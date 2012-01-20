@@ -1,13 +1,13 @@
 From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 2/5] iommu/amd: Implement DOMAIN_ATTR_GEOMETRY attribute
-Date: Fri, 20 Jan 2012 06:44:09 +0100
-Message-ID: <20120120.074409.1835198567920956646.hdoyu@nvidia.com>
-References: <201201191646.13798.laurent.pinchart@ideasonboard.com><20120119160739.GB2205@amd.com><201201191727.10176.laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH 0/5] IOMMU: Make IOMMU-API ready for GART-like hardware
+Date: Fri, 20 Jan 2012 07:14:03 +0100
+Message-ID: <20120120.081403.2268989617582455160.hdoyu@nvidia.com>
+References: <1326983405-319-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed;
+	boundary="_003_201201200814032268989617582455160hdoyunvidiacom_"
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <201201191727.10176.laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+In-Reply-To: <1326983405-319-1-git-send-email-joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,34 +17,111 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "joerg.roedel-5C7GfCeVMHo@public.gmane.org" <joerg.roedel-5C7GfCeVMHo@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Cc: "ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org" <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, "tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org" <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: "joerg.roedel-5C7GfCeVMHo@public.gmane.org" <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Cc: "ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org" <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, "tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org" <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, "Hiroshi.DOYU-xNZwKgViW5gAvxtiuMwx3w@public.gmane.org" <Hiroshi.DOYU-xNZwKgViW5gAvxtiuMwx3w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH 2/5] iommu/amd: Implement DOMAIN_ATTR_GEOMETRY attribute
-Date: Thu, 19 Jan 2012 17:27:09 +0100
-Message-ID: <201201191727.10176.laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+--_003_201201200814032268989617582455160hdoyunvidiacom_
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-> Hi Joerg,
-> 
-> On Thursday 19 January 2012 17:07:39 Joerg Roedel wrote:
-> > On Thu, Jan 19, 2012 at 04:46:13PM +0100, Laurent Pinchart wrote:
-> > > > +struct iommu_domain_geometry {
-> > > > +	u64 aperture_start;	/* First address that can be mapped    */
-> > > > +	u64 aperture_end;	/* Last address that can be mapped     */
-> > > 
-> > > Would it make sense to use a platform-dependent type that represents
-> > > physical addresses instead of u64 ?
-> > 
-> > Well, u64 is a catch-all datatype which should suit all drivers. Is this
-> > a problem at ARM?
-> 
-> No, it's not a problem for ARM, at least to my knowledge. It just struck me as 
-> weird, as we have specific data types for other kinds of addresses (such as 
-> dma_addr_t).
-> 
-> > We can also go the more complicated way of introducing an iova_addr_t or
-> > something. But if possible I would like to avoid that.
+Hi Joerg,
 
-"dma_addr_t" sounds nicer(and makes still sense) to me than a new "iova_addr_t".
+From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Subject: [PATCH 0/5] IOMMU: Make IOMMU-API ready for GART-like hardware
+Date: Thu, 19 Jan 2012 15:30:00 +0100
+Message-ID: <1326983405-319-1-git-send-email-joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+
+> Hi,
+>=20
+> this patch-set adds two new functions the the IOMMU-API:
+>=20
+> 	* iommu_domain_set_attr()
+> 	* iommu_domain_get_attr()
+>=20
+> These are generic functions to set and change attributes of a domain.
+> The plan is to have a set of generic attributes implemented by more than
+> one IOMMU driver as well as driver specific ones. As an example for the
+> first type this patch-set also implements the DOMAIN_ATTR_GEOMETRY
+> attribute. It can be used to query information about the address space
+> window that can be remapped by the iommu hardware. With this attribute
+> is is very easy to support IOMMUs like GART and friends.
+
+For Tegra GART & SMMU, this info is passed from board files as
+resource data via "platform_get_resource(,IORESOURCE_MEM,)". I think
+that this could be the attachement patch in Tegra case. The attached
+patches are based on the following post.
+
+https://lkml.org/lkml/2012/1/5/26
+https://lkml.org/lkml/2012/1/5/27
+
+--_003_201201200814032268989617582455160hdoyunvidiacom_
+Content-Type: text/x-patch;
+	name="0001-iommu-tegra-gart-Implement-DOMAIN_ATTR_GEOMETRY-attr.patch"
+Content-Description: 0001-iommu-tegra-gart-Implement-DOMAIN_ATTR_GEOMETRY-attr.patch
+Content-Disposition: attachment;
+	filename="0001-iommu-tegra-gart-Implement-DOMAIN_ATTR_GEOMETRY-attr.patch";
+	size=1059; creation-date="Fri, 20 Jan 2012 06:14:07 GMT";
+	modification-date="Fri, 20 Jan 2012 06:14:07 GMT"
+Content-Transfer-Encoding: base64
+
+RnJvbSA4MmQwZjgwOGE2YWIwYjhjZTM4Mzc5NDVmNTNkOWVmMDQyYjVkYWNkIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQ0KRnJvbTogSGlyb3NoaSBET1lVIDxoZG95dUBudmlkaWEuY29tPg0KRGF0
+ZTogRnJpLCAyMCBKYW4gMjAxMiAwNzo1NjowNyArMDIwMA0KU3ViamVjdDogW1BBVENIIDEvMl0g
+aW9tbXUvdGVncmEvZ2FydDogSW1wbGVtZW50IERPTUFJTl9BVFRSX0dFT01FVFJZDQogYXR0cmli
+dXRlDQoNCkltcGxlbWVudCB0aGUgYXR0cmlidXRlIGZvciB0aGUgVGVncmEgR0FSVCBkcml2ZXIu
+DQoNClNpZ25lZC1vZmYtYnk6IEhpcm9zaGkgRE9ZVSA8aGRveXVAbnZpZGlhLmNvbT4NCi0tLQ0K
+IGRyaXZlcnMvaW9tbXUvdGVncmEtZ2FydC5jIHwgICAgNiArKysrKysNCiAxIGZpbGVzIGNoYW5n
+ZWQsIDYgaW5zZXJ0aW9ucygrKSwgMCBkZWxldGlvbnMoLSkNCg0KZGlmZiAtLWdpdCBhL2RyaXZl
+cnMvaW9tbXUvdGVncmEtZ2FydC5jIGIvZHJpdmVycy9pb21tdS90ZWdyYS1nYXJ0LmMNCmluZGV4
+IGZlYWNjZDQuLmUyMzdiMDggMTAwNjQ0DQotLS0gYS9kcml2ZXJzL2lvbW11L3RlZ3JhLWdhcnQu
+Yw0KKysrIGIvZHJpdmVycy9pb21tdS90ZWdyYS1nYXJ0LmMNCkBAIC0xODEsNiArMTgxLDEyIEBA
+IHN0YXRpYyBpbnQgZ2FydF9pb21tdV9hdHRhY2hfZGV2KHN0cnVjdCBpb21tdV9kb21haW4gKmRv
+bWFpbiwNCiAJaWYgKCFnYXJ0KQ0KIAkJcmV0dXJuIC1FSU5WQUw7DQogCWRvbWFpbi0+cHJpdiA9
+IGdhcnQ7DQorDQorCWRvbWFpbi0+Z2VvbWV0cnkuYXBlcnR1cmVfc3RhcnQgPSBnYXJ0LT5pb3Zt
+bV9iYXNlOw0KKwlkb21haW4tPmdlb21ldHJ5LmFwZXJ0dXJlX2VuZCAgID0gZ2FydC0+aW92bW1f
+YmFzZSArDQorCQlnYXJ0LT5wYWdlX2NvdW50ICogR0FSVF9QQUdFX1NJWkUgLSAxOw0KKwlkb21h
+aW4tPmdlb21ldHJ5LmZvcmNlX2FwZXJ0dXJlID0gdHJ1ZTsNCisNCiAJY2xpZW50ID0gZGV2bV9r
+emFsbG9jKGRldiwgc2l6ZW9mKCpjKSwgR0ZQX0tFUk5FTCk7DQogCWlmICghY2xpZW50KQ0KIAkJ
+cmV0dXJuIC1FTk9NRU07DQotLSANCjEuNy41LjQNCg0K
+
+--_003_201201200814032268989617582455160hdoyunvidiacom_
+Content-Type: text/x-patch;
+	name="0002-iommu-tegra-smmu-Implement-DOMAIN_ATTR_GEOMETRY-attr.patch"
+Content-Description: 0002-iommu-tegra-smmu-Implement-DOMAIN_ATTR_GEOMETRY-attr.patch
+Content-Disposition: attachment;
+	filename="0002-iommu-tegra-smmu-Implement-DOMAIN_ATTR_GEOMETRY-attr.patch";
+	size=984; creation-date="Fri, 20 Jan 2012 06:14:07 GMT";
+	modification-date="Fri, 20 Jan 2012 06:14:07 GMT"
+Content-Transfer-Encoding: base64
+
+RnJvbSAwNDM4ODg1MzIxM2I4OWVhZTI5YzkxMzhlYjUzMzU5YWJhNmRlMThlIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQ0KRnJvbTogSGlyb3NoaSBET1lVIDxoZG95dUBudmlkaWEuY29tPg0KRGF0
+ZTogRnJpLCAyMCBKYW4gMjAxMiAwODowMjo1NCArMDIwMA0KU3ViamVjdDogW1BBVENIIDIvMl0g
+aW9tbXUvdGVncmEvc21tdTogSW1wbGVtZW50IERPTUFJTl9BVFRSX0dFT01FVFJZDQogYXR0cmli
+dXRlDQoNCkltcGxlbWVudCB0aGUgYXR0cmlidXRlIGZvciB0aGUgVGVncmEgU01NVSBkcml2ZXIu
+DQoNClNpZ25lZC1vZmYtYnk6IEhpcm9zaGkgRE9ZVSA8aGRveXVAbnZpZGlhLmNvbT4NCi0tLQ0K
+IGRyaXZlcnMvaW9tbXUvdGVncmEtc21tdS5jIHwgICAgNiArKysrKysNCiAxIGZpbGVzIGNoYW5n
+ZWQsIDYgaW5zZXJ0aW9ucygrKSwgMCBkZWxldGlvbnMoLSkNCg0KZGlmZiAtLWdpdCBhL2RyaXZl
+cnMvaW9tbXUvdGVncmEtc21tdS5jIGIvZHJpdmVycy9pb21tdS90ZWdyYS1zbW11LmMNCmluZGV4
+IDdkZWVhMzIuLjg0NTA0ZmYgMTAwNjQ0DQotLS0gYS9kcml2ZXJzL2lvbW11L3RlZ3JhLXNtbXUu
+Yw0KKysrIGIvZHJpdmVycy9pb21tdS90ZWdyYS1zbW11LmMNCkBAIC03MjMsNiArNzIzLDEyIEBA
+IGZvdW5kOg0KIA0KIAlzcGluX3VubG9ja19pcnFyZXN0b3JlKCZhcy0+bG9jaywgZmxhZ3MpOw0K
+IAlkb21haW4tPnByaXYgPSBhczsNCisNCisJZG9tYWluLT5nZW9tZXRyeS5hcGVydHVyZV9zdGFy
+dCA9IHNtbXUtPmlvdm1tX2Jhc2U7DQorCWRvbWFpbi0+Z2VvbWV0cnkuYXBlcnR1cmVfZW5kICAg
+PSBzbW11LT5pb3ZtbV9iYXNlICsNCisJCXNtbXUtPnBhZ2VfY291bnQgKiBTTU1VX1BBR0VfU0la
+RSAtIDE7DQorCWRvbWFpbi0+Z2VvbWV0cnkuZm9yY2VfYXBlcnR1cmUgPSB0cnVlOw0KKw0KIAlk
+ZXZfZGJnKHNtbXUtPmRldiwgInNtbXVfYXNAJXBcbiIsIGFzKTsNCiAJcmV0dXJuIDA7DQogDQot
+LSANCjEuNy41LjQNCg0K
+
+--_003_201201200814032268989617582455160hdoyunvidiacom_
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+iommu mailing list
+iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--_003_201201200814032268989617582455160hdoyunvidiacom_--
