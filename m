@@ -1,82 +1,69 @@
-From: 'Joerg Roedel' <joro@8bytes.org>
-Subject: Re: [PATCH v8 2/2] iommu/exynos: Add iommu driver for Exynos
-	Platforms
-Date: Mon, 23 Jan 2012 15:27:06 +0100
-Message-ID: <20120123142706.GA6269@8bytes.org>
-References: <001001ccc625$0afa7ee0$20ef7ca0$%cho@samsung.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 1/2] ARM: IOMMU: Tegra20: Add iommu_ops for GART driver
+Date: Mon, 23 Jan 2012 16:00:48 +0100
+Message-ID: <20120123150048.GB6269@8bytes.org>
+References: <1325747509-29665-1-git-send-email-hdoyu@nvidia.com> <1325747509-29665-2-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <001001ccc625$0afa7ee0$20ef7ca0$%cho@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: KyongHo Cho <pullip.cho@samsung.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, 'Sanghyun Lee' <sanghyun75.lee@samsung.com>, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Younglak Kim' <younglak1004.kim@samsung.com>, 'Marek Szyprowski' <m.szyprowski@samsung.com>, 'Kyungmin Park' <kyungmin.park@samsung.com>, 'Subash Patel' <subash.ramaswamy@linaro.org>
+In-Reply-To: <1325747509-29665-2-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linaro-mm-sig-bounces-cunTk1MwBs8s++Sfvej+rw@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 Hi,
 
-please also get and inclue Acks from the Exynos maintainer for the next
-post.
-Since I have a compiling config for exynos now I will merge the patches
-when you have the Acks and addressed or explained the issues I pointed
-out below.
+first, some questions about the GART on your platform.
 
-On Thu, Dec 29, 2011 at 09:26:08PM +0900, KyongHo Cho wrote:
-> +static void exynos_iommu_domain_destroy(struct iommu_domain *domain)
+1) How many GARTs are usually implemented? One GART per device or is
+   there a single GART covering all devices, or a mix of both?
+2) Are devices allowed to DMA outside of the remappable range or will
+   this fail?
+
+Besides that I think IOMMU-API is not yet fully ready for GART-like
+drivers like this one. But I will merge it anyway to get things moving.
+But please answer or fix my objections first.
+
+On Thu, Jan 05, 2012 at 09:11:48AM +0200, Hiroshi DOYU wrote:
+> +static void gart_iommu_domain_destroy(struct iommu_domain *domain)
 > +{
-> +	struct exynos_iommu_domain *priv = domain->priv;
-> +	struct list_head *pos, *n;
-> +	unsigned long flags;
-> +	int i;
+> +	struct gart_device *gart = domain->priv;
 > +
-> +	WARN_ON(!list_empty(&priv->clients));
+> +	spin_lock(&gart->client_lock);
+> +	if (!list_empty(&gart->client)) {
+> +		struct gart_client *c;
+> +
+> +		list_for_each_entry(c, &gart->client, list)
+> +			dev_err(gart->dev,
+> +				"%s is still attached\n", dev_name(c->dev));
+> +	}
+> +	spin_unlock(&gart->client_lock);
 
-This isn't really a problem. We allow destroying a domain with devices
-attached. So this WARN_ON is not necessary.
+gart needs a NULL check. When you create a domain and immediatly destroy
+it without ever attaching a device this code will dereference a NULL
+pointer.
+As a general improvement I suggest that you introduce a gart_domain
+structure and store it in domain->priv (assigned in domain_init) instead
+of using the hardware descriptor.
 
-> +static int exynos_iommu_map(struct iommu_domain *domain, unsigned long iova,
-> +			 phys_addr_t paddr, size_t size, int prot)
+> +static int gart_iommu_attach_dev(struct iommu_domain *domain,
+> +				 struct device *dev)
 > +{
-> +	struct exynos_iommu_domain *priv = domain->priv;
-> +	unsigned long *entry;
-> +	unsigned long flags;
-> +	int ret = -ENOMEM;
+> +	struct gart_device *gart;
+> +	struct gart_client *client, *c;
+> +	int err = 0;
 > +
-> +	BUG_ON(priv->pgtable == NULL);
-> +
-> +	spin_lock_irqsave(&priv->pgtablelock, flags);
-> +
-> +	entry = section_entry(priv->pgtable, iova);
-> +
-> +	if (size >= SECT_SIZE) {
-> +		ret = lv1set_section(entry, paddr, size >> SECT_ORDER,
-> +					&priv->lv2entcnt[lv1ent_offset(iova)]);
+> +	gart = dev_get_drvdata(dev->parent);
+> +	if (!gart)
+> +		return -EINVAL;
+> +	domain->priv = gart;
 
-This looks like you are partially re-implementing behavior of generic
-code because you are mapping multiple sections at once. The generic map
-code already splits up the address range correctly, so no need to do
-this in the driver (unless there is some benefit in the hardware, like
-an IOTLB entry that can cover multiple sections or something similar).
+What happens when devices behind different GARTs are assigned to the
+same domain? domain->priv can only hold a pointer to one hardware GART.
+This can be solved by a 'struct gart_domain' holding a linked list to
+all gart_devices in this domain.
 
-> +static size_t exynos_iommu_unmap(struct iommu_domain *domain,
-> +					       unsigned long iova, size_t size)
-> +{
-> +	struct exynos_iommu_domain *priv = domain->priv;
-> +	struct iommu_client *client;
-> +	unsigned long flags;
-> +
-> +	BUG_ON(priv->pgtable == NULL);
-> +
-> +	spin_lock_irqsave(&priv->pgtablelock, flags);
-> +
-> +	while (size != 0) {
-> +		int i, nent, order;
-> +		unsigned long *pent, *sent;
-
-Same with this while-loop. This looks like it re-implements behavior
-from the generic code.
-
-Regards,
 
 	Joerg
