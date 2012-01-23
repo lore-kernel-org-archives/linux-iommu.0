@@ -1,94 +1,90 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 2/2] ARM: IOMMU: Tegra30: Add iommu_ops for SMMU driver
-Date: Mon, 23 Jan 2012 16:43:10 +0100
-Message-ID: <20120123154310.GC6269@8bytes.org>
-References: <1325747509-29665-1-git-send-email-hdoyu@nvidia.com> <1325747509-29665-3-git-send-email-hdoyu@nvidia.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v2 0/5] VFIO core framework
+Date: Mon, 23 Jan 2012 10:20:05 -0700
+Message-ID: <20120123165620.26865.51875.stgit@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1325747509-29665-3-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linaro-mm-sig-bounces-cunTk1MwBs8s++Sfvej+rw@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org, joerg.roedel-5C7GfCeVMHo@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, benve-FYB4Gu1CFyUAvxtiuMwx3w@public.gmane.org, aafabbri-FYB4Gu1CFyUAvxtiuMwx3w@public.gmane.org, B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org, B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org, avi-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+This series includes the core framework for the VFIO driver.
+VFIO is a userspace driver interface meant to replace both the
+KVM device assignment code as well as interfaces like UIO.  Please
+see patch 1/5 for a complete description of VFIO, what it can do,
+and how it's designed.
 
-please see my comments inline. When you fix these issues I think the
-driver is ready for merging.
+This series can also be found here:
 
-On Thu, Jan 05, 2012 at 09:11:49AM +0200, Hiroshi DOYU wrote:
-> +static int smmu_iommu_map(struct iommu_domain *domain, unsigned long iova,
-> +			  phys_addr_t pa, size_t bytes, int prot)
-> +{
-> +	struct smmu_as *as = domain->priv;
-> +	unsigned long pfn = __phys_to_pfn(pa);
-> +	unsigned long flags;
-> +
-> +	dev_dbg(as->smmu->dev, "[%d] %08lx:%08x\n", as->asid, iova, pa);
-> +
-> +	if (!pfn_valid(pfn))
-> +		return -ENOMEM;
-> +
-> +	spin_lock_irqsave(&as->lock, flags);
-> +	__smmu_iommu_map_pfn(as, iova, pfn);
-> +	spin_unlock_irqrestore(&as->lock, flags);
-> +	return 0;
+git://github.com/awilliam/linux-vfio.git vfio-next
 
-Why do you completly ignore the size parameter in this function (and
-in the unmap part below)?
-According to the page-sizes you export to the generic layer size can be
-4k or 4M. You need to take care of that in this function.
+This plus the PCI VFIO bus driver for exposing PCI devices to
+userspace can be found here:
 
-> +static void smmu_iommu_domain_destroy(struct iommu_domain *domain)
-> +{
-> +	struct smmu_as *as = domain->priv;
-> +	struct smmu_device *smmu = as->smmu;
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&as->lock, flags);
-> +
-> +	if (as->pdir_page) {
-> +		spin_lock(&smmu->lock);
-> +		smmu_write(smmu, SMMU_PTB_ASID_CUR(as->asid), SMMU_PTB_ASID);
-> +		smmu_write(smmu, SMMU_PTB_DATA_RESET_VAL, SMMU_PTB_DATA);
-> +		FLUSH_SMMU_REGS(smmu);
-> +		spin_unlock(&smmu->lock);
-> +
-> +		free_pdir(as);
-> +	}
-> +
-> +	if (!list_empty(&as->client)) {
-> +		struct smmu_client *c;
-> +
-> +		list_for_each_entry(c, &as->client, list)
-> +			dev_err(smmu->dev,
-> +				"%s is still attached\n", dev_name(c->dev));
+git://github.com/awilliam/linux-vfio.git vfio-next-staging
 
-This is not an error. Just detach the devices when they are still
-attached to the domain.
+or here for a linux-2.6.git based tree:
 
-> +	}
-> +
-> +	spin_unlock_irqrestore(&as->lock, flags);
-> +
-> +	domain->priv = NULL;
-> +	dev_dbg(smmu->dev, "smmu_as@%p\n", as);
-> +}
-> +
-> +static int smmu_iommu_attach_dev(struct iommu_domain *domain,
-> +				 struct device *dev)
-> +{
-> +	struct smmu_as *as = domain->priv;
-> +	struct smmu_device *smmu = as->smmu;
+git://github.com/awilliam/linux-vfio.git vfio-linux-staging
 
-Hmm, this looks like there is a 1-1 mapping between hardware SMMU
-devices and domains. This is not consistent with IOMMU-API semantics
-where a domain can contain devices behind different SMMUs. Please fix
-that.
+A fully functional qemu driver for doing non-KVM based PCI
+device assignment can be found here:
+
+git://github.com/awilliam/qemu-vfio.git vfio-ng
+
+I'd like to propose VFIO for inclusion in Linux 3.4, starting with
+this core framework series.  Once we have agreement on these, I'll
+split up and post the VFIO PCI bus driver for inclusion as well.
+I can also host the above vfio-next branch for inclusion in
+linux-next.  Please review and comment.  Thanks,
+
+Alex
+
+v2: Interrupt setup ioctl rework based on comments by Konrad.
+    The interrupt ioctls are no longer exclusively targeted
+    at eventfds, allowing for more flexibility of other vfio
+    bus drivers making use of alternate mechanisms.  Also
+    updated vfio_iommu_info to report common IOMMU geometry
+    fields that we know we're going to need for Freescale
+    PAMU.  Additional ioctls and fields to be added via flags
+    as they're implemented in the IOMMU API.
+
+---
+
+Alex Williamson (5):
+      vfio: VFIO core Kconfig and Makefile
+      vfio: VFIO core IOMMU mapping support
+      vfio: VFIO core group interface
+      vfio: VFIO core header
+      vfio: Introduce documentation for VFIO driver
 
 
-Thanks,
-
-	Joerg
+ Documentation/ioctl/ioctl-number.txt |    1 
+ Documentation/vfio.txt               |  359 ++++++++++
+ MAINTAINERS                          |    8 
+ drivers/Kconfig                      |    2 
+ drivers/Makefile                     |    1 
+ drivers/vfio/Kconfig                 |    8 
+ drivers/vfio/Makefile                |    3 
+ drivers/vfio/vfio_iommu.c            |  611 +++++++++++++++++
+ drivers/vfio/vfio_main.c             | 1248 ++++++++++++++++++++++++++++++++++
+ drivers/vfio/vfio_private.h          |   36 +
+ include/linux/vfio.h                 |  395 +++++++++++
+ 11 files changed, 2672 insertions(+), 0 deletions(-)
+ create mode 100644 Documentation/vfio.txt
+ create mode 100644 drivers/vfio/Kconfig
+ create mode 100644 drivers/vfio/Makefile
+ create mode 100644 drivers/vfio/vfio_iommu.c
+ create mode 100644 drivers/vfio/vfio_main.c
+ create mode 100644 drivers/vfio/vfio_private.h
+ create mode 100644 include/linux/vfio.h
