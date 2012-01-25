@@ -1,106 +1,166 @@
-From: Joerg Roedel <joerg.roedel@amd.com>
-Subject: Re: [PATCH v8 2/2] iommu/exynos: Add iommu driver for Exynos
- Platforms
-Date: Wed, 25 Jan 2012 12:44:17 +0100
-Message-ID: <20120125114417.GE19255@amd.com>
-References: <001001ccc625$0afa7ee0$20ef7ca0$%cho@samsung.com>
- <20120123142706.GA6269@8bytes.org>
- <CAHQjnOMyoOH2cFjjGSzMvefZTQGROmQgaA8S0MmxnKGHWyQhyA@mail.gmail.com>
+From: Hiroshi Doyu <hdoyu@nvidia.com>
+Subject: Re: [PATCH 8/8] ARM: dma-mapping: add support for IOMMU mapper
+Date: Wed, 25 Jan 2012 14:47:27 +0200
+Message-ID: <20120125144727.2722b4a1fb8017dd3633d7ad@nvidia.com>
+References: <1323448798-18184-1-git-send-email-m.szyprowski@samsung.com>
+	<1323448798-18184-9-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAHQjnOMyoOH2cFjjGSzMvefZTQGROmQgaA8S0MmxnKGHWyQhyA@mail.gmail.com>
+In-Reply-To: <1323448798-18184-9-git-send-email-m.szyprowski@samsung.com>
 Sender: linux-samsung-soc-owner@vger.kernel.org
-To: KyongHo Cho <pullip.cho@samsung.com>
-Cc: Joerg Roedel <joro@8bytes.org>, linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Younglak Kim <younglak1004.kim@samsung.com>, Subash Patel <subash.ramaswamy@linaro.org>, Kukjin Kim <kgene.kim@samsung.com>, Kyungmin Park <kyungmin.park@samsung.com>, Sanghyun Lee <sanghyun75.lee@samsung.com>, linux-arm-kernel@lists.infradead.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linaro-mm-sig@lists.linaro.org" <linaro-mm-sig@lists.linaro.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Shariq Hasnain <shariq.hasnain@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Krishna Reddy <vdumpa@nvidia.com>, Kyungmin Park <kyungmin.park@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>, KyongHo Cho <pullip.cho@samsung.com>, Chunsang Jeong <chunsang.jeong@linaro.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 25, 2012 at 03:51:58PM +0900, KyongHo Cho wrote:
-> > This isn't really a problem. We allow destroying a domain with devi=
-ces
-> > attached. So this WARN_ON is not necessary.
-> >
-> BTW, Isn't it a problem when a device driver does not know that its
-> iommu domain is destroyed?
-> Can we regards that it is the faulty use of iommu API?
+Hi Marek,
 
-Yes we could, but we don't ;) The domain_destroy path has to take care
-of this anyway to be robust, so we can also take away the need to unatt=
-ach
-everything from a domain from the iommu-api user.
+On Fri, 9 Dec 2011 17:39:58 +0100
+Marek Szyprowski <m.szyprowski@samsung.com> wrote:
 
-> > This looks like you are partially re-implementing behavior of gener=
-ic
-> > code because you are mapping multiple sections at once. The generic=
- map
-> > code already splits up the address range correctly, so no need to d=
-o
-> > this in the driver (unless there is some benefit in the hardware, l=
-ike
-> > an IOTLB entry that can cover multiple sections or something simila=
-r).
-> >
-> Yes, I wanted to avoid repeated function call by iommu_map().
-> s5p_iommu_map() maps once for the same page size since it is efficien=
-t
-> and simple.
-> That's why this driver initializes domain->pgsize_bitmap with 0xFFFFF=
-000
-> even though our IOMMU driver just supports 3 different page sizes
-> including 4KB, 64KB and 1MB.
+> This patch add a complete implementation of DMA-mapping API for
+> devices that have IOMMU support. All DMA-mapping calls are supported.
+>
+> This patch contains some of the code kindly provided by Krishna Reddy
+> <vdumpa@nvidia.com> and Andrzej Pietrasiewicz <andrzej.p@samsung.com>
+>
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Signed-off-by: Kyungmin Park <kyungmin.park@samsung.com>
+>
+> Add initial proof of concept implementation of DMA-mapping API for
+> devices that have IOMMU support. Right now only dma_alloc_coherent,
+> dma_free_coherent and dma_mmap_coherent functions are supported.
+>
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Signed-off-by: Kyungmin Park <kyungmin.park@samsung.com>
+> ---
+>  arch/arm/Kconfig                 |    8 +
+>  arch/arm/include/asm/device.h    |    3 +
+>  arch/arm/include/asm/dma-iommu.h |   36 +++
+>  arch/arm/mm/dma-mapping.c        |  637 +++++++++++++++++++++++++++++++++++++-
+>  arch/arm/mm/vmregion.h           |    2 +-
+>  5 files changed, 671 insertions(+), 15 deletions(-)
+>  create mode 100644 arch/arm/include/asm/dma-iommu.h
+>
+> diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+> index 8827c9b..87416fc 100644
+> --- a/arch/arm/Kconfig
+> +++ b/arch/arm/Kconfig
+> @@ -42,6 +42,14 @@ config ARM
+>  config ARM_HAS_SG_CHAIN
+>         bool
+>
+> +config NEED_SG_DMA_LENGTH
+> +       bool
+> +
+> +config ARM_DMA_USE_IOMMU
+> +       select NEED_SG_DMA_LENGTH
+> +       select ARM_HAS_SG_CHAIN
+> +       bool
+> +
+>  config HAVE_PWM
+>         bool
+>
+> diff --git a/arch/arm/include/asm/device.h b/arch/arm/include/asm/device.h
+> index 6e2cb0e..b69c0d3 100644
+> --- a/arch/arm/include/asm/device.h
+> +++ b/arch/arm/include/asm/device.h
+> @@ -14,6 +14,9 @@ struct dev_archdata {
+>  #ifdef CONFIG_IOMMU_API
+>         void *iommu; /* private IOMMU data */
+>  #endif
+> +#ifdef CONFIG_ARM_DMA_USE_IOMMU
+> +       struct dma_iommu_mapping        *mapping;
+> +#endif
+>  };
+>
+>  struct omap_device;
+> diff --git a/arch/arm/include/asm/dma-iommu.h b/arch/arm/include/asm/dma-iommu.h
+> new file mode 100644
+> index 0000000..6668b41
+> --- /dev/null
+> +++ b/arch/arm/include/asm/dma-iommu.h
+> @@ -0,0 +1,36 @@
+> +#ifndef ASMARM_DMA_IOMMU_H
+> +#define ASMARM_DMA_IOMMU_H
+> +
+> +#ifdef __KERNEL__
+> +
+> +#include <linux/mm_types.h>
+> +#include <linux/scatterlist.h>
+> +#include <linux/dma-debug.h>
+> +#include <linux/kmemcheck.h>
+> +
+> +#include <asm/memory.h>
+> +
+> +struct dma_iommu_mapping {
+> +       /* iommu specific data */
+> +       struct iommu_domain     *domain;
+> +
+> +       void                    *bitmap;
+> +       size_t                  bits;
+> +       unsigned int            order;
+> +       dma_addr_t              base;
+> +
+> +       spinlock_t              lock;
+> +       struct kref             kref;
+> +};
+> +
+> +struct dma_iommu_mapping *
+> +arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, size_t size,
+> +                        int order);
+> +
+> +void arm_iommu_release_mapping(struct dma_iommu_mapping *mapping);
+> +
+> +int arm_iommu_attach_device(struct device *dev,
+> +                                       struct dma_iommu_mapping *mapping);
+> +
+> +#endif /* __KERNEL__ */
+> +#endif
+> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+> index 4845c09..7ac5a95 100644
+> --- a/arch/arm/mm/dma-mapping.c
+> +++ b/arch/arm/mm/dma-mapping.c
+> @@ -27,6 +27,9 @@
+>  #include <asm/sizes.h>
+>  #include <asm/mach/arch.h>
+>
+> +#include <linux/iommu.h>
+> +#include <asm/dma-iommu.h>
+> +
+>  #include "mm.h"
+>
+>  /*
+.....
+> +
+> +static void arm_iommu_unmap_page(struct device *dev, dma_addr_t handle,
+> +               size_t size, enum dma_data_direction dir,
+> +               struct dma_attrs *attrs)
+> +{
+> +       struct dma_iommu_mapping *mapping = dev->archdata.mapping;
+> +       dma_addr_t iova = handle & PAGE_MASK;
+> +       struct page *page = phys_to_page(iommu_iova_to_phys(mapping->domain, iova));
+> +       int offset = handle & ~PAGE_MASK;
+> +
+> +       if (!iova)
+> +               return;
+> +
+> +       if (!arch_is_coherent())
+> +               __dma_page_dev_to_cpu(page, offset, size, dir);
+> +
+> +       iommu_unmap(mapping->domain, iova, size);
 
-Repeated function calls are not a real performance problem in the
-iommu-code in my experience. The overhead is usualle somewhere else.
+Is __free_iova() needed here as below?
 
-> Do you think it is better for s5p_iommu_map() to map just one page at=
- once?
+	Modified arch/arm/mm/dma-mapping.c
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index 9aa1675..66830b2 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -1212,6 +1212,7 @@ static void arm_iommu_unmap_page(struct device *dev, dma_addr_t handle,
+		__dma_page_dev_to_cpu(page, offset, size, dir);
 
-In general I think we should not duplicate code. This logic was moved t=
-o
-the generic part for a reason and iommu drivers should use it unless
-there is a very good reason not to do so.
-
->=20
-> >> +static size_t exynos_iommu_unmap(struct iommu_domain *domain,
-> >> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0unsigned long iova, size_t size)
-> >> +{
-> >> + =A0 =A0 struct exynos_iommu_domain *priv =3D domain->priv;
-> >> + =A0 =A0 struct iommu_client *client;
-> >> + =A0 =A0 unsigned long flags;
-> >> +
-> >> + =A0 =A0 BUG_ON(priv->pgtable =3D=3D NULL);
-> >> +
-> >> + =A0 =A0 spin_lock_irqsave(&priv->pgtablelock, flags);
-> >> +
-> >> + =A0 =A0 while (size !=3D 0) {
-> >> + =A0 =A0 =A0 =A0 =A0 =A0 int i, nent, order;
-> >> + =A0 =A0 =A0 =A0 =A0 =A0 unsigned long *pent, *sent;
-> >
-> > Same with this while-loop. This looks like it re-implements behavio=
-r
-> > from the generic code.
-> >
-> If a region to unmap consists of tens of pages
-> there is no way to avoid flushing IOTLB repeatedly.
->=20
-> Out iommu driver doesn't need to flush IOTLB more than once for a
-> region to unmap.
->=20
-> Do you think the driver is better to unmaps just one page at once
-> though flushing IOTLB repeatedly?
-
-Is I/O-TLB flushing an expensive operation?
-
-
-	Joerg
-
---=20
-AMD Operating System Research Center
-
-Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
-General Managers: Alberto Bozzo
-Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr.=
- 43632
+	iommu_unmap(mapping->domain, iova, size);
++       __free_iova(mapping, iova, size);
+ }
