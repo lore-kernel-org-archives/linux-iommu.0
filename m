@@ -1,201 +1,131 @@
-From: David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
-Subject: Re: [Qemu-devel] [RFC] Device isolation infrastructure v2
-Date: Wed, 25 Jan 2012 14:13:28 +1100
-Message-ID: <20120125031328.GC13830@truffala.fritz.box>
-References: <1323930340-24055-1-git-send-email-david@gibson.dropbear.id.au>
-	<1323972307.2437.19.camel@x201.home>
-	<20111216145353.GA29877@amd.com>
-	<20111219001125.GA30390@truffala.fritz.box>
-	<20111219154156.GG29877@amd.com>
-	<20111221033235.GA4537@truffala.fritz.box>
-	<1324441837.29699.38.camel@bling.home>
+From: KyongHo Cho <pullip.cho@samsung.com>
+Subject: Re: [PATCH v8 2/2] iommu/exynos: Add iommu driver for Exynos Platforms
+Date: Wed, 25 Jan 2012 15:51:58 +0900
+Message-ID: <CAHQjnOMyoOH2cFjjGSzMvefZTQGROmQgaA8S0MmxnKGHWyQhyA@mail.gmail.com>
+References: <001001ccc625$0afa7ee0$20ef7ca0$%cho@samsung.com>
+	<20120123142706.GA6269@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1324441837.29699.38.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: chrisw-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, rusty-8n+1lVoiYb80n/F98K4Iww@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <20120123142706.GA6269@8bytes.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Kukjin Kim <kgene.kim@samsung.com>, Subash Patel <subash.ramaswamy@linaro.org>, linux-kernel@vger.kernel.org, Younglak Kim <younglak1004.kim@samsung.com>, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, Kyungmin Park <kyungmin.park@samsung.com>, Sanghyun Lee <sanghyun75.lee@samsung.com>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Dec 20, 2011 at 09:30:37PM -0700, Alex Williamson wrote:
-> On Wed, 2011-12-21 at 14:32 +1100, David Gibson wrote:
-> > On Mon, Dec 19, 2011 at 04:41:56PM +0100, Joerg Roedel wrote:
-> > > On Mon, Dec 19, 2011 at 11:11:25AM +1100, David Gibson wrote:
-> > > > Well.. that's not where it is in Alex's code either.  The iommu layer
-> > > > (to the extent that there is such a "layer") supplies the group info,
-> > > > but the group management is in vfio, not the iommu layer.  With mine
-> > > > it is in the driver core because the struct device seemed the logical
-> > > > place for the group id.
-> > > 
-> > > Okay, seems we have different ideas of what the 'grouping code' is. I
-> > > talked about the group enumeration code only. But group handling code is
-> > > certainly important to some degree too. But before we argue about the
-> > > right place of the code we should agree on the semantics such code
-> > > should provide.
-> > > 
-> > > For me it is fine when the code is in VFIO for now, since VFIO is the
-> > > only user at the moment. When more users pop up we can easily move it
-> > > out to somewhere else. But the semantics influence the interface to
-> > > user-space too, so it is more important now. It splits up into a number
-> > > of sub problems:
-> > > 
-> > > 	1) How userspace detects the device<->group relationship?
-> > > 	2) Do we want group-binding/unbinding to device drivers?
-> > > 	3) Group attach/detach to iommu-domains?
-> > > 	4) What to do with hot-added devices?
-> > > 
-> > > For 1) I think the current solution with the iommu_group file is fine.
-> > > It is somewhat expensive for user-space to figure out the per-group
-> > > device-sets, but that is a one-time effort so it doesn't really matter.
-> > > Probably we can rename 'iommu_group' to 'isolation_group' or
-> > > something.
-> > 
-> > Hrm.  Alex's group code also provides no in-kernel way to enumerate a
-> > group, short of walking every device in the system.  And it provides
-> > no way to attach information to a group.  It just seems foolish to me
-> > to have this concept without some kind of in-kernel handle on it, and
-> 
-> Who else needs to enumerate groups right now?  Who else needs to attach
-> data to a group.  We seem to be caught in this loop of arguing that we
-> need driver core based group management, but we don't have any plans to
-> make use of it, so it just bloats the kernel for most of the users that
-> don't care about it.
+Hi,
+On Mon, Jan 23, 2012 at 11:27 PM, Joerg Roedel <joro@8bytes.org> wrote:
+> Hi,
+>
+> please also get and inclue Acks from the Exynos maintainer for the ne=
+xt
+> post.
+> Since I have a compiling config for exynos now I will merge the patch=
+es
+> when you have the Acks and addressed or explained the issues I pointe=
+d
+> out below.
+>
+Thanks for review!
+I will include the Acks in the next patchset.
+I will post the next patchset with corrections by the day after tomorro=
+w.
 
-So, Ben and I discussed this with David Woodhouse during
-linux.conf.au.  He does want to update the core iommu_ops and dma_ops
-handling to be group aware, and is willing to do the work for that.
-So I will be doing another spin of my isolation code as a basis for
-that work of his.  So there's our other user.
+And sorry for late reply.
+I had holidays for the new year's day based on Lunar system.
 
-> > if you're managing the in-kernel representation you might as well
-> > expose it to userspace there as well.
-> 
-> Unfortunately this is just the start a peeling back layers of the onion.
-> We manage groups in the driver core, so the driver core should expose
-> them to userspace.  The driver core exposes them to userspace, so now it
-> needs to manage permissions for userspace.
+> On Thu, Dec 29, 2011 at 09:26:08PM +0900, KyongHo Cho wrote:
+>> +static void exynos_iommu_domain_destroy(struct iommu_domain *domain=
+)
+>> +{
+>> + =A0 =A0 struct exynos_iommu_domain *priv =3D domain->priv;
+>> + =A0 =A0 struct list_head *pos, *n;
+>> + =A0 =A0 unsigned long flags;
+>> + =A0 =A0 int i;
+>> +
+>> + =A0 =A0 WARN_ON(!list_empty(&priv->clients));
+>
+> This isn't really a problem. We allow destroying a domain with device=
+s
+> attached. So this WARN_ON is not necessary.
+>
+OK.
+BTW, Isn't it a problem when a device driver does not know that its
+iommu domain is destroyed?
+Can we regards that it is the faulty use of iommu API?
 
-That doesn't necessarily follow.  The current draft has the core group
-code export character devices on which permissions are managed, but
-I'm also considering options where it only exports sysfs and something
-else does the character device and permissions.
+>> +static int exynos_iommu_map(struct iommu_domain *domain, unsigned l=
+ong iova,
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0phys_addr_t paddr, size=
+_t size, int prot)
+>> +{
+>> + =A0 =A0 struct exynos_iommu_domain *priv =3D domain->priv;
+>> + =A0 =A0 unsigned long *entry;
+>> + =A0 =A0 unsigned long flags;
+>> + =A0 =A0 int ret =3D -ENOMEM;
+>> +
+>> + =A0 =A0 BUG_ON(priv->pgtable =3D=3D NULL);
+>> +
+>> + =A0 =A0 spin_lock_irqsave(&priv->pgtablelock, flags);
+>> +
+>> + =A0 =A0 entry =3D section_entry(priv->pgtable, iova);
+>> +
+>> + =A0 =A0 if (size >=3D SECT_SIZE) {
+>> + =A0 =A0 =A0 =A0 =A0 =A0 ret =3D lv1set_section(entry, paddr, size =
+>> SECT_ORDER,
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0 &priv->lv2entcnt[lv1ent_offset(iova)]);
+>
+> This looks like you are partially re-implementing behavior of generic
+> code because you are mapping multiple sections at once. The generic m=
+ap
+> code already splits up the address range correctly, so no need to do
+> this in the driver (unless there is some benefit in the hardware, lik=
+e
+> an IOTLB entry that can cover multiple sections or something similar)=
+=2E
+>
+Yes, I wanted to avoid repeated function call by iommu_map().
+s5p_iommu_map() maps once for the same page size since it is efficient
+and simple.
+That's why this driver initializes domain->pgsize_bitmap with 0xFFFFF00=
+0
+even though our IOMMU driver just supports 3 different page sizes
+including 4KB, 64KB and 1MB.
 
->  Then we add permissions and
-> now we need to provide group access, then we need a channel to an actual
-> userspace device driver, zing! we add a whole API there,
+Do you think it is better for s5p_iommu_map() to map just one page at o=
+nce?
 
-And the other option I was looking add had the core providing the char
-device but having it's fops get passed straight through to the binder.
+>> +static size_t exynos_iommu_unmap(struct iommu_domain *domain,
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0 =A0 =A0 =A0 =A0unsigned long iova, size_t size)
+>> +{
+>> + =A0 =A0 struct exynos_iommu_domain *priv =3D domain->priv;
+>> + =A0 =A0 struct iommu_client *client;
+>> + =A0 =A0 unsigned long flags;
+>> +
+>> + =A0 =A0 BUG_ON(priv->pgtable =3D=3D NULL);
+>> +
+>> + =A0 =A0 spin_lock_irqsave(&priv->pgtablelock, flags);
+>> +
+>> + =A0 =A0 while (size !=3D 0) {
+>> + =A0 =A0 =A0 =A0 =A0 =A0 int i, nent, order;
+>> + =A0 =A0 =A0 =A0 =A0 =A0 unsigned long *pent, *sent;
+>
+> Same with this while-loop. This looks like it re-implements behavior
+> from the generic code.
+>
+If a region to unmap consists of tens of pages
+there is no way to avoid flushing IOTLB repeatedly.
 
-> then we need
-> group driver binding, then we need group device driver binding, blam!
-> another API, then we need...  I don't see a clear end marker that
-> doesn't continue to bloat the core and add functionality that nobody
-> else needs and we don't even have plans of integrating more pervasively.
-> This appears to end with 80 to 90% of the vfio core code moving into the
-> driver core.
+Out iommu driver doesn't need to flush IOTLB more than once for a
+region to unmap.
 
-I don't agree.  Working out the right boundary isn't totally obvious,
-certainly, but that doesn't mean a reasonable boundary can't be found.
+Do you think the driver is better to unmaps just one page at once
+though flushing IOTLB repeatedly?
 
-> 
-> > > Regarding 2), I think providing user-space a way to unbind groups of
-> > > devices from their drivers is a horrible idea.
-> > 
-> > Well, I'm not wed to unbinding all the drivers at once.  But what I
-> > *do* think is essential is that we can atomically switch off automatic
-> > driver matching for the whole group.  Without that nothing really
-> > stops a driver reattaching to the things you've unbound, so you end up
-> > bailing a leakey boat.
-> 
-> Huh?  There is no issue with removing a device from one driver and
-> attaching it to another.  This happens all the time.  If you're talking
-> about hotplug, all we have to do is sit on the bus notifier chain and we
-> get called when devices are added, before the driver has a chance to
-> attach.  We can then force a vfio driver to attach when needed.
 
-But what is the transition point at which you know force attaching a
-vfio driver is the right thing?  My draft does that atomically with
-unbinding the existing drivers.  But you have a fair point about that
-causing devices to disappear surprisingly, so I think I'll change that
-so that it instead becomes 3 step: first prevent new drivers
-auto-binding to things in the group, then explicitly unbind existing
-drivers, then grab the group for userspace access.
+Thank you.
 
->  Hell,
-> we can just set dev->driver to something to prevent standard driver
-> probing.
-
-> > > It makes it too easy for
-> > > the user to shoot himself in the foot. For example when the user wants
-> > > to assign a network card to a guest, but that card is in the same group
-> > > as the GPU and the screen wents blank when the guest is started.
-> > > Requiring devices to be unbound one-by-one is better because this way
-> > > the user always needs to know what he is doing.
-> > 
-> > Ok, that's not the usage model I had in mind.  What I'm thinking here
-> > is that the admin removes groups that will be used in guests from the
-> > host kernel (probably via boot-time scripts).  The guests will pick
-> > them up later, so that when a guest quits then restarts, we don't have
-> > devices appearing transiently in the host.
-> 
-> I don't think that model is dynamic enough for our existing use cases.
-> A user shouldn't need to decide at boot time which devices are going to
-> be used for what purpose.  It's entirely valid for a user to start up a
-> VM, decide they want more network performance and reassign a NIC from
-> host use to guest use.  When they shutdown the VM or hot-unplug it, they
-> should be able to easily put it back to work on the host.
-
-Well, sure, you can do that too.  But I bet you the more common usage
-model for production will be to have most of the hardware assigned to
-a particular guest on a long term basis.
-
-[snip]
-> > > So what does this mean for point 3? I think we can implement attaching
-> > > and detaching groups in the iommu-api. This interface is not exposed to
-> > > userspace and can help VFIO and possible future users. Semantic is, that
-> > > domain_attach_group() only works when all devices in the group are in
-> > > their default domain and domain_detach_group() puts them back into the
-> > > default domain.
-> > 
-> > The domain_{attach,detach} functions absolutely should be group based
-> > not device based.  That's what it means to be a group.
-> 
-> Yet we have no plans to make that change...
-
-David Woodhouse does now.
-
-> > > Question 4) is also solved with the default-domain concept. A hot-added
-> > > device is put in the domain of its group automatically.
-> > 
-> > Well, of course it is.  A group can only have one domain.  That's what
-> > being a group means.
-> > 
-> > > If the group is
-> > > owned by VFIO and another driver attaches to the device dma_supported
-> > > will return false and initialization will fail.
-> > 
-> > By the time dma_supported is checked the driver could have already
-> > touched the device.  That's way too late.
-> 
-> Very likely that the driver will have already interfered with config
-> space.
-
-Exactly.
-
--- 
-David Gibson			| I'll have my music baroque, and my code
-david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
-				| _way_ _around_!
-http://www.ozlabs.org/~dgibson
+  KyongHo
