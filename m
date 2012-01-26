@@ -1,65 +1,71 @@
-From: Scott Wood <scottwood@freescale.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Subject: Re: [PATCH 2/5] iommu/amd: Implement DOMAIN_ATTR_GEOMETRY attribute
-Date: Thu, 26 Jan 2012 13:00:37 -0600
-Message-ID: <4F21A2D5.6000204@freescale.com>
-References: <1326983405-319-1-git-send-email-joerg.roedel@amd.com> <1326983405-319-3-git-send-email-joerg.roedel@amd.com> <C5ECD7A89D1DC44195F34B25E172658D038749@039-SN2MPN1-011.039d.mgd.msft.net> <20120120160344.GG2205@amd.com> <4F219A9C.8000400@freescale.com> <20120126183116.GI19255@amd.com> <4F219E82.106@freescale.com> <20120126185101.GJ19255@amd.com>
+Date: Thu, 26 Jan 2012 20:44:29 +0100
+Message-ID: <20120126194428.GH6269@8bytes.org>
+References: <1326983405-319-1-git-send-email-joerg.roedel@amd.com>
+	<1326983405-319-3-git-send-email-joerg.roedel@amd.com>
+	<C5ECD7A89D1DC44195F34B25E172658D038749@039-SN2MPN1-011.039d.mgd.msft.net>
+	<20120120160344.GG2205@amd.com> <4F219A9C.8000400@freescale.com>
+	<20120126183116.GI19255@amd.com> <4F219E82.106@freescale.com>
+	<20120126185101.GJ19255@amd.com> <4F21A2D5.6000204@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20120126185101.GJ19255@amd.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joerg.roedel@amd.com>
-Cc: Sethi Varun-B16395 <B16395@freescale.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Ohad Ben-Cohen <ohad@wizery.com>, Tony Lindgren <tony@atomide.com>, Hiroshi DOYU <Hiroshi.DOYU@nokia.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Wood Scott-B07421 <B07421@freescale.com>, David Brown <davidb@codeaurora.org>, David Woodhouse <dwmw2@infradead.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <4F21A2D5.6000204-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Cc: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Hiroshi DOYU <Hiroshi.DOYU-xNZwKgViW5gAvxtiuMwx3w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, David Brown <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/26/2012 12:51 PM, Joerg Roedel wrote:
-> On Thu, Jan 26, 2012 at 12:42:10PM -0600, Scott Wood wrote:
->> On 01/26/2012 12:31 PM, Joerg Roedel wrote:
->>> The force_aperture flag indicated whether DMA is only allowed between
->>> aperture_start and apertuer_end or if DMA is allowed outside of this
->>> range too (unmapped in this case).
->>>
->>> The AMD GART for example would set this flag to false because it does
->>> not enforce DMA to be in the aperture-range.
->>
->> Why is this not an AMD GART specific attribute?  Is there any feature
->> reporting mechanism by which a user would know if that flag is supported?
+On Thu, Jan 26, 2012 at 01:00:37PM -0600, Scott Wood wrote:
+> On 01/26/2012 12:51 PM, Joerg Roedel wrote:
+> > Because this is a flag that makes sense for all IOMMU. Every IOMMU
+> > either allows DMA outside its aperture or it doesn't.
+> > 
+> > Another reason why it must be in the generic struct is the intended
+> > generic dma-ops layer on-top. This code can decide on this flag wheter a
+> > address needs to be remapped at all.
 > 
-> Because this is a flag that makes sense for all IOMMU. Every IOMMU
-> either allows DMA outside its aperture or it doesn't.
+> So the DMA API would just read this, not write it?
+
+The whole geometry thing is only implemented on the read side. There is
+no implementation in domain_set_attr for it. So the geometry
+information is read-only by default.
+
+> Still no reason why it couldn't be a separate attribute.  Then if you
+> get a failure trying to write it, it's more obvious why.
+
+This would mean iommu specific hacks, which are not necessary in this
+case.
+
+> > Setting this flag wrong does not create unintended identity mappings.
 > 
-> Another reason why it must be in the generic struct is the intended
-> generic dma-ops layer on-top. This code can decide on this flag wheter a
-> address needs to be remapped at all.
+> Failing to set it means that DMA can go through that is not limited to
+> explicitly created mappings.  In some contexts (e.g. vfio) this is a
+> security hole.
 
-So the DMA API would just read this, not write it?
+No, when the hardware does not allow this, then software can't enforce
+it. Again, the whole geometry attribute is only for iommu drivers to
+export what the hardware can do. It is not for software to configure the
+iommu driver.
 
-Still no reason why it couldn't be a separate attribute.  Then if you
-get a failure trying to write it, it's more obvious why.
-
->> If it must be in the generic struct, it would be nice to invert the
->> polarity so that the default (after zeroing) is something that should be
->> more widely supportable, and less likely to create unintended identity
->> mappings.
+> > But I don't understand what you mean by 'restrictions on possible values'. The
+> > geometry attribute is filled by the IOMMU driver dependent on the
+> > hardware capabilities. There are no limits from the iommu-code side.
 > 
-> Setting this flag wrong does not create unintended identity mappings.
+> How does the user of the iommu API discover the hardware capabilities?
 
-Failing to set it means that DMA can go through that is not limited to
-explicitly created mappings.  In some contexts (e.g. vfio) this is a
-security hole.
+Which hardware capabilities besides the geometry do you mean?
 
->> How in general are available attributes and restrictions on possible
->> values to be communicated to users of the API?
-> 
-> The possible attributes can be found in inlude/linux/iommu.h.
 
-I meant possible for the currently running hardware.
-
-> But I don't understand what you mean by 'restrictions on possible values'. The
-> geometry attribute is filled by the IOMMU driver dependent on the
-> hardware capabilities. There are no limits from the iommu-code side.
-
-How does the user of the iommu API discover the hardware capabilities?
-
--Scott
+	Joerg
