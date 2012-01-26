@@ -1,73 +1,40 @@
-From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH] iommu/msm: Fix error handling in msm_iommu_unmap()
-Date: Thu, 26 Jan 2012 18:29:44 +0100
-Message-ID: <1327598984-20662-1-git-send-email-joerg.roedel@amd.com>
+From: Scott Wood <scottwood@freescale.com>
+Subject: Re: [PATCH 2/5] iommu/amd: Implement DOMAIN_ATTR_GEOMETRY attribute
+Date: Thu, 26 Jan 2012 12:25:32 -0600
+Message-ID: <4F219A9C.8000400@freescale.com>
+References: <1326983405-319-1-git-send-email-joerg.roedel@amd.com> <1326983405-319-3-git-send-email-joerg.roedel@amd.com> <C5ECD7A89D1DC44195F34B25E172658D038749@039-SN2MPN1-011.039d.mgd.msft.net> <20120120160344.GG2205@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: David Brown <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Stepan Moskovchenko <stepanm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20120120160344.GG2205@amd.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joerg.roedel@amd.com>
+Cc: Sethi Varun-B16395 <B16395@freescale.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Ohad Ben-Cohen <ohad@wizery.com>, Tony Lindgren <tony@atomide.com>, Hiroshi DOYU <Hiroshi.DOYU@nokia.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Wood Scott-B07421 <B07421@freescale.com>, David Brown <davidb@codeaurora.org>, David Woodhouse <dwmw2@infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Error handling in msm_iommu_unmap() is broken. On some error
-conditions retval is set to a non-zero value which causes
-the function to return 'len' at the end. This hides the
-error from the user. Zero should be returned in those error
-cases.
+On 01/20/2012 10:03 AM, Joerg Roedel wrote:
+> On Thu, Jan 19, 2012 at 05:16:48PM +0000, Sethi Varun-B16395 wrote:
+>>>  struct iommu_domain {
+>>>  	struct iommu_ops *ops;
+>>>  	void *priv;
+>>>  	iommu_fault_handler_t handler;
+>>> +	struct iommu_domain_geometry geometry;
+>>>  };
+>> In case of our iommu implementation the iommu_domain_geometry would
+>> include additional attributes. Why can't we let the geometry be
+>> Implementation dependent?
+> 
+> Because the values in this generic geometry-struct make sense for more
+> than one IOMMU (short-term for Tegra GART and Freescale PAMU). If you
+> have additional vendor-specific ones you could add them via a
+> vendor-specific attribute.
 
-Cc: David Brown <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: Stepan Moskovchenko <stepanm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
----
- drivers/iommu/msm_iommu.c |    7 +------
- 1 files changed, 1 insertions(+), 6 deletions(-)
+Freescale PAMU is the IOMMU that Varun is talking about, that needs
+additional geometry attributes (in particular, subwindow count).
 
-diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index 08a90b8..cee307e 100644
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -482,23 +482,19 @@ static size_t msm_iommu_unmap(struct iommu_domain *domain, unsigned long va,
- 
- 	priv = domain->priv;
- 
--	if (!priv) {
--		ret = -ENODEV;
-+	if (!priv)
- 		goto fail;
--	}
- 
- 	fl_table = priv->pgtable;
- 
- 	if (len != SZ_16M && len != SZ_1M &&
- 	    len != SZ_64K && len != SZ_4K) {
- 		pr_debug("Bad length: %d\n", len);
--		ret = -EINVAL;
- 		goto fail;
- 	}
- 
- 	if (!fl_table) {
- 		pr_debug("Null page table\n");
--		ret = -EINVAL;
- 		goto fail;
- 	}
- 
-@@ -507,7 +503,6 @@ static size_t msm_iommu_unmap(struct iommu_domain *domain, unsigned long va,
- 
- 	if (*fl_pte == 0) {
- 		pr_debug("First level PTE is 0\n");
--		ret = -ENODEV;
- 		goto fail;
- 	}
- 
--- 
-1.7.5.4
+How should a PAMU driver interpret "force_aperture"?  When would DMA
+ever be allowed outside the specified range?  What does the range mean
+in that case?
+
+-Scott
