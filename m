@@ -1,48 +1,40 @@
-From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 5/6] iommu/msm: Implement DOMAIN_ATTR_GEOMETRY attribute
-Date: Thu, 26 Jan 2012 19:40:56 +0100
-Message-ID: <1327603257-17028-6-git-send-email-joerg.roedel@amd.com>
-References: <1327603257-17028-1-git-send-email-joerg.roedel@amd.com>
+From: Scott Wood <scottwood@freescale.com>
+Subject: Re: [PATCH 2/5] iommu/amd: Implement DOMAIN_ATTR_GEOMETRY attribute
+Date: Thu, 26 Jan 2012 12:42:10 -0600
+Message-ID: <4F219E82.106@freescale.com>
+References: <1326983405-319-1-git-send-email-joerg.roedel@amd.com> <1326983405-319-3-git-send-email-joerg.roedel@amd.com> <C5ECD7A89D1DC44195F34B25E172658D038749@039-SN2MPN1-011.039d.mgd.msft.net> <20120120160344.GG2205@amd.com> <4F219A9C.8000400@freescale.com> <20120126183116.GI19255@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1327603257-17028-1-git-send-email-joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, David Brown <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20120126183116.GI19255@amd.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joerg.roedel@amd.com>
+Cc: Sethi Varun-B16395 <B16395@freescale.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Ohad Ben-Cohen <ohad@wizery.com>, Tony Lindgren <tony@atomide.com>, Hiroshi DOYU <Hiroshi.DOYU@nokia.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Wood Scott-B07421 <B07421@freescale.com>, David Brown <davidb@codeaurora.org>, David Woodhouse <dwmw2@infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Implement the attribute for the MSM IOMMU driver.
+On 01/26/2012 12:31 PM, Joerg Roedel wrote:
+> On Thu, Jan 26, 2012 at 12:25:32PM -0600, Scott Wood wrote:
+>> How should a PAMU driver interpret "force_aperture"?  When would DMA
+>> ever be allowed outside the specified range?  What does the range mean
+>> in that case?
+> 
+> The force_aperture flag indicated whether DMA is only allowed between
+> aperture_start and apertuer_end or if DMA is allowed outside of this
+> range too (unmapped in this case).
+> 
+> The AMD GART for example would set this flag to false because it does
+> not enforce DMA to be in the aperture-range.
 
-Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
----
- drivers/iommu/msm_iommu.c |    5 +++++
- 1 files changed, 5 insertions(+), 0 deletions(-)
+Why is this not an AMD GART specific attribute?  Is there any feature
+reporting mechanism by which a user would know if that flag is supported?
 
-diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index 08a90b8..ea6b7f7 100644
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -226,6 +226,11 @@ static int msm_iommu_domain_init(struct iommu_domain *domain)
- 
- 	memset(priv->pgtable, 0, SZ_16K);
- 	domain->priv = priv;
-+
-+	domain->geometry.aperture_start = 0;
-+	domain->geometry.aperture_end   = (1ULL << 32) - 1;
-+	domain->geometry.force_aperture = true;
-+
- 	return 0;
- 
- fail_nomem:
--- 
-1.7.5.4
+If it must be in the generic struct, it would be nice to invert the
+polarity so that the default (after zeroing) is something that should be
+more widely supportable, and less likely to create unintended identity
+mappings.
+
+How in general are available attributes and restrictions on possible
+values to be communicated to users of the API?
+
+-Scott
