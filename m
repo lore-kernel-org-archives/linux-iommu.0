@@ -1,229 +1,179 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [RFC] Device isolation infrastructure v2
-Date: Wed, 25 Jan 2012 16:44:53 -0700
-Message-ID: <1327535093.26484.190.camel@bling.home>
-References: <1323930340-24055-1-git-send-email-david@gibson.dropbear.id.au>
-	<1323972307.2437.19.camel@x201.home> <20111216145353.GA29877@amd.com>
-	<20111219001125.GA30390@truffala.fritz.box>
-	<20111219154156.GG29877@amd.com>
-	<20111221033235.GA4537@truffala.fritz.box>
-	<1324441837.29699.38.camel@bling.home>
-	<20120125031328.GC13830@truffala.fritz.box>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: RE: [PATCH 8/8] ARM: dma-mapping: add support for IOMMU mapper
+Date: Thu, 26 Jan 2012 08:46:05 +0100
+Message-ID: <007401ccdbfe$8f024ad0$ad06e070$%szyprowski@samsung.com>
+References: <1323448798-18184-1-git-send-email-m.szyprowski@samsung.com>
+ <1323448798-18184-9-git-send-email-m.szyprowski@samsung.com>
+ <20120125144727.2722b4a1fb8017dd3633d7ad@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <qemu-devel-bounces+gceq-qemu-devel=gmane.org@nongnu.org>
-In-Reply-To: <20120125031328.GC13830@truffala.fritz.box>
-List-Unsubscribe: <https://lists.nongnu.org/mailman/options/qemu-devel>,
-	<mailto:qemu-devel-request@nongnu.org?subject=unsubscribe>
-List-Archive: <http://lists.nongnu.org/archive/html/qemu-devel>
-List-Post: <mailto:qemu-devel@nongnu.org>
-List-Help: <mailto:qemu-devel-request@nongnu.org?subject=help>
-List-Subscribe: <https://lists.nongnu.org/mailman/listinfo/qemu-devel>,
-	<mailto:qemu-devel-request@nongnu.org?subject=subscribe>
-Errors-To: qemu-devel-bounces+gceq-qemu-devel=gmane.org@nongnu.org
-Sender: qemu-devel-bounces+gceq-qemu-devel=gmane.org@nongnu.org
-To: David Gibson <david@gibson.dropbear.id.au>
-Cc: chrisw@redhat.com, aik@ozlabs.ru, Joerg Roedel <joerg.roedel@amd.com>, joro@8bytes.org, rusty@rustcorp.com.au, agraf@suse.de, qemu-devel@nongnu.org, B08248@freescale.com, iommu@lists.linux-foundation.org, scottwood@freescale.com, dwmw2@infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <20120125144727.2722b4a1fb8017dd3633d7ad@nvidia.com>
+Content-language: pl
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: 'Hiroshi Doyu' <hdoyu@nvidia.com>
+Cc: linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, 'Shariq Hasnain' <shariq.hasnain@linaro.org>, 'Arnd Bergmann' <arnd@arndb.de>, 'Benjamin Herrenschmidt' <benh@kernel.crashing.org>, 'Krishna Reddy' <vdumpa@nvidia.com>, 'Kyungmin Park' <kyungmin.park@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>, 'Russell King - ARM Linux' <linux@arm.linux.org.uk>, 'KyongHo Cho' <pullip.cho@samsung.com>, 'Chunsang Jeong' <chunsang.jeong@linaro.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2012-01-25 at 14:13 +1100, David Gibson wrote:
-> On Tue, Dec 20, 2011 at 09:30:37PM -0700, Alex Williamson wrote:
-> > On Wed, 2011-12-21 at 14:32 +1100, David Gibson wrote:
-> > > On Mon, Dec 19, 2011 at 04:41:56PM +0100, Joerg Roedel wrote:
-> > > > On Mon, Dec 19, 2011 at 11:11:25AM +1100, David Gibson wrote:
-> > > > > Well.. that's not where it is in Alex's code either.  The iommu layer
-> > > > > (to the extent that there is such a "layer") supplies the group info,
-> > > > > but the group management is in vfio, not the iommu layer.  With mine
-> > > > > it is in the driver core because the struct device seemed the logical
-> > > > > place for the group id.
-> > > > 
-> > > > Okay, seems we have different ideas of what the 'grouping code' is. I
-> > > > talked about the group enumeration code only. But group handling code is
-> > > > certainly important to some degree too. But before we argue about the
-> > > > right place of the code we should agree on the semantics such code
-> > > > should provide.
-> > > > 
-> > > > For me it is fine when the code is in VFIO for now, since VFIO is the
-> > > > only user at the moment. When more users pop up we can easily move it
-> > > > out to somewhere else. But the semantics influence the interface to
-> > > > user-space too, so it is more important now. It splits up into a number
-> > > > of sub problems:
-> > > > 
-> > > > 	1) How userspace detects the device<->group relationship?
-> > > > 	2) Do we want group-binding/unbinding to device drivers?
-> > > > 	3) Group attach/detach to iommu-domains?
-> > > > 	4) What to do with hot-added devices?
-> > > > 
-> > > > For 1) I think the current solution with the iommu_group file is fine.
-> > > > It is somewhat expensive for user-space to figure out the per-group
-> > > > device-sets, but that is a one-time effort so it doesn't really matter.
-> > > > Probably we can rename 'iommu_group' to 'isolation_group' or
-> > > > something.
-> > > 
-> > > Hrm.  Alex's group code also provides no in-kernel way to enumerate a
-> > > group, short of walking every device in the system.  And it provides
-> > > no way to attach information to a group.  It just seems foolish to me
-> > > to have this concept without some kind of in-kernel handle on it, and
-> > 
-> > Who else needs to enumerate groups right now?  Who else needs to attach
-> > data to a group.  We seem to be caught in this loop of arguing that we
-> > need driver core based group management, but we don't have any plans to
-> > make use of it, so it just bloats the kernel for most of the users that
-> > don't care about it.
+Hello,
+
+On Wednesday, January 25, 2012 1:47 PM Hiroshi Doyu wrote:
+
+> Hi Marek,
 > 
-> So, Ben and I discussed this with David Woodhouse during
-> linux.conf.au.  He does want to update the core iommu_ops and dma_ops
-> handling to be group aware, and is willing to do the work for that.
-> So I will be doing another spin of my isolation code as a basis for
-> that work of his.  So there's our other user.
-
-Hmm...
-
-> > > if you're managing the in-kernel representation you might as well
-> > > expose it to userspace there as well.
-> > 
-> > Unfortunately this is just the start a peeling back layers of the onion.
-> > We manage groups in the driver core, so the driver core should expose
-> > them to userspace.  The driver core exposes them to userspace, so now it
-> > needs to manage permissions for userspace.
+> On Fri, 9 Dec 2011 17:39:58 +0100
+> Marek Szyprowski <m.szyprowski@samsung.com> wrote:
 > 
-> That doesn't necessarily follow.  The current draft has the core group
-> code export character devices on which permissions are managed, but
-> I'm also considering options where it only exports sysfs and something
-> else does the character device and permissions.
-
-Let's start to define it then.  A big problem I have with the isolation
-infrastructure you're proposing is that it doesn't have well defined
-bounds or interfaces.  It pulls devices out of the normal driver model,
-and even goes so far as to start exposing chardevs for groups to
-userspace.  The former feels like completely the wrong approach and the
-latter oversteps the bounds of a core interface for a very niche usage,
-IMO.
-
-Your argument for making groups more pervasive is that the iommu drivers
-need to know about them already and we should make use of groups in the
-dma_ops and iommu_ops interfaces.  Fine, that seems reasonable and I
-assume is what Woodhouse has agreed to work on.  I don't however see
-that as an argument for creating a group driver class or isolation API.
-In fact, we could probably layer a fairly similar version of vfio on top
-of "group enlightened" driver core with minimal changes.
-
-> >  Then we add permissions and
-> > now we need to provide group access, then we need a channel to an actual
-> > userspace device driver, zing! we add a whole API there,
+> > This patch add a complete implementation of DMA-mapping API for
+> > devices that have IOMMU support. All DMA-mapping calls are supported.
+> >
+> > This patch contains some of the code kindly provided by Krishna Reddy
+> > <vdumpa@nvidia.com> and Andrzej Pietrasiewicz <andrzej.p@samsung.com>
+> >
+> > Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> > Signed-off-by: Kyungmin Park <kyungmin.park@samsung.com>
+> >
+> > Add initial proof of concept implementation of DMA-mapping API for
+> > devices that have IOMMU support. Right now only dma_alloc_coherent,
+> > dma_free_coherent and dma_mmap_coherent functions are supported.
+> >
+> > Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> > Signed-off-by: Kyungmin Park <kyungmin.park@samsung.com>
+> > ---
+> >  arch/arm/Kconfig                 |    8 +
+> >  arch/arm/include/asm/device.h    |    3 +
+> >  arch/arm/include/asm/dma-iommu.h |   36 +++
+> >  arch/arm/mm/dma-mapping.c        |  637 +++++++++++++++++++++++++++++++++++++-
+> >  arch/arm/mm/vmregion.h           |    2 +-
+> >  5 files changed, 671 insertions(+), 15 deletions(-)
+> >  create mode 100644 arch/arm/include/asm/dma-iommu.h
+> >
+> > diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+> > index 8827c9b..87416fc 100644
+> > --- a/arch/arm/Kconfig
+> > +++ b/arch/arm/Kconfig
+> > @@ -42,6 +42,14 @@ config ARM
+> >  config ARM_HAS_SG_CHAIN
+> >         bool
+> >
+> > +config NEED_SG_DMA_LENGTH
+> > +       bool
+> > +
+> > +config ARM_DMA_USE_IOMMU
+> > +       select NEED_SG_DMA_LENGTH
+> > +       select ARM_HAS_SG_CHAIN
+> > +       bool
+> > +
+> >  config HAVE_PWM
+> >         bool
+> >
+> > diff --git a/arch/arm/include/asm/device.h b/arch/arm/include/asm/device.h
+> > index 6e2cb0e..b69c0d3 100644
+> > --- a/arch/arm/include/asm/device.h
+> > +++ b/arch/arm/include/asm/device.h
+> > @@ -14,6 +14,9 @@ struct dev_archdata {
+> >  #ifdef CONFIG_IOMMU_API
+> >         void *iommu; /* private IOMMU data */
+> >  #endif
+> > +#ifdef CONFIG_ARM_DMA_USE_IOMMU
+> > +       struct dma_iommu_mapping        *mapping;
+> > +#endif
+> >  };
+> >
+> >  struct omap_device;
+> > diff --git a/arch/arm/include/asm/dma-iommu.h b/arch/arm/include/asm/dma-iommu.h
+> > new file mode 100644
+> > index 0000000..6668b41
+> > --- /dev/null
+> > +++ b/arch/arm/include/asm/dma-iommu.h
+> > @@ -0,0 +1,36 @@
+> > +#ifndef ASMARM_DMA_IOMMU_H
+> > +#define ASMARM_DMA_IOMMU_H
+> > +
+> > +#ifdef __KERNEL__
+> > +
+> > +#include <linux/mm_types.h>
+> > +#include <linux/scatterlist.h>
+> > +#include <linux/dma-debug.h>
+> > +#include <linux/kmemcheck.h>
+> > +
+> > +#include <asm/memory.h>
+> > +
+> > +struct dma_iommu_mapping {
+> > +       /* iommu specific data */
+> > +       struct iommu_domain     *domain;
+> > +
+> > +       void                    *bitmap;
+> > +       size_t                  bits;
+> > +       unsigned int            order;
+> > +       dma_addr_t              base;
+> > +
+> > +       spinlock_t              lock;
+> > +       struct kref             kref;
+> > +};
+> > +
+> > +struct dma_iommu_mapping *
+> > +arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, size_t size,
+> > +                        int order);
+> > +
+> > +void arm_iommu_release_mapping(struct dma_iommu_mapping *mapping);
+> > +
+> > +int arm_iommu_attach_device(struct device *dev,
+> > +                                       struct dma_iommu_mapping *mapping);
+> > +
+> > +#endif /* __KERNEL__ */
+> > +#endif
+> > diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+> > index 4845c09..7ac5a95 100644
+> > --- a/arch/arm/mm/dma-mapping.c
+> > +++ b/arch/arm/mm/dma-mapping.c
+> > @@ -27,6 +27,9 @@
+> >  #include <asm/sizes.h>
+> >  #include <asm/mach/arch.h>
+> >
+> > +#include <linux/iommu.h>
+> > +#include <asm/dma-iommu.h>
+> > +
+> >  #include "mm.h"
+> >
+> >  /*
+> .....
+> > +
+> > +static void arm_iommu_unmap_page(struct device *dev, dma_addr_t handle,
+> > +               size_t size, enum dma_data_direction dir,
+> > +               struct dma_attrs *attrs)
+> > +{
+> > +       struct dma_iommu_mapping *mapping = dev->archdata.mapping;
+> > +       dma_addr_t iova = handle & PAGE_MASK;
+> > +       struct page *page = phys_to_page(iommu_iova_to_phys(mapping->domain, iova));
+> > +       int offset = handle & ~PAGE_MASK;
+> > +
+> > +       if (!iova)
+> > +               return;
+> > +
+> > +       if (!arch_is_coherent())
+> > +               __dma_page_dev_to_cpu(page, offset, size, dir);
+> > +
+> > +       iommu_unmap(mapping->domain, iova, size);
 > 
-> And the other option I was looking add had the core providing the char
-> device but having it's fops get passed straight through to the binder.
-
-I'm not a fan of that idea.  Core driver code should not be creating
-chardevs and I doubt anyone is onboard with the idea of a chardev with
-an arbitrary API bound behind it.
-
-> > then we need
-> > group driver binding, then we need group device driver binding, blam!
-> > another API, then we need...  I don't see a clear end marker that
-> > doesn't continue to bloat the core and add functionality that nobody
-> > else needs and we don't even have plans of integrating more pervasively.
-> > This appears to end with 80 to 90% of the vfio core code moving into the
-> > driver core.
+> Is __free_iova() needed here as below?
 > 
-> I don't agree.  Working out the right boundary isn't totally obvious,
-> certainly, but that doesn't mean a reasonable boundary can't be found.
-
-So let's define it.  Why do you think the driver core should expose
-anything more than a sysfs representation of groups to userspace?
-
-> > 
-> > > > Regarding 2), I think providing user-space a way to unbind groups of
-> > > > devices from their drivers is a horrible idea.
-> > > 
-> > > Well, I'm not wed to unbinding all the drivers at once.  But what I
-> > > *do* think is essential is that we can atomically switch off automatic
-> > > driver matching for the whole group.  Without that nothing really
-> > > stops a driver reattaching to the things you've unbound, so you end up
-> > > bailing a leakey boat.
-> > 
-> > Huh?  There is no issue with removing a device from one driver and
-> > attaching it to another.  This happens all the time.  If you're talking
-> > about hotplug, all we have to do is sit on the bus notifier chain and we
-> > get called when devices are added, before the driver has a chance to
-> > attach.  We can then force a vfio driver to attach when needed.
+> 	Modified arch/arm/mm/dma-mapping.c
+> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+> index 9aa1675..66830b2 100644
+> --- a/arch/arm/mm/dma-mapping.c
+> +++ b/arch/arm/mm/dma-mapping.c
+> @@ -1212,6 +1212,7 @@ static void arm_iommu_unmap_page(struct device *dev, dma_addr_t handle,
+> 		__dma_page_dev_to_cpu(page, offset, size, dir);
 > 
-> But what is the transition point at which you know force attaching a
-> vfio driver is the right thing?
+> 	iommu_unmap(mapping->domain, iova, size);
+> +       __free_iova(mapping, iova, size);
+>  }
 
-It's quite simple.  The vfio bus driver does a bus_register_notifier()
-and watches for BUS_NOTIFY_ADD_DEVICE.  At that point it registers the
-device with the vfio core.  The vfio core retrieves the group
-information for the device and matches it to a struct vfio_group.  When
-the user makes use of the vfio group they get file descriptors for each
-device and another for the iommu.  vfio therefore simply needs to check
-if there are any open file descriptors for devices or iommu to determine
-the newly added device needs to be bound to vfio.  There is actually
-code for this, feel free to find it in my trees.
+Right, thanks for finding this bug!
 
-> My draft does that atomically with
-> unbinding the existing drivers.  But you have a fair point about that
-> causing devices to disappear surprisingly, so I think I'll change that
-> so that it instead becomes 3 step: first prevent new drivers
-> auto-binding to things in the group, then explicitly unbind existing
-> drivers, then grab the group for userspace access.
-
-This is where I get confused, even if there are uses in the driver core
-for understanding groups, what business does the driver core have for
-exposed groups for userspace access?  I think that crosses the logical
-boundary and where we start peeling back layers of the onion for
-everything that entails.
-
-> >  Hell,
-> > we can just set dev->driver to something to prevent standard driver
-> > probing.
-> 
-> > > > It makes it too easy for
-> > > > the user to shoot himself in the foot. For example when the user wants
-> > > > to assign a network card to a guest, but that card is in the same group
-> > > > as the GPU and the screen wents blank when the guest is started.
-> > > > Requiring devices to be unbound one-by-one is better because this way
-> > > > the user always needs to know what he is doing.
-> > > 
-> > > Ok, that's not the usage model I had in mind.  What I'm thinking here
-> > > is that the admin removes groups that will be used in guests from the
-> > > host kernel (probably via boot-time scripts).  The guests will pick
-> > > them up later, so that when a guest quits then restarts, we don't have
-> > > devices appearing transiently in the host.
-> > 
-> > I don't think that model is dynamic enough for our existing use cases.
-> > A user shouldn't need to decide at boot time which devices are going to
-> > be used for what purpose.  It's entirely valid for a user to start up a
-> > VM, decide they want more network performance and reassign a NIC from
-> > host use to guest use.  When they shutdown the VM or hot-unplug it, they
-> > should be able to easily put it back to work on the host.
-> 
-> Well, sure, you can do that too.  But I bet you the more common usage
-> model for production will be to have most of the hardware assigned to
-> a particular guest on a long term basis.
-
-I don't doubt that that's the common usage, but it's a very poor model
-to aim for and call "good enough".
-
-> [snip]
-> > > > So what does this mean for point 3? I think we can implement attaching
-> > > > and detaching groups in the iommu-api. This interface is not exposed to
-> > > > userspace and can help VFIO and possible future users. Semantic is, that
-> > > > domain_attach_group() only works when all devices in the group are in
-> > > > their default domain and domain_detach_group() puts them back into the
-> > > > default domain.
-> > > 
-> > > The domain_{attach,detach} functions absolutely should be group based
-> > > not device based.  That's what it means to be a group.
-> > 
-> > Yet we have no plans to make that change...
-> 
-> David Woodhouse does now.
-
-Great, let's see it.
-
-Thanks,
-
-Alex
+Best regards
+-- 
+Marek Szyprowski
+Samsung Poland R&D Center
