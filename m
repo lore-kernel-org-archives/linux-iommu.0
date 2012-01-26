@@ -1,40 +1,73 @@
-From: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 2/2] ARM: IOMMU: Tegra30: Add iommu_ops for SMMU driver
-Date: Thu, 26 Jan 2012 15:59:16 +0100
-Message-ID: <20120126145915.GG6269@8bytes.org>
-References: <20120124142521.GE6269@8bytes.org> <20120125.093932.783007031082378997.hdoyu@nvidia.com>
+From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Subject: [PATCH] iommu/msm: Fix error handling in msm_iommu_unmap()
+Date: Thu, 26 Jan 2012 18:29:44 +0100
+Message-ID: <1327598984-20662-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20120125.093932.783007031082378997.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: "balbi-l0cyMroinI0@public.gmane.org" <balbi-l0cyMroinI0@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org" <linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: David Brown <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Stepan Moskovchenko <stepanm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 25, 2012 at 08:39:32AM +0100, Hiroshi Doyu wrote:
-> From: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> Date: Thu, 17 Nov 2011 07:31:31 +0200
-> Subject: [PATCH 2/2] ARM: IOMMU: Tegra30: Add iommu_ops for SMMU driver
-> 
-> Tegra 30 IOMMU H/W, SMMU (System Memory Management Unit). This patch
-> implements struct iommu_ops for SMMU for the upper IOMMU API.
-> 
-> This H/W module supports multiple virtual address spaces(domain x4),
-> and manages 2 level H/W translation pagetable.
-> 
-> Signed-off-by: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> ---
->  arch/arm/mach-tegra/include/mach/smmu.h |   63 ++
->  drivers/iommu/Kconfig                   |   11 +
->  drivers/iommu/Makefile                  |    1 +
->  drivers/iommu/tegra-smmu.c              | 1034 +++++++++++++++++++++++++++++++
->  4 files changed, 1109 insertions(+), 0 deletions(-)
->  create mode 100644 arch/arm/mach-tegra/include/mach/smmu.h
->  create mode 100644 drivers/iommu/tegra-smmu.c
+Error handling in msm_iommu_unmap() is broken. On some error
+conditions retval is set to a non-zero value which causes
+the function to return 'len' at the end. This hides the
+error from the user. Zero should be returned in those error
+cases.
 
-Removed 'default y' and applied to arm/tegra as well. Thanks.
+Cc: David Brown <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: Stepan Moskovchenko <stepanm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+---
+ drivers/iommu/msm_iommu.c |    7 +------
+ 1 files changed, 1 insertions(+), 6 deletions(-)
 
-
-	Joerg
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index 08a90b8..cee307e 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -482,23 +482,19 @@ static size_t msm_iommu_unmap(struct iommu_domain *domain, unsigned long va,
+ 
+ 	priv = domain->priv;
+ 
+-	if (!priv) {
+-		ret = -ENODEV;
++	if (!priv)
+ 		goto fail;
+-	}
+ 
+ 	fl_table = priv->pgtable;
+ 
+ 	if (len != SZ_16M && len != SZ_1M &&
+ 	    len != SZ_64K && len != SZ_4K) {
+ 		pr_debug("Bad length: %d\n", len);
+-		ret = -EINVAL;
+ 		goto fail;
+ 	}
+ 
+ 	if (!fl_table) {
+ 		pr_debug("Null page table\n");
+-		ret = -EINVAL;
+ 		goto fail;
+ 	}
+ 
+@@ -507,7 +503,6 @@ static size_t msm_iommu_unmap(struct iommu_domain *domain, unsigned long va,
+ 
+ 	if (*fl_pte == 0) {
+ 		pr_debug("First level PTE is 0\n");
+-		ret = -ENODEV;
+ 		goto fail;
+ 	}
+ 
+-- 
+1.7.5.4
