@@ -1,7 +1,7 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 3/6] iommu/vt-d: Implement DOMAIN_ATTR_GEOMETRY attribute
-Date: Thu, 26 Jan 2012 19:40:54 +0100
-Message-ID: <1327603257-17028-4-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 5/6] iommu/msm: Implement DOMAIN_ATTR_GEOMETRY attribute
+Date: Thu, 26 Jan 2012 19:40:56 +0100
+Message-ID: <1327603257-17028-6-git-send-email-joerg.roedel@amd.com>
 References: <1327603257-17028-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,27 +21,28 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, David Brown <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Implement the attribute for the Intel IOMMU driver.
+Implement the attribute for the MSM IOMMU driver.
 
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c |    4 ++++
- 1 files changed, 4 insertions(+), 0 deletions(-)
+ drivers/iommu/msm_iommu.c |    5 +++++
+ 1 files changed, 5 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index c9c6053..12e7dc1 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3917,6 +3917,10 @@ static int intel_iommu_domain_init(struct iommu_domain *domain)
- 	domain_update_iommu_cap(dmar_domain);
- 	domain->priv = dmar_domain;
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index 08a90b8..ea6b7f7 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -226,6 +226,11 @@ static int msm_iommu_domain_init(struct iommu_domain *domain)
  
+ 	memset(priv->pgtable, 0, SZ_16K);
+ 	domain->priv = priv;
++
 +	domain->geometry.aperture_start = 0;
-+	domain->geometry.aperture_end   = __DOMAIN_MAX_ADDR(dmar_domain->gaw);
++	domain->geometry.aperture_end   = (1ULL << 32) - 1;
 +	domain->geometry.force_aperture = true;
 +
  	return 0;
- }
  
+ fail_nomem:
 -- 
 1.7.5.4
