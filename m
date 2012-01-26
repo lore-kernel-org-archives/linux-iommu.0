@@ -1,38 +1,51 @@
-From: Scott Wood <scottwood@freescale.com>
+From: Joerg Roedel <joerg.roedel@amd.com>
 Subject: Re: [PATCH 2/5] iommu/amd: Implement DOMAIN_ATTR_GEOMETRY attribute
-Date: Thu, 26 Jan 2012 12:26:58 -0600
-Message-ID: <4F219AF2.6070108@freescale.com>
-References: <1326983405-319-1-git-send-email-joerg.roedel@amd.com> <201201191646.13798.laurent.pinchart@ideasonboard.com> <20120119160739.GB2205@amd.com> <201201191727.10176.laurent.pinchart@ideasonboard.com>
+Date: Thu, 26 Jan 2012 19:31:16 +0100
+Message-ID: <20120126183116.GI19255@amd.com>
+References: <1326983405-319-1-git-send-email-joerg.roedel@amd.com>
+ <1326983405-319-3-git-send-email-joerg.roedel@amd.com>
+ <C5ECD7A89D1DC44195F34B25E172658D038749@039-SN2MPN1-011.039d.mgd.msft.net>
+ <20120120160344.GG2205@amd.com>
+ <4F219A9C.8000400@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <201201191727.10176.laurent.pinchart@ideasonboard.com>
+Content-Disposition: inline
+In-Reply-To: <4F219A9C.8000400@freescale.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Joerg Roedel <joerg.roedel@amd.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Ohad Ben-Cohen <ohad@wizery.com>, David Woodhouse <dwmw2@infradead.org>, David Brown <davidb@codeaurora.org>, Tony Lindgren <tony@atomide.com>, Stuart Yoder <b08248@gmail.com>, Hiroshi Doyu <hdoyu@nvidia.com>
+To: Scott Wood <scottwood@freescale.com>
+Cc: Sethi Varun-B16395 <B16395@freescale.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Ohad Ben-Cohen <ohad@wizery.com>, Tony Lindgren <tony@atomide.com>, Hiroshi DOYU <Hiroshi.DOYU@nokia.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Wood Scott-B07421 <B07421@freescale.com>, David Brown <davidb@codeaurora.org>, David Woodhouse <dwmw2@infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/19/2012 10:27 AM, Laurent Pinchart wrote:
-> Hi Joerg,
+On Thu, Jan 26, 2012 at 12:25:32PM -0600, Scott Wood wrote:
+> On 01/20/2012 10:03 AM, Joerg Roedel wrote:
+> > Because the values in this generic geometry-struct make sense for more
+> > than one IOMMU (short-term for Tegra GART and Freescale PAMU). If you
+> > have additional vendor-specific ones you could add them via a
+> > vendor-specific attribute.
 > 
-> On Thursday 19 January 2012 17:07:39 Joerg Roedel wrote:
->> On Thu, Jan 19, 2012 at 04:46:13PM +0100, Laurent Pinchart wrote:
->>>> +struct iommu_domain_geometry {
->>>> +	u64 aperture_start;	/* First address that can be mapped    */
->>>> +	u64 aperture_end;	/* Last address that can be mapped     */
->>>
->>> Would it make sense to use a platform-dependent type that represents
->>> physical addresses instead of u64 ?
->>
->> Well, u64 is a catch-all datatype which should suit all drivers. Is this
->> a problem at ARM?
-> 
-> No, it's not a problem for ARM, at least to my knowledge. It just struck me as 
-> weird, as we have specific data types for other kinds of addresses (such as 
-> dma_addr_t).
+> Freescale PAMU is the IOMMU that Varun is talking about, that needs
+> additional geometry attributes (in particular, subwindow count).
 
-If we want to be able to expose these attribute structs to userspace via
-vfio, we'll want to stick with fixed size types.
+This can be solved by a PAMU specific attribute.
 
--Scott
+> How should a PAMU driver interpret "force_aperture"?  When would DMA
+> ever be allowed outside the specified range?  What does the range mean
+> in that case?
+
+The force_aperture flag indicated whether DMA is only allowed between
+aperture_start and apertuer_end or if DMA is allowed outside of this
+range too (unmapped in this case).
+
+The AMD GART for example would set this flag to false because it does
+not enforce DMA to be in the aperture-range.
+
+
+	Joerg
+
+-- 
+AMD Operating System Research Center
+
+Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
+General Managers: Alberto Bozzo
+Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
