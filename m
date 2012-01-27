@@ -1,54 +1,85 @@
-From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH] iommu/msm: Fix error handling in msm_iommu_unmap()
-Date: Fri, 27 Jan 2012 17:40:29 +0100
-Message-ID: <20120127164029.GQ19255@amd.com>
-References: <1327598984-20662-1-git-send-email-joerg.roedel@amd.com>
-	<20120127000630.GB16263@codeaurora.org>
+From: Scott Wood <scottwood@freescale.com>
+Subject: Re: [PATCH 2/5] iommu/amd: Implement DOMAIN_ATTR_GEOMETRY attribute
+Date: Fri, 27 Jan 2012 15:22:43 -0600
+Message-ID: <4F2315A3.80909@freescale.com>
+References: <1326983405-319-3-git-send-email-joerg.roedel@amd.com> <C5ECD7A89D1DC44195F34B25E172658D038749@039-SN2MPN1-011.039d.mgd.msft.net> <20120120160344.GG2205@amd.com> <4F219A9C.8000400@freescale.com> <20120126183116.GI19255@amd.com> <4F219E82.106@freescale.com> <20120126185101.GJ19255@amd.com> <4F21A2D5.6000204@freescale.com> <20120126194428.GH6269@8bytes.org> <4F21B152.3010103@freescale.com> <20120127110120.GL19255@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20120127000630.GB16263-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Brown <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Stepan Moskovchenko <stepanm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20120127110120.GL19255@amd.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joerg.roedel@amd.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Sethi Varun-B16395 <B16395@freescale.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Ohad Ben-Cohen <ohad@wizery.com>, Tony Lindgren <tony@atomide.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Wood Scott-B07421 <B07421@freescale.com>, David Brown <davidb@codeaurora.org>, David Woodhouse <dwmw2@infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jan 26, 2012 at 04:06:30PM -0800, David Brown wrote:
-> On Thu, Jan 26, 2012 at 06:29:44PM +0100, Joerg Roedel wrote:
-> > Error handling in msm_iommu_unmap() is broken. On some error
-> > conditions retval is set to a non-zero value which causes
-> > the function to return 'len' at the end. This hides the
-> > error from the user. Zero should be returned in those error
-> > cases.
-> > 
-> > Cc: David Brown <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> > Cc: Stepan Moskovchenko <stepanm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> > Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-> > ---
-> >  drivers/iommu/msm_iommu.c |    7 +------
-> >  1 files changed, 1 insertions(+), 6 deletions(-)
+On 01/27/2012 05:01 AM, Joerg Roedel wrote:
+> On Thu, Jan 26, 2012 at 02:02:26PM -0600, Scott Wood wrote:
+>> On 01/26/2012 01:44 PM, Joerg Roedel wrote:
 > 
-> Acked-by: David Brown <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>>>>> Another reason why it must be in the generic struct is the intended
+>>>>> generic dma-ops layer on-top. This code can decide on this flag wheter a
+>>>>> address needs to be remapped at all.
+>>>>
+>>>> So the DMA API would just read this, not write it?
+> 
+> Yes, the dma-ops code needs this information to decide whether remapping
+> is required at all and where the remap window is.
+> 
+>>> The whole geometry thing is only implemented on the read side. There is
+>>> no implementation in domain_set_attr for it. So the geometry
+>>> information is read-only by default.
+>>
+>> We will need to be able to set this, for some vfio+kvm uses.
+> 
+> That's fine. Just implement a handler for it in the driver-specific
+> set_attr callback then. 
 
-Thanks. I'll queue this up with iommu fixes for 3.3 and mark it for
-stable as well.
+OK, so there's a geometry that is read-only, and potentially a
+driver-specific geometry that is read/write.  The default config for
+PAMU would likely be a 1 MiB aperture in which the dma api can do
+arbitrary 4k mappings -- this fits within the get generic geometry
+operation.
 
+Should generic get geometry return an error if the driver-specific
+geometry has been set to something that doesn't fit within the generic
+geometry model?
 
-	Joerg
+>>>> Still no reason why it couldn't be a separate attribute.  Then if you
+>>>> get a failure trying to write it, it's more obvious why.
+>>>
+>>> This would mean iommu specific hacks, which are not necessary in this
+>>> case.
+>>
+>> Why would making it a separate generic attribute require iommu specific
+>> hacks?
+> 
+> Because the dma-ops code needs something like
+> 
+> 	iommu_domain_get_attr(domain, GART_ATTR_FORCE_APERTURE, data);
+> 
+> to check it. I call this a hack because the dma-ops code asks if it runs
+> on a specific hardware. This is not necessary here.
 
--- 
-AMD Operating System Research Center
+I said a generic attribute (not GART specific) -- but if we're never
+going to use the generic geometry struct for a set operation, bundling
+it should be OK.
 
-Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
-General Managers: Alberto Bozzo
-Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
+>>> Which hardware capabilities besides the geometry do you mean?
+>>
+>> Well, we have things like stash target (automatic cache prefetch after
+>> DMA) configuration, but in this case I was thinking about restrictions
+>> on what kind of aperture you can set, and what sort of mappings you can
+>> create with the result.
+> 
+> The stash target is a perfect fit for a PAMU specific domain attribute.
+
+Yes.
+
+> Yes, we talked about that already. Probably we should talk about code to
+> make progress here. Do you have anything ready to post?
+
+No, at this point I'm just trying to follow the API development while
+tending to other tasks.  I think Varun is working on the code for now.
+
+-Scott
