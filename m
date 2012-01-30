@@ -1,81 +1,96 @@
-From: Scott Wood <scottwood@freescale.com>
-Subject: Re: [PATCH 2/5] iommu/amd: Implement DOMAIN_ATTR_GEOMETRY attribute
-Date: Mon, 30 Jan 2012 14:21:53 -0600
-Message-ID: <4F26FBE1.5050006@freescale.com>
-References: <20120120160344.GG2205@amd.com> <4F219A9C.8000400@freescale.com> <20120126183116.GI19255@amd.com> <4F219E82.106@freescale.com> <20120126185101.GJ19255@amd.com> <4F21A2D5.6000204@freescale.com> <20120126194428.GH6269@8bytes.org> <4F21B152.3010103@freescale.com> <20120127110120.GL19255@amd.com> <4F2315A3.80909@freescale.com> <20120130142424.GR19255@amd.com>
+From: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Subject: Re: [Bug 42679] New: DMA Read on Marvell 88SE9128 fails when
+	Intel's IOMMU is on
+Date: Mon, 30 Jan 2012 12:59:34 -0800
+Message-ID: <20120130125934.7971c815.akpm@linux-foundation.org>
+References: <bug-42679-27@https.bugzilla.kernel.org/>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20120130142424.GR19255@amd.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joerg.roedel@amd.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Sethi Varun-B16395 <B16395@freescale.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Ohad Ben-Cohen <ohad@wizery.com>, Tony Lindgren <tony@atomide.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Wood Scott-B07421 <B07421@freescale.com>, David Brown <davidb@codeaurora.org>, David Woodhouse <dwmw2@infradead.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <bug-42679-27-3bo0kxnWaOQUvHkbgXJLS5sdmw4N0Rt+2LY78lusg7I@public.gmane.org/>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: pawel.zaq-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, bugzilla-daemon-590EEB7GvNiWaY/ihj7yzEB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/30/2012 08:24 AM, Joerg Roedel wrote:
-> On Fri, Jan 27, 2012 at 03:22:43PM -0600, Scott Wood wrote:
+
+(switched to email.  Please respond via emailed reply-to-all, not via the
+bugzilla web interface).
+
+On Sat, 28 Jan 2012 17:55:38 GMT
+bugzilla-daemon-590EEB7GvNiWaY/ihj7yzEB+6BGkLq7r@public.gmane.org wrote:
+
+> https://bugzilla.kernel.org/show_bug.cgi?id=42679
+
+I don't know if this is a SATA issue or intel-iommu.  Could you guys
+please take a look?
+
+>            Summary: DMA Read on Marvell 88SE9128 fails when Intel's IOMMU
+>                     is on
+>            Product: Memory Management
+>            Version: 2.5
+>           Platform: All
+>         OS/Version: Linux
+>               Tree: Mainline
+>             Status: NEW
+>           Severity: normal
+>           Priority: P1
+>          Component: Other
+>         AssignedTo: akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org
+>         ReportedBy: pawel.zaq-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+>         Regression: No
 > 
->> OK, so there's a geometry that is read-only, and potentially a
->> driver-specific geometry that is read/write.  The default config for
->> PAMU would likely be a 1 MiB aperture in which the dma api can do
->> arbitrary 4k mappings -- this fits within the get generic geometry
->> operation.
 > 
-> Better: There is a read-only geometry for _all_ IOMMUs. Some IOMMUs may
-> also allow to write the geometry, like PAMU.
-
-But we do not want to use this struct for writing.  We do not want
-force_aperture to be settable (we could error if it's set incorrectly,
-but that's unpleasant -- and what happens if another attribute is added
-in the future?  There would otherwise be no reason to do a get-geometry
-first).  We do want to be able to set subwindows and would prefer (but
-don't insist) that it be one atomic operation to set
-start/end/subwindows.  For PAMU you really shouldn't be setting
-start/end if you aren't going to set the subwindow count.  I don't see
-what real benefit we get by reusing the generic geometry struct here --
-we're not giving up any opportunities for common code.
-
->> Should generic get geometry return an error if the driver-specific
->> geometry has been set to something that doesn't fit within the generic
->> geometry model?
+> Created an attachment (id=72217)
+>  --> (https://bugzilla.kernel.org/attachment.cgi?id=72217)
+> Output of `dmesg' command
 > 
-> A domain can only have one geometry. So if you set a new geometry
-> subsequent calls to get_attr will return the new geometry.
-
-But the implementation may support geometries that are not expressable
-with the generic struct.  As soon as you set an aperture larger than 1
-MiB we cannot support arbitrary mappings within the aperture.  If we
-return a generic geometry showing the larger aperture, that would
-mislead generic users.
-
-The geometry should be reset when the iommu is taken away from one user
-(e.g. vfio) and given to another (e.g. dma api), so the dma api should
-never see the error unless something has gone wrong (in which case it's
-better to flag the error early).
-
->> I said a generic attribute (not GART specific) -- but if we're never
->> going to use the generic geometry struct for a set operation, bundling
->> it should be OK.
+> I have a MSI Z68A-GD80 B3 motherboard and when I try to enable Intel's IOMMU
+> (kernel booted with intel_iommu=on), integrated Marvell 88SE9128 SATA
+> controller doesn't work.
 > 
-> The generic struct should be used to set the geometry. But you can read
-> out the old geometry and set force_aperture to the same value in the new
-> geometry. Drivers should actually return -EINVAL when the user tries to
-> set an unsupported value for force_aperture.
-
-Wouldn't errors be less likely, and easier to diagnose, if
-force_aperture weren't part of the struct in the first place?
-
-If the idea is to keep attributes as granular as practical, it seems the
-bundling goes against that.  If that isn't a goal, then I don't see the
-problem with the PAMU geometry bundling start/end with subwindows.
-
->> No, at this point I'm just trying to follow the API development while
->> tending to other tasks.  I think Varun is working on the code for now.
+> To reproduce:
+> 1. Compile and prepare kernel with Intel IOMMU support enabled
+> (CONFIG_INTEL_IOMMU=y).
+> 2. Reboot the computer.
+> 3. Enter BIOS and enable VT-d.
+> 4. Boot the kernel with intel_iommu=on parameter.
 > 
-> Okay, maybe it is better to follow a 'release early, release often'
-> model here. So we can work out the issues together.
-
-I agree, and will keep prodding coworkers in this direction.
-
--Scott
+> Right after boot, kernel reports the following errors (SATA controller is at
+> 0b:00.0):
+> 
+> [    2.639774] DRHD: handling fault status reg 3
+> [    2.639782] DMAR:[DMA Read] Request device [0b:00.1] fault addr fff00000 
+> [    2.639783] DMAR:[fault reason 02] Present bit in context entry is clear
+> 
+> After a while these entries appear:
+> 
+> [    7.625837] ata14.00: qc timeout (cmd 0xa1)
+> [    7.628341] ata14.00: failed to IDENTIFY (I/O error, err_mask=0x4)
+> [    7.935483] ata14: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+> [   17.908407] ata14.00: qc timeout (cmd 0xa1)
+> [   17.910935] ata14.00: failed to IDENTIFY (I/O error, err_mask=0x4)
+> [   17.912276] ata14: limiting SATA link speed to 1.5 Gbps
+> [   18.219077] ata14: SATA link up 1.5 Gbps (SStatus 113 SControl 310)
+> [   48.134607] ata14.00: qc timeout (cmd 0xa1)
+> [   48.137508] ata14.00: failed to IDENTIFY (I/O error, err_mask=0x4)
+> [   48.444646] ata14: SATA link up 1.5 Gbps (SStatus 113 SControl 310)
+> 
+> When there is a disk connected to the controller it does not work. When there
+> are none, computer starts normally, apart from the huge lag caused by,
+> presumably, probing the device.
+> 
+> Since this is the secondary controller on these motherboards, to eliminate
+> those symptoms you can just plug disk in one of available ports of the built-in
+> Intel SATA controller and disable Marvell's one using BIOS. The other
+> work-around, if you need to use eSATA capabilities of the latter, is to disable
+> VT-d techonology also using BIOS.
