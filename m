@@ -1,48 +1,81 @@
-From: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 2/6] iommu/amd: Implement DOMAIN_ATTR_GEOMETRY attribute
-Date: Mon, 30 Jan 2012 17:42:42 +0200
-Message-ID: <CAK=WgbYhymxGi4VHKcYe1Lq6KHC3Lp5zCOYGdD334GjmB-mmTQ@mail.gmail.com>
-References: <1327603257-17028-1-git-send-email-joerg.roedel@amd.com>
-	<1327603257-17028-3-git-send-email-joerg.roedel@amd.com>
-	<CAK=WgbbZB0hGRr84JV4a7c0KvW7VbVzsnCx1PGg=wjoB0OSrYw@mail.gmail.com>
-	<20120127102608.GK19255@amd.com>
-	<CAK=WgbZQB+76FuJXK82x09CieDmF23zLQ8KbHbEtjnQsc_4axg@mail.gmail.com>
-	<20120127130329.GM19255@amd.com>
-	<CAK=WgbY+aBwTno4YxGLaxS7Y-R=CS1604+c5j-6EMQSfJeGvTA@mail.gmail.com>
-	<20120130144909.GT19255@amd.com>
+From: Scott Wood <scottwood@freescale.com>
+Subject: Re: [PATCH 2/5] iommu/amd: Implement DOMAIN_ATTR_GEOMETRY attribute
+Date: Mon, 30 Jan 2012 14:21:53 -0600
+Message-ID: <4F26FBE1.5050006@freescale.com>
+References: <20120120160344.GG2205@amd.com> <4F219A9C.8000400@freescale.com> <20120126183116.GI19255@amd.com> <4F219E82.106@freescale.com> <20120126185101.GJ19255@amd.com> <4F21A2D5.6000204@freescale.com> <20120126194428.GH6269@8bytes.org> <4F21B152.3010103@freescale.com> <20120127110120.GL19255@amd.com> <4F2315A3.80909@freescale.com> <20120130142424.GR19255@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20120130144909.GT19255-5C7GfCeVMHo@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Cc: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, David Brown <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20120130142424.GR19255@amd.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joerg.roedel@amd.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Sethi Varun-B16395 <B16395@freescale.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Ohad Ben-Cohen <ohad@wizery.com>, Tony Lindgren <tony@atomide.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Wood Scott-B07421 <B07421@freescale.com>, David Brown <davidb@codeaurora.org>, David Woodhouse <dwmw2@infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jan 30, 2012 at 4:49 PM, Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org> wrote:
-> Hardware specific attributes are intended, but not limited to hardware
-> specific drivers. A generic driver that _may_ run on a given hardware
-> can use a hardware specific attribute too. If it doesn't run on this
-> hardware it will just get -EINVAL back.
+On 01/30/2012 08:24 AM, Joerg Roedel wrote:
+> On Fri, Jan 27, 2012 at 03:22:43PM -0600, Scott Wood wrote:
+> 
+>> OK, so there's a geometry that is read-only, and potentially a
+>> driver-specific geometry that is read/write.  The default config for
+>> PAMU would likely be a 1 MiB aperture in which the dma api can do
+>> arbitrary 4k mappings -- this fits within the get generic geometry
+>> operation.
+> 
+> Better: There is a read-only geometry for _all_ IOMMUs. Some IOMMUs may
+> also allow to write the geometry, like PAMU.
 
-That sounds good.
+But we do not want to use this struct for writing.  We do not want
+force_aperture to be settable (we could error if it's set incorrectly,
+but that's unpleasant -- and what happens if another attribute is added
+in the future?  There would otherwise be no reason to do a get-geometry
+first).  We do want to be able to set subwindows and would prefer (but
+don't insist) that it be one atomic operation to set
+start/end/subwindows.  For PAMU you really shouldn't be setting
+start/end if you aren't going to set the subwindow count.  I don't see
+what real benefit we get by reusing the generic geometry struct here --
+we're not giving up any opportunities for common code.
 
-But I'm still not sure what's the advantage of the attribute API on
-top of regular, type-safe, dedicated API for every attribute: it
-doesn't sound like there's a vast number of attributes, only a
-handful, and dedicated API just sound (to me) much more readable and
-less prone to error.
+>> Should generic get geometry return an error if the driver-specific
+>> geometry has been set to something that doesn't fit within the generic
+>> geometry model?
+> 
+> A domain can only have one geometry. So if you set a new geometry
+> subsequent calls to get_attr will return the new geometry.
 
-But, again, maybe it's only me :)
+But the implementation may support geometries that are not expressable
+with the generic struct.  As soon as you set an aperture larger than 1
+MiB we cannot support arbitrary mappings within the aperture.  If we
+return a generic geometry showing the larger aperture, that would
+mislead generic users.
 
-Thanks,
-Ohad.
+The geometry should be reset when the iommu is taken away from one user
+(e.g. vfio) and given to another (e.g. dma api), so the dma api should
+never see the error unless something has gone wrong (in which case it's
+better to flag the error early).
+
+>> I said a generic attribute (not GART specific) -- but if we're never
+>> going to use the generic geometry struct for a set operation, bundling
+>> it should be OK.
+> 
+> The generic struct should be used to set the geometry. But you can read
+> out the old geometry and set force_aperture to the same value in the new
+> geometry. Drivers should actually return -EINVAL when the user tries to
+> set an unsupported value for force_aperture.
+
+Wouldn't errors be less likely, and easier to diagnose, if
+force_aperture weren't part of the struct in the first place?
+
+If the idea is to keep attributes as granular as practical, it seems the
+bundling goes against that.  If that isn't a goal, then I don't see the
+problem with the PAMU geometry bundling start/end with subwindows.
+
+>> No, at this point I'm just trying to follow the API development while
+>> tending to other tasks.  I think Varun is working on the code for now.
+> 
+> Okay, maybe it is better to follow a 'release early, release often'
+> model here. So we can work out the issues together.
+
+I agree, and will keep prodding coworkers in this direction.
+
+-Scott
