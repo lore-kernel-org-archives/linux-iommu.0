@@ -1,17 +1,22 @@
-From: Chris Wright <chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org>
-Subject: Re: [Bug 42679] New: DMA Read on Marvell 88SE9128 fails when Intel's
-	IOMMU is on
-Date: Mon, 30 Jan 2012 15:32:11 -0800
-Message-ID: <20120130233211.GM24091@sequoia.sous-sol.org>
-References: <bug-42679-27@https.bugzilla.kernel.org/>
-	<20120130125934.7971c815.akpm@linux-foundation.org>
-	<4F270E8C.2000406@redhat.com> <op.v8w3z0z0c3q55a@localhost>
+From: David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
+Subject: Re: [Qemu-devel] [RFC] Device isolation infrastructure v2
+Date: Tue, 31 Jan 2012 10:22:22 +1100
+Message-ID: <20120130232222.GC955@truffala.fritz.box>
+References: <1323930340-24055-1-git-send-email-david@gibson.dropbear.id.au>
+	<1323972307.2437.19.camel@x201.home>
+	<20111216145353.GA29877@amd.com>
+	<20111219001125.GA30390@truffala.fritz.box>
+	<20111219154156.GG29877@amd.com>
+	<20111221033235.GA4537@truffala.fritz.box>
+	<1324441837.29699.38.camel@bling.home>
+	<20120125031328.GC13830@truffala.fritz.box>
+	<1327535093.26484.190.camel@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <op.v8w3z0z0c3q55a@localhost>
+In-Reply-To: <1327535093.26484.190.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,29 +26,233 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: =?utf-8?B?UGF3ZcWCIMW7YWs=?= <pawel.zaq-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: bugzilla-daemon-590EEB7GvNiWaY/ihj7yzEB+6BGkLq7r@public.gmane.org, linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: chrisw-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, rusty-8n+1lVoiYb80n/F98K4Iww@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-KiBQYXdlxYIgxbthayAocGF3ZWwuemFxQGdtYWlsLmNvbSkgd3JvdGU6Cj4gT24gTW9uLCAzMCBK
-YW4gMjAxMiAyMjo0MTozMiArMDEwMCwgRG9uIER1dGlsZSA8ZGR1dGlsZUByZWRoYXQuY29tPiB3
-cm90ZToKPiA+V2VsbCwgdGhlIGxzcGNpIGR1bXAgaW4gdGhlIGJ1Z3ppbGxhIHJlcG9ydCBkb2Vz
-bid0IHNob3cgYSBkZXZpY2UKPiA+dy9CREY9MGI6MDAuMTsKPiA+c28sIGlmIHRoZSBTQVRBIGRl
-dmljZSAod2hpY2ggaXMgMGI6MDAuMCkgaXMgc3BpdHRpbmcgb3V0IDBiOjAwLjEKPiA+YXMgdGhl
-IHNvdXJjZQo+ID5vZiBhbnkgb2YgaXRzIERNQSBwYWNrZXRzLCB0aGUgSU9NTVUgd2lsbCBmYXVs
-dCBvbiBpdCwgc2luY2UKPiA+MGI6MDAuMSBkaWRuJ3QKPiA+cmVxdWVzdCBETUEgbWFwcGluZ3Mg
-KDBiOjAwLjAgZGlkKS4KPiA+SSBzZW1pLXJlY2FsbCBzb21lb25lIGVsc2UgcmVwb3J0aW5nIHRo
-aXMgJ2ZlYXR1cmUnIG9uIHRoaXMgbGlzdC4KPiA+V29uZGVyIGlmIHBjaS1xdWlyayBoYXMgdG8g
-ZmlsdGVyIHRoaXMgY2FzZSAoMGI6MDAuMCBvbiB0aGlzIHN5c3RlbSBtZWFucwo+ID5tYXAgZm9y
-IDBiOjAwLjAgJiAwYjowMC4xIC0tIGljayEpCj4gPgo+ID5kbyBhbm90aGVyIGxzcGNpIC12dnYg
-dG8gZW5zdXJlIHRoYXQgMGI6MDAuMSB3YXNuJ3QgZXhjbHVkZWQgaW4gdGhlIGxpc3QuCj4gPmlm
-IGl0IGRvZXNuJ3QgZXhpc3QsIHRoZW4gdGhlIHByb2JsZW0gaXMgdGhlIFNBVEEgZGV2aWNlIHVz
-aW5nIGFuCj4gPnVua25vd24vdW5yZWNvZ25pemVkCj4gPkJERiBvZiAwYjowMC4xCj4gCj4gWWVw
-LCB0aGF0J3MgY29ycmVjdC4gSSBlbmFibGVkIGFsbCBpbnRlZ3JhdGVkIHBlcmlwaGVyYWxzIG9u
-IG15Cj4gbW90aGVyYm9hcmQgYW5kIHRoZXJlIHdlcmUgc3RpbGwgbm8gZW50cmllcyB3aXRoIEJE
-RiAwYjowMC4xIGluCj4gbHNwY2kgLXZ2diBvdXRwdXQuIFNob3VsZCBJIHRha2UgdGhpcyBwcm9i
-bGVtIHRvIE1TSSB0aGVuPwoKWWVhaCwgc29tZXRoaW5nIGlzIG5vdCByaWdodC4gIElzIHRoZXJl
-IGFueSBCSU9TIGNvbnRyb2wgb3ZlciB0aGF0CmRldmljZT8KCnRoYW5rcywKLWNocmlzCl9fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcg
-bGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4
-Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On Wed, Jan 25, 2012 at 04:44:53PM -0700, Alex Williamson wrote:
+> On Wed, 2012-01-25 at 14:13 +1100, David Gibson wrote:
+> > On Tue, Dec 20, 2011 at 09:30:37PM -0700, Alex Williamson wrote:
+> > > On Wed, 2011-12-21 at 14:32 +1100, David Gibson wrote:
+> > > > On Mon, Dec 19, 2011 at 04:41:56PM +0100, Joerg Roedel wrote:
+> > > > > On Mon, Dec 19, 2011 at 11:11:25AM +1100, David Gibson wrote:
+> > > > > > Well.. that's not where it is in Alex's code either.  The iommu layer
+> > > > > > (to the extent that there is such a "layer") supplies the group info,
+> > > > > > but the group management is in vfio, not the iommu layer.  With mine
+> > > > > > it is in the driver core because the struct device seemed the logical
+> > > > > > place for the group id.
+> > > > > 
+> > > > > Okay, seems we have different ideas of what the 'grouping code' is. I
+> > > > > talked about the group enumeration code only. But group handling code is
+> > > > > certainly important to some degree too. But before we argue about the
+> > > > > right place of the code we should agree on the semantics such code
+> > > > > should provide.
+> > > > > 
+> > > > > For me it is fine when the code is in VFIO for now, since VFIO is the
+> > > > > only user at the moment. When more users pop up we can easily move it
+> > > > > out to somewhere else. But the semantics influence the interface to
+> > > > > user-space too, so it is more important now. It splits up into a number
+> > > > > of sub problems:
+> > > > > 
+> > > > > 	1) How userspace detects the device<->group relationship?
+> > > > > 	2) Do we want group-binding/unbinding to device drivers?
+> > > > > 	3) Group attach/detach to iommu-domains?
+> > > > > 	4) What to do with hot-added devices?
+> > > > > 
+> > > > > For 1) I think the current solution with the iommu_group file is fine.
+> > > > > It is somewhat expensive for user-space to figure out the per-group
+> > > > > device-sets, but that is a one-time effort so it doesn't really matter.
+> > > > > Probably we can rename 'iommu_group' to 'isolation_group' or
+> > > > > something.
+> > > > 
+> > > > Hrm.  Alex's group code also provides no in-kernel way to enumerate a
+> > > > group, short of walking every device in the system.  And it provides
+> > > > no way to attach information to a group.  It just seems foolish to me
+> > > > to have this concept without some kind of in-kernel handle on it, and
+> > > 
+> > > Who else needs to enumerate groups right now?  Who else needs to attach
+> > > data to a group.  We seem to be caught in this loop of arguing that we
+> > > need driver core based group management, but we don't have any plans to
+> > > make use of it, so it just bloats the kernel for most of the users that
+> > > don't care about it.
+> > 
+> > So, Ben and I discussed this with David Woodhouse during
+> > linux.conf.au.  He does want to update the core iommu_ops and dma_ops
+> > handling to be group aware, and is willing to do the work for that.
+> > So I will be doing another spin of my isolation code as a basis for
+> > that work of his.  So there's our other user.
+> 
+> Hmm...
+> 
+> > > > if you're managing the in-kernel representation you might as well
+> > > > expose it to userspace there as well.
+> > > 
+> > > Unfortunately this is just the start a peeling back layers of the onion.
+> > > We manage groups in the driver core, so the driver core should expose
+> > > them to userspace.  The driver core exposes them to userspace, so now it
+> > > needs to manage permissions for userspace.
+> > 
+> > That doesn't necessarily follow.  The current draft has the core group
+> > code export character devices on which permissions are managed, but
+> > I'm also considering options where it only exports sysfs and something
+> > else does the character device and permissions.
+> 
+> Let's start to define it then.  A big problem I have with the isolation
+> infrastructure you're proposing is that it doesn't have well defined
+> bounds or interfaces.  It pulls devices out of the normal driver
+> model,
+
+It doesn't pull them out of the driver model.  The struct devices are
+all there just like usual, it's just a flag which inhibits driver binding.
+
+> and even goes so far as to start exposing chardevs for groups to
+> userspace.
+
+I'm planning to split the patch so the character devices (and maybe
+even the concept of binders) aren't in the core group part, which
+should be all dwmw2 needs.
+
+>  The former feels like completely the wrong approach and the
+> latter oversteps the bounds of a core interface for a very niche usage,
+> IMO.
+> 
+> Your argument for making groups more pervasive is that the iommu drivers
+> need to know about them already and we should make use of groups in the
+> dma_ops and iommu_ops interfaces.  Fine, that seems reasonable and I
+> assume is what Woodhouse has agreed to work on.  I don't however see
+> that as an argument for creating a group driver class or isolation
+> API.
+
+No, it's not, hence the split.
+
+> In fact, we could probably layer a fairly similar version of vfio on top
+> of "group enlightened" driver core with minimal changes.
+
+Yes, you could.
+
+> > >  Then we add permissions and
+> > > now we need to provide group access, then we need a channel to an actual
+> > > userspace device driver, zing! we add a whole API there,
+> > 
+> > And the other option I was looking add had the core providing the char
+> > device but having it's fops get passed straight through to the binder.
+> 
+> I'm not a fan of that idea.  Core driver code should not be creating
+> chardevs and I doubt anyone is onboard with the idea of a chardev with
+> an arbitrary API bound behind it.
+
+Hm, yeah.   I'm still looking to see if I can think of a way to hang
+permissions on these things that's less clunky.
+
+> > > then we need
+> > > group driver binding, then we need group device driver binding, blam!
+> > > another API, then we need...  I don't see a clear end marker that
+> > > doesn't continue to bloat the core and add functionality that nobody
+> > > else needs and we don't even have plans of integrating more pervasively.
+> > > This appears to end with 80 to 90% of the vfio core code moving into the
+> > > driver core.
+> > 
+> > I don't agree.  Working out the right boundary isn't totally obvious,
+> > certainly, but that doesn't mean a reasonable boundary can't be found.
+> 
+> So let's define it.  Why do you think the driver core should expose
+> anything more than a sysfs representation of groups to userspace?
+
+Hrm.  It don't.  You're right the previous draft overextended there.
+
+> > > > > Regarding 2), I think providing user-space a way to unbind groups of
+> > > > > devices from their drivers is a horrible idea.
+> > > > 
+> > > > Well, I'm not wed to unbinding all the drivers at once.  But what I
+> > > > *do* think is essential is that we can atomically switch off automatic
+> > > > driver matching for the whole group.  Without that nothing really
+> > > > stops a driver reattaching to the things you've unbound, so you end up
+> > > > bailing a leakey boat.
+> > > 
+> > > Huh?  There is no issue with removing a device from one driver and
+> > > attaching it to another.  This happens all the time.  If you're talking
+> > > about hotplug, all we have to do is sit on the bus notifier chain and we
+> > > get called when devices are added, before the driver has a chance to
+> > > attach.  We can then force a vfio driver to attach when needed.
+> > 
+> > But what is the transition point at which you know force attaching a
+> > vfio driver is the right thing?
+> 
+> It's quite simple.  The vfio bus driver does a bus_register_notifier()
+> and watches for BUS_NOTIFY_ADD_DEVICE.  At that point it registers the
+> device with the vfio core.  The vfio core retrieves the group
+> information for the device and matches it to a struct vfio_group.  When
+> the user makes use of the vfio group they get file descriptors for each
+> device and another for the iommu.  vfio therefore simply needs to check
+> if there are any open file descriptors for devices or iommu to determine
+> the newly added device needs to be bound to vfio.  There is actually
+> code for this, feel free to find it in my trees.
+
+Ah, I see, you actually look at what's open at hotplug time.  Ok,
+ugly, but I guess it works.
+
+Incidentally though, after more thought I've worked out that having
+the group ids be per-bus-type as you do is not merely a somewhat
+non-obvious constraint, but actually broken.  There's at least one
+really clear case where a group must cross multiple bus-types: where a
+IOMMU equipped host bridge to a DMA-capable bus can isolate the bus as
+a whole but not individual devices beneath it, and there is another
+(non IOMMU equipped) bridge below it to a different DMA capable bus.
+In this case the group must encompass everything below the host
+bridge, including the subordinate bus of a different type.
+
+> > My draft does that atomically with
+> > unbinding the existing drivers.  But you have a fair point about that
+> > causing devices to disappear surprisingly, so I think I'll change that
+> > so that it instead becomes 3 step: first prevent new drivers
+> > auto-binding to things in the group, then explicitly unbind existing
+> > drivers, then grab the group for userspace access.
+> 
+> This is where I get confused, even if there are uses in the driver core
+> for understanding groups, what business does the driver core have for
+> exposed groups for userspace access?  I think that crosses the logical
+> boundary and where we start peeling back layers of the onion for
+> everything that entails.
+> 
+> > >  Hell,
+> > > we can just set dev->driver to something to prevent standard driver
+> > > probing.
+> > 
+> > > > > It makes it too easy for
+> > > > > the user to shoot himself in the foot. For example when the user wants
+> > > > > to assign a network card to a guest, but that card is in the same group
+> > > > > as the GPU and the screen wents blank when the guest is started.
+> > > > > Requiring devices to be unbound one-by-one is better because this way
+> > > > > the user always needs to know what he is doing.
+> > > > 
+> > > > Ok, that's not the usage model I had in mind.  What I'm thinking here
+> > > > is that the admin removes groups that will be used in guests from the
+> > > > host kernel (probably via boot-time scripts).  The guests will pick
+> > > > them up later, so that when a guest quits then restarts, we don't have
+> > > > devices appearing transiently in the host.
+> > > 
+> > > I don't think that model is dynamic enough for our existing use cases.
+> > > A user shouldn't need to decide at boot time which devices are going to
+> > > be used for what purpose.  It's entirely valid for a user to start up a
+> > > VM, decide they want more network performance and reassign a NIC from
+> > > host use to guest use.  When they shutdown the VM or hot-unplug it, they
+> > > should be able to easily put it back to work on the host.
+> > 
+> > Well, sure, you can do that too.  But I bet you the more common usage
+> > model for production will be to have most of the hardware assigned to
+> > a particular guest on a long term basis.
+> 
+> I don't doubt that that's the common usage, but it's a very poor model
+> to aim for and call "good enough".
+
+Nothing in my proposals precludes your usage model, it just makes the
+common usage model less problematic, with devices appearing briefly on
+the host while the guest is down.  For your usage model it's just one
+extra step - using sysfs to explicitly reassign the group to the host
+once the guest (or userspace) is done with it.
+
+-- 
+David Gibson			| I'll have my music baroque, and my code
+david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
+				| _way_ _around_!
+http://www.ozlabs.org/~dgibson
