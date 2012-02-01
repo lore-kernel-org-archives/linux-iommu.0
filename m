@@ -1,14 +1,18 @@
-From: David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
-Subject: [PATCH 2/3] device_isolation: Support isolation on POWER p5ioc2
-	bridges
-Date: Wed,  1 Feb 2012 15:46:53 +1100
-Message-ID: <1328071614-8320-3-git-send-email-david@gibson.dropbear.id.au>
-References: <1328071614-8320-1-git-send-email-david@gibson.dropbear.id.au>
+From: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH 2/5] iommu/amd: Implement DOMAIN_ATTR_GEOMETRY attribute
+Date: Wed, 1 Feb 2012 09:37:52 +0000
+Message-ID: <C5ECD7A89D1DC44195F34B25E172658D043BD1@039-SN2MPN1-012.039d.mgd.msft.net>
+References: <1326983405-319-1-git-send-email-joerg.roedel@amd.com>
+	<201201191646.13798.laurent.pinchart@ideasonboard.com>
+	<20120119160739.GB2205@amd.com>
+	<201201191727.10176.laurent.pinchart@ideasonboard.com>
+	<20120120160128.GF2205@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1328071614-8320-1-git-send-email-david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
+In-Reply-To: <20120120160128.GF2205-5C7GfCeVMHo@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,69 +22,34 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Brown <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds code to the code for the powernv platform to create
-and populate isolation groups on hardware using the p5ioc2 PCI host
-bridge used on some IBM POWER systems.
 
-Signed-off-by: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
-Signed-off-by: David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
----
- arch/powerpc/platforms/powernv/pci-p5ioc2.c |   14 +++++++++++++-
- arch/powerpc/platforms/powernv/pci.h        |    3 +++
- 2 files changed, 16 insertions(+), 1 deletions(-)
 
-diff --git a/arch/powerpc/platforms/powernv/pci-p5ioc2.c b/arch/powerpc/platforms/powernv/pci-p5ioc2.c
-index 2649677..e5bb3a6 100644
---- a/arch/powerpc/platforms/powernv/pci-p5ioc2.c
-+++ b/arch/powerpc/platforms/powernv/pci-p5ioc2.c
-@@ -20,6 +20,7 @@
- #include <linux/irq.h>
- #include <linux/io.h>
- #include <linux/msi.h>
-+#include <linux/device_isolation.h>
- 
- #include <asm/sections.h>
- #include <asm/io.h>
-@@ -88,10 +89,21 @@ static void pnv_pci_init_p5ioc2_msis(struct pnv_phb *phb) { }
- static void __devinit pnv_pci_p5ioc2_dma_dev_setup(struct pnv_phb *phb,
- 						   struct pci_dev *pdev)
- {
--	if (phb->p5ioc2.iommu_table.it_map == NULL)
-+	if (phb->p5ioc2.iommu_table.it_map == NULL) {
- 		iommu_init_table(&phb->p5ioc2.iommu_table, phb->hose->node);
-+#ifdef CONFIG_DEVICE_ISOLATION
-+		phb->p5ioc2.di_group = kzalloc(sizeof(*(phb->p5ioc2.di_group)),
-+					       GFP_KERNEL);
-+		BUG_ON(!phb->p5ioc2.di_group ||
-+		       (device_isolation_group_init(phb->p5ioc2.di_group,
-+						    "p5ioc2:%llx", phb->opal_id) < 0));
-+#endif
-+	}
- 
- 	set_iommu_table_base(&pdev->dev, &phb->p5ioc2.iommu_table);
-+#ifdef CONFIG_DEVICE_ISOLATION
-+	device_isolation_dev_add(phb->p5ioc2.di_group, &pdev->dev);
-+#endif
- }
- 
- static void __init pnv_pci_init_p5ioc2_phb(struct device_node *np,
-diff --git a/arch/powerpc/platforms/powernv/pci.h b/arch/powerpc/platforms/powernv/pci.h
-index 8bc4796..64ede1e 100644
---- a/arch/powerpc/platforms/powernv/pci.h
-+++ b/arch/powerpc/platforms/powernv/pci.h
-@@ -87,6 +87,9 @@ struct pnv_phb {
- 	union {
- 		struct {
- 			struct iommu_table iommu_table;
-+#ifdef CONFIG_DEVICE_ISOLATION
-+			struct device_isolation_group *di_group;
-+#endif
- 		} p5ioc2;
- 
- 		struct {
--- 
-1.7.8.3
+> -----Original Message-----
+> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
+> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Joerg Roedel
+> Sent: Friday, January 20, 2012 9:31 PM
+> To: Laurent Pinchart
+> Cc: Ohad Ben-Cohen; Tony Lindgren; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Wood Scott-B07421; David Brown; David
+> Woodhouse
+> Subject: Re: [PATCH 2/5] iommu/amd: Implement DOMAIN_ATTR_GEOMETRY
+> attribute
+> 
+> On Thu, Jan 19, 2012 at 05:27:09PM +0100, Laurent Pinchart wrote:
+> > > Well, u64 is a catch-all datatype which should suit all drivers. Is
+> > > this a problem at ARM?
+> >
+> > No, it's not a problem for ARM, at least to my knowledge. It just
+> > struck me as weird, as we have specific data types for other kinds of
+> > addresses (such as dma_addr_t).
+> 
+> Okay, I looked at the definition and dma_addr_t seems like a good fit.
+> To be consistent we should change the iova type of the map/unmap
+> functions to dma_addr_t too.
+This change is certainly required in the iommu API map/unmap calls.
+
+-Varun
