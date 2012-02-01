@@ -1,16 +1,15 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 2/3] device_isolation: Support isolation on POWER p5ioc2
-	bridges
-Date: Wed, 01 Feb 2012 12:15:21 -0700
-Message-ID: <1328123721.6937.225.camel@bling.home>
+Subject: Re: [PATCH 3/3] device_isolation: Support isolation on POWER p7ioc
+	(IODA) bridges
+Date: Wed, 01 Feb 2012 12:17:05 -0700
+Message-ID: <1328123825.6937.227.camel@bling.home>
 References: <1328071614-8320-1-git-send-email-david@gibson.dropbear.id.au>
-	<1328071614-8320-3-git-send-email-david@gibson.dropbear.id.au>
-	<1328122724.6937.216.camel@bling.home>
+	<1328071614-8320-4-git-send-email-david@gibson.dropbear.id.au>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1328122724.6937.216.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+In-Reply-To: <1328071614-8320-4-git-send-email-david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,99 +23,95 @@ To: David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
 Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2012-02-01 at 11:58 -0700, Alex Williamson wrote:
-> On Wed, 2012-02-01 at 15:46 +1100, David Gibson wrote:
-> > This patch adds code to the code for the powernv platform to create
-> > and populate isolation groups on hardware using the p5ioc2 PCI host
-> > bridge used on some IBM POWER systems.
-> > 
-> > Signed-off-by: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
-> > Signed-off-by: David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
-> > ---
-> >  arch/powerpc/platforms/powernv/pci-p5ioc2.c |   14 +++++++++++++-
-> >  arch/powerpc/platforms/powernv/pci.h        |    3 +++
-> >  2 files changed, 16 insertions(+), 1 deletions(-)
-> > 
-> > diff --git a/arch/powerpc/platforms/powernv/pci-p5ioc2.c b/arch/powerpc/platforms/powernv/pci-p5ioc2.c
-> > index 2649677..e5bb3a6 100644
-> > --- a/arch/powerpc/platforms/powernv/pci-p5ioc2.c
-> > +++ b/arch/powerpc/platforms/powernv/pci-p5ioc2.c
-> > @@ -20,6 +20,7 @@
-> >  #include <linux/irq.h>
-> >  #include <linux/io.h>
-> >  #include <linux/msi.h>
-> > +#include <linux/device_isolation.h>
-> >  
-> >  #include <asm/sections.h>
-> >  #include <asm/io.h>
-> > @@ -88,10 +89,21 @@ static void pnv_pci_init_p5ioc2_msis(struct pnv_phb *phb) { }
-> >  static void __devinit pnv_pci_p5ioc2_dma_dev_setup(struct pnv_phb *phb,
-> >  						   struct pci_dev *pdev)
-> >  {
-> > -	if (phb->p5ioc2.iommu_table.it_map == NULL)
-> > +	if (phb->p5ioc2.iommu_table.it_map == NULL) {
-> >  		iommu_init_table(&phb->p5ioc2.iommu_table, phb->hose->node);
-> > +#ifdef CONFIG_DEVICE_ISOLATION
-> > +		phb->p5ioc2.di_group = kzalloc(sizeof(*(phb->p5ioc2.di_group)),
-> > +					       GFP_KERNEL);
-> > +		BUG_ON(!phb->p5ioc2.di_group ||
-> > +		       (device_isolation_group_init(phb->p5ioc2.di_group,
-> > +						    "p5ioc2:%llx", phb->opal_id) < 0));
-> > +#endif
+On Wed, 2012-02-01 at 15:46 +1100, David Gibson wrote:
+> This patch adds code to the code for the powernv platform to create
+> and populate isolation groups on hardware using the p7ioc (aka IODA) PCI host
+> bridge used on some IBM POWER systems.
 > 
-> Hmm, it's really unfortunate that this is architected so we need to
-> surround everything in #ifdefs even though we have stub functions
-> defined.
-
-I think maybe we want:
-
-#ifdef CONFIG_DEVICE_ISOLATION
-struct device_isolation_group *device_isolation_create_group(void)
-{
-	struct device_isolation_group *di_group;
-
-	di_group = kzalloc(sizeof(*di_group), GFP_KERNEL);
-	if (!di_group)
-		return ERR_PTR(-ENOMEM);
-
-	return di_group;
-}
-#else
-struct device_isolation_group *device_isolation_create_group(void)
-{
-	return NULL;
-}
-#endif
-
-Then we can do:
-
-	phb->p5ioc2.di_group = device_isolation_create_group();
-	BUG_ON(IS_ERR(phb->p5ioc2.di_group) || (device_isolation_group_init(phb->p5ioc2.di_group, ...
-
-(We pass NULL to the stubs, but that's ok)
-	
-> > +	}
-> >  
-> >  	set_iommu_table_base(&pdev->dev, &phb->p5ioc2.iommu_table);
-> > +#ifdef CONFIG_DEVICE_ISOLATION
-> > +	device_isolation_dev_add(phb->p5ioc2.di_group, &pdev->dev);
-> > +#endif
-> >  }
-> >  
-> >  static void __init pnv_pci_init_p5ioc2_phb(struct device_node *np,
-> > diff --git a/arch/powerpc/platforms/powernv/pci.h b/arch/powerpc/platforms/powernv/pci.h
-> > index 8bc4796..64ede1e 100644
-> > --- a/arch/powerpc/platforms/powernv/pci.h
-> > +++ b/arch/powerpc/platforms/powernv/pci.h
-> > @@ -87,6 +87,9 @@ struct pnv_phb {
-> >  	union {
-> >  		struct {
-> >  			struct iommu_table iommu_table;
-> > +#ifdef CONFIG_DEVICE_ISOLATION
-> > +			struct device_isolation_group *di_group;
-> > +#endif
-> >  		} p5ioc2;
-> >  
-> >  		struct {
+> Signed-off-by: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
+> Signed-off-by: David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
+> ---
+>  arch/powerpc/platforms/powernv/pci-ioda.c |   18 ++++++++++++++++--
+>  arch/powerpc/platforms/powernv/pci.h      |    6 ++++++
+>  2 files changed, 22 insertions(+), 2 deletions(-)
 > 
-> 
+> diff --git a/arch/powerpc/platforms/powernv/pci-ioda.c b/arch/powerpc/platforms/powernv/pci-ioda.c
+> index 5e155df..4648475 100644
+> --- a/arch/powerpc/platforms/powernv/pci-ioda.c
+> +++ b/arch/powerpc/platforms/powernv/pci-ioda.c
+> @@ -20,6 +20,7 @@
+>  #include <linux/irq.h>
+>  #include <linux/io.h>
+>  #include <linux/msi.h>
+> +#include <linux/device_isolation.h>
+>  
+>  #include <asm/sections.h>
+>  #include <asm/io.h>
+> @@ -877,6 +878,9 @@ static void __devinit pnv_ioda_setup_bus_dma(struct pnv_ioda_pe *pe,
+>  		set_iommu_table_base(&dev->dev, &pe->tce32_table);
+>  		if (dev->subordinate)
+>  			pnv_ioda_setup_bus_dma(pe, dev->subordinate);
+> +#ifdef CONFIG_DEVICE_ISOLATION
+> +		device_isolation_dev_add(&pe->di_group, &dev->dev);
+> +#endif
+>  	}
+>  }
+>  
+> @@ -957,11 +961,21 @@ static void __devinit pnv_pci_ioda_setup_dma_pe(struct pnv_phb *phb,
+>  	}
+>  	iommu_init_table(tbl, phb->hose->node);
+>  
+> -	if (pe->pdev)
+> +#ifdef CONFIG_DEVICE_ISOLATION
+> +	BUG_ON(device_isolation_group_init(&pe->di_group, "ioda:rid%x-pe%x",
+> +					   pe->rid, pe->pe_number) < 0);
+> +#endif
+> +
+> +	if (pe->pdev) {
+>  		set_iommu_table_base(&pe->pdev->dev, tbl);
+> -	else
+> +#ifdef CONFIG_DEVICE_ISOLATION
+> +		device_isolation_dev_add(&pe->di_group, &pe->pdev->dev);
+> +#endif
+> +	} else
+>  		pnv_ioda_setup_bus_dma(pe, pe->pbus);
+>  
+
+Blech, #ifdefs.
+
+> +
+> +
+>  	return;
+>   fail:
+>  	/* XXX Failure: Try to fallback to 64-bit only ? */
+> diff --git a/arch/powerpc/platforms/powernv/pci.h b/arch/powerpc/platforms/powernv/pci.h
+> index 64ede1e..3e282b7 100644
+> --- a/arch/powerpc/platforms/powernv/pci.h
+> +++ b/arch/powerpc/platforms/powernv/pci.h
+> @@ -1,6 +1,8 @@
+>  #ifndef __POWERNV_PCI_H
+>  #define __POWERNV_PCI_H
+>  
+> +#include <linux/device_isolation.h>
+> +
+>  struct pci_dn;
+>  
+>  enum pnv_phb_type {
+> @@ -60,6 +62,10 @@ struct pnv_ioda_pe {
+>  
+>  	/* Link in list of PE#s */
+>  	struct list_head	link;
+> +
+> +#ifdef CONFIG_DEVICE_ISOLATION
+> +	struct device_isolation_group di_group;
+> +#endif
+
+Embedding the struct means we need to know the size, which means we
+can't get rid of the #ifdef.  Probably better to use a pointer if we
+don't mind adding a few bytes in the #ifndef case.  Thanks,
+
+Alex
+
+>  };
+>  
+>  struct pnv_phb {
