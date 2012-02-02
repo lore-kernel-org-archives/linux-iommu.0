@@ -1,13 +1,17 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: RFC: Device isolation groups
-Date: Wed, 01 Feb 2012 13:08:39 -0700
-Message-ID: <1328126919.6937.254.camel@bling.home>
+From: David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
+Subject: Re: [PATCH 3/3] device_isolation: Support isolation on POWER p7ioc
+	(IODA) bridges
+Date: Thu, 2 Feb 2012 11:23:03 +1100
+Message-ID: <20120202002303.GD8700@truffala.fritz.box>
 References: <1328071614-8320-1-git-send-email-david@gibson.dropbear.id.au>
+	<1328071614-8320-4-git-send-email-david@gibson.dropbear.id.au>
+	<1328123825.6937.227.camel@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1328071614-8320-1-git-send-email-david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1328123825.6937.227.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,88 +21,108 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2012-02-01 at 15:46 +1100, David Gibson wrote:
-> This patch series introduces a new infrastructure to the driver core
-> for representing "device isolation groups".  That is, groups of
-> devices which can be "isolated" in such a way that the rest of the
-> system can be protected from them, even in the presence of userspace
-> or a guest OS directly driving the devices.
+On Wed, Feb 01, 2012 at 12:17:05PM -0700, Alex Williamson wrote:
+> On Wed, 2012-02-01 at 15:46 +1100, David Gibson wrote:
+> > This patch adds code to the code for the powernv platform to create
+> > and populate isolation groups on hardware using the p7ioc (aka IODA) PCI host
+> > bridge used on some IBM POWER systems.
+> > 
+> > Signed-off-by: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
+> > Signed-off-by: David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
+> > ---
+> >  arch/powerpc/platforms/powernv/pci-ioda.c |   18 ++++++++++++++++--
+> >  arch/powerpc/platforms/powernv/pci.h      |    6 ++++++
+> >  2 files changed, 22 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/arch/powerpc/platforms/powernv/pci-ioda.c b/arch/powerpc/platforms/powernv/pci-ioda.c
+> > index 5e155df..4648475 100644
+> > --- a/arch/powerpc/platforms/powernv/pci-ioda.c
+> > +++ b/arch/powerpc/platforms/powernv/pci-ioda.c
+> > @@ -20,6 +20,7 @@
+> >  #include <linux/irq.h>
+> >  #include <linux/io.h>
+> >  #include <linux/msi.h>
+> > +#include <linux/device_isolation.h>
+> >  
+> >  #include <asm/sections.h>
+> >  #include <asm/io.h>
+> > @@ -877,6 +878,9 @@ static void __devinit pnv_ioda_setup_bus_dma(struct pnv_ioda_pe *pe,
+> >  		set_iommu_table_base(&dev->dev, &pe->tce32_table);
+> >  		if (dev->subordinate)
+> >  			pnv_ioda_setup_bus_dma(pe, dev->subordinate);
+> > +#ifdef CONFIG_DEVICE_ISOLATION
+> > +		device_isolation_dev_add(&pe->di_group, &dev->dev);
+> > +#endif
+> >  	}
+> >  }
+> >  
+> > @@ -957,11 +961,21 @@ static void __devinit pnv_pci_ioda_setup_dma_pe(struct pnv_phb *phb,
+> >  	}
+> >  	iommu_init_table(tbl, phb->hose->node);
+> >  
+> > -	if (pe->pdev)
+> > +#ifdef CONFIG_DEVICE_ISOLATION
+> > +	BUG_ON(device_isolation_group_init(&pe->di_group, "ioda:rid%x-pe%x",
+> > +					   pe->rid, pe->pe_number) < 0);
+> > +#endif
+> > +
+> > +	if (pe->pdev) {
+> >  		set_iommu_table_base(&pe->pdev->dev, tbl);
+> > -	else
+> > +#ifdef CONFIG_DEVICE_ISOLATION
+> > +		device_isolation_dev_add(&pe->di_group, &pe->pdev->dev);
+> > +#endif
+> > +	} else
+> >  		pnv_ioda_setup_bus_dma(pe, pe->pbus);
 > 
-> Isolation will typically be due to an IOMMU which can safely remap DMA
-> and interrupts coming from these devices.  We need to represent whole
-> groups, rather than individual devices, because there are a number of
-> cases where the group can be isolated as a whole, but devices within
-> it cannot be safely isolated from each other - this usually occurs
-> because the IOMMU cannot reliably distinguish which device in the
-> group initiated a transaction.  In other words, isolation groups
-> represent the minimum safe granularity for passthrough to guests or
-> userspace.
+> Blech, #ifdefs.
+
+Hm, yeah.  The problem is the di_group member not even existing when
+!DEVICE_ISOLATION.  Might be able to avoid that with an empty
+structure in that case.
+
+> > +
+> > +
+> >  	return;
+> >   fail:
+> >  	/* XXX Failure: Try to fallback to 64-bit only ? */
+> > diff --git a/arch/powerpc/platforms/powernv/pci.h b/arch/powerpc/platforms/powernv/pci.h
+> > index 64ede1e..3e282b7 100644
+> > --- a/arch/powerpc/platforms/powernv/pci.h
+> > +++ b/arch/powerpc/platforms/powernv/pci.h
+> > @@ -1,6 +1,8 @@
+> >  #ifndef __POWERNV_PCI_H
+> >  #define __POWERNV_PCI_H
+> >  
+> > +#include <linux/device_isolation.h>
+> > +
+> >  struct pci_dn;
+> >  
+> >  enum pnv_phb_type {
+> > @@ -60,6 +62,10 @@ struct pnv_ioda_pe {
+> >  
+> >  	/* Link in list of PE#s */
+> >  	struct list_head	link;
+> > +
+> > +#ifdef CONFIG_DEVICE_ISOLATION
+> > +	struct device_isolation_group di_group;
+> > +#endif
 > 
-> This series provides the core infraustrcture for tracking isolation
-> groups, and example implementations initializing the groups
-> appropriately for two PCI bridges (which include IOMMUs) found on IBM
-> POWER systems.
-> 
-> Actually using the group information is not included here, but David
-> Woodhouse has expressed an interest in using a structure like this to
-> represent operations in iommu_ops more correctly.
-> 
-> Some tracking of groups is a prerequisite for safe passthrough of
-> devices to guests or userspace, such as done by VFIO.  Current VFIO
-> patches use the iommu_ops->device_group mechanism for this.  However,
-> that mechanism is awkward, because without an in-kernel concrete
-> representation of groups, enumerating a group requires traversing
-> every device on a given bus type.  It also fails to cover some very
-> plausible IOMMU topologies, because its groups cannot span devices on
-> multiple bus types.
+> Embedding the struct means we need to know the size, which means we
+> can't get rid of the #ifdef.  Probably better to use a pointer if we
+> don't mind adding a few bytes in the #ifndef case.  Thanks,
 
-So far so good, but there's not much meat on the bone yet.  The sysfs
-linking and a list of devices in a group is all pretty straight forward
-and obvious.  I'm not sure yet how this solves the DMA quirks kind of
-issues though.  For instance if we have the ricoh device that uses the
-wrong source ID for DMA from function 1 and we put functions 0 & 1 in an
-isolation group... then what?  And who does device quirk grouping?  Each
-IOMMU driver?
+I've been back and forth a few types on this, and I've convinced
+myself that allowing the group structure to be embedded is a better
+idea.  It's a particular help when you need to construct one from
+platform or bridge init code that runs before mem_init_done.
 
-For the iommu_device_group() interface, I had imagined that we'd have
-something like:
-
-struct device *device_dma_alias_quirk(struct device *dev)
-{
-	if (<is broken ricoh func 1)
-		return <ricoh func0>;
-
-	return dev;
-}
-
-Then iommu_device_group turns into:
-
-int iommu_device_group(struct device *dev, unsigned int *groupid)
-{
-	dev = device_dma_alias_quirk(dev);
-        if (iommu_present(dev->bus) && dev->bus->iommu_ops->device_group)
-                return dev->bus->iommu_ops->device_group(dev, groupid);
-
-        return -ENODEV;
-}
-
-and device_dma_alias_quirk() is available for dma_ops too.
-
-So maybe a struct device_isolation_group not only needs a list of
-devices, but it also needs the representative device to do mappings
-identified.  dma_ops would then just use dev->di_group->dma_dev for
-mappings, and I assume we call iommu_alloc() with a di_group and instead
-of iommu_attach/detach_device, we'd have iommu_attach/detach_group?
-
-What I'm really curious about is where you now stand on what's going to
-happen in device_isolation_bind().  How do we get from a device in sysfs
-pointing to a group to something like vfio binding to that group and
-creating a chardev to access it?  Are we manipulating automatic driver
-binding or existing bound drivers once a group is bound?  Do isolation
-groups enforce isolation, or just describe it?  Thanks,
-
-Alex
+-- 
+David Gibson			| I'll have my music baroque, and my code
+david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
+				| _way_ _around_!
+http://www.ozlabs.org/~dgibson
