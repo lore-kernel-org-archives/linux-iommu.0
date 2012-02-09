@@ -1,17 +1,15 @@
-From: David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
-Subject: Re: [PATCH 1/3] Device isolation group infrastructure (v3)
-Date: Fri, 10 Feb 2012 11:21:12 +1100
-Message-ID: <20120210002112.GB10536@truffala.fritz.box>
-References: <1328071614-8320-1-git-send-email-david@gibson.dropbear.id.au>
-	<1328071614-8320-2-git-send-email-david@gibson.dropbear.id.au>
-	<20120208152748.GD22598@amd.com> <1328737168.2903.35.camel@pasglop>
-	<20120209112805.GN22598@amd.com>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: Using OMAP3 ISP live display and snapshot sample applications
+Date: Thu, 09 Feb 2012 08:25:27 +0100
+Message-ID: <1717097.bU1IFGjUNt@avalon>
+References: <CAOy7-nNSu2v9VS9Bh5O5StvEAvoxA4DqN7KdSGfZZSje1_Fgnw@mail.gmail.com>
+	<201201111041.06017.laurent.pinchart@ideasonboard.com>
+	<CAOy7-nOrTESdfG+_njJgcVUAiLuks_21=GFMBK-2b5mK9UJwpg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20120209112805.GN22598-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <CAOy7-nOrTESdfG+_njJgcVUAiLuks_21=GFMBK-2b5mK9UJwpg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,36 +19,49 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: James <angweiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Feb 09, 2012 at 12:28:05PM +0100, Joerg Roedel wrote:
-> On Thu, Feb 09, 2012 at 08:39:28AM +1100, Benjamin Herrenschmidt wrote:
-> > On Wed, 2012-02-08 at 16:27 +0100, Joerg Roedel wrote:
-> > > Again, device grouping is done by the IOMMU drivers, so this all
-> > > belongs
-> > > into the generic iommu-code rather than the driver core.
-> > 
-> > Except that there isn't really a "generic iommu code"... discovery,
-> > initialization & matching of iommu vs. devices etc... that's all
-> > implemented in the arch specific iommu code.
-> 
-> The whole point of moving the iommu drivers to drivers/iommu was to
-> factor out common code. We are not where we want to be yet but the goal
-> is to move more code to the generic part.
-> 
-> For the group-code this means that the generic code should iterate over
-> all devices on a bus and build up group structures based on isolation
-> information provided by the arch specific code.
+Hi James,
 
-And how exactly do you suggest it provide that information.  I really
-can't see how an iommu driver would specify its isolation constraints
-generally enough, except in the form of code and then we're back to
-where we are now.
+(CC'ing Ohad, Joerg and the IOMMU mailing list)
+
+On Wednesday 08 February 2012 16:29:14 James wrote:
+>
+> I baked a new kernel from your branch using OE & your defconfig but I got a
+> "Kernel Panic" when booting it.
+> 
+> Attached is the console log from the Overo+Tobi board+Caspa setup.
+> 
+> Can you advise my next course of resolution?
+
+Does the following patch fix the problem ?
+
+diff --git a/drivers/Makefile b/drivers/Makefile
+index 1b31421..2ec48f2 100644
+--- a/drivers/Makefile
++++ b/drivers/Makefile
+@@ -28,6 +28,7 @@ obj-$(CONFIG_XEN)		+= xen/
+ 
+ # regulators early, since some subsystems rely on them to initialize
+ obj-$(CONFIG_REGULATOR)		+= regulator/
++obj-$(CONFIG_IOMMU_SUPPORT)	+= iommu/
+ 
+ # tty/ comes before char/ so that the VT console is the boot-time
+ # default.
+@@ -125,7 +126,6 @@ obj-y				+= clk/
+ 
+ obj-$(CONFIG_HWSPINLOCK)	+= hwspinlock/
+ obj-$(CONFIG_NFC)		+= nfc/
+-obj-$(CONFIG_IOMMU_SUPPORT)	+= iommu/
+ 
+ # Virtualization drivers
+ obj-$(CONFIG_VIRT_DRIVERS)	+= virt/
+
+Ohad, Joerg, would this be an acceptable fix ? If so I'll submit a patch.
 
 -- 
-David Gibson			| I'll have my music baroque, and my code
-david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
-				| _way_ _around_!
-http://www.ozlabs.org/~dgibson
+Regards,
+
+Laurent Pinchart
