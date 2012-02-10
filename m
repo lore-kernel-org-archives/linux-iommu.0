@@ -1,64 +1,83 @@
-From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: Using OMAP3 ISP live display and snapshot sample applications
-Date: Fri, 10 Feb 2012 16:10:18 +0100
-Message-ID: <20120210151018.GS22598@amd.com>
-References: <CAOy7-nNSu2v9VS9Bh5O5StvEAvoxA4DqN7KdSGfZZSje1_Fgnw@mail.gmail.com>
-	<201201111041.06017.laurent.pinchart@ideasonboard.com>
-	<CAOy7-nOrTESdfG+_njJgcVUAiLuks_21=GFMBK-2b5mK9UJwpg@mail.gmail.com>
-	<1717097.bU1IFGjUNt@avalon>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: [PATCHv6 0/7] ARM: DMA-mapping framework redesign
+Date: Fri, 10 Feb 2012 19:58:37 +0100
+Message-ID: <1328900324-20946-1-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1717097.bU1IFGjUNt@avalon>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Cc: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, James <angweiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: TEXT/PLAIN
+Content-Transfer-Encoding: 7BIT
+Return-path: <owner-linux-mm@kvack.org>
+Sender: owner-linux-mm@kvack.org
+To: linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Kyungmin Park <kyungmin.park@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Joerg Roedel <joro@8bytes.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Shariq Hasnain <shariq.hasnain@linaro.org>, Chunsang Jeong <chunsang.jeong@linaro.org>, Krishna Reddy <vdumpa@nvidia.com>, KyongHo Cho <pullip.cho@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Feb 09, 2012 at 08:25:27AM +0100, Laurent Pinchart wrote:
-> diff --git a/drivers/Makefile b/drivers/Makefile
-> index 1b31421..2ec48f2 100644
-> --- a/drivers/Makefile
-> +++ b/drivers/Makefile
-> @@ -28,6 +28,7 @@ obj-$(CONFIG_XEN)		+= xen/
->  
->  # regulators early, since some subsystems rely on them to initialize
->  obj-$(CONFIG_REGULATOR)		+= regulator/
-> +obj-$(CONFIG_IOMMU_SUPPORT)	+= iommu/
->  
->  # tty/ comes before char/ so that the VT console is the boot-time
->  # default.
-> @@ -125,7 +126,6 @@ obj-y				+= clk/
->  
->  obj-$(CONFIG_HWSPINLOCK)	+= hwspinlock/
->  obj-$(CONFIG_NFC)		+= nfc/
-> -obj-$(CONFIG_IOMMU_SUPPORT)	+= iommu/
->  
->  # Virtualization drivers
->  obj-$(CONFIG_VIRT_DRIVERS)	+= virt/
-> 
-> Ohad, Joerg, would this be an acceptable fix ? If so I'll submit a patch.
+Hello,
 
-I also want to understand the problem first. Can you provide some
-context?
+This is another update on my works DMA-mapping framework redesign for
+ARM architecture. It includes a few minor cleanup and fixes since the
+last version posted by the end of December 2011. This patch series is
+now based on the generic, cross-arch dma-mapping redesign patches posted
+in the "[PATCH 00/14] DMA-mapping framework redesign preparation"
+thread: http://www.spinics.net/lists/linux-sh/msg09777.html
+
+All patches have been now rebased onto v3.3-rc2 kernel.
+
+All the code has been tested on Samsung Exynos4 'UniversalC210' board
+with IOMMU driver posted by KyongHo Cho.
 
 
-	Joerg
+History of the development:
 
+v1: (initial version of the DMA-mapping redesign patches):
+http://www.spinics.net/lists/linux-mm/msg21241.html
+
+v2:
+http://lists.linaro.org/pipermail/linaro-mm-sig/2011-September/000571.html
+http://lists.linaro.org/pipermail/linaro-mm-sig/2011-September/000577.html
+
+v3:
+http://www.spinics.net/lists/linux-mm/msg25490.html
+
+v4 and v5:
+http://www.spinics.net/lists/arm-kernel/msg151147.html
+http://www.spinics.net/lists/arm-kernel/msg154889.html
+
+Best regards
+--
+Marek Szyprowski
+Samsung Poland R&D Center
+
+
+Patch summary:
+
+Marek Szyprowski (7):
+  ARM: dma-mapping: remove offset parameter to prepare for generic
+    dma_ops
+  ARM: dma-mapping: use asm-generic/dma-mapping-common.h
+  ARM: dma-mapping: implement dma sg methods on top of any generic dma
+    ops
+  ARM: dma-mapping: move all dma bounce code to separate dma ops
+    structure
+  ARM: dma-mapping: remove redundant code and cleanup
+  ARM: dma-mapping: use alloc, mmap, free from dma_ops
+  ARM: dma-mapping: add support for IOMMU mapper
+
+ arch/arm/Kconfig                   |    9 +
+ arch/arm/common/dmabounce.c        |   78 +++-
+ arch/arm/include/asm/device.h      |    4 +
+ arch/arm/include/asm/dma-iommu.h   |   34 ++
+ arch/arm/include/asm/dma-mapping.h |  404 +++++------------
+ arch/arm/mm/dma-mapping.c          |  897 ++++++++++++++++++++++++++++++------
+ arch/arm/mm/vmregion.h             |    2 +-
+ 7 files changed, 980 insertions(+), 448 deletions(-)
+ create mode 100644 arch/arm/include/asm/dma-iommu.h
 
 -- 
-AMD Operating System Research Center
+1.7.1.569.g6f426
 
-Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
-General Managers: Alberto Bozzo
-Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Fight unfair telecom internet charges in Canada: sign http://stopthemeter.ca/
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
