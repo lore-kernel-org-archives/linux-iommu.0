@@ -1,13 +1,18 @@
-From: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Subject: Re: [Bug 42767] New: System unsuable with intel_iommu=on
-Date: Mon, 13 Feb 2012 12:51:08 -0800
-Message-ID: <20120213125108.6325bb07.akpm@linux-foundation.org>
-References: <bug-42767-27@https.bugzilla.kernel.org/>
+From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: Using OMAP3 ISP live display and snapshot sample applications
+Date: Tue, 14 Feb 2012 11:44:37 +0100
+Message-ID: <20120214104436.GU22598@amd.com>
+References: <CAOy7-nNSu2v9VS9Bh5O5StvEAvoxA4DqN7KdSGfZZSje1_Fgnw@mail.gmail.com>
+	<201201111041.06017.laurent.pinchart@ideasonboard.com>
+	<CAOy7-nOrTESdfG+_njJgcVUAiLuks_21=GFMBK-2b5mK9UJwpg@mail.gmail.com>
+	<1717097.bU1IFGjUNt@avalon> <20120210151018.GS22598@amd.com>
+	<CAOy7-nNgduFBqYMpLEaTPQ9VQwZ0Z29SzcAoGC6uRWGAPM3_JA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <bug-42767-27-3bo0kxnWaOQUvHkbgXJLS5sdmw4N0Rt+2LY78lusg7I@public.gmane.org/>
+Content-Disposition: inline
+In-Reply-To: <CAOy7-nNgduFBqYMpLEaTPQ9VQwZ0Z29SzcAoGC6uRWGAPM3_JA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,129 +22,116 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: ConiKost-Mmb7MZpHnFY@public.gmane.org, bugzilla-daemon-590EEB7GvNiWaY/ihj7yzEB+6BGkLq7r@public.gmane.org
+To: James <angweiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+On Mon, Feb 13, 2012 at 09:28:30AM +0800, James wrote:
 
-(switched to email.  Please respond via emailed reply-to-all, not via the
-bugzilla web interface).
+> >> @@ -28,6 +28,7 @@ obj-$(CONFIG_XEN) =A0 =A0 =A0 =A0 =A0 +=3D xen/
+> >>
+> >> =A0# regulators early, since some subsystems rely on them to initialize
+> >> =A0obj-$(CONFIG_REGULATOR) =A0 =A0 =A0 =A0 =A0 =A0 =A0+=3D regulator/
+> >> +obj-$(CONFIG_IOMMU_SUPPORT) =A0+=3D iommu/
+> >>
+> >> =A0# tty/ comes before char/ so that the VT console is the boot-time
+> >> =A0# default.
+> >> @@ -125,7 +126,6 @@ obj-y =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 +=3D clk/
+> >>
+> >> =A0obj-$(CONFIG_HWSPINLOCK) =A0 =A0 +=3D hwspinlock/
+> >> =A0obj-$(CONFIG_NFC) =A0 =A0 =A0 =A0 =A0 =A0+=3D nfc/
+> >> -obj-$(CONFIG_IOMMU_SUPPORT) =A0+=3D iommu/
+> >>
+> >> =A0# Virtualization drivers
+> >> =A0obj-$(CONFIG_VIRT_DRIVERS) =A0 +=3D virt/
 
-On Mon, 13 Feb 2012 20:45:21 GMT
-bugzilla-daemon-590EEB7GvNiWaY/ihj7yzEB+6BGkLq7r@public.gmane.org wrote:
+I don't see how this patch solves a problem like below.
 
-> https://bugzilla.kernel.org/show_bug.cgi?id=42767
-> 
->            Summary: System unsuable with intel_iommu=on
->            Product: Memory Management
->            Version: 2.5
->           Platform: All
->         OS/Version: Linux
->               Tree: Mainline
->             Status: NEW
->           Severity: normal
->           Priority: P1
->          Component: Other
->         AssignedTo: akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org
->         ReportedBy: ConiKost-Mmb7MZpHnFY@public.gmane.org
->         Regression: No
-> 
-> 
-> Hi,
-> i've some very strange problems since kernel 3.2.0.
-> When I enable the CONFIG_INTEL_IOMMU_DEFAULT_ON, the problems starts.
-> 
-> OS: Gentoo Linux
-> Kernel: Gentoo Sources 3.2.5 (tried also with vanilla 3.2.5)
-> Hardware: Thinkpad X200 Tablet
-> Bios: 3.20
-> 
-> The problems are, that my video card fails with 3d rendering (e.g. GNOME3
-> crashes) and my network card stops working after using some network i/o. When I
-> choose intel_iommu=off, all problems disapear and everything works fine.
-> 
-> Feb 13 21:24:11 [kernel] [drm:i915_hangcheck_elapsed] *ERROR* Hangcheck timer
-> elapsed... GPU hung
-> Feb 13 21:24:11 [kernel] render error detected, EIR: 0x00000010
-> Feb 13 21:24:11 [kernel]   IPEIR: 0x00000000
-> Feb 13 21:24:11 [kernel]   IPEHR: 0x18800180
-> Feb 13 21:24:11 [kernel]   INSTDONE: 0xffffffff
-> Feb 13 21:24:11 [kernel]   INSTPS: 0x4001e020
-> Feb 13 21:24:11 [kernel]   INSTDONE1: 0xbfffffff
-> Feb 13 21:24:11 [kernel]   ACTHD: 0x013f0000
-> Feb 13 21:24:11 [kernel] page table error
-> Feb 13 21:24:11 [kernel]   PGTBL_ER: 0x00100000
-> 
-> Feb 13 21:25:44 [kernel] DRHD: handling fault status reg 2
-> Feb 13 21:25:44 [kernel] DMAR:[DMA Read] Request device [00:19.0] fault addr
-> fff84000
-> Feb 13 21:25:44 [kernel] DMAR:[fault reason 06] PTE Read access is not set
-> Feb 13 21:25:47 [kernel] e1000e 0000:00:19.0: eth0: Detected Hardware Unit
-> Hang:
-> Feb 13 21:25:47 [kernel]   TDH                  <57>
-> Feb 13 21:25:47 [kernel]   TDT                  <68>
-> Feb 13 21:25:47 [kernel]   next_to_use          <68>
-> Feb 13 21:25:47 [kernel]   next_to_clean        <56>
-> Feb 13 21:25:47 [kernel] buffer_info[next_to_clean]:
-> Feb 13 21:25:47 [kernel]   time_stamp           <fffd86c5>
-> Feb 13 21:25:47 [kernel]   next_to_watch        <57>
-> Feb 13 21:25:47 [kernel]   jiffies              <fffd91c0>
-> Feb 13 21:25:47 [kernel]   next_to_watch.status <0>
-> Feb 13 21:25:47 [kernel] MAC Status             <80383>
-> Feb 13 21:25:47 [kernel] PHY Status             <796d>
-> Feb 13 21:25:47 [kernel] PHY 1000BASE-T Status  <3c00>
-> Feb 13 21:25:47 [kernel] PHY Extended Status    <3000>
-> Feb 13 21:25:47 [kernel] PCI Status             <10>
-> Feb 13 21:25:48 [kernel] fbcondecor: switched decor state to 'off' on console 0
-> Feb 13 21:25:48 [kernel] fbcondecor: console 0 using theme
-> 'battlestar-galactica'
-> Feb 13 21:25:48 [kernel] fbcondecor: switched decor state to 'on' on console 0
-> Feb 13 21:25:49 [kernel] e1000e 0000:00:19.0: eth0: Detected Hardware Unit
-> Hang:
-> Feb 13 21:25:49 [kernel]   TDH                  <57>
-> Feb 13 21:25:49 [kernel]   TDT                  <68>
-> Feb 13 21:25:49 [kernel]   next_to_use          <68>
-> Feb 13 21:25:49 [kernel]   next_to_clean        <56>
-> Feb 13 21:25:49 [kernel] buffer_info[next_to_clean]:
-> Feb 13 21:25:49 [kernel]   time_stamp           <fffd86c5>
-> Feb 13 21:25:49 [kernel]   next_to_watch        <57>
-> Feb 13 21:25:49 [kernel]   jiffies              <fffd9990>
-> Feb 13 21:25:49 [kernel]   next_to_watch.status <0>
-> Feb 13 21:25:49 [kernel] MAC Status             <80383>
-> Feb 13 21:25:49 [kernel] PHY Status             <796d>
-> Feb 13 21:25:49 [kernel] PHY 1000BASE-T Status  <3c00>
-> Feb 13 21:25:49 [kernel] PHY Extended Status    <3000>
-> Feb 13 21:25:49 [kernel] PCI Status             <10>
-> Feb 13 21:25:51 [kernel] ------------[ cut here ]------------
-> Feb 13 21:25:51 [kernel] WARNING: at net/sched/sch_generic.c:255
-> dev_watchdog+0x249/0x260()
-> Feb 13 21:25:51 [kernel] Hardware name: 7450EQG
-> Feb 13 21:25:51 [kernel] NETDEV WATCHDOG: eth0 (e1000e): transmit queue 0 timed
-> out
-> Feb 13 21:25:51 [kernel] Modules linked in:
-> Feb 13 21:25:51 [kernel] Pid: 0, comm: swapper/1 Not tainted 3.2.1-gentoo #1
-> Feb 13 21:25:51 [kernel] Call Trace:
-> Feb 13 21:25:51 [kernel]  <IRQ>  [<ffffffff810433bb>] ?
-> warn_slowpath_common+0x7b/0xc0
-> Feb 13 21:25:51 [kernel]  [<ffffffff810434b5>] ? warn_slowpath_fmt+0x45/0x50
-> Feb 13 21:25:51 [kernel]  [<ffffffff8104f9dd>] ? mod_timer+0x13d/0x240
-> Feb 13 21:25:51 [kernel]  [<ffffffff8156eb99>] ? dev_watchdog+0x249/0x260
-> Feb 13 21:25:51 [kernel]  [<ffffffff8104ef7b>] ? cascade+0x7b/0xa0
-> Feb 13 21:25:51 [kernel]  [<ffffffff8156e950>] ? qdisc_reset+0x40/0x40
-> Feb 13 21:25:51 [kernel]  [<ffffffff8104f0b6>] ? run_timer_softirq+0x116/0x270
-> Feb 13 21:25:51 [kernel]  [<ffffffff81049298>] ? __do_softirq+0x98/0x120
-> Feb 13 21:25:51 [kernel]  [<ffffffff816c84ac>] ? call_softirq+0x1c/0x30
-> Feb 13 21:25:51 [kernel]  [<ffffffff8100469d>] ? do_softirq+0x4d/0x80
-> Feb 13 21:25:51 [kernel]  [<ffffffff8104964e>] ? irq_exit+0x8e/0xd0
-> Feb 13 21:25:51 [kernel]  [<ffffffff8101be08>] ?
-> smp_apic_timer_interrupt+0x68/0xa0
-> Feb 13 21:25:51 [kernel]  [<ffffffff816c7c0b>] ? apic_timer_interrupt+0x6b/0x70
-> Feb 13 21:25:51 [kernel]  <EOI>  [<ffffffff8134225d>] ?
-> acpi_idle_enter_bm+0x214/0x252
-> Feb 13 21:25:51 [kernel]  [<ffffffff81342258>] ? acpi_idle_enter_bm+0x20f/0x252
-> Feb 13 21:25:51 [kernel]  [<ffffffff814c2c4a>] ? cpuidle_idle_call+0x8a/0xf0
-> Feb 13 21:25:51 [kernel]  [<ffffffff810011df>] ? cpu_idle+0xbf/0x110
-> Feb 13 21:25:51 [kernel]  [<ffffffff816b7cc9>] ? start_secondary+0x1f5/0x1fb
-> Feb 13 21:25:51 [kernel] ---[ end trace 71e047540e69b903 ]---
-> Feb 13 21:25:51 [kernel] e1000e 0000:00:19.0: eth0: Reset adapter
-> 
+> [    3.663269] Unable to handle kernel NULL pointer dereference at virtua=
+l address 00000058
+> [    3.671844] pgd =3D c0004000
+> [    3.674682] [00000058] *pgd=3D00000000
+> [    3.678527] Internal error: Oops: 5 [#1]
+> [    3.682647] Modules linked in:
+> [    3.685852] CPU: 0    Tainted: G        W     (3.2.0-rc2 #1)
+> [    3.691802] PC is at klist_next+0x10/0xb4
+> [    3.696014] LR is at next_device+0x8/0x14
+> [    3.700225] pc : [<c03eeac4>]    lr : [<c024deb8>]    psr: 60000013
+> [    3.700225] sp : de82de98  ip : 00000000  fp : c04300c0
+> [    3.712249] r10: 000003ff  r9 : c05e2c48  r8 : 00000001
+> [    3.717742] r7 : c078ed68  r6 : 00000000  r5 : de82deb8  r4 : de82deb8
+> [    3.724578] r3 : c031ff60  r2 : 00000000  r1 : de82deb8  r0 : 00000024
+> [    3.731414] Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segme=
+nt kernel
+> [    3.739074] Control: 10c5387d  Table: 80004019  DAC: 00000015
+> [    3.745117] Process swapper (pid: 1, stack limit =3D 0xde82c2f0)
+> [    3.751220] Stack: (0xde82de98 to 0xde82e000)
+> [    3.755798] de80:                                                     =
+  c031ff60 c04f8ff4
+> [    3.764373] dea0: de82deb8 c031ff60 c078ed68 c024deb8 c031ff60 c024df2=
+8 00000024 00000000
+> [    3.772949] dec0: c04f8ff4 debe8000 00007990 c05e2c40 0000000e c02e957=
+8 22222222 debd1660
+> [    3.781524] dee0: 00000000 c011801c c05e2c48 c0056368 debe8580 0000000=
+3 de893e80 00000000
+> [    3.790100] df00: c05e2c7c c05e2c48 c05e2c7c c078c144 c078c144 0000000=
+0 00000000 00000000
+> [    3.798675] df20: 00000000 c024e800 c024e7ec c024d720 00000000 c05e2c4=
+8 c05e2c7c c078c144
+> [    3.807281] df40: 00000000 c024d844 c078c144 de82df58 c024d7dc c024c9a=
+0 de825060 de888898
+> [    3.815856] df60: c078c144 c078c144 debd3ec0 c0781a10 00000000 c024d02=
+c c04f8fef c05fc430
+> [    3.824432] df80: de81b040 c078c144 c05d9168 c000dc9c c05c4068 0000000=
+0 00000000 c024dd88
+> [    3.833007] dfa0: 00000000 c05d904c c05d9168 c000dc9c c05c4068 0000000=
+0 00000000 c00087cc
+> [    3.841583] dfc0: c05c4068 de81b040 c0797fc0 00000000 c05d904c c05d916=
+8 c000dc9c 00000013
+> [    3.850158] dfe0: 00000000 c05a77c8 de81b040 00000000 c05a7750 c000dc9=
+c 00000000 00002000
+> [    3.858764] [<c03eeac4>] (klist_next+0x10/0xb4) from [<c024deb8>] (nex=
+t_device+0x8/0x14)
+> [    3.867248] [<c024deb8>] (next_device+0x8/0x14) from [<c024df28>] (dri=
+ver_find_device+0x64/0x7c)
+> [    3.876464] [<c024df28>] (driver_find_device+0x64/0x7c) from [<c02e957=
+8>] (isp_probe+0x228/0xa34)
+> [    3.885772] [<c02e9578>] (isp_probe+0x228/0xa34) from [<c024e800>] (pl=
+atform_drv_probe+0x14/0x18)
+> [    3.895111] [<c024e800>] (platform_drv_probe+0x14/0x18) from [<c024d72=
+0>] (driver_probe_device+0xc8/0x184)
+> [    3.905212] [<c024d720>] (driver_probe_device+0xc8/0x184) from [<c024d=
+844>] (__driver_attach+0x68/0x8c)
+> [    3.915100] [<c024d844>] (__driver_attach+0x68/0x8c) from [<c024c9a0>]=
+ (bus_for_each_dev+0x4c/0x78)
+> [    3.924591] [<c024c9a0>] (bus_for_each_dev+0x4c/0x78) from [<c024d02c>=
+] (bus_add_driver+0x9c/0x220)
+> [    3.934082] [<c024d02c>] (bus_add_driver+0x9c/0x220) from [<c024dd88>]=
+ (driver_register+0xa0/0x120)
+> [    3.943572] [<c024dd88>] (driver_register+0xa0/0x120) from [<c00087cc>=
+] (do_one_initcall+0x90/0x164)
+> [    3.953155] [<c00087cc>] (do_one_initcall+0x90/0x164) from [<c05a77c8>=
+] (kernel_init+0x78/0x11c)
+> [    3.962402] [<c05a77c8>] (kernel_init+0x78/0x11c) from [<c000dc9c>] (k=
+ernel_thread_exit+0x0/0x8)
+> [    3.971618] Code: e92d40f8 e1a04000 e5900000 e5946004 (e5907034) =
+
+> [    3.978057] ---[ end trace 1b75b31a2719ed1e ]---
+> [    3.983001] Kernel panic - not syncing: Attempted to kill init!
+
+This looks more like data corruption or something. But this is definitly
+not caused by some random order in the Makefile.
+Please debug this issue down to the real cause. Bisecting may help here.
+
+
+	Joerg
+
+-- =
+
+AMD Operating System Research Center
+
+Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
+General Managers: Alberto Bozzo
+Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 436=
+32
