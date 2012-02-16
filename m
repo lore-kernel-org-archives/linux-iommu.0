@@ -1,134 +1,80 @@
-From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Subject: Re: [PATCHv6 3/7] ARM: dma-mapping: implement dma sg methods on top
- of any generic dma ops
-Date: Tue, 14 Feb 2012 10:02:55 -0500
-Message-ID: <20120214150255.GC18359@phenom.dumpdata.com>
-References: <1328900324-20946-1-git-send-email-m.szyprowski@samsung.com>
- <1328900324-20946-4-git-send-email-m.szyprowski@samsung.com>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: Using OMAP3 ISP live display and snapshot sample applications
+Date: Thu, 16 Feb 2012 07:46:58 +0100
+Message-ID: <13567544.qv9HnVLVXR@avalon>
+References: <CAOy7-nNSu2v9VS9Bh5O5StvEAvoxA4DqN7KdSGfZZSje1_Fgnw@mail.gmail.com>
+	<CAOy7-nNgduFBqYMpLEaTPQ9VQwZ0Z29SzcAoGC6uRWGAPM3_JA@mail.gmail.com>
+	<20120214104436.GU22598@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <owner-linux-mm@kvack.org>
-Content-Disposition: inline
-In-Reply-To: <1328900324-20946-4-git-send-email-m.szyprowski@samsung.com>
-Sender: owner-linux-mm@kvack.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, Shariq Hasnain <shariq.hasnain@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Krishna Reddy <vdumpa@nvidia.com>, Kyungmin Park <kyungmin.park@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>, KyongHo Cho <pullip.cho@samsung.com>, Chunsang Jeong <chunsang.jeong@linaro.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20120214104436.GU22598-5C7GfCeVMHo@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Cc: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, James <angweiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Feb 10, 2012 at 07:58:40PM +0100, Marek Szyprowski wrote:
-> This patch converts all dma_sg methods to be generic (independent of the
-> current DMA mapping implementation for ARM architecture). All dma sg
-> operations are now implemented on top of respective
-> dma_map_page/dma_sync_single_for* operations from dma_map_ops structure.
+Hi Joerg,
 
-Looks good, except the worry I've that the DMA debug API calls are now
-lost.
+On Tuesday 14 February 2012 11:44:37 Joerg Roedel wrote:
+> On Mon, Feb 13, 2012 at 09:28:30AM +0800, James wrote:
+> > >> @@ -28,6 +28,7 @@ obj-$(CONFIG_XEN)           += xen/
+> > >> 
+> > >>  # regulators early, since some subsystems rely on them to initialize
+> > >>  obj-$(CONFIG_REGULATOR)              += regulator/
+> > >> +obj-$(CONFIG_IOMMU_SUPPORT)  += iommu/
+> > >> 
+> > >>  # tty/ comes before char/ so that the VT console is the boot-time
+> > >>  # default.
+> > >> @@ -125,7 +126,6 @@ obj-y                             += clk/
+> > >> 
+> > >>  obj-$(CONFIG_HWSPINLOCK)     += hwspinlock/
+> > >>  obj-$(CONFIG_NFC)            += nfc/
+> > >> -obj-$(CONFIG_IOMMU_SUPPORT)  += iommu/
+> > >> 
+> > >>  # Virtualization drivers
+> > >>  obj-$(CONFIG_VIRT_DRIVERS)   += virt/
 > 
-> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> Signed-off-by: Kyungmin Park <kyungmin.park@samsung.com>
-> ---
->  arch/arm/mm/dma-mapping.c |   35 +++++++++++++++--------------------
->  1 files changed, 15 insertions(+), 20 deletions(-)
+> I don't see how this patch solves a problem like below.
 > 
-> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-> index 91fe436..31ff699 100644
-> --- a/arch/arm/mm/dma-mapping.c
-> +++ b/arch/arm/mm/dma-mapping.c
-> @@ -635,12 +635,13 @@ EXPORT_SYMBOL(___dma_page_dev_to_cpu);
->  int arm_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
->  		enum dma_data_direction dir, struct dma_attrs *attrs)
->  {
-> +	struct dma_map_ops *ops = get_dma_ops(dev);
->  	struct scatterlist *s;
->  	int i, j;
->  
->  	for_each_sg(sg, s, nents, i) {
-> -		s->dma_address = __dma_map_page(dev, sg_page(s), s->offset,
-> -						s->length, dir);
-> +		s->dma_address = ops->map_page(dev, sg_page(s), s->offset,
-> +						s->length, dir, attrs);
->  		if (dma_mapping_error(dev, s->dma_address))
->  			goto bad_mapping;
->  	}
-> @@ -648,7 +649,7 @@ int arm_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
->  
->   bad_mapping:
->  	for_each_sg(sg, s, i, j)
-> -		__dma_unmap_page(dev, sg_dma_address(s), sg_dma_len(s), dir);
-> +		ops->unmap_page(dev, sg_dma_address(s), sg_dma_len(s), dir, attrs);
->  	return 0;
->  }
->  
-> @@ -665,11 +666,13 @@ int arm_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
->  void arm_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
->  		enum dma_data_direction dir, struct dma_attrs *attrs)
->  {
-> +	struct dma_map_ops *ops = get_dma_ops(dev);
->  	struct scatterlist *s;
-> +
->  	int i;
->  
->  	for_each_sg(sg, s, nents, i)
-> -		__dma_unmap_page(dev, sg_dma_address(s), sg_dma_len(s), dir);
-> +		ops->unmap_page(dev, sg_dma_address(s), sg_dma_len(s), dir, attrs);
->  }
->  
->  /**
-> @@ -682,17 +685,13 @@ void arm_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
->  void arm_dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
->  			int nents, enum dma_data_direction dir)
->  {
-> +	struct dma_map_ops *ops = get_dma_ops(dev);
->  	struct scatterlist *s;
->  	int i;
->  
-> -	for_each_sg(sg, s, nents, i) {
-> -		if (!dmabounce_sync_for_cpu(dev, sg_dma_address(s),
-> -					    sg_dma_len(s), dir))
-> -			continue;
-> -
-> -		__dma_page_dev_to_cpu(sg_page(s), s->offset,
-> -				      s->length, dir);
-> -	}
-> +	for_each_sg(sg, s, nents, i)
-> +		ops->sync_single_for_cpu(dev, sg_dma_address(s), s->length,
-> +					 dir);
->  }
->  
->  /**
-> @@ -705,17 +704,13 @@ void arm_dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
->  void arm_dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
->  			int nents, enum dma_data_direction dir)
->  {
-> +	struct dma_map_ops *ops = get_dma_ops(dev);
->  	struct scatterlist *s;
->  	int i;
->  
-> -	for_each_sg(sg, s, nents, i) {
-> -		if (!dmabounce_sync_for_device(dev, sg_dma_address(s),
-> -					sg_dma_len(s), dir))
-> -			continue;
-> -
-> -		__dma_page_cpu_to_dev(sg_page(s), s->offset,
-> -				      s->length, dir);
-> -	}
-> +	for_each_sg(sg, s, nents, i)
-> +		ops->sync_single_for_device(dev, sg_dma_address(s), s->length,
-> +					    dir);
->  }
->  
->  /*
-> -- 
-> 1.7.1.569.g6f426
-> 
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> > [    3.663269] Unable to handle kernel NULL pointer dereference at virtual
+> > address 00000058
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Fight unfair telecom internet charges in Canada: sign http://stopthemeter.ca/
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+[snip]
+
+> > [<c03eeac4>] (klist_next+0x10/0xb4) from [<c024deb8>]
+> > (next_device+0x8/0x14)
+> > [<c024deb8>] (next_device+0x8/0x14) from [<c024df28>]
+> > (driver_find_device+0x64/0x7c)
+> > [<c024df28>] (driver_find_device+0x64/0x7c) from [<c02e9578>]
+> > (isp_probe+0x228/0xa34)
+
+[snip]
+
+> This looks more like data corruption or something. But this is definitly
+> not caused by some random order in the Makefile.
+> Please debug this issue down to the real cause. Bisecting may help here.
+
+There's actually a line missing from the backtrace for some reason.
+
+isp_probe() calls iommu_attach_device(), which ends up calling 
+omap_iommu_attach(). That function then calls driver_find_device(), passing it 
+omap_iommu_driver.driver as its first argument. However, as the OMAP3 ISP 
+driver is linked in the kernel before the OMAP3 IOMMU driver, 
+omap_iommu_init() has not be called yet by this time. omap_iommu_driver.driver 
+is thus uninitialized, and klist iteration oopses as the linked list head is 
+NULL.
+
+-- 
+Regards,
+
+Laurent Pinchart
