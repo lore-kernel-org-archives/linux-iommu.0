@@ -1,81 +1,44 @@
-From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: Using OMAP3 ISP live display and snapshot sample applications
-Date: Fri, 24 Feb 2012 12:01:37 +0100
-Message-ID: <20120224110137.GF2454@amd.com>
-References: <CAOy7-nNSu2v9VS9Bh5O5StvEAvoxA4DqN7KdSGfZZSje1_Fgnw@mail.gmail.com>
-	<20120214104436.GU22598@amd.com> <13567544.qv9HnVLVXR@avalon>
-	<2017729.C83vkrQlqN@avalon>
-	<CAK=Wgbbq_7fmtRxSN+ZSY6X0opPMfR3QLNkBmWxZdXf_91wk5A@mail.gmail.com>
-	<CAK=WgbY5V=ZxVf2xisWuQbVwFyth9rQ8WaXiMkpjUHnMyyCSvQ@mail.gmail.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCHv6 7/7] ARM: dma-mapping: add support for IOMMU mapper
+Date: Fri, 24 Feb 2012 12:49:44 +0000
+Message-ID: <201202241249.44731.arnd@arndb.de>
+References: <1328900324-20946-1-git-send-email-m.szyprowski@samsung.com> <401E54CE964CD94BAE1EB4A729C7087E378E42AE18@HQMAIL04.nvidia.com> <00f301ccf2d7$b5b68570$21239050$%szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CAK=WgbY5V=ZxVf2xisWuQbVwFyth9rQ8WaXiMkpjUHnMyyCSvQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <00f301ccf2d7$b5b68570$21239050$%szyprowski@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: 'Krishna Reddy' <vdumpa@nvidia.com>, linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, 'Kyungmin Park' <kyungmin.park@samsung.com>, 'Joerg Roedel' <joro@8bytes.org>, 'Russell King - ARM Linux' <linux@arm.linux.org.uk>, 'Shariq Hasnain' <shariq.hasnain@linaro.org>, 'Chunsang Jeong' <chunsang.jeong@linaro.org>, 'KyongHo Cho' <pullip.cho@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>, 'Benjamin Herrenschmidt' <benh@kernel.crashing.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Feb 23, 2012 at 07:01:05PM +0200, Ohad Ben-Cohen wrote:
-> On Thu, Feb 23, 2012 at 6:59 PM, Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org> wrote:
-> > diff --git a/arch/arm/mach-omap2/mailbox.c b/arch/arm/mach-omap2/mailbo=
-x.c
-> > index 609ea2d..f992395 100644
-> > --- a/arch/arm/mach-omap2/mailbox.c
-> > +++ b/arch/arm/mach-omap2/mailbox.c
-> > @@ -412,7 +412,7 @@ static void __exit omap2_mbox_exit(void)
-> > =A0 =A0 =A0 =A0platform_driver_unregister(&omap2_mbox_driver);
-> > =A0}
-> >
-> > -module_init(omap2_mbox_init);
-> > +subsys_initcall(omap2_mbox_init);
-> > =A0module_exit(omap2_mbox_exit);
-> >
-> > =A0MODULE_LICENSE("GPL v2");
-> =
+On Friday 24 February 2012, Marek Szyprowski wrote:
+> > > +static struct page **__iommu_alloc_buffer(struct device *dev, size_t
+> > > +size, gfp_t gfp) {
+> > > +     struct page **pages;
+> > > +     int count = size >> PAGE_SHIFT;
+> > > +     int i=0;
+> > > +
+> > > +     pages = kzalloc(count * sizeof(struct page*), gfp);
+> > > +     if (!pages)
+> > > +             return NULL;
+> > 
+> > kzalloc can fail for any size bigger than PAGE_SIZE, if the system memory is
+> > fully fragmented.
+> > If there is a request for size bigger than 4MB, then the pages pointer array won't
+> > Fit in one page and kzalloc may fail. we should use vzalloc()/vfree()
+> > when pages pointer array size needed is bigger than PAGE_SIZE.
+> 
+> Right, thanks for spotting this. I will fix this in the next version.
 
-> And this, too:
-> =
+It's not clear though if that is the best solution. vzalloc comes at the
+price of using up space in the vmalloc area and as well as extra TLB entries,
+so we try to limit its use where possible. The other current code might fail
+in out of memory situations, but if a user wants to allocate a >4MB buffer
+(using up more than one physically contiguous page of pointers to pages), the
+following allocation of >1024 pages will likely fail as well, so we might
+just fail early.
 
-> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-> index 4e661f0..95adb7e 100644
-> --- a/drivers/iommu/omap-iommu.c
-> +++ b/drivers/iommu/omap-iommu.c
-> @@ -1222,7 +1222,7 @@ static int __init omap_iommu_init(void)
-> =
-
->         return platform_driver_register(&omap_iommu_driver);
->  }
-> -module_init(omap_iommu_init);
-> +subsys_initcall(omap_iommu_init);
-> =
-
->  static void __exit omap_iommu_exit(void)
->  {
-
-These patches make a lot more sense to me than fixing this by relying on
-some random linker behavior. Can you please send a fix like this with a
-proper commit-msg?
-
-Thanks,
-
-	Joerg
-
--- =
-
-AMD Operating System Research Center
-
-Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
-General Managers: Alberto Bozzo
-Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 436=
-32
+	Arnd
