@@ -1,51 +1,58 @@
-From: Joerg Roedel <Joerg.Roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH v2 2/2] iommu/omap: fix NULL pointer dereference
-Date: Fri, 24 Feb 2012 14:16:38 +0100
-Message-ID: <20120224131638.GH2454@amd.com>
-References: <1329902086-13868-1-git-send-email-ohad@wizery.com>
-	<20120223161109.GB2454@amd.com>
-	<CAK=WgbYufgQY-O_MBcXc3aE23sx+r5ZQLS4h_bLUh6DKpLVqAg@mail.gmail.com>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: RE: [PATCHv6 7/7] ARM: dma-mapping: add support for IOMMU mapper
+Date: Fri, 24 Feb 2012 14:18:02 +0100
+Message-ID: <013301ccf2f6$bc4ad840$34e088c0$%szyprowski@samsung.com>
+References: <1328900324-20946-1-git-send-email-m.szyprowski@samsung.com>
+ <401E54CE964CD94BAE1EB4A729C7087E378E42AE18@HQMAIL04.nvidia.com>
+ <00f301ccf2d7$b5b68570$21239050$%szyprowski@samsung.com>
+ <201202241249.44731.arnd@arndb.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CAK=WgbYufgQY-O_MBcXc3aE23sx+r5ZQLS4h_bLUh6DKpLVqAg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>
-Cc: Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Hiroshi DOYU <Hiroshi.DOYU-xNZwKgViW5gAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <201202241249.44731.arnd@arndb.de>
+Content-language: pl
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: 'Arnd Bergmann' <arnd@arndb.de>
+Cc: 'Krishna Reddy' <vdumpa@nvidia.com>, linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, 'Kyungmin Park' <kyungmin.park@samsung.com>, 'Joerg Roedel' <joro@8bytes.org>, 'Russell King - ARM Linux' <linux@arm.linux.org.uk>, 'Chunsang Jeong' <chunsang.jeong@linaro.org>, 'KyongHo Cho' <pullip.cho@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>, 'Benjamin Herrenschmidt' <benh@kernel.crashing.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Feb 23, 2012 at 06:16:59PM +0200, Ohad Ben-Cohen wrote:
-> On Thu, Feb 23, 2012 at 6:11 PM, Joerg Roedel <Joerg.Roedel-5C7GfCeVMHo@public.gmane.org> wrote:
-> > I guess these patches are 3.3 material?
+Hello,
+
+On Friday, February 24, 2012 1:50 PM Arnd Bergmann wrote:
+
+> On Friday 24 February 2012, Marek Szyprowski wrote:
+> > > > +static struct page **__iommu_alloc_buffer(struct device *dev, size_t
+> > > > +size, gfp_t gfp) {
+> > > > +     struct page **pages;
+> > > > +     int count = size >> PAGE_SHIFT;
+> > > > +     int i=0;
+> > > > +
+> > > > +     pages = kzalloc(count * sizeof(struct page*), gfp);
+> > > > +     if (!pages)
+> > > > +             return NULL;
+> > >
+> > > kzalloc can fail for any size bigger than PAGE_SIZE, if the system memory is
+> > > fully fragmented.
+> > > If there is a request for size bigger than 4MB, then the pages pointer array won't
+> > > Fit in one page and kzalloc may fail. we should use vzalloc()/vfree()
+> > > when pages pointer array size needed is bigger than PAGE_SIZE.
+> >
+> > Right, thanks for spotting this. I will fix this in the next version.
 > 
-> Yes.
-> 
-> > How about tagging them for stable too?
-> 
-> Good point. But it's only relevant for this 2nd patch (the NULL
-> pointer dereference fix), as the first one is a 3.3 regression. Let me
-> know if you want me to resend the 2nd one with the stable tag.
+> It's not clear though if that is the best solution. vzalloc comes at the
+> price of using up space in the vmalloc area and as well as extra TLB entries,
+> so we try to limit its use where possible. The other current code might fail
+> in out of memory situations, but if a user wants to allocate a >4MB buffer
+> (using up more than one physically contiguous page of pointers to pages), the
+> following allocation of >1024 pages will likely fail as well, so we might
+> just fail early.
 
-Applied both and added stable-tag to the second patch. I'll send the
-pull-request when you guys also send me the correct fix for the
-outstanding initialization order issue on OMAP.
+I want to use some kind of chained arrays, each of at most of PAGE_SIZE. This code 
+doesn't really need to keep these page pointers in contiguous virtual memory area, so
+it will not be a problem here.
 
-
-	Joerg
-
+Best regards
 -- 
-AMD Operating System Research Center
-
-Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
-General Managers: Alberto Bozzo
-Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
+Marek Szyprowski
+Samsung Poland R&D Center
