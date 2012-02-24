@@ -1,48 +1,24 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: RE: [PATCH v8 0/2] ommu/exynos: Add IOMMU/System MMU driver for
-	Samsung Exynos
-Date: Fri, 24 Feb 2012 14:45:56 +0100
-Message-ID: <014601ccf2fa$a25c8560$e7159020$%szyprowski@samsung.com>
-References: <000e01ccc624$c9349310$5b9db930$%cho@samsung.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCHv6 7/7] ARM: dma-mapping: add support for IOMMU mapper
+Date: Fri, 24 Feb 2012 14:31:01 +0000
+Message-ID: <201202241431.02170.arnd@arndb.de>
+References: <1328900324-20946-1-git-send-email-m.szyprowski@samsung.com> <201202241249.44731.arnd@arndb.de> <013301ccf2f6$bc4ad840$34e088c0$%szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <000e01ccc624$c9349310$5b9db930$%cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Content-language: pl
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: 'Kukjin Kim' <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Subash Patel' <subash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Younglak Kim' <younglak1004.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Kyungmin Park' <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Sanghyun Lee' <sanghyun75.lee-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <013301ccf2f6$bc4ad840$34e088c0$%szyprowski@samsung.com>
+Sender: linux-arch-owner@vger.kernel.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: 'Krishna Reddy' <vdumpa@nvidia.com>, linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, 'Kyungmin Park' <kyungmin.park@samsung.com>, 'Joerg Roedel' <joro@8bytes.org>, 'Russell King - ARM Linux' <linux@arm.linux.org.uk>, 'Chunsang Jeong' <chunsang.jeong@linaro.org>, 'KyongHo Cho' <pullip.cho@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>, 'Benjamin Herrenschmidt' <benh@kernel.crashing.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+On Friday 24 February 2012, Marek Szyprowski wrote:
+> I want to use some kind of chained arrays, each of at most of PAGE_SIZE. This code 
+> doesn't really need to keep these page pointers in contiguous virtual memory area, so
+> it will not be a problem here.
+> 
+Sounds like sg_alloc_table(), could you reuse that instead of rolling your own?
 
-On Thursday, December 29, 2011 1:24 PM KyongHo Cho wrote:
-
-> Changes since v7:
-> - Rebased with the recent commits of the following git branches
->   * git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git/next
->   * git.kernel.org/pub/scm/linux/kernel/git/kgene/linux-samsung.git/for-next
-> - Changed magic numbers into macros
-> - Setting owner of a System MMU in 'iommu' field of dev_archdata
-> - Verbose message in the default fault handler
-> - Some bug fixes.
-
-(snipped)
-
-The time is flying away and v3.4 merge windows will open soon. Do you plan to
-send an updated version of the SYSMMU driver anytime soon? It will be really 
-nice to have it finally merged to v3.4.
-
-Best regards
--- 
-Marek Szyprowski
-Samsung Poland R&D Center
+	Arnd
