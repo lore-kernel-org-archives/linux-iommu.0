@@ -1,22 +1,34 @@
-From: Ohad Ben-Cohen <ohad@wizery.com>
-Subject: Re: [PATCH v2 2/2] iommu/omap: fix NULL pointer dereference
-Date: Sun, 26 Feb 2012 12:20:12 +0200
-Message-ID: <CAK=WgbYg80AJCfHq==ShNkkfuxz6mfmc71hD9Z=JF_8CE9Xjcg@mail.gmail.com>
-References: <1329902086-13868-1-git-send-email-ohad@wizery.com>
- <20120223161109.GB2454@amd.com> <CAK=WgbYufgQY-O_MBcXc3aE23sx+r5ZQLS4h_bLUh6DKpLVqAg@mail.gmail.com>
- <20120224131638.GH2454@amd.com>
+From: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>
+Subject: Re: Using OMAP3 ISP live display and snapshot sample applications
+Date: Sun, 26 Feb 2012 12:20:46 +0200
+Message-ID: <CAK=WgbYPDNh38mHipKxwEiE6XZL2gAnuvR5Um3LFixb6g9i6+g@mail.gmail.com>
+References: <CAOy7-nNSu2v9VS9Bh5O5StvEAvoxA4DqN7KdSGfZZSje1_Fgnw@mail.gmail.com>
+	<20120214104436.GU22598@amd.com> <13567544.qv9HnVLVXR@avalon>
+	<2017729.C83vkrQlqN@avalon>
+	<CAK=Wgbbq_7fmtRxSN+ZSY6X0opPMfR3QLNkBmWxZdXf_91wk5A@mail.gmail.com>
+	<CAK=WgbY5V=ZxVf2xisWuQbVwFyth9rQ8WaXiMkpjUHnMyyCSvQ@mail.gmail.com>
+	<20120224110137.GF2454@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <20120224131638.GH2454@amd.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Joerg Roedel <Joerg.Roedel@amd.com>
-Cc: iommu@lists.linux-foundation.org, linux-omap@vger.kernel.org, Hiroshi DOYU <Hiroshi.DOYU@nokia.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Russell King <linux@arm.linux.org.uk>, Hiroshi Doyu <hdoyu@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20120224110137.GF2454-5C7GfCeVMHo@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Feb 24, 2012 at 3:16 PM, Joerg Roedel <Joerg.Roedel@amd.com> wrote:
-> Applied both and added stable-tag to the second patch. I'll send the
-> pull-request when you guys also send me the correct fix for the
-> outstanding initialization order issue on OMAP.
+On Fri, Feb 24, 2012 at 1:01 PM, Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org> wrote:
+> These patches make a lot more sense to me than fixing this by relying on
+> some random linker behavior. Can you please send a fix like this with a
+> proper commit-msg?
 
-It's out, thanks!
+Done, thanks.
