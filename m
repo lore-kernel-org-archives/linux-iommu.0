@@ -1,34 +1,77 @@
-From: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>
-Subject: Re: Using OMAP3 ISP live display and snapshot sample applications
-Date: Sun, 26 Feb 2012 12:20:46 +0200
-Message-ID: <CAK=WgbYPDNh38mHipKxwEiE6XZL2gAnuvR5Um3LFixb6g9i6+g@mail.gmail.com>
-References: <CAOy7-nNSu2v9VS9Bh5O5StvEAvoxA4DqN7KdSGfZZSje1_Fgnw@mail.gmail.com>
-	<20120214104436.GU22598@amd.com> <13567544.qv9HnVLVXR@avalon>
-	<2017729.C83vkrQlqN@avalon>
-	<CAK=Wgbbq_7fmtRxSN+ZSY6X0opPMfR3QLNkBmWxZdXf_91wk5A@mail.gmail.com>
-	<CAK=WgbY5V=ZxVf2xisWuQbVwFyth9rQ8WaXiMkpjUHnMyyCSvQ@mail.gmail.com>
-	<20120224110137.GF2454@amd.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH] ARM: OMAP: make iommu subsys_initcall to fix builtin omap3isp
+Date: Sun, 26 Feb 2012 18:34:28 +0100
+Message-ID: <3215700.hj2jFm3b0A@avalon>
+References: <1330251254-14693-1-git-send-email-ohad@wizery.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20120224110137.GF2454-5C7GfCeVMHo@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <1330251254-14693-1-git-send-email-ohad@wizery.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Ohad Ben-Cohen <ohad@wizery.com>
+Cc: Joerg Roedel <Joerg.Roedel@amd.com>, linux-omap@vger.kernel.org, Hiroshi Doyu <hdoyu@nvidia.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Feb 24, 2012 at 1:01 PM, Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org> wrote:
-> These patches make a lot more sense to me than fixing this by relying on
-> some random linker behavior. Can you please send a fix like this with a
-> proper commit-msg?
+Hi Ohad,
 
-Done, thanks.
+On Sunday 26 February 2012 12:14:14 Ohad Ben-Cohen wrote:
+> omap3isp depends on omap's iommu and will fail to probe if
+> initialized before it (which always happen if they are builtin).
+> 
+> Make omap's iommu subsys_initcall as an interim solution until
+> the probe deferral mechanism is merged.
+
+How will that fix the problem ?
+
+I'm fine with this patch, as it fixes the problem as well, although I still 
+believe modifying the link order would be a better fix in this case.
+
+> Reported-by: James <angweiyang@gmail.com>
+> Debugged-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> Signed-off-by: Ohad Ben-Cohen <ohad@wizery.com>
+> Cc: stable <stable@vger.kernel.org>
+> Cc: Tony Lindgren <tony@atomide.com>
+> Cc: Hiroshi Doyu <hdoyu@nvidia.com>
+> Cc: Joerg Roedel <Joerg.Roedel@amd.com>
+> ---
+>  arch/arm/mach-omap2/mailbox.c |    3 ++-
+>  drivers/iommu/omap-iommu.c    |    3 ++-
+>  2 files changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/arm/mach-omap2/mailbox.c b/arch/arm/mach-omap2/mailbox.c
+> index 609ea2d..a6db1e4 100644
+> --- a/arch/arm/mach-omap2/mailbox.c
+> +++ b/arch/arm/mach-omap2/mailbox.c
+> @@ -412,7 +412,8 @@ static void __exit omap2_mbox_exit(void)
+>  	platform_driver_unregister(&omap2_mbox_driver);
+>  }
+> 
+> -module_init(omap2_mbox_init);
+> +/* must be ready before omap3isp is probed */
+
+The problem is not limited to the omap3isp driver, the DSP driver could be 
+affected as well.
+
+> +subsys_initcall(omap2_mbox_init);
+>  module_exit(omap2_mbox_exit);
+> 
+>  MODULE_LICENSE("GPL v2");
+> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+> index 4e661f0..821062a 100644
+> --- a/drivers/iommu/omap-iommu.c
+> +++ b/drivers/iommu/omap-iommu.c
+> @@ -1222,7 +1222,8 @@ static int __init omap_iommu_init(void)
+> 
+>  	return platform_driver_register(&omap_iommu_driver);
+>  }
+> -module_init(omap_iommu_init);
+> +/* must be ready before omap3isp is probed */
+> +subsys_initcall(omap_iommu_init);
+> 
+>  static void __exit omap_iommu_exit(void)
+>  {
+-- 
+Regards,
+
+Laurent Pinchart
