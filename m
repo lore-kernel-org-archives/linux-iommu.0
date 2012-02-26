@@ -1,72 +1,60 @@
-From: KyongHo Cho <pullip.cho@samsung.com>
-Subject: Re: [PATCH v8 0/2] ommu/exynos: Add IOMMU/System MMU driver for
- Samsung Exynos
-Date: Sat, 25 Feb 2012 01:08:36 +0900
-Message-ID: <CAHQjnOPE5X=dn+8D348OruLqoYNGZwZk3eLtLRSERce-eTzXDg@mail.gmail.com>
-References: <000e01ccc624$c9349310$5b9db930$%cho@samsung.com>
-	<014601ccf2fa$a25c8560$e7159020$%szyprowski@samsung.com>
+From: Ohad Ben-Cohen <ohad@wizery.com>
+Subject: [PATCH] ARM: OMAP: make iommu subsys_initcall to fix builtin omap3isp
+Date: Sun, 26 Feb 2012 12:14:14 +0200
+Message-ID: <1330251254-14693-1-git-send-email-ohad@wizery.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <014601ccf2fa$a25c8560$e7159020$%szyprowski@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Subash Patel <subash.ramaswamy@linaro.org>, Younglak Kim <younglak1004.kim@samsung.com>, Kyungmin Park <kyungmin.park@samsung.com>, Sanghyun Lee <sanghyun75.lee@samsung.com>
+Return-path: <linux-omap-owner@vger.kernel.org>
+Sender: linux-omap-owner@vger.kernel.org
+To: Joerg Roedel <Joerg.Roedel@amd.com>
+Cc: linux-omap@vger.kernel.org, Hiroshi Doyu <hdoyu@nvidia.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Marek.
+omap3isp depends on omap's iommu and will fail to probe if
+initialized before it (which always happen if they are builtin).
 
-On Fri, Feb 24, 2012 at 10:45 PM, Marek Szyprowski
-<m.szyprowski@samsung.com> wrote:
-> Hi,
->
-> On Thursday, December 29, 2011 1:24 PM KyongHo Cho wrote:
->
->> Changes since v7:
->> - Rebased with the recent commits of the following git branches
->> =A0 * git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git/next
->> =A0 * git.kernel.org/pub/scm/linux/kernel/git/kgene/linux-samsung.gi=
-t/for-next
->> - Changed magic numbers into macros
->> - Setting owner of a System MMU in 'iommu' field of dev_archdata
->> - Verbose message in the default fault handler
->> - Some bug fixes.
->
-> (snipped)
->
-> The time is flying away and v3.4 merge windows will open soon. Do you=
- plan to
-> send an updated version of the SYSMMU driver anytime soon? It will be=
- really
-> nice to have it finally merged to v3.4.
->
+Make omap's iommu subsys_initcall as an interim solution until
+the probe deferral mechanism is merged.
 
-Thank you for asking.
+Reported-by: James <angweiyang@gmail.com>
+Debugged-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Ohad Ben-Cohen <ohad@wizery.com>
+Cc: stable <stable@vger.kernel.org>
+Cc: Tony Lindgren <tony@atomide.com>
+Cc: Hiroshi Doyu <hdoyu@nvidia.com>
+Cc: Joerg Roedel <Joerg.Roedel@amd.com>
+---
+ arch/arm/mach-omap2/mailbox.c |    3 ++-
+ drivers/iommu/omap-iommu.c    |    3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-I prepared a new patchset and it is ready for submitting.
-It includes several bugfixes and Exynos5 support.
+diff --git a/arch/arm/mach-omap2/mailbox.c b/arch/arm/mach-omap2/mailbox.c
+index 609ea2d..a6db1e4 100644
+--- a/arch/arm/mach-omap2/mailbox.c
++++ b/arch/arm/mach-omap2/mailbox.c
+@@ -412,7 +412,8 @@ static void __exit omap2_mbox_exit(void)
+ 	platform_driver_unregister(&omap2_mbox_driver);
+ }
+ 
+-module_init(omap2_mbox_init);
++/* must be ready before omap3isp is probed */
++subsys_initcall(omap2_mbox_init);
+ module_exit(omap2_mbox_exit);
+ 
+ MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index 4e661f0..821062a 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -1222,7 +1222,8 @@ static int __init omap_iommu_init(void)
+ 
+ 	return platform_driver_register(&omap_iommu_driver);
+ }
+-module_init(omap_iommu_init);
++/* must be ready before omap3isp is probed */
++subsys_initcall(omap_iommu_init);
+ 
+ static void __exit omap_iommu_exit(void)
+ {
+-- 
+1.7.5.4
 
-The last patche submitted has a bug when the following situation:
-   1. Allocating a 2nd level page table to map 4KB or 64KB on a virtual=
- region
-   2. Unmapped all entries in the 2nd level page table.
-   3. Mapping to the same region with 1MB page.
-   Then iommu_map() will return -EADDRINUSE due to incorrect counting
-   free entries in 2nd level page table.
-
-The next patch will be submitted by 2/28.
-
-BTW Marek, I want to know why MFC driver defines separate platform devi=
-ces
-for left and right buses.
-The next IOMMU driver defines just one platform device for a H/W device=
-=2E
-Thus, it defines just one SYSMMU_MFC platform device, for example.
-(the previous one defines 2 platform devices for SYSMMU_MFC)
-However, it is easy to separate the single platform device to multiple
-platform devices.
-
-Regards,
-
-Cho KyongHo.
