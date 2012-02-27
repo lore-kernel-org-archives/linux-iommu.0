@@ -1,49 +1,47 @@
-From: Ohad Ben-Cohen <ohad@wizery.com>
-Subject: Re: [PATCH] ARM: OMAP: make iommu subsys_initcall to fix builtin omap3isp
-Date: Mon, 27 Feb 2012 09:00:51 +0200
-Message-ID: <CAK=WgbZRjGEyx0mKmgoWYiOnuvUAka0kTzpLAYbra94Mfpp6qg@mail.gmail.com>
+From: Joerg Roedel <Joerg.Roedel@amd.com>
+Subject: Re: [PATCH] ARM: OMAP: make iommu subsys_initcall to fix builtin
+ omap3isp
+Date: Mon, 27 Feb 2012 13:02:57 +0100
+Message-ID: <20120227120257.GB7905@amd.com>
 References: <1330251254-14693-1-git-send-email-ohad@wizery.com>
- <3215700.hj2jFm3b0A@avalon> <CAK=WgbYkVALqrVMVv1ma3WzN5dYriM8X0MfwH4knwWwojB6hjg@mail.gmail.com>
+ <3215700.hj2jFm3b0A@avalon>
+ <CAK=WgbYkVALqrVMVv1ma3WzN5dYriM8X0MfwH4knwWwojB6hjg@mail.gmail.com>
  <35010303.ArkW8BdIu6@avalon>
+ <CAK=WgbZRjGEyx0mKmgoWYiOnuvUAka0kTzpLAYbra94Mfpp6qg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"
 Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <35010303.ArkW8BdIu6@avalon>
+Content-Disposition: inline
+In-Reply-To: <CAK=WgbZRjGEyx0mKmgoWYiOnuvUAka0kTzpLAYbra94Mfpp6qg@mail.gmail.com>
 Sender: linux-omap-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Joerg Roedel <Joerg.Roedel@amd.com>, linux-omap@vger.kernel.org, Hiroshi Doyu <hdoyu@nvidia.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>
+To: Ohad Ben-Cohen <ohad@wizery.com>
+Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-omap@vger.kernel.org, Hiroshi Doyu <hdoyu@nvidia.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Laurent,
+On Mon, Feb 27, 2012 at 09:00:51AM +0200, Ohad Ben-Cohen wrote:
+> On Mon, Feb 27, 2012 at 12:47 AM, Laurent Pinchart
+> > That's what the comment in the Makefile is for ;-) I don't think it's a
+> > perfect solution either, but it avoids playing with the various initcalls. The
+> > OMAP3 IOMMU isn't a subsystem, subsys_initcall() looks a bit like an API abuse
+> > to me.
+> 
+> Yes, it's dirty.
+> 
+> But it's explicit and consistent across build system changes (without
+> imposing anything on the build system). We do it all the time with
+> other subsystems. We don't like it, but luckily Grant came up with the
+> deferred probing mechanism, which will fix this all very nicely.
 
-On Mon, Feb 27, 2012 at 12:47 AM, Laurent Pinchart
-<laurent.pinchart@ideasonboard.com> wrote:
-> I'm asking about the probe deferral mechanism. The omap3-isp driver will still
-> call iommu_attach_device() in its probe function. What will happen then ? Will
-> it return an error ? On what basis will it do so ?
+Agreed. It is not the best fix, but at least more reliable then the
+Makefile change.
 
-Yes, iommu_attach_device() will fail, and omap3isp's probe function
-will then need to return -EAGAIN to request that its probe function
-will be invoked again later on.
 
-> That's what the comment in the Makefile is for ;-) I don't think it's a
-> perfect solution either, but it avoids playing with the various initcalls. The
-> OMAP3 IOMMU isn't a subsystem, subsys_initcall() looks a bit like an API abuse
-> to me.
+	Joerg
 
-Yes, it's dirty.
+-- 
+AMD Operating System Research Center
 
-But it's explicit and consistent across build system changes (without
-imposing anything on the build system). We do it all the time with
-other subsystems. We don't like it, but luckily Grant came up with the
-deferred probing mechanism, which will fix this all very nicely.
+Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
+General Managers: Alberto Bozzo
+Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
 
-> Are drivers supposed to call iommu_attach_device() in their probe() function
-> or later on ?
-
-If you can defer attaching to a later point, most commonly to a point
-where the device is opened by the user, it's better - less power will
-be consumed.
-
-Thanks,
-Ohad.
