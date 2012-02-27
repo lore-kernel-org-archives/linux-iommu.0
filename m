@@ -1,42 +1,44 @@
-From: Joerg Roedel <Joerg.Roedel@amd.com>
+From: Joerg Roedel <Joerg.Roedel-5C7GfCeVMHo@public.gmane.org>
 Subject: Re: [PATCH] ARM: OMAP: make iommu subsys_initcall to fix builtin
- omap3isp
-Date: Mon, 27 Feb 2012 13:02:57 +0100
-Message-ID: <20120227120257.GB7905@amd.com>
+	omap3isp
+Date: Mon, 27 Feb 2012 14:23:01 +0100
+Message-ID: <20120227132301.GC7905@amd.com>
 References: <1330251254-14693-1-git-send-email-ohad@wizery.com>
- <3215700.hj2jFm3b0A@avalon>
- <CAK=WgbYkVALqrVMVv1ma3WzN5dYriM8X0MfwH4knwWwojB6hjg@mail.gmail.com>
- <35010303.ArkW8BdIu6@avalon>
- <CAK=WgbZRjGEyx0mKmgoWYiOnuvUAka0kTzpLAYbra94Mfpp6qg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Return-path: <linux-omap-owner@vger.kernel.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CAK=WgbZRjGEyx0mKmgoWYiOnuvUAka0kTzpLAYbra94Mfpp6qg@mail.gmail.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Ohad Ben-Cohen <ohad@wizery.com>
-Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-omap@vger.kernel.org, Hiroshi Doyu <hdoyu@nvidia.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>
+In-Reply-To: <1330251254-14693-1-git-send-email-ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>
+Cc: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Feb 27, 2012 at 09:00:51AM +0200, Ohad Ben-Cohen wrote:
-> On Mon, Feb 27, 2012 at 12:47 AM, Laurent Pinchart
-> > That's what the comment in the Makefile is for ;-) I don't think it's a
-> > perfect solution either, but it avoids playing with the various initcalls. The
-> > OMAP3 IOMMU isn't a subsystem, subsys_initcall() looks a bit like an API abuse
-> > to me.
+On Sun, Feb 26, 2012 at 12:14:14PM +0200, Ohad Ben-Cohen wrote:
+> omap3isp depends on omap's iommu and will fail to probe if
+> initialized before it (which always happen if they are builtin).
 > 
-> Yes, it's dirty.
+> Make omap's iommu subsys_initcall as an interim solution until
+> the probe deferral mechanism is merged.
 > 
-> But it's explicit and consistent across build system changes (without
-> imposing anything on the build system). We do it all the time with
-> other subsystems. We don't like it, but luckily Grant came up with the
-> deferred probing mechanism, which will fix this all very nicely.
+> Reported-by: James <angweiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Debugged-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+> Signed-off-by: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>
+> Cc: stable <stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+> Cc: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
+> Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> Cc: Joerg Roedel <Joerg.Roedel-5C7GfCeVMHo@public.gmane.org>
 
-Agreed. It is not the best fix, but at least more reliable then the
-Makefile change.
-
-
-	Joerg
+Applied, thanks.
 
 -- 
 AMD Operating System Research Center
@@ -44,4 +46,3 @@ AMD Operating System Research Center
 Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
 General Managers: Alberto Bozzo
 Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
-
