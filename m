@@ -1,82 +1,87 @@
-From: Sylwester Nawrocki <s.nawrocki@samsung.com>
-Subject: Re: [PATCH v9 1/2] ARM: EXYNOS: Change System MMU platform device
- definitions
-Date: Wed, 29 Feb 2012 10:42:07 +0100
-Message-ID: <4F4DF2EF.1090505@samsung.com>
-References: <001901ccf5e3$6a363320$3ea29960$%cho@samsung.com>
- <CAH9JG2Uvh=_GWFWyBrE-hfGTvrwvs6n37bmKaHbCovJ++EeJ7g@mail.gmail.com>
- <CAHQjnOO1aADVQWxNt-J3nb0bgJvc2dfk+6qTWKWx7w+-LUVSmw@mail.gmail.com>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: [PATCHv7 0/9] ARM: DMA-mapping framework redesign
+Date: Wed, 29 Feb 2012 16:04:13 +0100
+Message-ID: <1330527862-16234-1-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: TEXT/PLAIN
 Content-Transfer-Encoding: 7BIT
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <CAHQjnOO1aADVQWxNt-J3nb0bgJvc2dfk+6qTWKWx7w+-LUVSmw@mail.gmail.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: KyongHo Cho <pullip.cho@samsung.com>
-Cc: Kyungmin Park <kyungmin.park@samsung.com>, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Joerg Roedel <joro@8bytes.org>, Subash Patel <subash.ramaswamy@linaro.org>, Younglak Kim <younglak1004.kim@samsung.com>, Sanghyun Lee <sanghyun75.lee@samsung.com>, Marek Szyprowski <m.szyprowski@samsung.com>
+Return-path: <linux-arch-owner@vger.kernel.org>
+Sender: linux-arch-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Kyungmin Park <kyungmin.park@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Joerg Roedel <joro@8bytes.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Shariq Hasnain <shariq.hasnain@linaro.org>, Chunsang Jeong <chunsang.jeong@linaro.org>, Krishna Reddy <vdumpa@nvidia.com>, KyongHo Cho <pullip.cho@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
 List-Id: iommu@lists.linux-foundation.org
 
 Hello,
 
-On 02/29/2012 01:25 AM, KyongHo Cho wrote:
->>>  static int exynos4_clk_hdmiphy_ctrl(struct clk *clk, int enable)
->>>  {
->>>       return s5p_gatectrl(S5P_HDMI_PHY_CONTROL, clk, enable);
->>> @@ -679,61 +684,55 @@ static struct clk exynos4_init_clocks_off[] = {
->>>               .enable         = exynos4_clk_ip_peril_ctrl,
->>>               .ctrlbit        = (1 << 14),
->>>       }, {
->>> -             .name           = "SYSMMU_MDMA",
->>> +             .name           = SYSMMU_CLOCK_NAME,
->>> +             .devname        = SYSMMU_CLOCK_DEVNAME(mfc_l, 0),
->>> +             .enable         = exynos4_clk_ip_mfc_ctrl,
->>> +             .ctrlbit        = (1 << 1),
->>> +     }, {
->>> +             .name           = SYSMMU_CLOCK_NAME,
->>> +             .devname        = SYSMMU_CLOCK_DEVNAME(mfc_r, 1),
->>> +             .enable         = exynos4_clk_ip_mfc_ctrl,
->>> +             .ctrlbit        = (1 << 2),
->>> +     }, {
->>> +             .name           = SYSMMU_CLOCK_NAME,
->>> +             .devname        = SYSMMU_CLOCK_DEVNAME(tv, 2),
->>> +             .enable         = exynos4_clk_ip_tv_ctrl,
->>> +             .ctrlbit        = (1 << 4),
->>> +     }, {
->>> +             .name           = SYSMMU_CLOCK_NAME,
->>> +             .devname        = SYSMMU_CLOCK_DEVNAME(jpeg, 3),
->>> +             .enable         = exynos4_clk_ip_cam_ctrl,
->>> +             .ctrlbit        = (1 << 11),
->>> +     }, {
->>> +             .name           = SYSMMU_CLOCK_NAME,
->>> +             .devname        = SYSMMU_CLOCK_DEVNAME(rot, 4),
->>>               .enable         = exynos4_clk_ip_image_ctrl,
->>> -             .ctrlbit        = (1 << 5),
->>> +             .ctrlbit        = (1 << 4),
->>>       }, {
->>> -             .name           = "SYSMMU_FIMC0",
->>> +             .name           = SYSMMU_CLOCK_NAME,
->>> +             .devname        = SYSMMU_CLOCK_DEVNAME(gsc0, 5),
->> It's exynos4 series clock and don't have gsc name. I don't know LSI
->> decides to use gsc instead of fimc for both exynos4 and exynos5. but
->> there's no name gsc at Spec..
-> 
-> gsc0 is just a name of the platform device of FIMC0 in Exynos4.
+This is yet another update on my works DMA-mapping framework redesign
+for ARM architecture. It includes a few minor cleanup and fixes reported
+by Konrad Rzeszutek Wilk and Krishna Reddy.
 
-I think it's not right what you're saying. Gscalers first appeared only
-in exynos5 (at least according to all specifications I have) and you already
-have the corresponding change for clock-exynos5.c. FIMCs in exynos 4210, 4212
-and 4412 are almost not changed, so please don't rename like this, which is 
-confusing. If you need common clkdev entries for the exynos4 and exynos5 
-devices, then the "devname"s above might need to be removed and required 
-clock entries should be created through the CLKDEV_INIT() macro.
+This version uses vmalloc for allocating page pointers array if it is
+larger than PAGE_SIZE. The chained allocation which fits inside a set of
+PAGE_SIZE units will be added later, once the base patches are merged.
 
-> It is also used for GSclaler0 in Exynos5.
-> I wanted to reduce waste of platform device definitions that do not exist
-> in an application processor.
-> 
-> If it looks confused, I will find another way.
+Like the previous version, this patchset is also based on the generic,
+cross-arch dma-mapping redesign patches posted in the "[PATCH 00/14]
+DMA-mapping framework redesign preparation" thread:
+http://www.spinics.net/lists/linux-sh/msg09777.html
 
-Thanks,
--- 
-Sylwester Nawrocki
+All patches have been now rebased onto v3.3-rc5 kernel.
+
+All the code has been tested on Samsung Exynos4 'UniversalC210' board
+with IOMMU driver posted by KyongHo Cho.
+
+
+History of the development:
+
+v1: (initial version of the DMA-mapping redesign patches):
+http://www.spinics.net/lists/linux-mm/msg21241.html
+
+v2:
+http://lists.linaro.org/pipermail/linaro-mm-sig/2011-September/000571.html
+http://lists.linaro.org/pipermail/linaro-mm-sig/2011-September/000577.html
+
+v3:
+http://www.spinics.net/lists/linux-mm/msg25490.html
+
+v4 and v5:
+http://www.spinics.net/lists/arm-kernel/msg151147.html
+http://www.spinics.net/lists/arm-kernel/msg154889.html
+
+v6:
+http://www.spinics.net/lists/linux-mm/msg29903.html
+
+Best regards
+--
+Marek Szyprowski
 Samsung Poland R&D Center
+
+
+Patch summary:
+
+Marek Szyprowski (9):
+  ARM: dma-mapping: introduce ARM_DMA_ERROR constant
+  ARM: dma-mapping: use pr_* instread of printk
+  ARM: dma-mapping: remove offset parameter to prepare for generic
+    dma_ops
+  ARM: dma-mapping: use asm-generic/dma-mapping-common.h
+  ARM: dma-mapping: implement dma sg methods on top of any generic dma
+    ops
+  ARM: dma-mapping: move all dma bounce code to separate dma ops
+    structure
+  ARM: dma-mapping: remove redundant code and cleanup
+  ARM: dma-mapping: use alloc, mmap, free from dma_ops
+  ARM: dma-mapping: add support for IOMMU mapper
+
+ arch/arm/Kconfig                   |    9 +
+ arch/arm/common/dmabounce.c        |   84 +++-
+ arch/arm/include/asm/device.h      |    4 +
+ arch/arm/include/asm/dma-iommu.h   |   34 ++
+ arch/arm/include/asm/dma-mapping.h |  407 ++++-----------
+ arch/arm/mm/dma-mapping.c          | 1013 ++++++++++++++++++++++++++++++------
+ arch/arm/mm/vmregion.h             |    2 +-
+ 7 files changed, 1088 insertions(+), 465 deletions(-)
+ create mode 100644 arch/arm/include/asm/dma-iommu.h
+
+-- 
+1.7.1.569.g6f426
