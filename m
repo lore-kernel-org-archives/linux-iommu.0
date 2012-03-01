@@ -1,229 +1,54 @@
-From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH] iommu/amd: Split amd_iommu_init function
-Date: Thu, 1 Mar 2012 16:09:28 +0100
-Message-ID: <1330614568-23924-1-git-send-email-joerg.roedel@amd.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH] ARM: OMAP: make iommu subsys_initcall to fix builtin omap3isp
+Date: Thu, 01 Mar 2012 17:37:40 +0100
+Message-ID: <6354375.6C9sXAHKbF@avalon>
+References: <1330251254-14693-1-git-send-email-ohad@wizery.com> <35010303.ArkW8BdIu6@avalon> <CAK=WgbZRjGEyx0mKmgoWYiOnuvUAka0kTzpLAYbra94Mfpp6qg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <CAK=WgbZRjGEyx0mKmgoWYiOnuvUAka0kTzpLAYbra94Mfpp6qg@mail.gmail.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Ohad Ben-Cohen <ohad@wizery.com>
+Cc: Joerg Roedel <Joerg.Roedel@amd.com>, linux-omap@vger.kernel.org, Hiroshi Doyu <hdoyu@nvidia.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>
 List-Id: iommu@lists.linux-foundation.org
 
-The hardware-initializtion part of the AMD IOMMU driver is
-split out into a seperate function. This function can now be
-called either from amd_iommu_init() itself or any other
-place if the hardware needs to be ready earlier. This will
-be used to implement interrupt remapping for AMD.
+Hi Ohad,
 
-Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
----
- drivers/iommu/amd_iommu_init.c |  123 +++++++++++++++++++++++++--------------
- include/linux/amd-iommu.h      |    2 +-
- 2 files changed, 80 insertions(+), 45 deletions(-)
+On Monday 27 February 2012 09:00:51 Ohad Ben-Cohen wrote:
+> On Mon, Feb 27, 2012 at 12:47 AM, Laurent Pinchart wrote:
+> > I'm asking about the probe deferral mechanism. The omap3-isp driver will
+> > still call iommu_attach_device() in its probe function. What will happen
+> > then ? Will it return an error ? On what basis will it do so ?
+> 
+> Yes, iommu_attach_device() will fail, and omap3isp's probe function will
+> then need to return -EAGAIN to request that its probe function will be
+> invoked again later on.
+> 
+> > That's what the comment in the Makefile is for ;-) I don't think it's a
+> > perfect solution either, but it avoids playing with the various initcalls.
+> > The OMAP3 IOMMU isn't a subsystem, subsys_initcall() looks a bit like an
+> > API abuse to me.
+> 
+> Yes, it's dirty.
+> 
+> But it's explicit and consistent across build system changes (without
+> imposing anything on the build system). We do it all the time with other
+> subsystems. We don't like it, but luckily Grant came up with the deferred
+> probing mechanism, which will fix this all very nicely.
+> 
+> > Are drivers supposed to call iommu_attach_device() in their probe()
+> > function or later on ?
+> 
+> If you can defer attaching to a later point, most commonly to a point
+> where the device is opened by the user, it's better - less power will
+> be consumed.
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index bdea288..75653da 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -1424,10 +1424,40 @@ static struct syscore_ops amd_iommu_syscore_ops = {
- 	.resume = amd_iommu_resume,
- };
- 
-+static void __init free_on_init_error(void)
-+{
-+	amd_iommu_uninit_devices();
-+
-+	free_pages((unsigned long)amd_iommu_pd_alloc_bitmap,
-+		   get_order(MAX_DOMAIN_ID/8));
-+
-+	free_pages((unsigned long)amd_iommu_rlookup_table,
-+		   get_order(rlookup_table_size));
-+
-+	free_pages((unsigned long)amd_iommu_alias_table,
-+		   get_order(alias_table_size));
-+
-+	free_pages((unsigned long)amd_iommu_dev_table,
-+		   get_order(dev_table_size));
-+
-+	free_iommu_all();
-+
-+	free_unity_maps();
-+
-+#ifdef CONFIG_GART_IOMMU
-+	/*
-+	 * We failed to initialize the AMD IOMMU - try fallback to GART
-+	 * if possible.
-+	 */
-+	gart_iommu_init();
-+
-+#endif
-+}
-+
- /*
-- * This is the core init function for AMD IOMMU hardware in the system.
-- * This function is called from the generic x86 DMA layer initialization
-- * code.
-+ * This is the hardware init function for AMD IOMMU in the system.
-+ * This function is called either from amd_iommu_init or from the interrupt
-+ * remapping setup code.
-  *
-  * This function basically parses the ACPI table for AMD IOMMU (IVRS)
-  * three times:
-@@ -1446,16 +1476,21 @@ static struct syscore_ops amd_iommu_syscore_ops = {
-  *		remapping requirements parsed out of the ACPI table in
-  *		this last pass.
-  *
-- * After that the hardware is initialized and ready to go. In the last
-- * step we do some Linux specific things like registering the driver in
-- * the dma_ops interface and initializing the suspend/resume support
-- * functions. Finally it prints some information about AMD IOMMUs and
-- * the driver state and enables the hardware.
-+ * After everything is set up the IOMMUs are enabled and the necessary
-+ * hotplug and suspend notifiers are registered.
-  */
--static int __init amd_iommu_init(void)
-+int __init amd_iommu_init_hardware(void)
- {
- 	int i, ret = 0;
- 
-+	if (!amd_iommu_detected)
-+		return -ENODEV;
-+
-+	if (amd_iommu_dev_table != NULL) {
-+		/* Hardware already initialized */
-+		return 0;
-+	}
-+
- 	/*
- 	 * First parse ACPI tables to find the largest Bus/Dev/Func
- 	 * we need to handle. Upon this information the shared data
-@@ -1472,9 +1507,8 @@ static int __init amd_iommu_init(void)
- 	alias_table_size   = tbl_size(ALIAS_TABLE_ENTRY_SIZE);
- 	rlookup_table_size = tbl_size(RLOOKUP_TABLE_ENTRY_SIZE);
- 
--	ret = -ENOMEM;
--
- 	/* Device table - directly used by all IOMMUs */
-+	ret = -ENOMEM;
- 	amd_iommu_dev_table = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
- 				      get_order(dev_table_size));
- 	if (amd_iommu_dev_table == NULL)
-@@ -1546,20 +1580,46 @@ static int __init amd_iommu_init(void)
- 
- 	enable_iommus();
- 
-+	amd_iommu_init_notifier();
-+
-+	register_syscore_ops(&amd_iommu_syscore_ops);
-+
-+out:
-+	return ret;
-+
-+free:
-+	free_on_init_error();
-+
-+	return ret;
-+}
-+
-+/*
-+ * This is the core init function for AMD IOMMU hardware in the system.
-+ * This function is called from the generic x86 DMA layer initialization
-+ * code.
-+ *
-+ * The function calls amd_iommu_init_hardware() to setup and enable the
-+ * IOMMU hardware if this has not happened yet. After that the driver
-+ * registers for the DMA-API and for the IOMMU-API as necessary.
-+ */
-+static int __init amd_iommu_init(void)
-+{
-+	int ret = 0;
-+
-+	ret = amd_iommu_init_hardware();
-+	if (ret)
-+		goto out;
-+
- 	if (iommu_pass_through)
- 		ret = amd_iommu_init_passthrough();
- 	else
- 		ret = amd_iommu_init_dma_ops();
- 
- 	if (ret)
--		goto free_disable;
-+		goto free;
- 
- 	amd_iommu_init_api();
- 
--	amd_iommu_init_notifier();
--
--	register_syscore_ops(&amd_iommu_syscore_ops);
--
- 	if (iommu_pass_through)
- 		goto out;
- 
-@@ -1569,39 +1629,14 @@ static int __init amd_iommu_init(void)
- 		printk(KERN_INFO "AMD-Vi: Lazy IO/TLB flushing enabled\n");
- 
- 	x86_platform.iommu_shutdown = disable_iommus;
-+
- out:
- 	return ret;
- 
--free_disable:
--	disable_iommus();
--
- free:
--	amd_iommu_uninit_devices();
--
--	free_pages((unsigned long)amd_iommu_pd_alloc_bitmap,
--		   get_order(MAX_DOMAIN_ID/8));
--
--	free_pages((unsigned long)amd_iommu_rlookup_table,
--		   get_order(rlookup_table_size));
--
--	free_pages((unsigned long)amd_iommu_alias_table,
--		   get_order(alias_table_size));
--
--	free_pages((unsigned long)amd_iommu_dev_table,
--		   get_order(dev_table_size));
--
--	free_iommu_all();
--
--	free_unity_maps();
--
--#ifdef CONFIG_GART_IOMMU
--	/*
--	 * We failed to initialize the AMD IOMMU - try fallback to GART
--	 * if possible.
--	 */
--	gart_iommu_init();
-+	disable_iommus();
- 
--#endif
-+	free_on_init_error();
- 
- 	goto out;
- }
-diff --git a/include/linux/amd-iommu.h b/include/linux/amd-iommu.h
-index ef00610..15f6b9e 100644
---- a/include/linux/amd-iommu.h
-+++ b/include/linux/amd-iommu.h
-@@ -28,7 +28,7 @@ struct task_struct;
- struct pci_dev;
- 
- extern int amd_iommu_detect(void);
--
-+extern int amd_iommu_init_hardware(void);
- 
- /**
-  * amd_iommu_enable_device_erratum() - Enable erratum workaround for device
+I'll try that then. How expensive is the iommu_attach_device() (and detach) 
+operation in terms of CPU time ?
+
 -- 
-1.7.5.4
+Regards,
+
+Laurent Pinchart
+
