@@ -1,45 +1,60 @@
-From: KyongHo Cho <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v9 0/2] iommu/exynos: Add IOMMU/System MMU driver for
-	Samsung Exynos
-Date: Fri, 2 Mar 2012 14:45:43 +0900
-Message-ID: <CAHQjnONxO32WP40sJz80=rjv3kqxmx55MUvjvhhO_mo3DNH8-A@mail.gmail.com>
-References: <001801ccf5e3$69d79860$3d86c920$%cho@samsung.com>
-	<CAH9JG2Vg8o_mm0gM042T0-kjMUoAdLzF+DeGErD7R86H0xqXZQ@mail.gmail.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [patch] iommu/amd: fix type bug in flush code
+Date: Fri, 2 Mar 2012 09:59:19 +0300
+Message-ID: <20120302065919.GF24508@elgon.mountain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAH9JG2Vg8o_mm0gM042T0-kjMUoAdLzF+DeGErD7R86H0xqXZQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Subash Patel <subash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Younglak Kim <younglak1004.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Sanghyun Lee <sanghyun75.lee-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joerg.roedel@amd.com>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Feb 28, 2012 at 4:01 PM, Kyungmin Park
-<kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org> wrote:
-> Hi,
->
-> Some comments.
-> 1. It's not same patch series. since it has additional feature,
-> exynos5 series support which don't covered at previous time.
-> 2. It assumes that name conversion is based on exynos5 as default. now
-> you use gsc at exynos4 even though there's no gsc block. It should be
-> fimc.
+write_file_bool() modifies 32 bits of data, so "amd_iommu_unmap_flush"
+needs to be 32 bits as well or we'll corrupt memory.  Fortunately it
+looks like the data is aligned with a gap after the declaration so this
+is harmless in production.
 
-Thanks. I agree about the second and applied it in the next patchset.
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 
->
-> So I suggest to send exynos4 series patch as before and send
-> additional exynos5 patch series next.
->
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index 2452f3b..f0469e0 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -649,7 +649,7 @@ extern unsigned long *amd_iommu_pd_alloc_bitmap;
+  * If true, the addresses will be flushed on unmap time, not when
+  * they are reused
+  */
+-extern bool amd_iommu_unmap_flush;
++extern u32 amd_iommu_unmap_flush;
+ 
+ /* Smallest number of PASIDs supported by any IOMMU in the system */
+ extern u32 amd_iommu_max_pasids;
 
-I will just extract a new patch that removes existing system MMU driver from
-the previous 2 patches and the patchset will consist of 3 patches.
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index daa333f..f5fbce2 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -402,7 +402,7 @@ static void amd_iommu_stats_init(void)
+ 		return;
+ 
+ 	de_fflush  = debugfs_create_bool("fullflush", 0444, stats_dir,
+-					 (u32 *)&amd_iommu_unmap_flush);
++					 &amd_iommu_unmap_flush);
+ 
+ 	amd_iommu_stats_add(&compl_wait);
+ 	amd_iommu_stats_add(&cnt_map_single);
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index bdea288..7d159fc 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -129,7 +129,7 @@ u16 amd_iommu_last_bdf;			/* largest PCI device id we have
+ 					   to handle */
+ LIST_HEAD(amd_iommu_unity_map);		/* a list of required unity mappings
+ 					   we find in ACPI */
+-bool amd_iommu_unmap_flush;		/* if true, flush on every unmap */
++u32 amd_iommu_unmap_flush;		/* if true, flush on every unmap */
+ 
+ LIST_HEAD(amd_iommu_list);		/* list of all AMD IOMMUs in the
+ 					   system */
