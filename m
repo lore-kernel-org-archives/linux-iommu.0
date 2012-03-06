@@ -1,315 +1,132 @@
-From: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 07/23] pci, dmar: Update dmar units devices list during hotplug
-Date: Mon,  5 Mar 2012 23:13:44 -0800
-Message-ID: <1331018040-30725-8-git-send-email-yinghai@kernel.org>
-References: <1331018040-30725-1-git-send-email-yinghai@kernel.org>
+From: KyongHo Cho <pullip.cho@samsung.com>
+Subject: [PATCH v10 0/3] iommu/exynos: Add IOMMU/System MMU driver for Samsung
+ Exynos
+Date: Tue, 06 Mar 2012 17:31:24 +0900
+Message-ID: <001f01ccfb73$84a2bbd0$8de83370$%cho@samsung.com>
+Reply-To: pullip.cho@samsung.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1331018040-30725-1-git-send-email-yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jesse Barnes <jbarnes-Y1mF5jBUw70BENJcbMCuUQ@public.gmane.org>, x86 <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Content-language: ko
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.orglinux-arm-kernel@lists.infradead.orglinux-samsung-soc@vger.kernel.orgiommu@lists.linux-foundation.orglinux-kernel@vger.kernel.org
+Cc: 'Joerg Roedel' <joro@8bytes.org>, 'Sanghyun Lee' <sanghyun75.lee@samsung.com>, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Younglak Kim' <younglak1004.kim@samsung.com>, 'Marek Szyprowski' <m.szyprowski@samsung.com>, 'Kyungmin Park' <kyungmin.park@samsung.com>, 'Subash Patel' <subash.ramaswamy@linaro.org>
 List-Id: iommu@lists.linux-foundation.org
 
-When do pci remove/rescan on system that have more iommus, got
+These patches are successfully compiled
+in linux-samsung.git/for-next branch
+You can find  the git repo. In
+http://git.kernel.org/?p=linux/kernel/git/kgene/linux-samsung.git;a=summary
 
-[  894.089745] Set context mapping for c4:00.0
-[  894.110890] mpt2sas3: Allocated physical memory: size(4293 kB)
-[  894.112556] mpt2sas3: Current Controller Queue Depth(1883), Max Controller Queue Depth(2144)
-[  894.127278] mpt2sas3: Scatter Gather Elements per IO(128)
-[  894.361295] DRHD: handling fault status reg 2
-[  894.364053] DMAR:[DMA Read] Request device [c4:00.0] fault addr fffbe000
-[  894.364056] DMAR:[fault reason 02] Present bit in context entry is cl
+Changes since v9:
+- Split the first patch into 2 patches.
+   One removes System MMU driver from arch/arm/plat- tree and
+   the other modifies and adds platform device definitions in
+   arch/arm/mach tree
+- Some bug fixes
+- Change "gsc" for Exynos4 to "fimc"
 
-it turns out when remove/rescan, pci dev will be freed and will get another new dev.
-but drhd units still keep old one... so dmar_find_matched_drhd_unit will
-return wrong drhd and iommu for the device that is not on first iommu.
+Changes since v8:
+- exynos_iommu_map/unmap() just works for the page sizes
+   that System MMU supports. (Joerg's comment)
+- 1 platform device for 1 H/W though a multimedia accelerator
+   with several System MMUs attached.
+   This make controlling System MMU simpler.
+- Information between System MMU and the accelerators:
+   Shifted to accelerator's device structure from System MMU's
 
-So need to update devices in drhd_units during pci remove/rescan.
+Changes since v7:
+- Rebased with the recent commits of the following git branches
+  * git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git/next
+  * git.kernel.org/pub/scm/linux/kernel/git/kgene/linux-samsung.git/for-next
+- Changed magic numbers into macros
+- Setting owner of a System MMU in 'iommu' field of dev_archdata
+- Verbose message in the default fault handler
+- Some bug fixes.
 
-Could save domain/bus/device/function aside in the list and according that info
-restore new dev to drhd_units later.
-Then dmar_find_matched_drdh_unit and device_to_iommu could return right drhd and iommu.
+Changes since v6:
+- Totally rewrite exynos_iommu_map() and exynos_iommu_unmap() according
+  to the change in iommu_map() and iommu_unmap().
+- Change special slab for Lv2 page table to kmalloc().
 
-Add remove_dev_from_drhd/restore_dev_to_drhd functions to do the real work.
-call them in device ADD_DEVICE and UNBOUND_DRIVER
+Changes since v5:
+- Relation between device and a domain become n:1 (Joerg's comment)
+- Implements iommu_commit(). --> Removed
 
-Need to do the samething to atsr.  (expose dmar_atsr_units and add atsru->segment)
+Changes since v4:
+- exynos_iommu_unmap()returns unmapped size in page order
+  (Ohad Ben-Cohen's comment)
+- Fixed typo error of resource names
+- Fixed missing #include<mach/sysmmu.h>
+  in arch/arm/mach-exynos4/mach-armlex4210.c
 
-After patch, will right iommu for the new dev and will not get DMAR error any more.
+Changes since v3:
+- Used DEFINE_RES_MEM and DEFINE_RES_IRQ macros
+  to define resources of System MMU (Russell King's comment)
+- Fixed removal of CONFIG_S5P_SLEEP definition
+ (Sylwester Nawrocki's comment)
 
--v2: add pci_dev_put/pci_dev_get to make refcount consistent.
+Changes since v2:
+- Add lock for System MMU private data.
+  And fixes the following problems pointed by Joerg Rodel:
+- Fix wrong argument to kmalloc() and get_free_pages()
+- Merged patches into 2 due to bisectability
 
-Signed-off-by: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
----
- drivers/iommu/intel-iommu.c |  187 ++++++++++++++++++++++++++++++++++++++++---
- include/linux/dmar.h        |    4 +
- 2 files changed, 181 insertions(+), 10 deletions(-)
+Changes since v1:
+Fixes of the following problems pointed by Russell King.:
+ - Missing unlocking a spinlock in exynos_iommu_attach_dev().
+ - atomic_t -> int in sysmmu_drvdata.activations
+ - sysmmu_platdata -> sysmmu_drvdata
+ - Change in error messages in irq handler
+ - Removed casting in format of error message
+ - omap_iommu_ops -> exynos_iommu_ops in the last patch
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index c9c6053..39ef2ce 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -665,6 +665,159 @@ static struct intel_iommu *device_to_iommu(int segment, u8 bus, u8 devfn)
- 	return NULL;
- }
+Patch Summary:
+[PATCH v10 1/3] S5P: SYSMMU: Remove System MMU device driver definitions
+[PATCH v10 2/3] ARM: EXYNOS: Change System MMU platform device definitions
+[PATCH v10 3/3] iommu/exynos: Add iommu driver for Exynos Platforms
+
+The first patch removes the existing System MMU device driver
+which does not conform to IOMMU API set prepared in the kernel.
  
-+#ifdef CONFIG_HOTPLUG
-+struct dev_dmaru {
-+	struct list_head list;
-+	void *dmaru;
-+	int index;
-+	int segment;
-+	unsigned char bus;
-+	unsigned int devfn;
-+};
-+
-+static int
-+save_dev_dmaru(int segment, unsigned char bus, unsigned int devfn,
-+		 void *dmaru, int index, struct list_head *lh)
-+{
-+	struct dev_dmaru *m;
-+
-+	m = kzalloc(sizeof(*m), GFP_KERNEL);
-+	if (!m)
-+		return -ENOMEM;
-+
-+	m->segment = segment;
-+	m->bus     = bus;
-+	m->devfn   = devfn;
-+	m->dmaru   = dmaru;
-+	m->index   = index;
-+
-+	list_add(&m->list, lh);
-+
-+	return 0;
-+}
-+
-+static void
-+*get_dev_dmaru(int segment, unsigned char bus, unsigned int devfn,
-+		int *index, struct list_head *lh)
-+{
-+	struct dev_dmaru *m;
-+	void *dmaru = NULL;
-+
-+	list_for_each_entry(m, lh, list) {
-+		if (m->segment == segment &&
-+		    m->bus == bus && m->devfn == devfn) {
-+			*index = m->index;
-+			dmaru  = m->dmaru;
-+			list_del(&m->list);
-+			kfree(m);
-+			break;
-+		}
-+	}
-+
-+	return dmaru;
-+}
-+
-+static LIST_HEAD(saved_dev_drhd_list);
-+
-+static void remove_dev_from_drhd(struct pci_dev *dev)
-+{
-+	struct dmar_drhd_unit *drhd = NULL;
-+	int segment = pci_domain_nr(dev->bus);
-+	int i;
-+
-+	for_each_drhd_unit(drhd) {
-+		if (drhd->ignored)
-+			continue;
-+		if (segment != drhd->segment)
-+			continue;
-+
-+		for (i = 0; i < drhd->devices_cnt; i++) {
-+			if (drhd->devices[i] == dev) {
-+				/* save it at first if it is in drhd */
-+				save_dev_dmaru(segment, dev->bus->number,
-+						dev->devfn, drhd, i,
-+						&saved_dev_drhd_list);
-+				/* always remove it */
-+				pci_dev_put(dev);
-+				drhd->devices[i] = NULL;
-+				return;
-+			}
-+		}
-+	}
-+}
-+
-+static void restore_dev_to_drhd(struct pci_dev *dev)
-+{
-+	struct dmar_drhd_unit *drhd = NULL;
-+	int i;
-+
-+	/* find the stored drhd */
-+	drhd = get_dev_dmaru(pci_domain_nr(dev->bus), dev->bus->number,
-+				 dev->devfn, &i, &saved_dev_drhd_list);
-+	/* restore that into drhd */
-+	if (drhd)
-+		drhd->devices[i] = pci_dev_get(dev);
-+}
-+#else
-+static void remove_dev_from_drhd(struct pci_dev *dev)
-+{
-+}
-+
-+static void restore_dev_to_drhd(struct pci_dev *dev)
-+{
-+}
-+#endif
-+
-+#if defined(CONFIG_DMAR) && defined(CONFIG_HOTPLUG)
-+static LIST_HEAD(saved_dev_atsr_list);
-+
-+static void remove_dev_from_atsr(struct pci_dev *dev)
-+{
-+	struct dmar_atsr_unit *atsr = NULL;
-+	int segment = pci_domain_nr(dev->bus);
-+	int i;
-+
-+	for_each_atsr_unit(atsr) {
-+		if (segment != atsr->segment)
-+			continue;
-+
-+		for (i = 0; i < atsr->devices_cnt; i++) {
-+			if (atsr->devices[i] == dev) {
-+				/* save it at first if it is in drhd */
-+				save_dev_dmaru(segment, dev->bus->number,
-+						dev->devfn, atsr, i,
-+						&saved_dev_atsr_list);
-+				/* always remove it */
-+				pci_dev_put(dev);
-+				atsr->devices[i] = NULL;
-+				return;
-+			}
-+		}
-+	}
-+}
-+
-+static void restore_dev_to_atsr(struct pci_dev *dev)
-+{
-+	struct dmar_atsr_unit *atsr = NULL;
-+	int i;
-+
-+	/* find the stored atsr */
-+	atsr = get_dev_dmaru(pci_domain_nr(dev->bus), dev->bus->number,
-+				 dev->devfn, &i, &saved_dev_atsr_list);
-+	/* restore that into atsr */
-+	if (atsr)
-+		atsr->devices[i] = pci_dev_get(dev);
-+}
-+#else
-+static void remove_dev_from_atsr(struct pci_dev *dev)
-+{
-+}
-+
-+static void restore_dev_to_atsr(struct pci_dev *dev)
-+{
-+}
-+#endif
-+
- static void domain_flush_cache(struct dmar_domain *domain,
- 			       void *addr, int size)
- {
-@@ -3474,6 +3627,7 @@ int __init dmar_parse_one_atsr(struct acpi_dmar_header *hdr)
- 
- 	atsru->hdr = hdr;
- 	atsru->include_all = atsr->flags & 0x1;
-+	atsru->segment = atsr->segment;
- 
- 	list_add(&atsru->list, &dmar_atsr_units);
- 
-@@ -3505,16 +3659,13 @@ int dmar_find_matched_atsr_unit(struct pci_dev *dev)
- {
- 	int i;
- 	struct pci_bus *bus;
--	struct acpi_dmar_atsr *atsr;
- 	struct dmar_atsr_unit *atsru;
- 
- 	dev = pci_physfn(dev);
- 
--	list_for_each_entry(atsru, &dmar_atsr_units, list) {
--		atsr = container_of(atsru->hdr, struct acpi_dmar_atsr, header);
--		if (atsr->segment == pci_domain_nr(dev->bus))
-+	list_for_each_entry(atsru, &dmar_atsr_units, list)
-+		if (atsru->segment == pci_domain_nr(dev->bus))
- 			goto found;
--	}
- 
- 	return 0;
- 
-@@ -3574,20 +3725,36 @@ static int device_notifier(struct notifier_block *nb,
- 	struct pci_dev *pdev = to_pci_dev(dev);
- 	struct dmar_domain *domain;
- 
--	if (iommu_no_mapping(dev))
-+	if (unlikely(dev->bus != &pci_bus_type))
- 		return 0;
- 
--	domain = find_domain(pdev);
--	if (!domain)
--		return 0;
-+	switch (action) {
-+	case BUS_NOTIFY_UNBOUND_DRIVER:
-+		if (iommu_no_mapping(dev))
-+			goto out;
-+
-+		if (iommu_pass_through)
-+			goto out;
-+
-+		domain = find_domain(pdev);
-+		if (!domain)
-+			goto out;
- 
--	if (action == BUS_NOTIFY_UNBOUND_DRIVER && !iommu_pass_through) {
- 		domain_remove_one_dev_info(domain, pdev);
- 
- 		if (!(domain->flags & DOMAIN_FLAG_VIRTUAL_MACHINE) &&
- 		    !(domain->flags & DOMAIN_FLAG_STATIC_IDENTITY) &&
- 		    list_empty(&domain->devices))
- 			domain_exit(domain);
-+out:
-+		remove_dev_from_drhd(pdev);
-+		remove_dev_from_atsr(pdev);
-+
-+		break;
-+	case BUS_NOTIFY_ADD_DEVICE:
-+		restore_dev_to_drhd(pdev);
-+		restore_dev_to_atsr(pdev);
-+		break;
- 	}
- 
- 	return 0;
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index 731a609..57e1375 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -236,9 +236,13 @@ struct dmar_atsr_unit {
- 	struct acpi_dmar_header *hdr;	/* ACPI header */
- 	struct pci_dev **devices;	/* target devices */
- 	int devices_cnt;		/* target device count */
-+	u16 segment;			/* PCI domain */
- 	u8 include_all:1;		/* include all ports */
- };
- 
-+#define for_each_atsr_unit(atsr) \
-+	list_for_each_entry(atsr, &dmar_atsr_units, list)
-+
- int dmar_parse_rmrr_atsr_dev(void);
- extern int dmar_parse_one_rmrr(struct acpi_dmar_header *header);
- extern int dmar_parse_one_atsr(struct acpi_dmar_header *header);
--- 
-1.7.7
+The second patch enhances System MMU platform device definition:
+ - Removed System MMU for MDMA0 in TOP block because it is not
+   used. Use MDMA2 in LCD block.
+ - Removed System MMU ID. Instead, a System MMU is bound to a device
+   that the System MMU is dedicated during machin initialization.
+   If a device driver wants to handle System MMU, it must bind its
+   device with System MMU with sysmmu_set_owner().
+ - clkdev
+ - Added support for Exynos5
+
+The last patch implements IOMMU API:
+- New System MMU device driver that fully implements IOMMU API.
+
+Thanks to Kyungmin Park and Marek Szyprowski for kind review.
+
+Diffstats:
+ arch/arm/mach-exynos/Kconfig                    |   11 +-
+ arch/arm/mach-exynos/Makefile                   |    2 +-
+ arch/arm/mach-exynos/clock-exynos4.c            |   87 +-
+ arch/arm/mach-exynos/clock-exynos4.h            |    2 +
+ arch/arm/mach-exynos/clock-exynos4210.c         |   11 +
+ arch/arm/mach-exynos/clock-exynos4212.c         |   28 +-
+ arch/arm/mach-exynos/clock-exynos5.c            |   90 ++
+ arch/arm/mach-exynos/dev-sysmmu.c               |  457 ++++++-----
+ arch/arm/mach-exynos/include/mach/irqs.h        |  179 ++--
+ arch/arm/mach-exynos/include/mach/map.h         |   38 +
+ arch/arm/mach-exynos/include/mach/regs-clock.h  |    5 +
+ arch/arm/mach-exynos/include/mach/regs-sysmmu.h |   28 -
+ arch/arm/mach-exynos/include/mach/sysmmu.h      |   84 +-
+ arch/arm/mach-exynos/mach-armlex4210.c          |    1 -
+ arch/arm/mach-exynos/mach-smdkv310.c            |    1 -
+ arch/arm/plat-s5p/Kconfig                       |    8 -
+ arch/arm/plat-s5p/Makefile                      |    1 -
+ arch/arm/plat-s5p/sysmmu.c                      |  313 -------
+ arch/arm/plat-samsung/include/plat/devs.h       |    1 -
+ arch/arm/plat-samsung/include/plat/sysmmu.h     |   95 --
+ drivers/iommu/Kconfig                           |   21 +
+ drivers/iommu/Makefile                          |    1 +
+ drivers/iommu/exynos-iommu.c                    | 1088 +++++++++++++++++++++++
+ 23 files changed, 1726 insertions(+), 826 deletions(-)
