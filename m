@@ -1,271 +1,1891 @@
-From: KyongHo Cho <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v10 3/3] iommu/exynos: Add iommu driver for Exynos
-	Platforms
-Date: Wed, 7 Mar 2012 10:24:56 +0900
-Message-ID: <CAHQjnOOCFqSNtvvvvd54yFvrrnPJmZQhi3LXT8jZArcEhjePXQ@mail.gmail.com>
-References: <002201ccfb73$93311520$b9933f60$%cho@samsung.com>
-	<CAH9JG2W=E7xmEO3o+up5a5Vm1PrPp60w0cfzN7=bYQO2BX1teA@mail.gmail.com>
+From: Chris Friesen <chris.friesen@genband.com>
+Subject: trying to figure out why VT-d isn't working on my kernel
+Date: Tue, 06 Mar 2012 22:42:16 -0600
+Message-ID: <4F56E728.8020506@genband.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAH9JG2W=E7xmEO3o+up5a5Vm1PrPp60w0cfzN7=bYQO2BX1teA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Kyungmin Park <kmpark-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, =?UTF-8?B?64yA7J246riw?= <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Younglak Kim <younglak1004.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Subash Patel <subash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Sanghyun Lee <sanghyun75.lee-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Mar 6, 2012 at 10:13 PM, Kyungmin Park <kmpark-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org> wrote:
-> On Tue, Mar 6, 2012 at 5:31 PM, KyongHo Cho <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org> wrot=
-e:
->> HAALgBjAGgAbwBAAHMAYQBtAHMAdQBuAGcALgBjAG8AbQA=3D;Tue,
->> =A006 Mar 2012 08:31:29 GMT;WwBQAEEAVABDAEgAIAB2ADEAMAAgADMALwAzAF0AIABp=
-AG8AbQBtAHUALwBlAHgAeQBuAG8AcwA6ACAAQQBkAGQAIABpAG8AbQBtAHUAIABkAHIAaQB2AGU=
-AcgAgAGYAbwByACAARQB4AHkAbgBvAHMAIABQAGwAYQB0AGYAbwByAG0AcwA=3D
->> x-cr-puzzleid: {CF0AAF04-8639-4D69-B4E1-BF71EA1B0A70}
-> What's this?
-I think it is inserted by Outlook and it was not found in the email editor
-before sending this patch. I am unable to use sendmail due to security
-reason in my company.
-I will find a way not to insert the above message. Thank you.
+Hi,
 
->>
->> This is the System MMU driver and IOMMU API implementation for
->> Exynos SOC platforms. Exynos platforms has more than 10 System
->> MMUs dedicated for each multimedia accellerators.
->>
->> The System MMU driver is already in arc/arm/plat-s5p but it is
->> moved to drivers/iommu due to Ohad Ben-Cohen gathered IOMMU drivers
->> there
->>
->> Any device driver in Exynos platforms that needs to control its
->> System MMU must call platform_set_sysmmu() to inform System MMU
->> driver who will control it.
->> platform_set_sysmmu() is defined in <mach/sysmmu.h>
-> Does it really required? if we can remove it. it can be compiled
-> without arch dependency.
-The function must be called while board initialization and all source files=
- for
-the purpose is placed in 'mach' directory. Thus device driver is not depend=
-ent
-on arch except the definition of data structure conveyed in
-device.platform_data.
+I've got a current (pulled today) kernel running on a Xeon E5-2648L CPU
+on an Intel motherboard, and I'm trying to get VT-d working without muc=
+h success.
 
-Since our System MMUs are attached to each peripheral devices, it is requir=
-ed
-to define relationships between System MMUs and peripheral devices.
-platform_set_sysmmu() defines the relationship.
+lspci -vv (version 3.1.4) doesn't show anything related to IOV.
+(Full output below.)  Since I know the I350 devices are capable of virt=
+ual
+functions, am I correct in assuming it's something similar to the situa=
+tion
+described at https://bugzilla.redhat.com/show_bug.cgi?id=3D652210 and t=
+here is
+a problem with my BIOS?  Based on comment 15 there, the fact that all
+the DevCtl2 lines show "ARIFwd-" seems interesting.
 
->> +
->> +#ifdef CONFIG_EXYNOS_IOMMU_DEBUG
->> +#define DEBUG
->> +#endif
-> If it's used only at here. you can add it at Makefile.
->
-> ifeq ($(CONFIG_EXYNOS_IOMMU_DEBUG),y)
-> =A0 =A0 =A0 =A0 CFLAGS-exynos-iommu =A0 =A0 =A0 =A0+=3D -DDEBUG
-> endif
->
-> Of course you can select as your preference.
 
-Thank you for advice.
+Among other things, I've enabled the following in the kernel config:
 
->> +
->> +#define lv2ent_fault(pent) ((*(pent) & 3) =3D=3D 0)
->> +#define lv2ent_small(pent) ((*(pent) & 2) =3D=3D 2)
-> #define lv2ent_small(pent) ((*(pent) & 3) =3D=3D 2)?
+CONFIG_DMAR_TABLE=3Dy
+CONFIG_INTEL_IOMMU=3Dy
+CONFIG_INTEL_IOMMU_DEFAULT_ON=3Dy
+CONFIG_PCI_MSI=3Dy
+CONFIG_PCI_STUB=3Dy
+CONFIG_PCI_IOV=3Dy
 
-The last bit is 'don't-care'.
-It is intentionally ignored in the above comparison.
 
->> +
->> +#define REG_MMU_CTRL =A0 =A0 =A0 =A0 =A0 0x000
->> +#define REG_MMU_CFG =A0 =A0 =A0 =A0 =A0 =A00x004
->> +#define REG_MMU_STATUS =A0 =A0 =A0 =A0 0x008
->> +#define REG_MMU_FLUSH =A0 =A0 =A0 =A0 =A00x00C
->> +#define REG_MMU_FLUSH_ENTRY =A0 =A00x010
->> +#define REG_PT_BASE_ADDR =A0 =A0 =A0 0x014
->> +#define REG_INT_STATUS =A0 =A0 =A0 =A0 0x018
->> +#define REG_INT_CLEAR =A0 =A0 =A0 =A0 =A00x01C
->> +#define REG_MMU_VERSION =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A00x034
-> Please place it in order.
+The BIOS has all VT-d related stuff except for interrupt remapping enab=
+led.
 
-I found that a mistake while defining the offsets of control registers.
-I will fix it.
 
->> +
->> +enum EXYNOS_SYSMMU_INTERRUPT_TYPE {
->> + =A0 =A0 =A0 SYSMMU_PAGEFAULT,
->> + =A0 =A0 =A0 SYSMMU_AR_MULTIHIT,
->> + =A0 =A0 =A0 SYSMMU_AW_MULTIHIT,
->> + =A0 =A0 =A0 SYSMMU_BUSERROR,
->> + =A0 =A0 =A0 SYSMMU_AR_SECURITY,
->> + =A0 =A0 =A0 SYSMMU_AR_ACCESS,
->> + =A0 =A0 =A0 SYSMMU_AW_SECURITY,
->> + =A0 =A0 =A0 SYSMMU_AW_PROTECTION, /* 7 */
->> + =A0 =A0 =A0 SYSMMU_FAULT_UNKNOWN,
->> + =A0 =A0 =A0 SYSMMU_FAULTS_NUM
-> missing comma, "SYSMMU_FAULTS_NUM,"
-Yes it is. I don't think that it is needed to appending comma after
-the last element
-unless it is predictable that adding elements after the last element
-in the future.
+The boot logs show:
 
->> +};
->> +
->> +typedef int (*sysmmu_fault_handler_t)(enum EXYNOS_SYSMMU_INTERRUPT_TYPE=
- itype,
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 unsigned long pgtable_base=
-, unsigned long fault_addr);
->> +
->> +static unsigned short fault_reg_offset[SYSMMU_FAULTS_NUM] =3D {
->> + =A0 =A0 =A0 REG_PAGE_FAULT_ADDR,
->> + =A0 =A0 =A0 REG_AR_FAULT_ADDR,
->> + =A0 =A0 =A0 REG_AW_FAULT_ADDR,
->> + =A0 =A0 =A0 REG_DEFAULT_SLAVE_ADDR,
->> + =A0 =A0 =A0 REG_AR_FAULT_ADDR,
->> + =A0 =A0 =A0 REG_AR_FAULT_ADDR,
->> + =A0 =A0 =A0 REG_AW_FAULT_ADDR,
->> + =A0 =A0 =A0 REG_AW_FAULT_ADDR
-> ditto.
-Answered above.
+ACPI: Core revision 20120111
+DMAR: Host address width 46
+DMAR: DRHD base: 0x000000fbffe000 flags: 0x0
+IOMMU 0: reg_base_addr fbffe000 ver 1:0 cap d2078c106f0462 ecap f020fe
+DMAR: DRHD base: 0x000000ebffc000 flags: 0x1
+IOMMU 1: reg_base_addr ebffc000 ver 1:0 cap d2078c106f0462 ecap f020fe
+DMAR: RMRR base: 0x000000bddbf000 end: 0x000000bddd5fff
+DMAR: ATSR flags: 0x0
+Switched APIC routing to physical flat.
+<snip>
+PCI: CLS 64 bytes, default 64
+IOMMU 0 0xfbffe000: using Queued invalidation
+IOMMU 1 0xebffc000: using Queued invalidation
+IOMMU: Setting RMRR:
+IOMMU: Setting identity map for device 0000:00:1d.0 [0xbddbf000 - 0xbdd=
+d5fff]
+IOMMU: Setting identity map for device 0000:00:1a.0 [0xbddbf000 - 0xbdd=
+d5fff]
+IOMMU: Prepare 0-16MiB unity mapping for LPC
+IOMMU: Setting identity map for device 0000:00:1f.0 [0x0 - 0xffffff]
+PCI-DMA: Intel(R) Virtualization Technology for Directed I/O
 
->> +};
->> +
->> +static char *sysmmu_fault_name[SYSMMU_FAULTS_NUM] =3D {
->> + =A0 =A0 =A0 "PAGE FAULT",
->> + =A0 =A0 =A0 "AR MULTI-HIT FAULT",
->> + =A0 =A0 =A0 "AW MULTI-HIT FAULT",
->> + =A0 =A0 =A0 "BUS ERROR",
->> + =A0 =A0 =A0 "AR SECURITY PROTECTION FAULT",
->> + =A0 =A0 =A0 "AR ACCESS PROTECTION FAULT",
->> + =A0 =A0 =A0 "AW SECURITY PROTECTION FAULT",
->> + =A0 =A0 =A0 "AW ACCESS PROTECTION FAULT",
->> + =A0 =A0 =A0 "UNKNOWN FAULT"
-> ditto.
-Answered above.
 
->> +void exynos_sysmmu_set_prefbuf(struct device *dev,
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 unsigned l=
-ong base0, unsigned long size0,
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 unsigned l=
-ong base1, unsigned long size1)
->> +{
->> + =A0 =A0 =A0 struct sysmmu_drvdata *data =3D dev_get_drvdata(dev->archd=
-ata.iommu);
->> + =A0 =A0 =A0 unsigned long flags;
->> + =A0 =A0 =A0 int i;
->> +
->> + =A0 =A0 =A0 BUG_ON((base0 + size0) <=3D base0);
->> + =A0 =A0 =A0 BUG_ON((size1 > 0) && ((base1 + size1) <=3D base1));
-> It's bogus check. it's impossible. Do you think overflow case?
-Yes I do.
-It is prepared to detect invalid parameters from device drivers.
 
->> +
->> + =A0 =A0 =A0 read_lock_irqsave(&data->lock, flags);
->> + =A0 =A0 =A0 if (!is_sysmmu_active(data))
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 goto finish;
->> +
->> + =A0 =A0 =A0 for (i =3D 0; i < data->nsfrs; i++) {
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 if ((readl(data->sfrbases[i] + S5P_MMU_VER=
-SION) >> 28) =3D=3D 3) {
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 sysmmu_block(data->sfrbase=
-s[i]);
->> +
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 if (size1 =3D=3D 0) {
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 if (size0 =
-<=3D SZ_128K) {
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 base1 =3D base0;
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 size1 =3D size0;
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 } else {
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 size1 =3D size0 -
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 ALIGN(size0 / 2, SZ_64K);
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 size0 =3D size0 - size1;
-> Umm I mis-understand this codes at first. it think size1 has 0
-> already. so it's meaning-less but now it re-use the size1 above.
 
-Let me explain how this function works.
-This function can accepts 2 memory regions to specify in the registers
-of System MMU.
-It is simple a device driver defines 2 memory regions but this function all=
-ows
-it to define just one memory region and specify second regions as zero.
-If the second regions is zero, this function divides the first region
-into 2 regions
-and specifies those regions into the registers of System MMU.
+I'm no PCI expert, so any assistance would be appreciated.
 
->> +void exynos_sysmmu_set_fault_handler(struct device *dev,
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 sysmmu_fault_handler_t handler)
->> +{
->> + =A0 =A0 =A0 struct sysmmu_drvdata *data =3D dev_get_drvdata(dev->archd=
-ata.iommu);
->> +
->> + =A0 =A0 =A0 __set_fault_handler(data, handler);
->> +}
->> +
->> +static int default_fault_handler(enum EXYNOS_SYSMMU_INTERRUPT_TYPE ityp=
-e,
-> Can you use the small letter instead of large one? do you see codes like =
-this?
-Ok. I will make it lower case.
+Thanks,
+Chris
 
->> +static phys_addr_t exynos_iommu_iova_to_phys(struct iommu_domain *domai=
-n,
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 unsigned long iova)
->> +{
->> + =A0 =A0 =A0 struct exynos_iommu_domain *priv =3D domain->priv;
->> + =A0 =A0 =A0 unsigned long *entry;
->> + =A0 =A0 =A0 unsigned long flags;
->> + =A0 =A0 =A0 phys_addr_t phys =3D -1;
->> +
->> + =A0 =A0 =A0 spin_lock_irqsave(&priv->pgtablelock, flags);
->> +
->> + =A0 =A0 =A0 entry =3D section_entry(priv->pgtable, iova);
->> +
->> + =A0 =A0 =A0 if (lv1ent_section(entry)) {
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 phys =3D section_phys(entry) + section_off=
-s(iova);
->> + =A0 =A0 =A0 } else if (lv1ent_page(entry)) {
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 entry =3D page_entry(entry, iova);
->> +
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 if (lv2ent_large(entry))
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 phys =3D lpage_phys(entry)=
- + lpage_offs(iova);
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 else if (lv2ent_small(entry))
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 phys =3D spage_phys(entry)=
- + spage_offs(iova);
->> + =A0 =A0 =A0 }
->> +
->> + =A0 =A0 =A0 spin_unlock_irqrestore(&priv->pgtablelock, flags);
->> +
->> + =A0 =A0 =A0 return phys;
-> What's happened if phys has -1? I mean it can't trigger any condition at =
-above.
-This function just follows page tables and finding corresponding
-physical address
-for the given IO virtual address.
--1 (0xFFFFFFFF in 32bit system) is just an error value
-if no translation information is found.
 
-But I found most IOMMU drivers return 0 for the case.
-I will change it to 0.
 
-Thank you for kind review.
+full "lspci -vv" output:
 
-Cho KyongHo.
+root@localhost:/root> lspci -vvv
+00:00.0 Host bridge: Intel Corporation Sandy Bridge DMI2 (rev 06)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- Par=
+Err+ Stepping- SERR+ FastB2B- DisINTx+
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Capabilities: [90] Express (v2) Root Port (Slot-), MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable- Non-Fatal- Fatal- U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed 2.5GT/s, Width x4, ASPM L0s L1, =
+Latency L0 <512ns, L1 <4us
+                        ClockPM- Surprise+ LLActRep+ BwNot+
+                LnkCtl: ASPM Disabled; RCB 64 bytes Disabled- Retrain- =
+CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed unknown, Width x0, TrErr- Train- SlotClk-=
+ DLActive- BWMgmt- ABWMgmt-
+                RootCtl: ErrCorrectable+ ErrNon-Fatal+ ErrFatal+ PMEInt=
+Ena- CRSVisible-
+                RootCap: CRSVisible-
+                RootSta: PME ReqID 0000, PMEStatus- PMEPending-
+                DevCap2: Completion Timeout: Range BCD, TimeoutDis+ ARI=
+=46wd-
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis- =
+ARIFwd-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+        Capabilities: [e0] Power Management version 3
+                Flags: PMEClk- DSI- D1- D2- AuxCurrent=3D0mA PME(D0+,D1=
+-,D2-,D3hot+,D3cold+)
+                Status: D0 NoSoftRst- PME-Enable- DSel=3D0 DScale=3D0 P=
+ME-
+
+00:01.0 PCI bridge: Intel Corporation Sandy Bridge IIO PCI Express Root=
+ Port 1a (rev 06) (prog-if 00 [Normal decode])
+        Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err+ Stepping- SERR+ FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0, Cache Line Size: 64 bytes
+        Bus: primary=3D00, secondary=3D01, subordinate=3D01, sec-latenc=
+y=3D0
+        I/O behind bridge: 0000f000-00000fff
+        Memory behind bridge: fff00000-000fffff
+        Prefetchable memory behind bridge: 00000000fff00000-00000000000=
+fffff
+        Secondary status: 66MHz- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- <SERR- <PERR-
+        BridgeCtl: Parity+ SERR+ NoISA- VGA- MAbort- >Reset- FastB2B-
+                PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
+        Capabilities: [40] Subsystem: Intel Corporation Device 3596
+        Capabilities: [60] MSI: Enable- Count=3D1/2 Maskable+ 64bit-
+                Address: 00000000  Data: 0000
+                Masking: 00000000  Pending: 00000000
+        Capabilities: [90] Express (v2) Root Port (Slot-), MSI 00
+                DevCap: MaxPayload 256 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable+ Non-Fatal+ Fatal+ U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x4, ASPM unknown,=
+ Latency L0 unlimited, L1 <16us
+                        ClockPM- Surprise+ LLActRep+ BwNot+
+                LnkCtl: ASPM Disabled; RCB 64 bytes Disabled- Retrain- =
+CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed 2.5GT/s, Width x0, TrErr- Train- SlotClk+=
+ DLActive- BWMgmt- ABWMgmt-
+                RootCtl: ErrCorrectable+ ErrNon-Fatal+ ErrFatal+ PMEInt=
+Ena- CRSVisible-
+                RootCap: CRSVisible-
+                RootSta: PME ReqID 0000, PMEStatus- PMEPending-
+                DevCap2: Completion Timeout: Range BCD, TimeoutDis+ ARI=
+=46wd+
+                DevCtl2: Completion Timeout: 65ms to 210ms, TimeoutDis-=
+ ARIFwd-
+                LnkCtl2: Target Link Speed: Unknown, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -3.5dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -3.5dB
+        Capabilities: [e0] Power Management version 3
+                Flags: PMEClk- DSI- D1- D2- AuxCurrent=3D0mA PME(D0+,D1=
+-,D2-,D3hot+,D3cold+)
+                Status: D0 NoSoftRst- PME-Enable- DSel=3D0 DScale=3D0 P=
+ME-
+        Kernel driver in use: pcieport
+
+00:01.1 PCI bridge: Intel Corporation Sandy Bridge IIO PCI Express Root=
+ Port 1b (rev 06) (prog-if 00 [Normal decode])
+        Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err+ Stepping- SERR+ FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0, Cache Line Size: 64 bytes
+        Bus: primary=3D00, secondary=3D02, subordinate=3D03, sec-latenc=
+y=3D0
+        I/O behind bridge: 00002000-00002fff
+        Memory behind bridge: d0900000-d0afffff
+        Prefetchable memory behind bridge: 00000000fff00000-00000000000=
+fffff
+        Secondary status: 66MHz- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- <SERR- <PERR-
+        BridgeCtl: Parity+ SERR+ NoISA- VGA- MAbort- >Reset- FastB2B-
+                PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
+        Capabilities: [40] Subsystem: Intel Corporation Device 3596
+        Capabilities: [60] MSI: Enable- Count=3D1/2 Maskable+ 64bit-
+                Address: 00000000  Data: 0000
+                Masking: 00000000  Pending: 00000000
+        Capabilities: [90] Express (v2) Root Port (Slot-), MSI 00
+                DevCap: MaxPayload 256 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable+ Non-Fatal+ Fatal+ U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 256 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x4, ASPM unknown,=
+ Latency L0 unlimited, L1 <16us
+                        ClockPM- Surprise+ LLActRep+ BwNot+
+                LnkCtl: ASPM L1 Enabled; RCB 64 bytes Disabled- Retrain=
+- CommClk+
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed 5GT/s, Width x4, TrErr- Train- SlotClk+ D=
+LActive+ BWMgmt- ABWMgmt-
+                RootCtl: ErrCorrectable+ ErrNon-Fatal+ ErrFatal+ PMEInt=
+Ena- CRSVisible-
+                RootCap: CRSVisible-
+                RootSta: PME ReqID 0000, PMEStatus- PMEPending-
+                DevCap2: Completion Timeout: Range BCD, TimeoutDis+ ARI=
+=46wd+
+                DevCtl2: Completion Timeout: 65ms to 210ms, TimeoutDis-=
+ ARIFwd-
+                LnkCtl2: Target Link Speed: Unknown, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -3.5dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -3.5dB
+        Capabilities: [e0] Power Management version 3
+                Flags: PMEClk- DSI- D1- D2- AuxCurrent=3D0mA PME(D0+,D1=
+-,D2-,D3hot+,D3cold+)
+                Status: D0 NoSoftRst- PME-Enable- DSel=3D0 DScale=3D0 P=
+ME-
+        Kernel driver in use: pcieport
+
+00:02.0 PCI bridge: Intel Corporation Sandy Bridge IIO PCI Express Root=
+ Port 2a (rev 06) (prog-if 00 [Normal decode])
+        Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err+ Stepping- SERR+ FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0, Cache Line Size: 64 bytes
+        Bus: primary=3D00, secondary=3D04, subordinate=3D04, sec-latenc=
+y=3D0
+        I/O behind bridge: 0000f000-00000fff
+        Memory behind bridge: fff00000-000fffff
+        Prefetchable memory behind bridge: 00000000fff00000-00000000000=
+fffff
+        Secondary status: 66MHz- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- <SERR- <PERR-
+        BridgeCtl: Parity+ SERR+ NoISA- VGA- MAbort- >Reset- FastB2B-
+                PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
+        Capabilities: [40] Subsystem: Intel Corporation Device 3596
+        Capabilities: [60] MSI: Enable- Count=3D1/2 Maskable+ 64bit-
+                Address: 00000000  Data: 0000
+                Masking: 00000000  Pending: 00000000
+        Capabilities: [90] Express (v2) Root Port (Slot+), MSI 00
+                DevCap: MaxPayload 256 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable+ Non-Fatal+ Fatal+ U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x16, ASPM unknown=
+, Latency L0 unlimited, L1 <16us
+                        ClockPM- Surprise+ LLActRep+ BwNot+
+                LnkCtl: ASPM Disabled; RCB 64 bytes Disabled- Retrain- =
+CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed 2.5GT/s, Width x0, TrErr- Train- SlotClk+=
+ DLActive- BWMgmt- ABWMgmt-
+                SltCap: AttnBtn- PwrCtrl- MRL- AttnInd- PwrInd- HotPlug=
+- Surpise-
+                        Slot #105, PowerLimit 0.000000; Interlock- NoCo=
+mpl-
+                SltCtl: Enable: AttnBtn- PwrFlt- MRL- PresDet- CmdCplt-=
+ HPIrq- LinkChg-
+                        Control: AttnInd Off, PwrInd Off, Power+ Interl=
+ock-
+                SltSta: Status: AttnBtn- PowerFlt- MRL- CmdCplt- PresDe=
+t- Interlock-
+                        Changed: MRL- PresDet+ LinkState-
+                RootCtl: ErrCorrectable+ ErrNon-Fatal+ ErrFatal+ PMEInt=
+Ena- CRSVisible-
+                RootCap: CRSVisible-
+                RootSta: PME ReqID 0000, PMEStatus- PMEPending-
+                DevCap2: Completion Timeout: Range BCD, TimeoutDis+ ARI=
+=46wd+
+                DevCtl2: Completion Timeout: 65ms to 210ms, TimeoutDis-=
+ ARIFwd-
+                LnkCtl2: Target Link Speed: Unknown, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -3.5dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -3.5dB
+        Capabilities: [e0] Power Management version 3
+                Flags: PMEClk- DSI- D1- D2- AuxCurrent=3D0mA PME(D0+,D1=
+-,D2-,D3hot+,D3cold+)
+                Status: D0 NoSoftRst- PME-Enable- DSel=3D0 DScale=3D0 P=
+ME-
+        Kernel driver in use: pcieport
+
+00:03.0 PCI bridge: Intel Corporation Sandy Bridge IIO PCI Express Root=
+ Port 3a in PCI Express Mode (rev 06) (prog-if 00 [Normal decode])
+        Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err+ Stepping- SERR+ FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0, Cache Line Size: 64 bytes
+        Bus: primary=3D00, secondary=3D05, subordinate=3D05, sec-latenc=
+y=3D0
+        I/O behind bridge: 0000f000-00000fff
+        Memory behind bridge: fff00000-000fffff
+        Prefetchable memory behind bridge: 00000000fff00000-00000000000=
+fffff
+        Secondary status: 66MHz- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- <SERR- <PERR-
+        BridgeCtl: Parity+ SERR+ NoISA- VGA- MAbort- >Reset- FastB2B-
+                PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
+        Capabilities: [40] Subsystem: Intel Corporation Device 3596
+        Capabilities: [60] MSI: Enable- Count=3D1/2 Maskable+ 64bit-
+                Address: 00000000  Data: 0000
+                Masking: 00000000  Pending: 00000000
+        Capabilities: [90] Express (v2) Root Port (Slot+), MSI 00
+                DevCap: MaxPayload 256 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag+ RBE+ FLReset-
+                DevCtl: Report errors: Correctable+ Non-Fatal+ Fatal+ U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x16, ASPM unknown=
+, Latency L0 unlimited, L1 <16us
+                        ClockPM- Surprise+ LLActRep+ BwNot+
+                LnkCtl: ASPM Disabled; RCB 64 bytes Disabled- Retrain- =
+CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed 2.5GT/s, Width x0, TrErr- Train- SlotClk+=
+ DLActive- BWMgmt- ABWMgmt-
+                SltCap: AttnBtn- PwrCtrl- MRL- AttnInd- PwrInd- HotPlug=
+- Surpise-
+                        Slot #102, PowerLimit 0.000000; Interlock- NoCo=
+mpl-
+                SltCtl: Enable: AttnBtn- PwrFlt- MRL- PresDet- CmdCplt-=
+ HPIrq- LinkChg-
+                        Control: AttnInd Off, PwrInd Off, Power+ Interl=
+ock-
+                SltSta: Status: AttnBtn- PowerFlt- MRL- CmdCplt- PresDe=
+t- Interlock-
+                        Changed: MRL- PresDet+ LinkState-
+                RootCtl: ErrCorrectable+ ErrNon-Fatal+ ErrFatal+ PMEInt=
+Ena- CRSVisible-
+                RootCap: CRSVisible-
+                RootSta: PME ReqID 0000, PMEStatus- PMEPending-
+                DevCap2: Completion Timeout: Range BCD, TimeoutDis+ ARI=
+=46wd+
+                DevCtl2: Completion Timeout: 65ms to 210ms, TimeoutDis-=
+ ARIFwd-
+                LnkCtl2: Target Link Speed: Unknown, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -3.5dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -3.5dB
+        Capabilities: [e0] Power Management version 3
+                Flags: PMEClk- DSI- D1- D2- AuxCurrent=3D0mA PME(D0+,D1=
+-,D2-,D3hot+,D3cold+)
+                Status: D0 NoSoftRst- PME-Enable- DSel=3D0 DScale=3D0 P=
+ME-
+        Kernel driver in use: pcieport
+
+00:04.0 System peripheral: Intel Corporation Sandy Bridge DMA Channel 0=
+ (rev 06)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0, Cache Line Size: 64 bytes
+        Interrupt: pin A routed to IRQ 11
+        Region 0: Memory at ebf90000 (64-bit, non-prefetchable) [size=3D=
+16K]
+        Capabilities: [80] MSI-X: Enable- Count=3D1 Masked-
+                Vector table: BAR=3D0 offset=3D00002000
+                PBA: BAR=3D0 offset=3D00003000
+        Capabilities: [90] Express (v2) Root Complex Integrated Endpoin=
+t, MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable- Non-Fatal- Fatal- U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x0, ASPM unknown,=
+ Latency L0 <64ns, L1 <1us
+                        ClockPM- Surprise- LLActRep- BwNot-
+                LnkCtl: ASPM Disabled; Disabled- Retrain- CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed unknown, Width x0, TrErr- Train- SlotClk-=
+ DLActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Not Supported, TimeoutDis+
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+        Capabilities: [e0] Power Management version 3
+                Flags: PMEClk- DSI- D1- D2- AuxCurrent=3D0mA PME(D0-,D1=
+-,D2-,D3hot-,D3cold-)
+                Status: D0 NoSoftRst+ PME-Enable- DSel=3D0 DScale=3D0 P=
+ME-
+
+00:04.1 System peripheral: Intel Corporation Sandy Bridge DMA Channel 1=
+ (rev 06)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0, Cache Line Size: 64 bytes
+        Interrupt: pin B routed to IRQ 10
+        Region 0: Memory at ebf80000 (64-bit, non-prefetchable) [size=3D=
+16K]
+        Capabilities: [80] MSI-X: Enable- Count=3D1 Masked-
+                Vector table: BAR=3D0 offset=3D00002000
+                PBA: BAR=3D0 offset=3D00003000
+        Capabilities: [90] Express (v2) Root Complex Integrated Endpoin=
+t, MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable- Non-Fatal- Fatal- U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x0, ASPM unknown,=
+ Latency L0 <64ns, L1 <1us
+                        ClockPM- Surprise- LLActRep- BwNot-
+                LnkCtl: ASPM Disabled; Disabled- Retrain- CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed unknown, Width x0, TrErr- Train- SlotClk-=
+ DLActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Not Supported, TimeoutDis+
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+        Capabilities: [e0] Power Management version 3
+                Flags: PMEClk- DSI- D1- D2- AuxCurrent=3D0mA PME(D0-,D1=
+-,D2-,D3hot-,D3cold-)
+                Status: D0 NoSoftRst+ PME-Enable- DSel=3D0 DScale=3D0 P=
+ME-
+
+00:04.2 System peripheral: Intel Corporation Sandy Bridge DMA Channel 2=
+ (rev 06)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0, Cache Line Size: 64 bytes
+        Interrupt: pin C routed to IRQ 5
+        Region 0: Memory at ebf70000 (64-bit, non-prefetchable) [size=3D=
+16K]
+        Capabilities: [80] MSI-X: Enable- Count=3D1 Masked-
+                Vector table: BAR=3D0 offset=3D00002000
+                PBA: BAR=3D0 offset=3D00003000
+        Capabilities: [90] Express (v2) Root Complex Integrated Endpoin=
+t, MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable- Non-Fatal- Fatal- U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x0, ASPM unknown,=
+ Latency L0 <64ns, L1 <1us
+                        ClockPM- Surprise- LLActRep- BwNot-
+                LnkCtl: ASPM Disabled; Disabled- Retrain- CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed unknown, Width x0, TrErr- Train- SlotClk-=
+ DLActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Not Supported, TimeoutDis+
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+        Capabilities: [e0] Power Management version 3
+                Flags: PMEClk- DSI- D1- D2- AuxCurrent=3D0mA PME(D0-,D1=
+-,D2-,D3hot-,D3cold-)
+                Status: D0 NoSoftRst+ PME-Enable- DSel=3D0 DScale=3D0 P=
+ME-
+
+00:04.3 System peripheral: Intel Corporation Sandy Bridge DMA Channel 3=
+ (rev 06)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0, Cache Line Size: 64 bytes
+        Interrupt: pin D routed to IRQ 11
+        Region 0: Memory at ebf60000 (64-bit, non-prefetchable) [size=3D=
+16K]
+        Capabilities: [80] MSI-X: Enable- Count=3D1 Masked-
+                Vector table: BAR=3D0 offset=3D00002000
+                PBA: BAR=3D0 offset=3D00003000
+        Capabilities: [90] Express (v2) Root Complex Integrated Endpoin=
+t, MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable- Non-Fatal- Fatal- U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x0, ASPM unknown,=
+ Latency L0 <64ns, L1 <1us
+                        ClockPM- Surprise- LLActRep- BwNot-
+                LnkCtl: ASPM Disabled; Disabled- Retrain- CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed unknown, Width x0, TrErr- Train- SlotClk-=
+ DLActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Not Supported, TimeoutDis+
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+        Capabilities: [e0] Power Management version 3
+                Flags: PMEClk- DSI- D1- D2- AuxCurrent=3D0mA PME(D0-,D1=
+-,D2-,D3hot-,D3cold-)
+                Status: D0 NoSoftRst+ PME-Enable- DSel=3D0 DScale=3D0 P=
+ME-
+
+00:04.4 System peripheral: Intel Corporation Sandy Bridge DMA Channel 4=
+ (rev 06)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0, Cache Line Size: 64 bytes
+        Interrupt: pin A routed to IRQ 11
+        Region 0: Memory at ebf50000 (64-bit, non-prefetchable) [size=3D=
+16K]
+        Capabilities: [80] MSI-X: Enable- Count=3D1 Masked-
+                Vector table: BAR=3D0 offset=3D00002000
+                PBA: BAR=3D0 offset=3D00003000
+        Capabilities: [90] Express (v2) Root Complex Integrated Endpoin=
+t, MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable- Non-Fatal- Fatal- U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x0, ASPM unknown,=
+ Latency L0 <64ns, L1 <1us
+                        ClockPM- Surprise- LLActRep- BwNot-
+                LnkCtl: ASPM Disabled; Disabled- Retrain- CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed unknown, Width x0, TrErr- Train- SlotClk-=
+ DLActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Not Supported, TimeoutDis+
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+        Capabilities: [e0] Power Management version 3
+                Flags: PMEClk- DSI- D1- D2- AuxCurrent=3D0mA PME(D0-,D1=
+-,D2-,D3hot-,D3cold-)
+                Status: D0 NoSoftRst+ PME-Enable- DSel=3D0 DScale=3D0 P=
+ME-
+
+00:04.5 System peripheral: Intel Corporation Sandy Bridge DMA Channel 5=
+ (rev 06)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0, Cache Line Size: 64 bytes
+        Interrupt: pin B routed to IRQ 10
+        Region 0: Memory at ebf40000 (64-bit, non-prefetchable) [size=3D=
+16K]
+        Capabilities: [80] MSI-X: Enable- Count=3D1 Masked-
+                Vector table: BAR=3D0 offset=3D00002000
+                PBA: BAR=3D0 offset=3D00003000
+        Capabilities: [90] Express (v2) Root Complex Integrated Endpoin=
+t, MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable- Non-Fatal- Fatal- U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x0, ASPM unknown,=
+ Latency L0 <64ns, L1 <1us
+                        ClockPM- Surprise- LLActRep- BwNot-
+                LnkCtl: ASPM Disabled; Disabled- Retrain- CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed unknown, Width x0, TrErr- Train- SlotClk-=
+ DLActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Not Supported, TimeoutDis+
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+        Capabilities: [e0] Power Management version 3
+                Flags: PMEClk- DSI- D1- D2- AuxCurrent=3D0mA PME(D0-,D1=
+-,D2-,D3hot-,D3cold-)
+                Status: D0 NoSoftRst+ PME-Enable- DSel=3D0 DScale=3D0 P=
+ME-
+
+00:04.6 System peripheral: Intel Corporation Sandy Bridge DMA Channel 6=
+ (rev 06)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0, Cache Line Size: 64 bytes
+        Interrupt: pin C routed to IRQ 5
+        Region 0: Memory at ebf30000 (64-bit, non-prefetchable) [size=3D=
+16K]
+        Capabilities: [80] MSI-X: Enable- Count=3D1 Masked-
+                Vector table: BAR=3D0 offset=3D00002000
+                PBA: BAR=3D0 offset=3D00003000
+        Capabilities: [90] Express (v2) Root Complex Integrated Endpoin=
+t, MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable- Non-Fatal- Fatal- U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x0, ASPM unknown,=
+ Latency L0 <64ns, L1 <1us
+                        ClockPM- Surprise- LLActRep- BwNot-
+                LnkCtl: ASPM Disabled; Disabled- Retrain- CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed unknown, Width x0, TrErr- Train- SlotClk-=
+ DLActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Not Supported, TimeoutDis+
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+        Capabilities: [e0] Power Management version 3
+                Flags: PMEClk- DSI- D1- D2- AuxCurrent=3D0mA PME(D0-,D1=
+-,D2-,D3hot-,D3cold-)
+                Status: D0 NoSoftRst+ PME-Enable- DSel=3D0 DScale=3D0 P=
+ME-
+
+00:04.7 System peripheral: Intel Corporation Sandy Bridge DMA Channel 7=
+ (rev 06)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0, Cache Line Size: 64 bytes
+        Interrupt: pin D routed to IRQ 11
+        Region 0: Memory at ebf20000 (64-bit, non-prefetchable) [size=3D=
+16K]
+        Capabilities: [80] MSI-X: Enable- Count=3D1 Masked-
+                Vector table: BAR=3D0 offset=3D00002000
+                PBA: BAR=3D0 offset=3D00003000
+        Capabilities: [90] Express (v2) Root Complex Integrated Endpoin=
+t, MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable- Non-Fatal- Fatal- U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x0, ASPM unknown,=
+ Latency L0 <64ns, L1 <1us
+                        ClockPM- Surprise- LLActRep- BwNot-
+                LnkCtl: ASPM Disabled; Disabled- Retrain- CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed unknown, Width x0, TrErr- Train- SlotClk-=
+ DLActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Not Supported, TimeoutDis+
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+        Capabilities: [e0] Power Management version 3
+                Flags: PMEClk- DSI- D1- D2- AuxCurrent=3D0mA PME(D0-,D1=
+-,D2-,D3hot-,D3cold-)
+                Status: D0 NoSoftRst+ PME-Enable- DSel=3D0 DScale=3D0 P=
+ME-
+
+00:05.0 System peripheral: Intel Corporation Sandy Bridge Address Map, =
+VTd_Misc, System Management (rev 06)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Capabilities: [40] Express (v2) Root Complex Integrated Endpoin=
+t, MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE- FLReset-
+                DevCtl: Report errors: Correctable- Non-Fatal- Fatal- U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x0, ASPM unknown,=
+ Latency L0 <64ns, L1 <1us
+                        ClockPM- Surprise- LLActRep- BwNot-
+                LnkCtl: ASPM Disabled; Disabled- Retrain- CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed unknown, Width x0, TrErr- Train- SlotClk-=
+ DLActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Not Supported, TimeoutDis-
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+
+00:05.2 System peripheral: Intel Corporation Sandy Bridge Control Statu=
+s and Global Errors (rev 06)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Capabilities: [40] Express (v2) Root Complex Integrated Endpoin=
+t, MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE- FLReset-
+                DevCtl: Report errors: Correctable- Non-Fatal- Fatal- U=
+nsupported-
+                        RlxdOrd+ ExtTag- PhantFunc- AuxPwr- NoSnoop+
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x0, ASPM unknown,=
+ Latency L0 <64ns, L1 <1us
+                        ClockPM- Surprise- LLActRep- BwNot-
+                LnkCtl: ASPM Disabled; Disabled- Retrain- CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed unknown, Width x0, TrErr- Train- SlotClk-=
+ DLActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Not Supported, TimeoutDis-
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+
+00:05.4 PIC: Intel Corporation Sandy Bridge I/O APIC (rev 06) (prog-if =
+20 [IO(X)-APIC])
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0, Cache Line Size: 64 bytes
+        Region 0: Memory at d0c60000 (32-bit, non-prefetchable) [size=3D=
+4K]
+        Capabilities: [6c] Power Management version 3
+                Flags: PMEClk- DSI- D1- D2- AuxCurrent=3D0mA PME(D0-,D1=
+-,D2-,D3hot-,D3cold-)
+                Status: D0 NoSoftRst+ PME-Enable- DSel=3D0 DScale=3D0 P=
+ME-
+
+00:05.6 Performance counters: Intel Corporation Sandy Bridge IIO Switch=
+ and IRP Performance Monitor (rev 06)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Capabilities: [40] Express (v2) Root Complex Integrated Endpoin=
+t, MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE- FLReset-
+                DevCtl: Report errors: Correctable- Non-Fatal- Fatal- U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x0, ASPM unknown,=
+ Latency L0 <64ns, L1 <1us
+                        ClockPM- Surprise- LLActRep- BwNot-
+                LnkCtl: ASPM Disabled; Disabled- Retrain- CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed unknown, Width x0, TrErr- Train- SlotClk-=
+ DLActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Not Supported, TimeoutDis-
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+
+00:06.0 System peripheral: Intel Corporation Device 3c60 (rev 06)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Capabilities: [40] Express (v2) Root Complex Integrated Endpoin=
+t, MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable- Non-Fatal- Fatal- U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x0, ASPM L0s, Lat=
+ency L0 unlimited, L1 unlimited
+                        ClockPM- Surprise+ LLActRep+ BwNot+
+                LnkCtl: ASPM Disabled; Disabled- Retrain- CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed unknown, Width x0, TrErr- Train- SlotClk+=
+ DLActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Not Supported, TimeoutDis-
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+
+00:06.1 Host bridge: Intel Corporation Device 3c61 (rev 06)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Capabilities: [40] Express (v2) Root Complex Integrated Endpoin=
+t, MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable- Non-Fatal- Fatal- U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x0, ASPM L0s, Lat=
+ency L0 unlimited, L1 unlimited
+                        ClockPM- Surprise+ LLActRep+ BwNot+
+                LnkCtl: ASPM Disabled; Disabled- Retrain- CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed unknown, Width x0, TrErr- Train- SlotClk+=
+ DLActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Not Supported, TimeoutDis-
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+
+00:06.2 Host bridge: Intel Corporation Device 3c62 (rev 06)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Capabilities: [40] Express (v2) Root Complex Integrated Endpoin=
+t, MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable- Non-Fatal- Fatal- U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x0, ASPM L0s, Lat=
+ency L0 unlimited, L1 unlimited
+                        ClockPM- Surprise+ LLActRep+ BwNot+
+                LnkCtl: ASPM Disabled; Disabled- Retrain- CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed unknown, Width x0, TrErr- Train- SlotClk+=
+ DLActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Not Supported, TimeoutDis-
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+
+00:06.3 Host bridge: Intel Corporation Device 3c63 (rev 06)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Capabilities: [40] Express (v2) Root Complex Integrated Endpoin=
+t, MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable- Non-Fatal- Fatal- U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x0, ASPM L0s, Lat=
+ency L0 unlimited, L1 unlimited
+                        ClockPM- Surprise+ LLActRep+ BwNot+
+                LnkCtl: ASPM Disabled; Disabled- Retrain- CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed unknown, Width x0, TrErr- Train- SlotClk+=
+ DLActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Not Supported, TimeoutDis-
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+
+00:06.4 Host bridge: Intel Corporation Device 3c64 (rev 06)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Capabilities: [40] Express (v2) Root Complex Integrated Endpoin=
+t, MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable- Non-Fatal- Fatal- U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x0, ASPM L0s, Lat=
+ency L0 unlimited, L1 unlimited
+                        ClockPM- Surprise+ LLActRep+ BwNot+
+                LnkCtl: ASPM Disabled; Disabled- Retrain- CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed unknown, Width x0, TrErr- Train- SlotClk+=
+ DLActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Not Supported, TimeoutDis-
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+
+00:06.5 Host bridge: Intel Corporation Device 3c65 (rev 06)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Capabilities: [40] Express (v2) Root Complex Integrated Endpoin=
+t, MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable- Non-Fatal- Fatal- U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x0, ASPM L0s, Lat=
+ency L0 unlimited, L1 unlimited
+                        ClockPM- Surprise+ LLActRep+ BwNot+
+                LnkCtl: ASPM Disabled; Disabled- Retrain- CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed unknown, Width x0, TrErr- Train- SlotClk+=
+ DLActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Not Supported, TimeoutDis-
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+
+00:06.6 Host bridge: Intel Corporation Device 3c66 (rev 06)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Capabilities: [40] Express (v2) Root Complex Integrated Endpoin=
+t, MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable- Non-Fatal- Fatal- U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x0, ASPM L0s, Lat=
+ency L0 unlimited, L1 unlimited
+                        ClockPM- Surprise+ LLActRep+ BwNot+
+                LnkCtl: ASPM Disabled; Disabled- Retrain- CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed unknown, Width x0, TrErr- Train- SlotClk+=
+ DLActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Not Supported, TimeoutDis-
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+
+00:06.7 Host bridge: Intel Corporation Device 3c67 (rev 06)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Capabilities: [40] Express (v2) Root Complex Integrated Endpoin=
+t, MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable- Non-Fatal- Fatal- U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x0, ASPM L0s, Lat=
+ency L0 unlimited, L1 unlimited
+                        ClockPM- Surprise+ LLActRep+ BwNot+
+                LnkCtl: ASPM Disabled; Disabled- Retrain- CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed unknown, Width x0, TrErr- Train- SlotClk+=
+ DLActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Not Supported, TimeoutDis-
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+
+00:07.0 Host bridge: Intel Corporation Device 3c68 (rev 06)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Capabilities: [40] Express (v2) Root Complex Integrated Endpoin=
+t, MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable- Non-Fatal- Fatal- U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x0, ASPM L0s, Lat=
+ency L0 unlimited, L1 unlimited
+                        ClockPM- Surprise+ LLActRep+ BwNot+
+                LnkCtl: ASPM Disabled; Disabled- Retrain- CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed unknown, Width x0, TrErr- Train- SlotClk+=
+ DLActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Not Supported, TimeoutDis-
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+
+00:07.1 Host bridge: Intel Corporation Device 3c69 (rev 06)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Capabilities: [40] Express (v2) Root Complex Integrated Endpoin=
+t, MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable- Non-Fatal- Fatal- U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x0, ASPM L0s, Lat=
+ency L0 unlimited, L1 unlimited
+                        ClockPM- Surprise+ LLActRep+ BwNot+
+                LnkCtl: ASPM Disabled; Disabled- Retrain- CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed unknown, Width x0, TrErr- Train- SlotClk+=
+ DLActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Not Supported, TimeoutDis-
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+
+00:07.2 Host bridge: Intel Corporation Device 3c6a (rev 06)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Capabilities: [40] Express (v2) Root Complex Integrated Endpoin=
+t, MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable- Non-Fatal- Fatal- U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x0, ASPM L0s, Lat=
+ency L0 unlimited, L1 unlimited
+                        ClockPM- Surprise+ LLActRep+ BwNot+
+                LnkCtl: ASPM Disabled; Disabled- Retrain- CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed unknown, Width x0, TrErr- Train- SlotClk+=
+ DLActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Not Supported, TimeoutDis-
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+
+00:07.3 Host bridge: Intel Corporation Device 3c6b (rev 06)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Capabilities: [40] Express (v2) Root Complex Integrated Endpoin=
+t, MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable- Non-Fatal- Fatal- U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x0, ASPM L0s, Lat=
+ency L0 unlimited, L1 unlimited
+                        ClockPM- Surprise+ LLActRep+ BwNot+
+                LnkCtl: ASPM Disabled; Disabled- Retrain- CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed unknown, Width x0, TrErr- Train- SlotClk+=
+ DLActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Not Supported, TimeoutDis-
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+
+00:07.4 Host bridge: Intel Corporation Device 3c6c (rev 06)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Capabilities: [40] Express (v2) Root Complex Integrated Endpoin=
+t, MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable- Non-Fatal- Fatal- U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #0, Speed unknown, Width x0, ASPM L0s, Lat=
+ency L0 unlimited, L1 unlimited
+                        ClockPM- Surprise+ LLActRep+ BwNot+
+                LnkCtl: ASPM Disabled; Disabled- Retrain- CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed unknown, Width x0, TrErr- Train- SlotClk+=
+ DLActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Not Supported, TimeoutDis-
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+
+00:11.0 PCI bridge: Intel Corporation Patsburg PCI Express Virtual Root=
+ Port (rev 05) (prog-if 00 [Normal decode])
+        Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0, Cache Line Size: 64 bytes
+        Bus: primary=3D00, secondary=3D06, subordinate=3D06, sec-latenc=
+y=3D0
+        I/O behind bridge: 00001000-00001fff
+        Memory behind bridge: d0b00000-d0bfffff
+        Prefetchable memory behind bridge: 00000000eb800000-00000000ebc=
+fffff
+        Secondary status: 66MHz- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- <SERR- <PERR-
+        BridgeCtl: Parity- SERR- NoISA- VGA- MAbort- >Reset- FastB2B-
+                PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
+        Capabilities: [40] Express (v2) Root Port (Slot-), MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable- Non-Fatal- Fatal- U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 4096 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
+- TransPend-
+                LnkCap: Port #17, Speed 2.5GT/s, Width x1, ASPM L0s L1,=
+ Latency L0 <64ns, L1 <1us
+                        ClockPM- Surprise- LLActRep- BwNot-
+                LnkCtl: ASPM Disabled; RCB 64 bytes Disabled- Retrain- =
+CommClk+
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed 2.5GT/s, Width x1, TrErr- Train- SlotClk+=
+ DLActive- BWMgmt- ABWMgmt-
+                RootCtl: ErrCorrectable- ErrNon-Fatal- ErrFatal- PMEInt=
+Ena- CRSVisible-
+                RootCap: CRSVisible-
+                RootSta: PME ReqID 0000, PMEStatus- PMEPending-
+                DevCap2: Completion Timeout: Not Supported, TimeoutDis-=
+ ARIFwd+
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis- =
+ARIFwd-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+        Capabilities: [80] Power Management version 3
+                Flags: PMEClk- DSI- D1- D2- AuxCurrent=3D0mA PME(D0+,D1=
+-,D2-,D3hot+,D3cold+)
+                Status: D0 NoSoftRst- PME-Enable- DSel=3D0 DScale=3D0 P=
+ME-
+        Capabilities: [88] Subsystem: Intel Corporation Device 3596
+        Capabilities: [90] MSI: Enable- Count=3D1/1 Maskable- 64bit-
+                Address: 00000000  Data: 0000
+        Kernel driver in use: pcieport
+
+00:16.0 Communication controller: Intel Corporation X79 series chipset =
+HECI Controller #2 (rev 05)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0
+        Interrupt: pin A routed to IRQ 11
+        Region 0: Memory at d0c50000 (64-bit, non-prefetchable) [size=3D=
+16]
+        Capabilities: [50] Power Management version 3
+                Flags: PMEClk- DSI- D1- D2- AuxCurrent=3D0mA PME(D0+,D1=
+-,D2-,D3hot+,D3cold+)
+                Status: D0 NoSoftRst+ PME-Enable- DSel=3D0 DScale=3D0 P=
+ME-
+        Capabilities: [8c] MSI: Enable- Count=3D1/1 Maskable- 64bit+
+                Address: 0000000000000000  Data: 0000
+
+00:16.1 Communication controller: Intel Corporation X79 series chipset =
+IDE-r Controller (rev 05)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0
+        Interrupt: pin A routed to IRQ 11
+        Region 0: Memory at d0c40000 (64-bit, non-prefetchable) [size=3D=
+16]
+        Capabilities: [50] Power Management version 3
+                Flags: PMEClk- DSI- D1- D2- AuxCurrent=3D0mA PME(D0+,D1=
+-,D2-,D3hot+,D3cold+)
+                Status: D0 NoSoftRst+ PME-Enable- DSel=3D0 DScale=3D0 P=
+ME-
+        Capabilities: [8c] MSI: Enable- Count=3D1/1 Maskable- 64bit+
+                Address: 0000000000000000  Data: 0000
+
+00:1a.0 USB controller: Intel Corporation X79 series chipset USB2 Enhan=
+ced Host Controller #2 (rev 05) (prog-if 20 [EHCI])
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err+ Stepping- SERR+ FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B+ ParErr- DEVSEL=3Dmedium >TAbo=
+rt- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0
+        Interrupt: pin B routed to IRQ 22
+        Region 0: Memory at d0c20000 (32-bit, non-prefetchable) [size=3D=
+1K]
+        Capabilities: [50] Power Management version 2
+                Flags: PMEClk- DSI- D1- D2- AuxCurrent=3D375mA PME(D0+,=
+D1-,D2-,D3hot+,D3cold+)
+                Status: D0 NoSoftRst- PME-Enable- DSel=3D0 DScale=3D0 P=
+ME-
+        Capabilities: [58] Debug port: BAR=3D1 offset=3D00a0
+        Capabilities: [98] PCI Advanced Features
+                AFCap: TP+ FLR+
+                AFCtrl: FLR-
+                AFStatus: TP-
+        Kernel driver in use: ehci_hcd
+
+00:1c.0 PCI bridge: Intel Corporation X79 series chipset PCI Express Ro=
+ot Port 1 (rev b5) (prog-if 00 [Normal decode])
+        Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err+ Stepping- SERR+ FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0, Cache Line Size: 64 bytes
+        Bus: primary=3D00, secondary=3D07, subordinate=3D07, sec-latenc=
+y=3D0
+        I/O behind bridge: 0000f000-00000fff
+        Memory behind bridge: fff00000-000fffff
+        Prefetchable memory behind bridge: 00000000fff00000-00000000000=
+fffff
+        Secondary status: 66MHz- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort+ <SERR- <PERR-
+        BridgeCtl: Parity+ SERR+ NoISA- VGA- MAbort- >Reset- FastB2B-
+                PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
+        Capabilities: [40] Express (v2) Root Port (Slot+), MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable+ Non-Fatal+ Fatal+ U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
++ TransPend-
+                LnkCap: Port #1, Speed 5GT/s, Width x4, ASPM L0s L1, La=
+tency L0 <1us, L1 <4us
+                        ClockPM- Surprise- LLActRep+ BwNot-
+                LnkCtl: ASPM Disabled; RCB 64 bytes Disabled- Retrain- =
+CommClk-
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed 2.5GT/s, Width x0, TrErr- Train- SlotClk+=
+ DLActive- BWMgmt- ABWMgmt-
+                SltCap: AttnBtn- PwrCtrl- MRL- AttnInd- PwrInd- HotPlug=
+- Surpise-
+                        Slot #101, PowerLimit 25.000000; Interlock- NoC=
+ompl+
+                SltCtl: Enable: AttnBtn- PwrFlt- MRL- PresDet- CmdCplt-=
+ HPIrq- LinkChg-
+                        Control: AttnInd Unknown, PwrInd Unknown, Power=
+- Interlock-
+                SltSta: Status: AttnBtn- PowerFlt- MRL- CmdCplt- PresDe=
+t- Interlock-
+                        Changed: MRL- PresDet- LinkState-
+                RootCtl: ErrCorrectable+ ErrNon-Fatal+ ErrFatal+ PMEInt=
+Ena- CRSVisible-
+                RootCap: CRSVisible-
+                RootSta: PME ReqID 0000, PMEStatus- PMEPending-
+                DevCap2: Completion Timeout: Range BC, TimeoutDis+ ARIF=
+wd-
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis- =
+ARIFwd-
+                LnkCtl2: Target Link Speed: 5GT/s, EnterCompliance- Spe=
+edDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -3.5dB
+        Capabilities: [80] MSI: Enable- Count=3D1/1 Maskable- 64bit-
+                Address: 00000000  Data: 0000
+        Capabilities: [90] Subsystem: Intel Corporation Device 3596
+        Capabilities: [a0] Power Management version 2
+                Flags: PMEClk- DSI- D1- D2- AuxCurrent=3D0mA PME(D0+,D1=
+-,D2-,D3hot+,D3cold+)
+                Status: D0 NoSoftRst- PME-Enable- DSel=3D0 DScale=3D0 P=
+ME-
+        Kernel driver in use: pcieport
+
+00:1c.7 PCI bridge: Intel Corporation X79 series chipset PCI Express Ro=
+ot Port 8 (rev b5) (prog-if 00 [Normal decode])
+        Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err+ Stepping- SERR+ FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0, Cache Line Size: 64 bytes
+        Bus: primary=3D00, secondary=3D08, subordinate=3D08, sec-latenc=
+y=3D0
+        I/O behind bridge: 0000f000-00000fff
+        Memory behind bridge: d0000000-d08fffff
+        Prefetchable memory behind bridge: 00000000ea000000-00000000eaf=
+fffff
+        Secondary status: 66MHz- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- <SERR- <PERR-
+        BridgeCtl: Parity+ SERR+ NoISA- VGA+ MAbort- >Reset- FastB2B-
+                PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
+        Capabilities: [40] Express (v2) Root Port (Slot+), MSI 00
+                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s =
+<64ns, L1 <1us
+                        ExtTag- RBE+ FLReset-
+                DevCtl: Report errors: Correctable+ Non-Fatal+ Fatal+ U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr=
++ TransPend-
+                LnkCap: Port #8, Speed 5GT/s, Width x1, ASPM L0s L1, La=
+tency L0 <512ns, L1 <4us
+                        ClockPM- Surprise- LLActRep+ BwNot-
+                LnkCtl: ASPM Disabled; RCB 64 bytes Disabled- Retrain- =
+CommClk+
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed 2.5GT/s, Width x1, TrErr- Train- SlotClk+=
+ DLActive+ BWMgmt+ ABWMgmt-
+                SltCap: AttnBtn- PwrCtrl- MRL- AttnInd- PwrInd- HotPlug=
+- Surpise-
+                        Slot #  0, PowerLimit 10.000000; Interlock- NoC=
+ompl+
+                SltCtl: Enable: AttnBtn- PwrFlt- MRL- PresDet- CmdCplt-=
+ HPIrq- LinkChg-
+                        Control: AttnInd Unknown, PwrInd Unknown, Power=
+- Interlock-
+                SltSta: Status: AttnBtn- PowerFlt- MRL- CmdCplt- PresDe=
+t+ Interlock-
+                        Changed: MRL- PresDet- LinkState+
+                RootCtl: ErrCorrectable+ ErrNon-Fatal+ ErrFatal+ PMEInt=
+Ena- CRSVisible-
+                RootCap: CRSVisible-
+                RootSta: PME ReqID 0000, PMEStatus- PMEPending-
+                DevCap2: Completion Timeout: Range BC, TimeoutDis+ ARIF=
+wd-
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis- =
+ARIFwd-
+                LnkCtl2: Target Link Speed: 5GT/s, EnterCompliance- Spe=
+edDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -3.5dB
+        Capabilities: [80] MSI: Enable- Count=3D1/1 Maskable- 64bit-
+                Address: 00000000  Data: 0000
+        Capabilities: [90] Subsystem: Intel Corporation Device 3596
+        Capabilities: [a0] Power Management version 2
+                Flags: PMEClk- DSI- D1- D2- AuxCurrent=3D0mA PME(D0+,D1=
+-,D2-,D3hot+,D3cold+)
+                Status: D0 NoSoftRst- PME-Enable- DSel=3D0 DScale=3D0 P=
+ME-
+        Kernel driver in use: pcieport
+
+00:1d.0 USB controller: Intel Corporation X79 series chipset USB2 Enhan=
+ced Host Controller #1 (rev 05) (prog-if 20 [EHCI])
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err+ Stepping- SERR+ FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B+ ParErr- DEVSEL=3Dmedium >TAbo=
+rt- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0
+        Interrupt: pin A routed to IRQ 20
+        Region 0: Memory at d0c10000 (32-bit, non-prefetchable) [size=3D=
+1K]
+        Capabilities: [50] Power Management version 2
+                Flags: PMEClk- DSI- D1- D2- AuxCurrent=3D375mA PME(D0+,=
+D1-,D2-,D3hot+,D3cold+)
+                Status: D0 NoSoftRst- PME-Enable- DSel=3D0 DScale=3D0 P=
+ME-
+        Capabilities: [58] Debug port: BAR=3D1 offset=3D00a0
+        Capabilities: [98] PCI Advanced Features
+                AFCap: TP+ FLR+
+                AFCtrl: FLR-
+                AFStatus: TP-
+        Kernel driver in use: ehci_hcd
+
+00:1e.0 PCI bridge: Intel Corporation 82801 PCI Bridge (rev a5) (prog-i=
+f 01 [Subtractive decode])
+        Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err+ Stepping- SERR+ FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0
+        Bus: primary=3D00, secondary=3D09, subordinate=3D09, sec-latenc=
+y=3D32
+        I/O behind bridge: 0000f000-00000fff
+        Memory behind bridge: fff00000-000fffff
+        Prefetchable memory behind bridge: 00000000fff00000-00000000000=
+fffff
+        Secondary status: 66MHz- FastB2B+ ParErr- DEVSEL=3Dmedium >TAbo=
+rt- <TAbort- <MAbort+ <SERR- <PERR-
+        BridgeCtl: Parity+ SERR+ NoISA- VGA- MAbort- >Reset- FastB2B-
+                PriDiscTmr- SecDiscTmr+ DiscTmrStat- DiscTmrSERREn+
+        Capabilities: [50] Subsystem: Intel Corporation Device 3596
+
+00:1f.0 ISA bridge: Intel Corporation X79 series chipset LPC Controller=
+ (rev 05)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err+ Stepping- SERR+ FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dmedium >TAbo=
+rt- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0
+        Capabilities: [e0] Vendor Specific Information <?>
+
+00:1f.2 SATA controller: Intel Corporation X79 series chipset 6-Port SA=
+TA AHCI Controller (rev 05) (prog-if 01 [AHCI 1.0])
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err+ Stepping- SERR- FastB2B- DisINTx+
+        Status: Cap+ 66MHz+ UDF- FastB2B+ ParErr- DEVSEL=3Dmedium >TAbo=
+rt- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0
+        Interrupt: pin B routed to IRQ 92
+        Region 0: I/O ports at 3070 [size=3D8]
+        Region 1: I/O ports at 3060 [size=3D4]
+        Region 2: I/O ports at 3050 [size=3D8]
+        Region 3: I/O ports at 3040 [size=3D4]
+        Region 4: I/O ports at 3020 [size=3D32]
+        Region 5: Memory at d0c00000 (32-bit, non-prefetchable) [size=3D=
+2K]
+        Capabilities: [80] MSI: Enable+ Count=3D1/1 Maskable- 64bit-
+                Address: fee00000  Data: 4091
+        Capabilities: [70] Power Management version 3
+                Flags: PMEClk- DSI- D1- D2- AuxCurrent=3D0mA PME(D0-,D1=
+-,D2-,D3hot+,D3cold-)
+                Status: D0 NoSoftRst+ PME-Enable- DSel=3D0 DScale=3D0 P=
+ME-
+        Capabilities: [a8] SATA HBA <?>
+        Capabilities: [b0] PCI Advanced Features
+                AFCap: TP+ FLR+
+                AFCtrl: FLR-
+                AFStatus: TP-
+        Kernel driver in use: ahci
+
+00:1f.3 SMBus: Intel Corporation X79 series chipset SMBus Host Controll=
+er (rev 05)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O+ Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop- Par=
+Err+ Stepping- SERR+ FastB2B- DisINTx-
+        Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=3Dmedium >TAbo=
+rt- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Interrupt: pin C routed to IRQ 23
+        Region 0: Memory at ebf10000 (64-bit, non-prefetchable) [size=3D=
+256]
+        Region 4: I/O ports at 3000 [size=3D32]
+
+02:00.0 Ethernet controller: Intel Corporation I350 Gigabit Network Con=
+nection (rev 01)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err+ Stepping- SERR+ FastB2B- DisINTx+
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0, Cache Line Size: 64 bytes
+        Interrupt: pin A routed to IRQ 27
+        Region 0: Memory at d0960000 (32-bit, non-prefetchable) [size=3D=
+128K]
+        Region 2: I/O ports at 2060 [size=3D32]
+        Region 3: Memory at d09b0000 (32-bit, non-prefetchable) [size=3D=
+16K]
+        Capabilities: [40] Power Management version 3
+                Flags: PMEClk- DSI+ D1- D2- AuxCurrent=3D0mA PME(D0+,D1=
+-,D2-,D3hot+,D3cold+)
+                Status: D0 NoSoftRst+ PME-Enable- DSel=3D0 DScale=3D1 P=
+ME-
+        Capabilities: [50] MSI: Enable- Count=3D1/1 Maskable+ 64bit+
+                Address: 0000000000000000  Data: 0000
+                Masking: 00000000  Pending: 00000000
+        Capabilities: [70] MSI-X: Enable+ Count=3D10 Masked-
+                Vector table: BAR=3D3 offset=3D00000000
+                PBA: BAR=3D3 offset=3D00002000
+        Capabilities: [a0] Express (v2) Endpoint, MSI 00
+                DevCap: MaxPayload 512 bytes, PhantFunc 0, Latency L0s =
+<512ns, L1 <64us
+                        ExtTag- AttnBtn- AttnInd- PwrInd- RBE+ FLReset+
+                DevCtl: Report errors: Correctable+ Non-Fatal+ Fatal+ U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop+ FL=
+Reset-
+                        MaxPayload 256 bytes, MaxReadReq 4096 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr+ UnsuppReq+ AuxPwr=
++ TransPend-
+                LnkCap: Port #2, Speed 5GT/s, Width x4, ASPM L0s L1, La=
+tency L0 <4us, L1 <32us
+                        ClockPM- Surprise- LLActRep- BwNot-
+                LnkCtl: ASPM Disabled; RCB 64 bytes Disabled- Retrain- =
+CommClk+
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed 5GT/s, Width x4, TrErr- Train- SlotClk+ D=
+LActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Range ABCD, TimeoutDis+
+                DevCtl2: Completion Timeout: 4s to 13s, TimeoutDis-
+                LnkCtl2: Target Link Speed: 5GT/s, EnterCompliance- Spe=
+edDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -3.5dB
+        Capabilities: [e0] Vital Product Data
+                Product Name: PVL Dell
+                Read-only fields:
+                        [V0] Vendor specific: FFV01.02.03.04
+                        [PN] Part number: \x01#Eg=EF=BF=BD
+                        [MN] Manufacture ID: 31 30 32 38
+                        [V1] Vendor specific: DSV1028VPDR.VER1.0
+                        [V3] Vendor specific: DTINIC
+                        [V4] Vendor specific: DCM1001008FC52101008FC532=
+01008FC54301008FC5
+                        [V5] Vendor specific: NPY4
+                        [V6] Vendor specific: PMT1
+                        [V7] Vendor specific: NMVIntel Corp
+                End
+        Kernel driver in use: igb
+
+02:00.1 Ethernet controller: Intel Corporation I350 Gigabit Network Con=
+nection (rev 01)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err+ Stepping- SERR+ FastB2B- DisINTx+
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0, Cache Line Size: 64 bytes
+        Interrupt: pin B routed to IRQ 30
+        Region 0: Memory at d0940000 (32-bit, non-prefetchable) [size=3D=
+128K]
+        Region 2: I/O ports at 2040 [size=3D32]
+        Region 3: Memory at d09a0000 (32-bit, non-prefetchable) [size=3D=
+16K]
+        Capabilities: [40] Power Management version 3
+                Flags: PMEClk- DSI+ D1- D2- AuxCurrent=3D0mA PME(D0+,D1=
+-,D2-,D3hot+,D3cold+)
+                Status: D0 NoSoftRst+ PME-Enable- DSel=3D0 DScale=3D1 P=
+ME-
+        Capabilities: [50] MSI: Enable- Count=3D1/1 Maskable+ 64bit+
+                Address: 0000000000000000  Data: 0000
+                Masking: 00000000  Pending: 00000000
+        Capabilities: [70] MSI-X: Enable+ Count=3D10 Masked-
+                Vector table: BAR=3D3 offset=3D00000000
+                PBA: BAR=3D3 offset=3D00002000
+        Capabilities: [a0] Express (v2) Endpoint, MSI 00
+                DevCap: MaxPayload 512 bytes, PhantFunc 0, Latency L0s =
+<512ns, L1 <64us
+                        ExtTag- AttnBtn- AttnInd- PwrInd- RBE+ FLReset+
+                DevCtl: Report errors: Correctable+ Non-Fatal+ Fatal+ U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop+ FL=
+Reset-
+                        MaxPayload 256 bytes, MaxReadReq 4096 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr+ UnsuppReq+ AuxPwr=
++ TransPend-
+                LnkCap: Port #2, Speed 5GT/s, Width x4, ASPM L0s L1, La=
+tency L0 <4us, L1 <32us
+                        ClockPM- Surprise- LLActRep- BwNot-
+                LnkCtl: ASPM Disabled; RCB 64 bytes Disabled- Retrain- =
+CommClk+
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed 5GT/s, Width x4, TrErr- Train- SlotClk+ D=
+LActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Range ABCD, TimeoutDis+
+                DevCtl2: Completion Timeout: 4s to 13s, TimeoutDis-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+        Capabilities: [e0] Vital Product Data
+                Product Name: PVL Dell
+                Read-only fields:
+                        [V0] Vendor specific: FFV01.02.03.04
+                        [PN] Part number: \x01#Eg=EF=BF=BD
+                        [MN] Manufacture ID: 31 30 32 38
+                        [V1] Vendor specific: DSV1028VPDR.VER1.0
+                        [V3] Vendor specific: DTINIC
+                        [V4] Vendor specific: DCM1001008FC52101008FC532=
+01008FC54301008FC5
+                        [V5] Vendor specific: NPY4
+                        [V6] Vendor specific: PMT1
+                        [V7] Vendor specific: NMVIntel Corp
+                End
+        Kernel driver in use: igb
+
+02:00.2 Ethernet controller: Intel Corporation I350 Gigabit Network Con=
+nection (rev 01)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err+ Stepping- SERR+ FastB2B- DisINTx+
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0, Cache Line Size: 64 bytes
+        Interrupt: pin C routed to IRQ 28
+        Region 0: Memory at d0920000 (32-bit, non-prefetchable) [size=3D=
+128K]
+        Region 2: I/O ports at 2020 [size=3D32]
+        Region 3: Memory at d0990000 (32-bit, non-prefetchable) [size=3D=
+16K]
+        Capabilities: [40] Power Management version 3
+                Flags: PMEClk- DSI+ D1- D2- AuxCurrent=3D0mA PME(D0+,D1=
+-,D2-,D3hot+,D3cold+)
+                Status: D0 NoSoftRst+ PME-Enable- DSel=3D0 DScale=3D1 P=
+ME-
+        Capabilities: [50] MSI: Enable- Count=3D1/1 Maskable+ 64bit+
+                Address: 0000000000000000  Data: 0000
+                Masking: 00000000  Pending: 00000000
+        Capabilities: [70] MSI-X: Enable+ Count=3D10 Masked-
+                Vector table: BAR=3D3 offset=3D00000000
+                PBA: BAR=3D3 offset=3D00002000
+        Capabilities: [a0] Express (v2) Endpoint, MSI 00
+                DevCap: MaxPayload 512 bytes, PhantFunc 0, Latency L0s =
+<512ns, L1 <64us
+                        ExtTag- AttnBtn- AttnInd- PwrInd- RBE+ FLReset+
+                DevCtl: Report errors: Correctable+ Non-Fatal+ Fatal+ U=
+nsupported-
+                        RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop+ FL=
+Reset-
+                        MaxPayload 256 bytes, MaxReadReq 4096 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr+ UnsuppReq+ AuxPwr=
++ TransPend-
+                LnkCap: Port #2, Speed 5GT/s, Width x4, ASPM L0s L1, La=
+tency L0 <4us, L1 <32us
+                        ClockPM- Surprise- LLActRep- BwNot-
+                LnkCtl: ASPM L1 Enabled; RCB 64 bytes Disabled- Retrain=
+- CommClk+
+                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+                LnkSta: Speed 5GT/s, Width x4, TrErr- Train- SlotClk+ D=
+LActive- BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Range ABCD, TimeoutDis+
+                DevCtl2: Completion Timeout: 4s to 13s, TimeoutDis-
+                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- S=
+peedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, Enter=
+ModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB
+        Capabilities: [e0] Vital Product Data
+                Product Name: PVL Dell
+                Read-only fields:
+                        [V0] Vendor specific: FFV01.02.03.04
+                        [PN] Part number: \x01#Eg=EF=BF=BD
+                        [MN] Manufacture ID: 31 30 32 38
+                        [V1] Vendor specific: DSV1028VPDR.VER1.0
+                        [V3] Vendor specific: DTINIC
+                        [V4] Vendor specific: DCM1001008FC52101008FC532=
+01008FC54301008FC5
+                        [V5] Vendor specific: NPY4
+                        [V6] Vendor specific: PMT1
+                        [V7] Vendor specific: NMVIntel Corp
+                End
+        Kernel driver in use: igb
+
+02:00.3 Ethernet controller: Intel Corporation I350 Gigabit Network Con=
+nection (rev 01)
+        Subsystem: Intel Corporation Device 3596
+        Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- Par=
+Err+ Stepping- SERR+ FastB2B- DisINTx+
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort=
+- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0, Cache Line Size: 64 bytes
+        Interrupt: pin D routed to IRQ 29
+        Region 0: Memory at d0900000 (32-bit, non-prefetchable) [size=3D=
+128K]
+        Region 2: I/O ports at 2000 [size=3D32]
+        Region 3: Memory at d0980000 (32-bit, non-prefetchable) [size=3D=
+16K]
+        Capabilities: [40] Power Management version 3
+                Flags: PMEClk- DSI+ D1- D2- AuxCurrent=3D0mA PME(D0+,D1=
+-,D2-,D3hot+,D3cold+)
+                Status: D0 NoSoftRst+ PME-Enable- DSel=3D0 DScale=3D1 P=
+ME-
+        Capabilities: [50] MSI: Enable- Count=3D1/1 Maskable+ 64bit+
+                Address: 0000000000000000  Data: 0000
+                Masking: 00000000  Pending: 00000000
+
+
+
+
+--=20
+Chris Friesen
+Software Developer
+GENBAND
+chris.friesen@genband.com
+www.genband.com
