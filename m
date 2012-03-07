@@ -1,70 +1,68 @@
-From: KyongHo Cho <pullip.cho@samsung.com>
-Subject: Re: [PATCH v10 3/3] iommu/exynos: Add iommu driver for Exynos Platforms
-Date: Wed, 7 Mar 2012 15:22:33 +0900
-Message-ID: <CAHQjnOOQKS1EU-3zWDDq2sLxPucY9CRZyrnaT5cyyrSa9-k9Nw@mail.gmail.com>
-References: <002201ccfb73$93311520$b9933f60$%cho@samsung.com>
-	<CAAQKjZNJHeApuiyh467w8wGaY8VFb_PqLrvHGUxmE8-+a4yRTA@mail.gmail.com>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCHv7 9/9] ARM: dma-mapping: add support for IOMMU mapper
+Date: Wed, 7 Mar 2012 07:37:06 +0100
+Message-ID: <20120307.083706.2087121294965856946.hdoyu@nvidia.com>
+References: <000001ccfaea$00c16f70$02444e50$%szyprowski@samsung.com><401E54CE964CD94BAE1EB4A729C7087E37970113FE@HQMAIL04.nvidia.com><20120307.080952.2152478004740487196.hdoyu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <CAAQKjZNJHeApuiyh467w8wGaY8VFb_PqLrvHGUxmE8-+a4yRTA@mail.gmail.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: InKi Dae <daeinki@gmail.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Joerg Roedel <joro@8bytes.org>, Subash Patel <subash.ramaswamy@linaro.org>, Younglak Kim <younglak1004.kim@samsung.com>, Kyungmin Park <kyungmin.park@samsung.com>, Sanghyun Lee <sanghyun75.lee@samsung.com>, Marek Szyprowski <m.szyprowski@samsung.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20120307.080952.2152478004740487196.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Krishna Reddy <vdumpa-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: "linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "shariq.hasnain-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <shariq.hasnain-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "chunsang.jeong-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <chunsang.jeong-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org" <linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "andrzej.p-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <andrzej.p-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org" <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, "pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 7, 2012 at 2:28 PM, InKi Dae <daeinki@gmail.com> wrote:
->> +static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
->> +{
->> + =A0 =A0 =A0 /* SYSMMU is in blocked when interrupt occurred. */
->> + =A0 =A0 =A0 struct sysmmu_drvdata *data =3D dev_id;
->> + =A0 =A0 =A0 struct resource *irqres;
->> + =A0 =A0 =A0 struct platform_device *pdev;
->> + =A0 =A0 =A0 enum EXYNOS_SYSMMU_INTERRUPT_TYPE itype;
->
-> how about to change EXYNOS_SYSMMU_INTERRUPT_TYPE to small letter? jus=
-t
-> for code clean.
->
-I will. please refer to the my reply to Kyungmin Park.
+From: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCHv7 9/9] ARM: dma-mapping: add support for IOMMU mapper
+Date: Wed, 07 Mar 2012 08:09:52 +0200 (EET)
+Message-ID: <20120307.080952.2152478004740487196.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
->> + =A0 =A0 =A0 unsigned long addr =3D -1;
->> +
->> + =A0 =A0 =A0 int i, ret =3D -ENOSYS;
->> +
->> + =A0 =A0 =A0 read_lock(&data->lock);
->> +
->> + =A0 =A0 =A0 WARN_ON(!is_sysmmu_active(data));
->> +
->> + =A0 =A0 =A0 pdev =3D to_platform_device(data->sysmmu);
->> + =A0 =A0 =A0 for (i =3D 0; i < pdev->num_resources; i++) {
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 irqres =3D platform_get_resource(pdev,=
- IORESOURCE_IRQ, i);
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 if (irqres && ((int)irqres->start =3D=3D=
- irq))
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 break;
->> + =A0 =A0 =A0 }
->
-> is there any reason that it should get irq resources in interrupt
-> handler? if not so then how about to move it into probe()?
->
-The platform device of ISP has a lot of IRQ sources.
-The above for clause determines which IRQ source (System MMU)
-generated the interrupt.
+> From: Krishna Reddy <vdumpa-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> Subject: RE: [PATCHv7 9/9] ARM: dma-mapping: add support for IOMMU mapper
+> Date: Tue, 6 Mar 2012 23:48:42 +0100
+> Message-ID: <401E54CE964CD94BAE1EB4A729C7087E37970113FE-wAPRp6hVlRhDw2glCA4ptUEOCMrvLtNR@public.gmane.org>
+> 
+> > > > +struct dma_iommu_mapping *
+> > > > +arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, size_t size,
+> > > > +                        int order)
+> > > > +{
+> > > > +       unsigned int count = (size >> PAGE_SHIFT) - order;
+> > > > +       unsigned int bitmap_size = BITS_TO_LONGS(count) * sizeof(long);
+> > 
+> > The count calculation doesn't seem correct. "order" is log2 number and
+> >  size >> PAGE_SHIFT is number of pages. 
+> > 
+> > If size is passed as 64*4096(256KB) and order is 6(allocation granularity is 2^6 pages=256KB),
+> >  just 1 bit is enough to manage allocations.  So it should be 4 bytes or one long.
+> 
+> Good catch!
+> 
+> > But the calculation gives count = 64 - 6 = 58 and 
+> > Bitmap_size gets set to (58/(4*8)) * 4 = 8 bytes, which is incorrect.
+> 
+> "order" isn't the order of size passed, which is minimal *page*
+> allocation order which client decides whatever, just in case.
+> 
+> > It should be as follows.
+> > unsigned int count = 1 << get_order(size) - order;
 
->> +
->> + =A0 =A0 =A0 if (i =3D=3D pdev->num_resources) {
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 itype =3D SYSMMU_FAULT_UNKNOWN;
->> + =A0 =A0 =A0 } else {
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 i /=3D 2;
->> +
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 itype =3D (enum EXYNOS_SYSMMU_INTERRUP=
-T_TYPE)
->
-> ditto.
->
+To be precise, as below?
 
-Thank you.
+ unsigned int count = 1 << (get_order(size) - order);
 
-Cho KyongHo.
+> > unsigned int bitmap_size = BITS_TO_LONGS(count) * sizeof(long) * BITS_PER_BYTE;
+> > 
+> > -KR
+> > 
+> > --nvpublic
+> > 
+> > 
