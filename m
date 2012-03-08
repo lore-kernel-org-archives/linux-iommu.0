@@ -1,126 +1,53 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: RE: [PATCHv7 9/9] ARM: dma-mapping: add support for IOMMU mapper
-Date: Wed, 07 Mar 2012 17:58:07 +0100
-Message-ID: <011701ccfc83$78030180$68090480$%szyprowski@samsung.com>
-References: <401E54CE964CD94BAE1EB4A729C7087E37970113FE@HQMAIL04.nvidia.com>
- <20120307.080952.2152478004740487196.hdoyu@nvidia.com>
- <20120307.083706.2087121294965856946.hdoyu@nvidia.com>
- <20120307.091601.458605132780655792.hdoyu@nvidia.com>
+From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH] AMD IOMMU: iommu_set_device_table() must not be __init
+Date: Thu, 8 Mar 2012 11:38:13 +0100
+Message-ID: <20120308103813.GP10684@amd.com>
+References: <4F5882B502000078000770CE@nat28.tlf.novell.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7BIT
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <20120307.091601.458605132780655792.hdoyu@nvidia.com>
-Content-language: pl
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: 'Hiroshi Doyu' <hdoyu@nvidia.com>, 'Krishna Reddy' <vdumpa@nvidia.com>
-Cc: linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, shariq.hasnain@linaro.org, arnd@arndb.de, benh@kernel.crashing.org, kyungmin.park@samsung.com, Andrzej Pietrasiewicz <andrzej.p@samsung.com>, linux@arm.linux.org.uk, pullip.cho@samsung.com, chunsang.jeong@linaro.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <4F5882B502000078000770CE-ce6RLXgGx+vWGUEhTRrCg1aTQe2KTcn/@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jan Beulich <JBeulich-IBi9RG/b67k@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
-
-On Wednesday, March 07, 2012 8:16 AM Hiroshi Doyu wrote:
-
-> From: Hiroshi DOYU <hdoyu@nvidia.com>
-> Subject: Re: [PATCHv7 9/9] ARM: dma-mapping: add support for IOMMU mapper
-> Date: Wed, 07 Mar 2012 08:37:06 +0200 (EET)
-> Message-ID: <20120307.083706.2087121294965856946.hdoyu@nvidia.com>
+On Thu, Mar 08, 2012 at 08:58:13AM +0000, Jan Beulich wrote:
+> This function is called from enable_iommus(), which in turn is used
+> from amd_iommu_resume().
 > 
-> > From: Hiroshi DOYU <hdoyu@nvidia.com>
-> > Subject: Re: [PATCHv7 9/9] ARM: dma-mapping: add support for IOMMU mapper
-> > Date: Wed, 07 Mar 2012 08:09:52 +0200 (EET)
-> > Message-ID: <20120307.080952.2152478004740487196.hdoyu@nvidia.com>
-> >
-> > > From: Krishna Reddy <vdumpa@nvidia.com>
-> > > Subject: RE: [PATCHv7 9/9] ARM: dma-mapping: add support for IOMMU mapper
-> > > Date: Tue, 6 Mar 2012 23:48:42 +0100
-> > > Message-ID: <401E54CE964CD94BAE1EB4A729C7087E37970113FE@HQMAIL04.nvidia.com>
-> > >
-> > > > > > +struct dma_iommu_mapping *
-> > > > > > +arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, size_t size,
-> > > > > > +                        int order)
-> > > > > > +{
-> > > > > > +       unsigned int count = (size >> PAGE_SHIFT) - order;
-> > > > > > +       unsigned int bitmap_size = BITS_TO_LONGS(count) * sizeof(long);
-> > > >
-> > > > The count calculation doesn't seem correct. "order" is log2 number and
-> > > >  size >> PAGE_SHIFT is number of pages.
-> > > >
-> > > > If size is passed as 64*4096(256KB) and order is 6(allocation granularity is 2^6
-> pages=256KB),
-> > > >  just 1 bit is enough to manage allocations.  So it should be 4 bytes or one long.
-> > >
-> > > Good catch!
-> > >
-> > > > But the calculation gives count = 64 - 6 = 58 and
-> > > > Bitmap_size gets set to (58/(4*8)) * 4 = 8 bytes, which is incorrect.
-> > >
-> > > "order" isn't the order of size passed, which is minimal *page*
-> > > allocation order which client decides whatever, just in case.
-> > >
-> > > > It should be as follows.
-> > > > unsigned int count = 1 << get_order(size) - order;
-> >
-> > To be precise, as below?
-> >
-> >  unsigned int count = 1 << (get_order(size) - order);
+> Signed-off-by: Jan Beulich <jbeulich-IBi9RG/b67k@public.gmane.org>
 > 
-> This could be:
-> 
-> From fd40740ef4bc4a3924fe1188ea6dd785be0fe859 Mon Sep 17 00:00:00 2001
-> From: Hiroshi DOYU <hdoyu@nvidia.com>
-> Date: Wed, 7 Mar 2012 08:14:38 +0200
-> Subject: [PATCH 1/1] dma-mapping: Fix count calculation of iova space
-> 
-> Fix count calculation of iova space.
-> Pointed by Krishna Reddy <vdumpa@nvidia.com>
-> 
-> Signed-off-by: Hiroshi DOYU <hdoyu@nvidia.com>
 > ---
->  arch/arm/mm/dma-mapping.c |   11 +++++++++--
->  1 files changed, 9 insertions(+), 2 deletions(-)
+>  drivers/iommu/amd_iommu_init.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-> index 6c2f104..56f0af5 100644
-> --- a/arch/arm/mm/dma-mapping.c
-> +++ b/arch/arm/mm/dma-mapping.c
-> @@ -1483,11 +1483,18 @@ struct dma_iommu_mapping *
->  arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, size_t size,
->  			 int order)
+> --- 3.3-rc6/drivers/iommu/amd_iommu_init.c
+> +++ 3.3-rc6-amd-iommu-sections/drivers/iommu/amd_iommu_init.c
+> @@ -275,7 +275,7 @@ static void iommu_set_exclusion_range(st
+>  }
+>  
+>  /* Programs the physical address of the device table into the IOMMU hardware */
+> -static void __init iommu_set_device_table(struct amd_iommu *iommu)
+> +static void iommu_set_device_table(struct amd_iommu *iommu)
 >  {
-> -	unsigned int count = (size >> PAGE_SHIFT) - order;
-> -	unsigned int bitmap_size = BITS_TO_LONGS(count) * sizeof(long);
-> +	unsigned int n, count;
-> +	unsigned int bitmap_size;
->  	struct dma_iommu_mapping *mapping;
->  	int err = -ENOMEM;
-> 
-> +	n = get_order(size);
-> +	if (n < order)
-> +		return ERR_PTR(-EINVAL);
-> +
-> +	count = 1 << (n - order);
-> +	bitmap_size = BITS_TO_LONGS(count) * sizeof(long);
-> +
->  	mapping = kzalloc(sizeof(struct dma_iommu_mapping), GFP_KERNEL);
->  	if (!mapping)
->  		goto err;
+>  	u64 entry;
 
-Thanks again for finding another bug. I thought that I've checked that code more
-than twice, but it looks that I've missed something again.
+Applied to iommu/fixes, thanks Jan.
 
-IMHO the size of virtual memory area doesn't need to be aligned to the power of
-two, so I will simplify it to the following code:
-
-unsigned int count = size >> (PAGE_SHIFT + order);
-unsigned int bitmap_size = BITS_TO_LONGS(count) * sizeof(long);
-
-if (!count)
-	return ERR_PTR(-EINVAL);
-
-...
-
-Best regards
 -- 
-Marek Szyprowski
-Samsung Poland R&D Center
+AMD Operating System Research Center
+
+Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
+General Managers: Alberto Bozzo
+Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
