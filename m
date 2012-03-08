@@ -1,53 +1,51 @@
-From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH] AMD IOMMU: iommu_set_device_table() must not be __init
-Date: Thu, 8 Mar 2012 11:38:13 +0100
-Message-ID: <20120308103813.GP10684@amd.com>
-References: <4F5882B502000078000770CE@nat28.tlf.novell.com>
+From: Chris Friesen <chris.friesen@genband.com>
+Subject: Re: trying to figure out why VT-d isn't working on my kernel -- solved
+Date: Thu, 08 Mar 2012 16:49:54 -0600
+Message-ID: <4F593792.1070909@genband.com>
+References: <4F56E728.8020506@genband.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <4F5882B502000078000770CE-ce6RLXgGx+vWGUEhTRrCg1aTQe2KTcn/@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jan Beulich <JBeulich-IBi9RG/b67k@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <4F56E728.8020506@genband.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Mar 08, 2012 at 08:58:13AM +0000, Jan Beulich wrote:
-> This function is called from enable_iommus(), which in turn is used
-> from amd_iommu_resume().
-> 
-> Signed-off-by: Jan Beulich <jbeulich-IBi9RG/b67k@public.gmane.org>
-> 
-> ---
->  drivers/iommu/amd_iommu_init.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> --- 3.3-rc6/drivers/iommu/amd_iommu_init.c
-> +++ 3.3-rc6-amd-iommu-sections/drivers/iommu/amd_iommu_init.c
-> @@ -275,7 +275,7 @@ static void iommu_set_exclusion_range(st
->  }
->  
->  /* Programs the physical address of the device table into the IOMMU hardware */
-> -static void __init iommu_set_device_table(struct amd_iommu *iommu)
-> +static void iommu_set_device_table(struct amd_iommu *iommu)
->  {
->  	u64 entry;
+On 03/06/2012 10:42 PM, Chris Friesen wrote:
+> Hi,
+>
+> I've got a current (pulled today) kernel running on a Xeon E5-2648L CPU
+> on an Intel motherboard, and I'm trying to get VT-d working without much success.
+>
+> lspci -vv (version 3.1.4) doesn't show anything related to IOV.
+> (Full output below.)  Since I know the I350 devices are capable of virtual
+> functions, am I correct in assuming it's something similar to the situation
+> described at https://bugzilla.redhat.com/show_bug.cgi?id=652210 and there is
+> a problem with my BIOS?  Based on comment 15 there, the fact that all
+> the DevCtl2 lines show "ARIFwd-" seems interesting.
+>
+>
+> Among other things, I've enabled the following in the kernel config:
+>
+> CONFIG_DMAR_TABLE=y
+> CONFIG_INTEL_IOMMU=y
+> CONFIG_INTEL_IOMMU_DEFAULT_ON=y
+> CONFIG_PCI_MSI=y
+> CONFIG_PCI_STUB=y
+> CONFIG_PCI_IOV=y
 
-Applied to iommu/fixes, thanks Jan.
+
+Just in case anyone else runs into this, it turns out that enabling 
+CONFIG_PCI_MMCONFIG allowed the virtual functions to be detected and 
+configured.
+
+Chris
+
 
 -- 
-AMD Operating System Research Center
-
-Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
-General Managers: Alberto Bozzo
-Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
+Chris Friesen
+Software Developer
+GENBAND
+chris.friesen@genband.com
+www.genband.com
