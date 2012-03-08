@@ -1,51 +1,83 @@
-From: Chris Friesen <chris.friesen@genband.com>
-Subject: Re: trying to figure out why VT-d isn't working on my kernel -- solved
-Date: Thu, 08 Mar 2012 16:49:54 -0600
-Message-ID: <4F593792.1070909@genband.com>
-References: <4F56E728.8020506@genband.com>
+From: Donald Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH] intel_iommu,dmar: reserve mmio of IOMMU registers
+Date: Thu,  8 Mar 2012 18:51:16 -0500
+Message-ID: <1331250676-55926-1-git-send-email-ddutile@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <4F56E728.8020506@genband.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: chrisw-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 03/06/2012 10:42 PM, Chris Friesen wrote:
-> Hi,
->
-> I've got a current (pulled today) kernel running on a Xeon E5-2648L CPU
-> on an Intel motherboard, and I'm trying to get VT-d working without much success.
->
-> lspci -vv (version 3.1.4) doesn't show anything related to IOV.
-> (Full output below.)  Since I know the I350 devices are capable of virtual
-> functions, am I correct in assuming it's something similar to the situation
-> described at https://bugzilla.redhat.com/show_bug.cgi?id=652210 and there is
-> a problem with my BIOS?  Based on comment 15 there, the fact that all
-> the DevCtl2 lines show "ARIFwd-" seems interesting.
->
->
-> Among other things, I've enabled the following in the kernel config:
->
-> CONFIG_DMAR_TABLE=y
-> CONFIG_INTEL_IOMMU=y
-> CONFIG_INTEL_IOMMU_DEFAULT_ON=y
-> CONFIG_PCI_MSI=y
-> CONFIG_PCI_STUB=y
-> CONFIG_PCI_IOV=y
+Intel-iommu initialization doesn't currently reserve the memory used
+for the IOMMU registers. This can allow the pci resource allocator
+to assign a device BAR to the same address as the IOMMU registers.
+This can cause some not so nice side affects when the driver
+ioremap's that region.
 
+Signed-off-by: Donald Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/dmar.c |   18 ++++++++++++++++--
+ 1 files changed, 16 insertions(+), 2 deletions(-)
 
-Just in case anyone else runs into this, it turns out that enabling 
-CONFIG_PCI_MMCONFIG allowed the virtual functions to be detected and 
-configured.
-
-Chris
-
-
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 35c1e17..1fcbd96 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -599,10 +599,16 @@ int alloc_iommu(struct dmar_drhd_unit *drhd)
+ 	iommu->seq_id = iommu_allocated++;
+ 	sprintf (iommu->name, "dmar%d", iommu->seq_id);
+ 
++	map_size = VTD_PAGE_SIZE;
++	if (!request_mem_region(drhd->reg_base_addr, map_size, iommu->name)) {
++		printk(KERN_ERR "IOMMU: can't reserve memory\n");
++		goto error;
++	}
++
+ 	iommu->reg = ioremap(drhd->reg_base_addr, VTD_PAGE_SIZE);
+ 	if (!iommu->reg) {
+ 		printk(KERN_ERR "IOMMU: can't map the region\n");
+-		goto error;
++		goto err_release;
+ 	}
+ 	iommu->cap = dmar_readq(iommu->reg + DMAR_CAP_REG);
+ 	iommu->ecap = dmar_readq(iommu->reg + DMAR_ECAP_REG);
+@@ -637,10 +643,16 @@ int alloc_iommu(struct dmar_drhd_unit *drhd)
+ 	map_size = VTD_PAGE_ALIGN(map_size);
+ 	if (map_size > VTD_PAGE_SIZE) {
+ 		iounmap(iommu->reg);
++		release_mem_region(drhd->reg_base_addr, VTD_PAGE_SIZE);
++		if (!request_mem_region(drhd->reg_base_addr, map_size, 
++					iommu->name)) {
++			printk(KERN_ERR "IOMMU: can't reserve memory\n");
++			goto error;
++		}
+ 		iommu->reg = ioremap(drhd->reg_base_addr, map_size);
+ 		if (!iommu->reg) {
+ 			printk(KERN_ERR "IOMMU: can't map the region\n");
+-			goto error;
++			goto err_release;
+ 		}
+ 	}
+ 
+@@ -659,6 +671,8 @@ int alloc_iommu(struct dmar_drhd_unit *drhd)
+ 
+  err_unmap:
+ 	iounmap(iommu->reg);
++ err_release:
++	release_mem_region(drhd->reg_base_addr, VTD_PAGE_SIZE);
+  error:
+ 	kfree(iommu);
+ 	return -1;
 -- 
-Chris Friesen
-Software Developer
-GENBAND
-chris.friesen@genband.com
-www.genband.com
+1.7.1
