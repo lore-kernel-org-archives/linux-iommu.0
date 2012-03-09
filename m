@@ -1,69 +1,109 @@
-From: David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
-Subject: Re: RFC: Device isolation groups
-Date: Fri, 9 Mar 2012 14:40:02 +1100
-Message-ID: <20120309034002.GP10735@truffala.fritz.box>
-References: <1328071614-8320-1-git-send-email-david@gibson.dropbear.id.au>
-	<1328126919.6937.254.camel@bling.home>
-	<20120202012414.GE8700@truffala.fritz.box>
-	<1330543855.29701.180.camel@bling.home>
+From: Yinghai Lu <yinghai@kernel.org>
+Subject: Re: [PATCH 07/23] pci, dmar: Update dmar units devices list during hotplug
+Date: Thu, 8 Mar 2012 23:06:10 -0800
+Message-ID: <CAE9FiQWPk-s5F5ofO=nU05tnRhmpav+f8Cs_mBG9A-MPuK9stw@mail.gmail.com>
+References: <1331018040-30725-1-git-send-email-yinghai@kernel.org>
+	<1331018040-30725-8-git-send-email-yinghai@kernel.org>
+	<CAErSpo6jqr44JS4Cyfc0cR_TNbo_ETjPJUO=x2gj-Q_x4TckVA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1330543855.29701.180.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <CAErSpo6jqr44JS4Cyfc0cR_TNbo_ETjPJUO=x2gj-Q_x4TckVA@mail.gmail.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Jesse Barnes <jbarnes@virtuousgeek.org>, x86 <x86@kernel.org>, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Feb 29, 2012 at 12:30:55PM -0700, Alex Williamson wrote:
-> On Thu, 2012-02-02 at 12:24 +1100, David Gibson wrote:
-> > On Wed, Feb 01, 2012 at 01:08:39PM -0700, Alex Williamson wrote:
-[snip]
-> Any update to this series?  It would be great if we could map out the
-> functionality to the point of breaking down and distributing work... or
-> determining if the end result has any value add to what VFIO already
-> does.  Thanks,
+On Thu, Mar 8, 2012 at 5:06 PM, Bjorn Helgaas <bhelgaas@google.com> wro=
+te:
+> On Tue, Mar 6, 2012 at 12:13 AM, Yinghai Lu <yinghai@kernel.org> wrot=
+e:
+>> When do pci remove/rescan on system that have more iommus, got
+>>
+>> [ =A0894.089745] Set context mapping for c4:00.0
+>> [ =A0894.110890] mpt2sas3: Allocated physical memory: size(4293 kB)
+>> [ =A0894.112556] mpt2sas3: Current Controller Queue Depth(1883), Max=
+ Controller Queue Depth(2144)
+>> [ =A0894.127278] mpt2sas3: Scatter Gather Elements per IO(128)
+>> [ =A0894.361295] DRHD: handling fault status reg 2
+>> [ =A0894.364053] DMAR:[DMA Read] Request device [c4:00.0] fault addr=
+ fffbe000
+>> [ =A0894.364056] DMAR:[fault reason 02] Present bit in context entry=
+ is cl
+>>
+>> it turns out when remove/rescan, pci dev will be freed and will get =
+another new dev.
+>> but drhd units still keep old one... so dmar_find_matched_drhd_unit =
+will
+>> return wrong drhd and iommu for the device that is not on first iomm=
+u.
+>>
+>> So need to update devices in drhd_units during pci remove/rescan.
+>>
+>> Could save domain/bus/device/function aside in the list and accordin=
+g that info
+>> restore new dev to drhd_units later.
+>> Then dmar_find_matched_drdh_unit and device_to_iommu could return ri=
+ght drhd and iommu.
+>>
+>> Add remove_dev_from_drhd/restore_dev_to_drhd functions to do the rea=
+l work.
+>> call them in device ADD_DEVICE and UNBOUND_DRIVER
+>>
+>> Need to do the samething to atsr. =A0(expose dmar_atsr_units and add=
+ atsru->segment)
+>>
+>> After patch, will right iommu for the new dev and will not get DMAR =
+error any more.
+>>
+>> -v2: add pci_dev_put/pci_dev_get to make refcount consistent.
+>>
+>> Signed-off-by: Yinghai Lu <yinghai@kernel.org>
+>> Cc: David Woodhouse <dwmw2@infradead.org>
+>> Cc: Vinod Koul <vinod.koul@intel.com>
+>> Cc: Dan Williams <dan.j.williams@intel.com>
+>> Cc: iommu@lists.linux-foundation.org
+>> ---
+>> =A0drivers/iommu/intel-iommu.c | =A0187 ++++++++++++++++++++++++++++=
+++++++++++++---
+>> =A0include/linux/dmar.h =A0 =A0 =A0 =A0| =A0 =A04 +
+>> =A02 files changed, 181 insertions(+), 10 deletions(-)
+>>
+>> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu=
+=2Ec
+>> index c9c6053..39ef2ce 100644
+>> --- a/drivers/iommu/intel-iommu.c
+>> +++ b/drivers/iommu/intel-iommu.c
+>> @@ -665,6 +665,159 @@ static struct intel_iommu *device_to_iommu(int=
+ segment, u8 bus, u8 devfn)
+>> =A0 =A0 =A0 =A0return NULL;
+>> =A0}
+>>
+>> +#ifdef CONFIG_HOTPLUG
+>> +struct dev_dmaru {
+>> + =A0 =A0 =A0 struct list_head list;
+>> + =A0 =A0 =A0 void *dmaru;
+>> + =A0 =A0 =A0 int index;
+>> + =A0 =A0 =A0 int segment;
+>> + =A0 =A0 =A0 unsigned char bus;
+>> + =A0 =A0 =A0 unsigned int devfn;
+>> +};
+>> +
+>> +static int
+>> +save_dev_dmaru(int segment, unsigned char bus, unsigned int devfn,
+>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0void *dmaru, int index, struct list=
+_head *lh)
+>
+> Follow the indentation style used elsewhere in the file: as much of
+> the declaration on one line as will fit (here and below).
+>
+> I think the callers would read more naturally if you passed in the
+> struct pci_dev * to save_dev_dmaru() and extracted the
+> segment/bus/devfn here rather than in the callers.
 
-Yes and no.
+Just want to keep save_dev_dmaru more consistent to get_dev_dmaru...
 
-No real change on the isolation code per se.  I had been hoping for
-feedback from David Woodhouse, but I guess he's been too busy.
+Anyway, will change to pass struct pci_dev *dev instead.
 
-In the meantime, however, Alexey has been working on a different
-approach to doing PCI passthrough which is more suitable for our
-machines.  It is based on passing through an entire virtual host
-bridge (which could be a whole host side host bridge, or a subset,
-depending on host isolation capabilities), rather than individual
-devices.  This makes it substantially simpler than VFIO (we don't need
-to virtualize config space or device addresses), and it provides
-better enforcement of isolation guarantees (VFIO isolation can be
-broken if devices have MMIO backdoors to config space, or if they can
-be made to DMA to other devices MMIO addresses instead of RAM
-addresses), but does require suitable bridge hardware - pSeries has
-such hardware, x86 mostly doesn't (although it wouldn't surprise me if
-large server class x86 machines do or will provide the necessary
-things).  Even on this sort of hardware the device-centred VFIO
-approach may have uses, since it might allow finer grained division,
-at the cost of isolation enforcement.
-
-This provides a more concrete case for the isolation infrastructure,
-since it would allow the virtual-PHB and VFIO approaches to co-exist.
-As Alexey's prototype comes into shape, it should illuminate what
-other content we need in the isolation infrastructure to make it fully
-usable.
-
--- 
-David Gibson			| I'll have my music baroque, and my code
-david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
-				| _way_ _around_!
-http://www.ozlabs.org/~dgibson
+Yinghai
