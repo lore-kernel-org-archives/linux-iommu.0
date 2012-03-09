@@ -1,58 +1,147 @@
-From: Yinghai Lu <yinghai@kernel.org>
-Subject: Re: [PATCH 07/23] pci, dmar: Update dmar units devices list during hotplug
-Date: Fri, 9 Mar 2012 10:29:40 -0800
-Message-ID: <CAE9FiQV=G0huaJYtTEacctzwHTKCS+xK54QWLn3P3e0kz_Dg2Q@mail.gmail.com>
-References: <1331018040-30725-1-git-send-email-yinghai@kernel.org>
-	<1331018040-30725-8-git-send-email-yinghai@kernel.org>
-	<CAErSpo6jqr44JS4Cyfc0cR_TNbo_ETjPJUO=x2gj-Q_x4TckVA@mail.gmail.com>
-	<CAE9FiQWPk-s5F5ofO=nU05tnRhmpav+f8Cs_mBG9A-MPuK9stw@mail.gmail.com>
-	<CAErSpo5QGqW8OL10H_PajnWi0JT=UsfX4c6pXJ_hsqXPcd+NPw@mail.gmail.com>
-	<CAE9FiQXMhEkMBTjnPJkB21ob9L9jNp_-8_h+xo6mOt3fFQ7xQQ@mail.gmail.com>
-	<CAErSpo55k_pJP2X_9jp+oBGAT_1y9hS8QNs0SgomwR-NpvimNA@mail.gmail.com>
+From: Donald Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v2] intel_iommu,dmar: reserve mmio of IOMMU registers
+Date: Fri,  9 Mar 2012 17:38:43 -0500
+Message-ID: <1331332723-19522-1-git-send-email-ddutile@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <CAErSpo55k_pJP2X_9jp+oBGAT_1y9hS8QNs0SgomwR-NpvimNA@mail.gmail.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Jesse Barnes <jbarnes@virtuousgeek.org>, x86 <x86@kernel.org>, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: chrisw-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Mar 9, 2012 at 9:37 AM, Bjorn Helgaas <bhelgaas@google.com> wro=
-te:
-> On Fri, Mar 9, 2012 at 10:32 AM, Yinghai Lu <yinghai@kernel.org> wrot=
-e:
->> On Fri, Mar 9, 2012 at 9:25 AM, Bjorn Helgaas <bhelgaas@google.com> =
-wrote:
->>>
->>> Well, it looks like you can change both save_dev_dmaru() *and*
->>> get_dev_dmaru() to take a struct pci_dev *. =A0I assumed that would=
- be
->>> obvious.
->>
->> no.
->>
->> get_dev_dmaru() have to use bus/devfn to retrieve the dev pointer.
->
-> I expected something like that, but all I see in the patch is this:
->
-> +static void restore_dev_to_drhd(struct pci_dev *dev)
-> + =A0 =A0 =A0 drhd =3D get_dev_dmaru(pci_domain_nr(dev->bus), dev->bu=
-s->number,
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0dev-=
->devfn, &i, &saved_dev_drhd_list);
->
-> +static void restore_dev_to_atsr(struct pci_dev *dev)
-> + =A0 =A0 =A0 atsr =3D get_dev_dmaru(pci_domain_nr(dev->bus), dev->bu=
-s->number,
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0dev-=
->devfn, &i, &saved_dev_atsr_list);
->
-> In both those cases, you have the struct pci_dev *.
+Intel-iommu initialization doesn't currently reserve the memory used
+for the IOMMU registers. This can allow the pci resource allocator
+to assign a device BAR to the same address as the IOMMU registers.
+This can cause some not so nice side affects when the driver
+ioremap's that region.
 
-OK, i missed that. will update that accordingly.
+Signed-off-by: Donald Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
-Thanks
+v2: missed a release-mem after an iounmap() in v1, which
+    caused the additional changes to add the phys_addr
+    and variable register region size to be stored in the
+    intel_iommu struct
+---
+ drivers/iommu/dmar.c        |   35 +++++++++++++++++++++++++++--------
+ include/linux/intel-iommu.h |    3 ++-
+ 2 files changed, 29 insertions(+), 9 deletions(-)
 
-Yinghai
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 35c1e17..0747c7f 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -581,7 +581,7 @@ int __init detect_intel_iommu(void)
+ int alloc_iommu(struct dmar_drhd_unit *drhd)
+ {
+ 	struct intel_iommu *iommu;
+-	int map_size;
++	resource_size_t map_size;
+ 	u32 ver;
+ 	static int iommu_allocated = 0;
+ 	int agaw = 0;
+@@ -599,10 +599,17 @@ int alloc_iommu(struct dmar_drhd_unit *drhd)
+ 	iommu->seq_id = iommu_allocated++;
+ 	sprintf (iommu->name, "dmar%d", iommu->seq_id);
+ 
+-	iommu->reg = ioremap(drhd->reg_base_addr, VTD_PAGE_SIZE);
++	iommu->reg_phys = drhd->reg_base_addr;
++	iommu->reg_size = VTD_PAGE_SIZE;
++	if (!request_mem_region(iommu->reg_phys, iommu->reg_size, iommu->name)) {
++		printk(KERN_ERR "IOMMU: can't reserve memory\n");
++		goto error;
++	}
++
++	iommu->reg = ioremap(iommu->reg_phys, iommu->reg_size);
+ 	if (!iommu->reg) {
+ 		printk(KERN_ERR "IOMMU: can't map the region\n");
+-		goto error;
++		goto err_release;
+ 	}
+ 	iommu->cap = dmar_readq(iommu->reg + DMAR_CAP_REG);
+ 	iommu->ecap = dmar_readq(iommu->reg + DMAR_ECAP_REG);
+@@ -635,19 +642,26 @@ int alloc_iommu(struct dmar_drhd_unit *drhd)
+ 	map_size = max_t(int, ecap_max_iotlb_offset(iommu->ecap),
+ 		cap_max_fault_reg_offset(iommu->cap));
+ 	map_size = VTD_PAGE_ALIGN(map_size);
+-	if (map_size > VTD_PAGE_SIZE) {
++	if (map_size > iommu->reg_size) {
+ 		iounmap(iommu->reg);
+-		iommu->reg = ioremap(drhd->reg_base_addr, map_size);
++		release_mem_region(iommu->reg_phys, iommu->reg_size);
++		iommu->reg_size = map_size;
++		if (!request_mem_region(iommu->reg_phys, iommu->reg_size, 
++					iommu->name)) {
++			printk(KERN_ERR "IOMMU: can't reserve memory\n");
++			goto error;
++		}
++		iommu->reg = ioremap(iommu->reg_phys, iommu->reg_size);
+ 		if (!iommu->reg) {
+ 			printk(KERN_ERR "IOMMU: can't map the region\n");
+-			goto error;
++			goto err_release;
+ 		}
+ 	}
+ 
+ 	ver = readl(iommu->reg + DMAR_VER_REG);
+ 	pr_info("IOMMU %d: reg_base_addr %llx ver %d:%d cap %llx ecap %llx\n",
+ 		iommu->seq_id,
+-		(unsigned long long)drhd->reg_base_addr,
++		(unsigned long long)iommu->reg_phys,
+ 		DMAR_VER_MAJOR(ver), DMAR_VER_MINOR(ver),
+ 		(unsigned long long)iommu->cap,
+ 		(unsigned long long)iommu->ecap);
+@@ -659,6 +673,8 @@ int alloc_iommu(struct dmar_drhd_unit *drhd)
+ 
+  err_unmap:
+ 	iounmap(iommu->reg);
++ err_release:
++	release_mem_region(iommu->reg_phys, iommu->reg_size);
+  error:
+ 	kfree(iommu);
+ 	return -1;
+@@ -671,8 +687,11 @@ void free_iommu(struct intel_iommu *iommu)
+ 
+ 	free_dmar_iommu(iommu);
+ 
+-	if (iommu->reg)
++	if (iommu->reg) {
+ 		iounmap(iommu->reg);
++		release_mem_region(iommu->reg_phys, iommu->reg_size);
++	}
++
+ 	kfree(iommu);
+ }
+ 
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index e6ca56d..c6d132b 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -308,6 +308,8 @@ enum {
+ 
+ struct intel_iommu {
+ 	void __iomem	*reg; /* Pointer to hardware regs, virtual addr */
++	resource_size_t reg_phys;
++	resource_size_t reg_size;
+ 	u64		cap;
+ 	u64		ecap;
+ 	u32		gcmd; /* Holds TE, EAFL. Don't need SRTP, SFL, WBF */
+@@ -360,7 +362,6 @@ extern void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 qdep,
+ 			       u64 addr, unsigned mask);
+ 
+ extern int qi_submit_sync(struct qi_desc *desc, struct intel_iommu *iommu);
+-
+ extern int dmar_ir_support(void);
+ 
+ #endif
+-- 
+1.7.1
