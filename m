@@ -1,109 +1,141 @@
-From: Yinghai Lu <yinghai@kernel.org>
-Subject: Re: [PATCH 07/23] pci, dmar: Update dmar units devices list during hotplug
-Date: Thu, 8 Mar 2012 23:06:10 -0800
-Message-ID: <CAE9FiQWPk-s5F5ofO=nU05tnRhmpav+f8Cs_mBG9A-MPuK9stw@mail.gmail.com>
-References: <1331018040-30725-1-git-send-email-yinghai@kernel.org>
-	<1331018040-30725-8-git-send-email-yinghai@kernel.org>
-	<CAErSpo6jqr44JS4Cyfc0cR_TNbo_ETjPJUO=x2gj-Q_x4TckVA@mail.gmail.com>
+From: Cho KyongHo <pullip.cho@samsung.com>
+Subject: [PATCH v11 0/3] iommu/exynos: Add IOMMU/System MMU driver for Samsung
+ Exynos
+Date: Fri, 09 Mar 2012 21:14:59 +0900
+Message-ID: <017701ccfdee$3f7c8270$be758750$%cho@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <CAErSpo6jqr44JS4Cyfc0cR_TNbo_ETjPJUO=x2gj-Q_x4TckVA@mail.gmail.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Jesse Barnes <jbarnes@virtuousgeek.org>, x86 <x86@kernel.org>, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Content-language: ko
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.orglinux-arm-kernel@lists.infradead.orglinux-samsung-soc@vger.kernel.orgiommu@lists.linux-foundation.orglinux-kernel@vger.kernel.org
+Cc: 'Joerg Roedel' <joro@8bytes.org>, 'Sanghyun Lee' <sanghyun75.lee@samsung.com>, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Younglak Kim' <younglak1004.kim@samsung.com>, 'Marek Szyprowski' <m.szyprowski@samsung.com>, 'Kyungmin Park' <kyungmin.park@samsung.com>, 'Subash Patel' <subash.ramaswamy@linaro.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Mar 8, 2012 at 5:06 PM, Bjorn Helgaas <bhelgaas@google.com> wro=
-te:
-> On Tue, Mar 6, 2012 at 12:13 AM, Yinghai Lu <yinghai@kernel.org> wrot=
-e:
->> When do pci remove/rescan on system that have more iommus, got
->>
->> [ =A0894.089745] Set context mapping for c4:00.0
->> [ =A0894.110890] mpt2sas3: Allocated physical memory: size(4293 kB)
->> [ =A0894.112556] mpt2sas3: Current Controller Queue Depth(1883), Max=
- Controller Queue Depth(2144)
->> [ =A0894.127278] mpt2sas3: Scatter Gather Elements per IO(128)
->> [ =A0894.361295] DRHD: handling fault status reg 2
->> [ =A0894.364053] DMAR:[DMA Read] Request device [c4:00.0] fault addr=
- fffbe000
->> [ =A0894.364056] DMAR:[fault reason 02] Present bit in context entry=
- is cl
->>
->> it turns out when remove/rescan, pci dev will be freed and will get =
-another new dev.
->> but drhd units still keep old one... so dmar_find_matched_drhd_unit =
-will
->> return wrong drhd and iommu for the device that is not on first iomm=
-u.
->>
->> So need to update devices in drhd_units during pci remove/rescan.
->>
->> Could save domain/bus/device/function aside in the list and accordin=
-g that info
->> restore new dev to drhd_units later.
->> Then dmar_find_matched_drdh_unit and device_to_iommu could return ri=
-ght drhd and iommu.
->>
->> Add remove_dev_from_drhd/restore_dev_to_drhd functions to do the rea=
-l work.
->> call them in device ADD_DEVICE and UNBOUND_DRIVER
->>
->> Need to do the samething to atsr. =A0(expose dmar_atsr_units and add=
- atsru->segment)
->>
->> After patch, will right iommu for the new dev and will not get DMAR =
-error any more.
->>
->> -v2: add pci_dev_put/pci_dev_get to make refcount consistent.
->>
->> Signed-off-by: Yinghai Lu <yinghai@kernel.org>
->> Cc: David Woodhouse <dwmw2@infradead.org>
->> Cc: Vinod Koul <vinod.koul@intel.com>
->> Cc: Dan Williams <dan.j.williams@intel.com>
->> Cc: iommu@lists.linux-foundation.org
->> ---
->> =A0drivers/iommu/intel-iommu.c | =A0187 ++++++++++++++++++++++++++++=
-++++++++++++---
->> =A0include/linux/dmar.h =A0 =A0 =A0 =A0| =A0 =A04 +
->> =A02 files changed, 181 insertions(+), 10 deletions(-)
->>
->> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu=
-=2Ec
->> index c9c6053..39ef2ce 100644
->> --- a/drivers/iommu/intel-iommu.c
->> +++ b/drivers/iommu/intel-iommu.c
->> @@ -665,6 +665,159 @@ static struct intel_iommu *device_to_iommu(int=
- segment, u8 bus, u8 devfn)
->> =A0 =A0 =A0 =A0return NULL;
->> =A0}
->>
->> +#ifdef CONFIG_HOTPLUG
->> +struct dev_dmaru {
->> + =A0 =A0 =A0 struct list_head list;
->> + =A0 =A0 =A0 void *dmaru;
->> + =A0 =A0 =A0 int index;
->> + =A0 =A0 =A0 int segment;
->> + =A0 =A0 =A0 unsigned char bus;
->> + =A0 =A0 =A0 unsigned int devfn;
->> +};
->> +
->> +static int
->> +save_dev_dmaru(int segment, unsigned char bus, unsigned int devfn,
->> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0void *dmaru, int index, struct list=
-_head *lh)
->
-> Follow the indentation style used elsewhere in the file: as much of
-> the declaration on one line as will fit (here and below).
->
-> I think the callers would read more naturally if you passed in the
-> struct pci_dev * to save_dev_dmaru() and extracted the
-> segment/bus/devfn here rather than in the callers.
+These patches are successfully compiled
+with little modification in
+linux-samsung.git/for-next branch
+You can find the git repo in
+http://git.kernel.org/?p=linux/kernel/git/kgene/linux-samsung.git
 
-Just want to keep save_dev_dmaru more consistent to get_dev_dmaru...
+Changes since v10:
+- Prevent race condition between iommu_attach_device() and
+   iommu_detach_device().
+- Added declaration of platform device for System MMU-FIMCs
+   in mach/sysmmu.h.
+- Some changes on macros and type names:
+   * enum EXYNOS_SYSMMU_INTERRUPT_TYPE
+      -> enum exynos_sysmmu_inttype
+   * Changed macro definitions for register offsets
+      to look uniform.
 
-Anyway, will change to pass struct pci_dev *dev instead.
+Changes since v9:
+- Split the first patch into 2 patches.
+   One removes System MMU driver from arch/arm/plat- tree and
+   the other modifies and adds platform device definitions in
+   arch/arm/mach tree
+- Some bug fixes
+- Change "gsc" for Exynos4 to "fimc"
 
-Yinghai
+Changes since v8:
+- exynos_iommu_map/unmap() just works for the page sizes
+   that System MMU supports. (Joerg's comment)
+- 1 platform device for 1 H/W though a multimedia accelerator
+   with several System MMUs attached.
+   This make controlling System MMU simpler.
+- Information between System MMU and the accelerators:
+   Shifted to accelerator's device structure from System MMU's
+
+Changes since v7:
+- Rebased with the recent commits of the following git branches
+  * git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git/next
+  * git.kernel.org/pub/scm/linux/kernel/git/kgene/linux-samsung.git/for-next
+- Changed magic numbers into macros
+- Setting owner of a System MMU in 'iommu' field of dev_archdata
+- Verbose message in the default fault handler
+- Some bug fixes.
+
+Changes since v6:
+- Totally rewrite exynos_iommu_map() and exynos_iommu_unmap() according
+  to the change in iommu_map() and iommu_unmap().
+- Change special slab for Lv2 page table to kmalloc().
+
+Changes since v5:
+- Relation between device and a domain become n:1 (Joerg's comment)
+- Implements iommu_commit(). --> Removed
+
+Changes since v4:
+- exynos_iommu_unmap()returns unmapped size in page order
+  (Ohad Ben-Cohen's comment)
+- Fixed typo error of resource names
+- Fixed missing #include<mach/sysmmu.h>
+  in arch/arm/mach-exynos4/mach-armlex4210.c
+
+Changes since v3:
+- Used DEFINE_RES_MEM and DEFINE_RES_IRQ macros
+  to define resources of System MMU (Russell King's comment)
+- Fixed removal of CONFIG_S5P_SLEEP definition  (Sylwester Nawrocki's comment)
+
+Changes since v2:
+- Add lock for System MMU private data.
+  And fixes the following problems pointed by Joerg Rodel:
+- Fix wrong argument to kmalloc() and get_free_pages()
+- Merged patches into 2 due to bisectability
+
+Changes since v1:
+Fixes of the following problems pointed by Russell King.:
+ - Missing unlocking a spinlock in exynos_iommu_attach_dev().
+ - atomic_t -> int in sysmmu_drvdata.activations
+ - sysmmu_platdata -> sysmmu_drvdata
+ - Change in error messages in irq handler
+ - Removed casting in format of error message
+ - omap_iommu_ops -> exynos_iommu_ops in the last patch
+
+Patch Summary:
+[PATCH v11 1/3] S5P: SYSMMU: Remove System MMU device driver
+[PATCH v11 2/3] ARM: EXYNOS: Change System MMU platform device definitions
+[PATCH v11 3/3] iommu/exynos: Add iommu driver for Exynos Platforms
+
+The first patch removes the existing System MMU device driver which does not conform to IOMMU API set prepared in the kernel.
+ 
+The second patch enhances System MMU platform device definition:
+ - Removed System MMU for MDMA0 in TOP block because it is not
+   used. Use MDMA2 in LCD block.
+ - Removed System MMU ID. Instead, a System MMU is bound to a device
+   that the System MMU is dedicated during machine initialization.
+   If a device driver wants to handle System MMU, it must bind its
+   device with System MMU with sysmmu_set_owner().
+ - clkdev
+ - Added support for Exynos5
+
+The last patch implements IOMMU API:
+- New System MMU device driver that fully implements IOMMU API.
+
+Thanks to Kyungmin Park and Marek Szyprowski for kind review.
+
+Diffstats:
+ arch/arm/mach-exynos/Kconfig                    |   11 +-
+ arch/arm/mach-exynos/Makefile                   |    2 +-
+ arch/arm/mach-exynos/clock-exynos4.c            |   79 +-
+ arch/arm/mach-exynos/clock-exynos4.h            |    2 +
+ arch/arm/mach-exynos/clock-exynos4210.c         |   11 +
+ arch/arm/mach-exynos/clock-exynos4212.c         |   28 +-
+ arch/arm/mach-exynos/clock-exynos5.c            |   90 ++
+ arch/arm/mach-exynos/dev-sysmmu.c               |  457 ++++++-----
+ arch/arm/mach-exynos/include/mach/irqs.h        |  179 ++--
+ arch/arm/mach-exynos/include/mach/map.h         |   38 +
+ arch/arm/mach-exynos/include/mach/regs-clock.h  |    5 +
+ arch/arm/mach-exynos/include/mach/regs-sysmmu.h |   28 -
+ arch/arm/mach-exynos/include/mach/sysmmu.h      |   88 ++-
+ arch/arm/mach-exynos/mach-armlex4210.c          |    1 -
+ arch/arm/mach-exynos/mach-smdkv310.c            |    1 -
+ arch/arm/plat-s5p/Kconfig                       |    8 -
+ arch/arm/plat-s5p/Makefile                      |    1 -
+ arch/arm/plat-s5p/sysmmu.c                      |  313 -------
+ arch/arm/plat-samsung/include/plat/devs.h       |    1 -
+ arch/arm/plat-samsung/include/plat/sysmmu.h     |   95 --
+ drivers/iommu/Kconfig                           |   21 +
+ drivers/iommu/Makefile                          |    1 +
+ drivers/iommu/exynos-iommu.c                    | 1081 +++++++++++++++++++++++
+ 23 files changed, 1719 insertions(+), 822 deletions(-)
