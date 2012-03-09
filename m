@@ -1,88 +1,112 @@
-From: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] intel_iommu,dmar: reserve mmio of IOMMU registers
-Date: Fri, 09 Mar 2012 11:10:27 -0500
-Message-ID: <4F5A2B73.9010103@redhat.com>
-References: <1331250676-55926-1-git-send-email-ddutile@redhat.com>
+From: Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH 07/23] pci, dmar: Update dmar units devices list during hotplug
+Date: Fri, 9 Mar 2012 10:25:39 -0700
+Message-ID: <CAErSpo5QGqW8OL10H_PajnWi0JT=UsfX4c6pXJ_hsqXPcd+NPw@mail.gmail.com>
+References: <1331018040-30725-1-git-send-email-yinghai@kernel.org>
+ <1331018040-30725-8-git-send-email-yinghai@kernel.org> <CAErSpo6jqr44JS4Cyfc0cR_TNbo_ETjPJUO=x2gj-Q_x4TckVA@mail.gmail.com>
+ <CAE9FiQWPk-s5F5ofO=nU05tnRhmpav+f8Cs_mBG9A-MPuK9stw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1331250676-55926-1-git-send-email-ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: chrisw-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <CAE9FiQWPk-s5F5ofO=nU05tnRhmpav+f8Cs_mBG9A-MPuK9stw@mail.gmail.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Yinghai Lu <yinghai@kernel.org>
+Cc: Jesse Barnes <jbarnes@virtuousgeek.org>, x86 <x86@kernel.org>, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-self-nak.
-Found an iounmap() with a  missing release_mem_region();
-will post V2 shortly.
+On Fri, Mar 9, 2012 at 12:06 AM, Yinghai Lu <yinghai@kernel.org> wrote:
+> On Thu, Mar 8, 2012 at 5:06 PM, Bjorn Helgaas <bhelgaas@google.com> w=
+rote:
+>> On Tue, Mar 6, 2012 at 12:13 AM, Yinghai Lu <yinghai@kernel.org> wro=
+te:
+>>> When do pci remove/rescan on system that have more iommus, got
+>>>
+>>> [ =A0894.089745] Set context mapping for c4:00.0
+>>> [ =A0894.110890] mpt2sas3: Allocated physical memory: size(4293 kB)
+>>> [ =A0894.112556] mpt2sas3: Current Controller Queue Depth(1883), Ma=
+x Controller Queue Depth(2144)
+>>> [ =A0894.127278] mpt2sas3: Scatter Gather Elements per IO(128)
+>>> [ =A0894.361295] DRHD: handling fault status reg 2
+>>> [ =A0894.364053] DMAR:[DMA Read] Request device [c4:00.0] fault add=
+r fffbe000
+>>> [ =A0894.364056] DMAR:[fault reason 02] Present bit in context entr=
+y is cl
+>>>
+>>> it turns out when remove/rescan, pci dev will be freed and will get=
+ another new dev.
+>>> but drhd units still keep old one... so dmar_find_matched_drhd_unit=
+ will
+>>> return wrong drhd and iommu for the device that is not on first iom=
+mu.
+>>>
+>>> So need to update devices in drhd_units during pci remove/rescan.
+>>>
+>>> Could save domain/bus/device/function aside in the list and accordi=
+ng that info
+>>> restore new dev to drhd_units later.
+>>> Then dmar_find_matched_drdh_unit and device_to_iommu could return r=
+ight drhd and iommu.
+>>>
+>>> Add remove_dev_from_drhd/restore_dev_to_drhd functions to do the re=
+al work.
+>>> call them in device ADD_DEVICE and UNBOUND_DRIVER
+>>>
+>>> Need to do the samething to atsr. =A0(expose dmar_atsr_units and ad=
+d atsru->segment)
+>>>
+>>> After patch, will right iommu for the new dev and will not get DMAR=
+ error any more.
+>>>
+>>> -v2: add pci_dev_put/pci_dev_get to make refcount consistent.
+>>>
+>>> Signed-off-by: Yinghai Lu <yinghai@kernel.org>
+>>> Cc: David Woodhouse <dwmw2@infradead.org>
+>>> Cc: Vinod Koul <vinod.koul@intel.com>
+>>> Cc: Dan Williams <dan.j.williams@intel.com>
+>>> Cc: iommu@lists.linux-foundation.org
+>>> ---
+>>> =A0drivers/iommu/intel-iommu.c | =A0187 +++++++++++++++++++++++++++=
++++++++++++++---
+>>> =A0include/linux/dmar.h =A0 =A0 =A0 =A0| =A0 =A04 +
+>>> =A02 files changed, 181 insertions(+), 10 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iomm=
+u.c
+>>> index c9c6053..39ef2ce 100644
+>>> --- a/drivers/iommu/intel-iommu.c
+>>> +++ b/drivers/iommu/intel-iommu.c
+>>> @@ -665,6 +665,159 @@ static struct intel_iommu *device_to_iommu(in=
+t segment, u8 bus, u8 devfn)
+>>> =A0 =A0 =A0 =A0return NULL;
+>>> =A0}
+>>>
+>>> +#ifdef CONFIG_HOTPLUG
+>>> +struct dev_dmaru {
+>>> + =A0 =A0 =A0 struct list_head list;
+>>> + =A0 =A0 =A0 void *dmaru;
+>>> + =A0 =A0 =A0 int index;
+>>> + =A0 =A0 =A0 int segment;
+>>> + =A0 =A0 =A0 unsigned char bus;
+>>> + =A0 =A0 =A0 unsigned int devfn;
+>>> +};
+>>> +
+>>> +static int
+>>> +save_dev_dmaru(int segment, unsigned char bus, unsigned int devfn,
+>>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0void *dmaru, int index, struct lis=
+t_head *lh)
+>>
+>> Follow the indentation style used elsewhere in the file: as much of
+>> the declaration on one line as will fit (here and below).
+>>
+>> I think the callers would read more naturally if you passed in the
+>> struct pci_dev * to save_dev_dmaru() and extracted the
+>> segment/bus/devfn here rather than in the callers.
+>
+> Just want to keep save_dev_dmaru more consistent to get_dev_dmaru...
 
-On 03/08/2012 06:51 PM, Donald Dutile wrote:
-> Intel-iommu initialization doesn't currently reserve the memory used
-> for the IOMMU registers. This can allow the pci resource allocator
-> to assign a device BAR to the same address as the IOMMU registers.
-> This can cause some not so nice side affects when the driver
-> ioremap's that region.
->
-> Signed-off-by: Donald Dutile<ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> ---
->   drivers/iommu/dmar.c |   18 ++++++++++++++++--
->   1 files changed, 16 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-> index 35c1e17..1fcbd96 100644
-> --- a/drivers/iommu/dmar.c
-> +++ b/drivers/iommu/dmar.c
-> @@ -599,10 +599,16 @@ int alloc_iommu(struct dmar_drhd_unit *drhd)
->   	iommu->seq_id = iommu_allocated++;
->   	sprintf (iommu->name, "dmar%d", iommu->seq_id);
->
-> +	map_size = VTD_PAGE_SIZE;
-> +	if (!request_mem_region(drhd->reg_base_addr, map_size, iommu->name)) {
-> +		printk(KERN_ERR "IOMMU: can't reserve memory\n");
-> +		goto error;
-> +	}
-> +
->   	iommu->reg = ioremap(drhd->reg_base_addr, VTD_PAGE_SIZE);
->   	if (!iommu->reg) {
->   		printk(KERN_ERR "IOMMU: can't map the region\n");
-> -		goto error;
-> +		goto err_release;
->   	}
->   	iommu->cap = dmar_readq(iommu->reg + DMAR_CAP_REG);
->   	iommu->ecap = dmar_readq(iommu->reg + DMAR_ECAP_REG);
-> @@ -637,10 +643,16 @@ int alloc_iommu(struct dmar_drhd_unit *drhd)
->   	map_size = VTD_PAGE_ALIGN(map_size);
->   	if (map_size>  VTD_PAGE_SIZE) {
->   		iounmap(iommu->reg);
-> +		release_mem_region(drhd->reg_base_addr, VTD_PAGE_SIZE);
-> +		if (!request_mem_region(drhd->reg_base_addr, map_size,
-> +					iommu->name)) {
-> +			printk(KERN_ERR "IOMMU: can't reserve memory\n");
-> +			goto error;
-> +		}
->   		iommu->reg = ioremap(drhd->reg_base_addr, map_size);
->   		if (!iommu->reg) {
->   			printk(KERN_ERR "IOMMU: can't map the region\n");
-> -			goto error;
-> +			goto err_release;
->   		}
->   	}
->
-> @@ -659,6 +671,8 @@ int alloc_iommu(struct dmar_drhd_unit *drhd)
->
->    err_unmap:
->   	iounmap(iommu->reg);
-> + err_release:
-> +	release_mem_region(drhd->reg_base_addr, VTD_PAGE_SIZE);
->    error:
->   	kfree(iommu);
->   	return -1;
+Well, it looks like you can change both save_dev_dmaru() *and*
+get_dev_dmaru() to take a struct pci_dev *.  I assumed that would be
+obvious.
+
+Bjorn
