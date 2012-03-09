@@ -1,112 +1,32 @@
-From: Bjorn Helgaas <bhelgaas@google.com>
+From: Yinghai Lu <yinghai@kernel.org>
 Subject: Re: [PATCH 07/23] pci, dmar: Update dmar units devices list during hotplug
-Date: Fri, 9 Mar 2012 10:25:39 -0700
-Message-ID: <CAErSpo5QGqW8OL10H_PajnWi0JT=UsfX4c6pXJ_hsqXPcd+NPw@mail.gmail.com>
+Date: Fri, 9 Mar 2012 09:32:57 -0800
+Message-ID: <CAE9FiQXMhEkMBTjnPJkB21ob9L9jNp_-8_h+xo6mOt3fFQ7xQQ@mail.gmail.com>
 References: <1331018040-30725-1-git-send-email-yinghai@kernel.org>
- <1331018040-30725-8-git-send-email-yinghai@kernel.org> <CAErSpo6jqr44JS4Cyfc0cR_TNbo_ETjPJUO=x2gj-Q_x4TckVA@mail.gmail.com>
- <CAE9FiQWPk-s5F5ofO=nU05tnRhmpav+f8Cs_mBG9A-MPuK9stw@mail.gmail.com>
+	<1331018040-30725-8-git-send-email-yinghai@kernel.org>
+	<CAErSpo6jqr44JS4Cyfc0cR_TNbo_ETjPJUO=x2gj-Q_x4TckVA@mail.gmail.com>
+	<CAE9FiQWPk-s5F5ofO=nU05tnRhmpav+f8Cs_mBG9A-MPuK9stw@mail.gmail.com>
+	<CAErSpo5QGqW8OL10H_PajnWi0JT=UsfX4c6pXJ_hsqXPcd+NPw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <CAE9FiQWPk-s5F5ofO=nU05tnRhmpav+f8Cs_mBG9A-MPuK9stw@mail.gmail.com>
+In-Reply-To: <CAErSpo5QGqW8OL10H_PajnWi0JT=UsfX4c6pXJ_hsqXPcd+NPw@mail.gmail.com>
 Sender: linux-pci-owner@vger.kernel.org
-To: Yinghai Lu <yinghai@kernel.org>
+To: Bjorn Helgaas <bhelgaas@google.com>
 Cc: Jesse Barnes <jbarnes@virtuousgeek.org>, x86 <x86@kernel.org>, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Mar 9, 2012 at 12:06 AM, Yinghai Lu <yinghai@kernel.org> wrote:
-> On Thu, Mar 8, 2012 at 5:06 PM, Bjorn Helgaas <bhelgaas@google.com> w=
-rote:
->> On Tue, Mar 6, 2012 at 12:13 AM, Yinghai Lu <yinghai@kernel.org> wro=
+On Fri, Mar 9, 2012 at 9:25 AM, Bjorn Helgaas <bhelgaas@google.com> wro=
 te:
->>> When do pci remove/rescan on system that have more iommus, got
->>>
->>> [ =A0894.089745] Set context mapping for c4:00.0
->>> [ =A0894.110890] mpt2sas3: Allocated physical memory: size(4293 kB)
->>> [ =A0894.112556] mpt2sas3: Current Controller Queue Depth(1883), Ma=
-x Controller Queue Depth(2144)
->>> [ =A0894.127278] mpt2sas3: Scatter Gather Elements per IO(128)
->>> [ =A0894.361295] DRHD: handling fault status reg 2
->>> [ =A0894.364053] DMAR:[DMA Read] Request device [c4:00.0] fault add=
-r fffbe000
->>> [ =A0894.364056] DMAR:[fault reason 02] Present bit in context entr=
-y is cl
->>>
->>> it turns out when remove/rescan, pci dev will be freed and will get=
- another new dev.
->>> but drhd units still keep old one... so dmar_find_matched_drhd_unit=
- will
->>> return wrong drhd and iommu for the device that is not on first iom=
-mu.
->>>
->>> So need to update devices in drhd_units during pci remove/rescan.
->>>
->>> Could save domain/bus/device/function aside in the list and accordi=
-ng that info
->>> restore new dev to drhd_units later.
->>> Then dmar_find_matched_drdh_unit and device_to_iommu could return r=
-ight drhd and iommu.
->>>
->>> Add remove_dev_from_drhd/restore_dev_to_drhd functions to do the re=
-al work.
->>> call them in device ADD_DEVICE and UNBOUND_DRIVER
->>>
->>> Need to do the samething to atsr. =A0(expose dmar_atsr_units and ad=
-d atsru->segment)
->>>
->>> After patch, will right iommu for the new dev and will not get DMAR=
- error any more.
->>>
->>> -v2: add pci_dev_put/pci_dev_get to make refcount consistent.
->>>
->>> Signed-off-by: Yinghai Lu <yinghai@kernel.org>
->>> Cc: David Woodhouse <dwmw2@infradead.org>
->>> Cc: Vinod Koul <vinod.koul@intel.com>
->>> Cc: Dan Williams <dan.j.williams@intel.com>
->>> Cc: iommu@lists.linux-foundation.org
->>> ---
->>> =A0drivers/iommu/intel-iommu.c | =A0187 +++++++++++++++++++++++++++=
-+++++++++++++---
->>> =A0include/linux/dmar.h =A0 =A0 =A0 =A0| =A0 =A04 +
->>> =A02 files changed, 181 insertions(+), 10 deletions(-)
->>>
->>> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iomm=
-u.c
->>> index c9c6053..39ef2ce 100644
->>> --- a/drivers/iommu/intel-iommu.c
->>> +++ b/drivers/iommu/intel-iommu.c
->>> @@ -665,6 +665,159 @@ static struct intel_iommu *device_to_iommu(in=
-t segment, u8 bus, u8 devfn)
->>> =A0 =A0 =A0 =A0return NULL;
->>> =A0}
->>>
->>> +#ifdef CONFIG_HOTPLUG
->>> +struct dev_dmaru {
->>> + =A0 =A0 =A0 struct list_head list;
->>> + =A0 =A0 =A0 void *dmaru;
->>> + =A0 =A0 =A0 int index;
->>> + =A0 =A0 =A0 int segment;
->>> + =A0 =A0 =A0 unsigned char bus;
->>> + =A0 =A0 =A0 unsigned int devfn;
->>> +};
->>> +
->>> +static int
->>> +save_dev_dmaru(int segment, unsigned char bus, unsigned int devfn,
->>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0void *dmaru, int index, struct lis=
-t_head *lh)
->>
->> Follow the indentation style used elsewhere in the file: as much of
->> the declaration on one line as will fit (here and below).
->>
->> I think the callers would read more naturally if you passed in the
->> struct pci_dev * to save_dev_dmaru() and extracted the
->> segment/bus/devfn here rather than in the callers.
 >
-> Just want to keep save_dev_dmaru more consistent to get_dev_dmaru...
+> Well, it looks like you can change both save_dev_dmaru() *and*
+> get_dev_dmaru() to take a struct pci_dev *. =A0I assumed that would b=
+e
+> obvious.
 
-Well, it looks like you can change both save_dev_dmaru() *and*
-get_dev_dmaru() to take a struct pci_dev *.  I assumed that would be
-obvious.
+no.
 
-Bjorn
+get_dev_dmaru() have to use bus/devfn to retrieve the dev pointer.
+
+Yinghai
