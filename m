@@ -1,11 +1,13 @@
-From: Donald Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v2] intel_iommu,dmar: reserve mmio of IOMMU registers
-Date: Fri,  9 Mar 2012 17:38:43 -0500
-Message-ID: <1331332723-19522-1-git-send-email-ddutile@redhat.com>
+From: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH v2 03/37] IOMMU: Fix tboot force iommu logic
+Date: Fri,  9 Mar 2012 23:00:03 -0800
+Message-ID: <1331362837-10740-4-git-send-email-yinghai@kernel.org>
+References: <1331362837-10740-1-git-send-email-yinghai@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1331362837-10740-1-git-send-email-yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,133 +17,46 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: chrisw-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+To: Jesse Barnes <jbarnes-Y1mF5jBUw70BENJcbMCuUQ@public.gmane.org>, x86 <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Intel-iommu initialization doesn't currently reserve the memory used
-for the IOMMU registers. This can allow the pci resource allocator
-to assign a device BAR to the same address as the IOMMU registers.
-This can cause some not so nice side affects when the driver
-ioremap's that region.
+Should check dmar_disabled just after tboot_force_iommu.
 
-Signed-off-by: Donald Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Otherwise when tboot is not used, and intel_iommu=off, and nointrmap
+still get dmar_table_init() called. that will cause some get_device
+calling, and it will have some device refcount leaking.
 
-v2: missed a release-mem after an iounmap() in v1, which
-    caused the additional changes to add the phys_addr
-    and variable register region size to be stored in the
-    intel_iommu struct
+Signed-off-by: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 ---
- drivers/iommu/dmar.c        |   35 +++++++++++++++++++++++++++--------
- include/linux/intel-iommu.h |    3 ++-
- 2 files changed, 29 insertions(+), 9 deletions(-)
+ drivers/iommu/intel-iommu.c |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 35c1e17..0747c7f 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -581,7 +581,7 @@ int __init detect_intel_iommu(void)
- int alloc_iommu(struct dmar_drhd_unit *drhd)
- {
- 	struct intel_iommu *iommu;
--	int map_size;
-+	resource_size_t map_size;
- 	u32 ver;
- 	static int iommu_allocated = 0;
- 	int agaw = 0;
-@@ -599,10 +599,17 @@ int alloc_iommu(struct dmar_drhd_unit *drhd)
- 	iommu->seq_id = iommu_allocated++;
- 	sprintf (iommu->name, "dmar%d", iommu->seq_id);
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 49eb412..7c71a3a 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -3768,6 +3768,9 @@ int __init intel_iommu_init(void)
+ 	/* VT-d is required for a TXT/tboot launch, so enforce that */
+ 	force_on = tboot_force_iommu();
  
--	iommu->reg = ioremap(drhd->reg_base_addr, VTD_PAGE_SIZE);
-+	iommu->reg_phys = drhd->reg_base_addr;
-+	iommu->reg_size = VTD_PAGE_SIZE;
-+	if (!request_mem_region(iommu->reg_phys, iommu->reg_size, iommu->name)) {
-+		printk(KERN_ERR "IOMMU: can't reserve memory\n");
-+		goto error;
-+	}
++	if (no_iommu || dmar_disabled)
++		return -ENODEV;
 +
-+	iommu->reg = ioremap(iommu->reg_phys, iommu->reg_size);
- 	if (!iommu->reg) {
- 		printk(KERN_ERR "IOMMU: can't map the region\n");
--		goto error;
-+		goto err_release;
- 	}
- 	iommu->cap = dmar_readq(iommu->reg + DMAR_CAP_REG);
- 	iommu->ecap = dmar_readq(iommu->reg + DMAR_ECAP_REG);
-@@ -635,19 +642,26 @@ int alloc_iommu(struct dmar_drhd_unit *drhd)
- 	map_size = max_t(int, ecap_max_iotlb_offset(iommu->ecap),
- 		cap_max_fault_reg_offset(iommu->cap));
- 	map_size = VTD_PAGE_ALIGN(map_size);
--	if (map_size > VTD_PAGE_SIZE) {
-+	if (map_size > iommu->reg_size) {
- 		iounmap(iommu->reg);
--		iommu->reg = ioremap(drhd->reg_base_addr, map_size);
-+		release_mem_region(iommu->reg_phys, iommu->reg_size);
-+		iommu->reg_size = map_size;
-+		if (!request_mem_region(iommu->reg_phys, iommu->reg_size, 
-+					iommu->name)) {
-+			printk(KERN_ERR "IOMMU: can't reserve memory\n");
-+			goto error;
-+		}
-+		iommu->reg = ioremap(iommu->reg_phys, iommu->reg_size);
- 		if (!iommu->reg) {
- 			printk(KERN_ERR "IOMMU: can't map the region\n");
--			goto error;
-+			goto err_release;
- 		}
+ 	if (dmar_table_init()) {
+ 		if (force_on)
+ 			panic("tboot: Failed to initialize DMAR table\n");
+@@ -3780,9 +3783,6 @@ int __init intel_iommu_init(void)
+ 		return 	-ENODEV;
  	}
  
- 	ver = readl(iommu->reg + DMAR_VER_REG);
- 	pr_info("IOMMU %d: reg_base_addr %llx ver %d:%d cap %llx ecap %llx\n",
- 		iommu->seq_id,
--		(unsigned long long)drhd->reg_base_addr,
-+		(unsigned long long)iommu->reg_phys,
- 		DMAR_VER_MAJOR(ver), DMAR_VER_MINOR(ver),
- 		(unsigned long long)iommu->cap,
- 		(unsigned long long)iommu->ecap);
-@@ -659,6 +673,8 @@ int alloc_iommu(struct dmar_drhd_unit *drhd)
- 
-  err_unmap:
- 	iounmap(iommu->reg);
-+ err_release:
-+	release_mem_region(iommu->reg_phys, iommu->reg_size);
-  error:
- 	kfree(iommu);
- 	return -1;
-@@ -671,8 +687,11 @@ void free_iommu(struct intel_iommu *iommu)
- 
- 	free_dmar_iommu(iommu);
- 
--	if (iommu->reg)
-+	if (iommu->reg) {
- 		iounmap(iommu->reg);
-+		release_mem_region(iommu->reg_phys, iommu->reg_size);
-+	}
-+
- 	kfree(iommu);
- }
- 
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index e6ca56d..c6d132b 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -308,6 +308,8 @@ enum {
- 
- struct intel_iommu {
- 	void __iomem	*reg; /* Pointer to hardware regs, virtual addr */
-+	resource_size_t reg_phys;
-+	resource_size_t reg_size;
- 	u64		cap;
- 	u64		ecap;
- 	u32		gcmd; /* Holds TE, EAFL. Don't need SRTP, SFL, WBF */
-@@ -360,7 +362,6 @@ extern void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 qdep,
- 			       u64 addr, unsigned mask);
- 
- extern int qi_submit_sync(struct qi_desc *desc, struct intel_iommu *iommu);
+-	if (no_iommu || dmar_disabled)
+-		return -ENODEV;
 -
- extern int dmar_ir_support(void);
- 
- #endif
+ 	if (iommu_init_mempool()) {
+ 		if (force_on)
+ 			panic("tboot: Failed to initialize iommu memory\n");
 -- 
-1.7.1
+1.7.7
