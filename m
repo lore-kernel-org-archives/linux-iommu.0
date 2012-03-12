@@ -1,12 +1,11 @@
-From: "Jan Beulich" <JBeulich-IBi9RG/b67k@public.gmane.org>
-Subject: [PATCH] AMD IOMMU: iommu_set_device_table() must not be __init
-Date: Thu, 08 Mar 2012 08:58:13 +0000
-Message-ID: <4F5882B502000078000770CE@nat28.tlf.novell.com>
+From: Lucas Stach <dev-8ppwABl0HbeELgA04lAiVw@public.gmane.org>
+Subject: [PATCH] iommu/tegra-gart: fix spin_unlock in map failure path
+Date: Mon, 12 Mar 2012 20:15:01 +0100
+Message-ID: <1331579701.1739.2.camel@tellur>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,26 +15,30 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This function is called from enable_iommus(), which in turn is used
-from amd_iommu_resume().
+This must have been messed up while merging, the intention was
+clearly to unlock there.
 
-Signed-off-by: Jan Beulich <jbeulich-IBi9RG/b67k@public.gmane.org>
-
+Signed-off-by: Lucas Stach <dev-8ppwABl0HbeELgA04lAiVw@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/tegra-gart.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
---- 3.3-rc6/drivers/iommu/amd_iommu_init.c
-+++ 3.3-rc6-amd-iommu-sections/drivers/iommu/amd_iommu_init.c
-@@ -275,7 +275,7 @@ static void iommu_set_exclusion_range(st
- }
- 
- /* Programs the physical address of the device table into the IOMMU hardware */
--static void __init iommu_set_device_table(struct amd_iommu *iommu)
-+static void iommu_set_device_table(struct amd_iommu *iommu)
- {
- 	u64 entry;
+diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
+index b21598f..779306e 100644
+--- a/drivers/iommu/tegra-gart.c
++++ b/drivers/iommu/tegra-gart.c
+@@ -246,7 +246,7 @@ static int gart_iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 	pfn = __phys_to_pfn(pa);
+ 	if (!pfn_valid(pfn)) {
+ 		dev_err(gart->dev, "Invalid page: %08x\n", pa);
+-		spin_lock_irqsave(&gart->pte_lock, flags);
++		spin_unlock_irqrestore(&gart->pte_lock, flags);
+ 		return -EINVAL;
+ 	}
+ 	gart_set_pte(gart, iova, GART_PTE(pfn));
+-- 
+1.7.7.6
