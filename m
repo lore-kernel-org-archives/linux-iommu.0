@@ -1,13 +1,15 @@
-From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] iommu/tegra-gart: fix spin_unlock in map failure path
-Date: Tue, 13 Mar 2012 08:37:33 +0200
-Message-ID: <20120313083733.fb91ecd23e03b426ff6bf7f3@nvidia.com>
-References: <1331579701.1739.2.camel@tellur>
+From: KyongHo Cho <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH v11 3/3] iommu/exynos: Add iommu driver for Exynos
+	Platforms
+Date: Tue, 13 Mar 2012 17:50:16 +0900
+Message-ID: <CAHQjnOOCQb4G1aeFB0FQVBstXpaXmahnQO8+FoinPcQNZEieGg@mail.gmail.com>
+References: <017a01ccfdee$4e5e7a00$eb1b6e00$%cho@samsung.com>
+	<20120312150156.GF18973@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1331579701.1739.2.camel@tellur>
+In-Reply-To: <20120312150156.GF18973-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,19 +19,78 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lucas Stach <dev-8ppwABl0HbeELgA04lAiVw@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Cc: linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Younglak Kim <younglak1004.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Subash Patel <subash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Sanghyun Lee <sanghyun75.lee-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Lucas,
+On Tue, Mar 13, 2012 at 12:01 AM, Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org> wrote:
+> On Fri, Mar 09, 2012 at 09:15:24PM +0900, Cho KyongHo wrote:
+>> +/* We does not consider super section mapping (16MB) */
+>> +struct iommu_client {
+>> + =A0 =A0 struct list_head node;
+>> + =A0 =A0 struct device *dev;
+>> +};
+>> +
+>> +struct exynos_iommu_domain {
+>> + =A0 =A0 struct list_head clients; /* list of iommu_client */
+>> + =A0 =A0 unsigned long *pgtable; /* lv1 page table, 16KB */
+>> + =A0 =A0 short *lv2entcnt; /* free lv2 entry counter for each section */
+>> + =A0 =A0 spinlock_t lock; /* lock for this structure and attached iommu=
+_client */
+>> + =A0 =A0 spinlock_t pgtablelock; /* lock for modifying page table @ pgt=
+able */
+>> +};
+>> +
+>> +struct sysmmu_drvdata {
+>> + =A0 =A0 struct device *sysmmu;
+>> + =A0 =A0 char *dbgname;
+>> + =A0 =A0 int nsfrs;
+>> + =A0 =A0 void __iomem **sfrbases;
+>> + =A0 =A0 struct clk *clk[2];
+>> + =A0 =A0 int activations;
+>> + =A0 =A0 rwlock_t lock;
+>> + =A0 =A0 struct iommu_domain *domain;
+>> + =A0 =A0 sysmmu_fault_handler_t fault_handler;
+>> + =A0 =A0 unsigned long pgtable;
+>> + =A0 =A0 struct iommu_client client;
+>> +};
+>
+> Is there any reason why 'struct iommu_client' is a seperate data
+> structure? Otherwise it can be merged with 'truct sysmmu_drvdata'.
+>
 
-On Mon, 12 Mar 2012 20:15:01 +0100
-Lucas Stach <dev-8ppwABl0HbeELgA04lAiVw@public.gmane.org> wrote:
+There is no reason to separate it.
+It is not cleanly refactored since patch version 10.
 
-> This must have been messed up while merging, the intention was
-> clearly to unlock there.
-> 
-> Signed-off-by: Lucas Stach <dev-8ppwABl0HbeELgA04lAiVw@public.gmane.org>
+>> +static void exynos_iommu_domain_destroy(struct iommu_domain *domain)
+>> +{
+>> + =A0 =A0 struct exynos_iommu_domain *priv =3D domain->priv;
+>> + =A0 =A0 struct list_head *pos, *n;
+>> + =A0 =A0 unsigned long flags;
+>> + =A0 =A0 int i;
+>> +
+>> + =A0 =A0 WARN_ON(!list_empty(&priv->clients));
+>> +
+>> + =A0 =A0 spin_lock_irqsave(&priv->lock, flags);
+>> +
+>> + =A0 =A0 list_for_each_safe(pos, n, &priv->clients) {
+>> + =A0 =A0 =A0 =A0 =A0 =A0 struct iommu_client *client;
+>> +
+>> + =A0 =A0 =A0 =A0 =A0 =A0 client =3D list_entry(pos, struct iommu_client=
+, node);
+>> + =A0 =A0 =A0 =A0 =A0 =A0 exynos_sysmmu_disable(client->dev);
+>> + =A0 =A0 =A0 =A0 =A0 =A0 kfree(client);
+>> + =A0 =A0 }
+>
+> Why this kfree here? Aren't all iommu_clients just a part of another
+> data-structre?
 
-Good catch. Thanks.
-Joerg, Could you put this one on your queue?
+It is absolutely my fault. It must be removed.
+I have forgot to care about updating iommu_domain_destroy()
+when modifying exynos_iommu_attach/detach_device().
+
+Thank you.
+
+The problems will be soon fixed and I will post next patch tomorrow.
+
+Cho KyongHo/
