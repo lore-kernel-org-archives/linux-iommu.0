@@ -1,11 +1,15 @@
-From: Lucas Stach <dev-8ppwABl0HbeELgA04lAiVw@public.gmane.org>
-Subject: [PATCH] iommu/tegra-gart: fix spin_unlock in map failure path
-Date: Mon, 12 Mar 2012 20:15:01 +0100
-Message-ID: <1331579701.1739.2.camel@tellur>
+From: Chris Wright <chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org>
+Subject: Re: trying to figure out why VT-d isn't working on my kernel -- solved
+Date: Wed, 14 Mar 2012 10:48:07 -0700
+Message-ID: <20120314174807.GB27235@sequoia.sous-sol.org>
+References: <4F56E728.8020506@genband.com>
+ <4F593792.1070909@genband.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <4F593792.1070909-b7o/lNNmKxtBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,30 +19,37 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Chris Friesen <chris.friesen-b7o/lNNmKxtBDgjK7y7TUQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This must have been messed up while merging, the intention was
-clearly to unlock there.
+* Chris Friesen (chris.friesen-b7o/lNNmKxtBDgjK7y7TUQ@public.gmane.org) wrote:
+> On 03/06/2012 10:42 PM, Chris Friesen wrote:
+> >I've got a current (pulled today) kernel running on a Xeon E5-2648L CPU
+> >on an Intel motherboard, and I'm trying to get VT-d working without much success.
+> >
+> >lspci -vv (version 3.1.4) doesn't show anything related to IOV.
+> >(Full output below.)  Since I know the I350 devices are capable of virtual
+> >functions, am I correct in assuming it's something similar to the situation
+> >described at https://bugzilla.redhat.com/show_bug.cgi?id=652210 and there is
+> >a problem with my BIOS?  Based on comment 15 there, the fact that all
+> >the DevCtl2 lines show "ARIFwd-" seems interesting.
+> >
+> >Among other things, I've enabled the following in the kernel config:
+> >
+> >CONFIG_DMAR_TABLE=y
+> >CONFIG_INTEL_IOMMU=y
+> >CONFIG_INTEL_IOMMU_DEFAULT_ON=y
+> >CONFIG_PCI_MSI=y
+> >CONFIG_PCI_STUB=y
+> >CONFIG_PCI_IOV=y
+> 
+> Just in case anyone else runs into this, it turns out that enabling
+> CONFIG_PCI_MMCONFIG allowed the virtual functions to be detected and
+> configured.
 
-Signed-off-by: Lucas Stach <dev-8ppwABl0HbeELgA04lAiVw@public.gmane.org>
----
- drivers/iommu/tegra-gart.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+Yeah, you need to be able to access PCI Extended Configuration Space to
+enable SR-IOV.
 
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index b21598f..779306e 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -246,7 +246,7 @@ static int gart_iommu_map(struct iommu_domain *domain, unsigned long iova,
- 	pfn = __phys_to_pfn(pa);
- 	if (!pfn_valid(pfn)) {
- 		dev_err(gart->dev, "Invalid page: %08x\n", pa);
--		spin_lock_irqsave(&gart->pte_lock, flags);
-+		spin_unlock_irqrestore(&gart->pte_lock, flags);
- 		return -EINVAL;
- 	}
- 	gart_set_pte(gart, iova, GART_PTE(pfn));
--- 
-1.7.7.6
+thanks,
+-chris
