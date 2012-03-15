@@ -1,7 +1,7 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 6/9] iommu/vt-d: Convert IR set_affinity function to remap_ops
-Date: Thu, 15 Mar 2012 18:39:48 +0100
-Message-ID: <1331833191-25779-7-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 1/9] iommu/amd: Split amd_iommu_init function
+Date: Thu, 15 Mar 2012 18:39:43 +0100
+Message-ID: <1331833191-25779-2-git-send-email-joerg.roedel@amd.com>
 References: <1331833191-25779-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,250 +21,212 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-X9Un+BFzKDI@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The function to set interrupt affinity with interrupt
-remapping enabled is Intel specific too. So move it to the
-irq_remap_ops too.
+The hardware-initializtion part of the AMD IOMMU driver is
+split out into a seperate function. This function can now be
+called either from amd_iommu_init() itself or any other
+place if the hardware needs to be ready earlier. This will
+be used to implement interrupt remapping for AMD.
 
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- arch/x86/include/asm/intr_remapping.h |    9 ++++
- arch/x86/kernel/apic/io_apic.c        |   69 +--------------------------------
- drivers/iommu/intel_intr_remapping.c  |   54 +++++++++++++++++++++++++
- drivers/iommu/intr_remapping.c        |    9 ++++
- drivers/iommu/intr_remapping.h        |    6 +++
- 5 files changed, 80 insertions(+), 67 deletions(-)
+ drivers/iommu/amd_iommu_init.c |  123 +++++++++++++++++++++++++--------------
+ include/linux/amd-iommu.h      |    2 +-
+ 2 files changed, 80 insertions(+), 45 deletions(-)
 
-diff --git a/arch/x86/include/asm/intr_remapping.h b/arch/x86/include/asm/intr_remapping.h
-index a22e1f1..ae933ec 100644
---- a/arch/x86/include/asm/intr_remapping.h
-+++ b/arch/x86/include/asm/intr_remapping.h
-@@ -40,6 +40,9 @@ extern int intr_setup_ioapic_entry(int irq,
- 				   struct IO_APIC_route_entry *entry,
- 				   unsigned int destination, int vector,
- 				   struct io_apic_irq_attr *attr);
-+extern int intr_set_affinity(struct irq_data *data,
-+			     const struct cpumask *mask,
-+			     bool force);
- 
- #else  /* CONFIG_IRQ_REMAP */
- 
-@@ -59,6 +62,12 @@ static inline int intr_setup_ioapic_entry(int irq,
- {
- 	return -ENODEV;
- }
-+static inline int intr_set_affinity(struct irq_data *data,
-+				    const struct cpumask *mask,
-+				    bool force)
-+{
-+	return 0;
-+}
- #endif /* CONFIG_IRQ_REMAP */
- 
- #endif /* __X86_INTR_REMAPPING_H */
-diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
-index 4746ba1..101090a 100644
---- a/arch/x86/kernel/apic/io_apic.c
-+++ b/arch/x86/kernel/apic/io_apic.c
-@@ -2288,71 +2288,6 @@ ioapic_set_affinity(struct irq_data *data, const struct cpumask *mask,
- 	return ret;
- }
- 
--#ifdef CONFIG_IRQ_REMAP
--
--/*
-- * Migrate the IO-APIC irq in the presence of intr-remapping.
-- *
-- * For both level and edge triggered, irq migration is a simple atomic
-- * update(of vector and cpu destination) of IRTE and flush the hardware cache.
-- *
-- * For level triggered, we eliminate the io-apic RTE modification (with the
-- * updated vector information), by using a virtual vector (io-apic pin number).
-- * Real vector that is used for interrupting cpu will be coming from
-- * the interrupt-remapping table entry.
-- *
-- * As the migration is a simple atomic update of IRTE, the same mechanism
-- * is used to migrate MSI irq's in the presence of interrupt-remapping.
-- */
--static int
--ir_ioapic_set_affinity(struct irq_data *data, const struct cpumask *mask,
--		       bool force)
--{
--	struct irq_cfg *cfg = data->chip_data;
--	unsigned int dest, irq = data->irq;
--	struct irte irte;
--
--	if (!cpumask_intersects(mask, cpu_online_mask))
--		return -EINVAL;
--
--	if (get_irte(irq, &irte))
--		return -EBUSY;
--
--	if (assign_irq_vector(irq, cfg, mask))
--		return -EBUSY;
--
--	dest = apic->cpu_mask_to_apicid_and(cfg->domain, mask);
--
--	irte.vector = cfg->vector;
--	irte.dest_id = IRTE_DEST(dest);
--
--	/*
--	 * Atomically updates the IRTE with the new destination, vector
--	 * and flushes the interrupt entry cache.
--	 */
--	modify_irte(irq, &irte);
--
--	/*
--	 * After this point, all the interrupts will start arriving
--	 * at the new destination. So, time to cleanup the previous
--	 * vector allocation.
--	 */
--	if (cfg->move_in_progress)
--		send_cleanup_vector(cfg);
--
--	cpumask_copy(data->affinity, mask);
--	return 0;
--}
--
--#else
--static inline int
--ir_ioapic_set_affinity(struct irq_data *data, const struct cpumask *mask,
--		       bool force)
--{
--	return 0;
--}
--#endif
--
- asmlinkage void smp_irq_move_cleanup_interrupt(void)
- {
- 	unsigned vector, me;
-@@ -2576,7 +2511,7 @@ static void irq_remap_modify_chip_defaults(struct irq_chip *chip)
- 	chip->irq_eoi = ir_ack_apic_level;
- 
- #ifdef CONFIG_SMP
--	chip->irq_set_affinity = ir_ioapic_set_affinity;
-+	chip->irq_set_affinity = intr_set_affinity;
- #endif
- }
- #endif /* CONFIG_IRQ_REMAP */
-@@ -3766,7 +3701,7 @@ void __init setup_ioapic_dest(void)
- 			mask = apic->target_cpus();
- 
- 		if (intr_remapping_enabled)
--			ir_ioapic_set_affinity(idata, mask, false);
-+			intr_set_affinity(idata, mask, false);
- 		else
- 			ioapic_set_affinity(idata, mask, false);
- 	}
-diff --git a/drivers/iommu/intel_intr_remapping.c b/drivers/iommu/intel_intr_remapping.c
-index f495eba..25372c1 100644
---- a/drivers/iommu/intel_intr_remapping.c
-+++ b/drivers/iommu/intel_intr_remapping.c
-@@ -901,6 +901,59 @@ static int intel_setup_ioapic_entry(int irq,
- 	return 0;
- }
- 
-+/*
-+ * Migrate the IO-APIC irq in the presence of intr-remapping.
-+ *
-+ * For both level and edge triggered, irq migration is a simple atomic
-+ * update(of vector and cpu destination) of IRTE and flush the hardware cache.
-+ *
-+ * For level triggered, we eliminate the io-apic RTE modification (with the
-+ * updated vector information), by using a virtual vector (io-apic pin number).
-+ * Real vector that is used for interrupting cpu will be coming from
-+ * the interrupt-remapping table entry.
-+ *
-+ * As the migration is a simple atomic update of IRTE, the same mechanism
-+ * is used to migrate MSI irq's in the presence of interrupt-remapping.
-+ */
-+static int
-+intel_ioapic_set_affinity(struct irq_data *data, const struct cpumask *mask,
-+			  bool force)
-+{
-+	struct irq_cfg *cfg = data->chip_data;
-+	unsigned int dest, irq = data->irq;
-+	struct irte irte;
-+
-+	if (!cpumask_intersects(mask, cpu_online_mask))
-+		return -EINVAL;
-+
-+	if (get_irte(irq, &irte))
-+		return -EBUSY;
-+
-+	if (assign_irq_vector(irq, cfg, mask))
-+		return -EBUSY;
-+
-+	dest = apic->cpu_mask_to_apicid_and(cfg->domain, mask);
-+
-+	irte.vector = cfg->vector;
-+	irte.dest_id = IRTE_DEST(dest);
-+
-+	/*
-+	 * Atomically updates the IRTE with the new destination, vector
-+	 * and flushes the interrupt entry cache.
-+	 */
-+	modify_irte(irq, &irte);
-+
-+	/*
-+	 * After this point, all the interrupts will start arriving
-+	 * at the new destination. So, time to cleanup the previous
-+	 * vector allocation.
-+	 */
-+	if (cfg->move_in_progress)
-+		send_cleanup_vector(cfg);
-+
-+	cpumask_copy(data->affinity, mask);
-+	return 0;
-+}
- 
- struct irq_remap_ops intel_irq_remap_ops = {
- 	.supported		= intel_intr_remapping_supported,
-@@ -910,4 +963,5 @@ struct irq_remap_ops intel_irq_remap_ops = {
- 	.hardware_reenable	= reenable_intr_remapping,
- 	.enable_faulting	= enable_drhd_fault_handling,
- 	.setup_ioapic_entry	= intel_setup_ioapic_entry,
-+	.set_affinity		= intel_ioapic_set_affinity,
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index a35e98a..6d114e5 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -1424,10 +1424,40 @@ static struct syscore_ops amd_iommu_syscore_ops = {
+ 	.resume = amd_iommu_resume,
  };
-diff --git a/drivers/iommu/intr_remapping.c b/drivers/iommu/intr_remapping.c
-index 739148a..2f4f27f 100644
---- a/drivers/iommu/intr_remapping.c
-+++ b/drivers/iommu/intr_remapping.c
-@@ -110,3 +110,12 @@ int intr_setup_ioapic_entry(int irq,
- 	return remap_ops->setup_ioapic_entry(irq, entry, destination,
- 					     vector, attr);
- }
-+
-+int intr_set_affinity(struct irq_data *data, const struct cpumask *mask,
-+		      bool force)
+ 
++static void __init free_on_init_error(void)
 +{
-+	if (!remap_ops || !remap_ops->set_affinity)
++	amd_iommu_uninit_devices();
++
++	free_pages((unsigned long)amd_iommu_pd_alloc_bitmap,
++		   get_order(MAX_DOMAIN_ID/8));
++
++	free_pages((unsigned long)amd_iommu_rlookup_table,
++		   get_order(rlookup_table_size));
++
++	free_pages((unsigned long)amd_iommu_alias_table,
++		   get_order(alias_table_size));
++
++	free_pages((unsigned long)amd_iommu_dev_table,
++		   get_order(dev_table_size));
++
++	free_iommu_all();
++
++	free_unity_maps();
++
++#ifdef CONFIG_GART_IOMMU
++	/*
++	 * We failed to initialize the AMD IOMMU - try fallback to GART
++	 * if possible.
++	 */
++	gart_iommu_init();
++
++#endif
++}
++
+ /*
+- * This is the core init function for AMD IOMMU hardware in the system.
+- * This function is called from the generic x86 DMA layer initialization
+- * code.
++ * This is the hardware init function for AMD IOMMU in the system.
++ * This function is called either from amd_iommu_init or from the interrupt
++ * remapping setup code.
+  *
+  * This function basically parses the ACPI table for AMD IOMMU (IVRS)
+  * three times:
+@@ -1446,16 +1476,21 @@ static struct syscore_ops amd_iommu_syscore_ops = {
+  *		remapping requirements parsed out of the ACPI table in
+  *		this last pass.
+  *
+- * After that the hardware is initialized and ready to go. In the last
+- * step we do some Linux specific things like registering the driver in
+- * the dma_ops interface and initializing the suspend/resume support
+- * functions. Finally it prints some information about AMD IOMMUs and
+- * the driver state and enables the hardware.
++ * After everything is set up the IOMMUs are enabled and the necessary
++ * hotplug and suspend notifiers are registered.
+  */
+-static int __init amd_iommu_init(void)
++int __init amd_iommu_init_hardware(void)
+ {
+ 	int i, ret = 0;
+ 
++	if (!amd_iommu_detected)
++		return -ENODEV;
++
++	if (amd_iommu_dev_table != NULL) {
++		/* Hardware already initialized */
 +		return 0;
++	}
 +
-+	return remap_ops->set_affinity(data, mask, force);
+ 	/*
+ 	 * First parse ACPI tables to find the largest Bus/Dev/Func
+ 	 * we need to handle. Upon this information the shared data
+@@ -1472,9 +1507,8 @@ static int __init amd_iommu_init(void)
+ 	alias_table_size   = tbl_size(ALIAS_TABLE_ENTRY_SIZE);
+ 	rlookup_table_size = tbl_size(RLOOKUP_TABLE_ENTRY_SIZE);
+ 
+-	ret = -ENOMEM;
+-
+ 	/* Device table - directly used by all IOMMUs */
++	ret = -ENOMEM;
+ 	amd_iommu_dev_table = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
+ 				      get_order(dev_table_size));
+ 	if (amd_iommu_dev_table == NULL)
+@@ -1546,20 +1580,46 @@ static int __init amd_iommu_init(void)
+ 
+ 	enable_iommus();
+ 
++	amd_iommu_init_notifier();
++
++	register_syscore_ops(&amd_iommu_syscore_ops);
++
++out:
++	return ret;
++
++free:
++	free_on_init_error();
++
++	return ret;
 +}
-diff --git a/drivers/iommu/intr_remapping.h b/drivers/iommu/intr_remapping.h
-index e8994f2..e0bc6e0 100644
---- a/drivers/iommu/intr_remapping.h
-+++ b/drivers/iommu/intr_remapping.h
-@@ -26,6 +26,8 @@
- 
- struct IO_APIC_route_entry;
- struct io_apic_irq_attr;
-+struct irq_data;
-+struct cpumask;
- 
- extern int disable_intremap;
- extern int disable_sourceid_checking;
-@@ -54,6 +56,10 @@ struct irq_remap_ops {
- 	int (*setup_ioapic_entry)(int irq, struct IO_APIC_route_entry *,
- 				  unsigned int, int,
- 				  struct io_apic_irq_attr *);
 +
-+	/* Set the CPU affinity of a remapped interrupt */
-+	int (*set_affinity)(struct irq_data *data, const struct cpumask *mask,
-+			    bool force);
- };
++/*
++ * This is the core init function for AMD IOMMU hardware in the system.
++ * This function is called from the generic x86 DMA layer initialization
++ * code.
++ *
++ * The function calls amd_iommu_init_hardware() to setup and enable the
++ * IOMMU hardware if this has not happened yet. After that the driver
++ * registers for the DMA-API and for the IOMMU-API as necessary.
++ */
++static int __init amd_iommu_init(void)
++{
++	int ret = 0;
++
++	ret = amd_iommu_init_hardware();
++	if (ret)
++		goto out;
++
+ 	if (iommu_pass_through)
+ 		ret = amd_iommu_init_passthrough();
+ 	else
+ 		ret = amd_iommu_init_dma_ops();
  
- extern struct irq_remap_ops intel_irq_remap_ops;
+ 	if (ret)
+-		goto free_disable;
++		goto free;
+ 
+ 	amd_iommu_init_api();
+ 
+-	amd_iommu_init_notifier();
+-
+-	register_syscore_ops(&amd_iommu_syscore_ops);
+-
+ 	if (iommu_pass_through)
+ 		goto out;
+ 
+@@ -1569,39 +1629,14 @@ static int __init amd_iommu_init(void)
+ 		printk(KERN_INFO "AMD-Vi: Lazy IO/TLB flushing enabled\n");
+ 
+ 	x86_platform.iommu_shutdown = disable_iommus;
++
+ out:
+ 	return ret;
+ 
+-free_disable:
+-	disable_iommus();
+-
+ free:
+-	amd_iommu_uninit_devices();
+-
+-	free_pages((unsigned long)amd_iommu_pd_alloc_bitmap,
+-		   get_order(MAX_DOMAIN_ID/8));
+-
+-	free_pages((unsigned long)amd_iommu_rlookup_table,
+-		   get_order(rlookup_table_size));
+-
+-	free_pages((unsigned long)amd_iommu_alias_table,
+-		   get_order(alias_table_size));
+-
+-	free_pages((unsigned long)amd_iommu_dev_table,
+-		   get_order(dev_table_size));
+-
+-	free_iommu_all();
+-
+-	free_unity_maps();
+-
+-#ifdef CONFIG_GART_IOMMU
+-	/*
+-	 * We failed to initialize the AMD IOMMU - try fallback to GART
+-	 * if possible.
+-	 */
+-	gart_iommu_init();
++	disable_iommus();
+ 
+-#endif
++	free_on_init_error();
+ 
+ 	goto out;
+ }
+diff --git a/include/linux/amd-iommu.h b/include/linux/amd-iommu.h
+index ef00610..15f6b9e 100644
+--- a/include/linux/amd-iommu.h
++++ b/include/linux/amd-iommu.h
+@@ -28,7 +28,7 @@ struct task_struct;
+ struct pci_dev;
+ 
+ extern int amd_iommu_detect(void);
+-
++extern int amd_iommu_init_hardware(void);
+ 
+ /**
+  * amd_iommu_enable_device_erratum() - Enable erratum workaround for device
 -- 
 1.7.5.4
