@@ -1,8 +1,7 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 4/9] iommu/vt-d: Convert missing apic.c intr-remapping call to
-	remap_ops
-Date: Thu, 15 Mar 2012 18:39:46 +0100
-Message-ID: <1331833191-25779-5-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 6/9] iommu/vt-d: Convert IR set_affinity function to remap_ops
+Date: Thu, 15 Mar 2012 18:39:48 +0100
+Message-ID: <1331833191-25779-7-git-send-email-joerg.roedel@amd.com>
 References: <1331833191-25779-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,197 +21,250 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-X9Un+BFzKDI@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Convert these calls too:
-
-	* Disable of remapping hardware
-	* Reenable of remapping hardware
-	* Enable fault handling
-
-With that all of arch/x86/kernel/apic/apic.c is converted to
-use the generic intr-remapping interface.
+The function to set interrupt affinity with interrupt
+remapping enabled is Intel specific too. So move it to the
+irq_remap_ops too.
 
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- arch/x86/include/asm/intr_remapping.h |    6 ++++++
- arch/x86/kernel/apic/apic.c           |    6 +++---
- drivers/iommu/intel_intr_remapping.c  |    7 +++++--
- drivers/iommu/intr_remapping.c        |   24 ++++++++++++++++++++++++
- drivers/iommu/intr_remapping.h        |    9 +++++++++
- include/linux/dmar.h                  |   18 ------------------
- 6 files changed, 47 insertions(+), 23 deletions(-)
+ arch/x86/include/asm/intr_remapping.h |    9 ++++
+ arch/x86/kernel/apic/io_apic.c        |   69 +--------------------------------
+ drivers/iommu/intel_intr_remapping.c  |   54 +++++++++++++++++++++++++
+ drivers/iommu/intr_remapping.c        |    9 ++++
+ drivers/iommu/intr_remapping.h        |    6 +++
+ 5 files changed, 80 insertions(+), 67 deletions(-)
 
 diff --git a/arch/x86/include/asm/intr_remapping.h b/arch/x86/include/asm/intr_remapping.h
-index 207c605..55aa892 100644
+index a22e1f1..ae933ec 100644
 --- a/arch/x86/include/asm/intr_remapping.h
 +++ b/arch/x86/include/asm/intr_remapping.h
-@@ -30,6 +30,9 @@ extern void setup_intr_remapping(void);
- extern int intr_remapping_supported(void);
- extern int intr_hardware_init(void);
- extern int intr_hardware_enable(void);
-+extern void intr_hardware_disable(void);
-+extern int intr_hardware_reenable(int);
-+extern int intr_enable_fault_handling(void);
+@@ -40,6 +40,9 @@ extern int intr_setup_ioapic_entry(int irq,
+ 				   struct IO_APIC_route_entry *entry,
+ 				   unsigned int destination, int vector,
+ 				   struct io_apic_irq_attr *attr);
++extern int intr_set_affinity(struct irq_data *data,
++			     const struct cpumask *mask,
++			     bool force);
  
  #else  /* CONFIG_IRQ_REMAP */
  
-@@ -39,6 +42,9 @@ static inline void setup_intr_remapping(void) { }
- static inline int intr_remapping_supported(void) { return 0; }
- static inline int intr_hardware_init(void) { return -ENODEV; }
- static inline int intr_hardware_enable(void) { return -ENODEV; }
-+static inline void intr_hardware_disable(void) { }
-+static inline int intr_hardware_reenable(int eim) { return -ENODEV; }
-+static inline int intr_enable_fault_handling(void) { return -ENODEV; }
- 
+@@ -59,6 +62,12 @@ static inline int intr_setup_ioapic_entry(int irq,
+ {
+ 	return -ENODEV;
+ }
++static inline int intr_set_affinity(struct irq_data *data,
++				    const struct cpumask *mask,
++				    bool force)
++{
++	return 0;
++}
  #endif /* CONFIG_IRQ_REMAP */
  
-diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
-index 578a452..d7863cc 100644
---- a/arch/x86/kernel/apic/apic.c
-+++ b/arch/x86/kernel/apic/apic.c
-@@ -1438,7 +1438,7 @@ void __init bsp_end_local_APIC_setup(void)
- 	 * handling for interrupt remapping.
- 	 */
- 	if (intr_remapping_enabled)
--		enable_drhd_fault_handling();
-+		intr_enable_fault_handling();
- 
+ #endif /* __X86_INTR_REMAPPING_H */
+diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
+index 4746ba1..101090a 100644
+--- a/arch/x86/kernel/apic/io_apic.c
++++ b/arch/x86/kernel/apic/io_apic.c
+@@ -2288,71 +2288,6 @@ ioapic_set_affinity(struct irq_data *data, const struct cpumask *mask,
+ 	return ret;
  }
  
-@@ -2172,7 +2172,7 @@ static int lapic_suspend(void)
- 	disable_local_APIC();
- 
- 	if (intr_remapping_enabled)
--		disable_intr_remapping();
-+		intr_hardware_disable();
- 
- 	local_irq_restore(flags);
- 	return 0;
-@@ -2239,7 +2239,7 @@ static void lapic_resume(void)
- 	apic_read(APIC_ESR);
- 
- 	if (intr_remapping_enabled)
--		reenable_intr_remapping(x2apic_mode);
-+		intr_hardware_reenable(x2apic_mode);
- 
- 	local_irq_restore(flags);
- }
-diff --git a/drivers/iommu/intel_intr_remapping.c b/drivers/iommu/intel_intr_remapping.c
-index 9c742fb..610b75b 100644
---- a/drivers/iommu/intel_intr_remapping.c
-+++ b/drivers/iommu/intel_intr_remapping.c
-@@ -764,7 +764,7 @@ int __init ir_dev_scope_init(void)
- }
- rootfs_initcall(ir_dev_scope_init);
- 
--void disable_intr_remapping(void)
-+static void disable_intr_remapping(void)
- {
- 	struct dmar_drhd_unit *drhd;
- 	struct intel_iommu *iommu = NULL;
-@@ -780,7 +780,7 @@ void disable_intr_remapping(void)
- 	}
- }
- 
--int reenable_intr_remapping(int eim)
-+static int reenable_intr_remapping(int eim)
- {
- 	struct dmar_drhd_unit *drhd;
- 	int setup = 0;
-@@ -818,4 +818,7 @@ struct irq_remap_ops intel_irq_remap_ops = {
- 	.supported		= intel_intr_remapping_supported,
- 	.hardware_init		= dmar_table_init,
- 	.hardware_enable	= intel_enable_intr_remapping,
-+	.hardware_disable	= disable_intr_remapping,
-+	.hardware_reenable	= reenable_intr_remapping,
-+	.enable_faulting	= enable_drhd_fault_handling,
- };
-diff --git a/drivers/iommu/intr_remapping.c b/drivers/iommu/intr_remapping.c
-index 670c69a..9aabed7 100644
---- a/drivers/iommu/intr_remapping.c
-+++ b/drivers/iommu/intr_remapping.c
-@@ -74,3 +74,27 @@ int __init intr_hardware_enable(void)
- 
- 	return remap_ops->hardware_enable();
- }
-+
-+void intr_hardware_disable(void)
-+{
-+	if (!remap_ops || !remap_ops->hardware_disable)
-+		return;
-+
-+	remap_ops->hardware_disable();
-+}
-+
-+int intr_hardware_reenable(int mode)
-+{
-+	if (!remap_ops || !remap_ops->hardware_reenable)
-+		return 0;
-+
-+	return remap_ops->hardware_reenable(mode);
-+}
-+
-+int __init intr_enable_fault_handling(void)
-+{
-+	if (!remap_ops || !remap_ops->enable_faulting)
-+		return -ENODEV;
-+
-+	return remap_ops->enable_faulting();
-+}
-diff --git a/drivers/iommu/intr_remapping.h b/drivers/iommu/intr_remapping.h
-index d6df732..2744c9a 100644
---- a/drivers/iommu/intr_remapping.h
-+++ b/drivers/iommu/intr_remapping.h
-@@ -37,6 +37,15 @@ struct irq_remap_ops {
- 
- 	/* Enables the remapping hardware */
- 	int  (*hardware_enable)(void);
-+
-+	/* Disables the remapping hardware */
-+	void (*hardware_disable)(void);
-+
-+	/* Reenables the remapping hardware */
-+	int  (*hardware_reenable)(int);
-+
-+	/* Enable fault handling */
-+	int  (*enable_faulting)(void);
- };
- 
- extern struct irq_remap_ops intel_irq_remap_ops;
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index 6d66c9c..f2bd87f 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -115,9 +115,6 @@ struct irte {
- };
- 
- #ifdef CONFIG_IRQ_REMAP
--extern void disable_intr_remapping(void);
--extern int reenable_intr_remapping(int);
+-#ifdef CONFIG_IRQ_REMAP
 -
- extern int get_irte(int irq, struct irte *entry);
- extern int modify_irte(int irq, struct irte *irte_modified);
- extern int alloc_irte(struct intel_iommu *iommu, int irq, u16 count);
-@@ -179,21 +176,6 @@ static inline int set_msi_sid(struct irte *irte, struct pci_dev *dev)
- 	return 0;
- }
- 
--#define intr_remapping_enabled		(0)
--
--static inline int enable_intr_remapping(void)
+-/*
+- * Migrate the IO-APIC irq in the presence of intr-remapping.
+- *
+- * For both level and edge triggered, irq migration is a simple atomic
+- * update(of vector and cpu destination) of IRTE and flush the hardware cache.
+- *
+- * For level triggered, we eliminate the io-apic RTE modification (with the
+- * updated vector information), by using a virtual vector (io-apic pin number).
+- * Real vector that is used for interrupting cpu will be coming from
+- * the interrupt-remapping table entry.
+- *
+- * As the migration is a simple atomic update of IRTE, the same mechanism
+- * is used to migrate MSI irq's in the presence of interrupt-remapping.
+- */
+-static int
+-ir_ioapic_set_affinity(struct irq_data *data, const struct cpumask *mask,
+-		       bool force)
 -{
--	return -1;
+-	struct irq_cfg *cfg = data->chip_data;
+-	unsigned int dest, irq = data->irq;
+-	struct irte irte;
+-
+-	if (!cpumask_intersects(mask, cpu_online_mask))
+-		return -EINVAL;
+-
+-	if (get_irte(irq, &irte))
+-		return -EBUSY;
+-
+-	if (assign_irq_vector(irq, cfg, mask))
+-		return -EBUSY;
+-
+-	dest = apic->cpu_mask_to_apicid_and(cfg->domain, mask);
+-
+-	irte.vector = cfg->vector;
+-	irte.dest_id = IRTE_DEST(dest);
+-
+-	/*
+-	 * Atomically updates the IRTE with the new destination, vector
+-	 * and flushes the interrupt entry cache.
+-	 */
+-	modify_irte(irq, &irte);
+-
+-	/*
+-	 * After this point, all the interrupts will start arriving
+-	 * at the new destination. So, time to cleanup the previous
+-	 * vector allocation.
+-	 */
+-	if (cfg->move_in_progress)
+-		send_cleanup_vector(cfg);
+-
+-	cpumask_copy(data->affinity, mask);
+-	return 0;
 -}
 -
--static inline void disable_intr_remapping(void)
--{
--}
--
--static inline int reenable_intr_remapping(int eim)
+-#else
+-static inline int
+-ir_ioapic_set_affinity(struct irq_data *data, const struct cpumask *mask,
+-		       bool force)
 -{
 -	return 0;
 -}
- #endif
+-#endif
+-
+ asmlinkage void smp_irq_move_cleanup_interrupt(void)
+ {
+ 	unsigned vector, me;
+@@ -2576,7 +2511,7 @@ static void irq_remap_modify_chip_defaults(struct irq_chip *chip)
+ 	chip->irq_eoi = ir_ack_apic_level;
  
- enum {
+ #ifdef CONFIG_SMP
+-	chip->irq_set_affinity = ir_ioapic_set_affinity;
++	chip->irq_set_affinity = intr_set_affinity;
+ #endif
+ }
+ #endif /* CONFIG_IRQ_REMAP */
+@@ -3766,7 +3701,7 @@ void __init setup_ioapic_dest(void)
+ 			mask = apic->target_cpus();
+ 
+ 		if (intr_remapping_enabled)
+-			ir_ioapic_set_affinity(idata, mask, false);
++			intr_set_affinity(idata, mask, false);
+ 		else
+ 			ioapic_set_affinity(idata, mask, false);
+ 	}
+diff --git a/drivers/iommu/intel_intr_remapping.c b/drivers/iommu/intel_intr_remapping.c
+index f495eba..25372c1 100644
+--- a/drivers/iommu/intel_intr_remapping.c
++++ b/drivers/iommu/intel_intr_remapping.c
+@@ -901,6 +901,59 @@ static int intel_setup_ioapic_entry(int irq,
+ 	return 0;
+ }
+ 
++/*
++ * Migrate the IO-APIC irq in the presence of intr-remapping.
++ *
++ * For both level and edge triggered, irq migration is a simple atomic
++ * update(of vector and cpu destination) of IRTE and flush the hardware cache.
++ *
++ * For level triggered, we eliminate the io-apic RTE modification (with the
++ * updated vector information), by using a virtual vector (io-apic pin number).
++ * Real vector that is used for interrupting cpu will be coming from
++ * the interrupt-remapping table entry.
++ *
++ * As the migration is a simple atomic update of IRTE, the same mechanism
++ * is used to migrate MSI irq's in the presence of interrupt-remapping.
++ */
++static int
++intel_ioapic_set_affinity(struct irq_data *data, const struct cpumask *mask,
++			  bool force)
++{
++	struct irq_cfg *cfg = data->chip_data;
++	unsigned int dest, irq = data->irq;
++	struct irte irte;
++
++	if (!cpumask_intersects(mask, cpu_online_mask))
++		return -EINVAL;
++
++	if (get_irte(irq, &irte))
++		return -EBUSY;
++
++	if (assign_irq_vector(irq, cfg, mask))
++		return -EBUSY;
++
++	dest = apic->cpu_mask_to_apicid_and(cfg->domain, mask);
++
++	irte.vector = cfg->vector;
++	irte.dest_id = IRTE_DEST(dest);
++
++	/*
++	 * Atomically updates the IRTE with the new destination, vector
++	 * and flushes the interrupt entry cache.
++	 */
++	modify_irte(irq, &irte);
++
++	/*
++	 * After this point, all the interrupts will start arriving
++	 * at the new destination. So, time to cleanup the previous
++	 * vector allocation.
++	 */
++	if (cfg->move_in_progress)
++		send_cleanup_vector(cfg);
++
++	cpumask_copy(data->affinity, mask);
++	return 0;
++}
+ 
+ struct irq_remap_ops intel_irq_remap_ops = {
+ 	.supported		= intel_intr_remapping_supported,
+@@ -910,4 +963,5 @@ struct irq_remap_ops intel_irq_remap_ops = {
+ 	.hardware_reenable	= reenable_intr_remapping,
+ 	.enable_faulting	= enable_drhd_fault_handling,
+ 	.setup_ioapic_entry	= intel_setup_ioapic_entry,
++	.set_affinity		= intel_ioapic_set_affinity,
+ };
+diff --git a/drivers/iommu/intr_remapping.c b/drivers/iommu/intr_remapping.c
+index 739148a..2f4f27f 100644
+--- a/drivers/iommu/intr_remapping.c
++++ b/drivers/iommu/intr_remapping.c
+@@ -110,3 +110,12 @@ int intr_setup_ioapic_entry(int irq,
+ 	return remap_ops->setup_ioapic_entry(irq, entry, destination,
+ 					     vector, attr);
+ }
++
++int intr_set_affinity(struct irq_data *data, const struct cpumask *mask,
++		      bool force)
++{
++	if (!remap_ops || !remap_ops->set_affinity)
++		return 0;
++
++	return remap_ops->set_affinity(data, mask, force);
++}
+diff --git a/drivers/iommu/intr_remapping.h b/drivers/iommu/intr_remapping.h
+index e8994f2..e0bc6e0 100644
+--- a/drivers/iommu/intr_remapping.h
++++ b/drivers/iommu/intr_remapping.h
+@@ -26,6 +26,8 @@
+ 
+ struct IO_APIC_route_entry;
+ struct io_apic_irq_attr;
++struct irq_data;
++struct cpumask;
+ 
+ extern int disable_intremap;
+ extern int disable_sourceid_checking;
+@@ -54,6 +56,10 @@ struct irq_remap_ops {
+ 	int (*setup_ioapic_entry)(int irq, struct IO_APIC_route_entry *,
+ 				  unsigned int, int,
+ 				  struct io_apic_irq_attr *);
++
++	/* Set the CPU affinity of a remapped interrupt */
++	int (*set_affinity)(struct irq_data *data, const struct cpumask *mask,
++			    bool force);
+ };
+ 
+ extern struct irq_remap_ops intel_irq_remap_ops;
 -- 
 1.7.5.4
