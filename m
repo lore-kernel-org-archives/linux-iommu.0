@@ -1,8 +1,7 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 1/2] iommu/amd: Make sure IOMMU interrupts are re-enabled on
-	resume
-Date: Thu, 15 Mar 2012 17:27:43 +0100
-Message-ID: <1331828864-25213-1-git-send-email-joerg.roedel@amd.com>
+Subject: [RFC PATCH 0/9] Introduce irq_remap_ops to x86
+Date: Thu, 15 Mar 2012 18:39:42 +0100
+Message-ID: <1331833191-25779-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -16,80 +15,47 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-X9Un+BFzKDI@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Unfortunatly the interrupts for the event log and the
-peripheral page-faults are only enabled at boot but not
-re-enabled at resume. Fix that.
+Hi,
 
-Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
----
- drivers/iommu/amd_iommu_init.c |   30 ++++++++++++++++++++----------
- 1 files changed, 20 insertions(+), 10 deletions(-)
+in order to implement interrupt remapping using the AMD IOMMU I did some
+refactoring of the current Intel-specific interrupt remapping code. The
+result is posted for comments in this patch-set.
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 526652a..182b80b 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -1123,8 +1123,9 @@ static int iommu_setup_msi(struct amd_iommu *iommu)
- {
- 	int r;
- 
--	if (pci_enable_msi(iommu->dev))
--		return 1;
-+	r = pci_enable_msi(iommu->dev);
-+	if (r)
-+		return r;
- 
- 	r = request_threaded_irq(iommu->dev->irq,
- 				 amd_iommu_int_handler,
-@@ -1134,27 +1135,36 @@ static int iommu_setup_msi(struct amd_iommu *iommu)
- 
- 	if (r) {
- 		pci_disable_msi(iommu->dev);
--		return 1;
-+		return r;
- 	}
- 
- 	iommu->int_enabled = true;
--	iommu_feature_enable(iommu, CONTROL_EVT_INT_EN);
--
--	if (iommu->ppr_log != NULL)
--		iommu_feature_enable(iommu, CONTROL_PPFINT_EN);
- 
- 	return 0;
- }
- 
- static int iommu_init_msi(struct amd_iommu *iommu)
- {
-+	int ret;
-+
- 	if (iommu->int_enabled)
--		return 0;
-+		goto enable_faults;
- 
- 	if (pci_find_capability(iommu->dev, PCI_CAP_ID_MSI))
--		return iommu_setup_msi(iommu);
-+		ret = iommu_setup_msi(iommu);
-+	else
-+		ret = -ENODEV;
- 
--	return 1;
-+	if (ret)
-+		return ret;
-+
-+enable_faults:
-+	iommu_feature_enable(iommu, CONTROL_EVT_INT_EN);
-+
-+	if (iommu->ppr_log != NULL)
-+		iommu_feature_enable(iommu, CONTROL_PPFINT_EN);
-+
-+	return 0;
- }
- 
- /****************************************************************************
--- 
-1.7.5.4
+The patch-set basically removes the Intel-specific calls from the X86
+apic and io-apic code and replaces all of them with helper functions
+that use the irq_remap_ops to hook into an implementation specific
+implementation.
+
+I have done basic testing on this patch-set on a VT-d machine with
+interrupt remapping and found no regression so far. But as usual this
+doesn't mean that there is none ;-)
+
+Anyway, since I am on vacation soon I sent out these patches to receive
+all kinds of comments so that I can start over to add the AMD part when
+I am back.
+
+Thanks,
+
+	Joerg
+
+Diffstat:
+
+ arch/ia64/include/asm/intr_remapping.h |    4 +
+ arch/x86/include/asm/intr_remapping.h  |  101 +++
+ arch/x86/include/asm/irq_remapping.h   |   45 --
+ arch/x86/kernel/apic/apic.c            |   20 +-
+ arch/x86/kernel/apic/io_apic.c         |  276 ++-------
+ drivers/iommu/Makefile                 |    2 +-
+ drivers/iommu/amd_iommu_init.c         |  123 +++--
+ drivers/iommu/dmar.c                   |    1 +
+ drivers/iommu/intel-iommu.c            |    1 +
+ drivers/iommu/intel_intr_remapping.c   | 1065 ++++++++++++++++++++++++++++++++
+ drivers/iommu/intr_remapping.c         |  810 +++----------------------
+ drivers/iommu/intr_remapping.h         |   97 +++-
+ include/linux/amd-iommu.h              |    2 +-
+ include/linux/dmar.h                   |   85 ---
+ 14 files changed, 1469 insertions(+), 1163 deletions(-)
