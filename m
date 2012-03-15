@@ -1,75 +1,99 @@
-From: Kukjin Kim <kgene.kim@samsung.com>
-Subject: Re: [PATCH v12 2/3] ARM: EXYNOS: Change System MMU platform device
- definitions
-Date: Thu, 15 Mar 2012 07:39:25 -0700
-Message-ID: <4F61FF1D.5000502@samsung.com>
-References: <000201cd0286$2e6fbb40$8b4f31c0$%cho@samsung.com> <20120315111227.GA2384@amd.com>
+From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Subject: [PATCH 2/2] iommu/amd: Move interrupt setup code into seperate
+	function
+Date: Thu, 15 Mar 2012 17:27:44 +0100
+Message-ID: <1331828864-25213-2-git-send-email-joerg.roedel@amd.com>
+References: <1331828864-25213-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <20120315111227.GA2384@amd.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Joerg Roedel <joerg.roedel@amd.com>
-Cc: Cho KyongHo <pullip.cho@samsung.com>, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Subash Patel' <subash.ramaswamy@linaro.org>, 'Younglak Kim' <younglak1004.kim@samsung.com>, 'Kyungmin Park' <kyungmin.park@samsung.com>, 'Sanghyun Lee' <sanghyun75.lee@samsung.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1331828864-25213-1-git-send-email-joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 03/15/12 04:12, Joerg Roedel wrote:
-> On Thu, Mar 15, 2012 at 05:32:39PM +0900, Cho KyongHo wrote:
+For interrupt remapping the enablement of the IOMMU MSI
+interrupt needs to be deferred because the IOMMU itself will
+be initialized before the io-apics are up and running. So
+the code to setup the MSI is moved seperated from the
+hardware-setup routine now.
 
-KyongHo, I looked at 'Cho KyongHo <pullip.cho ...>' and 'KyongHo Cho 
-<pullip.cho ...>' in this series, which one do you want to use?
+Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+---
+ drivers/iommu/amd_iommu_init.c |   24 +++++++++++++++++++++++-
+ 1 files changed, 23 insertions(+), 1 deletions(-)
 
->> Handling System MMUs with an identifier is not flexible to manage
->> System MMU platform devices because of the following reasons:
->> 1. A device driver which needs to handle System MMU must know the ID.
->> 2. A System MMU may not present in some implementations of Exynos family.
->> 3. Handling System MMU with IOMMU API does not require an ID.
->>
->> This patch is the result of removing ID of System MMUs.
->> Instead, a device driver that needs to handle its System MMU must
->> use IOMMU API while its descriptor of platform device is given.
->>
->> This patch also includes the following enhancements:
->> - A System MMU device becomes a child if its power domain device.
->> - clkdev
->>
->> Cc: Kukjin Kim<kgene.kim@samsung.com>
->> Signed-off-by: KyongHo Cho<pullip.cho@samsung.com>
->> ---
->>   arch/arm/mach-exynos/Kconfig                    |   10 +-
->>   arch/arm/mach-exynos/Makefile                   |    2 +-
->>   arch/arm/mach-exynos/clock-exynos4.c            |   79 ++--
->>   arch/arm/mach-exynos/clock-exynos4.h            |    2 +
->>   arch/arm/mach-exynos/clock-exynos4210.c         |   11 +
->>   arch/arm/mach-exynos/clock-exynos4212.c         |   28 ++-
->>   arch/arm/mach-exynos/clock-exynos5.c            |   90 +++++
->>   arch/arm/mach-exynos/dev-sysmmu.c               |  457 ++++++++++++----------
->>   arch/arm/mach-exynos/include/mach/irqs.h        |   25 +-
->>   arch/arm/mach-exynos/include/mach/map.h         |   38 ++
->>   arch/arm/mach-exynos/include/mach/regs-clock.h  |    5 +
->>   arch/arm/mach-exynos/include/mach/regs-sysmmu.h |   28 --
->>   arch/arm/mach-exynos/include/mach/sysmmu.h      |   88 +++--
->>   arch/arm/mach-exynos/mach-armlex4210.c          |    1 -
->>   arch/arm/mach-exynos/mach-smdkv310.c            |    1 -
->>   15 files changed, 529 insertions(+), 336 deletions(-)
->>   delete mode 100644 arch/arm/mach-exynos/include/mach/regs-sysmmu.h
->
-> This patch doesn't apply cleanly against upstream Linux (v3.3-rcX).
-> Please rebase to upstream and resend. The other 2 patches apply fine.
->
-
-Yes, as KyoungHo said, this has been created on top of Samsung tree 
-for-next because this touches many exynos stuff which has been changed 
-from Samsung tree for upcoming merge window. So if you're ok on this, 
-1st patch and this should be sent to upstream via samsung tree even 
-though I can't find any topic branch for this yet. And if you want topic 
-branch for your tree, let me know, I can provide it.
-
-Thanks.
-
-Best regards,
-Kgene.
---
-Kukjin Kim <kgene.kim@samsung.com>, Senior Engineer,
-SW Solution Development Team, Samsung Electronics Co., Ltd.
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 182b80b..8b026bf 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -196,6 +196,8 @@ static u32 rlookup_table_size;	/* size if the rlookup table */
+  */
+ extern void iommu_flush_all_caches(struct amd_iommu *iommu);
+ 
++static int __init amd_iommu_enable_interrupts(void);
++
+ static inline void update_last_devid(u16 devid)
+ {
+ 	if (devid > amd_iommu_last_bdf)
+@@ -1383,7 +1385,6 @@ static void enable_iommus(void)
+ 		iommu_enable_ppr_log(iommu);
+ 		iommu_enable_gt(iommu);
+ 		iommu_set_exclusion_range(iommu);
+-		iommu_init_msi(iommu);
+ 		iommu_enable(iommu);
+ 		iommu_flush_all_caches(iommu);
+ 	}
+@@ -1411,6 +1412,8 @@ static void amd_iommu_resume(void)
+ 
+ 	/* re-load the hardware */
+ 	enable_iommus();
++
++	amd_iommu_enable_interrupts();
+ }
+ 
+ static int amd_iommu_suspend(void)
+@@ -1595,6 +1598,21 @@ free:
+ 	return ret;
+ }
+ 
++static int __init amd_iommu_enable_interrupts(void)
++{
++	struct amd_iommu *iommu;
++	int ret = 0;
++
++	for_each_iommu(iommu) {
++		ret = iommu_init_msi(iommu);
++		if (ret)
++			goto out;
++	}
++
++out:
++	return ret;
++}
++
+ /*
+  * This is the core init function for AMD IOMMU hardware in the system.
+  * This function is called from the generic x86 DMA layer initialization
+@@ -1612,6 +1630,10 @@ static int __init amd_iommu_init(void)
+ 	if (ret)
+ 		goto out;
+ 
++	ret = amd_iommu_enable_interrupts();
++	if (ret)
++		goto free;
++
+ 	if (iommu_pass_through)
+ 		ret = amd_iommu_init_passthrough();
+ 	else
+-- 
+1.7.5.4
