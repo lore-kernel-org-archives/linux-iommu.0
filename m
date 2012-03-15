@@ -1,64 +1,75 @@
-From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH] iommu/amd: Don't initialize IOMMUv2 resources when not
-	required
-Date: Thu, 15 Mar 2012 12:49:21 +0100
-Message-ID: <1331812161-5294-1-git-send-email-joerg.roedel@amd.com>
+From: Kukjin Kim <kgene.kim@samsung.com>
+Subject: Re: [PATCH v12 2/3] ARM: EXYNOS: Change System MMU platform device
+ definitions
+Date: Thu, 15 Mar 2012 07:39:25 -0700
+Message-ID: <4F61FF1D.5000502@samsung.com>
+References: <000201cd0286$2e6fbb40$8b4f31c0$%cho@samsung.com> <20120315111227.GA2384@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <20120315111227.GA2384@amd.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Joerg Roedel <joerg.roedel@amd.com>
+Cc: Cho KyongHo <pullip.cho@samsung.com>, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Subash Patel' <subash.ramaswamy@linaro.org>, 'Younglak Kim' <younglak1004.kim@samsung.com>, 'Kyungmin Park' <kyungmin.park@samsung.com>, 'Sanghyun Lee' <sanghyun75.lee@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Add a check to the init-path of the AMD IOMMUv2 driver if
-the hardware is available in the system. Only allocate all
-the resources if it is really available.
+On 03/15/12 04:12, Joerg Roedel wrote:
+> On Thu, Mar 15, 2012 at 05:32:39PM +0900, Cho KyongHo wrote:
 
-Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
----
- drivers/iommu/amd_iommu_v2.c |   14 +++++++++++++-
- 1 files changed, 13 insertions(+), 1 deletions(-)
+KyongHo, I looked at 'Cho KyongHo <pullip.cho ...>' and 'KyongHo Cho 
+<pullip.cho ...>' in this series, which one do you want to use?
 
-diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
-index 8add9f1..036fe9b 100644
---- a/drivers/iommu/amd_iommu_v2.c
-+++ b/drivers/iommu/amd_iommu_v2.c
-@@ -921,7 +921,16 @@ static int __init amd_iommu_v2_init(void)
- 	size_t state_table_size;
- 	int ret;
- 
--	pr_info("AMD IOMMUv2 driver by Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>");
-+	pr_info("AMD IOMMUv2 driver by Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>\n");
-+
-+	if (!amd_iommu_v2_supported()) {
-+		pr_info("AMD IOMMUv2 functionality not available on this sytem\n");
-+		/*
-+		 * Load anyway to provide the symbols to other modules
-+		 * which may use AMD IOMMUv2 optionally.
-+		 */
-+		return 0;
-+	}
- 
- 	spin_lock_init(&state_lock);
- 
-@@ -961,6 +970,9 @@ static void __exit amd_iommu_v2_exit(void)
- 	size_t state_table_size;
- 	int i;
- 
-+	if (!amd_iommu_v2_supported())
-+		return;
-+
- 	profile_event_unregister(PROFILE_TASK_EXIT, &profile_nb);
- 	amd_iommu_unregister_ppr_notifier(&ppr_nb);
- 
--- 
-1.7.5.4
+>> Handling System MMUs with an identifier is not flexible to manage
+>> System MMU platform devices because of the following reasons:
+>> 1. A device driver which needs to handle System MMU must know the ID.
+>> 2. A System MMU may not present in some implementations of Exynos family.
+>> 3. Handling System MMU with IOMMU API does not require an ID.
+>>
+>> This patch is the result of removing ID of System MMUs.
+>> Instead, a device driver that needs to handle its System MMU must
+>> use IOMMU API while its descriptor of platform device is given.
+>>
+>> This patch also includes the following enhancements:
+>> - A System MMU device becomes a child if its power domain device.
+>> - clkdev
+>>
+>> Cc: Kukjin Kim<kgene.kim@samsung.com>
+>> Signed-off-by: KyongHo Cho<pullip.cho@samsung.com>
+>> ---
+>>   arch/arm/mach-exynos/Kconfig                    |   10 +-
+>>   arch/arm/mach-exynos/Makefile                   |    2 +-
+>>   arch/arm/mach-exynos/clock-exynos4.c            |   79 ++--
+>>   arch/arm/mach-exynos/clock-exynos4.h            |    2 +
+>>   arch/arm/mach-exynos/clock-exynos4210.c         |   11 +
+>>   arch/arm/mach-exynos/clock-exynos4212.c         |   28 ++-
+>>   arch/arm/mach-exynos/clock-exynos5.c            |   90 +++++
+>>   arch/arm/mach-exynos/dev-sysmmu.c               |  457 ++++++++++++----------
+>>   arch/arm/mach-exynos/include/mach/irqs.h        |   25 +-
+>>   arch/arm/mach-exynos/include/mach/map.h         |   38 ++
+>>   arch/arm/mach-exynos/include/mach/regs-clock.h  |    5 +
+>>   arch/arm/mach-exynos/include/mach/regs-sysmmu.h |   28 --
+>>   arch/arm/mach-exynos/include/mach/sysmmu.h      |   88 +++--
+>>   arch/arm/mach-exynos/mach-armlex4210.c          |    1 -
+>>   arch/arm/mach-exynos/mach-smdkv310.c            |    1 -
+>>   15 files changed, 529 insertions(+), 336 deletions(-)
+>>   delete mode 100644 arch/arm/mach-exynos/include/mach/regs-sysmmu.h
+>
+> This patch doesn't apply cleanly against upstream Linux (v3.3-rcX).
+> Please rebase to upstream and resend. The other 2 patches apply fine.
+>
+
+Yes, as KyoungHo said, this has been created on top of Samsung tree 
+for-next because this touches many exynos stuff which has been changed 
+from Samsung tree for upcoming merge window. So if you're ok on this, 
+1st patch and this should be sent to upstream via samsung tree even 
+though I can't find any topic branch for this yet. And if you want topic 
+branch for your tree, let me know, I can provide it.
+
+Thanks.
+
+Best regards,
+Kgene.
+--
+Kukjin Kim <kgene.kim@samsung.com>, Senior Engineer,
+SW Solution Development Team, Samsung Electronics Co., Ltd.
