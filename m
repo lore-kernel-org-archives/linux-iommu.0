@@ -1,7 +1,7 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 8/9] iommu/vt-d: Convert MSI remapping setup to remap_ops
-Date: Thu, 15 Mar 2012 18:39:50 +0100
-Message-ID: <1331833191-25779-9-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 5/9] iommu/vt-d: Convert IR ioapic-setup to use remap_ops
+Date: Thu, 15 Mar 2012 18:39:47 +0100
+Message-ID: <1331833191-25779-6-git-send-email-joerg.roedel@amd.com>
 References: <1331833191-25779-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,471 +21,298 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-X9Un+BFzKDI@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch introduces remapping-ops for setting ups MSI
-interrupts.
+The IOAPIC setup routine for interrupt remapping is VT-d
+specific. Move it to the irq_remap_ops and add a call helper
+function.
 
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- arch/x86/include/asm/intr_remapping.h |   26 +++++++
- arch/x86/include/asm/irq_remapping.h  |   23 ------
- arch/x86/kernel/apic/io_apic.c        |  121 ++++++++-------------------------
- drivers/iommu/intel_intr_remapping.c  |   97 ++++++++++++++++++++++++++
- drivers/iommu/intr_remapping.c        |   35 ++++++++++
- drivers/iommu/intr_remapping.h        |   16 +++++
- 6 files changed, 203 insertions(+), 115 deletions(-)
+ arch/x86/include/asm/intr_remapping.h |   15 +++++-
+ arch/x86/kernel/apic/io_apic.c        |   68 +------------------------
+ drivers/iommu/intel_intr_remapping.c  |   89 +++++++++++++++++++++++++++++++++
+ drivers/iommu/intr_remapping.c        |   12 +++++
+ drivers/iommu/intr_remapping.h        |    8 +++
+ 5 files changed, 125 insertions(+), 67 deletions(-)
 
 diff --git a/arch/x86/include/asm/intr_remapping.h b/arch/x86/include/asm/intr_remapping.h
-index a195b7d..a6afd6e 100644
+index 55aa892..a22e1f1 100644
 --- a/arch/x86/include/asm/intr_remapping.h
 +++ b/arch/x86/include/asm/intr_remapping.h
-@@ -26,6 +26,7 @@
+@@ -24,6 +24,9 @@
  
- struct IO_APIC_route_entry;
- struct io_apic_irq_attr;
-+struct pci_dev;
+ #ifdef CONFIG_IRQ_REMAP
  
++struct IO_APIC_route_entry;
++struct io_apic_irq_attr;
++
  extern int intr_remapping_enabled;
  
-@@ -44,6 +45,13 @@ extern int intr_set_affinity(struct irq_data *data,
- 			     const struct cpumask *mask,
- 			     bool force);
- extern void intr_free_irq(int irq);
-+extern void intr_compose_msi_msg(struct pci_dev *pdev,
-+				 unsigned int irq, unsigned int dest,
-+				 struct msi_msg *msg, u8 hpet_id);
-+extern int intr_msi_alloc_irq(struct pci_dev *pdev, int irq, int nvec);
-+extern int intr_msi_setup_irq(struct pci_dev *pdev, unsigned int irq,
-+			      int index, int sub_handle);
-+extern int intr_setup_hpet_msi(unsigned int irq, unsigned int id);
+ extern void setup_intr_remapping(void);
+@@ -33,6 +36,10 @@ extern int intr_hardware_enable(void);
+ extern void intr_hardware_disable(void);
+ extern int intr_hardware_reenable(int);
+ extern int intr_enable_fault_handling(void);
++extern int intr_setup_ioapic_entry(int irq,
++				   struct IO_APIC_route_entry *entry,
++				   unsigned int destination, int vector,
++				   struct io_apic_irq_attr *attr);
  
  #else  /* CONFIG_IRQ_REMAP */
  
-@@ -70,6 +78,24 @@ static inline int intr_set_affinity(struct irq_data *data,
- 	return 0;
- }
- static inline void intr_free_irq(int irq) { }
-+static inline void intr_compose_msi_msg(struct pci_dev *pdev,
-+					unsigned int irq, unsigned int dest,
-+					struct msi_msg *msg, u8 hpet_id)
-+{
-+}
-+static inline int intr_msi_alloc_irq(struct pci_dev *pdev, int irq, int nvec)
-+{
-+	return -ENODEV;
-+}
-+static inline int intr_msi_setup_irq(struct pci_dev *pdev, unsigned int irq,
-+				     int index, int sub_handle)
-+{
-+	return -ENODEV;
-+}
-+static inline int intr_setup_hpet_msi(unsigned int irq, unsigned int id)
+@@ -45,7 +52,13 @@ static inline int intr_hardware_enable(void) { return -ENODEV; }
+ static inline void intr_hardware_disable(void) { }
+ static inline int intr_hardware_reenable(int eim) { return -ENODEV; }
+ static inline int intr_enable_fault_handling(void) { return -ENODEV; }
+-
++static inline int intr_setup_ioapic_entry(int irq,
++					  struct IO_APIC_route_entry *entry,
++					  unsigned int destination, int vector,
++					  struct io_apic_irq_attr *attr)
 +{
 +	return -ENODEV;
 +}
  #endif /* CONFIG_IRQ_REMAP */
  
  #endif /* __X86_INTR_REMAPPING_H */
-diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
-index 47d9993..0ddfc0b 100644
---- a/arch/x86/include/asm/irq_remapping.h
-+++ b/arch/x86/include/asm/irq_remapping.h
-@@ -5,34 +5,11 @@
- 
- #ifdef CONFIG_IRQ_REMAP
- static void irq_remap_modify_chip_defaults(struct irq_chip *chip);
--static inline void prepare_irte(struct irte *irte, int vector,
--			        unsigned int dest)
--{
--	memset(irte, 0, sizeof(*irte));
--
--	irte->present = 1;
--	irte->dst_mode = apic->irq_dest_mode;
--	/*
--	 * Trigger mode in the IRTE will always be edge, and for IO-APIC, the
--	 * actual level or edge trigger will be setup in the IO-APIC
--	 * RTE. This will help simplify level triggered irq migration.
--	 * For more details, see the comments (in io_apic.c) explainig IO-APIC
--	 * irq migration in the presence of interrupt-remapping.
--	*/
--	irte->trigger_mode = 0;
--	irte->dlvry_mode = apic->irq_delivery_mode;
--	irte->vector = vector;
--	irte->dest_id = IRTE_DEST(dest);
--	irte->redir_hint = 1;
--}
- static inline bool irq_remapped(struct irq_cfg *cfg)
- {
- 	return cfg->irq_2_iommu.iommu != NULL;
- }
- #else
--static void prepare_irte(struct irte *irte, int vector, unsigned int dest)
--{
--}
- static inline bool irq_remapped(struct irq_cfg *cfg)
- {
- 	return false;
 diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
-index e194b78..a6af128 100644
+index 6c00161..4746ba1 100644
 --- a/arch/x86/kernel/apic/io_apic.c
 +++ b/arch/x86/kernel/apic/io_apic.c
-@@ -3010,54 +3010,34 @@ static int msi_compose_msg(struct pci_dev *pdev, unsigned int irq,
- 	dest = apic->cpu_mask_to_apicid_and(cfg->domain, apic->target_cpus());
- 
- 	if (irq_remapped(cfg)) {
--		struct irte irte;
--		int ir_index;
--		u16 sub_handle;
--
--		ir_index = map_irq_to_irte_handle(irq, &sub_handle);
--		BUG_ON(ir_index == -1);
--
--		prepare_irte(&irte, cfg->vector, dest);
--
--		/* Set source-id of interrupt request */
--		if (pdev)
--			set_msi_sid(&irte, pdev);
--		else
--			set_hpet_sid(&irte, hpet_id);
--
--		modify_irte(irq, &irte);
-+		intr_compose_msi_msg(pdev, irq, dest, msg, hpet_id);
-+		return err;
-+	}
- 
-+	if (x2apic_enabled())
-+		msg->address_hi = MSI_ADDR_BASE_HI |
-+				  MSI_ADDR_EXT_DEST_ID(dest);
-+	else
- 		msg->address_hi = MSI_ADDR_BASE_HI;
--		msg->data = sub_handle;
--		msg->address_lo = MSI_ADDR_BASE_LO | MSI_ADDR_IR_EXT_INT |
--				  MSI_ADDR_IR_SHV |
--				  MSI_ADDR_IR_INDEX1(ir_index) |
--				  MSI_ADDR_IR_INDEX2(ir_index);
--	} else {
--		if (x2apic_enabled())
--			msg->address_hi = MSI_ADDR_BASE_HI |
--					  MSI_ADDR_EXT_DEST_ID(dest);
--		else
--			msg->address_hi = MSI_ADDR_BASE_HI;
- 
--		msg->address_lo =
--			MSI_ADDR_BASE_LO |
--			((apic->irq_dest_mode == 0) ?
--				MSI_ADDR_DEST_MODE_PHYSICAL:
--				MSI_ADDR_DEST_MODE_LOGICAL) |
--			((apic->irq_delivery_mode != dest_LowestPrio) ?
--				MSI_ADDR_REDIRECTION_CPU:
--				MSI_ADDR_REDIRECTION_LOWPRI) |
--			MSI_ADDR_DEST_ID(dest);
-+	msg->address_lo =
-+		MSI_ADDR_BASE_LO |
-+		((apic->irq_dest_mode == 0) ?
-+			MSI_ADDR_DEST_MODE_PHYSICAL:
-+			MSI_ADDR_DEST_MODE_LOGICAL) |
-+		((apic->irq_delivery_mode != dest_LowestPrio) ?
-+			MSI_ADDR_REDIRECTION_CPU:
-+			MSI_ADDR_REDIRECTION_LOWPRI) |
-+		MSI_ADDR_DEST_ID(dest);
-+
-+	msg->data =
-+		MSI_DATA_TRIGGER_EDGE |
-+		MSI_DATA_LEVEL_ASSERT |
-+		((apic->irq_delivery_mode != dest_LowestPrio) ?
-+			MSI_DATA_DELIVERY_FIXED:
-+			MSI_DATA_DELIVERY_LOWPRI) |
-+		MSI_DATA_VECTOR(cfg->vector);
- 
--		msg->data =
--			MSI_DATA_TRIGGER_EDGE |
--			MSI_DATA_LEVEL_ASSERT |
--			((apic->irq_delivery_mode != dest_LowestPrio) ?
--				MSI_DATA_DELIVERY_FIXED:
--				MSI_DATA_DELIVERY_LOWPRI) |
--			MSI_DATA_VECTOR(cfg->vector);
--	}
- 	return err;
+@@ -1323,77 +1323,13 @@ static void ioapic_register_intr(unsigned int irq, struct irq_cfg *cfg,
+ 				      fasteoi ? "fasteoi" : "edge");
  }
  
-@@ -3100,33 +3080,6 @@ static struct irq_chip msi_chip = {
- 	.irq_retrigger		= ioapic_retrigger_irq,
- };
- 
--/*
-- * Map the PCI dev to the corresponding remapping hardware unit
-- * and allocate 'nvec' consecutive interrupt-remapping table entries
-- * in it.
-- */
--static int msi_alloc_irte(struct pci_dev *dev, int irq, int nvec)
+-
+-static int setup_ir_ioapic_entry(int irq,
+-			      struct IR_IO_APIC_route_entry *entry,
+-			      unsigned int destination, int vector,
+-			      struct io_apic_irq_attr *attr)
 -{
--	struct intel_iommu *iommu;
 -	int index;
+-	struct irte irte;
+-	int ioapic_id = mpc_ioapic_id(attr->ioapic);
+-	struct intel_iommu *iommu = map_ioapic_to_ir(ioapic_id);
 -
--	iommu = map_dev_to_ir(dev);
 -	if (!iommu) {
--		printk(KERN_ERR
--		       "Unable to map PCI %s to iommu\n", pci_name(dev));
--		return -ENOENT;
+-		pr_warn("No mapping iommu for ioapic %d\n", ioapic_id);
+-		return -ENODEV;
 -	}
 -
--	index = alloc_irte(iommu, irq, nvec);
+-	index = alloc_irte(iommu, irq, 1);
 -	if (index < 0) {
--		printk(KERN_ERR
--		       "Unable to allocate %d IRTE for PCI %s\n", nvec,
--		       pci_name(dev));
--		return -ENOSPC;
+-		pr_warn("Failed to allocate IRTE for ioapic %d\n", ioapic_id);
+-		return -ENOMEM;
 -	}
--	return index;
+-
+-	prepare_irte(&irte, vector, destination);
+-
+-	/* Set source-id of interrupt request */
+-	set_ioapic_sid(&irte, ioapic_id);
+-
+-	modify_irte(irq, &irte);
+-
+-	apic_printk(APIC_VERBOSE, KERN_DEBUG "IOAPIC[%d]: "
+-		"Set IRTE entry (P:%d FPD:%d Dst_Mode:%d "
+-		"Redir_hint:%d Trig_Mode:%d Dlvry_Mode:%X "
+-		"Avail:%X Vector:%02X Dest:%08X "
+-		"SID:%04X SQ:%X SVT:%X)\n",
+-		attr->ioapic, irte.present, irte.fpd, irte.dst_mode,
+-		irte.redir_hint, irte.trigger_mode, irte.dlvry_mode,
+-		irte.avail, irte.vector, irte.dest_id,
+-		irte.sid, irte.sq, irte.svt);
+-
+-	memset(entry, 0, sizeof(*entry));
+-
+-	entry->index2	= (index >> 15) & 0x1;
+-	entry->zero	= 0;
+-	entry->format	= 1;
+-	entry->index	= (index & 0x7fff);
+-	/*
+-	 * IO-APIC RTE will be configured with virtual vector.
+-	 * irq handler will do the explicit EOI to the io-apic.
+-	 */
+-	entry->vector	= attr->ioapic_pin;
+-	entry->mask	= 0;			/* enable IRQ */
+-	entry->trigger	= attr->trigger;
+-	entry->polarity	= attr->polarity;
+-
+-	/* Mask level triggered irqs.
+-	 * Use IRQ_DELAYED_DISABLE for edge triggered irqs.
+-	 */
+-	if (attr->trigger)
+-		entry->mask = 1;
+-
+-	return 0;
 -}
 -
- static int setup_msi_irq(struct pci_dev *dev, struct msi_desc *msidesc, int irq)
+ static int setup_ioapic_entry(int irq, struct IO_APIC_route_entry *entry,
+ 			       unsigned int destination, int vector,
+ 			       struct io_apic_irq_attr *attr)
  {
- 	struct irq_chip *chip = &msi_chip;
-@@ -3157,7 +3110,6 @@ int native_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
- 	int node, ret, sub_handle, index = 0;
- 	unsigned int irq, irq_want;
- 	struct msi_desc *msidesc;
--	struct intel_iommu *iommu = NULL;
+ 	if (intr_remapping_enabled)
+-		return setup_ir_ioapic_entry(irq,
+-			 (struct IR_IO_APIC_route_entry *)entry,
+-			 destination, vector, attr);
++		return intr_setup_ioapic_entry(irq, entry, destination,
++					       vector, attr);
  
- 	/* x86 doesn't support multiple MSI yet */
- 	if (type == PCI_CAP_ID_MSI && nvec > 1)
-@@ -3179,23 +3131,15 @@ int native_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
- 			 * allocate the consecutive block of IRTE's
- 			 * for 'nvec'
- 			 */
--			index = msi_alloc_irte(dev, irq, nvec);
-+			index = intr_msi_alloc_irq(dev, irq, nvec);
- 			if (index < 0) {
- 				ret = index;
- 				goto error;
- 			}
- 		} else {
--			iommu = map_dev_to_ir(dev);
--			if (!iommu) {
--				ret = -ENOENT;
-+			ret = intr_msi_setup_irq(dev, irq, index, sub_handle);
-+			if (ret < 0)
- 				goto error;
--			}
--			/*
--			 * setup the mapping between the irq and the IRTE
--			 * base index, the sub_handle pointing to the
--			 * appropriate interrupt remap table entry.
--			 */
--			set_irte_irq(irq, iommu, index, sub_handle);
- 		}
- no_ir:
- 		ret = setup_msi_irq(dev, msidesc, irq);
-@@ -3314,14 +3258,7 @@ int arch_setup_hpet_msi(unsigned int irq, unsigned int id)
- 	int ret;
- 
- 	if (intr_remapping_enabled) {
--		struct intel_iommu *iommu = map_hpet_to_ir(id);
--		int index;
--
--		if (!iommu)
--			return -1;
--
--		index = alloc_irte(iommu, irq, 1);
--		if (index < 0)
-+		if (!intr_setup_hpet_msi(irq, id))
- 			return -1;
- 	}
+ 	memset(entry, 0, sizeof(*entry));
  
 diff --git a/drivers/iommu/intel_intr_remapping.c b/drivers/iommu/intel_intr_remapping.c
-index 44a6e04..a3bae67 100644
+index 610b75b..f495eba 100644
 --- a/drivers/iommu/intel_intr_remapping.c
 +++ b/drivers/iommu/intel_intr_remapping.c
-@@ -13,6 +13,7 @@
- #include <acpi/acpi.h>
- #include <asm/intr_remapping.h>
- #include <asm/pci-direct.h>
-+#include <asm/msidef.h>
+@@ -31,6 +31,7 @@ struct hpet_scope {
+ };
  
- #include "intr_remapping.h"
+ #define IR_X2APIC_MODE(mode) (mode ? (1 << 11) : 0)
++#define IRTE_DEST(dest) ((x2apic_mode) ? dest : dest << 8)
  
-@@ -955,6 +956,98 @@ intel_ioapic_set_affinity(struct irq_data *data, const struct cpumask *mask,
- 	return 0;
+ static struct ioapic_scope ir_ioapic[MAX_IO_APICS];
+ static struct hpet_scope ir_hpet[MAX_HPET_TBS];
+@@ -814,6 +815,93 @@ error:
+ 	return -1;
  }
  
-+static void intel_compose_msi_msg(struct pci_dev *pdev,
-+				  unsigned int irq, unsigned int dest,
-+				  struct msi_msg *msg, u8 hpet_id)
++static void prepare_irte(struct irte *irte, int vector,
++			 unsigned int dest)
 +{
-+	struct irq_cfg *cfg;
++	memset(irte, 0, sizeof(*irte));
++
++	irte->present = 1;
++	irte->dst_mode = apic->irq_dest_mode;
++	/*
++	 * Trigger mode in the IRTE will always be edge, and for IO-APIC, the
++	 * actual level or edge trigger will be setup in the IO-APIC
++	 * RTE. This will help simplify level triggered irq migration.
++	 * For more details, see the comments (in io_apic.c) explainig IO-APIC
++	 * irq migration in the presence of interrupt-remapping.
++	*/
++	irte->trigger_mode = 0;
++	irte->dlvry_mode = apic->irq_delivery_mode;
++	irte->vector = vector;
++	irte->dest_id = IRTE_DEST(dest);
++	irte->redir_hint = 1;
++}
++
++static int intel_setup_ioapic_entry(int irq,
++				    struct IO_APIC_route_entry *route_entry,
++				    unsigned int destination, int vector,
++				    struct io_apic_irq_attr *attr)
++{
++	int ioapic_id = mpc_ioapic_id(attr->ioapic);
++	struct intel_iommu *iommu = map_ioapic_to_ir(ioapic_id);
++	struct IR_IO_APIC_route_entry *entry;
 +	struct irte irte;
-+	u16 sub_handle;
-+	int ir_index;
++	int index;
 +
-+	cfg = irq_get_chip_data(irq);
++	if (!iommu) {
++		pr_warn("No mapping iommu for ioapic %d\n", ioapic_id);
++		return -ENODEV;
++	}
 +
-+	ir_index = map_irq_to_irte_handle(irq, &sub_handle);
-+	BUG_ON(ir_index == -1);
++	entry = (struct IR_IO_APIC_route_entry *)route_entry;
 +
-+	prepare_irte(&irte, cfg->vector, dest);
++	index = alloc_irte(iommu, irq, 1);
++	if (index < 0) {
++		pr_warn("Failed to allocate IRTE for ioapic %d\n", ioapic_id);
++		return -ENOMEM;
++	}
++
++	prepare_irte(&irte, vector, destination);
 +
 +	/* Set source-id of interrupt request */
-+	if (pdev)
-+		set_msi_sid(&irte, pdev);
-+	else
-+		set_hpet_sid(&irte, hpet_id);
++	set_ioapic_sid(&irte, ioapic_id);
 +
 +	modify_irte(irq, &irte);
 +
-+	msg->address_hi = MSI_ADDR_BASE_HI;
-+	msg->data = sub_handle;
-+	msg->address_lo = MSI_ADDR_BASE_LO | MSI_ADDR_IR_EXT_INT |
-+			  MSI_ADDR_IR_SHV |
-+			  MSI_ADDR_IR_INDEX1(ir_index) |
-+			  MSI_ADDR_IR_INDEX2(ir_index);
-+}
++	apic_printk(APIC_VERBOSE, KERN_DEBUG "IOAPIC[%d]: "
++		"Set IRTE entry (P:%d FPD:%d Dst_Mode:%d "
++		"Redir_hint:%d Trig_Mode:%d Dlvry_Mode:%X "
++		"Avail:%X Vector:%02X Dest:%08X "
++		"SID:%04X SQ:%X SVT:%X)\n",
++		attr->ioapic, irte.present, irte.fpd, irte.dst_mode,
++		irte.redir_hint, irte.trigger_mode, irte.dlvry_mode,
++		irte.avail, irte.vector, irte.dest_id,
++		irte.sid, irte.sq, irte.svt);
 +
-+/*
-+ * Map the PCI dev to the corresponding remapping hardware unit
-+ * and allocate 'nvec' consecutive interrupt-remapping table entries
-+ * in it.
-+ */
-+static int intel_msi_alloc_irq(struct pci_dev *dev, int irq, int nvec)
-+{
-+	struct intel_iommu *iommu;
-+	int index;
++	memset(entry, 0, sizeof(*entry));
 +
-+	iommu = map_dev_to_ir(dev);
-+	if (!iommu) {
-+		printk(KERN_ERR
-+		       "Unable to map PCI %s to iommu\n", pci_name(dev));
-+		return -ENOENT;
-+	}
-+
-+	index = alloc_irte(iommu, irq, nvec);
-+	if (index < 0) {
-+		printk(KERN_ERR
-+		       "Unable to allocate %d IRTE for PCI %s\n", nvec,
-+		       pci_name(dev));
-+		return -ENOSPC;
-+	}
-+	return index;
-+}
-+
-+static int intel_msi_setup_irq(struct pci_dev *pdev, unsigned int irq,
-+			       int index, int sub_handle)
-+{
-+	struct intel_iommu *iommu;
-+
-+	iommu = map_dev_to_ir(pdev);
-+	if (!iommu)
-+		return -ENOENT;
++	entry->index2	= (index >> 15) & 0x1;
++	entry->zero	= 0;
++	entry->format	= 1;
++	entry->index	= (index & 0x7fff);
 +	/*
-+	 * setup the mapping between the irq and the IRTE
-+	 * base index, the sub_handle pointing to the
-+	 * appropriate interrupt remap table entry.
++	 * IO-APIC RTE will be configured with virtual vector.
++	 * irq handler will do the explicit EOI to the io-apic.
 +	 */
-+	set_irte_irq(irq, iommu, index, sub_handle);
++	entry->vector	= attr->ioapic_pin;
++	entry->mask	= 0;			/* enable IRQ */
++	entry->trigger	= attr->trigger;
++	entry->polarity	= attr->polarity;
++
++	/* Mask level triggered irqs.
++	 * Use IRQ_DELAYED_DISABLE for edge triggered irqs.
++	 */
++	if (attr->trigger)
++		entry->mask = 1;
 +
 +	return 0;
 +}
 +
-+static int intel_setup_hpet_msi(unsigned int irq, unsigned int id)
-+{
-+	struct intel_iommu *iommu = map_hpet_to_ir(id);
-+	int index;
-+
-+	if (!iommu)
-+		return -1;
-+
-+	index = alloc_irte(iommu, irq, 1);
-+	if (index < 0)
-+		return -1;
-+
-+	return 0;
-+}
 +
  struct irq_remap_ops intel_irq_remap_ops = {
  	.supported		= intel_intr_remapping_supported,
  	.hardware_init		= dmar_table_init,
-@@ -965,4 +1058,8 @@ struct irq_remap_ops intel_irq_remap_ops = {
- 	.setup_ioapic_entry	= intel_setup_ioapic_entry,
- 	.set_affinity		= intel_ioapic_set_affinity,
- 	.free_irq		= free_irte,
-+	.compose_msi_msg	= intel_compose_msi_msg,
-+	.msi_alloc_irq		= intel_msi_alloc_irq,
-+	.msi_setup_irq		= intel_msi_setup_irq,
-+	.setup_hpet_msi		= intel_setup_hpet_msi,
+@@ -821,4 +909,5 @@ struct irq_remap_ops intel_irq_remap_ops = {
+ 	.hardware_disable	= disable_intr_remapping,
+ 	.hardware_reenable	= reenable_intr_remapping,
+ 	.enable_faulting	= enable_drhd_fault_handling,
++	.setup_ioapic_entry	= intel_setup_ioapic_entry,
  };
 diff --git a/drivers/iommu/intr_remapping.c b/drivers/iommu/intr_remapping.c
-index a68d304..9dc1793 100644
+index 9aabed7..739148a 100644
 --- a/drivers/iommu/intr_remapping.c
 +++ b/drivers/iommu/intr_remapping.c
-@@ -127,3 +127,38 @@ void intr_free_irq(int irq)
+@@ -98,3 +98,15 @@ int __init intr_enable_fault_handling(void)
  
- 	remap_ops->free_irq(irq);
+ 	return remap_ops->enable_faulting();
  }
 +
-+void intr_compose_msi_msg(struct pci_dev *pdev,
-+			  unsigned int irq, unsigned int dest,
-+			  struct msi_msg *msg, u8 hpet_id)
++int intr_setup_ioapic_entry(int irq,
++			    struct IO_APIC_route_entry *entry,
++			    unsigned int destination, int vector,
++			    struct io_apic_irq_attr *attr)
 +{
-+	if (!remap_ops || !remap_ops->compose_msi_msg)
-+		return;
-+
-+	remap_ops->compose_msi_msg(pdev, irq, dest, msg, hpet_id);
-+}
-+
-+int intr_msi_alloc_irq(struct pci_dev *pdev, int irq, int nvec)
-+{
-+	if (!remap_ops || !remap_ops->msi_alloc_irq)
++	if (!remap_ops || !remap_ops->setup_ioapic_entry)
 +		return -ENODEV;
 +
-+	return remap_ops->msi_alloc_irq(pdev, irq, nvec);
-+}
-+
-+int intr_msi_setup_irq(struct pci_dev *pdev, unsigned int irq,
-+		       int index, int sub_handle)
-+{
-+	if (!remap_ops || !remap_ops->msi_setup_irq)
-+		return -ENODEV;
-+
-+	return remap_ops->msi_setup_irq(pdev, irq, index, sub_handle);
-+}
-+
-+int intr_setup_hpet_msi(unsigned int irq, unsigned int id)
-+{
-+	if (!remap_ops || !remap_ops->setup_hpet_msi)
-+		return -ENODEV;
-+
-+	return remap_ops->setup_hpet_msi(irq, id);
++	return remap_ops->setup_ioapic_entry(irq, entry, destination,
++					     vector, attr);
 +}
 diff --git a/drivers/iommu/intr_remapping.h b/drivers/iommu/intr_remapping.h
-index 5748553..6f4ea0a 100644
+index 2744c9a..e8994f2 100644
 --- a/drivers/iommu/intr_remapping.h
 +++ b/drivers/iommu/intr_remapping.h
-@@ -28,6 +28,8 @@ struct IO_APIC_route_entry;
- struct io_apic_irq_attr;
- struct irq_data;
- struct cpumask;
-+struct pci_dev;
-+struct msi_msg;
+@@ -24,6 +24,9 @@
  
+ #ifdef CONFIG_IRQ_REMAP
+ 
++struct IO_APIC_route_entry;
++struct io_apic_irq_attr;
++
  extern int disable_intremap;
  extern int disable_sourceid_checking;
-@@ -63,6 +65,20 @@ struct irq_remap_ops {
+ extern int no_x2apic_optout;
+@@ -46,6 +49,11 @@ struct irq_remap_ops {
  
- 	/* Free an IRQ */
- 	int (*free_irq)(int);
+ 	/* Enable fault handling */
+ 	int  (*enable_faulting)(void);
 +
-+	/* Create MSI msg to use for interrupt remapping */
-+	void (*compose_msi_msg)(struct pci_dev *,
-+				unsigned int, unsigned int,
-+				struct msi_msg *, u8);
-+
-+	/* Allocate remapping resources for MSI */
-+	int (*msi_alloc_irq)(struct pci_dev *, int, int);
-+
-+	/* Setup the remapped MSI irq */
-+	int (*msi_setup_irq)(struct pci_dev *, unsigned int, int, int);
-+
-+	/* Setup interrupt remapping for an HPET MSI */
-+	int (*setup_hpet_msi)(unsigned int, unsigned int);
++	/* IO-APIC setup routine */
++	int (*setup_ioapic_entry)(int irq, struct IO_APIC_route_entry *,
++				  unsigned int, int,
++				  struct io_apic_irq_attr *);
  };
  
  extern struct irq_remap_ops intel_irq_remap_ops;
