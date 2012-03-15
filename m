@@ -1,7 +1,8 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 1/9] iommu/amd: Split amd_iommu_init function
-Date: Thu, 15 Mar 2012 18:39:43 +0100
-Message-ID: <1331833191-25779-2-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 9/9] x86,
+	iommu/vt-d: Clean up interfaces for interrupt remapping
+Date: Thu, 15 Mar 2012 18:39:51 +0100
+Message-ID: <1331833191-25779-10-git-send-email-joerg.roedel@amd.com>
 References: <1331833191-25779-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,212 +22,244 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-X9Un+BFzKDI@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The hardware-initializtion part of the AMD IOMMU driver is
-split out into a seperate function. This function can now be
-called either from amd_iommu_init() itself or any other
-place if the hardware needs to be ready earlier. This will
-be used to implement interrupt remapping for AMD.
+Remove the Intel specific interfaces from dmar.h and remove
+asm/irq_remapping.h which is only used for io_apic.c anyway.
 
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c |  123 +++++++++++++++++++++++++--------------
- include/linux/amd-iommu.h      |    2 +-
- 2 files changed, 80 insertions(+), 45 deletions(-)
+ arch/x86/include/asm/irq_remapping.h |   22 ------------
+ arch/x86/kernel/apic/io_apic.c       |   17 +++++++++-
+ drivers/iommu/intel_intr_remapping.c |   20 ++++++------
+ include/linux/dmar.h                 |   59 ----------------------------------
+ 4 files changed, 26 insertions(+), 92 deletions(-)
+ delete mode 100644 arch/x86/include/asm/irq_remapping.h
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index a35e98a..6d114e5 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -1424,10 +1424,40 @@ static struct syscore_ops amd_iommu_syscore_ops = {
- 	.resume = amd_iommu_resume,
- };
+diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
+deleted file mode 100644
+index 0ddfc0b..0000000
+--- a/arch/x86/include/asm/irq_remapping.h
++++ /dev/null
+@@ -1,22 +0,0 @@
+-#ifndef _ASM_X86_IRQ_REMAPPING_H
+-#define _ASM_X86_IRQ_REMAPPING_H
+-
+-#define IRTE_DEST(dest) ((x2apic_mode) ? dest : dest << 8)
+-
+-#ifdef CONFIG_IRQ_REMAP
+-static void irq_remap_modify_chip_defaults(struct irq_chip *chip);
+-static inline bool irq_remapped(struct irq_cfg *cfg)
+-{
+-	return cfg->irq_2_iommu.iommu != NULL;
+-}
+-#else
+-static inline bool irq_remapped(struct irq_cfg *cfg)
+-{
+-	return false;
+-}
+-static inline void irq_remap_modify_chip_defaults(struct irq_chip *chip)
+-{
+-}
+-#endif
+-
+-#endif	/* _ASM_X86_IRQ_REMAPPING_H */
+diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
+index a6af128..c65d425 100644
+--- a/arch/x86/kernel/apic/io_apic.c
++++ b/arch/x86/kernel/apic/io_apic.c
+@@ -58,7 +58,6 @@
+ #include <asm/hypertransport.h>
+ #include <asm/setup.h>
+ #include <asm/intr_remapping.h>
+-#include <asm/irq_remapping.h>
+ #include <asm/hpet.h>
+ #include <asm/hw_irq.h>
  
-+static void __init free_on_init_error(void)
+@@ -68,6 +67,22 @@
+ #define for_each_irq_pin(entry, head) \
+ 	for (entry = head; entry; entry = entry->next)
+ 
++#ifdef CONFIG_IRQ_REMAP
++static void irq_remap_modify_chip_defaults(struct irq_chip *chip);
++static inline bool irq_remapped(struct irq_cfg *cfg)
 +{
-+	amd_iommu_uninit_devices();
-+
-+	free_pages((unsigned long)amd_iommu_pd_alloc_bitmap,
-+		   get_order(MAX_DOMAIN_ID/8));
-+
-+	free_pages((unsigned long)amd_iommu_rlookup_table,
-+		   get_order(rlookup_table_size));
-+
-+	free_pages((unsigned long)amd_iommu_alias_table,
-+		   get_order(alias_table_size));
-+
-+	free_pages((unsigned long)amd_iommu_dev_table,
-+		   get_order(dev_table_size));
-+
-+	free_iommu_all();
-+
-+	free_unity_maps();
-+
-+#ifdef CONFIG_GART_IOMMU
-+	/*
-+	 * We failed to initialize the AMD IOMMU - try fallback to GART
-+	 * if possible.
-+	 */
-+	gart_iommu_init();
-+
-+#endif
++	return cfg->irq_2_iommu.iommu != NULL;
 +}
++#else
++static inline bool irq_remapped(struct irq_cfg *cfg)
++{
++	return false;
++}
++static inline void irq_remap_modify_chip_defaults(struct irq_chip *chip)
++{
++}
++#endif
 +
  /*
-- * This is the core init function for AMD IOMMU hardware in the system.
-- * This function is called from the generic x86 DMA layer initialization
-- * code.
-+ * This is the hardware init function for AMD IOMMU in the system.
-+ * This function is called either from amd_iommu_init or from the interrupt
-+ * remapping setup code.
-  *
-  * This function basically parses the ACPI table for AMD IOMMU (IVRS)
-  * three times:
-@@ -1446,16 +1476,21 @@ static struct syscore_ops amd_iommu_syscore_ops = {
-  *		remapping requirements parsed out of the ACPI table in
-  *		this last pass.
-  *
-- * After that the hardware is initialized and ready to go. In the last
-- * step we do some Linux specific things like registering the driver in
-- * the dma_ops interface and initializing the suspend/resume support
-- * functions. Finally it prints some information about AMD IOMMUs and
-- * the driver state and enables the hardware.
-+ * After everything is set up the IOMMUs are enabled and the necessary
-+ * hotplug and suspend notifiers are registered.
-  */
--static int __init amd_iommu_init(void)
-+int __init amd_iommu_init_hardware(void)
- {
- 	int i, ret = 0;
- 
-+	if (!amd_iommu_detected)
-+		return -ENODEV;
-+
-+	if (amd_iommu_dev_table != NULL) {
-+		/* Hardware already initialized */
-+		return 0;
-+	}
-+
- 	/*
- 	 * First parse ACPI tables to find the largest Bus/Dev/Func
- 	 * we need to handle. Upon this information the shared data
-@@ -1472,9 +1507,8 @@ static int __init amd_iommu_init(void)
- 	alias_table_size   = tbl_size(ALIAS_TABLE_ENTRY_SIZE);
- 	rlookup_table_size = tbl_size(RLOOKUP_TABLE_ENTRY_SIZE);
- 
--	ret = -ENOMEM;
--
- 	/* Device table - directly used by all IOMMUs */
-+	ret = -ENOMEM;
- 	amd_iommu_dev_table = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
- 				      get_order(dev_table_size));
- 	if (amd_iommu_dev_table == NULL)
-@@ -1546,20 +1580,46 @@ static int __init amd_iommu_init(void)
- 
- 	enable_iommus();
- 
-+	amd_iommu_init_notifier();
-+
-+	register_syscore_ops(&amd_iommu_syscore_ops);
-+
-+out:
-+	return ret;
-+
-+free:
-+	free_on_init_error();
-+
-+	return ret;
-+}
-+
-+/*
-+ * This is the core init function for AMD IOMMU hardware in the system.
-+ * This function is called from the generic x86 DMA layer initialization
-+ * code.
-+ *
-+ * The function calls amd_iommu_init_hardware() to setup and enable the
-+ * IOMMU hardware if this has not happened yet. After that the driver
-+ * registers for the DMA-API and for the IOMMU-API as necessary.
-+ */
-+static int __init amd_iommu_init(void)
-+{
-+	int ret = 0;
-+
-+	ret = amd_iommu_init_hardware();
-+	if (ret)
-+		goto out;
-+
- 	if (iommu_pass_through)
- 		ret = amd_iommu_init_passthrough();
- 	else
- 		ret = amd_iommu_init_dma_ops();
- 
- 	if (ret)
--		goto free_disable;
-+		goto free;
- 
- 	amd_iommu_init_api();
- 
--	amd_iommu_init_notifier();
--
--	register_syscore_ops(&amd_iommu_syscore_ops);
--
- 	if (iommu_pass_through)
- 		goto out;
- 
-@@ -1569,39 +1629,14 @@ static int __init amd_iommu_init(void)
- 		printk(KERN_INFO "AMD-Vi: Lazy IO/TLB flushing enabled\n");
- 
- 	x86_platform.iommu_shutdown = disable_iommus;
-+
- out:
- 	return ret;
- 
--free_disable:
--	disable_iommus();
--
- free:
--	amd_iommu_uninit_devices();
--
--	free_pages((unsigned long)amd_iommu_pd_alloc_bitmap,
--		   get_order(MAX_DOMAIN_ID/8));
--
--	free_pages((unsigned long)amd_iommu_rlookup_table,
--		   get_order(rlookup_table_size));
--
--	free_pages((unsigned long)amd_iommu_alias_table,
--		   get_order(alias_table_size));
--
--	free_pages((unsigned long)amd_iommu_dev_table,
--		   get_order(dev_table_size));
--
--	free_iommu_all();
--
--	free_unity_maps();
--
--#ifdef CONFIG_GART_IOMMU
--	/*
--	 * We failed to initialize the AMD IOMMU - try fallback to GART
--	 * if possible.
--	 */
--	gart_iommu_init();
-+	disable_iommus();
- 
--#endif
-+	free_on_init_error();
- 
- 	goto out;
+  *      Is the SiS APIC rmw bug present ?
+  *      -1 = don't know, 0 = no, 1 = yes
+diff --git a/drivers/iommu/intel_intr_remapping.c b/drivers/iommu/intel_intr_remapping.c
+index a3bae67..7472634 100644
+--- a/drivers/iommu/intel_intr_remapping.c
++++ b/drivers/iommu/intel_intr_remapping.c
+@@ -64,7 +64,7 @@ int get_irte(int irq, struct irte *entry)
+ 	return 0;
  }
-diff --git a/include/linux/amd-iommu.h b/include/linux/amd-iommu.h
-index ef00610..15f6b9e 100644
---- a/include/linux/amd-iommu.h
-+++ b/include/linux/amd-iommu.h
-@@ -28,7 +28,7 @@ struct task_struct;
- struct pci_dev;
  
- extern int amd_iommu_detect(void);
+-int alloc_irte(struct intel_iommu *iommu, int irq, u16 count)
++static int alloc_irte(struct intel_iommu *iommu, int irq, u16 count)
+ {
+ 	struct ir_table *table = iommu->ir_table;
+ 	struct irq_2_iommu *irq_iommu = irq_2_iommu(irq);
+@@ -136,7 +136,7 @@ static int qi_flush_iec(struct intel_iommu *iommu, int index, int mask)
+ 	return qi_submit_sync(&desc, iommu);
+ }
+ 
+-int map_irq_to_irte_handle(int irq, u16 *sub_handle)
++static int map_irq_to_irte_handle(int irq, u16 *sub_handle)
+ {
+ 	struct irq_2_iommu *irq_iommu = irq_2_iommu(irq);
+ 	unsigned long flags;
+@@ -152,7 +152,7 @@ int map_irq_to_irte_handle(int irq, u16 *sub_handle)
+ 	return index;
+ }
+ 
+-int set_irte_irq(int irq, struct intel_iommu *iommu, u16 index, u16 subhandle)
++static int set_irte_irq(int irq, struct intel_iommu *iommu, u16 index, u16 subhandle)
+ {
+ 	struct irq_2_iommu *irq_iommu = irq_2_iommu(irq);
+ 	unsigned long flags;
+@@ -172,7 +172,7 @@ int set_irte_irq(int irq, struct intel_iommu *iommu, u16 index, u16 subhandle)
+ 	return 0;
+ }
+ 
+-int modify_irte(int irq, struct irte *irte_modified)
++static int modify_irte(int irq, struct irte *irte_modified)
+ {
+ 	struct irq_2_iommu *irq_iommu = irq_2_iommu(irq);
+ 	struct intel_iommu *iommu;
+@@ -200,7 +200,7 @@ int modify_irte(int irq, struct irte *irte_modified)
+ 	return rc;
+ }
+ 
+-struct intel_iommu *map_hpet_to_ir(u8 hpet_id)
++static struct intel_iommu *map_hpet_to_ir(u8 hpet_id)
+ {
+ 	int i;
+ 
+@@ -210,7 +210,7 @@ struct intel_iommu *map_hpet_to_ir(u8 hpet_id)
+ 	return NULL;
+ }
+ 
+-struct intel_iommu *map_ioapic_to_ir(int apic)
++static struct intel_iommu *map_ioapic_to_ir(int apic)
+ {
+ 	int i;
+ 
+@@ -220,7 +220,7 @@ struct intel_iommu *map_ioapic_to_ir(int apic)
+ 	return NULL;
+ }
+ 
+-struct intel_iommu *map_dev_to_ir(struct pci_dev *dev)
++static struct intel_iommu *map_dev_to_ir(struct pci_dev *dev)
+ {
+ 	struct dmar_drhd_unit *drhd;
+ 
+@@ -312,7 +312,7 @@ static void set_irte_sid(struct irte *irte, unsigned int svt,
+ 	irte->sid = sid;
+ }
+ 
+-int set_ioapic_sid(struct irte *irte, int apic)
++static int set_ioapic_sid(struct irte *irte, int apic)
+ {
+ 	int i;
+ 	u16 sid = 0;
+@@ -337,7 +337,7 @@ int set_ioapic_sid(struct irte *irte, int apic)
+ 	return 0;
+ }
+ 
+-int set_hpet_sid(struct irte *irte, u8 id)
++static int set_hpet_sid(struct irte *irte, u8 id)
+ {
+ 	int i;
+ 	u16 sid = 0;
+@@ -367,7 +367,7 @@ int set_hpet_sid(struct irte *irte, u8 id)
+ 	return 0;
+ }
+ 
+-int set_msi_sid(struct irte *irte, struct pci_dev *dev)
++static int set_msi_sid(struct irte *irte, struct pci_dev *dev)
+ {
+ 	struct pci_dev *bridge;
+ 
+diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+index 7a207a3..b029d1a 100644
+--- a/include/linux/dmar.h
++++ b/include/linux/dmar.h
+@@ -114,65 +114,6 @@ struct irte {
+ 	};
+ };
+ 
+-#ifdef CONFIG_IRQ_REMAP
+-extern int get_irte(int irq, struct irte *entry);
+-extern int modify_irte(int irq, struct irte *irte_modified);
+-extern int alloc_irte(struct intel_iommu *iommu, int irq, u16 count);
+-extern int set_irte_irq(int irq, struct intel_iommu *iommu, u16 index,
+-   			u16 sub_handle);
+-extern int map_irq_to_irte_handle(int irq, u16 *sub_handle);
 -
-+extern int amd_iommu_init_hardware(void);
- 
- /**
-  * amd_iommu_enable_device_erratum() - Enable erratum workaround for device
+-extern struct intel_iommu *map_dev_to_ir(struct pci_dev *dev);
+-extern struct intel_iommu *map_ioapic_to_ir(int apic);
+-extern struct intel_iommu *map_hpet_to_ir(u8 id);
+-extern int set_ioapic_sid(struct irte *irte, int apic);
+-extern int set_hpet_sid(struct irte *irte, u8 id);
+-extern int set_msi_sid(struct irte *irte, struct pci_dev *dev);
+-#else
+-static inline int alloc_irte(struct intel_iommu *iommu, int irq, u16 count)
+-{
+-	return -1;
+-}
+-static inline int modify_irte(int irq, struct irte *irte_modified)
+-{
+-	return -1;
+-}
+-static inline int map_irq_to_irte_handle(int irq, u16 *sub_handle)
+-{
+-	return -1;
+-}
+-static inline int set_irte_irq(int irq, struct intel_iommu *iommu, u16 index,
+-			       u16 sub_handle)
+-{
+-	return -1;
+-}
+-static inline struct intel_iommu *map_dev_to_ir(struct pci_dev *dev)
+-{
+-	return NULL;
+-}
+-static inline struct intel_iommu *map_ioapic_to_ir(int apic)
+-{
+-	return NULL;
+-}
+-static inline struct intel_iommu *map_hpet_to_ir(unsigned int hpet_id)
+-{
+-	return NULL;
+-}
+-static inline int set_ioapic_sid(struct irte *irte, int apic)
+-{
+-	return 0;
+-}
+-static inline int set_hpet_sid(struct irte *irte, u8 id)
+-{
+-	return -1;
+-}
+-static inline int set_msi_sid(struct irte *irte, struct pci_dev *dev)
+-{
+-	return 0;
+-}
+-
+-#endif
+-
+ enum {
+ 	IRQ_REMAP_XAPIC_MODE,
+ 	IRQ_REMAP_X2APIC_MODE,
 -- 
 1.7.5.4
