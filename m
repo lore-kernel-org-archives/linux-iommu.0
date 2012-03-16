@@ -1,17 +1,13 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/2] Isolation groups
-Date: Thu, 15 Mar 2012 14:15:01 -0600
-Message-ID: <1331842501.22038.58.camel@ul30vt>
-References: <20120312220109.30321.83419.stgit@bling.home>
-	<20120312223254.30321.74405.stgit@bling.home>
-	<20120313143340.GT24916@truffala.fritz.box>
-	<1331657387.2969.79.camel@bling.home>
-	<20120314095808.GX24916@truffala.fritz.box>
+From: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFC PATCH 0/9] Introduce irq_remap_ops to x86
+Date: Thu, 15 Mar 2012 17:51:04 -0700
+Message-ID: <CAE9FiQWPicLVgqEQmw9_8CsVaD9N8P_h6g42z7pUSibZBXLq-Q@mail.gmail.com>
+References: <1331833191-25779-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20120314095808.GX24916-MK4v0fQdeXQXU02nzanrWNbf9cGiqdzd@public.gmane.org>
+In-Reply-To: <1331833191-25779-1-git-send-email-joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,352 +17,54 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+To: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Cc: Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-X9Un+BFzKDI@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2012-03-14 at 20:58 +1100, David Gibson wrote:
-> On Tue, Mar 13, 2012 at 10:49:47AM -0600, Alex Williamson wrote:
-> > On Wed, 2012-03-14 at 01:33 +1100, David Gibson wrote:
-> > > On Mon, Mar 12, 2012 at 04:32:54PM -0600, Alex Williamson wrote:
-> > > > +/*
-> > > > + * Add a device to an isolation group.  Isolation groups start empty and
-> > > > + * must be told about the devices they contain.  Expect this to be called
-> > > > + * from isolation group providers via notifier.
-> > > > + */
-> > > 
-> > > Doesn't necessarily have to be from a notifier, particularly if the
-> > > provider is integrated into host bridge code.
-> > 
-> > Sure, a provider could do this on it's own if it wants.  This just
-> > provides some infrastructure for a common path.  Also note that this
-> > helps to eliminate all the #ifdef CONFIG_ISOLATION in the provider.  Yet
-> > to be seen whether that can reasonably be the case once isolation groups
-> > are added to streaming DMA paths.
-> 
-> Right, but other than the #ifdef safety, which could be achieved more
-> simply, I'm not seeing what benefit the infrastructure provides over
-> directly calling the bus notifier function.  The infrastructure groups
-> the notifiers by bus type internally, but AFAICT exactly one bus
-> notifier call would become exactly one isolation notifier call, and
-> the notifier callback itself would be almost identical.
+On Thu, Mar 15, 2012 at 10:39 AM, Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org> wrote:
+> Hi,
+>
+> in order to implement interrupt remapping using the AMD IOMMU I did some
+> refactoring of the current Intel-specific interrupt remapping code. The
+> result is posted for comments in this patch-set.
+>
+> The patch-set basically removes the Intel-specific calls from the X86
+> apic and io-apic code and replaces all of them with helper functions
+> that use the irq_remap_ops to hook into an implementation specific
+> implementation.
+>
+> I have done basic testing on this patch-set on a VT-d machine with
+> interrupt remapping and found no regression so far. But as usual this
+> doesn't mean that there is none ;-)
+>
+> Anyway, since I am on vacation soon I sent out these patches to receive
+> all kinds of comments so that I can start over to add the AMD part when
+> I am back.
+>
+> Thanks,
+>
+> =A0 =A0 =A0 =A0Joerg
+>
+> Diffstat:
+>
+> =A0arch/ia64/include/asm/intr_remapping.h | =A0 =A04 +
+> =A0arch/x86/include/asm/intr_remapping.h =A0| =A0101 +++
+> =A0arch/x86/include/asm/irq_remapping.h =A0 | =A0 45 --
+> =A0arch/x86/kernel/apic/apic.c =A0 =A0 =A0 =A0 =A0 =A0| =A0 20 +-
+> =A0arch/x86/kernel/apic/io_apic.c =A0 =A0 =A0 =A0 | =A0276 ++-------
+> =A0drivers/iommu/Makefile =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 | =A0 =A02 +-
+> =A0drivers/iommu/amd_iommu_init.c =A0 =A0 =A0 =A0 | =A0123 +++--
+> =A0drivers/iommu/dmar.c =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 | =A0 =A01 +
+> =A0drivers/iommu/intel-iommu.c =A0 =A0 =A0 =A0 =A0 =A0| =A0 =A01 +
+> =A0drivers/iommu/intel_intr_remapping.c =A0 | 1065 ++++++++++++++++++++++=
+++++++++++
+> =A0drivers/iommu/intr_remapping.c =A0 =A0 =A0 =A0 | =A0810 +++-----------=
+-----------
+> =A0drivers/iommu/intr_remapping.h =A0 =A0 =A0 =A0 | =A0 97 +++-
+> =A0include/linux/amd-iommu.h =A0 =A0 =A0 =A0 =A0 =A0 =A0| =A0 =A02 +-
+> =A0include/linux/dmar.h =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 | =A0 85 ---
+> =A014 files changed, 1469 insertions(+), 1163 deletions(-)
 
-I guess I don't see this as a fundamental design point of the proposal,
-it's just a convenient way to initialize groups as a side-band addition
-until isolation groups become a more fundamental part of the iommu
-infrastructure.  If you want to do that level of integration in your
-provider, do it and make the callbacks w/o the notifier.  If nobody ends
-up using them, we'll remove them.  Maybe it will just end up being a
-bootstrap.  In the typical case, yes, one bus notifier is one isolation
-notifier.  It does however also allow one bus notifier to become
-multiple isolation notifiers, and includes some filtering that would
-just be duplicated if every provider decided to implement their own bus
-notifier.
+Yes, it is good clean up for ioapic.c at least.
 
-> > > > +int isolation_group_add_dev(struct isolation_group *group, struct device *dev)
-> > > > +{
-> > > > +	struct isolation_device *device;
-> > > > +	int ret = 0;
-> > > > +
-> > > > +	mutex_lock(&isolation_lock);
-> > > > +
-> > > > +	if (dev->isolation_group) {
-> > > > +		ret = -EBUSY;
-> > > > +		goto out;
-> > > 
-> > > This should probably be a BUG_ON() - the isolation provider shouldn't
-> > > be putting the same device into two different groups.
-> > 
-> > Yeah, probably.
-> > 
-> > > > +	}
-> > > > +
-> > > > +	device = kzalloc(sizeof(*device), GFP_KERNEL);
-> > > > +	if (!device) {
-> > > > +		ret = -ENOMEM;
-> > > > +		goto out;
-> > > > +	}
-> > > > +
-> > > > +	device->dev = dev;
-> > > > +
-> > > > +	/* Cross link the device in sysfs */
-> > > > +	ret = sysfs_create_link(&dev->kobj, &group->kobj,
-> > > > +				"isolation_group");
-> > > > +	if (ret) {
-> > > > +		kfree(device);
-> > > > +		goto out;
-> > > > +	}
-> > > > +	
-> > > > +	ret = sysfs_create_link(group->devices_kobj, &dev->kobj,
-> > > > +				kobject_name(&dev->kobj));
-> > > 
-> > > So, a problem both here and in my version is what to name the device
-> > > links.  Because they could be potentially be quite widely scattered,
-> > > I'm not sure that kobject_name() is guaranteed to be sufficiently
-> > > unique.
-> > 
-> > Even if the name is not, we're pointing to a unique sysfs location.  I
-> > expect the primary user of this will be when userspace translates a
-> > device to a group (via the isolation_group link below), then tries to
-> > walk all the devices in the group to determine effected host devices and
-> > manager driver status.  So it would probably be traversing the link back
-> > rather than relying solely on the name of the link.  Right?
-> 
-> Yes, but if we get a duplicate kobject_name() we could get duplicate
-> link names within the same directory so we're still in trouble.  We
-> could replace the names with just an index number.
-
-This seems exceptionally unlikely, doesn't it?  Maybe
-sysfs_create_link() will fail in such a case as we can append some
-identifier to the name?
-
-> > > > +	if (ret) {
-> > > > +		sysfs_remove_link(&dev->kobj, "isolation_group");
-> > > > +		kfree(device);
-> > > > +		goto out;
-> > > > +	}
-> > > > +
-> > > > +	list_add(&device->list, &group->devices);
-> > > > +
-> > > > +	dev->isolation_group = group;
-> > > > +
-> > > > +	if (group->iommu_domain) {
-> > > > +		ret = group->iommu_ops->attach_dev(group->iommu_domain, dev);
-> > > > +		if (ret) {
-> > > > +			/* XXX fail device? */
-> > > > +		}
-> > > 
-> > > So, I presume the idea is that this is a stop-gap until iommu_ops is
-> > > converted to be in terms of groups rather than indivdual devices?
-> > 
-> > Yes, I thought we could just back it by the iommu api for now so we can
-> > implement managers, but eventually domain_init and attach_dev would
-> > probably be a single callback in some kind of group aware iommu api.
-> 
-> Makes sense.
-> 
-> > > > +	}
-> > > > +
-> > > > +	/* XXX signal manager? */
-> > > 
-> > > Uh, what did you have in mind here?
-> > 
-> > Another notifier?  Maybe just a callback struct registered when a
-> > manager is added to a group.  On one hand, maybe it's not necessary
-> > because adding a device to a managed group already restricts driver
-> > matching, but on the other, the manager may want to be informed about
-> > new devices and try to actively bind a driver to it.  For instance, if
-> > assigning an entire PE to a guest, which might include empty slots,
-> > would the manager want to be informed about the addition of a device so
-> > it could mirror the addition to the guest assigned the PE?
-> 
-> Oh, right, I was misinterpreting the comment.  Instead of reading it
-> as "notify the isolation group manager that something is happening" I
-> read it as "do something to manage when some process is given a Unix
-> signal".  Hence my complete confusion.
-> 
-> > > > +out:
-> > > > +	mutex_unlock(&isolation_lock);
-> > > > +
-> > > > +	return 0;
-> > > > +}
-> > > > +
-> > > > +/*
-> > > > + * Remove a device from an isolation group, likely because the device
-> > > > + * went away.
-> > > > + */
-> > > > +int isolation_group_del_dev(struct device *dev)
-> > > > +{
-> > > > +	struct isolation_group *group = dev->isolation_group;
-> > > > +	struct isolation_device *device;
-> > > > +
-> > > > +	if (!group)
-> > > > +		return -ENODEV;
-> > > > +
-> > > > +	mutex_lock(&isolation_lock);
-> > > > +
-> > > > +	list_for_each_entry(device, &group->devices, list) {
-> > > > +		if (device->dev == dev) {
-> > > > +			/* XXX signal manager? */
-> > > > +
-> > > > +			if (group->iommu_domain)
-> > > > +				group->iommu_ops->detach_dev(
-> > > > +					group->iommu_domain, dev);
-> > > > +			list_del(&device->list);
-> > > > +			kfree(device);
-> > > > +			dev->isolation_group = NULL;
-> > > > +			sysfs_remove_link(group->devices_kobj,
-> > > > +					  kobject_name(&dev->kobj));
-> > > > +			sysfs_remove_link(&dev->kobj, "isolation_group");
-> > > > +			break;
-> > > > +		}
-> > > > +	}
-> > > > +			
-> > > > +	mutex_unlock(&isolation_lock);
-> > > > +
-> > > > +	return 0;
-> > > > +}
-> > > > +
-> > > > +/*
-> > > > + * Filter and call out to our own notifier chains
-> > > > + */
-> > > 
-> > > So, I haven't quite worked out what this isolation notifier
-> > > infrastructure gives you, as opposed to having isolation providers
-> > > directly register bus notifiers.
-> > 
-> > For now, it nicely separates CONFIG_ISOLATION code so I don't litter
-> > intel-iommu with #ifdefs.  It also embraces that devices are always
-> > being added and removed and supports that with very little change to
-> > existing code paths.
-> 
-> Well, I get the first bit, but it's a long way from the minimum needed
-> to de-#ifdef.  I still haven't seen what it's giving the provider that
-> wouldn't be just as simple with direct bus_notifier calls.
-
-I think this is covered above.
-
-> > > > +static int isolation_bus_notify(struct notifier_block *nb,
-> > > > +				unsigned long action, void *data)
-> > > > +{
-> > > > +	struct isolation_notifier *notifier =
-> > > > +		container_of(nb, struct isolation_notifier, nb);
-> > > > +	struct device *dev = data;
-> > > > +
-> > > > +	switch (action) {
-> > > > +	case BUS_NOTIFY_ADD_DEVICE:
-> > > > +		if (!dev->isolation_group)
-> > > > +			blocking_notifier_call_chain(&notifier->notifier,
-> > > > +					ISOLATION_NOTIFY_ADD_DEVICE, dev);
-> > > > +		break;
-> > > > +	case BUS_NOTIFY_DEL_DEVICE:
-> > > > +		if (dev->isolation_group)
-> > > > +			blocking_notifier_call_chain(&notifier->notifier,
-> > > > +					ISOLATION_NOTIFY_DEL_DEVICE, dev);
-> > > > +		break;
-> > > > +	}
-> > > > +
-> > > > +	return NOTIFY_DONE;
-> > > > +}
-> > > > +
-> > > > +/*
-> > > > + * Wrapper for manual playback of BUS_NOTIFY_ADD_DEVICE when we add
-> > > > + * a new notifier.
-> > > > + */
-> > > > +static int isolation_do_add_notify(struct device *dev, void *data)
-> > > > +{
-> > > > +	struct notifier_block *nb = data;
-> > > > +
-> > > > +	if (!dev->isolation_group)
-> > > > +		nb->notifier_call(nb, ISOLATION_NOTIFY_ADD_DEVICE, dev);
-> > > > +
-> > > > +	return 0;
-> > > > +}
-> > > > +
-> > > > +/*
-> > > > + * Register a notifier.  This is for isolation group providers.  It's
-> > > > + * possible we could have multiple isolation group providers for the same
-> > > > + * bus type,
-> > > 
-> > > So the bit above doesn't seem to connect to the bit below.  We can
-> > > indeed have multiple isolation providers for one bus type, but the
-> > > below seems to be covering the (also possible, but different) case of
-> > > one isolation provider covering multiple bus types.
-> > 
-> > It covers both.  If a provider covers multiple buses it will call this
-> > function once for each bus.  Each new bus creates a new struct
-> > isolation_notifier and does a bus_register_notifier (using
-> > isolation_bus_notify).  The provider notifier block is added to our own
-> > notifier call chain for that struct isolation_notifier.  This way we
-> > only ever register a single notifier per bus, but support multiple
-> > providers for the bus.
-> 
-> Um, right, but what would be the problem with registering multiple
-> notifiers per bus.
-
-It's a minor optimization, but this way we can stop when one of the
-providers decides it "owns" the device.  As noted, I'm not stuck to this
-notifier and in the end, it doesn't gate creating groups using the
-isolation functions directly.
-
-> > > > so we create a struct isolation_notifier per bus_type, each
-> > > > + * with a notifier block.  Providers are therefore welcome to register
-> > > > + * as many buses as they can handle.
-> > > > + */
-> > > > +int isolation_register_notifier(struct bus_type *bus, struct notifier_block *nb)
-> > > > +{
-> > > > +	struct isolation_notifier *notifier;
-> > > > +	bool found = false;
-> > > > +	int ret;
-> > > > +
-> > > > +	mutex_lock(&isolation_lock);
-> > > > +	list_for_each_entry(notifier, &isolation_notifiers, list) {
-> > > > +		if (notifier->bus == bus) {
-> > > > +			found = true;
-> > > > +			break;
-> > > > +		}
-> > > > +	}
-> > > > +
-> > > > +	if (!found) {
-> > > > +		notifier = kzalloc(sizeof(*notifier), GFP_KERNEL);
-> > > > +		if (!notifier) {
-> > > > +			mutex_unlock(&isolation_lock);
-> > > > +			return -ENOMEM;	
-> > > > +		}
-> > > > +		notifier->bus = bus;
-> > > > +		notifier->nb.notifier_call = isolation_bus_notify;
-> > > > +		BLOCKING_INIT_NOTIFIER_HEAD(&notifier->notifier);
-> > > > +		bus_register_notifier(bus, &notifier->nb);
-> > > > +		list_add(&notifier->list, &isolation_notifiers);
-> > > > +	}
-> > > > +
-> > > > +	ret = blocking_notifier_chain_register(&notifier->notifier, nb);
-> > > > +	if (ret) {
-> > > > +		if (notifier->refcnt == 0) {
-> > > > +			bus_unregister_notifier(bus, &notifier->nb);
-> > > > +			list_del(&notifier->list);
-> > > > +			kfree(notifier);
-> > > > +		}
-> > > > +		mutex_unlock(&isolation_lock);
-> > > > +		return ret;
-> > > > +	}
-> > > > +	notifier->refcnt++;
-> > > > +
-> > > > +	mutex_unlock(&isolation_lock);
-> > > > +
-> > > > +	bus_for_each_dev(bus, NULL, nb, isolation_do_add_notify);
-> > > > +
-> > > > +	return 0;
-> > > > +}
-> > > 
-> > > So, somewhere, I think we need a fallback path, but I'm not sure
-> > > exactly where.  If an isolation provider doesn't explicitly put a
-> > > device into a group, the device should go into the group of its parent
-> > > bridge.  This covers the case of a bus with IOMMU which has below it a
-> > > bridge to a different type of DMA capable bus (which the IOMMU isn't
-> > > explicitly aware of).  DMAs from devices on the subordinate bus can be
-> > > translated by the top-level IOMMU (assuming it sees them as coming
-> > > from the bridge), but they all need to be treated as one group.
-> > 
-> > Why would the top level IOMMU provider not set the isolation group in
-> > this case.
-> 
-> Because it knows nothing about the subordinate bus.  For example
-> imagine a VT-d system, with a wacky PCI card into which you plug some
-> other type of DMA capable device.  The PCI card is acting as a bridge
-> from PCI to this, let's call it FooBus.  Obviously the VT-d code won't
-> have a FooBus notifier, since it knows nothing about FooBus.  But the
-> FooBus devices still need to end up in the group of the PCI bridge
-> device, since their DMA operations will appear as coming from the PCI
-> bridge card to the IOMMU, and can be isolated from the rest of the
-> system (but not each other) on that basis.
-
-I guess I was imagining that it's ok to have devices without an
-isolation group.  When that happens we can traverse up the bus to find a
-higher level isolation group.  It would probably make sense to have some
-kind of top-most isolation group that contains everything as it's an
-easy proof that if you own everything, you're isolated.  Potentially
-though, wackyPCIcard can also register isolation groups for each of it's
-FooBus devices if it's able to provide that capability.  Thanks,
-
-Alex
+Acked-by: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
