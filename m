@@ -1,49 +1,30 @@
-From: Subash Patel <subashrp@gmail.com>
-Subject: Re: [PATCHv7 9/9] ARM: dma-mapping: add support for IOMMU mapper
-Date: Thu, 22 Mar 2012 19:29:42 +0530
-Message-ID: <4F6B304E.5010402@gmail.com>
-References: <1330527862-16234-1-git-send-email-m.szyprowski@samsung.com> <1330527862-16234-10-git-send-email-m.szyprowski@samsung.com> <CAHQjnOO5DLOj8Fw=ZriSnXg8W3k7y8Dnu--Peqe6JJX0xGMhoQ@mail.gmail.com> <4F688B2D.20808@gmail.com> <CAHQjnOMjSPDOymJe356AWnJszQv+X-QWrVrB7ahYDkXBr5HrQw@mail.gmail.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] iommu: amd: fix section mismatch
+Date: Thu, 22 Mar 2012 19:30:37 +0100
+Message-ID: <20120322183037.GM26973@8bytes.org>
+References: <1331923102-28625-1-git-send-email-dev@snitselaar.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <CAHQjnOMjSPDOymJe356AWnJszQv+X-QWrVrB7ahYDkXBr5HrQw@mail.gmail.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: KyongHo Cho <pullip.cho@samsung.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, Shariq Hasnain <shariq.hasnain@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Krishna Reddy <vdumpa@nvidia.com>, Kyungmin Park <kyungmin.park@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Chunsang Jeong <chunsang.jeong@linaro.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1331923102-28625-1-git-send-email-dev-RR6//3E8fTwgb5+hjvvj3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Gerard Snitselaar <dev-RR6//3E8fTwgb5+hjvvj3w@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi KyongHo,
+On Fri, Mar 16, 2012 at 11:38:22AM -0700, Gerard Snitselaar wrote:
+> amd_iommu_enable_interrupts() called in amd_iommu_resume().
+> 
+> Signed-off-by: Gerard Snitselaar <dev-RR6//3E8fTwgb5+hjvvj3w@public.gmane.org>
 
-On 03/21/2012 05:26 AM, KyongHo Cho wrote:
-> On Tue, Mar 20, 2012 at 10:50 PM, Subash Patel<subashrp@gmail.com>  wrote:
->> Sorry for digging this very late. But as part of integrating dma_map v7&
->> sysmmu v12 on 3.3-rc5, I am facing below issue:
->>
->> a) By un-selecting IOMMU in menu config, I am able to allocate memory in
->> vb2-dma-contig
->>
->> b) When I enable SYSMMU support for the IP's, I am receiving below fault:
->>
->> Unhandled fault: external abort on non-linefetch (0x818) at 0xb6f55000
->>
->> I think this has something to do with the access to the SYSMMU registers for
->> writing the page table. Has anyone of you faced this issue while testing
->> these(dma_map+iommu) patches on kernel mentioned above? This must be
->> something related to recent changes, as I didn't have issues with these
->> patches on 3.2 kernel.
->>
->
-> 0xb6f55000 is not an address of SYSMMU register if your kernel starts
-> at 0xc0000000.
->
-> Can you tell me any detailed information or situation?
-I hate to say this, but I am not able to catch the fault location even 
-with JTAG. Once the fault comes, the debugger looses all control over. I 
-think now possible method is reproduction at your end :)
->
-> Regards,
->
-> KyongHo.
-Regards,
-Subash
+Applied to x86/amd, thanks Gerard.
