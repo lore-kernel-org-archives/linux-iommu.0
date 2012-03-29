@@ -1,98 +1,123 @@
-From: KyongHo Cho <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v12 2/3] ARM: EXYNOS: Change System MMU platform device
-	definitions
-Date: Thu, 29 Mar 2012 10:43:44 +0900
-Message-ID: <CAHQjnOMPvg5en_PzrPYx4nUAuPOgxiKm8HMHWAhJ4GhJqU8jKw@mail.gmail.com>
-References: <000201cd0286$2e6fbb40$8b4f31c0$%cho@samsung.com>
-	<20120315111227.GA2384@amd.com> <4F61FF1D.5000502@samsung.com>
-	<4F630841.2070307@linaro.org> <4F63A6F6.9050506@samsung.com>
-	<20120318132746.GL26973@8bytes.org> <4F73B9A3.30605@samsung.com>
+From: Hiroshi Doyu <hdoyu@nvidia.com>
+Subject: Re: [PATCHv7 9/9] ARM: dma-mapping: add support for IOMMU mapper
+Date: Thu, 29 Mar 2012 10:19:27 +0300
+Message-ID: <20120329101927.8ab6b1993475b7e16ae2258f@nvidia.com>
+References: <1330527862-16234-1-git-send-email-m.szyprowski@samsung.com>
+	<1330527862-16234-10-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <4F73B9A3.30605-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Subash Patel <subash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Younglak Kim <younglak1004.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Sanghyun Lee <sanghyun75.lee-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <1330527862-16234-10-git-send-email-m.szyprowski@samsung.com>
+Sender: owner-linux-mm@kvack.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linaro-mm-sig@lists.linaro.org" <linaro-mm-sig@lists.linaro.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Shariq Hasnain <shariq.hasnain@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Krishna Reddy <vdumpa@nvidia.com>, Kyungmin Park <kyungmin.park@samsung.com>, Andrzej
+ Pietrasiewicz <andrzej.p@samsung.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>, KyongHo Cho <pullip.cho@samsung.com>, Chunsang
+ Jeong <chunsang.jeong@linaro.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Mar 29, 2012 at 10:23 AM, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org> wrote:
-> Joerg Roedel wrote:
->>
->> On Fri, Mar 16, 2012 at 01:47:50PM -0700, Kukjin Kim wrote:
->>>
->>> Anyway Joerg, how do you want to handle this? Do you want to pick up
->>> 1/2/3 all of them in your tree? If so, 2nd patch should be on top of
->>> some samsung topic stuff.
->>
->>
->> Since patch 2 only applies to the Samsung tree, it is best to carry
->> this in your tree for merging. Feel free to add my Acked-by to patch 3.
->> But any further patches for the Exynos IOMMU drivers should go through
->> my tree after it is merged.
->>
->
-> Hi Joerg,
->
-> Now that 1st and 2nd can be applied cleanly into latest mainline. But
-> unfortunately, I have no chance to send them to Linus now and I'm not sure
-> you can do it during this merge window. If it is possible, please keep go=
-ing
-> on with my ack.
->
-> KyongHo, just note, happens follwoing complaint with checkpatch, but I'm =
-not
-> sure this should be fixed right now. I think, if required, we can fix it
-> later.
->
-> ERROR: Macros with complex values should be enclosed in parenthesis
-> #698: FILE: arch/arm/mach-exynos/dev-sysmmu.c:64:
->
-> +#define DEFINE_SYSMMU_RESOURCE(core, mem, irq) =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 \
-> + =A0 =A0 =A0 DEFINE_RES_MEM_NAMED(core##_PA_SYSMMU_##mem, SZ_4K, #mem), =
-=A0 =A0 =A0\
-> + =A0 =A0 =A0 DEFINE_RES_IRQ_NAMED(core##_IRQ_SYSMMU_##irq##_0, #mem)
->
-DEFINE_SYSMMU_RESOURCE macro defines 2 array elements. The replacement stri=
-ng
-must not be enclosed by parenthesis.
+Hi Marek,
 
-> ERROR: Macros with complex values should be enclosed in parenthesis
-> #702: FILE: arch/arm/mach-exynos/dev-sysmmu.c:68:
->
-> +#define SYSMMU_RESOURCE_DEFINE(core, ipname, mem, irq) =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 \
-> + =A0 =A0 =A0 SYSMMU_RESOURCE(core, ipname) { =A0 =A0 =A0 =A0 =A0 =A0 =A0=
- =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 \
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 DEFINE_SYSMMU_RESOURCE(core, mem, irq) =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0\
-> + =A0 =A0 =A0 }
->
-Ditto.
+On Wed, 29 Feb 2012 16:04:22 +0100
+Marek Szyprowski <m.szyprowski@samsung.com> wrote:
 
-> WARNING: quoted string split across lines
-> #914: FILE: arch/arm/mach-exynos/dev-sysmmu.c:259:
->
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 pr_err("%s:=
- Failed to add device resources
-> for "
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
- =A0 =A0 =A0 =A0 =A0 "%s.%d\n", __func__,
->
-It does not happened in the patch I posted and the email received also does
-not have such problem. I wonder why the "pr_err(..." line is split into 2 l=
-ines.
+> This patch add a complete implementation of DMA-mapping API for
+> devices that have IOMMU support. All DMA-mapping calls are supported.
+> 
+> This patch contains some of the code kindly provided by Krishna Reddy
+> <vdumpa@nvidia.com> and Andrzej Pietrasiewicz <andrzej.p@samsung.com>
+> 
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Signed-off-by: Kyungmin Park <kyungmin.park@samsung.com>
+> Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+> ---
+>  arch/arm/Kconfig                 |    8 +
+>  arch/arm/include/asm/device.h    |    3 +
+>  arch/arm/include/asm/dma-iommu.h |   34 ++
+>  arch/arm/mm/dma-mapping.c        |  726 +++++++++++++++++++++++++++++++++++++-
+>  arch/arm/mm/vmregion.h           |    2 +-
+>  5 files changed, 758 insertions(+), 15 deletions(-)
+>  create mode 100644 arch/arm/include/asm/dma-iommu.h
+> 
 
-Thank you for concerning :)
+<snip>
 
-KyongHo.
+> +/*
+> + * Map a part of the scatter-gather list into contiguous io address space
+> + */
+> +static int __map_sg_chunk(struct device *dev, struct scatterlist *sg,
+> +                         size_t size, dma_addr_t *handle,
+> +                         enum dma_data_direction dir)
+> +{
+> +       struct dma_iommu_mapping *mapping = dev->archdata.mapping;
+> +       dma_addr_t iova, iova_base;
+> +       int ret = 0;
+> +       unsigned int count;
+> +       struct scatterlist *s;
+> +
+> +       size = PAGE_ALIGN(size);
+> +       *handle = ARM_DMA_ERROR;
+> +
+> +       iova_base = iova = __alloc_iova(mapping, size);
+> +       if (iova == ARM_DMA_ERROR)
+> +               return -ENOMEM;
+> +
+> +       for (count = 0, s = sg; count < (size >> PAGE_SHIFT); s = sg_next(s))
+> +       {
+> +               phys_addr_t phys = page_to_phys(sg_page(s));
+> +               unsigned int len = PAGE_ALIGN(s->offset + s->length);
+> +
+> +               if (!arch_is_coherent())
+> +                       __dma_page_cpu_to_dev(sg_page(s), s->offset, s->length, dir);
+> +
+> +               ret = iommu_map(mapping->domain, iova, phys, len, 0);
+> +               if (ret < 0)
+> +                       goto fail;
+> +               count += len >> PAGE_SHIFT;
+> +               iova += len;
+> +       }
+> +       *handle = iova_base;
+> +
+> +       return 0;
+> +fail:
+> +       iommu_unmap(mapping->domain, iova_base, count * PAGE_SIZE);
+> +       __free_iova(mapping, iova_base, size);
+> +       return ret;
+> +}
+
+Do we need to set dma_address as below?
+
+>From e8bcc3cdac5375b5d7f5ac5b3f716a11c1008f38 Mon Sep 17 00:00:00 2001
+From: Hiroshi DOYU <hdoyu@nvidia.com>
+Date: Thu, 29 Mar 2012 09:59:04 +0300
+Subject: [PATCH 1/1] ARM: dma-mapping: Fix dma_address in sglist
+
+s->dma_address wasn't set at mapping.
+
+Signed-off-by: Hiroshi DOYU <hdoyu@nvidia.com>
+---
+ arch/arm/mm/dma-mapping.c |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index 3347c37..11a9d65 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -1111,6 +1111,8 @@ static int __map_sg_chunk(struct device *dev, struct scatterlist *sg,
+ 		ret = iommu_map(mapping->domain, iova, phys, len, 0);
+ 		if (ret < 0)
+ 			goto fail;
++		s->dma_address = iova;
++
+ 		count += len >> PAGE_SHIFT;
+ 		iova += len;
+ 	}
+-- 
+1.7.5.4
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Fight unfair telecom internet charges in Canada: sign http://stopthemeter.ca/
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
