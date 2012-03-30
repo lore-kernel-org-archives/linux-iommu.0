@@ -1,131 +1,64 @@
-From: Omar Ramirez Luna <omar.luna-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH] iommu: OMAP: device detach on domain destroy
-Date: Fri, 30 Mar 2012 11:03:49 -0500
-Message-ID: <1333123429-3727-1-git-send-email-omar.luna@linaro.org>
+From: Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH 00/10] vt-d irq_remap_ops patchset
+Date: Fri, 30 Mar 2012 11:46:58 -0700
+Message-ID: <1333133228-3134-1-git-send-email-suresh.b.siddha@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linaro-dev-bounces-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>
-List-Unsubscribe: <http://lists.linaro.org/mailman/options/linaro-dev>,
-	<mailto:linaro-dev-request-cunTk1MwBs8s++Sfvej+rw@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linaro.org/pipermail/linaro-dev>
-List-Post: <mailto:linaro-dev-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>
-List-Help: <mailto:linaro-dev-request-cunTk1MwBs8s++Sfvej+rw@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.linaro.org/mailman/listinfo/linaro-dev>,
-	<mailto:linaro-dev-request-cunTk1MwBs8s++Sfvej+rw@public.gmane.org?subject=subscribe>
-Sender: linaro-dev-bounces-cunTk1MwBs8s++Sfvej+rw@public.gmane.org
-Errors-To: linaro-dev-bounces-cunTk1MwBs8s++Sfvej+rw@public.gmane.org
-To: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Cc: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, linaro-dev-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Ingo Molnar <mingo-X9Un+BFzKDI@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Cc: Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-'domain_destroy with devices attached' case isn't yet handled, instead
-code assumes that the device was already detached.
+Ingo,
 
-If the domain is destroyed the hardware still has access to invalid
-pointers to its page table and internal iommu object. In order to
-detach the users we need to track devices using the iommu, current
-use cases only have one user of iommu per instance. When required
-this can evolve to a list with the devices using the iommu_dev.
+Here is the Joerg's irq_remap_ops patchset updated for the latest -tip.
+Simplified some of the naming conventions to follow the irq_remapping
+terminology. There are still some "if (irq_remapping_enabled)" checks in
+io_apic.c that I would like to roll into the new io_apic_ops. I will
+look into that shortly.
 
-Reported-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Reviewed-by: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>
-Signed-off-by: Omar Ramirez Luna <omar.luna-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
----
- drivers/iommu/omap-iommu.c |   32 +++++++++++++++++++++++---------
- 1 files changed, 23 insertions(+), 9 deletions(-)
+Joerg Roedel (8):
+  iommu: Rename intr_remapping files to intel_intr_remapping
+  iommu/vt-d: Make intr-remapping initialization generic
+  iommu/vt-d: Convert missing apic.c intr-remapping call to remap_ops
+  iommu/vt-d: Convert IR ioapic-setup to use remap_ops
+  iommu/vt-d: Convert IR set_affinity function to remap_ops
+  iommu/vt-d: Convert free_irte into a remap_ops callback
+  iommu/vt-d: Convert MSI remapping setup to remap_ops
+  x86, iommu/vt-d: Clean up interfaces for interrupt remapping
 
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index 821062a..e32bd15 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -41,11 +41,13 @@
-  * @pgtable:	the page table
-  * @iommu_dev:	an omap iommu device attached to this domain. only a single
-  *		iommu device can be attached for now.
-+ * @dev:	Device using this domain.
-  * @lock:	domain lock, should be taken when attaching/detaching
-  */
- struct omap_iommu_domain {
- 	u32 *pgtable;
- 	struct omap_iommu *iommu_dev;
-+	struct device *dev;
- 	spinlock_t lock;
- };
- 
-@@ -1074,6 +1076,7 @@ omap_iommu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 	}
- 
- 	omap_domain->iommu_dev = arch_data->iommu_dev = oiommu;
-+	omap_domain->dev = dev;
- 	oiommu->domain = domain;
- 
- 	/* temporary workaround */
-@@ -1084,19 +1087,16 @@ out:
- 	return ret;
- }
- 
--static void omap_iommu_detach_dev(struct iommu_domain *domain,
--				 struct device *dev)
-+static void _omap_iommu_detach_dev(struct omap_iommu_domain *omap_domain,
-+			struct device *dev)
- {
--	struct omap_iommu_domain *omap_domain = domain->priv;
--	struct omap_iommu_arch_data *arch_data = dev->archdata.iommu;
- 	struct omap_iommu *oiommu = dev_to_omap_iommu(dev);
--
--	spin_lock(&omap_domain->lock);
-+	struct omap_iommu_arch_data *arch_data = dev->archdata.iommu;
- 
- 	/* only a single device is supported per domain for now */
- 	if (omap_domain->iommu_dev != oiommu) {
- 		dev_err(dev, "invalid iommu device\n");
--		goto out;
-+		return;
- 	}
- 
- 	iopgtable_clear_entry_all(oiommu);
-@@ -1104,11 +1104,19 @@ static void omap_iommu_detach_dev(struct iommu_domain *domain,
- 	omap_iommu_detach(oiommu);
- 
- 	omap_domain->iommu_dev = arch_data->iommu_dev = NULL;
-+	omap_domain->dev = NULL;
- 
- 	/* temporary workaround */
- 	clk_disable(oiommu->clk);
-+}
- 
--out:
-+static void omap_iommu_detach_dev(struct iommu_domain *domain,
-+				 struct device *dev)
-+{
-+	struct omap_iommu_domain *omap_domain = domain->priv;
-+
-+	spin_lock(&omap_domain->lock);
-+	_omap_iommu_detach_dev(omap_domain, dev);
- 	spin_unlock(&omap_domain->lock);
- }
- 
-@@ -1147,13 +1155,19 @@ out:
- 	return -ENOMEM;
- }
- 
--/* assume device was already detached */
- static void omap_iommu_domain_destroy(struct iommu_domain *domain)
- {
- 	struct omap_iommu_domain *omap_domain = domain->priv;
- 
- 	domain->priv = NULL;
- 
-+	/*
-+	 * An iommu device is still attached
-+	 * (currently, only one device can be attached) ?
-+	 */
-+	if (omap_domain->iommu_dev)
-+		_omap_iommu_detach_dev(omap_domain, omap_domain->dev);
-+
- 	kfree(omap_domain->pgtable);
- 	kfree(omap_domain);
- }
+Suresh Siddha (2):
+  iommu: rename intr_remapping references to irq_remapping
+  iommu: rename intr_remapping.[ch] to irq_remapping.[ch]
+
+ arch/ia64/include/asm/irq_remapping.h              |    4 +
+ arch/x86/include/asm/irq_remapping.h               |  120 +++++--
+ arch/x86/kernel/apic/apic.c                        |   30 +-
+ arch/x86/kernel/apic/io_apic.c                     |  297 ++++-------------
+ drivers/iommu/Makefile                             |    2 +-
+ drivers/iommu/dmar.c                               |    9 +-
+ drivers/iommu/intel-iommu.c                        |    3 +-
+ .../{intr_remapping.c => intel_irq_remapping.c}    |  355 ++++++++++++++++----
+ drivers/iommu/intr_remapping.h                     |   17 -
+ drivers/iommu/irq_remapping.c                      |  164 +++++++++
+ drivers/iommu/irq_remapping.h                      |   88 +++++
+ include/linux/dmar.h                               |   85 -----
+ 12 files changed, 724 insertions(+), 450 deletions(-)
+ create mode 100644 arch/ia64/include/asm/irq_remapping.h
+ rename drivers/iommu/{intr_remapping.c => intel_irq_remapping.c} (66%)
+ delete mode 100644 drivers/iommu/intr_remapping.h
+ create mode 100644 drivers/iommu/irq_remapping.c
+ create mode 100644 drivers/iommu/irq_remapping.h
+
 -- 
-1.7.4.1
+1.7.6.5
