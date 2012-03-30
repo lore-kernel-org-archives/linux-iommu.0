@@ -1,8 +1,7 @@
 From: Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 05/10] iommu/vt-d: Convert IR set_affinity function to
-	remap_ops
-Date: Fri, 30 Mar 2012 11:47:03 -0700
-Message-ID: <1333133228-3134-6-git-send-email-suresh.b.siddha@intel.com>
+Subject: [PATCH 10/10] iommu: rename intr_remapping.[ch] to irq_remapping.[ch]
+Date: Fri, 30 Mar 2012 11:47:08 -0700
+Message-ID: <1333133228-3134-11-git-send-email-suresh.b.siddha@intel.com>
 References: <1333133228-3134-1-git-send-email-suresh.b.siddha@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,256 +21,184 @@ To: Ingo Molnar <mingo-X9Un+BFzKDI@public.gmane.org>, Thomas Gleixner <tglx-hfZt
 Cc: Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Make the file names consistent with the naming conventions of irq subsystem.
 
-The function to set interrupt affinity with interrupt
-remapping enabled is Intel specific too. So move it to the
-irq_remap_ops too.
-
-Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Acked-by: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Signed-off-by: Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Cc: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Signed-off-by: Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- arch/x86/include/asm/intr_remapping.h |    9 ++++
- arch/x86/kernel/apic/io_apic.c        |   69 +--------------------------------
- drivers/iommu/intel_intr_remapping.c  |   54 +++++++++++++++++++++++++
- drivers/iommu/intr_remapping.c        |    9 ++++
- drivers/iommu/intr_remapping.h        |    6 +++
- 5 files changed, 80 insertions(+), 67 deletions(-)
+ .../asm/{intr_remapping.h => irq_remapping.h}      |    0
+ .../asm/{intr_remapping.h => irq_remapping.h}      |    6 +++---
+ arch/x86/kernel/apic/apic.c                        |    2 +-
+ arch/x86/kernel/apic/io_apic.c                     |    2 +-
+ drivers/iommu/Makefile                             |    2 +-
+ drivers/iommu/dmar.c                               |    2 +-
+ drivers/iommu/intel-iommu.c                        |    2 +-
+ ...ntel_intr_remapping.c => intel_irq_remapping.c} |    4 ++--
+ .../iommu/{intr_remapping.c => irq_remapping.c}    |    2 +-
+ .../iommu/{intr_remapping.h => irq_remapping.h}    |    6 +++---
+ 10 files changed, 14 insertions(+), 14 deletions(-)
+ rename arch/ia64/include/asm/{intr_remapping.h => irq_remapping.h} (100%)
+ rename arch/x86/include/asm/{intr_remapping.h => irq_remapping.h} (97%)
+ rename drivers/iommu/{intel_intr_remapping.c => intel_irq_remapping.c} (99%)
+ rename drivers/iommu/{intr_remapping.c => irq_remapping.c} (99%)
+ rename drivers/iommu/{intr_remapping.h => irq_remapping.h} (96%)
 
-diff --git a/arch/x86/include/asm/intr_remapping.h b/arch/x86/include/asm/intr_remapping.h
-index a22e1f1..ae933ec 100644
+diff --git a/arch/ia64/include/asm/intr_remapping.h b/arch/ia64/include/asm/irq_remapping.h
+similarity index 100%
+rename from arch/ia64/include/asm/intr_remapping.h
+rename to arch/ia64/include/asm/irq_remapping.h
+diff --git a/arch/x86/include/asm/intr_remapping.h b/arch/x86/include/asm/irq_remapping.h
+similarity index 97%
+rename from arch/x86/include/asm/intr_remapping.h
+rename to arch/x86/include/asm/irq_remapping.h
+index f9cbbcb..dcb0c72 100644
 --- a/arch/x86/include/asm/intr_remapping.h
-+++ b/arch/x86/include/asm/intr_remapping.h
-@@ -40,6 +40,9 @@ extern int intr_setup_ioapic_entry(int irq,
- 				   struct IO_APIC_route_entry *entry,
- 				   unsigned int destination, int vector,
- 				   struct io_apic_irq_attr *attr);
-+extern int intr_set_affinity(struct irq_data *data,
-+			     const struct cpumask *mask,
-+			     bool force);
++++ b/arch/x86/include/asm/irq_remapping.h
+@@ -19,8 +19,8 @@
+  * the x86 interrupt management code.
+  */
  
- #else  /* CONFIG_IRQ_REMAP */
+-#ifndef __X86_INTR_REMAPPING_H
+-#define __X86_INTR_REMAPPING_H
++#ifndef __X86_IRQ_REMAPPING_H
++#define __X86_IRQ_REMAPPING_H
  
-@@ -59,6 +62,12 @@ static inline int intr_setup_ioapic_entry(int irq,
- {
- 	return -ENODEV;
+ #ifdef CONFIG_IRQ_REMAP
+ 
+@@ -100,4 +100,4 @@ static inline int setup_hpet_msi_remapped(unsigned int irq, unsigned int id)
  }
-+static inline int intr_set_affinity(struct irq_data *data,
-+				    const struct cpumask *mask,
-+				    bool force)
-+{
-+	return 0;
-+}
  #endif /* CONFIG_IRQ_REMAP */
  
- #endif /* __X86_INTR_REMAPPING_H */
+-#endif /* __X86_INTR_REMAPPING_H */
++#endif /* __X86_IRQ_REMAPPING_H */
+diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
+index 4246191..313c223 100644
+--- a/arch/x86/kernel/apic/apic.c
++++ b/arch/x86/kernel/apic/apic.c
+@@ -35,7 +35,7 @@
+ #include <linux/smp.h>
+ #include <linux/mm.h>
+ 
+-#include <asm/intr_remapping.h>
++#include <asm/irq_remapping.h>
+ #include <asm/perf_event.h>
+ #include <asm/x86_init.h>
+ #include <asm/pgalloc.h>
 diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
-index e1ab625..a97c79a 100644
+index abbbcd4..ef0648c 100644
 --- a/arch/x86/kernel/apic/io_apic.c
 +++ b/arch/x86/kernel/apic/io_apic.c
-@@ -2327,71 +2327,6 @@ ioapic_set_affinity(struct irq_data *data, const struct cpumask *mask,
- 	return ret;
- }
+@@ -57,7 +57,7 @@
+ #include <asm/msidef.h>
+ #include <asm/hypertransport.h>
+ #include <asm/setup.h>
+-#include <asm/intr_remapping.h>
++#include <asm/irq_remapping.h>
+ #include <asm/hpet.h>
+ #include <asm/hw_irq.h>
  
--#ifdef CONFIG_IRQ_REMAP
--
--/*
-- * Migrate the IO-APIC irq in the presence of intr-remapping.
-- *
-- * For both level and edge triggered, irq migration is a simple atomic
-- * update(of vector and cpu destination) of IRTE and flush the hardware cache.
-- *
-- * For level triggered, we eliminate the io-apic RTE modification (with the
-- * updated vector information), by using a virtual vector (io-apic pin number).
-- * Real vector that is used for interrupting cpu will be coming from
-- * the interrupt-remapping table entry.
-- *
-- * As the migration is a simple atomic update of IRTE, the same mechanism
-- * is used to migrate MSI irq's in the presence of interrupt-remapping.
-- */
--static int
--ir_ioapic_set_affinity(struct irq_data *data, const struct cpumask *mask,
--		       bool force)
--{
--	struct irq_cfg *cfg = data->chip_data;
--	unsigned int dest, irq = data->irq;
--	struct irte irte;
--
--	if (!cpumask_intersects(mask, cpu_online_mask))
--		return -EINVAL;
--
--	if (get_irte(irq, &irte))
--		return -EBUSY;
--
--	if (assign_irq_vector(irq, cfg, mask))
--		return -EBUSY;
--
--	dest = apic->cpu_mask_to_apicid_and(cfg->domain, mask);
--
--	irte.vector = cfg->vector;
--	irte.dest_id = IRTE_DEST(dest);
--
--	/*
--	 * Atomically updates the IRTE with the new destination, vector
--	 * and flushes the interrupt entry cache.
--	 */
--	modify_irte(irq, &irte);
--
--	/*
--	 * After this point, all the interrupts will start arriving
--	 * at the new destination. So, time to cleanup the previous
--	 * vector allocation.
--	 */
--	if (cfg->move_in_progress)
--		send_cleanup_vector(cfg);
--
--	cpumask_copy(data->affinity, mask);
--	return 0;
--}
--
--#else
--static inline int
--ir_ioapic_set_affinity(struct irq_data *data, const struct cpumask *mask,
--		       bool force)
--{
--	return 0;
--}
--#endif
--
- asmlinkage void smp_irq_move_cleanup_interrupt(void)
- {
- 	unsigned vector, me;
-@@ -2636,7 +2571,7 @@ static void irq_remap_modify_chip_defaults(struct irq_chip *chip)
- 	chip->irq_eoi = ir_ack_apic_level;
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index 823e1cf..3e5e82a 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -4,7 +4,7 @@ obj-$(CONFIG_AMD_IOMMU) += amd_iommu.o amd_iommu_init.o
+ obj-$(CONFIG_AMD_IOMMU_V2) += amd_iommu_v2.o
+ obj-$(CONFIG_DMAR_TABLE) += dmar.o
+ obj-$(CONFIG_INTEL_IOMMU) += iova.o intel-iommu.o
+-obj-$(CONFIG_IRQ_REMAP) += intel_intr_remapping.o intr_remapping.o
++obj-$(CONFIG_IRQ_REMAP) += intel_irq_remapping.o irq_remapping.o
+ obj-$(CONFIG_OMAP_IOMMU) += omap-iommu.o
+ obj-$(CONFIG_OMAP_IOVMM) += omap-iovmm.o
+ obj-$(CONFIG_OMAP_IOMMU_DEBUG) += omap-iommu-debug.o
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index ee74f69..5ef65cf 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -36,7 +36,7 @@
+ #include <linux/tboot.h>
+ #include <linux/dmi.h>
+ #include <linux/slab.h>
+-#include <asm/intr_remapping.h>
++#include <asm/irq_remapping.h>
+ #include <asm/iommu_table.h>
  
- #ifdef CONFIG_SMP
--	chip->irq_set_affinity = ir_ioapic_set_affinity;
-+	chip->irq_set_affinity = intr_set_affinity;
- #endif
- }
- #endif /* CONFIG_IRQ_REMAP */
-@@ -3826,7 +3761,7 @@ void __init setup_ioapic_dest(void)
- 			mask = apic->target_cpus();
+ #define PREFIX "DMAR: "
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 3c48ce2..430224b 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -42,7 +42,7 @@
+ #include <linux/dmi.h>
+ #include <linux/pci-ats.h>
+ #include <linux/memblock.h>
+-#include <asm/intr_remapping.h>
++#include <asm/irq_remapping.h>
+ #include <asm/cacheflush.h>
+ #include <asm/iommu.h>
  
- 		if (intr_remapping_enabled)
--			ir_ioapic_set_affinity(idata, mask, false);
-+			intr_set_affinity(idata, mask, false);
- 		else
- 			ioapic_set_affinity(idata, mask, false);
- 	}
-diff --git a/drivers/iommu/intel_intr_remapping.c b/drivers/iommu/intel_intr_remapping.c
-index f495eba..25372c1 100644
+diff --git a/drivers/iommu/intel_intr_remapping.c b/drivers/iommu/intel_irq_remapping.c
+similarity index 99%
+rename from drivers/iommu/intel_intr_remapping.c
+rename to drivers/iommu/intel_irq_remapping.c
+index efeb601..b4d3950 100644
 --- a/drivers/iommu/intel_intr_remapping.c
-+++ b/drivers/iommu/intel_intr_remapping.c
-@@ -901,6 +901,59 @@ static int intel_setup_ioapic_entry(int irq,
- 	return 0;
- }
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -11,11 +11,11 @@
+ #include <asm/cpu.h>
+ #include <linux/intel-iommu.h>
+ #include <acpi/acpi.h>
+-#include <asm/intr_remapping.h>
++#include <asm/irq_remapping.h>
+ #include <asm/pci-direct.h>
+ #include <asm/msidef.h>
  
-+/*
-+ * Migrate the IO-APIC irq in the presence of intr-remapping.
-+ *
-+ * For both level and edge triggered, irq migration is a simple atomic
-+ * update(of vector and cpu destination) of IRTE and flush the hardware cache.
-+ *
-+ * For level triggered, we eliminate the io-apic RTE modification (with the
-+ * updated vector information), by using a virtual vector (io-apic pin number).
-+ * Real vector that is used for interrupting cpu will be coming from
-+ * the interrupt-remapping table entry.
-+ *
-+ * As the migration is a simple atomic update of IRTE, the same mechanism
-+ * is used to migrate MSI irq's in the presence of interrupt-remapping.
-+ */
-+static int
-+intel_ioapic_set_affinity(struct irq_data *data, const struct cpumask *mask,
-+			  bool force)
-+{
-+	struct irq_cfg *cfg = data->chip_data;
-+	unsigned int dest, irq = data->irq;
-+	struct irte irte;
-+
-+	if (!cpumask_intersects(mask, cpu_online_mask))
-+		return -EINVAL;
-+
-+	if (get_irte(irq, &irte))
-+		return -EBUSY;
-+
-+	if (assign_irq_vector(irq, cfg, mask))
-+		return -EBUSY;
-+
-+	dest = apic->cpu_mask_to_apicid_and(cfg->domain, mask);
-+
-+	irte.vector = cfg->vector;
-+	irte.dest_id = IRTE_DEST(dest);
-+
-+	/*
-+	 * Atomically updates the IRTE with the new destination, vector
-+	 * and flushes the interrupt entry cache.
-+	 */
-+	modify_irte(irq, &irte);
-+
-+	/*
-+	 * After this point, all the interrupts will start arriving
-+	 * at the new destination. So, time to cleanup the previous
-+	 * vector allocation.
-+	 */
-+	if (cfg->move_in_progress)
-+		send_cleanup_vector(cfg);
-+
-+	cpumask_copy(data->affinity, mask);
-+	return 0;
-+}
+-#include "intr_remapping.h"
++#include "irq_remapping.h"
  
- struct irq_remap_ops intel_irq_remap_ops = {
- 	.supported		= intel_intr_remapping_supported,
-@@ -910,4 +963,5 @@ struct irq_remap_ops intel_irq_remap_ops = {
- 	.hardware_reenable	= reenable_intr_remapping,
- 	.enable_faulting	= enable_drhd_fault_handling,
- 	.setup_ioapic_entry	= intel_setup_ioapic_entry,
-+	.set_affinity		= intel_ioapic_set_affinity,
- };
-diff --git a/drivers/iommu/intr_remapping.c b/drivers/iommu/intr_remapping.c
-index 739148a..2f4f27f 100644
+ struct ioapic_scope {
+ 	struct intel_iommu *iommu;
+diff --git a/drivers/iommu/intr_remapping.c b/drivers/iommu/irq_remapping.c
+similarity index 99%
+rename from drivers/iommu/intr_remapping.c
+rename to drivers/iommu/irq_remapping.c
+index 523a7b3..1cf350e 100644
 --- a/drivers/iommu/intr_remapping.c
-+++ b/drivers/iommu/intr_remapping.c
-@@ -110,3 +110,12 @@ int intr_setup_ioapic_entry(int irq,
- 	return remap_ops->setup_ioapic_entry(irq, entry, destination,
- 					     vector, attr);
- }
-+
-+int intr_set_affinity(struct irq_data *data, const struct cpumask *mask,
-+		      bool force)
-+{
-+	if (!remap_ops || !remap_ops->set_affinity)
-+		return 0;
-+
-+	return remap_ops->set_affinity(data, mask, force);
-+}
-diff --git a/drivers/iommu/intr_remapping.h b/drivers/iommu/intr_remapping.h
-index e8994f2..e0bc6e0 100644
++++ b/drivers/iommu/irq_remapping.c
+@@ -2,7 +2,7 @@
+ #include <linux/string.h>
+ #include <linux/errno.h>
+ 
+-#include "intr_remapping.h"
++#include "irq_remapping.h"
+ 
+ int irq_remapping_enabled;
+ 
+diff --git a/drivers/iommu/intr_remapping.h b/drivers/iommu/irq_remapping.h
+similarity index 96%
+rename from drivers/iommu/intr_remapping.h
+rename to drivers/iommu/irq_remapping.h
+index bd5d98f..b12974c 100644
 --- a/drivers/iommu/intr_remapping.h
-+++ b/drivers/iommu/intr_remapping.h
-@@ -26,6 +26,8 @@
++++ b/drivers/iommu/irq_remapping.h
+@@ -19,8 +19,8 @@
+  * remapping drivers but with no need to be visible outside of the IOMMU layer.
+  */
  
- struct IO_APIC_route_entry;
- struct io_apic_irq_attr;
-+struct irq_data;
-+struct cpumask;
+-#ifndef __INTR_REMAPPING_H
+-#define __INTR_REMAPPING_H
++#ifndef __IRQ_REMAPPING_H
++#define __IRQ_REMAPPING_H
  
- extern int disable_intremap;
- extern int disable_sourceid_checking;
-@@ -54,6 +56,10 @@ struct irq_remap_ops {
- 	int (*setup_ioapic_entry)(int irq, struct IO_APIC_route_entry *,
- 				  unsigned int, int,
- 				  struct io_apic_irq_attr *);
-+
-+	/* Set the CPU affinity of a remapped interrupt */
-+	int (*set_affinity)(struct irq_data *data, const struct cpumask *mask,
-+			    bool force);
- };
+ #ifdef CONFIG_IRQ_REMAP
  
- extern struct irq_remap_ops intel_irq_remap_ops;
+@@ -85,4 +85,4 @@ extern struct irq_remap_ops intel_irq_remap_ops;
+ 
+ #endif /* CONFIG_IRQ_REMAP */
+ 
+-#endif /* __INTR_REMAPPING_H */
++#endif /* __IRQ_REMAPPING_H */
 -- 
 1.7.6.5
