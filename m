@@ -1,71 +1,131 @@
-From: Subash Patel <subashrp@gmail.com>
-Subject: Re: [PATCHv7 9/9] ARM: dma-mapping: add support for IOMMU mapper
-Date: Fri, 30 Mar 2012 12:44:47 +0530
-Message-ID: <4F755D67.5020802@gmail.com>
-References: <1330527862-16234-1-git-send-email-m.szyprowski@samsung.com> <1330527862-16234-10-git-send-email-m.szyprowski@samsung.com> <CAHQjnOO5DLOj8Fw=ZriSnXg8W3k7y8Dnu--Peqe6JJX0xGMhoQ@mail.gmail.com> <4F688B2D.20808@gmail.com> <CAHQjnOMjSPDOymJe356AWnJszQv+X-QWrVrB7ahYDkXBr5HrQw@mail.gmail.com> <4F6B304E.5010402@gmail.com>
+From: Omar Ramirez Luna <omar.luna-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: [PATCH] iommu: OMAP: device detach on domain destroy
+Date: Fri, 30 Mar 2012 11:03:49 -0500
+Message-ID: <1333123429-3727-1-git-send-email-omar.luna@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <4F6B304E.5010402@gmail.com>
-Sender: owner-linux-mm@kvack.org
-To: KyongHo Cho <pullip.cho@samsung.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, Shariq Hasnain <shariq.hasnain@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Krishna Reddy <vdumpa@nvidia.com>, Kyungmin Park <kyungmin.park@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Chunsang Jeong <chunsang.jeong@linaro.org>
+Return-path: <linaro-dev-bounces-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>
+List-Unsubscribe: <http://lists.linaro.org/mailman/options/linaro-dev>,
+	<mailto:linaro-dev-request-cunTk1MwBs8s++Sfvej+rw@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linaro.org/pipermail/linaro-dev>
+List-Post: <mailto:linaro-dev-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>
+List-Help: <mailto:linaro-dev-request-cunTk1MwBs8s++Sfvej+rw@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.linaro.org/mailman/listinfo/linaro-dev>,
+	<mailto:linaro-dev-request-cunTk1MwBs8s++Sfvej+rw@public.gmane.org?subject=subscribe>
+Sender: linaro-dev-bounces-cunTk1MwBs8s++Sfvej+rw@public.gmane.org
+Errors-To: linaro-dev-bounces-cunTk1MwBs8s++Sfvej+rw@public.gmane.org
+To: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Cc: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, linaro-dev-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi KyongHo,
+'domain_destroy with devices attached' case isn't yet handled, instead
+code assumes that the device was already detached.
 
-On 03/22/2012 07:29 PM, Subash Patel wrote:
-> Hi KyongHo,
->
-> On 03/21/2012 05:26 AM, KyongHo Cho wrote:
->> On Tue, Mar 20, 2012 at 10:50 PM, Subash Patel<subashrp@gmail.com> wrote:
->>> Sorry for digging this very late. But as part of integrating dma_map v7&
->>> sysmmu v12 on 3.3-rc5, I am facing below issue:
->>>
->>> a) By un-selecting IOMMU in menu config, I am able to allocate memory in
->>> vb2-dma-contig
->>>
->>> b) When I enable SYSMMU support for the IP's, I am receiving below
->>> fault:
->>>
->>> Unhandled fault: external abort on non-linefetch (0x818) at 0xb6f55000
->>>
->>> I think this has something to do with the access to the SYSMMU
->>> registers for
->>> writing the page table. Has anyone of you faced this issue while testing
->>> these(dma_map+iommu) patches on kernel mentioned above? This must be
->>> something related to recent changes, as I didn't have issues with these
->>> patches on 3.2 kernel.
->>>
->>
->> 0xb6f55000 is not an address of SYSMMU register if your kernel starts
->> at 0xc0000000.
->>
->> Can you tell me any detailed information or situation?
-> I hate to say this, but I am not able to catch the fault location even
-> with JTAG. Once the fault comes, the debugger looses all control over. I
-> think now possible method is reproduction at your end :)
+If the domain is destroyed the hardware still has access to invalid
+pointers to its page table and internal iommu object. In order to
+detach the users we need to track devices using the iommu, current
+use cases only have one user of iommu per instance. When required
+this can evolve to a list with the devices using the iommu_dev.
 
-Thanks to you, Issue is now figured out. This was due to generic Power 
-Domain code added recently. SYSMMU registers were not getting enabled 
-due to this. I reverted the PD changes from the machine to architecture 
-specific, and voila, SYSMMU is back into action using the 
-dma-mapping-v7. I will have to see how the same would behave when the 
-complete PD changes comes to mainline from maintainers for-next in future.
+Reported-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Reviewed-by: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Omar Ramirez Luna <omar.luna-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+---
+ drivers/iommu/omap-iommu.c |   32 +++++++++++++++++++++++---------
+ 1 files changed, 23 insertions(+), 9 deletions(-)
 
->>
->> Regards,
->>
->> KyongHo.
-> Regards,
-> Subash
-Regards,
-Subash
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Fight unfair telecom internet charges in Canada: sign http://stopthemeter.ca/
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index 821062a..e32bd15 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -41,11 +41,13 @@
+  * @pgtable:	the page table
+  * @iommu_dev:	an omap iommu device attached to this domain. only a single
+  *		iommu device can be attached for now.
++ * @dev:	Device using this domain.
+  * @lock:	domain lock, should be taken when attaching/detaching
+  */
+ struct omap_iommu_domain {
+ 	u32 *pgtable;
+ 	struct omap_iommu *iommu_dev;
++	struct device *dev;
+ 	spinlock_t lock;
+ };
+ 
+@@ -1074,6 +1076,7 @@ omap_iommu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 	}
+ 
+ 	omap_domain->iommu_dev = arch_data->iommu_dev = oiommu;
++	omap_domain->dev = dev;
+ 	oiommu->domain = domain;
+ 
+ 	/* temporary workaround */
+@@ -1084,19 +1087,16 @@ out:
+ 	return ret;
+ }
+ 
+-static void omap_iommu_detach_dev(struct iommu_domain *domain,
+-				 struct device *dev)
++static void _omap_iommu_detach_dev(struct omap_iommu_domain *omap_domain,
++			struct device *dev)
+ {
+-	struct omap_iommu_domain *omap_domain = domain->priv;
+-	struct omap_iommu_arch_data *arch_data = dev->archdata.iommu;
+ 	struct omap_iommu *oiommu = dev_to_omap_iommu(dev);
+-
+-	spin_lock(&omap_domain->lock);
++	struct omap_iommu_arch_data *arch_data = dev->archdata.iommu;
+ 
+ 	/* only a single device is supported per domain for now */
+ 	if (omap_domain->iommu_dev != oiommu) {
+ 		dev_err(dev, "invalid iommu device\n");
+-		goto out;
++		return;
+ 	}
+ 
+ 	iopgtable_clear_entry_all(oiommu);
+@@ -1104,11 +1104,19 @@ static void omap_iommu_detach_dev(struct iommu_domain *domain,
+ 	omap_iommu_detach(oiommu);
+ 
+ 	omap_domain->iommu_dev = arch_data->iommu_dev = NULL;
++	omap_domain->dev = NULL;
+ 
+ 	/* temporary workaround */
+ 	clk_disable(oiommu->clk);
++}
+ 
+-out:
++static void omap_iommu_detach_dev(struct iommu_domain *domain,
++				 struct device *dev)
++{
++	struct omap_iommu_domain *omap_domain = domain->priv;
++
++	spin_lock(&omap_domain->lock);
++	_omap_iommu_detach_dev(omap_domain, dev);
+ 	spin_unlock(&omap_domain->lock);
+ }
+ 
+@@ -1147,13 +1155,19 @@ out:
+ 	return -ENOMEM;
+ }
+ 
+-/* assume device was already detached */
+ static void omap_iommu_domain_destroy(struct iommu_domain *domain)
+ {
+ 	struct omap_iommu_domain *omap_domain = domain->priv;
+ 
+ 	domain->priv = NULL;
+ 
++	/*
++	 * An iommu device is still attached
++	 * (currently, only one device can be attached) ?
++	 */
++	if (omap_domain->iommu_dev)
++		_omap_iommu_detach_dev(omap_domain, omap_domain->dev);
++
+ 	kfree(omap_domain->pgtable);
+ 	kfree(omap_domain);
+ }
+-- 
+1.7.4.1
