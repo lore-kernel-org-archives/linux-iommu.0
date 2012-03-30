@@ -1,72 +1,67 @@
-From: David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
-Subject: Re: [PATCH 1/2] Isolation groups
-Date: Fri, 30 Mar 2012 15:19:46 +1100
-Message-ID: <20120330041946.GA21161@truffala.fritz.box>
-References: <20120313143340.GT24916@truffala.fritz.box>
-	<1331657387.2969.79.camel@bling.home>
-	<20120314095808.GX24916@truffala.fritz.box>
-	<1331842501.22038.58.camel@ul30vt>
-	<20120316034527.GJ24916@truffala.fritz.box>
-	<1331926278.13855.57.camel@bling.home>
-	<20120317045734.GL24916@truffala.fritz.box>
-	<1332364378.13855.236.camel@bling.home>
-	<20120327051407.GJ9357@truffala.fritz.box>
-	<1332876883.29722.143.camel@bling.home>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: RE: [PATCHv7 9/9] ARM: dma-mapping: add support for IOMMU mapper
+Date: Fri, 30 Mar 2012 08:30:06 +0200
+Message-ID: <000001cd0e3e$8ce21380$a6a63a80$%szyprowski@samsung.com>
+References: <1330527862-16234-1-git-send-email-m.szyprowski@samsung.com>
+ <1330527862-16234-10-git-send-email-m.szyprowski@samsung.com>
+ <20120329101927.8ab6b1993475b7e16ae2258f@nvidia.com>
+ <01b301cd0d81$f935d750$eba185f0$%szyprowski@samsung.com>
+ <401E54CE964CD94BAE1EB4A729C7087E37978A1E66@HQMAIL04.nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1332876883.29722.143.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7BIT
+Return-path: <owner-linux-mm@kvack.org>
+In-reply-to: <401E54CE964CD94BAE1EB4A729C7087E37978A1E66@HQMAIL04.nvidia.com>
+Content-language: pl
+Sender: owner-linux-mm@kvack.org
+To: 'Krishna Reddy' <vdumpa@nvidia.com>
+Cc: linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, 'Shariq Hasnain' <shariq.hasnain@linaro.org>, 'Arnd Bergmann' <arnd@arndb.de>, 'Benjamin Herrenschmidt' <benh@kernel.crashing.org>, 'Kyungmin Park' <kyungmin.park@samsung.com>, 'Andrzej Pietrasiewicz' <andrzej.p@samsung.com>, 'Russell King - ARM Linux' <linux@arm.linux.org.uk>, 'KyongHo Cho' <pullip.cho@samsung.com>, 'Hiroshi Doyu' <hdoyu@nvidia.com>, 'Chunsang Jeong' <chunsang.jeong@linaro.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Mar 27, 2012 at 01:34:43PM -0600, Alex Williamson wrote:
-[snip]
-> > > > this case, it gets a bit complex.  When the FooBus isolation provider
-> > > > is active, the FooBus devices would be in their own groups, not the
-> > > > group of the FooBridge and its sibling.  When the FooBus isolation
-> > > > provider is removed, it would have to configure the FooBus IOMMU to a
-> > > > passthrough mode, and revert the FooBus devices to the parent's
-> > > > group.  Hm.  Complicated.
-> > > 
-> > > Yep.  I think we're arriving at the same point.  Groups are
-> > > hierarchical, but ownership via a manager cannot be nested.  So to
-> > > manage a group, we need to walk the entire tree of devices below each
-> > > device checking that none of the groups are managed and all the devices
-> > > are using the right driver, then walk up from the group to verify no
-> > > group of a parent device is managed.  Thanks,
-> > 
-> > Blargh.  I really, really hope we can come up with a simpler model
-> > than that.
+Hello,
+
+On Friday, March 30, 2012 4:24 AM Krishna Reddy wrote:
+
+> Hi,
+> I have found a bug in arm_iommu_map_sg().
 > 
-> Yep, I'm pretty well at the end of this experiment.  Honestly, I think
-> isolation groups are the wrong approach.  We're trying to wrap too many
-> concepts together and it's completely unmanageable.  I cannot see adding
-> the complexity we're talking about here to the core device model for
-> such a niche usage.  I think we're better off going back to the
-> iommu_device_group() and building that out into something more complete,
-> starting with group based iommu ops and a dma quirk infrastructure.
-> >From there we can add some basic facilities to toggle driver autoprobe,
-> maybe setup notifications for the group, and hopefully include a way to
-> share iommu mappings between groups.  Anything much beyond that we
-> should probably leave for something like the vfio driver.  Thanks,
+> > +int arm_iommu_map_sg(struct device *dev, struct scatterlist *sg, int nents,
+> > +		     enum dma_data_direction dir, struct dma_attrs *attrs) {
+> > +	struct scatterlist *s = sg, *dma = sg, *start = sg;
+> > +	int i, count = 0;
+> > +	unsigned int offset = s->offset;
+> > +	unsigned int size = s->offset + s->length;
+> > +	unsigned int max = dma_get_max_seg_size(dev);
+> > +
+> > +	for (i = 1; i < nents; i++) {
+> > +		s->dma_address = ARM_DMA_ERROR;
+> > +		s->dma_length = 0;
+> > +
+> > +		s = sg_next(s);
+> 
+> With above code, the last sg element's dma_length is not getting set to zero.
+> This causing additional incorrect  unmapping during arm_iommu_unmap_sg call and
+> leading to random crashes.
+> The order of above three lines should be as follows.
+> 		s = sg_next(s);
+> 
+> 		s->dma_address = ARM_DMA_ERROR;
+> 		s->dma_length = 0;
+> 
 
-Yes, well, I was hoping for a simpler model that didn't involve simply
-sweeping all the issues under a rug.
+You are right, the order of those lines must be reversed. In all my test codes the 
+scatter list was initially cleared, so I missed this typical off-by-one error. 
+Thanks for spotting it!
 
+Best regards
 -- 
-David Gibson			| I'll have my music baroque, and my code
-david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
-				| _way_ _around_!
-http://www.ozlabs.org/~dgibson
+Marek Szyprowski
+Samsung Poland R&D Center
+
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Fight unfair telecom internet charges in Canada: sign http://stopthemeter.ca/
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
