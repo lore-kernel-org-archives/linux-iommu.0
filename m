@@ -1,13 +1,13 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC PATCH 3/3] iommu: Create attach/detach group interface
-Date: Mon, 02 Apr 2012 15:14:55 -0600
-Message-ID: <20120402211454.28977.32677.stgit@bling.home>
-References: <20120402203721.28977.95285.stgit@bling.home>
+From: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: [RFC PATCH 06/14] IOMMU: Fix tboot force iommu logic
+Date: Mon,  2 Apr 2012 19:19:33 -0700
+Message-ID: <1333419581-7836-7-git-send-email-yinghai@kernel.org>
+References: <1333419581-7836-1-git-send-email-yinghai@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20120402203721.28977.95285.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+In-Reply-To: <1333419581-7836-1-git-send-email-yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,75 +17,46 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org
+To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Len Brown <len.brown-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jiang Liu <jiang.liu-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, x86 <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-IOMMU ops should be working at a group level rather than a device
-level as we cannot arbitrarily assign devices from the same group
-to different domains.  For now this is just a simple wrapper that
-makes use of the dma_dev within a group.
+Should check dmar_disabled just after tboot_force_iommu.
 
-Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Otherwise when tboot is not used, and intel_iommu=off, and nointrmap
+still get dmar_table_init() called. that will cause some get_device
+calling, and it will have some device refcount leaking.
+
+Signed-off-by: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 ---
+ drivers/iommu/intel-iommu.c |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
 
- drivers/iommu/iommu.c |   12 ++++++++++++
- include/linux/iommu.h |   15 +++++++++++++++
- 2 files changed, 27 insertions(+), 0 deletions(-)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 6a51ed9..af77da1 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -327,6 +327,18 @@ void iommu_detach_device(struct iommu_domain *domain, struct device *dev)
- }
- EXPORT_SYMBOL_GPL(iommu_detach_device);
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index be867e6..b7e5a7e 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -3630,6 +3630,9 @@ int __init intel_iommu_init(void)
+ 	/* VT-d is required for a TXT/tboot launch, so enforce that */
+ 	force_on = tboot_force_iommu();
  
-+int iommu_attach_group(struct iommu_domain *domain, struct iommu_group *group)
-+{
-+	return iommu_attach_device(domain, group->dma_dev);
-+}
-+EXPORT_SYMBOL_GPL(iommu_attach_group);
++	if (no_iommu || dmar_disabled)
++		return -ENODEV;
 +
-+void iommu_detach_group(struct iommu_domain *domain, struct iommu_group *group)
-+{
-+	iommu_detach_device(domain, group->dma_dev);
-+}
-+EXPORT_SYMBOL_GPL(iommu_detach_group);
-+
- phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain,
- 			       unsigned long iova)
- {
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 24004d6..d4e9a7a 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -107,6 +107,10 @@ extern int iommu_attach_device(struct iommu_domain *domain,
- 			       struct device *dev);
- extern void iommu_detach_device(struct iommu_domain *domain,
- 				struct device *dev);
-+extern int iommu_attach_group(struct iommu_domain *domain,
-+			      struct iommu_group *group);
-+extern void iommu_detach_group(struct iommu_domain *domain,
-+			       struct iommu_group *group);
- extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
- 		     phys_addr_t paddr, size_t size, int prot);
- extern size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova,
-@@ -194,6 +198,17 @@ static inline void iommu_detach_device(struct iommu_domain *domain,
- {
- }
+ 	if (dmar_table_init()) {
+ 		if (force_on)
+ 			panic("tboot: Failed to initialize DMAR table\n");
+@@ -3642,9 +3645,6 @@ int __init intel_iommu_init(void)
+ 		return 	-ENODEV;
+ 	}
  
-+static inline int iommu_attach_group(struct iommu_domain *domain,
-+				     struct iommu_group *group)
-+{
-+	return -ENODEV;
-+}
-+
-+static inline void iommu_detach_group(struct iommu_domain *domain,
-+				      struct iommu_group *group)
-+{
-+}
-+
- static inline int iommu_map(struct iommu_domain *domain, unsigned long iova,
- 			    phys_addr_t paddr, int gfp_order, int prot)
- {
+-	if (no_iommu || dmar_disabled)
+-		return -ENODEV;
+-
+ 	if (iommu_init_mempool()) {
+ 		if (force_on)
+ 			panic("tboot: Failed to initialize iommu memory\n");
+-- 
+1.7.7
