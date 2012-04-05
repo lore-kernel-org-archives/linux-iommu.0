@@ -1,389 +1,108 @@
-From: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: [RFC PATCH 05/14] IOMMU: Update dmar units devices list during hotplug
-Date: Mon,  2 Apr 2012 19:19:32 -0700
-Message-ID: <1333419581-7836-6-git-send-email-yinghai@kernel.org>
-References: <1333419581-7836-1-git-send-email-yinghai@kernel.org>
+From: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
+Subject: Reparenting a platform device
+Date: Thu, 5 Apr 2012 10:42:58 +0200
+Message-ID: <20120405084258.GA19798@avionic-0098.adnet.avionic-design.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1333419581-7836-1-git-send-email-yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Len Brown <len.brown-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jiang Liu <jiang.liu-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, x86 <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Content-Type: multipart/mixed; boundary="===============2477958649242507229=="
+Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss>
+List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
+Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Sender: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+To: devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When do pci remove/rescan on system that have more iommus, got
 
-[  894.089745] Set context mapping for c4:00.0
-[  894.110890] mpt2sas3: Allocated physical memory: size(4293 kB)
-[  894.112556] mpt2sas3: Current Controller Queue Depth(1883), Max Controller Queue Depth(2144)
-[  894.127278] mpt2sas3: Scatter Gather Elements per IO(128)
-[  894.361295] DRHD: handling fault status reg 2
-[  894.364053] DMAR:[DMA Read] Request device [c4:00.0] fault addr fffbe000
-[  894.364056] DMAR:[fault reason 02] Present bit in context entry is cl
+--===============2477958649242507229==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="qMm9M+Fa2AknHoGS"
+Content-Disposition: inline
 
-It turns out when remove/rescan, pci dev will be freed and will get another
-new dev. But drhd units still keep old one... so dmar_find_matched_drhd_unit
-will return wrong drhd and iommu for the device that is not on first iommu.
 
-So need to update devices in drhd_units during pci remove/rescan.
+--qMm9M+Fa2AknHoGS
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Could save domain/bus/device/function aside in the list and according that
-info restore new dev to drhd_units later.
-Then dmar_find_matched_drdh_unit and device_to_iommu could return right drhd
-and iommu.
+Hi,
 
-Add remove_dev_from_drhd/restore_dev_to_drhd functions to do the real work.
-call them in device ADD_DEVICE and UNBOUND_DRIVER
+I have a device tree where I have a GART device and a DRM device which uses
+the GART. The GART is implemented by an IOMMU driver (tegra-gart) and
+requires the user device to be a child of the GART device (it explicitly
+checks for this when the user device is attached).
 
-Need to do the samething to atsr. (expose dmar_atsr_units and add
-atsru->segment)
+I've tried two alternatives to achieve this: create the GART device in the
+user driver's .probe() function and explicitly set the DRM device's parent
+to the resulting platform device like so:
 
-After patch, will have right iommu for the new dev and will not get DMAR
-error anymore.
+	gart = platform_device_alloc(...);
+	...
+	pdev->dev.parent = &gart->dev;
 
--v2: add pci_dev_put/pci_dev_get to make refcount consistent.
--v3: fix one left over CONFIG_DMAR
--v4: pass pci_dev *dev in save_dev_dmaru()/get_dev_dmaru() according to Bjorn.
--v5: fix case only have intr-remap enabled.
+The alternative is to use the device tree to look up the GART device node and
+resolve it to the corresponding struct device:
 
-Signed-off-by: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
----
- drivers/iommu/dmar.c                |  129 +++++++++++++++++++++++++++++++++++
- drivers/iommu/intel-iommu.c         |   36 +++++++---
- drivers/iommu/intel_irq_remapping.c |   36 ++++++++++-
- include/linux/dmar.h                |   17 +++++
- 4 files changed, 206 insertions(+), 12 deletions(-)
+	gart_node = of_parse_phandle(drm->dev->of_node, "gart-parent", 0);
+	gart = bus_find_device(drm->dev->bus, NULL, gart_node, match_of_node);
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index ec01bc7..fde4991 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -455,6 +455,135 @@ fail:
- 	return ret;
- }
- 
-+#ifdef CONFIG_HOTPLUG
-+struct dev_dmaru {
-+	struct list_head list;
-+	void *dmaru;
-+	int index;
-+	int segment;
-+	unsigned char bus;
-+	unsigned int devfn;
-+};
-+
-+static int save_dev_dmaru(struct pci_dev *dev, void *dmaru,
-+			  int index, struct list_head *lh)
-+{
-+	struct dev_dmaru *m;
-+
-+	m = kzalloc(sizeof(*m), GFP_KERNEL);
-+	if (!m)
-+		return -ENOMEM;
-+
-+	m->segment = pci_domain_nr(dev->bus);
-+	m->bus     = dev->bus->number;
-+	m->devfn   = dev->devfn;
-+	m->dmaru   = dmaru;
-+	m->index   = index;
-+
-+	list_add(&m->list, lh);
-+
-+	return 0;
-+}
-+static void *get_dev_dmaru(struct pci_dev *dev, int *index,
-+				struct list_head *lh)
-+{
-+	int segment = pci_domain_nr(dev->bus);
-+	unsigned char bus = dev->bus->number;
-+	unsigned int devfn = dev->devfn;
-+	struct dev_dmaru *m;
-+	void *dmaru = NULL;
-+
-+	list_for_each_entry(m, lh, list) {
-+		if (m->segment == segment &&
-+		    m->bus == bus && m->devfn == devfn) {
-+			*index = m->index;
-+			dmaru  = m->dmaru;
-+			list_del(&m->list);
-+			kfree(m);
-+			break;
-+		}
-+	}
-+
-+	return dmaru;
-+}
-+
-+static LIST_HEAD(saved_dev_drhd_list);
-+void remove_dev_from_drhd(struct pci_dev *dev)
-+{
-+	struct dmar_drhd_unit *drhd = NULL;
-+	int segment = pci_domain_nr(dev->bus);
-+	int i;
-+
-+	for_each_drhd_unit(drhd) {
-+		if (drhd->ignored)
-+			continue;
-+		if (segment != drhd->segment)
-+			continue;
-+
-+		for (i = 0; i < drhd->devices_cnt; i++) {
-+			if (drhd->devices[i] == dev) {
-+				/* save it at first if it is in drhd */
-+				save_dev_dmaru(dev, drhd, i,
-+						&saved_dev_drhd_list);
-+				/* always remove it */
-+				pci_dev_put(dev);
-+				drhd->devices[i] = NULL;
-+				return;
-+			}
-+		}
-+	}
-+}
-+void restore_dev_to_drhd(struct pci_dev *dev)
-+{
-+	struct dmar_drhd_unit *drhd = NULL;
-+	int i;
-+
-+	/* find the stored drhd */
-+	drhd = get_dev_dmaru(dev, &i, &saved_dev_drhd_list);
-+	/* restore that into drhd */
-+	if (drhd)
-+		drhd->devices[i] = pci_dev_get(dev);
-+}
-+
-+#ifdef CONFIG_INTEL_IOMMU
-+static LIST_HEAD(saved_dev_atsr_list);
-+void remove_dev_from_atsr(struct pci_dev *dev)
-+{
-+	struct dmar_atsr_unit *atsr = NULL;
-+	int segment = pci_domain_nr(dev->bus);
-+	int i;
-+
-+	for_each_atsr_unit(atsr) {
-+		if (segment != atsr->segment)
-+			continue;
-+
-+		for (i = 0; i < atsr->devices_cnt; i++) {
-+			if (atsr->devices[i] == dev) {
-+				/* save it at first if it is in drhd */
-+				save_dev_dmaru(dev, atsr, i,
-+						&saved_dev_atsr_list);
-+				/* always remove it */
-+				pci_dev_put(dev);
-+				atsr->devices[i] = NULL;
-+				return;
-+			}
-+		}
-+	}
-+}
-+void restore_dev_to_atsr(struct pci_dev *dev)
-+{
-+	struct dmar_atsr_unit *atsr = NULL;
-+	int i;
-+
-+	/* find the stored atsr */
-+	atsr = get_dev_dmaru(dev, &i, &saved_dev_atsr_list);
-+	/* restore that into atsr */
-+	if (atsr)
-+		atsr->devices[i] = pci_dev_get(dev);
-+}
-+#endif  /* CONFIG_INTEL_IOMMU */
-+
-+#endif  /* CONFIG_HOTPLUG */
- 
- int __init dmar_table_init(void)
- {
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 430224b..be867e6 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3472,7 +3472,7 @@ rmrr_parse_dev(struct dmar_rmrr_unit *rmrru)
- 	return ret;
- }
- 
--static LIST_HEAD(dmar_atsr_units);
-+LIST_HEAD(dmar_atsr_units);
- 
- int __init dmar_parse_one_atsr(struct acpi_dmar_header *hdr)
- {
-@@ -3486,6 +3486,7 @@ int __init dmar_parse_one_atsr(struct acpi_dmar_header *hdr)
- 
- 	atsru->hdr = hdr;
- 	atsru->include_all = atsr->flags & 0x1;
-+	atsru->segment = atsr->segment;
- 
- 	list_add(&atsru->list, &dmar_atsr_units);
- 
-@@ -3517,16 +3518,13 @@ int dmar_find_matched_atsr_unit(struct pci_dev *dev)
- {
- 	int i;
- 	struct pci_bus *bus;
--	struct acpi_dmar_atsr *atsr;
- 	struct dmar_atsr_unit *atsru;
- 
- 	dev = pci_physfn(dev);
- 
--	list_for_each_entry(atsru, &dmar_atsr_units, list) {
--		atsr = container_of(atsru->hdr, struct acpi_dmar_atsr, header);
--		if (atsr->segment == pci_domain_nr(dev->bus))
-+	list_for_each_entry(atsru, &dmar_atsr_units, list)
-+		if (atsru->segment == pci_domain_nr(dev->bus))
- 			goto found;
--	}
- 
- 	return 0;
- 
-@@ -3586,20 +3584,36 @@ static int device_notifier(struct notifier_block *nb,
- 	struct pci_dev *pdev = to_pci_dev(dev);
- 	struct dmar_domain *domain;
- 
--	if (iommu_no_mapping(dev))
-+	if (unlikely(dev->bus != &pci_bus_type))
- 		return 0;
- 
--	domain = find_domain(pdev);
--	if (!domain)
--		return 0;
-+	switch (action) {
-+	case BUS_NOTIFY_UNBOUND_DRIVER:
-+		if (iommu_no_mapping(dev))
-+			goto out;
-+
-+		if (iommu_pass_through)
-+			goto out;
-+
-+		domain = find_domain(pdev);
-+		if (!domain)
-+			goto out;
- 
--	if (action == BUS_NOTIFY_UNBOUND_DRIVER && !iommu_pass_through) {
- 		domain_remove_one_dev_info(domain, pdev);
- 
- 		if (!(domain->flags & DOMAIN_FLAG_VIRTUAL_MACHINE) &&
- 		    !(domain->flags & DOMAIN_FLAG_STATIC_IDENTITY) &&
- 		    list_empty(&domain->devices))
- 			domain_exit(domain);
-+out:
-+		remove_dev_from_drhd(pdev);
-+		remove_dev_from_atsr(pdev);
-+
-+		break;
-+	case BUS_NOTIFY_ADD_DEVICE:
-+		restore_dev_to_drhd(pdev);
-+		restore_dev_to_atsr(pdev);
-+		break;
- 	}
- 
- 	return 0;
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index b4d3950..05ffe20 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -757,12 +757,46 @@ int __init parse_ioapics_under_ir(void)
- 	return ir_supported;
- }
- 
-+static int device_notifier(struct notifier_block *nb,
-+				  unsigned long action, void *data)
-+{
-+	struct device *dev = data;
-+	struct pci_dev *pdev = to_pci_dev(dev);
-+
-+	if (unlikely(dev->bus != &pci_bus_type))
-+		return 0;
-+
-+	switch (action) {
-+	case BUS_NOTIFY_UNBOUND_DRIVER:
-+		remove_dev_from_drhd(pdev);
-+		break;
-+	case BUS_NOTIFY_ADD_DEVICE:
-+		restore_dev_to_drhd(pdev);
-+		break;
-+	}
-+
-+	return 0;
-+}
-+
-+static struct notifier_block device_nb = {
-+	.notifier_call = device_notifier,
-+};
-+
- int __init ir_dev_scope_init(void)
- {
-+	int ret;
-+
- 	if (!irq_remapping_enabled)
- 		return 0;
- 
--	return dmar_dev_scope_init();
-+	ret = dmar_dev_scope_init();
-+	if (ret < 0)
-+		return ret;
-+
-+	if (intel_iommu_enabled != 1)
-+		bus_register_notifier(&pci_bus_type, &device_nb);
-+
-+	return ret;
- }
- rootfs_initcall(ir_dev_scope_init);
- 
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index b029d1a..305db55 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -131,6 +131,18 @@ extern int dmar_set_interrupt(struct intel_iommu *iommu);
- extern irqreturn_t dmar_fault(int irq, void *dev_id);
- extern int arch_setup_dmar_msi(unsigned int irq);
- 
-+#ifdef CONFIG_HOTPLUG
-+void remove_dev_from_drhd(struct pci_dev *dev);
-+void restore_dev_to_drhd(struct pci_dev *dev);
-+void remove_dev_from_atsr(struct pci_dev *dev);
-+void restore_dev_to_atsr(struct pci_dev *dev);
-+#else
-+static inline void remove_dev_from_drhd(struct pci_dev *dev) { }
-+static inline void restore_dev_to_drhd(struct pci_dev *dev) { }
-+static inline void remove_dev_from_atsr(struct pci_dev *dev) { }
-+static inline void restore_dev_to_atsr(struct pci_dev *dev) { }
-+#endif
-+
- #ifdef CONFIG_INTEL_IOMMU
- extern int iommu_detected, no_iommu;
- extern struct list_head dmar_rmrr_units;
-@@ -146,14 +158,19 @@ struct dmar_rmrr_unit {
- #define for_each_rmrr_units(rmrr) \
- 	list_for_each_entry(rmrr, &dmar_rmrr_units, list)
- 
-+extern struct list_head dmar_atsr_units;
- struct dmar_atsr_unit {
- 	struct list_head list;		/* list of ATSR units */
- 	struct acpi_dmar_header *hdr;	/* ACPI header */
- 	struct pci_dev **devices;	/* target devices */
- 	int devices_cnt;		/* target device count */
-+	u16 segment;			/* PCI domain */
- 	u8 include_all:1;		/* include all ports */
- };
- 
-+#define for_each_atsr_unit(atsr) \
-+	list_for_each_entry(atsr, &dmar_atsr_units, list)
-+
- int dmar_parse_rmrr_atsr_dev(void);
- extern int dmar_parse_one_rmrr(struct acpi_dmar_header *header);
- extern int dmar_parse_one_atsr(struct acpi_dmar_header *header);
--- 
-1.7.7
+Where match_of_node matches each struct device's .of_node field to the
+gart_node.
+
+Both of these variants seem to work, and the DRM device can be properly
+attached to the GART device. However, after the DRM driver's .probe() exits,
+I get the following error:
+
+	[   25.579261] ------------[ cut here ]------------
+	[   25.583895] WARNING: at /home/thierry.reding/src/kernel/linux-ipmp.git/kernel/mutex-debug.c:78 debug_mutex_unlock+0x114/0x128()
+	[   25.595352] Modules linked in: tegra_drm(+) cfbfillrect cfbimgblt cfbcopyarea drm_kms_helper drm fb pwm_tegra pwm_bl backlight
+	[   25.606821] [<c0013c54>] (unwind_backtrace+0x0/0xf8) from [<c0027bcc>] (warn_slowpath_common+0x4c/0x64)
+	[   25.616207] [<c0027bcc>] (warn_slowpath_common+0x4c/0x64) from [<c0027c00>] (warn_slowpath_null+0x1c/0x24)
+	[   25.625853] [<c0027c00>] (warn_slowpath_null+0x1c/0x24) from [<c00667fc>] (debug_mutex_unlock+0x114/0x128)
+	[   25.635508] [<c00667fc>] (debug_mutex_unlock+0x114/0x128) from [<c03bee2c>] (__mutex_unlock_slowpath+0x84/0x140)
+	[   25.645680] [<c03bee2c>] (__mutex_unlock_slowpath+0x84/0x140) from [<c02149b4>] (__driver_attach+0x78/0x90)
+	[   25.655412] [<c02149b4>] (__driver_attach+0x78/0x90) from [<c0213128>] (bus_for_each_dev+0x50/0x7c)
+	[   25.664449] [<c0213128>] (bus_for_each_dev+0x50/0x7c) from [<c0214038>] (bus_add_driver+0x174/0x234)
+	[   25.673572] [<c0214038>] (bus_add_driver+0x174/0x234) from [<c0214e7c>] (driver_register+0x78/0x12c)
+	[   25.682696] [<c0214e7c>] (driver_register+0x78/0x12c) from [<c0008620>] (do_one_initcall+0x34/0x174)
+	[   25.691826] [<c0008620>] (do_one_initcall+0x34/0x174) from [<c006dab0>] (sys_init_module+0xc20/0x18e0)
+	[   25.701131] [<c006dab0>] (sys_init_module+0xc20/0x18e0) from [<c000df00>] (ret_fast_syscall+0x0/0x30)
+	[   25.710336] ---[ end trace f64968a4a9d9fe8b ]---
+
+I may be misinterpreting things, but this looks to be caused by the
+reparenting. So the question is whether what I'm trying to do is valid or
+if there is some other way to properly make the GART device the parent of
+the DRM device.
+
+Thanks,
+Thierry
+
+--qMm9M+Fa2AknHoGS
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.19 (GNU/Linux)
+
+iEYEARECAAYFAk99WxIACgkQZ+BJyKLjJp+mUgCbBUW9l6runOKEqDiHKPUpxAHK
+IU8AnAtf9hsgazkb/3FLlZLNCOgcBY5Q
+=eTDV
+-----END PGP SIGNATURE-----
+
+--qMm9M+Fa2AknHoGS--
+
+--===============2477958649242507229==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+devicetree-discuss mailing list
+devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+https://lists.ozlabs.org/listinfo/devicetree-discuss
+
+--===============2477958649242507229==--
