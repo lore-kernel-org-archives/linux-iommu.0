@@ -1,16 +1,14 @@
-From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: Reparenting a platform device
-Date: Thu, 05 Apr 2012 13:21:23 -0600
-Message-ID: <4F7DF0B3.4050500@wwwdotorg.org>
-References: <20120405084258.GA19798@avionic-0098.adnet.avionic-design.de>
-	<4F7DBCEE.9080400@wwwdotorg.org>
-	<20120405162318.GA10628@avionic-0098.adnet.avionic-design.de>
-	<20120405180805.GB11601@avionic-0098.adnet.avionic-design.de>
+From: Chris Wright <chrisw-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2] intel_iommu,dmar: reserve mmio of IOMMU registers
+Date: Thu, 5 Apr 2012 13:58:06 -0700
+Message-ID: <20120405205806.GV10418@x200.localdomain>
+References: <1331332723-19522-1-git-send-email-ddutile@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20120405180805.GB11601-RM9K5IK7kjIyiCvfTdI0JKcOhU4Rzj621B7CTYaBSLdn68oJJulU0Q@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1331332723-19522-1-git-send-email-ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,54 +18,109 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
-Cc: devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Donald Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: chrisw-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/05/2012 12:08 PM, Thierry Reding wrote:
-> * Thierry Reding wrote:
->> * Stephen Warren wrote:
->>> On 04/05/2012 02:42 AM, Thierry Reding wrote:
->>>> Hi,
->>>>
->>>> I have a device tree where I have a GART device and a DRM device which uses
->>>> the GART. The GART is implemented by an IOMMU driver (tegra-gart) and
->>>> requires the user device to be a child of the GART device (it explicitly
->>>> checks for this when the user device is attached).
->>>
->>> Isn't this wrong?
->>>
->>> I would expect the device parent/child relationship to reflect the
->>> CPU-initiated register access bus topology.
->>>
->>> A device's interaction with an IOMMU is an aspect of a device's
->>> initiating accesses itself, not CPU-initiated register accesses.
->>
->> Actually I have no idea why this was made a requirement. Maybe Hiroshi can
->> comment on this. The driver really only needs this to basically obtain a
->> pointer to itself. The MSM I/O MMU implementation does something similar,
->> though, and goes on to register actual child devices (they are instantiated
->> in arch/arm/mach-msm/devices-iommu.c). Each of those devices is then assigned
->> a specific memory area it seems.
-> [...]
->> I don't think having more than one device using the IOMMU will work properly
->> anyway in the context of the Tegra GART driver because there is not means to
->> allocate specific regions of the GART aperture to individual devices. So
->> really the one and only client actually needs to manage the allocations from
->> the GART aperture.
-> 
-> I've been thinking about this some more and it occurred to me that maybe it
-> would be best to add an additional layer between the GART and the clients
-> which could manage the allocations. Such a virtual device could actually be
-> registered as a child of the GART device and allow individual drivers to
-> request mappings from it so that there is a single instance handing them out
-> and keep them consistent.
-> 
-> How does that sound?
+* Donald Dutile (ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org) wrote:
+> --- a/drivers/iommu/dmar.c
+> +++ b/drivers/iommu/dmar.c
+> @@ -581,7 +581,7 @@ int __init detect_intel_iommu(void)
+>  int alloc_iommu(struct dmar_drhd_unit *drhd)
+>  {
+>  	struct intel_iommu *iommu;
+> -	int map_size;
+> +	resource_size_t map_size;
+>  	u32 ver;
+>  	static int iommu_allocated = 0;
+>  	int agaw = 0;
+> @@ -599,10 +599,17 @@ int alloc_iommu(struct dmar_drhd_unit *drhd)
+>  	iommu->seq_id = iommu_allocated++;
+>  	sprintf (iommu->name, "dmar%d", iommu->seq_id);
+>  
+> -	iommu->reg = ioremap(drhd->reg_base_addr, VTD_PAGE_SIZE);
 
-I must admit I'm not at all familiar with the IOMMU APIs, but isn't the
-IOMMU driver/subsystem itself what is managing all the allocations and
-handing them out to clients? And client drivers do things like asking
-for N pages of memory mapped into their aperture? If that is true, I'm
-not sure what the purpose is of the intermediate device you propose.
-Sorry for being somewhat clueless.
+I think it'd be nice to create a helper function that does the request
+and map.  This should include the map, read cap/ecap, calculate size and
+possbily remap.  Would probably simplify the error cleanup too.
+
+> +	iommu->reg_phys = drhd->reg_base_addr;
+> +	iommu->reg_size = VTD_PAGE_SIZE;
+> +	if (!request_mem_region(iommu->reg_phys, iommu->reg_size, iommu->name)) {
+> +		printk(KERN_ERR "IOMMU: can't reserve memory\n");
+> +		goto error;
+> +	}
+> +
+> +	iommu->reg = ioremap(iommu->reg_phys, iommu->reg_size);
+>  	if (!iommu->reg) {
+>  		printk(KERN_ERR "IOMMU: can't map the region\n");
+> -		goto error;
+> +		goto err_release;
+>  	}
+>  	iommu->cap = dmar_readq(iommu->reg + DMAR_CAP_REG);
+>  	iommu->ecap = dmar_readq(iommu->reg + DMAR_ECAP_REG);
+> @@ -635,19 +642,26 @@ int alloc_iommu(struct dmar_drhd_unit *drhd)
+>  	map_size = max_t(int, ecap_max_iotlb_offset(iommu->ecap),
+>  		cap_max_fault_reg_offset(iommu->cap));
+>  	map_size = VTD_PAGE_ALIGN(map_size);
+> -	if (map_size > VTD_PAGE_SIZE) {
+> +	if (map_size > iommu->reg_size) {
+>  		iounmap(iommu->reg);
+> -		iommu->reg = ioremap(drhd->reg_base_addr, map_size);
+> +		release_mem_region(iommu->reg_phys, iommu->reg_size);
+> +		iommu->reg_size = map_size;
+> +		if (!request_mem_region(iommu->reg_phys, iommu->reg_size, 
+> +					iommu->name)) {
+> +			printk(KERN_ERR "IOMMU: can't reserve memory\n");
+> +			goto error;
+> +		}
+> +		iommu->reg = ioremap(iommu->reg_phys, iommu->reg_size);
+>  		if (!iommu->reg) {
+>  			printk(KERN_ERR "IOMMU: can't map the region\n");
+> -			goto error;
+> +			goto err_release;
+>  		}
+>  	}
+>  
+>  	ver = readl(iommu->reg + DMAR_VER_REG);
+>  	pr_info("IOMMU %d: reg_base_addr %llx ver %d:%d cap %llx ecap %llx\n",
+>  		iommu->seq_id,
+> -		(unsigned long long)drhd->reg_base_addr,
+> +		(unsigned long long)iommu->reg_phys,
+>  		DMAR_VER_MAJOR(ver), DMAR_VER_MINOR(ver),
+>  		(unsigned long long)iommu->cap,
+>  		(unsigned long long)iommu->ecap);
+> @@ -659,6 +673,8 @@ int alloc_iommu(struct dmar_drhd_unit *drhd)
+>  
+>   err_unmap:
+>  	iounmap(iommu->reg);
+> + err_release:
+> +	release_mem_region(iommu->reg_phys, iommu->reg_size);
+>   error:
+>  	kfree(iommu);
+>  	return -1;
+> @@ -671,8 +687,11 @@ void free_iommu(struct intel_iommu *iommu)
+>  
+>  	free_dmar_iommu(iommu);
+>  
+> -	if (iommu->reg)
+> +	if (iommu->reg) {
+>  		iounmap(iommu->reg);
+> +		release_mem_region(iommu->reg_phys, iommu->reg_size);
+> +	}
+> +
+>  	kfree(iommu);
+>  }
+>  
+> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+> index e6ca56d..c6d132b 100644
+> --- a/include/linux/intel-iommu.h
+> +++ b/include/linux/intel-iommu.h
+> @@ -308,6 +308,8 @@ enum {
+>  
+>  struct intel_iommu {
+>  	void __iomem	*reg; /* Pointer to hardware regs, virtual addr */
+> +	resource_size_t reg_phys;
+> +	resource_size_t reg_size;
+
+I'd make these u64
