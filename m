@@ -1,40 +1,64 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCHv8 07/10] ARM: dma-mapping: move all dma bounce code to separate dma ops structure
-Date: Tue, 10 Apr 2012 13:17:08 +0000
-Message-ID: <201204101317.08765.arnd@arndb.de>
-References: <1334055852-19500-1-git-send-email-m.szyprowski@samsung.com> <201204101224.24959.arnd@arndb.de> <002801cd1718$b556a1e0$2003e5a0$%szyprowski@samsung.com>
+From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH 00/10] vt-d irq_remap_ops patchset
+Date: Tue, 10 Apr 2012 17:05:50 +0200
+Message-ID: <20120410150550.GB2428@amd.com>
+References: <1333133228-3134-1-git-send-email-suresh.b.siddha@intel.com>
 Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <002801cd1718$b556a1e0$2003e5a0$%szyprowski@samsung.com>
-Sender: linux-arch-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, iommu@lists.linux-foundation.org, 'Kyungmin Park' <kyungmin.park@samsung.com>, 'Joerg Roedel' <joro@8bytes.org>, 'Russell King - ARM Linux' <linux@arm.linux.org.uk>, 'Chunsang Jeong' <chunsang.jeong@linaro.org>, 'Krishna Reddy' <vdumpa@nvidia.com>, 'KyongHo Cho' <pullip.cho@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>, 'Benjamin Herrenschmidt' <benh@kernel.crashing.org>, 'Konrad Rzeszutek Wilk' <konrad.wilk@oracle.com>, 'Hiroshi Doyu' <hdoyu@nvidia.com>, 'Subash Patel' <subashrp@gmail.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1333133228-3134-1-git-send-email-suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-X9Un+BFzKDI@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tuesday 10 April 2012, Marek Szyprowski wrote:
-> Before patch no 6, there were custom methods for all scatter/gather
-> related operations. They iterated over the whole scatter list and called
-> cache related operations directly (which in turn checked if we use dma
-> bounce code or not and called respective version). Patch no 6 changed
-> them not to use such shortcut for direct calling cache related operations.
+Hi,
+
+On Fri, Mar 30, 2012 at 11:46:58AM -0700, Suresh Siddha wrote:
+> Ingo,
 > 
-> Instead it provides similar loop over scatter list and calls methods
-> from the current device's dma_map_ops structure. This way, after patch no 
-> 7 these functions call simple dma_map_page() method for all standard 
-> devices and dma bounce aware version for devices registered for dma 
-> bouncing (with use different dma_map_ops).
+> Here is the Joerg's irq_remap_ops patchset updated for the latest -tip.
+> Simplified some of the naming conventions to follow the irq_remapping
+> terminology. There are still some "if (irq_remapping_enabled)" checks in
+> io_apic.c that I would like to roll into the new io_apic_ops. I will
+> look into that shortly.
+> 
+> Joerg Roedel (8):
+>   iommu: Rename intr_remapping files to intel_intr_remapping
+>   iommu/vt-d: Make intr-remapping initialization generic
+>   iommu/vt-d: Convert missing apic.c intr-remapping call to remap_ops
+>   iommu/vt-d: Convert IR ioapic-setup to use remap_ops
+>   iommu/vt-d: Convert IR set_affinity function to remap_ops
+>   iommu/vt-d: Convert free_irte into a remap_ops callback
+>   iommu/vt-d: Convert MSI remapping setup to remap_ops
+>   x86, iommu/vt-d: Clean up interfaces for interrupt remapping
+> 
+> Suresh Siddha (2):
+>   iommu: rename intr_remapping references to irq_remapping
+>   iommu: rename intr_remapping.[ch] to irq_remapping.[ch]
 
-Ok, thanks for the explanation.
+Suresh, Yinghai, many thanks for testing this and pushing it forward. I
+really appreciate it.
 
-> I can provide a separate set of scatter/gather list related functions for
-> the linear dma mapping implementation and dma bouncing implementation 
-> if you think that the current approach is too complicated or 
-> over-engineered.
+Ingo, Have these patches been applied to -tip or are there further
+problems to be solved?
 
-It's probably not needed, though I have not looked at the big picture
-with all the patches applied. which I should do at some point.
 
-	Arnd
+	Joerg
+
+-- 
+AMD Operating System Research Center
+
+Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
+General Managers: Alberto Bozzo
+Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
