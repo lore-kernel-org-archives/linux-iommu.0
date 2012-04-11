@@ -1,70 +1,68 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH 0/3] IOMMU groups
-Date: Tue, 10 Apr 2012 15:03:21 -0600
-Message-ID: <1334091801.3799.387.camel@bling.home>
-References: <20120402203721.28977.95285.stgit@bling.home>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: RE: [PATCHv8 04/10] ARM: dma-mapping: remove offset parameter to
+ prepare for generic dma_ops
+Date: Wed, 11 Apr 2012 14:05:21 +0200
+Message-ID: <012e01cd17db$5f165c30$1d431490$%szyprowski@samsung.com>
+References: <1334055852-19500-1-git-send-email-m.szyprowski@samsung.com>
+ <1334055852-19500-5-git-send-email-m.szyprowski@samsung.com>
+ <201204101143.27915.arnd@arndb.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20120402203721.28977.95285.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-reply-to: <201204101143.27915.arnd@arndb.de>
+Content-language: pl
+Sender: linux-arch-owner@vger.kernel.org
+To: 'Arnd Bergmann' <arnd@arndb.de>
+Cc: linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, iommu@lists.linux-foundation.org, 'Kyungmin Park' <kyungmin.park@samsung.com>, 'Joerg Roedel' <joro@8bytes.org>, 'Russell King - ARM Linux' <linux@arm.linux.org.uk>, 'Chunsang Jeong' <chunsang.jeong@linaro.org>, 'Krishna Reddy' <vdumpa@nvidia.com>, 'KyongHo Cho' <pullip.cho@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>, 'Benjamin Herrenschmidt' <benh@kernel.crashing.org>, 'Konrad Rzeszutek Wilk' <konrad.wilk@oracle.com>, 'Hiroshi Doyu' <hdoyu@nvidia.com>, 'Subash Patel' <subashrp@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Arnd,
 
-Ping.  Does this approach look like it could satisfy your desire for a
-more integrated group layer?  I'd really like to move VFIO forward,
-we've been stalled on this long enough.  David Woodhouse, I think this
-provides the quirking you're looking for for device like the Ricoh, do
-you have any other requirements for a group layer?  Thanks,
+On Tuesday, April 10, 2012 1:43 PM Arnd Bergmann wrote:
 
-Alex
+> On Tuesday 10 April 2012, Marek Szyprowski wrote:
+> > This patch removes the need for offset parameter in dma bounce
+> > functions. This is required to let dma-mapping framework on ARM
+> > architecture use common, generic dma-mapping helpers.
+> >
+> > Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> > Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
+> 
+> This one worries me a little. I always thought that the range sync
+> functions were specifically needed for the dmabounce code. At the
+> very least, I would expect the changeset comment to have an explanation
+> of why this was initially done this way and why it's now safe to do
+> do it otherwise.
 
-On Mon, 2012-04-02 at 15:14 -0600, Alex Williamson wrote:
-> This series attempts to make IOMMU device grouping a slightly more
-> integral part of the device model.  iommu_device_groups were originally
-> introduced to support the VFIO user space driver interface which needs
-> to understand the granularity of device isolation in order to ensure
-> security of devices when assigned for user access.  This information
-> was provided via a simple group identifier from the IOMMU driver allowing
-> VFIO to walk devices and assemble groups itself.
-> 
-> The feedback received from this was that groups should be the effective
-> unit of work for the IOMMU API.  The existing model of allowing domains
-> to be created and individual devices attached ignores many of the
-> restrictions of the IOMMU, whether by design, by topology or by defective
-> devices.  Additionally we should be able to use the grouping information
-> at the dma ops layer for managing domains and quirking devices.
-> 
-> This series is a sketch at implementing only those aspects and leaving
-> everything else about the multifaceted hairball of Isolation groups for
-> another API.  Please comment and let me know if this seems like the
-> direction we should be headed.  Thanks,
-> 
-> Alex
-> 
-> 
-> ---
-> 
-> Alex Williamson (3):
->       iommu: Create attach/detach group interface
->       iommu: Create basic group infrastructure and update AMD-Vi & Intel VT-d
->       iommu: Introduce iommu_group
-> 
-> 
->  drivers/iommu/amd_iommu.c   |   50 ++++++----
->  drivers/iommu/intel-iommu.c |   76 ++++++++--------
->  drivers/iommu/iommu.c       |  210 ++++++++++++++++++++++++++++++++++++++-----
->  include/linux/device.h      |    2 
->  include/linux/iommu.h       |   43 +++++++++
->  5 files changed, 301 insertions(+), 80 deletions(-)
+Well, range sync functions are available from the early days of the dma 
+mapping api (at least that's what I've found reading the change log and
+old patches). They are the correct way of doing a partial syncs on the 
+buffer (usually used by the network device drivers). This patch changes
+only the internal implementation of the dma bounce functions to let 
+them tunnel through dma_map_ops structure. The driver api stays
+unchanged, so driver are obliged to call dma_*_range_* functions to
+keep code clean and easy to understand. 
+
+The only drawback I can see from this patch is reduced detection of
+the dma api abuse. Let us consider the following code:
+
+dma_addr = dma_map_single(dev, ptr, 64, DMA_TO_DEVICE);
+dma_sync_single_range_for_cpu(dev, dma_addr+16, 0, 32, DMA_TO_DEVICE);
+
+Without the patch such code fails, because dma bounce code is unable
+to find the bounce buffer for the given dma_address. After the patch
+the sync call will be equivalent to: 
+
+	dma_sync_single_range_for_cpu(dev, dma_addr, 16, 32, DMA_TO_DEVICE);
+
+which succeeds.
+
+I don't consider this as a real problem. DMA API abuse should be caught
+by debug_dma_* function family, so we can simplify the internal low-level
+implementation without losing anything.
+
+Best regards
+-- 
+Marek Szyprowski
+Samsung Poland R&D Center
