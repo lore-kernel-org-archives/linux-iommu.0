@@ -1,52 +1,45 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [RFC 4/4] drm: Add NVIDIA Tegra support
-Date: Wed, 11 Apr 2012 15:18:41 +0000
-Message-ID: <201204111518.41968.arnd@arndb.de>
-References: <1334146230-1795-1-git-send-email-thierry.reding@avionic-design.de> <20120411133512.GL4296@phenom.ffwll.local> <20120411141108.GI27337@avionic-0098.adnet.avionic-design.de>
+From: Sergei Shtylyov <sshtylyov@mvista.com>
+Subject: Re: [PATCH 1/2] iommu/exynos: fix runtime pm support
+Date: Wed, 11 Apr 2012 19:18:33 +0400
+Message-ID: <4F85A0C9.7050800@mvista.com>
+References: <1334154871-4756-1-git-send-email-m.szyprowski@samsung.com> <1334154871-4756-2-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-15"
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20120411141108.GI27337-RM9K5IK7kjIyiCvfTdI0JKcOhU4Rzj621B7CTYaBSLdn68oJJulU0Q@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Cc: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>, Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>, Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Jon Mayo <jmayo-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Colin Cross <ccross-z5hGa2qSFaRBDgjK7y7TUQ@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <1334154871-4756-2-git-send-email-m.szyprowski@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, Kyungmin Park <kyungmin.park@samsung.com>, Kukjin Kim <kgene.kim@samsung.com>, KyongHo Cho <pullip.cho@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wednesday 11 April 2012, Thierry Reding wrote:
->   * Daniel Vetter wrote:
-> > On Wed, Apr 11, 2012 at 03:23:26PM +0200, Thierry Reding wrote:
-> > > * Daniel Vetter wrote:
-> > > > On Wed, Apr 11, 2012 at 02:10:30PM +0200, Thierry Reding wrote:
-> > > > > This commit adds a very basic DRM driver for NVIDIA Tegra SoCs. It
-> > > > > currently has rudimentary GEM support and can run a console on the
-> > > > > framebuffer as well as X using the xf86-video-modesetting driver.
-> > > > > Only the RGB output is supported. Quite a lot of things still need
-> > > > > to be worked out and there is a lot of room for cleanup.
-> > > > 
-> > > > Indeed, after a quick look there are tons of functions that are just stubs
-> > > > ;-) One thing I wonder though is why you directly use the iommu api and
-> > > > not wrap it up into dma_map? Is arm infrastructure just not there yet or
-> > > > do you plan to tightly integrate the tegra drm with the iommu (e.g. for
-> > > > process space switching or similarly funky stuff)?
-> > > 
-> > > I'm not sure I know what you are referring to. Looking for all users of
-> > > iommu_map() doesn't turn up anything related to dma_map. Can you point me in
-> > > the right direction?
-> > 
-> > Well, you use the iommu api to map/unmap memory into the iommu for tegra,
-> > whereas usually device drivers just use the dma api to do that. The usual
-> > interface is dma_map_sg/dma_unmap_sg, but there are quite a few variants
-> > around. I'm just wondering why this you've choosen this.
-> 
-> I don't think this works on ARM. Maybe I'm not seeing the whole picture but
-> judging by a quick look through the kernel tree there aren't any users that
-> map DMA memory through an IOMMU.
+Hello.
 
+Marek Szyprowski wrote:
 
-dma_map_sg is certainly the right interface to use, and Marek Szyprowski has
-patches to make that work on ARM, hopefully going into v3.5, so you could
-use those.
+> Fix registration to runtime pw and add missing resume callback.
 
-	Arnd
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
+> ---
+>  drivers/iommu/exynos-iommu.c |   20 ++++++++++++++++++--
+>  1 files changed, 18 insertions(+), 2 deletions(-)
+
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> index b8daf7c..eef924d 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+[...]
+> @@ -674,11 +673,28 @@ err_alloc:
+>  	return ret;
+>  }
+>  
+> +static int exynos_pm_resume(struct device *dev)
+> +{
+> +	struct sysmmu_drvdata *data;
+> +
+> +	data = dev_get_drvdata(dev);
+
+    Why not do it right in the initializer?
+
+WBR, Sergei
