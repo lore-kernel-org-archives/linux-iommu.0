@@ -1,34 +1,69 @@
-From: Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>
-Subject: Re: [RFC 4/4] drm: Add NVIDIA Tegra support
-Date: Wed, 11 Apr 2012 14:48:10 +0200
-Message-ID: <20120411124810.GK4296@phenom.ffwll.local>
-References: <1334146230-1795-1-git-send-email-thierry.reding@avionic-design.de>
- <1334146230-1795-5-git-send-email-thierry.reding@avionic-design.de>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: RE: [PATCHv8 04/10] ARM: dma-mapping: remove offset parameter to
+ prepare for generic dma_ops
+Date: Wed, 11 Apr 2012 15:05:58 +0200
+Message-ID: <014901cd17e3$d67d18b0$83774a10$%szyprowski@samsung.com>
+References: <1334055852-19500-1-git-send-email-m.szyprowski@samsung.com>
+ <201204101143.27915.arnd@arndb.de>
+ <012e01cd17db$5f165c30$1d431490$%szyprowski@samsung.com>
+ <201204111218.39800.arnd@arndb.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1334146230-1795-5-git-send-email-thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Jon Mayo <jmayo-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Colin Cross <ccross-z5hGa2qSFaRBDgjK7y7TUQ@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Content-Transfer-Encoding: 7BIT
+Return-path: <owner-linux-mm@kvack.org>
+In-reply-to: <201204111218.39800.arnd@arndb.de>
+Content-language: pl
+Sender: owner-linux-mm@kvack.org
+To: 'Arnd Bergmann' <arnd@arndb.de>
+Cc: linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, iommu@lists.linux-foundation.org, 'Kyungmin Park' <kyungmin.park@samsung.com>, 'Joerg Roedel' <joro@8bytes.org>, 'Russell King - ARM Linux' <linux@arm.linux.org.uk>, 'Chunsang Jeong' <chunsang.jeong@linaro.org>, 'Krishna Reddy' <vdumpa@nvidia.com>, 'KyongHo Cho' <pullip.cho@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>, 'Benjamin Herrenschmidt' <benh@kernel.crashing.org>, 'Konrad Rzeszutek Wilk' <konrad.wilk@oracle.com>, 'Hiroshi Doyu' <hdoyu@nvidia.com>, 'Subash Patel' <subashrp@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 11, 2012 at 02:10:30PM +0200, Thierry Reding wrote:
-> This commit adds a very basic DRM driver for NVIDIA Tegra SoCs. It
-> currently has rudimentary GEM support and can run a console on the
-> framebuffer as well as X using the xf86-video-modesetting driver.
-> Only the RGB output is supported. Quite a lot of things still need
-> to be worked out and there is a lot of room for cleanup.
+Hi Arnd,
 
-Indeed, after a quick look there are tons of functions that are just stubs
-;-) One thing I wonder though is why you directly use the iommu api and
-not wrap it up into dma_map? Is arm infrastructure just not there yet or
-do you plan to tightly integrate the tegra drm with the iommu (e.g. for
-process space switching or similarly funky stuff)?
+On Wednesday, April 11, 2012 2:19 PM Arnd Bergmann wrote:
 
-Yours, Daniel
+> On Wednesday 11 April 2012, Marek Szyprowski wrote:
+> > Well, range sync functions are available from the early days of the dma
+> > mapping api (at least that's what I've found reading the change log and
+> > old patches). They are the correct way of doing a partial syncs on the
+> > buffer (usually used by the network device drivers). This patch changes
+> > only the internal implementation of the dma bounce functions to let
+> > them tunnel through dma_map_ops structure. The driver api stays
+> > unchanged, so driver are obliged to call dma_*_range_* functions to
+> > keep code clean and easy to understand.
+> >
+> > The only drawback I can see from this patch is reduced detection of
+> > the dma api abuse. Let us consider the following code:
+> >
+> > dma_addr = dma_map_single(dev, ptr, 64, DMA_TO_DEVICE);
+> > dma_sync_single_range_for_cpu(dev, dma_addr+16, 0, 32, DMA_TO_DEVICE);
+> >
+> > Without the patch such code fails, because dma bounce code is unable
+> > to find the bounce buffer for the given dma_address. After the patch
+> > the sync call will be equivalent to:
+> >
+> >         dma_sync_single_range_for_cpu(dev, dma_addr, 16, 32, DMA_TO_DEVICE);
+> >
+> > which succeeds.
+> >
+> > I don't consider this as a real problem. DMA API abuse should be caught
+> > by debug_dma_* function family, so we can simplify the internal low-level
+> > implementation without losing anything.
+> >
+> 
+> Ok, fair enough. Can you put the above text into the changelog?
+
+Yes, I will update it in the next release.
+
+Best regards
 -- 
-Daniel Vetter
-Mail: daniel-/w4YWyX8dFk@public.gmane.org
-Mobile: +41 (0)79 365 57 48
+Marek Szyprowski
+Samsung Poland R&D Center
+
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Fight unfair telecom internet charges in Canada: sign http://stopthemeter.ca/
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
