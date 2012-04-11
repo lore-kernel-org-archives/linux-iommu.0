@@ -1,41 +1,52 @@
-From: Alan Cox <alan-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
 Subject: Re: [RFC 4/4] drm: Add NVIDIA Tegra support
-Date: Wed, 11 Apr 2012 16:11:55 +0100
-Message-ID: <20120411161155.1f8693b3@pyramind.ukuu.org.uk>
-References: <1334146230-1795-1-git-send-email-thierry.reding@avionic-design.de>
-	<1334146230-1795-5-git-send-email-thierry.reding@avionic-design.de>
-	<20120411124810.GK4296@phenom.ffwll.local>
-	<20120411132326.GD27337@avionic-0098.adnet.avionic-design.de>
-	<20120411133512.GL4296@phenom.ffwll.local>
-	<20120411141108.GI27337@avionic-0098.adnet.avionic-design.de>
-	<20120411155237.24233afc@pyramind.ukuu.org.uk>
-	<20120411150603.GC20811@avionic-0098.adnet.avionic-design.de>
+Date: Wed, 11 Apr 2012 15:18:41 +0000
+Message-ID: <201204111518.41968.arnd@arndb.de>
+References: <1334146230-1795-1-git-send-email-thierry.reding@avionic-design.de> <20120411133512.GL4296@phenom.ffwll.local> <20120411141108.GI27337@avionic-0098.adnet.avionic-design.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: Text/Plain;
+  charset="iso-8859-15"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20120411150603.GC20811-RM9K5IK7kjIyiCvfTdI0JKcOhU4Rzj621B7CTYaBSLdn68oJJulU0Q@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
-Cc: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>, Colin Cross <ccross-z5hGa2qSFaRBDgjK7y7TUQ@public.gmane.org>, Jon Mayo <jmayo-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20120411141108.GI27337-RM9K5IK7kjIyiCvfTdI0JKcOhU4Rzj621B7CTYaBSLdn68oJJulU0Q@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Cc: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>, Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>, Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Jon Mayo <jmayo-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Colin Cross <ccross-z5hGa2qSFaRBDgjK7y7TUQ@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-> Heh, vmap() is exactly what I do. =) Would you mind explaining why exactly it
-> is hideous?
+On Wednesday 11 April 2012, Thierry Reding wrote:
+>   * Daniel Vetter wrote:
+> > On Wed, Apr 11, 2012 at 03:23:26PM +0200, Thierry Reding wrote:
+> > > * Daniel Vetter wrote:
+> > > > On Wed, Apr 11, 2012 at 02:10:30PM +0200, Thierry Reding wrote:
+> > > > > This commit adds a very basic DRM driver for NVIDIA Tegra SoCs. It
+> > > > > currently has rudimentary GEM support and can run a console on the
+> > > > > framebuffer as well as X using the xf86-video-modesetting driver.
+> > > > > Only the RGB output is supported. Quite a lot of things still need
+> > > > > to be worked out and there is a lot of room for cleanup.
+> > > > 
+> > > > Indeed, after a quick look there are tons of functions that are just stubs
+> > > > ;-) One thing I wonder though is why you directly use the iommu api and
+> > > > not wrap it up into dma_map? Is arm infrastructure just not there yet or
+> > > > do you plan to tightly integrate the tegra drm with the iommu (e.g. for
+> > > > process space switching or similarly funky stuff)?
+> > > 
+> > > I'm not sure I know what you are referring to. Looking for all users of
+> > > iommu_map() doesn't turn up anything related to dma_map. Can you point me in
+> > > the right direction?
+> > 
+> > Well, you use the iommu api to map/unmap memory into the iommu for tegra,
+> > whereas usually device drivers just use the dma api to do that. The usual
+> > interface is dma_map_sg/dma_unmap_sg, but there are quite a few variants
+> > around. I'm just wondering why this you've choosen this.
+> 
+> I don't think this works on ARM. Maybe I'm not seeing the whole picture but
+> judging by a quick look through the kernel tree there aren't any users that
+> map DMA memory through an IOMMU.
 
-On x86 we don't have a vast amount of address space available for virtual
-remappings and the framebuffer then eats over 8MB of it.
 
-The ideal case is that the fb layer can be taught to do page/offset
-addressing nicely. At that point we'd be able to attach the text consoles
-to arbitary GEM objects.. which means we can do really cool stuff.
+dma_map_sg is certainly the right interface to use, and Marek Szyprowski has
+patches to make that work on ARM, hopefully going into v3.5, so you could
+use those.
 
-Alan
+	Arnd
