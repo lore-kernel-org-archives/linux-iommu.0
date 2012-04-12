@@ -1,113 +1,154 @@
-From: Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Subject: Re: [RFC 4/4] drm: Add NVIDIA Tegra support
-Date: Thu, 12 Apr 2012 11:21:06 +0200
-Message-ID: <20120412092106.GU3852@pengutronix.de>
-References: <1334146230-1795-1-git-send-email-thierry.reding@avionic-design.de>
- <1334146230-1795-5-git-send-email-thierry.reding@avionic-design.de>
- <4F85C97E.50203@wwwdotorg.org>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: RE: [PATCHv8 10/10] ARM: dma-mapping: add support for IOMMU mapper
+Date: Thu, 12 Apr 2012 11:49:23 +0200
+Message-ID: <026f01cd1891$8a2f1b80$9e8d5280$%szyprowski@samsung.com>
+References: <1334055852-19500-1-git-send-email-m.szyprowski@samsung.com>
+ <1334055852-19500-11-git-send-email-m.szyprowski@samsung.com>
+ <201204101158.29590.arnd@arndb.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <4F85C97E.50203-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Cc: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>, Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Colin Cross <ccross-z5hGa2qSFaRBDgjK7y7TUQ@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jon Mayo <jmayo-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset=iso-8859-2
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-reply-to: <201204101158.29590.arnd@arndb.de>
+Content-language: pl
+Sender: linux-arch-owner@vger.kernel.org
+To: 'Arnd Bergmann' <arnd@arndb.de>
+Cc: linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, iommu@lists.linux-foundation.org, 'Kyungmin Park' <kyungmin.park@samsung.com>, 'Joerg Roedel' <joro@8bytes.org>, 'Russell King - ARM Linux' <linux@arm.linux.org.uk>, 'Chunsang Jeong' <chunsang.jeong@linaro.org>, 'Krishna Reddy' <vdumpa@nvidia.com>, 'KyongHo Cho' <pullip.cho@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>, 'Benjamin Herrenschmidt' <benh@kernel.crashing.org>, 'Konrad Rzeszutek Wilk' <konrad.wilk@oracle.com>, 'Hiroshi Doyu' <hdoyu@nvidia.com>, 'Subash Patel' <subashrp@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 11, 2012 at 12:12:14PM -0600, Stephen Warren wrote:
-> On 04/11/2012 06:10 AM, Thierry Reding wrote:
-> > This commit adds a very basic DRM driver for NVIDIA Tegra SoCs. It
-> > currently has rudimentary GEM support and can run a console on the
-> > framebuffer as well as X using the xf86-video-modesetting driver.
-> > Only the RGB output is supported. Quite a lot of things still need
-> > to be worked out and there is a lot of room for cleanup.
-> 
-> I'll let Jon Mayo comment on the actual driver implementation, since
-> he's a lot more familiar with Tegra's display hardware. However, I have
-> some general comments below.
-> 
-> >  .../devicetree/bindings/gpu/drm/tegra.txt          |   24 +
-> >  arch/arm/mach-tegra/board-dt-tegra20.c             |    3 +
-> >  arch/arm/mach-tegra/tegra2_clocks.c                |    8 +-
-> >  drivers/gpu/drm/Kconfig                            |    2 +
-> >  drivers/gpu/drm/Makefile                           |    1 +
-> >  drivers/gpu/drm/tegra/Kconfig                      |   10 +
-> >  drivers/gpu/drm/tegra/Makefile                     |    5 +
-> >  drivers/gpu/drm/tegra/tegra_drv.c                  | 2241 ++++++++++++++++++++
-> >  drivers/gpu/drm/tegra/tegra_drv.h                  |  184 ++
-> >  include/drm/tegra_drm.h                            |   44 +
-> 
-> Splitting this patch into two, between arch/arm and drivers/gpu would be
-> a good idea.
-> 
-> > diff --git a/Documentation/devicetree/bindings/gpu/drm/tegra.txt b/Documentation/devicetree/bindings/gpu/drm/tegra.txt
-> 
-> > +	drm@54200000 {
-> > +		compatible = "nvidia,tegra20-drm";
-> 
-> This doesn't seem right; there isn't a "DRM" hardware module on Tegra,
-> since "DRM" is a Linux/software-specific term.
-> 
-> I'd at least expect to see this compatible flag be renamed to something
-> more like "nvidia,tegra20-dc" (dc==display controller).
-> 
-> Since Tegra has two display controller modules (I believe identical?),
-> and numerous other independent(?) blocks, I'd expect to see multiple
-> nodes in device tree, one per hardware block, such that each block gets
-> its own device and driver. That said, I'm not familiar enough with
-> Tegra's display and graphics HW to know if this makes sense. Jon, what's
-> your take here? The clock change below, and in particular the original
-> code there that we use downstream, lends weight to my argument.
-> 
-> > +		reg = < 0x54200000 0x00040000    /* display A */
-> > +		        0x54240000 0x00040000    /* display B */
-> > +		        0x58000000 0x02000000 >; /* GART aperture */
-> > +		interrupts = < 0 73 0x04    /* display A */
-> > +		               0 74 0x04 >; /* display B */
+Hi Arnd,
+
+On Tuesday, April 10, 2012 1:58 PM Arnd Bergmann wrote:
+
+> On Tuesday 10 April 2012, Marek Szyprowski wrote:
+> > +/**
+> > + * arm_iommu_create_mapping
+> > + * @bus: pointer to the bus holding the client device (for IOMMU c=
+alls)
+> > + * @base: start address of the valid IO address space
+> > + * @size: size of the valid IO address space
+> > + * @order: accuracy of the IO addresses allocations
+> > + *
+> > + * Creates a mapping structure which holds information about used/=
+unused
+> > + * IO address ranges, which is required to perform memory allocati=
+on and
+> > + * mapping with IOMMU aware functions.
+> > + *
+> > + * The client device need to be attached to the mapping with
+> > + * arm_iommu_attach_device function.
+> > + */
+> > +struct dma_iommu_mapping *
+> > +arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, si=
+ze_t size,
+> > +                        int order)
+> > +{
+> > +       unsigned int count =3D size >> (PAGE_SHIFT + order);
+> > +       unsigned int bitmap_size =3D BITS_TO_LONGS(count) * sizeof(=
+long);
+> > +       struct dma_iommu_mapping *mapping;
+> > +       int err =3D -ENOMEM;
 > > +
-> > +		lvds {
-> > +			type = "rgb";
-> 
-> These sub-nodes probably want a "compatible" property rather than a
-> "type" property.
-> 
-> > +			size = <345 194>;
+> > +       if (!count)
+> > +               return ERR_PTR(-EINVAL);
 > > +
-> > +			default-mode {
-> > +				pixel-clock = <61715000>;
-> > +				vertical-refresh = <50>;
-> > +				resolution = <1366 768>;
-> > +				bits-per-pixel = <16>;
-> > +				horizontal-timings = <4 136 2 36>;
-> > +				vertical-timings = <2 4 21 10>;
-> > +			};
-> > +		};
-> 
-> I imagine that quite a bit of thought needs to be put into the output
-> part of the binding in order to:
-> 
-> * Model the outputs/connectors separately from display controllers.
-> * Make sure that the basic infra-structure for representing an output is
-> general enough to be extensible to all the kinds of outputs we support,
-> not just the LVDS output.
-> * We were wondering about putting an EDID into the DT to represent the
-> display modes, so that all outputs had EDIDs rather than "real" monitors
-> having EDIDs, and fixed internal displays having some other
-> representation of capabilities.
+> > +       mapping =3D kzalloc(sizeof(struct dma_iommu_mapping), GFP_K=
+ERNEL);
+> > +       if (!mapping)
+> > +               goto err;
+> > +
+> > +       mapping->bitmap =3D kzalloc(bitmap_size, GFP_KERNEL);
+> > +       if (!mapping->bitmap)
+> > +               goto err2;
+> > +
+> > +       mapping->base =3D base;
+> > +       mapping->bits =3D BITS_PER_BYTE * bitmap_size;
+> > +       mapping->order =3D order;
+> > +       spin_lock_init(&mapping->lock);
+> > +
+> > +       mapping->domain =3D iommu_domain_alloc(bus);
+> > +       if (!mapping->domain)
+> > +               goto err3;
+> > +
+> > +       kref_init(&mapping->kref);
+> > +       return mapping;
+> > +err3:
+> > +       kfree(mapping->bitmap);
+> > +err2:
+> > +       kfree(mapping);
+> > +err:
+> > +       return ERR_PTR(err);
+> > +}
+> > +EXPORT_SYMBOL(arm_iommu_create_mapping);
+>=20
+> I don't understand this function, mostly I guess because you have not
+> provided any users. A few questions here:
+>=20
+> * What is ARM specific about it that it is named arm_iommu_create_map=
+ping?
+>   Isn't this completely generic, at least on the interface side?
 
-You might want to have a look at the sdrm patches I recently posted to
-dri-devel and arm Linux Kernel. Among other things they allow to
-register crtcs/connectors/encoders seperately so that each of them can
-have its own representation in the devicetree. I haven't looked into
-devicetree support for DRM, but with or without devicetree the problem
-that we do not have a single PCI card for registering all DRM components
-is the same.
+This function is quite generic. It creates 'struct dma_iommu_mapping' o=
+bject,
+which is stored in the client's device arch data. This object mainly st=
+ores
+information about io/dma address space: base address, allocation bitmap=
+ and
+respective iommu domain. Please note that more than one device can be a=
+ssigned
+to the given dma_iommu_mapping to match different hardware topologies.
 
-Sascha
+This function is called by the board/(sub-)platform startup code to ini=
+tialize
+iommu based dma-mapping. For the example usage please refer to=20
+s5p_create_iommu_mapping() function in arch/arm/mach-exynos/dev-sysmmu.=
+c on=20
+3.4-rc2-arm-dma-v8-samsung branch in=20
+git://git.linaro.org/people/mszyprowski/linux-dma-mapping.git
 
--- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+GITWeb shortcut:=20
+http://git.linaro.org/gitweb?p=3Dpeople/mszyprowski/linux-dma-mapping.g=
+it;a=3Dblob;f=3Darch/arm/mach-exyno
+s/dev-sysmmu.c;h=3D31f2d6caf0e9949def18abd18af3f9d16737ae19;hb=3D602509=
+3750d41f88406042e6486e331b806dc87
+5#l283
+
+> * Why is this exported to modules? Which device drivers do you expect
+>   to call it?
+
+I thought it might be useful to use modules for registering devices, bu=
+t=20
+now I see that no platform use such approach. I will drop these exports=
+=20
+unless someone finds a real use case for them.
+
+> * Why do you pass the bus_type in here? That seems like the completel=
+y
+>   wrong thing to do when all devices are on the same bus type (e.g.
+>   amba or platform) but are connected to different instances that eac=
+h
+>   have their own iommu. I guess this is a question for J=F6rg, becaus=
+e the
+>   base iommu interface provides iommu_domain_alloc().
+
+That's only a consequence of the iommu api. I would also prefer to use =
+client=20
+device pointer here instead of the bus id, but maybe I don't have enoug=
+h=20
+knowledge about desktop IOMMUs. I suspect that there is also a need to =
+assign
+one IOMMU driver to the whole bus (like pci bus) and it originates from=
+ such
+systems. In embedded world we usually have only one iommu driver which=20
+operates on the platform bus devices. On Samsung Exynos4 we have over a=
+ dozen
+SYSMMU controllers for various multimedia blocks, but they are all exac=
+tly=20
+the same. We use one iommu ops structure and store a pointer to the rea=
+l=20
+iommu controller instance inside arch data of the client struct device.
+=20
+Best regards
+--=20
+Marek Szyprowski
+Samsung Poland R&D Center
