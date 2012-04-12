@@ -1,93 +1,290 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: RE: [RFC 4/4] drm: Add NVIDIA Tegra support
-Date: Thu, 12 Apr 2012 10:40:01 +0200
-Message-ID: <025f01cd1887$da56b6e0$8f0424a0$%szyprowski@samsung.com>
-References: <1334146230-1795-1-git-send-email-thierry.reding@avionic-design.de>
-	<20120411133512.GL4296@phenom.ffwll.local>
-	<20120411141108.GI27337@avionic-0098.adnet.avionic-design.de>
-	<201204111518.41968.arnd@arndb.de>
-	<20120412071816.GA18252@avionic-0098.mockup.avionic-design.de>
+From: Subash Patel <subashrp@gmail.com>
+Subject: Re: [PATCH] ARM: Exynos4: integrate SYSMMU driver with DMA-mapping
+ interface
+Date: Thu, 12 Apr 2012 14:35:56 +0530
+Message-ID: <4F869AF4.3080402@gmail.com>
+References: <1334155004-5700-1-git-send-email-m.szyprowski@samsung.com> <1334155004-5700-2-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <20120412071816.GA18252-RM9K5IK7kjIQXX3q8xo1gnVAuStQJXxyR5q1nwbD4aMs9pC9oP6+/A@public.gmane.org>
-Content-language: pl
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: 'Thierry Reding' <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>, 'Arnd Bergmann' <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Tomasz Stanislawski <t.stanislaws-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, 'Daniel Vetter' <daniel-/w4YWyX8dFk@public.gmane.org>, 'Colin Cross' <ccross-z5hGa2qSFaRBDgjK7y7TUQ@public.gmane.org>, 'Jon Mayo' <jmayo-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <1334155004-5700-2-git-send-email-m.szyprowski@samsung.com>
+Sender: owner-linux-mm@kvack.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, iommu@lists.linux-foundation.org, Kyungmin Park <kyungmin.park@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Joerg Roedel <joro@8bytes.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Chunsang Jeong <chunsang.jeong@linaro.org>, Krishna Reddy <vdumpa@nvidia.com>, KyongHo Cho <pullip.cho@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Hiroshi Doyu <hdoyu@nvidia.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Thierry,
+Hello Marek,
 
-On Thursday, April 12, 2012 9:18 AM Thierry Reding wrote:
+On 04/11/2012 08:06 PM, Marek Szyprowski wrote:
+> This patch provides an provides setup code which assigns IOMMU controllers
+> to FIMC and MFC devices and enables IOMMU aware DMA-mapping for them.
+> It has been tested on Samsung Exynos4 platform, NURI board.
+>
+> Most of the work is done in the s5p_sysmmu_late_init() function, which
+> first assigns SYSMMU controller to respective client device and then
+> creates IO address space mapping structures. In this example 128 MiB of
+> address space is created at 0x20000000 for most of the devices. IO address
+> allocation precision is set to 2^4 pages, so all small allocations will be
+> aligned to 64 pages. This reduces the size of the io address space bitmap
+> to 4 KiB.
+>
+> To solve the clock dependency issues, parent clocks have been added to each
+> SYSMMU controller bus clock. This models the true hardware behavior,
+> because client's device bus clock also gates the respective sysmmu bus
+> clock.
+>
+> Signed-off-by: Marek Szyprowski<m.szyprowski@samsung.com>
+> Acked-by: Kyungmin Park<kyungmin.park@samsung.com>
+> ---
+>   arch/arm/mach-exynos/Kconfig               |    1 +
+>   arch/arm/mach-exynos/clock-exynos4.c       |   64 +++++++++++++++-------------
+>   arch/arm/mach-exynos/dev-sysmmu.c          |   44 +++++++++++++++++++
+>   arch/arm/mach-exynos/include/mach/sysmmu.h |    3 +
+>   drivers/iommu/Kconfig                      |    1 +
+>   5 files changed, 84 insertions(+), 29 deletions(-)
+>
+> diff --git a/arch/arm/mach-exynos/Kconfig b/arch/arm/mach-exynos/Kconfig
+> index 801c738..25b9ba5 100644
+> --- a/arch/arm/mach-exynos/Kconfig
+> +++ b/arch/arm/mach-exynos/Kconfig
+> @@ -288,6 +288,7 @@ config MACH_NURI
+>   	select S5P_DEV_USB_EHCI
+>   	select S5P_SETUP_MIPIPHY
+>   	select EXYNOS4_DEV_DMA
+> +	select EXYNOS_DEV_SYSMMU
+>   	select EXYNOS4_SETUP_FIMC
+>   	select EXYNOS4_SETUP_FIMD0
+>   	select EXYNOS4_SETUP_I2C1
+> diff --git a/arch/arm/mach-exynos/clock-exynos4.c b/arch/arm/mach-exynos/clock-exynos4.c
+> index 29ae4df..fe459a3 100644
+> --- a/arch/arm/mach-exynos/clock-exynos4.c
+> +++ b/arch/arm/mach-exynos/clock-exynos4.c
+> @@ -497,29 +497,6 @@ static struct clk *exynos4_gate_clocks[] = {
+>
+>   static struct clk exynos4_init_clocks_off[] = {
+>   	{
+> -		.name		= "timers",
+> -		.parent		=&exynos4_clk_aclk_100.clk,
+> -		.enable		= exynos4_clk_ip_peril_ctrl,
+> -		.ctrlbit	= (1<<24),
+> -	}, {
+> -		.name		= "csis",
+> -		.devname	= "s5p-mipi-csis.0",
+> -		.enable		= exynos4_clk_ip_cam_ctrl,
+> -		.ctrlbit	= (1<<  4),
+> -		.parent		=&exynos4_clk_gate_cam,
+> -	}, {
+> -		.name		= "csis",
+> -		.devname	= "s5p-mipi-csis.1",
+> -		.enable		= exynos4_clk_ip_cam_ctrl,
+> -		.ctrlbit	= (1<<  5),
+> -		.parent		=&exynos4_clk_gate_cam,
+> -	}, {
+> -		.name		= "jpeg",
+> -		.id		= 0,
+> -		.enable		= exynos4_clk_ip_cam_ctrl,
+> -		.ctrlbit	= (1<<  6),
+> -		.parent		=&exynos4_clk_gate_cam,
+> -	}, {
+>   		.name		= "fimc",
+>   		.devname	= "exynos4-fimc.0",
+>   		.enable		= exynos4_clk_ip_cam_ctrl,
+> @@ -544,6 +521,35 @@ static struct clk exynos4_init_clocks_off[] = {
+>   		.ctrlbit	= (1<<  3),
+>   		.parent		=&exynos4_clk_gate_cam,
+>   	}, {
+> +		.name		= "mfc",
+> +		.devname	= "s5p-mfc",
+> +		.enable		= exynos4_clk_ip_mfc_ctrl,
+> +		.ctrlbit	= (1<<  0),
+> +		.parent		=&exynos4_clk_gate_mfc,
+> +	}, {
+> +		.name		= "timers",
+> +		.parent		=&exynos4_clk_aclk_100.clk,
+> +		.enable		= exynos4_clk_ip_peril_ctrl,
+> +		.ctrlbit	= (1<<24),
+> +	}, {
+> +		.name		= "csis",
+> +		.devname	= "s5p-mipi-csis.0",
+> +		.enable		= exynos4_clk_ip_cam_ctrl,
+> +		.ctrlbit	= (1<<  4),
+> +		.parent		=&exynos4_clk_gate_cam,
+> +	}, {
+> +		.name		= "csis",
+> +		.devname	= "s5p-mipi-csis.1",
+> +		.enable		= exynos4_clk_ip_cam_ctrl,
+> +		.ctrlbit	= (1<<  5),
+> +		.parent		=&exynos4_clk_gate_cam,
+> +	}, {
+> +		.name		= "jpeg",
+> +		.id		= 0,
+> +		.enable		= exynos4_clk_ip_cam_ctrl,
+> +		.ctrlbit	= (1<<  6),
+> +		.parent		=&exynos4_clk_gate_cam,
+> +	}, {
+>   		.name		= "hsmmc",
+>   		.devname	= "exynos4-sdhci.0",
+>   		.parent		=&exynos4_clk_aclk_133.clk,
+> @@ -674,12 +680,6 @@ static struct clk exynos4_init_clocks_off[] = {
+>   		.ctrlbit	= (1<<  0),
+>   		.parent		=&exynos4_clk_gate_lcd0,
+>   	}, {
+> -		.name		= "mfc",
+> -		.devname	= "s5p-mfc",
+> -		.enable		= exynos4_clk_ip_mfc_ctrl,
+> -		.ctrlbit	= (1<<  0),
+> -		.parent		=&exynos4_clk_gate_mfc,
+> -	}, {
+>   		.name		= "i2c",
+>   		.devname	= "s3c2440-i2c.0",
+>   		.parent		=&exynos4_clk_aclk_100.clk,
+> @@ -738,11 +738,13 @@ static struct clk exynos4_init_clocks_off[] = {
+>   		.devname	= SYSMMU_CLOCK_DEVNAME(mfc_l, 0),
+>   		.enable		= exynos4_clk_ip_mfc_ctrl,
+>   		.ctrlbit	= (1<<  1),
+> +		.parent		=&exynos4_init_clocks_off[4],
+>   	}, {
+>   		.name		= SYSMMU_CLOCK_NAME,
+>   		.devname	= SYSMMU_CLOCK_DEVNAME(mfc_r, 1),
+>   		.enable		= exynos4_clk_ip_mfc_ctrl,
+>   		.ctrlbit	= (1<<  2),
+> +		.parent		=&exynos4_init_clocks_off[4],
+>   	}, {
+>   		.name		= SYSMMU_CLOCK_NAME,
+>   		.devname	= SYSMMU_CLOCK_DEVNAME(tv, 2),
+> @@ -763,21 +765,25 @@ static struct clk exynos4_init_clocks_off[] = {
+>   		.devname	= SYSMMU_CLOCK_DEVNAME(fimc0, 5),
+>   		.enable		= exynos4_clk_ip_cam_ctrl,
+>   		.ctrlbit	= (1<<  7),
+> +		.parent		=&exynos4_init_clocks_off[0],
+>   	}, {
+>   		.name		= SYSMMU_CLOCK_NAME,
+>   		.devname	= SYSMMU_CLOCK_DEVNAME(fimc1, 6),
+>   		.enable		= exynos4_clk_ip_cam_ctrl,
+>   		.ctrlbit	= (1<<  8),
+> +		.parent		=&exynos4_init_clocks_off[1],
+>   	}, {
+>   		.name		= SYSMMU_CLOCK_NAME,
+>   		.devname	= SYSMMU_CLOCK_DEVNAME(fimc2, 7),
+>   		.enable		= exynos4_clk_ip_cam_ctrl,
+>   		.ctrlbit	= (1<<  9),
+> +		.parent		=&exynos4_init_clocks_off[2],
+>   	}, {
+>   		.name		= SYSMMU_CLOCK_NAME,
+>   		.devname	= SYSMMU_CLOCK_DEVNAME(fimc3, 8),
+>   		.enable		= exynos4_clk_ip_cam_ctrl,
+>   		.ctrlbit	= (1<<  10),
+> +		.parent		=&exynos4_init_clocks_off[3],
+>   	}, {
+>   		.name		= SYSMMU_CLOCK_NAME,
+>   		.devname	= SYSMMU_CLOCK_DEVNAME(fimd0, 10),
+> diff --git a/arch/arm/mach-exynos/dev-sysmmu.c b/arch/arm/mach-exynos/dev-sysmmu.c
+> index 3544638..31f2d6ca 100644
+> --- a/arch/arm/mach-exynos/dev-sysmmu.c
+> +++ b/arch/arm/mach-exynos/dev-sysmmu.c
+> @@ -12,12 +12,15 @@
+>
+>   #include<linux/platform_device.h>
+>   #include<linux/dma-mapping.h>
+> +#include<linux/slab.h>
+>
+>   #include<plat/cpu.h>
+> +#include<plat/devs.h>
+>
+>   #include<mach/map.h>
+>   #include<mach/irqs.h>
+>   #include<mach/sysmmu.h>
+> +#include<asm/dma-iommu.h>
+>
+>   static u64 exynos_sysmmu_dma_mask = DMA_BIT_MASK(32);
+>
+> @@ -276,3 +279,44 @@ static int __init init_sysmmu_platform_device(void)
+>    * see pm_domain.c, which use arch_initcall()
+>    */
+>   core_initcall(init_sysmmu_platform_device);
+> +#ifdef CONFIG_ARM_DMA_USE_IOMMU
+> +int __init s5p_create_iommu_mapping(struct device *client, dma_addr_t base,
+> +				    unsigned int size, int order)
+> +{
+> +	struct dma_iommu_mapping *mapping;
+> +	if (!client)
+> +		return 0;
+> +	mapping = arm_iommu_create_mapping(&platform_bus_type, base, size, order);
+> +	if (!mapping)
+> +		return -ENOMEM;
+> +	client->dma_parms = kzalloc(sizeof(*client->dma_parms), GFP_KERNEL);
+> +	dma_set_max_seg_size(client, 0xffffffffu);
+> +	arm_iommu_attach_device(client, mapping);
+> +	return 0;
+> +}
+> +
+> +/*
+> + * s5p_sysmmu_late_init
+> + * Create DMA-mapping IOMMU context for specified devices. This function must
+> + * be called later, once SYSMMU driver gets registered and probed.
+> + */
+> +static int __init s5p_sysmmu_late_init(void)
+> +{
+> +	platform_set_sysmmu(&SYSMMU_PLATDEV(fimc0).dev,&s5p_device_fimc0.dev);
+> +	platform_set_sysmmu(&SYSMMU_PLATDEV(fimc1).dev,&s5p_device_fimc1.dev);
+> +	platform_set_sysmmu(&SYSMMU_PLATDEV(fimc2).dev,&s5p_device_fimc2.dev);
+> +	platform_set_sysmmu(&SYSMMU_PLATDEV(fimc3).dev,&s5p_device_fimc3.dev);
+> +	platform_set_sysmmu(&SYSMMU_PLATDEV(mfc_l).dev,&s5p_device_mfc_l.dev);
+> +	platform_set_sysmmu(&SYSMMU_PLATDEV(mfc_r).dev,&s5p_device_mfc_r.dev);
+> +
+> +	s5p_create_iommu_mapping(&s5p_device_fimc0.dev, 0x20000000, SZ_128M, 4);
+> +	s5p_create_iommu_mapping(&s5p_device_fimc1.dev, 0x20000000, SZ_128M, 4);
+> +	s5p_create_iommu_mapping(&s5p_device_fimc2.dev, 0x20000000, SZ_128M, 4);
+> +	s5p_create_iommu_mapping(&s5p_device_fimc3.dev, 0x20000000, SZ_128M, 4);
+> +	s5p_create_iommu_mapping(&s5p_device_mfc_l.dev, 0x20000000, SZ_128M, 4);
+> +	s5p_create_iommu_mapping(&s5p_device_mfc_r.dev, 0x40000000, SZ_128M, 4);
+> +
+> +	return 0;
+> +}
+> +device_initcall(s5p_sysmmu_late_init);
 
-> * Arnd Bergmann wrote:
-> > On Wednesday 11 April 2012, Thierry Reding wrote:
-> > > Daniel Vetter wrote:
-> > > > Well, you use the iommu api to map/unmap memory into the iommu for tegra,
-> > > > whereas usually device drivers just use the dma api to do that. The usual
-> > > > interface is dma_map_sg/dma_unmap_sg, but there are quite a few variants
-> > > > around. I'm just wondering why this you've choosen this.
-> > >
-> > > I don't think this works on ARM. Maybe I'm not seeing the whole picture but
-> > > judging by a quick look through the kernel tree there aren't any users that
-> > > map DMA memory through an IOMMU.
-> >
-> > dma_map_sg is certainly the right interface to use, and Marek Szyprowski has
-> > patches to make that work on ARM, hopefully going into v3.5, so you could
-> > use those.
-> 
-> I've looked at Marek's patches but I don't think they'll work for Tegra 2 or
-> Tegra 3. The corresponding iommu_map() functions only set one PTE, regardless
-> of the number of bytes passed to them. However, the Tegra TRM indicates that
-> mapping needs to be done on a per-page basis so contiguous regions cannot be
-> combined. I suppose the IOMMU driver would have to be fixed to program more
-> than a single page in that case.
+Shouldn't these things be specific to a SoC? With this RFC, it happens 
+that you will predefine the IOMMU attachment and mapping information for 
+devices in common location (dev-sysmmu.c)? This may lead to problems 
+because there are some IP's with SYSMMU support in exynos5, but not 
+available in exynos4 (eg: GSC, FIMC-LITE, FIMC-ISP) Previously we used 
+to do above declaration in individual machine file, which I think was 
+more meaningful.
 
-I assume you want to map a set of pages into contiguous chunk in io address space.
-This can be done with dma_map_sg() call once IOMMU aware implementation has been
-assigned to the given device. DMA-mapping implementation is able to merge 
-consecutive chunks of the scatter list in the dma/io address space if possible
-(i.e. there are no in-page offsets between the chunks). With my implementation 
-of IOMMU aware dma-mapping you usually you get a single DMA chunk from the 
-provided scatter-list.
+> +#endif
+> diff --git a/arch/arm/mach-exynos/include/mach/sysmmu.h b/arch/arm/mach-exynos/include/mach/sysmmu.h
+> index 998daf2..07cae3a 100644
+> --- a/arch/arm/mach-exynos/include/mach/sysmmu.h
+> +++ b/arch/arm/mach-exynos/include/mach/sysmmu.h
+> @@ -57,6 +57,9 @@ static inline void platform_set_sysmmu(
+>   }
+>   #endif
+>
+> +int __init s5p_create_iommu_mapping(struct device *client, dma_addr_t base,
+> +				    unsigned int size, int order);
+> +
+>   #else /* !CONFIG_EXYNOS_DEV_SYSMMU */
+>   #define platform_set_sysmmu(dev, sysmmu) do { } while (0)
+>   #endif
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index 3b745bb..223e31e 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -166,6 +166,7 @@ config EXYNOS_IOMMU
+>   	bool "Exynos IOMMU Support"
+>   	depends on EXYNOS_DEV_SYSMMU
+>   	select IOMMU_API
+> +	select ARM_DMA_USE_IOMMU
+>   	help
+>   	  Support for the IOMMU(System MMU) of Samsung Exynos application
+>   	  processor family. This enables H/W multimedia accellerators to see
+Regards,
+Subash
 
-I know that this approach causes a lot of confusion at the first look, but that
-how dma mapping api has been designed. The scatter list based approach has some
-drawbacks - it is a bit oversized for most of the typical use cases for the 
-gfx/multimedia buffers, but that's all we have now. 
-
-Scatter lists were initially designed for the disk based block io operations, 
-hence the presence of the in-page offsets and lengths for each chunk. For 
-multimedia use cases providing an array of struct pages and asking dma-mapping 
-to map them into contiguous memory is probably all we need. I wonder if 
-introducing such new calls is a good idea. Anrd, what do think? It will 
-definitely simplify the drivers and improve the code understanding. On the 
-other hand it requires a significant amount of work in the dma-mapping 
-framework for all architectures, but that's not a big issue for me.
-
-> Also this doesn't yet solve the vmap() problem that is needed for the kernel
-> virtual mapping. I did try using dma_alloc_writecombine(), but that only
-> works for chunks of 2 MB or smaller, unless I use init_consistent_dma_size()
-> during board setup, which isn't provided for in a DT setup. I couldn't find
-> a better alternative, but I admit I'm not very familiar with all the VM APIs.
-> Do you have any suggestions on how to solve this? Otherwise I'll try and dig
-> in some more.
-
-Yes, I'm aware of this issue I'm currently working on solving it. I hope to use 
-standard vmalloc range for all coherent/writecombine allocations and get rid of
-the custom 'consistent_dma' region at all.
-
-Best regards
--- 
-Marek Szyprowski
-Samsung Poland R&D Center
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Fight unfair telecom internet charges in Canada: sign http://stopthemeter.ca/
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
