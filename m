@@ -1,50 +1,70 @@
-From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH] iommu: OMAP: device detach on domain destroy
-Date: Thu, 12 Apr 2012 12:25:05 +0200
-Message-ID: <20120412102505.GL2428@amd.com>
-References: <1333123429-3727-1-git-send-email-omar.luna@linaro.org>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] ARM: Exynos4: integrate SYSMMU driver with DMA-mapping interface
+Date: Thu, 12 Apr 2012 11:09:28 +0000
+Message-ID: <201204121109.28753.arnd@arndb.de>
+References: <1334155004-5700-1-git-send-email-m.szyprowski@samsung.com> <4F869AF4.3080402@gmail.com> <026301cd188d$32613860$9723a920$%szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1333123429-3727-1-git-send-email-omar.luna-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Omar Ramirez Luna <omar.luna-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, linaro-dev-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <026301cd188d$32613860$9723a920$%szyprowski@samsung.com>
+Sender: owner-linux-mm@kvack.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: 'Subash Patel' <subashrp@gmail.com>, linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, iommu@lists.linux-foundation.org, 'Kyungmin Park' <kyungmin.park@samsung.com>, 'Joerg Roedel' <joro@8bytes.org>, 'Russell King - ARM Linux' <linux@arm.linux.org.uk>, 'Chunsang Jeong' <chunsang.jeong@linaro.org>, 'Krishna Reddy' <vdumpa@nvidia.com>, 'KyongHo Cho' <pullip.cho@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>, 'Benjamin Herrenschmidt' <benh@kernel.crashing.org>, 'Konrad Rzeszutek Wilk' <konrad.wilk@oracle.com>, 'Hiroshi Doyu' <hdoyu@nvidia.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Mar 30, 2012 at 11:03:49AM -0500, Omar Ramirez Luna wrote:
-> 'domain_destroy with devices attached' case isn't yet handled, instead
-> code assumes that the device was already detached.
+On Thursday 12 April 2012, Marek Szyprowski wrote:
+> +
+> > > +/*
+> > > + * s5p_sysmmu_late_init
+> > > + * Create DMA-mapping IOMMU context for specified devices. This function must
+> > > + * be called later, once SYSMMU driver gets registered and probed.
+> > > + */
+> > > +static int __init s5p_sysmmu_late_init(void)
+> > > +{
+> > > +   platform_set_sysmmu(&SYSMMU_PLATDEV(fimc0).dev,&s5p_device_fimc0.dev);
+> > > +   platform_set_sysmmu(&SYSMMU_PLATDEV(fimc1).dev,&s5p_device_fimc1.dev);
+> > > +   platform_set_sysmmu(&SYSMMU_PLATDEV(fimc2).dev,&s5p_device_fimc2.dev);
+> > > +   platform_set_sysmmu(&SYSMMU_PLATDEV(fimc3).dev,&s5p_device_fimc3.dev);
+> > > +   platform_set_sysmmu(&SYSMMU_PLATDEV(mfc_l).dev,&s5p_device_mfc_l.dev);
+> > > +   platform_set_sysmmu(&SYSMMU_PLATDEV(mfc_r).dev,&s5p_device_mfc_r.dev);
+> > > +
+> > > +   s5p_create_iommu_mapping(&s5p_device_fimc0.dev, 0x20000000, SZ_128M, 4);
+> > > +   s5p_create_iommu_mapping(&s5p_device_fimc1.dev, 0x20000000, SZ_128M, 4);
+> > > +   s5p_create_iommu_mapping(&s5p_device_fimc2.dev, 0x20000000, SZ_128M, 4);
+> > > +   s5p_create_iommu_mapping(&s5p_device_fimc3.dev, 0x20000000, SZ_128M, 4);
+> > > +   s5p_create_iommu_mapping(&s5p_device_mfc_l.dev, 0x20000000, SZ_128M, 4);
+> > > +   s5p_create_iommu_mapping(&s5p_device_mfc_r.dev, 0x40000000, SZ_128M, 4);
+> > > +
+> > > +   return 0;
+> > > +}
+> > > +device_initcall(s5p_sysmmu_late_init);
+> > 
+> > Shouldn't these things be specific to a SoC? With this RFC, it happens
+> > that you will predefine the IOMMU attachment and mapping information for
+> > devices in common location (dev-sysmmu.c)? This may lead to problems
+> > because there are some IP's with SYSMMU support in exynos5, but not
+> > available in exynos4 (eg: GSC, FIMC-LITE, FIMC-ISP) Previously we used
+> > to do above declaration in individual machine file, which I think was
+> > more meaningful.
 > 
-> If the domain is destroyed the hardware still has access to invalid
-> pointers to its page table and internal iommu object. In order to
-> detach the users we need to track devices using the iommu, current
-> use cases only have one user of iommu per instance. When required
-> this can evolve to a list with the devices using the iommu_dev.
-> 
-> Reported-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> Reviewed-by: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>
-> Signed-off-by: Omar Ramirez Luna <omar.luna-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> Right, I simplified the code too much. Keeping these definitions inside machine 
+> files was a better idea. I completely forgot that Exynos sub-platform now covers
+> both Exynos4 and Exynos5 SoC families.
 
-Doesn't apply against 3.4-rc2. Please rebase and send a new version.
+Ideally the information about iommu attachment should come from the
+device tree. We have the "dma-ranges" properties that define how a dma
+address space is mapped. I am not entirely sure how that works when you
+have multiple IOMMUs and if that requires defining addititional properties,
+but I think we should make it so that we don't have to hardcode specific
+devices in the source.
 
+	Arnd
 
-	Joerg
-
-
--- 
-AMD Operating System Research Center
-
-Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
-General Managers: Alberto Bozzo
-Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Fight unfair telecom internet charges in Canada: sign http://stopthemeter.ca/
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
