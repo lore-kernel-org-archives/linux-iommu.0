@@ -1,69 +1,46 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: RE: [RFC 4/4] drm: Add NVIDIA Tegra support
-Date: Thu, 12 Apr 2012 16:20:16 +0200
-Message-ID: <02c801cd18b7$622d4c30$2687e490$%szyprowski@samsung.com>
+From: Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>
+Subject: Re: [RFC 4/4] drm: Add NVIDIA Tegra support
+Date: Thu, 12 Apr 2012 16:23:27 +0200
+Message-ID: <20120412142327.GF3705@phenom.ffwll.local>
 References: <1334146230-1795-1-git-send-email-thierry.reding@avionic-design.de>
-	<20120411133512.GL4296@phenom.ffwll.local>
-	<20120411141108.GI27337@avionic-0098.adnet.avionic-design.de>
-	<201204111518.41968.arnd@arndb.de>
-	<20120412071816.GA18252@avionic-0098.mockup.avionic-design.de>
-	<025f01cd1887$da56b6e0$8f0424a0$%szyprowski@samsung.com>
-	<20120412134216.GB15701@avionic-0098.adnet.avionic-design.de>
+ <20120412071816.GA18252@avionic-0098.mockup.avionic-design.de>
+ <025f01cd1887$da56b6e0$8f0424a0$%szyprowski@samsung.com>
+ <201204121118.19685.arnd@arndb.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <20120412134216.GB15701-RM9K5IK7kjIyiCvfTdI0JKcOhU4Rzj621B7CTYaBSLdn68oJJulU0Q@public.gmane.org>
-Content-language: pl
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: 'Thierry Reding' <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
-Cc: Tomasz Stanislawski <t.stanislaws-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Arnd Bergmann' <arnd-r2nGTMty4D4@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, 'Daniel Vetter' <daniel-/w4YWyX8dFk@public.gmane.org>, 'Colin Cross' <ccross-z5hGa2qSFaRBDgjK7y7TUQ@public.gmane.org>, 'Jon Mayo' <jmayo-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <201204121118.19685.arnd-r2nGTMty4D4@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Thierry Reding' <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, 'Daniel Vetter' <daniel-/w4YWyX8dFk@public.gmane.org>, 'Joerg Roedel' <joerg.roedel-5C7GfCeVMHo@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, 'Jon Mayo' <jmayo-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, 'Colin Cross' <ccross-z5hGa2qSFaRBDgjK7y7TUQ@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, 'Hiroshi Doyu' <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Tomasz Stanislawski <t.stanislaws-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Thierry,
-
-On Thursday, April 12, 2012 3:42 PM Thierry Reding wrote:
-
-> > > Also this doesn't yet solve the vmap() problem that is needed for the kernel
-> > > virtual mapping. I did try using dma_alloc_writecombine(), but that only
-> > > works for chunks of 2 MB or smaller, unless I use init_consistent_dma_size()
-> > > during board setup, which isn't provided for in a DT setup. I couldn't find
-> > > a better alternative, but I admit I'm not very familiar with all the VM APIs.
-> > > Do you have any suggestions on how to solve this? Otherwise I'll try and dig
-> > > in some more.
-> >
-> > Yes, I'm aware of this issue I'm currently working on solving it. I hope to use
-> > standard vmalloc range for all coherent/writecombine allocations and get rid of
-> > the custom 'consistent_dma' region at all.
+On Thu, Apr 12, 2012 at 11:18:19AM +0000, Arnd Bergmann wrote:
+> On Thursday 12 April 2012, Marek Szyprowski wrote:
+> > Scatter lists were initially designed for the disk based block io operations, 
+> > hence the presence of the in-page offsets and lengths for each chunk. For 
+> > multimedia use cases providing an array of struct pages and asking dma-mapping 
+> > to map them into contiguous memory is probably all we need. I wonder if 
+> > introducing such new calls is a good idea. Anrd, what do think? It will 
+> > definitely simplify the drivers and improve the code understanding. On the 
+> > other hand it requires a significant amount of work in the dma-mapping 
+> > framework for all architectures, but that's not a big issue for me.
 > 
-> Does your work aim at removing the 2 MB limitation or at remapping non-
-> contiguous memory to a virtually linear buffer? I have some trouble
-> understanding how removing the 2 MB limit would help, because if all buffers
-> can be allocated contiguously then there wouldn't be any need for the IOMMU,
-> right?
+> My feeling is that it's too much like the existing _sg version, so I wouldn't
+> add yet another variant. While having a simple page array is definitely
+> simpler and potentially faster, I think the API is already too complex
+> and we need to be very careful with new additions.
 
-I would like to remove 2MiB limitation by moving these mapping to generic vmalloc
-area. Please notice that this 2MiB limit is only applied to CPU virtual address
-space and no physical memory is preallocated for consistent dma. 
-
-ARM linear dma mapping implementation allocates coherent buffers by calling 
-alloc_pages() and then creating a coherent mapping for the allocated buffer.
-
-With IOMMU you can allocate chunks of memory and create a contiguous DMA mapping.
-To fulfill dma mapping request you also need to create a cpu coherent mapping for 
-them and right now my core uses the same remapping function as linear version.
-
-The only limitation here will be vmalloc space and its fragmentation.
-
-Best regards
+I concur here. For VT-d support we wrestle the pages through an sg list in
+drm/i915, too. It's not beautiful, and because our gpu internal pagetables
+need 2 loops to walk the sg lists, one for the sg segments, one to loop
+over all pages in a segment. And additional a WARN_ON if the segment
+dma address isn't page-aligned. It's ugly, but imo adding some helpers to
+easier deal with this common case (like the drm_prime_pages_to_sg)
+function is better than creating an entirely new interface.
+-Daniel
 -- 
-Marek Szyprowski
-Samsung Poland R&D Center
+Daniel Vetter
+Mail: daniel-/w4YWyX8dFk@public.gmane.org
+Mobile: +41 (0)79 365 57 48
