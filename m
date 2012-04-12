@@ -1,14 +1,14 @@
 From: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
-Subject: Re: [RFC 3/4] drm: fixed: Add dfixed_frac() macro
-Date: Thu, 12 Apr 2012 08:52:31 +0200
-Message-ID: <20120412065231.GD4162@avionic-0098.adnet.avionic-design.de>
+Subject: Re: [RFC 2/4] iommu: tegra/gart: Add device tree support
+Date: Thu, 12 Apr 2012 08:51:09 +0200
+Message-ID: <20120412065108.GC4162@avionic-0098.adnet.avionic-design.de>
 References: <1334146230-1795-1-git-send-email-thierry.reding@avionic-design.de>
-	<1334146230-1795-4-git-send-email-thierry.reding@avionic-design.de>
-	<4F85BE77.7090807@wwwdotorg.org>
+	<1334146230-1795-3-git-send-email-thierry.reding@avionic-design.de>
+	<4F85BD9D.7050409@wwwdotorg.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============5261212654333320255=="
+Content-Type: multipart/mixed; boundary="===============2201259864538729482=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <4F85BE77.7090807-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+In-Reply-To: <4F85BD9D.7050409-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,43 +23,59 @@ Cc: David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, devicetree-discuss-uLR0
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============5261212654333320255==
+--===============2201259864538729482==
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="6WlEvdN9Dv0WHSBl"
+	protocol="application/pgp-signature"; boundary="aT9PWwzfKXlsBJM1"
 Content-Disposition: inline
 
 
---6WlEvdN9Dv0WHSBl
+--aT9PWwzfKXlsBJM1
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
 * Stephen Warren wrote:
 > On 04/11/2012 06:10 AM, Thierry Reding wrote:
-> > This commit is taken from the Chromium tree and was originally written
-> > by Robert Morell.
+> > This commit adds device tree support for the GART hardware available on
+> > NVIDIA Tegra 20 SoCs.
+> >=20
+> > Signed-off-by: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
+> > ---
+> >  arch/arm/boot/dts/tegra20.dtsi         |    6 ++++++
+> >  arch/arm/mach-tegra/board-dt-tegra20.c |    1 +
+> >  drivers/iommu/tegra-gart.c             |   10 ++++++++++
+> >  3 files changed, 17 insertions(+)
 >=20
-> Maybe just cherry-pick it from there? That way, the git authorship will
-> show up as Robert.
+> I think I'd prefer at least the tegra20.dtsi change split out into a
+> separate patch so I can queue it in a "dt" topic branch in the Tegra repo.
+>=20
+> It might be a good idea to split this into two on an arch/arm vs.
+> drivers/iommu boundary. Looking at Olof's branches for 3.4, that split
+> is what happened there.
+>=20
+> Finally, there should be a binding documentation file in
+> Documentation/devicetree/bindings in order to specify the number of reg
+> property entries needed, and their meaning, since there's more than 1
+> (even though you did comment it nicely in the .dtsi file)
 
-I can do that. Though I'll have to remove the Chromium-specific tags.
+Okay, I'll do that.
 
 Thierry
 
---6WlEvdN9Dv0WHSBl
+--aT9PWwzfKXlsBJM1
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.19 (GNU/Linux)
 
-iEYEARECAAYFAk+Ge68ACgkQZ+BJyKLjJp+jsgCfSbu5PMoOaBQ60uadfxfXn6+U
-7vMAoJRPeQowa7tCu3naHMLVSXhE0+WO
-=5p28
+iEYEARECAAYFAk+Ge1wACgkQZ+BJyKLjJp/vYQCgmzAQyon0uJtVYVi1aTW1Ju9z
+4e8An3lnj6kmSzAELvSRO/7ryOIGuSQQ
+=5sDW
 -----END PGP SIGNATURE-----
 
---6WlEvdN9Dv0WHSBl--
+--aT9PWwzfKXlsBJM1--
 
---===============5261212654333320255==
+--===============2201259864538729482==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -69,4 +85,4 @@ _______________________________________________
 iommu mailing list
 iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============5261212654333320255==--
+--===============2201259864538729482==--
