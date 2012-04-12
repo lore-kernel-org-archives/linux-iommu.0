@@ -1,15 +1,14 @@
-From: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
-Subject: Re: [RFC 4/4] drm: Add NVIDIA Tegra support
-Date: Thu, 12 Apr 2012 11:33:01 +0200
-Message-ID: <20120412093301.GB23336@avionic-0098.mockup.avionic-design.de>
-References: <1334146230-1795-1-git-send-email-thierry.reding@avionic-design.de>
-	<1334146230-1795-5-git-send-email-thierry.reding@avionic-design.de>
-	<4F85C97E.50203@wwwdotorg.org>
-	<20120412092106.GU3852@pengutronix.de>
+From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH] iommu: OMAP: device detach on domain destroy
+Date: Thu, 12 Apr 2012 12:25:05 +0200
+Message-ID: <20120412102505.GL2428@amd.com>
+References: <1333123429-3727-1-git-send-email-omar.luna@linaro.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============8054262657807754720=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20120412092106.GU3852-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1333123429-3727-1-git-send-email-omar.luna-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,66 +18,33 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Cc: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Jon Mayo <jmayo-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Colin Cross <ccross-z5hGa2qSFaRBDgjK7y7TUQ@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Omar Ramirez Luna <omar.luna-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, linaro-dev-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+On Fri, Mar 30, 2012 at 11:03:49AM -0500, Omar Ramirez Luna wrote:
+> 'domain_destroy with devices attached' case isn't yet handled, instead
+> code assumes that the device was already detached.
+> 
+> If the domain is destroyed the hardware still has access to invalid
+> pointers to its page table and internal iommu object. In order to
+> detach the users we need to track devices using the iommu, current
+> use cases only have one user of iommu per instance. When required
+> this can evolve to a list with the devices using the iommu_dev.
+> 
+> Reported-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> Reviewed-by: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>
+> Signed-off-by: Omar Ramirez Luna <omar.luna-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
---===============8054262657807754720==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="NMuMz9nt05w80d4+"
-Content-Disposition: inline
+Doesn't apply against 3.4-rc2. Please rebase and send a new version.
 
 
---NMuMz9nt05w80d4+
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+	Joerg
 
-* Sascha Hauer wrote:
-> You might want to have a look at the sdrm patches I recently posted to
-> dri-devel and arm Linux Kernel. Among other things they allow to
-> register crtcs/connectors/encoders seperately so that each of them can
-> have its own representation in the devicetree. I haven't looked into
-> devicetree support for DRM, but with or without devicetree the problem
-> that we do not have a single PCI card for registering all DRM components
-> is the same.
 
-I'll do that. One interesting use-case that's been on my mind for some time
-is if it would be possible to provide a CRTC via DRM that isn't part of the
-SoC or DRM "device" but which can display a framebuffer prepared by the DRM
-framework.
+-- 
+AMD Operating System Research Center
 
-In other words I would like to use the Tegra hardware to render content into
-a framebuffer (using potentially the 3D engine or HW accelerated video
-decoding blocks) but display that framebuffer with a CRTC registered by a
-different driver (perhaps provided by a PCIe or USB device).
-
-I think such a setup would be possible if the CRTC registration can be
-decoupled from the DRM driver. Perhaps sdrm even supports that already?
-
-Thierry
-
---NMuMz9nt05w80d4+
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.19 (GNU/Linux)
-
-iEYEARECAAYFAk+GoUwACgkQZ+BJyKLjJp96wQCeOgh2gZUmQUL1oddfmrCLpejW
-nEUAn2upj9yAZjEmbirx6hhSnd3+6l9r
-=8elq
------END PGP SIGNATURE-----
-
---NMuMz9nt05w80d4+--
-
---===============8054262657807754720==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-iommu mailing list
-iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============8054262657807754720==--
+Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
+General Managers: Alberto Bozzo
+Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
