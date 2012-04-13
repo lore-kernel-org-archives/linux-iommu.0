@@ -1,72 +1,85 @@
 From: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
-Subject: Re: [PATCH 1/1] arm/dts: Tegra30: Add device tree support for SMMU
-Date: Fri, 13 Apr 2012 14:15:10 +0200
-Message-ID: <20120413121510.GD11605@avionic-0098.mockup.avionic-design.de>
-References: <20120413.132205.1766846402066131036.hdoyu@nvidia.com>
- <20120413110331.GA11605@avionic-0098.mockup.avionic-design.de>
- <20120413.143104.1310879848248152784.hdoyu@nvidia.com>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="sXc4Kmr5FA7axrvy"
+Subject: [PATCH 2/3] iommu: tegra/gart: Add device tree support
+Date: Fri, 13 Apr 2012 15:08:08 +0200
+Message-ID: <1334322489-837-2-git-send-email-thierry.reding@avionic-design.de>
+References: <1334322489-837-1-git-send-email-thierry.reding@avionic-design.de>
 Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20120413.143104.1310879848248152784.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1334322489-837-1-git-send-email-thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
 Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Olof Johansson <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, Colin Cross <ccross-z5hGa2qSFaRBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+This commit adds device tree support for the GART hardware available on
+NVIDIA Tegra 20 SoCs.
 
---sXc4Kmr5FA7axrvy
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
+---
+ .../devicetree/bindings/iommu/nvidia,tegra20-gart.txt    |   14 ++++++++++++++
+ drivers/iommu/tegra-gart.c                               |   11 +++++++++++
+ 2 files changed, 25 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iommu/nvidia,tegra20-gart.txt
 
-* Hiroshi Doyu wrote:
-> Thierry Reding wrote:
-> > * Hiroshi Doyu wrote:
-> > > +	smmu: smmu@7000f000 {
-> > > +		compatible =3D "nvidia,tegra30-smmu";
-> > > +		reg =3D < 0x7000f000 0x400	/* controller registers */
-> > > +			0x6000c000 0x150	/* AHB Arbitration registers */
-> > > +			0x00001000 0x3ffff000 >;/* Virtual address space range
-> > > +						 * Exclude the 1st & last page
-> > > +						 */
-> > > +		interrupts =3D < 0 13 0x40 >;
-> > > +	};
-> > >  };
-> >=20
-> > Why is the virtual address space range limited to 1 GiB? What is the re=
-ason
-> > for the exclusion of the first and last pages?
->=20
-> It's because physical RAM is located 2-4GB, and we may want to use
-> those area 1-1(V=3D=3DP) mapping in some cases. This could be extended
-> with larger RAM without 1-1 mapping theoretically. So far 1GB seems to
-> be enough.
-
-I'm thinking that this would be better off in a separate property so that
-it's easier for boards to override it.
-
-> The 1st page for AVP vector, and the last one is required by another
-> H/W entity.
-
-I would expect such peculiarities to be handled by the driver internally.
-That way users wouldn't have to know or care about these kind of details.
-If it can't be handled by the driver then at least it should be mentioned
-explicitly in the binding documentation.
-
-Thierry
-
---sXc4Kmr5FA7axrvy
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.19 (GNU/Linux)
-
-iEYEARECAAYFAk+IGM4ACgkQZ+BJyKLjJp+C2gCeOtlvbUu0bZNTLdZz4g5IHH03
-ScQAnRBKFM0xpBIbRGWamS7kdX5eg2Gp
-=hUR+
------END PGP SIGNATURE-----
-
---sXc4Kmr5FA7axrvy--
+diff --git a/Documentation/devicetree/bindings/iommu/nvidia,tegra20-gart.txt b/Documentation/devicetree/bindings/iommu/nvidia,tegra20-gart.txt
+new file mode 100644
+index 0000000..2d87b91
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iommu/nvidia,tegra20-gart.txt
+@@ -0,0 +1,14 @@
++NVIDIA Tegra 20 GART
++
++Required properties:
++- compatible: "nvidia,tegra20-gart"
++- reg: Two pairs of cells specifying the physical address and size of
++  the memory controller registers and the GART aperture respectively.
++
++Example:
++
++	gart: gart@7000f000 {
++		compatible = "nvidia,tegra20-gart";
++		reg = < 0x7000f000 0x00000100    /* controller registers */
++		        0x58000000 0x02000000 >; /* GART aperture */
++	};
+diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
+index f6bc1e6..40533bb 100644
+--- a/drivers/iommu/tegra-gart.c
++++ b/drivers/iommu/tegra-gart.c
+@@ -29,6 +29,7 @@
+ #include <linux/device.h>
+ #include <linux/io.h>
+ #include <linux/iommu.h>
++#include <linux/of.h>
+ 
+ #include <asm/cacheflush.h>
+ 
+@@ -422,6 +423,14 @@ const struct dev_pm_ops tegra_gart_pm_ops = {
+ 	.resume		= tegra_gart_resume,
+ };
+ 
++#ifdef CONFIG_OF
++static struct of_device_id tegra_gart_of_match[] __devinitdata = {
++	{ .compatible = "nvidia,tegra20-gart", },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, tegra_gart_of_match);
++#endif
++
+ static struct platform_driver tegra_gart_driver = {
+ 	.probe		= tegra_gart_probe,
+ 	.remove		= tegra_gart_remove,
+@@ -429,6 +438,7 @@ static struct platform_driver tegra_gart_driver = {
+ 		.owner	= THIS_MODULE,
+ 		.name	= "tegra-gart",
+ 		.pm	= &tegra_gart_pm_ops,
++		.of_match_table = of_match_ptr(tegra_gart_of_match),
+ 	},
+ };
+ 
+@@ -448,4 +458,5 @@ module_exit(tegra_gart_exit);
+ 
+ MODULE_DESCRIPTION("IOMMU API for GART in Tegra20");
+ MODULE_AUTHOR("Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>");
++MODULE_ALIAS("platform:tegra-gart");
+ MODULE_LICENSE("GPL v2");
+-- 
+1.7.10
