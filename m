@@ -1,14 +1,14 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH 1/3] iommu: tegra/gart: use correct gart_device
-Date: Mon, 16 Apr 2012 13:59:02 +0200
-Message-ID: <20120416115902.GX2428@amd.com>
-References: <1334322489-837-1-git-send-email-thierry.reding@avionic-design.de>
+Subject: Re: What happened to the DOMAIN_ATTR_GEOMETRY patchset
+Date: Mon, 16 Apr 2012 15:35:25 +0200
+Message-ID: <20120416133525.GY2428@amd.com>
+References: <1334351116.1625.45.camel@antimon>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1334322489-837-1-git-send-email-thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
+In-Reply-To: <1334351116.1625.45.camel@antimon>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,46 +18,32 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
-Cc: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, Olof Johansson <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Colin Cross <ccross-z5hGa2qSFaRBDgjK7y7TUQ@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Vandana Salve <vsalve-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+To: Lucas Stach <dev-8ppwABl0HbeELgA04lAiVw@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Applied patches 1 and 2. Should I also queue up patch 3 after the
-objections have been fixed? The patch doesn't touch drivers/iommu...
+Hi Lucas,
+
+On Fri, Apr 13, 2012 at 11:05:16PM +0200, Lucas Stach wrote:
+> sorry for not providing a proper thread reference, but I'm not
+> subscribed to this list long enough.
+> 
+> I wonder what happened to the DOMAIN_ATTR_GEOMETRY patchset. Did it got
+> dropped by accident or are there some reasons which are preventing this
+> from going in?
+
+There was too much discussion around it and too little time in the last
+cycle for me (was busy with other things). But I will post a new version
+of this patch-set and then we'll see. I am confident that we can merge
+this for v3.5.
+
+> It would be really useful for the Tegra-DRM driver to have this
+> attribute to implement proper memory management.
+
+I know, it is more or less required to make use of any GART-like IOMMU.
 
 
 	Joerg
-
-On Fri, Apr 13, 2012 at 03:08:07PM +0200, Thierry Reding wrote:
-> From: Vandana Salve <vsalve-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> 
-> Pass the correct gart device pointer.
-> 
-> Reviewed-by: Vandana Salve <vsalve-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> Tested-by: Vandana Salve <vsalve-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> Reviewed-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> Reviewed-by: Bharat Nihalani <bnihalani-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> Signed-off-by: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> ---
->  drivers/iommu/tegra-gart.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-> index 779306e..f6bc1e6 100644
-> --- a/drivers/iommu/tegra-gart.c
-> +++ b/drivers/iommu/tegra-gart.c
-> @@ -158,7 +158,7 @@ static int gart_iommu_attach_dev(struct iommu_domain *domain,
->  	struct gart_client *client, *c;
->  	int err = 0;
->  
-> -	gart = dev_get_drvdata(dev->parent);
-> +	gart = gart_handle;
->  	if (!gart)
->  		return -EINVAL;
->  	domain->priv = gart;
-> -- 
-> 1.7.10
-> 
 
 -- 
 AMD Operating System Research Center
