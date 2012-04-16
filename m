@@ -1,13 +1,14 @@
-From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/1] arm/dts: Tegra30: Add device tree support for SMMU
-Date: Mon, 16 Apr 2012 13:12:38 +0200
-Message-ID: <20120416.141238.381304581863200083.hdoyu@nvidia.com>
-References: <20120413.143104.1310879848248152784.hdoyu@nvidia.com><20120413121510.GD11605@avionic-0098.mockup.avionic-design.de><4F887DA0.8030103@wwwdotorg.org>
+From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH 1/3] iommu: tegra/gart: use correct gart_device
+Date: Mon, 16 Apr 2012 13:59:02 +0200
+Message-ID: <20120416115902.GX2428@amd.com>
+References: <1334322489-837-1-git-send-email-thierry.reding@avionic-design.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <4F887DA0.8030103-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1334322489-837-1-git-send-email-thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,83 +18,50 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org" <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org" <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
+Cc: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, Olof Johansson <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Colin Cross <ccross-z5hGa2qSFaRBDgjK7y7TUQ@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Vandana Salve <vsalve-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [PATCH 1/1] arm/dts: Tegra30: Add device tree support for SMMU
-Date: Fri, 13 Apr 2012 21:25:20 +0200
-Message-ID: <4F887DA0.8030103-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-
-> On 04/13/2012 06:15 AM, Thierry Reding wrote:
-> > * Hiroshi Doyu wrote:
-> >> Thierry Reding wrote:
-> >>> * Hiroshi Doyu wrote:
-> >>>> +	smmu: smmu@7000f000 {
-> >>>> +		compatible = "nvidia,tegra30-smmu";
-> >>>> +		reg = < 0x7000f000 0x400	/* controller registers */
-> >>>> +			0x6000c000 0x150	/* AHB Arbitration registers */
-> >>>> +			0x00001000 0x3ffff000 >;/* Virtual address space range
-> >>>> +						 * Exclude the 1st & last page
-> >>>> +						 */
-> >>>> +		interrupts = < 0 13 0x40 >;
-> >>>> +	};
-> >>>>  };
-> >>>
-> >>> Why is the virtual address space range limited to 1 GiB? What is the reason
-> >>> for the exclusion of the first and last pages?
-> >>
-> >> It's because physical RAM is located 2-4GB, and we may want to use
-> >> those area 1-1(V==P) mapping in some cases. This could be extended
-> >> with larger RAM without 1-1 mapping theoretically. So far 1GB seems to
-> >> be enough.
-> >
-> > I'm thinking that this would be better off in a separate property so that
-> > it's easier for boards to override it.
->
-> Yes, and for another reason: The entries in the reg property are
-> supposed to be within the bus address space that contains the device,
-> whereas here this 3rd reg entry is being used to define something about
-> an entirely unrelated address space - the virtual address space seen by
-> SMMU clients.
-
-What about using "dma-window" property to specify IOVA range in dtsi as below?
-
-arch/powerpc/platforms/cell/iommu.c:
-
-698 static int __init cell_iommu_get_window(struct device_node *np,
-699                                          unsigned long *base,
-700                                          unsigned long *size)
-701 {
-702         const void *dma_window;
-703         unsigned long index;
-704
-705         /* Use ibm,dma-window if available, else, hard code ! */
-706         dma_window = of_get_property(np, "ibm,dma-window", NULL);
-707         if (dma_window == NULL) {          ^^^^^^^^^^^^^^
-708                 *base = 0;
-709                 *size = 0x80000000u;
-710                 return -ENODEV;
-711         }
-712
-713         of_parse_dma_window(np, dma_window, &index, base, size);
-714         return 0;
-715 }
+Applied patches 1 and 2. Should I also queue up patch 3 after the
+objections have been fixed? The patch doesn't touch drivers/iommu...
 
 
-> >> The 1st page for AVP vector, and the last one is required by another
-> >> H/W entity.
-> >
-> > I would expect such peculiarities to be handled by the driver internally.
-> > That way users wouldn't have to know or care about these kind of details.
-> > If it can't be handled by the driver then at least it should be mentioned
-> > explicitly in the binding documentation.
->
-> I agree, but:
->
-> Why do those pages even need special handling? Doesn't the AVP get its
-> own address space ID, and then can set it up however it wants?
+	Joerg
 
-This sounds better than dealing with prefixed mappings at booting. At
-least we need to pass # of ASIDs, and client should claim one of them.
+On Fri, Apr 13, 2012 at 03:08:07PM +0200, Thierry Reding wrote:
+> From: Vandana Salve <vsalve-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> 
+> Pass the correct gart device pointer.
+> 
+> Reviewed-by: Vandana Salve <vsalve-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> Tested-by: Vandana Salve <vsalve-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> Reviewed-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> Reviewed-by: Bharat Nihalani <bnihalani-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> Signed-off-by: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> ---
+>  drivers/iommu/tegra-gart.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
+> index 779306e..f6bc1e6 100644
+> --- a/drivers/iommu/tegra-gart.c
+> +++ b/drivers/iommu/tegra-gart.c
+> @@ -158,7 +158,7 @@ static int gart_iommu_attach_dev(struct iommu_domain *domain,
+>  	struct gart_client *client, *c;
+>  	int err = 0;
+>  
+> -	gart = dev_get_drvdata(dev->parent);
+> +	gart = gart_handle;
+>  	if (!gart)
+>  		return -EINVAL;
+>  	domain->priv = gart;
+> -- 
+> 1.7.10
+> 
+
+-- 
+AMD Operating System Research Center
+
+Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
+General Managers: Alberto Bozzo
+Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
