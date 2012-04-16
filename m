@@ -1,59 +1,66 @@
-From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/1] arm/dts: Tegra30: Add device tree support for SMMU
-Date: Mon, 16 Apr 2012 12:10:59 +0200
-Message-ID: <20120416.131059.331282986467061278.hdoyu@nvidia.com>
-References: <20120413.132205.1766846402066131036.hdoyu@nvidia.com><4F887F9B.700@wwwdotorg.org>
+From: KyongHo Cho <pullip.cho@samsung.com>
+Subject: Re: [PATCH 0/2] Exynos: fix SYSMMU driver to work with power domains
+Date: Mon, 16 Apr 2012 19:13:23 +0900
+Message-ID: <CAHQjnOMbR1SUm=mjfZKLMxwpQasT6JsmXLgmRXyUT+3FyuwpTA@mail.gmail.com>
+References: <1334154871-4756-1-git-send-email-m.szyprowski@samsung.com>
+	<CAHQjnOOGWVcc95F==1__SCH0S-mX8bvRwOr7MhB3Arw=83jZMw@mail.gmail.com>
+	<4F899D18.6000700@samsung.com>
+	<CAHQjnOOws9imNo-S4prfHdqXjghotFaw_tqi81jNzHVPn8dXLg@mail.gmail.com>
+	<CAH9JG2VuBTp30KQGeKUsdQZKuPeAMj8XvGHdH-8r=XA5F2a5qg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <4F887F9B.700-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: "swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org" <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Cc: "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <CAH9JG2VuBTp30KQGeKUsdQZKuPeAMj8XvGHdH-8r=XA5F2a5qg@mail.gmail.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Kyungmin Park <kyungmin.park@samsung.com>
+Cc: linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, Kukjin Kim <kgene.kim@samsung.com>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [PATCH 1/1] arm/dts: Tegra30: Add device tree support for SMMU
-Date: Fri, 13 Apr 2012 21:33:47 +0200
-Message-ID: <4F887F9B.700-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+On Mon, Apr 16, 2012 at 7:01 PM, Kyungmin Park
+<kyungmin.park@samsung.com> wrote:
+> On 4/16/12, KyongHo Cho <pullip.cho@samsung.com> wrote:
+>> On Sun, Apr 15, 2012 at 12:51 AM, Kukjin Kim <kgene.kim@samsung.com>=
+ wrote:
+>>> On 04/12/12 01:19, KyongHo Cho wrote:
+>>>>
+>>>> On Wed, Apr 11, 2012 at 11:34 PM, Marek Szyprowski
+>>>> <m.szyprowski@samsung.com> =A0wrote:
+>>>>>
+>>>>> Hi!
+>>>>>
+>>>>> These two patches fixes operation of the SYSMMU driver (v12 versi=
+on [1])
+>>>>> with the new power domain driver based on generic power domains a=
+nd
+>>>>> runtime pw, which has been merged to Linux kernel v3.4-rc1.
+>>>>>
+>>>> Thanks, Marek.
+>>>>
+>>>> Your way of power gating is right
+>>>> and I will look into the changed runtime PM scheme in Exynos tree.
+>>>>
+>>> KyongHo,
+>>>
+>>> Do you want to upstream this series with your previous sysmmu (clea=
+nup and
+>>> moving) patches?
+>>>
+>>
+>> Yes I hope so.
+>> Marek's patch corrects run-time power management in Exynos4 with Sys=
+tem MMU.
+>
+> Hi,
+>
+> Next time, if you give Acked-By or Reviewed_by, then it's more helpfu=
+l
+> to determine to merge or not.
+>
 
-> On 04/13/2012 04:22 AM, Hiroshi Doyu wrote:
-> > From: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> > 
-> > Add device tree support for Tegra30 IOMMU(SMMU).
-> 
-> > +++ b/Documentation/devicetree/bindings/arm/tegra/tegra30-smmu.txt
-> 
-> I personally like the documentation to be named after the full
-> compatible value, so nvidia,tegra30-smmu.txt.
+I did not Ack it since he did not CC me.
+But, as you mentioned, I need to add my Reviewed-by after reviewing it.
 
-OK
+Thank you.
 
-> > @@ -0,0 +1,19 @@
-> > +NVIDIA Tegra 30 IOMMU H/W, SMMU (System Memory Management Unit)
-> > +
-> > +Required properties:
-> > +- compatible : "nvidia,tegra30-smmu"
-> > +- reg : Should contain MC registers location and length
-> > +- reg : Should contain AHB Arbitration registers and length
-> > +- reg : Should contain virtual address space range
-> 
-> This looks like 3 properties with the same name. It seems common to
-> write something more like:
-> 
-> reg : Should contain the register address and length for each fo the MC
-> and AHB arbitration registers.
-
-OK, this looks better.
-
-> But why does the SMMU driver expect to control the AHB arbitration
-> registers? They seem unrelated to the SMMU.
-
-It's necessary to inform AHB that SMMU is ready to use. There's a
-dedicated bit for SMMU in this AHB arbitration register.
-
-> As I said in my previous email, I think the VA space size should be a
-> separate property.
-
-OK, I'll update.
+KyongHo.
