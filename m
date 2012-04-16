@@ -1,13 +1,11 @@
-From: Subash Patel <subashrp-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 0/2] Exynos: fix SYSMMU driver to work with power domains
-Date: Mon, 16 Apr 2012 19:05:57 +0530
-Message-ID: <4F8C203D.3000407@gmail.com>
-References: <1334154871-4756-1-git-send-email-m.szyprowski@samsung.com>
+From: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
+Subject: [PATCH v2] ARM: dt: tegra20: Add GART device
+Date: Mon, 16 Apr 2012 17:04:30 +0200
+Message-ID: <1334588670-15124-1-git-send-email-thierry.reding@avionic-design.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1334154871-4756-1-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,40 +15,36 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, KyongHo Cho <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Colin Cross <ccross-z5hGa2qSFaRBDgjK7y7TUQ@public.gmane.org>, Olof Johansson <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hello Marek,
+This commit adds the device node required to probe NVIDIA Tegra 20 GART
+hardware from the device tree.
 
-I have tested these patches on origen 3.4-rc2 with sysmmu_v12, and they 
-work great ! Thank you for sharing them.
+Signed-off-by: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
+---
+Changes in v2:
+- drop unneeded of_dev_auxdata entry
 
-Regards,
-Subash
+ arch/arm/boot/dts/tegra20.dtsi |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
-On 04/11/2012 08:04 PM, Marek Szyprowski wrote:
-> Hi!
->
-> These two patches fixes operation of the SYSMMU driver (v12 version [1])
-> with the new power domain driver based on generic power domains and
-> runtime pw, which has been merged to Linux kernel v3.4-rc1.
->
-> [1] https://lkml.org/lkml/2012/3/15/51
->
-> Best regards
-> Marek Szyprowski
-> Samsung Poland R&D Center
->
->
-> Patch summary:
->
-> Marek Szyprowski (2):
->    iommu/exynos: fix runtime pm support
->    ARM: Exynos4: update SYSMMU setup code for gen_pd power domain driver
->
->   arch/arm/mach-exynos/dev-sysmmu.c |    6 +++++-
->   arch/arm/mach-exynos/pm_domains.c |   13 +++++++++++++
->   drivers/iommu/exynos-iommu.c      |   20 ++++++++++++++++++--
->   3 files changed, 36 insertions(+), 3 deletions(-)
->
+diff --git a/arch/arm/boot/dts/tegra20.dtsi b/arch/arm/boot/dts/tegra20.dtsi
+index 55b28fd..cf3ff41 100644
+--- a/arch/arm/boot/dts/tegra20.dtsi
++++ b/arch/arm/boot/dts/tegra20.dtsi
+@@ -212,5 +212,11 @@
+ 		interrupts = < 0 97 0x04 >;
+ 		phy_type = "utmi";
+ 	};
++
++	gart: gart@7000f000 {
++		compatible = "nvidia,tegra20-gart";
++		reg = < 0x7000f000 0x00000100    /* controller registers */
++		        0x58000000 0x02000000 >; /* GART aperture */
++	};
+ };
+ 
+-- 
+1.7.10
