@@ -1,83 +1,71 @@
-From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/1] dt: Add general DMA window parser
-Date: Wed, 18 Apr 2012 13:13:01 +0200
-Message-ID: <20120418.141301.716316488779792574.hdoyu@nvidia.com>
-References: <20120418102629.GA14533@avionic-0098.mockup.avionic-design.de><20120418.133629.1664781135413277375.hdoyu@nvidia.com><20120418105423.GA5667@avionic-0098.mockup.avionic-design.de>
+From: David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
+Subject: Re: [RFC PATCH 1/3] iommu: Introduce iommu_group
+Date: Wed, 18 Apr 2012 19:58:24 +1000
+Message-ID: <20120418095824.GB5387@truffala.fritz.box>
+References: <20120402203721.28977.95285.stgit@bling.home>
+	<20120402211440.28977.74440.stgit@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20120418105423.GA5667-RM9K5IK7kjIQXX3q8xo1gnVAuStQJXxyR5q1nwbD4aMs9pC9oP6+/A@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: "thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org" <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
-Cc: "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org" <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "joerg.roedel-5C7GfCeVMHo@public.gmane.org" <joerg.roedel-5C7GfCeVMHo@public.gmane.org>, "m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org" <linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20120402211440.28977.74440.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
-Subject: Re: [PATCH 1/1] dt: Add general DMA window parser
-Date: Wed, 18 Apr 2012 12:54:23 +0200
-Message-ID: <20120418105423.GA5667-RM9K5IK7kjIQXX3q8xo1gnVAuStQJXxyR5q1nwbD4aMs9pC9oP6+/A@public.gmane.org>
+On Mon, Apr 02, 2012 at 03:14:40PM -0600, Alex Williamson wrote:
+> IOMMUs often do not have visibility of individual devices in the
+> system.  Due to IOMMU design, bus topology, or device quirks, we
+> can often only identify groups of devices.  Examples include
+> Intel VT-d & AMD-Vi which often have function level visibility
+> compared to POWER partitionable endpoints which have bridge level
+> granularity.
 
-> * PGP Signed by an unknown key
-> 
-> * Hiroshi Doyu wrote:
-> > diff --git a/drivers/of/of_dma.c b/drivers/of/of_dma.c
-> > new file mode 100644
-> > index 0000000..45c9e88
-> > --- /dev/null
-> > +++ b/drivers/of/of_dma.c
-> > @@ -0,0 +1,35 @@
-> > +/*
-> > + * Stolen from:
-> > + *	"arch/microblaze/kernel/prom_parse.c"
-> > + *	"arch/powerpc/kernel/prom_parse.c"
-> > + */
-> > +
-> > +#include <linux/of_address.h>
-> > +
-> > +void of_parse_dma_window(struct device_node *dn, const void *dma_window_prop,
-> > +		unsigned long *busno, unsigned long *phys, unsigned long *size)
-> > +{
-> > +	const __be32 *dma_window;
-> > +	u32 cells;
-> > +	const unsigned char *prop;
-> 
-> There's no need for this to be const unsigned char *, const void * will do
-> just as well.
-> 
-> > +
-> > +	dma_window = dma_window_prop;
-> > +
-> > +	/* busno is always one cell */
-> > +	if (busno)
-> > +		*busno = be32_to_cpup(dma_window++);
-> > +
-> > +	prop = of_get_property(dn, "#dma-address-cells", NULL);
-> > +	if (!prop)
-> > +		prop = of_get_property(dn, "#address-cells", NULL);
-> > +
-> > +	cells = prop ? be32_to_cpup(prop) : of_n_addr_cells(dn);
-> > +	*phys = of_read_number(dma_window, cells);
-> 
-> This should probably fail gracefully if phys == NULL, similar to what you do
-> for busno.
-> 
-> > +
-> > +	dma_window += cells;
-> > +
-> > +	prop = of_get_property(dn, "#dma-size-cells", NULL);
-> > +	cells = prop ? be32_to_cpup(prop) : of_n_size_cells(dn);
-> > +	*size = of_read_number(dma_window, cells);
-> 
-> Same here.
-> 
-> > +}
-> > +
-> 
-> And you might want to add a EXPORT_SYMBOL(of_parse_dma_window) here so the
-> function can be used from modules.
-> 
-> Sorry for having you go through another round. I should have looked more
-> closely before.
+That's a significant oversimplification of the situation on POWER,
+although it doesn't really matter in this context.  On older (i.e. pre
+PCI-E) hardware, PEs have either host bridge (i.e. domain)
+granularity, or in IIUC in some cases p2p bridge granularity, using
+special p2p bridges, since that's the only real way to do iommu
+differentiation without the PCI-E requestor IDs.  This isn't as coarse
+as it seems in practice, because the hardware is usually built with a
+bridge per physical PCI slot.
 
-No problem, I'll wait for another comments, and post again later. Thank you for reivew.
+On newer PCI-E hardware, the PE granularity is basically a firmware
+decision, and can go down to function level.  I believe pHyp puts the
+granularity at the bridge level.  Our non-virtualized Linux "firmware"
+currently does put it at the function level, but Ben is thinking about
+changing that to bridge level: again, because of the hardware design
+that isn't as coarse as it seems, and at this level we can hardware
+guarantee isolation to a degree that's not possible at the function
+level.
+
+>  PCIe-to-PCI bridges also often cloud the IOMMU
+> visibility as it cannot distiguish devices behind the bridge.
+> Devices can also sometimes hurt themselves by initiating DMA using
+> the wrong source ID on a multifunction PCI device.
+> 
+> IOMMU groups are meant to help solve these problems and hopefully
+> become the working unit of the IOMMI API.
+
+So far, so simple.  No objections here.  I am trying to work out what
+the real difference in approach is in this seriers from either your or
+my earlier isolation group series.  AFAICT it's just that this
+approach is explicitly only about IOMMU identity, ignoring (here) any
+other factors which might affect isolation.  Or am I missing
+something?
+
+-- 
+David Gibson			| I'll have my music baroque, and my code
+david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
+				| _way_ _around_!
+http://www.ozlabs.org/~dgibson
