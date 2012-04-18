@@ -1,40 +1,45 @@
 From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [PATCH 1/1] dt: Add general DMA window parser
-Date: Wed, 18 Apr 2012 11:27:58 -0600
-Message-ID: <4F8EF99E.3050709@wwwdotorg.org>
-References: <201204180731.54064.arnd@arndb.de><20120418.121824.1894043789811063795.hdoyu@nvidia.com><20120418092613.GA8632@avionic-0098.mockup.avionic-design.de> <20120418.131907.2172387798112620167.hdoyu@nvidia.com>
+Subject: Re: [PATCH 1/1] arm/dts: Tegra30: Add device tree support for SMMU
+Date: Wed, 18 Apr 2012 11:31:12 -0600
+Message-ID: <4F8EFA60.2040400@wwwdotorg.org>
+References: <20120413.132205.1766846402066131036.hdoyu@nvidia.com>	<4F887F9B.700@wwwdotorg.org>	<20120416.131059.331282986467061278.hdoyu@nvidia.com>	<4F8C43AA.7090107@wwwdotorg.org> <20120418081017.d3c630c6f7d09cd4ed039854@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20120418.131907.2172387798112620167.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20120418081017.d3c630c6f7d09cd4ed039854-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: "thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org" <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "joerg.roedel-5C7GfCeVMHo@public.gmane.org" <joerg.roedel-5C7GfCeVMHo@public.gmane.org>, "m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org" <linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Cc: "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/18/2012 04:19 AM, Hiroshi Doyu wrote:
-
-> Subject: [PATCH 1/1] dt: Add general DMA window parser
+On 04/17/2012 11:10 PM, Hiroshi Doyu wrote:
+> On Mon, 16 Apr 2012 18:07:06 +0200
+> Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote:
 > 
-> This code was stolen from:
-> 	"arch/microblaze/kernel/prom_parse.c"
-> 	"arch/powerpc/kernel/prom_parse.c"
+>> On 04/16/2012 04:10 AM, Hiroshi Doyu wrote:
+>>> Stephen Warren wrote at Fri, 13 Apr 2012 21:33:47 +0200:
+>>>> On 04/13/2012 04:22 AM, Hiroshi Doyu wrote:
+>>>>> Add device tree support for Tegra30 IOMMU(SMMU).
+>> ...
+>>>> But why does the SMMU driver expect to control the AHB arbitration
+>>>> registers? They seem unrelated to the SMMU.
+>>>
+>>> It's necessary to inform AHB that SMMU is ready to use. There's a
+>>> dedicated bit for SMMU in this AHB arbitration register.
+>>
+>> Shouldn't there be a dedicated driver for the AHB arbitration registers
+>> that the SMMU driver calls into to achieve this? IIRC, the AHB
+>> arbitration registers support much more than the SMMU enable, and if we
+>> ever need to touch those other features, going to the SMMU driver to do
+>> so probably wouldn't make sense.
 > 
-> Once "ibm," prefix is removed from dts file. This generic one could
-> replace the originals.
+> Agree. Sounds like the way to go.
+> 
+> We haven't upstreamed AHB driver yet. So is it ok to remove AHB entry
+> from SMMU dt and add AHB function call when upstreaming AHB driver?
+> I'll work on that.
 
-> +extern void of_parse_dma_window(struct device_node *dn,
-> +		       const void *dma_window_prop, unsigned long *busno,
-> +			       unsigned long *phys, unsigned long *size);
-
-At least some other of_*() parsing functions take the property name
-rather than the property pointer, and also take an index into the
-property in order to support multiple entries in it. See for example
-of_parse_phandle and of_get_named_gpio_flags. Should this new API be
-similar? E.g.:
-
-extern void of_parse_dma_window(struct device_node *np,
-			const char *propname, int index,
-			unsigned long *busno,
-			unsigned long *phys, unsigned long *size);
+I think that seems reasonable for now, yes. I assume you mean
+implementing e.g. arch/arm/mach-tegra/tegra30-ahb.c, similar to how,
+say, the fuse APIs work.
