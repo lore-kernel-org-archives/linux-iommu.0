@@ -1,577 +1,529 @@
-From: David Gibson <david@gibson.dropbear.id.au>
-Subject: Re: [RFC PATCH 2/3] iommu: Create basic group infrastructure and
- update AMD-Vi & Intel VT-d
-Date: Wed, 18 Apr 2012 21:55:53 +1000
-Message-ID: <20120418115553.GC5387@truffala.fritz.box>
-References: <20120402203721.28977.95285.stgit@bling.home>
- <20120402211446.28977.62780.stgit@bling.home>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: [PATCHv9 05/10] ARM: dma-mapping: use asm-generic/dma-mapping-common.h
+Date: Wed, 18 Apr 2012 15:44:07 +0200
+Message-ID: <1334756652-30830-6-git-send-email-m.szyprowski@samsung.com>
+References: <1334756652-30830-1-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20120402211446.28977.62780.stgit@bling.home>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: dwmw2@infradead.org, iommu@lists.linux-foundation.org, qemu-devel@nongnu.org, joerg.roedel@amd.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: TEXT/PLAIN
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-reply-to: <1334756652-30830-1-git-send-email-m.szyprowski@samsung.com>
+Sender: linux-arch-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, iommu@lists.linux-foundation.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Kyungmin Park <kyungmin.park@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Joerg Roedel <joro@8bytes.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Chunsang Jeong <chunsang.jeong@linaro.org>, Krishna Reddy <vdumpa@nvidia.com>, KyongHo Cho <pullip.cho@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Hiroshi Doyu <hdoyu@nvidia.com>, Subash Patel <subashrp@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Apr 02, 2012 at 03:14:46PM -0600, Alex Williamson wrote:
-> IOMMU groups define the minimum granularity of the IOMMU.  We therefore
-> create groups using a dma_dev which is the effective requestor ID for
-> the entire group.  Additional devices can be added to groups based on
-> system topology, IOMMU limitations, or device quirks.
-> 
-> This implementation also includes a simple idr database for creating
-> a flat address space of group IDs across multiple IOMMUs.  Updates
-> included for Intel VT-d, using example iommu callbacks for adding and
-> removing devices, as well as AMD-Vi, which tracks devices on it's own.
-> We should be able to better integrate the iommu_group within existing
-> AMD-Vi structs or provide a private data location within the iommu_group
-> where we can eventually reduce redundancy.
-> 
-> Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+This patch modifies dma-mapping implementation on ARM architecture to
+use common dma_map_ops structure and asm-generic/dma-mapping-common.h
+helpers.
 
-Looks reasonable as far as it goes.  This still lacks an obvious means
-for doing group assignment of devices on busses subordinate to devices
-that are on iommu managed busses.  Which as we discussed earlier is a
-bit of a can of worms, but necessary.
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
+Tested-By: Subash Patel <subash.ramaswamy@linaro.org>
+---
+ arch/arm/Kconfig                   |    1 +
+ arch/arm/include/asm/device.h      |    1 +
+ arch/arm/include/asm/dma-mapping.h |  196 +++++-------------------------------
+ arch/arm/mm/dma-mapping.c          |  148 ++++++++++++++++-----------
+ 4 files changed, 115 insertions(+), 231 deletions(-)
 
-> ---
-> 
->  drivers/iommu/amd_iommu.c   |   50 ++++++-----
->  drivers/iommu/intel-iommu.c |   76 +++++++++--------
->  drivers/iommu/iommu.c       |  198 ++++++++++++++++++++++++++++++++++++++-----
->  include/linux/iommu.h       |   23 +++++
->  4 files changed, 267 insertions(+), 80 deletions(-)
-> 
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index f75e060..876db28 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -256,9 +256,10 @@ static bool check_device(struct device *dev)
->  
->  static int iommu_init_device(struct device *dev)
->  {
-> -	struct pci_dev *pdev = to_pci_dev(dev);
-> +	struct pci_dev *dma_pdev, *pdev = to_pci_dev(dev);
->  	struct iommu_dev_data *dev_data;
->  	u16 alias;
-> +	int ret;
->  
->  	if (dev->archdata.iommu)
->  		return 0;
-> @@ -279,6 +280,26 @@ static int iommu_init_device(struct device *dev)
->  			return -ENOTSUPP;
->  		}
->  		dev_data->alias_data = alias_data;
-> +
-> +		dma_pdev = pci_get_bus_and_slot(alias >> 8, alias & 0xff);
-> +	} else
-> +		dma_pdev = pdev;
-> +
-> +	/* dma_pdev = iommu_pci_quirk(dma_pdev) */
-
-Presumably an actual implementation of the quirk is coming?  It might
-be an idea for it to take both the individual and representative
-devices, in case that information is useful.
-
-> +	if (!dma_pdev->dev.iommu_group) {
-> +		struct iommu_group *group;
-> +
-> +		group = iommu_group_alloc(&dma_pdev->dev);
-> +		if (IS_ERR(group))
-> +			return PTR_ERR(group);
-> +	}
-> +
-> +	ret = iommu_group_add_device(dma_pdev->dev.iommu_group, dev);
-> +	if (ret) {
-> +		if (iommu_group_empty(dma_pdev->dev.iommu_group))
-> +			iommu_group_free(dma_pdev->dev.iommu_group);
-> +		return ret;
-
-It might be nice to have generic helpers that do this kind of lifetime
-handling of the groups, but that's a detail.
-
->  	}
->  
->  	if (pci_iommuv2_capable(pdev)) {
-> @@ -309,6 +330,12 @@ static void iommu_ignore_device(struct device *dev)
->  
->  static void iommu_uninit_device(struct device *dev)
->  {
-> +	struct iommu_group *group = dev->iommu_group;
-> +
-> +	iommu_group_remove_device(dev);
-> +	if (iommu_group_empty(group))
-> +		iommu_group_free(group);
-> +
->  	/*
->  	 * Nothing to do here - we keep dev_data around for unplugged devices
->  	 * and reuse it when the device is re-plugged - not doing so would
-> @@ -3191,26 +3218,6 @@ static int amd_iommu_domain_has_cap(struct iommu_domain *domain,
->  	return 0;
->  }
->  
-> -static int amd_iommu_device_group(struct device *dev, unsigned int *groupid)
-> -{
-> -	struct iommu_dev_data *dev_data = dev->archdata.iommu;
-> -	struct pci_dev *pdev = to_pci_dev(dev);
-> -	u16 devid;
-> -
-> -	if (!dev_data)
-> -		return -ENODEV;
-> -
-> -	if (pdev->is_virtfn || !iommu_group_mf)
-> -		devid = dev_data->devid;
-> -	else
-> -		devid = calc_devid(pdev->bus->number,
-> -				   PCI_DEVFN(PCI_SLOT(pdev->devfn), 0));
-> -
-> -	*groupid = amd_iommu_alias_table[devid];
-> -
-> -	return 0;
-> -}
-> -
->  static struct iommu_ops amd_iommu_ops = {
->  	.domain_init = amd_iommu_domain_init,
->  	.domain_destroy = amd_iommu_domain_destroy,
-> @@ -3220,7 +3227,6 @@ static struct iommu_ops amd_iommu_ops = {
->  	.unmap = amd_iommu_unmap,
->  	.iova_to_phys = amd_iommu_iova_to_phys,
->  	.domain_has_cap = amd_iommu_domain_has_cap,
-> -	.device_group = amd_iommu_device_group,
->  	.pgsize_bitmap	= AMD_IOMMU_PGSIZES,
->  };
->  
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index c9c6053..41ab7d0 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -4075,54 +4075,59 @@ static int intel_iommu_domain_has_cap(struct iommu_domain *domain,
->  	return 0;
->  }
->  
-> -/*
-> - * Group numbers are arbitrary.  Device with the same group number
-> - * indicate the iommu cannot differentiate between them.  To avoid
-> - * tracking used groups we just use the seg|bus|devfn of the lowest
-> - * level we're able to differentiate devices
-> - */
-> -static int intel_iommu_device_group(struct device *dev, unsigned int *groupid)
-> +static int intel_iommu_add_device(struct device *dev)
->  {
->  	struct pci_dev *pdev = to_pci_dev(dev);
-> -	struct pci_dev *bridge;
-> -	union {
-> -		struct {
-> -			u8 devfn;
-> -			u8 bus;
-> -			u16 segment;
-> -		} pci;
-> -		u32 group;
-> -	} id;
-> -
-> -	if (iommu_no_mapping(dev))
-> -		return -ENODEV;
-> -
-> -	id.pci.segment = pci_domain_nr(pdev->bus);
-> -	id.pci.bus = pdev->bus->number;
-> -	id.pci.devfn = pdev->devfn;
-> +	struct pci_dev *bridge, *dma_pdev = pdev;
-> +	int ret;
->  
-> -	if (!device_to_iommu(id.pci.segment, id.pci.bus, id.pci.devfn))
-> +	if (!device_to_iommu(pci_domain_nr(pdev->bus),
-> +			     pdev->bus->number, pdev->devfn))
->  		return -ENODEV;
->  
->  	bridge = pci_find_upstream_pcie_bridge(pdev);
->  	if (bridge) {
-> -		if (pci_is_pcie(bridge)) {
-> -			id.pci.bus = bridge->subordinate->number;
-> -			id.pci.devfn = 0;
-> -		} else {
-> -			id.pci.bus = bridge->bus->number;
-> -			id.pci.devfn = bridge->devfn;
-> -		}
-> +		if (pci_is_pcie(bridge))
-> +			dma_pdev = pci_get_domain_bus_and_slot(
-> +						pci_domain_nr(pdev->bus),
-> +						bridge->subordinate->number, 0);
-> +		else
-> +			dma_pdev = bridge;
-> +	}
-> +
-> +	if (!bridge && !pdev->is_virtfn && iommu_group_mf)
-> +		dma_pdev = pci_get_slot(dma_pdev->bus, 0);
-> +
-> +	/* dma_pdev = iommu_pci_quirk(dma_pdev); */
-> +
-> +	if (!dma_pdev->dev.iommu_group) {
-> +		struct iommu_group *group;
-> +
-> +		group = iommu_group_alloc(&dma_pdev->dev);
-> +		if (IS_ERR(group))
-> +			return PTR_ERR(group);
->  	}
->  
-> -	if (!pdev->is_virtfn && iommu_group_mf)
-> -		id.pci.devfn = PCI_DEVFN(PCI_SLOT(id.pci.devfn), 0);
-> +	ret = iommu_group_add_device(dma_pdev->dev.iommu_group, dev);
-> +	if (ret) {
-> +		if (iommu_group_empty(dma_pdev->dev.iommu_group))
-> +			iommu_group_free(dma_pdev->dev.iommu_group);
->  
-> -	*groupid = id.group;
-> +		return ret;
-> +	}
->  
->  	return 0;
->  }
->  
-> +static void intel_iommu_remove_device(struct device *dev)
-> +{
-> +	struct iommu_group *group = dev->iommu_group;
-> +
-> +	iommu_group_remove_device(dev);
-> +	if (iommu_group_empty(group))
-> +		iommu_group_free(group);
-> +}
-> +
->  static struct iommu_ops intel_iommu_ops = {
->  	.domain_init	= intel_iommu_domain_init,
->  	.domain_destroy = intel_iommu_domain_destroy,
-> @@ -4132,7 +4137,8 @@ static struct iommu_ops intel_iommu_ops = {
->  	.unmap		= intel_iommu_unmap,
->  	.iova_to_phys	= intel_iommu_iova_to_phys,
->  	.domain_has_cap = intel_iommu_domain_has_cap,
-> -	.device_group	= intel_iommu_device_group,
-> +	.add_device	= intel_iommu_add_device,
-> +	.remove_device	= intel_iommu_remove_device,
->  	.pgsize_bitmap	= INTEL_IOMMU_PGSIZES,
->  };
->  
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 2198b2d..6a51ed9 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -26,48 +26,96 @@
->  #include <linux/slab.h>
->  #include <linux/errno.h>
->  #include <linux/iommu.h>
-> +#include <linux/idr.h>
->  
-> -static ssize_t show_iommu_group(struct device *dev,
-> -				struct device_attribute *attr, char *buf)
-> +static struct kset *iommu_group_kset;
-> +static struct idr iommu_group_idr;
-> +static struct mutex iommu_group_mutex;
-> +
-> +struct iommu_group_attribute {
-> +	struct attribute attr;
-> +	ssize_t (*show)(struct iommu_group *group, char *buf);
-> +	ssize_t (*store)(struct iommu_group *group,
-> +			 const char *buf, size_t count);
-> +};
-> +
-> +#define to_iommu_group_attr(_attr)	\
-> +	container_of(_attr, struct iommu_group_attribute, attr)
-> +#define to_iommu_group(_kobj)		\
-> +	container_of(_kobj, struct iommu_group, kobj)
-> +
-> +static ssize_t iommu_group_attr_show(struct kobject *kobj,
-> +				     struct attribute *__attr, char *buf)
->  {
-> -	unsigned int groupid;
-> +	struct iommu_group_attribute *attr = to_iommu_group_attr(__attr);
-> +	struct iommu_group *group = to_iommu_group(kobj);
-> +	ssize_t ret = -EIO;
->  
-> -	if (iommu_device_group(dev, &groupid))
-> -		return 0;
-> +	if (attr->show)
-> +		ret = attr->show(group, buf);
-> +	return ret;
-> +}
-> +
-> +static ssize_t iommu_group_attr_store(struct kobject *kobj,
-> +				      struct attribute *__attr,
-> +				      const char *buf, size_t count)
-> +{
-> +	struct iommu_group_attribute *attr = to_iommu_group_attr(__attr);
-> +	struct iommu_group *group = to_iommu_group(kobj);
-> +	ssize_t ret = -EIO;
->  
-> -	return sprintf(buf, "%u", groupid);
-> +	if (attr->store)
-> +		ret = attr->store(group, buf, count);
-> +	return ret;
->  }
-> -static DEVICE_ATTR(iommu_group, S_IRUGO, show_iommu_group, NULL);
->  
-> -static int add_iommu_group(struct device *dev, void *data)
-> +static void iommu_group_release(struct kobject *kobj)
->  {
-> -	unsigned int groupid;
-> +	struct iommu_group *group = to_iommu_group(kobj);
->  
-> -	if (iommu_device_group(dev, &groupid) == 0)
-> -		return device_create_file(dev, &dev_attr_iommu_group);
-> +	mutex_lock(&iommu_group_mutex);
-> +	idr_remove(&iommu_group_idr, group->id);
-> +	mutex_unlock(&iommu_group_mutex);
->  
-> -	return 0;
-> +	kfree(group);
->  }
->  
-> -static int remove_iommu_group(struct device *dev)
-> +static const struct sysfs_ops iommu_group_sysfs_ops = {
-> +	.show = iommu_group_attr_show,
-> +	.store = iommu_group_attr_store,
-> +};
-> +
-> +static struct kobj_type iommu_group_ktype = {
-> +	.sysfs_ops = &iommu_group_sysfs_ops,
-> +	.release = iommu_group_release,
-> +};
-> +
-> +static int add_iommu_group(struct device *dev, void *data)
->  {
-> -	unsigned int groupid;
-> +	struct iommu_ops *ops = data;
->  
-> -	if (iommu_device_group(dev, &groupid) == 0)
-> -		device_remove_file(dev, &dev_attr_iommu_group);
-> +	if (!ops->add_device)
-> +		return -ENODEV;
->  
-> -	return 0;
-> +	WARN_ON(dev->iommu_group);
-> +
-> +	return ops->add_device(dev);
->  }
->  
->  static int iommu_device_notifier(struct notifier_block *nb,
->  				 unsigned long action, void *data)
->  {
->  	struct device *dev = data;
-> +	struct iommu_ops *ops = dev->bus->iommu_ops;
->  
->  	if (action == BUS_NOTIFY_ADD_DEVICE)
-> -		return add_iommu_group(dev, NULL);
-> -	else if (action == BUS_NOTIFY_DEL_DEVICE)
-> -		return remove_iommu_group(dev);
-> +		return add_iommu_group(dev, ops);
-> +	else if (action == BUS_NOTIFY_DEL_DEVICE) {
-> +		if (ops->remove_device && dev->iommu_group) {
-> +			ops->remove_device(dev);
-> +			return 0;
-> +		}
-> +	}
->  
->  	return 0;
->  }
-> @@ -79,7 +127,97 @@ static struct notifier_block iommu_device_nb = {
->  static void iommu_bus_init(struct bus_type *bus, struct iommu_ops *ops)
->  {
->  	bus_register_notifier(bus, &iommu_device_nb);
-> -	bus_for_each_dev(bus, NULL, NULL, add_iommu_group);
-> +	bus_for_each_dev(bus, NULL, ops, add_iommu_group);
-> +}
-> +
-> +struct iommu_group *iommu_group_alloc(struct device *dma_dev)
-> +{
-> +	struct iommu_group *group;
-> +	int ret;
-> +
-> +	group = kzalloc(sizeof(*group), GFP_KERNEL);
-> +	if (!group)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	group->kobj.kset = iommu_group_kset;
-> +	group->dma_dev = dma_dev;
-> +	atomic_set(&group->refcnt, 0);
-> +
-> +	mutex_lock(&iommu_group_mutex);
-> +
-> +again:
-> +	if (unlikely(0 == idr_pre_get(&iommu_group_idr, GFP_KERNEL))) {
-> +		kfree(group);
-> +		mutex_unlock(&iommu_group_mutex);
-> +		return ERR_PTR(-ENOMEM);
-> +	}
-> +
-> +	if (-EAGAIN == idr_get_new(&iommu_group_idr, group, &group->id))
-> +		goto again;
-> +
-> +	mutex_unlock(&iommu_group_mutex);
-> +
-> +	ret = kobject_init_and_add(&group->kobj, &iommu_group_ktype,
-> +				   NULL, "%d", group->id);
-> +	if (ret) {
-> +		iommu_group_release(&group->kobj);
-> +		return ERR_PTR(ret);
-> +	}
-> +
-> +	group->devices_kobj = kobject_create_and_add("devices", &group->kobj);
-> +        if (!group->devices_kobj) {
-> +		kobject_put(&group->kobj);
-> +		return ERR_PTR(-ENOMEM);
-> +	}
-> +
-> +	dma_dev->iommu_group = group;
-> +
-> +	return group;
-> +}
-> +
-> +void iommu_group_free(struct iommu_group *group)
-> +{
-> +	group->dma_dev->iommu_group = NULL;
-> +	WARN_ON(atomic_read(&group->refcnt));
-
-This kind of implies that the representative device doesn't count
-against the refcount, which seems wrong.
-
-> +	kobject_put(group->devices_kobj);
-> +	kobject_put(&group->kobj);
-> +}
-> +
-> +bool iommu_group_empty(struct iommu_group *group)
-> +{
-> +	return (0 == atomic_read(&group->refcnt));
-> +}
-> +
-> +int iommu_group_add_device(struct iommu_group *group, struct device *dev)
-> +{
-> +	int ret;
-> +
-> +	atomic_inc(&group->refcnt);
-> +
-> +	ret = sysfs_create_link(&dev->kobj, &group->kobj, "iommu_group");
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = sysfs_create_link(group->devices_kobj, &dev->kobj,
-> +                                kobject_name(&dev->kobj));
-> +	if (ret) {
-> +		sysfs_remove_link(&dev->kobj, "iommu_group");
-> +		return ret;
-> +	}
-> +
-> +	dev->iommu_group = group;
-> +
-> +	return 0;
-> +}
-> +
-> +void iommu_group_remove_device(struct device *dev)
-> +{
-> +	sysfs_remove_link(dev->iommu_group->devices_kobj,
-> +			  kobject_name(&dev->kobj));
-> +	sysfs_remove_link(&dev->kobj, "iommu_group");
-> +
-> +	atomic_dec(&dev->iommu_group->refcnt);
-> +	dev->iommu_group = NULL;
->  }
->  
->  /**
-> @@ -335,9 +473,23 @@ EXPORT_SYMBOL_GPL(iommu_unmap);
->  
->  int iommu_device_group(struct device *dev, unsigned int *groupid)
->  {
-> -	if (iommu_present(dev->bus) && dev->bus->iommu_ops->device_group)
-> -		return dev->bus->iommu_ops->device_group(dev, groupid);
-> +	if (dev->iommu_group) {
-> +		*groupid = dev->iommu_group->id;
-> +		return 0;
-> +	}
->  
->  	return -ENODEV;
->  }
->  EXPORT_SYMBOL_GPL(iommu_device_group);
-> +
-> +static int __init iommu_init(void)
-> +{
-> +	iommu_group_kset = kset_create_and_add("iommu_groups", NULL, NULL);
-> +	idr_init(&iommu_group_idr);
-> +	mutex_init(&iommu_group_mutex);
-> +
-> +	BUG_ON(!iommu_group_kset);
-> +
-> +	return 0;
-> +}
-> +subsys_initcall(iommu_init);
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 2ee375c..24004d6 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -60,6 +60,8 @@ struct iommu_domain {
->   * @iova_to_phys: translate iova to physical address
->   * @domain_has_cap: domain capabilities query
->   * @commit: commit iommu domain
-> + * @add_device: add device to iommu grouping
-> + * @remove_device: remove device from iommu grouping
->   * @pgsize_bitmap: bitmap of supported page sizes
->   */
->  struct iommu_ops {
-> @@ -76,10 +78,25 @@ struct iommu_ops {
->  	int (*domain_has_cap)(struct iommu_domain *domain,
->  			      unsigned long cap);
->  	int (*device_group)(struct device *dev, unsigned int *groupid);
-> +	int (*add_device)(struct device *dev);
-> +	void (*remove_device)(struct device *dev);
->  	unsigned long pgsize_bitmap;
->  };
->  
-> +/**
-> + * struct iommu_group - groups of devices representing iommu visibility
-> + * @dma_dev: all dma from the group appears to the iommu using this source id
-> + * @kobj: iommu group node in sysfs
-> + * @devices_kobj: sysfs subdir node for linking devices
-> + * @refcnt: number of devices in group
-> + * @id: unique id number for the group (for easy sysfs listing)
-> + */
->  struct iommu_group {
-> +	struct device *dma_dev;
-
-So, a "representative" device works very nicely for the AMD and Intel
-IOMMUs.  But I'm not sure it makes sense for any IOMMU - we could
-point it to the bridge in the Power case, but I'm not sure if that
-really makes sense (particularly when it's a host bridge, not a p2p
-bridge).  In embedded cases it may make even less sense.
-
-I think it would be better to move this into iommu driver specific
-data (which I guess would mean adding a facility for iommu driver
-specific data, either with a private pointer or using container_of).
-
-> +	struct kobject kobj;
-> +	struct kobject *devices_kobj;
-
-The devices_kobj has the same lifetime as the group, so it might as
-well be a static member.
-
-> +	atomic_t refcnt;
-> +	int id;
->  };
->  
->  extern int bus_set_iommu(struct bus_type *bus, struct iommu_ops *ops);
-> @@ -101,6 +118,12 @@ extern int iommu_domain_has_cap(struct iommu_domain *domain,
->  extern void iommu_set_fault_handler(struct iommu_domain *domain,
->  					iommu_fault_handler_t handler);
->  extern int iommu_device_group(struct device *dev, unsigned int *groupid);
-> +extern struct iommu_group *iommu_group_alloc(struct device *dev);
-> +extern void iommu_group_free(struct iommu_group *group);
-> +extern bool iommu_group_empty(struct iommu_group *group);
-> +extern int iommu_group_add_device(struct iommu_group *group,
-> +				  struct device *dev);
-> +extern void iommu_group_remove_device(struct device *dev);
->  
->  /**
->   * report_iommu_fault() - report about an IOMMU fault to the IOMMU framework
-> 
-
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index cf006d4..0fd27d4 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -4,6 +4,7 @@ config ARM
+ 	select HAVE_AOUT
+ 	select HAVE_DMA_API_DEBUG
+ 	select HAVE_IDE if PCI || ISA || PCMCIA
++	select HAVE_DMA_ATTRS
+ 	select HAVE_MEMBLOCK
+ 	select RTC_LIB
+ 	select SYS_SUPPORTS_APM_EMULATION
+diff --git a/arch/arm/include/asm/device.h b/arch/arm/include/asm/device.h
+index 7aa3680..6e2cb0e 100644
+--- a/arch/arm/include/asm/device.h
++++ b/arch/arm/include/asm/device.h
+@@ -7,6 +7,7 @@
+ #define ASMARM_DEVICE_H
+ 
+ struct dev_archdata {
++	struct dma_map_ops	*dma_ops;
+ #ifdef CONFIG_DMABOUNCE
+ 	struct dmabounce_device_info *dmabounce;
+ #endif
+diff --git a/arch/arm/include/asm/dma-mapping.h b/arch/arm/include/asm/dma-mapping.h
+index eeddbe2..6725a08 100644
+--- a/arch/arm/include/asm/dma-mapping.h
++++ b/arch/arm/include/asm/dma-mapping.h
+@@ -11,6 +11,27 @@
+ #include <asm/memory.h>
+ 
+ #define DMA_ERROR_CODE	(~0)
++extern struct dma_map_ops arm_dma_ops;
++
++static inline struct dma_map_ops *get_dma_ops(struct device *dev)
++{
++	if (dev && dev->archdata.dma_ops)
++		return dev->archdata.dma_ops;
++	return &arm_dma_ops;
++}
++
++static inline void set_dma_ops(struct device *dev, struct dma_map_ops *ops)
++{
++	BUG_ON(!dev);
++	dev->archdata.dma_ops = ops;
++}
++
++#include <asm-generic/dma-mapping-common.h>
++
++static inline int dma_set_mask(struct device *dev, u64 mask)
++{
++	return get_dma_ops(dev)->set_dma_mask(dev, mask);
++}
+ 
+ #ifdef __arch_page_to_dma
+ #error Please update to __arch_pfn_to_dma
+@@ -119,7 +140,6 @@ static inline void __dma_page_dev_to_cpu(struct page *page, unsigned long off,
+ 
+ extern int dma_supported(struct device *, u64);
+ extern int dma_set_mask(struct device *, u64);
+-
+ /*
+  * DMA errors are defined by all-bits-set in the DMA address.
+  */
+@@ -297,179 +317,17 @@ static inline void __dma_unmap_page(struct device *dev, dma_addr_t handle,
+ }
+ #endif /* CONFIG_DMABOUNCE */
+ 
+-/**
+- * dma_map_single - map a single buffer for streaming DMA
+- * @dev: valid struct device pointer, or NULL for ISA and EISA-like devices
+- * @cpu_addr: CPU direct mapped address of buffer
+- * @size: size of buffer to map
+- * @dir: DMA transfer direction
+- *
+- * Ensure that any data held in the cache is appropriately discarded
+- * or written back.
+- *
+- * The device owns this memory once this call has completed.  The CPU
+- * can regain ownership by calling dma_unmap_single() or
+- * dma_sync_single_for_cpu().
+- */
+-static inline dma_addr_t dma_map_single(struct device *dev, void *cpu_addr,
+-		size_t size, enum dma_data_direction dir)
+-{
+-	unsigned long offset;
+-	struct page *page;
+-	dma_addr_t addr;
+-
+-	BUG_ON(!virt_addr_valid(cpu_addr));
+-	BUG_ON(!virt_addr_valid(cpu_addr + size - 1));
+-	BUG_ON(!valid_dma_direction(dir));
+-
+-	page = virt_to_page(cpu_addr);
+-	offset = (unsigned long)cpu_addr & ~PAGE_MASK;
+-	addr = __dma_map_page(dev, page, offset, size, dir);
+-	debug_dma_map_page(dev, page, offset, size, dir, addr, true);
+-
+-	return addr;
+-}
+-
+-/**
+- * dma_map_page - map a portion of a page for streaming DMA
+- * @dev: valid struct device pointer, or NULL for ISA and EISA-like devices
+- * @page: page that buffer resides in
+- * @offset: offset into page for start of buffer
+- * @size: size of buffer to map
+- * @dir: DMA transfer direction
+- *
+- * Ensure that any data held in the cache is appropriately discarded
+- * or written back.
+- *
+- * The device owns this memory once this call has completed.  The CPU
+- * can regain ownership by calling dma_unmap_page().
+- */
+-static inline dma_addr_t dma_map_page(struct device *dev, struct page *page,
+-	     unsigned long offset, size_t size, enum dma_data_direction dir)
+-{
+-	dma_addr_t addr;
+-
+-	BUG_ON(!valid_dma_direction(dir));
+-
+-	addr = __dma_map_page(dev, page, offset, size, dir);
+-	debug_dma_map_page(dev, page, offset, size, dir, addr, false);
+-
+-	return addr;
+-}
+-
+-/**
+- * dma_unmap_single - unmap a single buffer previously mapped
+- * @dev: valid struct device pointer, or NULL for ISA and EISA-like devices
+- * @handle: DMA address of buffer
+- * @size: size of buffer (same as passed to dma_map_single)
+- * @dir: DMA transfer direction (same as passed to dma_map_single)
+- *
+- * Unmap a single streaming mode DMA translation.  The handle and size
+- * must match what was provided in the previous dma_map_single() call.
+- * All other usages are undefined.
+- *
+- * After this call, reads by the CPU to the buffer are guaranteed to see
+- * whatever the device wrote there.
+- */
+-static inline void dma_unmap_single(struct device *dev, dma_addr_t handle,
+-		size_t size, enum dma_data_direction dir)
+-{
+-	debug_dma_unmap_page(dev, handle, size, dir, true);
+-	__dma_unmap_page(dev, handle, size, dir);
+-}
+-
+-/**
+- * dma_unmap_page - unmap a buffer previously mapped through dma_map_page()
+- * @dev: valid struct device pointer, or NULL for ISA and EISA-like devices
+- * @handle: DMA address of buffer
+- * @size: size of buffer (same as passed to dma_map_page)
+- * @dir: DMA transfer direction (same as passed to dma_map_page)
+- *
+- * Unmap a page streaming mode DMA translation.  The handle and size
+- * must match what was provided in the previous dma_map_page() call.
+- * All other usages are undefined.
+- *
+- * After this call, reads by the CPU to the buffer are guaranteed to see
+- * whatever the device wrote there.
+- */
+-static inline void dma_unmap_page(struct device *dev, dma_addr_t handle,
+-		size_t size, enum dma_data_direction dir)
+-{
+-	debug_dma_unmap_page(dev, handle, size, dir, false);
+-	__dma_unmap_page(dev, handle, size, dir);
+-}
+-
+-
+-static inline void dma_sync_single_for_cpu(struct device *dev,
+-		dma_addr_t handle, size_t size, enum dma_data_direction dir)
+-{
+-	BUG_ON(!valid_dma_direction(dir));
+-
+-	debug_dma_sync_single_for_cpu(dev, handle, size, dir);
+-
+-	if (!dmabounce_sync_for_cpu(dev, handle, size, dir))
+-		return;
+-
+-	__dma_single_dev_to_cpu(dma_to_virt(dev, handle), size, dir);
+-}
+-
+-static inline void dma_sync_single_for_device(struct device *dev,
+-		dma_addr_t handle, size_t size, enum dma_data_direction dir)
+-{
+-	BUG_ON(!valid_dma_direction(dir));
+-
+-	debug_dma_sync_single_for_device(dev, handle, size, dir);
+-
+-	if (!dmabounce_sync_for_device(dev, handle, size, dir))
+-		return;
+-
+-	__dma_single_cpu_to_dev(dma_to_virt(dev, handle), size, dir);
+-}
+-
+-/**
+- * dma_sync_single_range_for_cpu
+- * @dev: valid struct device pointer, or NULL for ISA and EISA-like devices
+- * @handle: DMA address of buffer
+- * @offset: offset of region to start sync
+- * @size: size of region to sync
+- * @dir: DMA transfer direction (same as passed to dma_map_single)
+- *
+- * Make physical memory consistent for a single streaming mode DMA
+- * translation after a transfer.
+- *
+- * If you perform a dma_map_single() but wish to interrogate the
+- * buffer using the cpu, yet do not wish to teardown the PCI dma
+- * mapping, you must call this function before doing so.  At the
+- * next point you give the PCI dma address back to the card, you
+- * must first the perform a dma_sync_for_device, and then the
+- * device again owns the buffer.
+- */
+-static inline void dma_sync_single_range_for_cpu(struct device *dev,
+-		dma_addr_t handle, unsigned long offset, size_t size,
+-		enum dma_data_direction dir)
+-{
+-	dma_sync_single_for_cpu(dev, handle + offset, size, dir);
+-}
+-
+-static inline void dma_sync_single_range_for_device(struct device *dev,
+-		dma_addr_t handle, unsigned long offset, size_t size,
+-		enum dma_data_direction dir)
+-{
+-	dma_sync_single_for_device(dev, handle + offset, size, dir);
+-}
+-
+ /*
+  * The scatter list versions of the above methods.
+  */
+-extern int dma_map_sg(struct device *, struct scatterlist *, int,
+-		enum dma_data_direction);
+-extern void dma_unmap_sg(struct device *, struct scatterlist *, int,
++extern int arm_dma_map_sg(struct device *, struct scatterlist *, int,
++		enum dma_data_direction, struct dma_attrs *attrs);
++extern void arm_dma_unmap_sg(struct device *, struct scatterlist *, int,
++		enum dma_data_direction, struct dma_attrs *attrs);
++extern void arm_dma_sync_sg_for_cpu(struct device *, struct scatterlist *, int,
+ 		enum dma_data_direction);
+-extern void dma_sync_sg_for_cpu(struct device *, struct scatterlist *, int,
++extern void arm_dma_sync_sg_for_device(struct device *, struct scatterlist *, int,
+ 		enum dma_data_direction);
+-extern void dma_sync_sg_for_device(struct device *, struct scatterlist *, int,
+-		enum dma_data_direction);
+-
+ 
+ #endif /* __KERNEL__ */
+ #endif
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index cd228c6..92ffb0a 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -29,6 +29,85 @@
+ 
+ #include "mm.h"
+ 
++/**
++ * arm_dma_map_page - map a portion of a page for streaming DMA
++ * @dev: valid struct device pointer, or NULL for ISA and EISA-like devices
++ * @page: page that buffer resides in
++ * @offset: offset into page for start of buffer
++ * @size: size of buffer to map
++ * @dir: DMA transfer direction
++ *
++ * Ensure that any data held in the cache is appropriately discarded
++ * or written back.
++ *
++ * The device owns this memory once this call has completed.  The CPU
++ * can regain ownership by calling dma_unmap_page().
++ */
++static inline dma_addr_t arm_dma_map_page(struct device *dev, struct page *page,
++	     unsigned long offset, size_t size, enum dma_data_direction dir,
++	     struct dma_attrs *attrs)
++{
++	return __dma_map_page(dev, page, offset, size, dir);
++}
++
++/**
++ * arm_dma_unmap_page - unmap a buffer previously mapped through dma_map_page()
++ * @dev: valid struct device pointer, or NULL for ISA and EISA-like devices
++ * @handle: DMA address of buffer
++ * @size: size of buffer (same as passed to dma_map_page)
++ * @dir: DMA transfer direction (same as passed to dma_map_page)
++ *
++ * Unmap a page streaming mode DMA translation.  The handle and size
++ * must match what was provided in the previous dma_map_page() call.
++ * All other usages are undefined.
++ *
++ * After this call, reads by the CPU to the buffer are guaranteed to see
++ * whatever the device wrote there.
++ */
++static inline void arm_dma_unmap_page(struct device *dev, dma_addr_t handle,
++		size_t size, enum dma_data_direction dir,
++		struct dma_attrs *attrs)
++{
++	__dma_unmap_page(dev, handle, size, dir);
++}
++
++static inline void arm_dma_sync_single_for_cpu(struct device *dev,
++		dma_addr_t handle, size_t size, enum dma_data_direction dir)
++{
++	unsigned int offset = handle & (PAGE_SIZE - 1);
++	struct page *page = pfn_to_page(dma_to_pfn(dev, handle-offset));
++	if (!dmabounce_sync_for_cpu(dev, handle, size, dir))
++		return;
++
++	__dma_page_dev_to_cpu(page, offset, size, dir);
++}
++
++static inline void arm_dma_sync_single_for_device(struct device *dev,
++		dma_addr_t handle, size_t size, enum dma_data_direction dir)
++{
++	unsigned int offset = handle & (PAGE_SIZE - 1);
++	struct page *page = pfn_to_page(dma_to_pfn(dev, handle-offset));
++	if (!dmabounce_sync_for_device(dev, handle, size, dir))
++		return;
++
++	__dma_page_cpu_to_dev(page, offset, size, dir);
++}
++
++static int arm_dma_set_mask(struct device *dev, u64 dma_mask);
++
++struct dma_map_ops arm_dma_ops = {
++	.map_page		= arm_dma_map_page,
++	.unmap_page		= arm_dma_unmap_page,
++	.map_sg			= arm_dma_map_sg,
++	.unmap_sg		= arm_dma_unmap_sg,
++	.sync_single_for_cpu	= arm_dma_sync_single_for_cpu,
++	.sync_single_for_device	= arm_dma_sync_single_for_device,
++	.sync_sg_for_cpu	= arm_dma_sync_sg_for_cpu,
++	.sync_sg_for_device	= arm_dma_sync_sg_for_device,
++	.set_dma_mask		= arm_dma_set_mask,
++};
++EXPORT_SYMBOL(arm_dma_ops);
++
+ static u64 get_coherent_dma_mask(struct device *dev)
+ {
+ 	u64 mask = (u64)arm_dma_limit;
+@@ -458,47 +537,6 @@ void dma_free_coherent(struct device *dev, size_t size, void *cpu_addr, dma_addr
+ }
+ EXPORT_SYMBOL(dma_free_coherent);
+ 
+-/*
+- * Make an area consistent for devices.
+- * Note: Drivers should NOT use this function directly, as it will break
+- * platforms with CONFIG_DMABOUNCE.
+- * Use the driver DMA support - see dma-mapping.h (dma_sync_*)
+- */
+-void ___dma_single_cpu_to_dev(const void *kaddr, size_t size,
+-	enum dma_data_direction dir)
+-{
+-	unsigned long paddr;
+-
+-	BUG_ON(!virt_addr_valid(kaddr) || !virt_addr_valid(kaddr + size - 1));
+-
+-	dmac_map_area(kaddr, size, dir);
+-
+-	paddr = __pa(kaddr);
+-	if (dir == DMA_FROM_DEVICE) {
+-		outer_inv_range(paddr, paddr + size);
+-	} else {
+-		outer_clean_range(paddr, paddr + size);
+-	}
+-	/* FIXME: non-speculating: flush on bidirectional mappings? */
+-}
+-EXPORT_SYMBOL(___dma_single_cpu_to_dev);
+-
+-void ___dma_single_dev_to_cpu(const void *kaddr, size_t size,
+-	enum dma_data_direction dir)
+-{
+-	BUG_ON(!virt_addr_valid(kaddr) || !virt_addr_valid(kaddr + size - 1));
+-
+-	/* FIXME: non-speculating: not required */
+-	/* don't bother invalidating if DMA to device */
+-	if (dir != DMA_TO_DEVICE) {
+-		unsigned long paddr = __pa(kaddr);
+-		outer_inv_range(paddr, paddr + size);
+-	}
+-
+-	dmac_unmap_area(kaddr, size, dir);
+-}
+-EXPORT_SYMBOL(___dma_single_dev_to_cpu);
+-
+ static void dma_cache_maint_page(struct page *page, unsigned long offset,
+ 	size_t size, enum dma_data_direction dir,
+ 	void (*op)(const void *, size_t, int))
+@@ -596,21 +634,18 @@ EXPORT_SYMBOL(___dma_page_dev_to_cpu);
+  * Device ownership issues as mentioned for dma_map_single are the same
+  * here.
+  */
+-int dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
+-		enum dma_data_direction dir)
++int arm_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
++		enum dma_data_direction dir, struct dma_attrs *attrs)
+ {
+ 	struct scatterlist *s;
+ 	int i, j;
+ 
+-	BUG_ON(!valid_dma_direction(dir));
+-
+ 	for_each_sg(sg, s, nents, i) {
+ 		s->dma_address = __dma_map_page(dev, sg_page(s), s->offset,
+ 						s->length, dir);
+ 		if (dma_mapping_error(dev, s->dma_address))
+ 			goto bad_mapping;
+ 	}
+-	debug_dma_map_sg(dev, sg, nents, nents, dir);
+ 	return nents;
+ 
+  bad_mapping:
+@@ -618,7 +653,6 @@ int dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
+ 		__dma_unmap_page(dev, sg_dma_address(s), sg_dma_len(s), dir);
+ 	return 0;
+ }
+-EXPORT_SYMBOL(dma_map_sg);
+ 
+ /**
+  * dma_unmap_sg - unmap a set of SG buffers mapped by dma_map_sg
+@@ -630,18 +664,15 @@ EXPORT_SYMBOL(dma_map_sg);
+  * Unmap a set of streaming mode DMA translations.  Again, CPU access
+  * rules concerning calls here are the same as for dma_unmap_single().
+  */
+-void dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
+-		enum dma_data_direction dir)
++void arm_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
++		enum dma_data_direction dir, struct dma_attrs *attrs)
+ {
+ 	struct scatterlist *s;
+ 	int i;
+ 
+-	debug_dma_unmap_sg(dev, sg, nents, dir);
+-
+ 	for_each_sg(sg, s, nents, i)
+ 		__dma_unmap_page(dev, sg_dma_address(s), sg_dma_len(s), dir);
+ }
+-EXPORT_SYMBOL(dma_unmap_sg);
+ 
+ /**
+  * dma_sync_sg_for_cpu
+@@ -650,7 +681,7 @@ EXPORT_SYMBOL(dma_unmap_sg);
+  * @nents: number of buffers to map (returned from dma_map_sg)
+  * @dir: DMA transfer direction (same as was passed to dma_map_sg)
+  */
+-void dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
++void arm_dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
+ 			int nents, enum dma_data_direction dir)
+ {
+ 	struct scatterlist *s;
+@@ -664,10 +695,7 @@ void dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
+ 		__dma_page_dev_to_cpu(sg_page(s), s->offset,
+ 				      s->length, dir);
+ 	}
+-
+-	debug_dma_sync_sg_for_cpu(dev, sg, nents, dir);
+ }
+-EXPORT_SYMBOL(dma_sync_sg_for_cpu);
+ 
+ /**
+  * dma_sync_sg_for_device
+@@ -676,7 +704,7 @@ EXPORT_SYMBOL(dma_sync_sg_for_cpu);
+  * @nents: number of buffers to map (returned from dma_map_sg)
+  * @dir: DMA transfer direction (same as was passed to dma_map_sg)
+  */
+-void dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
++void arm_dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
+ 			int nents, enum dma_data_direction dir)
+ {
+ 	struct scatterlist *s;
+@@ -690,10 +718,7 @@ void dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
+ 		__dma_page_cpu_to_dev(sg_page(s), s->offset,
+ 				      s->length, dir);
+ 	}
+-
+-	debug_dma_sync_sg_for_device(dev, sg, nents, dir);
+ }
+-EXPORT_SYMBOL(dma_sync_sg_for_device);
+ 
+ /*
+  * Return whether the given device DMA address mask can be supported
+@@ -709,7 +734,7 @@ int dma_supported(struct device *dev, u64 mask)
+ }
+ EXPORT_SYMBOL(dma_supported);
+ 
+-int dma_set_mask(struct device *dev, u64 dma_mask)
++static int arm_dma_set_mask(struct device *dev, u64 dma_mask)
+ {
+ 	if (!dev->dma_mask || !dma_supported(dev, dma_mask))
+ 		return -EIO;
+@@ -720,7 +745,6 @@ int dma_set_mask(struct device *dev, u64 dma_mask)
+ 
+ 	return 0;
+ }
+-EXPORT_SYMBOL(dma_set_mask);
+ 
+ #define PREALLOC_DMA_DEBUG_ENTRIES	4096
+ 
 -- 
-David Gibson			| I'll have my music baroque, and my code
-david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
-				| _way_ _around_!
-http://www.ozlabs.org/~dgibson
+1.7.1.569.g6f426
