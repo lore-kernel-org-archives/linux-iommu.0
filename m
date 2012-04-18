@@ -1,45 +1,131 @@
-From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [PATCH 1/1] arm/dts: Tegra30: Add device tree support for SMMU
-Date: Wed, 18 Apr 2012 11:31:12 -0600
-Message-ID: <4F8EFA60.2040400@wwwdotorg.org>
-References: <20120413.132205.1766846402066131036.hdoyu@nvidia.com>	<4F887F9B.700@wwwdotorg.org>	<20120416.131059.331282986467061278.hdoyu@nvidia.com>	<4F8C43AA.7090107@wwwdotorg.org> <20120418081017.d3c630c6f7d09cd4ed039854@nvidia.com>
+From: Omar Ramirez Luna <omar.luna-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: [PATCH v2] iommu: OMAP: device detach on domain destroy
+Date: Wed, 18 Apr 2012 13:09:41 -0500
+Message-ID: <1334772581-32015-1-git-send-email-omar.luna@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20120418081017.d3c630c6f7d09cd4ed039854-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Cc: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, linaro-dev-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/17/2012 11:10 PM, Hiroshi Doyu wrote:
-> On Mon, 16 Apr 2012 18:07:06 +0200
-> Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote:
-> 
->> On 04/16/2012 04:10 AM, Hiroshi Doyu wrote:
->>> Stephen Warren wrote at Fri, 13 Apr 2012 21:33:47 +0200:
->>>> On 04/13/2012 04:22 AM, Hiroshi Doyu wrote:
->>>>> Add device tree support for Tegra30 IOMMU(SMMU).
->> ...
->>>> But why does the SMMU driver expect to control the AHB arbitration
->>>> registers? They seem unrelated to the SMMU.
->>>
->>> It's necessary to inform AHB that SMMU is ready to use. There's a
->>> dedicated bit for SMMU in this AHB arbitration register.
->>
->> Shouldn't there be a dedicated driver for the AHB arbitration registers
->> that the SMMU driver calls into to achieve this? IIRC, the AHB
->> arbitration registers support much more than the SMMU enable, and if we
->> ever need to touch those other features, going to the SMMU driver to do
->> so probably wouldn't make sense.
-> 
-> Agree. Sounds like the way to go.
-> 
-> We haven't upstreamed AHB driver yet. So is it ok to remove AHB entry
-> from SMMU dt and add AHB function call when upstreaming AHB driver?
-> I'll work on that.
+'domain_destroy with devices attached' case isn't yet handled, instead
+code assumes that the device was already detached.
 
-I think that seems reasonable for now, yes. I assume you mean
-implementing e.g. arch/arm/mach-tegra/tegra30-ahb.c, similar to how,
-say, the fuse APIs work.
+If the domain is destroyed the hardware still has access to invalid
+pointers to its page table and internal iommu object. In order to
+detach the users we need to track devices using the iommu, current
+use cases only have one user of iommu per instance. When required
+this can evolve to a list with the devices using the iommu_dev.
+
+Reported-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Reviewed-by: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Omar Ramirez Luna <omar.luna-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+---
+
+v2: rebased onto v3.4-rc2
+
+ drivers/iommu/omap-iommu.c |   32 +++++++++++++++++++++++---------
+ 1 files changed, 23 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index 6899dcd..e70ee2b 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -41,11 +41,13 @@
+  * @pgtable:	the page table
+  * @iommu_dev:	an omap iommu device attached to this domain. only a single
+  *		iommu device can be attached for now.
++ * @dev:	Device using this domain.
+  * @lock:	domain lock, should be taken when attaching/detaching
+  */
+ struct omap_iommu_domain {
+ 	u32 *pgtable;
+ 	struct omap_iommu *iommu_dev;
++	struct device *dev;
+ 	spinlock_t lock;
+ };
+ 
+@@ -1081,6 +1083,7 @@ omap_iommu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 	}
+ 
+ 	omap_domain->iommu_dev = arch_data->iommu_dev = oiommu;
++	omap_domain->dev = dev;
+ 	oiommu->domain = domain;
+ 
+ out:
+@@ -1088,19 +1091,16 @@ out:
+ 	return ret;
+ }
+ 
+-static void omap_iommu_detach_dev(struct iommu_domain *domain,
+-				 struct device *dev)
++static void _omap_iommu_detach_dev(struct omap_iommu_domain *omap_domain,
++			struct device *dev)
+ {
+-	struct omap_iommu_domain *omap_domain = domain->priv;
+-	struct omap_iommu_arch_data *arch_data = dev->archdata.iommu;
+ 	struct omap_iommu *oiommu = dev_to_omap_iommu(dev);
+-
+-	spin_lock(&omap_domain->lock);
++	struct omap_iommu_arch_data *arch_data = dev->archdata.iommu;
+ 
+ 	/* only a single device is supported per domain for now */
+ 	if (omap_domain->iommu_dev != oiommu) {
+ 		dev_err(dev, "invalid iommu device\n");
+-		goto out;
++		return;
+ 	}
+ 
+ 	iopgtable_clear_entry_all(oiommu);
+@@ -1108,8 +1108,16 @@ static void omap_iommu_detach_dev(struct iommu_domain *domain,
+ 	omap_iommu_detach(oiommu);
+ 
+ 	omap_domain->iommu_dev = arch_data->iommu_dev = NULL;
++	omap_domain->dev = NULL;
++}
+ 
+-out:
++static void omap_iommu_detach_dev(struct iommu_domain *domain,
++				 struct device *dev)
++{
++	struct omap_iommu_domain *omap_domain = domain->priv;
++
++	spin_lock(&omap_domain->lock);
++	_omap_iommu_detach_dev(omap_domain, dev);
+ 	spin_unlock(&omap_domain->lock);
+ }
+ 
+@@ -1148,13 +1156,19 @@ out:
+ 	return -ENOMEM;
+ }
+ 
+-/* assume device was already detached */
+ static void omap_iommu_domain_destroy(struct iommu_domain *domain)
+ {
+ 	struct omap_iommu_domain *omap_domain = domain->priv;
+ 
+ 	domain->priv = NULL;
+ 
++	/*
++	 * An iommu device is still attached
++	 * (currently, only one device can be attached) ?
++	 */
++	if (omap_domain->iommu_dev)
++		_omap_iommu_detach_dev(omap_domain, omap_domain->dev);
++
+ 	kfree(omap_domain->pgtable);
+ 	kfree(omap_domain);
+ }
+-- 
+1.7.4.1
