@@ -1,40 +1,43 @@
-From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [RFC 4/4] drm: Add NVIDIA Tegra support
-Date: Mon, 16 Apr 2012 14:37:39 -0600
-Message-ID: <4F8C8313.9070003@wwwdotorg.org>
-References: <20120412065038.GB4162@avionic-0098.adnet.avionic-design.de>
-	<4F86F97C.8010508@wwwdotorg.org>
-	<20120412174429.GB10042@avionic-0098.adnet.avionic-design.de>
-	<4F8753A0.6040907@wwwdotorg.org>
-	<20120413091457.GB617@avionic-0098.mockup.avionic-design.de>
-	<4F887C54.6030306@wwwdotorg.org>
-	<20120415083905.GA15207@avionic-0098.mockup.avionic-design.de>
-	<4F8C423B.8050609@wwwdotorg.org>
-	<20120416184819.GA21043@avionic-0098.mockup.avionic-design.de>
-	<4F8C6B80.4000001@wwwdotorg.org>
-	<20120416190320.GA21233@avionic-0098.mockup.avionic-design.de>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 1/1] arm/dts: Tegra30: Add device tree support for SMMU
+Date: Wed, 18 Apr 2012 08:10:17 +0300
+Message-ID: <20120418081017.d3c630c6f7d09cd4ed039854@nvidia.com>
+References: <20120413.132205.1766846402066131036.hdoyu@nvidia.com>
+	<4F887F9B.700@wwwdotorg.org>
+	<20120416.131059.331282986467061278.hdoyu@nvidia.com>
+	<4F8C43AA.7090107@wwwdotorg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="US-ASCII"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20120416190320.GA21233-RM9K5IK7kjIQXX3q8xo1gnVAuStQJXxyR5q1nwbD4aMs9pC9oP6+/A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
-Cc: David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Olof Johansson <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Colin Cross <ccross-z5hGa2qSFaRBDgjK7y7TUQ@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jon Mayo <jmayo-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <4F8C43AA.7090107-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Cc: "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/16/2012 01:03 PM, Thierry Reding wrote:
-...
-> I've been looking about for tools to generate EDID data but didn't find
-> anything useful. Does anyone know of any tool that's more convenient than
-> manually filling a struct edid and writing that to a file?
+On Mon, 16 Apr 2012 18:07:06 +0200
+Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote:
 
-Sorry, no.
+> On 04/16/2012 04:10 AM, Hiroshi Doyu wrote:
+> > Stephen Warren wrote at Fri, 13 Apr 2012 21:33:47 +0200:
+> >> On 04/13/2012 04:22 AM, Hiroshi Doyu wrote:
+> >>> Add device tree support for Tegra30 IOMMU(SMMU).
+> ...
+> >> But why does the SMMU driver expect to control the AHB arbitration
+> >> registers? They seem unrelated to the SMMU.
+> > 
+> > It's necessary to inform AHB that SMMU is ready to use. There's a
+> > dedicated bit for SMMU in this AHB arbitration register.
+> 
+> Shouldn't there be a dedicated driver for the AHB arbitration registers
+> that the SMMU driver calls into to achieve this? IIRC, the AHB
+> arbitration registers support much more than the SMMU enable, and if we
+> ever need to touch those other features, going to the SMMU driver to do
+> so probably wouldn't make sense.
+
+Agree. Sounds like the way to go.
+
+We haven't upstreamed AHB driver yet. So is it ok to remove AHB entry
+from SMMU dt and add AHB function call when upstreaming AHB driver?
+I'll work on that.
