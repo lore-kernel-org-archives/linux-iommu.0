@@ -1,55 +1,41 @@
-From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/1] dt: Add general DMA window parser
-Date: Thu, 19 Apr 2012 15:32:48 +0300
-Message-ID: <20120419153248.d8654d1533a33dc935eccea9@nvidia.com>
-References: <201204180731.54064.arnd@arndb.de>
-	<20120418.121824.1894043789811063795.hdoyu@nvidia.com>
-	<20120418092613.GA8632@avionic-0098.mockup.avionic-design.de>
-	<20120418.131907.2172387798112620167.hdoyu@nvidia.com>
-	<4F8EF99E.3050709@wwwdotorg.org>
-	<20120418193945.GA17960@avionic-0098.mockup.avionic-design.de>
+From: Joerg Roedel <joerg.roedel@amd.com>
+Subject: Re: [PATCH v2] iommu: OMAP: device detach on domain destroy
+Date: Thu, 19 Apr 2012 15:09:54 +0200
+Message-ID: <20120419130954.GD2428@amd.com>
+References: <1334772581-32015-1-git-send-email-omar.luna@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20120418193945.GA17960-RM9K5IK7kjIQXX3q8xo1gnVAuStQJXxyR5q1nwbD4aMs9pC9oP6+/A@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
-Cc: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "joerg.roedel-5C7GfCeVMHo@public.gmane.org" <joerg.roedel-5C7GfCeVMHo@public.gmane.org>, "m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org" <linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Return-path: <linux-omap-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1334772581-32015-1-git-send-email-omar.luna@linaro.org>
+Sender: linux-omap-owner@vger.kernel.org
+To: Omar Ramirez Luna <omar.luna@linaro.org>
+Cc: Ohad Ben-Cohen <ohad@wizery.com>, Tony Lindgren <tony@atomide.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, iommu@lists.linux-foundation.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, patches@linaro.org, linaro-dev@lists.linaro.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 18 Apr 2012 21:39:45 +0200
-Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org> wrote:
-
-> * PGP Signed by an unknown key
+On Wed, Apr 18, 2012 at 01:09:41PM -0500, Omar Ramirez Luna wrote:
+> 'domain_destroy with devices attached' case isn't yet handled, instead
+> code assumes that the device was already detached.
 > 
-> * Stephen Warren wrote:
-> > On 04/18/2012 04:19 AM, Hiroshi Doyu wrote:
-> > 
-> > > Subject: [PATCH 1/1] dt: Add general DMA window parser
-> > > 
-> > > This code was stolen from:
-> > > 	"arch/microblaze/kernel/prom_parse.c"
-> > > 	"arch/powerpc/kernel/prom_parse.c"
-> > > 
-> > > Once "ibm," prefix is removed from dts file. This generic one could
-> > > replace the originals.
-> > 
-> > > +extern void of_parse_dma_window(struct device_node *dn,
-> > > +		       const void *dma_window_prop, unsigned long *busno,
-> > > +			       unsigned long *phys, unsigned long *size);
-> > 
-> > At least some other of_*() parsing functions take the property name
-> > rather than the property pointer, and also take an index into the
-> > property in order to support multiple entries in it. See for example
-> > of_parse_phandle and of_get_named_gpio_flags. Should this new API be
-> > similar? E.g.:
-> > 
-> > extern void of_parse_dma_window(struct device_node *np,
-> > 			const char *propname, int index,
-> > 			unsigned long *busno,
-> > 			unsigned long *phys, unsigned long *size);
+> If the domain is destroyed the hardware still has access to invalid
+> pointers to its page table and internal iommu object. In order to
+> detach the users we need to track devices using the iommu, current
+> use cases only have one user of iommu per instance. When required
+> this can evolve to a list with the devices using the iommu_dev.
 > 
-> In that case the function should return int for proper error handling.
+> Reported-by: Joerg Roedel <joro@8bytes.org>
+> Reviewed-by: Ohad Ben-Cohen <ohad@wizery.com>
+> Signed-off-by: Omar Ramirez Luna <omar.luna@linaro.org>
+> ---
+> 
+> v2: rebased onto v3.4-rc2
 
-Good point. I'll.
+Applied, thanks.
+
+-- 
+AMD Operating System Research Center
+
+Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
+General Managers: Alberto Bozzo
+Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
+
