@@ -1,65 +1,49 @@
-From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 1/2] iommu/amd: Check for the right TLP prefix bit
-Date: Thu, 19 Apr 2012 15:39:36 +0200
-Message-ID: <1334842777-23214-1-git-send-email-joerg.roedel@amd.com>
+From: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
+Subject: Re: [RFC 0/4] Add NVIDIA Tegra DRM support
+Date: Thu, 19 Apr 2012 19:35:37 +0200
+Message-ID: <20120419173537.GA7692@avionic-0098.adnet.avionic-design.de>
+References: <1334146230-1795-1-git-send-email-thierry.reding@avionic-design.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="XsQoSWH+UP9D9v3l"
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1334146230-1795-1-git-send-email-thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Jon Mayo <jmayo-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Colin Cross <ccross-z5hGa2qSFaRBDgjK7y7TUQ@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Lucas Stach <dev-8ppwABl0HbeELgA04lAiVw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Unfortunatly the PRI spec changed and moved the
-TLP-prefix-required bit to a different location. This patch
-makes the necessary change in the AMD IOMMU driver.
-Regressions are not expected because all hardware
-implementing the PRI capability sets this bit to zero
-anyway.
 
-Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org # v3.3
-Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
----
- drivers/iommu/amd_iommu.c |    8 ++++----
- 1 files changed, 4 insertions(+), 4 deletions(-)
+--XsQoSWH+UP9D9v3l
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index a5bee8e..08f3eec 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -2035,20 +2035,20 @@ out_err:
- }
- 
- /* FIXME: Move this to PCI code */
--#define PCI_PRI_TLP_OFF		(1 << 2)
-+#define PCI_PRI_TLP_OFF		(1 << 15)
- 
- bool pci_pri_tlp_required(struct pci_dev *pdev)
- {
--	u16 control;
-+	u16 status;
- 	int pos;
- 
- 	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
- 	if (!pos)
- 		return false;
- 
--	pci_read_config_word(pdev, pos + PCI_PRI_CTRL, &control);
-+	pci_read_config_word(pdev, pos + PCI_PRI_STATUS, &status);
- 
--	return (control & PCI_PRI_TLP_OFF) ? true : false;
-+	return (status & PCI_PRI_TLP_OFF) ? true : false;
- }
- 
- /*
--- 
-1.7.5.4
+Before posting the next round of patches I wanted to clarify whether we need
+to take the Tegra driver through staging. Lucas brought this up referring to
+previous experience with Nouveau where Linus used to complain that userspace
+ABI was broken for non-staging drivers. I don't know how relevant that is
+for Tegra. We could also keep it in drivers/gpu/drm and only add userspace
+interfaces that we are sure are not going to change. Currently there isn't
+isn't anything that could be easily broken as only some of the standard DRM
+interfaces are supported anyway.
+
+Alternatively we could keep the driver in a separate tree until it becomes
+mature enough.
+
+Any thoughts?
+
+Thierry
+
+--XsQoSWH+UP9D9v3l
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.19 (GNU/Linux)
+
+iEYEARECAAYFAk+QTOkACgkQZ+BJyKLjJp8RqwCfagy34Wczuu+pXByuXxvkxInp
+Ts0An1rDZbM40nsA5jgtdfH9X6iyH2Xw
+=c02p
+-----END PGP SIGNATURE-----
+
+--XsQoSWH+UP9D9v3l--
