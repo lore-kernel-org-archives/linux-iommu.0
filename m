@@ -1,92 +1,112 @@
-From: Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>
-Subject: Re: Reparenting a platform device
-Date: Thu, 19 Apr 2012 20:26:30 -0600
-Message-ID: <20120420022630.B9BF23E08B0@localhost>
-References: <20120405084258.GA19798@avionic-0098.adnet.avionic-design.de>
- <20120407022423.EFB053E1858@localhost>
- <20120407113510.GA22116@avionic-0098.mockup.avionic-design.de>
+From: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
+Subject: Re: [RFC 0/4] Add NVIDIA Tegra DRM support
+Date: Fri, 20 Apr 2012 07:02:31 +0200
+Message-ID: <20120420050231.GA15313@avionic-0098.adnet.avionic-design.de>
+References: <1334146230-1795-1-git-send-email-thierry.reding@avionic-design.de>
+	<20120419173537.GA7692@avionic-0098.adnet.avionic-design.de>
+	<CAPM=9tzK83yYS33eNruvFDwb62ycZxJMC31davVRN=yaZD53YA@mail.gmail.com>
+	<20120419204016.GA8954@avionic-0098.mockup.avionic-design.de>
+	<4F907CBB.4080705@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-In-Reply-To: <20120407113510.GA22116-RM9K5IK7kjIQXX3q8xo1gnVAuStQJXxyR5q1nwbD4aMs9pC9oP6+/A@public.gmane.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss>
-List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
- <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
-Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Sender: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-To: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
-Cc: devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: multipart/mixed; boundary="===============2483856366916987309=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <4F907CBB.4080705-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jon Mayo <jmayo-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Colin Cross <ccross-z5hGa2qSFaRBDgjK7y7TUQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Dave Airlie <airlied-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, 7 Apr 2012 13:35:10 +0200, Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org> wrote:
-> * Grant Likely wrote:
-> > On Thu, 5 Apr 2012 10:42:58 +0200, Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org> wrote:
-> > > Hi,
-> > > 
-> > > I have a device tree where I have a GART device and a DRM device which uses
-> > > the GART. The GART is implemented by an IOMMU driver (tegra-gart) and
-> > > requires the user device to be a child of the GART device (it explicitly
-> > > checks for this when the user device is attached).
-> > > 
-> > > I've tried two alternatives to achieve this: create the GART device in the
-> > > user driver's .probe() function and explicitly set the DRM device's parent
-> > > to the resulting platform device like so:
-> > > 
-> > > 	gart = platform_device_alloc(...);
-> > > 	...
-> > > 	pdev->dev.parent = &gart->dev;
-> > 
-> > Yeah, don't *ever* try to do this.  The device hierarchy is a complex
-> > data structure which must never be directly manipulated.
-> > 
-> > > 
-> > > The alternative is to use the device tree to look up the GART device node and
-> > > resolve it to the corresponding struct device:
-> > > 
-> > > 	gart_node = of_parse_phandle(drm->dev->of_node, "gart-parent", 0);
-> > > 	gart = bus_find_device(drm->dev->bus, NULL, gart_node, match_of_node);
-> > > 
-> > > Where match_of_node matches each struct device's .of_node field to the
-> > > gart_node.
-> > > 
-> > > Both of these variants seem to work, and the DRM device can be properly
-> > > attached to the GART device. However, after the DRM driver's .probe() exits,
-> > > I get the following error:
-> > 
-> > I don't understand what you're trying to describe here as the 2nd
-> > option.
-> > 
-> > Regardless, reparenting should not ben the solution at all.  What does
-> > the device tree that you envision look like for this?  What devices
-> > are created, and what drivers bind to them?
-> 
-> The reason why I need to reparent at all is because the IOMMU driver requires
-> the user to be a child of the IOMMU device. If you look at the driver in
-> drivers/iommu/tegra-gart.c you'll see that it references dev->parent in
-> several places, most notably in the gart_iommu_attach_dev() function. So
-> there's really only two options that I can see: 1) create a virtual device
-> that is a child of the GART and is in charge of the actual allocations from
-> the GART and have the DRM driver use that interface or 2) change the GART
-> driver's behaviour in a way that the parent/child relationship is no longer a
-> requirement.
 
-Either is fine by me.
+--===============2483856366916987309==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="uAKRQypu60I7Lcqm"
+Content-Disposition: inline
 
-> 1) has the advantage of providing a central allocation manager for the GART
-> and will allow to register multiple clients with the GART. 2) does not have
-> that advantage.
-> 
-> Another alternative may be to allow only a single device to attach to the
-> GART that doesn't have to be a child of the GART. That way the DRM could take
-> care of GART aperture allocations, which seems to be the most logical place
-> to do that anyway.
 
-That also works.  As long as nothing messes about with odd reparenting
-then I'm happy.
+--uAKRQypu60I7Lcqm
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-g.
+* Jon Mayo wrote:
+> On 04/19/2012 01:40 PM, Thierry Reding wrote:
+[...]
+> >So would it be possible to get a basic dumb KMS driver into mainline
+> >(non-staging) and phase in acceleration later on, with ABI guarantees? I
+> >guess development can go on in separate trees until the ABI is stable an=
+d can
+> >subsequently be ported to the mainline driver.
+> >
+> >Is that an acceptable approach?
+>=20
+> That certainly seems like the most reasonable approach to me. Get
+> KMS only in first. It's a useful driver as-is, and has the lowest
+> barrier to entry into upstream.
+>=20
+> Then later we can phase in enhancements. We certainly have plenty of
+> places internally and externally to hash out acceleration
+> interfaces, and come to some consensus at at later date (either on
+> linux-tegra or direct email).
+
+Okay. Let's do that then.
+
+> We have a lot of concerns here. What is best for X11, what is best
+> for Android, how do we keep healthy open source implementations, and
+> how does NVIDIA move forward with supporting new Tegra on an open
+> source implementation.
+
+I think by supporting the DRM we can get pretty far for X11. Writing a Tegr=
+a-
+specific driver based off xf86-video-modesetting can be done to use advanced
+features if they can't be abstracted away properly. DRM also paves the way
+for Wayland support.
+
+What I see as somewhat of a problem is how to get NVIDIA and the community =
+to
+work together (and work together well). We'll have to see how this works ou=
+t,
+but I'd hate to see more resources wasted because everybody starts doing
+their own thing.
+
+> (My vote is NVIDIA starts using this DRM in-house and builds new
+> extensions on top of it, sharing patches on LKML when the hardware is
+> released)
+
+That sounds like a good plan. Ideally you should even share the patches as
+soon as they're ready. That'll give viewers some head start and you can fix
+the code even before the hardware is released.
+
+Thierry
+
+--uAKRQypu60I7Lcqm
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.19 (GNU/Linux)
+
+iEYEARECAAYFAk+Q7ecACgkQZ+BJyKLjJp+yGACfc+pluzXF7/marg7P8YedrlLy
+8dYAoKyn3JAVq0J8aU+uNfYhS0hEqQO0
+=xOfu
+-----END PGP SIGNATURE-----
+
+--uAKRQypu60I7Lcqm--
+
+--===============2483856366916987309==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+iommu mailing list
+iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============2483856366916987309==--
