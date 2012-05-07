@@ -1,128 +1,101 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [git pull] irq remapping ops for x86
-Date: Mon, 7 May 2012 15:54:18 +0200
-Message-ID: <20120507135418.GA16756@8bytes.org>
+From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Subject: Re: [PATCH v2] ARM: dt: tegra20: Add GART device
+Date: Mon, 07 May 2012 10:06:46 -0600
+Message-ID: <4FA7F316.7070904@wwwdotorg.org>
+References: <4FA2CE32.7010406@wwwdotorg.org><20120504.121357.1085445784831612281.hdoyu@nvidia.com><4FA410DD.3090105@wwwdotorg.org> <20120507.144758.1558303336683449254.hdoyu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============4238340606769657644=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20120507.144758.1558303336683449254.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: "thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org" <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>, "olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org" <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, "joerg.roedel-5C7GfCeVMHo@public.gmane.org" <joerg.roedel-5C7GfCeVMHo@public.gmane.org>, "grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org" <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, "rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ccross-z5hGa2qSFaRBDgjK7y7TUQ@public.gmane.org" <ccross-z5hGa2qSFaRBDgjK7y7TUQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+On 05/07/2012 05:47 AM, Hiroshi Doyu wrote:
+> Stephen Warren wrote at Fri, 4 May 2012 19:24:45 +0200:
+...
+>> Perhaps the simplest way is to represent those chunks as separate reg
+>> entries:
+>>
+>>     mc@7000f010 {
+>>         compatible = "nvidia,tegra30-mc";
+>>         reg = <0x7000f010 0x1d4 0x70000228 0xd4>;
+>>     };
+>>
+>>     smmu@0x70000050 {
+>>         compatible = "nvidia,tegra30-smmu";
+>>         reg = <0x70000010 0x2c 0x70000228 0x5c>;
+>>     };
+...
+> Ok, let's start with the simplest way, and improve later with nice
+> framework.
 
---===============4238340606769657644==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="wRRV7LY7NUeQGEoC"
-Content-Disposition: inline
+Uggh. So that patch is for the SMMU, but this thread is about the GART.
+Also, attaching patches makes it more difficult to review them, since
+them may not appear inline when reading the mail, and certainly don't
+when replying. Anyway...
 
+> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
 
---wRRV7LY7NUeQGEoC
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> +#include <mach/tegra-ahb.h>
 
-(again as a signed email)
+Note that this patch therefor depends on the AHB series that you just
+posted, and isn't applied anywhere yet.
 
-Hi Ingo,
+> +static int get_reg_bank(u32 offset)
+>  {
+> -	writel(val, smmu->regs + offs);
+> +	int i;
+> +	const struct smmu_reg_bank {
+> +		u32 start;
+> +		size_t size;
+> +	} r[] = {
+> +		{
+> +			.start = 0x10,
+> +			.size = 0x2c,
+> +		},
+> +		{
+> +			.start = 0x1f0,
+> +			.size = 0x10,
+> +		},
+> +		{
+> +			.start = 0x228,
+> +			.size = 0x5c,
+> +		},
+> +	};
+> +
+> +	for (i = 0; i < ARRAY_SIZE(r); i++) {
+> +		BUG_ON(offset < r[i].start);
+> +		if (offset < r[i].start + r[i].size)
+> +			return i;
+> +	}
+> +	BUG();
+> +	return 0; /* Never reach here */
+>  }
 
-The following changes since commit d48b97b403d23f6df0b990cee652bdf9a52337a3:
+While stylistically nice, I'm not sure that will be as likely to
+optimize out as the simple if/else code I gave as an example. I suppose
+it's not a big deal though.
 
-  Linux 3.4-rc6 (2012-05-06 15:07:32 -0700)
+>  static int tegra_smmu_probe(struct platform_device *pdev)
 
-are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git intr-remapping-ops
+> +	err = of_get_dma_window(dev->of_node, "dma-window", 0, NULL,
+> +				&base, &size);
 
-or as a signed tag at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git intr-remapping-ops-for-ingo
+So this also relies on the generic DMA window parsing patch too. I don't
+think that's checked in anywhere yet right?
 
-Joerg Roedel (8):
-      iommu: Rename intr_remapping files to intel_intr_remapping
-      iommu/vt-d: Make intr-remapping initialization generic
-      iommu/vt-d: Convert missing apic.c intr-remapping call to remap_ops
-      iommu/vt-d: Convert IR ioapic-setup to use remap_ops
-      iommu/vt-d: Convert IR set_affinity function to remap_ops
-      iommu/vt-d: Convert free_irte into a remap_ops callback
-      iommu/vt-d: Convert MSI remapping setup to remap_ops
-      x86, iommu/vt-d: Clean up interfaces for interrupt remapping
+> +	size >>= SMMU_PAGE_SHIFT;
+> +	if (!size)
+> +		return -ENODEV;
 
-Suresh Siddha (2):
-      iommu: rename intr_remapping references to irq_remapping
-      iommu: rename intr_remapping.[ch] to irq_remapping.[ch]
+It seems like this should validate that !(size & ((1 << SMMU_PAGE_SHIFT)
+- 1)) too?
 
- arch/ia64/include/asm/irq_remapping.h              |    4 +
- arch/x86/include/asm/irq_remapping.h               |  120 +++++--
- arch/x86/kernel/apic/apic.c                        |   30 +-
- arch/x86/kernel/apic/io_apic.c                     |  297 ++++-------------
- drivers/iommu/Makefile                             |    2 +-
- drivers/iommu/dmar.c                               |    9 +-
- drivers/iommu/intel-iommu.c                        |    3 +-
- .../{intr_remapping.c => intel_irq_remapping.c}    |  355 ++++++++++++++++----
- drivers/iommu/intr_remapping.h                     |   17 -
- drivers/iommu/irq_remapping.c                      |  164 +++++++++
- drivers/iommu/irq_remapping.h                      |   88 +++++
- include/linux/dmar.h                               |   85 -----
- 12 files changed, 724 insertions(+), 450 deletions(-)
- create mode 100644 arch/ia64/include/asm/irq_remapping.h
- rename drivers/iommu/{intr_remapping.c => intel_irq_remapping.c} (66%)
- delete mode 100644 drivers/iommu/intr_remapping.h
- create mode 100644 drivers/iommu/irq_remapping.c
- create mode 100644 drivers/iommu/irq_remapping.h
+This patch looks like it adds the full implementation of device tree
+support, yet doesn't add any documentation for the binding.
 
-This patchset introduces a generic ops-interface for
-accessing interrupt remapping hardware on x86. It factors
-out the VT-d specific code from io_apic.c and moves it to
-drivers/iommu. These changes will be used to add support for
-AMD interrupt remapping hardware.
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
-
---wRRV7LY7NUeQGEoC
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-
-iQIcBAEBAgAGBQJPp9QKAAoJECvwRC2XARrjP0kQAJeB4vWQeW3qm/j6mwVYp49u
-LLsmQU+xdX7gN/uGzdvRRJ39n0HK/IK89+/Z61YfFBLT4J54QgFICJqFqRhieKYJ
-nH8393MBmSfL5B+CakHYmuO6Iq7hwE9c6BQLWbUG0RZXfgIhT8H5Q/25zzUanuVD
-6omtulBnpqc94pJisvo8PpJfDrOCwqZgR8XISgEb4NSNTQeTxNMmfstwyherbXfb
-YE+Z0VCl7Tc7lcm1IHqQN5srBWyokbzppTWzjmutcDVpnnMNhUrVMOwWX08ajZHP
-+NjWb73TUyn2j5miedeJ5hxJ9UPxEdMxsl/nUIioir23P/ia8M2FvzEWhETozWU8
-jBd+BDdouUMDFRKJ9KpxqoEFB4DyAn2PbgkVu97vKn53I9AtI/oaFnp4i77O9w0j
-Lvdd8oI7VpuU1SHdPpVbll8zm0z6vWVKfgvC6kWpZaoMAGm6NoG1t0QX6Ao4CTkQ
-ynCNy+ZGzusZXmslrCHJHWseZCUjZPmKXMuM+IbxBnvdyw9Hdlrhe6EK3FDSkKnH
-I7z2x4Cu3p3LH6Y4pwg70hQqi4AmGT50VXkWkHGxJ4hjcWZ7m/o0OccaGQQh7qh7
-MCYo9M4st+bQOahatnan7CcOK4fwrE7fqMQaBTMeFiRPKUHzuomEZJ+YjD0gMbIG
-8u8wfdyoSqKjWK5mIttX
-=0Las
------END PGP SIGNATURE-----
-
---wRRV7LY7NUeQGEoC--
-
-
-
---===============4238340606769657644==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-iommu mailing list
-iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============4238340606769657644==--
+Finally, I assume you're going to post a similar patch for the Tegra20
+GART, so its register ranges don't overlap the Tegra20 MC?
