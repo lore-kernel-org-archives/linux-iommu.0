@@ -1,44 +1,34 @@
 From: Ingo Molnar <mingo@kernel.org>
-Subject: Re: [PATCH 2/3] irq_remap: fix the UP build failure
-Date: Tue, 8 May 2012 11:09:45 +0200
-Message-ID: <20120508090945.GC27323@gmail.com>
+Subject: Re: [PATCH 3/3] irq_remap: fix the 'sub_handle' uninitialized warning
+Date: Tue, 8 May 2012 11:15:26 +0200
+Message-ID: <20120508091526.GD27323@gmail.com>
 References: <20120508035153.GA30652@gmail.com>
- <1336460934-23592-2-git-send-email-suresh.b.siddha@intel.com>
+ <1336460934-23592-3-git-send-email-suresh.b.siddha@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1336460934-23592-2-git-send-email-suresh.b.siddha@intel.com>
+In-Reply-To: <1336460934-23592-3-git-send-email-suresh.b.siddha@intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Suresh Siddha <suresh.b.siddha@intel.com>
 Cc: joro@8bytes.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Joerg Roedel <joerg.roedel@amd.com>
 List-Id: iommu@lists.linux-foundation.org
 
 
-* Suresh Siddha <suresh.b.siddha@intel.com> wrote:
+another problem is that drivers/iommu/intel_irq_remapping.c is 
+supplied with comments rather poorly - I have to page down 
+almost 300 lines to see the first substantial comment! Copyright 
+notices would be nice as well.
 
-> Fix the below UP build failure with CONFIG_IRQ_REMAP enabled.
->=20
->  drivers/iommu/intel_irq_remapping.c:955:19: error: =E2=80=98struct i=
-rq_data=E2=80=99 has no member named =E2=80=98affinity=E2=80=99
+So lets do a better job and document this thing a bit better. 
+Please also align structure definitions vertically, like we 
+typically to do in new code.
 
-hm:
-
-> +++ b/drivers/iommu/intel_irq_remapping.c
-> +#ifdef CONFIG_SMP
-> +#endif
-> +#ifdef CONFIG_SMP
-> +#endif
-> +#ifdef CONFIG_SMP
-> +#endif
-> +#ifdef CONFIG_SMP
-> +#endif
-
-Adding this many #ifdefs is a bit sad. Could we not make the UP=20
-side have the (supposedly zero length!) affinity cpumask=20
-instead, or so, and make sure that the SMP functions compile to=20
-something sensible on UP?
+The file names should probably also be standardized (but that 
+should come via a Git space pull request, using git mv and 
+such). What we have currently is pretty random: 'dmar.c' should 
+probably be dma_remap.c, and *irq_remapping.c should probably be 
+*irq_remap.c.
 
 Thanks,
 
