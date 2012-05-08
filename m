@@ -1,42 +1,45 @@
-From: Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 3/3] irq_remap: fix the 'sub_handle' uninitialized warning
-Date: Tue,  8 May 2012 00:08:54 -0700
-Message-ID: <1336460934-23592-3-git-send-email-suresh.b.siddha@intel.com>
-References: <1336460934-23592-1-git-send-email-suresh.b.siddha@intel.com>
+From: Ingo Molnar <mingo@kernel.org>
+Subject: Re: [PATCH 2/3] irq_remap: fix the UP build failure
+Date: Tue, 8 May 2012 11:09:45 +0200
+Message-ID: <20120508090945.GC27323@gmail.com>
+References: <20120508035153.GA30652@gmail.com>
+ <1336460934-23592-2-git-send-email-suresh.b.siddha@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1336460934-23592-1-git-send-email-suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-In-Reply-To: <20120508035153.GA30652-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-References: <20120508035153.GA30652-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-Cc: Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1336460934-23592-2-git-send-email-suresh.b.siddha@intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Suresh Siddha <suresh.b.siddha@intel.com>
+Cc: joro@8bytes.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Joerg Roedel <joerg.roedel@amd.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Rml4IHRoZSB1bmluaXRpYWxpemVkIHdhcm5pbmc6CiAgZHJpdmVycy9pb21tdS9pbnRlbF9pcnFf
-cmVtYXBwaW5nLmM6OTg2OjEyOiB3YXJuaW5nOiDigJhzdWJfaGFuZGxl4oCZIG1heSBiZSB1c2Vk
-IHVuaW5pdGlhbGl6ZWQgaW4gdGhpcyBmdW5jdGlvbiBbLVd1bmluaXRpYWxpemVkXQoKU2lnbmVk
-LW9mZi1ieTogU3VyZXNoIFNpZGRoYSA8c3VyZXNoLmIuc2lkZGhhQGludGVsLmNvbT4KQ2M6IEpv
-ZXJnIFJvZWRlbCA8am9lcmcucm9lZGVsQGFtZC5jb20+Ci0tLQogZHJpdmVycy9pb21tdS9pbnRl
-bF9pcnFfcmVtYXBwaW5nLmMgfCAgICAyICstCiAxIGZpbGVzIGNoYW5nZWQsIDEgaW5zZXJ0aW9u
-cygrKSwgMSBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2ludGVsX2ly
-cV9yZW1hcHBpbmcuYyBiL2RyaXZlcnMvaW9tbXUvaW50ZWxfaXJxX3JlbWFwcGluZy5jCmluZGV4
-IDFjMDI1NWUuLjZkMzQ3MDYgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvaW9tbXUvaW50ZWxfaXJxX3Jl
-bWFwcGluZy5jCisrKyBiL2RyaXZlcnMvaW9tbXUvaW50ZWxfaXJxX3JlbWFwcGluZy5jCkBAIC05
-NjQsNyArOTY0LDcgQEAgc3RhdGljIHZvaWQgaW50ZWxfY29tcG9zZV9tc2lfbXNnKHN0cnVjdCBw
-Y2lfZGV2ICpwZGV2LAogewogCXN0cnVjdCBpcnFfY2ZnICpjZmc7CiAJc3RydWN0IGlydGUgaXJ0
-ZTsKLQl1MTYgc3ViX2hhbmRsZTsKKwl1MTYgc3ViX2hhbmRsZSA9IDA7CiAJaW50IGlyX2luZGV4
-OwogCiAJY2ZnID0gaXJxX2dldF9jaGlwX2RhdGEoaXJxKTsKLS0gCjEuNy42LjUKCl9fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlz
-dAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91
-bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+
+* Suresh Siddha <suresh.b.siddha@intel.com> wrote:
+
+> Fix the below UP build failure with CONFIG_IRQ_REMAP enabled.
+>=20
+>  drivers/iommu/intel_irq_remapping.c:955:19: error: =E2=80=98struct i=
+rq_data=E2=80=99 has no member named =E2=80=98affinity=E2=80=99
+
+hm:
+
+> +++ b/drivers/iommu/intel_irq_remapping.c
+> +#ifdef CONFIG_SMP
+> +#endif
+> +#ifdef CONFIG_SMP
+> +#endif
+> +#ifdef CONFIG_SMP
+> +#endif
+> +#ifdef CONFIG_SMP
+> +#endif
+
+Adding this many #ifdefs is a bit sad. Could we not make the UP=20
+side have the (supposedly zero length!) affinity cpumask=20
+instead, or so, and make sure that the SMP functions compile to=20
+something sensible on UP?
+
+Thanks,
+
+	Ingo
