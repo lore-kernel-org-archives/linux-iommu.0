@@ -1,7 +1,7 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 04/13] pci: New pci_dma_quirk()
-Date: Fri, 11 May 2012 16:55:55 -0600
-Message-ID: <20120511225555.30496.80525.stgit@bling.home>
+Subject: [PATCH 05/13] pci: New pci_acs_enabled()
+Date: Fri, 11 May 2012 16:56:02 -0600
+Message-ID: <20120511225602.30496.80438.stgit@bling.home>
 References: <20120511222148.30496.68571.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,64 +21,85 @@ To: benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, aik-sLpHqDYs0B2HXe+L
 Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org, B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, avi-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, benve-FYB4Gu1CFyUAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Integrating IOMMU groups more closely into the driver core allows
-us to more easily work around DMA quirks.  The Ricoh multifunction
-controller is a favorite example of devices that are currently
-incompatible with IOMMU isolation as all the functions use the
-requestor ID of function 0 for DMA.  Passing this device into
-pci_dma_quirk returns the PCI device to use for DMA.  The IOMMU
-driver can then construct an IOMMU group including both devices.
+In a PCIe environment, transactions aren't always required to
+reach the root bus before being re-routed.  Peer-to-peer DMA
+may actually not be seen by the IOMMU in these cases.  For
+IOMMU groups, we want to provide IOMMU drivers a way to detect
+these restrictions.  Provided with a PCI device, pci_acs_enabled
+returns the furthest downstream device with a complete PCI ACS
+chain.  This information can then be used in grouping to create
+fully isolated groups.  ACS chain logic extracted from libvirt.
 
 Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
 
- drivers/pci/quirks.c |   22 ++++++++++++++++++++++
- include/linux/pci.h  |    2 ++
- 2 files changed, 24 insertions(+), 0 deletions(-)
+ drivers/pci/pci.c   |   43 +++++++++++++++++++++++++++++++++++++++++++
+ include/linux/pci.h |    1 +
+ 2 files changed, 44 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 4bf7102..6f9f7f9 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -3109,3 +3109,25 @@ int pci_dev_specific_reset(struct pci_dev *dev, int probe)
- 
- 	return -ENOTTY;
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index 111569c..d7f05ce 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -2358,6 +2358,49 @@ void pci_enable_acs(struct pci_dev *dev)
+ 	pci_write_config_word(dev, pos + PCI_ACS_CTRL, ctrl);
  }
+ 
++#define PCI_EXT_CAP_ACS_ENABLED		(PCI_ACS_SV | PCI_ACS_RR | \
++					 PCI_ACS_CR | PCI_ACS_UF)
 +
-+struct pci_dev *pci_dma_quirk(struct pci_dev *dev)
++/**
++ * pci_acs_enabled - test ACS support in downstream chain
++ * @dev: starting PCI device
++ *
++ * Returns the furthest downstream device with an unbroken ACS chain.  If
++ * ACS is enabled throughout the chain, the returned device is the same as
++ * the one passed in.
++ */
++struct pci_dev *pci_acs_enabled(struct pci_dev *dev)
 +{
-+	struct pci_dev *dma_dev = dev;
++	struct pci_dev *acs_dev;
++	int pos;
++	u16 ctrl;
 +
-+	/*
-+	 * https://bugzilla.redhat.com/show_bug.cgi?id=605888
-+	 *
-+	 * Some Ricoh devices use the function 0 source ID for DMA on
-+	 * other functions of a multifunction device.  The DMA devices
-+	 * is therefore function 0, which will have implications of the
-+	 * iommu grouping of these devices.
-+	 */
-+	if (dev->vendor == PCI_VENDOR_ID_RICOH &&
-+	    (dev->device == 0xe822 || dev->device == 0xe230 ||
-+	     dev->device == 0xe832 || dev->device == 0xe476)) {
-+		dma_dev = pci_get_slot(dev->bus,
-+				       PCI_DEVFN(PCI_SLOT(dev->devfn), 0));
-+	}
++	if (!pci_is_root_bus(dev->bus))
++		acs_dev = pci_acs_enabled(dev->bus->self);
++	else
++		return dev;
 +
-+	return dma_dev;
++	/* If the chain is already broken, pass on the device */
++	if (acs_dev != dev->bus->self)
++		return acs_dev;
++
++	if (!pci_is_pcie(dev) || (dev->class >> 8) != PCI_CLASS_BRIDGE_PCI)
++		return dev;
++
++	if (dev->pcie_type != PCI_EXP_TYPE_DOWNSTREAM)
++		return dev;
++
++	pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ACS);
++	if (!pos)
++		return acs_dev;
++
++	pci_read_config_word(dev, pos + PCI_ACS_CTRL, &ctrl);
++	if ((ctrl & PCI_EXT_CAP_ACS_ENABLED) != PCI_EXT_CAP_ACS_ENABLED)
++		return acs_dev;
++
++	return dev;
 +}
++
+ /**
+  * pci_swizzle_interrupt_pin - swizzle INTx for device behind bridge
+  * @dev: the PCI device
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index e444f5b..9910b5c 100644
+index 9910b5c..dc25da3 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1479,9 +1479,11 @@ enum pci_fixup_pass {
+@@ -1586,6 +1586,7 @@ static inline bool pci_is_pcie(struct pci_dev *dev)
+ }
  
- #ifdef CONFIG_PCI_QUIRKS
- void pci_fixup_device(enum pci_fixup_pass pass, struct pci_dev *dev);
-+struct pci_dev *pci_dma_quirk(struct pci_dev *dev);
- #else
- static inline void pci_fixup_device(enum pci_fixup_pass pass,
- 				    struct pci_dev *dev) {}
-+struct pci_dev *pci_dma_quirk(struct pci_dev *dev) { return dev }
- #endif
+ void pci_request_acs(void);
++struct pci_dev *pci_acs_enabled(struct pci_dev *dev);
  
- void __iomem *pcim_iomap(struct pci_dev *pdev, int bar, unsigned long maxlen);
+ 
+ #define PCI_VPD_LRDT			0x80	/* Large Resource Data Type */
