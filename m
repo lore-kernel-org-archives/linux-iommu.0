@@ -1,54 +1,90 @@
-From: Kukjin Kim <kgene.kim@samsung.com>
-Subject: Re: [PATCH] iommu/exynos: Add iommu driver for Exynos Platforms
-Date: Sat, 12 May 2012 06:03:07 +0900
-Message-ID: <4FAD7E8B.6060407@samsung.com>
-References: <000001cd2f71$62c5c2f0$285148d0$%cho@samsung.com> <20120511124327.GB11750@amd.com>
+From: Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH 1/2] iommu/exynos: fix runtime pm support
+Date: Sat, 12 May 2012 06:31:59 +0900
+Message-ID: <4FAD854F.7040403@samsung.com>
+References: <1334154871-4756-1-git-send-email-m.szyprowski@samsung.com>
+	<1334154871-4756-2-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <20120511124327.GB11750@amd.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Joerg Roedel <joerg.roedel@amd.com>
-Cc: KyongHo <pullip.cho@samsung.com>, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Subash Patel' <subash.ramaswamy@linaro.org>, 'Younglak Kim' <younglak1004.kim@samsung.com>, 'Kyungmin Park' <kyungmin.park@samsung.com>, 'Sanghyun Lee' <sanghyun75.lee@samsung.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1334154871-4756-2-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, KyongHo Cho <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/11/12 21:43, Joerg Roedel wrote:
-> On Fri, May 11, 2012 at 09:27:09PM +0900, KyongHo wrote:
->> This is the System MMU driver and IOMMU API implementation for Exynos SOC
->> platforms. Exynos platforms has more than 10 System MMUs dedicated for each
->> multimedia accelerators.
->>
->> The System MMU driver is already in arc/arm/plat-s5p but it is moved to
->> drivers/iommu due to Ohad Ben-Cohen gathered IOMMU drivers there
->>
->> Any device driver in Exynos platforms that needs to control its System MMU must
->> call platform_set_sysmmu() to inform System MMU driver who will control it.
->> platform_set_sysmmu() is defined in<mach/sysmmu.h>
->>
->> To compile this patch,
->> you will need "for-next" branch of the linux-samsung.git:
->> git.kernel.org/pub/scm/linux/kernel/git/kgene/linux-samsung.git
->> Other patches needed by this patch are merged to the above branch.
->>
->> Cc: Joerg Roedel<joerg.roedel@amd.com>
->> Cc: Kukjin Kim<kgene.kim@samsung.com>
->> Signed-off-by: KyongHo Cho<pullip.cho@samsung.com>
+On 04/11/12 23:34, Marek Szyprowski wrote:
+> Fix registration to runtime pw and add missing resume callback.
 >
-> Looks good.
+> Signed-off-by: Marek Szyprowski<m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> Acked-by: Kyungmin Park<kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> ---
+>   drivers/iommu/exynos-iommu.c |   20 ++++++++++++++++++--
+>   1 files changed, 18 insertions(+), 2 deletions(-)
 >
-> Acked-by: Joerg Roedel<joerg.roedel@amd.com>
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> index b8daf7c..eef924d 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+> @@ -651,8 +651,7 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
 >
-> Please get this merged via the Samsung tree. Since the patch depends on
-> that tree anyway it makes the most sense to be there.
+>   	__set_fault_handler(data,&default_fault_handler);
 >
+> -	if (dev->parent)
+> -		pm_runtime_enable(dev);
+> +	pm_runtime_enable(dev);
+>
+>   	dev_dbg(dev, "(%s) Initialized\n", data->dbgname);
+>   	return 0;
+> @@ -674,11 +673,28 @@ err_alloc:
+>   	return ret;
+>   }
+>
+> +static int exynos_pm_resume(struct device *dev)
+> +{
+> +	struct sysmmu_drvdata *data;
+> +
+> +	data = dev_get_drvdata(dev);
+> +
+> +	if (is_sysmmu_active(data))
+> +		__exynos_sysmmu_enable(data, data->pgtable, NULL);
+> +
+> +	return 0;
+> +}
+> +
+> +const struct dev_pm_ops exynos_pm_ops = {
+> +	.resume =&exynos_pm_resume,
+> +};
+> +
+>   static struct platform_driver exynos_sysmmu_driver = {
+>   	.probe		= exynos_sysmmu_probe,
+>   	.driver		= {
+>   		.owner		= THIS_MODULE,
+>   		.name		= "exynos-sysmmu",
+> +		.pm		=&exynos_pm_ops,
+>   	}
+>   };
+>
+
 Joerg,
-OK, I applied with your ack.
+
+This patch is needed to correct run-time pm for EXYNOS SoCs with System 
+MMU after KyongHo's iommu/exynos patch. So if you're ok on this, let me 
+apply this in samsung tree.
 
 Thanks.
 
 Best regards,
 Kgene.
 --
-Kukjin Kim <kgene.kim@samsung.com>, Senior Engineer,
+Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Senior Engineer,
 SW Solution Development Team, Samsung Electronics Co., Ltd.
