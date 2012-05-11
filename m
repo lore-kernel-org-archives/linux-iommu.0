@@ -1,7 +1,8 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 05/13] pci: New pci_acs_enabled()
-Date: Fri, 11 May 2012 16:56:02 -0600
-Message-ID: <20120511225602.30496.80438.stgit@bling.home>
+Subject: [PATCH 06/13] iommu: Make use of DMA quirking and ACS enabled check
+	for groups
+Date: Fri, 11 May 2012 16:56:09 -0600
+Message-ID: <20120511225609.30496.92191.stgit@bling.home>
 References: <20120511222148.30496.68571.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,85 +22,56 @@ To: benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, aik-sLpHqDYs0B2HXe+L
 Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org, B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, avi-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, benve-FYB4Gu1CFyUAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-In a PCIe environment, transactions aren't always required to
-reach the root bus before being re-routed.  Peer-to-peer DMA
-may actually not be seen by the IOMMU in these cases.  For
-IOMMU groups, we want to provide IOMMU drivers a way to detect
-these restrictions.  Provided with a PCI device, pci_acs_enabled
-returns the furthest downstream device with a complete PCI ACS
-chain.  This information can then be used in grouping to create
-fully isolated groups.  ACS chain logic extracted from libvirt.
+Incorporate DMA quirking and ACS checking into amd_iommu and
+intel-iommu.  Note that IOMMU groups are not yet used for
+streaming DMA, so this doesn't immediately solve the problems
+with broken Ricoh devices.
 
 Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
 
- drivers/pci/pci.c   |   43 +++++++++++++++++++++++++++++++++++++++++++
- include/linux/pci.h |    1 +
- 2 files changed, 44 insertions(+), 0 deletions(-)
+ drivers/iommu/amd_iommu.c   |    3 +++
+ drivers/iommu/intel-iommu.c |    3 +++
+ drivers/pci/pci.h           |    1 +
+ 3 files changed, 7 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 111569c..d7f05ce 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -2358,6 +2358,49 @@ void pci_enable_acs(struct pci_dev *dev)
- 	pci_write_config_word(dev, pos + PCI_ACS_CTRL, ctrl);
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index b7e5ddf..a165311 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -291,6 +291,9 @@ static int iommu_init_device(struct device *dev)
+ 		dma_pdev = pci_get_slot(pdev->bus,
+ 					PCI_DEVFN(PCI_SLOT(pdev->devfn), 0));
+ 
++	dma_pdev = pci_dma_quirk(dma_pdev);
++	dma_pdev = pci_acs_enabled(dma_pdev);
++
+ 	group = iommu_group_get(&dma_pdev->dev);
+ 	if (!group) {
+ 		group = iommu_group_alloc();
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index e63b33b..5f526c7 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -4113,6 +4113,9 @@ static int intel_iommu_add_device(struct device *dev)
+ 		dma_pdev = pci_get_slot(pdev->bus,
+ 					PCI_DEVFN(PCI_SLOT(pdev->devfn), 0));
+ 
++	dma_pdev = pci_dma_quirk(dma_pdev);
++	dma_pdev = pci_acs_enabled(dma_pdev);
++
+ 	group = iommu_group_get(&dma_pdev->dev);
+ 	if (!group) {
+ 		group = iommu_group_alloc();
+diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+index e494347..e8f2f8f 100644
+--- a/drivers/pci/pci.h
++++ b/drivers/pci/pci.h
+@@ -310,6 +310,7 @@ static inline resource_size_t pci_resource_alignment(struct pci_dev *dev,
  }
  
-+#define PCI_EXT_CAP_ACS_ENABLED		(PCI_ACS_SV | PCI_ACS_RR | \
-+					 PCI_ACS_CR | PCI_ACS_UF)
-+
-+/**
-+ * pci_acs_enabled - test ACS support in downstream chain
-+ * @dev: starting PCI device
-+ *
-+ * Returns the furthest downstream device with an unbroken ACS chain.  If
-+ * ACS is enabled throughout the chain, the returned device is the same as
-+ * the one passed in.
-+ */
-+struct pci_dev *pci_acs_enabled(struct pci_dev *dev)
-+{
-+	struct pci_dev *acs_dev;
-+	int pos;
-+	u16 ctrl;
-+
-+	if (!pci_is_root_bus(dev->bus))
-+		acs_dev = pci_acs_enabled(dev->bus->self);
-+	else
-+		return dev;
-+
-+	/* If the chain is already broken, pass on the device */
-+	if (acs_dev != dev->bus->self)
-+		return acs_dev;
-+
-+	if (!pci_is_pcie(dev) || (dev->class >> 8) != PCI_CLASS_BRIDGE_PCI)
-+		return dev;
-+
-+	if (dev->pcie_type != PCI_EXP_TYPE_DOWNSTREAM)
-+		return dev;
-+
-+	pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ACS);
-+	if (!pos)
-+		return acs_dev;
-+
-+	pci_read_config_word(dev, pos + PCI_ACS_CTRL, &ctrl);
-+	if ((ctrl & PCI_EXT_CAP_ACS_ENABLED) != PCI_EXT_CAP_ACS_ENABLED)
-+		return acs_dev;
-+
-+	return dev;
-+}
-+
- /**
-  * pci_swizzle_interrupt_pin - swizzle INTx for device behind bridge
-  * @dev: the PCI device
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 9910b5c..dc25da3 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1586,6 +1586,7 @@ static inline bool pci_is_pcie(struct pci_dev *dev)
- }
+ extern void pci_enable_acs(struct pci_dev *dev);
++extern struct pci_dev *pci_acs_enabled(struct pci_dev *dev);
  
- void pci_request_acs(void);
-+struct pci_dev *pci_acs_enabled(struct pci_dev *dev);
- 
- 
- #define PCI_VPD_LRDT			0x80	/* Large Resource Data Type */
+ struct pci_dev_reset_methods {
+ 	u16 vendor;
