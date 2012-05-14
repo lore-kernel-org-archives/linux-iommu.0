@@ -1,135 +1,43 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 05/13] pci: New pci_acs_enabled()
-Date: Mon, 14 May 2012 16:49:26 -0600
-Message-ID: <1337035766.6954.74.camel@bling.home>
-References: <20120511222148.30496.68571.stgit@bling.home>
-	<20120511225602.30496.80438.stgit@bling.home>
-	<CAErSpo58hKPFb5duOi64sWuR5AJDTVp0rRHkQLotYE3CMXRRhA@mail.gmail.com>
+From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Subject: Re: [PATCH 1/2] iommu/tegra: smmu: Simplify allocation at once
+Date: Mon, 14 May 2012 17:34:15 -0600
+Message-ID: <4FB19677.4040702@wwwdotorg.org>
+References: <1337022975-23999-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAErSpo58hKPFb5duOi64sWuR5AJDTVp0rRHkQLotYE3CMXRRhA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org, B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, avi-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, benve-FYB4Gu1CFyUAvxtiuMwx3w@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1337022975-23999-1-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>, Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2012-05-14 at 16:02 -0600, Bjorn Helgaas wrote:
-> On Fri, May 11, 2012 at 4:56 PM, Alex Williamson
-> <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> > In a PCIe environment, transactions aren't always required to
-> > reach the root bus before being re-routed.  Peer-to-peer DMA
-> > may actually not be seen by the IOMMU in these cases.  For
-> > IOMMU groups, we want to provide IOMMU drivers a way to detect
-> > these restrictions.  Provided with a PCI device, pci_acs_enabled
-> > returns the furthest downstream device with a complete PCI ACS
-> > chain.  This information can then be used in grouping to create
-> > fully isolated groups.  ACS chain logic extracted from libvirt.
+On 05/14/2012 01:16 PM, Hiroshi DOYU wrote:
+> To simplify the code, alloc necessary data at once.
 > 
-> The name "pci_acs_enabled()" sounds like it returns a boolean, but it doesn't.
-
-Right, maybe this should be:
-
-struct pci_dev *pci_find_upstream_acs(struct pci_dev *pdev);
-
-> I'm not sure what "a complete PCI ACS chain" means.
+> Signed-off-by: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> ---
+> This patch requires:
 > 
-> The function starts from "dev" and searches *upstream*, so I'm
-> guessing it returns the root of a subtree that must be contained in a
-> group.
+>     [PATCH 1/2] iommu/tegra: smmu: Add device tree support for SMMU
+>         http://marc.info/?l=linux-tegra&m=133663641107327&w=2
+> 
+> Also the above patch requires:
+> 
+>     [PATCH 1/1] dt: Add general DMA window parser
+>         http://marc.info/?l=linux-tegra&m=133671302703840&w=2
 
-Any intermediate switch between an endpoint and the root bus can
-redirect a dma access without iommu translation, so we're looking for
-the furthest upstream device for which acs is enabled all the way up to
-the root bus.  I'll fix the function name and comments/commit log if
-that makes it sufficiently clear.  Thanks,
+I know I've been harping on about dependencies, but you typically only
+need to mention them if the dependencies are not already checked into
+the branch you expect this patch to be checked into.
 
-Alex
+> -	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
+> +	if (of_property_read_u32(dev->of_node, "nvidia,#asids", &asids))
+> +		return -ENODEV;
 
-> > Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> > ---
-> >
-> >  drivers/pci/pci.c   |   43 +++++++++++++++++++++++++++++++++++++++++++
-> >  include/linux/pci.h |    1 +
-> >  2 files changed, 44 insertions(+), 0 deletions(-)
-> >
-> > diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-> > index 111569c..d7f05ce 100644
-> > --- a/drivers/pci/pci.c
-> > +++ b/drivers/pci/pci.c
-> > @@ -2358,6 +2358,49 @@ void pci_enable_acs(struct pci_dev *dev)
-> >        pci_write_config_word(dev, pos + PCI_ACS_CTRL, ctrl);
-> >  }
-> >
-> > +#define PCI_EXT_CAP_ACS_ENABLED                (PCI_ACS_SV | PCI_ACS_RR | \
-> > +                                        PCI_ACS_CR | PCI_ACS_UF)
-> > +
-> > +/**
-> > + * pci_acs_enabled - test ACS support in downstream chain
-> > + * @dev: starting PCI device
-> > + *
-> > + * Returns the furthest downstream device with an unbroken ACS chain.  If
-> > + * ACS is enabled throughout the chain, the returned device is the same as
-> > + * the one passed in.
-> > + */
-> > +struct pci_dev *pci_acs_enabled(struct pci_dev *dev)
-> > +{
-> > +       struct pci_dev *acs_dev;
-> > +       int pos;
-> > +       u16 ctrl;
-> > +
-> > +       if (!pci_is_root_bus(dev->bus))
-> > +               acs_dev = pci_acs_enabled(dev->bus->self);
-> > +       else
-> > +               return dev;
-> > +
-> > +       /* If the chain is already broken, pass on the device */
-> > +       if (acs_dev != dev->bus->self)
-> > +               return acs_dev;
-> > +
-> > +       if (!pci_is_pcie(dev) || (dev->class >> 8) != PCI_CLASS_BRIDGE_PCI)
-> > +               return dev;
-> > +
-> > +       if (dev->pcie_type != PCI_EXP_TYPE_DOWNSTREAM)
-> > +               return dev;
-> > +
-> > +       pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ACS);
-> > +       if (!pos)
-> > +               return acs_dev;
-> > +
-> > +       pci_read_config_word(dev, pos + PCI_ACS_CTRL, &ctrl);
-> > +       if ((ctrl & PCI_EXT_CAP_ACS_ENABLED) != PCI_EXT_CAP_ACS_ENABLED)
-> > +               return acs_dev;
-> > +
-> > +       return dev;
-> > +}
-> > +
-> >  /**
-> >  * pci_swizzle_interrupt_pin - swizzle INTx for device behind bridge
-> >  * @dev: the PCI device
-> > diff --git a/include/linux/pci.h b/include/linux/pci.h
-> > index 9910b5c..dc25da3 100644
-> > --- a/include/linux/pci.h
-> > +++ b/include/linux/pci.h
-> > @@ -1586,6 +1586,7 @@ static inline bool pci_is_pcie(struct pci_dev *dev)
-> >  }
-> >
-> >  void pci_request_acs(void);
-> > +struct pci_dev *pci_acs_enabled(struct pci_dev *dev);
-> >
-> >
-> >  #define PCI_VPD_LRDT                   0x80    /* Large Resource Data Type */
-> >
-> --
-> To unsubscribe from this list: send the line "unsubscribe kvm" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+I believe you need to change the asids variable from int to u32 to avoid
+a warning here.
+
+Aside from that, the series,
+Acked-by: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
