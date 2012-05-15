@@ -1,96 +1,54 @@
-From: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [v2 2/2] iommu/tegra: smmu: Remove unnecessary cleanups with devm_*()
-Date: Tue, 15 May 2012 11:12:49 +0300
-Message-ID: <1337069574-2022-2-git-send-email-hdoyu@nvidia.com>
-References: <4FB19677.4040702@wwwdotorg.org>
-	<1337069574-2022-1-git-send-email-hdoyu@nvidia.com>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 1/2] iommu/tegra: smmu: Simplify allocation at once
+Date: Tue, 15 May 2012 10:26:49 +0200
+Message-ID: <20120515.112649.411607744957826949.hdoyu@nvidia.com>
+References: <1337022975-23999-1-git-send-email-hdoyu@nvidia.com><4FB19677.4040702@wwwdotorg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1337069574-2022-1-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <4FB19677.4040702-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org" <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Cc: "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org" <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, "rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "joerg.roedel-5C7GfCeVMHo@public.gmane.org" <joerg.roedel-5C7GfCeVMHo@public.gmane.org>, "thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org" <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Remove unnecessary cleanup procedures with devm_*() functions.
+Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote @ Tue, 15 May 2012 01:34:15 +0200:
 
-Signed-off-by: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Acked-by: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
----
- drivers/iommu/tegra-smmu.c |   37 ++++++-------------------------------
- 1 files changed, 6 insertions(+), 31 deletions(-)
+> On 05/14/2012 01:16 PM, Hiroshi DOYU wrote:
+> > To simplify the code, alloc necessary data at once.
+> > 
+> > Signed-off-by: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> > ---
+> > This patch requires:
+> > 
+> >     [PATCH 1/2] iommu/tegra: smmu: Add device tree support for SMMU
+> >         http://marc.info/?l=linux-tegra&m=133663641107327&w=2
+> > 
+> > Also the above patch requires:
+> > 
+> >     [PATCH 1/1] dt: Add general DMA window parser
+> >         http://marc.info/?l=linux-tegra&m=133671302703840&w=2
+> 
+> I know I've been harping on about dependencies, but you typically only
+> need to mention them if the dependencies are not already checked into
+> the branch you expect this patch to be checked into.
+> 
+> > -	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
+> > +	if (of_property_read_u32(dev->of_node, "nvidia,#asids", &asids))
+> > +		return -ENODEV;
+> 
+> I believe you need to change the asids variable from int to u32 to avoid
+> a warning here.
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 5eb32b3..9c2a99e 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -973,51 +973,26 @@ static int tegra_smmu_probe(struct platform_device *pdev)
- 	spin_lock_init(&smmu->lock);
- 	err = smmu_setup_regs(smmu);
- 	if (err)
--		goto fail;
-+		return err;
- 	platform_set_drvdata(pdev, smmu);
- 
- 	smmu->avp_vector_page = alloc_page(GFP_KERNEL);
- 	if (!smmu->avp_vector_page)
--		goto fail;
-+		return -ENOMEM;
- 
- 	smmu_handle = smmu;
- 	return 0;
--
--fail:
--	if (smmu->avp_vector_page)
--		__free_page(smmu->avp_vector_page);
--	if (smmu && smmu->as) {
--		for (i = 0; i < smmu->num_as; i++) {
--			if (smmu->as[i].pdir_page) {
--				ClearPageReserved(smmu->as[i].pdir_page);
--				__free_page(smmu->as[i].pdir_page);
--			}
--		}
--		devm_kfree(dev, smmu->as);
--	}
--	devm_kfree(dev, smmu);
--	return err;
- }
- 
- static int tegra_smmu_remove(struct platform_device *pdev)
- {
- 	struct smmu_device *smmu = platform_get_drvdata(pdev);
--	struct device *dev = smmu->dev;
-+	int i;
- 
- 	smmu_write(smmu, SMMU_CONFIG_DISABLE, SMMU_CONFIG);
--	platform_set_drvdata(pdev, NULL);
--	if (smmu->as) {
--		int i;
--
--		for (i = 0; i < smmu->num_as; i++)
--			free_pdir(&smmu->as[i]);
--		devm_kfree(dev, smmu->as);
--	}
--	if (smmu->avp_vector_page)
--		__free_page(smmu->avp_vector_page);
--	if (smmu->regs)
--		devm_iounmap(dev, smmu->regs);
--	devm_kfree(dev, smmu);
-+	for (i = 0; i < smmu->num_as; i++)
-+		free_pdir(&smmu->as[i]);
-+	__free_page(smmu->avp_vector_page);
- 	smmu_handle = NULL;
- 	return 0;
- }
--- 
-1.7.5.4
+There's no warning but it's allowed because of "-Wno-pointer-sign". It
+seems that this flag has been used for long in kernel, and there are
+many places. Is this conversion allowed because it's expeced that the
+author should know the range of value, or any other reason?
+
+*1:
+-Wno-pointer-sign
+    Don't warn for pointer argument passing or assignment with
+    different signedness. Only useful in the negative form since this
+    warning is enabled by default. This option is only supported for C
+    and Objective-C.
