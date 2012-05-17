@@ -1,47 +1,121 @@
-From: Anonymous <anonymous-MUDIJn/1Q3AaHdxRYFc1FNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH 04/13] pci: New pci_dma_quirk()
-Date: Thu, 17 May 2012 15:19:51 +0800
-Message-ID: <CAJtEV7YMrsttPfAdL0_uht-ZRwCHhYwHTvypCc6TfEzTEGaijQ@mail.gmail.com>
-References: <20120511222148.30496.68571.stgit@bling.home>
-	<20120511225555.30496.80525.stgit@bling.home>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: [PATCHv10 01/11] common: add dma_mmap_from_coherent() function
+Date: Thu, 17 May 2012 15:13:51 +0200
+Message-ID: <1337260441-8121-2-git-send-email-m.szyprowski@samsung.com>
+References: <1337260441-8121-1-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20120511225555.30496.80525.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org, B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, avi-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, benve-FYB4Gu1CFyUAvxtiuMwx3w@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org
+Content-Type: TEXT/PLAIN
+Content-Transfer-Encoding: 7BIT
+Return-path: <owner-linux-mm@kvack.org>
+In-reply-to: <1337260441-8121-1-git-send-email-m.szyprowski@samsung.com>
+Sender: owner-linux-mm@kvack.org
+To: linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, iommu@lists.linux-foundation.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Kyungmin Park <kyungmin.park@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Joerg Roedel <joro@8bytes.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Chunsang Jeong <chunsang.jeong@linaro.org>, Krishna Reddy <vdumpa@nvidia.com>, KyongHo Cho <pullip.cho@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Hiroshi Doyu <hdoyu@nvidia.com>, Subash Patel <subashrp@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Alex,
+Add a common helper for dma-mapping core for mapping a coherent buffer
+to userspace.
 
-On Sat, May 12, 2012 at 6:55 AM, Alex Williamson
-<alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> Integrating IOMMU groups more closely into the driver core allows
-> us to more easily work around DMA quirks. =A0The Ricoh multifunction
-> controller is a favorite example of devices that are currently
-> incompatible with IOMMU isolation as all the functions use the
-> requestor ID of function 0 for DMA. =A0Passing this device into
-> pci_dma_quirk returns the PCI device to use for DMA. =A0The IOMMU
-> driver can then construct an IOMMU group including both devices.
->
+Reported-by: Subash Patel <subashrp@gmail.com>
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
+Tested-By: Subash Patel <subash.ramaswamy@linaro.org>
+---
+ drivers/base/dma-coherent.c        |   42 ++++++++++++++++++++++++++++++++++++
+ include/asm-generic/dma-coherent.h |    4 +++-
+ 2 files changed, 45 insertions(+), 1 deletion(-)
 
-Please give some thought to the Marvell SATA controller quirk as well.
-
-Instead of multiple visible functions using the same requester ID of
-function 0, the Marvell device only makes function 0 visible, but uses
-the requestor ID of function 1 as well during DMA.
-
-See https://bugzilla.redhat.com/show_bug.cgi?id=3D757166
+diff --git a/drivers/base/dma-coherent.c b/drivers/base/dma-coherent.c
+index bb0025c..1b85949 100644
+--- a/drivers/base/dma-coherent.c
++++ b/drivers/base/dma-coherent.c
+@@ -10,6 +10,7 @@
+ struct dma_coherent_mem {
+ 	void		*virt_base;
+ 	dma_addr_t	device_base;
++	phys_addr_t	pfn_base;
+ 	int		size;
+ 	int		flags;
+ 	unsigned long	*bitmap;
+@@ -44,6 +45,7 @@ int dma_declare_coherent_memory(struct device *dev, dma_addr_t bus_addr,
+ 
+ 	dev->dma_mem->virt_base = mem_base;
+ 	dev->dma_mem->device_base = device_addr;
++	dev->dma_mem->pfn_base = PFN_DOWN(bus_addr);
+ 	dev->dma_mem->size = pages;
+ 	dev->dma_mem->flags = flags;
+ 
+@@ -176,3 +178,43 @@ int dma_release_from_coherent(struct device *dev, int order, void *vaddr)
+ 	return 0;
+ }
+ EXPORT_SYMBOL(dma_release_from_coherent);
++
++/**
++ * dma_mmap_from_coherent() - try to mmap the memory allocated from
++ * per-device coherent memory pool to userspace
++ * @dev:	device from which the memory was allocated
++ * @vma:	vm_area for the userspace memory
++ * @vaddr:	cpu address returned by dma_alloc_from_coherent
++ * @size:	size of the memory buffer allocated by dma_alloc_from_coherent
++ *
++ * This checks whether the memory was allocated from the per-device
++ * coherent memory pool and if so, maps that memory to the provided vma.
++ *
++ * Returns 1 if we correctly mapped the memory, or 0 if
++ * dma_release_coherent() should proceed with mapping memory from
++ * generic pools.
++ */
++int dma_mmap_from_coherent(struct device *dev, struct vm_area_struct *vma,
++			   void *vaddr, size_t size, int *ret)
++{
++	struct dma_coherent_mem *mem = dev ? dev->dma_mem : NULL;
++
++	if (mem && vaddr >= mem->virt_base && vaddr + size <=
++		   (mem->virt_base + (mem->size << PAGE_SHIFT))) {
++		unsigned long off = vma->vm_pgoff;
++		int start = (vaddr - mem->virt_base) >> PAGE_SHIFT;
++		int user_count = (vma->vm_end - vma->vm_start) >> PAGE_SHIFT;
++		int count = size >> PAGE_SHIFT;
++
++		*ret = -ENXIO;
++		if (off < count && user_count <= count - off) {
++			unsigned pfn = mem->pfn_base + start + off;
++			*ret = remap_pfn_range(vma, vma->vm_start, pfn,
++					       user_count << PAGE_SHIFT,
++					       vma->vm_page_prot);
++		}
++		return 1;
++	}
++	return 0;
++}
++EXPORT_SYMBOL(dma_mmap_from_coherent);
+diff --git a/include/asm-generic/dma-coherent.h b/include/asm-generic/dma-coherent.h
+index 85a3ffa..abfb268 100644
+--- a/include/asm-generic/dma-coherent.h
++++ b/include/asm-generic/dma-coherent.h
+@@ -3,13 +3,15 @@
+ 
+ #ifdef CONFIG_HAVE_GENERIC_DMA_COHERENT
+ /*
+- * These two functions are only for dma allocator.
++ * These three functions are only for dma allocator.
+  * Don't use them in device drivers.
+  */
+ int dma_alloc_from_coherent(struct device *dev, ssize_t size,
+ 				       dma_addr_t *dma_handle, void **ret);
+ int dma_release_from_coherent(struct device *dev, int order, void *vaddr);
+ 
++int dma_mmap_from_coherent(struct device *dev, struct vm_area_struct *vma,
++			    void *cpu_addr, size_t size, int *ret);
+ /*
+  * Standard interface
+  */
+-- 
+1.7.10.1
 
 --
-A.
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Fight unfair telecom internet charges in Canada: sign http://stopthemeter.ca/
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
