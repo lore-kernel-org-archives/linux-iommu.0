@@ -1,137 +1,105 @@
-From: Ohad Ben-Cohen <ohad@wizery.com>
-Subject: [PATCH] iommu/core: pass a user-provided token to fault handlers
-Date: Mon, 21 May 2012 20:20:05 +0300
-Message-ID: <1337620805-30217-1-git-send-email-ohad@wizery.com>
-Return-path: <linux-omap-owner@vger.kernel.org>
-Sender: linux-omap-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: linux-omap@vger.kernel.org, Joerg Roedel <Joerg.Roedel@amd.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Ohad Ben-Cohen <ohad@wizery.com>, Fernando Guzman Lugo <fernando.lugo@ti.com>
+From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 11/13] pci: Create common pcibios_err_to_errno
+Date: Mon, 21 May 2012 13:55:10 -0400
+Message-ID: <20120521175510.GB13990@phenom.dumpdata.com>
+References: <20120511222148.30496.68571.stgit@bling.home>
+	<20120511225643.30496.36823.stgit@bling.home>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20120511225643.30496.36823.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org, B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, avi-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, benve-FYB4Gu1CFyUAvxtiuMwx3w@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Sometimes a single IOMMU user may have to deal with several
-different IOMMU devices (e.g. remoteproc).
+On Fri, May 11, 2012 at 04:56:44PM -0600, Alex Williamson wrote:
+> For returning errors out to non-PCI code.  Re-name xen's version.
+> 
+> Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
-When an IOMMU fault happens, such users have to regain their
-context in order to deal with the fault.
-
-Users can't use the private fields of neither the iommu_domain nor
-the IOMMU device, because those are already used by the IOMMU core
-and low level driver (respectively).
-
-This patch just simply allows users to pass a private token (most
-notably their own context pointer) to iommu_set_fault_handler(),
-and then makes sure it is provided back to the users whenever
-an IOMMU fault happens.
-
-The patch also adopts remoteproc to the new fault handling
-interface, but the real functionality using this (recovery of
-remote processors) will only be added later in a subsequent patch
-set.
-
-Cc: Fernando Guzman Lugo <fernando.lugo@ti.com>
-Signed-off-by: Ohad Ben-Cohen <ohad@wizery.com>
----
- drivers/iommu/iommu.c                |    5 ++++-
- drivers/remoteproc/remoteproc_core.c |    4 ++--
- include/linux/iommu.h                |   10 ++++++----
- 3 files changed, 12 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 2198b2d..8b9ded8 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -119,6 +119,7 @@ EXPORT_SYMBOL_GPL(iommu_present);
-  * iommu_set_fault_handler() - set a fault handler for an iommu domain
-  * @domain: iommu domain
-  * @handler: fault handler
-+ * @token: user data, will be passed back to the fault handler
-  *
-  * This function should be used by IOMMU users which want to be notified
-  * whenever an IOMMU fault happens.
-@@ -127,11 +128,13 @@ EXPORT_SYMBOL_GPL(iommu_present);
-  * error code otherwise.
-  */
- void iommu_set_fault_handler(struct iommu_domain *domain,
--					iommu_fault_handler_t handler)
-+					iommu_fault_handler_t handler,
-+					void *token)
- {
- 	BUG_ON(!domain);
- 
- 	domain->handler = handler;
-+	domain->handler_token = token;
- }
- EXPORT_SYMBOL_GPL(iommu_set_fault_handler);
- 
-diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
-index ee15c68..f71d07e 100644
---- a/drivers/remoteproc/remoteproc_core.c
-+++ b/drivers/remoteproc/remoteproc_core.c
-@@ -78,7 +78,7 @@ typedef int (*rproc_handle_resource_t)(struct rproc *rproc, void *, int avail);
-  * the recovery of the remote processor.
-  */
- static int rproc_iommu_fault(struct iommu_domain *domain, struct device *dev,
--		unsigned long iova, int flags)
-+		unsigned long iova, int flags, void *token)
- {
- 	dev_err(dev, "iommu fault: da 0x%lx flags 0x%x\n", iova, flags);
- 
-@@ -117,7 +117,7 @@ static int rproc_enable_iommu(struct rproc *rproc)
- 		return -ENOMEM;
- 	}
- 
--	iommu_set_fault_handler(domain, rproc_iommu_fault);
-+	iommu_set_fault_handler(domain, rproc_iommu_fault, rproc);
- 
- 	ret = iommu_attach_device(domain, dev);
- 	if (ret) {
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index d937580..450293f 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -35,12 +35,13 @@ struct iommu_domain;
- #define IOMMU_FAULT_WRITE	0x1
- 
- typedef int (*iommu_fault_handler_t)(struct iommu_domain *,
--				struct device *, unsigned long, int);
-+			struct device *, unsigned long, int, void *);
- 
- struct iommu_domain {
- 	struct iommu_ops *ops;
- 	void *priv;
- 	iommu_fault_handler_t handler;
-+	void *handler_token;
- };
- 
- #define IOMMU_CAP_CACHE_COHERENCY	0x1
-@@ -95,7 +96,7 @@ extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain,
- extern int iommu_domain_has_cap(struct iommu_domain *domain,
- 				unsigned long cap);
- extern void iommu_set_fault_handler(struct iommu_domain *domain,
--					iommu_fault_handler_t handler);
-+			iommu_fault_handler_t handler, void *token);
- extern int iommu_device_group(struct device *dev, unsigned int *groupid);
- 
- /**
-@@ -132,7 +133,8 @@ static inline int report_iommu_fault(struct iommu_domain *domain,
- 	 * invoke it.
- 	 */
- 	if (domain->handler)
--		ret = domain->handler(domain, dev, iova, flags);
-+		ret = domain->handler(domain, dev, iova, flags,
-+						domain->handler_token);
- 
- 	return ret;
- }
-@@ -191,7 +193,7 @@ static inline int domain_has_cap(struct iommu_domain *domain,
- }
- 
- static inline void iommu_set_fault_handler(struct iommu_domain *domain,
--					iommu_fault_handler_t handler)
-+				iommu_fault_handler_t handler, void *token)
- {
- }
- 
--- 
-1.7.5.4
-
+Acked-by: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+> ---
+> 
+>  drivers/xen/xen-pciback/conf_space.c |    6 +++---
+>  include/linux/pci.h                  |   26 ++++++++++++++++++++++++++
+>  2 files changed, 29 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/xen/xen-pciback/conf_space.c b/drivers/xen/xen-pciback/conf_space.c
+> index 30d7be0..46ae0f9 100644
+> --- a/drivers/xen/xen-pciback/conf_space.c
+> +++ b/drivers/xen/xen-pciback/conf_space.c
+> @@ -124,7 +124,7 @@ static inline u32 merge_value(u32 val, u32 new_val, u32 new_val_mask,
+>  	return val;
+>  }
+>  
+> -static int pcibios_err_to_errno(int err)
+> +static int xen_pcibios_err_to_errno(int err)
+>  {
+>  	switch (err) {
+>  	case PCIBIOS_SUCCESSFUL:
+> @@ -202,7 +202,7 @@ out:
+>  		       pci_name(dev), size, offset, value);
+>  
+>  	*ret_val = value;
+> -	return pcibios_err_to_errno(err);
+> +	return xen_pcibios_err_to_errno(err);
+>  }
+>  
+>  int xen_pcibk_config_write(struct pci_dev *dev, int offset, int size, u32 value)
+> @@ -290,7 +290,7 @@ int xen_pcibk_config_write(struct pci_dev *dev, int offset, int size, u32 value)
+>  		}
+>  	}
+>  
+> -	return pcibios_err_to_errno(err);
+> +	return xen_pcibios_err_to_errno(err);
+>  }
+>  
+>  void xen_pcibk_config_free_dyn_fields(struct pci_dev *dev)
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index b437225..20a8f2e 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -467,6 +467,32 @@ static inline bool pci_dev_msi_enabled(struct pci_dev *pci_dev) { return false;
+>  #define PCIBIOS_SET_FAILED		0x88
+>  #define PCIBIOS_BUFFER_TOO_SMALL	0x89
+>  
+> +/*
+> + * Translate above to generic errno for passing back through non-pci.
+> + */
+> +static inline int pcibios_err_to_errno(int err)
+> +{
+> +	if (err <= PCIBIOS_SUCCESSFUL)
+> +		return err; /* Assume already errno */
+> +
+> +	switch (err) {
+> +	case PCIBIOS_FUNC_NOT_SUPPORTED:
+> +		return -ENOENT;
+> +	case PCIBIOS_BAD_VENDOR_ID:
+> +		return -EINVAL;
+> +	case PCIBIOS_DEVICE_NOT_FOUND:
+> +		return -ENODEV;
+> +	case PCIBIOS_BAD_REGISTER_NUMBER:
+> +		return -EFAULT;
+> +	case PCIBIOS_SET_FAILED:
+> +		return -EIO;
+> +	case PCIBIOS_BUFFER_TOO_SMALL:
+> +		return -ENOSPC;
+> +	}
+> +
+> +	return -ENOTTY;
+> +}
+> +
+>  /* Low-level architecture-dependent routines */
+>  
+>  struct pci_ops {
