@@ -1,14 +1,18 @@
-From: Joerg Roedel <Joerg.Roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH] iommu/core: pass a user-provided token to fault handlers
-Date: Wed, 23 May 2012 12:04:54 +0200
-Message-ID: <20120523100454.GI2604@amd.com>
-References: <1337620805-30217-1-git-send-email-ohad@wizery.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 1/2] resources: set type of new resource returned by
+	__request_region()
+Date: Wed, 23 May 2012 12:40:09 +0200
+Message-ID: <20120523104009.GD12795@8bytes.org>
+References: <20120518231238.31187.44571.stgit@bhelgaas.mtv.corp.google.com>
+	<20120518231832.31187.10630.stgit@bhelgaas.mtv.corp.google.com>
+	<20120521130451.GK2313@8bytes.org>
+	<CAErSpo582Ok9arr+3krKTQdue4i3wQOixVkBbheDX6a3v8xMHw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1337620805-30217-1-git-send-email-ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <CAErSpo582Ok9arr+3krKTQdue4i3wQOixVkBbheDX6a3v8xMHw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,40 +22,41 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Fernando Guzman Lugo <fernando.lugo-l0cyMroinI0@public.gmane.org>
+To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-X9Un+BFzKDI@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, May 21, 2012 at 08:20:05PM +0300, Ohad Ben-Cohen wrote:
-> Sometimes a single IOMMU user may have to deal with several
-> different IOMMU devices (e.g. remoteproc).
-> 
-> When an IOMMU fault happens, such users have to regain their
-> context in order to deal with the fault.
-> 
-> Users can't use the private fields of neither the iommu_domain nor
-> the IOMMU device, because those are already used by the IOMMU core
-> and low level driver (respectively).
-> 
-> This patch just simply allows users to pass a private token (most
-> notably their own context pointer) to iommu_set_fault_handler(),
-> and then makes sure it is provided back to the users whenever
-> an IOMMU fault happens.
-> 
-> The patch also adopts remoteproc to the new fault handling
-> interface, but the real functionality using this (recovery of
-> remote processors) will only be added later in a subsequent patch
-> set.
-> 
-> Cc: Fernando Guzman Lugo <fernando.lugo-l0cyMroinI0@public.gmane.org>
-> Signed-off-by: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>
+On Mon, May 21, 2012 at 07:52:24AM -0600, Bjorn Helgaas wrote:
+> On Mon, May 21, 2012 at 7:04 AM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> > On Fri, May 18, 2012 at 05:18:32PM -0600, Bjorn Helgaas wrote:
+> >> Previously we returned a new struct resource with only IORESOURCE_BUSY
+> >> set (and possibly IORESOURCE_MUXED or IORESOURCE_EXCLUSIVE), but no
+> >> MEM/IO/etc. bits set. =A0The new resource should inherit the type of
+> >> its parent.
+> >
+> > Should it? What about IORESOURCE_WINDOW for example? Any particular
+> > reason for this change to the interface of the __request_region()
+> > function?
+> =
 
-Applied, thanks.
+> Yes, I should have explained the connection :)  The next patch prints
+> the resource returned from request_mem_region().  Without this
+> __request_region() patch, that resource has no type, so %pR can't
+> print it correctly.
+> =
 
+> Good question about IORESOURCE_WINDOW.  Maybe it should inherit only
+> the IORESOURCE_TYPE_BITS part (IO/MEM/IRQ/DMA/BUS).  But it seemed
+> like it should also inherit PREFETCH, READONLY, CACHEABLE, etc.  Maybe
+> we should inherit everything but clear IORESOURCE_WINDOW?  I'm open to
+> suggestions here.
 
--- 
-AMD Operating System Research Center
+I am still not sure whether the inheritance is a good idea. How about
+changing the define of request_mem_region to:
 
-Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
-General Managers: Alberto Bozzo
-Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
+#define request_mem_region(start,n,name) __request_region(&iomem_resource, =
+(start), (n), (name), IORESOURCE_MEM)
+
+?
+
+	Joerg
