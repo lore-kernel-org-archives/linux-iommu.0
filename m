@@ -1,15 +1,13 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 03/13] iommu: IOMMU groups for VT-d and AMD-Vi
-Date: Thu, 24 May 2012 15:49:28 -0600
-Message-ID: <1337896168.4714.39.camel@ul30vt>
+From: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2 00/13] IOMMU Groups + VFIO
+Date: Thu, 24 May 2012 17:56:00 -0400
+Message-ID: <4FBEAE70.8090908@redhat.com>
 References: <20120522043607.5871.11340.stgit@bling.home>
-	<20120522050454.5871.67086.stgit@bling.home>
-	<4FBEA18F.1040607@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <4FBEA18F.1040607-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20120522043607.5871.11340.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,155 +17,100 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org, B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, avi-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, benve-FYB4Gu1CFyUAvxtiuMwx3w@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 2012-05-24 at 17:01 -0400, Don Dutile wrote:
-> On 05/22/2012 01:04 AM, Alex Williamson wrote:
-> > Add back group support for AMD&  Intel.  amd_iommu already tracks
-> > devices and has init and uninit routines to manage groups.
-> > intel-iommu does this on the fly, so we make use of the notifier
-> > support built into iommu groups to create and remove groups.
-> >
-> > Signed-off-by: Alex Williamson<alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> > ---
-> >
-> >   drivers/iommu/amd_iommu.c   |   28 +++++++++++++++++++++++++-
-> >   drivers/iommu/intel-iommu.c |   46 +++++++++++++++++++++++++++++++++++++++++++
-> >   2 files changed, 73 insertions(+), 1 deletions(-)
-> >
-> > diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> > index 32c00cd..b7e5ddf 100644
-> > --- a/drivers/iommu/amd_iommu.c
-> > +++ b/drivers/iommu/amd_iommu.c
-> > @@ -256,9 +256,11 @@ static bool check_device(struct device *dev)
-> >
-> >   static int iommu_init_device(struct device *dev)
-> >   {
-> > -	struct pci_dev *pdev = to_pci_dev(dev);
-> > +	struct pci_dev *dma_pdev, *pdev = to_pci_dev(dev);
-> >   	struct iommu_dev_data *dev_data;
-> > +	struct iommu_group *group;
-> >   	u16 alias;
-> > +	int ret;
-> >
-> >   	if (dev->archdata.iommu)
-> >   		return 0;
-> > @@ -279,8 +281,30 @@ static int iommu_init_device(struct device *dev)
-> >   			return -ENOTSUPP;
-> >   		}
-> >   		dev_data->alias_data = alias_data;
-> > +
-> > +		dma_pdev = pci_get_bus_and_slot(alias>>  8, alias&  0xff);
-> > +	} else
-> > +		dma_pdev = pdev;
-> > +
-> > +	if (!pdev->is_virtfn&&  PCI_FUNC(pdev->devfn)&&  iommu_group_mf&&
-> > +	    pdev->hdr_type == PCI_HEADER_TYPE_NORMAL)
-> > +		dma_pdev = pci_get_slot(pdev->bus,
-> > +					PCI_DEVFN(PCI_SLOT(pdev->devfn), 0));
-> > +
-> > +	group = iommu_group_get(&dma_pdev->dev);
-> > +	if (!group) {
-> > +		group = iommu_group_alloc();
-> > +		if (IS_ERR(group))
-> > +			return PTR_ERR(group);
-> >   	}
-> >
-> > +	ret = iommu_group_add_device(group, dev);
-> > +
-> > +	iommu_group_put(group);
-> > +
-> do you want to do a put if there is a failure in the iommu_group_add_device()?
-
-Yes, this was intentional.  iommu_group_alloc() adds a reference to the
-group it returns so that it doesn't disappear while we're working on it
-(documented in iommu.c).  iommu_group_get() also gets a reference.  So
-this put will free the group if it was new or just drop the reference if
-existing.  Thanks,
-
-Alex
-
-> > +	if (ret)
-> > +		return ret;
-> > +
-> >   	if (pci_iommuv2_capable(pdev)) {
-> >   		struct amd_iommu *iommu;
-> >
-> > @@ -309,6 +333,8 @@ static void iommu_ignore_device(struct device *dev)
-> >
-> >   static void iommu_uninit_device(struct device *dev)
-> >   {
-> > +	iommu_group_remove_device(dev);
-> > +
-> >   	/*
-> >   	 * Nothing to do here - we keep dev_data around for unplugged devices
-> >   	 * and reuse it when the device is re-plugged - not doing so would
-> > diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> > index d4a0ff7..e63b33b 100644
-> > --- a/drivers/iommu/intel-iommu.c
-> > +++ b/drivers/iommu/intel-iommu.c
-> > @@ -4087,6 +4087,50 @@ static int intel_iommu_domain_has_cap(struct iommu_domain *domain,
-> >   	return 0;
-> >   }
-> >
-> > +static int intel_iommu_add_device(struct device *dev)
-> > +{
-> > +	struct pci_dev *pdev = to_pci_dev(dev);
-> > +	struct pci_dev *bridge, *dma_pdev = pdev;
-> > +	struct iommu_group *group;
-> > +	int ret;
-> > +
-> > +	if (!device_to_iommu(pci_domain_nr(pdev->bus),
-> > +			     pdev->bus->number, pdev->devfn))
-> > +		return -ENODEV;
-> > +
-> > +	bridge = pci_find_upstream_pcie_bridge(pdev);
-> > +	if (bridge) {
-> > +		if (pci_is_pcie(bridge))
-> > +			dma_pdev = pci_get_domain_bus_and_slot(
-> > +						pci_domain_nr(pdev->bus),
-> > +						bridge->subordinate->number, 0);
-> > +		else
-> > +			dma_pdev = bridge;
-> > +	}
-> > +
-> > +	if (!pdev->is_virtfn&&  PCI_FUNC(pdev->devfn)&&  iommu_group_mf&&
-> > +	    pdev->hdr_type == PCI_HEADER_TYPE_NORMAL)
-> > +		dma_pdev = pci_get_slot(pdev->bus,
-> > +					PCI_DEVFN(PCI_SLOT(pdev->devfn), 0));
-> > +
-> > +	group = iommu_group_get(&dma_pdev->dev);
-> > +	if (!group) {
-> > +		group = iommu_group_alloc();
-> > +		if (IS_ERR(group))
-> > +			return PTR_ERR(group);
-> > +	}
-> > +
-> > +	ret = iommu_group_add_device(group, dev);
-> > +
-> ditto.
-> > +	iommu_group_put(group);
-> > +	return ret;
-> > +}
-> > +
-> > +static void intel_iommu_remove_device(struct device *dev)
-> > +{
-> > +	iommu_group_remove_device(dev);
-> > +}
-> > +
-> >   static struct iommu_ops intel_iommu_ops = {
-> >   	.domain_init	= intel_iommu_domain_init,
-> >   	.domain_destroy = intel_iommu_domain_destroy,
-> > @@ -4096,6 +4140,8 @@ static struct iommu_ops intel_iommu_ops = {
-> >   	.unmap		= intel_iommu_unmap,
-> >   	.iova_to_phys	= intel_iommu_iova_to_phys,
-> >   	.domain_has_cap = intel_iommu_domain_has_cap,
-> > +	.add_device	= intel_iommu_add_device,
-> > +	.remove_device	= intel_iommu_remove_device,
-> >   	.pgsize_bitmap	= INTEL_IOMMU_PGSIZES,
-> >   };
-> >
-> >
-> 
+On 05/22/2012 01:04 AM, Alex Williamson wrote:
+> Version 2 incorporating acks and feedback from v1.  The PCI DMA quirk
+> and ACS check are reworked, sysfs iommu groups ABI Documentation
+> added as well as numerous other fixes, including patches from Alexey
+> Kardashevskiy towards supporting POWER usage of VFIO and IOMMU groups.
+>
+> This series can be found here on top of 3.4:
+>
+> git://github.com/awilliam/linux-vfio.git iommu-group-vfio-20120521
+>
+> The Qemu tree has also been updated to Qemu 1.1 and can be found here:
+>
+> git://github.com/awilliam/qemu-vfio.git iommu-group-vfio
+>
+> I'd really like to make a push to get this in for 3.5, so let's talk
+> about how to do that across iommu, pci, and new driver.  Joerg, are
+> you sufficiently happy with the IOMMU group concept and code?  We'll
+> also need David Woodhouse buyin on the intel-iommu changes in patches
+> 3&  6.  Who needs to approve VFIO as a new driver, GregKH?  Bjorn,
+> I'd be happy to send the PCI changes as a series for you, but I
+> wonder if it makes sense to collect acks for them if you approve and
+> bundle them in with the associated code that needs them so you're
+> not left with unused code.  Let me know which you prefer.  If there
+> are better ways to do it, please let me know.  Thanks,
+>
+> Alex
+>
+> ---
+ack to 1,2,4,6,8,10 & 11.
+provided some minor feedback on 3,9,&12.
+have to do final review of the big stuff, 7 & 13.
+>
+> Alex Williamson (13):
+>        vfio: Add PCI device driver
+>        pci: Misc pci_reg additions
+>        pci: Create common pcibios_err_to_errno
+>        pci: export pci_user functions for use by other drivers
+>        vfio: x86 IOMMU implementation
+>        vfio: Add documentation
+>        vfio: VFIO core
+>        iommu: Make use of DMA quirking and ACS enabled check for groups
+>        pci: Add ACS validation utility
+>        pci: Add PCI DMA source ID quirk
+>        iommu: IOMMU groups for VT-d and AMD-Vi
+>        iommu: IOMMU Groups
+>        driver core: Add iommu_group tracking to struct device
+>
+>
+>   .../ABI/testing/sysfs-kernel-iommu_groups          |   14
+>   Documentation/ioctl/ioctl-number.txt               |    1
+>   Documentation/vfio.txt                             |  315 ++++
+>   MAINTAINERS                                        |    8
+>   drivers/Kconfig                                    |    2
+>   drivers/Makefile                                   |    1
+>   drivers/iommu/amd_iommu.c                          |   67 +
+>   drivers/iommu/intel-iommu.c                        |   87 +
+>   drivers/iommu/iommu.c                              |  578 +++++++-
+>   drivers/pci/access.c                               |    6
+>   drivers/pci/pci.c                                  |   76 +
+>   drivers/pci/pci.h                                  |    7
+>   drivers/pci/quirks.c                               |   69 +
+>   drivers/vfio/Kconfig                               |   16
+>   drivers/vfio/Makefile                              |    3
+>   drivers/vfio/pci/Kconfig                           |    8
+>   drivers/vfio/pci/Makefile                          |    4
+>   drivers/vfio/pci/vfio_pci.c                        |  557 +++++++
+>   drivers/vfio/pci/vfio_pci_config.c                 | 1522 ++++++++++++++++++++
+>   drivers/vfio/pci/vfio_pci_intrs.c                  |  724 ++++++++++
+>   drivers/vfio/pci/vfio_pci_private.h                |   91 +
+>   drivers/vfio/pci/vfio_pci_rdwr.c                   |  269 ++++
+>   drivers/vfio/vfio.c                                | 1413 +++++++++++++++++++
+>   drivers/vfio/vfio_iommu_x86.c                      |  743 ++++++++++
+>   drivers/xen/xen-pciback/conf_space.c               |    6
+>   include/linux/device.h                             |    2
+>   include/linux/iommu.h                              |  104 +
+>   include/linux/pci.h                                |   49 +
+>   include/linux/pci_regs.h                           |  112 +
+>   include/linux/vfio.h                               |  444 ++++++
+>   30 files changed, 7182 insertions(+), 116 deletions(-)
+>   create mode 100644 Documentation/ABI/testing/sysfs-kernel-iommu_groups
+>   create mode 100644 Documentation/vfio.txt
+>   create mode 100644 drivers/vfio/Kconfig
+>   create mode 100644 drivers/vfio/Makefile
+>   create mode 100644 drivers/vfio/pci/Kconfig
+>   create mode 100644 drivers/vfio/pci/Makefile
+>   create mode 100644 drivers/vfio/pci/vfio_pci.c
+>   create mode 100644 drivers/vfio/pci/vfio_pci_config.c
+>   create mode 100644 drivers/vfio/pci/vfio_pci_intrs.c
+>   create mode 100644 drivers/vfio/pci/vfio_pci_private.h
+>   create mode 100644 drivers/vfio/pci/vfio_pci_rdwr.c
+>   create mode 100644 drivers/vfio/vfio.c
+>   create mode 100644 drivers/vfio/vfio_iommu_x86.c
+>   create mode 100644 include/linux/vfio.h
