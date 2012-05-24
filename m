@@ -1,14 +1,14 @@
 From: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 03/13] iommu: IOMMU groups for VT-d and AMD-Vi
-Date: Thu, 24 May 2012 17:01:03 -0400
-Message-ID: <4FBEA18F.1040607@redhat.com>
+Subject: Re: [PATCH v2 05/13] pci: Add ACS validation utility
+Date: Thu, 24 May 2012 17:30:47 -0400
+Message-ID: <4FBEA887.6010908@redhat.com>
 References: <20120522043607.5871.11340.stgit@bling.home>
-	<20120522050454.5871.67086.stgit@bling.home>
+	<20120522050508.5871.96269.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20120522050454.5871.67086.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+In-Reply-To: <20120522050508.5871.96269.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,140 +22,222 @@ To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org, B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, avi-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, benve-FYB4Gu1CFyUAvxtiuMwx3w@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/22/2012 01:04 AM, Alex Williamson wrote:
-> Add back group support for AMD&  Intel.  amd_iommu already tracks
-> devices and has init and uninit routines to manage groups.
-> intel-iommu does this on the fly, so we make use of the notifier
-> support built into iommu groups to create and remove groups.
+On 05/22/2012 01:05 AM, Alex Williamson wrote:
+> In a PCI environment, transactions aren't always required to reach
+> the root bus before being re-routed.  Intermediate switches between
+> an endpoint and the root bus can redirect DMA back downstream before
+> things like IOMMUs have a chance to intervene.  Legacy PCI is always
+> susceptible to this as it operates on a shared bus.  PCIe added a
+> new capability to describe and control this behavior, Access Control
+> Services, or ACS.  The utility function pci_acs_enabled() allows us
+> to test the ACS capabilities of an individual devices against a set
+> of flags while pci_acs_path_enabled() tests a complete path from
+> a given downstream device up to the specified upstream device.  We
+> also include the ability to add device specific tests as it's
+> likely we'll see devices that do no implement ACS, but want to
+> indicate support for various capabilities in this space.
 >
 > Signed-off-by: Alex Williamson<alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 > ---
 >
->   drivers/iommu/amd_iommu.c   |   28 +++++++++++++++++++++++++-
->   drivers/iommu/intel-iommu.c |   46 +++++++++++++++++++++++++++++++++++++++++++
->   2 files changed, 73 insertions(+), 1 deletions(-)
+>   drivers/pci/pci.c    |   76 ++++++++++++++++++++++++++++++++++++++++++++++++++
+>   drivers/pci/quirks.c |   29 +++++++++++++++++++
+>   include/linux/pci.h  |   10 ++++++-
+>   3 files changed, 114 insertions(+), 1 deletions(-)
 >
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index 32c00cd..b7e5ddf 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -256,9 +256,11 @@ static bool check_device(struct device *dev)
->
->   static int iommu_init_device(struct device *dev)
->   {
-> -	struct pci_dev *pdev = to_pci_dev(dev);
-> +	struct pci_dev *dma_pdev, *pdev = to_pci_dev(dev);
->   	struct iommu_dev_data *dev_data;
-> +	struct iommu_group *group;
->   	u16 alias;
-> +	int ret;
->
->   	if (dev->archdata.iommu)
->   		return 0;
-> @@ -279,8 +281,30 @@ static int iommu_init_device(struct device *dev)
->   			return -ENOTSUPP;
->   		}
->   		dev_data->alias_data = alias_data;
-> +
-> +		dma_pdev = pci_get_bus_and_slot(alias>>  8, alias&  0xff);
-> +	} else
-> +		dma_pdev = pdev;
-> +
-> +	if (!pdev->is_virtfn&&  PCI_FUNC(pdev->devfn)&&  iommu_group_mf&&
-> +	    pdev->hdr_type == PCI_HEADER_TYPE_NORMAL)
-> +		dma_pdev = pci_get_slot(pdev->bus,
-> +					PCI_DEVFN(PCI_SLOT(pdev->devfn), 0));
-> +
-> +	group = iommu_group_get(&dma_pdev->dev);
-> +	if (!group) {
-> +		group = iommu_group_alloc();
-> +		if (IS_ERR(group))
-> +			return PTR_ERR(group);
->   	}
->
-> +	ret = iommu_group_add_device(group, dev);
-> +
-> +	iommu_group_put(group);
-> +
-do you want to do a put if there is a failure in the iommu_group_add_device()?
-> +	if (ret)
-> +		return ret;
-> +
->   	if (pci_iommuv2_capable(pdev)) {
->   		struct amd_iommu *iommu;
->
-> @@ -309,6 +333,8 @@ static void iommu_ignore_device(struct device *dev)
->
->   static void iommu_uninit_device(struct device *dev)
->   {
-> +	iommu_group_remove_device(dev);
-> +
->   	/*
->   	 * Nothing to do here - we keep dev_data around for unplugged devices
->   	 * and reuse it when the device is re-plugged - not doing so would
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index d4a0ff7..e63b33b 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -4087,6 +4087,50 @@ static int intel_iommu_domain_has_cap(struct iommu_domain *domain,
->   	return 0;
+> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> index 111569c..ab6c2a6 100644
+> --- a/drivers/pci/pci.c
+> +++ b/drivers/pci/pci.c
+> @@ -2359,6 +2359,82 @@ void pci_enable_acs(struct pci_dev *dev)
 >   }
 >
-> +static int intel_iommu_add_device(struct device *dev)
+>   /**
+> + * pci_acs_enable - test ACS against required flags for a given device
+typo:               ^^^ missing 'd'
+
+> + * @pdev: device to test
+> + * @acs_flags: required PCI ACS flags
+> + *
+> + * Return true if the device supports the provided flags.  Automatically
+> + * filters out flags that are not implemented on multifunction devices.
+> + */
+> +bool pci_acs_enabled(struct pci_dev *pdev, u16 acs_flags)
 > +{
-> +	struct pci_dev *pdev = to_pci_dev(dev);
-> +	struct pci_dev *bridge, *dma_pdev = pdev;
-> +	struct iommu_group *group;
-> +	int ret;
+> +	int pos;
+> +	u16 ctrl;
 > +
-> +	if (!device_to_iommu(pci_domain_nr(pdev->bus),
-> +			     pdev->bus->number, pdev->devfn))
-> +		return -ENODEV;
+> +	if (pci_dev_specific_acs_enabled(pdev, acs_flags))
+> +		return true;
 > +
-> +	bridge = pci_find_upstream_pcie_bridge(pdev);
-> +	if (bridge) {
-> +		if (pci_is_pcie(bridge))
-> +			dma_pdev = pci_get_domain_bus_and_slot(
-> +						pci_domain_nr(pdev->bus),
-> +						bridge->subordinate->number, 0);
-> +		else
-> +			dma_pdev = bridge;
+> +	if (!pci_is_pcie(pdev))
+> +		return false;
+> +
+> +	if (pdev->pcie_type == PCI_EXP_TYPE_DOWNSTREAM ||
+> +	    pdev->pcie_type == PCI_EXP_TYPE_ROOT_PORT) {
+> +		pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ACS);
+> +		if (!pos)
+> +			return false;
+> +
+> +		pci_read_config_word(pdev, pos + PCI_ACS_CTRL,&ctrl);
+> +		if ((ctrl&  acs_flags) != acs_flags)
+> +			return false;
+> +	} else if (pdev->multifunction) {
+> +		/* Filter out flags not applicable to multifunction */
+> +		acs_flags&= (PCI_ACS_RR | PCI_ACS_CR |
+> +			      PCI_ACS_EC | PCI_ACS_DT);
+> +
+> +		pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ACS);
+> +		if (!pos)
+> +			return false;
+> +
+> +		pci_read_config_word(pdev, pos + PCI_ACS_CTRL,&ctrl);
+> +		if ((ctrl&  acs_flags) != acs_flags)
+> +			return false;
 > +	}
 > +
-> +	if (!pdev->is_virtfn&&  PCI_FUNC(pdev->devfn)&&  iommu_group_mf&&
-> +	    pdev->hdr_type == PCI_HEADER_TYPE_NORMAL)
-> +		dma_pdev = pci_get_slot(pdev->bus,
-> +					PCI_DEVFN(PCI_SLOT(pdev->devfn), 0));
-> +
-> +	group = iommu_group_get(&dma_pdev->dev);
-> +	if (!group) {
-> +		group = iommu_group_alloc();
-> +		if (IS_ERR(group))
-> +			return PTR_ERR(group);
-> +	}
-> +
-> +	ret = iommu_group_add_device(group, dev);
-> +
-ditto.
-> +	iommu_group_put(group);
-> +	return ret;
+> +	return true;
+or, to reduce duplicated code (which compiler may do?):
+
+	/* Filter out flags not applicable to multifunction */
+	if (pdev->multifunction)
+		acs_flags &= (PCI_ACS_RR | PCI_ACS_CR |
+			      PCI_ACS_EC | PCI_ACS_DT);
+
+	if (pdev->pcie_type == PCI_EXP_TYPE_DOWNSTREAM ||
+	    pdev->pcie_type == PCI_EXP_TYPE_ROOT_PORT ||
+             pdev->multifunction) {
+		pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ACS);
+		if (!pos)
+			return false;
+		pci_read_config_word(pdev, pos + PCI_ACS_CTRL, &ctrl);
+		if ((ctrl & acs_flags) != acs_flags)
+			return false;
+	}
+
+	return true;
 > +}
+
+But the above doesn't handle the case where the RC does not do
+peer-to-peer btwn root ports. Per ACS spec, such a RC's root ports
+don't need to provide an ACS cap, since peer-to-peer port xfers aren't
+allowed/enabled/supported, so by design, the root port is ACS compliant.
+ATM, an IOMMU-capable system is a pre-req for VFIO,
+and all such systems have an ACS cap, but they may not always be true.
+
+> +EXPORT_SYMBOL_GPL(pci_acs_enabled);
 > +
-> +static void intel_iommu_remove_device(struct device *dev)
+> +/**
+> + * pci_acs_path_enable - test ACS flags from start to end in a hierarchy
+> + * @start: starting downstream device
+> + * @end: ending upstream device or NULL to search to the root bus
+> + * @acs_flags: required flags
+> + *
+> + * Walk up a device tree from start to end testing PCI ACS support.  If
+> + * any step along the way does not support the required flags, return false.
+> + */
+> +bool pci_acs_path_enabled(struct pci_dev *start,
+> +			  struct pci_dev *end, u16 acs_flags)
 > +{
-> +	iommu_group_remove_device(dev);
-> +}
+> +	struct pci_dev *pdev, *parent = start;
 > +
->   static struct iommu_ops intel_iommu_ops = {
->   	.domain_init	= intel_iommu_domain_init,
->   	.domain_destroy = intel_iommu_domain_destroy,
-> @@ -4096,6 +4140,8 @@ static struct iommu_ops intel_iommu_ops = {
->   	.unmap		= intel_iommu_unmap,
->   	.iova_to_phys	= intel_iommu_iova_to_phys,
->   	.domain_has_cap = intel_iommu_domain_has_cap,
-> +	.add_device	= intel_iommu_add_device,
-> +	.remove_device	= intel_iommu_remove_device,
->   	.pgsize_bitmap	= INTEL_IOMMU_PGSIZES,
->   };
+> +	do {
+> +		pdev = parent;
+> +
+> +		if (!pci_acs_enabled(pdev, acs_flags))
+> +			return false;
+> +
+> +		if (pci_is_root_bus(pdev->bus))
+> +			return (end == NULL);
+doesn't this mean that a caller can't pass the pdev of the root port?
+I would think that is a valid call, albeit not the common one.
+Also worried that the above code may be true on Intel machines, but not on AMD
+machines (the latter reps its IOMMU as a pdev of root bus, doesn't it?)
+
+> +
+> +		parent = pdev->bus->self;
+> +	} while (pdev != end);
+> +
+> +	return true;
+> +}
+> +EXPORT_SYMBOL_GPL(pci_acs_path_enabled);
+> +
+> +/**
+>    * pci_swizzle_interrupt_pin - swizzle INTx for device behind bridge
+>    * @dev: the PCI device
+>    * @pin: the INTx pin (1=INTA, 2=INTB, 3=INTD, 4=INTD)
+> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+> index a2dd77f..4ed6aa6 100644
+> --- a/drivers/pci/quirks.c
+> +++ b/drivers/pci/quirks.c
+> @@ -3149,3 +3149,32 @@ struct pci_dev *pci_dma_source(struct pci_dev *dev)
 >
+>   	return dev;
+>   }
+> +
+> +static const struct pci_dev_acs_enabled {
+> +	u16 vendor;
+> +	u16 device;
+> +	bool (*acs_enabled)(struct pci_dev *dev, u16 acs_flags);
+> +} pci_dev_acs_enabled[] = {
+> +	{ 0 }
+> +};
+> +
+> +bool pci_dev_specific_acs_enabled(struct pci_dev *dev, u16 acs_flags)
+> +{
+> +	const struct pci_dev_acs_enabled *i;
+> +
+> +	/*
+> +	 * Allow devices that do not expose standard PCI ACS capabilities
+> +	 * or control to indicate their support here.  Multi-function devices
+> +	 * which do not allow internal peer-to-peer between functions, but
+> +	 * do not implement PCI ACS may wish to return true here.
+> +	 */
+> +	for (i = pci_dev_acs_enabled; i->acs_enabled; i++) {
+> +		if ((i->vendor == dev->vendor ||
+> +		     i->vendor == (u16)PCI_ANY_ID)&&
+> +		    (i->device == dev->device ||
+> +		     i->device == (u16)PCI_ANY_ID))
+> +			return i->acs_enabled(dev, acs_flags);
+> +	}
+> +
+> +	return false;
+> +}
+I can't wait until these quirks are filled in! :)
+
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index 02dbfed..2559735 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -1480,6 +1480,7 @@ enum pci_fixup_pass {
+>   #ifdef CONFIG_PCI_QUIRKS
+>   void pci_fixup_device(enum pci_fixup_pass pass, struct pci_dev *dev);
+>   struct pci_dev *pci_dma_source(struct pci_dev *dev);
+> +bool pci_dev_specific_acs_enabled(struct pci_dev *dev, u16 acs_flags);
+>   #else
+>   static inline void pci_fixup_device(enum pci_fixup_pass pass,
+>   				    struct pci_dev *dev) {}
+> @@ -1487,6 +1488,11 @@ static inline struct pci_dev *pci_dma_source(struct pci_dev *dev)
+>   {
+>   	return dev;
+>   }
+> +static inline bool pci_dev_specific_acs_enabled(struct pci_dev *dev,
+> +						u16 acs_flags)
+> +{
+> +	return false;
+> +}
+>   #endif
+>
+>   void __iomem *pcim_iomap(struct pci_dev *pdev, int bar, unsigned long maxlen);
+> @@ -1589,7 +1595,9 @@ static inline bool pci_is_pcie(struct pci_dev *dev)
+>   }
+>
+>   void pci_request_acs(void);
+> -
+> +bool pci_acs_enabled(struct pci_dev *pdev, u16 acs_flags);
+> +bool pci_acs_path_enabled(struct pci_dev *start,
+> +			  struct pci_dev *end, u16 acs_flags);
+>
+>   #define PCI_VPD_LRDT			0x80	/* Large Resource Data Type */
+>   #define PCI_VPD_LRDT_ID(x)		(x | PCI_VPD_LRDT)
 >
