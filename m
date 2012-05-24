@@ -1,14 +1,14 @@
 From: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 05/13] pci: Add ACS validation utility
-Date: Thu, 24 May 2012 17:30:47 -0400
-Message-ID: <4FBEA887.6010908@redhat.com>
+Subject: Re: [PATCH v2 09/13] vfio: x86 IOMMU implementation
+Date: Thu, 24 May 2012 17:38:36 -0400
+Message-ID: <4FBEAA5C.4060105@redhat.com>
 References: <20120522043607.5871.11340.stgit@bling.home>
-	<20120522050508.5871.96269.stgit@bling.home>
+	<20120522050536.5871.65171.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20120522050508.5871.96269.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+In-Reply-To: <20120522050536.5871.65171.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,221 +23,71 @@ Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, B07421-KZfg59tc24xl57MIdRCFDg@p
 List-Id: iommu@lists.linux-foundation.org
 
 On 05/22/2012 01:05 AM, Alex Williamson wrote:
-> In a PCI environment, transactions aren't always required to reach
-> the root bus before being re-routed.  Intermediate switches between
-> an endpoint and the root bus can redirect DMA back downstream before
-> things like IOMMUs have a chance to intervene.  Legacy PCI is always
-> susceptible to this as it operates on a shared bus.  PCIe added a
-> new capability to describe and control this behavior, Access Control
-> Services, or ACS.  The utility function pci_acs_enabled() allows us
-> to test the ACS capabilities of an individual devices against a set
-> of flags while pci_acs_path_enabled() tests a complete path from
-> a given downstream device up to the specified upstream device.  We
-> also include the ability to add device specific tests as it's
-> likely we'll see devices that do no implement ACS, but want to
-> indicate support for various capabilities in this space.
+> x86 is probably the wrong name for this VFIO IOMMU driver, but x86
+> is the primary target for it.  This driver support a very simple
+> usage model using the existing IOMMU API.  The IOMMU is expected to
+> support the full host address space with no special IOVA windows,
+> number of mappings restrictions, or unique processor target options.
 >
 > Signed-off-by: Alex Williamson<alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 > ---
 >
->   drivers/pci/pci.c    |   76 ++++++++++++++++++++++++++++++++++++++++++++++++++
->   drivers/pci/quirks.c |   29 +++++++++++++++++++
->   include/linux/pci.h  |   10 ++++++-
->   3 files changed, 114 insertions(+), 1 deletions(-)
+>   Documentation/ioctl/ioctl-number.txt |    2
+>   drivers/vfio/Kconfig                 |    6
+>   drivers/vfio/Makefile                |    2
+>   drivers/vfio/vfio.c                  |    7
+>   drivers/vfio/vfio_iommu_x86.c        |  743 ++++++++++++++++++++++++++++++++++
+>   include/linux/vfio.h                 |   52 ++
+>   6 files changed, 811 insertions(+), 1 deletions(-)
+>   create mode 100644 drivers/vfio/vfio_iommu_x86.c
 >
-> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-> index 111569c..ab6c2a6 100644
-> --- a/drivers/pci/pci.c
-> +++ b/drivers/pci/pci.c
-> @@ -2359,6 +2359,82 @@ void pci_enable_acs(struct pci_dev *dev)
->   }
->
->   /**
-> + * pci_acs_enable - test ACS against required flags for a given device
-typo:               ^^^ missing 'd'
+> diff --git a/Documentation/ioctl/ioctl-number.txt b/Documentation/ioctl/ioctl-number.txt
+> index 111e30a..9d1694e 100644
+> --- a/Documentation/ioctl/ioctl-number.txt
+> +++ b/Documentation/ioctl/ioctl-number.txt
+> @@ -88,7 +88,7 @@ Code  Seq#(hex)	Include File		Comments
+>   		and kernel/power/user.c
+>   '8'	all				SNP8023 advanced NIC card
+>   					<mailto:mcr-b3vwm0MSY3FBDgjK7y7TUQ@public.gmane.org>
+> -';'	64-6F	linux/vfio.h
+> +';'	64-72	linux/vfio.h
+>   '@'	00-0F	linux/radeonfb.h	conflict!
+>   '@'	00-0F	drivers/video/aty/aty128fb.c	conflict!
+>   'A'	00-1F	linux/apm_bios.h	conflict!
+> diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
+> index 9acb1e7..bd88a30 100644
+> --- a/drivers/vfio/Kconfig
+> +++ b/drivers/vfio/Kconfig
+> @@ -1,6 +1,12 @@
+> +config VFIO_IOMMU_X86
+> +	tristate
+> +	depends on VFIO&&  X86
+> +	default n
+> +
+>   menuconfig VFIO
+>   	tristate "VFIO Non-Privileged userspace driver framework"
+>   	depends on IOMMU_API
+> +	select VFIO_IOMMU_X86 if X86
+>   	help
+>   	  VFIO provides a framework for secure userspace device drivers.
+>   	  See Documentation/vfio.txt for more details.
 
-> + * @pdev: device to test
-> + * @acs_flags: required PCI ACS flags
-> + *
-> + * Return true if the device supports the provided flags.  Automatically
-> + * filters out flags that are not implemented on multifunction devices.
-> + */
-> +bool pci_acs_enabled(struct pci_dev *pdev, u16 acs_flags)
-> +{
-> +	int pos;
-> +	u16 ctrl;
-> +
-> +	if (pci_dev_specific_acs_enabled(pdev, acs_flags))
-> +		return true;
-> +
-> +	if (!pci_is_pcie(pdev))
-> +		return false;
-> +
-> +	if (pdev->pcie_type == PCI_EXP_TYPE_DOWNSTREAM ||
-> +	    pdev->pcie_type == PCI_EXP_TYPE_ROOT_PORT) {
-> +		pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ACS);
-> +		if (!pos)
-> +			return false;
-> +
-> +		pci_read_config_word(pdev, pos + PCI_ACS_CTRL,&ctrl);
-> +		if ((ctrl&  acs_flags) != acs_flags)
-> +			return false;
-> +	} else if (pdev->multifunction) {
-> +		/* Filter out flags not applicable to multifunction */
-> +		acs_flags&= (PCI_ACS_RR | PCI_ACS_CR |
-> +			      PCI_ACS_EC | PCI_ACS_DT);
-> +
-> +		pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ACS);
-> +		if (!pos)
-> +			return false;
-> +
-> +		pci_read_config_word(pdev, pos + PCI_ACS_CTRL,&ctrl);
-> +		if ((ctrl&  acs_flags) != acs_flags)
-> +			return false;
-> +	}
-> +
-> +	return true;
-or, to reduce duplicated code (which compiler may do?):
+So a future refactoring that uses some chunk of this support
+on a non-x86 machine could be a lot of useless renaming.
 
-	/* Filter out flags not applicable to multifunction */
-	if (pdev->multifunction)
-		acs_flags &= (PCI_ACS_RR | PCI_ACS_CR |
-			      PCI_ACS_EC | PCI_ACS_DT);
+Why not rename vfio_iommu_x86 to something like vfio_iommu_no_iova
+and just make it conditionally compiled on X86 (as you've done above in Kconfig's)?
+Then if another arch can use it, or refactors the file to use
+some of it, and split x86 vs <other-arch> into separate per-arch files,
+or per-iova schemes, it's more descriptive and less disruptive?
 
-	if (pdev->pcie_type == PCI_EXP_TYPE_DOWNSTREAM ||
-	    pdev->pcie_type == PCI_EXP_TYPE_ROOT_PORT ||
-             pdev->multifunction) {
-		pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ACS);
-		if (!pos)
-			return false;
-		pci_read_config_word(pdev, pos + PCI_ACS_CTRL, &ctrl);
-		if ((ctrl & acs_flags) != acs_flags)
-			return false;
-	}
-
-	return true;
-> +}
-
-But the above doesn't handle the case where the RC does not do
-peer-to-peer btwn root ports. Per ACS spec, such a RC's root ports
-don't need to provide an ACS cap, since peer-to-peer port xfers aren't
-allowed/enabled/supported, so by design, the root port is ACS compliant.
-ATM, an IOMMU-capable system is a pre-req for VFIO,
-and all such systems have an ACS cap, but they may not always be true.
-
-> +EXPORT_SYMBOL_GPL(pci_acs_enabled);
-> +
-> +/**
-> + * pci_acs_path_enable - test ACS flags from start to end in a hierarchy
-> + * @start: starting downstream device
-> + * @end: ending upstream device or NULL to search to the root bus
-> + * @acs_flags: required flags
-> + *
-> + * Walk up a device tree from start to end testing PCI ACS support.  If
-> + * any step along the way does not support the required flags, return false.
-> + */
-> +bool pci_acs_path_enabled(struct pci_dev *start,
-> +			  struct pci_dev *end, u16 acs_flags)
-> +{
-> +	struct pci_dev *pdev, *parent = start;
-> +
-> +	do {
-> +		pdev = parent;
-> +
-> +		if (!pci_acs_enabled(pdev, acs_flags))
-> +			return false;
-> +
-> +		if (pci_is_root_bus(pdev->bus))
-> +			return (end == NULL);
-doesn't this mean that a caller can't pass the pdev of the root port?
-I would think that is a valid call, albeit not the common one.
-Also worried that the above code may be true on Intel machines, but not on AMD
-machines (the latter reps its IOMMU as a pdev of root bus, doesn't it?)
-
-> +
-> +		parent = pdev->bus->self;
-> +	} while (pdev != end);
-> +
-> +	return true;
-> +}
-> +EXPORT_SYMBOL_GPL(pci_acs_path_enabled);
-> +
-> +/**
->    * pci_swizzle_interrupt_pin - swizzle INTx for device behind bridge
->    * @dev: the PCI device
->    * @pin: the INTx pin (1=INTA, 2=INTB, 3=INTD, 4=INTD)
-> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-> index a2dd77f..4ed6aa6 100644
-> --- a/drivers/pci/quirks.c
-> +++ b/drivers/pci/quirks.c
-> @@ -3149,3 +3149,32 @@ struct pci_dev *pci_dma_source(struct pci_dev *dev)
->
->   	return dev;
->   }
-> +
-> +static const struct pci_dev_acs_enabled {
-> +	u16 vendor;
-> +	u16 device;
-> +	bool (*acs_enabled)(struct pci_dev *dev, u16 acs_flags);
-> +} pci_dev_acs_enabled[] = {
-> +	{ 0 }
-> +};
-> +
-> +bool pci_dev_specific_acs_enabled(struct pci_dev *dev, u16 acs_flags)
-> +{
-> +	const struct pci_dev_acs_enabled *i;
-> +
-> +	/*
-> +	 * Allow devices that do not expose standard PCI ACS capabilities
-> +	 * or control to indicate their support here.  Multi-function devices
-> +	 * which do not allow internal peer-to-peer between functions, but
-> +	 * do not implement PCI ACS may wish to return true here.
-> +	 */
-> +	for (i = pci_dev_acs_enabled; i->acs_enabled; i++) {
-> +		if ((i->vendor == dev->vendor ||
-> +		     i->vendor == (u16)PCI_ANY_ID)&&
-> +		    (i->device == dev->device ||
-> +		     i->device == (u16)PCI_ANY_ID))
-> +			return i->acs_enabled(dev, acs_flags);
-> +	}
-> +
-> +	return false;
-> +}
-I can't wait until these quirks are filled in! :)
-
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index 02dbfed..2559735 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -1480,6 +1480,7 @@ enum pci_fixup_pass {
->   #ifdef CONFIG_PCI_QUIRKS
->   void pci_fixup_device(enum pci_fixup_pass pass, struct pci_dev *dev);
->   struct pci_dev *pci_dma_source(struct pci_dev *dev);
-> +bool pci_dev_specific_acs_enabled(struct pci_dev *dev, u16 acs_flags);
->   #else
->   static inline void pci_fixup_device(enum pci_fixup_pass pass,
->   				    struct pci_dev *dev) {}
-> @@ -1487,6 +1488,11 @@ static inline struct pci_dev *pci_dma_source(struct pci_dev *dev)
->   {
->   	return dev;
->   }
-> +static inline bool pci_dev_specific_acs_enabled(struct pci_dev *dev,
-> +						u16 acs_flags)
-> +{
-> +	return false;
-> +}
->   #endif
->
->   void __iomem *pcim_iomap(struct pci_dev *pdev, int bar, unsigned long maxlen);
-> @@ -1589,7 +1595,9 @@ static inline bool pci_is_pcie(struct pci_dev *dev)
->   }
->
->   void pci_request_acs(void);
-> -
-> +bool pci_acs_enabled(struct pci_dev *pdev, u16 acs_flags);
-> +bool pci_acs_path_enabled(struct pci_dev *start,
-> +			  struct pci_dev *end, u16 acs_flags);
->
->   #define PCI_VPD_LRDT			0x80	/* Large Resource Data Type */
->   #define PCI_VPD_LRDT_ID(x)		(x | PCI_VPD_LRDT)
->
+> diff --git a/drivers/vfio/Makefile b/drivers/vfio/Makefile
+> index 7500a67..1f1abee 100644
+> --- a/drivers/vfio/Makefile
+> +++ b/drivers/vfio/Makefile
+> @@ -1 +1,3 @@
+>   obj-$(CONFIG_VFIO) += vfio.o
+> +obj-$(CONFIG_VFIO_IOMMU_X86) += vfio_iommu_x86.o
+> +obj-$(CONFIG_VFIO_PCI) += pci/
+> diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
+> index 6558eef..89899a8 100644
