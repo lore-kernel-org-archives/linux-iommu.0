@@ -1,15 +1,15 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 12/13] pci: Misc pci_reg additions
-Date: Thu, 24 May 2012 16:17:44 -0600
-Message-ID: <1337897864.4714.57.camel@ul30vt>
+Subject: Re: [PATCH v2 05/13] pci: Add ACS validation utility
+Date: Thu, 24 May 2012 16:35:46 -0600
+Message-ID: <1337898946.4714.71.camel@ul30vt>
 References: <20120522043607.5871.11340.stgit@bling.home>
-	<20120522050557.5871.15364.stgit@bling.home>
-	<4FBEACE2.1050701@redhat.com>
+	<20120522050508.5871.96269.stgit@bling.home>
+	<4FBEA887.6010908@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <4FBEACE2.1050701-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <4FBEA887.6010908-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,91 +23,213 @@ To: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org, B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, avi-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, benve-FYB4Gu1CFyUAvxtiuMwx3w@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 2012-05-24 at 17:49 -0400, Don Dutile wrote:
+On Thu, 2012-05-24 at 17:30 -0400, Don Dutile wrote:
 > On 05/22/2012 01:05 AM, Alex Williamson wrote:
-> > Fill in many missing definitions and add sizeof fields for many
-> > sections allowing for more extensive config parsing.
+> > In a PCI environment, transactions aren't always required to reach
+> > the root bus before being re-routed.  Intermediate switches between
+> > an endpoint and the root bus can redirect DMA back downstream before
+> > things like IOMMUs have a chance to intervene.  Legacy PCI is always
+> > susceptible to this as it operates on a shared bus.  PCIe added a
+> > new capability to describe and control this behavior, Access Control
+> > Services, or ACS.  The utility function pci_acs_enabled() allows us
+> > to test the ACS capabilities of an individual devices against a set
+> > of flags while pci_acs_path_enabled() tests a complete path from
+> > a given downstream device up to the specified upstream device.  We
+> > also include the ability to add device specific tests as it's
+> > likely we'll see devices that do no implement ACS, but want to
+> > indicate support for various capabilities in this space.
 > >
 > > Signed-off-by: Alex Williamson<alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 > > ---
 > >
-> overall, i'm very glad to see defines instead of hardcoded numbers in the code, but....
+> >   drivers/pci/pci.c    |   76 ++++++++++++++++++++++++++++++++++++++++++++++++++
+> >   drivers/pci/quirks.c |   29 +++++++++++++++++++
+> >   include/linux/pci.h  |   10 ++++++-
+> >   3 files changed, 114 insertions(+), 1 deletions(-)
+> >
+> > diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> > index 111569c..ab6c2a6 100644
+> > --- a/drivers/pci/pci.c
+> > +++ b/drivers/pci/pci.c
+> > @@ -2359,6 +2359,82 @@ void pci_enable_acs(struct pci_dev *dev)
+> >   }
+> >
+> >   /**
+> > + * pci_acs_enable - test ACS against required flags for a given device
+> typo:               ^^^ missing 'd'
+
+d'oh.  fixed
+
+> > + * @pdev: device to test
+> > + * @acs_flags: required PCI ACS flags
+> > + *
+> > + * Return true if the device supports the provided flags.  Automatically
+> > + * filters out flags that are not implemented on multifunction devices.
+> > + */
+> > +bool pci_acs_enabled(struct pci_dev *pdev, u16 acs_flags)
+> > +{
+> > +	int pos;
+> > +	u16 ctrl;
+> > +
+> > +	if (pci_dev_specific_acs_enabled(pdev, acs_flags))
+> > +		return true;
+> > +
+> > +	if (!pci_is_pcie(pdev))
+> > +		return false;
+> > +
+> > +	if (pdev->pcie_type == PCI_EXP_TYPE_DOWNSTREAM ||
+> > +	    pdev->pcie_type == PCI_EXP_TYPE_ROOT_PORT) {
+> > +		pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ACS);
+> > +		if (!pos)
+> > +			return false;
+> > +
+> > +		pci_read_config_word(pdev, pos + PCI_ACS_CTRL,&ctrl);
+> > +		if ((ctrl&  acs_flags) != acs_flags)
+> > +			return false;
+> > +	} else if (pdev->multifunction) {
+> > +		/* Filter out flags not applicable to multifunction */
+> > +		acs_flags&= (PCI_ACS_RR | PCI_ACS_CR |
+> > +			      PCI_ACS_EC | PCI_ACS_DT);
+> > +
+> > +		pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ACS);
+> > +		if (!pos)
+> > +			return false;
+> > +
+> > +		pci_read_config_word(pdev, pos + PCI_ACS_CTRL,&ctrl);
+> > +		if ((ctrl&  acs_flags) != acs_flags)
+> > +			return false;
+> > +	}
+> > +
+> > +	return true;
+> or, to reduce duplicated code (which compiler may do?):
 > 
-> >   include/linux/pci_regs.h |  112 +++++++++++++++++++++++++++++++++++++++++-----
-> >   1 files changed, 100 insertions(+), 12 deletions(-)
-> >
-> > diff --git a/include/linux/pci_regs.h b/include/linux/pci_regs.h
-> > index 4b608f5..379be84 100644
-> > --- a/include/linux/pci_regs.h
-> > +++ b/include/linux/pci_regs.h
-> > @@ -26,6 +26,7 @@
-> >    * Under PCI, each device has 256 bytes of configuration address space,
-> >    * of which the first 64 bytes are standardized as follows:
-> >    */
-> > +#define PCI_STD_HEADER_SIZEOF	64
-> >   #define PCI_VENDOR_ID		0x00	/* 16 bits */
-> >   #define PCI_DEVICE_ID		0x02	/* 16 bits */
-> >   #define PCI_COMMAND		0x04	/* 16 bits */
-> > @@ -209,9 +210,12 @@
-> >   #define  PCI_CAP_ID_SHPC 	0x0C	/* PCI Standard Hot-Plug Controller */
-> >   #define  PCI_CAP_ID_SSVID	0x0D	/* Bridge subsystem vendor/device ID */
-> >   #define  PCI_CAP_ID_AGP3	0x0E	/* AGP Target PCI-PCI bridge */
-> > +#define  PCI_CAP_ID_SECDEV	0x0F	/* Secure Device */
-> >   #define  PCI_CAP_ID_EXP 	0x10	/* PCI Express */
-> >   #define  PCI_CAP_ID_MSIX	0x11	/* MSI-X */
-> > +#define  PCI_CAP_ID_SATA	0x12	/* SATA Data/Index Conf. */
-> >   #define  PCI_CAP_ID_AF		0x13	/* PCI Advanced Features */
-> > +#define  PCI_CAP_ID_MAX		PCI_CAP_ID_AF
-> >   #define PCI_CAP_LIST_NEXT	1	/* Next capability in the list */
-> >   #define PCI_CAP_FLAGS		2	/* Capability defined flags (16 bits) */
-> >   #define PCI_CAP_SIZEOF		4
-> > @@ -276,6 +280,7 @@
-> >   #define  PCI_VPD_ADDR_MASK	0x7fff	/* Address mask */
-> >   #define  PCI_VPD_ADDR_F		0x8000	/* Write 0, 1 indicates completion */
-> >   #define PCI_VPD_DATA		4	/* 32-bits of data returned here */
-> > +#define PCI_CAP_VPD_SIZEOF	8
-> >
-> >   /* Slot Identification */
-> >
-> > @@ -297,8 +302,10 @@
-> >   #define PCI_MSI_ADDRESS_HI	8	/* Upper 32 bits (if PCI_MSI_FLAGS_64BIT set) */
-> >   #define PCI_MSI_DATA_32		8	/* 16 bits of data for 32-bit devices */
-> >   #define PCI_MSI_MASK_32		12	/* Mask bits register for 32-bit devices */
-> > +#define PCI_MSI_PENDING_32	16	/* Pending intrs for 32-bit devices */
-> >   #define PCI_MSI_DATA_64		12	/* 16 bits of data for 64-bit devices */
-> >   #define PCI_MSI_MASK_64		16	/* Mask bits register for 64-bit devices */
-> > +#define PCI_MSI_PENDING_64	20	/* Pending intrs for 64-bit devices */
-> >
-> >   /* MSI-X registers */
-> >   #define PCI_MSIX_FLAGS		2
-> > @@ -308,6 +315,7 @@
-> >   #define PCI_MSIX_TABLE		4
-> >   #define PCI_MSIX_PBA		8
-> >   #define  PCI_MSIX_FLAGS_BIRMASK	(7<<  0)
-> > +#define PCI_CAP_MSIX_SIZEOF	12	/* size of MSIX registers */
-> >
-> >   /* MSI-X entry's format */
-> >   #define PCI_MSIX_ENTRY_SIZE		16
-> > @@ -338,6 +346,7 @@
-> >   #define  PCI_AF_CTRL_FLR	0x01
-> >   #define PCI_AF_STATUS		5
-> >   #define  PCI_AF_STATUS_TP	0x01
-> > +#define PCI_CAP_AF_SIZEOF	6	/* size of AF registers */
-> >
-> >   /* PCI-X registers */
-> >
-> > @@ -374,6 +383,9 @@
-> >   #define  PCI_X_STATUS_SPL_ERR	0x20000000	/* Rcvd Split Completion Error Msg */
-> >   #define  PCI_X_STATUS_266MHZ	0x40000000	/* 266 MHz capable */
-> >   #define  PCI_X_STATUS_533MHZ	0x80000000	/* 533 MHz capable */
-> > +#define PCI_X_ECC_CSR		8	/* ECC control and status */
-> > +#define PCI_CAP_PCIX_SIZEOF_V0	8	/* size of registers for Version 0 */
-> > +#define PCI_CAP_PCIX_SIZEOF_V12	24	/* size for Version 1&  2 */
-> ew!
-> unlikely that version 12 will ever exist, but why not:
-> #define PCI_CAP_PCIX_SIZEOF_V1	24
-> #define PCI_CAP_PCIX_SIZEOF_V2	PCI_CAP_PCIX_SIZEOF_V1
+> 	/* Filter out flags not applicable to multifunction */
+> 	if (pdev->multifunction)
+> 		acs_flags &= (PCI_ACS_RR | PCI_ACS_CR |
+> 			      PCI_ACS_EC | PCI_ACS_DT);
+> 
+> 	if (pdev->pcie_type == PCI_EXP_TYPE_DOWNSTREAM ||
+> 	    pdev->pcie_type == PCI_EXP_TYPE_ROOT_PORT ||
+>              pdev->multifunction) {
+> 		pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ACS);
+> 		if (!pos)
+> 			return false;
+> 		pci_read_config_word(pdev, pos + PCI_ACS_CTRL, &ctrl);
+> 		if ((ctrl & acs_flags) != acs_flags)
+> 			return false;
+> 	}
+> 
+> 	return true;
 
-Works for me, will fix.  Thanks,
+Good suggestion
 
+> > +}
+> 
+> But the above doesn't handle the case where the RC does not do
+> peer-to-peer btwn root ports. Per ACS spec, such a RC's root ports
+> don't need to provide an ACS cap, since peer-to-peer port xfers aren't
+> allowed/enabled/supported, so by design, the root port is ACS compliant.
+> ATM, an IOMMU-capable system is a pre-req for VFIO,
+> and all such systems have an ACS cap, but they may not always be true.
+
+How do we know the behavior of the RC?  This is why I allowed the NULL
+bailout below so we don't have to check the RC and can assume the iommu
+driver knows something about it.
+
+> > +EXPORT_SYMBOL_GPL(pci_acs_enabled);
+> > +
+> > +/**
+> > + * pci_acs_path_enable - test ACS flags from start to end in a hierarchy
+> > + * @start: starting downstream device
+> > + * @end: ending upstream device or NULL to search to the root bus
+> > + * @acs_flags: required flags
+> > + *
+> > + * Walk up a device tree from start to end testing PCI ACS support.  If
+> > + * any step along the way does not support the required flags, return false.
+> > + */
+> > +bool pci_acs_path_enabled(struct pci_dev *start,
+> > +			  struct pci_dev *end, u16 acs_flags)
+> > +{
+> > +	struct pci_dev *pdev, *parent = start;
+> > +
+> > +	do {
+> > +		pdev = parent;
+> > +
+> > +		if (!pci_acs_enabled(pdev, acs_flags))
+> > +			return false;
+> > +
+> > +		if (pci_is_root_bus(pdev->bus))
+> > +			return (end == NULL);
+> doesn't this mean that a caller can't pass the pdev of the root port?
+> I would think that is a valid call, albeit not the common one.
+
+I think there's nothing to step up to after this point, IIRC
+pdev->bus->self segfaults from here.  So if we reach the end and you
+didn't ask for the end and haven't found your end device, we're done
+either way.  Is that not true?
+
+> Also worried that the above code may be true on Intel machines, but not on AMD
+> machines (the latter reps its IOMMU as a pdev of root bus, doesn't it?)
+
+I hope it would be the usage in the respective iommu drivers that would
+need to account for this.  I've designed this code to not care.  Patch
+06/13 does a search to NULL for both AMD and Intel, which seems to work.
+AMD does expose the IOMMU as a PCI device, but it's just a peer device
+of everything else on the root bus, not a parent, so we can't search
+with it as the end device.
+
+> > +
+> > +		parent = pdev->bus->self;
+> > +	} while (pdev != end);
+> > +
+> > +	return true;
+> > +}
+> > +EXPORT_SYMBOL_GPL(pci_acs_path_enabled);
+> > +
+> > +/**
+> >    * pci_swizzle_interrupt_pin - swizzle INTx for device behind bridge
+> >    * @dev: the PCI device
+> >    * @pin: the INTx pin (1=INTA, 2=INTB, 3=INTD, 4=INTD)
+> > diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+> > index a2dd77f..4ed6aa6 100644
+> > --- a/drivers/pci/quirks.c
+> > +++ b/drivers/pci/quirks.c
+> > @@ -3149,3 +3149,32 @@ struct pci_dev *pci_dma_source(struct pci_dev *dev)
+> >
+> >   	return dev;
+> >   }
+> > +
+> > +static const struct pci_dev_acs_enabled {
+> > +	u16 vendor;
+> > +	u16 device;
+> > +	bool (*acs_enabled)(struct pci_dev *dev, u16 acs_flags);
+> > +} pci_dev_acs_enabled[] = {
+> > +	{ 0 }
+> > +};
+> > +
+> > +bool pci_dev_specific_acs_enabled(struct pci_dev *dev, u16 acs_flags)
+> > +{
+> > +	const struct pci_dev_acs_enabled *i;
+> > +
+> > +	/*
+> > +	 * Allow devices that do not expose standard PCI ACS capabilities
+> > +	 * or control to indicate their support here.  Multi-function devices
+> > +	 * which do not allow internal peer-to-peer between functions, but
+> > +	 * do not implement PCI ACS may wish to return true here.
+> > +	 */
+> > +	for (i = pci_dev_acs_enabled; i->acs_enabled; i++) {
+> > +		if ((i->vendor == dev->vendor ||
+> > +		     i->vendor == (u16)PCI_ANY_ID)&&
+> > +		    (i->device == dev->device ||
+> > +		     i->device == (u16)PCI_ANY_ID))
+> > +			return i->acs_enabled(dev, acs_flags);
+> > +	}
+> > +
+> > +	return false;
+> > +}
+> I can't wait until these quirks are filled in! :)
+
+The list could get long...
+
+Thanks,
 Alex
