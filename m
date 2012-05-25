@@ -1,11 +1,11 @@
 From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: [PATCH 2/2] intel-iommu: Move duplicate list-mangling code into
-	unlink_domain_info() helper
-Date: Fri, 25 May 2012 17:43:02 +0100
-Message-ID: <1337964182.5820.86.camel@i7.infradead.org>
+Subject: [PATCH 1/2] intel-iommu: Add device info into list before doing
+	context mapping
+Date: Fri, 25 May 2012 17:42:54 +0100
+Message-ID: <1337964174.5820.85.camel@i7.infradead.org>
 References: <CA+55aFz4Z-4cWJQqUi4WH3ZsKFSOpRP6j0iCNne0fG7y_A4j=A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============8092869920756528252=="
+Content-Type: multipart/mixed; boundary="===============4478157597324396808=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 In-Reply-To: <CA+55aFz4Z-4cWJQqUi4WH3ZsKFSOpRP6j0iCNne0fG7y_A4j=A@mail.gmail.com>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
@@ -22,109 +22,77 @@ Cc: Chris Wright <chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org>, iommu-cunTk1M
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============8092869920756528252==
+--===============4478157597324396808==
 Content-Type: multipart/signed; micalg="sha1"; protocol="application/x-pkcs7-signature";
-	boundary="=-Xo/FOLRlcXbAx6l9IpZy"
+	boundary="=-5Pj1T7b1+UVthe26DU7S"
 
 
---=-Xo/FOLRlcXbAx6l9IpZy
+--=-5Pj1T7b1+UVthe26DU7S
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Now we have four copies of this code, Linus "suggested" it was about time
-we stopped copying it and turned it into a helper.
+Add device info into list before doing context mapping, because device
+info will be used by iommu_enable_dev_iotlb(). Without it, ATS won't get
+enabled as it should be.
 
+ATS, while a dubious decision from a security point of view, can be very
+important for performance.
+
+Signed-off-by: Xudong Hao <xudong.hao-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Xiantao Zhang <xiantao.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Acked-by: Chris Wright <chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org>
 Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: stable-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 ---
-We can still kill a lot more duplication by consolidating the DMA API and
-IOMMU API code. The only real difference is that the DMA API gets to alloca=
-te
-its own virtual addresses for things, which could be done externally (and
-that again would reduce duplication because we wouldn't need a separate
-allocator for each IOMMU.
+Resend with a follow-up patch to reduce the duplication of code, as request=
+ed.
 
- drivers/iommu/intel-iommu.c |   29 +++++++++++++----------------
- 1 files changed, 13 insertions(+), 16 deletions(-)
+ drivers/iommu/intel-iommu.c |   17 +++++++++++------
+ 1 files changed, 11 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 5fda348..67969bb 100644
+index f93d5ac..5fda348 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1906,6 +1906,15 @@ static void iommu_detach_dev(struct intel_iommu *iom=
-mu, u8 bus, u8 devfn)
- 	iommu->flush.flush_iotlb(iommu, 0, 0, 0, DMA_TLB_GLOBAL_FLUSH);
+@@ -2286,12 +2286,6 @@ static int domain_add_dev_info(struct dmar_domain *d=
+omain,
+ 	if (!info)
+ 		return -ENOMEM;
+=20
+-	ret =3D domain_context_mapping(domain, pdev, translation);
+-	if (ret) {
+-		free_devinfo_mem(info);
+-		return ret;
+-	}
+-
+ 	info->segment =3D pci_domain_nr(pdev->bus);
+ 	info->bus =3D pdev->bus->number;
+ 	info->devfn =3D pdev->devfn;
+@@ -2304,6 +2298,17 @@ static int domain_add_dev_info(struct dmar_domain *d=
+omain,
+ 	pdev->dev.archdata.iommu =3D info;
+ 	spin_unlock_irqrestore(&device_domain_lock, flags);
+=20
++	ret =3D domain_context_mapping(domain, pdev, translation);
++	if (ret) {
++		spin_lock_irqsave(&device_domain_lock, flags);
++		list_del(&info->link);
++		list_del(&info->global);
++		pdev->dev.archdata.iommu =3D NULL;
++		spin_unlock_irqrestore(&device_domain_lock, flags);
++		free_devinfo_mem(info);
++		return ret;
++	}
++
+ 	return 0;
  }
 =20
-+static inline void unlink_domain_info(struct device_domain_info *info)
-+{
-+	assert_spin_locked(&device_domain_lock);
-+	list_del(&info->link);
-+	list_del(&info->global);
-+	if (info->dev)
-+		info->dev->dev.archdata.iommu =3D NULL;
-+}
-+
- static void domain_remove_dev_info(struct dmar_domain *domain)
- {
- 	struct device_domain_info *info;
-@@ -1916,10 +1925,7 @@ static void domain_remove_dev_info(struct dmar_domai=
-n *domain)
- 	while (!list_empty(&domain->devices)) {
- 		info =3D list_entry(domain->devices.next,
- 			struct device_domain_info, link);
--		list_del(&info->link);
--		list_del(&info->global);
--		if (info->dev)
--			info->dev->dev.archdata.iommu =3D NULL;
-+		unlink_domain_info(info);
- 		spin_unlock_irqrestore(&device_domain_lock, flags);
-=20
- 		iommu_disable_dev_iotlb(info);
-@@ -2301,9 +2307,7 @@ static int domain_add_dev_info(struct dmar_domain *do=
-main,
- 	ret =3D domain_context_mapping(domain, pdev, translation);
- 	if (ret) {
- 		spin_lock_irqsave(&device_domain_lock, flags);
--		list_del(&info->link);
--		list_del(&info->global);
--		pdev->dev.archdata.iommu =3D NULL;
-+		unlink_domain_info(info);
- 		spin_unlock_irqrestore(&device_domain_lock, flags);
- 		free_devinfo_mem(info);
- 		return ret;
-@@ -3732,10 +3736,7 @@ static void domain_remove_one_dev_info(struct dmar_d=
-omain *domain,
- 		if (info->segment =3D=3D pci_domain_nr(pdev->bus) &&
- 		    info->bus =3D=3D pdev->bus->number &&
- 		    info->devfn =3D=3D pdev->devfn) {
--			list_del(&info->link);
--			list_del(&info->global);
--			if (info->dev)
--				info->dev->dev.archdata.iommu =3D NULL;
-+			unlink_domain_info(info);
- 			spin_unlock_irqrestore(&device_domain_lock, flags);
-=20
- 			iommu_disable_dev_iotlb(info);
-@@ -3790,11 +3791,7 @@ static void vm_domain_remove_all_dev_info(struct dma=
-r_domain *domain)
- 	while (!list_empty(&domain->devices)) {
- 		info =3D list_entry(domain->devices.next,
- 			struct device_domain_info, link);
--		list_del(&info->link);
--		list_del(&info->global);
--		if (info->dev)
--			info->dev->dev.archdata.iommu =3D NULL;
--
-+		unlink_domain_info(info);
- 		spin_unlock_irqrestore(&device_domain_lock, flags1);
-=20
- 		iommu_disable_dev_iotlb(info);
 --=20
 1.7.7.6
 
 
 
---=-Xo/FOLRlcXbAx6l9IpZy
+--=-5Pj1T7b1+UVthe26DU7S
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -225,25 +193,25 @@ kSIc5N4d9Lk3ypCnrYMvvqLspXcWeymdD7qC0KwcuOuRKEC6LBExggNvMIIDawIBATCBlDCBjDEL
 MAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdp
 dGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFy
 eSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMEJnowCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkD
-MQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTIwNTI1MTY0MzAyWjAjBgkqhkiG9w0BCQQx
-FgQU3XDXx7VFPfA7et3we31X5/JsuT8wgaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMC
+MQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTIwNTI1MTY0MjU0WjAjBgkqhkiG9w0BCQQx
+FgQUP68rZTZygJTDp8aOHUumQQhbOvowgaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMC
 SUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRp
 ZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1l
 ZGlhdGUgQ2xpZW50IENBAgMEJnowgacGCyqGSIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJ
 TDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlm
 aWNhdGUgU2lnbmluZzE4MDYGA1UEAxMvU3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVk
-aWF0ZSBDbGllbnQgQ0ECAwQmejANBgkqhkiG9w0BAQEFAASCAQDF/CL+qFBPitKy6BRDqibEzf41
-u67PbpVsUwkYT3OVZ3kpaLEd81HdmghGKm+m1UYTEsMATu/s03xdzYtzDbjcdpO/tAMLCPgqu8dA
-cQ2CBdgznssSSgC4qSVnIeiCpM/KedKNIg1wKFyIaC31JFzMjmnpmUhsJZfXFcbNun9b19up5Vre
-nxaG4Sy1avmHc5ljyaRfO3defL+CK3zgyCB/RrY92VbnAkVsTp1pNTm94kqnpCoMJLJ6lhT8WOm2
-zSYGlAZrtKsGatB1IcJoeUwBbjZENcgEIKLGTlQQvvaXG7wVsHF+qjy9mKapvzv2kgLUm8Vkz5GJ
-y5P3qf6doVMsAAAAAAAA
+aWF0ZSBDbGllbnQgQ0ECAwQmejANBgkqhkiG9w0BAQEFAASCAQCF2udUit7JpG+t1V6GSwptTZuu
+kBE+iogECW2Z3XyckQXE9Wm4d2j/ni8IiVxLdur6HIwdO050nOTPu7hr72W4iMl+wMKLcccdzYyP
+mobkA4zYFmi46EFe6WUxIngazlFt/3qFH75Ut0QlJFdkssLuIjk2hg42tRhRGpQ2rciVzMokplBR
+kp4WBl8RyUZuZemhnuT0eFcIkEd9xNsUV7aYt6kOKMBNGg7TNS67QnVaBzTvv8lDEr5vSSuVyJGs
+D6HNxosQkKYJnWpb0IK50Vs6ty2hxlLiCYXg/GEh9/sSzfdo7dvvBsK/IBoxJ3QICIeUHLnl2u+L
+jaANh7NdK/xUAAAAAAAA
 
 
---=-Xo/FOLRlcXbAx6l9IpZy--
+--=-5Pj1T7b1+UVthe26DU7S--
 
 
---===============8092869920756528252==
+--===============4478157597324396808==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -253,4 +221,4 @@ _______________________________________________
 iommu mailing list
 iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============8092869920756528252==--
+--===============4478157597324396808==--
