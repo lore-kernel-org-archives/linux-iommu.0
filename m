@@ -1,123 +1,143 @@
-From: Gavin Shan <shangw@linux.vnet.ibm.com>
-Subject: Re: [PATCH 1/5] pci: Add PCI DMA source ID quirk
-Date: Wed, 30 May 2012 16:34:57 +0800
-Message-ID: <20120530083457.GB7364@shangw>
-References: <20120530043142.1164.63415.stgit@bling.home>
- <20120530044834.1164.9081.stgit@bling.home>
-Reply-To: Gavin Shan <shangw@linux.vnet.ibm.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [git pull] IOMMU updates for Linux 3.5
+Date: Wed, 30 May 2012 14:39:06 +0200
+Message-ID: <20120530123906.GB3601@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20120530044834.1164.9081.stgit@bling.home>
-Sender: linux-pci-owner@vger.kernel.org
-Cc: bhelgaas@google.com, linux-pci@vger.kernel.org, benh@kernel.crashing.org, aik@ozlabs.ru, david@gibson.dropbear.id.au, joerg.roedel@amd.com, dwmw2@infradead.org, konrad.wilk@oracle.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, ddutile@redhat.com, alex.williamson@redhat.com
+Content-Type: multipart/mixed; boundary="===============5644437551016936098=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Alex,
 
->DMA transactions are tagged with the source ID of the device making
->the request.  Occasionally hardware screws this up and uses the
->source ID of a different device (often the wrong function number of
->a multifunction device).  A specific Ricoh multifunction device is
->a prime example of this problem and included in this patch.  The
->purpose of this function is that given a pci_dev, return the pci_dev
->to use as the source ID for DMA.  When hardware works correctly,
->this returns the input device.  For the components of the Ricoh
->multifunction device, return the pci_dev for function 0.
->
->This will be used by IOMMU drivers for determining the boundaries
->of IOMMU groups as multiple devices using the same source ID must
->be contained within the same group.  This can also be used by
->existing streaming DMA paths for the same purpose.
->
->Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
->---
->
-> drivers/pci/quirks.c |   40 ++++++++++++++++++++++++++++++++++++++++
-> include/linux/pci.h  |    5 +++++
-> 2 files changed, 45 insertions(+)
->
->diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
->index 2a75216..004e167 100644
->--- a/drivers/pci/quirks.c
->+++ b/drivers/pci/quirks.c
->@@ -3179,3 +3179,43 @@ int pci_dev_specific_reset(struct pci_dev *dev, int probe)
->
-> 	return -ENOTTY;
-> }
->+
->+static struct pci_dev *pci_func_0_dma_source(struct pci_dev *dev)
->+{
->+	return pci_get_slot(dev->bus, PCI_DEVFN(PCI_SLOT(dev->devfn), 0));
->+}
+--===============5644437551016936098==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="vGgW1X5XWziG23Ko"
+Content-Disposition: inline
 
-I think we needn't retrieve the PCI device passed in again from the list
-of PCI devices if its function number is zero.
 
-	if (!PCI_FUNC(dev->devfn))
-		return dev;
+--vGgW1X5XWziG23Ko
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Thanks,
-Gavin
+Hi Linus,
 
->+
->+static const struct pci_dev_dma_source {
->+	u16 vendor;
->+	u16 device;
->+	struct pci_dev *(*dma_source)(struct pci_dev *dev);
->+} pci_dev_dma_source[] = {
->+	/*
->+	 * https://bugzilla.redhat.com/show_bug.cgi?id=605888
->+	 *
->+	 * Some Ricoh devices use the function 0 source ID for DMA on
->+	 * other functions of a multifunction device.  The DMA devices
->+	 * is therefore function 0, which will have implications of the
->+	 * iommu grouping of these devices.
->+	 */
->+	{ PCI_VENDOR_ID_RICOH, 0xe822, pci_func_0_dma_source },
->+	{ PCI_VENDOR_ID_RICOH, 0xe230, pci_func_0_dma_source },
->+	{ PCI_VENDOR_ID_RICOH, 0xe832, pci_func_0_dma_source },
->+	{ PCI_VENDOR_ID_RICOH, 0xe832, pci_func_0_dma_source },
->+	{ 0 }
->+};
->+
->+struct pci_dev *pci_dma_source(struct pci_dev *dev)
->+{
->+	const struct pci_dev_dma_source *i;
->+
->+	for (i = pci_dev_dma_source; i->dma_source; i++) {
->+		if ((i->vendor == dev->vendor ||
->+		     i->vendor == (u16)PCI_ANY_ID) &&
->+		    (i->device == dev->device ||
->+		     i->device == (u16)PCI_ANY_ID))
->+			return i->dma_source(dev);
->+	}
->+
->+	return dev;
->+}
->diff --git a/include/linux/pci.h b/include/linux/pci.h
->index d8c379d..5bc7502 100644
->--- a/include/linux/pci.h
->+++ b/include/linux/pci.h
->@@ -1486,9 +1486,14 @@ enum pci_fixup_pass {
->
-> #ifdef CONFIG_PCI_QUIRKS
-> void pci_fixup_device(enum pci_fixup_pass pass, struct pci_dev *dev);
->+struct pci_dev *pci_dma_source(struct pci_dev *dev);
-> #else
-> static inline void pci_fixup_device(enum pci_fixup_pass pass,
-> 				    struct pci_dev *dev) {}
->+static inline struct pci_dev *pci_dma_source(struct pci_dev *dev)
->+{
->+	return dev;
->+}
-> #endif
->
-> void __iomem *pcim_iomap(struct pci_dev *pdev, int bar, unsigned long maxlen);
->
->--
->To unsubscribe from this list: send the line "unsubscribe linux-pci" in
->the body of a message to majordomo@vger.kernel.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+The following changes since commit 76e10d158efb6d4516018846f60c2ab5501900bc:
+
+  Linux 3.4 (2012-05-20 15:29:13 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v3.5
+
+for you to fetch changes up to 28f8571e1e84782244cc7bf1b129baf6cdc0832e:
+
+  Merge branches 'iommu/fixes', 'dma-debug', 'arm/omap', 'arm/tegra', 'core' and 'x86/amd' into next (2012-05-30 12:41:29 +0200)
+
+----------------------------------------------------------------
+
+IOMMU Updates for Linux 3.5
+
+Not much stuff this time. The only change to the IOMMU core code is the
+addition of a handle to the fault handling code. A few updates to the
+AMD IOMMU driver to work around new errata. The other patches are mostly
+fixes and enhancements to the existing ARM IOMMU drivers and
+documentation updates.
+
+A new IOMMU driver for the Exynos platform was also underway but got
+merged via the Samsung tree and is not part of this tree.
+
+----------------------------------------------------------------
+Hiroshi DOYU (2):
+      iommu/tegra: smmu: Print device name correctly
+      iommu/tegra: gart: Fix register offset correctly
+
+Jakub Kicinski (1):
+      dma-debug: release free_entries_lock before saving stack trace
+
+Joerg Roedel (3):
+      iommu/amd: Check for the right TLP prefix bit
+      iommu/amd: Add workaround for event log erratum
+      Merge branches 'iommu/fixes', 'dma-debug', 'arm/omap', 'arm/tegra', 'core' and 'x86/amd' into next
+
+Ohad Ben-Cohen (1):
+      iommu/core: pass a user-provided token to fault handlers
+
+Omar Ramirez Luna (1):
+      iommu: OMAP: device detach on domain destroy
+
+Shuah Khan (1):
+      Documentation: kernel-parameters.txt Add amd_iommu_dump
+
+Thierry Reding (1):
+      iommu: tegra/gart: Add device tree support
+
+Vandana Salve (1):
+      iommu: tegra/gart: use correct gart_device
+
+ .../bindings/iommu/nvidia,tegra20-gart.txt         |   14 ++++++++
+ Documentation/kernel-parameters.txt                |    6 ++++
+ drivers/iommu/amd_iommu.c                          |   37 ++++++++++++++------
+ drivers/iommu/iommu.c                              |    5 ++-
+ drivers/iommu/omap-iommu.c                         |   32 ++++++++++++-----
+ drivers/iommu/tegra-gart.c                         |   20 ++++++++---
+ drivers/iommu/tegra-smmu.c                         |    2 +-
+ drivers/remoteproc/remoteproc_core.c               |    4 +--
+ include/linux/iommu.h                              |   10 +++---
+ lib/dma-debug.c                                    |   10 +++---
+ 10 files changed, 104 insertions(+), 36 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iommu/nvidia,tegra20-gart.txt
+
+Please pull.
+
+Regards,
+
+	Joerg
+
+
+--vGgW1X5XWziG23Ko
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+
+iQIcBAEBAgAGBQJPxhTqAAoJECvwRC2XARrjawsP/0L04DUvIXobpMEFLBcYSoDu
+Jt9mJWAs0jbQtoGTUtOuF5UI+fiNR9Vbt76C9aMPY8kYS4224RXVsAThSTf4/2VQ
+FzkN99U5jrDg0V/Lc9f0qB0CCVAhJ58nrGoC5KIdNipYWtHVEp9DDYgbwd9gqh9f
+RK5U40MkZL7iILMV9RLKhiHsokydMEAoaUALOBD8PBC+S3A25Nx0Hkg6Foy/Sg6D
+GzuqYqycuPfC8RN9D9uxUk/XSuzDVaf9zxrPWv9eITmshW+VqkMW/0ZEuo3uP0yA
+9X99eaSklI0sltuoaErG2JcgMlJE1Ihtz06hOSnFCpVB+TqS+og/jnwXzNIZ84WA
+tDj7aJvpldz8mTSKeOq8OMsQ2OwdJEsnjZsaOUim0eWGCI3q53/M9QXfaGX8tHKT
+LrUotdOdVvQaqB/BGY3bdaY3LocAP4fKDZ42bw7gbZxq8+/bbhU+arqven8LHzc1
+EQ53cE2uFYMbhrIC3sVmitOQp77wwg1Ssw18cf/wj94xTlwi1+BwYUMrq0Evf2+r
+KKmhm0JgYWid0cm1QL6iPs2dp+9SG0tOJJSbuGcMhz5nuSuW9dzl09kSJhpW44c6
+EnbEPxjIj/VoINlcqTQVfgS5sQKZvLUEH5xvB9WGS3TL5mS0NP0Exf0RM2gErEjO
+dtaveyjm/O1QgakaoZ5D
+=Hhie
+-----END PGP SIGNATURE-----
+
+--vGgW1X5XWziG23Ko--
+
+
+
+--===============5644437551016936098==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+iommu mailing list
+iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============5644437551016936098==--
