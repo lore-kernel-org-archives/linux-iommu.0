@@ -1,8 +1,7 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v2 6/7] intel-iommu: Make use of DMA quirks and ACS checks in
-	IOMMU groups
-Date: Wed, 30 May 2012 14:19:43 -0600
-Message-ID: <20120530201942.31527.51604.stgit@bling.home>
+Subject: [PATCH v2 7/7] iommu: Remove group_mf
+Date: Wed, 30 May 2012 14:19:55 -0600
+Message-ID: <20120530201955.31527.42965.stgit@bling.home>
 References: <20120530201424.31527.33142.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,55 +21,101 @@ To: joerg.roedel-5C7GfCeVMHo@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@publ
 Cc: aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, liuj97-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Work around broken devices and adhere to ACS support when determining
-IOMMU grouping.
+The iommu=group_mf is really no longer needed with the addition of ACS
+support in IOMMU drivers creating groups.  Most multifunction devices
+will now be grouped already.  If a device has gone to the trouble of
+exposing ACS, trust that it works.  We can use the device specific ACS
+function for fixing devices we trust individually.  This largely
+reverts bcb71abe.
 
 Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
 
- drivers/iommu/intel-iommu.c |   25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+ Documentation/kernel-parameters.txt |    1 -
+ arch/ia64/include/asm/iommu.h       |    2 --
+ arch/ia64/kernel/pci-dma.c          |    1 -
+ arch/x86/include/asm/iommu.h        |    1 -
+ arch/x86/kernel/pci-dma.c           |   11 -----------
+ 5 files changed, 16 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 4a43452..ebf2b31 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -4090,6 +4090,14 @@ static int intel_iommu_domain_has_cap(struct iommu_domain *domain,
- 	return 0;
- }
+diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
+index 0ea6d04..1e38ef3 100644
+--- a/Documentation/kernel-parameters.txt
++++ b/Documentation/kernel-parameters.txt
+@@ -1128,7 +1128,6 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+ 		forcesac
+ 		soft
+ 		pt		[x86, IA-64]
+-		group_mf	[x86, IA-64]
  
-+static void swap_pci_ref(struct pci_dev **from, struct pci_dev *to)
-+{
-+	pci_dev_put(*from);
-+	*from = to;
-+}
-+
-+#define REQ_ACS_FLAGS	(PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF)
-+
- static int intel_iommu_add_device(struct device *dev)
- {
- 	struct pci_dev *pdev = to_pci_dev(dev);
-@@ -4112,6 +4120,23 @@ static int intel_iommu_add_device(struct device *dev)
- 	} else
- 		dma_pdev = pci_dev_get(pdev);
  
-+	swap_pci_ref(&dma_pdev, pci_get_dma_source(dma_pdev));
-+
-+	if (dma_pdev->multifunction &&
-+	    !pci_acs_enabled(dma_pdev, REQ_ACS_FLAGS))
-+		swap_pci_ref(&dma_pdev,
-+			     pci_get_slot(dma_pdev->bus,
-+					  PCI_DEVFN(PCI_SLOT(dma_pdev->devfn),
-+					  0)));
-+
-+	while (!pci_is_root_bus(dma_pdev->bus)) {
-+		if (pci_acs_path_enabled(dma_pdev->bus->self,
-+					 NULL, REQ_ACS_FLAGS))
-+			break;
-+
-+		swap_pci_ref(&dma_pdev, pci_dev_get(dma_pdev->bus->self));
-+	}
-+
- 	group = iommu_group_get(&dma_pdev->dev);
- 	pci_dev_put(dma_pdev);
- 	if (!group) {
+ 	io7=		[HW] IO7 for Marvel based alpha systems
+diff --git a/arch/ia64/include/asm/iommu.h b/arch/ia64/include/asm/iommu.h
+index b6a809f..105c93b 100644
+--- a/arch/ia64/include/asm/iommu.h
++++ b/arch/ia64/include/asm/iommu.h
+@@ -11,12 +11,10 @@ extern void no_iommu_init(void);
+ extern int force_iommu, no_iommu;
+ extern int iommu_pass_through;
+ extern int iommu_detected;
+-extern int iommu_group_mf;
+ #else
+ #define iommu_pass_through	(0)
+ #define no_iommu		(1)
+ #define iommu_detected		(0)
+-#define iommu_group_mf		(0)
+ #endif
+ extern void iommu_dma_init(void);
+ extern void machvec_init(const char *name);
+diff --git a/arch/ia64/kernel/pci-dma.c b/arch/ia64/kernel/pci-dma.c
+index 7cdc89b..1ddcfe5 100644
+--- a/arch/ia64/kernel/pci-dma.c
++++ b/arch/ia64/kernel/pci-dma.c
+@@ -32,7 +32,6 @@ int force_iommu __read_mostly;
+ #endif
+ 
+ int iommu_pass_through;
+-int iommu_group_mf;
+ 
+ /* Dummy device used for NULL arguments (normally ISA). Better would
+    be probably a smaller DMA mask, but this is bug-to-bug compatible
+diff --git a/arch/x86/include/asm/iommu.h b/arch/x86/include/asm/iommu.h
+index dffc38e..345c99c 100644
+--- a/arch/x86/include/asm/iommu.h
++++ b/arch/x86/include/asm/iommu.h
+@@ -5,7 +5,6 @@ extern struct dma_map_ops nommu_dma_ops;
+ extern int force_iommu, no_iommu;
+ extern int iommu_detected;
+ extern int iommu_pass_through;
+-extern int iommu_group_mf;
+ 
+ /* 10 seconds */
+ #define DMAR_OPERATION_TIMEOUT ((cycles_t) tsc_khz*10*1000)
+diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
+index 62c9457..ac8f823 100644
+--- a/arch/x86/kernel/pci-dma.c
++++ b/arch/x86/kernel/pci-dma.c
+@@ -45,15 +45,6 @@ int iommu_detected __read_mostly = 0;
+  */
+ int iommu_pass_through __read_mostly;
+ 
+-/*
+- * Group multi-function PCI devices into a single device-group for the
+- * iommu_device_group interface.  This tells the iommu driver to pretend
+- * it cannot distinguish between functions of a device, exposing only one
+- * group for the device.  Useful for disallowing use of individual PCI
+- * functions from userspace drivers.
+- */
+-int iommu_group_mf __read_mostly;
+-
+ extern struct iommu_table_entry __iommu_table[], __iommu_table_end[];
+ 
+ /* Dummy device used for NULL arguments (normally ISA). */
+@@ -193,8 +184,6 @@ static __init int iommu_setup(char *p)
+ #endif
+ 		if (!strncmp(p, "pt", 2))
+ 			iommu_pass_through = 1;
+-		if (!strncmp(p, "group_mf", 8))
+-			iommu_group_mf = 1;
+ 
+ 		gart_parse_options(p);
