@@ -1,8 +1,8 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 5/7] amd_iommu: Make use of DMA quirks and ACS checks in IOMMU
-	groups
-Date: Tue, 29 May 2012 23:10:34 -0600
-Message-ID: <20120530051034.1543.46304.stgit@bling.home>
+Subject: [PATCH 6/7] intel-iommu: Make use of DMA quirks and ACS checks in
+	IOMMU groups
+Date: Tue, 29 May 2012 23:10:41 -0600
+Message-ID: <20120530051040.1543.5587.stgit@bling.home>
 References: <20120530045150.1543.73660.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -28,23 +28,23 @@ IOMMU grouping.
 Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
 
- drivers/iommu/amd_iommu.c |   18 ++++++++++++++++++
+ drivers/iommu/intel-iommu.c |   18 ++++++++++++++++++
  1 file changed, 18 insertions(+)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index c0385b3..9b2e2c9 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -254,6 +254,8 @@ static bool check_device(struct device *dev)
- 	return true;
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index d42ce10..c26d21b 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -4090,6 +4090,8 @@ static int intel_iommu_domain_has_cap(struct iommu_domain *domain,
+ 	return 0;
  }
  
 +#define PCI_ACS_ENABLED	(PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF)
 +
- static int iommu_init_device(struct device *dev)
+ static int intel_iommu_add_device(struct device *dev)
  {
- 	struct pci_dev *dma_pdev, *pdev = to_pci_dev(dev);
-@@ -291,6 +293,22 @@ static int iommu_init_device(struct device *dev)
+ 	struct pci_dev *pdev = to_pci_dev(dev);
+@@ -4116,6 +4118,22 @@ static int intel_iommu_add_device(struct device *dev)
  		dma_pdev = pci_get_slot(pdev->bus,
  					PCI_DEVFN(PCI_SLOT(pdev->devfn), 0));
  
