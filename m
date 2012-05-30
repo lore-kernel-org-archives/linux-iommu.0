@@ -1,138 +1,68 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/5] pci: Add PCI DMA source ID quirk
-Date: Wed, 30 May 2012 12:05:24 -0600
-Message-ID: <1338401124.23475.8.camel@bling.home>
-References: <20120530043142.1164.63415.stgit@bling.home>
-	<20120530044834.1164.9081.stgit@bling.home>
-	<4FC6204C.5000209@gmail.com>
+From: Alex Williamson <alex.williamson@redhat.com>
+Subject: [PATCH v2 0/5] PCI: Prep for VFIO and IOMMU Groups
+Date: Wed, 30 May 2012 14:08:15 -0600
+Message-ID: <20120530200343.31085.78920.stgit@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <4FC6204C.5000209-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jiang Liu <liuj97-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org
+Return-path: <linux-pci-owner@vger.kernel.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: bhelgaas@google.com, linux-pci@vger.kernel.org
+Cc: benh@kernel.crashing.org, aik@ozlabs.ru, david@gibson.dropbear.id.au, joerg.roedel@amd.com, dwmw2@infradead.org, konrad.wilk@oracle.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, ddutile@redhat.com, alex.williamson@redhat.com, shangw@linux.vnet.ibm.com, liuj97@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2012-05-30 at 21:27 +0800, Jiang Liu wrote:
-> Hi Alex,
-> 	pci_get_slot() will hold a reference count on the returned
-> pci device, so need to release the reference count for balance.
-> According to patches "[PATCH 5/7] amd_iommu: Make use of DMA quirks
-> and ACS checks in IOMMU groups" and "[PATCH 6/7] intel-iommu: Make 
-> use of DMA quirks and ACS checks in IOMMU groups", current patches 
-> failed to release the reference count gained by pci_get_slot().
+v2:
+ - Test that we're not given func 0 before doing lookup
+ - Fix duplicate ricoh quirk
+ - Rename pci_dma_source() to pci_get_dma_source() and make sure
+   we always take a reference for the returned pci_dev.  Add comment
 
-Thanks for pointing this out Gerry.  I think I'll rename
-pci_dma_source() to pci_get_dma_source() which will then increment the
-reference of the device it returns, whether it's a quirk or the original
-device.  The caller will then be responsible for doing a pci_dev_put().
-Thanks,
+These last two changes trickle down through the IOMMU series, so
+will generate a v2 there as well.  Thanks,
 
 Alex
 
-> On 05/30/2012 12:48 PM, Alex Williamson wrote:
-> > DMA transactions are tagged with the source ID of the device making
-> > the request.  Occasionally hardware screws this up and uses the
-> > source ID of a different device (often the wrong function number of
-> > a multifunction device).  A specific Ricoh multifunction device is
-> > a prime example of this problem and included in this patch.  The
-> > purpose of this function is that given a pci_dev, return the pci_dev
-> > to use as the source ID for DMA.  When hardware works correctly,
-> > this returns the input device.  For the components of the Ricoh
-> > multifunction device, return the pci_dev for function 0.
-> > 
-> > This will be used by IOMMU drivers for determining the boundaries
-> > of IOMMU groups as multiple devices using the same source ID must
-> > be contained within the same group.  This can also be used by
-> > existing streaming DMA paths for the same purpose.
-> > 
-> > Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> > ---
-> > 
-> >  drivers/pci/quirks.c |   40 ++++++++++++++++++++++++++++++++++++++++
-> >  include/linux/pci.h  |    5 +++++
-> >  2 files changed, 45 insertions(+)
-> > 
-> > diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-> > index 2a75216..004e167 100644
-> > --- a/drivers/pci/quirks.c
-> > +++ b/drivers/pci/quirks.c
-> > @@ -3179,3 +3179,43 @@ int pci_dev_specific_reset(struct pci_dev *dev, int probe)
-> >  
-> >  	return -ENOTTY;
-> >  }
-> > +
-> > +static struct pci_dev *pci_func_0_dma_source(struct pci_dev *dev)
-> > +{
-> > +	return pci_get_slot(dev->bus, PCI_DEVFN(PCI_SLOT(dev->devfn), 0));
-> > +}
-> > +
-> > +static const struct pci_dev_dma_source {
-> > +	u16 vendor;
-> > +	u16 device;
-> > +	struct pci_dev *(*dma_source)(struct pci_dev *dev);
-> > +} pci_dev_dma_source[] = {
-> > +	/*
-> > +	 * https://bugzilla.redhat.com/show_bug.cgi?id=605888
-> > +	 *
-> > +	 * Some Ricoh devices use the function 0 source ID for DMA on
-> > +	 * other functions of a multifunction device.  The DMA devices
-> > +	 * is therefore function 0, which will have implications of the
-> > +	 * iommu grouping of these devices.
-> > +	 */
-> > +	{ PCI_VENDOR_ID_RICOH, 0xe822, pci_func_0_dma_source },
-> > +	{ PCI_VENDOR_ID_RICOH, 0xe230, pci_func_0_dma_source },
-> > +	{ PCI_VENDOR_ID_RICOH, 0xe832, pci_func_0_dma_source },
-> > +	{ PCI_VENDOR_ID_RICOH, 0xe832, pci_func_0_dma_source },
-> > +	{ 0 }
-> > +};
-> > +
-> > +struct pci_dev *pci_dma_source(struct pci_dev *dev)
-> > +{
-> > +	const struct pci_dev_dma_source *i;
-> > +
-> > +	for (i = pci_dev_dma_source; i->dma_source; i++) {
-> > +		if ((i->vendor == dev->vendor ||
-> > +		     i->vendor == (u16)PCI_ANY_ID) &&
-> > +		    (i->device == dev->device ||
-> > +		     i->device == (u16)PCI_ANY_ID))
-> > +			return i->dma_source(dev);
-> > +	}
-> > +
-> > +	return dev;
-> > +}
-> > diff --git a/include/linux/pci.h b/include/linux/pci.h
-> > index d8c379d..5bc7502 100644
-> > --- a/include/linux/pci.h
-> > +++ b/include/linux/pci.h
-> > @@ -1486,9 +1486,14 @@ enum pci_fixup_pass {
-> >  
-> >  #ifdef CONFIG_PCI_QUIRKS
-> >  void pci_fixup_device(enum pci_fixup_pass pass, struct pci_dev *dev);
-> > +struct pci_dev *pci_dma_source(struct pci_dev *dev);
-> >  #else
-> >  static inline void pci_fixup_device(enum pci_fixup_pass pass,
-> >  				    struct pci_dev *dev) {}
-> > +static inline struct pci_dev *pci_dma_source(struct pci_dev *dev)
-> > +{
-> > +	return dev;
-> > +}
-> >  #endif
-> >  
-> >  void __iomem *pcim_iomap(struct pci_dev *pdev, int bar, unsigned long maxlen);
-> > 
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe linux-pci" in
-> > the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+v1:
+These are the PCI related patches from the previously submitted
+v2 IOMMU Groups + VFIO series.  I've updated them with Don's
+comments and split them off on their own so that we can hopefully
+make some progress getting these in.  Patches are against 20120529
+linux-next tree.
+
+Patches 1 & 2 provide DMA quirking and ACS checking which will be
+used by IOMMU drivers supporting IOMMU groups.  Patch 3 enables the
+set of pci user config access functions to be called from other
+modules, which will be used by VFIO-pci.  Patch 4 enables a common
+translation of pcibios errors into errno for returning to userspace,
+also to be used by VFIO-pci.  Patch 5 adds additional PCI register
+definitions so we can more easily parse config space for devices in
+VFIO-pci.
+
+These patches, as well as IOMMU group support and VFIO can be
+found in git here:
+
+git://github.com/awilliam/linux-vfio.git (iommu-group-vfio-next-20120529)
+
+Please consider these for 3.5, but I'll settle for any kind of next
+branch.  Thanks,
+
+Alex
+
+---
+
+Alex Williamson (5):
+      pci: Misc pci_reg additions
+      pci: Create common pcibios_err_to_errno
+      pci: export pci_user functions for use by other drivers
+      pci: Add ACS validation utility
+      pci: Add PCI DMA source ID quirk
+
+
+ drivers/pci/access.c                 |    6 +-
+ drivers/pci/pci.c                    |   68 ++++++++++++++++++++
+ drivers/pci/pci.h                    |    7 --
+ drivers/pci/quirks.c                 |   80 ++++++++++++++++++++++++
+ drivers/xen/xen-pciback/conf_space.c |    6 +-
+ include/linux/pci.h                  |   49 ++++++++++++++-
+ include/linux/pci_regs.h             |  113 ++++++++++++++++++++++++++++++----
+ 7 files changed, 304 insertions(+), 25 deletions(-)
