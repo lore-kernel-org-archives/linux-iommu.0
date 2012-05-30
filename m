@@ -1,7 +1,7 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v2 3/7] amd_iommu: Support IOMMU groups
-Date: Wed, 30 May 2012 14:19:07 -0600
-Message-ID: <20120530201907.31527.34816.stgit@bling.home>
+Subject: [PATCH v2 4/7] intel-iommu: Support IOMMU groups
+Date: Wed, 30 May 2012 14:19:19 -0600
+Message-ID: <20120530201919.31527.45209.stgit@bling.home>
 References: <20120530201424.31527.33142.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,38 +21,43 @@ To: joerg.roedel-5C7GfCeVMHo@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@publ
 Cc: aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, liuj97-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add IOMMU group support to AMD-Vi device init and uninit code.
-Existing notifiers make sure this gets called for each device.
+Add IOMMU group support to Intel VT-d code.  This driver sets up
+devices ondemand, so make use of the add_device/remove_device
+callbacks in IOMMU API to manage setting up the groups.
 
 Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
 
- drivers/iommu/amd_iommu.c |   24 +++++++++++++++++++++++-
- 1 file changed, 23 insertions(+), 1 deletion(-)
+ drivers/iommu/intel-iommu.c |   43 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 43 insertions(+)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 0ad46f1..e072bd1 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -256,9 +256,11 @@ static bool check_device(struct device *dev)
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index c62f2df..4a43452 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -4090,6 +4090,47 @@ static int intel_iommu_domain_has_cap(struct iommu_domain *domain,
+ 	return 0;
+ }
  
- static int iommu_init_device(struct device *dev)
- {
--	struct pci_dev *pdev = to_pci_dev(dev);
-+	struct pci_dev *dma_pdev, *pdev = to_pci_dev(dev);
- 	struct iommu_dev_data *dev_data;
++static int intel_iommu_add_device(struct device *dev)
++{
++	struct pci_dev *pdev = to_pci_dev(dev);
++	struct pci_dev *bridge, *dma_pdev;
 +	struct iommu_group *group;
- 	u16 alias;
 +	int ret;
- 
- 	if (dev->archdata.iommu)
- 		return 0;
-@@ -279,8 +281,26 @@ static int iommu_init_device(struct device *dev)
- 			return -ENOTSUPP;
- 		}
- 		dev_data->alias_data = alias_data;
 +
-+		dma_pdev = pci_get_bus_and_slot(alias >> 8, alias & 0xff);
++	if (!device_to_iommu(pci_domain_nr(pdev->bus),
++			     pdev->bus->number, pdev->devfn))
++		return -ENODEV;
++
++	bridge = pci_find_upstream_pcie_bridge(pdev);
++	if (bridge) {
++		if (pci_is_pcie(bridge))
++			dma_pdev = pci_get_domain_bus_and_slot(
++						pci_domain_nr(pdev->bus),
++						bridge->subordinate->number, 0);
++		else
++			dma_pdev = pci_dev_get(bridge);
 +	} else
 +		dma_pdev = pci_dev_get(pdev);
 +
@@ -62,24 +67,27 @@ index 0ad46f1..e072bd1 100644
 +		group = iommu_group_alloc();
 +		if (IS_ERR(group))
 +			return PTR_ERR(group);
- 	}
- 
++	}
++
 +	ret = iommu_group_add_device(group, dev);
 +
 +	iommu_group_put(group);
++	return ret;
++}
 +
-+	if (ret)
-+		return ret;
-+
- 	if (pci_iommuv2_capable(pdev)) {
- 		struct amd_iommu *iommu;
- 
-@@ -309,6 +329,8 @@ static void iommu_ignore_device(struct device *dev)
- 
- static void iommu_uninit_device(struct device *dev)
- {
++static void intel_iommu_remove_device(struct device *dev)
++{
 +	iommu_group_remove_device(dev);
++}
 +
- 	/*
- 	 * Nothing to do here - we keep dev_data around for unplugged devices
- 	 * and reuse it when the device is re-plugged - not doing so would
+ static struct iommu_ops intel_iommu_ops = {
+ 	.domain_init	= intel_iommu_domain_init,
+ 	.domain_destroy = intel_iommu_domain_destroy,
+@@ -4099,6 +4140,8 @@ static struct iommu_ops intel_iommu_ops = {
+ 	.unmap		= intel_iommu_unmap,
+ 	.iova_to_phys	= intel_iommu_iova_to_phys,
+ 	.domain_has_cap = intel_iommu_domain_has_cap,
++	.add_device	= intel_iommu_add_device,
++	.remove_device	= intel_iommu_remove_device,
+ 	.pgsize_bitmap	= INTEL_IOMMU_PGSIZES,
+ };
