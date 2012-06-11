@@ -1,7 +1,7 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v3 1/5] pci: Add PCI DMA source ID quirk
-Date: Mon, 11 Jun 2012 09:26:55 -0600
-Message-ID: <20120611152654.25959.42238.stgit@bling.home>
+Subject: [PATCH v3 3/5] pci: export pci_user functions for use by other drivers
+Date: Mon, 11 Jun 2012 09:27:19 -0600
+Message-ID: <20120611152718.25959.93716.stgit@bling.home>
 References: <20120611152021.25959.71601.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,103 +21,76 @@ To: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2r
 Cc: aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-DMA transactions are tagged with the source ID of the device making
-the request.  Occasionally hardware screws this up and uses the
-source ID of a different device (often the wrong function number of
-a multifunction device).  A specific Ricoh multifunction device is
-a prime example of this problem and included in this patch.  The
-purpose of this function is that given a pci_dev, return the pci_dev
-to use as the source ID for DMA.  When hardware works correctly,
-this returns the input device.  For the components of the Ricoh
-multifunction device, return the pci_dev for function 0.
-
-This will be used by IOMMU drivers for determining the boundaries
-of IOMMU groups as multiple devices using the same source ID must
-be contained within the same group.  This can also be used by
-existing streaming DMA paths for the same purpose.
+VFIO PCI support will make use of these for user initiated
+PCI config accesses.
 
 Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Acked-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 ---
 
- drivers/pci/quirks.c |   51 ++++++++++++++++++++++++++++++++++++++++++++++++++
- include/linux/pci.h  |    5 +++++
- 2 files changed, 56 insertions(+)
+ drivers/pci/access.c |    6 ++++--
+ drivers/pci/pci.h    |    7 -------
+ include/linux/pci.h  |    8 ++++++++
+ 3 files changed, 12 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 2a75216..acd3956 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -3179,3 +3179,54 @@ int pci_dev_specific_reset(struct pci_dev *dev, int probe)
+diff --git a/drivers/pci/access.c b/drivers/pci/access.c
+index 2a58164..ba91a7e 100644
+--- a/drivers/pci/access.c
++++ b/drivers/pci/access.c
+@@ -162,7 +162,8 @@ int pci_user_read_config_##size						\
+ 	if (ret > 0)							\
+ 		ret = -EINVAL;						\
+ 	return ret;							\
+-}
++}									\
++EXPORT_SYMBOL_GPL(pci_user_read_config_##size);
  
- 	return -ENOTTY;
+ /* Returns 0 on success, negative values indicate error. */
+ #define PCI_USER_WRITE_CONFIG(size,type)				\
+@@ -181,7 +182,8 @@ int pci_user_write_config_##size					\
+ 	if (ret > 0)							\
+ 		ret = -EINVAL;						\
+ 	return ret;							\
+-}
++}									\
++EXPORT_SYMBOL_GPL(pci_user_write_config_##size);
+ 
+ PCI_USER_READ_CONFIG(byte, u8)
+ PCI_USER_READ_CONFIG(word, u16)
+diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+index e494347..f2dcc46 100644
+--- a/drivers/pci/pci.h
++++ b/drivers/pci/pci.h
+@@ -86,13 +86,6 @@ static inline bool pci_is_bridge(struct pci_dev *pci_dev)
+ 	return !!(pci_dev->subordinate);
  }
-+
-+static struct pci_dev *pci_func_0_dma_source(struct pci_dev *dev)
-+{
-+	if (!PCI_FUNC(dev->devfn))
-+		return pci_dev_get(dev);
-+
-+	return pci_get_slot(dev->bus, PCI_DEVFN(PCI_SLOT(dev->devfn), 0));
-+}
-+
-+static const struct pci_dev_dma_source {
-+	u16 vendor;
-+	u16 device;
-+	struct pci_dev *(*dma_source)(struct pci_dev *dev);
-+} pci_dev_dma_source[] = {
-+	/*
-+	 * https://bugzilla.redhat.com/show_bug.cgi?id=605888
-+	 *
-+	 * Some Ricoh devices use the function 0 source ID for DMA on
-+	 * other functions of a multifunction device.  The DMA devices
-+	 * is therefore function 0, which will have implications of the
-+	 * iommu grouping of these devices.
-+	 */
-+	{ PCI_VENDOR_ID_RICOH, 0xe822, pci_func_0_dma_source },
-+	{ PCI_VENDOR_ID_RICOH, 0xe230, pci_func_0_dma_source },
-+	{ PCI_VENDOR_ID_RICOH, 0xe832, pci_func_0_dma_source },
-+	{ PCI_VENDOR_ID_RICOH, 0xe476, pci_func_0_dma_source },
-+	{ 0 }
-+};
-+
-+/*
-+ * IOMMUs with isolation capabilities need to be programmed with the
-+ * correct source ID of a device.  In most cases, the source ID matches
-+ * the device doing the DMA, but sometimes hardware is broken and will
-+ * tag the DMA as being sourced from a different device.  This function
-+ * allows that translation.  Note that the reference count of the
-+ * returned device is incremented on all paths.
-+ */
-+struct pci_dev *pci_get_dma_source(struct pci_dev *dev)
-+{
-+	const struct pci_dev_dma_source *i;
-+
-+	for (i = pci_dev_dma_source; i->dma_source; i++) {
-+		if ((i->vendor == dev->vendor ||
-+		     i->vendor == (u16)PCI_ANY_ID) &&
-+		    (i->device == dev->device ||
-+		     i->device == (u16)PCI_ANY_ID))
-+			return i->dma_source(dev);
-+	}
-+
-+	return pci_dev_get(dev);
-+}
+ 
+-extern int pci_user_read_config_byte(struct pci_dev *dev, int where, u8 *val);
+-extern int pci_user_read_config_word(struct pci_dev *dev, int where, u16 *val);
+-extern int pci_user_read_config_dword(struct pci_dev *dev, int where, u32 *val);
+-extern int pci_user_write_config_byte(struct pci_dev *dev, int where, u8 val);
+-extern int pci_user_write_config_word(struct pci_dev *dev, int where, u16 val);
+-extern int pci_user_write_config_dword(struct pci_dev *dev, int where, u32 val);
+-
+ struct pci_vpd_ops {
+ 	ssize_t (*read)(struct pci_dev *dev, loff_t pos, size_t count, void *buf);
+ 	ssize_t (*write)(struct pci_dev *dev, loff_t pos, size_t count, const void *buf);
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index d8c379d..6badba3 100644
+index ba51a21..4cb13e59 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1486,9 +1486,14 @@ enum pci_fixup_pass {
+@@ -777,6 +777,14 @@ static inline int pci_write_config_dword(const struct pci_dev *dev, int where,
+ 	return pci_bus_write_config_dword(dev->bus, dev->devfn, where, val);
+ }
  
- #ifdef CONFIG_PCI_QUIRKS
- void pci_fixup_device(enum pci_fixup_pass pass, struct pci_dev *dev);
-+struct pci_dev *pci_get_dma_source(struct pci_dev *dev);
- #else
- static inline void pci_fixup_device(enum pci_fixup_pass pass,
- 				    struct pci_dev *dev) {}
-+static inline struct pci_dev *pci_get_dma_source(struct pci_dev *dev)
-+{
-+	return pci_dev_get(dev);
-+}
- #endif
- 
- void __iomem *pcim_iomap(struct pci_dev *pdev, int bar, unsigned long maxlen);
++/* user-space driven config access */
++int pci_user_read_config_byte(struct pci_dev *dev, int where, u8 *val);
++int pci_user_read_config_word(struct pci_dev *dev, int where, u16 *val);
++int pci_user_read_config_dword(struct pci_dev *dev, int where, u32 *val);
++int pci_user_write_config_byte(struct pci_dev *dev, int where, u8 val);
++int pci_user_write_config_word(struct pci_dev *dev, int where, u16 val);
++int pci_user_write_config_dword(struct pci_dev *dev, int where, u32 val);
++
+ int __must_check pci_enable_device(struct pci_dev *dev);
+ int __must_check pci_enable_device_io(struct pci_dev *dev);
+ int __must_check pci_enable_device_mem(struct pci_dev *dev);
