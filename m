@@ -1,7 +1,7 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v3 2/5] pci: Add ACS validation utility
-Date: Mon, 11 Jun 2012 09:27:07 -0600
-Message-ID: <20120611152707.25959.60516.stgit@bling.home>
+Subject: [PATCH v3 4/5] pci: Create common pcibios_err_to_errno
+Date: Mon, 11 Jun 2012 09:27:33 -0600
+Message-ID: <20120611152733.25959.67354.stgit@bling.home>
 References: <20120611152021.25959.71601.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,181 +21,81 @@ To: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2r
 Cc: aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-In a PCI environment, transactions aren't always required to reach
-the root bus before being re-routed.  Intermediate switches between
-an endpoint and the root bus can redirect DMA back downstream before
-things like IOMMUs have a chance to intervene.  Legacy PCI is always
-susceptible to this as it operates on a shared bus.  PCIe added a
-new capability to describe and control this behavior, Access Control
-Services, or ACS.  The utility function pci_acs_enabled() allows us
-to test the ACS capabilities of an individual devices against a set
-of flags while pci_acs_path_enabled() tests a complete path from
-a given downstream device up to the specified upstream device.  We
-also include the ability to add device specific tests as it's
-likely we'll see devices that do no implement ACS, but want to
-indicate support for various capabilities in this space.
+For returning errors out to non-PCI code.  Re-name xen's version.
 
 Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Acked-by: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 ---
 
- drivers/pci/pci.c    |   69 ++++++++++++++++++++++++++++++++++++++++++++++++++
- drivers/pci/quirks.c |   33 ++++++++++++++++++++++++
- include/linux/pci.h  |   10 +++++++
- 3 files changed, 111 insertions(+), 1 deletion(-)
+ drivers/xen/xen-pciback/conf_space.c |    6 +++---
+ include/linux/pci.h                  |   26 ++++++++++++++++++++++++++
+ 2 files changed, 29 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 447e834..1ccf7d4 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -2360,6 +2360,75 @@ void pci_enable_acs(struct pci_dev *dev)
+diff --git a/drivers/xen/xen-pciback/conf_space.c b/drivers/xen/xen-pciback/conf_space.c
+index 30d7be0..46ae0f9 100644
+--- a/drivers/xen/xen-pciback/conf_space.c
++++ b/drivers/xen/xen-pciback/conf_space.c
+@@ -124,7 +124,7 @@ static inline u32 merge_value(u32 val, u32 new_val, u32 new_val_mask,
+ 	return val;
  }
  
- /**
-+ * pci_acs_enabled - test ACS against required flags for a given device
-+ * @pdev: device to test
-+ * @acs_flags: required PCI ACS flags
-+ *
-+ * Return true if the device supports the provided flags.  Automatically
-+ * filters out flags that are not implemented on multifunction devices.
-+ */
-+bool pci_acs_enabled(struct pci_dev *pdev, u16 acs_flags)
-+{
-+	int pos, ret;
-+	u16 ctrl;
-+
-+	ret = pci_dev_specific_acs_enabled(pdev, acs_flags);
-+	if (ret >= 0)
-+		return ret > 0;
-+
-+	if (!pci_is_pcie(pdev))
-+		return false;
-+
-+	/* Filter out flags not applicable to multifunction */
-+	if (pdev->multifunction)
-+		acs_flags &= (PCI_ACS_RR | PCI_ACS_CR |
-+			      PCI_ACS_EC | PCI_ACS_DT);
-+
-+	if (pdev->pcie_type == PCI_EXP_TYPE_DOWNSTREAM ||
-+	    pdev->pcie_type == PCI_EXP_TYPE_ROOT_PORT ||
-+	    pdev->multifunction) {
-+		pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ACS);
-+		if (!pos)
-+			return false;
-+
-+		pci_read_config_word(pdev, pos + PCI_ACS_CTRL, &ctrl);
-+		if ((ctrl & acs_flags) != acs_flags)
-+			return false;
-+	}
-+
-+	return true;
-+}
-+
-+/**
-+ * pci_acs_path_enable - test ACS flags from start to end in a hierarchy
-+ * @start: starting downstream device
-+ * @end: ending upstream device or NULL to search to the root bus
-+ * @acs_flags: required flags
-+ *
-+ * Walk up a device tree from start to end testing PCI ACS support.  If
-+ * any step along the way does not support the required flags, return false.
-+ */
-+bool pci_acs_path_enabled(struct pci_dev *start,
-+			  struct pci_dev *end, u16 acs_flags)
-+{
-+	struct pci_dev *pdev, *parent = start;
-+
-+	do {
-+		pdev = parent;
-+
-+		if (!pci_acs_enabled(pdev, acs_flags))
-+			return false;
-+
-+		if (pci_is_root_bus(pdev->bus))
-+			return (end == NULL);
-+
-+		parent = pdev->bus->self;
-+	} while (pdev != end);
-+
-+	return true;
-+}
-+
-+/**
-  * pci_swizzle_interrupt_pin - swizzle INTx for device behind bridge
-  * @dev: the PCI device
-  * @pin: the INTx pin (1=INTA, 2=INTB, 3=INTD, 4=INTD)
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index acd3956..27e2c8f 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -3230,3 +3230,36 @@ struct pci_dev *pci_get_dma_source(struct pci_dev *dev)
+-static int pcibios_err_to_errno(int err)
++static int xen_pcibios_err_to_errno(int err)
+ {
+ 	switch (err) {
+ 	case PCIBIOS_SUCCESSFUL:
+@@ -202,7 +202,7 @@ out:
+ 		       pci_name(dev), size, offset, value);
  
- 	return pci_dev_get(dev);
+ 	*ret_val = value;
+-	return pcibios_err_to_errno(err);
++	return xen_pcibios_err_to_errno(err);
  }
-+
-+static const struct pci_dev_acs_enabled {
-+	u16 vendor;
-+	u16 device;
-+	int (*acs_enabled)(struct pci_dev *dev, u16 acs_flags);
-+} pci_dev_acs_enabled[] = {
-+	{ 0 }
-+};
-+
-+int pci_dev_specific_acs_enabled(struct pci_dev *dev, u16 acs_flags)
-+{
-+	const struct pci_dev_acs_enabled *i;
-+	int ret;
-+
-+	/*
-+	 * Allow devices that do not expose standard PCIe ACS capabilities
-+	 * or control to indicate their support here.  Multi-function express
-+	 * devices which do not allow internal peer-to-peer between functions,
-+	 * but do not implement PCIe ACS may wish to return true here.
-+	 */
-+	for (i = pci_dev_acs_enabled; i->acs_enabled; i++) {
-+		if ((i->vendor == dev->vendor ||
-+		     i->vendor == (u16)PCI_ANY_ID) &&
-+		    (i->device == dev->device ||
-+		     i->device == (u16)PCI_ANY_ID)) {
-+			ret = i->acs_enabled(dev, acs_flags);
-+			if (ret >= 0)
-+				return ret;
-+		}
-+	}
-+
-+	return -ENOTTY;
-+}
+ 
+ int xen_pcibk_config_write(struct pci_dev *dev, int offset, int size, u32 value)
+@@ -290,7 +290,7 @@ int xen_pcibk_config_write(struct pci_dev *dev, int offset, int size, u32 value)
+ 		}
+ 	}
+ 
+-	return pcibios_err_to_errno(err);
++	return xen_pcibios_err_to_errno(err);
+ }
+ 
+ void xen_pcibk_config_free_dyn_fields(struct pci_dev *dev)
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 6badba3..ba51a21 100644
+index 4cb13e59..f43bfef 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1487,6 +1487,7 @@ enum pci_fixup_pass {
- #ifdef CONFIG_PCI_QUIRKS
- void pci_fixup_device(enum pci_fixup_pass pass, struct pci_dev *dev);
- struct pci_dev *pci_get_dma_source(struct pci_dev *dev);
-+int pci_dev_specific_acs_enabled(struct pci_dev *dev, u16 acs_flags);
- #else
- static inline void pci_fixup_device(enum pci_fixup_pass pass,
- 				    struct pci_dev *dev) {}
-@@ -1494,6 +1495,11 @@ static inline struct pci_dev *pci_get_dma_source(struct pci_dev *dev)
- {
- 	return pci_dev_get(dev);
- }
-+static inline int pci_dev_specific_acs_enabled(struct pci_dev *dev,
-+					       u16 acs_flags)
+@@ -474,6 +474,32 @@ static inline bool pci_dev_msi_enabled(struct pci_dev *pci_dev) { return false;
+ #define PCIBIOS_SET_FAILED		0x88
+ #define PCIBIOS_BUFFER_TOO_SMALL	0x89
+ 
++/*
++ * Translate above to generic errno for passing back through non-pci.
++ */
++static inline int pcibios_err_to_errno(int err)
 +{
++	if (err <= PCIBIOS_SUCCESSFUL)
++		return err; /* Assume already errno */
++
++	switch (err) {
++	case PCIBIOS_FUNC_NOT_SUPPORTED:
++		return -ENOENT;
++	case PCIBIOS_BAD_VENDOR_ID:
++		return -EINVAL;
++	case PCIBIOS_DEVICE_NOT_FOUND:
++		return -ENODEV;
++	case PCIBIOS_BAD_REGISTER_NUMBER:
++		return -EFAULT;
++	case PCIBIOS_SET_FAILED:
++		return -EIO;
++	case PCIBIOS_BUFFER_TOO_SMALL:
++		return -ENOSPC;
++	}
++
 +	return -ENOTTY;
 +}
- #endif
++
+ /* Low-level architecture-dependent routines */
  
- void __iomem *pcim_iomap(struct pci_dev *pdev, int bar, unsigned long maxlen);
-@@ -1596,7 +1602,9 @@ static inline bool pci_is_pcie(struct pci_dev *dev)
- }
- 
- void pci_request_acs(void);
--
-+bool pci_acs_enabled(struct pci_dev *pdev, u16 acs_flags);
-+bool pci_acs_path_enabled(struct pci_dev *start,
-+			  struct pci_dev *end, u16 acs_flags);
- 
- #define PCI_VPD_LRDT			0x80	/* Large Resource Data Type */
- #define PCI_VPD_LRDT_ID(x)		(x | PCI_VPD_LRDT)
+ struct pci_ops {
