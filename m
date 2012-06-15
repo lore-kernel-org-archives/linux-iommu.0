@@ -1,68 +1,71 @@
-From: Joerg Roedel <joerg.roedel@amd.com>
-Subject: Re: [PATCH v3 0/5] PCI: Prep for VFIO and IOMMU Groups
-Date: Tue, 12 Jun 2012 18:04:27 +0200
-Message-ID: <20120612160427.GE2624@amd.com>
-References: <20120611152021.25959.71601.stgit@bling.home>
- <CAErSpo434tDtnSOxB_REG2jFNrZL=aZERWTmmK-cdjqM4z6yWg@mail.gmail.com>
- <20120612062000.GA6932@8bytes.org>
- <CAErSpo6J61+XhtEeXdE-5Evhs-SJ4=3iEZDAXGuRi9moAU8KhQ@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAErSpo6J61+XhtEeXdE-5Evhs-SJ4=3iEZDAXGuRi9moAU8KhQ@mail.gmail.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Joerg Roedel <joro@8bytes.org>, aik@ozlabs.ru, benh@kernel.crashing.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, dwmw2@infradead.org, david@gibson.dropbear.id.au
+From: Tom Mingarelli <thomas.mingarelli@hp.com>
+Subject: [PATCH] Intel IOMMU patch to reprocess RMRR info
+Date: Fri, 15 Jun 2012 08:58:58 -0400
+Message-ID: <20120615125336.15536.69372.sendpatchset@localhost6.localdomain6>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: David Woodhouse <dwm2@infradead.org>, Joerg Roedel <joerg.roedel@amd.com>
+Cc: Tom Mingarelli <thomas.mingarelli@hp.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Bjorn,
+This patch is being submitted to handle the case where a pci device is
+placed into the si domain, but then removed. The RMRR information for
+such devices need to be re-processed to avoid DMA Read errors due to
+the Present Bit being cleared in the context entry.
+----
+drivers/iommu/intel-iommu.c |   32 ++++++++++++++++++++++++++++++++
+1 files changed, 32 insertions(+), 0 deletions(-)
+    
+Signed-off-by: Tom Mingarelli <thomas.mingarelli@hp.com>
+Tested-by: Tony Camuso <tony.camuso@hp.com>
 
-On Tue, Jun 12, 2012 at 09:55:59AM -0600, Bjorn Helgaas wrote:
-> On Tue, Jun 12, 2012 at 12:20 AM, Joerg Roedel <joro@8bytes.org> wrot=
-e:
-> > Hi Bjorn,
-> >
-> > On Mon, Jun 11, 2012 at 06:59:25PM -0600, Bjorn Helgaas wrote:
-> >> On Mon, Jun 11, 2012 at 8:26 AM, Alex Williamson
-> >> <alex.williamson@redhat.com> wrote:
-> >> > v3:
-> >> > =A0- Small change to device specific ACS check to allow quirk to
-> >> > =A0 support yes/no/pass type functionality. (no change to other
-> >> > =A0 patches and no trickle down through IOMMU series)
-> >> >
-> >> > Bjorn, what's needed to get these in? =A0Thanks,
-> >>
-> >> Sorry for the delay. =A0I applied these to my "next" branch (heade=
-d for
-> >> 3.6). =A0I didn't feel comfortable pushing them towards 3.5 since
-> >> they're not bugfixes, and they haven't been in -next yet.
-> >
-> > Great. Do you applied them directly to your next branch or do you h=
-ave
-> > them in a seperate branch I can pull in to merge the IOMMU Groups
-> > patches on-top? The later would be really good :)
->=20
-> Hi Joerg, I have Alex's patches on a separate topic branch.  I folded
-> in the pci_get_dev() fix and pushed it to here:
->=20
->   git://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git
-> topic/alex-vfio-prep
->=20
-> This is also included in my "next" branch.
-
-
-Great, thanks. I will pull in this branch and apply Alex' IOMMU group
-code on-top.
-
-
-	Joerg
-
---=20
-AMD Operating System Research Center
-
-Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
-General Managers: Alberto Bozzo
-Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr.=
- 43632
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index f93d5ac..5ae57c5 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -2696,6 +2696,37 @@ static int iommu_dummy(struct pci_dev *pdev)
+ 	return pdev->dev.archdata.iommu == DUMMY_DEVICE_DOMAIN_INFO;
+ }
+ 
++static int reprocess_rmrr(struct device *dev)
++{
++	struct dmar_rmrr_unit *rmrr;
++	struct pci_dev *pdev;
++	int i, ret;
++
++	pdev = to_pci_dev(dev);
++
++	for_each_rmrr_units(rmrr) {
++		for (i = 0; i < rmrr->devices_cnt; i++) {
++			/*
++			 * Here we are just concerned with
++			 * finding the one device that was
++			 * removed from the si_domain and
++			 * re-evaluating its RMRR info.
++			 */
++			if (rmrr->devices[i] != pdev)
++				continue;
++			pr_info("%s %s\n",
++				"IOMMU: Reprocess RMRR information for device",
++				pci_name(pdev));
++			ret = iommu_prepare_rmrr_dev(rmrr, pdev);
++			if (ret)
++				pr_err("%s %s\n",
++					"IOMMU: Reprocessing RMRR reserved",
++					"region for device failed");
++		}
++	}
++	return 0;
++}
++
+ /* Check if the pdev needs to go through non-identity map and unmap process.*/
+ static int iommu_no_mapping(struct device *dev)
+ {
+@@ -2724,6 +2755,7 @@ static int iommu_no_mapping(struct device *dev)
+ 			domain_remove_one_dev_info(si_domain, pdev);
+ 			printk(KERN_INFO "32bit %s uses non-identity mapping\n",
+ 			       pci_name(pdev));
++			reprocess_rmrr(dev);
+ 			return 0;
+ 		}
+ 	} else {
