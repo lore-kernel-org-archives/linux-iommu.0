@@ -1,71 +1,49 @@
-From: Tom Mingarelli <thomas.mingarelli@hp.com>
-Subject: [PATCH] Intel IOMMU patch to reprocess RMRR info
-Date: Fri, 15 Jun 2012 08:58:58 -0400
-Message-ID: <20120615125336.15536.69372.sendpatchset@localhost6.localdomain6>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: David Woodhouse <dwm2@infradead.org>, Joerg Roedel <joerg.roedel@amd.com>
-Cc: Tom Mingarelli <thomas.mingarelli@hp.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+From: Omar Ramirez Luna <omar.luna@linaro.org>
+Subject: [PATCH 0/6] OMAP: iommu: hwmod, reset handling and runtime PM
+Date: Fri, 15 Jun 2012 20:55:58 -0500
+Message-ID: <1339811764-5337-1-git-send-email-omar.luna@linaro.org>
+Return-path: <linux-omap-owner@vger.kernel.org>
+Sender: linux-omap-owner@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>, Benoit Cousson <b-cousson@ti.com>
+Cc: Russell King <linux@arm.linux.org.uk>, Ohad Ben-Cohen <ohad@wizery.com>, Omar Ramirez Luna <omar.luna@linaro.org>, Joerg Roedel <joerg.roedel@amd.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Felipe Contreras <felipe.contreras@gmail.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch is being submitted to handle the case where a pci device is
-placed into the si domain, but then removed. The RMRR information for
-such devices need to be re-processed to avoid DMA Read errors due to
-the Present Bit being cleared in the context entry.
-----
-drivers/iommu/intel-iommu.c |   32 ++++++++++++++++++++++++++++++++
-1 files changed, 32 insertions(+), 0 deletions(-)
-    
-Signed-off-by: Tom Mingarelli <thomas.mingarelli@hp.com>
-Tested-by: Tony Camuso <tony.camuso@hp.com>
+Introduced hwmod support for OMAP3 (iva, isp) and OMAP4 (ipu, dsp),
+along with the corresponding runtime PM and routines to deassert reset
+lines, enable/disable clocks and configure sysc registers.
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index f93d5ac..5ae57c5 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -2696,6 +2696,37 @@ static int iommu_dummy(struct pci_dev *pdev)
- 	return pdev->dev.archdata.iommu == DUMMY_DEVICE_DOMAIN_INFO;
- }
- 
-+static int reprocess_rmrr(struct device *dev)
-+{
-+	struct dmar_rmrr_unit *rmrr;
-+	struct pci_dev *pdev;
-+	int i, ret;
-+
-+	pdev = to_pci_dev(dev);
-+
-+	for_each_rmrr_units(rmrr) {
-+		for (i = 0; i < rmrr->devices_cnt; i++) {
-+			/*
-+			 * Here we are just concerned with
-+			 * finding the one device that was
-+			 * removed from the si_domain and
-+			 * re-evaluating its RMRR info.
-+			 */
-+			if (rmrr->devices[i] != pdev)
-+				continue;
-+			pr_info("%s %s\n",
-+				"IOMMU: Reprocess RMRR information for device",
-+				pci_name(pdev));
-+			ret = iommu_prepare_rmrr_dev(rmrr, pdev);
-+			if (ret)
-+				pr_err("%s %s\n",
-+					"IOMMU: Reprocessing RMRR reserved",
-+					"region for device failed");
-+		}
-+	}
-+	return 0;
-+}
-+
- /* Check if the pdev needs to go through non-identity map and unmap process.*/
- static int iommu_no_mapping(struct device *dev)
- {
-@@ -2724,6 +2755,7 @@ static int iommu_no_mapping(struct device *dev)
- 			domain_remove_one_dev_info(si_domain, pdev);
- 			printk(KERN_INFO "32bit %s uses non-identity mapping\n",
- 			       pci_name(pdev));
-+			reprocess_rmrr(dev);
- 			return 0;
- 		}
- 	} else {
+Due to compatibility an ifdef needs to be propagated (previously on
+iommu resource info) to hwmod data in OMAP3, so users of iommu and
+tidspbridge can avoid issues of two modules managing mmu data/irqs/resets;
+this until tidspbridge can be safely migrated to iommu framework.
+
+Although IOMMU hwmod patches were already submitted in the past,
+this series adds few more changes, like:
+- New reset handling, based on a series that needs to be accepted first.
+- Fix for compile break if IOMMU_API is not selected.
+
+Previous work can be found at:
+
+http://www.mail-archive.com/linux-omap@vger.kernel.org/msg60133.html
+
+Omar Ramirez Luna (6):
+  ARM: OMAP: iommu: fix including iommu.h without IOMMU_API selected
+  ARM: OMAP3: hwmod data: add mmu data for iva and isp
+  ARM: OMAP4: hwmod data: add mmu hwmod for ipu and dsp
+  ARM: OMAP3/4: iommu: migrate to hwmod framework
+  ARM: OMAP2+: iommu: add reset handling
+  ARM: OMAP3/4: iommu: adapt to runtime pm
+
+ arch/arm/mach-omap2/devices.c              |    2 +-
+ arch/arm/mach-omap2/iommu2.c               |   36 ------
+ arch/arm/mach-omap2/omap-iommu.c           |  166 ++++++---------------------
+ arch/arm/mach-omap2/omap_hwmod_3xxx_data.c |  115 +++++++++++++++++++
+ arch/arm/mach-omap2/omap_hwmod_44xx_data.c |  136 ++++++++++++++++++++++-
+ arch/arm/plat-omap/include/plat/iommu.h    |   25 ++++-
+ arch/arm/plat-omap/include/plat/iommu2.h   |    2 -
+ drivers/iommu/omap-iommu.c                 |   68 ++++++-----
+ 8 files changed, 346 insertions(+), 204 deletions(-)
+
+-- 
+1.7.4.1
+
