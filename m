@@ -1,43 +1,173 @@
-From: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
-Subject: Re: [PATCH v2 0/7] IOMMU: Groups support
-Date: Tue, 19 Jun 2012 20:40:01 +1000
-Message-ID: <1340102401.28143.12.camel@pasglop>
-References: <20120530201424.31527.33142.stgit@bling.home>
-	<20120606110514.GG757@amd.com> <1339429021.24037.8.camel@bling.home>
-	<1340040703.17272.2.camel@bling.home> <20120619094918.GH2624@amd.com>
+From: "Cousson, Benoit" <b-cousson@ti.com>
+Subject: Re: [PATCH 3/6] ARM: OMAP4: hwmod data: add mmu hwmod for ipu and
+ dsp
+Date: Tue, 19 Jun 2012 14:36:56 +0200
+Message-ID: <4FE07268.7040606@ti.com>
+References: <1339811764-5337-1-git-send-email-omar.luna@linaro.org> <1339811764-5337-4-git-send-email-omar.luna@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20120619094918.GH2624-5C7GfCeVMHo@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Cc: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, liuj97-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <1339811764-5337-4-git-send-email-omar.luna@linaro.org>
+Sender: linux-omap-owner@vger.kernel.org
+To: Omar Ramirez Luna <omar.luna@linaro.org>
+Cc: Tony Lindgren <tony@atomide.com>, Russell King <linux@arm.linux.org.uk>, Ohad Ben-Cohen <ohad@wizery.com>, Joerg Roedel <joerg.roedel@amd.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Felipe Contreras <felipe.contreras@gmail.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2012-06-19 at 11:49 +0200, Joerg Roedel wrote:
-> Well, we can't hold up things forever. Given that the POWER guys had
-> long discussions with you about previous versions but not about this one
-> counts as a silent Ack for me ;)
+Hi Omar,
 
-Everybody was waiting for me and I was out for 3 weeks following some
-surgery ... I'll review that stuff ASAP (as in tomorrow if I can, else
-before end of the week).
-
-> So I already applied the patches into my local tree yesterday and gave
-> them some additional testing. All looks good so far. I think I will push
-> the result soon to get this into linux-next.
+On 6/16/2012 3:56 AM, Omar Ramirez Luna wrote:
+> Add mmu hwmod data for ipu and dsp.
 > 
-> I'll probably rebase to add the Cc's to the commits before pushing it
-> out.
+> Signed-off-by: Omar Ramirez Luna <omar.luna@linaro.org>
+> ---
+>   arch/arm/mach-omap2/omap_hwmod_44xx_data.c |  136 +++++++++++++++++++++++++++-
+>   1 files changed, 134 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/arm/mach-omap2/omap_hwmod_44xx_data.c b/arch/arm/mach-omap2/omap_hwmod_44xx_data.c
+> index ebf9657..3879e9c 100644
+> --- a/arch/arm/mach-omap2/omap_hwmod_44xx_data.c
+> +++ b/arch/arm/mach-omap2/omap_hwmod_44xx_data.c
+> @@ -30,6 +30,7 @@
+>   #include <plat/mmc.h>
+>   #include <plat/dmtimer.h>
+>   #include <plat/common.h>
+> +#include <plat/iommu.h>
+>   
+>   #include "omap_hwmod_common_data.h"
+>   
+> @@ -614,7 +615,6 @@ static struct omap_hwmod_irq_info omap44xx_dsp_irqs[] = {
+>   
+>   static struct omap_hwmod_rst_info omap44xx_dsp_resets[] = {
+>   	{ .name = "dsp", .rst_shift = 0 },
+> -	{ .name = "mmu_cache", .rst_shift = 1 },
+>   };
+>   
+>   static struct omap_hwmod omap44xx_dsp_hwmod = {
+> @@ -1629,7 +1629,6 @@ static struct omap_hwmod_irq_info omap44xx_ipu_irqs[] = {
+>   static struct omap_hwmod_rst_info omap44xx_ipu_resets[] = {
+>   	{ .name = "cpu0", .rst_shift = 0 },
+>   	{ .name = "cpu1", .rst_shift = 1 },
+> -	{ .name = "mmu_cache", .rst_shift = 2 },
+>   };
+>   
+>   static struct omap_hwmod omap44xx_ipu_hwmod = {
+> @@ -2436,6 +2435,137 @@ static struct omap_hwmod omap44xx_mmc5_hwmod = {
+>   };
+>   
+>   /*
+> + * 'mmu' class
+> + * The memory management unit performs virtual to physical address translation
+> + * for its requestors.
+> + */
+> +
+> +static struct omap_hwmod_class_sysconfig mmu_sysc = {
+> +	.rev_offs	= 0x000,
+> +	.sysc_offs	= 0x010,
+> +	.syss_offs	= 0x014,
+> +	.sysc_flags	= (SYSC_HAS_CLOCKACTIVITY | SYSC_HAS_SIDLEMODE |
+> +			   SYSC_HAS_SOFTRESET | SYSC_HAS_AUTOIDLE),
+> +	.idlemodes	= (SIDLE_FORCE | SIDLE_NO | SIDLE_SMART),
+> +	.sysc_fields	= &omap_hwmod_sysc_type1,
+> +};
+> +
+> +static struct omap_hwmod_class omap44xx_mmu_hwmod_class = {
+> +	.name = "mmu",
+> +	.sysc = &mmu_sysc,
+> +};
+> +
+> +/* ipu mmu */
+> +
+> +static struct omap_mmu_dev_attr ipu_mmu_dev_attr = {
+> +	.da_start = 0x0,
+> +	.da_end = 0xfffff000,
+> +	.nr_tlb_entries = 32,
+> +};
+> +
+> +static struct omap_hwmod omap44xx_ipu_mmu_hwmod;
+> +static struct omap_hwmod_irq_info omap44xx_ipu_mmu_irqs[] = {
+> +	{ .irq = 100 + OMAP44XX_IRQ_GIC_START, },
+> +	{ .irq = -1 }
+> +};
+> +
+> +static struct omap_hwmod_rst_info omap44xx_ipu_mmu_resets[] = {
+> +	{ .name = "mmu_cache", .rst_shift = 2 },
+> +};
+> +
+> +static struct omap_hwmod_addr_space omap44xx_ipu_mmu_addrs[] = {
+> +	{
+> +		.pa_start	= 0x55082000,
+> +		.pa_end		= 0x550820ff,
+> +		.flags		= ADDR_TYPE_RT,
+> +	},
+> +	{ }
+> +};
+> +
+> +/* l3_main_2 -> ipu_mmu */
+> +static struct omap_hwmod_ocp_if omap44xx_l3_main_2__ipu_mmu = {
+> +	.master		= &omap44xx_l3_main_2_hwmod,
+> +	.slave		= &omap44xx_ipu_mmu_hwmod,
+> +	.clk		= "l3_div_ck",
+> +	.addr		= omap44xx_ipu_mmu_addrs,
+> +	.user		= OCP_USER_MPU | OCP_USER_SDMA,
+> +};
+> +
+> +static struct omap_hwmod omap44xx_ipu_mmu_hwmod = {
+> +	.name		= "ipu_mmu",
+> +	.class		= &omap44xx_mmu_hwmod_class,
+> +	.clkdm_name	= "ducati_clkdm",
+> +	.mpu_irqs	= omap44xx_ipu_mmu_irqs,
+> +	.rst_lines	= omap44xx_ipu_mmu_resets,
+> +	.rst_lines_cnt	= ARRAY_SIZE(omap44xx_ipu_mmu_resets),
+> +	.main_clk	= "ipu_fck",
+> +	.prcm = {
+> +		.omap4 = {
+> +			.clkctrl_offs = OMAP4_CM_DUCATI_DUCATI_CLKCTRL_OFFSET,
+> +			.rstctrl_offs = OMAP4_RM_DUCATI_RSTCTRL_OFFSET,
+> +			.context_offs = OMAP4_RM_DUCATI_DUCATI_CONTEXT_OFFSET,
+> +			.modulemode   = MODULEMODE_HWCTRL,
+> +		},
+> +	},
+> +	.dev_attr	= &ipu_mmu_dev_attr,
+> +};
 
-Cheers,
-Ben.
+In fact, the MMU_IPU hwmod is now almost the same one than the previous IPU one...
+If we do that we should maybe just rename the IPU -> MMU_IPU and DSP -> MMU_DSP.
+
+But by doing that we will assume that the MMU does represent the subsystem, which is not necessarily super nice.
+
+I guess that a much better representation will be to keep the subsystem (IPU) to handle the PRCM part:
+
++	.main_clk	= "ipu_fck",
++	.prcm = {
++		.clkctrl_offs = OMAP4_CM_DUCATI_DUCATI_CLKCTRL_OFFSET,
++		.rstctrl_offs = OMAP4_RM_DUCATI_RSTCTRL_OFFSET,
++		.context_offs = OMAP4_RM_DUCATI_DUCATI_CONTEXT_OFFSET,
++		.modulemode   = MODULEMODE_HWCTRL,
+
+
+And then the MMU_IPU will handle the configuration registers part and the reset + irq.
+
+But then, you will have to create a parent child dependency between your devices to ensure that the IPU subsystem device will be enabled before trying to access the MMU_IPU.
+
+This is what the DSS is about to do to handle the same kind of power dependency. The DSS device is the parent of all the DSS IPs (DISPC, HDMI...) and thus pm_runtime will ensure that the parent is enabled before trying to enable the children.
+
+In term of DT, just to illustrate the situation, it will be something like that:
+
+ipu {
+	compatible = "simple-bus";
+	ti,hwmods = "ipu";
+
+	ipu_mmu: mmu@4a066000 {
+		compatible = "omap-mmu";
+		ti,hwmods = "mmu_ipu";
+		reg...;
+		irqs...;
+	}	
+}
+
+Is it something you can handle with your current framework?
+
+Regards,
+Benoit
+
