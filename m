@@ -1,52 +1,103 @@
 From: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 2/2] iommu/tegra: gart: Reserve iomem resource
-Date: Wed, 20 Jun 2012 10:04:33 +0300
-Message-ID: <1340175873-12531-2-git-send-email-hdoyu@nvidia.com>
-References: <1340054045.1367.31.camel@tellur>
- <1340175873-12531-1-git-send-email-hdoyu@nvidia.com>
+Subject: [PATCH 3/5] iommu/tegra: smmu: Simplify allocation at once
+Date: Wed, 20 Jun 2012 10:16:58 +0300
+Message-ID: <1340176620-13012-3-git-send-email-hdoyu@nvidia.com>
+References: <20120521124707.GC2604@amd.com>
+ <1340176620-13012-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1340175873-12531-1-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1340176620-13012-1-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>, Lucas Stach <dev-8ppwABl0HbeELgA04lAiVw@public.gmane.org>
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-GART Register/Aperture range should be reserved.
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+
+To simplify the code, alloc necessary data at once.
 
 Signed-off-by: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
-Cc: Lucas Stach <dev-8ppwABl0HbeELgA04lAiVw@public.gmane.org>
+Acked-by: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
 ---
- drivers/iommu/tegra-gart.c |    8 +++++++-
- 1 files changed, 7 insertions(+), 1 deletions(-)
+ drivers/iommu/tegra-smmu.c |   29 +++++++++--------------------
+ 1 files changed, 9 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index 33a23b6..a431006 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -366,12 +366,18 @@ static int tegra_gart_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 	}
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index 9ebb887..5447f05 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -240,8 +240,6 @@ struct smmu_device {
+ 	spinlock_t	lock;
+ 	char		*name;
+ 	struct device	*dev;
+-	int		num_as;
+-	struct smmu_as	*as;		/* Run-time allocated array */
+ 	struct page *avp_vector_page;	/* dummy page shared by all AS's */
  
--	gart_regs = devm_ioremap(dev, res->start, resource_size(res));
-+	gart_regs = devm_request_and_ioremap(dev, res);
- 	if (!gart_regs) {
- 		dev_err(dev, "failed to remap GART registers\n");
- 		return -ENXIO;
- 	}
+ 	/*
+@@ -253,6 +251,9 @@ struct smmu_device {
+ 	unsigned long asid_security;
  
-+	if (!devm_request_mem_region(dev, res_remap->start,
-+				     resource_size(res_remap), dev_name(dev))) {
-+		dev_err(dev, "failed to reserve GART aperture\n");
-+		return -EBUSY;
-+	}
+ 	struct device_node *ahb;
 +
- 	gart->dev = &pdev->dev;
- 	spin_lock_init(&gart->pte_lock);
- 	spin_lock_init(&gart->client_lock);
++	int		num_as;
++	struct smmu_as	as[0];		/* Run-time allocated array */
+ };
+ 
+ static struct smmu_device *smmu_handle; /* unique for a system */
+@@ -970,15 +971,18 @@ static int tegra_smmu_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	int i, asids, err = 0;
+ 	dma_addr_t base;
+-	size_t size;
+-	const void *prop;
++	size_t bytes, size;
+ 
+ 	if (smmu_handle)
+ 		return -EIO;
+ 
+ 	BUILD_BUG_ON(PAGE_SHIFT != SMMU_PAGE_SHIFT);
+ 
+-	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
++	if (of_property_read_u32(dev->of_node, "nvidia,#asids", &asids))
++		return -ENODEV;
++
++	bytes = sizeof(*smmu) + asids * sizeof(*smmu->as);
++	smmu = devm_kzalloc(dev, bytes, GFP_KERNEL);
+ 	if (!smmu) {
+ 		dev_err(dev, "failed to allocate smmu_device\n");
+ 		return -ENOMEM;
+@@ -1006,13 +1010,6 @@ static int tegra_smmu_probe(struct platform_device *pdev)
+ 	if (!size)
+ 		return -EINVAL;
+ 
+-	prop = of_get_property(dev->of_node, "nvidia,#asids", NULL);
+-	if (!prop)
+-		return -ENODEV;
+-	asids = be32_to_cpup(prop);
+-	if (!asids)
+-		return -ENODEV;
+-
+ 	smmu->ahb = of_parse_phandle(dev->of_node, "nvidia,ahb", 0);
+ 	if (!smmu->ahb)
+ 		return -ENODEV;
+@@ -1027,14 +1024,6 @@ static int tegra_smmu_probe(struct platform_device *pdev)
+ 	smmu->translation_enable_2 = ~0;
+ 	smmu->asid_security = 0;
+ 
+-	smmu->as = devm_kzalloc(dev,
+-			sizeof(smmu->as[0]) * smmu->num_as, GFP_KERNEL);
+-	if (!smmu->as) {
+-		dev_err(dev, "failed to allocate smmu_as\n");
+-		err = -ENOMEM;
+-		goto fail;
+-	}
+-
+ 	for (i = 0; i < smmu->num_as; i++) {
+ 		struct smmu_as *as = &smmu->as[i];
+ 
 -- 
 1.7.5.4
