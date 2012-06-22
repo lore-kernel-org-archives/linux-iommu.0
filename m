@@ -1,31 +1,38 @@
-From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [v3 1/5] iommu: Add DMA window parser, of_get_dma_window()
-Date: Mon, 25 Jun 2012 14:36:34 +0200
-Message-ID: <20120625123634.GV2624@amd.com>
-References: <1340623438-14958-1-git-send-email-hdoyu@nvidia.com>
+From: "Alexandra N. Kossovsky" <Alexandra.Kossovsky-mK/T7fl7eHLILq5++fvS8w@public.gmane.org>
+Subject: atomic context for iommu_map call
+Date: Fri, 22 Jun 2012 15:28:14 +0400
+Message-ID: <20120622112812.GV8140@oktetlabs.ru>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1340623438-14958-1-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Robert Stonehouse <rstonehouse-s/n/eUQHGBpZroRs9YW3xA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jun 25, 2012 at 02:23:54PM +0300, Hiroshi DOYU wrote:
-> This code was based on:
->     "arch/microblaze/kernel/prom_parse.c"
->     "arch/powerpc/kernel/prom_parse.c"
-> 
-> Can replace "of_parse_dma_window()" in the above. This supports
-> different formats flexibly. "prefix" can be configured if any. "busno"
-> and "index" are optionally specified. Set NULL and 0 if not used.
-> 
-> Signed-off-by: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> Acked-by: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-> ---
-> Update:
-> Move of_get_dma_window() in drivers/iommu/of_iommu.c
+Hello.
 
-Applied all, thanks.
+It is not clear from the documentation if iommu_map()/iommu_unmap()
+functions may be called from atomic context.
+In case of Intel IOMMU, it works; in case of AMD IOMMU, it does not.
+
+Was it done by purpose?  May I propose a patch for AMD IOMMU replacing
+GFP_KERNEL by GFP_ATOMIC to make things better?
+
+We use IOMMU API in OpenOnload project http://www.openonload.org/,
+and we get better latency with Intel IOMMU because we are not
+forced to use threaded IRQ.
+
+-- 
+Alexandra N. Kossovsky
+OKTET Labs (http://www.oktetlabs.ru/)
