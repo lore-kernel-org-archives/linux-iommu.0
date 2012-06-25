@@ -1,48 +1,31 @@
-From: Joerg Roedel <joerg.roedel@amd.com>
-Subject: Re: [PATCH v2 0/7] IOMMU: Groups support
-Date: Mon, 25 Jun 2012 13:29:34 +0200
-Message-ID: <20120625112934.GU2624@amd.com>
-References: <20120530201424.31527.33142.stgit@bling.home>
+From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [v3 1/5] iommu: Add DMA window parser, of_get_dma_window()
+Date: Mon, 25 Jun 2012 14:36:34 +0200
+Message-ID: <20120625123634.GV2624@amd.com>
+References: <1340623438-14958-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Return-path: <linux-pci-owner@vger.kernel.org>
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20120530201424.31527.33142.stgit@bling.home>
-Sender: linux-pci-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: dwmw2@infradead.org, iommu@lists.linux-foundation.org, bhelgaas@google.com, benh@kernel.crashing.org, aik@ozlabs.ru, david@gibson.dropbear.id.au, konrad.wilk@oracle.com, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, gregkh@linuxfoundation.org, ddutile@redhat.com, liuj97@gmail.com
+In-Reply-To: <1340623438-14958-1-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, May 30, 2012 at 02:18:29PM -0600, Alex Williamson wrote:
-> Alex Williamson (7):
->       iommu: Remove group_mf
->       intel-iommu: Make use of DMA quirks and ACS checks in IOMMU groups
->       amd_iommu: Make use of DMA quirks and ACS checks in IOMMU groups
->       intel-iommu: Support IOMMU groups
->       amd_iommu: Support IOMMU groups
->       iommu: IOMMU Groups
->       driver core: Add iommu_group tracking to struct device
+On Mon, Jun 25, 2012 at 02:23:54PM +0300, Hiroshi DOYU wrote:
+> This code was based on:
+>     "arch/microblaze/kernel/prom_parse.c"
+>     "arch/powerpc/kernel/prom_parse.c"
 > 
+> Can replace "of_parse_dma_window()" in the above. This supports
+> different formats flexibly. "prefix" can be configured if any. "busno"
+> and "index" are optionally specified. Set NULL and 0 if not used.
 > 
->  .../ABI/testing/sysfs-kernel-iommu_groups          |   14 
->  Documentation/kernel-parameters.txt                |    1 
->  arch/ia64/include/asm/iommu.h                      |    2 
->  arch/ia64/kernel/pci-dma.c                         |    1 
->  arch/x86/include/asm/iommu.h                       |    1 
->  arch/x86/kernel/pci-dma.c                          |   11 
->  drivers/iommu/amd_iommu.c                          |   70 ++
->  drivers/iommu/intel-iommu.c                        |   89 ++-
->  drivers/iommu/iommu.c                              |  578 +++++++++++++++++++-
->  include/linux/device.h                             |    2 
->  include/linux/iommu.h                              |  104 +++-
->  11 files changed, 767 insertions(+), 106 deletions(-)
->  create mode 100644 Documentation/ABI/testing/sysfs-kernel-iommu_groups
+> Signed-off-by: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> Acked-by: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+> ---
+> Update:
+> Move of_get_dma_window() in drivers/iommu/of_iommu.c
 
-Applied and pushed all of them. Thanks a lot, Alex.
-
--- 
-AMD Operating System Research Center
-
-Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
-General Managers: Alberto Bozzo
-Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
+Applied all, thanks.
