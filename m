@@ -1,64 +1,100 @@
-From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH] iommu/amd: Initialize dma_ops for hotplug and sriov devices
-Date: Mon, 25 Jun 2012 13:17:23 +0200
-Message-ID: <1340623043-29780-1-git-send-email-joerg.roedel@amd.com>
+From: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: [v3 3/5] iommu/tegra: smmu: Simplify allocation at once
+Date: Mon, 25 Jun 2012 14:23:56 +0300
+Message-ID: <1340623438-14958-3-git-send-email-hdoyu@nvidia.com>
+References: <1340623438-14958-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Stefan Assmann <sassmann-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1340623438-14958-1-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-When a device is added to the system at runtime the AMD
-IOMMU driver initializes the necessary data structures to
-handle translation for it. But it forgets to change the
-per-device dma_ops to point to the AMD IOMMU driver. So
-mapping actually never happens and all DMA accesses end in
-an IO_PAGE_FAULT. Fix this.
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-Reported-by: Stefan Assmann <sassmann-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+To simplify the code, alloc necessary data at once.
+
+Signed-off-by: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Acked-by: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c |    9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/iommu/tegra-smmu.c |   29 +++++++++--------------------
+ 1 files changed, 9 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index a2e418c..dfe7d37 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -83,6 +83,8 @@ static struct iommu_ops amd_iommu_ops;
- static ATOMIC_NOTIFIER_HEAD(ppr_notifier);
- int amd_iommu_max_glx_val = -1;
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index 2c92b8c..98fcc72 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -241,8 +241,6 @@ struct smmu_device {
+ 	spinlock_t	lock;
+ 	char		*name;
+ 	struct device	*dev;
+-	int		num_as;
+-	struct smmu_as	*as;		/* Run-time allocated array */
+ 	struct page *avp_vector_page;	/* dummy page shared by all AS's */
  
-+static struct dma_map_ops amd_iommu_dma_ops;
-+
- /*
-  * general struct to manage commands send to an IOMMU
-  */
-@@ -2267,6 +2269,13 @@ static int device_change_notifier(struct notifier_block *nb,
- 		list_add_tail(&dma_domain->list, &iommu_pd_list);
- 		spin_unlock_irqrestore(&iommu_pd_list_lock, flags);
+ 	/*
+@@ -254,6 +252,9 @@ struct smmu_device {
+ 	unsigned long asid_security;
  
-+		dev_data = get_dev_data(dev);
+ 	struct device_node *ahb;
 +
-+		if (!dev_data->passthrough)
-+			dev->archdata.dma_ops = &amd_iommu_dma_ops;
-+		else
-+			dev->archdata.dma_ops = &nommu_dma_ops;
++	int		num_as;
++	struct smmu_as	as[0];		/* Run-time allocated array */
+ };
+ 
+ static struct smmu_device *smmu_handle; /* unique for a system */
+@@ -902,15 +903,18 @@ static int tegra_smmu_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	int i, asids, err = 0;
+ 	dma_addr_t base;
+-	size_t size;
+-	const void *prop;
++	size_t bytes, size;
+ 
+ 	if (smmu_handle)
+ 		return -EIO;
+ 
+ 	BUILD_BUG_ON(PAGE_SHIFT != SMMU_PAGE_SHIFT);
+ 
+-	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
++	if (of_property_read_u32(dev->of_node, "nvidia,#asids", &asids))
++		return -ENODEV;
 +
- 		break;
- 	case BUS_NOTIFY_DEL_DEVICE:
++	bytes = sizeof(*smmu) + asids * sizeof(*smmu->as);
++	smmu = devm_kzalloc(dev, bytes, GFP_KERNEL);
+ 	if (!smmu) {
+ 		dev_err(dev, "failed to allocate smmu_device\n");
+ 		return -ENOMEM;
+@@ -938,13 +942,6 @@ static int tegra_smmu_probe(struct platform_device *pdev)
+ 	if (!size)
+ 		return -EINVAL;
+ 
+-	prop = of_get_property(dev->of_node, "nvidia,#asids", NULL);
+-	if (!prop)
+-		return -ENODEV;
+-	asids = be32_to_cpup(prop);
+-	if (!asids)
+-		return -ENODEV;
+-
+ 	smmu->ahb = of_parse_phandle(dev->of_node, "nvidia,ahb", 0);
+ 	if (!smmu->ahb)
+ 		return -ENODEV;
+@@ -959,14 +956,6 @@ static int tegra_smmu_probe(struct platform_device *pdev)
+ 	smmu->translation_enable_2 = ~0;
+ 	smmu->asid_security = 0;
+ 
+-	smmu->as = devm_kzalloc(dev,
+-			sizeof(smmu->as[0]) * smmu->num_as, GFP_KERNEL);
+-	if (!smmu->as) {
+-		dev_err(dev, "failed to allocate smmu_as\n");
+-		err = -ENOMEM;
+-		goto fail;
+-	}
+-
+ 	for (i = 0; i < smmu->num_as; i++) {
+ 		struct smmu_as *as = &smmu->as[i];
  
 -- 
-1.7.9.5
+1.7.5.4
