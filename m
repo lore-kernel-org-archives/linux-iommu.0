@@ -1,105 +1,311 @@
-From: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
-Subject: Re: Tegra DRM device tree bindings
-Date: Tue, 26 Jun 2012 16:00:33 +0200
-Message-ID: <20120626140033.GC1115@avionic-0098.mockup.avionic-design.de>
-References: <20120626105513.GA9552@avionic-0098.mockup.avionic-design.de>
- <20120626160224.40ba10a26e3dd3a56b1f312c@nvidia.com>
+From: Chris Wright <chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org>
+Subject: Re: atomic context for iommu_map call
+Date: Tue, 26 Jun 2012 11:07:43 -0700
+Message-ID: <20120626180743.GV15796@sequoia.sous-sol.org>
+References: <20120622112812.GV8140@oktetlabs.ru>
+	<20120626085853.GX2624@amd.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="adJ1OR3c6QgCpb/j"
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20120626160224.40ba10a26e3dd3a56b1f312c-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Lucas Stach <dev-8ppwABl0HbeELgA04lAiVw@public.gmane.org>
+In-Reply-To: <20120626085853.GX2624-5C7GfCeVMHo@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Cc: "Alexandra N. Kossovsky" <Alexandra.Kossovsky-mK/T7fl7eHLILq5++fvS8w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Robert Stonehouse <rstonehouse-s/n/eUQHGBpZroRs9YW3xA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+* Joerg Roedel (joerg.roedel-5C7GfCeVMHo@public.gmane.org) wrote:
+> On Fri, Jun 22, 2012 at 03:28:14PM +0400, Alexandra N. Kossovsky wrote:
+> > Hello.
+> > 
+> > It is not clear from the documentation if iommu_map()/iommu_unmap()
+> > functions may be called from atomic context.
+> > In case of Intel IOMMU, it works; in case of AMD IOMMU, it does not.
+> > 
+> > Was it done by purpose?  May I propose a patch for AMD IOMMU replacing
+> > GFP_KERNEL by GFP_ATOMIC to make things better?
+> 
+> Well, a better option would be to have an iommu_map_atomic() alongside
+> the current iommu_map API call.
 
---adJ1OR3c6QgCpb/j
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+A simple change for ->map to include flags and an iommu_map_atomic helper
+that calls ->map w/ GFP_ATOMIC will hit this in AMD IOMMU:
 
-On Tue, Jun 26, 2012 at 04:02:24PM +0300, Hiroshi Doyu wrote:
-> Hi Thierry,
->=20
-> On Tue, 26 Jun 2012 12:55:13 +0200
-> Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org> wrote:
->=20
-> > * PGP Signed by an unknown key
-> >=20
-> > Hi,
-> >=20
-> > while I haven't got much time to work on the actual code right now, I
-> > think it might still be useful if we could get the device tree binding
-> > to a point where everybody is happy with it. That'll also save me some
-> > time once I get to writing the code because I won't have to redo it over
-> > again. =3D)
-> >=20
-> > So here's the current proposal:
-> >=20
-> > 	host1x {
-> > 		compatible =3D "nvidia,tegra20-host1x", "simple-bus";
-> > 		reg =3D <0x50000000 0x00024000>;
-> > 		interrupts =3D <0 64 0x04   /* cop syncpt */
-> > 			      0 65 0x04   /* mpcore syncpt */
-> > 			      0 66 0x04   /* cop general */
-> > 			      0 67 0x04>; /* mpcore general */
-> >=20
-> > 		#address-cells =3D <1>;
-> > 		#size-cells =3D <1>;
-> >=20
-> > 		ranges =3D <0x54000000 0x54000000 0x04000000>;
-> >=20
-> > 		status =3D "disabled";
-> >=20
-> > 		gart =3D <&gart>;
-> ...
-> > output and hooks up a static EDID block with the LVDS output. There is
-> > also a carveout property which might be a better replacement for the
-> > "crippled" GART on Tegra20. Alternatively the CMA might work just as
-> > well instead.
-> >=20
-> > The Plutux can be described like this:
-> >=20
-> > 	host1x {
-> > 		carveout =3D <0x0e000000 0x02000000>;
->=20
-> As discussed in the following ML thread previously, the necessary info
-> related to the "gart" would be got from the standard IOMMU API(or
-> something above layers, DMABUF or TTM?). So I don't think that we need
-> to refer to "gart" and "carveout" here in the end.
->=20
-> http://lists.linuxfoundation.org/pipermail/iommu/2012-June/004266.html
+        mutex_lock(&domain->api_lock);
+-       ret = iommu_map_page(domain, iova, paddr, prot, page_size);
++       ret = iommu_map_page(domain, iova, paddr, prot, page_size, flags);
+        mutex_unlock(&domain->api_lock);
 
-Yes, if IOMMU or some layer above can provide the same information, then
-that is certainly better than explicitly referencing it in the DT.
+thanks,
+-chris
+---
 
-I'm not sure I understand how information about the carveout would be
-obtained from the IOMMU API, though.
+From: Chris Wright <chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org>
+Subject: [PATCH example] iommu: add gfp flags to ->map
 
-Thierry
+untested, not to apply
 
---adJ1OR3c6QgCpb/j
-Content-Type: application/pgp-signature
+---
+ drivers/iommu/amd_iommu.c   |   12 +++++++-----
+ drivers/iommu/intel-iommu.c |    2 +-
+ drivers/iommu/iommu.c       |   19 ++++++++++++++++---
+ drivers/iommu/msm_iommu.c   |    2 +-
+ drivers/iommu/omap-iommu.c  |   16 +++++++++-------
+ drivers/iommu/tegra-gart.c  |    2 +-
+ drivers/iommu/tegra-smmu.c  |    2 +-
+ include/linux/iommu.h       |   11 ++++++++++-
+ 8 files changed, 46 insertions(+), 20 deletions(-)
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.19 (GNU/Linux)
-
-iQIcBAEBAgAGBQJP6cCBAAoJEN0jrNd/PrOh61UP/35MXxx9f6Xmd8osMBM6gfP9
-j6v6A3W2HbyD1AF4AamHiuqvSPX+QGltd9njImljyuqTumu98itojicu0YKYF3hp
-d7+olhzhwFegVdk8W7Fs06OvhEg+KQmCMvOTnIvMoG8HfJRJXo5qlTOpTZVQ1MuS
-X56OaAOZOcch6rmmyTEy/aQL3E32ZJtHbwvRFlNuWeOhLn/Lp3HkeFCDclxN238n
-a+sQ5jLgisgVdmFQ1rgnO0z1ZT/7JrinXU17MHX42daNLRnOEioFGHvMRyGSmEp9
-PZ2rCSUAryDx6L/iZDf6Wif0bLf3acMI7hi2MhD1tKB8PenluYyUnlzMfoEusgzt
-EVudoJ92bKtxlDE4/E4Zb9Us1IK1Xx2fiEDAj5WUwzsBKk0GwTedG4c6sx8DKYfT
-ahQgj9wdUkbHJxrzCFNPbK6MRSQGJHrc+87aaScUIsIylFIBOS/ipWfT3Sh3z+CS
-uzu3bikqszgpeaZuoBp3yS2gHh34pauQTx1PLFcLSyXu6AM2V2Lpp2qXGcmfWZM/
-+MDaKSjLA+YjXEa34nspKO7MQ7ivDCL12n5Gp/uym00qED9SFEsfrMdU/FSL4SyI
-+cXK7/QTs+zCiOndyoVEotneNVPboTSc4PxCcWOR1aPLP76hesl7yNDuVi7I0Wwn
-T8/Hh5YAAxIX0soMtXew
-=Lk0D
------END PGP SIGNATURE-----
-
---adJ1OR3c6QgCpb/j--
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index a5bee8e..9160810 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -1186,7 +1186,8 @@ static int iommu_map_page(struct protection_domain *dom,
+ 			  unsigned long bus_addr,
+ 			  unsigned long phys_addr,
+ 			  int prot,
+-			  unsigned long page_size)
++			  unsigned long page_size,
++			  gfp_t flags)
+ {
+ 	u64 __pte, *pte;
+ 	int i, count;
+@@ -1197,7 +1198,7 @@ static int iommu_map_page(struct protection_domain *dom,
+ 	bus_addr  = PAGE_ALIGN(bus_addr);
+ 	phys_addr = PAGE_ALIGN(phys_addr);
+ 	count     = PAGE_SIZE_PTE_COUNT(page_size);
+-	pte       = alloc_pte(dom, bus_addr, page_size, NULL, GFP_KERNEL);
++	pte       = alloc_pte(dom, bus_addr, page_size, NULL, flags);
+ 
+ 	for (i = 0; i < count; ++i)
+ 		if (IOMMU_PTE_PRESENT(pte[i]))
+@@ -1297,7 +1298,7 @@ static int dma_ops_unity_map(struct dma_ops_domain *dma_dom,
+ 	for (addr = e->address_start; addr < e->address_end;
+ 	     addr += PAGE_SIZE) {
+ 		ret = iommu_map_page(&dma_dom->domain, addr, addr, e->prot,
+-				     PAGE_SIZE);
++				     PAGE_SIZE, GFP_KERNEL);
+ 		if (ret)
+ 			return ret;
+ 		/*
+@@ -3116,7 +3117,8 @@ static int amd_iommu_attach_device(struct iommu_domain *dom,
+ }
+ 
+ static int amd_iommu_map(struct iommu_domain *dom, unsigned long iova,
+-			 phys_addr_t paddr, size_t page_size, int iommu_prot)
++			 phys_addr_t paddr, size_t page_size, int iommu_prot,
++			 gfp_t flags)
+ {
+ 	struct protection_domain *domain = dom->priv;
+ 	int prot = 0;
+@@ -3131,7 +3133,7 @@ static int amd_iommu_map(struct iommu_domain *dom, unsigned long iova,
+ 		prot |= IOMMU_PROT_IW;
+ 
+ 	mutex_lock(&domain->api_lock);
+-	ret = iommu_map_page(domain, iova, paddr, prot, page_size);
++	ret = iommu_map_page(domain, iova, paddr, prot, page_size, flags);
+ 	mutex_unlock(&domain->api_lock);
+ 
+ 	return ret;
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index bf2fbaa..19fa562 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -4010,7 +4010,7 @@ static void intel_iommu_detach_device(struct iommu_domain *domain,
+ 
+ static int intel_iommu_map(struct iommu_domain *domain,
+ 			   unsigned long iova, phys_addr_t hpa,
+-			   size_t size, int iommu_prot)
++			   size_t size, int iommu_prot, gfp_t flags)
+ {
+ 	struct dmar_domain *dmar_domain = domain->priv;
+ 	u64 max_addr;
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 2198b2d..13e8dcd 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -209,8 +209,8 @@ int iommu_domain_has_cap(struct iommu_domain *domain,
+ }
+ EXPORT_SYMBOL_GPL(iommu_domain_has_cap);
+ 
+-int iommu_map(struct iommu_domain *domain, unsigned long iova,
+-	      phys_addr_t paddr, size_t size, int prot)
++static int __iommu_map(struct iommu_domain *domain, unsigned long iova,
++		       phys_addr_t paddr, size_t size, int prot, gfp_t flags)
+ {
+ 	unsigned long orig_iova = iova;
+ 	unsigned int min_pagesz;
+@@ -269,7 +269,7 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 		pr_debug("mapping: iova 0x%lx pa 0x%lx pgsize %lu\n", iova,
+ 					(unsigned long)paddr, pgsize);
+ 
+-		ret = domain->ops->map(domain, iova, paddr, pgsize, prot);
++		ret = domain->ops->map(domain, iova, paddr, pgsize, prot, flags);
+ 		if (ret)
+ 			break;
+ 
+@@ -284,8 +284,21 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 
+ 	return ret;
+ }
++
++int iommu_map(struct iommu_domain *domain, unsigned long iova,
++	      phys_addr_t paddr, size_t size, int prot)
++{
++	return __iommu_map(domain, iova, paddr, size, prot, GFP_KERNEL);
++}
+ EXPORT_SYMBOL_GPL(iommu_map);
+ 
++int iommu_map_atomic(struct iommu_domain *domain, unsigned long iova,
++		     phys_addr_t paddr, size_t size, int prot)
++{
++	return __iommu_map(domain, iova, paddr, size, prot, GFP_ATOMIC);
++}
++EXPORT_SYMBOL_GPL(iommu_map_atomic);
++
+ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
+ {
+ 	size_t unmapped_page, unmapped = 0;
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index cee307e..7381418 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -355,7 +355,7 @@ fail:
+ }
+ 
+ static int msm_iommu_map(struct iommu_domain *domain, unsigned long va,
+-			 phys_addr_t pa, size_t len, int prot)
++			 phys_addr_t pa, size_t len, int prot, gfp_t flags)
+ {
+ 	struct msm_priv *priv;
+ 	unsigned long flags;
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index 6899dcd..e20cde4 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -493,7 +493,7 @@ static void iopte_free(u32 *iopte)
+ 	kmem_cache_free(iopte_cachep, iopte);
+ }
+ 
+-static u32 *iopte_alloc(struct omap_iommu *obj, u32 *iopgd, u32 da)
++static u32 *iopte_alloc(struct omap_iommu *obj, u32 *iopgd, u32 da, gfp_t gfp)
+ {
+ 	u32 *iopte;
+ 
+@@ -505,7 +505,7 @@ static u32 *iopte_alloc(struct omap_iommu *obj, u32 *iopgd, u32 da)
+ 	 * do the allocation outside the page table lock
+ 	 */
+ 	spin_unlock(&obj->page_table_lock);
+-	iopte = kmem_cache_zalloc(iopte_cachep, GFP_KERNEL);
++	iopte = kmem_cache_zalloc(iopte_cachep, gfp);
+ 	spin_lock(&obj->page_table_lock);
+ 
+ 	if (!*iopgd) {
+@@ -563,10 +563,11 @@ static int iopgd_alloc_super(struct omap_iommu *obj, u32 da, u32 pa, u32 prot)
+ 	return 0;
+ }
+ 
+-static int iopte_alloc_page(struct omap_iommu *obj, u32 da, u32 pa, u32 prot)
++static int iopte_alloc_page(struct omap_iommu *obj, u32 da, u32 pa, u32 prot,
++			    gfp_t gfp)
+ {
+ 	u32 *iopgd = iopgd_offset(obj, da);
+-	u32 *iopte = iopte_alloc(obj, iopgd, da);
++	u32 *iopte = iopte_alloc(obj, iopgd, da, gfp);
+ 
+ 	if (IS_ERR(iopte))
+ 		return PTR_ERR(iopte);
+@@ -580,10 +581,11 @@ static int iopte_alloc_page(struct omap_iommu *obj, u32 da, u32 pa, u32 prot)
+ 	return 0;
+ }
+ 
+-static int iopte_alloc_large(struct omap_iommu *obj, u32 da, u32 pa, u32 prot)
++static int iopte_alloc_large(struct omap_iommu *obj, u32 da, u32 pa, u32 prot,
++			     gfp_t gfp)
+ {
+ 	u32 *iopgd = iopgd_offset(obj, da);
+-	u32 *iopte = iopte_alloc(obj, iopgd, da);
++	u32 *iopte = iopte_alloc(obj, iopgd, da, gfp);
+ 	int i;
+ 
+ 	if ((da | pa) & ~IOLARGE_MASK) {
+@@ -1014,7 +1016,7 @@ static void iopte_cachep_ctor(void *iopte)
+ }
+ 
+ static int omap_iommu_map(struct iommu_domain *domain, unsigned long da,
+-			 phys_addr_t pa, size_t bytes, int prot)
++			 phys_addr_t pa, size_t bytes, int prot, gfp_t gfp)
+ {
+ 	struct omap_iommu_domain *omap_domain = domain->priv;
+ 	struct omap_iommu *oiommu = omap_domain->iommu_dev;
+diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
+index 779306e..b8e8889 100644
+--- a/drivers/iommu/tegra-gart.c
++++ b/drivers/iommu/tegra-gart.c
+@@ -233,7 +233,7 @@ static void gart_iommu_domain_destroy(struct iommu_domain *domain)
+ }
+ 
+ static int gart_iommu_map(struct iommu_domain *domain, unsigned long iova,
+-			  phys_addr_t pa, size_t bytes, int prot)
++			  phys_addr_t pa, size_t bytes, int prot, gfp_t gfp)
+ {
+ 	struct gart_device *gart = domain->priv;
+ 	unsigned long flags;
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index eb93c82..ab71e81 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -627,7 +627,7 @@ static void __smmu_iommu_map_pfn(struct smmu_as *as, dma_addr_t iova,
+ }
+ 
+ static int smmu_iommu_map(struct iommu_domain *domain, unsigned long iova,
+-			  phys_addr_t pa, size_t bytes, int prot)
++			  phys_addr_t pa, size_t bytes, int prot, gfp_t gfp)
+ {
+ 	struct smmu_as *as = domain->priv;
+ 	unsigned long pfn = __phys_to_pfn(pa);
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index d937580..e9a5997 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -67,7 +67,7 @@ struct iommu_ops {
+ 	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
+ 	void (*detach_dev)(struct iommu_domain *domain, struct device *dev);
+ 	int (*map)(struct iommu_domain *domain, unsigned long iova,
+-		   phys_addr_t paddr, size_t size, int prot);
++		   phys_addr_t paddr, size_t size, int prot, gfp_t flags);
+ 	size_t (*unmap)(struct iommu_domain *domain, unsigned long iova,
+ 		     size_t size);
+ 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain,
+@@ -88,6 +88,8 @@ extern void iommu_detach_device(struct iommu_domain *domain,
+ 				struct device *dev);
+ extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 		     phys_addr_t paddr, size_t size, int prot);
++extern int iommu_map_atomic(struct iommu_domain *domain, unsigned long iova,
++			    phys_addr_t paddr, size_t size, int prot);
+ extern size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+ 		       size_t size);
+ extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain,
+@@ -172,6 +174,13 @@ static inline int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 	return -ENODEV;
+ }
+ 
++static inline int iommu_map_atomic(struct iommu_domain *domain,
++				   unsigned long iova, phys_addr_t paddr,
++				   int gfp_order, int prot)
++{
++	return -ENODEV;
++}
++
+ static inline int iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+ 			      int gfp_order)
+ {
