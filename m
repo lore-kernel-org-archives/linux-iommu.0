@@ -1,97 +1,92 @@
-From: Mark Zhang <markz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: RE: Tegra DRM device tree bindings
-Date: Fri, 29 Jun 2012 09:17:42 +0800
-Message-ID: <23B010BBA481A74B98487467C29BA57BF23653B6B4@HKMAIL01.nvidia.com>
-References: <23B010BBA481A74B98487467C29BA57BF2361DA3AA@HKMAIL01.nvidia.com>
+From: Lucas Stach <dev-8ppwABl0HbeELgA04lAiVw@public.gmane.org>
+Subject: Re: Tegra DRM device tree bindings
+Date: Wed, 27 Jun 2012 10:13:56 +0200
+Message-ID: <1340784836.1384.16.camel@antimon>
+References: <20120626105513.GA9552@avionic-0098.mockup.avionic-design.de>
+	 <20120626160224.40ba10a26e3dd3a56b1f312c@nvidia.com>
+	 <20120626140033.GC1115@avionic-0098.mockup.avionic-design.de>
+	 <23B010BBA481A74B98487467C29BA57BF2361DA3AA@HKMAIL01.nvidia.com>
 	 <4FEA6E09.30800@nvidia.com>
 	 <23B010BBA481A74B98487467C29BA57BF2361DA3C4@HKMAIL01.nvidia.com>
 	 <4FEA7472.7050201@nvidia.com>
 	 <20120627051418.GB7177@avionic-0098.mockup.avionic-design.de>
-	 <20120627155907.871b2a506374b7db14c202c4@nvidia.com>
-	 <20120627140809.GD19319@avionic-0098.mockup.avionic-design.de>
-	 <20120627172914.30a2ccfd1344161ca7724722@nvidia.com>
-	 <20120627144414.GA20681@avionic-0098.mockup.avionic-design.de>
-	 <1340812795.1350.7.camel@antimon>
-	 <20120628111253.GC15137@avionic-0098.mockup.avionic-design.de>
-	 <4FEC8B91.6010107@wwwdotorg.org> <1340903992.1348.27.camel@antimon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1340903992.1348.27.camel@antimon>
-Content-Language: en-US
+In-Reply-To: <20120627051418.GB7177-RM9K5IK7kjIQXX3q8xo1gnVAuStQJXxyR5q1nwbD4aMs9pC9oP6+/A@public.gmane.org>
 Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Lucas Stach <dev-8ppwABl0HbeELgA04lAiVw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Cc: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
+Cc: Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mark Zhang <markz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-PiBBbSBEb25uZXJzdGFnLCBkZW4gMjguMDYuMjAxMiwgMTA6NTEgLTA2MDAgc2NocmllYiBTdGVw
-aGVuIFdhcnJlbjoNCj4gPiBPbiAwNi8yOC8yMDEyIDA1OjEyIEFNLCBUaGllcnJ5IFJlZGluZyB3
-cm90ZToNCj4gPiA+IE9uIFdlZCwgSnVuIDI3LCAyMDEyIGF0IDA1OjU5OjU1UE0gKzAyMDAsIEx1
-Y2FzIFN0YWNoIHdyb3RlOg0KPiA+ID4+IEFtIE1pdHR3b2NoLCBkZW4gMjcuMDYuMjAxMiwgMTY6
-NDQgKzAyMDAgc2NocmllYiBUaGllcnJ5IFJlZGluZzoNCj4gPiAuLi4NCj4gPiA+Pj4gSW4gdGhl
-IGlkZWFsIGNhc2UgSSB3b3VsZCB3YW50IHRvIG5vdCBoYXZlIGEgY2FydmVvdXQgc2l6ZSBhdCBh
-bGwuDQo+ID4gPj4+IEhvd2V2ZXIgdGhlcmUgbWF5IGJlIHNpdHVhdGlvbnMgd2hlcmUgeW91IG5l
-ZWQgdG8gbWFrZSBzdXJlIHNvbWUNCj4gPiA+Pj4gZHJpdmVyIGNhbiBhbGxvY2F0ZSBhIGdpdmVu
-IGFtb3VudCBvZiBtZW1vcnkuIEhhdmluZyB0byBzcGVjaWZ5DQo+ID4gPj4+IHRoaXMgdXNpbmcg
-YSBrZXJuZWwgY29tbWFuZC1saW5lIHBhcmFtZXRlciBpcyBjdW1iZXJzb21lIGJlY2F1c2UNCj4g
-PiA+Pj4gaXQgbWF5IHJlcXVpcmUgY2hhbmdlcyB0byB0aGUgYm9vdGxvYWRlciBvciB3aGF0ZXZl
-ci4gU28gaWYgeW91DQo+ID4gPj4+IGtub3cgdGhhdCBhIHBhcnRpY3VsYXIgYm9hcmQgYWx3YXlz
-IG5lZWRzDQo+ID4gPj4+IDEyOCBNaUIgb2YgY2FydmVvdXQsIHRoZW4gaXQgbWFrZXMgc2Vuc2Ug
-dG8gc3BlY2lmeSBpdCBvbiBhDQo+ID4gPj4+IHBlci1ib2FyZCBiYXNpcy4NCj4gPiA+Pg0KPiA+
-ID4+IElmIHdlIGdvIHdpdGggQ01BLCB0aGlzIGlzIGEgbm9uLWlzc3VlLCBhcyBDTUEgYWxsb3dz
-IHRvIHVzZSB0aGUNCj4gPiA+PiBjb250aWcgYXJlYSBmb3Igbm9ybWFsIGFsbG9jYXRpb25zIGFu
-ZCBvbmx5IHB1cmdlcyB0aGVtIGlmIGl0DQo+ID4gPj4gcmVhbGx5IG5lZWRzIHRoZSBzcGFjZSBm
-b3IgY29udGlnIGFsbG9jcy4NCj4gPiA+DQo+ID4gPiBDTUEgY2VydGFpbmx5IHNvdW5kcyBsaWtl
-IHRoZSBtb3N0IHNpbXBsZSBhcHByb2FjaC4gV2hpbGUgaXQgbWF5IG5vdA0KPiA+ID4gYmUgc3Vp
-dGVkIGZvciAzRCBncmFwaGljcyBvciBtdWx0aW1lZGlhIHByb2Nlc3NpbmcgbGF0ZXIgb24sIEkg
-dGhpbmsNCj4gPiA+IHdlIGNvdWxkIHVzZSBpdCBhdCBhIHN0YXJ0aW5nIHBvaW50IHRvIGdldCBi
-YXNpYyBmcmFtZWJ1ZmZlciBhbmQgWA0KPiA+ID4gc3VwcG9ydCB1cCBhbmQgcnVubmluZy4gV2Ug
-Y2FuIGFsd2F5cyBtb3ZlIHRvIHNvbWV0aGluZyBtb3JlDQo+ID4gPiBhZHZhbmNlZCBsaWtlIFRU
-TSBsYXRlci4NCj4gPg0KPiA+IEkgdGhvdWdodCB0aGUgd2hvbGUgcHVycG9zZSBvZiBDTUEgd2Fz
-IHRvIGFjdCBhcyB0aGUgaW5mcmEtc3RydWN0dXJlDQo+ID4gdG8gcHJvdmlkZSBidWZmZXJzIHRv
-IDNELCBjYW1lcmEsIGV0Yy4gaW4gcGFydGljdWxhciBhbGxvd2luZyBzaGFyaW5nDQo+ID4gb2Yg
-YnVmZmVycyBiZXR3ZWVuIHRoZW0uIEluIG90aGVyIHdvcmRzLCBpc24ndCBDTUEgdGhlIG1lbW9y
-eSBtYW5hZ2VyPw0KPiA+IElmIHRoZXJlJ3Mgc29tZSBkZWZpY2llbmN5IHdpdGggQ01BIGZvciAz
-RCBncmFwaGljcywgaXQgc2VlbXMgbGlrZQ0KPiA+IHRoYXQgc2hvdWxkIGJlIHJhaXNlZCB3aXRo
-IHRob3NlIGRlc2lnbmluZyBDTUEuIE9yLCBhbSBJIHdheSBvZmYgYmFzZQ0KPiA+IHdpdGggbXkg
-ZXhwZWN0YXRpb25zIG9mIENNQT8NCj4gPg0KPiBDTUEgaXMganVzdCBhIHdheSBvZiBwcm92aWRp
-bmcgbGFyZ2UgY29udGlndW91cyBhZGRyZXNzIHNwYWNlIGJsb2NrcyBpbiBhIGR5bmFtaWMNCj4g
-ZmFzaGlvbi4gVGhlIHByb2JsZW0gQ01BIHNvbHZlcyBpczogd2UgaGF2ZSBhIHN5c3RlbSB3aXRo
-IHJlbGF0aXZlbHkgbG93DQo+IGFtb3VudHMgb2Ygc3lzbWVtIChsaWtlIDUxMk1CKSwgbm93IHRv
-IGVuc3VyZSB3ZSBjYW4gYWx3YXlzIGdldCBsYXJnZQ0KPiBjb250aWd1b3VzIGJ1ZmZlcnMgZm9y
-IHVzZSBieSBHUFUgb3IgVklERU8gYmxvY2tzLCB3ZSBuZWVkIHRvIHNldCBhc2lkZSBhDQo+IHJl
-bGF0aXZlbHkgbGFyZ2UgY29udGlndW91cyBwb29sIChsaWtlIDEyOE1CKS4gU28gd2UgYXJlIHN0
-ZWFsaW5nIDEyOE1CIG9mDQo+IG1lbW9yeSBmcm9tIHRoZSBzeXN0ZW0gd2hpbGUgd2UgbWF5IG9y
-IG1heSBub3QgdXNlIGl0LCB3aGljaCBpcyBiYWQuDQo+IE5vdyBDTUEgYWxsb3dzIHRvIHNheTog
-SSBtYXkgbmVlZCAxMjhNQiBvZiBjb250aWcgc3BhY2UsIGJ1dCB0aGUgc3lzdGVtIGlzIGZyZWUN
-Cj4gdG8gdXNlIGl0IGFzIG5vcm1hbCBtZW1vcnkgYXMgbG9uZyBhcyBJIGRvbid0IHJlYWxseSBu
-ZWVkIGl0LiBJZiB0aGUgc3BhY2UgaXMgcmVhbGx5DQo+IG5lZWRlZCwgQ01BIHB1cmdlcyBwYWdl
-cyBmcm9tIHRoZSBhcmVhIGFuZCBtYXkgZXZlbiBzd2FwIHRoZW0gb3V0LiBTbyB5ZXMNCj4gQ01B
-IGlzIGEgbWVtb3J5IGFsbG9jYXRvciBmb3IgY29udGlnIG1lbW9yeS4NCj4gDQo+IFRUTSB0aG91
-Z2ggc29sdmVzIG1vcmUgYWR2YW5jZWQgbWF0dGVycywgbGlrZSBidWZmZXIgc3luY2hyb25pc2F0
-aW9uIGJldHdlZW4NCj4gM0QgYW5kIDJEIGJsb2NrIG9mIGhhcmR3YXJlIG9yIHN5bmNpbmcgYnVm
-ZmVyIGFjY2VzcyBiZXR3ZWVuIEdQVSBhbmQgQ1BVLg0KPiBPbmUgb2YgdGhlIG1vc3QgaW50ZXJl
-c3RpbmcgdGhpbmdzIG9mIFRUTSBpcyB0aGUgYWJpbGl0eSB0byBwdXJnZSB0aGUgR1BVIERNQQ0K
-PiBidWZmZXJzIHRvIHNjYXR0ZXJlZCBzeXNtZW0gb3IgZXZlbiBzd2FwIHRoZW0gb3V0LCBpZiB0
-aGV5IGFyZSBub3QgY3VycmVudGx5DQo+IHVzZWQgYnkgdGhlIEdQVS4gSXQgdGhlbiBtYWtlcyBz
-dXJlIHRvIG1vdmUgdGhlbSBpbiB0aGUgY29udGlnIHNwYWNlIGFnYWluDQo+IHdoZW4gdGhlIEdQ
-VSByZWFsbHkgbmVlZHMgdGhlbSBhbmQgZml4IHVwIHRoZSBHUFUgY29tbWFuZCBzdHJlYW0gd2l0
-aCB0aGUNCj4gbmV3IGJ1ZmZlciBhZGRyZXNzLg0KPiANCj4gSU1ITyB0aGUgYmVzdCBzb2x1dGlv
-biB3b3VsZCBiZSB0byB1c2UgQ01BIGFzIGEgZmxleGlibGUgcmVwbGFjZW1lbnQgb2YgdGhlDQo+
-IHN0YXRpYyBjYXJ2ZW91dCBhcmVhIGFuZCBwdXQgVFRNIG9uIHRvcCBvZiB0aGlzIHRvIHNvbHZl
-IHRoZSBuZWVkcyBvZiBncmFwaGljcw0KPiBkcml2ZXJzLiBXZSBjZXJ0YWlubHkgZG9uJ3Qgd2Fu
-dCB0byByZWludmVudCB0aGUgd2hlZWwgaW5zaWRlIENNQS4gV2UgaGF2ZQ0KPiBzb2x1dGlvbnMg
-Zm9yIGFsbCB0aG9zZSB0aGluZ3MgaW4gdGhlIGtlcm5lbCByaWdodCBub3csIHdlIGp1c3QgaGF2
-ZSB0byBnbHVlIHRoZW0NCj4gdG9nZXRoZXIgaW4gYSBzYW5lIHdheS4NCj4gDQoNClRoYXQgaXMg
-YSBncmVhdCBleHBsYW5hdGlvbi4gU28gY291bGQgeW91IGV4cGxhaW4gd2hhdCdzIHRoZSByZWxh
-dGlvbiBiZXR3ZWVuIElPTU1VIGFwaSANCmFuZCBUVE0ob3IgR0VNKT8gDQpUZXJqZSBzYWlkIERN
-QUJVRiBhcGkgc2l0cyBvbiB0b3Agb2YgSU9NTVUgYXBpLiBTbyBmb3Igbm9ybWFsIGRldmljZSBk
-cml2ZXJzKHN1Y2ggYXMgZHJtKSwgDQpjYW4gZm9yZ2V0IGlvbW11IGFwaXMsIGp1c3QgdXNlIGRt
-YWJ1ZiBhcGkgaXMgT0suIElmIHNvLCBJIHdhbm5hIGtub3cgZG9lcyANClRUTS9HRU0gYW5kIElP
-TU1VIGFyZSByZWxhdGVkPyBPciBUVE0vR0VNIHVzZXMgZG1hYnVmIGFwaXMgd2hpY2ggY2FsbHMg
-aW9tbXUgYXBpIA0KdG8gZG8gbWVtb3J5IGFsbG9jYXRpb24vbWFwcGluZz8NCg0KDQo+IFRoYW5r
-cywNCj4gTHVjYXMNCj4gDQo+IC0tDQo+IFRvIHVuc3Vic2NyaWJlIGZyb20gdGhpcyBsaXN0OiBz
-ZW5kIHRoZSBsaW5lICJ1bnN1YnNjcmliZSBsaW51eC10ZWdyYSIgaW4gdGhlIGJvZHkNCj4gb2Yg
-YSBtZXNzYWdlIHRvIG1ham9yZG9tb0B2Z2VyLmtlcm5lbC5vcmcgTW9yZSBtYWpvcmRvbW8gaW5m
-byBhdA0KPiBodHRwOi8vdmdlci5rZXJuZWwub3JnL21ham9yZG9tby1pbmZvLmh0bWwNCg==
+Hi all,
+
+I'm not sure what your exact plans are for the direction in which the
+DRM driver should head, as I'm still a bit out of the loop as many of
+those matters were only discussed internally at NVIDIA or with some NDA
+developers. But I'll still try to get into the discussion.
+
+Am Mittwoch, den 27.06.2012, 07:14 +0200 schrieb Thierry Reding:
+> On Tue, Jun 26, 2012 at 08:48:18PM -0600, Stephen Warren wrote:
+> > On 06/26/2012 08:32 PM, Mark Zhang wrote:
+> > >> On 06/26/2012 07:46 PM, Mark Zhang wrote:
+> > >>>>> On Tue, 26 Jun 2012 12:55:13 +0200
+> > >>>>> Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org> wrote:
+> > >> ...
+> > >>>> I'm not sure I understand how information about the carveout would be
+> > >>>> obtained from the IOMMU API, though.
+> > >>>
+> > >>> I think that can be similar with current gart implementation. Define carveout as:
+> > >>>
+> > >>> carveout {
+> > >>>         compatible = "nvidia,tegra20-carveout";
+> > >>>         size = <0x10000000>;
+> > >>> };
+> > >>>
+> > >>> Then create a file such like "tegra-carveout.c" to get these definitions and
+> > >> register itself as platform device's iommu instance.
+> > >>
+> > >> The carveout isn't a HW object, so it doesn't seem appropriate to define a DT
+> > >> node to represent it.
+> > > 
+> > > Yes. But I think it's better to export the size of carveout as a configurable item.
+> > > So we need to define this somewhere. How about define carveout as a property of gart?
+> > 
+> > There already exists a way of preventing Linux from using certain chunks
+> > of memory; the /memreserve/ syntax. From a brief look at the dtc source,
+> > it looks like /memreserve/ entries can have labels, which implies that a
+> > property in the GART node could refer to the /memreserve/ entry by
+> > phandle in order to know what memory regions to use.
+> 
+> Wasn't the whole point of using a carveout supposed to be a replacement
+> for the GART? As such I'd think the carveout should rather be a property
+> of the host1x device.
+> 
+In my understanding carveout is neither a hardware nor software
+component. It's just a somewhat special pool of memory. As I pointed out
+in one of the older mails, carveout can not completely replace GART.
+While normal allocations for graphics use should be done contiguous,
+GART allows us to link normal scattered sysram buffers into GPU address
+space, which is a nice thing to have.
+IMHO if carveout is to be used exclusively by the GPU (i.e. the DRM
+driver) it should be a property of the host1x device.
+
+> AIUI what we want to do is have a large contiguous region of memory that
+> a central component (host1x) manages as a pool from which clients (DRM,
+> V4L, ...) can allocate buffers as needed. Since all of this memory will
+> be contiguous anyway there isn't much use for the GART anymore.
+> 
+I think this is the wrong way to go. Having a special memory pool
+managed by some driver adds one more allocator to the kernel, which is
+clearly not desirable. If we want a special mem region for GPU use, we
+should not share this memory pool with other components.
+
+But if we want a mem region for contig allocations used by many
+components, which seems to be consensus here, CMA is the way to go. In
+this case I think we don't want to bother with the carveout property at
+all at the DRM driver level. Such a shared mem region managed by CMA
+should be defined at a higher level of the device tree.
+
+Thanks,
+Lucas
