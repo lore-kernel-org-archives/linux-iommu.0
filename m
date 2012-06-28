@@ -1,104 +1,119 @@
-From: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
-Subject: Re: Tegra DRM device tree bindings
-Date: Thu, 28 Jun 2012 20:19:42 +0200
-Message-ID: <20120628181942.GA13131@avionic-0098.adnet.avionic-design.de>
-References: <20120627051418.GB7177@avionic-0098.mockup.avionic-design.de>
-	<20120627155907.871b2a506374b7db14c202c4@nvidia.com>
-	<20120627140809.GD19319@avionic-0098.mockup.avionic-design.de>
-	<20120627172914.30a2ccfd1344161ca7724722@nvidia.com>
-	<20120627144414.GA20681@avionic-0098.mockup.avionic-design.de>
-	<1340812795.1350.7.camel@antimon>
-	<20120628111253.GC15137@avionic-0098.mockup.avionic-design.de>
-	<4FEC8B91.6010107@wwwdotorg.org> <1340903992.1348.27.camel@antimon>
-	<4FEC9584.4080100@wwwdotorg.org>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [v2 1/1] iommu/tegra: smmu: Fix unsleepable memory allocation
+ at alloc_pdir()
+Date: Thu, 28 Jun 2012 20:35:54 +0200
+Message-ID: <20120628.213554.1189327754979133382.hdoyu@nvidia.com>
+References: <20120628134202.2102f715496a3b980b43f3b0@nvidia.com><1340880707-6934-1-git-send-email-hdoyu@nvidia.com><4FEC8CEE.1000401@wwwdotorg.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============7215670870857689605=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <4FEC9584.4080100-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Cc: Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, Mark Zhang <markz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <4FEC8CEE.1000401-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org" <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org" <chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote @ Thu, 28 Jun 2012 18:57:18 +0200:
 
---===============7215670870857689605==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="liOOAslEiF7prFVr"
-Content-Disposition: inline
+> On 06/28/2012 04:51 AM, Hiroshi DOYU wrote:
+> > alloc_pdir() is called from smmu_iommu_domain_init() with spin_lock
+> > held. memory allocations in alloc_pdir() had to be
+> > atomic/unsleepable. Instead of converting into atomic allocation, this
+> > patch once releases a lock, do the allocation, hold the lock again and
+> > then see if it's raced or not in order to avoid introducing mutex.
+> 
+> > ---
+> 
+> You'd typically want to include a brief description of what changed from
+> v1->v2 here, as a hint to reviewers re: what to concentrate on.
 
+Ok, I'll.
 
---liOOAslEiF7prFVr
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> > +static int alloc_pdir(struct smmu_as *as, unsigned long *flags)
+> 
+> > +	spin_unlock_irqrestore(&as->lock, *flags);
+> > +	cnt = devm_kzalloc(smmu->dev,
+> > +			   sizeof(cnt[0]) * SMMU_PDIR_COUNT, GFP_KERNEL);
+> > +	page = alloc_page(GFP_KERNEL | __GFP_DMA);
+> > +	spin_lock_irqsave(&as->lock, *flags);
+> > +
+> > +	if (as->pdir_page) {
+> > +		/* We raced, free the redundant */
+> > +		err = -ENODEV;
+> > +		goto err_out;
+> >  	}
+> 
+> Is that really an error; it just means that something else allocated the
+> same pdir already. Since the top of the function does:
+> 
+>  	if (as->pdir_page)
+>  		return 0;
+> 
+> I'd expect to s/err = -ENODEV/err = 0/ inside that if condition that I
+> quoted above, but still of cause "goto err_out" to free the now unneeded
+> allocations.
+> 
+> Aside from that, I think this looks reasonable.
 
-On Thu, Jun 28, 2012 at 11:33:56AM -0600, Stephen Warren wrote:
-> On 06/28/2012 11:19 AM, Lucas Stach wrote:
-> ...
-> > CMA is just a way of providing large contiguous address space blocks in
-> > a dynamic fashion. ...
-> >=20
-> > TTM though solves more advanced matters, like buffer synchronisation
-> > between 3D and 2D block of hardware ...
-> >=20
-> > IMHO the best solution would be to use CMA as a flexible replacement of
-> > the static carveout area and put TTM on top of this ...
->=20
-> Ah right, thanks for the explanation. That makes sense to me now.
+I think that, in the case of race condition, the one which comes
+later, should retry with the another ASID, which is incremented as
+below. So I modified that the latter one returns with -EAGAIN, and try
+with another ASID.
 
-Okay. I think that resolves the last open issue. I'll try to get some
-more work done on the DT and corresponding code soonish.
+The complete patch follows this mail.
 
-For those who don't know yet I've requested the creation of a project
-on freedesktop.org for Tegra graphics drivers[0]. I plan to have the DRM
-code hosted there once the project has been approved. Furthermore if we
-ever get to write a corresponding X driver it can be hosted there as
-well. We should also use the wiki for coordination once things get
-started.
-
-Thierry
-
-[0]: https://bugs.freedesktop.org/show_bug.cgi?id=3D51505
-
---liOOAslEiF7prFVr
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.19 (GNU/Linux)
-
-iQIcBAEBAgAGBQJP7KA+AAoJEN0jrNd/PrOhi10P/jTqOfkKQ2rHdNZu8CzWrbYe
-Yh7oGLPgFECnNtEPoQwkI5ezmb09qhxKp7QHylRxEg6DPOtE+zHQpWH20+g4hqQf
-e6NPqETx41J6QLJN402wXUe3D/m5W/WX2oC6x17APmTguwaBkKswkwiOj7NYz0U1
-cSsNsigMl/a2xWDIILGkz7vpPNfmayFWTRoZ1litfULgYZQFfW4X0i1YF3QyutN7
-oKOOzqz7MAajHe5E3KX66/UsTwtu+iOIOtVhRrjBo65+m6xXyh6QKvSkw7miwGnX
-NstuzLy+ZUADV8YImf6yLmCeJviHywZyDxgpFxiclIc2RUd6x+EHi/Irt5Hr8YlE
-/mEmluM3RwWPbvVOuAk0xNp+EnLKx3RrkPNc8yjgyiAWQP8fFMSv/WkiFrWqyhwG
-zayS2aKOazh3IKtnWz9RCtBeU0NDbXB5JX+iP6NzP7D7KNPWq8C/AlbfefmAklpp
-1VkPDHeWK/5ZM4+Tqpbw2pW6tN5eHYXdLXEyOQmE1sZBuEIGLqnaufZnbWyLzVTG
-Z6wbrOiRzSHhD6ULgsFncbOolq6CibIUqgUMemV6IPWTtoZIE+1rMJHoanjQmiaG
-h73PFm+a3+jr3K17f9YzEOrfXIfGad9teOsGYP2R7QkKKWpywdgwi7VlfUW5xjsr
-zejj+bYqMN3e2eJQ4KUU
-=PB+4
------END PGP SIGNATURE-----
-
---liOOAslEiF7prFVr--
-
---===============7215670870857689605==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-iommu mailing list
-iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============7215670870857689605==--
+Changes:
+	Modified drivers/iommu/tegra-smmu.c
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index ec656ec..f2c18fa 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -562,7 +562,7 @@ static int alloc_pdir(struct smmu_as *as, unsigned long *flags)
+ 
+ 	if (as->pdir_page) {
+ 		/* We raced, free the redundant */
+-		err = -ENODEV;
++		err = -EAGAIN;
+ 		goto err_out;
+ 	}
+ 
+@@ -799,8 +799,15 @@ static int smmu_iommu_domain_init(struct iommu_domain *domain)
+ 
+ 		spin_lock_irqsave(&tmp->lock, flags);
+ 		if (!tmp->pdir_page) {
+-			as = tmp;
+-			goto found;
++			int err;
++
++			err = alloc_pdir(tmp, &flags);
++			if (!err) {
++				as = tmp;
++				goto found;
++			}
++			if (err == -EAGAIN)
++				continue;
+ 		}
+ 		spin_unlock_irqrestore(&tmp->lock, flags);
+ 	}
+@@ -808,9 +815,6 @@ static int smmu_iommu_domain_init(struct iommu_domain *domain)
+ 	return -ENODEV;
+ 
+ found:
+-	if (alloc_pdir(as, &flags) < 0)
+-		goto err_alloc_pdir;
+-
+ 	spin_lock(&smmu->lock);
+ 
+ 	/* Update PDIR register */
+@@ -826,10 +830,6 @@ found:
+ 
+ 	dev_dbg(smmu->dev, "smmu_as@%p\n", as);
+ 	return 0;
+-
+-err_alloc_pdir:
+-	spin_unlock_irqrestore(&as->lock, flags);
+-	return -ENODEV;
+ }
+ 
+ static void smmu_iommu_domain_destroy(struct iommu_domain *domain)
