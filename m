@@ -1,51 +1,54 @@
-From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: Tegra DRM device tree bindings
-Date: Thu, 28 Jun 2012 09:37:53 +0300
-Message-ID: <20120628093753.545e0649fc84413837a5dca4@nvidia.com>
-References: <20120626105513.GA9552@avionic-0098.mockup.avionic-design.de>
-	<20120626160224.40ba10a26e3dd3a56b1f312c@nvidia.com>
-	<20120626140033.GC1115@avionic-0098.mockup.avionic-design.de>
-	<20120627154400.d9d7db67128404079d98ab39@nvidia.com>
-	<4FEB4AC6.2060909@wwwdotorg.org>
+From: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: Request VFIO inclusion in linux-next
+Date: Thu, 28 Jun 2012 09:44:08 +0300
+Message-ID: <20120628064408.GJ3007@mwanda>
+References: <1340686552.1207.128.camel@bling.home>
+	<20120627123733.GA5449@mwanda>
+	<1340825003.1207.224.camel@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <4FEB4AC6.2060909-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Cc: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Lucas Stach <dev-8ppwABl0HbeELgA04lAiVw@public.gmane.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1340825003.1207.224.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Stephen Rothwell <sfr-3FnU+UHB4dNDw9hX6IcOSA@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, kvm <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, qemu-devel <qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org>, chrisw <chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-next-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 27 Jun 2012 20:02:46 +0200
-Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote:
-
-> On 06/27/2012 06:44 AM, Hiroshi Doyu wrote:
-> ...
-> > I think that there are 2 cases:
+On Wed, Jun 27, 2012 at 01:23:23PM -0600, Alex Williamson wrote:
+> On Wed, 2012-06-27 at 15:37 +0300, Dan Carpenter wrote:
+> > On Mon, Jun 25, 2012 at 10:55:52PM -0600, Alex Williamson wrote:
+> > > Hi,
+> > > 
+> > > VFIO has been kicking around for well over a year now and has been
+> > > posted numerous times for review.  The pre-requirements are finally
+> > > available in linux-next (or will be in the 20120626 build) so I'd like
+> > > to request a new branch be included in linux-next with a goal of being
+> > > accepted into v3.6.
+> > > 
 > > 
-> >   (1) discontiguous memory with IOMMU
-> >   (2) contiguous memory without IOMMU(called "carveout" in general?)
-> ...
-> > For (2), although memory is mostly anonymous one, we may need to know
-> > how much to allocate, where we only need "size". This size is not from
-> > h/w feature, but it depends on the system load/usage. So I think that
-> > this size can be passed from kernel command line? For exmaple, we can
-> > specify how much contiguous memory is necessary with putting
-> > "coherent_pool=??M" in the kernel command line as below:
+> > Could you run Sparse over the driver?
+> > http://lwn.net/Articles/205624/
 > > 
-> > 	coherent_pool=nn[KMG]	[ARM,KNL]
-> > 			Sets the size of memory pool for coherent, atomic dma
-> > 			allocations.
+> > It reports a bunch of endian problems.  Some are definitely bugs
+> > like:
+> > 	*prev |= cpu_to_le32((u32)epos << 20);
 > 
-> I guess if that's the standard way of initializing CMA, then that's fine.
+> Done.  Mostly just adding annotation, but it did find a bug or two.
+> Should be cleaned up in tomorrow's next.  Thanks for the report,
 > 
-> It'd be nice if there was a way to specify that from the DT too; that
-> way the user/distro/bootloader constructing the kernel command-line
-> wouldn't have to remember to add "random" (potentially
-> Tegra-/board-specific) extra arguments onto the command-line; the Tegra
-> command-line in the upstream kernel is quite clean right now, especially
-> compare to the enormous number of options we require downstream:-(
 
-DT can specify the kernel command-line as "bootargs" in a dts file,
-which can be modified after extracted on memory by bootloader.
+Cool.  I have some Smatch fixes as well.  I've updated them to apply
+on top of today's linux-next.
+
+regards,
+dan carpenter
