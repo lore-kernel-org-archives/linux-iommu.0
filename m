@@ -1,170 +1,52 @@
-From: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [v3 2/2] iommu/tegra: smmu: Fix unsleepable memory allocation at
-	alloc_pdir()
-Date: Fri, 29 Jun 2012 09:15:27 +0300
-Message-ID: <1340950527-16482-2-git-send-email-hdoyu@nvidia.com>
-References: <20120628.221945.1306825810095951985.hdoyu@nvidia.com>
-	<1340950527-16482-1-git-send-email-hdoyu@nvidia.com>
+From: =?UTF-8?B?VGVyamUgQmVyZ3N0csO2bQ==?= <tbergstrom-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: Tegra DRM device tree bindings
+Date: Fri, 29 Jun 2012 16:20:31 +0300
+Message-ID: <4FEDAB9F.5040406@nvidia.com>
+References: <23B010BBA481A74B98487467C29BA57BF2361DA3AA@HKMAIL01.nvidia.com>  <4FEA6E09.30800@nvidia.com>  <23B010BBA481A74B98487467C29BA57BF2361DA3C4@HKMAIL01.nvidia.com>  <4FEA7472.7050201@nvidia.com>  <20120627051418.GB7177@avionic-0098.mockup.avionic-design.de>  <20120627155907.871b2a506374b7db14c202c4@nvidia.com>  <20120627140809.GD19319@avionic-0098.mockup.avionic-design.de>  <20120627172914.30a2ccfd1344161ca7724722@nvidia.com>  <20120627144414.GA20681@avionic-0098.mockup.avionic-design.de>  <1340812795.1350.7.camel@antimon>  <20120628111253.GC15137@avionic-0098.mockup.avionic-design.de>  <4FEC8B91.6010107@wwwdotorg.org> <1340903992.1348.27.camel@antimon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1340950527-16482-1-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Chris Wright <chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1340903992.1348.27.camel@antimon>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Lucas Stach <dev-8ppwABl0HbeELgA04lAiVw@public.gmane.org>
+Cc: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mark Zhang <markz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-alloc_pdir() is called from smmu_iommu_domain_init() with spin_lock
-held. memory allocations in alloc_pdir() had to be atomic. Instead of
-converting into atomic allocation, this patch once releases a lock,
-does the allocation, holds the lock again and then sees if it's raced
-or not in order to avoid introducing mutex and preallocation.
+On 28.06.2012 20:19, Lucas Stach wrote:
+> TTM though solves more advanced matters, like buffer synchronisation
+> between 3D and 2D block of hardware or syncing buffer access between GPU
+> and CPU.
+> One of the most interesting things of TTM is the ability to purge the
+> GPU DMA buffers to scattered sysmem or even swap them out, if they are
+> not currently used by the GPU. It then makes sure to move them in the
+> contig space again when the GPU really needs them and fix up the GPU
+> command stream with the new buffer address.
 
-Signed-off-by: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Reported-by: Chris Wright <chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org>
-Cc: Chris Wright <chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org>
-Cc: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
----
-v3:
-Added -EAGAIN in alloc_pdir when raced to retry.
----
- drivers/iommu/tegra-smmu.c |   77 +++++++++++++++++++++++++------------------
- 1 files changed, 45 insertions(+), 32 deletions(-)
+We preferably should choose dma_buf as a common interface towards
+buffers. That way whatever we choose as the memory manager, all dma_buf
+aware drivers will be able to use buffers allocated by other drivers.
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 532c8a4..dbba94c 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -539,28 +539,39 @@ static inline void put_signature(struct smmu_as *as,
- /*
-  * Caller must lock/unlock as
-  */
--static int alloc_pdir(struct smmu_as *as)
-+static int alloc_pdir(struct smmu_as *as, unsigned long *flags)
- {
- 	unsigned long *pdir;
--	int pdn;
-+	int pdn, err = 0;
- 	u32 val;
- 	struct smmu_device *smmu = as->smmu;
-+	struct page *page;
-+	unsigned int *cnt;
- 
--	as->pte_count = devm_kzalloc(smmu->dev,
--		     sizeof(as->pte_count[0]) * SMMU_PDIR_COUNT, GFP_KERNEL);
--	if (!as->pte_count) {
--		dev_err(smmu->dev,
--			"failed to allocate smmu_device PTE cunters\n");
--		return -ENOMEM;
-+	/*
-+	 * do the allocation outside the as lock
-+	 */
-+	spin_unlock_irqrestore(&as->lock, *flags);
-+	cnt = devm_kzalloc(smmu->dev,
-+			   sizeof(cnt[0]) * SMMU_PDIR_COUNT, GFP_KERNEL);
-+	page = alloc_page(GFP_KERNEL | __GFP_DMA);
-+	spin_lock_irqsave(&as->lock, *flags);
-+
-+	if (as->pdir_page) {
-+		/* We raced, free the redundant */
-+		err = -EAGAIN;
-+		goto err_out;
- 	}
--	as->pdir_page = alloc_page(GFP_KERNEL | __GFP_DMA);
--	if (!as->pdir_page) {
--		dev_err(smmu->dev,
--			"failed to allocate smmu_device page directory\n");
--		devm_kfree(smmu->dev, as->pte_count);
--		as->pte_count = NULL;
--		return -ENOMEM;
-+
-+	if (!page || !cnt) {
-+		dev_err(smmu->dev, "failed to allocate at %s\n", __func__);
-+		err = -ENOMEM;
-+		goto err_out;
- 	}
-+
-+	as->pdir_page = page;
-+	as->pte_count = cnt;
-+
- 	SetPageReserved(as->pdir_page);
- 	pdir = page_address(as->pdir_page);
- 
-@@ -577,6 +588,12 @@ static int alloc_pdir(struct smmu_as *as)
- 	FLUSH_SMMU_REGS(as->smmu);
- 
- 	return 0;
-+
-+err_out:
-+	devm_kfree(smmu->dev, cnt);
-+	if (page)
-+		__free_page(page);
-+	return err;
- }
- 
- static void __smmu_iommu_unmap(struct smmu_as *as, dma_addr_t iova)
-@@ -768,29 +785,29 @@ out:
- 
- static int smmu_iommu_domain_init(struct iommu_domain *domain)
- {
--	int i;
-+	int i, err = -ENODEV;
- 	unsigned long flags;
- 	struct smmu_as *as;
- 	struct smmu_device *smmu = smmu_handle;
- 
- 	/* Look for a free AS with lock held */
- 	for  (i = 0; i < smmu->num_as; i++) {
--		struct smmu_as *tmp = &smmu->as[i];
--
--		spin_lock_irqsave(&tmp->lock, flags);
--		if (!tmp->pdir_page) {
--			as = tmp;
--			goto found;
-+		as = &smmu->as[i];
-+		spin_lock_irqsave(&as->lock, flags);
-+		if (!as->pdir_page) {
-+			err = alloc_pdir(as, &flags);
-+			if (!err)
-+				goto found;
- 		}
--		spin_unlock_irqrestore(&tmp->lock, flags);
-+		spin_unlock_irqrestore(&as->lock, flags);
-+		if (err != -EAGAIN)
-+			break;
- 	}
--	dev_err(smmu->dev, "no free AS\n");
--	return -ENODEV;
-+	if (i == smmu->num_as)
-+		dev_err(smmu->dev,  "no free AS\n");
-+	return err;
- 
- found:
--	if (alloc_pdir(as) < 0)
--		goto err_alloc_pdir;
--
- 	spin_lock(&smmu->lock);
- 
- 	/* Update PDIR register */
-@@ -806,10 +823,6 @@ found:
- 
- 	dev_dbg(smmu->dev, "smmu_as@%p\n", as);
- 	return 0;
--
--err_alloc_pdir:
--	spin_unlock_irqrestore(&as->lock, flags);
--	return -ENODEV;
- }
- 
- static void smmu_iommu_domain_destroy(struct iommu_domain *domain)
--- 
-1.7.5.4
+We probably need to accommodate multiple memory managers to take care of
+legacy and new drivers. If V4L2 and DRM projects all move to dma_buf, we
+have the possibility to do zero-copy video without forcing everybody to
+use the same memory manager.
+
+As I understand, TTM is good for platforms where we have a separate
+frame buffer memory, as is the case with most of the graphics cards. In
+Tegra, graphics and CPU occupy the same memory, so I'm not sure if we
+require the level of functionality that TTM provides. I guess the level
+of functionality and the complexity that it brings is one reason why TTM
+hasn't really caught on in the ARM world.
+
+The synchronization primitives attached to TTM are slightly confusing.
+At the bottom level, it's operations which need to be synchronized
+between each other. That's the API level that we should to export from
+kernel to user space. It's then up to libdrm level (or whatever is doing
+the rendering in user space) to decide which operations it wants to have
+completed before a buffer can be reused/read/passed on to the next stage.
+
+Anyway, if we hide the memory manager behind dma_buf, we're free to muck
+around with multiple of them and see what works best.
+
+Terje
