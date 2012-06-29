@@ -1,114 +1,97 @@
-From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [v2 1/1] iommu/tegra: smmu: Fix unsleepable memory allocation
- at alloc_pdir()
-Date: Thu, 28 Jun 2012 21:19:45 +0200
-Message-ID: <20120628.221945.1306825810095951985.hdoyu@nvidia.com>
-References: <4FEC8CEE.1000401@wwwdotorg.org><20120628.213554.1189327754979133382.hdoyu@nvidia.com><4FECAB9C.9040809@wwwdotorg.org>
+From: Mark Zhang <markz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: RE: Tegra DRM device tree bindings
+Date: Fri, 29 Jun 2012 09:17:42 +0800
+Message-ID: <23B010BBA481A74B98487467C29BA57BF23653B6B4@HKMAIL01.nvidia.com>
+References: <23B010BBA481A74B98487467C29BA57BF2361DA3AA@HKMAIL01.nvidia.com>
+	 <4FEA6E09.30800@nvidia.com>
+	 <23B010BBA481A74B98487467C29BA57BF2361DA3C4@HKMAIL01.nvidia.com>
+	 <4FEA7472.7050201@nvidia.com>
+	 <20120627051418.GB7177@avionic-0098.mockup.avionic-design.de>
+	 <20120627155907.871b2a506374b7db14c202c4@nvidia.com>
+	 <20120627140809.GD19319@avionic-0098.mockup.avionic-design.de>
+	 <20120627172914.30a2ccfd1344161ca7724722@nvidia.com>
+	 <20120627144414.GA20681@avionic-0098.mockup.avionic-design.de>
+	 <1340812795.1350.7.camel@antimon>
+	 <20120628111253.GC15137@avionic-0098.mockup.avionic-design.de>
+	 <4FEC8B91.6010107@wwwdotorg.org> <1340903992.1348.27.camel@antimon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <4FECAB9C.9040809-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+In-Reply-To: <1340903992.1348.27.camel@antimon>
+Content-Language: en-US
 Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: "swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org" <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org" <chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org>
+To: Lucas Stach <dev-8ppwABl0HbeELgA04lAiVw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Cc: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote @ Thu, 28 Jun 2012 21:08:12 +0200:
-
-> On 06/28/2012 12:35 PM, Hiroshi Doyu wrote:
-> > Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote @ Thu, 28 Jun 2012 18:57:18 +0200:
-> >> On 06/28/2012 04:51 AM, Hiroshi DOYU wrote:
-> >>> alloc_pdir() is called from smmu_iommu_domain_init() with spin_lock
-> >>> held. memory allocations in alloc_pdir() had to be
-> >>> atomic/unsleepable. Instead of converting into atomic allocation, this
-> >>> patch once releases a lock, do the allocation, hold the lock again and
-> >>> then see if it's raced or not in order to avoid introducing mutex.
-> 
-> >>> +static int alloc_pdir(struct smmu_as *as, unsigned long *flags)
-> >>
-> >>> +	spin_unlock_irqrestore(&as->lock, *flags);
-> >>> +	cnt = devm_kzalloc(smmu->dev,
-> >>> +			   sizeof(cnt[0]) * SMMU_PDIR_COUNT, GFP_KERNEL);
-> >>> +	page = alloc_page(GFP_KERNEL | __GFP_DMA);
-> >>> +	spin_lock_irqsave(&as->lock, *flags);
-> >>> +
-> >>> +	if (as->pdir_page) {
-> >>> +		/* We raced, free the redundant */
-> >>> +		err = -ENODEV;
-> >>> +		goto err_out;
-> >>>  	}
-> >>
-> >> Is that really an error; it just means that something else allocated the
-> >> same pdir already. Since the top of the function does:
-> >>
-> >>  	if (as->pdir_page)
-> >>  		return 0;
-> >>
-> >> I'd expect to s/err = -ENODEV/err = 0/ inside that if condition that I
-> >> quoted above, but still of cause "goto err_out" to free the now unneeded
-> >> allocations.
-> >>
-> >> Aside from that, I think this looks reasonable.
-> > 
-> > I think that, in the case of race condition, the one which comes
-> > later, should retry with the another ASID, which is incremented as
-> > below. So I modified that the latter one returns with -EAGAIN, and try
-> > with another ASID.
-> > 
-> > The complete patch follows this mail.
-> 
-> incremental rather than complete, right?
-
-Actually I was working on it.
-
-> > Changes:
-> > 	Modified drivers/iommu/tegra-smmu.c
-> > diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-> > index ec656ec..f2c18fa 100644
-> > --- a/drivers/iommu/tegra-smmu.c
-> > +++ b/drivers/iommu/tegra-smmu.c
-> > @@ -562,7 +562,7 @@ static int alloc_pdir(struct smmu_as *as, unsigned long *flags)
-> >  
-> >  	if (as->pdir_page) {
-> >  		/* We raced, free the redundant */
-> > -		err = -ENODEV;
-> > +		err = -EAGAIN;
-> >  		goto err_out;
-> >  	}
-> >  
-> > @@ -799,8 +799,15 @@ static int smmu_iommu_domain_init(struct iommu_domain *domain)
-> >  
-> >  		spin_lock_irqsave(&tmp->lock, flags);
-> >  		if (!tmp->pdir_page) {
-> > -			as = tmp;
-> > -			goto found;
-> > +			int err;
-> > +
-> > +			err = alloc_pdir(tmp, &flags);
-> > +			if (!err) {
-> > +				as = tmp;
-> > +				goto found;
-> > +			}
-> > +			if (err == -EAGAIN)
-> > +				continue;
-> 
-> That loop is going to continue anyway, since that code is right at the
-> end of the loop. Don't you want to replace that if block with:
-> 
-> if (err != -EAGAIN)
->     goto err_alloc_pdir;
-> 
-> ?
-
-Yes, I also found. I'll send the update one tomorrow.
-
-> Also, the first thinig that alloc_pdir does is:
-> 
->         if (as->pdir_page)
->                 return 0;
-> 
-> It seems that should be removed completely, right? Since having the
-> pdir_page already allocated is an error.
-
-Yes. I thought that could be another patch. Same for the original code.
+PiBBbSBEb25uZXJzdGFnLCBkZW4gMjguMDYuMjAxMiwgMTA6NTEgLTA2MDAgc2NocmllYiBTdGVw
+aGVuIFdhcnJlbjoNCj4gPiBPbiAwNi8yOC8yMDEyIDA1OjEyIEFNLCBUaGllcnJ5IFJlZGluZyB3
+cm90ZToNCj4gPiA+IE9uIFdlZCwgSnVuIDI3LCAyMDEyIGF0IDA1OjU5OjU1UE0gKzAyMDAsIEx1
+Y2FzIFN0YWNoIHdyb3RlOg0KPiA+ID4+IEFtIE1pdHR3b2NoLCBkZW4gMjcuMDYuMjAxMiwgMTY6
+NDQgKzAyMDAgc2NocmllYiBUaGllcnJ5IFJlZGluZzoNCj4gPiAuLi4NCj4gPiA+Pj4gSW4gdGhl
+IGlkZWFsIGNhc2UgSSB3b3VsZCB3YW50IHRvIG5vdCBoYXZlIGEgY2FydmVvdXQgc2l6ZSBhdCBh
+bGwuDQo+ID4gPj4+IEhvd2V2ZXIgdGhlcmUgbWF5IGJlIHNpdHVhdGlvbnMgd2hlcmUgeW91IG5l
+ZWQgdG8gbWFrZSBzdXJlIHNvbWUNCj4gPiA+Pj4gZHJpdmVyIGNhbiBhbGxvY2F0ZSBhIGdpdmVu
+IGFtb3VudCBvZiBtZW1vcnkuIEhhdmluZyB0byBzcGVjaWZ5DQo+ID4gPj4+IHRoaXMgdXNpbmcg
+YSBrZXJuZWwgY29tbWFuZC1saW5lIHBhcmFtZXRlciBpcyBjdW1iZXJzb21lIGJlY2F1c2UNCj4g
+PiA+Pj4gaXQgbWF5IHJlcXVpcmUgY2hhbmdlcyB0byB0aGUgYm9vdGxvYWRlciBvciB3aGF0ZXZl
+ci4gU28gaWYgeW91DQo+ID4gPj4+IGtub3cgdGhhdCBhIHBhcnRpY3VsYXIgYm9hcmQgYWx3YXlz
+IG5lZWRzDQo+ID4gPj4+IDEyOCBNaUIgb2YgY2FydmVvdXQsIHRoZW4gaXQgbWFrZXMgc2Vuc2Ug
+dG8gc3BlY2lmeSBpdCBvbiBhDQo+ID4gPj4+IHBlci1ib2FyZCBiYXNpcy4NCj4gPiA+Pg0KPiA+
+ID4+IElmIHdlIGdvIHdpdGggQ01BLCB0aGlzIGlzIGEgbm9uLWlzc3VlLCBhcyBDTUEgYWxsb3dz
+IHRvIHVzZSB0aGUNCj4gPiA+PiBjb250aWcgYXJlYSBmb3Igbm9ybWFsIGFsbG9jYXRpb25zIGFu
+ZCBvbmx5IHB1cmdlcyB0aGVtIGlmIGl0DQo+ID4gPj4gcmVhbGx5IG5lZWRzIHRoZSBzcGFjZSBm
+b3IgY29udGlnIGFsbG9jcy4NCj4gPiA+DQo+ID4gPiBDTUEgY2VydGFpbmx5IHNvdW5kcyBsaWtl
+IHRoZSBtb3N0IHNpbXBsZSBhcHByb2FjaC4gV2hpbGUgaXQgbWF5IG5vdA0KPiA+ID4gYmUgc3Vp
+dGVkIGZvciAzRCBncmFwaGljcyBvciBtdWx0aW1lZGlhIHByb2Nlc3NpbmcgbGF0ZXIgb24sIEkg
+dGhpbmsNCj4gPiA+IHdlIGNvdWxkIHVzZSBpdCBhdCBhIHN0YXJ0aW5nIHBvaW50IHRvIGdldCBi
+YXNpYyBmcmFtZWJ1ZmZlciBhbmQgWA0KPiA+ID4gc3VwcG9ydCB1cCBhbmQgcnVubmluZy4gV2Ug
+Y2FuIGFsd2F5cyBtb3ZlIHRvIHNvbWV0aGluZyBtb3JlDQo+ID4gPiBhZHZhbmNlZCBsaWtlIFRU
+TSBsYXRlci4NCj4gPg0KPiA+IEkgdGhvdWdodCB0aGUgd2hvbGUgcHVycG9zZSBvZiBDTUEgd2Fz
+IHRvIGFjdCBhcyB0aGUgaW5mcmEtc3RydWN0dXJlDQo+ID4gdG8gcHJvdmlkZSBidWZmZXJzIHRv
+IDNELCBjYW1lcmEsIGV0Yy4gaW4gcGFydGljdWxhciBhbGxvd2luZyBzaGFyaW5nDQo+ID4gb2Yg
+YnVmZmVycyBiZXR3ZWVuIHRoZW0uIEluIG90aGVyIHdvcmRzLCBpc24ndCBDTUEgdGhlIG1lbW9y
+eSBtYW5hZ2VyPw0KPiA+IElmIHRoZXJlJ3Mgc29tZSBkZWZpY2llbmN5IHdpdGggQ01BIGZvciAz
+RCBncmFwaGljcywgaXQgc2VlbXMgbGlrZQ0KPiA+IHRoYXQgc2hvdWxkIGJlIHJhaXNlZCB3aXRo
+IHRob3NlIGRlc2lnbmluZyBDTUEuIE9yLCBhbSBJIHdheSBvZmYgYmFzZQ0KPiA+IHdpdGggbXkg
+ZXhwZWN0YXRpb25zIG9mIENNQT8NCj4gPg0KPiBDTUEgaXMganVzdCBhIHdheSBvZiBwcm92aWRp
+bmcgbGFyZ2UgY29udGlndW91cyBhZGRyZXNzIHNwYWNlIGJsb2NrcyBpbiBhIGR5bmFtaWMNCj4g
+ZmFzaGlvbi4gVGhlIHByb2JsZW0gQ01BIHNvbHZlcyBpczogd2UgaGF2ZSBhIHN5c3RlbSB3aXRo
+IHJlbGF0aXZlbHkgbG93DQo+IGFtb3VudHMgb2Ygc3lzbWVtIChsaWtlIDUxMk1CKSwgbm93IHRv
+IGVuc3VyZSB3ZSBjYW4gYWx3YXlzIGdldCBsYXJnZQ0KPiBjb250aWd1b3VzIGJ1ZmZlcnMgZm9y
+IHVzZSBieSBHUFUgb3IgVklERU8gYmxvY2tzLCB3ZSBuZWVkIHRvIHNldCBhc2lkZSBhDQo+IHJl
+bGF0aXZlbHkgbGFyZ2UgY29udGlndW91cyBwb29sIChsaWtlIDEyOE1CKS4gU28gd2UgYXJlIHN0
+ZWFsaW5nIDEyOE1CIG9mDQo+IG1lbW9yeSBmcm9tIHRoZSBzeXN0ZW0gd2hpbGUgd2UgbWF5IG9y
+IG1heSBub3QgdXNlIGl0LCB3aGljaCBpcyBiYWQuDQo+IE5vdyBDTUEgYWxsb3dzIHRvIHNheTog
+SSBtYXkgbmVlZCAxMjhNQiBvZiBjb250aWcgc3BhY2UsIGJ1dCB0aGUgc3lzdGVtIGlzIGZyZWUN
+Cj4gdG8gdXNlIGl0IGFzIG5vcm1hbCBtZW1vcnkgYXMgbG9uZyBhcyBJIGRvbid0IHJlYWxseSBu
+ZWVkIGl0LiBJZiB0aGUgc3BhY2UgaXMgcmVhbGx5DQo+IG5lZWRlZCwgQ01BIHB1cmdlcyBwYWdl
+cyBmcm9tIHRoZSBhcmVhIGFuZCBtYXkgZXZlbiBzd2FwIHRoZW0gb3V0LiBTbyB5ZXMNCj4gQ01B
+IGlzIGEgbWVtb3J5IGFsbG9jYXRvciBmb3IgY29udGlnIG1lbW9yeS4NCj4gDQo+IFRUTSB0aG91
+Z2ggc29sdmVzIG1vcmUgYWR2YW5jZWQgbWF0dGVycywgbGlrZSBidWZmZXIgc3luY2hyb25pc2F0
+aW9uIGJldHdlZW4NCj4gM0QgYW5kIDJEIGJsb2NrIG9mIGhhcmR3YXJlIG9yIHN5bmNpbmcgYnVm
+ZmVyIGFjY2VzcyBiZXR3ZWVuIEdQVSBhbmQgQ1BVLg0KPiBPbmUgb2YgdGhlIG1vc3QgaW50ZXJl
+c3RpbmcgdGhpbmdzIG9mIFRUTSBpcyB0aGUgYWJpbGl0eSB0byBwdXJnZSB0aGUgR1BVIERNQQ0K
+PiBidWZmZXJzIHRvIHNjYXR0ZXJlZCBzeXNtZW0gb3IgZXZlbiBzd2FwIHRoZW0gb3V0LCBpZiB0
+aGV5IGFyZSBub3QgY3VycmVudGx5DQo+IHVzZWQgYnkgdGhlIEdQVS4gSXQgdGhlbiBtYWtlcyBz
+dXJlIHRvIG1vdmUgdGhlbSBpbiB0aGUgY29udGlnIHNwYWNlIGFnYWluDQo+IHdoZW4gdGhlIEdQ
+VSByZWFsbHkgbmVlZHMgdGhlbSBhbmQgZml4IHVwIHRoZSBHUFUgY29tbWFuZCBzdHJlYW0gd2l0
+aCB0aGUNCj4gbmV3IGJ1ZmZlciBhZGRyZXNzLg0KPiANCj4gSU1ITyB0aGUgYmVzdCBzb2x1dGlv
+biB3b3VsZCBiZSB0byB1c2UgQ01BIGFzIGEgZmxleGlibGUgcmVwbGFjZW1lbnQgb2YgdGhlDQo+
+IHN0YXRpYyBjYXJ2ZW91dCBhcmVhIGFuZCBwdXQgVFRNIG9uIHRvcCBvZiB0aGlzIHRvIHNvbHZl
+IHRoZSBuZWVkcyBvZiBncmFwaGljcw0KPiBkcml2ZXJzLiBXZSBjZXJ0YWlubHkgZG9uJ3Qgd2Fu
+dCB0byByZWludmVudCB0aGUgd2hlZWwgaW5zaWRlIENNQS4gV2UgaGF2ZQ0KPiBzb2x1dGlvbnMg
+Zm9yIGFsbCB0aG9zZSB0aGluZ3MgaW4gdGhlIGtlcm5lbCByaWdodCBub3csIHdlIGp1c3QgaGF2
+ZSB0byBnbHVlIHRoZW0NCj4gdG9nZXRoZXIgaW4gYSBzYW5lIHdheS4NCj4gDQoNClRoYXQgaXMg
+YSBncmVhdCBleHBsYW5hdGlvbi4gU28gY291bGQgeW91IGV4cGxhaW4gd2hhdCdzIHRoZSByZWxh
+dGlvbiBiZXR3ZWVuIElPTU1VIGFwaSANCmFuZCBUVE0ob3IgR0VNKT8gDQpUZXJqZSBzYWlkIERN
+QUJVRiBhcGkgc2l0cyBvbiB0b3Agb2YgSU9NTVUgYXBpLiBTbyBmb3Igbm9ybWFsIGRldmljZSBk
+cml2ZXJzKHN1Y2ggYXMgZHJtKSwgDQpjYW4gZm9yZ2V0IGlvbW11IGFwaXMsIGp1c3QgdXNlIGRt
+YWJ1ZiBhcGkgaXMgT0suIElmIHNvLCBJIHdhbm5hIGtub3cgZG9lcyANClRUTS9HRU0gYW5kIElP
+TU1VIGFyZSByZWxhdGVkPyBPciBUVE0vR0VNIHVzZXMgZG1hYnVmIGFwaXMgd2hpY2ggY2FsbHMg
+aW9tbXUgYXBpIA0KdG8gZG8gbWVtb3J5IGFsbG9jYXRpb24vbWFwcGluZz8NCg0KDQo+IFRoYW5r
+cywNCj4gTHVjYXMNCj4gDQo+IC0tDQo+IFRvIHVuc3Vic2NyaWJlIGZyb20gdGhpcyBsaXN0OiBz
+ZW5kIHRoZSBsaW5lICJ1bnN1YnNjcmliZSBsaW51eC10ZWdyYSIgaW4gdGhlIGJvZHkNCj4gb2Yg
+YSBtZXNzYWdlIHRvIG1ham9yZG9tb0B2Z2VyLmtlcm5lbC5vcmcgTW9yZSBtYWpvcmRvbW8gaW5m
+byBhdA0KPiBodHRwOi8vdmdlci5rZXJuZWwub3JnL21ham9yZG9tby1pbmZvLmh0bWwNCg==
