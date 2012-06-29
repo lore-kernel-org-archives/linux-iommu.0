@@ -1,10 +1,8 @@
-From: Lucas Stach <dev-8ppwABl0HbeELgA04lAiVw@public.gmane.org>
-Subject: Re: Tegra DRM device tree bindings
-Date: Thu, 28 Jun 2012 10:11:15 +0200
-Message-ID: <1340871075.1377.12.camel@antimon>
-References: <20120626160224.40ba10a26e3dd3a56b1f312c@nvidia.com>
-	<20120626140033.GC1115@avionic-0098.mockup.avionic-design.de>
-	<23B010BBA481A74B98487467C29BA57BF2361DA3AA@HKMAIL01.nvidia.com>
+From: Mark Zhang <markz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: RE: Tegra DRM device tree bindings
+Date: Fri, 29 Jun 2012 13:57:46 +0800
+Message-ID: <23B010BBA481A74B98487467C29BA57BF23653B778@HKMAIL01.nvidia.com>
+References: <23B010BBA481A74B98487467C29BA57BF2361DA3AA@HKMAIL01.nvidia.com>
 	<4FEA6E09.30800@nvidia.com>
 	<23B010BBA481A74B98487467C29BA57BF2361DA3C4@HKMAIL01.nvidia.com>
 	<4FEA7472.7050201@nvidia.com>
@@ -14,12 +12,13 @@ References: <20120626160224.40ba10a26e3dd3a56b1f312c@nvidia.com>
 	<20120627172914.30a2ccfd1344161ca7724722@nvidia.com>
 	<20120627144414.GA20681@avionic-0098.mockup.avionic-design.de>
 	<1340812795.1350.7.camel@antimon>
-	<20120628090650.b915ad756c91d62d658eb53a@nvidia.com>
+	<20120628111253.GC15137@avionic-0098.mockup.avionic-design.de>
+	<4FEC8B91.6010107@wwwdotorg.org> <1340903992.1348.27.camel@antimon>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20120628090650.b915ad756c91d62d658eb53a-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -29,54 +28,87 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>, Mark Zhang <markz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Lucas Stach <dev-8ppwABl0HbeELgA04lAiVw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Cc: Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>, "dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Am Donnerstag, den 28.06.2012, 09:06 +0300 schrieb Hiroshi Doyu:
-> Hi Lucas,
+> > Am Donnerstag, den 28.06.2012, 10:51 -0600 schrieb Stephen Warren:
+> > > On 06/28/2012 05:12 AM, Thierry Reding wrote:
+> > > > On Wed, Jun 27, 2012 at 05:59:55PM +0200, Lucas Stach wrote:
+> > > >> Am Mittwoch, den 27.06.2012, 16:44 +0200 schrieb Thierry Reding:
+> > > ...
+> > > >>> In the ideal case I would want to not have a carveout size at all.
+> > > >>> However there may be situations where you need to make sure some
+> > > >>> driver can allocate a given amount of memory. Having to specify
+> > > >>> this using a kernel command-line parameter is cumbersome because
+> > > >>> it may require changes to the bootloader or whatever. So if you
+> > > >>> know that a particular board always needs
+> > > >>> 128 MiB of carveout, then it makes sense to specify it on a
+> > > >>> per-board basis.
+> > > >>
+> > > >> If we go with CMA, this is a non-issue, as CMA allows to use the
+> > > >> contig area for normal allocations and only purges them if it
+> > > >> really needs the space for contig allocs.
+> > > >
+> > > > CMA certainly sounds like the most simple approach. While it may
+> > > > not be suited for 3D graphics or multimedia processing later on, I
+> > > > think we could use it at a starting point to get basic framebuffer
+> > > > and X support up and running. We can always move to something more
+> > > > advanced like TTM later.
+> > >
+> > > I thought the whole purpose of CMA was to act as the infra-structure
+> > > to provide buffers to 3D, camera, etc. in particular allowing
+> > > sharing of buffers between them. In other words, isn't CMA the memory
+> manager?
+> > > If there's some deficiency with CMA for 3D graphics, it seems like
+> > > that should be raised with those designing CMA. Or, am I way off
+> > > base with my expectations of CMA?
+> > >
+> > CMA is just a way of providing large contiguous address space blocks
+> > in a dynamic fashion. The problem CMA solves is: we have a system with
+> > relatively low amounts of sysmem (like 512MB), now to ensure we can
+> > always get large contiguous buffers for use by GPU or VIDEO blocks, we
+> > need to set aside a relatively large contiguous pool (like 128MB). So
+> > we are stealing 128MB of memory from the system while we may or may not
+> use it, which is bad.
+> > Now CMA allows to say: I may need 128MB of contig space, but the
+> > system is free to use it as normal memory as long as I don't really
+> > need it. If the space is really needed, CMA purges pages from the area
+> > and may even swap them out. So yes CMA is a memory allocator for contig
+> memory.
+> >
+> > TTM though solves more advanced matters, like buffer synchronisation
+> > between 3D and 2D block of hardware or syncing buffer access between GPU
+> and CPU.
+> > One of the most interesting things of TTM is the ability to purge the
+> > GPU DMA buffers to scattered sysmem or even swap them out, if they are
+> > not currently used by the GPU. It then makes sure to move them in the
+> > contig space again when the GPU really needs them and fix up the GPU
+> > command stream with the new buffer address.
+> >
+> > IMHO the best solution would be to use CMA as a flexible replacement
+> > of the static carveout area and put TTM on top of this to solve the
+> > needs of graphics drivers. We certainly don't want to reinvent the
+> > wheel inside CMA. We have solutions for all those things in the kernel
+> > right now, we just have to glue them together in a sane way.
+> >
 > 
-> On Wed, 27 Jun 2012 17:59:55 +0200
-> Lucas Stach <dev-8ppwABl0HbeELgA04lAiVw@public.gmane.org> wrote:
-> 
-> > > > > > Rather than introducing a new property, how about using
-> > > > > > "coherent_pool=??M" in the kernel command line if necessary? I think
-> > > > > > that this carveout size depends on the system usage/load.
-> > > > > 
-> > > > > I was hoping that we could get away with using the CMA and perhaps
-> > > > > initialize it based on device tree content. I agree that the carveout
-> > > > > size depends on the use-case, but I still think it makes sense to
-> > > > > specify it on a per-board basis.
-> > > > 
-> > > > DRM driver doesn't know if it uses CMA or not, because DRM only uses
-> > > > DMA API.
-> > > 
-> > > So how is the DRM supposed to allocate buffers? Does it call the
-> > > dma_alloc_from_contiguous() function to do that? I can see how it is
-> > > used by arm_dma_ops but how does it end up in the driver?
-> > > 
-> > As I said before the DMA API is not a good fit for graphics drivers.
-> > Most of the DMA buffers used by graphics cores are long lived and big,
-> > so we need a special pool to alloc from to avoid eating all contiguous
-> > address space, as DMA API does not provide shrinker callbacks for
-> > clients using large amount of memory.
-> 
-> For contiguious address space shortage issue in DMA API, I think that
-> DMABUF framework can handle?
-> 
-No, DMABUF is only about sharing DMA buffers between different hardware
-blocks. It has no address space management at all.
+> That is a great explanation. So could you explain what's the relation between
+> IOMMU api and TTM(or GEM)?
+> Terje said DMABUF api sits on top of IOMMU api. So for normal device
+> drivers(such as drm), can forget iommu apis, just use dmabuf api is OK. If so, I
+> wanna know does TTM/GEM and IOMMU are related? Or TTM/GEM uses
+> dmabuf apis which calls iommu api to do memory allocation/mapping?
+>  
 
-All DRM drivers manage their address space on their own, either through
-GEM or TTM. On the desktop the main pool for contiguous memory is on
-card VRAM or a area of system memory set aside for use by the DRM
-driver. Having a carveout area only for DRM use would be the same thing,
-but makes the split between graphics and system memory a bit unflexible.
-Currently we have no sane way for integrating DRM memory managers with
-the normal DMA API. There was some discussion about DMA pools and/or
-shrinkers for DMA clients, but they have not led to any written code.
+Sorry for my stupid question. DMA mapping api sits on top of IOMMU api, not DMABUF.
+DMABUF is used to share buffers.
+So please ignore what I said.
 
-DMABUF only makes a limited integration between for example V4L and DRM
-possible, so they can share buffers. But we still have the situation
-that DRM devices allocate from their own pool, for explained reasons and
-not use the standard DMA API.
+> > Thanks,
+> > Lucas
+> >
+> > --
+> > To unsubscribe from this list: send the line "unsubscribe linux-tegra"
+> > in the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org More majordomo
+> > info at http://vger.kernel.org/majordomo-info.html
