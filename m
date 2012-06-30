@@ -1,20 +1,21 @@
 From: Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
 Subject: Re: Tegra DRM device tree bindings
-Date: Sat, 30 Jun 2012 20:01:44 +0200
-Message-ID: <20120630180143.GA23990@avionic-0098.adnet.avionic-design.de>
-References: <20120627051418.GB7177@avionic-0098.mockup.avionic-design.de>
+Date: Sat, 30 Jun 2012 20:04:13 +0200
+Message-ID: <20120630180413.GB23990@avionic-0098.adnet.avionic-design.de>
+References: <4FEA6E09.30800@nvidia.com>
+	<23B010BBA481A74B98487467C29BA57BF2361DA3C4@HKMAIL01.nvidia.com>
+	<4FEA7472.7050201@nvidia.com>
+	<20120627051418.GB7177@avionic-0098.mockup.avionic-design.de>
 	<20120627155907.871b2a506374b7db14c202c4@nvidia.com>
 	<20120627140809.GD19319@avionic-0098.mockup.avionic-design.de>
 	<20120627172914.30a2ccfd1344161ca7724722@nvidia.com>
 	<20120627144414.GA20681@avionic-0098.mockup.avionic-design.de>
-	<1340812795.1350.7.camel@antimon>
-	<20120628111253.GC15137@avionic-0098.mockup.avionic-design.de>
-	<4FEC8B91.6010107@wwwdotorg.org> <1340903992.1348.27.camel@antimon>
-	<4FEDAB9F.5040406@nvidia.com>
+	<20120628091853.d4c3d85749f9d41a5dfafd28@nvidia.com>
+	<4FEC8A82.9090202@wwwdotorg.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============9087065117799155212=="
+Content-Type: multipart/mixed; boundary="===============1152004875887831677=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <4FEDAB9F.5040406-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <4FEC8A82.9090202-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,92 +25,85 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Terje =?utf-8?Q?Bergstr=C3=B6m?= <tbergstrom-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, Mark Zhang <markz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Cc: Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, Mark Zhang <markz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============9087065117799155212==
+--===============1152004875887831677==
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="BOKacYhQ+x31HxR3"
+	protocol="application/pgp-signature"; boundary="3uo+9/B/ebqu+fSQ"
 Content-Disposition: inline
 
 
---BOKacYhQ+x31HxR3
-Content-Type: text/plain; charset=utf-8
+--3uo+9/B/ebqu+fSQ
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jun 29, 2012 at 04:20:31PM +0300, Terje Bergstr=C3=B6m wrote:
-> On 28.06.2012 20:19, Lucas Stach wrote:
-> > TTM though solves more advanced matters, like buffer synchronisation
-> > between 3D and 2D block of hardware or syncing buffer access between GPU
-> > and CPU.
-> > One of the most interesting things of TTM is the ability to purge the
-> > GPU DMA buffers to scattered sysmem or even swap them out, if they are
-> > not currently used by the GPU. It then makes sure to move them in the
-> > contig space again when the GPU really needs them and fix up the GPU
-> > command stream with the new buffer address.
+On Thu, Jun 28, 2012 at 10:46:58AM -0600, Stephen Warren wrote:
+> On 06/28/2012 12:18 AM, Hiroshi Doyu wrote:
+> > On Wed, 27 Jun 2012 16:44:14 +0200
+> > Thierry Reding <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org> wrote:
+> >=20
+> >>> I think that "coherent_pool" can be used only when the amount of
+> >>> contiguous memory is short in your system. Otherwise even unnecessary.
+> >>>
+> >>> Could you explain a bit more why you want carveout size on per-board =
+basis?
+> >>
+> >> In the ideal case I would want to not have a carveout size at all.
+> >> However there may be situations where you need to make sure some driver
+> >> can allocate a given amount of memory. Having to specify this using a
+> >> kernel command-line parameter is cumbersome because it may require
+> >> changes to the bootloader or whatever. So if you know that a particular
+> >> board always needs 128 MiB of carveout, then it makes sense to specify
+> >> it on a per-board basis.
+> >=20
+> > Hm...I could understand somewhat;) but DT can also specify "bootargs"
+> > in dts file, which can support per-board-wide spec too, like the above
+> > sum of carveout needed from all drivers. I just want to avoid
+> > introducing a new parameter additionaly if we can make use of the
+> > existing mechanism.
 >=20
-> We preferably should choose dma_buf as a common interface towards
-> buffers. That way whatever we choose as the memory manager, all dma_buf
-> aware drivers will be able to use buffers allocated by other drivers.
->=20
-> We probably need to accommodate multiple memory managers to take care of
-> legacy and new drivers. If V4L2 and DRM projects all move to dma_buf, we
-> have the possibility to do zero-copy video without forcing everybody to
-> use the same memory manager.
+> The bootargs in the DT file is usually provided by (over-written by) the
+> bootloader. If we start requiring lots of random kernel command-line
+> arguments, that makes it more effort for the user of the bootloader
+> (e.g. distribution bootloader scripts, etc.) to create the kernel
+> command-line. I'd prefer to avoid that as much as possible. That said,
+> using a standardized command-line option that is (or will be) used by
+> all (ARM?) SoCs for the same purpose is reasonable, because there's
+> commonality there.
 
-I agree. Supporting DMA BUF also doesn't seem very difficult.
-
-> As I understand, TTM is good for platforms where we have a separate
-> frame buffer memory, as is the case with most of the graphics cards. In
-> Tegra, graphics and CPU occupy the same memory, so I'm not sure if we
-> require the level of functionality that TTM provides. I guess the level
-> of functionality and the complexity that it brings is one reason why TTM
-> hasn't really caught on in the ARM world.
->=20
-> The synchronization primitives attached to TTM are slightly confusing.
-> At the bottom level, it's operations which need to be synchronized
-> between each other. That's the API level that we should to export from
-> kernel to user space. It's then up to libdrm level (or whatever is doing
-> the rendering in user space) to decide which operations it wants to have
-> completed before a buffer can be reused/read/passed on to the next stage.
->=20
-> Anyway, if we hide the memory manager behind dma_buf, we're free to muck
-> around with multiple of them and see what works best.
-
-Exactly. Other subthreads echo this as well. Using CMA seems the easiest
-and most flexible for now but still covers everything we need. If it
-turns out that it isn't suited for more advanced stuff once we start
-supporting 3D then we can still opt for something like TTM.
+I propose we stick with the default CMA settings for now and see where
+we end up. No need to jump the gun.
 
 Thierry
 
---BOKacYhQ+x31HxR3
+--3uo+9/B/ebqu+fSQ
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.19 (GNU/Linux)
 
-iQIcBAEBAgAGBQJP7z8HAAoJEN0jrNd/PrOhRGUP/1p3W4wboBdnVmN+sieGPkPB
-uOMhHwM+bJsgdU8jF/aEifT5YayEki0RTHVz6Ulq1LQwgtKS1VHdLF6Gn6E6FPvo
-TtNyq+4tZhlW9hyCU9sM7v/WHBbqVIkdLm4ngXWSUwiuWTfsFqrkYBKt0ENG40Ao
-inlCgSsQ58REk8dl/nZcUYZgX0QrA0Bqqq5LSl1D/83HyX6/7sUcF3thdS7cri8S
-lQ6zdA9ztZRVh2YKpNXCYZ3u+fASWHQ1XkNQqUMSaQXmkW8PPO+GTuu98yI7M/Il
-orirwS/jm9Ck9gudIyH0vLy5OVOFRmF/jxIf2Ri98NzmL1BZmAdGk/8rJwsKwCBU
-z+wsZen/n2MGKruQTN8jDiNAT0BB158m2hQFaJbt/WZbGoS3ECrxWldaebDSl8Ya
-b4XLtNAJaFsDQElgdHJaJ1r5xeitFM5JqbWcfa6bUb3lDV3GejoeZDADV6kdv7h5
-D0CR8VrPnLBQyhicnC3kOagIa3/AYgq6+bIZpBXYfKZ9PAXwYI0e68Ck3a8ZiK7q
-yfJke+dVaM/N7IldvJtlIViTpG9yvHh5g+6glz6lFnaStUXfiIgM7Emz91H4mk6K
-cwogcXTiWZNGO/S4AG9af4fE9Gh+wlwkC8ArMUPUPrJeGZKCiQN2xuB1NlKTqGft
-JE3JcVL1JNLeaOOmdFq6
-=QaLJ
+iQIcBAEBAgAGBQJP7z+dAAoJEN0jrNd/PrOhOqEP/j45tHQYsH2mLF0xwfG2pyl/
+YVtTRIyAZeBXcaggibN/FC2GkX8348uReKnHRdLxfI92eROksZzQDwMHx9fIXXyz
+Dhr+NEWV9gkjN3HQ9i+uPt0pFFL5qDDmn/p08tPGdqLtFCP5TtW4hxiW1LQ2cJy9
+CgA9CyM8WHbRVTLGVofk6t8PxTwETajAHBuNyIOjaKOrV4Om6En3gP7X0ADlzjhJ
+ayA2+x30mnJMAJ+p0rbT02HPQJ509aSXUOMdZewrUUwTaD35wJmpsmFc4QOz/n0g
+pFxtqaYyvB/JDNGlFBAnqYNLC4wuDYKXilEsGQnAkCbXmYhiOWAaNtMxaXPLzbXz
+bEkbL7zPYX+pV0QqwCLjGieZyR3xQpL871/xNXX+E97Ba4k4QI3cZHbbD3KHlDv5
+55aFqhU12f1StYSMDPbiqqp49oVtfGkJVZNuzyjj3xgUz+VfQAKP51yycFZCplKF
+CTnV1IY965OOTw4tYMRN2Ik0FjVNDCXj6zB6QTV3uQQuPzpIpmYgBpL7GYMRAhUW
+u3SxBGUyGgdUC9B7sAeB6wlAxIMnuv0XFWd6gT0Fqn1yVAdB+WyviM/CYFG09QTQ
+fJsVXUU/JX1VdKkUy8TcE59cod0onrA3sfMGNdhhWSAYAnXJxiWhLd/VSQGR9IlG
+a5U36vS/bLitRmYExJ7z
+=TLUo
 -----END PGP SIGNATURE-----
 
---BOKacYhQ+x31HxR3--
+--3uo+9/B/ebqu+fSQ--
 
---===============9087065117799155212==
+--===============1152004875887831677==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -119,4 +113,4 @@ _______________________________________________
 iommu mailing list
 iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============9087065117799155212==--
+--===============1152004875887831677==--
