@@ -1,8 +1,8 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 22/28] iommu/amd: Implement MSI routines for interrupt
-	remapping
-Date: Thu, 5 Jul 2012 14:36:42 +0200
-Message-ID: <1341491808-23083-23-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 25/28] iommu/amd: Make sure irq remapping still works on dma
+	init failure
+Date: Thu, 5 Jul 2012 14:36:45 +0200
+Message-ID: <1341491808-23083-26-git-send-email-joerg.roedel@amd.com>
 References: <1341491808-23083-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,96 +22,94 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add routines to setup interrupt remapping for MSI
-interrupts.
+Do not deinitialize the AMD IOMMU driver completly when
+interrupt remapping is already in use but the initialization
+of the DMA layer fails for some reason. Make sure the IOMMU
+can still be used to remap interrupts.
 
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c |   74 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 74 insertions(+)
+ drivers/iommu/amd_iommu_init.c |   40 +++++++++++++++++++++++++++++++---------
+ 1 file changed, 31 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index dc2e699..ee10f30 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -4054,4 +4054,78 @@ static int free_irq(int irq)
- 	return 0;
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 204dfea..1bfeef5 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -1401,6 +1401,16 @@ static void init_device_table_dma(void)
+ 	}
  }
  
-+static void compose_msi_msg(struct pci_dev *pdev,
-+			    unsigned int irq, unsigned int dest,
-+			    struct msi_msg *msg, u8 hpet_id)
++static void __init uninit_device_table_dma(void)
 +{
-+	struct irq_2_irte *irte_info;
-+	struct irq_cfg *cfg;
-+	union irte irte;
++	u32 devid;
 +
-+	cfg = irq_get_chip_data(irq);
-+	if (!cfg)
-+		return;
-+
-+	irte_info = &cfg->irq_remap_info.irq_2_irte;
-+
-+	irte.val		= 0;
-+	irte.fields.vector	= cfg->vector;
-+	irte.fields.int_type    = apic->irq_delivery_mode;
-+	irte.fields.destination	= dest;
-+	irte.fields.dm		= apic->irq_dest_mode;
-+	irte.fields.valid	= 1;
-+
-+	modify_irte(irte_info->devid, irte_info->index, irte);
-+
-+	msg->address_hi = MSI_ADDR_BASE_HI;
-+	msg->address_lo = MSI_ADDR_BASE_LO;
-+	msg->data       = irte_info->index;
++	for (devid = 0; devid <= amd_iommu_last_bdf; ++devid) {
++		amd_iommu_dev_table[devid].data[0] = 0ULL;
++		amd_iommu_dev_table[devid].data[1] = 0ULL;
++	}
 +}
 +
-+static int msi_alloc_irq(struct pci_dev *pdev, int irq, int nvec)
+ static void init_device_table(void)
+ {
+ 	u32 devid;
+@@ -1569,11 +1579,6 @@ static void __init free_on_init_error(void)
+ 
+ 	}
+ 
+-	amd_iommu_uninit_devices();
+-
+-	free_pages((unsigned long)amd_iommu_pd_alloc_bitmap,
+-		   get_order(MAX_DOMAIN_ID/8));
+-
+ 	free_pages((unsigned long)amd_iommu_rlookup_table,
+ 		   get_order(rlookup_table_size));
+ 
+@@ -1585,8 +1590,6 @@ static void __init free_on_init_error(void)
+ 
+ 	free_iommu_all();
+ 
+-	free_unity_maps();
+-
+ #ifdef CONFIG_GART_IOMMU
+ 	/*
+ 	 * We failed to initialize the AMD IOMMU - try fallback to GART
+@@ -1614,6 +1617,16 @@ static bool __init check_ioapic_information(void)
+ 	return true;
+ }
+ 
++static void __init free_dma_resources(void)
 +{
-+	struct irq_cfg *cfg;
-+	int index;
-+	u16 devid;
++	amd_iommu_uninit_devices();
 +
-+	if (!pdev)
-+		return -EINVAL;
++	free_pages((unsigned long)amd_iommu_pd_alloc_bitmap,
++		   get_order(MAX_DOMAIN_ID/8));
 +
-+	cfg = irq_get_chip_data(irq);
-+	if (!cfg)
-+		return -EINVAL;
-+
-+	devid = get_device_id(&pdev->dev);
-+	index = alloc_irq_index(cfg, devid, nvec);
-+
-+	return index < 0 ? MAX_IRQS_PER_TABLE : index;
++	free_unity_maps();
 +}
 +
-+static int msi_setup_irq(struct pci_dev *pdev, unsigned int irq,
-+			 int index, int offset)
-+{
-+	struct irq_2_irte *irte_info;
-+	struct irq_cfg *cfg;
-+	u16 devid;
+ /*
+  * This is the hardware init function for AMD IOMMU in the system.
+  * This function is called either from amd_iommu_init or from the interrupt
+@@ -1951,8 +1964,17 @@ static int __init amd_iommu_init(void)
+ 
+ 	ret = iommu_go_to_state(IOMMU_INITIALIZED);
+ 	if (ret) {
+-		disable_iommus();
+-		free_on_init_error();
++		free_dma_resources();
++		if (!irq_remapping_enabled) {
++			disable_iommus();
++			free_on_init_error();
++		} else {
++			struct amd_iommu *iommu;
 +
-+	if (!pdev)
-+		return -EINVAL;
-+
-+	cfg = irq_get_chip_data(irq);
-+	if (!cfg)
-+		return -EINVAL;
-+
-+	if (index >= MAX_IRQS_PER_TABLE)
-+		return 0;
-+
-+	devid		= get_device_id(&pdev->dev);
-+	irte_info	= &cfg->irq_remap_info.irq_2_irte;
-+
-+	irte_info->devid = devid;
-+	irte_info->index = index + offset;
-+	cfg->remapped    = true;
-+
-+	return 0;
-+}
-+
- #endif
++			uninit_device_table_dma();
++			for_each_iommu(iommu)
++				iommu_flush_all_caches(iommu);
++		}
+ 	}
+ 
+ 	return ret;
 -- 
 1.7.9.5
