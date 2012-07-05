@@ -1,8 +1,7 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 18/28] iommu/amd: Make sure IOMMU is not considered to
-	translate itself
-Date: Thu, 5 Jul 2012 14:36:38 +0200
-Message-ID: <1341491808-23083-19-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 12/28] iommu/amd: Keep track of HPET and IOAPIC device ids
+Date: Thu, 5 Jul 2012 14:36:32 +0200
+Message-ID: <1341491808-23083-13-git-send-email-joerg.roedel@amd.com>
 References: <1341491808-23083-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,32 +21,200 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The IVRS table usually includes the IOMMU device. But the
-IOMMU does never translate itself, so make sure the IOMMU
-driver knows this.
+The IVRS ACPI table provides information about the IOAPICs
+and the HPETs available in the system and which PCI device
+ID they use in transactions. Save that information for later
+usage in interrupt remapping.
 
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/iommu/amd_iommu.c       |    3 ++
+ drivers/iommu/amd_iommu_init.c  |   65 +++++++++++++++++++++++++++++++++++++--
+ drivers/iommu/amd_iommu_types.h |   34 ++++++++++++++++++++
+ 3 files changed, 100 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 569800f..cca9c70 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -72,6 +72,9 @@ static DEFINE_SPINLOCK(iommu_pd_list_lock);
+ static LIST_HEAD(dev_data_list);
+ static DEFINE_SPINLOCK(dev_data_list_lock);
+ 
++LIST_HEAD(ioapic_map);
++LIST_HEAD(hpet_map);
++
+ /*
+  * Domain for untranslated devices - only allocated
+  * if iommu=pt passed on kernel cmd line.
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 453f80a..c487822 100644
+index 8d1780c..b4cc3a7 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -1023,6 +1023,13 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
- 	ret = init_iommu_from_acpi(iommu, h);
- 	if (ret)
- 		return ret;
+@@ -55,6 +55,7 @@
+ #define IVHD_DEV_ALIAS_RANGE            0x43
+ #define IVHD_DEV_EXT_SELECT             0x46
+ #define IVHD_DEV_EXT_SELECT_RANGE       0x47
++#define IVHD_DEV_SPECIAL		0x48
+ 
+ #define IVHD_FLAG_HT_TUN_EN_MASK        0x01
+ #define IVHD_FLAG_PASSPW_EN_MASK        0x02
+@@ -696,6 +697,31 @@ static void __init set_dev_entry_from_acpi(struct amd_iommu *iommu,
+ 	set_iommu_for_device(iommu, devid);
+ }
+ 
++static int add_special_device(u8 type, u8 id, u16 devid)
++{
++	struct devid_map *entry;
++	struct list_head *list;
 +
-+	/*
-+	 * Make sure IOMMU is not considered to translate itself. The IVRS
-+	 * table tells us so, but this is a lie!
-+	 */
-+	amd_iommu_rlookup_table[iommu->devid] = NULL;
++	if (type != 1 && type != 2)
++		return -EINVAL;
 +
++	entry = kzalloc(sizeof(*entry), GFP_KERNEL);
++	if (!entry)
++		return -ENOMEM;
++
++	entry->id    = id;
++	entry->devid = devid;
++
++	if (type == 1)
++		list = &ioapic_map;
++	else
++		list = &hpet_map;
++
++	list_add_tail(&entry->list, list);
++
++	return 0;
++}
++
+ /*
+  * Reads the device exclusion range from ACPI and initialize IOMMU with
+  * it
+@@ -723,7 +749,7 @@ static void __init set_device_exclusion_range(u16 devid, struct ivmd_header *m)
+  * Takes a pointer to an AMD IOMMU entry in the ACPI table and
+  * initializes the hardware and our data structures with it.
+  */
+-static void __init init_iommu_from_acpi(struct amd_iommu *iommu,
++static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
+ 					struct ivhd_header *h)
+ {
+ 	u8 *p = (u8 *)h;
+@@ -873,12 +899,43 @@ static void __init init_iommu_from_acpi(struct amd_iommu *iommu,
+ 							flags, ext_flags);
+ 			}
+ 			break;
++		case IVHD_DEV_SPECIAL: {
++			u8 handle, type;
++			const char *var;
++			u16 devid;
++			int ret;
++
++			handle = e->ext & 0xff;
++			devid  = (e->ext >>  8) & 0xffff;
++			type   = (e->ext >> 24) & 0xff;
++
++			if (type == 1)
++				var = "IOAPIC";
++			else if (type == 2)
++				var = "HPET";
++			else
++				var = "UNKNOWN";
++
++			DUMP_printk("  DEV_SPECIAL(%s[%d])\t\tdevid: %02x:%02x.%x\n",
++				    var, (int)handle,
++				    PCI_BUS(devid),
++				    PCI_SLOT(devid),
++				    PCI_FUNC(devid));
++
++			set_dev_entry_from_acpi(iommu, devid, e->flags, 0);
++			ret = add_special_device(type, handle, devid);
++			if (ret)
++				return ret;
++			break;
++		}
+ 		default:
+ 			break;
+ 		}
+ 
+ 		p += ivhd_entry_length(p);
+ 	}
++
++	return 0;
+ }
+ 
+ /* Initializes the device->iommu mapping for the driver */
+@@ -918,6 +975,8 @@ static void __init free_iommu_all(void)
+  */
+ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
+ {
++	int ret;
++
+ 	spin_lock_init(&iommu->lock);
+ 
+ 	/* Add IOMMU to internal data structures */
+@@ -953,7 +1012,9 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
+ 
+ 	iommu->int_enabled = false;
+ 
+-	init_iommu_from_acpi(iommu, h);
++	ret = init_iommu_from_acpi(iommu, h);
++	if (ret)
++		return ret;
  	init_iommu_devices(iommu);
  
  	return 0;
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index 6f32d7b..925885d 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -565,6 +565,16 @@ struct amd_iommu {
+ 	u32 stored_l2[0x83];
+ };
+ 
++struct devid_map {
++	struct list_head list;
++	u8 id;
++	u16 devid;
++};
++
++/* Map HPET and IOAPIC ids to the devid used by the IOMMU */
++extern struct list_head ioapic_map;
++extern struct list_head hpet_map;
++
+ /*
+  * List with all IOMMUs in the system. This list is not locked because it is
+  * only written and read at driver initialization or suspend time
+@@ -672,6 +682,30 @@ static inline u16 calc_devid(u8 bus, u8 devfn)
+ 	return (((u16)bus) << 8) | devfn;
+ }
+ 
++static inline int get_ioapic_devid(int id)
++{
++	struct devid_map *entry;
++
++	list_for_each_entry(entry, &ioapic_map, list) {
++		if (entry->id == id)
++			return entry->devid;
++	}
++
++	return -EINVAL;
++}
++
++static inline int get_hpet_devid(int id)
++{
++	struct devid_map *entry;
++
++	list_for_each_entry(entry, &hpet_map, list) {
++		if (entry->id == id)
++			return entry->devid;
++	}
++
++	return -EINVAL;
++}
++
+ #ifdef CONFIG_AMD_IOMMU_STATS
+ 
+ struct __iommu_counter {
 -- 
 1.7.9.5
