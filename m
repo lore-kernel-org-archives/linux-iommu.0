@@ -1,7 +1,7 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 07/28] iommu/amd: Introduce early_amd_iommu_init routine
-Date: Thu, 5 Jul 2012 14:36:27 +0200
-Message-ID: <1341491808-23083-8-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 06/28] iommu/amd: Move informational prinks out of iommu_enable
+Date: Thu, 5 Jul 2012 14:36:26 +0200
+Message-ID: <1341491808-23083-7-git-send-email-joerg.roedel@amd.com>
 References: <1341491808-23083-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,95 +21,82 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Split out the code to parse the ACPI table and setup
-relevant data structures into a new function.
+This function will be called before the PCI subsystem is
+initialized. Therefore dev_name doen't work and IOMMU
+information can't be printed to the klog as before. Move the
+code to print that information to a later point where PCI
+initializtion has already happened.
 
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c      |    1 -
- drivers/iommu/amd_iommu_init.c |   38 +++++++++++++++++++++++---------------
- 2 files changed, 23 insertions(+), 16 deletions(-)
+ drivers/iommu/amd_iommu_init.c |   41 +++++++++++++++++++++++-----------------
+ 1 file changed, 24 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index a2e418c..cfa01c4 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -382,7 +382,6 @@ DECLARE_STATS_COUNTER(invalidate_iotlb);
- DECLARE_STATS_COUNTER(invalidate_iotlb_all);
- DECLARE_STATS_COUNTER(pri_requests);
- 
--
- static struct dentry *stats_dir;
- static struct dentry *de_fflush;
- 
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index e6782fa..1b23235 100644
+index 1354497..e6782fa 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -1494,17 +1494,14 @@ static void __init free_on_init_error(void)
-  * After everything is set up the IOMMUs are enabled and the necessary
-  * hotplug and suspend notifiers are registered.
-  */
--int __init amd_iommu_init_hardware(void)
-+static int __init early_amd_iommu_init(void)
+@@ -318,23 +318,6 @@ static void iommu_set_inv_tlb_timeout(struct amd_iommu *iommu, int timeout)
+ /* Function to enable the hardware */
+ static void iommu_enable(struct amd_iommu *iommu)
  {
- 	struct acpi_table_header *ivrs_base;
- 	acpi_size ivrs_size;
- 	acpi_status status;
- 	int i, ret = 0;
- 
--	if (no_iommu || (iommu_detected && !gart_iommu_aperture))
--		return -ENODEV;
+-	static const char * const feat_str[] = {
+-		"PreF", "PPR", "X2APIC", "NX", "GT", "[5]",
+-		"IA", "GA", "HE", "PC", NULL
+-	};
+-	int i;
 -
--	if (amd_iommu_disabled || !amd_iommu_detected)
-+	if (!amd_iommu_detected)
- 		return -ENODEV;
- 
- 	if (amd_iommu_dev_table != NULL) {
-@@ -1591,16 +1588,6 @@ int __init amd_iommu_init_hardware(void)
- 	if (ret)
- 		goto free;
- 
--	ret = amd_iommu_init_pci();
--	if (ret)
--		goto free;
+-	printk(KERN_INFO "AMD-Vi: Enabling IOMMU at %s cap 0x%hx",
+-	       dev_name(&iommu->dev->dev), iommu->cap_ptr);
 -
--	enable_iommus();
+-	if (iommu->cap & (1 << IOMMU_CAP_EFR)) {
+-		printk(KERN_CONT " extended features: ");
+-		for (i = 0; feat_str[i]; ++i)
+-			if (iommu_feature(iommu, (1ULL << i)))
+-				printk(KERN_CONT " %s", feat_str[i]);
+-	}
+-	printk(KERN_CONT "\n");
 -
--	amd_iommu_init_notifier();
--
--	register_syscore_ops(&amd_iommu_syscore_ops);
--
- out:
- 	/* Don't leak any ACPI memory */
- 	early_acpi_os_unmap_memory((char *)ivrs_base, ivrs_size);
-@@ -1614,6 +1601,27 @@ free:
- 	goto out;
+ 	iommu_feature_enable(iommu, CONTROL_IOMMU_EN);
  }
  
-+int amd_iommu_init_hardware(void)
+@@ -1102,6 +1085,28 @@ static int iommu_init_pci(struct amd_iommu *iommu)
+ 	return pci_enable_device(iommu->dev);
+ }
+ 
++static void print_iommu_info(void)
 +{
-+	int ret = 0;
++	static const char * const feat_str[] = {
++		"PreF", "PPR", "X2APIC", "NX", "GT", "[5]",
++		"IA", "GA", "HE", "PC", NULL
++	};
++	struct amd_iommu *iommu;
 +
-+	ret = early_amd_iommu_init();
-+	if (ret)
-+		return ret;
-+
-+	ret = amd_iommu_init_pci();
-+	if (ret)
-+		return ret;
-+
-+	enable_iommus();
-+
-+	amd_iommu_init_notifier();
-+
-+	register_syscore_ops(&amd_iommu_syscore_ops);
-+
-+	return ret;
++	for_each_iommu(iommu) {
++		int i;
++		pr_info("AMD-Vi: Found IOMMU at %s cap 0x%hx\n",
++			dev_name(&iommu->dev->dev), iommu->cap_ptr);
++		if (iommu->cap & (1 << IOMMU_CAP_EFR)) {
++			pr_info("AMD-Vi:  Extended features: ");
++			for (i = 0; feat_str[i]; ++i)
++				if (iommu_feature(iommu, (1ULL << i)))
++					pr_cont(" %s", feat_str[i]);
++		}
++		pr_cont("\n");
++	}
 +}
 +
- static int amd_iommu_enable_interrupts(void)
+ static int amd_iommu_init_pci(void)
  {
  	struct amd_iommu *iommu;
+@@ -1118,6 +1123,8 @@ static int amd_iommu_init_pci(void)
+ 
+ 	ret = amd_iommu_init_devices();
+ 
++	print_iommu_info();
++
+ 	return ret;
+ }
+ 
 -- 
 1.7.9.5
