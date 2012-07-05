@@ -1,7 +1,8 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 23/28] iommu/amd: Add call-back routine for HPET MSI
-Date: Thu, 5 Jul 2012 14:36:43 +0200
-Message-ID: <1341491808-23083-24-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 24/28] iommu/amd: Add initialization routines for AMD
+	interrupt remapping
+Date: Thu, 5 Jul 2012 14:36:44 +0200
+Message-ID: <1341491808-23083-25-git-send-email-joerg.roedel@amd.com>
 References: <1341491808-23083-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,47 +22,130 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add a routine to setup a HPET MSI interrupt for remapping.
+Add the six routines required to setup interrupt remapping
+with the AMD IOMMU. Also put it all together into the AMD
+specific irq_remap_ops.
 
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c |   26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+ drivers/iommu/amd_iommu.c       |   18 +++++++++++++++++
+ drivers/iommu/amd_iommu_init.c  |   42 +++++++++++++++++++++++++++++++++++++++
+ drivers/iommu/amd_iommu_proto.h |    8 ++++++++
+ 3 files changed, 68 insertions(+)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index ee10f30..fed1395 100644
+index fed1395..41fe178 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -4128,4 +4128,30 @@ static int msi_setup_irq(struct pci_dev *pdev, unsigned int irq,
+@@ -45,6 +45,7 @@
+ 
+ #include "amd_iommu_proto.h"
+ #include "amd_iommu_types.h"
++#include "irq_remapping.h"
+ 
+ #define CMD_SET_TYPE(cmd, t) ((cmd)->data[1] |= ((t) << 28))
+ 
+@@ -4154,4 +4155,21 @@ static int setup_hpet_msi(unsigned int irq, unsigned int id)
  	return 0;
  }
  
-+static int setup_hpet_msi(unsigned int irq, unsigned int id)
++struct irq_remap_ops amd_iommu_irq_ops = {
++	.supported		= amd_iommu_supported,
++	.prepare		= amd_iommu_prepare,
++	.enable			= amd_iommu_enable,
++	.disable		= amd_iommu_disable,
++	.reenable		= amd_iommu_reenable,
++	.enable_faulting	= amd_iommu_enable_faulting,
++	.setup_ioapic_entry	= setup_ioapic_entry,
++#ifdef CONFIG_SMP
++	.set_affinity		= set_affinity,
++#endif
++	.free_irq		= free_irq,
++	.compose_msi_msg	= compose_msi_msg,
++	.msi_alloc_irq		= msi_alloc_irq,
++	.msi_setup_irq		= msi_setup_irq,
++	.setup_hpet_msi		= setup_hpet_msi,
++};
+ #endif
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index c487822..204dfea 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -33,6 +33,7 @@
+ #include <asm/gart.h>
+ #include <asm/x86_init.h>
+ #include <asm/iommu_table.h>
++#include <asm/irq_remapping.h>
+ 
+ #include "amd_iommu_proto.h"
+ #include "amd_iommu_types.h"
+@@ -1896,7 +1897,48 @@ static int __init iommu_go_to_state(enum iommu_init_state state)
+ 	return ret;
+ }
+ 
++#ifdef CONFIG_IRQ_REMAP
++int __init amd_iommu_prepare(void)
 +{
-+	struct irq_2_irte *irte_info;
-+	struct irq_cfg *cfg;
-+	int index, devid;
++	return iommu_go_to_state(IOMMU_ACPI_FINISHED);
++}
 +
-+	cfg = irq_get_chip_data(irq);
-+	if (!cfg)
-+		return -EINVAL;
++int __init amd_iommu_supported(void)
++{
++	return amd_iommu_irq_remap ? 1 : 0;
++}
 +
-+	irte_info = &cfg->irq_remap_info.irq_2_irte;
-+	devid     = get_hpet_devid(id);
-+	if (devid < 0)
-+		return devid;
++int __init amd_iommu_enable(void)
++{
++	int ret;
 +
-+	index = alloc_irq_index(cfg, devid, 1);
-+	if (index < 0)
-+		return index;
-+
-+	irte_info->devid = devid;
-+	irte_info->index = index;
-+	cfg->remapped    = true;
++	ret = iommu_go_to_state(IOMMU_ENABLED);
++	if (ret)
++		return ret;
+ 
++	irq_remapping_enabled = 1;
 +
 +	return 0;
 +}
 +
- #endif
++void amd_iommu_disable(void)
++{
++	amd_iommu_suspend();
++}
++
++int amd_iommu_reenable(int mode)
++{
++	amd_iommu_resume();
++
++	return 0;
++}
++
++int __init amd_iommu_enable_faulting(void)
++{
++	/* We enable MSI later when PCI is initialized */
++	return 0;
++}
++#endif
+ 
+ /*
+  * This is the core init function for AMD IOMMU hardware in the system.
+diff --git a/drivers/iommu/amd_iommu_proto.h b/drivers/iommu/amd_iommu_proto.h
+index 1a7f41c..c294961 100644
+--- a/drivers/iommu/amd_iommu_proto.h
++++ b/drivers/iommu/amd_iommu_proto.h
+@@ -32,6 +32,14 @@ extern void amd_iommu_uninit_devices(void);
+ extern void amd_iommu_init_notifier(void);
+ extern void amd_iommu_init_api(void);
+ 
++/* Needed for interrupt remapping */
++extern int amd_iommu_supported(void);
++extern int amd_iommu_prepare(void);
++extern int amd_iommu_enable(void);
++extern void amd_iommu_disable(void);
++extern int amd_iommu_reenable(int);
++extern int amd_iommu_enable_faulting(void);
++
+ /* IOMMUv2 specific functions */
+ struct iommu_domain;
+ 
 -- 
 1.7.9.5
