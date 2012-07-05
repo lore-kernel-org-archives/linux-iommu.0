@@ -1,8 +1,7 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 24/28] iommu/amd: Add initialization routines for AMD
-	interrupt remapping
-Date: Thu, 5 Jul 2012 14:36:44 +0200
-Message-ID: <1341491808-23083-25-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 28/28] iommu/amd: Report irq remapping through IOMMU-API
+Date: Thu, 5 Jul 2012 14:36:48 +0200
+Message-ID: <1341491808-23083-29-git-send-email-joerg.roedel@amd.com>
 References: <1341491808-23083-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,130 +21,27 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add the six routines required to setup interrupt remapping
-with the AMD IOMMU. Also put it all together into the AMD
-specific irq_remap_ops.
+Report the availability of irq remapping through the
+IOMMU-API to allow KVM device passthrough again without
+additional module parameter overrides.
 
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c       |   18 +++++++++++++++++
- drivers/iommu/amd_iommu_init.c  |   42 +++++++++++++++++++++++++++++++++++++++
- drivers/iommu/amd_iommu_proto.h |    8 ++++++++
- 3 files changed, 68 insertions(+)
+ drivers/iommu/amd_iommu.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index fed1395..41fe178 100644
+index 41fe178..e9d08f8 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -45,6 +45,7 @@
+@@ -3265,6 +3265,8 @@ static int amd_iommu_domain_has_cap(struct iommu_domain *domain,
+ 	switch (cap) {
+ 	case IOMMU_CAP_CACHE_COHERENCY:
+ 		return 1;
++	case IOMMU_CAP_INTR_REMAP:
++		return irq_remapping_enabled;
+ 	}
  
- #include "amd_iommu_proto.h"
- #include "amd_iommu_types.h"
-+#include "irq_remapping.h"
- 
- #define CMD_SET_TYPE(cmd, t) ((cmd)->data[1] |= ((t) << 28))
- 
-@@ -4154,4 +4155,21 @@ static int setup_hpet_msi(unsigned int irq, unsigned int id)
  	return 0;
- }
- 
-+struct irq_remap_ops amd_iommu_irq_ops = {
-+	.supported		= amd_iommu_supported,
-+	.prepare		= amd_iommu_prepare,
-+	.enable			= amd_iommu_enable,
-+	.disable		= amd_iommu_disable,
-+	.reenable		= amd_iommu_reenable,
-+	.enable_faulting	= amd_iommu_enable_faulting,
-+	.setup_ioapic_entry	= setup_ioapic_entry,
-+#ifdef CONFIG_SMP
-+	.set_affinity		= set_affinity,
-+#endif
-+	.free_irq		= free_irq,
-+	.compose_msi_msg	= compose_msi_msg,
-+	.msi_alloc_irq		= msi_alloc_irq,
-+	.msi_setup_irq		= msi_setup_irq,
-+	.setup_hpet_msi		= setup_hpet_msi,
-+};
- #endif
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index c487822..204dfea 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -33,6 +33,7 @@
- #include <asm/gart.h>
- #include <asm/x86_init.h>
- #include <asm/iommu_table.h>
-+#include <asm/irq_remapping.h>
- 
- #include "amd_iommu_proto.h"
- #include "amd_iommu_types.h"
-@@ -1896,7 +1897,48 @@ static int __init iommu_go_to_state(enum iommu_init_state state)
- 	return ret;
- }
- 
-+#ifdef CONFIG_IRQ_REMAP
-+int __init amd_iommu_prepare(void)
-+{
-+	return iommu_go_to_state(IOMMU_ACPI_FINISHED);
-+}
-+
-+int __init amd_iommu_supported(void)
-+{
-+	return amd_iommu_irq_remap ? 1 : 0;
-+}
-+
-+int __init amd_iommu_enable(void)
-+{
-+	int ret;
-+
-+	ret = iommu_go_to_state(IOMMU_ENABLED);
-+	if (ret)
-+		return ret;
- 
-+	irq_remapping_enabled = 1;
-+
-+	return 0;
-+}
-+
-+void amd_iommu_disable(void)
-+{
-+	amd_iommu_suspend();
-+}
-+
-+int amd_iommu_reenable(int mode)
-+{
-+	amd_iommu_resume();
-+
-+	return 0;
-+}
-+
-+int __init amd_iommu_enable_faulting(void)
-+{
-+	/* We enable MSI later when PCI is initialized */
-+	return 0;
-+}
-+#endif
- 
- /*
-  * This is the core init function for AMD IOMMU hardware in the system.
-diff --git a/drivers/iommu/amd_iommu_proto.h b/drivers/iommu/amd_iommu_proto.h
-index 1a7f41c..c294961 100644
---- a/drivers/iommu/amd_iommu_proto.h
-+++ b/drivers/iommu/amd_iommu_proto.h
-@@ -32,6 +32,14 @@ extern void amd_iommu_uninit_devices(void);
- extern void amd_iommu_init_notifier(void);
- extern void amd_iommu_init_api(void);
- 
-+/* Needed for interrupt remapping */
-+extern int amd_iommu_supported(void);
-+extern int amd_iommu_prepare(void);
-+extern int amd_iommu_enable(void);
-+extern void amd_iommu_disable(void);
-+extern int amd_iommu_reenable(int);
-+extern int amd_iommu_enable_faulting(void);
-+
- /* IOMMUv2 specific functions */
- struct iommu_domain;
- 
 -- 
 1.7.9.5
