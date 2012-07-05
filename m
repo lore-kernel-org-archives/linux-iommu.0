@@ -1,8 +1,7 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 09/28] iommu/amd: Move unmap_flush message to
-	amd_iommu_init_dma_ops()
-Date: Thu, 5 Jul 2012 14:36:29 +0200
-Message-ID: <1341491808-23083-10-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 10/28] iommu/amd: Introduce amd_iommu_init_dma routine
+Date: Thu, 5 Jul 2012 14:36:30 +0200
+Message-ID: <1341491808-23083-11-git-send-email-joerg.roedel@amd.com>
 References: <1341491808-23083-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,49 +21,65 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The message belongs there anyway, so move it to that
-function.
+This function will initialize everthing necessary so that
+devices can do DMA. This includes dma_ops and iommu_ops.
 
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c      |    5 +++++
- drivers/iommu/amd_iommu_init.c |    8 --------
- 2 files changed, 5 insertions(+), 8 deletions(-)
+ drivers/iommu/amd_iommu_init.c |   27 ++++++++++++++++++++-------
+ 1 file changed, 20 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index cfa01c4..569800f 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -2962,6 +2962,11 @@ int __init amd_iommu_init_dma_ops(void)
- 
- 	amd_iommu_stats_init();
- 
-+	if (amd_iommu_unmap_flush)
-+		pr_info("AMD-Vi: IO/TLB flush on unmap enabled\n");
-+	else
-+		pr_info("AMD-Vi: Lazy IO/TLB flushing enabled\n");
-+
- 	return 0;
- 
- free_domains:
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 2324f9b..ab3bc19 100644
+index ab3bc19..0afd89c 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -1706,14 +1706,6 @@ static int __init amd_iommu_init(void)
+@@ -1633,8 +1633,6 @@ int amd_iommu_init_hardware(void)
  
- 	amd_iommu_init_api();
+ 	enable_iommus();
+ 
+-	amd_iommu_init_notifier();
+-
+ 	register_syscore_ops(&amd_iommu_syscore_ops);
+ 
+ 	return ret;
+@@ -1675,6 +1673,25 @@ static bool detect_ivrs(void)
+ 	return true;
+ }
+ 
++static int amd_iommu_init_dma(void)
++{
++	int ret;
++
++	if (iommu_pass_through)
++		ret = amd_iommu_init_passthrough();
++	else
++		ret = amd_iommu_init_dma_ops();
++
++	if (ret)
++		return ret;
++
++	amd_iommu_init_api();
++
++	amd_iommu_init_notifier();
++
++	return 0;
++}
++
+ /*
+  * This is the core init function for AMD IOMMU hardware in the system.
+  * This function is called from the generic x86 DMA layer initialization
+@@ -1696,11 +1713,7 @@ static int __init amd_iommu_init(void)
+ 	if (ret)
+ 		goto free;
  
 -	if (iommu_pass_through)
--		goto out;
--
--	if (amd_iommu_unmap_flush)
--		printk(KERN_INFO "AMD-Vi: IO/TLB flush on unmap enabled\n");
+-		ret = amd_iommu_init_passthrough();
 -	else
--		printk(KERN_INFO "AMD-Vi: Lazy IO/TLB flushing enabled\n");
+-		ret = amd_iommu_init_dma_ops();
 -
- out:
- 	return ret;
++	ret = amd_iommu_init_dma();
+ 	if (ret)
+ 		goto free;
  
 -- 
 1.7.9.5
