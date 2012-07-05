@@ -1,8 +1,7 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 17/28] iommu/amd: Split device table initialization into irq
-	and dma part
-Date: Thu, 5 Jul 2012 14:36:37 +0200
-Message-ID: <1341491808-23083-18-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 19/28] iommu/amd: Add IRTE invalidation routine
+Date: Thu, 5 Jul 2012 14:36:39 +0200
+Message-ID: <1341491808-23083-20-git-send-email-joerg.roedel@amd.com>
 References: <1341491808-23083-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,67 +21,78 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When the IOMMU is enabled very early (as with irq-remapping)
-some devices are still in BIOS hand. When dma is blocked
-early this can cause lots of IO_PAGE_FAULTs. So delay the
-DMA initialization and do it right before the dma_ops are
-initialized.
+Add routine to invalidate the IOMMU cache for interupt
+translations. Also include the IRTE caches when flushing all
+IOMMU caches.
 
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c |   22 ++++++++++++++++++----
- 1 file changed, 18 insertions(+), 4 deletions(-)
+ drivers/iommu/amd_iommu.c       |   27 +++++++++++++++++++++++++++
+ drivers/iommu/amd_iommu_types.h |    1 +
+ 2 files changed, 28 insertions(+)
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index e663f1d..453f80a 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -1383,19 +1383,27 @@ static int __init init_memory_definitions(struct acpi_table_header *table)
-  * Init the device table to not allow DMA access for devices and
-  * suppress all page faults
-  */
--static void init_device_table(void)
-+static void init_device_table_dma(void)
- {
- 	u32 devid;
- 
- 	for (devid = 0; devid <= amd_iommu_last_bdf; ++devid) {
- 		set_dev_entry_bit(devid, DEV_ENTRY_VALID);
- 		set_dev_entry_bit(devid, DEV_ENTRY_TRANSLATION);
--
--		if (amd_iommu_irq_remap)
--			set_dev_entry_bit(devid, DEV_ENTRY_IRQ_TBL_EN);
- 	}
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 6282dab..7006605 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -834,6 +834,13 @@ static void build_inv_all(struct iommu_cmd *cmd)
+ 	CMD_SET_TYPE(cmd, CMD_INV_ALL);
  }
  
-+static void init_device_table(void)
++static void build_inv_irt(struct iommu_cmd *cmd, u16 devid)
++{
++	memset(cmd, 0, sizeof(*cmd));
++	cmd->data[0] = devid;
++	CMD_SET_TYPE(cmd, CMD_INV_IRT);
++}
++
+ /*
+  * Writes the command to the IOMMUs command buffer and informs the
+  * hardware about the new command.
+@@ -955,12 +962,32 @@ static void iommu_flush_all(struct amd_iommu *iommu)
+ 	iommu_completion_wait(iommu);
+ }
+ 
++static void iommu_flush_irt(struct amd_iommu *iommu, u16 devid)
++{
++	struct iommu_cmd cmd;
++
++	build_inv_irt(&cmd, devid);
++
++	iommu_queue_command(iommu, &cmd);
++}
++
++static void iommu_flush_irt_all(struct amd_iommu *iommu)
 +{
 +	u32 devid;
 +
-+	if (!amd_iommu_irq_remap)
-+		return;
++	for (devid = 0; devid <= 0xffff; ++devid)
++		iommu_flush_irt(iommu, devid);
 +
-+	for (devid = 0; devid <= amd_iommu_last_bdf; ++devid)
-+		set_dev_entry_bit(devid, DEV_ENTRY_IRQ_TBL_EN);
++	iommu_completion_wait(iommu);
 +}
 +
- static void iommu_init_flags(struct amd_iommu *iommu)
+ void iommu_flush_all_caches(struct amd_iommu *iommu)
  {
- 	iommu->acpi_flags & IVHD_FLAG_HT_TUN_EN_MASK ?
-@@ -1783,8 +1791,14 @@ static bool detect_ivrs(void)
+ 	if (iommu_feature(iommu, FEATURE_IA)) {
+ 		iommu_flush_all(iommu);
+ 	} else {
+ 		iommu_flush_dte_all(iommu);
++		iommu_flush_irt_all(iommu);
+ 		iommu_flush_tlb_all(iommu);
+ 	}
+ }
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index 1155389..0791451 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -152,6 +152,7 @@
+ #define CMD_INV_DEV_ENTRY       0x02
+ #define CMD_INV_IOMMU_PAGES	0x03
+ #define CMD_INV_IOTLB_PAGES	0x04
++#define CMD_INV_IRT		0x05
+ #define CMD_COMPLETE_PPR	0x07
+ #define CMD_INV_ALL		0x08
  
- static int amd_iommu_init_dma(void)
- {
-+	struct amd_iommu *iommu;
- 	int ret;
- 
-+	init_device_table_dma();
-+
-+	for_each_iommu(iommu)
-+		iommu_flush_all_caches(iommu);
-+
- 	if (iommu_pass_through)
- 		ret = amd_iommu_init_passthrough();
- 	else
 -- 
 1.7.9.5
