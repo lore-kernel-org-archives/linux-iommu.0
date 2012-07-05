@@ -1,7 +1,8 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 26/28] iommu/irq: Use amd_iommu_irq_ops if supported
-Date: Thu, 5 Jul 2012 14:36:46 +0200
-Message-ID: <1341491808-23083-27-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 27/28] iommu/amd: Print message to system log when irq
+	remapping is enabled
+Date: Thu, 5 Jul 2012 14:36:47 +0200
+Message-ID: <1341491808-23083-28-git-send-email-joerg.roedel@amd.com>
 References: <1341491808-23083-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,41 +22,26 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Finally enable interrupt remapping for AMD systems.
+Print an indicator to dmesg to easily find out if interrupt
+remapping is enabled of a given system.
 
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/irq_remapping.c |    5 +++++
- drivers/iommu/irq_remapping.h |    1 +
- 2 files changed, 6 insertions(+)
+ drivers/iommu/amd_iommu_init.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
-index 7a880c3..e2c06c1 100644
---- a/drivers/iommu/irq_remapping.c
-+++ b/drivers/iommu/irq_remapping.c
-@@ -47,6 +47,11 @@ early_param("intremap", setup_irqremap);
- void __init setup_irq_remapping_ops(void)
- {
- 	remap_ops = &intel_irq_remap_ops;
-+
-+#ifdef CONFIG_AMD_IOMMU
-+	if (amd_iommu_irq_ops.prepare() == 0)
-+		remap_ops = &amd_iommu_irq_ops;
-+#endif
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 1bfeef5..f2d0fdb 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -1198,6 +1198,8 @@ static void print_iommu_info(void)
+ 		}
+ 		pr_cont("\n");
+ 	}
++	if (irq_remapping_enabled)
++		pr_info("AMD-Vi: Interrupt remapping enabled\n");
  }
  
- int irq_remapping_supported(void)
-diff --git a/drivers/iommu/irq_remapping.h b/drivers/iommu/irq_remapping.h
-index b3f70c9..915a247 100644
---- a/drivers/iommu/irq_remapping.h
-+++ b/drivers/iommu/irq_remapping.h
-@@ -84,6 +84,7 @@ struct irq_remap_ops {
- };
- 
- extern struct irq_remap_ops intel_irq_remap_ops;
-+extern struct irq_remap_ops amd_iommu_irq_ops;
- 
- #else  /* CONFIG_IRQ_REMAP */
- 
+ static int __init amd_iommu_init_pci(void)
 -- 
 1.7.9.5
