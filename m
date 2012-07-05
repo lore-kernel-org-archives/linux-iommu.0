@@ -1,7 +1,8 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 12/28] iommu/amd: Keep track of HPET and IOAPIC device ids
-Date: Thu, 5 Jul 2012 14:36:32 +0200
-Message-ID: <1341491808-23083-13-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 01/28] x86/irq: Add data structure to keep AMD specific irq
+	remapping information
+Date: Thu, 5 Jul 2012 14:36:21 +0200
+Message-ID: <1341491808-23083-2-git-send-email-joerg.roedel@amd.com>
 References: <1341491808-23083-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,203 +19,87 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The IVRS ACPI table provides information about the IOAPICs
-and the HPETs available in the system and which PCI device
-ID they use in transactions. Save that information for later
-usage in interrupt remapping.
+Add a data structure to store information the IOMMU driver
+can use to get from a 'struct irq_cfg' to the remapping
+entry.
 
+Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Cc: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c       |    3 ++
- drivers/iommu/amd_iommu_init.c  |   65 +++++++++++++++++++++++++++++++++++++--
- drivers/iommu/amd_iommu_types.h |   34 ++++++++++++++++++++
- 3 files changed, 100 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/hw_irq.h       |   14 +++++++++++++-
+ arch/x86/kernel/apic/io_apic.c      |    2 +-
+ drivers/iommu/intel_irq_remapping.c |    2 +-
+ 3 files changed, 15 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 569800f..cca9c70 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -72,6 +72,9 @@ static DEFINE_SPINLOCK(iommu_pd_list_lock);
- static LIST_HEAD(dev_data_list);
- static DEFINE_SPINLOCK(dev_data_list_lock);
- 
-+LIST_HEAD(ioapic_map);
-+LIST_HEAD(hpet_map);
-+
- /*
-  * Domain for untranslated devices - only allocated
-  * if iommu=pt passed on kernel cmd line.
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 8d1780c..b4cc3a7 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -55,6 +55,7 @@
- #define IVHD_DEV_ALIAS_RANGE            0x43
- #define IVHD_DEV_EXT_SELECT             0x46
- #define IVHD_DEV_EXT_SELECT_RANGE       0x47
-+#define IVHD_DEV_SPECIAL		0x48
- 
- #define IVHD_FLAG_HT_TUN_EN_MASK        0x01
- #define IVHD_FLAG_PASSPW_EN_MASK        0x02
-@@ -696,6 +697,31 @@ static void __init set_dev_entry_from_acpi(struct amd_iommu *iommu,
- 	set_iommu_for_device(iommu, devid);
+diff --git a/arch/x86/include/asm/hw_irq.h b/arch/x86/include/asm/hw_irq.h
+index eb92a6e..b6171e6 100644
+--- a/arch/x86/include/asm/hw_irq.h
++++ b/arch/x86/include/asm/hw_irq.h
+@@ -101,6 +101,7 @@ static inline void set_io_apic_irq_attr(struct io_apic_irq_attr *irq_attr,
+ 	irq_attr->polarity	= polarity;
  }
  
-+static int add_special_device(u8 type, u8 id, u16 devid)
-+{
-+	struct devid_map *entry;
-+	struct list_head *list;
-+
-+	if (type != 1 && type != 2)
-+		return -EINVAL;
-+
-+	entry = kzalloc(sizeof(*entry), GFP_KERNEL);
-+	if (!entry)
-+		return -ENOMEM;
-+
-+	entry->id    = id;
-+	entry->devid = devid;
-+
-+	if (type == 1)
-+		list = &ioapic_map;
-+	else
-+		list = &hpet_map;
-+
-+	list_add_tail(&entry->list, list);
-+
-+	return 0;
-+}
-+
- /*
-  * Reads the device exclusion range from ACPI and initialize IOMMU with
-  * it
-@@ -723,7 +749,7 @@ static void __init set_device_exclusion_range(u16 devid, struct ivmd_header *m)
-  * Takes a pointer to an AMD IOMMU entry in the ACPI table and
-  * initializes the hardware and our data structures with it.
-  */
--static void __init init_iommu_from_acpi(struct amd_iommu *iommu,
-+static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
- 					struct ivhd_header *h)
- {
- 	u8 *p = (u8 *)h;
-@@ -873,12 +899,43 @@ static void __init init_iommu_from_acpi(struct amd_iommu *iommu,
- 							flags, ext_flags);
- 			}
- 			break;
-+		case IVHD_DEV_SPECIAL: {
-+			u8 handle, type;
-+			const char *var;
-+			u16 devid;
-+			int ret;
-+
-+			handle = e->ext & 0xff;
-+			devid  = (e->ext >>  8) & 0xffff;
-+			type   = (e->ext >> 24) & 0xff;
-+
-+			if (type == 1)
-+				var = "IOAPIC";
-+			else if (type == 2)
-+				var = "HPET";
-+			else
-+				var = "UNKNOWN";
-+
-+			DUMP_printk("  DEV_SPECIAL(%s[%d])\t\tdevid: %02x:%02x.%x\n",
-+				    var, (int)handle,
-+				    PCI_BUS(devid),
-+				    PCI_SLOT(devid),
-+				    PCI_FUNC(devid));
-+
-+			set_dev_entry_from_acpi(iommu, devid, e->flags, 0);
-+			ret = add_special_device(type, handle, devid);
-+			if (ret)
-+				return ret;
-+			break;
-+		}
- 		default:
- 			break;
- 		}
- 
- 		p += ivhd_entry_length(p);
- 	}
-+
-+	return 0;
- }
- 
- /* Initializes the device->iommu mapping for the driver */
-@@ -918,6 +975,8 @@ static void __init free_iommu_all(void)
-  */
- static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
- {
-+	int ret;
-+
- 	spin_lock_init(&iommu->lock);
- 
- 	/* Add IOMMU to internal data structures */
-@@ -953,7 +1012,9 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
- 
- 	iommu->int_enabled = false;
- 
--	init_iommu_from_acpi(iommu, h);
-+	ret = init_iommu_from_acpi(iommu, h);
-+	if (ret)
-+		return ret;
- 	init_iommu_devices(iommu);
- 
- 	return 0;
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index 6f32d7b..925885d 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -565,6 +565,16 @@ struct amd_iommu {
- 	u32 stored_l2[0x83];
++/* Intel specific interrupt remapping information */
+ struct irq_2_iommu {
+ 	struct intel_iommu *iommu;
+ 	u16 irte_index;
+@@ -108,6 +109,17 @@ struct irq_2_iommu {
+ 	u8  irte_mask;
  };
  
-+struct devid_map {
-+	struct list_head list;
-+	u8 id;
-+	u16 devid;
++/* AMD specific interrupt remapping information */
++struct irq_2_irte {
++	u16 devid; /* Device ID for IRTE table */
++	u16 index; /* Index into IRTE table*/
 +};
 +
-+/* Map HPET and IOAPIC ids to the devid used by the IOMMU */
-+extern struct list_head ioapic_map;
-+extern struct list_head hpet_map;
++union irq_remap_info {
++	struct irq_2_iommu irq_2_iommu;
++	struct irq_2_irte  irq_2_irte;
++};
 +
  /*
-  * List with all IOMMUs in the system. This list is not locked because it is
-  * only written and read at driver initialization or suspend time
-@@ -672,6 +682,30 @@ static inline u16 calc_devid(u8 bus, u8 devfn)
- 	return (((u16)bus) << 8) | devfn;
+  * This is performance-critical, we want to do it O(1)
+  *
+@@ -120,7 +132,7 @@ struct irq_cfg {
+ 	u8			vector;
+ 	u8			move_in_progress : 1;
+ #ifdef CONFIG_IRQ_REMAP
+-	struct irq_2_iommu	irq_2_iommu;
++	union irq_remap_info    irq_remap_info;
+ #endif
+ };
+ 
+diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
+index 5f0ff59..08f666c 100644
+--- a/arch/x86/kernel/apic/io_apic.c
++++ b/arch/x86/kernel/apic/io_apic.c
+@@ -72,7 +72,7 @@
+ static void irq_remap_modify_chip_defaults(struct irq_chip *chip);
+ static inline bool irq_remapped(struct irq_cfg *cfg)
+ {
+-	return cfg->irq_2_iommu.iommu != NULL;
++	return cfg->irq_remap_info.irq_2_iommu.iommu != NULL;
+ }
+ #else
+ static inline bool irq_remapped(struct irq_cfg *cfg)
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index 6d34706..e4e4334 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -43,7 +43,7 @@ static DEFINE_RAW_SPINLOCK(irq_2_ir_lock);
+ static struct irq_2_iommu *irq_2_iommu(unsigned int irq)
+ {
+ 	struct irq_cfg *cfg = irq_get_chip_data(irq);
+-	return cfg ? &cfg->irq_2_iommu : NULL;
++	return cfg ? &cfg->irq_remap_info.irq_2_iommu : NULL;
  }
  
-+static inline int get_ioapic_devid(int id)
-+{
-+	struct devid_map *entry;
-+
-+	list_for_each_entry(entry, &ioapic_map, list) {
-+		if (entry->id == id)
-+			return entry->devid;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static inline int get_hpet_devid(int id)
-+{
-+	struct devid_map *entry;
-+
-+	list_for_each_entry(entry, &hpet_map, list) {
-+		if (entry->id == id)
-+			return entry->devid;
-+	}
-+
-+	return -EINVAL;
-+}
-+
- #ifdef CONFIG_AMD_IOMMU_STATS
- 
- struct __iommu_counter {
+ int get_irte(int irq, struct irte *entry)
 -- 
 1.7.9.5
