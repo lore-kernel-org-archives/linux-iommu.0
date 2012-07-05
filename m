@@ -1,7 +1,8 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 06/28] iommu/amd: Move informational prinks out of iommu_enable
-Date: Thu, 5 Jul 2012 14:36:26 +0200
-Message-ID: <1341491808-23083-7-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 14/28] iommu/amd: Allocate data structures to keep track of
+	irq remapping tables
+Date: Thu, 5 Jul 2012 14:36:34 +0200
+Message-ID: <1341491808-23083-15-git-send-email-joerg.roedel@amd.com>
 References: <1341491808-23083-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,82 +22,85 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This function will be called before the PCI subsystem is
-initialized. Therefore dev_name doen't work and IOMMU
-information can't be printed to the klog as before. Move the
-code to print that information to a later point where PCI
-initializtion has already happened.
+To easily map device ids to interrupt remapping table
+entries a new lookup table is necessary.
 
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c |   41 +++++++++++++++++++++++-----------------
- 1 file changed, 24 insertions(+), 17 deletions(-)
+ drivers/iommu/amd_iommu_init.c  |   16 ++++++++++++++++
+ drivers/iommu/amd_iommu_types.h |    9 +++++++++
+ 2 files changed, 25 insertions(+)
 
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 1354497..e6782fa 100644
+index 34b46b7..9dc0ebc 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -318,23 +318,6 @@ static void iommu_set_inv_tlb_timeout(struct amd_iommu *iommu, int timeout)
- /* Function to enable the hardware */
- static void iommu_enable(struct amd_iommu *iommu)
+@@ -181,6 +181,12 @@ u16 *amd_iommu_alias_table;
+ struct amd_iommu **amd_iommu_rlookup_table;
+ 
+ /*
++ * This table is used to find the irq remapping table for a given device id
++ * quickly.
++ */
++struct irq_remap_table **irq_lookup_table;
++
++/*
+  * AMD IOMMU allows up to 2^16 differend protection domains. This is a bitmap
+  * to know which ones are already in use.
+  */
+@@ -1535,9 +1541,13 @@ static struct syscore_ops amd_iommu_syscore_ops = {
+ 
+ static void __init free_on_init_error(void)
  {
--	static const char * const feat_str[] = {
--		"PreF", "PPR", "X2APIC", "NX", "GT", "[5]",
--		"IA", "GA", "HE", "PC", NULL
--	};
--	int i;
--
--	printk(KERN_INFO "AMD-Vi: Enabling IOMMU at %s cap 0x%hx",
--	       dev_name(&iommu->dev->dev), iommu->cap_ptr);
--
--	if (iommu->cap & (1 << IOMMU_CAP_EFR)) {
--		printk(KERN_CONT " extended features: ");
--		for (i = 0; feat_str[i]; ++i)
--			if (iommu_feature(iommu, (1ULL << i)))
--				printk(KERN_CONT " %s", feat_str[i]);
--	}
--	printk(KERN_CONT "\n");
--
- 	iommu_feature_enable(iommu, CONTROL_IOMMU_EN);
- }
- 
-@@ -1102,6 +1085,28 @@ static int iommu_init_pci(struct amd_iommu *iommu)
- 	return pci_enable_device(iommu->dev);
- }
- 
-+static void print_iommu_info(void)
-+{
-+	static const char * const feat_str[] = {
-+		"PreF", "PPR", "X2APIC", "NX", "GT", "[5]",
-+		"IA", "GA", "HE", "PC", NULL
-+	};
-+	struct amd_iommu *iommu;
++	free_pages((unsigned long)irq_lookup_table,
++		   get_order(rlookup_table_size));
 +
-+	for_each_iommu(iommu) {
-+		int i;
-+		pr_info("AMD-Vi: Found IOMMU at %s cap 0x%hx\n",
-+			dev_name(&iommu->dev->dev), iommu->cap_ptr);
-+		if (iommu->cap & (1 << IOMMU_CAP_EFR)) {
-+			pr_info("AMD-Vi:  Extended features: ");
-+			for (i = 0; feat_str[i]; ++i)
-+				if (iommu_feature(iommu, (1ULL << i)))
-+					pr_cont(" %s", feat_str[i]);
-+		}
-+		pr_cont("\n");
-+	}
-+}
+ 	if (amd_iommu_irq_cache) {
+ 		kmem_cache_destroy(amd_iommu_irq_cache);
+ 		amd_iommu_irq_cache = NULL;
 +
- static int amd_iommu_init_pci(void)
- {
- 	struct amd_iommu *iommu;
-@@ -1118,6 +1123,8 @@ static int amd_iommu_init_pci(void)
+ 	}
  
- 	ret = amd_iommu_init_devices();
- 
-+	print_iommu_info();
+ 	amd_iommu_uninit_devices();
+@@ -1690,6 +1700,12 @@ static int __init early_amd_iommu_init(void)
+ 				0, NULL);
+ 		if (!amd_iommu_irq_cache)
+ 			goto out;
 +
- 	return ret;
- }
++		irq_lookup_table = (void *)__get_free_pages(
++				GFP_KERNEL | __GFP_ZERO,
++				get_order(rlookup_table_size));
++		if (!irq_lookup_table)
++			goto out;
+ 	}
+ 
+ 	ret = init_memory_definitions(ivrs_base);
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index c9e0049..1155389 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -175,6 +175,7 @@
+ #define DEV_ENTRY_EX            0x67
+ #define DEV_ENTRY_SYSMGT1       0x68
+ #define DEV_ENTRY_SYSMGT2       0x69
++#define DEV_ENTRY_IRQ_TBL_EN	0x80
+ #define DEV_ENTRY_INIT_PASS     0xb8
+ #define DEV_ENTRY_EINT_PASS     0xb9
+ #define DEV_ENTRY_NMI_PASS      0xba
+@@ -337,6 +338,14 @@ extern bool amd_iommu_iotlb_sup;
+ #define MAX_IRQS_PER_TABLE	256
+ #define IRQ_TABLE_ALIGNMENT	128
+ 
++struct irq_remap_table {
++	spinlock_t lock;
++	unsigned min_index;
++	u32 *table;
++};
++
++extern struct irq_remap_table **irq_lookup_table;
++
+ /* Interrupt remapping feature used? */
+ extern bool amd_iommu_irq_remap;
  
 -- 
 1.7.9.5
