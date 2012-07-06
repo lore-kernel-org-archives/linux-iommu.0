@@ -1,16 +1,10 @@
-From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH 17/28] iommu/amd: Split device table initialization into
-	irq and dma part
-Date: Fri, 6 Jul 2012 15:08:38 +0200
-Message-ID: <20120706130838.GD2639@amd.com>
-References: <1341491808-23083-1-git-send-email-joerg.roedel@amd.com>
-	<1341491808-23083-18-git-send-email-joerg.roedel@amd.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [git pull] IOMMU fixes for Linux 3.5-rc5
+Date: Fri, 6 Jul 2012 15:17:43 +0200
+Message-ID: <20120706131743.GA2364@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============4581726415513317300=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1341491808-23083-18-git-send-email-joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,84 +14,108 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jul 05, 2012 at 02:36:37PM +0200, Joerg Roedel wrote:
-> When the IOMMU is enabled very early (as with irq-remapping)
-> some devices are still in BIOS hand. When dma is blocked
-> early this can cause lots of IO_PAGE_FAULTs. So delay the
-> DMA initialization and do it right before the dma_ops are
-> initialized.
-> 
-> Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 
-Okay, I merged this patch with the previous one after another review.
-This patch basically undoes and refactors what the previous patch did.
-So it makes sense to do it all in one patch.
+--===============4581726415513317300==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="d6Gm4EdcadzBjdND"
+Content-Disposition: inline
 
-> ---
->  drivers/iommu/amd_iommu_init.c |   22 ++++++++++++++++++----
->  1 file changed, 18 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-> index e663f1d..453f80a 100644
-> --- a/drivers/iommu/amd_iommu_init.c
-> +++ b/drivers/iommu/amd_iommu_init.c
-> @@ -1383,19 +1383,27 @@ static int __init init_memory_definitions(struct acpi_table_header *table)
->   * Init the device table to not allow DMA access for devices and
->   * suppress all page faults
->   */
-> -static void init_device_table(void)
-> +static void init_device_table_dma(void)
->  {
->  	u32 devid;
->  
->  	for (devid = 0; devid <= amd_iommu_last_bdf; ++devid) {
->  		set_dev_entry_bit(devid, DEV_ENTRY_VALID);
->  		set_dev_entry_bit(devid, DEV_ENTRY_TRANSLATION);
-> -
-> -		if (amd_iommu_irq_remap)
-> -			set_dev_entry_bit(devid, DEV_ENTRY_IRQ_TBL_EN);
->  	}
->  }
->  
-> +static void init_device_table(void)
-> +{
-> +	u32 devid;
-> +
-> +	if (!amd_iommu_irq_remap)
-> +		return;
-> +
-> +	for (devid = 0; devid <= amd_iommu_last_bdf; ++devid)
-> +		set_dev_entry_bit(devid, DEV_ENTRY_IRQ_TBL_EN);
-> +}
-> +
->  static void iommu_init_flags(struct amd_iommu *iommu)
->  {
->  	iommu->acpi_flags & IVHD_FLAG_HT_TUN_EN_MASK ?
-> @@ -1783,8 +1791,14 @@ static bool detect_ivrs(void)
->  
->  static int amd_iommu_init_dma(void)
->  {
-> +	struct amd_iommu *iommu;
->  	int ret;
->  
-> +	init_device_table_dma();
-> +
-> +	for_each_iommu(iommu)
-> +		iommu_flush_all_caches(iommu);
-> +
->  	if (iommu_pass_through)
->  		ret = amd_iommu_init_passthrough();
->  	else
-> -- 
-> 1.7.9.5
 
--- 
-AMD Operating System Research Center
+--d6Gm4EdcadzBjdND
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
-General Managers: Alberto Bozzo
-Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
+Hi Linus,
+
+The following changes since commit eee53537c476c947bf7faa1c916d2f5a0ae8ec93:
+
+  iommu/amd: Fix deadlock in ppr-handling error path (2012-06-04 12:47:44 +0200)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v3.5-rc5
+
+for you to fetch changes up to 3775d4818d72081e2afa2aed2442a2b9ecfc5eab:
+
+  iommu/amd: fix type bug in flush code (2012-07-02 12:11:40 +0200)
+
+----------------------------------------------------------------
+IOMMU fixes for Linux v3.5-rc5
+
+The patches fix several issues in the AMD IOMMU driver, the NVidia SMMU
+driver, and the DMA debug code. The most important fix for the AMD IOMMU
+solves a problem with SR-IOV devices where virtual functions did not
+work with IOMMU enabled. The NVidia SMMU patch fixes a possible sleep
+while spin-lock situation (queued the small fix for v3.5, a better but
+more intrusive fix is coming for v3.6). The DMA debug patches fix a
+possible data corruption issue due to bool vs. u32 usage.
+
+----------------------------------------------------------------
+Dan Carpenter (2):
+      dma-debug: debugfs_create_bool() takes a u32 pointer
+      iommu/amd: fix type bug in flush code
+
+Hiroshi DOYU (1):
+      iommu/tegra: smmu: Fix unsleepable memory allocation
+
+Joerg Roedel (1):
+      iommu/amd: Initialize dma_ops for hotplug and sriov devices
+
+Shuah Khan (1):
+      iommu/amd: Fix missing iommu_shutdown initialization in passthrough mode
+
+ drivers/iommu/amd_iommu.c       |   11 ++++++++++-
+ drivers/iommu/amd_iommu_init.c  |    6 +++---
+ drivers/iommu/amd_iommu_types.h |    2 +-
+ drivers/iommu/tegra-smmu.c      |    4 ++--
+ lib/dma-debug.c                 |    4 ++--
+ 5 files changed, 18 insertions(+), 9 deletions(-)
+
+Please pull.
+
+Regards,
+
+	Joerg
+
+
+--d6Gm4EdcadzBjdND
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+
+iQIcBAEBAgAGBQJP9uV3AAoJECvwRC2XARrjPk8QAMFosqWmN4ZdqD6BJ7csCkVA
+tHIeO2fK43JeOIgTzgPFMnvRdEv4kM8I9CkQNWffTNbentD0YTm5WFobFrXbdTOO
+UiBw9ZKxxyQToYKSdAh/xwVoY+wxG2WFwbIV45NYoI52+8alYr9Nt3vjfRYqge3B
+lVjhsYr9li3jC0K/a49kcSLi59JUcBwLcsiL78TzaYbLSRm3wXdkDzN5EhCMeZao
+TMD/SX2p29v3jgcWqH9aNg1sum2OOuQvZre3Dxek0WwqMsBPJJHIcfsjRjAlMwYR
++DOznne6pbZf+yXrWN+BZmOvYRToy4UbYxBppPlk7QhE8cy7gMHkU4Xo8EMhb0Qy
+00thyC5UcXvPJG41wWDmbP/N3mvOg2pLQTC3QV3G9CS8mKekEvQ4Wb8vdaHhsQbp
+dvT7gXUfF++HWoC/hSdlxO0wKAiqj8vU1LpJALnqEBsXIRlEKDQENgaE2rNlr5lI
+xXbjK1R2pR0saF1OavgoKB/uVNpgmMPBdtcrRK5UGKAaPbgrogkzcfmELQIMppF/
+mMTQSX2WMumoK3ViQFNMi+thrEY1Da4cTC1IrrzaTmtdKDjbD/vNjs+rf8WiN//P
+UAwOMKnR0WhdWrA83fQCMuMhFfH3xeQxVUoe6QQBytXIqIwXmVysg/M/Pz0OF6v+
+UcSY5l7bbOoCfiEO1Oj6
+=Q5ji
+-----END PGP SIGNATURE-----
+
+--d6Gm4EdcadzBjdND--
+
+
+
+--===============4581726415513317300==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+iommu mailing list
+iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============4581726415513317300==--
