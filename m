@@ -1,73 +1,54 @@
-From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH 06/28] iommu/amd: Move informational prinks out of
-	iommu_enable
-Date: Fri, 6 Jul 2012 14:08:24 +0200
-Message-ID: <20120706120824.GA2639@amd.com>
+From: Joerg Roedel <joerg.roedel@amd.com>
+Subject: Re: [PATCH 03/28] x86/irq: Use irq_remap specific print_IO_APIC
+ paths only on Intel
+Date: Fri, 6 Jul 2012 15:05:30 +0200
+Message-ID: <20120706130530.GC2639@amd.com>
 References: <1341491808-23083-1-git-send-email-joerg.roedel@amd.com>
-	<1341491808-23083-7-git-send-email-joerg.roedel@amd.com>
-	<1341547718.27760.5.camel@joe2Laptop>
+ <1341491808-23083-4-git-send-email-joerg.roedel@amd.com>
+ <20120706085036.GB24449@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1341547718.27760.5.camel@joe2Laptop>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <20120706085036.GB24449@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Ingo Molnar <mingo@kernel.org>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, x86@kernel.org, Yinghai Lu <yinghai@kernel.org>, Suresh Siddha <suresh.b.siddha@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joe,
-
-On Thu, Jul 05, 2012 at 09:08:38PM -0700, Joe Perches wrote:
-> On Thu, 2012-07-05 at 14:36 +0200, Joerg Roedel wrote:
-> > +	static const char * const feat_str[] = {
-> > +		"PreF", "PPR", "X2APIC", "NX", "GT", "[5]",
-> > +		"IA", "GA", "HE", "PC", NULL
-> > +	};
-> > +	struct amd_iommu *iommu;
-> > +
-> > +	for_each_iommu(iommu) {
-> > +		int i;
-> > +		pr_info("AMD-Vi: Found IOMMU at %s cap 0x%hx\n",
-> > +			dev_name(&iommu->dev->dev), iommu->cap_ptr);
-> > +		if (iommu->cap & (1 << IOMMU_CAP_EFR)) {
-> > +			pr_info("AMD-Vi:  Extended features: ");
-> > +			for (i = 0; feat_str[i]; ++i)
-> > +				if (iommu_feature(iommu, (1ULL << i)))
-> > +					pr_cont(" %s", feat_str[i]);
+On Fri, Jul 06, 2012 at 10:50:36AM +0200, Ingo Molnar wrote:
 > 
-> I think this should use {} around the for loop
-> and this would be better as:
-> 
-> 	static const char * const feat_str[] = {
-> 		"PreF", "PPR", "X2APIC", "NX", "GT", "[5]",
-> 		"IA", "GA", "HE", "PC"
-> 	};
-> []
-> 			for (i = 0; ARRAY_SIZE(feat_str); i++) {
-> 				if (iommu_feature(iommu, (1ULL << i)))
-> 					pr_cont(" %s", feat_str[i]);
->  			}
+> * Joerg Roedel <joerg.roedel@amd.com> wrote:
+> >  extern int irq_remapping_enabled;
+> > +extern int intel_irq_remap_debug;
 
-Changed that, thanks.
+> Instead of yet another set of global flags thrown around the 
+> kernel please properly factor out this code, its data structures 
+> and methods: introduce a single descriptor structure that 
+> describes this piece of hardware, with debugging flags part of 
+> this structure - with operations function pointer structure and 
+> such.
 
-> I don't see the utility of the separate function and
-> this could just be inlined in the calling function.
+Not sure I understand what you mean. So, simplified, from a hardware
+point of view we have IO-APICs and MSIs. This doesn't change with
+IOMMU-based interrupt remapping. The IO-APICs and MSIs are properly
+abstraced through 'struct irq_chip'.
 
-Well, the benefit is that the function call can be easily moved to
-another place if necessary. So I left the printks in the seperate
-function. The compiler will inline them anyway.
+When an IOMMU comes into play the IO-APICs and MSIs need to be
+programmed differently so that they send the IRQ messages in a way the
+IOMMU can remap. This is done by using a different 'struct irq_chip'
+when interrupt remapping is enabled.
 
-Thanks,
+For IRQ remapping there are two (not so much) different implementations
+which are abstracted through 'struct irq_remap_ops' made accessible via
+functions.
+
+So what I _think_ you mean is to add another call-back to the
+irq_remap_ops to print out debugging information and use that call-back
+when IRQ remapping is enabled instead of the routine in io_apic.c. Is
+that right?
+
+Regards,
 
 	Joerg
 
