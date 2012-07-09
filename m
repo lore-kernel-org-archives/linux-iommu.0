@@ -1,16 +1,18 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: atomic context for iommu_map call
-Date: Mon, 9 Jul 2012 11:42:10 +0200
-Message-ID: <20120709094210.GH2639@amd.com>
-References: <20120622112812.GV8140@oktetlabs.ru>
-	<20120626085853.GX2624@amd.com>
-	<20120626180743.GV15796@sequoia.sous-sol.org>
+Subject: Re: [PATCH 03/28] x86/irq: Use irq_remap specific print_IO_APIC
+	paths only on Intel
+Date: Mon, 9 Jul 2012 14:32:30 +0200
+Message-ID: <20120709123230.GA25282@amd.com>
+References: <1341491808-23083-1-git-send-email-joerg.roedel@amd.com>
+	<1341491808-23083-4-git-send-email-joerg.roedel@amd.com>
+	<20120706085036.GB24449@gmail.com> <20120706130530.GC2639@amd.com>
+	<20120706140037.GA22845@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20120626180743.GV15796-JyIX8gxvWYPr2PDY2+4mTGD2FQJk+8+b@public.gmane.org>
+In-Reply-To: <20120706140037.GA22845-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,40 +22,65 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Chris Wright <chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org>
-Cc: "Alexandra N. Kossovsky" <Alexandra.Kossovsky-mK/T7fl7eHLILq5++fvS8w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Robert Stonehouse <rstonehouse-s/n/eUQHGBpZroRs9YW3xA@public.gmane.org>
+To: Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jun 26, 2012 at 11:07:43AM -0700, Chris Wright wrote:
-> * Joerg Roedel (joerg.roedel-5C7GfCeVMHo@public.gmane.org) wrote:
-> > On Fri, Jun 22, 2012 at 03:28:14PM +0400, Alexandra N. Kossovsky wrote:
-> > > Hello.
-> > > 
-> > > It is not clear from the documentation if iommu_map()/iommu_unmap()
-> > > functions may be called from atomic context.
-> > > In case of Intel IOMMU, it works; in case of AMD IOMMU, it does not.
-> > > 
-> > > Was it done by purpose?  May I propose a patch for AMD IOMMU replacing
-> > > GFP_KERNEL by GFP_ATOMIC to make things better?
-> > 
-> > Well, a better option would be to have an iommu_map_atomic() alongside
-> > the current iommu_map API call.
+On Fri, Jul 06, 2012 at 04:00:37PM +0200, Ingo Molnar wrote:
+> ( A proper abstraction would stick it all into some sort PCI 
+>   driver alike structure, including enumeration, initialization, 
+>   debugging and other non-core details. )
+
+This is certainly a multi-cycle process to make sure we do not break
+everything from one release to another. But cleaning that 4000+ lines
+monster up is a good thing, I agree with that. 
+
+> So the way this could work in a cleaner fashion is to 
+> encapsulate the logic even more. Today we have a per irq_desc 
+> irq_cfg data descriptor, but there's still global knowledge in 
+> actual vector allocation such as create_irq() or 
+> msi_compose_msg(). Patterns like:
 > 
-> A simple change for ->map to include flags and an iommu_map_atomic helper
-> that calls ->map w/ GFP_ATOMIC will hit this in AMD IOMMU:
+>         if (irq_remapped(cfg)) {
+>                 compose_remapped_msi_msg(pdev, irq, dest, msg, hpet_id);
+>                 return err;
+>         }
 > 
->         mutex_lock(&domain->api_lock);
-> -       ret = iommu_map_page(domain, iova, paddr, prot, page_size);
-> +       ret = iommu_map_page(domain, iova, paddr, prot, page_size, flags);
->         mutex_unlock(&domain->api_lock);
+>         if (x2apic_enabled())
+>                 msg->address_hi = MSI_ADDR_BASE_HI |
+>                                   MSI_ADDR_EXT_DEST_ID(dest);
+>         else
+>                 msg->address_hi = MSI_ADDR_BASE_HI;
+> 
+> all all signs of insufficient abstraction.
 
-Yes, something like this was in my mind too. Can you send this as a real
-patch-set for inclusion or is it better if someone else is picking this
-up?
+Why was this code merged when you are unhappy with it?
+
+About the irq_remapped() thing: to abstract this properly it has to be a
+per-irq abstraction, because in the MSI case some interrupts may be
+remapped and others may be not. In the AMD IOMMU case for example, the
+MSI interrupt of the IOMMU device itself is not remapped but all others
+are. So function pointers in 'struct irq_cfg' come into mind for that.
+What do you think about that?
+
+> More importantly, all the silly open-coded if (irq_remapping_enabled)
+> checks should be eliminated from core x86 code. IRQ remapping
+> should be either be an irq_chip detail or should live in a
+> separate layer.
+
+I'll start with factoring out these irq_remapping_enabled and post the
+results so that we can agree on the right direction. I gained some
+experience with this code while factoring out all the VT-d internals
+from it in one of the last cycles.
+
+> So before extending all this please get this into shape.
+
+What about Patches 1 and 2? Any comments on these or are they fine?
 
 
-	Joerg
+Kind Regards,
 
+     Joerg
 
 -- 
 AMD Operating System Research Center
