@@ -1,90 +1,159 @@
-From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH 03/28] x86/irq: Use irq_remap specific print_IO_APIC
-	paths only on Intel
-Date: Mon, 9 Jul 2012 14:32:30 +0200
-Message-ID: <20120709123230.GA25282@amd.com>
-References: <1341491808-23083-1-git-send-email-joerg.roedel@amd.com>
-	<1341491808-23083-4-git-send-email-joerg.roedel@amd.com>
-	<20120706085036.GB24449@gmail.com> <20120706130530.GC2639@amd.com>
-	<20120706140037.GA22845@gmail.com>
+From: Omar Ramirez Luna <omar.luna@linaro.org>
+Subject: Re: [PATCH 3/6] ARM: OMAP4: hwmod data: add mmu hwmod for ipu and dsp
+Date: Mon, 9 Jul 2012 08:50:02 -0500
+Message-ID: <CALLhW=6-Yn=X04nVe6FXXW5JE_t1DVSOvKjocfjYEtxvzkFerg@mail.gmail.com>
+References: <1339811764-5337-1-git-send-email-omar.luna@linaro.org>
+	<1339811764-5337-4-git-send-email-omar.luna@linaro.org>
+	<4FE07268.7040606@ti.com>
+	<CALLhW=67d7=4Jx1T4Kn5ddNz7vQ5YeN4AzuOuXrW1_UGYwpG2A@mail.gmail.com>
+	<4FE0BB57.3080403@ti.com>
+	<CALLhW=4rnUFVciYe8OD+HaUr21qWy+8viJru3VKg1QEgXxofAQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20120706140037.GA22845-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <CALLhW=4rnUFVciYe8OD+HaUr21qWy+8viJru3VKg1QEgXxofAQ@mail.gmail.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Paul Walmsley <paul@pwsan.com>, "Cousson, Benoit" <b-cousson@ti.com>
+Cc: Tony Lindgren <tony@atomide.com>, Russell King <linux@arm.linux.org.uk>, Ohad Ben-Cohen <ohad@wizery.com>, Joerg Roedel <joerg.roedel@amd.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Felipe Contreras <felipe.contreras@gmail.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jul 06, 2012 at 04:00:37PM +0200, Ingo Molnar wrote:
-> ( A proper abstraction would stick it all into some sort PCI 
->   driver alike structure, including enumeration, initialization, 
->   debugging and other non-core details. )
+Hi Paul,
 
-This is certainly a multi-cycle process to make sure we do not break
-everything from one release to another. But cleaning that 4000+ lines
-monster up is a good thing, I agree with that. 
+On 27 June 2012 20:27, Omar Ramirez Luna <omar.luna@linaro.org> wrote:
+> On 19 June 2012 12:48, Cousson, Benoit <b-cousson@ti.com> wrote:
+>> On 6/19/2012 6:39 PM, Omar Ramirez Luna wrote:
+>>>
+>>> Hi Benoit,
+>>>
+>>> On 19 June 2012 07:36, Cousson, Benoit <b-cousson@ti.com> wrote:
+>>>>
+>>>> On 6/16/2012 3:56 AM, Omar Ramirez Luna wrote:
+>>>
+>>> ...
+>>>>>
+>>>>> +static struct omap_hwmod omap44xx_ipu_mmu_hwmod = {
+>>>>> +     .name           = "ipu_mmu",
+>>>>> +     .class          = &omap44xx_mmu_hwmod_class,
+>>>>> +     .clkdm_name     = "ducati_clkdm",
+>>>>> +     .mpu_irqs       = omap44xx_ipu_mmu_irqs,
+>>>>> +     .rst_lines      = omap44xx_ipu_mmu_resets,
+>>>>> +     .rst_lines_cnt  = ARRAY_SIZE(omap44xx_ipu_mmu_resets),
+>>>>> +     .main_clk       = "ipu_fck",
+>>>>> +     .prcm = {
+>>>>> +             .omap4 = {
+>>>>> +                     .clkctrl_offs =
+>>>>> OMAP4_CM_DUCATI_DUCATI_CLKCTRL_OFFSET,
+>>>>> +                     .rstctrl_offs = OMAP4_RM_DUCATI_RSTCTRL_OFFSET,
+>>>>> +                     .context_offs =
+>>>>> OMAP4_RM_DUCATI_DUCATI_CONTEXT_OFFSET,
+>>>>> +                     .modulemode   = MODULEMODE_HWCTRL,
+>>>>> +             },
+>>>>> +     },
+>>>>> +     .dev_attr       = &ipu_mmu_dev_attr,
+>>>>> +};
+>>>>
+>>>>
+>>>> In fact, the MMU_IPU hwmod is now almost the same one than the previous
+>>>> IPU one...
+>>>> If we do that we should maybe just rename the IPU -> MMU_IPU and DSP ->
+>>>> MMU_DSP.
+>>>>
+>>>> But by doing that we will assume that the MMU does represent the
+>>>> subsystem, which is not necessarily super nice.
+>>>>
+>>>> I guess that a much better representation will be to keep the subsystem
+>>>> (IPU) to handle the PRCM part:
+>>>>
+>>>> +       .main_clk       = "ipu_fck",
+>>>> +       .prcm = {
+>>>> +               .clkctrl_offs = OMAP4_CM_DUCATI_DUCATI_CLKCTRL_OFFSET,
+>>>> +               .rstctrl_offs = OMAP4_RM_DUCATI_RSTCTRL_OFFSET,
+>>>> +               .context_offs = OMAP4_RM_DUCATI_DUCATI_CONTEXT_OFFSET,
+>>>> +               .modulemode   = MODULEMODE_HWCTRL,
+>>>>
+>>>> And then the MMU_IPU will handle the configuration registers part and the
+>>>> reset + irq.
+>>>>
+>>>> But then, you will have to create a parent child dependency between your
+>>>> devices to ensure that the IPU subsystem device will be enabled before
+>>>> trying to access the MMU_IPU.
+>>>>
+>>>> This is what the DSS is about to do to handle the same kind of power
+>>>> dependency. The DSS device is the parent of all the DSS IPs (DISPC, HDMI...)
+>>>> and thus pm_runtime will ensure that the parent is enabled before trying to
+>>>> enable the children.
+>>>>
+>>>> In term of DT, just to illustrate the situation, it will be something
+>>>> like that:
+>>>>
+>>>> ipu {
+>>>>        compatible = "simple-bus";
+>>>>        ti,hwmods = "ipu";
+>>>>
+>>>>        ipu_mmu: mmu@4a066000 {
+>>>>                compatible = "omap-mmu";
+>>>>                ti,hwmods = "mmu_ipu";
+>>>>                reg...;
+>>>>                irqs...;
+>>>>        }
+>>>> }
+>>>>
+>>>> Is it something you can handle with your current framework?
+>>>
+>>>
+>>> I agree it would be nice only IPU managed the prcm, however we can't
+>>> do that right now because hwmod expects the IP block to be out of
+>>> reset to continue the _enable sequence. On IPU both reset lines are
+>>> asserted at that point and hence _are_any_hardreset_lines_asserted
+>>> check will bail out, and ipu resets can't be lifted without a
+>>> configured iommu otherwise it might execute random garbage.
+>>
+>>
+>> That's a good point, but like Paul said, the hard reset was removed outside
+>> of the fmwk due to the lack of understanding about the real usage / need for
+>> it.
+>>
+>> If we do have a better understanding, we might add some more support in the
+>> fmwk or at least improve it.
+>>
+>> I'm now realizing that aborting the init if some reset lines are asserted is
+>> not what we want to do for the IPU SS hwmod that will contain the IPU
+>> (processor) reset control.
+>> In fact the previous approach with a fake hwmod for the ipu_c0 processor
+>> would have been avoided that issue.
+>>
+>> If we do not want to go back with that, we should clearly revise the
+>> _are_any_hardreset_lines_asserted approach and not prevent the init in such
+>> case since it will prevent all the subsystem to start properly.
+>>
+>>
+>>> So, for IPU and DSP the mmu must be deasserted and configured before
+>>> the processor reset line (which is more like a parking brake) is
+>>> deasserted, and the latter should be made before _enable is called so
+>>> it can fully execute the enable sequence.
+>>
+>>
+>> Yep, so we have to change the way it is handled today.
+>>
+>>
+>> Paul,
+>>
+>> If we consider that the reset lines are stored in the subsystem hwmod (IPU,
+>> DSP or IVA), we cannot prevent the init phase because some line are
+>> asserted. Otherwise we will never allow the MMU or processor to be enabled
+>> later.
+>> We might have to remove that check, maybe based on flag if we want to keep
+>> that functionality or do an explicit reset control like we use to do.
+>>
+>> What do you think?
+>
+> I was waiting for some comments then I realized Paul wasn't actually
+> in the list of recipients for this email.
 
-> So the way this could work in a cleaner fashion is to 
-> encapsulate the logic even more. Today we have a per irq_desc 
-> irq_cfg data descriptor, but there's still global knowledge in 
-> actual vector allocation such as create_irq() or 
-> msi_compose_msg(). Patterns like:
-> 
->         if (irq_remapped(cfg)) {
->                 compose_remapped_msi_msg(pdev, irq, dest, msg, hpet_id);
->                 return err;
->         }
-> 
->         if (x2apic_enabled())
->                 msg->address_hi = MSI_ADDR_BASE_HI |
->                                   MSI_ADDR_EXT_DEST_ID(dest);
->         else
->                 msg->address_hi = MSI_ADDR_BASE_HI;
-> 
-> all all signs of insufficient abstraction.
+Any chance you had time to check on this? While at it, could you please check:
 
-Why was this code merged when you are unhappy with it?
+http://www.mail-archive.com/linux-omap@vger.kernel.org/msg70443.html
 
-About the irq_remapped() thing: to abstract this properly it has to be a
-per-irq abstraction, because in the MSI case some interrupts may be
-remapped and others may be not. In the AMD IOMMU case for example, the
-MSI interrupt of the IOMMU device itself is not remapped but all others
-are. So function pointers in 'struct irq_cfg' come into mind for that.
-What do you think about that?
+Thanks,
 
-> More importantly, all the silly open-coded if (irq_remapping_enabled)
-> checks should be eliminated from core x86 code. IRQ remapping
-> should be either be an irq_chip detail or should live in a
-> separate layer.
-
-I'll start with factoring out these irq_remapping_enabled and post the
-results so that we can agree on the right direction. I gained some
-experience with this code while factoring out all the VT-d internals
-from it in one of the last cycles.
-
-> So before extending all this please get this into shape.
-
-What about Patches 1 and 2? Any comments on these or are they fine?
-
-
-Kind Regards,
-
-     Joerg
-
--- 
-AMD Operating System Research Center
-
-Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
-General Managers: Alberto Bozzo
-Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
+Omar
