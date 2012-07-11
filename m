@@ -1,7 +1,7 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 25/27] iommu/irq: Use amd_iommu_irq_ops if supported
-Date: Wed, 11 Jul 2012 15:39:10 +0200
-Message-ID: <1342013952-10174-26-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 15/27] iommu/amd: Check if IOAPIC information is correct
+Date: Wed, 11 Jul 2012 15:39:00 +0200
+Message-ID: <1342013952-10174-16-git-send-email-joerg.roedel@amd.com>
 References: <1342013952-10174-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,28 +21,96 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Finally enable interrupt remapping for AMD systems.
+When the IOAPIC information provided in the IVRS table is
+not correct or not complete the system may not boot at all
+when interrupt remapping is enabled. So check if this
+information is correct and print out a firmware bug message
+when it is not.
 
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/irq_remapping.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/iommu/Kconfig          |    2 +-
+ drivers/iommu/amd_iommu_init.c |   27 ++++++++++++++++++++++++---
+ 2 files changed, 25 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
-index 9276996..92ce0c7 100644
---- a/drivers/iommu/irq_remapping.c
-+++ b/drivers/iommu/irq_remapping.c
-@@ -51,6 +51,11 @@ early_param("intremap", setup_irqremap);
- void __init setup_irq_remapping_ops(void)
- {
- 	remap_ops = &intel_irq_remap_ops;
-+
-+#ifdef CONFIG_AMD_IOMMU
-+	if (amd_iommu_irq_ops.prepare() == 0)
-+		remap_ops = &amd_iommu_irq_ops;
-+#endif
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 3408937..7be6d93 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -38,7 +38,7 @@ config AMD_IOMMU
+ 	select PCI_PRI
+ 	select PCI_PASID
+ 	select IOMMU_API
+-	depends on X86_64 && PCI && ACPI
++	depends on X86_64 && PCI && ACPI && X86_IO_APIC
+ 	---help---
+ 	  With this option you can enable support for AMD IOMMU hardware in
+ 	  your system. An IOMMU is a hardware component which provides
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 473a51d..a25201f 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -33,6 +33,7 @@
+ #include <asm/gart.h>
+ #include <asm/x86_init.h>
+ #include <asm/iommu_table.h>
++#include <asm/io_apic.h>
+ 
+ #include "amd_iommu_proto.h"
+ #include "amd_iommu_types.h"
+@@ -1575,6 +1576,23 @@ static void __init free_on_init_error(void)
+ #endif
  }
  
- int irq_remapping_supported(void)
++static bool __init check_ioapic_information(void)
++{
++	int idx;
++
++	for (idx = 0; idx < nr_ioapics; ++idx) {
++		int id = mpc_ioapic_id(idx);
++
++		if (get_ioapic_devid(id) < 0) {
++			pr_err(FW_BUG "AMD-Vi: IO-APIC[%d] not in IVRS table\n", id);
++			pr_err("AMD-Vi: Disabling interrupt remapping due to BIOS Bug\n");
++			return false;
++		}
++	}
++
++	return true;
++}
++
+ /*
+  * This is the hardware init function for AMD IOMMU in the system.
+  * This function is called either from amd_iommu_init or from the interrupt
+@@ -1661,9 +1679,6 @@ static int __init early_amd_iommu_init(void)
+ 	if (amd_iommu_pd_alloc_bitmap == NULL)
+ 		goto out;
+ 
+-	/* init the device table */
+-	init_device_table();
+-
+ 	/*
+ 	 * let all alias entries point to itself
+ 	 */
+@@ -1686,6 +1701,9 @@ static int __init early_amd_iommu_init(void)
+ 	if (ret)
+ 		goto out;
+ 
++	if (amd_iommu_irq_remap)
++		amd_iommu_irq_remap = check_ioapic_information();
++
+ 	if (amd_iommu_irq_remap) {
+ 		/*
+ 		 * Interrupt remapping enabled, create kmem_cache for the
+@@ -1709,6 +1727,9 @@ static int __init early_amd_iommu_init(void)
+ 	if (ret)
+ 		goto out;
+ 
++	/* init the device table */
++	init_device_table();
++
+ out:
+ 	/* Don't leak any ACPI memory */
+ 	early_acpi_os_unmap_memory((char __iomem *)ivrs_base, ivrs_size);
 -- 
 1.7.9.5
