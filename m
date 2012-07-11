@@ -1,14 +1,15 @@
-From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 17/27] iommu/amd: Make sure IOMMU is not considered to
-	translate itself
-Date: Wed, 11 Jul 2012 15:39:02 +0200
-Message-ID: <1342013952-10174-18-git-send-email-joerg.roedel@amd.com>
+From: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 01/27] x86/irq: Add data structure to keep AMD specific
+	irq remapping information
+Date: Wed, 11 Jul 2012 14:42:03 -0700
+Message-ID: <CAE9FiQUEYVMi46WYfLDDUO=PuTHYbmqXreZnCWLRdUjBH2iH4Q@mail.gmail.com>
 References: <1342013952-10174-1-git-send-email-joerg.roedel@amd.com>
+	<1342013952-10174-2-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1342013952-10174-1-git-send-email-joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <1342013952-10174-2-git-send-email-joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,36 +19,100 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The IVRS table usually includes the IOMMU device. But the
-IOMMU does never translate itself, so make sure the IOMMU
-driver knows this.
+On Wed, Jul 11, 2012 at 6:38 AM, Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org> wrote:
+> Add a data structure to store information the IOMMU driver
+> can use to get from a 'struct irq_cfg' to the remapping
+> entry.
+>
+> Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+> Cc: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> Cc: Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+> ---
+>  arch/x86/include/asm/hw_irq.h       |   14 +++++++++++++-
+>  arch/x86/kernel/apic/io_apic.c      |    2 +-
+>  drivers/iommu/intel_irq_remapping.c |    2 +-
+>  3 files changed, 15 insertions(+), 3 deletions(-)
+>
+> diff --git a/arch/x86/include/asm/hw_irq.h b/arch/x86/include/asm/hw_irq.h
+> index eb92a6e..b6171e6 100644
+> --- a/arch/x86/include/asm/hw_irq.h
+> +++ b/arch/x86/include/asm/hw_irq.h
+> @@ -101,6 +101,7 @@ static inline void set_io_apic_irq_attr(struct io_apic_irq_attr *irq_attr,
+>         irq_attr->polarity      = polarity;
+>  }
+>
+> +/* Intel specific interrupt remapping information */
+>  struct irq_2_iommu {
+>         struct intel_iommu *iommu;
+>         u16 irte_index;
+> @@ -108,6 +109,17 @@ struct irq_2_iommu {
+>         u8  irte_mask;
+>  };
+>
+> +/* AMD specific interrupt remapping information */
+> +struct irq_2_irte {
+> +       u16 devid; /* Device ID for IRTE table */
+> +       u16 index; /* Index into IRTE table*/
+> +};
+> +
+> +union irq_remap_info {
+> +       struct irq_2_iommu irq_2_iommu;
+> +       struct irq_2_irte  irq_2_irte;
+> +};
+> +
+>  /*
+>   * This is performance-critical, we want to do it O(1)
+>   *
+> @@ -120,7 +132,7 @@ struct irq_cfg {
+>         u8                      vector;
+>         u8                      move_in_progress : 1;
+>  #ifdef CONFIG_IRQ_REMAP
+> -       struct irq_2_iommu      irq_2_iommu;
+> +       union irq_remap_info    irq_remap_info;
 
-Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
----
- drivers/iommu/amd_iommu_init.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+how about
++union {
++       struct irq_2_iommu irq_2_iommu;
++       struct irq_2_irte  irq_2_irte;
++};
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 0b4093c..820f688 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -1018,6 +1018,13 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
- 	ret = init_iommu_from_acpi(iommu, h);
- 	if (ret)
- 		return ret;
-+
-+	/*
-+	 * Make sure IOMMU is not considered to translate itself. The IVRS
-+	 * table tells us so, but this is a lie!
-+	 */
-+	amd_iommu_rlookup_table[iommu->devid] = NULL;
-+
- 	init_iommu_devices(iommu);
- 
- 	return 0;
--- 
-1.7.9.5
+instead?
+
+>  #endif
+>  };
+>
+> diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
+> index 5f0ff59..08f666c 100644
+> --- a/arch/x86/kernel/apic/io_apic.c
+> +++ b/arch/x86/kernel/apic/io_apic.c
+> @@ -72,7 +72,7 @@
+>  static void irq_remap_modify_chip_defaults(struct irq_chip *chip);
+>  static inline bool irq_remapped(struct irq_cfg *cfg)
+>  {
+> -       return cfg->irq_2_iommu.iommu != NULL;
+> +       return cfg->irq_remap_info.irq_2_iommu.iommu != NULL;
+>  }
+>  #else
+>  static inline bool irq_remapped(struct irq_cfg *cfg)
+> diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+> index 6d34706..e4e4334 100644
+> --- a/drivers/iommu/intel_irq_remapping.c
+> +++ b/drivers/iommu/intel_irq_remapping.c
+> @@ -43,7 +43,7 @@ static DEFINE_RAW_SPINLOCK(irq_2_ir_lock);
+>  static struct irq_2_iommu *irq_2_iommu(unsigned int irq)
+>  {
+>         struct irq_cfg *cfg = irq_get_chip_data(irq);
+> -       return cfg ? &cfg->irq_2_iommu : NULL;
+> +       return cfg ? &cfg->irq_remap_info.irq_2_iommu : NULL;
+>  }
+>
+>  int get_irte(int irq, struct irte *entry)
+> --
+> 1.7.9.5
+>
+>
