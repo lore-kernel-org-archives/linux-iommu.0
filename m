@@ -1,8 +1,7 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 01/27] x86/irq: Add data structure to keep AMD specific irq
-	remapping information
-Date: Wed, 11 Jul 2012 15:38:46 +0200
-Message-ID: <1342013952-10174-2-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 06/27] iommu/amd: Move informational prinks out of iommu_enable
+Date: Wed, 11 Jul 2012 15:38:51 +0200
+Message-ID: <1342013952-10174-7-git-send-email-joerg.roedel@amd.com>
 References: <1342013952-10174-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,87 +18,88 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add a data structure to store information the IOMMU driver
-can use to get from a 'struct irq_cfg' to the remapping
-entry.
+This function will be called before the PCI subsystem is
+initialized. Therefore dev_name doen't work and IOMMU
+information can't be printed to the klog as before. Move the
+code to print that information to a later point where PCI
+initializtion has already happened.
 
-Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-Cc: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- arch/x86/include/asm/hw_irq.h       |   14 +++++++++++++-
- arch/x86/kernel/apic/io_apic.c      |    2 +-
- drivers/iommu/intel_irq_remapping.c |    2 +-
- 3 files changed, 15 insertions(+), 3 deletions(-)
+ drivers/iommu/amd_iommu_init.c |   44 ++++++++++++++++++++++++----------------
+ 1 file changed, 27 insertions(+), 17 deletions(-)
 
-diff --git a/arch/x86/include/asm/hw_irq.h b/arch/x86/include/asm/hw_irq.h
-index eb92a6e..b6171e6 100644
---- a/arch/x86/include/asm/hw_irq.h
-+++ b/arch/x86/include/asm/hw_irq.h
-@@ -101,6 +101,7 @@ static inline void set_io_apic_irq_attr(struct io_apic_irq_attr *irq_attr,
- 	irq_attr->polarity	= polarity;
- }
- 
-+/* Intel specific interrupt remapping information */
- struct irq_2_iommu {
- 	struct intel_iommu *iommu;
- 	u16 irte_index;
-@@ -108,6 +109,17 @@ struct irq_2_iommu {
- 	u8  irte_mask;
- };
- 
-+/* AMD specific interrupt remapping information */
-+struct irq_2_irte {
-+	u16 devid; /* Device ID for IRTE table */
-+	u16 index; /* Index into IRTE table*/
-+};
-+
-+union irq_remap_info {
-+	struct irq_2_iommu irq_2_iommu;
-+	struct irq_2_irte  irq_2_irte;
-+};
-+
- /*
-  * This is performance-critical, we want to do it O(1)
-  *
-@@ -120,7 +132,7 @@ struct irq_cfg {
- 	u8			vector;
- 	u8			move_in_progress : 1;
- #ifdef CONFIG_IRQ_REMAP
--	struct irq_2_iommu	irq_2_iommu;
-+	union irq_remap_info    irq_remap_info;
- #endif
- };
- 
-diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
-index 5f0ff59..08f666c 100644
---- a/arch/x86/kernel/apic/io_apic.c
-+++ b/arch/x86/kernel/apic/io_apic.c
-@@ -72,7 +72,7 @@
- static void irq_remap_modify_chip_defaults(struct irq_chip *chip);
- static inline bool irq_remapped(struct irq_cfg *cfg)
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index fa6ca8b..bcdcaac 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -312,23 +312,6 @@ static void iommu_set_inv_tlb_timeout(struct amd_iommu *iommu, int timeout)
+ /* Function to enable the hardware */
+ static void iommu_enable(struct amd_iommu *iommu)
  {
--	return cfg->irq_2_iommu.iommu != NULL;
-+	return cfg->irq_remap_info.irq_2_iommu.iommu != NULL;
- }
- #else
- static inline bool irq_remapped(struct irq_cfg *cfg)
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 6d34706..e4e4334 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -43,7 +43,7 @@ static DEFINE_RAW_SPINLOCK(irq_2_ir_lock);
- static struct irq_2_iommu *irq_2_iommu(unsigned int irq)
- {
- 	struct irq_cfg *cfg = irq_get_chip_data(irq);
--	return cfg ? &cfg->irq_2_iommu : NULL;
-+	return cfg ? &cfg->irq_remap_info.irq_2_iommu : NULL;
+-	static const char * const feat_str[] = {
+-		"PreF", "PPR", "X2APIC", "NX", "GT", "[5]",
+-		"IA", "GA", "HE", "PC", NULL
+-	};
+-	int i;
+-
+-	printk(KERN_INFO "AMD-Vi: Enabling IOMMU at %s cap 0x%hx",
+-	       dev_name(&iommu->dev->dev), iommu->cap_ptr);
+-
+-	if (iommu->cap & (1 << IOMMU_CAP_EFR)) {
+-		printk(KERN_CONT " extended features: ");
+-		for (i = 0; feat_str[i]; ++i)
+-			if (iommu_feature(iommu, (1ULL << i)))
+-				printk(KERN_CONT " %s", feat_str[i]);
+-	}
+-	printk(KERN_CONT "\n");
+-
+ 	iommu_feature_enable(iommu, CONTROL_IOMMU_EN);
  }
  
- int get_irte(int irq, struct irte *entry)
+@@ -1096,6 +1079,31 @@ static int iommu_init_pci(struct amd_iommu *iommu)
+ 	return pci_enable_device(iommu->dev);
+ }
+ 
++static void print_iommu_info(void)
++{
++	static const char * const feat_str[] = {
++		"PreF", "PPR", "X2APIC", "NX", "GT", "[5]",
++		"IA", "GA", "HE", "PC"
++	};
++	struct amd_iommu *iommu;
++
++	for_each_iommu(iommu) {
++		int i;
++
++		pr_info("AMD-Vi: Found IOMMU at %s cap 0x%hx\n",
++			dev_name(&iommu->dev->dev), iommu->cap_ptr);
++
++		if (iommu->cap & (1 << IOMMU_CAP_EFR)) {
++			pr_info("AMD-Vi:  Extended features: ");
++			for (i = 0; ARRAY_SIZE(feat_str); ++i) {
++				if (iommu_feature(iommu, (1ULL << i)))
++					pr_cont(" %s", feat_str[i]);
++			}
++		}
++		pr_cont("\n");
++	}
++}
++
+ static int amd_iommu_init_pci(void)
+ {
+ 	struct amd_iommu *iommu;
+@@ -1112,6 +1120,8 @@ static int amd_iommu_init_pci(void)
+ 
+ 	ret = amd_iommu_init_devices();
+ 
++	print_iommu_info();
++
+ 	return ret;
+ }
+ 
 -- 
 1.7.9.5
