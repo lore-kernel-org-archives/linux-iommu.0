@@ -1,7 +1,8 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 15/27] iommu/amd: Check if IOAPIC information is correct
-Date: Wed, 11 Jul 2012 15:39:00 +0200
-Message-ID: <1342013952-10174-16-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 23/27] iommu/amd: Add initialization routines for AMD
+	interrupt remapping
+Date: Wed, 11 Jul 2012 15:39:08 +0200
+Message-ID: <1342013952-10174-24-git-send-email-joerg.roedel@amd.com>
 References: <1342013952-10174-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,96 +22,143 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When the IOAPIC information provided in the IVRS table is
-not correct or not complete the system may not boot at all
-when interrupt remapping is enabled. So check if this
-information is correct and print out a firmware bug message
-when it is not.
+Add the six routines required to setup interrupt remapping
+with the AMD IOMMU. Also put it all together into the AMD
+specific irq_remap_ops.
 
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/Kconfig          |    2 +-
- drivers/iommu/amd_iommu_init.c |   27 ++++++++++++++++++++++++---
- 2 files changed, 25 insertions(+), 4 deletions(-)
+ drivers/iommu/amd_iommu.c       |   18 +++++++++++++++++
+ drivers/iommu/amd_iommu_init.c  |   42 +++++++++++++++++++++++++++++++++++++++
+ drivers/iommu/amd_iommu_proto.h |    8 ++++++++
+ drivers/iommu/irq_remapping.h   |    1 +
+ 4 files changed, 69 insertions(+)
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 3408937..7be6d93 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -38,7 +38,7 @@ config AMD_IOMMU
- 	select PCI_PRI
- 	select PCI_PASID
- 	select IOMMU_API
--	depends on X86_64 && PCI && ACPI
-+	depends on X86_64 && PCI && ACPI && X86_IO_APIC
- 	---help---
- 	  With this option you can enable support for AMD IOMMU hardware in
- 	  your system. An IOMMU is a hardware component which provides
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 473a51d..a25201f 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -33,6 +33,7 @@
- #include <asm/gart.h>
- #include <asm/x86_init.h>
- #include <asm/iommu_table.h>
-+#include <asm/io_apic.h>
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index ac6e731..439f03c 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -45,6 +45,7 @@
  
  #include "amd_iommu_proto.h"
  #include "amd_iommu_types.h"
-@@ -1575,6 +1576,23 @@ static void __init free_on_init_error(void)
- #endif
++#include "irq_remapping.h"
+ 
+ #define CMD_SET_TYPE(cmd, t) ((cmd)->data[1] |= ((t) << 28))
+ 
+@@ -4154,4 +4155,21 @@ static int setup_hpet_msi(unsigned int irq, unsigned int id)
+ 	return 0;
  }
  
-+static bool __init check_ioapic_information(void)
++struct irq_remap_ops amd_iommu_irq_ops = {
++	.supported		= amd_iommu_supported,
++	.prepare		= amd_iommu_prepare,
++	.enable			= amd_iommu_enable,
++	.disable		= amd_iommu_disable,
++	.reenable		= amd_iommu_reenable,
++	.enable_faulting	= amd_iommu_enable_faulting,
++	.setup_ioapic_entry	= setup_ioapic_entry,
++#ifdef CONFIG_SMP
++	.set_affinity		= set_affinity,
++#endif
++	.free_irq		= free_irq,
++	.compose_msi_msg	= compose_msi_msg,
++	.msi_alloc_irq		= msi_alloc_irq,
++	.msi_setup_irq		= msi_setup_irq,
++	.setup_hpet_msi		= setup_hpet_msi,
++};
+ #endif
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 820f688..d195d22 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -34,6 +34,7 @@
+ #include <asm/x86_init.h>
+ #include <asm/iommu_table.h>
+ #include <asm/io_apic.h>
++#include <asm/irq_remapping.h>
+ 
+ #include "amd_iommu_proto.h"
+ #include "amd_iommu_types.h"
+@@ -1894,7 +1895,48 @@ static int __init iommu_go_to_state(enum iommu_init_state state)
+ 	return ret;
+ }
+ 
++#ifdef CONFIG_IRQ_REMAP
++int __init amd_iommu_prepare(void)
 +{
-+	int idx;
-+
-+	for (idx = 0; idx < nr_ioapics; ++idx) {
-+		int id = mpc_ioapic_id(idx);
-+
-+		if (get_ioapic_devid(id) < 0) {
-+			pr_err(FW_BUG "AMD-Vi: IO-APIC[%d] not in IVRS table\n", id);
-+			pr_err("AMD-Vi: Disabling interrupt remapping due to BIOS Bug\n");
-+			return false;
-+		}
-+	}
-+
-+	return true;
++	return iommu_go_to_state(IOMMU_ACPI_FINISHED);
 +}
 +
++int __init amd_iommu_supported(void)
++{
++	return amd_iommu_irq_remap ? 1 : 0;
++}
++
++int __init amd_iommu_enable(void)
++{
++	int ret;
++
++	ret = iommu_go_to_state(IOMMU_ENABLED);
++	if (ret)
++		return ret;
+ 
++	irq_remapping_enabled = 1;
++
++	return 0;
++}
++
++void amd_iommu_disable(void)
++{
++	amd_iommu_suspend();
++}
++
++int amd_iommu_reenable(int mode)
++{
++	amd_iommu_resume();
++
++	return 0;
++}
++
++int __init amd_iommu_enable_faulting(void)
++{
++	/* We enable MSI later when PCI is initialized */
++	return 0;
++}
++#endif
+ 
  /*
-  * This is the hardware init function for AMD IOMMU in the system.
-  * This function is called either from amd_iommu_init or from the interrupt
-@@ -1661,9 +1679,6 @@ static int __init early_amd_iommu_init(void)
- 	if (amd_iommu_pd_alloc_bitmap == NULL)
- 		goto out;
+  * This is the core init function for AMD IOMMU hardware in the system.
+diff --git a/drivers/iommu/amd_iommu_proto.h b/drivers/iommu/amd_iommu_proto.h
+index 1a7f41c..c294961 100644
+--- a/drivers/iommu/amd_iommu_proto.h
++++ b/drivers/iommu/amd_iommu_proto.h
+@@ -32,6 +32,14 @@ extern void amd_iommu_uninit_devices(void);
+ extern void amd_iommu_init_notifier(void);
+ extern void amd_iommu_init_api(void);
  
--	/* init the device table */
--	init_device_table();
--
- 	/*
- 	 * let all alias entries point to itself
- 	 */
-@@ -1686,6 +1701,9 @@ static int __init early_amd_iommu_init(void)
- 	if (ret)
- 		goto out;
- 
-+	if (amd_iommu_irq_remap)
-+		amd_iommu_irq_remap = check_ioapic_information();
++/* Needed for interrupt remapping */
++extern int amd_iommu_supported(void);
++extern int amd_iommu_prepare(void);
++extern int amd_iommu_enable(void);
++extern void amd_iommu_disable(void);
++extern int amd_iommu_reenable(int);
++extern int amd_iommu_enable_faulting(void);
 +
- 	if (amd_iommu_irq_remap) {
- 		/*
- 		 * Interrupt remapping enabled, create kmem_cache for the
-@@ -1709,6 +1727,9 @@ static int __init early_amd_iommu_init(void)
- 	if (ret)
- 		goto out;
+ /* IOMMUv2 specific functions */
+ struct iommu_domain;
  
-+	/* init the device table */
-+	init_device_table();
-+
- out:
- 	/* Don't leak any ACPI memory */
- 	early_acpi_os_unmap_memory((char __iomem *)ivrs_base, ivrs_size);
+diff --git a/drivers/iommu/irq_remapping.h b/drivers/iommu/irq_remapping.h
+index b3f70c9..915a247 100644
+--- a/drivers/iommu/irq_remapping.h
++++ b/drivers/iommu/irq_remapping.h
+@@ -84,6 +84,7 @@ struct irq_remap_ops {
+ };
+ 
+ extern struct irq_remap_ops intel_irq_remap_ops;
++extern struct irq_remap_ops amd_iommu_irq_ops;
+ 
+ #else  /* CONFIG_IRQ_REMAP */
+ 
 -- 
 1.7.9.5
