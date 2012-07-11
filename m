@@ -1,7 +1,8 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 10/27] iommu/amd: Introduce amd_iommu_init_dma routine
-Date: Wed, 11 Jul 2012 15:38:55 +0200
-Message-ID: <1342013952-10174-11-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 21/27] iommu/amd: Implement MSI routines for interrupt
+	remapping
+Date: Wed, 11 Jul 2012 15:39:06 +0200
+Message-ID: <1342013952-10174-22-git-send-email-joerg.roedel@amd.com>
 References: <1342013952-10174-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,65 +22,96 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This function will initialize everthing necessary so that
-devices can do DMA. This includes dma_ops and iommu_ops.
+Add routines to setup interrupt remapping for MSI
+interrupts.
 
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c |   27 ++++++++++++++++++++-------
- 1 file changed, 20 insertions(+), 7 deletions(-)
+ drivers/iommu/amd_iommu.c |   74 +++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 74 insertions(+)
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 514556c..5311a88 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -1627,8 +1627,6 @@ int __init amd_iommu_init_hardware(void)
- 
- 	enable_iommus();
- 
--	amd_iommu_init_notifier();
--
- 	register_syscore_ops(&amd_iommu_syscore_ops);
- 
- 	return ret;
-@@ -1669,6 +1667,25 @@ static bool detect_ivrs(void)
- 	return true;
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 713f84c..9a24a1b 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -4054,4 +4054,78 @@ static int free_irq(int irq)
+ 	return 0;
  }
  
-+static int amd_iommu_init_dma(void)
++static void compose_msi_msg(struct pci_dev *pdev,
++			    unsigned int irq, unsigned int dest,
++			    struct msi_msg *msg, u8 hpet_id)
 +{
-+	int ret;
++	struct irq_2_irte *irte_info;
++	struct irq_cfg *cfg;
++	union irte irte;
 +
-+	if (iommu_pass_through)
-+		ret = amd_iommu_init_passthrough();
-+	else
-+		ret = amd_iommu_init_dma_ops();
++	cfg = irq_get_chip_data(irq);
++	if (!cfg)
++		return;
 +
-+	if (ret)
-+		return ret;
++	irte_info = &cfg->irq_remap_info.irq_2_irte;
 +
-+	amd_iommu_init_api();
++	irte.val		= 0;
++	irte.fields.vector	= cfg->vector;
++	irte.fields.int_type    = apic->irq_delivery_mode;
++	irte.fields.destination	= dest;
++	irte.fields.dm		= apic->irq_dest_mode;
++	irte.fields.valid	= 1;
 +
-+	amd_iommu_init_notifier();
++	modify_irte(irte_info->devid, irte_info->index, irte);
++
++	msg->address_hi = MSI_ADDR_BASE_HI;
++	msg->address_lo = MSI_ADDR_BASE_LO;
++	msg->data       = irte_info->index;
++}
++
++static int msi_alloc_irq(struct pci_dev *pdev, int irq, int nvec)
++{
++	struct irq_cfg *cfg;
++	int index;
++	u16 devid;
++
++	if (!pdev)
++		return -EINVAL;
++
++	cfg = irq_get_chip_data(irq);
++	if (!cfg)
++		return -EINVAL;
++
++	devid = get_device_id(&pdev->dev);
++	index = alloc_irq_index(cfg, devid, nvec);
++
++	return index < 0 ? MAX_IRQS_PER_TABLE : index;
++}
++
++static int msi_setup_irq(struct pci_dev *pdev, unsigned int irq,
++			 int index, int offset)
++{
++	struct irq_2_irte *irte_info;
++	struct irq_cfg *cfg;
++	u16 devid;
++
++	if (!pdev)
++		return -EINVAL;
++
++	cfg = irq_get_chip_data(irq);
++	if (!cfg)
++		return -EINVAL;
++
++	if (index >= MAX_IRQS_PER_TABLE)
++		return 0;
++
++	devid		= get_device_id(&pdev->dev);
++	irte_info	= &cfg->irq_remap_info.irq_2_irte;
++
++	irte_info->devid = devid;
++	irte_info->index = index + offset;
++	cfg->remapped    = true;
 +
 +	return 0;
 +}
 +
- /*
-  * This is the core init function for AMD IOMMU hardware in the system.
-  * This function is called from the generic x86 DMA layer initialization
-@@ -1690,11 +1707,7 @@ static int __init amd_iommu_init(void)
- 	if (ret)
- 		goto free;
- 
--	if (iommu_pass_through)
--		ret = amd_iommu_init_passthrough();
--	else
--		ret = amd_iommu_init_dma_ops();
--
-+	ret = amd_iommu_init_dma();
- 	if (ret)
- 		goto free;
- 
+ #endif
 -- 
 1.7.9.5
