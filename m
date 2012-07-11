@@ -1,273 +1,163 @@
-From: Joerg Roedel <joerg.roedel@amd.com>
-Subject: [PATCH 19/27] iommu/amd: Add routines to manage irq remapping tables
-Date: Wed, 11 Jul 2012 15:39:04 +0200
-Message-ID: <1342013952-10174-20-git-send-email-joerg.roedel@amd.com>
+From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Subject: [PATCH 20/27] iommu/amd: Add IOAPIC remapping routines
+Date: Wed, 11 Jul 2012 15:39:05 +0200
+Message-ID: <1342013952-10174-21-git-send-email-joerg.roedel@amd.com>
 References: <1342013952-10174-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1342013952-10174-1-git-send-email-joerg.roedel@amd.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: linux-kernel@vger.kernel.org, Joerg Roedel <joerg.roedel@amd.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1342013952-10174-1-git-send-email-joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add routines to:
+Add the routine to setup interrupt remapping for ioapic
+interrupts. Also add a routine to change the affinity of an
+irq and to free an irq allocation for interrupt remapping.
+The last two functions will also be used for MSI interrupts.
 
-* Alloc remapping tables and single entries from these
-  tables
-* Change entries in the tables
-* Free entries in the table
-
-Signed-off-by: Joerg Roedel <joerg.roedel@amd.com>
+Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c |  230 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 230 insertions(+)
+ drivers/iommu/amd_iommu.c |  119 +++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 119 insertions(+)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 26ebd28..8bfcf29 100644
+index 8bfcf29..713f84c 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -31,6 +31,12 @@
- #include <linux/amd-iommu.h>
- #include <linux/notifier.h>
- #include <linux/export.h>
-+#include <linux/irq.h>
-+#include <linux/msi.h>
-+#include <asm/irq_remapping.h>
-+#include <asm/io_apic.h>
-+#include <asm/apic.h>
-+#include <asm/hw_irq.h>
- #include <asm/msidef.h>
- #include <asm/proto.h>
- #include <asm/iommu.h>
-@@ -3706,3 +3712,227 @@ int amd_iommu_device_info(struct pci_dev *pdev,
- 	return 0;
+@@ -3935,4 +3935,123 @@ static void free_irte(u16 devid, int index)
+ 	iommu_completion_wait(iommu);
  }
- EXPORT_SYMBOL(amd_iommu_device_info);
-+
-+#ifdef CONFIG_IRQ_REMAP
-+
-+/*****************************************************************************
-+ *
-+ * Interrupt Remapping Implementation
-+ *
-+ *****************************************************************************/
-+
-+union irte {
-+	u32 val;
-+	struct {
-+		u32 valid	: 1,
-+		    no_fault	: 1,
-+		    int_type	: 3,
-+		    rq_eoi	: 1,
-+		    dm		: 1,
-+		    rsvd_1	: 1,
-+		    destination	: 8,
-+		    vector	: 8,
-+		    rsvd_2	: 8;
-+	} fields;
-+};
-+
-+#define DTE_IRQ_PHYS_ADDR_MASK	(((1ULL << 45)-1) << 6)
-+#define DTE_IRQ_REMAP_INTCTL    (2ULL << 60)
-+#define DTE_IRQ_TABLE_LEN       (8ULL << 1)
-+#define DTE_IRQ_REMAP_ENABLE    1ULL
-+
-+static void set_dte_irq_entry(u16 devid, struct irq_remap_table *table)
-+{
-+	u64 dte;
-+
-+	dte	= amd_iommu_dev_table[devid].data[2];
-+	dte	&= ~DTE_IRQ_PHYS_ADDR_MASK;
-+	dte	|= virt_to_phys(table->table);
-+	dte	|= DTE_IRQ_REMAP_INTCTL;
-+	dte	|= DTE_IRQ_TABLE_LEN;
-+	dte	|= DTE_IRQ_REMAP_ENABLE;
-+
-+	amd_iommu_dev_table[devid].data[2] = dte;
-+}
-+
-+#define IRTE_ALLOCATED (~1U)
-+
-+static struct irq_remap_table *get_irq_table(u16 devid, bool ioapic)
-+{
-+	struct irq_remap_table *table = NULL;
-+	struct amd_iommu *iommu;
-+	unsigned long flags;
-+	u16 alias;
-+
-+	write_lock_irqsave(&amd_iommu_devtable_lock, flags);
-+
-+	iommu = amd_iommu_rlookup_table[devid];
-+	if (!iommu)
-+		goto out_unlock;
-+
-+	table = irq_lookup_table[devid];
-+	if (table)
-+		goto out;
-+
-+	alias = amd_iommu_alias_table[devid];
-+	table = irq_lookup_table[alias];
-+	if (table) {
-+		irq_lookup_table[devid] = table;
-+		set_dte_irq_entry(devid, table);
-+		iommu_flush_dte(iommu, devid);
-+		goto out;
-+	}
-+
-+	/* Nothing there yet, allocate new irq remapping table */
-+	table = kzalloc(sizeof(*table), GFP_ATOMIC);
-+	if (!table)
-+		goto out;
-+
-+	if (ioapic)
-+		/* Keep the first 32 indexes free for IOAPIC interrupts */
-+		table->min_index = 32;
-+
-+	table->table = kmem_cache_alloc(amd_iommu_irq_cache, GFP_ATOMIC);
-+	if (!table->table) {
-+		kfree(table);
-+		goto out;
-+	}
-+
-+	memset(table->table, 0, MAX_IRQS_PER_TABLE * sizeof(u32));
-+
-+	if (ioapic) {
-+		int i;
-+
-+		for (i = 0; i < 32; ++i)
-+			table->table[i] = IRTE_ALLOCATED;
-+	}
-+
-+	irq_lookup_table[devid] = table;
-+	set_dte_irq_entry(devid, table);
-+	iommu_flush_dte(iommu, devid);
-+	if (devid != alias) {
-+		irq_lookup_table[alias] = table;
-+		set_dte_irq_entry(devid, table);
-+		iommu_flush_dte(iommu, alias);
-+	}
-+
-+out:
-+	iommu_completion_wait(iommu);
-+
-+out_unlock:
-+	write_unlock_irqrestore(&amd_iommu_devtable_lock, flags);
-+
-+	return table;
-+}
-+
-+static int alloc_irq_index(struct irq_cfg *cfg, u16 devid, int count)
+ 
++static int setup_ioapic_entry(int irq, struct IO_APIC_route_entry *entry,
++			      unsigned int destination, int vector,
++			      struct io_apic_irq_attr *attr)
 +{
 +	struct irq_remap_table *table;
-+	unsigned long flags;
-+	int index, c;
++	struct irq_2_irte *irte_info;
++	struct irq_cfg *cfg;
++	union irte irte;
++	int ioapic_id;
++	int index;
++	int devid;
++	int ret;
 +
-+	table = get_irq_table(devid, false);
-+	if (!table)
-+		return -ENODEV;
++	cfg = irq_get_chip_data(irq);
++	if (!cfg)
++		return -EINVAL;
 +
-+	spin_lock_irqsave(&table->lock, flags);
++	irte_info = &cfg->irq_remap_info.irq_2_irte;
++	ioapic_id = mpc_ioapic_id(attr->ioapic);
++	devid     = get_ioapic_devid(ioapic_id);
 +
-+	/* Scan table for free entries */
-+	for (c = 0, index = table->min_index;
-+	     index < MAX_IRQS_PER_TABLE;
-+	     ++index) {
-+		if (table->table[index] == 0)
-+			c += 1;
-+		else
-+			c = 0;
++	if (devid < 0)
++		return devid;
 +
-+		if (c == count)	{
-+			struct irq_2_irte *irte_info;
++	table = get_irq_table(devid, true);
++	if (table == NULL)
++		return -ENOMEM;
 +
-+			for (; c != 0; --c)
-+				table->table[index - c + 1] = IRTE_ALLOCATED;
++	index = attr->ioapic_pin;
 +
-+			index -= count - 1;
++	/* Setup IRQ remapping info */
++	irte_info->devid = devid;
++	irte_info->index = index;
++	cfg->remapped    = true;
 +
-+			irte_info        = &cfg->irq_remap_info.irq_2_irte;
-+			irte_info->devid = devid;
-+			irte_info->index = index;
-+			cfg->remapped    = true;
++	/* Setup IRTE for IOMMU */
++	irte.val		= 0;
++	irte.fields.vector      = vector;
++	irte.fields.int_type    = apic->irq_delivery_mode;
++	irte.fields.destination = destination;
++	irte.fields.dm          = apic->irq_dest_mode;
++	irte.fields.valid       = 1;
 +
-+			goto out;
-+		}
-+	}
++	ret = modify_irte(devid, index, irte);
++	if (ret)
++		return ret;
 +
-+	index = -ENOSPC;
++	/* Setup IOAPIC entry */
++	memset(entry, 0, sizeof(*entry));
 +
-+out:
-+	spin_unlock_irqrestore(&table->lock, flags);
++	entry->vector        = index;
++	entry->mask          = 0;
++	entry->trigger       = attr->trigger;
++	entry->polarity      = attr->polarity;
 +
-+	return index;
++	/*
++	 * Mask level triggered irqs.
++	 * Use IRQ_DELAYED_DISABLE for edge triggered irqs.
++	 */
++	if (attr->trigger)
++		entry->mask = 1;
++
++	return 0;
 +}
 +
 +#ifdef CONFIG_SMP
-+static int get_irte(u16 devid, int index, union irte *irte)
++static int set_affinity(struct irq_data *data, const struct cpumask *mask,
++			bool force)
 +{
-+	struct irq_remap_table *table;
-+	unsigned long flags;
++	struct irq_2_irte *irte_info;
++	unsigned int dest, irq;
++	struct irq_cfg *cfg;
++	union irte irte;
 +
-+	table = get_irq_table(devid, false);
-+	if (!table)
-+		return -ENOMEM;
++	cfg       = data->chip_data;
++	irq       = data->irq;
++	irte_info = &cfg->irq_remap_info.irq_2_irte;
 +
-+	spin_lock_irqsave(&table->lock, flags);
-+	irte->val = table->table[index];
-+	spin_unlock_irqrestore(&table->lock, flags);
-+
-+	return 0;
-+}
-+#endif
-+
-+static int modify_irte(u16 devid, int index, union irte irte)
-+{
-+	struct irq_remap_table *table;
-+	struct amd_iommu *iommu;
-+	unsigned long flags;
-+
-+	iommu = amd_iommu_rlookup_table[devid];
-+	if (iommu == NULL)
++	if (!cpumask_intersects(mask, cpu_online_mask))
 +		return -EINVAL;
 +
-+	table = get_irq_table(devid, false);
-+	if (!table)
-+		return -ENOMEM;
++	if (get_irte(irte_info->devid, irte_info->index, &irte))
++		return -EBUSY;
 +
-+	spin_lock_irqsave(&table->lock, flags);
-+	table->table[index] = irte.val;
-+	spin_unlock_irqrestore(&table->lock, flags);
++	if (assign_irq_vector(irq, cfg, mask))
++		return -EBUSY;
 +
-+	iommu_flush_irt(iommu, devid);
-+	iommu_completion_wait(iommu);
++	dest = apic->cpu_mask_to_apicid_and(cfg->domain, mask);
++
++	irte.fields.vector      = cfg->vector;
++	irte.fields.destination = dest;
++
++	modify_irte(irte_info->devid, irte_info->index, irte);
++
++	if (cfg->move_in_progress)
++		send_cleanup_vector(cfg);
++
++	cpumask_copy(data->affinity, mask);
++
++	return 0;
++}
++#endif /* CONFIG_SMP */
++
++static int free_irq(int irq)
++{
++	struct irq_2_irte *irte_info;
++	struct irq_cfg *cfg;
++
++	cfg = irq_get_chip_data(irq);
++	if (!cfg)
++		return -EINVAL;
++
++	irte_info = &cfg->irq_remap_info.irq_2_irte;
++
++	free_irte(irte_info->devid, irte_info->index);
 +
 +	return 0;
 +}
 +
-+static void free_irte(u16 devid, int index)
-+{
-+	struct irq_remap_table *table;
-+	struct amd_iommu *iommu;
-+	unsigned long flags;
-+
-+	iommu = amd_iommu_rlookup_table[devid];
-+	if (iommu == NULL)
-+		return;
-+
-+	table = get_irq_table(devid, false);
-+	if (!table)
-+		return;
-+
-+	spin_lock_irqsave(&table->lock, flags);
-+	table->table[index] = 0;
-+	spin_unlock_irqrestore(&table->lock, flags);
-+
-+	iommu_flush_irt(iommu, devid);
-+	iommu_completion_wait(iommu);
-+}
-+
-+#endif
+ #endif
 -- 
 1.7.9.5
