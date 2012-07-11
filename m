@@ -1,8 +1,7 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 14/27] iommu/amd: Allocate data structures to keep track of
-	irq remapping tables
-Date: Wed, 11 Jul 2012 15:38:59 +0200
-Message-ID: <1342013952-10174-15-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 02/27] x86/irq: Introduce irq_cfg->remapped
+Date: Wed, 11 Jul 2012 15:38:47 +0200
+Message-ID: <1342013952-10174-3-git-send-email-joerg.roedel@amd.com>
 References: <1342013952-10174-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,88 +18,82 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-To easily map device ids to interrupt remapping table
-entries a new lookup table is necessary.
+This flag will show whether the interrupt is remapped in a
+way that works for VT-d and AMD-Vi.
 
+Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Cc: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c  |   16 ++++++++++++++++
- drivers/iommu/amd_iommu_types.h |    9 +++++++++
- 2 files changed, 25 insertions(+)
+ arch/x86/include/asm/hw_irq.h       |    1 +
+ arch/x86/kernel/apic/io_apic.c      |    2 +-
+ drivers/iommu/intel_irq_remapping.c |    4 ++++
+ 3 files changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 49e72b9..473a51d 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -181,6 +181,12 @@ u16 *amd_iommu_alias_table;
- struct amd_iommu **amd_iommu_rlookup_table;
- 
- /*
-+ * This table is used to find the irq remapping table for a given device id
-+ * quickly.
-+ */
-+struct irq_remap_table **irq_lookup_table;
-+
-+/*
-  * AMD IOMMU allows up to 2^16 differend protection domains. This is a bitmap
-  * to know which ones are already in use.
-  */
-@@ -1532,9 +1538,13 @@ static struct syscore_ops amd_iommu_syscore_ops = {
- 
- static void __init free_on_init_error(void)
+diff --git a/arch/x86/include/asm/hw_irq.h b/arch/x86/include/asm/hw_irq.h
+index b6171e6..71bb327 100644
+--- a/arch/x86/include/asm/hw_irq.h
++++ b/arch/x86/include/asm/hw_irq.h
+@@ -132,6 +132,7 @@ struct irq_cfg {
+ 	u8			vector;
+ 	u8			move_in_progress : 1;
+ #ifdef CONFIG_IRQ_REMAP
++	bool			remapped;
+ 	union irq_remap_info    irq_remap_info;
+ #endif
+ };
+diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
+index 08f666c..d5bccc0 100644
+--- a/arch/x86/kernel/apic/io_apic.c
++++ b/arch/x86/kernel/apic/io_apic.c
+@@ -72,7 +72,7 @@
+ static void irq_remap_modify_chip_defaults(struct irq_chip *chip);
+ static inline bool irq_remapped(struct irq_cfg *cfg)
  {
-+	free_pages((unsigned long)irq_lookup_table,
-+		   get_order(rlookup_table_size));
-+
- 	if (amd_iommu_irq_cache) {
- 		kmem_cache_destroy(amd_iommu_irq_cache);
- 		amd_iommu_irq_cache = NULL;
-+
- 	}
+-	return cfg->irq_remap_info.irq_2_iommu.iommu != NULL;
++	return cfg->remapped;
+ }
+ #else
+ static inline bool irq_remapped(struct irq_cfg *cfg)
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index e4e4334..29411ed 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -68,6 +68,7 @@ static int alloc_irte(struct intel_iommu *iommu, int irq, u16 count)
+ {
+ 	struct ir_table *table = iommu->ir_table;
+ 	struct irq_2_iommu *irq_iommu = irq_2_iommu(irq);
++	struct irq_cfg *cfg = irq_get_chip_data(irq);
+ 	u16 index, start_index;
+ 	unsigned int mask = 0;
+ 	unsigned long flags;
+@@ -115,6 +116,7 @@ static int alloc_irte(struct intel_iommu *iommu, int irq, u16 count)
+ 	for (i = index; i < index + count; i++)
+ 		table->base[i].present = 1;
  
- 	amd_iommu_uninit_devices();
-@@ -1687,6 +1697,12 @@ static int __init early_amd_iommu_init(void)
- 				0, NULL);
- 		if (!amd_iommu_irq_cache)
- 			goto out;
-+
-+		irq_lookup_table = (void *)__get_free_pages(
-+				GFP_KERNEL | __GFP_ZERO,
-+				get_order(rlookup_table_size));
-+		if (!irq_lookup_table)
-+			goto out;
- 	}
++	cfg->remapped = true;
+ 	irq_iommu->iommu = iommu;
+ 	irq_iommu->irte_index =  index;
+ 	irq_iommu->sub_handle = 0;
+@@ -155,6 +157,7 @@ static int map_irq_to_irte_handle(int irq, u16 *sub_handle)
+ static int set_irte_irq(int irq, struct intel_iommu *iommu, u16 index, u16 subhandle)
+ {
+ 	struct irq_2_iommu *irq_iommu = irq_2_iommu(irq);
++	struct irq_cfg *cfg = irq_get_chip_data(irq);
+ 	unsigned long flags;
  
- 	ret = init_memory_definitions(ivrs_base);
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index 0e15e78..ceaa499 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -175,6 +175,7 @@
- #define DEV_ENTRY_EX            0x67
- #define DEV_ENTRY_SYSMGT1       0x68
- #define DEV_ENTRY_SYSMGT2       0x69
-+#define DEV_ENTRY_IRQ_TBL_EN	0x80
- #define DEV_ENTRY_INIT_PASS     0xb8
- #define DEV_ENTRY_EINT_PASS     0xb9
- #define DEV_ENTRY_NMI_PASS      0xba
-@@ -337,6 +338,14 @@ extern bool amd_iommu_iotlb_sup;
- #define MAX_IRQS_PER_TABLE	256
- #define IRQ_TABLE_ALIGNMENT	128
+ 	if (!irq_iommu)
+@@ -162,6 +165,7 @@ static int set_irte_irq(int irq, struct intel_iommu *iommu, u16 index, u16 subha
  
-+struct irq_remap_table {
-+	spinlock_t lock;
-+	unsigned min_index;
-+	u32 *table;
-+};
-+
-+extern struct irq_remap_table **irq_lookup_table;
-+
- /* Interrupt remapping feature used? */
- extern bool amd_iommu_irq_remap;
+ 	raw_spin_lock_irqsave(&irq_2_ir_lock, flags);
  
++	cfg->remapped = true;
+ 	irq_iommu->iommu = iommu;
+ 	irq_iommu->irte_index = index;
+ 	irq_iommu->sub_handle = subhandle;
 -- 
 1.7.9.5
