@@ -1,7 +1,8 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 27/27] iommu/amd: Report irq remapping through IOMMU-API
-Date: Wed, 11 Jul 2012 15:39:12 +0200
-Message-ID: <1342013952-10174-28-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 17/27] iommu/amd: Make sure IOMMU is not considered to
+	translate itself
+Date: Wed, 11 Jul 2012 15:39:02 +0200
+Message-ID: <1342013952-10174-18-git-send-email-joerg.roedel@amd.com>
 References: <1342013952-10174-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,26 +22,31 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Report the availability of irq remapping through the
-IOMMU-API to allow KVM device passthrough again without
-additional module parameter overrides.
+The IVRS table usually includes the IOMMU device. But the
+IOMMU does never translate itself, so make sure the IOMMU
+driver knows this.
 
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iommu/amd_iommu_init.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 439f03c..c28ce2f 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -3265,6 +3265,8 @@ static int amd_iommu_domain_has_cap(struct iommu_domain *domain,
- 	switch (cap) {
- 	case IOMMU_CAP_CACHE_COHERENCY:
- 		return 1;
-+	case IOMMU_CAP_INTR_REMAP:
-+		return irq_remapping_enabled;
- 	}
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 0b4093c..820f688 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -1018,6 +1018,13 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
+ 	ret = init_iommu_from_acpi(iommu, h);
+ 	if (ret)
+ 		return ret;
++
++	/*
++	 * Make sure IOMMU is not considered to translate itself. The IVRS
++	 * table tells us so, but this is a lie!
++	 */
++	amd_iommu_rlookup_table[iommu->devid] = NULL;
++
+ 	init_iommu_devices(iommu);
  
  	return 0;
 -- 
