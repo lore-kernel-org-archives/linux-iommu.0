@@ -1,7 +1,8 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 20/27] iommu/amd: Add IOAPIC remapping routines
-Date: Wed, 11 Jul 2012 15:39:05 +0200
-Message-ID: <1342013952-10174-21-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 24/27] iommu/amd: Make sure irq remapping still works on dma
+	init failure
+Date: Wed, 11 Jul 2012 15:39:09 +0200
+Message-ID: <1342013952-10174-25-git-send-email-joerg.roedel@amd.com>
 References: <1342013952-10174-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,143 +22,94 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add the routine to setup interrupt remapping for ioapic
-interrupts. Also add a routine to change the affinity of an
-irq and to free an irq allocation for interrupt remapping.
-The last two functions will also be used for MSI interrupts.
+Do not deinitialize the AMD IOMMU driver completly when
+interrupt remapping is already in use but the initialization
+of the DMA layer fails for some reason. Make sure the IOMMU
+can still be used to remap interrupts.
 
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c |  119 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 119 insertions(+)
+ drivers/iommu/amd_iommu_init.c |   40 +++++++++++++++++++++++++++++++---------
+ 1 file changed, 31 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 8bfcf29..713f84c 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -3935,4 +3935,123 @@ static void free_irte(u16 devid, int index)
- 	iommu_completion_wait(iommu);
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index d195d22..8140fd2 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -1399,6 +1399,16 @@ static void init_device_table_dma(void)
+ 	}
  }
  
-+static int setup_ioapic_entry(int irq, struct IO_APIC_route_entry *entry,
-+			      unsigned int destination, int vector,
-+			      struct io_apic_irq_attr *attr)
++static void __init uninit_device_table_dma(void)
 +{
-+	struct irq_remap_table *table;
-+	struct irq_2_irte *irte_info;
-+	struct irq_cfg *cfg;
-+	union irte irte;
-+	int ioapic_id;
-+	int index;
-+	int devid;
-+	int ret;
++	u32 devid;
 +
-+	cfg = irq_get_chip_data(irq);
-+	if (!cfg)
-+		return -EINVAL;
-+
-+	irte_info = &cfg->irq_remap_info.irq_2_irte;
-+	ioapic_id = mpc_ioapic_id(attr->ioapic);
-+	devid     = get_ioapic_devid(ioapic_id);
-+
-+	if (devid < 0)
-+		return devid;
-+
-+	table = get_irq_table(devid, true);
-+	if (table == NULL)
-+		return -ENOMEM;
-+
-+	index = attr->ioapic_pin;
-+
-+	/* Setup IRQ remapping info */
-+	irte_info->devid = devid;
-+	irte_info->index = index;
-+	cfg->remapped    = true;
-+
-+	/* Setup IRTE for IOMMU */
-+	irte.val		= 0;
-+	irte.fields.vector      = vector;
-+	irte.fields.int_type    = apic->irq_delivery_mode;
-+	irte.fields.destination = destination;
-+	irte.fields.dm          = apic->irq_dest_mode;
-+	irte.fields.valid       = 1;
-+
-+	ret = modify_irte(devid, index, irte);
-+	if (ret)
-+		return ret;
-+
-+	/* Setup IOAPIC entry */
-+	memset(entry, 0, sizeof(*entry));
-+
-+	entry->vector        = index;
-+	entry->mask          = 0;
-+	entry->trigger       = attr->trigger;
-+	entry->polarity      = attr->polarity;
-+
-+	/*
-+	 * Mask level triggered irqs.
-+	 * Use IRQ_DELAYED_DISABLE for edge triggered irqs.
-+	 */
-+	if (attr->trigger)
-+		entry->mask = 1;
-+
-+	return 0;
++	for (devid = 0; devid <= amd_iommu_last_bdf; ++devid) {
++		amd_iommu_dev_table[devid].data[0] = 0ULL;
++		amd_iommu_dev_table[devid].data[1] = 0ULL;
++	}
 +}
 +
-+#ifdef CONFIG_SMP
-+static int set_affinity(struct irq_data *data, const struct cpumask *mask,
-+			bool force)
+ static void init_device_table(void)
+ {
+ 	u32 devid;
+@@ -1567,11 +1577,6 @@ static void __init free_on_init_error(void)
+ 
+ 	}
+ 
+-	amd_iommu_uninit_devices();
+-
+-	free_pages((unsigned long)amd_iommu_pd_alloc_bitmap,
+-		   get_order(MAX_DOMAIN_ID/8));
+-
+ 	free_pages((unsigned long)amd_iommu_rlookup_table,
+ 		   get_order(rlookup_table_size));
+ 
+@@ -1583,8 +1588,6 @@ static void __init free_on_init_error(void)
+ 
+ 	free_iommu_all();
+ 
+-	free_unity_maps();
+-
+ #ifdef CONFIG_GART_IOMMU
+ 	/*
+ 	 * We failed to initialize the AMD IOMMU - try fallback to GART
+@@ -1612,6 +1615,16 @@ static bool __init check_ioapic_information(void)
+ 	return true;
+ }
+ 
++static void __init free_dma_resources(void)
 +{
-+	struct irq_2_irte *irte_info;
-+	unsigned int dest, irq;
-+	struct irq_cfg *cfg;
-+	union irte irte;
++	amd_iommu_uninit_devices();
 +
-+	cfg       = data->chip_data;
-+	irq       = data->irq;
-+	irte_info = &cfg->irq_remap_info.irq_2_irte;
++	free_pages((unsigned long)amd_iommu_pd_alloc_bitmap,
++		   get_order(MAX_DOMAIN_ID/8));
 +
-+	if (!cpumask_intersects(mask, cpu_online_mask))
-+		return -EINVAL;
-+
-+	if (get_irte(irte_info->devid, irte_info->index, &irte))
-+		return -EBUSY;
-+
-+	if (assign_irq_vector(irq, cfg, mask))
-+		return -EBUSY;
-+
-+	dest = apic->cpu_mask_to_apicid_and(cfg->domain, mask);
-+
-+	irte.fields.vector      = cfg->vector;
-+	irte.fields.destination = dest;
-+
-+	modify_irte(irte_info->devid, irte_info->index, irte);
-+
-+	if (cfg->move_in_progress)
-+		send_cleanup_vector(cfg);
-+
-+	cpumask_copy(data->affinity, mask);
-+
-+	return 0;
-+}
-+#endif /* CONFIG_SMP */
-+
-+static int free_irq(int irq)
-+{
-+	struct irq_2_irte *irte_info;
-+	struct irq_cfg *cfg;
-+
-+	cfg = irq_get_chip_data(irq);
-+	if (!cfg)
-+		return -EINVAL;
-+
-+	irte_info = &cfg->irq_remap_info.irq_2_irte;
-+
-+	free_irte(irte_info->devid, irte_info->index);
-+
-+	return 0;
++	free_unity_maps();
 +}
 +
- #endif
+ /*
+  * This is the hardware init function for AMD IOMMU in the system.
+  * This function is called either from amd_iommu_init or from the interrupt
+@@ -1949,8 +1962,17 @@ static int __init amd_iommu_init(void)
+ 
+ 	ret = iommu_go_to_state(IOMMU_INITIALIZED);
+ 	if (ret) {
+-		disable_iommus();
+-		free_on_init_error();
++		free_dma_resources();
++		if (!irq_remapping_enabled) {
++			disable_iommus();
++			free_on_init_error();
++		} else {
++			struct amd_iommu *iommu;
++
++			uninit_device_table_dma();
++			for_each_iommu(iommu)
++				iommu_flush_all_caches(iommu);
++		}
+ 	}
+ 
+ 	return ret;
 -- 
 1.7.9.5
