@@ -1,49 +1,118 @@
-From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: Tegra-DRM: Tegra30: DMA mapping API
-Date: Wed, 11 Jul 2012 14:42:54 +0300
-Message-ID: <20120711144254.8f119872445e95713b467448@nvidia.com>
-References: <23B010BBA481A74B98487467C29BA57BF2366A1010@HKMAIL01.nvidia.com>
-	<20120706.092417.916278591811517036.hdoyu@nvidia.com>
-	<23B010BBA481A74B98487467C29BA57BF2366A1012@HKMAIL01.nvidia.com>
-	<20120709.182828.1247752887335819184.hdoyu@nvidia.com>
-	<1341908041.9360.6.camel@markz-desktop>
-	<20120710132417.b52fbc05847cabec7e16cebd@nvidia.com>
-	<20120710132639.a65ce779fcfabe74435dd6bc@nvidia.com>
-	<20120711105827.GE25282@amd.com>
+From: Sethi Varun-B16395 <B16395@freescale.com>
+Subject: RE: [PATCH 2/7] iommu/amd: Implement DOMAIN_ATTR_GEOMETRY attribute
+Date: Wed, 11 Jul 2012 11:47:39 +0000
+Message-ID: <C5ECD7A89D1DC44195F34B25E172658D13AA64@039-SN2MPN1-013.039d.mgd.msft.net>
+References: <1342003763-8139-1-git-send-email-joerg.roedel@amd.com>
+ <1342003763-8139-3-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20120711105827.GE25282-5C7GfCeVMHo@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>, Mark Zhang <markz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Lucas Stach <dev-8ppwABl0HbeELgA04lAiVw@public.gmane.org>
-Cc: Wei Ni <wni-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Emily Jiang <ejiang-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Peer Chen <pchen-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org" <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Alex Courbot <acourbot-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Ken Adams <KAdams-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1342003763-8139-3-git-send-email-joerg.roedel@amd.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joerg.roedel@amd.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
+
+
+> -----Original Message-----
+> From: iommu-bounces@lists.linux-foundation.org [mailto:iommu-
+> bounces@lists.linux-foundation.org] On Behalf Of Joerg Roedel
+> Sent: Wednesday, July 11, 2012 4:19 PM
+> To: iommu@lists.linux-foundation.org
+> Cc: linux-kernel@vger.kernel.org
+> Subject: [PATCH 2/7] iommu/amd: Implement DOMAIN_ATTR_GEOMETRY attribute
+> 
+> Implement the attribute itself and add the code for the AMD IOMMU driver.
+> 
+> Signed-off-by: Joerg Roedel <joerg.roedel@amd.com>
+> ---
+>  drivers/iommu/amd_iommu.c |    4 ++++
+>  drivers/iommu/iommu.c     |   19 ++++++++++++++++---
+>  include/linux/iommu.h     |    8 ++++++++
+>  3 files changed, 28 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c index
+> a2e418c..259a6be 100644
+> --- a/drivers/iommu/amd_iommu.c
+> +++ b/drivers/iommu/amd_iommu.c
+> @@ -3069,6 +3069,10 @@ static int amd_iommu_domain_init(struct
+> iommu_domain *dom)
+> 
+>  	dom->priv = domain;
+> 
+> +	dom->geometry.aperture_start = 0;
+> +	dom->geometry.aperture_end   = ~0ULL;
+> +	dom->geometry.force_aperture = true;
+> +
+>  	return 0;
+> 
+>  out_free:
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c index
+> c39972d..ed5e0a5 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -348,10 +348,23 @@ EXPORT_SYMBOL_GPL(iommu_device_group);
+>  int iommu_domain_get_attr(struct iommu_domain *domain,
+>  			  enum iommu_attr attr, void *data)
+>  {
+> -	if (!domain->ops->domain_get_attr)
+> -		return -EINVAL;
+> +	struct iommu_domain_geometry *geometry;
+> +	int ret = 0;
+> +
+> +	switch (attr) {
+> +	case DOMAIN_ATTR_GEOMETRY:
+> +		geometry  = data;
+> +		*geometry = domain->geometry;
+> +
+> +		break;
+> +	default:
+> +		if (!domain->ops->domain_get_attr)
+> +			return -EINVAL;
+> 
+> -	return domain->ops->domain_get_attr(domain, attr, data);
+> +		ret = domain->ops->domain_get_attr(domain, attr, data);
+> +	}
+> +
+> +	return ret;
+>  }
+>  EXPORT_SYMBOL_GPL(iommu_domain_get_attr);
+> 
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h index
+> 0eef096..f7df4aa 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -37,11 +37,18 @@ struct iommu_domain;  typedef int
+> (*iommu_fault_handler_t)(struct iommu_domain *,
+>  			struct device *, unsigned long, int, void *);
+> 
+> +struct iommu_domain_geometry {
+> +	dma_addr_t aperture_start; /* First address that can be mapped
+> */
+> +	dma_addr_t aperture_end;   /* Last address that can be mapped
+> */
+> +	bool force_aperture;       /* DMA only allowed in mappable range?
+> */
+> +};
+> +
+>  struct iommu_domain {
+>  	struct iommu_ops *ops;
+>  	void *priv;
+>  	iommu_fault_handler_t handler;
+>  	void *handler_token;
+> +	struct iommu_domain_geometry geometry;
+>  };
+> 
 Hi Joerg,
+I am currently working on upstreaming the Freescale IOMMU driver. As discussed (with Scott Wood)
+a while back, this representation of the GEOMETRY attribute doesn't go well with our IOMMU
+implementation. Our representation of the geometry would be more complex and is certainly modifiable.
+Our IOMMU allows for creating custom DMA mappings by defining a set of DMA sub windows within
+a given window. We need a mechanism for specifying the number of DMA subwindows as a part of the 
+domain geometry. My suggestion would be to make the GEOMETRY attribute implementation dependent
 
-On Wed, 11 Jul 2012 12:58:27 +0200
-Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org> wrote:
-
-> Hi,
-> 
-> On Tue, Jul 10, 2012 at 01:26:39PM +0300, Hiroshi Doyu wrote:
-> > > http://lists.linuxfoundation.org/pipermail/iommu/2012-January/003531.html
-> > 
-> > Do you have any plan to merge the above "IOMMU: Make IOMMU-API ready
-> > for GART-like hardware"?
-> > 
-> > Tegra DRM seems to need that feature eventually.
-> 
-> I just rebased and updated the patch-set. A new version is sent out. If
-> no major objections come up I queue it for the next merge window.
-
-Thank you for your prompt action. This would help us a lot.
+Regards
+Varun
