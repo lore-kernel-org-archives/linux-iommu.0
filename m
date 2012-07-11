@@ -1,7 +1,8 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 02/27] x86/irq: Introduce irq_cfg->remapped
-Date: Wed, 11 Jul 2012 15:38:47 +0200
-Message-ID: <1342013952-10174-3-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 04/27] iommu/amd: Use acpi_get_table instead of
+	acpi_table_parse
+Date: Wed, 11 Jul 2012 15:38:49 +0200
+Message-ID: <1342013952-10174-5-git-send-email-joerg.roedel@amd.com>
 References: <1342013952-10174-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,82 +19,242 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This flag will show whether the interrupt is remapped in a
-way that works for VT-d and AMD-Vi.
+This makes it easier to propagate errors while parsing the
+IVRS table and makes the amd_iommu_init_err hack obsolete.
 
-Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-Cc: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- arch/x86/include/asm/hw_irq.h       |    1 +
- arch/x86/kernel/apic/io_apic.c      |    2 +-
- drivers/iommu/intel_irq_remapping.c |    4 ++++
- 3 files changed, 6 insertions(+), 1 deletion(-)
+ drivers/iommu/amd_iommu_init.c |  118 ++++++++++++++++++++++------------------
+ 1 file changed, 66 insertions(+), 52 deletions(-)
 
-diff --git a/arch/x86/include/asm/hw_irq.h b/arch/x86/include/asm/hw_irq.h
-index b6171e6..71bb327 100644
---- a/arch/x86/include/asm/hw_irq.h
-+++ b/arch/x86/include/asm/hw_irq.h
-@@ -132,6 +132,7 @@ struct irq_cfg {
- 	u8			vector;
- 	u8			move_in_progress : 1;
- #ifdef CONFIG_IRQ_REMAP
-+	bool			remapped;
- 	union irq_remap_info    irq_remap_info;
- #endif
- };
-diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
-index 08f666c..d5bccc0 100644
---- a/arch/x86/kernel/apic/io_apic.c
-+++ b/arch/x86/kernel/apic/io_apic.c
-@@ -72,7 +72,7 @@
- static void irq_remap_modify_chip_defaults(struct irq_chip *chip);
- static inline bool irq_remapped(struct irq_cfg *cfg)
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 1b3f699..de11b98 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -26,6 +26,8 @@
+ #include <linux/msi.h>
+ #include <linux/amd-iommu.h>
+ #include <linux/export.h>
++#include <linux/acpi.h>
++#include <acpi/acpi.h>
+ #include <asm/pci-direct.h>
+ #include <asm/iommu.h>
+ #include <asm/gart.h>
+@@ -122,7 +124,7 @@ struct ivmd_header {
+ 
+ bool amd_iommu_dump;
+ 
+-static int __initdata amd_iommu_detected;
++static bool amd_iommu_detected;
+ static bool __initdata amd_iommu_disabled;
+ 
+ u16 amd_iommu_last_bdf;			/* largest PCI device id we have
+@@ -149,11 +151,6 @@ bool amd_iommu_v2_present __read_mostly;
+ bool amd_iommu_force_isolation __read_mostly;
+ 
+ /*
+- * The ACPI table parsing functions set this variable on an error
+- */
+-static int __initdata amd_iommu_init_err;
+-
+-/*
+  * List of protection domains - used during resume
+  */
+ LIST_HEAD(amd_iommu_pd_list);
+@@ -457,11 +454,9 @@ static int __init find_last_devid_acpi(struct acpi_table_header *table)
+ 	 */
+ 	for (i = 0; i < table->length; ++i)
+ 		checksum += p[i];
+-	if (checksum != 0) {
++	if (checksum != 0)
+ 		/* ACPI table corrupt */
+-		amd_iommu_init_err = -ENODEV;
+-		return 0;
+-	}
++		return -ENODEV;
+ 
+ 	p += IVRS_HEADER_LENGTH;
+ 
+@@ -1087,16 +1082,12 @@ static int __init init_iommu_all(struct acpi_table_header *table)
+ 				    h->mmio_phys);
+ 
+ 			iommu = kzalloc(sizeof(struct amd_iommu), GFP_KERNEL);
+-			if (iommu == NULL) {
+-				amd_iommu_init_err = -ENOMEM;
+-				return 0;
+-			}
++			if (iommu == NULL)
++				return -ENOMEM;
+ 
+ 			ret = init_iommu_one(iommu, h);
+-			if (ret) {
+-				amd_iommu_init_err = ret;
+-				return 0;
+-			}
++			if (ret)
++				return ret;
+ 			break;
+ 		default:
+ 			break;
+@@ -1477,9 +1468,15 @@ static void __init free_on_init_error(void)
+  */
+ int __init amd_iommu_init_hardware(void)
  {
--	return cfg->irq_remap_info.irq_2_iommu.iommu != NULL;
-+	return cfg->remapped;
++	struct acpi_table_header *ivrs_base;
++	acpi_size ivrs_size;
++	acpi_status status;
+ 	int i, ret = 0;
+ 
+-	if (!amd_iommu_detected)
++	if (no_iommu || (iommu_detected && !gart_iommu_aperture))
++		return -ENODEV;
++
++	if (amd_iommu_disabled || !amd_iommu_detected)
+ 		return -ENODEV;
+ 
+ 	if (amd_iommu_dev_table != NULL) {
+@@ -1487,16 +1484,21 @@ int __init amd_iommu_init_hardware(void)
+ 		return 0;
+ 	}
+ 
++	status = acpi_get_table_with_size("IVRS", 0, &ivrs_base, &ivrs_size);
++	if (status == AE_NOT_FOUND)
++		return -ENODEV;
++	else if (ACPI_FAILURE(status)) {
++		const char *err = acpi_format_exception(status);
++		pr_err("AMD-Vi: IVRS table error: %s\n", err);
++		return -EINVAL;
++	}
++
+ 	/*
+ 	 * First parse ACPI tables to find the largest Bus/Dev/Func
+ 	 * we need to handle. Upon this information the shared data
+ 	 * structures for the IOMMUs in the system will be allocated
+ 	 */
+-	if (acpi_table_parse("IVRS", find_last_devid_acpi) != 0)
+-		return -ENODEV;
+-
+-	ret = amd_iommu_init_err;
+-	if (ret)
++	if (find_last_devid_acpi(ivrs_base))
+ 		goto out;
+ 
+ 	dev_table_size     = tbl_size(DEV_TABLE_ENTRY_SIZE);
+@@ -1553,22 +1555,13 @@ int __init amd_iommu_init_hardware(void)
+ 	 * now the data structures are allocated and basically initialized
+ 	 * start the real acpi table scan
+ 	 */
+-	ret = -ENODEV;
+-	if (acpi_table_parse("IVRS", init_iommu_all) != 0)
+-		goto free;
+-
+-	if (amd_iommu_init_err) {
+-		ret = amd_iommu_init_err;
+-		goto free;
+-	}
+-
+-	if (acpi_table_parse("IVRS", init_memory_definitions) != 0)
++	ret = init_iommu_all(ivrs_base);
++	if (ret)
+ 		goto free;
+ 
+-	if (amd_iommu_init_err) {
+-		ret = amd_iommu_init_err;
++	ret = init_memory_definitions(ivrs_base);
++	if (ret)
+ 		goto free;
+-	}
+ 
+ 	ret = amd_iommu_init_devices();
+ 	if (ret)
+@@ -1581,12 +1574,16 @@ int __init amd_iommu_init_hardware(void)
+ 	register_syscore_ops(&amd_iommu_syscore_ops);
+ 
+ out:
++	/* Don't leak any ACPI memory */
++	early_acpi_os_unmap_memory((char __iomem *)ivrs_base, ivrs_size);
++	ivrs_base = NULL;
++
+ 	return ret;
+ 
+ free:
+ 	free_on_init_error();
+ 
+-	return ret;
++	goto out;
  }
- #else
- static inline bool irq_remapped(struct irq_cfg *cfg)
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index e4e4334..29411ed 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -68,6 +68,7 @@ static int alloc_irte(struct intel_iommu *iommu, int irq, u16 count)
+ 
+ static int amd_iommu_enable_interrupts(void)
+@@ -1604,6 +1601,26 @@ out:
+ 	return ret;
+ }
+ 
++static bool detect_ivrs(void)
++{
++	struct acpi_table_header *ivrs_base;
++	acpi_size ivrs_size;
++	acpi_status status;
++
++	status = acpi_get_table_with_size("IVRS", 0, &ivrs_base, &ivrs_size);
++	if (status == AE_NOT_FOUND)
++		return false;
++	else if (ACPI_FAILURE(status)) {
++		const char *err = acpi_format_exception(status);
++		pr_err("AMD-Vi: IVRS table error: %s\n", err);
++		return false;
++	}
++
++	early_acpi_os_unmap_memory((char __iomem *)ivrs_base, ivrs_size);
++
++	return true;
++}
++
+ /*
+  * This is the core init function for AMD IOMMU hardware in the system.
+  * This function is called from the generic x86 DMA layer initialization
+@@ -1663,29 +1680,26 @@ free:
+  * IOMMUs
+  *
+  ****************************************************************************/
+-static int __init early_amd_iommu_detect(struct acpi_table_header *table)
+-{
+-	return 0;
+-}
+-
+ int __init amd_iommu_detect(void)
  {
- 	struct ir_table *table = iommu->ir_table;
- 	struct irq_2_iommu *irq_iommu = irq_2_iommu(irq);
-+	struct irq_cfg *cfg = irq_get_chip_data(irq);
- 	u16 index, start_index;
- 	unsigned int mask = 0;
- 	unsigned long flags;
-@@ -115,6 +116,7 @@ static int alloc_irte(struct intel_iommu *iommu, int irq, u16 count)
- 	for (i = index; i < index + count; i++)
- 		table->base[i].present = 1;
++
+ 	if (no_iommu || (iommu_detected && !gart_iommu_aperture))
+ 		return -ENODEV;
  
-+	cfg->remapped = true;
- 	irq_iommu->iommu = iommu;
- 	irq_iommu->irte_index =  index;
- 	irq_iommu->sub_handle = 0;
-@@ -155,6 +157,7 @@ static int map_irq_to_irte_handle(int irq, u16 *sub_handle)
- static int set_irte_irq(int irq, struct intel_iommu *iommu, u16 index, u16 subhandle)
- {
- 	struct irq_2_iommu *irq_iommu = irq_2_iommu(irq);
-+	struct irq_cfg *cfg = irq_get_chip_data(irq);
- 	unsigned long flags;
+ 	if (amd_iommu_disabled)
+ 		return -ENODEV;
  
- 	if (!irq_iommu)
-@@ -162,6 +165,7 @@ static int set_irte_irq(int irq, struct intel_iommu *iommu, u16 index, u16 subha
+-	if (acpi_table_parse("IVRS", early_amd_iommu_detect) == 0) {
+-		iommu_detected = 1;
+-		amd_iommu_detected = 1;
+-		x86_init.iommu.iommu_init = amd_iommu_init;
++	if (!detect_ivrs())
++		return -ENODEV;
  
- 	raw_spin_lock_irqsave(&irq_2_ir_lock, flags);
+-		/* Make sure ACS will be enabled */
+-		pci_request_acs();
+-		return 1;
+-	}
+-	return -ENODEV;
++	amd_iommu_detected = true;
++	iommu_detected = 1;
++	x86_init.iommu.iommu_init = amd_iommu_init;
++
++	/* Make sure ACS will be enabled */
++	pci_request_acs();
++
++	return 0;
+ }
  
-+	cfg->remapped = true;
- 	irq_iommu->iommu = iommu;
- 	irq_iommu->irte_index = index;
- 	irq_iommu->sub_handle = subhandle;
+ /****************************************************************************
 -- 
 1.7.9.5
