@@ -1,11 +1,13 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 0/7] Make IOMMU-API ready for GART-like hardware
-Date: Wed, 11 Jul 2012 12:49:16 +0200
-Message-ID: <1342003763-8139-1-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 3/7] iommu/vt-d: Implement DOMAIN_ATTR_GEOMETRY attribute
+Date: Wed, 11 Jul 2012 12:49:19 +0200
+Message-ID: <1342003763-8139-4-git-send-email-joerg.roedel@amd.com>
+References: <1342003763-8139-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1342003763-8139-1-git-send-email-joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,35 +21,27 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Implement the attribute for the Intel IOMMU driver.
 
-here is finally a new version of this patch-set. Changes to the previous
-version include:
+Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+---
+ drivers/iommu/intel-iommu.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-	* Rebased to v3.5-rc6
-	* Added missing Acked-by's
-
-The potential issue with type-safety still exists. But since people are
-desperatly waiting for the functionality of this patch-set I think we
-live with it for now. If it turns out to be a real problem we can change
-it any time.
-Unless any major objections come up I plan to queue these patches for
-v3.6.
-
-Regards,
-
-	Joerg
-
-Diffstat:
-
- drivers/iommu/amd_iommu.c    |    4 ++++
- drivers/iommu/exynos-iommu.c |    4 ++++
- drivers/iommu/intel-iommu.c  |    4 ++++
- drivers/iommu/iommu.c        |   33 +++++++++++++++++++++++++++++++++
- drivers/iommu/msm_iommu.c    |    5 +++++
- drivers/iommu/omap-iommu.c   |    4 ++++
- drivers/iommu/tegra-gart.c   |    5 +++++
- drivers/iommu/tegra-smmu.c   |    5 +++++
- include/linux/iommu.h        |   36 +++++++++++++++++++++++++++++++++++-
-
- 9 files changed, 99 insertions(+), 1 deletion(-)
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index b12af2f..6cb0791 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -3932,6 +3932,10 @@ static int intel_iommu_domain_init(struct iommu_domain *domain)
+ 	domain_update_iommu_cap(dmar_domain);
+ 	domain->priv = dmar_domain;
+ 
++	domain->geometry.aperture_start = 0;
++	domain->geometry.aperture_end   = __DOMAIN_MAX_ADDR(dmar_domain->gaw);
++	domain->geometry.force_aperture = true;
++
+ 	return 0;
+ }
+ 
+-- 
+1.7.9.5
