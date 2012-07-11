@@ -1,7 +1,7 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 22/27] iommu/amd: Add call-back routine for HPET MSI
-Date: Wed, 11 Jul 2012 15:39:07 +0200
-Message-ID: <1342013952-10174-23-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 08/27] iommu/amd: Split enable_iommus() routine
+Date: Wed, 11 Jul 2012 15:38:53 +0200
+Message-ID: <1342013952-10174-9-git-send-email-joerg.roedel@amd.com>
 References: <1342013952-10174-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,47 +21,58 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add a routine to setup a HPET MSI interrupt for remapping.
+Split the enable_iommus() routine so that a part of it can
+run in early code.
 
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c |   26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+ drivers/iommu/amd_iommu_init.c |   21 ++++++++++++++++++---
+ 1 file changed, 18 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 9a24a1b..ac6e731 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -4128,4 +4128,30 @@ static int msi_setup_irq(struct pci_dev *pdev, unsigned int irq,
- 	return 0;
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 49e16bb..4912eca 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -1379,7 +1379,7 @@ static void iommu_apply_resume_quirks(struct amd_iommu *iommu)
+  * This function finally enables all IOMMUs found in the system after
+  * they have been initialized
+  */
+-static void enable_iommus(void)
++static void early_enable_iommus(void)
+ {
+ 	struct amd_iommu *iommu;
+ 
+@@ -1389,14 +1389,29 @@ static void enable_iommus(void)
+ 		iommu_set_device_table(iommu);
+ 		iommu_enable_command_buffer(iommu);
+ 		iommu_enable_event_buffer(iommu);
+-		iommu_enable_ppr_log(iommu);
+-		iommu_enable_gt(iommu);
+ 		iommu_set_exclusion_range(iommu);
+ 		iommu_enable(iommu);
+ 		iommu_flush_all_caches(iommu);
+ 	}
  }
  
-+static int setup_hpet_msi(unsigned int irq, unsigned int id)
++static void enable_iommus_v2(void)
 +{
-+	struct irq_2_irte *irte_info;
-+	struct irq_cfg *cfg;
-+	int index, devid;
++	struct amd_iommu *iommu;
 +
-+	cfg = irq_get_chip_data(irq);
-+	if (!cfg)
-+		return -EINVAL;
-+
-+	irte_info = &cfg->irq_remap_info.irq_2_irte;
-+	devid     = get_hpet_devid(id);
-+	if (devid < 0)
-+		return devid;
-+
-+	index = alloc_irq_index(cfg, devid, 1);
-+	if (index < 0)
-+		return index;
-+
-+	irte_info->devid = devid;
-+	irte_info->index = index;
-+	cfg->remapped    = true;
-+
-+	return 0;
++	for_each_iommu(iommu) {
++		iommu_enable_ppr_log(iommu);
++		iommu_enable_gt(iommu);
++	}
 +}
 +
- #endif
++static void enable_iommus(void)
++{
++	early_enable_iommus();
++
++	enable_iommus_v2();
++}
++
+ static void disable_iommus(void)
+ {
+ 	struct amd_iommu *iommu;
 -- 
 1.7.9.5
