@@ -1,118 +1,50 @@
-From: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 01/27] x86/irq: Add data structure to keep AMD specific
-	irq remapping information
-Date: Wed, 11 Jul 2012 14:42:03 -0700
-Message-ID: <CAE9FiQUEYVMi46WYfLDDUO=PuTHYbmqXreZnCWLRdUjBH2iH4Q@mail.gmail.com>
-References: <1342013952-10174-1-git-send-email-joerg.roedel@amd.com>
-	<1342013952-10174-2-git-send-email-joerg.roedel@amd.com>
+From: markz <markz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: Tegra-DRM: Tegra30: DMA mapping API
+Date: Thu, 12 Jul 2012 11:04:33 +0800
+Message-ID: <1342062273.4559.5.camel@markz-desktop>
+References: <23B010BBA481A74B98487467C29BA57BF2366A1010@HKMAIL01.nvidia.com>
+	 <20120706.092417.916278591811517036.hdoyu@nvidia.com>
+	 <23B010BBA481A74B98487467C29BA57BF2366A1012@HKMAIL01.nvidia.com>
+	 <20120709.182828.1247752887335819184.hdoyu@nvidia.com>
+	 <1341908041.9360.6.camel@markz-desktop>
+	 <20120710132417.b52fbc05847cabec7e16cebd@nvidia.com>
+	 <20120710132639.a65ce779fcfabe74435dd6bc@nvidia.com>
+	 <20120711105827.GE25282@amd.com>
+	 <20120711144254.8f119872445e95713b467448@nvidia.com>
+Reply-To: <markz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1342013952-10174-2-git-send-email-joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20120711144254.8f119872445e95713b467448-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>, Lucas Stach <dev-8ppwABl0HbeELgA04lAiVw@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Peer Chen <pchen-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Wei Ni <wni-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Emily Jiang <ejiang-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Alex Courbot <acourbot-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org" <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>, Ken Adams <KAdams-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jul 11, 2012 at 6:38 AM, Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org> wrote:
-> Add a data structure to store information the IOMMU driver
-> can use to get from a 'struct irq_cfg' to the remapping
-> entry.
->
-> Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-> Cc: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> Cc: Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-> ---
->  arch/x86/include/asm/hw_irq.h       |   14 +++++++++++++-
->  arch/x86/kernel/apic/io_apic.c      |    2 +-
->  drivers/iommu/intel_irq_remapping.c |    2 +-
->  3 files changed, 15 insertions(+), 3 deletions(-)
->
-> diff --git a/arch/x86/include/asm/hw_irq.h b/arch/x86/include/asm/hw_irq.h
-> index eb92a6e..b6171e6 100644
-> --- a/arch/x86/include/asm/hw_irq.h
-> +++ b/arch/x86/include/asm/hw_irq.h
-> @@ -101,6 +101,7 @@ static inline void set_io_apic_irq_attr(struct io_apic_irq_attr *irq_attr,
->         irq_attr->polarity      = polarity;
->  }
->
-> +/* Intel specific interrupt remapping information */
->  struct irq_2_iommu {
->         struct intel_iommu *iommu;
->         u16 irte_index;
-> @@ -108,6 +109,17 @@ struct irq_2_iommu {
->         u8  irte_mask;
->  };
->
-> +/* AMD specific interrupt remapping information */
-> +struct irq_2_irte {
-> +       u16 devid; /* Device ID for IRTE table */
-> +       u16 index; /* Index into IRTE table*/
-> +};
-> +
-> +union irq_remap_info {
-> +       struct irq_2_iommu irq_2_iommu;
-> +       struct irq_2_irte  irq_2_irte;
-> +};
-> +
->  /*
->   * This is performance-critical, we want to do it O(1)
->   *
-> @@ -120,7 +132,7 @@ struct irq_cfg {
->         u8                      vector;
->         u8                      move_in_progress : 1;
->  #ifdef CONFIG_IRQ_REMAP
-> -       struct irq_2_iommu      irq_2_iommu;
-> +       union irq_remap_info    irq_remap_info;
+On Wed, 2012-07-11 at 19:42 +0800, Hiroshi Doyu wrote:
+> Hi Joerg,
+> 
+> On Wed, 11 Jul 2012 12:58:27 +0200
+> Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org> wrote:
+> 
+> > Hi,
+> > 
+> > On Tue, Jul 10, 2012 at 01:26:39PM +0300, Hiroshi Doyu wrote:
+> > > > http://lists.linuxfoundation.org/pipermail/iommu/2012-January/003531.html
+> > > 
+> > > Do you have any plan to merge the above "IOMMU: Make IOMMU-API ready
+> > > for GART-like hardware"?
+> > > 
+> > > Tegra DRM seems to need that feature eventually.
+> > 
+> > I just rebased and updated the patch-set. A new version is sent out. If
+> > no major objections come up I queue it for the next merge window.
+> 
+> Thank you for your prompt action. This would help us a lot.
 
-how about
-+union {
-+       struct irq_2_iommu irq_2_iommu;
-+       struct irq_2_irte  irq_2_irte;
-+};
-
-instead?
-
->  #endif
->  };
->
-> diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
-> index 5f0ff59..08f666c 100644
-> --- a/arch/x86/kernel/apic/io_apic.c
-> +++ b/arch/x86/kernel/apic/io_apic.c
-> @@ -72,7 +72,7 @@
->  static void irq_remap_modify_chip_defaults(struct irq_chip *chip);
->  static inline bool irq_remapped(struct irq_cfg *cfg)
->  {
-> -       return cfg->irq_2_iommu.iommu != NULL;
-> +       return cfg->irq_remap_info.irq_2_iommu.iommu != NULL;
->  }
->  #else
->  static inline bool irq_remapped(struct irq_cfg *cfg)
-> diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-> index 6d34706..e4e4334 100644
-> --- a/drivers/iommu/intel_irq_remapping.c
-> +++ b/drivers/iommu/intel_irq_remapping.c
-> @@ -43,7 +43,7 @@ static DEFINE_RAW_SPINLOCK(irq_2_ir_lock);
->  static struct irq_2_iommu *irq_2_iommu(unsigned int irq)
->  {
->         struct irq_cfg *cfg = irq_get_chip_data(irq);
-> -       return cfg ? &cfg->irq_2_iommu : NULL;
-> +       return cfg ? &cfg->irq_remap_info.irq_2_iommu : NULL;
->  }
->
->  int get_irte(int irq, struct irte *entry)
-> --
-> 1.7.9.5
->
->
+That's great. So Hiroshi-san, about your patch: 
+http://lists.linuxfoundation.org/pipermail/iommu/2012-January/003531.html
+, what is your plan to merge this?
+After Joerg's patch and yours are merged into linux-next, I can submit
+my drm patch into review process.
