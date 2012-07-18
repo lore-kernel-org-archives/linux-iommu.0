@@ -1,67 +1,43 @@
-From: Hiroshi Doyu <hdoyu@nvidia.com>
-Subject: Re: [v3.6 3/3] iommu/tegra: smmu: Fix unsleepable memory allocation
- at alloc_pdir()
-Date: Wed, 18 Jul 2012 10:50:35 +0200
-Message-ID: <20120718.115035.519900225393247427.hdoyu@nvidia.com>
-References: <20120717100901.GH4213@amd.com><20120717.152524.175499431618552821.hdoyu@nvidia.com><20120717132300.GK4213@amd.com>
+From: Omar Ramirez Luna <omar.luna@linaro.org>
+Subject: Re: [PATCH 0/6] OMAP: iommu: hwmod, reset handling and runtime PM
+Date: Wed, 18 Jul 2012 12:15:00 -0500
+Message-ID: <CALLhW=7PcocUyG=b+LszJj+hvNqKAY8Gf6hNPc0XW3XtF=hG9g@mail.gmail.com>
+References: <1339811764-5337-1-git-send-email-omar.luna@linaro.org>
+	<20120717101100.GI4213@amd.com>
+	<CAK=WgbbVvFoGRoitscvTRUWUWd=3HLiuvs6ZUNZnAbF67tXO5A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <20120717132300.GK4213@amd.com>
+In-Reply-To: <CAK=WgbbVvFoGRoitscvTRUWUWd=3HLiuvs6ZUNZnAbF67tXO5A@mail.gmail.com>
 Sender: linux-omap-owner@vger.kernel.org
-To: "joerg.roedel@amd.com" <joerg.roedel@amd.com>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, "chrisw@sous-sol.org" <chrisw@sous-sol.org>, "ohad@wizery.com" <ohad@wizery.com>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>
+To: Joerg Roedel <joerg.roedel@amd.com>
+Cc: Ohad Ben-Cohen <ohad@wizery.com>, Paul Walmsley <paul@pwsan.com>, Tony Lindgren <tony@atomide.com>, Benoit Cousson <b-cousson@ti.com>, Russell King <linux@arm.linux.org.uk>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Felipe Contreras <felipe.contreras@gmail.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-"joerg.roedel@amd.com" <joerg.roedel@amd.com> wrote @ Tue, 17 Jul 2012 15:23:00 +0200:
+On 17 July 2012 05:51, Ohad Ben-Cohen <ohad@wizery.com> wrote:
+> + Paul
+>
+> On Tue, Jul 17, 2012 at 1:11 PM, Joerg Roedel <joerg.roedel@amd.com> wrote:
+>> On Fri, Jun 15, 2012 at 08:55:58PM -0500, Omar Ramirez Luna wrote:
+>>> Omar Ramirez Luna (6):
+>>>   ARM: OMAP: iommu: fix including iommu.h without IOMMU_API selected
+>>>   ARM: OMAP3: hwmod data: add mmu data for iva and isp
+>>>   ARM: OMAP4: hwmod data: add mmu hwmod for ipu and dsp
+>>>   ARM: OMAP3/4: iommu: migrate to hwmod framework
+>>>   ARM: OMAP2+: iommu: add reset handling
+>>>   ARM: OMAP3/4: iommu: adapt to runtime pm
+>>
+>> What happens with this patch-set. Comments anyone? Ohad?
+>
+> Looks like it depends on a few OMAP hwmod changes (reset handling)
+> which require Paul's ACK.
 
-> On Tue, Jul 17, 2012 at 02:25:24PM +0200, Hiroshi Doyu wrote:
-> > The above spin_lock is always necessary. "as->lock" should be held to
-> > protect "as->pdir_page". Only when "as->pdir_page" is NULL,
-> > "as->pdir_page" would be allocated in "alloc_pdir()". Without this
-> > lock, the following race could happen:
-> > 
-> > 
-> > Without as->lock:
-> > A:			B:
-> > i == 3
-> > pdir_page == NULL
-> > 			i == 3
-> > 	     		pdir_page == NULL
-> > pdir_page = a;
-> > 			pdir_page = b;	!!!!!! OVERWRITTEN !!!!!!
-> >
-> 
-> Unless I am missing something, this is not the correct situation with my
-> patch. It would look more like this:
-> 
-> 
->  A:					B:
->  i == 3
->  pdir_page == NULL
->  					i == 3
->  	     				pdir_page == NULL
-> 
->  take as->lock
-> 
->  /* race check */
->  pdir_page == NULL -> proceed		/* spinning on as->lock */
-> 
->  pdir_page = a;
-> 
->  release as->lock
-> 
-> 					 take as->lock
-> 
-> 					 /* race check */
-> 					 pdir_page != NULL -> return
-> 
-> This should be fine, no? Do I miss something?
+That's correct, sorry if I failed to mention that in the cover-letter,
+but it does depend on:
 
-You are right. I didn't get the point of your patch. In the case that
-you can return -EAGAIN, the complicated "lock,unlock,lock,check race"
-is not necessary as you did.
+http://lkml.indiana.edu/hypermail/linux/kernel/1207.2/00361.html
 
-Verified the patch w/ Tegra3 based board. Please put this into next
-queue. Thanks.
+For the hwmod reset handling. Mainly, I wanted to gather comments for
+this patch set.
+
+- omar
