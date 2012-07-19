@@ -1,43 +1,46 @@
-From: Omar Ramirez Luna <omar.luna@linaro.org>
-Subject: Re: [PATCH 0/6] OMAP: iommu: hwmod, reset handling and runtime PM
-Date: Wed, 18 Jul 2012 12:15:00 -0500
-Message-ID: <CALLhW=7PcocUyG=b+LszJj+hvNqKAY8Gf6hNPc0XW3XtF=hG9g@mail.gmail.com>
-References: <1339811764-5337-1-git-send-email-omar.luna@linaro.org>
-	<20120717101100.GI4213@amd.com>
-	<CAK=WgbbVvFoGRoitscvTRUWUWd=3HLiuvs6ZUNZnAbF67tXO5A@mail.gmail.com>
+From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Subject: [PATCH 1/2] iommu/amd: Add missing spin_lock initialization
+Date: Thu, 19 Jul 2012 13:45:20 +0200
+Message-ID: <1342698321-21720-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <CAK=WgbbVvFoGRoitscvTRUWUWd=3HLiuvs6ZUNZnAbF67tXO5A@mail.gmail.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Joerg Roedel <joerg.roedel@amd.com>
-Cc: Ohad Ben-Cohen <ohad@wizery.com>, Paul Walmsley <paul@pwsan.com>, Tony Lindgren <tony@atomide.com>, Benoit Cousson <b-cousson@ti.com>, Russell King <linux@arm.linux.org.uk>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Felipe Contreras <felipe.contreras@gmail.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 17 July 2012 05:51, Ohad Ben-Cohen <ohad@wizery.com> wrote:
-> + Paul
->
-> On Tue, Jul 17, 2012 at 1:11 PM, Joerg Roedel <joerg.roedel@amd.com> wrote:
->> On Fri, Jun 15, 2012 at 08:55:58PM -0500, Omar Ramirez Luna wrote:
->>> Omar Ramirez Luna (6):
->>>   ARM: OMAP: iommu: fix including iommu.h without IOMMU_API selected
->>>   ARM: OMAP3: hwmod data: add mmu data for iva and isp
->>>   ARM: OMAP4: hwmod data: add mmu hwmod for ipu and dsp
->>>   ARM: OMAP3/4: iommu: migrate to hwmod framework
->>>   ARM: OMAP2+: iommu: add reset handling
->>>   ARM: OMAP3/4: iommu: adapt to runtime pm
->>
->> What happens with this patch-set. Comments anyone? Ohad?
->
-> Looks like it depends on a few OMAP hwmod changes (reset handling)
-> which require Paul's ACK.
+Add missing spin_lock initialization in
+amd_iommu_bind_pasid() function and make lockdep happy
+again.
 
-That's correct, sorry if I failed to mention that in the cover-letter,
-but it does depend on:
+Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org # >= v3.3
+Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+---
+ drivers/iommu/amd_iommu_v2.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-http://lkml.indiana.edu/hypermail/linux/kernel/1207.2/00361.html
-
-For the hwmod reset handling. Mainly, I wanted to gather comments for
-this patch set.
-
-- omar
+diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
+index 036fe9b..a1f1bc8 100644
+--- a/drivers/iommu/amd_iommu_v2.c
++++ b/drivers/iommu/amd_iommu_v2.c
+@@ -681,6 +681,8 @@ int amd_iommu_bind_pasid(struct pci_dev *pdev, int pasid,
+ 
+ 	atomic_set(&pasid_state->count, 1);
+ 	init_waitqueue_head(&pasid_state->wq);
++	spin_lock_init(&pasid_state->lock);
++
+ 	pasid_state->task         = task;
+ 	pasid_state->mm           = get_task_mm(task);
+ 	pasid_state->device_state = dev_state;
+-- 
+1.7.9.5
