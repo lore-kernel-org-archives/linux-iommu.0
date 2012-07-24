@@ -1,14 +1,14 @@
 From: Julia Lawall <Julia.Lawall@lip6.fr>
-Subject: [PATCH] drivers/iommu/intel-iommu.c: add missing free_domain_mem
-Date: Tue, 24 Jul 2012 16:16:04 +0200
-Message-ID: <1343139364-26936-1-git-send-email-Julia.Lawall@lip6.fr>
+Subject: [PATCH v2] drivers/iommu/intel-iommu.c: add missing free_domain_mem
+Date: Tue, 24 Jul 2012 16:18:14 +0200
+Message-ID: <1343139494-26998-1-git-send-email-Julia.Lawall@lip6.fr>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: David Woodhouse <dwmw2@infradead.org>
-Cc: kernel-janitors@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Julia Lawall <julia@diku.dk>
+Cc: kernel-janitors@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Julia Lawall <julia@diku.dk>
+From: Julia Lawall <Julia.Lawall@lip6.fr>
 
 Add missing free_domain_mem on failure path after alloc_domain.
 
@@ -39,9 +39,11 @@ if(...) { ... when != e2(...,(T1)e,...)
 ) }
 // </smpl>
 
-Signed-off-by: Julia Lawall <julia@diku.dk>
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
 ---
+Email address corrected.
+
  drivers/iommu/intel-iommu.c |    1 +
  1 file changed, 1 insertion(+)
 
