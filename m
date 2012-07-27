@@ -1,27 +1,19 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [GIT PULL (PATCH 0/4) v2] VFIO driver for v3.6
-Date: Thu, 26 Jul 2012 10:14:48 -0600
-Message-ID: <1343319288.3125.24.camel@ul30vt>
+From: Paul Mackerras <paulus@samba.org>
+Subject: Re: [GIT PULL (PATCH 0/4)] VFIO driver for v3.6
+Date: Fri, 27 Jul 2012 15:32:06 +1000
+Message-ID: <20120727053206.GC11870@drongo>
 References: <20120725142254.12800.61860.stgit@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20120725142254.12800.61860.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org, B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, avi-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, benve-FYB4Gu1CFyUAvxtiuMwx3w@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20120725142254.12800.61860.stgit@bling.home>
+Sender: linux-kernel-owner@vger.kernel.org
+To: torvalds@linux-foundation.org
+Cc: Alex Williamson <alex.williamson@redhat.com>, benh@kernel.crashing.org, aik@ozlabs.ru, david@gibson.dropbear.id.au, gregkh@linuxfoundation.org, joerg.roedel@amd.com, dwmw2@infradead.org, chrisw@sous-sol.org, agraf@suse.de, benve@cisco.com, aafabbri@cisco.com, B08248@freescale.com, B07421@freescale.com, avi@redhat.com, konrad.wilk@oracle.com, kvm@vger.kernel.org, qemu-devel@nongnu.org, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, bhelgaas@google.com, ddutile@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2012-07-25 at 08:53 -0600, Alex Williamson wrote:
+On Wed, Jul 25, 2012 at 08:53:06AM -0600, Alex Williamson wrote:
 > Hi Linus,
 > 
 > This series includes the VFIO userspace driver interface for the
@@ -48,64 +40,10 @@ On Wed, 2012-07-25 at 08:53 -0600, Alex Williamson wrote:
 > Roedel, and others.  This driver has been available in linux-next for
 > the last month.  Thanks,
 
-randconfig testing in next found a dependency issue that I've fix in the
-for-linus branch above.  Change from v1 is:
+Linus,
 
-diff --git a/drivers/vfio/pci/Kconfig b/drivers/vfio/pci/Kconfig
-index cc7db62..5980758 100644
---- a/drivers/vfio/pci/Kconfig
-+++ b/drivers/vfio/pci/Kconfig
-@@ -1,6 +1,6 @@
- config VFIO_PCI
- 	tristate "VFIO support for PCI devices"
--	depends on VFIO && PCI
-+	depends on VFIO && PCI && EVENTFD
- 	help
- 	  Support for the PCI VFIO bus driver.  This is required to make
- 	  use of PCI drivers using the VFIO framework.
+Are you thinking of pulling this driver in for 3.6?  I would be glad
+to see it go in since we want to use it with KVM on PowerPC.  If
+possible we'd like the PowerPC bits for it to go in as well.
 
-If anyone wants a full resend of v2 to the list with this change, please
-let me know.  Thanks,
-
-Alex
-
-> ---
-> 
-> Alex Williamson (4):
->       vfio: Add PCI device driver
->       vfio: Type1 IOMMU implementation
->       vfio: Add documentation
->       vfio: VFIO core
-> 
-> 
->  Documentation/ioctl/ioctl-number.txt |    1 
->  Documentation/vfio.txt               |  314 +++++++
->  MAINTAINERS                          |    8 
->  drivers/Kconfig                      |    2 
->  drivers/Makefile                     |    1 
->  drivers/vfio/Kconfig                 |   16 
->  drivers/vfio/Makefile                |    3 
->  drivers/vfio/pci/Kconfig             |    8 
->  drivers/vfio/pci/Makefile            |    4 
->  drivers/vfio/pci/vfio_pci.c          |  579 +++++++++++++
->  drivers/vfio/pci/vfio_pci_config.c   | 1540 ++++++++++++++++++++++++++++++++++
->  drivers/vfio/pci/vfio_pci_intrs.c    |  740 ++++++++++++++++
->  drivers/vfio/pci/vfio_pci_private.h  |   91 ++
->  drivers/vfio/pci/vfio_pci_rdwr.c     |  269 ++++++
->  drivers/vfio/vfio.c                  | 1420 +++++++++++++++++++++++++++++++
->  drivers/vfio/vfio_iommu_type1.c      |  753 +++++++++++++++++
->  include/linux/vfio.h                 |  445 ++++++++++
->  17 files changed, 6194 insertions(+)
->  create mode 100644 Documentation/vfio.txt
->  create mode 100644 drivers/vfio/Kconfig
->  create mode 100644 drivers/vfio/Makefile
->  create mode 100644 drivers/vfio/pci/Kconfig
->  create mode 100644 drivers/vfio/pci/Makefile
->  create mode 100644 drivers/vfio/pci/vfio_pci.c
->  create mode 100644 drivers/vfio/pci/vfio_pci_config.c
->  create mode 100644 drivers/vfio/pci/vfio_pci_intrs.c
->  create mode 100644 drivers/vfio/pci/vfio_pci_private.h
->  create mode 100644 drivers/vfio/pci/vfio_pci_rdwr.c
->  create mode 100644 drivers/vfio/vfio.c
->  create mode 100644 drivers/vfio/vfio_iommu_type1.c
->  create mode 100644 include/linux/vfio.h
+Paul.
