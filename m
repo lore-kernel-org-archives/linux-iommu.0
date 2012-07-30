@@ -1,49 +1,45 @@
-From: Paul Mackerras <paulus@samba.org>
-Subject: Re: [GIT PULL (PATCH 0/4)] VFIO driver for v3.6
-Date: Fri, 27 Jul 2012 15:32:06 +1000
-Message-ID: <20120727053206.GC11870@drongo>
-References: <20120725142254.12800.61860.stgit@bling.home>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH 1/2] iommu/tegra: smmu: Cleanup with lesser nest
+Date: Mon, 30 Jul 2012 08:39:18 +0300
+Message-ID: <1343626759-20680-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20120725142254.12800.61860.stgit@bling.home>
-Sender: linux-kernel-owner@vger.kernel.org
-To: torvalds@linux-foundation.org
-Cc: Alex Williamson <alex.williamson@redhat.com>, benh@kernel.crashing.org, aik@ozlabs.ru, david@gibson.dropbear.id.au, gregkh@linuxfoundation.org, joerg.roedel@amd.com, dwmw2@infradead.org, chrisw@sous-sol.org, agraf@suse.de, benve@cisco.com, aafabbri@cisco.com, B08248@freescale.com, B07421@freescale.com, avi@redhat.com, konrad.wilk@oracle.com, kvm@vger.kernel.org, qemu-devel@nongnu.org, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, bhelgaas@google.com, ddutile@redhat.com
+Content-Type: text/plain
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jul 25, 2012 at 08:53:06AM -0600, Alex Williamson wrote:
-> Hi Linus,
-> 
-> This series includes the VFIO userspace driver interface for the
-> 3.6 kernel merge window.  This driver is intended to provide a
-> secure interface for device access using IOMMU protection for
-> applications like assignment of physical devices to virtual
-> machines.  Qemu will be the first user of this interface, enabling
-> assignment of PCI devices to Qemu guests.  This interface is
-> intended to eventually replace the x86-specific assignment mechanism
-> currently available in KVM.  This interface has the advantage of
-> being more secure, by working with IOMMU groups to ensure device
-> isolation and providing it's own filtered resource access mechanism,
-> and also more flexible, in not being x86 or KVM specific (extensions
-> to enable POWER are already working).
-> 
-> As a new driver, I'm including both the individual patches in email,
-> as well as a branch to pull from:
-> 
-> git://github.com/awilliam/linux-vfio.git for-linus
-> 
-> This driver is originally the work of Tom Lyon, but has since been
-> handed over to me and gone through a complete overhaul thanks to the
-> input from David Gibson, Ben Herrenschmidt, Chris Wright, Joerg
-> Roedel, and others.  This driver has been available in linux-next for
-> the last month.  Thanks,
+Small clean up with lesser nest for readability.
 
-Linus,
+Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/tegra-smmu.c |   13 ++++++++-----
+ 1 files changed, 8 insertions(+), 5 deletions(-)
 
-Are you thinking of pulling this driver in for 3.6?  I would be glad
-to see it go in since we want to use it with KVM on PowerPC.  If
-possible we'd like the PowerPC bits for it to go in as well.
-
-Paul.
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index 4ba325a..2be5ac2 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -814,11 +814,14 @@ static int smmu_iommu_domain_init(struct iommu_domain *domain)
+ 	/* Look for a free AS with lock held */
+ 	for  (i = 0; i < smmu->num_as; i++) {
+ 		as = &smmu->as[i];
+-		if (!as->pdir_page) {
+-			err = alloc_pdir(as);
+-			if (!err)
+-				goto found;
+-		}
++
++		if (as->pdir_page)
++			continue;
++
++		err = alloc_pdir(as);
++		if (!err)
++			goto found;
++
+ 		if (err != -EAGAIN)
+ 			break;
+ 	}
+-- 
+1.7.5.4
