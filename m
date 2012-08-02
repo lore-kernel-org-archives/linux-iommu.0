@@ -1,109 +1,302 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [GIT PULL (PATCH 0/4)] VFIO driver for v3.6
-Date: Tue, 31 Jul 2012 10:33:05 -0600
-Message-ID: <1343752385.3368.8.camel@ul30vt>
-References: <20120725142254.12800.61860.stgit@bling.home>
-	<20120727053206.GC11870@drongo> <1343690279.8073.215.camel@ul30vt>
-	<CA+55aFzTzO-jzHNYSW6Hb5_kmP6aYCWH_hbAauLUn9rf9iLg_w@mail.gmail.com>
-	<1343746415.3368.5.camel@ul30vt>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: [v2 1/1] iommu/tegra: smmu: debugfs for TLB/PTC statistics
+Date: Thu, 2 Aug 2012 11:46:40 +0300
+Message-ID: <1343897200-3396-1-git-send-email-hdoyu@nvidia.com>
+References: <1343711681-23394-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1343746415.3368.5.camel@ul30vt>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Cc: B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, agraf-l3A5Bk7waGM@public.gmane.org, avi-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org, B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, benve-FYB4Gu1CFyUAvxtiuMwx3w@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1343711681-23394-1-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, joerg.roedel-5C7GfCeVMHo@public.gmane.org, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2012-07-31 at 08:53 -0600, Alex Williamson wrote:
-> On Mon, 2012-07-30 at 22:11 -0700, Linus Torvalds wrote:
-> > On Mon, Jul 30, 2012 at 4:17 PM, Alex Williamson
-> > <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> > >
-> > > I'm pretty anxious to find out as well.  Linus, ping, any thoughts on
-> > > including this in 3.6?  Thanks,
-> > 
-> > I just pulled it, but then I unpulled again when I realized it's not a
-> > signed tag and it's on github.
-> > 
-> > Please, people. Do tagged releases with proper signatures if you're
-> > not using kernel.org or other controlled servers. In fact, I prefer
-> > signed tags even if you *do* use kernel.org etc.
-> 
-> Sorry about that, Linus.  I think this is a properly signed tag, please
-> let me know if I'm still screwing up.  Thanks,
-> 
-> Alex
-> 
-> The following changes since commit 2e3ee613480563a6d5c01b57d342e65cc58c06df:
-> 
->   Merge tag 'writeback-proportions' of git://git.kernel.org/pub/scm/linux/kernel/git/wfg/linux (2012-07-30 22:14:04 -0700)
-> 
-> are available in the git repository at:
-> 
-> 
->   git-9UaJU3cA/F/QT0dZR+AlfA@public.gmane.org:awilliam/linux-vfio.git tags/vfio-for-v3.6
+Add debugfs entries to collect TLB/PTC statistics.
 
-Ack, git pull-request snuck this by me, obviously this should be:
+  $ echo "reset" > /sys/kernel/debug/smmu/mc/{tlb,ptc}
+  $ echo "on" > /sys/kernel/debug/smmu/mc/{tlb,ptc}
+  $ echo "off" > /sys/kernel/debug/smmu/mc/{tlb,ptc}
+  $ cat /sys/kernel/debug/smmu/mc/{tlb,ptc}
+  hit:0014910c miss:00014d22
 
-git://github.com/awilliam/linux-vfio.git tags/vfio-for-v3.6
+  The above format is:
+  hit:<HIT count><SPC>miss:<MISS count><SPC><CR+LF>
 
-Thanks,
-Alex
+  fscanf(fp, "hit:%lx miss:%lx", &hit, &miss);
 
-> for you to fetch changes up to 89e1f7d4c66d85f42c3d52ea3866eb10cadf6153:
-> 
->   vfio: Add PCI device driver (2012-07-31 08:16:24 -0600)
-> 
-> ----------------------------------------------------------------
-> VFIO for v3.6
-> 
-> ----------------------------------------------------------------
-> Alex Williamson (4):
->       vfio: VFIO core
->       vfio: Add documentation
->       vfio: Type1 IOMMU implementation
->       vfio: Add PCI device driver
-> 
->  Documentation/ioctl/ioctl-number.txt |    1 +
->  Documentation/vfio.txt               |  314 +++++++
->  MAINTAINERS                          |    8 +
->  drivers/Kconfig                      |    2 +
->  drivers/Makefile                     |    1 +
->  drivers/vfio/Kconfig                 |   16 +
->  drivers/vfio/Makefile                |    3 +
->  drivers/vfio/pci/Kconfig             |    8 +
->  drivers/vfio/pci/Makefile            |    4 +
->  drivers/vfio/pci/vfio_pci.c          |  579 +++++++++++++
->  drivers/vfio/pci/vfio_pci_config.c   | 1540 ++++++++++++++++++++++++++++++++++
->  drivers/vfio/pci/vfio_pci_intrs.c    |  740 ++++++++++++++++
->  drivers/vfio/pci/vfio_pci_private.h  |   91 ++
->  drivers/vfio/pci/vfio_pci_rdwr.c     |  269 ++++++
->  drivers/vfio/vfio.c                  | 1420 +++++++++++++++++++++++++++++++
->  drivers/vfio/vfio_iommu_type1.c      |  753 +++++++++++++++++
->  include/linux/vfio.h                 |  445 ++++++++++
->  17 files changed, 6194 insertions(+)
->  create mode 100644 Documentation/vfio.txt
->  create mode 100644 drivers/vfio/Kconfig
->  create mode 100644 drivers/vfio/Makefile
->  create mode 100644 drivers/vfio/pci/Kconfig
->  create mode 100644 drivers/vfio/pci/Makefile
->  create mode 100644 drivers/vfio/pci/vfio_pci.c
->  create mode 100644 drivers/vfio/pci/vfio_pci_config.c
->  create mode 100644 drivers/vfio/pci/vfio_pci_intrs.c
->  create mode 100644 drivers/vfio/pci/vfio_pci_private.h
->  create mode 100644 drivers/vfio/pci/vfio_pci_rdwr.c
->  create mode 100644 drivers/vfio/vfio.c
->  create mode 100644 drivers/vfio/vfio_iommu_type1.c
->  create mode 100644 include/linux/vfio.h
-> 
-> 
+Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+---
+Update: Match the above format correctly. ":" was missed.
+---
+ drivers/iommu/tegra-smmu.c |  202 +++++++++++++++++++++++++++++++++++++++++---
+ 1 files changed, 190 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index 4ba325a..95b4698 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -32,6 +32,8 @@
+ #include <linux/io.h>
+ #include <linux/of.h>
+ #include <linux/of_iommu.h>
++#include <linux/debugfs.h>
++#include <linux/seq_file.h>
+ 
+ #include <asm/page.h>
+ #include <asm/cacheflush.h>
+@@ -47,16 +49,29 @@
+ #define SMMU_CONFIG_DISABLE			0
+ #define SMMU_CONFIG_ENABLE			1
+ 
+-#define SMMU_TLB_CONFIG				0x14
+-#define SMMU_TLB_CONFIG_STATS__MASK		(1 << 31)
+-#define SMMU_TLB_CONFIG_STATS__ENABLE		(1 << 31)
++/* REVISIT: To support multiple MCs */
++enum {
++	_MC = 0,
++};
++
++enum {
++	_TLB = 0,
++	_PTC,
++};
++
++#define SMMU_CACHE_CONFIG_BASE			0x14
++#define __SMMU_CACHE_CONFIG(mc, cache)		(SMMU_CACHE_CONFIG_BASE + 4 * cache)
++#define SMMU_CACHE_CONFIG(cache)		__SMMU_CACHE_CONFIG(_MC, cache)
++
++#define SMMU_CACHE_CONFIG_STATS_SHIFT		31
++#define SMMU_CACHE_CONFIG_STATS_ENABLE		(1 << SMMU_CACHE_CONFIG_STATS_SHIFT)
++#define SMMU_CACHE_CONFIG_STATS_TEST_SHIFT	30
++#define SMMU_CACHE_CONFIG_STATS_TEST		(1 << SMMU_CACHE_CONFIG_STATS_TEST_SHIFT)
++
+ #define SMMU_TLB_CONFIG_HIT_UNDER_MISS__ENABLE	(1 << 29)
+ #define SMMU_TLB_CONFIG_ACTIVE_LINES__VALUE	0x10
+ #define SMMU_TLB_CONFIG_RESET_VAL		0x20000010
+ 
+-#define SMMU_PTC_CONFIG				0x18
+-#define SMMU_PTC_CONFIG_STATS__MASK		(1 << 31)
+-#define SMMU_PTC_CONFIG_STATS__ENABLE		(1 << 31)
+ #define SMMU_PTC_CONFIG_CACHE__ENABLE		(1 << 29)
+ #define SMMU_PTC_CONFIG_INDEX_MAP__PATTERN	0x3f
+ #define SMMU_PTC_CONFIG_RESET_VAL		0x2000003f
+@@ -86,10 +101,10 @@
+ 
+ #define SMMU_ASID_SECURITY			0x38
+ 
+-#define SMMU_STATS_TLB_HIT_COUNT		0x1f0
+-#define SMMU_STATS_TLB_MISS_COUNT		0x1f4
+-#define SMMU_STATS_PTC_HIT_COUNT		0x1f8
+-#define SMMU_STATS_PTC_MISS_COUNT		0x1fc
++#define SMMU_STATS_CACHE_COUNT_BASE		0x1f0
++
++#define SMMU_STATS_CACHE_COUNT(mc, cache, hitmiss)		\
++	(SMMU_STATS_CACHE_COUNT_BASE + 8 * cache + 4 * hitmiss)
+ 
+ #define SMMU_TRANSLATION_ENABLE_0		0x228
+ #define SMMU_TRANSLATION_ENABLE_1		0x22c
+@@ -251,6 +266,8 @@ struct smmu_device {
+ 	unsigned long translation_enable_2;
+ 	unsigned long asid_security;
+ 
++	struct dentry *debugfs_root;
++
+ 	struct device_node *ahb;
+ 
+ 	int		num_as;
+@@ -412,8 +429,8 @@ static int smmu_setup_regs(struct smmu_device *smmu)
+ 	smmu_write(smmu, smmu->translation_enable_1, SMMU_TRANSLATION_ENABLE_1);
+ 	smmu_write(smmu, smmu->translation_enable_2, SMMU_TRANSLATION_ENABLE_2);
+ 	smmu_write(smmu, smmu->asid_security, SMMU_ASID_SECURITY);
+-	smmu_write(smmu, SMMU_TLB_CONFIG_RESET_VAL, SMMU_TLB_CONFIG);
+-	smmu_write(smmu, SMMU_PTC_CONFIG_RESET_VAL, SMMU_PTC_CONFIG);
++	smmu_write(smmu, SMMU_TLB_CONFIG_RESET_VAL, SMMU_CACHE_CONFIG(_TLB));
++	smmu_write(smmu, SMMU_PTC_CONFIG_RESET_VAL, SMMU_CACHE_CONFIG(_PTC));
+ 
+ 	smmu_flush_regs(smmu, 1);
+ 
+@@ -892,6 +909,164 @@ static struct iommu_ops smmu_iommu_ops = {
+ 	.pgsize_bitmap	= SMMU_IOMMU_PGSIZES,
+ };
+ 
++/* Should be in the order of enum */
++static const char * const smmu_debugfs_mc[] = { "mc", };
++static const char * const smmu_debugfs_cache[] = {  "tlb", "ptc", };
++
++static ssize_t smmu_debugfs_stats_write(struct file *file,
++					const char __user *buffer,
++					size_t count, loff_t *pos)
++{
++	struct smmu_device *smmu;
++	struct dentry *dent;
++	int i, cache, mc;
++	enum {
++		_OFF = 0,
++		_ON,
++		_RESET,
++	};
++	const char * const command[] = {
++		[_OFF]		= "off",
++		[_ON]		= "on",
++		[_RESET]	= "reset",
++	};
++	char str[] = "reset";
++	u32 val;
++	size_t offs;
++
++	count = min_t(size_t, count, sizeof(str));
++	if (copy_from_user(str, buffer, count))
++		return -EINVAL;
++
++	for (i = 0; i < ARRAY_SIZE(command); i++)
++		if (strncmp(str, command[i],
++			    strlen(command[i])) == 0)
++			break;
++
++	if (i == ARRAY_SIZE(command))
++		return -EINVAL;
++
++	dent = file->f_dentry;
++	cache = (int)dent->d_inode->i_private;
++	mc = (int)dent->d_parent->d_inode->i_private;
++	smmu = dent->d_parent->d_parent->d_inode->i_private;
++
++	offs = SMMU_CACHE_CONFIG(cache);
++	val = smmu_read(smmu, offs);
++	switch (i) {
++	case _OFF:
++		val &= ~SMMU_CACHE_CONFIG_STATS_ENABLE;
++		val &= ~SMMU_CACHE_CONFIG_STATS_TEST;
++		smmu_write(smmu, val, offs);
++		break;
++	case _ON:
++		val |= SMMU_CACHE_CONFIG_STATS_ENABLE;
++		val &= ~SMMU_CACHE_CONFIG_STATS_TEST;
++		smmu_write(smmu, val, offs);
++		break;
++	case _RESET:
++		val |= SMMU_CACHE_CONFIG_STATS_TEST;
++		smmu_write(smmu, val, offs);
++		val &= ~SMMU_CACHE_CONFIG_STATS_TEST;
++		smmu_write(smmu, val, offs);
++		break;
++	default:
++		BUG();
++		break;
++	}
++
++	dev_dbg(smmu->dev, "%s() %08x, %08x @%08x\n", __func__,
++		val, smmu_read(smmu, offs), offs);
++
++	return count;
++}
++
++static int smmu_debugfs_stats_show(struct seq_file *s, void *v)
++{
++	struct smmu_device *smmu;
++	struct dentry *dent;
++	int i, cache, mc;
++	const char * const stats[] = { "hit", "miss", };
++
++	dent = d_find_alias(s->private);
++	cache = (int)dent->d_inode->i_private;
++	mc = (int)dent->d_parent->d_inode->i_private;
++	smmu = dent->d_parent->d_parent->d_inode->i_private;
++
++	for (i = 0; i < ARRAY_SIZE(stats); i++) {
++		u32 val;
++		size_t offs;
++
++		offs = SMMU_STATS_CACHE_COUNT(mc, cache, i);
++		val = smmu_read(smmu, offs);
++		seq_printf(s, "%s:%08x ", stats[i], val);
++
++		dev_dbg(smmu->dev, "%s() %s %08x @%08x\n", __func__,
++			stats[i], val, offs);
++	}
++	seq_printf(s, "\n");
++
++	return 0;
++}
++
++static int smmu_debugfs_stats_open(struct inode *inode, struct file *file)
++{
++	return single_open(file, smmu_debugfs_stats_show, inode);
++}
++
++static const struct file_operations smmu_debugfs_stats_fops = {
++	.open		= smmu_debugfs_stats_open,
++	.read		= seq_read,
++	.llseek		= seq_lseek,
++	.release	= single_release,
++	.write		= smmu_debugfs_stats_write,
++};
++
++static void smmu_debugfs_delete(struct smmu_device *smmu)
++{
++	debugfs_remove_recursive(smmu->debugfs_root);
++}
++
++static void smmu_debugfs_create(struct smmu_device *smmu)
++{
++	int i;
++	struct dentry *root;
++
++	root = debugfs_create_file(dev_name(smmu->dev),
++				   S_IFDIR | S_IRWXU | S_IRUGO | S_IXUGO,
++				   NULL, smmu, NULL);
++	if (!root)
++		goto err_out;
++	smmu->debugfs_root = root;
++
++	for (i = 0; i < ARRAY_SIZE(smmu_debugfs_mc); i++) {
++		int j;
++		struct dentry *mc;
++
++		mc = debugfs_create_file(smmu_debugfs_mc[i],
++					 S_IFDIR | S_IRWXU | S_IRUGO | S_IXUGO,
++					 root, (void *)i, NULL);
++		if (!mc)
++			goto err_out;
++
++		for (j = 0; j < ARRAY_SIZE(smmu_debugfs_cache); j++) {
++			struct dentry *cache;
++
++			cache = debugfs_create_file(smmu_debugfs_cache[j],
++						    S_IWUGO | S_IRUGO, mc,
++						    (void *)j,
++						    &smmu_debugfs_stats_fops);
++			if (!cache)
++				goto err_out;
++		}
++	}
++
++	return;
++
++err_out:
++	smmu_debugfs_delete(smmu);
++}
++
+ static int tegra_smmu_suspend(struct device *dev)
+ {
+ 	struct smmu_device *smmu = dev_get_drvdata(dev);
+@@ -996,6 +1171,7 @@ static int tegra_smmu_probe(struct platform_device *pdev)
+ 	if (!smmu->avp_vector_page)
+ 		return -ENOMEM;
+ 
++	smmu_debugfs_create(smmu);
+ 	smmu_handle = smmu;
+ 	return 0;
+ }
+@@ -1005,6 +1181,8 @@ static int tegra_smmu_remove(struct platform_device *pdev)
+ 	struct smmu_device *smmu = platform_get_drvdata(pdev);
+ 	int i;
+ 
++	smmu_debugfs_delete(smmu);
++
+ 	smmu_write(smmu, SMMU_CONFIG_DISABLE, SMMU_CONFIG);
+ 	for (i = 0; i < smmu->num_as; i++)
+ 		free_pdir(&smmu->as[i]);
+-- 
+1.7.5.4
