@@ -1,40 +1,83 @@
-From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [v2 1/1] iommu/tegra: smmu: debugfs for TLB/PTC statistics
-Date: Fri, 3 Aug 2012 17:57:40 +0200
-Message-ID: <20120803155740.GI1996@amd.com>
-References: <1343711681-23394-1-git-send-email-hdoyu@nvidia.com>
- <1343897200-3396-1-git-send-email-hdoyu@nvidia.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH 1/2] intel-iommu: Fix ACS path checking
+Date: Sat, 04 Aug 2012 12:08:55 -0600
+Message-ID: <20120804180852.6144.71902.stgit@bling.home>
+References: <20120804180155.6144.83332.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1343897200-3396-1-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20120804180155.6144.83332.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joerg.roedel-5C7GfCeVMHo@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dsahern-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Aug 02, 2012 at 11:46:40AM +0300, Hiroshi Doyu wrote:
-> Add debugfs entries to collect TLB/PTC statistics.
-> 
->   $ echo "reset" > /sys/kernel/debug/smmu/mc/{tlb,ptc}
->   $ echo "on" > /sys/kernel/debug/smmu/mc/{tlb,ptc}
->   $ echo "off" > /sys/kernel/debug/smmu/mc/{tlb,ptc}
->   $ cat /sys/kernel/debug/smmu/mc/{tlb,ptc}
->   hit:0014910c miss:00014d22
-> 
->   The above format is:
->   hit:<HIT count><SPC>miss:<MISS count><SPC><CR+LF>
-> 
->   fscanf(fp, "hit:%lx miss:%lx", &hit, &miss);
-> 
-> Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+SR-IOV can create buses without a bridge.  There may be other cases
+where this happens as well.  In these cases skip to the parent bus
+and continue testing devices there.
 
-Applied to arm/tegra, thanks.
+Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+---
 
--- 
-AMD Operating System Research Center
+ drivers/iommu/intel-iommu.c |   25 ++++++++++++++++++++++---
+ 1 file changed, 22 insertions(+), 3 deletions(-)
 
-Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
-General Managers: Alberto Bozzo
-Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 7469b53..bae1357 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -4124,8 +4124,13 @@ static int intel_iommu_add_device(struct device *dev)
+ 	} else
+ 		dma_pdev = pci_dev_get(pdev);
+ 
++	/* Account for quirked devices */
+ 	swap_pci_ref(&dma_pdev, pci_get_dma_source(dma_pdev));
+ 
++	/*
++	 * If it's a multifunction device that does not support our
++	 * required ACS flags, add to the same group as function 0.
++	 */
+ 	if (dma_pdev->multifunction &&
+ 	    !pci_acs_enabled(dma_pdev, REQ_ACS_FLAGS))
+ 		swap_pci_ref(&dma_pdev,
+@@ -4133,14 +4138,28 @@ static int intel_iommu_add_device(struct device *dev)
+ 					  PCI_DEVFN(PCI_SLOT(dma_pdev->devfn),
+ 					  0)));
+ 
++	/*
++	 * Devices on the root bus go through the iommu.  If that's not us,
++	 * find the next upstream device and test ACS up to the root bus.
++	 * Finding the next device may require skipping virtual buses.
++	 */
+ 	while (!pci_is_root_bus(dma_pdev->bus)) {
+-		if (pci_acs_path_enabled(dma_pdev->bus->self,
+-					 NULL, REQ_ACS_FLAGS))
++		struct pci_bus *bus = dma_pdev->bus;
++
++		while (!bus->self) {
++			if (!pci_is_root_bus(bus))
++				bus = bus->parent;
++			else
++				goto root_bus;
++		}
++
++		if (pci_acs_path_enabled(bus->self, NULL, REQ_ACS_FLAGS))
+ 			break;
+ 
+-		swap_pci_ref(&dma_pdev, pci_dev_get(dma_pdev->bus->self));
++		swap_pci_ref(&dma_pdev, pci_dev_get(bus->self));
+ 	}
+ 
++root_bus:
+ 	group = iommu_group_get(&dma_pdev->dev);
+ 	pci_dev_put(dma_pdev);
+ 	if (!group) {
