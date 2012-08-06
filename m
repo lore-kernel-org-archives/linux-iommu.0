@@ -1,82 +1,29 @@
-From: Alex Williamson <alex.williamson@redhat.com>
+From: Joerg Roedel <joerg.roedel@amd.com>
 Subject: Re: [PATCH 0/2] Fix ACS path checking
-Date: Mon, 06 Aug 2012 08:23:10 -0600
-Message-ID: <1344262990.3441.13.camel@ul30vt.home>
+Date: Mon, 6 Aug 2012 19:41:13 +0200
+Message-ID: <20120806174113.GM1996@amd.com>
 References: <20120804180155.6144.83332.stgit@bling.home>
-	 <20120806105010.GK1996@amd.com> <20120806122053.GL1996@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
 Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20120806122053.GL1996@amd.com>
+Content-Disposition: inline
+In-Reply-To: <20120804180155.6144.83332.stgit@bling.home>
 Sender: linux-pci-owner@vger.kernel.org
-To: Joerg Roedel <joerg.roedel@amd.com>
-Cc: linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, dwmw2@infradead.org, linux-kernel@vger.kernel.org, dsahern@gmail.com
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: dwmw2@infradead.org, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, dsahern@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2012-08-06 at 14:20 +0200, Joerg Roedel wrote:
-> On Mon, Aug 06, 2012 at 12:50:10PM +0200, Joerg Roedel wrote:
-> > On Sat, Aug 04, 2012 at 12:08:46PM -0600, Alex Williamson wrote:
-> > Hmm, tried it here, At least pci_request_acs() still gets called. How do
-> > you detect if ACS is really enabled?
-> 
-> Okay, I found a problem. pci_request_acs needs to be called before PCI
-> probing. Does the attached patch help?
-> 
-> From 87a4363be30d5d015a984a60769f29b0607fc5fb Mon Sep 17 00:00:00 2001
-> From: Joerg Roedel <joerg.roedel@amd.com>
-> Date: Mon, 6 Aug 2012 14:18:42 +0200
-> Subject: [PATCH] iommu/amd: Fix pci_request_acs() call-place
-> 
-> The pci_request_acs() function needs to be called before PCI
-> probing to be effective. So move it to another call-place to
-> ensure that.
-> 
-> Signed-off-by: Joerg Roedel <joerg.roedel@amd.com>
-> ---
->  drivers/iommu/amd_iommu_init.c |    6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+On Sat, Aug 04, 2012 at 12:08:46PM -0600, Alex Williamson wrote:
+> Alex Williamson (2):
+>       amd-iommu: Fix ACS path checking
+>       intel-iommu: Fix ACS path checking
 
+Applied these two patches together with my ACS fix to iommu/fixes,
+thanks.
 
-Yes, that's it.  Before and after:
+-- 
+AMD Operating System Research Center
 
-00:04.0 PCI bridge: Advanced Micro Devices [AMD] nee ATI RD890 PCI to PCI bridge (PCI express gpp port D) (prog-if 00 [Normal decode])
-	Capabilities: [190] Access Control Services
-		ACSCap:	SrcValid+ TransBlk+ ReqRedir+ CmpltRedir+ UpstreamFwd+ EgressCtrl- DirectTrans+
-		ACSCtl:	SrcValid- TransBlk- ReqRedir- CmpltRedir- UpstreamFwd- EgressCtrl- DirectTrans-
-
-	Capabilities: [190] Access Control Services
-		ACSCap:	SrcValid+ TransBlk+ ReqRedir+ CmpltRedir+ UpstreamFwd+ EgressCtrl- DirectTrans+
-		ACSCtl:	SrcValid+ TransBlk- ReqRedir+ CmpltRedir+ UpstreamFwd+ EgressCtrl- DirectTrans-
-
-The former makes iommu grouping put all my VFs in a single group below
-this device.  Correct given the ACS state, but not very useful.  Thanks,
-
-Alex
-
-Tested-by: Alex Williamson <alex.williamson@redhat.com>
-
-> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-> index 500e7f1..0a2ea31 100644
-> --- a/drivers/iommu/amd_iommu_init.c
-> +++ b/drivers/iommu/amd_iommu_init.c
-> @@ -1131,9 +1131,6 @@ static int __init amd_iommu_init_pci(void)
->  			break;
->  	}
->  
-> -	/* Make sure ACS will be enabled */
-> -	pci_request_acs();
-> -
->  	ret = amd_iommu_init_devices();
->  
->  	print_iommu_info();
-> @@ -1652,6 +1649,9 @@ static bool detect_ivrs(void)
->  
->  	early_acpi_os_unmap_memory((char __iomem *)ivrs_base, ivrs_size);
->  
-> +	/* Make sure ACS will be enabled during PCI probe */
-> +	pci_request_acs();
-> +
->  	return true;
->  }
->  
+Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
+General Managers: Alberto Bozzo
+Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
