@@ -1,23 +1,42 @@
-From: David Ahern <dsahern@gmail.com>
-Subject: Re: [PATCH 1/2] intel-iommu: Fix ACS path checking
-Date: Sun, 05 Aug 2012 22:51:29 -0600
-Message-ID: <501F4D51.9070306@gmail.com>
-References: <20120804180155.6144.83332.stgit@bling.home> <20120804180852.6144.71902.stgit@bling.home>
+From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH 0/2] Fix ACS path checking
+Date: Mon, 6 Aug 2012 12:50:10 +0200
+Message-ID: <20120806105010.GK1996@amd.com>
+References: <20120804180155.6144.83332.stgit@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20120804180852.6144.71902.stgit@bling.home>
-Sender: linux-pci-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: joerg.roedel@amd.com, dwmw2@infradead.org, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20120804180155.6144.83332.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dsahern-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 8/4/12 12:08 PM, Alex Williamson wrote:
-> SR-IOV can create buses without a bridge.  There may be other cases
-> where this happens as well.  In these cases skip to the parent bus
-> and continue testing devices there.
->
-> Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+On Sat, Aug 04, 2012 at 12:08:46PM -0600, Alex Williamson wrote:
+> Joerg, I notice that ACS isn't getting enabled on my AMD system on
+> 3.6-rc1.  I'll investigate more, but mention it in case you get to
+> it first.
 
-Tested-by: David Ahern <dsahern@gmail.com>
+Hmm, tried it here, At least pci_request_acs() still gets called. How do
+you detect if ACS is really enabled?
+
+Regards,
+
+	Joerg
+
+-- 
+AMD Operating System Research Center
+
+Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
+General Managers: Alberto Bozzo
+Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
