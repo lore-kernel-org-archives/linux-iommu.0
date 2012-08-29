@@ -1,39 +1,68 @@
-From: Andrew Cooks <acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: DMA Remapping and Marvell 88SE9172, 88SE9128 SATA controllers
-Date: Tue, 28 Aug 2012 00:05:59 +0800
-Message-ID: <CAJtEV7aGSvRvyevveysWkDn18Oz3n3qF6EpPtgvwC4dsJU41HA@mail.gmail.com>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: [RFC 0/5] ARM: dma-mapping: New dma_map_ops to control IOVA more precisely
+Date: Wed, 29 Aug 2012 09:55:30 +0300
+Message-ID: <1346223335-31455-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: jgarzik-e+AXbWqSrlAAvxtiuMwx3w@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, pawel.zaq-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, chunsang.jeong-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, vdumpa-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, subashrp-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, minchan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-There's a problem relating to DMA Remapping which affects systems with
-Marvell SATA controllers. It was first reported on 2012-01-28 on
-bugzilla.kernel.org[1] and is best described by Don Dutile: "...the
-lspci dump in the bugzilla report doesn't show a device w/BDF=0b:00.1;
-so, if the SATA device (which is 0b:00.0) is spitting out 0b:00.1 as
-the source of any of its DMA packets, the IOMMU will fault on it,
-since 0b:00.1 didn't request DMA mappings (0b:00.0 did)."[2]
+Hi,
 
-Is this kind of problem caused by a missing/incorrect entry in an ACPI
-table? Is it feasible to introduce a fake device for the missing
-function using a pci quirk?
+The following APIs are needed for us to support the legacy Tegra
+memory manager for devices("NvMap") with *DMA mapping API*.
 
-Thanks,
+New API:
 
-ac.
+ ->iova_alloc(): To allocate IOVA area.
+ ->iova_alloc_at(): To allocate IOVA area at specific address.
+ ->iova_free():  To free IOVA area.
 
-1. https://bugzilla.kernel.org/show_bug.cgi?id=42679
-2. https://lists.linux-foundation.org/pipermail/iommu/2012-January/003552.html
+ ->map_page_at(): To map page at specific IOVA.
+
+misc:
+ ->iova_get_free_total(): To return how much IOVA is available totally.
+ ->iova_get_free_max():   To return the size of biggest IOVA area.
+
+Although  NvMap itself will be replaced soon, there are cases for the
+above API where we need to specify IOVA explicitly.
+
+(1) HWAs may require the address for special purpose, like reset vector.
+(2) IOVA linear mapping: ex: [RFC 5/5] ARM: dma-mapping: Introduce
+    dma_map_linear_attrs() for IOVA linear map
+(3) To support different heaps. To have allocation and mapping
+    independently.
+
+Some of them could be supported with creating different mappings, but
+currently a device can have a single contiguous mapping, and we cannot
+specifiy any address inside of a map since all IOVA alloction is done
+implicitly now.
+
+This is the revised version of:
+
+ http://lists.linaro.org/pipermail/linaro-mm-sig/2012-May/001947.html
+ http://lists.linaro.org/pipermail/linaro-mm-sig/2012-May/001948.html
+ http://lists.linaro.org/pipermail/linaro-mm-sig/2012-May/001949.html
+
+Any comment would be really appreciated.
+
+Hiroshi Doyu (5):
+  ARM: dma-mapping: New dma_map_ops->iova_get_free_{total,max}
+    functions
+  ARM: dma-mapping: New dma_map_ops->iova_{alloc,free}() functions
+  ARM: dma-mapping: New dma_map_ops->iova_alloc*_at* function
+  ARM: dma-mapping: New dma_map_ops->map_page*_at* function
+  ARM: dma-mapping: Introduce dma_map_linear_attrs() for IOVA linear
+    map
+
+ arch/arm/include/asm/dma-mapping.h       |   55 +++++++++++++
+ arch/arm/mm/dma-mapping.c                |  124 ++++++++++++++++++++++++++++++
+ include/asm-generic/dma-mapping-common.h |   20 +++++
+ include/linux/dma-mapping.h              |   14 ++++
+ 4 files changed, 213 insertions(+), 0 deletions(-)
+
+-- 
+1.7.5.4
