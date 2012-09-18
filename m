@@ -1,16 +1,11 @@
-From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH] intel-iommu: Default to non-coherent for domains
-	unattached to iommus
-Date: Tue, 18 Sep 2012 16:34:46 +0200
-Message-ID: <20120918143446.GO2505@amd.com>
-References: <1347479705-33972-1-git-send-email-ddutile@redhat.com>
-	<20120918115937.GB9939@8bytes.org> <50587DE6.3000207@redhat.com>
+From: Tom Mingarelli <thomas.mingarelli-VXdhtT5mjnY@public.gmane.org>
+Subject: [PATCH v2] Intel IOMMU patch to reprocess RMRR info
+Date: Tue, 18 Sep 2012 16:49:44 +0000 (UTC)
+Message-ID: <20120918164955.12296.28799.sendpatchset@tmingo.houston.hp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <50587DE6.3000207-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,35 +15,91 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linda Knippers <linda.knippers-VXdhtT5mjnY@public.gmane.org>, Shuah Khan <shuah.khan-VXdhtT5mjnY@public.gmane.org>, Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Tom Mingarelli <thomas.mingarelli-VXdhtT5mjnY@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Sep 18, 2012 at 09:57:58AM -0400, Don Dutile wrote:
-> And you can't apply Alex's original patch as-is, since the iommu_bmp
-> structure element changed from a ptr to an array,
-> (a snippet of) alex's patch looked like:
-> +    i = find_first_bit(&domain->iommu_bmp, g_num_of_iommus);
-> 
-> and the correct patch with the change to iommu_bmp is:
-> +    i = find_first_bit(domain->iommu_bmp, g_num_of_iommus);
-> 
-> and the reason why I re-posted it, vs fwd-ing the original patch
-> & asking for inclusion.
-> Additionally, the above patch is what the customer tested & verified.
-> 
-> So, if you made the above adjustment to Alex's patch,
-> then the patch is ok.  If not, the above adjustment must be made.
+When a 32bit PCI device is removed from the SI Domain, the RMRR information
+for this device becomes invalid and needs to be reprocessed to avoid DMA
+Read errors. These errors are evidenced by the Present bit being cleared in
+the device's context entry. Fixing this problem with an enhancement to process
+the RMRR info when the device is assigned to another domain. The Bus Master bit
+is cleared during the move to another domain and during the reprocessing of
+the RMRR info so no DMA can take place at this time.
+----
+PATCH v1: https://lkml.org/lkml/2012/6/15/204
 
-Okay, fine then. I made the adjustment to Alex' patch and will push my
-updated tree out after some compile-testing.
+drivers/iommu/intel-iommu.c |   47 ++++++++++++++++++++++++++++++++++++++++--
+ 1 files changed, 44 insertions(+), 3 deletions(-)
 
+Signed-off-by: Thomas Mingarelli <thomas.mingarelli-VXdhtT5mjnY@public.gmane.org>
 
-	Joerg
-
--- 
-AMD Operating System Research Center
-
-Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
-General Managers: Alberto Bozzo
-Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
+diff -up ./drivers/iommu/intel-iommu.c.ORIG ./drivers/iommu/intel-iommu.c
+--- ./drivers/iommu/intel-iommu.c.ORIG	2012-09-18 09:58:25.147976889 -0500
++++ ./drivers/iommu/intel-iommu.c	2012-09-18 10:39:43.286672765 -0500
+@@ -2706,11 +2706,39 @@ static int iommu_dummy(struct pci_dev *p
+ 	return pdev->dev.archdata.iommu == DUMMY_DEVICE_DOMAIN_INFO;
+ }
+ 
++static int reprocess_rmrr(struct device *dev)
++{
++	struct dmar_rmrr_unit *rmrr;
++	struct pci_dev *pdev;
++	int i, ret;
++
++	pdev = to_pci_dev(dev);
++
++	for_each_rmrr_units(rmrr) {
++		for (i = 0; i < rmrr->devices_cnt; i++) {
++			/*
++			 * Here we are just concerned with
++			 * finding the one device that was
++			 * removed from the si_domain and
++			 * re-evaluating its RMRR info.
++			 */
++			if (rmrr->devices[i] != pdev)
++				continue;
++			pr_info("IOMMU: Reprocess RMRR information for device %s.\n",
++				pci_name(pdev));
++			ret = iommu_prepare_rmrr_dev(rmrr, pdev);
++			if (ret)
++				pr_err("IOMMU: Reprocessing RMRR reserved region for device failed");
++		}
++	}
++return 0;
++}
++
+ /* Check if the pdev needs to go through non-identity map and unmap process.*/
+ static int iommu_no_mapping(struct device *dev)
+ {
+ 	struct pci_dev *pdev;
+-	int found;
++	int found, current_bus_master;
+ 
+ 	if (unlikely(dev->bus != &pci_bus_type))
+ 		return 1;
+@@ -2731,9 +2759,22 @@ static int iommu_no_mapping(struct devic
+ 			 * 32 bit DMA is removed from si_domain and fall back
+ 			 * to non-identity mapping.
+ 			 */
+-			domain_remove_one_dev_info(si_domain, pdev);
+ 			printk(KERN_INFO "32bit %s uses non-identity mapping\n",
+-			       pci_name(pdev));
++				pci_name(pdev));
++			/*
++			 * If a device gets this far we need to clear the Bus
++			 * Master bit before we start moving devices from domain
++			 * to domain. We will also reset the Bus Master bit
++			 * after reprocessing the RMRR info. However, we only
++			 * do both the clearing and setting if needed.
++			 */
++			current_bus_master = pdev->is_busmaster;
++			if (current_bus_master)
++				pci_clear_master(pdev);
++			domain_remove_one_dev_info(si_domain, pdev);
++			reprocess_rmrr(dev);
++			if (current_bus_master)
++				pci_set_master(pdev);
+ 			return 0;
+ 		}
+ 	} else {
