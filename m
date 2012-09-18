@@ -1,15 +1,15 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] intel-iommu: Default to non-coherent for domains
-	unattached to iommus
-Date: Tue, 18 Sep 2012 13:59:37 +0200
-Message-ID: <20120918115937.GB9939@8bytes.org>
-References: <1347479705-33972-1-git-send-email-ddutile@redhat.com>
+From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [RFC 0/5] ARM: dma-mapping: New dma_map_ops to control IOVA more
+	precisely
+Date: Tue, 18 Sep 2012 14:49:18 +0200
+Message-ID: <20120918124918.GK2505@amd.com>
+References: <1346223335-31455-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1347479705-33972-1-git-send-email-ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1346223335-31455-1-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,49 +19,49 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Donald Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, chunsang.jeong-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, subashrp-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, minchan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, vdumpa-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Sep 12, 2012 at 03:55:05PM -0400, Donald Dutile wrote:
-> This patch was posted back in Nov 2011:
->   http://lists.linuxfoundation.org/pipermail/iommu/2011-November/003086.html
-> 
-> and due to discussion about the patch, it was never pulled in.
-> Although the thread discussed an alternate patch to
-> default to non-coherent if any IOMMU didn't support coherency,
-> this alternate method was never implemented, and this bug persists.
-> 
-> This patch has been in RHEL6 for quite some time,
-> and it wasn't noticed that it didn't get into linux upstream, 
-> until a RH partner reported this error when running upstream kernels,
-> and noticed how it doesn't occur on RHEL6 kernels.
-> Applying this patch to an upstream kernel resolved this issue.
-> 
-> 
->  domain_update_iommu_coherency() currently defaults to setting
->  domains as coherent when the domain is not attached to any iommus.
->  This allows for a window in domain_context_mapping_one() where such a
->  domain can update context entries non-coherently, and only after
->  update the domain capability to clear iommu_coherency.
->  This can be seen using KVM device assignment on VT-d systems that
->  do not support coherency in the ecap register.  When a device is
->  added to a guest, a domain is created (iommu_coherency = 0), the
->  device is attached, and ranges are mapped.  If we then hot unplug
->  the device, the coherency is updated and set to the default (1)
->  since no iommus are attached to the domain.  A subsequent attach
->  of a device makes use of the same dmar domain (now marked coherent)
->  updates context entries with coherency enabled, and only disables
->  coherency as the last step in the process.
->  To fix this, switch domain_update_iommu_coherency() to use the
->  safer, non-coherent default for domains not attached to iommus.
-> 
-> Signed-off-by: Donald Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> cc: Alex Williamson <alex.williamson at redhat.com>
+On Wed, Aug 29, 2012 at 09:55:30AM +0300, Hiroshi Doyu wrote:
+> The following APIs are needed for us to support the legacy Tegra
+> memory manager for devices("NvMap") with *DMA mapping API*.
 
-Hmm, who is the author? The patch looks the same as what Alex submitted
-last year. I applied Alex' patch because it includes also the Acked-bys
-and he seems to be the author anyway. Oh, and I added a stable-tag.
+Maybe I am not understanding the need completly. Can you elaborate on
+why this is needed for legacy Tegra?
 
+> New API:
+> 
+>  ->iova_alloc(): To allocate IOVA area.
+>  ->iova_alloc_at(): To allocate IOVA area at specific address.
+>  ->iova_free():  To free IOVA area.
+> 
+>  ->map_page_at(): To map page at specific IOVA.
+
+This sounds like a layering violation. The situation today is as
+follows:
+
+	DMA-API   : Handle DMA-addresses including an address allocator
+	IOMMU-API : Full control over DMA address space, no address
+	            allocator
+
+So what you want to do add to the DMA-API is already part of the
+IOMMU-API.
+
+Here is my suggestion what you can do instead of extending the DMA-API.
+You can use the IOMMU-API to initialize the device address space with
+any mappings at the IOVAs you need the mappings. In the end you allocate
+another free range in the device address space and use that to satisfy
+DMA-API allocations. Any reason why that could not work?
+
+
+Regards,
 
 	Joerg
+
+-- 
+AMD Operating System Research Center
+
+Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
+General Managers: Alberto Bozzo
+Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
