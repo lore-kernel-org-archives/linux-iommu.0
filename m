@@ -1,30 +1,34 @@
-From: "joerg.roedel-5C7GfCeVMHo@public.gmane.org" <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [v2 1/1] iommu/tegra: smmu: Use debugfs_create_dir for directory
-Date: Mon, 17 Sep 2012 18:28:02 +0200
-Message-ID: <20120917162802.GA2505@amd.com>
-References: <20120809155624.b781edae9efa7c51faf6c31c@nvidia.com>
- <1345009652-13408-1-git-send-email-hdoyu@nvidia.com>
- <502BCA9E.5090206@wwwdotorg.org>
- <20120904.095134.292349834288373260.hdoyu@nvidia.com>
- <504E3046.9080103@wwwdotorg.org>
+From: Joerg Roedel <joerg.roedel@amd.com>
+Subject: Re: [PATCH] iommu/amd: remove duplicated include from
+ amd_iommu_init.c
+Date: Tue, 18 Sep 2012 12:32:32 +0200
+Message-ID: <20120918103232.GD2505@amd.com>
+References: <CAPgLHd9NxLd3m_s9KqF5P-n9BACgE2Nj=xCL-+0tkEuG-ZwGnA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <504E3046.9080103-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "balbi-l0cyMroinI0@public.gmane.org" <balbi-l0cyMroinI0@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAPgLHd9NxLd3m_s9KqF5P-n9BACgE2Nj=xCL-+0tkEuG-ZwGnA@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Wei Yongjun <weiyj.lk@gmail.com>
+Cc: yongjun_wei@trendmicro.com.cn, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Sep 10, 2012 at 12:24:06PM -0600, Stephen Warren wrote:
+On Sun, Aug 26, 2012 at 09:51:15AM +0800, Wei Yongjun wrote:
+> From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+> 
+> From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+> 
+> Remove duplicated include.
+> 
+> Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
 
-> Joerg, could you please apply this patch ASAP? Currently, Tegra won't
-> boot in linux-next without it. Alternatively, would you like me to take
-> the patch through the Tegra tree? Thanks.
-
-Sorry, I had some vacation. But I am back now and will apply the patch
-ASAP.
+Applied, thanks.
 
 
-	Joerg
+-- 
+AMD Operating System Research Center
+
+Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
+General Managers: Alberto Bozzo
+Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
