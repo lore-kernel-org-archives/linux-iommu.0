@@ -1,7 +1,7 @@
 From: Tom Mingarelli <thomas.mingarelli-VXdhtT5mjnY@public.gmane.org>
 Subject: [PATCH v2] Intel IOMMU patch to reprocess RMRR info
-Date: Tue, 18 Sep 2012 16:49:44 +0000 (UTC)
-Message-ID: <20120918164955.12296.28799.sendpatchset@tmingo.houston.hp.com>
+Date: Tue, 18 Sep 2012 17:27:56 +0000 (UTC)
+Message-ID: <20120918172807.12439.93299.sendpatchset@tmingo.houston.hp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -15,8 +15,8 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linda Knippers <linda.knippers-VXdhtT5mjnY@public.gmane.org>, Shuah Khan <shuah.khan-VXdhtT5mjnY@public.gmane.org>, Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Tom Mingarelli <thomas.mingarelli-VXdhtT5mjnY@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Shuah Khan <shuah.khan-VXdhtT5mjnY@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tom Mingarelli <thomas.mingarelli-VXdhtT5mjnY@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 When a 32bit PCI device is removed from the SI Domain, the RMRR information
