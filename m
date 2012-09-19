@@ -1,110 +1,76 @@
-From: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2] Intel IOMMU patch to reprocess RMRR info
-Date: Tue, 18 Sep 2012 13:46:24 -0400
-Message-ID: <5058B370.1040800@redhat.com>
-References: <20120918164955.12296.28799.sendpatchset@tmingo.houston.hp.com>
+From: Hiroshi Doyu <hdoyu@nvidia.com>
+Subject: Re: [RFC 0/5] ARM: dma-mapping: New dma_map_ops to control IOVA
+ more precisely
+Date: Wed, 19 Sep 2012 09:58:43 +0300
+Message-ID: <20120919095843.d1db155e0f085f4fcf64ea32@nvidia.com>
+References: <1346223335-31455-1-git-send-email-hdoyu@nvidia.com>
+	<20120918124918.GK2505@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="US-ASCII"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20120918164955.12296.28799.sendpatchset-jP8EmR9A9vELnkn81s9yt/egYHeGw8Jk@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tom Mingarelli <thomas.mingarelli-VXdhtT5mjnY@public.gmane.org>
-Cc: Shuah Khan <shuah.khan-VXdhtT5mjnY@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <20120918124918.GK2505@amd.com>
+Sender: owner-linux-mm@kvack.org
+To: Joerg Roedel <joerg.roedel@amd.com>
+Cc: "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "arnd@arndb.de" <arnd@arndb.de>, "minchan@kernel.org" <minchan@kernel.org>, "chunsang.jeong@linaro.org" <chunsang.jeong@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "subashrp@gmail.com" <subashrp@gmail.com>, "linaro-mm-sig@lists.linaro.org" <linaro-mm-sig@lists.linaro.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Krishna Reddy <vdumpa@nvidia.com>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, "kyungmin.park@samsung.com" <kyungmin.park@samsung.com>, "pullip.cho@samsung.com" <pullip.cho@samsung.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 09/18/2012 12:49 PM, Tom Mingarelli wrote:
-> When a 32bit PCI device is removed from the SI Domain, the RMRR information
-> for this device becomes invalid and needs to be reprocessed to avoid DMA
-> Read errors. These errors are evidenced by the Present bit being cleared in
-> the device's context entry. Fixing this problem with an enhancement to process
-> the RMRR info when the device is assigned to another domain. The Bus Master bit
-> is cleared during the move to another domain and during the reprocessing of
-> the RMRR info so no DMA can take place at this time.
-> ----
-> PATCH v1: https://lkml.org/lkml/2012/6/15/204
->
-> drivers/iommu/intel-iommu.c |   47 ++++++++++++++++++++++++++++++++++++++++--
->   1 files changed, 44 insertions(+), 3 deletions(-)
->
-> Signed-off-by: Thomas Mingarelli<thomas.mingarelli-VXdhtT5mjnY@public.gmane.org>
->
-> diff -up ./drivers/iommu/intel-iommu.c.ORIG ./drivers/iommu/intel-iommu.c
-> --- ./drivers/iommu/intel-iommu.c.ORIG	2012-09-18 09:58:25.147976889 -0500
-> +++ ./drivers/iommu/intel-iommu.c	2012-09-18 10:39:43.286672765 -0500
-> @@ -2706,11 +2706,39 @@ static int iommu_dummy(struct pci_dev *p
->   	return pdev->dev.archdata.iommu == DUMMY_DEVICE_DOMAIN_INFO;
->   }
->
-> +static int reprocess_rmrr(struct device *dev)
-> +{
-> +	struct dmar_rmrr_unit *rmrr;
-> +	struct pci_dev *pdev;
-> +	int i, ret;
-> +
-> +	pdev = to_pci_dev(dev);
-> +
-> +	for_each_rmrr_units(rmrr) {
-> +		for (i = 0; i<  rmrr->devices_cnt; i++) {
-> +			/*
-> +			 * Here we are just concerned with
-> +			 * finding the one device that was
-> +			 * removed from the si_domain and
-> +			 * re-evaluating its RMRR info.
-> +			 */
-> +			if (rmrr->devices[i] != pdev)
-> +				continue;
-> +			pr_info("IOMMU: Reprocess RMRR information for device %s.\n",
-> +				pci_name(pdev));
-> +			ret = iommu_prepare_rmrr_dev(rmrr, pdev);
-> +			if (ret)
-> +				pr_err("IOMMU: Reprocessing RMRR reserved region for device failed");
-> +		}
-> +	}
-> +return 0;
-> +}
-> +
->   /* Check if the pdev needs to go through non-identity map and unmap process.*/
->   static int iommu_no_mapping(struct device *dev)
->   {
->   	struct pci_dev *pdev;
-> -	int found;
-> +	int found, current_bus_master;
->
->   	if (unlikely(dev->bus !=&pci_bus_type))
->   		return 1;
-> @@ -2731,9 +2759,22 @@ static int iommu_no_mapping(struct devic
->   			 * 32 bit DMA is removed from si_domain and fall back
->   			 * to non-identity mapping.
->   			 */
-> -			domain_remove_one_dev_info(si_domain, pdev);
->   			printk(KERN_INFO "32bit %s uses non-identity mapping\n",
-> -			       pci_name(pdev));
-> +				pci_name(pdev));
-> +			/*
-> +			 * If a device gets this far we need to clear the Bus
-> +			 * Master bit before we start moving devices from domain
-> +			 * to domain. We will also reset the Bus Master bit
-> +			 * after reprocessing the RMRR info. However, we only
-> +			 * do both the clearing and setting if needed.
-> +			 */
-> +			current_bus_master = pdev->is_busmaster;
-> +			if (current_bus_master)
-> +				pci_clear_master(pdev);
-> +			domain_remove_one_dev_info(si_domain, pdev);
-> +			reprocess_rmrr(dev);
-> +			if (current_bus_master)
-> +				pci_set_master(pdev);
->   			return 0;
->   		}
->   	} else {
+Hi Joerg,
 
-appears to have recommended changes from v1, so looks good wrt handling devices w/rmrr.
+On Tue, 18 Sep 2012 14:49:18 +0200
+Joerg Roedel <joerg.roedel@amd.com> wrote:
+
+> On Wed, Aug 29, 2012 at 09:55:30AM +0300, Hiroshi Doyu wrote:
+> > The following APIs are needed for us to support the legacy Tegra
+> > memory manager for devices("NvMap") with *DMA mapping API*.
+> 
+> Maybe I am not understanding the need completly. Can you elaborate on
+> why this is needed for legacy Tegra?
+
+Actually not for legacy but it's necessary to replace homebrewed
+in-kernel API(not upstreamed) with the standard ones. The homebrewed
+in-kernel API has been used for the abvoe nvmap as its backend. The
+homebrewed ones are being replaced with the standard ones, IOMMU-API,
+DMA-API and dma-buf, mainly for transition purpose. I found that some
+missing features in DMA-API for that. I posted since other SoCs may
+have the similiar requirements, (1) To specify IOVA address at
+allocation, and (2) To have IOVA allocation and mapping separately.
+
+> > New API:
+> > 
+> >  ->iova_alloc(): To allocate IOVA area.
+> >  ->iova_alloc_at(): To allocate IOVA area at specific address.
+> >  ->iova_free():  To free IOVA area.
+> > 
+> >  ->map_page_at(): To map page at specific IOVA.
+> 
+> This sounds like a layering violation. The situation today is as
+> follows:
+> 
+> 	DMA-API   : Handle DMA-addresses including an address allocator
+> 	IOMMU-API : Full control over DMA address space, no address
+> 	            allocator
+> 
+> So what you want to do add to the DMA-API is already part of the
+> IOMMU-API.
+>
+> Here is my suggestion what you can do instead of extending the DMA-API.
+> You can use the IOMMU-API to initialize the device address space with
+> any mappings at the IOVAs you need the mappings. In the end you allocate
+> another free range in the device address space and use that to satisfy
+> DMA-API allocations. Any reason why that could not work?
+
+I guess that it would work. Originally I thought that using DMA-API
+and IOMMU-API together in driver might be kind of layering violation
+since IOMMU-API itself is used in DMA-API. Only DMA-API used in driver
+might be cleaner. Considering that DMA API traditionally handling
+*anonymous* {bus,iova} address only, introducing the concept of
+specific address in DMA API may not be so encouraged, though.
+
+It would be nice to listen how other SoCs have solved similar needs.
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
