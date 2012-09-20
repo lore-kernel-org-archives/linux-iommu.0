@@ -1,56 +1,90 @@
-From: Kumar Gala <galak@kernel.crashing.org>
-Subject: Re: [RFC][PATCH 1/3] iommu/fsl: Store iommu domain information pointer in archdata.
-Date: Wed, 19 Sep 2012 08:50:14 -0500
-Message-ID: <5BDB4D18-CB0D-4EBA-B38F-A278B7C00A61@kernel.crashing.org>
-References: <1348060632-12997-1-git-send-email-b16395@freescale.com> <1348060632-12997-2-git-send-email-b16395@freescale.com>
-Mime-Version: 1.0 (Apple Message framework v1278)
-Content-Type: text/plain; charset=us-ascii
+From: Scott Wood <scottwood@freescale.com>
+Subject: Re: [RFC][PATCH 2/3] iommu/fsl: Add iommu domain attributes
+ required by fsl PAMU driver.
+Date: Wed, 19 Sep 2012 19:12:16 -0500
+Message-ID: <1348099936.22800.21@snotra>
+References: <1348060632-12997-1-git-send-email-b16395@freescale.com>
+	<1348060632-12997-3-git-send-email-b16395@freescale.com>
+	<6B8A3365-C97E-4742-A0DD-D8FD6BA358EB@kernel.crashing.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"; delsp=Yes; format=Flowed
 Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1348060632-12997-2-git-send-email-b16395@freescale.com>
+In-Reply-To: <6B8A3365-C97E-4742-A0DD-D8FD6BA358EB@kernel.crashing.org>
+	(from galak@kernel.crashing.org on Wed Sep 19 08:52:27 2012)
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: "<b16395@freescale.com>" <b16395@freescale.com>
-Cc: iommu@lists.linux-foundation.org, joerg.roedel@amd.com, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, Varun Sethi <Varun.Sethi@freescale.com>
+To: Kumar Gala <galak@kernel.crashing.org>
+Cc: "<b16395@freescale.com>" <b16395@freescale.com>, joerg.roedel@amd.com, iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, Varun Sethi <Varun.Sethi@freescale.com>
 List-Id: iommu@lists.linux-foundation.org
 
+On 09/19/2012 08:52:27 AM, Kumar Gala wrote:
+> 
+> On Sep 19, 2012, at 8:17 AM, <b16395@freescale.com>  
+> <b16395@freescale.com> wrote:
+> 
+> > From: Varun Sethi <Varun.Sethi@freescale.com>
+> >
+> > Added the following domain attributes required by FSL PAMU driver:
+> > 1. Subwindows field added to the iommu domain geometry attribute.
+> > 2. Added new iommu stash attribute, which allows setting of the
+> >   LIODN specific stash id parameter through IOMMU API.
+> > 3. Added an attribute for enabling/disabling DMA to a particular
+> >   memory window.
+> >
+> > Signed-off-by: Varun Sethi <Varun.Sethi@freescale.com>
+> > ---
+> > include/linux/iommu.h |   30 ++++++++++++++++++++++++++++++
+> > 1 files changed, 30 insertions(+), 0 deletions(-)
+> >
+> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> > index 7e83370..eaa40c6 100644
+> > --- a/include/linux/iommu.h
+> > +++ b/include/linux/iommu.h
+> > @@ -44,6 +44,28 @@ struct iommu_domain_geometry {
+> > 	dma_addr_t aperture_start; /* First address that can be  
+> mapped    */
+> > 	dma_addr_t aperture_end;   /* Last address that can be  
+> mapped     */
+> > 	bool force_aperture;       /* DMA only allowed in mappable  
+> range? */
+> > +
+> > +	/* The subwindows field indicates number of DMA subwindows  
+> supported
+> > +	 * by the geometry. Following is the interpretation of
+> > +	 * values for this field:
+> > +	 * 0 : This implies that the supported geometry size is 1 MB
+> > +         * with each subwindow size being 4KB. Thus number of  
+> subwindows
+> > +	 * being = 1MB/4KB = 256.
+> > +	 * 1 : Only one DMA window i.e. no subwindows.
+> > +	 * value other than 0 or 1 would indicate actual number of  
+> subwindows.
+> > +	 */
+> > +	u32 subwindows;
+> > +};
+> > +
+> > +/* This attribute corresponds to IOMMUs capable of generating
+> > + * a stash transaction. A stash transaction is typically a
+> > + * hardware initiated prefetch of data from memory to cache.
+> > + * This attribute allows configuring stashig specific parameters
+> > + * in the IOMMU hardware.
+> > + */
+> > +struct iommu_stash_attribute {
+> > +	u32 	cpu;	/* cpu number */
+> > +	u32 	cache;	/* cache to stash to: L1,L2,L3 */
+> 
+> seems like this should be enum instead of u32 for cache
+> 
+> With enum being something like:
+> 
+> enum iommu_attr_stash_cache {
+> 	IOMMU_ATTR_CACHE_L1,
+> 	IOMMU_ATTR_CACHE_L2,
+> 	IOMMU_ATTR_CACHE_L3,
+> };
 
-On Sep 19, 2012, at 8:17 AM, <b16395@freescale.com> <b16395@freescale.com> wrote:
+Don't we want these structs to be usable via some VFIO ioctl?  In that  
+case they need to use fixed size types.
 
-> From: Varun Sethi <Varun.Sethi@freescale.com>
-> 
-> Add a new field in the device (powerpc) archdata structure for storing iommu domain
-> information pointer. This pointer is stored when the device is attached to a particular
-> domain.
-> 
-> Signed-off-by: Varun Sethi <Varun.Sethi@freescale.com>
-> ---
-> arch/powerpc/include/asm/device.h |    4 ++++
-> 1 files changed, 4 insertions(+), 0 deletions(-)
-
-Not too familiar, but what does the IBM Server IOMMU do for iommu_domain?
-
-> 
-> diff --git a/arch/powerpc/include/asm/device.h b/arch/powerpc/include/asm/device.h
-> index 77e97dd..6dc79fe 100644
-> --- a/arch/powerpc/include/asm/device.h
-> +++ b/arch/powerpc/include/asm/device.h
-> @@ -28,6 +28,10 @@ struct dev_archdata {
-> 		void		*iommu_table_base;
-> 	} dma_data;
-> 
-> +	/* IOMMU domain information pointer. This would be set
-> +	 * when this device is attached to an iommu_domain.
-> +	 */
-> +	void			*iommu_domain;
-> #ifdef CONFIG_SWIOTLB
-> 	dma_addr_t		max_direct_dma_addr;
-> #endif
-> -- 
-> 1.7.4.1
-> 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
+-Scott
