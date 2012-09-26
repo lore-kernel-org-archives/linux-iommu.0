@@ -1,7 +1,7 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Subject: Re: 3.6-rc7 boot crash + bisection
-Date: Wed, 26 Sep 2012 13:50:13 -0600
-Message-ID: <1348689013.28860.220.camel@bling.home>
+Date: Wed, 26 Sep 2012 16:04:03 -0600
+Message-ID: <1348697043.28860.235.camel@bling.home>
 References: <20120924210348.5f50677b@brain.lan>
 	<1348597970.28860.114.camel@bling.home>
 	<20120925205420.0a07dea2@brain.lan>
@@ -10,11 +10,12 @@ References: <20120924210348.5f50677b@brain.lan>
 	<1348670159.28860.183.camel@bling.home>
 	<20120926151044.GE10549@amd.com>
 	<1348676470.28860.197.camel@bling.home>
+	<1348689013.28860.220.camel@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1348676470.28860.197.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+In-Reply-To: <1348689013.28860.220.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -28,104 +29,123 @@ To: "Roedel, Joerg" <Joerg.Roedel-5C7GfCeVMHo@public.gmane.org>
 Cc: Florian Dazinger <florian-Q0TRQrZM+Zzk1uMJSBkQmQ@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2012-09-26 at 10:21 -0600, Alex Williamson wrote:
-> On Wed, 2012-09-26 at 17:10 +0200, Roedel, Joerg wrote:
-> > On Wed, Sep 26, 2012 at 08:35:59AM -0600, Alex Williamson wrote:
-> > > Hmm, that throws a kink in iommu groups.  So perhaps we need to make an
-> > > alias interface to iommu groups.  Seems like this could just be an extra
-> > > parameter to iommu_group_get and iommu_group_add_device (empty in the
-> > > typical case).  Then we have the problem of what's the type for an
-> > > alias?  For AMI-Vi, it's a u16, but we need to be more generic than
-> > > that.  Maybe iommu groups should just treat it as a void* so iommus can
-> > > use a pointer to some structure or a fixed value like a u16 bus:slot.
-> > > Thoughts?
+On Wed, 2012-09-26 at 13:50 -0600, Alex Williamson wrote:
+> On Wed, 2012-09-26 at 10:21 -0600, Alex Williamson wrote:
+> > On Wed, 2012-09-26 at 17:10 +0200, Roedel, Joerg wrote:
+> > > On Wed, Sep 26, 2012 at 08:35:59AM -0600, Alex Williamson wrote:
+> > > > Hmm, that throws a kink in iommu groups.  So perhaps we need to make an
+> > > > alias interface to iommu groups.  Seems like this could just be an extra
+> > > > parameter to iommu_group_get and iommu_group_add_device (empty in the
+> > > > typical case).  Then we have the problem of what's the type for an
+> > > > alias?  For AMI-Vi, it's a u16, but we need to be more generic than
+> > > > that.  Maybe iommu groups should just treat it as a void* so iommus can
+> > > > use a pointer to some structure or a fixed value like a u16 bus:slot.
+> > > > Thoughts?
+> > > 
+> > > Good question. The iommu-groups are part of the IOMMU-API, with an
+> > > interface to the IOMMU drivers and one to the users of IOMMU-API. So the
+> > > alias handling itself should be a function of the interface to the IOMMU
+> > > driver. In general the interface should not be bus specific.
+> > > 
+> > > So a void pointer seems the only logical choice then. But I would not
+> > > limit its scope to alias handling. How about making it a bus-private
+> > > pointer where IOMMU driver store bus-specific information. That way we
+> > > make sure that there is one struct per bus-type for this pointer, and
+> > > not one structure per IOMMU driver.
 > > 
-> > Good question. The iommu-groups are part of the IOMMU-API, with an
-> > interface to the IOMMU drivers and one to the users of IOMMU-API. So the
-> > alias handling itself should be a function of the interface to the IOMMU
-> > driver. In general the interface should not be bus specific.
-> > 
-> > So a void pointer seems the only logical choice then. But I would not
-> > limit its scope to alias handling. How about making it a bus-private
-> > pointer where IOMMU driver store bus-specific information. That way we
-> > make sure that there is one struct per bus-type for this pointer, and
-> > not one structure per IOMMU driver.
+> > I thought of another approach that may actually be more 3.6 worthy.
+> > What if we just make the iommu driver handle it?  For instance,
+> > amd_iommu can walk the alias table looking for entries that use the same
+> > alias and get the device via pci_get_bus_and_slot.  If it finds a device
+> > with an iommu group, it attaches the new device to the same group,
+> > hiding anything about aliases from the group layer.  It just groups all
+> > devices within the range.  I think the only complication is making sure
+> > we're safe around device hotplug while we're doing this.  Thanks,
 > 
-> I thought of another approach that may actually be more 3.6 worthy.
-> What if we just make the iommu driver handle it?  For instance,
-> amd_iommu can walk the alias table looking for entries that use the same
-> alias and get the device via pci_get_bus_and_slot.  If it finds a device
-> with an iommu group, it attaches the new device to the same group,
-> hiding anything about aliases from the group layer.  It just groups all
-> devices within the range.  I think the only complication is making sure
-> we're safe around device hotplug while we're doing this.  Thanks,
+> I think this could work.  Instead of searching for other devices, check
+> for or allocate an iommu group on the alias dev_data, any "virtual"
+> aliases use that iommu group.  Florian, could you test this as well?
 
-I think this could work.  Instead of searching for other devices, check
-for or allocate an iommu group on the alias dev_data, any "virtual"
-aliases use that iommu group.  Florian, could you test this as well?
-Thanks,
+Here's a lockdep clean version of it:
 
-Alex
+amd_iommu: Handle aliases not backed by devices
+
+Aliases sometimes don't have a struct pci_dev backing them.  This breaks
+our attempt to figure out the topology and device quirks that may effect
+IOMMU grouping.  When this happens, allocate an IOMMU group on the
+dev_data for the alias and make use of it for all devices referencing
+this alias.
 
 Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index b64502d..22879ed 100644
+index b64502d..4eacb17 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -126,6 +126,8 @@ static void free_dev_data(struct iommu_dev_data *dev_data)
+@@ -71,6 +71,7 @@ static DEFINE_SPINLOCK(iommu_pd_list_lock);
+ /* List of all available dev_data structures */
+ static LIST_HEAD(dev_data_list);
+ static DEFINE_SPINLOCK(dev_data_list_lock);
++static DEFINE_MUTEX(dev_data_iommu_group_lock);
  
- 	spin_lock_irqsave(&dev_data_list_lock, flags);
+ /*
+  * Domain for untranslated devices - only allocated
+@@ -128,6 +129,9 @@ static void free_dev_data(struct iommu_dev_data *dev_data)
  	list_del(&dev_data->dev_data_list);
-+	if (dev_data->group)
-+		iommu_group_put(dev_data->group);
  	spin_unlock_irqrestore(&dev_data_list_lock, flags);
  
++	if (dev_data->group)
++		iommu_group_put(dev_data->group);
++
  	kfree(dev_data);
-@@ -256,6 +258,37 @@ static bool check_device(struct device *dev)
+ }
+ 
+@@ -256,6 +260,34 @@ static bool check_device(struct device *dev)
  	return true;
  }
  
 +/*
 + * Sometimes there's no actual device for an alias.  When that happens
-+ * we allocate an iommu group on the iommu_dev_data so that it gets used
-+ * by anything with the same alias.  We keep the reference from
-+ * iommu_group_alloc so the group persists with the iommu_dev_data.
++ * we allocate an iommu group on the dev_data and use it for anything
++ * aliasing back to this device.  This makes sure that multiple devices
++ * aliased to a non-existent device id all get grouped together.  Hold
++ * on to the reference for the group, it can be static rather than get
++ * automatically reclaimed if this device later gets removed.
 + */
 +static int dev_data_add_iommu_group(struct iommu_dev_data *dev_data,
 +				    struct device *dev)
 +{
-+	unsigned long flags;
-+	struct iommu_group *group;
-+	int ret = 0;
++	mutex_lock(&dev_data_iommu_group_lock);
 +
-+	spin_lock_irqsave(&dev_data_list_lock, flags);
 +	if (!dev_data->group) {
-+		group = iommu_group_alloc();
++		struct iommu_group *group = iommu_group_alloc();
 +		if (IS_ERR(group)) {
-+			ret = PTR_ERR(group);
-+			goto unlock;
++			mutex_unlock(&dev_data_iommu_group_lock);
++			return PTR_ERR(group);
 +		}
 +
 +		dev_data->group = group;
-+	} else
-+		group = dev_data->group;
++	}
 +
-+	ret = iommu_group_add_device(group, dev);
-+unlock:
-+	spin_unlock_irqrestore(&dev_data_list_lock, flags);
-+	return ret;
++	mutex_unlock(&dev_data_iommu_group_lock);
++
++	return iommu_group_add_device(dev_data->group, dev);
 +}
 +
  static void swap_pci_ref(struct pci_dev **from, struct pci_dev *to)
  {
  	pci_dev_put(*from);
-@@ -264,38 +297,12 @@ static void swap_pci_ref(struct pci_dev **from, struct pci_dev *to)
+@@ -264,38 +296,17 @@ static void swap_pci_ref(struct pci_dev **from, struct pci_dev *to)
  
  #define REQ_ACS_FLAGS	(PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF)
  
 -static int iommu_init_device(struct device *dev)
++/*
++ * Given a pci device, look at device quirks and topology between it
++ * and the IOMMU to determine the IOMMU group.  Once we've found or
++ * created an IOMMU group, add the provided device to it.
++ */
 +static int pdev_add_iommu_group(struct pci_dev *pdev, struct device *dev)
  {
 -	struct pci_dev *dma_pdev, *pdev = to_pci_dev(dev);
@@ -162,7 +182,7 @@ index b64502d..22879ed 100644
  	/* Account for quirked devices */
  	swap_pci_ref(&dma_pdev, pci_get_dma_source(dma_pdev));
  
-@@ -344,8 +351,61 @@ root_bus:
+@@ -344,8 +355,61 @@ root_bus:
  
  	iommu_group_put(group);
  
