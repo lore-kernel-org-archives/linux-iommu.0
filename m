@@ -1,22 +1,13 @@
-From: Florian Dazinger <florian-Q0TRQrZM+Zzk1uMJSBkQmQ@public.gmane.org>
-Subject: Re: 3.6-rc7 boot crash + bisection
-Date: Thu, 27 Sep 2012 18:22:49 +0200
-Message-ID: <20120927182249.2338546f@brain.lan>
-References: <20120924210348.5f50677b@brain.lan>
-	<1348597970.28860.114.camel@bling.home>
-	<20120925205420.0a07dea2@brain.lan>
-	<1348602226.28860.132.camel@bling.home>
-	<20120926132050.GB10549@amd.com>
-	<1348670159.28860.183.camel@bling.home>
-	<20120926151044.GE10549@amd.com>
-	<1348676470.28860.197.camel@bling.home>
-	<1348689013.28860.220.camel@bling.home>
-	<1348697043.28860.235.camel@bling.home>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2] Intel IOMMU patch to reprocess RMRR info
+Date: Thu, 27 Sep 2012 14:36:40 -0600
+Message-ID: <1348778200.2320.241.camel@ul30vt.home>
+References: <20120918164955.12296.28799.sendpatchset@tmingo.houston.hp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1348697043.28860.235.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+In-Reply-To: <20120918164955.12296.28799.sendpatchset-jP8EmR9A9vELnkn81s9yt/egYHeGw8Jk@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,55 +17,129 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Tom Mingarelli <thomas.mingarelli-VXdhtT5mjnY@public.gmane.org>
+Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Shuah Khan <shuah.khan-VXdhtT5mjnY@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Am Wed, 26 Sep 2012 16:04:03 -0600
-schrieb Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>:
+[adding David Woodhouse]
 
-> On Wed, 2012-09-26 at 13:50 -0600, Alex Williamson wrote:
-> > On Wed, 2012-09-26 at 10:21 -0600, Alex Williamson wrote:
-> > > On Wed, 2012-09-26 at 17:10 +0200, Roedel, Joerg wrote:
-> > > > On Wed, Sep 26, 2012 at 08:35:59AM -0600, Alex Williamson wrote:
-> > > > > Hmm, that throws a kink in iommu groups.  So perhaps we need to make an
-> > > > > alias interface to iommu groups.  Seems like this could just be an extra
-> > > > > parameter to iommu_group_get and iommu_group_add_device (empty in the
-> > > > > typical case).  Then we have the problem of what's the type for an
-> > > > > alias?  For AMI-Vi, it's a u16, but we need to be more generic than
-> > > > > that.  Maybe iommu groups should just treat it as a void* so iommus can
-> > > > > use a pointer to some structure or a fixed value like a u16 bus:slot.
-> > > > > Thoughts?
-> > > > 
-> > > > Good question. The iommu-groups are part of the IOMMU-API, with an
-> > > > interface to the IOMMU drivers and one to the users of IOMMU-API. So the
-> > > > alias handling itself should be a function of the interface to the IOMMU
-> > > > driver. In general the interface should not be bus specific.
-> > > > 
-> > > > So a void pointer seems the only logical choice then. But I would not
-> > > > limit its scope to alias handling. How about making it a bus-private
-> > > > pointer where IOMMU driver store bus-specific information. That way we
-> > > > make sure that there is one struct per bus-type for this pointer, and
-> > > > not one structure per IOMMU driver.
-> > > 
-> > > I thought of another approach that may actually be more 3.6 worthy.
-> > > What if we just make the iommu driver handle it?  For instance,
-> > > amd_iommu can walk the alias table looking for entries that use the same
-> > > alias and get the device via pci_get_bus_and_slot.  If it finds a device
-> > > with an iommu group, it attaches the new device to the same group,
-> > > hiding anything about aliases from the group layer.  It just groups all
-> > > devices within the range.  I think the only complication is making sure
-> > > we're safe around device hotplug while we're doing this.  Thanks,
-> > 
-> > I think this could work.  Instead of searching for other devices, check
-> > for or allocate an iommu group on the alias dev_data, any "virtual"
-> > aliases use that iommu group.  Florian, could you test this as well?
+On Tue, 2012-09-18 at 16:49 +0000, Tom Mingarelli wrote:
+> When a 32bit PCI device is removed from the SI Domain, the RMRR information
+> for this device becomes invalid and needs to be reprocessed to avoid DMA
+> Read errors. These errors are evidenced by the Present bit being cleared in
+> the device's context entry. Fixing this problem with an enhancement to process
+> the RMRR info when the device is assigned to another domain. The Bus Master bit
+> is cleared during the move to another domain and during the reprocessing of
+> the RMRR info so no DMA can take place at this time.
+> ----
+> PATCH v1: https://lkml.org/lkml/2012/6/15/204
 > 
-> Here's a lockdep clean version of it:
+> drivers/iommu/intel-iommu.c |   47 ++++++++++++++++++++++++++++++++++++++++--
+>  1 files changed, 44 insertions(+), 3 deletions(-)
 > 
-> amd_iommu: Handle aliases not backed by devices
+> Signed-off-by: Thomas Mingarelli <thomas.mingarelli-VXdhtT5mjnY@public.gmane.org>
 > 
-[ skipped patch ]
+> diff -up ./drivers/iommu/intel-iommu.c.ORIG ./drivers/iommu/intel-iommu.c
+> --- ./drivers/iommu/intel-iommu.c.ORIG	2012-09-18 09:58:25.147976889 -0500
+> +++ ./drivers/iommu/intel-iommu.c	2012-09-18 10:39:43.286672765 -0500
+> @@ -2706,11 +2706,39 @@ static int iommu_dummy(struct pci_dev *p
+>  	return pdev->dev.archdata.iommu == DUMMY_DEVICE_DOMAIN_INFO;
+>  }
+>  
+> +static int reprocess_rmrr(struct device *dev)
+> +{
+> +	struct dmar_rmrr_unit *rmrr;
+> +	struct pci_dev *pdev;
+> +	int i, ret;
+> +
+> +	pdev = to_pci_dev(dev);
+> +
+> +	for_each_rmrr_units(rmrr) {
+> +		for (i = 0; i < rmrr->devices_cnt; i++) {
+> +			/*
+> +			 * Here we are just concerned with
+> +			 * finding the one device that was
+> +			 * removed from the si_domain and
+> +			 * re-evaluating its RMRR info.
+> +			 */
 
-yes, this patch is working for me, too. I also tested your second patch, it was working as well.
-thanks, Florian
+I'm still not sure why this comment is wrapped so tightly.
+
+> +			if (rmrr->devices[i] != pdev)
+> +				continue;
+> +			pr_info("IOMMU: Reprocess RMRR information for device %s.\n",
+> +				pci_name(pdev));
+> +			ret = iommu_prepare_rmrr_dev(rmrr, pdev);
+> +			if (ret)
+> +				pr_err("IOMMU: Reprocessing RMRR reserved region for device failed");
+
+This could be "if (iommu_prepare_rmrr...)" because...
+
+> +		}
+> +	}
+> +return 0;
+
+Why does return anything?  Looks like it could be a void function since
+you're not returning the only possible error case above and not checking
+the return value below.  You're missing an indent here anyway.
+
+> +}
+> +
+>  /* Check if the pdev needs to go through non-identity map and unmap process.*/
+>  static int iommu_no_mapping(struct device *dev)
+>  {
+>  	struct pci_dev *pdev;
+> -	int found;
+> +	int found, current_bus_master;
+>  
+>  	if (unlikely(dev->bus != &pci_bus_type))
+>  		return 1;
+> @@ -2731,9 +2759,22 @@ static int iommu_no_mapping(struct devic
+>  			 * 32 bit DMA is removed from si_domain and fall back
+>  			 * to non-identity mapping.
+>  			 */
+> -			domain_remove_one_dev_info(si_domain, pdev);
+>  			printk(KERN_INFO "32bit %s uses non-identity mapping\n",
+> -			       pci_name(pdev));
+> +				pci_name(pdev));
+
+White space damage?  Change this to a pr_info if you really want to
+touch it.
+
+> +			/*
+> +			 * If a device gets this far we need to clear the Bus
+> +			 * Master bit before we start moving devices from domain
+> +			 * to domain. We will also reset the Bus Master bit
+> +			 * after reprocessing the RMRR info. However, we only
+> +			 * do both the clearing and setting if needed.
+> +			 */
+> +			current_bus_master = pdev->is_busmaster;
+> +			if (current_bus_master)
+> +				pci_clear_master(pdev);
+> +			domain_remove_one_dev_info(si_domain, pdev);
+> +			reprocess_rmrr(dev);
+> +			if (current_bus_master)
+> +				pci_set_master(pdev);
+
+I don't know any better way to halt DMA since we can't move the device
+to a new domain atomically, but what about the other cases where we
+switch domains?  For instance, what if some unsuspecting user tries to
+assign the device to a guest?  I think it's generally inadvisable to
+assign a devices with RMRRs to a guest, but if they do, they're going to
+run into the same problem.  The RMRRs aren't reprocessed for the VM
+domain and again aren't reprocessed when returned to a standard device
+domain.  Even more fun, if assigned to a VM domain, RMRRs should be
+added with the device and removed if the device is later detached from
+the domain.
+
+The lazy solution might be to disallow devices with RMRRs from being
+attached via the IOMMU API interfaces (do we need more reasons not to
+use RMRRs?).  Otherwise we need to be proactive about setting up a new
+domain with RMRR entries for every case and correctly tracking RMRRs for
+VM domains.  Thanks,
+
+Alex
+
+>  			return 0;
+>  		}
+>  	} else {
