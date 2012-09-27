@@ -1,13 +1,15 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2] Intel IOMMU patch to reprocess RMRR info
-Date: Thu, 27 Sep 2012 14:36:40 -0600
-Message-ID: <1348778200.2320.241.camel@ul30vt.home>
+From: "Mingarelli, Thomas" <Thomas.Mingarelli-VXdhtT5mjnY@public.gmane.org>
+Subject: RE: [PATCH v2] Intel IOMMU patch to reprocess RMRR info
+Date: Thu, 27 Sep 2012 21:10:21 +0000
+Message-ID: <9774516974AF5F4C8A2C3C69CD3412332338F452@G1W3651.americas.hpqcorp.net>
 References: <20120918164955.12296.28799.sendpatchset@tmingo.houston.hp.com>
+	<1348778200.2320.241.camel@ul30vt.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20120918164955.12296.28799.sendpatchset-jP8EmR9A9vELnkn81s9yt/egYHeGw8Jk@public.gmane.org>
+In-Reply-To: <1348778200.2320.241.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,9 +19,23 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tom Mingarelli <thomas.mingarelli-VXdhtT5mjnY@public.gmane.org>
-Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Shuah Khan <shuah.khan-VXdhtT5mjnY@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Khan, Shuah" <shuah.khan-VXdhtT5mjnY@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
+
+Alex,
+
+Are you suggesting that a solution is to prevent devices with RMRRs from being placed in the SI Domain in the first place (when pt mode is used)?
+
+
+Tom
+
+-----Original Message-----
+From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org] 
+Sent: Thursday, September 27, 2012 3:37 PM
+To: Mingarelli, Thomas
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Knippers, Linda; Khan, Shuah; Don Dutile; David Woodhouse
+Subject: Re: [PATCH v2] Intel IOMMU patch to reprocess RMRR info
 
 [adding David Woodhouse]
 
