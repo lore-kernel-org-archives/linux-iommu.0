@@ -1,15 +1,17 @@
-From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: Re: [PATCH v2] Intel IOMMU patch to reprocess RMRR info
-Date: Thu, 27 Sep 2012 22:50:05 +0100
-Message-ID: <1348782605.2036.117.camel@shinybook.infradead.org>
+From: "Mingarelli, Thomas" <Thomas.Mingarelli-VXdhtT5mjnY@public.gmane.org>
+Subject: RE: [PATCH v2] Intel IOMMU patch to reprocess RMRR info
+Date: Thu, 27 Sep 2012 21:48:37 +0000
+Message-ID: <9774516974AF5F4C8A2C3C69CD3412332338F504@G1W3651.americas.hpqcorp.net>
 References: <20120918164955.12296.28799.sendpatchset@tmingo.houston.hp.com>
 	<1348778200.2320.241.camel@ul30vt.home>
 	<9774516974AF5F4C8A2C3C69CD3412332338F452@G1W3651.americas.hpqcorp.net>
-	<1348781647.2320.264.camel@ul30vt.home>
+	<1348781647.2320.264.camel@ul30vt.home> <5064CA2D.3030206@hp.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============8959400756900282714=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1348781647.2320.264.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
+In-Reply-To: <5064CA2D.3030206-VXdhtT5mjnY@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,22 +21,42 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Khan, Shuah" <shuah.khan-VXdhtT5mjnY@public.gmane.org>, "Mingarelli,
-	Thomas" <Thomas.Mingarelli-VXdhtT5mjnY@public.gmane.org>
+To: "Knippers, Linda" <linda.knippers-VXdhtT5mjnY@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Khan, Shuah" <shuah.khan-VXdhtT5mjnY@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-
---===============8959400756900282714==
-Content-Type: multipart/signed; micalg="sha1"; protocol="application/x-pkcs7-signature";
-	boundary="=-9C7fnSIhwyYwVWUwJ6M1"
+I think this sounds like a separate patch.
 
 
---=-9C7fnSIhwyYwVWUwJ6M1
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Tom
 
-On Thu, 2012-09-27 at 15:34 -0600, Alex Williamson wrote:
+-----Original Message-----
+From: Knippers, Linda 
+Sent: Thursday, September 27, 2012 4:51 PM
+To: Alex Williamson
+Cc: Mingarelli, Thomas; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Khan, Shuah; Don Dutile; David Woodhouse
+Subject: Re: [PATCH v2] Intel IOMMU patch to reprocess RMRR info
+
+Alex Williamson wrote:
+> On Thu, 2012-09-27 at 21:10 +0000, Mingarelli, Thomas wrote:
+>> Alex,
+>>
+>> Are you suggesting that a solution is to prevent devices with RMRRs
+>> from being placed in the SI Domain in the first place (when pt mode is
+>> used)?
+> 
+> No, it seems like it's preferable that devices with RMRRs stay in the si
+> domain if the device supports 64bit DMA.  They're likely to cause less
+> problems there and we can ignore the RMRRs in the si domain.  The
+> problem I'm trying to address is that the domain you're setting up with
+> RMRRs is only used for dma_ops (ie. host driver use).  If the device is
+> attached to a guest, that domain gets discarded and the device is added
+> to yet another domain, potentially with other devices.  That domain is
+> missing RMRRs, so now your device is going to generate VT-d faults.  The
+> device can then get removed from that domain, in which case the RMRRs
+> should be removed, and again a new dma_ops domain needs to get created
+> with RMRRs.
+> 
 > It really seems like RMRRs are incompatible with IOMMU API use though.
 > If an RMRR is setup for a VM domain, that's bad because a) it gives the
 > VM direct access to that range of host memory, and b) it interferes with
@@ -44,155 +66,144 @@ On Thu, 2012-09-27 at 15:34 -0600, Alex Williamson wrote:
 > DMA'able space on the guest.  Data is read or written to the host memory
 > instead of the guest memory.  So maybe the right answer is to make
 > intel_iommu_attach_device return error if requested to act on a device
-> with RMRR ranges.
+> with RMRR ranges.  
 
-That would include fairly much any USB host controller. The whole RMRR
-concept is completely broken and should never have been invented. The
-idea that firmware-controlled DMA should continue to happen *after* the
-operating system has been booted and taken control of the hardware is
-just insane.
+That sounds like the right answer to me.  Tom, can you make that
+change when you address the rest of the comments?   Or should it
+be a separate patch?
 
-The majority of RMRR use is for USB controllers, so that firmware can
-emulate a legacy keyboard for the benefit of pre-USB operating systems.
-But no operating system that old is ever going to support the IOMMU
-anyway, so that's just mad. But that's why we've managed to get away
-with setting up the RMRRs and then tearing them down when a native
-driver has actually taken control of the hardware =E2=80=94 because at that
-point, it should have been reset and whatever the firmware had
-configured to do has been abandoned.
+-- ljk
 
-Perhaps we should have a special case for USB controllers, which are
-quite happy when you drop their RMRR regions when the OS takes over, and
-for any *other* device with RMRRs, have a TAINT_YOUR_FIRMWARE_IS_INSANE
-and just refuse to let a native driver do anything at all with them?
-
---=20
-dwmw2
-
---=-9C7fnSIhwyYwVWUwJ6M1
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIUbjCCBjQw
-ggQcoAMCAQICAR4wDQYJKoZIhvcNAQEFBQAwfTELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0
-Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxKTAn
-BgNVBAMTIFN0YXJ0Q29tIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MB4XDTA3MTAyNDIxMDE1NVoX
-DTE3MTAyNDIxMDE1NVowgYwxCzAJBgNVBAYTAklMMRYwFAYDVQQKEw1TdGFydENvbSBMdGQuMSsw
-KQYDVQQLEyJTZWN1cmUgRGlnaXRhbCBDZXJ0aWZpY2F0ZSBTaWduaW5nMTgwNgYDVQQDEy9TdGFy
-dENvbSBDbGFzcyAxIFByaW1hcnkgSW50ZXJtZWRpYXRlIENsaWVudCBDQTCCASIwDQYJKoZIhvcN
-AQEBBQADggEPADCCAQoCggEBAMcJg8zOLdgasSmkLhOrlr6KMoOMpohBllVHrdRvEg/q6r8jR+EK
-75xCGhR8ToREoqe7zM9/UnC6TS2y9UKTpT1v7RSMzR0t6ndl0TWBuUr/UXBhPk+Kmy7bI4yW4urC
-+y7P3/1/X7U8ocb8VpH/Clt+4iq7nirMcNh6qJR+xjOhV+VHzQMALuGYn5KZmc1NbJQYclsGkDxD
-z2UbFqE2+6vIZoL+jb9x4Pa5gNf1TwSDkOkikZB1xtB4ZqtXThaABSONdfmv/Z1pua3FYxnCFmdr
-/+N2JLKutIxMYqQOJebr/f/h5t95m4JgrM3Y/w7YX9d7YAL9jvN4SydHsU6n65cCAwEAAaOCAa0w
-ggGpMA8GA1UdEwEB/wQFMAMBAf8wDgYDVR0PAQH/BAQDAgEGMB0GA1UdDgQWBBRTcu2SnODaywFc
-fH6WNU7y1LhRgjAfBgNVHSMEGDAWgBROC+8apEBbpRdphzDKNGhD0EGu8jBmBggrBgEFBQcBAQRa
-MFgwJwYIKwYBBQUHMAGGG2h0dHA6Ly9vY3NwLnN0YXJ0c3NsLmNvbS9jYTAtBggrBgEFBQcwAoYh
-aHR0cDovL3d3dy5zdGFydHNzbC5jb20vc2ZzY2EuY3J0MFsGA1UdHwRUMFIwJ6AloCOGIWh0dHA6
-Ly93d3cuc3RhcnRzc2wuY29tL3Nmc2NhLmNybDAnoCWgI4YhaHR0cDovL2NybC5zdGFydHNzbC5j
-b20vc2ZzY2EuY3JsMIGABgNVHSAEeTB3MHUGCysGAQQBgbU3AQIBMGYwLgYIKwYBBQUHAgEWImh0
-dHA6Ly93d3cuc3RhcnRzc2wuY29tL3BvbGljeS5wZGYwNAYIKwYBBQUHAgEWKGh0dHA6Ly93d3cu
-c3RhcnRzc2wuY29tL2ludGVybWVkaWF0ZS5wZGYwDQYJKoZIhvcNAQEFBQADggIBAAqDCH14qywG
-XLhjjF6uHLkjd02hcdh9hrw+VUsv+q1eeQWB21jWj3kJ96AUlPCoEGZ/ynJNScWy6QMVQjbbMXlt
-UfO4n4bGGdKo3awPWp61tjAFgraLJgDk+DsSvUD6EowjMTNx25GQgyYJ5RPIzKKR9tQW8gGK+2+R
-HxkUCTbYFnL6kl8Ch507rUdPPipJ9CgJFws3kDS3gOS5WFMxcjO5DwKfKSETEPrHh7p5shuuNktv
-sv6hxHTLhiMKX893gxdT3XLS9OKmCv87vkINQcNEcIIoFWbP9HORz9v3vQwR4e3ksLc2JZOAFK+s
-sS5XMEoznzpihEP0PLc4dCBYjbvSD7kxgDwZ+Aj8Q9PkbvE9sIPP7ON0fz095HdThKjiVJe6vofq
-+n6b1NBc8XdrQvBmunwxD5nvtTW4vtN6VY7mUCmxsCieuoBJ9OlqmsVWQvifIYf40dJPZkk9YgGT
-zWLpXDSfLSplbY2LL9C9U0ptvjcDjefLTvqSFc7tw1sEhF0n/qpA2r0GpvkLRDmcSwVyPvmjFBGq
-Up/pNy8ZuPGQmHwFi2/14+xeSUDG2bwnsYJQG2EdJCB6luQ57GEnTA/yKZSTKI8dDQa8Sd3zfXb1
-9mOgSF0bBdXbuKhEpuP9wirslFe6fQ1t5j5R0xi72MZ8ikMu1RQZKCyDbMwazlHiMIIHFzCCBf+g
-AwIBAgIDBCZ6MA0GCSqGSIb3DQEBBQUAMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRD
-b20gTHRkLjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYG
-A1UEAxMvU3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0EwHhcN
-MTIwNTAxMTI1ODI3WhcNMTMwNTAzMTEzNzIwWjBdMRkwFwYDVQQNExA4Y1VOSzUzMTc0ODRYRjk3
-MRwwGgYDVQQDDBNkd213MkBpbmZyYWRlYWQub3JnMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZy
-YWRlYWQub3JnMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyYe7wo6MrtrB4uIGGbrY
-4IifY/Xsq22pSv605yganL0+uyUdd8rCjrYlH6Q/ra5TVJCQFTgzaepkuqPQc79DC/Cxmzm6Qo+s
-wLZy868oFsccsVokL2bPAWIPaRXfNPJKkYR1FTWQfZpWJVQmT+sPf1XFUullVBAK+d9RztopyacI
-xWoZ/W/Cmv7mseQbttYTtGKJa0btX73nsQRWl6SgErWXo59zg9friCLTy1GXMXJYB8H+PtnuwX0w
-MrAvWDdX1ABgIlA17W3FraCn0eW15ZM46eyu0/amGzJZNtemCWF73P7BAijzeV1jNmiJFXdZ0DT0
-w+hmtMO9PxdDUyt78QIDAQABo4IDrjCCA6owCQYDVR0TBAIwADALBgNVHQ8EBAMCBLAwHQYDVR0l
-BBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMB0GA1UdDgQWBBTkfe5UOr3PcirsjApibyyUEfsyRzAf
-BgNVHSMEGDAWgBRTcu2SnODaywFcfH6WNU7y1LhRgjAeBgNVHREEFzAVgRNkd213MkBpbmZyYWRl
-YWQub3JnMIICIQYDVR0gBIICGDCCAhQwggIQBgsrBgEEAYG1NwECAjCCAf8wLgYIKwYBBQUHAgEW
-Imh0dHA6Ly93d3cuc3RhcnRzc2wuY29tL3BvbGljeS5wZGYwNAYIKwYBBQUHAgEWKGh0dHA6Ly93
-d3cuc3RhcnRzc2wuY29tL2ludGVybWVkaWF0ZS5wZGYwgfcGCCsGAQUFBwICMIHqMCcWIFN0YXJ0
-Q29tIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MAMCAQEagb5UaGlzIGNlcnRpZmljYXRlIHdhcyBp
-c3N1ZWQgYWNjb3JkaW5nIHRvIHRoZSBDbGFzcyAxIFZhbGlkYXRpb24gcmVxdWlyZW1lbnRzIG9m
-IHRoZSBTdGFydENvbSBDQSBwb2xpY3ksIHJlbGlhbmNlIG9ubHkgZm9yIHRoZSBpbnRlbmRlZCBw
-dXJwb3NlIGluIGNvbXBsaWFuY2Ugb2YgdGhlIHJlbHlpbmcgcGFydHkgb2JsaWdhdGlvbnMuMIGc
-BggrBgEFBQcCAjCBjzAnFiBTdGFydENvbSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTADAgECGmRM
-aWFiaWxpdHkgYW5kIHdhcnJhbnRpZXMgYXJlIGxpbWl0ZWQhIFNlZSBzZWN0aW9uICJMZWdhbCBh
-bmQgTGltaXRhdGlvbnMiIG9mIHRoZSBTdGFydENvbSBDQSBwb2xpY3kuMDYGA1UdHwQvMC0wK6Ap
-oCeGJWh0dHA6Ly9jcmwuc3RhcnRzc2wuY29tL2NydHUxLWNybC5jcmwwgY4GCCsGAQUFBwEBBIGB
-MH8wOQYIKwYBBQUHMAGGLWh0dHA6Ly9vY3NwLnN0YXJ0c3NsLmNvbS9zdWIvY2xhc3MxL2NsaWVu
-dC9jYTBCBggrBgEFBQcwAoY2aHR0cDovL2FpYS5zdGFydHNzbC5jb20vY2VydHMvc3ViLmNsYXNz
-MS5jbGllbnQuY2EuY3J0MCMGA1UdEgQcMBqGGGh0dHA6Ly93d3cuc3RhcnRzc2wuY29tLzANBgkq
-hkiG9w0BAQUFAAOCAQEAqDU1FKifNtCFJbLnvOi1BLRfk7mut55PMtPSZLJ4/AnG7AjmJnbBI4U5
-DELwvVq3mIpwUpGqZUkqkZMEfBPIbfq517UZB3h4iANtqif+ULfTLhg5XgcK5eF8/T6EtX2c3epq
-ylARdleCbj/0FwiUDvPlTsA6PIN4SCekjRLgjKERrL3heFz+Hteq1rtMAvMkNuyL0/0ijyyg2y45
-NASAl2Afl9SLes/fnoh9nBwzfNQfb6qDYUFpnglfpGrq/0b1NtaOUb2z1SR+H1tKlb8bVJJIdvpu
-mEi27kSRIhzk3h30uTfKkKetgy++ouyldxZ7KZ0PuoLQrBy465EoQLosETCCBxcwggX/oAMCAQIC
-AwQmejANBgkqhkiG9w0BAQUFADCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0
-ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMT
-L1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBMB4XDTEyMDUw
-MTEyNTgyN1oXDTEzMDUwMzExMzcyMFowXTEZMBcGA1UEDRMQOGNVTks1MzE3NDg0WEY5NzEcMBoG
-A1UEAwwTZHdtdzJAaW5mcmFkZWFkLm9yZzEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFk
-Lm9yZzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMmHu8KOjK7aweLiBhm62OCIn2P1
-7KttqUr+tOcoGpy9PrslHXfKwo62JR+kP62uU1SQkBU4M2nqZLqj0HO/QwvwsZs5ukKPrMC2cvOv
-KBbHHLFaJC9mzwFiD2kV3zTySpGEdRU1kH2aViVUJk/rD39VxVLpZVQQCvnfUc7aKcmnCMVqGf1v
-wpr+5rHkG7bWE7RiiWtG7V+957EEVpekoBK1l6Ofc4PX64gi08tRlzFyWAfB/j7Z7sF9MDKwL1g3
-V9QAYCJQNe1txa2gp9HlteWTOOnsrtP2phsyWTbXpglhe9z+wQIo83ldYzZoiRV3WdA09MPoZrTD
-vT8XQ1Mre/ECAwEAAaOCA64wggOqMAkGA1UdEwQCMAAwCwYDVR0PBAQDAgSwMB0GA1UdJQQWMBQG
-CCsGAQUFBwMCBggrBgEFBQcDBDAdBgNVHQ4EFgQU5H3uVDq9z3Iq7IwKYm8slBH7MkcwHwYDVR0j
-BBgwFoAUU3Ltkpzg2ssBXHx+ljVO8tS4UYIwHgYDVR0RBBcwFYETZHdtdzJAaW5mcmFkZWFkLm9y
-ZzCCAiEGA1UdIASCAhgwggIUMIICEAYLKwYBBAGBtTcBAgIwggH/MC4GCCsGAQUFBwIBFiJodHRw
-Oi8vd3d3LnN0YXJ0c3NsLmNvbS9wb2xpY3kucGRmMDQGCCsGAQUFBwIBFihodHRwOi8vd3d3LnN0
-YXJ0c3NsLmNvbS9pbnRlcm1lZGlhdGUucGRmMIH3BggrBgEFBQcCAjCB6jAnFiBTdGFydENvbSBD
-ZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTADAgEBGoG+VGhpcyBjZXJ0aWZpY2F0ZSB3YXMgaXNzdWVk
-IGFjY29yZGluZyB0byB0aGUgQ2xhc3MgMSBWYWxpZGF0aW9uIHJlcXVpcmVtZW50cyBvZiB0aGUg
-U3RhcnRDb20gQ0EgcG9saWN5LCByZWxpYW5jZSBvbmx5IGZvciB0aGUgaW50ZW5kZWQgcHVycG9z
-ZSBpbiBjb21wbGlhbmNlIG9mIHRoZSByZWx5aW5nIHBhcnR5IG9ibGlnYXRpb25zLjCBnAYIKwYB
-BQUHAgIwgY8wJxYgU3RhcnRDb20gQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkwAwIBAhpkTGlhYmls
-aXR5IGFuZCB3YXJyYW50aWVzIGFyZSBsaW1pdGVkISBTZWUgc2VjdGlvbiAiTGVnYWwgYW5kIExp
-bWl0YXRpb25zIiBvZiB0aGUgU3RhcnRDb20gQ0EgcG9saWN5LjA2BgNVHR8ELzAtMCugKaAnhiVo
-dHRwOi8vY3JsLnN0YXJ0c3NsLmNvbS9jcnR1MS1jcmwuY3JsMIGOBggrBgEFBQcBAQSBgTB/MDkG
-CCsGAQUFBzABhi1odHRwOi8vb2NzcC5zdGFydHNzbC5jb20vc3ViL2NsYXNzMS9jbGllbnQvY2Ew
-QgYIKwYBBQUHMAKGNmh0dHA6Ly9haWEuc3RhcnRzc2wuY29tL2NlcnRzL3N1Yi5jbGFzczEuY2xp
-ZW50LmNhLmNydDAjBgNVHRIEHDAahhhodHRwOi8vd3d3LnN0YXJ0c3NsLmNvbS8wDQYJKoZIhvcN
-AQEFBQADggEBAKg1NRSonzbQhSWy57zotQS0X5O5rreeTzLT0mSyePwJxuwI5iZ2wSOFOQxC8L1a
-t5iKcFKRqmVJKpGTBHwTyG36ude1GQd4eIgDbaon/lC30y4YOV4HCuXhfP0+hLV9nN3qaspQEXZX
-gm4/9BcIlA7z5U7AOjyDeEgnpI0S4IyhEay94Xhc/h7Xqta7TALzJDbsi9P9Io8soNsuOTQEgJdg
-H5fUi3rP356IfZwcM3zUH2+qg2FBaZ4JX6Rq6v9G9TbWjlG9s9Ukfh9bSpW/G1SSSHb6bphItu5E
-kSIc5N4d9Lk3ypCnrYMvvqLspXcWeymdD7qC0KwcuOuRKEC6LBExggNvMIIDawIBATCBlDCBjDEL
-MAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdp
-dGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFy
-eSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMEJnowCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkD
-MQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTIwOTI3MjE1MDA1WjAjBgkqhkiG9w0BCQQx
-FgQU6AYlKVunTEB8i1FAb4v7wdw3/C0wgaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMC
-SUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRp
-ZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1l
-ZGlhdGUgQ2xpZW50IENBAgMEJnowgacGCyqGSIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJ
-TDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlm
-aWNhdGUgU2lnbmluZzE4MDYGA1UEAxMvU3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVk
-aWF0ZSBDbGllbnQgQ0ECAwQmejANBgkqhkiG9w0BAQEFAASCAQAJRsQvk/bV7/cTbeVoJ7D0g9U+
-EmPkYySNGbh/22v8UkKxMCz425BIQgNw8SEA0ZIVfKTeluS/jeDhDJ9jNHpun8AKx28xPW0bjeVc
-5H0oq53jm+9PxSjsxOuiSZqKt4AWtfDy6LKk13z9ObhfNCytTVZghpsvZe/rhSwZtx3GxC2RL0jx
-LOz6ENRl3txMESKOtco5px3exk/pVs9TtyRH4J0Jt/sluxGduqZAlnklUMEpI1RJMdKac+TreZhO
-Z/98VC+HdCfFzJSBz7M/zNsUzBE91F8Dq08q8kghui3CnJQXDWIV3elygWR4/HBAipaTBE4qR/LX
-WTSsAYlCOG71AAAAAAAA
-
-
---=-9C7fnSIhwyYwVWUwJ6M1--
-
-
---===============8959400756900282714==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============8959400756900282714==--
+> Thanks,
+> 
+> Alex
+> 
+>> -----Original Message-----
+>> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org] 
+>> Sent: Thursday, September 27, 2012 3:37 PM
+>> To: Mingarelli, Thomas
+>> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Knippers, Linda; Khan, Shuah; Don Dutile; David Woodhouse
+>> Subject: Re: [PATCH v2] Intel IOMMU patch to reprocess RMRR info
+>>
+>> [adding David Woodhouse]
+>>
+>> On Tue, 2012-09-18 at 16:49 +0000, Tom Mingarelli wrote:
+>>> When a 32bit PCI device is removed from the SI Domain, the RMRR information
+>>> for this device becomes invalid and needs to be reprocessed to avoid DMA
+>>> Read errors. These errors are evidenced by the Present bit being cleared in
+>>> the device's context entry. Fixing this problem with an enhancement to process
+>>> the RMRR info when the device is assigned to another domain. The Bus Master bit
+>>> is cleared during the move to another domain and during the reprocessing of
+>>> the RMRR info so no DMA can take place at this time.
+>>> ----
+>>> PATCH v1: https://lkml.org/lkml/2012/6/15/204
+>>>
+>>> drivers/iommu/intel-iommu.c |   47 ++++++++++++++++++++++++++++++++++++++++--
+>>>  1 files changed, 44 insertions(+), 3 deletions(-)
+>>>
+>>> Signed-off-by: Thomas Mingarelli <thomas.mingarelli-VXdhtT5mjnY@public.gmane.org>
+>>>
+>>> diff -up ./drivers/iommu/intel-iommu.c.ORIG ./drivers/iommu/intel-iommu.c
+>>> --- ./drivers/iommu/intel-iommu.c.ORIG	2012-09-18 09:58:25.147976889 -0500
+>>> +++ ./drivers/iommu/intel-iommu.c	2012-09-18 10:39:43.286672765 -0500
+>>> @@ -2706,11 +2706,39 @@ static int iommu_dummy(struct pci_dev *p
+>>>  	return pdev->dev.archdata.iommu == DUMMY_DEVICE_DOMAIN_INFO;
+>>>  }
+>>>  
+>>> +static int reprocess_rmrr(struct device *dev)
+>>> +{
+>>> +	struct dmar_rmrr_unit *rmrr;
+>>> +	struct pci_dev *pdev;
+>>> +	int i, ret;
+>>> +
+>>> +	pdev = to_pci_dev(dev);
+>>> +
+>>> +	for_each_rmrr_units(rmrr) {
+>>> +		for (i = 0; i < rmrr->devices_cnt; i++) {
+>>> +			/*
+>>> +			 * Here we are just concerned with
+>>> +			 * finding the one device that was
+>>> +			 * removed from the si_domain and
+>>> +			 * re-evaluating its RMRR info.
+>>> +			 */
+>> I'm still not sure why this comment is wrapped so tightly.
+>>
+>>> +			if (rmrr->devices[i] != pdev)
+>>> +				continue;
+>>> +			pr_info("IOMMU: Reprocess RMRR information for device %s.\n",
+>>> +				pci_name(pdev));
+>>> +			ret = iommu_prepare_rmrr_dev(rmrr, pdev);
+>>> +			if (ret)
+>>> +				pr_err("IOMMU: Reprocessing RMRR reserved region for device failed");
+>> This could be "if (iommu_prepare_rmrr...)" because...
+>>
+>>> +		}
+>>> +	}
+>>> +return 0;
+>> Why does return anything?  Looks like it could be a void function since
+>> you're not returning the only possible error case above and not checking
+>> the return value below.  You're missing an indent here anyway.
+>>
+>>> +}
+>>> +
+>>>  /* Check if the pdev needs to go through non-identity map and unmap process.*/
+>>>  static int iommu_no_mapping(struct device *dev)
+>>>  {
+>>>  	struct pci_dev *pdev;
+>>> -	int found;
+>>> +	int found, current_bus_master;
+>>>  
+>>>  	if (unlikely(dev->bus != &pci_bus_type))
+>>>  		return 1;
+>>> @@ -2731,9 +2759,22 @@ static int iommu_no_mapping(struct devic
+>>>  			 * 32 bit DMA is removed from si_domain and fall back
+>>>  			 * to non-identity mapping.
+>>>  			 */
+>>> -			domain_remove_one_dev_info(si_domain, pdev);
+>>>  			printk(KERN_INFO "32bit %s uses non-identity mapping\n",
+>>> -			       pci_name(pdev));
+>>> +				pci_name(pdev));
+>> White space damage?  Change this to a pr_info if you really want to
+>> touch it.
+>>
+>>> +			/*
+>>> +			 * If a device gets this far we need to clear the Bus
+>>> +			 * Master bit before we start moving devices from domain
+>>> +			 * to domain. We will also reset the Bus Master bit
+>>> +			 * after reprocessing the RMRR info. However, we only
+>>> +			 * do both the clearing and setting if needed.
+>>> +			 */
+>>> +			current_bus_master = pdev->is_busmaster;
+>>> +			if (current_bus_master)
+>>> +				pci_clear_master(pdev);
+>>> +			domain_remove_one_dev_info(si_domain, pdev);
+>>> +			reprocess_rmrr(dev);
+>>> +			if (current_bus_master)
+>>> +				pci_set_master(pdev);
+>> I don't know any better way to halt DMA since we can't move the device
+>> to a new domain atomically, but what about the other cases where we
+>> switch domains?  For instance, what if some unsuspecting user tries to
+>> assign the device to a guest?  I think it's generally inadvisable to
+>> assign a devices with RMRRs to a guest, but if they do, they're going to
+>> run into the same problem.  The RMRRs aren't reprocessed for the VM
+>> domain and again aren't reprocessed when returned to a standard device
+>> domain.  Even more fun, if assigned to a VM domain, RMRRs should be
+>> added with the device and removed if the device is later detached from
+>> the domain.
+>>
+>> The lazy solution might be to disallow devices with RMRRs from being
+>> attached via the IOMMU API interfaces (do we need more reasons not to
+>> use RMRRs?).  Otherwise we need to be proactive about setting up a new
+>> domain with RMRR entries for every case and correctly tracking RMRRs for
+>> VM domains.  Thanks,
+>>
+>> Alex
+>>
+>>>  			return 0;
+>>>  		}
+>>>  	} else {
+>>
+>>
+> 
+> 
+> 
