@@ -1,16 +1,18 @@
 From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 10/16] iommu/amd: Implement MSI routines for interrupt
-	remapping
-Date: Fri, 28 Sep 2012 10:49:34 -0400
-Message-ID: <20120928144933.GH7483@localhost.localdomain>
+Subject: Re: [PATCH 05/16] iommu/amd: Split device table initialization into
+	irq and dma part
+Date: Fri, 28 Sep 2012 11:00:10 -0400
+Message-ID: <20120928150009.GI7483@localhost.localdomain>
 References: <1348835046-3262-1-git-send-email-joerg.roedel@amd.com>
-	<1348835046-3262-11-git-send-email-joerg.roedel@amd.com>
+	<1348835046-3262-6-git-send-email-joerg.roedel@amd.com>
+	<20120928141752.GD7483@localhost.localdomain>
+	<20120928142555.GC4009@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1348835046-3262-11-git-send-email-joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <20120928142555.GC4009-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,106 +26,25 @@ To: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Sep 28, 2012 at 02:24:00PM +0200, Joerg Roedel wrote:
-> Add routines to setup interrupt remapping for MSI
-> interrupts.
+On Fri, Sep 28, 2012 at 04:25:55PM +0200, Joerg Roedel wrote:
+> On Fri, Sep 28, 2012 at 10:17:53AM -0400, Konrad Rzeszutek Wilk wrote:
+> > On Fri, Sep 28, 2012 at 02:23:55PM +0200, Joerg Roedel wrote:
+> > > When the IOMMU is enabled very early (as with irq-remapping)
+> > > some devices are still in BIOS hand. When dma is blocked
+> > > early this can cause lots of IO_PAGE_FAULTs. So delay the
+> > > DMA initialization and do it right before the dma_ops are
+> > > initialized.
+> > > To be secure, block all interrupts by default when irq-remapping is
+> > 
+> > What are you trying to be secure against?
 > 
-> Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-> ---
->  drivers/iommu/amd_iommu.c |   74 +++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 74 insertions(+)
-> 
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index 3df01b2..84efecd 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -4126,4 +4126,78 @@ static int free_irq(int irq)
->  	return 0;
->  }
->  
-> +static void compose_msi_msg(struct pci_dev *pdev,
-> +			    unsigned int irq, unsigned int dest,
-> +			    struct msi_msg *msg, u8 hpet_id)
-> +{
-> +	struct irq_2_iommu *irte_info;
-> +	struct irq_cfg *cfg;
-> +	union irte irte;
-> +
-> +	cfg = irq_get_chip_data(irq);
-> +	if (!cfg)
-> +		return;
-> +
-> +	irte_info = &cfg->irq_2_iommu;
-> +
-> +	irte.val		= 0;
-> +	irte.fields.vector	= cfg->vector;
-> +	irte.fields.int_type    = apic->irq_delivery_mode;
-> +	irte.fields.destination	= dest;
-> +	irte.fields.dm		= apic->irq_dest_mode;
-> +	irte.fields.valid	= 1;
-> +
-> +	modify_irte(irte_info->sub_handle, irte_info->irte_index, irte);
-> +
-> +	msg->address_hi = MSI_ADDR_BASE_HI;
-> +	msg->address_lo = MSI_ADDR_BASE_LO;
-> +	msg->data       = irte_info->irte_index;
-> +}
-> +
-> +static int msi_alloc_irq(struct pci_dev *pdev, int irq, int nvec)
-> +{
-> +	struct irq_cfg *cfg;
-> +	int index;
-> +	u16 devid;
-> +
-> +	if (!pdev)
-> +		return -EINVAL;
-> +
-> +	cfg = irq_get_chip_data(irq);
-> +	if (!cfg)
-> +		return -EINVAL;
-> +
-> +	devid = get_device_id(&pdev->dev);
-> +	index = alloc_irq_index(cfg, devid, nvec);
-> +
-> +	return index < 0 ? MAX_IRQS_PER_TABLE : index;
-> +}
-> +
-> +static int msi_setup_irq(struct pci_dev *pdev, unsigned int irq,
-> +			 int index, int offset)
-> +{
-> +	struct irq_2_iommu *irte_info;
-> +	struct irq_cfg *cfg;
-> +	u16 devid;
-> +
-> +	if (!pdev)
-> +		return -EINVAL;
-> +
-> +	cfg = irq_get_chip_data(irq);
-> +	if (!cfg)
-> +		return -EINVAL;
-> +
-> +	if (index >= MAX_IRQS_PER_TABLE)
-> +		return 0;
+> Against attacks of faked MSI msgs that could DoS the system. MSI
+> messages are only specific DMA transactions in the end and a guest with
+> a device assigned has control over its DMA engine and can thus send
+> arbitrary interrupt requests to the host. There is a whole paper about
+> such attacks. I can't find right now, but I send you  a link when I find
+> it.
 
-Hmm? Not an error code?
-
-> +
-> +	devid		= get_device_id(&pdev->dev);
-> +	irte_info	= &cfg->irq_2_iommu;
-> +
-> +	irte_info->sub_handle = devid;
-> +	irte_info->irte_index = index + offset;
-> +	irte_info->iommu      = (void *)cfg;
-> +
-> +	return 0;
-> +}
-> +
->  #endif
-> -- 
-> 1.7.9.5
-> 
-> 
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+I think I know which one you are talking about - that is the Joanna's
+Rutkowski/Rafal Wojtczuk paper. Could you include a bit about it
+in the description or at least the title in the git commit pls?
