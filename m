@@ -1,15 +1,16 @@
 From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 09/16] iommu/amd: Add IOAPIC remapping routines
-Date: Fri, 28 Sep 2012 10:45:15 -0400
-Message-ID: <20120928144513.GG7483@localhost.localdomain>
+Subject: Re: [PATCH 10/16] iommu/amd: Implement MSI routines for interrupt
+	remapping
+Date: Fri, 28 Sep 2012 10:49:34 -0400
+Message-ID: <20120928144933.GH7483@localhost.localdomain>
 References: <1348835046-3262-1-git-send-email-joerg.roedel@amd.com>
-	<1348835046-3262-10-git-send-email-joerg.roedel@amd.com>
+	<1348835046-3262-11-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1348835046-3262-10-git-send-email-joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <1348835046-3262-11-git-send-email-joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,156 +24,96 @@ To: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Sep 28, 2012 at 02:23:59PM +0200, Joerg Roedel wrote:
-> Add the routine to setup interrupt remapping for ioapic
-> interrupts. Also add a routine to change the affinity of an
-> irq and to free an irq allocation for interrupt remapping.
-> The last two functions will also be used for MSI interrupts.
+On Fri, Sep 28, 2012 at 02:24:00PM +0200, Joerg Roedel wrote:
+> Add routines to setup interrupt remapping for MSI
+> interrupts.
 > 
 > Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 > ---
->  drivers/iommu/amd_iommu.c |  126 +++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 126 insertions(+)
+>  drivers/iommu/amd_iommu.c |   74 +++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 74 insertions(+)
 > 
 > diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index bd277924..3df01b2 100644
+> index 3df01b2..84efecd 100644
 > --- a/drivers/iommu/amd_iommu.c
 > +++ b/drivers/iommu/amd_iommu.c
-> @@ -4000,4 +4000,130 @@ static void free_irte(u16 devid, int index)
->  	iommu_completion_wait(iommu);
+> @@ -4126,4 +4126,78 @@ static int free_irq(int irq)
+>  	return 0;
 >  }
 >  
-> +static int setup_ioapic_entry(int irq, struct IO_APIC_route_entry *entry,
-> +			      unsigned int destination, int vector,
-> +			      struct io_apic_irq_attr *attr)
+> +static void compose_msi_msg(struct pci_dev *pdev,
+> +			    unsigned int irq, unsigned int dest,
+> +			    struct msi_msg *msg, u8 hpet_id)
 > +{
-> +	struct irq_remap_table *table;
 > +	struct irq_2_iommu *irte_info;
 > +	struct irq_cfg *cfg;
 > +	union irte irte;
-> +	int ioapic_id;
-> +	int index;
-> +	int devid;
-> +	int ret;
 > +
 > +	cfg = irq_get_chip_data(irq);
 > +	if (!cfg)
-> +		return -EINVAL;
+> +		return;
 > +
 > +	irte_info = &cfg->irq_2_iommu;
-> +	ioapic_id = mpc_ioapic_id(attr->ioapic);
-> +	devid     = get_ioapic_devid(ioapic_id);
 > +
-> +	if (devid < 0)
-> +		return devid;
-> +
-> +	table = get_irq_table(devid, true);
-> +	if (table == NULL)
-> +		return -ENOMEM;
-> +
-> +	index = attr->ioapic_pin;
-> +
-> +	/* Setup IRQ remapping info */
-> +	irte_info->sub_handle = devid;
-> +	irte_info->irte_index = index;
-> +	irte_info->iommu      = (void *)cfg;
-> +
-> +	/* Setup IRTE for IOMMU */
 > +	irte.val		= 0;
-> +	irte.fields.vector      = vector;
+> +	irte.fields.vector	= cfg->vector;
 > +	irte.fields.int_type    = apic->irq_delivery_mode;
-> +	irte.fields.destination = destination;
-> +	irte.fields.dm          = apic->irq_dest_mode;
-> +	irte.fields.valid       = 1;
-> +
-> +	ret = modify_irte(devid, index, irte);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* Setup IOAPIC entry */
-> +	memset(entry, 0, sizeof(*entry));
-> +
-> +	entry->vector        = index;
-> +	entry->mask          = 0;
-> +	entry->trigger       = attr->trigger;
-> +	entry->polarity      = attr->polarity;
-> +
-> +	/*
-> +	 * Mask level triggered irqs.
-> +	 * Use IRQ_DELAYED_DISABLE for edge triggered irqs.
-
-so how come it is not set?
-
-> +	 */
-> +	if (attr->trigger)
-> +		entry->mask = 1;
-> +
-> +	return 0;
-> +}
-> +
-> +static int set_affinity(struct irq_data *data, const struct cpumask *mask,
-> +			bool force)
-> +{
-> +	struct irq_2_iommu *irte_info;
-> +	unsigned int dest, irq;
-> +	struct irq_cfg *cfg;
-> +	union irte irte;
-> +	int err;
-> +
-> +	if (!config_enabled(CONFIG_SMP))
-> +		return -1;
-
--1? -ENOx something?
-> +
-> +	cfg       = data->chip_data;
-> +	irq       = data->irq;
-> +	irte_info = &cfg->irq_2_iommu;
-> +
-> +	if (!cpumask_intersects(mask, cpu_online_mask))
-> +		return -EINVAL;
-> +
-> +	if (get_irte(irte_info->sub_handle, irte_info->irte_index, &irte))
-> +		return -EBUSY;
-> +
-> +	if (assign_irq_vector(irq, cfg, mask))
-> +		return -EBUSY;
-> +
-> +	err = apic->cpu_mask_to_apicid_and(cfg->domain, mask, &dest);
-> +	if (err) {
-> +		if (assign_irq_vector(irq, cfg, data->affinity))
-> +			pr_err("AMD-Vi: Failed to recover vector for irq %d\n", irq);
-
-If we do OK with the assignment of the vector, should we just continue
-on instead of returning error?
-
-> +		return err;
-> +	}
-> +
-> +	irte.fields.vector      = cfg->vector;
-> +	irte.fields.destination = dest;
+> +	irte.fields.destination	= dest;
+> +	irte.fields.dm		= apic->irq_dest_mode;
+> +	irte.fields.valid	= 1;
 > +
 > +	modify_irte(irte_info->sub_handle, irte_info->irte_index, irte);
 > +
-> +	if (cfg->move_in_progress)
-> +		send_cleanup_vector(cfg);
-> +
-> +	cpumask_copy(data->affinity, mask);
-> +
-> +	return 0;
+> +	msg->address_hi = MSI_ADDR_BASE_HI;
+> +	msg->address_lo = MSI_ADDR_BASE_LO;
+> +	msg->data       = irte_info->irte_index;
 > +}
 > +
-> +static int free_irq(int irq)
+> +static int msi_alloc_irq(struct pci_dev *pdev, int irq, int nvec)
 > +{
-> +	struct irq_2_iommu *irte_info;
 > +	struct irq_cfg *cfg;
+> +	int index;
+> +	u16 devid;
+> +
+> +	if (!pdev)
+> +		return -EINVAL;
 > +
 > +	cfg = irq_get_chip_data(irq);
 > +	if (!cfg)
 > +		return -EINVAL;
 > +
-> +	irte_info = &cfg->irq_2_iommu;
+> +	devid = get_device_id(&pdev->dev);
+> +	index = alloc_irq_index(cfg, devid, nvec);
 > +
-> +	free_irte(irte_info->sub_handle, irte_info->irte_index);
+> +	return index < 0 ? MAX_IRQS_PER_TABLE : index;
+> +}
+> +
+> +static int msi_setup_irq(struct pci_dev *pdev, unsigned int irq,
+> +			 int index, int offset)
+> +{
+> +	struct irq_2_iommu *irte_info;
+> +	struct irq_cfg *cfg;
+> +	u16 devid;
+> +
+> +	if (!pdev)
+> +		return -EINVAL;
+> +
+> +	cfg = irq_get_chip_data(irq);
+> +	if (!cfg)
+> +		return -EINVAL;
+> +
+> +	if (index >= MAX_IRQS_PER_TABLE)
+> +		return 0;
+
+Hmm? Not an error code?
+
+> +
+> +	devid		= get_device_id(&pdev->dev);
+> +	irte_info	= &cfg->irq_2_iommu;
+> +
+> +	irte_info->sub_handle = devid;
+> +	irte_info->irte_index = index + offset;
+> +	irte_info->iommu      = (void *)cfg;
 > +
 > +	return 0;
 > +}
