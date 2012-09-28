@@ -1,8 +1,7 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 05/16] iommu/amd: Split device table initialization into irq
-	and dma part
-Date: Fri, 28 Sep 2012 14:23:55 +0200
-Message-ID: <1348835046-3262-6-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 14/16] iommu/irq: Use amd_iommu_irq_ops if supported
+Date: Fri, 28 Sep 2012 14:24:04 +0200
+Message-ID: <1348835046-3262-15-git-send-email-joerg.roedel@amd.com>
 References: <1348835046-3262-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,65 +20,28 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When the IOMMU is enabled very early (as with irq-remapping)
-some devices are still in BIOS hand. When dma is blocked
-early this can cause lots of IO_PAGE_FAULTs. So delay the
-DMA initialization and do it right before the dma_ops are
-initialized.
-To be secure, block all interrupts by default when irq-remapping is
-enabled in the system. They will be reenabled on demand
-later.
+Finally enable interrupt remapping for AMD systems.
 
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c |   19 ++++++++++++++++++-
- 1 file changed, 18 insertions(+), 1 deletion(-)
+ drivers/iommu/irq_remapping.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 3f0b68f..8e9d71c 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -1378,7 +1378,7 @@ static int __init init_memory_definitions(struct acpi_table_header *table)
-  * Init the device table to not allow DMA access for devices and
-  * suppress all page faults
-  */
--static void init_device_table(void)
-+static void init_device_table_dma(void)
+diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
+index 151690d..faf85d6 100644
+--- a/drivers/iommu/irq_remapping.c
++++ b/drivers/iommu/irq_remapping.c
+@@ -51,6 +51,11 @@ early_param("intremap", setup_irqremap);
+ void __init setup_irq_remapping_ops(void)
  {
- 	u32 devid;
- 
-@@ -1388,6 +1388,17 @@ static void init_device_table(void)
- 	}
+ 	remap_ops = &intel_irq_remap_ops;
++
++#ifdef CONFIG_AMD_IOMMU
++	if (amd_iommu_irq_ops.prepare() == 0)
++		remap_ops = &amd_iommu_irq_ops;
++#endif
  }
  
-+static void init_device_table(void)
-+{
-+	u32 devid;
-+
-+	if (!amd_iommu_irq_remap)
-+		return;
-+
-+	for (devid = 0; devid <= amd_iommu_last_bdf; ++devid)
-+		set_dev_entry_bit(devid, DEV_ENTRY_IRQ_TBL_EN);
-+}
-+
- static void iommu_init_flags(struct amd_iommu *iommu)
- {
- 	iommu->acpi_flags & IVHD_FLAG_HT_TUN_EN_MASK ?
-@@ -1778,8 +1789,14 @@ static bool detect_ivrs(void)
- 
- static int amd_iommu_init_dma(void)
- {
-+	struct amd_iommu *iommu;
- 	int ret;
- 
-+	init_device_table_dma();
-+
-+	for_each_iommu(iommu)
-+		iommu_flush_all_caches(iommu);
-+
- 	if (iommu_pass_through)
- 		ret = amd_iommu_init_passthrough();
- 	else
+ int irq_remapping_supported(void)
 -- 
 1.7.9.5
