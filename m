@@ -1,15 +1,17 @@
-From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 07/16] iommu/amd: Add IRTE invalidation routine
-Date: Fri, 28 Sep 2012 10:20:18 -0400
-Message-ID: <20120928142017.GE7483@localhost.localdomain>
+From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH 05/16] iommu/amd: Split device table initialization into
+	irq and dma part
+Date: Fri, 28 Sep 2012 16:25:55 +0200
+Message-ID: <20120928142555.GC4009@amd.com>
 References: <1348835046-3262-1-git-send-email-joerg.roedel@amd.com>
-	<1348835046-3262-8-git-send-email-joerg.roedel@amd.com>
+	<1348835046-3262-6-git-send-email-joerg.roedel@amd.com>
+	<20120928141752.GD7483@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1348835046-3262-8-git-send-email-joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <20120928141752.GD7483-bi+AKbBUZKY6gyzm1THtWbp2dZbC/Bob@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,94 +21,34 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+To: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Sep 28, 2012 at 02:23:57PM +0200, Joerg Roedel wrote:
-> Add routine to invalidate the IOMMU cache for interupt
-> translations. Also include the IRTE caches when flushing all
-> IOMMU caches.
+On Fri, Sep 28, 2012 at 10:17:53AM -0400, Konrad Rzeszutek Wilk wrote:
+> On Fri, Sep 28, 2012 at 02:23:55PM +0200, Joerg Roedel wrote:
+> > When the IOMMU is enabled very early (as with irq-remapping)
+> > some devices are still in BIOS hand. When dma is blocked
+> > early this can cause lots of IO_PAGE_FAULTs. So delay the
+> > DMA initialization and do it right before the dma_ops are
+> > initialized.
+> > To be secure, block all interrupts by default when irq-remapping is
 > 
-> Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-> ---
->  drivers/iommu/amd_iommu.c       |   27 +++++++++++++++++++++++++++
->  drivers/iommu/amd_iommu_types.h |    1 +
->  2 files changed, 28 insertions(+)
-> 
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index b6a8079..a2c1f7a 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -902,6 +902,13 @@ static void build_inv_all(struct iommu_cmd *cmd)
->  	CMD_SET_TYPE(cmd, CMD_INV_ALL);
->  }
->  
-> +static void build_inv_irt(struct iommu_cmd *cmd, u16 devid)
-> +{
-> +	memset(cmd, 0, sizeof(*cmd));
-> +	cmd->data[0] = devid;
-> +	CMD_SET_TYPE(cmd, CMD_INV_IRT);
-> +}
-> +
->  /*
->   * Writes the command to the IOMMUs command buffer and informs the
->   * hardware about the new command.
-> @@ -1023,12 +1030,32 @@ static void iommu_flush_all(struct amd_iommu *iommu)
->  	iommu_completion_wait(iommu);
->  }
->  
-> +static void iommu_flush_irt(struct amd_iommu *iommu, u16 devid)
-> +{
-> +	struct iommu_cmd cmd;
-> +
-> +	build_inv_irt(&cmd, devid);
-> +
-> +	iommu_queue_command(iommu, &cmd);
-> +}
-> +
-> +static void iommu_flush_irt_all(struct amd_iommu *iommu)
-> +{
-> +	u32 devid;
-> +
-> +	for (devid = 0; devid <= 0xffff; ++devid)
+> What are you trying to be secure against?
 
-Should this be #define? Or perhaps based of sizeof?
+Against attacks of faked MSI msgs that could DoS the system. MSI
+messages are only specific DMA transactions in the end and a guest with
+a device assigned has control over its DMA engine and can thus send
+arbitrary interrupt requests to the host. There is a whole paper about
+such attacks. I can't find right now, but I send you  a link when I find
+it.
 
-Is there a specific reason that it is u16 in the build_inv_irt but here it is u32?
 
-> +		iommu_flush_irt(iommu, devid);
-> +
-> +	iommu_completion_wait(iommu);
-> +}
-> +
->  void iommu_flush_all_caches(struct amd_iommu *iommu)
->  {
->  	if (iommu_feature(iommu, FEATURE_IA)) {
->  		iommu_flush_all(iommu);
->  	} else {
->  		iommu_flush_dte_all(iommu);
-> +		iommu_flush_irt_all(iommu);
->  		iommu_flush_tlb_all(iommu);
->  	}
->  }
-> diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-> index 1a7d480..b183306 100644
-> --- a/drivers/iommu/amd_iommu_types.h
-> +++ b/drivers/iommu/amd_iommu_types.h
-> @@ -152,6 +152,7 @@
->  #define CMD_INV_DEV_ENTRY       0x02
->  #define CMD_INV_IOMMU_PAGES	0x03
->  #define CMD_INV_IOTLB_PAGES	0x04
-> +#define CMD_INV_IRT		0x05
->  #define CMD_COMPLETE_PPR	0x07
->  #define CMD_INV_ALL		0x08
->  
-> -- 
-> 1.7.9.5
-> 
-> 
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+	Joerg
+
+-- 
+AMD Operating System Research Center
+
+Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
+General Managers: Alberto Bozzo
+Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
