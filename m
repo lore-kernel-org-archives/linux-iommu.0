@@ -1,41 +1,38 @@
-From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH 10/16] iommu/amd: Implement MSI routines for interrupt
-	remapping
-Date: Fri, 28 Sep 2012 17:04:13 +0200
-Message-ID: <20120928150413.GI4009@amd.com>
+From: Joerg Roedel <joerg.roedel@amd.com>
+Subject: Re: [PATCH 07/16] iommu/amd: Add IRTE invalidation routine
+Date: Fri, 28 Sep 2012 17:36:29 +0200
+Message-ID: <20120928153629.GJ4009@amd.com>
 References: <1348835046-3262-1-git-send-email-joerg.roedel@amd.com>
-	<1348835046-3262-11-git-send-email-joerg.roedel@amd.com>
-	<20120928144933.GH7483@localhost.localdomain>
+ <1348835046-3262-8-git-send-email-joerg.roedel@amd.com>
+ <20120928142017.GE7483@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20120928144933.GH7483-bi+AKbBUZKY6gyzm1THtWbp2dZbC/Bob@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <20120928142017.GE7483@localhost.localdomain>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Sep 28, 2012 at 10:49:34AM -0400, Konrad Rzeszutek Wilk wrote:
-> On Fri, Sep 28, 2012 at 02:24:00PM +0200, Joerg Roedel wrote:
-> > +	if (index >= MAX_IRQS_PER_TABLE)
-> > +		return 0;
+On Fri, Sep 28, 2012 at 10:20:18AM -0400, Konrad Rzeszutek Wilk wrote:
+> On Fri, Sep 28, 2012 at 02:23:57PM +0200, Joerg Roedel wrote:
+> > +static void iommu_flush_irt_all(struct amd_iommu *iommu)
+> > +{
+> > +	u32 devid;
+> > +
+> > +	for (devid = 0; devid <= 0xffff; ++devid)
 > 
-> Hmm? Not an error code?
+> Should this be #define? Or perhaps based of sizeof?
 
-No, when this case happens it just means that the interrupt is not
-remapped (because the device itself is not handled by the IOMMU). This
-is not an error code and only tells the code which composes the msi-msg
-to use the default routine instead of the one for interrupt remapping.
+I'll add a define for that. The 0xffff is a hardware constant, so sizeof
+will not work.
+
+> Is there a specific reason that it is u16 in the build_inv_irt but
+> here it is u32?
+
+Yes, with u16 the loop-counter will overflow and make it to an endless
+loop.
 
 
 	Joerg
