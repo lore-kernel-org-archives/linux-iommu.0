@@ -1,8 +1,7 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 15/16] iommu/amd: Print message to system log when irq
-	remapping is enabled
-Date: Fri, 28 Sep 2012 14:24:05 +0200
-Message-ID: <1348835046-3262-16-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 11/16] iommu/amd: Add call-back routine for HPET MSI
+Date: Fri, 28 Sep 2012 14:24:01 +0200
+Message-ID: <1348835046-3262-12-git-send-email-joerg.roedel@amd.com>
 References: <1348835046-3262-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,26 +20,47 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Print an indicator to dmesg to easily find out if interrupt
-remapping is enabled of a given system.
+Add a routine to setup a HPET MSI interrupt for remapping.
 
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iommu/amd_iommu.c |   26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 0608ef4..45f0f47 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -1196,6 +1196,8 @@ static void print_iommu_info(void)
- 		}
- 		pr_cont("\n");
- 	}
-+	if (irq_remapping_enabled)
-+		pr_info("AMD-Vi: Interrupt remapping enabled\n");
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 84efecd..af245f4 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -4200,4 +4200,30 @@ static int msi_setup_irq(struct pci_dev *pdev, unsigned int irq,
+ 	return 0;
  }
  
- static int __init amd_iommu_init_pci(void)
++static int setup_hpet_msi(unsigned int irq, unsigned int id)
++{
++	struct irq_2_iommu *irte_info;
++	struct irq_cfg *cfg;
++	int index, devid;
++
++	cfg = irq_get_chip_data(irq);
++	if (!cfg)
++		return -EINVAL;
++
++	irte_info = &cfg->irq_2_iommu;
++	devid     = get_hpet_devid(id);
++	if (devid < 0)
++		return devid;
++
++	index = alloc_irq_index(cfg, devid, 1);
++	if (index < 0)
++		return index;
++
++	irte_info->sub_handle = devid;
++	irte_info->irte_index = index;
++	irte_info->iommu      = (void *)cfg;
++
++	return 0;
++}
++
+ #endif
 -- 
 1.7.9.5
