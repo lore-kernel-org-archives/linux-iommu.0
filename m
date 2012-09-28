@@ -1,7 +1,8 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 16/16] iommu/amd: Report irq remapping through IOMMU-API
-Date: Fri, 28 Sep 2012 14:24:06 +0200
-Message-ID: <1348835046-3262-17-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 10/16] iommu/amd: Implement MSI routines for interrupt
+	remapping
+Date: Fri, 28 Sep 2012 14:24:00 +0200
+Message-ID: <1348835046-3262-11-git-send-email-joerg.roedel@amd.com>
 References: <1348835046-3262-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -20,27 +21,96 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Report the availability of irq remapping through the
-IOMMU-API to allow KVM device passthrough again without
-additional module parameter overrides.
+Add routines to setup interrupt remapping for MSI
+interrupts.
 
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iommu/amd_iommu.c |   74 +++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 74 insertions(+)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 6fe4ad7..3f616f6 100644
+index 3df01b2..84efecd 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -3353,6 +3353,8 @@ static int amd_iommu_domain_has_cap(struct iommu_domain *domain,
- 	switch (cap) {
- 	case IOMMU_CAP_CACHE_COHERENCY:
- 		return 1;
-+	case IOMMU_CAP_INTR_REMAP:
-+		return irq_remapping_enabled;
- 	}
- 
+@@ -4126,4 +4126,78 @@ static int free_irq(int irq)
  	return 0;
+ }
+ 
++static void compose_msi_msg(struct pci_dev *pdev,
++			    unsigned int irq, unsigned int dest,
++			    struct msi_msg *msg, u8 hpet_id)
++{
++	struct irq_2_iommu *irte_info;
++	struct irq_cfg *cfg;
++	union irte irte;
++
++	cfg = irq_get_chip_data(irq);
++	if (!cfg)
++		return;
++
++	irte_info = &cfg->irq_2_iommu;
++
++	irte.val		= 0;
++	irte.fields.vector	= cfg->vector;
++	irte.fields.int_type    = apic->irq_delivery_mode;
++	irte.fields.destination	= dest;
++	irte.fields.dm		= apic->irq_dest_mode;
++	irte.fields.valid	= 1;
++
++	modify_irte(irte_info->sub_handle, irte_info->irte_index, irte);
++
++	msg->address_hi = MSI_ADDR_BASE_HI;
++	msg->address_lo = MSI_ADDR_BASE_LO;
++	msg->data       = irte_info->irte_index;
++}
++
++static int msi_alloc_irq(struct pci_dev *pdev, int irq, int nvec)
++{
++	struct irq_cfg *cfg;
++	int index;
++	u16 devid;
++
++	if (!pdev)
++		return -EINVAL;
++
++	cfg = irq_get_chip_data(irq);
++	if (!cfg)
++		return -EINVAL;
++
++	devid = get_device_id(&pdev->dev);
++	index = alloc_irq_index(cfg, devid, nvec);
++
++	return index < 0 ? MAX_IRQS_PER_TABLE : index;
++}
++
++static int msi_setup_irq(struct pci_dev *pdev, unsigned int irq,
++			 int index, int offset)
++{
++	struct irq_2_iommu *irte_info;
++	struct irq_cfg *cfg;
++	u16 devid;
++
++	if (!pdev)
++		return -EINVAL;
++
++	cfg = irq_get_chip_data(irq);
++	if (!cfg)
++		return -EINVAL;
++
++	if (index >= MAX_IRQS_PER_TABLE)
++		return 0;
++
++	devid		= get_device_id(&pdev->dev);
++	irte_info	= &cfg->irq_2_iommu;
++
++	irte_info->sub_handle = devid;
++	irte_info->irte_index = index + offset;
++	irte_info->iommu      = (void *)cfg;
++
++	return 0;
++}
++
+ #endif
 -- 
 1.7.9.5
