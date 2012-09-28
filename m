@@ -1,8 +1,8 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 06/16] iommu/amd: Make sure IOMMU is not considered to
-	translate itself
-Date: Fri, 28 Sep 2012 14:23:56 +0200
-Message-ID: <1348835046-3262-7-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 15/16] iommu/amd: Print message to system log when irq
+	remapping is enabled
+Date: Fri, 28 Sep 2012 14:24:05 +0200
+Message-ID: <1348835046-3262-16-git-send-email-joerg.roedel@amd.com>
 References: <1348835046-3262-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,32 +21,26 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The IVRS table usually includes the IOMMU device. But the
-IOMMU does never translate itself, so make sure the IOMMU
-driver knows this.
+Print an indicator to dmesg to easily find out if interrupt
+remapping is enabled of a given system.
 
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/iommu/amd_iommu_init.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 8e9d71c..202b2b7 100644
+index 0608ef4..45f0f47 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -1018,6 +1018,13 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
- 	ret = init_iommu_from_acpi(iommu, h);
- 	if (ret)
- 		return ret;
-+
-+	/*
-+	 * Make sure IOMMU is not considered to translate itself. The IVRS
-+	 * table tells us so, but this is a lie!
-+	 */
-+	amd_iommu_rlookup_table[iommu->devid] = NULL;
-+
- 	init_iommu_devices(iommu);
+@@ -1196,6 +1196,8 @@ static void print_iommu_info(void)
+ 		}
+ 		pr_cont("\n");
+ 	}
++	if (irq_remapping_enabled)
++		pr_info("AMD-Vi: Interrupt remapping enabled\n");
+ }
  
- 	return 0;
+ static int __init amd_iommu_init_pci(void)
 -- 
 1.7.9.5
