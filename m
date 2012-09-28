@@ -1,7 +1,7 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 04/16] iommu/amd: Check if IOAPIC information is correct
-Date: Fri, 28 Sep 2012 14:23:54 +0200
-Message-ID: <1348835046-3262-5-git-send-email-joerg.roedel@amd.com>
+Subject: [PATCH 09/16] iommu/amd: Add IOAPIC remapping routines
+Date: Fri, 28 Sep 2012 14:23:59 +0200
+Message-ID: <1348835046-3262-10-git-send-email-joerg.roedel@amd.com>
 References: <1348835046-3262-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -20,96 +20,150 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When the IOAPIC information provided in the IVRS table is
-not correct or not complete the system may not boot at all
-when interrupt remapping is enabled. So check if this
-information is correct and print out a firmware bug message
-when it is not.
+Add the routine to setup interrupt remapping for ioapic
+interrupts. Also add a routine to change the affinity of an
+irq and to free an irq allocation for interrupt remapping.
+The last two functions will also be used for MSI interrupts.
 
 Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/Kconfig          |    2 +-
- drivers/iommu/amd_iommu_init.c |   27 ++++++++++++++++++++++++---
- 2 files changed, 25 insertions(+), 4 deletions(-)
+ drivers/iommu/amd_iommu.c |  126 +++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 126 insertions(+)
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 9f69b56..e39f9db 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -42,7 +42,7 @@ config AMD_IOMMU
- 	select PCI_PRI
- 	select PCI_PASID
- 	select IOMMU_API
--	depends on X86_64 && PCI && ACPI
-+	depends on X86_64 && PCI && ACPI && X86_IO_APIC
- 	---help---
- 	  With this option you can enable support for AMD IOMMU hardware in
- 	  your system. An IOMMU is a hardware component which provides
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index db100c5..3f0b68f 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -33,6 +33,7 @@
- #include <asm/gart.h>
- #include <asm/x86_init.h>
- #include <asm/iommu_table.h>
-+#include <asm/io_apic.h>
- 
- #include "amd_iommu_proto.h"
- #include "amd_iommu_types.h"
-@@ -1572,6 +1573,23 @@ static void __init free_on_init_error(void)
- #endif
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index bd277924..3df01b2 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -4000,4 +4000,130 @@ static void free_irte(u16 devid, int index)
+ 	iommu_completion_wait(iommu);
  }
  
-+static bool __init check_ioapic_information(void)
++static int setup_ioapic_entry(int irq, struct IO_APIC_route_entry *entry,
++			      unsigned int destination, int vector,
++			      struct io_apic_irq_attr *attr)
 +{
-+	int idx;
++	struct irq_remap_table *table;
++	struct irq_2_iommu *irte_info;
++	struct irq_cfg *cfg;
++	union irte irte;
++	int ioapic_id;
++	int index;
++	int devid;
++	int ret;
 +
-+	for (idx = 0; idx < nr_ioapics; ++idx) {
-+		int id = mpc_ioapic_id(idx);
++	cfg = irq_get_chip_data(irq);
++	if (!cfg)
++		return -EINVAL;
 +
-+		if (get_ioapic_devid(id) < 0) {
-+			pr_err(FW_BUG "AMD-Vi: IO-APIC[%d] not in IVRS table\n", id);
-+			pr_err("AMD-Vi: Disabling interrupt remapping due to BIOS Bug\n");
-+			return false;
-+		}
-+	}
++	irte_info = &cfg->irq_2_iommu;
++	ioapic_id = mpc_ioapic_id(attr->ioapic);
++	devid     = get_ioapic_devid(ioapic_id);
 +
-+	return true;
++	if (devid < 0)
++		return devid;
++
++	table = get_irq_table(devid, true);
++	if (table == NULL)
++		return -ENOMEM;
++
++	index = attr->ioapic_pin;
++
++	/* Setup IRQ remapping info */
++	irte_info->sub_handle = devid;
++	irte_info->irte_index = index;
++	irte_info->iommu      = (void *)cfg;
++
++	/* Setup IRTE for IOMMU */
++	irte.val		= 0;
++	irte.fields.vector      = vector;
++	irte.fields.int_type    = apic->irq_delivery_mode;
++	irte.fields.destination = destination;
++	irte.fields.dm          = apic->irq_dest_mode;
++	irte.fields.valid       = 1;
++
++	ret = modify_irte(devid, index, irte);
++	if (ret)
++		return ret;
++
++	/* Setup IOAPIC entry */
++	memset(entry, 0, sizeof(*entry));
++
++	entry->vector        = index;
++	entry->mask          = 0;
++	entry->trigger       = attr->trigger;
++	entry->polarity      = attr->polarity;
++
++	/*
++	 * Mask level triggered irqs.
++	 * Use IRQ_DELAYED_DISABLE for edge triggered irqs.
++	 */
++	if (attr->trigger)
++		entry->mask = 1;
++
++	return 0;
 +}
 +
- /*
-  * This is the hardware init function for AMD IOMMU in the system.
-  * This function is called either from amd_iommu_init or from the interrupt
-@@ -1658,9 +1676,6 @@ static int __init early_amd_iommu_init(void)
- 	if (amd_iommu_pd_alloc_bitmap == NULL)
- 		goto out;
- 
--	/* init the device table */
--	init_device_table();
--
- 	/*
- 	 * let all alias entries point to itself
- 	 */
-@@ -1683,6 +1698,9 @@ static int __init early_amd_iommu_init(void)
- 	if (ret)
- 		goto out;
- 
-+	if (amd_iommu_irq_remap)
-+		amd_iommu_irq_remap = check_ioapic_information();
++static int set_affinity(struct irq_data *data, const struct cpumask *mask,
++			bool force)
++{
++	struct irq_2_iommu *irte_info;
++	unsigned int dest, irq;
++	struct irq_cfg *cfg;
++	union irte irte;
++	int err;
 +
- 	if (amd_iommu_irq_remap) {
- 		/*
- 		 * Interrupt remapping enabled, create kmem_cache for the
-@@ -1706,6 +1724,9 @@ static int __init early_amd_iommu_init(void)
- 	if (ret)
- 		goto out;
- 
-+	/* init the device table */
-+	init_device_table();
++	if (!config_enabled(CONFIG_SMP))
++		return -1;
 +
- out:
- 	/* Don't leak any ACPI memory */
- 	early_acpi_os_unmap_memory((char __iomem *)ivrs_base, ivrs_size);
++	cfg       = data->chip_data;
++	irq       = data->irq;
++	irte_info = &cfg->irq_2_iommu;
++
++	if (!cpumask_intersects(mask, cpu_online_mask))
++		return -EINVAL;
++
++	if (get_irte(irte_info->sub_handle, irte_info->irte_index, &irte))
++		return -EBUSY;
++
++	if (assign_irq_vector(irq, cfg, mask))
++		return -EBUSY;
++
++	err = apic->cpu_mask_to_apicid_and(cfg->domain, mask, &dest);
++	if (err) {
++		if (assign_irq_vector(irq, cfg, data->affinity))
++			pr_err("AMD-Vi: Failed to recover vector for irq %d\n", irq);
++		return err;
++	}
++
++	irte.fields.vector      = cfg->vector;
++	irte.fields.destination = dest;
++
++	modify_irte(irte_info->sub_handle, irte_info->irte_index, irte);
++
++	if (cfg->move_in_progress)
++		send_cleanup_vector(cfg);
++
++	cpumask_copy(data->affinity, mask);
++
++	return 0;
++}
++
++static int free_irq(int irq)
++{
++	struct irq_2_iommu *irte_info;
++	struct irq_cfg *cfg;
++
++	cfg = irq_get_chip_data(irq);
++	if (!cfg)
++		return -EINVAL;
++
++	irte_info = &cfg->irq_2_iommu;
++
++	free_irte(irte_info->sub_handle, irte_info->irte_index);
++
++	return 0;
++}
++
+ #endif
 -- 
 1.7.9.5
