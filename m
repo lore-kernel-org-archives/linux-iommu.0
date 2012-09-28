@@ -1,32 +1,52 @@
-From: Joerg Roedel <joerg.roedel@amd.com>
-Subject: [PATCH 0/16] Interrupt remapping support for AMD IOMMU
-Date: Fri, 28 Sep 2012 14:23:50 +0200
-Message-ID: <1348835046-3262-1-git-send-email-joerg.roedel@amd.com>
+From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Subject: [PATCH 06/16] iommu/amd: Make sure IOMMU is not considered to
+	translate itself
+Date: Fri, 28 Sep 2012 14:23:56 +0200
+Message-ID: <1348835046-3262-7-git-send-email-joerg.roedel@amd.com>
+References: <1348835046-3262-1-git-send-email-joerg.roedel@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1348835046-3262-1-git-send-email-joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+The IVRS table usually includes the IOMMU device. But the
+IOMMU does never translate itself, so make sure the IOMMU
+driver knows this.
 
-here is a new version of the remaining patches to add interrupt
-remapping support to the AMD IOMMU driver. The patches have been rebased
-to v3.6-rc7 and tested again on various machines. As with the previous
-version no issued were found with these patches too.
+Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+---
+ drivers/iommu/amd_iommu_init.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
-Regards,
-
-	Joerg
-
-Diffstat:
-
- drivers/iommu/Kconfig           |    2 +-
- drivers/iommu/amd_iommu.c       |  504 +++++++++++++++++++++++++++++++++++++++
- drivers/iommu/amd_iommu_init.c  |  237 +++++++++++++++++-
- drivers/iommu/amd_iommu_proto.h |    8 +
- drivers/iommu/amd_iommu_types.h |   53 ++++
- drivers/iommu/irq_remapping.c   |    5 +
- drivers/iommu/irq_remapping.h   |    6 +
- 7 files changed, 801 insertions(+), 14 deletions(-)
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 8e9d71c..202b2b7 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -1018,6 +1018,13 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
+ 	ret = init_iommu_from_acpi(iommu, h);
+ 	if (ret)
+ 		return ret;
++
++	/*
++	 * Make sure IOMMU is not considered to translate itself. The IVRS
++	 * table tells us so, but this is a lie!
++	 */
++	amd_iommu_rlookup_table[iommu->devid] = NULL;
++
+ 	init_iommu_devices(iommu);
+ 
+ 	return 0;
+-- 
+1.7.9.5
