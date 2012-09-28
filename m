@@ -1,17 +1,18 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 Subject: Re: [PATCH v2] Intel IOMMU patch to reprocess RMRR info
-Date: Fri, 28 Sep 2012 11:43:01 +0200
-Message-ID: <20120928094301.GH10549@amd.com>
+Date: Fri, 28 Sep 2012 11:46:25 +0200
+Message-ID: <20120928094625.GI10549@amd.com>
 References: <20120918164955.12296.28799.sendpatchset@tmingo.houston.hp.com>
 	<1348778200.2320.241.camel@ul30vt.home>
 	<9774516974AF5F4C8A2C3C69CD3412332338F452@G1W3651.americas.hpqcorp.net>
 	<1348781647.2320.264.camel@ul30vt.home>
+	<1348782605.2036.117.camel@shinybook.infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1348781647.2320.264.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
+In-Reply-To: <1348782605.2036.117.camel-Fexsq3y4057IgHVZqg5X0TlWvGAXklZc@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,24 +22,36 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Khan, Shuah" <shuah.khan-VXdhtT5mjnY@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "Mingarelli,
-	Thomas" <Thomas.Mingarelli-VXdhtT5mjnY@public.gmane.org>
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: "Khan, Shuah" <shuah.khan-VXdhtT5mjnY@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Mingarelli, Thomas" <Thomas.Mingarelli-VXdhtT5mjnY@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Sep 27, 2012 at 03:34:07PM -0600, Alex Williamson wrote:
-
-> It really seems like RMRRs are incompatible with IOMMU API use
-> though.
-
-I don't think so. The concept of RMRR is just not defined well enough
-(like the concept of unity mappings on the AMD side which is similar to
- RMRR). The definition says, that any memory region must be mapped at
-any time for the device. But that is not true (at least I have no
-counter-example yet). The right definition would be, that the RMRR
-regions are only necessary as long as the operating system does not
-control the particular device. And assigning a device to a guest also
-counts a 'taking control over the device'.
-
-
-	Joerg
+T24gVGh1LCBTZXAgMjcsIDIwMTIgYXQgMTA6NTA6MDVQTSArMDEwMCwgRGF2aWQgV29vZGhvdXNl
+IHdyb3RlOgo+IFRoYXQgd291bGQgaW5jbHVkZSBmYWlybHkgbXVjaCBhbnkgVVNCIGhvc3QgY29u
+dHJvbGxlci4gVGhlIHdob2xlIFJNUlIKPiBjb25jZXB0IGlzIGNvbXBsZXRlbHkgYnJva2VuIGFu
+ZCBzaG91bGQgbmV2ZXIgaGF2ZSBiZWVuIGludmVudGVkLiBUaGUKPiBpZGVhIHRoYXQgZmlybXdh
+cmUtY29udHJvbGxlZCBETUEgc2hvdWxkIGNvbnRpbnVlIHRvIGhhcHBlbiAqYWZ0ZXIqIHRoZQo+
+IG9wZXJhdGluZyBzeXN0ZW0gaGFzIGJlZW4gYm9vdGVkIGFuZCB0YWtlbiBjb250cm9sIG9mIHRo
+ZSBoYXJkd2FyZSBpcwo+IGp1c3QgaW5zYW5lLgo+IAo+IFRoZSBtYWpvcml0eSBvZiBSTVJSIHVz
+ZSBpcyBmb3IgVVNCIGNvbnRyb2xsZXJzLCBzbyB0aGF0IGZpcm13YXJlIGNhbgo+IGVtdWxhdGUg
+YSBsZWdhY3kga2V5Ym9hcmQgZm9yIHRoZSBiZW5lZml0IG9mIHByZS1VU0Igb3BlcmF0aW5nIHN5
+c3RlbXMuCj4gQnV0IG5vIG9wZXJhdGluZyBzeXN0ZW0gdGhhdCBvbGQgaXMgZXZlciBnb2luZyB0
+byBzdXBwb3J0IHRoZSBJT01NVQo+IGFueXdheSwgc28gdGhhdCdzIGp1c3QgbWFkLiBCdXQgdGhh
+dCdzIHdoeSB3ZSd2ZSBtYW5hZ2VkIHRvIGdldCBhd2F5Cj4gd2l0aCBzZXR0aW5nIHVwIHRoZSBS
+TVJScyBhbmQgdGhlbiB0ZWFyaW5nIHRoZW0gZG93biB3aGVuIGEgbmF0aXZlCj4gZHJpdmVyIGhh
+cyBhY3R1YWxseSB0YWtlbiBjb250cm9sIG9mIHRoZSBoYXJkd2FyZSDigJQgYmVjYXVzZSBhdCB0
+aGF0Cj4gcG9pbnQsIGl0IHNob3VsZCBoYXZlIGJlZW4gcmVzZXQgYW5kIHdoYXRldmVyIHRoZSBm
+aXJtd2FyZSBoYWQKPiBjb25maWd1cmVkIHRvIGRvIGhhcyBiZWVuIGFiYW5kb25lZC4KCkV2ZW4g
+b24gbW9kZXJuIGhhcmR3YXJlIHdpdGggbW9kZXJuIChJT01NVSBhd2FyZSkga2VybmVscyB0aGVy
+ZSBpcyBzdGlsbAp0aGlzIHNtYWxsIHRpbWUgd2luZG93IHdoZW4gdGhlIE9TIGhhcyBlbmFibGVk
+IHRoZSBJT01NVSBhbmQgdGhlIFVTQgpkcml2ZXIgaXMgbm90IGluaXRpYWxpemVkIHlldC4gSW4g
+dGhpcyB0aW1lIHdpbmRvdyB0aGUgUk1SUiBtZW1vcnkKcmVnaW9uIGlzIHN0aWxsIG5lY2Vzc2Fy
+eSwgbm8/CgpBcyBJIHNhaWQgYWxyZWFkeSBpbiBhbm90aGVyIG1haWwsIEkgdGhpbmsgaXQgaXMg
+c2FmZSB0byBpZ25vcmUgYW55IFJNUlIKcmVxdWlyZW1lbnRzIHdoZW4gd2Ugc3RhcnQgdG8gdXNl
+IGEgZGV2aWNlIGluIHRoZSBPUy4KCgoJSm9lcmcKCi0tIApBTUQgT3BlcmF0aW5nIFN5c3RlbSBS
+ZXNlYXJjaCBDZW50ZXIKCkFkdmFuY2VkIE1pY3JvIERldmljZXMgR21iSCBFaW5zdGVpbnJpbmcg
+MjQgODU2MDkgRG9ybmFjaApHZW5lcmFsIE1hbmFnZXJzOiBBbGJlcnRvIEJvenpvClJlZ2lzdHJh
+dGlvbjogRG9ybmFjaCwgTGFuZGtyLiBNdWVuY2hlbjsgUmVnaXN0ZXJnZXIuIE11ZW5jaGVuLCBI
+UkIgTnIuIDQzNjMyCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcK
+aHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
