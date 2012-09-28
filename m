@@ -1,14 +1,17 @@
-From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 03/16] iommu/amd: Allocate data structures to keep track of
-	irq remapping tables
-Date: Fri, 28 Sep 2012 14:23:53 +0200
-Message-ID: <1348835046-3262-4-git-send-email-joerg.roedel@amd.com>
-References: <1348835046-3262-1-git-send-email-joerg.roedel@amd.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2] Intel IOMMU patch to reprocess RMRR info
+Date: Fri, 28 Sep 2012 06:40:08 -0600
+Message-ID: <1348836008.2320.284.camel@ul30vt.home>
+References: <20120918164955.12296.28799.sendpatchset@tmingo.houston.hp.com>
+	<1348778200.2320.241.camel@ul30vt.home>
+	<9774516974AF5F4C8A2C3C69CD3412332338F452@G1W3651.americas.hpqcorp.net>
+	<1348781647.2320.264.camel@ul30vt.home>
+	<20120928094301.GH10549@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1348835046-3262-1-git-send-email-joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <20120928094301.GH10549-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,88 +21,28 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Khan, Shuah" <shuah.khan-VXdhtT5mjnY@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "Mingarelli,
+	Thomas" <Thomas.Mingarelli-VXdhtT5mjnY@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-To easily map device ids to interrupt remapping table
-entries a new lookup table is necessary.
+On Fri, 2012-09-28 at 11:43 +0200, Joerg Roedel wrote:
+> On Thu, Sep 27, 2012 at 03:34:07PM -0600, Alex Williamson wrote:
+> 
+> > It really seems like RMRRs are incompatible with IOMMU API use
+> > though.
+> 
+> I don't think so. The concept of RMRR is just not defined well enough
+> (like the concept of unity mappings on the AMD side which is similar to
+>  RMRR). The definition says, that any memory region must be mapped at
+> any time for the device. But that is not true (at least I have no
+> counter-example yet). The right definition would be, that the RMRR
+> regions are only necessary as long as the operating system does not
+> control the particular device. And assigning a device to a guest also
+> counts a 'taking control over the device'.
 
-Signed-off-by: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
----
- drivers/iommu/amd_iommu_init.c  |   16 ++++++++++++++++
- drivers/iommu/amd_iommu_types.h |    9 +++++++++
- 2 files changed, 25 insertions(+)
+I think HP folks would be very unhappy with that definition.  As David
+indicates, that's how things like USB use RMRR, but the actual
+definition in the spec leaves much more room for abuse.  Thanks,
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index a046a0e..db100c5 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -181,6 +181,12 @@ u16 *amd_iommu_alias_table;
- struct amd_iommu **amd_iommu_rlookup_table;
- 
- /*
-+ * This table is used to find the irq remapping table for a given device id
-+ * quickly.
-+ */
-+struct irq_remap_table **irq_lookup_table;
-+
-+/*
-  * AMD IOMMU allows up to 2^16 differend protection domains. This is a bitmap
-  * to know which ones are already in use.
-  */
-@@ -1529,9 +1535,13 @@ static struct syscore_ops amd_iommu_syscore_ops = {
- 
- static void __init free_on_init_error(void)
- {
-+	free_pages((unsigned long)irq_lookup_table,
-+		   get_order(rlookup_table_size));
-+
- 	if (amd_iommu_irq_cache) {
- 		kmem_cache_destroy(amd_iommu_irq_cache);
- 		amd_iommu_irq_cache = NULL;
-+
- 	}
- 
- 	amd_iommu_uninit_devices();
-@@ -1684,6 +1694,12 @@ static int __init early_amd_iommu_init(void)
- 				0, NULL);
- 		if (!amd_iommu_irq_cache)
- 			goto out;
-+
-+		irq_lookup_table = (void *)__get_free_pages(
-+				GFP_KERNEL | __GFP_ZERO,
-+				get_order(rlookup_table_size));
-+		if (!irq_lookup_table)
-+			goto out;
- 	}
- 
- 	ret = init_memory_definitions(ivrs_base);
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index 953cea8..1a7d480 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -175,6 +175,7 @@
- #define DEV_ENTRY_EX            0x67
- #define DEV_ENTRY_SYSMGT1       0x68
- #define DEV_ENTRY_SYSMGT2       0x69
-+#define DEV_ENTRY_IRQ_TBL_EN	0x80
- #define DEV_ENTRY_INIT_PASS     0xb8
- #define DEV_ENTRY_EINT_PASS     0xb9
- #define DEV_ENTRY_NMI_PASS      0xba
-@@ -337,6 +338,14 @@ extern bool amd_iommu_iotlb_sup;
- #define MAX_IRQS_PER_TABLE	256
- #define IRQ_TABLE_ALIGNMENT	128
- 
-+struct irq_remap_table {
-+	spinlock_t lock;
-+	unsigned min_index;
-+	u32 *table;
-+};
-+
-+extern struct irq_remap_table **irq_lookup_table;
-+
- /* Interrupt remapping feature used? */
- extern bool amd_iommu_irq_remap;
- 
--- 
-1.7.9.5
+Alex
