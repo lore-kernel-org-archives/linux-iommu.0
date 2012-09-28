@@ -1,17 +1,17 @@
 From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH 08/16] iommu/amd: Add routines to manage irq remapping
-	tables
-Date: Fri, 28 Sep 2012 17:01:34 +0200
-Message-ID: <20120928150134.GH4009@amd.com>
+Subject: Re: [PATCH 10/16] iommu/amd: Implement MSI routines for interrupt
+	remapping
+Date: Fri, 28 Sep 2012 17:04:13 +0200
+Message-ID: <20120928150413.GI4009@amd.com>
 References: <1348835046-3262-1-git-send-email-joerg.roedel@amd.com>
-	<1348835046-3262-9-git-send-email-joerg.roedel@amd.com>
-	<20120928144011.GF7483@localhost.localdomain>
+	<1348835046-3262-11-git-send-email-joerg.roedel@amd.com>
+	<20120928144933.GH7483@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20120928144011.GF7483-bi+AKbBUZKY6gyzm1THtWbp2dZbC/Bob@public.gmane.org>
+In-Reply-To: <20120928144933.GH7483-bi+AKbBUZKY6gyzm1THtWbp2dZbC/Bob@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,20 +25,17 @@ To: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Sep 28, 2012 at 10:40:13AM -0400, Konrad Rzeszutek Wilk wrote:
-> On Fri, Sep 28, 2012 at 02:23:58PM +0200, Joerg Roedel wrote:
-> > +			irte_info             = &cfg->irq_2_iommu;
-> > +			irte_info->sub_handle = devid;
-> > +			irte_info->irte_index = index;
+On Fri, Sep 28, 2012 at 10:49:34AM -0400, Konrad Rzeszutek Wilk wrote:
+> On Fri, Sep 28, 2012 at 02:24:00PM +0200, Joerg Roedel wrote:
+> > +	if (index >= MAX_IRQS_PER_TABLE)
+> > +		return 0;
 > 
-> Should the irte_info also contain the count information to know how
-> whether the table->table[index] (which would be IRTE_ALLOCATED at
-> this point) is owned by correct irte_info ?
+> Hmm? Not an error code?
 
-No, because the irte_info used here is only for the first index. For the
-following indexes up to index+count-1 other irte_info structs are used.
-This is necessary because of the way MSI-X interrupts are set up with
-interrupt remapping.
+No, when this case happens it just means that the interrupt is not
+remapped (because the device itself is not handled by the IOMMU). This
+is not an error code and only tells the code which composes the msi-msg
+to use the default routine instead of the one for interrupt remapping.
 
 
 	Joerg
