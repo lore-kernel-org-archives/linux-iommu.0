@@ -1,14 +1,12 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2] Intel IOMMU patch to reprocess RMRR info
-Date: Fri, 28 Sep 2012 11:28:06 -0600
-Message-ID: <1348853286.2320.369.camel@ul30vt.home>
-References: <uh6q9m8bwu6c2jov69m2aivu.1348847561292@email.android.com>
-	<5065D1F5.1090003@hp.com> <20120928170106.GE18962@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [git pull] IOMMU Fixes for v3.6-rc7
+Date: Fri, 28 Sep 2012 21:10:42 +0200
+Message-ID: <20120928191041.GA3965@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20120928170106.GE18962-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Disposition: inline
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,43 +16,49 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Khan, Shuah" <shuah.khan-VXdhtT5mjnY@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "Mingarelli,
-	Thomas" <Thomas.Mingarelli-VXdhtT5mjnY@public.gmane.org>
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 2012-09-28 at 19:01 +0200, Joerg Roedel wrote:
-> On Fri, Sep 28, 2012 at 12:36:05PM -0400, Linda Knippers wrote:
-> > I can only speak to the HP servers.  We have been shipping devices
-> > 'for a while' that provide sensor-type data to the platform.  The
-> > device does DMA writes to a range of memory (the RMRR) and
-> > iLO does DMA reads of that data.
-> 
-> And what PCI request-ids are used for these DMA transfers? Are this
-> request-ids which belong to devices Linux handles on its own?
-> 
-> > If we address Alex's comments and we make a change to disallow the
-> > devices (non-USB devices?) with RMRRs from being assigned to
-> > a guest, will those changes be considered?
-> 
-> This is overkill in my eyes. It means that *any* device which has an
-> RMRR defined, whether it is on your platform or not, can not be assigned
-> to a guest.
-> 
-> I think it is better to have the RMRR regions mapped in the domains used
-> for DMA-API mappings and disallow to assign these devices to guests. For
-> devices where this breaks we can implement some quirk-solution and
-> disallow guest assignment. But disallowing assignment of devices with
-> RMRR defined in general is pure overkill.
+Hi Linus,
 
-On the other hand, a blanket blacklist of no assignment of RMRR devices
-deters creative uses of RMRRs, which seems like a good thing.  USB
-probably needs to be an exception due to widespread usage of RMRRs that
-are known to not be needed.  Anything else risks the assigned device
-doing autonomous writes to memory, potentially causing corruption.  The
-only safe way to prevent that would be to insert a reserved memory range
-into the guest to match the RMRR, maybe even identity map it if we care
-about the RMRR continuing to work, but that makes hotplug of those
-devices nearly impossible.  Thanks,
+The following changes since commit 979570e02981d4a8fc20b3cc8fd651856c98ee9d:
 
-Alex
+  Linux 3.6-rc7 (2012-09-23 18:10:57 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v3.6-rc7
+
+for you to fetch changes up to 0774e392555a128cff7a94929b9ce957927fef49:
+
+  iommu/amd: Fix wrong assumption in iommu-group specific code (2012-09-28 16:14:44 +0200)
+
+----------------------------------------------------------------
+IOMMU fixes for Linux v3.6-rc7
+
+Two small patches:
+
+	* One patch to fix the function declarations for
+	  !CONFIG_IOMMU_API. This is causing build errors
+	  in linux-next and should be fixed for v3.6.
+
+	* Another patch to fix an IOMMU group related NULL pointer
+	  dereference.
+
+----------------------------------------------------------------
+Alex Williamson (1):
+      iommu: static inline iommu group stub functions
+
+Joerg Roedel (1):
+      iommu/amd: Fix wrong assumption in iommu-group specific code
+
+ drivers/iommu/amd_iommu.c |    6 ++++--
+ include/linux/iommu.h     |   42 ++++++++++++++++++++++++------------------
+ 2 files changed, 28 insertions(+), 20 deletions(-)
+
+Please pull.
+
+Regards,
+
+	Joerg
