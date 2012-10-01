@@ -1,53 +1,33 @@
-From: Shuah Khan <shuahkhan@gmail.com>
-Subject: Re: [PATCH 14/16] iommu/irq: Use amd_iommu_irq_ops if supported
-Date: Fri, 28 Sep 2012 17:39:03 -0600
-Message-ID: <CAKocOONaiMJs7pWeWxO=_bN5_KU=jZh=kvL7U_v-w9LmSrQ+Fw@mail.gmail.com>
-References: <1348835046-3262-1-git-send-email-joerg.roedel@amd.com>
-	<1348835046-3262-15-git-send-email-joerg.roedel@amd.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+From: Daniel J Blueman <daniel@quora.org>
+Subject: [PATCH] Correct AMD IOMMU printing
+Date: Mon,  1 Oct 2012 15:41:13 +0800
+Message-ID: <1349077273-17297-1-git-send-email-daniel@quora.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1348835046-3262-15-git-send-email-joerg.roedel@amd.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joerg.roedel@amd.com>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Ingo Molnar <mingo@redhat.com>
+Cc: Joerg Roedel <joerg.roedel@amd.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Daniel J Blueman <daniel@quora.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Sep 28, 2012 at 6:24 AM, Joerg Roedel <joerg.roedel@amd.com> wrote:
-> Finally enable interrupt remapping for AMD systems.
->
-> Signed-off-by: Joerg Roedel <joerg.roedel@amd.com>
-> ---
->  drivers/iommu/irq_remapping.c |    5 +++++
->  1 file changed, 5 insertions(+)
->
-> diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
-> index 151690d..faf85d6 100644
-> --- a/drivers/iommu/irq_remapping.c
-> +++ b/drivers/iommu/irq_remapping.c
-> @@ -51,6 +51,11 @@ early_param("intremap", setup_irqremap);
->  void __init setup_irq_remapping_ops(void)
->  {
->         remap_ops = &intel_irq_remap_ops;
-> +
-> +#ifdef CONFIG_AMD_IOMMU
-> +       if (amd_iommu_irq_ops.prepare() == 0)
-> +               remap_ops = &amd_iommu_irq_ops;
-> +#endif
+When an AMD IOMMU is detected, prevent printing unintended blank line.
 
-Should remap_ops be set to null when amd_iommu_irq_ops.prepare()
-fails?What happens if remap_ops left set to intel_irq_remap_ops?
-Should remap_ops = &intel_irq_remap_ops; moved into #else case
-forifdef CONFIG_AMD_IOMMU?
->  }
->
->  int irq_remapping_supported(void)
-> --
-> 1.7.9.5
->
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
+Signed-off-by: Daniel J Blueman <daniel@quora.org>
+---
+ drivers/iommu/amd_iommu_init.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 18a89b7..49d9d32 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -1115,8 +1115,8 @@ static void print_iommu_info(void)
+ 				if (iommu_feature(iommu, (1ULL << i)))
+ 					pr_cont(" %s", feat_str[i]);
+ 			}
++			pr_cont("\n");
+ 		}
+-		pr_cont("\n");
+ 	}
+ }
+ 
+-- 
+1.7.9.5
