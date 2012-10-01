@@ -1,43 +1,58 @@
-From: Shuah Khan <shuahkhan@gmail.com>
-Subject: Re: [PATCH 14/16] iommu/irq: Use amd_iommu_irq_ops if supported
-Date: Mon, 1 Oct 2012 10:04:16 -0600
-Message-ID: <CAKocOOOLQD6wyA3x5ZtoS-YcbxzOmdSxW9FkH90c+Tt2pkHOfQ@mail.gmail.com>
+From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH 09/16] iommu/amd: Add IOAPIC remapping routines
+Date: Mon, 1 Oct 2012 18:33:38 +0200
+Message-ID: <20121001163338.GP4009@amd.com>
 References: <1348835046-3262-1-git-send-email-joerg.roedel@amd.com>
-	<1348835046-3262-15-git-send-email-joerg.roedel@amd.com>
-	<CAKocOONaiMJs7pWeWxO=_bN5_KU=jZh=kvL7U_v-w9LmSrQ+Fw@mail.gmail.com>
-	<20121001080841.GN4009@amd.com>
+	<1348835046-3262-10-git-send-email-joerg.roedel@amd.com>
+	<6d716497-bcf6-4d71-88a3-6ec772a4d396@sausexedgep01.amd.com>
+	<20121001084051.GO4009@amd.com>
+	<20121001134753.GF4099@phenom.dumpdata.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20121001080841.GN4009@amd.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joerg.roedel@amd.com>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20121001134753.GF4099-6K5HmflnPlqSPmnEAIUT9EEOCMrvLtNR@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Oct 1, 2012 at 2:08 AM, Joerg Roedel <joerg.roedel@amd.com> wrote:
-> On Fri, Sep 28, 2012 at 05:39:03PM -0600, Shuah Khan wrote:
->> On Fri, Sep 28, 2012 at 6:24 AM, Joerg Roedel <joerg.roedel@amd.com> wrote:
->> >  void __init setup_irq_remapping_ops(void)
->> >  {
->> >         remap_ops = &intel_irq_remap_ops;
->> > +
->> > +#ifdef CONFIG_AMD_IOMMU
->> > +       if (amd_iommu_irq_ops.prepare() == 0)
->> > +               remap_ops = &amd_iommu_irq_ops;
->> > +#endif
->>
->> Should remap_ops be set to null when amd_iommu_irq_ops.prepare()
->> fails?What happens if remap_ops left set to intel_irq_remap_ops?
->> Should remap_ops = &intel_irq_remap_ops; moved into #else case
->> forifdef CONFIG_AMD_IOMMU?
->
-> Remap-Ops does not need to be set to NULL because irq_remapping_enabled
-> will not get set to true then and remap_ops will not get called. The
-> Intel path can't also be moved to #else because this would mean that
-> kernels can only support eihter, Intel or AMD IOMMU. But Linux can
-> support both in the same kernel.
+On Mon, Oct 01, 2012 at 09:47:53AM -0400, Konrad Rzeszutek Wilk wrote:
+> On Mon, Oct 01, 2012 at 10:40:51AM +0200, Joerg Roedel wrote:
 
-Thanks for the explanation.
+> > Don't understand this. What is not set?
+> 
+> the IRQ_DELAYED_DISABLE. But I could not even find that enum anymore?
+> Has that been obsoleted?
 
--- Shuah
+You are right, its was removed. Ok, I will remove that line of the
+comment too.
+
+> I was thinking the other way around. You recover the old affinity. Should
+> you print out a warning mentioning to the system admin that you could not
+> set the new affinity but reverted to the old one? Or will that not serve
+> anything except spam the kernel logs?
+
+Well, I don't think it makes sense to print an additional error at this
+point. The error will be propagated upwards in the call-chain and in the
+end it is up to the initiator how to handle this situation (for example
+just return a failure to user-space).
+
+
+	Joerg
+
+-- 
+AMD Operating System Research Center
+
+Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
+General Managers: Alberto Bozzo
+Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
