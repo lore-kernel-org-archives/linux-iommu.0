@@ -1,16 +1,17 @@
-From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 Subject: Re: [PATCH 09/16] iommu/amd: Add IOAPIC remapping routines
-Date: Mon, 1 Oct 2012 10:40:51 +0200
-Message-ID: <20121001084051.GO4009@amd.com>
+Date: Mon, 1 Oct 2012 09:47:53 -0400
+Message-ID: <20121001134753.GF4099@phenom.dumpdata.com>
 References: <1348835046-3262-1-git-send-email-joerg.roedel@amd.com>
 	<1348835046-3262-10-git-send-email-joerg.roedel@amd.com>
 	<6d716497-bcf6-4d71-88a3-6ec772a4d396@sausexedgep01.amd.com>
+	<20121001084051.GO4009@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <6d716497-bcf6-4d71-88a3-6ec772a4d396-drQb3oNRF8yAbyOsnIB/ifZ4XP/Yx64J@public.gmane.org>
+In-Reply-To: <20121001084051.GO4009-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,48 +21,48 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+To: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Sep 28, 2012 at 10:45:15AM -0400, Konrad Rzeszutek Wilk wrote:
-> On Fri, Sep 28, 2012 at 02:23:59PM +0200, Joerg Roedel wrote:
-> > +	/*
-> > +	 * Mask level triggered irqs.
-> > +	 * Use IRQ_DELAYED_DISABLE for edge triggered irqs.
+On Mon, Oct 01, 2012 at 10:40:51AM +0200, Joerg Roedel wrote:
+> On Fri, Sep 28, 2012 at 10:45:15AM -0400, Konrad Rzeszutek Wilk wrote:
+> > On Fri, Sep 28, 2012 at 02:23:59PM +0200, Joerg Roedel wrote:
+> > > +	/*
+> > > +	 * Mask level triggered irqs.
+> > > +	 * Use IRQ_DELAYED_DISABLE for edge triggered irqs.
+> > 
+> > so how come it is not set?
 > 
-> so how come it is not set?
+> Don't understand this. What is not set?
 
-Don't understand this. What is not set?
-
-> > +	if (!config_enabled(CONFIG_SMP))
-> > +		return -1;
+the IRQ_DELAYED_DISABLE. But I could not even find that enum anymore?
+Has that been obsoleted?
 > 
-> -1? -ENOx something?
-
-No, -1 for compatibiblity with the other implementation of this.
-
-> > +	err = apic->cpu_mask_to_apicid_and(cfg->domain, mask, &dest);
-> > +	if (err) {
-> > +		if (assign_irq_vector(irq, cfg, data->affinity))
-> > +			pr_err("AMD-Vi: Failed to recover vector for irq %d\n", irq);
+> > > +	if (!config_enabled(CONFIG_SMP))
+> > > +		return -1;
+> > 
+> > -1? -ENOx something?
 > 
-> If we do OK with the assignment of the vector, should we just continue
-> on instead of returning error?
+> No, -1 for compatibiblity with the other implementation of this.
 
-The purpose of this is to recover to the old affinity if we failed at
-this point. Even in this case, setting the new affinity still failed and
-we need to inform the caller about this. Thus returning the error.
-Also note the pr_err message which also tells you about the
-recovery-case :)
+OK.
+> 
+> > > +	err = apic->cpu_mask_to_apicid_and(cfg->domain, mask, &dest);
+> > > +	if (err) {
+> > > +		if (assign_irq_vector(irq, cfg, data->affinity))
+> > > +			pr_err("AMD-Vi: Failed to recover vector for irq %d\n", irq);
+> > 
+> > If we do OK with the assignment of the vector, should we just continue
+> > on instead of returning error?
+> 
+> The purpose of this is to recover to the old affinity if we failed at
+> this point. Even in this case, setting the new affinity still failed and
+> we need to inform the caller about this. Thus returning the error.
+> Also note the pr_err message which also tells you about the
+> recovery-case :)
 
-
-	Joerg
-
-
--- 
-AMD Operating System Research Center
-
-Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
-General Managers: Alberto Bozzo
-Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
+I was thinking the other way around. You recover the old affinity. Should
+you print out a warning mentioning to the system admin that you could not
+set the new affinity but reverted to the old one? Or will that not serve
+anything except spam the kernel logs?
