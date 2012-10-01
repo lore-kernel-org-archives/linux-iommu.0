@@ -1,11 +1,16 @@
-From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 1/2] iommu/tegra: smmu: Fix smmu_iommu_unmap() return value
-Date: Mon, 1 Oct 2012 11:19:19 +0300
-Message-ID: <1349079560-31133-1-git-send-email-hdoyu@nvidia.com>
+From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH 09/16] iommu/amd: Add IOAPIC remapping routines
+Date: Mon, 1 Oct 2012 10:40:51 +0200
+Message-ID: <20121001084051.GO4009@amd.com>
+References: <1348835046-3262-1-git-send-email-joerg.roedel@amd.com>
+	<1348835046-3262-10-git-send-email-joerg.roedel@amd.com>
+	<6d716497-bcf6-4d71-88a3-6ec772a4d396@sausexedgep01.amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <6d716497-bcf6-4d71-88a3-6ec772a4d396-drQb3oNRF8yAbyOsnIB/ifZ4XP/Yx64J@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,71 +20,48 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joerg.roedel-5C7GfCeVMHo@public.gmane.org
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+On Fri, Sep 28, 2012 at 10:45:15AM -0400, Konrad Rzeszutek Wilk wrote:
+> On Fri, Sep 28, 2012 at 02:23:59PM +0200, Joerg Roedel wrote:
+> > +	/*
+> > +	 * Mask level triggered irqs.
+> > +	 * Use IRQ_DELAYED_DISABLE for edge triggered irqs.
+> 
+> so how come it is not set?
 
-Fix to return 0 if fails.
+Don't understand this. What is not set?
 
-Signed-off-by: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/tegra-smmu.c |   15 +++++++++------
- 1 files changed, 9 insertions(+), 6 deletions(-)
+> > +	if (!config_enabled(CONFIG_SMP))
+> > +		return -1;
+> 
+> -1? -ENOx something?
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 0b4d62e..f7e9bf8 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -680,7 +680,7 @@ err_out:
- 	return err;
- }
- 
--static void __smmu_iommu_unmap(struct smmu_as *as, dma_addr_t iova)
-+static int __smmu_iommu_unmap(struct smmu_as *as, dma_addr_t iova)
- {
- 	unsigned long *pte;
- 	struct page *page;
-@@ -688,10 +688,10 @@ static void __smmu_iommu_unmap(struct smmu_as *as, dma_addr_t iova)
- 
- 	pte = locate_pte(as, iova, false, &page, &count);
- 	if (WARN_ON(!pte))
--		return;
-+		return -EINVAL;
- 
--	if (WARN_ON(*pte == _PTE_VACANT(iova)))
--		return;
-+	if (*pte == _PTE_VACANT(iova))
-+		return -EINVAL;
- 
- 	*pte = _PTE_VACANT(iova);
- 	FLUSH_CPU_DCACHE(pte, page, sizeof(*pte));
-@@ -700,6 +700,8 @@ static void __smmu_iommu_unmap(struct smmu_as *as, dma_addr_t iova)
- 		free_ptbl(as, iova);
- 		smmu_flush_regs(as->smmu, 0);
- 	}
-+
-+	return 0;
- }
- 
- static void __smmu_iommu_map_pfn(struct smmu_as *as, dma_addr_t iova,
-@@ -747,13 +749,14 @@ static size_t smmu_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
- {
- 	struct smmu_as *as = domain->priv;
- 	unsigned long flags;
-+	int err;
- 
- 	dev_dbg(as->smmu->dev, "[%d] %08lx\n", as->asid, iova);
- 
- 	spin_lock_irqsave(&as->lock, flags);
--	__smmu_iommu_unmap(as, iova);
-+	err = __smmu_iommu_unmap(as, iova);
- 	spin_unlock_irqrestore(&as->lock, flags);
--	return SMMU_PAGE_SIZE;
-+	return err ? 0 : SMMU_PAGE_SIZE;
- }
- 
- static phys_addr_t smmu_iommu_iova_to_phys(struct iommu_domain *domain,
+No, -1 for compatibiblity with the other implementation of this.
+
+> > +	err = apic->cpu_mask_to_apicid_and(cfg->domain, mask, &dest);
+> > +	if (err) {
+> > +		if (assign_irq_vector(irq, cfg, data->affinity))
+> > +			pr_err("AMD-Vi: Failed to recover vector for irq %d\n", irq);
+> 
+> If we do OK with the assignment of the vector, should we just continue
+> on instead of returning error?
+
+The purpose of this is to recover to the old affinity if we failed at
+this point. Even in this case, setting the new affinity still failed and
+we need to inform the caller about this. Thus returning the error.
+Also note the pr_err message which also tells you about the
+recovery-case :)
+
+
+	Joerg
+
+
 -- 
-1.7.5.4
+AMD Operating System Research Center
+
+Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
+General Managers: Alberto Bozzo
+Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
