@@ -1,31 +1,38 @@
-From: Konrad Rzeszutek Wilk <konrad@kernel.org>
-Subject: Re: [PATCH 09/16] iommu/amd: Add IOAPIC remapping routines
-Date: Mon, 1 Oct 2012 12:34:56 -0400
-Message-ID: <CACJDEmqpE_ewzZPuS9OUCOmEHS2HRL66bk0nuTOLd1aMjNu4MQ@mail.gmail.com>
-References: <1348835046-3262-1-git-send-email-joerg.roedel@amd.com>
-	<1348835046-3262-10-git-send-email-joerg.roedel@amd.com>
-	<6d716497-bcf6-4d71-88a3-6ec772a4d396@sausexedgep01.amd.com>
-	<20121001084051.GO4009@amd.com>
-	<20121001134753.GF4099@phenom.dumpdata.com>
-	<20121001163338.GP4009@amd.com>
+From: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: [patch] iommu/amd: use after free in get_irq_table()
+Date: Tue, 2 Oct 2012 11:34:40 +0300
+Message-ID: <20121002083439.GN12398@elgon.mountain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20121001163338.GP4009@amd.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joerg.roedel@amd.com>
-Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kernel-janitors-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
->> I was thinking the other way around. You recover the old affinity. Should
->> you print out a warning mentioning to the system admin that you could not
->> set the new affinity but reverted to the old one? Or will that not serve
->> anything except spam the kernel logs?
->
-> Well, I don't think it makes sense to print an additional error at this
-> point. The error will be propagated upwards in the call-chain and in the
-> end it is up to the initiator how to handle this situation (for example
-> just return a failure to user-space).
+We should return NULL on error instead of the freed pointer.
 
-OK. Thx for the explanation. I was not sure whether the error would
-propagate properly up the chain.
+Signed-off-by: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index e78b8a4..a636d68 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -3867,6 +3867,7 @@ static struct irq_remap_table *get_irq_table(u16 devid, bool ioapic)
+ 	table->table = kmem_cache_alloc(amd_iommu_irq_cache, GFP_ATOMIC);
+ 	if (!table->table) {
+ 		kfree(table);
++		table = NULL;
+ 		goto out;
+ 	}
+ 
