@@ -1,51 +1,92 @@
-From: Kumar Gala <galak@kernel.crashing.org>
-Subject: Re: [PATCH 3/3 v2] iommu/fsl: Freescale PAMU driver and IOMMU API implementation.
-Date: Thu, 4 Oct 2012 08:20:25 -0500
-Message-ID: <91BA7E6D-4B29-4CCF-80EB-947EBBCF51F4@kernel.crashing.org>
-References: <1349351808-7156-1-git-send-email-b16395@freescale.com> <1349351808-7156-4-git-send-email-b16395@freescale.com>
-Mime-Version: 1.0 (Apple Message framework v1278)
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1349351808-7156-4-git-send-email-b16395@freescale.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "<b16395@freescale.com>" <b16395@freescale.com>
-Cc: joerg.roedel@amd.com, iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, Varun Sethi <Varun.Sethi@freescale.com>
+From: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH 2/3 v2] iommu/fsl: Add iommu domain attributes required
+	by fsl PAMU driver.
+Date: Thu, 4 Oct 2012 16:22:18 +0000
+Message-ID: <C5ECD7A89D1DC44195F34B25E172658D1EFC03@039-SN2MPN1-013.039d.mgd.msft.net>
+References: <1349351808-7156-1-git-send-email-b16395@freescale.com>
+	<1349351808-7156-3-git-send-email-b16395@freescale.com>
+	<43F13A8A-BF97-427C-8736-8F2E55B7A3D1@kernel.crashing.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <43F13A8A-BF97-427C-8736-8F2E55B7A3D1-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Kumar Gala <galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
-On Oct 4, 2012, at 6:56 AM, <b16395@freescale.com> <b16395@freescale.com> wrote:
 
-> From: Varun Sethi <Varun.Sethi@freescale.com>
+> -----Original Message-----
+> From: Kumar Gala [mailto:galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org]
+> Sent: Thursday, October 04, 2012 6:47 PM
+> To: Sethi Varun-B16395
+> Cc: joerg.roedel-5C7GfCeVMHo@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-
+> dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Sethi Varun-B16395
+> Subject: Re: [PATCH 2/3 v2] iommu/fsl: Add iommu domain attributes
+> required by fsl PAMU driver.
 > 
-> Following is a brief description of the PAMU hardware:
-> PAMU determines what action to take and whether to authorize the action on the basis
-> of the memory address, a Logical IO Device Number (LIODN), and PAACT table (logically)
-> indexed by LIODN and address. Hardware devices which need to access memory must provide
-> an LIODN in addition to the memory address.
 > 
-> Peripheral Access Authorization and Control Tables (PAACTs) are the primary data structures
-> used by PAMU. A PAACT is a table of peripheral access authorization and control entries (PAACE).
-> Each PAACE defines the range of I/O bus address space that is accessible by the LIOD and the
-> associated access capabilities.
+> On Oct 4, 2012, at 6:56 AM, <b16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org> <b16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+> wrote:
 > 
-> There are two types of PAACTs: primary PAACT (PPAACT) and secondary PAACT (SPAACT). A given physical
-> I/O device may be able to act as one or more independent logical I/O devices (LIODs). Each such
-> logical I/O device is assigned an identifier called logical I/O device number (LIODN). A LIOD is
-> allocated a contiguous portion of the I/O bus address space called the DSA window for performing
-> DSA operations. The DSA window may optionally be divided into multiple sub-windows, each of which
-> may be used to map to a region in system storage space. The first sub-window is referred to
-> as the primary sub-window and the remaining are called secondary sub-windows.
+> > From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+> >
+> > Added the following domain attributes required by FSL PAMU driver:
+> > 1. Subwindows field added to the iommu domain geometry attribute.
+> > 2. Added new iommu stash attribute, which allows setting of the
+> >   LIODN specific stash id parameter through IOMMU API.
+> > 3. Added an attribute for enabling/disabling DMA to a particular
+> >   memory window.
+> >
+> > Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+> > ---
+> > include/linux/iommu.h |   35 +++++++++++++++++++++++++++++++++++
+> > 1 files changed, 35 insertions(+), 0 deletions(-)
+> >
+> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h index
+> > f3b99e1..62e22f0 100644
+> > --- a/include/linux/iommu.h
+> > +++ b/include/linux/iommu.h
+> > @@ -44,6 +44,33 @@ struct iommu_domain_geometry {
+> > 	dma_addr_t aperture_start; /* First address that can be mapped
+> */
+> > 	dma_addr_t aperture_end;   /* Last address that can be mapped
+> */
+> > 	bool force_aperture;       /* DMA only allowed in mappable range?
+> */
+> > +
+> > +	/* The subwindows field indicates number of DMA subwindows
+> supported
+> > +	 * by the geometry. Following is the interpretation of
+> > +	 * values for this field:
+> > +	 * 0 : This implies that the supported geometry size is 1 MB
+> > +         * with each subwindow size being 4KB. Thus number of
+> subwindows
+> > +	 * being = 1MB/4KB = 256.
+> > +	 * 1 : Only one DMA window i.e. no subwindows.
+> > +	 * value other than 0 or 1 would indicate actual number of
+> subwindows.
+> > +	 */
+> > +	u32 subwindows;
+> > +};
+> > +
+> > +/* cache stash targets */
+> > +#define L1_CACHE 1
+> > +#define L2_CACHE 2
+> > +#define L3_CACHE 3
 > 
-> This patch provides the PAMU driver (fsl_pamu.c) and the corresponding IOMMU API implementation
-> (fsl_pamu_domain.c). The PAMU hardware driver (fsl_pamu.c) has been derived from the work done
-> by Ashish Kalra and Timur Tabi (timur@freescale.com).
-> 
-> Signed-off-by: Varun Sethi <Varun.Sethi@freescale.com>
-> ---
+> These names are way to generic for being exposed to user space
+Will fix naming to IOMMU_ATTR_CACHE_L1 etc.
 
-I'm not seeing any of the comments I made addressed.
-
-What changed in this version?
-
-- k
+-Varun
