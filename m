@@ -1,15 +1,14 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH 1/5] amd_iommu: Split IOMMU group initialization
-Date: Tue, 09 Oct 2012 08:41:38 -0600
-Message-ID: <1349793698.2759.287.camel@ul30vt.home>
+From: Florian Dazinger <florian-Q0TRQrZM+Zzk1uMJSBkQmQ@public.gmane.org>
+Subject: Re: [RFC PATCH 0/5] amd_iommu: Refactor IOMMU group and support
+	virtual aliases
+Date: Tue, 9 Oct 2012 20:27:38 +0200
+Message-ID: <20121009202738.7e047e64@brain.lan>
 References: <20121009044057.16302.44577.stgit@bling.home>
-	<20121009044935.16302.93049.stgit@bling.home>
-	<CAKocOOOTp7BMbqFyZx=rH-2uOC51C17JTjP77w7=7KB8jKh=hA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAKocOOOTp7BMbqFyZx=rH-2uOC51C17JTjP77w7=7KB8jKh=hA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <20121009044057.16302.44577.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,144 +18,118 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Shuah Khan <shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: florian-Q0TRQrZM+Zzk1uMJSBkQmQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2012-10-09 at 08:33 -0600, Shuah Khan wrote:
-> Alex,
+Am Mon, 08 Oct 2012 22:49:28 -0600
+schrieb Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>:
+
+> This series is meant to refactor IOMMU group support in amd_iommu
+> to properly support virtual aliases.  If multiple devices alias to
+> the same virtual alias, they should be grouped together.  This code
+> also verifies whether the alias should be the root of the group vs
+> devices above the alias.
 > 
-> couple of comments in-lined:
+> This seems to do the right thing on my system, but that's not saying
+> a lot since it doesn't do anything interesting with aliases.  I'd
+> appreciate if Joerg and Florian could test this on their systems.
+> Thanks,
 > 
-> On Mon, Oct 8, 2012 at 10:49 PM, Alex Williamson
-> <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> > This needs to be broken apart, start with pulling all the IOMMU
-> > group init code into a new function.
-> >
-> > Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> > ---
-> >
-> >  drivers/iommu/amd_iommu.c |   61 ++++++++++++++++++++++++++++++++-------------
-> >  1 file changed, 43 insertions(+), 18 deletions(-)
-> >
-> > diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> > index 55074cb..b65b377 100644
-> > --- a/drivers/iommu/amd_iommu.c
-> > +++ b/drivers/iommu/amd_iommu.c
-> > @@ -276,39 +276,32 @@ static void swap_pci_ref(struct pci_dev **from, struct pci_dev *to)
-> >
-> >  #define REQ_ACS_FLAGS  (PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF)
-> >
-> > -static int iommu_init_device(struct device *dev)
-> > +static int init_iommu_group(struct device *dev)
-> >  {
-> > -       struct pci_dev *dma_pdev = NULL, *pdev = to_pci_dev(dev);
-> >         struct iommu_dev_data *dev_data;
-> >         struct iommu_group *group;
-> > -       u16 alias;
-> > +       struct pci_dev *dma_pdev = NULL;
-> >         int ret;
+> Alex
 > 
-> I don't see ret get initialized
-
-It looks that way, but...
-
-> >
-> > -       if (dev->archdata.iommu)
-> > +       group = iommu_group_get(dev);
-> > +       if (group) {
-> > +               iommu_group_put(group);
-> >                 return 0;
-> > +       }
-> >
-> >         dev_data = find_dev_data(get_device_id(dev));
-> >         if (!dev_data)
-> >                 return -ENOMEM;
-> >
-> > -       alias = amd_iommu_alias_table[dev_data->devid];
-> > -       if (alias != dev_data->devid) {
-> > -               struct iommu_dev_data *alias_data;
-> > -
-> > -               alias_data = find_dev_data(alias);
-> > -               if (alias_data == NULL) {
-> > -                       pr_err("AMD-Vi: Warning: Unhandled device %s\n",
-> > -                                       dev_name(dev));
-> > -                       free_dev_data(dev_data);
-> > -                       return -ENOTSUPP;
-> > -               }
-> > -               dev_data->alias_data = alias_data;
-> > +       if (dev_data->alias_data) {
-> > +               u16 alias;
-> >
-> > +               alias = amd_iommu_alias_table[dev_data->devid];
-> >                 dma_pdev = pci_get_bus_and_slot(alias >> 8, alias & 0xff);
-> >         }
-> >
-> > -       if (dma_pdev == NULL)
-> > -               dma_pdev = pci_dev_get(pdev);
-> > +       if (!dma_pdev)
-> > +               dma_pdev = pci_dev_get(to_pci_dev(dev));
-> >
-> >         /* Account for quirked devices */
-> >         swap_pci_ref(&dma_pdev, pci_get_dma_source(dma_pdev));
-> > @@ -358,6 +351,38 @@ root_bus:
-> >
-> >         iommu_group_put(group);
-> >
-> > +       return ret;
+> ---
 > 
-> Do you even need ret - can this be simply return 0;
+> Alex Williamson (5):
+>       amd_iommu: Properly account for virtual aliases in IOMMU groups
+>       amd_iommu: Split IOMMU group allocation and attach
+>       amd_iommu: Split upstream bus device lookup
+>       amd_iommu: Split IOMMU Group topology walk
+>       amd_iommu: Split IOMMU group initialization
+> 
+> 
+>  drivers/iommu/amd_iommu.c       |  184 ++++++++++++++++++++++++++++++---------
+>  drivers/iommu/amd_iommu_types.h |    1 
+>  2 files changed, 142 insertions(+), 43 deletions(-)
+> 
 
-If you apply the patch, you'll see the end of this function is:
+patch #5 does not apply cleanly on top of 3.6, I had to edit amd_iommu_types.h manually (easy enough), apart from that, it is working fine!
+thanks, Florian 
 
-        ret = iommu_group_add_device(group, dev);
+dmesg:
+[    1.475665] pci 0000:01:00.0: Boot video device
+[    1.475762] PCI: CLS 64 bytes, default 64
+[    1.478371] AMD-Vi: device: 00:00.2 cap: 0040 seg: 0 flags: 3e info 1300
+[    1.478409] AMD-Vi:        mmio-addr: 00000000feb20000
+[    1.478487] AMD-Vi:   DEV_SELECT_RANGE_START  devid: 00:00.0 flags: 00
+[    1.478521] AMD-Vi:   DEV_RANGE_END           devid: 00:00.2
+[    1.478555] AMD-Vi:   DEV_SELECT                      devid: 00:02.0 flags: 00
+[    1.478588] AMD-Vi:   DEV_SELECT_RANGE_START  devid: 01:00.0 flags: 00
+[    1.478622] AMD-Vi:   DEV_RANGE_END           devid: 01:00.1
+[    1.478655] AMD-Vi:   DEV_SELECT                      devid: 00:04.0 flags: 00
+[    1.478688] AMD-Vi:   DEV_SELECT                      devid: 02:00.0 flags: 00
+[    1.478722] AMD-Vi:   DEV_SELECT                      devid: 00:05.0 flags: 00
+[    1.478755] AMD-Vi:   DEV_SELECT                      devid: 03:00.0 flags: 00
+[    1.478788] AMD-Vi:   DEV_SELECT                      devid: 00:06.0 flags: 00
+[    1.478822] AMD-Vi:   DEV_SELECT                      devid: 04:00.0 flags: 00
+[    1.478855] AMD-Vi:   DEV_SELECT                      devid: 00:07.0 flags: 00
+[    1.478888] AMD-Vi:   DEV_SELECT                      devid: 05:00.0 flags: 00
+[    1.478921] AMD-Vi:   DEV_SELECT                      devid: 00:09.0 flags: 00
+[    1.478955] AMD-Vi:   DEV_SELECT                      devid: 06:00.0 flags: 00
+[    1.478988] AMD-Vi:   DEV_SELECT                      devid: 00:0d.0 flags: 00
+[    1.479021] AMD-Vi:   DEV_SELECT                      devid: 07:00.0 flags: 00
+[    1.479055] AMD-Vi:   DEV_ALIAS_RANGE                 devid: 08:01.0 flags: 00 devid_to: 08:00.0
+[    1.479091] AMD-Vi:   DEV_RANGE_END           devid: 08:1f.7
+[    1.479128] AMD-Vi:   DEV_SELECT                      devid: 00:11.0 flags: 00
+[    1.479162] AMD-Vi:   DEV_SELECT_RANGE_START  devid: 00:12.0 flags: 00
+[    1.479195] AMD-Vi:   DEV_RANGE_END           devid: 00:12.2
+[    1.479229] AMD-Vi:   DEV_SELECT_RANGE_START  devid: 00:13.0 flags: 00
+[    1.479262] AMD-Vi:   DEV_RANGE_END           devid: 00:13.2
+[    1.479295] AMD-Vi:   DEV_SELECT                      devid: 00:14.0 flags: d7
+[    1.479329] AMD-Vi:   DEV_SELECT                      devid: 00:14.3 flags: 00
+[    1.479362] AMD-Vi:   DEV_SELECT                      devid: 00:14.4 flags: 00
+[    1.479396] AMD-Vi:   DEV_ALIAS_RANGE                 devid: 09:00.0 flags: 00 devid_to: 00:14.4
+[    1.479432] AMD-Vi:   DEV_RANGE_END           devid: 09:1f.7
+[    1.479478] AMD-Vi:   DEV_SELECT                      devid: 00:14.5 flags: 00
+[    1.479513] AMD-Vi:   DEV_SELECT_RANGE_START  devid: 00:16.0 flags: 00
+[    1.479547] AMD-Vi:   DEV_RANGE_END           devid: 00:16.2
+[    1.533745] AMD-Vi: Found IOMMU at 0000:00:00.2 cap 0x40
+[    1.533781] 
+[    1.533830] pci 0000:00:00.2: irq 72 for MSI/MSI-X
+[    1.542957] AMD-Vi: Lazy IO/TLB flushing enabled
 
-        iommu_group_put(group);
-
-        return ret;
-}
-
-It's unfortunate that diff didn't make this easier to review.  Thanks,
-
-Alex
-
-> > +}
-> > +
-> > +static int iommu_init_device(struct device *dev)
-> > +{
-> > +       struct pci_dev *pdev = to_pci_dev(dev);
-> > +       struct iommu_dev_data *dev_data;
-> > +       u16 alias;
-> > +       int ret;
-> > +
-> > +       if (dev->archdata.iommu)
-> > +               return 0;
-> > +
-> > +       dev_data = find_dev_data(get_device_id(dev));
-> > +       if (!dev_data)
-> > +               return -ENOMEM;
-> > +
-> > +       alias = amd_iommu_alias_table[dev_data->devid];
-> > +       if (alias != dev_data->devid) {
-> > +               struct iommu_dev_data *alias_data;
-> > +
-> > +               alias_data = find_dev_data(alias);
-> > +               if (alias_data == NULL) {
-> > +                       pr_err("AMD-Vi: Warning: Unhandled device %s\n",
-> > +                                       dev_name(dev));
-> > +                       free_dev_data(dev_data);
-> > +                       return -ENOTSUPP;
-> > +               }
-> > +               dev_data->alias_data = alias_data;
-> > +       }
-> > +
-> > +       ret = init_iommu_group(dev);
-> >         if (ret)
-> >                 return ret;
-> >
-> >
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> > the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> > Please read the FAQ at  http://www.tux.org/lkml/
+lspci:
+00:00.0 Host bridge: Advanced Micro Devices [AMD] nee ATI RD890 PCI to PCI bridge (external gfx0 port B) (rev 02)
+00:00.2 IOMMU: Advanced Micro Devices [AMD] nee ATI RD990 I/O Memory Management Unit (IOMMU)
+00:02.0 PCI bridge: Advanced Micro Devices [AMD] nee ATI RD890 PCI to PCI bridge (PCI express gpp port B)
+00:04.0 PCI bridge: Advanced Micro Devices [AMD] nee ATI RD890 PCI to PCI bridge (PCI express gpp port D)
+00:05.0 PCI bridge: Advanced Micro Devices [AMD] nee ATI RD890 PCI to PCI bridge (PCI express gpp port E)
+00:06.0 PCI bridge: Advanced Micro Devices [AMD] nee ATI RD890 PCI to PCI bridge (PCI express gpp port F)
+00:07.0 PCI bridge: Advanced Micro Devices [AMD] nee ATI RD890 PCI to PCI bridge (PCI express gpp port G)
+00:09.0 PCI bridge: Advanced Micro Devices [AMD] nee ATI RD890 PCI to PCI bridge (PCI express gpp port H)
+00:0d.0 PCI bridge: Advanced Micro Devices [AMD] nee ATI RD890 PCI to PCI bridge (external gfx1 port B)
+00:11.0 SATA controller: Advanced Micro Devices [AMD] nee ATI SB7x0/SB8x0/SB9x0 SATA Controller [AHCI mode] (rev 40)
+00:12.0 USB controller: Advanced Micro Devices [AMD] nee ATI SB7x0/SB8x0/SB9x0 USB OHCI0 Controller
+00:12.2 USB controller: Advanced Micro Devices [AMD] nee ATI SB7x0/SB8x0/SB9x0 USB EHCI Controller
+00:13.0 USB controller: Advanced Micro Devices [AMD] nee ATI SB7x0/SB8x0/SB9x0 USB OHCI0 Controller
+00:13.2 USB controller: Advanced Micro Devices [AMD] nee ATI SB7x0/SB8x0/SB9x0 USB EHCI Controller
+00:14.0 SMBus: Advanced Micro Devices [AMD] nee ATI SBx00 SMBus Controller (rev 42)
+00:14.3 ISA bridge: Advanced Micro Devices [AMD] nee ATI SB7x0/SB8x0/SB9x0 LPC host controller (rev 40)
+00:14.4 PCI bridge: Advanced Micro Devices [AMD] nee ATI SBx00 PCI to PCI Bridge (rev 40)
+00:14.5 USB controller: Advanced Micro Devices [AMD] nee ATI SB7x0/SB8x0/SB9x0 USB OHCI2 Controller
+00:16.0 USB controller: Advanced Micro Devices [AMD] nee ATI SB7x0/SB8x0/SB9x0 USB OHCI0 Controller
+00:16.2 USB controller: Advanced Micro Devices [AMD] nee ATI SB7x0/SB8x0/SB9x0 USB EHCI Controller
+00:18.0 Host bridge: Advanced Micro Devices [AMD] Family 10h Processor HyperTransport Configuration
+00:18.1 Host bridge: Advanced Micro Devices [AMD] Family 10h Processor Address Map
+00:18.2 Host bridge: Advanced Micro Devices [AMD] Family 10h Processor DRAM Controller
+00:18.3 Host bridge: Advanced Micro Devices [AMD] Family 10h Processor Miscellaneous Control
+00:18.4 Host bridge: Advanced Micro Devices [AMD] Family 10h Processor Link Control
+01:00.0 VGA compatible controller: Advanced Micro Devices [AMD] nee ATI RV730XT [Radeon HD 4670]
+01:00.1 Audio device: Advanced Micro Devices [AMD] nee ATI RV710/730 HDMI Audio [Radeon HD 4000 series]
+02:00.0 SATA controller: ASMedia Technology Inc. ASM1062 Serial ATA Controller (rev 01)
+03:00.0 Ethernet controller: Intel Corporation 82583V Gigabit Network Connection
+04:00.0 USB controller: ASMedia Technology Inc. ASM1042 SuperSpeed USB Host Controller
+05:00.0 USB controller: ASMedia Technology Inc. ASM1042 SuperSpeed USB Host Controller
+06:00.0 USB controller: ASMedia Technology Inc. ASM1042 SuperSpeed USB Host Controller
+07:00.0 PCI bridge: PLX Technology, Inc. PEX8112 x1 Lane PCI Express-to-PCI Bridge (rev aa)
+08:04.0 Multimedia audio controller: C-Media Electronics Inc CMI8788 [Oxygen HD Audio]
