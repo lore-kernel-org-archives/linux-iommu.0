@@ -1,12 +1,13 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC PATCH 0/5] amd_iommu: Refactor IOMMU group and support virtual
-	aliases
-Date: Mon, 08 Oct 2012 22:49:28 -0600
-Message-ID: <20121009044057.16302.44577.stgit@bling.home>
+Subject: [RFC PATCH 1/5] amd_iommu: Split IOMMU group initialization
+Date: Mon, 08 Oct 2012 22:49:35 -0600
+Message-ID: <20121009044935.16302.93049.stgit@bling.home>
+References: <20121009044057.16302.44577.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20121009044057.16302.44577.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,29 +21,106 @@ To: Joerg.Roedel-5C7GfCeVMHo@public.gmane.org, florian-Q0TRQrZM+Zzk1uMJSBkQmQ@pu
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This series is meant to refactor IOMMU group support in amd_iommu
-to properly support virtual aliases.  If multiple devices alias to
-the same virtual alias, they should be grouped together.  This code
-also verifies whether the alias should be the root of the group vs
-devices above the alias.
+This needs to be broken apart, start with pulling all the IOMMU
+group init code into a new function.
 
-This seems to do the right thing on my system, but that's not saying
-a lot since it doesn't do anything interesting with aliases.  I'd
-appreciate if Joerg and Florian could test this on their systems.
-Thanks,
-
-Alex
-
+Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
 
-Alex Williamson (5):
-      amd_iommu: Properly account for virtual aliases in IOMMU groups
-      amd_iommu: Split IOMMU group allocation and attach
-      amd_iommu: Split upstream bus device lookup
-      amd_iommu: Split IOMMU Group topology walk
-      amd_iommu: Split IOMMU group initialization
+ drivers/iommu/amd_iommu.c |   61 ++++++++++++++++++++++++++++++++-------------
+ 1 file changed, 43 insertions(+), 18 deletions(-)
 
-
- drivers/iommu/amd_iommu.c       |  184 ++++++++++++++++++++++++++++++---------
- drivers/iommu/amd_iommu_types.h |    1 
- 2 files changed, 142 insertions(+), 43 deletions(-)
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 55074cb..b65b377 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -276,39 +276,32 @@ static void swap_pci_ref(struct pci_dev **from, struct pci_dev *to)
+ 
+ #define REQ_ACS_FLAGS	(PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF)
+ 
+-static int iommu_init_device(struct device *dev)
++static int init_iommu_group(struct device *dev)
+ {
+-	struct pci_dev *dma_pdev = NULL, *pdev = to_pci_dev(dev);
+ 	struct iommu_dev_data *dev_data;
+ 	struct iommu_group *group;
+-	u16 alias;
++	struct pci_dev *dma_pdev = NULL;
+ 	int ret;
+ 
+-	if (dev->archdata.iommu)
++	group = iommu_group_get(dev);
++	if (group) {
++		iommu_group_put(group);
+ 		return 0;
++	}
+ 
+ 	dev_data = find_dev_data(get_device_id(dev));
+ 	if (!dev_data)
+ 		return -ENOMEM;
+ 
+-	alias = amd_iommu_alias_table[dev_data->devid];
+-	if (alias != dev_data->devid) {
+-		struct iommu_dev_data *alias_data;
+-
+-		alias_data = find_dev_data(alias);
+-		if (alias_data == NULL) {
+-			pr_err("AMD-Vi: Warning: Unhandled device %s\n",
+-					dev_name(dev));
+-			free_dev_data(dev_data);
+-			return -ENOTSUPP;
+-		}
+-		dev_data->alias_data = alias_data;
++	if (dev_data->alias_data) {
++		u16 alias;
+ 
++		alias = amd_iommu_alias_table[dev_data->devid];
+ 		dma_pdev = pci_get_bus_and_slot(alias >> 8, alias & 0xff);
+ 	}
+ 
+-	if (dma_pdev == NULL)
+-		dma_pdev = pci_dev_get(pdev);
++	if (!dma_pdev)
++		dma_pdev = pci_dev_get(to_pci_dev(dev));
+ 
+ 	/* Account for quirked devices */
+ 	swap_pci_ref(&dma_pdev, pci_get_dma_source(dma_pdev));
+@@ -358,6 +351,38 @@ root_bus:
+ 
+ 	iommu_group_put(group);
+ 
++	return ret;
++}
++
++static int iommu_init_device(struct device *dev)
++{
++	struct pci_dev *pdev = to_pci_dev(dev);
++	struct iommu_dev_data *dev_data;
++	u16 alias;
++	int ret;
++
++	if (dev->archdata.iommu)
++		return 0;
++
++	dev_data = find_dev_data(get_device_id(dev));
++	if (!dev_data)
++		return -ENOMEM;
++
++	alias = amd_iommu_alias_table[dev_data->devid];
++	if (alias != dev_data->devid) {
++		struct iommu_dev_data *alias_data;
++
++		alias_data = find_dev_data(alias);
++		if (alias_data == NULL) {
++			pr_err("AMD-Vi: Warning: Unhandled device %s\n",
++					dev_name(dev));
++			free_dev_data(dev_data);
++			return -ENOTSUPP;
++		}
++		dev_data->alias_data = alias_data;
++	}
++
++	ret = init_iommu_group(dev);
+ 	if (ret)
+ 		return ret;
+ 
