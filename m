@@ -1,18 +1,13 @@
-From: Andrew Oakley <andrew-WCNZvuCk18ErewFq2K+F1F6hYfS7NtTn@public.gmane.org>
-Subject: Re: [git pull] IOMMU Updates for v3.7-rc1
-Date: Wed, 10 Oct 2012 23:02:31 +0100
-Message-ID: <20121010230231.2fb3c3b9@ado-amd-gentoo.moore.slainvet.net>
-References: <20121005152312.GA4649@8bytes.org>
-	<20121009224532.1e515664@ado-amd-gentoo.moore.slainvet.net>
-	<20121010073022.GB16151@8bytes.org>
-	<20121010095823.140fdd98@ado-amd-gentoo.moore.slainvet.net>
-	<20121010133249.GC16151@8bytes.org>
-	<20121010201131.091d5a1f@ado-amd-gentoo.moore.slainvet.net>
+From: andrew-WCNZvuCk18ErewFq2K+F1F6hYfS7NtTn@public.gmane.org
+Subject: [PATCH] iommu/amd: Workaround wrong IOAPIC devid in IVRS.
+Date: Wed, 10 Oct 2012 23:05:09 +0100
+Message-ID: <1349906709-5846-1-git-send-email-andrew@ado.is-a-geek.net>
+References: <20121010230231.2fb3c3b9@ado-amd-gentoo.moore.slainvet.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20121010201131.091d5a1f-IjT0q3EH84DI7ueSY2wKCeWwSe/Luo9VmGrBRn/+eNheoWH0uzbU5w@public.gmane.org>
+In-Reply-To: <20121010230231.2fb3c3b9-IjT0q3EH84DI7ueSY2wKCeWwSe/Luo9VmGrBRn/+eNheoWH0uzbU5w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,25 +17,45 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Andrew Oakley <andrew-WCNZvuCk18ErewFq2K+F1F6hYfS7NtTn@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andrew Oakley <andrew-WCNZvuCk18ErewFq2K+F1F6hYfS7NtTn@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 10 Oct 2012 20:11:31 +0100
-Andrew Oakley <andrew-WCNZvuCk18ErewFq2K+F1F6hYfS7NtTn@public.gmane.org> wrote:
-> If I modify the devid for the IOAPIC in init_iommu_from_acpi then it
-> also seems to work.  I haven't managed to get vfio/qemu working yet
-> but it seems to be unrelated ("Invalid ROM contents", same thing
-> happens when I try to dump the rom with stable kernels).
+From: Andrew Oakley <andrew-WCNZvuCk18ErewFq2K+F1F6hYfS7NtTn@public.gmane.org>
 
-I've now managed to get a network card passed through and working
-properly in a guest.  The bug has been reported to the vendor so
-hopefully it will get fixed in a BIOS update.
+The IOAPIC always has the same device id but is sometimes reported in
+the IVRS table with a different id.  This patch allows interrupt
+remapping to work on devices with this bug.
+---
+ drivers/iommu/amd_iommu_init.c |    9 +++++++++
+ 1 files changed, 9 insertions(+), 0 deletions(-)
 
-I'm not sure if the fix I've got is safe or if it's really a good idea
-to enable interrupt remapping with a broken BIOS.
-
-Thanks
-
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 18b0d99..ca266b9 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -751,6 +751,9 @@ static void __init set_device_exclusion_range(u16 devid, struct ivmd_header *m)
+ 	}
+ }
+ 
++/* SB IOAPIC is always on this device in AMD systems */
++#define IOAPIC_SB_DEVID		((0x00 << 8) | PCI_DEVFN(0x14, 0))
++
+ /*
+  * Takes a pointer to an AMD IOMMU entry in the ACPI table and
+  * initializes the hardware and our data structures with it.
+@@ -928,6 +931,12 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
+ 				    PCI_SLOT(devid),
+ 				    PCI_FUNC(devid));
+ 
++			if (type == IVHD_SPECIAL_IOAPIC &&
++			    devid != IOAPIC_SB_DEVID) {
++				pr_err(FW_BUG "AMD-Vi: wrong IOAPIC devid\n");
++				devid = IOAPIC_SB_DEVID;
++			}
++
+ 			set_dev_entry_from_acpi(iommu, devid, e->flags, 0);
+ 			ret = add_special_device(type, handle, devid);
+ 			if (ret)
 -- 
-Andrew Oakley
+1.7.8.6
