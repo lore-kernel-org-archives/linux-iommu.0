@@ -1,60 +1,58 @@
-From: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [git pull] IOMMU Updates for v3.7-rc1
-Date: Thu, 11 Oct 2012 11:32:39 +0200
-Message-ID: <20121011093239.GA2619@amd.com>
-References: <20121005152312.GA4649@8bytes.org>
-	<20121009224532.1e515664@ado-amd-gentoo.moore.slainvet.net>
-	<20121010073022.GB16151@8bytes.org>
-	<20121010095823.140fdd98@ado-amd-gentoo.moore.slainvet.net>
-	<20121010133249.GC16151@8bytes.org>
-	<20121010201131.091d5a1f@ado-amd-gentoo.moore.slainvet.net>
-	<20121010230231.2fb3c3b9@ado-amd-gentoo.moore.slainvet.net>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20121010230231.2fb3c3b9-IjT0q3EH84DI7ueSY2wKCeWwSe/Luo9VmGrBRn/+eNheoWH0uzbU5w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Andrew Oakley <andrew-WCNZvuCk18ErewFq2K+F1F6hYfS7NtTn@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Omar Ramirez Luna <omar.luna@linaro.org>
+Subject: [PATCH v3 0/6] OMAP: iommu: hwmod, reset handling and runtime PM
+Date: Thu, 11 Oct 2012 20:06:05 -0500
+Message-ID: <1350003977-32744-1-git-send-email-omar.luna@linaro.org>
+Return-path: <linux-doc-owner@vger.kernel.org>
+Sender: linux-doc-owner@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>, Joerg Roedel <joerg.roedel@amd.com>
+Cc: Russell King <linux@arm.linux.org.uk>, Omar Ramirez Luna <omar.luna@linaro.org>, Benoit Cousson <b-cousson@ti.com>, Ohad Ben-Cohen <ohad@wizery.com>, Paul Walmsley <paul@pwsan.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, devicetree-discuss@lists.ozlabs.org, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Oct 10, 2012 at 11:02:31PM +0100, Andrew Oakley wrote:
-> On Wed, 10 Oct 2012 20:11:31 +0100
-> Andrew Oakley <andrew-WCNZvuCk18ErewFq2K+F1F6hYfS7NtTn@public.gmane.org> wrote:
+These patches are needed for remoteproc to work on OMAP4.
 
-> I'm not sure if the fix I've got is safe or if it's really a good idea
-> to enable interrupt remapping with a broken BIOS.
+Introduced iommu hwmod support for OMAP3 (iva, isp) and
+OMAP4 (ipu, dsp), along with the corresponding runtime PM
+and routines to deassert reset lines, enable/disable clocks
+and configure sysc registers.
 
-Sadly it is not. Your patch works for your particular case but is not
-generally applicable. There are indeed systems with 2 or more IOAPICs
-and they all use different device-ids.
+Although IOMMU hwmod patches were already submitted in the past,
+this series adds few more changes, like:
+- New reset handling.
+- Save and restore context code rework.
+- Device tree bindings for OMAP3 and OMAP4.
 
-So, typically, there is one IOAPIC per SB, like in your case. But on
-RD890 the chipset NB also includes an IOAPIC (which uses
-device-id 00:00.1). This IOAPIC exists on your system too but is
-disabled by the BIOS because the board does not use it.
+For this series I just dropped the patches already included in
+mainline.
 
-So, in the end, device-id 00:00.1 might also be correct and the IVRS
-entry could refer to the NB IOAPIC. We don't have any reliable
-indication which IOAPIC is described in the IVRS table.
+Previous work can be found at:
+[v2]
+  http://www.mail-archive.com/linux-omap@vger.kernel.org/msg75701.html
+[v1]
+  http://www.mail-archive.com/linux-omap@vger.kernel.org/msg70447.html
 
-Cheer,
+[old iteration without reset, save/restore and device tree]
+  http://www.mail-archive.com/linux-omap@vger.kernel.org/msg60133.html
 
-	Joerg
+Omar Ramirez Luna (6):
+  ARM: OMAP3/4: iommu: migrate to hwmod framework
+  ARM: OMAP3/4: iommu: adapt to runtime pm
+  ARM: OMAP: iommu: pm runtime save and restore context
+  ARM: OMAP: iommu: optimize save and restore routines
+  ARM: OMAP: iommu: add device tree support
+  arm/dts: OMAP3/4: Add iommu nodes
+
+ .../devicetree/bindings/arm/omap/iommu.txt         |   10 ++
+ arch/arm/boot/dts/omap3.dtsi                       |   12 +-
+ arch/arm/boot/dts/omap4.dtsi                       |   17 +-
+ arch/arm/mach-omap2/devices.c                      |    2 +-
+ arch/arm/mach-omap2/iommu2.c                       |   74 ++------
+ arch/arm/mach-omap2/omap-iommu.c                   |  176 +++++---------------
+ arch/arm/plat-omap/include/plat/iommu.h            |   20 ++-
+ arch/arm/plat-omap/include/plat/iommu2.h           |    4 -
+ drivers/iommu/omap-iommu.c                         |  163 ++++++++++++++----
+ 9 files changed, 245 insertions(+), 233 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/arm/omap/iommu.txt
 
 -- 
-AMD Operating System Research Center
+1.7.9.5
 
-Advanced Micro Devices GmbH Einsteinring 24 85609 Dornach
-General Managers: Alberto Bozzo
-Registration: Dornach, Landkr. Muenchen; Registerger. Muenchen, HRB Nr. 43632
