@@ -1,94 +1,72 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v3] Prevent devices with RMRRs from being placed into SI
-	Domain during startup
-Date: Tue, 16 Oct 2012 10:59:40 -0600
-Message-ID: <1350406780.2112.254.camel@bling.home>
-References: <20121016164905.14478.21080.sendpatchset@RHEL63BL460c.osen.hp.com>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH v3 0/6] OMAP: iommu: hwmod, reset handling and runtime
+ PM
+Date: Tue, 16 Oct 2012 10:22:59 -0700
+Message-ID: <20121016172258.GT15569@atomide.com>
+References: <1350003977-32744-1-git-send-email-omar.luna@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20121016164905.14478.21080.sendpatchset-CvFtHRyKCAIXAUP4FAKr9K0S01CSe8MM@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tom Mingarelli <thomas.mingarelli-VXdhtT5mjnY@public.gmane.org>
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Shuah Khan <shuah.khan-VXdhtT5mjnY@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-omap-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1350003977-32744-1-git-send-email-omar.luna@linaro.org>
+Sender: linux-omap-owner@vger.kernel.org
+To: Omar Ramirez Luna <omar.luna@linaro.org>
+Cc: Joerg Roedel <joerg.roedel@amd.com>, Russell King <linux@arm.linux.org.uk>, Benoit Cousson <b-cousson@ti.com>, Ohad Ben-Cohen <ohad@wizery.com>, Paul Walmsley <paul@pwsan.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, devicetree-discuss@lists.ozlabs.org, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2012-10-16 at 16:50 +0000, Tom Mingarelli wrote:
-> This patch is to prevent devices that have RMRRs associated with them 
-> from getting placed into the SI Domain during init. We don't put USB devices
-> into this category, however. This fixes the issue where the RMRR info
-> for devices being placed in and out of the SI Domain gets lost.
+* Omar Ramirez Luna <omar.luna@linaro.org> [121011 18:07]:
+> These patches are needed for remoteproc to work on OMAP4.
 > 
-> Signed-off-by: Thomas Mingarelli <thomas.mingarelli-VXdhtT5mjnY@public.gmane.org>
-> ----
-> PATCH v1: https://lkml.org/lkml/2012/6/15/204
-> PATCH v2: https://lkml.org/lkml/2012/9/18/354
+> Introduced iommu hwmod support for OMAP3 (iva, isp) and
+> OMAP4 (ipu, dsp), along with the corresponding runtime PM
+> and routines to deassert reset lines, enable/disable clocks
+> and configure sysc registers.
 > 
-> drivers/iommu/intel-iommu.c |   33 +++++++++++++++++++++++++++++++++
-> 1 files changed, 33 insertions(+), 0 deletions(-)
+> Although IOMMU hwmod patches were already submitted in the past,
+> this series adds few more changes, like:
+> - New reset handling.
+> - Save and restore context code rework.
+> - Device tree bindings for OMAP3 and OMAP4.
 > 
-> diff -up ./drivers/iommu/intel-iommu.c.ORIG ./drivers/iommu/intel-iommu.c
-> --- ./drivers/iommu/intel-iommu.c.ORIG	2012-10-16 09:34:23.148089944 -0500
-> +++ ./drivers/iommu/intel-iommu.c	2012-10-16 09:56:56.905932861 -0500
-> @@ -2320,8 +2320,41 @@ static int domain_add_dev_info(struct dm
->  	return 0;
->  }
->  
-> +static bool device_has_rmrr(struct pci_dev *dev)
-> +{
-> +	struct dmar_rmrr_unit *rmrr;
-> +	int i;
-> +
-> +	for_each_rmrr_units(rmrr) {
-> +		for (i = 0; i < rmrr->devices_cnt; i++) {
-> +			/*
-> +			 * Here we are just concerned with checking each device
-> +			 * that has an RMRR associated with it and not allow it
-> +			 * to be placed into the SI Domain during startup.
-> +			*/
-> +			if (rmrr->devices[i] == dev)
-> +				return true;
-> +		}
-> +	}
-> +	return false;
-> +}
-> +
->  static int iommu_should_identity_map(struct pci_dev *pdev, int startup)
->  {
-> +
-> +	if (startup) {
-> +		/*
-> +		 * This is where we will refuse any device that has an
-> +		 * RMRR associated with it and is not a USB device and
-> +		 * NOT allow it to be placed into the SI Domain. We
-> +		 * only do this on startup.
+> For this series I just dropped the patches already included in
+> mainline.
 
-Why only on startup?
+These will need to be rebased on omap-for-v3.8/cleanup-headers-iommu
+when I have that pushed out as that removes plat/*iommu*.h files.
 
->  We don't need a separate bit
-> +		 * for this because it could be ANY device.
-> +		*/
+Regards,
 
-Note the white space here doesn't match existing comment blocks in
-intel-iommu.
-
-> +		if (device_has_rmrr(pdev) &&
-> +			(pdev->class >> 8) != PCI_CLASS_SERIAL_USB)
-> +				return 0;
-> +	}
-> +
->  	if ((iommu_identity_mapping & IDENTMAP_AZALIA) && IS_AZALIA(pdev))
->  		return 1;
->  
-
-Thanks,
-Alex
+Tony
+ 
+> Previous work can be found at:
+> [v2]
+>   http://www.mail-archive.com/linux-omap@vger.kernel.org/msg75701.html
+> [v1]
+>   http://www.mail-archive.com/linux-omap@vger.kernel.org/msg70447.html
+> 
+> [old iteration without reset, save/restore and device tree]
+>   http://www.mail-archive.com/linux-omap@vger.kernel.org/msg60133.html
+> 
+> Omar Ramirez Luna (6):
+>   ARM: OMAP3/4: iommu: migrate to hwmod framework
+>   ARM: OMAP3/4: iommu: adapt to runtime pm
+>   ARM: OMAP: iommu: pm runtime save and restore context
+>   ARM: OMAP: iommu: optimize save and restore routines
+>   ARM: OMAP: iommu: add device tree support
+>   arm/dts: OMAP3/4: Add iommu nodes
+> 
+>  .../devicetree/bindings/arm/omap/iommu.txt         |   10 ++
+>  arch/arm/boot/dts/omap3.dtsi                       |   12 +-
+>  arch/arm/boot/dts/omap4.dtsi                       |   17 +-
+>  arch/arm/mach-omap2/devices.c                      |    2 +-
+>  arch/arm/mach-omap2/iommu2.c                       |   74 ++------
+>  arch/arm/mach-omap2/omap-iommu.c                   |  176 +++++---------------
+>  arch/arm/plat-omap/include/plat/iommu.h            |   20 ++-
+>  arch/arm/plat-omap/include/plat/iommu2.h           |    4 -
+>  drivers/iommu/omap-iommu.c                         |  163 ++++++++++++++----
+>  9 files changed, 245 insertions(+), 233 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/arm/omap/iommu.txt
+> 
+> -- 
+> 1.7.9.5
+> 
