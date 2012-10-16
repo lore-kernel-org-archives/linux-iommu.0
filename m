@@ -1,8 +1,8 @@
 From: Shuah Khan <shuah.khan-VXdhtT5mjnY@public.gmane.org>
 Subject: Re: [PATCH v3] Prevent devices with RMRRs from being placed into SI
 	Domain during startup
-Date: Tue, 16 Oct 2012 11:26:00 -0600
-Message-ID: <1350408360.2785.26.camel@lorien2>
+Date: Tue, 16 Oct 2012 11:28:11 -0600
+Message-ID: <1350408491.2785.28.camel@lorien2>
 References: <20121016164905.14478.21080.sendpatchset@RHEL63BL460c.osen.hp.com>
 Reply-To: shuah.khan-VXdhtT5mjnY@public.gmane.org
 Mime-Version: 1.0
@@ -63,10 +63,6 @@ On Tue, 2012-10-16 at 16:50 +0000, Tom Mingarelli wrote:
 > +	return false;
 > +}
 > +
-
-Will you use the same routine to deny device assignment request for
-devices with RMRR? Is that going to be another patch?
-
 >  static int iommu_should_identity_map(struct pci_dev *pdev, int startup)
 >  {
 > +
@@ -80,14 +76,13 @@ devices with RMRR? Is that going to be another patch?
 > +		*/
 > +		if (device_has_rmrr(pdev) &&
 > +			(pdev->class >> 8) != PCI_CLASS_SERIAL_USB)
+
+Forgot to ask in my last response. Is it sufficient to check _USB. Are
+we missing any other devices that use RMRR that would qualify?
+
 > +				return 0;
 > +	}
 > +
-
-Is there a reason to not group this with the other pci device checks
-below. Don't you need this done whenever iommu_should_identity_map() get
-called as opposed just at startup?
-
 >  	if ((iommu_identity_mapping & IDENTMAP_AZALIA) && IS_AZALIA(pdev))
 >  		return 1;
 >  
