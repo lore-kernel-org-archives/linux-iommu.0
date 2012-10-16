@@ -1,15 +1,16 @@
-From: Shuah Khan <shuah.khan-VXdhtT5mjnY@public.gmane.org>
-Subject: Re: [PATCH v3] Prevent devices with RMRRs from being placed into SI
+From: "Mingarelli, Thomas" <Thomas.Mingarelli-VXdhtT5mjnY@public.gmane.org>
+Subject: RE: [PATCH v3] Prevent devices with RMRRs from being placed into SI
 	Domain during startup
-Date: Tue, 16 Oct 2012 11:28:11 -0600
-Message-ID: <1350408491.2785.28.camel@lorien2>
+Date: Tue, 16 Oct 2012 17:38:47 +0000
+Message-ID: <9774516974AF5F4C8A2C3C69CD341233233C1A2E@G1W3651.americas.hpqcorp.net>
 References: <20121016164905.14478.21080.sendpatchset@RHEL63BL460c.osen.hp.com>
-Reply-To: shuah.khan-VXdhtT5mjnY@public.gmane.org
+	<1350406780.2112.254.camel@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20121016164905.14478.21080.sendpatchset-CvFtHRyKCAIXAUP4FAKr9K0S01CSe8MM@public.gmane.org>
+In-Reply-To: <1350406780.2112.254.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,9 +20,21 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tom Mingarelli <thomas.mingarelli-VXdhtT5mjnY@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Khan, Shuah" <shuah.khan-VXdhtT5mjnY@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
+
+I only perform this action on startup because that is the first time the devices are placed into the SI Domain when passthrough mode is used. If they never make it into the SI Domain then there is no RMRR confusion to worry about.
+
+
+Tom
+
+-----Original Message-----
+From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org] 
+Sent: Tuesday, October 16, 2012 12:00 PM
+To: Mingarelli, Thomas
+Cc: David Woodhouse; Don Dutile; Khan, Shuah; Knippers, Linda; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Subject: Re: [PATCH v3] Prevent devices with RMRRs from being placed into SI Domain during startup
 
 On Tue, 2012-10-16 at 16:50 +0000, Tom Mingarelli wrote:
 > This patch is to prevent devices that have RMRRs associated with them 
@@ -71,18 +84,25 @@ On Tue, 2012-10-16 at 16:50 +0000, Tom Mingarelli wrote:
 > +		 * This is where we will refuse any device that has an
 > +		 * RMRR associated with it and is not a USB device and
 > +		 * NOT allow it to be placed into the SI Domain. We
-> +		 * only do this on startup. We don't need a separate bit
+> +		 * only do this on startup.
+
+Why only on startup?
+
+>  We don't need a separate bit
 > +		 * for this because it could be ANY device.
 > +		*/
+
+Note the white space here doesn't match existing comment blocks in
+intel-iommu.
+
 > +		if (device_has_rmrr(pdev) &&
 > +			(pdev->class >> 8) != PCI_CLASS_SERIAL_USB)
-
-Forgot to ask in my last response. Is it sufficient to check _USB. Are
-we missing any other devices that use RMRR that would qualify?
-
 > +				return 0;
 > +	}
 > +
 >  	if ((iommu_identity_mapping & IDENTMAP_AZALIA) && IS_AZALIA(pdev))
 >  		return 1;
 >  
+
+Thanks,
+Alex
