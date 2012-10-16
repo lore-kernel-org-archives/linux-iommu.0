@@ -1,15 +1,15 @@
 From: "Mingarelli, Thomas" <Thomas.Mingarelli-VXdhtT5mjnY@public.gmane.org>
 Subject: RE: [PATCH v3] Prevent devices with RMRRs from being placed into SI
 	Domain during startup
-Date: Tue, 16 Oct 2012 17:40:08 +0000
-Message-ID: <9774516974AF5F4C8A2C3C69CD341233233C1A39@G1W3651.americas.hpqcorp.net>
+Date: Tue, 16 Oct 2012 17:41:11 +0000
+Message-ID: <9774516974AF5F4C8A2C3C69CD341233233C1A44@G1W3651.americas.hpqcorp.net>
 References: <20121016164905.14478.21080.sendpatchset@RHEL63BL460c.osen.hp.com>
-	<1350408360.2785.26.camel@lorien2>
+	<1350408491.2785.28.camel@lorien2>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1350408360.2785.26.camel@lorien2>
+In-Reply-To: <1350408491.2785.28.camel@lorien2>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -24,14 +24,14 @@ To: "Khan, Shuah" <shuah.khan-VXdhtT5mjnY@public.gmane.org>
 Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-I was under the impression this was ONLY a concern with devices placed in and out of the SI Domain when passthrough mode is used. If those devices never make it into the SI Domain in the first place then there should be no concern.
+I imagine there could be other devices that get a "free ride". Any help or suggestions in that area are greatly appreciated.
 
 
 Tom
 
 -----Original Message-----
 From: Khan, Shuah 
-Sent: Tuesday, October 16, 2012 12:26 PM
+Sent: Tuesday, October 16, 2012 12:28 PM
 To: Mingarelli, Thomas
 Cc: Alex Williamson; David Woodhouse; Don Dutile; Knippers, Linda; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Subject: Re: [PATCH v3] Prevent devices with RMRRs from being placed into SI Domain during startup
@@ -76,10 +76,6 @@ On Tue, 2012-10-16 at 16:50 +0000, Tom Mingarelli wrote:
 > +	return false;
 > +}
 > +
-
-Will you use the same routine to deny device assignment request for
-devices with RMRR? Is that going to be another patch?
-
 >  static int iommu_should_identity_map(struct pci_dev *pdev, int startup)
 >  {
 > +
@@ -93,14 +89,13 @@ devices with RMRR? Is that going to be another patch?
 > +		*/
 > +		if (device_has_rmrr(pdev) &&
 > +			(pdev->class >> 8) != PCI_CLASS_SERIAL_USB)
+
+Forgot to ask in my last response. Is it sufficient to check _USB. Are
+we missing any other devices that use RMRR that would qualify?
+
 > +				return 0;
 > +	}
 > +
-
-Is there a reason to not group this with the other pci device checks
-below. Don't you need this done whenever iommu_should_identity_map() get
-called as opposed just at startup?
-
 >  	if ((iommu_identity_mapping & IDENTMAP_AZALIA) && IS_AZALIA(pdev))
 >  		return 1;
 >  
