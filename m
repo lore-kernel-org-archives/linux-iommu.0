@@ -1,11 +1,15 @@
-From: Tom Mingarelli <thomas.mingarelli-VXdhtT5mjnY@public.gmane.org>
-Subject: [PATCH v3] Prevent devices with RMRRs from being placed into SI Domain
-Date: Wed, 17 Oct 2012 21:17:00 +0000 (UTC)
-Message-ID: <20121018021735.23962.51639.sendpatchset@RHEL63BL460c>
+From: "Mingarelli, Thomas" <Thomas.Mingarelli-VXdhtT5mjnY@public.gmane.org>
+Subject: RE: [PATCH v3] Prevent devices with RMRRs from being placed into SI
+	Domain
+Date: Wed, 17 Oct 2012 21:19:20 +0000
+Message-ID: <9774516974AF5F4C8A2C3C69CD341233233D0E28@G2W2530.americas.hpqcorp.net>
+References: <20121018021735.23962.51639.sendpatchset@RHEL63BL460c>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20121018021735.23962.51639.sendpatchset@RHEL63BL460c>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,9 +19,22 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Shuah Khan <shuah.khan-VXdhtT5mjnY@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tom Mingarelli <thomas.mingarelli-VXdhtT5mjnY@public.gmane.org>
+To: "Mingarelli, Thomas" <Thomas.Mingarelli-VXdhtT5mjnY@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Don
+	Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Khan, Shuah" <shuah.khan-VXdhtT5mjnY@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
+
+I meant to edit the preamble with no reference to init. This patch will prevent any device with an RMRR association from getting placed into the SI Domain and any time.
+
+
+Tom
+
+-----Original Message-----
+From: Mingarelli, Thomas 
+Sent: Wednesday, October 17, 2012 4:17 PM
+To: Alex Williamson; David Woodhouse; Don Dutile
+Cc: Khan, Shuah; Mingarelli, Thomas; Knippers, Linda; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Subject: [PATCH v3] Prevent devices with RMRRs from being placed into SI Domain
 
 This patch is to prevent devices that have RMRRs associated with them to
 not be placed into the SI Domain during init. We don't put USB devices
