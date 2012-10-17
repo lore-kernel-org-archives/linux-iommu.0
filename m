@@ -1,101 +1,51 @@
-From: "Mingarelli, Thomas" <Thomas.Mingarelli-VXdhtT5mjnY@public.gmane.org>
-Subject: RE: [PATCH v3] Prevent devices with RMRRs from being placed into SI
-	Domain during startup
-Date: Tue, 16 Oct 2012 17:41:11 +0000
-Message-ID: <9774516974AF5F4C8A2C3C69CD341233233C1A44@G1W3651.americas.hpqcorp.net>
-References: <20121016164905.14478.21080.sendpatchset@RHEL63BL460c.osen.hp.com>
-	<1350408491.2785.28.camel@lorien2>
+From: Varun Sethi <Varun.Sethi@freescale.com>
+Subject: [PATCH 1/3 v2] iommu/fsl: Store iommu domain information pointer in
+ archdata.
+Date: Wed, 17 Oct 2012 23:02:48 +0530
+Message-ID: <1350495170-4593-2-git-send-email-Varun.Sethi@freescale.com>
+References: <1350495170-4593-1-git-send-email-Varun.Sethi@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1350408491.2785.28.camel@lorien2>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Khan, Shuah" <shuah.khan-VXdhtT5mjnY@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+In-Reply-To: <1350495170-4593-1-git-send-email-Varun.Sethi@freescale.com>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+To: joerg.roedel@amd.com, iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Cc: Varun Sethi <Varun.Sethi@freescale.com>
 List-Id: iommu@lists.linux-foundation.org
 
-I imagine there could be other devices that get a "free ride". Any help or suggestions in that area are greatly appreciated.
+Add a new field in the device (powerpc) archdata structure for storing iommu domain
+information pointer. This pointer is stored when the device is attached to a particular
+domain.
 
+Signed-off-by: Varun Sethi <Varun.Sethi@freescale.com>
+---
+ arch/powerpc/include/asm/device.h |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
 
-Tom
-
------Original Message-----
-From: Khan, Shuah 
-Sent: Tuesday, October 16, 2012 12:28 PM
-To: Mingarelli, Thomas
-Cc: Alex Williamson; David Woodhouse; Don Dutile; Knippers, Linda; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
-Subject: Re: [PATCH v3] Prevent devices with RMRRs from being placed into SI Domain during startup
-
-On Tue, 2012-10-16 at 16:50 +0000, Tom Mingarelli wrote:
-> This patch is to prevent devices that have RMRRs associated with them 
-> from getting placed into the SI Domain during init. We don't put USB devices
-> into this category, however. This fixes the issue where the RMRR info
-> for devices being placed in and out of the SI Domain gets lost.
-> 
-> Signed-off-by: Thomas Mingarelli <thomas.mingarelli-VXdhtT5mjnY@public.gmane.org>
-> ----
-> PATCH v1: https://lkml.org/lkml/2012/6/15/204
-> PATCH v2: https://lkml.org/lkml/2012/9/18/354
-> 
-> drivers/iommu/intel-iommu.c |   33 +++++++++++++++++++++++++++++++++
-> 1 files changed, 33 insertions(+), 0 deletions(-)
-> 
-> diff -up ./drivers/iommu/intel-iommu.c.ORIG ./drivers/iommu/intel-iommu.c
-> --- ./drivers/iommu/intel-iommu.c.ORIG	2012-10-16 09:34:23.148089944 -0500
-> +++ ./drivers/iommu/intel-iommu.c	2012-10-16 09:56:56.905932861 -0500
-> @@ -2320,8 +2320,41 @@ static int domain_add_dev_info(struct dm
->  	return 0;
->  }
->  
-> +static bool device_has_rmrr(struct pci_dev *dev)
-> +{
-> +	struct dmar_rmrr_unit *rmrr;
-> +	int i;
-> +
-> +	for_each_rmrr_units(rmrr) {
-> +		for (i = 0; i < rmrr->devices_cnt; i++) {
-> +			/*
-> +			 * Here we are just concerned with checking each device
-> +			 * that has an RMRR associated with it and not allow it
-> +			 * to be placed into the SI Domain during startup.
-> +			*/
-> +			if (rmrr->devices[i] == dev)
-> +				return true;
-> +		}
-> +	}
-> +	return false;
-> +}
-> +
->  static int iommu_should_identity_map(struct pci_dev *pdev, int startup)
->  {
-> +
-> +	if (startup) {
-> +		/*
-> +		 * This is where we will refuse any device that has an
-> +		 * RMRR associated with it and is not a USB device and
-> +		 * NOT allow it to be placed into the SI Domain. We
-> +		 * only do this on startup. We don't need a separate bit
-> +		 * for this because it could be ANY device.
-> +		*/
-> +		if (device_has_rmrr(pdev) &&
-> +			(pdev->class >> 8) != PCI_CLASS_SERIAL_USB)
-
-Forgot to ask in my last response. Is it sufficient to check _USB. Are
-we missing any other devices that use RMRR that would qualify?
-
-> +				return 0;
-> +	}
-> +
->  	if ((iommu_identity_mapping & IDENTMAP_AZALIA) && IS_AZALIA(pdev))
->  		return 1;
->  
+diff --git a/arch/powerpc/include/asm/device.h b/arch/powerpc/include/asm/device.h
+index 77e97dd..6dc79fe 100644
+--- a/arch/powerpc/include/asm/device.h
++++ b/arch/powerpc/include/asm/device.h
+@@ -28,6 +28,10 @@ struct dev_archdata {
+ 		void		*iommu_table_base;
+ 	} dma_data;
+ 
++	/* IOMMU domain information pointer. This would be set
++	 * when this device is attached to an iommu_domain.
++	 */
++	void			*iommu_domain;
+ #ifdef CONFIG_SWIOTLB
+ 	dma_addr_t		max_direct_dma_addr;
+ #endif
+-- 
+1.7.4.1
