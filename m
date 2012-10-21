@@ -1,35 +1,94 @@
-From: Omar Ramirez Luna <omar.luna@linaro.org>
-Subject: Re: [PATCH v3 0/6] OMAP: iommu: hwmod, reset handling and runtime PM
-Date: Fri, 19 Oct 2012 11:37:37 -0500
-Message-ID: <CALLhW=5TAckcobUym9BawSKeaX4cPQEd=nhH1=65fL_6hWY+1A@mail.gmail.com>
-References: <1350003977-32744-1-git-send-email-omar.luna@linaro.org>
-	<20121016172258.GT15569@atomide.com>
-	<CALLhW=5Fmjhd+w57Dmm2BLmBoHuC7_jprJndkw1dHoVzVu4TOg@mail.gmail.com>
-	<20121018235246.GK30550@atomide.com>
+From: Craig Hada <craig.hada-VXdhtT5mjnY@public.gmane.org>
+Subject: Re: [PATCH v3] Prevent devices with RMRRs from being placed into
+	SI Domain
+Date: Sun, 21 Oct 2012 13:27:01 -0700
+Message-ID: <50845A95.1000200@hp.com>
+References: <20121018021735.23962.51639.sendpatchset@RHEL63BL460c>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <20121018235246.GK30550@atomide.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: Joerg Roedel <joerg.roedel@amd.com>, Russell King <linux@arm.linux.org.uk>, Benoit Cousson <b-cousson@ti.com>, Ohad Ben-Cohen <ohad@wizery.com>, Paul Walmsley <paul@pwsan.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, devicetree-discuss@lists.ozlabs.org, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20121018021735.23962.51639.sendpatchset@RHEL63BL460c>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Tom Mingarelli <thomas.mingarelli-VXdhtT5mjnY@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Shuah Khan <shuah.khan-VXdhtT5mjnY@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Tony,
-
-On 18 October 2012 18:52, Tony Lindgren <tony@atomide.com> wrote:
-> Thanks, the related patches are now posted in thread
-> "[PATCH v3 0/6] omap iommu changes to remove plat includes".
-
-Ok.
-
-> Also, can you please take a look at the "Updated status of the removal
-> of plat headers" thread?
+On 10/17/2012 2:17 PM, Tom Mingarelli wrote:
+> This patch is to prevent devices that have RMRRs associated with them to
+> not be placed into the SI Domain during init. We don't put USB devices
+> into this category, however. This fixes the issue where the RMRR info
+> for devices being placed in and out of the SI Domain gets lost.
 >
-> I've tagged you to remove the omap plat/mailbox.h :)
+> Signed-off-by: Thomas Mingarelli <thomas.mingarelli-VXdhtT5mjnY@public.gmane.org>
+> Tested-by: Shuah Khan <shuah.khan-VXdhtT5mjnY@public.gmane.org>
+> ----
+> PATCH v1: https://lkml.org/lkml/2012/6/15/204
+> PATCH v2: https://lkml.org/lkml/2012/9/18/354
+>
+>
+> drivers/iommu/intel-iommu.c |   30 ++++++++++++++++++++++++++++++
+>   1 files changed, 30 insertions(+), 0 deletions(-)
+>
+> diff -up ./drivers/iommu/intel-iommu.c.ORIG ./drivers/iommu/intel-iommu.c
+> --- ./drivers/iommu/intel-iommu.c.ORIG	2012-10-16 09:34:23.148089944 -0500
+> +++ ./drivers/iommu/intel-iommu.c	2012-10-17 20:41:40.509642356 -0500
+> @@ -2320,8 +2320,38 @@ static int domain_add_dev_info(struct dm
+>   	return 0;
+>   }
+>   
+> +static bool device_has_rmrr(struct pci_dev *dev)
+> +{
+> +	struct dmar_rmrr_unit *rmrr;
+> +	int i;
+> +
+> +	for_each_rmrr_units(rmrr) {
+> +		for (i = 0; i < rmrr->devices_cnt; i++) {
+> +			/*
+> +			 * Here we are just concerned with checking each device
+> +			 * that has an RMRR associated with it and not allow it
+> +			 * to be placed into the SI Domain during startup.
+> +			*/
+> +			if (rmrr->devices[i] == dev)
+> +				return true;
+> +		}
+> +	}
+> +	return false;
+> +}
+> +
+>   static int iommu_should_identity_map(struct pci_dev *pdev, int startup)
+>   {
+> +
+> +	/*
+> +	 * This is where we will refuse any device that has an
+> +	 * RMRR associated with it and is not a USB device and
+> +	 * NOT allow it to be placed into the SI Domain. We don't
+> +	 * need a separate bit for this because it could be ANY device.
+> +	 */
+> +	if (device_has_rmrr(pdev) &&
+> +		(pdev->class >> 8) != PCI_CLASS_SERIAL_USB)
+> +			return 0;
+> +
+>   	if ((iommu_identity_mapping & IDENTMAP_AZALIA) && IS_AZALIA(pdev))
+>   		return 1;
+>   
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> .
+>
+I applied this patch to my system and booted with IOMMU pass through 
+mode enabled. Without the patch my system would panic or wedge. I also 
+applied a be2net patch I'm working on and was able to get successful 
+netperf runs with IOMMU pass through mode enabled.
 
-Yes, got the request from Benoit too, but just now had the time to look at it.
-
-Cheers,
-
-Omar
+-Craig
