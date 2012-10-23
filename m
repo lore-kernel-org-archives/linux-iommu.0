@@ -1,130 +1,44 @@
-From: Sethi Varun-B16395 <B16395@freescale.com>
-Subject: RE: [PATCH 3/3 v3] iommu/fsl: Freescale PAMU driver and IOMMU API
- implementation.
-Date: Tue, 23 Oct 2012 11:35:56 +0000
-Message-ID: <C5ECD7A89D1DC44195F34B25E172658D223951@039-SN2MPN1-013.039d.mgd.msft.net>
-References: <6AE080B68D46FC4BA2D2769E68D765B7081084A7@039-SN2MPN1-023.039d.mgd.msft.net>
-	(from B04825@freescale.com on Mon Oct 22 16:18:07 2012)
- <1350949982.30970.11@snotra>
+From: Shuah Khan <shuah.khan-VXdhtT5mjnY@public.gmane.org>
+Subject: Re: [PATCH -stable] amd_iommu: attach device fails on the last pci
+	device
+Date: Tue, 23 Oct 2012 09:07:20 -0600
+Message-ID: <1351004840.2552.13.camel@lorien2>
+References: <1350059367.2643.17.camel@lorien2>
+	<20121012183828.GA16453@elie.Belkin> <1350067490.4627.8.camel@lorien2>
+	<20121012193543.GA16600@elie.Belkin>
+Reply-To: shuah.khan-VXdhtT5mjnY@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1350949982.30970.11@snotra>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Wood Scott-B07421 <B07421@freescale.com>, Tabi Timur-B04825 <B04825@freescale.com>
-Cc: "joerg.roedel@amd.com" <joerg.roedel@amd.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20121012193543.GA16600-fcEM2ccDkbL2nhBuCrrZHw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jonathan Nieder <jrnieder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+On Fri, 2012-10-12 at 12:35 -0700, Jonathan Nieder wrote:
+> Shuah Khan wrote:
+> > On Fri, 2012-10-12 at 11:38 -0700, Jonathan Nieder wrote:
+> 
+> >> To save Willy time: am I correct in guessing the upstream commit you
+> >> are referring to is 98fc5a693bbdda498a556654c70d1e31a186c988
+> >> (x86/amd-iommu: Use get_device_id and check_device where appropriate,
+> >> 2009-11-24)?
+> >
+> > Yes that is one.
+> 
+> Great, thanks for the quick confirmation.
 
+Is this patch in the queue to be pulled into 2.6.32 tree?
 
-> -----Original Message-----
-> From: Wood Scott-B07421
-> Sent: Tuesday, October 23, 2012 5:23 AM
-> To: Tabi Timur-B04825
-> Cc: Sethi Varun-B16395; joerg.roedel@amd.com; iommu@lists.linux-
-> foundation.org; linuxppc-dev@lists.ozlabs.org; linux-
-> kernel@vger.kernel.org
-> Subject: Re: [PATCH 3/3 v3] iommu/fsl: Freescale PAMU driver and IOMMU
-> API implementation.
-> 
-> On 10/22/2012 04:18:07 PM, Tabi Timur-B04825 wrote:
-> > On Wed, Oct 17, 2012 at 12:32 PM, Varun Sethi
-> > <Varun.Sethi@freescale.com> wrote:
-> > > +}
-> > > +
-> > > +static unsigned long pamu_get_fspi_and_allocate(u32 subwin_cnt) {
-> >
-> > subwin_cnt should probably be an unsigned int.
-> >
-> > This function needs to be documented.  What value is being returned?
-> 
-> spaact offset (yes, this needs to be documented)
-[Sethi Varun-B16395] Ok.
-
-> 
-> > > +/* This bitmap advertises the page sizes supported by PAMU hardware
-> > > + * to the IOMMU API.
-> > > + */
-> > > +#define FSL_PAMU_PGSIZES       (~0xFFFUL)
-> >
-> > There should be a better way to define this.  ~(PAMU_PAGE_SIZE-1)
-> > maybe?
-> 
-> Is it even true?  We don't support IOMMU pages larger than the SoC can
-> address.
-> 
-> The (~0xFFFUL) version also discards some valid IOMMU page sizes on 32-
-> bit kernels.  One use case for windows larger than the CPU virtual
-> address space is creating one big identity-map window to effectively
-> disable translation.  If we're to support that, the size of pgsize_bitmap
-> will need to change as well.
-> 
-[Sethi Varun-B16395] Correct, this needs to be fixed. I will try to address this
-In a separate patch (would require changes to iommu_map).
-
-> > > +static int map_liodn(int liodn, struct fsl_dma_domain *dma_domain)
-> > > +{
-> > > +       u32 subwin_cnt = dma_domain->subwin_cnt;
-> > > +       unsigned long rpn;
-> > > +       int ret = 0, i;
-> > > +
-> > > +       if (subwin_cnt) {
-> > > +               struct dma_subwindow *sub_win_ptr =
-> > > +                                       &dma_domain->sub_win_arr[0];
-> > > +               for (i = 0; i < subwin_cnt; i++) {
-> > > +                       if (sub_win_ptr[i].valid) {
-> > > +                               rpn = sub_win_ptr[i].paddr >>
-> > > +                                        PAMU_PAGE_SHIFT,
-> > > +                               spin_lock(&iommu_lock);
-> > > +                               ret = pamu_config_spaace(liodn,
-> > subwin_cnt, i,
-> > > +
-> > sub_win_ptr[i].size,
-> > > +                                                        -1,
-> > > +                                                        rpn,
-> > > +
-> > dma_domain->snoop_id,
-> > > +
-> > dma_domain->stash_id,
-> > > +                                                        (i > 0) ?
-> > 1 : 0,
-> > > +
-> > sub_win_ptr[i].prot);
-> > > +                               spin_unlock(&iommu_lock);
-> > > +                               if (ret) {
-> > > +                                       pr_err("PAMU SPAACE
-> > configuration failed for liodn %d\n",
-> > > +                                                liodn);
-> > > +                                       return ret;
-> > > +                               }
-> > > +                       }
-> > > +               }
-> 
-> Break up that nesting with some subfunctions.
-> 
-> > > +       while (!list_empty(&dma_domain->devices)) {
-> > > +               info = list_entry(dma_domain->devices.next,
-> > > +                       struct device_domain_info, link);
-> > > +               remove_domain_ref(info, dma_domain->subwin_cnt);
-> > > +       }
-> >
-> > I wonder if you should use list_for_each_safe() instead.
-> 
-> The above is simpler if you're destroying the entire list.
-> 
-> > > +}
-> > > +
-> > > +static int configure_domain_dma_state(struct fsl_dma_domain
-> > *dma_domain, int enable)
-> >
-> > bool enable
-> >
-> > Finally, please CC: me on all IOMMU and PAMU patches you post
-> > upstream.
-> 
-> Me too.
-[Sethi Varun-B16395] Sure.
-
--Varun
+Thanks,
+-- Shuah
