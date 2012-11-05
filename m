@@ -1,82 +1,127 @@
-From: Scott Wood <scottwood@freescale.com>
-Subject: Re: [PATCH 3/4 v4] iommu/fsl: Add iommu domain attributes required
- by fsl PAMU driver.
-Date: Mon, 5 Nov 2012 17:56:07 -0600
-Message-ID: <1352159767.28279.11@snotra>
-References: <1352114361-25192-3-git-send-email-Varun.Sethi@freescale.com>
+From: Rahul Sharma <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: [PATCH] iommu: exynos: add support for dt based instantiation for
+	iommu devices
+Date: Mon, 05 Nov 2012 20:52:50 +0530
+Message-ID: <1352128970-4791-1-git-send-email-rahul.sharma@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; delsp=Yes; format=Flowed
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1352114361-25192-3-git-send-email-Varun.Sethi@freescale.com>
-	(from Varun.Sethi@freescale.com on Mon Nov  5 05:19:20 2012)
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-Cc: joerg.roedel@amd.com, iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, timur@freescale.com, Varun Sethi <Varun.Sethi@freescale.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: jy0922.shim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, sw0312.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, joshi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, prashanth.g-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, s.shirish-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/05/2012 05:19:20 AM, Varun Sethi wrote:
-> Added the following domain attributes required by FSL PAMU driver:
-> 1. Subwindows field added to the iommu domain geometry attribute.
-> 2. Added new iommu stash attribute, which allows setting of the
->    LIODN specific stash id parameter through IOMMU API.
-> 3. Added an attribute for enabling/disabling DMA to a particular
->    memory window.
-> 
-> 
-> Signed-off-by: Varun Sethi <Varun.Sethi@freescale.com>
-> ---
-> changes in v4:
-> - Updated comment explaining subwindows(as mentioned by Scott).
-> change in v3:
-> -renamed the stash attribute targets
->  include/linux/iommu.h |   36 ++++++++++++++++++++++++++++++++++++
->  1 files changed, 36 insertions(+), 0 deletions(-)
-> 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index f3b99e1..e72f5e5 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -44,6 +44,34 @@ struct iommu_domain_geometry {
->  	dma_addr_t aperture_start; /* First address that can be  
-> mapped    */
->  	dma_addr_t aperture_end;   /* Last address that can be  
-> mapped     */
->  	bool force_aperture;       /* DMA only allowed in mappable  
-> range? */
-> +
-> +	/**
-> +	 * There could be a single contiguous window tha maps the entire
-> +	 * geometry or it could be split in to multiple subwindows.
+This patch adds supports DT based intantiation of sysmmu devices.
+It also removes dependency on CONFIG_EXYNOS_DEV_SYSMMU which is
+primarily meant for nont-dt platforms.
 
-...or it could be a normal IOMMU that supports arbitrary paging  
-throughout the aperture.
+This patch is based on "arm/exynos" branch at
+http://git.kernel.org/?p=linux/kernel/git/joro/iommu.git
 
-> +	 * Subwindows allow for supporting physically discontiguous  
-> mappings.
+This patch is having dependency on  linux-samsung-soc patchset posted at
+http://permalink.gmane.org/gmane.linux.kernel.samsung-soc/13556
 
-...in the absence of arbitrary paging.
+Signed-off-by: Rahul Sharma <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+---
+ drivers/iommu/Kconfig        |    2 +-
+ drivers/iommu/exynos-iommu.c |   28 +++++++++++++++++++++++++---
+ 2 files changed, 26 insertions(+), 4 deletions(-)
 
-> +	 * This attribute indicates number of DMA subwindows supported  
-> by
-> +	 * the geometry.
-
-s/indicates number/indicates the number/
-
->   If there is a single window that maps the entire
-> +	 * geometry, attribute must be set to "1". A value of "0"  
-> implies
-> +	 * that there are 256 subwindows each of size 4K. Value other  
-> than
-> +	 * "0" or "1" indicates the actual number of subwindows.
-
-No, a value of "0" indicates that this mechanism is not in use at all,  
-and normal paging is used.  PAMU specific things like "256 subwindows"  
-must not be a default value in a generic API.
-
-In the case of PAMU, if you specify 0 here, the aperture is limited to  
-1 MiB because that is the limit of PAMU's ability to simulate arbitrary  
-paging with subwindows, but this is only the limit of one  
-implementation.  It's not part of the API.
-
--Scott
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 9f69b56..52dc41f 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -168,7 +168,7 @@ config TEGRA_IOMMU_SMMU
+ 
+ config EXYNOS_IOMMU
+ 	bool "Exynos IOMMU Support"
+-	depends on ARCH_EXYNOS && EXYNOS_DEV_SYSMMU
++	depends on ARCH_EXYNOS
+ 	select IOMMU_API
+ 	help
+ 	  Support for the IOMMU(System MMU) of Samsung Exynos application
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 7fe44f8..64a7392 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -25,6 +25,7 @@
+ #include <linux/list.h>
+ #include <linux/memblock.h>
+ #include <linux/export.h>
++#include <linux/of_platform.h>
+ 
+ #include <asm/cacheflush.h>
+ #include <asm/pgtable.h>
+@@ -576,6 +577,7 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
+ 	int i, ret;
+ 	struct device *dev;
+ 	struct sysmmu_drvdata *data;
++	struct sysmmu_platform_data *platdata;
+ 
+ 	dev = &pdev->dev;
+ 
+@@ -634,9 +636,21 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
++	if (dev->of_node) {
++		platdata = devm_kzalloc(dev, sizeof(*platdata), GFP_KERNEL);
++		if (!platdata) {
++			dev_dbg(dev, "memory allocation for pdata failed\n");
++			goto err_irq;
++		}
++
++		platdata->clockname = SYSMMU_CLOCK_NAME;
++		platdata->dbgname = (char *)dev->of_node->name;
++		dev->platform_data = platdata;
++	}
++
+ 	if (dev_get_platdata(dev)) {
+ 		char *deli, *beg;
+-		struct sysmmu_platform_data *platdata = dev_get_platdata(dev);
++		platdata = dev_get_platdata(dev);
+ 
+ 		beg = platdata->clockname;
+ 
+@@ -670,8 +684,7 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
+ 
+ 	__set_fault_handler(data, &default_fault_handler);
+ 
+-	if (dev->parent)
+-		pm_runtime_enable(dev);
++	pm_runtime_enable(dev);
+ 
+ 	dev_dbg(dev, "(%s) Initialized\n", data->dbgname);
+ 	return 0;
+@@ -693,11 +706,20 @@ err_alloc:
+ 	return ret;
+ }
+ 
++static struct of_device_id iommu_match_types[] = {
++	{
++		.compatible = "samsung,exynos5-sysmmu",
++	}, {
++		/* end node */
++	}
++};
++
+ static struct platform_driver exynos_sysmmu_driver = {
+ 	.probe		= exynos_sysmmu_probe,
+ 	.driver		= {
+ 		.owner		= THIS_MODULE,
+ 		.name		= "exynos-sysmmu",
++		.of_match_table = iommu_match_types,
+ 	}
+ };
+ 
+-- 
+1.7.0.4
