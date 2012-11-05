@@ -1,8 +1,8 @@
 From: Rahul Sharma <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 Subject: [PATCH] iommu: exynos: add support for dt based instantiation for
 	iommu devices
-Date: Mon, 05 Nov 2012 20:52:50 +0530
-Message-ID: <1352128970-4791-1-git-send-email-rahul.sharma@samsung.com>
+Date: Mon, 05 Nov 2012 15:18:15 +0530
+Message-ID: <1352108895-21087-1-git-send-email-rahul.sharma@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -27,8 +27,8 @@ primarily meant for nont-dt platforms.
 This patch is based on "arm/exynos" branch at
 http://git.kernel.org/?p=linux/kernel/git/joro/iommu.git
 
-This patch is having dependency on  linux-samsung-soc patchset posted at
-http://permalink.gmane.org/gmane.linux.kernel.samsung-soc/13556
+This patch is having dependency on  linux-samsung-soc patchset named
+"add dt based support for iommu for hdmi"
 
 Signed-off-by: Rahul Sharma <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
@@ -50,7 +50,7 @@ index 9f69b56..52dc41f 100644
  	help
  	  Support for the IOMMU(System MMU) of Samsung Exynos application
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 7fe44f8..64a7392 100644
+index 7fe44f8..9079f71 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
 @@ -25,6 +25,7 @@
@@ -73,7 +73,7 @@ index 7fe44f8..64a7392 100644
  		}
  	}
  
-+	if (dev->of_node) {
++	if(dev->of_node) {
 +		platdata = devm_kzalloc(dev, sizeof(*platdata), GFP_KERNEL);
 +		if (!platdata) {
 +			dev_dbg(dev, "memory allocation for pdata failed\n");
