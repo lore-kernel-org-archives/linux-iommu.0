@@ -1,48 +1,40 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 1/2] iommu/amd: Update MAINTAINERS entry
-Date: Mon, 29 Oct 2012 19:08:16 +0100
-Message-ID: <1351534096-28538-1-git-send-email-joro@8bytes.org>
+From: Varun Sethi <Varun.Sethi@freescale.com>
+Subject: [PATCH 1/4 v2] iommu/fsl: Store iommu domain information pointer in archdata.
+Date: Mon, 5 Nov 2012 16:49:19 +0530
+Message-ID: <1352114361-25192-2-git-send-email-Varun.Sethi@freescale.com>
+References: <1352114361-25192-1-git-send-email-Varun.Sethi@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1352114361-25192-1-git-send-email-Varun.Sethi@freescale.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joerg.roedel@amd.com, iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, timur@freescale.com, scottwood@freescale.com
+Cc: Varun Sethi <Varun.Sethi@freescale.com>
 List-Id: iommu@lists.linux-foundation.org
 
-I have no access to my AMD email address anymore. Update
-entry in MAINTAINERS to the new address.
+Add a new field in the device (powerpc) archdata structure for storing iommu domain
+information pointer. This pointer is stored when the device is attached to a particular
+domain.
 
-Signed-off-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Signed-off-by: Varun Sethi <Varun.Sethi@freescale.com>
 ---
- MAINTAINERS |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/powerpc/include/asm/device.h |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 027ec2b..0267ba2 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -526,10 +526,10 @@ F:	drivers/video/geode/
- F:	arch/x86/include/asm/geode.h
+diff --git a/arch/powerpc/include/asm/device.h b/arch/powerpc/include/asm/device.h
+index 77e97dd..6dc79fe 100644
+--- a/arch/powerpc/include/asm/device.h
++++ b/arch/powerpc/include/asm/device.h
+@@ -28,6 +28,10 @@ struct dev_archdata {
+ 		void		*iommu_table_base;
+ 	} dma_data;
  
- AMD IOMMU (AMD-VI)
--M:	Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
-+M:	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
- L:	iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
--S:	Supported
-+S:	Maintained
- F:	drivers/iommu/amd_iommu*.[ch]
- F:	include/linux/amd-iommu.h
- 
++	/* IOMMU domain information pointer. This would be set
++	 * when this device is attached to an iommu_domain.
++	 */
++	void			*iommu_domain;
+ #ifdef CONFIG_SWIOTLB
+ 	dma_addr_t		max_direct_dma_addr;
+ #endif
 -- 
-1.7.9.5
+1.7.4.1
