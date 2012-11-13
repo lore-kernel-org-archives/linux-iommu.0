@@ -1,52 +1,88 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH] intel-iommu: Fix lookup in add device
-Date: Tue, 13 Nov 2012 10:22:03 -0700
-Message-ID: <20121113172144.6783.37724.stgit@bling.home>
+From: Matthew Thode <prometheanfire@gentoo.org>
+Subject: Re: [PATCH] intel-iommu: Fix lookup in add device
+Date: Tue, 13 Nov 2012 12:12:41 -0600
+Message-ID: <50A28D99.2000309@gentoo.org>
+References: <20121113172144.6783.37724.stgit@bling.home>
+Reply-To: prometheanfire@gentoo.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: prometheanfire-aBrp7R+bbdUdnm+yROfE0A@public.gmane.org, cardoe-aBrp7R+bbdUdnm+yROfE0A@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, mthode-sh12bNGkds0dnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature";
+ boundary="------------enig30DD44203562B017129ADCC1"
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20121113172144.6783.37724.stgit@bling.home>
+Sender: linux-pci-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: iommu@lists.linux-foundation.org, joro@8bytes.org, cardoe@gentoo.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, mthode@mthode.org, ddutile@redhat.com, bhelgaas@google.com, dwmw2@infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-We can't assume this device exists, fall back to the bridge itself.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig30DD44203562B017129ADCC1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Tested-by: Matthew Thode <prometheanfire-aBrp7R+bbdUdnm+yROfE0A@public.gmane.org>
-Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
----
- drivers/iommu/intel-iommu.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+On 11/13/2012 11:22 AM, Alex Williamson wrote:
+> We can't assume this device exists, fall back to the bridge itself.
+>=20
+> Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+> Tested-by: Matthew Thode <prometheanfire@gentoo.org>
+> Cc: stable@vger.kernel.org
+> ---
+>  drivers/iommu/intel-iommu.c |    4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index d4a4cd4..0badfa4 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -4108,7 +4108,7 @@ static void swap_pci_ref(struct pci_dev **from, s=
+truct pci_dev *to)
+>  static int intel_iommu_add_device(struct device *dev)
+>  {
+>  	struct pci_dev *pdev =3D to_pci_dev(dev);
+> -	struct pci_dev *bridge, *dma_pdev;
+> +	struct pci_dev *bridge, *dma_pdev =3D NULL;
+>  	struct iommu_group *group;
+>  	int ret;
+> =20
+> @@ -4122,7 +4122,7 @@ static int intel_iommu_add_device(struct device *=
+dev)
+>  			dma_pdev =3D pci_get_domain_bus_and_slot(
+>  						pci_domain_nr(pdev->bus),
+>  						bridge->subordinate->number, 0);
+> -		else
+> +		if (!dma_pdev)
+>  			dma_pdev =3D pci_dev_get(bridge);
+>  	} else
+>  		dma_pdev =3D pci_dev_get(pdev);
+>=20
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index d4a4cd4..0badfa4 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -4108,7 +4108,7 @@ static void swap_pci_ref(struct pci_dev **from, struct pci_dev *to)
- static int intel_iommu_add_device(struct device *dev)
- {
- 	struct pci_dev *pdev = to_pci_dev(dev);
--	struct pci_dev *bridge, *dma_pdev;
-+	struct pci_dev *bridge, *dma_pdev = NULL;
- 	struct iommu_group *group;
- 	int ret;
- 
-@@ -4122,7 +4122,7 @@ static int intel_iommu_add_device(struct device *dev)
- 			dma_pdev = pci_get_domain_bus_and_slot(
- 						pci_domain_nr(pdev->bus),
- 						bridge->subordinate->number, 0);
--		else
-+		if (!dma_pdev)
- 			dma_pdev = pci_dev_get(bridge);
- 	} else
- 		dma_pdev = pci_dev_get(pdev);
+I've tested this and it works just fine.
+
+--=20
+-- Matthew Thode (prometheanfire)
+
+
+--------------enig30DD44203562B017129ADCC1
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.19 (GNU/Linux)
+
+iQIcBAEBAgAGBQJQoo2iAAoJECRx6z5ArFrDM/oQANDRznWn1BAsuUMEVRgcgOGM
+Ezru9+I9baZeKxPOTFp+nmL3IWS/BS3nCFl3ALIZI/NMJUzOyYg9GtaHTOgHp4el
+58ZyzTqlS9yF2iadhErVIP7KsREQ42KFosYCr+Y4r00F37MgJztV9ag/c12Xp9gc
+AxeB7E7G9pqITMUKcKkx20qwm/Ygx/qIDD6uN7ZlW9dXOe11ziXQCnMQPs9u6i93
+OyiAp6KWmOn+noPei59aqXBk1jqz6F9T6CgAW4A7VVSfqvivLAV/IvwhDZQoGLEK
+j/fetcQDWDulhzV5YWpWi8G8A9DTlBZRiYAgoduUvwmDWSaXd465+142aWVVZaK0
+tFpzA7gkUHDxph+DmEAuAlQZeqNelRn/FtHtqeDckSlb9s9HlUzdxtIJWqh1QW4S
+dJN+vz3L56Mq6vA+JJHF4juoOI2Gh2oBqdgzaY2xG7/azbUlfkjodB3NWdaR4vAB
+0GE+5+HwPKwapZKdBz9Yee1L4x4F4WBGoP7c+DK8npRa4SqTUqi2vjnYIyV3QnJv
+YJkLU1QeJNY1FjkYh1j/DRNYPLbQ+/PXfDBV+ln9QY6AmCaqfUKjELf1WJ/6hSeQ
+GrUsMYiXFrOhnU/kqYtagZYDbaf8RFBLmHHuE2PMz++fuyWG5VTQvTLZ+h/Wtnxs
+vTKlb1OnyULwQZqCBtq2
+=G/Ba
+-----END PGP SIGNATURE-----
+
+--------------enig30DD44203562B017129ADCC1--
