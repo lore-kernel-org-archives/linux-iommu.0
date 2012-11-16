@@ -1,53 +1,295 @@
-From: Omar Ramirez Luna <omar.luna-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v4 2/2] ARM: OMAP3/4: iommu: adapt to runtime pm
-Date: Thu, 15 Nov 2012 13:05:58 -0600
-Message-ID: <CALLhW=6yKs8Moq6zAP06E6Nevhj8v5C-BGSgNyCsQbYXoJpLxQ@mail.gmail.com>
-References: <1352860489-19960-1-git-send-email-omar.luna@linaro.org>
-	<1352860489-19960-3-git-send-email-omar.luna@linaro.org>
-	<CAK=WgbZm+sjavwb_Li_W5ygm0XuS9YMYfQEkdoB188Uir0arGg@mail.gmail.com>
-	<CALLhW=46xUZzuEBaQD7vsOTQOGR7bwXMSM_mugN_gWa-oqwfuw@mail.gmail.com>
-	<CAK=WgbaTupjayMLmgptfLtNkkk_GZL8RYQrYn8O7FG5GpANswg@mail.gmail.com>
+From: Steven Kinney <steven.kinney@amd.com>
+Subject: AMD IOMMUv2 performance counter patch and family 15h model 10h-1Fh
+ quirk
+Date: Fri, 16 Nov 2012 16:42:29 -0600
+Message-ID: <20121116224228.GA23704@skinney-Trinity>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAK=WgbaTupjayMLmgptfLtNkkk_GZL8RYQrYn8O7FG5GpANswg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>
-Cc: Paul Walmsley <paul-DWxLp4Yu+b8AvxtiuMwx3w@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Mauro Carvalho Chehab <mchehab-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Ido Yariv <ido-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, linux-arm <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: multipart/mixed; boundary="dDRMvlgZJXvWKvBx"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: tglx@linutronix.de, mingo@redhat.com, hpa@zytor.com, x86@kernel.org, joerg.roedel@amd.com
+Cc: bhelgaas@google.com, sebastian@breakpoint.cc, myron.stowe@redhat.com, hdoyu@nvidia.com, swarren@wwwdotorg.org, jkosina@suse.cz, kgene.kim@samsung.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, steven.kinney@amd.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 15 November 2012 11:39, Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org> wrote:
->> I do agree description is missing, again I thought I had done this
->> somewhere but looks like I didn't, will update these. If you think
->> these should be different patches please let me know, otherwise I
->> would like to keep a single *documented* patch.
->
-> It seems like there are 3 different logical changes here:
->
-> 1. remove clk_* invocations from iommu_fault_handler()
-> 2. keep clocks enabled as long as iommu is enabled
-> 3. convert to runtime pm
->
-> If we split this to three patches in this order, you won't have to add
-> and remove runtime pm functions.
->
-> Let's do it, please. It's a small nuisance now, but may be really
-> helpful in the future when someone tries to debug stuff and understand
-> the motivation behind these changes. It'd make it much easier for you
-> to document the changes, too: you have an entire commit log per
-> change.
+--dDRMvlgZJXvWKvBx
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
 
-Ok, not a problem then.
+These patches add AMD IOMMUv2 perfomance counter support and allow external
+drivers to manage the PC; for example, a implementation of perf IOMMUv2 PMU.
 
-Cheers,
+The quirk fixes a potential problem regarding BIOS and enables the IOMMUv2
+Extended Feature Register PC bit targeting AMD Family 15h Model 10h-1Fh.
 
-Omar
+
+--dDRMvlgZJXvWKvBx
+Content-Type: text/x-diff; charset="us-ascii";
+	name="0001-iommuv2-amd-add-quirk-for-15h-models-10h-1Fh.patch"
+Content-Disposition: attachment;
+	filename="0001-iommuv2-amd-add-quirk-for-15h-models-10h-1Fh.patch"
+Content-Description: 0001-iommuv2-amd-add-quirk-for-15h-models-10h-1Fh.patch
+
+>From 760e18a02c0bb7eb5f5e3ebc192d43931f4c753b Mon Sep 17 00:00:00 2001
+From: "Steven L. Kinney" <steven.kinney@amd.com>
+Date: Fri, 16 Nov 2012 15:27:47 -0600
+Subject: [PATCH] iommuv2/amd: Add quirk for AMD 15H_M10 IOMMUv2 Performance
+ Counters
+
+Add AMD PCI device definition that will identify devices that relate to the
+IOMMUv2 PC PCI quirk added for potential non-enable by BIOS.
+
+On AMD family 15h models 10h-1Fh BIOS may not enable performance counters in
+IOMMUv2's EFR.  Add a quirk to enable the counters when this happens.
+
+Signed-off-by: Steven L. Kinney <steven.kinney@amd.com>
+---
+ arch/x86/kernel/quirks.c |   17 +++++++++++++++++
+ include/linux/pci_ids.h  |    2 ++
+ 2 files changed, 19 insertions(+)
+
+diff --git a/arch/x86/kernel/quirks.c b/arch/x86/kernel/quirks.c
+index 1b27de5..9ea518b 100644
+--- a/arch/x86/kernel/quirks.c
++++ b/arch/x86/kernel/quirks.c
+@@ -567,3 +567,20 @@ DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_15H_NB_F5,
+ 			quirk_amd_nb_node);
+ 
+ #endif
++
++#if defined(CONFIG_PCI) && defined(CONFIG_AMD_IOMMU_V2_PC)
++
++static void amd_force_iommu_v2_pc(struct pci_dev *dev)
++{
++	u32 val;
++
++	pci_read_config_dword(dev, 0x70, &val);
++	val |= (1<<9);
++	pci_write_config_dword(dev, 0x70, val);
++	dev_printk(KERN_DEBUG, &dev->dev, "Enabled IOMMUv2 PC\n");
++}
++
++DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_15H_M10H_IOMMU,
++			amd_force_iommu_v2_pc);
++
++#endif
+diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
+index 9d36b82..70e20a3 100644
+--- a/include/linux/pci_ids.h
++++ b/include/linux/pci_ids.h
+@@ -396,6 +396,8 @@
+ /* AMD RD890 Chipset */
+ #define PCI_DEVICE_ID_RD890_IOMMU	0x5a23
+ 
++#define PCI_DEVICE_ID_AMD_15H_M10H_IOMMU	0x1419
++
+ #define PCI_VENDOR_ID_ADL		0x1005
+ #define PCI_DEVICE_ID_ADL_2301		0x2301
+ 
+-- 
+1.7.9.5
+
+
+--dDRMvlgZJXvWKvBx
+Content-Type: text/plain; charset="us-ascii"; name=
+	"0002-iommuv2-amd-enable-performance-counters-on-family-15h-models-10h-1Fh"
+Content-Disposition: attachment; filename=
+	"0002-iommuv2-amd-enable-performance-counters-on-family-15h-models-10h-1Fh"
+Content-Description: 0002-iommuv2-amd-enable-performance-counters-on-family-15h-models-10h-1Fh
+
+>From c51e45b34dd7075e9adc28fc1c00baecd07161db Mon Sep 17 00:00:00 2001
+From: "Steven L. Kinney" <steven.kinney@amd.com>
+Date: Fri, 16 Nov 2012 15:47:14 -0600
+Subject: [PATCH] iommuv2/amd: Enable Performance Counters On Family 15h
+ Models 10h-1Fh
+
+Add Kernel configuration selection for AMD IOMMUv2 performance counters.
+
+Add a check that will determine the configuration of the AMD IOMMUv2
+performance counter(s) and extend the IOMMUv2 MMIO Region to account for the
+additional PC register bank.
+
+Add maximum IOMMUv2 bank/counter members to the amd_iommu structure that will
+hold the relevant data concerning the available PC bank and counter resources.
+
+Add code to iommu_init_pci that will check for IOMMUv2 PC HW support and
+populate the max banks and counters into the amd_iommu structure.
+
+Add exported functionality that will allow external drivers to obtain IOMMUv2
+PC bank/counter resource information and manage the IOMMUv2 PC measurment
+configuration.  Bank and counter assignment is managed outside of this driver;
+for example, within a perf IOMMUv2 PMU realization.
+
+Signed-off-by: Steven L. Kinney <steven.kinney@amd.com>
+---
+ drivers/iommu/Kconfig           |   10 +++++
+ drivers/iommu/amd_iommu_init.c  |   86 +++++++++++++++++++++++++++++++++++++++
+ drivers/iommu/amd_iommu_types.h |   13 +++++-
+ 3 files changed, 108 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index e39f9db..d732e31 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -73,6 +73,16 @@ config AMD_IOMMU_V2
+ 	  hardware. Select this option if you want to use devices that support
+ 	  the PCI PRI and PASID interface.
+ 
++# AMD IOMMUv2 Performance Counter support
++config AMD_IOMMU_V2_PC
++	bool "AMD IOMMUv2 Performance Counters (EXPERIMENTAL)"
++	depends on AMD_IOMMU_V2
++	---help---
++	  This option enables support for AMD IOMMUv2 Performance Counters.
++	  Select this option if you want to enable IOMMUv2 Performance
++	  Counters support.
++	  If unsure, say N.
++
+ # Intel IOMMU support
+ config DMAR_TABLE
+ 	bool
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 81837b0..d3243af 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -1145,6 +1145,20 @@ static int iommu_init_pci(struct amd_iommu *iommu)
+ 	if (iommu->cap & (1UL << IOMMU_CAP_NPCACHE))
+ 		amd_iommu_np_cache = true;
+ 
++#ifdef CONFIG_AMD_IOMMU_V2_PC
++	if (iommu_feature(iommu, FEATURE_PC)) {
++		u32 val;
++		dev_printk(KERN_DEBUG, &iommu->dev->dev,
++			   "AMD-Vi: IOMMUv2 perf counters supported\n");
++		val = readl(iommu->mmio_base + MMIO_CNTR_CONF_OFFSET);
++		iommu->max_banks = (u8) ((val >> 12) & 0x3f);
++		iommu->max_counters = (u8) ((val >> 7) & 0xf);
++		dev_printk(KERN_DEBUG, &iommu->dev->dev,
++			   "AMD-Vi: %d counter banks, %d counters each\n",
++			   iommu->max_banks, iommu->max_counters);
++	}
++#endif
++
+ 	if (is_rd890_iommu(iommu->dev)) {
+ 		int i, j;
+ 
+@@ -2076,3 +2090,75 @@ bool amd_iommu_v2_supported(void)
+ 	return amd_iommu_v2_present;
+ }
+ EXPORT_SYMBOL(amd_iommu_v2_supported);
++
++#ifdef CONFIG_AMD_IOMMU_V2_PC
++/****************************************************************************
++ *
++ * IOMMUv2 EFR Performance Counter support functionality. This code allows
++ * access to the IOMMUv2 PC functionality.
++ *
++ ****************************************************************************/
++
++u8 amd_iommu_v2_get_max_pc_banks(u16 devid)
++{
++	struct amd_iommu *iommu;
++
++	/* locate the iommu governing the devid */
++	iommu = amd_iommu_rlookup_table[devid];
++
++	if (iommu)
++		return iommu->max_banks;
++
++	return -ENODEV;
++}
++EXPORT_SYMBOL(amd_iommu_v2_get_max_pc_banks);
++
++u8 amd_iommu_v2_get_max_pc_counters(u16 devid)
++{
++	struct amd_iommu *iommu;
++
++	/* locate the iommu governing the devid */
++	iommu = amd_iommu_rlookup_table[devid];
++
++	if (iommu)
++		return iommu->max_counters;
++
++	return -ENODEV;
++}
++EXPORT_SYMBOL(amd_iommu_v2_get_max_pc_counters);
++
++int amd_iommu_v2_get_set_pc_reg_val(u16 devid, u8 bank, u8 cntr, u8 fxn,
++				    long long *value, is_write)
++{
++	struct amd_iommu *iommu;
++	u32 offset;
++	u32 max_offset_lim;
++
++	/* locate the iommu associated with the device ID */
++	iommu = amd_iommu_rlookup_table[devid];
++	if (iommu == NULL)
++		return -ENODEV;
++
++	/* check for valid iommu pc register indexing */
++	if (fxn < 0 || fxn > 0x28 || (fxn & 7))
++		return -ENODEV;
++
++	offset = (u32)(((0x40|bank) << 12) | (cntr << 8) | fxn);
++
++	/* limit the offset to the hw defined mmio region aperture */
++	max_offset_lim = (u32)(((0x40|iommu->max_banks) << 12) |
++				(iommu->max_counters << 8) | 0x28);
++	if ((offset < IOMMU_V2_PC_REG_OFFSET) ||
++	    (offset > max_offset_lim))
++		return -EINVAL;
++
++	if (is_write)
++		*value = readl(iommu->mmio_base + offset);
++	else
++		writel((u32)*value, iommu->mmio_base + offset);
++
++	return 0;
++}
++EXPORT_SYMBOL(amd_iommu_v2_get_set_pc_reg_val);
++#endif
++
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index c9aa3d0..6dc1f68 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -38,7 +38,12 @@
+ #define RLOOKUP_TABLE_ENTRY_SIZE	(sizeof(void *))
+ 
+ /* Length of the MMIO region for the AMD IOMMU */
++#ifdef CONFIG_AMD_IOMMU_V2_PC
++#define MMIO_REGION_LENGTH       0x80000
++#define IOMMU_V2_PC_REG_OFFSET	 0x40000
++#else
+ #define MMIO_REGION_LENGTH       0x4000
++#endif
+ 
+ /* Capability offsets used by the driver */
+ #define MMIO_CAP_HDR_OFFSET	0x00
+@@ -77,7 +82,7 @@
+ #define MMIO_STATUS_OFFSET	0x2020
+ #define MMIO_PPR_HEAD_OFFSET	0x2030
+ #define MMIO_PPR_TAIL_OFFSET	0x2038
+-
++#define MMIO_CNTR_CONF_OFFSET	0x4000
+ 
+ /* Extended Feature Bits */
+ #define FEATURE_PREFETCH	(1ULL<<0)
+@@ -584,6 +589,12 @@ struct amd_iommu {
+ 
+ 	/* The l2 indirect registers */
+ 	u32 stored_l2[0x83];
++
++#ifdef CONFIG_AMD_IOMMU_V2_PC
++	/* The maximum PC banks and counters/bank (PCSup=1) */
++	u8 max_banks;
++	u8 max_counters;
++#endif
+ };
+ 
+ struct devid_map {
+-- 
+1.7.9.5
+
+
+--dDRMvlgZJXvWKvBx--
