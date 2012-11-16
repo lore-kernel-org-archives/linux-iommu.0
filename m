@@ -1,29 +1,33 @@
-From: Steven Kinney <steven.kinney@amd.com>
-Subject: AMD IOMMUv2 performance counter patch and family 15h model 10h-1Fh
- quirk
-Date: Fri, 16 Nov 2012 16:42:29 -0600
-Message-ID: <20121116224228.GA23704@skinney-Trinity>
+From: Steven Kinney <steven.kinney-5C7GfCeVMHo@public.gmane.org>
+Subject: Re-send the AMD IOMMUv2 performance counter patched and PCI quirk.
+	Sorry for the noise.
+Date: Fri, 16 Nov 2012 17:20:18 -0600
+Message-ID: <20121116232018.GA24141@skinney-Trinity>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="dDRMvlgZJXvWKvBx"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: multipart/mixed; boundary="X1bOJ3K7DJ5YkBrT"
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: tglx@linutronix.de, mingo@redhat.com, hpa@zytor.com, x86@kernel.org, joerg.roedel@amd.com
-Cc: bhelgaas@google.com, sebastian@breakpoint.cc, myron.stowe@redhat.com, hdoyu@nvidia.com, swarren@wwwdotorg.org, jkosina@suse.cz, kgene.kim@samsung.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, steven.kinney@amd.com
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, joerg.roedel-5C7GfCeVMHo@public.gmane.org
+Cc: kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org, jkosina-AlSwsSmVLrQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, steven.kinney-5C7GfCeVMHo@public.gmane.org, sebastian-E0PNVn5OA6ohrxcnuTQ+TQ@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, myron.stowe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
---dDRMvlgZJXvWKvBx
+--X1bOJ3K7DJ5YkBrT
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
 
-These patches add AMD IOMMUv2 perfomance counter support and allow external
-drivers to manage the PC; for example, a implementation of perf IOMMUv2 PMU.
+Resending previous AMD IOMMUv2 patches due to improper extension on second
+patch.
 
-The quirk fixes a potential problem regarding BIOS and enables the IOMMUv2
-Extended Feature Register PC bit targeting AMD Family 15h Model 10h-1Fh.
-
-
---dDRMvlgZJXvWKvBx
+--X1bOJ3K7DJ5YkBrT
 Content-Type: text/x-diff; charset="us-ascii";
 	name="0001-iommuv2-amd-add-quirk-for-15h-models-10h-1Fh.patch"
 Content-Disposition: attachment;
@@ -31,7 +35,7 @@ Content-Disposition: attachment;
 Content-Description: 0001-iommuv2-amd-add-quirk-for-15h-models-10h-1Fh.patch
 
 >From 760e18a02c0bb7eb5f5e3ebc192d43931f4c753b Mon Sep 17 00:00:00 2001
-From: "Steven L. Kinney" <steven.kinney@amd.com>
+From: "Steven L. Kinney" <steven.kinney-5C7GfCeVMHo@public.gmane.org>
 Date: Fri, 16 Nov 2012 15:27:47 -0600
 Subject: [PATCH] iommuv2/amd: Add quirk for AMD 15H_M10 IOMMUv2 Performance
  Counters
@@ -42,7 +46,7 @@ IOMMUv2 PC PCI quirk added for potential non-enable by BIOS.
 On AMD family 15h models 10h-1Fh BIOS may not enable performance counters in
 IOMMUv2's EFR.  Add a quirk to enable the counters when this happens.
 
-Signed-off-by: Steven L. Kinney <steven.kinney@amd.com>
+Signed-off-by: Steven L. Kinney <steven.kinney-5C7GfCeVMHo@public.gmane.org>
 ---
  arch/x86/kernel/quirks.c |   17 +++++++++++++++++
  include/linux/pci_ids.h  |    2 ++
@@ -90,15 +94,15 @@ index 9d36b82..70e20a3 100644
 1.7.9.5
 
 
---dDRMvlgZJXvWKvBx
-Content-Type: text/plain; charset="us-ascii"; name=
-	"0002-iommuv2-amd-enable-performance-counters-on-family-15h-models-10h-1Fh"
+--X1bOJ3K7DJ5YkBrT
+Content-Type: text/x-diff; charset="us-ascii"; name=
+	"0002-iommuv2-amd-enable-performance-counters-on-family-15h-models-10h-1Fh.patch"
 Content-Disposition: attachment; filename=
-	"0002-iommuv2-amd-enable-performance-counters-on-family-15h-models-10h-1Fh"
-Content-Description: 0002-iommuv2-amd-enable-performance-counters-on-family-15h-models-10h-1Fh
+	"0002-iommuv2-amd-enable-performance-counters-on-family-15h-models-10h-1Fh.patch"
+Content-Description: 0002-iommuv2-amd-enable-performance-counters-on-family-15h-models-10h-1Fh.patch
 
 >From c51e45b34dd7075e9adc28fc1c00baecd07161db Mon Sep 17 00:00:00 2001
-From: "Steven L. Kinney" <steven.kinney@amd.com>
+From: "Steven L. Kinney" <steven.kinney-5C7GfCeVMHo@public.gmane.org>
 Date: Fri, 16 Nov 2012 15:47:14 -0600
 Subject: [PATCH] iommuv2/amd: Enable Performance Counters On Family 15h
  Models 10h-1Fh
@@ -120,7 +124,7 @@ PC bank/counter resource information and manage the IOMMUv2 PC measurment
 configuration.  Bank and counter assignment is managed outside of this driver;
 for example, within a perf IOMMUv2 PMU realization.
 
-Signed-off-by: Steven L. Kinney <steven.kinney@amd.com>
+Signed-off-by: Steven L. Kinney <steven.kinney-5C7GfCeVMHo@public.gmane.org>
 ---
  drivers/iommu/Kconfig           |   10 +++++
  drivers/iommu/amd_iommu_init.c  |   86 +++++++++++++++++++++++++++++++++++++++
@@ -292,4 +296,11 @@ index c9aa3d0..6dc1f68 100644
 1.7.9.5
 
 
---dDRMvlgZJXvWKvBx--
+--X1bOJ3K7DJ5YkBrT
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--X1bOJ3K7DJ5YkBrT--
