@@ -1,13 +1,11 @@
-From: Bill Pemberton <wfp5p-4Ng6DfrEGID2fBVCVOL8/A@public.gmane.org>
-Subject: [PATCH 231/493] iommu: remove use of __devinit
-Date: Mon, 19 Nov 2012 13:23:00 -0500
-Message-ID: <1353349642-3677-231-git-send-email-wfp5p@virginia.edu>
-References: <1353349642-3677-1-git-send-email-wfp5p@virginia.edu>
+From: Omar Ramirez Luna <omar.luna-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: [PATCH v5 0/5] OMAP: iommu: hwmod, reset handling and runtime PM
+Date: Mon, 19 Nov 2012 19:05:47 -0600
+Message-ID: <1353373552-16039-1-git-send-email-omar.luna@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1353349642-3677-1-git-send-email-wfp5p-4Ng6DfrEGID2fBVCVOL8/A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,82 +15,49 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, Paul Walmsley <paul-DWxLp4Yu+b8AvxtiuMwx3w@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Mauro Carvalho Chehab <mchehab-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ido Yariv <ido-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-CONFIG_HOTPLUG is going away as an option so __devinit is no longer
-needed.
+These patches are needed for remoteproc to work on OMAP4.
 
-Signed-off-by: Bill Pemberton <wfp5p-4Ng6DfrEGID2fBVCVOL8/A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org )
----
- drivers/iommu/intel-iommu.c | 4 ++--
- drivers/iommu/omap-iommu.c  | 2 +-
- drivers/iommu/tegra-gart.c  | 2 +-
- drivers/iommu/tegra-smmu.c  | 2 +-
- 4 files changed, 5 insertions(+), 5 deletions(-)
+Introduced iommu hwmod support for OMAP3 (iva, isp) and
+OMAP4 (ipu, dsp), along with the corresponding runtime PM
+and routines to deassert reset lines, enable/disable clocks
+and configure sysc registers.
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index d4a4cd4..246c7ce 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -4196,7 +4196,7 @@ static struct iommu_ops intel_iommu_ops = {
- 	.pgsize_bitmap	= INTEL_IOMMU_PGSIZES,
- };
- 
--static void __devinit quirk_iommu_rwbf(struct pci_dev *dev)
-+static void quirk_iommu_rwbf(struct pci_dev *dev)
- {
- 	/*
- 	 * Mobile 4 Series Chipset neglects to set RWBF capability,
-@@ -4224,7 +4224,7 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2a40, quirk_iommu_rwbf);
- #define GGC_MEMORY_SIZE_3M_VT	(0xa << 8)
- #define GGC_MEMORY_SIZE_4M_VT	(0xb << 8)
- 
--static void __devinit quirk_calpella_no_shadow_gtt(struct pci_dev *dev)
-+static void quirk_calpella_no_shadow_gtt(struct pci_dev *dev)
- {
- 	unsigned short ggc;
- 
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index e7b0a17..c13979d 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -905,7 +905,7 @@ static void omap_iommu_detach(struct omap_iommu *obj)
- /*
-  *	OMAP Device MMU(IOMMU) detection
-  */
--static int __devinit omap_iommu_probe(struct platform_device *pdev)
-+static int omap_iommu_probe(struct platform_device *pdev)
- {
- 	int err = -ENODEV;
- 	int irq;
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index c16e8fc..58ae73c 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -448,7 +448,7 @@ static struct platform_driver tegra_gart_driver = {
- 	},
- };
- 
--static int __devinit tegra_gart_init(void)
-+static int tegra_gart_init(void)
- {
- 	bus_set_iommu(&platform_bus_type, &gart_iommu_ops);
- 	return platform_driver_register(&tegra_gart_driver);
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 4167863..e635a90 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -1273,7 +1273,7 @@ static struct platform_driver tegra_smmu_driver = {
- 	},
- };
- 
--static int __devinit tegra_smmu_init(void)
-+static int tegra_smmu_init(void)
- {
- 	bus_set_iommu(&platform_bus_type, &smmu_iommu_ops);
- 	return platform_driver_register(&tegra_smmu_driver);
+A couple of patches were added (first two) to be clearer on
+the reasons for such changes, they were previosuly bundled as part
+of runtime PM changes. The last patch corresponds to a change in the
+leaf clocks used and it depends on this series to work properly.
+
+Due to single Image support, I rebased these on top of k3.7-rc5 and
+DEPEND on:
+
+[PATCH v5 0/6] Move rest of omap-iommu to live in drivers/iommu
+http://thread.gmane.org/gmane.linux.kernel/1387788
+
+Minor rebasing might be needed if these are included on top of
+linux-omap, since they are affected by changes on headers being
+moved to include/linux/platform_data and arch/arm/mach-omap2.
+
+Omar Ramirez Luna (5):
+  iommu/omap: remove redundant clock handling on ISR
+  iommu/omap: keep mmu enabled when requested
+  iommu/omap: migrate to hwmod framework
+  iommu/omap: adapt to runtime pm
+  ARM: OMAP4: hwmod data: ipu and dsp to use parent clocks instead of
+    leaf clocks
+
+ arch/arm/mach-omap2/clock44xx_data.c       |   22 ----
+ arch/arm/mach-omap2/devices.c              |    2 +-
+ arch/arm/mach-omap2/omap-iommu.c           |  167 ++++++---------------------
+ arch/arm/mach-omap2/omap_hwmod_44xx_data.c |    4 +-
+ drivers/iommu/omap-iommu.c                 |   68 ++++++-----
+ drivers/iommu/omap-iommu.h                 |    3 -
+ drivers/iommu/omap-iommu2.c                |   36 ------
+ include/linux/platform_data/iommu-omap.h   |    9 +-
+ 8 files changed, 84 insertions(+), 227 deletions(-)
+
 -- 
-1.8.0
+1.7.4.1
