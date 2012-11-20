@@ -1,8 +1,8 @@
 From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v2 11/12] iommu/exynos: add literal name of System MMU for
-	debugging
-Date: Tue, 20 Nov 2012 16:30:51 +0900
-Message-ID: <002501cdc6f0$f81ca550$e855eff0$%cho@samsung.com>
+Subject: [PATCH v2 09/12] iommu/exynos: add supoort for runtime pm and
+	suspend/resume
+Date: Tue, 20 Nov 2012 16:30:40 +0900
+Message-ID: <002301cdc6f0$f1a1dce0$d4e596a0$%cho@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -21,219 +21,315 @@ To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-sa
 Cc: 'Kukjin Kim' <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, sw0312.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, 'Subash Patel' <subash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Sanghyun Lee' <sanghyun75.lee-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This commit adds System MMU name to the driver data of each System
-MMU. It is used by fault information.
+This change enables the client device drivers not to care about
+the state of System MMU since the internal state of System MMU
+is controlled by the runtime PM and suspend/resume callback functions.
 
 Signed-off-by: KyongHo Cho <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/exynos-iommu.c | 100 ++++++++++++++++++++++++++++++++-----------
- 1 file changed, 76 insertions(+), 24 deletions(-)
+ drivers/iommu/exynos-iommu.c | 175 ++++++++++++++++++++++---------------------
+ 1 file changed, 89 insertions(+), 86 deletions(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 77833f5..128c811 100644
+index 8f9239c..169f56e 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -26,6 +26,7 @@
- #include <linux/list.h>
- #include <linux/memblock.h>
- #include <linux/export.h>
-+#include <linux/string.h>
- #include <linux/of.h>
- #include <linux/of_platform.h>
- 
-@@ -150,15 +151,21 @@ enum exynos_sysmmu_inttype {
- 	SYSMMU_FAULTS_NUM
- };
- 
--/*
-+/**
-+ * fault handler function type
-+ * @dev: the client device
-+ * @mmuname: name of the System MMU that generates fault
-  * @itype: type of fault.
-  * @pgtable_base: the physical address of page table base. This is 0 if @itype
-  *                is SYSMMU_BUSERROR.
-  * @fault_addr: the device (virtual) address that the System MMU tried to
-  *             translated. This is 0 if @itype is SYSMMU_BUSERROR.
-  */
--typedef int (*sysmmu_fault_handler_t)(enum exynos_sysmmu_inttype itype,
--			unsigned long pgtable_base, unsigned long fault_addr);
-+typedef int (*sysmmu_fault_handler_t)(struct device *dev,
-+				      const char *mmuname,
-+				      enum exynos_sysmmu_inttype itype,
-+				      unsigned long pgtable_base,
-+				      unsigned long fault_addr);
- 
- static unsigned short fault_reg_offset[SYSMMU_FAULTS_NUM] = {
- 	REG_PAGE_FAULT_ADDR,
-@@ -234,6 +241,7 @@ struct sysmmu_drvdata {
+@@ -208,6 +208,7 @@ struct sysmmu_drvdata {
+ 	struct iommu_domain *domain;
  	sysmmu_fault_handler_t fault_handler;
  	unsigned long pgtable;
- 	bool runtime_active;
-+	const char **mmuname;
++	bool runtime_active;
  	void __iomem *sfrbases[0];
  };
  
-@@ -612,16 +620,18 @@ void exynos_sysmmu_set_fault_handler(struct device *dev,
- 	spin_unlock_irqrestore(&owner->lock, flags);
+@@ -477,7 +478,8 @@ static bool __sysmmu_disable(struct sysmmu_drvdata *drvdata)
+ 		drvdata->pgtable = 0;
+ 		drvdata->domain = NULL;
+ 
+-		__sysmmu_disable_nocount(drvdata);
++		if (drvdata->runtime_active)
++			__sysmmu_disable_nocount(drvdata);
+ 
+ 		dev_dbg(drvdata->sysmmu, "Disabled\n");
+ 	} else  {
+@@ -490,30 +492,6 @@ static bool __sysmmu_disable(struct sysmmu_drvdata *drvdata)
+ 	return disabled;
  }
  
--static int default_fault_handler(enum exynos_sysmmu_inttype itype,
--		     unsigned long pgtable_base, unsigned long fault_addr)
-+static int default_fault_handler(struct device *dev, const char *mmuname,
-+					enum exynos_sysmmu_inttype itype,
-+					unsigned long pgtable_base,
-+					unsigned long fault_addr)
- {
- 	unsigned long *ent;
- 
- 	if ((itype >= SYSMMU_FAULTS_NUM) || (itype < SYSMMU_PAGEFAULT))
- 		itype = SYSMMU_FAULT_UNKNOWN;
- 
--	pr_err("%s occurred at 0x%lx(Page table base: 0x%lx)\n",
--			sysmmu_fault_name[itype], fault_addr, pgtable_base);
-+	dev_err(dev, "%s occured at 0x%lx by '%s'(Page table base: 0x%lx)\n",
-+		sysmmu_fault_name[itype], fault_addr, mmuname, pgtable_base);
- 
- 	ent = section_entry(__va(pgtable_base), fault_addr);
- 	pr_err("\tLv1 entry: 0x%lx\n", *ent);
-@@ -642,25 +652,30 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
- {
- 	/* SYSMMU is in blocked when interrupt occurred. */
- 	struct sysmmu_drvdata *data = dev_id;
--	struct resource *irqres;
--	struct platform_device *pdev;
-+	struct exynos_iommu_owner *owner = NULL;
- 	enum exynos_sysmmu_inttype itype;
- 	unsigned long addr = -1;
+-static bool __exynos_sysmmu_disable(struct device *dev)
+-{
+-	unsigned long flags;
+-	bool disabled = true;
+-	struct exynos_iommu_owner *owner = dev->archdata.iommu;
+-	struct device *sysmmu;
 -
-+	const char *mmuname = NULL;
- 	int i, ret = -ENOSYS;
- 
--	spin_lock(&data->lock);
-+	if (data->master)
-+		owner = data->master->archdata.iommu;
-+
-+	if (owner)
-+		spin_lock(&owner->lock);
- 
- 	WARN_ON(!is_sysmmu_active(data));
- 
--	pdev = to_platform_device(data->sysmmu);
--	for (i = 0; i < (pdev->num_resources / 2); i++) {
--		irqres = platform_get_resource(pdev, IORESOURCE_IRQ, i);
-+	for (i = 0; i < data->nsfrs; i++) {
-+		struct resource *irqres;
-+		irqres = platform_get_resource(
-+				to_platform_device(data->sysmmu),
-+				IORESOURCE_IRQ, i);
- 		if (irqres && ((int)irqres->start == irq))
- 			break;
- 	}
- 
--	if (i == pdev->num_resources) {
-+	if (i == data->nsfrs) {
- 		itype = SYSMMU_FAULT_UNKNOWN;
- 	} else {
- 		itype = (enum exynos_sysmmu_inttype)
-@@ -672,28 +687,34 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
- 				data->sfrbases[i] + fault_reg_offset[itype]);
- 	}
- 
--	if (data->domain)
--		ret = report_iommu_fault(data->domain, data->master,
-+	if (data->domain) /* owner is always set if data->domain exists */
-+		ret = report_iommu_fault(data->domain, owner->dev,
- 				addr, itype);
- 
- 	if ((ret == -ENOSYS) && data->fault_handler) {
- 		unsigned long base = data->pgtable;
-+		mmuname = (data->mmuname) ?  data->mmuname[i]
-+						: dev_name(data->sysmmu);
-+
- 		if (itype != SYSMMU_FAULT_UNKNOWN)
- 			base = __raw_readl(
- 					data->sfrbases[i] + REG_PT_BASE_ADDR);
--		ret = data->fault_handler(itype, base, addr);
-+		ret = data->fault_handler(owner ? owner->dev : data->sysmmu,
-+					mmuname, itype, base, addr);
- 	}
- 
- 	if (!ret && (itype != SYSMMU_FAULT_UNKNOWN))
- 		__raw_writel(1 << itype, data->sfrbases[i] + REG_INT_CLEAR);
- 	else
--		dev_dbg(data->sysmmu, "%s is not handled.\n",
--				sysmmu_fault_name[itype]);
-+		dev_dbg(owner ? owner->dev : data->sysmmu,
-+				"%s is not handled by %s\n",
-+				sysmmu_fault_name[itype],
-+				dev_name(data->sysmmu));
- 
--	if (itype != SYSMMU_FAULT_UNKNOWN)
--		sysmmu_unblock(data->sfrbases[i]);
-+	sysmmu_unblock(data->sfrbases[i]);
- 
--	spin_unlock(&data->lock);
-+	if (owner)
-+		spin_unlock(&owner->lock);
- 
- 	return IRQ_HANDLED;
- }
-@@ -1049,6 +1070,30 @@ err_dev_put:
- 	return ret;
- }
- 
-+static void __init __sysmmu_init_mmuname(struct device *sysmmu,
-+					struct sysmmu_drvdata *drvdata)
-+{
-+	int i;
-+	const char *mmuname;
-+
-+	if (of_property_count_strings(sysmmu->of_node, "mmuname") !=
-+							drvdata->nsfrs)
-+		return;
-+
-+	drvdata->mmuname = (void *)drvdata->sfrbases +
-+				sizeof(drvdata->sfrbases[0]) * drvdata->nsfrs;
-+
-+	for (i = 0; i < drvdata->nsfrs; i++) {
-+		if (of_property_read_string_index(sysmmu->of_node,
-+					"mmuname", i, &mmuname))
-+			dev_err(sysmmu, "Failed read mmuname[%d]\n", i);
-+		else
-+			drvdata->mmuname[i] = kstrdup(mmuname, GFP_KERNEL);
-+		if (!drvdata->mmuname[i])
-+			drvdata->mmuname[i] = "noname";
-+	}
-+}
-+
- static int __init exynos_sysmmu_probe(struct platform_device *pdev)
+-	BUG_ON(!has_sysmmu(dev));
+-
+-	spin_lock_irqsave(&owner->lock, flags);
+-
+-	/* Every call to __sysmmu_disable() must return same result */
+-	for_each_sysmmu(dev, sysmmu) {
+-		struct sysmmu_drvdata *drvdata = dev_get_drvdata(sysmmu);
+-		disabled = __sysmmu_disable(drvdata);
+-		if (disabled)
+-			drvdata->master = NULL;
+-	}
+-
+-	spin_unlock_irqrestore(&owner->lock, flags);
+-
+-	return disabled;
+-}
+-
+ static void __sysmmu_enable_nocount(struct sysmmu_drvdata *drvdata)
  {
- 	int i, ret;
-@@ -1060,9 +1105,14 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
- 		return -ENODEV;
- 	}
+ 	int i;
+@@ -554,7 +532,8 @@ static int __sysmmu_enable(struct sysmmu_drvdata *drvdata,
+ 		drvdata->pgtable = pgtable;
+ 		drvdata->domain = domain;
  
-+	ret = of_property_count_strings(pdev->dev.of_node, "mmuname");
-+	if (ret != (int)(pdev->num_resources / 2))
-+		ret = 0;
+-		__sysmmu_enable_nocount(drvdata);
++		if (drvdata->runtime_active)
++			__sysmmu_enable_nocount(drvdata);
+ 
+ 		dev_dbg(drvdata->sysmmu, "Enabled\n");
+ 	} else {
+@@ -610,42 +589,31 @@ static int __exynos_sysmmu_enable(struct device *dev, unsigned long pgtable,
+ 
+ int exynos_sysmmu_enable(struct device *dev, unsigned long pgtable)
+ {
+-	int ret;
+-	struct device *sysmmu;
+-
+ 	BUG_ON(!memblock_is_memory(pgtable));
+ 
+-	for_each_sysmmu(dev, sysmmu) {
+-		ret = pm_runtime_get_sync(sysmmu);
+-		if (ret < 0)
+-			break;
+-	}
+-
+-	if (ret < 0) {
+-		struct device *start;
+-		for_each_sysmmu_until(dev, start, sysmmu)
+-			pm_runtime_put(start);
+-
+-		return ret;
+-	}
+-
+-	ret = __exynos_sysmmu_enable(dev, pgtable, NULL);
+-	if (ret < 0)
+-		for_each_sysmmu(dev, sysmmu)
+-			pm_runtime_put(sysmmu);
+-
+-	return ret;
++	return __exynos_sysmmu_enable(dev, pgtable, NULL);
+ }
+ 
+ bool exynos_sysmmu_disable(struct device *dev)
+ {
+-	bool disabled;
++	unsigned long flags;
++	bool disabled = true;
++	struct exynos_iommu_owner *owner = dev->archdata.iommu;
+ 	struct device *sysmmu;
+ 
+-	disabled = __exynos_sysmmu_disable(dev);
++	BUG_ON(!has_sysmmu(dev));
+ 
+-	for_each_sysmmu(dev, sysmmu)
+-		pm_runtime_put(sysmmu);
++	spin_lock_irqsave(&owner->lock, flags);
 +
- 	data = devm_kzalloc(dev,
- 			sizeof(*data)
--			+ sizeof(*data->sfrbases) * (pdev->num_resources / 2),
-+			+ sizeof(*data->sfrbases) * (pdev->num_resources / 2)
-+			+ sizeof(*data->mmuname) * ret,
- 			GFP_KERNEL);
- 	if (!data) {
- 		dev_err(dev, "Not enough memory\n");
-@@ -1112,6 +1162,8 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
++	/* Every call to __sysmmu_disable() must return same result */
++	for_each_sysmmu(dev, sysmmu) {
++		struct sysmmu_drvdata *drvdata = dev_get_drvdata(sysmmu);
++		disabled = __sysmmu_disable(drvdata);
++		if (disabled)
++			drvdata->master = NULL;
++	}
++
++	spin_unlock_irqrestore(&owner->lock, flags);
+ 
+ 	return disabled;
+ }
+@@ -661,7 +629,8 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova)
+ 		data = dev_get_drvdata(sysmmu);
+ 
+ 		spin_lock_irqsave(&data->lock, flags);
+-		if (is_sysmmu_active(data)) {
++		if (is_sysmmu_active(data) &&
++				data->runtime_active) {
+ 			int i;
+ 			for (i = 0; i < data->nsfrs; i++) {
+ 				if (sysmmu_block(data->sfrbases[i])) {
+@@ -899,6 +868,7 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
  
  	ret = __sysmmu_setup(dev, data);
  	if (!ret) {
-+		__sysmmu_init_mmuname(dev, data);
-+
- 		data->runtime_active = !pm_runtime_enabled(dev);
++		data->runtime_active = !pm_runtime_enabled(dev);
  		data->sysmmu = dev;
  		spin_lock_init(&data->lock);
+ 
+@@ -911,6 +881,64 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
+ 	return ret;
+ }
+ 
++#ifdef CONFIG_PM_SLEEP
++static int sysmmu_suspend(struct device *dev)
++{
++	struct sysmmu_drvdata *drvdata = dev_get_drvdata(dev);
++	unsigned long flags;
++	spin_lock_irqsave(&drvdata->lock, flags);
++	if (is_sysmmu_active(drvdata) &&
++		(!pm_runtime_enabled(dev) || drvdata->runtime_active))
++		__sysmmu_disable_nocount(drvdata);
++	spin_unlock_irqrestore(&drvdata->lock, flags);
++	return 0;
++}
++
++static int sysmmu_resume(struct device *dev)
++{
++	struct sysmmu_drvdata *drvdata = dev_get_drvdata(dev);
++	unsigned long flags;
++	spin_lock_irqsave(&drvdata->lock, flags);
++	if (is_sysmmu_active(drvdata) &&
++		(!pm_runtime_enabled(dev) || drvdata->runtime_active)) {
++		__sysmmu_enable_nocount(drvdata);
++	}
++	spin_unlock_irqrestore(&drvdata->lock, flags);
++	return 0;
++}
++#endif
++
++#ifdef CONFIG_PM_RUNTIME
++static int sysmmu_runtime_suspend(struct device *dev)
++{
++	struct sysmmu_drvdata *drvdata = dev_get_drvdata(dev);
++	unsigned long flags;
++	spin_lock_irqsave(&drvdata->lock, flags);
++	if (is_sysmmu_active(drvdata))
++		__sysmmu_disable_nocount(drvdata);
++	drvdata->runtime_active = false;
++	spin_unlock_irqrestore(&drvdata->lock, flags);
++	return 0;
++}
++
++static int sysmmu_runtime_resume(struct device *dev)
++{
++	struct sysmmu_drvdata *drvdata = dev_get_drvdata(dev);
++	unsigned long flags;
++	spin_lock_irqsave(&drvdata->lock, flags);
++	drvdata->runtime_active = true;
++	if (is_sysmmu_active(drvdata))
++		__sysmmu_enable_nocount(drvdata);
++	spin_unlock_irqrestore(&drvdata->lock, flags);
++	return 0;
++}
++#endif
++
++static const struct dev_pm_ops __pm_ops = {
++	SET_SYSTEM_SLEEP_PM_OPS(sysmmu_suspend, sysmmu_resume)
++	SET_RUNTIME_PM_OPS(sysmmu_runtime_resume, sysmmu_runtime_suspend, NULL)
++};
++
+ /*
+  * Descriptions of Device Tree node for System MMU
+  *
+@@ -948,6 +976,7 @@ static struct platform_driver exynos_sysmmu_driver __refdata = {
+ 	.driver		= {
+ 		.owner		= THIS_MODULE,
+ 		.name		= "exynos-sysmmu",
++		.pm		= &__pm_ops,
+ 		.of_match_table = of_match_ptr(sysmmu_of_match),
+ 	}
+ };
+@@ -1009,13 +1038,9 @@ static void exynos_iommu_domain_destroy(struct iommu_domain *domain)
+ 	spin_lock_irqsave(&priv->lock, flags);
+ 
+ 	list_for_each_entry_safe(owner, n, &priv->clients, client) {
+-		struct device *sysmmu;
+-		while (!__exynos_sysmmu_disable(owner->dev))
++		while (!exynos_sysmmu_disable(owner->dev))
+ 			; /* until System MMU is actually disabled */
+ 		list_del_init(&owner->client);
+-
+-		for_each_sysmmu(owner->dev, sysmmu)
+-			pm_runtime_put(sysmmu);
+ 	}
+ 
+ 	spin_unlock_irqrestore(&priv->lock, flags);
+@@ -1038,7 +1063,6 @@ static int exynos_iommu_attach_device(struct iommu_domain *domain,
+ 	struct exynos_iommu_domain *priv = domain->priv;
+ 	unsigned long flags;
+ 	int ret;
+-	struct device *sysmmu;
+ 
+ 	if (WARN_ON(!list_empty(&owner->client))) {
+ 		bool found = false;
+@@ -1063,20 +1087,6 @@ static int exynos_iommu_attach_device(struct iommu_domain *domain,
+ 		return 0;
+ 	}
+ 
+-	for_each_sysmmu(dev, sysmmu) {
+-		ret = pm_runtime_get_sync(sysmmu);
+-		if (ret < 0)
+-			break;
+-	}
+-
+-	if (ret < 0) {
+-		struct device *start;
+-		for_each_sysmmu_until(dev, start, sysmmu)
+-			pm_runtime_put(start);
+-
+-		return ret;
+-	}
+-
+ 	spin_lock_irqsave(&priv->lock, flags);
+ 
+ 	ret = __exynos_sysmmu_enable(dev, __pa(priv->pgtable), domain);
+@@ -1091,15 +1101,12 @@ static int exynos_iommu_attach_device(struct iommu_domain *domain,
+ 
+ 	spin_unlock_irqrestore(&priv->lock, flags);
+ 
+-	if (ret < 0) {
++	if (ret < 0)
+ 		dev_err(dev, "%s: Failed to attach IOMMU with pgtable %#lx\n",
+ 				__func__, __pa(priv->pgtable));
+-		for_each_sysmmu(dev, sysmmu)
+-			pm_runtime_put(sysmmu);
+-	} else {
++	else
+ 		dev_dbg(dev, "%s: Attached new IOMMU with pgtable 0x%lx\n",
+ 					__func__, __pa(priv->pgtable));
+-	}
+ 
+ 	return ret;
+ }
+@@ -1115,7 +1122,7 @@ static void exynos_iommu_detach_device(struct iommu_domain *domain,
+ 
+ 	list_for_each_entry_safe(owner, n, &priv->clients, client) {
+ 		if (owner == dev->archdata.iommu) {
+-			if (__exynos_sysmmu_disable(dev))
++			if (exynos_sysmmu_disable(dev))
+ 				list_del_init(&owner->client);
+ 			else
+ 				BUG();
+@@ -1125,14 +1132,10 @@ static void exynos_iommu_detach_device(struct iommu_domain *domain,
+ 
+ 	spin_unlock_irqrestore(&priv->lock, flags);
+ 
+-	if (owner == dev->archdata.iommu) {
+-		struct device *sysmmu;
++	if (owner == dev->archdata.iommu)
+ 		dev_dbg(dev, "%s: Detached IOMMU with pgtable %#lx\n",
+ 					__func__, __pa(priv->pgtable));
+-		for_each_sysmmu(dev, sysmmu)
+-			pm_runtime_put(sysmmu);
+-
+-	} else
++	else
+ 		dev_dbg(dev, "%s: No IOMMU is attached\n", __func__);
+ }
+ 
 -- 
 1.8.0
