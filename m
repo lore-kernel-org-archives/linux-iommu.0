@@ -1,7 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 03/19] x86, io_apic: Introduce x86_io_apic_ops.disable()
-Date: Tue, 20 Nov 2012 14:12:40 +0100
-Message-ID: <1353417176-18945-4-git-send-email-joro@8bytes.org>
+Subject: [PATCH 01/19] x86,
+	apic: Move irq_remapping_enabled checks into IRQ-remapping code
+Date: Tue, 20 Nov 2012 14:12:38 +0100
+Message-ID: <1353417176-18945-2-git-send-email-joro@8bytes.org>
 References: <1353417176-18945-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,211 +22,85 @@ To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar 
 Cc: Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Sebastian Andrzej Siewior <sebastian-E0PNVn5OA6ohrxcnuTQ+TQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This function pointer is used to call a system-specific
-function for disabling the IO-APIC. Currently this is used
-for IRQ remapping which has its own disable routine.
-
-Also introduce the necessary infrastructure in the interrupt
-remapping code to overwrite this and other function pointers
-as necessary by interrupt remapping.
+Move the three easy to move checks in the x86' apic.c file
+into the IRQ-remapping code.
 
 Signed-off-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Acked-by: Sebastian Andrzej Siewior <sebastian-E0PNVn5OA6ohrxcnuTQ+TQ@public.gmane.org>
 ---
- arch/x86/include/asm/io_apic.h  |    2 ++
- arch/x86/include/asm/x86_init.h |    9 +++++----
- arch/x86/kernel/apic/io_apic.c  |   41 ++++++++++++++++++---------------------
- arch/x86/kernel/x86_init.c      |    9 +++++----
- drivers/iommu/irq_remapping.c   |   31 ++++++++++++++++++++++++++++-
- 5 files changed, 61 insertions(+), 31 deletions(-)
+ arch/x86/kernel/apic/apic.c   |    9 +++------
+ drivers/iommu/irq_remapping.c |   11 +++++++++--
+ 2 files changed, 12 insertions(+), 8 deletions(-)
 
-diff --git a/arch/x86/include/asm/io_apic.h b/arch/x86/include/asm/io_apic.h
-index 73d8c53..d59e172 100644
---- a/arch/x86/include/asm/io_apic.h
-+++ b/arch/x86/include/asm/io_apic.h
-@@ -179,6 +179,7 @@ extern void __init native_io_apic_init_mappings(void);
- extern unsigned int native_io_apic_read(unsigned int apic, unsigned int reg);
- extern void native_io_apic_write(unsigned int apic, unsigned int reg, unsigned int val);
- extern void native_io_apic_modify(unsigned int apic, unsigned int reg, unsigned int val);
-+extern void native_disable_io_apic(void);
+diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
+index b17416e..69cba83 100644
+--- a/arch/x86/kernel/apic/apic.c
++++ b/arch/x86/kernel/apic/apic.c
+@@ -1444,8 +1444,7 @@ void __init bsp_end_local_APIC_setup(void)
+ 	 * Now that local APIC setup is completed for BP, configure the fault
+ 	 * handling for interrupt remapping.
+ 	 */
+-	if (irq_remapping_enabled)
+-		irq_remap_enable_fault_handling();
++	irq_remap_enable_fault_handling();
  
- static inline unsigned int io_apic_read(unsigned int apic, unsigned int reg)
- {
-@@ -223,6 +224,7 @@ static inline void disable_ioapic_support(void) { }
- #define native_io_apic_read		NULL
- #define native_io_apic_write		NULL
- #define native_io_apic_modify		NULL
-+#define native_disable_io_apic		NULL
- #endif
- 
- #endif /* _ASM_X86_IO_APIC_H */
-diff --git a/arch/x86/include/asm/x86_init.h b/arch/x86/include/asm/x86_init.h
-index 5769349..b1d2d6a 100644
---- a/arch/x86/include/asm/x86_init.h
-+++ b/arch/x86/include/asm/x86_init.h
-@@ -190,10 +190,11 @@ struct x86_msi_ops {
- };
- 
- struct x86_io_apic_ops {
--	void		(*init)  (void);
--	unsigned int	(*read)  (unsigned int apic, unsigned int reg);
--	void		(*write) (unsigned int apic, unsigned int reg, unsigned int value);
--	void		(*modify)(unsigned int apic, unsigned int reg, unsigned int value);
-+	void		(*init)   (void);
-+	unsigned int	(*read)   (unsigned int apic, unsigned int reg);
-+	void		(*write)  (unsigned int apic, unsigned int reg, unsigned int value);
-+	void		(*modify) (unsigned int apic, unsigned int reg, unsigned int value);
-+	void		(*disable)(void);
- };
- 
- extern struct x86_init_ops x86_init;
-diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
-index 1817fa9..3603bc4 100644
---- a/arch/x86/kernel/apic/io_apic.c
-+++ b/arch/x86/kernel/apic/io_apic.c
-@@ -1935,30 +1935,14 @@ void __init enable_IO_APIC(void)
- 	clear_IO_APIC();
  }
  
--/*
-- * Not an __init, needed by the reboot code
-- */
--void disable_IO_APIC(void)
-+void native_disable_io_apic(void)
- {
- 	/*
--	 * Clear the IO-APIC before rebooting:
--	 */
--	clear_IO_APIC();
--
--	if (!legacy_pic->nr_legacy_irqs)
--		return;
--
--	/*
- 	 * If the i8259 is routed through an IOAPIC
- 	 * Put that IOAPIC in virtual wire mode
- 	 * so legacy interrupts can be delivered.
--	 *
--	 * With interrupt-remapping, for now we will use virtual wire A mode,
--	 * as virtual wire B is little complex (need to configure both
--	 * IOAPIC RTE as well as interrupt-remapping table entry).
--	 * As this gets called during crash dump, keep this simple for now.
- 	 */
--	if (ioapic_i8259.pin != -1 && !irq_remapping_enabled) {
-+	if (ioapic_i8259.pin != -1) {
- 		struct IO_APIC_route_entry entry;
+@@ -2218,8 +2217,7 @@ static int lapic_suspend(void)
+ 	local_irq_save(flags);
+ 	disable_local_APIC();
  
- 		memset(&entry, 0, sizeof(entry));
-@@ -1978,12 +1962,25 @@ void disable_IO_APIC(void)
- 		ioapic_write_entry(ioapic_i8259.apic, ioapic_i8259.pin, entry);
- 	}
+-	if (irq_remapping_enabled)
+-		irq_remapping_disable();
++	irq_remapping_disable();
  
-+	if (cpu_has_apic || apic_from_smp_config())
-+		disconnect_bsp_APIC(ioapic_i8259.pin != -1);
-+
-+}
-+
-+/*
-+ * Not an __init, needed by the reboot code
-+ */
-+void disable_IO_APIC(void)
-+{
- 	/*
--	 * Use virtual wire A mode when interrupt remapping is enabled.
-+	 * Clear the IO-APIC before rebooting:
- 	 */
--	if (cpu_has_apic || apic_from_smp_config())
--		disconnect_bsp_APIC(!irq_remapping_enabled &&
--				ioapic_i8259.pin != -1);
-+	clear_IO_APIC();
-+
-+	if (!legacy_pic->nr_legacy_irqs)
-+		return;
-+
-+	x86_io_apic_ops.disable();
+ 	local_irq_restore(flags);
+ 	return 0;
+@@ -2287,8 +2285,7 @@ static void lapic_resume(void)
+ 	apic_write(APIC_ESR, 0);
+ 	apic_read(APIC_ESR);
+ 
+-	if (irq_remapping_enabled)
+-		irq_remapping_reenable(x2apic_mode);
++	irq_remapping_reenable(x2apic_mode);
+ 
+ 	local_irq_restore(flags);
  }
- 
- #ifdef CONFIG_X86_32
-diff --git a/arch/x86/kernel/x86_init.c b/arch/x86/kernel/x86_init.c
-index 7a3d075..754524a 100644
---- a/arch/x86/kernel/x86_init.c
-+++ b/arch/x86/kernel/x86_init.c
-@@ -118,8 +118,9 @@ struct x86_msi_ops x86_msi = {
- };
- 
- struct x86_io_apic_ops x86_io_apic_ops = {
--	.init	= native_io_apic_init_mappings,
--	.read	= native_io_apic_read,
--	.write	= native_io_apic_write,
--	.modify	= native_io_apic_modify,
-+	.init			= native_io_apic_init_mappings,
-+	.read			= native_io_apic_read,
-+	.write			= native_io_apic_write,
-+	.modify			= native_io_apic_modify,
-+	.disable		= native_disable_io_apic,
- };
 diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
-index 19381b9..db3dcaf 100644
+index faf85d6..19381b9 100644
 --- a/drivers/iommu/irq_remapping.c
 +++ b/drivers/iommu/irq_remapping.c
-@@ -1,3 +1,4 @@
-+#include <linux/cpumask.h>
- #include <linux/kernel.h>
- #include <linux/string.h>
- #include <linux/cpumask.h>
-@@ -6,6 +7,9 @@
- 
- #include <asm/hw_irq.h>
- #include <asm/irq_remapping.h>
-+#include <asm/processor.h>
-+#include <asm/x86_init.h>
-+#include <asm/apic.h>
- 
- #include "irq_remapping.h"
- 
-@@ -17,6 +21,24 @@ int no_x2apic_optout;
- 
- static struct irq_remap_ops *remap_ops;
- 
-+static void irq_remapping_disable_io_apic(void)
-+{
-+	/*
-+	 * With interrupt-remapping, for now we will use virtual wire A
-+	 * mode, as virtual wire B is little complex (need to configure
-+	 * both IOAPIC RTE as well as interrupt-remapping table entry).
-+	 * As this gets called during crash dump, keep this simple for
-+	 * now.
-+	 */
-+	if (cpu_has_apic || apic_from_smp_config())
-+		disconnect_bsp_APIC(0);
-+}
-+
-+static void __init irq_remapping_modify_x86_ops(void)
-+{
-+	x86_io_apic_ops.disable	=	irq_remapping_disable_io_apic;
-+}
-+
- static __init int setup_nointremap(char *str)
- {
- 	disable_irq_remap = 1;
-@@ -79,10 +101,17 @@ int __init irq_remapping_prepare(void)
- 
- int __init irq_remapping_enable(void)
- {
-+	int ret;
-+
- 	if (!remap_ops || !remap_ops->enable)
- 		return -ENODEV;
- 
--	return remap_ops->enable();
-+	ret = remap_ops->enable();
-+
-+	if (irq_remapping_enabled)
-+		irq_remapping_modify_x86_ops();
-+
-+	return ret;
- }
+@@ -87,7 +87,9 @@ int __init irq_remapping_enable(void)
  
  void irq_remapping_disable(void)
+ {
+-	if (!remap_ops || !remap_ops->disable)
++	if (!irq_remapping_enabled ||
++	    !remap_ops ||
++	    !remap_ops->disable)
+ 		return;
+ 
+ 	remap_ops->disable();
+@@ -95,7 +97,9 @@ void irq_remapping_disable(void)
+ 
+ int irq_remapping_reenable(int mode)
+ {
+-	if (!remap_ops || !remap_ops->reenable)
++	if (!irq_remapping_enabled ||
++	    !remap_ops ||
++	    !remap_ops->reenable)
+ 		return 0;
+ 
+ 	return remap_ops->reenable(mode);
+@@ -103,6 +107,9 @@ int irq_remapping_reenable(int mode)
+ 
+ int __init irq_remap_enable_fault_handling(void)
+ {
++	if (!irq_remapping_enabled)
++		return 0;
++
+ 	if (!remap_ops || !remap_ops->enable_faulting)
+ 		return -ENODEV;
+ 
 -- 
 1.7.9.5
