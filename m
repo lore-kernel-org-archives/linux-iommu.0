@@ -1,12 +1,14 @@
 From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: [PATCH 0/4] iommu/fsl: Freescale PAMU driver and IOMMU API
-	implementation.
-Date: Tue, 20 Nov 2012 19:24:53 +0530
-Message-ID: <1353419697-31269-1-git-send-email-Varun.Sethi@freescale.com>
+Subject: [PATCH 2/4] iommu/fsl: Add PAMU bypass enable register to ccsr_guts
+	structure.
+Date: Tue, 20 Nov 2012 19:24:55 +0530
+Message-ID: <1353419697-31269-3-git-send-email-Varun.Sethi@freescale.com>
+References: <1353419697-31269-1-git-send-email-Varun.Sethi@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1353419697-31269-1-git-send-email-Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,41 +22,28 @@ To: joerg.roedel-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq
 Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patchset provides the Freescale PAMU (Peripheral Access Management Unit) driver
-and the corresponding IOMMU API implementation. PAMU is the IOMMU present on Freescale
-QorIQ platforms. PAMU can authorize memory access, remap the memory address, and remap 
-the I/O transaction type.
+PAMU bypass enable register added to the ccsr_guts structure.
 
-This set consists of the following patches:
-1. Addition of new field in the device (powerpc) archdata structure for storing iommu domain information
-   pointer. This pointer is stored when the device is attached to a particular iommu domain.
-2. Add PAMU bypass enable register to the ccsr_guts structure.
-3. Addition of domain attributes required by the PAMU driver IOMMU API.
-4. PAMU driver and IOMMU API implementation.
+Signed-off-by: Timur Tabi <timur-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+---
+ arch/powerpc/include/asm/fsl_guts.h |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
 
-This patch set is based on the next branch of the iommu git tree maintained by Joerg.
-
-
-Varun Sethi (4):
-  store iommu domain pointer in device archdata structure.
-  Add PAMU bypass enable register to ccsr_guts structure.
-  Add attributes for fsl PAMU driver.
-  FSL PAMU driver.
-
- arch/powerpc/include/asm/device.h   |    4 +
- arch/powerpc/include/asm/fsl_guts.h |    4 +-
- drivers/iommu/Kconfig               |    8 +
- drivers/iommu/Makefile              |    1 +
- drivers/iommu/fsl_pamu.c            | 1152 +++++++++++++++++++++++++++++++++++++++
- drivers/iommu/fsl_pamu.h            |  398 ++++++++++++++
- drivers/iommu/fsl_pamu_domain.c     |  978 +++++++++++++++++++++++++++++++++
- drivers/iommu/fsl_pamu_domain.h     |  102 ++++
- include/linux/iommu.h               |   43 +++++++++++++++++++++++++++++++++++++++++++
- 9 files changed, 2680 insertions(+), 1 deletions(-)
- create mode 100644 drivers/iommu/fsl_pamu.c
- create mode 100644 drivers/iommu/fsl_pamu.h
- create mode 100644 drivers/iommu/fsl_pamu_domain.c
- create mode 100644 drivers/iommu/fsl_pamu_domain.h
-
+diff --git a/arch/powerpc/include/asm/fsl_guts.h b/arch/powerpc/include/asm/fsl_guts.h
+index aa4c488..bb208eb 100644
+--- a/arch/powerpc/include/asm/fsl_guts.h
++++ b/arch/powerpc/include/asm/fsl_guts.h
+@@ -69,7 +69,9 @@ struct ccsr_guts {
+ 	u8	res0c4[0x224 - 0xc4];
+ 	__be32  iodelay1;	/* 0x.0224 - IO delay control register 1 */
+ 	__be32  iodelay2;	/* 0x.0228 - IO delay control register 2 */
+-	u8	res22c[0x800 - 0x22c];
++	u8	res22c[0x604 - 0x22c];
++	__be32	pamubypenr; 	/* 0x.604 - PAMU bypass enable register */
++	u8	res608[0x800 - 0x608];
+ 	__be32	clkdvdr;	/* 0x.0800 - Clock Divide Register */
+ 	u8	res804[0x900 - 0x804];
+ 	__be32	ircr;		/* 0x.0900 - Infrared Control Register */
 -- 
 1.7.4.1
