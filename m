@@ -1,7 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 05/19] x86, hpet: Introduce x86_msi_ops.setup_hpet_msi
-Date: Tue, 20 Nov 2012 14:12:42 +0100
-Message-ID: <1353417176-18945-6-git-send-email-joro@8bytes.org>
+Subject: [PATCH 06/19] x86,
+	msi: Use IRQ remapping specific setup_msi_irqs routine
+Date: Tue, 20 Nov 2012 14:12:43 +0100
+Message-ID: <1353417176-18945-7-git-send-email-joro@8bytes.org>
 References: <1353417176-18945-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,134 +22,224 @@ To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar 
 Cc: Suresh Siddha <suresh.b.siddha-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Sebastian Andrzej Siewior <sebastian-E0PNVn5OA6ohrxcnuTQ+TQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This function pointer can be overwritten by the IRQ
-remapping code. The irq_remapping_enabled check can be
-removed from default_setup_hpet_msi.
+Use seperate routines to setup MSI IRQs for both
+irq_remapping_enabled cases.
 
 Signed-off-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Acked-by: Sebastian Andrzej Siewior <sebastian-E0PNVn5OA6ohrxcnuTQ+TQ@public.gmane.org>
 ---
- arch/x86/include/asm/hpet.h     |    5 +++--
- arch/x86/include/asm/x86_init.h |    1 +
- arch/x86/kernel/apic/io_apic.c  |    7 +------
- arch/x86/kernel/hpet.c          |    2 +-
- arch/x86/kernel/x86_init.c      |   10 ++++++----
- drivers/iommu/irq_remapping.c   |    3 ++-
- 6 files changed, 14 insertions(+), 14 deletions(-)
+ arch/x86/include/asm/irq_remapping.h |   12 -------
+ arch/x86/include/asm/pci.h           |    2 ++
+ arch/x86/kernel/apic/io_apic.c       |   26 ++--------------
+ drivers/iommu/irq_remapping.c        |   57 ++++++++++++++++++++++++++++++++--
+ 4 files changed, 59 insertions(+), 38 deletions(-)
 
-diff --git a/arch/x86/include/asm/hpet.h b/arch/x86/include/asm/hpet.h
-index 434e210..b18df57 100644
---- a/arch/x86/include/asm/hpet.h
-+++ b/arch/x86/include/asm/hpet.h
-@@ -80,9 +80,9 @@ extern void hpet_msi_write(struct hpet_dev *hdev, struct msi_msg *msg);
- extern void hpet_msi_read(struct hpet_dev *hdev, struct msi_msg *msg);
+diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
+index 5fb9bbb..0ee1e88 100644
+--- a/arch/x86/include/asm/irq_remapping.h
++++ b/arch/x86/include/asm/irq_remapping.h
+@@ -47,9 +47,6 @@ extern void free_remapped_irq(int irq);
+ extern void compose_remapped_msi_msg(struct pci_dev *pdev,
+ 				     unsigned int irq, unsigned int dest,
+ 				     struct msi_msg *msg, u8 hpet_id);
+-extern int msi_alloc_remapped_irq(struct pci_dev *pdev, int irq, int nvec);
+-extern int msi_setup_remapped_irq(struct pci_dev *pdev, unsigned int irq,
+-				  int index, int sub_handle);
+ extern int setup_hpet_msi_remapped(unsigned int irq, unsigned int id);
  
- #ifdef CONFIG_PCI_MSI
--extern int arch_setup_hpet_msi(unsigned int irq, unsigned int id);
-+extern int default_setup_hpet_msi(unsigned int irq, unsigned int id);
- #else
--static inline int arch_setup_hpet_msi(unsigned int irq, unsigned int id)
-+static inline int default_setup_hpet_msi(unsigned int irq, unsigned int id)
+ #else  /* CONFIG_IRQ_REMAP */
+@@ -83,15 +80,6 @@ static inline void compose_remapped_msi_msg(struct pci_dev *pdev,
+ 					    struct msi_msg *msg, u8 hpet_id)
  {
- 	return -EINVAL;
  }
-@@ -111,6 +111,7 @@ extern void hpet_unregister_irq_handler(rtc_irq_handler handler);
- static inline int hpet_enable(void) { return 0; }
- static inline int is_hpet_enabled(void) { return 0; }
- #define hpet_readl(a) 0
-+#define default_setup_hpet_msi	NULL
- 
- #endif
- #endif /* _ASM_X86_HPET_H */
-diff --git a/arch/x86/include/asm/x86_init.h b/arch/x86/include/asm/x86_init.h
-index 8ff79f7..1ee10ca 100644
---- a/arch/x86/include/asm/x86_init.h
-+++ b/arch/x86/include/asm/x86_init.h
-@@ -187,6 +187,7 @@ struct x86_msi_ops {
- 	void (*teardown_msi_irq)(unsigned int irq);
- 	void (*teardown_msi_irqs)(struct pci_dev *dev);
- 	void (*restore_msi_irqs)(struct pci_dev *dev, int irq);
-+	int  (*setup_hpet_msi)(unsigned int irq, unsigned int id);
- };
- 
- struct x86_io_apic_ops {
+-static inline int msi_alloc_remapped_irq(struct pci_dev *pdev, int irq, int nvec)
+-{
+-	return -ENODEV;
+-}
+-static inline int msi_setup_remapped_irq(struct pci_dev *pdev, unsigned int irq,
+-					 int index, int sub_handle)
+-{
+-	return -ENODEV;
+-}
+ static inline int setup_hpet_msi_remapped(unsigned int irq, unsigned int id)
+ {
+ 	return -ENODEV;
+diff --git a/arch/x86/include/asm/pci.h b/arch/x86/include/asm/pci.h
+index 6e41b93..11540a8 100644
+--- a/arch/x86/include/asm/pci.h
++++ b/arch/x86/include/asm/pci.h
+@@ -121,9 +121,11 @@ static inline void x86_restore_msi_irqs(struct pci_dev *dev, int irq)
+ #define arch_teardown_msi_irq x86_teardown_msi_irq
+ #define arch_restore_msi_irqs x86_restore_msi_irqs
+ /* implemented in arch/x86/kernel/apic/io_apic. */
++struct msi_desc;
+ int native_setup_msi_irqs(struct pci_dev *dev, int nvec, int type);
+ void native_teardown_msi_irq(unsigned int irq);
+ void native_restore_msi_irqs(struct pci_dev *dev, int irq);
++int setup_msi_irq(struct pci_dev *dev, struct msi_desc *msidesc, int irq);
+ /* default to the implementation in drivers/lib/msi.c */
+ #define HAVE_DEFAULT_MSI_TEARDOWN_IRQS
+ #define HAVE_DEFAULT_MSI_RESTORE_IRQS
 diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
-index edaaad9..ca01f42a 100644
+index ca01f42a..a2cb0e9 100644
 --- a/arch/x86/kernel/apic/io_apic.c
 +++ b/arch/x86/kernel/apic/io_apic.c
-@@ -3310,17 +3310,12 @@ static struct irq_chip hpet_msi_type = {
- 	.irq_retrigger = ioapic_retrigger_irq,
+@@ -3148,7 +3148,7 @@ static struct irq_chip msi_chip = {
+ 	.irq_retrigger		= ioapic_retrigger_irq,
  };
  
--int arch_setup_hpet_msi(unsigned int irq, unsigned int id)
-+int default_setup_hpet_msi(unsigned int irq, unsigned int id)
+-static int setup_msi_irq(struct pci_dev *dev, struct msi_desc *msidesc, int irq)
++int setup_msi_irq(struct pci_dev *dev, struct msi_desc *msidesc, int irq)
  {
- 	struct irq_chip *chip = &hpet_msi_type;
+ 	struct irq_chip *chip = &msi_chip;
  	struct msi_msg msg;
- 	int ret;
+@@ -3175,9 +3175,9 @@ static int setup_msi_irq(struct pci_dev *dev, struct msi_desc *msidesc, int irq)
  
--	if (irq_remapping_enabled) {
--		if (!setup_hpet_msi_remapped(irq, id))
--			return -1;
--	}
--
- 	ret = msi_compose_msg(NULL, irq, &msg, id);
- 	if (ret < 0)
- 		return ret;
-diff --git a/arch/x86/kernel/hpet.c b/arch/x86/kernel/hpet.c
-index 1460a5d..22d4fe5 100644
---- a/arch/x86/kernel/hpet.c
-+++ b/arch/x86/kernel/hpet.c
-@@ -478,7 +478,7 @@ static int hpet_msi_next_event(unsigned long delta,
- 
- static int hpet_setup_msi_irq(unsigned int irq)
+ int native_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
  {
--	if (arch_setup_hpet_msi(irq, hpet_blockid)) {
-+	if (x86_msi.setup_hpet_msi(irq, hpet_blockid)) {
- 		destroy_irq(irq);
- 		return -EINVAL;
+-	int node, ret, sub_handle, index = 0;
+ 	unsigned int irq, irq_want;
+ 	struct msi_desc *msidesc;
++	int node, ret;
+ 
+ 	/* x86 doesn't support multiple MSI yet */
+ 	if (type == PCI_CAP_ID_MSI && nvec > 1)
+@@ -3185,36 +3185,16 @@ int native_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
+ 
+ 	node = dev_to_node(&dev->dev);
+ 	irq_want = nr_irqs_gsi;
+-	sub_handle = 0;
+ 	list_for_each_entry(msidesc, &dev->msi_list, list) {
+ 		irq = create_irq_nr(irq_want, node);
+ 		if (irq == 0)
+ 			return -1;
++
+ 		irq_want = irq + 1;
+-		if (!irq_remapping_enabled)
+-			goto no_ir;
+ 
+-		if (!sub_handle) {
+-			/*
+-			 * allocate the consecutive block of IRTE's
+-			 * for 'nvec'
+-			 */
+-			index = msi_alloc_remapped_irq(dev, irq, nvec);
+-			if (index < 0) {
+-				ret = index;
+-				goto error;
+-			}
+-		} else {
+-			ret = msi_setup_remapped_irq(dev, irq, index,
+-						     sub_handle);
+-			if (ret < 0)
+-				goto error;
+-		}
+-no_ir:
+ 		ret = setup_msi_irq(dev, msidesc, irq);
+ 		if (ret < 0)
+ 			goto error;
+-		sub_handle++;
  	}
-diff --git a/arch/x86/kernel/x86_init.c b/arch/x86/kernel/x86_init.c
-index ee4af8b..0357eee 100644
---- a/arch/x86/kernel/x86_init.c
-+++ b/arch/x86/kernel/x86_init.c
-@@ -19,6 +19,7 @@
- #include <asm/time.h>
- #include <asm/irq.h>
- #include <asm/io_apic.h>
-+#include <asm/hpet.h>
- #include <asm/pat.h>
- #include <asm/tsc.h>
- #include <asm/iommu.h>
-@@ -111,10 +112,11 @@ struct x86_platform_ops x86_platform = {
+ 	return 0;
  
- EXPORT_SYMBOL_GPL(x86_platform);
- struct x86_msi_ops x86_msi = {
--	.setup_msi_irqs = native_setup_msi_irqs,
--	.teardown_msi_irq = native_teardown_msi_irq,
--	.teardown_msi_irqs = default_teardown_msi_irqs,
--	.restore_msi_irqs = default_restore_msi_irqs,
-+	.setup_msi_irqs		= native_setup_msi_irqs,
-+	.teardown_msi_irq	= native_teardown_msi_irq,
-+	.teardown_msi_irqs	= default_teardown_msi_irqs,
-+	.restore_msi_irqs	= default_restore_msi_irqs,
-+	.setup_hpet_msi		= default_setup_hpet_msi,
- };
- 
- struct x86_io_apic_ops x86_io_apic_ops = {
 diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
-index db3dcaf..0baad3b 100644
+index 0baad3b..bc94fd2 100644
 --- a/drivers/iommu/irq_remapping.c
 +++ b/drivers/iommu/irq_remapping.c
-@@ -36,7 +36,8 @@ static void irq_remapping_disable_io_apic(void)
+@@ -4,6 +4,8 @@
+ #include <linux/cpumask.h>
+ #include <linux/errno.h>
+ #include <linux/msi.h>
++#include <linux/irq.h>
++#include <linux/pci.h>
  
- static void __init irq_remapping_modify_x86_ops(void)
+ #include <asm/hw_irq.h>
+ #include <asm/irq_remapping.h>
+@@ -21,6 +23,10 @@ int no_x2apic_optout;
+ 
+ static struct irq_remap_ops *remap_ops;
+ 
++static int msi_alloc_remapped_irq(struct pci_dev *pdev, int irq, int nvec);
++static int msi_setup_remapped_irq(struct pci_dev *pdev, unsigned int irq,
++				  int index, int sub_handle);
++
+ static void irq_remapping_disable_io_apic(void)
  {
--	x86_io_apic_ops.disable	=	irq_remapping_disable_io_apic;
-+	x86_io_apic_ops.disable		= irq_remapping_disable_io_apic;
-+	x86_msi.setup_hpet_msi		= setup_hpet_msi_remapped;
+ 	/*
+@@ -34,9 +40,54 @@ static void irq_remapping_disable_io_apic(void)
+ 		disconnect_bsp_APIC(0);
  }
  
- static __init int setup_nointremap(char *str)
++static int irq_remapping_setup_msi_irqs(struct pci_dev *dev,
++					int nvec, int type)
++{
++	int node, ret, sub_handle, index = 0;
++	struct msi_desc *msidesc;
++	unsigned int irq;
++
++	/* We don't support multiple MSI yet */
++	if (type == PCI_CAP_ID_MSI && nvec > 1)
++		return 1;
++
++	node		= dev_to_node(&dev->dev);
++	irq		= get_nr_irqs_gsi();
++	sub_handle	= 0;
++
++	list_for_each_entry(msidesc, &dev->msi_list, list) {
++
++		irq = create_irq_nr(irq, node);
++		if (irq == 0)
++			return -1;
++
++		if (sub_handle == 0)
++			ret = index = msi_alloc_remapped_irq(dev, irq, nvec);
++		else
++			ret = msi_setup_remapped_irq(dev, irq, index, sub_handle);
++
++		if (ret < 0)
++			goto error;
++
++		ret = setup_msi_irq(dev, msidesc, irq);
++		if (ret < 0)
++			goto error;
++
++		sub_handle += 1;
++		irq        += 1;
++	}
++
++	return 0;
++
++error:
++	destroy_irq(irq);
++	return ret;
++}
++
+ static void __init irq_remapping_modify_x86_ops(void)
+ {
+ 	x86_io_apic_ops.disable		= irq_remapping_disable_io_apic;
++	x86_msi.setup_msi_irqs		= irq_remapping_setup_msi_irqs;
+ 	x86_msi.setup_hpet_msi		= setup_hpet_msi_remapped;
+ }
+ 
+@@ -186,7 +237,7 @@ void compose_remapped_msi_msg(struct pci_dev *pdev,
+ 	remap_ops->compose_msi_msg(pdev, irq, dest, msg, hpet_id);
+ }
+ 
+-int msi_alloc_remapped_irq(struct pci_dev *pdev, int irq, int nvec)
++static int msi_alloc_remapped_irq(struct pci_dev *pdev, int irq, int nvec)
+ {
+ 	if (!remap_ops || !remap_ops->msi_alloc_irq)
+ 		return -ENODEV;
+@@ -194,8 +245,8 @@ int msi_alloc_remapped_irq(struct pci_dev *pdev, int irq, int nvec)
+ 	return remap_ops->msi_alloc_irq(pdev, irq, nvec);
+ }
+ 
+-int msi_setup_remapped_irq(struct pci_dev *pdev, unsigned int irq,
+-			   int index, int sub_handle)
++static int msi_setup_remapped_irq(struct pci_dev *pdev, unsigned int irq,
++				  int index, int sub_handle)
+ {
+ 	if (!remap_ops || !remap_ops->msi_setup_irq)
+ 		return -ENODEV;
 -- 
 1.7.9.5
