@@ -1,88 +1,82 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [git pull] IOMMU Fixes for v3.7-rc6
-Date: Tue, 20 Nov 2012 15:16:43 +0100
-Message-ID: <20121120141642.GA3708@8bytes.org>
+From: Tom Mingarelli <thomas.mingarelli-VXdhtT5mjnY@public.gmane.org>
+Subject: [PATCH v4] intel-iommu: Prevent devices with RMRRs from being placed
+	into SI Domain
+Date: Tue, 20 Nov 2012 19:43:17 +0000 (UTC)
+Message-ID: <20120917082234.22091.84161.sendpatchset@RHEL63BL460c>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="HlL+5n6rz5pIUxbD"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Shuah Khan <shuah.khan-VXdhtT5mjnY@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Tom Mingarelli <thomas.mingarelli-VXdhtT5mjnY@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+This patch is to prevent non-USB devices that have RMRRs associated with them from
+being placed into the SI Domain during init. This fixes the issue where the RMRR info
+for devices being placed in and out of the SI Domain gets lost.
 
---HlL+5n6rz5pIUxbD
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Thomas Mingarelli <thomas.mingarelli-VXdhtT5mjnY@public.gmane.org>
+Tested-by: Shuah Khan <shuah.khan-VXdhtT5mjnY@public.gmane.org>
+---
+PATCH v1: https://lkml.org/lkml/2012/6/15/204
+PATCH v2: https://lkml.org/lkml/2012/9/18/354
+PATCH v3: https://lkml.org/lkml/2012/10/16/375
 
-Hi Linus,
+ drivers/iommu/intel-iommu.c |   31 +++++++++++++++++++++++++++++++
+ 1 files changed, 31 insertions(+), 0 deletions(-)
 
-The following changes since commit f4a75d2eb7b1e2206094b901be09adb31ba63681:
-
-  Linux 3.7-rc6 (2012-11-16 17:42:40 -0800)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-f=
-ixes-v3.7-rc6
-
-for you to fetch changes up to 3da4af0affbb797e8ac4c2b4598da0c34b8cc52a:
-
-  intel-iommu: Fix lookup in add device (2012-11-17 13:27:15 +0100)
-
-----------------------------------------------------------------
-IOMMU fixes for Linux 3.7-rc6
-
-Some fixes and a MAINTAINERS update to remove my lost AMD email address
-=66rom the file. The fixes take care of a resource leak and a problem on
-VT-d with the new IOMMU group code.
-
-----------------------------------------------------------------
-Alex Williamson (1):
-      intel-iommu: Fix lookup in add device
-
-Cyril Roelandt (1):
-      iommu/tegra-smmu.c: fix dentry reference leak in smmu_debugfs_stats_s=
-how().
-
-Joerg Roedel (1):
-      iommu/amd: Update MAINTAINERS entry
-
- MAINTAINERS                 |    4 ++--
- drivers/iommu/intel-iommu.c |    4 ++--
- drivers/iommu/tegra-smmu.c  |    1 +
- 3 files changed, 5 insertions(+), 4 deletions(-)
-
-Please pull.
-
-Regards,
-
-	Joerg
-
-
---HlL+5n6rz5pIUxbD
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-
-iQIcBAEBAgAGBQJQq5DKAAoJECvwRC2XARrjADkQANg2rbkRcKAO5+BdCbBgBPeH
-70SMkDUdEFkD/hNlkSTy2rVBIubVMJvcRW1Cak3vbDGLiMxFR0wmD2G1IO94Nz/v
-VlEXfRjF9yomcPqEACfuaHo+dBo5G1dW42mL0cDv/U4pJHPzNdgeU/S2JaG8Iqo1
-rwGYXaO/uTgQ9nN38BrxTMsNG4fp9Py3Gko0A6K/WS6MGrhfwFpUUpI5mBYrZnPh
-Pfng2MtNI0978CZKd6W8/ds4cPWWSzjTDTWoE0/uc04lFlPgamNynzcJ0KI33pl4
-lTMVQJF9uIpfMRvJIlSjwz8UH4w7pETvLrpoRHc1tTXlg/wN2mP8VJB87XXK8aXp
-J8FNkW8OU9qSKQDwu/mPlhgGE5pm+FfDBIXKHuoJa3XaEVoTDlZQZ3LGxAmuukTx
-Jk49Umha4lZuXwWNlDYOeHi4i2ogeT1yqoMiKE1gYdBt1l6dZVYu5bufNur/Pdu2
-24GI7wCkd9P0Q9BwV8zXHqyiatzVRhXvv3QTMAXmVa4FRmxiy/fvlYJ8CUzJItib
-pbvEGr1te/sjOrrXQiNjvmDAMdF+GoeTGtXKtxUROQizeJJlB3UL1SFGm76/0B67
-lS2oWYci5s3/7q88ua+SWntrG1hbkh5XcNg8+9um/BAk3+mOBgUfyPbQ5yGGooGt
-4iRExK0F5G7QlqPjZTT2
-=OiQG
------END PGP SIGNATURE-----
-
---HlL+5n6rz5pIUxbD--
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index d4a4cd4..8c064df 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -2320,8 +2320,39 @@ static int domain_add_dev_info(struct dmar_domain *domain,
+ 	return 0;
+ }
+ 
++static bool device_has_rmrr(struct pci_dev *dev)
++{
++	struct dmar_rmrr_unit *rmrr;
++	int i;
++
++	for_each_rmrr_units(rmrr) {
++		for (i = 0; i < rmrr->devices_cnt; i++) {
++			/*
++			 * Return TRUE if this RMRR contains the device that
++			 * is passed in.
++			 */
++			if (rmrr->devices[i] == dev)
++				return true;
++		}
++	}
++	return false;
++}
++
+ static int iommu_should_identity_map(struct pci_dev *pdev, int startup)
+ {
++
++	/*
++	 * We want to prevent any device associated with an RMRR from
++	 * getting placed into the SI Domain. This is done because
++	 * problems exist when devices are moved in and out of domains
++	 * and their respective RMRR info is lost. We exempt USB devices
++	 * from this process due to their usage of RMRRs that are known
++	 * to not be needed after BIOS hand-off to OS.
++	 */
++	if (device_has_rmrr(pdev) &&
++	    (pdev->class >> 8) != PCI_CLASS_SERIAL_USB)
++		return 0;
++
+ 	if ((iommu_identity_mapping & IDENTMAP_AZALIA) && IS_AZALIA(pdev))
+ 		return 1;
+ 
+-- 
+1.7.1
