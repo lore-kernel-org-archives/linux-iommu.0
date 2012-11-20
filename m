@@ -1,118 +1,72 @@
-From: Omar Ramirez Luna <omar.luna-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v5 5/5] ARM: OMAP4: hwmod data: ipu and dsp to use parent
-	clocks instead of leaf clocks
-Date: Mon, 19 Nov 2012 19:05:52 -0600
-Message-ID: <1353373552-16039-6-git-send-email-omar.luna@linaro.org>
-References: <1353373552-16039-1-git-send-email-omar.luna@linaro.org>
+From: Cho KyongHo <pullip.cho@samsung.com>
+Subject: [PATCH v2 0/12] iommu/exynos: Fixes and Enhancements of System MMU
+ driver with DT
+Date: Tue, 20 Nov 2012 16:29:45 +0900
+Message-ID: <001a01cdc6f0$d06c1f90$71445eb0$%cho@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1353373552-16039-1-git-send-email-omar.luna-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, Paul Walmsley <paul-DWxLp4Yu+b8AvxtiuMwx3w@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Mauro Carvalho Chehab <mchehab-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ido Yariv <ido-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Content-language: ko
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: 'Joerg Roedel' <joro@8bytes.org>, sw0312.kim@samsung.com, 'Sanghyun Lee' <sanghyun75.lee@samsung.com>, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Subash Patel' <subash.ramaswamy@linaro.org>, prathyush.k@samsung.com, rahul.sharma@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-This prevents hwmod _enable_clocks...omap2_dflt_clk_enable path
-from enabling modulemode inside CLKCTRL using its clk->enable_reg
-field. Instead is left to _omap4_enable_module though soc_ops, as
-the one in charge of this setting.
+The current exynos-iommu(System MMU) driver does not work autonomously
+since it is lack of support for power management of peripheral blocks.
+For example, MFC device driver must ensure that its System MMU is disabled
+before MFC block is power-down not to invalidate IOTLB in the System MMU
+when I/O memory mapping is changed. Because A System MMU is resides in the
+same H/W block, access to control registers of System MMU while the H/W
+block is turned off must be prohibited.
 
-According to comments received[1] for related patches the idea is
-to get rid of leaf clocks in future. So remove these two while at it.
+This set of changes solves the above problem with setting each System MMUs
+as the parent of the device which owns the System MMU to recieve the
+information when the device is turned off or turned on.
 
-[1] http://lkml.org/lkml/2012/8/20/226
+Another big change to the driver is the support for devicetree.
+The bindings for System MMU is described in
+Documentation/devicetree/bindings/arm/samsung/system-mmu.txt
 
-Signed-off-by: Omar Ramirez Luna <omar.luna-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
----
- arch/arm/mach-omap2/clock44xx_data.c       |   22 ----------------------
- arch/arm/mach-omap2/omap_hwmod_44xx_data.c |    4 ++--
- 2 files changed, 2 insertions(+), 24 deletions(-)
+In addition, this patchset also includes several bug fixes and enhancements
+of the current driver.
 
-diff --git a/arch/arm/mach-omap2/clock44xx_data.c b/arch/arm/mach-omap2/clock44xx_data.c
-index 6efc30c..067c486 100644
---- a/arch/arm/mach-omap2/clock44xx_data.c
-+++ b/arch/arm/mach-omap2/clock44xx_data.c
-@@ -1316,16 +1316,6 @@ static struct clk dmic_fck = {
- 	.clkdm_name	= "abe_clkdm",
- };
- 
--static struct clk dsp_fck = {
--	.name		= "dsp_fck",
--	.ops		= &clkops_omap2_dflt,
--	.enable_reg	= OMAP4430_CM_TESLA_TESLA_CLKCTRL,
--	.enable_bit	= OMAP4430_MODULEMODE_HWCTRL,
--	.clkdm_name	= "tesla_clkdm",
--	.parent		= &dpll_iva_m4x2_ck,
--	.recalc		= &followparent_recalc,
--};
--
- static struct clk dss_sys_clk = {
- 	.name		= "dss_sys_clk",
- 	.ops		= &clkops_omap2_dflt,
-@@ -1696,16 +1686,6 @@ static struct clk i2c4_fck = {
- 	.recalc		= &followparent_recalc,
- };
- 
--static struct clk ipu_fck = {
--	.name		= "ipu_fck",
--	.ops		= &clkops_omap2_dflt,
--	.enable_reg	= OMAP4430_CM_DUCATI_DUCATI_CLKCTRL,
--	.enable_bit	= OMAP4430_MODULEMODE_HWCTRL,
--	.clkdm_name	= "ducati_clkdm",
--	.parent		= &ducati_clk_mux_ck,
--	.recalc		= &followparent_recalc,
--};
--
- static struct clk iss_ctrlclk = {
- 	.name		= "iss_ctrlclk",
- 	.ops		= &clkops_omap2_dflt,
-@@ -3151,7 +3131,6 @@ static struct omap_clk omap44xx_clks[] = {
- 	CLK(NULL,	"div_ts_ck",			&div_ts_ck,	CK_446X),
- 	CLK(NULL,	"dmic_sync_mux_ck",		&dmic_sync_mux_ck,	CK_443X),
- 	CLK(NULL,	"dmic_fck",			&dmic_fck,	CK_443X),
--	CLK(NULL,	"dsp_fck",			&dsp_fck,	CK_443X),
- 	CLK(NULL,	"dss_sys_clk",			&dss_sys_clk,	CK_443X),
- 	CLK(NULL,	"dss_tv_clk",			&dss_tv_clk,	CK_443X),
- 	CLK(NULL,	"dss_48mhz_clk",		&dss_48mhz_clk,	CK_443X),
-@@ -3183,7 +3162,6 @@ static struct omap_clk omap44xx_clks[] = {
- 	CLK(NULL,	"i2c2_fck",			&i2c2_fck,	CK_443X),
- 	CLK(NULL,	"i2c3_fck",			&i2c3_fck,	CK_443X),
- 	CLK(NULL,	"i2c4_fck",			&i2c4_fck,	CK_443X),
--	CLK(NULL,	"ipu_fck",			&ipu_fck,	CK_443X),
- 	CLK(NULL,	"iss_ctrlclk",			&iss_ctrlclk,	CK_443X),
- 	CLK(NULL,	"iss_fck",			&iss_fck,	CK_443X),
- 	CLK(NULL,	"iva_fck",			&iva_fck,	CK_443X),
-diff --git a/arch/arm/mach-omap2/omap_hwmod_44xx_data.c b/arch/arm/mach-omap2/omap_hwmod_44xx_data.c
-index aab5c12..1f61093 100644
---- a/arch/arm/mach-omap2/omap_hwmod_44xx_data.c
-+++ b/arch/arm/mach-omap2/omap_hwmod_44xx_data.c
-@@ -650,7 +650,7 @@ static struct omap_hwmod omap44xx_dsp_hwmod = {
- 	.mpu_irqs	= omap44xx_dsp_irqs,
- 	.rst_lines	= omap44xx_dsp_resets,
- 	.rst_lines_cnt	= ARRAY_SIZE(omap44xx_dsp_resets),
--	.main_clk	= "dsp_fck",
-+	.main_clk	= "dpll_iva_m4x2_ck",
- 	.prcm = {
- 		.omap4 = {
- 			.clkctrl_offs = OMAP4_CM_TESLA_TESLA_CLKCTRL_OFFSET,
-@@ -1677,7 +1677,7 @@ static struct omap_hwmod omap44xx_ipu_hwmod = {
- 	.mpu_irqs	= omap44xx_ipu_irqs,
- 	.rst_lines	= omap44xx_ipu_resets,
- 	.rst_lines_cnt	= ARRAY_SIZE(omap44xx_ipu_resets),
--	.main_clk	= "ipu_fck",
-+	.main_clk	= "ducati_clk_mux_ck",
- 	.prcm = {
- 		.omap4 = {
- 			.clkctrl_offs = OMAP4_CM_DUCATI_DUCATI_CLKCTRL_OFFSET,
--- 
-1.7.4.1
+Change log:
+v2:
+- Split the patch to iommu/exynos into 9 patches
+- Support for System MMU 3.3
+- Some code compaction
+
+Patch summary:
+[PATCH v2 01/12] ARM: EXYNOS: remove system mmu initialization from arch/arm/ tree
+[PATCH v2 02/12] ARM: EXYNOS: Add clk_ops for gating clocks of System MMU
+[PATCH v2 03/12] ARM: EXYNOS: add System MMU definition to DT
+[PATCH v2 04/12] iommu/exynos: support for device tree
+[PATCH v2 05/12] iommu/exynos: pass version information from DT
+[PATCH v2 06/12] iommu/exynos: allocate lv2 page table from own slab
+[PATCH v2 07/12] iommu/exynos: change rwlock to spinlock
+[PATCH v2 08/12] iommu/exynos: set System MMU as the parent of client device
+[PATCH v2 09/12] iommu/exynos: add supoort for runtime pm and suspend/resume
+[PATCH v2 10/12] iommu/exynos: add support for System MMU 3.2 and 3.3
+[PATCH v2 11/12] iommu/exynos: add literal name of System MMU for debugging
+[PATCH v2 12/12] iommu/exynos: add debugfs entries for System MMU
+
+Diffstats:
+ .../devicetree/bindings/arm/exynos/system-mmu.txt  |   86 ++
+ arch/arm/boot/dts/exynos4210.dtsi                  |   96 ++
+ arch/arm/boot/dts/exynos4x12.dtsi                  |  124 ++
+ arch/arm/boot/dts/exynos5250.dtsi                  |  147 +-
+ arch/arm/mach-exynos/Kconfig                       |    5 -
+ arch/arm/mach-exynos/Makefile                      |    1 -
+ arch/arm/mach-exynos/clock-exynos4.c               |   41 +-
+ arch/arm/mach-exynos/clock-exynos4210.c            |    9 +-
+ arch/arm/mach-exynos/clock-exynos4212.c            |   23 +-
+ arch/arm/mach-exynos/clock-exynos5.c               |   87 +-
+ arch/arm/mach-exynos/dev-sysmmu.c                  |  274 ----
+ arch/arm/mach-exynos/include/mach/sysmmu.h         |   66 -
+ arch/arm/mach-exynos/mach-exynos4-dt.c             |   34 +
+ arch/arm/mach-exynos/mach-exynos5-dt.c             |   30 +
+ drivers/iommu/Kconfig                              |    2 +-
+ drivers/iommu/exynos-iommu.c                       | 1423 +++++++++++++++-----
+ 16 files changed, 1720 insertions(+), 728 deletions(-)
