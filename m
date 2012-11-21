@@ -1,92 +1,175 @@
-From: Cho KyongHo <pullip.cho@samsung.com>
-Subject: [PATCH v3 06/12] iommu/exynos: allocate lv2 page table from own slab
-Date: Wed, 21 Nov 2012 14:05:55 +0900
-Message-ID: <002d01cdc7a5$e32ad9e0$a9808da0$%cho@samsung.com>
+From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: [PATCH v3 07/12] iommu/exynos: change rwlock to spinlock
+Date: Wed, 21 Nov 2012 14:06:15 +0900
+Message-ID: <002e01cdc7a5$ef301750$cd9045f0$%cho@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-language: ko
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Cc: 'Joerg Roedel' <joro@8bytes.org>, sw0312.kim@samsung.com, 'Sanghyun Lee' <sanghyun75.lee@samsung.com>, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Subash Patel' <subash.ramaswamy@linaro.org>, prathyush.k@samsung.com, rahul.sharma@samsung.com
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: 'Kukjin Kim' <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, sw0312.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, 'Subash Patel' <subash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Sanghyun Lee' <sanghyun75.lee-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Since kmalloc() does not guarantee the alignment of 1KB when it
-allocates 1KB, it is required to allocate lv2 page table from
-own slab that guarantees alignment of 1KB.
+Since acquiring read_lock is not more frequent than write_lock, it is
+not beneficial to use rwlock, this commit changes rwlock to spinlock.
 
-Change-Id: Ia25642c7c0143d2c50a8ed5a3d0dd9067f324c4e
-Signed-off-by: KyongHo Cho <pullip.cho@samsung.com>
+Change-Id: Ia3365ccec0744e735b71f0389e5c56a0243bcd2c
+Signed-off-by: KyongHo Cho <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/exynos-iommu.c | 24 ++++++++++++++++++++----
- 1 file changed, 20 insertions(+), 4 deletions(-)
+ drivers/iommu/exynos-iommu.c | 32 ++++++++++++++++----------------
+ 1 file changed, 16 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 4061b17..0bb194e 100644
+index 0bb194e..e39ddac 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -104,6 +104,8 @@
- #define REG_PB1_SADDR		0x054
- #define REG_PB1_EADDR		0x058
+@@ -184,7 +184,7 @@ struct sysmmu_drvdata {
+ 	struct clk *clk;
+ 	int activations;
+ 	struct sysmmu_version ver;
+-	rwlock_t lock;
++	spinlock_t lock;
+ 	struct iommu_domain *domain;
+ 	sysmmu_fault_handler_t fault_handler;
+ 	unsigned long pgtable;
+@@ -288,7 +288,7 @@ void exynos_sysmmu_set_prefbuf(struct device *dev,
+ 	BUG_ON((base0 + size0) <= base0);
+ 	BUG_ON((size1 > 0) && ((base1 + size1) <= base1));
  
-+static struct kmem_cache *lv2table_kmem_cache;
-+
- static unsigned long *section_entry(unsigned long *pgtable, unsigned long iova)
- {
- 	return pgtable + lv1ent_offset(iova);
-@@ -865,7 +867,8 @@ static void exynos_iommu_domain_destroy(struct iommu_domain *domain)
+-	read_lock_irqsave(&data->lock, flags);
++	spin_lock_irqsave(&data->lock, flags);
+ 	if (!is_sysmmu_active(data))
+ 		goto finish;
  
- 	for (i = 0; i < NUM_LV1ENTRIES; i++)
- 		if (lv1ent_page(priv->pgtable + i))
--			kfree(__va(lv2table_base(priv->pgtable + i)));
-+			kmem_cache_free(lv2table_kmem_cache,
-+					__va(lv2table_base(priv->pgtable + i)));
- 
- 	free_pages((unsigned long)priv->pgtable, 2);
- 	free_pages((unsigned long)priv->lv2entcnt, 1);
-@@ -959,7 +962,7 @@ static unsigned long *alloc_lv2entry(unsigned long *sent, unsigned long iova,
- 	if (lv1ent_fault(sent)) {
- 		unsigned long *pent;
- 
--		pent = kzalloc(LV2TABLE_SIZE, GFP_ATOMIC);
-+		pent = kmem_cache_zalloc(lv2table_kmem_cache, GFP_ATOMIC);
- 		BUG_ON((unsigned long)pent & (LV2TABLE_SIZE - 1));
- 		if (!pent)
- 			return NULL;
-@@ -982,7 +985,7 @@ static int lv1set_section(unsigned long *sent, phys_addr_t paddr, short *pgcnt)
- 		if (*pgcnt != NUM_LV2ENTRIES)
- 			return -EADDRINUSE;
- 
--		kfree(page_entry(sent, 0));
-+		kmem_cache_free(lv2table_kmem_cache, page_entry(sent, 0));
- 
- 		*pgcnt = 0;
+@@ -318,7 +318,7 @@ void exynos_sysmmu_set_prefbuf(struct device *dev,
+ 		}
  	}
-@@ -1168,10 +1171,23 @@ static int __init exynos_iommu_init(void)
+ finish:
+-	read_unlock_irqrestore(&data->lock, flags);
++	spin_unlock_irqrestore(&data->lock, flags);
+ }
+ 
+ static void __set_fault_handler(struct sysmmu_drvdata *data,
+@@ -326,9 +326,9 @@ static void __set_fault_handler(struct sysmmu_drvdata *data,
  {
- 	int ret;
+ 	unsigned long flags;
  
-+	lv2table_kmem_cache = kmem_cache_create("exynos-iommu-lv2table",
-+		LV2TABLE_SIZE, LV2TABLE_SIZE, 0, NULL);
-+	if (!lv2table_kmem_cache) {
-+		pr_err("%s: failed to create kmem cache\n", __func__);
-+		return -ENOMEM;
-+	}
-+
- 	ret = platform_driver_register(&exynos_sysmmu_driver);
+-	write_lock_irqsave(&data->lock, flags);
++	spin_lock_irqsave(&data->lock, flags);
+ 	data->fault_handler = handler;
+-	write_unlock_irqrestore(&data->lock, flags);
++	spin_unlock_irqrestore(&data->lock, flags);
+ }
  
- 	if (ret == 0)
--		bus_set_iommu(&platform_bus_type, &exynos_iommu_ops);
-+		ret = bus_set_iommu(&platform_bus_type, &exynos_iommu_ops);
-+
-+	if (ret) {
-+		pr_err("%s: Failed to register exynos-iommu driver.\n",
-+								__func__);
-+		kmem_cache_destroy(lv2table_kmem_cache);
-+	}
+ void exynos_sysmmu_set_fault_handler(struct device *dev,
+@@ -376,7 +376,7 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
+ 
+ 	int i, ret = -ENOSYS;
+ 
+-	read_lock(&data->lock);
++	spin_lock(&data->lock);
+ 
+ 	WARN_ON(!is_sysmmu_active(data));
+ 
+@@ -420,7 +420,7 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
+ 	if (itype != SYSMMU_FAULT_UNKNOWN)
+ 		sysmmu_unblock(data->sfrbases[i]);
+ 
+-	read_unlock(&data->lock);
++	spin_unlock(&data->lock);
+ 
+ 	return IRQ_HANDLED;
+ }
+@@ -431,7 +431,7 @@ static bool __exynos_sysmmu_disable(struct sysmmu_drvdata *data)
+ 	bool disabled = false;
+ 	int i;
+ 
+-	write_lock_irqsave(&data->lock, flags);
++	spin_lock_irqsave(&data->lock, flags);
+ 
+ 	if (!set_sysmmu_inactive(data))
+ 		goto finish;
+@@ -446,7 +446,7 @@ static bool __exynos_sysmmu_disable(struct sysmmu_drvdata *data)
+ 	data->pgtable = 0;
+ 	data->domain = NULL;
+ finish:
+-	write_unlock_irqrestore(&data->lock, flags);
++	spin_unlock_irqrestore(&data->lock, flags);
+ 
+ 	if (disabled)
+ 		dev_dbg(data->sysmmu, "Disabled\n");
+@@ -469,7 +469,7 @@ static int __exynos_sysmmu_enable(struct sysmmu_drvdata *data,
+ 	int i, ret = 0;
+ 	unsigned long flags;
+ 
+-	write_lock_irqsave(&data->lock, flags);
++	spin_lock_irqsave(&data->lock, flags);
+ 
+ 	if (!set_sysmmu_active(data)) {
+ 		if (WARN_ON(pgtable != data->pgtable)) {
+@@ -506,7 +506,7 @@ static int __exynos_sysmmu_enable(struct sysmmu_drvdata *data,
+ 
+ 	dev_dbg(data->sysmmu, "Enabled\n");
+ finish:
+-	write_unlock_irqrestore(&data->lock, flags);
++	spin_unlock_irqrestore(&data->lock, flags);
  
  	return ret;
  }
+@@ -553,7 +553,7 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova)
+ 	unsigned long flags;
+ 	struct sysmmu_drvdata *data = dev_get_drvdata(dev->archdata.iommu);
+ 
+-	read_lock_irqsave(&data->lock, flags);
++	spin_lock_irqsave(&data->lock, flags);
+ 
+ 	if (is_sysmmu_active(data)) {
+ 		int i;
+@@ -569,7 +569,7 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova)
+ 			"Disabled. Skipping invalidating TLB.\n");
+ 	}
+ 
+-	read_unlock_irqrestore(&data->lock, flags);
++	spin_unlock_irqrestore(&data->lock, flags);
+ }
+ 
+ void exynos_sysmmu_tlb_invalidate(struct device *dev)
+@@ -577,7 +577,7 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
+ 	unsigned long flags;
+ 	struct sysmmu_drvdata *data = dev_get_drvdata(dev->archdata.iommu);
+ 
+-	read_lock_irqsave(&data->lock, flags);
++	spin_lock_irqsave(&data->lock, flags);
+ 
+ 	if (is_sysmmu_active(data)) {
+ 		int i;
+@@ -592,7 +592,7 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
+ 			"Disabled. Skipping invalidating TLB.\n");
+ 	}
+ 
+-	read_unlock_irqrestore(&data->lock, flags);
++	spin_unlock_irqrestore(&data->lock, flags);
+ }
+ 
+ static int __init __sysmmu_init_clock(struct device *sysmmu,
+@@ -748,7 +748,7 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
+ 	ret = __sysmmu_setup(dev, data);
+ 	if (!ret) {
+ 		data->sysmmu = dev;
+-		rwlock_init(&data->lock);
++		spin_lock_init(&data->lock);
+ 		INIT_LIST_HEAD(&data->node);
+ 
+ 		__set_fault_handler(data, &default_fault_handler);
 -- 
 1.8.0
