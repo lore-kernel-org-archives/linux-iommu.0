@@ -1,8 +1,7 @@
 From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v4 11/12] iommu/exynos: add literal name of System MMU for
-	debugging
-Date: Thu, 22 Nov 2012 20:33:41 +0900
-Message-ID: <002c01cdc8a5$3976abd0$ac640370$%cho@samsung.com>
+Subject: [PATCH v4 12/12] iommu/exynos: add debugfs entries for System MMU
+Date: Thu, 22 Nov 2012 20:33:47 +0900
+Message-ID: <002d01cdc8a5$3c832880$b5897980$%cho@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -21,219 +20,282 @@ To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-sa
 Cc: 'Kukjin Kim' <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, sw0312.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, 'Subash Patel' <subash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Sanghyun Lee' <sanghyun75.lee-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This commit adds System MMU name to the driver data of each System
-MMU. It is used by fault information.
+This commit adds debugfs directory and nodes for inspecting internal
+state of System MMU.
 
 Signed-off-by: KyongHo Cho <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/exynos-iommu.c | 100 ++++++++++++++++++++++++++++++++-----------
- 1 file changed, 76 insertions(+), 24 deletions(-)
+ drivers/iommu/exynos-iommu.c | 204 +++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 198 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 985d317..4981afe 100644
+index 4981afe..93885a3 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -26,6 +26,7 @@
+@@ -26,12 +26,17 @@
  #include <linux/list.h>
  #include <linux/memblock.h>
  #include <linux/export.h>
-+#include <linux/string.h>
++#include <linux/fs.h>
++#include <linux/seq_file.h>
++#include <linux/debugfs.h>
+ #include <linux/string.h>
  #include <linux/of.h>
  #include <linux/of_platform.h>
  
-@@ -150,15 +151,21 @@ enum exynos_sysmmu_inttype {
- 	SYSMMU_FAULTS_NUM
- };
+ #include <asm/cacheflush.h>
  
--/*
-+/**
-+ * fault handler function type
-+ * @dev: the client device
-+ * @mmuname: name of the System MMU that generates fault
-  * @itype: type of fault.
-  * @pgtable_base: the physical address of page table base. This is 0 if @itype
-  *                is SYSMMU_BUSERROR.
-  * @fault_addr: the device (virtual) address that the System MMU tried to
-  *             translated. This is 0 if @itype is SYSMMU_BUSERROR.
-  */
--typedef int (*sysmmu_fault_handler_t)(enum exynos_sysmmu_inttype itype,
--			unsigned long pgtable_base, unsigned long fault_addr);
-+typedef int (*sysmmu_fault_handler_t)(struct device *dev,
-+				      const char *mmuname,
-+				      enum exynos_sysmmu_inttype itype,
-+				      unsigned long pgtable_base,
-+				      unsigned long fault_addr);
- 
- static unsigned short fault_reg_offset[SYSMMU_FAULTS_NUM] = {
- 	REG_PAGE_FAULT_ADDR,
-@@ -234,6 +241,7 @@ struct sysmmu_drvdata {
++#define MODULE_NAME "exynos-sysmmu"
++
+ /* We does not consider super section mapping (16MB) */
+ #define SECT_ORDER 20
+ #define LPAGE_ORDER 16
+@@ -237,6 +242,7 @@ struct sysmmu_drvdata {
+ 	spinlock_t lock;
+ 	struct sysmmu_prefbuf pbufs[MAX_NUM_PBUF];
+ 	int num_pbufs;
++	struct dentry *debugfs_root;
+ 	struct iommu_domain *domain;
  	sysmmu_fault_handler_t fault_handler;
  	unsigned long pgtable;
- 	bool runtime_active;
-+	const char **mmuname;
- 	void __iomem *sfrbases[0];
- };
- 
-@@ -611,16 +619,18 @@ void exynos_sysmmu_set_fault_handler(struct device *dev,
- 	spin_unlock_irqrestore(&owner->lock, flags);
+@@ -1095,6 +1101,8 @@ static void __init __sysmmu_init_mmuname(struct device *sysmmu,
+ 	}
  }
  
--static int default_fault_handler(enum exynos_sysmmu_inttype itype,
--		     unsigned long pgtable_base, unsigned long fault_addr)
-+static int default_fault_handler(struct device *dev, const char *mmuname,
-+					enum exynos_sysmmu_inttype itype,
-+					unsigned long pgtable_base,
-+					unsigned long fault_addr)
- {
- 	unsigned long *ent;
- 
- 	if ((itype >= SYSMMU_FAULTS_NUM) || (itype < SYSMMU_PAGEFAULT))
- 		itype = SYSMMU_FAULT_UNKNOWN;
- 
--	pr_err("%s occurred at 0x%lx(Page table base: 0x%lx)\n",
--			sysmmu_fault_name[itype], fault_addr, pgtable_base);
-+	dev_err(dev, "%s occured at 0x%lx by '%s'(Page table base: 0x%lx)\n",
-+		sysmmu_fault_name[itype], fault_addr, mmuname, pgtable_base);
- 
- 	ent = section_entry(__va(pgtable_base), fault_addr);
- 	pr_err("\tLv1 entry: 0x%lx\n", *ent);
-@@ -641,25 +651,30 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
- {
- 	/* SYSMMU is in blocked when interrupt occurred. */
- 	struct sysmmu_drvdata *data = dev_id;
--	struct resource *irqres;
--	struct platform_device *pdev;
-+	struct exynos_iommu_owner *owner = NULL;
- 	enum exynos_sysmmu_inttype itype;
- 	unsigned long addr = -1;
--
-+	const char *mmuname = NULL;
- 	int i, ret = -ENOSYS;
- 
--	spin_lock(&data->lock);
-+	if (data->master)
-+		owner = data->master->archdata.iommu;
-+
-+	if (owner)
-+		spin_lock(&owner->lock);
- 
- 	WARN_ON(!is_sysmmu_active(data));
- 
--	pdev = to_platform_device(data->sysmmu);
--	for (i = 0; i < (pdev->num_resources / 2); i++) {
--		irqres = platform_get_resource(pdev, IORESOURCE_IRQ, i);
-+	for (i = 0; i < data->nsfrs; i++) {
-+		struct resource *irqres;
-+		irqres = platform_get_resource(
-+				to_platform_device(data->sysmmu),
-+				IORESOURCE_IRQ, i);
- 		if (irqres && ((int)irqres->start == irq))
- 			break;
- 	}
- 
--	if (i == pdev->num_resources) {
-+	if (i == data->nsfrs) {
- 		itype = SYSMMU_FAULT_UNKNOWN;
- 	} else {
- 		itype = (enum exynos_sysmmu_inttype)
-@@ -671,28 +686,34 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
- 				data->sfrbases[i] + fault_reg_offset[itype]);
- 	}
- 
--	if (data->domain)
--		ret = report_iommu_fault(data->domain, data->master,
-+	if (data->domain) /* owner is always set if data->domain exists */
-+		ret = report_iommu_fault(data->domain, owner->dev,
- 				addr, itype);
- 
- 	if ((ret == -ENOSYS) && data->fault_handler) {
- 		unsigned long base = data->pgtable;
-+		mmuname = (data->mmuname) ?  data->mmuname[i]
-+						: dev_name(data->sysmmu);
-+
- 		if (itype != SYSMMU_FAULT_UNKNOWN)
- 			base = __raw_readl(
- 					data->sfrbases[i] + REG_PT_BASE_ADDR);
--		ret = data->fault_handler(itype, base, addr);
-+		ret = data->fault_handler(owner ? owner->dev : data->sysmmu,
-+					mmuname, itype, base, addr);
- 	}
- 
- 	if (!ret && (itype != SYSMMU_FAULT_UNKNOWN))
- 		__raw_writel(1 << itype, data->sfrbases[i] + REG_INT_CLEAR);
- 	else
--		dev_dbg(data->sysmmu, "%s is not handled.\n",
--				sysmmu_fault_name[itype]);
-+		dev_dbg(owner ? owner->dev : data->sysmmu,
-+				"%s is not handled by %s\n",
-+				sysmmu_fault_name[itype],
-+				dev_name(data->sysmmu));
- 
--	if (itype != SYSMMU_FAULT_UNKNOWN)
--		sysmmu_unblock(data->sfrbases[i]);
-+	sysmmu_unblock(data->sfrbases[i]);
- 
--	spin_unlock(&data->lock);
-+	if (owner)
-+		spin_unlock(&owner->lock);
- 
- 	return IRQ_HANDLED;
- }
-@@ -1050,6 +1071,30 @@ err_dev_put:
- 	return ret;
- }
- 
-+static void __init __sysmmu_init_mmuname(struct device *sysmmu,
-+					struct sysmmu_drvdata *drvdata)
-+{
-+	int i;
-+	const char *mmuname;
-+
-+	if (of_property_count_strings(sysmmu->of_node, "mmuname") !=
-+							drvdata->nsfrs)
-+		return;
-+
-+	drvdata->mmuname = (void *)drvdata->sfrbases +
-+				sizeof(drvdata->sfrbases[0]) * drvdata->nsfrs;
-+
-+	for (i = 0; i < drvdata->nsfrs; i++) {
-+		if (of_property_read_string_index(sysmmu->of_node,
-+					"mmuname", i, &mmuname))
-+			dev_err(sysmmu, "Failed read mmuname[%d]\n", i);
-+		else
-+			drvdata->mmuname[i] = kstrdup(mmuname, GFP_KERNEL);
-+		if (!drvdata->mmuname[i])
-+			drvdata->mmuname[i] = "noname";
-+	}
-+}
++static void __create_debugfs_entry(struct sysmmu_drvdata *drvdata);
 +
  static int __init exynos_sysmmu_probe(struct platform_device *pdev)
  {
  	int i, ret;
-@@ -1061,9 +1106,14 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
- 		return -ENODEV;
+@@ -1165,6 +1173,8 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
+ 
+ 		__set_fault_handler(data, &default_fault_handler);
+ 
++		__create_debugfs_entry(data);
++
+ 		platform_set_drvdata(pdev, data);
+ 
+ 		dev->archdata.iommu = &sysmmu_placeholder;
+@@ -1269,7 +1279,7 @@ static struct platform_driver exynos_sysmmu_driver __refdata = {
+ 	.probe		= exynos_sysmmu_probe,
+ 	.driver		= {
+ 		.owner		= THIS_MODULE,
+-		.name		= "exynos-sysmmu",
++		.name		= MODULE_NAME,
+ 		.pm		= &__pm_ops,
+ 		.of_match_table = of_match_ptr(sysmmu_of_match),
+ 	}
+@@ -1646,6 +1656,8 @@ static struct iommu_ops exynos_iommu_ops = {
+ 	.pgsize_bitmap = SECT_SIZE | LPAGE_SIZE | SPAGE_SIZE,
+ };
+ 
++static struct dentry *sysmmu_debugfs_root; /* /sys/kernel/debug/sysmmu */
++
+ static int __init exynos_iommu_init(void)
+ {
+ 	int ret;
+@@ -1657,17 +1669,197 @@ static int __init exynos_iommu_init(void)
+ 		return -ENOMEM;
  	}
  
-+	ret = of_property_count_strings(pdev->dev.of_node, "mmuname");
-+	if (ret != (int)(pdev->num_resources / 2))
-+		ret = 0;
-+
- 	data = devm_kzalloc(dev,
- 			sizeof(*data)
--			+ sizeof(*data->sfrbases) * (pdev->num_resources / 2),
-+			+ sizeof(*data->sfrbases) * (pdev->num_resources / 2)
-+			+ sizeof(*data->mmuname) * ret,
- 			GFP_KERNEL);
- 	if (!data) {
- 		dev_err(dev, "Not enough memory\n");
-@@ -1107,6 +1157,8 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
+-	ret = platform_driver_register(&exynos_sysmmu_driver);
++	ret = bus_set_iommu(&platform_bus_type, &exynos_iommu_ops);
++	if (ret) {
++		kmem_cache_destroy(lv2table_kmem_cache);
++		pr_err("%s: Failed to register IOMMU ops\n", __func__);
++		return -EFAULT;
++	}
  
- 	ret = __sysmmu_setup(dev, data);
- 	if (!ret) {
-+		__sysmmu_init_mmuname(dev, data);
+-	if (ret == 0)
+-		ret = bus_set_iommu(&platform_bus_type, &exynos_iommu_ops);
++	sysmmu_debugfs_root = debugfs_create_dir("sysmmu", NULL);
++	if (!sysmmu_debugfs_root)
++		pr_err("%s: Failed to create debugfs entry, 'sysmmu'\n",
++							__func__);
++	if (IS_ERR(sysmmu_debugfs_root))
++		sysmmu_debugfs_root = NULL;
+ 
++	ret = platform_driver_register(&exynos_sysmmu_driver);
+ 	if (ret) {
+-		pr_err("%s: Failed to register exynos-iommu driver.\n",
+-								__func__);
+ 		kmem_cache_destroy(lv2table_kmem_cache);
++		pr_err("%s: Failed to register System MMU driver\n", __func__);
+ 	}
+ 
+ 	return ret;
+ }
+ subsys_initcall(exynos_iommu_init);
 +
- 		data->runtime_active = !pm_runtime_enabled(dev);
- 		data->sysmmu = dev;
- 		spin_lock_init(&data->lock);
++static int debug_string_show(struct seq_file *s, void *unused)
++{
++	char *str = s->private;
++
++	seq_printf(s, "%s\n", str);
++
++	return 0;
++}
++
++static int debug_sysmmu_list_show(struct seq_file *s, void *unused)
++{
++	struct sysmmu_drvdata *drvdata = s->private;
++	struct platform_device *pdev = to_platform_device(drvdata->sysmmu);
++	int idx, maj, min, ret;
++
++	seq_printf(s, "SysMMU Name | Ver | SFR Base\n");
++
++	if (pm_runtime_enabled(drvdata->sysmmu)) {
++		ret = pm_runtime_get_sync(drvdata->sysmmu);
++		if (ret < 0)
++			return ret;
++	}
++
++	for (idx = 0; idx < drvdata->nsfrs; idx++) {
++		struct resource *res;
++
++		res = platform_get_resource(pdev, IORESOURCE_MEM, idx);
++		if (!res)
++			break;
++
++		maj = __sysmmu_version(drvdata, idx, &min);
++
++		if (drvdata->mmuname) {
++			if (maj == 0)
++				seq_printf(s, "%11.s | N/A | 0x%08x\n",
++					drvdata->mmuname[idx], res->start);
++			else
++				seq_printf(s, "%11.s | %d.%d | 0x%08x\n",
++				drvdata->mmuname[idx], maj, min, res->start);
++		} else {
++			if (maj == 0)
++				seq_printf(s, "N/A | 0x%08x\n", res->start);
++			else
++				seq_printf(s, "%d.%d | 0x%08x\n",
++							maj, min, res->start);
++		}
++	}
++
++	if (pm_runtime_enabled(drvdata->sysmmu))
++		pm_runtime_put(drvdata->sysmmu);
++
++	return 0;
++}
++
++static int debug_next_sibling_show(struct seq_file *s, void *unused)
++{
++	struct device *dev = s->private;
++
++	if (dev->parent &&
++		!strncmp(dev_name(dev->parent),
++			MODULE_NAME, strlen(MODULE_NAME)))
++		seq_printf(s, "%s\n", dev_name(dev->parent));
++	return 0;
++}
++
++static int __show_master(struct device *dev, void *data)
++{
++	struct seq_file *s = data;
++
++	if (strncmp(dev_name(dev), MODULE_NAME, strlen(MODULE_NAME)))
++		seq_printf(s, "%s\n", dev_name(dev));
++	return 0;
++}
++
++static int debug_master_show(struct seq_file *s, void *unused)
++{
++	struct device *dev = s->private;
++
++	device_for_each_child(dev, s, __show_master);
++	return 0;
++}
++
++static int debug_string_open(struct inode *inode, struct file *file)
++{
++	return single_open(file, debug_string_show, inode->i_private);
++}
++
++static int debug_sysmmu_list_open(struct inode *inode, struct file *file)
++{
++	return single_open(file, debug_sysmmu_list_show, inode->i_private);
++}
++
++static int debug_next_sibling_open(struct inode *inode, struct file *file)
++{
++	return single_open(file, debug_next_sibling_show, inode->i_private);
++}
++
++static int debug_master_open(struct inode *inode, struct file *file)
++{
++	return single_open(file, debug_master_show, inode->i_private);
++}
++
++static const struct file_operations debug_string_fops = {
++	.open = debug_string_open,
++	.read = seq_read,
++	.llseek = seq_lseek,
++	.release = single_release,
++};
++
++static const struct file_operations debug_sysmmu_list_fops = {
++	.open = debug_sysmmu_list_open,
++	.read = seq_read,
++	.llseek = seq_lseek,
++	.release = single_release,
++};
++
++static const struct file_operations debug_next_sibling_fops = {
++	.open = debug_next_sibling_open,
++	.read = seq_read,
++	.llseek = seq_lseek,
++	.release = single_release,
++};
++
++static const struct file_operations debug_master_fops = {
++	.open = debug_master_open,
++	.read = seq_read,
++	.llseek = seq_lseek,
++	.release = single_release,
++};
++
++static void __init __create_debugfs_entry(struct sysmmu_drvdata *drvdata)
++{
++	if (!sysmmu_debugfs_root)
++		return;
++
++	drvdata->debugfs_root = debugfs_create_dir(dev_name(drvdata->sysmmu),
++							sysmmu_debugfs_root);
++	if (!drvdata->debugfs_root)
++		dev_err(drvdata->sysmmu, "Failed to create debugfs dentry\n");
++	if (IS_ERR(drvdata->debugfs_root))
++		drvdata->debugfs_root = NULL;
++
++	if (!drvdata->debugfs_root)
++		return;
++
++	if (!debugfs_create_u32("enable", 0664, drvdata->debugfs_root,
++						&drvdata->activations))
++		dev_err(drvdata->sysmmu,
++				"Failed to create debugfs file 'enable'\n");
++
++	if (!debugfs_create_x32("pagetable", 0664, drvdata->debugfs_root,
++						(u32 *)&drvdata->pgtable))
++		dev_err(drvdata->sysmmu,
++				"Failed to create debugfs file 'pagetable'\n");
++
++	if (!debugfs_create_file("sysmmu_list", 0444, drvdata->debugfs_root,
++					drvdata, &debug_sysmmu_list_fops))
++		dev_err(drvdata->sysmmu,
++			"Failed to create debugfs file 'sysmmu_list'\n");
++
++	if (!debugfs_create_file("next_sibling", 0x444, drvdata->debugfs_root,
++				drvdata->sysmmu, &debug_next_sibling_fops))
++		dev_err(drvdata->sysmmu,
++			"Failed to create debugfs file 'next_siblings'\n");
++
++	if (!debugfs_create_file("master", 0x444, drvdata->debugfs_root,
++				drvdata->sysmmu, &debug_master_fops))
++		dev_err(drvdata->sysmmu,
++			"Failed to create debugfs file 'next_siblings'\n");
++}
 -- 
 1.8.0
