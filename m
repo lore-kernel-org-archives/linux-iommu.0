@@ -1,16 +1,14 @@
-From: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v5 5/5] ARM: OMAP4: hwmod data: ipu and dsp to use
-	parent clocks instead of leaf clocks
-Date: Wed, 21 Nov 2012 10:52:02 -0800
-Message-ID: <20121121185202.GC18567@atomide.com>
+From: Felipe Contreras <felipe.contreras-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v5 4/5] iommu/omap: adapt to runtime pm
+Date: Thu, 22 Nov 2012 03:47:31 +0100
+Message-ID: <CAMP44s0h+6XTaJv8q-MJe4vmDiBzNG2cjTugSn7nFyAsZPk+Ag@mail.gmail.com>
 References: <1353373552-16039-1-git-send-email-omar.luna@linaro.org>
-	<1353373552-16039-6-git-send-email-omar.luna@linaro.org>
+	<1353373552-16039-5-git-send-email-omar.luna@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1353373552-16039-6-git-send-email-omar.luna-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1353373552-16039-5-git-send-email-omar.luna-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,109 +19,27 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Omar Ramirez Luna <omar.luna-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, Paul Walmsley <paul-DWxLp4Yu+b8AvxtiuMwx3w@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Mauro Carvalho Chehab <mchehab-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ido Yariv <ido-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, Kevin Hilman <khilman-l0cyMroinI0@public.gmane.org>, Paul Walmsley <paul-DWxLp4Yu+b8AvxtiuMwx3w@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Mauro Carvalho Chehab <mchehab-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ido Yariv <ido-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-* Omar Ramirez Luna <omar.luna-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> [121119 17:08]:
-> This prevents hwmod _enable_clocks...omap2_dflt_clk_enable path
-> from enabling modulemode inside CLKCTRL using its clk->enable_reg
-> field. Instead is left to _omap4_enable_module though soc_ops, as
-> the one in charge of this setting.
-> 
-> According to comments received[1] for related patches the idea is
-> to get rid of leaf clocks in future. So remove these two while at it.
-> 
-> [1] http://lkml.org/lkml/2012/8/20/226
+On Tue, Nov 20, 2012 at 2:05 AM, Omar Ramirez Luna <omar.luna-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
 
-This one should be queued by Paul, or at least acked by him.
+> @@ -1022,7 +1019,8 @@ static int __devexit omap_iommu_remove(struct platform_device *pdev)
+>         release_mem_region(res->start, resource_size(res));
+>         iounmap(obj->regbase);
+>
+> -       clk_put(obj->clk);
+> +       pm_runtime_disable(obj->dev);
+> +
+>         dev_info(&pdev->dev, "%s removed\n", obj->name);
+>         kfree(obj);
+>         return 0;
 
-Regards,
+I still believe this is not needed. The device framework does that
+when removing the device, and does it more properly, with
+__pm_runtime_disable(dev, false).
 
-Tony
+Cheers.
 
- 
-> Signed-off-by: Omar Ramirez Luna <omar.luna-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> ---
->  arch/arm/mach-omap2/clock44xx_data.c       |   22 ----------------------
->  arch/arm/mach-omap2/omap_hwmod_44xx_data.c |    4 ++--
->  2 files changed, 2 insertions(+), 24 deletions(-)
-> 
-> diff --git a/arch/arm/mach-omap2/clock44xx_data.c b/arch/arm/mach-omap2/clock44xx_data.c
-> index 6efc30c..067c486 100644
-> --- a/arch/arm/mach-omap2/clock44xx_data.c
-> +++ b/arch/arm/mach-omap2/clock44xx_data.c
-> @@ -1316,16 +1316,6 @@ static struct clk dmic_fck = {
->  	.clkdm_name	= "abe_clkdm",
->  };
->  
-> -static struct clk dsp_fck = {
-> -	.name		= "dsp_fck",
-> -	.ops		= &clkops_omap2_dflt,
-> -	.enable_reg	= OMAP4430_CM_TESLA_TESLA_CLKCTRL,
-> -	.enable_bit	= OMAP4430_MODULEMODE_HWCTRL,
-> -	.clkdm_name	= "tesla_clkdm",
-> -	.parent		= &dpll_iva_m4x2_ck,
-> -	.recalc		= &followparent_recalc,
-> -};
-> -
->  static struct clk dss_sys_clk = {
->  	.name		= "dss_sys_clk",
->  	.ops		= &clkops_omap2_dflt,
-> @@ -1696,16 +1686,6 @@ static struct clk i2c4_fck = {
->  	.recalc		= &followparent_recalc,
->  };
->  
-> -static struct clk ipu_fck = {
-> -	.name		= "ipu_fck",
-> -	.ops		= &clkops_omap2_dflt,
-> -	.enable_reg	= OMAP4430_CM_DUCATI_DUCATI_CLKCTRL,
-> -	.enable_bit	= OMAP4430_MODULEMODE_HWCTRL,
-> -	.clkdm_name	= "ducati_clkdm",
-> -	.parent		= &ducati_clk_mux_ck,
-> -	.recalc		= &followparent_recalc,
-> -};
-> -
->  static struct clk iss_ctrlclk = {
->  	.name		= "iss_ctrlclk",
->  	.ops		= &clkops_omap2_dflt,
-> @@ -3151,7 +3131,6 @@ static struct omap_clk omap44xx_clks[] = {
->  	CLK(NULL,	"div_ts_ck",			&div_ts_ck,	CK_446X),
->  	CLK(NULL,	"dmic_sync_mux_ck",		&dmic_sync_mux_ck,	CK_443X),
->  	CLK(NULL,	"dmic_fck",			&dmic_fck,	CK_443X),
-> -	CLK(NULL,	"dsp_fck",			&dsp_fck,	CK_443X),
->  	CLK(NULL,	"dss_sys_clk",			&dss_sys_clk,	CK_443X),
->  	CLK(NULL,	"dss_tv_clk",			&dss_tv_clk,	CK_443X),
->  	CLK(NULL,	"dss_48mhz_clk",		&dss_48mhz_clk,	CK_443X),
-> @@ -3183,7 +3162,6 @@ static struct omap_clk omap44xx_clks[] = {
->  	CLK(NULL,	"i2c2_fck",			&i2c2_fck,	CK_443X),
->  	CLK(NULL,	"i2c3_fck",			&i2c3_fck,	CK_443X),
->  	CLK(NULL,	"i2c4_fck",			&i2c4_fck,	CK_443X),
-> -	CLK(NULL,	"ipu_fck",			&ipu_fck,	CK_443X),
->  	CLK(NULL,	"iss_ctrlclk",			&iss_ctrlclk,	CK_443X),
->  	CLK(NULL,	"iss_fck",			&iss_fck,	CK_443X),
->  	CLK(NULL,	"iva_fck",			&iva_fck,	CK_443X),
-> diff --git a/arch/arm/mach-omap2/omap_hwmod_44xx_data.c b/arch/arm/mach-omap2/omap_hwmod_44xx_data.c
-> index aab5c12..1f61093 100644
-> --- a/arch/arm/mach-omap2/omap_hwmod_44xx_data.c
-> +++ b/arch/arm/mach-omap2/omap_hwmod_44xx_data.c
-> @@ -650,7 +650,7 @@ static struct omap_hwmod omap44xx_dsp_hwmod = {
->  	.mpu_irqs	= omap44xx_dsp_irqs,
->  	.rst_lines	= omap44xx_dsp_resets,
->  	.rst_lines_cnt	= ARRAY_SIZE(omap44xx_dsp_resets),
-> -	.main_clk	= "dsp_fck",
-> +	.main_clk	= "dpll_iva_m4x2_ck",
->  	.prcm = {
->  		.omap4 = {
->  			.clkctrl_offs = OMAP4_CM_TESLA_TESLA_CLKCTRL_OFFSET,
-> @@ -1677,7 +1677,7 @@ static struct omap_hwmod omap44xx_ipu_hwmod = {
->  	.mpu_irqs	= omap44xx_ipu_irqs,
->  	.rst_lines	= omap44xx_ipu_resets,
->  	.rst_lines_cnt	= ARRAY_SIZE(omap44xx_ipu_resets),
-> -	.main_clk	= "ipu_fck",
-> +	.main_clk	= "ducati_clk_mux_ck",
->  	.prcm = {
->  		.omap4 = {
->  			.clkctrl_offs = OMAP4_CM_DUCATI_DUCATI_CLKCTRL_OFFSET,
-> -- 
-> 1.7.4.1
-> 
+-- 
+Felipe Contreras
