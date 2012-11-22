@@ -1,488 +1,93 @@
-From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v4 04/12] iommu/exynos: support for device tree
-Date: Thu, 22 Nov 2012 20:32:57 +0900
-Message-ID: <002501cdc8a5$1eb6ade0$5c2409a0$%cho@samsung.com>
+From: Cho KyongHo <pullip.cho@samsung.com>
+Subject: [PATCH v4 00/12] iommu/exynos: Fixes and Enhancements of System MMU
+ driver with DT
+Date: Thu, 22 Nov 2012 20:31:59 +0900
+Message-ID: <002101cdc8a4$fc375990$f4a60cb0$%cho@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-language: ko
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: 'Kukjin Kim' <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, sw0312.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, 'Subash Patel' <subash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Sanghyun Lee' <sanghyun75.lee-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: linux-arm-kernel-bounces@lists.infradead.org
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: 'Kukjin Kim' <kgene.kim@samsung.com>, prathyush.k@samsung.com, 'Joerg Roedel' <joro@8bytes.org>, sw0312.kim@samsung.com, 'Subash Patel' <subash.ramaswamy@linaro.org>, 'Sanghyun Lee' <sanghyun75.lee@samsung.com>, rahul.sharma@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-This commit adds device tree support for System MMU.
+The current exynos-iommu(System MMU) driver does not work autonomously
+since it is lack of support for power management of peripheral blocks.
+For example, MFC device driver must ensure that its System MMU is disabled
+before MFC block is power-down not to invalidate IOTLB in the System MMU
+when I/O memory mapping is changed. Because A System MMU is resides in the
+same H/W block, access to control registers of System MMU while the H/W
+block is turned off must be prohibited.
 
-Signed-off-by: KyongHo Cho <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
----
- drivers/iommu/Kconfig        |   2 +-
- drivers/iommu/exynos-iommu.c | 289 ++++++++++++++++++++++++++-----------------
- 2 files changed, 177 insertions(+), 114 deletions(-)
+This set of changes solves the above problem with setting each System MMUs
+as the parent of the device which owns the System MMU to recieve the
+information when the device is turned off or turned on.
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index e39f9db..64586f1 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -168,7 +168,7 @@ config TEGRA_IOMMU_SMMU
- 
- config EXYNOS_IOMMU
- 	bool "Exynos IOMMU Support"
--	depends on ARCH_EXYNOS && EXYNOS_DEV_SYSMMU
-+	depends on ARCH_EXYNOS
- 	select IOMMU_API
- 	help
- 	  Support for the IOMMU(System MMU) of Samsung Exynos application
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 7fe44f8..53972c8 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -1,6 +1,6 @@
--/* linux/drivers/iommu/exynos_iommu.c
-+/* linux/drivers/iommu/exynos-iommu.c
-  *
-- * Copyright (c) 2011 Samsung Electronics Co., Ltd.
-+ * Copyright (c) 2011-2012 Samsung Electronics Co., Ltd.
-  *		http://www.samsung.com
-  *
-  * This program is free software; you can redistribute it and/or modify
-@@ -12,6 +12,7 @@
- #define DEBUG
- #endif
- 
-+#include <linux/kernel.h>
- #include <linux/io.h>
- #include <linux/interrupt.h>
- #include <linux/platform_device.h>
-@@ -25,11 +26,10 @@
- #include <linux/list.h>
- #include <linux/memblock.h>
- #include <linux/export.h>
-+#include <linux/of.h>
-+#include <linux/of_platform.h>
- 
- #include <asm/cacheflush.h>
--#include <asm/pgtable.h>
--
--#include <mach/sysmmu.h>
- 
- /* We does not consider super section mapping (16MB) */
- #define SECT_ORDER 20
-@@ -169,15 +169,14 @@ struct sysmmu_drvdata {
- 	struct list_head node; /* entry of exynos_iommu_domain.clients */
- 	struct device *sysmmu;	/* System MMU's device descriptor */
- 	struct device *dev;	/* Owner of system MMU */
--	char *dbgname;
- 	int nsfrs;
--	void __iomem **sfrbases;
--	struct clk *clk[2];
-+	struct clk *clk;
- 	int activations;
- 	rwlock_t lock;
- 	struct iommu_domain *domain;
- 	sysmmu_fault_handler_t fault_handler;
- 	unsigned long pgtable;
-+	void __iomem *sfrbases[0];
- };
- 
- static bool set_sysmmu_active(struct sysmmu_drvdata *data)
-@@ -384,8 +383,8 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
- 	if (!ret && (itype != SYSMMU_FAULT_UNKNOWN))
- 		__raw_writel(1 << itype, data->sfrbases[i] + REG_INT_CLEAR);
- 	else
--		dev_dbg(data->sysmmu, "(%s) %s is not handled.\n",
--				data->dbgname, sysmmu_fault_name[itype]);
-+		dev_dbg(data->sysmmu, "%s is not handled.\n",
-+				sysmmu_fault_name[itype]);
- 
- 	if (itype != SYSMMU_FAULT_UNKNOWN)
- 		sysmmu_unblock(data->sfrbases[i]);
-@@ -409,10 +408,8 @@ static bool __exynos_sysmmu_disable(struct sysmmu_drvdata *data)
- 	for (i = 0; i < data->nsfrs; i++)
- 		__raw_writel(CTRL_DISABLE, data->sfrbases[i] + REG_MMU_CTRL);
- 
--	if (data->clk[1])
--		clk_disable(data->clk[1]);
--	if (data->clk[0])
--		clk_disable(data->clk[0]);
-+	if (data->clk)
-+		clk_disable(data->clk);
- 
- 	disabled = true;
- 	data->pgtable = 0;
-@@ -421,10 +418,10 @@ finish:
- 	write_unlock_irqrestore(&data->lock, flags);
- 
- 	if (disabled)
--		dev_dbg(data->sysmmu, "(%s) Disabled\n", data->dbgname);
-+		dev_dbg(data->sysmmu, "Disabled\n");
- 	else
--		dev_dbg(data->sysmmu, "(%s) %d times left to be disabled\n",
--					data->dbgname, data->activations);
-+		dev_dbg(data->sysmmu, "%d times left to be disabled\n",
-+					data->activations);
- 
- 	return disabled;
- }
-@@ -451,14 +448,12 @@ static int __exynos_sysmmu_enable(struct sysmmu_drvdata *data,
- 			ret = 1;
- 		}
- 
--		dev_dbg(data->sysmmu, "(%s) Already enabled\n", data->dbgname);
-+		dev_dbg(data->sysmmu, "Already enabled\n");
- 		goto finish;
- 	}
- 
--	if (data->clk[0])
--		clk_enable(data->clk[0]);
--	if (data->clk[1])
--		clk_enable(data->clk[1]);
-+	if (data->clk)
-+		clk_enable(data->clk);
- 
- 	data->pgtable = pgtable;
- 
-@@ -478,7 +473,7 @@ static int __exynos_sysmmu_enable(struct sysmmu_drvdata *data,
- 
- 	data->domain = domain;
- 
--	dev_dbg(data->sysmmu, "(%s) Enabled\n", data->dbgname);
-+	dev_dbg(data->sysmmu, "Enabled\n");
- finish:
- 	write_unlock_irqrestore(&data->lock, flags);
- 
-@@ -494,7 +489,7 @@ int exynos_sysmmu_enable(struct device *dev, unsigned long pgtable)
- 
- 	ret = pm_runtime_get_sync(data->sysmmu);
- 	if (ret < 0) {
--		dev_dbg(data->sysmmu, "(%s) Failed to enable\n", data->dbgname);
-+		dev_dbg(data->sysmmu, "Failed to enable\n");
- 		return ret;
- 	}
- 
-@@ -502,8 +497,8 @@ int exynos_sysmmu_enable(struct device *dev, unsigned long pgtable)
- 	if (WARN_ON(ret < 0)) {
- 		pm_runtime_put(data->sysmmu);
- 		dev_err(data->sysmmu,
--			"(%s) Already enabled with page table %#lx\n",
--			data->dbgname, data->pgtable);
-+			"Already enabled with page table %#lx\n",
-+			data->pgtable);
- 	} else {
- 		data->dev = dev;
- 	}
-@@ -540,8 +535,7 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova)
- 		}
- 	} else {
- 		dev_dbg(data->sysmmu,
--			"(%s) Disabled. Skipping invalidating TLB.\n",
--			data->dbgname);
-+			"Disabled. Skipping invalidating TLB.\n");
- 	}
- 
- 	read_unlock_irqrestore(&data->lock, flags);
-@@ -564,140 +558,209 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
- 		}
- 	} else {
- 		dev_dbg(data->sysmmu,
--			"(%s) Disabled. Skipping invalidating TLB.\n",
--			data->dbgname);
-+			"Disabled. Skipping invalidating TLB.\n");
- 	}
- 
- 	read_unlock_irqrestore(&data->lock, flags);
- }
- 
--static int exynos_sysmmu_probe(struct platform_device *pdev)
-+static int __init __sysmmu_init_clock(struct device *sysmmu,
-+					struct sysmmu_drvdata *drvdata,
-+					struct device *master)
- {
--	int i, ret;
--	struct device *dev;
--	struct sysmmu_drvdata *data;
-+	char *conid;
-+	struct clk *parent_clk;
-+	int ret;
- 
--	dev = &pdev->dev;
-+	drvdata->clk = clk_get(sysmmu, "sysmmu");
-+	if (IS_ERR(drvdata->clk)) {
-+		dev_dbg(sysmmu, "No gating clock found.\n");
-+		drvdata->clk = NULL;
-+		return 0;
-+	}
- 
--	data = kzalloc(sizeof(*data), GFP_KERNEL);
--	if (!data) {
--		dev_dbg(dev, "Not enough memory\n");
--		ret = -ENOMEM;
--		goto err_alloc;
-+	if (!master)
-+		return 0;
-+
-+	conid = dev_get_platdata(sysmmu);
-+	if (!conid) {
-+		dev_dbg(sysmmu, "No parent clock specified.\n");
-+		return 0;
- 	}
- 
--	ret = dev_set_drvdata(dev, data);
-+	parent_clk = clk_get(master, conid);
-+	if (IS_ERR(parent_clk)) {
-+		parent_clk = clk_get(NULL, conid);
-+		if (IS_ERR(parent_clk)) {
-+			clk_put(drvdata->clk);
-+			dev_err(sysmmu, "No parent clock '%s,%s' found\n",
-+				dev_name(master), conid);
-+			return PTR_ERR(parent_clk);
-+		}
-+	}
-+
-+	ret = clk_set_parent(drvdata->clk, parent_clk);
- 	if (ret) {
--		dev_dbg(dev, "Unabled to initialize driver data\n");
--		goto err_init;
-+		clk_put(drvdata->clk);
-+		dev_err(sysmmu, "Failed to set parent clock '%s,%s'\n",
-+				dev_name(master), conid);
- 	}
- 
--	data->nsfrs = pdev->num_resources / 2;
--	data->sfrbases = kmalloc(sizeof(*data->sfrbases) * data->nsfrs,
--								GFP_KERNEL);
--	if (data->sfrbases == NULL) {
--		dev_dbg(dev, "Not enough memory\n");
--		ret = -ENOMEM;
--		goto err_init;
-+	clk_put(parent_clk);
-+
-+	return ret;
-+}
-+
-+static int __init __sysmmu_setup(struct device *sysmmu,
-+				struct sysmmu_drvdata *drvdata)
-+{
-+	struct device_node *master_node;
-+	const char *compat;
-+	struct platform_device *pmaster = NULL;
-+	u32 master_inst_no = -1;
-+	int ret;
-+
-+	master_node = of_parse_phandle(sysmmu->of_node, "mmu-master", 0);
-+	if (!master_node && !of_property_read_string(
-+			sysmmu->of_node, "mmu-master-compat", &compat)) {
-+		of_property_read_u32_array(sysmmu->of_node,
-+					"mmu-master-no", &master_inst_no, 1);
-+		for_each_compatible_node(master_node, NULL, compat) {
-+			pmaster = of_find_device_by_node(master_node);
-+			if (pmaster && (pmaster->id == master_inst_no))
-+				break;
-+			of_dev_put(pmaster);
-+			pmaster = NULL;
-+		}
-+	} else if (master_node) {
-+		pmaster = of_find_device_by_node(master_node);
- 	}
- 
-+	if (!pmaster) {
-+		dev_dbg(sysmmu, "No master device is specified.\n");
-+		return __sysmmu_init_clock(sysmmu, drvdata, NULL);
-+	}
-+
-+	pmaster->dev.archdata.iommu = sysmmu;
-+
-+	ret = __sysmmu_init_clock(sysmmu, drvdata, &pmaster->dev);
-+	if (ret)
-+		dev_err(sysmmu, "Failed to initialize gating clocks\n");
-+
-+	of_dev_put(pmaster);
-+
-+	return ret;
-+}
-+
-+static int __init exynos_sysmmu_probe(struct platform_device *pdev)
-+{
-+	int i, ret;
-+	struct device *dev = &pdev->dev;
-+	struct sysmmu_drvdata *data;
-+
-+	if (pdev->num_resources == 0) {
-+		dev_err(dev, "No System MMU resource defined\n");
-+		return -ENODEV;
-+	}
-+
-+	data = devm_kzalloc(dev,
-+			sizeof(*data)
-+			+ sizeof(*data->sfrbases) * (pdev->num_resources / 2),
-+			GFP_KERNEL);
-+	if (!data) {
-+		dev_err(dev, "Not enough memory\n");
-+		return -ENOMEM;
-+	}
-+
-+	data->nsfrs = pdev->num_resources / 2;
-+
- 	for (i = 0; i < data->nsfrs; i++) {
- 		struct resource *res;
- 		res = platform_get_resource(pdev, IORESOURCE_MEM, i);
- 		if (!res) {
--			dev_dbg(dev, "Unable to find IOMEM region\n");
--			ret = -ENOENT;
--			goto err_res;
-+			dev_err(dev, "Unable to find IOMEM region\n");
-+			return -ENOENT;
- 		}
- 
--		data->sfrbases[i] = ioremap(res->start, resource_size(res));
-+		data->sfrbases[i] = devm_request_and_ioremap(dev, res);
- 		if (!data->sfrbases[i]) {
--			dev_dbg(dev, "Unable to map IOMEM @ PA:%#x\n",
-+			dev_err(dev, "Unable to map IOMEM @ PA:%#x\n",
- 							res->start);
--			ret = -ENOENT;
--			goto err_res;
-+			return -EBUSY;
- 		}
- 	}
- 
- 	for (i = 0; i < data->nsfrs; i++) {
- 		ret = platform_get_irq(pdev, i);
- 		if (ret <= 0) {
--			dev_dbg(dev, "Unable to find IRQ resource\n");
--			goto err_irq;
-+			dev_err(dev, "Unable to find IRQ resource\n");
-+			return ret;
- 		}
- 
--		ret = request_irq(ret, exynos_sysmmu_irq, 0,
-+		ret = devm_request_irq(dev, ret, exynos_sysmmu_irq, 0,
- 					dev_name(dev), data);
- 		if (ret) {
--			dev_dbg(dev, "Unabled to register interrupt handler\n");
--			goto err_irq;
-+			dev_err(dev, "Unabled to register interrupt handler\n");
-+			return ret;
- 		}
- 	}
- 
--	if (dev_get_platdata(dev)) {
--		char *deli, *beg;
--		struct sysmmu_platform_data *platdata = dev_get_platdata(dev);
--
--		beg = platdata->clockname;
-+	pm_runtime_enable(dev);
- 
--		for (deli = beg; (*deli != '\0') && (*deli != ','); deli++)
--			/* NOTHING */;
-+	ret = __sysmmu_setup(dev, data);
-+	if (!ret) {
-+		data->sysmmu = dev;
-+		rwlock_init(&data->lock);
-+		INIT_LIST_HEAD(&data->node);
- 
--		if (*deli == '\0')
--			deli = NULL;
--		else
--			*deli = '\0';
-+		__set_fault_handler(data, &default_fault_handler);
- 
--		data->clk[0] = clk_get(dev, beg);
--		if (IS_ERR(data->clk[0])) {
--			data->clk[0] = NULL;
--			dev_dbg(dev, "No clock descriptor registered\n");
--		}
-+		platform_set_drvdata(pdev, data);
- 
--		if (data->clk[0] && deli) {
--			*deli = ',';
--			data->clk[1] = clk_get(dev, deli + 1);
--			if (IS_ERR(data->clk[1]))
--				data->clk[1] = NULL;
--		}
--
--		data->dbgname = platdata->dbgname;
-+		dev_dbg(dev, "Initialized\n");
- 	}
- 
--	data->sysmmu = dev;
--	rwlock_init(&data->lock);
--	INIT_LIST_HEAD(&data->node);
--
--	__set_fault_handler(data, &default_fault_handler);
--
--	if (dev->parent)
--		pm_runtime_enable(dev);
--
--	dev_dbg(dev, "(%s) Initialized\n", data->dbgname);
--	return 0;
--err_irq:
--	while (i-- > 0) {
--		int irq;
--
--		irq = platform_get_irq(pdev, i);
--		free_irq(irq, data);
--	}
--err_res:
--	while (data->nsfrs-- > 0)
--		iounmap(data->sfrbases[data->nsfrs]);
--	kfree(data->sfrbases);
--err_init:
--	kfree(data);
--err_alloc:
--	dev_err(dev, "Failed to initialize\n");
- 	return ret;
- }
- 
--static struct platform_driver exynos_sysmmu_driver = {
-+/*
-+ * Descriptions of Device Tree node for System MMU
-+ *
-+ * A System MMU should be described by a single tree node.
-+ *
-+ * A System MMU node should have the following properties:
-+ * - reg: tuples of the base address and the size of the IO region of System MMU
-+ * - compatible: it must be "samsung,exynos-sysmmu".
-+ * - interrupt-parent = specify if the interrupt of System MMU is generated by
-+ *   interrupt combiner or interrupt controller.
-+ * - interrupts: tuples of interrupt numbers. a tuple has 2 elements if
-+ *   @interrupt-parent is '<&combiner>', 3 elements otherwise.
-+ *
-+ * 'mmuname', 'reg' and 'interrupts' properties can be an array if the System
-+ * MMU driver controls several number of System MMUs at the same time. Note that
-+ * the number of elements in those three properties must be the same.
-+ *
-+ * The following properties are optional:
-+ * - mmuname: name of the System MMU for debugging purpose
-+ * - mmu-master: reference to the node of the master device.
-+ * - mmu-master-compat: 'compatible' proberty of the node of the master device
-+ *    of System MMU. This is ignored if @mmu-master is currectly specified.
-+ * - mmu-master-no: instance number of the master device of System MMU. This is
-+ *    ignored if @mmu-master is correctly specified. This is '0' by default.
-+ */
-+#ifdef CONFIG_OF
-+static struct of_device_id sysmmu_of_match[] __initconst = {
-+	{ .compatible = "samsung,exynos-sysmmu", },
-+	{ },
-+};
-+#endif
-+
-+static struct platform_driver exynos_sysmmu_driver __refdata = {
- 	.probe		= exynos_sysmmu_probe,
- 	.driver		= {
- 		.owner		= THIS_MODULE,
- 		.name		= "exynos-sysmmu",
-+		.of_match_table = of_match_ptr(sysmmu_of_match),
- 	}
- };
- 
--- 
-1.8.0
+Another big change to the driver is the support for devicetree.
+The bindings for System MMU is described in
+Documentation/devicetree/bindings/arm/samsung/system-mmu.txt
+
+In addition, this patchset also includes several bug fixes and enhancements
+of the current driver.
+
+Change log:
+v4:
+- Remove Change-Id from v3 patches
+- Change the order of the third and the first patch
+  Thanks to Kukjin Kim.
+- Fix memory leak when allocating and assigning exynos_iommu_owner to client
+  device if the client device has multiple System MMUs.
+  Thanks to Rahul Sharma.
+
+v3:
+- Fix prefetch buffer flag definition for System MMU 3.3 (patch 10/12)
+- Fix incorrect setting for SET_RUNTIME_PM_OPS (patch 09/12)
+  Thanks to Prathyush.
+
+v2:
+- Split the patch to iommu/exynos into 9 patches
+- Support for System MMU 3.3
+- Some code compaction
+
+Patch summary:
+[PATCH v4 01/12] ARM: EXYNOS: Add clk_ops for gating clocks of System MMU
+[PATCH v4 02/12] ARM: EXYNOS: add System MMU definition to DT
+[PATCH v4 03/12] ARM: EXYNOS: remove system mmu initialization from exynos tree
+[PATCH v4 04/12] iommu/exynos: support for device tree
+[PATCH v4 05/12] iommu/exynos: pass version information from DT
+[PATCH v4 06/12] iommu/exynos: allocate lv2 page table from own slab
+[PATCH v4 07/12] iommu/exynos: change rwlock to spinlock
+[PATCH v4 08/12] iommu/exynos: set System MMU as the parent of client device
+[PATCH v4 09/12] iommu/exynos: add support for runtime pm and suspend/resume
+[PATCH v4 10/12] iommu/exynos: add support for System MMU 3.2 and 3.3
+[PATCH v4 11/12] iommu/exynos: add literal name of System MMU for debugging
+[PATCH v4 12/12] iommu/exynos: add debugfs entries for System MMU
+
+Diffstats:
+ .../devicetree/bindings/arm/exynos/system-mmu.txt  |   86 ++
+ arch/arm/boot/dts/exynos4210.dtsi                  |   96 ++
+ arch/arm/boot/dts/exynos4x12.dtsi                  |  124 ++
+ arch/arm/boot/dts/exynos5250.dtsi                  |  147 +-
+ arch/arm/mach-exynos/Kconfig                       |    5 -
+ arch/arm/mach-exynos/Makefile                      |    1 -
+ arch/arm/mach-exynos/clock-exynos4.c               |   41 +-
+ arch/arm/mach-exynos/clock-exynos4210.c            |    9 +-
+ arch/arm/mach-exynos/clock-exynos4212.c            |   23 +-
+ arch/arm/mach-exynos/clock-exynos5.c               |   86 +-
+ arch/arm/mach-exynos/dev-sysmmu.c                  |  274 ----
+ arch/arm/mach-exynos/include/mach/sysmmu.h         |   66 -
+ arch/arm/mach-exynos/mach-exynos4-dt.c             |   34 +
+ arch/arm/mach-exynos/mach-exynos5-dt.c             |   30 +
+ drivers/iommu/Kconfig                              |    2 +-
+ drivers/iommu/exynos-iommu.c                       | 1428 +++++++++++++++-----
+ 16 files changed, 1720 insertions(+), 732 deletions(-)
