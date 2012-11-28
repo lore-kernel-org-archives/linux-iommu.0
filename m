@@ -1,8 +1,8 @@
 From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 Subject: Re: [PATCH 00/19 v4] Improve IRQ remapping abstraction in x86 core
 	code
-Date: Wed, 28 Nov 2012 16:09:49 -0500
-Message-ID: <20121128210949.GC13915@phenom.dumpdata.com>
+Date: Wed, 28 Nov 2012 16:22:05 -0500
+Message-ID: <20121128212205.GD13915@phenom.dumpdata.com>
 References: <1353417176-18945-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -29,12 +29,15 @@ On Tue, Nov 20, 2012 at 02:12:37PM +0100, Joerg Roedel wrote:
 > here is the fourth version of the patch-set to improve the abstraction
 > of interrupt remapping in the x86 core code. A more detailed description
 > can be found in the original post at:
-
-Are these patches available on some git tree?
-
 > 
 >         https://lkml.org/lkml/2012/8/7/317
-> 
+>
+
+I looked at the patches and you can also add
+Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+
+If you have a git tree I would like to test them as well. Thx.
+ 
 > Changes from v3->v4:
 > 
 > 	* Rebased to v3.7-rc6
