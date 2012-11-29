@@ -1,137 +1,156 @@
-From: Thierry Reding <thierry.reding@avionic-design.de>
-Subject: Re: [PATCH 1/1] ARM: tegra: bus_notifier registers IOMMU
- devices(was: How to specify IOMMU'able devices in DT)
-Date: Thu, 29 Nov 2012 11:17:29 +0100
-Message-ID: <20121129101729.GA6150@avionic-0098.adnet.avionic-design.de>
-References: <20120924124452.41070ed2ee9944d930cffffc@nvidia.com>
- <054901cd9a45$db1a7ea0$914f7be0$%szyprowski@samsung.com>
- <20120924.145014.1452596970914043018.hdoyu@nvidia.com>
- <20121128.154832.539666140149950229.hdoyu@nvidia.com>
+From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: RE: [PATCH v4 00/12] iommu/exynos: Fixes and Enhancements of System
+	MMU driver with DT
+Date: Thu, 29 Nov 2012 19:55:57 +0900
+Message-ID: <008601cdce20$1ccffb00$566ff100$%cho@samsung.com>
+References: <002101cdc8a4$fc375990$f4a60cb0$%cho@samsung.com>
+	<112e01cdc951$976699b0$c633cd10$%kim@samsung.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="vkogqOf2sHV7VnPd"
-Return-path: <owner-linux-mm@kvack.org>
-Content-Disposition: inline
-In-Reply-To: <20121128.154832.539666140149950229.hdoyu@nvidia.com>
-Sender: owner-linux-mm@kvack.org
-To: Hiroshi Doyu <hdoyu@nvidia.com>
-Cc: "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "swarren@wwwdotorg.org" <swarren@wwwdotorg.org>, "joro@8bytes.org" <joro@8bytes.org>, "James.Bottomley@HansenPartnership.com" <James.Bottomley@HansenPartnership.com>, "arnd@arndb.de" <arnd@arndb.de>, Krishna Reddy <vdumpa@nvidia.com>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "minchan@kernel.org" <minchan@kernel.org>, "chunsang.jeong@linaro.org" <chunsang.jeong@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "subashrp@gmail.com" <subashrp@gmail.com>, "linaro-mm-sig@lists.linaro.org" <linaro-mm-sig@lists.linaro.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, "kyungmin.park@samsung.com" <kyungmin.park@samsung.com>, "pullip.cho@samsung.com" <pullip.ch>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-reply-to: 
+Content-language: ko
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: 'Cho KyongHo' <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Kukjin Kim' <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, sw0312.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, 'Subash Patel' <subash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Sanghyun Lee' <sanghyun75.lee-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+> -----Original Message-----
+> From: Cho KyongHo [mailto:pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org]
+> Sent: Monday, November 26, 2012 10:54 AM
+> > -----Original Message-----
+> > From: Cho KyongHo [mailto:pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org]
+> > Sent: Monday, November 26, 2012 10:28 AM
+> >
+> > > -----Original Message-----
+> > > From: Kukjin Kim [mailto:kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org]
+> > > Sent: Friday, November 23, 2012 5:08 PM
+> > > Subject: RE: [PATCH v4 00/12] iommu/exynos: Fixes and Enhancements of System MMU driver with DT
+> > >
+> > > Cho KyongHo wrote:
+> > > >
+> > > > The current exynos-iommu(System MMU) driver does not work autonomously
+> > > > since it is lack of support for power management of peripheral blocks.
+> > > > For example, MFC device driver must ensure that its System MMU is disabled
+> > > > before MFC block is power-down not to invalidate IOTLB in the System MMU
+> > > > when I/O memory mapping is changed. Because A System MMU is resides in the
+> > > > same H/W block, access to control registers of System MMU while the H/W
+> > > > block is turned off must be prohibited.
+> > > >
+> > > > This set of changes solves the above problem with setting each System MMUs
+> > > > as the parent of the device which owns the System MMU to recieve the
+> > > > information when the device is turned off or turned on.
+> > > >
+> > > > Another big change to the driver is the support for devicetree.
+> > > > The bindings for System MMU is described in
+> > > > Documentation/devicetree/bindings/arm/samsung/system-mmu.txt
+> > > >
+> > > > In addition, this patchset also includes several bug fixes and
+> > > > enhancements
+> > > > of the current driver.
+> > > >
+> > > > Change log:
+> > > > v4:
+> > > > - Remove Change-Id from v3 patches
+> > > > - Change the order of the third and the first patch
+> > > >   Thanks to Kukjin Kim.
+> > > > - Fix memory leak when allocating and assigning exynos_iommu_owner to
+> > > > client
+> > > >   device if the client device has multiple System MMUs.
+> > > >   Thanks to Rahul Sharma.
+> > > >
+> > > > v3:
+> > > > - Fix prefetch buffer flag definition for System MMU 3.3 (patch 10/12)
+> > > > - Fix incorrect setting for SET_RUNTIME_PM_OPS (patch 09/12)
+> > > >   Thanks to Prathyush.
+> > > >
+> > > > v2:
+> > > > - Split the patch to iommu/exynos into 9 patches
+> > > > - Support for System MMU 3.3
+> > > > - Some code compaction
+> > > >
+> > > > Patch summary:
+> > > > [PATCH v4 01/12] ARM: EXYNOS: Add clk_ops for gating clocks of System MMU
+> > > > [PATCH v4 02/12] ARM: EXYNOS: add System MMU definition to DT
+> > > > [PATCH v4 03/12] ARM: EXYNOS: remove system mmu initialization from exynos
+> > > > tree
+> > > > [PATCH v4 04/12] iommu/exynos: support for device tree
+> > > > [PATCH v4 05/12] iommu/exynos: pass version information from DT
+> > > > [PATCH v4 06/12] iommu/exynos: allocate lv2 page table from own slab
+> > > > [PATCH v4 07/12] iommu/exynos: change rwlock to spinlock
+> > > > [PATCH v4 08/12] iommu/exynos: set System MMU as the parent of client
+> > > > device
+> > > > [PATCH v4 09/12] iommu/exynos: add support for runtime pm and
+> > > > suspend/resume
+> > > > [PATCH v4 10/12] iommu/exynos: add support for System MMU 3.2 and 3.3
+> > > > [PATCH v4 11/12] iommu/exynos: add literal name of System MMU for
+> > > > debugging
+> > > > [PATCH v4 12/12] iommu/exynos: add debugfs entries for System MMU
+> > > >
+> > > > Diffstats:
+> > > >  .../devicetree/bindings/arm/exynos/system-mmu.txt  |   86 ++
+> > > >  arch/arm/boot/dts/exynos4210.dtsi                  |   96 ++
+> > > >  arch/arm/boot/dts/exynos4x12.dtsi                  |  124 ++
+> > > >  arch/arm/boot/dts/exynos5250.dtsi                  |  147 +-
+> > > >  arch/arm/mach-exynos/Kconfig                       |    5 -
+> > > >  arch/arm/mach-exynos/Makefile                      |    1 -
+> > > >  arch/arm/mach-exynos/clock-exynos4.c               |   41 +-
+> > > >  arch/arm/mach-exynos/clock-exynos4210.c            |    9 +-
+> > > >  arch/arm/mach-exynos/clock-exynos4212.c            |   23 +-
+> > > >  arch/arm/mach-exynos/clock-exynos5.c               |   86 +-
+> > > >  arch/arm/mach-exynos/dev-sysmmu.c                  |  274 ----
+> > > >  arch/arm/mach-exynos/include/mach/sysmmu.h         |   66 -
+> > > >  arch/arm/mach-exynos/mach-exynos4-dt.c             |   34 +
+> > > >  arch/arm/mach-exynos/mach-exynos5-dt.c             |   30 +
+> > > >  drivers/iommu/Kconfig                              |    2 +-
+> > > >  drivers/iommu/exynos-iommu.c                       | 1428
+> > > +++++++++++++++-----
+> > > >  16 files changed, 1720 insertions(+), 732 deletions(-)
+> > >
+> > > Looks good to me 1st~3rd patches. After quick review, I think, 1st and 2nd
+> > > patches can go to upstream for v3.8 without any dependency. So I will.
+> > >
+> > > The 3rd patch has a dependency with other driver changes (4th ~ 12th), so it
+> > > should be sent to upstream with others.
+> > >
+> > > BTW since the 3rd patch touches many Samsung stuff in arch/arm/ so I'd
+> > > prefer to take it in Samsung tree. If Joerg is ok on iommu/exynos driver
+> > > changes for v3.8...
+> > >
+> > > Joerg, please let me know about iommu/exynos stuff so that I can decide to
+> > > take 3rd patch or not for v3.8.
+> > >
+> >
+> > Hi, Kukjin Kim.
+> >
+> > I found that control bit fields of clock gating of System MMU of MFC L/R is inversed.
+> > That is reported by Prathyush Kalashwaram.
+> >
+> > I will post v5 patchset that solves this.
+> >
+> 
+> I did not posted v5 patchset.
+> Instead, I posted just the fix for the 03/12 patch mentioned above
+> as the reply to the 03/12 patch.
+> 
 
---vkogqOf2sHV7VnPd
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hi, Joerg.
 
-On Wed, Nov 28, 2012 at 02:48:32PM +0100, Hiroshi Doyu wrote:
-[...]
-> From: Hiroshi Doyu <hdoyu@nvidia.com>
-> Date: Wed, 28 Nov 2012 14:47:04 +0200
-> Subject: [PATCH 1/1] ARM: tegra: bus_notifier registers IOMMU devices
->=20
-> platform_bus notifier registers IOMMU devices if dma-window is
-> specified.
->=20
-> Its format is:
->   dma-window =3D <"start" "size">;
-> ex)
->   dma-window =3D <0x12345000 0x8000>;
->=20
-> Signed-off-by: Hiroshi Doyu <hdoyu@nvidia.com>
-> ---
->  arch/arm/mach-tegra/board-dt-tegra30.c |   40 ++++++++++++++++++++++++++=
-++++++
->  1 file changed, 40 insertions(+)
->=20
-> diff --git a/arch/arm/mach-tegra/board-dt-tegra30.c b/arch/arm/mach-tegra=
-/board-dt-tegra30.c
-> index a2b6cf1..570d718 100644
-> --- a/arch/arm/mach-tegra/board-dt-tegra30.c
-> +++ b/arch/arm/mach-tegra/board-dt-tegra30.c
-> @@ -30,9 +30,11 @@
->  #include <linux/of_fdt.h>
->  #include <linux/of_irq.h>
->  #include <linux/of_platform.h>
-> +#include <linux/of_iommu.h>
-> =20
->  #include <asm/mach/arch.h>
->  #include <asm/hardware/gic.h>
-> +#include <asm/dma-iommu.h>
-> =20
->  #include "board.h"
->  #include "clock.h"
-> @@ -86,10 +88,48 @@ static __initdata struct tegra_clk_init_table tegra_d=
-t_clk_init_table[] =3D {
->  	{ NULL,		NULL,		0,		0},
->  };
-> =20
-> +#ifdef CONFIG_ARM_DMA_USE_IOMMU
-> +static int tegra_iommu_device_notifier(struct notifier_block *nb,
-> +				       unsigned long event, void *_dev)
-> +{
-> +	struct dma_iommu_mapping *map =3D NULL;
-> +	struct device *dev =3D _dev;
-> +	dma_addr_t base;
-> +	size_t size;
-> +	int err;
-> +
-> +	switch (event) {
-> +	case BUS_NOTIFY_ADD_DEVICE:
-> +		err =3D of_get_dma_window(dev->of_node, NULL, 0, NULL, &base,
-> +					&size);
-> +		if (!err)
-> +			map =3D arm_iommu_create_mapping(&platform_bus_type,
-> +						       base, size, 0);
-> +		if (IS_ERR_OR_NULL(map))
-> +			break;
-> +		if (arm_iommu_attach_device(dev, map))
-> +			dev_err(dev, "Failed to attach %s\n", dev_name(dev));
-> +		dev_dbg(dev, "Attached %s to map %p\n", dev_name(dev), map);
-> +		break;
-> +	}
-> +	return NOTIFY_DONE;
-> +}
-> +#else
-> +#define tegra_iommu_device_notifier NULL
-> +#endif
-> +
-> +static struct notifier_block tegra_iommu_device_nb =3D {
-> +	.notifier_call =3D tegra_iommu_device_notifier,
-> +};
+I am waiting for your comment about the patchset.
+The latest version is v4.
+And a fix of [patch v4 03/12] mentioned above is posted as a reply.
 
-You don't need this extra protection since you use IS_ENABLED below and
-these are all static variables. The whole point of IS_ENABLED is to
-allow full compile coverage while leaving it up to the compiler to
-eliminate dead code.
+If you have any concern about the patches, please let me know
 
-Thierry
+Thank you.
 
---vkogqOf2sHV7VnPd
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.19 (GNU/Linux)
-
-iQIcBAEBAgAGBQJQtzY5AAoJEN0jrNd/PrOhuzMP/iJ18BF54Mt6oyjkj7L4SDsE
-BHtFAOgoS6H6ZE4gDkJcmXotmEb1qSP4dhM6kox7XtEwfQ2QQ19btFNfsvyZrrZF
-S7oRehteLuY9f9UeattSzMW7p/vLp4ca15krNuS2zMLonsvfARY3+zKshvp95i4w
-u13XLVCCz8qFqMI+hTC1mG6J38yUX3OE8MatP213sO23gR+M+k2W2hGdShoIkLca
-FjaeWw8XqapGQNAM7M95IkdWalIZGGQ7VUcWU7J+dYnb1yNS0fIiDPyc+PMXlcDc
-rRseaEPAjeRKcx+gu7mTf0tZOo+oiwQFy7eRVtj1o/9KteIvL7BE5ePd7pnNQM5v
-U9zBJ3mTt4suST5xFK0tTnJElbZFMtNA75ZC6mrHfyVFo1HcQd3gx2CN5qxWL709
-Sgr8Gr0hrWyodLxiDE+a3q+k4deB5BxYccp1swZMrrlkH4MYVESCrgJ6TyZPjihr
-OtpJyH4myC+GqBBdyxQ5phNLq13UdgmtiurnXDaKIgqq46yNR5TaUuo4B/bTDK6s
-2PmMFziZYyCmnWiMb8JU42J/VHSQrQkv7EC3V9w6BKhkynPvh6CLMcsD7A2Ub+Ta
-rZKyuy89z0wuGKhyJgpIGXRpjyROIorlHcsWpP9MPGb3V8Hec6hmBbVGFsSrxPqw
-Io+pFSTddkjReGRA/agl
-=uArM
------END PGP SIGNATURE-----
-
---vkogqOf2sHV7VnPd--
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+Cho KyongHo.
