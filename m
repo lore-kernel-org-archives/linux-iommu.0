@@ -1,203 +1,92 @@
-From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: Supermicro X9SRL-F - channel enumeration error & ACPI/firmware
- bug question
-Date: Thu, 29 Nov 2012 20:38:53 -0700
-Message-ID: <CAErSpo6zvcN3aS_5ZNFD04yGNm_ehrNY_VUjO=172PSMKZYe+A@mail.gmail.com>
-References: <097501cdca7b$7e303890$7a90a9b0$@lucidpixels.com>
- <20121126224245.248f0901@neptune.home> <CAErSpo7Y7m9o2u36ghiW1UDkwweSCG1ZGBx167Anfw4wXTYrCg@mail.gmail.com>
- <CAErSpo6vrHMTht1nQxiF6HD7qCvUE-NS2eAnQjgUXym1pnNkSA@mail.gmail.com>
- <004201cdcc3a$a7538310$f5fa8930$@lucidpixels.com> <CAErSpo7530xA6=1Ytj09dwyS1M_N_yAfk4xkr3f9Z_NBn6TJrA@mail.gmail.com>
- <00a501cdcca3$c2638510$472a8f30$@lucidpixels.com> <00b501cdcca6$03f88af0$0be9a0d0$@lucidpixels.com>
- <50B6ADA5.2030205@gmail.com> <04b301cdcdcb$65e2f400$31a8dc00$@lucidpixels.com>
- <CADLC3L09uxX_AU+22nfS20DCE97n1_ZxkG5A1R9joJcEua-EBg@mail.gmail.com>
- <02d501cdce0f$4b0ce520$e126af60$@lucidpixels.com> <CAErSpo7MpFrSX9rVH48A4mvsRdBjQybqiocv3nrZOPoK_+aqcw@mail.gmail.com>
- <CADLC3L1BAgQCbi1V=N0CRkJxbaQVK36q4pzbdnanO60exFem4w@mail.gmail.com>
+From: Kukjin Kim <kgene.kim@samsung.com>
+Subject: RE: [PATCH v4 00/12] iommu/exynos: Fixes and Enhancements of System
+ MMU driver with DT
+Date: Fri, 30 Nov 2012 19:55:30 +0900
+Message-ID: <1d6601cdcee9$36ebd760$a4c38620$%kim@samsung.com>
+References: <002101cdc8a4$fc375990$f4a60cb0$%cho@samsung.com>
+ <112e01cdc951$976699b0$c633cd10$%kim@samsung.com>
+ <008601cdce20$1ccffb00$566ff100$%cho@samsung.com>
+ <CAPdUM4M77LGQn+FcxmsA38H9wrJX6to_OgmtkSgUYkXVuD-m2w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CADLC3L1BAgQCbi1V=N0CRkJxbaQVK36q4pzbdnanO60exFem4w@mail.gmail.com>
+In-reply-to: <CAPdUM4M77LGQn+FcxmsA38H9wrJX6to_OgmtkSgUYkXVuD-m2w@mail.gmail.com>
+Content-language: ko
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robert Hancock <hancockrwd@gmail.com>
-Cc: Justin Piszcz <jpiszcz@lucidpixels.com>, =?ISO-8859-1?Q?Bruno_Pr=E9mont?= <bonbons@linux-vserver.org>, support@supermicro.com, linux-kernel@vger.kernel.org, Dan Williams <djbw@fb.com>, Jeff Garzik <jgarzik@pobox.com>, linux-ide@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org
+To: 'Rahul Sharma' <r.sh.open@gmail.com>, 'Cho KyongHo' <pullip.cho@samsung.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, prathyush.k@samsung.com, sw0312.kim@samsung.com, 'Subash Patel' <subash.ramaswamy@linaro.org>, 'Sanghyun Lee' <sanghyun75.lee@samsung.com>, rahul.sharma@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-[+cc Jeff, linux-ide, David, Joerg, iommu]
-
-On Thu, Nov 29, 2012 at 7:39 PM, Robert Hancock <hancockrwd@gmail.com> =
-wrote:
-> On Thu, Nov 29, 2012 at 12:16 PM, Bjorn Helgaas <bhelgaas@google.com>=
- wrote:
->> On Thu, Nov 29, 2012 at 1:55 AM, Justin Piszcz <jpiszcz@lucidpixels.=
-com> wrote:
->>>
->>>
->>> -----Original Message-----
->>> From: Robert Hancock [mailto:hancockrwd@gmail.com]
->>> Sent: Wednesday, November 28, 2012 7:55 PM
->>> To: Justin Piszcz
->>> Cc: Bjorn Helgaas; Bruno Pr=E9mont; support@supermicro.com;
->>> linux-kernel@vger.kernel.org; Dan Williams
->>> Subject: Re: Supermicro X9SRL-F - channel enumeration error & ACPI/=
-firmware
->>> bug question
->>>
->>> On Wed, Nov 28, 2012 at 6:49 PM, Justin Piszcz <jpiszcz@lucidpixels=
-=2Ecom>
->>> wrote:
->>>>
->>>>
->>>> -----Original Message-----
->>>> From: Robert Hancock [mailto:hancockrwd@gmail.com]
->>>> Sent: Wednesday, November 28, 2012 7:35 PM
->>>> To: Justin Piszcz
->>>> Cc: 'Bjorn Helgaas'; 'Bruno Pr=E9mont'; support@supermicro.com;
->>>> linux-kernel@vger.kernel.org; 'Dan Williams'
->>>> Subject: Re: Supermicro X9SRL-F - channel enumeration error &
->>> ACPI/firmware
->>>> bug question
->>>>
->>>>
->>>> What does lspci -vv show on that controller? Not sure what actual
->>>> chipset that controller is, but there's a known issue with some Ma=
-rvell
->>>> 6Gbps SATA controllers with DMAR enabled - it seems the device iss=
-ues
->>>> memory read/write requests from the wrong PCI function ID and the =
-IOMMU
->>>> rightly denies access as the function listed in the requests doesn=
-'t
->>>> have any mapping to that memory. I don't think there's presently a
->>>> workaround other than disabling DMAR. We could (and likely should)=
- be
->>>> detecting that device and adding some kind of quirk for it.
->>>>
->>>> That sounds likely...
->>>> It is shown below:
->>>>
->>>> Card name: HighPoint Rocket 620 Dual Port SATA 6 Gbps PCI Express =
-2.0 Host
->>>> Adapter
->>>>
->>>> lspci -vv output:
->>>>
->>>> 84:00.0 SATA controller: Marvell Technology Group Ltd. 88SE9123 PC=
-Ie SATA
->>>> 6.0 Gb/s controller (rev 11) (prog-if 01 [AHCI 1.0])
->>>>   Subsystem: Marvell Technology Group Ltd. 88SE9123 PCIe SATA 6.0 =
-Gb/s
->>>> controller
->>>
->>> Yeah, that's one of those controllers I think. But I can't tell fro=
-m
->>> the bit of the dmesg you posted exactly what's going on. Can you po=
-st
->>> a full boot log from having the card installed and some drive attac=
-hed
->>> (by putting the boot drive on another controller for example)?
->>>
->>>>> =3D=3D> Further issues with the X9SRL-F -- does this board suppor=
-t ASPM or is
->>>>> this a Linux/ASPM implementation issue?
->>>>> [    0.632170]  pci0000:ff: ACPI _OSC support notification failed=
-,
->>>> disabling
->>>>> PCIe ASPM
->>>>> [    0.632239]  pci0000:ff: Unable to request _OSC control (_OSC =
-support
->>>>> mask: 0x08)
->>>>
->>>> What's the full dmesg from this machine (or is it already posted
->>> somewhere)?
->>>>
->>>> It is now available here:
->>>> http://home.comcast.net/~jpiszcz/20121128/dmesg.txt
->>>
->>>> Is that the same boot log? It doesn't have this error in it.
->>>
->>> Yes, the error is here: (its towards the bottom)
->>>
->>>  [    7.973015] ata14.00: qc timeout (cmd 0xa1)
->>> [    8.472120] ata14.00: failed to IDENTIFY (I/O error, err_mask=3D=
-0x4)
->>> [    9.275922] ata14: SATA link up 1.5 Gbps (SStatus 113 SControl 3=
-00)
->>> [   19.260667] ata14.00: qc timeout (cmd 0xa1)
->>> [   19.759828] ata14.00: failed to IDENTIFY (I/O error, err_mask=3D=
-0x4)
->>> [   19.760451] ata14: limiting SATA link speed to 1.5 Gbps
->>> [   20.566598] ata14: SATA link up 1.5 Gbps (SStatus 113 SControl 3=
-10)
->>> [   50.521078] ata14.00: qc timeout (cmd 0xa1)
->>> [   51.020880] ata14.00: failed to IDENTIFY (I/O error, err_mask=3D=
-0x4)
->>> [   51.824664] ata14: SATA link up 1.5 Gbps (SStatus 113 SControl 3=
-10)
->>> [   51.824682] dmar: DRHD: handling fault status reg 502
->>> [   51.824686] dmar: DMAR:[DMA Read] Request device [04:00.0] fault=
- addr 0
->>> [   51.824686] DMAR:[fault reason 06] PTE Read access is not set
->>
->> You have these devices:
->>
->>     pci 0000:04:00.0: [10de:01d3] type 00 class 0x030000 nVidia G72
->>     pci 0000:84:00.0: [1b4b:9123] type 00 class 0x010601 Marvell 88S=
-E9123 SATA
->>     pci 0000:84:00.1: [1b4b:91a4] type 00 class 0x01018f Marvell 88S=
-E9128 IDE
->>
->> I think the 04:00.0 DMAR errors are symptoms of nouveau driver issue=
-s,
->> and if you get rid of that driver, they'll probably go away.
->>
->> But this 84:00.1 DMAR error:
->>
->>     dmar: DMAR:[DMA Read] Request device [84:00.1] fault addr fff000=
-00
->>     DMAR:[fault reason 02] Present bit in context entry is clear
->>
->> looks like the probable cause of the Marvell issue.  It looks simila=
-r
->> to https://bugzilla.kernel.org/show_bug.cgi?id=3D42679, although the
->> reports there show a bb:dd.0 device (but no bb:dd.1 device), and the
->> DMAR rejects DMA that appears to be from bb:dd.1.
->>
->> Another report that's even more similar is
->> https://bugzilla.redhat.com/show_bug.cgi?id=3D757166 .  In that case=
-,
->> both bb:dd.0 and bb:dd.1 exist (as in your system), and the DMAR fau=
-lt
->> is exactly like what you're seeing.
->>
->> So you're not alone, but unfortunately, nobody seems to be working o=
-n
->> either bug report.  I took the liberty to add you to the cc: list of
->> both.
->>
->> I don't really know what else to do at this point.  Maybe a SATA
->> expert with some Marvell docs could figure out why we're seeing DMA
->> from the IDE controller, but I'm not that person :)
+Rahul Sharma wrote:
 >
-> I doubt any Marvell docs would really be very helpful (except for
-> maybe an errata list but that likely would just tell us what we can
-> already figure out). The SATA controller part of the device seems to
-> just be issuing accesses with the wrong PCI function ID.
->
-> The only solution I can think of would be at the PCI/DMAR layer -
-> basically functions 0 and 1 on this device should be allowed to acces=
-s
-> each other's DMA regions.
+> Hi Mr. Cho,
+> 
+> We have verified the above patchset for following usecases on exynos5.
+> 
+> 1) MFC decoding using Sysmmu_L and R. (with the bit Inversion fix)
+> 2) GSC operations.
+> 3) FIMD and MIXER (HDMI) as displays.
+> 
+> Thanks for your effort.
+> 
+Thanks for your test on board.
 
-That's essentially the patch at
-https://bugzilla.redhat.com/show_bug.cgi?id=3D757166#c16, which in my
-opinion is too ugly to consider.  But fortunately, I'm not the
-maintainer for any IOMMU drivers.
+[...]
 
-My point about the docs is that often we think "this hardware is
-clearly broken and the only workaround is X," but sometimes it's just
-that we don't understand the hardware designer's intent.  It may be
-that the hardware was just never tested with DMAR and is indeed
-broken, or it may be that it does work with DMAR given a different
-driver structure or different device initialization.  I just don't
-want lack of imagination to force us to assume there's only one
-workaround.
+> >> > >
+> >> > > Looks good to me 1st~3rd patches. After quick review, I think, 1st
+> and 2nd
+> >> > > patches can go to upstream for v3.8 without any dependency. So I
+> will.
+> >> > >
+> >> > > The 3rd patch has a dependency with other driver changes (4th ~
+> 12th), so it
+> >> > > should be sent to upstream with others.
+> >> > >
+> >> > > BTW since the 3rd patch touches many Samsung stuff in arch/arm/ so
+> I'd
+> >> > > prefer to take it in Samsung tree. If Joerg is ok on iommu/exynos
+> driver
+> >> > > changes for v3.8...
+> >> > >
+> >> > > Joerg, please let me know about iommu/exynos stuff so that I can
+> decide to
+> >> > > take 3rd patch or not for v3.8.
+> >> > >
+> >> >
+> >> > Hi, Kukjin Kim.
+> >> >
+> >> > I found that control bit fields of clock gating of System MMU of MFC
+> L/R is inversed.
+> >> > That is reported by Prathyush Kalashwaram.
+> >> >
+> >> > I will post v5 patchset that solves this.
+> >> >
+> >>
+> >> I did not posted v5 patchset.
+> >> Instead, I posted just the fix for the 03/12 patch mentioned above
+> >> as the reply to the 03/12 patch.
+> >>
+> >
+> > Hi, Joerg.
+> >
+> > I am waiting for your comment about the patchset.
+
+Same here.
+
+> > The latest version is v4.
+> > And a fix of [patch v4 03/12] mentioned above is posted as a reply.
+> >
+> > If you have any concern about the patches, please let me know
+> >
+
+If there is no reply, as I said, I will apply 1st and 2nd patches...
+
+Thanks.
+
+Best regards,
+Kgene.
+--
+Kukjin Kim <kgene.kim@samsung.com>, Senior Engineer,
+SW Solution Development Team, Samsung Electronics Co., Ltd.
