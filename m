@@ -1,40 +1,35 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: Supermicro X9SRL-F - channel enumeration error & ACPI/firmware
- bug question
-Date: Sun, 2 Dec 2012 14:26:49 +0100
-Message-ID: <20121202132649.GM30633@8bytes.org>
-References: <CAErSpo7530xA6=1Ytj09dwyS1M_N_yAfk4xkr3f9Z_NBn6TJrA@mail.gmail.com>
- <00a501cdcca3$c2638510$472a8f30$@lucidpixels.com>
- <00b501cdcca6$03f88af0$0be9a0d0$@lucidpixels.com>
- <50B6ADA5.2030205@gmail.com>
- <04b301cdcdcb$65e2f400$31a8dc00$@lucidpixels.com>
- <CADLC3L09uxX_AU+22nfS20DCE97n1_ZxkG5A1R9joJcEua-EBg@mail.gmail.com>
- <02d501cdce0f$4b0ce520$e126af60$@lucidpixels.com>
- <CAErSpo7MpFrSX9rVH48A4mvsRdBjQybqiocv3nrZOPoK_+aqcw@mail.gmail.com>
- <CADLC3L1BAgQCbi1V=N0CRkJxbaQVK36q4pzbdnanO60exFem4w@mail.gmail.com>
- <CAErSpo6zvcN3aS_5ZNFD04yGNm_ehrNY_VUjO=172PSMKZYe+A@mail.gmail.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 1/1] iommuv2/amd: Enable Performance Counters On Family
+	15h Models 10h-1Fh
+Date: Sun, 2 Dec 2012 14:30:26 +0100
+Message-ID: <20121202133026.GN30633@8bytes.org>
+References: <1353967225-18742-1-git-send-email-steven.kinney@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-ide-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CAErSpo6zvcN3aS_5ZNFD04yGNm_ehrNY_VUjO=172PSMKZYe+A@mail.gmail.com>
-Sender: linux-ide-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Robert Hancock <hancockrwd@gmail.com>, Justin Piszcz <jpiszcz@lucidpixels.com>, Bruno =?iso-8859-1?Q?Pr=E9mont?= <bonbons@linux-vserver.org>, support@supermicro.com, linux-kernel@vger.kernel.org, Dan Williams <djbw@fb.com>, Jeff Garzik <jgarzik@pobox.com>, linux-ide@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org
+In-Reply-To: <1353967225-18742-1-git-send-email-steven.kinney-5C7GfCeVMHo@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Steven Kinney <steven.kinney-5C7GfCeVMHo@public.gmane.org>
+Cc: Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Jiri Kosina <jkosina-AlSwsSmVLrQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Nov 29, 2012 at 08:38:53PM -0700, Bjorn Helgaas wrote:
-> That's essentially the patch at
-> https://bugzilla.redhat.com/show_bug.cgi?id=757166#c16, which in my
-> opinion is too ugly to consider.  But fortunately, I'm not the
-> maintainer for any IOMMU drivers.
+On Mon, Nov 26, 2012 at 04:00:25PM -0600, Steven Kinney wrote:
+> From: "Steven L. Kinney" <steven.kinney-5C7GfCeVMHo@public.gmane.org>
+> 
+> Add Kernel configuration selection for AMD IOMMUv2 performance
+> counters.
 
-There is a quirk infrastructure for those kinds of broken devices in
-drivers/pci/quirks.c. Have a look into the function
-pci_get_dma_source(). This function is used by the IOMMU drivers to
-create the correct mappings.
+How can the counters be used?
 
 
 	Joerg
-
-
