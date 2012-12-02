@@ -1,13 +1,18 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 2/2] iommu/amd: Remove obsolete comment
-Date: Sun,  2 Dec 2012 16:06:14 +0100
-Message-ID: <1354460774-2936-2-git-send-email-joro@8bytes.org>
-References: <1354460774-2936-1-git-send-email-joro@8bytes.org>
+From: Tabi Timur-B04825 <B04825-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: Re: [PATCH 3/4 v5] iommu/fsl: Add iommu domain attributes required
+	by fsl PAMU driver.
+Date: Sun, 2 Dec 2012 15:11:54 +0000
+Message-ID: <6AE080B68D46FC4BA2D2769E68D765B7081BD902@039-SN2MPN1-023.039d.mgd.msft.net>
+References: <1353419697-31269-1-git-send-email-Varun.Sethi@freescale.com>
+	<1353419697-31269-4-git-send-email-Varun.Sethi@freescale.com>
+	<20121202140323.GO30633@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1354460774-2936-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20121202140323.GO30633-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Language: en-US
+Content-ID: <B9AA00DCAD5BDB4BA4F903AE35466973-725oAoX4OcF2GV6JINhBVAC/G2K4zDHf@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,38 +22,21 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Tabi Timur-B04825 <B04825-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The AMD IOMMU driver only uses the page-sizes it gets from
-IOMMU core and uses the appropriate page-size. So this
-comment is not necessary.
+Joerg Roedel wrote:
+> When you add implementation specific attributes please add some
+> indication to the names that it is only for PAMU. DOMAIN_ATTR_STASH
+> sounds too generic.
 
-Signed-off-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
----
- drivers/iommu/amd_iommu.c |   10 ----------
- 1 file changed, 10 deletions(-)
+We were thinking that maybe this attribute could be useful to other IOMMUs 
+in the future.  Stashing is not a concept that would only work on 
+Freescale processors.
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 98d74ab..c1c74e0 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -57,16 +57,6 @@
-  * physically contiguous memory regions it is mapping into page sizes
-  * that we support.
-  *
-- * Traditionally the IOMMU core just handed us the mappings directly,
-- * after making sure the size is an order of a 4KiB page and that the
-- * mapping has natural alignment.
-- *
-- * To retain this behavior, we currently advertise that we support
-- * all page sizes that are an order of 4KiB.
-- *
-- * If at some point we'd like to utilize the IOMMU core's new behavior,
-- * we could change this to advertise the real page sizes we support.
-- *
-  * 512GB Pages are not supported due to a hardware bug
-  */
- #define AMD_IOMMU_PGSIZES	((~0xFFFUL) & ~(2ULL << 38))
+But we'll change it if you insist.
+
 -- 
-1.7.9.5
+Timur Tabi
+Linux kernel developer at Freescale
