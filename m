@@ -1,18 +1,16 @@
-From: Tabi Timur-B04825 <B04825-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: Re: [PATCH 3/4 v5] iommu/fsl: Add iommu domain attributes required
-	by fsl PAMU driver.
-Date: Sun, 2 Dec 2012 15:11:54 +0000
-Message-ID: <6AE080B68D46FC4BA2D2769E68D765B7081BD902@039-SN2MPN1-023.039d.mgd.msft.net>
-References: <1353419697-31269-1-git-send-email-Varun.Sethi@freescale.com>
-	<1353419697-31269-4-git-send-email-Varun.Sethi@freescale.com>
-	<20121202140323.GO30633@8bytes.org>
+From: "Kinney, Steven" <Steven.Kinney-5C7GfCeVMHo@public.gmane.org>
+Subject: RE: [PATCH 1/1] iommuv2/amd: Enable Performance Counters On Family
+	15h Models 10h-1Fh
+Date: Sun, 2 Dec 2012 21:55:09 +0000
+Message-ID: <57D41218901B4442B4AFF404D215911636ABC6@sausexdag02.amd.com>
+References: <1353967225-18742-1-git-send-email-steven.kinney@amd.com>
+	<20121202133026.GN30633@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20121202140323.GO30633-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20121202133026.GN30633-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Content-Language: en-US
-Content-ID: <B9AA00DCAD5BDB4BA4F903AE35466973-725oAoX4OcF2GV6JINhBVAC/G2K4zDHf@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,20 +21,35 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Tabi Timur-B04825 <B04825-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+Cc: Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Jiri Kosina <jkosina-AlSwsSmVLrQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Hurwitz, Sherry" <sherry.hurwitz-5C7GfCeVMHo@public.gmane.org>, Joerg Roedel <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Joerg Roedel wrote:
-> When you add implementation specific attributes please add some
-> indication to the names that it is only for PAMU. DOMAIN_ATTR_STASH
-> sounds too generic.
+Hi Joerg,
 
-We were thinking that maybe this attribute could be useful to other IOMMUs 
-in the future.  Stashing is not a concept that would only work on 
-Freescale processors.
+                  I didn't want to expose the internals of the IOMMU, so I decided to export the function(s) so that the perf IOMMUv2 PMU can make call(s) into the IOMMU core to request PC resources.  The perf_event_amd_iommuv2.h defines the prototype for the added PC functionality.  I have the perf IOMMUv2 PMU working and counting IOMMUv2 PC events using this interface, but if  you have a suggestion to make this implementation more robust, I will accommodate the suggestion.  Also, if it would be helpful, I can submit the perf IOMMUv2 PMU patches.  
 
-But we'll change it if you insist.
+BTW, I am resubmitting this patch since I caught a function signature error; was changing the code based on Boris's suggestion(s) and forgot to add the variable type (bool) concerning the 'is_write' parameter.
 
--- 
-Timur Tabi
-Linux kernel developer at Freescale
+Hope all is well with you and the team; we miss you guys!
+
+Regards,
+
+Steve
+
+-----Original Message-----
+From: Joerg Roedel [mailto:joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org] 
+Sent: Sunday, December 02, 2012 7:30 AM
+To: Kinney, Steven
+Cc: Joerg Roedel; Kukjin Kim; Stephen Warren; Jiri Kosina; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Subject: Re: [PATCH 1/1] iommuv2/amd: Enable Performance Counters On Family 15h Models 10h-1Fh
+
+On Mon, Nov 26, 2012 at 04:00:25PM -0600, Steven Kinney wrote:
+> From: "Steven L. Kinney" <steven.kinney-5C7GfCeVMHo@public.gmane.org>
+> 
+> Add Kernel configuration selection for AMD IOMMUv2 performance 
+> counters.
+
+How can the counters be used?
+
+
+	Joerg
