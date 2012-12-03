@@ -1,14 +1,17 @@
-From: Andrew Cooks <acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 4/4] create context mapping entries for devices that use
-	phantom functions.
-Date: Mon,  3 Dec 2012 19:16:27 +0800
-Message-ID: <1354533387-4110-5-git-send-email-acooks@gmail.com>
-References: <1354533387-4110-1-git-send-email-acooks@gmail.com>
+From: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH 3/4 v5] iommu/fsl: Add iommu domain attributes required
+	by fsl PAMU driver.
+Date: Mon, 3 Dec 2012 16:57:29 +0000
+Message-ID: <C5ECD7A89D1DC44195F34B25E172658D2B2A51@039-SN2MPN1-013.039d.mgd.msft.net>
+References: <1353419697-31269-1-git-send-email-Varun.Sethi@freescale.com>
+	<1353419697-31269-4-git-send-email-Varun.Sethi@freescale.com>
+	<20121202140323.GO30633@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1354533387-4110-1-git-send-email-acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <20121202140323.GO30633-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,64 +21,43 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, jgarzik-e+AXbWqSrlAAvxtiuMwx3w@public.gmane.org, Joerg-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org, Roedel-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, Justin-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org, Piszcz-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org, jpiszcz-BP4nVm5VUdNhbmWW9KSYcQ@public.gmane.org, Robert-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org, Hancock-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org, hancockrwd-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, YingChu <xjtuychu-PkbjNfxxIARBDgjK7y7TUQ@public.gmane.org>
-Cc: "open list:INTEL IOMMU VT-d" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Tabi Timur-B04825 <B04825-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Create context mapping for phantom functions.
 
-Signed-off-by: Andrew Cooks <acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
----
- drivers/iommu/intel-iommu.c |   30 ++++++++++++++++++++++++++++++
- 1 files changed, 30 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 554e6ac..b3c9b55 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -1673,6 +1673,32 @@ static int domain_context_mapping_one(struct dmar_domain *domain, int segment,
- }
- 
- static int
-+context_map_phantoms(struct dmar_domain *domain, struct pci_dev *pdev,
-+			int translation)
-+{
-+	unsigned fn;
-+	int ret;
-+
-+	if (!pdev->phantoms_enabled)
-+		return 0;
-+
-+	pr_debug("context_map_phantoms()\n");
-+
-+	for (fn = 1 ; fn < 8 ; fn++) {
-+		ret = domain_context_mapping_one(domain,
-+					pci_domain_nr(pdev->bus),
-+					pdev->bus->number,
-+					fn,
-+					translation);
-+		if (ret) {
-+			pr_info("function %d phantom mapping failed.\n", fn);
-+			return ret;
-+		}
-+	}
-+	return 0;
-+}
-+
-+static int
- domain_context_mapping(struct dmar_domain *domain, struct pci_dev *pdev,
- 			int translation)
- {
-@@ -1685,6 +1711,10 @@ domain_context_mapping(struct dmar_domain *domain, struct pci_dev *pdev,
- 	if (ret)
- 		return ret;
- 
-+	ret = context_map_phantoms(domain, pdev, translation);
-+	if (ret)
-+		return ret;
-+
- 	/* dependent device mapping */
- 	tmp = pci_find_upstream_pcie_bridge(pdev);
- 	if (!tmp)
--- 
-1.7.1
+> -----Original Message-----
+> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
+> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Joerg Roedel
+> Sent: Sunday, December 02, 2012 7:33 PM
+> To: Sethi Varun-B16395
+> Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Wood
+> Scott-B07421; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; Tabi Timur-B04825
+> Subject: Re: [PATCH 3/4 v5] iommu/fsl: Add iommu domain attributes
+> required by fsl PAMU driver.
+> 
+> Hmm, we need to work out a good abstraction for this.
+> 
+> On Tue, Nov 20, 2012 at 07:24:56PM +0530, Varun Sethi wrote:
+> > Added the following domain attributes required by FSL PAMU driver:
+> > 1. Subwindows field added to the iommu domain geometry attribute.
+> 
+> Are the Subwindows mapped with full size or do you map only parts of the
+> subwindows?
+> 
+[Sethi Varun-B16395] It's possible to map a part of the subwindow i.e. size of the mapping can be less than the sub window size.
+
+> > +	 * This attribute indicates number of DMA subwindows supported by
+> > +	 * the geometry. If there is a single window that maps the entire
+> > +	 * geometry, attribute must be set to "1". A value of "0" implies
+> > +	 * that this mechanism is not used at all(normal paging is used).
+> > +	 * Value other than* "0" or "1" indicates the actual number of
+> > +	 * subwindows.
+> > +	 */
+> 
+> This semantic is ugly, how about a feature detection mechanism?
+> 
+[Sethi Varun-B16395] A feature mechanism to query the type of IOMMU?
+
+-Varun
