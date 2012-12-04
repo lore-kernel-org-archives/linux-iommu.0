@@ -1,103 +1,104 @@
-From: Scott Wood <scottwood@freescale.com>
-Subject: Re: [PATCH 3/4 v5] iommu/fsl: Add iommu domain attributes required
- by fsl PAMU driver.
-Date: Tue, 4 Dec 2012 12:22:51 -0600
-Message-ID: <1354645371.16710.15@snotra>
-References: <C5ECD7A89D1DC44195F34B25E172658D2B70EE@039-SN2MPN1-013.039d.mgd.msft.net>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: [v3 1/1] iommu/tegra: smmu: bus_notifier registers platform IOMMU devices
+Date: Tue, 4 Dec 2012 20:37:44 +0200
+Message-ID: <1354646264-12126-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; delsp=Yes; format=Flowed
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <C5ECD7A89D1DC44195F34B25E172658D2B70EE@039-SN2MPN1-013.039d.mgd.msft.net>
-	(from B16395@freescale.com on Tue Dec  4 05:53:33 2012)
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sethi Varun-B16395 <B16395@freescale.com>
-Cc: Wood Scott-B07421 <B07421@freescale.com>, Joerg Roedel <joro@8bytes.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, Tabi Timur-B04825 <B04825@freescale.com>
+Content-Type: text/plain
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org, nvmarkzhang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 12/04/2012 05:53:33 AM, Sethi Varun-B16395 wrote:
-> 
-> 
-> > -----Original Message-----
-> > From: Wood Scott-B07421
-> > Sent: Monday, December 03, 2012 10:34 PM
-> > To: Sethi Varun-B16395
-> > Cc: Joerg Roedel; linux-kernel@vger.kernel.org; iommu@lists.linux-
-> > foundation.org; Wood Scott-B07421; linuxppc-dev@lists.ozlabs.org;  
-> Tabi
-> > Timur-B04825
-> > Subject: Re: [PATCH 3/4 v5] iommu/fsl: Add iommu domain attributes
-> > required by fsl PAMU driver.
-> >
-> > On 12/03/2012 10:57:29 AM, Sethi Varun-B16395 wrote:
-> > >
-> > >
-> > > > -----Original Message-----
-> > > > From: iommu-bounces@lists.linux-foundation.org [mailto:iommu-
-> > > > bounces@lists.linux-foundation.org] On Behalf Of Joerg Roedel
-> > > > Sent: Sunday, December 02, 2012 7:33 PM
-> > > > To: Sethi Varun-B16395
-> > > > Cc: linux-kernel@vger.kernel.org;  
-> iommu@lists.linux-foundation.org;
-> > > Wood
-> > > > Scott-B07421; linuxppc-dev@lists.ozlabs.org; Tabi Timur-B04825
-> > > > Subject: Re: [PATCH 3/4 v5] iommu/fsl: Add iommu domain  
-> attributes
-> > > > required by fsl PAMU driver.
-> > > >
-> > > > Hmm, we need to work out a good abstraction for this.
-> > > >
-> > > > On Tue, Nov 20, 2012 at 07:24:56PM +0530, Varun Sethi wrote:
-> > > > > Added the following domain attributes required by FSL PAMU  
-> driver:
-> > > > > 1. Subwindows field added to the iommu domain geometry  
-> attribute.
-> > > >
-> > > > Are the Subwindows mapped with full size or do you map only  
-> parts
-> > > of the
-> > > > subwindows?
-> > > >
-> > > [Sethi Varun-B16395] It's possible to map a part of the subwindow  
-> i.e.
-> > > size of the mapping can be less than the sub window size.
-> > >
-> > > > > +	 * This attribute indicates number of DMA subwindows
-> > supported
-> > > by
-> > > > > +	 * the geometry. If there is a single window that maps  
-> the
-> > > entire
-> > > > > +	 * geometry, attribute must be set to "1". A value of  
-> "0"
-> > > implies
-> > > > > +	 * that this mechanism is not used at all(normal paging  
-> is
-> > > used).
-> > > > > +	 * Value other than* "0" or "1" indicates the actual  
-> number
-> > of
-> > > > > +	 * subwindows.
-> > > > > +	 */
-> > > >
-> > > > This semantic is ugly, how about a feature detection mechanism?
-> > > >
-> > > [Sethi Varun-B16395] A feature mechanism to query the type of  
-> IOMMU?
-> >
-> > A feature mechanism to determine whether this subwindow mechanism is
-> > available, and what the limits are.
-> >
-> So, we use the IOMMU capability interface to find out if IOMMU  
-> supports sub windows or not, right? But still number of sub windows  
-> would be specified as a part of the geometry and the valid value for  
-> sub windows would  0,1 or actual number of sub windows.
+Most of platform devices are IOMMU'able in Tegra30 SoC. Registering
+all IOMMU'able devices manually isn't nice. This patch allows
+platform bus_notifier to register IOMMU devices. Map info can be
+passed from DT. Info format is:
 
-How does a user of the interface find out what values are possible for  
-the "actual number of subwindows"?  How does a user of the interface  
-find out whether there are any limitations on specifying a value of  
-zero (in the case of PAMU, that would be a maximum 1 MiB  
-naturally-aligned aperture to support arbitrary 4KiB mappings)?
+  dma-window = <0 0x40000000>;
 
--Scott
+TODO:
+A map can be shared with mutiple devices. This info also could be
+passed from DT or default map can be set in advance.
+
+Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+---
+v3: Added bus_unregister_notifier
+---
+ drivers/iommu/tegra-smmu.c |   48 +++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 47 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index 25c1210..8fec9be 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -38,6 +38,7 @@
+ 
+ #include <asm/page.h>
+ #include <asm/cacheflush.h>
++#include <asm/dma-iommu.h>
+ 
+ enum smmu_hwgrp {
+ 	HWGRP_AFI,
+@@ -1273,13 +1274,58 @@ static struct platform_driver tegra_smmu_driver = {
+ 	},
+ };
+ 
++static int tegra_smmu_device_notifier(struct notifier_block *nb,
++				      unsigned long event, void *_dev)
++{
++	struct dma_iommu_mapping *map = NULL;
++	struct device *dev = _dev;
++	dma_addr_t base;
++	size_t size;
++	int err;
++
++	switch (event) {
++	case BUS_NOTIFY_ADD_DEVICE:
++		err = of_get_dma_window(dev->of_node, NULL, 0, NULL, &base,
++					&size);
++		if (!err)
++			map = arm_iommu_create_mapping(&platform_bus_type,
++						       base, size, 0);
++		if (IS_ERR_OR_NULL(map))
++			break;
++		if (arm_iommu_attach_device(dev, map)) {
++			arm_iommu_release_mapping(map);
++			dev_err(dev, "Failed to attach %s\n", dev_name(dev));
++		}
++		dev_dbg(dev, "Attached %s to map %p\n", dev_name(dev), map);
++		break;
++	default:
++		break;
++	}
++	return NOTIFY_DONE;
++}
++
++static struct notifier_block tegra_smmu_device_nb = {
++	.notifier_call = tegra_smmu_device_notifier,
++};
++
+ static int __devinit tegra_smmu_init(void)
+ {
+-	return platform_driver_register(&tegra_smmu_driver);
++	int err;
++
++	err = platform_driver_register(&tegra_smmu_driver);
++	if (err)
++		return err;
++	if (IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU))
++		bus_register_notifier(&platform_bus_type,
++				      &tegra_smmu_device_nb);
++	return 0;
+ }
+ 
+ static void __exit tegra_smmu_exit(void)
+ {
++	if (IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU))
++		bus_unregister_notifier(&platform_bus_type,
++					&tegra_smmu_device_nb);
+ 	platform_driver_unregister(&tegra_smmu_driver);
+ }
+ 
+-- 
+1.7.9.5
