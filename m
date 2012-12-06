@@ -1,67 +1,44 @@
-From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [v3 1/1] iommu/tegra: smmu: bus_notifier registers platform IOMMU
- devices
-Date: Wed, 05 Dec 2012 14:11:40 -0700
-Message-ID: <50BFB88C.8080901@wwwdotorg.org>
-References: <1354646264-12126-1-git-send-email-hdoyu@nvidia.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 1/1] iommuv2/amd: Enable Performance Counters On Family
+	15h Models 10h-1Fh
+Date: Thu, 6 Dec 2012 11:32:38 +0100
+Message-ID: <20121206103238.GF1806@8bytes.org>
+References: <1354659546-9700-1-git-send-email-steven.kinney@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1354646264-12126-1-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org, nvmarkzhang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1354659546-9700-1-git-send-email-steven.kinney-5C7GfCeVMHo@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Steven Kinney <steven.kinney-5C7GfCeVMHo@public.gmane.org>
+Cc: Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Jiri Kosina <jkosina-AlSwsSmVLrQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 12/04/2012 11:37 AM, Hiroshi Doyu wrote:
-> Most of platform devices are IOMMU'able in Tegra30 SoC. Registering
-> all IOMMU'able devices manually isn't nice. This patch allows
-> platform bus_notifier to register IOMMU devices. Map info can be
-> passed from DT. Info format is:
-> 
->   dma-window = <0 0x40000000>;
-> 
-> TODO:
-> A map can be shared with mutiple devices. This info also could be
-> passed from DT or default map can be set in advance.
+On Tue, Dec 04, 2012 at 04:19:06PM -0600, Steven Kinney wrote:
+>  drivers/iommu/Kconfig           |   10 +++++
+>  drivers/iommu/amd_iommu_init.c  |   85 +++++++++++++++++++++++++++++++++++++++
+>  drivers/iommu/amd_iommu_types.h |   13 +++++-
+>  3 files changed, 107 insertions(+), 1 deletion(-)
 
-> +static int tegra_smmu_device_notifier(struct notifier_block *nb,
-> +				      unsigned long event, void *_dev)
+So first of all, this patch alone doesn't make sense. You should submit
+it in a patch-set that enabled IOMMUv2 performance counters for the
+end-user. This means together with the PMU implementation and tools
+support.
 
-> +	switch (event) {
-> +	case BUS_NOTIFY_ADD_DEVICE:
-> +		err = of_get_dma_window(dev->of_node, NULL, 0, NULL, &base,
-> +					&size);
-> +		if (!err)
-> +			map = arm_iommu_create_mapping(&platform_bus_type,
-> +						       base, size, 0);
+Further I don't see how this patch is specific to Family 15h Models
+10h-1Fh as described in the subject-line.
 
-So, this ends up attempting to hook up the Tegra SMMU for /any/ node on
-a platform bus that has a dma-window property. That seems a little
-dangerous. I guess it's not true for Tegra30, but what if there are
-multiple buses on the SoC, each with a separate IOMMU - using this
-approach would mean the two IOMMU drivers end up fighting to register
-mappings for devices on each-others buses.
+Any comments on these two points?
 
-I think the solution here is one of:
+Cheers,
 
-a) Explicitly represent the bus structure in DT (something we don't do
-on Tegra at present), and have the bus itself indicate which IOMMU
-device is the IOMMU for that bus.
-
-b) Add another property to each device that has a dma-window, containing
-the phandle of the IOMMU that handles its accesses. The code above could
-then validate that it was the IOMMU for each device as it was registered.
-
-Probably, devices should not be registered until the IOMMU that serves
-them is available. Otherwise, can't a device probe, start making IO
-accesses using a physical/bus memory map, and then later have that
-yanked out and replaced by the IOMMU'd memory map. How is that
-co-ordinated? That somewhat argues for each device explicitly setting up
-the IOMMU registration, or the driver core handling the dependencies.
-
-Finally, what is the implication of the TODO above? Given the limited
-number of ASIDs on Tegra30, isn't that something we need to solve before
-deploying this patch. Presumably solving it requires a DT binding to be
-designed and reviewed?
+	Joerg
