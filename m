@@ -1,50 +1,124 @@
-From: "Kinney, Steven" <Steven.Kinney@amd.com>
-Subject: RE: [PATCH 1/1] iommuv2/amd: Enable Performance Counters On Family
- 15h Models 10h-1Fh
-Date: Thu, 6 Dec 2012 17:07:49 +0000
-Message-ID: <57D41218901B4442B4AFF404D215911636E15F@sausexdag02.amd.com>
-References: <1354659546-9700-1-git-send-email-steven.kinney@amd.com>
- <20121206103238.GF1806@8bytes.org>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [v3 1/1] iommu/tegra: smmu: bus_notifier registers platform
+ IOMMU devices
+Date: Fri, 7 Dec 2012 10:32:52 +0100
+Message-ID: <20121207.113252.926112456335402420.hdoyu@nvidia.com>
+References: <1354646264-12126-1-git-send-email-hdoyu@nvidia.com><50BEE9D6.2080107@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20121206103238.GF1806@8bytes.org>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Hiroshi DOYU <hdoyu@nvidia.com>, Stephen Warren <swarren@wwwdotorg.org>, Jiri Kosina <jkosina@suse.cz>, Kukjin Kim <kgene.kim@samsung.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <50BEE9D6.2080107-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "nvmarkzhang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <nvmarkzhang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org" <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+Mark Zhang <nvmarkzhang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote @ Wed, 5 Dec 2012 07:29:42 +0100:
 
-                       I see your point(s).  First, to the second point, I should (and will) add a check to the AMD Family/Model coupled to this change.  Also, I will append the patch(es) to include the perf IOMMU PMU so that this change is put into context.
+> On 12/05/2012 02:37 AM, Hiroshi Doyu wrote:
+> > Most of platform devices are IOMMU'able in Tegra30 SoC. Registering
+> > all IOMMU'able devices manually isn't nice. This patch allows
+> > platform bus_notifier to register IOMMU devices. Map info can be
+> > passed from DT. Info format is:
+> > 
+> >   dma-window = <0 0x40000000>;
+> > 
+> > TODO:
+> > A map can be shared with mutiple devices. This info also could be
+> > passed from DT or default map can be set in advance.
+> > 
+> > Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> > ---
+> > v3: Added bus_unregister_notifier
+> > ---
+> >  drivers/iommu/tegra-smmu.c |   48 +++++++++++++++++++++++++++++++++++++++++++-
+> >  1 file changed, 47 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+> > index 25c1210..8fec9be 100644
+> > --- a/drivers/iommu/tegra-smmu.c
+> > +++ b/drivers/iommu/tegra-smmu.c
+> > @@ -38,6 +38,7 @@
+> >  
+> >  #include <asm/page.h>
+> >  #include <asm/cacheflush.h>
+> > +#include <asm/dma-iommu.h>
+> >  
+> >  enum smmu_hwgrp {
+> >  	HWGRP_AFI,
+> > @@ -1273,13 +1274,58 @@ static struct platform_driver tegra_smmu_driver = {
+> >  	},
+> >  };
+> >  
+> > +static int tegra_smmu_device_notifier(struct notifier_block *nb,
+> > +				      unsigned long event, void *_dev)
+> > +{
+> > +	struct dma_iommu_mapping *map = NULL;
+> > +	struct device *dev = _dev;
+> > +	dma_addr_t base;
+> > +	size_t size;
+> > +	int err;
+> > +
+> > +	switch (event) {
+> > +	case BUS_NOTIFY_ADD_DEVICE:
+> > +		err = of_get_dma_window(dev->of_node, NULL, 0, NULL, &base,
+> > +					&size);
+> > +		if (!err)
+> > +			map = arm_iommu_create_mapping(&platform_bus_type,
+> > +						       base, size, 0);
+> > +		if (IS_ERR_OR_NULL(map))
+> > +			break;
+> > +		if (arm_iommu_attach_device(dev, map)) {
+> > +			arm_iommu_release_mapping(map);
+> > +			dev_err(dev, "Failed to attach %s\n", dev_name(dev));
+> > +		}
+> > +		dev_dbg(dev, "Attached %s to map %p\n", dev_name(dev), map);
+> 
+> If "arm_iommu_attach_device" fails, the "dev_err" and "dev_dbg" will all
+> be called.
+> 
+> > +		break;
+> > +	default:
+> > +		break;
+> > +	}
+> > +	return NOTIFY_DONE;
+> > +}
+> > +
+> > +static struct notifier_block tegra_smmu_device_nb = {
+> > +	.notifier_call = tegra_smmu_device_notifier,
+> > +};
+> > +
+> >  static int __devinit tegra_smmu_init(void)
+> >  {
+> > -	return platform_driver_register(&tegra_smmu_driver);
+> > +	int err;
+> > +
+> > +	err = platform_driver_register(&tegra_smmu_driver);
+> > +	if (err)
+> > +		return err;
+> > +	if (IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU))
+> > +		bus_register_notifier(&platform_bus_type,
+> > +				      &tegra_smmu_device_nb);
+> > +	return 0;
+> >  }
+> >  
+> >  static void __exit tegra_smmu_exit(void)
+> >  {
+> > +	if (IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU))
+> > +		bus_unregister_notifier(&platform_bus_type,
+> > +					&tegra_smmu_device_nb);
+> 
+> Okay. Here unregister the notifier, but where is the
+> "arm_iommu_release_mapping" for every IOMMU'able devices?
 
-Thanks for your time and advise.
+True. I think that this could be solved with:
 
-Best Regards,
-
-Steve
-
------Original Message-----
-From: Joerg Roedel [mailto:joro@8bytes.org] 
-Sent: Thursday, December 06, 2012 4:33 AM
-To: Kinney, Steven
-Cc: Hiroshi DOYU; Stephen Warren; Jiri Kosina; Kukjin Kim; linux-kernel@vger.kernel.org; iommu@lists.linux-foundation.org
-Subject: Re: [PATCH 1/1] iommuv2/amd: Enable Performance Counters On Family 15h Models 10h-1Fh
-
-On Tue, Dec 04, 2012 at 04:19:06PM -0600, Steven Kinney wrote:
->  drivers/iommu/Kconfig           |   10 +++++
->  drivers/iommu/amd_iommu_init.c  |   85 +++++++++++++++++++++++++++++++++++++++
->  drivers/iommu/amd_iommu_types.h |   13 +++++-
->  3 files changed, 107 insertions(+), 1 deletion(-)
-
-So first of all, this patch alone doesn't make sense. You should submit it in a patch-set that enabled IOMMUv2 performance counters for the end-user. This means together with the PMU implementation and tools support.
-
-Further I don't see how this patch is specific to Family 15h Models 10h-1Fh as described in the subject-line.
-
-Any comments on these two points?
-
-Cheers,
-
-	Joerg
+ static void __exit tegra_smmu_exit(void)
+ {
++       if (IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)) {
++               bus_for_each_dev(&platform_bus_type, NULL, NULL,
++                                tegra_smmu_remove_map);
++               bus_unregister_notifier(&platform_bus_type,
++                                       &tegra_smmu_device_nb);
++       }
