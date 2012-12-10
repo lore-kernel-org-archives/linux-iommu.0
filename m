@@ -1,125 +1,86 @@
-From: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 3/4 v5] iommu/fsl: Add iommu domain attributes required
-	by fsl PAMU driver.
-Date: Mon, 10 Dec 2012 10:10:06 +0000
-Message-ID: <C5ECD7A89D1DC44195F34B25E172658D2C09A4@039-SN2MPN1-013.039d.mgd.msft.net>
-References: <C5ECD7A89D1DC44195F34B25E172658D2B70EE@039-SN2MPN1-013.039d.mgd.msft.net>
-	(from B16395@freescale.com on Tue Dec  4 05:53:33 2012)
-	<1354645371.16710.15@snotra>
+From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Subject: Re: [v3 1/1] iommu/tegra: smmu: bus_notifier registers platform IOMMU
+ devices
+Date: Mon, 10 Dec 2012 10:43:17 -0700
+Message-ID: <50C61F35.9050702@wwwdotorg.org>
+References: <1354646264-12126-1-git-send-email-hdoyu@nvidia.com><50BFB88C.8080901@wwwdotorg.org> <20121207.121205.1712068640752315024.hdoyu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1354645371.16710.15@snotra>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: Tabi Timur-B04825 <B04825-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20121207.121205.1712068640752315024.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org" <thierry.reding-RM9K5IK7kjKj5M59NBduVrNAH6kLmebB@public.gmane.org>, "nvmarkzhang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <nvmarkzhang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-> -----Original Message-----
-> From: Wood Scott-B07421
-> Sent: Tuesday, December 04, 2012 11:53 PM
-> To: Sethi Varun-B16395
-> Cc: Wood Scott-B07421; Joerg Roedel; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; Tabi
-> Timur-B04825
-> Subject: Re: [PATCH 3/4 v5] iommu/fsl: Add iommu domain attributes
-> required by fsl PAMU driver.
+On 12/07/2012 03:12 AM, Hiroshi Doyu wrote:
+> Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote @ Wed, 5 Dec 2012 22:11:40 +0100:
 > 
-> On 12/04/2012 05:53:33 AM, Sethi Varun-B16395 wrote:
-> >
-> >
-> > > -----Original Message-----
-> > > From: Wood Scott-B07421
-> > > Sent: Monday, December 03, 2012 10:34 PM
-> > > To: Sethi Varun-B16395
-> > > Cc: Joerg Roedel; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
-> > > foundation.org; Wood Scott-B07421; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org;
-> > Tabi
-> > > Timur-B04825
-> > > Subject: Re: [PATCH 3/4 v5] iommu/fsl: Add iommu domain attributes
-> > > required by fsl PAMU driver.
-> > >
-> > > On 12/03/2012 10:57:29 AM, Sethi Varun-B16395 wrote:
-> > > >
-> > > >
-> > > > > -----Original Message-----
-> > > > > From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
-> > > > > bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Joerg Roedel
-> > > > > Sent: Sunday, December 02, 2012 7:33 PM
-> > > > > To: Sethi Varun-B16395
-> > > > > Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> > > > Wood
-> > > > > Scott-B07421; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; Tabi Timur-B04825
-> > > > > Subject: Re: [PATCH 3/4 v5] iommu/fsl: Add iommu domain
-> > attributes
-> > > > > required by fsl PAMU driver.
-> > > > >
-> > > > > Hmm, we need to work out a good abstraction for this.
-> > > > >
-> > > > > On Tue, Nov 20, 2012 at 07:24:56PM +0530, Varun Sethi wrote:
-> > > > > > Added the following domain attributes required by FSL PAMU
-> > driver:
-> > > > > > 1. Subwindows field added to the iommu domain geometry
-> > attribute.
-> > > > >
-> > > > > Are the Subwindows mapped with full size or do you map only
-> > parts
-> > > > of the
-> > > > > subwindows?
-> > > > >
-> > > > [Sethi Varun-B16395] It's possible to map a part of the subwindow
-> > i.e.
-> > > > size of the mapping can be less than the sub window size.
-> > > >
-> > > > > > +	 * This attribute indicates number of DMA subwindows
-> > > supported
-> > > > by
-> > > > > > +	 * the geometry. If there is a single window that maps
-> > the
-> > > > entire
-> > > > > > +	 * geometry, attribute must be set to "1". A value of
-> > "0"
-> > > > implies
-> > > > > > +	 * that this mechanism is not used at all(normal paging
-> > is
-> > > > used).
-> > > > > > +	 * Value other than* "0" or "1" indicates the actual
-> > number
-> > > of
-> > > > > > +	 * subwindows.
-> > > > > > +	 */
-> > > > >
-> > > > > This semantic is ugly, how about a feature detection mechanism?
-> > > > >
-> > > > [Sethi Varun-B16395] A feature mechanism to query the type of
-> > IOMMU?
-> > >
-> > > A feature mechanism to determine whether this subwindow mechanism is
-> > > available, and what the limits are.
-> > >
-> > So, we use the IOMMU capability interface to find out if IOMMU
-> > supports sub windows or not, right? But still number of sub windows
-> > would be specified as a part of the geometry and the valid value for
-> > sub windows would  0,1 or actual number of sub windows.
+>> On 12/04/2012 11:37 AM, Hiroshi Doyu wrote:
+>>> Most of platform devices are IOMMU'able in Tegra30 SoC. Registering
+>>> all IOMMU'able devices manually isn't nice. This patch allows
+>>> platform bus_notifier to register IOMMU devices. Map info can be
+>>> passed from DT. Info format is:
+>>>
+>>>   dma-window = <0 0x40000000>;
+>>>
+>>> TODO:
+>>> A map can be shared with mutiple devices. This info also could be
+>>> passed from DT or default map can be set in advance.
+>>
+>>> +static int tegra_smmu_device_notifier(struct notifier_block *nb,
+>>> +				      unsigned long event, void *_dev)
+>>
+>>> +	switch (event) {
+>>> +	case BUS_NOTIFY_ADD_DEVICE:
+>>> +		err = of_get_dma_window(dev->of_node, NULL, 0, NULL, &base,
+>>> +					&size);
+>>> +		if (!err)
+>>> +			map = arm_iommu_create_mapping(&platform_bus_type,
+>>> +						       base, size, 0);
+>>
+>> So, this ends up attempting to hook up the Tegra SMMU for /any/ node on
+>> a platform bus that has a dma-window property. That seems a little
+>> dangerous. I guess it's not true for Tegra30, but what if there are
+>> multiple buses on the SoC, each with a separate IOMMU - using this
+>> approach would mean the two IOMMU drivers end up fighting to register
+>> mappings for devices on each-others buses.
+>>
+>> I think the solution here is one of:
+>>
+>> a) Explicitly represent the bus structure in DT (something we don't do
+>> on Tegra at present), and have the bus itself indicate which IOMMU
+>> device is the IOMMU for that bus.
 > 
-> How does a user of the interface find out what values are possible for
-> the "actual number of subwindows"?  How does a user of the interface find
-> out whether there are any limitations on specifying a value of zero (in
-> the case of PAMU, that would be a maximum 1 MiB naturally-aligned
-> aperture to support arbitrary 4KiB mappings)?
-How about if we say that the default value for subwindows is zero and this what you get when you read the geometry (iommu_get_attr) after initializing the domain? In that case the user would know that implication of setting subwindows to zero with respect to the aperture size. Also, should we introduce an additional API like "iommu_check_attr", which the user can use to validate the attribute value. For example in case of geometry, the user can fill up the structure and pass it to the iommu driver in order to verify the aperture and subwindows field.
+> AHB/APB/PPSB bus don't do much currently. New bus drivers for them
+> would be used just for device registration. I'm not so sure if this
+> direction is right or not. Could they live with the existing
+> platfrom_driver? Any example would be appreciated if any.
 
--Varun
+I wasn't really thinking of creating a whole new driver for the bus; the
+existing simple-bus will automatically enumerate/instantiate all its
+children, and hence allow describing (at least part of) the SoC bus
+structure without writing any additional code. This appears to be used
+quite a bit already in arch/arm/boot/dts/*.
+
+...
+>> Probably, devices should not be registered until the IOMMU that serves
+>> them is available. Otherwise, can't a device probe, start making IO
+>> accesses using a physical/bus memory map, and then later have that
+>> yanked out and replaced by the IOMMU'd memory map. How is that
+>> co-ordinated? That somewhat argues for each device explicitly setting up
+>> the IOMMU registration, or the driver core handling the
+>> dependencies.
+> 
+> I think that enabling/disabling IOMMU _tranparently_ to drivers may be
+> beneficial basically because we don't want to deal with drivers with
+> IOMMU enabled separately from the normal case.
+> 
+> For dynamic enabling/disabling of IOMMU, *dma_ops in struct
+> dev_archdata will be overwritten, and there may be inconsistency for
+> the type of dma allocated buffers. Has there been other arch/platfrom
+> to handle dynamic enabling/disalbing IOMMU this already, even for each
+> drivers?
+
+I don't know.
