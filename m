@@ -1,18 +1,13 @@
-From: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 3/4 v5] iommu/fsl: Add iommu domain attributes required
-	by fsl PAMU driver.
-Date: Tue, 11 Dec 2012 04:50:29 +0000
-Message-ID: <C5ECD7A89D1DC44195F34B25E172658D2C4AEE@039-SN2MPN1-013.039d.mgd.msft.net>
-References: <C5ECD7A89D1DC44195F34B25E172658D2B70EE@039-SN2MPN1-013.039d.mgd.msft.net>
-	<1354645371.16710.15@snotra>
-	<C5ECD7A89D1DC44195F34B25E172658D2C09A4@039-SN2MPN1-013.039d.mgd.msft.net>
-	<1355187644.5334.23@snotra>
+From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: [PATCH v5 00/12] iommu/exynos: Fixes and Enhancements of System MMU
+	driver with DT
+Date: Tue, 11 Dec 2012 20:07:09 +0900
+Message-ID: <003001cdd78f$a9bb1e00$fd315a00$%cho@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1355187644.5334.23@snotra>
-Content-Language: en-US
+Content-language: ko
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,146 +17,89 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: Tabi Timur-B04825 <B04825-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: 'Linux ARM Kernel' <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, 'Linux IOMMU' <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, 'Linux Kernel' <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, 'Linux Samsung SOC' <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: 'Kukjin Kim' <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Prathyush' <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'SWKim' <sw0312.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Dae Inki' <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Subash Patel' <subash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Sanghyun Lee' <sanghyun75.lee-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Rahun Sharma' <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+The current exynos-iommu(System MMU) driver does not work autonomously
+since it is lack of support for power management of peripheral blocks.
+For example, MFC device driver must ensure that its System MMU is disabled
+before MFC block is power-down not to invalidate IOTLB in the System MMU
+when I/O memory mapping is changed. Because A System MMU is resides in the
+same H/W block, access to control registers of System MMU while the H/W
+block is turned off must be prohibited.
 
+This set of changes solves the above problem with setting each System MMUs
+as the parent of the device which owns the System MMU to receive the
+information when the device is turned off or turned on.
 
-> -----Original Message-----
-> From: Wood Scott-B07421
-> Sent: Tuesday, December 11, 2012 6:31 AM
-> To: Sethi Varun-B16395
-> Cc: Wood Scott-B07421; Joerg Roedel; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; Tabi
-> Timur-B04825
-> Subject: Re: [PATCH 3/4 v5] iommu/fsl: Add iommu domain attributes
-> required by fsl PAMU driver.
-> 
-> On 12/10/2012 04:10:06 AM, Sethi Varun-B16395 wrote:
-> >
-> >
-> > > -----Original Message-----
-> > > From: Wood Scott-B07421
-> > > Sent: Tuesday, December 04, 2012 11:53 PM
-> > > To: Sethi Varun-B16395
-> > > Cc: Wood Scott-B07421; Joerg Roedel; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org;
-> > Tabi
-> > > Timur-B04825
-> > > Subject: Re: [PATCH 3/4 v5] iommu/fsl: Add iommu domain attributes
-> > > required by fsl PAMU driver.
-> > >
-> > > On 12/04/2012 05:53:33 AM, Sethi Varun-B16395 wrote:
-> > > >
-> > > >
-> > > > > -----Original Message-----
-> > > > > From: Wood Scott-B07421
-> > > > > Sent: Monday, December 03, 2012 10:34 PM
-> > > > > To: Sethi Varun-B16395
-> > > > > Cc: Joerg Roedel; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
-> > > > > foundation.org; Wood Scott-B07421;
-> > linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org;
-> > > > Tabi
-> > > > > Timur-B04825
-> > > > > Subject: Re: [PATCH 3/4 v5] iommu/fsl: Add iommu domain
-> > attributes
-> > > > > required by fsl PAMU driver.
-> > > > >
-> > > > > On 12/03/2012 10:57:29 AM, Sethi Varun-B16395 wrote:
-> > > > > >
-> > > > > >
-> > > > > > > -----Original Message-----
-> > > > > > > From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> > [mailto:iommu-
-> > > > > > > bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Joerg
-> > Roedel
-> > > > > > > Sent: Sunday, December 02, 2012 7:33 PM
-> > > > > > > To: Sethi Varun-B16395
-> > > > > > > Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> > > > > > Wood
-> > > > > > > Scott-B07421; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; Tabi
-> > Timur-B04825
-> > > > > > > Subject: Re: [PATCH 3/4 v5] iommu/fsl: Add iommu domain
-> > > > attributes
-> > > > > > > required by fsl PAMU driver.
-> > > > > > >
-> > > > > > > Hmm, we need to work out a good abstraction for this.
-> > > > > > >
-> > > > > > > On Tue, Nov 20, 2012 at 07:24:56PM +0530, Varun Sethi wrote:
-> > > > > > > > Added the following domain attributes required by FSL PAMU
-> > > > driver:
-> > > > > > > > 1. Subwindows field added to the iommu domain geometry
-> > > > attribute.
-> > > > > > >
-> > > > > > > Are the Subwindows mapped with full size or do you map only
-> > > > parts
-> > > > > > of the
-> > > > > > > subwindows?
-> > > > > > >
-> > > > > > [Sethi Varun-B16395] It's possible to map a part of the
-> > subwindow
-> > > > i.e.
-> > > > > > size of the mapping can be less than the sub window size.
-> > > > > >
-> > > > > > > > +	 * This attribute indicates number of DMA subwindows
-> > > > > supported
-> > > > > > by
-> > > > > > > > +	 * the geometry. If there is a single window that maps
-> > > > the
-> > > > > > entire
-> > > > > > > > +	 * geometry, attribute must be set to "1". A value of
-> > > > "0"
-> > > > > > implies
-> > > > > > > > +	 * that this mechanism is not used at all(normal paging
-> > > > is
-> > > > > > used).
-> > > > > > > > +	 * Value other than* "0" or "1" indicates the actual
-> > > > number
-> > > > > of
-> > > > > > > > +	 * subwindows.
-> > > > > > > > +	 */
-> > > > > > >
-> > > > > > > This semantic is ugly, how about a feature detection
-> > mechanism?
-> > > > > > >
-> > > > > > [Sethi Varun-B16395] A feature mechanism to query the type of
-> > > > IOMMU?
-> > > > >
-> > > > > A feature mechanism to determine whether this subwindow
-> > mechanism is
-> > > > > available, and what the limits are.
-> > > > >
-> > > > So, we use the IOMMU capability interface to find out if IOMMU
-> > > > supports sub windows or not, right? But still number of sub
-> > windows
-> > > > would be specified as a part of the geometry and the valid value
-> > for
-> > > > sub windows would  0,1 or actual number of sub windows.
-> > >
-> > > How does a user of the interface find out what values are possible
-> > for
-> > > the "actual number of subwindows"?  How does a user of the
-> > interface find
-> > > out whether there are any limitations on specifying a value of zero
-> > (in
-> > > the case of PAMU, that would be a maximum 1 MiB naturally-aligned
-> > > aperture to support arbitrary 4KiB mappings)?
-> > How about if we say that the default value for subwindows is zero and
-> > this what you get when you read the geometry (iommu_get_attr) after
-> > initializing the domain? In that case the user would know that
-> > implication of setting subwindows to zero with respect to the aperture
-> > size.
-> 
-> So it would default to the maximum aperture size possible with no
-> subwindows?  That might be OK, though is there a way to reset the domain
-> later on to get back to that informational state?
-> 
-[Sethi Varun-B16395] Yes, that can be done via iommu_set_attr API.
+Another big change to the driver is the support for devicetree.
+The bindings for System MMU is described in
+Documentation/devicetree/bindings/arm/samsung/system-mmu.txt
 
-> How about finding out the maximum number of subwindows?
-[Sethi Varun-B16395] We can introduce an API to determine the permissible range of values for an attribute, but it may be redundant for other IOMMU implementations. For the IOMMU implementations where geometry is just a read only attribute, iommu_get_attr returns the set of permissible values. I think it would be better if we can add a read only field (for the users) "max_subwindows" to the geometry.
+In addition, this patchset also includes several bug fixes and enhancements
+of the current driver.
 
--Varun
+Change log:
+v5:
+- new bugfix: patch 01
+- Reordered patches
+  * patch 01 ~ 05: Bugfix and enhancements of the existing driver
+  * patch 06 ~ 10: Device Tree support and callbacks for power management
+  * patch 11     : System MMU 3.2 and 3.3 support
+  * patch 12 ~ 14: Debugging features
+- Additional code compaction
+
+v4:
+- Remove Change-Id from v3 patches
+- Change the order of the third and the first patch
+  Thanks to Kukjin Kim.
+- Fix memory leak when allocating and assigning exynos_iommu_owner to client
+  device if the client device has multiple System MMUs.
+  Thanks to Rahul Sharma.
+
+v3:
+- Fix prefetch buffer flag definition for System MMU 3.3 (patch 10/12)
+- Fix incorrect setting for SET_RUNTIME_PM_OPS (patch 09/12)
+  Thanks to Prathyush.
+
+v2:
+- Split the patch to iommu/exynos into 9 patches
+- Support for System MMU 3.3
+- Some code compaction
+
+Patch summary:
+[PATCH v5 01/14] iommu/exynos: add missing cache flush for removed pagetable entries
+[PATCH v5 02/14] iommu/exynos: always use iommu fault handler
+[PATCH v5 03/14] iommu/exynos: allocate lv2 page table from own slab
+[PATCH v5 04/14] iommu/exynos: change rwlock to spinlock
+[PATCH v5 05/14] ARM: EXYNOS: Add clk_ops for gating clocks of System MMU
+[PATCH v5 06/14] ARM: EXYNOS: add System MMU definition to DT
+[PATCH v5 07/14] iommu/exynos: support for device tree
+[PATCH v5 08/14] iommu/exynos: set System MMU as the parent of client device
+[PATCH v5 09/14] ARM: EXYNOS: remove system mmu initialization from exynos tree
+[PATCH v5 10/14] iommu/exynos: add support for runtime pm and suspend/resume
+[PATCH v5 11/14] iommu/exynos: add support for System MMU 3.2 and 3.3
+[PATCH v5 12/14] iommu/exynos: pass version information from DT
+[PATCH v5 13/14] iommu/exynos: add literal name of System MMU for debugging
+[PATCH v5 14/14] iommu/exynos: add debugfs entries for System MMU
+
+Diffstats:
+ .../devicetree/bindings/arm/exynos/system-mmu.txt  |   86 ++
+ arch/arm/boot/dts/exynos4210.dtsi                  |   96 ++
+ arch/arm/boot/dts/exynos4x12.dtsi                  |  124 ++
+ arch/arm/boot/dts/exynos5250.dtsi                  |  154 +-
+ arch/arm/mach-exynos/Kconfig                       |    5 -
+ arch/arm/mach-exynos/Makefile                      |    1 -
+ arch/arm/mach-exynos/clock-exynos4.c               |   41 +-
+ arch/arm/mach-exynos/clock-exynos4210.c            |    9 +-
+ arch/arm/mach-exynos/clock-exynos4212.c            |   23 +-
+ arch/arm/mach-exynos/clock-exynos5.c               |   86 +-
+ arch/arm/mach-exynos/dev-sysmmu.c                  |  274 ----
+ arch/arm/mach-exynos/include/mach/sysmmu.h         |   66 -
+ arch/arm/mach-exynos/mach-exynos4-dt.c             |   34 +
+ arch/arm/mach-exynos/mach-exynos5-dt.c             |   30 +
+ drivers/iommu/Kconfig                              |    2 +-
+ drivers/iommu/Makefile                             |    2 +-
+ drivers/iommu/exynos-iommu.c                       | 1477 +++++++++++++++-----
+ 17 files changed, 1745 insertions(+), 765 deletions(-)
