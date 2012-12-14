@@ -1,14 +1,12 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] iommu: moving initialization earlier
-Date: Thu, 13 Dec 2012 08:48:55 -0700
-Message-ID: <1355413735.2229.1.camel@ul30vt.home>
-References: <1355365763.19932.75.camel@pasglop>
-	<1355380115-4518-1-git-send-email-aik@ozlabs.ru>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: [PATCH 0/4] iommu/fsl: Freescale PAMU driver and IOMMU API
+	implementation.
+Date: Fri, 14 Dec 2012 19:21:51 +0530
+Message-ID: <1355493114-21776-1-git-send-email-Varun.Sethi@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1355380115-4518-1-git-send-email-aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,40 +16,44 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
-Cc: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: joerg.roedel-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, timur-KZfg59tc24xl57MIdRCFDg@public.gmane.org, scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org
+Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Probably a good idea to CC the iommu list and maintainer...
+This patchset provides the Freescale PAMU (Peripheral Access Management Unit) driver
+and the corresponding IOMMU API implementation. PAMU is the IOMMU present on Freescale
+QorIQ platforms. PAMU can authorize memory access, remap the memory address, and remap 
+the I/O transaction type.
 
-On Thu, 2012-12-13 at 17:28 +1100, Alexey Kardashevskiy wrote:
-> The iommu_init() call initializes IOMMU internal structures and data
-> required for the API to function such as iommu_group_alloc().
-> It is registered as a subsys_initcall.
-> 
-> One of the IOMMU users is a PCI subsystem on POWER which discovers new
-> IOMMU tables during the PCI scan so the most logical place to call
-> iommu_group_alloc() is when a new group is just discovered. However
-> PCI scan is done from subsys_initcall hook as well what makes
-> using of the IOMMU API impossible.
-> 
-> The patch moves IOMMU subsystem initialization one step earlier.
-> 
-> Signed-off-by: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
-> ---
->  drivers/iommu/iommu.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index de857bb..b0afd3d 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -865,7 +865,7 @@ printk("%s %u\n", __func__, __LINE__);
->  
->  	return 0;
->  }
-> -subsys_initcall(iommu_init);
-> +arch_initcall(iommu_init);
->  
->  int iommu_domain_get_attr(struct iommu_domain *domain,
->  			  enum iommu_attr attr, void *data)
+This set consists of the following patches:
+1. Addition of new field in the device (powerpc) archdata structure for storing iommu domain information
+   pointer. This pointer is stored when the device is attached to a particular iommu domain.
+2. Add PAMU bypass enable register to the ccsr_guts structure.
+3. Addition of domain attributes required by the PAMU driver IOMMU API.
+4. PAMU driver and IOMMU API implementation.
+
+This patch set is based on the next branch of the iommu git tree maintained by Joerg.
+
+Varun Sethi (4):
+  store iommu domain info in device arch data.
+  add pamu bypass enable register to guts.
+  Add iommu attributes for PAMU
+  FSL PAMU driver.
+
+ arch/powerpc/include/asm/device.h   |    4 +
+ arch/powerpc/include/asm/fsl_guts.h |    4 +-
+ drivers/iommu/Kconfig               |    8 +
+ drivers/iommu/Makefile              |    1 +
+ drivers/iommu/fsl_pamu.c            | 1152 +++++++++++++++++++++++++++++++++++
+ drivers/iommu/fsl_pamu.h            |  398 ++++++++++++
+ drivers/iommu/fsl_pamu_domain.c     | 1033 +++++++++++++++++++++++++++++++
+ drivers/iommu/fsl_pamu_domain.h     |   96 +++
+ include/linux/iommu.h               |   49 ++
+ 9 files changed, 2744 insertions(+), 1 deletions(-)
+ create mode 100644 drivers/iommu/fsl_pamu.c
+ create mode 100644 drivers/iommu/fsl_pamu.h
+ create mode 100644 drivers/iommu/fsl_pamu_domain.c
+ create mode 100644 drivers/iommu/fsl_pamu_domain.h
+
+-- 
+1.7.4.1
