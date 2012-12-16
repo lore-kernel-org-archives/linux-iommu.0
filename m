@@ -1,12 +1,16 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: [PATCH 2/4] iommu/fsl: Add PAMU bypass enable register to ccsr_guts
-	structure.
-Date: Fri, 14 Dec 2012 19:23:52 +0530
-Message-ID: <1355493232-21821-1-git-send-email-Varun.Sethi@freescale.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] iommu: moving initialization earlier
+Date: Sun, 16 Dec 2012 12:20:24 +0100
+Message-ID: <20121216112024.GJ1806@8bytes.org>
+References: <1355365763.19932.75.camel@pasglop>
+	<1355380115-4518-1-git-send-email-aik@ozlabs.ru>
+	<1355413735.2229.1.camel@ul30vt.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1355413735.2229.1.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,34 +20,20 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joerg.roedel-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, timur-KZfg59tc24xl57MIdRCFDg@public.gmane.org, scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org
-Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-PAMU bypass enable register added to the ccsr_guts structure.
+Alexey,
 
-(This patch has already been applied by Kumar Gala in the linuxppc tree next branch)
+On Thu, Dec 13, 2012 at 08:48:55AM -0700, Alex Williamson wrote:
+> Probably a good idea to CC the iommu list and maintainer...
+> 
+> On Thu, 2012-12-13 at 17:28 +1100, Alexey Kardashevskiy wrote:
+> > Signed-off-by: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
 
-Signed-off-by: Timur Tabi <timur-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
----
- arch/powerpc/include/asm/fsl_guts.h |    4 +++-
- 1 files changed, 3 insertions(+), 1 deletions(-)
+Please resend the patch when the merge-window is closed.
 
-diff --git a/arch/powerpc/include/asm/fsl_guts.h b/arch/powerpc/include/asm/fsl_guts.h
-index dd5ba2c..77ced0b 100644
---- a/arch/powerpc/include/asm/fsl_guts.h
-+++ b/arch/powerpc/include/asm/fsl_guts.h
-@@ -71,7 +71,9 @@ struct ccsr_guts {
- 	u8	res0c4[0x224 - 0xc4];
- 	__be32  iodelay1;	/* 0x.0224 - IO delay control register 1 */
- 	__be32  iodelay2;	/* 0x.0228 - IO delay control register 2 */
--	u8	res22c[0x800 - 0x22c];
-+	u8	res22c[0x604 - 0x22c];
-+	__be32	pamubypenr; 	/* 0x.604 - PAMU bypass enable register */
-+	u8	res608[0x800 - 0x608];
- 	__be32	clkdvdr;	/* 0x.0800 - Clock Divide Register */
- 	u8	res804[0x900 - 0x804];
- 	__be32	ircr;		/* 0x.0900 - Infrared Control Register */
--- 
-1.7.4.1
+Thanks,
+
+	Joerg
