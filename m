@@ -1,121 +1,152 @@
-From: Kukjin Kim <kgene.kim@samsung.com>
-Subject: RE: [PATCH v5 00/12] iommu/exynos: Fixes and Enhancements of System
- MMU driver with DT
-Date: Tue, 18 Dec 2012 20:11:05 -0800
-Message-ID: <002301cddd9e$dfe265a0$9fa730e0$@samsung.com>
-References: <003001cdd78f$a9bb1e00$fd315a00$%cho@samsung.com>
+From: Andrew Cooks <acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [RFC PATCH] Fix Intel IOMMU support for Marvell 88SE91xx SATA
+	controllers.
+Date: Wed, 19 Dec 2012 18:58:23 +0800
+Message-ID: <1355914703-28576-1-git-send-email-acooks@gmail.com>
+References: <1354533387-4110-1-git-send-email-acooks@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <003001cdd78f$a9bb1e00$fd315a00$%cho@samsung.com>
-Content-language: en-us
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: 'Cho KyongHo' <pullip.cho@samsung.com>, 'Linux ARM Kernel' <linux-arm-kernel@lists.infradead.org>, 'Linux IOMMU' <iommu@lists.linux-foundation.org>, 'Linux Kernel' <linux-kernel@vger.kernel.org>, 'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>
-Cc: 'Dae Inki' <inki.dae@samsung.com>, 'Joerg Roedel' <joro@8bytes.org>, 'Prathyush' <prathyush.k@samsung.com>, 'Rahun Sharma' <rahul.sharma@samsung.com>, 'Sanghyun Lee' <sanghyun75.lee@samsung.com>, 'Subash Patel' <subash.ramaswamy@linaro.org>, 'SWKim' <sw0312.kim@samsung.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1354533387-4110-1-git-send-email-acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, xjtuychu-PkbjNfxxIARBDgjK7y7TUQ@public.gmane.org, gm.ychu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, jpiszcz-BP4nVm5VUdNhbmWW9KSYcQ@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Cc: "open list:PCI SUBSYSTEM" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU VT-d" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Cho KyoungHo wrote:
-> 
-> The current exynos-iommu(System MMU) driver does not work
-> autonomously
-> since it is lack of support for power management of peripheral blocks.
-> For example, MFC device driver must ensure that its System MMU is
-> disabled
-> before MFC block is power-down not to invalidate IOTLB in the System MMU
-> when I/O memory mapping is changed. Because A System MMU is resides in
-> the
-> same H/W block, access to control registers of System MMU while the H/W
-> block is turned off must be prohibited.
-> 
-> This set of changes solves the above problem with setting each System
-> MMUs
-> as the parent of the device which owns the System MMU to receive the
-> information when the device is turned off or turned on.
-> 
-> Another big change to the driver is the support for devicetree.
-> The bindings for System MMU is described in
-> Documentation/devicetree/bindings/arm/samsung/system-mmu.txt
-> 
-> In addition, this patchset also includes several bug fixes and
-enhancements
-> of the current driver.
-> 
-> Change log:
-> v5:
-> - new bugfix: patch 01
-> - Reordered patches
->   * patch 01 ~ 05: Bugfix and enhancements of the existing driver
->   * patch 06 ~ 10: Device Tree support and callbacks for power management
->   * patch 11     : System MMU 3.2 and 3.3 support
->   * patch 12 ~ 14: Debugging features
-> - Additional code compaction
-> 
-> v4:
-> - Remove Change-Id from v3 patches
-> - Change the order of the third and the first patch
->   Thanks to Kukjin Kim.
-> - Fix memory leak when allocating and assigning exynos_iommu_owner to
-> client
->   device if the client device has multiple System MMUs.
->   Thanks to Rahul Sharma.
-> 
-> v3:
-> - Fix prefetch buffer flag definition for System MMU 3.3 (patch 10/12)
-> - Fix incorrect setting for SET_RUNTIME_PM_OPS (patch 09/12)
->   Thanks to Prathyush.
-> 
-> v2:
-> - Split the patch to iommu/exynos into 9 patches
-> - Support for System MMU 3.3
-> - Some code compaction
-> 
-> Patch summary:
-> [PATCH v5 01/14] iommu/exynos: add missing cache flush for removed
-> pagetable entries
-> [PATCH v5 02/14] iommu/exynos: always use iommu fault handler
-> [PATCH v5 03/14] iommu/exynos: allocate lv2 page table from own slab
-> [PATCH v5 04/14] iommu/exynos: change rwlock to spinlock
-> [PATCH v5 05/14] ARM: EXYNOS: Add clk_ops for gating clocks of System
-> MMU
-> [PATCH v5 06/14] ARM: EXYNOS: add System MMU definition to DT
-> [PATCH v5 07/14] iommu/exynos: support for device tree
-> [PATCH v5 08/14] iommu/exynos: set System MMU as the parent of client
-> device
-> [PATCH v5 09/14] ARM: EXYNOS: remove system mmu initialization from
-> exynos tree
-> [PATCH v5 10/14] iommu/exynos: add support for runtime pm and
-> suspend/resume
-> [PATCH v5 11/14] iommu/exynos: add support for System MMU 3.2 and 3.3
-> [PATCH v5 12/14] iommu/exynos: pass version information from DT
-> [PATCH v5 13/14] iommu/exynos: add literal name of System MMU for
-> debugging
-> [PATCH v5 14/14] iommu/exynos: add debugfs entries for System MMU
-> 
-> Diffstats:
->  .../devicetree/bindings/arm/exynos/system-mmu.txt  |   86 ++
->  arch/arm/boot/dts/exynos4210.dtsi                  |   96 ++
->  arch/arm/boot/dts/exynos4x12.dtsi                  |  124 ++
->  arch/arm/boot/dts/exynos5250.dtsi                  |  154 +-
->  arch/arm/mach-exynos/Kconfig                       |    5 -
->  arch/arm/mach-exynos/Makefile                      |    1 -
->  arch/arm/mach-exynos/clock-exynos4.c               |   41 +-
->  arch/arm/mach-exynos/clock-exynos4210.c            |    9 +-
->  arch/arm/mach-exynos/clock-exynos4212.c            |   23 +-
->  arch/arm/mach-exynos/clock-exynos5.c               |   86 +-
->  arch/arm/mach-exynos/dev-sysmmu.c                  |  274 ----
->  arch/arm/mach-exynos/include/mach/sysmmu.h         |   66 -
->  arch/arm/mach-exynos/mach-exynos4-dt.c             |   34 +
->  arch/arm/mach-exynos/mach-exynos5-dt.c             |   30 +
->  drivers/iommu/Kconfig                              |    2 +-
->  drivers/iommu/Makefile                             |    2 +-
->  drivers/iommu/exynos-iommu.c                       | 1477
-+++++++++++++++-----
->  17 files changed, 1745 insertions(+), 765 deletions(-)
+This is my second attempt to make Marvell 88SE91xx SATA controllers work when IOMMU is enabled.[1][2] 
+As suggested, it no longer tries to add support for phantom functions.
 
-Hmm, the 5th and 6th patches which were 1st and 2nd patches in previous
-version are not merged into mainline via Samsung tree yet. Just merged into
-Samsung tree. But if Joerg is ok on this series, this series should be
-merged into both tree...Joerg, how do you think?
+What's missing:
+* No AMD support. I need some help with this.
+* Table of affected chip IDs is incomplete. I think 0x9123, 0x9125, 0x9128 are also affected.
 
-- Kukjin
+Patch is against 3.7.1
+
+Review and feedback would be appreciated.
+
+1. https://bugzilla.redhat.com/show_bug.cgi?id=757166
+2. https://bugzilla.kernel.org/show_bug.cgi?id=42679
+
+Signed-off-by: Andrew Cooks <acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+---
+ drivers/iommu/intel-iommu.c |   36 ++++++++++++++++++++++++++++++++++--
+ drivers/pci/quirks.c        |   34 ++++++++++++++++++++++++++++++++++
+ include/linux/pci.h         |    1 +
+ 3 files changed, 66 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 0badfa4..17e64c0 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -1672,6 +1674,31 @@ static int domain_context_mapping_one(struct dmar_domain *domain, int segment,
+ 	return 0;
+ }
+ 
++/* For buggy devices like Marvell 88SE91xx chips that use unclaimed
++ * functions.
++ */
++static int map_quirky_dma_fn(struct dmar_domain *domain,
++		struct pci_dev *pdev,
++		int translation)
++{
++	u8 fn;
++	int err = 0;
++
++	for (fn = 1; fn < 8; fn++) {
++		if (pci_func_is_dma_source(pdev, fn)) {
++			err = domain_context_mapping_one(domain,
++					pci_domain_nr(pdev->bus),
++					pdev->bus->number,
++					PCI_DEVFN(PCI_SLOT(pdev->devfn), fn),
++					translation);
++			if (err)
++				return err;
++			dev_dbg(&pdev->dev, "func: %d mapped dma quirk", fn);
++		}
++	}
++	return 0;
++}
++
+ static int
+ domain_context_mapping(struct dmar_domain *domain, struct pci_dev *pdev,
+ 			int translation)
+@@ -1685,6 +1712,11 @@ domain_context_mapping(struct dmar_domain *domain, struct pci_dev *pdev,
+ 	if (ret)
+ 		return ret;
+ 
++	/* quirk for undeclared pci functions */
++	ret = map_quirky_dma_fn(domain, pdev, translation);
++	if (ret)
++		return ret;
++
+ 	/* dependent device mapping */
+ 	tmp = pci_find_upstream_pcie_bridge(pdev);
+ 	if (!tmp)
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index 7a451ff..8d02bac 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -3227,6 +3227,40 @@ static const struct pci_dev_dma_source {
+ 	{ 0 }
+ };
+ 
++static const struct pci_dev_dma_source_funcs {
++	u16 vendor;
++	u16 device;
++	u8 func_map;	/* bit map. lsb is fn 0. */
++} pci_dev_dma_source_funcs[] = {
++	 {0x1b4b, 0x9172, (1<<0)|(1<<1)},
++	 { 0 },	
++};
++
++static u8 pci_get_dma_source_map(struct pci_dev *dev)
++{
++	const struct pci_dev_dma_source_funcs *i;
++
++	for (i = pci_dev_dma_source_funcs; i->func_map; i++) {
++		if ((i->vendor == dev->vendor ||
++		     i->vendor == (u16)PCI_ANY_ID) &&
++		    (i->device == dev->device ||
++		     i->device == (u16)PCI_ANY_ID)) {
++			return i->func_map;			
++		}
++	}
++	return 0;
++}
++
++int pci_func_is_dma_source(struct pci_dev *dev, int fn)
++{
++	u8 fn_map = pci_get_dma_source_map(dev);
++
++	if (fn_map & (1 << fn))
++		return 1;
++
++	return 0;
++}
++
+ /*
+  * IOMMUs with isolation capabilities need to be programmed with the
+  * correct source ID of a device.  In most cases, the source ID matches
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index ee21795..8f0fa7f 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -1546,6 +1546,7 @@ enum pci_fixup_pass {
+ #ifdef CONFIG_PCI_QUIRKS
+ void pci_fixup_device(enum pci_fixup_pass pass, struct pci_dev *dev);
+ struct pci_dev *pci_get_dma_source(struct pci_dev *dev);
++int pci_func_is_dma_source(struct pci_dev *dev, int fn);
+ int pci_dev_specific_acs_enabled(struct pci_dev *dev, u16 acs_flags);
+ #else
+ static inline void pci_fixup_device(enum pci_fixup_pass pass,
+-- 
+1.7.1
