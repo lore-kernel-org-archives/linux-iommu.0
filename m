@@ -1,14 +1,15 @@
-From: Andrew Cooks <acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [RFC PATCH] Fix Intel IOMMU support for Marvell 88SE91xx SATA
-	controllers.
-Date: Wed, 19 Dec 2012 18:58:23 +0800
-Message-ID: <1355914703-28576-1-git-send-email-acooks@gmail.com>
-References: <1354533387-4110-1-git-send-email-acooks@gmail.com>
+From: "Woodhouse, David" <david.woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH] intel-iommu: Free old page tables before creating superpage
+Date: Wed, 19 Dec 2012 13:25:35 +0000
+Message-ID: <1355923535.18919.71.camel@shinybook.infradead.org>
+References: <7356B26205136F47B72D4A7E5ED1048D26F57D51@ORSMSX106.amr.corp.intel.com>
+	<1354528768.24281.65.camel@shinybook.infradead.org>
+	<7356B26205136F47B72D4A7E5ED1048D26F58064@ORSMSX106.amr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============2427646001974428182=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1354533387-4110-1-git-send-email-acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <7356B26205136F47B72D4A7E5ED1048D26F58064-P5GAC/sN6hlZtRGVdHMbwrfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,135 +19,167 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, xjtuychu-PkbjNfxxIARBDgjK7y7TUQ@public.gmane.org, gm.ychu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, jpiszcz-BP4nVm5VUdNhbmWW9KSYcQ@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
-Cc: "open list:PCI SUBSYSTEM" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU VT-d" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: "torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org" <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Dutt, Sudeep" <sudeep.dutt-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Murty,
+	Ravi" <ravi.murty-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This is my second attempt to make Marvell 88SE91xx SATA controllers work when IOMMU is enabled.[1][2] 
-As suggested, it no longer tries to add support for phantom functions.
+--===============2427646001974428182==
+Content-Language: en-GB
+Content-Type: multipart/signed; micalg=sha1;
+	protocol="application/x-pkcs7-signature"; boundary="=-Dd8aX3AhL1+ktOurVAAn"
 
-What's missing:
-* No AMD support. I need some help with this.
-* Table of affected chip IDs is incomplete. I think 0x9123, 0x9125, 0x9128 are also affected.
+--=-Dd8aX3AhL1+ktOurVAAn
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Patch is against 3.7.1
+The dma_pte_free_pagetable() function will only free a page table page
+if it is asked to free the *entire* 2MiB range that it covers. So if a
+page table page was used for one or more small mappings, it's likely to
+end up still present in the page tables... but with no valid PTEs.
 
-Review and feedback would be appreciated.
+This was fine when we'd only be repopulating it with 4KiB PTEs anyway
+but the same virtual address range can end up being reused for a
+*large-page* mapping. And in that case were were trying to insert the
+large page into the second-level page table, and getting a complaint
+from the sanity check in __domain_mapping() because there was already a
+corresponding entry. This was *relatively* harmless; it led to a memory
+leak of the old page table page, but no other ill-effects.
 
-1. https://bugzilla.redhat.com/show_bug.cgi?id=757166
-2. https://bugzilla.kernel.org/show_bug.cgi?id=42679
+Fix it by calling dma_pte_clear_range (hopefully redundant) and
+dma_pte_free_pagetable() before setting up the new large page.
 
-Signed-off-by: Andrew Cooks <acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Tested-by: Ravi Murty <Ravi.Murty-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Tested-by: Sudeep Dutt <sudeep.dutt-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: stable-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org [3.0+]
 ---
- drivers/iommu/intel-iommu.c |   36 ++++++++++++++++++++++++++++++++++--
- drivers/pci/quirks.c        |   34 ++++++++++++++++++++++++++++++++++
- include/linux/pci.h         |    1 +
- 3 files changed, 66 insertions(+), 0 deletions(-)
+Oops, should have chased this up before the 3.7 release. Oh well, it can
+make it into 3.7.2.
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 0badfa4..17e64c0 100644
+index 0badfa4..9476c1b 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1672,6 +1674,31 @@ static int domain_context_mapping_one(struct dmar_domain *domain, int segment,
- 	return 0;
- }
- 
-+/* For buggy devices like Marvell 88SE91xx chips that use unclaimed
-+ * functions.
-+ */
-+static int map_quirky_dma_fn(struct dmar_domain *domain,
-+		struct pci_dev *pdev,
-+		int translation)
-+{
-+	u8 fn;
-+	int err = 0;
-+
-+	for (fn = 1; fn < 8; fn++) {
-+		if (pci_func_is_dma_source(pdev, fn)) {
-+			err = domain_context_mapping_one(domain,
-+					pci_domain_nr(pdev->bus),
-+					pdev->bus->number,
-+					PCI_DEVFN(PCI_SLOT(pdev->devfn), fn),
-+					translation);
-+			if (err)
-+				return err;
-+			dev_dbg(&pdev->dev, "func: %d mapped dma quirk", fn);
-+		}
-+	}
-+	return 0;
-+}
-+
- static int
- domain_context_mapping(struct dmar_domain *domain, struct pci_dev *pdev,
- 			int translation)
-@@ -1685,6 +1712,11 @@ domain_context_mapping(struct dmar_domain *domain, struct pci_dev *pdev,
- 	if (ret)
- 		return ret;
- 
-+	/* quirk for undeclared pci functions */
-+	ret = map_quirky_dma_fn(domain, pdev, translation);
-+	if (ret)
-+		return ret;
-+
- 	/* dependent device mapping */
- 	tmp = pci_find_upstream_pcie_bridge(pdev);
- 	if (!tmp)
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 7a451ff..8d02bac 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -3227,6 +3227,40 @@ static const struct pci_dev_dma_source {
- 	{ 0 }
- };
- 
-+static const struct pci_dev_dma_source_funcs {
-+	u16 vendor;
-+	u16 device;
-+	u8 func_map;	/* bit map. lsb is fn 0. */
-+} pci_dev_dma_source_funcs[] = {
-+	 {0x1b4b, 0x9172, (1<<0)|(1<<1)},
-+	 { 0 },	
-+};
-+
-+static u8 pci_get_dma_source_map(struct pci_dev *dev)
-+{
-+	const struct pci_dev_dma_source_funcs *i;
-+
-+	for (i = pci_dev_dma_source_funcs; i->func_map; i++) {
-+		if ((i->vendor == dev->vendor ||
-+		     i->vendor == (u16)PCI_ANY_ID) &&
-+		    (i->device == dev->device ||
-+		     i->device == (u16)PCI_ANY_ID)) {
-+			return i->func_map;			
-+		}
-+	}
-+	return 0;
-+}
-+
-+int pci_func_is_dma_source(struct pci_dev *dev, int fn)
-+{
-+	u8 fn_map = pci_get_dma_source_map(dev);
-+
-+	if (fn_map & (1 << fn))
-+		return 1;
-+
-+	return 0;
-+}
-+
- /*
-  * IOMMUs with isolation capabilities need to be programmed with the
-  * correct source ID of a device.  In most cases, the source ID matches
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index ee21795..8f0fa7f 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1546,6 +1546,7 @@ enum pci_fixup_pass {
- #ifdef CONFIG_PCI_QUIRKS
- void pci_fixup_device(enum pci_fixup_pass pass, struct pci_dev *dev);
- struct pci_dev *pci_get_dma_source(struct pci_dev *dev);
-+int pci_func_is_dma_source(struct pci_dev *dev, int fn);
- int pci_dev_specific_acs_enabled(struct pci_dev *dev, u16 acs_flags);
- #else
- static inline void pci_fixup_device(enum pci_fixup_pass pass,
--- 
-1.7.1
+@@ -1827,10 +1827,17 @@ static int __domain_mapping(struct dmar_domain *dom=
+ain, unsigned long iov_pfn,
+ 			if (!pte)
+ 				return -ENOMEM;
+ 			/* It is large page*/
+-			if (largepage_lvl > 1)
++			if (largepage_lvl > 1) {
+ 				pteval |=3D DMA_PTE_LARGE_PAGE;
+-			else
++				/* Ensure that old small page tables are removed to make room
++				   for superpage, if they exist. */
++				dma_pte_clear_range(domain, iov_pfn,
++						    iov_pfn + lvl_to_nr_pages(largepage_lvl) - 1);
++				dma_pte_free_pagetable(domain, iov_pfn,
++						       iov_pfn + lvl_to_nr_pages(largepage_lvl) - 1);
++			} else {
+ 				pteval &=3D ~(uint64_t)DMA_PTE_LARGE_PAGE;
++			}
+=20
+ 		}
+ 		/* We don't need lock here, nobody else
+
+--=20
+                   Sent with MeeGo's ActiveSync support.
+
+David Woodhouse                            Open Source Technology Centre
+David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
+
+--=-Dd8aX3AhL1+ktOurVAAn
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIO6jCCAz0w
+ggKmoAMCAQICAwWw/zANBgkqhkiG9w0BAQUFADBOMQswCQYDVQQGEwJVUzEQMA4GA1UEChMHRXF1
+aWZheDEtMCsGA1UECxMkRXF1aWZheCBTZWN1cmUgQ2VydGlmaWNhdGUgQXV0aG9yaXR5MB4XDTA2
+MDIxNjE4MDEzMFoXDTE2MDIxOTE4MDEzMFowUjELMAkGA1UEBhMCVVMxGjAYBgNVBAoTEUludGVs
+IENvcnBvcmF0aW9uMScwJQYDVQQDEx5JbnRlbCBFeHRlcm5hbCBCYXNpYyBQb2xpY3kgQ0EwggEi
+MA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDBpd/XOb9QVqEZ8mQ1042TdOIq3ATDIsV2xDyt
+30yLyMR5Wjtus0bn3B+he89BiNO/LP6+rFzEwlD55PlX+HLGIKeNNG97dqyc30FElEUjZzTZFq2N
+4e3kVJ/XAEEgANzV8v9qp7qWwxugPgfc3z9BkYot+CifozexHLb/hEZj+yISCU61kRZvuSQ0E11y
+YL4dRgcglJeaHo3oX57rvIckaLsYV5/1Aj+R8DM1Ppk965XQAKsHfnyT7C4S50T4lVn4lz36wOdN
+Zn/zegG1zp41lnoTFfT4KuKVJH5x7YD1p6KbgJCKLovnujGuohquBNfdXKpZkvz6pGv+iC1HawJd
+AgMBAAGjgaAwgZ0wDgYDVR0PAQH/BAQDAgEGMB0GA1UdDgQWBBQaxgxKxEdvqNutK/D0Vgaj7TdU
+DDA6BgNVHR8EMzAxMC+gLaArhilodHRwOi8vY3JsLmdlb3RydXN0LmNvbS9jcmxzL3NlY3VyZWNh
+LmNybDAfBgNVHSMEGDAWgBRI5mj5K9KylddH2CMgEE8zmJCf1DAPBgNVHRMBAf8EBTADAQH/MA0G
+CSqGSIb3DQEBBQUAA4GBABMQOK2kVKVIlUWwLTdywJ+e2O+PC/uQltK2F3lRyrPfBn69tOkIP4Sg
+DJOfsxyobIrPLe75kBLw+Dom13OBDp/EMZJZ1CglQfVV8co9mT3aZMjSGGQiMgkJLR3jMfr900fX
+ZKj5XeqCJ+JP0mEhJGEdVCY+FFlksJjV86fDrq1QMIIFijCCBHKgAwIBAgIKYR6AtwAAAAAABzAN
+BgkqhkiG9w0BAQUFADBSMQswCQYDVQQGEwJVUzEaMBgGA1UEChMRSW50ZWwgQ29ycG9yYXRpb24x
+JzAlBgNVBAMTHkludGVsIEV4dGVybmFsIEJhc2ljIFBvbGljeSBDQTAeFw0wOTA1MTUxOTI1MTNa
+Fw0xNTA1MTUxOTM1MTNaMFYxCzAJBgNVBAYTAlVTMRowGAYDVQQKExFJbnRlbCBDb3Jwb3JhdGlv
+bjErMCkGA1UEAxMiSW50ZWwgRXh0ZXJuYWwgQmFzaWMgSXNzdWluZyBDQSAzQTCCASIwDQYJKoZI
+hvcNAQEBBQADggEPADCCAQoCggEBAMGPgGLnOO5IOzlHRfr1XfCVb97V4BR2QVpPZ7CrcIQ+FGa2
+KHD/6dPjwxOIrtFTdfW4BYikdFmxUZVBWRWZ5Vye2cCdGzFWqIEOE1e17nNx1jM8Z6GZEqbDUS+v
+BuPlBFHKQoVm5BaNIHpyn2XZxqwjV9j5/crIfPrCGstk+2ztUhVS8OHEgzO784PgD9pOgBnnAbZH
+mEM1FYYmQ6ibS+gVCHzobDYG+YReRiHpFKWBxpUuP+X0WYFw/Ja1JW7N8pELAFDw0UFBWFgiv1QI
+usdLvSy8mcsLJ5wy050OVcxShqoUxhw/wvyuuoQxvmEPjhRa1C2oSCmGN0003GMhQWMCAwEAAaOC
+AlwwggJYMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFKoWZq+3PVZTYK4Nwu3z7gfLUWB+MAsG
+A1UdDwQEAwIBhjASBgkrBgEEAYI3FQEEBQIDAQABMCMGCSsGAQQBgjcVAgQWBBTCKwhTx+hdMsKC
+gOmWwLgjQsAV+TAZBgkrBgEEAYI3FAIEDB4KAFMAdQBiAEMAQTAfBgNVHSMEGDAWgBQaxgxKxEdv
+qNutK/D0Vgaj7TdUDDCBvQYDVR0fBIG1MIGyMIGvoIGsoIGphk5odHRwOi8vd3d3LmludGVsLmNv
+bS9yZXBvc2l0b3J5L0NSTC9JbnRlbCUyMEV4dGVybmFsJTIwQmFzaWMlMjBQb2xpY3klMjBDQS5j
+cmyGV2h0dHA6Ly9jZXJ0aWZpY2F0ZXMuaW50ZWwuY29tL3JlcG9zaXRvcnkvQ1JML0ludGVsJTIw
+RXh0ZXJuYWwlMjBCYXNpYyUyMFBvbGljeSUyMENBLmNybDCB4wYIKwYBBQUHAQEEgdYwgdMwYwYI
+KwYBBQUHMAKGV2h0dHA6Ly93d3cuaW50ZWwuY29tL3JlcG9zaXRvcnkvY2VydGlmaWNhdGVzL0lu
+dGVsJTIwRXh0ZXJuYWwlMjBCYXNpYyUyMFBvbGljeSUyMENBLmNydDBsBggrBgEFBQcwAoZgaHR0
+cDovL2NlcnRpZmljYXRlcy5pbnRlbC5jb20vcmVwb3NpdG9yeS9jZXJ0aWZpY2F0ZXMvSW50ZWwl
+MjBFeHRlcm5hbCUyMEJhc2ljJTIwUG9saWN5JTIwQ0EuY3J0MA0GCSqGSIb3DQEBBQUAA4IBAQCU
+Y/1d0MS6VPTlIcOho1XWh193PD5kJDJSPdphLHQdM1oKA+whMdIBoY1VzTDDK+C+Ey4Jcyna7fpC
+8uVmn/Rz/i9MZtyc7qezPtZTn9UyORvJmddH+Ox/RycGwe3ags8jUdspECorYOkJyZksnDIlTVUv
+bR7wyY+gGJYqxWXqrcVFEiMsWu8/OIlf7F2gAYMBw1kZ55dn4lWBIM0WqvReWpPvhYeN7Y+3MKEd
+SMkQ7TZiNbfdZ5D/8KfWNMTJ4VHltOgCL1lA5tx/F4R1920skpL5eu3Sj650RUe3rOXsaV5NyJzB
+wB31+1zsmleVdFD0k/Fw9HxXbAQE35ucN/7CMIIGFzCCBP+gAwIBAgIKEIhPUAABAABfaTANBgkq
+hkiG9w0BAQUFADBWMQswCQYDVQQGEwJVUzEaMBgGA1UEChMRSW50ZWwgQ29ycG9yYXRpb24xKzAp
+BgNVBAMTIkludGVsIEV4dGVybmFsIEJhc2ljIElzc3VpbmcgQ0EgM0EwHhcNMTEwNDEyMTIzMzQx
+WhcNMTQwMzI3MTIzMzQxWjBFMRkwFwYDVQQDExBXb29kaG91c2UsIERhdmlkMSgwJgYJKoZIhvcN
+AQkBFhlkYXZpZC53b29kaG91c2VAaW50ZWwuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIB
+CgKCAQEAvxW1JMLaZUeM6Cg2OVV1nfsZOt9x/CjVJ7SBlapefSjUoNT48n58zLK+Q00YxPkIxnwl
+m57dAxSUf/Dqg+C6DOdLknVQILrGeWNSZdC8GQ8HlHz+D5ldgTDY9L1vDM65p1wbXW4R5QfMbooZ
+IQKlyUivGkggwBUpTeeXDOfz5f4m2UW5aCnyG8yhiBUHISAQyXLwQg+iVhBpTqsVvvojybQY8lGF
+Z7U+kgbgBY0HCqOuEmT7Iz/tm4W3dpfh8mFluZUn1fMBvCaC+cdKVV/1lpeUdtMNREH+jKUU49lt
+BblH1qXmEViOvMT4itbfkUSWeWgeI9umMOK4eL31LLepCQIDAQABo4IC9jCCAvIwCwYDVR0PBAQD
+AgeAMDwGCSsGAQQBgjcVBwQvMC0GJSsGAQQBgjcVCIbDjHWEmeVRg/2BKIWOn1OCkcAJZ4HevTmV
+8EMCAWQCAQgwHQYDVR0OBBYEFMcuq9ocKJ7EbWcVlAWTYVXwOsrHMB8GA1UdIwQYMBaAFKoWZq+3
+PVZTYK4Nwu3z7gfLUWB+MIHPBgNVHR8EgccwgcQwgcGggb6ggbuGV2h0dHA6Ly93d3cuaW50ZWwu
+Y29tL3JlcG9zaXRvcnkvQ1JML0ludGVsJTIwRXh0ZXJuYWwlMjBCYXNpYyUyMElzc3VpbmclMjBD
+QSUyMDNBKDEpLmNybIZgaHR0cDovL2NlcnRpZmljYXRlcy5pbnRlbC5jb20vcmVwb3NpdG9yeS9D
+UkwvSW50ZWwlMjBFeHRlcm5hbCUyMEJhc2ljJTIwSXNzdWluZyUyMENBJTIwM0EoMSkuY3JsMIH1
+BggrBgEFBQcBAQSB6DCB5TBsBggrBgEFBQcwAoZgaHR0cDovL3d3dy5pbnRlbC5jb20vcmVwb3Np
+dG9yeS9jZXJ0aWZpY2F0ZXMvSW50ZWwlMjBFeHRlcm5hbCUyMEJhc2ljJTIwSXNzdWluZyUyMENB
+JTIwM0EoMSkuY3J0MHUGCCsGAQUFBzAChmlodHRwOi8vY2VydGlmaWNhdGVzLmludGVsLmNvbS9y
+ZXBvc2l0b3J5L2NlcnRpZmljYXRlcy9JbnRlbCUyMEV4dGVybmFsJTIwQmFzaWMlMjBJc3N1aW5n
+JTIwQ0ElMjAzQSgxKS5jcnQwHwYDVR0lBBgwFgYIKwYBBQUHAwQGCisGAQQBgjcKAwwwKQYJKwYB
+BAGCNxUKBBwwGjAKBggrBgEFBQcDBDAMBgorBgEEAYI3CgMMME8GA1UdEQRIMEagKQYKKwYBBAGC
+NxQCA6AbDBlkYXZpZC53b29kaG91c2VAaW50ZWwuY29tgRlkYXZpZC53b29kaG91c2VAaW50ZWwu
+Y29tMA0GCSqGSIb3DQEBBQUAA4IBAQBxLiiAAGnWEDYYtUaje48WjSbMx8O+TsKX2x1sgi/ilnUR
+evhznvvFGx9hRrTtQ4Sz+hU7nWvoxbSLDVx6vDQ7+wyGo6SzE0MYqwB3EzwO/P8MnpgZTlEmgDeP
+GjYX2IFzp5fG7NNvc6byf8pLjXgn+2wqRLUqrh2PZZ5KKIiicVNT+UOlRIbB2T1WuSVHBMQxhQBr
+rzwwYuyoawJCHHo+eKUE51cSSzkT95K+m0Q6XYGC8tQ3i94nBIaLMIg/GM6K2cYKH3vdu/otvGPl
+j9/HEKo+mktp2A2S5sIwCKlw8nYOaYKe1dpmYtXKfVoOIIZ/LaVEB/XEIEC1x/oPbrH/MYIB6jCC
+AeYCAQEwZDBWMQswCQYDVQQGEwJVUzEaMBgGA1UEChMRSW50ZWwgQ29ycG9yYXRpb24xKzApBgNV
+BAMTIkludGVsIEV4dGVybmFsIEJhc2ljIElzc3VpbmcgQ0EgM0ECChCIT1AAAQAAX2kwCQYFKw4D
+AhoFAKBdMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTEyMTIxOTEz
+MjUzNVowIwYJKoZIhvcNAQkEMRYEFBZrM5/zaz66s6xGzEWYY7YJ88kGMA0GCSqGSIb3DQEBAQUA
+BIIBABO6DPQ/fOr0Dskc8lAjUGJQVxWnnz3hy81Ow6zIWC2T0HNd5dafaiG6o2U1FFpCrQZc4JRr
+I0nLOu0vwFttfDjK+MjyjnuW9l4lLnFCbPriBdPjoBmanxgKeeh6fXgK/ZWsbvSx8hyc+SgSi9cn
+aZsGH46drzIn5cxvyEJPvi9ZT4qntqbFqJjsObXTZB3GbpwHD9Z6FAnkKPIs5V5qb3ZBXM+HEZ1a
+H6kelptQzndZ73fL0KFVMxVOnNvMY0xmj9lzG5lc+Lsf0K8lTPDepjM54bROoDFD3cmfuuhsSnca
+eMVbc05hmwzAK5hac6UkGxGeSXALbBrAmUL7iu4ms3MAAAAAAAA=
+
+
+--=-Dd8aX3AhL1+ktOurVAAn--
+
+--===============2427646001974428182==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============2427646001974428182==--
