@@ -1,15 +1,13 @@
-From: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 0/4] iommu/fsl: Freescale PAMU driver and IOMMU API
-	implementation.
-Date: Fri, 21 Dec 2012 01:46:56 +0000
-Message-ID: <C5ECD7A89D1DC44195F34B25E172658D2DFA6A@039-SN2MPN1-012.039d.mgd.msft.net>
-References: <1355493114-21776-1-git-send-email-Varun.Sethi@freescale.com>
+From: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH] omap: iommu: fixing NULL pointer return value
+Date: Fri, 21 Dec 2012 15:39:50 +0200
+Message-ID: <CAK=WgbaCU0q2t37k51_oVdmFO2uB6zUus-gV5X9O1xy1_GTOng@mail.gmail.com>
+References: <1356096979-27698-1-git-send-email-g-aubertin@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1355493114-21776-1-git-send-email-Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <1356096979-27698-1-git-send-email-g-aubertin-l0cyMroinI0@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,60 +17,39 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Tabi Timur-B04825 <B04825-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+To: Guillaume Aubertin <g-aubertin-l0cyMroinI0@public.gmane.org>
+Cc: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, lo <linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-ping!!
+Hi Guillaume,
 
-> -----Original Message-----
-> From: Sethi Varun-B16395
-> Sent: Friday, December 14, 2012 7:22 PM
-> To: joerg.roedel-5C7GfCeVMHo@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-
-> dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Tabi Timur-B04825;
-> Wood Scott-B07421
-> Cc: Sethi Varun-B16395
-> Subject: [PATCH 0/4] iommu/fsl: Freescale PAMU driver and IOMMU API
-> implementation.
-> 
-> This patchset provides the Freescale PAMU (Peripheral Access Management
-> Unit) driver and the corresponding IOMMU API implementation. PAMU is the
-> IOMMU present on Freescale QorIQ platforms. PAMU can authorize memory
-> access, remap the memory address, and remap the I/O transaction type.
-> 
-> This set consists of the following patches:
-> 1. Addition of new field in the device (powerpc) archdata structure for
-> storing iommu domain information
->    pointer. This pointer is stored when the device is attached to a
-> particular iommu domain.
-> 2. Add PAMU bypass enable register to the ccsr_guts structure.
-> 3. Addition of domain attributes required by the PAMU driver IOMMU API.
-> 4. PAMU driver and IOMMU API implementation.
-> 
-> This patch set is based on the next branch of the iommu git tree
-> maintained by Joerg.
-> 
-> Varun Sethi (4):
->   store iommu domain info in device arch data.
->   add pamu bypass enable register to guts.
->   Add iommu attributes for PAMU
->   FSL PAMU driver.
-> 
->  arch/powerpc/include/asm/device.h   |    4 +
->  arch/powerpc/include/asm/fsl_guts.h |    4 +-
->  drivers/iommu/Kconfig               |    8 +
->  drivers/iommu/Makefile              |    1 +
->  drivers/iommu/fsl_pamu.c            | 1152
-> +++++++++++++++++++++++++++++++++++
->  drivers/iommu/fsl_pamu.h            |  398 ++++++++++++
->  drivers/iommu/fsl_pamu_domain.c     | 1033
-> +++++++++++++++++++++++++++++++
->  drivers/iommu/fsl_pamu_domain.h     |   96 +++
->  include/linux/iommu.h               |   49 ++
->  9 files changed, 2744 insertions(+), 1 deletions(-)  create mode 100644
-> drivers/iommu/fsl_pamu.c  create mode 100644 drivers/iommu/fsl_pamu.h
-> create mode 100644 drivers/iommu/fsl_pamu_domain.c  create mode 100644
-> drivers/iommu/fsl_pamu_domain.h
-> 
+You should also cc Joerg and the iommu ml for iommu patches (cc'ing now).
+
+On Fri, Dec 21, 2012 at 3:36 PM, Guillaume Aubertin <g-aubertin-l0cyMroinI0@public.gmane.org> wrote:
+> the returned NULL pointer is not detected by IS_ERR(), and then
+> de-referenced in the calling function, omap_iommu_attach_dev().
+>
+> Signed-off-by: Guillaume Aubertin <g-aubertin-l0cyMroinI0@public.gmane.org>
+
+Acked-by: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>
+
+> ---
+>  drivers/iommu/omap-iommu.c |    2 +-
+>  1 files changed, 1 insertions(+), 1 deletions(-)
+>
+> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+> index badc17c..a0fcad2 100644
+> --- a/drivers/iommu/omap-iommu.c
+> +++ b/drivers/iommu/omap-iommu.c
+> @@ -861,7 +861,7 @@ static struct omap_iommu *omap_iommu_attach(const char *name, u32 *iopgd)
+>                                 (void *)name,
+>                                 device_match_by_alias);
+>         if (!dev)
+> -               return NULL;
+> +               return ERR_PTR(-ENODEV);
+>
+>         obj = to_iommu(dev);
+>
 > --
-> 1.7.4.1
+> 1.7.0.4
+>
