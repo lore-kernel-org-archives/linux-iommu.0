@@ -1,96 +1,127 @@
-From: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 0/4] iommu/fsl: Freescale PAMU driver and IOMMU API
-	implementation.
-Date: Thu, 3 Jan 2013 05:21:09 +0000
-Message-ID: <C5ECD7A89D1DC44195F34B25E172658D2F58B0@039-SN2MPN1-013.039d.mgd.msft.net>
-References: <1355493114-21776-1-git-send-email-Varun.Sethi@freescale.com>
+From: Sylwester Nawrocki <sylvester.nawrocki@gmail.com>
+Subject: Re: [PATCH v6 05/12] iommu/exynos: support for device tree
+Date: Thu, 03 Jan 2013 22:34:38 +0100
+Message-ID: <50E5F96E.2040703@gmail.com>
+References: <003801cde30b$d9667b90$8c3372b0$%cho@samsung.com> <50E1E62B.3090501@gmail.com> <CAHQjnOMav9A43m4=7=N9kzEHTHE_q_ygu8x6mzY6Cus=q0c06A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Tabi Timur-B04825 <B04825-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <CAHQjnOMav9A43m4=7=N9kzEHTHE_q_ygu8x6mzY6Cus=q0c06A@mail.gmail.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: KyongHo Cho <pullip.cho@samsung.com>
+Cc: Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux Kernel <linux-kernel@vger.kernel.org>, Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>, Hyunwoong Kim <khw0178.kim@samsung.com>, Joerg Roedel <joro@8bytes.org>, Kukjin Kim <kgene.kim@samsung.com>, Prathyush <prathyush.k@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Subash Patel <supash.ramaswamy@linaro.org>, devicetree-discuss <devicetree-discuss@lists.ozlabs.org>, Thomas Abraham <thomas.abraham@linaro.org>, Tomasz Figa <t.figa@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
-It's been a while since I submitted this patch. I have tried to address your comments regarding the subwindow attribute. I would really appreciate if I can get some feedback on this patch.
+On 01/02/2013 06:53 AM, KyongHo Cho wrote:
+>> > +/*
+>> > + * Descriptions of Device Tree node for System MMU
+>> > + *
+>> > + * A System MMU should be described by a single tree node.
+>> > + *
+>> > + * A System MMU node should have the following properties:
+>> > + * - reg: tuples of the base address and the size of the IO region
+> of System MMU
+>> > + * - compatible: it must be "samsung,exynos-sysmmu".
+>>
+>>  I think this compatible property is too generic. It should include
+>>  specific SoC
+>>  name in it, e.g. samsung,exynos4210-sysmmu. Please refer to this thread
+>>  http://www.spinics.net/lists/linux-omap/msg83512.html, which discusses
+>>  similar issue.
+>
+> Ok, I got the point. BTW , I think this will cause adding a
+> compatibility property whenever a SoC is released even though it has
+> completely sameSystem MMU. Is it inevitable?
 
-Regards
-Varun
+No, there is no need for separate 'compatible' property for each SoC.
+If the iommu is same across several SoCs same 'compatible' string should be
+used for it. Please refer to the below table.
 
-> -----Original Message-----
-> From: Sethi Varun-B16395
-> Sent: Friday, December 21, 2012 7:17 AM
-> To: 'Joerg Roedel'
-> Cc: Sethi Varun-B16395; joerg.roedel-5C7GfCeVMHo@public.gmane.org; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
-> foundation.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-
-> kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Tabi Timur-B04825; Wood Scott-B07421
-> Subject: RE: [PATCH 0/4] iommu/fsl: Freescale PAMU driver and IOMMU API
-> implementation.
-> 
-> ping!!
-> 
-> > -----Original Message-----
-> > From: Sethi Varun-B16395
-> > Sent: Friday, December 14, 2012 7:22 PM
-> > To: joerg.roedel-5C7GfCeVMHo@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-
-> > dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Tabi Timur-B04825;
-> > Wood Scott-B07421
-> > Cc: Sethi Varun-B16395
-> > Subject: [PATCH 0/4] iommu/fsl: Freescale PAMU driver and IOMMU API
-> > implementation.
-> >
-> > This patchset provides the Freescale PAMU (Peripheral Access
-> > Management
-> > Unit) driver and the corresponding IOMMU API implementation. PAMU is
-> > the IOMMU present on Freescale QorIQ platforms. PAMU can authorize
-> > memory access, remap the memory address, and remap the I/O transaction
-> type.
-> >
-> > This set consists of the following patches:
-> > 1. Addition of new field in the device (powerpc) archdata structure
-> > for storing iommu domain information
-> >    pointer. This pointer is stored when the device is attached to a
-> > particular iommu domain.
-> > 2. Add PAMU bypass enable register to the ccsr_guts structure.
-> > 3. Addition of domain attributes required by the PAMU driver IOMMU API.
-> > 4. PAMU driver and IOMMU API implementation.
-> >
-> > This patch set is based on the next branch of the iommu git tree
-> > maintained by Joerg.
-> >
-> > Varun Sethi (4):
-> >   store iommu domain info in device arch data.
-> >   add pamu bypass enable register to guts.
-> >   Add iommu attributes for PAMU
-> >   FSL PAMU driver.
-> >
-> >  arch/powerpc/include/asm/device.h   |    4 +
-> >  arch/powerpc/include/asm/fsl_guts.h |    4 +-
-> >  drivers/iommu/Kconfig               |    8 +
-> >  drivers/iommu/Makefile              |    1 +
-> >  drivers/iommu/fsl_pamu.c            | 1152
-> > +++++++++++++++++++++++++++++++++++
-> >  drivers/iommu/fsl_pamu.h            |  398 ++++++++++++
-> >  drivers/iommu/fsl_pamu_domain.c     | 1033
-> > +++++++++++++++++++++++++++++++
-> >  drivers/iommu/fsl_pamu_domain.h     |   96 +++
-> >  include/linux/iommu.h               |   49 ++
-> >  9 files changed, 2744 insertions(+), 1 deletions(-)  create mode
-> > 100644 drivers/iommu/fsl_pamu.c  create mode 100644
-> > drivers/iommu/fsl_pamu.h create mode 100644
-> > drivers/iommu/fsl_pamu_domain.c  create mode 100644
-> > drivers/iommu/fsl_pamu_domain.h
-> >
-> > --
-> > 1.7.4.1
+  SoC       | sysmmu type |    compatible
+-------------------------------------------------------------
+exynos4210 |  A          | samsung,exynos4210-sysmmu
+exynos4212 |  A          | samsung,exynos4210-sysmmu
+exynos4412 |  B          | samsung,exynos4412-sysmmu
+exynos5250 |  C          | samsung,exynos5250-sysmmu
+
+In fact, the sysmmu device compatible property could contain more than one
+string, e.g.
+
+   compatible = "samsung,exynos4412-sysmmu", "samsung,exynos4210-sysmmu";
+
+if type A is subset of type B in terms of functionality and the register
+maps are compatible.
+
+It might be useful to put in the documentation which compatible applies
+to which SoC. Then the driver can distinguish between different versions
+of the hardware by looking at the 'compatible' property.
+
+In patch "[PATCH v6 10/12] iommu/exynos: pass version information from DT"
+you are doing something that looks strange to me. Couldn't you use 
+compatible
+property to derive the SYSMMU major/minor version information ? Or do these
+numbers differ even within single SoC type ?
+
+>> > + * - interrupt-parent = specify if the interrupt of System MMU is
+> generated by
+>> > + *   interrupt combiner or interrupt controller.
+>> > + * - interrupts: tuples of interrupt numbers. a tuple has 2 elements if
+>> > + *   @interrupt-parent is '<&combiner>', 3 elements otherwise.
+>>
+>>  It's probably enough to say that format of the interrupts property is
+>>  dependant on
+>>  the interrupt controller used.
+>
+> I agree that :)
+>
+>> > + *
+>> > + * 'mmuname', 'reg' and 'interrupts' properties can be an array if
+> the System
+>> > + * MMU driver controls several number of System MMUs at the same
+> time. Note that
+>> > + * the number of elements in those three properties must be the same.
+>>
+>>  It might be useful to provide some example here.
+>
+> examples are there in Documentations directory.
+
+Oops, sorry. I missed these are just comments in the code. AFAIU, there is
+no need to keep 2 copies of the binding's description. I would put it only
+under the Documentation directory.
+
+>> > + * The following properties are optional:
+>> > + * - mmuname: name of the System MMU for debugging purpose
+>>
+>>  Not sure if it is something that is supposed to be included in FDT. You
+>>  could
+>>  probably derive it from the 'compatible' property, if it is really
+>>  needed. The device
+>>  tree bindings should not be treated as direct replacement for platform
+>>  data structures.
+>
+> actually it is just for debugging purpose.
+> I understand that it should not be there.
+> Thank you.
+>
+>> > + * - mmu-master: reference to the node of the master device.
+>> > + * - mmu-master-compat: 'compatible' proberty of the node of the
+> master device
+>> > + *    of System MMU. This is ignored if @mmu-master is currectly
+> specified.
+>> > + * - mmu-master-no: instance number of the master device of System
+> MMU. This is
+>> > + *    ignored if @mmu-master is correctly specified. This is '0' by
+> default.
+>>
+>>  Maybe device node aliases would be better alternative here ? But what
+>>  would be
+>>  a use case where you can't set 'mmu-master' and 'mmu-master-no' is
+> needed ?
+>
+> It is for platform devices that are not specified in FDT.
+> Don't we need consider that?
+
+I don't think there is a need for that. But I might be missing something.
+In any case it's probably better to use aliases, e.g. like it's done with
+the exynos5 gscaler device.
