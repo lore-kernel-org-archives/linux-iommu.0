@@ -1,17 +1,16 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu: moving initialization earlier
-Date: Sun, 6 Jan 2013 10:49:36 +0100
-Message-ID: <20130106094936.GD25591@8bytes.org>
-References: <1355365763.19932.75.camel@pasglop>
-	<1355380115-4518-1-git-send-email-aik@ozlabs.ru>
-	<1355413735.2229.1.camel@ul30vt.home>
-	<20121216112024.GJ1806@8bytes.org> <50E6910E.7030103@ozlabs.ru>
+Subject: Re: [PATCH 0/4] iommu/fsl: Freescale PAMU driver and IOMMU API
+	implementation.
+Date: Sun, 6 Jan 2013 10:51:33 +0100
+Message-ID: <20130106095133.GE25591@8bytes.org>
+References: <1355493114-21776-1-git-send-email-Varun.Sethi@freescale.com>
+	<C5ECD7A89D1DC44195F34B25E172658D2F58B0@039-SN2MPN1-013.039d.mgd.msft.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <50E6910E.7030103-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
+In-Reply-To: <C5ECD7A89D1DC44195F34B25E172658D2F58B0-RL0Hj/+nBVDYdknt8GnhQq4g8xLGJsHaLnY5E4hWTkheoWH0uzbU5w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,21 +20,20 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
-Cc: iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Tabi Timur-B04825 <B04825-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jan 04, 2013 at 07:21:34PM +1100, Alexey Kardashevskiy wrote:
-> On 16/12/12 22:20, Joerg Roedel wrote:
+Hi Varun,
 
-> >Please resend the patch when the merge-window is closed.
-> 
-> is it closed now? not sure I entirely understand what window you
-> kept in mind :)
+On Thu, Jan 03, 2013 at 05:21:09AM +0000, Sethi Varun-B16395 wrote:
+> It's been a while since I submitted this patch. I have tried to
+> address your comments regarding the subwindow attribute. I would
+> really appreciate if I can get some feedback on this patch.
 
-Yes, it is closed now :-) The merge-window is the time between a Linux
-kernel release (like v3.7) and the next release candiate (like
-v3.8-rc1).
+I have some ideas in mind how we can abstract this in the IOMMU-API
+(with an extension to the API). I will send a RFC patchset soon to add
+these changes and then we can discuss it.
 
 
 	Joerg
