@@ -1,16 +1,11 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 0/4] iommu/fsl: Freescale PAMU driver and IOMMU API
-	implementation.
-Date: Sun, 6 Jan 2013 10:51:33 +0100
-Message-ID: <20130106095133.GE25591@8bytes.org>
-References: <1355493114-21776-1-git-send-email-Varun.Sethi@freescale.com>
-	<C5ECD7A89D1DC44195F34B25E172658D2F58B0@039-SN2MPN1-013.039d.mgd.msft.net>
+From: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
+Subject: [PATCH] iommu: moving initialization earlier
+Date: Mon,  7 Jan 2013 18:51:52 +1100
+Message-ID: <1357545112-17375-1-git-send-email-aik@ozlabs.ru>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <C5ECD7A89D1DC44195F34B25E172658D2F58B0-RL0Hj/+nBVDYdknt8GnhQq4g8xLGJsHaLnY5E4hWTkheoWH0uzbU5w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,20 +15,40 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Tabi Timur-B04825 <B04825-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+To: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+Cc: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Varun,
+The iommu_init() initializes IOMMU internal structures and data
+required for the IOMMU API as iommu_group_alloc().
+It is registered as a subsys_initcall now.
 
-On Thu, Jan 03, 2013 at 05:21:09AM +0000, Sethi Varun-B16395 wrote:
-> It's been a while since I submitted this patch. I have tried to
-> address your comments regarding the subwindow attribute. I would
-> really appreciate if I can get some feedback on this patch.
+One of the IOMMU users is going to be a PCI subsystem on POWER.
+It discovers new IOMMU tables during the PCI scan so the logical
+place to call iommu_group_alloc() is the moment when a new group
+is discovered. However PCI scan is done from subsys_initcall hook
+as IOMMU does so PCI hook can be (and is) called before the IOMMU one.
 
-I have some ideas in mind how we can abstract this in the IOMMU-API
-(with an extension to the API). I will send a RFC patchset soon to add
-these changes and then we can discuss it.
+The patch moves IOMMU subsystem initialization one step earlier
+to make sure that IOMMU is initialized before PCI scan begins.
 
+Signed-off-by: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
+---
+ drivers/iommu/iommu.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-	Joerg
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index ddbdaca..1065a1a 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -861,7 +861,7 @@ static int __init iommu_init(void)
+ 
+ 	return 0;
+ }
+-subsys_initcall(iommu_init);
++arch_initcall(iommu_init);
+ 
+ int iommu_domain_get_attr(struct iommu_domain *domain,
+ 			  enum iommu_attr attr, void *data)
+-- 
+1.7.10.4
