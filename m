@@ -1,60 +1,71 @@
-From: 'Joerg Roedel' <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v6 00/12] iommu/exynos: Fixes and Enhancements of System
-	MMU driver with DT
-Date: Thu, 10 Jan 2013 18:19:05 +0100
-Message-ID: <20130110171844.GA2650@8bytes.org>
+From: Kukjin Kim <kgene.kim@samsung.com>
+Subject: RE: [PATCH v6 00/12] iommu/exynos: Fixes and Enhancements of System
+ MMU driver with DT
+Date: Thu, 10 Jan 2013 10:06:24 -0800
+Message-ID: <026e01cdef5d$364fd150$a2ef73f0$@samsung.com>
 References: <003301cde30b$c584c2d0$508e4870$%cho@samsung.com>
-	<032401cde783$485ae1a0$d910a4e0$@samsung.com>
+ <032401cde783$485ae1a0$d910a4e0$@samsung.com>
+ <20130110171844.GA2650@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <032401cde783$485ae1a0$d910a4e0$@samsung.com>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: 'Linux Samsung SOC' <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, 'Hyunwoong Kim' <khw0178.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Prathyush' <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Subash Patel' <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Linux Kernel' <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, 'Linux IOMMU' <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, 'Cho KyongHo' <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Linux ARM Kernel' <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, 'Rahul Sharma' <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <20130110171844.GA2650@8bytes.org>
+Content-language: en-us
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: 'Joerg Roedel' <joro@8bytes.org>
+Cc: 'Cho KyongHo' <pullip.cho@samsung.com>, 'Linux ARM Kernel' <linux-arm-kernel@lists.infradead.org>, 'Linux IOMMU' <iommu@lists.linux-foundation.org>, 'Linux Kernel' <linux-kernel@vger.kernel.org>, 'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>, 'Hyunwoong Kim' <khw0178.kim@samsung.com>, 'Prathyush' <prathyush.k@samsung.com>, 'Rahul Sharma' <rahul.sharma@samsung.com>, 'Subash Patel' <supash.ramaswamy@linaro.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Dec 31, 2012 at 10:18:46AM -0800, Kukjin Kim wrote:
-> Cho KyongHo wrote:
-
-> > Diffstats:
-> >  arch/arm/boot/dts/exynos5250-smdk5250.dts  |    2 +-
-> >  arch/arm/boot/dts/exynos5250.dtsi          |   27 +-
-> >  arch/arm/mach-exynos/Kconfig               |    5 -
-> >  arch/arm/mach-exynos/Makefile              |    1 -
-> >  arch/arm/mach-exynos/clock-exynos4.c       |   41 +-
-> >  arch/arm/mach-exynos/clock-exynos4210.c    |    9 +-
-> >  arch/arm/mach-exynos/clock-exynos4212.c    |   23 +-
-> >  arch/arm/mach-exynos/clock-exynos5.c       |   87 +-
-> >  arch/arm/mach-exynos/dev-sysmmu.c          |  274 ------
-> >  arch/arm/mach-exynos/include/mach/sysmmu.h |   66 --
-> >  arch/arm/mach-exynos/mach-exynos4-dt.c     |   34 +
-> >  arch/arm/mach-exynos/mach-exynos5-dt.c     |   30 +
-> >  drivers/iommu/Kconfig                      |    2 +-
-> >  drivers/iommu/Makefile                     |    2 +-
-> >  drivers/iommu/exynos-iommu.c               | 1477 +++++++++++++++++++++--
-> > -----
-> >  15 files changed, 1284 insertions(+), 796 deletions(-)
+'Joerg Roedel' wrote:
 > 
-> Joerg, it's time to merge this. If you don't mind, let me pick up this whole
-> series into Samsung tree because this touches many Samsung stuff.
+> On Mon, Dec 31, 2012 at 10:18:46AM -0800, Kukjin Kim wrote:
+> > Cho KyongHo wrote:
+> 
+> > > Diffstats:
+> > >  arch/arm/boot/dts/exynos5250-smdk5250.dts  |    2 +-
+> > >  arch/arm/boot/dts/exynos5250.dtsi          |   27 +-
+> > >  arch/arm/mach-exynos/Kconfig               |    5 -
+> > >  arch/arm/mach-exynos/Makefile              |    1 -
+> > >  arch/arm/mach-exynos/clock-exynos4.c       |   41 +-
+> > >  arch/arm/mach-exynos/clock-exynos4210.c    |    9 +-
+> > >  arch/arm/mach-exynos/clock-exynos4212.c    |   23 +-
+> > >  arch/arm/mach-exynos/clock-exynos5.c       |   87 +-
+> > >  arch/arm/mach-exynos/dev-sysmmu.c          |  274 ------
+> > >  arch/arm/mach-exynos/include/mach/sysmmu.h |   66 --
+> > >  arch/arm/mach-exynos/mach-exynos4-dt.c     |   34 +
+> > >  arch/arm/mach-exynos/mach-exynos5-dt.c     |   30 +
+> > >  drivers/iommu/Kconfig                      |    2 +-
+> > >  drivers/iommu/Makefile                     |    2 +-
+> > >  drivers/iommu/exynos-iommu.c               | 1477
+> +++++++++++++++++++++--
+> > > -----
+> > >  15 files changed, 1284 insertions(+), 796 deletions(-)
+> >
+> > Joerg, it's time to merge this. If you don't mind, let me pick up this
+whole
+> > series into Samsung tree because this touches many Samsung stuff.
+> 
+> Well, looking at the diffstat the IOMMU changes are a lot larger than
+> the exynos ones. So I think this should go through the IOMMU tree once
+> the latest review comments are fixed.
+> 
+If so, too many ugly merge conflicts will be happened when Linus merges for
+v3.9 because the legacy(current) exynos clock stuff is going away in Samsung
+tree and as I said, this touches Samsung stuff widely. Of course, Stephen
+should complain the conflicts between your tree and mine once you apply this
+whole series in your -next before Linus' merge for v3.9. I believe, you
+don't want it.
 
-Well, looking at the diffstat the IOMMU changes are a lot larger than
-the exynos ones. So I think this should go through the IOMMU tree once
-the latest review comments are fixed.
+You know, we have several options to avoid it. When you take this series in
+your tree, you can provide topic branch for me. Or this series should be
+separated for arch/arm/ and drivers/ for both trees, then only drivers/iommu
+changes should be picked up in your tree. I'm OK both, let me know which one
+you would prefer or other way.
 
-> Happy new year, thanks.
+BTW, KyongHo, you need to update the clock changes for exynos-iommu against
+on exynos common clock stuff. 
 
-Happy new year too,
+Thanks.
 
-      Joerg
+- Kukjin 
