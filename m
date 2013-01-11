@@ -1,43 +1,49 @@
-From: 'Joerg Roedel' <joro@8bytes.org>
-Subject: Re: [PATCH v6 00/12] iommu/exynos: Fixes and Enhancements of System
- MMU driver with DT
-Date: Fri, 11 Jan 2013 16:52:26 +0100
-Message-ID: <20130111155226.GK25591@8bytes.org>
-References: <003301cde30b$c584c2d0$508e4870$%cho@samsung.com>
- <032401cde783$485ae1a0$d910a4e0$@samsung.com>
- <20130110171844.GA2650@8bytes.org>
- <027601cdef61$2df576a0$89e063e0$@samsung.com>
- <20130110191207.GI25591@8bytes.org>
- <02ae01cdef69$67d66200$37832600$@samsung.com>
+From: Shuah Khan <shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH] iommu: moving initialization earlier
+Date: Fri, 11 Jan 2013 09:56:20 -0700
+Message-ID: <CAKocOOOzzpN_ZdN9owv5tb-28qtvXc9KvF7WuyZdxYrAYxnNTw@mail.gmail.com>
+References: <1357545112-17375-1-git-send-email-aik@ozlabs.ru>
+	<20130110170941.GA2556@8bytes.org>
+	<CAKocOOP=V=kZ=4661YSs4b+7GLcNqzVvvhb+ONBO=LiR3txvTA@mail.gmail.com>
+	<20130111145059.GJ25591@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <02ae01cdef69$67d66200$37832600$@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Kukjin Kim <kgene.kim@samsung.com>
-Cc: 'Cho KyongHo' <pullip.cho@samsung.com>, 'Linux ARM Kernel' <linux-arm-kernel@lists.infradead.org>, 'Linux IOMMU' <iommu@lists.linux-foundation.org>, 'Linux Kernel' <linux-kernel@vger.kernel.org>, 'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>, 'Hyunwoong Kim' <khw0178.kim@samsung.com>, 'Prathyush' <prathyush.k@samsung.com>, 'Rahul Sharma' <rahul.sharma@samsung.com>, 'Subash Patel' <supash.ramaswamy@linaro.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20130111145059.GJ25591-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Shuah Khan <shuah.khan-VXdhtT5mjnY@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Kukjin,
+On Fri, Jan 11, 2013 at 7:50 AM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> On Thu, Jan 10, 2013 at 01:40:17PM -0700, Shuah Khan wrote:
+>> I am currently debugging IO_PAGE_FAULTS on 3.6.11 (happens on all
+>> pre-3.7 releases). I root-caused the reason 3.7 works is because in
+>> 3.7 amd iommu driver moving up the early iommu initialization from
+>> irq_remap_ops with the irq remapping feature.
+>
+> Have you investigated the reason for those IO_PAGE_FAULTS? I guess they
+> come from the USB controlers and happen between the time the IOMMU is
+> enabled and the USB controlers are taken over by the Linux kernel from
+> the BIOS.
+>
+> But I don't see why this patch can have any impact on the IO_PAGE_FAULTS
+> you are seeing.
 
-On Thu, Jan 10, 2013 at 11:33:41AM -0800, Kukjin Kim wrote:
-> Sure, keep going on with
-> 
-> Acked-by: Kukjin Kim <kgene.kim@samsung.com>
+USB is one of them and SATA is another. I know with my back-port to
+split dma ops initialization and this patch Alexey sent, the problem
+goes away on 3.6.11 and I don't see the problem on 3.7. Same system,
+and two different boots. I will investigate do more investigation into
+the nature of these faults I am seeing and get back to you.
 
-Done that. Applied the patch, some manual work was necessary as the
-patch didn't apply cleanly to v3.8-rc3. Please double-check if the
-result is correct.
-
-> OK, good. Let me know the name of branch when you set-up it :-)
-
-I pushed the branch to
-
-	git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git arm/exynos
-
->From there you can pull it into your tree.
-
-Have fun,
-
-     Joerg
+Thanks,
+-- Shuah
