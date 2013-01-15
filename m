@@ -1,15 +1,12 @@
-From: KyongHo Cho <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v6 00/12] iommu/exynos: Fixes and Enhancements of System
-	MMU driver with DT
-Date: Thu, 17 Jan 2013 02:00:03 +0900
-Message-ID: <CAHQjnOMonei8ZS+wKhv4REXq_dpXPdnGrdKEfkdJ+J7QF7kf8w@mail.gmail.com>
-References: <003301cde30b$c584c2d0$508e4870$%cho@samsung.com>
-	<20130116105327.GA16543@mudshark.cambridge.arm.com>
+From: Damian Hobson-Garcia <dhobsong-AlSX/UN32fvPDbFq/vQRIQ@public.gmane.org>
+Subject: [PATCH] drivers: iommu: Use of add_device()/remove_device() outside
+	of IOMMU groups
+Date: Tue, 15 Jan 2013 19:10:52 +0900
+Message-ID: <1358244652-12728-1-git-send-email-dhobsong@igel.co.jp>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130116105327.GA16543-MRww78TxoiP5vMa5CHWGZ34zcgK1vI+I0E9HWUfgJXw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,45 +16,76 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Hyunwoong Kim <khw0178.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Prathyush <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Subash Patel <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Linux Samsung SOC <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Rahul Sharma <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: hdk-AlSX/UN32fvPDbFq/vQRIQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Damian Hobson-Garcia <dhobsong-AlSX/UN32fvPDbFq/vQRIQ@public.gmane.org>, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 16, 2013 at 7:53 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> On Wed, Dec 26, 2012 at 01:53:15AM +0000, Cho KyongHo wrote:
->> notice: v6 patch-set is rebased on next/iommu-exynos branch of
->> linux-samsung.git.  This patch-set does not include 2 patches (05 and 06
->> patches in v5 patch-se) because they alread exist already in the branch.
->
-> Given that devicetree-discuss has been notably absent from discussion
-> surrounding the proposed binding, I think that including that patch in
-> linux-samsung.git and dropping it from this series is rather premature.
->
-> I have comments on the binding, so I'll dig up the version you posted in v5
-> and add devicetree-discuss to CC.
+We've recently been thinking about the best way to attach platform devices in
+an IOMMU in a generic way without having to have every platform device
+register itself at probe time.  We've seen that at least on the tegra IOMMU,
+using the platform_bus notifier seems like a viable option (http://lists.linuxfoundation.org/pipermail/iommu/2012-December/004954.html). We also noticed that
+the IOMMU ops add_device() function is called (indirectly) from a similar bus
+notifier and we're thinking that using the bus notifier in the common code
+would be better than us rolling our own to do basically the same thing.
 
-Thank you.
+The problem, however, is that add_device() seems to be intended for use with
+IOMMU groups.  i.e. After calling add_device() on a device that is should be
+in a group, dev->iommu_group should have some meaningful value.
+I think though, that if the IOMMU groups requirement can be removed, it should
+be more versatile.
 
->> The current exynos-iommu(System MMU) driver does not work autonomously
->> since it is lack of support for power management of peripheral blocks.
->> For example, MFC device driver must ensure that its System MMU is disabled
->> before MFC block is power-down not to invalidate IOTLB in the System MMU
->> when I/O memory mapping is changed. Because A System MMU is resides in the
->> same H/W block, access to control registers of System MMU while the H/W
->> block is turned off must be prohibited.
->>
->> This set of changes solves the above problem with setting each System MMUs
->> as the parent of the device which owns the System MMU to recieve the
->> information when the device is turned off or turned on.
->>
->> Another big change to the driver is the support for devicetree.
->> The bindings for System MMU is described in
->> Documentation/devicetree/bindings/arm/samsung/system-mmu.txt
->
-> This should probably be Documentation/devicetree/bindings/iommu/ no?
+I believe that removing the IOMMU groups dependency can be achieved with the
+patch below. Currently the intel-iommu seems to be the only implementation
+using these callbacks.
 
-Please let me check it.
+Signed-off-by: Damian Hobson-Garcia <dhobsong-AlSX/UN32fvPDbFq/vQRIQ@public.gmane.org>
+---
+ drivers/iommu/intel-iommu.c |    3 ++-
+ drivers/iommu/iommu.c       |    2 +-
+ include/linux/iommu.h       |    4 ++--
+ 3 files changed, 5 insertions(+), 4 deletions(-)
 
-Thank you.
-
-KyongHo.
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index b9d0911..a763872 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -4217,7 +4217,8 @@ root_bus:
+ 
+ static void intel_iommu_remove_device(struct device *dev)
+ {
+-	iommu_group_remove_device(dev);
++	if (dev->iommu_group)
++		iommu_group_remove_device(dev);
+ }
+ 
+ static struct iommu_ops intel_iommu_ops = {
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index ddbdaca..a6046c2 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -510,7 +510,7 @@ static int iommu_bus_notifier(struct notifier_block *nb,
+ 		if (ops->add_device)
+ 			return ops->add_device(dev);
+ 	} else if (action == BUS_NOTIFY_DEL_DEVICE) {
+-		if (ops->remove_device && dev->iommu_group) {
++		if (ops->remove_device) {
+ 			ops->remove_device(dev);
+ 			return 0;
+ 		}
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index f3b99e1..2715592 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -74,8 +74,8 @@ enum iommu_attr {
+  * @unmap: unmap a physically contiguous memory region from an iommu domain
+  * @iova_to_phys: translate iova to physical address
+  * @domain_has_cap: domain capabilities query
+- * @add_device: add device to iommu grouping
+- * @remove_device: remove device from iommu grouping
++ * @add_device: add device to iommu grouping or domain
++ * @remove_device: remove device from iommu grouping or domain
+  * @domain_get_attr: Query domain attributes
+  * @domain_set_attr: Change domain attributes
+  * @pgsize_bitmap: bitmap of supported page sizes
+-- 
+1.7.5.4
