@@ -1,7 +1,7 @@
 From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 6/6] ARM: dt: tegra114: Add SMMU entry
-Date: Tue, 15 Jan 2013 10:17:28 +0200
-Message-ID: <1358237848-968-6-git-send-email-hdoyu@nvidia.com>
+Subject: [PATCH 7/6] iommu/tegra: smmu: Add dependency on ARCH_TEGRA_114_SOC
+Date: Tue, 15 Jan 2013 15:22:29 +0200
+Message-ID: <1358256149-28700-1-git-send-email-hdoyu@nvidia.com>
 References: <1358237848-968-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,34 +12,25 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv
 Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Add SMMU entry.
+TEGRA_IOMMU_SMMU depends on ARCH_TEGRA_114_SOC too.
 
 Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- arch/arm/boot/dts/tegra114.dtsi |   11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/iommu/Kconfig |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/tegra114.dtsi b/arch/arm/boot/dts/tegra114.dtsi
-index fd2fd0e..c3a602c 100644
---- a/arch/arm/boot/dts/tegra114.dtsi
-+++ b/arch/arm/boot/dts/tegra114.dtsi
-@@ -82,6 +82,17 @@
- 		reg = <0x7000e400 0x400>;
- 	};
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index e39f9db..90cc484 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -158,7 +158,7 @@ config TEGRA_IOMMU_GART
  
-+	smmu {
-+		compatible = "nvidia,tegra114-smmu", "nvidia,tegra30-smmu";
-+		reg = <0x7000f010 0x02c
-+		       0x7000f1f0 0x010
-+		       0x7000f228 0x074>;
-+		nvidia,#asids = <4>;
-+		dma-window = <0 0x40000000>;
-+		nvidia,swgroups = <0x18659fe>;
-+		nvidia,ahb = <&ahb>;
-+	};
-+
- 	cpus {
- 		#address-cells = <1>;
- 		#size-cells = <0>;
+ config TEGRA_IOMMU_SMMU
+ 	bool "Tegra SMMU IOMMU Support"
+-	depends on ARCH_TEGRA_3x_SOC && TEGRA_AHB
++	depends on (ARCH_TEGRA_114_SOC || ARCH_TEGRA_3x_SOC) && TEGRA_AHB
+ 	select IOMMU_API
+ 	help
+ 	  Enables support for remapping discontiguous physical memory
 -- 
 1.7.9.5
