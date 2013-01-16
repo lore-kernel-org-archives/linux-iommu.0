@@ -1,71 +1,45 @@
 From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [PATCH 2/6] iommu/tegra: smmu: Pass swgroup info from DT
-Date: Wed, 16 Jan 2013 14:07:53 -0700
-Message-ID: <50F716A9.9060607@wwwdotorg.org>
-References: <1358237848-968-1-git-send-email-hdoyu@nvidia.com> <1358237848-968-2-git-send-email-hdoyu@nvidia.com>
+Subject: Re: [PATCH 4/6] iommu/tegra: smmu: Support variable MMIO range
+Date: Wed, 16 Jan 2013 14:12:24 -0700
+Message-ID: <50F717B8.6050800@wwwdotorg.org>
+References: <1358237848-968-1-git-send-email-hdoyu@nvidia.com> <1358237848-968-4-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1358237848-968-2-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1358237848-968-4-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 On 01/15/2013 01:17 AM, Hiroshi Doyu wrote:
-> Pass available H/W client component(software client group) info from
-> DT in bitmap. This info is specific to a certain generation of Tegra
-> SoC. With this, Tegra SMMU driver could be identical among Tegra
-> generations. This also removes the old way of passing this bit from
-> each device pdata, which could configure(enable/disable) each device
-> IOMMU'able, but it belongs to a kind of "policy", which can be done by
-> kernel/system later. Now DT passes just pure H/W info.
+> There are 3 SMMU MMIO register blocks. They may get bigger as new
+> Tegra SoC comes. This patch enables to support variable size of those
+> register blocks.
 
-> diff --git a/Documentation/devicetree/bindings/iommu/nvidia,tegra30-smmu.txt b/Documentation/devicetree/bindings/iommu/nvidia,tegra30-smmu.txt
-> index 89fb543..de449d0 100644
-> --- a/Documentation/devicetree/bindings/iommu/nvidia,tegra30-smmu.txt
-> +++ b/Documentation/devicetree/bindings/iommu/nvidia,tegra30-smmu.txt
-> @@ -8,6 +8,46 @@ Required properties:
->  - nvidia,#asids : # of ASIDs
->  - dma-window : IOVA start address and length.
->  - nvidia,ahb : phandle to the ahb bus connected to SMMU.
-> +- nvidia,swgroups: Available H/W client component(software client
-> +  group) in bitmap in SoC. Those IDs are calculated as below:
-> +
-> +	  <ID> = (<OFFSET> - MC_SMMU_AFI_ASID_0) / 4;
+Why would the register blocks move around? In the HW, there's one single
+chunk of memory containing all the SMMU registers, and we simply carve
+out a few holes since some unrelated registers are stuck in the middle,
+thus leaving us with 3 register ranges. If the size of those carved out
+chunks changes, then doesn't that mean all the registers moved around
+within the single chunk, and hence all the register offsets in the
+driver become invalid?
 
-OK, so I understand the addition to the DT defines which clients exist,
-and hence which ASID-selection registers exist. This addition makes
-sense to me.
+It may help if you provide an explicit example of what the register
+layout change is...
 
 > diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
 
->  /*
->   * Per client for address space
-> @@ -263,7 +192,6 @@ struct smmu_client {
->  	struct device		*dev;
->  	struct list_head	list;
->  	struct smmu_as		*as;
-> -	u32			swgrp;
->  };
+>  static inline u32 smmu_read(struct smmu_device *smmu, size_t offs)
+>  {
+>  	BUG_ON(offs < 0x10);
+> -	if (offs < 0x3c)
+> +	if (offs < 0x10 + smmu->regsz[0])
+>  		return readl(smmu->regs[0] + offs - 0x10);
+>  	BUG_ON(offs < 0x1f0);
+> -	if (offs < 0x200)
+> +	if (offs < 0x1f0 + smmu->regsz[1])
 
-What I don't quite understand is that change, but perhaps that's because
-I'm not sure what that field meant before, and/or where the
-client<->ASID mapping comes from.
-
-Before this patch, did each client use that removed "u32 swgrp" to tell
-the SMMU driver which ASID-selection register was used to configure it,
-and then the SMMU took the union of all clients to know which
-ASID-selection registers existed? If so, then perhaps this change makes
-more sense than I thought... But, how does the SMMU driver know which of
-the bits in the new nvidia,swgroups property is related to each struct
-smmu_client?
-
-Or, did the removed "u32 swgrp" indicate which of the SMMU's ASIDs
-should be assigned to the client?
-
-I guess what I'm missing is: How does the SMMU know which ASID to assign
-to each client, either before or after this change? Or, does the driver
-just assign every client to ASID 0 right now, and there's no provision
-for separate ASIDs?
+Wouldn't you need to adjust that BUG_ON() in a similar way to how the if
+condition was adjusted?
