@@ -1,36 +1,47 @@
-From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 7/6] iommu/tegra: smmu: Add dependency on ARCH_TEGRA_114_SOC
-Date: Tue, 15 Jan 2013 15:22:29 +0200
-Message-ID: <1358256149-28700-1-git-send-email-hdoyu@nvidia.com>
-References: <1358237848-968-1-git-send-email-hdoyu@nvidia.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH v6 00/12] iommu/exynos: Fixes and Enhancements of System
+ MMU driver with DT
+Date: Wed, 16 Jan 2013 10:53:27 +0000
+Message-ID: <20130116105327.GA16543@mudshark.cambridge.arm.com>
+References: <003301cde30b$c584c2d0$508e4870$%cho@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1358237848-968-1-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <003301cde30b$c584c2d0$508e4870$%cho@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Cho KyongHo <pullip.cho@samsung.com>
+Cc: 'Linux ARM Kernel' <linux-arm-kernel@lists.infradead.org>, 'Linux IOMMU' <iommu@lists.linux-foundation.org>, 'Linux Kernel' <linux-kernel@vger.kernel.org>, 'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Hyunwoong Kim' <khw0178.kim@samsung.com>, 'Prathyush' <prathyush.k@samsung.com>, 'Joerg Roedel' <joro@8bytes.org>, 'Subash Patel' <supash.ramaswamy@linaro.org>, 'Rahul Sharma' <rahul.sharma@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-TEGRA_IOMMU_SMMU depends on ARCH_TEGRA_114_SOC too.
+On Wed, Dec 26, 2012 at 01:53:15AM +0000, Cho KyongHo wrote:
+> notice: v6 patch-set is rebased on next/iommu-exynos branch of
+> linux-samsung.git.  This patch-set does not include 2 patches (05 and 06
+> patches in v5 patch-se) because they alread exist already in the branch.
 
-Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/Kconfig |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Given that devicetree-discuss has been notably absent from discussion
+surrounding the proposed binding, I think that including that patch in
+linux-samsung.git and dropping it from this series is rather premature.
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index e39f9db..90cc484 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -158,7 +158,7 @@ config TEGRA_IOMMU_GART
- 
- config TEGRA_IOMMU_SMMU
- 	bool "Tegra SMMU IOMMU Support"
--	depends on ARCH_TEGRA_3x_SOC && TEGRA_AHB
-+	depends on (ARCH_TEGRA_114_SOC || ARCH_TEGRA_3x_SOC) && TEGRA_AHB
- 	select IOMMU_API
- 	help
- 	  Enables support for remapping discontiguous physical memory
--- 
-1.7.9.5
+I have comments on the binding, so I'll dig up the version you posted in v5
+and add devicetree-discuss to CC.
+
+> The current exynos-iommu(System MMU) driver does not work autonomously
+> since it is lack of support for power management of peripheral blocks.
+> For example, MFC device driver must ensure that its System MMU is disabled
+> before MFC block is power-down not to invalidate IOTLB in the System MMU
+> when I/O memory mapping is changed. Because A System MMU is resides in the
+> same H/W block, access to control registers of System MMU while the H/W
+> block is turned off must be prohibited.
+> 
+> This set of changes solves the above problem with setting each System MMUs
+> as the parent of the device which owns the System MMU to recieve the
+> information when the device is turned off or turned on.
+> 
+> Another big change to the driver is the support for devicetree.
+> The bindings for System MMU is described in
+> Documentation/devicetree/bindings/arm/samsung/system-mmu.txt
+
+This should probably be Documentation/devicetree/bindings/iommu/ no?
+
+Will
