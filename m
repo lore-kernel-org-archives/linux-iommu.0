@@ -1,45 +1,43 @@
 From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [PATCH 4/6] iommu/tegra: smmu: Support variable MMIO range
-Date: Wed, 16 Jan 2013 14:12:24 -0700
-Message-ID: <50F717B8.6050800@wwwdotorg.org>
-References: <1358237848-968-1-git-send-email-hdoyu@nvidia.com> <1358237848-968-4-git-send-email-hdoyu@nvidia.com>
+Subject: Re: [PATCH 6/6] ARM: dt: tegra114: Add SMMU entry
+Date: Wed, 16 Jan 2013 14:17:56 -0700
+Message-ID: <50F71904.5070600@wwwdotorg.org>
+References: <1358237848-968-1-git-send-email-hdoyu@nvidia.com>
+	<1358237848-968-6-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1358237848-968-4-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1358237848-968-6-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 On 01/15/2013 01:17 AM, Hiroshi Doyu wrote:
-> There are 3 SMMU MMIO register blocks. They may get bigger as new
-> Tegra SoC comes. This patch enables to support variable size of those
-> register blocks.
+> Add SMMU entry.
 
-Why would the register blocks move around? In the HW, there's one single
-chunk of memory containing all the SMMU registers, and we simply carve
-out a few holes since some unrelated registers are stuck in the middle,
-thus leaving us with 3 register ranges. If the size of those carved out
-chunks changes, then doesn't that mean all the registers moved around
-within the single chunk, and hence all the register offsets in the
-driver become invalid?
+> diff --git a/arch/arm/boot/dts/tegra114.dtsi b/arch/arm/boot/dts/tegra114.dtsi
 
-It may help if you provide an explicit example of what the register
-layout change is...
+> +	smmu {
+> +		compatible = "nvidia,tegra114-smmu", "nvidia,tegra30-smmu";
+> +		reg = <0x7000f010 0x02c
+> +		       0x7000f1f0 0x010
+> +		       0x7000f228 0x074>;
 
-> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+Oh, so the only change here relative to Tegra30 is that the final memory
+range is larger; the others don't move around at all. Is that all that
+patch 4/6 is trying to cope with? If so, I'd suggest simplifying that
+patch a bunch; perhaps just remove the final if() check in each function
+and make all accesses with (offs > 0x200) go to smmu->regs[2]?
 
->  static inline u32 smmu_read(struct smmu_device *smmu, size_t offs)
->  {
->  	BUG_ON(offs < 0x10);
-> -	if (offs < 0x3c)
-> +	if (offs < 0x10 + smmu->regsz[0])
->  		return readl(smmu->regs[0] + offs - 0x10);
->  	BUG_ON(offs < 0x1f0);
-> -	if (offs < 0x200)
-> +	if (offs < 0x1f0 + smmu->regsz[1])
-
-Wouldn't you need to adjust that BUG_ON() in a similar way to how the if
-condition was adjusted?
+You can always add checks to probe() that memory range 0 and 1 have the
+expected size such that the code in smmu_{read,write} will work as expected.
