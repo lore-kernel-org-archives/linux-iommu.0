@@ -1,16 +1,15 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v5 06/14] ARM: EXYNOS: add System MMU definition to DT
-Date: Thu, 17 Jan 2013 16:39:41 +0000
-Message-ID: <20130117163941.GL3699@mudshark.cambridge.arm.com>
-References: <003601cdd790$082a1310$187e3930$%cho@samsung.com>
-	<20130116115114.GB16543@mudshark.cambridge.arm.com>
-	<20130116.184321.179736289870581833.hdoyu@nvidia.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC] drivers: iommu: Use of add_device()/remove_device()
+	outside of IOMMU groups
+Date: Thu, 17 Jan 2013 14:21:51 -0700
+Message-ID: <1358457711.9252.54.camel@ul30vt.home>
+References: <1358244652-12728-1-git-send-email-dhobsong@igel.co.jp>
+	<1358372869.11144.21.camel@bling.home> <50F76E12.7020607@igel.co.jp>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20130116.184321.179736289870581833.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <50F76E12.7020607-AlSX/UN32fvPDbFq/vQRIQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,53 +19,107 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "sw0312.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <sw0312.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "subash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <subash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "sanghyun75.lee-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <sanghyun75.lee-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XWGXanvQGlWp@public.gmane.org>
+To: Damian Hobson-Garcia <dhobsong-AlSX/UN32fvPDbFq/vQRIQ@public.gmane.org>
+Cc: hdk-AlSX/UN32fvPDbFq/vQRIQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Hiroshi,
-
-On Wed, Jan 16, 2013 at 04:43:21PM +0000, Hiroshi Doyu wrote:
-> Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote @ Wed, 16 Jan 2013 12:51:14 +0100:
-> > Given that this information is not discoverable, it needs to be encoded
-> > in the device tree, but where? I can see two approaches:
-> > 
-> >   1. For each IOMMU node, list phandles to the devices connected to it
-> >      and have a corresponding list of StreamIDs.
-> > 
-> > or
-> > 
-> >   2. For each device wishing to use an IOMMU, have a phandle to the
-> >      IOMMU node and a separate StreamID property. The IOMMU would then
-> >      parse this information when the device is added to the bus.
-> > 
-> > Although I prefer the second approach, it has the downside of affecting
-> > all device bindings that wish to use an IOMMU, so I'm open to any other
-> > ideas.
+On Thu, 2013-01-17 at 12:20 +0900, Damian Hobson-Garcia wrote:
+> I mistakenly sent this with the tag [PATCH] when it should have been 
+> [RFC].  Updated with this reply.
 > 
-> Actually the above summarize tegra SMMU situation well too. For
-> example, each IOMMU'able device has IOVA constraint that some of the
-> address area isn't available because of its MMIO. This info needs to
-> be described in DT. If <IOMMU phandle> + some parametes are embedded
-> in a device node, that info could be dealt at a bus notifier(*1).
+> Hi Alex,
+> On 2013/01/17 6:47, Alex Williamson wrote:
+> > On Tue, 2013-01-15 at 19:10 +0900, Damian Hobson-Garcia wrote:
+> >> We've recently been thinking about the best way to attach platform devices in
+> >> an IOMMU in a generic way without having to have every platform device
+> >> register itself at probe time.  We've seen that at least on the tegra IOMMU,
+> >> using the platform_bus notifier seems like a viable option (http://lists.linuxfoundation.org/pipermail/iommu/2012-December/004954.html). We also noticed that
+> >> the IOMMU ops add_device() function is called (indirectly) from a similar bus
+> >> notifier and we're thinking that using the bus notifier in the common code
+> >> would be better than us rolling our own to do basically the same thing.
+> >>
+> >> The problem, however, is that add_device() seems to be intended for use with
+> >> IOMMU groups.  i.e. After calling add_device() on a device that is should be
+> >> in a group, dev->iommu_group should have some meaningful value.
+> >> I think though, that if the IOMMU groups requirement can be removed, it should
+> >> be more versatile.
+> >>
+> >> I believe that removing the IOMMU groups dependency can be achieved with the
+> >> patch below. Currently the intel-iommu seems to be the only implementation
+> >> using these callbacks.
+> >
+> > What stops you from creating a single iommu_group and adding all device
+> > to it?  Thanks,
+>  >
+>  > Alex
+> Thanks for your comment.
 > 
-> *1: http://lists.linuxfoundation.org/pipermail/iommu/2012-November/004934.html
+> Nothing stops me, but putting everything in one group doesn't really add 
+> any benefit over not using groups at all, does it?  It seems like its 
+> just adding more complexity(i.e code) to the driver without adding any 
+> additional functionality.
 
-I've been thinking about this a bit more and, unfortunately, my conclusion
-is that method (2) above is problematic, so we do need something similar to
-(1).
+Does your iommu provide any isolation or is it translate-only.  As Varun
+notes, groups enable vfio, so if there's any possibility that you care
+about userspace drivers for your devices or assigning devices to qemu
+guests, then groups might be useful.  The overhead of groups is really
+meant to be very minimal for the iommu driver.  That said, I guess I
+have no real objection to generalizing the iommu bus notifier for
+add/remove.  Thanks,
 
-The reason for this comes about when dealing with chained IOMMUs. In this
-case, each IOMMU in the chain needs to know about all of the masters hanging
-beneath it (potentially behind other IOMMUs) but may also need to supplement
-each device with additional data relevant to that point in the IOMMU chain.
-In the case of the ARM System MMU, this could be StreamID information (as
-the StreamID for a device can change as the transaction stream passes
-through an SMMU) and for your case it could be that the DMA window is
-widened along the chain.
+Alex
 
-So, extending the mmu-master property described in this thread to be
-"mmu-masters : a list of phandles to device nodes representing bus masters
-for which the IOMMU can provide a translation" is probably a good start.
-
-Will
+> >> Signed-off-by: Damian Hobson-Garcia <dhobsong-AlSX/UN32fvPDbFq/vQRIQ@public.gmane.org>
+> >> ---
+> >>   drivers/iommu/intel-iommu.c |    3 ++-
+> >>   drivers/iommu/iommu.c       |    2 +-
+> >>   include/linux/iommu.h       |    4 ++--
+> >>   3 files changed, 5 insertions(+), 4 deletions(-)
+> >>
+> >> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> >> index b9d0911..a763872 100644
+> >> --- a/drivers/iommu/intel-iommu.c
+> >> +++ b/drivers/iommu/intel-iommu.c
+> >> @@ -4217,7 +4217,8 @@ root_bus:
+> >>
+> >>   static void intel_iommu_remove_device(struct device *dev)
+> >>   {
+> >> -	iommu_group_remove_device(dev);
+> >> +	if (dev->iommu_group)
+> >> +		iommu_group_remove_device(dev);
+> >>   }
+> >>
+> >>   static struct iommu_ops intel_iommu_ops = {
+> >> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> >> index ddbdaca..a6046c2 100644
+> >> --- a/drivers/iommu/iommu.c
+> >> +++ b/drivers/iommu/iommu.c
+> >> @@ -510,7 +510,7 @@ static int iommu_bus_notifier(struct notifier_block *nb,
+> >>   		if (ops->add_device)
+> >>   			return ops->add_device(dev);
+> >>   	} else if (action == BUS_NOTIFY_DEL_DEVICE) {
+> >> -		if (ops->remove_device && dev->iommu_group) {
+> >> +		if (ops->remove_device) {
+> >>   			ops->remove_device(dev);
+> >>   			return 0;
+> >>   		}
+> >> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> >> index f3b99e1..2715592 100644
+> >> --- a/include/linux/iommu.h
+> >> +++ b/include/linux/iommu.h
+> >> @@ -74,8 +74,8 @@ enum iommu_attr {
+> >>    * @unmap: unmap a physically contiguous memory region from an iommu domain
+> >>    * @iova_to_phys: translate iova to physical address
+> >>    * @domain_has_cap: domain capabilities query
+> >> - * @add_device: add device to iommu grouping
+> >> - * @remove_device: remove device from iommu grouping
+> >> + * @add_device: add device to iommu grouping or domain
+> >> + * @remove_device: remove device from iommu grouping or domain
+> >>    * @domain_get_attr: Query domain attributes
+> >>    * @domain_set_attr: Change domain attributes
+> >>    * @pgsize_bitmap: bitmap of supported page sizes
+> >
+> >
+> >
+> 
+> 
