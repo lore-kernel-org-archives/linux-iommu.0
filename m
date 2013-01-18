@@ -1,147 +1,71 @@
-From: Damian Hobson-Garcia <dhobsong-AlSX/UN32fvPDbFq/vQRIQ@public.gmane.org>
-Subject: Re: [RFC] drivers: iommu: Use of add_device()/remove_device() outside
-	of IOMMU groups
-Date: Fri, 18 Jan 2013 16:22:37 +0900
-Message-ID: <50F8F83D.30006@igel.co.jp>
-References: <1358244652-12728-1-git-send-email-dhobsong@igel.co.jp>
-	<1358372869.11144.21.camel@bling.home>
-	<50F76E12.7020607@igel.co.jp>
-	<1358457711.9252.54.camel@ul30vt.home>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 4/6] iommu/tegra: smmu: Support variable MMIO range
+Date: Fri, 18 Jan 2013 10:05:46 +0100
+Message-ID: <20130118.110546.1909336134474854222.hdoyu@nvidia.com>
+References: <1358237848-968-1-git-send-email-hdoyu@nvidia.com><1358237848-968-4-git-send-email-hdoyu@nvidia.com><50F717B8.6050800@wwwdotorg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1358457711.9252.54.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: hdk-AlSX/UN32fvPDbFq/vQRIQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <50F717B8.6050800-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org" <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Alex,
-On 2013/01/18 6:21, Alex Williamson wrote:
-> On Thu, 2013-01-17 at 12:20 +0900, Damian Hobson-Garcia wrote:
->> I mistakenly sent this with the tag [PATCH] when it should have been
->> [RFC].  Updated with this reply.
->>
->> Hi Alex,
->> On 2013/01/17 6:47, Alex Williamson wrote:
->>> On Tue, 2013-01-15 at 19:10 +0900, Damian Hobson-Garcia wrote:
->>>> We've recently been thinking about the best way to attach platform devices in
->>>> an IOMMU in a generic way without having to have every platform device
->>>> register itself at probe time.  We've seen that at least on the tegra IOMMU,
->>>> using the platform_bus notifier seems like a viable option (http://lists.linuxfoundation.org/pipermail/iommu/2012-December/004954.html). We also noticed that
->>>> the IOMMU ops add_device() function is called (indirectly) from a similar bus
->>>> notifier and we're thinking that using the bus notifier in the common code
->>>> would be better than us rolling our own to do basically the same thing.
->>>>
->>>> The problem, however, is that add_device() seems to be intended for use with
->>>> IOMMU groups.  i.e. After calling add_device() on a device that is should be
->>>> in a group, dev->iommu_group should have some meaningful value.
->>>> I think though, that if the IOMMU groups requirement can be removed, it should
->>>> be more versatile.
->>>>
->>>> I believe that removing the IOMMU groups dependency can be achieved with the
->>>> patch below. Currently the intel-iommu seems to be the only implementation
->>>> using these callbacks.
->>>
->>> What stops you from creating a single iommu_group and adding all device
->>> to it?  Thanks,
->>   >
->>   > Alex
->> Thanks for your comment.
->>
->> Nothing stops me, but putting everything in one group doesn't really add
->> any benefit over not using groups at all, does it?  It seems like its
->> just adding more complexity(i.e code) to the driver without adding any
->> additional functionality.
->
-> Does your iommu provide any isolation or is it translate-only.  As Varun
-> notes, groups enable vfio, so if there's any possibility that you care
-> about userspace drivers for your devices or assigning devices to qemu
-> guests, then groups might be useful.  The overhead of groups is really
-> meant to be very minimal for the iommu driver.  That said, I guess I
-> have no real objection to generalizing the iommu bus notifier for
-> add/remove.  Thanks,
->
+Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote @ Wed, 16 Jan 2013 22:12:24 +0100:
 
-Our iommu is used for translation.  We plan on using vfio at some point, 
-though how well that fits with the current IOMMU ARM implementation 
-remains to be seen. So considering your and Varun's comments, it looks 
-like we want to be implementing groups after all, though generalizing 
-the add/remove still seems to me like a good idea.
+> On 01/15/2013 01:17 AM, Hiroshi Doyu wrote:
+> > There are 3 SMMU MMIO register blocks. They may get bigger as new
+> > Tegra SoC comes. This patch enables to support variable size of those
+> > register blocks.
+>
+> Why would the register blocks move around? In the HW, there's one single
+> chunk of memory containing all the SMMU registers, and we simply carve
+> out a few holes since some unrelated registers are stuck in the middle,
+> thus leaving us with 3 register ranges. If the size of those carved out
+> chunks changes, then doesn't that mean all the registers moved around
+> within the single chunk, and hence all the register offsets in the
+> driver become invalid?
 
-Thanks,
-Damian
-> Alex
->
->>>> Signed-off-by: Damian Hobson-Garcia <dhobsong-AlSX/UN32fvPDbFq/vQRIQ@public.gmane.org>
->>>> ---
->>>>    drivers/iommu/intel-iommu.c |    3 ++-
->>>>    drivers/iommu/iommu.c       |    2 +-
->>>>    include/linux/iommu.h       |    4 ++--
->>>>    3 files changed, 5 insertions(+), 4 deletions(-)
->>>>
->>>> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
->>>> index b9d0911..a763872 100644
->>>> --- a/drivers/iommu/intel-iommu.c
->>>> +++ b/drivers/iommu/intel-iommu.c
->>>> @@ -4217,7 +4217,8 @@ root_bus:
->>>>
->>>>    static void intel_iommu_remove_device(struct device *dev)
->>>>    {
->>>> -	iommu_group_remove_device(dev);
->>>> +	if (dev->iommu_group)
->>>> +		iommu_group_remove_device(dev);
->>>>    }
->>>>
->>>>    static struct iommu_ops intel_iommu_ops = {
->>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>>> index ddbdaca..a6046c2 100644
->>>> --- a/drivers/iommu/iommu.c
->>>> +++ b/drivers/iommu/iommu.c
->>>> @@ -510,7 +510,7 @@ static int iommu_bus_notifier(struct notifier_block *nb,
->>>>    		if (ops->add_device)
->>>>    			return ops->add_device(dev);
->>>>    	} else if (action == BUS_NOTIFY_DEL_DEVICE) {
->>>> -		if (ops->remove_device && dev->iommu_group) {
->>>> +		if (ops->remove_device) {
->>>>    			ops->remove_device(dev);
->>>>    			return 0;
->>>>    		}
->>>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->>>> index f3b99e1..2715592 100644
->>>> --- a/include/linux/iommu.h
->>>> +++ b/include/linux/iommu.h
->>>> @@ -74,8 +74,8 @@ enum iommu_attr {
->>>>     * @unmap: unmap a physically contiguous memory region from an iommu domain
->>>>     * @iova_to_phys: translate iova to physical address
->>>>     * @domain_has_cap: domain capabilities query
->>>> - * @add_device: add device to iommu grouping
->>>> - * @remove_device: remove device from iommu grouping
->>>> + * @add_device: add device to iommu grouping or domain
->>>> + * @remove_device: remove device from iommu grouping or domain
->>>>     * @domain_get_attr: Query domain attributes
->>>>     * @domain_set_attr: Change domain attributes
->>>>     * @pgsize_bitmap: bitmap of supported page sizes
->>>
->>>
->>>
->>
->>
->
->
->
+Presently there are 3 register blocks. In the future chips over some
+generations, some of register block "size" can be extended to the end
+and also more new register blocks will be added, which is expected at
+most a few blocks. Usually the starting address of each block won't
+change. Ideally SMMU register blocks should be in one block, but it
+was a bit too late to change this design(or H/W). Considering this
+situation, in this driver, number of register blocks should be
+allocated dynamically, based on the info from DT. Its range checks
+should be done in the accessors as below(*1) if necessary. This way
+may sacrifice some perf because a new accessor prevents compiler
+optimization of register offset calculation, but I think that SMMU
+register accesses are not so frequent and it's acceptable in order to
+unify "tegra-smmu" over Tegra SoCs.
 
+*1:
 
--- 
-Damian Hobson-Garcia
-IGEL Co.,Ltd
-http://www.igel.co.jp
+ /*
+  *	SMMU register accessors
+  */
+ static inline u32 smmu_read(struct smmu_device *smmu, size_t offs)
+ {
+ 	void __iommu *addr = smmu->regbase + offs;
+ #ifdef DEBUG
+ 	int i;
+
+ 	for (i = 0; i < smmu->num_regblks; i++) {
+ 		BUG_ON(addr < smmu->reg[i].start);
+ 		if (addr <= smmu->reg[i].end)
+ 			break;
+ 	}
+ #endfi
+ 	return readl(addr);
+ }
+
+Even the checks if "offs" is in some of register blocks could be
+ifdef'ed out with DEBUG. "smmu->regbase" can be calculated in probe()
+as below. I don't think that we don't need to access "mc" DT entry to
+get this address. since "smmu"'s 1st reg block always starts at 0x10.
+
+  /* same as "mc"'s 1st reg block */
+  smmu->regbase = smmu->reg[0] & PAGE_MASK;
