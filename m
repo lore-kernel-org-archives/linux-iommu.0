@@ -1,7 +1,7 @@
 From: Hideki EIRAKU <hdk@igel.co.jp>
-Subject: [PATCH v6 3/4] ARM: mach-shmobile: sh73a0: Add IPMMU device
-Date: Mon, 21 Jan 2013 19:54:28 +0900
-Message-ID: <1358765669-14567-4-git-send-email-hdk@igel.co.jp>
+Subject: [PATCH v6 2/4] ARM: mach-shmobile: sh7372: Add IPMMU device
+Date: Mon, 21 Jan 2013 19:54:27 +0900
+Message-ID: <1358765669-14567-3-git-send-email-hdk@igel.co.jp>
 References: <1358765669-14567-1-git-send-email-hdk@igel.co.jp>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1358765669-14567-1-git-send-email-hdk@igel.co.jp>
@@ -18,29 +18,29 @@ while the IPMMU module's MMU function is enabled.
 
 Signed-off-by: Hideki EIRAKU <hdk@igel.co.jp>
 ---
- arch/arm/mach-shmobile/setup-sh73a0.c | 31 +++++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
+ arch/arm/mach-shmobile/setup-sh7372.c | 39 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 39 insertions(+)
 
-diff --git a/arch/arm/mach-shmobile/setup-sh73a0.c b/arch/arm/mach-shmobile/setup-sh73a0.c
-index db99a4a..36c2b2e 100644
---- a/arch/arm/mach-shmobile/setup-sh73a0.c
-+++ b/arch/arm/mach-shmobile/setup-sh73a0.c
-@@ -30,6 +30,7 @@
- #include <linux/sh_dma.h>
- #include <linux/sh_intc.h>
+diff --git a/arch/arm/mach-shmobile/setup-sh7372.c b/arch/arm/mach-shmobile/setup-sh7372.c
+index c917882..04ad98e 100644
+--- a/arch/arm/mach-shmobile/setup-sh7372.c
++++ b/arch/arm/mach-shmobile/setup-sh7372.c
+@@ -33,6 +33,7 @@
  #include <linux/sh_timer.h>
+ #include <linux/pm_domain.h>
+ #include <linux/dma-mapping.h>
 +#include <linux/platform_data/sh_ipmmu.h>
  #include <mach/dma-register.h>
  #include <mach/hardware.h>
  #include <mach/irqs.h>
-@@ -754,6 +755,35 @@ static struct platform_device pmu_device = {
- 	.resource	= pmu_resources,
+@@ -982,6 +983,43 @@ static struct platform_device spu1_device = {
+ 	.num_resources	= ARRAY_SIZE(spu1_resources),
  };
  
-+/* an IPMMU module for ICB */
++/* IPMMUI (an IPMMU module for ICB/LMB) */
 +static struct resource ipmmu_resources[] = {
 +	[0] = {
-+		.name	= "IPMMU",
++		.name	= "IPMMUI",
 +		.start	= 0xfe951000,
 +		.end	= 0xfe9510ff,
 +		.flags	= IORESOURCE_MEM,
@@ -49,6 +49,14 @@ index db99a4a..36c2b2e 100644
 +
 +static const char * const ipmmu_dev_names[] = {
 +	"sh_mobile_lcdc_fb.0",
++	"sh_mobile_lcdc_fb.1",
++	"sh_mobile_ceu.0",
++	"uio_pdrv_genirq.0",
++	"uio_pdrv_genirq.1",
++	"uio_pdrv_genirq.2",
++	"uio_pdrv_genirq.3",
++	"uio_pdrv_genirq.4",
++	"uio_pdrv_genirq.5",
 +};
 +
 +static struct shmobile_ipmmu_platform_data ipmmu_platform_data = {
@@ -66,16 +74,16 @@ index db99a4a..36c2b2e 100644
 +	.num_resources  = ARRAY_SIZE(ipmmu_resources),
 +};
 +
- static struct platform_device *sh73a0_early_devices[] __initdata = {
+ static struct platform_device *sh7372_early_devices[] __initdata = {
  	&scif0_device,
  	&scif1_device,
-@@ -767,6 +797,7 @@ static struct platform_device *sh73a0_early_devices[] __initdata = {
- 	&cmt10_device,
+@@ -993,6 +1031,7 @@ static struct platform_device *sh7372_early_devices[] __initdata = {
+ 	&cmt2_device,
  	&tmu00_device,
  	&tmu01_device,
 +	&ipmmu_device,
  };
  
- static struct platform_device *sh73a0_late_devices[] __initdata = {
+ static struct platform_device *sh7372_late_devices[] __initdata = {
 -- 
 1.8.0
