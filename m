@@ -1,86 +1,64 @@
-From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [PATCH 4/6] iommu/tegra: smmu: Support variable MMIO range
-Date: Mon, 21 Jan 2013 10:04:42 -0700
-Message-ID: <50FD752A.6060706@wwwdotorg.org>
-References: <50F717B8.6050800@wwwdotorg.org><20130118.110546.1909336134474854222.hdoyu@nvidia.com><50F97BDD.8010502@wwwdotorg.org> <20130121.093603.449745485344660335.hdoyu@nvidia.com>
+From: "Steven L. Kinney" <steven.kinney-5C7GfCeVMHo@public.gmane.org>
+Subject: [PATCH 0/3] AMD IOMMUv2 Performance Counter patches
+Date: Mon, 21 Jan 2013 14:18:00 -0600
+Message-ID: <1358799483-6198-1-git-send-email-steven.kinney@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20130121.093603.449745485344660335.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H.
+	Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Peter Zijlstra <a.p.zijlstra-/NLkJaSkS4VmR6Xm/wNWPw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Steven L. Kinney" <steven.kinney-5C7GfCeVMHo@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Cyrill Gorcunov <gorcunov-GEFAQzZX7r8dnm+yROfE0A@public.gmane.org>, Sebastian Andrzej Siewior <sebastian-E0PNVn5OA6ohrxcnuTQ+TQ@public.gmane.org>, Andi Kleen <ak-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, Arnaldo Carvalho de Melo <acme-f8uhVLnGfZaxAyOMLChx1axOck334EZe@public.gmane.org>, Jiri Kosina <jkosina-AlSwsSmVLrQ@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Myron Stowe <myron.stowe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Thomas Renninger <trenn-l3A5Bk7waGM@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/21/2013 12:36 AM, Hiroshi Doyu wrote:
-> Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote @ Fri, 18 Jan 2013 17:44:13 +0100:
-> 
->>> Even the checks if "offs" is in some of register blocks could be
->>> ifdef'ed out with DEBUG. "smmu->regbase" can be calculated in probe()
->>> as below. I don't think that we don't need to access "mc" DT entry to
->>> get this address. since "smmu"'s 1st reg block always starts at 0x10.
->>>
->>>   /* same as "mc"'s 1st reg block */
->>>   smmu->regbase = smmu->reg[0] & PAGE_MASK;
->>
->> I don't see regbase in the existing driver or your patch. Are you
-> 
-> I attached the update one below just for "regbase".
-> 
->> proposing to simply make readl/writel add the offset onto a base address
->> that's calculated like that? That may not work in general; if the SMMU
->> register ranges cross a page boundary, and the various separate ranges
->> end up getting mapped to non-contiguous virtual addresses, using a
->> single base address won't work.
-> 
-> That's not in general, but I think that this works because the 1st
-> SMMU register block offset is fixed(0x10) against MC base. If this is
-> not acceptable, then, I think that SMMU driver needs to access to MC
-> node to get the its base. What do you think?
+From: "Steven L. Kinney" <steven.kinney-5C7GfCeVMHo@public.gmane.org>
 
->  drivers/iommu/tegra-smmu.c |   62 ++++++++++++++++++++++++--------------------
->  1 file changed, 34 insertions(+), 28 deletions(-)
-> 
-> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+These patches implement the AMD IOMMUv2.5 Performance Counter functionality
+via custom perf PMU and implement static counting for various IOMMU
+translations.  The patches address three areas of functionality:
 
-> +#ifdef DEBUG
-> +static inline void smmu_check_reg_range(size_t offs)
+1) 	Add a PCI quirk for the enablement of IOMMUv2 EFR PC within a specific
+	AMD family/model in which BIOS has not enabled.  Based on code 
+	implemented by Andreas Herrmann at AMD Dresden.
+2)	Extend the AMD IOMMU initialization to include IOMMUv2 PC enablement
+	and access to IOMMUv2 counter registers.  For all AMD family/models
+	that implement IOMMUv2.5 functionality.
+3)	Code the perf IOMMUv2 PMU to manage IOMMUv2 perf events, which call
+	the function(s) extending the AMD IOMMU core driver.  For all AMD
+	family/models that implement IOMMUv2.5 functionality.
 
-Like I said before, when is DEBUG defined? Rarely I suspect. It'd be
-best to simply enable smmu_check_reg_range() all the time. As such ...
+The command-line, to invoke the iommuv2 PMU, is:
 
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < smmu->nregs; i++) {
-> +		BUG_ON(offs < smmu->regs[i] - smmu->regbase);
-> +		if (offs <= smmu->rege[i] - smmu->regbase)
-> +			break;
-> +	}
-> +}
-> +#else
-> +static inline void smmu_check_reg_range(size_t offs) { }
-> +#endif
-> +
->  static inline u32 smmu_read(struct smmu_device *smmu, size_t offs)
->  {
-> -	BUG_ON(offs < 0x10);
-> -	if (offs < 0x3c)
-> -		return readl(smmu->regs[0] + offs - 0x10);
-> -	BUG_ON(offs < 0x1f0);
-> -	if (offs < 0x200)
-> -		return readl(smmu->regs[1] + offs - 0x1f0);
-> -	BUG_ON(offs < 0x228);
-> -	if (offs < 0x284)
-> -		return readl(smmu->regs[2] + offs - 0x228);
-> -	BUG();
-> +	smmu_check_reg_range(offs);
+perf stat -e iommuv2/config=[data],config1=[data]/{u,r} [command]
 
-... here, you'd be doing the loop every access anyway, so you may as
-well not calculate regbase at all, move the body of
-smmu_check_reg_range() into smmu_read()/smmu_write(), and do the access
-inside the if statement inside the loop, with the per-range mapping.
+For information regarding AMD IOMMU v2.5 PC configuration, see the public
+specification.
 
-> +	return readl(smmu->regbase + offs);
->  }
+Steven L. Kinney (3):
+  AMD x86 quirks: Quirk for enabling IOMMUv2 PC feature
+  AMD IOMMUv2 PC resource management hooks
+  AMD IOMMUv2 PC perf PMU implementation
+
+ arch/x86/kernel/cpu/Makefile                 |    1 +
+ arch/x86/kernel/cpu/perf_event_amd_iommuv2.c |  429 ++++++++++++++++++++++++++
+ arch/x86/kernel/cpu/perf_event_amd_iommuv2.h |   42 +++
+ arch/x86/kernel/quirks.c                     |   17 +
+ drivers/iommu/Kconfig                        |   10 +
+ drivers/iommu/amd_iommu_init.c               |   99 ++++++
+ drivers/iommu/amd_iommu_types.h              |   12 +
+ include/linux/pci_ids.h                      |    2 +
+ 8 files changed, 612 insertions(+)
+ create mode 100644 arch/x86/kernel/cpu/perf_event_amd_iommuv2.c
+ create mode 100644 arch/x86/kernel/cpu/perf_event_amd_iommuv2.h
+
+-- 
+1.7.9.5
