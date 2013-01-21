@@ -1,7 +1,7 @@
 From: Hideki EIRAKU <hdk@igel.co.jp>
-Subject: [PATCH v6 4/4] ARM: mach-shmobile: r8a7740: Add IPMMU device
-Date: Mon, 21 Jan 2013 19:54:29 +0900
-Message-ID: <1358765669-14567-5-git-send-email-hdk@igel.co.jp>
+Subject: [PATCH v6 3/4] ARM: mach-shmobile: sh73a0: Add IPMMU device
+Date: Mon, 21 Jan 2013 19:54:28 +0900
+Message-ID: <1358765669-14567-4-git-send-email-hdk@igel.co.jp>
 References: <1358765669-14567-1-git-send-email-hdk@igel.co.jp>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1358765669-14567-1-git-send-email-hdk@igel.co.jp>
@@ -18,29 +18,29 @@ while the IPMMU module's MMU function is enabled.
 
 Signed-off-by: Hideki EIRAKU <hdk@igel.co.jp>
 ---
- arch/arm/mach-shmobile/setup-r8a7740.c | 33 +++++++++++++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
+ arch/arm/mach-shmobile/setup-sh73a0.c | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
 
-diff --git a/arch/arm/mach-shmobile/setup-r8a7740.c b/arch/arm/mach-shmobile/setup-r8a7740.c
-index 0952224..b85bea5 100644
---- a/arch/arm/mach-shmobile/setup-r8a7740.c
-+++ b/arch/arm/mach-shmobile/setup-r8a7740.c
-@@ -28,6 +28,7 @@
+diff --git a/arch/arm/mach-shmobile/setup-sh73a0.c b/arch/arm/mach-shmobile/setup-sh73a0.c
+index db99a4a..36c2b2e 100644
+--- a/arch/arm/mach-shmobile/setup-sh73a0.c
++++ b/arch/arm/mach-shmobile/setup-sh73a0.c
+@@ -30,6 +30,7 @@
  #include <linux/sh_dma.h>
+ #include <linux/sh_intc.h>
  #include <linux/sh_timer.h>
- #include <linux/dma-mapping.h>
 +#include <linux/platform_data/sh_ipmmu.h>
  #include <mach/dma-register.h>
- #include <mach/r8a7740.h>
- #include <mach/pm-rmobile.h>
-@@ -262,6 +263,37 @@ static struct platform_device cmt10_device = {
- 	.num_resources	= ARRAY_SIZE(cmt10_resources),
+ #include <mach/hardware.h>
+ #include <mach/irqs.h>
+@@ -754,6 +755,35 @@ static struct platform_device pmu_device = {
+ 	.resource	= pmu_resources,
  };
  
-+/* IPMMUI (an IPMMU module for ICB/LMB) */
++/* an IPMMU module for ICB */
 +static struct resource ipmmu_resources[] = {
 +	[0] = {
-+		.name	= "IPMMUI",
++		.name	= "IPMMU",
 +		.start	= 0xfe951000,
 +		.end	= 0xfe9510ff,
 +		.flags	= IORESOURCE_MEM,
@@ -49,8 +49,6 @@ index 0952224..b85bea5 100644
 +
 +static const char * const ipmmu_dev_names[] = {
 +	"sh_mobile_lcdc_fb.0",
-+	"sh_mobile_lcdc_fb.1",
-+	"sh_mobile_ceu.0",
 +};
 +
 +static struct shmobile_ipmmu_platform_data ipmmu_platform_data = {
@@ -68,16 +66,16 @@ index 0952224..b85bea5 100644
 +	.num_resources  = ARRAY_SIZE(ipmmu_resources),
 +};
 +
- static struct platform_device *r8a7740_early_devices[] __initdata = {
+ static struct platform_device *sh73a0_early_devices[] __initdata = {
  	&scif0_device,
  	&scif1_device,
-@@ -273,6 +305,7 @@ static struct platform_device *r8a7740_early_devices[] __initdata = {
- 	&scif7_device,
- 	&scifb_device,
+@@ -767,6 +797,7 @@ static struct platform_device *sh73a0_early_devices[] __initdata = {
  	&cmt10_device,
+ 	&tmu00_device,
+ 	&tmu01_device,
 +	&ipmmu_device,
  };
  
- /* DMA */
+ static struct platform_device *sh73a0_late_devices[] __initdata = {
 -- 
 1.8.0
