@@ -1,13 +1,10 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [git pull] ioapic-cleanups-for-v3.9
-Date: Mon, 28 Jan 2013 16:58:02 +0100
-Message-ID: <20130128155757.GA3643@8bytes.org>
-References: <20130125100040.GA13908@8bytes.org>
-	<20130125104915.GB23332@gmail.com>
+Subject: [git pull] IOMMU Fixes for v3.8-rc5
+Date: Mon, 28 Jan 2013 17:05:57 +0100
+Message-ID: <20130128160555.GA3867@8bytes.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============2879331555476838049=="
+Content-Type: multipart/mixed; boundary="===============0078274236943348490=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130125104915.GB23332-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,145 +14,88 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sebastian Andrzej Siewior <sebastian-E0PNVn5OA6ohrxcnuTQ+TQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============2879331555476838049==
+--===============0078274236943348490==
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="4Ckj6UjgE2iN1+kY"
+	protocol="application/pgp-signature"; boundary="opJtzjQTFsWo+cga"
 Content-Disposition: inline
 
 
---4Ckj6UjgE2iN1+kY
+--opJtzjQTFsWo+cga
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-Hi Ingo,
+Hi Linus,
 
-On Fri, Jan 25, 2013 at 11:49:15AM +0100, Ingo Molnar wrote:
-> Hm, there are some not so trivial looking conflicts in=20
-> io_apic.c, due to the MSI patches I applied yesterday:
->=20
->  5ca72c4f7c41 AHCI: Support multiple MSIs
->  08261d87f7d1 PCI/MSI: Enable multiple MSIs with pci_enable_msi_block_aut=
-o()
->  51906e779f2b x86/MSI: Support multiple MSIs in presense of IRQ remapping
->=20
-> Could you please resolve them and resend?
+The following changes since commit 949db153b6466c6f7cad5a427ecea94985927311:
 
-Okay, I resolved the conflicts and tested the result again. Here it is:
-
-The following changes since commit 5ca72c4f7c412c2002363218901eba5516c476b1:
-
-  AHCI: Support multiple MSIs (2013-01-24 17:25:13 +0100)
+  Linux 3.8-rc5 (2013-01-25 11:57:28 -0800)
 
 are available in the git repository at:
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/ioapic-=
-cleanups-for-tip
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v3.8-rc5
 
-for you to fetch changes up to a1bb20c232d066de0762f8e7cf332e5ce8385210:
+for you to fetch changes up to 318fe782539c4150d1b8e4e6c9dc3a896512cb8a:
 
-  x86, irq: Move irq_remapped out of x86 core code (2013-01-28 12:51:52 +01=
-00)
+  IOMMU, AMD Family15h Model10-1Fh erratum 746 Workaround (2013-01-28 15:26:54 +0100)
 
 ----------------------------------------------------------------
-Cleanup X86 IOAPIC code from interrupt remapping details
+IOMMU fixes for Linux v3.8-rc5
 
-These patches move all interrupt remapping specific checks out of the
-x86 core code and replaces the respective call-sites with function
-pointers. As a result the interrupt remapping code is better abstraced
-=66rom x86 core interrupt handling code.
-
-The code was rebased to v3.8-rc4 and tested on systems with AMD-Vi and
-Intel VT-d (both capable of interrupt remapping). The systems were
-tested with IOMMU enabled and with IOMMU disabled. No issues were found.
+One fix for the AMD IOMMU driver to work around broken BIOSes found in
+the field. Some BIOSes forget to enable a workaround for a hardware
+problem which might cause the IOMMU to stop working under high load
+conditions. The fix makes sure this workaround is enabled.
 
 ----------------------------------------------------------------
-Joerg Roedel (19):
-      x86, apic: Move irq_remapping_enabled checks into IRQ-remapping code
-      x86, apic: Mask IO-APIC and PIC unconditionally on LAPIC resume
-      x86, io_apic: Introduce x86_io_apic_ops.disable()
-      x86, io_apic: Introduce x86_io_apic_ops.print_entries for debugging
-      x86, hpet: Introduce x86_msi_ops.setup_hpet_msi
-      x86, msi: Use IRQ remapping specific setup_msi_irqs routine
-      x86, io_apic: Introduce set_affinity function pointer
-      x86, io_apic: Convert setup_ioapic_entry to function pointer
-      x86, io_apic: Move irq_remapping_enabled checks out of check_timer()
-      x86, io_apic: Remove irq_remapping_enabled check in setup_timer_IRQ0_=
-pin
-      x86, irq: Move irq_remapping_enabled declaration to iommu code
-      x86, irq: Add data structure to keep AMD specific irq remapping infor=
-mation
-      x86, io-apic: Move CONFIG_IRQ_REMAP code out of x86 core
-      x86, io-apic: Remove !irq_remapped() check from __target_IO_APIC_irq()
-      x86, irq: Move irq_remapped() check into free_remapped_irq
-      x86, irq: Introduce setup_remapped_irq()
-      x86, msi: Introduce x86_msi.compose_msi_msg call-back
-      x86, io_apic: Introduce eoi_ioapic_pin call-back
-      x86, irq: Move irq_remapped out of x86 core code
+Suravee Suthikulpanit (1):
+      IOMMU, AMD Family15h Model10-1Fh erratum 746 Workaround
 
- arch/x86/include/asm/hpet.h          |    5 +-
- arch/x86/include/asm/hw_irq.h        |   13 +-
- arch/x86/include/asm/io_apic.h       |   28 +++
- arch/x86/include/asm/irq_remapping.h |   40 ++-
- arch/x86/include/asm/pci.h           |    3 +
- arch/x86/include/asm/x86_init.h      |   27 +-
- arch/x86/kernel/apic/apic.c          |   28 +--
- arch/x86/kernel/apic/io_apic.c       |  446 +++++++++++-------------------=
-----
- arch/x86/kernel/hpet.c               |    2 +-
- arch/x86/kernel/x86_init.c           |   24 +-
- drivers/iommu/amd_iommu.c            |    8 +-
- drivers/iommu/dmar.c                 |    2 +
- drivers/iommu/intel-iommu.c          |    2 +
- drivers/iommu/intel_irq_remapping.c  |   12 +
- drivers/iommu/irq_remapping.c        |  231 +++++++++++++++++-
- drivers/iommu/irq_remapping.h        |    1 +
- include/linux/irq.h                  |    3 +
- 17 files changed, 504 insertions(+), 371 deletions(-)
+ drivers/iommu/amd_iommu_init.c |   34 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
 
 Please pull.
 
-Thanks,
+Regards,
 
 	Joerg
 
 
---4Ckj6UjgE2iN1+kY
+--opJtzjQTFsWo+cga
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (GNU/Linux)
 
-iQIcBAEBAgAGBQJRBqAFAAoJECvwRC2XARrjyn8P/jpaDXLQklU8Wijapa8jYNjm
-aN/5qlznHtDfJUf3Fi5D+qQv6G2gs2pl5zb8gz8Ei6ViQohxj3XhcZwc/e5rtI+c
-tfOy2OjO2iRamjEHR+So+ZB/5pfvELxnUAsqZO3tc8QzxymVWrXYj+t1Xw1jXmW0
-1cmRPWDrlmo5kYPNtPrAr1evhTMC0oH9Jac/+zxzi2LgorXQUsmvKKqTyuVC8qiE
-3gAwKwm60Q76S9qPqF2PCfOXx8QSO3BvBgL4avTrtJ5cC9yKXeuqOPuu72BOHx4o
-aSN/kkLbv9iukE6NZ76IPN4BBiVWrVBPu8VlW+xM5SgCM3cY0YvQaIDTUPAWDs4v
-/Oxis2msmJ+hIJP/VXnXqRUaaBTTsAek9EcbyVxmDjOYYwJvb4kRZ8zS7APu69ng
-1OgNUl5mrwH6aZoMZ2it5hOtGfhDtykAsYC9NdjbKEanQe1G8JlDovONBdliPC4n
-bjZEA2u2QNh51bWqpEv+m229CnhE79/85UOFqBqF0UUa635BssOSvRUf+/6lZVyU
-4pNhTOxNQBN3qcW7ZtxB1/6s4kV3SHst+xi8GFOTBCVGvP9YY8ZPiB9Iwq02Yoob
-beTy/fPDkHM1hQ0UjrDjFz0gquwE4Uis3jSGRsdzw8BRyr/BIRwwBDuUfkiPG1wF
-YMppGGvLdGiYeMZw+NmN
-=MQ6Q
+iQIcBAEBAgAGBQJRBqHjAAoJECvwRC2XARrj2TUQAJsAtqA4HNWbIiELsrUGS7fe
+jz6/wJqEnZ7qr5QCh/gmR8pJplj9CJR6EBqw5SunRDMYEv+QhbZ2FQx6euKOe3Eh
+fk5XPuFCaYOO5T2lpHG2t3PGGTx1yYqsB5Fob2JJMrY15XlNuEvvWACGp4BkiMy2
++eQ2tjzNMaXeDpQhxgxiREKd1jqKE+MQKzG54UL3mc4R8yH6hykoyEvHO3Kp8BkQ
+Eg5iKcmyvmffBfcC7gMjXuiE79Elu8YKRfmqxepaW1z0cQA+mJuTeKGjLrjiJVD+
+5/TixuFX37idr0KEFUs9XnPajSy8V+1julgXTmT3xlYISj2q+YYHsnCAYDWp3Yci
+tUQG8vnOFnE9E7RHpPkw4Mm0v0YUjzmMVTL+uJIHBj3a36LBFb6QWNXVujR9EAEe
+3ILw0af/LQ3GwMw5rdvFzUULWoPy/hsFiPxkeQGjZr1gbIR36XrqyVRuImifL9KA
+hxno96hP7Nizz0GvwfJSMVjzE3FTACh8tmt5DO3QOIQ07AS0o/iuxSn48buai/bO
+6c1FXahpgdu0WsT8TVBnAyvOaxe68a0Om/ZssPtsiFWhAGGNp2nMHsG/frPeKl9V
+/864srQRUkoOmlvDuRl/GHjIXCzdiI+r7juS8dka/XEzuP4TZ8xHDnDaGtKc0jI4
+pAbaw4OGBJdrmWkP5iDa
+=8L7B
 -----END PGP SIGNATURE-----
 
---4Ckj6UjgE2iN1+kY--
+--opJtzjQTFsWo+cga--
 
 
 
---===============2879331555476838049==
+--===============0078274236943348490==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============2879331555476838049==--
+--===============0078274236943348490==--
