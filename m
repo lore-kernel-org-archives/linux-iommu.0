@@ -1,15 +1,14 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [git pull] ioapic-cleanups-for-v3.9
-Date: Fri, 25 Jan 2013 12:31:05 +0100
-Message-ID: <20130125113105.GV25591@8bytes.org>
-References: <20130125100040.GA13908@8bytes.org>
-	<20130125104915.GB23332@gmail.com>
+Subject: Re: [PATCH V4] IOMMU, AMD Family15h Model10-1Fh erratum 746 Workaround
+Date: Mon, 28 Jan 2013 15:26:37 +0100
+Message-ID: <20130128142637.GY25591@8bytes.org>
+References: <1359055073-29732-1-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20130125104915.GB23332-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1359055073-29732-1-git-send-email-suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,21 +18,29 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sebastian Andrzej Siewior <sebastian-E0PNVn5OA6ohrxcnuTQ+TQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jan 25, 2013 at 11:49:15AM +0100, Ingo Molnar wrote:
-> Hm, there are some not so trivial looking conflicts in 
-> io_apic.c, due to the MSI patches I applied yesterday:
+On Thu, Jan 24, 2013 at 01:17:53PM -0600, Suthikulpanit, Suravee wrote:
+> From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+> ---
+> Changelog:
+> v4:
+>       * Fix style and spacing
 > 
->  5ca72c4f7c41 AHCI: Support multiple MSIs
->  08261d87f7d1 PCI/MSI: Enable multiple MSIs with pci_enable_msi_block_auto()
->  51906e779f2b x86/MSI: Support multiple MSIs in presense of IRQ remapping
+> v3:
+>       * Add proper commit message
+>       * Change logic to avoid unnecessary indentaion
 > 
-> Could you please resolve them and resend?
+> v2:
+>       * Fix logic that check the processor model.
+>       * Clear write enable bit after apply workaround
+>       * Change function name
+> 
+>  drivers/iommu/amd_iommu_init.c |   34 ++++++++++++++++++++++++++++++++++
+>  1 file changed, 34 insertions(+)
 
-Will do. I rebase to tip/x86/apic and test again.
-
-
-	Joerg
+Applied to iommu/fixes, thanks guys.
