@@ -1,50 +1,41 @@
 From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [v2 1/1] iommu/tegra: smmu: Support variable MMIO ranges/blocks
-Date: Tue, 29 Jan 2013 10:57:25 -0700
-Message-ID: <51080D85.4050201@wwwdotorg.org>
-References: <50FD752A.6060706@wwwdotorg.org><1359448450-24894-1-git-send-email-hdoyu@nvidia.com><510800F7.7020507@wwwdotorg.org> <20130129.194007.2143867447969494923.hdoyu@nvidia.com>
+Subject: Re: [v3 1/1] iommu/tegra: smmu: Support variable MMIO ranges/blocks
+Date: Tue, 29 Jan 2013 10:58:41 -0700
+Message-ID: <51080DD1.6050007@wwwdotorg.org>
+References: <510800F7.7020507@wwwdotorg.org>
+	<1359482169-26756-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20130129.194007.2143867447969494923.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1359482169-26756-1-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/29/2013 10:40 AM, Hiroshi Doyu wrote:
-> Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote @ Tue, 29 Jan 2013 18:03:51 +0100:
-> 
->>> +	/* Same as "mc" 1st regiter block start address */
->>> +	smmu->regbase = (void __iomem *)((u32)smmu->regs[0] & ~PAGE_MASK);
->>
->> I'm not sure if it's relevant how these register ranges are related to
->> the MC registers, given this is the SMMU driver?
-> 
-> All SMMU register offsets are against MC[0]'s start address and SMMU
-> register blocks are interleaved as below. The 1st SMMU register block
-> SMMU[0]'s offset is always 0x10.
-> 
-> Address Register block
-> -----------------------
-> 000-010	MC[0]
-> 010-03c	SMMU[0]
-> 03c-1f0	MC[1]
-> 1f0-200	SMMU[1]
-> 200-228	MC[2]
-> 228-284	SMMU[2]
-> 284-...	MC[3]
+On 01/29/2013 10:56 AM, Hiroshi Doyu wrote:
+> Presently SMMU registers are located in discontiguous 3 blocks. They
+> are interleaved by MC registers. Ideally SMMU register blocks should
+> be in an independent one block, but it is too late to change this H/W
+> design. In the future Tegra chips over some generations, it is
+> expected that some of register block "size" can be extended towards
+> the end and also more new register blocks will be added at most a few
+> blocks. The starting address of each existing block won't change. This
+> patch allocates multiple number of register blocks dynamically based
+> on the info passed from DT. Those ranges are verified in the
+> accessors{read,write}. This may sacrifice some performance because a
+> new accessors prevents compiler optimization of a fixed size register
+> offset calculation. Since SMMU register accesses are not so frequent,
+> this would be acceptable. This patch is necessary to unify
+> "tegra-smmu.ko" over some Tegra SoC generations.
 
-I know that's true, but it's still not really relevant to the SMMU
-driver. What is relevant is that the SMMU has a bunch of chunks of
-address space containing SMMU registers, and there are gaps, and all the
-register offsets in the SMMU driver are relative to the page-aligned
-base of the first chunk. The fact the gaps contain MC registers is what
-isn't relevant.
-
-> If the above assumption is not acceptable, alternatively we need to
-> access MC's node to get the 1st MC register block start address, for
-> example, via embedded in MC's phandle in smmu entry.
-
-Like I said, the code is fine so I'm not really objecting to it.
+Reviewed-by: Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
