@@ -1,8 +1,8 @@
 From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [v2 1/1] iommu/tegra: smmu: Support variable MMIO ranges/blocks
-Date: Tue, 29 Jan 2013 18:40:07 +0100
-Message-ID: <20130129.194007.2143867447969494923.hdoyu@nvidia.com>
-References: <50FD752A.6060706@wwwdotorg.org><1359448450-24894-1-git-send-email-hdoyu@nvidia.com><510800F7.7020507@wwwdotorg.org>
+Subject: [v3 1/1] iommu/tegra: smmu: Support variable MMIO ranges/blocks
+Date: Tue, 29 Jan 2013 19:56:09 +0200
+Message-ID: <1359482169-26756-1-git-send-email-hdoyu@nvidia.com>
+References: <510800F7.7020507@wwwdotorg.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -17,63 +17,133 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org" <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Cc: "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote @ Tue, 29 Jan 2013 18:03:51 +0100:
+Presently SMMU registers are located in discontiguous 3 blocks. They
+are interleaved by MC registers. Ideally SMMU register blocks should
+be in an independent one block, but it is too late to change this H/W
+design. In the future Tegra chips over some generations, it is
+expected that some of register block "size" can be extended towards
+the end and also more new register blocks will be added at most a few
+blocks. The starting address of each existing block won't change. This
+patch allocates multiple number of register blocks dynamically based
+on the info passed from DT. Those ranges are verified in the
+accessors{read,write}. This may sacrifice some performance because a
+new accessors prevents compiler optimization of a fixed size register
+offset calculation. Since SMMU register accesses are not so frequent,
+this would be acceptable. This patch is necessary to unify
+"tegra-smmu.ko" over some Tegra SoC generations.
 
-> > +	/* Same as "mc" 1st regiter block start address */
-> > +	smmu->regbase = (void __iomem *)((u32)smmu->regs[0] & ~PAGE_MASK);
-> 
-> I'm not sure if it's relevant how these register ranges are related to
-> the MC registers, given this is the SMMU driver?
+Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+---
+v3:
+Fixed overlapped register validation. (Stephen Warren)
+Fixed typo s/regiter/register/. (Stephen Warren)
+---
+ drivers/iommu/tegra-smmu.c |   61 ++++++++++++++++++++++++++------------------
+ 1 file changed, 36 insertions(+), 25 deletions(-)
 
-All SMMU register offsets are against MC[0]'s start address and SMMU
-register blocks are interleaved as below. The 1st SMMU register block
-SMMU[0]'s offset is always 0x10.
-
-Address Register block
------------------------
-000-010	MC[0]
-010-03c	SMMU[0]
-03c-1f0	MC[1]
-1f0-200	SMMU[1]
-200-228	MC[2]
-228-284	SMMU[2]
-284-...	MC[3]
-
-If the above assumption is not acceptable, alternatively we need to
-access MC's node to get the 1st MC register block start address, for
-example, via embedded in MC's phandle in smmu entry.
-
-	Modified arch/arm/boot/dts/tegra30.dtsi
-diff --git a/arch/arm/boot/dts/tegra30.dtsi b/arch/arm/boot/dts/tegra30.dtsi
-index c5db29d..e9fb9ef 100644
---- a/arch/arm/boot/dts/tegra30.dtsi
-+++ b/arch/arm/boot/dts/tegra30.dtsi
-@@ -397,7 +397,7 @@
- 		reg = <0x7000e400 0x400>;
- 	};
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index fc17889..d1448f9 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -293,7 +293,11 @@ struct smmu_debugfs_info {
+  * Per SMMU device - IOMMU device
+  */
+ struct smmu_device {
+-	void __iomem	*regs[NUM_SMMU_REG_BANKS];
++	void __iomem	*regbase;	/* register offset base */
++	void __iomem	**regs;		/* register block start address array */
++	void __iomem	**rege;		/* register block end address array */
++	int		nregs;		/* number of register blocks */
++
+ 	unsigned long	iovmm_base;	/* remappable base address */
+ 	unsigned long	page_count;	/* total remappable size */
+ 	spinlock_t	lock;
+@@ -325,35 +329,33 @@ static struct smmu_device *smmu_handle; /* unique for a system */
+  */
+ static inline u32 smmu_read(struct smmu_device *smmu, size_t offs)
+ {
+-	BUG_ON(offs < 0x10);
+-	if (offs < 0x3c)
+-		return readl(smmu->regs[0] + offs - 0x10);
+-	BUG_ON(offs < 0x1f0);
+-	if (offs < 0x200)
+-		return readl(smmu->regs[1] + offs - 0x1f0);
+-	BUG_ON(offs < 0x228);
+-	if (offs < 0x284)
+-		return readl(smmu->regs[2] + offs - 0x228);
++	int i;
++
++	for (i = 0; i < smmu->nregs; i++) {
++		void __iomem *addr = smmu->regbase + offs;
++
++		BUG_ON(addr < smmu->regs[i]);
++		if (addr < smmu->rege[i])
++			return readl(addr);
++	}
++
+ 	BUG();
+ }
  
--	memory-controller {
-+	mc: memory-controller {
- 		compatible = "nvidia,tegra30-mc";
- 		reg = <0x7000f000 0x010
- 		       0x7000f03c 0x1b4
-@@ -414,6 +414,7 @@
- 		nvidia,#asids = <4>;		/* # of ASIDs */
- 		dma-window = <0 0x40000000>;	/* IOVA start & length */
- 		nvidia,ahb = <&ahb>;
-+		nvidia.mc = <&mc>;
- 	};
+ static inline void smmu_write(struct smmu_device *smmu, u32 val, size_t offs)
+ {
+-	BUG_ON(offs < 0x10);
+-	if (offs < 0x3c) {
+-		writel(val, smmu->regs[0] + offs - 0x10);
+-		return;
+-	}
+-	BUG_ON(offs < 0x1f0);
+-	if (offs < 0x200) {
+-		writel(val, smmu->regs[1] + offs - 0x1f0);
+-		return;
+-	}
+-	BUG_ON(offs < 0x228);
+-	if (offs < 0x284) {
+-		writel(val, smmu->regs[2] + offs - 0x228);
+-		return;
++	int i;
++
++	for (i = 0; i < smmu->nregs; i++) {
++		void __iomem *addr = smmu->regbase + offs;
++
++		BUG_ON(addr < smmu->regs[i]);
++		if (addr < smmu->rege[i]) {
++			writel(val, addr);
++			return;
++		}
+ 	}
++
+ 	BUG();
+ }
  
- 	ahub {
-
-I may think that above may be a bit too much since we know that the
-1st SMMU offset(0x10) and also that the MC register is aligned with
-page boundary, and the following works actually.
-
-	smmu->regbase = (void __iomem *)((u32)smmu->regs[0] & ~PAGE_MASK);
-
-I don't think that the existing SMMU/MC register offsets will change so easily.
+@@ -1170,7 +1172,13 @@ static int tegra_smmu_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 	}
+ 
+-	for (i = 0; i < ARRAY_SIZE(smmu->regs); i++) {
++	smmu->nregs = pdev->num_resources;
++	smmu->regs = devm_kzalloc(dev, 2 * smmu->nregs * sizeof(*smmu->regs),
++				  GFP_KERNEL);
++	smmu->rege = smmu->regs + smmu->nregs;
++	if (!smmu->regs)
++		return -ENOMEM;
++	for (i = 0; i < smmu->nregs; i++) {
+ 		struct resource *res;
+ 
+ 		res = platform_get_resource(pdev, IORESOURCE_MEM, i);
+@@ -1179,7 +1187,10 @@ static int tegra_smmu_probe(struct platform_device *pdev)
+ 		smmu->regs[i] = devm_request_and_ioremap(&pdev->dev, res);
+ 		if (!smmu->regs[i])
+ 			return -EBUSY;
++		smmu->rege[i] = smmu->regs[i] + resource_size(res);
+ 	}
++	/* Same as "mc" 1st register block start address */
++	smmu->regbase = (void __iomem *)((u32)smmu->regs[0] & ~PAGE_MASK);
+ 
+ 	err = of_get_dma_window(dev->of_node, NULL, 0, NULL, &base, &size);
+ 	if (err)
+-- 
+1.7.9.5
