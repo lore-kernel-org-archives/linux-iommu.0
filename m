@@ -1,16 +1,14 @@
-From: Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [git pull] ioapic-cleanups-for-v3.9
-Date: Tue, 29 Jan 2013 10:07:25 +0100
-Message-ID: <20130129090725.GA5775@gmail.com>
-References: <20130125100040.GA13908@8bytes.org>
-	<20130125104915.GB23332@gmail.com>
-	<20130128155757.GA3643@8bytes.org>
+From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Subject: Re: [v2 1/1] iommu/tegra: smmu: Support variable MMIO ranges/blocks
+Date: Tue, 29 Jan 2013 10:03:51 -0700
+Message-ID: <510800F7.7020507@wwwdotorg.org>
+References: <50FD752A.6060706@wwwdotorg.org>
+	<1359448450-24894-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20130128155757.GA3643-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1359448450-24894-1-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,94 +18,59 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sebastian Andrzej Siewior <sebastian-E0PNVn5OA6ohrxcnuTQ+TQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+On 01/29/2013 01:34 AM, Hiroshi Doyu wrote:
+> Presently SMMU registers are located in discontiguous 3 blocks. They
+> are interleaved by MC registers. Ideally SMMU register blocks should
+> be in an independent one block, but it is too late to change this H/W
+> design. In the future Tegra chips over some generations, it is
+> expected that some of register block "size" can be extended towards
+> the end and also more new register blocks will be added at most a few
+> blocks. The starting address of each existing block won't change. This
+> patch allocates multiple number of register blocks dynamically based
+> on the info passed from DT. Those ranges are verified in the
+> accessors{read,write}. This may sacrifice some performance because a
+> new accessors prevents compiler optimization of a fixed size register
+> offset calculation. Since SMMU register accesses are not so frequent,
+> this would be acceptable. This patch is necessary to unify
+> "tegra-smmu.ko" over some Tegra SoC generations.
 
-* Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
 
-> Hi Ingo,
-> 
-> On Fri, Jan 25, 2013 at 11:49:15AM +0100, Ingo Molnar wrote:
-> > Hm, there are some not so trivial looking conflicts in 
-> > io_apic.c, due to the MSI patches I applied yesterday:
-> > 
-> >  5ca72c4f7c41 AHCI: Support multiple MSIs
-> >  08261d87f7d1 PCI/MSI: Enable multiple MSIs with pci_enable_msi_block_auto()
-> >  51906e779f2b x86/MSI: Support multiple MSIs in presense of IRQ remapping
-> > 
-> > Could you please resolve them and resend?
-> 
-> Okay, I resolved the conflicts and tested the result again. Here it is:
-> 
-> The following changes since commit 5ca72c4f7c412c2002363218901eba5516c476b1:
-> 
->   AHCI: Support multiple MSIs (2013-01-24 17:25:13 +0100)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/ioapic-cleanups-for-tip
-> 
-> for you to fetch changes up to a1bb20c232d066de0762f8e7cf332e5ce8385210:
-> 
->   x86, irq: Move irq_remapped out of x86 core code (2013-01-28 12:51:52 +0100)
-> 
-> ----------------------------------------------------------------
-> Cleanup X86 IOAPIC code from interrupt remapping details
-> 
-> These patches move all interrupt remapping specific checks out of the
-> x86 core code and replaces the respective call-sites with function
-> pointers. As a result the interrupt remapping code is better abstraced
-> from x86 core interrupt handling code.
-> 
-> The code was rebased to v3.8-rc4 and tested on systems with AMD-Vi and
-> Intel VT-d (both capable of interrupt remapping). The systems were
-> tested with IOMMU enabled and with IOMMU disabled. No issues were found.
-> 
-> ----------------------------------------------------------------
-> Joerg Roedel (19):
->       x86, apic: Move irq_remapping_enabled checks into IRQ-remapping code
->       x86, apic: Mask IO-APIC and PIC unconditionally on LAPIC resume
->       x86, io_apic: Introduce x86_io_apic_ops.disable()
->       x86, io_apic: Introduce x86_io_apic_ops.print_entries for debugging
->       x86, hpet: Introduce x86_msi_ops.setup_hpet_msi
->       x86, msi: Use IRQ remapping specific setup_msi_irqs routine
->       x86, io_apic: Introduce set_affinity function pointer
->       x86, io_apic: Convert setup_ioapic_entry to function pointer
->       x86, io_apic: Move irq_remapping_enabled checks out of check_timer()
->       x86, io_apic: Remove irq_remapping_enabled check in setup_timer_IRQ0_pin
->       x86, irq: Move irq_remapping_enabled declaration to iommu code
->       x86, irq: Add data structure to keep AMD specific irq remapping information
->       x86, io-apic: Move CONFIG_IRQ_REMAP code out of x86 core
->       x86, io-apic: Remove !irq_remapped() check from __target_IO_APIC_irq()
->       x86, irq: Move irq_remapped() check into free_remapped_irq
->       x86, irq: Introduce setup_remapped_irq()
->       x86, msi: Introduce x86_msi.compose_msi_msg call-back
->       x86, io_apic: Introduce eoi_ioapic_pin call-back
->       x86, irq: Move irq_remapped out of x86 core code
-> 
->  arch/x86/include/asm/hpet.h          |    5 +-
->  arch/x86/include/asm/hw_irq.h        |   13 +-
->  arch/x86/include/asm/io_apic.h       |   28 +++
->  arch/x86/include/asm/irq_remapping.h |   40 ++-
->  arch/x86/include/asm/pci.h           |    3 +
->  arch/x86/include/asm/x86_init.h      |   27 +-
->  arch/x86/kernel/apic/apic.c          |   28 +--
->  arch/x86/kernel/apic/io_apic.c       |  446 +++++++++++-----------------------
->  arch/x86/kernel/hpet.c               |    2 +-
->  arch/x86/kernel/x86_init.c           |   24 +-
->  drivers/iommu/amd_iommu.c            |    8 +-
->  drivers/iommu/dmar.c                 |    2 +
->  drivers/iommu/intel-iommu.c          |    2 +
->  drivers/iommu/intel_irq_remapping.c  |   12 +
->  drivers/iommu/irq_remapping.c        |  231 +++++++++++++++++-
->  drivers/iommu/irq_remapping.h        |    1 +
->  include/linux/irq.h                  |    3 +
->  17 files changed, 504 insertions(+), 371 deletions(-)
-> 
-> Please pull.
+>  static inline u32 smmu_read(struct smmu_device *smmu, size_t offs)
 
-Pulled, thanks Joerg!
+> +	for (i = 0; i < smmu->nregs; i++) {
+> +		void __iomem *addr = smmu->regbase + offs;
 
-	Ingo
+I don't really like the concept of "regbase", but I suppose it works
+just fine and isn't entirely avoidable, so I won't object.
+
+> +		BUG_ON(addr < smmu->regs[i]);
+> +		if (addr <= smmu->rege[i])
+> +			return readl(addr);
+
+So here we assume that rege points at the last valid address in the range...
+
+> @@ -1170,7 +1172,13 @@ static int tegra_smmu_probe(struct platform_device *pdev)
+>  		return -ENOMEM;
+>  	}
+>  
+> -	for (i = 0; i < ARRAY_SIZE(smmu->regs); i++) {
+> +	smmu->nregs = pdev->num_resources;
+> +	smmu->regs = devm_kzalloc(dev, 2 * smmu->nregs * sizeof(*smmu->regs),
+> +				  GFP_KERNEL);
+> +	smmu->rege = smmu->regs + smmu->nregs;
+
+... but here rege is set to the first address after the range. I think
+the simplest solution is to change the <= to < in smmu_{read,write}().
+
+> +	/* Same as "mc" 1st regiter block start address */
+> +	smmu->regbase = (void __iomem *)((u32)smmu->regs[0] & ~PAGE_MASK);
+
+I'm not sure if it's relevant how these register ranges are related to
+the MC registers, given this is the SMMU driver?
+
+s/regiter/register/ in the comment if you keep it.
