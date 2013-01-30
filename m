@@ -1,110 +1,89 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 4/4] iommu: Add domain window handling functions
-Date: Wed, 30 Jan 2013 22:43:48 +0100
-Message-ID: <1359582228-21552-5-git-send-email-joro@8bytes.org>
-References: <1359582228-21552-1-git-send-email-joro@8bytes.org>
+From: Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: PCI warning on boot 3.8.0-rc1
+Date: Wed, 30 Jan 2013 14:59:56 -0700
+Message-ID: <CAErSpo5eOE_=Ob2jN7ACy0eJBOa8k36XqCbHnGTCs-wfiy8tiw@mail.gmail.com>
+References: <20130116143853.339dd89b@nehalam.linuxnetplumber.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1359582228-21552-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20130116143853.339dd89b@nehalam.linuxnetplumber.net>
+Sender: linux-pci-owner@vger.kernel.org
+To: Stephen Hemminger <stephen@networkplumber.org>
+Cc: linux-pci@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org, alex.williamson@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-Add the iommu_domain_wnd_enable() and iommu_domain_wnd_disable()
-functions to the IOMMU-API. These functions will be used to
-setup domains that are based on subwindows and not on
-paging.
+On Wed, Jan 16, 2013 at 3:38 PM, Stephen Hemminger
+<stephen@networkplumber.org> wrote:
+> I see this on boot in dmesg
+>
+> [    0.574494] DMAR: No ATSR found
+> [    0.574549] IOMMU 0 0xfed90000: using Queued invalidation
+> [    0.574550] IOMMU 1 0xfed91000: using Queued invalidation
+> [    0.574554] IOMMU: Setting RMRR:
+> [    0.574583] IOMMU: Setting identity map for device 0000:00:02.0 [0xcf000000 -
+>  0xdf1fffff]
+> [    0.575748] IOMMU: Setting identity map for device 0000:00:1d.0 [0xcd551000 -
+>  0xcd56dfff]
+> [    0.575767] IOMMU: Setting identity map for device 0000:00:1a.0 [0xcd551000 -
+>  0xcd56dfff]
+> [    0.575786] IOMMU: Setting identity map for device 0000:00:14.0 [0xcd551000 -
+>  0xcd56dfff]
+> [    0.575797] IOMMU: Prepare 0-16MiB unity mapping for LPC
+> [    0.575806] IOMMU: Setting identity map for device 0000:00:1f.0 [0x0 - 0xffff
+> ff]
+> [    0.576186] PCI-DMA: Intel(R) Virtualization Technology for Directed I/O
+> [    0.576337] ------------[ cut here ]------------
+> [    0.576342] WARNING: at drivers/pci/search.c:46 pci_find_upstream_pcie_bridge
+> +0x59/0x71()
+> [    0.576343] Hardware name: System Product Name
+> [    0.576344] Modules linked in:
+> [    0.576347] Pid: 1, comm: swapper/0 Not tainted 3.8.0-rc1-net-next+ #4
+> [    0.576348] Call Trace:
+> [    0.576352]  [<ffffffff81074261>] warn_slowpath_common+0x83/0x9c
+> [    0.576355]  [<ffffffff813fae71>] ? bus_set_iommu+0x49/0x49
+> [    0.576357]  [<ffffffff81074294>] warn_slowpath_null+0x1a/0x1c
+> [    0.576360]  [<ffffffff812db618>] pci_find_upstream_pcie_bridge+0x59/0x71
+> [    0.576362]  [<ffffffff813fd247>] intel_iommu_add_device+0x4d/0x17a
+> [    0.576364]  [<ffffffff813faeab>] add_iommu_group+0x3a/0x48
+> [    0.576368]  [<ffffffff8135d490>] bus_for_each_dev+0x57/0x89
+> [    0.576370]  [<ffffffff813fae6a>] bus_set_iommu+0x42/0x49
+> [    0.576374]  [<ffffffff81b1b1a5>] intel_iommu_init+0xa27/0xb44
+> [    0.576377]  [<ffffffff8105dcf3>] ? free_init_pages+0xf5/0x10d
+> [    0.576379]  [<ffffffff81aeb87d>] ? maybe_link.part.2+0x10b/0x10b
+> [    0.576382]  [<ffffffff81aeef53>] ? memblock_find_dma_reserve+0x133/0x133
+> [    0.576384]  [<ffffffff81aeef66>] pci_iommu_init+0x13/0x3e
+> [    0.576387]  [<ffffffff8100023c>] do_one_initcall+0x7f/0x133
+> [    0.576390]  [<ffffffff814d0c2c>] kernel_init+0x146/0x29b
+> [    0.576393]  [<ffffffff81aea52f>] ? do_early_param+0x8c/0x8c
+> [    0.576395]  [<ffffffff814d0ae6>] ? rest_init+0xda/0xda
+> [    0.576398]  [<ffffffff814ed4dc>] ret_from_fork+0x7c/0xb0
+> [    0.576400]  [<ffffffff814d0ae6>] ? rest_init+0xda/0xda
+> [    0.576406] ---[ end trace f709d1eb2b66cbf5 ]---
+>
+> $ sudo lspci -t -vv
+> -[0000:00]-+-00.0  Intel Corporation Xeon E3-1200 v2/3rd Gen Core processor DRAM Controller
+>            +-01.0-[01-02]----00.0  Intel Corporation Ethernet Controller 10-Gigabit X540-AT2
+>            +-02.0  Intel Corporation Xeon E3-1200 v2/3rd Gen Core processor Graphics Controller
+>            +-14.0  Intel Corporation 7 Series/C210 Series Chipset Family USB xHCI Host Controller
+>            +-16.0  Intel Corporation 7 Series/C210 Series Chipset Family MEI Controller #1
+>            +-1a.0  Intel Corporation 7 Series/C210 Series Chipset Family USB Enhanced Host Controller #2
+>            +-1b.0  Intel Corporation 7 Series/C210 Series Chipset Family High Definition Audio Controller
+>            +-1c.0-[03]--
+>            +-1c.4-[04]----00.0  Realtek Semiconductor Co., Ltd. RTL8111/8168B PCI Express Gigabit Ethernet controller
+>            +-1c.5-[05-06]----00.0-[06]--
+>            +-1d.0  Intel Corporation 7 Series/C210 Series Chipset Family USB Enhanced Host Controller #1
+>            +-1f.0  Intel Corporation Z77 Express Chipset LPC Controller
+>            +-1f.2  Intel Corporation 7 Series/C210 Series Chipset Family 6-port SATA Controller [AHCI mode]
+>            \-1f.3  Intel Corporation 7 Series/C210 Series Chipset Family SMBus Controller
 
-Signed-off-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
----
- drivers/iommu/iommu.c |   20 ++++++++++++++++++++
- include/linux/iommu.h |   18 ++++++++++++++++++
- 2 files changed, 38 insertions(+)
+I think drivers/pci/search.c is identical between 3.7 and 3.8-rc1.  Is
+this the first time you've turned on the IOMMU on that box?
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index ab9dafd..55ae3bf 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -852,6 +852,26 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
- }
- EXPORT_SYMBOL_GPL(iommu_unmap);
- 
-+
-+int iommu_domain_wnd_enable(struct iommu_domain *domain, u32 window,
-+			    unsigned long offset, size_t size)
-+{
-+	if (unlikely(domain->ops->domain_wnd_enable == NULL))
-+		return -ENODEV;
-+
-+	return domain->ops->domain_wnd_enable(domain, window, offset, size);
-+}
-+EXPORT_SYMBOL_GPL(iommu_domain_wnd_enable);
-+
-+void iommu_domain_wnd_disable(struct iommu_domain *domain, u32 window)
-+{
-+	if (unlikely(domain->ops->domain_wnd_disable == NULL))
-+		return;
-+
-+	return domain->ops->domain_wnd_disable(domain, window);
-+}
-+EXPORT_SYMBOL_GPL(iommu_domain_wnd_disable);
-+
- static int __init iommu_init(void)
- {
- 	iommu_group_kset = kset_create_and_add("iommu_groups",
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 26066f5..f01657e 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -90,6 +90,9 @@ struct iommu_ops {
- 		   phys_addr_t paddr, size_t size, int prot);
- 	size_t (*unmap)(struct iommu_domain *domain, unsigned long iova,
- 		     size_t size);
-+	int (*domain_wnd_enable)(struct iommu_domain *domain, u32 window,
-+				   unsigned long offset, size_t size);
-+	void (*domain_wnd_disable)(struct iommu_domain *domain, u32 window);
- 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain,
- 				    unsigned long iova);
- 	int (*domain_has_cap)(struct iommu_domain *domain,
-@@ -123,6 +126,9 @@ extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
- 		     phys_addr_t paddr, size_t size, int prot);
- extern size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova,
- 		       size_t size);
-+extern int iommu_domain_wnd_enable(struct iommu_domain *domain, u32 window,
-+				   unsigned long offset, size_t size);
-+extern void iommu_domain_wnd_disable(struct iommu_domain *domain, u32 window);
- extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain,
- 				      unsigned long iova);
- extern int iommu_domain_has_cap(struct iommu_domain *domain,
-@@ -240,6 +246,18 @@ static inline int iommu_unmap(struct iommu_domain *domain, unsigned long iova,
- 	return -ENODEV;
- }
- 
-+static inline int iommu_domain_wnd_enable(struct iommu_domain *domain,
-+					  u32 window, unsigned long offset,
-+					  size_t size)
-+{
-+	return -ENODEV;
-+}
-+
-+static inline void iommu_domain_wnd_disable(struct iommu_domain *domain,
-+					    u32 window)
-+{
-+}
-+
- static inline phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain,
- 					     unsigned long iova)
- {
--- 
-1.7.9.5
+It's the same warning as in this bugzilla:
+https://bugzilla.kernel.org/show_bug.cgi?id=44881, and there's a patch
+there at https://bugzilla.kernel.org/show_bug.cgi?id=44881#c11, but
+it's just a quirk that turns off VT-d if we find certain broken
+bridges.  It doesn't look like you have any of those (although I don't
+know what you have at 05:00.0).
+
+Bjorn
