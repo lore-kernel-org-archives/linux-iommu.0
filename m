@@ -1,139 +1,40 @@
-From: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 4/4] iommu: Add domain window handling functions
-Date: Thu, 31 Jan 2013 09:32:26 +0000
-Message-ID: <C5ECD7A89D1DC44195F34B25E172658D3670ED@039-SN2MPN1-013.039d.mgd.msft.net>
-References: <1359582228-21552-1-git-send-email-joro@8bytes.org>
-	<1359582228-21552-5-git-send-email-joro@8bytes.org>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: [v2 1/1] iommu/tegra: smmu: Change SMMU's dependency on ARCH_TEGRA
+Date: Thu, 31 Jan 2013 12:43:08 +0200
+Message-ID: <1359628988-3678-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1359582228-21552-5-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Theoretically TEGRA_IOMMU_SMMU depends on ARCH_TEGRA_3x_SOC and
+ARCH_TEGRA_114_SOC only. This patch allows a Tegra20 only kernel to
+enable SMMU(Tegra20 doesn't have a SMMU), which could avoid editing
+this Kconfig entry every time we add a new chip later.
 
+Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+---
+v1:
+http://lists.linuxfoundation.org/pipermail/iommu/2013-January/005051.html
+---
+ drivers/iommu/Kconfig |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> -----Original Message-----
-> From: Joerg Roedel [mailto:joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org]
-> Sent: Thursday, January 31, 2013 3:14 AM
-> To: Sethi Varun-B16395
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Joerg
-> Roedel
-> Subject: [PATCH 4/4] iommu: Add domain window handling functions
-> 
-> Add the iommu_domain_wnd_enable() and iommu_domain_wnd_disable()
-> functions to the IOMMU-API. These functions will be used to setup domains
-> that are based on subwindows and not on paging.
-> 
-> Signed-off-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> ---
->  drivers/iommu/iommu.c |   20 ++++++++++++++++++++
->  include/linux/iommu.h |   18 ++++++++++++++++++
->  2 files changed, 38 insertions(+)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c index
-> ab9dafd..55ae3bf 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -852,6 +852,26 @@ size_t iommu_unmap(struct iommu_domain *domain,
-> unsigned long iova, size_t size)  }  EXPORT_SYMBOL_GPL(iommu_unmap);
-> 
-> +
-> +int iommu_domain_wnd_enable(struct iommu_domain *domain, u32 window,
-> +			    unsigned long offset, size_t size) {
-> +	if (unlikely(domain->ops->domain_wnd_enable == NULL))
-> +		return -ENODEV;
-> +
-> +	return domain->ops->domain_wnd_enable(domain, window, offset,
-> size); }
-> +EXPORT_SYMBOL_GPL(iommu_domain_wnd_enable);
-> +
-> +void iommu_domain_wnd_disable(struct iommu_domain *domain, u32 window)
-> +{
-> +	if (unlikely(domain->ops->domain_wnd_disable == NULL))
-> +		return;
-> +
-> +	return domain->ops->domain_wnd_disable(domain, window); }
-> +EXPORT_SYMBOL_GPL(iommu_domain_wnd_disable);
-> +
->  static int __init iommu_init(void)
->  {
->  	iommu_group_kset = kset_create_and_add("iommu_groups",
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h index
-> 26066f5..f01657e 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -90,6 +90,9 @@ struct iommu_ops {
->  		   phys_addr_t paddr, size_t size, int prot);
->  	size_t (*unmap)(struct iommu_domain *domain, unsigned long iova,
->  		     size_t size);
-> +	int (*domain_wnd_enable)(struct iommu_domain *domain, u32 window,
-> +				   unsigned long offset, size_t size);
-> +	void (*domain_wnd_disable)(struct iommu_domain *domain, u32
-> window);
->  	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain,
->  				    unsigned long iova);
->  	int (*domain_has_cap)(struct iommu_domain *domain, @@ -123,6 +126,9
-> @@ extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
->  		     phys_addr_t paddr, size_t size, int prot);  extern
-> size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova,
->  		       size_t size);
-> +extern int iommu_domain_wnd_enable(struct iommu_domain *domain, u32
-> window,
-> +				   unsigned long offset, size_t size); extern
-> void
-> +iommu_domain_wnd_disable(struct iommu_domain *domain, u32 window);
->  extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain,
->  				      unsigned long iova);
->  extern int iommu_domain_has_cap(struct iommu_domain *domain, @@ -240,6
-> +246,18 @@ static inline int iommu_unmap(struct iommu_domain *domain,
-> unsigned long iova,
->  	return -ENODEV;
->  }
-> 
-> +static inline int iommu_domain_wnd_enable(struct iommu_domain *domain,
-> +					  u32 window, unsigned long offset,
-> +					  size_t size)
-> +{
-> +	return -ENODEV;
-> +}
-> +
-> +static inline void iommu_domain_wnd_disable(struct iommu_domain *domain,
-> +					    u32 window)
-> +{
-> +}
-> +
->  static inline phys_addr_t iommu_iova_to_phys(struct iommu_domain
-> *domain,
->  					     unsigned long iova)
->  {
-We would need a corresponding physical address in the iommu_domain_wnd_enable call. The sub windows can point to physically discontiguous locations. Also, although we support partial mappings where the sub window size < geometry_size/max_sub_windows, but the mapping would always start from the sub window base (sub window base address would be aligned to (geometry size)/max_sub_windows). The user of the API would have to ensure that the iova is aligned to the max sub window size. So, offset is not relevant in our case as it would always be zero. The size should be u64 in order to accommodate window sizes supported by PAMU.
-
-
-int iommu_domain_wnd_enable(struct iommu_domain *domain, u32 window, phys_addr_t paddr, u64 size)
-
-We need a mechanism to determine the maximum number of subwindows supported by PAMU. How about representing it in the iommu_domain structure:
-struct  iommu_domain {
-	struct iommu_ops *ops;
-	void *priv;
-	iommu_fault_handler_t handler;
-	void *handler_token;
-	struct iommu_domain_geometry geometry;
-	u32 max_sub_windows; -----> maximum number of sub windows supported by the hardware.
-}
-
-Also, we would need to set the number of sub windows for a geometry, for that again we would need a new domain attribute (DOMAIN_ATTR_SUBWINDOWS).
-
--Varun
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index e39f9db..3f0b15a1 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -158,7 +158,7 @@ config TEGRA_IOMMU_GART
+ 
+ config TEGRA_IOMMU_SMMU
+ 	bool "Tegra SMMU IOMMU Support"
+-	depends on ARCH_TEGRA_3x_SOC && TEGRA_AHB
++	depends on ARCH_TEGRA && TEGRA_AHB
+ 	select IOMMU_API
+ 	help
+ 	  Enables support for remapping discontiguous physical memory
+-- 
+1.7.9.5
