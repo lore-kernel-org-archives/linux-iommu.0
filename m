@@ -1,135 +1,139 @@
-From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [v3 1/1] iommu/tegra: smmu: Support variable MMIO ranges/blocks
-Date: Thu, 31 Jan 2013 10:14:10 +0200
-Message-ID: <1359620050-28727-1-git-send-email-hdoyu@nvidia.com>
+From: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH 4/4] iommu: Add domain window handling functions
+Date: Thu, 31 Jan 2013 09:32:26 +0000
+Message-ID: <C5ECD7A89D1DC44195F34B25E172658D3670ED@039-SN2MPN1-013.039d.mgd.msft.net>
+References: <1359582228-21552-1-git-send-email-joro@8bytes.org>
+	<1359582228-21552-5-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1359582228-21552-5-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Presently SMMU registers are located in discontiguous 3 blocks. They
-are interleaved by MC registers. Ideally SMMU register blocks should
-be in an independent one block, but it is too late to change this H/W
-design. In the future Tegra chips over some generations, it is
-expected that some of register block "size" can be extended towards
-the end and also more new register blocks will be added at most a few
-blocks. The starting address of each existing block won't change. This
-patch allocates multiple number of register blocks dynamically based
-on the info passed from DT. Those ranges are verified in the
-accessors{read,write}. This may sacrifice some performance because a
-new accessors prevents compiler optimization of a fixed size register
-offset calculation. Since SMMU register accesses are not so frequent,
-this would be acceptable. This patch is necessary to unify
-"tegra-smmu.ko" over some Tegra SoC generations.
 
-Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Reviewed-by: Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/tegra-smmu.c |   61 ++++++++++++++++++++++++++------------------
- 1 file changed, 36 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 25c1210..024a7e1 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -293,7 +293,11 @@ struct smmu_debugfs_info {
-  * Per SMMU device - IOMMU device
-  */
- struct smmu_device {
--	void __iomem	*regs[NUM_SMMU_REG_BANKS];
-+	void __iomem	*regbase;	/* register offset base */
-+	void __iomem	**regs;		/* register block start address array */
-+	void __iomem	**rege;		/* register block end address array */
-+	int		nregs;		/* number of register blocks */
-+
- 	unsigned long	iovmm_base;	/* remappable base address */
- 	unsigned long	page_count;	/* total remappable size */
- 	spinlock_t	lock;
-@@ -325,35 +329,33 @@ static struct smmu_device *smmu_handle; /* unique for a system */
-  */
- static inline u32 smmu_read(struct smmu_device *smmu, size_t offs)
- {
--	BUG_ON(offs < 0x10);
--	if (offs < 0x3c)
--		return readl(smmu->regs[0] + offs - 0x10);
--	BUG_ON(offs < 0x1f0);
--	if (offs < 0x200)
--		return readl(smmu->regs[1] + offs - 0x1f0);
--	BUG_ON(offs < 0x228);
--	if (offs < 0x284)
--		return readl(smmu->regs[2] + offs - 0x228);
-+	int i;
-+
-+	for (i = 0; i < smmu->nregs; i++) {
-+		void __iomem *addr = smmu->regbase + offs;
-+
-+		BUG_ON(addr < smmu->regs[i]);
-+		if (addr <= smmu->rege[i])
-+			return readl(addr);
-+	}
-+
- 	BUG();
- }
- 
- static inline void smmu_write(struct smmu_device *smmu, u32 val, size_t offs)
- {
--	BUG_ON(offs < 0x10);
--	if (offs < 0x3c) {
--		writel(val, smmu->regs[0] + offs - 0x10);
--		return;
--	}
--	BUG_ON(offs < 0x1f0);
--	if (offs < 0x200) {
--		writel(val, smmu->regs[1] + offs - 0x1f0);
--		return;
--	}
--	BUG_ON(offs < 0x228);
--	if (offs < 0x284) {
--		writel(val, smmu->regs[2] + offs - 0x228);
--		return;
-+	int i;
-+
-+	for (i = 0; i < smmu->nregs; i++) {
-+		void __iomem *addr = smmu->regbase + offs;
-+
-+		BUG_ON(addr < smmu->regs[i]);
-+		if (addr <= smmu->rege[i]) {
-+			writel(val, addr);
-+			return;
-+		}
- 	}
-+
- 	BUG();
- }
- 
-@@ -1170,7 +1172,13 @@ static int tegra_smmu_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 	}
- 
--	for (i = 0; i < ARRAY_SIZE(smmu->regs); i++) {
-+	smmu->nregs = pdev->num_resources;
-+	smmu->regs = devm_kzalloc(dev, 2 * smmu->nregs * sizeof(*smmu->regs),
-+				  GFP_KERNEL);
-+	smmu->rege = smmu->regs + smmu->nregs;
-+	if (!smmu->regs)
-+		return -ENOMEM;
-+	for (i = 0; i < smmu->nregs; i++) {
- 		struct resource *res;
- 
- 		res = platform_get_resource(pdev, IORESOURCE_MEM, i);
-@@ -1179,7 +1187,10 @@ static int tegra_smmu_probe(struct platform_device *pdev)
- 		smmu->regs[i] = devm_request_and_ioremap(&pdev->dev, res);
- 		if (!smmu->regs[i])
- 			return -EBUSY;
-+		smmu->rege[i] = smmu->regs[i] + resource_size(res);
- 	}
-+	/* Same as "mc" 1st regiter block start address */
-+	smmu->regbase = (void __iomem *)((u32)smmu->regs[0] & ~PAGE_MASK);
- 
- 	err = of_get_dma_window(dev->of_node, NULL, 0, NULL, &base, &size);
- 	if (err)
--- 
-1.7.9.5
+> -----Original Message-----
+> From: Joerg Roedel [mailto:joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org]
+> Sent: Thursday, January 31, 2013 3:14 AM
+> To: Sethi Varun-B16395
+> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Joerg
+> Roedel
+> Subject: [PATCH 4/4] iommu: Add domain window handling functions
+> 
+> Add the iommu_domain_wnd_enable() and iommu_domain_wnd_disable()
+> functions to the IOMMU-API. These functions will be used to setup domains
+> that are based on subwindows and not on paging.
+> 
+> Signed-off-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> ---
+>  drivers/iommu/iommu.c |   20 ++++++++++++++++++++
+>  include/linux/iommu.h |   18 ++++++++++++++++++
+>  2 files changed, 38 insertions(+)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c index
+> ab9dafd..55ae3bf 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -852,6 +852,26 @@ size_t iommu_unmap(struct iommu_domain *domain,
+> unsigned long iova, size_t size)  }  EXPORT_SYMBOL_GPL(iommu_unmap);
+> 
+> +
+> +int iommu_domain_wnd_enable(struct iommu_domain *domain, u32 window,
+> +			    unsigned long offset, size_t size) {
+> +	if (unlikely(domain->ops->domain_wnd_enable == NULL))
+> +		return -ENODEV;
+> +
+> +	return domain->ops->domain_wnd_enable(domain, window, offset,
+> size); }
+> +EXPORT_SYMBOL_GPL(iommu_domain_wnd_enable);
+> +
+> +void iommu_domain_wnd_disable(struct iommu_domain *domain, u32 window)
+> +{
+> +	if (unlikely(domain->ops->domain_wnd_disable == NULL))
+> +		return;
+> +
+> +	return domain->ops->domain_wnd_disable(domain, window); }
+> +EXPORT_SYMBOL_GPL(iommu_domain_wnd_disable);
+> +
+>  static int __init iommu_init(void)
+>  {
+>  	iommu_group_kset = kset_create_and_add("iommu_groups",
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h index
+> 26066f5..f01657e 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -90,6 +90,9 @@ struct iommu_ops {
+>  		   phys_addr_t paddr, size_t size, int prot);
+>  	size_t (*unmap)(struct iommu_domain *domain, unsigned long iova,
+>  		     size_t size);
+> +	int (*domain_wnd_enable)(struct iommu_domain *domain, u32 window,
+> +				   unsigned long offset, size_t size);
+> +	void (*domain_wnd_disable)(struct iommu_domain *domain, u32
+> window);
+>  	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain,
+>  				    unsigned long iova);
+>  	int (*domain_has_cap)(struct iommu_domain *domain, @@ -123,6 +126,9
+> @@ extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
+>  		     phys_addr_t paddr, size_t size, int prot);  extern
+> size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+>  		       size_t size);
+> +extern int iommu_domain_wnd_enable(struct iommu_domain *domain, u32
+> window,
+> +				   unsigned long offset, size_t size); extern
+> void
+> +iommu_domain_wnd_disable(struct iommu_domain *domain, u32 window);
+>  extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain,
+>  				      unsigned long iova);
+>  extern int iommu_domain_has_cap(struct iommu_domain *domain, @@ -240,6
+> +246,18 @@ static inline int iommu_unmap(struct iommu_domain *domain,
+> unsigned long iova,
+>  	return -ENODEV;
+>  }
+> 
+> +static inline int iommu_domain_wnd_enable(struct iommu_domain *domain,
+> +					  u32 window, unsigned long offset,
+> +					  size_t size)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+> +static inline void iommu_domain_wnd_disable(struct iommu_domain *domain,
+> +					    u32 window)
+> +{
+> +}
+> +
+>  static inline phys_addr_t iommu_iova_to_phys(struct iommu_domain
+> *domain,
+>  					     unsigned long iova)
+>  {
+We would need a corresponding physical address in the iommu_domain_wnd_enable call. The sub windows can point to physically discontiguous locations. Also, although we support partial mappings where the sub window size < geometry_size/max_sub_windows, but the mapping would always start from the sub window base (sub window base address would be aligned to (geometry size)/max_sub_windows). The user of the API would have to ensure that the iova is aligned to the max sub window size. So, offset is not relevant in our case as it would always be zero. The size should be u64 in order to accommodate window sizes supported by PAMU.
+
+
+int iommu_domain_wnd_enable(struct iommu_domain *domain, u32 window, phys_addr_t paddr, u64 size)
+
+We need a mechanism to determine the maximum number of subwindows supported by PAMU. How about representing it in the iommu_domain structure:
+struct  iommu_domain {
+	struct iommu_ops *ops;
+	void *priv;
+	iommu_fault_handler_t handler;
+	void *handler_token;
+	struct iommu_domain_geometry geometry;
+	u32 max_sub_windows; -----> maximum number of sub windows supported by the hardware.
+}
+
+Also, we would need to set the number of sub windows for a geometry, for that again we would need a new domain attribute (DOMAIN_ATTR_SUBWINDOWS).
+
+-Varun
