@@ -1,40 +1,127 @@
-From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [v2 1/1] iommu/tegra: smmu: Change SMMU's dependency on ARCH_TEGRA
-Date: Thu, 31 Jan 2013 12:43:08 +0200
-Message-ID: <1359628988-3678-1-git-send-email-hdoyu@nvidia.com>
+From: Shuah Khan <shuah.khan@hp.com>
+Subject: IO_PAGE_FAULTs on unity mapped regions during amd_iommu_init() in
+ Linux 3.4
+Date: Thu, 31 Jan 2013 11:33:30 -0700
+Message-ID: <1359657210.6061.3.camel@lorien2>
+Reply-To: shuah.khan@hp.com
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <stable-owner@vger.kernel.org>
+Sender: stable-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: LKML <linux-kernel@vger.kernel.org>, stable <stable@vger.kernel.org>, iommu@lists.linux-foundation.org, shuahkhan@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-Theoretically TEGRA_IOMMU_SMMU depends on ARCH_TEGRA_3x_SOC and
-ARCH_TEGRA_114_SOC only. This patch allows a Tegra20 only kernel to
-enable SMMU(Tegra20 doesn't have a SMMU), which could avoid editing
-this Kconfig entry every time we add a new chip later.
+Joerg,
 
-Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
----
-v1:
-http://lists.linuxfoundation.org/pipermail/iommu/2013-January/005051.html
----
- drivers/iommu/Kconfig |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I am seeing IO_PAGE_FAULTs on AMD system running releases prior to 3.7.
+I focused my debug and testing on 3.4. I am hoping to find a solution
+for this problem in 3.4. I don't see any IO_PAGE_FAULTs with 3.7 and
+later releases on this system.
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index e39f9db..3f0b15a1 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -158,7 +158,7 @@ config TEGRA_IOMMU_GART
- 
- config TEGRA_IOMMU_SMMU
- 	bool "Tegra SMMU IOMMU Support"
--	depends on ARCH_TEGRA_3x_SOC && TEGRA_AHB
-+	depends on ARCH_TEGRA && TEGRA_AHB
- 	select IOMMU_API
- 	help
- 	  Enables support for remapping discontiguous physical memory
--- 
-1.7.9.5
+On this system BIOS specifies Unity mapped (direct mapped) exclusion
+ranges in IVMDs for several devices. These regions are in use during
+BIOS hand-off to kernel and continue to be used during kernel boot and
+run-time.
+
+Access to these ranges continues to work with no errors until AMD IOMMU
+driver disables and re-enables IOMMU in enable_iommus(). These faults
+don't persist and appear between the enable_iommus() call and before
+amd_iommu_init() gets done printing "AMD-Vi: Lazy IO/TLB flushing
+enabled" message.
+
+Read requests from device 02:00.2 and write request from device 03:00.0
+to these unity mapped regions fail. The reason appears to be because
+domain id is 0.
+
+Domain gets assigned in amd_iommu_init_dma_ops() and unity maps are
+handled. I don't see enable_iommus() doing anything to these unity
+mapped exclusion ranges. So I am assuming that is not the issue,
+however, could domain ids get flushed? More like, why do these faults
+show up in this window? These are direct mapped, so there is no need for
+any translations.
+
+Please see below for IVMD dump and IO_PAGE_FAULT analysis.
+
+Dump of these ranges from dmesg:
+
+[    5.322280] AMD-Vi: IVMD_TYPE_ALL             devid_start: 00:00.0
+devid_end: 04:00.3 range_start: 00000000000f0000 range_end:
+0000000000100000 flags: 7
+[    5.322367] AMD-Vi: IVMD_TYPE_ALL             devid_start: 00:00.0
+devid_end: 04:00.3 range_start: 00000000bff70000 range_end:
+00000000bfff0000 flags: 7
+[    5.322454] AMD-Vi: IVMD_TYPE_ALL             devid_start: 00:00.0
+devid_end: 04:00.3 range_start: 00000000000e8000 range_end:
+00000000000e9000 flags: 7
+[    5.322540] AMD-Vi: IVMD_TYPE_ALL             devid_start: 00:00.0
+devid_end: 04:00.3 range_start: 00000000bdffe000 range_end:
+00000000be000000 flags: 7
+[    5.322627] AMD-Vi: IVMD_TYPE_ALL             devid_start: 00:00.0
+devid_end: 04:00.3 range_start: 00000000bdff9000 range_end:
+00000000bdffd000 flags: 7
+[    5.322714] AMD-Vi: IVMD_TYPE_ALL             devid_start: 00:00.0
+devid_end: 04:00.3 range_start: 00000000bdfe9000 range_end:
+00000000bdff9000 flags: 7
+
+
+Now to IO_PAGE_FAULT analysis: My observations in ""
+
+[   15.281594] AMD-Vi: Event logged [IO_PAGE_FAULT device=02:00.2
+domain=0x0000 address=0x00000000bdffe000 flags=0x0050]
+[   15.281861] AMD-Vi: Event logged [IO_PAGE_FAULT device=02:00.2
+domain=0x0000 address=0x00000000bdff9080 flags=0x0050]
+[   15.281990] AMD-Vi: Event logged [IO_PAGE_FAULT device=02:00.2
+domain=0x0000 address=0x00000000bdff9100 flags=0x0050]
+
+Domain ID is zero - "PASID not valid"
+flags=0x0050 - "Bits PE and PR are set in the Event."
+TR: translation TR=0
+  "TR is 0 that means it is a transaction request"
+RZ: reserved bit RZ=0
+  "Since PR is set RZ is meaningful, I/O page fault is due to an invalid
+   level encoding"
+PE: permission indicator PE=1
+  "Device doesn't have permission for this transaction"
+RW: read-write RW=0
+  "RW is meaningful since PR=1, TR=0, and I=0. It is a Read transaction"
+PR: Present PR=1
+  "PR = 1 means transaction is to a page marked present"
+I: interrupt I=0
+  "transaction is a memory request"
+US: user-supervisor US=0
+  "Supervisor privileges were asserted."
+NX: no execute NX=0
+  "0 upstream transaction lacks a PASID TLP prefix. Domain ID is zero."
+GN: guest/nested GN=0
+  "Transaction used a nested address (GPA)."
+
+[   15.281733] AMD-Vi: Event logged [IO_PAGE_FAULT device=03:00.0
+domain=0x0000 address=0x00000000bdff9160 flags=0x0070]
+
+Domain ID is zero - "PASID is not valid"
+flags=0x0070 - "Bits PE, RW, and PR are set in the Event."
+TR: translation TR=0
+  "TR is 0 that means it is a transaction request"
+RZ: reserved bit RZ=0
+  "Since PR is set RZ is meaningful, I/O page fault is due to an invalid
+   level encoding"
+PE: permission indicator PE=1
+  "Device doesn't have permission for this transaction"
+RW: read-write RW=1
+  "RW is meaningful since PR=1, TR=0, and I=0. It is a Write
+transaction"
+PR: Present PR=1
+  "PR = 1 means transaction is to a page marked present"
+I: interrupt I=0
+  "transaction is a memory request"
+US: user-supervisor US=0
+  "Supervisor privileges were asserted."
+NX: no execute NX=0
+  "0 upstream transaction lacks a PASID TLP prefix. Domain ID is zero."
+GN: guest/nested GN=0
+  "Transaction used a nested address (GPA)."
+
+Thanks,
+-- Shuah
