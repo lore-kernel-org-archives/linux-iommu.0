@@ -1,43 +1,43 @@
-From: Sami Liedes <sliedes@nvidia.com>
-Subject: [PATCH] iommu/tegra: Add missing spinlock initialization
-Date: Mon, 4 Feb 2013 14:31:48 +0200
-Message-ID: <1359981110-9924-1-git-send-email-sliedes@nvidia.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 4/4] iommu: Add domain window handling functions
+Date: Mon, 4 Feb 2013 14:02:14 +0100
+Message-ID: <20130204130214.GN25591@8bytes.org>
+References: <1359582228-21552-1-git-send-email-joro@8bytes.org>
+	<1359582228-21552-5-git-send-email-joro@8bytes.org>
+	<C5ECD7A89D1DC44195F34B25E172658D3670ED@039-SN2MPN1-013.039d.mgd.msft.net>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: Sami Liedes <sliedes@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Hiroshi Doyu <hdoyu@nvidia.com>, Stephen Warren <swarren@nvidia.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thierry Reding <thierry.reding@avionic-design.de>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <C5ECD7A89D1DC44195F34B25E172658D3670ED-RL0Hj/+nBVDYdknt8GnhQq4g8xLGJsHaLnY5E4hWTkheoWH0uzbU5w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Fix tegra_smmu_probe() to initialize client_lock spinlocks in
-per-address-space structures.
+On Thu, Jan 31, 2013 at 09:32:26AM +0000, Sethi Varun-B16395 wrote:
+> We need a mechanism to determine the maximum number of subwindows supported by PAMU. How about representing it in the iommu_domain structure:
+> struct  iommu_domain {
+> 	struct iommu_ops *ops;
+> 	void *priv;
+> 	iommu_fault_handler_t handler;
+> 	void *handler_token;
+> 	struct iommu_domain_geometry geometry;
+> 	u32 max_sub_windows; -----> maximum number of sub windows supported by the hardware.
+> }
 
-Signed-off-by: Sami Liedes <sliedes@nvidia.com>
----
- drivers/iommu/tegra-smmu.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+I`ll leave that flag to the private-data of the IOMMU domain. Instead I
+added a DOMAIN_ATTR_WINDOWS attribute to get/set the number of
+subwindows. I'll post the updated patch-set soon.
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index f08dbcd..46cc8cf 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -1,7 +1,7 @@
- /*
-  * IOMMU API for SMMU in Tegra30
-  *
-- * Copyright (c) 2011-2012, NVIDIA CORPORATION.  All rights reserved.
-+ * Copyright (c) 2011-2013, NVIDIA CORPORATION.  All rights reserved.
-  *
-  * This program is free software; you can redistribute it and/or modify it
-  * under the terms and conditions of the GNU General Public License,
-@@ -1217,6 +1217,7 @@ static int tegra_smmu_probe(struct platform_device *pdev)
- 		as->pte_attr = _PTE_ATTR;
- 
- 		spin_lock_init(&as->lock);
-+		spin_lock_init(&as->client_lock);
- 		INIT_LIST_HEAD(&as->client);
- 	}
- 	spin_lock_init(&smmu->lock);
--- 
-1.7.9.5
+
+	Joerg
