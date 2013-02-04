@@ -1,42 +1,118 @@
-From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [v2 1/1] iommu/tegra: smmu: Change SMMU's dependency on
- ARCH_TEGRA
-Date: Mon, 4 Feb 2013 17:53:01 +0100
-Message-ID: <20130204.185301.977259448309722798.hdoyu@nvidia.com>
-References: <1359628988-3678-1-git-send-email-hdoyu@nvidia.com><20130204.102732.652026294649237107.hdoyu@nvidia.com>
+From: Stuart Yoder <b08248-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 4/5] iommu: Add domain window handling functions
+Date: Mon, 4 Feb 2013 12:10:51 -0600
+Message-ID: <CALRxmdCiSZgoqd8tp90kPCdA=s7SWZCTwKsFnWu7S5=U7+eRLQ@mail.gmail.com>
+References: <1359983924-28952-1-git-send-email-joro@8bytes.org>
+	<1359983924-28952-5-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20130204.102732.652026294649237107.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1359983924-28952-5-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote @ Mon, 04 Feb 2013 10:27:32 +0200 (EET):
+On Mon, Feb 4, 2013 at 7:18 AM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> Add the iommu_domain_window_enable() and iommu_domain_window_disable()
+> functions to the IOMMU-API. These functions will be used to setup
+> domains that are based on subwindows and not on paging.
+>
+> Signed-off-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> ---
+>  drivers/iommu/iommu.c |   20 ++++++++++++++++++++
+>  include/linux/iommu.h |   22 ++++++++++++++++++++++
+>  2 files changed, 42 insertions(+)
+>
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index ab9dafd..0fdb7db 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -852,6 +852,26 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
+>  }
+>  EXPORT_SYMBOL_GPL(iommu_unmap);
+>
+> +
+> +int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
+> +                              phys_addr_t paddr, size_t size)
+> +{
+> +       if (unlikely(domain->ops->domain_window_enable == NULL))
+> +               return -ENODEV;
+> +
+> +       return domain->ops->domain_window_enable(domain, wnd_nr, paddr, size);
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_domain_window_enable);
+> +
+> +void iommu_domain_window_disable(struct iommu_domain *domain, u32 wnd_nr)
+> +{
+> +       if (unlikely(domain->ops->domain_window_disable == NULL))
+> +               return;
+> +
+> +       return domain->ops->domain_window_disable(domain, wnd_nr);
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_domain_window_disable);
+> +
+>  static int __init iommu_init(void)
+>  {
+>         iommu_group_kset = kset_create_and_add("iommu_groups",
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 26066f5..0cba2d8 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -101,6 +101,12 @@ struct iommu_ops {
+>                                enum iommu_attr attr, void *data);
+>         int (*domain_set_attr)(struct iommu_domain *domain,
+>                                enum iommu_attr attr, void *data);
+> +
+> +       /* Window handling functions */
+> +       int (*domain_window_enable)(struct iommu_domain *domain, u32 wnd_nr,
+> +                                   phys_addr_t paddr, size_t size);
+> +       void (*domain_window_disable)(struct iommu_domain *domain, u32 wnd_nr);
+> +
+>         unsigned long pgsize_bitmap;
+>  };
+>
+> @@ -158,6 +164,10 @@ extern int iommu_domain_get_attr(struct iommu_domain *domain, enum iommu_attr,
+>  extern int iommu_domain_set_attr(struct iommu_domain *domain, enum iommu_attr,
+>                                  void *data);
+>
+> +/* Window handling function prototypes */
+> +extern int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
+> +                                     phys_addr_t offset, size_t size);
+> +extern void iommu_domain_window_disable(struct iommu_domain *domain, u32 wnd_nr);
+>  /**
+>   * report_iommu_fault() - report about an IOMMU fault to the IOMMU framework
+>   * @domain: the iommu domain where the fault has happened
+> @@ -240,6 +250,18 @@ static inline int iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+>         return -ENODEV;
+>  }
+>
+> +static inline int iommu_domain_window_enable(struct iommu_domain *domain,
+> +                                            u32 wnd_nr, phys_addr_t paddr,
+> +                                            size_t size)
+> +{
+> +       return -ENODEV;
+> +}
+> +
+> +static inline void iommu_domain_window_disable(struct iommu_domain *domain,
+> +                                              u32 wnd_nr)
+> +{
+> +}
+> +
+>  static inline phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain,
+>                                              unsigned long iova)
+>  {
 
-> Hi Joerg,
-> 
-> Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote @ Thu, 31 Jan 2013 11:43:08 +0100:
-> 
-> > Theoretically TEGRA_IOMMU_SMMU depends on ARCH_TEGRA_3x_SOC and
-> > ARCH_TEGRA_114_SOC only. This patch allows a Tegra20 only kernel to
-> > enable SMMU(Tegra20 doesn't have a SMMU), which could avoid editing
-> > this Kconfig entry every time we add a new chip later.
-> 
-> Is there any chance to get this patch merged in v3.9?
-> 
-> Also there's another patch for v3.9:
->   [v2 1/1] iommu/tegra: smmu: Change SMMU's dependency on ARCH_TEGRA
->   http://lists.linuxfoundation.org/pipermail/iommu/2013-January/005129.html
+This API looks workable.   The one change we need is that the size argument in
+the enable API needs to be 64 bits.   Our window sizes can exceed 4GB.
 
-The above link is pointing this mail wrongly. So the pending patches for v3.9 are:
-
- - [v3 1/1] iommu/tegra: smmu: Support variable MMIO ranges/blocks
-   http://lists.linuxfoundation.org/pipermail/iommu/2013-January/005127.html
- 
- - [v2 1/1] iommu/tegra: smmu: Change SMMU's dependency on ARCH_TEGRA
-   http://lists.linuxfoundation.org/pipermail/iommu/2013-January/005129.html
-
-Joerg, could you take them merged in for v3.9?
+Stuart
