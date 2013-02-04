@@ -1,77 +1,112 @@
-From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [v3 1/1] iommu/tegra: smmu: Support variable MMIO ranges/blocks
-Date: Mon, 04 Feb 2013 13:35:45 -0700
-Message-ID: <51101BA1.5090208@wwwdotorg.org>
-References: <1359620050-28727-1-git-send-email-hdoyu@nvidia.com><20130204195232.GA15278@8bytes.org> <20130204.223114.121259250064618894.hdoyu@nvidia.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: PCI warning on boot 3.8.0-rc1
+Date: Mon, 04 Feb 2013 13:36:04 -0700
+Message-ID: <1360010164.11144.542.camel@bling.home>
+References: <20130116143853.339dd89b@nehalam.linuxnetplumber.net>
+	<CAErSpo5eOE_=Ob2jN7ACy0eJBOa8k36XqCbHnGTCs-wfiy8tiw@mail.gmail.com>
+	<20130204103645.38ae2d5e@nehalam.linuxnetplumber.net>
+	<1360009684.11144.539.camel@bling.home>
+	<20130204123041.31e402df@nehalam.linuxnetplumber.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20130204.223114.121259250064618894.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20130204123041.31e402df-We1ePj4FEcvRI77zikRAJc56i+j3xesD0e7PPNI6Mm0@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Stephen Hemminger <stephen-OTpzqLSitTUnbdJkjeBofR2eb7JE58TQ@public.gmane.org>
+Cc: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 02/04/2013 01:31 PM, Hiroshi Doyu wrote:
-> Hi Joerg,
+On Mon, 2013-02-04 at 12:30 -0800, Stephen Hemminger wrote:
+> On Mon, 04 Feb 2013 13:28:04 -0700
+> Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
 > 
-> Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote @ Mon, 4 Feb 2013 20:53:32 +0100:
+> > On Mon, 2013-02-04 at 10:36 -0800, Stephen Hemminger wrote:
+> > > > I think drivers/pci/search.c is identical between 3.7 and 3.8-rc1.  Is
+> > > > this the first time you've turned on the IOMMU on that box?
+> > > 
+> > > It exists in 3.7 and earlier kernels, just haven't turned on same config.
+> > > 
+> > > > It's the same warning as in this bugzilla:
+> > > > https://bugzilla.kernel.org/show_bug.cgi?id=44881, and there's a patch
+> > > > there at https://bugzilla.kernel.org/show_bug.cgi?id=44881#c11, but
+> > > > it's just a quirk that turns off VT-d if we find certain broken
+> > > > bridges.  It doesn't look like you have any of those (although I don't
+> > > > know what you have at 05:00.0).
+> > > > 
+> > > > Bjorn
+> > > 
+> > > This is a standard ASUS motherboard, and don't want to disable VT-d.
+> > 
+> > Stephen,
+> > 
+> > Can you give the lspci -vvv of device 5:00.0 to see if it's one we've
+> > seen before?  Does the patch below help?
 > 
->>>  static inline u32 smmu_read(struct smmu_device *smmu, size_t offs)
->>>  {
->>> -	BUG_ON(offs < 0x10);
->>> -	if (offs < 0x3c)
->>> -		return readl(smmu->regs[0] + offs - 0x10);
->>> -	BUG_ON(offs < 0x1f0);
->>> -	if (offs < 0x200)
->>> -		return readl(smmu->regs[1] + offs - 0x1f0);
->>> -	BUG_ON(offs < 0x228);
->>> -	if (offs < 0x284)
->>> -		return readl(smmu->regs[2] + offs - 0x228);
->>> +	int i;
->>> +
->>> +	for (i = 0; i < smmu->nregs; i++) {
->>> +		void __iomem *addr = smmu->regbase + offs;
->>> +
->>> +		BUG_ON(addr < smmu->regs[i]);
->>> +		if (addr <= smmu->rege[i])
->>> +			return readl(addr);
->>> +	}
->>
->> This loop is purely for checking offset to be valid. And this loop is
->> repeated in the smmu_write() function. I queued a patch on-top to make
->> this more clear. Please double-check:
 > 
-> Actually I did the similar thing in the first version of this patch(*1)
-> 
-> +static inline void smmu_check_reg_range(size_t offs)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < smmu->nregs; i++) {
-> +	    BUG_ON(offs < smmu->regs[i] - smmu->regbase);
-> +	    		if (offs <= smmu->rege[i] - smmu->regbase)
-> +			   	 break;
-> +	 }
-> +}
-> 
-> *1:
-> http://lists.linuxfoundation.org/pipermail/iommu/2013-January/005072.html
-> 
-> Then, Stehpen pointed out about this check function(*2).
-> 
-> "... here, you'd be doing the loop every access anyway, so you may as
-> well not calculate regbase at all, move the body of
-> smmu_check_reg_range() into smmu_read()/smmu_write(), and do the access
-> inside the if statement inside the loop, with the per-range mapping."
+> $ sudo lspci -vvv -s 5:00.0
+> 05:00.0 PCI bridge: ASMedia Technology Inc. ASM1083/1085 PCIe to PCI Bridge (rev 03) (prog-if 01 [Subtractive decode])
 
-Upon reflection, that comment probably isn't correct, since the only way
-to know where each register range begins, relative to the register
-numbers that the driver uses, is to calculate reg_base. So, I think you
-do need reg_base, and Joerg's latest patch seems reasonable.
+Someone has even decided to name this one a PCIe-to-PCI bridge despite
+it lacking a PCIe capability.  Thanks,
 
-> *2:
-> http://lists.linuxfoundation.org/pipermail/iommu/2013-January/005074.html
+Alex
+
+> 	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
+> 	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
+> 	Latency: 0, Cache Line Size: 64 bytes
+> 	Bus: primary=05, secondary=06, subordinate=06, sec-latency=32
+> 	I/O behind bridge: 0000f000-00000fff
+> 	Memory behind bridge: fff00000-000fffff
+> 	Prefetchable memory behind bridge: 00000000fff00000-00000000000fffff
+> 	Secondary status: 66MHz+ FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort- <MAbort+ <SERR- <PERR-
+> 	BridgeCtl: Parity- SERR- NoISA- VGA- MAbort- >Reset- FastB2B-
+> 		PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
+> 	Capabilities: [c0] Subsystem: ASUSTeK Computer Inc. Device 8489
 > 
-> I might not get Stehpen's point in the latest patch(?), though....
+> 
+> > Bjorn, I think we need to quirk it somehow.  So far they've all been
+> > PCI-to-PCI bridges attached to root ports where we expect it's actually
+> > a PCIe-to-PCI bridge.  Seems like maybe we could have the same attached
+> > to a downstream port.  The patch below avoids the WARN and gives us a
+> > device, but of course pci_is_pcie reports wrong for this device and may
+> > cause some trickle down breakage.  A more complete option might be to
+> > add a is_pcie flag to the device that can be set independent of
+> > pcie_cap.  We'd need to check all the callers for assumptions, but then
+> > we could put the quirk in one place and hopefully fix everything.
+> > Thoughts?  Thanks,
+> > 
+> > Alex
+> > 
+> > 
+> > diff --git a/drivers/pci/search.c b/drivers/pci/search.c
+> > index bf969ba..65ae270 100644
+> > --- a/drivers/pci/search.c
+> > +++ b/drivers/pci/search.c
+> > @@ -42,6 +42,15 @@ pci_find_upstream_pcie_bridge(struct pci_dev *pdev)
+> >  		}
+> >  		/* PCI device should connect to a PCIe bridge */
+> >  		if (pci_pcie_type(pdev) != PCI_EXP_TYPE_PCI_BRIDGE) {
+> > +			/*
+> > +			 * Not all PCIe-to-PCI bridges expose a PCIe
+> > +			 * capability.  If we make it to a PCIe root port
+> > +			 * and the previous device was a PCI-to-PCI bridge,
+> > +			 * assume it was really a PCIe-to-PCI bridge.
+> > +			 */
+> > +			if (pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT &&
+> > +			    tmp && tmp->hdr_type == PCI_HEADER_TYPE_BRIDGE)
+> > +				return tmp;
+> >  			/* Busted hardware? */
+> >  			WARN_ON_ONCE(1);
+> >  			return NULL;
+> > 
+> > 
+> 
