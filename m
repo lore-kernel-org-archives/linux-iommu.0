@@ -1,118 +1,32 @@
-From: Stuart Yoder <b08248-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 4/5] iommu: Add domain window handling functions
-Date: Mon, 4 Feb 2013 12:10:51 -0600
-Message-ID: <CALRxmdCiSZgoqd8tp90kPCdA=s7SWZCTwKsFnWu7S5=U7+eRLQ@mail.gmail.com>
-References: <1359983924-28952-1-git-send-email-joro@8bytes.org>
-	<1359983924-28952-5-git-send-email-joro@8bytes.org>
+From: Stephen Hemminger <stephen@networkplumber.org>
+Subject: Re: PCI warning on boot 3.8.0-rc1
+Date: Mon, 4 Feb 2013 10:36:45 -0800
+Message-ID: <20130204103645.38ae2d5e@nehalam.linuxnetplumber.net>
+References: <20130116143853.339dd89b@nehalam.linuxnetplumber.net>
+ <CAErSpo5eOE_=Ob2jN7ACy0eJBOa8k36XqCbHnGTCs-wfiy8tiw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1359983924-28952-5-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <CAErSpo5eOE_=Ob2jN7ACy0eJBOa8k36XqCbHnGTCs-wfiy8tiw@mail.gmail.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: linux-pci@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org, alex.williamson@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Feb 4, 2013 at 7:18 AM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
-> Add the iommu_domain_window_enable() and iommu_domain_window_disable()
-> functions to the IOMMU-API. These functions will be used to setup
-> domains that are based on subwindows and not on paging.
->
-> Signed-off-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> ---
->  drivers/iommu/iommu.c |   20 ++++++++++++++++++++
->  include/linux/iommu.h |   22 ++++++++++++++++++++++
->  2 files changed, 42 insertions(+)
->
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index ab9dafd..0fdb7db 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -852,6 +852,26 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
->  }
->  EXPORT_SYMBOL_GPL(iommu_unmap);
->
-> +
-> +int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
-> +                              phys_addr_t paddr, size_t size)
-> +{
-> +       if (unlikely(domain->ops->domain_window_enable == NULL))
-> +               return -ENODEV;
-> +
-> +       return domain->ops->domain_window_enable(domain, wnd_nr, paddr, size);
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_domain_window_enable);
-> +
-> +void iommu_domain_window_disable(struct iommu_domain *domain, u32 wnd_nr)
-> +{
-> +       if (unlikely(domain->ops->domain_window_disable == NULL))
-> +               return;
-> +
-> +       return domain->ops->domain_window_disable(domain, wnd_nr);
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_domain_window_disable);
-> +
->  static int __init iommu_init(void)
->  {
->         iommu_group_kset = kset_create_and_add("iommu_groups",
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 26066f5..0cba2d8 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -101,6 +101,12 @@ struct iommu_ops {
->                                enum iommu_attr attr, void *data);
->         int (*domain_set_attr)(struct iommu_domain *domain,
->                                enum iommu_attr attr, void *data);
-> +
-> +       /* Window handling functions */
-> +       int (*domain_window_enable)(struct iommu_domain *domain, u32 wnd_nr,
-> +                                   phys_addr_t paddr, size_t size);
-> +       void (*domain_window_disable)(struct iommu_domain *domain, u32 wnd_nr);
-> +
->         unsigned long pgsize_bitmap;
->  };
->
-> @@ -158,6 +164,10 @@ extern int iommu_domain_get_attr(struct iommu_domain *domain, enum iommu_attr,
->  extern int iommu_domain_set_attr(struct iommu_domain *domain, enum iommu_attr,
->                                  void *data);
->
-> +/* Window handling function prototypes */
-> +extern int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
-> +                                     phys_addr_t offset, size_t size);
-> +extern void iommu_domain_window_disable(struct iommu_domain *domain, u32 wnd_nr);
->  /**
->   * report_iommu_fault() - report about an IOMMU fault to the IOMMU framework
->   * @domain: the iommu domain where the fault has happened
-> @@ -240,6 +250,18 @@ static inline int iommu_unmap(struct iommu_domain *domain, unsigned long iova,
->         return -ENODEV;
->  }
->
-> +static inline int iommu_domain_window_enable(struct iommu_domain *domain,
-> +                                            u32 wnd_nr, phys_addr_t paddr,
-> +                                            size_t size)
-> +{
-> +       return -ENODEV;
-> +}
-> +
-> +static inline void iommu_domain_window_disable(struct iommu_domain *domain,
-> +                                              u32 wnd_nr)
-> +{
-> +}
-> +
->  static inline phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain,
->                                              unsigned long iova)
->  {
 
-This API looks workable.   The one change we need is that the size argument in
-the enable API needs to be 64 bits.   Our window sizes can exceed 4GB.
+> I think drivers/pci/search.c is identical between 3.7 and 3.8-rc1.  Is
+> this the first time you've turned on the IOMMU on that box?
 
-Stuart
+It exists in 3.7 and earlier kernels, just haven't turned on same config.
+
+> It's the same warning as in this bugzilla:
+> https://bugzilla.kernel.org/show_bug.cgi?id=44881, and there's a patch
+> there at https://bugzilla.kernel.org/show_bug.cgi?id=44881#c11, but
+> it's just a quirk that turns off VT-d if we find certain broken
+> bridges.  It doesn't look like you have any of those (although I don't
+> know what you have at 05:00.0).
+> 
+> Bjorn
+
+This is a standard ASUS motherboard, and don't want to disable VT-d.
