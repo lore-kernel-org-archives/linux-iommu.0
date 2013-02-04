@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 2/5] iommu: Check for valid pgsize_bitmap in iommu_map/unmap
-Date: Mon,  4 Feb 2013 14:18:40 +0100
-Message-ID: <1359983924-28952-3-git-send-email-joro@8bytes.org>
+Subject: [PATCH 4/5] iommu: Add domain window handling functions
+Date: Mon,  4 Feb 2013 14:18:42 +0100
+Message-ID: <1359983924-28952-5-git-send-email-joro@8bytes.org>
 References: <1359983924-28952-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,38 +21,93 @@ To: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Stuart 
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-In case the page-size bitmap is zero the code path in
-iommu_map and iommu_unmap is undefined. Make it defined and
-return -ENODEV in this case.
+Add the iommu_domain_window_enable() and iommu_domain_window_disable()
+functions to the IOMMU-API. These functions will be used to setup
+domains that are based on subwindows and not on paging.
 
 Signed-off-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 ---
- drivers/iommu/iommu.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/iommu/iommu.c |   20 ++++++++++++++++++++
+ include/linux/iommu.h |   22 ++++++++++++++++++++++
+ 2 files changed, 42 insertions(+)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index ddbdaca..622360f 100644
+index ab9dafd..0fdb7db 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -734,7 +734,8 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
- 	size_t orig_size = size;
- 	int ret = 0;
+@@ -852,6 +852,26 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
+ }
+ EXPORT_SYMBOL_GPL(iommu_unmap);
  
--	if (unlikely(domain->ops->map == NULL))
-+	if (unlikely(domain->ops->unmap == NULL ||
-+		     domain->ops->pgsize_bitmap == 0UL))
- 		return -ENODEV;
++
++int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
++			       phys_addr_t paddr, size_t size)
++{
++	if (unlikely(domain->ops->domain_window_enable == NULL))
++		return -ENODEV;
++
++	return domain->ops->domain_window_enable(domain, wnd_nr, paddr, size);
++}
++EXPORT_SYMBOL_GPL(iommu_domain_window_enable);
++
++void iommu_domain_window_disable(struct iommu_domain *domain, u32 wnd_nr)
++{
++	if (unlikely(domain->ops->domain_window_disable == NULL))
++		return;
++
++	return domain->ops->domain_window_disable(domain, wnd_nr);
++}
++EXPORT_SYMBOL_GPL(iommu_domain_window_disable);
++
+ static int __init iommu_init(void)
+ {
+ 	iommu_group_kset = kset_create_and_add("iommu_groups",
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 26066f5..0cba2d8 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -101,6 +101,12 @@ struct iommu_ops {
+ 			       enum iommu_attr attr, void *data);
+ 	int (*domain_set_attr)(struct iommu_domain *domain,
+ 			       enum iommu_attr attr, void *data);
++
++	/* Window handling functions */
++	int (*domain_window_enable)(struct iommu_domain *domain, u32 wnd_nr,
++				    phys_addr_t paddr, size_t size);
++	void (*domain_window_disable)(struct iommu_domain *domain, u32 wnd_nr);
++
+ 	unsigned long pgsize_bitmap;
+ };
  
- 	/* find out the minimum page size supported */
-@@ -808,7 +809,8 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
- 	size_t unmapped_page, unmapped = 0;
- 	unsigned int min_pagesz;
+@@ -158,6 +164,10 @@ extern int iommu_domain_get_attr(struct iommu_domain *domain, enum iommu_attr,
+ extern int iommu_domain_set_attr(struct iommu_domain *domain, enum iommu_attr,
+ 				 void *data);
  
--	if (unlikely(domain->ops->unmap == NULL))
-+	if (unlikely(domain->ops->unmap == NULL ||
-+		     domain->ops->pgsize_bitmap == 0UL))
- 		return -ENODEV;
++/* Window handling function prototypes */
++extern int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
++				      phys_addr_t offset, size_t size);
++extern void iommu_domain_window_disable(struct iommu_domain *domain, u32 wnd_nr);
+ /**
+  * report_iommu_fault() - report about an IOMMU fault to the IOMMU framework
+  * @domain: the iommu domain where the fault has happened
+@@ -240,6 +250,18 @@ static inline int iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+ 	return -ENODEV;
+ }
  
- 	/* find out the minimum page size supported */
++static inline int iommu_domain_window_enable(struct iommu_domain *domain,
++					     u32 wnd_nr, phys_addr_t paddr,
++					     size_t size)
++{
++	return -ENODEV;
++}
++
++static inline void iommu_domain_window_disable(struct iommu_domain *domain,
++					       u32 wnd_nr)
++{
++}
++
+ static inline phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain,
+ 					     unsigned long iova)
+ {
 -- 
 1.7.9.5
