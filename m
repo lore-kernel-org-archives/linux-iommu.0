@@ -1,55 +1,44 @@
-From: Stuart Yoder <b08248-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 4/5] iommu: Add domain window handling functions
-Date: Mon, 4 Feb 2013 17:31:51 -0600
-Message-ID: <CALRxmdD9Ock04AoUtF9FT_uY5C5Eb7cSPmtCM6WK=StNB_iYkQ@mail.gmail.com>
-References: <1359983924-28952-1-git-send-email-joro@8bytes.org>
-	<1359983924-28952-5-git-send-email-joro@8bytes.org>
-	<CALRxmdCiSZgoqd8tp90kPCdA=s7SWZCTwKsFnWu7S5=U7+eRLQ@mail.gmail.com>
-	<20130204185650.GP25591@8bytes.org>
+From: Scott Wood <scottwood@freescale.com>
+Subject: Re: [PATCH 4/4] iommu: Add domain window handling functions
+Date: Mon, 4 Feb 2013 17:36:20 -0600
+Message-ID: <1360020980.14901.17@snotra>
+References: <1359582228-21552-1-git-send-email-joro@8bytes.org>
+	<1359582228-21552-5-git-send-email-joro@8bytes.org>
+	<C5ECD7A89D1DC44195F34B25E172658D3670ED@039-SN2MPN1-013.039d.mgd.msft.net>
+	<20130204130214.GN25591@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130204185650.GP25591-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"; delsp=Yes; format=Flowed
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20130204130214.GN25591@8bytes.org> (from joro@8bytes.org on
+	Mon Feb  4 07:02:14 2013)
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Sethi Varun-B16395 <B16395@freescale.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Wood Scott-B07421 <B07421@freescale.com>, Yoder Stuart-B08248 <B08248@freescale.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Feb 4, 2013 at 12:56 PM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
-> On Mon, Feb 04, 2013 at 12:10:51PM -0600, Stuart Yoder wrote:
->> On Mon, Feb 4, 2013 at 7:18 AM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
->> > +static inline int iommu_domain_window_enable(struct iommu_domain *domain,
->> > +                                            u32 wnd_nr, phys_addr_t paddr,
->> > +                                            size_t size)
->> > +{
->> > +       return -ENODEV;
->> > +}
->> > +
->> > +static inline void iommu_domain_window_disable(struct iommu_domain *domain,
->> > +                                              u32 wnd_nr)
->> > +{
->> > +}
->> > +
->> >  static inline phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain,
->> >                                              unsigned long iova)
->> >  {
->>
->> This API looks workable.   The one change we need is that the size argument in
->> the enable API needs to be 64 bits.   Our window sizes can exceed 4GB.
->
-> Okay. So if your architecture supports sizes over 2^32 then size_t
-> probably is already 64bits, right?
+On 02/04/2013 07:02:14 AM, Joerg Roedel wrote:
+> On Thu, Jan 31, 2013 at 09:32:26AM +0000, Sethi Varun-B16395 wrote:
+> > We need a mechanism to determine the maximum number of subwindows  
+> supported by PAMU. How about representing it in the iommu_domain  
+> structure:
+> > struct  iommu_domain {
+> > 	struct iommu_ops *ops;
+> > 	void *priv;
+> > 	iommu_fault_handler_t handler;
+> > 	void *handler_token;
+> > 	struct iommu_domain_geometry geometry;
+> > 	u32 max_sub_windows; -----> maximum number of sub windows  
+> supported by the hardware.
+> > }
+> 
+> I`ll leave that flag to the private-data of the IOMMU domain. Instead  
+> I
+> added a DOMAIN_ATTR_WINDOWS attribute to get/set the number of
+> subwindows. I'll post the updated patch-set soon.
 
-No, on a 32-bit platform size_t would generally be 32-bits.  But the PAMU
-is independent of that.   I think we should just make it a u64.
+If it's private data, how does the caller know what sort of geometry it  
+can request?
 
-Stuart
+-Scott
