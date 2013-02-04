@@ -1,25 +1,81 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [v2 1/1] iommu/tegra: smmu: Change SMMU's dependency on
- ARCH_TEGRA
-Date: Mon, 4 Feb 2013 20:56:56 +0100
-Message-ID: <20130204195655.GB15278@8bytes.org>
-References: <1359628988-3678-1-git-send-email-hdoyu@nvidia.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: PCI warning on boot 3.8.0-rc1
+Date: Mon, 04 Feb 2013 13:28:04 -0700
+Message-ID: <1360009684.11144.539.camel@bling.home>
+References: <20130116143853.339dd89b@nehalam.linuxnetplumber.net>
+	<CAErSpo5eOE_=Ob2jN7ACy0eJBOa8k36XqCbHnGTCs-wfiy8tiw@mail.gmail.com>
+	<20130204103645.38ae2d5e@nehalam.linuxnetplumber.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1359628988-3678-1-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20130204103645.38ae2d5e-We1ePj4FEcvRI77zikRAJc56i+j3xesD0e7PPNI6Mm0@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Stephen Hemminger <stephen-OTpzqLSitTUnbdJkjeBofR2eb7JE58TQ@public.gmane.org>
+Cc: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jan 31, 2013 at 12:43:08PM +0200, Hiroshi Doyu wrote:
-> Theoretically TEGRA_IOMMU_SMMU depends on ARCH_TEGRA_3x_SOC and
-> ARCH_TEGRA_114_SOC only. This patch allows a Tegra20 only kernel to
-> enable SMMU(Tegra20 doesn't have a SMMU), which could avoid editing
-> this Kconfig entry every time we add a new chip later.
+On Mon, 2013-02-04 at 10:36 -0800, Stephen Hemminger wrote:
+> > I think drivers/pci/search.c is identical between 3.7 and 3.8-rc1.  Is
+> > this the first time you've turned on the IOMMU on that box?
 > 
-> Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> It exists in 3.7 and earlier kernels, just haven't turned on same config.
+> 
+> > It's the same warning as in this bugzilla:
+> > https://bugzilla.kernel.org/show_bug.cgi?id=44881, and there's a patch
+> > there at https://bugzilla.kernel.org/show_bug.cgi?id=44881#c11, but
+> > it's just a quirk that turns off VT-d if we find certain broken
+> > bridges.  It doesn't look like you have any of those (although I don't
+> > know what you have at 05:00.0).
+> > 
+> > Bjorn
+> 
+> This is a standard ASUS motherboard, and don't want to disable VT-d.
 
-Applied to arm/tegra, thanks.
+Stephen,
+
+Can you give the lspci -vvv of device 5:00.0 to see if it's one we've
+seen before?  Does the patch below help?
+
+Bjorn, I think we need to quirk it somehow.  So far they've all been
+PCI-to-PCI bridges attached to root ports where we expect it's actually
+a PCIe-to-PCI bridge.  Seems like maybe we could have the same attached
+to a downstream port.  The patch below avoids the WARN and gives us a
+device, but of course pci_is_pcie reports wrong for this device and may
+cause some trickle down breakage.  A more complete option might be to
+add a is_pcie flag to the device that can be set independent of
+pcie_cap.  We'd need to check all the callers for assumptions, but then
+we could put the quirk in one place and hopefully fix everything.
+Thoughts?  Thanks,
+
+Alex
+
+
+diff --git a/drivers/pci/search.c b/drivers/pci/search.c
+index bf969ba..65ae270 100644
+--- a/drivers/pci/search.c
++++ b/drivers/pci/search.c
+@@ -42,6 +42,15 @@ pci_find_upstream_pcie_bridge(struct pci_dev *pdev)
+ 		}
+ 		/* PCI device should connect to a PCIe bridge */
+ 		if (pci_pcie_type(pdev) != PCI_EXP_TYPE_PCI_BRIDGE) {
++			/*
++			 * Not all PCIe-to-PCI bridges expose a PCIe
++			 * capability.  If we make it to a PCIe root port
++			 * and the previous device was a PCI-to-PCI bridge,
++			 * assume it was really a PCIe-to-PCI bridge.
++			 */
++			if (pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT &&
++			    tmp && tmp->hdr_type == PCI_HEADER_TYPE_BRIDGE)
++				return tmp;
+ 			/* Busted hardware? */
+ 			WARN_ON_ONCE(1);
+ 			return NULL;
