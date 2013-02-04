@@ -1,123 +1,180 @@
-From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [v3 1/1] iommu/tegra: smmu: Support variable MMIO ranges/blocks
-Date: Mon, 4 Feb 2013 21:54:07 +0100
-Message-ID: <20130204.225407.2202093543593597795.hdoyu@nvidia.com>
-References: <20130204.223114.121259250064618894.hdoyu@nvidia.com><51101BA1.5090208@wwwdotorg.org><20130204.223921.2367725583637314.hdoyu@nvidia.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: PCI warning on boot 3.8.0-rc1
+Date: Mon, 04 Feb 2013 15:41:24 -0700
+Message-ID: <1360017684.11144.547.camel@bling.home>
+References: <20130116143853.339dd89b@nehalam.linuxnetplumber.net>
+	<CAErSpo5eOE_=Ob2jN7ACy0eJBOa8k36XqCbHnGTCs-wfiy8tiw@mail.gmail.com>
+	<20130204103645.38ae2d5e@nehalam.linuxnetplumber.net>
+	<1360009684.11144.539.camel@bling.home>
 Mime-Version: 1.0
-Content-Type: multipart/mixed;
-	boundary="_002_201302042254072202093543593597795hdoyunvidiacom_"
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20130204.223921.2367725583637314.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1360009684.11144.539.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Stephen Hemminger <stephen-OTpzqLSitTUnbdJkjeBofR2eb7JE58TQ@public.gmane.org>
+Cc: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
---_002_201302042254072202093543593597795hdoyunvidiacom_
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+On Mon, 2013-02-04 at 13:28 -0700, Alex Williamson wrote:
+> On Mon, 2013-02-04 at 10:36 -0800, Stephen Hemminger wrote:
+> > > I think drivers/pci/search.c is identical between 3.7 and 3.8-rc1.  Is
+> > > this the first time you've turned on the IOMMU on that box?
+> > 
+> > It exists in 3.7 and earlier kernels, just haven't turned on same config.
+> > 
+> > > It's the same warning as in this bugzilla:
+> > > https://bugzilla.kernel.org/show_bug.cgi?id=44881, and there's a patch
+> > > there at https://bugzilla.kernel.org/show_bug.cgi?id=44881#c11, but
+> > > it's just a quirk that turns off VT-d if we find certain broken
+> > > bridges.  It doesn't look like you have any of those (although I don't
+> > > know what you have at 05:00.0).
+> > > 
+> > > Bjorn
+> > 
+> > This is a standard ASUS motherboard, and don't want to disable VT-d.
+> 
+> Stephen,
+> 
+> Can you give the lspci -vvv of device 5:00.0 to see if it's one we've
+> seen before?  Does the patch below help?
+> 
+> Bjorn, I think we need to quirk it somehow.  So far they've all been
+> PCI-to-PCI bridges attached to root ports where we expect it's actually
+> a PCIe-to-PCI bridge.  Seems like maybe we could have the same attached
+> to a downstream port.  The patch below avoids the WARN and gives us a
+> device, but of course pci_is_pcie reports wrong for this device and may
+> cause some trickle down breakage.  A more complete option might be to
+> add a is_pcie flag to the device that can be set independent of
+> pcie_cap.  We'd need to check all the callers for assumptions, but then
+> we could put the quirk in one place and hopefully fix everything.
+> Thoughts?  Thanks,
 
-Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote @ Mon, 04 Feb 2013 22:39:21 +0200 (EE=
-T):
+This latter approach seems like it might be easier than I expected since
+all the users are so well filtered through the access functions.  A
+quick look through who uses pci_is_pcie seems like this might be
+complete, but more eyes are required.  I'll upload this to the bz for
+those reporters to test as well.  Thoughts?  Thanks,
 
-> > Upon reflection, that comment probably isn't correct, since the only wa=
-y
-> > to know where each register range begins, relative to the register
-> > numbers that the driver uses, is to calculate reg_base. So, I think you
-> > do need reg_base, and Joerg's latest patch seems reasonable.
->=20
-> Ok, now it's clear. Joerg, please get yours merged on the top of this.
+Alex
 
-Joerg, could you please replace v3 with the attached v4?
+commit 60d668a3cdeeb0e29570cf0043736436c146bde8
+Author: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Date:   Mon Feb 4 15:34:34 2013 -0700
 
---_002_201302042254072202093543593597795hdoyunvidiacom_
-Content-Type: text/x-patch;
-	name="0001-iommu-tegra-smmu-Support-variable-MMIO-ranges-blocks.patch"
-Content-Description: 0001-iommu-tegra-smmu-Support-variable-MMIO-ranges-blocks.patch
-Content-Disposition: attachment;
-	filename="0001-iommu-tegra-smmu-Support-variable-MMIO-ranges-blocks.patch";
-	size=4447; creation-date="Mon, 04 Feb 2013 20:54:09 GMT";
-	modification-date="Mon, 04 Feb 2013 20:54:09 GMT"
-Content-Transfer-Encoding: base64
+    pci: Handle unadvertised PCIe bridges
+    
+    There seem to be several PCIe-to-PCI bridges out in the wild that
+    blatantly ignore the PCIe specification and do not expose a PCIe
+    capability.  We can attempt to deduce their existence by looking
+    for PCI bridges directly connected to root ports or downstream
+    ports.  What this means is that pci_is_pcie() does not imply PCIe
+    capability and we un-deprecate is_pcie to denote the difference.
+    All the accesses seem to go through pcie_capability_reg_implemented,
+    so we can significantly limit the footprint of this change by
+    checking things there.
+    
+    Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
-RnJvbSAyZjcxMzM3NDUzNDgzZGEyOTFjMjliNzQ0Y2ExNjU4NTdjOGI4NGU0IE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQ0KRnJvbTogSGlyb3NoaSBEb3l1IDxoZG95dUBudmlkaWEuY29tPg0KRGF0
-ZTogV2VkLCA5IEphbiAyMDEzIDEyOjM4OjQ3ICswMjAwDQpTdWJqZWN0OiBbdjQgMS8xXSBpb21t
-dS90ZWdyYTogc21tdTogU3VwcG9ydCB2YXJpYWJsZSBNTUlPIHJhbmdlcy9ibG9ja3MNCg0KUHJl
-c2VudGx5IFNNTVUgcmVnaXN0ZXJzIGFyZSBsb2NhdGVkIGluIGRpc2NvbnRpZ3VvdXMgMyBibG9j
-a3MuIFRoZXkNCmFyZSBpbnRlcmxlYXZlZCBieSBNQyByZWdpc3RlcnMuIElkZWFsbHkgU01NVSBy
-ZWdpc3RlciBibG9ja3Mgc2hvdWxkDQpiZSBpbiBhbiBpbmRlcGVuZGVudCBvbmUgYmxvY2ssIGJ1
-dCBpdCBpcyB0b28gbGF0ZSB0byBjaGFuZ2UgdGhpcyBIL1cNCmRlc2lnbi4gSW4gdGhlIGZ1dHVy
-ZSBUZWdyYSBjaGlwcyBvdmVyIHNvbWUgZ2VuZXJhdGlvbnMsIGl0IGlzDQpleHBlY3RlZCB0aGF0
-IHNvbWUgb2YgcmVnaXN0ZXIgYmxvY2sgInNpemUiIGNhbiBiZSBleHRlbmRlZCB0b3dhcmRzDQp0
-aGUgZW5kIGFuZCBhbHNvIG1vcmUgbmV3IHJlZ2lzdGVyIGJsb2NrcyB3aWxsIGJlIGFkZGVkIGF0
-IG1vc3QgYSBmZXcNCmJsb2Nrcy4gVGhlIHN0YXJ0aW5nIGFkZHJlc3Mgb2YgZWFjaCBleGlzdGlu
-ZyBibG9jayB3b24ndCBjaGFuZ2UuIFRoaXMNCnBhdGNoIGFsbG9jYXRlcyBtdWx0aXBsZSBudW1i
-ZXIgb2YgcmVnaXN0ZXIgYmxvY2tzIGR5bmFtaWNhbGx5IGJhc2VkDQpvbiB0aGUgaW5mbyBwYXNz
-ZWQgZnJvbSBEVC4gVGhvc2UgcmFuZ2VzIGFyZSB2ZXJpZmllZCBpbiB0aGUNCmFjY2Vzc29yc3ty
-ZWFkLHdyaXRlfS4gVGhpcyBtYXkgc2FjcmlmaWNlIHNvbWUgcGVyZm9ybWFuY2UgYmVjYXVzZSBh
-DQpuZXcgYWNjZXNzb3JzIHByZXZlbnRzIGNvbXBpbGVyIG9wdGltaXphdGlvbiBvZiBhIGZpeGVk
-IHNpemUgcmVnaXN0ZXINCm9mZnNldCBjYWxjdWxhdGlvbi4gU2luY2UgU01NVSByZWdpc3RlciBh
-Y2Nlc3NlcyBhcmUgbm90IHNvIGZyZXF1ZW50LA0KdGhpcyB3b3VsZCBiZSBhY2NlcHRhYmxlLiBU
-aGlzIHBhdGNoIGlzIG5lY2Vzc2FyeSB0byB1bmlmeQ0KInRlZ3JhLXNtbXUua28iIG92ZXIgc29t
-ZSBUZWdyYSBTb0MgZ2VuZXJhdGlvbnMuDQoNClNpZ25lZC1vZmYtYnk6IEhpcm9zaGkgRG95dSA8
-aGRveXVAbnZpZGlhLmNvbT4NClJldmlld2VkLWJ5OiBTdGVwaGVuIFdhcnJlbiA8c3dhcnJlbkBu
-dmlkaWEuY29tPg0KLS0tDQpVcGRhdGU6IFNldCByZWdlIHRoZSBsYXN0IHZhbGlkIGFkZHJlc3Mu
-DQotLS0NCi0tLQ0KIGRyaXZlcnMvaW9tbXUvdGVncmEtc21tdS5jIHwgICA2MSArKysrKysrKysr
-KysrKysrKysrKysrKysrKy0tLS0tLS0tLS0tLS0tLS0tLQ0KIDEgZmlsZSBjaGFuZ2VkLCAzNiBp
-bnNlcnRpb25zKCspLCAyNSBkZWxldGlvbnMoLSkNCg0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9t
-bXUvdGVncmEtc21tdS5jIGIvZHJpdmVycy9pb21tdS90ZWdyYS1zbW11LmMNCmluZGV4IGZjMTc4
-ODkuLjBkNDAzZmUgMTAwNjQ0DQotLS0gYS9kcml2ZXJzL2lvbW11L3RlZ3JhLXNtbXUuYw0KKysr
-IGIvZHJpdmVycy9pb21tdS90ZWdyYS1zbW11LmMNCkBAIC0yOTMsNyArMjkzLDExIEBAIHN0cnVj
-dCBzbW11X2RlYnVnZnNfaW5mbyB7DQogICogUGVyIFNNTVUgZGV2aWNlIC0gSU9NTVUgZGV2aWNl
-DQogICovDQogc3RydWN0IHNtbXVfZGV2aWNlIHsNCi0Jdm9pZCBfX2lvbWVtCSpyZWdzW05VTV9T
-TU1VX1JFR19CQU5LU107DQorCXZvaWQgX19pb21lbQkqcmVnYmFzZTsJLyogcmVnaXN0ZXIgb2Zm
-c2V0IGJhc2UgKi8NCisJdm9pZCBfX2lvbWVtCSoqcmVnczsJCS8qIHJlZ2lzdGVyIGJsb2NrIHN0
-YXJ0IGFkZHJlc3MgYXJyYXkgKi8NCisJdm9pZCBfX2lvbWVtCSoqcmVnZTsJCS8qIHJlZ2lzdGVy
-IGJsb2NrIGVuZCBhZGRyZXNzIGFycmF5ICovDQorCWludAkJbnJlZ3M7CQkvKiBudW1iZXIgb2Yg
-cmVnaXN0ZXIgYmxvY2tzICovDQorDQogCXVuc2lnbmVkIGxvbmcJaW92bW1fYmFzZTsJLyogcmVt
-YXBwYWJsZSBiYXNlIGFkZHJlc3MgKi8NCiAJdW5zaWduZWQgbG9uZwlwYWdlX2NvdW50OwkvKiB0
-b3RhbCByZW1hcHBhYmxlIHNpemUgKi8NCiAJc3BpbmxvY2tfdAlsb2NrOw0KQEAgLTMyNSwzNSAr
-MzI5LDMzIEBAIHN0YXRpYyBzdHJ1Y3Qgc21tdV9kZXZpY2UgKnNtbXVfaGFuZGxlOyAvKiB1bmlx
-dWUgZm9yIGEgc3lzdGVtICovDQogICovDQogc3RhdGljIGlubGluZSB1MzIgc21tdV9yZWFkKHN0
-cnVjdCBzbW11X2RldmljZSAqc21tdSwgc2l6ZV90IG9mZnMpDQogew0KLQlCVUdfT04ob2ZmcyA8
-IDB4MTApOw0KLQlpZiAob2ZmcyA8IDB4M2MpDQotCQlyZXR1cm4gcmVhZGwoc21tdS0+cmVnc1sw
-XSArIG9mZnMgLSAweDEwKTsNCi0JQlVHX09OKG9mZnMgPCAweDFmMCk7DQotCWlmIChvZmZzIDwg
-MHgyMDApDQotCQlyZXR1cm4gcmVhZGwoc21tdS0+cmVnc1sxXSArIG9mZnMgLSAweDFmMCk7DQot
-CUJVR19PTihvZmZzIDwgMHgyMjgpOw0KLQlpZiAob2ZmcyA8IDB4Mjg0KQ0KLQkJcmV0dXJuIHJl
-YWRsKHNtbXUtPnJlZ3NbMl0gKyBvZmZzIC0gMHgyMjgpOw0KKwlpbnQgaTsNCisNCisJZm9yIChp
-ID0gMDsgaSA8IHNtbXUtPm5yZWdzOyBpKyspIHsNCisJCXZvaWQgX19pb21lbSAqYWRkciA9IHNt
-bXUtPnJlZ2Jhc2UgKyBvZmZzOw0KKw0KKwkJQlVHX09OKGFkZHIgPCBzbW11LT5yZWdzW2ldKTsN
-CisJCWlmIChhZGRyIDw9IHNtbXUtPnJlZ2VbaV0pDQorCQkJcmV0dXJuIHJlYWRsKGFkZHIpOw0K
-Kwl9DQorDQogCUJVRygpOw0KIH0NCiANCiBzdGF0aWMgaW5saW5lIHZvaWQgc21tdV93cml0ZShz
-dHJ1Y3Qgc21tdV9kZXZpY2UgKnNtbXUsIHUzMiB2YWwsIHNpemVfdCBvZmZzKQ0KIHsNCi0JQlVH
-X09OKG9mZnMgPCAweDEwKTsNCi0JaWYgKG9mZnMgPCAweDNjKSB7DQotCQl3cml0ZWwodmFsLCBz
-bW11LT5yZWdzWzBdICsgb2ZmcyAtIDB4MTApOw0KLQkJcmV0dXJuOw0KLQl9DQotCUJVR19PTihv
-ZmZzIDwgMHgxZjApOw0KLQlpZiAob2ZmcyA8IDB4MjAwKSB7DQotCQl3cml0ZWwodmFsLCBzbW11
-LT5yZWdzWzFdICsgb2ZmcyAtIDB4MWYwKTsNCi0JCXJldHVybjsNCi0JfQ0KLQlCVUdfT04ob2Zm
-cyA8IDB4MjI4KTsNCi0JaWYgKG9mZnMgPCAweDI4NCkgew0KLQkJd3JpdGVsKHZhbCwgc21tdS0+
-cmVnc1syXSArIG9mZnMgLSAweDIyOCk7DQotCQlyZXR1cm47DQorCWludCBpOw0KKw0KKwlmb3Ig
-KGkgPSAwOyBpIDwgc21tdS0+bnJlZ3M7IGkrKykgew0KKwkJdm9pZCBfX2lvbWVtICphZGRyID0g
-c21tdS0+cmVnYmFzZSArIG9mZnM7DQorDQorCQlCVUdfT04oYWRkciA8IHNtbXUtPnJlZ3NbaV0p
-Ow0KKwkJaWYgKGFkZHIgPD0gc21tdS0+cmVnZVtpXSkgew0KKwkJCXdyaXRlbCh2YWwsIGFkZHIp
-Ow0KKwkJCXJldHVybjsNCisJCX0NCiAJfQ0KKw0KIAlCVUcoKTsNCiB9DQogDQpAQCAtMTE3MCw3
-ICsxMTcyLDEzIEBAIHN0YXRpYyBpbnQgdGVncmFfc21tdV9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1f
-ZGV2aWNlICpwZGV2KQ0KIAkJcmV0dXJuIC1FTk9NRU07DQogCX0NCiANCi0JZm9yIChpID0gMDsg
-aSA8IEFSUkFZX1NJWkUoc21tdS0+cmVncyk7IGkrKykgew0KKwlzbW11LT5ucmVncyA9IHBkZXYt
-Pm51bV9yZXNvdXJjZXM7DQorCXNtbXUtPnJlZ3MgPSBkZXZtX2t6YWxsb2MoZGV2LCAyICogc21t
-dS0+bnJlZ3MgKiBzaXplb2YoKnNtbXUtPnJlZ3MpLA0KKwkJCQkgIEdGUF9LRVJORUwpOw0KKwlz
-bW11LT5yZWdlID0gc21tdS0+cmVncyArIHNtbXUtPm5yZWdzOw0KKwlpZiAoIXNtbXUtPnJlZ3Mp
-DQorCQlyZXR1cm4gLUVOT01FTTsNCisJZm9yIChpID0gMDsgaSA8IHNtbXUtPm5yZWdzOyBpKysp
-IHsNCiAJCXN0cnVjdCByZXNvdXJjZSAqcmVzOw0KIA0KIAkJcmVzID0gcGxhdGZvcm1fZ2V0X3Jl
-c291cmNlKHBkZXYsIElPUkVTT1VSQ0VfTUVNLCBpKTsNCkBAIC0xMTc5LDcgKzExODcsMTAgQEAg
-c3RhdGljIGludCB0ZWdyYV9zbW11X3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYp
-DQogCQlzbW11LT5yZWdzW2ldID0gZGV2bV9yZXF1ZXN0X2FuZF9pb3JlbWFwKCZwZGV2LT5kZXYs
-IHJlcyk7DQogCQlpZiAoIXNtbXUtPnJlZ3NbaV0pDQogCQkJcmV0dXJuIC1FQlVTWTsNCisJCXNt
-bXUtPnJlZ2VbaV0gPSBzbW11LT5yZWdzW2ldICsgcmVzb3VyY2Vfc2l6ZShyZXMpIC0gMTsNCiAJ
-fQ0KKwkvKiBTYW1lIGFzICJtYyIgMXN0IHJlZ2l0ZXIgYmxvY2sgc3RhcnQgYWRkcmVzcyAqLw0K
-KwlzbW11LT5yZWdiYXNlID0gKHZvaWQgX19pb21lbSAqKSgodTMyKXNtbXUtPnJlZ3NbMF0gJiB+
-UEFHRV9NQVNLKTsNCiANCiAJZXJyID0gb2ZfZ2V0X2RtYV93aW5kb3coZGV2LT5vZl9ub2RlLCBO
-VUxMLCAwLCBOVUxMLCAmYmFzZSwgJnNpemUpOw0KIAlpZiAoZXJyKQ0KLS0gDQoxLjcuOS41DQoN
-Cg==
-
---_002_201302042254072202093543593597795hdoyunvidiacom_--
+diff --git a/drivers/pci/access.c b/drivers/pci/access.c
+index 3af0478..3df24e7 100644
+--- a/drivers/pci/access.c
++++ b/drivers/pci/access.c
+@@ -511,7 +511,7 @@ static inline bool pcie_cap_has_rtctl(const struct pci_dev *dev)
+ 
+ static bool pcie_capability_reg_implemented(struct pci_dev *dev, int pos)
+ {
+-	if (!pci_is_pcie(dev))
++	if (!pci_is_pcie(dev) || !pci_pcie_cap(dev))
+ 		return false;
+ 
+ 	switch (pos) {
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index 6186f03..0a87b6b 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -926,20 +926,46 @@ static void pci_read_irq(struct pci_dev *dev)
+ 	dev->irq = irq;
+ }
+ 
++static bool is_unadvertised_pcie_bridge(struct pci_dev *pdev)
++{
++	struct pci_dev *parent;
++
++	if (pdev->hdr_type != PCI_HEADER_TYPE_BRIDGE ||
++	    pci_find_capability(pdev, PCI_CAP_ID_EXP) ||
++            pci_is_root_bus(pdev->bus))
++		return false;
++
++	parent = pdev->bus->self;
++
++	if (pci_is_pcie(parent) &&
++	    (pci_pcie_type(parent) == PCI_EXP_TYPE_ROOT_PORT ||
++	     pci_pcie_type(parent) == PCI_EXP_TYPE_DOWNSTREAM)) {
++		pr_warn("WARNING: Your hardware is broken, device %s appears to be a\n Legacy PCI device attached directly to a PCIe device which is not a\n PCIe-to-PCI bridge.  Per section 7.8 of the PCI Express 3.0 spec, the\n PCI express capability structure is required for PCI express device\nfunctions.\n",
++		        pci_name(pdev));
++		return true;
++	}
++
++	return false;
++}
++
+ void set_pcie_port_type(struct pci_dev *pdev)
+ {
+ 	int pos;
+-	u16 reg16;
++	u16 flags, caps = 0;
+ 
+ 	pos = pci_find_capability(pdev, PCI_CAP_ID_EXP);
+-	if (!pos)
++	if (pos) {
++		pci_read_config_word(pdev, pos + PCI_EXP_FLAGS, &flags);
++		pci_read_config_word(pdev, pos + PCI_EXP_DEVCAP, &caps);
++	} else if (is_unadvertised_pcie_bridge(pdev))
++		flags = PCI_EXP_TYPE_PCI_BRIDGE << 4;
++	else
+ 		return;
++
+ 	pdev->is_pcie = 1;
+ 	pdev->pcie_cap = pos;
+-	pci_read_config_word(pdev, pos + PCI_EXP_FLAGS, &reg16);
+-	pdev->pcie_flags_reg = reg16;
+-	pci_read_config_word(pdev, pos + PCI_EXP_DEVCAP, &reg16);
+-	pdev->pcie_mpss = reg16 & PCI_EXP_DEVCAP_PAYLOAD;
++	pdev->pcie_flags_reg = flags;
++	pdev->pcie_mpss = caps & PCI_EXP_DEVCAP_PAYLOAD;
+ }
+ 
+ void set_pcie_hotplug_bridge(struct pci_dev *pdev)
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 15472d6..c9ef42c 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -300,8 +300,8 @@ struct pci_dev {
+ 	unsigned int	msix_enabled:1;
+ 	unsigned int	ari_enabled:1;	/* ARI forwarding */
+ 	unsigned int	is_managed:1;
+-	unsigned int	is_pcie:1;	/* Obsolete. Will be removed.
+-					   Use pci_is_pcie() instead */
++	unsigned int	is_pcie:1;	/* Don't access directly,
++					   use pci_is_pcie() instead */
+ 	unsigned int    needs_freset:1; /* Dev requires fundamental reset */
+ 	unsigned int	state_saved:1;
+ 	unsigned int	is_physfn:1;
+@@ -1689,7 +1689,7 @@ static inline int pci_pcie_cap(struct pci_dev *dev)
+  */
+ static inline bool pci_is_pcie(struct pci_dev *dev)
+ {
+-	return !!pci_pcie_cap(dev);
++	return dev->is_pcie;
+ }
+ 
+ /**
