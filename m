@@ -1,11 +1,17 @@
-From: Stuart Yoder <b08248-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: RFC: additional domain attributes specific to PAMU
-Date: Mon, 4 Feb 2013 21:37:20 -0600
-Message-ID: <CALRxmdChbSk1gLXc2pqVd0GPdM09SofyjA5L_KuvSn4SQZJoXA@mail.gmail.com>
+From: Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH 4/4] iommu: Add domain window handling functions
+Date: Tue, 5 Feb 2013 03:41:03 +0000
+Message-ID: <9F6FE96B71CF29479FF1CDC8046E150354A1DC@039-SN1MPN1-003.039d.mgd.msft.net>
+References: <1359582228-21552-1-git-send-email-joro@8bytes.org>
+	<1359582228-21552-5-git-send-email-joro@8bytes.org>
+	<C5ECD7A89D1DC44195F34B25E172658D3670ED@039-SN2MPN1-013.039d.mgd.msft.net>
+	<20130204130214.GN25591@8bytes.org> <1360020980.14901.17@snotra>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1360020980.14901.17@snotra>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,51 +21,46 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Varun Sethi <varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Joerg,
 
-The attributes you have defined look good and are mechanisms we need
-to determine if iommu is aperture based, get max # of windows, set
-actual number of windows, etc.
 
-However, there are a couple of other attributes we need:
+> -----Original Message-----
+> From: Wood Scott-B07421
+> Sent: Monday, February 04, 2013 5:36 PM
+> To: Joerg Roedel
+> Cc: Sethi Varun-B16395; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Wood Scott-
+> B07421; Yoder Stuart-B08248
+> Subject: Re: [PATCH 4/4] iommu: Add domain window handling functions
+> 
+> On 02/04/2013 07:02:14 AM, Joerg Roedel wrote:
+> > On Thu, Jan 31, 2013 at 09:32:26AM +0000, Sethi Varun-B16395 wrote:
+> > > We need a mechanism to determine the maximum number of subwindows
+> > supported by PAMU. How about representing it in the iommu_domain
+> > structure:
+> > > struct  iommu_domain {
+> > > 	struct iommu_ops *ops;
+> > > 	void *priv;
+> > > 	iommu_fault_handler_t handler;
+> > > 	void *handler_token;
+> > > 	struct iommu_domain_geometry geometry;
+> > > 	u32 max_sub_windows; -----> maximum number of sub windows
+> > supported by the hardware.
+> > > }
+> >
+> > I`ll leave that flag to the private-data of the IOMMU domain. Instead
+> > I
+> > added a DOMAIN_ATTR_WINDOWS attribute to get/set the number of
+> > subwindows. I'll post the updated patch-set soon.
+> 
+> If it's private data, how does the caller know what sort of geometry it
+> can request?
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 8330df1..0038c39 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -61,6 +61,8 @@ enum iommu_attr {
-        DOMAIN_ATTR_GEOMETRY,
-        DOMAIN_ATTR_PAGING,
-        DOMAIN_ATTR_WINDOWS,
-+       DOMAIN_ATTR_ENABLE,
-+       DOMAIN_ATTR_FSL_PAMUV1,
-        DOMAIN_ATTR_MAX,
- };
+The way I thought this could work based on the patch that Joerg posted today
+was that when the domain is created the caller could read the DOMAIN_ATTR_WINDOWS 
+domain_get_windows() to determine the max.  The initial/default value is the
+max.  The caller could then set a smaller value if they wanted to.
 
-We need a mechanism to enable/disable the overall aperture, and that
-is what DOMAIN_ATTR_ENABLE is for.   After everything is configured we
-enable the overall aperture...and can't do it before.
-
-There are a lot of quirky, very specific constraints that apply to
-PAMU only (most likely) and may not be generic.   Here are the ones I
-can think of:
-   -aperture must be power of 2, and naturally aligned
-   -number of windows must be power of 2, and address space size
-    of each window is determined by aperture size / # of windows
-   -the actual size of the mapped region of a window must be power
-    of 2 starting with 4KB and physical address must be
-    naturally aligned
-
-Instead of advertising those constraints somehow, it seem easier just
-to advertise that this IOMMU is a PAMU v1.  The attribute would be
-read only and would be a boolean--  if the attribute is present then
-it's a PAMU v1.
-
-Wanted to get your thoughts on that.
-
-Thanks,
 Stuart
