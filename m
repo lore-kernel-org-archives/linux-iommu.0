@@ -1,44 +1,32 @@
-From: Scott Wood <scottwood@freescale.com>
-Subject: Re: [PATCH 4/4] iommu: Add domain window handling functions
-Date: Mon, 4 Feb 2013 17:36:20 -0600
-Message-ID: <1360020980.14901.17@snotra>
-References: <1359582228-21552-1-git-send-email-joro@8bytes.org>
-	<1359582228-21552-5-git-send-email-joro@8bytes.org>
-	<C5ECD7A89D1DC44195F34B25E172658D3670ED@039-SN2MPN1-013.039d.mgd.msft.net>
-	<20130204130214.GN25591@8bytes.org>
+From: Stephen Hemminger <stephen@networkplumber.org>
+Subject: Re: PCI warning on boot 3.8.0-rc1
+Date: Mon, 4 Feb 2013 17:36:10 -0800
+Message-ID: <20130204173610.18a31d24@nehalam.linuxnetplumber.net>
+References: <20130116143853.339dd89b@nehalam.linuxnetplumber.net>
+	<CAErSpo5eOE_=Ob2jN7ACy0eJBOa8k36XqCbHnGTCs-wfiy8tiw@mail.gmail.com>
+	<20130204103645.38ae2d5e@nehalam.linuxnetplumber.net>
+	<1360009684.11144.539.camel@bling.home>
+	<1360017684.11144.547.camel@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; delsp=Yes; format=Flowed
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20130204130214.GN25591@8bytes.org> (from joro@8bytes.org on
-	Mon Feb  4 07:02:14 2013)
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Sethi Varun-B16395 <B16395@freescale.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Wood Scott-B07421 <B07421@freescale.com>, Yoder Stuart-B08248 <B08248@freescale.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1360017684.11144.547.camel@bling.home>
+Sender: linux-pci-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 02/04/2013 07:02:14 AM, Joerg Roedel wrote:
-> On Thu, Jan 31, 2013 at 09:32:26AM +0000, Sethi Varun-B16395 wrote:
-> > We need a mechanism to determine the maximum number of subwindows  
-> supported by PAMU. How about representing it in the iommu_domain  
-> structure:
-> > struct  iommu_domain {
-> > 	struct iommu_ops *ops;
-> > 	void *priv;
-> > 	iommu_fault_handler_t handler;
-> > 	void *handler_token;
-> > 	struct iommu_domain_geometry geometry;
-> > 	u32 max_sub_windows; -----> maximum number of sub windows  
-> supported by the hardware.
-> > }
-> 
-> I`ll leave that flag to the private-data of the IOMMU domain. Instead  
-> I
-> added a DOMAIN_ATTR_WINDOWS attribute to get/set the number of
-> subwindows. I'll post the updated patch-set soon.
+On Mon, 04 Feb 2013 15:41:24 -0700
+Alex Williamson <alex.williamson@redhat.com> wrote:
 
-If it's private data, how does the caller know what sort of geometry it  
-can request?
+> +
+> +	if (pci_is_pcie(parent) &&
+> +	    (pci_pcie_type(parent) == PCI_EXP_TYPE_ROOT_PORT ||
+> +	     pci_pcie_type(parent) == PCI_EXP_TYPE_DOWNSTREAM)) {
+> +		pr_warn("WARNING: Your hardware is broken, device %s appears to be a\n Legacy PCI device attached directly to a PCIe device which is not a\n PCIe-to-PCI bridge.  Per section 7.8 of the PCI Express 3.0 spec, the\n PCI express capability structure is required for PCI express device\nfunctions.\n",
+> +		        pci_name(pdev));
 
--Scott
+Too whiny!
+Two short lines seems to be more the enough. Users can't do anything about
+hardware not following spec. Put any outher stuff into comments.
