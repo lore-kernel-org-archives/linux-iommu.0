@@ -1,18 +1,17 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 4/5] iommu: Add domain window handling functions
-Date: Tue, 5 Feb 2013 14:20:45 +0100
-Message-ID: <20130205132044.GB2532@8bytes.org>
-References: <1359983924-28952-1-git-send-email-joro@8bytes.org>
-	<1359983924-28952-5-git-send-email-joro@8bytes.org>
-	<CALRxmdCiSZgoqd8tp90kPCdA=s7SWZCTwKsFnWu7S5=U7+eRLQ@mail.gmail.com>
-	<20130204185650.GP25591@8bytes.org>
-	<CALRxmdD9Ock04AoUtF9FT_uY5C5Eb7cSPmtCM6WK=StNB_iYkQ@mail.gmail.com>
+Subject: Re: IO_PAGE_FAULTs on unity mapped regions during amd_iommu_init()
+	in Linux 3.4
+Date: Tue, 5 Feb 2013 14:31:05 +0100
+Message-ID: <20130205133104.GC2532@8bytes.org>
+References: <1359657210.6061.3.camel@lorien2>
+	<20130201130035.GE25591@8bytes.org>
+	<1359743519.2759.38.camel@lorien2>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CALRxmdD9Ock04AoUtF9FT_uY5C5Eb7cSPmtCM6WK=StNB_iYkQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <1359743519.2759.38.camel@lorien2>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,41 +21,27 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Stuart Yoder <b08248-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Shuah Khan <shuah.khan-VXdhtT5mjnY@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, stable <stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Feb 04, 2013 at 05:31:51PM -0600, Stuart Yoder wrote:
-> On Mon, Feb 4, 2013 at 12:56 PM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
-> > On Mon, Feb 04, 2013 at 12:10:51PM -0600, Stuart Yoder wrote:
-> >> On Mon, Feb 4, 2013 at 7:18 AM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
-> >> > +static inline int iommu_domain_window_enable(struct iommu_domain *domain,
-> >> > +                                            u32 wnd_nr, phys_addr_t paddr,
-> >> > +                                            size_t size)
-> >> > +{
-> >> > +       return -ENODEV;
-> >> > +}
-> >> > +
-> >> > +static inline void iommu_domain_window_disable(struct iommu_domain *domain,
-> >> > +                                              u32 wnd_nr)
-> >> > +{
-> >> > +}
-> >> > +
-> >> >  static inline phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain,
-> >> >                                              unsigned long iova)
-> >> >  {
-> >>
-> >> This API looks workable.   The one change we need is that the size argument in
-> >> the enable API needs to be 64 bits.   Our window sizes can exceed 4GB.
-> >
-> > Okay. So if your architecture supports sizes over 2^32 then size_t
-> > probably is already 64bits, right?
-> 
-> No, on a 32-bit platform size_t would generally be 32-bits.  But the PAMU
-> is independent of that.   I think we should just make it a u64.
+Hi Shuah,
 
-Okay, I will change that. Will push the updated branch once Sethi agrees
-on the interface changes.
+On Fri, Feb 01, 2013 at 11:31:59AM -0700, Shuah Khan wrote:
+> Yes, 3.7 has the same window of opportunity for this race condition,
+> however I couldn't figure out why it doesn't happen on 3.7. On 3.7 the
+> window between amd_iommu_init_hardware() and amd_iommu_init_dma_ops()
+> might actually be wider than the window in 3.4.
+
+I think this is highly timing related. IOMMU initialization may have
+been moved by a few milliseconds between the kernel versions which might
+cause the warnings to appear or disappear. I don't think it has much
+value to dive deeper into the differences between the initialization
+sequences.
+
+As somethimes with such issues there is a simple and a more complex fix
+for that. I'll try to come up with a simple fix for the next merge
+window and implement the clean and more complex one for the next one.
 
 
 	Joerg
