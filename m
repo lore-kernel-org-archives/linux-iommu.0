@@ -1,14 +1,16 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: RFC: additional domain attributes specific to PAMU
-Date: Tue, 5 Feb 2013 11:35:34 +0100
-Message-ID: <20130205103533.GQ25591@8bytes.org>
-References: <CALRxmdChbSk1gLXc2pqVd0GPdM09SofyjA5L_KuvSn4SQZJoXA@mail.gmail.com>
+Subject: Re: [PATCH 5/5] iommu: Add DOMAIN_ATTR_WINDOWS domain attribute
+Date: Tue, 5 Feb 2013 11:41:55 +0100
+Message-ID: <20130205104155.GR25591@8bytes.org>
+References: <1359983924-28952-1-git-send-email-joro@8bytes.org>
+	<1359983924-28952-6-git-send-email-joro@8bytes.org>
+	<C5ECD7A89D1DC44195F34B25E172658D373D2B@039-SN2MPN1-013.039d.mgd.msft.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CALRxmdChbSk1gLXc2pqVd0GPdM09SofyjA5L_KuvSn4SQZJoXA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <C5ECD7A89D1DC44195F34B25E172658D373D2B-RL0Hj/+nBVDYdknt8GnhQq4g8xLGJsHaLnY5E4hWTkheoWH0uzbU5w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,31 +20,27 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Stuart Yoder <b08248-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Varun Sethi <varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Stuart,
+Hi,
 
-On Mon, Feb 04, 2013 at 09:37:20PM -0600, Stuart Yoder wrote:
-> +       DOMAIN_ATTR_ENABLE,
-> +       DOMAIN_ATTR_FSL_PAMUV1,
-> Instead of advertising those constraints somehow, it seem easier just
-> to advertise that this IOMMU is a PAMU v1.  The attribute would be
-> read only and would be a boolean--  if the attribute is present then
-> it's a PAMU v1.
+On Tue, Feb 05, 2013 at 09:14:40AM +0000, Sethi Varun-B16395 wrote:
+> In case of PAMU, geometry would be meaningless without specifying the
+> number of subwindows. If the API user specifies a geometry but fails
+> to specify the number of required subwindows, we would assume a
+> default (max supported) value, which may be incorrect. It's going to
+> be really ugly. I think we should add the number of sub windows to the
+> domain geometry. This parameter would be used in case of a window
+> based iommu. So, a separate set_window API wouldn't be required.
 
-> [...]
-
-> Wanted to get your thoughts on that.
-
-Sounds reasonable. Just put PAMU into the name of the attributes to make
-clear these attributes are specific to your implementation and implement
-the attributes in the PAMU specific get/set_attr call-backs. This is
-particularily true for DOMAIN_ATTR_ENABLE (or better
-DOMAIN_ATTR_PAMU_ENABLE). We can also go with DOMAIN_ATTR_FSL_PAMUV1 for
-now, but a more generic way of determining the IOMMU type might make
-sense. But this can be changed later.
+I think this can all be implemented with the interface proposed here
+together with a PAMU-specific DOMAIN_ATTR_PAMU_ENABLE attribute. Stuart
+outlined in his RFC mail how this can be done. I don't consider this
+ugly, it is rather a clean tradeoff between putting functionality into
+the generic part of the IOMMU-API and putting it into the PAMU specific
+part.
 
 Regards,
 
