@@ -1,18 +1,17 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 5/5] iommu: Add DOMAIN_ATTR_WINDOWS domain attribute
-Date: Tue, 5 Feb 2013 14:05:34 +0100
-Message-ID: <20130205130534.GS25591@8bytes.org>
-References: <1359983924-28952-1-git-send-email-joro@8bytes.org>
-	<1359983924-28952-6-git-send-email-joro@8bytes.org>
-	<C5ECD7A89D1DC44195F34B25E172658D373D2B@039-SN2MPN1-013.039d.mgd.msft.net>
-	<20130205104155.GR25591@8bytes.org>
-	<C5ECD7A89D1DC44195F34B25E172658D3752B1@039-SN2MPN1-013.039d.mgd.msft.net>
+From: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [v3 1/1] iommu/tegra: smmu: Support variable MMIO ranges/blocks
+Date: Tue, 5 Feb 2013 14:19:15 +0100
+Message-ID: <20130205131914.GA2532@8bytes.org>
+References: <20130204.223114.121259250064618894.hdoyu@nvidia.com>
+	<51101BA1.5090208@wwwdotorg.org>
+	<20130204.223921.2367725583637314.hdoyu@nvidia.com>
+	<20130204.225407.2202093543593597795.hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <C5ECD7A89D1DC44195F34B25E172658D3752B1-RL0Hj/+nBVDYdknt8GnhQq4g8xLGJsHaLnY5E4hWTkheoWH0uzbU5w@public.gmane.org>
+In-Reply-To: <20130204.225407.2202093543593597795.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,32 +21,20 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Feb 05, 2013 at 10:52:03AM +0000, Sethi Varun-B16395 wrote:
-> DOMAIN_ATTR_PAMU_ENABLE is required to enable a particular DMA window.
-> My point is about the domain geometry, which is incomplete in case of
-> PAMU without the number of subwindows. Geometry parameters are used
-> for initializing the PAMU window settings. Individual subwindows can
-> only be enabled, once the PAMU window has been initialized using the
-> geometry settings.
+On Mon, Feb 04, 2013 at 09:54:07PM +0100, Hiroshi Doyu wrote:
+> Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote @ Mon, 04 Feb 2013 22:39:21 +0200 (EET):
+> 
+> > > Upon reflection, that comment probably isn't correct, since the only way
+> > > to know where each register range begins, relative to the register
+> > > numbers that the driver uses, is to calculate reg_base. So, I think you
+> > > do need reg_base, and Joerg's latest patch seems reasonable.
+> > 
+> > Ok, now it's clear. Joerg, please get yours merged on the top of this.
+> 
+> Joerg, could you please replace v3 with the attached v4?
 
-I understand that. What you do is:
-
-	/* Set geometry */
-	set_attr(domain, DOMAIN_ATTR_GEOMETRY);
-
-	/* Set number of PAMU subwindows */
-	set_attr(domain, DOMAIN_ATTR_WINDOWS);
-
-	/* Commit changes to hardware and enable the window */
-	set_attr(domain, DOMAIN_ATTR_PAMU_ENABLE);
-
-And I don't see any problem with that. The domain_attr interface was
-introduced to cope with device specifics, we don't change global
-interface data structures for that.
-
-
-	Joerg
+Done.
