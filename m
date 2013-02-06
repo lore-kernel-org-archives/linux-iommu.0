@@ -1,58 +1,39 @@
-From: Sethi Varun-B16395 <B16395@freescale.com>
-Subject: RE: [PATCH 5/5] iommu: Add DOMAIN_ATTR_WINDOWS domain attribute
-Date: Tue, 5 Feb 2013 17:15:45 +0000
-Message-ID: <C5ECD7A89D1DC44195F34B25E172658D3792D4@039-SN2MPN1-013.039d.mgd.msft.net>
-References: <1359983924-28952-1-git-send-email-joro@8bytes.org>
- <1359983924-28952-6-git-send-email-joro@8bytes.org>
- <C5ECD7A89D1DC44195F34B25E172658D373D2B@039-SN2MPN1-013.039d.mgd.msft.net>
- <20130205104155.GR25591@8bytes.org>
- <C5ECD7A89D1DC44195F34B25E172658D3752B1@039-SN2MPN1-013.039d.mgd.msft.net>
- <20130205130534.GS25591@8bytes.org>
+From: Simon Horman <horms@verge.net.au>
+Subject: Re: [PATCH v6 0/4] Renesas IPMMU driver for sh7372, sh73a0 and
+ r8a7740
+Date: Wed, 6 Feb 2013 09:38:40 +0900
+Message-ID: <20130206003840.GA20881@verge.net.au>
+References: <1358765669-14567-1-git-send-email-hdk@igel.co.jp>
+ <20130201135633.GH25591@8bytes.org>
+ <20130201140927.GA12216@linux-sh.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20130205130534.GS25591@8bytes.org>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Stuart Yoder <b08248@gmail.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Wood Scott-B07421 <B07421@freescale.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-sh-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20130201140927.GA12216@linux-sh.org>
+Sender: linux-sh-owner@vger.kernel.org
+To: Paul Mundt <lethal@linux-sh.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Hideki EIRAKU <hdk@igel.co.jp>, Magnus Damm <magnus.damm@gmail.com>, Russell King <linux@arm.linux.org.uk>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Katsuya MATSUBARA <matsu@igel.co.jp>, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Damian Hobson-Garcia <dhobsong@igel.co.jp>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
+On Fri, Feb 01, 2013 at 11:09:28PM +0900, Paul Mundt wrote:
+> On Fri, Feb 01, 2013 at 02:56:33PM +0100, Joerg Roedel wrote:
+> > On Mon, Jan 21, 2013 at 07:54:25PM +0900, Hideki EIRAKU wrote:
+> > > Hideki EIRAKU (4):
+> > >   iommu/shmobile: Add iommu driver for Renesas IPMMU modules
+> > >   ARM: mach-shmobile: sh7372: Add IPMMU device
+> > >   ARM: mach-shmobile: sh73a0: Add IPMMU device
+> > >   ARM: mach-shmobile: r8a7740: Add IPMMU device
+> > 
+> > Paul, Magnus, any opinions on patches 2-4? Can you ACK them when they
+> > are ok for you?
+> > 
+> No strong opinions one way or the other, patches 2-4 don't really do
+> anything of significance.
+> 
+> Acked-by: Paul Mundt <lethal@linux-sh.org>
 
+Likewise. shmobile patches:
 
-> -----Original Message-----
-> From: Joerg Roedel [mailto:joro@8bytes.org]
-> Sent: Tuesday, February 05, 2013 6:36 PM
-> To: Sethi Varun-B16395
-> Cc: Stuart Yoder; iommu@lists.linux-foundation.org; linux-
-> kernel@vger.kernel.org; Wood Scott-B07421
-> Subject: Re: [PATCH 5/5] iommu: Add DOMAIN_ATTR_WINDOWS domain attribute
-> 
-> On Tue, Feb 05, 2013 at 10:52:03AM +0000, Sethi Varun-B16395 wrote:
-> > DOMAIN_ATTR_PAMU_ENABLE is required to enable a particular DMA window.
-> > My point is about the domain geometry, which is incomplete in case of
-> > PAMU without the number of subwindows. Geometry parameters are used
-> > for initializing the PAMU window settings. Individual subwindows can
-> > only be enabled, once the PAMU window has been initialized using the
-> > geometry settings.
-> 
-> I understand that. What you do is:
-> 
-> 	/* Set geometry */
-> 	set_attr(domain, DOMAIN_ATTR_GEOMETRY);
-> 
-> 	/* Set number of PAMU subwindows */
-> 	set_attr(domain, DOMAIN_ATTR_WINDOWS);
-> 
-> 	/* Commit changes to hardware and enable the window */
-> 	set_attr(domain, DOMAIN_ATTR_PAMU_ENABLE);
-> 
-> And I don't see any problem with that. The domain_attr interface was
-> introduced to cope with device specifics, we don't change global
-> interface data structures for that.
-> 
-> 
-[Sethi Varun-B16395] But, then it would be mandatory to set the DOMAIN_ATTR_WINDOWS attribute in case of PAMU. I guess that it would be implementation specific. I am fine with the API.
+Acked-by: Simon Horman <horms+renesas@verge.net.au>
 
--Varun
