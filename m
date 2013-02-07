@@ -1,43 +1,59 @@
-From: Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 1/1] iommu/exynos: Make exynos_sysmmu_disable static
-Date: Wed,  6 Feb 2013 13:55:17 +0530
-Message-ID: <1360139117-6671-1-git-send-email-sachin.kamat@linaro.org>
+From: Shuah Khan <shuah.khan@hp.com>
+Subject: Re: IO_PAGE_FAULTs on unity mapped regions during amd_iommu_init()
+ in Linux 3.4
+Date: Wed, 06 Feb 2013 19:40:50 -0700
+Message-ID: <1360204850.2615.10.camel@lorien2>
+References: <1359657210.6061.3.camel@lorien2>
+	 <20130201130035.GE25591@8bytes.org> <1359743519.2759.38.camel@lorien2>
+	 <20130205133104.GC2532@8bytes.org>
+	 <CAKocOOO6Z2LyLYiuQMWf4iv4PAP8h5jbNWxRcSXKgXD1es6GYg@mail.gmail.com>
+	 <20130206121223.GT25591@8bytes.org>
+Reply-To: shuah.khan@hp.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <20130206121223.GT25591@8bytes.org>
+Sender: stable-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: LKML <linux-kernel@vger.kernel.org>, stable <stable@vger.kernel.org>, iommu@lists.linux-foundation.org, Greg KH <gregkh@linuxfoundation.org>, shuahkhan@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-'exynos_sysmmu_disable' is used only in this file and can be made static.
+On Wed, 2013-02-06 at 13:12 +0100, Joerg Roedel wrote:
+> On Tue, Feb 05, 2013 at 06:57:21AM -0700, Shuah Khan wrote:
+> > Thanks much. I will hang on to this test system for testing your fix.
+> 
+> Okay, here is the simple fix for v3.8-rc6. I guess it is not
+> straighforward to port it to v3.4, but it should be doable.
+> 
+> From 2ecf57c85e67e0243b36b787d0490c0b47202ba8 Mon Sep 17 00:00:00 2001
+> From: Joerg Roedel <joro@8bytes.org>
+> Date: Wed, 6 Feb 2013 12:55:23 +0100
+> Subject: [PATCH] iommu/amd: Initialize device table after dma_ops
+> 
+> When dma_ops are initialized the unity mappings are
+> created. The init_device_table_dma() function makes sure DMA
+> from all devices is blocked by default. This opens a short
+> window in time where DMA to unity mapped regions is blocked
+> by the IOMMU. Make sure this does not happen by initializing
+> the device table after dma_ops.
+> 
+> Signed-off-by: Joerg Roedel <joro@8bytes.org>
 
-Signed-off-by: Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
----
- drivers/iommu/exynos-iommu.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+Joerg,
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 7fe44f8..238a3ca 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -511,7 +511,7 @@ int exynos_sysmmu_enable(struct device *dev, unsigned long pgtable)
- 	return ret;
- }
- 
--bool exynos_sysmmu_disable(struct device *dev)
-+static bool exynos_sysmmu_disable(struct device *dev)
- {
- 	struct sysmmu_drvdata *data = dev_get_drvdata(dev->archdata.iommu);
- 	bool disabled;
--- 
-1.7.4.1
+I tested your patch on 3.8. I was able to reproduce the problem and then
+apply your patch to verify that the problem is fixed. This patch applies
+cleanly to 3.7.6, however I could not reproduce the problem on 3.7.6
+without the patch. But the window exists on 3.7 as well. Your patch can
+be applied to 3.7.6 as is.
+
+I back-ported the patch to 3.4 and 3.0 and tested. I am sending those
+patches after this email.
+
+On 3.4.29 and 3.0.62 I was able to reproduce the problem and then
+applied the back-ported patch to verify that the problem is fixed.
+
+Thanks again for the fix.
+
+-- Shuah
