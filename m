@@ -1,39 +1,30 @@
-From: Ingo Molnar <mingo@kernel.org>
-Subject: [v3.0 backport patch] amd_iommu: IO_PAGE_FAULTs on unity mapped
- regions during amd_iommu_init()
-Date: Thu, 7 Feb 2013 12:12:52 +0100
-Message-ID: <20130207111252.GF8945@gmail.com>
-References: <1360205603.2615.19.camel@lorien2>
- <20130207104905.GC8945@gmail.com>
- <20130207110702.GU25591@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 1/1] iommu/exynos: Make exynos_sysmmu_disable static
+Date: Thu, 7 Feb 2013 21:55:11 +0100
+Message-ID: <20130207205511.GB2849@8bytes.org>
+References: <1360139117-6671-1-git-send-email-sachin.kamat@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <stable-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20130207110702.GU25591@8bytes.org>
-Sender: stable-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Shuah Khan <shuah.khan@hp.com>, tglx@linutronix.de, hpa@zytor.com, mingo@redhat.com, stable <stable@vger.kernel.org>, iommu@lists.linux-foundation.org, Greg KH <gregkh@linuxfoundation.org>, x86@kernel.org, shuahkhan@gmail.com
+In-Reply-To: <1360139117-6671-1-git-send-email-sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-
-* Joerg Roedel <joro@8bytes.org> wrote:
-
-> On Thu, Feb 07, 2013 at 11:49:05AM +0100, Ingo Molnar wrote:
-> > 
-> > * Shuah Khan <shuah.khan@hp.com> wrote:
-> > >  arch/x86/kernel/amd_iommu_init.c |   10 +++++++---
-> > >  1 file changed, 7 insertions(+), 3 deletions(-)
-> > 
-> > That file does not exist anymore, it died 2.5+ years ago:
-> > 
-> >   403f81d8ee53 iommu/amd: Move missing parts to drivers/iommu
+On Wed, Feb 06, 2013 at 01:55:17PM +0530, Sachin Kamat wrote:
+> 'exynos_sysmmu_disable' is used only in this file and can be made static.
 > 
-> Right, the file was moved for Linux v3.1 AFAIR. But this patch is a
-> stable-packport for v3.0 of a patch I sent yersterday :)
+> Signed-off-by: Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
-I changed the title accordingly.
-
-Thanks,
-
-	Ingo
+Applied to arm/exynos, thanks.
