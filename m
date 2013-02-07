@@ -1,59 +1,63 @@
 From: Shuah Khan <shuah.khan@hp.com>
-Subject: Re: IO_PAGE_FAULTs on unity mapped regions during amd_iommu_init()
- in Linux 3.4
-Date: Wed, 06 Feb 2013 19:40:50 -0700
-Message-ID: <1360204850.2615.10.camel@lorien2>
-References: <1359657210.6061.3.camel@lorien2>
-	 <20130201130035.GE25591@8bytes.org> <1359743519.2759.38.camel@lorien2>
-	 <20130205133104.GC2532@8bytes.org>
-	 <CAKocOOO6Z2LyLYiuQMWf4iv4PAP8h5jbNWxRcSXKgXD1es6GYg@mail.gmail.com>
-	 <20130206121223.GT25591@8bytes.org>
+Subject: [PATCH] amd_iommu: IO_PAGE_FAULTs on unity mapped regions during
+ amd_iommu_init()
+Date: Wed, 06 Feb 2013 19:45:28 -0700
+Message-ID: <1360205128.2615.14.camel@lorien2>
 Reply-To: shuah.khan@hp.com
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <20130206121223.GT25591@8bytes.org>
 Sender: stable-owner@vger.kernel.org
 To: Joerg Roedel <joro@8bytes.org>
-Cc: LKML <linux-kernel@vger.kernel.org>, stable <stable@vger.kernel.org>, iommu@lists.linux-foundation.org, Greg KH <gregkh@linuxfoundation.org>, shuahkhan@gmail.com
+Cc: iommu@lists.linux-foundation.org, stable <stable@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, shuahkhan@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2013-02-06 at 13:12 +0100, Joerg Roedel wrote:
-> On Tue, Feb 05, 2013 at 06:57:21AM -0700, Shuah Khan wrote:
-> > Thanks much. I will hang on to this test system for testing your fix.
-> 
-> Okay, here is the simple fix for v3.8-rc6. I guess it is not
-> straighforward to port it to v3.4, but it should be doable.
-> 
-> From 2ecf57c85e67e0243b36b787d0490c0b47202ba8 Mon Sep 17 00:00:00 2001
-> From: Joerg Roedel <joro@8bytes.org>
-> Date: Wed, 6 Feb 2013 12:55:23 +0100
-> Subject: [PATCH] iommu/amd: Initialize device table after dma_ops
-> 
-> When dma_ops are initialized the unity mappings are
-> created. The init_device_table_dma() function makes sure DMA
-> from all devices is blocked by default. This opens a short
-> window in time where DMA to unity mapped regions is blocked
-> by the IOMMU. Make sure this does not happen by initializing
-> the device table after dma_ops.
-> 
-> Signed-off-by: Joerg Roedel <joro@8bytes.org>
+When dma_ops are initialized the unity mappings are created. The
+init_device_table_dma() function makes sure DMA from all devices is
+blocked by default. This opens a short window in time where DMA to
+unity mapped regions is blocked by the IOMMU. Make sure this does not
+happen by initializing the device table after dma_ops.
 
-Joerg,
+Signed-off-by: Shuah Khan <shuah.khan@hp.com>
+CC: stable@vger.kernel.org 3.4
+---
+ drivers/iommu/amd_iommu_init.c |    9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-I tested your patch on 3.8. I was able to reproduce the problem and then
-apply your patch to verify that the problem is fixed. This patch applies
-cleanly to 3.7.6, however I could not reproduce the problem on 3.7.6
-without the patch. But the window exists on 3.7 as well. Your patch can
-be applied to 3.7.6 as is.
-
-I back-ported the patch to 3.4 and 3.0 and tested. I am sending those
-patches after this email.
-
-On 3.4.29 and 3.0.62 I was able to reproduce the problem and then
-applied the back-ported patch to verify that the problem is fixed.
-
-Thanks again for the fix.
-
--- Shuah
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index ef0ae93..b573f80 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -1572,8 +1572,6 @@ int __init amd_iommu_init_hardware(void)
+ 	if (amd_iommu_pd_alloc_bitmap == NULL)
+ 		goto free;
+ 
+-	/* init the device table */
+-	init_device_table();
+ 
+ 	/*
+ 	 * let all alias entries point to itself
+@@ -1655,6 +1653,7 @@ out:
+  */
+ static int __init amd_iommu_init(void)
+ {
++	struct amd_iommu *iommu;
+ 	int ret = 0;
+ 
+ 	ret = amd_iommu_init_hardware();
+@@ -1673,6 +1672,12 @@ static int __init amd_iommu_init(void)
+ 	if (ret)
+ 		goto free;
+ 
++	/* init the device table */
++	init_device_table();
++
++	for_each_iommu(iommu)
++		iommu_flush_all_caches(iommu);
++
+ 	amd_iommu_init_api();
+ 
+ 	x86_platform.iommu_shutdown = disable_iommus;
+-- 
+1.7.9.5
