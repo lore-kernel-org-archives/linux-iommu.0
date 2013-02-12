@@ -1,82 +1,36 @@
-From: Shuah Khan <shuah.khan@hp.com>
-Subject: [PATCH 4/4] amd_iommu: Remove calc_devid() and use PCI_DEVID() from
- pci
-Date: Mon, 11 Feb 2013 16:01:25 -0700
-Message-ID: <1360623685.2950.68.camel@lorien2>
-Reply-To: shuah.khan@hp.com
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-Sender: linux-pci-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, bhelgaas@google.com
-Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, linux-pci@vger.kernel.org, shemminger@vyatta.com, jiang.liu@huawei.com, linasvepstas@gmail.com, paulmck@linux.vnet.ibm.com, davej@redhat.com, dhowells@redhat.com, mtk.manpages@gmail.com, tglx@linutronix.de, wangyijing@huawei.com, shuahkhan@gmail.com
+From: Cyril Roelandt <tipecaml@gmail.com>
+Subject: [PATCH 2/5] iommu: remove redundant NULL check before dma_ops_domain_free().
+Date: Tue, 12 Feb 2013 05:01:50 +0100
+Message-ID: <1360641713-24895-3-git-send-email-tipecaml@gmail.com>
+References: <1360641713-24895-1-git-send-email-tipecaml@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1360641713-24895-1-git-send-email-tipecaml@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Cc: Cyril Roelandt <tipecaml@gmail.com>, joro@8bytes.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-Change to remove calc_devid() and use PCI_DEVID() from pci instead.
+dma_ops_domain_free on a NULL pointer is a no-op, so the NULL check in
+amd_iommu_init_dma_ops() can be removed.
 
-Signed-off-by: Shuah Khan <shuah.khan@hp.com>
+Signed-off-by: Cyril Roelandt <tipecaml@gmail.com>
 ---
- drivers/iommu/amd_iommu.c       |    2 +-
- drivers/iommu/amd_iommu_init.c  |    6 +++---
- drivers/iommu/amd_iommu_types.h |    7 -------
- 3 files changed, 4 insertions(+), 11 deletions(-)
+ drivers/iommu/amd_iommu.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index c1c74e0..38c1392 100644
+index d33eaaf..98f555d 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -173,7 +173,7 @@ static inline u16 get_device_id(struct device *dev)
- {
- 	struct pci_dev *pdev = to_pci_dev(dev);
+@@ -3187,8 +3187,7 @@ int __init amd_iommu_init_dma_ops(void)
+ free_domains:
  
--	return calc_devid(pdev->bus->number, pdev->devfn);
-+	return PCI_DEVID(pdev->bus->number, pdev->devfn);
- }
+ 	for_each_iommu(iommu) {
+-		if (iommu->default_dom)
+-			dma_ops_domain_free(iommu->default_dom);
++		dma_ops_domain_free(iommu->default_dom);
+ 	}
  
- static struct iommu_dev_data *get_dev_data(struct device *dev)
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index faf10ba..582b5df 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -406,7 +406,7 @@ static int __init find_last_devid_on_pci(int bus, int dev, int fn, int cap_ptr)
- 	u32 cap;
- 
- 	cap = read_pci_config(bus, dev, fn, cap_ptr+MMIO_RANGE_OFFSET);
--	update_last_devid(calc_devid(MMIO_GET_BUS(cap), MMIO_GET_LD(cap)));
-+	update_last_devid(PCI_DEVID(MMIO_GET_BUS(cap), MMIO_GET_LD(cap)));
- 
- 	return 0;
- }
-@@ -1128,9 +1128,9 @@ static int iommu_init_pci(struct amd_iommu *iommu)
- 	pci_read_config_dword(iommu->dev, cap_ptr + MMIO_MISC_OFFSET,
- 			      &misc);
- 
--	iommu->first_device = calc_devid(MMIO_GET_BUS(range),
-+	iommu->first_device = PCI_DEVID(MMIO_GET_BUS(range),
- 					 MMIO_GET_FD(range));
--	iommu->last_device = calc_devid(MMIO_GET_BUS(range),
-+	iommu->last_device = PCI_DEVID(MMIO_GET_BUS(range),
- 					MMIO_GET_LD(range));
- 
- 	if (!(iommu->cap & (1 << IOMMU_CAP_IOTLB)))
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index a07882f..ec36cf6 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -701,13 +701,6 @@ extern int amd_iommu_max_glx_val;
-  */
- extern void iommu_flush_all_caches(struct amd_iommu *iommu);
- 
--/* takes bus and device/function and returns the device id
-- * FIXME: should that be in generic PCI code? */
--static inline u16 calc_devid(u8 bus, u8 devfn)
--{
--	return (((u16)bus) << 8) | devfn;
--}
--
- static inline int get_ioapic_devid(int id)
- {
- 	struct devid_map *entry;
+ 	return ret;
 -- 
-1.7.9.5
+1.7.10.4
