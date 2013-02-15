@@ -1,43 +1,49 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH 0/4] pci: Add PCI_BUS() and PCI_DEVID() interfaces to
- return bus number and device id
-Date: Wed, 13 Feb 2013 13:03:15 +0100
-Message-ID: <20130213120315.GE25591@8bytes.org>
-References: <1360623614.2950.60.camel@lorien2>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1360623614.2950.60.camel@lorien2>
-Sender: linux-pci-owner@vger.kernel.org
-To: bhelgaas@google.com
-Cc: Shuah Khan <shuah.khan@hp.com>, jiang.liu@huawei.com, shemminger@vyatta.com, paulmck@linux.vnet.ibm.com, linasvepstas@gmail.com, dhowells@redhat.com, davej@redhat.com, tglx@linutronix.de, mtk.manpages@gmail.com, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, wangyijing@huawei.com, LKML <linux-kernel@vger.kernel.org>, shuahkhan@gmail.com
+From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Subject: [PATCH 1/2] iommu/tegra: assume CONFIG_OF in gart driver
+Date: Fri, 15 Feb 2013 15:01:06 -0700
+Message-ID: <1360965667-19699-1-git-send-email-swarren@wwwdotorg.org>
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Bjorn,
+From: Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-On Mon, Feb 11, 2013 at 04:00:14PM -0700, Shuah Khan wrote:
-> pci defines PCI_DEVFN(), PCI_SLOT(), and PCI_FUNC() interfaces, however,
-> it doesn't have interfaces to return PCI bus and PCI device id. Drivers
-> (AMD IOMMU, and AER) have module specific definitions for PCI_BUS() and
-> AMD_IOMMU driver also has a module specific interface to calculate PCI
-> device id from bus number and devfn.
-> 
-> This patch set adds PCI_BUS(), and PCI_DEVID() to pci.h, changes are to
-> use PCI_BUS() from pci. Changes AMD_IOMMU driver to use PCI_BUS() and
-> PCI_DEVID() from pci.
+Tegra only supports, and always enables, device tree. Remove all ifdefs
+for DT support from the driver.
 
-Not sure who is going to merge this, it touches PCI and IOMMU code.
-Personally I don't care :-) If you want to take it via your tree feel
-free to add my
+Signed-off-by: Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/tegra-gart.c |    4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-Reviewed-by: Joerg Roedel <joro@8bytes.org>
-Tested-by: Joerg Roedel <joro@8bytes.org>
-Acked-by: Joerg Roedel <joro@8bytes.org>
-
-Otherwise please Ack the PCI parts and I will add it to my tree then.
-
-
-Thanks,
-
-	Joerg
+diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
+index 8219f1d..8643757 100644
+--- a/drivers/iommu/tegra-gart.c
++++ b/drivers/iommu/tegra-gart.c
+@@ -430,13 +430,11 @@ const struct dev_pm_ops tegra_gart_pm_ops = {
+ 	.resume		= tegra_gart_resume,
+ };
+ 
+-#ifdef CONFIG_OF
+ static struct of_device_id tegra_gart_of_match[] = {
+ 	{ .compatible = "nvidia,tegra20-gart", },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, tegra_gart_of_match);
+-#endif
+ 
+ static struct platform_driver tegra_gart_driver = {
+ 	.probe		= tegra_gart_probe,
+@@ -445,7 +443,7 @@ static struct platform_driver tegra_gart_driver = {
+ 		.owner	= THIS_MODULE,
+ 		.name	= "tegra-gart",
+ 		.pm	= &tegra_gart_pm_ops,
+-		.of_match_table = of_match_ptr(tegra_gart_of_match),
++		.of_match_table = tegra_gart_of_match,
+ 	},
+ };
+ 
+-- 
+1.7.10.4
