@@ -1,13 +1,12 @@
-From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: [PATCH 2/2] iommu/tegra: assume CONFIG_OF in SMMU driver
-Date: Fri, 15 Feb 2013 15:01:07 -0700
-Message-ID: <1360965667-19699-2-git-send-email-swarren@wwwdotorg.org>
-References: <1360965667-19699-1-git-send-email-swarren@wwwdotorg.org>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: [PATCH 0/6 v8] iommu/fsl: Freescale PAMU driver and IOMMU API
+	implementation.
+Date: Mon, 18 Feb 2013 18:22:13 +0530
+Message-ID: <1361191939-21260-1-git-send-email-Varun.Sethi@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1360965667-19699-1-git-send-email-swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,46 +16,52 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org
+Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+This patchset provides the Freescale PAMU (Peripheral Access Management Unit) driver
+and the corresponding IOMMU API implementation. PAMU is the IOMMU present on Freescale
+QorIQ platforms. PAMU can authorize memory access, remap the memory address, and remap 
+the I/O transaction type.
 
-Tegra only supports, and always enables, device tree. Remove all ifdefs
-for DT support from the driver.
+This set consists of the following patches:
+1. Addition of new field in the device (powerpc) archdata structure for storing iommu domain information
+   pointer. This pointer is stored when the device is attached to a particular iommu domain.
+2. Store PCI controller platform device information in the PCI controller structure.
+3. Add defines for FSL PCI controller BRR1 register.
+4. Add window permission flags in the iommu_domain_window_enable API.
+5. Add domain attributes for FSL PAMU driver.
+6. PAMU driver and IOMMU API implementation.
 
-Signed-off-by: Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/tegra-smmu.c |    4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+This patch set is based on the next branch of the iommu git tree maintained by Joerg.
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 05a8ddb..eb0109f 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -1268,13 +1268,11 @@ const struct dev_pm_ops tegra_smmu_pm_ops = {
- 	.resume		= tegra_smmu_resume,
- };
- 
--#ifdef CONFIG_OF
- static struct of_device_id tegra_smmu_of_match[] = {
- 	{ .compatible = "nvidia,tegra30-smmu", },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, tegra_smmu_of_match);
--#endif
- 
- static struct platform_driver tegra_smmu_driver = {
- 	.probe		= tegra_smmu_probe,
-@@ -1283,7 +1281,7 @@ static struct platform_driver tegra_smmu_driver = {
- 		.owner	= THIS_MODULE,
- 		.name	= "tegra-smmu",
- 		.pm	= &tegra_smmu_pm_ops,
--		.of_match_table = of_match_ptr(tegra_smmu_of_match),
-+		.of_match_table = tegra_smmu_of_match,
- 	},
- };
- 
+Varun Sethi (6):
+  Store iommu domain information in the device structure.
+  Store the platform device information corresponding to the pci
+    controller.
+  Added defines for the FSL PCI controller BRR1 register.
+  Add window permission flags for iommu_domain_window_enable API.
+  Add addtional attributes specific to the PAMU driver.
+  FSL PAMU driver and IOMMU API implementation.
+
+ arch/powerpc/include/asm/device.h     |    4 +
+ arch/powerpc/include/asm/pci-bridge.h |    4 +
+ arch/powerpc/sysdev/fsl_pci.c         |    9 +-
+ arch/powerpc/sysdev/fsl_pci.h         |    2 +-
+ drivers/iommu/Kconfig                 |    8 +
+ drivers/iommu/Makefile                |    1 +
+ drivers/iommu/fsl_pamu.c              | 1260 +++++++++++++++++++++++++++++++++
+ drivers/iommu/fsl_pamu.h              |  398 +++++++++++
+ drivers/iommu/fsl_pamu_domain.c       | 1135 +++++++++++++++++++++++++++++
+ drivers/iommu/fsl_pamu_domain.h       |   89 +++
+ drivers/iommu/iommu.c                 |    5 +-
+ include/linux/iommu.h                 |   40 +-
+ 12 files changed, 2947 insertions(+), 8 deletions(-)
+ create mode 100644 drivers/iommu/fsl_pamu.c
+ create mode 100644 drivers/iommu/fsl_pamu.h
+ create mode 100644 drivers/iommu/fsl_pamu_domain.c
+ create mode 100644 drivers/iommu/fsl_pamu_domain.h
+
 -- 
-1.7.10.4
+1.7.4.1
