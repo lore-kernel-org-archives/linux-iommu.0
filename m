@@ -1,8 +1,8 @@
 From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: [PATCH 2/6] powerpc/fsl_pci: Store the platform device information
-	corresponding to the pci controller.
-Date: Mon, 18 Feb 2013 18:22:15 +0530
-Message-ID: <1361191939-21260-3-git-send-email-Varun.Sethi@freescale.com>
+Subject: [PATCH 4/6] iommu/fsl: Add window permission flags for
+	iommu_domain_window_enable API.
+Date: Mon, 18 Feb 2013 18:22:17 +0530
+Message-ID: <1361191939-21260-5-git-send-email-Varun.Sethi@freescale.com>
 References: <1361191939-21260-1-git-send-email-Varun.Sethi@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,74 +22,66 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxppc
 Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The pci controller structure has a provision to store the device strcuture
-pointer of the corresponding platform device. Currently this information is
-not stored during fsl pci controller initialization. This information is
-required while dealing with iommu groups for pci devices connected to the fsl
-pci controller. For the case where the pci devices can't be paritioned, they
-would fall under the same device group as the pci controller.
-
-This patch stores the platform device information in the pci controller
-structure during initialization.
+Each iommu window can have access permissions associated with it. Extended the
+window_enable API to incorporate window access permissions.
 
 Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 ---
- arch/powerpc/sysdev/fsl_pci.c |    9 +++++++--
- arch/powerpc/sysdev/fsl_pci.h |    2 +-
- 2 files changed, 8 insertions(+), 3 deletions(-)
+ drivers/iommu/iommu.c |    5 +++--
+ include/linux/iommu.h |    7 ++++---
+ 2 files changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/arch/powerpc/sysdev/fsl_pci.c b/arch/powerpc/sysdev/fsl_pci.c
-index 92a5915..b393ae7 100644
---- a/arch/powerpc/sysdev/fsl_pci.c
-+++ b/arch/powerpc/sysdev/fsl_pci.c
-@@ -421,13 +421,16 @@ void fsl_pcibios_fixup_bus(struct pci_bus *bus)
- 	}
- }
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index b972d43..1a2564d 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -854,12 +854,13 @@ EXPORT_SYMBOL_GPL(iommu_unmap);
  
--int __init fsl_add_bridge(struct device_node *dev, int is_primary)
-+int __init fsl_add_bridge(struct platform_device *pdev, int is_primary)
+ 
+ int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
+-			       phys_addr_t paddr, u64 size)
++			       phys_addr_t paddr, u64 size, int iommu_prot)
  {
- 	int len;
- 	struct pci_controller *hose;
- 	struct resource rsrc;
- 	const int *bus_range;
- 	u8 hdr_type, progif;
-+	struct device_node *dev;
-+
-+	dev = pdev->dev.of_node;
+ 	if (unlikely(domain->ops->domain_window_enable == NULL))
+ 		return -ENODEV;
  
- 	if (!of_device_is_available(dev)) {
- 		pr_warning("%s: disabled\n", dev->full_name);
-@@ -453,6 +456,8 @@ int __init fsl_add_bridge(struct device_node *dev, int is_primary)
- 	if (!hose)
- 		return -ENOMEM;
+-	return domain->ops->domain_window_enable(domain, wnd_nr, paddr, size);
++	return domain->ops->domain_window_enable(domain, wnd_nr, paddr, size,
++						 iommu_prot);
+ }
+ EXPORT_SYMBOL_GPL(iommu_domain_window_enable);
  
-+	/* set platform device as the parent */
-+	hose->parent = &pdev->dev;
- 	hose->first_busno = bus_range ? bus_range[0] : 0x0;
- 	hose->last_busno = bus_range ? bus_range[1] : 0xff;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index ba3b8a9..529987c 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -105,7 +105,7 @@ struct iommu_ops {
  
-@@ -880,7 +885,7 @@ static int fsl_pci_probe(struct platform_device *pdev)
- #endif
+ 	/* Window handling functions */
+ 	int (*domain_window_enable)(struct iommu_domain *domain, u32 wnd_nr,
+-				    phys_addr_t paddr, u64 size);
++				    phys_addr_t paddr, u64 size, int iommu_prot);
+ 	void (*domain_window_disable)(struct iommu_domain *domain, u32 wnd_nr);
+ 	/* Set the numer of window per domain */
+ 	int (*domain_set_windows)(struct iommu_domain *domain, u32 w_count);
+@@ -171,7 +171,8 @@ extern int iommu_domain_set_attr(struct iommu_domain *domain, enum iommu_attr,
  
- 	node = pdev->dev.of_node;
--	ret = fsl_add_bridge(node, fsl_pci_primary == node);
-+	ret = fsl_add_bridge(pdev, fsl_pci_primary == node);
+ /* Window handling function prototypes */
+ extern int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
+-				      phys_addr_t offset, u64 size);
++				      phys_addr_t offset, u64 size,
++				      int iommu_prot);
+ extern void iommu_domain_window_disable(struct iommu_domain *domain, u32 wnd_nr);
+ /**
+  * report_iommu_fault() - report about an IOMMU fault to the IOMMU framework
+@@ -257,7 +258,7 @@ static inline int iommu_unmap(struct iommu_domain *domain, unsigned long iova,
  
- #ifdef CONFIG_SWIOTLB
- 	if (ret == 0) {
-diff --git a/arch/powerpc/sysdev/fsl_pci.h b/arch/powerpc/sysdev/fsl_pci.h
-index d078537..c495c00 100644
---- a/arch/powerpc/sysdev/fsl_pci.h
-+++ b/arch/powerpc/sysdev/fsl_pci.h
-@@ -91,7 +91,7 @@ struct ccsr_pci {
- 	__be32	pex_err_cap_r3;		/* 0x.e34 - PCIE error capture register 0 */
- };
- 
--extern int fsl_add_bridge(struct device_node *dev, int is_primary);
-+extern int fsl_add_bridge(struct platform_device *pdev, int is_primary);
- extern void fsl_pcibios_fixup_bus(struct pci_bus *bus);
- extern int mpc83xx_add_bridge(struct device_node *dev);
- u64 fsl_pci_immrbar_base(struct pci_controller *hose);
+ static inline int iommu_domain_window_enable(struct iommu_domain *domain,
+ 					     u32 wnd_nr, phys_addr_t paddr,
+-					     u64 size)
++					     u64 size, int iommu_prot)
+ {
+ 	return -ENODEV;
+ }
 -- 
 1.7.4.1
