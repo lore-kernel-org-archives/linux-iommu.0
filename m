@@ -1,17 +1,14 @@
-From: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 6/6 v8] iommu/fsl: Freescale PAMU driver and IOMMU API
-	implementation.
-Date: Wed, 20 Feb 2013 09:41:05 +0000
-Message-ID: <C5ECD7A89D1DC44195F34B25E172658D3AC29D@039-SN2MPN1-013.039d.mgd.msft.net>
-References: <1361191939-21260-1-git-send-email-Varun.Sethi@freescale.com>
-	<1361191939-21260-7-git-send-email-Varun.Sethi@freescale.com>
-	<5123A169.9060100@freescale.com>
+From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 1/4] pci: Add PCI_BUS() and PCI_DEVID() interfaces to
+	return bus number and device id
+Date: Wed, 20 Feb 2013 18:19:27 -0700
+Message-ID: <CAErSpo6jY1bX9G59uz8Zt_pDJ4OoR=kJkGjNLYYRTrKVXM8+eg@mail.gmail.com>
+References: <1360623637.2950.63.camel@lorien2>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5123A169.9060100-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <1360623637.2950.63.camel@lorien2>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,34 +18,50 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Craciun Diana Madalina-STFD002 <STFD002-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+To: shuah.khan-VXdhtT5mjnY@public.gmane.org, dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: jiang.liu-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, shemminger-ZtmgI6mnKB3QT0dZR+AlfA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mtk.manpages-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, davej-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, paulmck-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, linasvepstas-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+On Mon, Feb 11, 2013 at 4:00 PM, Shuah Khan <shuah.khan-VXdhtT5mjnY@public.gmane.org> wrote:
+> pci defines PCI_DEVFN(), PCI_SLOT(), and PCI_FUNC() interfaces, however,
+> it doesn't have interfaces to return PCI bus and PCI device id. Drivers
+> (AMD IOMMU, and AER) implement module specific definitions for PCI_BUS()
+> and AMD_IOMMU driver also has a module specific interface to calculate PCI
+> device id from bus number and devfn.
+>
+> Add PCI_BUS and PCI_DEVID interfaces to return PCI bus number and PCI device
+> id respectively to avoid the need for duplicate definitions in other modules.
+> AER driver code and AMD IOMMU driver define PCI_BUS. AMD IOMMU driver defines
+> an interface to calculate device id from bus number, and devfn pair.
+>
+> Signed-off-by: Shuah Khan <shuah.khan-VXdhtT5mjnY@public.gmane.org>
+> ---
+>  include/uapi/linux/pci.h |    4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/include/uapi/linux/pci.h b/include/uapi/linux/pci.h
+> index 3c292bc0..6b2c8b3 100644
+> --- a/include/uapi/linux/pci.h
+> +++ b/include/uapi/linux/pci.h
+> @@ -30,6 +30,10 @@
+>  #define PCI_DEVFN(slot, func)  ((((slot) & 0x1f) << 3) | ((func) & 0x07))
+>  #define PCI_SLOT(devfn)                (((devfn) >> 3) & 0x1f)
+>  #define PCI_FUNC(devfn)                ((devfn) & 0x07)
+> +#define PCI_DEVID(bus, devfn)  ((((u16)bus) << 8) | devfn)
+> +
+> +/* return bus from PCI devid = ((u16)bus_number) << 8) | devfn */
+> +#define PCI_BUS(x) (((x) >> 8) & 0xff)
+>
+>  /* Ioctls for /proc/bus/pci/X/Y nodes. */
+>  #define PCIIOC_BASE            ('P' << 24 | 'C' << 16 | 'I' << 8)
 
+David, can you point me at a description of include/uapi ... what is
+there and why, and how we should decide what new things go in
+include/uapi/linux/pci.h as opposed to include/linux/pci.h?  Maybe
+there should be something in Documentation/?
 
-> -----Original Message-----
-> From: Craciun Diana Madalina-STFD002
-> Sent: Tuesday, February 19, 2013 9:30 PM
-> To: Sethi Varun-B16395
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org;
-> linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Wood Scott-B07421; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; Yoder
-> Stuart-B08248
-> Subject: Re: [PATCH 6/6 v8] iommu/fsl: Freescale PAMU driver and IOMMU
-> API implementation.
-> 
-> On 02/18/2013 02:52 PM, Varun Sethi wrote:
-> > +/**
-> > + * pamu_get_ppaace() - Return the primary PACCE
-> > + * @liodn: liodn PAACT index for desired PAACE
-> > + *
-> > + * Returns the ppace pointer upon success else return
-> > + * null.
-> > + */
-> > +static struct paace *pamu_get_ppaace(int liodn) {
-> > +	if (!ppaact || liodn > PAACE_NUMBER_ENTRIES) {
-> 
-> Shouldn't be "liodn >= PAACE_NUMBER_ENTRIES" ?
-Yes, will fix this.
+I'm guessing it's something to do with being exported to userland, but
+I'm not sure the things in this patch (PCI_DEV_ID, PCI_BUS) are really
+exportable in the sense of being used for syscalls, etc.
 
--Varun
+Bjorn
