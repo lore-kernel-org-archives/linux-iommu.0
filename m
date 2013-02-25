@@ -1,16 +1,15 @@
-From: Andrew Cooks <acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [RFC PATCH] Fix Intel IOMMU support for Marvell 88SE91xx SATA
-	controllers.
-Date: Mon, 25 Feb 2013 16:37:08 +0800
-Message-ID: <CAJtEV7avQcDokktNdziQ+8j+37q7PSbZstxQ09xNWq-6XfAFbw@mail.gmail.com>
-References: <1354533387-4110-1-git-send-email-acooks@gmail.com>
-	<1355914703-28576-1-git-send-email-acooks@gmail.com>
-	<5127C716.6050903@linux-ipv6.be>
+From: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH 0/6 v8] iommu/fsl: Freescale PAMU driver and IOMMU API
+	implementation.
+Date: Mon, 25 Feb 2013 10:15:55 +0000
+Message-ID: <C5ECD7A89D1DC44195F34B25E172658D3B8CF1@039-SN2MPN1-013.039d.mgd.msft.net>
+References: <1361191939-21260-1-git-send-email-Varun.Sethi@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5127C716.6050903-VfPWfsRibaPZj6PxcwrBaQ@public.gmane.org>
+In-Reply-To: <1361191939-21260-1-git-send-email-Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,38 +19,73 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Stijn Tintel <stijn-VfPWfsRibaPZj6PxcwrBaQ@public.gmane.org>
-Cc: open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, YingChu <xjtuychu-PkbjNfxxIARBDgjK7y7TUQ@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Justin Piszcz <jpiszcz-BP4nVm5VUdNhbmWW9KSYcQ@public.gmane.org>, "open list:PCI SUBSYSTEM" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, Feb 23, 2013 at 3:29 AM, Stijn Tintel <stijn-VfPWfsRibaPZj6PxcwrBaQ@public.gmane.org> wrote:
-> On 19-12-12 11:58, Andrew Cooks wrote:
->> This is my second attempt to make Marvell 88SE91xx SATA controllers work when IOMMU is enabled.[1][2]
->> As suggested, it no longer tries to add support for phantom functions.
->>
->> What's missing:
->> * No AMD support. I need some help with this.
->> * Table of affected chip IDs is incomplete. I think 0x9123, 0x9125, 0x9128 are also affected.
-> This one is also affected: 08:00.0 0106: 1b4b:9130 (rev 11), this is in
-> dmesg:
->
-> [    1.914086] dmar: DMAR:[DMA Read] Request device [08:00.1] fault addr
-> fff00000
+Hi Joerg,
+Do you have any comments on the patch set.
 
-Handling specific chip revisions is another issue I'm not sure how to
-handle. We could use another bitmap field, but we need more vendor
-cooperation to know exactly which chip model and revision combinations
-are affected.
+Regards
+Varun
 
->>
->> Patch is against 3.7.1
->>
->> Review and feedback would be appreciated.
-> I changed your patch to check for my chip ID, and it solves my problem:
-> no more hang during boot, and the HDD connected to this controller is
-> now detected with IOMMU enabled.
->
-> Also see 1 minor comment inline.
-
-Thanks for the feedback!  I'll include your PCI_VENDOR_ID change in
-the next iteration of the patch.
+> -----Original Message-----
+> From: Sethi Varun-B16395
+> Sent: Monday, February 18, 2013 6:22 PM
+> To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org;
+> linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Wood Scott-B07421; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; Yoder
+> Stuart-B08248
+> Cc: Sethi Varun-B16395
+> Subject: [PATCH 0/6 v8] iommu/fsl: Freescale PAMU driver and IOMMU API
+> implementation.
+> 
+> This patchset provides the Freescale PAMU (Peripheral Access Management
+> Unit) driver and the corresponding IOMMU API implementation. PAMU is the
+> IOMMU present on Freescale QorIQ platforms. PAMU can authorize memory
+> access, remap the memory address, and remap the I/O transaction type.
+> 
+> This set consists of the following patches:
+> 1. Addition of new field in the device (powerpc) archdata structure for
+> storing iommu domain information
+>    pointer. This pointer is stored when the device is attached to a
+> particular iommu domain.
+> 2. Store PCI controller platform device information in the PCI controller
+> structure.
+> 3. Add defines for FSL PCI controller BRR1 register.
+> 4. Add window permission flags in the iommu_domain_window_enable API.
+> 5. Add domain attributes for FSL PAMU driver.
+> 6. PAMU driver and IOMMU API implementation.
+> 
+> This patch set is based on the next branch of the iommu git tree
+> maintained by Joerg.
+> 
+> Varun Sethi (6):
+>   Store iommu domain information in the device structure.
+>   Store the platform device information corresponding to the pci
+>     controller.
+>   Added defines for the FSL PCI controller BRR1 register.
+>   Add window permission flags for iommu_domain_window_enable API.
+>   Add addtional attributes specific to the PAMU driver.
+>   FSL PAMU driver and IOMMU API implementation.
+> 
+>  arch/powerpc/include/asm/device.h     |    4 +
+>  arch/powerpc/include/asm/pci-bridge.h |    4 +
+>  arch/powerpc/sysdev/fsl_pci.c         |    9 +-
+>  arch/powerpc/sysdev/fsl_pci.h         |    2 +-
+>  drivers/iommu/Kconfig                 |    8 +
+>  drivers/iommu/Makefile                |    1 +
+>  drivers/iommu/fsl_pamu.c              | 1260
+> +++++++++++++++++++++++++++++++++
+>  drivers/iommu/fsl_pamu.h              |  398 +++++++++++
+>  drivers/iommu/fsl_pamu_domain.c       | 1135
+> +++++++++++++++++++++++++++++
+>  drivers/iommu/fsl_pamu_domain.h       |   89 +++
+>  drivers/iommu/iommu.c                 |    5 +-
+>  include/linux/iommu.h                 |   40 +-
+>  12 files changed, 2947 insertions(+), 8 deletions(-)  create mode 100644
+> drivers/iommu/fsl_pamu.c  create mode 100644 drivers/iommu/fsl_pamu.h
+> create mode 100644 drivers/iommu/fsl_pamu_domain.c  create mode 100644
+> drivers/iommu/fsl_pamu_domain.h
+> 
+> --
+> 1.7.4.1
