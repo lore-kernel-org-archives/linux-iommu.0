@@ -1,91 +1,82 @@
-From: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 0/6 v8] iommu/fsl: Freescale PAMU driver and IOMMU API
-	implementation.
-Date: Mon, 25 Feb 2013 10:15:55 +0000
-Message-ID: <C5ECD7A89D1DC44195F34B25E172658D3B8CF1@039-SN2MPN1-013.039d.mgd.msft.net>
-References: <1361191939-21260-1-git-send-email-Varun.Sethi@freescale.com>
+From: Shuah Khan <shuah.khan@hp.com>
+Subject: Re: [PATCH 1/4] pci: Add PCI_BUS() and PCI_DEVID() interfaces to
+ return bus number and device id
+Date: Mon, 25 Feb 2013 09:37:25 -0700
+Message-ID: <1361810245.2975.14.camel@lorien2>
+References: <1360623637.2950.63.camel@lorien2>
+	 <CAErSpo6jY1bX9G59uz8Zt_pDJ4OoR=kJkGjNLYYRTrKVXM8+eg@mail.gmail.com>
+Reply-To: shuah.khan@hp.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1361191939-21260-1-git-send-email-Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <CAErSpo6jY1bX9G59uz8Zt_pDJ4OoR=kJkGjNLYYRTrKVXM8+eg@mail.gmail.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: dhowells@redhat.com, Joerg Roedel <joro@8bytes.org>, paulmck@linux.vnet.ibm.com, linasvepstas@gmail.com, davej@redhat.com, tglx@linutronix.de, mtk.manpages@gmail.com, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, linux-pci@vger.kernel.org, shemminger@vyatta.com, jiang.liu@huawei.com, wangyijing@huawei.com, shuahkhan@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
-Do you have any comments on the patch set.
+On Wed, 2013-02-20 at 18:19 -0700, Bjorn Helgaas wrote:
+> On Mon, Feb 11, 2013 at 4:00 PM, Shuah Khan <shuah.khan@hp.com> wrote:
+> > pci defines PCI_DEVFN(), PCI_SLOT(), and PCI_FUNC() interfaces, however,
+> > it doesn't have interfaces to return PCI bus and PCI device id. Drivers
+> > (AMD IOMMU, and AER) implement module specific definitions for PCI_BUS()
+> > and AMD_IOMMU driver also has a module specific interface to calculate PCI
+> > device id from bus number and devfn.
+> >
+> > Add PCI_BUS and PCI_DEVID interfaces to return PCI bus number and PCI device
+> > id respectively to avoid the need for duplicate definitions in other modules.
+> > AER driver code and AMD IOMMU driver define PCI_BUS. AMD IOMMU driver defines
+> > an interface to calculate device id from bus number, and devfn pair.
+> >
+> > Signed-off-by: Shuah Khan <shuah.khan@hp.com>
+> > ---
+> >  include/uapi/linux/pci.h |    4 ++++
+> >  1 file changed, 4 insertions(+)
+> >
+> > diff --git a/include/uapi/linux/pci.h b/include/uapi/linux/pci.h
+> > index 3c292bc0..6b2c8b3 100644
+> > --- a/include/uapi/linux/pci.h
+> > +++ b/include/uapi/linux/pci.h
+> > @@ -30,6 +30,10 @@
+> >  #define PCI_DEVFN(slot, func)  ((((slot) & 0x1f) << 3) | ((func) & 0x07))
+> >  #define PCI_SLOT(devfn)                (((devfn) >> 3) & 0x1f)
+> >  #define PCI_FUNC(devfn)                ((devfn) & 0x07)
+> > +#define PCI_DEVID(bus, devfn)  ((((u16)bus) << 8) | devfn)
+> > +
+> > +/* return bus from PCI devid = ((u16)bus_number) << 8) | devfn */
+> > +#define PCI_BUS(x) (((x) >> 8) & 0xff)
+> >
+> >  /* Ioctls for /proc/bus/pci/X/Y nodes. */
+> >  #define PCIIOC_BASE            ('P' << 24 | 'C' << 16 | 'I' << 8)
+> 
+> David, can you point me at a description of include/uapi ... what is
+> there and why, and how we should decide what new things go in
+> include/uapi/linux/pci.h as opposed to include/linux/pci.h?  Maybe
+> there should be something in Documentation/?
+> 
+> I'm guessing it's something to do with being exported to userland, but
+> I'm not sure the things in this patch (PCI_DEV_ID, PCI_BUS) are really
+> exportable in the sense of being used for syscalls, etc.
+> 
 
-Regards
-Varun
+Bjorn,David,
 
-> -----Original Message-----
-> From: Sethi Varun-B16395
-> Sent: Monday, February 18, 2013 6:22 PM
-> To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org;
-> linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Wood Scott-B07421; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; Yoder
-> Stuart-B08248
-> Cc: Sethi Varun-B16395
-> Subject: [PATCH 0/6 v8] iommu/fsl: Freescale PAMU driver and IOMMU API
-> implementation.
-> 
-> This patchset provides the Freescale PAMU (Peripheral Access Management
-> Unit) driver and the corresponding IOMMU API implementation. PAMU is the
-> IOMMU present on Freescale QorIQ platforms. PAMU can authorize memory
-> access, remap the memory address, and remap the I/O transaction type.
-> 
-> This set consists of the following patches:
-> 1. Addition of new field in the device (powerpc) archdata structure for
-> storing iommu domain information
->    pointer. This pointer is stored when the device is attached to a
-> particular iommu domain.
-> 2. Store PCI controller platform device information in the PCI controller
-> structure.
-> 3. Add defines for FSL PCI controller BRR1 register.
-> 4. Add window permission flags in the iommu_domain_window_enable API.
-> 5. Add domain attributes for FSL PAMU driver.
-> 6. PAMU driver and IOMMU API implementation.
-> 
-> This patch set is based on the next branch of the iommu git tree
-> maintained by Joerg.
-> 
-> Varun Sethi (6):
->   Store iommu domain information in the device structure.
->   Store the platform device information corresponding to the pci
->     controller.
->   Added defines for the FSL PCI controller BRR1 register.
->   Add window permission flags for iommu_domain_window_enable API.
->   Add addtional attributes specific to the PAMU driver.
->   FSL PAMU driver and IOMMU API implementation.
-> 
->  arch/powerpc/include/asm/device.h     |    4 +
->  arch/powerpc/include/asm/pci-bridge.h |    4 +
->  arch/powerpc/sysdev/fsl_pci.c         |    9 +-
->  arch/powerpc/sysdev/fsl_pci.h         |    2 +-
->  drivers/iommu/Kconfig                 |    8 +
->  drivers/iommu/Makefile                |    1 +
->  drivers/iommu/fsl_pamu.c              | 1260
-> +++++++++++++++++++++++++++++++++
->  drivers/iommu/fsl_pamu.h              |  398 +++++++++++
->  drivers/iommu/fsl_pamu_domain.c       | 1135
-> +++++++++++++++++++++++++++++
->  drivers/iommu/fsl_pamu_domain.h       |   89 +++
->  drivers/iommu/iommu.c                 |    5 +-
->  include/linux/iommu.h                 |   40 +-
->  12 files changed, 2947 insertions(+), 8 deletions(-)  create mode 100644
-> drivers/iommu/fsl_pamu.c  create mode 100644 drivers/iommu/fsl_pamu.h
-> create mode 100644 drivers/iommu/fsl_pamu_domain.c  create mode 100644
-> drivers/iommu/fsl_pamu_domain.h
-> 
-> --
-> 1.7.4.1
+Looks like the following thread answers some of the questions about when
+this uapi export was done on the existing defines.
+
+https://lkml.org/lkml/2011/7/28/198 
+
+Sounds like the concern is that the older defines PCI_DEVFN, PCI_SLOT,
+PCI_FUNC,  and PCI_DEVID could be exported, but not the new ones I
+added. I could find any discussion on whether these four older defines
+are exportable or the reasons for the export in the above thread.
+
+So the question is if uapi/linux.pci.h isn't the right place, do you
+have a recommendation on where they belong. The only alternative I can
+think of is include/linux/pci.h. It makes functional and logical sense
+to add the new defines to where the existing ones are defines. At least,
+not knowing the details of the change that moved PCI_DEVFN etc. to
+uapi/pci.h, that is my conclusion.
+
+-- Shuah
