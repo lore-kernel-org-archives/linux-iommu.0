@@ -1,164 +1,70 @@
-From: Stuart Yoder <b08248-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 6/6 v8] iommu/fsl: Freescale PAMU driver and IOMMU API
-	implementation.
-Date: Tue, 26 Feb 2013 16:33:15 -0600
-Message-ID: <CALRxmdBBO2AoAnKSTNNTYhHZ9fitJKWWeZMUj1ObtFhsZS5iSw@mail.gmail.com>
-References: <1361191939-21260-1-git-send-email-Varun.Sethi@freescale.com>
-	<1361191939-21260-7-git-send-email-Varun.Sethi@freescale.com>
+From: Shuah Khan <shuah.khan@hp.com>
+Subject: [PATCH 3.0] iommu/amd: Initialize device table after dma_ops
+Date: Tue, 26 Feb 2013 16:36:29 -0700
+Message-ID: <1361921789.2720.14.camel@lorien2>
+References: <1360205603.2615.19.camel@lorien2>
+	 <20130207104905.GC8945@gmail.com> <20130207110702.GU25591@8bytes.org>
+	 <20130207111252.GF8945@gmail.com>
+Reply-To: shuah.khan@hp.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1361191939-21260-7-git-send-email-Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <20130207111252.GF8945@gmail.com>
+Sender: stable-owner@vger.kernel.org
+To: Ingo Molnar <mingo@kernel.org>, tglx@linutronix.de, Joerg Roedel <joro@8bytes.org>, hpa@zytor.com, mingo@redhat.com
+Cc: Greg KH <gregkh@linuxfoundation.org>, x86@kernel.org, stable <stable@vger.kernel.org>, iommu@lists.linux-foundation.org, shuahkhan@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-Have not got through the entire file, but have a few comments...
+When dma_ops are initialized the unity mappings are created. The
+init_device_table_dma() function makes sure DMA from all devices is
+blocked by default. This opens a short window in time where DMA to
+unity mapped regions is blocked by the IOMMU. Make sure this does not
+happen by initializing the device table after dma_ops.
 
-+/*
-+ * Set the PAACE type as primary and set the coherency required domain
-+ * attribute
-+ */
-+static void pamu_setup_default_xfer_to_host_ppaace(struct paace *ppaace)
-+{
-+       set_bf(ppaace->addr_bitfields, PAACE_AF_PT, PAACE_PT_PRIMARY);
+Back-port upstream commit: f528d980c17b8714aedc918ba86e058af914d66b
+
+Signed-off-by: Joerg Roedel <joro@8bytes.org>
+Signed-off-by: Shuah Khan <shuah.khan@hp.com>
+CC: stable@vger.kernel.org 3.0
+---
+ arch/x86/kernel/amd_iommu_init.c |   10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/kernel/amd_iommu_init.c b/arch/x86/kernel/amd_iommu_init.c
+index 33df6e8..d86aa3f 100644
+--- a/arch/x86/kernel/amd_iommu_init.c
++++ b/arch/x86/kernel/amd_iommu_init.c
+@@ -1363,6 +1363,7 @@ static struct syscore_ops amd_iommu_syscore_ops = {
+  */
+ static int __init amd_iommu_init(void)
+ {
++	struct amd_iommu *iommu;
+ 	int i, ret = 0;
+ 
+ 	/*
+@@ -1411,9 +1412,6 @@ static int __init amd_iommu_init(void)
+ 	if (amd_iommu_pd_alloc_bitmap == NULL)
+ 		goto free;
+ 
+-	/* init the device table */
+-	init_device_table();
+-
+ 	/*
+ 	 * let all alias entries point to itself
+ 	 */
+@@ -1463,6 +1461,12 @@ static int __init amd_iommu_init(void)
+ 	if (ret)
+ 		goto free_disable;
+ 
++	/* init the device table */
++	init_device_table();
 +
-+       set_bf(ppaace->domain_attr.to_host.coherency_required, PAACE_DA_HOST_CR,
-+              PAACE_M_COHERENCE_REQ);
-+}
++	for_each_iommu(iommu)
++		iommu_flush_all_caches(iommu);
 +
-+/*
-+ * Set the PAACE type as secondary and set the coherency required domain
-+ * attribute.
-+ */
-+static void pamu_setup_default_xfer_to_host_spaace(struct paace *spaace)
-+{
-+       set_bf(spaace->addr_bitfields, PAACE_AF_PT, PAACE_PT_SECONDARY);
-+       set_bf(spaace->domain_attr.to_host.coherency_required, PAACE_DA_HOST_CR,
-+              PAACE_M_COHERENCE_REQ);
-+}
-
-Can we change the names of the above functions...   I know there is some history
-with the name, but "xfer_to_host" is confusing.
-
-Maybe just call them:
-
-pamu_init_paace()
-pamu_init_spaace()
-
-> +/**
-> + * pamu_config_spaace() - Sets up SPAACE entry for specified subwindow
-> + *
-> + * @liodn:  Logical IO device number
-> + * @subwin_cnt:  number of sub-windows associated with dma-window
-> + * @subwin_addr: starting address of subwindow
-> + * @subwin_size: size of subwindow
-> + * @omi: Operation mapping index
-> + * @rpn: real (true physical) page number
-> + * @snoopid: snoop id for hardware coherency -- if ~snoopid == 0 then
-> + *                       snoopid not defined
-> + * @stashid: cache stash id for associated cpu
-> + * @enable: enable/disable subwindow after reconfiguration
-> + * @prot: sub window permissions
-> + *
-> + * Returns 0 upon success else error code < 0 returned
-> + */
-> +int pamu_config_spaace(int liodn, u32 subwin_cnt, u32 subwin_addr,
-> +                      phys_addr_t subwin_size, u32 omi, unsigned long rpn,
-> +                      u32 snoopid, u32 stashid, int enable, int prot)
-> +{
-> +       struct paace *paace;
-> +
-> +       /* setup sub-windows */
-> +       if (!subwin_cnt) {
-> +               pr_err("Invalid subwindow count\n");
-> +               return -EINVAL;
-> +       }
-> +
-> +       paace = pamu_get_ppaace(liodn);
-> +       if (subwin_addr > 0 && subwin_addr < subwin_cnt && paace) {
-
-Why is the comparison subwin_addr < subwin_cnt?   Seems wrong...
-
-> +               paace = pamu_get_spaace(paace, subwin_addr - 1);
-> +
-> +               if (paace && !(paace->addr_bitfields & PAACE_V_VALID)) {
-> +                       pamu_setup_default_xfer_to_host_spaace(paace);
-> +                       set_bf(paace->addr_bitfields, SPAACE_AF_LIODN, liodn);
-> +               }
-> +       }
-> +
-> +       if (!paace) {
-> +               pr_err("Invalid liodn entry\n");
-> +               return -ENOENT;
-> +       }
-> +
-> +       if (!enable && prot == PAACE_AP_PERMS_DENIED) {
-> +               if (subwin_addr > 0)
-> +                       set_bf(paace->addr_bitfields, PAACE_AF_V,
-> +                                PAACE_V_INVALID);
-> +               else
-> +                       set_bf(paace->addr_bitfields, PAACE_AF_AP,
-> +                                prot);
-> +               mb();
-> +               return 0;
-> +       }
-
-Can you add a comment to the above if statement...when is this function called
-with PAACE_AP_PERMS_DENIED?
-
-
-> +       if (subwin_size & (subwin_size - 1) || subwin_size < PAMU_PAGE_SIZE) {
-> +               pr_err("subwindow size out of range, or not a power of 2\n");
-> +               return -EINVAL;
-> +       }
-> +
-> +       if (rpn == ULONG_MAX) {
-> +               pr_err("real page number out of range\n");
-> +               return -EINVAL;
-> +       }
-> +
-> +       /* window size is 2^(WSE+1) bytes */
-> +       set_bf(paace->win_bitfields, PAACE_WIN_SWSE,
-> +              map_addrspace_size_to_wse(subwin_size));
-> +
-> +       set_bf(paace->impl_attr, PAACE_IA_ATM, PAACE_ATM_WINDOW_XLATE);
-> +       paace->twbah = rpn >> 20;
-> +       set_bf(paace->win_bitfields, PAACE_WIN_TWBAL, rpn);
-> +       set_bf(paace->addr_bitfields, PAACE_AF_AP, prot);
-> +
-> +       /* configure snoop id */
-> +       if (~snoopid != 0)
-> +               paace->domain_attr.to_host.snpid = snoopid;
-> +
-> +       /* set up operation mapping if it's configured */
-> +       if (omi < OME_NUMBER_ENTRIES) {
-> +               set_bf(paace->impl_attr, PAACE_IA_OTM, PAACE_OTM_INDEXED);
-> +               paace->op_encode.index_ot.omi = omi;
-> +       } else if (~omi != 0) {
-> +               pr_err("bad operation mapping index: %d\n", omi);
-> +               return -EINVAL;
-> +       }
-> +
-> +       if (~stashid != 0)
-> +               set_bf(paace->impl_attr, PAACE_IA_CID, stashid);
-> +
-> +       smp_wmb();
-> +
-> +       if (enable)
-> +               paace->addr_bitfields |= PAACE_V_VALID;
-> +
-> +       mb();
-> +
-> +       return 0;
-> +}
+ 	amd_iommu_init_api();
+ 
+ 	amd_iommu_init_notifier();
+-- 
+1.7.9.5
