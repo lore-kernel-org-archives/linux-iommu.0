@@ -1,127 +1,108 @@
-From: Shuah Khan <shuah.khan@hp.com>
-Subject: Re: [PATCH 1/4] pci: Add PCI_BUS() and PCI_DEVID() interfaces to
- return bus number and device id
-Date: Mon, 25 Feb 2013 14:53:22 -0700
-Message-ID: <1361829202.2958.3.camel@lorien2>
-References: <1360623637.2950.63.camel@lorien2>
-	 <CAErSpo6jY1bX9G59uz8Zt_pDJ4OoR=kJkGjNLYYRTrKVXM8+eg@mail.gmail.com>
-	 <1361810245.2975.14.camel@lorien2>
-	 <CAErSpo7u+vos73jTR1ASzv3XRwcMX1XwptP41mUWekz7Tv249w@mail.gmail.com>
-Reply-To: shuah.khan@hp.com
+From: Stuart Yoder <b08248-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 2/6] powerpc/fsl_pci: Store the platform device
+	information corresponding to the pci controller.
+Date: Mon, 25 Feb 2013 18:09:04 -0600
+Message-ID: <CALRxmdDc9TuxH7HgAF3_iLgatoaOUML6fUt8SU+sxHyz6ZVjfw@mail.gmail.com>
+References: <1361191939-21260-1-git-send-email-Varun.Sethi@freescale.com>
+	<1361191939-21260-3-git-send-email-Varun.Sethi@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <CAErSpo7u+vos73jTR1ASzv3XRwcMX1XwptP41mUWekz7Tv249w@mail.gmail.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: dhowells@redhat.com, Joerg Roedel <joro@8bytes.org>, paulmck@linux.vnet.ibm.com, linasvepstas@gmail.com, davej@redhat.com, tglx@linutronix.de, mtk.manpages@gmail.com, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, linux-pci@vger.kernel.org, shemminger@vyatta.com, jiang.liu@huawei.com, wangyijing@huawei.com, shuahkhan@gmail.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1361191939-21260-3-git-send-email-Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Cc: Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2013-02-25 at 14:23 -0700, Bjorn Helgaas wrote:
-> On Mon, Feb 25, 2013 at 9:37 AM, Shuah Khan <shuah.khan@hp.com> wrote:
-> > On Wed, 2013-02-20 at 18:19 -0700, Bjorn Helgaas wrote:
-> >> On Mon, Feb 11, 2013 at 4:00 PM, Shuah Khan <shuah.khan@hp.com> wrote:
-> >> > pci defines PCI_DEVFN(), PCI_SLOT(), and PCI_FUNC() interfaces, however,
-> >> > it doesn't have interfaces to return PCI bus and PCI device id. Drivers
-> >> > (AMD IOMMU, and AER) implement module specific definitions for PCI_BUS()
-> >> > and AMD_IOMMU driver also has a module specific interface to calculate PCI
-> >> > device id from bus number and devfn.
-> >> >
-> >> > Add PCI_BUS and PCI_DEVID interfaces to return PCI bus number and PCI device
-> >> > id respectively to avoid the need for duplicate definitions in other modules.
-> >> > AER driver code and AMD IOMMU driver define PCI_BUS. AMD IOMMU driver defines
-> >> > an interface to calculate device id from bus number, and devfn pair.
-> >> >
-> >> > Signed-off-by: Shuah Khan <shuah.khan@hp.com>
-> >> > ---
-> >> >  include/uapi/linux/pci.h |    4 ++++
-> >> >  1 file changed, 4 insertions(+)
-> >> >
-> >> > diff --git a/include/uapi/linux/pci.h b/include/uapi/linux/pci.h
-> >> > index 3c292bc0..6b2c8b3 100644
-> >> > --- a/include/uapi/linux/pci.h
-> >> > +++ b/include/uapi/linux/pci.h
-> >> > @@ -30,6 +30,10 @@
-> >> >  #define PCI_DEVFN(slot, func)  ((((slot) & 0x1f) << 3) | ((func) & 0x07))
-> >> >  #define PCI_SLOT(devfn)                (((devfn) >> 3) & 0x1f)
-> >> >  #define PCI_FUNC(devfn)                ((devfn) & 0x07)
-> >> > +#define PCI_DEVID(bus, devfn)  ((((u16)bus) << 8) | devfn)
-> >> > +
-> >> > +/* return bus from PCI devid = ((u16)bus_number) << 8) | devfn */
-> >> > +#define PCI_BUS(x) (((x) >> 8) & 0xff)
-> >> >
-> >> >  /* Ioctls for /proc/bus/pci/X/Y nodes. */
-> >> >  #define PCIIOC_BASE            ('P' << 24 | 'C' << 16 | 'I' << 8)
-> >>
-> >> David, can you point me at a description of include/uapi ... what is
-> >> there and why, and how we should decide what new things go in
-> >> include/uapi/linux/pci.h as opposed to include/linux/pci.h?  Maybe
-> >> there should be something in Documentation/?
-> >>
-> >> I'm guessing it's something to do with being exported to userland, but
-> >> I'm not sure the things in this patch (PCI_DEV_ID, PCI_BUS) are really
-> >> exportable in the sense of being used for syscalls, etc.
-> >>
-> >
-> > Bjorn,David,
-> >
-> > Looks like the following thread answers some of the questions about when
-> > this uapi export was done on the existing defines.
-> >
-> > https://lkml.org/lkml/2011/7/28/198
-> >
-> > Sounds like the concern is that the older defines PCI_DEVFN, PCI_SLOT,
-> > PCI_FUNC,  and PCI_DEVID could be exported, but not the new ones I
-> > added. I could find any discussion on whether these four older defines
-> > are exportable or the reasons for the export in the above thread.
-> 
-> I think David's disintegration script took include/linux/pci.h, left
-> the #ifdef __KERNEL__ parts there, and moved everything else (which
-> wasn't much) to include/uapi/linux/pci.h.
-> 
-> It's obvious that the PCIIOC_ #defines need to be exported to
-> user-space for ioctls.  It's not obvious to me why PCI_DEVFN,
-> PCI_SLOT, and PCI_FUNC need to be exported to user-space.  But I can
-> imagine user-space using functionality like that, even if it's not
-> connected to a kernel interface.  I assume the intent of the
-> disintegration is that only include/uapi would be exposed to
-> user-space, so keeping those definitions in include/linux/pci.h would
-> break any user programs that used them.
-> 
-> > So the question is if uapi/linux.pci.h isn't the right place, do you
-> > have a recommendation on where they belong. The only alternative I can
-> > think of is include/linux/pci.h. It makes functional and logical sense
-> > to add the new defines to where the existing ones are defines. At least,
-> > not knowing the details of the change that moved PCI_DEVFN etc. to
-> > uapi/pci.h, that is my conclusion.
-> 
-> Using the linux-fullhist tree, I found these:
-> 
-> 059d367 Import 2.1.82 -- moved PCI_DEVFN outside #ifdef __KERNEL__
-> b039547 Import 2.1.76 -- PCI_DEVFN was inside #ifdef __KERNEL__
-> f6d9739 Import 2.1.68pre1 -- added #ifdef __KERNEL__ (enclosing PCI_DEVFN)
-> 940649f Import 1.3.0 -- added PCI_DEVFN
-> 
-> There's no indication of *why* PCI_DEVFN was exported, of course.
-> 
-> Bottom line, I think it's reasonable to keep PCI_DEVFN, et al., in
-> uapi/linux/pci.h to keep from breaking user-programs, even though if
-> we were adding them today we would probably put them in the
-> kernel-only linux/pci.h.  For the new ones you're adding, I'd propose
-> putting them in the kernel-only linux/pci.h because we know no user
-> programs use them.
+This patch was submitted separately to linuxppc-dev (and was already
+applied).  You don't need it in this patch set, right?
 
-Yeah. These have been in uapi long enough to continue to keep them
-there. :)
+Stuart
 
-> 
-> It's not nice and consistent, but it does follow the simple rule of
-> "don't expose things to user-space unnecessarily."  We might want to
-> add a comment to keep somebody from cleaning it up later.
-
-ok. Will resend patches adding the new defines to linux/pci.h and
-renaming PCI_BUS() to PCI_BUS_NR() or PCI_BUS_NUM() like you suggested.
-
-Thanks,
--- Shuah
+On Mon, Feb 18, 2013 at 6:52 AM, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org> wrote:
+> The pci controller structure has a provision to store the device strcuture
+> pointer of the corresponding platform device. Currently this information is
+> not stored during fsl pci controller initialization. This information is
+> required while dealing with iommu groups for pci devices connected to the fsl
+> pci controller. For the case where the pci devices can't be paritioned, they
+> would fall under the same device group as the pci controller.
+>
+> This patch stores the platform device information in the pci controller
+> structure during initialization.
+>
+> Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+> ---
+>  arch/powerpc/sysdev/fsl_pci.c |    9 +++++++--
+>  arch/powerpc/sysdev/fsl_pci.h |    2 +-
+>  2 files changed, 8 insertions(+), 3 deletions(-)
+>
+> diff --git a/arch/powerpc/sysdev/fsl_pci.c b/arch/powerpc/sysdev/fsl_pci.c
+> index 92a5915..b393ae7 100644
+> --- a/arch/powerpc/sysdev/fsl_pci.c
+> +++ b/arch/powerpc/sysdev/fsl_pci.c
+> @@ -421,13 +421,16 @@ void fsl_pcibios_fixup_bus(struct pci_bus *bus)
+>         }
+>  }
+>
+> -int __init fsl_add_bridge(struct device_node *dev, int is_primary)
+> +int __init fsl_add_bridge(struct platform_device *pdev, int is_primary)
+>  {
+>         int len;
+>         struct pci_controller *hose;
+>         struct resource rsrc;
+>         const int *bus_range;
+>         u8 hdr_type, progif;
+> +       struct device_node *dev;
+> +
+> +       dev = pdev->dev.of_node;
+>
+>         if (!of_device_is_available(dev)) {
+>                 pr_warning("%s: disabled\n", dev->full_name);
+> @@ -453,6 +456,8 @@ int __init fsl_add_bridge(struct device_node *dev, int is_primary)
+>         if (!hose)
+>                 return -ENOMEM;
+>
+> +       /* set platform device as the parent */
+> +       hose->parent = &pdev->dev;
+>         hose->first_busno = bus_range ? bus_range[0] : 0x0;
+>         hose->last_busno = bus_range ? bus_range[1] : 0xff;
+>
+> @@ -880,7 +885,7 @@ static int fsl_pci_probe(struct platform_device *pdev)
+>  #endif
+>
+>         node = pdev->dev.of_node;
+> -       ret = fsl_add_bridge(node, fsl_pci_primary == node);
+> +       ret = fsl_add_bridge(pdev, fsl_pci_primary == node);
+>
+>  #ifdef CONFIG_SWIOTLB
+>         if (ret == 0) {
+> diff --git a/arch/powerpc/sysdev/fsl_pci.h b/arch/powerpc/sysdev/fsl_pci.h
+> index d078537..c495c00 100644
+> --- a/arch/powerpc/sysdev/fsl_pci.h
+> +++ b/arch/powerpc/sysdev/fsl_pci.h
+> @@ -91,7 +91,7 @@ struct ccsr_pci {
+>         __be32  pex_err_cap_r3;         /* 0x.e34 - PCIE error capture register 0 */
+>  };
+>
+> -extern int fsl_add_bridge(struct device_node *dev, int is_primary);
+> +extern int fsl_add_bridge(struct platform_device *pdev, int is_primary);
+>  extern void fsl_pcibios_fixup_bus(struct pci_bus *bus);
+>  extern int mpc83xx_add_bridge(struct device_node *dev);
+>  u64 fsl_pci_immrbar_base(struct pci_controller *hose);
+> --
+> 1.7.4.1
+>
+>
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
