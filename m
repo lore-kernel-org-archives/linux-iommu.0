@@ -1,108 +1,30 @@
-From: Stuart Yoder <b08248-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 2/6] powerpc/fsl_pci: Store the platform device
-	information corresponding to the pci controller.
-Date: Mon, 25 Feb 2013 18:09:04 -0600
-Message-ID: <CALRxmdDc9TuxH7HgAF3_iLgatoaOUML6fUt8SU+sxHyz6ZVjfw@mail.gmail.com>
-References: <1361191939-21260-1-git-send-email-Varun.Sethi@freescale.com>
-	<1361191939-21260-3-git-send-email-Varun.Sethi@freescale.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1361191939-21260-3-git-send-email-Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+From: David Howells <dhowells@redhat.com>
+Subject: Re: [PATCH 1/4] pci: Add PCI_BUS() and PCI_DEVID() interfaces to return bus number and device id
+Date: Tue, 26 Feb 2013 00:45:40 +0000
+Message-ID: <19586.1361839540@warthog.procyon.org.uk>
+References: <CAErSpo6jY1bX9G59uz8Zt_pDJ4OoR=kJkGjNLYYRTrKVXM8+eg@mail.gmail.com> <1360623637.2950.63.camel@lorien2>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <CAErSpo6jY1bX9G59uz8Zt_pDJ4OoR=kJkGjNLYYRTrKVXM8+eg@mail.gmail.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: dhowells@redhat.com, shuah.khan@hp.com, Joerg Roedel <joro@8bytes.org>, paulmck@linux.vnet.ibm.com, linasvepstas@gmail.com, davej@redhat.com, tglx@linutronix.de, mtk.manpages@gmail.com, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, linux-pci@vger.kernel.org, shemminger@vyatta.com, jiang.liu@huawei.com, wangyijing@huawei.com, shuahkhan@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-This patch was submitted separately to linuxppc-dev (and was already
-applied).  You don't need it in this patch set, right?
+Bjorn Helgaas <bhelgaas@google.com> wrote:
 
-Stuart
+> David, can you point me at a description of include/uapi ... what is
+> there and why, and how we should decide what new things go in
+> include/uapi/linux/pci.h as opposed to include/linux/pci.h?  Maybe
+> there should be something in Documentation/?
 
-On Mon, Feb 18, 2013 at 6:52 AM, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org> wrote:
-> The pci controller structure has a provision to store the device strcuture
-> pointer of the corresponding platform device. Currently this information is
-> not stored during fsl pci controller initialization. This information is
-> required while dealing with iommu groups for pci devices connected to the fsl
-> pci controller. For the case where the pci devices can't be paritioned, they
-> would fall under the same device group as the pci controller.
->
-> This patch stores the platform device information in the pci controller
-> structure during initialization.
->
-> Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-> ---
->  arch/powerpc/sysdev/fsl_pci.c |    9 +++++++--
->  arch/powerpc/sysdev/fsl_pci.h |    2 +-
->  2 files changed, 8 insertions(+), 3 deletions(-)
->
-> diff --git a/arch/powerpc/sysdev/fsl_pci.c b/arch/powerpc/sysdev/fsl_pci.c
-> index 92a5915..b393ae7 100644
-> --- a/arch/powerpc/sysdev/fsl_pci.c
-> +++ b/arch/powerpc/sysdev/fsl_pci.c
-> @@ -421,13 +421,16 @@ void fsl_pcibios_fixup_bus(struct pci_bus *bus)
->         }
->  }
->
-> -int __init fsl_add_bridge(struct device_node *dev, int is_primary)
-> +int __init fsl_add_bridge(struct platform_device *pdev, int is_primary)
->  {
->         int len;
->         struct pci_controller *hose;
->         struct resource rsrc;
->         const int *bus_range;
->         u8 hdr_type, progif;
-> +       struct device_node *dev;
-> +
-> +       dev = pdev->dev.of_node;
->
->         if (!of_device_is_available(dev)) {
->                 pr_warning("%s: disabled\n", dev->full_name);
-> @@ -453,6 +456,8 @@ int __init fsl_add_bridge(struct device_node *dev, int is_primary)
->         if (!hose)
->                 return -ENOMEM;
->
-> +       /* set platform device as the parent */
-> +       hose->parent = &pdev->dev;
->         hose->first_busno = bus_range ? bus_range[0] : 0x0;
->         hose->last_busno = bus_range ? bus_range[1] : 0xff;
->
-> @@ -880,7 +885,7 @@ static int fsl_pci_probe(struct platform_device *pdev)
->  #endif
->
->         node = pdev->dev.of_node;
-> -       ret = fsl_add_bridge(node, fsl_pci_primary == node);
-> +       ret = fsl_add_bridge(pdev, fsl_pci_primary == node);
->
->  #ifdef CONFIG_SWIOTLB
->         if (ret == 0) {
-> diff --git a/arch/powerpc/sysdev/fsl_pci.h b/arch/powerpc/sysdev/fsl_pci.h
-> index d078537..c495c00 100644
-> --- a/arch/powerpc/sysdev/fsl_pci.h
-> +++ b/arch/powerpc/sysdev/fsl_pci.h
-> @@ -91,7 +91,7 @@ struct ccsr_pci {
->         __be32  pex_err_cap_r3;         /* 0x.e34 - PCIE error capture register 0 */
->  };
->
-> -extern int fsl_add_bridge(struct device_node *dev, int is_primary);
-> +extern int fsl_add_bridge(struct platform_device *pdev, int is_primary);
->  extern void fsl_pcibios_fixup_bus(struct pci_bus *bus);
->  extern int mpc83xx_add_bridge(struct device_node *dev);
->  u64 fsl_pci_immrbar_base(struct pci_controller *hose);
-> --
-> 1.7.4.1
->
->
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+Probably in CodingStyle, Submitting* or somewhere similar.
+
+> I'm guessing it's something to do with being exported to userland, but
+> I'm not sure the things in this patch (PCI_DEV_ID, PCI_BUS) are really
+> exportable in the sense of being used for syscalls, etc.
+
+As a rule, if it's in uapi/ then it's exported to userspace; if it's not, then
+it isn't.  The old headers where disintegrated along the lines of __KERNEL__
+delimited sections by my scripts.
+
+David
