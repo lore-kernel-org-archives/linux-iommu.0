@@ -1,91 +1,71 @@
-From: Kumar Gala <galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
-Subject: Re: [PATCH 1/6 v8] iommu/fsl: Store iommu domain information pointer
-	in archdata.
-Date: Thu, 28 Feb 2013 09:51:23 -0600
-Message-ID: <BAB98EA5-5324-4FB2-97C2-A28A96C569DC@kernel.crashing.org>
-References: <1361191939-21260-1-git-send-email-Varun.Sethi@freescale.com>
-	<1361191939-21260-2-git-send-email-Varun.Sethi@freescale.com>
-	<20130227113045.GH26252@8bytes.org>
-	<C5ECD7A89D1DC44195F34B25E172658D3C26F6@039-SN2MPN1-013.039d.mgd.msft.net>
-Mime-Version: 1.0 (Apple Message framework v1278)
-Content-Type: text/plain; charset="us-ascii"
+From: Shuah Khan <shuah.khan@hp.com>
+Subject: Re: [PATCH 3.4] iommu/amd: Initialize device table after dma_ops
+Date: Thu, 28 Feb 2013 12:52:00 -0700
+Message-ID: <1362081120.2822.30.camel@lorien2>
+References: <1360205128.2615.14.camel@lorien2>
+	 <1361922545.2720.17.camel@lorien2>
+Reply-To: shuah.khan@hp.com
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <C5ECD7A89D1DC44195F34B25E172658D3C26F6-RL0Hj/+nBVDYdknt8GnhQq4g8xLGJsHaLnY5E4hWTkheoWH0uzbU5w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org list" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org list" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <1361922545.2720.17.camel@lorien2>
+Sender: stable-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, Herton Ronaldo Krzesinski <herton.krzesinski@canonical.com>
+Cc: iommu@lists.linux-foundation.org, stable <stable@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, shuahkhan@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-
-On Feb 27, 2013, at 6:04 AM, Sethi Varun-B16395 wrote:
-
-> Hi Kumar,Ben,
-> I am implementing the Freescale PAMU (IOMMU) driver using the Linux IOMMU API. In this particular patch, I have added a new field to dev_archdata structure to store the dma domain information.
-> This field is updated whenever we attach a device to an iommu domain.
+On Tue, 2013-02-26 at 16:49 -0700, Shuah Khan wrote:
+> When dma_ops are initialized the unity mappings are created. The
+> init_device_table_dma() function makes sure DMA from all devices is
+> blocked by default. This opens a short window in time where DMA to
+> unity mapped regions is blocked by the IOMMU. Make sure this does not
+> happen by initializing the device table after dma_ops.
 > 
-> Regards
-> Varun
-
-Would be good to see if this overlaps with Alexey's work for IOMMU driver for powernv.
-
-- k
-
+> Back-port upstream commit: f528d980c17b8714aedc918ba86e058af914d66b
 > 
->> -----Original Message-----
->> From: Joerg Roedel [mailto:joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org]
->> Sent: Wednesday, February 27, 2013 5:01 PM
->> To: Sethi Varun-B16395
->> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org;
->> linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Wood Scott-B07421; Yoder Stuart-B08248
->> Subject: Re: [PATCH 1/6 v8] iommu/fsl: Store iommu domain information
->> pointer in archdata.
->> 
->> On Mon, Feb 18, 2013 at 06:22:14PM +0530, Varun Sethi wrote:
->>> Add a new field in the device (powerpc) archdata structure for storing
->>> iommu domain information pointer. This pointer is stored when the
->>> device is attached to a particular domain.
->>> 
->>> 
->>> Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
->>> ---
->>> - no change.
->>> arch/powerpc/include/asm/device.h |    4 ++++
->>> 1 files changed, 4 insertions(+), 0 deletions(-)
->>> 
->>> diff --git a/arch/powerpc/include/asm/device.h
->>> b/arch/powerpc/include/asm/device.h
->>> index 77e97dd..6dc79fe 100644
->>> --- a/arch/powerpc/include/asm/device.h
->>> +++ b/arch/powerpc/include/asm/device.h
->>> @@ -28,6 +28,10 @@ struct dev_archdata {
->>> 		void		*iommu_table_base;
->>> 	} dma_data;
->>> 
->>> +	/* IOMMU domain information pointer. This would be set
->>> +	 * when this device is attached to an iommu_domain.
->>> +	 */
->>> +	void			*iommu_domain;
->> 
->> Please Cc the PowerPC Maintainers on this, so that they can have a look
->> at it. This also must be put this into an #ifdef CONFIG_IOMMU_API.
->> 
->> 
->> 	Joerg
->> 
->> 
+> Signed-off-by: Joerg Roedel <joro@8bytes.org>
+> Signed-off-by: Shuah Khan <shuah.khan@hp.com>
+> CC: stable@vger.kernel.org 3.4
+
+Please consider this for 3.5 as well.
+
+-- Shuah
+> ---
+>  drivers/iommu/amd_iommu_init.c |    9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
 > 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
+> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+> index ef0ae93..b573f80 100644
+> --- a/drivers/iommu/amd_iommu_init.c
+> +++ b/drivers/iommu/amd_iommu_init.c
+> @@ -1572,8 +1572,6 @@ int __init amd_iommu_init_hardware(void)
+>  	if (amd_iommu_pd_alloc_bitmap == NULL)
+>  		goto free;
+>  
+> -	/* init the device table */
+> -	init_device_table();
+>  
+>  	/*
+>  	 * let all alias entries point to itself
+> @@ -1655,6 +1653,7 @@ out:
+>   */
+>  static int __init amd_iommu_init(void)
+>  {
+> +	struct amd_iommu *iommu;
+>  	int ret = 0;
+>  
+>  	ret = amd_iommu_init_hardware();
+> @@ -1673,6 +1672,12 @@ static int __init amd_iommu_init(void)
+>  	if (ret)
+>  		goto free;
+>  
+> +	/* init the device table */
+> +	init_device_table();
+> +
+> +	for_each_iommu(iommu)
+> +		iommu_flush_all_caches(iommu);
+> +
+>  	amd_iommu_init_api();
+>  
+>  	x86_platform.iommu_shutdown = disable_iommus;
