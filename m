@@ -1,214 +1,55 @@
-From: Stuart Yoder <b08248-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 6/6 v8] iommu/fsl: Freescale PAMU driver and IOMMU API
-	implementation.
-Date: Wed, 27 Feb 2013 18:03:41 -0600
-Message-ID: <CALRxmdD6PTVvk2PpcPPEqh74E-=qTivmS7Gr8Mxeobd2Jgso0A@mail.gmail.com>
-References: <1361191939-21260-1-git-send-email-Varun.Sethi@freescale.com>
-	<1361191939-21260-7-git-send-email-Varun.Sethi@freescale.com>
+From: Shuah Khan <shuah.khan@hp.com>
+Subject: [PATCH v2 0/4] pci: Add PCI_BUS() and PCI_DEVID() interfaces to
+ return bus number and device id
+Date: Wed, 27 Feb 2013 17:06:18 -0700
+Message-ID: <1362009978.2808.33.camel@lorien2>
+Reply-To: shuah.khan@hp.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1361191939-21260-7-git-send-email-Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, bhelgaas@google.com
+Cc: jiang.liu@huawei.com, shemminger@vyatta.com, paulmck@linux.vnet.ibm.com, linasvepstas@gmail.com, dhowells@redhat.com, davej@redhat.com, tglx@linutronix.de, mtk.manpages@gmail.com, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, wangyijing@huawei.com, LKML <linux-kernel@vger.kernel.org>, shuahkhan@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-Some more comments...
+pci defines PCI_DEVFN(), PCI_SLOT(), and PCI_FUNC() interfaces, however,
+it doesn't have interfaces to return PCI bus and PCI device id. Drivers
+(AMD IOMMU, and AER) have module specific definitions for PCI_BUS() and
+AMD_IOMMU driver also has a module specific interface to calculate PCI
+device id from bus number and devfn.
 
-On Mon, Feb 18, 2013 at 6:52 AM, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org> wrote:
-> +/* Handling access violations */
-> +#define make64(high, low) (((u64)(high) << 32) | (low))
-> +
-> +struct pamu_isr_data {
-> +       void __iomem *pamu_reg_base;    /* Base address of PAMU regs*/
-> +       unsigned int count;             /* The number of PAMUs */
-> +};
-> +
-> +static struct paace *ppaact;
-> +static struct paace *spaact;
-> +static struct ome *omt;
-> +
-> +/* maximum subwindows permitted per liodn */
-> +unsigned int max_subwindow_count;
-> +/* Number of SPAACT entries */
-> +unsigned long max_subwins;
+This patch set adds PCI_BUS_NUM(), and PCI_DEVID() to pci.h, changes AER
+to use PCI_BUS_NUM() from pci and remove local PCI_BUS() define. Changes
+AMD_IOMMU driver to use PCI_BUS_NUM() and PCI_DEVID() from pci and remove
+local PCI_BUS() define and local PCI_DEVID() implementation.
 
-I don't like that these variables are not static... and they are
-referenced directly
-from code in fsl_pamu_domain.c.  It would be better if fsl_pamu_domain.c
-called an accessor function-- like pamu_get_max_subwins.
+Files changed:
 
-> +/* Pool for fspi allocation */
-> +struct gen_pool *spaace_pool;
+[PATCH v2 1/4] pci: Add PCI_BUS_NUM() and PCI_DEVID() interfaces to return bus
+           number and device id
 
-spaace_pool should be static?
+ include/linux/pci.h |   15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-I'm wondering if you should change pamu_isr_data into a more
-general struct analagous to struct intel_iommu.   You could
-put in there the max # of subwins, etc.   You could then
-provide an accessor to get at that data.
+[PATCH v2 2/4] pci/aer: Remove local PCI_BUS() define and use PCI_BUS_NUM()
+           from pci
 
-[cut]
-> +/**
-> + * pamu_get_fspi_and_allocate() - Allocates fspi index and reserves subwindows
-> + *                                required for primary PAACE in the secondary
-> + *                                PAACE table.
-> + * @subwin_cnt: Number of subwindows to be reserved.
-> + *
-> + * A PPAACE entry may have a number of associated subwindows. A subwindow
-> + * corresponds to a SPAACE entry in the SPAACT table. Each PAACE entry stores
-> + * the index (fspi) of the first SPAACE entry in the SPAACT table. This
-> + * function returns the index of the first SPAACE entry. The remaining
-> + * SPAACE entries are reserved contiguously from that index.
-> + *
-> + * Returns a valid fspi index in the range of 0 - max_subwins on success.
-> + * If no SPAACE entry is available or the allocator can not reserve the required
-> + * number of contiguous entries function returns ULONG_MAX indicating a failure.
-> + *
-> +*/
-> +static unsigned long pamu_get_fspi_and_allocate(u32 subwin_cnt)
-> +{
-> +       unsigned long spaace_addr;
-> +
-> +       spaace_addr = gen_pool_alloc(spaace_pool, subwin_cnt * sizeof(struct paace));
-> +       if (!spaace_addr)
-> +               return ULONG_MAX;
-> +
-> +       return (spaace_addr - (unsigned long)spaact) / (sizeof(struct paace));
-> +}
+ drivers/pci/pcie/aer/aerdrv_core.c |    4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-In order to keep things symmetric (with the free function) can we just
-call the above
-function:
+[PATCH v2 3/4] iommu/amd: Remove local PCI_BUS() define and use PCI_BUS_NUM()
+           from pci
 
-   pamu_alloc_subwins()
+ drivers/iommu/amd_iommu.c       |   12 ++++++------
+ drivers/iommu/amd_iommu_init.c  |   34 +++++++++++++++++-----------------
+ drivers/iommu/amd_iommu_types.h |    4 +---
+ 3 files changed, 24 insertions(+), 26 deletions(-)
 
-> +/* Release the subwindows reserved for a particular LIODN */
-> +void pamu_free_subwins(int liodn)
-> +{
-> +       struct paace *ppaace;
-> +       u32 subwin_cnt, size;
-> +
-> +       ppaace = pamu_get_ppaace(liodn);
-> +       if (!ppaace) {
-> +               pr_err("Invalid liodn entry\n");
-> +               return;
-> +       }
-> +
-> +       if (get_bf(ppaace->addr_bitfields, PPAACE_AF_MW)) {
-> +               subwin_cnt = 1UL << (get_bf(ppaace->impl_attr, PAACE_IA_WCE) + 1);
-> +               size = (subwin_cnt - 1) * sizeof(struct paace);
-> +               gen_pool_free(spaace_pool, (unsigned long)&spaact[ppaace->fspi], size);
-> +               set_bf(ppaace->addr_bitfields, PPAACE_AF_MW, 0);
-> +       }
-> +}
+[PATCH v2 4/4] iommu/amd: Remove calc_devid() and use PCI_DEVID() from pci
+(no change to this patch - but tagging it v2 for clarity)
 
-[cut]
-
-> +/**
-> + * get_stash_id - Returns stash destination id corresponding to a
-> + *                cache type and vcpu.
-> + * @stash_dest_hint: L1, L2 or L3
-> + * @vcpu: vpcu target for a particular cache type.
-> + *
-> + * Returs stash on success or ~(u32)0 on failure.
-> + *
-> + */
-> +u32 get_stash_id(u32 stash_dest_hint, u32 vcpu)
-> +{
-
-The stash dest is really not a hint, right?  It's the requested stash
-destination.  So maybe just drop 'hint' from the name.
-
-The CPU here is really a physical CPU number and has nothing to do
-with vcpus I think.  vcpu implies the index is inside a virtual machine...but
-this API is generic and may or may not be used with KVM.
-
-> +
-> +/*
-> + * Get the maximum number of PAACT table entries
-> + * and subwindows supported by PAMU
-> + */
-> +static void get_pamu_cap_values(unsigned long pamu_reg_base)
-> +{
-> +       u32 pc_val;
-> +
-> +       pc_val = in_be32((u32 *)(pamu_reg_base + PAMU_PC3));
-> +       /* Maximum number of subwindows per liodn */
-> +       max_subwindow_count = 1 << (1 + PAMU_PC3_MWCE(pc_val));
-> +       /* Total number of SPACCT entries */
-> +       max_subwins = PAACE_NUMBER_ENTRIES * max_subwindow_count;
-> +}
-
-If you follow the suggestion at the top of this file, this function
-would become something like--  init_pamu_capabilities().   And then
-create an accessor function to access max subwins, etc.
-
-Also, BTW, I don't see any support for the DOMAIN_ATTR_WINDOWS
-attribute in your patch.  Was that coming in a later patch?
-
-[cut
-
-> +static int __init fsl_pamu_probe(struct platform_device *pdev)
-> +{
-> +       void __iomem *pamu_regs = NULL;
-> +       struct ccsr_guts __iomem *guts_regs = NULL;
-> +       u32 pamubypenr, pamu_counter;
-> +       unsigned long pamu_reg_off;
-> +       unsigned long pamu_reg_base;
-> +       struct pamu_isr_data *data;
-> +       struct device_node *guts_node;
-> +       u64 size;
-> +       struct page *p;
-> +       int ret = 0;
-> +       int irq;
-> +       phys_addr_t ppaact_phys;
-> +       phys_addr_t spaact_phys;
-> +       phys_addr_t omt_phys;
-> +       size_t mem_size = 0;
-> +       unsigned int order = 0;
-> +       u32 csd_port_id = 0;
-> +       unsigned i;
-> +       /*
-> +        * enumerate all PAMUs and allocate and setup PAMU tables
-> +        * for each of them,
-> +        * NOTE : All PAMUs share the same LIODN tables.
-> +        */
-> +
-> +       pamu_regs = of_iomap(pdev->dev.of_node, 0);
-> +       if (!pamu_regs) {
-> +               dev_err(&pdev->dev, "ioremap of PAMU node failed\n");
-> +               return -ENOMEM;
-
-Any reason not to be consistent with the other error handling-- set ret and
-goto error"?
-
-> +       }
-> +       of_get_address(pdev->dev.of_node, 0, &size, NULL);
-> +
-> +       irq = irq_of_parse_and_map(pdev->dev.of_node, 0);
-> +       if (irq == NO_IRQ) {
-> +               dev_warn(&pdev->dev, "no interrupts listed in PAMU node\n");
-> +               goto error;
-> +       }
-> +
-> +       data = kzalloc(sizeof(struct pamu_isr_data), GFP_KERNEL);
-> +       if (!data) {
-> +               iounmap(pamu_regs);
-> +               return -ENOMEM;
-
-Any reason not to be consistent with the other error handling-- set ret and
-goto error"?
-
-
-Stuart
+ drivers/iommu/amd_iommu.c       |    2 +-
+ drivers/iommu/amd_iommu_init.c  |    6 +++---
+ drivers/iommu/amd_iommu_types.h |    7 -------
+ 3 files changed, 4 insertions(+), 11 deletions(-)
