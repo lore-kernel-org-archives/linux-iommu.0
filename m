@@ -1,95 +1,221 @@
-From: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
-Subject: Re: [PATCH 1/6 v8] iommu/fsl: Store iommu domain information pointer
-	in archdata.
-Date: Fri, 01 Mar 2013 12:24:55 +1100
-Message-ID: <51300367.6080300@ozlabs.ru>
-References: <1361191939-21260-1-git-send-email-Varun.Sethi@freescale.com>
-	<1361191939-21260-2-git-send-email-Varun.Sethi@freescale.com>
-	<20130227113045.GH26252@8bytes.org>
-	<C5ECD7A89D1DC44195F34B25E172658D3C26F6@039-SN2MPN1-013.039d.mgd.msft.net>
-	<BAB98EA5-5324-4FB2-97C2-A28A96C569DC@kernel.crashing.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <BAB98EA5-5324-4FB2-97C2-A28A96C569DC-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Kumar Gala <galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
-Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org list" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org list" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
+From: Andrew Cooks <acooks@gmail.com>
+Subject: [PATCH] Quirk to support Marvell 88SE91xx SATA controllers with Intel IOMMU.
+Date: Fri,  1 Mar 2013 16:26:13 +0800
+Message-ID: <1362126373-32318-1-git-send-email-acooks@gmail.com>
+References: <1354533387-4110-1-git-send-email-acooks@gmail.com>, <1355914703-28576-1-git-send-email-acooks@gmail.com>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1354533387-4110-1-git-send-email-acooks@gmail.com>, <1355914703-28576-1-git-send-email-acooks@gmail.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: acooks@gmail.com, joro@8bytes.org, xjtuychu@hotmail.com, gm.ychu@gmail.com, alex.williamson@redhat.com, bhelgaas@google.com, jpiszcz@lucidpixels.com, dwmw2@infradead.org
+Cc: "open list:INTEL IOMMU VT-d" <iommu@lists.linux-foundation.org>, open list <linux-kernel@vger.kernel.org>, "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi!
+This is my third submitted patch to make Marvell 88SE91xx SATA controllers work when IOMMU is enabled.[1][2]
 
-On POWERNV we use only the part of IOMMU API which handles devices and 
-groups. We do not use IOMMU domains as VFIO containers do everything we 
-need for VFIO and we do not implement iommu_ops as it is not very relevant 
-to our architecture (does not give dma window properties, etc).
+What's changed:
+* Adopt David Woodhouse's terminology by referring to the quirky functions as 'ghost' functions.
+* Unmap ghost functions when device is detached from IOMMU.
+* Stub function for when CONFIG_PCI_QUIRKS is not enabled.
 
-So your work does not overlap with my work :)
+The bad:
+* Still no AMD support.
+* The table of affected chip IDs is as complete as I can make it by googling for bug reports.
 
+This patch was generated against commit b0af9cd9aab60ceb17d3ebabb9fdf4ff0a99cf50, but will also apply cleanly to 3.7.10.
 
-On 01/03/13 02:51, Kumar Gala wrote:
->
-> On Feb 27, 2013, at 6:04 AM, Sethi Varun-B16395 wrote:
->
->> Hi Kumar,Ben,
->> I am implementing the Freescale PAMU (IOMMU) driver using the Linux IOMMU API. In this particular patch, I have added a new field to dev_archdata structure to store the dma domain information.
->> This field is updated whenever we attach a device to an iommu domain.
->>
->> Regards
->> Varun
->
-> Would be good to see if this overlaps with Alexey's work for IOMMU driver for powernv.
->
-> - k
->
->>
->>> -----Original Message-----
->>> From: Joerg Roedel [mailto:joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org]
->>> Sent: Wednesday, February 27, 2013 5:01 PM
->>> To: Sethi Varun-B16395
->>> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org;
->>> linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Wood Scott-B07421; Yoder Stuart-B08248
->>> Subject: Re: [PATCH 1/6 v8] iommu/fsl: Store iommu domain information
->>> pointer in archdata.
->>>
->>> On Mon, Feb 18, 2013 at 06:22:14PM +0530, Varun Sethi wrote:
->>>> Add a new field in the device (powerpc) archdata structure for storing
->>>> iommu domain information pointer. This pointer is stored when the
->>>> device is attached to a particular domain.
->>>>
->>>>
->>>> Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
->>>> ---
->>>> - no change.
->>>> arch/powerpc/include/asm/device.h |    4 ++++
->>>> 1 files changed, 4 insertions(+), 0 deletions(-)
->>>>
->>>> diff --git a/arch/powerpc/include/asm/device.h
->>>> b/arch/powerpc/include/asm/device.h
->>>> index 77e97dd..6dc79fe 100644
->>>> --- a/arch/powerpc/include/asm/device.h
->>>> +++ b/arch/powerpc/include/asm/device.h
->>>> @@ -28,6 +28,10 @@ struct dev_archdata {
->>>> 		void		*iommu_table_base;
->>>> 	} dma_data;
->>>>
->>>> +	/* IOMMU domain information pointer. This would be set
->>>> +	 * when this device is attached to an iommu_domain.
->>>> +	 */
->>>> +	void			*iommu_domain;
->>>
->>> Please Cc the PowerPC Maintainers on this, so that they can have a look
->>> at it. This also must be put this into an #ifdef CONFIG_IOMMU_API.
+Bug reports:
+1. https://bugzilla.redhat.com/show_bug.cgi?id=757166
+2. https://bugzilla.kernel.org/show_bug.cgi?id=42679
 
+Signed-off-by: Andrew Cooks <acooks@gmail.com>
+---
+ drivers/iommu/intel-iommu.c |   50 +++++++++++++++++++++++++++++++++++++++++++
+ drivers/pci/quirks.c        |   47 +++++++++++++++++++++++++++++++++++++++-
+ include/linux/pci.h         |    5 ++++
+ include/linux/pci_ids.h     |    1 +
+ 4 files changed, 102 insertions(+), 1 deletions(-)
 
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 0099667..13323f2 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -1674,6 +1674,50 @@ static int domain_context_mapping_one(struct dmar_domain *domain, int segment,
+ 	return 0;
+ }
+ 
++/* For quirky devices like Marvell 88SE91xx chips that use ghost functions. */
++static int map_ghost_dma_fn(struct dmar_domain *domain,
++		struct pci_dev *pdev,
++		int translation)
++{
++	u8 fn, fn_map;
++	int err = 0;
++
++	fn_map = pci_get_dma_source_map(pdev);
++
++	for (fn = 1; fn < 8; fn++) {
++		if (fn_map & (1 << fn)) {
++			err = domain_context_mapping_one(domain,
++					pci_domain_nr(pdev->bus),
++					pdev->bus->number,
++					PCI_DEVFN(PCI_SLOT(pdev->devfn), fn),
++					translation);
++			if (err)
++				return err;
++			dev_dbg(&pdev->dev, "dma quirk; func %d mapped", fn);
++		}
++	}
++	return 0;
++}
++
++static void iommu_detach_dev(struct intel_iommu *iommu, u8 bus, u8 devfn);
++
++static void unmap_ghost_dma_fn(struct intel_iommu *iommu,
++		struct pci_dev *pdev)
++{
++	u8 fn, fn_map;
++
++	fn_map = pci_get_dma_source_map(pdev);
++
++	for (fn = 1; fn < 8; fn++) {
++		if (fn_map & (1 << fn)) {
++			iommu_detach_dev(iommu,
++					pdev->bus->number,
++					PCI_DEVFN(PCI_SLOT(pdev->devfn), fn));
++			dev_dbg(&pdev->dev, "dma quirk; func %d unmapped", fn);
++		}
++	}
++}
++
+ static int
+ domain_context_mapping(struct dmar_domain *domain, struct pci_dev *pdev,
+ 			int translation)
+@@ -1687,6 +1731,11 @@ domain_context_mapping(struct dmar_domain *domain, struct pci_dev *pdev,
+ 	if (ret)
+ 		return ret;
+ 
++	/* quirk for undeclared/ghost pci functions */
++	ret = map_ghost_dma_fn(domain, pdev, translation);
++	if (ret)
++		return ret;
++
+ 	/* dependent device mapping */
+ 	tmp = pci_find_upstream_pcie_bridge(pdev);
+ 	if (!tmp)
+@@ -3786,6 +3835,7 @@ static void domain_remove_one_dev_info(struct dmar_domain *domain,
+ 			iommu_disable_dev_iotlb(info);
+ 			iommu_detach_dev(iommu, info->bus, info->devfn);
+ 			iommu_detach_dependent_devices(iommu, pdev);
++			unmap_ghost_dma_fn(iommu, pdev);
+ 			free_devinfo_mem(info);
+ 
+ 			spin_lock_irqsave(&device_domain_lock, flags);
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index 0369fb6..d311100 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -3249,6 +3249,10 @@ static struct pci_dev *pci_func_0_dma_source(struct pci_dev *dev)
+ 	return pci_get_slot(dev->bus, PCI_DEVFN(PCI_SLOT(dev->devfn), 0));
+ }
+ 
++/* Table of source functions for real devices. The DMA requests for the
++ * device are tagged with a different real function as source. This is
++ * relevant to multifunction devices.
++ */
+ static const struct pci_dev_dma_source {
+ 	u16 vendor;
+ 	u16 device;
+@@ -3275,7 +3279,8 @@ static const struct pci_dev_dma_source {
+  * the device doing the DMA, but sometimes hardware is broken and will
+  * tag the DMA as being sourced from a different device.  This function
+  * allows that translation.  Note that the reference count of the
+- * returned device is incremented on all paths.
++ * returned device is incremented on all paths. Translation is done when
++ * the device is added to an IOMMU group.
+  */
+ struct pci_dev *pci_get_dma_source(struct pci_dev *dev)
+ {
+@@ -3292,6 +3297,46 @@ struct pci_dev *pci_get_dma_source(struct pci_dev *dev)
+ 	return pci_dev_get(dev);
+ }
+ 
++/* Table of multiple (ghost) source functions. This is similar to the
++ * translated sources above, but with the following differences:
++ * 1. the device may use multiple functions as DMA sources,
++ * 2. these functions cannot be assumed to be actual devices,
++ * 3. the specific ghost function for a request can not be exactly predicted.
++ * The bitmap only contains the additional quirk functions.
++ */
++static const struct pci_dev_dma_multi_func_sources {
++	u16 vendor;
++	u16 device;
++	u8 func_map;	/* bit map. lsb is fn 0. */
++} pci_dev_dma_multi_func_sources[] = {
++	{ PCI_VENDOR_ID_MARVELL_2, 0x9123, (1<<0)|(1<<1)},
++	{ PCI_VENDOR_ID_MARVELL_2, 0x9125, (1<<0)|(1<<1)},
++	{ PCI_VENDOR_ID_MARVELL_2, 0x9128, (1<<0)|(1<<1)},
++	{ PCI_VENDOR_ID_MARVELL_2, 0x9130, (1<<0)|(1<<1)},
++	{ PCI_VENDOR_ID_MARVELL_2, 0x9172, (1<<0)|(1<<1)},
++	{ 0 }
++};
++
++/*
++ * The mapping of fake/ghost functions is used when the real device is
++ * attached to an IOMMU domain. IOMMU groups are not aware of these
++ * functions, because they're not real devices.
++ */
++u8 pci_get_dma_source_map(struct pci_dev *dev)
++{
++	const struct pci_dev_dma_multi_func_sources *i;
++
++	for (i = pci_dev_dma_multi_func_sources; i->func_map; i++) {
++		if ((i->vendor == dev->vendor ||
++		     i->vendor == (u16)PCI_ANY_ID) &&
++		    (i->device == dev->device ||
++		     i->device == (u16)PCI_ANY_ID)) {
++			return i->func_map;
++		}
++	}
++	return 0;
++}
++
+ static const struct pci_dev_acs_enabled {
+ 	u16 vendor;
+ 	u16 device;
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 2461033..5ad3822 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -1578,6 +1578,7 @@ enum pci_fixup_pass {
+ #ifdef CONFIG_PCI_QUIRKS
+ void pci_fixup_device(enum pci_fixup_pass pass, struct pci_dev *dev);
+ struct pci_dev *pci_get_dma_source(struct pci_dev *dev);
++u8 pci_get_dma_source_map(struct pci_dev *dev);
+ int pci_dev_specific_acs_enabled(struct pci_dev *dev, u16 acs_flags);
+ #else
+ static inline void pci_fixup_device(enum pci_fixup_pass pass,
+@@ -1586,6 +1587,10 @@ static inline struct pci_dev *pci_get_dma_source(struct pci_dev *dev)
+ {
+ 	return pci_dev_get(dev);
+ }
++u8 pci_get_dma_source_map(struct pci_dev *dev)
++{
++	return 0;
++}
+ static inline int pci_dev_specific_acs_enabled(struct pci_dev *dev,
+ 					       u16 acs_flags)
+ {
+diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
+index f11c1c2..df57496 100644
+--- a/include/linux/pci_ids.h
++++ b/include/linux/pci_ids.h
+@@ -1604,6 +1604,7 @@
+ #define PCI_SUBDEVICE_ID_KEYSPAN_SX2	0x5334
+ 
+ #define PCI_VENDOR_ID_MARVELL		0x11ab
++#define PCI_VENDOR_ID_MARVELL_2	0x1b4b
+ #define PCI_DEVICE_ID_MARVELL_GT64111	0x4146
+ #define PCI_DEVICE_ID_MARVELL_GT64260	0x6430
+ #define PCI_DEVICE_ID_MARVELL_MV64360	0x6460
 -- 
-Alexey	
+1.7.1
