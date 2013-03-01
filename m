@@ -1,64 +1,104 @@
-From: Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 1/6 v8] iommu/fsl: Store iommu domain information
-	pointer in archdata.
-Date: Fri, 1 Mar 2013 16:21:57 +0000
-Message-ID: <9F6FE96B71CF29479FF1CDC8046E1503565876@039-SN1MPN1-003.039d.mgd.msft.net>
-References: <1361191939-21260-1-git-send-email-Varun.Sethi@freescale.com>
-	<1361191939-21260-2-git-send-email-Varun.Sethi@freescale.com>
-	<20130227113045.GH26252@8bytes.org>
-	<C5ECD7A89D1DC44195F34B25E172658D3C26F6@039-SN2MPN1-013.039d.mgd.msft.net>
-	<BAB98EA5-5324-4FB2-97C2-A28A96C569DC@kernel.crashing.org>
-	<51300367.6080300@ozlabs.ru>
-	<C5ECD7A89D1DC44195F34B25E172658D3C802F@039-SN2MPN1-013.039d.mgd.msft.net>
-	<51307DCE.1050506@ozlabs.ru>
+From: "Justin Piszcz" <jpiszcz@lucidpixels.com>
+Subject: RE: [PATCH] Quirk to support Marvell 88SE91xx SATA controllers with Intel IOMMU.
+Date: Fri, 1 Mar 2013 12:54:30 -0500
+Message-ID: <007f01ce16a5$d362de50$7a289af0$@lucidpixels.com>
+References: <1354533387-4110-1-git-send-email-acooks@gmail.com>, <1355914703-28576-1-git-send-email-acooks@gmail.com> <1362126373-32318-1-git-send-email-acooks@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <51307DCE.1050506-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Kumar Gala <galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org list" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org list" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1362126373-32318-1-git-send-email-acooks@gmail.com>
+Content-Language: en-us
+Sender: linux-pci-owner@vger.kernel.org
+To: 'Andrew Cooks' <acooks@gmail.com>, joro@8bytes.org, xjtuychu@hotmail.com, gm.ychu@gmail.com, alex.williamson@redhat.com, bhelgaas@google.com, dwmw2@infradead.org
+Cc: "'open list:INTEL IOMMU (VT-d)'" <iommu@lists.linux-foundation.org>, 'open list' <linux-kernel@vger.kernel.org>, "'open list:PCI SUBSYSTEM'" <linux-pci@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
 
-> -----Original Message-----
-> From: Alexey Kardashevskiy [mailto:aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org]
-> Sent: Friday, March 01, 2013 4:07 AM
-> To: Sethi Varun-B16395
-> Cc: Kumar Gala; Benjamin Herrenschmidt; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-> list; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org list; Wood Scott-B07421; Yoder Stuart-B08248; Joerg Roedel; Paul
-> Mackerras; David Gibson; Alex Williamson
-> Subject: Re: [PATCH 1/6 v8] iommu/fsl: Store iommu domain information pointer in archdata.
-> 
-> btw the device struct already has a pointer to its iommu_group, and the
-> iommu_group struct itself has a pointer void *iommu_data which you could
-> use for anything you want (iommu_group_get_iommudata(),
-> iommu_group_set_iommudata()).
->
-> By design you are expected to add iommu groups to a domain but not devices
-> so I am not so sure that you really need a pointer to domain in the device
-> struct.
+-----Original Message-----
+From: Andrew Cooks [mailto:acooks@gmail.com] 
+Sent: Friday, March 01, 2013 3:26 AM
+To: acooks@gmail.com; joro@8bytes.org; xjtuychu@hotmail.com;
+gm.ychu@gmail.com; alex.williamson@redhat.com; bhelgaas@google.com;
+jpiszcz@lucidpixels.com; dwmw2@infradead.org
+Cc: open list:INTEL IOMMU (VT-d); open list; open list:PCI SUBSYSTEM
+Subject: [PATCH] Quirk to support Marvell 88SE91xx SATA controllers with
+Intel IOMMU.
 
-Well, at the lowest level the IOMMU API does attach devices to domains-- i.e.
-API attach_dev().  So, it seems to conceptually make sense to have a ptr
-from the device to the associated domain.  When you implement attach_dev()
-you need to be able to see whether the device is already attached to
-a domain.   Adding a couple of levels of indirection...from device to
-group to domain...doesn't seems to make things simpler or better IMHO.
+This is my third submitted patch to make Marvell 88SE91xx SATA controllers
+work when IOMMU is enabled.[1][2]
 
-x86 keeps a pointer to the domain in device archdata and since there is
-a direct correlation between a device and domain I'd rather see it
-where this patch has it.
+What's changed:
+* Adopt David Woodhouse's terminology by referring to the quirky functions
+as 'ghost' functions.
+* Unmap ghost functions when device is detached from IOMMU.
+* Stub function for when CONFIG_PCI_QUIRKS is not enabled.
 
-Stuart
+The bad:
+* Still no AMD support.
+* The table of affected chip IDs is as complete as I can make it by googling
+for bug reports.
+
+This patch was generated against commit
+b0af9cd9aab60ceb17d3ebabb9fdf4ff0a99cf50, but will also apply cleanly to
+3.7.10.
+
+--
+
+Hi,
+
+Against 3.7.10:
+
+# patch -p1 <
+../RFC-Fix-Intel-IOMMU-support-for-Marvell-88SE91xx-SATA-controllers..patch 
+patching file drivers/iommu/intel-iommu.c
+patching file drivers/pci/quirks.c
+Hunk #1 succeeded at 3230 (offset 3 lines).
+patching file include/linux/pci.h
+#
+
+Recompile kernel, reboot..
+
+Shutdown host, re-attach to Marvell Controller w/IOMMU.
+
+The host still failed to boot, dmesg/panic here:
+http://home.comcast.net/~jpiszcz/20130301/boot_failure.JPG
+
+(The root disk is /dev/sdc)
+
+I recompiled again with IOMMU off and it booted ok:
+
+# uname -a
+Linux host 3.7.10 #2 SMP Fri Mar 1 12:44:25 EST 2013 x86_64 GNU/Linux
+
+Here is the part of dmesg (what it looks like when it succeeds with
+IOMMU=off)
+
+[    4.288113] input: American Megatrends Inc. Virtual Keyboard and Mouse as
+/devices/pci0000:00/0000:00:1a.1/usb4/4-2/4-2:1.0/input/input3
+[    4.289025] hid-generic 0003:046B:FF10.0001: input,hidraw0: USB HID v1.10
+Keyboard [American Megatrends Inc. Virtual Keyboard and Mouse] on
+usb-0000:00:1a.1-2/input0
+[    4.305993] input: American Megatrends Inc. Virtual Keyboard and Mouse as
+/devices/pci0000:00/0000:00:1a.1/usb4/4-2/4-2:1.1/input/input4
+[    4.307106] hid-generic 0003:046B:FF10.0002: input,hidraw1: USB HID v1.10
+Mouse [American Megatrends Inc. Virtual Keyboard and Mouse] on
+usb-0000:00:1a.1-2/input1
+[    4.326481] ata6: SATA link down (SStatus 0 SControl 300)
+[    4.327324] scsi 7:0:0:0: Direct-Access     ATA      INTEL SSDSC2MH25
+PWG4 PQ: 0 ANSI: 5
+[    4.329953] sd 7:0:0:0: [sdc] 488397168 512-byte logical blocks: (250
+GB/232 GiB)
+[    4.330639] scsi 14:0:0:0: Processor         Marvell  91xx Config
+1.01 PQ: 0 ANSI: 5
+[    4.333276] sd 7:0:0:0: [sdc] Write Protect is off
+[    4.334746] sd 7:0:0:0: [sdc] Mode Sense: 00 3a 00 00
+[    4.334921] sd 7:0:0:0: [sdc] Write cache: enabled, read cache: enabled,
+doesn't support DPO or FUA
+[    4.345622]  sdc: sdc1 sdc2
+[    4.347493] sd 7:0:0:0: [sdc] Attached SCSI disk
+
+Justin.
+ 
