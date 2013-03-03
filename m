@@ -1,110 +1,40 @@
-From: Ben Hutchings <ben@decadent.org.uk>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Subject: Re: [PATCH 3.2] iommu/amd: Initialize device table after dma_ops
-Date: Sat, 02 Mar 2013 23:00:35 +0000
-Message-ID: <1362265235.3768.156.camel@deadeye.wl.decadent.org.uk>
+Date: Sun, 3 Mar 2013 23:58:28 +0100
+Message-ID: <20130303225828.GA22602@8bytes.org>
 References: <1362087590.2822.44.camel@lorien2>
+	<1362265235.3768.156.camel@deadeye.wl.decadent.org.uk>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg="pgp-sha512";
-	protocol="application/pgp-signature"; boundary="=-6Ww+n+gsyuTIs+av3CJA"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1362087590.2822.44.camel@lorien2>
-Sender: linux-kernel-owner@vger.kernel.org
-To: shuah.khan@hp.com
-Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, stable <stable@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, shuahkhan@gmail.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1362265235.3768.156.camel-nDn/Rdv9kqW9Jme8/bJn5UCKIB8iOfG2tUK59QYPAWc@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Ben Hutchings <ben-/+tVBieCtBitmTQ+vhA3Yw@public.gmane.org>
+Cc: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, stable <stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shuah.khan-VXdhtT5mjnY@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Ben,
 
---=-6Ww+n+gsyuTIs+av3CJA
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On Sat, Mar 02, 2013 at 11:00:35PM +0000, Ben Hutchings wrote:
+> I'm not convinced about this backport, because the order of
+> initialisation already changed a lot after 3.2 and before the upstream
+> commit.  So I'm going to wait for Joerg to confirm that this makes sense
+> before adding it to the patch queue.
 
-On Thu, 2013-02-28 at 14:39 -0700, Shuah Khan wrote:
-> When dma_ops are initialized the unity mappings are created. The
-> init_device_table_dma() function makes sure DMA from all devices is
-> blocked by default. This opens a short window in time where DMA to
-> unity mapped regions is blocked by the IOMMU. Make sure this does not
-> happen by initializing the device table after dma_ops.
->=20
-> Back-port upstream commit: f528d980c17b8714aedc918ba86e058af914d66b
-> Tested on 3.2.38
->=20
-> Signed-off-by: Joerg Roedel <joro@8bytes.org>
-> Signed-off-by: Shuah Khan <shuah.khan@hp.com>
-> CC: stable@vger.kernel.org 3.2
+The patch looks good, it fixes a race condition during amd_iommu
+initialization. I'll also gave the backport a test to be sure it
+doesn't break anything.
 
-I'm not convinced about this backport, because the order of
-initialisation already changed a lot after 3.2 and before the upstream
-commit.  So I'm going to wait for Joerg to confirm that this makes sense
-before adding it to the patch queue.
+Thanks,
 
-Ben.
-
-> ---
->  drivers/iommu/amd_iommu_init.c |   10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
->=20
-> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_ini=
-t.c
-> index 62a4d5c..b7d1cdd 100644
-> --- a/drivers/iommu/amd_iommu_init.c
-> +++ b/drivers/iommu/amd_iommu_init.c
-> @@ -1396,6 +1396,7 @@ static struct syscore_ops amd_iommu_syscore_ops =3D=
- {
->   */
->  static int __init amd_iommu_init(void)
->  {
-> +	struct amd_iommu *iommu;
->  	int i, ret =3D 0;
-> =20
->  	/*
-> @@ -1444,9 +1445,6 @@ static int __init amd_iommu_init(void)
->  	if (amd_iommu_pd_alloc_bitmap =3D=3D NULL)
->  		goto free;
-> =20
-> -	/* init the device table */
-> -	init_device_table();
-> -
->  	/*
->  	 * let all alias entries point to itself
->  	 */
-> @@ -1496,6 +1494,12 @@ static int __init amd_iommu_init(void)
->  	if (ret)
->  		goto free_disable;
-> =20
-> +	/* init the device table */
-> +	init_device_table();
-> +
-> +	for_each_iommu(iommu)
-> +		iommu_flush_all_caches(iommu);
-> +
->  	amd_iommu_init_api();
-> =20
->  	amd_iommu_init_notifier();
-
---=20
-Ben Hutchings
-Computers are not intelligent.	They only think they are.
-
---=-6Ww+n+gsyuTIs+av3CJA
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-
-iQIVAwUAUTKEk+e/yOyVhhEJAQpiuxAAwQDAhgIShizYkFh8ZTD5HR2nY7WzAZGK
-H8ugbP3XWKHbBQ6pjAfZ9Fctg/HFt5bYuj2ydolSeFWGoxkD9HoPf2vCREYWkHhw
-aczPaxS+g/nLUxwV58Irdr003ESXez5kxLqgwl4X7MMg34jaiLDUwRGGRHdie3Bg
-S60VjUDv6ofsVAZrtj05ROuR1pTIk7sSS2FLrdcsXKBvB+bb1FG8KxqxgAQiU1uY
-Bmm/Lx7UdMsJVyroEvbH5WJ1uOHURs9sPgpHkc/G3M7QulfCGaGgeF0ABJbyM/G3
-lUcZ/7gE8NXnjPw2uRIBgkBhU0l/LnfvpITVY4NcXVtXfsOGpZnqB+MfSpRJM5jw
-RXEbg0Lgb1Nob9As2uwB0maEdwwUwwTlcBE6gZI6ZzVmA6+k+mBbXhFDR+PCvMtC
-dKT4peNeTJN6p1YAZTn0bpbTTkTjeILWcRyXnRxb3UPPfCV+Wf4RrxmcJcOPTeKp
-NGH4/uQSO7QDbnOYEYc3FROIbsXEORpLFWYA7f9MFw/IoXcU1DV+6aYuPMv03Ufh
-s0ypDVijA/1jez8kqUWZu8RfLfZyXkok60xLrdd4Z1rcYtAgjmtvJ/xu/952kiay
-zBn2Dp9TNf7WBjZKV6fC8BbSDWrzEi0cgwjBmcxJ5iAAaFobiGRT3dp45U9WZDwE
-jU+YR6yfzhM=
-=Dl8V
------END PGP SIGNATURE-----
-
---=-6Ww+n+gsyuTIs+av3CJA--
+	Joerg
