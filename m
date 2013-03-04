@@ -1,16 +1,18 @@
-From: "Justin Piszcz" <jpiszcz-BP4nVm5VUdNhbmWW9KSYcQ@public.gmane.org>
-Subject: RE: [PATCH] Quirk to support Marvell 88SE91xx SATA controllers with
-	Intel IOMMU.
-Date: Mon, 4 Mar 2013 06:32:11 -0500
-Message-ID: <003101ce18cb$ea51f330$bef5d990$@lucidpixels.com>
-References: <1354533387-4110-1-git-send-email-acooks@gmail.com>	<1355914703-28576-1-git-send-email-acooks@gmail.com>	<1362126373-32318-1-git-send-email-acooks@gmail.com>	<CAO9zADxjoP+R9ccz7vMPmcFvdYwNjErSjaWc_RFkW_FY3+SK=w@mail.gmail.com>	<CAJtEV7Zs2BiwJ9jdDeoceh9hiVXvVaSvj=9H+4+vEzhY72AS9g@mail.gmail.com>	<00b701ce16d3$0aabe0f0$2003a2d0$@lucidpixels.com>
-	<CAJtEV7bvPORPoXgQY2OahNVMj+SY5z=xxQ=nueX7=kLVfpyF_A@mail.gmail.com>
+From: Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH 6/6 v8] iommu/fsl: Freescale PAMU driver and IOMMU API
+	implementation.
+Date: Mon, 4 Mar 2013 16:55:10 +0000
+Message-ID: <9F6FE96B71CF29479FF1CDC8046E15035664E9@039-SN1MPN1-003.039d.mgd.msft.net>
+References: <1361191939-21260-1-git-send-email-Varun.Sethi@freescale.com>
+	<1361191939-21260-7-git-send-email-Varun.Sethi@freescale.com>
+	<CALRxmdDEccTaS2Houuns44DoQ_8wUbXAMiXQ8w0Ks9R2F2u-Ag@mail.gmail.com>
+	<C5ECD7A89D1DC44195F34B25E172658D3D12D9@039-SN2MPN1-013.039d.mgd.msft.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAJtEV7bvPORPoXgQY2OahNVMj+SY5z=xxQ=nueX7=kLVfpyF_A-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-Language: en-us
+In-Reply-To: <C5ECD7A89D1DC44195F34B25E172658D3D12D9-RL0Hj/+nBVDYdknt8GnhQq4g8xLGJsHaLnY5E4hWTkheoWH0uzbU5w@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,75 +22,136 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: 'Andrew Cooks' <acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: 'Chu Ying' <gm.ychu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "'open list:INTEL IOMMU (VT-d)'" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, 'YingChu' <xjtuychu-PkbjNfxxIARBDgjK7y7TUQ@public.gmane.org>, "'open list:PCI SUBSYSTEM'" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, 'David Woodhouse' <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, 'open list' <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
 
-On Sat, Mar 2, 2013 at 7:18 AM, Justin Piszcz <jpiszcz-BP4nVm5VUdNhbmWW9KSYcQ@public.gmane.org>
-wrote:
+> -----Original Message-----
+> From: Sethi Varun-B16395
+> Sent: Monday, March 04, 2013 5:31 AM
+> To: Stuart Yoder
+> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Wood
+> Scott-B07421; Joerg Roedel; Yoder Stuart-B08248
+> Subject: RE: [PATCH 6/6 v8] iommu/fsl: Freescale PAMU driver and IOMMU API implementation.
+> 
+> 
+> 
+> > -----Original Message-----
+> > From: Stuart Yoder [mailto:b08248-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org]
+> > Sent: Saturday, March 02, 2013 4:58 AM
+> > To: Sethi Varun-B16395
+> > Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org;
+> > linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Wood Scott-B07421; Joerg Roedel; Yoder
+> > Stuart-B08248
+> > Subject: Re: [PATCH 6/6 v8] iommu/fsl: Freescale PAMU driver and IOMMU
+> > API implementation.
+> >
+> > On Mon, Feb 18, 2013 at 6:52 AM, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+> > wrote:
+> > [cut]
+> > > +static phys_addr_t get_phys_addr(struct fsl_dma_domain *dma_domain,
+> > > +unsigned long iova) {
+> > > +       u32 win_cnt = dma_domain->win_cnt;
+> > > +       struct dma_window *win_ptr =
+> > > +                               &dma_domain->win_arr[0];
+> > > +       struct iommu_domain_geometry *geom;
+> > > +
+> > > +       geom = &dma_domain->iommu_domain->geometry;
+> > > +
+> > > +       if (!win_cnt || !dma_domain->geom_size) {
+> > > +               pr_err("Number of windows/geometry not configured for
+> > the domain\n");
+> > > +               return 0;
+> > > +       }
+> > > +
+> > > +       if (win_cnt > 1) {
+> > > +               u64 subwin_size;
+> > > +               unsigned long subwin_iova;
+> > > +               u32 wnd;
+> > > +
+> > > +               subwin_size = dma_domain->geom_size >> ilog2(win_cnt);
+> >
+> > Could it be just geom_size / win_cnt ??
+> [Sethi Varun-B16395] You would run in to linking issues with respect to u64 division on 32 bit kernels.
+> 
+> >
+> > > +               subwin_iova = iova & ~(subwin_size - 1);
+> > > +               wnd = (subwin_iova - geom->aperture_start) >>
+> > ilog2(subwin_size);
+> > > +               win_ptr = &dma_domain->win_arr[wnd];
+> > > +       }
+> > > +
+> > > +       if (win_ptr->valid)
+> > > +               return (win_ptr->paddr + (iova & (win_ptr->size -
+> > > + 1)));
+> > > +
+> > > +       return 0;
+> > > +}
+> > > +
+> > > +static int map_liodn_subwins(int liodn, struct fsl_dma_domain
+> > > +*dma_domain)
+> >
+> > Just call it map_subwins().  They are just sub windows, not "liodn sub
+> > windows".
+> >
+> [Sethi Varun-B16395] This would be called per liodn.
 >
-> Against a clean 3.7.10 (from ftp.kernel.org)
->
-> # patch -p1 <
->
-../patch/RFC-Fix-Intel-IOMMU-support-for-Marvell-88SE91xx-SATA-controllers..
-> patch
-> patching file drivers/iommu/intel-iommu.c
-> patching file drivers/pci/quirks.c
-> Hunk #1 succeeded at 3230 (offset 3 lines).
-> patching file include/linux/pci.h
-> # pwd
-> /usr/src/linux-3.7.10
->
+> > [cut]
+> >
+> > > +static int map_liodn_win(int liodn, struct fsl_dma_domain
+> > > +*dma_domain)
+> >
+> > Call it map_win().
+> [Sethi Varun-B16395] This would again be called per liodn.
 
-I've downloaded and patched the 3.7.10 tarball and still get the same
-output I got before; different output from yours. I'm not sure the
-patch is complete or applying correctly, are you?
-Could you please check whether the patch you're applying is the same
-as the attached file?
+On the function names-- function names are typically named
+with a noun describing some object and a verb describing
+the action...and sometimes a subsystem identifier:
+    kmem_cache + zalloc
+    spin + lock
 
-Hi,
+I don't think inserting liodn in the function name to indicates that it 
+operates per liodn makes it more clear and reads a little awkward to me:
 
-Success!
+    map + liodn_win
 
-Patch from e-mail:
-# md5sum marvell_ghost_funcs.patch 
-718bfb5876e3538ec23a516ef28d03f5  marvell_ghost_funcs.patch
+...it's almost like there is a "liodn_win" object.
 
-Kernel from ftp.kernel.org:
-# md5sum linux-3.7.10.tar.bz2
-56ec294a922b6112a1ef129668f38a83  linux-3.7.10.tar.bz2
+I think plain map_win() is more clear and the function prototype makes
+it pretty clear that you are operating on an liodn.
+ 
+> > [cut]
+> > > +static  bool check_pci_ctl_endpt_part(struct pci_controller *pci_ctl)
+> > > +{
+> > > +       u32 version;
+> > > +
+> > > +       /* Check the PCI controller version number by readding BRR1
+> > register */
+> > > +       version = in_be32(pci_ctl->cfg_addr + (PCI_FSL_BRR1 >> 2));
+> > > +       version &= PCI_FSL_BRR1_VER;
+> > > +       /* If PCI controller version is >= 0x204 we can partition
+> > endpoints*/
+> > > +       if (version >= 0x204)
+> > > +               return 1;
+> > > +
+> > > +       return 0;
+> > > +}
+> >
+> > Can we just use the compatible string here to identify the different
+> > kinds of PCI
+> > controllers?   Reading the actual device registers is ugly right now
+> > because
+> > you are #defining the BRR1 stuff in a generic powerpc header.
+> >
+> [Sethi Varun-B16395] hmmm......, I would have to check for various different compatible strings in that
+> case. May be I can move the defines to a different file. What if I move them to some other header?
 
-Decompress, patch, re-compile w/IOMMU=on.
+Don't personally feel too strongly about version register or header...but it should be some fsl
+PCI header that you define those regs.
 
-# tar jxf linux-3.7.10.tar.bz2 ; ln -s linux-3.7.10 linux   
-# cd linux; patch -p1 < ../marvell_ghost_funcs.patch
-patching file drivers/iommu/intel-iommu.c
-Hunk #1 succeeded at 1672 (offset -2 lines).
-Hunk #2 succeeded at 1729 (offset -2 lines).
-Hunk #3 succeeded at 3833 (offset -2 lines).
-patching file drivers/pci/quirks.c
-Hunk #1 succeeded at 3210 (offset -39 lines).
-Hunk #2 succeeded at 3240 (offset -39 lines).
-Hunk #3 succeeded at 3258 (offset -39 lines).
-patching file include/linux/pci.h
-Hunk #1 succeeded at 1546 (offset -32 lines).
-Hunk #2 succeeded at 1555 (offset -32 lines).
-patching file include/linux/pci_ids.h
+You'll either need to check for a hardware version number or a compatible,
+so a compatible check may be just as easy...look for "fsl,qoriq-pcie-v2.4"?
 
-Reboot, re-test.
-
-# lilo
-Added 3.7.7-1
-Added 3.7.10-5-ioff
-Added 3.7.10-7    (iommu=off w/patch) = OK
-Added 3.7.10-8  * (iommu=on w/patch) = OK
-
-dmesg w/patch + iommu
-http://home.comcast.net/~jpiszcz/20130304/dmesg-success-patch.txt
-
-Thanks!
-
-Justin.
+Stuart
