@@ -1,15 +1,13 @@
-From: Suravee Suthikulanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+From: JapHack <japhack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org>
 Subject: Re: Problem with ethernet/sound with IOMMU enabled on M5A99FX pro
-	r2.0	motherboard
-Date: Thu, 7 Mar 2013 09:25:18 -0600
-Message-ID: <5138B15E.6000302@amd.com>
-References: <1362510652.3171.YahooMailClassic@web120705.mail.ne1.yahoo.com>,
-	<2004654126.1428743.1362596937686.JavaMail.root@redhat.com>
-	<498F3735-A671-4FEA-A612-4BACF08DCE15@amd.com>
+	r2.0 motherboard
+Date: Thu, 7 Mar 2013 07:58:10 -0800 (PST)
+Message-ID: <1362671890.8814.YahooMailClassic@web120703.mail.ne1.yahoo.com>
+References: <5138B15E.6000302@amd.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0293251793173895190=="
+Content-Type: multipart/mixed; boundary="===============2457683216670349775=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <498F3735-A671-4FEA-A612-4BACF08DCE15-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <5138B15E.6000302-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,199 +17,199 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: japhack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org
+To: Suravee Suthikulanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
---===============0293251793173895190==
-Content-Type: multipart/alternative;
-	boundary="------------020709040409080301050906"
+--===============2457683216670349775==
+Content-Type: multipart/alternative; boundary="-1480336445-136746299-1362671890=:8814"
 
---------------020709040409080301050906
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: 7bit
+---1480336445-136746299-1362671890=:8814
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Hi,
+acpi.dump http://pastebin.com/2wEYXykY
+dmesg.dump http://pastebin.com/ugfpRjxc
+lspci -nnk http://pastebin.com/W5HdqQia
 
-Would you please provide the kernel log and the dump of ACPI (from tools 
-like "acpidump")?  These should help debugging the issue.
+I have the onboard ethernet shut off in the bios
+but the soundcard is still not being seen with oss4,=20
+if iommu is enabled in bios and iommu=3Dpt is not entered in grub.
 
-Thank you,
+Thanks, Don
 
-Suravee
->> *From:* Donald Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org <mailto:ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>>
->> *Date:* March 7, 2013, 3:08:57 AM GMT+08:00
->> *To:* JapHack <japhack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org <mailto:japhack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org>>
->> *Cc:* <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org 
->> <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>>
->> *Subject:* *Re: Problem with ethernet/sound with IOMMU enabled on 
->> M5A99FX pro r2.0 motherboard*
->>
->> Probably a missing IVMD block for the sound device.
->>
->> The ethernet device issue could be a driver issue --
->> DMA write to a page that was mapped for read-only.
->> Providing the IO page fault message would help to
->> diagnose further.
->>
->> - DonD
->>
->> ----- Original Message -----
->> From: "JapHack" <japhack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org <mailto:japhack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org>>
->> To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org 
->> <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
->> Sent: Tuesday, March 5, 2013 2:10:52 PM
->> Subject: Problem with ethernet/sound with IOMMU enabled on M5A99FX 
->> pro r2.0    motherboard
->>
->>
->> I recently bought this board as I wanted to start doing pci 
->> passthrough emulation.
->>
->> I noticed that after I had installed it and booted up, with IOMMU 
->> enabled
->> the network would work fine for a while then I would get an AMD-Vi IO 
->> page fault
->> and the driver would crash.
->> IF I turn off IOMMU there is no problem with using ethernet,
->>
->> The onboard ethernet chip is a RTL8111F/8168F.
->> For now I've turned off the network adapter in the bios and am using 
->> an add on card.
->>
->> Then I noticed that I could not use the onboard audio with oss 
->> (4.2.2007) with IOMMU
->> enabled. Alsa works ok, but I prefer to use oss. As with the ethernet 
->> card if I turn off
->> IOMMU in the bios the onboard audio is recognized and works fine.
->>
->> Any clues or help would be appreciated
->> Thanks, Don
->>
->> _______________________________________________
->> iommu mailing list
->> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org 
->> <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
->> https://lists.linuxfoundation.org/mailman/listinfo/iommu
->> _______________________________________________
->> iommu mailing list
->> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org 
->> <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
->> https://lists.linuxfoundation.org/mailman/listinfo/iommu
->>
+--- On Thu, 3/7/13, Suravee Suthikulanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org> wr=
+ote:
 
+From: Suravee Suthikulanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: Problem with ethernet/sound with IOMMU enabled on M5A99FX pro =
+r2.0 motherboard
+To: japhack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org
+Cc: ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Date: Thursday, March 7, 2013, 9:25 AM
 
---------------020709040409080301050906
-Content-Type: text/html; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
+=0A  =0A=0A    =0A  =0A  =0A    Hi,
+=0A   =20
+=0A    Would you please provide the kernel log and the dump of ACPI (from=
+=0A    tools like "acpidump")?=A0 These should help debugging the issue.
+=0A   =20
+=0A    Thank you,
+=0A   =20
+=0A    Suravee
+=0A    =0A      =0A        From: Donald Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+=0A          Date: March 7, 2013, 3:08:57 AM GMT+08:00
+=0A          To: JapHack <japhack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org>
+=0A          Cc: <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+=0A          Subject: Re: Problem with ethernet/sound with IOMMU=0A        =
+    enabled on M5A99FX pro r2.0 motherboard
+=0A         =20
+=0A        =0A      =0A      =0A        Probably a missing IVMD block for t=
+he sound device.
+=0A         =20
+=0A          The ethernet device issue could be a driver issue --=20
+=0A          DMA write to a page that was mapped for read-only.
+=0A          Providing the IO page fault message would help to
+=0A          diagnose further.
+=0A         =20
+=0A          - DonD
+=0A         =20
+=0A          ----- Original Message -----
+=0A          From: "JapHack" <japhack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org>
+=0A          To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+=0A          Sent: Tuesday, March 5, 2013 2:10:52 PM
+=0A          Subject: Problem with ethernet/sound with IOMMU enabled=0A    =
+        on M5A99FX pro r2.0 =A0 =A0motherboard
+=0A         =20
+=0A         =20
+=0A          I recently bought this board as I wanted to start doing=0A    =
+        pci passthrough emulation.=0A         =20
+=0A         =20
+=0A          I noticed that after I had installed it and booted up,=0A     =
+       with IOMMU enabled =0A         =20
+=0A          the network would work fine for a while then I would get=0A   =
+         an AMD-Vi IO page fault=0A         =20
+=0A          and the driver would crash.=20
+=0A          IF I turn off IOMMU there is no problem with using=0A         =
+   ethernet,=20
+=0A         =20
+=0A          The onboard ethernet chip is a RTL8111F/8168F.=20
+=0A          For now I've turned off the network adapter in the bios=0A    =
+        and am using an add on card.=0A         =20
+=0A         =20
+=0A          Then I noticed that I could not use the onboard audio=0A      =
+      with oss (4.2.2007) with IOMMU=0A         =20
+=0A          enabled. Alsa works ok, but I prefer to use oss. As with=0A   =
+         the ethernet card if I turn off=0A         =20
+=0A          IOMMU in the bios the onboard audio is recognized and=0A      =
+      works fine.=20
+=0A         =20
+=0A          Any clues or help would be appreciated=20
+=0A          Thanks, Don=20
+=0A         =20
+=0A          _______________________________________________
+=0A          iommu mailing list
+=0A          iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+=0A          https://lists.linuxfoundation.org/mailman/listinfo/iommu
+=0A          _______________________________________________
+=0A          iommu mailing list
+=0A          iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+=0A          https://lists.linuxfoundation.org/mailman/listinfo/iommu
+=0A         =20
+=0A        =0A      =0A    =0A   =20
+=0A  =0A=0A
+---1480336445-136746299-1362671890=:8814
+Content-Type: text/html; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-<html>
-  <head>
-    <meta content="text/html; charset=ISO-8859-1"
-      http-equiv="Content-Type">
-  </head>
-  <body text="#000000" bgcolor="#FFFFFF">
-    Hi,<br>
-    <br>
-    Would you please provide the kernel log and the dump of ACPI (from
-    tools like "acpidump")?&nbsp; These should help debugging the issue.<br>
-    <br>
-    Thank you,<br>
-    <br>
-    Suravee<br>
-    <blockquote cite="mid:498F3735-A671-4FEA-A612-4BACF08DCE15-5C7GfCeVMHo@public.gmane.org"
-      type="cite">
-      <blockquote type="cite">
-        <div><b>From:</b> Donald Dutile &lt;<a moz-do-not-send="true"
-            href="mailto:ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org">ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org</a>&gt;<br>
-          <b>Date:</b> March 7, 2013, 3:08:57 AM GMT+08:00<br>
-          <b>To:</b> JapHack &lt;<a moz-do-not-send="true"
-            href="mailto:japhack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org">japhack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org</a>&gt;<br>
-          <b>Cc:</b> &lt;<a moz-do-not-send="true"
-            href="mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org">iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org</a>&gt;<br>
-          <b>Subject:</b> <b>Re: Problem with ethernet/sound with IOMMU
-            enabled on M5A99FX pro r2.0 motherboard</b><br>
-          <br>
-        </div>
-      </blockquote>
-      <blockquote type="cite">
-        <div><span>Probably a missing IVMD block for the sound device.</span><br>
-          <span></span><br>
-          <span>The ethernet device issue could be a driver issue -- </span><br>
-          <span>DMA write to a page that was mapped for read-only.</span><br>
-          <span>Providing the IO page fault message would help to</span><br>
-          <span>diagnose further.</span><br>
-          <span></span><br>
-          <span>- DonD</span><br>
-          <span></span><br>
-          <span>----- Original Message -----</span><br>
-          <span>From: "JapHack" &lt;<a moz-do-not-send="true"
-              href="mailto:japhack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org">japhack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org</a>&gt;</span><br>
-          <span>To: <a moz-do-not-send="true"
-              href="mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org">iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org</a></span><br>
-          <span>Sent: Tuesday, March 5, 2013 2:10:52 PM</span><br>
-          <span>Subject: Problem with ethernet/sound with IOMMU enabled
-            on M5A99FX pro r2.0 &nbsp; &nbsp;motherboard</span><br>
-          <span></span><br>
-          <span></span><br>
-          <span>I recently bought this board as I wanted to start doing
-            pci passthrough emulation.
-          </span><br>
-          <span></span><br>
-          <span>I noticed that after I had installed it and booted up,
-            with IOMMU enabled </span>
-          <br>
-          <span>the network would work fine for a while then I would get
-            an AMD-Vi IO page fault
-          </span><br>
-          <span>and the driver would crash. </span><br>
-          <span>IF I turn off IOMMU there is no problem with using
-            ethernet, </span><br>
-          <span></span><br>
-          <span>The onboard ethernet chip is a RTL8111F/8168F. </span><br>
-          <span>For now I've turned off the network adapter in the bios
-            and am using an add on card.
-          </span><br>
-          <span></span><br>
-          <span>Then I noticed that I could not use the onboard audio
-            with oss (4.2.2007) with IOMMU
-          </span><br>
-          <span>enabled. Alsa works ok, but I prefer to use oss. As with
-            the ethernet card if I turn off
-          </span><br>
-          <span>IOMMU in the bios the onboard audio is recognized and
-            works fine. </span><br>
-          <span></span><br>
-          <span>Any clues or help would be appreciated </span><br>
-          <span>Thanks, Don </span><br>
-          <span></span><br>
-          <span>_______________________________________________</span><br>
-          <span>iommu mailing list</span><br>
-          <span><a moz-do-not-send="true"
-              href="mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org">iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org</a></span><br>
-          <span><a moz-do-not-send="true"
-              href="https://lists.linuxfoundation.org/mailman/listinfo/iommu">https://lists.linuxfoundation.org/mailman/listinfo/iommu</a></span><br>
-          <span>_______________________________________________</span><br>
-          <span>iommu mailing list</span><br>
-          <span><a moz-do-not-send="true"
-              href="mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org">iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org</a></span><br>
-          <span><a moz-do-not-send="true"
-              href="https://lists.linuxfoundation.org/mailman/listinfo/iommu">https://lists.linuxfoundation.org/mailman/listinfo/iommu</a></span><br>
-          <span></span><br>
-        </div>
-      </blockquote>
-    </blockquote>
-    <br>
-  </body>
-</html>
+<table cellspacing=3D"0" cellpadding=3D"0" border=3D"0" ><tr><td valign=3D"=
+top" style=3D"font: inherit;">acpi.dump http://pastebin.com/2wEYXykY<br>dme=
+sg.dump http://pastebin.com/ugfpRjxc<br>lspci -nnk http://pastebin.com/W5Hd=
+qQia<br><br>I have the onboard ethernet shut off in the bios<br>but the sou=
+ndcard is still not being seen with oss4, <br>if iommu is enabled in bios a=
+nd iommu=3Dpt is not entered in grub.<br><br>Thanks, Don<br><br>--- On <b>T=
+hu, 3/7/13, Suravee Suthikulanit <i>&lt;suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org&gt;</=
+i></b> wrote:<br><blockquote style=3D"border-left: 2px solid rgb(16, 16, 25=
+5); margin-left: 5px; padding-left: 5px;"><br>From: Suravee Suthikulanit &l=
+t;suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org&gt;<br>Subject: Re: Problem with ethernet/s=
+ound with IOMMU enabled on M5A99FX pro r2.0 motherboard<br>To: japhack@yaho=
+o.com<br>Cc: ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org<br>Date: =
+Thursday, March 7, 2013, 9:25 AM<br><br><div id=3D"yiv1208139767">=0A  =0A=
+=0A    =0A  =0A  <div>=0A    Hi,<br>=0A    <br>=0A    Would you please prov=
+ide the kernel log and the dump of ACPI (from=0A    tools like "acpidump")?=
+&nbsp; These should help debugging the issue.<br>=0A    <br>=0A    Thank yo=
+u,<br>=0A    <br>=0A    Suravee<br>=0A    <blockquote type=3D"cite">=0A    =
+  <blockquote type=3D"cite">=0A        <div><b>From:</b> Donald Dutile &lt;=
+<a rel=3D"nofollow" ymailto=3D"mailto:ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" target=3D"_blank"=
+ href=3D"/mc/compose?to=3Dddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org">ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org</a>&gt;<br=
+>=0A          <b>Date:</b> March 7, 2013, 3:08:57 AM GMT+08:00<br>=0A      =
+    <b>To:</b> JapHack &lt;<a rel=3D"nofollow" ymailto=3D"mailto:japhack@ya=
+hoo.com" target=3D"_blank" href=3D"/mc/compose?to=3Djaphack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org">japh=
+ack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org</a>&gt;<br>=0A          <b>Cc:</b> &lt;<a rel=3D"nofollow" ym=
+ailto=3D"mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" target=3D"_blank" href=3D=
+"/mc/compose?to=3Diommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org">iommu-cunTk1MwBs9QetFLy7KEm2CgeU+1il2p@public.gmane.org=
+ation.org</a>&gt;<br>=0A          <b>Subject:</b> <b>Re: Problem with ether=
+net/sound with IOMMU=0A            enabled on M5A99FX pro r2.0 motherboard<=
+/b><br>=0A          <br>=0A        </div>=0A      </blockquote>=0A      <bl=
+ockquote type=3D"cite">=0A        <div><span>Probably a missing IVMD block =
+for the sound device.</span><br>=0A          <span></span><br>=0A          =
+<span>The ethernet device issue could be a driver issue -- </span><br>=0A  =
+        <span>DMA write to a page that was mapped for read-only.</span><br>=
+=0A          <span>Providing the IO page fault message would help to</span>=
+<br>=0A          <span>diagnose further.</span><br>=0A          <span></spa=
+n><br>=0A          <span>- DonD</span><br>=0A          <span></span><br>=0A=
+          <span>----- Original Message -----</span><br>=0A          <span>F=
+rom: "JapHack" &lt;<a rel=3D"nofollow" ymailto=3D"mailto:japhack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org"=
+ target=3D"_blank" href=3D"/mc/compose?to=3Djaphack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org">japhack@yaho=
+o.com</a>&gt;</span><br>=0A          <span>To: <a rel=3D"nofollow" ymailto=
+=3D"mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" target=3D"_blank" href=3D"/mc/=
+compose?to=3Diommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org">iommu-cunTk1MwBs9QetFLy7KEmy65B3kUBaIG@public.gmane.org=
+.org</a></span><br>=0A          <span>Sent: Tuesday, March 5, 2013 2:10:52 =
+PM</span><br>=0A          <span>Subject: Problem with ethernet/sound with I=
+OMMU enabled=0A            on M5A99FX pro r2.0 &nbsp; &nbsp;motherboard</sp=
+an><br>=0A          <span></span><br>=0A          <span></span><br>=0A     =
+     <span>I recently bought this board as I wanted to start doing=0A      =
+      pci passthrough emulation.=0A          </span><br>=0A          <span>=
+</span><br>=0A          <span>I noticed that after I had installed it and b=
+ooted up,=0A            with IOMMU enabled </span>=0A          <br>=0A     =
+     <span>the network would work fine for a while then I would get=0A     =
+       an AMD-Vi IO page fault=0A          </span><br>=0A          <span>an=
+d the driver would crash. </span><br>=0A          <span>IF I turn off IOMMU=
+ there is no problem with using=0A            ethernet, </span><br>=0A     =
+     <span></span><br>=0A          <span>The onboard ethernet chip is a RTL=
+8111F/8168F. </span><br>=0A          <span>For now I've turned off the netw=
+ork adapter in the bios=0A            and am using an add on card.=0A      =
+    </span><br>=0A          <span></span><br>=0A          <span>Then I noti=
+ced that I could not use the onboard audio=0A            with oss (4.2.2007=
+) with IOMMU=0A          </span><br>=0A          <span>enabled. Alsa works =
+ok, but I prefer to use oss. As with=0A            the ethernet card if I t=
+urn off=0A          </span><br>=0A          <span>IOMMU in the bios the onb=
+oard audio is recognized and=0A            works fine. </span><br>=0A      =
+    <span></span><br>=0A          <span>Any clues or help would be apprecia=
+ted </span><br>=0A          <span>Thanks, Don </span><br>=0A          <span=
+></span><br>=0A          <span>____________________________________________=
+___</span><br>=0A          <span>iommu mailing list</span><br>=0A          =
+<span><a rel=3D"nofollow" ymailto=3D"mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cUBSOeVevoDU@public.gmane.org=
+g" target=3D"_blank" href=3D"/mc/compose?to=3Diommu-cunTk1MwBs9QetFLy7KEmxxBWXNxL4zz@public.gmane.org=
+org">iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org</a></span><br>=0A          <span><a r=
+el=3D"nofollow" target=3D"_blank" href=3D"https://lists.linuxfoundation.org=
+/mailman/listinfo/iommu">https://lists.linuxfoundation.org/mailman/listinfo=
+/iommu</a></span><br>=0A          <span>___________________________________=
+____________</span><br>=0A          <span>iommu mailing list</span><br>=0A =
+         <span><a rel=3D"nofollow" ymailto=3D"mailto:iommu-cunTk1MwBs9QetFLy7KEmw@public.gmane.org=
+dation.org" target=3D"_blank" href=3D"/mc/compose?to=3Diommu-cunTk1MwBs+XwC/5MpYmKg@public.gmane.org=
+undation.org">iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org</a></span><br>=0A          <=
+span><a rel=3D"nofollow" target=3D"_blank" href=3D"https://lists.linuxfound=
+ation.org/mailman/listinfo/iommu">https://lists.linuxfoundation.org/mailman=
+/listinfo/iommu</a></span><br>=0A          <span></span><br>=0A        </di=
+v>=0A      </blockquote>=0A    </blockquote>=0A    <br>=0A  </div>=0A=0A</d=
+iv></blockquote></td></tr></table>
+---1480336445-136746299-1362671890=:8814--
 
---------------020709040409080301050906--
-
---===============0293251793173895190==
+--===============2457683216670349775==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============0293251793173895190==--
+--===============2457683216670349775==--
