@@ -1,14 +1,21 @@
-From: Donald Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: Problem with ethernet/sound with IOMMU enabled on M5A99FX pro
-	r2.0	motherboard
-Date: Wed, 6 Mar 2013 14:08:57 -0500 (EST)
-Message-ID: <2004654126.1428743.1362596937686.JavaMail.root@redhat.com>
-References: <1362510652.3171.YahooMailClassic@web120705.mail.ne1.yahoo.com>
+From: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH 2/6] powerpc/fsl_pci: Store the platform device
+	information corresponding to the pci controller.
+Date: Thu, 7 Mar 2013 09:14:21 +0000
+Message-ID: <C5ECD7A89D1DC44195F34B25E172658D3E74C7@039-SN2MPN1-013.039d.mgd.msft.net>
+References: <1361191939-21260-1-git-send-email-Varun.Sethi@freescale.com>
+	<1361191939-21260-3-git-send-email-Varun.Sethi@freescale.com>
+	<CALRxmdDc9TuxH7HgAF3_iLgatoaOUML6fUt8SU+sxHyz6ZVjfw@mail.gmail.com>
+	<C5ECD7A89D1DC44195F34B25E172658D3BD338@039-SN2MPN1-013.039d.mgd.msft.net>
+	<20130227104505.GE26252@8bytes.org>
+	<C5ECD7A89D1DC44195F34B25E172658D3C24A9@039-SN2MPN1-013.039d.mgd.msft.net>
+	<D109CC7C-09D2-41E6-82BF-376692C390CA@kernel.crashing.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1362510652.3171.YahooMailClassic-s6rE+/zRgQruQS8rMknbopOW+3bF1jUfVpNB7YpNyf8@public.gmane.org>
+In-Reply-To: <D109CC7C-09D2-41E6-82BF-376692C390CA-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,44 +25,41 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: JapHack <japhack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Kumar Gala <galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Probably a missing IVMD block for the sound device.
+Hi Joerg,
+I have to post the next version of my patchset, should I base it on top of 3.9-rc1?
+By when would you move the iommu git tree to 3.9-rc1?
 
-The ethernet device issue could be a driver issue -- 
-DMA write to a page that was mapped for read-only.
-Providing the IO page fault message would help to
-diagnose further.
+Regards
+Varun
 
-- DonD
-
------ Original Message -----
-From: "JapHack" <japhack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org>
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Sent: Tuesday, March 5, 2013 2:10:52 PM
-Subject: Problem with ethernet/sound with IOMMU enabled on M5A99FX pro r2.0	motherboard
-
-
-I recently bought this board as I wanted to start doing pci passthrough emulation. 
-
-I noticed that after I had installed it and booted up, with IOMMU enabled 
-the network would work fine for a while then I would get an AMD-Vi IO page fault 
-and the driver would crash. 
-IF I turn off IOMMU there is no problem with using ethernet, 
-
-The onboard ethernet chip is a RTL8111F/8168F. 
-For now I've turned off the network adapter in the bios and am using an add on card. 
-
-Then I noticed that I could not use the onboard audio with oss (4.2.2007) with IOMMU 
-enabled. Alsa works ok, but I prefer to use oss. As with the ethernet card if I turn off 
-IOMMU in the bios the onboard audio is recognized and works fine. 
-
-Any clues or help would be appreciated 
-Thanks, Don 
-
-_______________________________________________
-iommu mailing list
-iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> -----Original Message-----
+> From: Kumar Gala [mailto:galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org]
+> Sent: Thursday, February 28, 2013 9:15 PM
+> To: Sethi Varun-B16395
+> Cc: Joerg Roedel; Stuart Yoder; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+> linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Wood Scott-
+> B07421; Yoder Stuart-B08248
+> Subject: Re: [PATCH 2/6] powerpc/fsl_pci: Store the platform device
+> information corresponding to the pci controller.
+> 
+> 
+> On Feb 27, 2013, at 4:56 AM, Sethi Varun-B16395 wrote:
+> 
+> > This patch is present in the "next branch" of linux ppc tree maintained
+> by Kumar Gala.
+> > Following is the commit id:
+> > 52c5affc545053d37c0b05224bbf70f5336caa20
+> >
+> > I am not sure if this would be part of 3.9-rc1.
+> >
+> > Regards
+> > varun
+> 
+> This is now in Linus's tree so will be in 3.9-rc1
+> 
+> - k
+> 
