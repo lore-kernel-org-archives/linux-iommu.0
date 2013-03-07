@@ -1,14 +1,22 @@
-From: Gaudenz Steinlin <gaudenz-Pp/UeI/YXckUgOneFgkt3A@public.gmane.org>
-Subject: Re: Marvell 88NV9143 in mini-PCIe not working with intel_iommu=on
-Date: Thu, 07 Mar 2013 10:25:22 +0100
-Message-ID: <87zjyfy325.fsf@meteor.durcheinandertal.bofh>
-References: <874ngpj3d9.fsf@meteor.durcheinandertal.bofh>
-	<CAJtEV7Zyq3+YPu9Vvcxcm8nw41-ENjLuRHUzyFFzXQn-wiSf1w@mail.gmail.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 2/6] powerpc/fsl_pci: Store the platform device
+	information corresponding to the pci controller.
+Date: Thu, 7 Mar 2013 11:37:41 +0100
+Message-ID: <20130307103741.GB22602@8bytes.org>
+References: <1361191939-21260-1-git-send-email-Varun.Sethi@freescale.com>
+	<1361191939-21260-3-git-send-email-Varun.Sethi@freescale.com>
+	<CALRxmdDc9TuxH7HgAF3_iLgatoaOUML6fUt8SU+sxHyz6ZVjfw@mail.gmail.com>
+	<C5ECD7A89D1DC44195F34B25E172658D3BD338@039-SN2MPN1-013.039d.mgd.msft.net>
+	<20130227104505.GE26252@8bytes.org>
+	<C5ECD7A89D1DC44195F34B25E172658D3C24A9@039-SN2MPN1-013.039d.mgd.msft.net>
+	<D109CC7C-09D2-41E6-82BF-376692C390CA@kernel.crashing.org>
+	<C5ECD7A89D1DC44195F34B25E172658D3E74C7@039-SN2MPN1-013.039d.mgd.msft.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAJtEV7Zyq3+YPu9Vvcxcm8nw41-ENjLuRHUzyFFzXQn-wiSf1w-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <C5ECD7A89D1DC44195F34B25E172658D3E74C7-RL0Hj/+nBVDYdknt8GnhQq4g8xLGJsHaLnY5E4hWTkheoWH0uzbU5w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,104 +26,47 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Andrew Cooks <acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, jyli-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Shun Fu <fushun-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>
+To: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Kumar Gala <galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Yes, please base your patches on the latest upstream-tag. I will move my
+tree to v3.9-rc1 soon, there are some fixes that need to go upstream.
 
-Hi Andrew
-
-Andrew Cooks <acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> writes:
-
-> On Tue, Mar 5, 2013 at 11:03 PM, Gaudenz Steinlin <gaudenz-Pp/UeI/YXckUgOneFgkt3A@public.gmane.org> wrote:
->>
->> [ Sending this to the MVUMI driver authors and the IOMMU list as I can't
->> tell which part is at fault. ]
->>
->> [ ... ]
->> [    4.342079] dmar: DRHD: handling fault status reg 2
->> [    4.342132] dmar: DMAR:[DMA Read] Request device [02:00.0] fault addr fffff000
->> [    4.342132] DMAR:[fault reason 02] Present bit in context entry is clear
->> [ ... ]
->> [   34.344078] mvumi 0000:02:00.1: no handshake response at state 0x2.
->> [   34.344115] mvumi 0000:02:00.1: isr : global=0x0,status=0x0.
->> [   34.344146] mvumi 0000:02:00.1: handshake failed at state 0x2.
->> [   34.344266] mvumi: probe of 0000:02:00.1 failed with error -22
->>
->
-> Looks like another Marvell DMA source tag issue.
-
-You are probably right with this. See below.
-
->
->> And the full lspic output for this device:
->>
->> gaudenz@meteor:~$ sudo lspci -vv -nnq -s 02:
->> 02:00.0 Mass storage controller [01ff]: Marvell Technology Group Ltd. Device [1b4b:91f3]
->>         Subsystem: Marvell Technology Group Ltd. Device [1b4b:9143]
->> ...
->>         Capabilities: [140 v1] Virtual Channel
->>                 Caps:   LPEVC=0 RefClk=100ns PATEntryBits=1
->>                 Arb:    Fixed- WRR32- WRR64- WRR128-
->>                 Ctrl:   ArbSelect=Fixed
->>                 Status: InProgress-
->>                 VC0:    Caps:   PATOffset=00 MaxTimeSlots=1 RejSnoopTrans-
->>                         Arb:    Fixed- WRR32- WRR64- WRR128- TWRR128- WRR256-
->>                         Ctrl:   Enable+ ID=0 ArbSelect=Fixed TC/VC=01
->>                         Status: NegoPending- InProgress-
->>
->> 02:00.1 Mass storage controller [0180]: Marvell Technology Group Ltd. Device [1b4b:9143] (rev 10)
->>         Subsystem: Marvell Technology Group Ltd. Device [1b4b:9143]
->> ...
->>         Kernel driver in use: mvumi
->>
->> 02:00.2 Non-Volatile memory controller [0108]: Marvell Technology Group Ltd. Device [1b4b:91e3] (prog-if 01)
->>         Subsystem: Marvell Technology Group Ltd. Device [1b4b:9143]
->>...
->
-> In this case it seems like a multifunction device with 02:00.1 being
-> the only function that the mvumi driver cares about.  So my guess is
-> that 02:00.1 is issuing DMA with the incorrect tag of 02:00.0.
->
-> Perhaps Alex Williamson can tell us about iommu device groups, whether
-> it would be possible to group the functions together automatically and
-> whether that would solve the problem. It should also be possible to
-> adapt the quirk patch I posted recently to handle this, but I'm still
-> waiting to hear if that patch has a future.
-
-I adapted your quirk patch to my device and it works. As I'm very new to
-this I don't know if my modifications are right or if there is a better
-way to do this. Diff on top of the latest version of the quirk you
-posted to the iommu list:
-
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 13323f2..0ba462a 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -1684,7 +1684,7 @@ static int map_ghost_dma_fn(struct dmar_domain *domain,
- 
-        fn_map = pci_get_dma_source_map(pdev);
- 
--       for (fn = 1; fn < 8; fn++) {
-+       for (fn = 0; fn < 8; fn++) {
-                if (fn_map & (1 << fn)) {
-                        err = domain_context_mapping_one(domain,
-                                        pci_domain_nr(pdev->bus),
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index d311100..21b664b 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -3314,6 +3314,7 @@ static const struct pci_dev_dma_multi_func_sources {
-        { PCI_VENDOR_ID_MARVELL_2, 0x9128, (1<<0)|(1<<1)},
-        { PCI_VENDOR_ID_MARVELL_2, 0x9130, (1<<0)|(1<<1)},
-        { PCI_VENDOR_ID_MARVELL_2, 0x9172, (1<<0)|(1<<1)},
-+       { PCI_VENDOR_ID_MARVELL_2, 0x9143, (1<<0)},
-        { 0 }
- };
-
-Gaudenz
-
--- 
-Ever tried. Ever failed. No matter.
-Try again. Fail again. Fail better.
-~ Samuel Beckett ~
+On Thu, Mar 07, 2013 at 09:14:21AM +0000, Sethi Varun-B16395 wrote:
+> Hi Joerg,
+> I have to post the next version of my patchset, should I base it on top of 3.9-rc1?
+> By when would you move the iommu git tree to 3.9-rc1?
+> 
+> Regards
+> Varun
+> 
+> > -----Original Message-----
+> > From: Kumar Gala [mailto:galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org]
+> > Sent: Thursday, February 28, 2013 9:15 PM
+> > To: Sethi Varun-B16395
+> > Cc: Joerg Roedel; Stuart Yoder; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+> > linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Wood Scott-
+> > B07421; Yoder Stuart-B08248
+> > Subject: Re: [PATCH 2/6] powerpc/fsl_pci: Store the platform device
+> > information corresponding to the pci controller.
+> > 
+> > 
+> > On Feb 27, 2013, at 4:56 AM, Sethi Varun-B16395 wrote:
+> > 
+> > > This patch is present in the "next branch" of linux ppc tree maintained
+> > by Kumar Gala.
+> > > Following is the commit id:
+> > > 52c5affc545053d37c0b05224bbf70f5336caa20
+> > >
+> > > I am not sure if this would be part of 3.9-rc1.
+> > >
+> > > Regards
+> > > varun
+> > 
+> > This is now in Linus's tree so will be in 3.9-rc1
+> > 
+> > - k
+> > 
+> 
+> 
