@@ -1,22 +1,15 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 2/6] powerpc/fsl_pci: Store the platform device
-	information corresponding to the pci controller.
-Date: Thu, 7 Mar 2013 11:37:41 +0100
-Message-ID: <20130307103741.GB22602@8bytes.org>
-References: <1361191939-21260-1-git-send-email-Varun.Sethi@freescale.com>
-	<1361191939-21260-3-git-send-email-Varun.Sethi@freescale.com>
-	<CALRxmdDc9TuxH7HgAF3_iLgatoaOUML6fUt8SU+sxHyz6ZVjfw@mail.gmail.com>
-	<C5ECD7A89D1DC44195F34B25E172658D3BD338@039-SN2MPN1-013.039d.mgd.msft.net>
-	<20130227104505.GE26252@8bytes.org>
-	<C5ECD7A89D1DC44195F34B25E172658D3C24A9@039-SN2MPN1-013.039d.mgd.msft.net>
-	<D109CC7C-09D2-41E6-82BF-376692C390CA@kernel.crashing.org>
-	<C5ECD7A89D1DC44195F34B25E172658D3E74C7@039-SN2MPN1-013.039d.mgd.msft.net>
+From: Suravee Suthikulanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: Problem with ethernet/sound with IOMMU enabled on M5A99FX pro
+	r2.0	motherboard
+Date: Thu, 7 Mar 2013 09:25:18 -0600
+Message-ID: <5138B15E.6000302@amd.com>
+References: <1362510652.3171.YahooMailClassic@web120705.mail.ne1.yahoo.com>,
+	<2004654126.1428743.1362596937686.JavaMail.root@redhat.com>
+	<498F3735-A671-4FEA-A612-4BACF08DCE15@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============0293251793173895190=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <C5ECD7A89D1DC44195F34B25E172658D3E74C7-RL0Hj/+nBVDYdknt8GnhQq4g8xLGJsHaLnY5E4hWTkheoWH0uzbU5w@public.gmane.org>
+In-Reply-To: <498F3735-A671-4FEA-A612-4BACF08DCE15-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,47 +19,199 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Kumar Gala <galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+To: japhack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Yes, please base your patches on the latest upstream-tag. I will move my
-tree to v3.9-rc1 soon, there are some fixes that need to go upstream.
+--===============0293251793173895190==
+Content-Type: multipart/alternative;
+	boundary="------------020709040409080301050906"
 
-On Thu, Mar 07, 2013 at 09:14:21AM +0000, Sethi Varun-B16395 wrote:
-> Hi Joerg,
-> I have to post the next version of my patchset, should I base it on top of 3.9-rc1?
-> By when would you move the iommu git tree to 3.9-rc1?
-> 
-> Regards
-> Varun
-> 
-> > -----Original Message-----
-> > From: Kumar Gala [mailto:galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org]
-> > Sent: Thursday, February 28, 2013 9:15 PM
-> > To: Sethi Varun-B16395
-> > Cc: Joerg Roedel; Stuart Yoder; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> > linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Wood Scott-
-> > B07421; Yoder Stuart-B08248
-> > Subject: Re: [PATCH 2/6] powerpc/fsl_pci: Store the platform device
-> > information corresponding to the pci controller.
-> > 
-> > 
-> > On Feb 27, 2013, at 4:56 AM, Sethi Varun-B16395 wrote:
-> > 
-> > > This patch is present in the "next branch" of linux ppc tree maintained
-> > by Kumar Gala.
-> > > Following is the commit id:
-> > > 52c5affc545053d37c0b05224bbf70f5336caa20
-> > >
-> > > I am not sure if this would be part of 3.9-rc1.
-> > >
-> > > Regards
-> > > varun
-> > 
-> > This is now in Linus's tree so will be in 3.9-rc1
-> > 
-> > - k
-> > 
-> 
-> 
+--------------020709040409080301050906
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
+
+Hi,
+
+Would you please provide the kernel log and the dump of ACPI (from tools 
+like "acpidump")?  These should help debugging the issue.
+
+Thank you,
+
+Suravee
+>> *From:* Donald Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org <mailto:ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>>
+>> *Date:* March 7, 2013, 3:08:57 AM GMT+08:00
+>> *To:* JapHack <japhack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org <mailto:japhack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org>>
+>> *Cc:* <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org 
+>> <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>>
+>> *Subject:* *Re: Problem with ethernet/sound with IOMMU enabled on 
+>> M5A99FX pro r2.0 motherboard*
+>>
+>> Probably a missing IVMD block for the sound device.
+>>
+>> The ethernet device issue could be a driver issue --
+>> DMA write to a page that was mapped for read-only.
+>> Providing the IO page fault message would help to
+>> diagnose further.
+>>
+>> - DonD
+>>
+>> ----- Original Message -----
+>> From: "JapHack" <japhack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org <mailto:japhack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org>>
+>> To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org 
+>> <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+>> Sent: Tuesday, March 5, 2013 2:10:52 PM
+>> Subject: Problem with ethernet/sound with IOMMU enabled on M5A99FX 
+>> pro r2.0    motherboard
+>>
+>>
+>> I recently bought this board as I wanted to start doing pci 
+>> passthrough emulation.
+>>
+>> I noticed that after I had installed it and booted up, with IOMMU 
+>> enabled
+>> the network would work fine for a while then I would get an AMD-Vi IO 
+>> page fault
+>> and the driver would crash.
+>> IF I turn off IOMMU there is no problem with using ethernet,
+>>
+>> The onboard ethernet chip is a RTL8111F/8168F.
+>> For now I've turned off the network adapter in the bios and am using 
+>> an add on card.
+>>
+>> Then I noticed that I could not use the onboard audio with oss 
+>> (4.2.2007) with IOMMU
+>> enabled. Alsa works ok, but I prefer to use oss. As with the ethernet 
+>> card if I turn off
+>> IOMMU in the bios the onboard audio is recognized and works fine.
+>>
+>> Any clues or help would be appreciated
+>> Thanks, Don
+>>
+>> _______________________________________________
+>> iommu mailing list
+>> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org 
+>> <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+>> _______________________________________________
+>> iommu mailing list
+>> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org 
+>> <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+>>
+
+
+--------------020709040409080301050906
+Content-Type: text/html; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
+
+<html>
+  <head>
+    <meta content="text/html; charset=ISO-8859-1"
+      http-equiv="Content-Type">
+  </head>
+  <body text="#000000" bgcolor="#FFFFFF">
+    Hi,<br>
+    <br>
+    Would you please provide the kernel log and the dump of ACPI (from
+    tools like "acpidump")?&nbsp; These should help debugging the issue.<br>
+    <br>
+    Thank you,<br>
+    <br>
+    Suravee<br>
+    <blockquote cite="mid:498F3735-A671-4FEA-A612-4BACF08DCE15-5C7GfCeVMHo@public.gmane.org"
+      type="cite">
+      <blockquote type="cite">
+        <div><b>From:</b> Donald Dutile &lt;<a moz-do-not-send="true"
+            href="mailto:ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org">ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org</a>&gt;<br>
+          <b>Date:</b> March 7, 2013, 3:08:57 AM GMT+08:00<br>
+          <b>To:</b> JapHack &lt;<a moz-do-not-send="true"
+            href="mailto:japhack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org">japhack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org</a>&gt;<br>
+          <b>Cc:</b> &lt;<a moz-do-not-send="true"
+            href="mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org">iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org</a>&gt;<br>
+          <b>Subject:</b> <b>Re: Problem with ethernet/sound with IOMMU
+            enabled on M5A99FX pro r2.0 motherboard</b><br>
+          <br>
+        </div>
+      </blockquote>
+      <blockquote type="cite">
+        <div><span>Probably a missing IVMD block for the sound device.</span><br>
+          <span></span><br>
+          <span>The ethernet device issue could be a driver issue -- </span><br>
+          <span>DMA write to a page that was mapped for read-only.</span><br>
+          <span>Providing the IO page fault message would help to</span><br>
+          <span>diagnose further.</span><br>
+          <span></span><br>
+          <span>- DonD</span><br>
+          <span></span><br>
+          <span>----- Original Message -----</span><br>
+          <span>From: "JapHack" &lt;<a moz-do-not-send="true"
+              href="mailto:japhack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org">japhack-/E1597aS9LQAvxtiuMwx3w@public.gmane.org</a>&gt;</span><br>
+          <span>To: <a moz-do-not-send="true"
+              href="mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org">iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org</a></span><br>
+          <span>Sent: Tuesday, March 5, 2013 2:10:52 PM</span><br>
+          <span>Subject: Problem with ethernet/sound with IOMMU enabled
+            on M5A99FX pro r2.0 &nbsp; &nbsp;motherboard</span><br>
+          <span></span><br>
+          <span></span><br>
+          <span>I recently bought this board as I wanted to start doing
+            pci passthrough emulation.
+          </span><br>
+          <span></span><br>
+          <span>I noticed that after I had installed it and booted up,
+            with IOMMU enabled </span>
+          <br>
+          <span>the network would work fine for a while then I would get
+            an AMD-Vi IO page fault
+          </span><br>
+          <span>and the driver would crash. </span><br>
+          <span>IF I turn off IOMMU there is no problem with using
+            ethernet, </span><br>
+          <span></span><br>
+          <span>The onboard ethernet chip is a RTL8111F/8168F. </span><br>
+          <span>For now I've turned off the network adapter in the bios
+            and am using an add on card.
+          </span><br>
+          <span></span><br>
+          <span>Then I noticed that I could not use the onboard audio
+            with oss (4.2.2007) with IOMMU
+          </span><br>
+          <span>enabled. Alsa works ok, but I prefer to use oss. As with
+            the ethernet card if I turn off
+          </span><br>
+          <span>IOMMU in the bios the onboard audio is recognized and
+            works fine. </span><br>
+          <span></span><br>
+          <span>Any clues or help would be appreciated </span><br>
+          <span>Thanks, Don </span><br>
+          <span></span><br>
+          <span>_______________________________________________</span><br>
+          <span>iommu mailing list</span><br>
+          <span><a moz-do-not-send="true"
+              href="mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org">iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org</a></span><br>
+          <span><a moz-do-not-send="true"
+              href="https://lists.linuxfoundation.org/mailman/listinfo/iommu">https://lists.linuxfoundation.org/mailman/listinfo/iommu</a></span><br>
+          <span>_______________________________________________</span><br>
+          <span>iommu mailing list</span><br>
+          <span><a moz-do-not-send="true"
+              href="mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org">iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org</a></span><br>
+          <span><a moz-do-not-send="true"
+              href="https://lists.linuxfoundation.org/mailman/listinfo/iommu">https://lists.linuxfoundation.org/mailman/listinfo/iommu</a></span><br>
+          <span></span><br>
+        </div>
+      </blockquote>
+    </blockquote>
+    <br>
+  </body>
+</html>
+
+--------------020709040409080301050906--
+
+--===============0293251793173895190==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============0293251793173895190==--
