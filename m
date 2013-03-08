@@ -1,15 +1,13 @@
-From: Andrew Cooks <acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: Marvell 88NV9143 in mini-PCIe not working with intel_iommu=on
-Date: Fri, 8 Mar 2013 10:53:16 +0800
-Message-ID: <CAJtEV7aL0TeSYB-+1bTgq=8Rbt2wijLfQF7jrHHXTeXeR811DQ@mail.gmail.com>
-References: <874ngpj3d9.fsf@meteor.durcheinandertal.bofh>
-	<CAJtEV7Zyq3+YPu9Vvcxcm8nw41-ENjLuRHUzyFFzXQn-wiSf1w@mail.gmail.com>
-	<87zjyfy325.fsf@meteor.durcheinandertal.bofh>
+From: Gaudenz Steinlin <gaudenz-Pp/UeI/YXckUgOneFgkt3A@public.gmane.org>
+Subject: Re: [PATCH v4] Quirk for buggy dma source tags with Intel IOMMU.
+Date: Fri, 08 Mar 2013 12:43:12 +0100
+Message-ID: <87ip5286cv.fsf@meteor.durcheinandertal.bofh>
+References: <1362710133-25168-1-git-send-email-acooks@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <87zjyfy325.fsf-GHYWf4lDKkckpxEkk3frnhJri3DaQkR5HbjI3kCSeWs@public.gmane.org>
+In-Reply-To: <1362710133-25168-1-git-send-email-acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,93 +17,280 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Gaudenz Steinlin <gaudenz-Pp/UeI/YXckUgOneFgkt3A@public.gmane.org>
-Cc: jyli-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Shun Fu <fushun-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Andrew Cooks <acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.orgacooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jpiszcz-BP4nVm5VUdNhbmWW9KSYcQ@public.gmane.org
+Cc: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "open list:PCI SUBSYSTEM" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Mar 7, 2013 at 5:25 PM, Gaudenz Steinlin <gaudenz-Pp/UeI/YXckUgOneFgkt3A@public.gmane.org> wrote:
->
-> Hi Andrew
->
-> Andrew Cooks <acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> writes:
->
->> On Tue, Mar 5, 2013 at 11:03 PM, Gaudenz Steinlin <gaudenz-Pp/UeI/YXckUgOneFgkt3A@public.gmane.org> wrote:
->>>
->>> [ Sending this to the MVUMI driver authors and the IOMMU list as I can't
->>> tell which part is at fault. ]
->>>
->>> [ ... ]
->>> [    4.342079] dmar: DRHD: handling fault status reg 2
->>> [    4.342132] dmar: DMAR:[DMA Read] Request device [02:00.0] fault addr fffff000
->>> [    4.342132] DMAR:[fault reason 02] Present bit in context entry is clear
->>> [ ... ]
->>> [   34.344078] mvumi 0000:02:00.1: no handshake response at state 0x2.
->>> [   34.344115] mvumi 0000:02:00.1: isr : global=0x0,status=0x0.
->>> [   34.344146] mvumi 0000:02:00.1: handshake failed at state 0x2.
->>> [   34.344266] mvumi: probe of 0000:02:00.1 failed with error -22
->>>
->>
->> Looks like another Marvell DMA source tag issue.
->
-> You are probably right with this. See below.
->
->>
->>> And the full lspic output for this device:
->>>
->>> gaudenz@meteor:~$ sudo lspci -vv -nnq -s 02:
->>> 02:00.0 Mass storage controller [01ff]: Marvell Technology Group Ltd. Device [1b4b:91f3]
->>>         Subsystem: Marvell Technology Group Ltd. Device [1b4b:9143]
->>> ...
->>>         Capabilities: [140 v1] Virtual Channel
->>>                 Caps:   LPEVC=0 RefClk=100ns PATEntryBits=1
->>>                 Arb:    Fixed- WRR32- WRR64- WRR128-
->>>                 Ctrl:   ArbSelect=Fixed
->>>                 Status: InProgress-
->>>                 VC0:    Caps:   PATOffset=00 MaxTimeSlots=1 RejSnoopTrans-
->>>                         Arb:    Fixed- WRR32- WRR64- WRR128- TWRR128- WRR256-
->>>                         Ctrl:   Enable+ ID=0 ArbSelect=Fixed TC/VC=01
->>>                         Status: NegoPending- InProgress-
->>>
->>> 02:00.1 Mass storage controller [0180]: Marvell Technology Group Ltd. Device [1b4b:9143] (rev 10)
->>>         Subsystem: Marvell Technology Group Ltd. Device [1b4b:9143]
->>> ...
->>>         Kernel driver in use: mvumi
->>>
->>> 02:00.2 Non-Volatile memory controller [0108]: Marvell Technology Group Ltd. Device [1b4b:91e3] (prog-if 01)
->>>         Subsystem: Marvell Technology Group Ltd. Device [1b4b:9143]
->>>...
->>
->> In this case it seems like a multifunction device with 02:00.1 being
->> the only function that the mvumi driver cares about.  So my guess is
->> that 02:00.1 is issuing DMA with the incorrect tag of 02:00.0.
->>
->> Perhaps Alex Williamson can tell us about iommu device groups, whether
->> it would be possible to group the functions together automatically and
->> whether that would solve the problem. It should also be possible to
->> adapt the quirk patch I posted recently to handle this, but I'm still
->> waiting to hear if that patch has a future.
->
-> I adapted your quirk patch to my device and it works.
 
-Thanks for testing it!
+Hi Andrew
 
->  As I'm very new to this I don't know if my modifications are right or if there is a better
-> way to do this.
+Andrew Cooks <acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> writes:
 
-Don't worry, I'm also pretty new here.
+> This patch creates a quirk to allow the Intel IOMMU to be enabled for devices
+> that use incorrect tags during DMA. It is similar to the quirk for Ricoh
+> devices, but allows mapping multiple functions and mapping of 'ghost'
+> functions that do not correspond to real devices. Devices that need this
+> include a variety of Marvell 88SE91xx based SATA controllers. [1][2]
 
-For this device, I think the quirk used for Ricoh devices that's
-already in the mainline kernel would also work, because both function
-0 and function 1 are known and the device only seems to use function
-0. However, since it is another Marvell device, it may look out of
-place in that table.
+I can confirm that this version of the patch also works for my mini-PCIe
+device (88NV9143). See the my mail about it for more information. I had
+to manually fix the patch because the patch utility did not understand
+it. There is a formatting error in the last hunk for quirks.c (missing
+space before context line) and the line count in the hunk header is
+wrong (66 lines changed should be 56 lines). I hope nothing was missing
+from the patch.
 
-I'm hoping one of the veteran developers would give some guidance for
-the best approach to enable more devices in future.
+Tested on 3.8.2.
 
-> Diff on top of the latest version of the quirk you
-> posted to the iommu list:
+Gaudenz
+
 >
-I included this in v4 of the patch I posted, before I saw your message.
+> Changelog:
+> v4: Process feedback received from Alex Williamson.
+>  * don't assume function 0 is a real device.
+>  * exit early if no ghost functions are known, or all known functions have
+>    been mapped.
+>  * cleanup failure case so mapping succeeds or fails for all ghost functions
+>    per device.
+>  * improve comments.
+>
+> v3:
+>  * Adopt David Woodhouse's terminology by referring to the quirky functions as
+>  'ghost' functions.
+>  * Unmap ghost functions when device is detached from IOMMU.
+>  * Stub function for when CONFIG_PCI_QUIRKS is not enabled.
+>
+>
+>  This patch was generated against 3.9-rc1, but will also apply to 3.7.10.
+>
+>  Bug reports:
+>  1. https://bugzilla.redhat.com/show_bug.cgi?id=757166
+>  2. https://bugzilla.kernel.org/show_bug.cgi?id=42679
+>
+> Signed-off-by: Andrew Cooks <acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> ---
+>  drivers/iommu/intel-iommu.c |   69 +++++++++++++++++++++++++++++++++++++++++++
+>  drivers/pci/quirks.c        |   67 +++++++++++++++++++++++++++++++++++++++++-
+>  include/linux/pci.h         |    5 +++
+>  include/linux/pci_ids.h     |    1 +
+>  4 files changed, 141 insertions(+), 1 deletions(-)
+>
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 0099667..f53f3e3 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -1674,6 +1674,69 @@ static int domain_context_mapping_one(struct dmar_domain *domain, int segment,
+>  	return 0;
+>  }
+>  
+> +static void iommu_detach_dev(struct intel_iommu *iommu, u8 bus, u8 devfn);
+> +
+> +static void unmap_ghost_dma_fn(struct pci_dev *pdev, u8 fn_map)
+> +{
+> +	u8 fn;
+> +	struct intel_iommu *iommu;
+> +
+> +	iommu = device_to_iommu(pci_domain_nr(pdev->bus), pdev->bus->number,
+> +				pdev->devfn);
+> +
+> +	/* something must be seriously fubar if we can't lookup the iommu. */
+> +	BUG_ON(!iommu);
+> +
+> +	for (fn = 0; fn <= 7 && fn_map << fn; fn++) {
+> +		if (fn == PCI_FUNC(pdev->devfn))
+> +			continue;
+> +		if (fn_map & (1<<fn)) {
+> +			iommu_detach_dev(iommu,
+> +					pdev->bus->number,
+> +					PCI_DEVFN(PCI_SLOT(pdev->devfn), fn));
+> +			dev_dbg(&pdev->dev, "quirk; ghost func %d unmapped",
+> +				fn);
+> +		}
+> +	}
+> +}
+> +
+> +/* For quirky devices like Marvell 88SE91xx chips that use ghost functions. */
+> +static int map_ghost_dma_fn(struct dmar_domain *domain,
+> +		struct pci_dev *pdev,
+> +		int translation)
+> +{
+> +	u8 fn, fn_map;
+> +	u8 fn_mapped = 0;
+> +	int err = 0;
+> +
+> +	fn_map = pci_get_dma_source_map(pdev);
+> +
+> +	/* this is the common, non-quirky case. */
+> +	if (!fn_map)
+> +		return 0;
+> +
+> +	for (fn = 0; fn <= 7 && fn_map << fn; fn++) {
+> +		if (fn == PCI_FUNC(pdev->devfn))
+> +			continue;
+> +		if (fn_map & (1<<fn)) {
+> +			err = domain_context_mapping_one(domain,
+> +					pci_domain_nr(pdev->bus),
+> +					pdev->bus->number,
+> +					PCI_DEVFN(PCI_SLOT(pdev->devfn), fn),
+> +					translation);
+> +			if (err) {
+> +				dev_err(&pdev->dev,
+> +					"mapping ghost func %d failed", fn);
+> +				unmap_ghost_dma_fn(pdev, fn_mapped);
+> +				return err;
+> +			}
+> +			dev_dbg(&pdev->dev, "quirk; ghost func %d mapped", fn);
+> +			fn_mapped |= (1<<fn);
+> +		}
+> +	}
+> +	return 0;
+> +}
+> +
+>  static int
+>  domain_context_mapping(struct dmar_domain *domain, struct pci_dev *pdev,
+>  			int translation)
+> @@ -1687,6 +1750,11 @@ domain_context_mapping(struct dmar_domain *domain, struct pci_dev *pdev,
+>  	if (ret)
+>  		return ret;
+>  
+> +	/* quirk for undeclared/ghost pci functions */
+> +	ret = map_ghost_dma_fn(domain, pdev, translation);
+> +	if (ret)
+> +		return ret;
+> +
+>  	/* dependent device mapping */
+>  	tmp = pci_find_upstream_pcie_bridge(pdev);
+>  	if (!tmp)
+> @@ -3786,6 +3854,7 @@ static void domain_remove_one_dev_info(struct dmar_domain *domain,
+>  			iommu_disable_dev_iotlb(info);
+>  			iommu_detach_dev(iommu, info->bus, info->devfn);
+>  			iommu_detach_dependent_devices(iommu, pdev);
+> +			unmap_ghost_dma_fn(pdev, pci_get_dma_source_map(pdev));
+>  			free_devinfo_mem(info);
+>  
+>  			spin_lock_irqsave(&device_domain_lock, flags);
+> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+> index 0369fb6..cf00acb 100644
+> --- a/drivers/pci/quirks.c
+> +++ b/drivers/pci/quirks.c
+> @@ -3249,6 +3249,10 @@ static struct pci_dev *pci_func_0_dma_source(struct pci_dev *dev)
+>  	return pci_get_slot(dev->bus, PCI_DEVFN(PCI_SLOT(dev->devfn), 0));
+>  }
+>  
+> +/* Table of source functions for real devices. The DMA requests for the
+> + * device are tagged with a different real function as source. This is
+> + * relevant to multifunction devices.
+> + */
+>  static const struct pci_dev_dma_source {
+>  	u16 vendor;
+>  	u16 device;
+> @@ -3275,7 +3279,8 @@ static const struct pci_dev_dma_source {
+>   * the device doing the DMA, but sometimes hardware is broken and will
+>   * tag the DMA as being sourced from a different device.  This function
+>   * allows that translation.  Note that the reference count of the
+> - * returned device is incremented on all paths.
+> + * returned device is incremented on all paths. Translation is done when
+> + * the device is added to an IOMMU group.
+>   */
+>  struct pci_dev *pci_get_dma_source(struct pci_dev *dev)
+>  {
+> @@ -3292,6 +3297,66 @@ struct pci_dev *pci_get_dma_source(struct pci_dev *dev)
+>  	return pci_dev_get(dev);
+>  }
+>  
+> +/* Table of multiple (ghost) source functions. This is similar to the
+> + * translated sources above, but with the following differences:
+> + * 1. the device may use multiple functions as DMA sources,
+> + * 2. these functions cannot be assumed to be actual devices, they're simply
+> + * incorrect DMA tags.
+> + * 3. the specific ghost function for a request can not always be predicted.
+> + * For example, the actual device could be xx:yy.1 and it could use
+> + * both 0 and 1 for different requests, with no obvious way to tell when
+> + * DMA will be tagged as comming from xx.yy.0 and and when it will be tagged
+> + * as comming from xx.yy.1.
+> + * The bitmap contains all of the functions used in DMA tags, including the
+> + * actual device.
+> + * See  https://bugzilla.redhat.com/show_bug.cgi?id=757166,
+> + * https://bugzilla.kernel.org/show_bug.cgi?id=42679
+> + * https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1089768
+> + */
+> +static const struct pci_dev_dma_multi_func_sources {
+> +	u16 vendor;
+> +	u16 device;
+> +	u8 func_map;	/* bit map. lsb is fn 0. */
+> +} pci_dev_dma_multi_func_sources[] = {
+> +	{ PCI_VENDOR_ID_MARVELL_2, 0x9123, (1<<0)|(1<<1)},
+> +	{ PCI_VENDOR_ID_MARVELL_2, 0x9125, (1<<0)|(1<<1)},
+> +	{ PCI_VENDOR_ID_MARVELL_2, 0x9128, (1<<0)|(1<<1)},
+> +	{ PCI_VENDOR_ID_MARVELL_2, 0x9130, (1<<0)|(1<<1)},
+> +	{ PCI_VENDOR_ID_MARVELL_2, 0x9143, (1<<0)|(1<<1)},
+> +	{ PCI_VENDOR_ID_MARVELL_2, 0x9172, (1<<0)|(1<<1)},
+> +	{ 0 }
+> +};
+> +
+> +/*
+> + * The mapping of fake/ghost functions is used when the real device is
+> + * attached to an IOMMU domain. IOMMU groups are not aware of these
+> + * functions, because they're not real devices.
+> + */
+> +u8 pci_get_dma_source_map(struct pci_dev *dev)
+> +{
+> +	const struct pci_dev_dma_multi_func_sources *i;
+> +
+> +	for (i = pci_dev_dma_multi_func_sources; i->func_map; i++) {
+> +		if ((i->vendor == dev->vendor ||
+> +		     i->vendor == (u16)PCI_ANY_ID) &&
+> +		    (i->device == dev->device ||
+> +		     i->device == (u16)PCI_ANY_ID)) {
+> +			return i->func_map;
+> +		}
+> +	}
+> +	return 0;
+> +}
+> +
+> static const struct pci_dev_acs_enabled {
+>  	u16 vendor;
+>  	u16 device;
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index 2461033..5ad3822 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -1578,6 +1578,7 @@ enum pci_fixup_pass {
+>  #ifdef CONFIG_PCI_QUIRKS
+>  void pci_fixup_device(enum pci_fixup_pass pass, struct pci_dev *dev);
+>  struct pci_dev *pci_get_dma_source(struct pci_dev *dev);
+> +u8 pci_get_dma_source_map(struct pci_dev *dev);
+>  int pci_dev_specific_acs_enabled(struct pci_dev *dev, u16 acs_flags);
+>  #else
+>  static inline void pci_fixup_device(enum pci_fixup_pass pass,
+> @@ -1586,6 +1587,10 @@ static inline struct pci_dev *pci_get_dma_source(struct pci_dev *dev)
+>  {
+>  	return pci_dev_get(dev);
+>  }
+> +u8 pci_get_dma_source_map(struct pci_dev *dev)
+> +{
+> +	return 0;
+> +}
+>  static inline int pci_dev_specific_acs_enabled(struct pci_dev *dev,
+>  					       u16 acs_flags)
+>  {
+> diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
+> index f11c1c2..df57496 100644
+> --- a/include/linux/pci_ids.h
+> +++ b/include/linux/pci_ids.h
+> @@ -1604,6 +1604,7 @@
+>  #define PCI_SUBDEVICE_ID_KEYSPAN_SX2	0x5334
+>  
+>  #define PCI_VENDOR_ID_MARVELL		0x11ab
+> +#define PCI_VENDOR_ID_MARVELL_2	0x1b4b
+>  #define PCI_DEVICE_ID_MARVELL_GT64111	0x4146
+>  #define PCI_DEVICE_ID_MARVELL_GT64260	0x6430
+>  #define PCI_DEVICE_ID_MARVELL_MV64360	0x6460
+> -- 
+> 1.7.1
+>
 
-Thanks.
+-- 
+Ever tried. Ever failed. No matter.
+Try again. Fail again. Fail better.
+~ Samuel Beckett ~
