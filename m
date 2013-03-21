@@ -1,112 +1,78 @@
-From: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
-Subject: [PATCH] intel-iommu: Synchronize gcmd value with global command
-	register
-Date: Thu, 21 Mar 2013 10:32:36 +0900
-Message-ID: <1363829556-2128-1-git-send-email-indou.takao@jp.fujitsu.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
+Subject: [PATCH] iommu: add a function to find an iommu group by id
+Date: Thu, 21 Mar 2013 18:48:42 +1100
+Message-ID: <1363852122-17974-1-git-send-email-aik@ozlabs.ru>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joerg.roedel@amd.com>
+Cc: Alexey Kardashevskiy <aik@ozlabs.ru>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, David Gibson <david@gibson.dropbear.id.au>, Paul Mackerras <paulus@samba.org>, Alex Williamson <alex.williamson@redhat.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch synchronize iommu->gcmd value with global command register so
-that bits in the register could be handled correctly.
+As IOMMU groups are exposed to the user space by their numbers,
+the user space can use them in various kernel APIs so the kernel
+might need an API to find a group by its ID.
 
-iommu_disable_irq_remapping() should disable only IR(Interrupt
-Remapping), but in the case of kdump, it also disables QI(Queued
-Invalidation) and DMAR(DMA remapping) at the same time.
+As an example, QEMU VFIO on PPC64 platform needs it to associate
+a logical bus number (LIOBN) with a specific IOMMU group in order
+to support in-kernel handling of DMA map/unmap requests.
 
-At boot time, iommu_disable_irq_remapping() is called via
-intel_enable_irq_remapping().
+The patch adds the iommu_group_find(id) function which performs
+such search.
 
-static void iommu_disable_irq_remapping(struct intel_iommu *iommu)
-{
-(snip)
-	iommu->gcmd &= ~DMA_GCMD_IRE;
-	writel(iommu->gcmd, iommu->reg + DMAR_GCMD_REG);
-
-In this function, clearing IRE bit in iommu->gcmd and writing it to
-global command register. But initial value of iommu->gcmd is zero, so
-this writel means clearing all bits in global command register.
-
-In the case of second kernel(kdump kernel) boot, IR/QI/DMAR are already
-enabled because it was used in first kernel, so they are disabled at the
-same time in this function.
-
-In this patch iommu->gcmd is initialized so that its value could be
-synchronized with global command register. By this,
-iommu_disable_irq_remapping() disables only IR, and QI is disabled in
-dmar_disable_qi(). This patch also changes init_dmars() to disable DMAR
-before initializing it if already enabled.
-
-Signed-off-by: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
 ---
- drivers/iommu/dmar.c        |   11 ++++++++++-
- drivers/iommu/intel-iommu.c |   12 ++++++++++++
- 2 files changed, 22 insertions(+), 1 deletions(-)
+ drivers/iommu/iommu.c |   26 ++++++++++++++++++++++++++
+ include/linux/iommu.h |    1 +
+ 2 files changed, 27 insertions(+)
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index e5cdaf8..9f69352 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -645,7 +645,7 @@ out:
- int alloc_iommu(struct dmar_drhd_unit *drhd)
- {
- 	struct intel_iommu *iommu;
--	u32 ver;
-+	u32 ver, sts;
- 	static int iommu_allocated = 0;
- 	int agaw = 0;
- 	int msagaw = 0;
-@@ -695,6 +695,15 @@ int alloc_iommu(struct dmar_drhd_unit *drhd)
- 		(unsigned long long)iommu->cap,
- 		(unsigned long long)iommu->ecap);
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index b0afd3d..6340cac 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -205,6 +205,32 @@ printk("%s %u grp %d\n", __func__, __LINE__, iommu_group_id(group));
+ }
+ EXPORT_SYMBOL_GPL(iommu_group_alloc);
  
-+	/* Reflect status in gcmd */
-+	sts = readl(iommu->reg + DMAR_GSTS_REG);
-+	if (sts & DMA_GSTS_IRES)
-+		iommu->gcmd |= DMA_GCMD_IRE;
-+	if (sts & DMA_GSTS_TES)
-+		iommu->gcmd |= DMA_GCMD_TE;
-+	if (sts & DMA_GSTS_QIES)
-+		iommu->gcmd |= DMA_GCMD_QIE;
++struct iommu_group *iommu_group_find(int id)
++{
++	struct kobject *group_kobj;
++	struct iommu_group *grp;
++	const char *name;
 +
- 	raw_spin_lock_init(&iommu->register_lock);
- 
- 	drhd->iommu = iommu;
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 0099667..3437046 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -2515,6 +2515,18 @@ static int __init init_dmars(void)
- 	}
- 
- 	/*
-+	 * Disable translation if already enabled prior to OS handover.
-+	 */
-+	for_each_drhd_unit(drhd) {
-+		if (drhd->ignored)
-+			continue;
++	if (!iommu_group_kset)
++		return NULL;
 +
-+		iommu = drhd->iommu;
-+		if (iommu->gcmd & DMA_GCMD_TE)
-+			iommu_disable_translation(iommu);
-+	}
++	name = kasprintf(GFP_KERNEL, "%d", id);
++	if (!name)
++		return NULL;
 +
-+	/*
- 	 * Start from the sane iommu hardware state.
- 	 */
- 	for_each_drhd_unit(drhd) {
++	group_kobj = kset_find_obj(iommu_group_kset, name);
++	kfree(name);
++
++	if (!group_kobj)
++		return NULL;
++
++	grp = container_of(group_kobj, struct iommu_group, kobj);
++	BUG_ON(grp->id != id);
++
++	return grp;
++}
++EXPORT_SYMBOL_GPL(iommu_group_find);
++
+ /**
+  * iommu_group_get_iommudata - retrieve iommu_data registered for a group
+  * @group: the group
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index f3b99e1..20281d5 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -113,6 +113,7 @@ struct iommu_ops {
+ extern int bus_set_iommu(struct bus_type *bus, struct iommu_ops *ops);
+ extern bool iommu_present(struct bus_type *bus);
+ extern struct iommu_domain *iommu_domain_alloc(struct bus_type *bus);
++extern struct iommu_group *iommu_group_find(int id);
+ extern void iommu_domain_free(struct iommu_domain *domain);
+ extern int iommu_attach_device(struct iommu_domain *domain,
+ 			       struct device *dev);
 -- 
-1.7.1
+1.7.10.4
