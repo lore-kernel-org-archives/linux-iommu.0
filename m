@@ -1,7 +1,8 @@
 From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: [PATCH 2/5 v10] powerpc: Add iommu domain pointer to device archdata
-Date: Sat, 23 Mar 2013 04:04:58 +0530
-Message-ID: <1363991700-21454-4-git-send-email-Varun.Sethi@freescale.com>
+Subject: [PATCH 4/5 v10] iommu/fsl: Add additional iommu attributes required
+	by the PAMU driver.
+Date: Sat, 23 Mar 2013 04:05:00 +0530
+Message-ID: <1363991700-21454-6-git-send-email-Varun.Sethi@freescale.com>
 References: <1363991700-21454-1-git-send-email-Varun.Sethi@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,35 +22,76 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJ
 Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Add an iommu domain pointer to device (powerpc) archdata.  Devices
-are attached to iommu domains and this pointer provides a mechanism
-to correlate between a device and the associated iommu domain.  This
-field is set when a device is attached to a domain.
+Added the following domain attributes for the FSL PAMU driver:
+1. Added new iommu stash attribute, which allows setting of the
+   LIODN specific stash id parameter through IOMMU API.
+2. Added an attribute for enabling/disabling DMA to a particular
+   memory window.
+3. Added domain attribute to check for PAMUV1 specific constraints.
 
 Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 ---
 - no change in v10.
-- Added CONFIG_IOMMU_API in v9.
 
- arch/powerpc/include/asm/device.h |    6 ++++++
- 1 files changed, 6 insertions(+), 0 deletions(-)
+ include/linux/iommu.h |   35 +++++++++++++++++++++++++++++++++++
+ 1 files changed, 35 insertions(+), 0 deletions(-)
 
-diff --git a/arch/powerpc/include/asm/device.h b/arch/powerpc/include/asm/device.h
-index 77e97dd..2d5c1c5 100644
---- a/arch/powerpc/include/asm/device.h
-+++ b/arch/powerpc/include/asm/device.h
-@@ -28,6 +28,12 @@ struct dev_archdata {
- 		void		*iommu_table_base;
- 	} dma_data;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 02ac111..1db9fd3 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -40,6 +40,25 @@ struct notifier_block;
+ typedef int (*iommu_fault_handler_t)(struct iommu_domain *,
+ 			struct device *, unsigned long, int, void *);
  
-+	/* IOMMU domain information pointer. This would be set
-+	 * when this device is attached to an iommu_domain.
-+	 */
-+#ifdef CONFIG_IOMMU_API
-+	void			*iommu_domain;
-+#endif
- #ifdef CONFIG_SWIOTLB
- 	dma_addr_t		max_direct_dma_addr;
- #endif
++/* cache stash targets */
++enum stash_target {
++	IOMMU_ATTR_CACHE_L1 = 1,
++	IOMMU_ATTR_CACHE_L2,
++	IOMMU_ATTR_CACHE_L3,
++};
++
++/* This attribute corresponds to IOMMUs capable of generating
++ * a stash transaction. A stash transaction is typically a
++ * hardware initiated prefetch of data from memory to cache.
++ * This attribute allows configuring stashig specific parameters
++ * in the IOMMU hardware.
++ */
++
++struct iommu_stash_attribute {
++	u32 	cpu;	/* cpu number */
++	u32 	cache;	/* cache to stash to: L1,L2,L3 */
++};
++
+ struct iommu_domain_geometry {
+ 	dma_addr_t aperture_start; /* First address that can be mapped    */
+ 	dma_addr_t aperture_end;   /* Last address that can be mapped     */
+@@ -57,10 +76,26 @@ struct iommu_domain {
+ #define IOMMU_CAP_CACHE_COHERENCY	0x1
+ #define IOMMU_CAP_INTR_REMAP		0x2	/* isolates device intrs */
+ 
++/*
++ * Following constraints are specifc to PAMUV1:
++ *  -aperture must be power of 2, and naturally aligned
++ *  -number of windows must be power of 2, and address space size
++ *   of each window is determined by aperture size / # of windows
++ *  -the actual size of the mapped region of a window must be power
++ *   of 2 starting with 4KB and physical address must be naturally
++ *   aligned.
++ * DOMAIN_ATTR_FSL_PAMUV1 corresponds to the above mentioned contraints.
++ * The caller can invoke iommu_domain_get_attr to check if the underlying
++ * iommu implementation supports these constraints.
++ */
++
+ enum iommu_attr {
+ 	DOMAIN_ATTR_GEOMETRY,
+ 	DOMAIN_ATTR_PAGING,
+ 	DOMAIN_ATTR_WINDOWS,
++	DOMAIN_ATTR_PAMU_STASH,
++	DOMAIN_ATTR_PAMU_ENABLE,
++	DOMAIN_ATTR_FSL_PAMUV1,
+ 	DOMAIN_ATTR_MAX,
+ };
+ 
 -- 
 1.7.4.1
