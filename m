@@ -1,14 +1,12 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] iommu: add a function to find an iommu group by id
-Date: Fri, 22 Mar 2013 10:07:42 -0600
-Message-ID: <1363968462.24132.611.camel@bling.home>
-References: <1363883719.2747.13.camel@ul30vt.home>
-	<1363934941-21020-1-git-send-email-aik@ozlabs.ru>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: [PATCH 0/5 v10] iommu/fsl: Freescale PAMU driver and IOMMU API
+	implementation.
+Date: Sat, 23 Mar 2013 04:04:55 +0530
+Message-ID: <1363991700-21454-1-git-send-email-Varun.Sethi@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1363934941-21020-1-git-send-email-aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,94 +16,56 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org
+Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 2013-03-22 at 17:49 +1100, Alexey Kardashevskiy wrote:
-> As IOMMU groups are exposed to the user space by their numbers,
-> the user space can use them in various kernel APIs so the kernel
-> might need an API to find a group by its ID.
-> 
-> As an example, QEMU VFIO on PPC64 platform needs it to associate
-> a logical bus number (LIOBN) with a specific IOMMU group in order
-> to support in-kernel handling of DMA map/unmap requests.
-> 
-> The patch adds the iommu_group_get_by_id(id) function which performs
-> such search.
-> 
-> Signed-off-by: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
-> ---
+This patchset provides the Freescale PAMU (Peripheral Access Management Unit) driver
+and the corresponding IOMMU API implementation. PAMU is the IOMMU present on Freescale
+QorIQ platforms. PAMU can authorize memory access, remap the memory address, and remap 
+the I/O transaction type.
 
-v2: <describe what changed>
+This set consists of the following patches:
+1.  Make iova u64 in the iommu_iova_to_phys API.
+2. Addition of new field in the device (powerpc) archdata structure for storing iommu domain information
+   pointer.
+3. Add window permission flags in the iommu_domain_window_enable API.
+4. Add domain attributes for FSL PAMU driver.
+5. PAMU driver and IOMMU API implementation.
 
->  drivers/iommu/iommu.c |   28 ++++++++++++++++++++++++++++
->  include/linux/iommu.h |    1 +
->  2 files changed, 29 insertions(+)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 1065a1a..531cbb5 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -204,6 +204,34 @@ again:
->  }
->  EXPORT_SYMBOL_GPL(iommu_group_alloc);
->  
-> +struct iommu_group *iommu_group_get_by_id(int id)
-> +{
-> +	struct kobject *group_kobj;
-> +	struct iommu_group *grp;
+This patch set is based on the master branch (3.9-rc2) of Linus Torvald's git tree.
 
-This is named "group" everywhere else in this file.
+Varun Sethi (5):
+  Make iova u64 in the iommu_iova_to_phys API.
+  Add iommu domain pointer to device archdata
+  Add the window permission flag as a parameter to iommu_window_enable
+  API.
+  Add addition iommu attributes required by the PAMU driver.
+  FSL PAMU driver.
 
-> +	const char *name;
-> +
-> +	if (!iommu_group_kset)
-> +		return NULL;
-> +
-> +	name = kasprintf(GFP_KERNEL, "%d", id);
-> +	if (!name)
-> +		return NULL;
-> +
-> +	group_kobj = kset_find_obj(iommu_group_kset, name);
+ arch/powerpc/include/asm/device.h |    6 +
+ arch/powerpc/sysdev/fsl_pci.h     |    5 +
+ drivers/iommu/Kconfig             |    8 +
+ drivers/iommu/Makefile            |    1 +
+ drivers/iommu/amd_iommu.c         |    2 +-
+ drivers/iommu/exynos-iommu.c      |    2 +-
+ drivers/iommu/fsl_pamu.c          | 1250 +++++++++++++++++++++++++++++++++++++
+ drivers/iommu/fsl_pamu.h          |  405 ++++++++++++
+ drivers/iommu/fsl_pamu_domain.c   | 1134 +++++++++++++++++++++++++++++++++
+ drivers/iommu/fsl_pamu_domain.h   |   85 +++
+ drivers/iommu/intel-iommu.c       |    2 +-
+ drivers/iommu/iommu.c             |    8 +-
+ drivers/iommu/msm_iommu.c         |    2 +-
+ drivers/iommu/omap-iommu.c        |    2 +-
+ drivers/iommu/shmobile-iommu.c    |    2 +-
+ drivers/iommu/tegra-gart.c        |    2 +-
+ drivers/iommu/tegra-smmu.c        |    2 +-
+ include/linux/iommu.h             |   51 ++-
+ 18 files changed, 2948 insertions(+), 21 deletions(-)
+ create mode 100644 drivers/iommu/fsl_pamu.c
+ create mode 100644 drivers/iommu/fsl_pamu.h
+ create mode 100644 drivers/iommu/fsl_pamu_domain.c
+ create mode 100644 drivers/iommu/fsl_pamu_domain.h
 
-This does a kobject_get on group->kobj
-
-> +	kfree(name);
-> +
-> +	if (!group_kobj)
-> +		return NULL;
-> +
-> +	grp = container_of(group_kobj, struct iommu_group, kobj);
-> +	BUG_ON(grp->id != id);
-> +
-
-Here you want to exchange one reference for another, so first do the
-get:
-
-> +	kobject_get(grp->devices_kobj);
-
-Now you need to release the get from the find:
-
-kobject_put(&group->kobj)
-
-> +
-> +	return grp;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_group_get_by_id);
-> +
->  /**
->   * iommu_group_get_iommudata - retrieve iommu_data registered for a group
->   * @group: the group
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index f3b99e1..00e5d7d 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -113,6 +113,7 @@ struct iommu_ops {
->  extern int bus_set_iommu(struct bus_type *bus, struct iommu_ops *ops);
->  extern bool iommu_present(struct bus_type *bus);
->  extern struct iommu_domain *iommu_domain_alloc(struct bus_type *bus);
-> +extern struct iommu_group *iommu_group_get_by_id(int id);
->  extern void iommu_domain_free(struct iommu_domain *domain);
->  extern int iommu_attach_device(struct iommu_domain *domain,
->  			       struct device *dev);
+-- 
+1.7.4.1
