@@ -1,14 +1,15 @@
 From: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] iommu: add a function to find an iommu group by id
-Date: Mon, 25 Mar 2013 11:07:26 -0400
-Message-ID: <5150682E.6040900@redhat.com>
-References: <1364167429-6432-1-git-send-email-aik@ozlabs.ru>
-	<1364221712.24132.632.camel@bling.home>
+Subject: Re: [PATCH 1/5 v10] iommu/fsl: Make iova u64 in the iommu_iova_to_phys
+	API.
+Date: Mon, 25 Mar 2013 11:07:45 -0400
+Message-ID: <51506841.4090104@redhat.com>
+References: <1363991700-21454-1-git-send-email-Varun.Sethi@freescale.com>
+	<1363991700-21454-3-git-send-email-Varun.Sethi@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1364221712.24132.632.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+In-Reply-To: <1363991700-21454-3-git-send-email-Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,95 +19,183 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 03/25/2013 10:28 AM, Alex Williamson wrote:
-> On Mon, 2013-03-25 at 10:23 +1100, Alexey Kardashevskiy wrote:
->> As IOMMU groups are exposed to the user space by their numbers,
->> the user space can use them in various kernel APIs so the kernel
->> might need an API to find a group by its ID.
->>
->> As an example, QEMU VFIO on PPC64 platform needs it to associate
->> a logical bus number (LIOBN) with a specific IOMMU group in order
->> to support in-kernel handling of DMA map/unmap requests.
->>
->> The patch adds the iommu_group_get_by_id(id) function which performs
->> such search.
->
-> Subject: [PATCH v3]....
->
-> v2 was the last one, where's the changelog for v3?
->> v2: fixed reference counting.
->>
-and changed function name...
+I agree that unsigned long was an improper choice for iova's,
+but why aren't they dma_addr_t ? ... an iova is a dma-addr, just
+a 'virtual' one wrt phys-addr.
 
->> Signed-off-by: Alexey Kardashevskiy<aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
->> ---
+On 03/22/2013 06:34 PM, Varun Sethi wrote:
+> This is required in case of PAMU, as it can support a window size of up
+> to 64G (even on 32bit).
 >
-> Acked-by: Alex Williamson<alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> Signed-off-by: Varun Sethi<Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+> ---
+> - no change in v10.
 >
->>   drivers/iommu/iommu.c |   29 +++++++++++++++++++++++++++++
->>   include/linux/iommu.h |    1 +
->>   2 files changed, 30 insertions(+)
->>
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index 1065a1a..0de83eb 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -204,6 +204,35 @@ again:
->>   }
->>   EXPORT_SYMBOL_GPL(iommu_group_alloc);
->>
->> +struct iommu_group *iommu_group_get_by_id(int id)
->> +{
->> +	struct kobject *group_kobj;
->> +	struct iommu_group *group;
->> +	const char *name;
->> +
->> +	if (!iommu_group_kset)
->> +		return NULL;
->> +
->> +	name = kasprintf(GFP_KERNEL, "%d", id);
->> +	if (!name)
->> +		return NULL;
->> +
->> +	group_kobj = kset_find_obj(iommu_group_kset, name);
->> +	kfree(name);
->> +
->> +	if (!group_kobj)
->> +		return NULL;
->> +
->> +	group = container_of(group_kobj, struct iommu_group, kobj);
->> +	BUG_ON(group->id != id);
->> +
->> +	kobject_get(group->devices_kobj);
->> +	kobject_put(&group->kobj);
->> +
->> +	return group;
->> +}
->> +EXPORT_SYMBOL_GPL(iommu_group_get_by_id);
->> +
->>   /**
->>    * iommu_group_get_iommudata - retrieve iommu_data registered for a group
->>    * @group: the group
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index f3b99e1..00e5d7d 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
->> @@ -113,6 +113,7 @@ struct iommu_ops {
->>   extern int bus_set_iommu(struct bus_type *bus, struct iommu_ops *ops);
->>   extern bool iommu_present(struct bus_type *bus);
->>   extern struct iommu_domain *iommu_domain_alloc(struct bus_type *bus);
->> +extern struct iommu_group *iommu_group_get_by_id(int id);
->>   extern void iommu_domain_free(struct iommu_domain *domain);
->>   extern int iommu_attach_device(struct iommu_domain *domain,
->>   			       struct device *dev);
+>   drivers/iommu/amd_iommu.c      |    2 +-
+>   drivers/iommu/exynos-iommu.c   |    2 +-
+>   drivers/iommu/intel-iommu.c    |    2 +-
+>   drivers/iommu/iommu.c          |    3 +--
+>   drivers/iommu/msm_iommu.c      |    2 +-
+>   drivers/iommu/omap-iommu.c     |    2 +-
+>   drivers/iommu/shmobile-iommu.c |    2 +-
+>   drivers/iommu/tegra-gart.c     |    2 +-
+>   drivers/iommu/tegra-smmu.c     |    2 +-
+>   include/linux/iommu.h          |    9 +++------
+>   10 files changed, 12 insertions(+), 16 deletions(-)
 >
+> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> index 98f555d..42f6a71 100644
+> --- a/drivers/iommu/amd_iommu.c
+> +++ b/drivers/iommu/amd_iommu.c
+> @@ -3412,7 +3412,7 @@ static size_t amd_iommu_unmap(struct iommu_domain *dom, unsigned long iova,
+>   }
 >
+>   static phys_addr_t amd_iommu_iova_to_phys(struct iommu_domain *dom,
+> -					  unsigned long iova)
+> +					  u64 iova)
+>   {
+>   	struct protection_domain *domain = dom->priv;
+>   	unsigned long offset_mask;
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> index 238a3ca..541e81b 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+> @@ -1027,7 +1027,7 @@ done:
+>   }
 >
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+>   static phys_addr_t exynos_iommu_iova_to_phys(struct iommu_domain *domain,
+> -					  unsigned long iova)
+> +					  u64 iova)
+>   {
+>   	struct exynos_iommu_domain *priv = domain->priv;
+>   	unsigned long *entry;
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 0099667..c9663ac 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -4111,7 +4111,7 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
+>   }
+>
+>   static phys_addr_t intel_iommu_iova_to_phys(struct iommu_domain *domain,
+> -					    unsigned long iova)
+> +					    u64 iova)
+>   {
+>   	struct dmar_domain *dmar_domain = domain->priv;
+>   	struct dma_pte *pte;
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index b972d43..39106ec 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -706,8 +706,7 @@ void iommu_detach_group(struct iommu_domain *domain, struct iommu_group *group)
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_detach_group);
+>
+> -phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain,
+> -			       unsigned long iova)
+> +phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, u64 iova)
+>   {
+>   	if (unlikely(domain->ops->iova_to_phys == NULL))
+>   		return 0;
+> diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+> index 6a8870a..fcd14a3 100644
+> --- a/drivers/iommu/msm_iommu.c
+> +++ b/drivers/iommu/msm_iommu.c
+> @@ -554,7 +554,7 @@ fail:
+>   }
+>
+>   static phys_addr_t msm_iommu_iova_to_phys(struct iommu_domain *domain,
+> -					  unsigned long va)
+> +					  u64 va)
+>   {
+>   	struct msm_priv *priv;
+>   	struct msm_iommu_drvdata *iommu_drvdata;
+> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+> index 6ac02fa..102ae56 100644
+> --- a/drivers/iommu/omap-iommu.c
+> +++ b/drivers/iommu/omap-iommu.c
+> @@ -1219,7 +1219,7 @@ static void omap_iommu_domain_destroy(struct iommu_domain *domain)
+>   }
+>
+>   static phys_addr_t omap_iommu_iova_to_phys(struct iommu_domain *domain,
+> -					  unsigned long da)
+> +					  u64 da)
+>   {
+>   	struct omap_iommu_domain *omap_domain = domain->priv;
+>   	struct omap_iommu *oiommu = omap_domain->iommu_dev;
+> diff --git a/drivers/iommu/shmobile-iommu.c b/drivers/iommu/shmobile-iommu.c
+> index b6e8b57..9216802 100644
+> --- a/drivers/iommu/shmobile-iommu.c
+> +++ b/drivers/iommu/shmobile-iommu.c
+> @@ -296,7 +296,7 @@ done:
+>   }
+>
+>   static phys_addr_t shmobile_iommu_iova_to_phys(struct iommu_domain *domain,
+> -					       unsigned long iova)
+> +					       u64 iova)
+>   {
+>   	struct shmobile_iommu_domain *sh_domain = domain->priv;
+>   	uint32_t l1entry = 0, l2entry = 0;
+> diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
+> index 8643757..17179c0 100644
+> --- a/drivers/iommu/tegra-gart.c
+> +++ b/drivers/iommu/tegra-gart.c
+> @@ -279,7 +279,7 @@ static size_t gart_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+>   }
+>
+>   static phys_addr_t gart_iommu_iova_to_phys(struct iommu_domain *domain,
+> -					   unsigned long iova)
+> +					   u64 iova)
+>   {
+>   	struct gart_device *gart = domain->priv;
+>   	unsigned long pte;
+> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+> index b34e5fd..eef9460 100644
+> --- a/drivers/iommu/tegra-smmu.c
+> +++ b/drivers/iommu/tegra-smmu.c
+> @@ -757,7 +757,7 @@ static size_t smmu_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+>   }
+>
+>   static phys_addr_t smmu_iommu_iova_to_phys(struct iommu_domain *domain,
+> -					   unsigned long iova)
+> +					   u64 iova)
+>   {
+>   	struct smmu_as *as = domain->priv;
+>   	unsigned long *pte;
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index ba3b8a9..576cc19 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -91,8 +91,7 @@ struct iommu_ops {
+>   		   phys_addr_t paddr, size_t size, int prot);
+>   	size_t (*unmap)(struct iommu_domain *domain, unsigned long iova,
+>   		     size_t size);
+> -	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain,
+> -				    unsigned long iova);
+> +	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain, u64 iova);
+>   	int (*domain_has_cap)(struct iommu_domain *domain,
+>   			      unsigned long cap);
+>   	int (*add_device)(struct device *dev);
+> @@ -134,8 +133,7 @@ extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
+>   		     phys_addr_t paddr, size_t size, int prot);
+>   extern size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+>   		       size_t size);
+> -extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain,
+> -				      unsigned long iova);
+> +extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, u64 iova);
+>   extern int iommu_domain_has_cap(struct iommu_domain *domain,
+>   				unsigned long cap);
+>   extern void iommu_set_fault_handler(struct iommu_domain *domain,
+> @@ -267,8 +265,7 @@ static inline void iommu_domain_window_disable(struct iommu_domain *domain,
+>   {
+>   }
+>
+> -static inline phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain,
+> -					     unsigned long iova)
+> +static inline phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, u64 iova)
+>   {
+>   	return 0;
+>   }
