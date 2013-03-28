@@ -1,8 +1,8 @@
 From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: [PATCH 1/5 v11] iommu/fsl: Make iova dma_addr_t in the
-	iommu_iova_to_phys API.
-Date: Fri, 29 Mar 2013 01:23:58 +0530
-Message-ID: <1364500442-20927-2-git-send-email-Varun.Sethi@freescale.com>
+Subject: [PATCH 4/5 v11] iommu/fsl: Add additional iommu attributes required
+	by the PAMU driver.
+Date: Fri, 29 Mar 2013 01:24:01 +0530
+Message-ID: <1364500442-20927-5-git-send-email-Varun.Sethi@freescale.com>
 References: <1364500442-20927-1-git-send-email-Varun.Sethi@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,177 +22,76 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, stuart.yoder-KZfg59tc24xl57MId
 Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This is required in case of PAMU, as it can support a window size of up
-to 64G (even on 32bit). 
+Added the following domain attributes for the FSL PAMU driver:
+1. Added new iommu stash attribute, which allows setting of the
+   LIODN specific stash id parameter through IOMMU API.
+2. Added an attribute for enabling/disabling DMA to a particular
+   memory window.
+3. Added domain attribute to check for PAMUV1 specific constraints.
 
 Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 ---
-changes in v11:
-- Made iova dma_addr_t instead of u64.
+- no change in v11.
 - no change in v10.
- drivers/iommu/amd_iommu.c      |    2 +-
- drivers/iommu/exynos-iommu.c   |    2 +-
- drivers/iommu/intel-iommu.c    |    2 +-
- drivers/iommu/iommu.c          |    3 +--
- drivers/iommu/msm_iommu.c      |    2 +-
- drivers/iommu/omap-iommu.c     |    2 +-
- drivers/iommu/shmobile-iommu.c |    2 +-
- drivers/iommu/tegra-gart.c     |    2 +-
- drivers/iommu/tegra-smmu.c     |    2 +-
- include/linux/iommu.h          |    9 +++------
- 10 files changed, 12 insertions(+), 16 deletions(-)
+ include/linux/iommu.h |   35 +++++++++++++++++++++++++++++++++++
+ 1 files changed, 35 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 98f555d..ee5431d 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -3412,7 +3412,7 @@ static size_t amd_iommu_unmap(struct iommu_domain *dom, unsigned long iova,
- }
- 
- static phys_addr_t amd_iommu_iova_to_phys(struct iommu_domain *dom,
--					  unsigned long iova)
-+					  dma_addr_t iova)
- {
- 	struct protection_domain *domain = dom->priv;
- 	unsigned long offset_mask;
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 238a3ca..3f32d64 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -1027,7 +1027,7 @@ done:
- }
- 
- static phys_addr_t exynos_iommu_iova_to_phys(struct iommu_domain *domain,
--					  unsigned long iova)
-+					  dma_addr_t iova)
- {
- 	struct exynos_iommu_domain *priv = domain->priv;
- 	unsigned long *entry;
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 0099667..6e0b9ff 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -4111,7 +4111,7 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
- }
- 
- static phys_addr_t intel_iommu_iova_to_phys(struct iommu_domain *domain,
--					    unsigned long iova)
-+					    dma_addr_t iova)
- {
- 	struct dmar_domain *dmar_domain = domain->priv;
- 	struct dma_pte *pte;
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index b972d43..f730ed9 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -706,8 +706,7 @@ void iommu_detach_group(struct iommu_domain *domain, struct iommu_group *group)
- }
- EXPORT_SYMBOL_GPL(iommu_detach_group);
- 
--phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain,
--			       unsigned long iova)
-+phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
- {
- 	if (unlikely(domain->ops->iova_to_phys == NULL))
- 		return 0;
-diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index 6a8870a..8ab4f41 100644
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -554,7 +554,7 @@ fail:
- }
- 
- static phys_addr_t msm_iommu_iova_to_phys(struct iommu_domain *domain,
--					  unsigned long va)
-+					  dma_addr_t va)
- {
- 	struct msm_priv *priv;
- 	struct msm_iommu_drvdata *iommu_drvdata;
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index 6ac02fa..e02e5d7 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -1219,7 +1219,7 @@ static void omap_iommu_domain_destroy(struct iommu_domain *domain)
- }
- 
- static phys_addr_t omap_iommu_iova_to_phys(struct iommu_domain *domain,
--					  unsigned long da)
-+					  dma_addr_t da)
- {
- 	struct omap_iommu_domain *omap_domain = domain->priv;
- 	struct omap_iommu *oiommu = omap_domain->iommu_dev;
-diff --git a/drivers/iommu/shmobile-iommu.c b/drivers/iommu/shmobile-iommu.c
-index b6e8b57..d572863 100644
---- a/drivers/iommu/shmobile-iommu.c
-+++ b/drivers/iommu/shmobile-iommu.c
-@@ -296,7 +296,7 @@ done:
- }
- 
- static phys_addr_t shmobile_iommu_iova_to_phys(struct iommu_domain *domain,
--					       unsigned long iova)
-+					       dma_addr_t iova)
- {
- 	struct shmobile_iommu_domain *sh_domain = domain->priv;
- 	uint32_t l1entry = 0, l2entry = 0;
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index 8643757..4aec8be 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -279,7 +279,7 @@ static size_t gart_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
- }
- 
- static phys_addr_t gart_iommu_iova_to_phys(struct iommu_domain *domain,
--					   unsigned long iova)
-+					   dma_addr_t iova)
- {
- 	struct gart_device *gart = domain->priv;
- 	unsigned long pte;
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index b34e5fd..bc9b599 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -757,7 +757,7 @@ static size_t smmu_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
- }
- 
- static phys_addr_t smmu_iommu_iova_to_phys(struct iommu_domain *domain,
--					   unsigned long iova)
-+					   dma_addr_t iova)
- {
- 	struct smmu_as *as = domain->priv;
- 	unsigned long *pte;
 diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index ba3b8a9..bb0a0fc 100644
+index 2727810..af8f996 100644
 --- a/include/linux/iommu.h
 +++ b/include/linux/iommu.h
-@@ -91,8 +91,7 @@ struct iommu_ops {
- 		   phys_addr_t paddr, size_t size, int prot);
- 	size_t (*unmap)(struct iommu_domain *domain, unsigned long iova,
- 		     size_t size);
--	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain,
--				    unsigned long iova);
-+	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain, dma_addr_t iova);
- 	int (*domain_has_cap)(struct iommu_domain *domain,
- 			      unsigned long cap);
- 	int (*add_device)(struct device *dev);
-@@ -134,8 +133,7 @@ extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
- 		     phys_addr_t paddr, size_t size, int prot);
- extern size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova,
- 		       size_t size);
--extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain,
--				      unsigned long iova);
-+extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova);
- extern int iommu_domain_has_cap(struct iommu_domain *domain,
- 				unsigned long cap);
- extern void iommu_set_fault_handler(struct iommu_domain *domain,
-@@ -267,8 +265,7 @@ static inline void iommu_domain_window_disable(struct iommu_domain *domain,
- {
- }
+@@ -40,6 +40,25 @@ struct notifier_block;
+ typedef int (*iommu_fault_handler_t)(struct iommu_domain *,
+ 			struct device *, unsigned long, int, void *);
  
--static inline phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain,
--					     unsigned long iova)
-+static inline phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
- {
- 	return 0;
- }
++/* cache stash targets */
++enum stash_target {
++	IOMMU_ATTR_CACHE_L1 = 1,
++	IOMMU_ATTR_CACHE_L2,
++	IOMMU_ATTR_CACHE_L3,
++};
++
++/* This attribute corresponds to IOMMUs capable of generating
++ * a stash transaction. A stash transaction is typically a
++ * hardware initiated prefetch of data from memory to cache.
++ * This attribute allows configuring stashig specific parameters
++ * in the IOMMU hardware.
++ */
++
++struct iommu_stash_attribute {
++	u32 	cpu;	/* cpu number */
++	u32 	cache;	/* cache to stash to: L1,L2,L3 */
++};
++
+ struct iommu_domain_geometry {
+ 	dma_addr_t aperture_start; /* First address that can be mapped    */
+ 	dma_addr_t aperture_end;   /* Last address that can be mapped     */
+@@ -57,10 +76,26 @@ struct iommu_domain {
+ #define IOMMU_CAP_CACHE_COHERENCY	0x1
+ #define IOMMU_CAP_INTR_REMAP		0x2	/* isolates device intrs */
+ 
++/*
++ * Following constraints are specifc to PAMUV1:
++ *  -aperture must be power of 2, and naturally aligned
++ *  -number of windows must be power of 2, and address space size
++ *   of each window is determined by aperture size / # of windows
++ *  -the actual size of the mapped region of a window must be power
++ *   of 2 starting with 4KB and physical address must be naturally
++ *   aligned.
++ * DOMAIN_ATTR_FSL_PAMUV1 corresponds to the above mentioned contraints.
++ * The caller can invoke iommu_domain_get_attr to check if the underlying
++ * iommu implementation supports these constraints.
++ */
++
+ enum iommu_attr {
+ 	DOMAIN_ATTR_GEOMETRY,
+ 	DOMAIN_ATTR_PAGING,
+ 	DOMAIN_ATTR_WINDOWS,
++	DOMAIN_ATTR_PAMU_STASH,
++	DOMAIN_ATTR_PAMU_ENABLE,
++	DOMAIN_ATTR_FSL_PAMUV1,
+ 	DOMAIN_ATTR_MAX,
+ };
+ 
 -- 
 1.7.4.1
