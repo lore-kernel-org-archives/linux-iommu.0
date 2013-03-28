@@ -1,55 +1,71 @@
-From: <suravee.suthikulpanit@amd.com>
-Subject: [PATCH 3/3] iommu/amd: Re-enable IOMMU event log interrupt after handling.
-Date: Wed, 27 Mar 2013 18:51:52 -0500
-Message-ID: <1364428312-2611-1-git-send-email-suravee.suthikulpanit@amd.com>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: [PATCH 0/5 v11] iommu/fsl: Freescale PAMU driver and IOMMU API
+	implementation.
+Date: Fri, 29 Mar 2013 01:23:57 +0530
+Message-ID: <1364500442-20927-1-git-send-email-Varun.Sethi@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, joro@8bytes.org
-Cc: linux-kernel@vger.kernel.org, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org
+Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+This patchset provides the Freescale PAMU (Peripheral Access Management Unit) driver
+and the corresponding IOMMU API implementation. PAMU is the IOMMU present on Freescale
+QorIQ platforms. PAMU can authorize memory access, remap the memory address, and remap 
+the I/O transaction type.
 
-Current driver does not clear the IOMMU event log interrupt bit
-in the IOMMU status register after processing an interrupt.
-This causes the IOMMU hardware to generate event log interrupt only once.
-This has been observed in both IOMMU v1 and V2 hardware.
-This patch clears the bit by writing 1 to bit 1 of the IOMMU
-status register (MMIO Offset 2020h)
+This set consists of the following patches:
+1.  Make iova dma_addr_t in the iommu_iova_to_phys API.
+2. Addition of new field in the device (powerpc) archdata structure for storing iommu domain information
+   pointer.
+3. Add window permission flags in the iommu_domain_window_enable API.
+4. Add domain attributes for FSL PAMU driver.
+5. PAMU driver and IOMMU API implementation.
 
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
----
- drivers/iommu/amd_iommu.c       |    3 +++
- drivers/iommu/amd_iommu_types.h |    1 +
- 2 files changed, 4 insertions(+)
+This patch set is based on the next branch Joerg's iommu git tree.
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 30ac0cb..13a4f63 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -809,6 +809,9 @@ static void iommu_poll_events(struct amd_iommu *iommu)
- 	u32 head, tail;
- 	unsigned long flags;
- 
-+	/* enable event interrupts again */
-+	writel(MMIO_STATUS_EVT_INT_MASK, iommu->mmio_base + MMIO_STATUS_OFFSET);
-+
- 	spin_lock_irqsave(&iommu->lock, flags);
- 
- 	head = readl(iommu->mmio_base + MMIO_EVT_HEAD_OFFSET);
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index e38ab43..083f98c 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -99,6 +99,7 @@
- #define PASID_MASK		0x000fffff
- 
- /* MMIO status bits */
-+#define MMIO_STATUS_EVT_INT_MASK	(1 << 1)
- #define MMIO_STATUS_COM_WAIT_INT_MASK	(1 << 2)
- #define MMIO_STATUS_PPR_INT_MASK	(1 << 6)
- 
+Varun Sethi (5):
+  Make iova dma_addr_t in the iommu_iova_to_phys API.
+  Add iommu domain pointer to device archdata
+  Add the window permission flag as a parameter to iommu_window_enable
+  API.
+  Add addition iommu attributes required by the PAMU driver.
+  FSL PAMU driver.
+
+ arch/powerpc/include/asm/device.h |    6 +
+ arch/powerpc/sysdev/fsl_pci.h     |    5 +
+ drivers/iommu/Kconfig             |    8 +
+ drivers/iommu/Makefile            |    1 +
+ drivers/iommu/amd_iommu.c         |    2 +-
+ drivers/iommu/exynos-iommu.c      |    2 +-
+ drivers/iommu/fsl_pamu.c          | 1269 +++++++++++++++++++++++++++++++++++++
+ drivers/iommu/fsl_pamu.h          |  405 ++++++++++++
+ drivers/iommu/fsl_pamu_domain.c   | 1137 +++++++++++++++++++++++++++++++++
+ drivers/iommu/fsl_pamu_domain.h   |   85 +++
+ drivers/iommu/intel-iommu.c       |    2 +-
+ drivers/iommu/iommu.c             |    8 +-
+ drivers/iommu/msm_iommu.c         |    2 +-
+ drivers/iommu/omap-iommu.c        |    2 +-
+ drivers/iommu/shmobile-iommu.c    |    2 +-
+ drivers/iommu/tegra-gart.c        |    2 +-
+ drivers/iommu/tegra-smmu.c        |    2 +-
+ include/linux/iommu.h             |   51 ++-
+ 18 files changed, 2970 insertions(+), 21 deletions(-)
+ create mode 100644 drivers/iommu/fsl_pamu.c
+ create mode 100644 drivers/iommu/fsl_pamu.h
+ create mode 100644 drivers/iommu/fsl_pamu_domain.c
+ create mode 100644 drivers/iommu/fsl_pamu_domain.h
+
 -- 
-1.7.10.4
+1.7.4.1
