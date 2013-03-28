@@ -1,12 +1,13 @@
 From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: [PATCH 0/5 v11] iommu/fsl: Freescale PAMU driver and IOMMU API
-	implementation.
-Date: Fri, 29 Mar 2013 01:23:57 +0530
-Message-ID: <1364500442-20927-1-git-send-email-Varun.Sethi@freescale.com>
+Subject: [PATCH 2/5 v11] powerpc: Add iommu domain pointer to device archdata
+Date: Fri, 29 Mar 2013 01:23:59 +0530
+Message-ID: <1364500442-20927-3-git-send-email-Varun.Sethi@freescale.com>
+References: <1364500442-20927-1-git-send-email-Varun.Sethi@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1364500442-20927-1-git-send-email-Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,52 +21,35 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, stuart.yoder-KZfg59tc24xl57MId
 Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patchset provides the Freescale PAMU (Peripheral Access Management Unit) driver
-and the corresponding IOMMU API implementation. PAMU is the IOMMU present on Freescale
-QorIQ platforms. PAMU can authorize memory access, remap the memory address, and remap 
-the I/O transaction type.
+Add an iommu domain pointer to device (powerpc) archdata.  Devices
+are attached to iommu domains and this pointer provides a mechanism
+to correlate between a device and the associated iommu domain.  This
+field is set when a device is attached to a domain.
 
-This set consists of the following patches:
-1.  Make iova dma_addr_t in the iommu_iova_to_phys API.
-2. Addition of new field in the device (powerpc) archdata structure for storing iommu domain information
-   pointer.
-3. Add window permission flags in the iommu_domain_window_enable API.
-4. Add domain attributes for FSL PAMU driver.
-5. PAMU driver and IOMMU API implementation.
+Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+---
+- no change in v11.
+- no change in v10.
+- Added CONFIG_IOMMU_API in v9.
+ arch/powerpc/include/asm/device.h |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
 
-This patch set is based on the next branch Joerg's iommu git tree.
-
-Varun Sethi (5):
-  Make iova dma_addr_t in the iommu_iova_to_phys API.
-  Add iommu domain pointer to device archdata
-  Add the window permission flag as a parameter to iommu_window_enable
-  API.
-  Add addition iommu attributes required by the PAMU driver.
-  FSL PAMU driver.
-
- arch/powerpc/include/asm/device.h |    6 +
- arch/powerpc/sysdev/fsl_pci.h     |    5 +
- drivers/iommu/Kconfig             |    8 +
- drivers/iommu/Makefile            |    1 +
- drivers/iommu/amd_iommu.c         |    2 +-
- drivers/iommu/exynos-iommu.c      |    2 +-
- drivers/iommu/fsl_pamu.c          | 1269 +++++++++++++++++++++++++++++++++++++
- drivers/iommu/fsl_pamu.h          |  405 ++++++++++++
- drivers/iommu/fsl_pamu_domain.c   | 1137 +++++++++++++++++++++++++++++++++
- drivers/iommu/fsl_pamu_domain.h   |   85 +++
- drivers/iommu/intel-iommu.c       |    2 +-
- drivers/iommu/iommu.c             |    8 +-
- drivers/iommu/msm_iommu.c         |    2 +-
- drivers/iommu/omap-iommu.c        |    2 +-
- drivers/iommu/shmobile-iommu.c    |    2 +-
- drivers/iommu/tegra-gart.c        |    2 +-
- drivers/iommu/tegra-smmu.c        |    2 +-
- include/linux/iommu.h             |   51 ++-
- 18 files changed, 2970 insertions(+), 21 deletions(-)
- create mode 100644 drivers/iommu/fsl_pamu.c
- create mode 100644 drivers/iommu/fsl_pamu.h
- create mode 100644 drivers/iommu/fsl_pamu_domain.c
- create mode 100644 drivers/iommu/fsl_pamu_domain.h
-
+diff --git a/arch/powerpc/include/asm/device.h b/arch/powerpc/include/asm/device.h
+index 77e97dd..2d5c1c5 100644
+--- a/arch/powerpc/include/asm/device.h
++++ b/arch/powerpc/include/asm/device.h
+@@ -28,6 +28,12 @@ struct dev_archdata {
+ 		void		*iommu_table_base;
+ 	} dma_data;
+ 
++	/* IOMMU domain information pointer. This would be set
++	 * when this device is attached to an iommu_domain.
++	 */
++#ifdef CONFIG_IOMMU_API
++	void			*iommu_domain;
++#endif
+ #ifdef CONFIG_SWIOTLB
+ 	dma_addr_t		max_direct_dma_addr;
+ #endif
 -- 
 1.7.4.1
