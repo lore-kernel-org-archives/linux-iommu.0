@@ -1,15 +1,15 @@
-From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [PATCH 1/3] iommu/amd: Add logic to decode AMD IOMMU event flag
-Date: Tue, 2 Apr 2013 16:40:37 +0200
-Message-ID: <20130402144037.GE5488@pd.tnic>
-References: <1364428283-2548-1-git-send-email-suravee.suthikulpanit@amd.com>
-	<20130402143335.GB15687@8bytes.org>
+From: Suravee Suthikulanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH 2/3] iommu/amd: Add IOMMU event log injection interface
+	for testing event flag decoding logic
+Date: Tue, 2 Apr 2013 09:44:55 -0500
+Message-ID: <515AEEE7.40903@amd.com>
+References: <1364428294-2579-1-git-send-email-suravee.suthikulpanit@amd.com>
+	<20130402143521.GC15687@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20130402143335.GB15687-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20130402143521.GC15687-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,31 +23,30 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Apr 02, 2013 at 04:33:36PM +0200, Joerg Roedel wrote:
-> Hi Suravee,
-> 
-> On Wed, Mar 27, 2013 at 06:51:23PM -0500, suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org wrote:
-> > From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-> > 
-> > Add logic to decode AMD IOMMU event flag based on information from AMD IOMMU specification.
-> > This should simplify debugging IOMMU errors.  Also, dump DTE information in additional cases.
-> 
-> The patch in general makes sense to have, but I have a couple of
-> comments.
+On 4/2/2013 9:35 AM, Joerg Roedel wrote:
+> On Wed, Mar 27, 2013 at 06:51:34PM -0500, suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org wrote:
+>> From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+>>
+>> Add IOMMU event log injection interface for testing event flag decoding logic.
+>> This interface allows users to specify device id, event flag, and event types via debugfs.
+>>
+>> echo 0x300 > /sys/kernel/debug/amd-iommu-evninj/devid // (e.g. Bus:Dev.fun 3:0.0)
+>> echo 0xfff > /sys/kernel/debug/amd-iommu-evninj/flags // (e.g. Specify flag value)
+>> echo 2 > /sys/kernel/debug/amd-iommu-evninj/type      // (e.g. for IO_PAGE_FAULT event)
+>>
+>> Once the event is injected, IOMMU driver will parse and print out the event information
+>> in kernel log (dmesg) with the various information depending on the types of event and flag
+>> specified.
+> Why is this needed? I think the risk of regressions in the
+> event-handling code is to low to justify the need for an event-injection
+> mechanism.
+You are right, it is not needed.  I create this interface to provide a 
+way for reviewers to test out how the report will be generated for each 
+type of events/errors.
 
-While you guys are at it, can someone fix this too pls (ASUS board with
-a PD on it).
-
-[    0.220342] [Firmware Bug]: AMD-Vi: IOAPIC[9] not in IVRS table
-[    0.220398] [Firmware Bug]: AMD-Vi: IOAPIC[10] not in IVRS table
-[    0.220451] [Firmware Bug]: AMD-Vi: No southbridge IOAPIC found in IVRS table
-[    0.220506] AMD-Vi: Disabling interrupt remapping due to BIOS Bug(s)
-
-Thanks.
-
--- 
-Regards/Gruss,
-    Boris.
-
-Sent from a fat crate under my desk. Formatting is fine.
---
+Suravee
+>
+> 	Joerg
+>
+>
+>
