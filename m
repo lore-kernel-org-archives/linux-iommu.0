@@ -1,16 +1,11 @@
-From: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 0/5 v11] iommu/fsl: Freescale PAMU driver and IOMMU API
-	implementation.
-Date: Tue, 2 Apr 2013 17:50:50 +0000
-Message-ID: <C5ECD7A89D1DC44195F34B25E172658D44E415@039-SN2MPN1-013.039d.mgd.msft.net>
-References: <1364500442-20927-1-git-send-email-Varun.Sethi@freescale.com>
-	<20130402162310.GJ15687@8bytes.org>
+From: <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: [PATCH V2] iommu/amd: Add logic to decode AMD IOMMU event flag
+Date: Tue, 2 Apr 2013 14:05:14 -0500
+Message-ID: <1364929514-3129-1-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130402162310.GJ15687-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,45 +15,269 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Bhushan Bharat-R65777 <R65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 
+Add logic to decode AMD IOMMU event flag based on information from AMD IOMMU specification.
+This should simplify debugging IOMMU errors.  Also, dump DTE information in additional cases.
 
-> -----Original Message-----
-> From: Joerg Roedel [mailto:joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org]
-> Sent: Tuesday, April 02, 2013 9:53 PM
-> To: Sethi Varun-B16395
-> Cc: Yoder Stuart-B08248; Wood Scott-B07421; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
-> foundation.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-
-> kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org;
-> benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org
-> Subject: Re: [PATCH 0/5 v11] iommu/fsl: Freescale PAMU driver and IOMMU
-> API implementation.
-> 
-> On Fri, Mar 29, 2013 at 01:23:57AM +0530, Varun Sethi wrote:
-> > This patchset provides the Freescale PAMU (Peripheral Access
-> > Management Unit) driver and the corresponding IOMMU API
-> > implementation. PAMU is the IOMMU present on Freescale QorIQ
-> > platforms. PAMU can authorize memory access, remap the memory address,
-> and remap the I/O transaction type.
-> >
-> > This set consists of the following patches:
-> > 1.  Make iova dma_addr_t in the iommu_iova_to_phys API.
-> > 2. Addition of new field in the device (powerpc) archdata structure for
-> storing iommu domain information
-> >    pointer.
-> > 3. Add window permission flags in the iommu_domain_window_enable API.
-> > 4. Add domain attributes for FSL PAMU driver.
-> > 5. PAMU driver and IOMMU API implementation.
-> 
-> Okay, I am about to apply patches 1 and 3 to a new ppc/pamu branch in my
-> tree.
-> 
-> As a general question, how did you test the IOMMU driver and what will
-> you do in the future to avoid regressions?
-> 
-I use a kernel module for testing the iommu_api support. The module allows for dynamic creation and deletion of iommu domains for the devices in the device tree. Also, the vfio support (under development) for Freescale SOCs with APMU hardware would depend on the PAMU driver.
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+---
+Changelog:
+V2:
+	* Fix printing format to reduce noise
+	* Use string table instead of switch/case
+	* Use pr_cont instead of printk
 
--Varun
+ drivers/iommu/amd_iommu.c |  170 ++++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 136 insertions(+), 34 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index b287ca3..3362678 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -601,6 +601,93 @@ static void amd_iommu_stats_init(void)
+  *
+  ****************************************************************************/
+ 
++struct _event_log_flags {
++	u32	gn:1, /* 16 */
++		nx:1, /* 17 */
++		us:1, /* 18 */
++		 i:1, /* 19 */
++		pr:1, /* 20 */
++		rw:1, /* 21 */
++		pe:1, /* 22 */
++		rz:1, /* 23 */
++		tr:1, /* 24 */
++		type:3, /* [27:25] */
++		_reserved_:20; /* Reserved */
++};
++
++static const char * const _type_field_encodings[] = {
++	/* 00 */"Reserved",
++	/* 01 */"Master Abort",
++	/* 10 */"Target Abort",
++	/* 11 */"Data Error",
++};
++
++static const char * const _invalid_transaction_desc[] = {
++	/* 000 */"Read request or non-posted write in the interrupt "
++		 "addres range",
++	/* 001 */"Pretranslated transaction received from an I/O device "
++		 "that has I=0 or V=0 in DTE",
++	/* 010 */"Port I/O space transaction received from an I/O device "
++		 "that has IoCtl=00b in DTE",
++	/* 011 */"Posted write to invalid address range",
++	/* 100 */"Invalid read request or non-posted write",
++	/* 101 */"Posted write to the interrupt/EOI range from an I/O "
++		 "device that has IntCtl=00b in DTE",
++	/* 110 */"Posted write to a reserved interrupt address range",
++	/* 111 */"Invalid transaction to the system management address range",
++};
++
++static const char * const _invalid_translation_desc[] = {
++	/* 000 */"Translation request received from an I/O device that has "
++		 "I=0, or has V=0, or has V=1 and TV=0 in DTE",
++	/* 001 */"Translation request in invalid address range",
++	/* 010 */"Invalid translation request",
++	/* 011 */"Reserved",
++	/* 100 */"Reserved",
++	/* 101 */"Reserved",
++	/* 110 */"Reserved",
++	/* 111 */"Reserved",
++};
++
++static void dump_flags(int flags, int ev_type)
++{
++	struct _event_log_flags *p = (struct _event_log_flags *) &flags;
++	u32 err_type = p->type;
++
++	pr_err("AMD-Vi: Flags details: %s, NX:%u, %s, %s, %s, %s, %s, %s, %s\n",
++		(p->gn ? "Use guest address" : "Use nested address"),
++		(p->nx),
++		(p->us ? "User privileges" : "Supervisor privileges"),
++		(p->i ? "Interrupt request" : "memory request"),
++		(p->pr ? "Page present or Interrupt remapped" :
++			"Page not present or Interrupt blocked"),
++		(p->rw ? "Write transaction" : "Read transaction"),
++		(p->pe ? "Does not have permission" : "Has permission"),
++		(p->rz ? "Reserv bit not zero" : "Illegal level encoding"),
++		(p->tr ? "Translation request" : "Transaction request"));
++
++	pr_err("AMD-Vi: Type of error: (0x%x) ", err_type);
++	if ((ev_type == EVENT_TYPE_DEV_TAB_ERR)  ||
++	    (ev_type == EVENT_TYPE_PAGE_TAB_ERR) ||
++	    (ev_type == EVENT_TYPE_CMD_HARD_ERR)) {
++		if (err_type < ARRAY_SIZE(_type_field_encodings)) {
++			pr_cont("%s\n",
++				_type_field_encodings[err_type]);
++		}
++	} else if (ev_type == EVENT_TYPE_INV_DEV_REQ) {
++		if (p->tr == 0) {
++			if (err_type < ARRAY_SIZE(_invalid_translation_desc))
++				pr_cont("%s\n",
++					_invalid_translation_desc[err_type]);
++		} else {
++			if (err_type < ARRAY_SIZE(_invalid_transaction_desc))
++				pr_cont("%s\n",
++					_invalid_transaction_desc[err_type]);
++		}
++	}
++	pr_err("AMD-Vi: (Note: Please refer to AMD IOMMU specification for details.)\n");
++}
++
+ static void dump_dte_entry(u16 devid)
+ {
+ 	int i;
+@@ -619,81 +706,95 @@ static void dump_command(unsigned long phys_addr)
+ 		pr_err("AMD-Vi: CMD[%d]: %08x\n", i, cmd->data[i]);
+ }
+ 
+-static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
++void amd_iommu_print_event(int type, int devid, int domid,
++			      int flags, u64 address)
+ {
+-	int type, devid, domid, flags;
+-	volatile u32 *event = __evt;
+-	int count = 0;
+-	u64 address;
+-
+-retry:
+-	type    = (event[1] >> EVENT_TYPE_SHIFT)  & EVENT_TYPE_MASK;
+-	devid   = (event[0] >> EVENT_DEVID_SHIFT) & EVENT_DEVID_MASK;
+-	domid   = (event[1] >> EVENT_DOMID_SHIFT) & EVENT_DOMID_MASK;
+-	flags   = (event[1] >> EVENT_FLAGS_SHIFT) & EVENT_FLAGS_MASK;
+-	address = (u64)(((u64)event[3]) << 32) | event[2];
+-
+-	if (type == 0) {
+-		/* Did we hit the erratum? */
+-		if (++count == LOOP_TIMEOUT) {
+-			pr_err("AMD-Vi: No event written to event log\n");
+-			return;
+-		}
+-		udelay(1);
+-		goto retry;
+-	}
+-
+-	printk(KERN_ERR "AMD-Vi: Event logged [");
++	pr_err("AMD-Vi: Event logged [");
+ 
+ 	switch (type) {
+ 	case EVENT_TYPE_ILL_DEV:
+-		printk("ILLEGAL_DEV_TABLE_ENTRY device=%02x:%02x.%x "
++		pr_cont("ILLEGAL_DEV_TABLE_ENTRY device=%02x:%02x.%x "
+ 		       "address=0x%016llx flags=0x%04x]\n",
+ 		       PCI_BUS(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 		       address, flags);
++		dump_flags(flags, type);
+ 		dump_dte_entry(devid);
+ 		break;
+ 	case EVENT_TYPE_IO_FAULT:
+-		printk("IO_PAGE_FAULT device=%02x:%02x.%x "
++		pr_cont("IO_PAGE_FAULT device=%02x:%02x.%x "
+ 		       "domain=0x%04x address=0x%016llx flags=0x%04x]\n",
+ 		       PCI_BUS(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 		       domid, address, flags);
++		dump_flags(flags, type);
++		dump_dte_entry(devid);
+ 		break;
+ 	case EVENT_TYPE_DEV_TAB_ERR:
+-		printk("DEV_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
++		pr_cont("DEV_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
+ 		       "address=0x%016llx flags=0x%04x]\n",
+ 		       PCI_BUS(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 		       address, flags);
++		dump_flags(flags, type);
+ 		break;
+ 	case EVENT_TYPE_PAGE_TAB_ERR:
+-		printk("PAGE_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
++		pr_cont("PAGE_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
+ 		       "domain=0x%04x address=0x%016llx flags=0x%04x]\n",
+ 		       PCI_BUS(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 		       domid, address, flags);
++		dump_flags(flags, type);
+ 		break;
+ 	case EVENT_TYPE_ILL_CMD:
+-		printk("ILLEGAL_COMMAND_ERROR address=0x%016llx]\n", address);
++		pr_cont("ILLEGAL_COMMAND_ERROR address=0x%016llx]\n", address);
+ 		dump_command(address);
+ 		break;
+ 	case EVENT_TYPE_CMD_HARD_ERR:
+-		printk("COMMAND_HARDWARE_ERROR address=0x%016llx "
++		pr_cont("COMMAND_HARDWARE_ERROR address=0x%016llx "
+ 		       "flags=0x%04x]\n", address, flags);
++		dump_flags(flags, type);
+ 		break;
+ 	case EVENT_TYPE_IOTLB_INV_TO:
+-		printk("IOTLB_INV_TIMEOUT device=%02x:%02x.%x "
++		pr_cont("IOTLB_INV_TIMEOUT device=%02x:%02x.%x "
+ 		       "address=0x%016llx]\n",
+ 		       PCI_BUS(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 		       address);
+ 		break;
+ 	case EVENT_TYPE_INV_DEV_REQ:
+-		printk("INVALID_DEVICE_REQUEST device=%02x:%02x.%x "
++		pr_cont("INVALID_DEVICE_REQUEST device=%02x:%02x.%x "
+ 		       "address=0x%016llx flags=0x%04x]\n",
+ 		       PCI_BUS(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 		       address, flags);
++		dump_flags(flags, type);
++		dump_dte_entry(devid);
+ 		break;
+ 	default:
+-		printk(KERN_ERR "UNKNOWN type=0x%02x]\n", type);
++		pr_cont("UNKNOWN type=0x%02x]\n", type);
+ 	}
++}
++
++static void iommu_handle_event(struct amd_iommu *iommu, void *__evt)
++{
++	int type, devid, domid, flags;
++	u32 *event = __evt;
++	int count = 0;
++	u64 address;
++
++retry:
++	type    = (event[1] >> EVENT_TYPE_SHIFT)  & EVENT_TYPE_MASK;
++	devid   = (event[0] >> EVENT_DEVID_SHIFT) & EVENT_DEVID_MASK;
++	domid   = (event[1] >> EVENT_DOMID_SHIFT) & EVENT_DOMID_MASK;
++	flags   = (event[1] >> EVENT_FLAGS_SHIFT) & EVENT_FLAGS_MASK;
++	address = (u64)(((u64)event[3]) << 32) | event[2];
++
++	if (type == 0) {
++		/* Did we hit the erratum? */
++		if (++count == LOOP_TIMEOUT) {
++			pr_err("AMD-Vi: No event written to event log\n");
++			return;
++		}
++		udelay(1);
++		goto retry;
++	}
++
++	amd_iommu_print_event(type, devid, domid, flags, address);
+ 
+ 	memset(__evt, 0, 4 * sizeof(u32));
+ }
+@@ -709,7 +810,7 @@ static void iommu_poll_events(struct amd_iommu *iommu)
+ 	tail = readl(iommu->mmio_base + MMIO_EVT_TAIL_OFFSET);
+ 
+ 	while (head != tail) {
+-		iommu_print_event(iommu, iommu->evt_buf + head);
++		iommu_handle_event(iommu, iommu->evt_buf + head);
+ 		head = (head + EVENT_ENTRY_SIZE) % iommu->evt_buf_size;
+ 	}
+ 
+@@ -3268,6 +3369,7 @@ static int __init alloc_passthrough_domain(void)
+ 
+ 	return 0;
+ }
++
+ static int amd_iommu_domain_init(struct iommu_domain *dom)
+ {
+ 	struct protection_domain *domain;
+-- 
+1.7.10.4
