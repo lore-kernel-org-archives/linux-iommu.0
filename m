@@ -1,51 +1,45 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 5/5 v11] iommu/fsl: Freescale PAMU driver and iommu
-	implementation.
-Date: Wed, 03 Apr 2013 12:01:31 -0600
-Message-ID: <1365012091.2882.252.camel@bling.home>
-References: <1364500442-20927-1-git-send-email-Varun.Sethi@freescale.com>
-	<1364500442-20927-6-git-send-email-Varun.Sethi@freescale.com>
-	<20130402161812.GI15687@8bytes.org>
+From: Stuart Yoder <b08248@gmail.com>
+Subject: Re: RFC: vfio API changes needed for powerpc
+Date: Wed, 3 Apr 2013 13:25:26 -0500
+Message-ID: <CALRxmdChSoKHaPTTiKjntkrntKLSN6zn0Z7e_WYYx1cKwk-cUQ@mail.gmail.com>
+References: <1364942646.24520.27@snotra>
+	<1364958751.2882.209.camel@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130402161812.GI15687-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <1364958751.2882.209.camel@bling.home>
+Sender: kvm-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: Scott Wood <scottwood@freescale.com>, Wood Scott-B07421 <B07421@freescale.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "agraf@suse.de" <agraf@suse.de>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, Yoder Stuart-B08248 <B08248@freescale.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Bhushan Bharat-R65777 <R65777@freescale.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2013-04-02 at 18:18 +0200, Joerg Roedel wrote:
-> Cc'ing Alex Williamson
-> 
-> Alex, can you please review the iommu-group part of this patch?
+>> >  Type1 is arbitrary.  It might as well be named "brown" and this one
+>> > can be
+>> > "blue".
+>>
+>> The difference is that "type1" seems to refer to hardware that can do
+>> arbitrary 4K page mappings, possibly constrained by an aperture but
+>> nothing else.  More than one IOMMU can reasonably fit that.  The odds
+>> that another IOMMU would have exactly the same restrictions as PAMU
+>> seem smaller in comparison.
+>>
+>> In any case, if you had to deal with some Intel-only quirk, would it
+>> make sense to call it a "type1 attribute"?  I'm not advocating one way
+>> or the other on whether an abstraction is viable here (though Stuart
+>> seems to think it's "highly unlikely anything but a PAMU will comply"),
+>> just that if it is to be abstracted rather than a hardware-specific
+>> interface, we need to document what is and is not part of the
+>> abstraction.  Otherwise a non-PAMU-specific user won't know what they
+>> can rely on, and someone adding support for a new windowed IOMMU won't
+>> know if theirs is close enough, or they need to introduce a "type3".
+>
+> So Alexey named the SPAPR IOMMU something related to spapr...
+> surprisingly enough.  I'm fine with that.  If you think it's unique
+> enough, name it something appropriately.  I haven't seen the code and
+> don't know the architecture sufficiently to have an opinion.
 
-Sure, it looks pretty reasonable.  AIUI, all PCI devices are below some
-kind of host bridge that is either new and supports partitioning or old
-and doesn't.  I don't know if that's a visibility or isolation
-requirement, perhaps PCI ACS-ish.  In the new host bridge case, each
-device gets a group.  This seems not to have any quirks for
-multifunction devices though.  On AMD and Intel IOMMUs we test
-multifunction device ACS support to determine whether all the functions
-should be in the same group.  Is there any reason to trust multifunction
-devices on PAMU?
+The only reason I suggested "type 2" is that I thought that was the
+convention...we would enumerate different iommus.   I think that
+calling it "pamu" is better and more clear.
 
-I also find it curious what happens to the iommu group of the host
-bridge.  In the partitionable case the host bridge group is removed, in
-the non-partitionable case the host bridge group becomes the group for
-the children, removing the host bridge.  It's unique to PAMU so far that
-these host bridges are even in an iommu group (x86 only adds pci
-devices), but I don't see it as necessarily wrong leaving it in either
-scenario.  Does it solve some problem to remove them from the groups?
-Thanks,
-
-Alex
+Stuart
