@@ -1,46 +1,59 @@
-From: Scott Wood <scottwood@freescale.com>
+From: Stuart Yoder <b08248@gmail.com>
 Subject: Re: RFC: vfio API changes needed for powerpc
-Date: Wed, 3 Apr 2013 13:39:43 -0500
-Message-ID: <1365014383.25627.5@snotra>
-References: <1364938725.2882.184.camel@bling.home>
-	<1364943035.24520.28@snotra>
-	<CALRxmdBjF12q1eQgsjD8UUdpqvjUUoRHWcms4yLYYuB_su5J3w@mail.gmail.com>
+Date: Wed, 3 Apr 2013 14:09:45 -0500
+Message-ID: <CALRxmdDHYp1+svjwDrhMc9w2p7H8t87PphEZ1t+97C-EHDR+3g@mail.gmail.com>
+References: <1364943035.24520.28@snotra>
+	<1364960240.2882.230.camel@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; delsp=Yes; format=Flowed
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <CALRxmdBjF12q1eQgsjD8UUdpqvjUUoRHWcms4yLYYuB_su5J3w@mail.gmail.com>
-	(from b08248@gmail.com on Wed Apr  3 13:32:26 2013)
-Content-Disposition: inline
+In-Reply-To: <1364960240.2882.230.camel@bling.home>
 Sender: kvm-owner@vger.kernel.org
-To: Stuart Yoder <b08248@gmail.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>, Wood Scott-B07421 <B07421@freescale.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "agraf@suse.de" <agraf@suse.de>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, Yoder Stuart-B08248 <B08248@freescale.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Bhushan Bharat-R65777 <R65777@freescale.com>
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: Scott Wood <scottwood@freescale.com>, Wood Scott-B07421 <B07421@freescale.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "agraf@suse.de" <agraf@suse.de>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, Yoder Stuart-B08248 <B08248@freescale.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Bhushan Bharat-R65777 <R65777@freescale.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/03/2013 01:32:26 PM, Stuart Yoder wrote:
-> On Tue, Apr 2, 2013 at 5:50 PM, Scott Wood <scottwood@freescale.com>  
-> wrote:
-> > On 04/02/2013 04:38:45 PM, Alex Williamson wrote:
-> >>
-> >> On Tue, 2013-04-02 at 16:08 -0500, Stuart Yoder wrote:
-> >> >     VFIO_IOMMU_MAP_MSI(iova, size)
-> >
-> >
-> > Not sure how you mean "size" to be used -- for MPIC it would be 4K  
-> per bank,
-> > and you can only map one bank at a time (which bank you're mapping  
-> should be
-> > a parameter, if only so that the kernel doesn't have to keep  
-> iteration state
-> > for you).
-> 
-> The intent was for user space to tell the kernel which windows to use
-> for MSI.   So I envisioned a total size of window-size *  
-> msi-bank-count.
+> Would is be possible for userspace to simply leave room for MSI bank
+> mapping (how much room could be determined by something like
+> VFIO_IOMMU_GET_MSI_BANK_COUNT) then document the API that userspace can
+> DMA_MAP starting at the 0x0 address of the aperture, growing up, and
+> VFIO will map banks on demand at the top of the aperture, growing down?
+> Wouldn't that avoid a lot of issues with userspace needing to know
+> anything about MSI banks (other than count) and coordinating irq numbers
+> and enabling handlers?
 
-Size doesn't tell the kernel *which* banks to use, only how many.  If  
-it already knows which banks are used by the group, then it also knows  
-how many are used.  And size is misleading because the mapping is not  
-generally going to be contiguous.
+This is basically option #A in the original proposals sent.   I like
+this approach, in that it
+is simpler and keeps user space mostly out of this...which is
+consistent with how things are done
+on x86.  User space just needs to know how many windows to leave at
+the top of the aperture.
+The kernel then has the flexibility to use those windows how it wants.
 
--Scott
+But one question, is when should the kernel actually map (and unmap)
+the MSI banks.   One thing we need to do is enable the aperture...and current
+thinking is that is done on the first DMA_MAP.   Similarly when the last mapping
+is unmapped we could also umap the MSI banks.
+
+Sequence would be something like:
+
+        VFIO_GROUP_SET_CONTAINER     // add groups to the container
+
+        VFIO_SET_IOMMU(VFIO_FSL_PAMU)    // set iommu model
+
+        cnt = VFIO_IOMMU_GET_MSI_BANK_COUNT    // returns max # of MSI banks
+
+        VFIO_IOMMU_SET_ATTR(ATTR_GEOMETRY) // set overall aperture
+
+        VFIO_IOMMU_SET_ATTR(ATTR_WINDOWS) // set # of windows,
+including MSI banks
+
+        VFIO_IOMMU_MAP_DMA    // map the guest's memory
+               ---> kernel enables aperture and maps needed MSI banks here
+
+        VFIO_DEVICE_SET_IRQS
+               ---> kernel sets actual MSI addr/data in physical
+device here (I think)
+
+
+Stuart
