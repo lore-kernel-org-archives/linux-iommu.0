@@ -1,13 +1,16 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: RFC: vfio API changes needed for powerpc
-Date: Tue, 02 Apr 2013 21:37:20 -0600
-Message-ID: <1364960240.2882.230.camel@bling.home>
-References: <1364943035.24520.28@snotra>
+From: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH 5/5 v11] iommu/fsl: Freescale PAMU driver and iommu
+	implementation.
+Date: Wed, 3 Apr 2013 05:12:16 +0000
+Message-ID: <C5ECD7A89D1DC44195F34B25E172658D45040D@039-SN2MPN1-013.039d.mgd.msft.net>
+References: <CAOZdJXWS50mpgMYu8o8K11yQFU6y-vNwxd9zPkqSd7euGt7XQg@mail.gmail.com>	(from
+	timur@tabi.org on Tue Apr 2 20:35:54 2013) <1364953950.8690.4@snotra>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1364943035.24520.28@snotra>
+In-Reply-To: <1364953950.8690.4@snotra>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,120 +20,58 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org" <qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org>, "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Bhushan Bharat-R65777 <R65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+To: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Timur Tabi <timur-N01EOCouUvQ@public.gmane.org>
+Cc: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, lkml <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Kumar Gala <galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2013-04-02 at 17:50 -0500, Scott Wood wrote:
-> On 04/02/2013 04:38:45 PM, Alex Williamson wrote:
-> > On Tue, 2013-04-02 at 16:08 -0500, Stuart Yoder wrote:
-> > > On Tue, Apr 2, 2013 at 3:57 PM, Scott Wood  
-> > <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org> wrote:
-> > > >> >    C.  Explicit mapping using normal DMA map.  The last idea  
-> > is that
-> > > >> >        we would introduce a new ioctl to give user-space an fd  
-> > to
-> > > >> >        the MSI bank, which could be mmapped.  The flow would be
-> > > >> >        something like this:
-> > > >> >           -for each group user space calls new ioctl
-> > > >> > VFIO_GROUP_GET_MSI_FD
-> > > >> >           -user space mmaps the fd, getting a vaddr
-> > > >> >           -user space does a normal DMA map for desired iova
-> > > >> >        This approach makes everything explicit, but adds a new  
-> > ioctl
-> > > >> >        applicable most likely only to the PAMU (type2 iommu).
-> > > >>
-> > > >> And the DMA_MAP of that mmap then allows userspace to select the  
-> > window
-> > > >> used?  This one seems like a lot of overhead, adding a new  
-> > ioctl, new
-> > > >> fd, mmap, special mapping path, etc.
-> > > >
-> > > >
-> > > > There's going to be special stuff no matter what.  This would  
-> > keep it
-> > > > separated from the IOMMU map code.
-> > > >
-> > > > I'm not sure what you mean by "overhead" here... the runtime  
-> > overhead of
-> > > > setting things up is not particularly relevant as long as it's  
-> > reasonable.
-> > > > If you mean development and maintenance effort, keeping things  
-> > well
-> > > > separated should help.
+
+
+> -----Original Message-----
+> From: Wood Scott-B07421
+> Sent: Wednesday, April 03, 2013 7:23 AM
+> To: Timur Tabi
+> Cc: Joerg Roedel; Sethi Varun-B16395; lkml; Kumar Gala; Yoder Stuart-
+> B08248; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Benjamin Herrenschmidt;
+> linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+> Subject: Re: [PATCH 5/5 v11] iommu/fsl: Freescale PAMU driver and iommu
+> implementation.
+> 
+> On 04/02/2013 08:35:54 PM, Timur Tabi wrote:
+> > On Tue, Apr 2, 2013 at 11:18 AM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> >
+> > > > +     panic("\n");
 > > >
-> > > We don't need to change DMA_MAP.  If we can simply add a new "type  
-> > 2"
-> > > ioctl that allows user space to set which windows are MSIs, it  
-> > seems vastly
-> > > less complex than an ioctl to supply a new fd, mmap of it, etc.
-> > >
-> > > So maybe 2 ioctls:
-> > >     VFIO_IOMMU_GET_MSI_COUNT
+> > > A kernel panic seems like an over-reaction to an access violation.
+> >
+> > We have no way to determining what code caused the violation, so we
+> > can't just kill the process.  I agree it seems like overkill, but what
+> > else should we do?  Does the IOMMU layer have a way for the IOMMU
+> > driver to stop the device that caused the problem?
 > 
-> Do you mean a count of actual MSIs or a count of MSI banks used by the  
-> whole VFIO group?
+> At a minimum, log a message and continue.  Probably turn off the LIODN,
+> at least if it continues to be noisy (otherwise we could get stuck in an
+> interrupt storm as you note).  Possibly let the user know somehow,
+> especially if it's a VFIO domain.
+[Sethi Varun-B16395] Can definitely log the message and disable the LIODN (to avoid an interrupt storm), but
+we definitely need a mechanism to inform vfio subsystem about the error. Also, disabling LIODN may not be a viable
+option with the new LIODN allocation scheme (where LIODN would be associated with a domain).
 
-I hope the latter, which would clarify how this is distinct from
-DEVICE_GET_IRQ_INFO.  Is hotplug even on the table?  Presumably
-dynamically adding a device could bring along additional MSI banks?
-
-> > >     VFIO_IOMMU_MAP_MSI(iova, size)
 > 
-> Not sure how you mean "size" to be used -- for MPIC it would be 4K per  
-> bank, and you can only map one bank at a time (which bank you're  
-> mapping should be a parameter, if only so that the kernel doesn't have  
-> to keep iteration state for you).
+> Don't take down the whole kernel.  It's not just overkill; it undermines
+> VFIO's efforts to make it safe for users to control devices.
 > 
-> > How are MSIs related to devices on PAMU?
+> > > Besides the device that caused the violation the system should still
+> > > work, no?
+> >
+> > Not really.  The PAMU was designed to add IOMMU support to legacy
+> > devices, which have no concept of an MMU.  If the PAMU detects an
+> > access violation, there's no way for the device to recover, because it
+> > has no idea that a violation has occurred.  It's going to keep on
+> > writing to bad data.
 > 
-> PAMU doesn't care about MSIs.  The relation of individual MSIs to a  
-> device is standard PCI stuff.  Each MSI bank (which is part of the  
-> MPIC, not PAMU) can hold numerous MSIs.  The VFIO user would want to  
-> map all MSI banks that are in use by any of the devices in the group.   
-> Ideally we'd let the VFIO grouping influence the allocation of MSIs.
-
-The current VFIO MSI support has the host handling everything about MSI.
-The user never programs an MSI vector to the physical device, they set
-up everything through ioctl.  On interrupt, we simply trigger an eventfd
-and leave it to things like KVM irqfd or QEMU to do the right thing in a
-virtual machine.
-
-Here the MSI vector has to go through a PAMU window to hit the correct
-MSI bank.  So that means it has some component of the iova involved,
-which we're proposing here is controlled by userspace (whether that
-vector uses an offset from 0x10000000 or 0x00000000 depending on which
-window slot is used to make the MSI bank).  I assume we're still working
-in a model where the physical interrupt fires into the host and a
-host-based interrupt handler triggers an eventfd, right?  So that means
-the vector also has host components so we trigger the correct ISR.  How
-is that coordinated?
-
-Would is be possible for userspace to simply leave room for MSI bank
-mapping (how much room could be determined by something like
-VFIO_IOMMU_GET_MSI_BANK_COUNT) then document the API that userspace can
-DMA_MAP starting at the 0x0 address of the aperture, growing up, and
-VFIO will map banks on demand at the top of the aperture, growing down?
-Wouldn't that avoid a lot of issues with userspace needing to know
-anything about MSI banks (other than count) and coordinating irq numbers
-and enabling handlers?
-
-> > On x86 MSI count is very
-> > device specific, which means it wold be a VFIO_DEVICE_* ioctl  
-> > (actually
-> > VFIO_DEVICE_GET_IRQ_INFO does this for us on x86).  The trouble with  
-> > it
-> > being a device ioctl is that you need to get the device FD, but the
-> > IOMMU protection needs to be established before you can get that... so
-> > there's an ordering problem if you need it from the device before
-> > configuring the IOMMU.  Thanks,
+> I think that's only the case for posted writes (or devices which fail to
+> take a hint and stop even after they see an I/O error).
 > 
-> What do you mean by "IOMMU protection needs to be established"?   
-> Wouldn't we just start with no mappings in place?
+[Sethi Varun-B16395] Even in the case where the guest driver detects a failure, it may not be able to fix the problem without intervention from the VFIO subsystem.
 
-If no mappings blocks all DMA, sure, that's fine.  Once the VFIO device
-FD is accessible by userspace we have to protect the host against DMA.
-If any IOMMU_SET_ATTR calls temporarily disable DMA protection, that
-could be exploitable.  Thanks,
-
-Alex
+-Varun
