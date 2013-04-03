@@ -1,103 +1,288 @@
-From: Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: Re: RFC: vfio API changes needed for powerpc
-Date: Tue, 2 Apr 2013 17:50:35 -0500
-Message-ID: <1364943035.24520.28@snotra>
-References: <1364938725.2882.184.camel@bling.home>
+From: <suravee.suthikulpanit@amd.com>
+Subject: [PATCH V3] iommu/amd: Add logic to decode AMD IOMMU event flag
+Date: Tue, 2 Apr 2013 19:06:50 -0500
+Message-ID: <1364947610-3327-1-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="Flowed"; DelSp="Yes"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1364938725.2882.184.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org> (from
-	alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org on Tue Apr  2 16:38:45 2013)
-Content-Disposition: inline
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org" <qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org>, "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Bhushan Bharat-R65777 <R65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, joro@8bytes.org
+Cc: linux-kernel@vger.kernel.org, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/02/2013 04:38:45 PM, Alex Williamson wrote:
-> On Tue, 2013-04-02 at 16:08 -0500, Stuart Yoder wrote:
-> > On Tue, Apr 2, 2013 at 3:57 PM, Scott Wood  
-> <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org> wrote:
-> > >> >    C.  Explicit mapping using normal DMA map.  The last idea  
-> is that
-> > >> >        we would introduce a new ioctl to give user-space an fd  
-> to
-> > >> >        the MSI bank, which could be mmapped.  The flow would be
-> > >> >        something like this:
-> > >> >           -for each group user space calls new ioctl
-> > >> > VFIO_GROUP_GET_MSI_FD
-> > >> >           -user space mmaps the fd, getting a vaddr
-> > >> >           -user space does a normal DMA map for desired iova
-> > >> >        This approach makes everything explicit, but adds a new  
-> ioctl
-> > >> >        applicable most likely only to the PAMU (type2 iommu).
-> > >>
-> > >> And the DMA_MAP of that mmap then allows userspace to select the  
-> window
-> > >> used?  This one seems like a lot of overhead, adding a new  
-> ioctl, new
-> > >> fd, mmap, special mapping path, etc.
-> > >
-> > >
-> > > There's going to be special stuff no matter what.  This would  
-> keep it
-> > > separated from the IOMMU map code.
-> > >
-> > > I'm not sure what you mean by "overhead" here... the runtime  
-> overhead of
-> > > setting things up is not particularly relevant as long as it's  
-> reasonable.
-> > > If you mean development and maintenance effort, keeping things  
-> well
-> > > separated should help.
-> >
-> > We don't need to change DMA_MAP.  If we can simply add a new "type  
-> 2"
-> > ioctl that allows user space to set which windows are MSIs, it  
-> seems vastly
-> > less complex than an ioctl to supply a new fd, mmap of it, etc.
-> >
-> > So maybe 2 ioctls:
-> >     VFIO_IOMMU_GET_MSI_COUNT
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 
-Do you mean a count of actual MSIs or a count of MSI banks used by the  
-whole VFIO group?
+Add logic to decode AMD IOMMU event flag based on information from AMD IOMMU specification.
+This should simplify debugging IOMMU errors.  Also, dump DTE information in additional cases.
 
-> >     VFIO_IOMMU_MAP_MSI(iova, size)
+This is an example:
+AMD-Vi: Event logged [IO_PAGE_FAULT device=51:00.0 domain=0x0000 address=0x0000000000000000 flags=0x0fff]
+AMD-Vi: Flags details: Guest NX=1 User Intr Present Write No-Perm Rsrv-Bit Translation
+AMD-Vi: Type of error: (0x7) 
+AMD-Vi: (Note: Please refer to AMD IOMMU specification for details.)
+AMD-Vi: DTE[0]: 6000003fa75e2403
+AMD-Vi: DTE[1]: 0000000000000014
+AMD-Vi: DTE[2]: 2000003fa5e09011
+AMD-Vi: DTE[3]: 0000000000000000
 
-Not sure how you mean "size" to be used -- for MPIC it would be 4K per  
-bank, and you can only map one bank at a time (which bank you're  
-mapping should be a parameter, if only so that the kernel doesn't have  
-to keep iteration state for you).
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+---
+Changelog:
+V3:
+	* Move comments to end of line
+	* Shorten the print out to be within one line
+V2:
+	* Fix printing format to reduce noise
+	* Use string table instead of switch/case
+	* Use pr_cont instead of printk
 
-> How are MSIs related to devices on PAMU?
+ drivers/iommu/amd_iommu.c |  171 ++++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 137 insertions(+), 34 deletions(-)
 
-PAMU doesn't care about MSIs.  The relation of individual MSIs to a  
-device is standard PCI stuff.  Each MSI bank (which is part of the  
-MPIC, not PAMU) can hold numerous MSIs.  The VFIO user would want to  
-map all MSI banks that are in use by any of the devices in the group.   
-Ideally we'd let the VFIO grouping influence the allocation of MSIs.
-
-> On x86 MSI count is very
-> device specific, which means it wold be a VFIO_DEVICE_* ioctl  
-> (actually
-> VFIO_DEVICE_GET_IRQ_INFO does this for us on x86).  The trouble with  
-> it
-> being a device ioctl is that you need to get the device FD, but the
-> IOMMU protection needs to be established before you can get that... so
-> there's an ordering problem if you need it from the device before
-> configuring the IOMMU.  Thanks,
-
-What do you mean by "IOMMU protection needs to be established"?   
-Wouldn't we just start with no mappings in place?
-
--Scott
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index b287ca3..593a1a3 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -601,6 +601,94 @@ static void amd_iommu_stats_init(void)
+  *
+  ****************************************************************************/
+ 
++struct _event_log_flags {
++	u32	gn:1,		/* 16 */
++		nx:1,		/* 17 */
++		us:1,		/* 18 */
++		 i:1,		/* 19 */
++		pr:1,		/* 20 */
++		rw:1,		/* 21 */
++		pe:1,		/* 22 */
++		rz:1,		/* 23 */
++		tr:1,		/* 24 */
++		type:3,		/* [27:25] */
++		_reserved_:20;	/* Reserved */
++};
++
++static const char * const _type_field_encodings[] = {
++	"Reserved",		/* 00 */
++	"Master Abort",		/* 01 */
++	"Target Abort",		/* 10 */
++	"Data Error",		/* 11 */
++};
++
++static const char * const _invalid_transaction_desc[] = {
++	"Read request or non-posted write in the interrupt "
++		 "addres range",				/* 000 */
++	"Pretranslated transaction received from an "
++		"I/O device that has I=0 or V=0 in DTE",	/* 001 */
++	"Port I/O space transaction received from an "
++		"I/O device that has IoCtl=00b in DTE",		/* 010 */
++	"Posted write to invalid address range",		/* 011 */
++	"Invalid read request or non-posted write",		/* 100 */
++	"Posted write to the interrupt/EOI range from an "
++		"I/O device that has IntCtl=00b in DTE",	/* 101 */
++	"Posted write to a reserved interrupt address range",	/* 110 */
++	"Invalid transaction to the system management "
++		"address range",				/* 111 */
++};
++
++static const char * const _invalid_translation_desc[] = {
++	"Translation request received from an I/O device "
++		"that has I=0, or has V=0, or has V=1 and "
++		"TV=0 in DTE",					/* 000 */
++	"Translation request in invalid address range",		/* 001 */
++	"Invalid translation request",				/* 010 */
++	"Reserved",						/* 011 */
++	"Reserved",						/* 100 */
++	"Reserved",						/* 101 */
++	"Reserved",						/* 110 */
++	"Reserved",						/* 111 */
++};
++
++static void dump_flags(int flags, int ev_type)
++{
++	struct _event_log_flags *p = (struct _event_log_flags *) &flags;
++	u32 err_type = p->type;
++
++	pr_err("AMD-Vi: Flags details: %s NX=%u %s %s %s %s %s %s %s\n",
++		(p->gn ? "Guest" : "Nested"),
++		(p->nx),
++		(p->us ? "User" : "Super"),
++		(p->i ? "Intr" : "Mem"),
++		(p->pr ? "Present" : "Absent"),
++		(p->rw ? "Write" : "Read"),
++		(p->pe ? "No-Perm" : "Has-Perm"),
++		(p->rz ? "Rsrv-Bit" : "Ill-Level"),
++		(p->tr ? "Translation" : "Transaction"));
++
++	pr_err("AMD-Vi: Type of error: (0x%x) ", err_type);
++	if ((ev_type == EVENT_TYPE_DEV_TAB_ERR)  ||
++	    (ev_type == EVENT_TYPE_PAGE_TAB_ERR) ||
++	    (ev_type == EVENT_TYPE_CMD_HARD_ERR)) {
++		if (err_type < ARRAY_SIZE(_type_field_encodings)) {
++			pr_cont("%s\n",
++				_type_field_encodings[err_type]);
++		}
++	} else if (ev_type == EVENT_TYPE_INV_DEV_REQ) {
++		if (p->tr == 0) {
++			if (err_type < ARRAY_SIZE(_invalid_translation_desc))
++				pr_cont("%s\n",
++					_invalid_translation_desc[err_type]);
++		} else {
++			if (err_type < ARRAY_SIZE(_invalid_transaction_desc))
++				pr_cont("%s\n",
++					_invalid_transaction_desc[err_type]);
++		}
++	}
++	pr_err("AMD-Vi: (Note: Please refer to AMD IOMMU specification for details.)\n");
++}
++
+ static void dump_dte_entry(u16 devid)
+ {
+ 	int i;
+@@ -619,81 +707,95 @@ static void dump_command(unsigned long phys_addr)
+ 		pr_err("AMD-Vi: CMD[%d]: %08x\n", i, cmd->data[i]);
+ }
+ 
+-static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
++void amd_iommu_print_event(int type, int devid, int domid,
++			      int flags, u64 address)
+ {
+-	int type, devid, domid, flags;
+-	volatile u32 *event = __evt;
+-	int count = 0;
+-	u64 address;
+-
+-retry:
+-	type    = (event[1] >> EVENT_TYPE_SHIFT)  & EVENT_TYPE_MASK;
+-	devid   = (event[0] >> EVENT_DEVID_SHIFT) & EVENT_DEVID_MASK;
+-	domid   = (event[1] >> EVENT_DOMID_SHIFT) & EVENT_DOMID_MASK;
+-	flags   = (event[1] >> EVENT_FLAGS_SHIFT) & EVENT_FLAGS_MASK;
+-	address = (u64)(((u64)event[3]) << 32) | event[2];
+-
+-	if (type == 0) {
+-		/* Did we hit the erratum? */
+-		if (++count == LOOP_TIMEOUT) {
+-			pr_err("AMD-Vi: No event written to event log\n");
+-			return;
+-		}
+-		udelay(1);
+-		goto retry;
+-	}
+-
+-	printk(KERN_ERR "AMD-Vi: Event logged [");
++	pr_err("AMD-Vi: Event logged [");
+ 
+ 	switch (type) {
+ 	case EVENT_TYPE_ILL_DEV:
+-		printk("ILLEGAL_DEV_TABLE_ENTRY device=%02x:%02x.%x "
++		pr_cont("ILLEGAL_DEV_TABLE_ENTRY device=%02x:%02x.%x "
+ 		       "address=0x%016llx flags=0x%04x]\n",
+ 		       PCI_BUS(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 		       address, flags);
++		dump_flags(flags, type);
+ 		dump_dte_entry(devid);
+ 		break;
+ 	case EVENT_TYPE_IO_FAULT:
+-		printk("IO_PAGE_FAULT device=%02x:%02x.%x "
++		pr_cont("IO_PAGE_FAULT device=%02x:%02x.%x "
+ 		       "domain=0x%04x address=0x%016llx flags=0x%04x]\n",
+ 		       PCI_BUS(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 		       domid, address, flags);
++		dump_flags(flags, type);
++		dump_dte_entry(devid);
+ 		break;
+ 	case EVENT_TYPE_DEV_TAB_ERR:
+-		printk("DEV_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
++		pr_cont("DEV_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
+ 		       "address=0x%016llx flags=0x%04x]\n",
+ 		       PCI_BUS(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 		       address, flags);
++		dump_flags(flags, type);
+ 		break;
+ 	case EVENT_TYPE_PAGE_TAB_ERR:
+-		printk("PAGE_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
++		pr_cont("PAGE_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
+ 		       "domain=0x%04x address=0x%016llx flags=0x%04x]\n",
+ 		       PCI_BUS(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 		       domid, address, flags);
++		dump_flags(flags, type);
+ 		break;
+ 	case EVENT_TYPE_ILL_CMD:
+-		printk("ILLEGAL_COMMAND_ERROR address=0x%016llx]\n", address);
++		pr_cont("ILLEGAL_COMMAND_ERROR address=0x%016llx]\n", address);
+ 		dump_command(address);
+ 		break;
+ 	case EVENT_TYPE_CMD_HARD_ERR:
+-		printk("COMMAND_HARDWARE_ERROR address=0x%016llx "
++		pr_cont("COMMAND_HARDWARE_ERROR address=0x%016llx "
+ 		       "flags=0x%04x]\n", address, flags);
++		dump_flags(flags, type);
+ 		break;
+ 	case EVENT_TYPE_IOTLB_INV_TO:
+-		printk("IOTLB_INV_TIMEOUT device=%02x:%02x.%x "
++		pr_cont("IOTLB_INV_TIMEOUT device=%02x:%02x.%x "
+ 		       "address=0x%016llx]\n",
+ 		       PCI_BUS(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 		       address);
+ 		break;
+ 	case EVENT_TYPE_INV_DEV_REQ:
+-		printk("INVALID_DEVICE_REQUEST device=%02x:%02x.%x "
++		pr_cont("INVALID_DEVICE_REQUEST device=%02x:%02x.%x "
+ 		       "address=0x%016llx flags=0x%04x]\n",
+ 		       PCI_BUS(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 		       address, flags);
++		dump_flags(flags, type);
++		dump_dte_entry(devid);
+ 		break;
+ 	default:
+-		printk(KERN_ERR "UNKNOWN type=0x%02x]\n", type);
++		pr_cont("UNKNOWN type=0x%02x]\n", type);
+ 	}
++}
++
++static void iommu_handle_event(struct amd_iommu *iommu, void *__evt)
++{
++	int type, devid, domid, flags;
++	u32 *event = __evt;
++	int count = 0;
++	u64 address;
++
++retry:
++	type    = (event[1] >> EVENT_TYPE_SHIFT)  & EVENT_TYPE_MASK;
++	devid   = (event[0] >> EVENT_DEVID_SHIFT) & EVENT_DEVID_MASK;
++	domid   = (event[1] >> EVENT_DOMID_SHIFT) & EVENT_DOMID_MASK;
++	flags   = (event[1] >> EVENT_FLAGS_SHIFT) & EVENT_FLAGS_MASK;
++	address = (u64)(((u64)event[3]) << 32) | event[2];
++
++	if (type == 0) {
++		/* Did we hit the erratum? */
++		if (++count == LOOP_TIMEOUT) {
++			pr_err("AMD-Vi: No event written to event log\n");
++			return;
++		}
++		udelay(1);
++		goto retry;
++	}
++
++	amd_iommu_print_event(type, devid, domid, flags, address);
+ 
+ 	memset(__evt, 0, 4 * sizeof(u32));
+ }
+@@ -709,7 +811,7 @@ static void iommu_poll_events(struct amd_iommu *iommu)
+ 	tail = readl(iommu->mmio_base + MMIO_EVT_TAIL_OFFSET);
+ 
+ 	while (head != tail) {
+-		iommu_print_event(iommu, iommu->evt_buf + head);
++		iommu_handle_event(iommu, iommu->evt_buf + head);
+ 		head = (head + EVENT_ENTRY_SIZE) % iommu->evt_buf_size;
+ 	}
+ 
+@@ -3268,6 +3370,7 @@ static int __init alloc_passthrough_domain(void)
+ 
+ 	return 0;
+ }
++
+ static int amd_iommu_domain_init(struct iommu_domain *dom)
+ {
+ 	struct protection_domain *domain;
+-- 
+1.7.10.4
