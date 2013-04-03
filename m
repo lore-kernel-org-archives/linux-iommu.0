@@ -1,16 +1,16 @@
 From: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 2/5 v11] powerpc: Add iommu domain pointer to device
-	archdata
-Date: Wed, 3 Apr 2013 05:17:07 +0000
-Message-ID: <C5ECD7A89D1DC44195F34B25E172658D450439@039-SN2MPN1-013.039d.mgd.msft.net>
+Subject: RE: [PATCH 4/5 v11] iommu/fsl: Add additional iommu attributes
+	required by the PAMU driver.
+Date: Wed, 3 Apr 2013 05:21:16 +0000
+Message-ID: <C5ECD7A89D1DC44195F34B25E172658D45047E@039-SN2MPN1-013.039d.mgd.msft.net>
 References: <1364500442-20927-1-git-send-email-Varun.Sethi@freescale.com>
-	<1364500442-20927-3-git-send-email-Varun.Sethi@freescale.com>
-	<20130402150842.GG15687@8bytes.org>
+	<1364500442-20927-5-git-send-email-Varun.Sethi@freescale.com>
+	<20130402151011.GH15687@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130402150842.GG15687-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20130402151011.GH15687-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -25,34 +25,44 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Kumar/Ben,
-Any comments?
-
-(Had checked with Ben (on IRC) sometime back, he was fine with this patch)
-
-Regards
-Varun
 
 
 > -----Original Message-----
 > From: Joerg Roedel [mailto:joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org]
-> Sent: Tuesday, April 02, 2013 8:39 PM
+> Sent: Tuesday, April 02, 2013 8:40 PM
 > To: Sethi Varun-B16395
 > Cc: Yoder Stuart-B08248; Wood Scott-B07421; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
 > foundation.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-
 > kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org;
 > benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org
-> Subject: Re: [PATCH 2/5 v11] powerpc: Add iommu domain pointer to device
-> archdata
+> Subject: Re: [PATCH 4/5 v11] iommu/fsl: Add additional iommu attributes
+> required by the PAMU driver.
 > 
-> On Fri, Mar 29, 2013 at 01:23:59AM +0530, Varun Sethi wrote:
-> > Add an iommu domain pointer to device (powerpc) archdata.  Devices are
-> > attached to iommu domains and this pointer provides a mechanism to
-> > correlate between a device and the associated iommu domain.  This
-> > field is set when a device is attached to a domain.
-> >
-> > Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+> On Fri, Mar 29, 2013 at 01:24:01AM +0530, Varun Sethi wrote:
+> > +/* cache stash targets */
+> > +enum stash_target {
+> > +	IOMMU_ATTR_CACHE_L1 = 1,
+> > +	IOMMU_ATTR_CACHE_L2,
+> > +	IOMMU_ATTR_CACHE_L3,
+> > +};
+> > +
+> > +/* This attribute corresponds to IOMMUs capable of generating
+> > + * a stash transaction. A stash transaction is typically a
+> > + * hardware initiated prefetch of data from memory to cache.
+> > + * This attribute allows configuring stashig specific parameters
+> > + * in the IOMMU hardware.
+> > + */
+> > +
+> > +struct iommu_stash_attribute {
+> > +	u32 	cpu;	/* cpu number */
+> > +	u32 	cache;	/* cache to stash to: L1,L2,L3 */
+> > +};
+> > +
 > 
-> This patch needs to be Acked by the PPC maintainers.
+> I would prefer these PAMU specific enum and struct to be in a pamu-
+> specific iommu-header.
 > 
-> 
+
+[Sethi Varun-B16395] But, these would be used by the IOMMU API users (e.g. VFIO), they shouldn't depend on PAMU specific headers.
+
+-Varun
