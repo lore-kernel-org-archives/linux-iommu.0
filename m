@@ -1,8 +1,8 @@
-From: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+From: Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 Subject: RE: [PATCH 5/5 v11] iommu/fsl: Freescale PAMU driver and iommu
 	implementation.
-Date: Thu, 4 Apr 2013 16:35:39 +0000
-Message-ID: <C5ECD7A89D1DC44195F34B25E172658D459471@039-SN2MPN1-013.039d.mgd.msft.net>
+Date: Thu, 4 Apr 2013 16:43:03 +0000
+Message-ID: <9F6FE96B71CF29479FF1CDC8046E15035A26DD@039-SN1MPN1-003.039d.mgd.msft.net>
 References: <1364500442-20927-1-git-send-email-Varun.Sethi@freescale.com>
 	<1364500442-20927-6-git-send-email-Varun.Sethi@freescale.com>
 	<20130402161812.GI15687@8bytes.org>
@@ -24,22 +24,19 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
 
 > -----Original Message-----
 > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> Sent: Thursday, April 04, 2013 8:52 PM
+> Sent: Thursday, April 04, 2013 10:22 AM
 > To: Sethi Varun-B16395
-> Cc: Joerg Roedel; Yoder Stuart-B08248; Wood Scott-B07421;
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-
-> kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org;
-> benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org
-> Subject: Re: [PATCH 5/5 v11] iommu/fsl: Freescale PAMU driver and iommu
-> implementation.
+> Cc: Joerg Roedel; Yoder Stuart-B08248; Wood Scott-B07421; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-
+> dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org; benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org
+> Subject: Re: [PATCH 5/5 v11] iommu/fsl: Freescale PAMU driver and iommu implementation.
 > 
 > On Thu, 2013-04-04 at 13:00 +0000, Sethi Varun-B16395 wrote:
 > >
@@ -48,26 +45,25 @@ List-Id: iommu@lists.linux-foundation.org
 > > > Sent: Wednesday, April 03, 2013 11:32 PM
 > > > To: Joerg Roedel
 > > > Cc: Sethi Varun-B16395; Yoder Stuart-B08248; Wood Scott-B07421;
-> > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org;
-> > > linux- kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org;
+> > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-
+> > > kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org;
 > > > benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org
-> > > Subject: Re: [PATCH 5/5 v11] iommu/fsl: Freescale PAMU driver and
-> > > iommu implementation.
+> > > Subject: Re: [PATCH 5/5 v11] iommu/fsl: Freescale PAMU driver and iommu
+> > > implementation.
 > > >
 > > > On Tue, 2013-04-02 at 18:18 +0200, Joerg Roedel wrote:
 > > > > Cc'ing Alex Williamson
 > > > >
 > > > > Alex, can you please review the iommu-group part of this patch?
 > > >
-> > > Sure, it looks pretty reasonable.  AIUI, all PCI devices are below
-> > > some kind of host bridge that is either new and supports
-> > > partitioning or old and doesn't.  I don't know if that's a
-> > > visibility or isolation requirement, perhaps PCI ACS-ish.  In the
-> > > new host bridge case, each device gets a group.  This seems not to
-> > > have any quirks for multifunction devices though.  On AMD and Intel
-> > > IOMMUs we test multifunction device ACS support to determine whether
-> > > all the functions should be in the same group.  Is there any reason
-> to trust multifunction devices on PAMU?
+> > > Sure, it looks pretty reasonable.  AIUI, all PCI devices are below some
+> > > kind of host bridge that is either new and supports partitioning or old
+> > > and doesn't.  I don't know if that's a visibility or isolation
+> > > requirement, perhaps PCI ACS-ish.  In the new host bridge case, each
+> > > device gets a group.  This seems not to have any quirks for multifunction
+> > > devices though.  On AMD and Intel IOMMUs we test multifunction device ACS
+> > > support to determine whether all the functions should be in the same
+> > > group.  Is there any reason to trust multifunction devices on PAMU?
 > > >
 > > [Sethi Varun-B16395] In the case where we can partition endpoints we
 > > can distinguish transactions based on the bus,device,function number
@@ -80,18 +76,14 @@ List-Id: iommu@lists.linux-foundation.org
 > not isolate functions from each other.  For example a peer-to-peer DMA
 > between functions may not be translated by the upstream IOMMU.  IOMMU
 > groups should encompass both visibility and isolation.
-[Sethi Varun-B16395] We can isolate the DMA access to the host based on the to the pci bus,device,function number.
-I thought that was enough to put devices in to separate iommu groups. This is a PCIe controller property which allows us to partition PCIe devices. But, what I can understand from your point is that we also need to consider isolation at PCIe device level as well. I will check for the case of multifunction devices.
-
 > 
 > > > I also find it curious what happens to the iommu group of the host
-> > > bridge.  In the partitionable case the host bridge group is removed,
-> > > in the non-partitionable case the host bridge group becomes the
-> > > group for the children, removing the host bridge.  It's unique to
-> > > PAMU so far that these host bridges are even in an iommu group (x86
-> > > only adds pci devices), but I don't see it as necessarily wrong
-> > > leaving it in either scenario.  Does it solve some problem to remove
-> them from the groups?
+> > > bridge.  In the partitionable case the host bridge group is removed, in
+> > > the non-partitionable case the host bridge group becomes the group for
+> > > the children, removing the host bridge.  It's unique to PAMU so far that
+> > > these host bridges are even in an iommu group (x86 only adds pci
+> > > devices), but I don't see it as necessarily wrong leaving it in either
+> > > scenario.  Does it solve some problem to remove them from the groups?
 > > > Thanks,
 > > [Sethi Varun-B16395] The PCIe controller isn't a partitionable entity,
 > > it would always be owned by the host.
@@ -99,8 +91,17 @@ I thought that was enough to put devices in to separate iommu groups. This is a 
 > Ownership of a device shouldn't play into the group context.  An IOMMU
 > group should be defined by it's visibility and isolation from other
 > devices.  Whether the PCIe controller is allowed to be handed to
-> userspace is a question for VFIO.
-[Sethi Varun-B16395] The problem is in the case, where we can't partition PCIe devices. PCIe devices share the same device group as the PCI controller. This becomes a problem while assigning the devices to the guest, as you are required to unbind all the PCIe devices including the controller from the host. PCIe controller can't be unbound from the host, so we simply delete the controller iommu_group.
+> userspace is a question for VFIO.  Thanks,
 
--Varun
- 
+Right now the add_device() callback gets called for all platform
+devices (including PCI controller) and PCI devices.  PCI controllers
+are a kind of special case in that their device tree node has a
+property indicating that it is DMA capable...but in fact the
+PCI controller itself does not DMA, but it's the PCI endpoints
+under it.
+
+So, as you noted the bridge/controller shouldn't be in an IOMMU
+group and so since the platform 'add device' code didn't special
+case PCI controllers, this patch removes their group if it's there.
+
+Stuart
