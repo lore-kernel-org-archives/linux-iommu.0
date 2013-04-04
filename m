@@ -1,90 +1,57 @@
-From: Neil Horman <nhorman@tuxdriver.com>
-Subject: Re: [PATCH v2] irq: add quirk for broken interrupt remapping on 55XX
- chipsets
-Date: Thu, 4 Apr 2013 16:02:09 -0400
-Message-ID: <20130404200209.GA19354@hmsreliant.think-freely.org>
-References: <1362158276-4901-1-git-send-email-nhorman@tuxdriver.com>
- <1362423859-18516-1-git-send-email-nhorman@tuxdriver.com>
- <CAErSpo4=L9q+q5hqP2Avw6uceQwZiPuOzadhsqGpu6aP53PMbQ@mail.gmail.com>
- <1365085649.28127.66.camel@i7.infradead.org>
- <20130404145012.GA3403@neilslaptop.think-freely.org>
- <CAErSpo6x5rokg8np7xEKO6y6Qke5X7=r7J7VB2LVrAGGzDC1sA@mail.gmail.com>
- <20130404153905.GB3403@neilslaptop.think-freely.org>
- <CAErSpo7Mup+k7UmZsH1ZidCM1dJw-rNfdtCC6dSF+cZe1d+aBg@mail.gmail.com>
- <20130404175117.GC3403@neilslaptop.think-freely.org>
- <CAErSpo7CPb7p4Psyz-dFtwwgNf8Y9Y+b+w9e7XNHZOmiPOnPog@mail.gmail.com>
+From: Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: RFC:  vfio API changes needed for powerpc (v2)
+Date: Thu, 4 Apr 2013 21:38:44 +0000
+Message-ID: <9F6FE96B71CF29479FF1CDC8046E15035A29AC@039-SN1MPN1-003.039d.mgd.msft.net>
+References: <9F6FE96B71CF29479FF1CDC8046E15035A273C@039-SN1MPN1-003.039d.mgd.msft.net>
+	<1365100973.2882.315.camel@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAErSpo7CPb7p4Psyz-dFtwwgNf8Y9Y+b+w9e7XNHZOmiPOnPog@mail.gmail.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Don Dutile <ddutile@redhat.com>, David Woodhouse <dwmw2@infradead.org>, Prarit Bhargava <prarit@redhat.com>, Don Zickus <dzickus@redhat.com>, Jiang Liu <jiang.liu@huawei.com>, Asit Mallick <asit.k.mallick@intel.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, Yinghai Lu <yinghai@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1365100973.2882.315.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org" <qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org>, "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Bhushan Bharat-R65777 <R65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Apr 04, 2013 at 12:41:27PM -0600, Bjorn Helgaas wrote:
-> On Thu, Apr 4, 2013 at 11:51 AM, Neil Horman <nhorman@tuxdriver.com> wrote:
-> 
-> > Oh, you want the bug report that I'm fixing this against?  Sure, I can do that.
-> > I thought you wanted me to include a url in the WARN_TAINT, with which user
-> > could report occurances of this bug.  Yeah, the bug that this is reported in is:
-> > https://bugzilla.redhat.com/show_bug.cgi?id=887006
+
+> > /*
+> >  * VFIO_PAMU_MAP_MSI_BANK
+> >  *
+> >  * Maps the MSI bank at the specified index and iova.  User space must
+> >  * call this ioctl once for each MSI bank (count of banks is returned by
+> >  * VFIO_IOMMU_GET_MSI_BANK_COUNT).
+> >  * Caller provides struct vfio_pamu_msi_bank_map with all fields set.
+> >  * Operates on VFIO file descriptor (/dev/vfio/vfio).
+> >  * Return: 0 on success, -errno on failure
+> >  */
 > >
-> > Its standing in for about a dozen or so variants of this issue we've seen
+> > struct vfio_pamu_msi_bank_map {
+> >         __u32   argsz;
+> >         __u32   msi_bank_index;  /* the index of the MSI bank */
+> >         __u64   iova;      /* the iova the bank is to be mapped to */
+> > };
 > 
-> Exactly -- I'm just hoping for something in the changelog.  BTW, this
-> particular bugzilla is not public.
-> 
-Ok, that I can do, I'll get the bz fixed up to be public in a bit.
+> Again, flags.  If we dynamically add or remove devices from a container
+> the bank count can change, right?  If bank count goes from 2 to 3, does
+> userspace know assume the new bank is [2]?  If bank count goes from 3 to
+> 2, which index was that?  If removing a device removes an MSI bank then
+> vfio-pamu will automatically do the unmap, right?
 
+My assumption is that the bank count returned by VFIO_IOMMU_GET_MSI_BANK_COUNT
+is the max bank count for a platform.  (number will mostly likely always be
+3 or 4).  So it won't change as devices are added or removed.
 
-> > Regardless, theres also the security issue to consider here - namely that
-> > disabling irq remapping opens up users of virt to a possible security bug
-> > (potential irq injection).  Some users may wish to live with the remapping
-> > error, given that error typically leads to devices that need to be
-> > restarted/reset to start working again, rather than live with the security hole.
-> > I rather like the warning, that gives users a choice, but I'll spin up a version
-> > that just disables it if you would rather.
-> 
-> I don't believe users will want to make a choice like that or even be
-> sophisticated enough to do it, at least not based on something in
-> dmesg.  I'm pretty sure I'm not  :)
-> 
-> The only supportable thing I can imagine doing would be:
-> 
->   - Disable interrupt remapping if this chipset defect is present, so
-> devices work reliably (they don't need whatever restart/reset you
-> referred to above).
->   - Disable virt functionality when interrupt remapping is disabled to
-> avoid the security problem (I don't know the details of this.)
->   - Add a command-line option to enable interrupt remapping (I think
-> "intremap=on" is currently parsed too early, but maybe this could be
-> reworked so the option could override the quirk disable).
->   - Add release notes saying "boot with 'intremap=on' if you want the
-> virt functionality and can accept unreliable devices."
-> 
-> That way the default behavior is safe and reliable (though perhaps
-> lacking some functionality), and you have told the user a way to get
-> safe and unreliable operation if he's willing to accept that.  At
-> least, that's what I think I would want if I were in RH's shoes.
-> 
-Theres a long argument behind this, and I'm with you.  At the least I don't see
-a problem with disabling it upstream, at least not a policy-oriented reason.
-That said, having looked back at my notes, I do now recall a technical
-impediment behind disabling interrupt remapping.  If we were to do this in an
-early quirk, we would need to determine the status of the interrupt remapping
-capability flag in the iommu in question.  Looking at the interrupt remapping
-code, it appears that the capability flag isn't directly contained in the pci
-config space, but rather in a memory mapped address range who's base address is
-parsed out of an acpi table.  Since we check the irq_remapping_enabled flag in
-the current quirk (which is set after the early quirks run), to do this in an
-early quirk, we would need to somehow parse that base address register out of
-the available acpi tables ourselves, and I'm not at all sure how to do that.  Do
-you know if theres some available parsing mechanism that early in boot?  If so,
-I can probably make this happen.
+If devices are added or removed, the kernel side can enable or disable
+the corresponding MSI windows.  But that is hidden from user space.
 
-Neil
-
-> Bjorn
-> 
+Stuart
