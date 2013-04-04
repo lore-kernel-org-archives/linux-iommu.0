@@ -1,113 +1,90 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: [PATCH] documentation: iommu: add description of ARM System MMU
- binding
-Date: Thu,  4 Apr 2013 17:50:59 +0100
-Message-ID: <1365094259-24847-1-git-send-email-will.deacon@arm.com>
+From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2] irq: add quirk for broken interrupt remapping on 55XX
+	chipsets
+Date: Thu, 4 Apr 2013 11:14:30 -0600
+Message-ID: <CAErSpo7Mup+k7UmZsH1ZidCM1dJw-rNfdtCC6dSF+cZe1d+aBg@mail.gmail.com>
+References: <1362158276-4901-1-git-send-email-nhorman@tuxdriver.com>
+	<1362423859-18516-1-git-send-email-nhorman@tuxdriver.com>
+	<CAErSpo4=L9q+q5hqP2Avw6uceQwZiPuOzadhsqGpu6aP53PMbQ@mail.gmail.com>
+	<1365085649.28127.66.camel@i7.infradead.org>
+	<20130404145012.GA3403@neilslaptop.think-freely.org>
+	<CAErSpo6x5rokg8np7xEKO6y6Qke5X7=r7J7VB2LVrAGGzDC1sA@mail.gmail.com>
+	<20130404153905.GB3403@neilslaptop.think-freely.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: devicetree-discuss@lists.ozlabs.org
-Cc: Andreas Herrmann <andreas.herrmann@calxeda.com>, iommu@lists.linux-foundation.org, Will Deacon <will.deacon@arm.com>, linux-arm-kernel@lists.infradead.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20130404153905.GB3403-0o1r3XBGOEbbgkc5XkKeNuvMHUBZFtU3YPYVAmT7z5s@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Neil Horman <nhorman-2XuSBdqkA4R54TAoqtyWWQ@public.gmane.org>
+Cc: Prarit Bhargava <prarit-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Don Zickus <dzickus-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jiang Liu <jiang.liu-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Asit Mallick <asit.k.mallick-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds a description of the device tree binding for the ARM
-System MMU architecture.
+On Thu, Apr 4, 2013 at 9:39 AM, Neil Horman <nhorman-2XuSBdqkA4R54TAoqtyWWQ@public.gmane.org> wrote:
+> On Thu, Apr 04, 2013 at 08:57:06AM -0600, Bjorn Helgaas wrote:
+>> On Thu, Apr 4, 2013 at 8:50 AM, Neil Horman <nhorman-2XuSBdqkA4R54TAoqtyWWQ@public.gmane.org> wrote:
+>> > On Thu, Apr 04, 2013 at 03:27:29PM +0100, David Woodhouse wrote:
+>> >> On Wed, 2013-04-03 at 17:53 -0600, Bjorn Helgaas wrote:
+>> >> > );
+>> >> > > +
+>> >> > > +       if ((revision == 0x13) && irq_remapping_enabled) {
+>> >> > > +                pr_warn(HW_ERR "This system BIOS has enabled interrupt remapping\n"
+>> >> > > +                        "on a chipset that contains an errata making that\n"
+>> >> > > +                        "feature unstable.  Please reboot with nointremap\n"
+>> >> > > +                        "added to the kernel command line and contact\n"
+>> >> > > +                        "your BIOS vendor for an update");
+>> >>
+>> >> This should be WARN_TAINT(TAINT_FIRMWARE_WORKAROUND). And 'an erratum'.
+>> >>
+>> > Ok, copy that. I'll repost shortly
+>>
+>> When you do, please include URLs for any problem reports or bugzillas you have.
+>>
+> Well, those are going to be vendor specific, so I'm not sure we can really do
+> that, at least not in any meaningful way.
 
-Cc: Rob Herring <robherring2@gmail.com>
-Cc: Andreas Herrmann <andreas.herrmann@calxeda.com>
-Signed-off-by: Will Deacon <will.deacon@arm.com>
----
+Sorry, I don't understand your point.  It's useful to know who
+reported it (e.g., for future testers) and what happened and what
+bugzillas it solved.  Of course it applies only to machines with this
+chipset and certain BIOS revisions.
 
-Hello,
+>> I assume Windows "just works" in this situation?
+> No more or less than linux does in this case.  The Intel provided errata
+> indicates that the only acceptable workaround is to disable remapping in the
+> BIOS, so I would presume that if a windows system has a BIOS that doesn't
+> implement this fix, its just as exposed as we are.
 
-The driver for this is still a WIP. Both Andreas and myself have prototype
-code, but we're planning to merge that together to get something more
-general. Deciding on the binding is a good first step.
+It sounds like the effect of this bug is that on Linux, devices may
+not work at all because of lost interrupts.  Either Windows must never
+enable remapping (so it never sees the bug), or it must be designed in
+a way that tolerates the problem.  I can't believe these machines
+shipped with Windows certification if devices didn't work correctly.
 
-All comments welcome,
+Either way, I don't understand why we can't make the quirk just fix
+this.  Booting with "nointremap" only sets disable_irq_remap, which is
+only used by irq_remapping_supported().  Early quirks are run before
+irq_remapping_supported () is ever called, so an early quirk ought to
+be just as effective as the command line option.  Here's the relevant
+call tree I see:
 
-Will
+  start_kernel
+    setup_arch
+      parse_early_param
+      early_quirks
+    rest_init
+      ...
+        <first use of disable_irq_remap>
 
- .../devicetree/bindings/iommu/arm,smmu.txt         | 61 ++++++++++++++++++++++
- 1 file changed, 61 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iommu/arm,smmu.txt
+The x86 setup_arch() does call generic_apic_probe(), but as far as I
+can tell, none of the APIC .probe() methods reference
+disable_irq_remap, so that doesn't look like a problem.
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-new file mode 100644
-index 0000000..938325f
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-@@ -0,0 +1,61 @@
-+* ARM System MMU Architecture Implementation
-+
-+ARM SoCs may contain an implementation of the ARM System Memory
-+Management Unit Architecture, which can be used to provide 1 or 2 stages
-+of address translation to bus masters external to the CPU.
-+
-+The SMMU may also raise interrupts in response to various fault
-+conditions.
-+
-+** System MMU required properties:
-+
-+- compatible    : Should be one of "arm,smmu-v1" or "arm,smmu-v2"
-+                  depending on the version of the architecture
-+                  implemented.
-+
-+- reg           : Base address and size of the SMMU.
-+
-+- #global-interrupts : The number of global interrupts exposed by the
-+                       device.
-+
-+- interrupts    : Interrupt list, with the first #global-irqs entries
-+                  corresponding to the global interrupts and any
-+                  following entries corresponding to context interrupts,
-+                  specified in order of their indexing by the SMMU.
-+
-+- mmu-masters   : A list of phandles to device nodes representing bus
-+                  masters for which the SMMU can provide a translation.
-+
-+- stream-ids    : A list of 16-bit values corresponding to the StreamIDs
-+                  for the devices listed in the mmu-masters property.
-+                  This list must be same length as mmu-masters, so
-+                  masters with multiple stream-ids will have multiple
-+                  entries in mmu-masters.
-+
-+** System MMU optional properties:
-+
-+- smmu-parent   : When multiple SMMUs are chained together, this
-+                  property can be used to provide a phandle to the
-+                  parent SMMU (that is the next SMMU on the path going
-+                  from the mmu-masters towards memory) node for this
-+                  SMMU.
-+
-+Example:
-+
-+        smmu {
-+                compatible = "arm,smmu-v1";
-+                reg = <0xba5e0000 0x10000>;
-+                #global-interrupts = <2>;
-+                interrupts = <0 32 4>,
-+                             <0 33 4>,
-+                             <0 34 4>, /* This is the first context interrupt */
-+                             <0 35 4>,
-+                             <0 36 4>,
-+                             <0 37 4>;
-+                mmu-masters = <&dma0>,
-+                              <&dma0>,
-+                              <&dma1>;
-+                stream-ids  = <0xd01d>,
-+                              <0xd01e>,
-+                              <0xd11c>;
-+        };
--- 
-1.8.0
+Bjorn
