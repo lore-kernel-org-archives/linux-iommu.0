@@ -1,142 +1,68 @@
-From: Neil Horman <nhorman@tuxdriver.com>
-Subject: Re: [PATCH v2] irq: add quirk for broken interrupt remapping on 55XX
- chipsets
-Date: Thu, 4 Apr 2013 07:17:12 -0400
-Message-ID: <20130404111711.GA2551@neilslaptop.think-freely.org>
-References: <1362158276-4901-1-git-send-email-nhorman@tuxdriver.com>
- <1362423859-18516-1-git-send-email-nhorman@tuxdriver.com>
- <CAErSpo4=L9q+q5hqP2Avw6uceQwZiPuOzadhsqGpu6aP53PMbQ@mail.gmail.com>
+From: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH 5/5 v11] iommu/fsl: Freescale PAMU driver and iommu
+	implementation.
+Date: Thu, 4 Apr 2013 13:00:23 +0000
+Message-ID: <C5ECD7A89D1DC44195F34B25E172658D45883B@039-SN2MPN1-013.039d.mgd.msft.net>
+References: <1364500442-20927-1-git-send-email-Varun.Sethi@freescale.com>
+	<1364500442-20927-6-git-send-email-Varun.Sethi@freescale.com>
+	<20130402161812.GI15687@8bytes.org>
+	<1365012091.2882.252.camel@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAErSpo4=L9q+q5hqP2Avw6uceQwZiPuOzadhsqGpu6aP53PMbQ@mail.gmail.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Prarit Bhargava <prarit@redhat.com>, Don Zickus <dzickus@redhat.com>, Don Dutile <ddutile@redhat.com>, Asit Mallick <asit.k.mallick@intel.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org, Yinghai Lu <yinghai@kernel.org>, Jiang Liu <jiang.liu@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1365012091.2882.252.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 03, 2013 at 05:53:27PM -0600, Bjorn Helgaas wrote:
-> [+cc David and iommu list, Yinghai, Jiang]
-> 
-> On Mon, Mar 4, 2013 at 12:04 PM, Neil Horman <nhorman@tuxdriver.com> wrote:
-> > A few years back intel published a spec update:
-> > http://www.intel.com/content/dam/doc/specification-update/5520-and-5500-chipset-ioh-specification-update.pdf
-> >
-> > For the 5520 and 5500 chipsets which contained an errata (specificially errata
-> > 53), which noted that these chipsets can't properly do interrupt remapping, and
-> > as a result the recommend that interrupt remapping be disabled in bios.  While
-> > many vendors have a bios update to do exactly that, not all do, and of course
-> > not all users update their bios to a level that corrects the problem.  As a
-> > result, occasionally interrupts can arrive at a cpu even after affinity for that
-> > interrupt has be moved, leading to lost or spurrious interrupts (usually
-> > characterized by the message:
-> > kernel: do_IRQ: 7.71 No irq handler for vector (irq -1)
-> >
-> > There have been several incidents recently of people seeing this error, and
-> > investigation has shown that they have system for which their BIOS level is such
-> > that this feature was not properly turned off.  As such, it would be good to
-> > give them a reminder that their systems are vulnurable to this problem.
-> >
-> > Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
-> > CC: Prarit Bhargava <prarit@redhat.com>
-> > CC: Don Zickus <dzickus@redhat.com>
-> > CC: Don Dutile <ddutile@redhat.com>
-> > CC: Bjorn Helgaas <bhelgaas@google.com>
-> > CC: Asit Mallick <asit.k.mallick@intel.com>
-> > CC: linux-pci@vger.kernel.org
-> >
-> > ---
-> >
-> > Change notes:
-> >
-> > v2)
-> >
-> > * Moved the quirk to the x86 arch, since consensus seems to be that the 55XX
-> > chipset series is x86 only.  I decided however to keep the quirk as a regular
-> > quirk, not an early_quirk.  Early quirks have no way currently to determine if
-> > BIOS has properly disabled the feature in the iommu, at least not without
-> > significant hacking, and since its quite possible this will be a short lived
-> > quirk, should Don Z's workaround code prove successful (and it looks like it may
-> > well), I don't think that necessecary.
-> >
-> > * Removed the WARNING banner from the quirk, and added the HW_ERR token to the
-> > string, I opted to leave the newlines in place however, as I really couldnt
-> > find a way to keep the text on a single line is still legible from a code
-> > perspective.  I think theres enough language in there that using cscope on just
-> > about any substring however will turn it up, and again, this may be a short
-> > lived quirk.
-> > ---
-> >  arch/x86/kernel/quirks.c | 18 ++++++++++++++++++
-> >  include/linux/pci_ids.h  |  2 ++
-> >  2 files changed, 20 insertions(+)
-> >
-> > diff --git a/arch/x86/kernel/quirks.c b/arch/x86/kernel/quirks.c
-> > index 26ee48a..a718ea2 100644
-> > --- a/arch/x86/kernel/quirks.c
-> > +++ b/arch/x86/kernel/quirks.c
-> > @@ -5,6 +5,7 @@
-> >  #include <linux/irq.h>
-> >
-> >  #include <asm/hpet.h>
-> > +#include "../../../drivers/iommu/irq_remapping.h"
-> >
-> >  #if defined(CONFIG_X86_IO_APIC) && defined(CONFIG_SMP) && defined(CONFIG_PCI)
-> >
-> > @@ -567,3 +568,20 @@ DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_15H_NB_F5,
-> >                         quirk_amd_nb_node);
-> >
-> >  #endif
-> > +
-> > +static void intel_remapping_check(struct pci_dev *dev)
-> > +{
-> > +       u8 revision;
-> > +
-> > +       pci_read_config_byte(dev, PCI_REVISION_ID, &revision);
-> > +
-> > +       if ((revision == 0x13) && irq_remapping_enabled) {
-> > +                pr_warn(HW_ERR "This system BIOS has enabled interrupt remapping\n"
-> > +                        "on a chipset that contains an errata making that\n"
-> > +                        "feature unstable.  Please reboot with nointremap\n"
-> > +                        "added to the kernel command line and contact\n"
-> > +                        "your BIOS vendor for an update");
-> > +       }
-> > +}
-> > +DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_5520_IOHUB, intel_remapping_check);
-> > +DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_5500_IOHUB, intel_remapping_check);
-> 
-> This started as an IOMMU change, and I'm not an expert in that area,
-> so I added David and the IOMMU list.  I'd rather have him deal with
-> this than me.
-> 
-This was never an iommu change, other than the fact that interrupt mapping and
-the iommu are tightly coupled.
 
-> Is this something we can just *fix* in the kernel, e.g., by turning
-> off interrupt remapping ourselves, or does it have to be done before
-> the OS boots?
-> 
-Possibly, but it didn't seem safe to me.  As it currently stands, pci quirks are
-executed after the apic is configured, which means its possible the problem
-might trigger before the quirk has a chance to execute (even the early quirk).
-There was an exchange about this earlier in the thread IIRC.
 
-> > diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
-> > index 31717bd..54027a6 100644
-> > --- a/include/linux/pci_ids.h
-> > +++ b/include/linux/pci_ids.h
-> > @@ -2732,6 +2732,8 @@
-> >  #define PCI_DEVICE_ID_INTEL_LYNNFIELD_MC_CH2_RANK_REV2  0x2db2
-> >  #define PCI_DEVICE_ID_INTEL_LYNNFIELD_MC_CH2_TC_REV2    0x2db3
-> >  #define PCI_DEVICE_ID_INTEL_82855PM_HB 0x3340
-> > +#define PCI_DEVICE_ID_INTEL_5500_IOHUB 0x3403
-> > +#define PCI_DEVICE_ID_INTEL_5520_IOHUB 0x3406
+> -----Original Message-----
+> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> Sent: Wednesday, April 03, 2013 11:32 PM
+> To: Joerg Roedel
+> Cc: Sethi Varun-B16395; Yoder Stuart-B08248; Wood Scott-B07421;
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-
+> kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org;
+> benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org
+> Subject: Re: [PATCH 5/5 v11] iommu/fsl: Freescale PAMU driver and iommu
+> implementation.
 > 
-> For constants only used in one place, we just use the bare constant
-> (0x3403) in the quirk rather than editing pci_ids.h (see comment at
-> the top of that file).
+> On Tue, 2013-04-02 at 18:18 +0200, Joerg Roedel wrote:
+> > Cc'ing Alex Williamson
+> >
+> > Alex, can you please review the iommu-group part of this patch?
 > 
-Ok, I'll repost with this removed.
+> Sure, it looks pretty reasonable.  AIUI, all PCI devices are below some
+> kind of host bridge that is either new and supports partitioning or old
+> and doesn't.  I don't know if that's a visibility or isolation
+> requirement, perhaps PCI ACS-ish.  In the new host bridge case, each
+> device gets a group.  This seems not to have any quirks for multifunction
+> devices though.  On AMD and Intel IOMMUs we test multifunction device ACS
+> support to determine whether all the functions should be in the same
+> group.  Is there any reason to trust multifunction devices on PAMU?
+> 
+[Sethi Varun-B16395] In the case where we can partition endpoints we can distinguish transactions based on the bus,device,function number combination. This support is available in the PCIe controller (host bridge).
 
-Thanks & Regards
-Neil
+> I also find it curious what happens to the iommu group of the host
+> bridge.  In the partitionable case the host bridge group is removed, in
+> the non-partitionable case the host bridge group becomes the group for
+> the children, removing the host bridge.  It's unique to PAMU so far that
+> these host bridges are even in an iommu group (x86 only adds pci
+> devices), but I don't see it as necessarily wrong leaving it in either
+> scenario.  Does it solve some problem to remove them from the groups?
+> Thanks,
+[Sethi Varun-B16395] The PCIe controller isn't a partitionable entity, it would always be owned by the host.
+
+-Varun
