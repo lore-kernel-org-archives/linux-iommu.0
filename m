@@ -1,151 +1,106 @@
-From: Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RFC:  vfio API changes needed for powerpc (v2)
-Date: Thu, 4 Apr 2013 17:32:46 +0000
-Message-ID: <9F6FE96B71CF29479FF1CDC8046E15035A273C@039-SN1MPN1-003.039d.mgd.msft.net>
+From: Neil Horman <nhorman@tuxdriver.com>
+Subject: Re: [PATCH v2] irq: add quirk for broken interrupt remapping on 55XX
+ chipsets
+Date: Thu, 4 Apr 2013 13:51:17 -0400
+Message-ID: <20130404175117.GC3403@neilslaptop.think-freely.org>
+References: <1362158276-4901-1-git-send-email-nhorman@tuxdriver.com>
+ <1362423859-18516-1-git-send-email-nhorman@tuxdriver.com>
+ <CAErSpo4=L9q+q5hqP2Avw6uceQwZiPuOzadhsqGpu6aP53PMbQ@mail.gmail.com>
+ <1365085649.28127.66.camel@i7.infradead.org>
+ <20130404145012.GA3403@neilslaptop.think-freely.org>
+ <CAErSpo6x5rokg8np7xEKO6y6Qke5X7=r7J7VB2LVrAGGzDC1sA@mail.gmail.com>
+ <20130404153905.GB3403@neilslaptop.think-freely.org>
+ <CAErSpo7Mup+k7UmZsH1ZidCM1dJw-rNfdtCC6dSF+cZe1d+aBg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org" <qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org>, "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Bhushan Bharat-R65777 <R65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAErSpo7Mup+k7UmZsH1ZidCM1dJw-rNfdtCC6dSF+cZe1d+aBg@mail.gmail.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, Prarit Bhargava <prarit@redhat.com>, Don Zickus <dzickus@redhat.com>, Jiang Liu <jiang.liu@huawei.com>, Asit Mallick <asit.k.mallick@intel.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, Yinghai Lu <yinghai@kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Based on the email thread over the last couple of days, I have
-below an more concrete proposal (v2) for new ioctls supporting vfio-pci
-on SoCs with the Freescale PAMU.
+On Thu, Apr 04, 2013 at 11:14:30AM -0600, Bjorn Helgaas wrote:
+> On Thu, Apr 4, 2013 at 9:39 AM, Neil Horman <nhorman@tuxdriver.com> wrote:
+> > On Thu, Apr 04, 2013 at 08:57:06AM -0600, Bjorn Helgaas wrote:
+> >> On Thu, Apr 4, 2013 at 8:50 AM, Neil Horman <nhorman@tuxdriver.com> wrote:
+> >> > On Thu, Apr 04, 2013 at 03:27:29PM +0100, David Woodhouse wrote:
+> >> >> On Wed, 2013-04-03 at 17:53 -0600, Bjorn Helgaas wrote:
+> >> >> > );
+> >> >> > > +
+> >> >> > > +       if ((revision == 0x13) && irq_remapping_enabled) {
+> >> >> > > +                pr_warn(HW_ERR "This system BIOS has enabled interrupt remapping\n"
+> >> >> > > +                        "on a chipset that contains an errata making that\n"
+> >> >> > > +                        "feature unstable.  Please reboot with nointremap\n"
+> >> >> > > +                        "added to the kernel command line and contact\n"
+> >> >> > > +                        "your BIOS vendor for an update");
+> >> >>
+> >> >> This should be WARN_TAINT(TAINT_FIRMWARE_WORKAROUND). And 'an erratum'.
+> >> >>
+> >> > Ok, copy that. I'll repost shortly
+> >>
+> >> When you do, please include URLs for any problem reports or bugzillas you have.
+> >>
+> > Well, those are going to be vendor specific, so I'm not sure we can really do
+> > that, at least not in any meaningful way.
+> 
+> Sorry, I don't understand your point.  It's useful to know who
+> reported it (e.g., for future testers) and what happened and what
+> bugzillas it solved.  Of course it applies only to machines with this
+> chipset and certain BIOS revisions.
+> 
+Oh, you want the bug report that I'm fixing this against?  Sure, I can do that.
+I thought you wanted me to include a url in the WARN_TAINT, with which user
+could report occurances of this bug.  Yeah, the bug that this is reported in is:
+https://bugzilla.redhat.com/show_bug.cgi?id=887006
 
-Example usage is as described by Scott:
+Its standing in for about a dozen or so variants of this issue we've seen
 
-count = VFIO_IOMMU_GET_MSI_BANK_COUNT
-VFIO_IOMMU_SET_ATTR(ATTR_GEOMETRY)
-VFIO_IOMMU_SET_ATTR(ATTR_WINDOWS)
-// do other DMA maps now, or later, or not at all, doesn't matter
-for (i = 0; i < count; i++)
-        VFIO_IOMMU_MAP_MSI_BANK(iova, i);
-// The kernel now knows where each bank has been mapped, and can
-//   update PCI config space appropriately.
+> >> I assume Windows "just works" in this situation?
+> > No more or less than linux does in this case.  The Intel provided errata
+> > indicates that the only acceptable workaround is to disable remapping in the
+> > BIOS, so I would presume that if a windows system has a BIOS that doesn't
+> > implement this fix, its just as exposed as we are.
+> 
+> It sounds like the effect of this bug is that on Linux, devices may
+> not work at all because of lost interrupts.  Either Windows must never
+> enable remapping (so it never sees the bug), or it must be designed in
+> a way that tolerates the problem.  I can't believe these machines
+> shipped with Windows certification if devices didn't work correctly.
+> 
+I don't know what to tell you here.  We explicitly asked intel about this, and
+there was an effort to recode the interrupt migration code to properly manage
+this situation, and intels response was "No, just disable it in BIOS", so we're
+telling people to disable it in BIOS.  You'd have to ask somebody at Microsoft
+what Windows did or did not do about this problem.
 
-Thanks,
-Stuart
+> Either way, I don't understand why we can't make the quirk just fix
+> this.  Booting with "nointremap" only sets disable_irq_remap, which is
+> only used by irq_remapping_supported().  Early quirks are run before
+> irq_remapping_supported () is ever called, so an early quirk ought to
+> be just as effective as the command line option.  Here's the relevant
+> call tree I see:
+> 
+>   start_kernel
+>     setup_arch
+>       parse_early_param
+>       early_quirks
+>     rest_init
+>       ...
+>         <first use of disable_irq_remap>
+> 
+> The x86 setup_arch() does call generic_apic_probe(), but as far as I
+> can tell, none of the APIC .probe() methods reference
+> disable_irq_remap, so that doesn't look like a problem.
+> 
+Well, I can give it a try, but I'm sure something went wrong last time I did.
+Regardless, theres also the security issue to consider here - namely that
+disabling irq remapping opens up users of virt to a possible security bug
+(potential irq injection).  Some users may wish to live with the remapping
+error, given that error typically leads to devices that need to be
+restarted/reset to start working again, rather than live with the security hole.
+I rather like the warning, that gives users a choice, but I'll spin up a version
+that just disables it if you would rather.
 
-----------------------------------------------------------------------------
-
-The Freescale PAMU is an aperture-based IOMMU with the following 
-characteristics.  Each device has an entry in a table in memory
-describing the iova->phys mapping. The mapping has:
-   -an overall aperture that is power of 2 sized, and has a start iova that
-    is naturally aligned
-   -has 1 or more windows within the aperture
-      -number of windows must be power of 2, max is 256
-      -size of each window is determined by aperture size / # of windows
-      -iova of each window is determined by aperture start iova / # of windows
-      -the mapped region in each window can be different than
-       the window size...mapping must power of 2 
-      -physical address of the mapping must be naturally aligned
-       with the mapping size
-
-/*
- * VFIO_PAMU_GET_ATTR
- *
- * Gets the iommu attributes for the current vfio container.  This 
- * ioctl is applicable to an iommu type of VFIO_PAMU only.
- * Caller sets argsz and attribute.  The ioctl fills in
- * the provided struct vfio_pamu_attr based on the attribute
- * value that was set.
- * Operates on VFIO file descriptor (/dev/vfio/vfio).
- * Return: 0 on success, -errno on failure
- */
-struct vfio_pamu_attr {
-        __u32   argsz;
-        __u32   attribute;
-#define VFIO_ATTR_GEOMETRY     1
-#define VFIO_ATTR_WINDOWS      2
-#define VFIO_ATTR_PAMU_STASH   3
-
-        /* fowlling fields are for VFIO_ATTR_GEOMETRY */
-        __u64 aperture_start; /* first address that can be mapped    */
-        __u64 aperture_end;   /* last address that can be mapped     */
-
-        /* follwing fields are for VFIO_ATTR_WINDOWS */
-        __u32 windows;        /* number of windows in the aperture */
-                              /* initially this will be the max number
-                               * of windows that can be set
-                               */
-
-        /* following fields are for VFIO_ATTR_PAMU_STASH */
-        __u32 cpu;            /* CPU number for stashing */
-        __u32 cache;          /* cache ID for stashing */
-};
-#define VFIO_PAMU_GET_ATTR  _IO(VFIO_TYPE, VFIO_BASE + x,
-        struct vfio_pamu_attr)
-
-/*
- * VFIO_PAMU_SET_ATTR
- *
- * Sets the iommu attributes for the current vfio container.  This 
- * ioctl is applicable to an iommu type of VFIO_PAMU only.
- * Caller sets struct vfio_pamu attr, including argsz and attribute and
- * setting any fields that are valid for the attribute.
- * Operates on VFIO file descriptor (/dev/vfio/vfio).
- * Return: 0 on success, -errno on failure
- */
-#define VFIO_PAMU_SET_ATTR  _IO(VFIO_TYPE, VFIO_BASE + x,
-        struct vfio_pamu_attr)
-
-/*
- * VFIO_PAMU_GET_MSI_BANK_COUNT
- *
- * Returns the number of MSI banks for this platform.  This tells user space
- * how many aperture windows should be reserved for MSI banks when setting
- * the PAMU geometry and window count.
- * Fills in provided struct vfio_pamu_msi_banks. Caller sets argsz. 
- * Operates on VFIO file descriptor (/dev/vfio/vfio).
- * Return: 0 on success, -errno on failure
- */
-struct vfio_pamu_msi_banks {
-        __u32   argsz;
-        __u32   bank_count;  /* the number of MSI
-};
-#define VFIO_PAMU_GET_MSI_BANK_COUNT  _IO(VFIO_TYPE, VFIO_BASE + x,
-        struct vfio_pamu_msi_banks)
-
-/*
- * VFIO_PAMU_MAP_MSI_BANK
- *
- * Maps the MSI bank at the specified index and iova.  User space must
- * call this ioctl once for each MSI bank (count of banks is returned by
- * VFIO_IOMMU_GET_MSI_BANK_COUNT).
- * Caller provides struct vfio_pamu_msi_bank_map with all fields set.
- * Operates on VFIO file descriptor (/dev/vfio/vfio).
- * Return: 0 on success, -errno on failure
- */
-
-struct vfio_pamu_msi_bank_map {
-        __u32   argsz;
-        __u32   msi_bank_index;  /* the index of the MSI bank */
-        __u64   iova;      /* the iova the bank is to be mapped to */
-};
-
-/*
- * VFIO_PAMU_UNMAP_MSI_BANK
- *
- * Unmaps the MSI bank at the specified iova.
- * Caller provides struct vfio_pamu_msi_bank_unmap with all fields set.
- * Operates on VFIO file descriptor (/dev/vfio/vfio).
- * Return: 0 on success, -errno on failure
- */
-
-struct vfio_pamu_msi_bank_unmap {
-        __u32   argsz;
-        __u64   iova;      /* the iova to be unmapped to */
-};
+Neil
