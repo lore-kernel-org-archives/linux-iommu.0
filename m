@@ -1,35 +1,84 @@
-From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH v2] irq: add quirk for broken interrupt remapping on 55XX chipsets
-Date: Thu, 4 Apr 2013 08:57:06 -0600
-Message-ID: <CAErSpo6x5rokg8np7xEKO6y6Qke5X7=r7J7VB2LVrAGGzDC1sA@mail.gmail.com>
-References: <1362158276-4901-1-git-send-email-nhorman@tuxdriver.com>
- <1362423859-18516-1-git-send-email-nhorman@tuxdriver.com> <CAErSpo4=L9q+q5hqP2Avw6uceQwZiPuOzadhsqGpu6aP53PMbQ@mail.gmail.com>
- <1365085649.28127.66.camel@i7.infradead.org> <20130404145012.GA3403@neilslaptop.think-freely.org>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 5/5 v11] iommu/fsl: Freescale PAMU driver and iommu
+	implementation.
+Date: Thu, 04 Apr 2013 09:22:10 -0600
+Message-ID: <1365088930.2882.296.camel@bling.home>
+References: <1364500442-20927-1-git-send-email-Varun.Sethi@freescale.com>
+	<1364500442-20927-6-git-send-email-Varun.Sethi@freescale.com>
+	<20130402161812.GI15687@8bytes.org>
+	<1365012091.2882.252.camel@bling.home>
+	<C5ECD7A89D1DC44195F34B25E172658D45883B@039-SN2MPN1-013.039d.mgd.msft.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20130404145012.GA3403@neilslaptop.think-freely.org>
-Sender: linux-pci-owner@vger.kernel.org
-To: Neil Horman <nhorman@tuxdriver.com>
-Cc: David Woodhouse <dwmw2@infradead.org>, Prarit Bhargava <prarit@redhat.com>, Don Zickus <dzickus@redhat.com>, Jiang Liu <jiang.liu@huawei.com>, Asit Mallick <asit.k.mallick@intel.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, Yinghai Lu <yinghai@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <C5ECD7A89D1DC44195F34B25E172658D45883B-RL0Hj/+nBVDYdknt8GnhQq4g8xLGJsHaLnY5E4hWTkheoWH0uzbU5w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Apr 4, 2013 at 8:50 AM, Neil Horman <nhorman@tuxdriver.com> wrote:
-> On Thu, Apr 04, 2013 at 03:27:29PM +0100, David Woodhouse wrote:
->> On Wed, 2013-04-03 at 17:53 -0600, Bjorn Helgaas wrote:
->> > );
->> > > +
->> > > +       if ((revision == 0x13) && irq_remapping_enabled) {
->> > > +                pr_warn(HW_ERR "This system BIOS has enabled interrupt remapping\n"
->> > > +                        "on a chipset that contains an errata making that\n"
->> > > +                        "feature unstable.  Please reboot with nointremap\n"
->> > > +                        "added to the kernel command line and contact\n"
->> > > +                        "your BIOS vendor for an update");
->>
->> This should be WARN_TAINT(TAINT_FIRMWARE_WORKAROUND). And 'an erratum'.
->>
-> Ok, copy that. I'll repost shortly
+On Thu, 2013-04-04 at 13:00 +0000, Sethi Varun-B16395 wrote:
+> 
+> > -----Original Message-----
+> > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> > Sent: Wednesday, April 03, 2013 11:32 PM
+> > To: Joerg Roedel
+> > Cc: Sethi Varun-B16395; Yoder Stuart-B08248; Wood Scott-B07421;
+> > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-
+> > kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org;
+> > benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org
+> > Subject: Re: [PATCH 5/5 v11] iommu/fsl: Freescale PAMU driver and iommu
+> > implementation.
+> > 
+> > On Tue, 2013-04-02 at 18:18 +0200, Joerg Roedel wrote:
+> > > Cc'ing Alex Williamson
+> > >
+> > > Alex, can you please review the iommu-group part of this patch?
+> > 
+> > Sure, it looks pretty reasonable.  AIUI, all PCI devices are below some
+> > kind of host bridge that is either new and supports partitioning or old
+> > and doesn't.  I don't know if that's a visibility or isolation
+> > requirement, perhaps PCI ACS-ish.  In the new host bridge case, each
+> > device gets a group.  This seems not to have any quirks for multifunction
+> > devices though.  On AMD and Intel IOMMUs we test multifunction device ACS
+> > support to determine whether all the functions should be in the same
+> > group.  Is there any reason to trust multifunction devices on PAMU?
+> > 
+> [Sethi Varun-B16395] In the case where we can partition endpoints we
+> can distinguish transactions based on the bus,device,function number
+> combination. This support is available in the PCIe controller (host
+> bridge).
 
-When you do, please include URLs for any problem reports or bugzillas you have.
+So can x86 IOMMUs, that's the visibility aspect of IOMMU groups.
+Visibility alone doesn't necessarily imply that a device is isolated
+though.  A multifunction PCI device that doesn't expose ACS support may
+not isolate functions from each other.  For example a peer-to-peer DMA
+between functions may not be translated by the upstream IOMMU.  IOMMU
+groups should encompass both visibility and isolation.
 
-I assume Windows "just works" in this situation?
+> > I also find it curious what happens to the iommu group of the host
+> > bridge.  In the partitionable case the host bridge group is removed, in
+> > the non-partitionable case the host bridge group becomes the group for
+> > the children, removing the host bridge.  It's unique to PAMU so far that
+> > these host bridges are even in an iommu group (x86 only adds pci
+> > devices), but I don't see it as necessarily wrong leaving it in either
+> > scenario.  Does it solve some problem to remove them from the groups?
+> > Thanks,
+> [Sethi Varun-B16395] The PCIe controller isn't a partitionable entity,
+> it would always be owned by the host.
+
+Ownership of a device shouldn't play into the group context.  An IOMMU
+group should be defined by it's visibility and isolation from other
+devices.  Whether the PCIe controller is allowed to be handed to
+userspace is a question for VFIO.  Thanks,
+
+Alex
