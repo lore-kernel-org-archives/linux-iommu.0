@@ -1,135 +1,85 @@
-From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH v2] irq: add quirk for broken interrupt remapping on 55XX chipsets
-Date: Wed, 3 Apr 2013 17:53:27 -0600
-Message-ID: <CAErSpo4=L9q+q5hqP2Avw6uceQwZiPuOzadhsqGpu6aP53PMbQ@mail.gmail.com>
-References: <1362158276-4901-1-git-send-email-nhorman@tuxdriver.com> <1362423859-18516-1-git-send-email-nhorman@tuxdriver.com>
+From: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+Subject: Re: [PATCH] intel-iommu: Synchronize gcmd value with global command
+	register
+Date: Thu, 04 Apr 2013 14:48:25 +0900
+Message-ID: <515D1429.40707@jp.fujitsu.com>
+References: <1363829556-2128-1-git-send-email-indou.takao@jp.fujitsu.com>
+	<20130326144629.GB2727@8bytes.org>
+	<51527D74.9080209@jp.fujitsu.com>
+	<20130327103122.GK30540@8bytes.org> <51591EEE.60401@jp.fujitsu.com>
+	<20130402140546.GA15687@8bytes.org>
+	<515BD638.8070307@jp.fujitsu.com>
+	<1364977479.28127.15.camel@i7.infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1362423859-18516-1-git-send-email-nhorman@tuxdriver.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Neil Horman <nhorman@tuxdriver.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Prarit Bhargava <prarit@redhat.com>, Don Zickus <dzickus@redhat.com>, Don Dutile <ddutile@redhat.com>, Asit Mallick <asit.k.mallick@intel.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org, Yinghai Lu <yinghai@kernel.org>, Jiang Liu <jiang.liu@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1364977479.28127.15.camel-W2I5cNIroUsVm/YvaOjsyQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Cc: kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-[+cc David and iommu list, Yinghai, Jiang]
+(2013/04/03 17:24), David Woodhouse wrote:
+> On Wed, 2013-04-03 at 16:11 +0900, Takao Indoh wrote:
+>> (2013/04/02 23:05), Joerg Roedel wrote:
+>>> On Mon, Apr 01, 2013 at 02:45:18PM +0900, Takao Indoh wrote:
+>>>> <Current flow on kdump boot>
+>>>> enable_IR
+>>>>     intel_enable_irq_remapping
+>>>>       iommu_disable_irq_remapping  <== IRES/QIES/TES disabled here
+>>>>       dmar_disable_qi              <== do nothing
+>>>>       dmar_enable_qi               <== QIES enabled
+>>>>       intel_setup_irq_remapping    <== IRES enabled
+>>>
+>>> But what we want to do here in the kdumo case is to disable translation
+>>> too, right? Because the former kernel might have translation and
+>>> irq-remapping enabled and the kdump kernel might be compiled without
+>>> support for dma-remapping. So if we don't disable translation here too
+>>> the kdump kernel is unable to do DMA.
+>>
+>> Yeah, you are right. I forgot such a case.
+> 
+> If you disable translation and there's some device still doing DMA, it's
+> going to scribble over random areas of memory. You really want to have
+> translation enabled and all the page tables *cleared*, during kexec. I
+> think it's fair to insist that the secondary kernel should use the IOMMU
+> if the first one did.
+> 
+>> To be honest, I also expected the side effect of this patch. As I wrote
+>> in the previous mail, I'm working on kdump problem with iommu, that is,
+>> ongoing DMA causes DMAR fault in 2nd kernel and sometimes kdump fails
+>> due to this fault.
+> 
+> Here you've lost me. The DMAR fault is caught and reported, and how does
+> this lead to a kdump failure? Are you using dodgy hardware that just
+> keeps *trying* after an abort, and floods the system with a storm of
+> DMAR faults? We've occasionally spoken about working around such a
+> problem by setting a bit to make subsequent faults *silent*. Would that
+> work?
 
-On Mon, Mar 4, 2013 at 12:04 PM, Neil Horman <nhorman@tuxdriver.com> wrote:
-> A few years back intel published a spec update:
-> http://www.intel.com/content/dam/doc/specification-update/5520-and-5500-chipset-ioh-specification-update.pdf
->
-> For the 5520 and 5500 chipsets which contained an errata (specificially errata
-> 53), which noted that these chipsets can't properly do interrupt remapping, and
-> as a result the recommend that interrupt remapping be disabled in bios.  While
-> many vendors have a bios update to do exactly that, not all do, and of course
-> not all users update their bios to a level that corrects the problem.  As a
-> result, occasionally interrupts can arrive at a cpu even after affinity for that
-> interrupt has be moved, leading to lost or spurrious interrupts (usually
-> characterized by the message:
-> kernel: do_IRQ: 7.71 No irq handler for vector (irq -1)
->
-> There have been several incidents recently of people seeing this error, and
-> investigation has shown that they have system for which their BIOS level is such
-> that this feature was not properly turned off.  As such, it would be good to
-> give them a reminder that their systems are vulnurable to this problem.
->
-> Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
-> CC: Prarit Bhargava <prarit@redhat.com>
-> CC: Don Zickus <dzickus@redhat.com>
-> CC: Don Dutile <ddutile@redhat.com>
-> CC: Bjorn Helgaas <bhelgaas@google.com>
-> CC: Asit Mallick <asit.k.mallick@intel.com>
-> CC: linux-pci@vger.kernel.org
->
-> ---
->
-> Change notes:
->
-> v2)
->
-> * Moved the quirk to the x86 arch, since consensus seems to be that the 55XX
-> chipset series is x86 only.  I decided however to keep the quirk as a regular
-> quirk, not an early_quirk.  Early quirks have no way currently to determine if
-> BIOS has properly disabled the feature in the iommu, at least not without
-> significant hacking, and since its quite possible this will be a short lived
-> quirk, should Don Z's workaround code prove successful (and it looks like it may
-> well), I don't think that necessecary.
->
-> * Removed the WARNING banner from the quirk, and added the HW_ERR token to the
-> string, I opted to leave the newlines in place however, as I really couldnt
-> find a way to keep the text on a single line is still legible from a code
-> perspective.  I think theres enough language in there that using cscope on just
-> about any substring however will turn it up, and again, this may be a short
-> lived quirk.
-> ---
->  arch/x86/kernel/quirks.c | 18 ++++++++++++++++++
->  include/linux/pci_ids.h  |  2 ++
->  2 files changed, 20 insertions(+)
->
-> diff --git a/arch/x86/kernel/quirks.c b/arch/x86/kernel/quirks.c
-> index 26ee48a..a718ea2 100644
-> --- a/arch/x86/kernel/quirks.c
-> +++ b/arch/x86/kernel/quirks.c
-> @@ -5,6 +5,7 @@
->  #include <linux/irq.h>
->
->  #include <asm/hpet.h>
-> +#include "../../../drivers/iommu/irq_remapping.h"
->
->  #if defined(CONFIG_X86_IO_APIC) && defined(CONFIG_SMP) && defined(CONFIG_PCI)
->
-> @@ -567,3 +568,20 @@ DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_15H_NB_F5,
->                         quirk_amd_nb_node);
->
->  #endif
-> +
-> +static void intel_remapping_check(struct pci_dev *dev)
-> +{
-> +       u8 revision;
-> +
-> +       pci_read_config_byte(dev, PCI_REVISION_ID, &revision);
-> +
-> +       if ((revision == 0x13) && irq_remapping_enabled) {
-> +                pr_warn(HW_ERR "This system BIOS has enabled interrupt remapping\n"
-> +                        "on a chipset that contains an errata making that\n"
-> +                        "feature unstable.  Please reboot with nointremap\n"
-> +                        "added to the kernel command line and contact\n"
-> +                        "your BIOS vendor for an update");
-> +       }
-> +}
-> +DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_5520_IOHUB, intel_remapping_check);
-> +DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_5500_IOHUB, intel_remapping_check);
+There are several cases.
+- DMAR fault messages floods and second kernel does not boot. Recently I
+  saw similar report. https://lkml.org/lkml/2013/3/8/120
+- igb driver detectes error on linkup and kdump via network fails.
+- On a certain platform, though kdump itself works, PCIe error like
+  Unexpected Completion is detected and it gets hardware degraded.
 
-This started as an IOMMU change, and I'm not an expert in that area,
-so I added David and the IOMMU list.  I'd rather have him deal with
-this than me.
+Thanks,
+Takao Indoh
 
-Is this something we can just *fix* in the kernel, e.g., by turning
-off interrupt remapping ourselves, or does it have to be done before
-the OS boots?
 
-> diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
-> index 31717bd..54027a6 100644
-> --- a/include/linux/pci_ids.h
-> +++ b/include/linux/pci_ids.h
-> @@ -2732,6 +2732,8 @@
->  #define PCI_DEVICE_ID_INTEL_LYNNFIELD_MC_CH2_RANK_REV2  0x2db2
->  #define PCI_DEVICE_ID_INTEL_LYNNFIELD_MC_CH2_TC_REV2    0x2db3
->  #define PCI_DEVICE_ID_INTEL_82855PM_HB 0x3340
-> +#define PCI_DEVICE_ID_INTEL_5500_IOHUB 0x3403
-> +#define PCI_DEVICE_ID_INTEL_5520_IOHUB 0x3406
-
-For constants only used in one place, we just use the bare constant
-(0x3403) in the quirk rather than editing pci_ids.h (see comment at
-the top of that file).
-
->  #define PCI_DEVICE_ID_INTEL_IOAT_TBG4  0x3429
->  #define PCI_DEVICE_ID_INTEL_IOAT_TBG5  0x342a
->  #define PCI_DEVICE_ID_INTEL_IOAT_TBG6  0x342b
-> --
-> 1.7.11.7
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-pci" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+>>   What we have to do is stopping DMA transaction
+>> before DMA-remapping is disabled in 2nd kernel.
+> 
+> The IOMMU is there to stop DMA transactions. That is its *job*. :)
+> 
