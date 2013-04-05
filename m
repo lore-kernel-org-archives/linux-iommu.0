@@ -1,22 +1,12 @@
-From: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 5/5 v11] iommu/fsl: Freescale PAMU driver and iommu
-	implementation.
-Date: Fri, 5 Apr 2013 00:01:38 +0000
-Message-ID: <C5ECD7A89D1DC44195F34B25E172658D45AC83@039-SN2MPN1-013.039d.mgd.msft.net>
-References: <1364500442-20927-1-git-send-email-Varun.Sethi@freescale.com>
-	<1364500442-20927-6-git-send-email-Varun.Sethi@freescale.com>
-	<20130402161812.GI15687@8bytes.org>
-	<1365012091.2882.252.camel@bling.home>
-	<C5ECD7A89D1DC44195F34B25E172658D45883B@039-SN2MPN1-013.039d.mgd.msft.net>
-	<1365088930.2882.296.camel@bling.home>
-	<C5ECD7A89D1DC44195F34B25E172658D459471@039-SN2MPN1-013.039d.mgd.msft.net>
-	<1365093819.2882.301.camel@bling.home>
+From: Andrew Cooks <acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Ricoh DMAR bug returns? (WAS Re: [PATCH v4] Quirk for buggy dma
+	source tags with Intel IOMMU.)
+Date: Fri, 5 Apr 2013 12:44:12 +0800
+Message-ID: <CAJtEV7baCffS49omM8ZTtGW-AsAnK6tV5dPbG4t3Yq_=F9uvLw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1365093819.2882.301.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,123 +16,121 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+To: Pat Erley <pat-lkml-Jx9fsTfDDR3YtjvyW6yDsg@public.gmane.org>
+Cc: "list-PxS6QbICe4xqbv67lBd7PQ@public.gmane.org:PCI SUBSYSTEM" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU,
+	(VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, jforbes-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, "David Woodhouse (supporter:INTEL IOMMU (VT-d))" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+On Tue, Apr 2, 2013 at 11:47 PM, Pat Erley <pat-lkml-Jx9fsTfDDR3YtjvyW6yDsg@public.gmane.org> wrote:
+> On 04/02/2013 10:50 AM, Andrew Cooks wrote:
+>>
+>> On 2 Apr 2013 15:37, "Pat Erley" <pat-lkml-Jx9fsTfDDR3YtjvyW6yDsg@public.gmane.org
+>> <mailto:pat-lkml-Jx9fsTfDDR3YtjvyW6yDsg@public.gmane.org>> wrote:
+>>  >
+>>  > On 03/07/2013 09:35 PM, Andrew Cooks wrote:
+>>  >>
+>>  >> --- a/drivers/pci/quirks.c
+>>  >> +++ b/drivers/pci/quirks.c
+>>  >>
+>>  >> +/* Table of multiple (ghost) source functions. This is similar to the
+>>  >> + * translated sources above, but with the following differences:
+>>  >> + * 1. the device may use multiple functions as DMA sources,
+>>  >> + * 2. these functions cannot be assumed to be actual devices,
+>> they're simply
+>>  >> + * incorrect DMA tags.
+>>  >> + * 3. the specific ghost function for a request can not always be
+>> predicted.
+>>  >> + * For example, the actual device could be xx:yy.1 and it could use
+>>  >> + * both 0 and 1 for different requests, with no obvious way to tell
+>> when
+>>  >> + * DMA will be tagged as comming from xx.yy.0 and and when it will
+>> be tagged
+>>  >> + * as comming from xx.yy.1.
+>>  >> + * The bitmap contains all of the functions used in DMA tags,
+>> including the
+>>  >> + * actual device.
+>>  >> + * See https://bugzilla.redhat.com/show_bug.cgi?id=757166,
+>>  >> + * https://bugzilla.kernel.org/show_bug.cgi?id=42679
+>>  >> + * https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1089768
+>>  >> + */
+>>  >> +static const struct pci_dev_dma_multi_func_sources {
+>>  >> +       u16 vendor;
+>>  >> +       u16 device;
+>>  >> +       u8 func_map;    /* bit map. lsb is fn 0. */
+>>  >> +} pci_dev_dma_multi_func_sources[] = {
+>>  >> +       { PCI_VENDOR_ID_MARVELL_2, 0x9123, (1<<0)|(1<<1)},
+>>  >> +       { PCI_VENDOR_ID_MARVELL_2, 0x9125, (1<<0)|(1<<1)},
+>>  >> +       { PCI_VENDOR_ID_MARVELL_2, 0x9128, (1<<0)|(1<<1)},
+>>  >> +       { PCI_VENDOR_ID_MARVELL_2, 0x9130, (1<<0)|(1<<1)},
+>>  >> +       { PCI_VENDOR_ID_MARVELL_2, 0x9143, (1<<0)|(1<<1)},
+>>  >> +       { PCI_VENDOR_ID_MARVELL_2, 0x9172, (1<<0)|(1<<1)},
+>>  >> +       { 0 }
+>>  >> +};
+>>  >
+>>  >
+>>  > Adding another buggy device.  I have a Ricoh multifunction device:
+>>  >
+>>  > 17:00.0 SD Host controller: Ricoh Co Ltd MMC/SD Host Controller (rev
+>> 01)
+>>  > 17:00.3 FireWire (IEEE 1394): Ricoh Co Ltd R5C832 PCIe IEEE 1394
+>>  >         Controller (rev 01)
+>>  >
+>>  > 17:00.0 0805: 1180:e822 (rev 01)
+>>  > 17:00.3 0c00: 1180:e832 (rev 01)
+>>  >
+>>
+>> The Ricoh device issue has been known for some time and a quirk has been
+>> available since commit 12ea6cad1c7d046 in June 2012.  It's slightly
+>> different than the problem this patch tries to work around [1].
+>
+>
+> Hmm, I've had this problem with many recent (vanilla) kernels, up to and
+> including 3.9-rc5
+>
+>
+>>  > that adding entries for also fixed booting.  I don't have any SD
+>> cards or firewire devices handy to test that they work, but the system
+>> now boots, which was not the case without your patch and IOMMU/DMAR
+>> enabled.
+>>
+>> That is really strange. Could you tell us what kernel version you tested
+>> and provide dmesg output?
+>
+>
+> I'll capture a vanilla 3.8.5 boot without any patches and iommu=off, then
+> try to find another machine to catch what I can of a netconsole boot with
+> iommu=on.  What's the preferred way to send these?  pastebin links?
+>
+> I'd been running the 'dirty' fix that's in the redhat bugzilla entry.  I
+> checked my .config and have CONFIG_PCI_QUIRKS=y, and verified my devices are
+> in the quirks table for the pci_func_0_dma_source fixup.
+>
+Do you mean that even though your hardware is specifically listed in
+the quirk table, the quirk simply hasn't worked for you? That would be
+unfortunate, to say the least.
 
+The fedora kernel included a separate patch for this issue until
+recently (see https://bugzilla.redhat.com/show_bug.cgi?id=880051).  It
+basically just disabled DMAR when the Ricoh device is present, the
+same as the patch to the mailing list you mentioned.
 
-> -----Original Message-----
-> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> Sent: Thursday, April 04, 2013 10:14 PM
-> To: Sethi Varun-B16395
-> Cc: Joerg Roedel; Yoder Stuart-B08248; Wood Scott-B07421;
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-
-> kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org;
-> benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org
-> Subject: Re: [PATCH 5/5 v11] iommu/fsl: Freescale PAMU driver and iommu
-> implementation.
-> 
-> On Thu, 2013-04-04 at 16:35 +0000, Sethi Varun-B16395 wrote:
-> >
-> > > -----Original Message-----
-> > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > > Sent: Thursday, April 04, 2013 8:52 PM
-> > > To: Sethi Varun-B16395
-> > > Cc: Joerg Roedel; Yoder Stuart-B08248; Wood Scott-B07421;
-> > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org;
-> > > linux- kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org;
-> > > benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org
-> > > Subject: Re: [PATCH 5/5 v11] iommu/fsl: Freescale PAMU driver and
-> > > iommu implementation.
-> > >
-> > > On Thu, 2013-04-04 at 13:00 +0000, Sethi Varun-B16395 wrote:
-> > > >
-> > > > > -----Original Message-----
-> > > > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > > > > Sent: Wednesday, April 03, 2013 11:32 PM
-> > > > > To: Joerg Roedel
-> > > > > Cc: Sethi Varun-B16395; Yoder Stuart-B08248; Wood Scott-B07421;
-> > > > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org;
-> > > > > linux- kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org;
-> > > > > benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org
-> > > > > Subject: Re: [PATCH 5/5 v11] iommu/fsl: Freescale PAMU driver
-> > > > > and iommu implementation.
-> > > > >
-> > > > > On Tue, 2013-04-02 at 18:18 +0200, Joerg Roedel wrote:
-> > > > > > Cc'ing Alex Williamson
-> > > > > >
-> > > > > > Alex, can you please review the iommu-group part of this patch?
-> > > > >
-> > > > > Sure, it looks pretty reasonable.  AIUI, all PCI devices are
-> > > > > below some kind of host bridge that is either new and supports
-> > > > > partitioning or old and doesn't.  I don't know if that's a
-> > > > > visibility or isolation requirement, perhaps PCI ACS-ish.  In
-> > > > > the new host bridge case, each device gets a group.  This seems
-> > > > > not to have any quirks for multifunction devices though.  On AMD
-> > > > > and Intel IOMMUs we test multifunction device ACS support to
-> > > > > determine whether all the functions should be in the same group.
-> > > > > Is there any reason
-> > > to trust multifunction devices on PAMU?
-> > > > >
-> > > > [Sethi Varun-B16395] In the case where we can partition endpoints
-> > > > we can distinguish transactions based on the bus,device,function
-> > > > number combination. This support is available in the PCIe
-> > > > controller (host bridge).
-> > >
-> > > So can x86 IOMMUs, that's the visibility aspect of IOMMU groups.
-> > > Visibility alone doesn't necessarily imply that a device is isolated
-> > > though.  A multifunction PCI device that doesn't expose ACS support
-> > > may not isolate functions from each other.  For example a
-> > > peer-to-peer DMA between functions may not be translated by the
-> > > upstream IOMMU.  IOMMU groups should encompass both visibility and
-> isolation.
-> > [Sethi Varun-B16395] We can isolate the DMA access to the host based
-> > on the to the pci bus,device,function number.
-> 
-> The IOMMU can only isolate DMA that it can see.  A multifunction device
-> may never expose peer-to-peer DMA to the upstream device, it's
-> implementation specific.  The ACS flags allow that possibility to be
-> controlled and prevented.
-> 
-> > I thought that was enough to put devices in to separate iommu groups.
-> > This is a PCIe controller property which allows us to partition PCIe
-> > devices. But, what I can understand from your point is that we also
-> > need to consider isolation at PCIe device level as well. I will check
-> > for the case of multifunction devices.
-> >
-> > >
-> > > > > I also find it curious what happens to the iommu group of the
-> > > > > host bridge.  In the partitionable case the host bridge group is
-> > > > > removed, in the non-partitionable case the host bridge group
-> > > > > becomes the group for the children, removing the host bridge.
-> > > > > It's unique to PAMU so far that these host bridges are even in
-> > > > > an iommu group (x86 only adds pci devices), but I don't see it
-> > > > > as necessarily wrong leaving it in either scenario.  Does it
-> > > > > solve some problem to remove
-> > > them from the groups?
-> > > > > Thanks,
-> > > > [Sethi Varun-B16395] The PCIe controller isn't a partitionable
-> > > > entity, it would always be owned by the host.
-> > >
-> > > Ownership of a device shouldn't play into the group context.  An
-> > > IOMMU group should be defined by it's visibility and isolation from
-> > > other devices.  Whether the PCIe controller is allowed to be handed
-> > > to userspace is a question for VFIO.
-> > [Sethi Varun-B16395] The problem is in the case, where we can't
-> > partition PCIe devices. PCIe devices share the same device group as
-> > the PCI controller. This becomes a problem while assigning the devices
-> > to the guest, as you are required to unbind all the PCIe devices
-> > including the controller from the host. PCIe controller can't be
-> > unbound from the host, so we simply delete the controller iommu_group.
-> 
-> Unbinding devices is a VFIO implementation, it shouldn't leak into IOMMU
-> groups.  Also note that VFIO has a driver white list where we can have
-> exceptions to the rule.  I recently added pciehp to that list because the
-> host driver provides functionality.  Being attached to the host driver
-> means the device is not accessible to the user through VFIO, but other
-> devices in the group are.  Thanks,
-> 
-Also, as Stuart pointed out the PCIe controller aren't the actual DMA devices (endpoints are the actual DMA devices). So, we remove the device group allocated for the PCIe controllers.
+Is the dirty fix you're referring to comment 7?
+https://bugzilla.redhat.com/show_bug.cgi?id=605888#c7
 
--Varun
+>>
+>> [1] In the Ricoh case, multiple functions are used for real devices and
+>> the bug is that these devices all use function 0 during DMA. In this
+>> particular case, I'd expect the FireWire device 17:00.3 to issue DMA
+>> from the SD Host Controller address 17:00.0. The quirk is not too much
+>> of a terrible hack - it's a fairly simple translation.
+>>
+>> In the Marvell case, the real device uses DMA source tags that don't
+>> actually belong to any visible devices. The quirk to make this work is
+>> more invasive, not nearly as elegant and has not attracted much
+>> enthusiasm from subsystem maintainers, though I'm still hopeful that a
+>> quirk will be merged in some form or another.
+>>
+>
+> Thanks for explaining the difference!
+>
+> Pat
