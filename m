@@ -1,15 +1,21 @@
-From: Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: RFC: vfio API changes needed for powerpc (v2)
-Date: Thu, 4 Apr 2013 23:11:59 +0000
-Message-ID: <9F6FE96B71CF29479FF1CDC8046E15035A2B7F@039-SN1MPN1-003.039d.mgd.msft.net>
-References: <9F6FE96B71CF29479FF1CDC8046E15035A29AC@039-SN1MPN1-003.039d.mgd.msft.net>
-	(from B08248@freescale.com on Thu Apr  4 16:38:44 2013)
-	<1365115909.14772.20@snotra>
+From: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH 5/5 v11] iommu/fsl: Freescale PAMU driver and iommu
+	implementation.
+Date: Fri, 5 Apr 2013 00:01:38 +0000
+Message-ID: <C5ECD7A89D1DC44195F34B25E172658D45AC83@039-SN2MPN1-013.039d.mgd.msft.net>
+References: <1364500442-20927-1-git-send-email-Varun.Sethi@freescale.com>
+	<1364500442-20927-6-git-send-email-Varun.Sethi@freescale.com>
+	<20130402161812.GI15687@8bytes.org>
+	<1365012091.2882.252.camel@bling.home>
+	<C5ECD7A89D1DC44195F34B25E172658D45883B@039-SN2MPN1-013.039d.mgd.msft.net>
+	<1365088930.2882.296.camel@bling.home>
+	<C5ECD7A89D1DC44195F34B25E172658D459471@039-SN2MPN1-013.039d.mgd.msft.net>
+	<1365093819.2882.301.camel@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1365115909.14772.20@snotra>
+In-Reply-To: <1365093819.2882.301.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -20,122 +26,123 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org" <qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, Bhushan Bharat-R65777 <R65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
 
 > -----Original Message-----
-> From: Wood Scott-B07421
-> Sent: Thursday, April 04, 2013 5:52 PM
-> To: Yoder Stuart-B08248
-> Cc: Alex Williamson; Wood Scott-B07421; agraf-l3A5Bk7waGM@public.gmane.org; Bhushan Bharat-R65777; Sethi Varun-B16395;
-> kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> Subject: Re: RFC: vfio API changes needed for powerpc (v2)
+> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> Sent: Thursday, April 04, 2013 10:14 PM
+> To: Sethi Varun-B16395
+> Cc: Joerg Roedel; Yoder Stuart-B08248; Wood Scott-B07421;
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-
+> kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org;
+> benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org
+> Subject: Re: [PATCH 5/5 v11] iommu/fsl: Freescale PAMU driver and iommu
+> implementation.
 > 
-> On 04/04/2013 04:38:44 PM, Yoder Stuart-B08248 wrote:
+> On Thu, 2013-04-04 at 16:35 +0000, Sethi Varun-B16395 wrote:
 > >
-> > > > /*
-> > > >  * VFIO_PAMU_MAP_MSI_BANK
-> > > >  *
-> > > >  * Maps the MSI bank at the specified index and iova.  User space
-> > must
-> > > >  * call this ioctl once for each MSI bank (count of banks is
-> > returned by
-> > > >  * VFIO_IOMMU_GET_MSI_BANK_COUNT).
-> > > >  * Caller provides struct vfio_pamu_msi_bank_map with all fields
-> > set.
-> > > >  * Operates on VFIO file descriptor (/dev/vfio/vfio).
-> > > >  * Return: 0 on success, -errno on failure
-> > > >  */
-> > > >
-> > > > struct vfio_pamu_msi_bank_map {
-> > > >         __u32   argsz;
-> > > >         __u32   msi_bank_index;  /* the index of the MSI bank */
-> > > >         __u64   iova;      /* the iova the bank is to be mapped
-> > to */
-> > > > };
+> > > -----Original Message-----
+> > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> > > Sent: Thursday, April 04, 2013 8:52 PM
+> > > To: Sethi Varun-B16395
+> > > Cc: Joerg Roedel; Yoder Stuart-B08248; Wood Scott-B07421;
+> > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org;
+> > > linux- kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org;
+> > > benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org
+> > > Subject: Re: [PATCH 5/5 v11] iommu/fsl: Freescale PAMU driver and
+> > > iommu implementation.
 > > >
-> > > Again, flags.  If we dynamically add or remove devices from a
-> > container
-> > > the bank count can change, right?  If bank count goes from 2 to 3,
-> > does
-> > > userspace know assume the new bank is [2]?  If bank count goes from
-> > 3 to
-> > > 2, which index was that?  If removing a device removes an MSI bank
-> > then
-> > > vfio-pamu will automatically do the unmap, right?
+> > > On Thu, 2013-04-04 at 13:00 +0000, Sethi Varun-B16395 wrote:
+> > > >
+> > > > > -----Original Message-----
+> > > > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> > > > > Sent: Wednesday, April 03, 2013 11:32 PM
+> > > > > To: Joerg Roedel
+> > > > > Cc: Sethi Varun-B16395; Yoder Stuart-B08248; Wood Scott-B07421;
+> > > > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org;
+> > > > > linux- kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org;
+> > > > > benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org
+> > > > > Subject: Re: [PATCH 5/5 v11] iommu/fsl: Freescale PAMU driver
+> > > > > and iommu implementation.
+> > > > >
+> > > > > On Tue, 2013-04-02 at 18:18 +0200, Joerg Roedel wrote:
+> > > > > > Cc'ing Alex Williamson
+> > > > > >
+> > > > > > Alex, can you please review the iommu-group part of this patch?
+> > > > >
+> > > > > Sure, it looks pretty reasonable.  AIUI, all PCI devices are
+> > > > > below some kind of host bridge that is either new and supports
+> > > > > partitioning or old and doesn't.  I don't know if that's a
+> > > > > visibility or isolation requirement, perhaps PCI ACS-ish.  In
+> > > > > the new host bridge case, each device gets a group.  This seems
+> > > > > not to have any quirks for multifunction devices though.  On AMD
+> > > > > and Intel IOMMUs we test multifunction device ACS support to
+> > > > > determine whether all the functions should be in the same group.
+> > > > > Is there any reason
+> > > to trust multifunction devices on PAMU?
+> > > > >
+> > > > [Sethi Varun-B16395] In the case where we can partition endpoints
+> > > > we can distinguish transactions based on the bus,device,function
+> > > > number combination. This support is available in the PCIe
+> > > > controller (host bridge).
+> > >
+> > > So can x86 IOMMUs, that's the visibility aspect of IOMMU groups.
+> > > Visibility alone doesn't necessarily imply that a device is isolated
+> > > though.  A multifunction PCI device that doesn't expose ACS support
+> > > may not isolate functions from each other.  For example a
+> > > peer-to-peer DMA between functions may not be translated by the
+> > > upstream IOMMU.  IOMMU groups should encompass both visibility and
+> isolation.
+> > [Sethi Varun-B16395] We can isolate the DMA access to the host based
+> > on the to the pci bus,device,function number.
+> 
+> The IOMMU can only isolate DMA that it can see.  A multifunction device
+> may never expose peer-to-peer DMA to the upstream device, it's
+> implementation specific.  The ACS flags allow that possibility to be
+> controlled and prevented.
+> 
+> > I thought that was enough to put devices in to separate iommu groups.
+> > This is a PCIe controller property which allows us to partition PCIe
+> > devices. But, what I can understand from your point is that we also
+> > need to consider isolation at PCIe device level as well. I will check
+> > for the case of multifunction devices.
 > >
-> > My assumption is that the bank count returned by
-> > VFIO_IOMMU_GET_MSI_BANK_COUNT
-> > is the max bank count for a platform.  (number will mostly likely
-> > always be
-> > 3 or 4).  So it won't change as devices are added or removed.
+> > >
+> > > > > I also find it curious what happens to the iommu group of the
+> > > > > host bridge.  In the partitionable case the host bridge group is
+> > > > > removed, in the non-partitionable case the host bridge group
+> > > > > becomes the group for the children, removing the host bridge.
+> > > > > It's unique to PAMU so far that these host bridges are even in
+> > > > > an iommu group (x86 only adds pci devices), but I don't see it
+> > > > > as necessarily wrong leaving it in either scenario.  Does it
+> > > > > solve some problem to remove
+> > > them from the groups?
+> > > > > Thanks,
+> > > > [Sethi Varun-B16395] The PCIe controller isn't a partitionable
+> > > > entity, it would always be owned by the host.
+> > >
+> > > Ownership of a device shouldn't play into the group context.  An
+> > > IOMMU group should be defined by it's visibility and isolation from
+> > > other devices.  Whether the PCIe controller is allowed to be handed
+> > > to userspace is a question for VFIO.
+> > [Sethi Varun-B16395] The problem is in the case, where we can't
+> > partition PCIe devices. PCIe devices share the same device group as
+> > the PCI controller. This becomes a problem while assigning the devices
+> > to the guest, as you are required to unbind all the PCIe devices
+> > including the controller from the host. PCIe controller can't be
+> > unbound from the host, so we simply delete the controller iommu_group.
 > 
-> It should be the actual number of banks used.  This is required if
-> we're going to have userspace do the iteration and specify the exact
-> iovas to use -- and even if we aren't going to do that, it would be
-> more restrictive on available iova-space than is necessary.  Usually
-> there will be only one bank in the group.
+> Unbinding devices is a VFIO implementation, it shouldn't leak into IOMMU
+> groups.  Also note that VFIO has a driver white list where we can have
+> exceptions to the rule.  I recently added pciehp to that list because the
+> host driver provides functionality.  Being attached to the host driver
+> means the device is not accessible to the user through VFIO, but other
+> devices in the group are.  Thanks,
 > 
-> Actually mapping all of the MSI banks, all the time, would completely
-> negate the point of using the separate alias pages.
+Also, as Stuart pointed out the PCIe controller aren't the actual DMA devices (endpoints are the actual DMA devices). So, we remove the device group allocated for the PCIe controllers.
 
-The geometry, windows, DMA mappings, etc is set on a 'container'
-which may have multiple groups in it.  So user space needs to
-determine the total number of MSI windows needed when setting
-the geometry and window count.
-
-In the flow you proposed:
-
-count = VFIO_IOMMU_GET_MSI_BANK_COUNT
-VFIO_IOMMU_SET_ATTR(ATTR_GEOMETRY)
-VFIO_IOMMU_SET_ATTR(ATTR_WINDOWS)
-// do other DMA maps now, or later, or not at all, doesn't matter
-for (i = 0; i < count; i++)
-        VFIO_IOMMU_MAP_MSI_BANK(iova, i);
-
-...that "count" has to be the total, not the count for 1 of
-N possible groups.   So the get count ioctl is not done on
-a group.
-
-However, like you pointed out we don't want to negate isolation 
-of the separate alias pages.  All this API is doing is telling
-the kernel which windows to use for which MSI banks.   It's up
-to the kernel to actually enable them as needed.
-
-Say 3 MSI banks exist.  If there are no groups added to the
-vfio container and all 3 MAP_MSI_BANK calls occurred
-the picture may look like this (based on my earlier example):
-
-   win gphys/
-    #   enabled iova        phys          size
-    --- ------- ----        ----          ----
-    5     N     0x10000000  0xf_fe044000  4KB    // msi bank 1
-    6     N     0x14000000  0xf_fe045000  4KB    // msi bank 2
-    7     N     0x18000000  0xf_fe046000  4KB    // msi bank 3
-
-User space adds 2 groups that use bank 1:
-
-   win          gphys/
-    #   enabled iova        phys          size
-    --- ------- ----        ----          ----
-    5     Y     0x10000000  0xf_fe044000  4KB    // msi bank 1
-    6     N     0x14000000  0xf_fe045000  4KB    // msi bank 2
-    7     N     0x18000000  0xf_fe046000  4KB    // msi bank 3
-
-User space adds another group that uses bank 3:
-
-   win          gphys/
-    #   enabled iova        phys          size
-    --- ------- ----        ----          ----
-    5     Y     0x10000000  0xf_fe044000  4KB    // msi bank 1
-    6     N     0x14000000  0xf_fe045000  4KB    // msi bank 2
-    7     Y     0x18000000  0xf_fe046000  4KB    // msi bank 3
-
-User space doesn't need to care what is actually enabled,
-it just needs to the the kernel which windows to use
-and the kernel can take care of the rest.
-
-Stuart
+-Varun
