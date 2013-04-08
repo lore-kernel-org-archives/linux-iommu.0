@@ -1,76 +1,55 @@
-From: Suravee Suthikulanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH V3] iommu/amd: Add logic to decode AMD IOMMU event flag
-Date: Mon, 8 Apr 2013 10:43:45 -0500
-Message-ID: <5162E5B1.2030707@amd.com>
-References: <1364947610-3327-1-git-send-email-suravee.suthikulpanit@amd.com>
-	<02D2024799561B48A732D1A51CB969E81959AF3E@sausexdag04.amd.com>
-	<20130408145003.GC4723@pd.tnic>
+From: Takao Indoh <indou.takao@jp.fujitsu.com>
+Subject: Re: [PATCH] intel-iommu: Synchronize gcmd value with global command
+ register
+Date: Mon, 08 Apr 2013 17:57:07 +0900
+Message-ID: <51628663.9040604@jp.fujitsu.com>
+References: <1363829556-2128-1-git-send-email-indou.takao@jp.fujitsu.com>  <20130326144629.GB2727@8bytes.org> <51527D74.9080209@jp.fujitsu.com>  <20130327103122.GK30540@8bytes.org> <51591EEE.60401@jp.fujitsu.com>  <20130402140546.GA15687@8bytes.org> <515BD638.8070307@jp.fujitsu.com>  <1364977479.28127.15.camel@i7.infradead.org>  <515D1429.40707@jp.fujitsu.com> <1365085489.28127.64.camel@i7.infradead.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============3162259264137799675=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130408145003.GC4723-fF5Pk5pvG8Y@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset=ISO-2022-JP
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1365085489.28127.64.camel@i7.infradead.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: dwmw2@infradead.org
+Cc: kexec@lists.infradead.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
---===============3162259264137799675==
-Content-Type: multipart/alternative;
-	boundary="------------070605090806070903080808"
+(2013/04/04 23:24), David Woodhouse wrote:
+> On Thu, 2013-04-04 at 14:48 +0900, Takao Indoh wrote:
+>>
+>> - DMAR fault messages floods and second kernel does not boot. Recently I
+>>    saw similar report. https://lkml.org/lkml/2013/3/8/120
+> 
+> Right. So the fix for that is to make the subsequent errors silent,
+> until/unless we actually get a request to create a mapping for the given
+> device.
+> 
+>> - igb driver detectes error on linkup and kdump via network fails.
+> 
+> That's a driver bug, IIRC. It was failing to completely reset the
+> hardware. It's fixed now, isn't it?
 
---------------070605090806070903080808
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+No, it can be reproduced with latest kernel(3.9.0-rc6).
 
-On 4/8/2013 9:50 AM, Borislav Petkov wrote:
-> Independent from Joerg's feedback on this, I have only one question:
-> you're not seriously considering on dumping this "Note:..." line above
-> on*every*  IO-PF, right?
-Boris,
+> 
+>> - On a certain platform, though kdump itself works, PCIe error like
+>>    Unexpected Completion is detected and it gets hardware degraded.
+> 
+> More information required.
 
-If you think that is obvious, I can get rid of this also.
+When I tested intel_iommu on a certain machine, the following error
+message was logged in its firmware, and I/O board got abnormal status.
+05:00.0 is igb, so I think this was caused by DMA error on igb. This
+occurs before igb driver loading, so this cannot be fixed in driver.
 
-Suravee
+    PCI: Unexpected Completion Bus: 5 Device: 0x00 Function: 0x00
 
---------------070605090806070903080808
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Anyway, I'm thinking we should introduce something framework to clean
+all devices to stop DMA at boot time rather than dealing with the
+problem in each driver. And one of the way I found is resetting devcies
+by PCIe layer. If DMAR is disabled in init_dmars(), we can have a
+chance to handle devices to stop DMA in PCI layer, like qci-quirk. This
+is one of the reason why I propose this patch.
 
-<html>
-  <head>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-  </head>
-  <body text="#000000" bgcolor="#FFFFFF">
-    <div class="moz-cite-prefix">On 4/8/2013 9:50 AM, Borislav Petkov
-      wrote:<br>
-    </div>
-    <blockquote cite="mid:20130408145003.GC4723-fF5Pk5pvG8Y@public.gmane.org" type="cite">
-      <pre wrap="">Independent from Joerg's feedback on this, I have only one question:
-you're not seriously considering on dumping this "Note:..." line above
-on <b class="moz-txt-star"><span class="moz-txt-tag">*</span>every<span class="moz-txt-tag">*</span></b> IO-PF, right?</pre>
-    </blockquote>
-    Boris, <br>
-    <br>
-    If you think that is obvious, I can get rid of this also. <br>
-    <br>
-    Suravee<br>
-  </body>
-</html>
-
---------------070605090806070903080808--
-
---===============3162259264137799675==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============3162259264137799675==--
+Thanks,
+Takao Indoh
