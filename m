@@ -1,306 +1,239 @@
-From: "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>
-Subject: RE: [PATCH V3] iommu/amd: Add logic to decode AMD IOMMU event flag
-Date: Mon, 8 Apr 2013 14:33:32 +0000
-Message-ID: <02D2024799561B48A732D1A51CB969E81959AF3E@sausexdag04.amd.com>
-References: <1364947610-3327-1-git-send-email-suravee.suthikulpanit@amd.com>
+From: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH] documentation: iommu: add description of ARM System MMU
+	binding
+Date: Mon, 08 Apr 2013 10:03:54 -0700
+Message-ID: <5162F87A.7070409@codeaurora.org>
+References: <1365094259-24847-1-git-send-email-will.deacon@arm.com>
+	<515F37C1.4000109@codeaurora.org>
+	<20130408092535.GA17476@mudshark.cambridge.arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1364947610-3327-1-git-send-email-suravee.suthikulpanit@amd.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "joro@8bytes.org" <joro@8bytes.org>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20130408092535.GA17476-MRww78TxoiP5vMa5CHWGZ34zcgK1vI+I0E9HWUfgJXw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Joerg,
+Hi Will,
 
-Do you have any more feedback about this patch?
+On 4/8/2013 2:25 AM, Will Deacon wrote:
+> Hi Olav,
+> 
+> On Fri, Apr 05, 2013 at 09:44:49PM +0100, Olav Haugan wrote:
+>> On 4/4/2013 9:50 AM, Will Deacon wrote:
+>>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+>>> new file mode 100644
+>>> index 0000000..938325f
+>>> --- /dev/null
+>>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+>>> @@ -0,0 +1,61 @@
+>>> +* ARM System MMU Architecture Implementation
+>>> +
+>>> +ARM SoCs may contain an implementation of the ARM System Memory
+>>> +Management Unit Architecture, which can be used to provide 1 or 2 stages
+>>> +of address translation to bus masters external to the CPU.
+>>> +
+>>> +The SMMU may also raise interrupts in response to various fault
+>>> +conditions.
+>>> +
+>>> +** System MMU required properties:
+>>> +
+>>> +- compatible    : Should be one of "arm,smmu-v1" or "arm,smmu-v2"
+>>> +                  depending on the version of the architecture
+>>> +                  implemented.
+>>> +
+>>> +- reg           : Base address and size of the SMMU.
+>>> +
+>>> +- #global-interrupts : The number of global interrupts exposed by the
+>>> +                       device.
+>>> +
+>>> +- interrupts    : Interrupt list, with the first #global-irqs entries
+>>> +                  corresponding to the global interrupts and any
+>>> +                  following entries corresponding to context interrupts,
+>>> +                  specified in order of their indexing by the SMMU.
+>>> +
+>>> +- mmu-masters   : A list of phandles to device nodes representing bus
+>>> +                  masters for which the SMMU can provide a translation.
+>>
+>> I am not sure I understand the use of mmu-masters. I would imagine that
+>> the bus masters themselves would have phandles to their respective SMMUs
+>> that provides the translation.
+> 
+> The problem with that is when you have chained SMMUs. E.g., a separate SMMU
+> for stage 1 and stage 2, where the StreamIDs are not the same going into the
+> second SMMU on the chain. The set of masters and StreamIDs coming into a
+> system MMU is really a property of that system MMU, and is determined at
+> integration time.
+> 
+>>> +
+>>> +- stream-ids    : A list of 16-bit values corresponding to the StreamIDs
+>>> +                  for the devices listed in the mmu-masters property.
+>>> +                  This list must be same length as mmu-masters, so
+>>> +                  masters with multiple stream-ids will have multiple
+>>> +                  entries in mmu-masters.
+>>> +
+>>
+>> Why are the stream IDs (SIDs) coupled with the bus masters in this way?
+>> You are probably following a different pattern than we do. Our SMMU
+>> driver programs the SMMU SIDs and does not really know or care which
+>> mmu-master it belongs to.
+> 
+> Generally, the StreamIDs are fixed in hardware (as a function of various AXI
+> bits -- see the SMMU integration guide) and cannot be set by software.
+> Furthermore, when the StreamIDs have an implicit effect on IOMMU domain
+> configuration, since stream-matching may not be always be able to identify a
+> master uniquely.
+
+Let me clarify what I mean by "our SMMU driver programs the SMMU SIDs".
+What I meant to say is that our SMMU driver programs the SID into the
+Stream Match Register (SMR) to route the transactions to the correct
+context bank based on the SID.
+
+>> Please see my comments above. I would like to work with you on defining
+>> the bindings for System MMU. We have had System MMU DT bindings for some
+>> time and I'd like to share what we are doing in hope that we can merge
+>> something that works for all of us.
+>>
+>> We use some of the same properties but we have a lot more. We also model
+>> the context banks as children of each SMMU in an object-oriented way.
+> 
+> Hmm, what you have looks really... complicated. Why do you need so much stuff?
+
+Yes, some of the stuff is implementation specific.
+
+>> Here is our current binding for SMMUv1:
+>>
+>> * Qualcomm MSM IOMMU v1
+>>
+>> Required properties:
+>> - compatible : one of:
+>> 	- "qcom,msm-smmu-v1"
+>> - reg : offset and length of the register set for the device. Optional
+>> 	offset and length for clock register for additional clock that
+>> 	needs to be turned on for access to this IOMMU.
+>> - reg-names: "iommu_base", "clk_base" (optional)
+> 
+> Since I'm just working on a software model, I've not gone near clocks.
+> However, clocks are fairly well understood so we could easily add those
+> later if they're needed.
+> 
+>> - label: name of this IOMMU instance.
+> 
+> What?
+
+This is mostly used for debugging allowing us to log a name that is more
+user friendly instead of something like "fda64000.qcom,iommu" as the
+device name. We also use this to create debugfs directory with a user
+friendly name.
+
+> 
+>> Optional properties:
+>> - qcom,iommu-secure-id : Secure identifier for the IOMMU block
+>> - vdd-supply : vdd-supply: phandle to GDSC regulator controlling this IOMMU.
+>> - qcom,alt-vdd-supply : Alternative regulator needed to access IOMMU
+>>   configuration registers.
+>> - interrupts : should contain the performance monitor overflow interrupt
+>> number.
+>> - qcom,iommu-enable-halt : Enable halt of the IOMMU before programming
+>> certain	registers
+>> - qcom,iommu-pmu-ngroups: Number of Performance Monitor Unit (PMU) groups.
+>> - qcom,iommu-pmu-ncounters: Number of PMU counters per group.
+>> - qcom,iommu-pmu-event-classes: List of event classes supported.
+>> - qcom,needs-alt-core-clk : boolean to enable the secondary core clock
+>> for access to the IOMMU configuration registers
+>> - qcom,iommu-bfb-regs : An array of unsigned 32-bit integers
+>> corresponding to BFB register addresses that need to be configured for
+>> performance tuning purposes. If this property is present, the
+>> qcom,iommu-bfb-data must also be present. Register addresses are
+>> specified as an offset from the base of the IOMMU hardware block. This
+>> property may be omitted if no BFB register configuration needs to be
+>> done for a particular IOMMU hardware instance. The registers specified
+>> by this property shall fall within the IOMMU implementation-defined
+>> register region.
+>> - qcom,iommu-bfb-data : An array of unsigned 32-bit integers
+>> representing the values to be programmed into the corresponding
+>> registers given by the qcom,iommu-bfb-regs property. If this property is
+>> present, the qcom,iommu-bfb-regs property shall also be present, and the
+>> lengths of both properties shall be the same.
+> 
+> This really looks specific to your implementation/integration and I can't
+> see that we'd want this in the binding to be honest. It would be good to
+> have PMU support in the future, but I've not thought about that part yet.
+
+Yes, some of this is specific to our implementation. However, the
+properties related to regulators and PMU are not specific I believe. How
+do you do handle regulators?
+
+>> - List of sub nodes, one for each of the translation context banks
+>> supported.
+>>   Each sub node has the following required properties:
+>>
+>>   - reg : offset and length of the register set for the context bank.
+> 
+> Why do you need this? The structure of the context banks is well defined by
+> the SMMU architecture.
+
+Since we specify the context banks as children of the IOMMU we specify
+the address of each node. I believe you should be specifying the "reg"
+property for the nodes when you do this.
+
+>>   - interrupts : should contain the context bank interrupt.
+>>   - qcom,iommu-ctx-sids : List of stream identifiers associated with
+>> this translation context.
+> 
+> StreamIDs aren't statically associated with a translation context. Why do
+> you put them here? Also, how do this interact with stream matching?
+
+We put the StreamIDs in the context bank to tell our driver that these
+StreamIDs should be programmed into the Stream Match Register (SMR) to
+route the transactions bearing these StreamIDs to this context bank. We
+don't really change the SID2CB mapping during run-time. It is set during
+compile time.
+
+>>   - label : Name of the context bank
+> 
+> Again: what?
+
+Same idea as the label in the IOMMU parent node. We also use this to
+allow clients to find context bank devices to attach to based on the name.
+
+>> Optional sub-node properties:
+>>    - qcom,secure-context : boolean indicating that a context is secure
+>>  and programmed by the secure environment.
+> 
+> Why does Linux care about this?
+
+Linux cares about this because if we are doing content protection using
+one of the context banks then the context bank is programmed by the
+secure environment and not accessible/programmable by the HLOS.
+
+> 
+>> Please let me know your thoughts on this.
+> 
+> I'd really rather start off small, and describe precisely what we need to
+> get architecturally-compliant SMMUs off the ground. Then, as the code grows
+> to use more features (PM, PMU, ...) then we can extend the binding.
+> Otherwise, we paint ourselves into a corner with the binding before we've
+> developed any driver code.
+
+Sure, I did not mean to add implementation specific stuff to upstream
+bindings. Does it makes sense to you thought the way we modeled context
+banks as child nodes?
 
 Thanks,
 
-Suravee
-________________________________________
-From: suravee.suthikulpanit@amd.com [suravee.suthikulpanit@amd.com]
-Sent: Tuesday, April 02, 2013 7:06 PM
-To: iommu@lists.linux-foundation.org; joro@8bytes.org
-Cc: linux-kernel@vger.kernel.org; Suthikulpanit, Suravee
-Subject: [PATCH V3] iommu/amd: Add logic to decode AMD IOMMU event flag
+Olav Haugan
 
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-
-Add logic to decode AMD IOMMU event flag based on information from AMD IOMMU specification.
-This should simplify debugging IOMMU errors.  Also, dump DTE information in additional cases.
-
-This is an example:
-AMD-Vi: Event logged [IO_PAGE_FAULT device=51:00.0 domain=0x0000 address=0x0000000000000000 flags=0x0fff]
-AMD-Vi: Flags details: Guest NX=1 User Intr Present Write No-Perm Rsrv-Bit Translation
-AMD-Vi: Type of error: (0x7)
-AMD-Vi: (Note: Please refer to AMD IOMMU specification for details.)
-AMD-Vi: DTE[0]: 6000003fa75e2403
-AMD-Vi: DTE[1]: 0000000000000014
-AMD-Vi: DTE[2]: 2000003fa5e09011
-AMD-Vi: DTE[3]: 0000000000000000
-
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
----
-Changelog:
-V3:
-        * Move comments to end of line
-        * Shorten the print out to be within one line
-V2:
-        * Fix printing format to reduce noise
-        * Use string table instead of switch/case
-        * Use pr_cont instead of printk
-
- drivers/iommu/amd_iommu.c |  171 ++++++++++++++++++++++++++++++++++++---------
- 1 file changed, 137 insertions(+), 34 deletions(-)
-
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index b287ca3..593a1a3 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -601,6 +601,94 @@ static void amd_iommu_stats_init(void)
-  *
-  ****************************************************************************/
-
-+struct _event_log_flags {
-+       u32     gn:1,           /* 16 */
-+               nx:1,           /* 17 */
-+               us:1,           /* 18 */
-+                i:1,           /* 19 */
-+               pr:1,           /* 20 */
-+               rw:1,           /* 21 */
-+               pe:1,           /* 22 */
-+               rz:1,           /* 23 */
-+               tr:1,           /* 24 */
-+               type:3,         /* [27:25] */
-+               _reserved_:20;  /* Reserved */
-+};
-+
-+static const char * const _type_field_encodings[] = {
-+       "Reserved",             /* 00 */
-+       "Master Abort",         /* 01 */
-+       "Target Abort",         /* 10 */
-+       "Data Error",           /* 11 */
-+};
-+
-+static const char * const _invalid_transaction_desc[] = {
-+       "Read request or non-posted write in the interrupt "
-+                "addres range",                                /* 000 */
-+       "Pretranslated transaction received from an "
-+               "I/O device that has I=0 or V=0 in DTE",        /* 001 */
-+       "Port I/O space transaction received from an "
-+               "I/O device that has IoCtl=00b in DTE",         /* 010 */
-+       "Posted write to invalid address range",                /* 011 */
-+       "Invalid read request or non-posted write",             /* 100 */
-+       "Posted write to the interrupt/EOI range from an "
-+               "I/O device that has IntCtl=00b in DTE",        /* 101 */
-+       "Posted write to a reserved interrupt address range",   /* 110 */
-+       "Invalid transaction to the system management "
-+               "address range",                                /* 111 */
-+};
-+
-+static const char * const _invalid_translation_desc[] = {
-+       "Translation request received from an I/O device "
-+               "that has I=0, or has V=0, or has V=1 and "
-+               "TV=0 in DTE",                                  /* 000 */
-+       "Translation request in invalid address range",         /* 001 */
-+       "Invalid translation request",                          /* 010 */
-+       "Reserved",                                             /* 011 */
-+       "Reserved",                                             /* 100 */
-+       "Reserved",                                             /* 101 */
-+       "Reserved",                                             /* 110 */
-+       "Reserved",                                             /* 111 */
-+};
-+
-+static void dump_flags(int flags, int ev_type)
-+{
-+       struct _event_log_flags *p = (struct _event_log_flags *) &flags;
-+       u32 err_type = p->type;
-+
-+       pr_err("AMD-Vi: Flags details: %s NX=%u %s %s %s %s %s %s %s\n",
-+               (p->gn ? "Guest" : "Nested"),
-+               (p->nx),
-+               (p->us ? "User" : "Super"),
-+               (p->i ? "Intr" : "Mem"),
-+               (p->pr ? "Present" : "Absent"),
-+               (p->rw ? "Write" : "Read"),
-+               (p->pe ? "No-Perm" : "Has-Perm"),
-+               (p->rz ? "Rsrv-Bit" : "Ill-Level"),
-+               (p->tr ? "Translation" : "Transaction"));
-+
-+       pr_err("AMD-Vi: Type of error: (0x%x) ", err_type);
-+       if ((ev_type == EVENT_TYPE_DEV_TAB_ERR)  ||
-+           (ev_type == EVENT_TYPE_PAGE_TAB_ERR) ||
-+           (ev_type == EVENT_TYPE_CMD_HARD_ERR)) {
-+               if (err_type < ARRAY_SIZE(_type_field_encodings)) {
-+                       pr_cont("%s\n",
-+                               _type_field_encodings[err_type]);
-+               }
-+       } else if (ev_type == EVENT_TYPE_INV_DEV_REQ) {
-+               if (p->tr == 0) {
-+                       if (err_type < ARRAY_SIZE(_invalid_translation_desc))
-+                               pr_cont("%s\n",
-+                                       _invalid_translation_desc[err_type]);
-+               } else {
-+                       if (err_type < ARRAY_SIZE(_invalid_transaction_desc))
-+                               pr_cont("%s\n",
-+                                       _invalid_transaction_desc[err_type]);
-+               }
-+       }
-+       pr_err("AMD-Vi: (Note: Please refer to AMD IOMMU specification for details.)\n");
-+}
-+
- static void dump_dte_entry(u16 devid)
- {
-        int i;
-@@ -619,81 +707,95 @@ static void dump_command(unsigned long phys_addr)
-                pr_err("AMD-Vi: CMD[%d]: %08x\n", i, cmd->data[i]);
- }
-
--static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
-+void amd_iommu_print_event(int type, int devid, int domid,
-+                             int flags, u64 address)
- {
--       int type, devid, domid, flags;
--       volatile u32 *event = __evt;
--       int count = 0;
--       u64 address;
--
--retry:
--       type    = (event[1] >> EVENT_TYPE_SHIFT)  & EVENT_TYPE_MASK;
--       devid   = (event[0] >> EVENT_DEVID_SHIFT) & EVENT_DEVID_MASK;
--       domid   = (event[1] >> EVENT_DOMID_SHIFT) & EVENT_DOMID_MASK;
--       flags   = (event[1] >> EVENT_FLAGS_SHIFT) & EVENT_FLAGS_MASK;
--       address = (u64)(((u64)event[3]) << 32) | event[2];
--
--       if (type == 0) {
--               /* Did we hit the erratum? */
--               if (++count == LOOP_TIMEOUT) {
--                       pr_err("AMD-Vi: No event written to event log\n");
--                       return;
--               }
--               udelay(1);
--               goto retry;
--       }
--
--       printk(KERN_ERR "AMD-Vi: Event logged [");
-+       pr_err("AMD-Vi: Event logged [");
-
-        switch (type) {
-        case EVENT_TYPE_ILL_DEV:
--               printk("ILLEGAL_DEV_TABLE_ENTRY device=%02x:%02x.%x "
-+               pr_cont("ILLEGAL_DEV_TABLE_ENTRY device=%02x:%02x.%x "
-                       "address=0x%016llx flags=0x%04x]\n",
-                       PCI_BUS(devid), PCI_SLOT(devid), PCI_FUNC(devid),
-                       address, flags);
-+               dump_flags(flags, type);
-                dump_dte_entry(devid);
-                break;
-        case EVENT_TYPE_IO_FAULT:
--               printk("IO_PAGE_FAULT device=%02x:%02x.%x "
-+               pr_cont("IO_PAGE_FAULT device=%02x:%02x.%x "
-                       "domain=0x%04x address=0x%016llx flags=0x%04x]\n",
-                       PCI_BUS(devid), PCI_SLOT(devid), PCI_FUNC(devid),
-                       domid, address, flags);
-+               dump_flags(flags, type);
-+               dump_dte_entry(devid);
-                break;
-        case EVENT_TYPE_DEV_TAB_ERR:
--               printk("DEV_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
-+               pr_cont("DEV_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
-                       "address=0x%016llx flags=0x%04x]\n",
-                       PCI_BUS(devid), PCI_SLOT(devid), PCI_FUNC(devid),
-                       address, flags);
-+               dump_flags(flags, type);
-                break;
-        case EVENT_TYPE_PAGE_TAB_ERR:
--               printk("PAGE_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
-+               pr_cont("PAGE_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
-                       "domain=0x%04x address=0x%016llx flags=0x%04x]\n",
-                       PCI_BUS(devid), PCI_SLOT(devid), PCI_FUNC(devid),
-                       domid, address, flags);
-+               dump_flags(flags, type);
-                break;
-        case EVENT_TYPE_ILL_CMD:
--               printk("ILLEGAL_COMMAND_ERROR address=0x%016llx]\n", address);
-+               pr_cont("ILLEGAL_COMMAND_ERROR address=0x%016llx]\n", address);
-                dump_command(address);
-                break;
-        case EVENT_TYPE_CMD_HARD_ERR:
--               printk("COMMAND_HARDWARE_ERROR address=0x%016llx "
-+               pr_cont("COMMAND_HARDWARE_ERROR address=0x%016llx "
-                       "flags=0x%04x]\n", address, flags);
-+               dump_flags(flags, type);
-                break;
-        case EVENT_TYPE_IOTLB_INV_TO:
--               printk("IOTLB_INV_TIMEOUT device=%02x:%02x.%x "
-+               pr_cont("IOTLB_INV_TIMEOUT device=%02x:%02x.%x "
-                       "address=0x%016llx]\n",
-                       PCI_BUS(devid), PCI_SLOT(devid), PCI_FUNC(devid),
-                       address);
-                break;
-        case EVENT_TYPE_INV_DEV_REQ:
--               printk("INVALID_DEVICE_REQUEST device=%02x:%02x.%x "
-+               pr_cont("INVALID_DEVICE_REQUEST device=%02x:%02x.%x "
-                       "address=0x%016llx flags=0x%04x]\n",
-                       PCI_BUS(devid), PCI_SLOT(devid), PCI_FUNC(devid),
-                       address, flags);
-+               dump_flags(flags, type);
-+               dump_dte_entry(devid);
-                break;
-        default:
--               printk(KERN_ERR "UNKNOWN type=0x%02x]\n", type);
-+               pr_cont("UNKNOWN type=0x%02x]\n", type);
-        }
-+}
-+
-+static void iommu_handle_event(struct amd_iommu *iommu, void *__evt)
-+{
-+       int type, devid, domid, flags;
-+       u32 *event = __evt;
-+       int count = 0;
-+       u64 address;
-+
-+retry:
-+       type    = (event[1] >> EVENT_TYPE_SHIFT)  & EVENT_TYPE_MASK;
-+       devid   = (event[0] >> EVENT_DEVID_SHIFT) & EVENT_DEVID_MASK;
-+       domid   = (event[1] >> EVENT_DOMID_SHIFT) & EVENT_DOMID_MASK;
-+       flags   = (event[1] >> EVENT_FLAGS_SHIFT) & EVENT_FLAGS_MASK;
-+       address = (u64)(((u64)event[3]) << 32) | event[2];
-+
-+       if (type == 0) {
-+               /* Did we hit the erratum? */
-+               if (++count == LOOP_TIMEOUT) {
-+                       pr_err("AMD-Vi: No event written to event log\n");
-+                       return;
-+               }
-+               udelay(1);
-+               goto retry;
-+       }
-+
-+       amd_iommu_print_event(type, devid, domid, flags, address);
-
-        memset(__evt, 0, 4 * sizeof(u32));
- }
-@@ -709,7 +811,7 @@ static void iommu_poll_events(struct amd_iommu *iommu)
-        tail = readl(iommu->mmio_base + MMIO_EVT_TAIL_OFFSET);
-
-        while (head != tail) {
--               iommu_print_event(iommu, iommu->evt_buf + head);
-+               iommu_handle_event(iommu, iommu->evt_buf + head);
-                head = (head + EVENT_ENTRY_SIZE) % iommu->evt_buf_size;
-        }
-
-@@ -3268,6 +3370,7 @@ static int __init alloc_passthrough_domain(void)
-
-        return 0;
- }
-+
- static int amd_iommu_domain_init(struct iommu_domain *dom)
- {
-        struct protection_domain *domain;
---
-1.7.10.4
+-- 
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+hosted by The Linux Foundation
