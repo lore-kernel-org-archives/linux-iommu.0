@@ -1,55 +1,56 @@
-From: Takao Indoh <indou.takao@jp.fujitsu.com>
-Subject: Re: [PATCH] intel-iommu: Synchronize gcmd value with global command
- register
-Date: Mon, 08 Apr 2013 17:57:07 +0900
-Message-ID: <51628663.9040604@jp.fujitsu.com>
-References: <1363829556-2128-1-git-send-email-indou.takao@jp.fujitsu.com>  <20130326144629.GB2727@8bytes.org> <51527D74.9080209@jp.fujitsu.com>  <20130327103122.GK30540@8bytes.org> <51591EEE.60401@jp.fujitsu.com>  <20130402140546.GA15687@8bytes.org> <515BD638.8070307@jp.fujitsu.com>  <1364977479.28127.15.camel@i7.infradead.org>  <515D1429.40707@jp.fujitsu.com> <1365085489.28127.64.camel@i7.infradead.org>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] documentation: iommu: add description of ARM System MMU
+	binding
+Date: Mon, 8 Apr 2013 09:59:46 +0100
+Message-ID: <20130408085946.GA17208@mudshark.cambridge.arm.com>
+References: <1365094259-24847-1-git-send-email-will.deacon@arm.com>
+	<515EFF1A.5030705@gmail.com>
+	<20130405165745.GB17151@mudshark.cambridge.arm.com>
+	<515F1716.70309@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-2022-JP
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1365085489.28127.64.camel@i7.infradead.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: dwmw2@infradead.org
-Cc: kexec@lists.infradead.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <515F1716.70309-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-(2013/04/04 23:24), David Woodhouse wrote:
-> On Thu, 2013-04-04 at 14:48 +0900, Takao Indoh wrote:
->>
->> - DMAR fault messages floods and second kernel does not boot. Recently I
->>    saw similar report. https://lkml.org/lkml/2013/3/8/120
+On Fri, Apr 05, 2013 at 07:25:26PM +0100, Rob Herring wrote:
+> On 04/05/2013 11:57 AM, Will Deacon wrote:
+> > Hi Rob,
+> > 
+> > On Fri, Apr 05, 2013 at 05:43:06PM +0100, Rob Herring wrote:
 > 
-> Right. So the fix for that is to make the subsequent errors silent,
-> until/unless we actually get a request to create a mapping for the given
-> device.
+> [...]
 > 
->> - igb driver detectes error on linkup and kdump via network fails.
+> >>> +- compatible    : Should be one of "arm,smmu-v1" or "arm,smmu-v2"
+> >>> +                  depending on the version of the architecture
+> >>> +                  implemented.
+> >>
+> >> We can keep these, but we should have specific models like arm,smmu-400,
+> >> etc. as well.
+> > 
+> > Ok, if distinctions need to be between MMU-400 and a v1 implementation, then
+> > we can add those strings later.
 > 
-> That's a driver bug, IIRC. It was failing to completely reset the
-> hardware. It's fixed now, isn't it?
+> No, you want to have specific values in the dtb's up front. If there is
+> something needed later in the kernel, you don't want to require a dtb
+> update then. Adding future parts later is fine, but we already know what
+> blocks we have.
 
-No, it can be reproduced with latest kernel(3.9.0-rc6).
+Yes, you're right. I'll add those for v2.
 
-> 
->> - On a certain platform, though kdump itself works, PCIe error like
->>    Unexpected Completion is detected and it gets hardware degraded.
-> 
-> More information required.
+Cheers,
 
-When I tested intel_iommu on a certain machine, the following error
-message was logged in its firmware, and I/O board got abnormal status.
-05:00.0 is igb, so I think this was caused by DMA error on igb. This
-occurs before igb driver loading, so this cannot be fixed in driver.
-
-    PCI: Unexpected Completion Bus: 5 Device: 0x00 Function: 0x00
-
-Anyway, I'm thinking we should introduce something framework to clean
-all devices to stop DMA at boot time rather than dealing with the
-problem in each driver. And one of the way I found is resetting devcies
-by PCIe layer. If DMAR is disabled in init_dmars(), we can have a
-chance to handle devices to stop DMA in PCI layer, like qci-quirk. This
-is one of the reason why I propose this patch.
-
-Thanks,
-Takao Indoh
+Will
