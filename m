@@ -1,18 +1,15 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] documentation: iommu: add description of ARM System MMU
-	binding
-Date: Mon, 8 Apr 2013 09:59:46 +0100
-Message-ID: <20130408085946.GA17208@mudshark.cambridge.arm.com>
-References: <1365094259-24847-1-git-send-email-will.deacon@arm.com>
-	<515EFF1A.5030705@gmail.com>
-	<20130405165745.GB17151@mudshark.cambridge.arm.com>
-	<515F1716.70309@gmail.com>
+From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Subject: Re: [PATCH V3] iommu/amd: Add logic to decode AMD IOMMU event flag
+Date: Mon, 8 Apr 2013 16:50:03 +0200
+Message-ID: <20130408145003.GC4723@pd.tnic>
+References: <1364947610-3327-1-git-send-email-suravee.suthikulpanit@amd.com>
+	<02D2024799561B48A732D1A51CB969E81959AF3E@sausexdag04.amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <515F1716.70309-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <02D2024799561B48A732D1A51CB969E81959AF3E-Vo+W8YXarrhLxsqq04mzcUEOCMrvLtNR@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,35 +19,48 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: "Suthikulpanit, Suravee" <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Apr 05, 2013 at 07:25:26PM +0100, Rob Herring wrote:
-> On 04/05/2013 11:57 AM, Will Deacon wrote:
-> > Hi Rob,
-> > 
-> > On Fri, Apr 05, 2013 at 05:43:06PM +0100, Rob Herring wrote:
+On Mon, Apr 08, 2013 at 02:33:32PM +0000, Suthikulpanit, Suravee wrote:
+> Joerg,
 > 
-> [...]
+> Do you have any more feedback about this patch?
 > 
-> >>> +- compatible    : Should be one of "arm,smmu-v1" or "arm,smmu-v2"
-> >>> +                  depending on the version of the architecture
-> >>> +                  implemented.
-> >>
-> >> We can keep these, but we should have specific models like arm,smmu-400,
-> >> etc. as well.
-> > 
-> > Ok, if distinctions need to be between MMU-400 and a v1 implementation, then
-> > we can add those strings later.
+> Thanks,
 > 
-> No, you want to have specific values in the dtb's up front. If there is
-> something needed later in the kernel, you don't want to require a dtb
-> update then. Adding future parts later is fine, but we already know what
-> blocks we have.
+> Suravee
+> ________________________________________
+> From: suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org [suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org]
+> Sent: Tuesday, April 02, 2013 7:06 PM
+> To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+> Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Suthikulpanit, Suravee
+> Subject: [PATCH V3] iommu/amd: Add logic to decode AMD IOMMU event flag
+> 
+> From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+> 
+> Add logic to decode AMD IOMMU event flag based on information from AMD IOMMU specification.
+> This should simplify debugging IOMMU errors.  Also, dump DTE information in additional cases.
+> 
+> This is an example:
+> AMD-Vi: Event logged [IO_PAGE_FAULT device=51:00.0 domain=0x0000 address=0x0000000000000000 flags=0x0fff]
+> AMD-Vi: Flags details: Guest NX=1 User Intr Present Write No-Perm Rsrv-Bit Translation
+> AMD-Vi: Type of error: (0x7)
+> AMD-Vi: (Note: Please refer to AMD IOMMU specification for details.)
 
-Yes, you're right. I'll add those for v2.
+Independent from Joerg's feedback on this, I have only one question:
+you're not seriously considering on dumping this "Note:..." line above
+on *every* IO-PF, right?
 
-Cheers,
+I very positively assume that people who stare at that output should, as
+a first prerequisite, know where to find those fields' descriptions. :-)
 
-Will
+Thanks.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+Sent from a fat crate under my desk. Formatting is fine.
+--
