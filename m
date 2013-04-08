@@ -1,40 +1,76 @@
-From: Scott Wood <scottwood@freescale.com>
-Subject: Re: RFC: vfio API changes needed for powerpc (v3)
-Date: Fri, 5 Apr 2013 17:17:25 -0500
-Message-ID: <1365200245.17535.13@snotra>
-References: <9F6FE96B71CF29479FF1CDC8046E15035A29FB@039-SN1MPN1-003.039d.mgd.msft.net>
+From: Suravee Suthikulanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH V3] iommu/amd: Add logic to decode AMD IOMMU event flag
+Date: Mon, 8 Apr 2013 10:43:45 -0500
+Message-ID: <5162E5B1.2030707@amd.com>
+References: <1364947610-3327-1-git-send-email-suravee.suthikulpanit@amd.com>
+	<02D2024799561B48A732D1A51CB969E81959AF3E@sausexdag04.amd.com>
+	<20130408145003.GC4723@pd.tnic>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; delsp=Yes; format=Flowed
-Content-Transfer-Encoding: 8BIT
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <9F6FE96B71CF29479FF1CDC8046E15035A29FB@039-SN1MPN1-003.039d.mgd.msft.net>
-	(from B08248@freescale.com on Thu Apr  4 17:10:27 2013)
-Content-Disposition: inline
-Sender: kvm-owner@vger.kernel.org
-To: Yoder Stuart-B08248 <B08248@freescale.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>, Wood Scott-B07421 <B07421@freescale.com>, "agraf@suse.de" <agraf@suse.de>, Bhushan Bharat-R65777 <R65777@freescale.com>, Sethi Varun-B16395 <B16395@freescale.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Content-Type: multipart/mixed; boundary="===============3162259264137799675=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20130408145003.GC4723-fF5Pk5pvG8Y@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/04/2013 05:10:27 PM, Yoder Stuart-B08248 wrote:
-> /*
->  * VFIO_IOMMU_PAMU_UNMAP_MSI_BANK
->  *
->  * Unmaps the MSI bank at the specified iova.
->  * Caller provides struct vfio_pamu_msi_bank_unmap with all fields  
-> set.
->  * Operates on VFIO file descriptor (/dev/vfio/vfio).
->  * Return: 0 on success, -errno on failure
->  */
-> 
-> struct vfio_pamu_msi_bank_unmap {
->         __u32   argsz;
->         __u32   flags;     /* no flags currently */
->         __u64   iova;      /* the iova to be unmapped to */
-> };
-> #define VFIO_IOMMU_PAMU_UNMAP_MSI_BANK  _IO(VFIO_TYPE, VFIO_BASE + x,
->         struct vfio_pamu_msi_bank_unmap )
+--===============3162259264137799675==
+Content-Type: multipart/alternative;
+	boundary="------------070605090806070903080808"
 
-What happens if a normal unmap call is done on the MSI iova?  Do we  
-need a separate unmap?
+--------------070605090806070903080808
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 
--Scott
+On 4/8/2013 9:50 AM, Borislav Petkov wrote:
+> Independent from Joerg's feedback on this, I have only one question:
+> you're not seriously considering on dumping this "Note:..." line above
+> on*every*  IO-PF, right?
+Boris,
+
+If you think that is obvious, I can get rid of this also.
+
+Suravee
+
+--------------070605090806070903080808
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+<html>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+  </head>
+  <body text="#000000" bgcolor="#FFFFFF">
+    <div class="moz-cite-prefix">On 4/8/2013 9:50 AM, Borislav Petkov
+      wrote:<br>
+    </div>
+    <blockquote cite="mid:20130408145003.GC4723-fF5Pk5pvG8Y@public.gmane.org" type="cite">
+      <pre wrap="">Independent from Joerg's feedback on this, I have only one question:
+you're not seriously considering on dumping this "Note:..." line above
+on <b class="moz-txt-star"><span class="moz-txt-tag">*</span>every<span class="moz-txt-tag">*</span></b> IO-PF, right?</pre>
+    </blockquote>
+    Boris, <br>
+    <br>
+    If you think that is obvious, I can get rid of this also. <br>
+    <br>
+    Suravee<br>
+  </body>
+</html>
+
+--------------070605090806070903080808--
+
+--===============3162259264137799675==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============3162259264137799675==--
