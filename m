@@ -1,16 +1,14 @@
-From: Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: RFC: vfio API changes needed for powerpc (v3)
-Date: Tue, 9 Apr 2013 01:22:15 +0000
-Message-ID: <9F6FE96B71CF29479FF1CDC8046E15035A5CA3@039-SN1MPN1-003.039d.mgd.msft.net>
-References: <9F6FE96B71CF29479FF1CDC8046E15035A29FB@039-SN1MPN1-003.039d.mgd.msft.net>
-	(from B08248@freescale.com on Thu Apr  4 17:10:27 2013)
-	<1365200245.17535.13@snotra>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH V3] iommu/amd: Add logic to decode AMD IOMMU event flag
+Date: Tue, 9 Apr 2013 11:41:32 +0200
+Message-ID: <20130409094132.GD6858@8bytes.org>
+References: <1364947610-3327-1-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1365200245.17535.13@snotra>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <1364947610-3327-1-git-send-email-suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,44 +18,33 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org" <qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, Bhushan Bharat-R65777 <R65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+To: suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-> -----Original Message-----
-> From: Wood Scott-B07421
-> Sent: Friday, April 05, 2013 5:17 PM
-> To: Yoder Stuart-B08248
-> Cc: Alex Williamson; Wood Scott-B07421; agraf-l3A5Bk7waGM@public.gmane.org; Bhushan Bharat-R65777; Sethi Varun-B16395;
-> kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> Subject: Re: RFC: vfio API changes needed for powerpc (v3)
+On Tue, Apr 02, 2013 at 07:06:50PM -0500, Suthikulpanit, Suravee wrote:
+> From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 > 
-> On 04/04/2013 05:10:27 PM, Yoder Stuart-B08248 wrote:
-> > /*
-> >  * VFIO_IOMMU_PAMU_UNMAP_MSI_BANK
-> >  *
-> >  * Unmaps the MSI bank at the specified iova.
-> >  * Caller provides struct vfio_pamu_msi_bank_unmap with all fields
-> > set.
-> >  * Operates on VFIO file descriptor (/dev/vfio/vfio).
-> >  * Return: 0 on success, -errno on failure
-> >  */
-> >
-> > struct vfio_pamu_msi_bank_unmap {
-> >         __u32   argsz;
-> >         __u32   flags;     /* no flags currently */
-> >         __u64   iova;      /* the iova to be unmapped to */
-> > };
-> > #define VFIO_IOMMU_PAMU_UNMAP_MSI_BANK  _IO(VFIO_TYPE, VFIO_BASE + x,
-> >         struct vfio_pamu_msi_bank_unmap )
+> Add logic to decode AMD IOMMU event flag based on information from AMD IOMMU specification.
+> This should simplify debugging IOMMU errors.  Also, dump DTE information in additional cases.
 > 
-> What happens if a normal unmap call is done on the MSI iova?  Do we
-> need a separate unmap?
+> This is an example:
+> AMD-Vi: Event logged [IO_PAGE_FAULT device=51:00.0 domain=0x0000 address=0x0000000000000000 flags=0x0fff]
+> AMD-Vi: Flags details: Guest NX=1 User Intr Present Write No-Perm Rsrv-Bit Translation
+> AMD-Vi: Type of error: (0x7) 
+> AMD-Vi: (Note: Please refer to AMD IOMMU specification for details.)
+> AMD-Vi: DTE[0]: 6000003fa75e2403
+> AMD-Vi: DTE[1]: 0000000000000014
+> AMD-Vi: DTE[2]: 2000003fa5e09011
+> AMD-Vi: DTE[3]: 0000000000000000
 
-I was thinking a normal unmap on an MSI windows would be an error...but
-I'm not set on that.   I put the msi unmap there to make things symmetric,
-a normal unmap would work as well...and then we could drop the msi unmap.
+This example should look like this instead:
 
-Stuart
+AMD-Vi: Event logged [IO_PAGE_FAULT device=51:00.0 domain=0x0000 address=0x0 flags: G NX US I P Wr Rsvd Tr]
+
+by default. When the user passes amd_iommu=verbose on the cmd-line then
+you can print additional information like "type of error" or the dump
+the DTE.
+
+
+	Joerg
