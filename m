@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 7/9] iommu/amd: Add ioapic and hpet ivrs override
-Date: Tue,  9 Apr 2013 22:13:02 +0200
-Message-ID: <1365538384-12426-8-git-send-email-joro@8bytes.org>
+Subject: [PATCH 9/9] iommu/amd: Document ivrs_ioapic and ivrs_hpet parameters
+Date: Tue,  9 Apr 2013 22:13:04 +0200
+Message-ID: <1365538384-12426-10-git-send-email-joro@8bytes.org>
 References: <1365538384-12426-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,90 +21,38 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add two new kernel commandline parameters ivrs_ioapic and
-ivrs_hpet to override the Id->DeviceId mapping from the IVRS
-ACPI table. This can be used to work around broken BIOSes to
-get interrupt remapping working on AMD systems.
+Document the new kernel commandline parameters in the
+appropriate file.
 
 Signed-off-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c |   64 ++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 62 insertions(+), 2 deletions(-)
+ Documentation/kernel-parameters.txt |   14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 2a3b1b1..030d6ab 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -2145,8 +2145,68 @@ static int __init parse_amd_iommu_options(char *str)
- 	return 1;
- }
+diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
+index 4609e81..2848b1b 100644
+--- a/Documentation/kernel-parameters.txt
++++ b/Documentation/kernel-parameters.txt
+@@ -1226,6 +1226,20 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
  
--__setup("amd_iommu_dump", parse_amd_iommu_dump);
--__setup("amd_iommu=", parse_amd_iommu_options);
-+static int __init parse_ivrs_ioapic(char *str)
-+{
-+	unsigned int bus, dev, fn;
-+	int ret, id, i;
-+	u16 devid;
-+
-+	ret = sscanf(str, "[%d]=%x:%x.%x", &id, &bus, &dev, &fn);
-+
-+	if (ret != 4) {
-+		pr_err("AMD-Vi: Invalid command line: ivrs_ioapic%s\n", str);
-+		return 1;
-+	}
-+
-+	if (early_ioapic_map_size == EARLY_MAP_SIZE) {
-+		pr_err("AMD-Vi: Early IOAPIC map overflow - ignoring ivrs_ioapic%s\n",
-+			str);
-+		return 1;
-+	}
-+
-+	devid = ((bus & 0xff) << 8) | ((dev & 0x1f) << 3) | (fn & 0x7);
-+
-+	i				= early_ioapic_map_size++;
-+	early_ioapic_map[i].id		= id;
-+	early_ioapic_map[i].devid	= devid;
-+	early_ioapic_map[i].cmd_line	= true;
-+
-+	return 1;
-+}
-+
-+static int __init parse_ivrs_hpet(char *str)
-+{
-+	unsigned int bus, dev, fn;
-+	int ret, id, i;
-+	u16 devid;
-+
-+	ret = sscanf(str, "[%d]=%x:%x.%x", &id, &bus, &dev, &fn);
-+
-+	if (ret != 4) {
-+		pr_err("AMD-Vi: Invalid command line: ivrs_hpet%s\n", str);
-+		return 1;
-+	}
-+
-+	if (early_hpet_map_size == EARLY_MAP_SIZE) {
-+		pr_err("AMD-Vi: Early HPET map overflow - ignoring ivrs_hpet%s\n",
-+			str);
-+		return 1;
-+	}
-+
-+	devid = ((bus & 0xff) << 8) | ((dev & 0x1f) << 3) | (fn & 0x7);
-+
-+	i				= early_hpet_map_size++;
-+	early_hpet_map[i].id		= id;
-+	early_hpet_map[i].devid		= devid;
-+	early_hpet_map[i].cmd_line	= true;
-+
-+	return 1;
-+}
-+
-+__setup("amd_iommu_dump",	parse_amd_iommu_dump);
-+__setup("amd_iommu=",		parse_amd_iommu_options);
-+__setup("ivrs_ioapic",		parse_ivrs_ioapic);
-+__setup("ivrs_hpet",		parse_ivrs_hpet);
+ 	iucv=		[HW,NET]
  
- IOMMU_INIT_FINISH(amd_iommu_detect,
- 		  gart_iommu_hole_init,
++	ivrs_ioapic	[HW,X86_64]
++			Provide an override to the IOAPIC-ID<->DEVICE-ID
++			mapping provided in the IVRS ACPI table. For
++			example, to map IOAPIC-ID decimal 10 to
++			PCI device 00:14.0 write the parameter as:
++				ivrs_ioapic[10]=00:14.0
++
++	ivrs_hpet	[HW,X86_64]
++			Provide an override to the HPET-ID<->DEVICE-ID
++			mapping provided in the IVRS ACPI table. For
++			example, to map HPET-ID decimal 0 to
++			PCI device 00:14.0 write the parameter as:
++				ivrs_hpet[0]=00:14.0
++
+ 	js=		[HW,JOY] Analog joystick
+ 			See Documentation/input/joystick.txt.
+ 
 -- 
 1.7.9.5
