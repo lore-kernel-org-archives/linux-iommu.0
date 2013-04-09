@@ -1,14 +1,15 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 8/9] iommu/amd: Don't report firmware bugs with cmd-line ivrs
-	overrides
-Date: Tue,  9 Apr 2013 22:13:03 +0200
-Message-ID: <1365538384-12426-9-git-send-email-joro@8bytes.org>
+Subject: Re: [PATCH 7/9] iommu/amd: Add ioapic and hpet ivrs override
+Date: Tue, 9 Apr 2013 22:29:42 +0200
+Message-ID: <20130409202941.GJ6858@8bytes.org>
 References: <1365538384-12426-1-git-send-email-joro@8bytes.org>
+	<1365538384-12426-8-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1365538384-12426-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1365538384-12426-8-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,91 +20,17 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When the IVRS entries for IOAPIC and HPET are overridden on
-the kernel command line, a problem detected in the check
-function might not be a firmware bug anymore. So disable
-the firmware bug reporting if the user provided valid
-ivrs_ioapic or ivrs_hpet entries on the command line.
+On Tue, Apr 09, 2013 at 10:13:02PM +0200, Joerg Roedel wrote:
+> Add two new kernel commandline parameters ivrs_ioapic and
+> ivrs_hpet to override the Id->DeviceId mapping from the IVRS
+> ACPI table. This can be used to work around broken BIOSes to
+> get interrupt remapping working on AMD systems.
+> 
+> Signed-off-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 
-Signed-off-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
----
- drivers/iommu/amd_iommu_init.c |   19 ++++++++++++++++---
- 1 file changed, 16 insertions(+), 3 deletions(-)
+Forgot to add:
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 030d6ab..9767941 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -219,6 +219,7 @@ static struct devid_map __initdata early_ioapic_map[EARLY_MAP_SIZE];
- static struct devid_map __initdata early_hpet_map[EARLY_MAP_SIZE];
- static int __initdata early_ioapic_map_size;
- static int __initdata early_hpet_map_size;
-+static bool __initdata cmdline_maps;
- 
- static enum iommu_init_state init_state = IOMMU_START_STATE;
- 
-@@ -1686,18 +1687,28 @@ static void __init free_on_init_error(void)
- 
- static bool __init check_ioapic_information(void)
- {
-+	const char *fw_bug = FW_BUG;
- 	bool ret, has_sb_ioapic;
- 	int idx;
- 
- 	has_sb_ioapic = false;
- 	ret           = false;
- 
-+	/*
-+	 * If we have map overrides on the kernel command line the
-+	 * messages in this function might not describe firmware bugs
-+	 * anymore - so be careful
-+	 */
-+	if (cmdline_maps)
-+		fw_bug = "";
-+
- 	for (idx = 0; idx < nr_ioapics; idx++) {
- 		int devid, id = mpc_ioapic_id(idx);
- 
- 		devid = get_ioapic_devid(id);
- 		if (devid < 0) {
--			pr_err(FW_BUG "AMD-Vi: IOAPIC[%d] not in IVRS table\n", id);
-+			pr_err("%sAMD-Vi: IOAPIC[%d] not in IVRS table\n",
-+				fw_bug, id);
- 			ret = false;
- 		} else if (devid == IOAPIC_SB_DEVID) {
- 			has_sb_ioapic = true;
-@@ -1714,11 +1725,11 @@ static bool __init check_ioapic_information(void)
- 		 * when the BIOS is buggy and provides us the wrong
- 		 * device id for the IOAPIC in the system.
- 		 */
--		pr_err(FW_BUG "AMD-Vi: No southbridge IOAPIC found in IVRS table\n");
-+		pr_err("%sAMD-Vi: No southbridge IOAPIC found\n", fw_bug);
- 	}
- 
- 	if (!ret)
--		pr_err("AMD-Vi: Disabling interrupt remapping due to BIOS Bug(s)\n");
-+		pr_err("AMD-Vi: Disabling interrupt remapping\n");
- 
- 	return ret;
- }
-@@ -2166,6 +2177,7 @@ static int __init parse_ivrs_ioapic(char *str)
- 
- 	devid = ((bus & 0xff) << 8) | ((dev & 0x1f) << 3) | (fn & 0x7);
- 
-+	cmdline_maps			= true;
- 	i				= early_ioapic_map_size++;
- 	early_ioapic_map[i].id		= id;
- 	early_ioapic_map[i].devid	= devid;
-@@ -2195,6 +2207,7 @@ static int __init parse_ivrs_hpet(char *str)
- 
- 	devid = ((bus & 0xff) << 8) | ((dev & 0x1f) << 3) | (fn & 0x7);
- 
-+	cmdline_maps			= true;
- 	i				= early_hpet_map_size++;
- 	early_hpet_map[i].id		= id;
- 	early_hpet_map[i].devid		= devid;
--- 
-1.7.9.5
+Tested-by: Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>
