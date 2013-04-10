@@ -1,8 +1,8 @@
 From: <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 0/2] iommu/amd: iommu/amd: Show detail event log when using
-	amd-iommu=verbose
-Date: Wed, 10 Apr 2013 10:57:04 -0500
-Message-ID: <1365609424-3315-1-git-send-email-suravee.suthikulpanit@amd.com>
+Subject: [PATCH 1/2] iommu/amd: Adding new command line option
+	"amd-iommu=verbose"
+Date: Wed, 10 Apr 2013 10:57:31 -0500
+Message-ID: <1365609451-3347-1-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -22,17 +22,49 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 
-This patch set add detail event log information for AMD IOMMU in dmesg when booting with
-"amd-iommu=verbose".
+Adding new command line option "amd-iommu=verbose" to allow verbose print out
+in dmesg.
 
-Suravee Suthikulpanit (2):
-  iommu/amd: Adding new command line option "amd-iommu=verbose"
-  iommu/amd: Add logic to decode AMD IOMMU event flag
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+---
+ drivers/iommu/amd_iommu_init.c  |    4 ++++
+ drivers/iommu/amd_iommu_types.h |    2 ++
+ 2 files changed, 6 insertions(+)
 
- drivers/iommu/amd_iommu.c       |  215 ++++++++++++++++++++++++++++++---------
- drivers/iommu/amd_iommu_init.c  |    4 +
- drivers/iommu/amd_iommu_types.h |    2 +
- 3 files changed, 174 insertions(+), 47 deletions(-)
-
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index e3c2d74..1c8770e 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -157,6 +157,8 @@ bool amd_iommu_v2_present __read_mostly;
+ 
+ bool amd_iommu_force_isolation __read_mostly;
+ 
++bool amd_iommu_verbose __read_mostly;
++
+ /*
+  * List of protection domains - used during resume
+  */
+@@ -2092,6 +2094,8 @@ static int __init parse_amd_iommu_options(char *str)
+ 			amd_iommu_disabled = true;
+ 		if (strncmp(str, "force_isolation", 15) == 0)
+ 			amd_iommu_force_isolation = true;
++		if (strncmp(str, "verbose", 7) == 0)
++			amd_iommu_verbose = true;
+ 	}
+ 
+ 	return 1;
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index e38ab43..9ade4f9 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -694,6 +694,8 @@ extern bool amd_iommu_v2_present;
+ 
+ extern bool amd_iommu_force_isolation;
+ 
++extern bool amd_iommu_verbose;
++
+ /* Max levels of glxval supported */
+ extern int amd_iommu_max_glx_val;
+ 
 -- 
 1.7.10.4
