@@ -1,120 +1,289 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] documentation: iommu: add description of ARM System MMU
-	binding
-Date: Wed, 10 Apr 2013 18:37:32 +0100
-Message-ID: <20130410173732.GQ26992@mudshark.cambridge.arm.com>
-References: <1365094259-24847-1-git-send-email-will.deacon@arm.com>
-	<515F37C1.4000109@codeaurora.org>
-	<20130408092535.GA17476@mudshark.cambridge.arm.com>
-	<5162F87A.7070409@codeaurora.org>
+From: Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: PCI warning on boot 3.8.0-rc1
+Date: Wed, 10 Apr 2013 16:36:50 -0600
+Message-ID: <20130410223650.GA6109@google.com>
+References: <20130116143853.339dd89b@nehalam.linuxnetplumber.net>
+ <CAErSpo5eOE_=Ob2jN7ACy0eJBOa8k36XqCbHnGTCs-wfiy8tiw@mail.gmail.com>
+ <20130204103645.38ae2d5e@nehalam.linuxnetplumber.net>
+ <1360009684.11144.539.camel@bling.home>
+ <1360017684.11144.547.camel@bling.home>
+ <20130206074900.02f04e3f@nehalam.linuxnetplumber.net>
+ <1360166321.11144.638.camel@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-pci-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <5162F87A.7070409-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <1360166321.11144.638.camel@bling.home>
+Sender: linux-pci-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: Stephen Hemminger <stephen@networkplumber.org>, linux-pci@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Apr 08, 2013 at 06:03:54PM +0100, Olav Haugan wrote:
-> Hi Will,
+On Wed, Feb 06, 2013 at 08:58:41AM -0700, Alex Williamson wrote:
+> On Wed, 2013-02-06 at 07:49 -0800, Stephen Hemminger wrote:
+> > On Mon, 04 Feb 2013 15:41:24 -0700
+> > Alex Williamson <alex.williamson@redhat.com> wrote:
+> >=20
+> > > On Mon, 2013-02-04 at 13:28 -0700, Alex Williamson wrote:
+> > > > On Mon, 2013-02-04 at 10:36 -0800, Stephen Hemminger wrote:
+> > > > > > I think drivers/pci/search.c is identical between 3.7 and 3=
+=2E8-rc1.  Is
+> > > > > > this the first time you've turned on the IOMMU on that box?
+> > > > >=20
+> > > > > It exists in 3.7 and earlier kernels, just haven't turned on =
+same config.
+> > > > >=20
+> > > > > > It's the same warning as in this bugzilla:
+> > > > > > https://bugzilla.kernel.org/show_bug.cgi?id=3D44881, and th=
+ere's a patch
+> > > > > > there at https://bugzilla.kernel.org/show_bug.cgi?id=3D4488=
+1#c11, but
+> > > > > > it's just a quirk that turns off VT-d if we find certain br=
+oken
+> > > > > > bridges.  It doesn't look like you have any of those (altho=
+ugh I don't
+> > > > > > know what you have at 05:00.0).
+> > > > > >=20
+> > > > > > Bjorn
+> > > > >=20
+> > > > > This is a standard ASUS motherboard, and don't want to disabl=
+e VT-d.
+> > > >=20
+> > > > Stephen,
+> > > >=20
+> > > > Can you give the lspci -vvv of device 5:00.0 to see if it's one=
+ we've
+> > > > seen before?  Does the patch below help?
+> > > >=20
+> > > > Bjorn, I think we need to quirk it somehow.  So far they've all=
+ been
+> > > > PCI-to-PCI bridges attached to root ports where we expect it's =
+actually
+> > > > a PCIe-to-PCI bridge.  Seems like maybe we could have the same =
+attached
+> > > > to a downstream port.  The patch below avoids the WARN and give=
+s us a
+> > > > device, but of course pci_is_pcie reports wrong for this device=
+ and may
+> > > > cause some trickle down breakage.  A more complete option might=
+ be to
+> > > > add a is_pcie flag to the device that can be set independent of
+> > > > pcie_cap.  We'd need to check all the callers for assumptions, =
+but then
+> > > > we could put the quirk in one place and hopefully fix everythin=
+g.
+> > > > Thoughts?  Thanks,
+> > >=20
+> > > This latter approach seems like it might be easier than I expecte=
+d since
+> > > all the users are so well filtered through the access functions. =
+ A
+> > > quick look through who uses pci_is_pcie seems like this might be
+> > > complete, but more eyes are required.  I'll upload this to the bz=
+ for
+> > > those reporters to test as well.  Thoughts?  Thanks,
+> > >=20
+> > > Alex
+> >=20
+> > On my hardware this gives:
+>=20
+> > [    0.254621] pci_bus 0000:05: busn_res: can not insert [bus 05-ff=
+] under [bus 00-3e] (conflicts with (null) [bus 00-3e])
+> > [    0.254647] WARNING: Your hardware is broken, device (null) appe=
+ars to be a
+> > [    0.254647]  Legacy PCI device attached directly to a PCIe devic=
+e which is not a
+> > [    0.254647]  PCIe-to-PCI bridge.  Per section 7.8 of the PCI Exp=
+ress 3.0 spec, the
+> > [    0.254647]  PCI express capability structure is required for PC=
+I express device
+> > [    0.254647] functions.
+> > [    0.254653] pci 0000:05:00.0: [1b21:1080] type 01 class 0x060401
+>=20
+> I guess I must be calling pci_name() before it's set.  The warning
+> message needs some work too, it's mainly meant for hardware vendors w=
+ith
+> the hope that they might test Linux and see it before shipping these
+> broken devices.  Bjorn, does this approach seem worth pursuing?  Than=
+ks,
 
-Hello,
+Sorry I dropped this for so long.  I'm looking at the patch
+here: https://bugzilla.kernel.org/attachment.cgi?id=3D92521,
+appended for convenience.
 
-> > Generally, the StreamIDs are fixed in hardware (as a function of various AXI
-> > bits -- see the SMMU integration guide) and cannot be set by software.
-> > Furthermore, when the StreamIDs have an implicit effect on IOMMU domain
-> > configuration, since stream-matching may not be always be able to identify a
-> > master uniquely.
-> 
-> Let me clarify what I mean by "our SMMU driver programs the SMMU SIDs".
-> What I meant to say is that our SMMU driver programs the SID into the
-> Stream Match Register (SMR) to route the transactions to the correct
-> context bank based on the SID.
+In case anybody else needs the context, I think we have
+this scenario (from John Wehin's original report at
+https://bugzilla.kernel.org/show_bug.cgi?id=3D44881):
 
-Ok, but then how does that interact with the IOMMU API in Linux? e.g. if a
-client asks for an iova <-> pa mapping on a device, then you need to lookup
-the StreamIDs for that device, no?
+    pci 0000:00:1c.4: PCI bridge to [bus 03-04]	# PCIe root port
+    pci 0000:03:00.0: PCI bridge to [bus 04]	# no PCIe cap
+    ...
+    pci 0000:03:00.0: expected upstream PCIe bridge; 0000:00:1c.4 is ty=
+pe 0x4
 
-> > This really looks specific to your implementation/integration and I can't
-> > see that we'd want this in the binding to be honest. It would be good to
-> > have PMU support in the future, but I've not thought about that part yet.
-> 
-> Yes, some of this is specific to our implementation. However, the
-> properties related to regulators and PMU are not specific I believe. How
-> do you do handle regulators?
+We called pci_find_upstream_pcie_bridge(03:00.0), which generated
+the warning because:
 
-As I said, I'm just using a software model more the moment, so no clocks or
-regulators. We can add these later, since Linux has good support for things
-like that already.
+    - 03:00.0 is not a PCIe device, and
+    - 00:1c.4 (its upstream bridge) *is* a PCIe device, and
+    - 00:1c.4 is a Root Port (PCI_EXP_TYPE_ROOT_PORT =3D=3D 0x4),
+      not a PCIe-to-PCI bridge (PCI_EXP_TYPE_PCI_BRIDGE =3D=3D 0x7)
+      as we expected
 
-> >> - List of sub nodes, one for each of the translation context banks
-> >> supported.
-> >>   Each sub node has the following required properties:
-> >>
-> >>   - reg : offset and length of the register set for the context bank.
-> > 
-> > Why do you need this? The structure of the context banks is well defined by
-> > the SMMU architecture.
-> 
-> Since we specify the context banks as children of the IOMMU we specify
-> the address of each node. I believe you should be specifying the "reg"
-> property for the nodes when you do this.
+> commit 60d668a3cdeeb0e29570cf0043736436c146bde8
+> Author: Alex Williamson <alex.williamson@redhat.com>
+> Date:   Mon Feb 4 15:34:34 2013 -0700
+>=20
+>     pci: Handle unadvertised PCIe bridges
+>    =20
+>     There seem to be several PCIe-to-PCI bridges out in the wild that
+>     blatantly ignore the PCIe specification and do not expose a PCIe
+>     capability.  We can attempt to deduce their existence by looking
+>     for PCI bridges directly connected to root ports or downstream
+>     ports.  What this means is that pci_is_pcie() does not imply PCIe
+>     capability and we un-deprecate is_pcie to denote the difference.
+>     All the accesses seem to go through pcie_capability_reg_implement=
+ed,
+>     so we can significantly limit the footprint of this change by
+>     checking things there.
+>    =20
+>     Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+>=20
+> diff --git a/drivers/pci/access.c b/drivers/pci/access.c
+> index 3af0478..3df24e7 100644
+> --- a/drivers/pci/access.c
+> +++ b/drivers/pci/access.c
+> @@ -511,7 +511,7 @@ static inline bool pcie_cap_has_rtctl(const struc=
+t pci_dev *dev)
+> =20
+>  static bool pcie_capability_reg_implemented(struct pci_dev *dev, int=
+ pos)
+>  {
+> -	if (!pci_is_pcie(dev))
+> +	if (!pci_is_pcie(dev) || !pci_pcie_cap(dev))
+>  		return false;
+> =20
+>  	switch (pos) {
+> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+> index 6186f03..0a87b6b 100644
+> --- a/drivers/pci/probe.c
+> +++ b/drivers/pci/probe.c
+> @@ -926,20 +926,46 @@ static void pci_read_irq(struct pci_dev *dev)
+>  	dev->irq =3D irq;
+>  }
+> =20
+> +static bool is_unadvertised_pcie_bridge(struct pci_dev *pdev)
+> +{
+> +	struct pci_dev *parent;
+> +
+> +	if (pdev->hdr_type !=3D PCI_HEADER_TYPE_BRIDGE ||
+> +	    pci_find_capability(pdev, PCI_CAP_ID_EXP) ||
+> +            pci_is_root_bus(pdev->bus))
+> +		return false;
+> +
+> +	parent =3D pdev->bus->self;
+> +
+> +	if (pci_is_pcie(parent) &&
+> +	    (pci_pcie_type(parent) =3D=3D PCI_EXP_TYPE_ROOT_PORT ||
+> +	     pci_pcie_type(parent) =3D=3D PCI_EXP_TYPE_DOWNSTREAM)) {
+> +		pr_warn("WARNING: Your hardware is broken, device %s appears to be=
+ a\n Legacy PCI device attached directly to a PCIe device which is not =
+a\n PCIe-to-PCI bridge.  Per section 7.8 of the PCI Express 3.0 spec, t=
+he\n PCI express capability structure is required for PCI express devic=
+e\nfunctions.\n",
+> +		        pci_name(pdev));
 
-It's completely redundant information though!
+Vendors might see this warning, but I'm doubtful they'll do anything
+about it. =A0I suspect it will result in a lot of emails from concerned
+users to LKML and linux-pci, and we really can't do anything other
+than say "yup, it's broken, report it to your vendor."
 
-> >>   - interrupts : should contain the context bank interrupt.
-> >>   - qcom,iommu-ctx-sids : List of stream identifiers associated with
-> >> this translation context.
-> > 
-> > StreamIDs aren't statically associated with a translation context. Why do
-> > you put them here? Also, how do this interact with stream matching?
-> 
-> We put the StreamIDs in the context bank to tell our driver that these
-> StreamIDs should be programmed into the Stream Match Register (SMR) to
-> route the transactions bearing these StreamIDs to this context bank. We
-> don't really change the SID2CB mapping during run-time. It is set during
-> compile time.
+And since the hardware seems to actually *work* if we just pretend that
+the problem device (e.g., 03:00.0 above) is PCIe, it's doubtful that
+the vendor would do anything anyway, so maybe a dev_info() would be
+sufficient.
 
-Again, I'm struggling to see how this interfaces to the more general-purpose
-IOMMU API.
+> +		return true;
+> +	}
+> +
+> +	return false;
+> +}
+> +
+>  void set_pcie_port_type(struct pci_dev *pdev)
+>  {
+>  	int pos;
+> -	u16 reg16;
+> +	u16 flags, caps =3D 0;
+> =20
+>  	pos =3D pci_find_capability(pdev, PCI_CAP_ID_EXP);
+> -	if (!pos)
+> +	if (pos) {
+> +		pci_read_config_word(pdev, pos + PCI_EXP_FLAGS, &flags);
+> +		pci_read_config_word(pdev, pos + PCI_EXP_DEVCAP, &caps);
+> +	} else if (is_unadvertised_pcie_bridge(pdev))
+> +		flags =3D PCI_EXP_TYPE_PCI_BRIDGE << 4;
+> +	else
+>  		return;
+> +
+>  	pdev->is_pcie =3D 1;
+>  	pdev->pcie_cap =3D pos;
+> -	pci_read_config_word(pdev, pos + PCI_EXP_FLAGS, &reg16);
+> -	pdev->pcie_flags_reg =3D reg16;
+> -	pci_read_config_word(pdev, pos + PCI_EXP_DEVCAP, &reg16);
+> -	pdev->pcie_mpss =3D reg16 & PCI_EXP_DEVCAP_PAYLOAD;
+> +	pdev->pcie_flags_reg =3D flags;
 
-> >> Optional sub-node properties:
-> >>    - qcom,secure-context : boolean indicating that a context is secure
-> >>  and programmed by the secure environment.
-> > 
-> > Why does Linux care about this?
-> 
-> Linux cares about this because if we are doing content protection using
-> one of the context banks then the context bank is programmed by the
-> secure environment and not accessible/programmable by the HLOS.
+If we can avoid it, I'd prefer not to complicate the meaning of
+"pci_is_pcie()" -- it used to mean "this device has a PCIe
+capability and you can do PCIe things with it."  But now it
+means something else, and we can't do PCIe things with these
+problem devices anyway.
 
-Why can't the secure world just hide those context banks by using
-SMMU_SCR1.NSNUMCBO?
+Could we accomplish basically the same thing by making
+pci_find_upstream_pcie_bridge() look like this?
 
-> > I'd really rather start off small, and describe precisely what we need to
-> > get architecturally-compliant SMMUs off the ground. Then, as the code grows
-> > to use more features (PM, PMU, ...) then we can extend the binding.
-> > Otherwise, we paint ourselves into a corner with the binding before we've
-> > developed any driver code.
-> 
-> Sure, I did not mean to add implementation specific stuff to upstream
-> bindings. Does it makes sense to you thought the way we modeled context
-> banks as child nodes?
+    if (pci_is_pcie(pdev))
+	    return NULL;
 
-Not really, no. It seems to configure everything up-front, which makes
-dynamic use of the IOMMU difficult afaict. It may suit your use-case (as you
-say, you even set up the mappings at compile-time) but it's not especially
-general.
++   bridge =3D pdev->bus->self;
++   if (bridge && pci_is_pcie(bridge) &&
++	(pci_pcie_type(bridge) =3D=3D PCI_EXP_TYPE_ROOT_PORT ||
++	 pci_pcie_type(bridge) =3D=3D PCI_EXP_TYPE_DOWNSTREAM))
++	    return NULL;
 
-Will
+    while (1) {
+	...
+
+Bjorn
+
+> +	pdev->pcie_mpss =3D caps & PCI_EXP_DEVCAP_PAYLOAD;
+>  }
+> =20
+>  void set_pcie_hotplug_bridge(struct pci_dev *pdev)
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index 15472d6..c9ef42c 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -300,8 +300,8 @@ struct pci_dev {
+>  	unsigned int	msix_enabled:1;
+>  	unsigned int	ari_enabled:1;	/* ARI forwarding */
+>  	unsigned int	is_managed:1;
+> -	unsigned int	is_pcie:1;	/* Obsolete. Will be removed.
+> -					   Use pci_is_pcie() instead */
+> +	unsigned int	is_pcie:1;	/* Don't access directly,
+> +					   use pci_is_pcie() instead */
+>  	unsigned int    needs_freset:1; /* Dev requires fundamental reset *=
+/
+>  	unsigned int	state_saved:1;
+>  	unsigned int	is_physfn:1;
+> @@ -1689,7 +1689,7 @@ static inline int pci_pcie_cap(struct pci_dev *=
+dev)
+>   */
+>  static inline bool pci_is_pcie(struct pci_dev *dev)
+>  {
+> -	return !!pci_pcie_cap(dev);
+> +	return dev->is_pcie;
+>  }
+> =20
+>  /**
