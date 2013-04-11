@@ -1,65 +1,41 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: [PATCH] iommu: Fix printk formats for dma_addr_t
-Date: Thu, 11 Apr 2013 09:19:44 +0530
-Message-ID: <1365652184-4340-1-git-send-email-Varun.Sethi@freescale.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: RFC: vfio API changes needed for powerpc (v3)
+Date: Thu, 11 Apr 2013 14:56:59 +0200
+Message-ID: <20130411125659.GL6858@8bytes.org>
+References: <9F6FE96B71CF29479FF1CDC8046E15035A29FB@039-SN1MPN1-003.039d.mgd.msft.net>
+ <1365200245.17535.13@snotra>
+ <9F6FE96B71CF29479FF1CDC8046E15035A5CA3@039-SN1MPN1-003.039d.mgd.msft.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <kvm-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <9F6FE96B71CF29479FF1CDC8046E15035A5CA3@039-SN1MPN1-003.039d.mgd.msft.net>
+Sender: kvm-owner@vger.kernel.org
+To: Yoder Stuart-B08248 <B08248@freescale.com>
+Cc: Wood Scott-B07421 <B07421@freescale.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "agraf@suse.de" <agraf@suse.de>, Bhushan Bharat-R65777 <R65777@freescale.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Fix printk formats for dma_addr_t:
+On Tue, Apr 09, 2013 at 01:22:15AM +0000, Yoder Stuart-B08248 wrote:
+> > What happens if a normal unmap call is done on the MSI iova?  Do we
+> > need a separate unmap?
+> 
+> I was thinking a normal unmap on an MSI windows would be an error...but
+> I'm not set on that.   I put the msi unmap there to make things symmetric,
+> a normal unmap would work as well...and then we could drop the msi unmap.
 
-   drivers/iommu/tegra-smmu.c: In function 'smmu_iommu_iova_to_phys':
->> drivers/iommu/tegra-smmu.c:774:2: warning: format '%lx' expects argument of type 'long unsigned int', but argument 4 has type 'dma_addr_t' [-Wformat]
---
-   drivers/iommu/tegra-gart.c: In function 'gart_iommu_iova_to_phys':
->> drivers/iommu/tegra-gart.c:298:3: warning: format '%lx' expects argument of type 'long unsigned int', but argument 3 has type 'dma_addr_t' [-Wformat]
+Hmm, this API semantic isn't very clean. When you explicitly map the MSI
+banks a clean API would also allow to unmap them. But that is not
+possible in your design because the kernel is responsible for mapping
+MSIs and you can't unmap a MSI bank that is in use by the kernel.
 
-Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
----
- drivers/iommu/tegra-gart.c |    3 ++-
- drivers/iommu/tegra-smmu.c |    3 ++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
+So since the kernel owns the MSI setup anyways it should also take care
+of mapping the MSI banks. What is the reason to not let the kernel
+allocate the MSI banks top-down from the end of the DMA window space?
+Just let userspace know (or even set if needed) in advance how many of
+the windows it configures the kernel will take for mapping MSI banks and
+you are fine, no?
 
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index 4aec8be..108c0e9 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -295,7 +295,8 @@ static phys_addr_t gart_iommu_iova_to_phys(struct iommu_domain *domain,
- 
- 	pa = (pte & GART_PAGE_MASK);
- 	if (!pfn_valid(__phys_to_pfn(pa))) {
--		dev_err(gart->dev, "No entry for %08lx:%08x\n", iova, pa);
-+		dev_err(gart->dev, "No entry for %08llx:%08x\n",
-+			 (unsigned long long)iova, pa);
- 		gart_dump_table(gart);
- 		return -EINVAL;
- 	}
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index bc9b599..f6f120e 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -772,7 +772,8 @@ static phys_addr_t smmu_iommu_iova_to_phys(struct iommu_domain *domain,
- 	pfn = *pte & SMMU_PFN_MASK;
- 	WARN_ON(!pfn_valid(pfn));
- 	dev_dbg(as->smmu->dev,
--		"iova:%08lx pfn:%08lx asid:%d\n", iova, pfn, as->asid);
-+		"iova:%08llx pfn:%08lx asid:%d\n", (unsigned long long)iova,
-+		 pfn, as->asid);
- 
- 	spin_unlock_irqrestore(&as->lock, flags);
- 	return PFN_PHYS(pfn);
--- 
-1.7.4.1
+
+	Joerg
+
+
