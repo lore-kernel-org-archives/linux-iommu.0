@@ -1,16 +1,15 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 7/9] iommu/amd: Add ioapic and hpet ivrs override
-Date: Fri, 12 Apr 2013 10:04:49 +0200
-Message-ID: <20130412080448.GM6858@8bytes.org>
+Subject: Re: [PATCH 0/9] AMD IOMMU cleanups, fixes and IVRS bug workarounds
+Date: Fri, 12 Apr 2013 10:06:37 +0200
+Message-ID: <20130412080637.GN6858@8bytes.org>
 References: <1365538384-12426-1-git-send-email-joro@8bytes.org>
-	<1365538384-12426-8-git-send-email-joro@8bytes.org>
-	<20130409202941.GJ6858@8bytes.org> <51672DB7.4010403@amd.com>
+	<CAKocOOP5tMsDLS8Wotu0kMNjSVJpN+pPhE9zj+n9ZKS9EcVR+A@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <51672DB7.4010403-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <CAKocOOP5tMsDLS8Wotu0kMNjSVJpN+pPhE9zj+n9ZKS9EcVR+A-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,27 +19,29 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Suravee Suthikulanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Shuah Khan <shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Apr 11, 2013 at 04:40:07PM -0500, Suthikulpanit, Suravee wrote:
-> On 4/9/2013 3:29 PM, Joerg Roedel wrote:
-> >On Tue, Apr 09, 2013 at 10:13:02PM +0200, Joerg Roedel wrote:
-> >>Add two new kernel commandline parameters ivrs_ioapic and
-> >>ivrs_hpet to override the Id->DeviceId mapping from the IVRS
-> >>ACPI table. This can be used to work around broken BIOSes to
-> >>get interrupt remapping working on AMD systems.
-> >>
-> >>Signed-off-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> >Forgot to add:
-> >
-> >Tested-by: Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>
-> I also tested on some other systems here and the patch works also.
+Hi Shuah,
 
-Cool, thanks for testing. I'll add your
+On Wed, Apr 10, 2013 at 10:06:02AM -0600, Shuah Khan wrote:
+> On Tue, Apr 9, 2013 at 2:12 PM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> >  Documentation/kernel-parameters.txt |   14 ++++
+> >  drivers/iommu/amd_iommu.c           |   79 +++++++-----------
+> >  drivers/iommu/amd_iommu_init.c      |  151 +++++++++++++++++++++++++++++++----
+> >  drivers/iommu/amd_iommu_types.h     |    1 +
+> >  4 files changed, 182 insertions(+), 63 deletions(-)
 
-Tested-by: Suravee Suthikulanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+> Reviewed all the patches in this set. No longer have access to test machine. :(
+
+Oh, that's sad. You were the only one having a machine wich actually has
+unity-mapped ranges defined in the BIOS table. The code for those
+mappings was basically untested before you ran it on that machine.
+ 
+> Reviewed-by: Shuah Khan <shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+
+Thanks.
 
 
 	Joerg
