@@ -1,18 +1,11 @@
-From: Linda Knippers <linda.knippers-VXdhtT5mjnY@public.gmane.org>
-Subject: Re: [PATCH 0/9] AMD IOMMU cleanups, fixes and IVRS bug workarounds
-Date: Sat, 13 Apr 2013 19:33:13 -0400
-Message-ID: <5169EB39.5090908@hp.com>
-References: <1365538384-12426-1-git-send-email-joro@8bytes.org>
-	<CAKocOOP5tMsDLS8Wotu0kMNjSVJpN+pPhE9zj+n9ZKS9EcVR+A@mail.gmail.com>
-	<20130412080637.GN6858@8bytes.org>
-	<CAJtEV7aLa2tKw-B0f0ZNHdP86yxpvUAofs9eVPYCeib6m67f8g@mail.gmail.com>
-	<20130413152602.GO6858@8bytes.org>
-	<CAKocOOMZ-s-SHdJ0mb=EngiS2szGraK+=GNPpkmwALhi1hutnQ@mail.gmail.com>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: [PATCH 1/3] iommu: Move swap_pci_ref function to pci.h.
+Date: Mon, 15 Apr 2013 00:42:00 +0530
+Message-ID: <1365966722-1804-1-git-send-email-Varun.Sethi@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAKocOOMZ-s-SHdJ0mb=EngiS2szGraK+=GNPpkmwALhi1hutnQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,40 +15,75 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org
+Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/13/13 19:14, Shuah Khan wrote:
-> On Sat, Apr 13, 2013 at 9:26 AM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
->> On Sat, Apr 13, 2013 at 11:06:22PM +0800, Andrew Cooks wrote:
->>> On Fri, Apr 12, 2013 at 4:06 PM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
->>
->>>> Oh, that's sad. You were the only one having a machine wich actually has
->>>> unity-mapped ranges defined in the BIOS table. The code for those
->>>> mappings was basically untested before you ran it on that machine.
->>>>
->>> What is the machine in question? Maybe someone else has access to one,
->>> if it's not too exotic.
->>
->> Shuah had access to a HP server machine (don't know which one) that
->> defined unity-map ranges in the BIOS table. Shuah certainly knows the
->> details about that machine.
->>
-> 
-> Joerg/Andrew,
-> 
-> It is a DL385 Gen8 server. Unfortunately I left HP as of yesterday and no longer
-> have access to the system. Maybe there others that have access to one.
+swap_pci_ref function is used by the IOMMU API code for swapping pci device
+pointers, while determining the iommu group for the device.
+Currently this function was being implemented for different IOMMU drivers.
+This patch moves the function to pci.h so that the implementation can be
+shared across various IOMMU drivers.
 
-Shuah, I think I know which machine you were using but if you'll send
-me a note off list with the system details and what someone should look
-for, I'll see if I can get someone to test.
+Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+---
+ drivers/iommu/amd_iommu.c   |    6 ------
+ drivers/iommu/intel-iommu.c |    6 ------
+ include/linux/pci.h         |    8 ++++++++
+ 3 files changed, 8 insertions(+), 12 deletions(-)
 
--- ljk
-> 
-> -- Shuah
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> 
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index a7f6b04..c36c046 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -263,12 +263,6 @@ static bool check_device(struct device *dev)
+ 	return true;
+ }
+ 
+-static void swap_pci_ref(struct pci_dev **from, struct pci_dev *to)
+-{
+-	pci_dev_put(*from);
+-	*from = to;
+-}
+-
+ static struct pci_bus *find_hosted_bus(struct pci_bus *bus)
+ {
+ 	while (!bus->self) {
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 6e0b9ff..8d7c979 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -4137,12 +4137,6 @@ static int intel_iommu_domain_has_cap(struct iommu_domain *domain,
+ 	return 0;
+ }
+ 
+-static void swap_pci_ref(struct pci_dev **from, struct pci_dev *to)
+-{
+-	pci_dev_put(*from);
+-	*from = to;
+-}
+-
+ #define REQ_ACS_FLAGS	(PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF)
+ 
+ static int intel_iommu_add_device(struct device *dev)
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 2461033a..41511de 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -1850,6 +1850,14 @@ static inline struct eeh_dev *pci_dev_to_eeh_dev(struct pci_dev *pdev)
+ }
+ #endif
+ 
++#ifdef CONFIG_IOMMU_API
++static inline void swap_pci_ref(struct pci_dev **from, struct pci_dev *to)
++{
++	pci_dev_put(*from);
++	*from = to;
++}
++#endif
++
+ /**
+  * pci_find_upstream_pcie_bridge - find upstream PCIe-to-PCI bridge of a device
+  * @pdev: the PCI device
+-- 
+1.7.4.1
