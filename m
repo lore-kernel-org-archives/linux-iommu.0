@@ -1,11 +1,22 @@
-From: <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 2/2 V2] iommu/AMD: Per-thread IOMMU Interrupt Handling
-Date: Mon, 15 Apr 2013 02:07:56 -0500
-Message-ID: <1366009676-44867-1-git-send-email-suravee.suthikulpanit@amd.com>
+From: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+Subject: Re: [PATCH] intel-iommu: Synchronize gcmd value with global command
+	register
+Date: Mon, 15 Apr 2013 18:00:13 +0900
+Message-ID: <516BC19D.4090303@jp.fujitsu.com>
+References: <1363829556-2128-1-git-send-email-indou.takao@jp.fujitsu.com>
+	<20130326144629.GB2727@8bytes.org>
+	<51527D74.9080209@jp.fujitsu.com>
+	<20130327103122.GK30540@8bytes.org> <51591EEE.60401@jp.fujitsu.com>
+	<20130402140546.GA15687@8bytes.org>
+	<515BD638.8070307@jp.fujitsu.com>
+	<1364977479.28127.15.camel@i7.infradead.org>
+	<20130405110616.GB6858@8bytes.org>
+	<5164EEE6.8000707@jp.fujitsu.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <5164EEE6.8000707-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,251 +26,60 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tindoh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+(2013/04/10 13:47), Takao Indoh wrote:
+> (2013/04/05 20:06), Joerg Roedel wrote:
+>> On Wed, Apr 03, 2013 at 09:24:39AM +0100, David Woodhouse wrote:
+>>> On Wed, 2013-04-03 at 16:11 +0900, Takao Indoh wrote:
+>>>> Yeah, you are right. I forgot such a case.
+>>>
+>>> If you disable translation and there's some device still doing DMA, it's
+>>> going to scribble over random areas of memory. You really want to have
+>>> translation enabled and all the page tables *cleared*, during kexec. I
+>>> think it's fair to insist that the secondary kernel should use the IOMMU
+>>> if the first one did.
+>>
+>> Do we really need to insist on that? The IOMMU initialization on x86
+>> happens after the kernel scanned and enumerated the PCI bus. While doing
+>> this the kernel (at least it should) disables all devices it finds. So
+>> when the IOMMU init code runs we should be safe from any in-flight DMA
+>> and can either disable translation or re-initialize it for the kdump
+>> kernel. Until then translation needs to stay enabled of course, so that
+>> the old page-tables are still used and in-flight DMA doesn't corrupt
+>> any data.
+> 
+> So we should do in this order, right?
+> (1) PCI initialization. Stop all ongoing DMA here.
+> (2) Disable translation if already enable.
+> (3) Make pgtable and enable translation.
 
-In the current interrupt handling scheme, there are as many threads as
-the number of IOMMUs. Each thread is created and assigned to an IOMMU at
-the time of registering interrupt handlers (request_threaded_irq).
-When an IOMMU HW generates an interrupt, the irq handler (top half) wakes up
-the corresponding thread to process event and PPR logs of all IOMMUs
-starting from the 1st IOMMU.
+Joerg, David,
 
-In the system with multiple IOMMU,this handling scheme complicates the
-synchronization of the IOMMU data structures and status registers as
-there could be multiple threads competing for the same IOMMU while
-the other IOMMU could be left unhandled.
+On DMAR initialization during kdump boot, do you guys agree to change
+order like this?
 
-To simplify, this patch is proposing a different interrupt handling scheme
-by having each thread only managing interrupts of the corresponding IOMMU.
-This can be achieved by passing the struct amd_iommu when registering the
-interrupt handlers. This structure is unique for each IOMMU and can be used
-by the bottom half thread to identify the IOMMU to be handled instead
-of calling for_each_iommu.  Besides this also eliminate the needs to lock
-the IOMMU for processing event and PPR logs.
+Current order:
+(1) Disable translation
+(2) PCI initialization
+(3) Make pgtable and enable translation.
 
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
----
- drivers/iommu/amd_iommu.c      |  154 +++++++++++++++-------------------------
- drivers/iommu/amd_iommu_init.c |    2 +-
- 2 files changed, 58 insertions(+), 98 deletions(-)
+Order I'm proposing:
+(1) PCI initialization
+(2) Disable translation
+(3) Make pgtable and enable translation.
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 419af1d..3548d63 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -803,45 +803,16 @@ retry:
- static void iommu_poll_events(struct amd_iommu *iommu)
- {
- 	u32 head, tail;
--	u32 status;
--	unsigned long flags;
--
--	spin_lock_irqsave(&iommu->lock, flags);
--
--	status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
--
--	while (status & MMIO_STATUS_EVT_INT_MASK) {
--
--		/* enable event interrupts again */
--		writel(MMIO_STATUS_EVT_INT_MASK,
--			iommu->mmio_base + MMIO_STATUS_OFFSET);
--
--		head = readl(iommu->mmio_base + MMIO_EVT_HEAD_OFFSET);
--		tail = readl(iommu->mmio_base + MMIO_EVT_TAIL_OFFSET);
- 
--		while (head != tail) {
--			iommu_handle_event(iommu, iommu->evt_buf + head);
--			head = (head + EVENT_ENTRY_SIZE) % iommu->evt_buf_size;
--		}
--
--		writel(head, iommu->mmio_base + MMIO_EVT_HEAD_OFFSET);
-+	head = readl(iommu->mmio_base + MMIO_EVT_HEAD_OFFSET);
-+	tail = readl(iommu->mmio_base + MMIO_EVT_TAIL_OFFSET);
- 
--		/*
--		 * Hardware bug: When re-enabling interrupt (by writing 1
--		 * to clear the bit), the hardware might also try to set
--		 * the interrupt bit in the event status register.
--		 * In this scenario, the bit will be set, and disable
--		 * subsequent interrupts.
--		 *
--		 * Workaround: The IOMMU driver should read back the
--		 * status register and check if the interrupt bits are cleared.
--		 * If not, driver will need to go through the interrupt handler
--		 * again and re-clear the bits
--		 */
--		status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
-+	while (head != tail) {
-+		iommu_handle_event(iommu, iommu->evt_buf + head);
-+		head = (head + EVENT_ENTRY_SIZE) % iommu->evt_buf_size;
- 	}
- 
--	spin_unlock_irqrestore(&iommu->lock, flags);
-+	writel(head, iommu->mmio_base + MMIO_EVT_HEAD_OFFSET);
- }
- 
- static void iommu_handle_ppr_entry(struct amd_iommu *iommu, u64 *raw)
-@@ -866,73 +837,75 @@ static void iommu_handle_ppr_entry(struct amd_iommu *iommu, u64 *raw)
- 
- static void iommu_poll_ppr_log(struct amd_iommu *iommu)
- {
--	unsigned long flags;
--	u32 status;
- 	u32 head, tail;
- 
- 	if (iommu->ppr_log == NULL)
- 		return;
- 
--	spin_lock_irqsave(&iommu->lock, flags);
--
--	status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
--
--	while (status & MMIO_STATUS_PPR_INT_MASK) {
--		/* enable ppr interrupts again */
--		writel(MMIO_STATUS_PPR_INT_MASK,
--			iommu->mmio_base + MMIO_STATUS_OFFSET);
-+	head = readl(iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
-+	tail = readl(iommu->mmio_base + MMIO_PPR_TAIL_OFFSET);
- 
--		head = readl(iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
--		tail = readl(iommu->mmio_base + MMIO_PPR_TAIL_OFFSET);
-+	while (head != tail) {
-+		volatile u64 *raw;
-+		u64 entry[2];
-+		int i;
- 
--		while (head != tail) {
--			volatile u64 *raw;
--			u64 entry[2];
--			int i;
-+		raw = (u64 *)(iommu->ppr_log + head);
- 
--			raw = (u64 *)(iommu->ppr_log + head);
-+		/*
-+		 * Hardware bug: Interrupt may arrive before the entry is
-+		 * written to memory. If this happens we need to wait for the
-+		 * entry to arrive.
-+		 */
-+		for (i = 0; i < LOOP_TIMEOUT; ++i) {
-+			if (PPR_REQ_TYPE(raw[0]) != 0)
-+				break;
-+			udelay(1);
-+		}
- 
--			/*
--			 * Hardware bug: Interrupt may arrive before the entry
--			 * is written to memory. If this happens we need to wait
--			 * for the entry to arrive.
--			 */
--			for (i = 0; i < LOOP_TIMEOUT; ++i) {
--				if (PPR_REQ_TYPE(raw[0]) != 0)
--					break;
--				udelay(1);
--			}
-+		/* Avoid memcpy function-call overhead */
-+		entry[0] = raw[0];
-+		entry[1] = raw[1];
- 
--			/* Avoid memcpy function-call overhead */
--			entry[0] = raw[0];
--			entry[1] = raw[1];
-+		/*
-+		 * To detect the hardware bug we need to clear the entry
-+		 * back to zero.
-+		 */
-+		raw[0] = raw[1] = 0UL;
- 
--			/*
--			 * To detect the hardware bug we need to clear the entry
--			 * back to zero.
--			 */
--			raw[0] = raw[1] = 0UL;
-+		/* Update head pointer of hardware ring-buffer */
-+		head = (head + PPR_ENTRY_SIZE) % PPR_LOG_SIZE;
-+		writel(head, iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
- 
--			/* Update head pointer of hardware ring-buffer */
--			head = (head + PPR_ENTRY_SIZE) % PPR_LOG_SIZE;
--			writel(head, iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
-+		/* Handle PPR entry */
-+		iommu_handle_ppr_entry(iommu, entry);
- 
--			/*
--			 * Release iommu->lock because ppr-handling might need
--			 * to re-acquire it
--			 */
--			spin_unlock_irqrestore(&iommu->lock, flags);
-+		/* Refresh ring-buffer information */
-+		head = readl(iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
-+		tail = readl(iommu->mmio_base + MMIO_PPR_TAIL_OFFSET);
-+	}
-+}
- 
--			/* Handle PPR entry */
--			iommu_handle_ppr_entry(iommu, entry);
-+irqreturn_t amd_iommu_int_thread(int irq, void *data)
-+{
-+	struct amd_iommu *iommu = (struct amd_iommu *) data;
-+	u32 status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
- 
--			spin_lock_irqsave(&iommu->lock, flags);
-+	while (status & (MMIO_STATUS_EVT_INT_MASK | MMIO_STATUS_PPR_INT_MASK)) {
-+		if (status & MMIO_STATUS_EVT_INT_MASK) {
-+			pr_devel("AMD-Vi: Processing IOMMU Event Log\n");
-+			iommu_poll_events(iommu);
-+		}
- 
--			/* Refresh ring-buffer information */
--			head = readl(iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
--			tail = readl(iommu->mmio_base + MMIO_PPR_TAIL_OFFSET);
-+		if (status & MMIO_STATUS_PPR_INT_MASK) {
-+			pr_devel("AMD-Vi: Processing IOMMU PPR Log\n");
-+			iommu_poll_ppr_log(iommu);
- 		}
- 
-+		/* Enable EVT and PPR interrupts again */
-+		writel((MMIO_STATUS_EVT_INT_MASK | MMIO_STATUS_PPR_INT_MASK),
-+			iommu->mmio_base + MMIO_STATUS_OFFSET);
-+
- 		/*
- 		 * Hardware bug: When re-enabling interrupt (by writing 1
- 		 * to clear the bit), the hardware might also try to set
-@@ -947,19 +920,6 @@ static void iommu_poll_ppr_log(struct amd_iommu *iommu)
- 		 */
- 		status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
- 	}
--
--	spin_unlock_irqrestore(&iommu->lock, flags);
--}
--
--irqreturn_t amd_iommu_int_thread(int irq, void *data)
--{
--	struct amd_iommu *iommu;
--
--	for_each_iommu(iommu) {
--		iommu_poll_events(iommu);
--		iommu_poll_ppr_log(iommu);
--	}
--
- 	return IRQ_HANDLED;
- }
- 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index e3c2d74..e4120bb 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -1275,7 +1275,7 @@ static int iommu_setup_msi(struct amd_iommu *iommu)
- 				 amd_iommu_int_handler,
- 				 amd_iommu_int_thread,
- 				 0, "AMD-Vi",
--				 iommu->dev);
-+				 iommu);
- 
- 	if (r) {
- 		pci_disable_msi(iommu->dev);
--- 
-1.7.10.4
+The purpose to change the behavior is to stop DMA in PCI layer.
+
+As Joerg said, if we need to consider the case that kdump kernel is
+compiled without dma-remapping(CONFIG_INTEL_IOMMU is off?), I can update
+my patch to handle such a case properly by adding ifdef
+CONFIG_INTEL_IOMMU.
+
+About how to stop the DMA on PCI layer, I'll post another mail to
+discuss it to iommu and pci list.
+
+Thanks,
+Takao Indoh
