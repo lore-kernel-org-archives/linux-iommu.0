@@ -1,22 +1,22 @@
-From: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Subject: Re: [PATCH] intel-iommu: Synchronize gcmd value with global command
 	register
-Date: Mon, 15 Apr 2013 18:00:13 +0900
-Message-ID: <516BC19D.4090303@jp.fujitsu.com>
-References: <1363829556-2128-1-git-send-email-indou.takao@jp.fujitsu.com>
-	<20130326144629.GB2727@8bytes.org>
+Date: Mon, 15 Apr 2013 12:18:29 +0200
+Message-ID: <20130415101829.GP6858@8bytes.org>
+References: <20130326144629.GB2727@8bytes.org>
 	<51527D74.9080209@jp.fujitsu.com>
 	<20130327103122.GK30540@8bytes.org> <51591EEE.60401@jp.fujitsu.com>
 	<20130402140546.GA15687@8bytes.org>
 	<515BD638.8070307@jp.fujitsu.com>
 	<1364977479.28127.15.camel@i7.infradead.org>
 	<20130405110616.GB6858@8bytes.org>
-	<5164EEE6.8000707@jp.fujitsu.com>
+	<5164EEE6.8000707@jp.fujitsu.com> <516BC19D.4090303@jp.fujitsu.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5164EEE6.8000707-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <516BC19D.4090303-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,60 +26,40 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tindoh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+To: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+Cc: kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tindoh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-(2013/04/10 13:47), Takao Indoh wrote:
-> (2013/04/05 20:06), Joerg Roedel wrote:
->> On Wed, Apr 03, 2013 at 09:24:39AM +0100, David Woodhouse wrote:
->>> On Wed, 2013-04-03 at 16:11 +0900, Takao Indoh wrote:
->>>> Yeah, you are right. I forgot such a case.
->>>
->>> If you disable translation and there's some device still doing DMA, it's
->>> going to scribble over random areas of memory. You really want to have
->>> translation enabled and all the page tables *cleared*, during kexec. I
->>> think it's fair to insist that the secondary kernel should use the IOMMU
->>> if the first one did.
->>
->> Do we really need to insist on that? The IOMMU initialization on x86
->> happens after the kernel scanned and enumerated the PCI bus. While doing
->> this the kernel (at least it should) disables all devices it finds. So
->> when the IOMMU init code runs we should be safe from any in-flight DMA
->> and can either disable translation or re-initialize it for the kdump
->> kernel. Until then translation needs to stay enabled of course, so that
->> the old page-tables are still used and in-flight DMA doesn't corrupt
->> any data.
+On Mon, Apr 15, 2013 at 06:00:13PM +0900, Takao Indoh wrote:
+> On DMAR initialization during kdump boot, do you guys agree to change
+> order like this?
 > 
-> So we should do in this order, right?
-> (1) PCI initialization. Stop all ongoing DMA here.
-> (2) Disable translation if already enable.
+> Current order:
+> (1) Disable translation
+> (2) PCI initialization
+> (3) Make pgtable and enable translation.
+> 
+> Order I'm proposing:
+> (1) PCI initialization
+> (2) Disable translation
 > (3) Make pgtable and enable translation.
 
-Joerg, David,
+I think this should work. In fact, translation only needs to be disabled
+while the IOMMU hardware is reprogrammed to the new data structures the
+kdump kernel set up.
 
-On DMAR initialization during kdump boot, do you guys agree to change
-order like this?
+> As Joerg said, if we need to consider the case that kdump kernel is
+> compiled without dma-remapping(CONFIG_INTEL_IOMMU is off?), I can update
+> my patch to handle such a case properly by adding ifdef
+> CONFIG_INTEL_IOMMU.
 
-Current order:
-(1) Disable translation
-(2) PCI initialization
-(3) Make pgtable and enable translation.
+Thinking about it, this case is a bit more special. If the kdump kernel
+has no IOMMU driver at all there is also no code to disable it. So
+unless we want to force the kdump kernel to have the driver when the
+first kernel had it, I think we also want some quirk (depending on
+!CONFIG_INTEL_IOMMU) that disables translation at boot.
 
-Order I'm proposing:
-(1) PCI initialization
-(2) Disable translation
-(3) Make pgtable and enable translation.
+I know, its complicated :)
 
-The purpose to change the behavior is to stop DMA in PCI layer.
 
-As Joerg said, if we need to consider the case that kdump kernel is
-compiled without dma-remapping(CONFIG_INTEL_IOMMU is off?), I can update
-my patch to handle such a case properly by adding ifdef
-CONFIG_INTEL_IOMMU.
-
-About how to stop the DMA on PCI layer, I'll post another mail to
-discuss it to iommu and pci list.
-
-Thanks,
-Takao Indoh
+	Joerg
