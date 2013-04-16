@@ -1,272 +1,128 @@
-From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Subject: Re: PCI warning on boot 3.8.0-rc1
-Date: Mon, 15 Apr 2013 13:29:28 -0600
-Message-ID: <CAErSpo7qx1Z0zEQgUW9Q8iBcw27=TKCzE-9KgocwDU2gUSTO=A@mail.gmail.com>
-References: <20130116143853.339dd89b@nehalam.linuxnetplumber.net>
-	<CAErSpo5eOE_=Ob2jN7ACy0eJBOa8k36XqCbHnGTCs-wfiy8tiw@mail.gmail.com>
-	<20130204103645.38ae2d5e@nehalam.linuxnetplumber.net>
-	<1360009684.11144.539.camel@bling.home>
-	<1360017684.11144.547.camel@bling.home>
-	<20130206074900.02f04e3f@nehalam.linuxnetplumber.net>
-	<1360166321.11144.638.camel@bling.home>
-	<20130410223650.GA6109@google.com>
-	<1365638519.26525.5.camel@ul30vt.home>
-	<CAErSpo4Nn9wsoaNxKZbHfU79w1t9C9Y3iHei5_bJpPjRZHSAow@mail.gmail.com>
-	<1366053154.2918.180.camel@bling.home>
+From: Olav Haugan <ohaugan@codeaurora.org>
+Subject: Re: [PATCH] documentation: iommu: add description of ARM System MMU
+ binding
+Date: Tue, 16 Apr 2013 11:18:42 -0700
+Message-ID: <516D9602.2010404@codeaurora.org>
+References: <1365094259-24847-1-git-send-email-will.deacon@arm.com> <515F37C1.4000109@codeaurora.org> <20130408092535.GA17476@mudshark.cambridge.arm.com> <5162F87A.7070409@codeaurora.org> <20130410173732.GQ26992@mudshark.cambridge.arm.com> <5169C7D1.8070300@codeaurora.org> <20130415131341.GG9827@mudshark.cambridge.arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1366053154.2918.180.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Stephen Hemminger <stephen-OTpzqLSitTUnbdJkjeBofR2eb7JE58TQ@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <20130415131341.GG9827@mudshark.cambridge.arm.com>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Will Deacon <will.deacon@arm.com>
+Cc: Andreas Herrmann <andreas.herrmann@calxeda.com>, "tzeng@codeaurora.org" <tzeng@codeaurora.org>, "devicetree-discuss@lists.ozlabs.org" <devicetree-discuss@lists.ozlabs.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-arm-msm@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Apr 15, 2013 at 1:12 PM, Alex Williamson
-<alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> On Thu, 2013-04-11 at 11:23 -0600, Bjorn Helgaas wrote:
->> On Wed, Apr 10, 2013 at 6:01 PM, Alex Williamson
->> <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
->> > On Wed, 2013-04-10 at 16:36 -0600, Bjorn Helgaas wrote:
->> >> On Wed, Feb 06, 2013 at 08:58:41AM -0700, Alex Williamson wrote:
->> >> > On Wed, 2013-02-06 at 07:49 -0800, Stephen Hemminger wrote:
->> >> > > On Mon, 04 Feb 2013 15:41:24 -0700
->> >> > > Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
->> >> > >
->> >> > > > On Mon, 2013-02-04 at 13:28 -0700, Alex Williamson wrote:
->> >> > > > > On Mon, 2013-02-04 at 10:36 -0800, Stephen Hemminger wrote:
->> >> > > > > > > I think drivers/pci/search.c is identical between 3.7 and 3.8-rc1.  Is
->> >> > > > > > > this the first time you've turned on the IOMMU on that box?
->> >> > > > > >
->> >> > > > > > It exists in 3.7 and earlier kernels, just haven't turned on same config.
->> >> > > > > >
->> >> > > > > > > It's the same warning as in this bugzilla:
->> >> > > > > > > https://bugzilla.kernel.org/show_bug.cgi?id=44881, and there's a patch
->> >> > > > > > > there at https://bugzilla.kernel.org/show_bug.cgi?id=44881#c11, but
->> >> > > > > > > it's just a quirk that turns off VT-d if we find certain broken
->> >> > > > > > > bridges.  It doesn't look like you have any of those (although I don't
->> >> > > > > > > know what you have at 05:00.0).
->> >> > > > > > >
->> >> > > > > > > Bjorn
->> >> > > > > >
->> >> > > > > > This is a standard ASUS motherboard, and don't want to disable VT-d.
->> >> > > > >
->> >> > > > > Stephen,
->> >> > > > >
->> >> > > > > Can you give the lspci -vvv of device 5:00.0 to see if it's one we've
->> >> > > > > seen before?  Does the patch below help?
->> >> > > > >
->> >> > > > > Bjorn, I think we need to quirk it somehow.  So far they've all been
->> >> > > > > PCI-to-PCI bridges attached to root ports where we expect it's actually
->> >> > > > > a PCIe-to-PCI bridge.  Seems like maybe we could have the same attached
->> >> > > > > to a downstream port.  The patch below avoids the WARN and gives us a
->> >> > > > > device, but of course pci_is_pcie reports wrong for this device and may
->> >> > > > > cause some trickle down breakage.  A more complete option might be to
->> >> > > > > add a is_pcie flag to the device that can be set independent of
->> >> > > > > pcie_cap.  We'd need to check all the callers for assumptions, but then
->> >> > > > > we could put the quirk in one place and hopefully fix everything.
->> >> > > > > Thoughts?  Thanks,
->> >> > > >
->> >> > > > This latter approach seems like it might be easier than I expected since
->> >> > > > all the users are so well filtered through the access functions.  A
->> >> > > > quick look through who uses pci_is_pcie seems like this might be
->> >> > > > complete, but more eyes are required.  I'll upload this to the bz for
->> >> > > > those reporters to test as well.  Thoughts?  Thanks,
->> >> > > >
->> >> > > > Alex
->> >> > >
->> >> > > On my hardware this gives:
->> >> >
->> >> > > [    0.254621] pci_bus 0000:05: busn_res: can not insert [bus 05-ff] under [bus 00-3e] (conflicts with (null) [bus 00-3e])
->> >> > > [    0.254647] WARNING: Your hardware is broken, device (null) appears to be a
->> >> > > [    0.254647]  Legacy PCI device attached directly to a PCIe device which is not a
->> >> > > [    0.254647]  PCIe-to-PCI bridge.  Per section 7.8 of the PCI Express 3.0 spec, the
->> >> > > [    0.254647]  PCI express capability structure is required for PCI express device
->> >> > > [    0.254647] functions.
->> >> > > [    0.254653] pci 0000:05:00.0: [1b21:1080] type 01 class 0x060401
->> >> >
->> >> > I guess I must be calling pci_name() before it's set.  The warning
->> >> > message needs some work too, it's mainly meant for hardware vendors with
->> >> > the hope that they might test Linux and see it before shipping these
->> >> > broken devices.  Bjorn, does this approach seem worth pursuing?  Thanks,
->> >>
->> >> Sorry I dropped this for so long.  I'm looking at the patch
->> >> here: https://bugzilla.kernel.org/attachment.cgi?id=92521,
->> >> appended for convenience.
->> >>
->> >> In case anybody else needs the context, I think we have
->> >> this scenario (from John Wehin's original report at
->> >> https://bugzilla.kernel.org/show_bug.cgi?id=44881):
->> >>
->> >>     pci 0000:00:1c.4: PCI bridge to [bus 03-04]       # PCIe root port
->> >>     pci 0000:03:00.0: PCI bridge to [bus 04]  # no PCIe cap
->> >>     ...
->> >>     pci 0000:03:00.0: expected upstream PCIe bridge; 0000:00:1c.4 is type 0x4
->> >>
->> >> We called pci_find_upstream_pcie_bridge(03:00.0), which generated
->> >> the warning because:
->> >>
->> >>     - 03:00.0 is not a PCIe device, and
->> >>     - 00:1c.4 (its upstream bridge) *is* a PCIe device, and
->> >>     - 00:1c.4 is a Root Port (PCI_EXP_TYPE_ROOT_PORT == 0x4),
->> >>       not a PCIe-to-PCI bridge (PCI_EXP_TYPE_PCI_BRIDGE == 0x7)
->> >>       as we expected
->> >>
->> >> > commit 60d668a3cdeeb0e29570cf0043736436c146bde8
->> >> > Author: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
->> >> > Date:   Mon Feb 4 15:34:34 2013 -0700
->> >> >
->> >> >     pci: Handle unadvertised PCIe bridges
->> >> >
->> >> >     There seem to be several PCIe-to-PCI bridges out in the wild that
->> >> >     blatantly ignore the PCIe specification and do not expose a PCIe
->> >> >     capability.  We can attempt to deduce their existence by looking
->> >> >     for PCI bridges directly connected to root ports or downstream
->> >> >     ports.  What this means is that pci_is_pcie() does not imply PCIe
->> >> >     capability and we un-deprecate is_pcie to denote the difference.
->> >> >     All the accesses seem to go through pcie_capability_reg_implemented,
->> >> >     so we can significantly limit the footprint of this change by
->> >> >     checking things there.
->> >> >
->> >> >     Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
->> >> >
->> >> > diff --git a/drivers/pci/access.c b/drivers/pci/access.c
->> >> > index 3af0478..3df24e7 100644
->> >> > --- a/drivers/pci/access.c
->> >> > +++ b/drivers/pci/access.c
->> >> > @@ -511,7 +511,7 @@ static inline bool pcie_cap_has_rtctl(const struct pci_dev *dev)
->> >> >
->> >> >  static bool pcie_capability_reg_implemented(struct pci_dev *dev, int pos)
->> >> >  {
->> >> > -   if (!pci_is_pcie(dev))
->> >> > +   if (!pci_is_pcie(dev) || !pci_pcie_cap(dev))
->> >> >             return false;
->> >> >
->> >> >     switch (pos) {
->> >> > diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
->> >> > index 6186f03..0a87b6b 100644
->> >> > --- a/drivers/pci/probe.c
->> >> > +++ b/drivers/pci/probe.c
->> >> > @@ -926,20 +926,46 @@ static void pci_read_irq(struct pci_dev *dev)
->> >> >     dev->irq = irq;
->> >> >  }
->> >> >
->> >> > +static bool is_unadvertised_pcie_bridge(struct pci_dev *pdev)
->> >> > +{
->> >> > +   struct pci_dev *parent;
->> >> > +
->> >> > +   if (pdev->hdr_type != PCI_HEADER_TYPE_BRIDGE ||
->> >> > +       pci_find_capability(pdev, PCI_CAP_ID_EXP) ||
->> >> > +            pci_is_root_bus(pdev->bus))
->> >> > +           return false;
->> >> > +
->> >> > +   parent = pdev->bus->self;
->> >> > +
->> >> > +   if (pci_is_pcie(parent) &&
->> >> > +       (pci_pcie_type(parent) == PCI_EXP_TYPE_ROOT_PORT ||
->> >> > +        pci_pcie_type(parent) == PCI_EXP_TYPE_DOWNSTREAM)) {
->> >> > +           pr_warn("WARNING: Your hardware is broken, device %s appears to be a\n Legacy PCI device attached directly to a PCIe device which is not a\n PCIe-to-PCI bridge.  Per section 7.8 of the PCI Express 3.0 spec, the\n PCI express capability structure is required for PCI express device\nfunctions.\n",
->> >> > +                   pci_name(pdev));
->> >>
->> >> Vendors might see this warning, but I'm doubtful they'll do anything
->> >> about it.  I suspect it will result in a lot of emails from concerned
->> >> users to LKML and linux-pci, and we really can't do anything other
->> >> than say "yup, it's broken, report it to your vendor."
->> >>
->> >> And since the hardware seems to actually *work* if we just pretend that
->> >> the problem device (e.g., 03:00.0 above) is PCIe, it's doubtful that
->> >> the vendor would do anything anyway, so maybe a dev_info() would be
->> >> sufficient.
->> >>
->> >> > +           return true;
->> >> > +   }
->> >> > +
->> >> > +   return false;
->> >> > +}
->> >> > +
->> >> >  void set_pcie_port_type(struct pci_dev *pdev)
->> >> >  {
->> >> >     int pos;
->> >> > -   u16 reg16;
->> >> > +   u16 flags, caps = 0;
->> >> >
->> >> >     pos = pci_find_capability(pdev, PCI_CAP_ID_EXP);
->> >> > -   if (!pos)
->> >> > +   if (pos) {
->> >> > +           pci_read_config_word(pdev, pos + PCI_EXP_FLAGS, &flags);
->> >> > +           pci_read_config_word(pdev, pos + PCI_EXP_DEVCAP, &caps);
->> >> > +   } else if (is_unadvertised_pcie_bridge(pdev))
->> >> > +           flags = PCI_EXP_TYPE_PCI_BRIDGE << 4;
->> >> > +   else
->> >> >             return;
->> >> > +
->> >> >     pdev->is_pcie = 1;
->> >> >     pdev->pcie_cap = pos;
->> >> > -   pci_read_config_word(pdev, pos + PCI_EXP_FLAGS, &reg16);
->> >> > -   pdev->pcie_flags_reg = reg16;
->> >> > -   pci_read_config_word(pdev, pos + PCI_EXP_DEVCAP, &reg16);
->> >> > -   pdev->pcie_mpss = reg16 & PCI_EXP_DEVCAP_PAYLOAD;
->> >> > +   pdev->pcie_flags_reg = flags;
->> >>
->> >> If we can avoid it, I'd prefer not to complicate the meaning of
->> >> "pci_is_pcie()" -- it used to mean "this device has a PCIe
->> >> capability and you can do PCIe things with it."  But now it
->> >> means something else, and we can't do PCIe things with these
->> >> problem devices anyway.
->> >>
->> >> Could we accomplish basically the same thing by making
->> >> pci_find_upstream_pcie_bridge() look like this?
->> >>
->> >>     if (pci_is_pcie(pdev))
->> >>           return NULL;
->> >>
->> >> +   bridge = pdev->bus->self;
->> >> +   if (bridge && pci_is_pcie(bridge) &&
->> >> +     (pci_pcie_type(bridge) == PCI_EXP_TYPE_ROOT_PORT ||
->> >> +      pci_pcie_type(bridge) == PCI_EXP_TYPE_DOWNSTREAM))
->> >> +         return NULL;
->> >>
->> >>     while (1) {
->> >>       ...
->> >
->> > This only solves pci_find_upstream_pcie_bridge(3:00.0), I think it still
->> > fails for any devices found on subordinate buses below that.  Thanks,
+On 4/15/2013 6:13 AM, Will Deacon wrote:
+> On Sat, Apr 13, 2013 at 10:02:09PM +0100, Olav Haugan wrote:
+>> On 4/10/2013 10:37 AM, Will Deacon wrote:
+>>> Ok, but then how does that interact with the IOMMU API in Linux? e.g.
+>>> if a client asks for an iova <-> pa mapping on a device, then you
+>>> need to lookup the StreamIDs for that device, no?
 >>
->> Can't we apply the same approach throughout the whole tree with some
->> reworking of pci_find_upstream_pcie_bridge()?
+>> Can you explain this use case a bit more. I am not clear what you mean
+>> by a "client"? Are you referring to a client in Linux or are you
+>> referring to the client being the core behind an IOMMU (such as a DMA
+>> engine or a video core)?
+> 
+> Sure. By `client', I mean any use of the IOMMU API. It could be something
+> like your LVD example later on, it could be KVM or it could be indirectly
+> via dma-mapping. Basically, any user of <linux/iommu.h>.
+
+Ok, so if I do a VA2PA on a domain (calling iommu_iova_to_phys()) you
+don't need any information about StreamID (no need to look up the
+StreamID). You would just walk the page table of the domain and find the
+address (or use ATS on the IOMMU if supported by the HW).
+
+>> I am not sure how StreamIDs relates to the IOMMU API in Linux :-)
+> 
+> That's the thing; they don't, at least not explicitly. The StreamIDs must
+> all be handled inside the driver and it's actually what the driver would
+> deal with, rather than devices.
+> 
+> For example, if I create an IOMMU domain containing a DMA controller, that
+> means that I have associated a set of StreamIDs (i.e. those configured to
+> identify the DMA controller's master ports) with that domain. That may have
+> further consequences on which other devices can be put in the same domain
+> (stream-matching may require some IDs to sit in the same address space/domain)
+> and also effectively parameterises the domain, by pointing those StreamIDs
+> at the same context bank.
+
+Yes, this is clear to me.
+
+>> I think it helps if I explain my use case to you so you understand how
+>> we use the IOMMU and maybe you can explain your use case and how your
+>> driver works so that we can get on the same page. BTW, our ARMv1 IOMMU
+>> driver can be found @ [1]
 >>
->> It seems like pci_find_upstream_pcie_bridge() (and some code in
->> callers) is really trying to figure out the requester-ID for use as
->> the IOMMU's source-ID, but the current code organization seems a bit
->> confusing.  I suspect cleaning that up a bit would make it more
->> obvious how to fix this.
->
-> But the bug is really that the bridge is a PCIe device but does not
-> expose a PCIe capability.  So yes, we can add hacks all around this path
-> to fix it, but we lose the general ability to identify these devices as
-> PCIe.  Maybe a compromise is a version of pci_is_pcie() that is a little
-> more flexible, pci_is_probably_pcie()?  Then we could use it when we
-> don't actually want to access the capability, but want to test the
-> device type.  Thanks,
+>> Our use case:
+>>
+>> 1) During boot IOMMU HW is probed, devices for each IOMMU and for each
+>> context bank are created.
+> 
+> So you create a device for each context bank...
+> 
+>> 2) Video session starts.
+>> 3) Linux Video Driver (LVD) creates one or more domain
+>> (iommu_domain_alloc) and calls iommu_attach_device() for each context
+>> bank it is going to use.
+> 
+> ...and attach the context bank to the domain dynamically?
 
-What good is it to know that "this is really a PCIe device" when it
-doesn't have a PCIe capability?  There's no PCIe operation we can
-perform on such a device -- we can't determine or set link speed,
-control ASPM, use AER, etc.
+Yes
 
-As far as the rest of the kernel is concerned, I think it's merely a
-PCI device.  The requester-ID thing is the only thing I know about
-that makes it slightly more than PCI.  That seems like such a special
-case thing that it's not worth trying to make a general PCI concept
-out of it.
+> If so, doesn't that strongly tie your video driver to the SMMU?
 
-Bjorn
+Isn't this more or less what you are doing in DT where you associate
+specific devices with an IOMMU (mmu-masters)?
+
+>> The video driver selects context bank to attach to based on the use case
+>> and does not know about StreamIDs really.
+>>
+>> BTW, when you call iommu_attach_device() what "device" do you pass as
+>> argument? Do you pass the IOMMU as a device? How do you specify which
+>> Context Bank to attach to?
+> 
+> This seems to be where we differ. My anticipated use-case is that a domain
+> is allocated, which defines an empty address space. Masters are then
+> attached to the domain by passing their struct device, so this may
+> correspond to a DMA controller or a video core, in your case. The context
+> bank is allocated dynamically when the first device is added to the
+> domain, and then it is subsequently shared between all the masters in that
+> domain.
+
+I feel that there are some limitation with this. Maybe you can address
+the following:
+
+1) What if you want two context banks in one domain (shared page table)?
+2) What if a master (device) needs to use 2 or more context banks?
+
+>>> Why can't the secure world just hide those context banks by using 
+>>> SMMU_SCR1.NSNUMCBO?
+>>
+>> Yes, that is a possibility for context banks. If you have 1 or more
+>> "secure" context banks it also means that Linux does not have access
+>> (read: can't have) to the global register space and this must be
+>> communicated somehow (hence the "secure-id" IOMMU node property. The
+>> secure-context property might be redundant. However, there might be use
+>> cases were Linux would want to know about the secure context bank. One
+>> such use case could be to register for page fault from the secure
+>> context bank so that Linux can log a useful page fault message to the
+>> kernel log.
+> 
+> Perhaps, but I don't think it's worth complicating the binding based on a
+> potential nice-to-have fault message.
+> 
+
+However, global register space (including Stream Match Registers [SMR])
+needs to be programmed by the secure environment for security or by
+hyper-visor if you are in such an environment.
+
+Thanks,
+
+Olav Haugan
+
+-- 
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+hosted by The Linux Foundation
