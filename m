@@ -1,128 +1,76 @@
-From: Olav Haugan <ohaugan@codeaurora.org>
-Subject: Re: [PATCH] documentation: iommu: add description of ARM System MMU
- binding
-Date: Tue, 16 Apr 2013 11:18:42 -0700
-Message-ID: <516D9602.2010404@codeaurora.org>
-References: <1365094259-24847-1-git-send-email-will.deacon@arm.com> <515F37C1.4000109@codeaurora.org> <20130408092535.GA17476@mudshark.cambridge.arm.com> <5162F87A.7070409@codeaurora.org> <20130410173732.GQ26992@mudshark.cambridge.arm.com> <5169C7D1.8070300@codeaurora.org> <20130415131341.GG9827@mudshark.cambridge.arm.com>
+From: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+Subject: Re: [PATCH] intel-iommu: Synchronize gcmd value with global command
+	register
+Date: Wed, 17 Apr 2013 17:48:46 +0900
+Message-ID: <516E61EE.5030607@jp.fujitsu.com>
+References: <20130326144629.GB2727@8bytes.org>
+	<51527D74.9080209@jp.fujitsu.com>
+	<20130327103122.GK30540@8bytes.org> <51591EEE.60401@jp.fujitsu.com>
+	<20130402140546.GA15687@8bytes.org>
+	<515BD638.8070307@jp.fujitsu.com>
+	<1364977479.28127.15.camel@i7.infradead.org>
+	<20130405110616.GB6858@8bytes.org>
+	<5164EEE6.8000707@jp.fujitsu.com> <516BC19D.4090303@jp.fujitsu.com>
+	<20130415101829.GP6858@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <20130415131341.GG9827@mudshark.cambridge.arm.com>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: Andreas Herrmann <andreas.herrmann@calxeda.com>, "tzeng@codeaurora.org" <tzeng@codeaurora.org>, "devicetree-discuss@lists.ozlabs.org" <devicetree-discuss@lists.ozlabs.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-arm-msm@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20130415101829.GP6858-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tindoh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 4/15/2013 6:13 AM, Will Deacon wrote:
-> On Sat, Apr 13, 2013 at 10:02:09PM +0100, Olav Haugan wrote:
->> On 4/10/2013 10:37 AM, Will Deacon wrote:
->>> Ok, but then how does that interact with the IOMMU API in Linux? e.g.
->>> if a client asks for an iova <-> pa mapping on a device, then you
->>> need to lookup the StreamIDs for that device, no?
+(2013/04/15 19:18), Joerg Roedel wrote:
+> On Mon, Apr 15, 2013 at 06:00:13PM +0900, Takao Indoh wrote:
+>> On DMAR initialization during kdump boot, do you guys agree to change
+>> order like this?
 >>
->> Can you explain this use case a bit more. I am not clear what you mean
->> by a "client"? Are you referring to a client in Linux or are you
->> referring to the client being the core behind an IOMMU (such as a DMA
->> engine or a video core)?
-> 
-> Sure. By `client', I mean any use of the IOMMU API. It could be something
-> like your LVD example later on, it could be KVM or it could be indirectly
-> via dma-mapping. Basically, any user of <linux/iommu.h>.
-
-Ok, so if I do a VA2PA on a domain (calling iommu_iova_to_phys()) you
-don't need any information about StreamID (no need to look up the
-StreamID). You would just walk the page table of the domain and find the
-address (or use ATS on the IOMMU if supported by the HW).
-
->> I am not sure how StreamIDs relates to the IOMMU API in Linux :-)
-> 
-> That's the thing; they don't, at least not explicitly. The StreamIDs must
-> all be handled inside the driver and it's actually what the driver would
-> deal with, rather than devices.
-> 
-> For example, if I create an IOMMU domain containing a DMA controller, that
-> means that I have associated a set of StreamIDs (i.e. those configured to
-> identify the DMA controller's master ports) with that domain. That may have
-> further consequences on which other devices can be put in the same domain
-> (stream-matching may require some IDs to sit in the same address space/domain)
-> and also effectively parameterises the domain, by pointing those StreamIDs
-> at the same context bank.
-
-Yes, this is clear to me.
-
->> I think it helps if I explain my use case to you so you understand how
->> we use the IOMMU and maybe you can explain your use case and how your
->> driver works so that we can get on the same page. BTW, our ARMv1 IOMMU
->> driver can be found @ [1]
+>> Current order:
+>> (1) Disable translation
+>> (2) PCI initialization
+>> (3) Make pgtable and enable translation.
 >>
->> Our use case:
->>
->> 1) During boot IOMMU HW is probed, devices for each IOMMU and for each
->> context bank are created.
+>> Order I'm proposing:
+>> (1) PCI initialization
+>> (2) Disable translation
+>> (3) Make pgtable and enable translation.
 > 
-> So you create a device for each context bank...
+> I think this should work. In fact, translation only needs to be disabled
+> while the IOMMU hardware is reprogrammed to the new data structures the
+> kdump kernel set up.
+
+Ok, I agree.
+
 > 
->> 2) Video session starts.
->> 3) Linux Video Driver (LVD) creates one or more domain
->> (iommu_domain_alloc) and calls iommu_attach_device() for each context
->> bank it is going to use.
+>> As Joerg said, if we need to consider the case that kdump kernel is
+>> compiled without dma-remapping(CONFIG_INTEL_IOMMU is off?), I can update
+>> my patch to handle such a case properly by adding ifdef
+>> CONFIG_INTEL_IOMMU.
 > 
-> ...and attach the context bank to the domain dynamically?
-
-Yes
-
-> If so, doesn't that strongly tie your video driver to the SMMU?
-
-Isn't this more or less what you are doing in DT where you associate
-specific devices with an IOMMU (mmu-masters)?
-
->> The video driver selects context bank to attach to based on the use case
->> and does not know about StreamIDs really.
->>
->> BTW, when you call iommu_attach_device() what "device" do you pass as
->> argument? Do you pass the IOMMU as a device? How do you specify which
->> Context Bank to attach to?
+> Thinking about it, this case is a bit more special. If the kdump kernel
+> has no IOMMU driver at all there is also no code to disable it. So
+> unless we want to force the kdump kernel to have the driver when the
+> first kernel had it, I think we also want some quirk (depending on
+> !CONFIG_INTEL_IOMMU) that disables translation at boot.
 > 
-> This seems to be where we differ. My anticipated use-case is that a domain
-> is allocated, which defines an empty address space. Masters are then
-> attached to the domain by passing their struct device, so this may
-> correspond to a DMA controller or a video core, in your case. The context
-> bank is allocated dynamically when the first device is added to the
-> domain, and then it is subsequently shared between all the masters in that
-> domain.
+> I know, its complicated :)
 
-I feel that there are some limitation with this. Maybe you can address
-the following:
-
-1) What if you want two context banks in one domain (shared page table)?
-2) What if a master (device) needs to use 2 or more context banks?
-
->>> Why can't the secure world just hide those context banks by using 
->>> SMMU_SCR1.NSNUMCBO?
->>
->> Yes, that is a possibility for context banks. If you have 1 or more
->> "secure" context banks it also means that Linux does not have access
->> (read: can't have) to the global register space and this must be
->> communicated somehow (hence the "secure-id" IOMMU node property. The
->> secure-context property might be redundant. However, there might be use
->> cases were Linux would want to know about the secure context bank. One
->> such use case could be to register for page fault from the secure
->> context bank so that Linux can log a useful page fault message to the
->> kernel log.
-> 
-> Perhaps, but I don't think it's worth complicating the binding based on a
-> potential nice-to-have fault message.
-> 
-
-However, global register space (including Stream Match Registers [SMR])
-needs to be programmed by the secure environment for security or by
-hyper-visor if you are in such an environment.
+yeah complicated. hmm..., this isn't limited only to iommu case, there
+are many problems which are caused by difference of config between first
+kernel and second one. So, to make code simple, I think we don't need to
+care such a exceptional case. I mean, I think it is a matter of user
+and user has to compile second kernel with dma-remapping if user want to
+use it in first kernel.
 
 Thanks,
-
-Olav Haugan
-
--- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-hosted by The Linux Foundation
+Takao Indoh
