@@ -1,43 +1,53 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/2 V2] iommu/amd: Add workaround for ERBT1312
-Date: Thu, 18 Apr 2013 22:06:13 +0200
-Message-ID: <20130418200613.GB17148@8bytes.org>
-References: <1366009666-44792-1-git-send-email-suravee.suthikulpanit@amd.com>
-	<20130418160220.GA4153@8bytes.org> <51701B9F.10003@amd.com>
-	<20130418162856.GA13891@8bytes.org> <5170268E.8080706@amd.com>
-	<20130418183538.GA17148@8bytes.org> <517041EA.70407@amd.com>
+From: Myron Stowe <myron.stowe@gmail.com>
+Subject: 2013 Linux Plumbers ACPI/PM, PCI Microconference proposal call for participaton
+Date: Thu, 18 Apr 2013 15:52:09 -0600
+Message-ID: <CAL-B5D3mP-Eo7yzZb=ZJ_+GK5YGzKZV2p0SD05s3fXDR2BGorA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <517041EA.70407-5C7GfCeVMHo@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: linux-pci <linux-pci@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Apr 18, 2013 at 01:56:42PM -0500, Suthikulpanit, Suravee wrote:
-> On 4/18/2013 1:35 PM, Joerg Roedel wrote:
+All:
 
-> According to the "kernel/irq/handle.c:irq_wake_thread()", I thought
-> that for the threaded IRQ, if the system getting a new interrupt
-> from the device while the thread is running, it will just return and
-> do nothing.
+We would like to hold a combined ACPI/PM, PCI focused microconference
+as part of this year's Linux Plumbers conference but first we need to
+show that there is enough interest and material that needs covered.
 
-Yes, but the irq-thread function itself executes the handler function
-repeatedly until the IRQTF_RUNTHREAD bit is cleared. And every new
-interrupt will set this bit again. So when there is a new interrupt
-while our handler function runs the handler will be called again by the
-irq-thread.
+There is a lot of activity in these subsystems so please respond by
+submitting presentation or discussion proposals that you would be
+willing to cover for consideration (respond to this mail on the
+linux-pci list for tracking purposes please).  You should also feel
+free to submit ideas as proposals that others could cover.  This is
+the "Plumbers" conference so topics concerning userspace interaction
+with the kernel and not just topics concerning pure kernel subsystem
+internals would be greatly welcomed.
+
+The initial call[1] only produced two responses.  We understand that
+everyone is busy but without proposals the program committee will not
+be able to select this topic for approval - so please step up.
 
 
-	Joerg
+If approved by the program committee, we will give precedence to
+proposals that bring up current issues that need attention, help, or
+resolution.  We would like for the majority of the microconference to
+be "working session discussions" in which a current issues in/with the
+ACPI/PM and PCI subsystem space that needs solving are introduced and
+then opened up for live discussion by attendees - much like what took
+place last year during the Kernel Summit's PCI miniconf.
+
+As a possible aid towards promoting topics for submissions we have
+listed a few candidates that seem to meet the criteria in the
+microconference proposals wiki located at
+http://wiki.linuxplumbersconf.org/2013:pci_subsystem
+
+
+Please feel free to forward this invitation on to any others, or
+relevant lists, that seem appropriate.
+
+Thanks,
+  Len, Bjorn, Myron, Rafael
+
+
+[1] https://lkml.org/lkml/2013/3/7/315
