@@ -1,61 +1,114 @@
-From: Wei Hu <wei@aristanetworks.com>
-Subject: Re: [PATCH 1/1] intel-iommu: Disable DMA Remapping when intel_iommu=off
-Date: Mon, 22 Apr 2013 00:11:33 -0700
-Message-ID: <CANwcMEZsH5YeuucyXLeA3MWE8tApAbLLzkkT=26cDZU=Y0yhtw@mail.gmail.com>
-References: <1366441080-5937-1-git-send-email-wei@aristanetworks.com>
- <5174CB26.9060908@jp.fujitsu.com> <CANwcMEZF+ehPeFuucRqcKSiNNoXL6bDy+GTHBHYjr3DfoZY7vg@mail.gmail.com>
- <5174E185.1040806@jp.fujitsu.com>
+From: Myron Stowe <myron.stowe-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: 2013 Linux Plumbers ACPI/PM,
+	PCI Microconference proposal call for participaton
+Date: Thu, 18 Apr 2013 15:43:34 -0600
+Message-ID: <CAL-B5D3UzFP2nMmj7hzXTyq9EkV0WDJMWKM=FMCv6ps5DH8PdA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5174E185.1040806@jp.fujitsu.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Takao Indoh <indou.takao@jp.fujitsu.com>
-Cc: dwmw2 <dwmw2@infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: multipart/mixed; boundary="===============3034976900017647216=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-pci <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Apr 22, 2013 at 12:06 AM, Takao Indoh
-<indou.takao@jp.fujitsu.com> wrote:
-> (2013/04/22 15:50), Wei Hu wrote:
->> On Sun, Apr 21, 2013 at 10:31 PM, Takao Indoh
->> <indou.takao@jp.fujitsu.com> wrote:
->>> (2013/04/20 15:58), Wei Hu wrote:
->>>> On a VT-d capable machine Linux will enable IOMMU by default. If it
->>>> then kexec's a second kernel with intel_iommu=off, this second kernel
->>>> will leave the DMA remapping engine on with no code handling it. The
->>>> symptom is at least USB and SATA drives stop working. This patch fixes
->>>> the problem by always disabling DMA remapping when intel_iommu=off.
->>>
->>> Even when second kernel boots up with intel_iommu=on, dma-remapping need
->>> to be disabled as well before it is initialized and enabled again in
->>> init_dmars(). So, how about something like this?
->>>
->>>          for_each_drhd_unit(drhd) {
->>>                  struct dmar_drhd_unit *drhd;
->>>                  if (drhd->ignored)
->>>                          continue;
->>>
->>>                  iommu = drhd->iommu;
->>>                  if (iommu->gcmd & DMA_GCMD_TE)
->>>                          iommu_disable_translation(iommu);
->>>          }
->>>
->>> Note, if you agree above code and fix your patch like this, you need
->>> additinal fix to set iommu->gcmd flag sinse gcmd is always zero here.
->>> See first hunk of this patch.
->>> https://lkml.org/lkml/2013/3/20/707
->>
->> Thanks for your reply. I reviewed your patch. Are you suggesting
->> keeping your change to dmar.c, and moving your change to intel-iommu.c
->> (i.e. the code you just showed) up after the call to
->> dmar_table_init()?
->>
->
-> Yes, exactly.
->
-> Thanks,
-> Takao Indoh
->
+--===============3034976900017647216==
+Content-Type: multipart/alternative; boundary=089e01184d728e222d04daa97ebe
 
-Sounds great. If you want to make the change and get your patch
-accepted that's fine with me.
+--089e01184d728e222d04daa97ebe
+Content-Type: text/plain; charset=ISO-8859-1
+
+All:
+
+We would like to hold a combined ACPI/PM, PCI focused microconference as
+part of this year's Linux Plumbers conference but first we need to show
+that there is enough interest and material that needs covered.
+
+There is a lot of activity in these subsystems so please respond by
+submitting presentation or discussion proposals that you would be willing
+to cover for consideration (respond to this mail on the linux-pci list for
+tracking purposes please).  You should also feel free to submit ideas as
+proposals that others could cover.  This is the "Plumbers" conference so
+topics concerning userspace interaction with the kernel and not just topics
+concerning pure kernel subsystem internals would be greatly welcomed.
+
+The initial call[1] only produced two responses.  We understand that
+everyone is busy but without proposals the program committee will not be
+able to select this topic for approval - so please step up.
+
+
+If approved by the program committee, we will give precedence to proposals
+that bring up current issues that need attention, help, or resolution.  We
+would like for the majority of the microconference to be "working session
+discussions" in which a current issues in/with the ACPI/PM and PCI
+subsystem space that needs solving are introduced and then opened up for
+live discussion by attendees - much like what took place last year during
+the Kernel Summit's PCI miniconf.
+
+As a possible aid towards promoting topics for submissions we have listed a
+few candidates that seem to meet the criteria in the microconference
+proposals wiki located at
+http://wiki.linuxplumbersconf.org/2013:pci_subsystem
+
+
+Please feel free to forward this invitation on to any others, or relevant
+lists, that seem appropriate.
+
+Thanks,
+  Len, Bjorn, Myron, Rafael
+
+
+[1] https://lkml.org/lkml/2013/3/7/315
+
+--089e01184d728e222d04daa97ebe
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">All:<br><br>We would like to hold a combined ACPI/PM, PCI =
+focused microconference as part of this year&#39;s Linux Plumbers conferenc=
+e but first we need to show that there is enough interest and material that=
+ needs covered.<br>
+<br>There is a lot of activity in these subsystems so please respond by sub=
+mitting presentation or discussion proposals that you would be willing to c=
+over for consideration (respond to this mail on the linux-pci list for trac=
+king purposes please).=A0 You should also feel free to submit ideas as prop=
+osals that others could cover.=A0 This is the &quot;Plumbers&quot; conferen=
+ce so topics concerning userspace interaction with the kernel and not just =
+topics concerning pure kernel subsystem internals would be greatly welcomed=
+.<br>
+<br>The initial call[1] only produced two responses.=A0 We understand that =
+everyone is busy but without proposals the program committee will not be ab=
+le to select this topic for approval - so please step up.<br><br><br>If app=
+roved by the program committee, we will give precedence to proposals that b=
+ring up current issues that need attention, help, or resolution.=A0 We woul=
+d like for the majority of the microconference to be &quot;working session =
+discussions&quot; in which a current issues in/with the ACPI/PM and PCI sub=
+system space that needs solving are introduced and then opened up for live =
+discussion by attendees - much like what took place last year during the Ke=
+rnel Summit&#39;s PCI miniconf.<br>
+<br>As a possible aid towards promoting topics for submissions we have list=
+ed a few candidates that seem to meet the criteria in the microconference p=
+roposals wiki located at <a href=3D"http://wiki.linuxplumbersconf.org/2013:=
+pci_subsystem">http://wiki.linuxplumbersconf.org/2013:pci_subsystem</a><br>
+<br><br>Please feel free to forward this invitation on to any others, or re=
+levant lists, that seem appropriate.<br><br>Thanks,<br>=A0 Len, Bjorn, Myro=
+n, Rafael<br><br><br>[1] <a href=3D"https://lkml.org/lkml/2013/3/7/315">htt=
+ps://lkml.org/lkml/2013/3/7/315</a><br>
+<br></div>
+
+--089e01184d728e222d04daa97ebe--
+
+--===============3034976900017647216==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============3034976900017647216==--
