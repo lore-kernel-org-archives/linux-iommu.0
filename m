@@ -1,22 +1,17 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] documentation: iommu: add description of ARM System MMU
-	binding
-Date: Thu, 18 Apr 2013 20:01:31 +0100
-Message-ID: <20130418190131.GA12344@mudshark.cambridge.arm.com>
-References: <1365094259-24847-1-git-send-email-will.deacon@arm.com>
-	<515F37C1.4000109@codeaurora.org>
-	<20130408092535.GA17476@mudshark.cambridge.arm.com>
-	<5162F87A.7070409@codeaurora.org>
-	<20130410173732.GQ26992@mudshark.cambridge.arm.com>
-	<5169C7D1.8070300@codeaurora.org>
-	<20130415131341.GG9827@mudshark.cambridge.arm.com>
-	<516D9602.2010404@codeaurora.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 1/2 V2] iommu/amd: Add workaround for ERBT1312
+Date: Thu, 18 Apr 2013 22:06:13 +0200
+Message-ID: <20130418200613.GB17148@8bytes.org>
+References: <1366009666-44792-1-git-send-email-suravee.suthikulpanit@amd.com>
+	<20130418160220.GA4153@8bytes.org> <51701B9F.10003@amd.com>
+	<20130418162856.GA13891@8bytes.org> <5170268E.8080706@amd.com>
+	<20130418183538.GA17148@8bytes.org> <517041EA.70407@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <516D9602.2010404-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-Reply-To: <517041EA.70407-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,56 +21,23 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Olav,
+On Thu, Apr 18, 2013 at 01:56:42PM -0500, Suthikulpanit, Suravee wrote:
+> On 4/18/2013 1:35 PM, Joerg Roedel wrote:
 
-On Tue, Apr 16, 2013 at 07:18:42PM +0100, Olav Haugan wrote:
-> On 4/15/2013 6:13 AM, Will Deacon wrote:
-> > If so, doesn't that strongly tie your video driver to the SMMU?
-> 
-> Isn't this more or less what you are doing in DT where you associate
-> specific devices with an IOMMU (mmu-masters)?
+> According to the "kernel/irq/handle.c:irq_wake_thread()", I thought
+> that for the threaded IRQ, if the system getting a new interrupt
+> from the device while the thread is running, it will just return and
+> do nothing.
 
-No. The device-tree describes the *hardware*, as per usual. The StreamIDs
-are fixed properties of the SoC and we can't change them from Linux, so we
-describe all of the StreamIDs upstream of each SMMU so that we can program
-the thing. There's no way to generic way to discover them.
+Yes, but the irq-thread function itself executes the handler function
+repeatedly until the IRQTF_RUNTHREAD bit is cleared. And every new
+interrupt will set this bit again. So when there is a new interrupt
+while our handler function runs the handler will be called again by the
+irq-thread.
 
-> > This seems to be where we differ. My anticipated use-case is that a domain
-> > is allocated, which defines an empty address space. Masters are then
-> > attached to the domain by passing their struct device, so this may
-> > correspond to a DMA controller or a video core, in your case. The context
-> > bank is allocated dynamically when the first device is added to the
-> > domain, and then it is subsequently shared between all the masters in that
-> > domain.
-> 
-> I feel that there are some limitation with this. Maybe you can address
-> the following:
-> 
-> 1) What if you want two context banks in one domain (shared page table)?
 
-Why would a page table shared between devices require multiple context
-banks? Multiple SMRs and S2CRs, sure, but they would ultimately point at the
-same context bank (and hence same address space).
-
-> 2) What if a master (device) needs to use 2 or more context banks?
-
-If a master needs to be in two address spaces at once, then it will need to
-attach it's StreamIDs to different domains. You can't place a single
-StreamID in two address spaces (this is an architectural constraint).
-
-> > Perhaps, but I don't think it's worth complicating the binding based on a
-> > potential nice-to-have fault message.
-> > 
-> 
-> However, global register space (including Stream Match Registers [SMR])
-> needs to be programmed by the secure environment for security or by
-> hyper-visor if you are in such an environment.
-
-Of course, but that's not Linux (and KVM would likely have some additional
-code if it wanted to do device passthrough, for example).
-
-Will
+	Joerg
