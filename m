@@ -1,53 +1,41 @@
-From: Myron Stowe <myron.stowe@gmail.com>
-Subject: 2013 Linux Plumbers ACPI/PM, PCI Microconference proposal call for participaton
-Date: Thu, 18 Apr 2013 15:52:09 -0600
-Message-ID: <CAL-B5D3mP-Eo7yzZb=ZJ_+GK5YGzKZV2p0SD05s3fXDR2BGorA@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Sender: linux-acpi-owner@vger.kernel.org
-To: linux-pci <linux-pci@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+From: Wei Hu <wei@aristanetworks.com>
+Subject: [PATCH 1/1] intel-iommu: Disable DMA Remapping when intel_iommu=off
+Date: Fri, 19 Apr 2013 23:58:00 -0700
+Message-ID: <1366441080-5937-1-git-send-email-wei@aristanetworks.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: David Woodhouse <dwmw2@infradead.org>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Wei Hu <wei@aristanetworks.com>
 List-Id: iommu@lists.linux-foundation.org
 
-All:
+On a VT-d capable machine Linux will enable IOMMU by default. If it
+then kexec's a second kernel with intel_iommu=off, this second kernel
+will leave the DMA remapping engine on with no code handling it. The
+symptom is at least USB and SATA drives stop working. This patch fixes
+the problem by always disabling DMA remapping when intel_iommu=off.
 
-We would like to hold a combined ACPI/PM, PCI focused microconference
-as part of this year's Linux Plumbers conference but first we need to
-show that there is enough interest and material that needs covered.
+Signed-off-by: Wei Hu <wei@aristanetworks.com>
+---
+ drivers/iommu/intel-iommu.c |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
 
-There is a lot of activity in these subsystems so please respond by
-submitting presentation or discussion proposals that you would be
-willing to cover for consideration (respond to this mail on the
-linux-pci list for tracking purposes please).  You should also feel
-free to submit ideas as proposals that others could cover.  This is
-the "Plumbers" conference so topics concerning userspace interaction
-with the kernel and not just topics concerning pure kernel subsystem
-internals would be greatly welcomed.
-
-The initial call[1] only produced two responses.  We understand that
-everyone is busy but without proposals the program committee will not
-be able to select this topic for approval - so please step up.
-
-
-If approved by the program committee, we will give precedence to
-proposals that bring up current issues that need attention, help, or
-resolution.  We would like for the majority of the microconference to
-be "working session discussions" in which a current issues in/with the
-ACPI/PM and PCI subsystem space that needs solving are introduced and
-then opened up for live discussion by attendees - much like what took
-place last year during the Kernel Summit's PCI miniconf.
-
-As a possible aid towards promoting topics for submissions we have
-listed a few candidates that seem to meet the criteria in the
-microconference proposals wiki located at
-http://wiki.linuxplumbersconf.org/2013:pci_subsystem
-
-
-Please feel free to forward this invitation on to any others, or
-relevant lists, that seem appropriate.
-
-Thanks,
-  Len, Bjorn, Myron, Rafael
-
-
-[1] https://lkml.org/lkml/2013/3/7/315
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 0099667..0b8f8bb 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -3681,8 +3681,12 @@ int __init intel_iommu_init(void)
+ 		return 	-ENODEV;
+ 	}
+ 
+-	if (no_iommu || dmar_disabled)
++	if (no_iommu || dmar_disabled) {
++		struct dmar_drhd_unit *drhd;
++		for_each_drhd_unit(drhd)
++			iommu_disable_translation(drhd->iommu);
+ 		return -ENODEV;
++	}
+ 
+ 	if (iommu_init_mempool()) {
+ 		if (force_on)
+-- 
+1.7.4.4
