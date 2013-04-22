@@ -1,10 +1,10 @@
-From: Myron Stowe <myron.stowe-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: 2013 Linux Plumbers ACPI/PM,
-	PCI Microconference proposal call for participaton
-Date: Thu, 18 Apr 2013 15:43:34 -0600
-Message-ID: <CAL-B5D3UzFP2nMmj7hzXTyq9EkV0WDJMWKM=FMCv6ps5DH8PdA@mail.gmail.com>
+From: <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: [PATCH 1/1 V2] iommu/AMD: Per-thread IOMMU Interrupt Handling
+Date: Mon, 22 Apr 2013 16:32:34 -0500
+Message-ID: <1366666354-4399-1-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============3034976900017647216=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -15,100 +15,184 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-pci <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
---===============3034976900017647216==
-Content-Type: multipart/alternative; boundary=089e01184d728e222d04daa97ebe
+From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 
---089e01184d728e222d04daa97ebe
-Content-Type: text/plain; charset=ISO-8859-1
+In the current interrupt handling scheme, there are as many threads as
+the number of IOMMUs. Each thread is created and assigned to an IOMMU at
+the time of registering interrupt handlers (request_threaded_irq).
+When an IOMMU HW generates an interrupt, the irq handler (top half) wakes up
+the corresponding thread to process event and PPR logs of all IOMMUs
+starting from the 1st IOMMU.
 
-All:
+In the system with multiple IOMMU,this handling scheme complicates the
+synchronization of the IOMMU data structures and status registers as
+there could be multiple threads competing for the same IOMMU while
+the other IOMMU could be left unhandled.
 
-We would like to hold a combined ACPI/PM, PCI focused microconference as
-part of this year's Linux Plumbers conference but first we need to show
-that there is enough interest and material that needs covered.
+To simplify, this patch is proposing a different interrupt handling scheme
+by having each thread only managing interrupts of the corresponding IOMMU.
+This can be achieved by passing the struct amd_iommu when registering the
+interrupt handlers. This structure is unique for each IOMMU and can be used
+by the bottom half thread to identify the IOMMU to be handled instead
+of calling for_each_iommu.  Besides this also eliminate the needs to lock
+the IOMMU for processing event and PPR logs.
 
-There is a lot of activity in these subsystems so please respond by
-submitting presentation or discussion proposals that you would be willing
-to cover for consideration (respond to this mail on the linux-pci list for
-tracking purposes please).  You should also feel free to submit ideas as
-proposals that others could cover.  This is the "Plumbers" conference so
-topics concerning userspace interaction with the kernel and not just topics
-concerning pure kernel subsystem internals would be greatly welcomed.
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+---
+V2:
+	- Re-create the patch from new code base.
 
-The initial call[1] only produced two responses.  We understand that
-everyone is busy but without proposals the program committee will not be
-able to select this topic for approval - so please step up.
+ drivers/iommu/amd_iommu.c      |   82 ++++++++++++++++------------------------
+ drivers/iommu/amd_iommu_init.c |    2 +-
+ 2 files changed, 34 insertions(+), 50 deletions(-)
 
-
-If approved by the program committee, we will give precedence to proposals
-that bring up current issues that need attention, help, or resolution.  We
-would like for the majority of the microconference to be "working session
-discussions" in which a current issues in/with the ACPI/PM and PCI
-subsystem space that needs solving are introduced and then opened up for
-live discussion by attendees - much like what took place last year during
-the Kernel Summit's PCI miniconf.
-
-As a possible aid towards promoting topics for submissions we have listed a
-few candidates that seem to meet the criteria in the microconference
-proposals wiki located at
-http://wiki.linuxplumbersconf.org/2013:pci_subsystem
-
-
-Please feel free to forward this invitation on to any others, or relevant
-lists, that seem appropriate.
-
-Thanks,
-  Len, Bjorn, Myron, Rafael
-
-
-[1] https://lkml.org/lkml/2013/3/7/315
-
---089e01184d728e222d04daa97ebe
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">All:<br><br>We would like to hold a combined ACPI/PM, PCI =
-focused microconference as part of this year&#39;s Linux Plumbers conferenc=
-e but first we need to show that there is enough interest and material that=
- needs covered.<br>
-<br>There is a lot of activity in these subsystems so please respond by sub=
-mitting presentation or discussion proposals that you would be willing to c=
-over for consideration (respond to this mail on the linux-pci list for trac=
-king purposes please).=A0 You should also feel free to submit ideas as prop=
-osals that others could cover.=A0 This is the &quot;Plumbers&quot; conferen=
-ce so topics concerning userspace interaction with the kernel and not just =
-topics concerning pure kernel subsystem internals would be greatly welcomed=
-.<br>
-<br>The initial call[1] only produced two responses.=A0 We understand that =
-everyone is busy but without proposals the program committee will not be ab=
-le to select this topic for approval - so please step up.<br><br><br>If app=
-roved by the program committee, we will give precedence to proposals that b=
-ring up current issues that need attention, help, or resolution.=A0 We woul=
-d like for the majority of the microconference to be &quot;working session =
-discussions&quot; in which a current issues in/with the ACPI/PM and PCI sub=
-system space that needs solving are introduced and then opened up for live =
-discussion by attendees - much like what took place last year during the Ke=
-rnel Summit&#39;s PCI miniconf.<br>
-<br>As a possible aid towards promoting topics for submissions we have list=
-ed a few candidates that seem to meet the criteria in the microconference p=
-roposals wiki located at <a href=3D"http://wiki.linuxplumbersconf.org/2013:=
-pci_subsystem">http://wiki.linuxplumbersconf.org/2013:pci_subsystem</a><br>
-<br><br>Please feel free to forward this invitation on to any others, or re=
-levant lists, that seem appropriate.<br><br>Thanks,<br>=A0 Len, Bjorn, Myro=
-n, Rafael<br><br><br>[1] <a href=3D"https://lkml.org/lkml/2013/3/7/315">htt=
-ps://lkml.org/lkml/2013/3/7/315</a><br>
-<br></div>
-
---089e01184d728e222d04daa97ebe--
-
---===============3034976900017647216==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============3034976900017647216==--
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 6e14ff6..9a706ca 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -700,22 +700,7 @@ retry:
+ 
+ static void iommu_poll_events(struct amd_iommu *iommu)
+ {
+-	u32 head, tail, status;
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&iommu->lock, flags);
+-
+-	/* enable event interrupts again */
+-	do {
+-		/*
+-		 * Workaround for Erratum ERBT1312
+-		 * Clearing the EVT_INT bit may race in the hardware, so read
+-		 * it again and make sure it was really cleared
+-		 */
+-		status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
+-		writel(MMIO_STATUS_EVT_INT_MASK,
+-		       iommu->mmio_base + MMIO_STATUS_OFFSET);
+-	} while (status & MMIO_STATUS_EVT_INT_MASK);
++	u32 head, tail;
+ 
+ 	head = readl(iommu->mmio_base + MMIO_EVT_HEAD_OFFSET);
+ 	tail = readl(iommu->mmio_base + MMIO_EVT_TAIL_OFFSET);
+@@ -726,8 +711,6 @@ static void iommu_poll_events(struct amd_iommu *iommu)
+ 	}
+ 
+ 	writel(head, iommu->mmio_base + MMIO_EVT_HEAD_OFFSET);
+-
+-	spin_unlock_irqrestore(&iommu->lock, flags);
+ }
+ 
+ static void iommu_handle_ppr_entry(struct amd_iommu *iommu, u64 *raw)
+@@ -752,26 +735,11 @@ static void iommu_handle_ppr_entry(struct amd_iommu *iommu, u64 *raw)
+ 
+ static void iommu_poll_ppr_log(struct amd_iommu *iommu)
+ {
+-	unsigned long flags;
+-	u32 head, tail, status;
++	u32 head, tail;
+ 
+ 	if (iommu->ppr_log == NULL)
+ 		return;
+ 
+-	spin_lock_irqsave(&iommu->lock, flags);
+-
+-	/* enable ppr interrupts again */
+-	do {
+-		/*
+-		 * Workaround for Erratum ERBT1312
+-		 * Clearing the PPR_INT bit may race in the hardware, so read
+-		 * it again and make sure it was really cleared
+-		 */
+-		status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
+-		writel(MMIO_STATUS_PPR_INT_MASK,
+-		       iommu->mmio_base + MMIO_STATUS_OFFSET);
+-	} while (status & MMIO_STATUS_PPR_INT_MASK);
+-
+ 	head = readl(iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
+ 	tail = readl(iommu->mmio_base + MMIO_PPR_TAIL_OFFSET);
+ 
+@@ -807,34 +775,50 @@ static void iommu_poll_ppr_log(struct amd_iommu *iommu)
+ 		head = (head + PPR_ENTRY_SIZE) % PPR_LOG_SIZE;
+ 		writel(head, iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
+ 
+-		/*
+-		 * Release iommu->lock because ppr-handling might need to
+-		 * re-acquire it
+-		 */
+-		spin_unlock_irqrestore(&iommu->lock, flags);
+-
+ 		/* Handle PPR entry */
+ 		iommu_handle_ppr_entry(iommu, entry);
+ 
+-		spin_lock_irqsave(&iommu->lock, flags);
+-
+ 		/* Refresh ring-buffer information */
+ 		head = readl(iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
+ 		tail = readl(iommu->mmio_base + MMIO_PPR_TAIL_OFFSET);
+ 	}
+-
+-	spin_unlock_irqrestore(&iommu->lock, flags);
+ }
+ 
+ irqreturn_t amd_iommu_int_thread(int irq, void *data)
+ {
+-	struct amd_iommu *iommu;
++	struct amd_iommu *iommu = (struct amd_iommu *) data;
++	u32 status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
+ 
+-	for_each_iommu(iommu) {
+-		iommu_poll_events(iommu);
+-		iommu_poll_ppr_log(iommu);
+-	}
++	while (status & (MMIO_STATUS_EVT_INT_MASK | MMIO_STATUS_PPR_INT_MASK)) {
++		/* Enable EVT and PPR interrupts again */
++		writel((MMIO_STATUS_EVT_INT_MASK | MMIO_STATUS_PPR_INT_MASK),
++			iommu->mmio_base + MMIO_STATUS_OFFSET);
+ 
++		if (status & MMIO_STATUS_EVT_INT_MASK) {
++			pr_devel("AMD-Vi: Processing IOMMU Event Log\n");
++			iommu_poll_events(iommu);
++		}
++
++		if (status & MMIO_STATUS_PPR_INT_MASK) {
++			pr_devel("AMD-Vi: Processing IOMMU PPR Log\n");
++			iommu_poll_ppr_log(iommu);
++		}
++
++		/*
++		 * Hardware bug: ERBT1312
++		 * When re-enabling interrupt (by writing 1
++		 * to clear the bit), the hardware might also try to set
++		 * the interrupt bit in the event status register.
++		 * In this scenario, the bit will be set, and disable
++		 * subsequent interrupts.
++		 *
++		 * Workaround: The IOMMU driver should read back the
++		 * status register and check if the interrupt bits are cleared.
++		 * If not, driver will need to go through the interrupt handler
++		 * again and re-clear the bits
++		 */
++		status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
++	}
+ 	return IRQ_HANDLED;
+ }
+ 
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 9767941..3d3d6cd 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -1324,7 +1324,7 @@ static int iommu_setup_msi(struct amd_iommu *iommu)
+ 				 amd_iommu_int_handler,
+ 				 amd_iommu_int_thread,
+ 				 0, "AMD-Vi",
+-				 iommu->dev);
++				 iommu);
+ 
+ 	if (r) {
+ 		pci_disable_msi(iommu->dev);
+-- 
+1.7.10.4
