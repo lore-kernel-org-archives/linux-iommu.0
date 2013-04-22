@@ -1,14 +1,11 @@
-From: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
-Subject: Re: [PATCH 1/1] intel-iommu: Disable DMA Remapping when
-	intel_iommu=off
-Date: Mon, 22 Apr 2013 14:31:18 +0900
-Message-ID: <5174CB26.9060908@jp.fujitsu.com>
-References: <1366441080-5937-1-git-send-email-wei@aristanetworks.com>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: [PATCH 1/3 v2] iommu: Move swap_pci_ref function to pci.h.
+Date: Mon, 22 Apr 2013 11:01:54 +0530
+Message-ID: <1366608716-1704-1-git-send-email-Varun.Sethi@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1366441080-5937-1-git-send-email-wei-BGArkANP9klv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,62 +15,111 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: wei-BGArkANP9klv6pq1l3V1OdBPR1lH4CV8@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org
+Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-(2013/04/20 15:58), Wei Hu wrote:
-> On a VT-d capable machine Linux will enable IOMMU by default. If it
-> then kexec's a second kernel with intel_iommu=off, this second kernel
-> will leave the DMA remapping engine on with no code handling it. The
-> symptom is at least USB and SATA drives stop working. This patch fixes
-> the problem by always disabling DMA remapping when intel_iommu=off.
+swap_pci_ref function is used by the IOMMU API code for swapping pci device
+pointers, while determining the iommu group for the device.
+Currently this function was being implemented for different IOMMU drivers.
+This patch moves the function to a new file, drivers/iommu/pci.h so that the
+implementation can be shared across various IOMMU drivers.
 
-Even when second kernel boots up with intel_iommu=on, dma-remapping need
-to be disabled as well before it is initialized and enabled again in
-init_dmars(). So, how about something like this?
+Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+---
+v2 changes:
+- created a new file drivers/iommu/pci.h.
 
-        for_each_drhd_unit(drhd) {
-                struct dmar_drhd_unit *drhd;
-                if (drhd->ignored)
-                        continue;
+ drivers/iommu/amd_iommu.c   |    7 +------
+ drivers/iommu/intel-iommu.c |    7 +------
+ drivers/iommu/pci.h         |   29 +++++++++++++++++++++++++++++
+ 3 files changed, 31 insertions(+), 12 deletions(-)
+ create mode 100644 drivers/iommu/pci.h
 
-                iommu = drhd->iommu;
-                if (iommu->gcmd & DMA_GCMD_TE)
-                        iommu_disable_translation(iommu);
-        }
-
-Note, if you agree above code and fix your patch like this, you need
-additinal fix to set iommu->gcmd flag sinse gcmd is always zero here.
-See first hunk of this patch.
-https://lkml.org/lkml/2013/3/20/707
-
-Thanks,
-Takao Indoh
-
-
-> 
-> Signed-off-by: Wei Hu <wei-BGArkANP9klv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-> ---
->   drivers/iommu/intel-iommu.c |    6 +++++-
->   1 files changed, 5 insertions(+), 1 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 0099667..0b8f8bb 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -3681,8 +3681,12 @@ int __init intel_iommu_init(void)
->   		return 	-ENODEV;
->   	}
->   
-> -	if (no_iommu || dmar_disabled)
-> +	if (no_iommu || dmar_disabled) {
-> +		struct dmar_drhd_unit *drhd;
-> +		for_each_drhd_unit(drhd)
-> +			iommu_disable_translation(drhd->iommu);
->   		return -ENODEV;
-> +	}
->   
->   	if (iommu_init_mempool()) {
->   		if (force_on)
-> 
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index a7f6b04..2463464 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -46,6 +46,7 @@
+ #include "amd_iommu_proto.h"
+ #include "amd_iommu_types.h"
+ #include "irq_remapping.h"
++#include "pci.h"
+ 
+ #define CMD_SET_TYPE(cmd, t) ((cmd)->data[1] |= ((t) << 28))
+ 
+@@ -263,12 +264,6 @@ static bool check_device(struct device *dev)
+ 	return true;
+ }
+ 
+-static void swap_pci_ref(struct pci_dev **from, struct pci_dev *to)
+-{
+-	pci_dev_put(*from);
+-	*from = to;
+-}
+-
+ static struct pci_bus *find_hosted_bus(struct pci_bus *bus)
+ {
+ 	while (!bus->self) {
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 6e0b9ff..81ad7b8 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -47,6 +47,7 @@
+ #include <asm/iommu.h>
+ 
+ #include "irq_remapping.h"
++#include "pci.h"
+ 
+ #define ROOT_SIZE		VTD_PAGE_SIZE
+ #define CONTEXT_SIZE		VTD_PAGE_SIZE
+@@ -4137,12 +4138,6 @@ static int intel_iommu_domain_has_cap(struct iommu_domain *domain,
+ 	return 0;
+ }
+ 
+-static void swap_pci_ref(struct pci_dev **from, struct pci_dev *to)
+-{
+-	pci_dev_put(*from);
+-	*from = to;
+-}
+-
+ #define REQ_ACS_FLAGS	(PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF)
+ 
+ static int intel_iommu_add_device(struct device *dev)
+diff --git a/drivers/iommu/pci.h b/drivers/iommu/pci.h
+new file mode 100644
+index 0000000..d460646
+--- /dev/null
++++ b/drivers/iommu/pci.h
+@@ -0,0 +1,29 @@
++/*
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License, version 2, as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
++ *
++ * Copyright (C) 2013 Red Hat, Inc.
++ * Copyright (C) 2013 Freescale Semiconductor, Inc.
++ *
++ */
++#ifndef __PCI_H
++#define __PCI_H
++
++/* Helper function for swapping pci device reference */
++static inline void swap_pci_ref(struct pci_dev **from, struct pci_dev *to)
++{
++	pci_dev_put(*from);
++	*from = to;
++}
++
++#endif  /* __PCI_H */
+-- 
+1.7.4.1
