@@ -1,15 +1,15 @@
-From: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 1/3 v2] iommu: Move swap_pci_ref function to pci.h.
-Date: Tue, 23 Apr 2013 13:02:38 +0000
-Message-ID: <C5ECD7A89D1DC44195F34B25E172658D4B4A00@039-SN2MPN1-011.039d.mgd.msft.net>
-References: <1366691726-9023-1-git-send-email-Varun.Sethi@freescale.com>
-	<20130423125827.GD2589@8bytes.org>
+From: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 1/2 V2] iommu/amd: Add workaround for ERBT1312
+Date: Tue, 23 Apr 2013 09:22:45 -0400
+Message-ID: <51768B25.1060501@redhat.com>
+References: <1366009666-44792-1-git-send-email-suravee.suthikulpanit@amd.com>
+	<20130418160220.GA4153@8bytes.org> <51701B9F.10003@amd.com>
+	<20130418162856.GA13891@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130423125827.GD2589-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <20130418162856.GA13891-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,33 +20,97 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Thanks.
-
-> -----Original Message-----
-> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
-> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Joerg Roedel
-> Sent: Tuesday, April 23, 2013 6:32 PM
-> To: Sethi Varun-B16395
-> Cc: galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org; benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org; Yoder Stuart-
-> B08248; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> Wood Scott-B07421; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-> Subject: Re: [PATCH 1/3 v2] iommu: Move swap_pci_ref function to pci.h.
-> 
-> On Tue, Apr 23, 2013 at 10:05:24AM +0530, Varun Sethi wrote:
-> > +#ifndef __PCI_H
-> > +#define __PCI_H
-> 
-> Using __PCI_H is not a wise choice, it has certainly a high risk of a
-> collision. Anyway, I changed it to __IOMMU_PCI_H and applied the patch.
-> 
-> 
-> 	Joerg
-> 
-> 
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+On 04/18/2013 12:28 PM, Joerg Roedel wrote:
+> On Thu, Apr 18, 2013 at 11:13:19AM -0500, Suravee Suthikulanit wrote:
+>> This workaround is required for both event log and ppr log.  Your
+>> patch is only taking care of the event log.
+>
+> Right, thanks for the notice. Here is the updated patch.
+>
+>  From cebe04596989c4b9001e2c1571c4fb219ea37b99 Mon Sep 17 00:00:00 2001
+> From: Joerg Roedel<joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> Date: Thu, 18 Apr 2013 17:55:04 +0200
+> Subject: [PATCH] iommu/amd: Workaround for ERBT1312
+>
+> Work around an IOMMU  hardware bug where clearing the
+> EVT_INT or PPR_INT bit in the status register may race with
+> the hardware trying to set it again. When not handled the
+> bit might not be cleared and we lose all future event or ppr
+> interrupts.
+>
+> Reported-by: Suravee Suthikulpanit<suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+> Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Signed-off-by: Joerg Roedel<joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> ---
+>   drivers/iommu/amd_iommu.c |   34 ++++++++++++++++++++++++++--------
+>   1 file changed, 26 insertions(+), 8 deletions(-)
+>
+> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> index f42793d..27792f8 100644
+> --- a/drivers/iommu/amd_iommu.c
+> +++ b/drivers/iommu/amd_iommu.c
+> @@ -700,14 +700,23 @@ retry:
+>
+>   static void iommu_poll_events(struct amd_iommu *iommu)
+>   {
+> -	u32 head, tail;
+> +	u32 head, tail, status;
+>   	unsigned long flags;
+>
+> -	/* enable event interrupts again */
+> -	writel(MMIO_STATUS_EVT_INT_MASK, iommu->mmio_base + MMIO_STATUS_OFFSET);
+> -
+>   	spin_lock_irqsave(&iommu->lock, flags);
+>
+> +	/* enable event interrupts again */
+> +	do {
+> +		/*
+> +		 * Workaround for Erratum ERBT1312
+> +		 * Clearing the EVT_INT bit may race in the hardware, so read
+> +		 * it again and make sure it was really cleared
+> +		 */
+> +		status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
+> +		writel(MMIO_STATUS_EVT_INT_MASK,
+> +		       iommu->mmio_base + MMIO_STATUS_OFFSET);
+> +	} while (status&  MMIO_STATUS_EVT_INT_MASK);
+> +
+>   	head = readl(iommu->mmio_base + MMIO_EVT_HEAD_OFFSET);
+>   	tail = readl(iommu->mmio_base + MMIO_EVT_TAIL_OFFSET);
+>
+> @@ -744,16 +753,25 @@ static void iommu_handle_ppr_entry(struct amd_iommu *iommu, u64 *raw)
+>   static void iommu_poll_ppr_log(struct amd_iommu *iommu)
+>   {
+>   	unsigned long flags;
+> -	u32 head, tail;
+> +	u32 head, tail, status;
+>
+>   	if (iommu->ppr_log == NULL)
+>   		return;
+>
+> -	/* enable ppr interrupts again */
+> -	writel(MMIO_STATUS_PPR_INT_MASK, iommu->mmio_base + MMIO_STATUS_OFFSET);
+> -
+>   	spin_lock_irqsave(&iommu->lock, flags);
+>
+> +	/* enable ppr interrupts again */
+> +	do {
+> +		/*
+> +		 * Workaround for Erratum ERBT1312
+> +		 * Clearing the PPR_INT bit may race in the hardware, so read
+> +		 * it again and make sure it was really cleared
+> +		 */
+> +		status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
+> +		writel(MMIO_STATUS_PPR_INT_MASK,
+> +		       iommu->mmio_base + MMIO_STATUS_OFFSET);
+> +	} while (status&  MMIO_STATUS_PPR_INT_MASK);
+> +
+>   	head = readl(iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
+>   	tail = readl(iommu->mmio_base + MMIO_PPR_TAIL_OFFSET);
+>
+Given other threads on this mail list (and I've seen crashes with same problem)
+where this type of logging during a flood of IOMMU errors will lock up the machine,
+is there something that can be done to break the do-while loop after n iterations
+have been exec'd, so the kernel can progress during a crash ?
