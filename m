@@ -1,116 +1,42 @@
-From: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/2 V2] iommu/amd: Add workaround for ERBT1312
-Date: Tue, 23 Apr 2013 09:22:45 -0400
-Message-ID: <51768B25.1060501@redhat.com>
-References: <1366009666-44792-1-git-send-email-suravee.suthikulpanit@amd.com>
-	<20130418160220.GA4153@8bytes.org> <51701B9F.10003@amd.com>
-	<20130418162856.GA13891@8bytes.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH 2/3 v14] iommu/fsl: Add additional iommu attributes
+ required by the PAMU driver.
+Date: Tue, 23 Apr 2013 15:38:38 +0200
+Message-ID: <20130423133837.GG17148@8bytes.org>
+References: <1366691726-9023-1-git-send-email-Varun.Sethi@freescale.com>
+ <1366691726-9023-2-git-send-email-Varun.Sethi@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130418162856.GA13891-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1366691726-9023-2-git-send-email-Varun.Sethi@freescale.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Varun Sethi <Varun.Sethi@freescale.com>
+Cc: iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, galak@kernel.crashing.org, benh@kernel.crashing.org, stuart.yoder@freescale.com, scottwood@freescale.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/18/2013 12:28 PM, Joerg Roedel wrote:
-> On Thu, Apr 18, 2013 at 11:13:19AM -0500, Suravee Suthikulanit wrote:
->> This workaround is required for both event log and ppr log.  Your
->> patch is only taking care of the event log.
->
-> Right, thanks for the notice. Here is the updated patch.
->
->  From cebe04596989c4b9001e2c1571c4fb219ea37b99 Mon Sep 17 00:00:00 2001
-> From: Joerg Roedel<joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> Date: Thu, 18 Apr 2013 17:55:04 +0200
-> Subject: [PATCH] iommu/amd: Workaround for ERBT1312
->
-> Work around an IOMMU  hardware bug where clearing the
-> EVT_INT or PPR_INT bit in the status register may race with
-> the hardware trying to set it again. When not handled the
-> bit might not be cleared and we lose all future event or ppr
-> interrupts.
->
-> Reported-by: Suravee Suthikulpanit<suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-> Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Signed-off-by: Joerg Roedel<joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+On Tue, Apr 23, 2013 at 10:05:25AM +0530, Varun Sethi wrote:
+> Added the following domain attributes for the FSL PAMU driver:
+> 1. Added new iommu stash attribute, which allows setting of the
+>    LIODN specific stash id parameter through IOMMU API.
+> 2. Added an attribute for enabling/disabling DMA to a particular
+>    memory window.
+> 3. Added domain attribute to check for PAMUV1 specific constraints.
+> 
+> Signed-off-by: Varun Sethi <Varun.Sethi@freescale.com>
 > ---
->   drivers/iommu/amd_iommu.c |   34 ++++++++++++++++++++++++++--------
->   1 file changed, 26 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index f42793d..27792f8 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -700,14 +700,23 @@ retry:
->
->   static void iommu_poll_events(struct amd_iommu *iommu)
->   {
-> -	u32 head, tail;
-> +	u32 head, tail, status;
->   	unsigned long flags;
->
-> -	/* enable event interrupts again */
-> -	writel(MMIO_STATUS_EVT_INT_MASK, iommu->mmio_base + MMIO_STATUS_OFFSET);
-> -
->   	spin_lock_irqsave(&iommu->lock, flags);
->
-> +	/* enable event interrupts again */
-> +	do {
-> +		/*
-> +		 * Workaround for Erratum ERBT1312
-> +		 * Clearing the EVT_INT bit may race in the hardware, so read
-> +		 * it again and make sure it was really cleared
-> +		 */
-> +		status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
-> +		writel(MMIO_STATUS_EVT_INT_MASK,
-> +		       iommu->mmio_base + MMIO_STATUS_OFFSET);
-> +	} while (status&  MMIO_STATUS_EVT_INT_MASK);
-> +
->   	head = readl(iommu->mmio_base + MMIO_EVT_HEAD_OFFSET);
->   	tail = readl(iommu->mmio_base + MMIO_EVT_TAIL_OFFSET);
->
-> @@ -744,16 +753,25 @@ static void iommu_handle_ppr_entry(struct amd_iommu *iommu, u64 *raw)
->   static void iommu_poll_ppr_log(struct amd_iommu *iommu)
->   {
->   	unsigned long flags;
-> -	u32 head, tail;
-> +	u32 head, tail, status;
->
->   	if (iommu->ppr_log == NULL)
->   		return;
->
-> -	/* enable ppr interrupts again */
-> -	writel(MMIO_STATUS_PPR_INT_MASK, iommu->mmio_base + MMIO_STATUS_OFFSET);
-> -
->   	spin_lock_irqsave(&iommu->lock, flags);
->
-> +	/* enable ppr interrupts again */
-> +	do {
-> +		/*
-> +		 * Workaround for Erratum ERBT1312
-> +		 * Clearing the PPR_INT bit may race in the hardware, so read
-> +		 * it again and make sure it was really cleared
-> +		 */
-> +		status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
-> +		writel(MMIO_STATUS_PPR_INT_MASK,
-> +		       iommu->mmio_base + MMIO_STATUS_OFFSET);
-> +	} while (status&  MMIO_STATUS_PPR_INT_MASK);
-> +
->   	head = readl(iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
->   	tail = readl(iommu->mmio_base + MMIO_PPR_TAIL_OFFSET);
->
-Given other threads on this mail list (and I've seen crashes with same problem)
-where this type of logging during a flood of IOMMU errors will lock up the machine,
-is there something that can be done to break the do-while loop after n iterations
-have been exec'd, so the kernel can progress during a crash ?
+> v14 changes:
+> - Add FSL prefix to PAMU attributes.
+> v13 changes:
+> - created a new file include/linux/fsl_pamu_stash.h for stash
+> attributes.
+> v12 changes:
+> - Moved PAMU specifc stash ids and structures to PAMU header file.
+> - no change in v11.
+> - no change in v10.
+>  include/linux/fsl_pamu_stash.h |   39 +++++++++++++++++++++++++++++++++++++++
+
+Isn't asm/ for your architecture a better place for that header?
+
+
+	Joerg
