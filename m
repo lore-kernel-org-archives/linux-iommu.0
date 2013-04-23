@@ -1,148 +1,83 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: RFC:  vfio / iommu driver for hardware with no iommu
-Date: Tue, 23 Apr 2013 13:47:07 -0600
-Message-ID: <1366746427.2918.650.camel@bling.home>
-References: <9F6FE96B71CF29479FF1CDC8046E15035BE0A3@039-SN1MPN1-002.039d.mgd.msft.net>
-	<1366736189.2918.573.camel@bling.home>
-	<9F6FE96B71CF29479FF1CDC8046E15035BE2BD@039-SN1MPN1-002.039d.mgd.msft.net>
+From: Olav Haugan <ohaugan@codeaurora.org>
+Subject: Re: [PATCH] documentation: iommu: add description of ARM System MMU
+ binding
+Date: Tue, 23 Apr 2013 15:54:53 -0700
+Message-ID: <5177113D.7060300@codeaurora.org>
+References: <1365094259-24847-1-git-send-email-will.deacon@arm.com> <515F37C1.4000109@codeaurora.org> <20130408092535.GA17476@mudshark.cambridge.arm.com> <5162F87A.7070409@codeaurora.org> <20130410173732.GQ26992@mudshark.cambridge.arm.com> <5169C7D1.8070300@codeaurora.org> <20130415131341.GG9827@mudshark.cambridge.arm.com> <516D9602.2010404@codeaurora.org> <20130418190131.GA12344@mudshark.cambridge.arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <9F6FE96B71CF29479FF1CDC8046E15035BE2BD-TcFNo7jSaXPiTqIcKZ1S2K4g8xLGJsHaLnY5E4hWTkheoWH0uzbU5w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <20130418190131.GA12344@mudshark.cambridge.arm.com>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Will Deacon <will.deacon@arm.com>
+Cc: Andreas Herrmann <andreas.herrmann@calxeda.com>, "tzeng@codeaurora.org" <tzeng@codeaurora.org>, "devicetree-discuss@lists.ozlabs.org" <devicetree-discuss@lists.ozlabs.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2013-04-23 at 19:16 +0000, Yoder Stuart-B08248 wrote:
-> 
-> > -----Original Message-----
-> > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > Sent: Tuesday, April 23, 2013 11:56 AM
-> > To: Yoder Stuart-B08248
-> > Cc: Joerg Roedel; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> > Subject: Re: RFC: vfio / iommu driver for hardware with no iommu
-> > 
-> > On Tue, 2013-04-23 at 16:13 +0000, Yoder Stuart-B08248 wrote:
-> > > Joerg/Alex,
-> > >
-> > > We have embedded systems where we use QEMU/KVM and have
-> > > the requirement to do device assignment, but have no
-> > > iommu.  So we would like to get vfio-pci working on
-> > > systems like this.
-> > >
-> > > We're aware of the obvious limitations-- no protection,
-> > > DMA'able memory must be physically contiguous and will
-> > > have no iova->phy translation.  But there are use cases
-> > > where all OSes involved are trusted and customers can
-> > > live with those limitations.   Virtualization is used
-> > > here not to sandbox untrusted code, but to consolidate
-> > > multiple OSes.
-> > >
-> > > We would like to get your feedback on the rough idea.  There
-> > > are two parts-- iommu driver and vfio-pci.
-> > >
-> > > 1.  iommu driver
-> > >
-> > > First, we still need device groups created because vfio
-> > > is based on that, so we envision a 'dummy' iommu
-> > > driver that implements only  the add/remove device
-> > > ops.  Something like:
-> > >
-> > >     static struct iommu_ops fsl_none_ops = {
-> > >             .add_device     = fsl_none_add_device,
-> > >             .remove_device  = fsl_none_remove_device,
-> > >     };
-> > >
-> > >     int fsl_iommu_none_init()
-> > >     {
-> > >             int ret = 0;
-> > >
-> > >             ret = iommu_init_mempool();
-> > >             if (ret)
-> > >                     return ret;
-> > >
-> > >             bus_set_iommu(&platform_bus_type, &fsl_none_ops);
-> > >             bus_set_iommu(&pci_bus_type, &fsl_none_ops);
-> > >
-> > >             return ret;
-> > >     }
-> > >
-> > > 2.  vfio-pci
-> > >
-> > > For vfio-pci, we would ideally like to keep user space mostly
-> > > unchanged.  User space will have to follow the semantics
-> > > of mapping only physically contiguous chunks...and iova
-> > > will equal phys.
-> > >
-> > > So, we propose to implement a new vfio iommu type,
-> > > called VFIO_TYPE_NONE_IOMMU.  This implements
-> > > any needed vfio interfaces, but there are no calls
-> > > to the iommu layer...e.g. map_dma() is a noop.
-> > >
-> > > Would like your feedback.
-> > 
-> > My first thought is that this really detracts from vfio and iommu groups
-> > being a secure interface, so somehow this needs to be clearly an
-> > insecure mode that requires an opt-in and maybe taints the kernel.  Any
-> > notion of unprivileged use needs to be blocked and it should test
-> > CAP_COMPROMISE_KERNEL (or whatever it's called now) at critical access
-> > points.  We might even have interfaces exported that would allow this to
-> > be an out-of-tree driver (worth a check).
-> > 
-> > I would guess that you would probably want to do all the iommu group
-> > setup from the vfio fake-iommu driver.  In other words, that driver both
-> > creates the fake groups and provides the dummy iommu backend for vfio.
-> > That would be a nice way to compartmentalize this as a
-> > vfio-noiommu-special.
-> 
-> So you mean don't implement any of the iommu driver
-> ops at all and keep everything in the vfio layer?
-> 
-> Would you still have real iommu groups?...i.e. 
-> $ readlink /sys/bus/pci/devices/0000:06:0d.0/iommu_group
-> ../../../../kernel/iommu_groups/26
-> 
-> ...and that is created by vfio-noiommu-special?
+Hi Will,
 
-I'm suggesting (but haven't checked if it's possible), to implement the
-iommu driver ops as part of the vfio iommu backend driver.  The primary
-motivation for this would be to a) keep a fake iommu groups interface
-out of the iommu proper (possibly containing it in an external driver)
-and b) modularizing it so we don't have fake iommu groups being created
-by default.  It would have to populate the iommu groups sysfs interfaces
-to be compatible with vfio.
-
-> Right now when the PCI and platform buses are probed,
-> the iommu driver add-device callback gets called and
-> that is where the per-device group gets created.  Are
-> you envisioning registering a callback for the PCI
-> bus to do this in vfio-noiommu-special?
-
-Yes.  It's just as easy to walk all the devices rather than doing
-callbacks, iirc the group code does this when you register.  In fact,
-this noiommu interface may not want to add all devices, we may want to
-be very selective and only add some.
-
-> > Would map/unmap really be no-ops?  Seems like you still want to do page
-> > pinning.
+On 4/18/2013 12:01 PM, Will Deacon wrote:
+> On Tue, Apr 16, 2013 at 07:18:42PM +0100, Olav Haugan wrote:
+>> On 4/15/2013 6:13 AM, Will Deacon wrote:
+>>> If so, doesn't that strongly tie your video driver to the SMMU?
+>>
+>> Isn't this more or less what you are doing in DT where you associate
+>> specific devices with an IOMMU (mmu-masters)?
 > 
-> You're right, that was a bad example...most would be no ops though.
+> No. The device-tree describes the *hardware*, as per usual. The StreamIDs
+> are fixed properties of the SoC and we can't change them from Linux, so we
+> describe all of the StreamIDs upstream of each SMMU so that we can program
+> the thing. There's no way to generic way to discover them.
+
+I meant that you are putting phandles to bus masters in the device tree
+that use/need the SMMU for VA2PA translation. Doesn't this put a
+dependency on the bus master devices? How will this work? Lets say that
+we have a device during bootup that needs to use the SMMU (such as a
+display processor [DP]). Don't you have cyclic dependency? The SMMU
+device needs the DP device (phandle) but the DP device needs the SMMU to
+initialize its device driver?
+
+>>> This seems to be where we differ. My anticipated use-case is that a domain
+>>> is allocated, which defines an empty address space. Masters are then
+>>> attached to the domain by passing their struct device, so this may
+>>> correspond to a DMA controller or a video core, in your case. The context
+>>> bank is allocated dynamically when the first device is added to the
+>>> domain, and then it is subsequently shared between all the masters in that
+>>> domain.
+>>
+>> I feel that there are some limitation with this. Maybe you can address
+>> the following:
+>>
+>> 1) What if you want two context banks in one domain (shared page table)?
 > 
-> > Also, you're using fsl in the example above, but would such a
-> > driver have any platform dependency?
+> Why would a page table shared between devices require multiple context
+> banks? Multiple SMRs and S2CRs, sure, but they would ultimately point at the
+> same context bank (and hence same address space).
+
+What if you want to have 2 different VMID's being generated? Also, what
+about TLB management? If I have two context banks I can invalidate only
+entries associated with 1 of the context banks (if VMID differ for the
+two context banks).
+
+>> 2) What if a master (device) needs to use 2 or more context banks?
 > 
-> This wouldn't have to be fsl specific if we thought it was
-> potentially generally useful.
+> If a master needs to be in two address spaces at once, then it will need to
+> attach it's StreamIDs to different domains. You can't place a single
+> StreamID in two address spaces (this is an architectural constraint).
+
+Yes, you would have a separate domain. I am just wondering how I would
+model this in DT using the bindings that you are proposing? How does it
+work? The bindings specify bus masters to StreamIDs. So if I call attach
+with the master device you will allocate a context bank and program the
+StreamIDs as specified in the DT. So now if I want to have another
+context bank associated with the same master device what do I do? I call
+into attach with a new domain but with the same master device but the
+master device is already attached to a context/domain.
 
 Thanks,
-Alex
+
+Olav Haugan
+
+-- 
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+hosted by The Linux Foundation
