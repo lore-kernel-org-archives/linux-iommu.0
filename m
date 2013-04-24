@@ -1,16 +1,16 @@
-From: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/2 V2] iommu/amd: Add workaround for ERBT1312
-Date: Wed, 24 Apr 2013 09:52:40 -0400
-Message-ID: <5177E3A8.5020001@redhat.com>
-References: <1366009666-44792-1-git-send-email-suravee.suthikulpanit@amd.com>
-	<20130418160220.GA4153@8bytes.org> <51701B9F.10003@amd.com>
-	<20130418162856.GA13891@8bytes.org> <51768B25.1060501@redhat.com>
-	<20130424104616.GH17148@8bytes.org>
+From: Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: RFC:  vfio / iommu driver for hardware with no iommu
+Date: Wed, 24 Apr 2013 15:22:50 +0000
+Message-ID: <9F6FE96B71CF29479FF1CDC8046E15035BEEA9@039-SN1MPN1-002.039d.mgd.msft.net>
+References: <9F6FE96B71CF29479FF1CDC8046E15035BE0A3@039-SN1MPN1-002.039d.mgd.msft.net>
+	<20130424105718.GJ17148@8bytes.org>
+	<6A3DF150A5B70D4F9B66A25E3F7C888D06FF5799@039-SN2MPN1-011.039d.mgd.msft.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130424104616.GH17148-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <6A3DF150A5B70D4F9B66A25E3F7C888D06FF5799-RL0Hj/+nBVCMXPU/2EZmt64g8xLGJsHaLnY5E4hWTkheoWH0uzbU5w@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,22 +20,50 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Bhushan Bharat-R65777 <R65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/24/2013 06:46 AM, Joerg Roedel wrote:
-> On Tue, Apr 23, 2013 at 09:22:45AM -0400, Don Dutile wrote:
->> Given other threads on this mail list (and I've seen crashes with same problem)
->> where this type of logging during a flood of IOMMU errors will lock up the machine,
->> is there something that can be done to break the do-while loop after n iterations
->> have been exec'd, so the kernel can progress during a crash ?
->
-> In the case of an IOMMU error flood this loop will only run until the
-> event-log/ppr-log overflows. So it should not turn into an endless loop.
->
->
-> 	Joerg
->
->
-Thanks for verification.
+
+
+> -----Original Message-----
+> From: Bhushan Bharat-R65777
+> Sent: Wednesday, April 24, 2013 6:04 AM
+> To: Joerg Roedel; Yoder Stuart-B08248
+> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> Subject: RE: RFC: vfio / iommu driver for hardware with no iommu
+> 
+> 
+> 
+> > -----Original Message-----
+> > From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
+> > bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Joerg Roedel
+> > Sent: Wednesday, April 24, 2013 4:27 PM
+> > To: Yoder Stuart-B08248
+> > Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> > Subject: Re: RFC: vfio / iommu driver for hardware with no iommu
+> >
+> > On Tue, Apr 23, 2013 at 04:13:00PM +0000, Yoder Stuart-B08248 wrote:
+> > > We're aware of the obvious limitations-- no protection, DMA'able
+> > > memory must be physically contiguous and will have no iova->phy
+> > > translation.  But there are use cases where all OSes involved are
+> > > trusted and customers can
+> > > live with those limitations.   Virtualization is used
+> > > here not to sandbox untrusted code, but to consolidate multiple OSes.
+> >
+> > One of the major points of VFIO is to provide a userspace interface for hardware
+> > IOMMUs. So if you have a platform without an IOMMU why do you care about VFIO at
+> > all?
+> 
+> We want to do direct device assignment to user space.
+> So if the device is behind iommu then it will be a secure interface.
+> if device is not behind a iommu then it is insecure. But the user space can access the device. This way
+> we can be consistent with one mechanism to do direct device assignment.
+
+And more specifically, there's the desire to assign things like
+a PCI device to a KVM virtual machine on a platform without
+an iommu.   QEMU uses vfio-pci and we don't want to implement
+a completely separate user space approach to do this.  We want
+QEMU to stay (mostly) unchanged.
+
+Stuart
