@@ -1,83 +1,195 @@
-From: Olav Haugan <ohaugan@codeaurora.org>
-Subject: Re: [PATCH] documentation: iommu: add description of ARM System MMU
- binding
-Date: Tue, 23 Apr 2013 15:54:53 -0700
-Message-ID: <5177113D.7060300@codeaurora.org>
-References: <1365094259-24847-1-git-send-email-will.deacon@arm.com> <515F37C1.4000109@codeaurora.org> <20130408092535.GA17476@mudshark.cambridge.arm.com> <5162F87A.7070409@codeaurora.org> <20130410173732.GQ26992@mudshark.cambridge.arm.com> <5169C7D1.8070300@codeaurora.org> <20130415131341.GG9827@mudshark.cambridge.arm.com> <516D9602.2010404@codeaurora.org> <20130418190131.GA12344@mudshark.cambridge.arm.com>
+From: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+Subject: [PATCH] Reset PCIe devices to stop ongoing DMA
+Date: Wed, 24 Apr 2013 13:58:59 +0900
+Message-ID: <1366779539-3584-1-git-send-email-indou.takao@jp.fujitsu.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <20130418190131.GA12344@mudshark.cambridge.arm.com>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: Andreas Herrmann <andreas.herrmann@calxeda.com>, "tzeng@codeaurora.org" <tzeng@codeaurora.org>, "devicetree-discuss@lists.ozlabs.org" <devicetree-discuss@lists.ozlabs.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+This patch resets PCIe devices on boot to stop ongoing DMA. When
+"pci=pcie_reset_devices" is specified, a hot reset is triggered on each
+PCIe root port and downstream port to reset its downstream endpoint.
 
-On 4/18/2013 12:01 PM, Will Deacon wrote:
-> On Tue, Apr 16, 2013 at 07:18:42PM +0100, Olav Haugan wrote:
->> On 4/15/2013 6:13 AM, Will Deacon wrote:
->>> If so, doesn't that strongly tie your video driver to the SMMU?
->>
->> Isn't this more or less what you are doing in DT where you associate
->> specific devices with an IOMMU (mmu-masters)?
-> 
-> No. The device-tree describes the *hardware*, as per usual. The StreamIDs
-> are fixed properties of the SoC and we can't change them from Linux, so we
-> describe all of the StreamIDs upstream of each SMMU so that we can program
-> the thing. There's no way to generic way to discover them.
+Problem:
+This patch solves the problem that kdump can fail when intel_iommu=on is
+specified. When intel_iommu=on is specified, many dma-remapping errors
+occur in second kernel and it causes problems like driver error or PCI
+SERR, at last kdump fails. This problem is caused as follows.
+1) Devices are working on first kernel.
+2) Switch to second kernel(kdump kernel). The devices are still working
+   and its DMA continues during this switch.
+3) iommu is initialized during second kernel boot and ongoing DMA causes
+   dma-remapping errors.
 
-I meant that you are putting phandles to bus masters in the device tree
-that use/need the SMMU for VA2PA translation. Doesn't this put a
-dependency on the bus master devices? How will this work? Lets say that
-we have a device during bootup that needs to use the SMMU (such as a
-display processor [DP]). Don't you have cyclic dependency? The SMMU
-device needs the DP device (phandle) but the DP device needs the SMMU to
-initialize its device driver?
+Solution:
+All DMA transactions have to be stopped before iommu is initialized. By
+this patch devices are reset and in-flight DMA is stopped before
+pci_iommu_init.
 
->>> This seems to be where we differ. My anticipated use-case is that a domain
->>> is allocated, which defines an empty address space. Masters are then
->>> attached to the domain by passing their struct device, so this may
->>> correspond to a DMA controller or a video core, in your case. The context
->>> bank is allocated dynamically when the first device is added to the
->>> domain, and then it is subsequently shared between all the masters in that
->>> domain.
->>
->> I feel that there are some limitation with this. Maybe you can address
->> the following:
->>
->> 1) What if you want two context banks in one domain (shared page table)?
-> 
-> Why would a page table shared between devices require multiple context
-> banks? Multiple SMRs and S2CRs, sure, but they would ultimately point at the
-> same context bank (and hence same address space).
+To invoke hot reset on an endpoint, its upstream link need to be reset.
+reset_pcie_devices() is called from fs_initcall_sync, and it finds root
+port/downstream port whose child is PCIe endpoint, and then reset link
+between them. If the endpoint is VGA device, it is skipped because the
+monitor blacks out if VGA controller is reset.
 
-What if you want to have 2 different VMID's being generated? Also, what
-about TLB management? If I have two context banks I can invalidate only
-entries associated with 1 of the context banks (if VMID differ for the
-two context banks).
+Actually this is v8 patch but quite different from v7 and it's been so
+long since previous post, so I start over again.
+Previous post:
+[PATCH v7 0/5] Reset PCIe devices to address DMA problem on kdump
+https://lkml.org/lkml/2012/11/26/814
 
->> 2) What if a master (device) needs to use 2 or more context banks?
-> 
-> If a master needs to be in two address spaces at once, then it will need to
-> attach it's StreamIDs to different domains. You can't place a single
-> StreamID in two address spaces (this is an architectural constraint).
+Signed-off-by: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+---
+ Documentation/kernel-parameters.txt |    2 +
+ drivers/pci/pci.c                   |  103 +++++++++++++++++++++++++++++++++++
+ 2 files changed, 105 insertions(+), 0 deletions(-)
 
-Yes, you would have a separate domain. I am just wondering how I would
-model this in DT using the bindings that you are proposing? How does it
-work? The bindings specify bus masters to StreamIDs. So if I call attach
-with the master device you will allocate a context bank and program the
-StreamIDs as specified in the DT. So now if I want to have another
-context bank associated with the same master device what do I do? I call
-into attach with a new domain but with the same master device but the
-master device is already attached to a context/domain.
-
-Thanks,
-
-Olav Haugan
-
+diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
+index 4609e81..2a31ade 100644
+--- a/Documentation/kernel-parameters.txt
++++ b/Documentation/kernel-parameters.txt
+@@ -2250,6 +2250,8 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+ 				any pair of devices, possibly at the cost of
+ 				reduced performance.  This also guarantees
+ 				that hot-added devices will work.
++		pcie_reset_devices	Reset PCIe endpoint on boot by hot
++				reset
+ 		cbiosize=nn[KMG]	The fixed amount of bus space which is
+ 				reserved for the CardBus bridge's IO window.
+ 				The default value is 256 bytes.
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index b099e00..42385c9 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -3878,6 +3878,107 @@ void __weak pci_fixup_cardbus(struct pci_bus *bus)
+ }
+ EXPORT_SYMBOL(pci_fixup_cardbus);
+ 
++/*
++ * Return true if dev is PCIe root port or downstream port whose child is PCIe
++ * endpoint except VGA device.
++ */
++static int __init need_reset(struct pci_dev *dev)
++{
++	struct pci_bus *subordinate;
++	struct pci_dev *child;
++
++	if (!pci_is_pcie(dev) || !dev->subordinate ||
++	    list_empty(&dev->subordinate->devices) ||
++	    ((pci_pcie_type(dev) != PCI_EXP_TYPE_ROOT_PORT) &&
++	     (pci_pcie_type(dev) != PCI_EXP_TYPE_DOWNSTREAM)))
++		return 0;
++
++	subordinate = dev->subordinate;
++	list_for_each_entry(child, &subordinate->devices, bus_list) {
++		if ((pci_pcie_type(child) == PCI_EXP_TYPE_UPSTREAM) ||
++		    (pci_pcie_type(child) == PCI_EXP_TYPE_PCI_BRIDGE) ||
++		    ((child->class >> 16) == PCI_BASE_CLASS_DISPLAY))
++			/* Don't reset switch, bridge, VGA device */
++			return 0;
++	}
++
++	return 1;
++}
++
++static void __init save_config(struct pci_dev *dev)
++{
++	struct pci_bus *subordinate;
++	struct pci_dev *child;
++
++	if (!need_reset(dev))
++		return;
++
++	subordinate = dev->subordinate;
++	list_for_each_entry(child, &subordinate->devices, bus_list) {
++		dev_info(&child->dev, "save state\n");
++		pci_save_state(child);
++	}
++}
++
++static void __init restore_config(struct pci_dev *dev)
++{
++	struct pci_bus *subordinate;
++	struct pci_dev *child;
++
++	if (!need_reset(dev))
++		return;
++
++	subordinate = dev->subordinate;
++	list_for_each_entry(child, &subordinate->devices, bus_list) {
++		dev_info(&child->dev, "restore state\n");
++		pci_restore_state(child);
++	}
++}
++
++static void __init do_device_reset(struct pci_dev *dev)
++{
++	u16 ctrl;
++
++	if (!need_reset(dev))
++		return;
++
++	dev_info(&dev->dev, "Reset Secondary bus\n");
++
++	/* Assert Secondary Bus Reset */
++	pci_read_config_word(dev, PCI_BRIDGE_CONTROL, &ctrl);
++	ctrl |= PCI_BRIDGE_CTL_BUS_RESET;
++	pci_write_config_word(dev, PCI_BRIDGE_CONTROL, ctrl);
++
++	msleep(2);
++
++	/* De-assert Secondary Bus Reset */
++	ctrl &= ~PCI_BRIDGE_CTL_BUS_RESET;
++	pci_write_config_word(dev, PCI_BRIDGE_CONTROL, ctrl);
++}
++
++static int __initdata pcie_reset_devices;
++static int __init reset_pcie_devices(void)
++{
++	struct pci_dev *dev = NULL;
++
++	if (!pcie_reset_devices)
++		return 0;
++
++	for_each_pci_dev(dev)
++		save_config(dev);
++
++	for_each_pci_dev(dev)
++		do_device_reset(dev);
++
++	msleep(1000);
++
++	for_each_pci_dev(dev)
++		restore_config(dev);
++
++	return 0;
++}
++fs_initcall_sync(reset_pcie_devices);
++
+ static int __init pci_setup(char *str)
+ {
+ 	while (str) {
+@@ -3920,6 +4021,8 @@ static int __init pci_setup(char *str)
+ 				pcie_bus_config = PCIE_BUS_PEER2PEER;
+ 			} else if (!strncmp(str, "pcie_scan_all", 13)) {
+ 				pci_add_flags(PCI_SCAN_ALL_PCIE_DEVS);
++			} else if (!strncmp(str, "pcie_reset_devices", 18)) {
++				pcie_reset_devices = 1;
+ 			} else {
+ 				printk(KERN_ERR "PCI: Unknown option `%s'\n",
+ 						str);
 -- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-hosted by The Linux Foundation
+1.7.1
