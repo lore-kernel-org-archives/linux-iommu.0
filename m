@@ -1,17 +1,15 @@
-From: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: RFC:  vfio / iommu driver for hardware with no iommu
-Date: Thu, 25 Apr 2013 18:23:36 -0400
-Message-ID: <5179ACE8.2030506@redhat.com>
-References: <9F6FE96B71CF29479FF1CDC8046E15035BE0A3@039-SN1MPN1-002.039d.mgd.msft.net>
-	<1366736189.2918.573.camel@bling.home>
-	<9F6FE96B71CF29479FF1CDC8046E15035BE2BD@039-SN1MPN1-002.039d.mgd.msft.net>
-	<1366746427.2918.650.camel@bling.home> <51783553.80202@redhat.com>
-	<C5ECD7A89D1DC44195F34B25E172658D4BA91B@039-SN2MPN1-011.039d.mgd.msft.net>
+From: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+Subject: Re: [PATCH] Reset PCIe devices to stop ongoing DMA
+Date: Fri, 26 Apr 2013 12:10:48 +0900
+Message-ID: <5179F038.2030706@jp.fujitsu.com>
+References: <1366779539-3584-1-git-send-email-indou.takao@jp.fujitsu.com>
+	<51783987.2040604@redhat.com> <5178BAFB.9060100@jp.fujitsu.com>
+	<51796F77.1040108@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <C5ECD7A89D1DC44195F34B25E172658D4BA91B-RL0Hj/+nBVCMXPU/2EZmt64g8xLGJsHaLnY5E4hWTkheoWH0uzbU5w@public.gmane.org>
+In-Reply-To: <51796F77.1040108-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,145 +19,301 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tindoh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/24/2013 10:49 PM, Sethi Varun-B16395 wrote:
->
->
->> -----Original Message-----
->> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
->> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Don Dutile
->> Sent: Thursday, April 25, 2013 1:11 AM
->> To: Alex Williamson
->> Cc: Yoder Stuart-B08248; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
->> Subject: Re: RFC: vfio / iommu driver for hardware with no iommu
+(2013/04/26 3:01), Don Dutile wrote:
+> On 04/25/2013 01:11 AM, Takao Indoh wrote:
+>> (2013/04/25 4:59), Don Dutile wrote:
+>>> On 04/24/2013 12:58 AM, Takao Indoh wrote:
+>>>> This patch resets PCIe devices on boot to stop ongoing DMA. When
+>>>> "pci=pcie_reset_devices" is specified, a hot reset is triggered on each
+>>>> PCIe root port and downstream port to reset its downstream endpoint.
+>>>>
+>>>> Problem:
+>>>> This patch solves the problem that kdump can fail when intel_iommu=on is
+>>>> specified. When intel_iommu=on is specified, many dma-remapping errors
+>>>> occur in second kernel and it causes problems like driver error or PCI
+>>>> SERR, at last kdump fails. This problem is caused as follows.
+>>>> 1) Devices are working on first kernel.
+>>>> 2) Switch to second kernel(kdump kernel). The devices are still working
+>>>>       and its DMA continues during this switch.
+>>>> 3) iommu is initialized during second kernel boot and ongoing DMA causes
+>>>>       dma-remapping errors.
+>>>>
+>>>> Solution:
+>>>> All DMA transactions have to be stopped before iommu is initialized. By
+>>>> this patch devices are reset and in-flight DMA is stopped before
+>>>> pci_iommu_init.
+>>>>
+>>>> To invoke hot reset on an endpoint, its upstream link need to be reset.
+>>>> reset_pcie_devices() is called from fs_initcall_sync, and it finds root
+>>>> port/downstream port whose child is PCIe endpoint, and then reset link
+>>>> between them. If the endpoint is VGA device, it is skipped because the
+>>>> monitor blacks out if VGA controller is reset.
+>>>>
+>>> Couple questions wrt VGA device:
+>>> (1) Many graphics devices are multi-function, one function being VGA;
+>>>        is the VGA always function 0, so this scan sees it first&  doesn't
+>>>        do a reset on that PCIe link?  if the VGA is not function 0, won't
+>>>        this logic break (will reset b/c function 0 is non-VGA graphics) ?
 >>
->> On 04/23/2013 03:47 PM, Alex Williamson wrote:
->>> On Tue, 2013-04-23 at 19:16 +0000, Yoder Stuart-B08248 wrote:
->>>>
->>>>> -----Original Message-----
->>>>> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
->>>>> Sent: Tuesday, April 23, 2013 11:56 AM
->>>>> To: Yoder Stuart-B08248
->>>>> Cc: Joerg Roedel; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
->>>>> Subject: Re: RFC: vfio / iommu driver for hardware with no iommu
->>>>>
->>>>> On Tue, 2013-04-23 at 16:13 +0000, Yoder Stuart-B08248 wrote:
->>>>>> Joerg/Alex,
->>>>>>
->>>>>> We have embedded systems where we use QEMU/KVM and have the
->>>>>> requirement to do device assignment, but have no iommu.  So we
->>>>>> would like to get vfio-pci working on systems like this.
->>>>>>
->>>>>> We're aware of the obvious limitations-- no protection, DMA'able
->>>>>> memory must be physically contiguous and will have no iova->phy
->>>>>> translation.  But there are use cases where all OSes involved are
->>>>>> trusted and customers can
->>>>>> live with those limitations.   Virtualization is used
->>>>>> here not to sandbox untrusted code, but to consolidate multiple
->>>>>> OSes.
->>>>>>
->>>>>> We would like to get your feedback on the rough idea.  There are
->>>>>> two parts-- iommu driver and vfio-pci.
->>>>>>
->>>>>> 1.  iommu driver
->>>>>>
->>>>>> First, we still need device groups created because vfio is based on
->>>>>> that, so we envision a 'dummy' iommu driver that implements only
->>>>>> the add/remove device ops.  Something like:
->>>>>>
->>>>>>       static struct iommu_ops fsl_none_ops = {
->>>>>>               .add_device     = fsl_none_add_device,
->>>>>>               .remove_device  = fsl_none_remove_device,
->>>>>>       };
->>>>>>
->>>>>>       int fsl_iommu_none_init()
->>>>>>       {
->>>>>>               int ret = 0;
->>>>>>
->>>>>>               ret = iommu_init_mempool();
->>>>>>               if (ret)
->>>>>>                       return ret;
->>>>>>
->>>>>>               bus_set_iommu(&platform_bus_type,&fsl_none_ops);
->>>>>>               bus_set_iommu(&pci_bus_type,&fsl_none_ops);
->>>>>>
->>>>>>               return ret;
->>>>>>       }
->>>>>>
->>>>>> 2.  vfio-pci
->>>>>>
->>>>>> For vfio-pci, we would ideally like to keep user space mostly
->>>>>> unchanged.  User space will have to follow the semantics of mapping
->>>>>> only physically contiguous chunks...and iova will equal phys.
->>>>>>
->>>>>> So, we propose to implement a new vfio iommu type, called
->>>>>> VFIO_TYPE_NONE_IOMMU.  This implements any needed vfio interfaces,
->>>>>> but there are no calls to the iommu layer...e.g. map_dma() is a
->>>>>> noop.
->>>>>>
->>>>>> Would like your feedback.
->>>>>
->>>>> My first thought is that this really detracts from vfio and iommu
->>>>> groups being a secure interface, so somehow this needs to be clearly
->>>>> an insecure mode that requires an opt-in and maybe taints the
->>>>> kernel.  Any notion of unprivileged use needs to be blocked and it
->>>>> should test CAP_COMPROMISE_KERNEL (or whatever it's called now) at
->>>>> critical access points.  We might even have interfaces exported that
->>>>> would allow this to be an out-of-tree driver (worth a check).
->>>>>
->>>>> I would guess that you would probably want to do all the iommu group
->>>>> setup from the vfio fake-iommu driver.  In other words, that driver
->>>>> both creates the fake groups and provides the dummy iommu backend for
->> vfio.
->>>>> That would be a nice way to compartmentalize this as a
->>>>> vfio-noiommu-special.
->>>>
->>>> So you mean don't implement any of the iommu driver ops at all and
->>>> keep everything in the vfio layer?
->>>>
->>>> Would you still have real iommu groups?...i.e.
->>>> $ readlink /sys/bus/pci/devices/0000:06:0d.0/iommu_group
->>>> ../../../../kernel/iommu_groups/26
->>>>
->>>> ...and that is created by vfio-noiommu-special?
->>>
->>> I'm suggesting (but haven't checked if it's possible), to implement
->>> the iommu driver ops as part of the vfio iommu backend driver.  The
->>> primary motivation for this would be to a) keep a fake iommu groups
->>> interface out of the iommu proper (possibly containing it in an
->>> external driver) and b) modularizing it so we don't have fake iommu
->>> groups being created by default.  It would have to populate the iommu
->>> groups sysfs interfaces to be compatible with vfio.
->>>
->>>> Right now when the PCI and platform buses are probed, the iommu
->>>> driver add-device callback gets called and that is where the
->>>> per-device group gets created.  Are you envisioning registering a
->>>> callback for the PCI bus to do this in vfio-noiommu-special?
->>>
->>> Yes.  It's just as easy to walk all the devices rather than doing
->>> callbacks, iirc the group code does this when you register.  In fact,
->>> this noiommu interface may not want to add all devices, we may want to
->>> be very selective and only add some.
->>>
->> Right.
->> Sounds like a no-iommu driver is needed to leave vfio unaffected, and
->> still leverage/use vfio for qemu's device assignment.
->> Just not sure how to 'taint' it as 'not secure' if no-iommu driver put in
->> place.
+>> VGA is not reset irrespective of its function number. The logic of this
+>> patch is:
 >>
->> btw -- qemu has the inherent assumption that pci cfg cycles are trapped,
->>          so assigned devices are 'remapped' from system-B:D.F to virt-
->> machine's
->>          (virtualized) B:D.F of the assigned device.
->>          Are pci-cfg cycles trapped in freescale qemu model ?
+>> for_each_pci_dev(dev) {
+>>       if (dev is not PCIe)
+>>          continue;
+>>       if (dev is not root port/downstream port) ---(1)
+>>          continue;
+>>       list_for_each_entry(child,&dev->subordinate->devices, bus_list) {
+>>           if (child is upstream port or bridge or VGA) ---(2)
+>>               continue;
+>>       }
+>>       do_reset_its_child(dev);
+>> }
 >>
-> The vfio-pci device would be visible (to a KVM guest) as a PCI device on the virtual PCI bus (emulated by qemu).
->
-> -Varun
->
-Understood, but as Alex stated, the whole purpose of VFIO is to
-be able to do _secure_, user-level-driven I/O.  Since this would
-be 'unsecure', there should be a way to note that during configuration.
+>> Therefore VGA itself is skipped by (1), and upstream device(root port or
+>> downstream port) of VGA is also skipped by (2).
+>>
+>>
+>>> (2) I'm hearing VGA will soon not be the a required console; this logic
+>>>        assumes it is, and why it isn't blanked.
+>>>        Q: Should the filter be based on a device having a device-class of display ?
+>>
+>> I want to avoid the situation that user's monitor blacks out and user
+>> cannot know what's going on. That's reason why I introduced the logic to
+>> skip VGA. As far as I tested the logic based on device-class works well,
+> sorry, I read your description, which said VGA, but your are filtering on display class,
+> which includes non-VGA as well. So, all set ... but large, (x16) non-VGA display devices
+> are probably one of the most aggressive DMA engines on a system.... and will grow as
+> asymmetric processing using GPUs gets architected into a device-agnostic manner.
+> So, this may work well for servers, which is the primary consumer/user of this feature,
+> and they typically have built-in graphics that are generally used in simple VGA mode,
+> so this may be sufficient for now.
+
+Ok, understood.
+
+
+> 
+>> but I would appreciate it if there are better ways.
+>>
+> You probably don't want to hear it but....
+> a) only turn off cmd-reg master enable bit
+> b) only do reset based on a list of devices known not to
+>     obey their cmd-reg master enable bit, and only do reset to those devices.
+> But, given the testing you've done so far, this optional (need cmdline) feature,
+> let's start here.
+
+Ok. Either way I think we need more testing.
+
+ 
+>>>
+>>>> Actually this is v8 patch but quite different from v7 and it's been so
+>>>> long since previous post, so I start over again.
+>>> Thanks for this re-start.  I need to continue reviewing the rest.
+>>
+>> Thank you for your review!
+>>
+>>>
+>>> Q: Why not force IOMMU off when re-booting a kexec kernel to perform a crash
+>>>       dump?  After the crash dump, the system is rebooting to previous (iommu=on) setting.
+>>>       That logic, along w/your previous patch to disable the IOMMU if iommu=off
+>>>       is set, would remove this (relatively slow) PCI init sequencing ?
+>>
+>> To force iommu off, all ongoing DMA have to be stopped before that since
+>> they are accessing the device address, not physical address. If we disable
+>> iommu without stopping in-flihgt DMA, devices access invalid memory area
+>> and it causes memory corruption or PCI-SERR due to DMA error.
+> Right, that's a 'duh' on my part.
+> I thought 'disable iommu' == 'block all dma' and it just turns it off &
+> let's the ongoing DMA run...
+> Please ignore this question... sigh.
+> 
+>>
+>> So, whether we use iommu or not in second kernel, we have to stop DMA in
+>> second kernel if iommu is used in first kernel.
+>>
+>> Thanks,
+>> Takao Indoh
+>>
+>>
+>>>
+>>>> Previous post:
+>>>> [PATCH v7 0/5] Reset PCIe devices to address DMA problem on kdump
+>>>> https://lkml.org/lkml/2012/11/26/814
+>>>>
+>>>> Signed-off-by: Takao Indoh<indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+>>>> ---
+>>>>     Documentation/kernel-parameters.txt |    2 +
+>>>>     drivers/pci/pci.c                   |  103 +++++++++++++++++++++++++++++++++++
+>>>>     2 files changed, 105 insertions(+), 0 deletions(-)
+>>>>
+>>>> diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
+>>>> index 4609e81..2a31ade 100644
+>>>> --- a/Documentation/kernel-parameters.txt
+>>>> +++ b/Documentation/kernel-parameters.txt
+>>>> @@ -2250,6 +2250,8 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+>>>>                     any pair of devices, possibly at the cost of
+>>>>                     reduced performance.  This also guarantees
+>>>>                     that hot-added devices will work.
+>>>> +        pcie_reset_devices    Reset PCIe endpoint on boot by hot
+>>>> +                reset
+>>>>             cbiosize=nn[KMG]    The fixed amount of bus space which is
+>>>>                     reserved for the CardBus bridge's IO window.
+>>>>                     The default value is 256 bytes.
+>>>> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+>>>> index b099e00..42385c9 100644
+>>>> --- a/drivers/pci/pci.c
+>>>> +++ b/drivers/pci/pci.c
+>>>> @@ -3878,6 +3878,107 @@ void __weak pci_fixup_cardbus(struct pci_bus *bus)
+>>>>     }
+>>>>     EXPORT_SYMBOL(pci_fixup_cardbus);
+>>>>
+>>>> +/*
+>>>> + * Return true if dev is PCIe root port or downstream port whose child is PCIe
+>>>> + * endpoint except VGA device.
+>>>> + */
+>>>> +static int __init need_reset(struct pci_dev *dev)
+>>>> +{
+>>>> +    struct pci_bus *subordinate;
+>>>> +    struct pci_dev *child;
+>>>> +
+>>>> +    if (!pci_is_pcie(dev) || !dev->subordinate ||
+>>>> +        list_empty(&dev->subordinate->devices) ||
+>>>> +        ((pci_pcie_type(dev) != PCI_EXP_TYPE_ROOT_PORT)&&
+>>>> +         (pci_pcie_type(dev) != PCI_EXP_TYPE_DOWNSTREAM)))
+>>>> +        return 0;
+>>>> +
+>>>> +    subordinate = dev->subordinate;
+>>>> +    list_for_each_entry(child,&subordinate->devices, bus_list) {
+>>>> +        if ((pci_pcie_type(child) == PCI_EXP_TYPE_UPSTREAM) ||
+>>>> +            (pci_pcie_type(child) == PCI_EXP_TYPE_PCI_BRIDGE) ||
+>>>> +            ((child->class>>   16) == PCI_BASE_CLASS_DISPLAY))
+>>>> +            /* Don't reset switch, bridge, VGA device */
+>>>> +            return 0;
+>>>> +    }
+>>>> +
+>>>> +    return 1;
+>>>> +}
+>>>> +
+>>>> +static void __init save_config(struct pci_dev *dev)
+> This should be renamed.  it implies it is saving the config of the pdev passed in,
+> when in reality, it is saving the config of all the devices attached to this pdev.
+> i.e., save_downstream_configs()
+> 
+>>>> +{
+>>>> +    struct pci_bus *subordinate;
+>>>> +    struct pci_dev *child;
+>>>> +
+>>>> +    if (!need_reset(dev))
+>>>> +        return;
+>>>> +
+>>>> +    subordinate = dev->subordinate;
+>>>> +    list_for_each_entry(child,&subordinate->devices, bus_list) {
+>>>> +        dev_info(&child->dev, "save state\n");
+>>>> +        pci_save_state(child);
+>>>> +    }
+>>>> +}
+>>>> +
+>>>> +static void __init restore_config(struct pci_dev *dev)
+> inverse of above: restore_downstream_configs()
+>>>> +{
+>>>> +    struct pci_bus *subordinate;
+>>>> +    struct pci_dev *child;
+>>>> +
+>>>> +    if (!need_reset(dev))
+>>>> +        return;
+>>>> +
+>>>> +    subordinate = dev->subordinate;
+>>>> +    list_for_each_entry(child,&subordinate->devices, bus_list) {
+>>>> +        dev_info(&child->dev, "restore state\n");
+>>>> +        pci_restore_state(child);
+>>>> +    }
+>>>> +}
+>>>> +
+>>>> +static void __init do_device_reset(struct pci_dev *dev)
+> do_downstream_device_reset() -- it's not resetting this pdev,
+> but the pdev's of the devices attached to it.
+> 
+Right, I'll change them as you said.
+
+
+>>>> +{
+>>>> +    u16 ctrl;
+>>>> +
+>>>> +    if (!need_reset(dev))
+>>>> +        return;
+>>>> +
+>>>> +    dev_info(&dev->dev, "Reset Secondary bus\n");
+>>>> +
+>>>> +    /* Assert Secondary Bus Reset */
+>>>> +    pci_read_config_word(dev, PCI_BRIDGE_CONTROL,&ctrl);
+>>>> +    ctrl |= PCI_BRIDGE_CTL_BUS_RESET;
+>>>> +    pci_write_config_word(dev, PCI_BRIDGE_CONTROL, ctrl);
+>>>> +
+>>>> +    msleep(2);
+>>>> +
+> This works well for x86, which uses ioport registers to access
+> these <256-offset registers, b/c the write() function can't return
+> until the write is actually completed, but for a non-x86 system,
+> with fully mmconf'd PCI space, a write() may still be a write & run
+> (sitting in CPU write-merge) buffer, so if you need a full 2ms,
+> you ought to do another read_config() to the device, to flush the write,
+> before starting the msleep(2) clock.
+> 
+I didn't know that... I'll insert something like this before msleep.
+
+pci_read_config_word(dev, PCI_BRIDGE_CONTROL, &dummy);
+
+BTW, I referred aer_do_secondary_bus_reset() when I wrote this code.
+Probably need the same fix, right?
+
+
+>>>> +    /* De-assert Secondary Bus Reset */
+>>>> +    ctrl&= ~PCI_BRIDGE_CTL_BUS_RESET;
+>>>> +    pci_write_config_word(dev, PCI_BRIDGE_CONTROL, ctrl);
+>>>> +}
+>>>> +
+>>>> +static int __initdata pcie_reset_devices;
+>>>> +static int __init reset_pcie_devices(void)
+> this should be reset_pcie_endpoints() ... it's not resetting all pcie devices
+>>>> +{
+>>>> +    struct pci_dev *dev = NULL;
+>>>> +
+>>>> +    if (!pcie_reset_devices)
+>>>> +        return 0;
+>>>> +
+>>>> +    for_each_pci_dev(dev)
+>>>> +        save_config(dev);
+>>>> +
+>>>> +    for_each_pci_dev(dev)
+>>>> +        do_device_reset(dev);
+>>>> +
+>>>> +    msleep(1000);
+>>>> +
+>>>> +    for_each_pci_dev(dev)
+>>>> +        restore_config(dev);
+>>>> +
+> My apologies if past thread covered this sequence...
+> Why three loops through all PCIe devices on the system?
+> why not have the first for-each-pci-dev() loop filter devices
+> to be reset, and save_config those pdev's,
+> return a list of saved_pdev's;  feed that list into the do_device_reset();
+> then mpsleep(), then restore the list.
+> in fact, once you create a link list of pdev's to reset,
+> just loop that list doing save, then reset; rtn the list, do msleep(),
+> then restore the config of pdevs in the list.
+> Otherwise, doing much more traversing than what's needed.
+> Doing a great deal more config-saving then needed right now as well
+> (saving all non-endpt devices that aren't reset).
+> 
+
+Creating list is nice idea, thanks. I'll do.
+
+I'll have vacation next week, so I'll post v2 patch the week after
+next.
+
+Thanks,
+Takao Indoh
