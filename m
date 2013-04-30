@@ -1,14 +1,15 @@
 From: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Subject: Re: RFC: IOMMU/AMD: Error Handling
-Date: Tue, 30 Apr 2013 11:06:30 -0400
-Message-ID: <517FDDF6.8090707@redhat.com>
+Date: Tue, 30 Apr 2013 11:09:08 -0400
+Message-ID: <517FDE94.7080700@redhat.com>
 References: <517ECDDA.3000606@amd.com> <517ED3A9.2050508@redhat.com>
-	<517FD9E8.8070802@amd.com>
+	<BA42942F2D0DED45AFB0A6216D1E951D44CBE1F9@sausexdag01.amd.com>
+	<517EE940.8010005@redhat.com> <517FDB96.7060602@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <517FD9E8.8070802-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <517FDB96.7060602-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,79 +23,36 @@ To: Suravee Suthikulanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/30/2013 10:49 AM, Suravee Suthikulanit wrote:
-> On 4/29/2013 3:10 PM, Don Dutile wrote:
->> On 04/29/2013 03:45 PM, Suravee Suthikulanit wrote:
->>> Joerg,
+On 04/30/2013 10:56 AM, Suravee Suthikulanit wrote:
+> On 4/29/2013 4:42 PM, Don Dutile wrote:
+>> On 04/29/2013 04:34 PM, Duran, Leo wrote:
+>>> I'm wondering if resetting the IOMMU at init-time (once) would clear any BIOS induced noise.
+>>> Leo
 >>>
->>> We are in the process of implementing AMD IOMMU error handling, and I would like some comments from you and the community.
->>>
->>> Currently, the AMD IOMMU driver only reports events from the event log in the dmesg, and does not try to handle them in case of errors. AMD IOMMU errors can be categorized as device-specific errors and IOMMU errors.
->>>
->>> 1. For IOMMU errors such as:
->>> - DEV_TAB_HADWARE_ERROR
->>> - PAGE_TAB_ERROR
->>> - COMMAND_HARDWARE_ERROR
->>> If the error is detected during IOMMU initialization, we could disable IOMMU and proceed. If the error occurs after IOMMU is initialized, we won't be able to recover from this, and might need to result in panic.
->>>
->>> 2. For device-specific errors such as:
->>> - ILLEGAL_DEV_TABLE_ENTRY
->>> - IO_PAGE_FAULT
->>> - INVALDE_DEVICE_REQUEST
->>> We think the AMD IOMMU driver should try to isolate the device. This involves blocking device transactions at IOMMU DTE and tries to disable the device (e.g. calling the remove(struct pci_dev *pdev) interface generally provides by device drivers). This could prevents the device from continuing to fail and to risk of system instability.
->>>
->> disabling the device is not an option.
->> We've seen mis-configured ACPI tables generate storms
->> of invalide dte messages after iommu setup but before they are cleared up when
->> the OS driver is started & resets the device. The original storm is from bios-use
->> of IOMMU with a device.
-> Would some sorts of threshold to help determine the badness of errors might be sufficient? For instance, if the device has generated N errors, it is then be removed (where N is tunable through sysfs or kernel boot options).
->
-No!  removing a device is _not_ acceptable.
-Again, the most common case I've seen is the *boot* device
-not having the proper IVMD(AMD) or RMRR(Intel) structures in the ACPI tables,
-or they are temporarily invalided during reboot (esp. during kexec'd kdump kernels).
-Second most common -- the usb controller that the user may need to control the
-system on power-up.  It'll be more fun when IPMI + IOMMU are put together in the ARM space.
-Filter faults from a device; 'nuf said.
-
-
->> I'd recommend creating a filter that prevents further logging from a device
->> for 5 mins at a time if a storm of DTE-related errors are seen.
->> by definition, the DMA is blocked from corrupting/changing memory, so isolation has been established;
->> keeping the failure log from consuming the system is the needed fix.
->
-> I believe the IOMMU hardware can be configured to suppress logging of subsequent I/O page fault errors until
-> the device table cache is cleared. This should help avoiding storm of interrupts you are seeing.
->
-If the tables are correct... if not.... then hung system.
-
+>> Well, depends what you mean by 'reset'....
+>> (a) setting it up for OS use is effectively a reset, but doesn't quiesce a device
+>> doing dma reads of a (bios-setup) queue. then the noisy messages begin
+>> (b) disable the iommu, and then the dma just occurs... and bad for writes, potentially.
 >>
->>> 3. In case of posted memory write transaction, device driver might not be aware that the transaction has failed and blocked at IOMMU. If there is no HW IOMMU, I believe this is handled by PCI error handling code. If the IOMMU hardware reporth such case, could this potentially leverage the Linux IOMMU fault handling interface, iommu_set_fault_handler() and report_iommu_fault(), to communicate to device driver or PCI driver?
->>>
->> Wondering if you could use AER-like callback mechanism so a driver can be invoked when IOMMU error occurs,
->> so the device driver can quiesce or reset the device if it deems it transient.
-> That might also be possible. I might need to look into it more.
+>> Similar issue is being reported & worked for kdump, where device are still
+>> doing DMA while the system is trying to 'reset' to the kexec'd kernel, and
+>> take a crash dump.
+>>
+>> Solution: stop devices from doing dma... but some you _want_ enabled throughout...
+>> like keyboard & mouse via usb controller, so you get to pick os from
+>> grub... not so for kexec...
+>>
+>> so, again, for isolation faults.... let the hw do its job -- isolate
+>> and throttle/silence the fault messages on a per-device, time-duration heuristic
+>> so the system can get through boot-up where enough OS is init'd (drivers started)
+>> to stop the temporary noise.
+> This sounds more like issue with the order of how things are initialized in the system.
+> If so, could we separate the code which enabling of IOMMU error logging/handling and
+> delay it until we are certain that systems are stable?
 >
+So, you are proposing we not enable fault events when IOMMU is initially configured;
+use the IOMMU through boot/driver-config, hoping all is well, and if not, continue blindly,
+and then enable IOMMU faults post/late-init ?
+
 > Suravee
-
-In summary: when BIOS's are made perfect, then you could implement your perfect disabling algorithm;
-             unfortunately, esp. with IOMMU's & intr-remap acpi tables, the bios's are notoriously buggy.
-
->>
->>> Any feedback or comments are appreciated.
->>>
->>> Thank you,
->>> Suravee
->>>
->>>
->>>
->>>
->>> _______________________________________________
->>> iommu mailing list
->>> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
->>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
->>
->>
->
 >
