@@ -1,7 +1,7 @@
 From: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Subject: Re: RFC: vfio / iommu driver for hardware with no iommu
-Date: Tue, 30 Apr 2013 14:13:39 -0400
-Message-ID: <518009D3.2050304@redhat.com>
+Date: Tue, 30 Apr 2013 14:25:59 -0400
+Message-ID: <51800CB7.9010609@redhat.com>
 References: <9F6FE96B71CF29479FF1CDC8046E15035BE0A3@039-SN1MPN1-002.039d.mgd.msft.net>
 	<1366736189.2918.573.camel@bling.home>
 	<9F6FE96B71CF29479FF1CDC8046E15035BE2BD@039-SN1MPN1-002.039d.mgd.msft.net>
@@ -187,10 +187,6 @@ On 04/30/2013 01:28 PM, Konrad Rzeszutek Wilk wrote:
 >
 > It does not work with SWIOTLB as it uses the DMA API, not the IOMMU API.
 >
-I think you got it reversed.  vfio uses iommu api, not dma api.
-if vfio used dma api, swiotlb is configured as the default dma-ops interface
-and it could work (with more interfaces... domain-alloc, etc.).
-
 > It could be extended to use it. I was toying with this b/c for Xen to
 > use VFIO I would have to implement an Xen IOMMU driver that would basically
 > piggyback on the SWIOTLB (as Xen itself does the IOMMU parts and takes
@@ -199,6 +195,9 @@ and it could work (with more interfaces... domain-alloc, etc.).
 > But your requirement would be the same, so it might as well be an generic
 > driver called SWIOTLB-IOMMU driver.
 >
+arch/x86/kernel/pci-nommu.c as a starting point?
+
+
 > If you are up for writting I am up for reviewing/Ack-ing/etc.
 >
 > The complexity would be to figure out the VFIO group thing and how to assign
@@ -206,5 +205,3 @@ and it could work (with more interfaces... domain-alloc, etc.).
 > xen-pciback does (or pcistub). That is by writting the BDF in the "bind"
 > attribute in SysFS (or via a kernel parameter).
 >
-
-Did uio provide this un-secure support, and just needs some attention upstream?
