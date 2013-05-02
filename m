@@ -1,31 +1,32 @@
-From: Roland Dreier <roland-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+From: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Subject: Re: decent performance drop for SCSI LLD / SAN initiator when iommu
  is turned on
-Date: Wed, 1 May 2013 17:13:25 -0700
-Message-ID: <CAL1RGDU8PdB+88YDYeCc4_Shbno6=e=uDtQRSfAr9uUv5JP=1w@mail.gmail.com>
+Date: Thu, 2 May 2013 04:56:03 +0300
+Message-ID: <20130502015603.GC26105@redhat.com>
 References: <CAJZOPZJ8eF-Q+WFzA-_vvzkpSb41PQjKFo27_Wi3McUccOqs9A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-rdma-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
 In-Reply-To: <CAJZOPZJ8eF-Q+WFzA-_vvzkpSb41PQjKFo27_Wi3McUccOqs9A-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 Sender: linux-rdma-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: Or Gerlitz <or.gerlitz-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Yan Burman <yanb-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>, "linux-rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Roland Dreier <roland-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Yan Burman <yanb-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>, linux-rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, May 1, 2013 at 4:11 PM, Or Gerlitz <or.gerlitz-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-> This was done over kernel 3.5.x, I will re-run tomorrow with latest
-> upstream and send the top perf hits for both cases, but does this
-> rings some bells? basically it makes sense for some extra latency, but
-> I didn't expect the IOPS and BW drop to be so notable. Is it possible
-> that at these rates the IOMMU is so much trashed that it can't keep
-> the perf we have without it being on?
+On Thu, May 02, 2013 at 02:11:15AM +0300, Or Gerlitz wrote:
+> Hi Roland, IOMMU folks,
+> 
+> So we've noted that when configuring the kernel && booting with intel
+> iommu set to on on a physical node (non VM, and without enabling SRIOV
+> by the HW device driver) raw performance of the iSER (iSCSI RDMA) SAN
+> initiator is reduced notably, e.g in the testbed we looked today we
+> had ~260K 1KB random IOPS and 5.5GBs BW for 128KB IOs with iommu
+> turned off for single LUN, and ~150K IOPS and 4GBs BW with iommu
+> turned on. No change on the target node between runs.
 
-Using the IOMMU makes the dma mapping API *much* more expensive.  Look
-at the recent thread about NFS/RDMA performance for another instance
-of this.
-
- - R.
+That's why we have iommu=pt.
+See definition of iommu_pass_through in arch/x86/kernel/pci-dma.c.
 --
 To unsubscribe from this list: send the line "unsubscribe linux-rdma" in
 the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
