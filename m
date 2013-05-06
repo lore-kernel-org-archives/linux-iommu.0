@@ -1,168 +1,59 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [git pull] IOMMU Updates for v3.10
-Date: Mon, 6 May 2013 10:51:21 +0200
-Message-ID: <20130506085120.GA2973@8bytes.org>
+From: Or Gerlitz <or.gerlitz-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: decent performance drop for SCSI LLD / SAN initiator when iommu
+ is turned on
+Date: Tue, 7 May 2013 00:39:01 +0300
+Message-ID: <CAJZOPZLWgXNCEpZjzuizVGPEVPg1G+cHh373ZCoumMx9eAabvQ@mail.gmail.com>
+References: <CAJZOPZJ8eF-Q+WFzA-_vvzkpSb41PQjKFo27_Wi3McUccOqs9A@mail.gmail.com>
+	<20130502015603.GC26105@redhat.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============3523456251781072137=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-rdma-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20130502015603.GC26105-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Sender: linux-rdma-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Alexander Duyck <alexander.h.duyck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Roland Dreier <roland-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Yan Burman <yanb-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>, linux-rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Asias He <asias-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-
---===============3523456251781072137==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="3MwIy2ne0vdjdPXF"
-Content-Disposition: inline
-
-
---3MwIy2ne0vdjdPXF
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-Hi Linus,
-
-The following changes since commit c1be5a5b1b355d40e6cf79cc979eb66dafa24ad1:
-
-  Linux 3.9 (2013-04-28 17:36:01 -0700)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v3.10
-
-for you to fetch changes up to 0c4513be3d01a854867446ee793748409cc0ebdf:
-
-  Merge branches 'iommu/fixes', 'x86/vt-d', 'x86/amd', 'ppc/pamu', 'core' and 'arm/tegra' into next (2013-05-02 12:10:19 +0200)
-
-----------------------------------------------------------------
-
-IOMMU Updates for Linux v3.10
-
-The updates are mostly about the x86 IOMMUs this time. Exceptions are
-the groundwork for the PAMU IOMMU from Freescale (for a PPC platform)
-and an extension to the IOMMU group interface. On the x86 side this
-includes a workaround for VT-d to disable interrupt remapping on broken
-chipsets. On the AMD-Vi side the most important new feature is a kernel
-command-line interface to override broken information in IVRS ACPI
-tables and get interrupt remapping working this way. Besides that there
-are small fixes all over the place.
-
-----------------------------------------------------------------
-Alexey Kardashevskiy (1):
-      iommu: Add a function to find an iommu group by id
-
-Joerg Roedel (12):
-      iommu/amd: Remove map_sg_no_iommu()
-      iommu/amd: Use AMD specific data structure for irq remapping
-      iommu/amd: Properly initialize irq-table lock
-      iommu: Fix compile warnings with forward declarations
-      iommu/amd: Move add_special_device() to __init
-      iommu/amd: Extend IVRS special device data structure
-      iommu/amd: Add early maps for ioapic and hpet
-      iommu/amd: Add ioapic and hpet ivrs override
-      iommu/amd: Don't report firmware bugs with cmd-line ivrs overrides
-      iommu/amd: Document ivrs_ioapic and ivrs_hpet parameters
-      iommu/amd: Workaround for ERBT1312
-      Merge branches 'iommu/fixes', 'x86/vt-d', 'x86/amd', 'ppc/pamu', 'core' and 'arm/tegra' into next
-
-Li, Zhen-Hua (1):
-      iommu/vt-d: dmar_fault should only clear PPF/PFO field.
-
-Linn Crosetto (1):
-      iommu/vt-d: Remove warning for HPET scope type
-
-Neil Horman (1):
-      iommu/vt-d: add quirk for broken interrupt remapping on 55XX chipsets
-
-Suravee Suthikulpanit (2):
-      iommu/amd: Re-enable IOMMU event log interrupt after handling.
-      iommu/AMD: Per-thread IOMMU Interrupt Handling
-
-Takao Indoh (1):
-      iommu/vt-d: Disable translation if already enabled
-
-Varun Sethi (4):
-      iommu/fsl: Make iova dma_addr_t in the iommu_iova_to_phys API.
-      iommu/fsl: Add the window permission flag as a parameter to iommu_window_enable API.
-      iommu: Move swap_pci_ref function to drivers/iommu/pci.h.
-      iommu/tegra: Fix printk formats for dma_addr_t
-
-Wang YanQing (1):
-      iommu: Include linux/err.h
-
-Wei Yongjun (1):
-      iommu/amd: fix error return code in early_amd_iommu_init()
-
- Documentation/kernel-parameters.txt  |   14 ++++
- arch/x86/include/asm/irq_remapping.h |    9 ++
- arch/x86/kernel/early-quirks.c       |   20 +++++
- drivers/iommu/amd_iommu.c            |  145 ++++++++++++++------------------
- drivers/iommu/amd_iommu_init.c       |  154 ++++++++++++++++++++++++++++++----
- drivers/iommu/amd_iommu_types.h      |    2 +
- drivers/iommu/dmar.c                 |   26 ++++--
- drivers/iommu/exynos-iommu.c         |    2 +-
- drivers/iommu/intel-iommu.c          |   24 ++++--
- drivers/iommu/intel_irq_remapping.c  |   10 +++
- drivers/iommu/iommu.c                |   37 +++++++-
- drivers/iommu/irq_remapping.c        |    6 ++
- drivers/iommu/irq_remapping.h        |    2 +
- drivers/iommu/msm_iommu.c            |    2 +-
- drivers/iommu/omap-iommu.c           |    2 +-
- drivers/iommu/pci.h                  |   29 +++++++
- drivers/iommu/shmobile-iommu.c       |    2 +-
- drivers/iommu/tegra-gart.c           |    5 +-
- drivers/iommu/tegra-smmu.c           |    5 +-
- include/linux/iommu.h                |   18 ++--
- 20 files changed, 382 insertions(+), 132 deletions(-)
- create mode 100644 drivers/iommu/pci.h
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
-
---3MwIy2ne0vdjdPXF
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-
-iQIcBAEBAgAGBQJRh28IAAoJECvwRC2XARrjD9cP/AzFh5128wZGVYDAr4AVBKGt
-PAmvQmd+QKZt/TDvuYPh5QOXdqF48R/cPCevAvNK5sn33xc8Ac4YvFqkAqAFmW26
-ZpBwLsKjiMsJiHO17mvHzFPB+7dGhupoIwsChS5mcukrzbFreUmFQF7RR70eu5QI
-ZaZlTkf06iKxxj4i+xkUcfIDEwMkqyd5QR+ij9Zo6kDP7jiahxz6yHjs8DKJTQLZ
-V+7oAKlaIAaF5KU2pH5g7iXmSKtIL/Jpn5a7XGJfQD68gSCftzs3xV3qaFwC29/k
-eXBZEzEOmUie4LyldQs0Da7BTDy4JDNhL4KF7Cg2607dcPsPJtSgBHYNqM5Rz9o/
-L+4LSR/+TefizpudM6jk7ImDn8KenU+Mg8XXbzQyPAZ0beTcI0pxwC5GqCN+4I25
-pjlLgMq/Vf3rf9DY6EOdc2ouTszYn1xQZPxTOVMDmBz2Bub41+ga1D0B9eJj/OfN
-7I+opPupNpiV+PaUanLpTLE/rwebKc0h8NiwERgmndTmDha16k30wi9mYu/AT4MS
-MoZJBWzhO63pdjRTCH/hAwtQJev2LOMHIDR7vOvmMR+vOZvzlSCvWghqWv2AGE+l
-XEZvVGnSdOV38W5VogflIfAPmcV8MZPDVm16+3ROM0o1D+6Su+CXaWNBQUIKBgK+
-I5TMcS8GI6IyuZFakiTG
-=98Wk
------END PGP SIGNATURE-----
-
---3MwIy2ne0vdjdPXF--
+On Thu, May 2, 2013 at 4:56 AM, Michael S. Tsirkin <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+>
+> On Thu, May 02, 2013 at 02:11:15AM +0300, Or Gerlitz wrote:
+> > So we've noted that when configuring the kernel && booting with intel
+> > iommu set to on on a physical node (non VM, and without enabling SRIOV
+> > by the HW device driver) raw performance of the iSER (iSCSI RDMA) SAN
+> > initiator is reduced notably, e.g in the testbed we looked today we
+> > had ~260K 1KB random IOPS and 5.5GBs BW for 128KB IOs with iommu
+> > turned off for single LUN, and ~150K IOPS and 4GBs BW with iommu
+> > turned on. No change on the target node between runs.
+>
+> That's why we have iommu=pt.
+> See definition of iommu_pass_through in arch/x86/kernel/pci-dma.c.
 
 
 
---===============3523456251781072137==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Hi Michael (hope you feel better),
 
+We did some runs with the pt approach you suggested and still didn't
+get the promised gain -- in parallel we came across this 2012 commit
+f800326dc "ixgbe: Replace standard receive path with a page based
+receive" where they say "[...] we are able to see a considerable
+performance gain when an IOMMU is enabled because we are no longer
+unmapping every buffer on receive [...] instead we can simply call
+sync_single_range [...]"  looking on the commit you can see that they
+allocate a page/skb dma_map it initially and later of the life cycle
+of that buffer use dma_sync_for_device/cpu and avoid dma_map/unmap on
+the fast path.
 
---===============3523456251781072137==--
+Well few questions which I'd love to hear people's opinion -- 1st this
+approach seems cool for network device RX path, but what about the TX
+path, any idea how to avoid dma_map for it? or why on the TX path
+calling dma_map/unmap for every buffer doesn't involve a notable perf
+hit? 2nd I don't see how to apply the method on block device since
+these devices don't allocate buffers, but rather get a scatter-gather
+list of pages from upper layers, issue dma_map_sg on them and submit
+the IO, later when done call dma_unmap_sg
+
+Or.
+--
+To unsubscribe from this list: send the line "unsubscribe linux-rdma" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
