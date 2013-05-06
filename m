@@ -1,134 +1,168 @@
-From: Yan Burman <yanb-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
-Subject: RE: decent performance drop for SCSI LLD / SAN initiator when iommu
- is turned on
-Date: Sun, 5 May 2013 14:06:26 +0000
-Message-ID: <0EE9A1CDC8D6434DB00095CD7DB873462CFA81F0@MTLDAG01.mtl.com>
-References: <CAJZOPZJ8eF-Q+WFzA-_vvzkpSb41PQjKFo27_Wi3McUccOqs9A@mail.gmail.com>
- <20130502015603.GC26105@redhat.com>
- <0EE9A1CDC8D6434DB00095CD7DB873462CF9D73E@MTLDAG01.mtl.com>
- <518412AC.3070507@redhat.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [git pull] IOMMU Updates for v3.10
+Date: Mon, 6 May 2013 10:51:21 +0200
+Message-ID: <20130506085120.GA2973@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-rdma-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <518412AC.3070507-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
-Sender: linux-rdma-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Or Gerlitz <or.gerlitz-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Roland Dreier <roland-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: multipart/mixed; boundary="===============3523456251781072137=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 
-
-> -----Original Message-----
-> From: Don Dutile [mailto:ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> Sent: Friday, May 03, 2013 22:41
-> To: Yan Burman
-> Cc: Michael S. Tsirkin; Or Gerlitz; Roland Dreier; linux-rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> Subject: Re: decent performance drop for SCSI LLD / SAN initiator when
-> iommu is turned on
-> 
-> On 05/02/2013 10:13 AM, Yan Burman wrote:
-> >
-> >
-> >> -----Original Message-----
-> >> From: Michael S. Tsirkin [mailto:mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> >> Sent: Thursday, May 02, 2013 04:56
-> >> To: Or Gerlitz
-> >> Cc: Roland Dreier; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Yan Burman;
-> >> linux- rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> >> Subject: Re: decent performance drop for SCSI LLD / SAN initiator
-> >> when iommu is turned on
-> >>
-> >> On Thu, May 02, 2013 at 02:11:15AM +0300, Or Gerlitz wrote:
-> >>> Hi Roland, IOMMU folks,
-> >>>
-> >>> So we've noted that when configuring the kernel&&  booting with
-> >>> intel iommu set to on on a physical node (non VM, and without
-> >>> enabling SRIOV by the HW device driver) raw performance of the iSER
-> >>> (iSCSI RDMA) SAN initiator is reduced notably, e.g in the testbed we
-> >>> looked today we had ~260K 1KB random IOPS and 5.5GBs BW for 128KB
-> >>> IOs with iommu turned off for single LUN, and ~150K IOPS and 4GBs BW
-> >>> with iommu turned on. No change on the target node between runs.
-> >>
-> >> That's why we have iommu=pt.
-> >> See definition of iommu_pass_through in arch/x86/kernel/pci-dma.c.
-> >
-> > I tried passing "intel_iommu=on iommu=pt" to 3.8.11 kernel and I still get
-> performance degradation.
-> > I get the same numbers with iommu=pt as without it.
-> >
-> > I wanted to send perf output, but currently I seem to have some problem
-> with its output.
-> > Will try to get perf differences next week.
-> >
-> > Yan
-> >
-> >
-> > _______________________________________________
-> > iommu mailing list
-> > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> > https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> dmesg dump? -- interested to see if x2apic is on, and if MSI is used (or not)
+--===============3523456251781072137==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="3MwIy2ne0vdjdPXF"
+Content-Disposition: inline
 
 
-The entire dmesg is 98K, so I won't send it here (I can send it off list if you need it), but I see that x2apic is not enabled:
+--3MwIy2ne0vdjdPXF
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-[    0.019051] ------------[ cut here ]------------
-[    0.019175] WARNING: at drivers/iommu/intel_irq_remapping.c:542 intel_enable_irq_remapping+0x78/0x279()
-[    0.019362] Hardware name: ProLiant DL380p Gen8
-[    0.019481] Your BIOS is broken and requested that x2apic be disabled
-[    0.019481] This will leave your machine vulnerable to irq-injection attacks
-[    0.019481] Use 'intremap=no_x2apic_optout' to override BIOS request
-[    0.019750] Modules linked in:
-[    0.019921] Pid: 1, comm: swapper/0 Not tainted 3.8.11-perf #4
-[    0.020040] Call Trace:
-[    0.020159]  [<ffffffff8103d22a>] warn_slowpath_common+0x7a/0xb0
-[    0.020279]  [<ffffffff8103d301>] warn_slowpath_fmt+0x41/0x50
-[    0.020399]  [<ffffffff8168f300>] intel_enable_irq_remapping+0x78/0x279
-[    0.020522]  [<ffffffff8168f563>] irq_remapping_enable+0x1b/0x24
-[    0.020646]  [<ffffffff8166faf5>] enable_IR+0x3c/0x3e
-[    0.020768]  [<ffffffff8166fb7f>] enable_IR_x2apic+0x88/0x1e7
-[    0.020892]  [<ffffffff81672089>] default_setup_apic_routing+0x15/0x6e
-[    0.021015]  [<ffffffff8166ef7d>] native_smp_prepare_cpus+0x361/0x395
-[    0.021139]  [<ffffffff816625d0>] kernel_init_freeable+0x5e/0x191
-[    0.021263]  [<ffffffff8138a810>] ? rest_init+0x80/0x80
-[    0.021384]  [<ffffffff8138a819>] kernel_init+0x9/0xf0
-[    0.021505]  [<ffffffff8139132c>] ret_from_fork+0x7c/0xb0
-[    0.021630]  [<ffffffff8138a810>] ? rest_init+0x80/0x80
-[    0.021755] ---[ end trace 307c85faec0be3b4 ]---
-[    0.022289] Enabled IRQ remapping in xapic mode
-[    0.022409] x2apic not enabled, IRQ remapping is in xapic mode
-[    0.022543] Switched APIC routing to physical flat.
+Hi Linus,
+
+The following changes since commit c1be5a5b1b355d40e6cf79cc979eb66dafa24ad1:
+
+  Linux 3.9 (2013-04-28 17:36:01 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v3.10
+
+for you to fetch changes up to 0c4513be3d01a854867446ee793748409cc0ebdf:
+
+  Merge branches 'iommu/fixes', 'x86/vt-d', 'x86/amd', 'ppc/pamu', 'core' and 'arm/tegra' into next (2013-05-02 12:10:19 +0200)
+
+----------------------------------------------------------------
+
+IOMMU Updates for Linux v3.10
+
+The updates are mostly about the x86 IOMMUs this time. Exceptions are
+the groundwork for the PAMU IOMMU from Freescale (for a PPC platform)
+and an extension to the IOMMU group interface. On the x86 side this
+includes a workaround for VT-d to disable interrupt remapping on broken
+chipsets. On the AMD-Vi side the most important new feature is a kernel
+command-line interface to override broken information in IVRS ACPI
+tables and get interrupt remapping working this way. Besides that there
+are small fixes all over the place.
+
+----------------------------------------------------------------
+Alexey Kardashevskiy (1):
+      iommu: Add a function to find an iommu group by id
+
+Joerg Roedel (12):
+      iommu/amd: Remove map_sg_no_iommu()
+      iommu/amd: Use AMD specific data structure for irq remapping
+      iommu/amd: Properly initialize irq-table lock
+      iommu: Fix compile warnings with forward declarations
+      iommu/amd: Move add_special_device() to __init
+      iommu/amd: Extend IVRS special device data structure
+      iommu/amd: Add early maps for ioapic and hpet
+      iommu/amd: Add ioapic and hpet ivrs override
+      iommu/amd: Don't report firmware bugs with cmd-line ivrs overrides
+      iommu/amd: Document ivrs_ioapic and ivrs_hpet parameters
+      iommu/amd: Workaround for ERBT1312
+      Merge branches 'iommu/fixes', 'x86/vt-d', 'x86/amd', 'ppc/pamu', 'core' and 'arm/tegra' into next
+
+Li, Zhen-Hua (1):
+      iommu/vt-d: dmar_fault should only clear PPF/PFO field.
+
+Linn Crosetto (1):
+      iommu/vt-d: Remove warning for HPET scope type
+
+Neil Horman (1):
+      iommu/vt-d: add quirk for broken interrupt remapping on 55XX chipsets
+
+Suravee Suthikulpanit (2):
+      iommu/amd: Re-enable IOMMU event log interrupt after handling.
+      iommu/AMD: Per-thread IOMMU Interrupt Handling
+
+Takao Indoh (1):
+      iommu/vt-d: Disable translation if already enabled
+
+Varun Sethi (4):
+      iommu/fsl: Make iova dma_addr_t in the iommu_iova_to_phys API.
+      iommu/fsl: Add the window permission flag as a parameter to iommu_window_enable API.
+      iommu: Move swap_pci_ref function to drivers/iommu/pci.h.
+      iommu/tegra: Fix printk formats for dma_addr_t
+
+Wang YanQing (1):
+      iommu: Include linux/err.h
+
+Wei Yongjun (1):
+      iommu/amd: fix error return code in early_amd_iommu_init()
+
+ Documentation/kernel-parameters.txt  |   14 ++++
+ arch/x86/include/asm/irq_remapping.h |    9 ++
+ arch/x86/kernel/early-quirks.c       |   20 +++++
+ drivers/iommu/amd_iommu.c            |  145 ++++++++++++++------------------
+ drivers/iommu/amd_iommu_init.c       |  154 ++++++++++++++++++++++++++++++----
+ drivers/iommu/amd_iommu_types.h      |    2 +
+ drivers/iommu/dmar.c                 |   26 ++++--
+ drivers/iommu/exynos-iommu.c         |    2 +-
+ drivers/iommu/intel-iommu.c          |   24 ++++--
+ drivers/iommu/intel_irq_remapping.c  |   10 +++
+ drivers/iommu/iommu.c                |   37 +++++++-
+ drivers/iommu/irq_remapping.c        |    6 ++
+ drivers/iommu/irq_remapping.h        |    2 +
+ drivers/iommu/msm_iommu.c            |    2 +-
+ drivers/iommu/omap-iommu.c           |    2 +-
+ drivers/iommu/pci.h                  |   29 +++++++
+ drivers/iommu/shmobile-iommu.c       |    2 +-
+ drivers/iommu/tegra-gart.c           |    5 +-
+ drivers/iommu/tegra-smmu.c           |    5 +-
+ include/linux/iommu.h                |   18 ++--
+ 20 files changed, 382 insertions(+), 132 deletions(-)
+ create mode 100644 drivers/iommu/pci.h
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+
+--3MwIy2ne0vdjdPXF
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+
+iQIcBAEBAgAGBQJRh28IAAoJECvwRC2XARrjD9cP/AzFh5128wZGVYDAr4AVBKGt
+PAmvQmd+QKZt/TDvuYPh5QOXdqF48R/cPCevAvNK5sn33xc8Ac4YvFqkAqAFmW26
+ZpBwLsKjiMsJiHO17mvHzFPB+7dGhupoIwsChS5mcukrzbFreUmFQF7RR70eu5QI
+ZaZlTkf06iKxxj4i+xkUcfIDEwMkqyd5QR+ij9Zo6kDP7jiahxz6yHjs8DKJTQLZ
+V+7oAKlaIAaF5KU2pH5g7iXmSKtIL/Jpn5a7XGJfQD68gSCftzs3xV3qaFwC29/k
+eXBZEzEOmUie4LyldQs0Da7BTDy4JDNhL4KF7Cg2607dcPsPJtSgBHYNqM5Rz9o/
+L+4LSR/+TefizpudM6jk7ImDn8KenU+Mg8XXbzQyPAZ0beTcI0pxwC5GqCN+4I25
+pjlLgMq/Vf3rf9DY6EOdc2ouTszYn1xQZPxTOVMDmBz2Bub41+ga1D0B9eJj/OfN
+7I+opPupNpiV+PaUanLpTLE/rwebKc0h8NiwERgmndTmDha16k30wi9mYu/AT4MS
+MoZJBWzhO63pdjRTCH/hAwtQJev2LOMHIDR7vOvmMR+vOZvzlSCvWghqWv2AGE+l
+XEZvVGnSdOV38W5VogflIfAPmcV8MZPDVm16+3ROM0o1D+6Su+CXaWNBQUIKBgK+
+I5TMcS8GI6IyuZFakiTG
+=98Wk
+-----END PGP SIGNATURE-----
+
+--3MwIy2ne0vdjdPXF--
 
 
 
-MSI is being used:
-cat /proc/interrupts | grep mlx
-  98:          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0  IR-PCI-MSI-edge      mlx4-comp-0@pci:0000:07:00.0
-  99:          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0  IR-PCI-MSI-edge      mlx4-comp-1@pci:0000:07:00.0
- 100:          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0  IR-PCI-MSI-edge      mlx4-comp-2@pci:0000:07:00.0
- 101:       3877          0          0          0       5503          0          0          0          0          0          0          0          0          0          0          0  IR-PCI-MSI-edge      mlx4-async@pci:0000:07:00.0
- 102:        108          0          0          0          0    2012115          0          0          0          0          0          0          0          0          0          0  IR-PCI-MSI-edge      mlx4-ib-1-0@PCI Bus 0000:07
- 103:          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0  IR-PCI-MSI-edge      mlx4-ib-1-1@PCI Bus 0000:07
- 104:          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0  IR-PCI-MSI-edge      mlx4-ib-1-2@PCI Bus 0000:07
- 105:          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0  IR-PCI-MSI-edge      mlx4-ib-1-3@PCI Bus 0000:07
- 106:          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0  IR-PCI-MSI-edge      mlx4-ib-1-4@PCI Bus 0000:07
- 107:          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0  IR-PCI-MSI-edge      mlx4-ib-1-5@PCI Bus 0000:07
- 108:          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0  IR-PCI-MSI-edge      mlx4-ib-1-6@PCI Bus 0000:07
- 109:          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0  IR-PCI-MSI-edge      mlx4-ib-1-7@PCI Bus 0000:07
+--===============3523456251781072137==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 
-I tried passing in 'intremap=no_x2apic_optout' along with iommu=pt, but saw no difference in performance.
-
-I did see a difference between boot with iommu=pt and without it (don't know if it matters):
-Without iommu=pt, I get a lot of "IOMMU: Setting identity map for device 0000:07:00.0 [0xe8000 - 0xe8fff]"
-With iommu=pt, I get a lot of "IOMMU: hardware identity mapping for device 0000:20:04.7" first and the "Setting identity map for device" messages,
-But the device in question (0000:07:00.0) does not appear in " IOMMU: hardware identity mapping" messages.
-
-Yan
---
-To unsubscribe from this list: send the line "unsubscribe linux-rdma" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--===============3523456251781072137==--
