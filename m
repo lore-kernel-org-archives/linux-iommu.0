@@ -1,36 +1,218 @@
-From: Or Gerlitz <or.gerlitz-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: decent performance drop for SCSI LLD / SAN initiator when iommu
- is turned on
-Date: Tue, 7 May 2013 17:50:01 +0300
-Message-ID: <CAJZOPZ+Ofir1u8AbdMoXaujQZJe4D1Ly18B4+NJZ9L0GVUp90Q@mail.gmail.com>
-References: <CAJZOPZJ8eF-Q+WFzA-_vvzkpSb41PQjKFo27_Wi3McUccOqs9A@mail.gmail.com>
-	<20130502015603.GC26105@redhat.com>
-	<CAJZOPZLWgXNCEpZjzuizVGPEVPg1G+cHh373ZCoumMx9eAabvQ@mail.gmail.com>
-	<5188304E.9050603@intel.com>
-	<20130507122235.GA21361@redhat.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH] Reset PCIe devices to stop ongoing DMA
+Date: Tue, 07 May 2013 10:39:42 -0600
+Message-ID: <1367944782.2868.106.camel@ul30vt.home>
+References: <1366779539-3584-1-git-send-email-indou.takao@jp.fujitsu.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-rdma-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20130507122235.GA21361-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Sender: linux-rdma-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Alexander Duyck <alexander.h.duyck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Roland Dreier <roland-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Yan Burman <yanb-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>, linux-rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Asias He <asias-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <kexec-bounces+glkk-kexec=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <1366779539-3584-1-git-send-email-indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/kexec>,
+ <mailto:kexec-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/kexec/>
+List-Post: <mailto:kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:kexec-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/kexec>,
+ <mailto:kexec-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "kexec" <kexec-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: kexec-bounces+glkk-kexec=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+Cc: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, May 7, 2013 at 3:22 PM, Michael S. Tsirkin <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> But why isn't iommu=pt effective?
-> AFAIK the whole point of it was to give up on security
-> for host-controlled devices, but still get a
-> measure of security for assigned devices.
+On Wed, 2013-04-24 at 13:58 +0900, Takao Indoh wrote:
+> This patch resets PCIe devices on boot to stop ongoing DMA. When
+> "pci=pcie_reset_devices" is specified, a hot reset is triggered on each
+> PCIe root port and downstream port to reset its downstream endpoint.
+> 
+> Problem:
+> This patch solves the problem that kdump can fail when intel_iommu=on is
+> specified. When intel_iommu=on is specified, many dma-remapping errors
+> occur in second kernel and it causes problems like driver error or PCI
+> SERR, at last kdump fails. This problem is caused as follows.
+> 1) Devices are working on first kernel.
+> 2) Switch to second kernel(kdump kernel). The devices are still working
+>    and its DMA continues during this switch.
+> 3) iommu is initialized during second kernel boot and ongoing DMA causes
+>    dma-remapping errors.
+> 
+> Solution:
+> All DMA transactions have to be stopped before iommu is initialized. By
+> this patch devices are reset and in-flight DMA is stopped before
+> pci_iommu_init.
+> 
+> To invoke hot reset on an endpoint, its upstream link need to be reset.
+> reset_pcie_devices() is called from fs_initcall_sync, and it finds root
+> port/downstream port whose child is PCIe endpoint, and then reset link
+> between them. If the endpoint is VGA device, it is skipped because the
+> monitor blacks out if VGA controller is reset.
+> 
+> Actually this is v8 patch but quite different from v7 and it's been so
+> long since previous post, so I start over again.
+> Previous post:
+> [PATCH v7 0/5] Reset PCIe devices to address DMA problem on kdump
+> https://lkml.org/lkml/2012/11/26/814
+> 
+> Signed-off-by: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+> ---
+>  Documentation/kernel-parameters.txt |    2 +
+>  drivers/pci/pci.c                   |  103 +++++++++++++++++++++++++++++++++++
+>  2 files changed, 105 insertions(+), 0 deletions(-)
+> 
+> diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
+> index 4609e81..2a31ade 100644
+> --- a/Documentation/kernel-parameters.txt
+> +++ b/Documentation/kernel-parameters.txt
+> @@ -2250,6 +2250,8 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+>  				any pair of devices, possibly at the cost of
+>  				reduced performance.  This also guarantees
+>  				that hot-added devices will work.
+> +		pcie_reset_devices	Reset PCIe endpoint on boot by hot
+> +				reset
+>  		cbiosize=nn[KMG]	The fixed amount of bus space which is
+>  				reserved for the CardBus bridge's IO window.
+>  				The default value is 256 bytes.
+> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> index b099e00..42385c9 100644
+> --- a/drivers/pci/pci.c
+> +++ b/drivers/pci/pci.c
+> @@ -3878,6 +3878,107 @@ void __weak pci_fixup_cardbus(struct pci_bus *bus)
+>  }
+>  EXPORT_SYMBOL(pci_fixup_cardbus);
+>  
+> +/*
+> + * Return true if dev is PCIe root port or downstream port whose child is PCIe
+> + * endpoint except VGA device.
+> + */
+> +static int __init need_reset(struct pci_dev *dev)
+> +{
+> +	struct pci_bus *subordinate;
+> +	struct pci_dev *child;
+> +
+> +	if (!pci_is_pcie(dev) || !dev->subordinate ||
+> +	    list_empty(&dev->subordinate->devices) ||
+> +	    ((pci_pcie_type(dev) != PCI_EXP_TYPE_ROOT_PORT) &&
+> +	     (pci_pcie_type(dev) != PCI_EXP_TYPE_DOWNSTREAM)))
+> +		return 0;
+> +
+> +	subordinate = dev->subordinate;
+> +	list_for_each_entry(child, &subordinate->devices, bus_list) {
+> +		if ((pci_pcie_type(child) == PCI_EXP_TYPE_UPSTREAM) ||
+> +		    (pci_pcie_type(child) == PCI_EXP_TYPE_PCI_BRIDGE) ||
+> +		    ((child->class >> 16) == PCI_BASE_CLASS_DISPLAY))
+> +			/* Don't reset switch, bridge, VGA device */
+> +			return 0;
+> +	}
+> +
+> +	return 1;
+> +}
+> +
+> +static void __init save_config(struct pci_dev *dev)
+> +{
+> +	struct pci_bus *subordinate;
+> +	struct pci_dev *child;
+> +
+> +	if (!need_reset(dev))
+> +		return;
+> +
+> +	subordinate = dev->subordinate;
+> +	list_for_each_entry(child, &subordinate->devices, bus_list) {
+> +		dev_info(&child->dev, "save state\n");
+> +		pci_save_state(child);
+> +	}
+> +}
+> +
+> +static void __init restore_config(struct pci_dev *dev)
+> +{
+> +	struct pci_bus *subordinate;
+> +	struct pci_dev *child;
+> +
+> +	if (!need_reset(dev))
+> +		return;
+> +
+> +	subordinate = dev->subordinate;
+> +	list_for_each_entry(child, &subordinate->devices, bus_list) {
+> +		dev_info(&child->dev, "restore state\n");
+> +		pci_restore_state(child);
+> +	}
+> +}
+> +
+> +static void __init do_device_reset(struct pci_dev *dev)
+> +{
+> +	u16 ctrl;
+> +
+> +	if (!need_reset(dev))
+> +		return;
+> +
+> +	dev_info(&dev->dev, "Reset Secondary bus\n");
+> +
+> +	/* Assert Secondary Bus Reset */
+> +	pci_read_config_word(dev, PCI_BRIDGE_CONTROL, &ctrl);
+> +	ctrl |= PCI_BRIDGE_CTL_BUS_RESET;
+> +	pci_write_config_word(dev, PCI_BRIDGE_CONTROL, ctrl);
+> +
+> +	msleep(2);
+> +
+> +	/* De-assert Secondary Bus Reset */
+> +	ctrl &= ~PCI_BRIDGE_CTL_BUS_RESET;
+> +	pci_write_config_word(dev, PCI_BRIDGE_CONTROL, ctrl);
+> +}
+> +
+> +static int __initdata pcie_reset_devices;
+> +static int __init reset_pcie_devices(void)
+> +{
+> +	struct pci_dev *dev = NULL;
+> +
+> +	if (!pcie_reset_devices)
+> +		return 0;
+> +
+> +	for_each_pci_dev(dev)
+> +		save_config(dev);
+> +
+> +	for_each_pci_dev(dev)
+> +		do_device_reset(dev);
 
+So we do a reset on each root port or downstream port, but the PCI to
+PCI bridge spec (1.2) states:
 
-Good questions, from the tests Yan did so far he didn't see that this
-yields improvement for the iSER
-SCSI driver, didn't try it yet with netdevice, Alex/Asias did you
-tried that option? any conclusions?
+        11.1.1. Secondary Reset Signal
+                The secondary reset signal, RST#, is a logical OR of the
+                primary interface RST# signal and
+                the state of the Secondary Bus Reset bit of the Bridge
+                Control register (see Section 3.2.5.18).
 
-Or.
---
-To unsubscribe from this list: send the line "unsubscribe linux-rdma" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+I read that to mean that in a legacy topology, doing a reset on the top
+level bridge triggers a reset down the entire hierarchy.  How does this
+apply to a PCIe topology?  Can we just do a reset on the top level root
+ports?  If so, that would also imply that a reset propagates down
+through PCIe-to-PCI bridges, so legacy PCI devices may be reset and the
+option name is misleading.
+
+Even so, you still have root complex endpoints, which are not getting
+reset through this, so it's really not a complete solution.  Thanks,
+
+Alex
+
+> +
+> +	msleep(1000);
+> +
+> +	for_each_pci_dev(dev)
+> +		restore_config(dev);
+> +
+> +	return 0;
+> +}
+> +fs_initcall_sync(reset_pcie_devices);
+> +
+>  static int __init pci_setup(char *str)
+>  {
+>  	while (str) {
+> @@ -3920,6 +4021,8 @@ static int __init pci_setup(char *str)
+>  				pcie_bus_config = PCIE_BUS_PEER2PEER;
+>  			} else if (!strncmp(str, "pcie_scan_all", 13)) {
+>  				pci_add_flags(PCI_SCAN_ALL_PCIE_DEVS);
+> +			} else if (!strncmp(str, "pcie_reset_devices", 18)) {
+> +				pcie_reset_devices = 1;
+>  			} else {
+>  				printk(KERN_ERR "PCI: Unknown option `%s'\n",
+>  						str);
