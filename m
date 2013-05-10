@@ -1,11 +1,13 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 0/3] pci/iommu: Quirk non-compliant PCIe-to-PCI bridges
-Date: Fri, 10 May 2013 15:18:39 -0600
-Message-ID: <20130510210937.32592.21950.stgit@bling.home>
+Subject: [PATCH 1/3] pci: Add PCI walk function and PCIe bridge test
+Date: Fri, 10 May 2013 15:18:46 -0600
+Message-ID: <20130510211845.32592.77464.stgit@bling.home>
+References: <20130510210937.32592.21950.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20130510210937.32592.21950.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,34 +21,117 @@ To: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, stephen-OTpzqLSitTUnbdJkje
 Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This series tries to address:
-
+These will replace pci_find_upstream_pcie_bridge, which is difficult
+to use and rather specific to intel-iommu usage.  A quirked
+pci_is_pcie_bridge function is provided to work around non-compliant
+PCIe-to-PCI bridges such as those found in
 https://bugzilla.kernel.org/show_bug.cgi?id=44881
 
-Where pci_find_upstream_pcie_bridge() gets lost trying to find the
-upstream PCIe-to-PCI bridge for a device because the bridge doesn't
-expose a PCIe capability.  To do this, we add a pci_is_pcie_bridge
-function which includes a quirk to look to the next upstream device
-as a sanity check.  We can then replace pci_find_upstream_pcie_bridge
-with a function that's a bit more generic and less tied to intel-iommu
-eccentricities.
-
-This works on my VT-d system, but I don't have any of the offending
-bridges.  Appreciate testing from those who do.  I'll link this series
-to the bz above for more testing.  Thanks,
-
-Alex
-
+Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
+ drivers/pci/search.c |   57 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/pci.h  |   23 ++++++++++++++++++++
+ 2 files changed, 80 insertions(+)
 
-Alex Williamson (3):
-      pci: Add PCI walk function and PCIe bridge test
-      intel-iommu: Convert to pci_walk_up_to_first_match
-      pci: Remove pci_find_pcie_upstream_bridge
-
-
- drivers/iommu/intel-iommu.c         |   77 ++++++++++++++++++++++-------------
- drivers/iommu/intel_irq_remapping.c |   13 ++++--
- drivers/pci/search.c                |   74 ++++++++++++++++++++++------------
- include/linux/pci.h                 |   26 +++++++++---
- 4 files changed, 124 insertions(+), 66 deletions(-)
+diff --git a/drivers/pci/search.c b/drivers/pci/search.c
+index d0627fa..0357f74 100644
+--- a/drivers/pci/search.c
++++ b/drivers/pci/search.c
+@@ -17,6 +17,63 @@
+ DECLARE_RWSEM(pci_bus_sem);
+ EXPORT_SYMBOL_GPL(pci_bus_sem);
+ 
++/* Test for PCIe bridges. */
++bool pci_is_pcie_bridge(struct pci_dev *pdev)
++{
++	if (!pci_is_bridge(pdev))
++		return false;
++
++	if (pci_is_pcie(pdev))
++		return true;
++
++#ifdef CONFIG_PCI_QUIRKS
++	/*
++	 * If we're not on the root bus, look one device upstream of the
++	 * current device.  If that device is PCIe and is not a PCIe-to-PCI
++	 * bridge, then the current device is effectively PCIe as it must
++	 * be the PCIe-to-PCI bridge.  This handles several bridges that
++	 * violate the PCIe spec by not exposing a PCIe capability:
++	 * https://bugzilla.kernel.org/show_bug.cgi?id=44881
++	 */
++	if (!pci_is_root_bus(pdev->bus)) {
++		struct pci_dev *parent = pdev->bus->self;
++
++		if (pci_is_pcie(parent) &&
++		    pci_pcie_type(parent) != PCI_EXP_TYPE_PCI_BRIDGE)
++
++			return true;
++	}
++#endif
++	return false;
++}
++
++/*
++ * Walk upstream from the given pdev for the first device returning
++ * true for the provided match function.  If no match is found, return
++ * NULL.  *last records the previous step in the walk.
++ */
++struct pci_dev *pci_walk_up_to_first_match(struct pci_dev *pdev,
++					   bool (*match)(struct pci_dev *),
++					   struct pci_dev **last)
++{
++	*last = NULL;
++
++	if (match(pdev))
++		return pdev;
++
++	*last = pdev;
++
++	while (!pci_is_root_bus(pdev->bus)) {
++		*last = pdev;
++		pdev = pdev->bus->self;
++
++		if (match(pdev))
++			return pdev;
++	}
++
++	return NULL;
++}
++
+ /*
+  * find the upstream PCIe-to-PCI bridge of a PCI device
+  * if the device is PCIE, return NULL
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index bd8ec30..e87423a 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -1855,6 +1855,29 @@ static inline struct eeh_dev *pci_dev_to_eeh_dev(struct pci_dev *pdev)
+ #endif
+ 
+ /**
++ * pci_walk_up_to_first_match - Generic upstream search function
++ * @pdev: starting PCI device to search
++ * @match: match function to call on each device (true = match)
++ * @last: last device examined prior to returned device
++ *
++ * Walk upstream from the given device, calling match() at each device.
++ * Returns the first device matching match().  If the root bus is reached
++ * without finding a match, return NULL.  last returns the N-1 step in
++ * the search path.
++ */
++struct pci_dev *pci_walk_up_to_first_match(struct pci_dev *pdev,
++					   bool (*match)(struct pci_dev *),
++					   struct pci_dev **last);
++
++/**
++ * pci_is_pcie_bridge - Match a PCIe bridge device
++ * @pdev: device to test
++ *
++ * Return true if the given device is a PCIe bridge, false otherwise.
++ */
++bool pci_is_pcie_bridge(struct pci_dev *pdev);
++
++/**
+  * pci_find_upstream_pcie_bridge - find upstream PCIe-to-PCI bridge of a device
+  * @pdev: the PCI device
+  *
