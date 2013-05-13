@@ -1,61 +1,136 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] documentation: iommu: add description of ARM System MMU
-	binding
-Date: Mon, 13 May 2013 11:04:11 +0100
-Message-ID: <20130513100411.GD29814@mudshark.cambridge.arm.com>
-References: <5162F87A.7070409@codeaurora.org>
-	<20130410173732.GQ26992@mudshark.cambridge.arm.com>
-	<5169C7D1.8070300@codeaurora.org>
-	<20130415131341.GG9827@mudshark.cambridge.arm.com>
-	<516D9602.2010404@codeaurora.org>
-	<20130418190131.GA12344@mudshark.cambridge.arm.com>
-	<5177113D.7060300@codeaurora.org>
-	<20130424095501.GC21850@mudshark.cambridge.arm.com>
-	<5189635A.8090504@codeaurora.org> <20130513090724.GA10369@alberich>
+From: Andreas Herrmann <andreas.herrmann@calxeda.com>
+Subject: Re: [PATCH v2] documentation: iommu: add description of ARM System
+ MMU binding
+Date: Mon, 13 May 2013 11:50:20 +0200
+Message-ID: <20130513095020.GB10369@alberich>
+References: <1365789727-5371-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <20130513090724.GA10369@alberich>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Cc: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <1365789727-5371-1-git-send-email-will.deacon@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Will Deacon <will.deacon@arm.com>
+Cc: Olav Haugan <ohaugan@codeaurora.org>, "devicetree-discuss@lists.ozlabs.org" <devicetree-discuss@lists.ozlabs.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, May 13, 2013 at 10:07:24AM +0100, Andreas Herrmann wrote:
-> On Tue, May 07, 2013 at 04:26:02PM -0400, Olav Haugan wrote:
-> > I think you misunderstood me. I am talking about having for example 1
-> > master with two (2) context banks so that StreamID "1" goes to CB0 and
-> > StreamID "2" goes to CB1. This means that the master device is attached
-> > to two different domains. How do I model this with the the device tree
-> > bindings?
-> 
-> Hi Olav,
-> 
-> I think with the proposed device tree binding you can't model this.
-> 
-> Do we have such use cases already? Or what future use cases would
-> require this?
-> 
-> I can imagine of multiple contexts per device for stuff similar to
-> what PASID in PCI Express are used for.
-> 
-> But in such a case you probably want to have some configurable bits in
-> the StreamID (that should be set by an SMMU driver). And the DT
-> binding should contain the number of contexts that a master device can
-> support.
+Hi Will,
 
-See my reply to your other thread, but I don't think this should be solved
-in the SMMU driver. I really think that the device/domain configuration
-should be driven by the master device drivers, rather than the device-tree.
+so far, I thought, that this proposal is fine. After I have tried to
+make use of the binding I have some points that might need further
+disucssion.
 
-Will
+Olav already asked (in another thread) how to model the mapping of
+stream IDs to contexts for master devices that support multiple
+contexts.  I doubt that this is fully covered yet.
+
+I also think that it is more useful to move the stream-id property to
+the device node of a master device. (It's a characteristic of the
+master device not of the SMMU.) Currently with multiple stream IDs per
+master device you have repeated entries in the mmu-master property.
+
+But all that is needed is to point (once) to each mmu-master in the
+SMMU device node. Then you should be able to look up the corresponding
+stream IDs in the device node for each mmu-master.
+
+
+Regars,
+Andreas
+
+
+On Fri, Apr 12, 2013 at 02:02:07PM -0400, Will Deacon wrote:
+> This patch adds a description of the device tree binding for the ARM
+> System MMU architecture.
+> 
+> Cc: Rob Herring <robherring2@gmail.com>
+> Cc: Andreas Herrmann <andreas.herrmann@calxeda.com>
+> Signed-off-by: Will Deacon <will.deacon@arm.com>
+> ---
+>  .../devicetree/bindings/iommu/arm,smmu.txt         | 66 ++++++++++++++++++++++
+>  1 file changed, 66 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> new file mode 100644
+> index 0000000..56de07c
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> @@ -0,0 +1,66 @@
+> +* ARM System MMU Architecture Implementation
+> +
+> +ARM SoCs may contain an implementation of the ARM System Memory
+> +Management Unit Architecture, which can be used to provide 1 or 2 stages
+> +of address translation to bus masters external to the CPU.
+> +
+> +The SMMU may also raise interrupts in response to various fault
+> +conditions.
+> +
+> +** System MMU required properties:
+> +
+> +- compatible    : Should be one of:
+> +
+> +                        "arm,smmu-v1"
+> +                        "arm,smmu-v2"
+> +                        "arm,mmu-400"
+> +
+> +                  depending on the particular implementation and/or the
+> +                  version of the architecture implemented.
+> +
+> +- reg           : Base address and size of the SMMU.
+> +
+> +- #global-interrupts : The number of global interrupts exposed by the
+> +                       device.
+> +
+> +- interrupts    : Interrupt list, with the first #global-irqs entries
+> +                  corresponding to the global interrupts and any
+> +                  following entries corresponding to context interrupts,
+> +                  specified in order of their indexing by the SMMU.
+> +
+> +- mmu-masters   : A list of phandles to device nodes representing bus
+> +                  masters for which the SMMU can provide a translation.
+> +
+> +- stream-ids    : A list of 32-bit values corresponding to the StreamIDs
+> +                  for the devices listed in the mmu-masters property.
+> +                  This list must be same length as mmu-masters, so
+> +                  masters with multiple stream-ids will have multiple
+> +                  entries in mmu-masters.
+> +
+> +** System MMU optional properties:
+> +
+> +- smmu-parent   : When multiple SMMUs are chained together, this
+> +                  property can be used to provide a phandle to the
+> +                  parent SMMU (that is the next SMMU on the path going
+> +                  from the mmu-masters towards memory) node for this
+> +                  SMMU.
+> +
+> +Example:
+> +
+> +        smmu {
+> +                compatible = "arm,smmu-v1";
+> +                reg = <0xba5e0000 0x10000>;
+> +                #global-interrupts = <2>;
+> +                interrupts = <0 32 4>,
+> +                             <0 33 4>,
+> +                             <0 34 4>, /* This is the first context interrupt */
+> +                             <0 35 4>,
+> +                             <0 36 4>,
+> +                             <0 37 4>;
+> +                mmu-masters = <&dma0>,
+> +                              <&dma0>,
+> +                              <&dma1>;
+> +                stream-ids  = <0xd01d>,
+> +                              <0xd01e>,
+> +                              <0xd11c>;
+> +        };
+> -- 
+> 1.8.0
+> 
