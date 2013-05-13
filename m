@@ -1,88 +1,61 @@
-From: Andreas Herrmann <andreas.herrmann@calxeda.com>
-Subject: Re: [PATCH v2] documentation: iommu: add description of ARM System
- MMU binding
-Date: Mon, 13 May 2013 12:41:47 +0200
-Message-ID: <20130513104147.GF10369@alberich>
-References: <1365789727-5371-1-git-send-email-will.deacon@arm.com>
- <20130513095020.GB10369@alberich>
- <20130513095846.GC29814@mudshark.cambridge.arm.com>
+From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: [PATCH 0/2 v2] perf/x86/amd: IOMMU Performance Counter Support
+Date: Mon, 13 May 2013 16:42:42 -0500
+Message-ID: <1368481362-5562-1-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20130513095846.GC29814@mudshark.cambridge.arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: Olav Haugan <ohaugan@codeaurora.org>, "devicetree-discuss@lists.ozlabs.org" <devicetree-discuss@lists.ozlabs.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, a.p.zijlstra-/NLkJaSkS4VmR6Xm/wNWPw@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: steven.kinney-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, May 13, 2013 at 05:58:46AM -0400, Will Deacon wrote:
-> On Mon, May 13, 2013 at 10:50:20AM +0100, Andreas Herrmann wrote:
-> > Hi Will,
-> 
-> Hi Andreas,
-> 
-> > so far, I thought, that this proposal is fine. After I have tried to
-> > make use of the binding I have some points that might need further
-> > disucssion.
-> 
-> Sure, although I've been using the binding without issues so it would be
-> interesting to understand your use-case and why it's raising problems.
-> 
-> > Olav already asked (in another thread) how to model the mapping of
-> > stream IDs to contexts for master devices that support multiple
-> > contexts.  I doubt that this is fully covered yet.
-> 
-> Yeah, I've been meaning to reply to that. Given the way that the IOMMU API
-> is structure in Linux, I don't think having multiple stream IDs per (struct)
-> device, where each StreamID points at a different context (and therefore
-> address space) makes much sense. It also doesn't solve the more general
-> problem where StreamIDs for a device might have different SMMUs downstream.
-> 
-> To solve this, I think it is better to treat the device as having multiple
-> struct device instances, and managing the mappings in the device driver.
+This is the rework of the original patch set here:
 
-Ok.
+http://lists.linuxfoundation.org/pipermail/iommu/2013-January/005075.html
 
-> For most devices, I'd expect a single context to be enough. This is
-> certainly the case for device virtualisation at stage-2 and DMA at stage-1.
+These patches implement the AMD IOMMU Performance Counter functionality
+via custom perf PMU and implement static counting for various IOMMU
+translations.
 
-Yep, that's the usual case.
-(Just thought what other scenarios there are.)
+    1) Extend the AMD IOMMU initialization to include performance
+       counter enablement.
 
-So the DT binding is for the most common (single-context) use case only.
-(And everything else needs special device driver treatment.)
+    2) The perf AMD IOMMU PMU to manage performance counters, which
+       interface with the AMD IOMMU core driver.
 
-> > I also think that it is more useful to move the stream-id property to
-> > the device node of a master device. (It's a characteristic of the
-> > master device not of the SMMU.) Currently with multiple stream IDs per
-> > master device you have repeated entries in the mmu-master property.
-> 
-> The problem with that approach is how to handle StreamID remastering. This
-> can and will happen, so the StreamID for a device is actually a property of
-> both the device *and* a particular point in the bus topology. Putting this
-> information in the device nodes will drag topology information all over the
-> place and I don't think it will make things clearer to read or easier to parse.
+The command-line, to invoke the iommuv2 PMU, is:
 
-Ok, good point, didn't think about that.
-And agreed, adding remastered StreamIDs as a property to a device node is odd.
+    perf stat -e amd_iommu/config=[data],config1=[data]/{u,r} [command]
 
-> > But all that is needed is to point (once) to each mmu-master in the
-> > SMMU device node. Then you should be able to look up the corresponding
-> > stream IDs in the device node for each mmu-master.
-> 
-> Again, you also need to tie in topology information if you go down this
-> route.
+The IOMMU performance counter support is available starting in the 
+AMD family15h model 0x30.
 
+For information regarding IOMMU performance counter configuration,
+please see the AMD IOMMU v2.5 specification.
 
-Thanks,
-Andreas
+Steven L Kinney (2):
+  IOMMU/AMD: Adding IOMMUv2 PC resource management
+  IOMMU/AMD: IOMMUV2 PC PERF uncore PMU implementation
+
+ arch/x86/kernel/cpu/Makefile                 |    2 +-
+ arch/x86/kernel/cpu/perf_event_amd_iommuv2.c |  409 ++++++++++++++++++++++++++
+ arch/x86/kernel/cpu/perf_event_amd_iommuv2.h |   55 ++++
+ drivers/iommu/amd_iommu_init.c               |  116 +++++++-
+ drivers/iommu/amd_iommu_proto.h              |    7 +
+ drivers/iommu/amd_iommu_types.h              |   12 +-
+ 6 files changed, 594 insertions(+), 7 deletions(-)
+ create mode 100644 arch/x86/kernel/cpu/perf_event_amd_iommuv2.c
+ create mode 100644 arch/x86/kernel/cpu/perf_event_amd_iommuv2.h
+
+-- 
+1.7.10.4
