@@ -1,77 +1,199 @@
-From: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 7/7] PCI: use pf as dma_dev for vf that does not have func0
-	sibling
-Date: Mon, 13 May 2013 19:28:26 -0700
-Message-ID: <1368498506-25857-8-git-send-email-yinghai@kernel.org>
-References: <1368498506-25857-1-git-send-email-yinghai@kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1368498506-25857-1-git-send-email-yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Gu Zheng <guz.fnst-BthXqXjhjHXQFUHtdCDX3A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+From: Takao Indoh <indou.takao@jp.fujitsu.com>
+Subject: [PATCH v2] PCI: Reset PCIe devices to stop ongoing DMA
+Date: Tue, 14 May 2013 14:29:25 +0900
+Message-ID: <1368509365-2260-1-git-send-email-indou.takao@jp.fujitsu.com>
+Return-path: <linux-pci-owner@vger.kernel.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, bhelgaas@google.com
+Cc: iommu@lists.linux-foundation.org, kexec@lists.infradead.org, ishii.hironobu@jp.fujitsu.com, ddutile@redhat.com, bill.sumner@hp.com, alex.williamson@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-Fix crash:
-[  122.181002] pci 0000:c4:00.4: [10df:e228] type 00 class 0x020000
-[  122.188541] BUG: unable to handle kernel NULL pointer dereference at 0000000000000010
-[  122.197324] IP: [<ffffffff81f58f78>] intel_iommu_add_device+0x108/0x1e0
-[  122.204753] PGD 0 
-[  122.207019] Oops: 0000 [#1] SMP 
-[  122.210655] Modules linked in:
-[  122.214084] CPU: 49 PID: 1 Comm: swapper/0 Tainted: G          I  3.9.0-yh-09240-g8a69c01-dirty #1571
-...
-[  122.365363] Call Trace:
-[  122.368112]  [<ffffffff81f4ee2e>] iommu_bus_notifier+0x3e/0xd0
-[  122.374645]  [<ffffffff820b702e>] notifier_call_chain+0x6e/0xb0
-[  122.381277]  [<ffffffff810b912e>] __blocking_notifier_call_chain+0x5e/0x90
-[  122.388963]  [<ffffffff810b9176>] blocking_notifier_call_chain+0x16/0x20
-[  122.396471]  [<ffffffff81762fc5>] device_add+0x475/0x6f0
+This patch resets PCIe devices on boot to stop ongoing DMA. When
+"pci=pcie_reset_endpoint_devices" is specified, a hot reset is triggered
+on each PCIe root port and downstream port to reset its downstream
+endpoint.
 
-pv is c3:00.0, and vf is from c4:00.4 and there is no c4:00.0,
-as we have
-     Initial VFs: 64, Total VFs: 64, Number of VFs: 63, Function Dependency Link: 00
-     VF offset: 260, stride: 1
+Problem:
+This patch solves the problem that kdump can fail when intel_iommu=on is
+specified. When intel_iommu=on is specified, many dma-remapping errors
+occur in second kernel and it causes problems like driver error or PCI
+SERR, at last kdump fails. This problem is caused as follows.
+1) Devices are working on first kernel.
+2) Switch to second kernel(kdump kernel). The devices are still working
+   and its DMA continues during this switch.
+3) iommu is initialized during second kernel boot and ongoing DMA causes
+   dma-remapping errors.
 
-Signed-off-by: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Solution:
+All DMA transactions have to be stopped before iommu is initialized. By
+this patch devices are reset and in-flight DMA is stopped before
+pci_iommu_init.
 
+To invoke hot reset on an endpoint, its upstream link need to be reset.
+reset_pcie_endpoints() is called from fs_initcall_sync, and it finds
+root port/downstream port whose child is PCIe endpoint, and then reset
+link between them. If the endpoint is VGA device, it is skipped because
+the monitor blacks out if VGA controller is reset.
+
+Changelog:
+v2:
+- Read pci config before de-assert secondary bus reset to flush previous
+  write
+- Change function/variable name
+- Make a list of devices to be reset
+
+v1:
+https://patchwork.kernel.org/patch/2482291/
+
+Signed-off-by: Takao Indoh <indou.takao@jp.fujitsu.com>
 ---
- drivers/iommu/intel-iommu.c |   12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ Documentation/kernel-parameters.txt |    2 +
+ drivers/pci/pci.c                   |  113 +++++++++++++++++++++++++++++++++++
+ 2 files changed, 115 insertions(+), 0 deletions(-)
 
-Index: linux-2.6/drivers/iommu/intel-iommu.c
-===================================================================
---- linux-2.6.orig/drivers/iommu/intel-iommu.c
-+++ linux-2.6/drivers/iommu/intel-iommu.c
-@@ -4185,11 +4185,15 @@ static int intel_iommu_add_device(struct
- 	 * required ACS flags, add to the same group as function 0.
- 	 */
- 	if (dma_pdev->multifunction &&
--	    !pci_acs_enabled(dma_pdev, REQ_ACS_FLAGS))
--		swap_pci_ref(&dma_pdev,
--			     pci_get_slot(dma_pdev->bus,
-+	    !pci_acs_enabled(dma_pdev, REQ_ACS_FLAGS)) {
-+		struct pci_dev *dev_tmp = pci_get_slot(dma_pdev->bus,
- 					  PCI_DEVFN(PCI_SLOT(dma_pdev->devfn),
--					  0)));
-+					  0));
-+
-+		if (!dev_tmp && dma_pdev->is_virtfn)
-+			dev_tmp = pci_dev_get(dma_pdev->physfn);
-+		swap_pci_ref(&dma_pdev, dev_tmp);
-+	}
+diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
+index c3bfacb..8c9e8e4 100644
+--- a/Documentation/kernel-parameters.txt
++++ b/Documentation/kernel-parameters.txt
+@@ -2321,6 +2321,8 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+ 				any pair of devices, possibly at the cost of
+ 				reduced performance.  This also guarantees
+ 				that hot-added devices will work.
++		pcie_reset_endpoint_devices	Reset PCIe endpoint on boot by
++				hot reset
+ 		cbiosize=nn[KMG]	The fixed amount of bus space which is
+ 				reserved for the CardBus bridge's IO window.
+ 				The default value is 256 bytes.
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index a899d8b..70c1205 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -3873,6 +3873,116 @@ void __weak pci_fixup_cardbus(struct pci_bus *bus)
+ }
+ EXPORT_SYMBOL(pci_fixup_cardbus);
  
- 	/*
- 	 * Devices on the root bus go through the iommu.  If that's not us,
++/*
++ * Return true if dev is PCIe root port or downstream port whose child is PCIe
++ * endpoint except VGA device.
++ */
++static int __init need_reset(struct pci_dev *dev)
++{
++	struct pci_bus *subordinate;
++	struct pci_dev *child;
++
++	if (!pci_is_pcie(dev) || !dev->subordinate ||
++	    list_empty(&dev->subordinate->devices) ||
++	    ((pci_pcie_type(dev) != PCI_EXP_TYPE_ROOT_PORT) &&
++	     (pci_pcie_type(dev) != PCI_EXP_TYPE_DOWNSTREAM)))
++		return 0;
++
++	subordinate = dev->subordinate;
++	list_for_each_entry(child, &subordinate->devices, bus_list) {
++		if ((pci_pcie_type(child) == PCI_EXP_TYPE_UPSTREAM) ||
++		    (pci_pcie_type(child) == PCI_EXP_TYPE_PCI_BRIDGE) ||
++		    ((child->class >> 16) == PCI_BASE_CLASS_DISPLAY))
++			/* Don't reset switch, bridge, VGA device */
++			return 0;
++	}
++
++	return 1;
++}
++
++static void __init save_downstream_configs(struct pci_dev *dev)
++{
++	struct pci_bus *subordinate;
++	struct pci_dev *child;
++
++	subordinate = dev->subordinate;
++	list_for_each_entry(child, &subordinate->devices, bus_list) {
++		dev_info(&child->dev, "save state\n");
++		pci_save_state(child);
++	}
++}
++
++static void __init restore_downstream_configs(struct pci_dev *dev)
++{
++	struct pci_bus *subordinate;
++	struct pci_dev *child;
++
++	subordinate = dev->subordinate;
++	list_for_each_entry(child, &subordinate->devices, bus_list) {
++		dev_info(&child->dev, "restore state\n");
++		pci_restore_state(child);
++	}
++}
++
++static void __init do_downstream_device_reset(struct pci_dev *dev)
++{
++	u16 ctrl;
++
++	dev_info(&dev->dev, "Reset Secondary bus\n");
++
++	/* Assert Secondary Bus Reset */
++	pci_read_config_word(dev, PCI_BRIDGE_CONTROL, &ctrl);
++	ctrl |= PCI_BRIDGE_CTL_BUS_RESET;
++	pci_write_config_word(dev, PCI_BRIDGE_CONTROL, ctrl);
++
++	/* Read config again to flush previous write */
++	pci_read_config_word(dev, PCI_BRIDGE_CONTROL, &ctrl);
++
++	msleep(2);
++
++	/* De-assert Secondary Bus Reset */
++	ctrl &= ~PCI_BRIDGE_CTL_BUS_RESET;
++	pci_write_config_word(dev, PCI_BRIDGE_CONTROL, ctrl);
++}
++
++struct pci_dev_entry {
++	struct list_head list;
++	struct pci_dev *dev;
++};
++static int __initdata pcie_reset_endpoint_devices;
++static int __init reset_pcie_endpoints(void)
++{
++	struct pci_dev *dev = NULL;
++	struct pci_dev_entry *pdev_entry, *tmp;
++	LIST_HEAD(pdev_list);
++
++	if (!pcie_reset_endpoint_devices)
++		return 0;
++
++	for_each_pci_dev(dev)
++		if (need_reset(dev)) {
++			pdev_entry = kmalloc(sizeof(*pdev_entry), GFP_KERNEL);
++			pdev_entry->dev = dev;
++			list_add(&pdev_entry->list, &pdev_list);
++		}
++
++	list_for_each_entry(pdev_entry, &pdev_list, list)
++		save_downstream_configs(pdev_entry->dev);
++
++	list_for_each_entry(pdev_entry, &pdev_list, list)
++		do_downstream_device_reset(pdev_entry->dev);
++
++	msleep(1000);
++
++	list_for_each_entry_safe(pdev_entry, tmp, &pdev_list, list) {
++		restore_downstream_configs(pdev_entry->dev);
++		kfree(pdev_entry);
++	}
++
++	return 0;
++}
++fs_initcall_sync(reset_pcie_endpoints);
++
+ static int __init pci_setup(char *str)
+ {
+ 	while (str) {
+@@ -3915,6 +4025,9 @@ static int __init pci_setup(char *str)
+ 				pcie_bus_config = PCIE_BUS_PEER2PEER;
+ 			} else if (!strncmp(str, "pcie_scan_all", 13)) {
+ 				pci_add_flags(PCI_SCAN_ALL_PCIE_DEVS);
++			} else if (!strncmp(str, "pcie_reset_endpoint_devices",
++						27)) {
++				pcie_reset_endpoint_devices = 1;
+ 			} else {
+ 				printk(KERN_ERR "PCI: Unknown option `%s'\n",
+ 						str);
+-- 
+1.7.1
