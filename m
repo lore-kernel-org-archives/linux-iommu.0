@@ -1,90 +1,46 @@
-From: Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH 2/2] IOMMU/AMD: IOMMU PC PERF uncore PMU implementation
-Date: Tue, 14 May 2013 09:14:24 +0200
-Message-ID: <20130514071424.GB15942@dyad.programming.kicks-ass.net>
-References: <1368481453-5657-1-git-send-email-steven.kinney@amd.com>
+From: Suravee Suthikulanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH 1/2] IOMMU/AMD: Adding IOMMU PC resource management
+Date: Tue, 14 May 2013 09:37:21 -0500
+Message-ID: <51924C21.3020906@amd.com>
+References: <1368481424-5626-1-git-send-email-steven.kinney@amd.com>
+	<20130514070924.GA15942@dyad.programming.kicks-ass.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1368481453-5657-1-git-send-email-steven.kinney@amd.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: steven.kinney@amd.com
-Cc: linux-kernel@vger.kernel.org, mingo@redhat.com, iommu@lists.linux-foundation.org, joro@8bytes.org, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20130514070924.GA15942-ml83lk9NYoCAxCfHYDuV95NvnLFust7K9Kp1ZRVAGBM@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: steven.kinney-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, May 13, 2013 at 04:44:13PM -0500, steven.kinney@amd.com wrote:
-> From: Steven L Kinney <Steven.Kinney@amd.com>
-> 
-> Implement a perf PMU to handle IOMMU PC perf events.  This PMU will handle
-> static counter perf events relative to the AMD IOMMU Performance Counters.
-> 
-> To invoke the AMD IOMMU PMU issue a perf tool command such as:
-> 
-> ./perf stat -e amd_iommu/config=<config-data>,config1=<config1-data>/u <command>
-> 
-> For example:
-> 
-> ./perf stat -e amd_iommu/config=0x8000000000000005,config1=0/u <command>
-> 
-> The resulting count will be how many IOMMU total peripheral memory
-> operations were performed during the command execution window.
-> 
-> Signed-off-by: Steven Kinney <steven.kinney@amd.com>
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> ---
+On 5/14/2013 2:09 AM, Peter Zijlstra wrote:
+> On Mon, May 13, 2013 at 04:43:44PM -0500, steven.kinney-5C7GfCeVMHo@public.gmane.org wrote:
+>> +static void init_iommu_perf_ctr(struct amd_iommu *iommu)
+>> +{
+>> +	u32 val = 0xabcd, val2 = 0;
+>> +
+>> +	if (!iommu_feature(iommu, FEATURE_PC))
+>> +		return;
+>> +
+>> +	amd_iommu_pc_present = true;
+>> +
+>> +	/* Check if the performance counters can be written to */
+>> +	if ((0 != amd_iommu_pc_get_set_reg_val(0, 0, 0, 0, &val, true)) ||
+>> +	    (0 != amd_iommu_pc_get_set_reg_val(0, 0, 0, 0, &val2, false)) ||
+>> +	    (val != val2)) {
+>> +		pr_err("AMD-Vi: Unable to write to IOMMU perf counter.\n");
+> Would it make sense to clear amd_iommu_pc_present here?
+Yes, I'll take care of this here.
 
-> +PMU_FORMAT_ATTR(iommu_raw, "config:63");
+Thank you,
 
-> +static int perf_iommu_init(struct perf_event *event)
-> +{
-> +	struct hw_perf_event *hwc = &event->hw;
-> +	struct perf_iommu *perf_iommu;
-> +	u64 config, config1;
-> +
-> +	/* initialize the cntr_assign_mask */
-> +	cntr_assign_mask = 0;
-> +
-> +	/* test the event attr type check for PMU enumeration */
-> +	if (event->attr.type != event->pmu->type)
-> +		return -ENOENT;
-> +
-> +	perf_iommu = &perf_iommu_fetch;
-> +
-> +	if (perf_iommu) {
-> +		config = event->attr.config;
-> +		config1 = event->attr.config1;
-> +	} else
-> +		return -EINVAL;
-> +
-> +	if (event->pmu != &perf_iommu->pmu)
-> +		return -ENOENT;
-> +
-> +	/* make sure the event->attr.config is raw (vendor specific) */
-> +	if (!(config & IOMMU_PC_RAW_CONFIG_MASK))
-> +		return -EINVAL;
-
-Is this really needed? Non of the uncore PMU drivers have a magic config bit
-either. Seems weird to me.
-
-> +	/* integrate with iommu base devid (0000), assume one iommu */
-> +	perf_iommu->max_banks =
-> +		amd_iommu_pc_get_max_banks(IOMMU_BASE_DEVID);
-> +	perf_iommu->max_counters =
-> +		amd_iommu_pc_get_max_counters(IOMMU_BASE_DEVID);
-> +
-> +	/* update the hw_perf_event struct with the iommu config data */
-> +	hwc->config = config;
-> +	hwc->extra_reg.config = config1;
-> +
-> +	return 0;
-> +}
-
-Also it might make sense to add a few event aliases to both this IOMMU and the
-AMD uncore driver.
-
-Search for uncore_.*_events in arch/x86/kernel/cpu/perf_event_intel_uncore.c
-for examples.
-
-This way you can also make the IOMMU a tad more useful by providing some events
-you think are the most useful for people interested in this thing.
+Surave
