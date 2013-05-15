@@ -1,15 +1,15 @@
-From: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH v2, part 2 16/18] PCI,
-	iommu: use hotplug-safe iterators to walk PCI buses
-Date: Tue, 14 May 2013 18:13:11 -0400
-Message-ID: <5192B6F7.8090508@redhat.com>
-References: <1368550322-1045-1-git-send-email-jiang.liu@huawei.com>
-	<1368550322-1045-16-git-send-email-jiang.liu@huawei.com>
+From: Pat Erley <pat-lkml-Jx9fsTfDDR3YtjvyW6yDsg@public.gmane.org>
+Subject: Re: Ricoh DMAR bug returns? (WAS Re: [PATCH v4] Quirk for buggy dma
+	source tags with Intel IOMMU.)
+Date: Wed, 15 May 2013 00:40:47 -0400
+Message-ID: <519311CF.1010209@erley.org>
+References: <CAJtEV7baCffS49omM8ZTtGW-AsAnK6tV5dPbG4t3Yq_=F9uvLw@mail.gmail.com>
+	<515E6634.701@erley.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1368550322-1045-16-git-send-email-jiang.liu-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <515E6634.701-Jx9fsTfDDR3YtjvyW6yDsg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,87 +19,145 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jiang Liu <liuj97-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Toshi Kani <toshi.kani-VXdhtT5mjnY@public.gmane.org>, Jiang Liu <jiang.liu-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Myron Stowe <myron.stowe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Rafael J . Wysocki" <rjw-KKrjLPT3xs0@public.gmane.org>, Gu Zheng <guz.fnst-BthXqXjhjHXQFUHtdCDX3A@public.gmane.org>, Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "Li,
-	Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, Hannes Reinecke <hare-l3A5Bk7waGM@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+To: Andrew Cooks <acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "list-PxS6QbICe4xqbv67lBd7PQ@public.gmane.org:PCI SUBSYSTEM" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU,
+	(VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, jforbes-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, "David Woodhouse (supporter:INTEL IOMMU (VT-d))" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/14/2013 12:52 PM, Jiang Liu wrote:
-> Enhance iommu drviers to use hotplug-safe iterators to walk
-> PCI buses.
+On 04/05/2013 01:50 AM, Pat Erley wrote:
+> On 04/05/2013 12:44 AM, Andrew Cooks wrote:
+>> On Tue, Apr 2, 2013 at 11:47 PM, Pat Erley <pat-lkml-Jx9fsTfDDR3YtjvyW6yDsg@public.gmane.org> wrote:
+>>> On 04/02/2013 10:50 AM, Andrew Cooks wrote:
+>>>>
+>>>> On 2 Apr 2013 15:37, "Pat Erley" <pat-lkml-Jx9fsTfDDR3YtjvyW6yDsg@public.gmane.org
+>>>> <mailto:pat-lkml-Jx9fsTfDDR3YtjvyW6yDsg@public.gmane.org>> wrote:
+>>>>   >
+>>>>   > On 03/07/2013 09:35 PM, Andrew Cooks wrote:
+>>>>   >>
+>>>>   >> --- a/drivers/pci/quirks.c
+>>>>   >> +++ b/drivers/pci/quirks.c
+>>>>   >>
+>>>>   >> +/* Table of multiple (ghost) source functions. This is similar
+>>>> to the
+>>>>   >> + * translated sources above, but with the following differences:
+>>>>   >> + * 1. the device may use multiple functions as DMA sources,
+>>>>   >> + * 2. these functions cannot be assumed to be actual devices,
+>>>> they're simply
+>>>>   >> + * incorrect DMA tags.
+>>>>   >> + * 3. the specific ghost function for a request can not always be
+>>>> predicted.
+>>>>   >> + * For example, the actual device could be xx:yy.1 and it
+>>>> could use
+>>>>   >> + * both 0 and 1 for different requests, with no obvious way to
+>>>> tell
+>>>> when
+>>>>   >> + * DMA will be tagged as comming from xx.yy.0 and and when it
+>>>> will
+>>>> be tagged
+>>>>   >> + * as comming from xx.yy.1.
+>>>>   >> + * The bitmap contains all of the functions used in DMA tags,
+>>>> including the
+>>>>   >> + * actual device.
+>>>>   >> + * See https://bugzilla.redhat.com/show_bug.cgi?id=757166,
+>>>>   >> + * https://bugzilla.kernel.org/show_bug.cgi?id=42679
+>>>>   >> + * https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1089768
+>>>>   >> + */
+>>>>   >> +static const struct pci_dev_dma_multi_func_sources {
+>>>>   >> +       u16 vendor;
+>>>>   >> +       u16 device;
+>>>>   >> +       u8 func_map;    /* bit map. lsb is fn 0. */
+>>>>   >> +} pci_dev_dma_multi_func_sources[] = {
+>>>>   >> +       { PCI_VENDOR_ID_MARVELL_2, 0x9123, (1<<0)|(1<<1)},
+>>>>   >> +       { PCI_VENDOR_ID_MARVELL_2, 0x9125, (1<<0)|(1<<1)},
+>>>>   >> +       { PCI_VENDOR_ID_MARVELL_2, 0x9128, (1<<0)|(1<<1)},
+>>>>   >> +       { PCI_VENDOR_ID_MARVELL_2, 0x9130, (1<<0)|(1<<1)},
+>>>>   >> +       { PCI_VENDOR_ID_MARVELL_2, 0x9143, (1<<0)|(1<<1)},
+>>>>   >> +       { PCI_VENDOR_ID_MARVELL_2, 0x9172, (1<<0)|(1<<1)},
+>>>>   >> +       { 0 }
+>>>>   >> +};
+>>>>   >
+>>>>   >
+>>>>   > Adding another buggy device.  I have a Ricoh multifunction device:
+>>>>   >
+>>>>   > 17:00.0 SD Host controller: Ricoh Co Ltd MMC/SD Host Controller
+>>>> (rev
+>>>> 01)
+>>>>   > 17:00.3 FireWire (IEEE 1394): Ricoh Co Ltd R5C832 PCIe IEEE 1394
+>>>>   >         Controller (rev 01)
+>>>>   >
+>>>>   > 17:00.0 0805: 1180:e822 (rev 01)
+>>>>   > 17:00.3 0c00: 1180:e832 (rev 01)
+>>>>   >
+>>>>
+>>>> The Ricoh device issue has been known for some time and a quirk has
+>>>> been
+>>>> available since commit 12ea6cad1c7d046 in June 2012.  It's slightly
+>>>> different than the problem this patch tries to work around [1].
+>>>
+>>>
+>>> Hmm, I've had this problem with many recent (vanilla) kernels, up to and
+>>> including 3.9-rc5
+>>>
+>>>
+>>>>   > that adding entries for also fixed booting.  I don't have any SD
+>>>> cards or firewire devices handy to test that they work, but the system
+>>>> now boots, which was not the case without your patch and IOMMU/DMAR
+>>>> enabled.
+>>>>
+>>>> That is really strange. Could you tell us what kernel version you
+>>>> tested
+>>>> and provide dmesg output?
+>>>
+>>>
+>>> I'll capture a vanilla 3.8.5 boot without any patches and iommu=off,
+>>> then
+>>> try to find another machine to catch what I can of a netconsole boot
+>>> with
+>>> iommu=on.  What's the preferred way to send these?  pastebin links?
+>>>
+>>> I'd been running the 'dirty' fix that's in the redhat bugzilla entry.  I
+>>> checked my .config and have CONFIG_PCI_QUIRKS=y, and verified my
+>>> devices are
+>>> in the quirks table for the pci_func_0_dma_source fixup.
+>>>
+>> Do you mean that even though your hardware is specifically listed in
+>> the quirk table, the quirk simply hasn't worked for you? That would be
+>> unfortunate, to say the least.
 >
-> Signed-off-by: Jiang Liu<jiang.liu-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> Cc: Joerg Roedel<joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> Cc: Ingo Molnar<mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> Cc: Donald Dutile<ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> Cc: Hannes Reinecke<hare-l3A5Bk7waGM@public.gmane.org>
-> Cc: "Li, Zhen-Hua"<zhen-hual-VXdhtT5mjnY@public.gmane.org>
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> ---
->   drivers/iommu/amd_iommu.c | 4 +++-
->   drivers/iommu/dmar.c      | 6 ++++--
->   2 files changed, 7 insertions(+), 3 deletions(-)
+> Precisely.
 >
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index e046d7a..d6fdf94 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -357,6 +357,7 @@ static int init_iommu_group(struct device *dev)
->   	struct iommu_dev_data *dev_data;
->   	struct iommu_group *group;
->   	struct pci_dev *dma_pdev;
-> +	struct pci_bus *b = NULL;
->   	int ret;
+>> The fedora kernel included a separate patch for this issue until
+>> recently (see https://bugzilla.redhat.com/show_bug.cgi?id=880051).  It
+>> basically just disabled DMAR when the Ricoh device is present, the
+>> same as the patch to the mailing list you mentioned.
 >
->   	group = iommu_group_get(dev);
-> @@ -393,7 +394,7 @@ static int init_iommu_group(struct device *dev)
->   		 * the alias.  Be careful to also test the parent device if
->   		 * we think the alias is the root of the group.
->   		 */
-> -		bus = pci_find_bus(0, alias>>  8);
-> +		b = bus = pci_find_bus(0, alias>>  8);
->   		if (!bus)
->   			goto use_group;
+> Yes, that's what I've been avoiding doing.  Every new release, I boot
+> once with iommu=on, and firewire blacklisted, boot up, load the firewire
+> driver.  This has caused the 'Ricoh DMAR' bug on every kernel since I
+> got the laptop.  I then reboot and ....
 >
-> @@ -413,6 +414,7 @@ static int init_iommu_group(struct device *dev)
->   	dma_pdev = get_isolation_root(pci_dev_get(to_pci_dev(dev)));
->   use_pdev:
->   	ret = use_pdev_iommu_group(dma_pdev, dev);
-> +	pci_bus_put(b);
-pci_find_bus() does a pci_bus_put() after the pci_get_bus();
-is this needed, or did you mean to make the above patch pci_get_bus() ?
+>> Is the dirty fix you're referring to comment 7?
+>> https://bugzilla.redhat.com/show_bug.cgi?id=605888#c7
+>
+> Apply this patch, which has worked fine for me, but per a commend in a
+> thread I created here on 10/19/2012[1], this has a potential significant
+> performance impact.  In my use case, a performance hit is worth the cost
+> for the features.
+>
+> However, your patch(while not intended to be the fix), actually solves
+> the issue on my machine.  I don't know if it also has the potential
+> performance impact, but it's certainly not noticeably worse in my use case.
+>
+> Pat Erley
+>
+> [1] http://marc.info/?l=linux-pci&m=135094489232548&w=2
 
->   	pci_dev_put(dma_pdev);
->   	return ret;
->   use_group:
-> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-> index e5cdaf8..5bb3cdc 100644
-> --- a/drivers/iommu/dmar.c
-> +++ b/drivers/iommu/dmar.c
-> @@ -67,12 +67,12 @@ static void __init dmar_register_drhd_unit(struct dmar_drhd_unit *drhd)
->   static int __init dmar_parse_one_dev_scope(struct acpi_dmar_device_scope *scope,
->   					   struct pci_dev **dev, u16 segment)
->   {
-> -	struct pci_bus *bus;
-> +	struct pci_bus *b, *bus;
->   	struct pci_dev *pdev = NULL;
->   	struct acpi_dmar_pci_path *path;
->   	int count;
->
-> -	bus = pci_find_bus(segment, scope->bus);
-> +	b = bus = pci_find_bus(segment, scope->bus);
->   	path = (struct acpi_dmar_pci_path *)(scope + 1);
->   	count = (scope->length - sizeof(struct acpi_dmar_device_scope))
->   		/ sizeof(struct acpi_dmar_pci_path);
-> @@ -97,6 +97,8 @@ static int __init dmar_parse_one_dev_scope(struct acpi_dmar_device_scope *scope,
->   		count --;
->   		bus = pdev->subordinate;
->   	}
-> +	pci_bus_put(b);
-ditto.
+As a follow up, I still have this problem in 3.10.0-rc1+ (and the patch 
+by Andrew to fix buggy dma source devices still fixes it).
 
-> +
->   	if (!pdev) {
->   		pr_warn("Device scope device [%04x:%02x:%02x.%02x] not found\n",
->   			segment, scope->bus, path->dev, path->fn);
+Andrew, have you done anything with your DMA source patch since you last 
+posted it?  I'm still using it and it still makes my computer happy. 
+I'd happily switch to a newer revision of the patch instead of carrying 
+a rebased version of what you posted in March.
+
+Pat Erley
