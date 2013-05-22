@@ -1,124 +1,199 @@
-From: Sethi Varun-B16395 <B16395@freescale.com>
-Subject: RE: [PATCH 1/3] pci: Add PCI walk function and PCIe bridge test
-Date: Wed, 22 May 2013 14:34:09 +0000
-Message-ID: <C5ECD7A89D1DC44195F34B25E172658D544C52@039-SN2MPN1-013.039d.mgd.msft.net>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 1/3] pci: Add PCI walk function and PCIe bridge test
+Date: Wed, 22 May 2013 09:02:02 -0600
+Message-ID: <1369234922.2646.86.camel@ul30vt.home>
 References: <20130510210937.32592.21950.stgit@bling.home>
-	 <20130510211845.32592.77464.stgit@bling.home>
-	 <C5ECD7A89D1DC44195F34B25E172658D50609A@039-SN2MPN1-011.039d.mgd.msft.net>
- <1368456548.5520.1.camel@ul30vt.home>
+	<20130510211845.32592.77464.stgit@bling.home>
+	<C5ECD7A89D1DC44195F34B25E172658D50609A@039-SN2MPN1-011.039d.mgd.msft.net>
+	<1368456548.5520.1.camel@ul30vt.home>
+	<C5ECD7A89D1DC44195F34B25E172658D544C52@039-SN2MPN1-013.039d.mgd.msft.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1368456548.5520.1.camel@ul30vt.home>
-Content-Language: en-US
-Sender: linux-pci-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: "bhelgaas@google.com" <bhelgaas@google.com>, "stephen@networkplumber.org" <stephen@networkplumber.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "joro@8bytes.org" <joro@8bytes.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <C5ECD7A89D1DC44195F34B25E172658D544C52-RL0Hj/+nBVDYdknt8GnhQq4g8xLGJsHaLnY5E4hWTkheoWH0uzbU5w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "stephen-OTpzqLSitTUnbdJkjeBofR2eb7JE58TQ@public.gmane.org" <stephen-OTpzqLSitTUnbdJkjeBofR2eb7JE58TQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-QW55IGlkZWEgd2hlbiB3b3VsZCB0aGlzIHBhdGNoIHNldCBiZSBpbnRlZ3JhdGVkPyBGcmVlc2Nh
-bGUgUEFNVSBkcml2ZXIgZGVwZW5kcyBvbiB0aGlzIHBhdGNoLiBDdXJyZW50bHkgSSBhbSB1c2lu
-ZyB0aGUgcGNpX2ZpbmRfcGNpZV91cHN0cmVhbV9icmlkZ2Ugcm91dGluZSBpbiB0aGUgZGV2aWNl
-IGdyb3VwIGNyZWF0aW9uIHJvdXRpbmUuDQoNCi1WYXJ1bg0KDQo+IC0tLS0tT3JpZ2luYWwgTWVz
-c2FnZS0tLS0tDQo+IEZyb206IEFsZXggV2lsbGlhbXNvbiBbbWFpbHRvOmFsZXgud2lsbGlhbXNv
-bkByZWRoYXQuY29tXQ0KPiBTZW50OiBNb25kYXksIE1heSAxMywgMjAxMyA4OjE5IFBNDQo+IFRv
-OiBTZXRoaSBWYXJ1bi1CMTYzOTUNCj4gQ2M6IGJoZWxnYWFzQGdvb2dsZS5jb207IHN0ZXBoZW5A
-bmV0d29ya3BsdW1iZXIub3JnOyBsaW51eC0NCj4gcGNpQHZnZXIua2VybmVsLm9yZzsgaW9tbXVA
-bGlzdHMubGludXgtZm91bmRhdGlvbi5vcmc7DQo+IGR3bXcyQGluZnJhZGVhZC5vcmcNCj4gU3Vi
-amVjdDogUmU6IFtQQVRDSCAxLzNdIHBjaTogQWRkIFBDSSB3YWxrIGZ1bmN0aW9uIGFuZCBQQ0ll
-IGJyaWRnZSB0ZXN0DQo+IA0KPiBPbiBNb24sIDIwMTMtMDUtMTMgYXQgMTM6NTEgKzAwMDAsIFNl
-dGhpIFZhcnVuLUIxNjM5NSB3cm90ZToNCj4gPiBXb3VsZCB0aGVzZSBmdW5jdGlvbnMgYmUgdXNl
-ZCBvdXRzaWRlIGRyaXZlcnMvaW9tbXU/IFdlIHJlY2VudGx5IGFkZGVkDQo+IHBjaS5oIHVuZGVy
-IGRyaXZlcnMvaW9tbXUsIG1heWJlIHdlIGNhbiBhZGQgYSBuZXcgZmlsZSBmb3IgdGhlc2UNCj4g
-ZnVuY3Rpb25zIGFzIHdlbGwuDQo+IA0KPiBUaGUgaW50ZW50aW9uIGlzIHRvIG1ha2UgdGhlbSBn
-ZW5lcmljIGVub3VnaCBmb3IgcGNpLWNvcmUsIHVubGlrZQ0KPiBwY2lfZmluZF91cHN0cmVhbV9w
-Y2llX2JyaWRnZSwgd2hpY2ggd2FzIHJhdGhlciBzcGVjaWZpYyB0byBpb21tdSB1c2FnZS4NCj4g
-VGhhbmtzLA0KPiANCj4gQWxleA0KPiANCj4gPiA+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0t
-DQo+ID4gPiBGcm9tOiBpb21tdS1ib3VuY2VzQGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnIFtt
-YWlsdG86aW9tbXUtDQo+ID4gPiBib3VuY2VzQGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnXSBP
-biBCZWhhbGYgT2YgQWxleCBXaWxsaWFtc29uDQo+ID4gPiBTZW50OiBTYXR1cmRheSwgTWF5IDEx
-LCAyMDEzIDI6NDkgQU0NCj4gPiA+IFRvOiBiaGVsZ2Fhc0Bnb29nbGUuY29tOyBzdGVwaGVuQG5l
-dHdvcmtwbHVtYmVyLm9yZw0KPiA+ID4gQ2M6IGxpbnV4LXBjaUB2Z2VyLmtlcm5lbC5vcmc7IGlv
-bW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnOw0KPiA+ID4gZHdtdzJAaW5mcmFkZWFkLm9y
-Zw0KPiA+ID4gU3ViamVjdDogW1BBVENIIDEvM10gcGNpOiBBZGQgUENJIHdhbGsgZnVuY3Rpb24g
-YW5kIFBDSWUgYnJpZGdlIHRlc3QNCj4gPiA+DQo+ID4gPiBUaGVzZSB3aWxsIHJlcGxhY2UgcGNp
-X2ZpbmRfdXBzdHJlYW1fcGNpZV9icmlkZ2UsIHdoaWNoIGlzIGRpZmZpY3VsdA0KPiA+ID4gdG8g
-dXNlIGFuZCByYXRoZXIgc3BlY2lmaWMgdG8gaW50ZWwtaW9tbXUgdXNhZ2UuICBBIHF1aXJrZWQN
-Cj4gPiA+IHBjaV9pc19wY2llX2JyaWRnZSBmdW5jdGlvbiBpcyBwcm92aWRlZCB0byB3b3JrIGFy
-b3VuZCBub24tY29tcGxpYW50DQo+ID4gPiBQQ0llLXRvLVBDSSBicmlkZ2VzIHN1Y2ggYXMgdGhv
-c2UgZm91bmQgaW4NCj4gPiA+IGh0dHBzOi8vYnVnemlsbGEua2VybmVsLm9yZy9zaG93X2J1Zy5j
-Z2k/aWQ9NDQ4ODENCj4gPiA+DQo+ID4gPiBTaWduZWQtb2ZmLWJ5OiBBbGV4IFdpbGxpYW1zb24g
-PGFsZXgud2lsbGlhbXNvbkByZWRoYXQuY29tPg0KPiA+ID4gLS0tDQo+ID4gPiAgZHJpdmVycy9w
-Y2kvc2VhcmNoLmMgfCAgIDU3DQo+ID4gPiArKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKw0KPiA+ID4gIGluY2x1ZGUvbGludXgvcGNpLmggIHwgICAyMyAr
-KysrKysrKysrKysrKysrKysrKw0KPiA+ID4gIDIgZmlsZXMgY2hhbmdlZCwgODAgaW5zZXJ0aW9u
-cygrKQ0KPiA+ID4NCj4gPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3BjaS9zZWFyY2guYyBiL2Ry
-aXZlcnMvcGNpL3NlYXJjaC5jIGluZGV4DQo+ID4gPiBkMDYyN2ZhLi4wMzU3Zjc0IDEwMDY0NA0K
-PiA+ID4gLS0tIGEvZHJpdmVycy9wY2kvc2VhcmNoLmMNCj4gPiA+ICsrKyBiL2RyaXZlcnMvcGNp
-L3NlYXJjaC5jDQo+ID4gPiBAQCAtMTcsNiArMTcsNjMgQEANCj4gPiA+ICBERUNMQVJFX1JXU0VN
-KHBjaV9idXNfc2VtKTsNCj4gPiA+ICBFWFBPUlRfU1lNQk9MX0dQTChwY2lfYnVzX3NlbSk7DQo+
-ID4gPg0KPiA+ID4gKy8qIFRlc3QgZm9yIFBDSWUgYnJpZGdlcy4gKi8NCj4gPiA+ICtib29sIHBj
-aV9pc19wY2llX2JyaWRnZShzdHJ1Y3QgcGNpX2RldiAqcGRldikgew0KPiA+ID4gKwlpZiAoIXBj
-aV9pc19icmlkZ2UocGRldikpDQo+ID4gPiArCQlyZXR1cm4gZmFsc2U7DQo+ID4gPiArDQo+ID4g
-PiArCWlmIChwY2lfaXNfcGNpZShwZGV2KSkNCj4gPiA+ICsJCXJldHVybiB0cnVlOw0KPiA+ID4g
-Kw0KPiA+ID4gKyNpZmRlZiBDT05GSUdfUENJX1FVSVJLUw0KPiA+ID4gKwkvKg0KPiA+ID4gKwkg
-KiBJZiB3ZSdyZSBub3Qgb24gdGhlIHJvb3QgYnVzLCBsb29rIG9uZSBkZXZpY2UgdXBzdHJlYW0g
-b2YgdGhlDQo+ID4gPiArCSAqIGN1cnJlbnQgZGV2aWNlLiAgSWYgdGhhdCBkZXZpY2UgaXMgUENJ
-ZSBhbmQgaXMgbm90IGEgUENJZS10by1QQ0kNCj4gPiA+ICsJICogYnJpZGdlLCB0aGVuIHRoZSBj
-dXJyZW50IGRldmljZSBpcyBlZmZlY3RpdmVseSBQQ0llIGFzIGl0IG11c3QNCj4gPiA+ICsJICog
-YmUgdGhlIFBDSWUtdG8tUENJIGJyaWRnZS4gIFRoaXMgaGFuZGxlcyBzZXZlcmFsIGJyaWRnZXMg
-dGhhdA0KPiA+ID4gKwkgKiB2aW9sYXRlIHRoZSBQQ0llIHNwZWMgYnkgbm90IGV4cG9zaW5nIGEg
-UENJZSBjYXBhYmlsaXR5Og0KPiA+ID4gKwkgKiBodHRwczovL2J1Z3ppbGxhLmtlcm5lbC5vcmcv
-c2hvd19idWcuY2dpP2lkPTQ0ODgxDQo+ID4gPiArCSAqLw0KPiA+ID4gKwlpZiAoIXBjaV9pc19y
-b290X2J1cyhwZGV2LT5idXMpKSB7DQo+ID4gPiArCQlzdHJ1Y3QgcGNpX2RldiAqcGFyZW50ID0g
-cGRldi0+YnVzLT5zZWxmOw0KPiA+ID4gKw0KPiA+ID4gKwkJaWYgKHBjaV9pc19wY2llKHBhcmVu
-dCkgJiYNCj4gPiA+ICsJCSAgICBwY2lfcGNpZV90eXBlKHBhcmVudCkgIT0gUENJX0VYUF9UWVBF
-X1BDSV9CUklER0UpDQo+ID4gPiArDQo+ID4gPiArCQkJcmV0dXJuIHRydWU7DQo+ID4gPiArCX0N
-Cj4gPiA+ICsjZW5kaWYNCj4gPiA+ICsJcmV0dXJuIGZhbHNlOw0KPiA+ID4gK30NCj4gPiA+ICsN
-Cj4gPiA+ICsvKg0KPiA+ID4gKyAqIFdhbGsgdXBzdHJlYW0gZnJvbSB0aGUgZ2l2ZW4gcGRldiBm
-b3IgdGhlIGZpcnN0IGRldmljZSByZXR1cm5pbmcNCj4gPiA+ICsgKiB0cnVlIGZvciB0aGUgcHJv
-dmlkZWQgbWF0Y2ggZnVuY3Rpb24uICBJZiBubyBtYXRjaCBpcyBmb3VuZCwNCj4gPiA+ICtyZXR1
-cm4NCj4gPiA+ICsgKiBOVUxMLiAgKmxhc3QgcmVjb3JkcyB0aGUgcHJldmlvdXMgc3RlcCBpbiB0
-aGUgd2Fsay4NCj4gPiA+ICsgKi8NCj4gPiA+ICtzdHJ1Y3QgcGNpX2RldiAqcGNpX3dhbGtfdXBf
-dG9fZmlyc3RfbWF0Y2goc3RydWN0IHBjaV9kZXYgKnBkZXYsDQo+ID4gPiArCQkJCQkgICBib29s
-ICgqbWF0Y2gpKHN0cnVjdCBwY2lfZGV2ICopLA0KPiA+ID4gKwkJCQkJICAgc3RydWN0IHBjaV9k
-ZXYgKipsYXN0KQ0KPiA+ID4gK3sNCj4gPiA+ICsJKmxhc3QgPSBOVUxMOw0KPiA+ID4gKw0KPiA+
-ID4gKwlpZiAobWF0Y2gocGRldikpDQo+ID4gPiArCQlyZXR1cm4gcGRldjsNCj4gPiA+ICsNCj4g
-PiA+ICsJKmxhc3QgPSBwZGV2Ow0KPiA+ID4gKw0KPiA+ID4gKwl3aGlsZSAoIXBjaV9pc19yb290
-X2J1cyhwZGV2LT5idXMpKSB7DQo+ID4gPiArCQkqbGFzdCA9IHBkZXY7DQo+ID4gPiArCQlwZGV2
-ID0gcGRldi0+YnVzLT5zZWxmOw0KPiA+ID4gKw0KPiA+ID4gKwkJaWYgKG1hdGNoKHBkZXYpKQ0K
-PiA+ID4gKwkJCXJldHVybiBwZGV2Ow0KPiA+ID4gKwl9DQo+ID4gPiArDQo+ID4gPiArCXJldHVy
-biBOVUxMOw0KPiA+ID4gK30NCj4gPiA+ICsNCj4gPiA+ICAvKg0KPiA+ID4gICAqIGZpbmQgdGhl
-IHVwc3RyZWFtIFBDSWUtdG8tUENJIGJyaWRnZSBvZiBhIFBDSSBkZXZpY2UNCj4gPiA+ICAgKiBp
-ZiB0aGUgZGV2aWNlIGlzIFBDSUUsIHJldHVybiBOVUxMIGRpZmYgLS1naXQNCj4gPiA+IGEvaW5j
-bHVkZS9saW51eC9wY2kuaCBiL2luY2x1ZGUvbGludXgvcGNpLmggaW5kZXggYmQ4ZWMzMC4uZTg3
-NDIzYQ0KPiA+ID4gMTAwNjQ0DQo+ID4gPiAtLS0gYS9pbmNsdWRlL2xpbnV4L3BjaS5oDQo+ID4g
-PiArKysgYi9pbmNsdWRlL2xpbnV4L3BjaS5oDQo+ID4gPiBAQCAtMTg1NSw2ICsxODU1LDI5IEBA
-IHN0YXRpYyBpbmxpbmUgc3RydWN0IGVlaF9kZXYNCj4gPiA+ICpwY2lfZGV2X3RvX2VlaF9kZXYo
-c3RydWN0IHBjaV9kZXYgKnBkZXYpICAjZW5kaWYNCj4gPiA+DQo+ID4gPiAgLyoqDQo+ID4gPiAr
-ICogcGNpX3dhbGtfdXBfdG9fZmlyc3RfbWF0Y2ggLSBHZW5lcmljIHVwc3RyZWFtIHNlYXJjaCBm
-dW5jdGlvbg0KPiA+ID4gKyAqIEBwZGV2OiBzdGFydGluZyBQQ0kgZGV2aWNlIHRvIHNlYXJjaA0K
-PiA+ID4gKyAqIEBtYXRjaDogbWF0Y2ggZnVuY3Rpb24gdG8gY2FsbCBvbiBlYWNoIGRldmljZSAo
-dHJ1ZSA9IG1hdGNoKQ0KPiA+ID4gKyAqIEBsYXN0OiBsYXN0IGRldmljZSBleGFtaW5lZCBwcmlv
-ciB0byByZXR1cm5lZCBkZXZpY2UNCj4gPiA+ICsgKg0KPiA+ID4gKyAqIFdhbGsgdXBzdHJlYW0g
-ZnJvbSB0aGUgZ2l2ZW4gZGV2aWNlLCBjYWxsaW5nIG1hdGNoKCkgYXQgZWFjaA0KPiBkZXZpY2Uu
-DQo+ID4gPiArICogUmV0dXJucyB0aGUgZmlyc3QgZGV2aWNlIG1hdGNoaW5nIG1hdGNoKCkuICBJ
-ZiB0aGUgcm9vdCBidXMgaXMNCj4gPiA+ICtyZWFjaGVkDQo+ID4gPiArICogd2l0aG91dCBmaW5k
-aW5nIGEgbWF0Y2gsIHJldHVybiBOVUxMLiAgbGFzdCByZXR1cm5zIHRoZSBOLTEgc3RlcA0KPiA+
-ID4gK2luDQo+ID4gPiArICogdGhlIHNlYXJjaCBwYXRoLg0KPiA+ID4gKyAqLw0KPiA+ID4gK3N0
-cnVjdCBwY2lfZGV2ICpwY2lfd2Fsa191cF90b19maXJzdF9tYXRjaChzdHJ1Y3QgcGNpX2RldiAq
-cGRldiwNCj4gPiA+ICsJCQkJCSAgIGJvb2wgKCptYXRjaCkoc3RydWN0IHBjaV9kZXYgKiksDQo+
-ID4gPiArCQkJCQkgICBzdHJ1Y3QgcGNpX2RldiAqKmxhc3QpOw0KPiA+ID4gKw0KPiA+ID4gKy8q
-Kg0KPiA+ID4gKyAqIHBjaV9pc19wY2llX2JyaWRnZSAtIE1hdGNoIGEgUENJZSBicmlkZ2UgZGV2
-aWNlDQo+ID4gPiArICogQHBkZXY6IGRldmljZSB0byB0ZXN0DQo+ID4gPiArICoNCj4gPiA+ICsg
-KiBSZXR1cm4gdHJ1ZSBpZiB0aGUgZ2l2ZW4gZGV2aWNlIGlzIGEgUENJZSBicmlkZ2UsIGZhbHNl
-DQo+IG90aGVyd2lzZS4NCj4gPiA+ICsgKi8NCj4gPiA+ICtib29sIHBjaV9pc19wY2llX2JyaWRn
-ZShzdHJ1Y3QgcGNpX2RldiAqcGRldik7DQo+ID4gPiArDQo+ID4gPiArLyoqDQo+ID4gPiAgICog
-cGNpX2ZpbmRfdXBzdHJlYW1fcGNpZV9icmlkZ2UgLSBmaW5kIHVwc3RyZWFtIFBDSWUtdG8tUENJ
-IGJyaWRnZQ0KPiA+ID4gb2YgYSBkZXZpY2UNCj4gPiA+ICAgKiBAcGRldjogdGhlIFBDSSBkZXZp
-Y2UNCj4gPiA+ICAgKg0KPiA+ID4NCj4gPiA+IF9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fDQo+ID4gPiBpb21tdSBtYWlsaW5nIGxpc3QNCj4gPiA+IGlvbW11
-QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnDQo+ID4gPiBodHRwczovL2xpc3RzLmxpbnV4Zm91
-bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ0KPiA+DQo+ID4NCj4gDQo+IA0KPiAN
-Cg0K
+On Wed, 2013-05-22 at 14:34 +0000, Sethi Varun-B16395 wrote:
+> Any idea when would this patch set be integrated? Freescale PAMU
+> driver depends on this patch. Currently I am using the
+> pci_find_pcie_upstream_bridge routine in the device group creation
+> routine.
+
+I don't know, Bjorn?  The bugzilla referenced in patch 0/3 has several
+reports from users that this series solves the problem for them.
+Thanks,
+
+Alex
+
+> > -----Original Message-----
+> > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> > Sent: Monday, May 13, 2013 8:19 PM
+> > To: Sethi Varun-B16395
+> > Cc: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; stephen-OTpzqLSitTUnbdJkjeBofR2eb7JE58TQ@public.gmane.org; linux-
+> > pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+> > dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+> > Subject: Re: [PATCH 1/3] pci: Add PCI walk function and PCIe bridge test
+> > 
+> > On Mon, 2013-05-13 at 13:51 +0000, Sethi Varun-B16395 wrote:
+> > > Would these functions be used outside drivers/iommu? We recently added
+> > pci.h under drivers/iommu, maybe we can add a new file for these
+> > functions as well.
+> > 
+> > The intention is to make them generic enough for pci-core, unlike
+> > pci_find_upstream_pcie_bridge, which was rather specific to iommu usage.
+> > Thanks,
+> > 
+> > Alex
+> > 
+> > > > -----Original Message-----
+> > > > From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
+> > > > bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Alex Williamson
+> > > > Sent: Saturday, May 11, 2013 2:49 AM
+> > > > To: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; stephen-OTpzqLSitTUnbdJkjeBofR2eb7JE58TQ@public.gmane.org
+> > > > Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+> > > > dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+> > > > Subject: [PATCH 1/3] pci: Add PCI walk function and PCIe bridge test
+> > > >
+> > > > These will replace pci_find_upstream_pcie_bridge, which is difficult
+> > > > to use and rather specific to intel-iommu usage.  A quirked
+> > > > pci_is_pcie_bridge function is provided to work around non-compliant
+> > > > PCIe-to-PCI bridges such as those found in
+> > > > https://bugzilla.kernel.org/show_bug.cgi?id=44881
+> > > >
+> > > > Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> > > > ---
+> > > >  drivers/pci/search.c |   57
+> > > > ++++++++++++++++++++++++++++++++++++++++++++++++++
+> > > >  include/linux/pci.h  |   23 ++++++++++++++++++++
+> > > >  2 files changed, 80 insertions(+)
+> > > >
+> > > > diff --git a/drivers/pci/search.c b/drivers/pci/search.c index
+> > > > d0627fa..0357f74 100644
+> > > > --- a/drivers/pci/search.c
+> > > > +++ b/drivers/pci/search.c
+> > > > @@ -17,6 +17,63 @@
+> > > >  DECLARE_RWSEM(pci_bus_sem);
+> > > >  EXPORT_SYMBOL_GPL(pci_bus_sem);
+> > > >
+> > > > +/* Test for PCIe bridges. */
+> > > > +bool pci_is_pcie_bridge(struct pci_dev *pdev) {
+> > > > +	if (!pci_is_bridge(pdev))
+> > > > +		return false;
+> > > > +
+> > > > +	if (pci_is_pcie(pdev))
+> > > > +		return true;
+> > > > +
+> > > > +#ifdef CONFIG_PCI_QUIRKS
+> > > > +	/*
+> > > > +	 * If we're not on the root bus, look one device upstream of the
+> > > > +	 * current device.  If that device is PCIe and is not a PCIe-to-PCI
+> > > > +	 * bridge, then the current device is effectively PCIe as it must
+> > > > +	 * be the PCIe-to-PCI bridge.  This handles several bridges that
+> > > > +	 * violate the PCIe spec by not exposing a PCIe capability:
+> > > > +	 * https://bugzilla.kernel.org/show_bug.cgi?id=44881
+> > > > +	 */
+> > > > +	if (!pci_is_root_bus(pdev->bus)) {
+> > > > +		struct pci_dev *parent = pdev->bus->self;
+> > > > +
+> > > > +		if (pci_is_pcie(parent) &&
+> > > > +		    pci_pcie_type(parent) != PCI_EXP_TYPE_PCI_BRIDGE)
+> > > > +
+> > > > +			return true;
+> > > > +	}
+> > > > +#endif
+> > > > +	return false;
+> > > > +}
+> > > > +
+> > > > +/*
+> > > > + * Walk upstream from the given pdev for the first device returning
+> > > > + * true for the provided match function.  If no match is found,
+> > > > +return
+> > > > + * NULL.  *last records the previous step in the walk.
+> > > > + */
+> > > > +struct pci_dev *pci_walk_up_to_first_match(struct pci_dev *pdev,
+> > > > +					   bool (*match)(struct pci_dev *),
+> > > > +					   struct pci_dev **last)
+> > > > +{
+> > > > +	*last = NULL;
+> > > > +
+> > > > +	if (match(pdev))
+> > > > +		return pdev;
+> > > > +
+> > > > +	*last = pdev;
+> > > > +
+> > > > +	while (!pci_is_root_bus(pdev->bus)) {
+> > > > +		*last = pdev;
+> > > > +		pdev = pdev->bus->self;
+> > > > +
+> > > > +		if (match(pdev))
+> > > > +			return pdev;
+> > > > +	}
+> > > > +
+> > > > +	return NULL;
+> > > > +}
+> > > > +
+> > > >  /*
+> > > >   * find the upstream PCIe-to-PCI bridge of a PCI device
+> > > >   * if the device is PCIE, return NULL diff --git
+> > > > a/include/linux/pci.h b/include/linux/pci.h index bd8ec30..e87423a
+> > > > 100644
+> > > > --- a/include/linux/pci.h
+> > > > +++ b/include/linux/pci.h
+> > > > @@ -1855,6 +1855,29 @@ static inline struct eeh_dev
+> > > > *pci_dev_to_eeh_dev(struct pci_dev *pdev)  #endif
+> > > >
+> > > >  /**
+> > > > + * pci_walk_up_to_first_match - Generic upstream search function
+> > > > + * @pdev: starting PCI device to search
+> > > > + * @match: match function to call on each device (true = match)
+> > > > + * @last: last device examined prior to returned device
+> > > > + *
+> > > > + * Walk upstream from the given device, calling match() at each
+> > device.
+> > > > + * Returns the first device matching match().  If the root bus is
+> > > > +reached
+> > > > + * without finding a match, return NULL.  last returns the N-1 step
+> > > > +in
+> > > > + * the search path.
+> > > > + */
+> > > > +struct pci_dev *pci_walk_up_to_first_match(struct pci_dev *pdev,
+> > > > +					   bool (*match)(struct pci_dev *),
+> > > > +					   struct pci_dev **last);
+> > > > +
+> > > > +/**
+> > > > + * pci_is_pcie_bridge - Match a PCIe bridge device
+> > > > + * @pdev: device to test
+> > > > + *
+> > > > + * Return true if the given device is a PCIe bridge, false
+> > otherwise.
+> > > > + */
+> > > > +bool pci_is_pcie_bridge(struct pci_dev *pdev);
+> > > > +
+> > > > +/**
+> > > >   * pci_find_upstream_pcie_bridge - find upstream PCIe-to-PCI bridge
+> > > > of a device
+> > > >   * @pdev: the PCI device
+> > > >   *
+> > > >
+> > > > _______________________________________________
+> > > > iommu mailing list
+> > > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> > > > https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> > >
+> > >
+> > 
+> > 
+> > 
+> 
