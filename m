@@ -1,113 +1,108 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH net-next 20/22] sfc: reuse pages to avoid DMA
-	mapping/unmapping costs
-Date: Wed, 22 May 2013 12:44:14 -0600
-Message-ID: <1369248254.2646.118.camel@ul30vt.home>
-References: <1363030400.2608.37.camel@bwh-desktop.uk.solarflarecom.com>
-	<1363031947.2608.57.camel@bwh-desktop.uk.solarflarecom.com>
-	<loom.20130522T180718-104@post.gmane.org>
-	<1369244582.2670.32.camel@bwh-desktop.uk.level5networks.com>
+From: <suravee.suthikulpanit@amd.com>
+Subject: [PATCH 1/3] iommu/amd: Adding amd_iommu_log cmdline option
+Date: Wed, 22 May 2013 14:15:53 -0500
+Message-ID: <1369250155-12226-2-git-send-email-suravee.suthikulpanit@amd.com>
+References: <1369250155-12226-1-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1369244582.2670.32.camel-/LGg1Z1CJKQ+9kgCwbf1HqK4ta4zdZpAajtMo4Cw6ucAvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ben Hutchings <bhutchings-s/n/eUQHGBpZroRs9YW3xA@public.gmane.org>
-Cc: linux-net-drivers <linux-net-drivers-s/n/eUQHGBpZroRs9YW3xA@public.gmane.org>, Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Nikolay Aleksandrov <naleksan-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Daniel Pieczko <dpieczko-s/n/eUQHGBpZroRs9YW3xA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1369250155-12226-1-git-send-email-suravee.suthikulpanit@amd.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, joro@8bytes.org
+Cc: ddutile@redhat.com, alex.williamson@redhat.com, linux-kernel@vger.kernel.org, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 List-Id: iommu@lists.linux-foundation.org
 
-[adding cc iommu list + aik]
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 
-On Wed, 2013-05-22 at 18:43 +0100, Ben Hutchings wrote:
-> On Wed, 2013-05-22 at 16:29 +0000, Alex Williamson wrote:
-> > Ben Hutchings <bhutchings <at> solarflare.com> writes:
-> > 
-> > > 
-> > > From:  Daniel Pieczko <dpieczko <at> solarflare.com>
-> > > 
-> > > On POWER systems, DMA mapping/unmapping operations are very expensive.
-> > > These changes reduce these costs by trying to reuse DMA mapped pages.
-> [...]
-> > > When an IOMMU is not present, the recycle ring can be small to reduce
-> > > memory usage, since DMA mapping operations are inexpensive.
-> > 
-> > I'm not sure I agree with the test for whether an IOMMU is present...
-> > 
-> > > diff --git a/drivers/net/ethernet/sfc/efx.c 
-> > b/drivers/net/ethernet/sfc/efx.c
-> > > index 1213af5..a70c458 100644
-> > > --- a/drivers/net/ethernet/sfc/efx.c
-> > > +++ b/drivers/net/ethernet/sfc/efx.c
-> > [snip]
-> > > +void efx_init_rx_recycle_ring(struct efx_nic *efx,
-> > > +			      struct efx_rx_queue *rx_queue)
-> > > +{
-> > > +	unsigned int bufs_in_recycle_ring, page_ring_size;
-> > > +
-> > > +	/* Set the RX recycle ring size */
-> > > +#ifdef CONFIG_PPC64
-> > > +	bufs_in_recycle_ring = EFX_RECYCLE_RING_SIZE_IOMMU;
-> > > +#else
-> > > +	if (efx->pci_dev->dev.iommu_group)
-> > > +		bufs_in_recycle_ring = EFX_RECYCLE_RING_SIZE_IOMMU;
-> > > +	else
-> > > +		bufs_in_recycle_ring = EFX_RECYCLE_RING_SIZE_NOIOMMU;
-> > > +#endif /* CONFIG_PPC64 */
-> > 
-> > Testing for an iommu_group is more of a test of (is an iommu present && does 
-> > it support the iommu api && does it support iommu groups && is the device 
-> > isolatable).  That doesn't seem like what we want here (besides, it's kind 
-> > of a hacky sidestep to the API which would suggest using iommu_group_get/put 
-> > here).
-> 
-> Since we don't try to use the iommu_group itself, those functions don't
-> seem to be appropriate.
-> 
-> > We could use iommu_present(&pci_bus_type), which reduces the test to (iommu 
-> > present && supports iommu api (ie. iommu_ops)).
-> 
-> That's the test we use OOT for older kernel version.  However I advised
-> Daniel, apparently wrongly, that testing iommu_group would now be more
-> accurate.
-> 
-> > Better, but I think you 
-> > really care about an iommu present with dma_ops.  I think we can assume that 
-> > if an iommu supports iommu_ops, it supports dma_ops, but that still leaves 
-> > out iommus that do not support iommu_ops.  Do we care about those?
-> 
-> Unfortunately the pSeries IOMMU code doesn't support iommu_ops yet, and
-> that is precisely the case where DMA map/unmap operations are most
-> expensive (that we've seen).
+Adding amd_iommu_log command line option to allow "default", "verbose" and "debug"
+IOMMU error logging level in kernel log.
 
-I think that's soon to change, at least for some POWER models, with the
-work that Alexey is doing.  Hopefully that work will cover enough
-platforms that we could remove the #ifdef here and just use
-iommu_present(), even if not ideal.
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+---
+ Documentation/kernel-parameters.txt |   10 ++++++++++
+ drivers/iommu/amd_iommu_init.c      |   17 +++++++++++++++++
+ drivers/iommu/amd_iommu_types.h     |    6 ++++++
+ 3 files changed, 33 insertions(+)
 
-> > Furthermore, what about cases where an iommu is present, but unused?  For 
-> > example, iommu=pt (passthrough).  I'd think the driver would want to behave 
-> > as it would in the non-iommu case in that configuration.  Anyway, I don't 
-> > think iommu_group is the correct test here.  Thanks,
-> 
-> Right.  The real question the driver should ask is: 'will DMA-mapping/
-> unmapping for this device be significantly slower than DMA-syncing?'  We
-> don't yet have a way to ask that; maybe that should be added to the DMA
-> API.
-
-Right.  So maybe a better approximation is to ask whether sync has any
-overhead.  Couldn't you get the dma_ops for the device (get_dma_ops())
-and check whether the sync functions are implemented?  That's still not
-perfect though as a bounce buffer iommu may also have no overhead
-depending on the dma_mask of the device (or the address being mapped).
-Thanks,
-
-Alex
+diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
+index c3bfacb..752f0f9 100644
+--- a/Documentation/kernel-parameters.txt
++++ b/Documentation/kernel-parameters.txt
+@@ -350,6 +350,16 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+ 			driver will print ACPI tables for AMD IOMMU during
+ 			IOMMU initialization.
+ 
++	amd_iommu_log=	[HW,X86-64]
++			Specify parametes to choose the logging level. By default
++			the AMD IOMMU minimizes the logging detail, filters
++			duplicate log entries and suppress logging when encounters
++			storm of interrupts from a particular device.
++			Available options are:
++			default - Default log level.
++			verbose - Output detail log messages.
++			debug   - Output detail log messages and no filter/suppress.
++
+ 	amijoy.map=	[HW,JOY] Amiga joystick support
+ 			Map of devices attached to JOY0DAT and JOY1DAT
+ 			Format: <a>,<b>
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index bf51abb..66e3722 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -157,6 +157,8 @@ bool amd_iommu_v2_present __read_mostly;
+ 
+ bool amd_iommu_force_isolation __read_mostly;
+ 
++int amd_iommu_log_level __read_mostly = AMD_IOMMU_LOG_DEFAULT;
++
+ /*
+  * List of protection domains - used during resume
+  */
+@@ -2157,6 +2159,20 @@ static int __init parse_amd_iommu_options(char *str)
+ 	return 1;
+ }
+ 
++static int __init parse_amd_iommu_log(char *str)
++{
++	for (; *str; ++str) {
++		if (strncmp(str, "default", 7) == 0)
++			amd_iommu_log_level = AMD_IOMMU_LOG_DEFAULT;
++		else if (strncmp(str, "verbose", 7) == 0)
++			amd_iommu_log_level = AMD_IOMMU_LOG_VERBOSE;
++		else if (strncmp(str, "debug", 5) == 0)
++			amd_iommu_log_level = AMD_IOMMU_LOG_DEBUG;
++	}
++
++	return 1;
++}
++
+ static int __init parse_ivrs_ioapic(char *str)
+ {
+ 	unsigned int bus, dev, fn;
+@@ -2219,6 +2235,7 @@ static int __init parse_ivrs_hpet(char *str)
+ 
+ __setup("amd_iommu_dump",	parse_amd_iommu_dump);
+ __setup("amd_iommu=",		parse_amd_iommu_options);
++__setup("amd_iommu_log=",	parse_amd_iommu_log);
+ __setup("ivrs_ioapic",		parse_ivrs_ioapic);
+ __setup("ivrs_hpet",		parse_ivrs_hpet);
+ 
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index 0285a21..85b7a65 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -694,6 +694,12 @@ extern bool amd_iommu_v2_present;
+ 
+ extern bool amd_iommu_force_isolation;
+ 
++#define AMD_IOMMU_LOG_DEFAULT        0
++#define AMD_IOMMU_LOG_VERBOSE        1
++#define AMD_IOMMU_LOG_DEBUG          2
++
++extern int amd_iommu_log_level;
++
+ /* Max levels of glxval supported */
+ extern int amd_iommu_max_glx_val;
+ 
+-- 
+1.7.10.4
