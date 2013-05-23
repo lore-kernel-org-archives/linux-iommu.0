@@ -1,27 +1,59 @@
-From: Libo Chen <clbchenlibo.chen@huawei.com>
-Subject: Re: [PATCH] msm: iommu: fix leak and invalid access
-Date: Thu, 23 May 2013 09:23:56 +0800
-Message-ID: <519D6FAC.6010609@huawei.com>
-References: <51931347.7020600@huawei.com> <519C5E8F.7060006@huawei.com> <20130522222942.GA5706@codeaurora.org>
+From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Subject: [PATCH 1/1] x86/iommu: fix dma pte address size error
+Date: Thu, 23 May 2013 15:52:40 +0800
+Message-ID: <1369295560-21877-1-git-send-email-zhen-hual@hp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20130522222942.GA5706@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: David Brown <davidb@codeaurora.org>
-Cc: ohad@wizery.com, joerg.roedel@amd.com, LKML <linux-kernel@vger.kernel.org>, joro@8bytes.org, Varun.Sethi@freescale.com, iommu@lists.linux-foundation.org, mingo@kernel.org, ddutile@redhat.com, Andrew Morton <akpm@linux-foundation.org>, Li Zefan <lizefan@huawei.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Dan Williams <djbw-b10kYP2dOMg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2013/5/23 6:29, David Brown wrote:
-> On Wed, May 22, 2013 at 01:58:39PM +0800, Libo Chen wrote:
-> 
->> > ping...
-> This is the first I've seen this patch.  The original appears to have
-> been sent to Andrew Morton and lkml.  I'll reply with an Ack there.
-> 
-> David
+In Intel Vt-D specs, Chapter 9.3 Page-Table Entry,
+The size of ADDR(address) field is 12:51, but the function dma_pte_addr
+ treats it as 12:63.
 
-Regards
+Signed-off-by: Li, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+---
+ drivers/iommu/intel-iommu.c   |    2 +-
+ include/linux/dma_remapping.h |    2 ++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-Libo
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index b4f0e28..ac49c2e 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -311,7 +311,7 @@ static inline void dma_set_pte_prot(struct dma_pte *pte, unsigned long prot)
+ static inline u64 dma_pte_addr(struct dma_pte *pte)
+ {
+ #ifdef CONFIG_64BIT
+-	return pte->val & VTD_PAGE_MASK;
++	return pte->val & DMA_PTE_MASK;
+ #else
+ 	/* Must have a full atomic 64-bit read */
+ 	return  __cmpxchg64(&pte->val, 0ULL, 0ULL) & VTD_PAGE_MASK;
+diff --git a/include/linux/dma_remapping.h b/include/linux/dma_remapping.h
+index 57c9a8a..7a1e212 100644
+--- a/include/linux/dma_remapping.h
++++ b/include/linux/dma_remapping.h
+@@ -16,6 +16,8 @@
+ #define DMA_PTE_WRITE (2)
+ #define DMA_PTE_LARGE_PAGE (1 << 7)
+ #define DMA_PTE_SNP (1 << 11)
++#define DMA_PTE_ADD_LENGTH (40)
++#define DMA_PTE_MASK	((((u64)1 << DMA_PTE_ADD_LENGTH) - 1) << VTD_PAGE_SHIFT)
+ 
+ #define CONTEXT_TT_MULTI_LEVEL	0
+ #define CONTEXT_TT_DEV_IOTLB	1
+-- 
+1.7.10.4
