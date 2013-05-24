@@ -1,14 +1,11 @@
-From: ZhenHua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Subject: Re: [PATCH 1/1] x86/iommu: use bit structures for context_entry
-Date: Fri, 24 May 2013 08:43:04 +0800
-Message-ID: <519EB798.2080904@hp.com>
-References: <1369354931-19373-1-git-send-email-zhen-hual@hp.com>
-	<1369355784.2080.5.camel@joe-AO722>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH] iommu: Split iommu_unmaps
+Date: Fri, 24 May 2013 11:14:45 -0600
+Message-ID: <20130524171401.14099.78694.stgit@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1369355784.2080.5.camel@joe-AO722>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,57 +15,112 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Use lo and hi for clear, may run faster than memset.
+iommu_map splits requests into pages that the iommu driver reports
+that it can handle.  The iommu_unmap path does not do the same.  This
+can cause problems not only from callers that might expect the same
+behavior as the map path, but even from the failure path of iommu_map,
+should it fail at a point where it has mapped and needs to unwind a
+set of pages that the iommu driver cannot handle directly.  amd_iommu,
+for example, will BUG_ON if asked to unmap a non power of 2 size.
 
-But it is not a big problem.  Never mind.
+Fix this by extracting and generalizing the sizing code from the
+iommu_map path and use it for both map and unmap.
 
-Thanks
-ZhenHua
+Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/iommu.c |   63 +++++++++++++++++++++++++++----------------------
+ 1 file changed, 35 insertions(+), 28 deletions(-)
 
-On 05/24/2013 08:36 AM, Joe Perches wrote:
-> On Fri, 2013-05-24 at 08:22 +0800, Li, Zhen-Hua wrote:
->> There is a structure named context_entry used by intel iommu, and there
->> are some bit operations on it. Use bit structure may make these operations
->> easy.
-> []
->> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> []
->> @@ -221,55 +221,28 @@ get_context_addr_from_root(struct root_entry *root)
->>    * 8-23: domain id
->>    */
->>   struct context_entry {
->> -	u64 lo;
->> -	u64 hi;
->> +	union {
->> +		struct {
->> +			u64	present:1,
-> why use struct and union at all?
->
-> Why not just:
->
-> struct context_entry {
-> 	u64	present:1,
-> 		fpd:1,
-> 		translation_type:2,
-> 		reserved_l:8,
-> 		asr:52;
-> 	u64	aw:3,
-> 		avail:4,
-> 		reserved_h1:1,
-> 		did:16,
-> 		reserved_h2:40;
-> };
->
->> @@ -743,7 +716,8 @@ static void clear_context_table(struct intel_iommu *iommu, u8 bus, u8 devfn)
-> []
->>   	if (context) {
->> -		context_clear_entry(&context[devfn]);
->> +		context[devfn].lo = 0;
->> +		context[devfn].hi = 0;
-> 		memset(&context[devfn], 0, sizeof(...))
->
->
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index d8f98b1..4b0b56b 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -754,6 +754,38 @@ int iommu_domain_has_cap(struct iommu_domain *domain,
+ }
+ EXPORT_SYMBOL_GPL(iommu_domain_has_cap);
+ 
++static size_t iommu_pgsize(struct iommu_domain *domain,
++			   unsigned long addr_merge, size_t size)
++{
++	unsigned int pgsize_idx;
++	size_t pgsize;
++
++	/* Max page size that still fits into 'size' */
++	pgsize_idx = __fls(size);
++
++	/* need to consider alignment requirements ? */
++	if (likely(addr_merge)) {
++		/* Max page size allowed by address */
++		unsigned int align_pgsize_idx = __ffs(addr_merge);
++		pgsize_idx = min(pgsize_idx, align_pgsize_idx);
++	}
++
++	/* build a mask of acceptable page sizes */
++	pgsize = (1UL << (pgsize_idx + 1)) - 1;
++
++	/* throw away page sizes not supported by the hardware */
++	pgsize &= domain->ops->pgsize_bitmap;
++
++	/* make sure we're still sane */
++	BUG_ON(!pgsize);
++
++	/* pick the biggest page */
++	pgsize_idx = __fls(pgsize);
++	pgsize = 1UL << pgsize_idx;
++
++	return pgsize;
++}
++
+ int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 	      phys_addr_t paddr, size_t size, int prot)
+ {
+@@ -785,32 +817,7 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 				(unsigned long)paddr, (unsigned long)size);
+ 
+ 	while (size) {
+-		unsigned long pgsize, addr_merge = iova | paddr;
+-		unsigned int pgsize_idx;
+-
+-		/* Max page size that still fits into 'size' */
+-		pgsize_idx = __fls(size);
+-
+-		/* need to consider alignment requirements ? */
+-		if (likely(addr_merge)) {
+-			/* Max page size allowed by both iova and paddr */
+-			unsigned int align_pgsize_idx = __ffs(addr_merge);
+-
+-			pgsize_idx = min(pgsize_idx, align_pgsize_idx);
+-		}
+-
+-		/* build a mask of acceptable page sizes */
+-		pgsize = (1UL << (pgsize_idx + 1)) - 1;
+-
+-		/* throw away page sizes not supported by the hardware */
+-		pgsize &= domain->ops->pgsize_bitmap;
+-
+-		/* make sure we're still sane */
+-		BUG_ON(!pgsize);
+-
+-		/* pick the biggest page */
+-		pgsize_idx = __fls(pgsize);
+-		pgsize = 1UL << pgsize_idx;
++		size_t pgsize = iommu_pgsize(domain, iova | paddr, size);
+ 
+ 		pr_debug("mapping: iova 0x%lx pa 0x%lx pgsize %lu\n", iova,
+ 					(unsigned long)paddr, pgsize);
+@@ -863,9 +870,9 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
+ 	 * or we hit an area that isn't mapped.
+ 	 */
+ 	while (unmapped < size) {
+-		size_t left = size - unmapped;
++		size_t pgsize = iommu_pgsize(domain, iova, size - unmapped);
+ 
+-		unmapped_page = domain->ops->unmap(domain, iova, left);
++		unmapped_page = domain->ops->unmap(domain, iova, pgsize);
+ 		if (!unmapped_page)
+ 			break;
+ 
