@@ -1,11 +1,13 @@
-From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Subject: [PATCH 1/1] x86/iommu: fix dma pte address size error
-Date: Fri, 24 May 2013 08:35:56 +0800
-Message-ID: <1369355756-1030-1-git-send-email-zhen-hual@hp.com>
+From: Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH 1/1] x86/iommu: use bit structures for context_entry
+Date: Thu, 23 May 2013 17:36:24 -0700
+Message-ID: <1369355784.2080.5.camel@joe-AO722>
+References: <1369354931-19373-1-git-send-email-zhen-hual@hp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1369354931-19373-1-git-send-email-zhen-hual-VXdhtT5mjnY@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,49 +17,49 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Dan Williams <djbw-b10kYP2dOMg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+To: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-In Intel Vt-D specs, Chapter 9.3 Page-Table Entry,
-The size of ADDR(address) field is 12:51, but the function dma_pte_addr
- treats it as 12:63.
+On Fri, 2013-05-24 at 08:22 +0800, Li, Zhen-Hua wrote:
+> There is a structure named context_entry used by intel iommu, and there
+> are some bit operations on it. Use bit structure may make these operations
+> easy.
+[]
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+[]
+> @@ -221,55 +221,28 @@ get_context_addr_from_root(struct root_entry *root)
+>   * 8-23: domain id
+>   */
+>  struct context_entry {
+> -	u64 lo;
+> -	u64 hi;
+> +	union {
+> +		struct {
+> +			u64	present:1,
 
-Signed-off-by: Li, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
----
- drivers/iommu/intel-iommu.c   |    4 ++--
- include/linux/dma_remapping.h |    2 ++
- 2 files changed, 4 insertions(+), 2 deletions(-)
+why use struct and union at all?
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index b4f0e28..c6d2847 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -311,10 +311,10 @@ static inline void dma_set_pte_prot(struct dma_pte *pte, unsigned long prot)
- static inline u64 dma_pte_addr(struct dma_pte *pte)
- {
- #ifdef CONFIG_64BIT
--	return pte->val & VTD_PAGE_MASK;
-+	return pte->val & DMA_PTE_MASK;
- #else
- 	/* Must have a full atomic 64-bit read */
--	return  __cmpxchg64(&pte->val, 0ULL, 0ULL) & VTD_PAGE_MASK;
-+	return  __cmpxchg64(&pte->val, 0ULL, 0ULL) & DMA_PTE_MASK;
- #endif
- }
- 
-diff --git a/include/linux/dma_remapping.h b/include/linux/dma_remapping.h
-index 57c9a8a..7a1e212 100644
---- a/include/linux/dma_remapping.h
-+++ b/include/linux/dma_remapping.h
-@@ -16,6 +16,8 @@
- #define DMA_PTE_WRITE (2)
- #define DMA_PTE_LARGE_PAGE (1 << 7)
- #define DMA_PTE_SNP (1 << 11)
-+#define DMA_PTE_ADD_LENGTH (40)
-+#define DMA_PTE_MASK	((((u64)1 << DMA_PTE_ADD_LENGTH) - 1) << VTD_PAGE_SHIFT)
- 
- #define CONTEXT_TT_MULTI_LEVEL	0
- #define CONTEXT_TT_DEV_IOTLB	1
--- 
-1.7.10.4
+Why not just:
+
+struct context_entry {
+	u64	present:1,
+		fpd:1,
+		translation_type:2,
+		reserved_l:8,
+		asr:52;
+	u64	aw:3,
+		avail:4,
+		reserved_h1:1,
+		did:16,
+		reserved_h2:40;
+}; 
+
+> @@ -743,7 +716,8 @@ static void clear_context_table(struct intel_iommu *iommu, u8 bus, u8 devfn)
+[]
+>  	if (context) {
+> -		context_clear_entry(&context[devfn]);
+> +		context[devfn].lo = 0;
+> +		context[devfn].hi = 0;
+
+		memset(&context[devfn], 0, sizeof(...))
