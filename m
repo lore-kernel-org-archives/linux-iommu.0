@@ -1,151 +1,171 @@
-From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH 1/3] pci: Add PCI walk function and PCIe bridge test
-Date: Thu, 23 May 2013 14:44:58 -0600
-Message-ID: <CAErSpo5Z_GefXUD+Ts=beVurU9ZnLghN=Qkj7V0ZSjn-=zNsag@mail.gmail.com>
-References: <20130510210937.32592.21950.stgit@bling.home> <20130510211845.32592.77464.stgit@bling.home>
+From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Subject: [PATCH 1/1] x86/iommu: use bit structures for context_entry
+Date: Fri, 24 May 2013 08:22:11 +0800
+Message-ID: <1369354931-19373-1-git-send-email-zhen-hual@hp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20130510211845.32592.77464.stgit@bling.home>
-Sender: linux-pci-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: Stephen Hemminger <stephen@networkplumber.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, David Woodhouse <dwmw2@infradead.org>, Don Dutile <ddutile@redhat.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, May 10, 2013 at 3:18 PM, Alex Williamson
-<alex.williamson@redhat.com> wrote:
-> These will replace pci_find_upstream_pcie_bridge, which is difficult
-> to use and rather specific to intel-iommu usage.  A quirked
-> pci_is_pcie_bridge function is provided to work around non-compliant
-> PCIe-to-PCI bridges such as those found in
-> https://bugzilla.kernel.org/show_bug.cgi?id=44881
->
-> Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
-> ---
->  drivers/pci/search.c |   57 ++++++++++++++++++++++++++++++++++++++++++++++++++
->  include/linux/pci.h  |   23 ++++++++++++++++++++
->  2 files changed, 80 insertions(+)
->
-> diff --git a/drivers/pci/search.c b/drivers/pci/search.c
-> index d0627fa..0357f74 100644
-> --- a/drivers/pci/search.c
-> +++ b/drivers/pci/search.c
-> @@ -17,6 +17,63 @@
->  DECLARE_RWSEM(pci_bus_sem);
->  EXPORT_SYMBOL_GPL(pci_bus_sem);
->
-> +/* Test for PCIe bridges. */
-> +bool pci_is_pcie_bridge(struct pci_dev *pdev)
-> +{
-> +       if (!pci_is_bridge(pdev))
-> +               return false;
-> +
-> +       if (pci_is_pcie(pdev))
-> +               return true;
-> +
-> +#ifdef CONFIG_PCI_QUIRKS
-> +       /*
-> +        * If we're not on the root bus, look one device upstream of the
-> +        * current device.  If that device is PCIe and is not a PCIe-to-PCI
-> +        * bridge, then the current device is effectively PCIe as it must
-> +        * be the PCIe-to-PCI bridge.  This handles several bridges that
-> +        * violate the PCIe spec by not exposing a PCIe capability:
-> +        * https://bugzilla.kernel.org/show_bug.cgi?id=44881
-> +        */
-> +       if (!pci_is_root_bus(pdev->bus)) {
-> +               struct pci_dev *parent = pdev->bus->self;
-> +
-> +               if (pci_is_pcie(parent) &&
-> +                   pci_pcie_type(parent) != PCI_EXP_TYPE_PCI_BRIDGE)
-> +
-> +                       return true;
-> +       }
-> +#endif
-> +       return false;
-> +}
+There is a structure named context_entry used by intel iommu, and there
+are some bit operations on it. Use bit structure may make these operations
+easy.
 
-I like this strategy.  But I'd rather it not be a general-purpose PCI
-interface, because if pci_is_pcie_bridge() is true, people will assume
-they can perform PCIe operations on the device, and they can't.  The
-only use for this is to figure out the source ID the IOMMU will see,
-so I think this should just go in the IOMMU code.
+Signed-off-by: Li, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+---
+ drivers/iommu/intel-iommu.c |   88 +++++++++++++++----------------------------
+ 1 file changed, 31 insertions(+), 57 deletions(-)
 
-> +/*
-> + * Walk upstream from the given pdev for the first device returning
-> + * true for the provided match function.  If no match is found, return
-> + * NULL.  *last records the previous step in the walk.
-> + */
-> +struct pci_dev *pci_walk_up_to_first_match(struct pci_dev *pdev,
-> +                                          bool (*match)(struct pci_dev *),
-> +                                          struct pci_dev **last)
-> +{
-> +       *last = NULL;
-> +
-> +       if (match(pdev))
-> +               return pdev;
-> +
-> +       *last = pdev;
-> +
-> +       while (!pci_is_root_bus(pdev->bus)) {
-> +               *last = pdev;
-> +               pdev = pdev->bus->self;
-> +
-> +               if (match(pdev))
-> +                       return pdev;
-> +       }
-> +
-> +       return NULL;
-> +}
-
-Same here.  I don't really see much potential for other uses of this,
-so it seems like you might as well just put this in the IOMMU code and
-make it call pci_is_pcie_bridge() directly.
-
-The "source ID == upstream PCIe bridge" mapping is deeply ingrained in
-your skull, but I think it would make the intent of the code clearer
-if the function names mentioned the source ID somehow.  Otherwise new
-readers like me have to come up with that association on our own.  But
-since I'm proposing putting all this in the IOMMU code, it's totally
-up to you :)
-
-Bjorn
-
-> +
->  /*
->   * find the upstream PCIe-to-PCI bridge of a PCI device
->   * if the device is PCIE, return NULL
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index bd8ec30..e87423a 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -1855,6 +1855,29 @@ static inline struct eeh_dev *pci_dev_to_eeh_dev(struct pci_dev *pdev)
->  #endif
->
->  /**
-> + * pci_walk_up_to_first_match - Generic upstream search function
-> + * @pdev: starting PCI device to search
-> + * @match: match function to call on each device (true = match)
-> + * @last: last device examined prior to returned device
-> + *
-> + * Walk upstream from the given device, calling match() at each device.
-> + * Returns the first device matching match().  If the root bus is reached
-> + * without finding a match, return NULL.  last returns the N-1 step in
-> + * the search path.
-> + */
-> +struct pci_dev *pci_walk_up_to_first_match(struct pci_dev *pdev,
-> +                                          bool (*match)(struct pci_dev *),
-> +                                          struct pci_dev **last);
-> +
-> +/**
-> + * pci_is_pcie_bridge - Match a PCIe bridge device
-> + * @pdev: device to test
-> + *
-> + * Return true if the given device is a PCIe bridge, false otherwise.
-> + */
-> +bool pci_is_pcie_bridge(struct pci_dev *pdev);
-> +
-> +/**
->   * pci_find_upstream_pcie_bridge - find upstream PCIe-to-PCI bridge of a device
->   * @pdev: the PCI device
->   *
->
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index b4f0e28..ae10471 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -221,55 +221,28 @@ get_context_addr_from_root(struct root_entry *root)
+  * 8-23: domain id
+  */
+ struct context_entry {
+-	u64 lo;
+-	u64 hi;
++	union {
++		struct {
++			u64	present:1,
++				fpd:1,
++				translation_type:2,
++				reserved_l:8,
++				asr:52;
++		};
++		u64 lo;
++	};
++	union {
++		struct {
++			u64	aw:3,
++				avail:4,
++				reserved_h1:1,
++				did:16,
++				reserved_h2:40;
++		};
++		u64 hi;
++	};
+ };
+ 
+-static inline bool context_present(struct context_entry *context)
+-{
+-	return (context->lo & 1);
+-}
+-static inline void context_set_present(struct context_entry *context)
+-{
+-	context->lo |= 1;
+-}
+-
+-static inline void context_set_fault_enable(struct context_entry *context)
+-{
+-	context->lo &= (((u64)-1) << 2) | 1;
+-}
+-
+-static inline void context_set_translation_type(struct context_entry *context,
+-						unsigned long value)
+-{
+-	context->lo &= (((u64)-1) << 4) | 3;
+-	context->lo |= (value & 3) << 2;
+-}
+-
+-static inline void context_set_address_root(struct context_entry *context,
+-					    unsigned long value)
+-{
+-	context->lo |= value & VTD_PAGE_MASK;
+-}
+-
+-static inline void context_set_address_width(struct context_entry *context,
+-					     unsigned long value)
+-{
+-	context->hi |= value & 7;
+-}
+-
+-static inline void context_set_domain_id(struct context_entry *context,
+-					 unsigned long value)
+-{
+-	context->hi |= (value & ((1 << 16) - 1)) << 8;
+-}
+-
+-static inline void context_clear_entry(struct context_entry *context)
+-{
+-	context->lo = 0;
+-	context->hi = 0;
+-}
+-
+ /*
+  * 0: readable
+  * 1: writable
+@@ -727,7 +700,7 @@ static int device_context_mapped(struct intel_iommu *iommu, u8 bus, u8 devfn)
+ 		ret = 0;
+ 		goto out;
+ 	}
+-	ret = context_present(&context[devfn]);
++	ret = context->present;
+ out:
+ 	spin_unlock_irqrestore(&iommu->lock, flags);
+ 	return ret;
+@@ -743,7 +716,8 @@ static void clear_context_table(struct intel_iommu *iommu, u8 bus, u8 devfn)
+ 	root = &iommu->root_entry[bus];
+ 	context = get_context_addr_from_root(root);
+ 	if (context) {
+-		context_clear_entry(&context[devfn]);
++		context[devfn].lo = 0;
++		context[devfn].hi = 0;
+ 		__iommu_flush_cache(iommu, &context[devfn], \
+ 			sizeof(*context));
+ 	}
+@@ -1573,7 +1547,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain, int segment,
+ 	if (!context)
+ 		return -ENOMEM;
+ 	spin_lock_irqsave(&iommu->lock, flags);
+-	if (context_present(context)) {
++	if (context->present) {
+ 		spin_unlock_irqrestore(&iommu->lock, flags);
+ 		return 0;
+ 	}
+@@ -1623,7 +1597,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain, int segment,
+ 		}
+ 	}
+ 
+-	context_set_domain_id(context, id);
++	context->did = id;
+ 
+ 	if (translation != CONTEXT_TT_PASS_THROUGH) {
+ 		info = iommu_support_dev_iotlb(domain, segment, bus, devfn);
+@@ -1635,15 +1609,15 @@ static int domain_context_mapping_one(struct dmar_domain *domain, int segment,
+ 	 * AGAW value supported by hardware. And ASR is ignored by hardware.
+ 	 */
+ 	if (unlikely(translation == CONTEXT_TT_PASS_THROUGH))
+-		context_set_address_width(context, iommu->msagaw);
++		context->aw = iommu->msagaw;
+ 	else {
+-		context_set_address_root(context, virt_to_phys(pgd));
+-		context_set_address_width(context, iommu->agaw);
++		context->asr = virt_to_phys(pgd) >> VTD_PAGE_SHIFT;
++		context->aw  = iommu->agaw;
+ 	}
+ 
+-	context_set_translation_type(context, translation);
+-	context_set_fault_enable(context);
+-	context_set_present(context);
++	context->translation_type = translation;
++	context->fpd = 0;
++	context->present = 1;
+ 	domain_flush_cache(domain, context, sizeof(*context));
+ 
+ 	/*
+-- 
+1.7.10.4
