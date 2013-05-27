@@ -1,14 +1,15 @@
-From: Jiang Liu <liuj97-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v3, part2 17/20] PCI,
-	iommu: use hotplug-safe iterators to walk PCI buses
-Date: Sun, 26 May 2013 23:53:14 +0800
-Message-ID: <1369583597-3801-18-git-send-email-jiang.liu@huawei.com>
-References: <1369583597-3801-1-git-send-email-jiang.liu@huawei.com>
+From: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH 2/2] vfio: hugepage support for vfio_iommu_type1
+Date: Mon, 27 May 2013 08:41:21 +0000
+Message-ID: <C5ECD7A89D1DC44195F34B25E172658D552685@039-SN2MPN1-013.039d.mgd.msft.net>
+References: <20130524171613.14229.84050.stgit@bling.home>
+	<20130524172438.14229.59476.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1369583597-3801-1-git-send-email-jiang.liu-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20130524172438.14229.59476.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,83 +19,173 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Toshi Kani <toshi.kani-VXdhtT5mjnY@public.gmane.org>, Jiang Liu <jiang.liu-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Rafael J . Wysocki" <rjw-KKrjLPT3xs0@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Li,
-	Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, Hannes Reinecke <hare-l3A5Bk7waGM@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Gu Zheng <guz.fnst-BthXqXjhjHXQFUHtdCDX3A@public.gmane.org>, Myron Stowe <myron.stowe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jiang Liu <liuj97-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "chegu_vinod-VXdhtT5mjnY@public.gmane.org" <chegu_vinod-VXdhtT5mjnY@public.gmane.org>, "qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org" <qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Enhance iommu drviers to use hotplug-safe iterators to walk
-PCI buses.
 
-Signed-off-by: Jiang Liu <jiang.liu-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Donald Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Hannes Reinecke <hare-l3A5Bk7waGM@public.gmane.org>
-Cc: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
----
- drivers/iommu/amd_iommu.c | 4 +++-
- drivers/iommu/dmar.c      | 6 ++++--
- 2 files changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 21d02b0..eef7a7e 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -352,6 +352,7 @@ static int init_iommu_group(struct device *dev)
- 	struct iommu_dev_data *dev_data;
- 	struct iommu_group *group;
- 	struct pci_dev *dma_pdev;
-+	struct pci_bus *b = NULL;
- 	int ret;
- 
- 	group = iommu_group_get(dev);
-@@ -388,7 +389,7 @@ static int init_iommu_group(struct device *dev)
- 		 * the alias.  Be careful to also test the parent device if
- 		 * we think the alias is the root of the group.
- 		 */
--		bus = pci_find_bus(0, alias >> 8);
-+		b = bus = pci_get_bus(0, alias >> 8);
- 		if (!bus)
- 			goto use_group;
- 
-@@ -408,6 +409,7 @@ static int init_iommu_group(struct device *dev)
- 	dma_pdev = get_isolation_root(pci_dev_get(to_pci_dev(dev)));
- use_pdev:
- 	ret = use_pdev_iommu_group(dma_pdev, dev);
-+	pci_bus_put(b);
- 	pci_dev_put(dma_pdev);
- 	return ret;
- use_group:
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index a7967ce..7162787 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -67,12 +67,12 @@ static void __init dmar_register_drhd_unit(struct dmar_drhd_unit *drhd)
- static int __init dmar_parse_one_dev_scope(struct acpi_dmar_device_scope *scope,
- 					   struct pci_dev **dev, u16 segment)
- {
--	struct pci_bus *bus;
-+	struct pci_bus *b, *bus;
- 	struct pci_dev *pdev = NULL;
- 	struct acpi_dmar_pci_path *path;
- 	int count;
- 
--	bus = pci_find_bus(segment, scope->bus);
-+	b = bus = pci_get_bus(segment, scope->bus);
- 	path = (struct acpi_dmar_pci_path *)(scope + 1);
- 	count = (scope->length - sizeof(struct acpi_dmar_device_scope))
- 		/ sizeof(struct acpi_dmar_pci_path);
-@@ -97,6 +97,8 @@ static int __init dmar_parse_one_dev_scope(struct acpi_dmar_device_scope *scope,
- 		count --;
- 		bus = pdev->subordinate;
- 	}
-+	pci_bus_put(b);
-+
- 	if (!pdev) {
- 		pr_warn("Device scope device [%04x:%02x:%02x.%02x] not found\n",
- 			segment, scope->bus, path->dev, path->fn);
--- 
-1.8.1.2
+> -----Original Message-----
+> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
+> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Alex Williamson
+> Sent: Friday, May 24, 2013 10:55 PM
+> To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; chegu_vinod-VXdhtT5mjnY@public.gmane.org; qemu-
+> devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Subject: [PATCH 2/2] vfio: hugepage support for vfio_iommu_type1
+> 
+> We currently send all mappings to the iommu in PAGE_SIZE chunks, which
+> prevents the iommu from enabling support for larger page sizes.
+> We still need to pin pages, which means we step through them in PAGE_SIZE
+> chunks, but we can batch up contiguous physical memory chunks to allow
+> the iommu the opportunity to use larger pages.  The approach here is a
+> bit different that the one currently used for legacy KVM device
+> assignment.  Rather than looking at the vma page size and using that as
+> the maximum size to pass to the iommu, we instead simply look at whether
+> the next page is physically contiguous.  This means we might ask the
+> iommu to map a 4MB region, while legacy KVM might limit itself to a
+
+[Sethi Varun-B16395] Wouldn't this depend on the IOMMU page alignment constraints?
+
+> maximum of 2MB.
+> 
+> Splitting our mapping path also allows us to be smarter about locked
+> memory because we can more easily unwind if the user attempts to exceed
+> the limit.  Therefore, rather than assuming that a mapping will result in
+> locked memory, we test each page as it is pinned to determine whether it
+> locks RAM vs an mmap'd MMIO region.  This should result in better locking
+> granularity and less locked page fudge factors in userspace.
+> 
+> The unmap path uses the same algorithm as legacy KVM.  We don't want to
+> track the pfn for each mapping ourselves, but we need the pfn in order to
+> unpin pages.  We therefore ask the iommu for the iova to physical address
+> translation, ask it to unpin a page, and see how many pages were actually
+> unpinned.  iommus supporting large pages will often return something
+> bigger than a page here, which we know will be physically contiguous and
+> we can unpin a batch of pfns.  iommus not supporting large mappings won't
+> see an improvement in batching here as they only unmap a page at a time.
+> 
+> With this change, we also make a clarification to the API for mapping and
+> unmapping DMA.  We can only guarantee unmaps at the same granularity as
+> used for the original mapping.  In other words, unmapping a subregion of
+> a previous mapping is not guaranteed and may result in a larger or
+> smaller unmapping than requested.  The size field in the unmapping
+> structure is updated to reflect this.
+> Previously this was unmodified on mapping, always returning the the
+> requested unmap size.  This is now updated to return the actual unmap
+> size on success, allowing userspace to appropriately track mappings.
+> 
+[Sethi Varun-B16395] The main problem here is that the user space application is oblivious of the physical memory contiguity, right?
+
+
+> Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> ---
+>  drivers/vfio/vfio_iommu_type1.c |  523 +++++++++++++++++++++++++--------
+> ------
+> +static long vfio_unpin_pages(unsigned long pfn, long npage,
+> +			     int prot, bool do_accounting)
+> +{
+> +	unsigned long unlocked = 0;
+> +	long i;
+> +
+> +	for (i = 0; i < npage; i++)
+> +		unlocked += put_pfn(pfn++, prot);
+> +
+> +	if (do_accounting)
+> +		vfio_lock_acct(-unlocked);
+> +
+> +	return unlocked;
+> +}
+> +
+> +static int vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma
+> *dma,
+> +			    dma_addr_t iova, size_t *size)
+> +{
+> +	dma_addr_t start = iova, end = iova + *size;
+> +	long unlocked = 0;
+> +
+> +	while (iova < end) {
+> +		size_t unmapped;
+> +		phys_addr_t phys;
+> +
+>  		/*
+> -		 * Only add actual locked pages to accounting
+> -		 * XXX We're effectively marking a page locked for every
+> -		 * IOVA page even though it's possible the user could be
+> -		 * backing multiple IOVAs with the same vaddr.  This over-
+> -		 * penalizes the user process, but we currently have no
+> -		 * easy way to do this properly.
+> +		 * We use the IOMMU to track the physical address.  This
+> +		 * saves us from having a lot more entries in our mapping
+> +		 * tree.  The downside is that we don't track the size
+> +		 * used to do the mapping.  We request unmap of a single
+> +		 * page, but expect IOMMUs that support large pages to
+> +		 * unmap a larger chunk.
+>  		 */
+> -		if (!is_invalid_reserved_pfn(pfn))
+> -			locked++;
+> -
+> -		ret = iommu_map(iommu->domain, iova,
+> -				(phys_addr_t)pfn << PAGE_SHIFT,
+> -				PAGE_SIZE, prot);
+> -		if (ret) {
+> -			/* Back out mappings on error */
+> -			put_pfn(pfn, prot);
+> -			__vfio_dma_do_unmap(iommu, start, i, prot);
+> -			return ret;
+> +		phys = iommu_iova_to_phys(iommu->domain, iova);
+> +		if (WARN_ON(!phys)) {
+[Sethi Varun-B16395] When can this happen? Why won't this be treated as an error? 
+
+> +			iova += PAGE_SIZE;
+> +			continue;
+>  		}
+> +
+> +		unmapped = iommu_unmap(iommu->domain, iova, PAGE_SIZE);
+> +		if (!unmapped)
+> +			break;
+> +
+> +		unlocked += vfio_unpin_pages(phys >> PAGE_SHIFT,
+> +					     unmapped >> PAGE_SHIFT,
+> +					     dma->prot, false);
+> +		iova += unmapped;
+>  	}
+> -	vfio_lock_acct(locked);
+> +
+> +	vfio_lock_acct(-unlocked);
+> +
+> +	*size = iova - start;
+> +
+>  	return 0;
+>  }
+> 
+>  static int vfio_remove_dma_overlap(struct vfio_iommu *iommu, dma_addr_t
+> start,
+> -				   size_t size, struct vfio_dma *dma)
+> +				   size_t *size, struct vfio_dma *dma)
+>  {
+> +	size_t offset, overlap, tmp;
+>  	struct vfio_dma *split;
+> -	long npage_lo, npage_hi;
+> +	int ret;
+> +
+> +	/*
+> +	 * Existing dma region is completely covered, unmap all.  This is
+> +	 * the likely case since userspace tends to map and unmap buffers
+> +	 * in one shot rather than multiple mappings within a buffer.
+> +	 */
+> +	if (likely(start <= dma->iova &&
+> +		   start + *size >= dma->iova + dma->size)) {
+> +		*size = dma->size;
+> +		ret = vfio_unmap_unpin(iommu, dma, dma->iova, size);
+> +		if (ret)
+> +			return ret;
+> +
+> +		/*
+> +		 * Did we remove more than we have?  Should never happen
+> +		 * since a vfio_dma is contiguous in iova and vaddr.
+> +		 */
+> +		WARN_ON(*size != dma->size);
+[Sethi Varun-B16395] Doesn't this indicate something wrong with the IOMMU mappings?
+
+-Varun
