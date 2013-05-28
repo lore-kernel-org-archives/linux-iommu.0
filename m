@@ -1,16 +1,13 @@
-From: Suravee Suthikulanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH 2/2 V3] perf/x86/amd: AMD IOMMU PC PERF uncore PMU
-	implementation
-Date: Tue, 28 May 2013 12:17:28 -0500
-Message-ID: <51A4E6A8.7080004@amd.com>
-References: <1368819813-6481-1-git-send-email-suravee.suthikulpanit@amd.com>
-	<1368819813-6481-3-git-send-email-suravee.suthikulpanit@amd.com>
-	<20130528121850.GC2575@8bytes.org>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v2 1/2] iommu: Quirked PCIe bridge test and search function
+Date: Tue, 28 May 2013 12:40:20 -0600
+Message-ID: <20130528184020.3318.7800.stgit@bling.home>
+References: <20130528183527.3318.5365.stgit@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130528121850.GC2575-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20130528183527.3318.5365.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,59 +17,153 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, a.p.zijlstra-/NLkJaSkS4VmR6Xm/wNWPw@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: stephen-OTpzqLSitTUnbdJkjeBofR2eb7JE58TQ@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 5/28/2013 7:18 AM, Joerg Roedel wrote:
-> On Fri, May 17, 2013 at 02:43:32PM -0500, Suthikulpanit, Suravee wrote:
->> diff --git a/arch/x86/kernel/cpu/Makefile b/arch/x86/kernel/cpu/Makefile
->> index b0684e4..fcbd3b8 100644
->> --- a/arch/x86/kernel/cpu/Makefile
->> +++ b/arch/x86/kernel/cpu/Makefile
->> @@ -30,7 +30,7 @@ obj-$(CONFIG_CPU_SUP_UMC_32)		+= umc.o
->>   obj-$(CONFIG_PERF_EVENTS)		+= perf_event.o
->>   
->>   ifdef CONFIG_PERF_EVENTS
->> -obj-$(CONFIG_CPU_SUP_AMD)		+= perf_event_amd.o perf_event_amd_uncore.o
->> +obj-$(CONFIG_CPU_SUP_AMD)		+= perf_event_amd.o perf_event_amd_uncore.o perf_event_amd_iommu.o
-> This should also depend on CONFIG_AMD_IOMMU. If no IOMMU driver is
-> compiled in it doesn't make sense to have that PMU.
-I will take care of this.
-> +	} else {
-> +		return -EINVAL;
-> +	}
-> +
-> +	/* integrate with iommu base devid (0000), assume one iommu */
-> +	perf_iommu->max_banks =
-> +		amd_iommu_pc_get_max_banks(IOMMU_BASE_DEVID);
-> +	perf_iommu->max_counters =
-> +		amd_iommu_pc_get_max_counters(IOMMU_BASE_DEVID);
-> +
-> +	/* update the hw_perf_event struct with the iommu config data */
-> +	hwc->config = config;
-> +	hwc->extra_reg.config = config1;
-> +
-> +	return 0;
-> +}
-> That implementation is very basic. Any reason for not using the event
-> reporting mechanism of the IOMMU? You could implement a nice perf
-> iommutop or something to see which devices do the most transactions or
-> something like that.
->
->
-> 	Joerg
-This patch is adding perf system-wide counting mode support which is 
-used by "perf stat" tool.  We are not implementing the sampling mode 
-since MSI interrupt of the IOMMU cannot be used for current perf 
-sampling tools (e.g. perf record or top) since the IOMMU counters are 
-not core-specific.   The current "perf record" and "perf top" needs to 
-attribute each sample to a particular core/pid which would allow the 
-tools to figure out the instruction pointer and map the sample to a 
-paticular module.
+Some PCIe-to-PCI bridges are not fully compliant with the PCIe spec
+and do not include a PCIe capability.  pci_is_pcie() is not useful on
+these devices, making it difficult to determine where we transition
+from a legacy PCI bus to a PCIe link.  PCI-core doesn't want a quirked
+bridge test for fear of confusion that a PCIe capability would be
+expected, so implement it in IOMMU code.
 
-If I understand correctly, when you mentioned "perf iommutop", you want 
-a new perf user-space tool which will show real-time IOMMU events per 
-IOMMU HW and/or device?
+Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/Kconfig  |    3 ++
+ drivers/iommu/Makefile |    1 +
+ drivers/iommu/pci.c    |   69 ++++++++++++++++++++++++++++++++++++++++++++++++
+ drivers/iommu/pci.h    |   23 ++++++++++++++++
+ 4 files changed, 96 insertions(+)
+ create mode 100644 drivers/iommu/pci.c
 
-Suravee
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index c332fb9..a591794 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -2,6 +2,9 @@
+ config IOMMU_API
+ 	bool
+ 
++config IOMMU_PCI
++	bool
++
+ menuconfig IOMMU_SUPPORT
+ 	bool "IOMMU Hardware Support"
+ 	default y
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index ef0e520..f14d905 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -15,3 +15,4 @@ obj-$(CONFIG_TEGRA_IOMMU_SMMU) += tegra-smmu.o
+ obj-$(CONFIG_EXYNOS_IOMMU) += exynos-iommu.o
+ obj-$(CONFIG_SHMOBILE_IOMMU) += shmobile-iommu.o
+ obj-$(CONFIG_SHMOBILE_IPMMU) += shmobile-ipmmu.o
++obj-$(CONFIG_IOMMU_PCI) += pci.o
+diff --git a/drivers/iommu/pci.c b/drivers/iommu/pci.c
+new file mode 100644
+index 0000000..c3cae8d
+--- /dev/null
++++ b/drivers/iommu/pci.c
+@@ -0,0 +1,69 @@
++/*
++ * Copyright (C) 2013 Red Hat, Inc.  All rights reserved.
++ * Author: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 as published
++ * by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
++ */
++
++#include <linux/pci.h>
++
++bool iommu_pci_is_pcie_bridge(struct pci_dev *pdev)
++{
++	if (!pdev->subordinate)
++		return false;
++
++	if (pci_is_pcie(pdev))
++		return true;
++
++#ifdef CONFIG_PCI_QUIRKS
++	/*
++	 * If we're not on the root bus, look one device upstream of the
++	 * current device.  If that device is PCIe and is not a PCIe-to-PCI
++	 * bridge, then the current device is effectively PCIe as it must
++	 * be the PCIe-to-PCI bridge.  This handles several bridges that
++	 * violate the PCIe spec by not exposing a PCIe capability:
++	 * https://bugzilla.kernel.org/show_bug.cgi?id=44881
++	 */
++	if (!pci_is_root_bus(pdev->bus)) {
++		struct pci_dev *parent = pdev->bus->self;
++
++		if (pci_is_pcie(parent) &&
++		    pci_pcie_type(parent) != PCI_EXP_TYPE_PCI_BRIDGE)
++			return true;
++	}
++#endif
++	return false;
++}
++
++struct pci_dev *iommu_pci_find_upstream(struct pci_dev *pdev,
++					bool (*match)(struct pci_dev *),
++					struct pci_dev **last)
++{
++	*last = NULL;
++
++	if (match(pdev))
++		return pdev;
++
++	*last = pdev;
++
++	while (!pci_is_root_bus(pdev->bus)) {
++		*last = pdev;
++		pdev = pdev->bus->self;
++
++		if (match(pdev))
++			return pdev;
++	}
++
++	return NULL;
++}
+diff --git a/drivers/iommu/pci.h b/drivers/iommu/pci.h
+index 352d80a..cc6d58a 100644
+--- a/drivers/iommu/pci.h
++++ b/drivers/iommu/pci.h
+@@ -26,4 +26,27 @@ static inline void swap_pci_ref(struct pci_dev **from, struct pci_dev *to)
+ 	*from = to;
+ }
+ 
++/**
++ * iommu_pci_is_pcie_bridge - Match a PCIe bridge device
++ * @pdev: device to test
++ *
++ * Return true if the given device is a PCIe bridge, false otherwise.
++ */
++bool iommu_pci_is_pcie_bridge(struct pci_dev *pdev);
++
++/**
++ * iommu_pci_find_upstream - Generic upstream search function
++ * @pdev: starting PCI device to search
++ * @match: match function to call on each device (true = match)
++ * @last: last device examined prior to returned device
++ *
++ * Walk upstream from the given device, calling match() at each
++ * device, including self.  Returns the first device matching match().
++ * If the root bus is reached without finding a match, return NULL.
++ * last returns the N-1 step in the search path.
++ */
++struct pci_dev *iommu_pci_find_upstream(struct pci_dev *pdev,
++					bool (*match)(struct pci_dev *),
++					struct pci_dev **last);
++
+ #endif  /* __IOMMU_PCI_H */
