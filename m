@@ -1,169 +1,52 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v2 1/2] iommu: Quirked PCIe bridge test and search function
-Date: Tue, 28 May 2013 12:40:20 -0600
-Message-ID: <20130528184020.3318.7800.stgit@bling.home>
-References: <20130528183527.3318.5365.stgit@bling.home>
+From: Alex Williamson <alex.williamson@redhat.com>
+Subject: [PATCH v2 0/2] iommu/intel: Quirk non-compliant PCIe-to-PCI bridges
+Date: Tue, 28 May 2013 12:40:11 -0600
+Message-ID: <20130528183527.3318.5365.stgit@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130528183527.3318.5365.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: stephen-OTpzqLSitTUnbdJkjeBofR2eb7JE58TQ@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-pci-owner@vger.kernel.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, dwmw2@infradead.org, joro@8bytes.org
+Cc: stephen@networkplumber.org, linux-pci@vger.kernel.org, ddutile@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-Some PCIe-to-PCI bridges are not fully compliant with the PCIe spec
-and do not include a PCIe capability.  pci_is_pcie() is not useful on
-these devices, making it difficult to determine where we transition
-from a legacy PCI bus to a PCIe link.  PCI-core doesn't want a quirked
-bridge test for fear of confusion that a PCIe capability would be
-expected, so implement it in IOMMU code.
+This series tries to address:
 
-Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+https://bugzilla.kernel.org/show_bug.cgi?id=3D44881
+
+Where pci_find_upstream_pcie_bridge() gets lost trying to find the
+upstream PCIe-to-PCI bridge for a device because the bridge doesn't
+expose a PCIe capability.=C2=A0 To do this, we add a iommu_pci_is_pcie_=
+bridge
+function which includes a quirk to look to the next upstream device
+as a sanity check.=C2=A0 We can then replace pci_find_upstream_pcie_bri=
+dge
+with a function that's a bit more generic and less tied to intel-iommu
+eccentricities.
+
+v2 uses the same logic as v1, but moves the search and match code to
+IOMMU-core since PCI-core doesn't want it.  v1 has several reports
+from users that this solves the problem they have in the above bz.
+Thanks,
+
+Alex
+
 ---
- drivers/iommu/Kconfig  |    3 ++
- drivers/iommu/Makefile |    1 +
- drivers/iommu/pci.c    |   69 ++++++++++++++++++++++++++++++++++++++++++++++++
- drivers/iommu/pci.h    |   23 ++++++++++++++++
- 4 files changed, 96 insertions(+)
- create mode 100644 drivers/iommu/pci.c
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index c332fb9..a591794 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -2,6 +2,9 @@
- config IOMMU_API
- 	bool
- 
-+config IOMMU_PCI
-+	bool
-+
- menuconfig IOMMU_SUPPORT
- 	bool "IOMMU Hardware Support"
- 	default y
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index ef0e520..f14d905 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -15,3 +15,4 @@ obj-$(CONFIG_TEGRA_IOMMU_SMMU) += tegra-smmu.o
- obj-$(CONFIG_EXYNOS_IOMMU) += exynos-iommu.o
- obj-$(CONFIG_SHMOBILE_IOMMU) += shmobile-iommu.o
- obj-$(CONFIG_SHMOBILE_IPMMU) += shmobile-ipmmu.o
-+obj-$(CONFIG_IOMMU_PCI) += pci.o
-diff --git a/drivers/iommu/pci.c b/drivers/iommu/pci.c
-new file mode 100644
-index 0000000..c3cae8d
---- /dev/null
-+++ b/drivers/iommu/pci.c
-@@ -0,0 +1,69 @@
-+/*
-+ * Copyright (C) 2013 Red Hat, Inc.  All rights reserved.
-+ * Author: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published
-+ * by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program; if not, write to the Free Software
-+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-+ */
-+
-+#include <linux/pci.h>
-+
-+bool iommu_pci_is_pcie_bridge(struct pci_dev *pdev)
-+{
-+	if (!pdev->subordinate)
-+		return false;
-+
-+	if (pci_is_pcie(pdev))
-+		return true;
-+
-+#ifdef CONFIG_PCI_QUIRKS
-+	/*
-+	 * If we're not on the root bus, look one device upstream of the
-+	 * current device.  If that device is PCIe and is not a PCIe-to-PCI
-+	 * bridge, then the current device is effectively PCIe as it must
-+	 * be the PCIe-to-PCI bridge.  This handles several bridges that
-+	 * violate the PCIe spec by not exposing a PCIe capability:
-+	 * https://bugzilla.kernel.org/show_bug.cgi?id=44881
-+	 */
-+	if (!pci_is_root_bus(pdev->bus)) {
-+		struct pci_dev *parent = pdev->bus->self;
-+
-+		if (pci_is_pcie(parent) &&
-+		    pci_pcie_type(parent) != PCI_EXP_TYPE_PCI_BRIDGE)
-+			return true;
-+	}
-+#endif
-+	return false;
-+}
-+
-+struct pci_dev *iommu_pci_find_upstream(struct pci_dev *pdev,
-+					bool (*match)(struct pci_dev *),
-+					struct pci_dev **last)
-+{
-+	*last = NULL;
-+
-+	if (match(pdev))
-+		return pdev;
-+
-+	*last = pdev;
-+
-+	while (!pci_is_root_bus(pdev->bus)) {
-+		*last = pdev;
-+		pdev = pdev->bus->self;
-+
-+		if (match(pdev))
-+			return pdev;
-+	}
-+
-+	return NULL;
-+}
-diff --git a/drivers/iommu/pci.h b/drivers/iommu/pci.h
-index 352d80a..cc6d58a 100644
---- a/drivers/iommu/pci.h
-+++ b/drivers/iommu/pci.h
-@@ -26,4 +26,27 @@ static inline void swap_pci_ref(struct pci_dev **from, struct pci_dev *to)
- 	*from = to;
- }
- 
-+/**
-+ * iommu_pci_is_pcie_bridge - Match a PCIe bridge device
-+ * @pdev: device to test
-+ *
-+ * Return true if the given device is a PCIe bridge, false otherwise.
-+ */
-+bool iommu_pci_is_pcie_bridge(struct pci_dev *pdev);
-+
-+/**
-+ * iommu_pci_find_upstream - Generic upstream search function
-+ * @pdev: starting PCI device to search
-+ * @match: match function to call on each device (true = match)
-+ * @last: last device examined prior to returned device
-+ *
-+ * Walk upstream from the given device, calling match() at each
-+ * device, including self.  Returns the first device matching match().
-+ * If the root bus is reached without finding a match, return NULL.
-+ * last returns the N-1 step in the search path.
-+ */
-+struct pci_dev *iommu_pci_find_upstream(struct pci_dev *pdev,
-+					bool (*match)(struct pci_dev *),
-+					struct pci_dev **last);
-+
- #endif  /* __IOMMU_PCI_H */
+Alex Williamson (2):
+      iommu: Quirked PCIe bridge test and search function
+      intel-iommu: Convert to iommu_pci_find_upstream + iommu_pci_is_pc=
+ie_bridge
+
+
+ drivers/iommu/Kconfig               |    5 ++
+ drivers/iommu/Makefile              |    1=20
+ drivers/iommu/intel-iommu.c         |   77 ++++++++++++++++++++++-----=
+--------
+ drivers/iommu/intel_irq_remapping.c |   15 +++++--
+ drivers/iommu/pci.c                 |   69 +++++++++++++++++++++++++++=
+++++
+ drivers/iommu/pci.h                 |   23 ++++++++++
+ 6 files changed, 157 insertions(+), 33 deletions(-)
+ create mode 100644 drivers/iommu/pci.c
