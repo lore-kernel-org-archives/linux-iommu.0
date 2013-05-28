@@ -1,62 +1,69 @@
-From: Stephen Hemminger <stephen@networkplumber.org>
-Subject: Re: [PATCH v2 1/2] iommu: Quirked PCIe bridge test and search
- function
-Date: Tue, 28 May 2013 13:28:19 -0700
-Message-ID: <20130528132819.2f1bc333@nehalam.linuxnetplumber.net>
+From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2 0/2] iommu/intel: Quirk non-compliant PCIe-to-PCI
+	bridges
+Date: Tue, 28 May 2013 16:09:49 -0600
+Message-ID: <CAErSpo4rjifYfC_4vcs2g-Pb-LR_n2NB6e5en3=CSWgW4iQcJA@mail.gmail.com>
 References: <20130528183527.3318.5365.stgit@bling.home>
-	<20130528184020.3318.7800.stgit@bling.home>
-	<20130528123827.2507c34e@nehalam.linuxnetplumber.net>
-	<1369770790.2646.272.camel@ul30vt.home>
-	<20130528125650.5ca5b419@nehalam.linuxnetplumber.net>
-	<1369772124.2646.288.camel@ul30vt.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1369772124.2646.288.camel@ul30vt.home>
-Sender: linux-pci-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: iommu@lists.linux-foundation.org, dwmw2@infradead.org, joro@8bytes.org, linux-pci@vger.kernel.org, ddutile@redhat.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20130528183527.3318.5365.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Hemminger <stephen-OTpzqLSitTUnbdJkjeBofR2eb7JE58TQ@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 28 May 2013 14:15:24 -0600
-Alex Williamson <alex.williamson@redhat.com> wrote:
-
-> On Tue, 2013-05-28 at 12:56 -0700, Stephen Hemminger wrote:
-> > On Tue, 28 May 2013 13:53:10 -0600
-> > Alex Williamson <alex.williamson@redhat.com> wrote:
-> > 
-> > > On Tue, 2013-05-28 at 12:38 -0700, Stephen Hemminger wrote:
-> > > > On Tue, 28 May 2013 12:40:20 -0600
-> > > > Alex Williamson <alex.williamson@redhat.com> wrote:
-> > > > 
-> > > > > Some PCIe-to-PCI bridges are not fully compliant with the PCIe spec
-> > > > > and do not include a PCIe capability.  pci_is_pcie() is not useful on
-> > > > > these devices, making it difficult to determine where we transition
-> > > > > from a legacy PCI bus to a PCIe link.  PCI-core doesn't want a quirked
-> > > > > bridge test for fear of confusion that a PCIe capability would be
-> > > > > expected, so implement it in IOMMU code.
-> > > > > 
-> > > > > Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
-> > > > 
-> > > > This won't work for me because I run without IOMMU.
-> > > > The overhead of IOMMU setup per-packet significantly impacts network performance.
-> > > 
-> > > You were one of the reporters of this issue:
-> > > 
-> > > http://www.spinics.net/lists/linux-pci/msg19579.html
-> > > 
-> > > Does this not work for you or are you saying this is not relevant to you
-> > > because you no longer attempt to enable the IOMMU?  Thanks,
-> > > 
-> > 
-> > For most usage, I gave up on using IOMMU/SR-IOV.
-> 
-> Ok, let's call that a "don't care" rather than "won't work" for the
-> purposes of these patches.  I'll take you off the CC if there's another
-> version.  Thanks,
-> 
+On Tue, May 28, 2013 at 12:40 PM, Alex Williamson
+<alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+> This series tries to address:
+>
+> https://bugzilla.kernel.org/show_bug.cgi?id=44881
+>
+> Where pci_find_upstream_pcie_bridge() gets lost trying to find the
+> upstream PCIe-to-PCI bridge for a device because the bridge doesn't
+> expose a PCIe capability.  To do this, we add a iommu_pci_is_pcie_bridge
+> function which includes a quirk to look to the next upstream device
+> as a sanity check.  We can then replace pci_find_upstream_pcie_bridge
+> with a function that's a bit more generic and less tied to intel-iommu
+> eccentricities.
+>
+> v2 uses the same logic as v1, but moves the search and match code to
+> IOMMU-core since PCI-core doesn't want it.  v1 has several reports
+> from users that this solves the problem they have in the above bz.
+> Thanks,
+>
 > Alex
-> 
+>
+> ---
+>
+> Alex Williamson (2):
+>       iommu: Quirked PCIe bridge test and search function
+>       intel-iommu: Convert to iommu_pci_find_upstream + iommu_pci_is_pcie_bridge
+>
+>
+>  drivers/iommu/Kconfig               |    5 ++
+>  drivers/iommu/Makefile              |    1
+>  drivers/iommu/intel-iommu.c         |   77 ++++++++++++++++++++++-------------
+>  drivers/iommu/intel_irq_remapping.c |   15 +++++--
+>  drivers/iommu/pci.c                 |   69 +++++++++++++++++++++++++++++++
+>  drivers/iommu/pci.h                 |   23 ++++++++++
+>  6 files changed, 157 insertions(+), 33 deletions(-)
+>  create mode 100644 drivers/iommu/pci.c
 
-Yes, it is a don't care. but leave me on cc, because I may still need it.
+These both look OK to me, for whatever that's worth (since they don't
+touch drivers/pci any more :)).
+
+I assume you probably removed the only users of
+pci_find_upstream_pcie_bridge(), right?  If so, and you want to remove
+that in this same series, you can add my Acked-by to that.
+
+Bjorn
