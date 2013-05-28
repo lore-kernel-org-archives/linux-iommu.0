@@ -1,14 +1,15 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 3/2] vfio: Provide module option to disable vfio_iommu_type1
-	hugepage support
-Date: Tue, 28 May 2013 10:27:52 -0600
-Message-ID: <20130528162637.28848.76733.stgit@bling.home>
-References: <20130524171613.14229.84050.stgit@bling.home>
+From: Suravee Suthikulanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH 1/2 V3] perf/x86/amd: Adding IOMMU PC resource management
+Date: Tue, 28 May 2013 11:28:52 -0500
+Message-ID: <51A4DB44.8030207@amd.com>
+References: <1368819813-6481-1-git-send-email-suravee.suthikulpanit@amd.com>
+	<1368819813-6481-2-git-send-email-suravee.suthikulpanit@amd.com>
+	<20130528110752.GB2575@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130524171613.14229.84050.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+In-Reply-To: <20130528110752.GB2575-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,51 +19,174 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, chegu_vinod-VXdhtT5mjnY@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Steven L Kinney <Steven.Kinney-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, a.p.zijlstra-/NLkJaSkS4VmR6Xm/wNWPw@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add a module option to vfio_iommu_type1 to disable IOMMU hugepage
-support.  This causes iommu_map to only be called with single page
-mappings, disabling the IOMMU driver's ability to use hugepages.
-This option can be enabled by loading vfio_iommu_type1 with
-disable_hugepages=1 or dynamically through sysfs.  If enabled
-dynamically, only new mappings are restricted.
+Joerg,
 
-Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
+Thanks for the review.  I'll post new patch set to address your comment 
+shortly.
 
-As suggested by Konrad.  This is cleaner to add as a follow-on
+Suravee
 
- drivers/vfio/vfio_iommu_type1.c |   11 +++++++++++
- 1 file changed, 11 insertions(+)
-
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 6654a7e..8a2be4e 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -48,6 +48,12 @@ module_param_named(allow_unsafe_interrupts,
- MODULE_PARM_DESC(allow_unsafe_interrupts,
- 		 "Enable VFIO IOMMU support for on platforms without interrupt remapping support.");
- 
-+static bool disable_hugepages;
-+module_param_named(disable_hugepages,
-+		   disable_hugepages, bool, S_IRUGO | S_IWUSR);
-+MODULE_PARM_DESC(disable_hugepages,
-+		 "Disable VFIO IOMMU support for IOMMU hugepages.");
-+
- struct vfio_iommu {
- 	struct iommu_domain	*domain;
- 	struct mutex		lock;
-@@ -270,6 +276,11 @@ static long vfio_pin_pages(unsigned long vaddr, long npage,
- 		return -ENOMEM;
- 	}
- 
-+	if (unlikely(disable_hugepages)) {
-+		vfio_lock_acct(1);
-+		return 1;
-+	}
-+
- 	/* Lock all the consecutive pages from pfn_base */
- 	for (i = 1, vaddr += PAGE_SIZE; i < npage; i++, vaddr += PAGE_SIZE) {
- 		unsigned long pfn = 0;
+On 5/28/2013 6:07 AM, Joerg Roedel wrote:
+> On Fri, May 17, 2013 at 02:43:31PM -0500, Suthikulpanit, Suravee wrote:
+>> From: Steven L Kinney <Steven.Kinney-5C7GfCeVMHo@public.gmane.org>
+>>
+>> Add functionality to check the availability of the AMD IOMMU Performance
+>> Counters and export this functionality to other core drivers, such as in this
+>> case, a perf AMD IOMMU PMU.  This feature is not bound to any specific AMD
+>> family/model other than the presence of the IOMMU with PC enabled.
+>>
+>> The AMD IOMMU PC support static counting only at this time.
+>>
+>> Signed-off-by: Steven Kinney <steven.kinney-5C7GfCeVMHo@public.gmane.org>
+>> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+>> ---
+>> V2 Changes:
+>> 	- Modify the amd_iommu_pc_get_set_reg_val function
+>> 	to support 64 bit values.
+>> 	- Fix logic to properly clear amd_iommu_pc_present when
+>> 	initialization failed.
+>>
+>>   drivers/iommu/amd_iommu_init.c  |  121 ++++++++++++++++++++++++++++++++++++++-
+>>   drivers/iommu/amd_iommu_proto.h |    7 +++
+>>   drivers/iommu/amd_iommu_types.h |   12 +++-
+>>   3 files changed, 134 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+>> index bf51abb..395fa29 100644
+>> --- a/drivers/iommu/amd_iommu_init.c
+>> +++ b/drivers/iommu/amd_iommu_init.c
+>> @@ -154,6 +154,7 @@ bool amd_iommu_iotlb_sup __read_mostly = true;
+>>   u32 amd_iommu_max_pasids __read_mostly = ~0;
+>>   
+>>   bool amd_iommu_v2_present __read_mostly;
+>> +bool amd_iommu_pc_present __read_mostly;
+>>   
+>>   bool amd_iommu_force_isolation __read_mostly;
+>>   
+>> @@ -371,21 +372,21 @@ static void iommu_disable(struct amd_iommu *iommu)
+>>    */
+>>   static u8 __iomem * __init iommu_map_mmio_space(u64 address)
+>>   {
+>> -	if (!request_mem_region(address, MMIO_REGION_LENGTH, "amd_iommu")) {
+>> +	if (!request_mem_region(address, MMIO_REG_END_OFFSET, "amd_iommu")) {
+> This length needs to be different on IOMMUv1 systems where the MMI
+> region is only 16kb large. Only use MMIO_REG_END_OFFSET on IOMMUv2
+> systems.
+>
+>> +static void init_iommu_perf_ctr(struct amd_iommu *iommu)
+>> +{
+>> +	u64 val = 0xabcd, val2 = 0;
+>> +
+>> +	if (!iommu_feature(iommu, FEATURE_PC))
+>> +		return;
+>> +
+>> +	amd_iommu_pc_present = true;
+>> +
+>> +	/* Check if the performance counters can be written to */
+>> +	if ((0 != amd_iommu_pc_get_set_reg_val(0, 0, 0, 0, &val, true)) ||
+>> +	    (0 != amd_iommu_pc_get_set_reg_val(0, 0, 0, 0, &val2, false)) ||
+>> +	    (val != val2)) {
+>> +		pr_err("AMD-Vi: Unable to write to IOMMU perf counter.\n");
+>> +		amd_iommu_pc_present = false;
+>> +		return;
+>> +	}
+>> +
+>> +	pr_info("AMD-Vi: IOMMU performance counters " "supported\n");
+> Why are this two strings? This makes it hard to grep for the message.
+>
+>
+>> +u8 amd_iommu_pc_get_max_banks(u16 devid)
+>> +{
+>> +	struct amd_iommu *iommu;
+>> +
+>> +	/* locate the iommu governing the devid */
+>> +	iommu = amd_iommu_rlookup_table[devid];
+>> +
+>> +	if (iommu)
+>> +		return iommu->max_banks;
+>> +
+>> +	return -ENODEV;
+>> +}
+>> +EXPORT_SYMBOL(amd_iommu_pc_get_max_banks);
+> You can't return -ENODEV in a function returning u8. Return int instead.
+>
+>> +
+>> +bool amd_iommu_pc_supported(void)
+>> +{
+>> +	return amd_iommu_pc_present;
+>> +}
+>> +EXPORT_SYMBOL(amd_iommu_pc_supported);
+>> +
+>> +u8 amd_iommu_pc_get_max_counters(u16 devid)
+>> +{
+>> +	struct amd_iommu *iommu;
+>> +
+>> +	/* locate the iommu governing the devid */
+>> +	iommu = amd_iommu_rlookup_table[devid];
+>> +
+>> +	if (iommu)
+>> +		return iommu->max_counters;
+>> +
+>> +	return -ENODEV;
+>> +}
+>> +EXPORT_SYMBOL(amd_iommu_pc_get_max_counters);
+> Same here. Please don't return negative values as u8.
+>
+>> +
+>> +int amd_iommu_pc_get_set_reg_val(u16 devid, u8 bank, u8 cntr, u8 fxn,
+>> +				    u64 *value, bool is_write)
+>> +{
+>> +	struct amd_iommu *iommu;
+>> +	u32 offset;
+>> +	u32 max_offset_lim;
+>> +
+>> +	/* Make sure the IOMMU PC resource is available */
+>> +	if (!amd_iommu_pc_present) {
+>> +		pr_info("AMD IOMMU - PC Not supported.\n");
+> This message is redundant. You already print about about performance
+> counter availability in the init code. Please remove it.
+>
+>> +		return -ENODEV;
+>> +	}
+>> +
+>> +	/* locate the iommu associated with the device ID */
+>> +	iommu = amd_iommu_rlookup_table[devid];
+>> +	if (iommu == NULL)
+>> +		return -ENODEV;
+>> +
+>> +	/* check for valid iommu pc register indexing */
+>> +	if (fxn < 0 || fxn > 0x28 || (fxn & 7))
+>> +		return -ENODEV;
+> Does this check for calling errors? If so, you might consider turning
+> this into a WARN_ON.
+>
+>> +
+>> +	offset = (u32)(((0x40|bank) << 12) | (cntr << 8) | fxn);
+>> +
+>> +	/* limit the offset to the hw defined mmio region aperture */
+>> +	max_offset_lim = (u32)(((0x40|iommu->max_banks) << 12) |
+>> +				(iommu->max_counters << 8) | 0x28);
+>> +	if ((offset < MMIO_CNTR_REG_OFFSET) ||
+>> +	    (offset > max_offset_lim))
+>> +		return -EINVAL;
+>> +
+>> +	if (is_write) {
+>> +		writel((u32)*value, iommu->mmio_base + offset);
+>> +		writel((*value >> 32), iommu->mmio_base + offset + 4);
+>> +	} else {
+>> +		*value = readl(iommu->mmio_base + offset + 4);
+>> +		*value <<= 32;
+>> +		*value = readl(iommu->mmio_base + offset);
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+>
+> 	Joerg
+>
+>
+>
