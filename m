@@ -1,108 +1,58 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: [PATCH] iommu: amd/intel: Remove multifunction assumption around
- grouping
-Date: Thu, 30 May 2013 12:39:18 -0600
-Message-ID: <20130530183855.14612.15585.stgit@bling.home>
+From: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+Subject: [PATCH] iommu/omap: fix printk formats for dma_addr_t
+Date: Thu, 30 May 2013 18:10:38 -0500
+Message-ID: <1369955438-51067-1-git-send-email-s-anna@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-Sender: linux-pci-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, dwmw2@infradead.org, joro@8bytes.org
-Cc: linux-pci@vger.kernel.org, ddutile@redhat.com, linux-kernel@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-If a device is multifunction and does not have ACS enabled then we
-assume that the entire package lacks ACS and use function 0 as the
-base of the group.  The PCIe spec however states that components are
-permitted to implement ACS on some, none, or all of their applicable
-functions.  It's therefore conceivable that function 0 may be fully
-independent and support ACS while other functions do not.  Instead
-use the lowest function of the slot that does not have ACS enabled
-as the base of the group.  This may be the current device, which is
-intentional.  So long as we use a consistent algorithm, all the
-non-ACS functions will be grouped together and ACS functions will
-get separate groups.
+Fixed the following printk format warnings for dma_addr_t
+for OMAP IOMMU.
 
-Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+drivers/iommu/omap-iommu.c: In function 'omap_iommu_iova_to_phys':
+drivers/iommu/omap-iommu.c:1238:4: warning: format '%lx' expects type 'long unsigned int', but argument 4 has type 'dma_addr_t'
+drivers/iommu/omap-iommu.c:1245:4: warning: format '%lx' expects type 'long unsigned int', but argument 4 has type 'dma_addr_t'
+
+Signed-off-by: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c   |   25 +++++++++++++++++++------
- drivers/iommu/intel-iommu.c |   25 +++++++++++++++++++------
- 2 files changed, 38 insertions(+), 12 deletions(-)
+ drivers/iommu/omap-iommu.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 1d84be1..565c745 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -287,14 +287,27 @@ static struct pci_dev *get_isolation_root(struct pci_dev *pdev)
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index e02e5d7..0cc658c 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -1235,14 +1235,16 @@ static phys_addr_t omap_iommu_iova_to_phys(struct iommu_domain *domain,
+ 		else if (iopte_is_large(*pte))
+ 			ret = omap_iommu_translate(*pte, da, IOLARGE_MASK);
+ 		else
+-			dev_err(dev, "bogus pte 0x%x, da 0x%lx", *pte, da);
++			dev_err(dev, "bogus pte 0x%x, da 0x%llx", *pte,
++							(unsigned long long)da);
+ 	} else {
+ 		if (iopgd_is_section(*pgd))
+ 			ret = omap_iommu_translate(*pgd, da, IOSECTION_MASK);
+ 		else if (iopgd_is_super(*pgd))
+ 			ret = omap_iommu_translate(*pgd, da, IOSUPER_MASK);
+ 		else
+-			dev_err(dev, "bogus pgd 0x%x, da 0x%lx", *pgd, da);
++			dev_err(dev, "bogus pgd 0x%x, da 0x%llx", *pgd,
++							(unsigned long long)da);
+ 	}
  
- 	/*
- 	 * If it's a multifunction device that does not support our
--	 * required ACS flags, add to the same group as function 0.
-+	 * required ACS flags, add to the same group as lowest numbered
-+	 * function that also does not suport the required ACS flags.
- 	 */
- 	if (dma_pdev->multifunction &&
--	    !pci_acs_enabled(dma_pdev, REQ_ACS_FLAGS))
--		swap_pci_ref(&dma_pdev,
--			     pci_get_slot(dma_pdev->bus,
--					  PCI_DEVFN(PCI_SLOT(dma_pdev->devfn),
--					  0)));
-+	    !pci_acs_enabled(dma_pdev, REQ_ACS_FLAGS)) {
-+		u8 i, slot = PCI_SLOT(dma_pdev->devfn);
-+
-+		for (i = 0; i < 8; i++) {
-+			struct pci_dev *tmp;
-+
-+			tmp = pci_get_slot(dma_pdev->bus, PCI_DEVFN(slot, i));
-+			if (!tmp)
-+				continue;
-+
-+			if (!pci_acs_enabled(tmp, REQ_ACS_FLAGS)) {
-+				swap_pci_ref(&dma_pdev, tmp);
-+				break;
-+			}
-+			pci_dev_put(tmp);
-+		}
-+	}
- 
- 	/*
- 	 * Devices on the root bus go through the iommu.  If that's not us,
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index b4f0e28..eec0d3e 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -4182,14 +4182,27 @@ static int intel_iommu_add_device(struct device *dev)
- 
- 	/*
- 	 * If it's a multifunction device that does not support our
--	 * required ACS flags, add to the same group as function 0.
-+	 * required ACS flags, add to the same group as lowest numbered
-+	 * function that also does not suport the required ACS flags.
- 	 */
- 	if (dma_pdev->multifunction &&
--	    !pci_acs_enabled(dma_pdev, REQ_ACS_FLAGS))
--		swap_pci_ref(&dma_pdev,
--			     pci_get_slot(dma_pdev->bus,
--					  PCI_DEVFN(PCI_SLOT(dma_pdev->devfn),
--					  0)));
-+	    !pci_acs_enabled(dma_pdev, REQ_ACS_FLAGS)) {
-+		u8 i, slot = PCI_SLOT(dma_pdev->devfn);
-+
-+		for (i = 0; i < 8; i++) {
-+			struct pci_dev *tmp;
-+
-+			tmp = pci_get_slot(dma_pdev->bus, PCI_DEVFN(slot, i));
-+			if (!tmp)
-+				continue;
-+
-+			if (!pci_acs_enabled(tmp, REQ_ACS_FLAGS)) {
-+				swap_pci_ref(&dma_pdev, tmp);
-+				break;
-+			}
-+			pci_dev_put(tmp);
-+		}
-+	}
- 
- 	/*
- 	 * Devices on the root bus go through the iommu.  If that's not us,
+ 	return ret;
+-- 
+1.8.2
