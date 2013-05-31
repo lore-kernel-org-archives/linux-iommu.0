@@ -1,83 +1,87 @@
-From: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
-Subject: [PATCH] iommu/omap: fix checkpatch warnings in omap iommu code
-Date: Thu, 30 May 2013 18:10:59 -0500
-Message-ID: <1369955459-51101-1-git-send-email-s-anna@ti.com>
+From: Chegu Vinod <chegu_vinod@hp.com>
+Subject: Re: [PATCH 3/2] vfio: Provide module option to disable
+ vfio_iommu_type1 hugepage support
+Date: Thu, 30 May 2013 19:33:21 -0700
+Message-ID: <51A80BF1.4040408@hp.com>
+References: <20130524171613.14229.84050.stgit@bling.home>
+	<20130528162637.28848.76733.stgit@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+Return-path: <qemu-devel-bounces+gceq-qemu-devel=gmane.org@nongnu.org>
+In-Reply-To: <20130528162637.28848.76733.stgit@bling.home>
+List-Unsubscribe: <https://lists.nongnu.org/mailman/options/qemu-devel>,
+	<mailto:qemu-devel-request@nongnu.org?subject=unsubscribe>
+List-Archive: <http://lists.nongnu.org/archive/html/qemu-devel>
+List-Post: <mailto:qemu-devel@nongnu.org>
+List-Help: <mailto:qemu-devel-request@nongnu.org?subject=help>
+List-Subscribe: <https://lists.nongnu.org/mailman/listinfo/qemu-devel>,
+	<mailto:qemu-devel-request@nongnu.org?subject=subscribe>
+Errors-To: qemu-devel-bounces+gceq-qemu-devel=gmane.org@nongnu.org
+Sender: qemu-devel-bounces+gceq-qemu-devel=gmane.org@nongnu.org
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, qemu-devel@nongnu.org, kvm@vger.kernel.org, konrad.wilk@oracle.com
 List-Id: iommu@lists.linux-foundation.org
 
-This patch fixes the checkpatch warnings in omap iommu
-code, most of them are related to broken strings.
+On 5/28/2013 9:27 AM, Alex Williamson wrote:
+> Add a module option to vfio_iommu_type1 to disable IOMMU hugepage
+> support.  This causes iommu_map to only be called with single page
+> mappings, disabling the IOMMU driver's ability to use hugepages.
+> This option can be enabled by loading vfio_iommu_type1 with
+> disable_hugepages=1 or dynamically through sysfs.  If enabled
+> dynamically, only new mappings are restricted.
+>
+> Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+> ---
+>
+> As suggested by Konrad.  This is cleaner to add as a follow-on
+>
+>   drivers/vfio/vfio_iommu_type1.c |   11 +++++++++++
+>   1 file changed, 11 insertions(+)
+>
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> index 6654a7e..8a2be4e 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -48,6 +48,12 @@ module_param_named(allow_unsafe_interrupts,
+>   MODULE_PARM_DESC(allow_unsafe_interrupts,
+>   		 "Enable VFIO IOMMU support for on platforms without interrupt remapping support.");
+>   
+> +static bool disable_hugepages;
+> +module_param_named(disable_hugepages,
+> +		   disable_hugepages, bool, S_IRUGO | S_IWUSR);
+> +MODULE_PARM_DESC(disable_hugepages,
+> +		 "Disable VFIO IOMMU support for IOMMU hugepages.");
+> +
+>   struct vfio_iommu {
+>   	struct iommu_domain	*domain;
+>   	struct mutex		lock;
+> @@ -270,6 +276,11 @@ static long vfio_pin_pages(unsigned long vaddr, long npage,
+>   		return -ENOMEM;
+>   	}
+>   
+> +	if (unlikely(disable_hugepages)) {
+> +		vfio_lock_acct(1);
+> +		return 1;
+> +	}
+> +
+>   	/* Lock all the consecutive pages from pfn_base */
+>   	for (i = 1, vaddr += PAGE_SIZE; i < npage; i++, vaddr += PAGE_SIZE) {
+>   		unsigned long pfn = 0;
+>
+> .
+>
 
-Signed-off-by: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
----
- drivers/iommu/omap-iommu.c     | 9 ++++-----
- drivers/iommu/omap-iopgtable.h | 2 +-
- drivers/iommu/omap-iovmm.c     | 4 ++--
- 3 files changed, 7 insertions(+), 8 deletions(-)
+Tested-by: Chegu Vinod <chegu_vinod@hp.com>
 
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index 0cc658c..0ba3766 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -833,16 +833,15 @@ static irqreturn_t iommu_fault_handler(int irq, void *data)
- 	iopgd = iopgd_offset(obj, da);
- 
- 	if (!iopgd_is_table(*iopgd)) {
--		dev_err(obj->dev, "%s: errs:0x%08x da:0x%08x pgd:0x%p "
--			"*pgd:px%08x\n", obj->name, errs, da, iopgd, *iopgd);
-+		dev_err(obj->dev, "%s: errs:0x%08x da:0x%08x pgd:0x%p *pgd:px%08x\n",
-+				obj->name, errs, da, iopgd, *iopgd);
- 		return IRQ_NONE;
- 	}
- 
- 	iopte = iopte_offset(iopgd, da);
- 
--	dev_err(obj->dev, "%s: errs:0x%08x da:0x%08x pgd:0x%p *pgd:0x%08x "
--		"pte:0x%p *pte:0x%08x\n", obj->name, errs, da, iopgd, *iopgd,
--		iopte, *iopte);
-+	dev_err(obj->dev, "%s: errs:0x%08x da:0x%08x pgd:0x%p *pgd:0x%08x pte:0x%p *pte:0x%08x\n",
-+			obj->name, errs, da, iopgd, *iopgd, iopte, *iopte);
- 
- 	return IRQ_NONE;
- }
-diff --git a/drivers/iommu/omap-iopgtable.h b/drivers/iommu/omap-iopgtable.h
-index cd4ae9e..f4003d5 100644
---- a/drivers/iommu/omap-iopgtable.h
-+++ b/drivers/iommu/omap-iopgtable.h
-@@ -95,4 +95,4 @@ static inline phys_addr_t omap_iommu_translate(u32 d, u32 va, u32 mask)
- #define iopte_offset(iopgd, da)	(iopgd_page_vaddr(iopgd) + iopte_index(da))
- 
- #define to_iommu(dev)							\
--	(struct omap_iommu *)platform_get_drvdata(to_platform_device(dev))
-+	((struct omap_iommu *)platform_get_drvdata(to_platform_device(dev)))
-diff --git a/drivers/iommu/omap-iovmm.c b/drivers/iommu/omap-iovmm.c
-index 46d87569..d147259 100644
---- a/drivers/iommu/omap-iovmm.c
-+++ b/drivers/iommu/omap-iovmm.c
-@@ -102,8 +102,8 @@ static size_t sgtable_len(const struct sg_table *sgt)
- 		}
- 
- 		if (i && sg->offset) {
--			pr_err("%s: sg[%d] offset not allowed in internal "
--					"entries\n", __func__, i);
-+			pr_err("%s: sg[%d] offset not allowed in internal entries\n",
-+				__func__, i);
- 			return 0;
- 		}
- 
--- 
-1.8.2
+I was able to verify your changes on a 2 Sandybridge-EP socket platform 
+and observed about ~7-8% improvement in the netperf's TCP_RR 
+performance.  The guest size was small (16vcpu/32GB).
+
+Hopefully these changes also have an indirect benefit of avoiding soft 
+lockups on the host side when larger guests (> 256GB ) are rebooted. 
+Someone who has ready access to a larger Sandybridge-EP/EX platform can 
+verify this.
+
+FYI
+Vinod
