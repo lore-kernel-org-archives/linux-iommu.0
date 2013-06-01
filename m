@@ -1,60 +1,53 @@
-From: Suravee Suthikulanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH 0/2 V4] perf/x86/amd: IOMMU Performance Counter Support
-Date: Fri, 31 May 2013 18:08:53 -0500
-Message-ID: <51A92D85.9040901@amd.com>
-References: <1369781112-2198-1-git-send-email-suravee.suthikulpanit@amd.com>
+From: =?iso-8859-1?Q?Beno=EEt?= Canet <benoit.canet@irqsave.net>
+Subject: SR-IOV PF reset and QEMU VFs VFIO passthrough
+Date: Sat, 1 Jun 2013 14:13:21 +0200
+Message-ID: <20130601121320.GC5157@irqsave.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1369781112-2198-1-git-send-email-suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, a.p.zijlstra-/NLkJaSkS4VmR6Xm/wNWPw@public.gmane.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Return-path: <qemu-devel-bounces+gceq-qemu-devel=gmane.org@nongnu.org>
+Content-Disposition: inline
+List-Unsubscribe: <https://lists.nongnu.org/mailman/options/qemu-devel>,
+	<mailto:qemu-devel-request@nongnu.org?subject=unsubscribe>
+List-Archive: <http://lists.nongnu.org/archive/html/qemu-devel>
+List-Post: <mailto:qemu-devel@nongnu.org>
+List-Help: <mailto:qemu-devel-request@nongnu.org?subject=help>
+List-Subscribe: <https://lists.nongnu.org/mailman/listinfo/qemu-devel>,
+	<mailto:qemu-devel-request@nongnu.org?subject=subscribe>
+Errors-To: qemu-devel-bounces+gceq-qemu-devel=gmane.org@nongnu.org
+Sender: qemu-devel-bounces+gceq-qemu-devel=gmane.org@nongnu.org
+To: linux-pci@vger.kernel.org, qemu-devel@nongnu.org, iommu@lists.linux-foundation.org, alex.williamson@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-Jorge,
 
-Please let me know if you have any other questions/concerns.
+Hello,
 
-Thanks,
+I may have soon the PF driver of an SR-IOV card to code and make work wit=
+h
+QEMU/KVM so I have the following questions.
 
-Suravee
+In an AMD64 setup where QEMU use VFIO to passthrough the VFs of an SR-IOV=
+ card
+to a guest will the consequences of a PF FLR be handled fine by QEMU and =
+the
+guest ?
 
-On 5/28/2013 5:45 PM, suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org wrote:
-> From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
->
-> These patches implement the AMD IOMMU Performance Counter functionality
-> via custom perf PMU and implement static counting for various IOMMU
-> translations.
->
->      1) Extend the AMD IOMMU initialization to include performance
->         counter enablement.
->
->      2) The perf AMD IOMMU PMU to manage performance counters, which
->         interface with the AMD IOMMU core driver.
->
-> Steven L Kinney (1):
->    perf/x86/amd: Adding IOMMU PC resource management
->
-> Suravee Suthikulpanit (1):
->    perf/x86/amd: AMD IOMMU PC PERF uncore PMU implementation
->
->   arch/x86/kernel/cpu/Makefile               |    4 +
->   arch/x86/kernel/cpu/perf_event_amd_iommu.c |  500 ++++++++++++++++++++++++++++
->   arch/x86/kernel/cpu/perf_event_amd_iommu.h |   40 +++
->   drivers/iommu/amd_iommu_init.c             |  140 +++++++-
->   drivers/iommu/amd_iommu_proto.h            |    7 +
->   drivers/iommu/amd_iommu_types.h            |   15 +-
->   6 files changed, 694 insertions(+), 12 deletions(-)
->   create mode 100644 arch/x86/kernel/cpu/perf_event_amd_iommu.c
->   create mode 100644 arch/x86/kernel/cpu/perf_event_amd_iommu.h
->
+I read that pci_reset_function would call pci_restore_state restoring the=
+ SR-IOV
+configuration after the reset of the PF.
+
+The ways the hardware work means that the VFs would disappear and reappea=
+r in a
+short lapse of time.
+
+Will these events be handled by the kernel pci hotplug code ?
+
+Given that the PF driver restore the PF config space after the reset will=
+ /sys
+files used by QEMU disappear and reappear messing the QEMU VFIO passthrou=
+gh or
+will it goes smoothly ?
+
+Best regards
+
+Beno=EEt Canet
