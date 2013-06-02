@@ -1,48 +1,68 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: SR-IOV PF reset and QEMU VFs VFIO passthrough
-Date: Sun, 02 Jun 2013 08:11:42 -0600
-Message-ID: <1370182302.30975.279.camel@ul30vt.home>
+From: =?iso-8859-1?Q?Beno=EEt?= Canet <benoit.canet@irqsave.net>
+Subject: Re: [Qemu-devel] SR-IOV PF reset and QEMU VFs VFIO passthrough
+Date: Sun, 2 Jun 2013 17:13:20 +0200
+Message-ID: <20130602151320.GB4095@irqsave.net>
 References: <20130601121320.GC5157@irqsave.net>
+ <1370182302.30975.279.camel@ul30vt.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130601121320.GC5157-J9ArbTHlV+bR7s880joybQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: =?ISO-8859-1?Q?Beno=EEt?= Canet <benoit.canet-J9ArbTHlV+bR7s880joybQ@public.gmane.org>
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1370182302.30975.279.camel@ul30vt.home>
+Sender: linux-pci-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: =?iso-8859-1?Q?Beno=EEt?= Canet <benoit.canet@irqsave.net>, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, qemu-devel@nongnu.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gU2F0LCAyMDEzLTA2LTAxIGF0IDE0OjEzICswMjAwLCBCZW5vw650IENhbmV0IHdyb3RlOgo+
-IEhlbGxvLAo+IAo+IEkgbWF5IGhhdmUgc29vbiB0aGUgUEYgZHJpdmVyIG9mIGFuIFNSLUlPViBj
-YXJkIHRvIGNvZGUgYW5kIG1ha2Ugd29yayB3aXRoCj4gUUVNVS9LVk0gc28gSSBoYXZlIHRoZSBm
-b2xsb3dpbmcgcXVlc3Rpb25zLgo+IAo+IEluIGFuIEFNRDY0IHNldHVwIHdoZXJlIFFFTVUgdXNl
-IFZGSU8gdG8gcGFzc3Rocm91Z2ggdGhlIFZGcyBvZiBhbiBTUi1JT1YgY2FyZAo+IHRvIGEgZ3Vl
-c3Qgd2lsbCB0aGUgY29uc2VxdWVuY2VzIG9mIGEgUEYgRkxSIGJlIGhhbmRsZWQgZmluZSBieSBR
-RU1VIGFuZCB0aGUKPiBndWVzdCA/Cj4gCj4gSSByZWFkIHRoYXQgcGNpX3Jlc2V0X2Z1bmN0aW9u
-IHdvdWxkIGNhbGwgcGNpX3Jlc3RvcmVfc3RhdGUgcmVzdG9yaW5nIHRoZSBTUi1JT1YKPiBjb25m
-aWd1cmF0aW9uIGFmdGVyIHRoZSByZXNldCBvZiB0aGUgUEYuCj4gCj4gVGhlIHdheXMgdGhlIGhh
-cmR3YXJlIHdvcmsgbWVhbnMgdGhhdCB0aGUgVkZzIHdvdWxkIGRpc2FwcGVhciBhbmQgcmVhcHBl
-YXIgaW4gYQo+IHNob3J0IGxhcHNlIG9mIHRpbWUuCj4gCj4gV2lsbCB0aGVzZSBldmVudHMgYmUg
-aGFuZGxlZCBieSB0aGUga2VybmVsIHBjaSBob3RwbHVnIGNvZGUgPwo+IAo+IEdpdmVuIHRoYXQg
-dGhlIFBGIGRyaXZlciByZXN0b3JlIHRoZSBQRiBjb25maWcgc3BhY2UgYWZ0ZXIgdGhlIHJlc2V0
-IHdpbGwgL3N5cwo+IGZpbGVzIHVzZWQgYnkgUUVNVSBkaXNhcHBlYXIgYW5kIHJlYXBwZWFyIG1l
-c3NpbmcgdGhlIFFFTVUgVkZJTyBwYXNzdGhyb3VnaCBvcgo+IHdpbGwgaXQgZ29lcyBzbW9vdGhs
-eSA/CgpPbiBhbiBJbnRlbCA4MjU3NiBTUi1JT1YgTklDLCBhIEZMUiBvZiB0aGUgUEYgZG9lcyBu
-b3QgY2F1c2UgdGhlIFZGcyB0bwpiZSByZW1vdmVkLiAgSXQncyBub3QgY2xlYXIgdG8gbWUgdGhh
-dCB0aGV5IGNvbnRpbnVlIHdvcmtpbmcgYWNyb3NzIHRoZQpyZXNldCwgYnV0IHRoZXJlIGlzIG5v
-IGhvdHBsdWcuICBJZiB0aGVyZSB3YXMgYSBob3RwbHVnLCB2ZmlvLXBjaSB3b24ndApyZWxlYXNl
-IHRoZSBkZXZpY2Ugd2hpbGUgaXQncyBpbiB1c2UsIHNvIHRoZSBob3RwbHVnIHdvdWxkIGJlIGJs
-b2NrZWQKdW50aWwgdGhlIGRldmljZXMgYmVjb21lcyB1bnVzZWQsIHN1Y2ggYXMgZnJvbSB0aGUg
-Vk0gYmVpbmcgc2h1dGRvd24uClRoYW5rcywKCkFsZXgKCl9fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5s
-aW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFp
-bG1hbi9saXN0aW5mby9pb21tdQ==
+
+Thanks a lot for the answer.
+
+Best regards
+
+Beno=EEt
+
+> Le Sunday 02 Jun 2013 =E0 08:11:42 (-0600), Alex Williamson a =E9crit=
+ :
+> On Sat, 2013-06-01 at 14:13 +0200, Beno=EEt Canet wrote:
+> > Hello,
+> >=20
+> > I may have soon the PF driver of an SR-IOV card to code and make wo=
+rk with
+> > QEMU/KVM so I have the following questions.
+> >=20
+> > In an AMD64 setup where QEMU use VFIO to passthrough the VFs of an =
+SR-IOV card
+> > to a guest will the consequences of a PF FLR be handled fine by QEM=
+U and the
+> > guest ?
+> >=20
+> > I read that pci_reset_function would call pci_restore_state restori=
+ng the SR-IOV
+> > configuration after the reset of the PF.
+> >=20
+> > The ways the hardware work means that the VFs would disappear and r=
+eappear in a
+> > short lapse of time.
+> >=20
+> > Will these events be handled by the kernel pci hotplug code ?
+> >=20
+> > Given that the PF driver restore the PF config space after the rese=
+t will /sys
+> > files used by QEMU disappear and reappear messing the QEMU VFIO pas=
+sthrough or
+> > will it goes smoothly ?
+>=20
+> On an Intel 82576 SR-IOV NIC, a FLR of the PF does not cause the VFs =
+to
+> be removed.  It's not clear to me that they continue working across t=
+he
+> reset, but there is no hotplug.  If there was a hotplug, vfio-pci won=
+'t
+> release the device while it's in use, so the hotplug would be blocked
+> until the devices becomes unused, such as from the VM being shutdown.
+> Thanks,
+>=20
+> Alex
+>=20
+>=20
