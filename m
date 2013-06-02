@@ -1,53 +1,48 @@
-From: =?iso-8859-1?Q?Beno=EEt?= Canet <benoit.canet@irqsave.net>
-Subject: SR-IOV PF reset and QEMU VFs VFIO passthrough
-Date: Sat, 1 Jun 2013 14:13:21 +0200
-Message-ID: <20130601121320.GC5157@irqsave.net>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: SR-IOV PF reset and QEMU VFs VFIO passthrough
+Date: Sun, 02 Jun 2013 08:11:42 -0600
+Message-ID: <1370182302.30975.279.camel@ul30vt.home>
+References: <20130601121320.GC5157@irqsave.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-Return-path: <qemu-devel-bounces+gceq-qemu-devel=gmane.org@nongnu.org>
-Content-Disposition: inline
-List-Unsubscribe: <https://lists.nongnu.org/mailman/options/qemu-devel>,
-	<mailto:qemu-devel-request@nongnu.org?subject=unsubscribe>
-List-Archive: <http://lists.nongnu.org/archive/html/qemu-devel>
-List-Post: <mailto:qemu-devel@nongnu.org>
-List-Help: <mailto:qemu-devel-request@nongnu.org?subject=help>
-List-Subscribe: <https://lists.nongnu.org/mailman/listinfo/qemu-devel>,
-	<mailto:qemu-devel-request@nongnu.org?subject=subscribe>
-Errors-To: qemu-devel-bounces+gceq-qemu-devel=gmane.org@nongnu.org
-Sender: qemu-devel-bounces+gceq-qemu-devel=gmane.org@nongnu.org
-To: linux-pci@vger.kernel.org, qemu-devel@nongnu.org, iommu@lists.linux-foundation.org, alex.williamson@redhat.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20130601121320.GC5157-J9ArbTHlV+bR7s880joybQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: =?ISO-8859-1?Q?Beno=EEt?= Canet <benoit.canet-J9ArbTHlV+bR7s880joybQ@public.gmane.org>
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-
-Hello,
-
-I may have soon the PF driver of an SR-IOV card to code and make work wit=
-h
-QEMU/KVM so I have the following questions.
-
-In an AMD64 setup where QEMU use VFIO to passthrough the VFs of an SR-IOV=
- card
-to a guest will the consequences of a PF FLR be handled fine by QEMU and =
-the
-guest ?
-
-I read that pci_reset_function would call pci_restore_state restoring the=
- SR-IOV
-configuration after the reset of the PF.
-
-The ways the hardware work means that the VFs would disappear and reappea=
-r in a
-short lapse of time.
-
-Will these events be handled by the kernel pci hotplug code ?
-
-Given that the PF driver restore the PF config space after the reset will=
- /sys
-files used by QEMU disappear and reappear messing the QEMU VFIO passthrou=
-gh or
-will it goes smoothly ?
-
-Best regards
-
-Beno=EEt Canet
+T24gU2F0LCAyMDEzLTA2LTAxIGF0IDE0OjEzICswMjAwLCBCZW5vw650IENhbmV0IHdyb3RlOgo+
+IEhlbGxvLAo+IAo+IEkgbWF5IGhhdmUgc29vbiB0aGUgUEYgZHJpdmVyIG9mIGFuIFNSLUlPViBj
+YXJkIHRvIGNvZGUgYW5kIG1ha2Ugd29yayB3aXRoCj4gUUVNVS9LVk0gc28gSSBoYXZlIHRoZSBm
+b2xsb3dpbmcgcXVlc3Rpb25zLgo+IAo+IEluIGFuIEFNRDY0IHNldHVwIHdoZXJlIFFFTVUgdXNl
+IFZGSU8gdG8gcGFzc3Rocm91Z2ggdGhlIFZGcyBvZiBhbiBTUi1JT1YgY2FyZAo+IHRvIGEgZ3Vl
+c3Qgd2lsbCB0aGUgY29uc2VxdWVuY2VzIG9mIGEgUEYgRkxSIGJlIGhhbmRsZWQgZmluZSBieSBR
+RU1VIGFuZCB0aGUKPiBndWVzdCA/Cj4gCj4gSSByZWFkIHRoYXQgcGNpX3Jlc2V0X2Z1bmN0aW9u
+IHdvdWxkIGNhbGwgcGNpX3Jlc3RvcmVfc3RhdGUgcmVzdG9yaW5nIHRoZSBTUi1JT1YKPiBjb25m
+aWd1cmF0aW9uIGFmdGVyIHRoZSByZXNldCBvZiB0aGUgUEYuCj4gCj4gVGhlIHdheXMgdGhlIGhh
+cmR3YXJlIHdvcmsgbWVhbnMgdGhhdCB0aGUgVkZzIHdvdWxkIGRpc2FwcGVhciBhbmQgcmVhcHBl
+YXIgaW4gYQo+IHNob3J0IGxhcHNlIG9mIHRpbWUuCj4gCj4gV2lsbCB0aGVzZSBldmVudHMgYmUg
+aGFuZGxlZCBieSB0aGUga2VybmVsIHBjaSBob3RwbHVnIGNvZGUgPwo+IAo+IEdpdmVuIHRoYXQg
+dGhlIFBGIGRyaXZlciByZXN0b3JlIHRoZSBQRiBjb25maWcgc3BhY2UgYWZ0ZXIgdGhlIHJlc2V0
+IHdpbGwgL3N5cwo+IGZpbGVzIHVzZWQgYnkgUUVNVSBkaXNhcHBlYXIgYW5kIHJlYXBwZWFyIG1l
+c3NpbmcgdGhlIFFFTVUgVkZJTyBwYXNzdGhyb3VnaCBvcgo+IHdpbGwgaXQgZ29lcyBzbW9vdGhs
+eSA/CgpPbiBhbiBJbnRlbCA4MjU3NiBTUi1JT1YgTklDLCBhIEZMUiBvZiB0aGUgUEYgZG9lcyBu
+b3QgY2F1c2UgdGhlIFZGcyB0bwpiZSByZW1vdmVkLiAgSXQncyBub3QgY2xlYXIgdG8gbWUgdGhh
+dCB0aGV5IGNvbnRpbnVlIHdvcmtpbmcgYWNyb3NzIHRoZQpyZXNldCwgYnV0IHRoZXJlIGlzIG5v
+IGhvdHBsdWcuICBJZiB0aGVyZSB3YXMgYSBob3RwbHVnLCB2ZmlvLXBjaSB3b24ndApyZWxlYXNl
+IHRoZSBkZXZpY2Ugd2hpbGUgaXQncyBpbiB1c2UsIHNvIHRoZSBob3RwbHVnIHdvdWxkIGJlIGJs
+b2NrZWQKdW50aWwgdGhlIGRldmljZXMgYmVjb21lcyB1bnVzZWQsIHN1Y2ggYXMgZnJvbSB0aGUg
+Vk0gYmVpbmcgc2h1dGRvd24uClRoYW5rcywKCkFsZXgKCl9fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5s
+aW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFp
+bG1hbi9saXN0aW5mby9pb21tdQ==
