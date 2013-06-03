@@ -1,99 +1,78 @@
-From: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: VFIO and scheduled SR-IOV cards
-Date: Mon, 03 Jun 2013 14:34:29 -0400
-Message-ID: <51ACE1B5.2050102@redhat.com>
-References: <20130603163305.GC4094@irqsave.net>
-	<1370282529.30975.344.camel@ul30vt.home>
+From: Don Dutile <ddutile@redhat.com>
+Subject: Re: [Qemu-devel] SR-IOV PF reset and QEMU VFs VFIO passthrough
+Date: Mon, 03 Jun 2013 14:41:04 -0400
+Message-ID: <51ACE340.1030406@redhat.com>
+References: <20130601121320.GC5157@irqsave.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1370282529.30975.344.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: =?UTF-8?B?QmVub8OudCBDYW5ldA==?= <benoit.canet-J9ArbTHlV+bR7s880joybQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org
+Content-Type: text/plain; charset=ISO-8859-1;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20130601121320.GC5157@irqsave.net>
+Sender: linux-pci-owner@vger.kernel.org
+To: =?ISO-8859-1?Q?Beno=EEt_Canet?= <benoit.canet@irqsave.net>
+Cc: linux-pci@vger.kernel.org, qemu-devel@nongnu.org, iommu@lists.linux-foundation.org, alex.williamson@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMDYvMDMvMjAxMyAwMjowMiBQTSwgQWxleCBXaWxsaWFtc29uIHdyb3RlOgo+IE9uIE1vbiwg
-MjAxMy0wNi0wMyBhdCAxODozMyArMDIwMCwgQmVub8OudCBDYW5ldCB3cm90ZToKPj4gSGVsbG8s
-Cj4+Cj4+IEkgcGxhbiB0byB3cml0ZSBhIFBGIGRyaXZlciBmb3IgYW4gU1ItSU9WIGNhcmQgYW5k
-IG1ha2UgdGhlIFZGcyB3b3JrIHdpdGggUUVNVSdzCj4+IFZGSU8gcGFzc3Rocm91Z2ggc28gSSBh
-bSBhc2tpbmcgdGhlIGZvbGxvd2luZyBkZXNpZ24gcXVlc3Rpb24gYmVmb3JlIHRyeWluZyB0bwo+
-PiB3cml0ZSBhbmQgcHVzaCBjb2RlLgo+Pgo+PiBBZnRlciBTUi1JT1YgYmVpbmcgZW5hYmxlZCBv
-biB0aGlzIGhhcmR3YXJlIG9ubHkgb25lIFZGIGZ1bmN0aW9uIGNhbiBiZSBhY3RpdmUKPj4gYXQg
-YSBnaXZlbiB0aW1lLgo+Cj4gSXMgdGhpcyBhY3R1YWxseSBhbiBTUi1JT1YgZGV2aWNlIG9yIGFy
-ZSB5b3UgdHJ5aW5nIHRvIHdyaXRlIGEgZHJpdmVyCj4gdGhhdCBlbXVsYXRlcyBTUi1JT1YgZm9y
-IGEgUEY/Cj4KPj4gVGhlIFBGIGhvc3Qga2VybmVsIGRyaXZlciBpcyBhY3RpbmcgYXMgYSBzY2hl
-ZHVsZXIuCj4+IEl0IHN3aXRjaCBldmVyeSBmZXcgbWlsbGlzZWNvbmRzIHdoaWNoIFZGIGlzIHRo
-ZSBjdXJyZW50IGFjdGl2ZSBmdW5jdGlvbiB3aGlsZQo+PiBkaXNhYmxpbmcgdGhlIG90aGVycyBW
-RnMuCj4+CnRoYXQncyB0aW1lLXNoYXJpbmcgb2YgaHcsIHdoaWNoIHN3IGRvZXNuJ3Qgc2VlIC4u
-LiBzbywgb2suCgo+PiBPbmUgY29uc2VxdWVuY2Ugb2YgaG93IHRoZSBoYXJkd2FyZSB3b3JrcyBp
-cyB0aGF0IHRoZSBNTVIgcmVnaW9ucyBvZiB0aGUKPj4gc3dpdGNoZWQgb2ZmIFZGcyBtdXN0IGJl
-IHVubWFwcGVkIGFuZCB0aGVpciBpbyBhY2Nlc3Mgc2hvdWxkIGJsb2NrIHVudGlsIHRoZSBWRgo+
-PiBpcyBzd2l0Y2hlZCBvbiBhZ2Fpbi4KPgpUaGlzIHZpb2xhdGVzIHRoZSBzcGVjLiwgYW5kIGRv
-ZXMgaW1wYWN0IHN3IC0tIGhvdyBjYW4gb25lIGFzc2lnbiBzdWNoIGEgVkYgdG8gYSBndWVzdAot
-LSBpdCBkb2VzIG5vdCB3b3JrIGluZGVwLiBvZiBvdGhlciBWRnMuCgo+IE1NUiA9IE1lbW9yeSBN
-YXBwZWQgUmVnaXN0ZXI/Cj4KPiBUaGlzIHNlZW1zIGNvbnRyYWRpY3RvcnkgdG8gdGhlIFNSLUlP
-ViBzcGVjLCB3aGljaCBzdGF0ZXM6Cj4KPiAgICAgICAgICBFYWNoIFZGIGNvbnRhaW5zIGEgbm9u
-LXNoYXJlZCBzZXQgb2YgcGh5c2ljYWwgcmVzb3VyY2VzIHJlcXVpcmVkCj4gICAgICAgICAgdG8g
-ZGVsaXZlciBGdW5jdGlvbi1zcGVjaWZpYwo+ICAgICAgICAgIHNlcnZpY2VzLCBlLmcuLCByZXNv
-dXJjZXMgc3VjaCBhcyB3b3JrIHF1ZXVlcywgZGF0YSBidWZmZXJzLAo+ICAgICAgICAgIGV0Yy4g
-VGhlc2UgcmVzb3VyY2VzIGNhbiBiZSBkaXJlY3RseQo+ICAgICAgICAgIGFjY2Vzc2VkIGJ5IGFu
-IFNJIHdpdGhvdXQgcmVxdWlyaW5nIFZJIG9yIFNSLVBDSU0gaW50ZXJ2ZW50aW9uLgo+Cj4gRnVy
-dGhlcm1vcmUsIGVhY2ggVkYgc2hvdWxkIGhhdmUgYSBzZXBhcmF0ZSByZXF1ZXN0ZXIgSUQuICBX
-aGF0J3MgYmVpbmcKPiBzdWdnZXN0ZWQgaGVyZSBzZWVtcyBsaWtlIG1heWJlIHRoYXQncyBub3Qg
-dGhlIGNhc2UuICBJZiB0cnVlLCBpdCB3b3VsZApJIGRpZG4ndCByZWFkIGl0IHRoYXQgd2F5IGFi
-b3ZlLiAgSSByZWFkIGl0IGFzIHRoZSBQQ0llIGVuZCBpcyB0aW1lc2hhcmVkCmJ0d24gVkZzICgm
-IFBGcz8pLiAuLi4uIHdpdGggc29tZSBWRnMgZGlzYXBwZWFyaW5nIChmcm9tIGEgZHJpdmVyIHBl
-cnNwZWN0aXZlKQphcyBpZiB0aGUgZGV2aWNlIHdhcyBob3QgdW5wbHVnIHcvbyBub3RpZmljYXRp
-b24uICBUaGF0IHdpbGwgcHJvYmFibHkgY2F1c2UKcmVhZC10aW1lb3V0cyAmIFNNRSdzLCBicmlu
-Z2luZyBkb3duIG1vc3QgZW50ZXJwcmlzZS1sZXZlbCBzeXN0ZW1zLgoKPiBtYWtlIGlvbW11IGdy
-b3VwcyBjaGFsbGVuZ2luZy4gIElzIHRoZXJlIGFueSBWRiBzYXZlL3Jlc3RvcmUgYXJvdW5kIHRo
-ZQo+IHNjaGVkdWxpbmc/Cj4KPj4gRWFjaCBJT01NVSBtYXAvdW5tYXAgc2hvdWxkIGJlIGRvbmUg
-aW4gbGVzcyB0aGFuIDEwMG5zLgo+Cj4gSSB0aGluayB0aGF0IG1heSBiZSBhIGxvdCB0byBhc2sg
-aWYgd2UgbmVlZCB0byB1bm1hcCB0aGUgcmVnaW9ucyBpbiB0aGUKPiBndWVzdCBhbmQgaW4gdGhl
-IGlvbW11LiAgSWYgdGhlICJWRnMiIHVzZWQgZGlmZmVyZW50IHJlcXVlc3RlciBJRHMsCj4gaW9t
-bXUgdW5tYXBwaW5nIHdob3VsZG4ndCBiZSBuZWNlc3NhcnkuICBJIGV4cGVyaW1lbnRlZCB3aXRo
-IHN3aXRjaGluZwo+IGJldHdlZW4gdHJhcHBlZCAocmVhZC93cml0ZSkgYWNjZXNzIHRvIG1lbW9y
-eSByZWdpb25zIGFuZCBtbWFwJ2QgKGRpcmVjdAo+IG1hcHBpbmcpIGZvciBoYW5kbGluZyBsZWdh
-Y3kgaW50ZXJydXB0cy4gIFRoZXJlIHdhcyBhIG5vdGljZWFibGUKPiBwZXJmb3JtYW5jZSBwZW5h
-bHR5IHN3aXRjaGluZyBwZXIgaW50ZXJydXB0Lgo+Cj4+IEFzIHRoZSBrZXJuZWwgaW9tbXUgbW9k
-dWxlIGlzIGJlaW5nIGNhbGxlZCBieSB0aGUgVkZJTyBkcml2ZXIgdGhlIFBGIGRyaXZlcgo+PiBj
-YW5ub3QgaW50ZXJmYWNlIHdpdGggaXQuCj4+Cj4+IEN1cnJlbnRseSB0aGUgb25seSBpbnRlcmZh
-Y2Ugb2YgdGhlIFZGSU8gY29kZSBpcyBmb3IgdGhlIHVzZXJsYW5kIFFFTVUgcHJvY2Vzcwo+PiBh
-bmQgSSBmZWFyIHRoYXQgbm90aWZ5aW5nIFFFTVUgdGhhdCBpdCBzaG91bGQgZG8gdGhlIHVubWFw
-L2Jsb2NrIHdvdWxkIHRha2UgbW9yZQo+PiB0aGFuIDEwMG5zLgo+Pgo+PiBBbHNvIGJsb2NraW5n
-IHRoZSBJTyBhY2Nlc3MgaW4gUUVNVSB1bmRlciB0aGUgQlFMIHdvdWxkIGZyZWV6ZSBRRU1VLgo+
-Pgo+PiBEbyB5b3UgaGF2ZSBhbmQgaWRlYSBvbiBob3cgdG8gd3JpdGUgdGhpcyByZXF1aXJlZCBt
-YXAgYW5kIGJsb2NrL3VubWFwIGZlYXR1cmUgPwo+Cj4gSXQgc2VlbXMgbGlrZSB0aGVyZSBhcmUg
-c2V2ZXJhbCBvcHRpb25zLCBidXQgSSdtIGRvdWJ0ZnVsIHRoYXQgYW55IG9mCj4gdGhlbSB3aWxs
-IG1lZXQgMTAwbnMuICBJZiB0aGlzIGlzIGNvbXBsZXRlbHkgZmFrZSBTUi1JT1YgYW5kIHRoZXJl
-J3Mgbm90Cj4gYSBkaWZmZXJlbnQgcmVxdWVzdGVyIElEIHBlciBWRiwgSSdkIHN0YXJ0IHdpdGgg
-c2VlaW5nIGlmIHlvdSBjYW4gZXZlbgo+IGRvIHRoZSBpb21tdV91bm1hcC9pb21tdV9tYXAgb2Yg
-dGhlIE1NSU8gQkFScyBpbiB1bmRlciAxMDBucy4gIElmIHRoYXQncwo+IGNsb3NlIHRvIHlvdXIg
-bGltaXQsIHRoZW4geW91ciBvbmx5IHJlYWwgb3B0aW9uIGZvciBRRU1VIGlzIHRvIGZyZWV6ZQo+
-IGl0LCB3aGljaCBzdGlsbCBpbnZvbHZlcyBnZXR0aW5nIG11bHRpcGxlIChtYXliZSBtYW55KSB2
-Q1BVcyBvdXQgb2YgVk0KPiBtb2RlLiAgVGhhdCdzIG5vdCBmcmVlIGVpdGhlci4gIElmIGJ5IHNv
-bWUgbWlyYWNsZSB5b3UgaGF2ZSB0aW1lIHRvCj4gc3BhcmUsIHlvdSBjb3VsZCByZW1hcCB0aGUg
-cmVnaW9ucyB0byB0cmFwcGVkIG1vZGUgYW5kIGxldCB0aGUgdkNQVXMgcnVuCj4gd2hpbGUgdmZp
-byBibG9ja3Mgb24gcmVhZC93cml0ZS4KPgo+IE1heWJlIHRoZXJlJ3MgZXZlbiBhIHF1ZXN0aW9u
-IHdoZXRoZXIgbW1hcCdkIG1vZGUgaXMgd29ydGh3aGlsZSBmb3IgdGhpcwo+IGRldmljZS4gIFRy
-YXBwaW5nIGV2ZXJ5IHJlYWQvd3JpdGUgaXMgb3JkZXJzIG9mIG1hZ25pdHVkZSBzbG93ZXIsIGJ1
-dAo+IGFsbG93cyB5b3UgdG8gaGFuZGxlIHRoZSAid2FpdCBmb3IgVkYiIG9uIHRoZSBrZXJuZWwg
-c2lkZS4KPgo+IElmIHlvdSBjYW4gcHJvdmlkZSBtb3JlIGluZm8gb24gdGhlIGRldmljZSBkZXNp
-Z24vY29udHJhaW50cywgbWF5YmUgd2UKPiBjYW4gY29tZSB1cCB3aXRoIGJldHRlciBvcHRpb25z
-LiAgVGhhbmtzLAo+Cj4gQWxleAo+Cj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX18KPiBpb21tdSBtYWlsaW5nIGxpc3QKPiBpb21tdUBsaXN0cy5saW51eC1m
-b3VuZGF0aW9uLm9yZwo+IGh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFu
-L2xpc3RpbmZvL2lvbW11CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5v
-cmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9t
-bXU=
+On 06/01/2013 08:13 AM, Beno=EEt Canet wrote:
+>
+> Hello,
+>
+> I may have soon the PF driver of an SR-IOV card to code and make work=
+ with
+> QEMU/KVM so I have the following questions.
+>
+> In an AMD64 setup where QEMU use VFIO to passthrough the VFs of an SR=
+-IOV card
+> to a guest will the consequences of a PF FLR be handled fine by QEMU =
+and the
+> guest ?
+>
+the reset occurs long before the device is passed to the guest.
+
+> I read that pci_reset_function would call pci_restore_state restoring=
+ the SR-IOV
+> configuration after the reset of the PF.
+>
+correct.
+
+> The ways the hardware work means that the VFs would disappear and rea=
+ppear in a
+> short lapse of time.
+>
+Not sure your definitiion of 'disappear'.  If you mean: if I had anothe=
+r thread
+poking at the device, the device would appear to be removed, then come =
+back (if os
+poking hasn't crashed from the device's lack of response).
+If you mean the VF gets entirely removed from the PCI tree, then no.
+A pci reset !=3D hot unplug/plug.  The device remains in the device tre=
+e.
+
+> Will these events be handled by the kernel pci hotplug code ?
+>
+'these events' ??? -- which events....
+=46LR is currently done by libvirt & qemu/vfio to ensure assigned devic=
+es are quiesced
+as they are switched from host->guest domain, and guest->(back-to-)host=
+ domain.
+
+> Given that the PF driver restore the PF config space after the reset =
+will /sys
+The PF driver doesn't do the config space restore -- it's done in PCI c=
+ore code.
+
+> files used by QEMU disappear and reappear messing the QEMU VFIO passt=
+hrough or
+As stated above, the devices don't disappear from the device tree, so t=
+hey don't
+get removed/added to the /sys(/bus/pci/...) files.
+
+> will it goes smoothly ?
+>
+it goes smoothly today.... :-/
+
+> Best regards
+>
+> Beno=EEt Canet
+>
