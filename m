@@ -1,64 +1,83 @@
-From: =?iso-8859-1?Q?Beno=EEt?= Canet <benoit.canet@irqsave.net>
-Subject: VFIO and scheduled SR-IOV cards
-Date: Mon, 3 Jun 2013 18:33:05 +0200
-Message-ID: <20130603163305.GC4094@irqsave.net>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: VFIO and scheduled SR-IOV cards
+Date: Mon, 03 Jun 2013 12:02:09 -0600
+Message-ID: <1370282529.30975.344.camel@ul30vt.home>
+References: <20130603163305.GC4094@irqsave.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-Return-path: <qemu-devel-bounces+gceq-qemu-devel=gmane.org@nongnu.org>
-Content-Disposition: inline
-List-Unsubscribe: <https://lists.nongnu.org/mailman/options/qemu-devel>,
-	<mailto:qemu-devel-request@nongnu.org?subject=unsubscribe>
-List-Archive: <http://lists.nongnu.org/archive/html/qemu-devel>
-List-Post: <mailto:qemu-devel@nongnu.org>
-List-Help: <mailto:qemu-devel-request@nongnu.org?subject=help>
-List-Subscribe: <https://lists.nongnu.org/mailman/listinfo/qemu-devel>,
-	<mailto:qemu-devel-request@nongnu.org?subject=subscribe>
-Errors-To: qemu-devel-bounces+gceq-qemu-devel=gmane.org@nongnu.org
-Sender: qemu-devel-bounces+gceq-qemu-devel=gmane.org@nongnu.org
-To: iommu@lists.linux-foundation.org, qemu-devel@nongnu.org, alex.williamson@redhat.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20130603163305.GC4094-J9ArbTHlV+bR7s880joybQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: =?ISO-8859-1?Q?Beno=EEt?= Canet <benoit.canet-J9ArbTHlV+bR7s880joybQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-
-Hello,
-
-I plan to write a PF driver for an SR-IOV card and make the VFs work with=
- QEMU's
-VFIO passthrough so I am asking the following design question before tryi=
-ng to
-write and push code.
-
-After SR-IOV being enabled on this hardware only one VF function can be a=
-ctive
-at a given time.
-
-The PF host kernel driver is acting as a scheduler.
-It switch every few milliseconds which VF is the current active function =
-while
-disabling the others VFs.
-
-One consequence of how the hardware works is that the MMR regions of the
-switched off VFs must be unmapped and their io access should block until =
-the VF
-is switched on again.
-
-Each IOMMU map/unmap should be done in less than 100ns.
-
-As the kernel iommu module is being called by the VFIO driver the PF driv=
-er
-cannot interface with it.
-
-Currently the only interface of the VFIO code is for the userland QEMU pr=
-ocess
-and I fear that notifying QEMU that it should do the unmap/block would ta=
-ke more
-than 100ns.
-
-Also blocking the IO access in QEMU under the BQL would freeze QEMU.
-
-Do you have and idea on how to write this required map and block/unmap fe=
-ature ?
-
-Best regards
-
-Beno=EEt Canet
+T24gTW9uLCAyMDEzLTA2LTAzIGF0IDE4OjMzICswMjAwLCBCZW5vw650IENhbmV0IHdyb3RlOgo+
+IEhlbGxvLAo+IAo+IEkgcGxhbiB0byB3cml0ZSBhIFBGIGRyaXZlciBmb3IgYW4gU1ItSU9WIGNh
+cmQgYW5kIG1ha2UgdGhlIFZGcyB3b3JrIHdpdGggUUVNVSdzCj4gVkZJTyBwYXNzdGhyb3VnaCBz
+byBJIGFtIGFza2luZyB0aGUgZm9sbG93aW5nIGRlc2lnbiBxdWVzdGlvbiBiZWZvcmUgdHJ5aW5n
+IHRvCj4gd3JpdGUgYW5kIHB1c2ggY29kZS4KPiAKPiBBZnRlciBTUi1JT1YgYmVpbmcgZW5hYmxl
+ZCBvbiB0aGlzIGhhcmR3YXJlIG9ubHkgb25lIFZGIGZ1bmN0aW9uIGNhbiBiZSBhY3RpdmUKPiBh
+dCBhIGdpdmVuIHRpbWUuCgpJcyB0aGlzIGFjdHVhbGx5IGFuIFNSLUlPViBkZXZpY2Ugb3IgYXJl
+IHlvdSB0cnlpbmcgdG8gd3JpdGUgYSBkcml2ZXIKdGhhdCBlbXVsYXRlcyBTUi1JT1YgZm9yIGEg
+UEY/Cgo+IFRoZSBQRiBob3N0IGtlcm5lbCBkcml2ZXIgaXMgYWN0aW5nIGFzIGEgc2NoZWR1bGVy
+Lgo+IEl0IHN3aXRjaCBldmVyeSBmZXcgbWlsbGlzZWNvbmRzIHdoaWNoIFZGIGlzIHRoZSBjdXJy
+ZW50IGFjdGl2ZSBmdW5jdGlvbiB3aGlsZQo+IGRpc2FibGluZyB0aGUgb3RoZXJzIFZGcy4KPiAK
+PiBPbmUgY29uc2VxdWVuY2Ugb2YgaG93IHRoZSBoYXJkd2FyZSB3b3JrcyBpcyB0aGF0IHRoZSBN
+TVIgcmVnaW9ucyBvZiB0aGUKPiBzd2l0Y2hlZCBvZmYgVkZzIG11c3QgYmUgdW5tYXBwZWQgYW5k
+IHRoZWlyIGlvIGFjY2VzcyBzaG91bGQgYmxvY2sgdW50aWwgdGhlIFZGCj4gaXMgc3dpdGNoZWQg
+b24gYWdhaW4uCgpNTVIgPSBNZW1vcnkgTWFwcGVkIFJlZ2lzdGVyPwoKVGhpcyBzZWVtcyBjb250
+cmFkaWN0b3J5IHRvIHRoZSBTUi1JT1Ygc3BlYywgd2hpY2ggc3RhdGVzOgoKICAgICAgICBFYWNo
+IFZGIGNvbnRhaW5zIGEgbm9uLXNoYXJlZCBzZXQgb2YgcGh5c2ljYWwgcmVzb3VyY2VzIHJlcXVp
+cmVkCiAgICAgICAgdG8gZGVsaXZlciBGdW5jdGlvbi1zcGVjaWZpYwogICAgICAgIHNlcnZpY2Vz
+LCBlLmcuLCByZXNvdXJjZXMgc3VjaCBhcyB3b3JrIHF1ZXVlcywgZGF0YSBidWZmZXJzLAogICAg
+ICAgIGV0Yy4gVGhlc2UgcmVzb3VyY2VzIGNhbiBiZSBkaXJlY3RseQogICAgICAgIGFjY2Vzc2Vk
+IGJ5IGFuIFNJIHdpdGhvdXQgcmVxdWlyaW5nIFZJIG9yIFNSLVBDSU0gaW50ZXJ2ZW50aW9uLgoK
+RnVydGhlcm1vcmUsIGVhY2ggVkYgc2hvdWxkIGhhdmUgYSBzZXBhcmF0ZSByZXF1ZXN0ZXIgSUQu
+ICBXaGF0J3MgYmVpbmcKc3VnZ2VzdGVkIGhlcmUgc2VlbXMgbGlrZSBtYXliZSB0aGF0J3Mgbm90
+IHRoZSBjYXNlLiAgSWYgdHJ1ZSwgaXQgd291bGQKbWFrZSBpb21tdSBncm91cHMgY2hhbGxlbmdp
+bmcuICBJcyB0aGVyZSBhbnkgVkYgc2F2ZS9yZXN0b3JlIGFyb3VuZCB0aGUKc2NoZWR1bGluZz8K
+Cj4gRWFjaCBJT01NVSBtYXAvdW5tYXAgc2hvdWxkIGJlIGRvbmUgaW4gbGVzcyB0aGFuIDEwMG5z
+LgoKSSB0aGluayB0aGF0IG1heSBiZSBhIGxvdCB0byBhc2sgaWYgd2UgbmVlZCB0byB1bm1hcCB0
+aGUgcmVnaW9ucyBpbiB0aGUKZ3Vlc3QgYW5kIGluIHRoZSBpb21tdS4gIElmIHRoZSAiVkZzIiB1
+c2VkIGRpZmZlcmVudCByZXF1ZXN0ZXIgSURzLAppb21tdSB1bm1hcHBpbmcgd2hvdWxkbid0IGJl
+IG5lY2Vzc2FyeS4gIEkgZXhwZXJpbWVudGVkIHdpdGggc3dpdGNoaW5nCmJldHdlZW4gdHJhcHBl
+ZCAocmVhZC93cml0ZSkgYWNjZXNzIHRvIG1lbW9yeSByZWdpb25zIGFuZCBtbWFwJ2QgKGRpcmVj
+dAptYXBwaW5nKSBmb3IgaGFuZGxpbmcgbGVnYWN5IGludGVycnVwdHMuICBUaGVyZSB3YXMgYSBu
+b3RpY2VhYmxlCnBlcmZvcm1hbmNlIHBlbmFsdHkgc3dpdGNoaW5nIHBlciBpbnRlcnJ1cHQuCgo+
+IEFzIHRoZSBrZXJuZWwgaW9tbXUgbW9kdWxlIGlzIGJlaW5nIGNhbGxlZCBieSB0aGUgVkZJTyBk
+cml2ZXIgdGhlIFBGIGRyaXZlcgo+IGNhbm5vdCBpbnRlcmZhY2Ugd2l0aCBpdC4KPiAKPiBDdXJy
+ZW50bHkgdGhlIG9ubHkgaW50ZXJmYWNlIG9mIHRoZSBWRklPIGNvZGUgaXMgZm9yIHRoZSB1c2Vy
+bGFuZCBRRU1VIHByb2Nlc3MKPiBhbmQgSSBmZWFyIHRoYXQgbm90aWZ5aW5nIFFFTVUgdGhhdCBp
+dCBzaG91bGQgZG8gdGhlIHVubWFwL2Jsb2NrIHdvdWxkIHRha2UgbW9yZQo+IHRoYW4gMTAwbnMu
+Cj4gCj4gQWxzbyBibG9ja2luZyB0aGUgSU8gYWNjZXNzIGluIFFFTVUgdW5kZXIgdGhlIEJRTCB3
+b3VsZCBmcmVlemUgUUVNVS4KPiAKPiBEbyB5b3UgaGF2ZSBhbmQgaWRlYSBvbiBob3cgdG8gd3Jp
+dGUgdGhpcyByZXF1aXJlZCBtYXAgYW5kIGJsb2NrL3VubWFwIGZlYXR1cmUgPwoKSXQgc2VlbXMg
+bGlrZSB0aGVyZSBhcmUgc2V2ZXJhbCBvcHRpb25zLCBidXQgSSdtIGRvdWJ0ZnVsIHRoYXQgYW55
+IG9mCnRoZW0gd2lsbCBtZWV0IDEwMG5zLiAgSWYgdGhpcyBpcyBjb21wbGV0ZWx5IGZha2UgU1It
+SU9WIGFuZCB0aGVyZSdzIG5vdAphIGRpZmZlcmVudCByZXF1ZXN0ZXIgSUQgcGVyIFZGLCBJJ2Qg
+c3RhcnQgd2l0aCBzZWVpbmcgaWYgeW91IGNhbiBldmVuCmRvIHRoZSBpb21tdV91bm1hcC9pb21t
+dV9tYXAgb2YgdGhlIE1NSU8gQkFScyBpbiB1bmRlciAxMDBucy4gIElmIHRoYXQncwpjbG9zZSB0
+byB5b3VyIGxpbWl0LCB0aGVuIHlvdXIgb25seSByZWFsIG9wdGlvbiBmb3IgUUVNVSBpcyB0byBm
+cmVlemUKaXQsIHdoaWNoIHN0aWxsIGludm9sdmVzIGdldHRpbmcgbXVsdGlwbGUgKG1heWJlIG1h
+bnkpIHZDUFVzIG91dCBvZiBWTQptb2RlLiAgVGhhdCdzIG5vdCBmcmVlIGVpdGhlci4gIElmIGJ5
+IHNvbWUgbWlyYWNsZSB5b3UgaGF2ZSB0aW1lIHRvCnNwYXJlLCB5b3UgY291bGQgcmVtYXAgdGhl
+IHJlZ2lvbnMgdG8gdHJhcHBlZCBtb2RlIGFuZCBsZXQgdGhlIHZDUFVzIHJ1bgp3aGlsZSB2Zmlv
+IGJsb2NrcyBvbiByZWFkL3dyaXRlLgoKTWF5YmUgdGhlcmUncyBldmVuIGEgcXVlc3Rpb24gd2hl
+dGhlciBtbWFwJ2QgbW9kZSBpcyB3b3J0aHdoaWxlIGZvciB0aGlzCmRldmljZS4gIFRyYXBwaW5n
+IGV2ZXJ5IHJlYWQvd3JpdGUgaXMgb3JkZXJzIG9mIG1hZ25pdHVkZSBzbG93ZXIsIGJ1dAphbGxv
+d3MgeW91IHRvIGhhbmRsZSB0aGUgIndhaXQgZm9yIFZGIiBvbiB0aGUga2VybmVsIHNpZGUuCgpJ
+ZiB5b3UgY2FuIHByb3ZpZGUgbW9yZSBpbmZvIG9uIHRoZSBkZXZpY2UgZGVzaWduL2NvbnRyYWlu
+dHMsIG1heWJlIHdlCmNhbiBjb21lIHVwIHdpdGggYmV0dGVyIG9wdGlvbnMuICBUaGFua3MsCgpB
+bGV4CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21t
+dSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9s
+aXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
