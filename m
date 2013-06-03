@@ -1,68 +1,126 @@
-From: =?iso-8859-1?Q?Beno=EEt?= Canet <benoit.canet@irqsave.net>
-Subject: Re: [Qemu-devel] SR-IOV PF reset and QEMU VFs VFIO passthrough
-Date: Sun, 2 Jun 2013 17:13:20 +0200
-Message-ID: <20130602151320.GB4095@irqsave.net>
-References: <20130601121320.GC5157@irqsave.net>
- <1370182302.30975.279.camel@ul30vt.home>
+From: Sethi Varun-B16395 <B16395@freescale.com>
+Subject: RE: [PATCH] iommu: amd/intel: Remove multifunction assumption
+ around	grouping
+Date: Mon, 3 Jun 2013 07:28:26 +0000
+Message-ID: <C5ECD7A89D1DC44195F34B25E172658D56A9F4@039-SN2MPN1-013.039d.mgd.msft.net>
+References: <20130530183855.14612.15585.stgit@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1370182302.30975.279.camel@ul30vt.home>
+In-Reply-To: <20130530183855.14612.15585.stgit@bling.home>
+Content-Language: en-US
 Sender: linux-pci-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: =?iso-8859-1?Q?Beno=EEt?= Canet <benoit.canet@irqsave.net>, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, qemu-devel@nongnu.org
+To: Alex Williamson <alex.williamson@redhat.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "joro@8bytes.org" <joro@8bytes.org>
+Cc: "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
-Thanks a lot for the answer.
+> -----Original Message-----
+> From: iommu-bounces@lists.linux-foundation.org [mailto:iommu-
+> bounces@lists.linux-foundation.org] On Behalf Of Alex Williamson
+> Sent: Friday, May 31, 2013 12:09 AM
+> To: iommu@lists.linux-foundation.org; dwmw2@infradead.org;
+> joro@8bytes.org
+> Cc: linux-pci@vger.kernel.org; linux-kernel@vger.kernel.org
+> Subject: [PATCH] iommu: amd/intel: Remove multifunction assumption around
+> grouping
+> 
+> If a device is multifunction and does not have ACS enabled then we assume
+> that the entire package lacks ACS and use function 0 as the base of the
+> group.  The PCIe spec however states that components are permitted to
+> implement ACS on some, none, or all of their applicable functions.  It's
+> therefore conceivable that function 0 may be fully independent and
+> support ACS while other functions do not.  Instead use the lowest
+> function of the slot that does not have ACS enabled as the base of the
+> group.  This may be the current device, which is intentional.  So long as
+> we use a consistent algorithm, all the non-ACS functions will be grouped
+> together and ACS functions will get separate groups.
+> 
+> Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+> ---
+>  drivers/iommu/amd_iommu.c   |   25 +++++++++++++++++++------
+>  drivers/iommu/intel-iommu.c |   25 +++++++++++++++++++------
+>  2 files changed, 38 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c index
+> 1d84be1..565c745 100644
+> --- a/drivers/iommu/amd_iommu.c
+> +++ b/drivers/iommu/amd_iommu.c
+> @@ -287,14 +287,27 @@ static struct pci_dev *get_isolation_root(struct
+> pci_dev *pdev)
+> 
+>  	/*
+>  	 * If it's a multifunction device that does not support our
+> -	 * required ACS flags, add to the same group as function 0.
+> +	 * required ACS flags, add to the same group as lowest numbered
+> +	 * function that also does not suport the required ACS flags.
+>  	 */
+>  	if (dma_pdev->multifunction &&
+> -	    !pci_acs_enabled(dma_pdev, REQ_ACS_FLAGS))
+> -		swap_pci_ref(&dma_pdev,
+> -			     pci_get_slot(dma_pdev->bus,
+> -					  PCI_DEVFN(PCI_SLOT(dma_pdev->devfn),
+> -					  0)));
+> +	    !pci_acs_enabled(dma_pdev, REQ_ACS_FLAGS)) {
+> +		u8 i, slot = PCI_SLOT(dma_pdev->devfn);
+> +
+> +		for (i = 0; i < 8; i++) {
+> +			struct pci_dev *tmp;
+> +
+> +			tmp = pci_get_slot(dma_pdev->bus, PCI_DEVFN(slot, i));
+> +			if (!tmp)
+> +				continue;
+> +
+> +			if (!pci_acs_enabled(tmp, REQ_ACS_FLAGS)) {
+> +				swap_pci_ref(&dma_pdev, tmp);
+> +				break;
+> +			}
+> +			pci_dev_put(tmp);
+> +		}
+> +	}
+> 
+>  	/*
+>  	 * Devices on the root bus go through the iommu.  If that's not us,
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index b4f0e28..eec0d3e 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -4182,14 +4182,27 @@ static int intel_iommu_add_device(struct device
+> *dev)
+> 
+>  	/*
+>  	 * If it's a multifunction device that does not support our
+> -	 * required ACS flags, add to the same group as function 0.
+> +	 * required ACS flags, add to the same group as lowest numbered
+> +	 * function that also does not suport the required ACS flags.
+>  	 */
+>  	if (dma_pdev->multifunction &&
+> -	    !pci_acs_enabled(dma_pdev, REQ_ACS_FLAGS))
+> -		swap_pci_ref(&dma_pdev,
+> -			     pci_get_slot(dma_pdev->bus,
+> -					  PCI_DEVFN(PCI_SLOT(dma_pdev->devfn),
+> -					  0)));
+> +	    !pci_acs_enabled(dma_pdev, REQ_ACS_FLAGS)) {
+> +		u8 i, slot = PCI_SLOT(dma_pdev->devfn);
+> +
+> +		for (i = 0; i < 8; i++) {
+[Sethi Varun-B16395] A macro like PCI_MAX_FUNCTIONS would improve code readability.
 
-Best regards
+> +			struct pci_dev *tmp;
+> +
+> +			tmp = pci_get_slot(dma_pdev->bus, PCI_DEVFN(slot, i));
+> +			if (!tmp)
+> +				continue;
+> +
+> +			if (!pci_acs_enabled(tmp, REQ_ACS_FLAGS)) {
+> +				swap_pci_ref(&dma_pdev, tmp);
+> +				break;
+> +			}
+> +			pci_dev_put(tmp);
+> +		}
+> +	}
 
-Beno=EEt
+It would be nice if this code could be represented as a function in a common file like iommu/pci.c.
 
-> Le Sunday 02 Jun 2013 =E0 08:11:42 (-0600), Alex Williamson a =E9crit=
- :
-> On Sat, 2013-06-01 at 14:13 +0200, Beno=EEt Canet wrote:
-> > Hello,
-> >=20
-> > I may have soon the PF driver of an SR-IOV card to code and make wo=
-rk with
-> > QEMU/KVM so I have the following questions.
-> >=20
-> > In an AMD64 setup where QEMU use VFIO to passthrough the VFs of an =
-SR-IOV card
-> > to a guest will the consequences of a PF FLR be handled fine by QEM=
-U and the
-> > guest ?
-> >=20
-> > I read that pci_reset_function would call pci_restore_state restori=
-ng the SR-IOV
-> > configuration after the reset of the PF.
-> >=20
-> > The ways the hardware work means that the VFs would disappear and r=
-eappear in a
-> > short lapse of time.
-> >=20
-> > Will these events be handled by the kernel pci hotplug code ?
-> >=20
-> > Given that the PF driver restore the PF config space after the rese=
-t will /sys
-> > files used by QEMU disappear and reappear messing the QEMU VFIO pas=
-sthrough or
-> > will it goes smoothly ?
->=20
-> On an Intel 82576 SR-IOV NIC, a FLR of the PF does not cause the VFs =
-to
-> be removed.  It's not clear to me that they continue working across t=
-he
-> reset, but there is no hotplug.  If there was a hotplug, vfio-pci won=
-'t
-> release the device while it's in use, so the hotplug would be blocked
-> until the devices becomes unused, such as from the VM being shutdown.
-> Thanks,
->=20
-> Alex
->=20
->=20
+-Varun
