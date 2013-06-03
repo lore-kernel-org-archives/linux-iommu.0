@@ -1,126 +1,110 @@
-From: Sethi Varun-B16395 <B16395@freescale.com>
-Subject: RE: [PATCH] iommu: amd/intel: Remove multifunction assumption
- around	grouping
-Date: Mon, 3 Jun 2013 07:28:26 +0000
-Message-ID: <C5ECD7A89D1DC44195F34B25E172658D56A9F4@039-SN2MPN1-013.039d.mgd.msft.net>
-References: <20130530183855.14612.15585.stgit@bling.home>
+From: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: Re: [PATCH 2/2 V4] perf/x86/amd: AMD IOMMU PC PERF uncore PMU
+	implementation
+Date: Mon, 3 Jun 2013 11:16:38 +0200
+Message-ID: <20130603091638.GC8770@twins.programming.kicks-ass.net>
+References: <1369781112-2198-1-git-send-email-suravee.suthikulpanit@amd.com>
+	<1369781112-2198-3-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20130530183855.14612.15585.stgit@bling.home>
-Content-Language: en-US
-Sender: linux-pci-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "joro@8bytes.org" <joro@8bytes.org>
-Cc: "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1369781112-2198-3-git-send-email-suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-
-> -----Original Message-----
-> From: iommu-bounces@lists.linux-foundation.org [mailto:iommu-
-> bounces@lists.linux-foundation.org] On Behalf Of Alex Williamson
-> Sent: Friday, May 31, 2013 12:09 AM
-> To: iommu@lists.linux-foundation.org; dwmw2@infradead.org;
-> joro@8bytes.org
-> Cc: linux-pci@vger.kernel.org; linux-kernel@vger.kernel.org
-> Subject: [PATCH] iommu: amd/intel: Remove multifunction assumption around
-> grouping
-> 
-> If a device is multifunction and does not have ACS enabled then we assume
-> that the entire package lacks ACS and use function 0 as the base of the
-> group.  The PCIe spec however states that components are permitted to
-> implement ACS on some, none, or all of their applicable functions.  It's
-> therefore conceivable that function 0 may be fully independent and
-> support ACS while other functions do not.  Instead use the lowest
-> function of the slot that does not have ACS enabled as the base of the
-> group.  This may be the current device, which is intentional.  So long as
-> we use a consistent algorithm, all the non-ACS functions will be grouped
-> together and ACS functions will get separate groups.
-> 
-> Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
-> ---
->  drivers/iommu/amd_iommu.c   |   25 +++++++++++++++++++------
->  drivers/iommu/intel-iommu.c |   25 +++++++++++++++++++------
->  2 files changed, 38 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c index
-> 1d84be1..565c745 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -287,14 +287,27 @@ static struct pci_dev *get_isolation_root(struct
-> pci_dev *pdev)
-> 
->  	/*
->  	 * If it's a multifunction device that does not support our
-> -	 * required ACS flags, add to the same group as function 0.
-> +	 * required ACS flags, add to the same group as lowest numbered
-> +	 * function that also does not suport the required ACS flags.
->  	 */
->  	if (dma_pdev->multifunction &&
-> -	    !pci_acs_enabled(dma_pdev, REQ_ACS_FLAGS))
-> -		swap_pci_ref(&dma_pdev,
-> -			     pci_get_slot(dma_pdev->bus,
-> -					  PCI_DEVFN(PCI_SLOT(dma_pdev->devfn),
-> -					  0)));
-> +	    !pci_acs_enabled(dma_pdev, REQ_ACS_FLAGS)) {
-> +		u8 i, slot = PCI_SLOT(dma_pdev->devfn);
+On Tue, May 28, 2013 at 05:45:12PM -0500, suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org wrote:
+> +static void perf_iommu_start(struct perf_event *event, int flags)
+> +{
+> +	struct hw_perf_event *hwc = &event->hw;
 > +
-> +		for (i = 0; i < 8; i++) {
-> +			struct pci_dev *tmp;
+> +	pr_debug("perf: amd_iommu:perf_iommu_start\n");
+> +	if (WARN_ON_ONCE(!(hwc->state & PERF_HES_STOPPED)))
+> +		return;
 > +
-> +			tmp = pci_get_slot(dma_pdev->bus, PCI_DEVFN(slot, i));
-> +			if (!tmp)
-> +				continue;
+> +	WARN_ON_ONCE(!(hwc->state & PERF_HES_UPTODATE));
+> +	hwc->state = 0;
 > +
-> +			if (!pci_acs_enabled(tmp, REQ_ACS_FLAGS)) {
-> +				swap_pci_ref(&dma_pdev, tmp);
-> +				break;
-> +			}
-> +			pci_dev_put(tmp);
-> +		}
+> +	if (flags & PERF_EF_RELOAD) {
+> +		u64 prev_raw_count =  local64_read(&hwc->prev_count);
+> +		amd_iommu_pc_get_set_reg_val(_GET_DEVID(event),
+> +				_GET_BANK(event), _GET_CNTR(event),
+> +				IOMMU_PC_COUNTER_REG, &prev_raw_count, true);
 > +	}
-> 
->  	/*
->  	 * Devices on the root bus go through the iommu.  If that's not us,
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index b4f0e28..eec0d3e 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -4182,14 +4182,27 @@ static int intel_iommu_add_device(struct device
-> *dev)
-> 
->  	/*
->  	 * If it's a multifunction device that does not support our
-> -	 * required ACS flags, add to the same group as function 0.
-> +	 * required ACS flags, add to the same group as lowest numbered
-> +	 * function that also does not suport the required ACS flags.
->  	 */
->  	if (dma_pdev->multifunction &&
-> -	    !pci_acs_enabled(dma_pdev, REQ_ACS_FLAGS))
-> -		swap_pci_ref(&dma_pdev,
-> -			     pci_get_slot(dma_pdev->bus,
-> -					  PCI_DEVFN(PCI_SLOT(dma_pdev->devfn),
-> -					  0)));
-> +	    !pci_acs_enabled(dma_pdev, REQ_ACS_FLAGS)) {
-> +		u8 i, slot = PCI_SLOT(dma_pdev->devfn);
 > +
-> +		for (i = 0; i < 8; i++) {
-[Sethi Varun-B16395] A macro like PCI_MAX_FUNCTIONS would improve code readability.
-
-> +			struct pci_dev *tmp;
+> +	perf_iommu_enable_event(event);
+> +	perf_event_update_userpage(event);
 > +
-> +			tmp = pci_get_slot(dma_pdev->bus, PCI_DEVFN(slot, i));
-> +			if (!tmp)
-> +				continue;
+> +}
 > +
-> +			if (!pci_acs_enabled(tmp, REQ_ACS_FLAGS)) {
-> +				swap_pci_ref(&dma_pdev, tmp);
-> +				break;
-> +			}
-> +			pci_dev_put(tmp);
-> +		}
-> +	}
+> +static void perf_iommu_read(struct perf_event *event)
+> +{
+> +	u64 count = 0ULL;
+> +	u64 prev_raw_count = 0ULL;
+> +	u64 delta = 0ULL;
+> +	struct hw_perf_event *hwc = &event->hw;
+> +	pr_debug("perf: amd_iommu:perf_iommu_read\n");
+> +
+> +	amd_iommu_pc_get_set_reg_val(_GET_DEVID(event),
+> +				_GET_BANK(event), _GET_CNTR(event),
+> +				IOMMU_PC_COUNTER_REG, &count, false);
+> +
+> +	/* IOMMU pc counter register is only 48 bits */
+> +	count &= 0xFFFFFFFFFFFFULL;
+> +
+> +	prev_raw_count =  local64_read(&hwc->prev_count);
+> +	if (local64_cmpxchg(&hwc->prev_count, prev_raw_count,
+> +					count) != prev_raw_count)
+> +		return;
+> +
+> +	delta = count - prev_raw_count;
+> +	local64_add(delta, &event->count);
+> +
+> +}
 
-It would be nice if this code could be represented as a function in a common file like iommu/pci.c.
+OK, so it looks like you have the event as a free-running counter; that
+is, I don't see it being reset anywhere.
 
--Varun
+Combined with the fact that you're only 48bit wide, it looks like you
+have a problem.
+
+perf_iommu_read()'s delta is wrong. Imagine we've just wrapped and
+prev_raw_count = 0xFFFFFFFFFFFFUL and count = 0x1. Then we do a 64bit
+subtraction and end up with delta = 0xffff000000000002 or
+18446462598732840962 instead of 2.
+
+(also there's trailing whitespace in that function)
+
+> +
+> +static void perf_iommu_stop(struct perf_event *event, int flags)
+> +{
+> +	struct hw_perf_event *hwc = &event->hw;
+> +	u64 config;
+> +
+> +	pr_debug("perf: amd_iommu:perf_iommu_stop\n");
+> +
+> +	if (hwc->state & PERF_HES_UPTODATE)
+> +		return;
+> +
+> +	perf_iommu_disable_event(event);
+> +	WARN_ON_ONCE(hwc->state & PERF_HES_STOPPED);
+> +	hwc->state |= PERF_HES_STOPPED;
+> +
+> +	if (hwc->state & PERF_HES_UPTODATE)
+> +		return;
+> +
+> +	config = hwc->config;
+> +	perf_iommu_read(event);
+> +	hwc->state |= PERF_HES_UPTODATE;
+> +}
