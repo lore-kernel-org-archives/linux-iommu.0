@@ -1,141 +1,64 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] iommu: amd/intel: Remove multifunction assumption
-	around	grouping
-Date: Mon, 03 Jun 2013 09:10:17 -0600
-Message-ID: <1370272217.30975.283.camel@ul30vt.home>
-References: <20130530183855.14612.15585.stgit@bling.home>
-	<C5ECD7A89D1DC44195F34B25E172658D56A9F4@039-SN2MPN1-013.039d.mgd.msft.net>
+From: =?iso-8859-1?Q?Beno=EEt?= Canet <benoit.canet@irqsave.net>
+Subject: VFIO and scheduled SR-IOV cards
+Date: Mon, 3 Jun 2013 18:33:05 +0200
+Message-ID: <20130603163305.GC4094@irqsave.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <C5ECD7A89D1DC44195F34B25E172658D56A9F4-RL0Hj/+nBVDYdknt8GnhQq4g8xLGJsHaLnY5E4hWTkheoWH0uzbU5w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Return-path: <qemu-devel-bounces+gceq-qemu-devel=gmane.org@nongnu.org>
+Content-Disposition: inline
+List-Unsubscribe: <https://lists.nongnu.org/mailman/options/qemu-devel>,
+	<mailto:qemu-devel-request@nongnu.org?subject=unsubscribe>
+List-Archive: <http://lists.nongnu.org/archive/html/qemu-devel>
+List-Post: <mailto:qemu-devel@nongnu.org>
+List-Help: <mailto:qemu-devel-request@nongnu.org?subject=help>
+List-Subscribe: <https://lists.nongnu.org/mailman/listinfo/qemu-devel>,
+	<mailto:qemu-devel-request@nongnu.org?subject=subscribe>
+Errors-To: qemu-devel-bounces+gceq-qemu-devel=gmane.org@nongnu.org
+Sender: qemu-devel-bounces+gceq-qemu-devel=gmane.org@nongnu.org
+To: iommu@lists.linux-foundation.org, qemu-devel@nongnu.org, alex.williamson@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2013-06-03 at 07:28 +0000, Sethi Varun-B16395 wrote:
-> > -----Original Message-----
-> > From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
-> > bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Alex Williamson
-> > Sent: Friday, May 31, 2013 12:09 AM
-> > To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org;
-> > joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-> > Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > Subject: [PATCH] iommu: amd/intel: Remove multifunction assumption around
-> > grouping
-> > 
-> > If a device is multifunction and does not have ACS enabled then we assume
-> > that the entire package lacks ACS and use function 0 as the base of the
-> > group.  The PCIe spec however states that components are permitted to
-> > implement ACS on some, none, or all of their applicable functions.  It's
-> > therefore conceivable that function 0 may be fully independent and
-> > support ACS while other functions do not.  Instead use the lowest
-> > function of the slot that does not have ACS enabled as the base of the
-> > group.  This may be the current device, which is intentional.  So long as
-> > we use a consistent algorithm, all the non-ACS functions will be grouped
-> > together and ACS functions will get separate groups.
-> > 
-> > Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> > ---
-> >  drivers/iommu/amd_iommu.c   |   25 +++++++++++++++++++------
-> >  drivers/iommu/intel-iommu.c |   25 +++++++++++++++++++------
-> >  2 files changed, 38 insertions(+), 12 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c index
-> > 1d84be1..565c745 100644
-> > --- a/drivers/iommu/amd_iommu.c
-> > +++ b/drivers/iommu/amd_iommu.c
-> > @@ -287,14 +287,27 @@ static struct pci_dev *get_isolation_root(struct
-> > pci_dev *pdev)
-> > 
-> >  	/*
-> >  	 * If it's a multifunction device that does not support our
-> > -	 * required ACS flags, add to the same group as function 0.
-> > +	 * required ACS flags, add to the same group as lowest numbered
-> > +	 * function that also does not suport the required ACS flags.
-> >  	 */
-> >  	if (dma_pdev->multifunction &&
-> > -	    !pci_acs_enabled(dma_pdev, REQ_ACS_FLAGS))
-> > -		swap_pci_ref(&dma_pdev,
-> > -			     pci_get_slot(dma_pdev->bus,
-> > -					  PCI_DEVFN(PCI_SLOT(dma_pdev->devfn),
-> > -					  0)));
-> > +	    !pci_acs_enabled(dma_pdev, REQ_ACS_FLAGS)) {
-> > +		u8 i, slot = PCI_SLOT(dma_pdev->devfn);
-> > +
-> > +		for (i = 0; i < 8; i++) {
-> > +			struct pci_dev *tmp;
-> > +
-> > +			tmp = pci_get_slot(dma_pdev->bus, PCI_DEVFN(slot, i));
-> > +			if (!tmp)
-> > +				continue;
-> > +
-> > +			if (!pci_acs_enabled(tmp, REQ_ACS_FLAGS)) {
-> > +				swap_pci_ref(&dma_pdev, tmp);
-> > +				break;
-> > +			}
-> > +			pci_dev_put(tmp);
-> > +		}
-> > +	}
-> > 
-> >  	/*
-> >  	 * Devices on the root bus go through the iommu.  If that's not us,
-> > diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> > index b4f0e28..eec0d3e 100644
-> > --- a/drivers/iommu/intel-iommu.c
-> > +++ b/drivers/iommu/intel-iommu.c
-> > @@ -4182,14 +4182,27 @@ static int intel_iommu_add_device(struct device
-> > *dev)
-> > 
-> >  	/*
-> >  	 * If it's a multifunction device that does not support our
-> > -	 * required ACS flags, add to the same group as function 0.
-> > +	 * required ACS flags, add to the same group as lowest numbered
-> > +	 * function that also does not suport the required ACS flags.
-> >  	 */
-> >  	if (dma_pdev->multifunction &&
-> > -	    !pci_acs_enabled(dma_pdev, REQ_ACS_FLAGS))
-> > -		swap_pci_ref(&dma_pdev,
-> > -			     pci_get_slot(dma_pdev->bus,
-> > -					  PCI_DEVFN(PCI_SLOT(dma_pdev->devfn),
-> > -					  0)));
-> > +	    !pci_acs_enabled(dma_pdev, REQ_ACS_FLAGS)) {
-> > +		u8 i, slot = PCI_SLOT(dma_pdev->devfn);
-> > +
-> > +		for (i = 0; i < 8; i++) {
-> [Sethi Varun-B16395] A macro like PCI_MAX_FUNCTIONS would improve code readability.
 
-Ok, I see a couple defines of PCI_MAX_FUNCTION, I guess we could add one
-to iommu/pci.h too.
+Hello,
 
-> > +			struct pci_dev *tmp;
-> > +
-> > +			tmp = pci_get_slot(dma_pdev->bus, PCI_DEVFN(slot, i));
-> > +			if (!tmp)
-> > +				continue;
-> > +
-> > +			if (!pci_acs_enabled(tmp, REQ_ACS_FLAGS)) {
-> > +				swap_pci_ref(&dma_pdev, tmp);
-> > +				break;
-> > +			}
-> > +			pci_dev_put(tmp);
-> > +		}
-> > +	}
-> 
-> It would be nice if this code could be represented as a function in a common file like iommu/pci.c.
+I plan to write a PF driver for an SR-IOV card and make the VFs work with=
+ QEMU's
+VFIO passthrough so I am asking the following design question before tryi=
+ng to
+write and push code.
 
-I agree, but I haven't gotten any feedback on iommu/pci.c yet and didn't
-want this patch to depend on that series.  There are probably more
-opportunities to consolidate there.  Thanks,
+After SR-IOV being enabled on this hardware only one VF function can be a=
+ctive
+at a given time.
 
-Alex
+The PF host kernel driver is acting as a scheduler.
+It switch every few milliseconds which VF is the current active function =
+while
+disabling the others VFs.
+
+One consequence of how the hardware works is that the MMR regions of the
+switched off VFs must be unmapped and their io access should block until =
+the VF
+is switched on again.
+
+Each IOMMU map/unmap should be done in less than 100ns.
+
+As the kernel iommu module is being called by the VFIO driver the PF driv=
+er
+cannot interface with it.
+
+Currently the only interface of the VFIO code is for the userland QEMU pr=
+ocess
+and I fear that notifying QEMU that it should do the unmap/block would ta=
+ke more
+than 100ns.
+
+Also blocking the IO access in QEMU under the BQL would freeze QEMU.
+
+Do you have and idea on how to write this required map and block/unmap fe=
+ature ?
+
+Best regards
+
+Beno=EEt Canet
