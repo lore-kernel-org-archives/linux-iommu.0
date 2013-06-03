@@ -1,78 +1,111 @@
-From: Don Dutile <ddutile@redhat.com>
-Subject: Re: [Qemu-devel] SR-IOV PF reset and QEMU VFs VFIO passthrough
-Date: Mon, 03 Jun 2013 14:41:04 -0400
-Message-ID: <51ACE340.1030406@redhat.com>
-References: <20130601121320.GC5157@irqsave.net>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: VFIO and scheduled SR-IOV cards
+Date: Mon, 03 Jun 2013 12:57:45 -0600
+Message-ID: <1370285865.30975.361.camel@ul30vt.home>
+References: <20130603163305.GC4094@irqsave.net>
+	<1370282529.30975.344.camel@ul30vt.home> <51ACE1B5.2050102@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20130601121320.GC5157@irqsave.net>
-Sender: linux-pci-owner@vger.kernel.org
-To: =?ISO-8859-1?Q?Beno=EEt_Canet?= <benoit.canet@irqsave.net>
-Cc: linux-pci@vger.kernel.org, qemu-devel@nongnu.org, iommu@lists.linux-foundation.org, alex.williamson@redhat.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <51ACE1B5.2050102-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: =?ISO-8859-1?Q?Beno=EEt?= Canet <benoit.canet-J9ArbTHlV+bR7s880joybQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 06/01/2013 08:13 AM, Beno=EEt Canet wrote:
->
-> Hello,
->
-> I may have soon the PF driver of an SR-IOV card to code and make work=
- with
-> QEMU/KVM so I have the following questions.
->
-> In an AMD64 setup where QEMU use VFIO to passthrough the VFs of an SR=
--IOV card
-> to a guest will the consequences of a PF FLR be handled fine by QEMU =
-and the
-> guest ?
->
-the reset occurs long before the device is passed to the guest.
-
-> I read that pci_reset_function would call pci_restore_state restoring=
- the SR-IOV
-> configuration after the reset of the PF.
->
-correct.
-
-> The ways the hardware work means that the VFs would disappear and rea=
-ppear in a
-> short lapse of time.
->
-Not sure your definitiion of 'disappear'.  If you mean: if I had anothe=
-r thread
-poking at the device, the device would appear to be removed, then come =
-back (if os
-poking hasn't crashed from the device's lack of response).
-If you mean the VF gets entirely removed from the PCI tree, then no.
-A pci reset !=3D hot unplug/plug.  The device remains in the device tre=
-e.
-
-> Will these events be handled by the kernel pci hotplug code ?
->
-'these events' ??? -- which events....
-=46LR is currently done by libvirt & qemu/vfio to ensure assigned devic=
-es are quiesced
-as they are switched from host->guest domain, and guest->(back-to-)host=
- domain.
-
-> Given that the PF driver restore the PF config space after the reset =
-will /sys
-The PF driver doesn't do the config space restore -- it's done in PCI c=
-ore code.
-
-> files used by QEMU disappear and reappear messing the QEMU VFIO passt=
-hrough or
-As stated above, the devices don't disappear from the device tree, so t=
-hey don't
-get removed/added to the /sys(/bus/pci/...) files.
-
-> will it goes smoothly ?
->
-it goes smoothly today.... :-/
-
-> Best regards
->
-> Beno=EEt Canet
->
+T24gTW9uLCAyMDEzLTA2LTAzIGF0IDE0OjM0IC0wNDAwLCBEb24gRHV0aWxlIHdyb3RlOgo+IE9u
+IDA2LzAzLzIwMTMgMDI6MDIgUE0sIEFsZXggV2lsbGlhbXNvbiB3cm90ZToKPiA+IE9uIE1vbiwg
+MjAxMy0wNi0wMyBhdCAxODozMyArMDIwMCwgQmVub8OudCBDYW5ldCB3cm90ZToKPiA+PiBIZWxs
+bywKPiA+Pgo+ID4+IEkgcGxhbiB0byB3cml0ZSBhIFBGIGRyaXZlciBmb3IgYW4gU1ItSU9WIGNh
+cmQgYW5kIG1ha2UgdGhlIFZGcyB3b3JrIHdpdGggUUVNVSdzCj4gPj4gVkZJTyBwYXNzdGhyb3Vn
+aCBzbyBJIGFtIGFza2luZyB0aGUgZm9sbG93aW5nIGRlc2lnbiBxdWVzdGlvbiBiZWZvcmUgdHJ5
+aW5nIHRvCj4gPj4gd3JpdGUgYW5kIHB1c2ggY29kZS4KPiA+Pgo+ID4+IEFmdGVyIFNSLUlPViBi
+ZWluZyBlbmFibGVkIG9uIHRoaXMgaGFyZHdhcmUgb25seSBvbmUgVkYgZnVuY3Rpb24gY2FuIGJl
+IGFjdGl2ZQo+ID4+IGF0IGEgZ2l2ZW4gdGltZS4KPiA+Cj4gPiBJcyB0aGlzIGFjdHVhbGx5IGFu
+IFNSLUlPViBkZXZpY2Ugb3IgYXJlIHlvdSB0cnlpbmcgdG8gd3JpdGUgYSBkcml2ZXIKPiA+IHRo
+YXQgZW11bGF0ZXMgU1ItSU9WIGZvciBhIFBGPwo+ID4KPiA+PiBUaGUgUEYgaG9zdCBrZXJuZWwg
+ZHJpdmVyIGlzIGFjdGluZyBhcyBhIHNjaGVkdWxlci4KPiA+PiBJdCBzd2l0Y2ggZXZlcnkgZmV3
+IG1pbGxpc2Vjb25kcyB3aGljaCBWRiBpcyB0aGUgY3VycmVudCBhY3RpdmUgZnVuY3Rpb24gd2hp
+bGUKPiA+PiBkaXNhYmxpbmcgdGhlIG90aGVycyBWRnMuCj4gPj4KPiB0aGF0J3MgdGltZS1zaGFy
+aW5nIG9mIGh3LCB3aGljaCBzdyBkb2Vzbid0IHNlZSAuLi4gc28sIG9rLgo+IAo+ID4+IE9uZSBj
+b25zZXF1ZW5jZSBvZiBob3cgdGhlIGhhcmR3YXJlIHdvcmtzIGlzIHRoYXQgdGhlIE1NUiByZWdp
+b25zIG9mIHRoZQo+ID4+IHN3aXRjaGVkIG9mZiBWRnMgbXVzdCBiZSB1bm1hcHBlZCBhbmQgdGhl
+aXIgaW8gYWNjZXNzIHNob3VsZCBibG9jayB1bnRpbCB0aGUgVkYKPiA+PiBpcyBzd2l0Y2hlZCBv
+biBhZ2Fpbi4KPiA+Cj4gVGhpcyB2aW9sYXRlcyB0aGUgc3BlYy4sIGFuZCBkb2VzIGltcGFjdCBz
+dyAtLSBob3cgY2FuIG9uZSBhc3NpZ24gc3VjaCBhIFZGIHRvIGEgZ3Vlc3QKPiAtLSBpdCBkb2Vz
+IG5vdCB3b3JrIGluZGVwLiBvZiBvdGhlciBWRnMuCj4gCj4gPiBNTVIgPSBNZW1vcnkgTWFwcGVk
+IFJlZ2lzdGVyPwo+ID4KPiA+IFRoaXMgc2VlbXMgY29udHJhZGljdG9yeSB0byB0aGUgU1ItSU9W
+IHNwZWMsIHdoaWNoIHN0YXRlczoKPiA+Cj4gPiAgICAgICAgICBFYWNoIFZGIGNvbnRhaW5zIGEg
+bm9uLXNoYXJlZCBzZXQgb2YgcGh5c2ljYWwgcmVzb3VyY2VzIHJlcXVpcmVkCj4gPiAgICAgICAg
+ICB0byBkZWxpdmVyIEZ1bmN0aW9uLXNwZWNpZmljCj4gPiAgICAgICAgICBzZXJ2aWNlcywgZS5n
+LiwgcmVzb3VyY2VzIHN1Y2ggYXMgd29yayBxdWV1ZXMsIGRhdGEgYnVmZmVycywKPiA+ICAgICAg
+ICAgIGV0Yy4gVGhlc2UgcmVzb3VyY2VzIGNhbiBiZSBkaXJlY3RseQo+ID4gICAgICAgICAgYWNj
+ZXNzZWQgYnkgYW4gU0kgd2l0aG91dCByZXF1aXJpbmcgVkkgb3IgU1ItUENJTSBpbnRlcnZlbnRp
+b24uCj4gPgo+ID4gRnVydGhlcm1vcmUsIGVhY2ggVkYgc2hvdWxkIGhhdmUgYSBzZXBhcmF0ZSBy
+ZXF1ZXN0ZXIgSUQuICBXaGF0J3MgYmVpbmcKPiA+IHN1Z2dlc3RlZCBoZXJlIHNlZW1zIGxpa2Ug
+bWF5YmUgdGhhdCdzIG5vdCB0aGUgY2FzZS4gIElmIHRydWUsIGl0IHdvdWxkCj4gSSBkaWRuJ3Qg
+cmVhZCBpdCB0aGF0IHdheSBhYm92ZS4gIEkgcmVhZCBpdCBhcyB0aGUgUENJZSBlbmQgaXMgdGlt
+ZXNoYXJlZAo+IGJ0d24gVkZzICgmIFBGcz8pLiAuLi4uIHdpdGggc29tZSBWRnMgZGlzYXBwZWFy
+aW5nIChmcm9tIGEgZHJpdmVyIHBlcnNwZWN0aXZlKQo+IGFzIGlmIHRoZSBkZXZpY2Ugd2FzIGhv
+dCB1bnBsdWcgdy9vIG5vdGlmaWNhdGlvbi4gIFRoYXQgd2lsbCBwcm9iYWJseSBjYXVzZQo+IHJl
+YWQtdGltZW91dHMgJiBTTUUncywgYnJpbmdpbmcgZG93biBtb3N0IGVudGVycHJpc2UtbGV2ZWwg
+c3lzdGVtcy4KClBlcmhhcHMgSSdtIHJlYWRpbmcgdG9vIG11Y2ggaW50byBpdCwgYnV0IHVzaW5n
+IHRoZSBzYW1lIHJlcXVlc3RlciBJRAp3b3VsZCBzZWVtIGxpa2UganVzdGlmaWNhdGlvbiBmb3Ig
+d2h5IHRoZSBkZXZpY2UgbmVlZHMgdG8gYmUgdW5tYXBwZWQuCk90aGVyd2lzZSB3ZSBjb3VsZCBq
+dXN0IHN0b3AgUUVNVSBhbmQgbGVhdmUgdGhlIG1hcHBpbmdzIGFsb25lIGlmIHdlCmp1c3Qgd2Fu
+dCB0byBtYWtlIHN1cmUgYWNjZXNzIHRvIHRoZSBkZXZpY2UgaXMgYmxvY2tlZCB3aGlsZSB0aGUg
+ZGV2aWNlCmlzIHN3YXBwZWQgb3V0LiAgTm90IHRoZSBiZXN0IG92ZXJhbGwgdGhyb3VnaHB1dCBh
+bGdvcml0aG0sIGJ1dCBtYXliZSBhCnByb29mIG9mIGNvbmNlcHQuICBOZWVkIG1vcmUgaW5mbyBh
+Ym91dCBob3cgdGhlIGRldmljZSBhY3R1YWxseSBiZWhhdmVzCnRvIGtub3cgZm9yIHN1cmUuICBU
+aGFua3MsCgpBbGV4Cgo+ID4gbWFrZSBpb21tdSBncm91cHMgY2hhbGxlbmdpbmcuICBJcyB0aGVy
+ZSBhbnkgVkYgc2F2ZS9yZXN0b3JlIGFyb3VuZCB0aGUKPiA+IHNjaGVkdWxpbmc/Cj4gPgo+ID4+
+IEVhY2ggSU9NTVUgbWFwL3VubWFwIHNob3VsZCBiZSBkb25lIGluIGxlc3MgdGhhbiAxMDBucy4K
+PiA+Cj4gPiBJIHRoaW5rIHRoYXQgbWF5IGJlIGEgbG90IHRvIGFzayBpZiB3ZSBuZWVkIHRvIHVu
+bWFwIHRoZSByZWdpb25zIGluIHRoZQo+ID4gZ3Vlc3QgYW5kIGluIHRoZSBpb21tdS4gIElmIHRo
+ZSAiVkZzIiB1c2VkIGRpZmZlcmVudCByZXF1ZXN0ZXIgSURzLAo+ID4gaW9tbXUgdW5tYXBwaW5n
+IHdob3VsZG4ndCBiZSBuZWNlc3NhcnkuICBJIGV4cGVyaW1lbnRlZCB3aXRoIHN3aXRjaGluZwo+
+ID4gYmV0d2VlbiB0cmFwcGVkIChyZWFkL3dyaXRlKSBhY2Nlc3MgdG8gbWVtb3J5IHJlZ2lvbnMg
+YW5kIG1tYXAnZCAoZGlyZWN0Cj4gPiBtYXBwaW5nKSBmb3IgaGFuZGxpbmcgbGVnYWN5IGludGVy
+cnVwdHMuICBUaGVyZSB3YXMgYSBub3RpY2VhYmxlCj4gPiBwZXJmb3JtYW5jZSBwZW5hbHR5IHN3
+aXRjaGluZyBwZXIgaW50ZXJydXB0Lgo+ID4KPiA+PiBBcyB0aGUga2VybmVsIGlvbW11IG1vZHVs
+ZSBpcyBiZWluZyBjYWxsZWQgYnkgdGhlIFZGSU8gZHJpdmVyIHRoZSBQRiBkcml2ZXIKPiA+PiBj
+YW5ub3QgaW50ZXJmYWNlIHdpdGggaXQuCj4gPj4KPiA+PiBDdXJyZW50bHkgdGhlIG9ubHkgaW50
+ZXJmYWNlIG9mIHRoZSBWRklPIGNvZGUgaXMgZm9yIHRoZSB1c2VybGFuZCBRRU1VIHByb2Nlc3MK
+PiA+PiBhbmQgSSBmZWFyIHRoYXQgbm90aWZ5aW5nIFFFTVUgdGhhdCBpdCBzaG91bGQgZG8gdGhl
+IHVubWFwL2Jsb2NrIHdvdWxkIHRha2UgbW9yZQo+ID4+IHRoYW4gMTAwbnMuCj4gPj4KPiA+PiBB
+bHNvIGJsb2NraW5nIHRoZSBJTyBhY2Nlc3MgaW4gUUVNVSB1bmRlciB0aGUgQlFMIHdvdWxkIGZy
+ZWV6ZSBRRU1VLgo+ID4+Cj4gPj4gRG8geW91IGhhdmUgYW5kIGlkZWEgb24gaG93IHRvIHdyaXRl
+IHRoaXMgcmVxdWlyZWQgbWFwIGFuZCBibG9jay91bm1hcCBmZWF0dXJlID8KPiA+Cj4gPiBJdCBz
+ZWVtcyBsaWtlIHRoZXJlIGFyZSBzZXZlcmFsIG9wdGlvbnMsIGJ1dCBJJ20gZG91YnRmdWwgdGhh
+dCBhbnkgb2YKPiA+IHRoZW0gd2lsbCBtZWV0IDEwMG5zLiAgSWYgdGhpcyBpcyBjb21wbGV0ZWx5
+IGZha2UgU1ItSU9WIGFuZCB0aGVyZSdzIG5vdAo+ID4gYSBkaWZmZXJlbnQgcmVxdWVzdGVyIElE
+IHBlciBWRiwgSSdkIHN0YXJ0IHdpdGggc2VlaW5nIGlmIHlvdSBjYW4gZXZlbgo+ID4gZG8gdGhl
+IGlvbW11X3VubWFwL2lvbW11X21hcCBvZiB0aGUgTU1JTyBCQVJzIGluIHVuZGVyIDEwMG5zLiAg
+SWYgdGhhdCdzCj4gPiBjbG9zZSB0byB5b3VyIGxpbWl0LCB0aGVuIHlvdXIgb25seSByZWFsIG9w
+dGlvbiBmb3IgUUVNVSBpcyB0byBmcmVlemUKPiA+IGl0LCB3aGljaCBzdGlsbCBpbnZvbHZlcyBn
+ZXR0aW5nIG11bHRpcGxlIChtYXliZSBtYW55KSB2Q1BVcyBvdXQgb2YgVk0KPiA+IG1vZGUuICBU
+aGF0J3Mgbm90IGZyZWUgZWl0aGVyLiAgSWYgYnkgc29tZSBtaXJhY2xlIHlvdSBoYXZlIHRpbWUg
+dG8KPiA+IHNwYXJlLCB5b3UgY291bGQgcmVtYXAgdGhlIHJlZ2lvbnMgdG8gdHJhcHBlZCBtb2Rl
+IGFuZCBsZXQgdGhlIHZDUFVzIHJ1bgo+ID4gd2hpbGUgdmZpbyBibG9ja3Mgb24gcmVhZC93cml0
+ZS4KPiA+Cj4gPiBNYXliZSB0aGVyZSdzIGV2ZW4gYSBxdWVzdGlvbiB3aGV0aGVyIG1tYXAnZCBt
+b2RlIGlzIHdvcnRod2hpbGUgZm9yIHRoaXMKPiA+IGRldmljZS4gIFRyYXBwaW5nIGV2ZXJ5IHJl
+YWQvd3JpdGUgaXMgb3JkZXJzIG9mIG1hZ25pdHVkZSBzbG93ZXIsIGJ1dAo+ID4gYWxsb3dzIHlv
+dSB0byBoYW5kbGUgdGhlICJ3YWl0IGZvciBWRiIgb24gdGhlIGtlcm5lbCBzaWRlLgo+ID4KPiA+
+IElmIHlvdSBjYW4gcHJvdmlkZSBtb3JlIGluZm8gb24gdGhlIGRldmljZSBkZXNpZ24vY29udHJh
+aW50cywgbWF5YmUgd2UKPiA+IGNhbiBjb21lIHVwIHdpdGggYmV0dGVyIG9wdGlvbnMuICBUaGFu
+a3MsCj4gPgo+ID4gQWxleAo+ID4KPiA+IF9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fCj4gPiBpb21tdSBtYWlsaW5nIGxpc3QKPiA+IGlvbW11QGxpc3RzLmxp
+bnV4LWZvdW5kYXRpb24ub3JnCj4gPiBodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcv
+bWFpbG1hbi9saXN0aW5mby9pb21tdQo+IAoKCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgt
+Zm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4v
+bGlzdGluZm8vaW9tbXU=
