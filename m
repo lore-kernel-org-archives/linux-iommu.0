@@ -1,16 +1,13 @@
-From: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [Qemu-devel] SR-IOV PF reset and QEMU VFs VFIO passthrough
-Date: Mon, 03 Jun 2013 18:03:23 -0400
-Message-ID: <51AD12AB.1000903@redhat.com>
-References: <20130601121320.GC5157@irqsave.net> <51ACE340.1030406@redhat.com>
-	<20130603192958.GB31044@irqsave.net> <51AD02B1.8070503@redhat.com>
-	<20130603212723.GG4094@irqsave.net> <51AD0DB8.8090109@redhat.com>
-	<20130603215855.GC31044@irqsave.net>
+From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH 0/3] iommu/amd: IOMMU Error Reporting/Handling/Filtering
+Date: Tue, 4 Jun 2013 00:27:28 -0500
+Message-ID: <51AD7AC0.6020303@amd.com>
+References: <1369250155-12226-1-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"; Format="flowed"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130603215855.GC31044-J9ArbTHlV+bR7s880joybQ@public.gmane.org>
+In-Reply-To: <1369250155-12226-1-git-send-email-suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,137 +17,94 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: =?ISO-8859-1?Q?Beno=EEt_Canet?= <benoit.canet-J9ArbTHlV+bR7s880joybQ@public.gmane.org>
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org
+To: suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 06/03/2013 05:58 PM, Beno=EEt Canet wrote:
->>> When the PF does an FLR the hardware go back to its default state, the =
-SR-IOV
->>> configuration is gone and the VFs disappears from the bus.
->>> Then the restore state function of the kernel reset code would bring th=
-e SR-IOV
->>> PF configuration back.
->>>
->> Ok, now you're a bit mis-led here.
->> The configuration header for SRIOV is _not_ put back.
->> Only the std, PCI config header section is put back in place, along with
->> msi(x), pm-caps.
->> If the hw wipes out all VF state setup (which it should, IMO), all VF co=
-nfiguration
->> will be lost in the hw...
->> *but*, the PCI core will still think the VFs exist (not hot-unplugged, n=
-o more than PF was);
->> trying to setup the VFs again, will fail (or worse).
->
-> I read the following code on a not so hold kernel.
->
-> -----------
-> int pci_reset_function(struct pci_dev *dev)
-> {
->> .......int rc;
->
->> .......rc =3D pci_dev_reset(dev, 1);
->> .......if (rc)
->> .......>.......return rc;
->
->> .......pci_save_state(dev);
->
->> ......./*
->> ....... * both INTx and MSI are disabled after the Interrupt Disable bit
->> ....... * is set and the Bus Master bit is cleared.
->> ....... */
->> .......pci_write_config_word(dev, PCI_COMMAND, PCI_COMMAND_INTX_DISABLE);
->
->> .......rc =3D pci_dev_reset(dev, 0);
->
->> .......pci_restore_state(dev);
->
->> .......return rc;
-> }
-> EXPORT_SYMBOL_GPL(pci_reset_function);
-> -----------
->
-> and
->
-> -----------
-> /**
->   * pci_restore_state - Restore the saved state of a PCI device
->   * @dev: - PCI device that we're dealing with
->   */
-> void pci_restore_state(struct pci_dev *dev)
-> {
->> .......if (!dev->state_saved)
->> .......>.......return;
->
->> ......./* PCI Express register must be restored first */
->> .......pci_restore_pcie_state(dev);
->> .......pci_restore_ats_state(dev);
->
->> .......pci_restore_config_space(dev);
->
->> .......pci_restore_pcix_state(dev);
->> .......pci_restore_msi_state(dev);
->> .......pci_restore_iov_state(dev);
->
->> .......dev->state_saved =3D false;
-> }
-> -----------
->
-> with pci_restore_iov_state calling sriov_restore_state:
->
-> -----------
-> static void sriov_restore_state(struct pci_dev *dev)
-> {
->> .......int i;
->> .......u16 ctrl;
->> .......struct pci_sriov *iov =3D dev->sriov;
->
->> .......pci_read_config_word(dev, iov->pos + PCI_SRIOV_CTRL,&ctrl);
->> .......if (ctrl&  PCI_SRIOV_CTRL_VFE)
->> .......>.......return;
->
->> .......for (i =3D PCI_IOV_RESOURCES; i<=3D PCI_IOV_RESOURCE_END; i++)
->> .......>.......pci_update_resource(dev, i);
->
->> .......pci_write_config_dword(dev, iov->pos + PCI_SRIOV_SYS_PGSIZE, iov-=
->pgsz);
->> .......pci_write_config_word(dev, iov->pos + PCI_SRIOV_NUM_VF, iov->num_=
-VFs);
->> .......pci_write_config_word(dev, iov->pos + PCI_SRIOV_CTRL, iov->ctrl);
->> .......if (iov->ctrl&  PCI_SRIOV_CTRL_VFE)
->> .......>.......msleep(100);
-> }
-> --------
->
-> The sriov_restore_state looked like if it does the right thing but maybe =
-I missread
-> the code.
->
-/my bad; I forgot about the save|restore_iov_state calls.... doh!
+Ping
 
-Now it gets down to how well your hw (& driver) works after the reset is do=
-ne...
-
->>
->>> The hardware also have a privately owned SR-IOV related configuration i=
-n the PF
->>> configuration space. This configuration is used to configure the VFs re=
-sources.
->>> (memory)
->>>
->> Per the SRIOV spec, yes, but that's in PCIe ext cfg space.
->> That area of the PCI configuration is not saved or restored by dev-reset.
+On 5/22/2013 2:15 PM, suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org wrote:
+> From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 >
-> Can a callback be added so PF driver can restore this state ?
+> This patch set implements framework for handling errors reported via IOMMU
+> event log. It also implements mechanism to filter/suppress error messages when
+> IOMMU hardware generates large amount event logs, which is often caused by
+> devices performing invalid operations or from misconfiguring IOMMU hardware
+> (e.g. IO_PAGE_FAULT and INVALID_DEVICE_QEQUEST").
 >
-As you pointed out, no need to, unless it's a device-specific,
-PCIe cap structure.  the SRIOV caps are re-instated, as you showed above...
-
-> Best regards
+> DEVICE vs IOMMU ERRORS:
+> =======================
+> Event types in AMD IOMMU event log can be categorized as:
+>      - IOMMU error : An error which is specific to IOMMU hardware
+>      - Device error: An error which is specific to a device
+>      - Non-error   : Miscelleneous events which are not classified as errors.
+> This patch set implements frameworks for handling "IOMMU error" and "device error".
+> For IOMMU error, the driver will log the event in dmesg and panic since the IOMMU
+> hardware is no longer functioning. For device error, the driver will decode and
+> log the error in dmesg based on the error logging level specified at boot time.
 >
-> Beno=EEt Canet
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-pci" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> ERROR LOGGING LEVEL:
+> ====================
+> The filtering framework introduce 3 levels of event logging,
+> "AMD_IOMMU_LOG_[DEFAULT|VERBOSE|DEBUG]".  Users can specify the level
+> via a new boot option "amd_iommu_log=[default|verbose|debug]".
+>      - default: Each error message is truncated. Filtering is enabled.
+>      - verbose: Output detail error message. Filtering is enabled.
+>      - debug  : Output detail error message. Filtering is disabled.
+>
+> ERROR THRESHOLD LEVEL:
+> ======================
+> Error threshold is used by the log filtering logic to determine when to suppress
+> the errors from a particular device. The threshold is defined as "the number of errors
+> (X) over a specified period (Y sec)". When the threshold is reached, IOMMU driver will
+> suppress subsequent error messages from the device for a predefined period (Z sec).
+> X, Y, and Z is currently hard-coded to 10 errors, 5 sec, and 30 sec.
+>
+> DATA STRUCTURE:
+> ===============
+> A new structure "struct dte_err_info" is added. It contains error information
+> specific to each device table entry (DTE). The structure is allocated dynamically
+> per DTE when IOMMU driver handle device error for the first time.
+>
+> ERROR STATES and LOG FILTERING:
+> ============================================
+> The filtering framework define 3 device error states "NONE", "PROBATION" and "SUPPRESS".
+>   1. From IOMMU driver intialization, all devices are in DEV_ERR_NONE state.
+>   2. During interupt handling, IOMMU driver processes each entry in the event log.
+>   3. If an entry is device error, the driver tags DTE with DEV_ERR_PROBATION and
+>      report error via via dmesg.
+>   4. For non-debug mode, if the device threshold is reached, the device is moved into
+>      DEV_ERR_SUPPRESS state in which all error messages are suppressed.
+>   5. After the suppress period has passed, the driver put the device in probation state,
+>      and errors are reported once again. If the device continues to generate errors,
+>      it will be re-suppress once the next threshold is reached.
+>
+> EXAMPLE OUTPUT:
+> ===============
+> AMD-Vi: Event=IO_PAGE_FAULT dev=3:0.0 dom=0x1b addr=0x97040 flg=N Ex Sup M P W Pm Ill Ta
+> AMD-Vi: Event=IO_PAGE_FAULT dev=3:0.0 dom=0x1b addr=0x97070 flg=N Ex Sup M P W Pm Ill Ta
+> AMD-Vi: Event=IO_PAGE_FAULT dev=3:0.0 dom=0x1b addr=0x97060 flg=N Ex Sup M P W Pm Ill Ta
+> AMD-Vi: Event=IO_PAGE_FAULT dev=3:0.0 dom=0x1b addr=0x4970 flg=N Ex Sup M P W Pm Ill Ta
+> AMD-Vi: Event=IO_PAGE_FAULT dev=3:0.0 dom=0x1b addr=0x98840 flg=N Ex Sup M P W Pm Ill Ta
+> AMD-Vi: Event=IO_PAGE_FAULT dev=3:0.0 dom=0x1b addr=0x98870 flg=N Ex Sup M P W Pm Ill Ta
+> AMD-Vi: Event=IO_PAGE_FAULT dev=3:0.0 dom=0x1b addr=0x98860 flg=N Ex Sup M P W Pm Ill Ta
+> AMD-Vi: Event=IO_PAGE_FAULT dev=3:0.0 dom=0x1b addr=0x4980 flg=N Ex Sup M P W Pm Ill Ta
+> AMD-Vi: Event=IO_PAGE_FAULT dev=3:0.0 dom=0x1b addr=0x99040 flg=N Ex Sup M P W Pm Ill Ta
+> AMD-Vi: Event=IO_PAGE_FAULT dev=3:0.0 dom=0x1b addr=0x99060 flg=N Ex Sup M P W Pm Ill Ta
+> AMD-Vi: Warning: IOMMU error threshold (10) reached for device=3:0.0. Suppress for 30 secs.!!!
+>
+> Suravee Suthikulpanit (3):
+>    iommu/amd: Adding amd_iommu_log cmdline option
+>    iommu/amd: Add error handling/reporting/filtering logic
+>    iommu/amd: Remove old event printing logic
+>
+>   Documentation/kernel-parameters.txt |   10 +
+>   drivers/iommu/Makefile              |    2 +-
+>   drivers/iommu/amd_iommu.c           |   85 +-------
+>   drivers/iommu/amd_iommu_fault.c     |  368 +++++++++++++++++++++++++++++++++++
+>   drivers/iommu/amd_iommu_init.c      |   19 ++
+>   drivers/iommu/amd_iommu_proto.h     |    6 +
+>   drivers/iommu/amd_iommu_types.h     |   16 ++
+>   7 files changed, 426 insertions(+), 80 deletions(-)
+>   create mode 100644 drivers/iommu/amd_iommu_fault.c
+>
