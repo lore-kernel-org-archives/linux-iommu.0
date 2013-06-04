@@ -1,13 +1,17 @@
-From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH 0/3] iommu/amd: IOMMU Error Reporting/Handling/Filtering
-Date: Tue, 4 Jun 2013 00:27:28 -0500
-Message-ID: <51AD7AC0.6020303@amd.com>
-References: <1369250155-12226-1-git-send-email-suravee.suthikulpanit@amd.com>
+From: =?iso-8859-1?Q?Beno=EEt?= Canet <benoit.canet-J9ArbTHlV+bR7s880joybQ@public.gmane.org>
+Subject: Re: [Qemu-devel] VFIO and scheduled SR-IOV cards
+Date: Tue, 4 Jun 2013 17:50:30 +0200
+Message-ID: <20130604155030.GA5991@irqsave.net>
+References: <20130603163305.GC4094@irqsave.net>
+	<1370282529.30975.344.camel@ul30vt.home>
+	<51ACE1B5.2050102@redhat.com>
+	<1370285865.30975.361.camel@ul30vt.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1369250155-12226-1-git-send-email-suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1370285865.30975.361.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,94 +21,178 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: =?iso-8859-1?Q?Beno=EEt?= Canet <benoit.canet-J9ArbTHlV+bR7s880joybQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Ping
 
-On 5/22/2013 2:15 PM, suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org wrote:
-> From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
->
-> This patch set implements framework for handling errors reported via IOMMU
-> event log. It also implements mechanism to filter/suppress error messages when
-> IOMMU hardware generates large amount event logs, which is often caused by
-> devices performing invalid operations or from misconfiguring IOMMU hardware
-> (e.g. IO_PAGE_FAULT and INVALID_DEVICE_QEQUEST").
->
-> DEVICE vs IOMMU ERRORS:
-> =======================
-> Event types in AMD IOMMU event log can be categorized as:
->      - IOMMU error : An error which is specific to IOMMU hardware
->      - Device error: An error which is specific to a device
->      - Non-error   : Miscelleneous events which are not classified as errors.
-> This patch set implements frameworks for handling "IOMMU error" and "device error".
-> For IOMMU error, the driver will log the event in dmesg and panic since the IOMMU
-> hardware is no longer functioning. For device error, the driver will decode and
-> log the error in dmesg based on the error logging level specified at boot time.
->
-> ERROR LOGGING LEVEL:
-> ====================
-> The filtering framework introduce 3 levels of event logging,
-> "AMD_IOMMU_LOG_[DEFAULT|VERBOSE|DEBUG]".  Users can specify the level
-> via a new boot option "amd_iommu_log=[default|verbose|debug]".
->      - default: Each error message is truncated. Filtering is enabled.
->      - verbose: Output detail error message. Filtering is enabled.
->      - debug  : Output detail error message. Filtering is disabled.
->
-> ERROR THRESHOLD LEVEL:
-> ======================
-> Error threshold is used by the log filtering logic to determine when to suppress
-> the errors from a particular device. The threshold is defined as "the number of errors
-> (X) over a specified period (Y sec)". When the threshold is reached, IOMMU driver will
-> suppress subsequent error messages from the device for a predefined period (Z sec).
-> X, Y, and Z is currently hard-coded to 10 errors, 5 sec, and 30 sec.
->
-> DATA STRUCTURE:
-> ===============
-> A new structure "struct dte_err_info" is added. It contains error information
-> specific to each device table entry (DTE). The structure is allocated dynamically
-> per DTE when IOMMU driver handle device error for the first time.
->
-> ERROR STATES and LOG FILTERING:
-> ============================================
-> The filtering framework define 3 device error states "NONE", "PROBATION" and "SUPPRESS".
->   1. From IOMMU driver intialization, all devices are in DEV_ERR_NONE state.
->   2. During interupt handling, IOMMU driver processes each entry in the event log.
->   3. If an entry is device error, the driver tags DTE with DEV_ERR_PROBATION and
->      report error via via dmesg.
->   4. For non-debug mode, if the device threshold is reached, the device is moved into
->      DEV_ERR_SUPPRESS state in which all error messages are suppressed.
->   5. After the suppress period has passed, the driver put the device in probation state,
->      and errors are reported once again. If the device continues to generate errors,
->      it will be re-suppress once the next threshold is reached.
->
-> EXAMPLE OUTPUT:
-> ===============
-> AMD-Vi: Event=IO_PAGE_FAULT dev=3:0.0 dom=0x1b addr=0x97040 flg=N Ex Sup M P W Pm Ill Ta
-> AMD-Vi: Event=IO_PAGE_FAULT dev=3:0.0 dom=0x1b addr=0x97070 flg=N Ex Sup M P W Pm Ill Ta
-> AMD-Vi: Event=IO_PAGE_FAULT dev=3:0.0 dom=0x1b addr=0x97060 flg=N Ex Sup M P W Pm Ill Ta
-> AMD-Vi: Event=IO_PAGE_FAULT dev=3:0.0 dom=0x1b addr=0x4970 flg=N Ex Sup M P W Pm Ill Ta
-> AMD-Vi: Event=IO_PAGE_FAULT dev=3:0.0 dom=0x1b addr=0x98840 flg=N Ex Sup M P W Pm Ill Ta
-> AMD-Vi: Event=IO_PAGE_FAULT dev=3:0.0 dom=0x1b addr=0x98870 flg=N Ex Sup M P W Pm Ill Ta
-> AMD-Vi: Event=IO_PAGE_FAULT dev=3:0.0 dom=0x1b addr=0x98860 flg=N Ex Sup M P W Pm Ill Ta
-> AMD-Vi: Event=IO_PAGE_FAULT dev=3:0.0 dom=0x1b addr=0x4980 flg=N Ex Sup M P W Pm Ill Ta
-> AMD-Vi: Event=IO_PAGE_FAULT dev=3:0.0 dom=0x1b addr=0x99040 flg=N Ex Sup M P W Pm Ill Ta
-> AMD-Vi: Event=IO_PAGE_FAULT dev=3:0.0 dom=0x1b addr=0x99060 flg=N Ex Sup M P W Pm Ill Ta
-> AMD-Vi: Warning: IOMMU error threshold (10) reached for device=3:0.0. Suppress for 30 secs.!!!
->
-> Suravee Suthikulpanit (3):
->    iommu/amd: Adding amd_iommu_log cmdline option
->    iommu/amd: Add error handling/reporting/filtering logic
->    iommu/amd: Remove old event printing logic
->
->   Documentation/kernel-parameters.txt |   10 +
->   drivers/iommu/Makefile              |    2 +-
->   drivers/iommu/amd_iommu.c           |   85 +-------
->   drivers/iommu/amd_iommu_fault.c     |  368 +++++++++++++++++++++++++++++++++++
->   drivers/iommu/amd_iommu_init.c      |   19 ++
->   drivers/iommu/amd_iommu_proto.h     |    6 +
->   drivers/iommu/amd_iommu_types.h     |   16 ++
->   7 files changed, 426 insertions(+), 80 deletions(-)
->   create mode 100644 drivers/iommu/amd_iommu_fault.c
->
+Hello,
+
+More informations on how the hardware works.
+
+-Each VF will have its own memory and MMR, etc.
+That means the resources are not shared.
+
+-Each VF will have its own bus number, function number and device number.
+That means request ID is separated for each VF.
+
+There is also VF save/restore area for the switch.
+
+A VF regular memory (not MMR) is still accessible after a switch out.
+
+But when a function VF1 is scheduled a read to a MRR of VF number 0 could r=
+eturn
+the value of the same MMR in VF number 1 because VF number 1 is switched on=
+ and
+the PF processor is busy servicing VF number 1.
+
+This could confuse the guest VF driver so the unmap and block or a same goal
+achieving technique is required.
+
+I hope these informations makes the area of the problem to solve narrower.
+
+Best regards
+
+Beno=EEt Canet
+
+> Le Monday 03 Jun 2013 =E0 12:57:45 (-0600), Alex Williamson a =E9crit :
+> On Mon, 2013-06-03 at 14:34 -0400, Don Dutile wrote:
+> > On 06/03/2013 02:02 PM, Alex Williamson wrote:
+> > > On Mon, 2013-06-03 at 18:33 +0200, Beno=EEt Canet wrote:
+> > >> Hello,
+> > >>
+> > >> I plan to write a PF driver for an SR-IOV card and make the VFs work=
+ with QEMU's
+> > >> VFIO passthrough so I am asking the following design question before=
+ trying to
+> > >> write and push code.
+> > >>
+> > >> After SR-IOV being enabled on this hardware only one VF function can=
+ be active
+> > >> at a given time.
+> > >
+> > > Is this actually an SR-IOV device or are you trying to write a driver
+> > > that emulates SR-IOV for a PF?
+> > >
+> > >> The PF host kernel driver is acting as a scheduler.
+> > >> It switch every few milliseconds which VF is the current active func=
+tion while
+> > >> disabling the others VFs.
+> > >>
+> > that's time-sharing of hw, which sw doesn't see ... so, ok.
+> > =
+
+> > >> One consequence of how the hardware works is that the MMR regions of=
+ the
+> > >> switched off VFs must be unmapped and their io access should block u=
+ntil the VF
+> > >> is switched on again.
+> > >
+> > This violates the spec., and does impact sw -- how can one assign such =
+a VF to a guest
+> > -- it does not work indep. of other VFs.
+> > =
+
+> > > MMR =3D Memory Mapped Register?
+> > >
+> > > This seems contradictory to the SR-IOV spec, which states:
+> > >
+> > >          Each VF contains a non-shared set of physical resources requ=
+ired
+> > >          to deliver Function-specific
+> > >          services, e.g., resources such as work queues, data buffers,
+> > >          etc. These resources can be directly
+> > >          accessed by an SI without requiring VI or SR-PCIM interventi=
+on.
+> > >
+> > > Furthermore, each VF should have a separate requester ID.  What's bei=
+ng
+> > > suggested here seems like maybe that's not the case.  If true, it wou=
+ld
+> > I didn't read it that way above.  I read it as the PCIe end is timeshar=
+ed
+> > btwn VFs (& PFs?). .... with some VFs disappearing (from a driver persp=
+ective)
+> > as if the device was hot unplug w/o notification.  That will probably c=
+ause
+> > read-timeouts & SME's, bringing down most enterprise-level systems.
+> =
+
+> Perhaps I'm reading too much into it, but using the same requester ID
+> would seem like justification for why the device needs to be unmapped.
+> Otherwise we could just stop QEMU and leave the mappings alone if we
+> just want to make sure access to the device is blocked while the device
+> is swapped out.  Not the best overall throughput algorithm, but maybe a
+> proof of concept.  Need more info about how the device actually behaves
+> to know for sure.  Thanks,
+> =
+
+> Alex
+> =
+
+> > > make iommu groups challenging.  Is there any VF save/restore around t=
+he
+> > > scheduling?
+> > >
+> > >> Each IOMMU map/unmap should be done in less than 100ns.
+> > >
+> > > I think that may be a lot to ask if we need to unmap the regions in t=
+he
+> > > guest and in the iommu.  If the "VFs" used different requester IDs,
+> > > iommu unmapping whouldn't be necessary.  I experimented with switching
+> > > between trapped (read/write) access to memory regions and mmap'd (dir=
+ect
+> > > mapping) for handling legacy interrupts.  There was a noticeable
+> > > performance penalty switching per interrupt.
+> > >
+> > >> As the kernel iommu module is being called by the VFIO driver the PF=
+ driver
+> > >> cannot interface with it.
+> > >>
+> > >> Currently the only interface of the VFIO code is for the userland QE=
+MU process
+> > >> and I fear that notifying QEMU that it should do the unmap/block wou=
+ld take more
+> > >> than 100ns.
+> > >>
+> > >> Also blocking the IO access in QEMU under the BQL would freeze QEMU.
+> > >>
+> > >> Do you have and idea on how to write this required map and block/unm=
+ap feature ?
+> > >
+> > > It seems like there are several options, but I'm doubtful that any of
+> > > them will meet 100ns.  If this is completely fake SR-IOV and there's =
+not
+> > > a different requester ID per VF, I'd start with seeing if you can even
+> > > do the iommu_unmap/iommu_map of the MMIO BARs in under 100ns.  If tha=
+t's
+> > > close to your limit, then your only real option for QEMU is to freeze
+> > > it, which still involves getting multiple (maybe many) vCPUs out of VM
+> > > mode.  That's not free either.  If by some miracle you have time to
+> > > spare, you could remap the regions to trapped mode and let the vCPUs =
+run
+> > > while vfio blocks on read/write.
+> > >
+> > > Maybe there's even a question whether mmap'd mode is worthwhile for t=
+his
+> > > device.  Trapping every read/write is orders of magnitude slower, but
+> > > allows you to handle the "wait for VF" on the kernel side.
+> > >
+> > > If you can provide more info on the device design/contraints, maybe we
+> > > can come up with better options.  Thanks,
+> > >
+> > > Alex
+> > >
+> > > _______________________________________________
+> > > iommu mailing list
+> > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> > > https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> > =
+
+> =
+
+> =
+
+> =
+
+> =
