@@ -1,13 +1,11 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] iommu: Split iommu_unmaps
-Date: Wed, 05 Jun 2013 10:39:30 -0600
-Message-ID: <1370450370.3516.21.camel@ul30vt.home>
-References: <20130524171401.14099.78694.stgit@bling.home>
+From: <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: [PATCH 0/2 V5] perf/x86/amd: IOMMU Performance Counter Support
+Date: Wed, 5 Jun 2013 16:11:47 -0500
+Message-ID: <1370466709-3212-1-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130524171401.14099.78694.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,123 +15,38 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, a.p.zijlstra-/NLkJaSkS4VmR6Xm/wNWPw@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Joerg,
+From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 
-Any comments on this?  I need this for vfio hugepage support, otherwise
-we risk getting a map failure that results in a BUG_ON from
-iommu_unmap_page in amd_iommu.  I can take it in through my vfio tree to
-keep the dependencies together if you want to provide an ack.  Thanks,
+NOTE: Please see individual patch for changes list.
 
-Alex
+These patches implement the AMD IOMMU Performance Counter functionality
+via custom perf PMU and implement static counting for various IOMMU
+translations.
 
-On Fri, 2013-05-24 at 11:14 -0600, Alex Williamson wrote:
-> iommu_map splits requests into pages that the iommu driver reports
-> that it can handle.  The iommu_unmap path does not do the same.  This
-> can cause problems not only from callers that might expect the same
-> behavior as the map path, but even from the failure path of iommu_map,
-> should it fail at a point where it has mapped and needs to unwind a
-> set of pages that the iommu driver cannot handle directly.  amd_iommu,
-> for example, will BUG_ON if asked to unmap a non power of 2 size.
-> 
-> Fix this by extracting and generalizing the sizing code from the
-> iommu_map path and use it for both map and unmap.
-> 
-> Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> ---
->  drivers/iommu/iommu.c |   63 +++++++++++++++++++++++++++----------------------
->  1 file changed, 35 insertions(+), 28 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index d8f98b1..4b0b56b 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -754,6 +754,38 @@ int iommu_domain_has_cap(struct iommu_domain *domain,
->  }
->  EXPORT_SYMBOL_GPL(iommu_domain_has_cap);
->  
-> +static size_t iommu_pgsize(struct iommu_domain *domain,
-> +			   unsigned long addr_merge, size_t size)
-> +{
-> +	unsigned int pgsize_idx;
-> +	size_t pgsize;
-> +
-> +	/* Max page size that still fits into 'size' */
-> +	pgsize_idx = __fls(size);
-> +
-> +	/* need to consider alignment requirements ? */
-> +	if (likely(addr_merge)) {
-> +		/* Max page size allowed by address */
-> +		unsigned int align_pgsize_idx = __ffs(addr_merge);
-> +		pgsize_idx = min(pgsize_idx, align_pgsize_idx);
-> +	}
-> +
-> +	/* build a mask of acceptable page sizes */
-> +	pgsize = (1UL << (pgsize_idx + 1)) - 1;
-> +
-> +	/* throw away page sizes not supported by the hardware */
-> +	pgsize &= domain->ops->pgsize_bitmap;
-> +
-> +	/* make sure we're still sane */
-> +	BUG_ON(!pgsize);
-> +
-> +	/* pick the biggest page */
-> +	pgsize_idx = __fls(pgsize);
-> +	pgsize = 1UL << pgsize_idx;
-> +
-> +	return pgsize;
-> +}
-> +
->  int iommu_map(struct iommu_domain *domain, unsigned long iova,
->  	      phys_addr_t paddr, size_t size, int prot)
->  {
-> @@ -785,32 +817,7 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
->  				(unsigned long)paddr, (unsigned long)size);
->  
->  	while (size) {
-> -		unsigned long pgsize, addr_merge = iova | paddr;
-> -		unsigned int pgsize_idx;
-> -
-> -		/* Max page size that still fits into 'size' */
-> -		pgsize_idx = __fls(size);
-> -
-> -		/* need to consider alignment requirements ? */
-> -		if (likely(addr_merge)) {
-> -			/* Max page size allowed by both iova and paddr */
-> -			unsigned int align_pgsize_idx = __ffs(addr_merge);
-> -
-> -			pgsize_idx = min(pgsize_idx, align_pgsize_idx);
-> -		}
-> -
-> -		/* build a mask of acceptable page sizes */
-> -		pgsize = (1UL << (pgsize_idx + 1)) - 1;
-> -
-> -		/* throw away page sizes not supported by the hardware */
-> -		pgsize &= domain->ops->pgsize_bitmap;
-> -
-> -		/* make sure we're still sane */
-> -		BUG_ON(!pgsize);
-> -
-> -		/* pick the biggest page */
-> -		pgsize_idx = __fls(pgsize);
-> -		pgsize = 1UL << pgsize_idx;
-> +		size_t pgsize = iommu_pgsize(domain, iova | paddr, size);
->  
->  		pr_debug("mapping: iova 0x%lx pa 0x%lx pgsize %lu\n", iova,
->  					(unsigned long)paddr, pgsize);
-> @@ -863,9 +870,9 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
->  	 * or we hit an area that isn't mapped.
->  	 */
->  	while (unmapped < size) {
-> -		size_t left = size - unmapped;
-> +		size_t pgsize = iommu_pgsize(domain, iova, size - unmapped);
->  
-> -		unmapped_page = domain->ops->unmap(domain, iova, left);
-> +		unmapped_page = domain->ops->unmap(domain, iova, pgsize);
->  		if (!unmapped_page)
->  			break;
->  
-> 
+    1) Extend the AMD IOMMU initialization to include performance
+       counter enablement.
+
+    2) The perf AMD IOMMU PMU to manage performance counters, which
+       interface with the AMD IOMMU core driver.
+
+Steven L Kinney (1):
+  perf/x86/amd: Adding IOMMU PC resource management
+
+Suravee Suthikulpanit (1):
+  perf/x86/amd: AMD IOMMU PC PERF uncore PMU implementation
+
+ arch/x86/kernel/cpu/Makefile               |    4 +
+ arch/x86/kernel/cpu/perf_event_amd_iommu.c |  504 ++++++++++++++++++++++++++++
+ arch/x86/kernel/cpu/perf_event_amd_iommu.h |   40 +++
+ drivers/iommu/amd_iommu_init.c             |  140 +++++++-
+ drivers/iommu/amd_iommu_proto.h            |    7 +
+ drivers/iommu/amd_iommu_types.h            |   15 +-
+ 6 files changed, 698 insertions(+), 12 deletions(-)
+ create mode 100644 arch/x86/kernel/cpu/perf_event_amd_iommu.c
+ create mode 100644 arch/x86/kernel/cpu/perf_event_amd_iommu.h
+
+-- 
+1.7.10.4
