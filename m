@@ -1,16 +1,13 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [Qemu-devel] VFIO and scheduled SR-IOV cards
-Date: Tue, 04 Jun 2013 12:31:38 -0600
-Message-ID: <1370370698.30975.447.camel@ul30vt.home>
-References: <20130603163305.GC4094@irqsave.net>
-	<1370282529.30975.344.camel@ul30vt.home> <51ACE1B5.2050102@redhat.com>
-	<1370285865.30975.361.camel@ul30vt.home>
-	<20130604155030.GA5991@irqsave.net>
+Subject: Re: [PATCH] iommu: Split iommu_unmaps
+Date: Wed, 05 Jun 2013 10:39:30 -0600
+Message-ID: <1370450370.3516.21.camel@ul30vt.home>
+References: <20130524171401.14099.78694.stgit@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130604155030.GA5991-J9ArbTHlV+bR7s880joybQ@public.gmane.org>
+In-Reply-To: <20130524171401.14099.78694.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,129 +17,123 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: =?ISO-8859-1?Q?Beno=EEt?= Canet <benoit.canet-J9ArbTHlV+bR7s880joybQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVHVlLCAyMDEzLTA2LTA0IGF0IDE3OjUwICswMjAwLCBCZW5vw650IENhbmV0IHdyb3RlOgo+
-IEhlbGxvLAo+IAo+IE1vcmUgaW5mb3JtYXRpb25zIG9uIGhvdyB0aGUgaGFyZHdhcmUgd29ya3Mu
-Cj4gCj4gLUVhY2ggVkYgd2lsbCBoYXZlIGl0cyBvd24gbWVtb3J5IGFuZCBNTVIsIGV0Yy4KPiBU
-aGF0IG1lYW5zIHRoZSByZXNvdXJjZXMgYXJlIG5vdCBzaGFyZWQuCgpJJ20gc3RpbGwgbm90IGNs
-ZWFyIG9uIE1NUiwgd2hhdCBpcyB0aGF0PyAgTWVtb3J5IE1hcHBlZCBSZWdpc3RlcnMgKGllLgpy
-ZWdpc3RlcnMgYWNjZXNzZWQgdGhyb3VnaCB0aGUgZGV2aWNlJ3MgTU1JTyByZWdpb25zKT8KCj4g
-LUVhY2ggVkYgd2lsbCBoYXZlIGl0cyBvd24gYnVzIG51bWJlciwgZnVuY3Rpb24gbnVtYmVyIGFu
-ZCBkZXZpY2UgbnVtYmVyLgo+IFRoYXQgbWVhbnMgcmVxdWVzdCBJRCBpcyBzZXBhcmF0ZWQgZm9y
-IGVhY2ggVkYuCgpUaGF0J3MgYSByZWxpZWYgOikKCj4gVGhlcmUgaXMgYWxzbyBWRiBzYXZlL3Jl
-c3RvcmUgYXJlYSBmb3IgdGhlIHN3aXRjaC4KPiAKPiBBIFZGIHJlZ3VsYXIgbWVtb3J5IChub3Qg
-TU1SKSBpcyBzdGlsbCBhY2Nlc3NpYmxlIGFmdGVyIGEgc3dpdGNoIG91dC4KCkRvZXMgdGhpcyBt
-ZWFuIHRoYXQgdGhlIE1NSU8gb2YgdGhlIGRldmljZSBoYXMgc29tZSBzZWN0aW9ucyB0aGF0IGFy
-ZQptZW1vcnkgbWFwcGVkIHJlZ2lzdGVycyBhbmQgc29tZSBzZWN0aW9ucyB0aGF0IGFyZSByZWd1
-bGFyIG1lbW9yeSBhbmQKanVzdCB0aGUgc2VjdGlvbnMgdGhhdCBhcmUgbWVtb3J5IG1hcHBlZCBy
-ZWdpc3RlcnMgYXJlIG5vdCBhY2Nlc3NpYmxlCndoZW4gdGhlIFZGIGlzIHN3YXBwZWQgb3V0PyAg
-QXJlIHRoZXNlIHdpdGhpbiB0aGUgc2FtZSBQQ0kgQkFSIG9yIHNwbGl0CmFjcm9zcyBCQVJzPyAg
-V2hhdCBhcmUgdGhlIHBlcmZvcm1hbmNlIHJlcXVpcmVtZW50cyBvZiBhY2Nlc3MgdG8gdGhlIE1N
-UgpyZWdpb25zIChpZS4gZG8gdGhleSBldmVuIG5lZWQgdG8gYmUgbW1hcCdkIGZvciBkaXJlY3Qg
-YWNjZXNzKT8KCj4gQnV0IHdoZW4gYSBmdW5jdGlvbiBWRjEgaXMgc2NoZWR1bGVkIGEgcmVhZCB0
-byBhIE1SUiBvZiBWRiBudW1iZXIgMCBjb3VsZCByZXR1cm4KPiB0aGUgdmFsdWUgb2YgdGhlIHNh
-bWUgTU1SIGluIFZGIG51bWJlciAxIGJlY2F1c2UgVkYgbnVtYmVyIDEgaXMgc3dpdGNoZWQgb24g
-YW5kCj4gdGhlIFBGIHByb2Nlc3NvciBpcyBidXN5IHNlcnZpY2luZyBWRiBudW1iZXIgMS4KPiAK
-PiBUaGlzIGNvdWxkIGNvbmZ1c2UgdGhlIGd1ZXN0IFZGIGRyaXZlciBzbyB0aGUgdW5tYXAgYW5k
-IGJsb2NrIG9yIGEgc2FtZSBnb2FsCj4gYWNoaWV2aW5nIHRlY2huaXF1ZSBpcyByZXF1aXJlZC4K
-PiAKPiBJIGhvcGUgdGhlc2UgaW5mb3JtYXRpb25zIG1ha2VzIHRoZSBhcmVhIG9mIHRoZSBwcm9i
-bGVtIHRvIHNvbHZlIG5hcnJvd2VyLgoKR2V0dGluZyBjbGVhcmVyLiAgVGhhbmtzLAoKQWxleAoK
-PiA+IExlIE1vbmRheSAwMyBKdW4gMjAxMyDDoCAxMjo1Nzo0NSAoLTA2MDApLCBBbGV4IFdpbGxp
-YW1zb24gYSDDqWNyaXQgOgo+ID4gT24gTW9uLCAyMDEzLTA2LTAzIGF0IDE0OjM0IC0wNDAwLCBE
-b24gRHV0aWxlIHdyb3RlOgo+ID4gPiBPbiAwNi8wMy8yMDEzIDAyOjAyIFBNLCBBbGV4IFdpbGxp
-YW1zb24gd3JvdGU6Cj4gPiA+ID4gT24gTW9uLCAyMDEzLTA2LTAzIGF0IDE4OjMzICswMjAwLCBC
-ZW5vw650IENhbmV0IHdyb3RlOgo+ID4gPiA+PiBIZWxsbywKPiA+ID4gPj4KPiA+ID4gPj4gSSBw
-bGFuIHRvIHdyaXRlIGEgUEYgZHJpdmVyIGZvciBhbiBTUi1JT1YgY2FyZCBhbmQgbWFrZSB0aGUg
-VkZzIHdvcmsgd2l0aCBRRU1VJ3MKPiA+ID4gPj4gVkZJTyBwYXNzdGhyb3VnaCBzbyBJIGFtIGFz
-a2luZyB0aGUgZm9sbG93aW5nIGRlc2lnbiBxdWVzdGlvbiBiZWZvcmUgdHJ5aW5nIHRvCj4gPiA+
-ID4+IHdyaXRlIGFuZCBwdXNoIGNvZGUuCj4gPiA+ID4+Cj4gPiA+ID4+IEFmdGVyIFNSLUlPViBi
-ZWluZyBlbmFibGVkIG9uIHRoaXMgaGFyZHdhcmUgb25seSBvbmUgVkYgZnVuY3Rpb24gY2FuIGJl
-IGFjdGl2ZQo+ID4gPiA+PiBhdCBhIGdpdmVuIHRpbWUuCj4gPiA+ID4KPiA+ID4gPiBJcyB0aGlz
-IGFjdHVhbGx5IGFuIFNSLUlPViBkZXZpY2Ugb3IgYXJlIHlvdSB0cnlpbmcgdG8gd3JpdGUgYSBk
-cml2ZXIKPiA+ID4gPiB0aGF0IGVtdWxhdGVzIFNSLUlPViBmb3IgYSBQRj8KPiA+ID4gPgo+ID4g
-PiA+PiBUaGUgUEYgaG9zdCBrZXJuZWwgZHJpdmVyIGlzIGFjdGluZyBhcyBhIHNjaGVkdWxlci4K
-PiA+ID4gPj4gSXQgc3dpdGNoIGV2ZXJ5IGZldyBtaWxsaXNlY29uZHMgd2hpY2ggVkYgaXMgdGhl
-IGN1cnJlbnQgYWN0aXZlIGZ1bmN0aW9uIHdoaWxlCj4gPiA+ID4+IGRpc2FibGluZyB0aGUgb3Ro
-ZXJzIFZGcy4KPiA+ID4gPj4KPiA+ID4gdGhhdCdzIHRpbWUtc2hhcmluZyBvZiBodywgd2hpY2gg
-c3cgZG9lc24ndCBzZWUgLi4uIHNvLCBvay4KPiA+ID4gCj4gPiA+ID4+IE9uZSBjb25zZXF1ZW5j
-ZSBvZiBob3cgdGhlIGhhcmR3YXJlIHdvcmtzIGlzIHRoYXQgdGhlIE1NUiByZWdpb25zIG9mIHRo
-ZQo+ID4gPiA+PiBzd2l0Y2hlZCBvZmYgVkZzIG11c3QgYmUgdW5tYXBwZWQgYW5kIHRoZWlyIGlv
-IGFjY2VzcyBzaG91bGQgYmxvY2sgdW50aWwgdGhlIFZGCj4gPiA+ID4+IGlzIHN3aXRjaGVkIG9u
-IGFnYWluLgo+ID4gPiA+Cj4gPiA+IFRoaXMgdmlvbGF0ZXMgdGhlIHNwZWMuLCBhbmQgZG9lcyBp
-bXBhY3Qgc3cgLS0gaG93IGNhbiBvbmUgYXNzaWduIHN1Y2ggYSBWRiB0byBhIGd1ZXN0Cj4gPiA+
-IC0tIGl0IGRvZXMgbm90IHdvcmsgaW5kZXAuIG9mIG90aGVyIFZGcy4KPiA+ID4gCj4gPiA+ID4g
-TU1SID0gTWVtb3J5IE1hcHBlZCBSZWdpc3Rlcj8KPiA+ID4gPgo+ID4gPiA+IFRoaXMgc2VlbXMg
-Y29udHJhZGljdG9yeSB0byB0aGUgU1ItSU9WIHNwZWMsIHdoaWNoIHN0YXRlczoKPiA+ID4gPgo+
-ID4gPiA+ICAgICAgICAgIEVhY2ggVkYgY29udGFpbnMgYSBub24tc2hhcmVkIHNldCBvZiBwaHlz
-aWNhbCByZXNvdXJjZXMgcmVxdWlyZWQKPiA+ID4gPiAgICAgICAgICB0byBkZWxpdmVyIEZ1bmN0
-aW9uLXNwZWNpZmljCj4gPiA+ID4gICAgICAgICAgc2VydmljZXMsIGUuZy4sIHJlc291cmNlcyBz
-dWNoIGFzIHdvcmsgcXVldWVzLCBkYXRhIGJ1ZmZlcnMsCj4gPiA+ID4gICAgICAgICAgZXRjLiBU
-aGVzZSByZXNvdXJjZXMgY2FuIGJlIGRpcmVjdGx5Cj4gPiA+ID4gICAgICAgICAgYWNjZXNzZWQg
-YnkgYW4gU0kgd2l0aG91dCByZXF1aXJpbmcgVkkgb3IgU1ItUENJTSBpbnRlcnZlbnRpb24uCj4g
-PiA+ID4KPiA+ID4gPiBGdXJ0aGVybW9yZSwgZWFjaCBWRiBzaG91bGQgaGF2ZSBhIHNlcGFyYXRl
-IHJlcXVlc3RlciBJRC4gIFdoYXQncyBiZWluZwo+ID4gPiA+IHN1Z2dlc3RlZCBoZXJlIHNlZW1z
-IGxpa2UgbWF5YmUgdGhhdCdzIG5vdCB0aGUgY2FzZS4gIElmIHRydWUsIGl0IHdvdWxkCj4gPiA+
-IEkgZGlkbid0IHJlYWQgaXQgdGhhdCB3YXkgYWJvdmUuICBJIHJlYWQgaXQgYXMgdGhlIFBDSWUg
-ZW5kIGlzIHRpbWVzaGFyZWQKPiA+ID4gYnR3biBWRnMgKCYgUEZzPykuIC4uLi4gd2l0aCBzb21l
-IFZGcyBkaXNhcHBlYXJpbmcgKGZyb20gYSBkcml2ZXIgcGVyc3BlY3RpdmUpCj4gPiA+IGFzIGlm
-IHRoZSBkZXZpY2Ugd2FzIGhvdCB1bnBsdWcgdy9vIG5vdGlmaWNhdGlvbi4gIFRoYXQgd2lsbCBw
-cm9iYWJseSBjYXVzZQo+ID4gPiByZWFkLXRpbWVvdXRzICYgU01FJ3MsIGJyaW5naW5nIGRvd24g
-bW9zdCBlbnRlcnByaXNlLWxldmVsIHN5c3RlbXMuCj4gPiAKPiA+IFBlcmhhcHMgSSdtIHJlYWRp
-bmcgdG9vIG11Y2ggaW50byBpdCwgYnV0IHVzaW5nIHRoZSBzYW1lIHJlcXVlc3RlciBJRAo+ID4g
-d291bGQgc2VlbSBsaWtlIGp1c3RpZmljYXRpb24gZm9yIHdoeSB0aGUgZGV2aWNlIG5lZWRzIHRv
-IGJlIHVubWFwcGVkLgo+ID4gT3RoZXJ3aXNlIHdlIGNvdWxkIGp1c3Qgc3RvcCBRRU1VIGFuZCBs
-ZWF2ZSB0aGUgbWFwcGluZ3MgYWxvbmUgaWYgd2UKPiA+IGp1c3Qgd2FudCB0byBtYWtlIHN1cmUg
-YWNjZXNzIHRvIHRoZSBkZXZpY2UgaXMgYmxvY2tlZCB3aGlsZSB0aGUgZGV2aWNlCj4gPiBpcyBz
-d2FwcGVkIG91dC4gIE5vdCB0aGUgYmVzdCBvdmVyYWxsIHRocm91Z2hwdXQgYWxnb3JpdGhtLCBi
-dXQgbWF5YmUgYQo+ID4gcHJvb2Ygb2YgY29uY2VwdC4gIE5lZWQgbW9yZSBpbmZvIGFib3V0IGhv
-dyB0aGUgZGV2aWNlIGFjdHVhbGx5IGJlaGF2ZXMKPiA+IHRvIGtub3cgZm9yIHN1cmUuICBUaGFu
-a3MsCj4gPiAKPiA+IEFsZXgKPiA+IAo+ID4gPiA+IG1ha2UgaW9tbXUgZ3JvdXBzIGNoYWxsZW5n
-aW5nLiAgSXMgdGhlcmUgYW55IFZGIHNhdmUvcmVzdG9yZSBhcm91bmQgdGhlCj4gPiA+ID4gc2No
-ZWR1bGluZz8KPiA+ID4gPgo+ID4gPiA+PiBFYWNoIElPTU1VIG1hcC91bm1hcCBzaG91bGQgYmUg
-ZG9uZSBpbiBsZXNzIHRoYW4gMTAwbnMuCj4gPiA+ID4KPiA+ID4gPiBJIHRoaW5rIHRoYXQgbWF5
-IGJlIGEgbG90IHRvIGFzayBpZiB3ZSBuZWVkIHRvIHVubWFwIHRoZSByZWdpb25zIGluIHRoZQo+
-ID4gPiA+IGd1ZXN0IGFuZCBpbiB0aGUgaW9tbXUuICBJZiB0aGUgIlZGcyIgdXNlZCBkaWZmZXJl
-bnQgcmVxdWVzdGVyIElEcywKPiA+ID4gPiBpb21tdSB1bm1hcHBpbmcgd2hvdWxkbid0IGJlIG5l
-Y2Vzc2FyeS4gIEkgZXhwZXJpbWVudGVkIHdpdGggc3dpdGNoaW5nCj4gPiA+ID4gYmV0d2VlbiB0
-cmFwcGVkIChyZWFkL3dyaXRlKSBhY2Nlc3MgdG8gbWVtb3J5IHJlZ2lvbnMgYW5kIG1tYXAnZCAo
-ZGlyZWN0Cj4gPiA+ID4gbWFwcGluZykgZm9yIGhhbmRsaW5nIGxlZ2FjeSBpbnRlcnJ1cHRzLiAg
-VGhlcmUgd2FzIGEgbm90aWNlYWJsZQo+ID4gPiA+IHBlcmZvcm1hbmNlIHBlbmFsdHkgc3dpdGNo
-aW5nIHBlciBpbnRlcnJ1cHQuCj4gPiA+ID4KPiA+ID4gPj4gQXMgdGhlIGtlcm5lbCBpb21tdSBt
-b2R1bGUgaXMgYmVpbmcgY2FsbGVkIGJ5IHRoZSBWRklPIGRyaXZlciB0aGUgUEYgZHJpdmVyCj4g
-PiA+ID4+IGNhbm5vdCBpbnRlcmZhY2Ugd2l0aCBpdC4KPiA+ID4gPj4KPiA+ID4gPj4gQ3VycmVu
-dGx5IHRoZSBvbmx5IGludGVyZmFjZSBvZiB0aGUgVkZJTyBjb2RlIGlzIGZvciB0aGUgdXNlcmxh
-bmQgUUVNVSBwcm9jZXNzCj4gPiA+ID4+IGFuZCBJIGZlYXIgdGhhdCBub3RpZnlpbmcgUUVNVSB0
-aGF0IGl0IHNob3VsZCBkbyB0aGUgdW5tYXAvYmxvY2sgd291bGQgdGFrZSBtb3JlCj4gPiA+ID4+
-IHRoYW4gMTAwbnMuCj4gPiA+ID4+Cj4gPiA+ID4+IEFsc28gYmxvY2tpbmcgdGhlIElPIGFjY2Vz
-cyBpbiBRRU1VIHVuZGVyIHRoZSBCUUwgd291bGQgZnJlZXplIFFFTVUuCj4gPiA+ID4+Cj4gPiA+
-ID4+IERvIHlvdSBoYXZlIGFuZCBpZGVhIG9uIGhvdyB0byB3cml0ZSB0aGlzIHJlcXVpcmVkIG1h
-cCBhbmQgYmxvY2svdW5tYXAgZmVhdHVyZSA/Cj4gPiA+ID4KPiA+ID4gPiBJdCBzZWVtcyBsaWtl
-IHRoZXJlIGFyZSBzZXZlcmFsIG9wdGlvbnMsIGJ1dCBJJ20gZG91YnRmdWwgdGhhdCBhbnkgb2YK
-PiA+ID4gPiB0aGVtIHdpbGwgbWVldCAxMDBucy4gIElmIHRoaXMgaXMgY29tcGxldGVseSBmYWtl
-IFNSLUlPViBhbmQgdGhlcmUncyBub3QKPiA+ID4gPiBhIGRpZmZlcmVudCByZXF1ZXN0ZXIgSUQg
-cGVyIFZGLCBJJ2Qgc3RhcnQgd2l0aCBzZWVpbmcgaWYgeW91IGNhbiBldmVuCj4gPiA+ID4gZG8g
-dGhlIGlvbW11X3VubWFwL2lvbW11X21hcCBvZiB0aGUgTU1JTyBCQVJzIGluIHVuZGVyIDEwMG5z
-LiAgSWYgdGhhdCdzCj4gPiA+ID4gY2xvc2UgdG8geW91ciBsaW1pdCwgdGhlbiB5b3VyIG9ubHkg
-cmVhbCBvcHRpb24gZm9yIFFFTVUgaXMgdG8gZnJlZXplCj4gPiA+ID4gaXQsIHdoaWNoIHN0aWxs
-IGludm9sdmVzIGdldHRpbmcgbXVsdGlwbGUgKG1heWJlIG1hbnkpIHZDUFVzIG91dCBvZiBWTQo+
-ID4gPiA+IG1vZGUuICBUaGF0J3Mgbm90IGZyZWUgZWl0aGVyLiAgSWYgYnkgc29tZSBtaXJhY2xl
-IHlvdSBoYXZlIHRpbWUgdG8KPiA+ID4gPiBzcGFyZSwgeW91IGNvdWxkIHJlbWFwIHRoZSByZWdp
-b25zIHRvIHRyYXBwZWQgbW9kZSBhbmQgbGV0IHRoZSB2Q1BVcyBydW4KPiA+ID4gPiB3aGlsZSB2
-ZmlvIGJsb2NrcyBvbiByZWFkL3dyaXRlLgo+ID4gPiA+Cj4gPiA+ID4gTWF5YmUgdGhlcmUncyBl
-dmVuIGEgcXVlc3Rpb24gd2hldGhlciBtbWFwJ2QgbW9kZSBpcyB3b3J0aHdoaWxlIGZvciB0aGlz
-Cj4gPiA+ID4gZGV2aWNlLiAgVHJhcHBpbmcgZXZlcnkgcmVhZC93cml0ZSBpcyBvcmRlcnMgb2Yg
-bWFnbml0dWRlIHNsb3dlciwgYnV0Cj4gPiA+ID4gYWxsb3dzIHlvdSB0byBoYW5kbGUgdGhlICJ3
-YWl0IGZvciBWRiIgb24gdGhlIGtlcm5lbCBzaWRlLgo+ID4gPiA+Cj4gPiA+ID4gSWYgeW91IGNh
-biBwcm92aWRlIG1vcmUgaW5mbyBvbiB0aGUgZGV2aWNlIGRlc2lnbi9jb250cmFpbnRzLCBtYXli
-ZSB3ZQo+ID4gPiA+IGNhbiBjb21lIHVwIHdpdGggYmV0dGVyIG9wdGlvbnMuICBUaGFua3MsCj4g
-PiA+ID4KPiA+ID4gPiBBbGV4Cj4gPiA+ID4KPiA+ID4gPiBfX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fXwo+ID4gPiA+IGlvbW11IG1haWxpbmcgbGlzdAo+ID4g
-PiA+IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCj4gPiA+ID4gaHR0cHM6Ly9saXN0
-cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXUKPiA+ID4gCj4gPiAK
-PiA+IAo+ID4gCj4gPiAKCgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24u
-b3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lv
-bW11
+Joerg,
+
+Any comments on this?  I need this for vfio hugepage support, otherwise
+we risk getting a map failure that results in a BUG_ON from
+iommu_unmap_page in amd_iommu.  I can take it in through my vfio tree to
+keep the dependencies together if you want to provide an ack.  Thanks,
+
+Alex
+
+On Fri, 2013-05-24 at 11:14 -0600, Alex Williamson wrote:
+> iommu_map splits requests into pages that the iommu driver reports
+> that it can handle.  The iommu_unmap path does not do the same.  This
+> can cause problems not only from callers that might expect the same
+> behavior as the map path, but even from the failure path of iommu_map,
+> should it fail at a point where it has mapped and needs to unwind a
+> set of pages that the iommu driver cannot handle directly.  amd_iommu,
+> for example, will BUG_ON if asked to unmap a non power of 2 size.
+> 
+> Fix this by extracting and generalizing the sizing code from the
+> iommu_map path and use it for both map and unmap.
+> 
+> Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> ---
+>  drivers/iommu/iommu.c |   63 +++++++++++++++++++++++++++----------------------
+>  1 file changed, 35 insertions(+), 28 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index d8f98b1..4b0b56b 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -754,6 +754,38 @@ int iommu_domain_has_cap(struct iommu_domain *domain,
+>  }
+>  EXPORT_SYMBOL_GPL(iommu_domain_has_cap);
+>  
+> +static size_t iommu_pgsize(struct iommu_domain *domain,
+> +			   unsigned long addr_merge, size_t size)
+> +{
+> +	unsigned int pgsize_idx;
+> +	size_t pgsize;
+> +
+> +	/* Max page size that still fits into 'size' */
+> +	pgsize_idx = __fls(size);
+> +
+> +	/* need to consider alignment requirements ? */
+> +	if (likely(addr_merge)) {
+> +		/* Max page size allowed by address */
+> +		unsigned int align_pgsize_idx = __ffs(addr_merge);
+> +		pgsize_idx = min(pgsize_idx, align_pgsize_idx);
+> +	}
+> +
+> +	/* build a mask of acceptable page sizes */
+> +	pgsize = (1UL << (pgsize_idx + 1)) - 1;
+> +
+> +	/* throw away page sizes not supported by the hardware */
+> +	pgsize &= domain->ops->pgsize_bitmap;
+> +
+> +	/* make sure we're still sane */
+> +	BUG_ON(!pgsize);
+> +
+> +	/* pick the biggest page */
+> +	pgsize_idx = __fls(pgsize);
+> +	pgsize = 1UL << pgsize_idx;
+> +
+> +	return pgsize;
+> +}
+> +
+>  int iommu_map(struct iommu_domain *domain, unsigned long iova,
+>  	      phys_addr_t paddr, size_t size, int prot)
+>  {
+> @@ -785,32 +817,7 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
+>  				(unsigned long)paddr, (unsigned long)size);
+>  
+>  	while (size) {
+> -		unsigned long pgsize, addr_merge = iova | paddr;
+> -		unsigned int pgsize_idx;
+> -
+> -		/* Max page size that still fits into 'size' */
+> -		pgsize_idx = __fls(size);
+> -
+> -		/* need to consider alignment requirements ? */
+> -		if (likely(addr_merge)) {
+> -			/* Max page size allowed by both iova and paddr */
+> -			unsigned int align_pgsize_idx = __ffs(addr_merge);
+> -
+> -			pgsize_idx = min(pgsize_idx, align_pgsize_idx);
+> -		}
+> -
+> -		/* build a mask of acceptable page sizes */
+> -		pgsize = (1UL << (pgsize_idx + 1)) - 1;
+> -
+> -		/* throw away page sizes not supported by the hardware */
+> -		pgsize &= domain->ops->pgsize_bitmap;
+> -
+> -		/* make sure we're still sane */
+> -		BUG_ON(!pgsize);
+> -
+> -		/* pick the biggest page */
+> -		pgsize_idx = __fls(pgsize);
+> -		pgsize = 1UL << pgsize_idx;
+> +		size_t pgsize = iommu_pgsize(domain, iova | paddr, size);
+>  
+>  		pr_debug("mapping: iova 0x%lx pa 0x%lx pgsize %lu\n", iova,
+>  					(unsigned long)paddr, pgsize);
+> @@ -863,9 +870,9 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
+>  	 * or we hit an area that isn't mapped.
+>  	 */
+>  	while (unmapped < size) {
+> -		size_t left = size - unmapped;
+> +		size_t pgsize = iommu_pgsize(domain, iova, size - unmapped);
+>  
+> -		unmapped_page = domain->ops->unmap(domain, iova, left);
+> +		unmapped_page = domain->ops->unmap(domain, iova, pgsize);
+>  		if (!unmapped_page)
+>  			break;
+>  
+> 
