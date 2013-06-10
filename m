@@ -1,8 +1,8 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 4/9] ARM: dma-mapping: NULLify dev->archdata.mapping pointer
-	on detach
-Date: Mon, 10 Jun 2013 19:34:40 +0100
-Message-ID: <1370889285-22799-5-git-send-email-will.deacon@arm.com>
+Subject: [PATCH 3/9] ARM: dma-mapping: convert DMA direction into IOMMU
+	protection attributes
+Date: Mon, 10 Jun 2013 19:34:39 +0100
+Message-ID: <1370889285-22799-4-git-send-email-will.deacon@arm.com>
 References: <1370889285-22799-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,27 +22,53 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The current code only clobbers a local variable, so the device is left
-with a stale mapping pointer.
+IOMMU mappings take a prot parameter, identifying the protection bits
+to enforce on the newly created mapping (READ or WRITE). The ARM
+dma-mapping framework currently just passes 0 as the prot argument,
+resulting in faulting mappings.
 
-Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+This patch infers the protection attributes based on the direction of
+the DMA transfer.
+
+Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- arch/arm/mm/dma-mapping.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/mm/dma-mapping.c | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
 
 diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index d119de7..10282db 100644
+index 6fb80cf..d119de7 100644
 --- a/arch/arm/mm/dma-mapping.c
 +++ b/arch/arm/mm/dma-mapping.c
-@@ -1921,7 +1921,7 @@ void arm_iommu_detach_device(struct device *dev)
+@@ -1636,13 +1636,27 @@ static dma_addr_t arm_coherent_iommu_map_page(struct device *dev, struct page *p
+ {
+ 	struct dma_iommu_mapping *mapping = dev->archdata.mapping;
+ 	dma_addr_t dma_addr;
+-	int ret, len = PAGE_ALIGN(size + offset);
++	int ret, prot, len = PAGE_ALIGN(size + offset);
  
- 	iommu_detach_device(mapping->domain, dev);
- 	kref_put(&mapping->kref, release_iommu_mapping);
--	mapping = NULL;
-+	dev->archdata.mapping = NULL;
- 	set_dma_ops(dev, NULL);
+ 	dma_addr = __alloc_iova(mapping, len);
+ 	if (dma_addr == DMA_ERROR_CODE)
+ 		return dma_addr;
  
- 	pr_debug("Detached IOMMU controller from %s device.\n", dev_name(dev));
+-	ret = iommu_map(mapping->domain, dma_addr, page_to_phys(page), len, 0);
++	switch (dir) {
++	case DMA_BIDIRECTIONAL:
++		prot = IOMMU_READ | IOMMU_WRITE;
++		break;
++	case DMA_TO_DEVICE:
++		prot = IOMMU_READ;
++		break;
++	case DMA_FROM_DEVICE:
++		prot = IOMMU_WRITE;
++		break;
++	default:
++		prot = 0;
++	}
++
++	ret = iommu_map(mapping->domain, dma_addr, page_to_phys(page), len, prot);
+ 	if (ret < 0)
+ 		goto fail;
+ 
 -- 
 1.8.2.2
