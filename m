@@ -1,7 +1,8 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 1/9] dma: pl330: rip out broken, redundant ID probing
-Date: Mon, 10 Jun 2013 19:34:37 +0100
-Message-ID: <1370889285-22799-2-git-send-email-will.deacon@arm.com>
+Subject: [PATCH 7/9] documentation: iommu: add description of ARM System MMU
+	binding
+Date: Mon, 10 Jun 2013 19:34:43 +0100
+Message-ID: <1370889285-22799-8-git-send-email-will.deacon@arm.com>
 References: <1370889285-22799-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,104 +19,96 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jassi Brar <jaswinder.singh-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The PL330 driver probes the peripheral and primecell IDs of the device to
-make sure that it is indeed an AMBA PL330. However, it does this by
-making byte accesses to a device mapping of the word-aligned ID
-registers, which is either UNPREDICTABLE or generates an alignment fault
-(depending on the presence of the virtualisation extensions).
+This patch adds a description of the device tree binding for the ARM
+System MMU architecture.
 
-Rather than fix this code, we can actually rip most of it out and let
-the AMBA bus driver correctly do the probing for us.
-
-Cc: Jassi Brar <jaswinder.singh-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/dma/pl330.c | 27 +++------------------------
- 1 file changed, 3 insertions(+), 24 deletions(-)
+ .../devicetree/bindings/iommu/arm,smmu.txt         | 70 ++++++++++++++++++++++
+ 1 file changed, 70 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iommu/arm,smmu.txt
 
-diff --git a/drivers/dma/pl330.c b/drivers/dma/pl330.c
-index 24e0754..22e2a8f 100644
---- a/drivers/dma/pl330.c
-+++ b/drivers/dma/pl330.c
-@@ -157,7 +157,6 @@ enum pl330_reqtype {
- #define PERIPH_REV_R0P0		0
- #define PERIPH_REV_R1P0		1
- #define PERIPH_REV_R1P1		2
--#define PCELL_ID		0xff0
- 
- #define CR0_PERIPH_REQ_SET	(1 << 0)
- #define CR0_BOOT_EN_SET		(1 << 1)
-@@ -193,8 +192,6 @@ enum pl330_reqtype {
- #define INTEG_CFG		0x0
- #define PERIPH_ID_VAL		((PART << 0) | (DESIGNER << 12))
- 
--#define PCELL_ID_VAL		0xb105f00d
--
- #define PL330_STATE_STOPPED		(1 << 0)
- #define PL330_STATE_EXECUTING		(1 << 1)
- #define PL330_STATE_WFE			(1 << 2)
-@@ -292,7 +289,6 @@ static unsigned cmd_line;
- /* Populated by the PL330 core driver for DMA API driver's info */
- struct pl330_config {
- 	u32	periph_id;
--	u32	pcell_id;
- #define DMAC_MODE_NS	(1 << 0)
- 	unsigned int	mode;
- 	unsigned int	data_bus_width:10; /* In number of bits */
-@@ -650,19 +646,6 @@ static inline bool _manager_ns(struct pl330_thread *thrd)
- 	return (pl330->pinfo->pcfg.mode & DMAC_MODE_NS) ? true : false;
- }
- 
--static inline u32 get_id(struct pl330_info *pi, u32 off)
--{
--	void __iomem *regs = pi->base;
--	u32 id = 0;
--
--	id |= (readb(regs + off + 0x0) << 0);
--	id |= (readb(regs + off + 0x4) << 8);
--	id |= (readb(regs + off + 0x8) << 16);
--	id |= (readb(regs + off + 0xc) << 24);
--
--	return id;
--}
--
- static inline u32 get_revision(u32 periph_id)
- {
- 	return (periph_id >> PERIPH_REV_SHIFT) & PERIPH_REV_MASK;
-@@ -1986,9 +1969,6 @@ static void read_dmac_config(struct pl330_info *pi)
- 	pi->pcfg.num_events = val;
- 
- 	pi->pcfg.irq_ns = readl(regs + CR3);
--
--	pi->pcfg.periph_id = get_id(pi, PERIPH_ID);
--	pi->pcfg.pcell_id = get_id(pi, PCELL_ID);
- }
- 
- static inline void _reset_thread(struct pl330_thread *thrd)
-@@ -2098,10 +2078,8 @@ static int pl330_add(struct pl330_info *pi)
- 	regs = pi->base;
- 
- 	/* Check if we can handle this DMAC */
--	if ((get_id(pi, PERIPH_ID) & 0xfffff) != PERIPH_ID_VAL
--	   || get_id(pi, PCELL_ID) != PCELL_ID_VAL) {
--		dev_err(pi->dev, "PERIPH_ID 0x%x, PCELL_ID 0x%x !\n",
--			get_id(pi, PERIPH_ID), get_id(pi, PCELL_ID));
-+	if ((pi->pcfg.periph_id & 0xfffff) != PERIPH_ID_VAL) {
-+		dev_err(pi->dev, "PERIPH_ID 0x%x !\n", pi->pcfg.periph_id);
- 		return -EINVAL;
- 	}
- 
-@@ -2922,6 +2900,7 @@ pl330_probe(struct amba_device *adev, const struct amba_id *id)
- 	if (ret)
- 		return ret;
- 
-+	pi->pcfg.periph_id = adev->periphid;
- 	ret = pl330_add(pi);
- 	if (ret)
- 		goto probe_err1;
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+new file mode 100644
+index 0000000..e34c6cd
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+@@ -0,0 +1,70 @@
++* ARM System MMU Architecture Implementation
++
++ARM SoCs may contain an implementation of the ARM System Memory
++Management Unit Architecture, which can be used to provide 1 or 2 stages
++of address translation to bus masters external to the CPU.
++
++The SMMU may also raise interrupts in response to various fault
++conditions.
++
++** System MMU required properties:
++
++- compatible    : Should be one of:
++
++                        "arm,smmu-v1"
++                        "arm,smmu-v2"
++                        "arm,mmu-400"
++                        "arm,mmu-500"
++
++                  depending on the particular implementation and/or the
++                  version of the architecture implemented.
++
++- reg           : Base address and size of the SMMU.
++
++- #global-interrupts : The number of global interrupts exposed by the
++                       device.
++
++- interrupts    : Interrupt list, with the first #global-irqs entries
++                  corresponding to the global interrupts and any
++                  following entries corresponding to context interrupts,
++                  specified in order of their indexing by the SMMU.
++
++                  For SMMUv2 implementations, there must be exactly one
++                  interrupt per context bank. In the case of a single,
++                  combined interrupt, it must be listed multiple times.
++
++- mmu-masters   : A list of phandles to device nodes representing bus
++                  masters for which the SMMU can provide a translation
++                  and their corresponding StreamIDs (see example below).
++                  Each device node linked from this list must have a
++                  "#stream-id-cells" property, indicating the number of
++                  StreamIDs associated with it.
++
++** System MMU optional properties:
++
++- smmu-parent   : When multiple SMMUs are chained together, this
++                  property can be used to provide a phandle to the
++                  parent SMMU (that is the next SMMU on the path going
++                  from the mmu-masters towards memory) node for this
++                  SMMU.
++
++Example:
++
++        smmu {
++                compatible = "arm,smmu-v1";
++                reg = <0xba5e0000 0x10000>;
++                #global-interrupts = <2>;
++                interrupts = <0 32 4>,
++                             <0 33 4>,
++                             <0 34 4>, /* This is the first context interrupt */
++                             <0 35 4>,
++                             <0 36 4>,
++                             <0 37 4>;
++
++                /*
++                 * Two DMA controllers, the first with two StreamIDs (0xd01d
++                 * and 0xd01e) and the second with only one (0xd11c).
++                 */
++                mmu-masters = <&dma0 0xd01d 0xd01e>,
++                              <&dma1 0xd11c>;
++        };
 -- 
 1.8.2.2
