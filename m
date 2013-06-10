@@ -1,7 +1,7 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 9/9] MAINTAINERS: add entry for ARM system MMU driver
-Date: Mon, 10 Jun 2013 19:34:45 +0100
-Message-ID: <1370889285-22799-10-git-send-email-will.deacon@arm.com>
+Subject: [PATCH 5/9] arm64: pgtable: use pte_index instead of __pte_index
+Date: Mon, 10 Jun 2013 19:34:41 +0100
+Message-ID: <1370889285-22799-6-git-send-email-will.deacon@arm.com>
 References: <1370889285-22799-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,32 +18,40 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add myself as maintainer for the ARM system MMU driver.
+pte_index is a useful helper outside of arch/arm64, for things like the
+ARM SMMU driver, so rename __pte_index to pte_index to be consistent
+with both arch/arm/ and also the definitions of pmd_index and pgd_index.
 
+Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- MAINTAINERS | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/arm64/include/asm/pgtable.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 250dc97..84df4bd 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1310,6 +1310,12 @@ T:	git git://git.xilinx.com/linux-xlnx.git
- S:	Supported
- F:	arch/arm/mach-zynq/
+diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
+index e333a24..b93bc23 100644
+--- a/arch/arm64/include/asm/pgtable.h
++++ b/arch/arm64/include/asm/pgtable.h
+@@ -119,7 +119,7 @@ extern struct page *empty_zero_page;
+ #define pte_none(pte)		(!pte_val(pte))
+ #define pte_clear(mm,addr,ptep)	set_pte(ptep, __pte(0))
+ #define pte_page(pte)		(pfn_to_page(pte_pfn(pte)))
+-#define pte_offset_kernel(dir,addr)	(pmd_page_vaddr(*(dir)) + __pte_index(addr))
++#define pte_offset_kernel(dir,addr)	(pmd_page_vaddr(*(dir)) + pte_index(addr))
  
-+ARM SMMU DRIVER
-+M:	Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-+L:	linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org (moderated for non-subscribers)
-+S:	Maintained
-+F:	drivers/iommu/arm-smmu.c
-+
- ARM64 PORT (AARCH64 ARCHITECTURE)
- M:	Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
- M:	Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+ #define pte_offset_map(dir,addr)	pte_offset_kernel((dir), (addr))
+ #define pte_offset_map_nested(dir,addr)	pte_offset_kernel((dir), (addr))
+@@ -263,7 +263,7 @@ static inline pmd_t *pmd_offset(pud_t *pud, unsigned long addr)
+ #endif
+ 
+ /* Find an entry in the third-level page table.. */
+-#define __pte_index(addr)	(((addr) >> PAGE_SHIFT) & (PTRS_PER_PTE - 1))
++#define pte_index(addr)		(((addr) >> PAGE_SHIFT) & (PTRS_PER_PTE - 1))
+ 
+ static inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
+ {
 -- 
 1.8.2.2
