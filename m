@@ -1,35 +1,24 @@
-From: Jassi Brar <jaswinder.singh@linaro.org>
-Subject: Re: [PATCH 1/9] dma: pl330: rip out broken, redundant ID probing
-Date: Tue, 11 Jun 2013 10:10:36 +0530
-Message-ID: <CAJe_Zhc1UoTC4q4oaW=dzyi_10Q7EoezoT=G8_v+yCmBxV75+A@mail.gmail.com>
-References: <1370889285-22799-1-git-send-email-will.deacon@arm.com>
- <1370889285-22799-2-git-send-email-will.deacon@arm.com>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 4/9] ARM: dma-mapping: NULLify dev->archdata.mapping
+ pointer on detach
+Date: Tue, 11 Jun 2013 07:34:55 +0200
+Message-ID: <20130611.083455.1500863288897785600.hdoyu@nvidia.com>
+References: <1370889285-22799-1-git-send-email-will.deacon@arm.com><1370889285-22799-5-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1370889285-22799-2-git-send-email-will.deacon@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: Vinod Koul <vinod.koul@intel.com>, iommu@lists.linux-foundation.org, device-tree <devicetree-discuss@lists.ozlabs.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1370889285-22799-5-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 11 June 2013 00:04, Will Deacon <will.deacon@arm.com> wrote:
-> The PL330 driver probes the peripheral and primecell IDs of the device to
-> make sure that it is indeed an AMBA PL330. However, it does this by
-> making byte accesses to a device mapping of the word-aligned ID
-> registers, which is either UNPREDICTABLE or generates an alignment fault
-> (depending on the presence of the virtualisation extensions).
->
-> Rather than fix this code, we can actually rip most of it out and let
-> the AMBA bus driver correctly do the probing for us.
->
-Acked-by: Jassi Brar <jaswinder.singh@linaro.org>
+Hi Will,
+
+Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote @ Mon, 10 Jun 2013 20:34:40 +0200:
+
+> The current code only clobbers a local variable, so the device is left
+> with a stale mapping pointer.
+
+True. This's my bad. Thanks.
