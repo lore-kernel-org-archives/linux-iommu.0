@@ -1,62 +1,132 @@
-From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2] PCI: Reset PCIe devices to stop ongoing DMA
-Date: Tue, 11 Jun 2013 22:45:27 -0600
-Message-ID: <CAErSpo5u8qGALt6C+tuPYXdd2YgyMH6fnPnA+afUteEZ7kY0iw@mail.gmail.com>
-References: <1368509365-2260-1-git-send-email-indou.takao@jp.fujitsu.com>
-	<CAErSpo4t_2Xw76p3Z9FVzyyK-MBovavDu9D=pYoPMjESSxgT=w@mail.gmail.com>
-	<51B19DF3.2070009@jp.fujitsu.com>
-	<CAErSpo6dfEnzriHD_aWZB_3E-kSzauhNRHPd+VuFX5HONVKgqw@mail.gmail.com>
-	<51B6BEDB.3000509@jp.fujitsu.com>
+From: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 1/9] dma: pl330: rip out broken, redundant ID probing
+Date: Wed, 12 Jun 2013 11:01:30 +0530
+Message-ID: <20130612053130.GD4107@intel.com>
+References: <1370889285-22799-1-git-send-email-will.deacon@arm.com>
+ <1370889285-22799-2-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <51B6BEDB.3000509-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
-Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Haren Myneni <hbabu-r/Jw6+rmf7HQT0dZR+AlfA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Vivek Goyal <vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bill.sumner-VXdhtT5mjnY@public.gmane.org
+Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1370889285-22799-2-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
+List-Post: <mailto:devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+List-Help: <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
+ <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=subscribe>
+Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Sender: "devicetree-discuss"
+ <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Jassi Brar <jaswinder.singh-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-[+cc Vivek, Haren; sorry I didn't think to add you earlier]
+On Mon, Jun 10, 2013 at 07:34:37PM +0100, Will Deacon wrote:
+> The PL330 driver probes the peripheral and primecell IDs of the device to
+> make sure that it is indeed an AMBA PL330. However, it does this by
+> making byte accesses to a device mapping of the word-aligned ID
+> registers, which is either UNPREDICTABLE or generates an alignment fault
+> (depending on the presence of the virtualisation extensions).
+> 
+> Rather than fix this code, we can actually rip most of it out and let
+> the AMBA bus driver correctly do the probing for us.
+> 
+> Cc: Jassi Brar <jaswinder.singh-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> Cc: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Applied, thanks
 
-On Tue, Jun 11, 2013 at 12:08 AM, Takao Indoh
-<indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org> wrote:
-> (2013/06/11 11:20), Bjorn Helgaas wrote:
+--
+~Vinod
+> ---
+>  drivers/dma/pl330.c | 27 +++------------------------
+>  1 file changed, 3 insertions(+), 24 deletions(-)
+> 
+> diff --git a/drivers/dma/pl330.c b/drivers/dma/pl330.c
+> index 24e0754..22e2a8f 100644
+> --- a/drivers/dma/pl330.c
+> +++ b/drivers/dma/pl330.c
+> @@ -157,7 +157,6 @@ enum pl330_reqtype {
+>  #define PERIPH_REV_R0P0		0
+>  #define PERIPH_REV_R1P0		1
+>  #define PERIPH_REV_R1P1		2
+> -#define PCELL_ID		0xff0
+>  
+>  #define CR0_PERIPH_REQ_SET	(1 << 0)
+>  #define CR0_BOOT_EN_SET		(1 << 1)
+> @@ -193,8 +192,6 @@ enum pl330_reqtype {
+>  #define INTEG_CFG		0x0
+>  #define PERIPH_ID_VAL		((PART << 0) | (DESIGNER << 12))
+>  
+> -#define PCELL_ID_VAL		0xb105f00d
+> -
+>  #define PL330_STATE_STOPPED		(1 << 0)
+>  #define PL330_STATE_EXECUTING		(1 << 1)
+>  #define PL330_STATE_WFE			(1 << 2)
+> @@ -292,7 +289,6 @@ static unsigned cmd_line;
+>  /* Populated by the PL330 core driver for DMA API driver's info */
+>  struct pl330_config {
+>  	u32	periph_id;
+> -	u32	pcell_id;
+>  #define DMAC_MODE_NS	(1 << 0)
+>  	unsigned int	mode;
+>  	unsigned int	data_bus_width:10; /* In number of bits */
+> @@ -650,19 +646,6 @@ static inline bool _manager_ns(struct pl330_thread *thrd)
+>  	return (pl330->pinfo->pcfg.mode & DMAC_MODE_NS) ? true : false;
+>  }
+>  
+> -static inline u32 get_id(struct pl330_info *pi, u32 off)
+> -{
+> -	void __iomem *regs = pi->base;
+> -	u32 id = 0;
+> -
+> -	id |= (readb(regs + off + 0x0) << 0);
+> -	id |= (readb(regs + off + 0x4) << 8);
+> -	id |= (readb(regs + off + 0x8) << 16);
+> -	id |= (readb(regs + off + 0xc) << 24);
+> -
+> -	return id;
+> -}
+> -
+>  static inline u32 get_revision(u32 periph_id)
+>  {
+>  	return (periph_id >> PERIPH_REV_SHIFT) & PERIPH_REV_MASK;
+> @@ -1986,9 +1969,6 @@ static void read_dmac_config(struct pl330_info *pi)
+>  	pi->pcfg.num_events = val;
+>  
+>  	pi->pcfg.irq_ns = readl(regs + CR3);
+> -
+> -	pi->pcfg.periph_id = get_id(pi, PERIPH_ID);
+> -	pi->pcfg.pcell_id = get_id(pi, PCELL_ID);
+>  }
+>  
+>  static inline void _reset_thread(struct pl330_thread *thrd)
+> @@ -2098,10 +2078,8 @@ static int pl330_add(struct pl330_info *pi)
+>  	regs = pi->base;
+>  
+>  	/* Check if we can handle this DMAC */
+> -	if ((get_id(pi, PERIPH_ID) & 0xfffff) != PERIPH_ID_VAL
+> -	   || get_id(pi, PCELL_ID) != PCELL_ID_VAL) {
+> -		dev_err(pi->dev, "PERIPH_ID 0x%x, PCELL_ID 0x%x !\n",
+> -			get_id(pi, PERIPH_ID), get_id(pi, PCELL_ID));
+> +	if ((pi->pcfg.periph_id & 0xfffff) != PERIPH_ID_VAL) {
+> +		dev_err(pi->dev, "PERIPH_ID 0x%x !\n", pi->pcfg.periph_id);
+>  		return -EINVAL;
+>  	}
+>  
+> @@ -2922,6 +2900,7 @@ pl330_probe(struct amba_device *adev, const struct amba_id *id)
+>  	if (ret)
+>  		return ret;
+>  
+> +	pi->pcfg.periph_id = adev->periphid;
+>  	ret = pl330_add(pi);
+>  	if (ret)
+>  		goto probe_err1;
+> -- 
+> 1.8.2.2
+> 
 
->> I'm not sure you need to reset legacy devices (or non-PCI devices)
->> yet, but the current hook isn't anchored anywhere -- it's just an
->> fs_initcall() that doesn't give the reader any clue about the
->> connection between the reset and the problem it's solving.
->>
->> If we do something like this patch, I think it needs to be done at the
->> point where we enable or disable the IOMMU.  That way, it's connected
->> to the important event, and there's a clue about how to make
->> corresponding fixes for other IOMMUs.
->
-> Ok. pci_iommu_init() is appropriate place to add this hook?
-
-I looked at various IOMMU init places today, and it's far more
-complicated and varied than I had hoped.
-
-This reset scheme depends on enumerating PCI devices before we
-initialize the IOMMU used by those devices.  x86 works that way today,
-but not all architectures do (see the sparc pci_fire_pbm_init(), for
-example).  And I think conceptually, the IOMMU should be enumerated
-and initialized *before* the devices that use it.
-
-So I'm uncomfortable with that aspect of this scheme.
-
-It would be at least conceivable to reset the devices in the system
-kernel, before the kexec.  I know we want to do as little as possible
-in the crashing kernel, but it's at least a possibility, and it might
-be cleaner.
-
-Bjorn
+-- 
