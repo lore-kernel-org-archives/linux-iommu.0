@@ -1,15 +1,17 @@
 From: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 1/9] dma: pl330: rip out broken, redundant ID probing
-Date: Wed, 12 Jun 2013 11:01:30 +0530
-Message-ID: <20130612053130.GD4107@intel.com>
+Subject: Re: [PATCH 2/9] dma: pl330: use dma_addr_t for describing bus
+ addresses
+Date: Wed, 12 Jun 2013 11:01:54 +0530
+Message-ID: <20130612053154.GE4107@intel.com>
 References: <1370889285-22799-1-git-send-email-will.deacon@arm.com>
- <1370889285-22799-2-git-send-email-will.deacon@arm.com>
+ <1370889285-22799-3-git-send-email-will.deacon@arm.com>
+ <CAJe_ZheKMVQgq42Vx5N1TXXdgFJ2sp50ixU30A7beXhmSVHnZQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1370889285-22799-2-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <CAJe_ZheKMVQgq42Vx5N1TXXdgFJ2sp50ixU30A7beXhmSVHnZQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.ozlabs.org/options/devicetree-discuss>,
  <mailto:devicetree-discuss-request-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.ozlabs.org/pipermail/devicetree-discuss/>
@@ -20,113 +22,37 @@ List-Subscribe: <https://lists.ozlabs.org/listinfo/devicetree-discuss>,
 Errors-To: devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 Sender: "devicetree-discuss"
  <devicetree-discuss-bounces+gldd-devicetree-discuss=m.gmane.org-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Jassi Brar <jaswinder.singh-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Jassi Brar <jaswinder.singh-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, device-tree <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jun 10, 2013 at 07:34:37PM +0100, Will Deacon wrote:
-> The PL330 driver probes the peripheral and primecell IDs of the device to
-> make sure that it is indeed an AMBA PL330. However, it does this by
-> making byte accesses to a device mapping of the word-aligned ID
-> registers, which is either UNPREDICTABLE or generates an alignment fault
-> (depending on the presence of the virtualisation extensions).
-> 
-> Rather than fix this code, we can actually rip most of it out and let
-> the AMBA bus driver correctly do the probing for us.
-> 
-> Cc: Jassi Brar <jaswinder.singh-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> Cc: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Applied, thanks
-
---
-~Vinod
-> ---
->  drivers/dma/pl330.c | 27 +++------------------------
->  1 file changed, 3 insertions(+), 24 deletions(-)
-> 
-> diff --git a/drivers/dma/pl330.c b/drivers/dma/pl330.c
-> index 24e0754..22e2a8f 100644
-> --- a/drivers/dma/pl330.c
-> +++ b/drivers/dma/pl330.c
-> @@ -157,7 +157,6 @@ enum pl330_reqtype {
->  #define PERIPH_REV_R0P0		0
->  #define PERIPH_REV_R1P0		1
->  #define PERIPH_REV_R1P1		2
-> -#define PCELL_ID		0xff0
->  
->  #define CR0_PERIPH_REQ_SET	(1 << 0)
->  #define CR0_BOOT_EN_SET		(1 << 1)
-> @@ -193,8 +192,6 @@ enum pl330_reqtype {
->  #define INTEG_CFG		0x0
->  #define PERIPH_ID_VAL		((PART << 0) | (DESIGNER << 12))
->  
-> -#define PCELL_ID_VAL		0xb105f00d
-> -
->  #define PL330_STATE_STOPPED		(1 << 0)
->  #define PL330_STATE_EXECUTING		(1 << 1)
->  #define PL330_STATE_WFE			(1 << 2)
-> @@ -292,7 +289,6 @@ static unsigned cmd_line;
->  /* Populated by the PL330 core driver for DMA API driver's info */
->  struct pl330_config {
->  	u32	periph_id;
-> -	u32	pcell_id;
->  #define DMAC_MODE_NS	(1 << 0)
->  	unsigned int	mode;
->  	unsigned int	data_bus_width:10; /* In number of bits */
-> @@ -650,19 +646,6 @@ static inline bool _manager_ns(struct pl330_thread *thrd)
->  	return (pl330->pinfo->pcfg.mode & DMAC_MODE_NS) ? true : false;
->  }
->  
-> -static inline u32 get_id(struct pl330_info *pi, u32 off)
-> -{
-> -	void __iomem *regs = pi->base;
-> -	u32 id = 0;
-> -
-> -	id |= (readb(regs + off + 0x0) << 0);
-> -	id |= (readb(regs + off + 0x4) << 8);
-> -	id |= (readb(regs + off + 0x8) << 16);
-> -	id |= (readb(regs + off + 0xc) << 24);
-> -
-> -	return id;
-> -}
-> -
->  static inline u32 get_revision(u32 periph_id)
->  {
->  	return (periph_id >> PERIPH_REV_SHIFT) & PERIPH_REV_MASK;
-> @@ -1986,9 +1969,6 @@ static void read_dmac_config(struct pl330_info *pi)
->  	pi->pcfg.num_events = val;
->  
->  	pi->pcfg.irq_ns = readl(regs + CR3);
-> -
-> -	pi->pcfg.periph_id = get_id(pi, PERIPH_ID);
-> -	pi->pcfg.pcell_id = get_id(pi, PCELL_ID);
->  }
->  
->  static inline void _reset_thread(struct pl330_thread *thrd)
-> @@ -2098,10 +2078,8 @@ static int pl330_add(struct pl330_info *pi)
->  	regs = pi->base;
->  
->  	/* Check if we can handle this DMAC */
-> -	if ((get_id(pi, PERIPH_ID) & 0xfffff) != PERIPH_ID_VAL
-> -	   || get_id(pi, PCELL_ID) != PCELL_ID_VAL) {
-> -		dev_err(pi->dev, "PERIPH_ID 0x%x, PCELL_ID 0x%x !\n",
-> -			get_id(pi, PERIPH_ID), get_id(pi, PCELL_ID));
-> +	if ((pi->pcfg.periph_id & 0xfffff) != PERIPH_ID_VAL) {
-> +		dev_err(pi->dev, "PERIPH_ID 0x%x !\n", pi->pcfg.periph_id);
->  		return -EINVAL;
->  	}
->  
-> @@ -2922,6 +2900,7 @@ pl330_probe(struct amba_device *adev, const struct amba_id *id)
->  	if (ret)
->  		return ret;
->  
-> +	pi->pcfg.periph_id = adev->periphid;
->  	ret = pl330_add(pi);
->  	if (ret)
->  		goto probe_err1;
-> -- 
-> 1.8.2.2
-> 
-
--- 
+T24gVHVlLCBKdW4gMTEsIDIwMTMgYXQgMTA6MDc6MTJBTSArMDUzMCwgSmFzc2kgQnJhciB3cm90
+ZToKPiBPbiAxMSBKdW5lIDIwMTMgMDA6MDQsIFdpbGwgRGVhY29uIDx3aWxsLmRlYWNvbkBhcm0u
+Y29tPiB3cm90ZToKPiAKPiA+IFRoZSBtaWNyb2NvZGUgYnVzIGFkZHJlc3MgKHBsMzMwX2RtYWMu
+bWNvZGVfYnVzKSBpcyBjdXJyZW50bHkgYSB1MzIsCj4gPiB3aGljaCBmYWlscyB0byBjb21waWxl
+IHdoZW4gYnVpbGRpbmcgb24gYSBzeXN0ZW0gd2l0aCA2NC1iaXQgYnVzCj4gPiBhZGRyZXNzZXMu
+Cj4gPgo+ID4gVGhpcyBwYXRjaCB1c2VzIGRtYV9hZGRyX3QgdG8gcmVwcmVzZW50IHRoZSBhZGRy
+ZXNzIGluc3RlYWQuCj4gPgo+ID4gQWNrZWQtYnk6IEphc3NpIEJyYXIgPGphc3dpbmRlci5zaW5n
+aEBsaW5hcm8ub3JnPgo+IAo+IAo+ID4gQ2M6IEphc3NpIEJyYXIgPGphc3dpbmRlci5zaW5naEBs
+aW5hcm8ub3JnPgo+ID4gQ2M6IFZpbm9kIEtvdWwgPHZpbm9kLmtvdWxAaW50ZWwuY29tPgo+ID4g
+U2lnbmVkLW9mZi1ieTogV2lsbCBEZWFjb24gPHdpbGwuZGVhY29uQGFybS5jb20+CkFwcGxpZWQs
+IHRoYW5rcwoKLS0KflZpbm9kCj4gPiAtLS0KPiA+ICBkcml2ZXJzL2RtYS9wbDMzMC5jIHwgMiAr
+LQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQo+ID4K
+PiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2RtYS9wbDMzMC5jIGIvZHJpdmVycy9kbWEvcGwzMzAu
+Ywo+ID4gaW5kZXggMjJlMmE4Zi4uZjFiYzU5MyAxMDA2NDQKPiA+IC0tLSBhL2RyaXZlcnMvZG1h
+L3BsMzMwLmMKPiA+ICsrKyBiL2RyaXZlcnMvZG1hL3BsMzMwLmMKPiA+IEBAIC01MDEsNyArNTAx
+LDcgQEAgc3RydWN0IHBsMzMwX2RtYWMgewo+ID4gICAgICAgICAvKiBNYXhpbXVtIHBvc3NpYmxl
+IGV2ZW50cy9pcnFzICovCj4gPiAgICAgICAgIGludCAgICAgICAgICAgICAgICAgICAgIGV2ZW50
+c1szMl07Cj4gPiAgICAgICAgIC8qIEJVUyBhZGRyZXNzIG9mIE1pY3JvQ29kZSBidWZmZXIgKi8K
+PiA+IC0gICAgICAgdTMyICAgICAgICAgICAgICAgICAgICAgbWNvZGVfYnVzOwo+ID4gKyAgICAg
+ICBkbWFfYWRkcl90ICAgICAgICAgICAgICBtY29kZV9idXM7Cj4gPiAgICAgICAgIC8qIENQVSBh
+ZGRyZXNzIG9mIE1pY3JvQ29kZSBidWZmZXIgKi8KPiA+ICAgICAgICAgdm9pZCAgICAgICAgICAg
+ICAgICAgICAgKm1jb2RlX2NwdTsKPiA+ICAgICAgICAgLyogTGlzdCBvZiBhbGwgQ2hhbm5lbCB0
+aHJlYWRzICovCj4gPiAtLQo+ID4gMS44LjIuMgo+ID4KPiA+Cj4gCj4gCj4gLS0gCj4gTGluYXJv
+Lm9yZyDilIIgT3BlbiBzb3VyY2Ugc29mdHdhcmUgZm9yIEFSTSBTb0NzIHwgRm9sbG93IExpbmFy
+bwo+IGh0dHA6Ly9mYWNlYm9vay5jb20vcGFnZXMvTGluYXJvLzE1NTk3NDU4MTA5MTEwNiAgLQo+
+IGh0dHA6Ly90d2l0dGVyLmNvbS8jIS9saW5hcm9vcmcgLSBodHRwOi8vbGluYXJvLm9yZy9saW5h
+cm8tYmxvZwoKLS0gCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fCmRldmljZXRyZWUtZGlzY3VzcyBtYWlsaW5nIGxpc3QKZGV2aWNldHJlZS1kaXNjdXNzQGxp
+c3RzLm96bGFicy5vcmcKaHR0cHM6Ly9saXN0cy5vemxhYnMub3JnL2xpc3RpbmZvL2RldmljZXRy
+ZWUtZGlzY3Vzcwo=
