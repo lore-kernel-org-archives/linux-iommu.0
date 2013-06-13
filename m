@@ -1,13 +1,18 @@
-From: ZhenHua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Subject: Re: [PATCH 1/1] x86/iommu: fix dma pte address size error
-Date: Thu, 13 Jun 2013 08:43:05 +0800
-Message-ID: <51B91599.5070006@hp.com>
-References: <1369355756-1030-1-git-send-email-zhen-hual@hp.com>
+From: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+Subject: Re: [PATCH v2] PCI: Reset PCIe devices to stop ongoing DMA
+Date: Thu, 13 Jun 2013 11:44:49 +0900
+Message-ID: <51B93221.2040505@jp.fujitsu.com>
+References: <1368509365-2260-1-git-send-email-indou.takao@jp.fujitsu.com>
+	<CAErSpo4t_2Xw76p3Z9FVzyyK-MBovavDu9D=pYoPMjESSxgT=w@mail.gmail.com>
+	<51B19DF3.2070009@jp.fujitsu.com>
+	<CAErSpo6dfEnzriHD_aWZB_3E-kSzauhNRHPd+VuFX5HONVKgqw@mail.gmail.com>
+	<51B6BEDB.3000509@jp.fujitsu.com>
+	<CAErSpo5u8qGALt6C+tuPYXdd2YgyMH6fnPnA+afUteEZ7kY0iw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1369355756-1030-1-git-send-email-zhen-hual-VXdhtT5mjnY@public.gmane.org>
+In-Reply-To: <CAErSpo5u8qGALt6C+tuPYXdd2YgyMH6fnPnA+afUteEZ7kY0iw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,54 +22,50 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Dan Williams <djbw-b10kYP2dOMg@public.gmane.org>David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hbabu-r/Jw6+rmf7HQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bill.sumner-VXdhtT5mjnY@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi guys,
-     I think this patch is necessary. Please take a look at it.
+(2013/06/12 13:45), Bjorn Helgaas wrote:
+> [+cc Vivek, Haren; sorry I didn't think to add you earlier]
+> 
+> On Tue, Jun 11, 2013 at 12:08 AM, Takao Indoh
+> <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org> wrote:
+>> (2013/06/11 11:20), Bjorn Helgaas wrote:
+> 
+>>> I'm not sure you need to reset legacy devices (or non-PCI devices)
+>>> yet, but the current hook isn't anchored anywhere -- it's just an
+>>> fs_initcall() that doesn't give the reader any clue about the
+>>> connection between the reset and the problem it's solving.
+>>>
+>>> If we do something like this patch, I think it needs to be done at the
+>>> point where we enable or disable the IOMMU.  That way, it's connected
+>>> to the important event, and there's a clue about how to make
+>>> corresponding fixes for other IOMMUs.
+>>
+>> Ok. pci_iommu_init() is appropriate place to add this hook?
+> 
+> I looked at various IOMMU init places today, and it's far more
+> complicated and varied than I had hoped.
+> 
+> This reset scheme depends on enumerating PCI devices before we
+> initialize the IOMMU used by those devices.  x86 works that way today,
+> but not all architectures do (see the sparc pci_fire_pbm_init(), for
 
-Thanks
-Zhen-Hua
+Sorry, could you tell me which part depends on architecture?
 
-On 05/24/2013 08:35 AM, Li, Zhen-Hua wrote:
-> In Intel Vt-D specs, Chapter 9.3 Page-Table Entry,
-> The size of ADDR(address) field is 12:51, but the function dma_pte_addr
->   treats it as 12:63.
->
-> Signed-off-by: Li, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-> ---
->   drivers/iommu/intel-iommu.c   |    4 ++--
->   include/linux/dma_remapping.h |    2 ++
->   2 files changed, 4 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index b4f0e28..c6d2847 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -311,10 +311,10 @@ static inline void dma_set_pte_prot(struct dma_pte *pte, unsigned long prot)
->   static inline u64 dma_pte_addr(struct dma_pte *pte)
->   {
->   #ifdef CONFIG_64BIT
-> -	return pte->val & VTD_PAGE_MASK;
-> +	return pte->val & DMA_PTE_MASK;
->   #else
->   	/* Must have a full atomic 64-bit read */
-> -	return  __cmpxchg64(&pte->val, 0ULL, 0ULL) & VTD_PAGE_MASK;
-> +	return  __cmpxchg64(&pte->val, 0ULL, 0ULL) & DMA_PTE_MASK;
->   #endif
->   }
->   
-> diff --git a/include/linux/dma_remapping.h b/include/linux/dma_remapping.h
-> index 57c9a8a..7a1e212 100644
-> --- a/include/linux/dma_remapping.h
-> +++ b/include/linux/dma_remapping.h
-> @@ -16,6 +16,8 @@
->   #define DMA_PTE_WRITE (2)
->   #define DMA_PTE_LARGE_PAGE (1 << 7)
->   #define DMA_PTE_SNP (1 << 11)
-> +#define DMA_PTE_ADD_LENGTH (40)
-> +#define DMA_PTE_MASK	((((u64)1 << DMA_PTE_ADD_LENGTH) - 1) << VTD_PAGE_SHIFT)
->   
->   #define CONTEXT_TT_MULTI_LEVEL	0
->   #define CONTEXT_TT_DEV_IOTLB	1
+> example).  And I think conceptually, the IOMMU should be enumerated
+> and initialized *before* the devices that use it.
+> 
+> So I'm uncomfortable with that aspect of this scheme.
+> 
+> It would be at least conceivable to reset the devices in the system
+> kernel, before the kexec.  I know we want to do as little as possible
+> in the crashing kernel, but it's at least a possibility, and it might
+> be cleaner.
+
+I bet this will be not accepted by kdump maintainer. Everything in panic
+kernel is unreliable.
+
+Thanks,
+Takao Indoh
