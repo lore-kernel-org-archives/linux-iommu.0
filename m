@@ -1,7 +1,7 @@
-From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+From: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
 Subject: Re: [PATCH v2] PCI: Reset PCIe devices to stop ongoing DMA
-Date: Wed, 12 Jun 2013 21:41:30 -0600
-Message-ID: <CAErSpo5tVK-Z3aOdMTzab-S8o5zLVtDOFQ8-LSYpUgbrJSsxuw@mail.gmail.com>
+Date: Fri, 14 Jun 2013 11:11:02 +0900
+Message-ID: <51BA7BB6.1080104@jp.fujitsu.com>
 References: <1368509365-2260-1-git-send-email-indou.takao@jp.fujitsu.com>
 	<CAErSpo4t_2Xw76p3Z9FVzyyK-MBovavDu9D=pYoPMjESSxgT=w@mail.gmail.com>
 	<51B19DF3.2070009@jp.fujitsu.com>
@@ -9,11 +9,12 @@ References: <1368509365-2260-1-git-send-email-indou.takao@jp.fujitsu.com>
 	<51B6BEDB.3000509@jp.fujitsu.com>
 	<CAErSpo5u8qGALt6C+tuPYXdd2YgyMH6fnPnA+afUteEZ7kY0iw@mail.gmail.com>
 	<51B93221.2040505@jp.fujitsu.com>
+	<CAErSpo5tVK-Z3aOdMTzab-S8o5zLVtDOFQ8-LSYpUgbrJSsxuw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <51B93221.2040505-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+In-Reply-To: <CAErSpo5tVK-Z3aOdMTzab-S8o5zLVtDOFQ8-LSYpUgbrJSsxuw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,70 +24,114 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
-Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, hbabu-r/Jw6+rmf7HQT0dZR+AlfA@public.gmane.org, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Vivek Goyal <vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bill.sumner-VXdhtT5mjnY@public.gmane.org
+To: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hbabu-r/Jw6+rmf7HQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bill.sumner-VXdhtT5mjnY@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jun 12, 2013 at 8:44 PM, Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org> wrote:
-> (2013/06/12 13:45), Bjorn Helgaas wrote:
->> [+cc Vivek, Haren; sorry I didn't think to add you earlier]
->>
->> On Tue, Jun 11, 2013 at 12:08 AM, Takao Indoh
->> <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org> wrote:
->>> (2013/06/11 11:20), Bjorn Helgaas wrote:
->>
->>>> I'm not sure you need to reset legacy devices (or non-PCI devices)
->>>> yet, but the current hook isn't anchored anywhere -- it's just an
->>>> fs_initcall() that doesn't give the reader any clue about the
->>>> connection between the reset and the problem it's solving.
->>>>
->>>> If we do something like this patch, I think it needs to be done at the
->>>> point where we enable or disable the IOMMU.  That way, it's connected
->>>> to the important event, and there's a clue about how to make
->>>> corresponding fixes for other IOMMUs.
+(2013/06/13 12:41), Bjorn Helgaas wrote:
+> On Wed, Jun 12, 2013 at 8:44 PM, Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org> wrote:
+>> (2013/06/12 13:45), Bjorn Helgaas wrote:
+>>> [+cc Vivek, Haren; sorry I didn't think to add you earlier]
 >>>
->>> Ok. pci_iommu_init() is appropriate place to add this hook?
+>>> On Tue, Jun 11, 2013 at 12:08 AM, Takao Indoh
+>>> <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org> wrote:
+>>>> (2013/06/11 11:20), Bjorn Helgaas wrote:
+>>>
+>>>>> I'm not sure you need to reset legacy devices (or non-PCI devices)
+>>>>> yet, but the current hook isn't anchored anywhere -- it's just an
+>>>>> fs_initcall() that doesn't give the reader any clue about the
+>>>>> connection between the reset and the problem it's solving.
+>>>>>
+>>>>> If we do something like this patch, I think it needs to be done at the
+>>>>> point where we enable or disable the IOMMU.  That way, it's connected
+>>>>> to the important event, and there's a clue about how to make
+>>>>> corresponding fixes for other IOMMUs.
+>>>>
+>>>> Ok. pci_iommu_init() is appropriate place to add this hook?
+>>>
+>>> I looked at various IOMMU init places today, and it's far more
+>>> complicated and varied than I had hoped.
+>>>
+>>> This reset scheme depends on enumerating PCI devices before we
+>>> initialize the IOMMU used by those devices.  x86 works that way today,
+>>> but not all architectures do (see the sparc pci_fire_pbm_init(), for
 >>
->> I looked at various IOMMU init places today, and it's far more
->> complicated and varied than I had hoped.
+>> Sorry, could you tell me which part depends on architecture?
+> 
+> Your patch works if PCIe devices are reset before the kdump kernel
+> enables the IOMMU.  On x86, this is possible because PCI enumeration
+> happens before the IOMMU initialization.  On sparc, the IOMMU is
+> initialized before PCI devices are enumerated, so there would still be
+> a window where ongoing DMA could cause an IOMMU error.
+
+Ok, understood, thanks.
+
+Hmmm, it seems to be difficult to find out method which is common to
+all architectures. So, what I can do for now is introducing reset scheme
+which is only for x86.
+
+1) Change this patch so that it work only on x86 platform. For example
+   call this reset code from x86_init.iommu.iommu_init() instead of
+   fs_initcall.
+
+Or another idea is:
+
+2) Enumerate PCI devices in IOMMU layer. That is:
+   PCI layer
+     Just provide interface to reset given strcut pci_dev. Maybe
+     pci_reset_function() looks good for this purpose.
+   IOMMU layer
+     Determine which devices should be reset. On kernel boot, check if
+     IOMMU is already active or not, and if active, check IOMMU page
+     table and reset devices whose entry exists there.
+
+> Of course, it might be possible to reorganize the sparc code to to the
+> IOMMU init *after* it enumerates PCI devices.  But I think that change
+> would be hard to justify.
+> 
+> And I think even on x86, it would be better if we did the IOMMU init
+> before PCI enumeration -- the PCI devices depend on the IOMMU, so
+> logically the IOMMU should be initialized first so the PCI devices can
+> be associated with it as they are enumerated.
+
+So third idea is:
+
+3) Do reset before PCI enumeration(arch_initcall_sync or somewhere). We
+   need to implement new code to enumerate PCI devices and reset them
+   for this purpose.
+
+Idea 2 is not difficult to implement, but one problem is that this
+method may be dangerous. We need to scan IOMMU page table which is used
+in previous kernel, but it may be broken. Idea 3 seems to be difficult
+to implement...
+
+
+> 
+>>> example).  And I think conceptually, the IOMMU should be enumerated
+>>> and initialized *before* the devices that use it.
+>>>
+>>> So I'm uncomfortable with that aspect of this scheme.
+>>>
+>>> It would be at least conceivable to reset the devices in the system
+>>> kernel, before the kexec.  I know we want to do as little as possible
+>>> in the crashing kernel, but it's at least a possibility, and it might
+>>> be cleaner.
 >>
->> This reset scheme depends on enumerating PCI devices before we
->> initialize the IOMMU used by those devices.  x86 works that way today,
->> but not all architectures do (see the sparc pci_fire_pbm_init(), for
->
-> Sorry, could you tell me which part depends on architecture?
+>> I bet this will be not accepted by kdump maintainer. Everything in panic
+>> kernel is unreliable.
+> 
+> kdump is inherently unreliable.  The kdump kernel doesn't start from
+> an arbitrary machine state.  We don't expect it to tolerate all CPUs
+> running, for example.  Maybe it should be expected to tolerate PCI
+> devices running, either.
 
-Your patch works if PCIe devices are reset before the kdump kernel
-enables the IOMMU.  On x86, this is possible because PCI enumeration
-happens before the IOMMU initialization.  On sparc, the IOMMU is
-initialized before PCI devices are enumerated, so there would still be
-a window where ongoing DMA could cause an IOMMU error.
+What I wanted to say is that any resources of first kernel are
+unreliable. Under panic situation, struct pci_dev tree may be broken, or
+pci_lock may be already hold by someone, etc. So, if we do this in first
+kernel, maybe kdump needs its own code to enumerate PCI devices and
+reset them.
 
-Of course, it might be possible to reorganize the sparc code to to the
-IOMMU init *after* it enumerates PCI devices.  But I think that change
-would be hard to justify.
+Vivek?
 
-And I think even on x86, it would be better if we did the IOMMU init
-before PCI enumeration -- the PCI devices depend on the IOMMU, so
-logically the IOMMU should be initialized first so the PCI devices can
-be associated with it as they are enumerated.
-
->> example).  And I think conceptually, the IOMMU should be enumerated
->> and initialized *before* the devices that use it.
->>
->> So I'm uncomfortable with that aspect of this scheme.
->>
->> It would be at least conceivable to reset the devices in the system
->> kernel, before the kexec.  I know we want to do as little as possible
->> in the crashing kernel, but it's at least a possibility, and it might
->> be cleaner.
->
-> I bet this will be not accepted by kdump maintainer. Everything in panic
-> kernel is unreliable.
-
-kdump is inherently unreliable.  The kdump kernel doesn't start from
-an arbitrary machine state.  We don't expect it to tolerate all CPUs
-running, for example.  Maybe it should be expected to tolerate PCI
-devices running, either.
-
-Bjorn
+Thanks,
+Takao Indoh
