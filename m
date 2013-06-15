@@ -1,13 +1,11 @@
-From: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/1] x86/iommu: fix dma pte address size error
-Date: Fri, 14 Jun 2013 16:16:30 -0400
-Message-ID: <51BB7A1E.5000605@redhat.com>
-References: <1369355756-1030-1-git-send-email-zhen-hual@hp.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH] intel-iommu: Fix leaks in pagetable freeing
+Date: Sat, 15 Jun 2013 10:27:19 -0600
+Message-ID: <20130615161614.2107.41044.stgit@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1369355756-1030-1-git-send-email-zhen-hual-VXdhtT5mjnY@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,62 +15,136 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Cc: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Dan Williams <djbw-b10kYP2dOMg@public.gmane.org>
+To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/23/2013 08:35 PM, Li, Zhen-Hua wrote:
-> In Intel Vt-D specs, Chapter 9.3 Page-Table Entry,
-> The size of ADDR(address) field is 12:51, but the function dma_pte_addr
->   treats it as 12:63.
->
-> Signed-off-by: Li, Zhen-Hua<zhen-hual-VXdhtT5mjnY@public.gmane.org>
-> ---
->   drivers/iommu/intel-iommu.c   |    4 ++--
->   include/linux/dma_remapping.h |    2 ++
->   2 files changed, 4 insertions(+), 2 deletions(-)
->
+At best the current code only seems to free the leaf pagetables and
+the root.  If you're unlucky enough to have a large gap (like any
+QEMU guest with more than 3G of memory), only the first chunk of leaf
+pagetables are freed (plus the root).  This is a massive memory leak.
+This patch re-writes the pagetable freeing function to use a
+recursive algorithm and manages to not only free all the pagetables,
+but does it without any apparent performance loss versus the current
+broken version.
 
-Is this patching for the sake of spec interpretation?
-a dma-pte format (consumed by iommu) has 63,61:52 as available for sw, ignored by hw.
-62 is 'transient mapping' bit, which is a _hint_ for selecting iotlbs to flush sooner.
-finally, the system would have to have a memory map that actually has bit 62 set to
-be affected.
+Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+---
 
-So, for intel-iommu, I don't see a bug occurring.
-Did you actually have one with previous definition, and if so,
-could you provide that information ?
+Suggesting for stable, would like to see some soak time, but it's
+hard to imagine this being any worse than the current code.
 
-Cheers,
-- Don
-  
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index b4f0e28..c6d2847 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -311,10 +311,10 @@ static inline void dma_set_pte_prot(struct dma_pte *pte, unsigned long prot)
->   static inline u64 dma_pte_addr(struct dma_pte *pte)
->   {
->   #ifdef CONFIG_64BIT
-> -	return pte->val&  VTD_PAGE_MASK;
-> +	return pte->val&  DMA_PTE_MASK;
->   #else
->   	/* Must have a full atomic 64-bit read */
-> -	return  __cmpxchg64(&pte->val, 0ULL, 0ULL)&  VTD_PAGE_MASK;
-> +	return  __cmpxchg64(&pte->val, 0ULL, 0ULL)&  DMA_PTE_MASK;
->   #endif
->   }
->
-> diff --git a/include/linux/dma_remapping.h b/include/linux/dma_remapping.h
-> index 57c9a8a..7a1e212 100644
-> --- a/include/linux/dma_remapping.h
-> +++ b/include/linux/dma_remapping.h
-> @@ -16,6 +16,8 @@
->   #define DMA_PTE_WRITE (2)
->   #define DMA_PTE_LARGE_PAGE (1<<  7)
->   #define DMA_PTE_SNP (1<<  11)
-> +#define DMA_PTE_ADD_LENGTH (40)
-> +#define DMA_PTE_MASK	((((u64)1<<  DMA_PTE_ADD_LENGTH) - 1)<<  VTD_PAGE_SHIFT)
->
->   #define CONTEXT_TT_MULTI_LEVEL	0
->   #define CONTEXT_TT_DEV_IOTLB	1
+This likely also affects device domains, but the current code does
+ok at freeing individual leaf pagetables and driver domains would
+only get a full pruning if the driver or device is removed.
+
+Some test programs:
+https://github.com/awilliam/tests/blob/master/kvm-huge-guest-test.c
+https://github.com/awilliam/tests/blob/master/vfio-huge-guest-test.c
+
+Both of these simulate a large guest on a small host system.  They
+mmap 4G of memory and map it across a large address space just like
+QEMU would (aside from re-using the same mmap across multiple IOVAs).
+On existing code the vfio version (w/o a KVM memory slot limit) will
+leak over 1G of pagetables per run.
+
+ drivers/iommu/intel-iommu.c |   72 +++++++++++++++++++++----------------------
+ 1 file changed, 35 insertions(+), 37 deletions(-)
+
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index eec0d3e..15e9b57 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -890,56 +890,54 @@ static int dma_pte_clear_range(struct dmar_domain *domain,
+ 	return order;
+ }
+ 
++static void dma_pte_free_level(struct dmar_domain *domain, int level,
++			       struct dma_pte *pte, unsigned long pfn,
++			       unsigned long start_pfn, unsigned long last_pfn)
++{
++	pfn = max(start_pfn, pfn);
++	pte = &pte[pfn_level_offset(pfn, level)];
++
++	do {
++		unsigned long level_pfn;
++		struct dma_pte *level_pte;
++
++		if (!dma_pte_present(pte) || dma_pte_superpage(pte))
++			goto next;
++
++		level_pfn = pfn & level_mask(level - 1);
++		level_pte = phys_to_virt(dma_pte_addr(pte));
++
++		if (level > 2)
++			dma_pte_free_level(domain, level - 1, level_pte,
++					   level_pfn, start_pfn, last_pfn);
++
++		/* If range covers entire pagetable, free it */
++		if (!(start_pfn > level_pfn ||
++		      last_pfn < level_pfn + level_size(level))) {
++			dma_clear_pte(pte);
++			domain_flush_cache(domain, pte, sizeof(*pte));
++			free_pgtable_page(level_pte);
++		}
++next:
++		pfn += level_size(level);
++	} while (!first_pte_in_page(++pte) && pfn <= last_pfn);
++}
++
+ /* free page table pages. last level pte should already be cleared */
+ static void dma_pte_free_pagetable(struct dmar_domain *domain,
+ 				   unsigned long start_pfn,
+ 				   unsigned long last_pfn)
+ {
+ 	int addr_width = agaw_to_width(domain->agaw) - VTD_PAGE_SHIFT;
+-	struct dma_pte *first_pte, *pte;
+-	int total = agaw_to_level(domain->agaw);
+-	int level;
+-	unsigned long tmp;
+-	int large_page = 2;
+ 
+ 	BUG_ON(addr_width < BITS_PER_LONG && start_pfn >> addr_width);
+ 	BUG_ON(addr_width < BITS_PER_LONG && last_pfn >> addr_width);
+ 	BUG_ON(start_pfn > last_pfn);
+ 
+ 	/* We don't need lock here; nobody else touches the iova range */
+-	level = 2;
+-	while (level <= total) {
+-		tmp = align_to_level(start_pfn, level);
+-
+-		/* If we can't even clear one PTE at this level, we're done */
+-		if (tmp + level_size(level) - 1 > last_pfn)
+-			return;
+-
+-		do {
+-			large_page = level;
+-			first_pte = pte = dma_pfn_level_pte(domain, tmp, level, &large_page);
+-			if (large_page > level)
+-				level = large_page + 1;
+-			if (!pte) {
+-				tmp = align_to_level(tmp + 1, level + 1);
+-				continue;
+-			}
+-			do {
+-				if (dma_pte_present(pte)) {
+-					free_pgtable_page(phys_to_virt(dma_pte_addr(pte)));
+-					dma_clear_pte(pte);
+-				}
+-				pte++;
+-				tmp += level_size(level);
+-			} while (!first_pte_in_page(pte) &&
+-				 tmp + level_size(level) - 1 <= last_pfn);
++	dma_pte_free_level(domain, agaw_to_level(domain->agaw),
++			   domain->pgd, 0, start_pfn, last_pfn);
+ 
+-			domain_flush_cache(domain, first_pte,
+-					   (void *)pte - (void *)first_pte);
+-			
+-		} while (tmp && tmp + level_size(level) - 1 <= last_pfn);
+-		level++;
+-	}
+ 	/* free pgd */
+ 	if (start_pfn == 0 && last_pfn == DOMAIN_MAX_PFN(domain->gaw)) {
+ 		free_pgtable_page(domain->pgd);
