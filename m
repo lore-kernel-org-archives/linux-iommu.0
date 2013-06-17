@@ -1,14 +1,11 @@
-From: "Li, Zhen-Hua (USL-China)" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Subject: Re: [PATCH 1/1] x86/iommu: fix dma pte address size error
-Date: Mon, 17 Jun 2013 11:38:37 +0800
-Message-ID: <51BE84BD.6050501@hp.com>
-References: <1369355756-1030-1-git-send-email-zhen-hual@hp.com>
-	<51BB7A1E.5000605@redhat.com>
+From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Subject: [PATCH 1/1] x86/iommu: remove useless code
+Date: Mon, 17 Jun 2013 13:51:46 +0800
+Message-ID: <1371448306-6884-1-git-send-email-zhen-hual@hp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <51BB7A1E.5000605-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,82 +15,32 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Dan Williams <djbw-b10kYP2dOMg@public.gmane.org>
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Dan Williams <djbw-b10kYP2dOMg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Don,
+From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
 
-This patch is not only for the sake of spec interpretation.
-Till now I did not see any bugs , but it does not meant no bugs will appear
-in the future. The address returned by dma_pte_addr is used in many places.
+In intel-iommu.c, the function dma_pte_addr does not change the
+value of its parameter (pte). So it is useless if it nobody catches
+its return value.
 
-Thanks
-Zhenhua
+Signed-off-by: Li, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+---
+ drivers/iommu/intel-iommu.c |    1 -
+ 1 file changed, 1 deletion(-)
 
-
-On 06/15/2013 04:16 AM, Don Dutile wrote:
-> On 05/23/2013 08:35 PM, Li, Zhen-Hua wrote:
->> In Intel Vt-D specs, Chapter 9.3 Page-Table Entry,
->> The size of ADDR(address) field is 12:51, but the function dma_pte_addr
->>   treats it as 12:63.
->>
->> Signed-off-by: Li, Zhen-Hua<zhen-hual-VXdhtT5mjnY@public.gmane.org>
->> ---
->>   drivers/iommu/intel-iommu.c   |    4 ++--
->>   include/linux/dma_remapping.h |    2 ++
->>   2 files changed, 4 insertions(+), 2 deletions(-)
->>
->
-> Is this patching for the sake of spec interpretation?
-> a dma-pte format (consumed by iommu) has 63,61:52 as available for sw, 
-> ignored by hw.
-> 62 is 'transient mapping' bit, which is a _hint_ for selecting iotlbs 
-> to flush sooner.
-> finally, the system would have to have a memory map that actually has 
-> bit 62 set to
-> be affected.
->
-> So, for intel-iommu, I don't see a bug occurring.
-> Did you actually have one with previous definition, and if so,
-> could you provide that information ?
->
-> Cheers,
-> - Don
->
->> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
->> index b4f0e28..c6d2847 100644
->> --- a/drivers/iommu/intel-iommu.c
->> +++ b/drivers/iommu/intel-iommu.c
->> @@ -311,10 +311,10 @@ static inline void dma_set_pte_prot(struct 
->> dma_pte *pte, unsigned long prot)
->>   static inline u64 dma_pte_addr(struct dma_pte *pte)
->>   {
->>   #ifdef CONFIG_64BIT
->> -    return pte->val&  VTD_PAGE_MASK;
->> +    return pte->val&  DMA_PTE_MASK;
->>   #else
->>       /* Must have a full atomic 64-bit read */
->> -    return  __cmpxchg64(&pte->val, 0ULL, 0ULL)& VTD_PAGE_MASK;
->> +    return  __cmpxchg64(&pte->val, 0ULL, 0ULL)& DMA_PTE_MASK;
->>   #endif
->>   }
->>
->> diff --git a/include/linux/dma_remapping.h 
->> b/include/linux/dma_remapping.h
->> index 57c9a8a..7a1e212 100644
->> --- a/include/linux/dma_remapping.h
->> +++ b/include/linux/dma_remapping.h
->> @@ -16,6 +16,8 @@
->>   #define DMA_PTE_WRITE (2)
->>   #define DMA_PTE_LARGE_PAGE (1<<  7)
->>   #define DMA_PTE_SNP (1<<  11)
->> +#define DMA_PTE_ADD_LENGTH (40)
->> +#define DMA_PTE_MASK    ((((u64)1<<  DMA_PTE_ADD_LENGTH) - 1)<<  
->> VTD_PAGE_SHIFT)
->>
->>   #define CONTEXT_TT_MULTI_LEVEL    0
->>   #define CONTEXT_TT_DEV_IOTLB    1
->
-> .
->
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index b4f0e28..d9d378b 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -809,7 +809,6 @@ static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
+ 				/* Someone else set it while we were thinking; use theirs. */
+ 				free_pgtable_page(tmp_page);
+ 			} else {
+-				dma_pte_addr(pte);
+ 				domain_flush_cache(domain, pte, sizeof(*pte));
+ 			}
+ 		}
+-- 
+1.7.10.4
