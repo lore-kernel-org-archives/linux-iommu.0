@@ -1,122 +1,62 @@
-From: Jiang Liu <liuj97-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v3, part2 17/20] PCI, iommu: use hotplug-safe iterators
-	to walk PCI buses
-Date: Wed, 19 Jun 2013 00:34:53 +0800
-Message-ID: <51C08C2D.6080208@gmail.com>
-References: <1369583597-3801-1-git-send-email-jiang.liu@huawei.com>
-	<1369583597-3801-18-git-send-email-jiang.liu@huawei.com>
-	<20130617202010.GC7877@google.com> <51BF72DA.3050106@redhat.com>
+From: Don Dutile <ddutile@redhat.com>
+Subject: Re: DMA mapping API(IOMMU) for ARM64?
+Date: Tue, 18 Jun 2013 18:08:15 -0400
+Message-ID: <51C0DA4F.1010405@redhat.com>
+References: <20130618.053955.305832937374936961.hdoyu@nvidia.com>
+ <20130618101914.GB3539@mudshark.cambridge.arm.com>
+ <5159282.rrJMaZuYMv@wuerfel>
+ <20130618.140137.1551430695673122122.hdoyu@nvidia.com>
+ <20130618125054.GL9930@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <51BF72DA.3050106-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Toshi Kani <toshi.kani-VXdhtT5mjnY@public.gmane.org>, Jiang Liu <jiang.liu-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Myron Stowe <myron.stowe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Rafael J . Wysocki" <rjw-KKrjLPT3xs0@public.gmane.org>, Gu Zheng <guz.fnst-BthXqXjhjHXQFUHtdCDX3A@public.gmane.org>, "Li,
-	Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, Hannes Reinecke <hare-l3A5Bk7waGM@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20130618125054.GL9930@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Catalin Marinas <catalin.marinas@arm.com>
+Cc: "arnd@arndb.de" <arnd@arndb.de>, Will Deacon <Will.Deacon@arm.com>, "linaro-mm-sig@lists.linaro.org" <linaro-mm-sig@lists.linaro.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Hiroshi Doyu <hdoyu@nvidia.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 06/18/2013 04:34 AM, Don Dutile wrote:
-> On 06/17/2013 04:20 PM, Bjorn Helgaas wrote:
->> On Sun, May 26, 2013 at 11:53:14PM +0800, Jiang Liu wrote:
->>> Enhance iommu drviers to use hotplug-safe iterators to walk
->>> PCI buses.
+On 06/18/2013 08:50 AM, Catalin Marinas wrote:
+> On Tue, Jun 18, 2013 at 12:01:37PM +0100, Hiroshi Doyu wrote:
+>> Arnd Bergmann<arnd@arndb.de>  wrote @ Tue, 18 Jun 2013 12:32:44 +0200:
+>>> On Tuesday 18 June 2013 11:19:14 Will Deacon wrote:
+>>>> I've spoken briefly with Catalin about this and it seems like there might be
+>>>> *some* scope for sharing common dma-mapping code between architectures.
+>>>> There doesn't really need to be any architecture-specific details in
+>>>> allocating iova space and the interface to the iommu drivers is
+>>>> well-defined. The arch-specific stuff is bogged down in the non-coherent
+>>>> buffer management, but that doesn't necessarily equate to lots of code.
+>>>>
+>>>> So, the best bet would be to figure out how to split up what we have under
+>>>> arch/arm/ so that it can be re-used by arm64 and potentially other
+>>>> architectures (powerpc has some simple stuff for coherent mappings and some
+>>>> less-simple stuff for non-coherent buffers).
 >>>
->>> Signed-off-by: Jiang Liu<jiang.liu-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
->>> Cc: Joerg Roedel<joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
->>> Cc: Ingo Molnar<mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
->>> Cc: Donald Dutile<ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
->>> Cc: Hannes Reinecke<hare-l3A5Bk7waGM@public.gmane.org>
->>> Cc: "Li, Zhen-Hua"<zhen-hual-VXdhtT5mjnY@public.gmane.org>
->>> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
->>> Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
->>> ---
->>>   drivers/iommu/amd_iommu.c | 4 +++-
->>>   drivers/iommu/dmar.c      | 6 ++++--
+>>> I'm sure that other architectures are interested in sharing the code.
+>>> Best move it into the global mm/ directory, at least the version for
+>>> coherent mappings.
 >>
->> The AMD and Intel IOMMU drivers are very different, and I would
->> split this into a patch for each.
+>> I'm guessing that this kind of unification usually takes some time
+>> since we need to factor out the common code from the different
+>> ${ARCH}/mm/dma-mapping.c. Also some of ${ARCH} has IOMMU support in
+>> it. So if we want to develop our 64-bit ARM with working DMA mapping
+>> API during this transition, the step to take would be:
 >>
-> +1
-Hi Don and Bjorn,
-
-Thanks for review, will split it into two patches.
-Regards!
-Gerry
-> 
->>>   2 files changed, 7 insertions(+), 3 deletions(-)
->>>
->>> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
->>> index 21d02b0..eef7a7e 100644
->>> --- a/drivers/iommu/amd_iommu.c
->>> +++ b/drivers/iommu/amd_iommu.c
->>> @@ -352,6 +352,7 @@ static int init_iommu_group(struct device *dev)
->>>       struct iommu_dev_data *dev_data;
->>>       struct iommu_group *group;
->>>       struct pci_dev *dma_pdev;
->>> +    struct pci_bus *b = NULL;
->>>       int ret;
->>>
->>>       group = iommu_group_get(dev);
->>> @@ -388,7 +389,7 @@ static int init_iommu_group(struct device *dev)
->>>            * the alias.  Be careful to also test the parent device if
->>>            * we think the alias is the root of the group.
->>>            */
->>> -        bus = pci_find_bus(0, alias>>  8);
->>> +        b = bus = pci_get_bus(0, alias>>  8);
->>>           if (!bus)
->>>               goto use_group;
->>>
->>> @@ -408,6 +409,7 @@ static int init_iommu_group(struct device *dev)
->>>       dma_pdev = get_isolation_root(pci_dev_get(to_pci_dev(dev)));
->>>   use_pdev:
->>>       ret = use_pdev_iommu_group(dma_pdev, dev);
->>> +    pci_bus_put(b);
->>>       pci_dev_put(dma_pdev);
->>>       return ret;
->>>   use_group:
->>> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
->>> index a7967ce..7162787 100644
->>> --- a/drivers/iommu/dmar.c
->>> +++ b/drivers/iommu/dmar.c
->>> @@ -67,12 +67,12 @@ static void __init dmar_register_drhd_unit(struct
->>> dmar_drhd_unit *drhd)
->>>   static int __init dmar_parse_one_dev_scope(struct
->>> acpi_dmar_device_scope *scope,
->>>                          struct pci_dev **dev, u16 segment)
->>>   {
->>> -    struct pci_bus *bus;
->>> +    struct pci_bus *b, *bus;
->>>       struct pci_dev *pdev = NULL;
->>>       struct acpi_dmar_pci_path *path;
->>>       int count;
->>>
->>> -    bus = pci_find_bus(segment, scope->bus);
->>> +    b = bus = pci_get_bus(segment, scope->bus);
->>>       path = (struct acpi_dmar_pci_path *)(scope + 1);
->>>       count = (scope->length - sizeof(struct acpi_dmar_device_scope))
->>>           / sizeof(struct acpi_dmar_pci_path);
->>> @@ -97,6 +97,8 @@ static int __init dmar_parse_one_dev_scope(struct
->>> acpi_dmar_device_scope *scope,
->>>           count --;
->>>           bus = pdev->subordinate;
->>>       }
->>> +    pci_bus_put(b);
->>> +
->>>       if (!pdev) {
->>>           pr_warn("Device scope device [%04x:%02x:%02x.%02x] not
->>> found\n",
->>>               segment, scope->bus, path->dev, path->fn);
->>> -- 
->>> 1.8.1.2
->>>
-> 
+>> 1, Copy arch/arm/mm/dma-mapping.c arch/arm64/mm/dma-mapping.c(+swiotlb)
+>> 2, Adapt arch/arm64/mm/dma-mapping.c(+swiotlb) to 64bit compatible.
+>> 3, Factor out the common code from them into mm/dma-mapping.c
+>
+> Or add the relevant code to something like lib/iommu-helper.c, convert
+> arm64 to use that and we can work on converting arm and other
+> architectures afterwards.
+>
+why not in current drivers/iommu directory ?
