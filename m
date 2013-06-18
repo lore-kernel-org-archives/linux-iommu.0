@@ -1,16 +1,11 @@
-From: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v3, part2 17/20] PCI, iommu: use hotplug-safe iterators
-	to walk PCI buses
-Date: Mon, 17 Jun 2013 16:34:34 -0400
-Message-ID: <51BF72DA.3050106@redhat.com>
-References: <1369583597-3801-1-git-send-email-jiang.liu@huawei.com>
-	<1369583597-3801-18-git-send-email-jiang.liu@huawei.com>
-	<20130617202010.GC7877@google.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH] amd_iommu: Fix leak in free_pagetable()
+Date: Mon, 17 Jun 2013 19:48:08 -0600
+Message-ID: <20130618014459.20440.73844.stgit@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130617202010.GC7877-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,92 +15,75 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: Toshi Kani <toshi.kani-VXdhtT5mjnY@public.gmane.org>, Jiang Liu <jiang.liu-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Myron Stowe <myron.stowe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Rafael J . Wysocki" <rjw-KKrjLPT3xs0@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Li,
-	Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, Hannes Reinecke <hare-l3A5Bk7waGM@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Gu Zheng <guz.fnst-BthXqXjhjHXQFUHtdCDX3A@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jiang Liu <liuj97-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 06/17/2013 04:20 PM, Bjorn Helgaas wrote:
-> On Sun, May 26, 2013 at 11:53:14PM +0800, Jiang Liu wrote:
->> Enhance iommu drviers to use hotplug-safe iterators to walk
->> PCI buses.
->>
->> Signed-off-by: Jiang Liu<jiang.liu-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
->> Cc: Joerg Roedel<joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
->> Cc: Ingo Molnar<mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
->> Cc: Donald Dutile<ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
->> Cc: Hannes Reinecke<hare-l3A5Bk7waGM@public.gmane.org>
->> Cc: "Li, Zhen-Hua"<zhen-hual-VXdhtT5mjnY@public.gmane.org>
->> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
->> Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
->> ---
->>   drivers/iommu/amd_iommu.c | 4 +++-
->>   drivers/iommu/dmar.c      | 6 ++++--
->
-> The AMD and Intel IOMMU drivers are very different, and I would
-> split this into a patch for each.
->
-+1
+AMD IOMMU initializes domains with a 3 level page table by default
+and will dynamically size it up to a 6 level page table.  Sadly,
+free_pagetable() ignores this feature and statically frees as if
+it's a 3 level page table.  Recurse through all the levels to
+free everything.
 
->>   2 files changed, 7 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
->> index 21d02b0..eef7a7e 100644
->> --- a/drivers/iommu/amd_iommu.c
->> +++ b/drivers/iommu/amd_iommu.c
->> @@ -352,6 +352,7 @@ static int init_iommu_group(struct device *dev)
->>   	struct iommu_dev_data *dev_data;
->>   	struct iommu_group *group;
->>   	struct pci_dev *dma_pdev;
->> +	struct pci_bus *b = NULL;
->>   	int ret;
->>
->>   	group = iommu_group_get(dev);
->> @@ -388,7 +389,7 @@ static int init_iommu_group(struct device *dev)
->>   		 * the alias.  Be careful to also test the parent device if
->>   		 * we think the alias is the root of the group.
->>   		 */
->> -		bus = pci_find_bus(0, alias>>  8);
->> +		b = bus = pci_get_bus(0, alias>>  8);
->>   		if (!bus)
->>   			goto use_group;
->>
->> @@ -408,6 +409,7 @@ static int init_iommu_group(struct device *dev)
->>   	dma_pdev = get_isolation_root(pci_dev_get(to_pci_dev(dev)));
->>   use_pdev:
->>   	ret = use_pdev_iommu_group(dma_pdev, dev);
->> +	pci_bus_put(b);
->>   	pci_dev_put(dma_pdev);
->>   	return ret;
->>   use_group:
->> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
->> index a7967ce..7162787 100644
->> --- a/drivers/iommu/dmar.c
->> +++ b/drivers/iommu/dmar.c
->> @@ -67,12 +67,12 @@ static void __init dmar_register_drhd_unit(struct dmar_drhd_unit *drhd)
->>   static int __init dmar_parse_one_dev_scope(struct acpi_dmar_device_scope *scope,
->>   					   struct pci_dev **dev, u16 segment)
->>   {
->> -	struct pci_bus *bus;
->> +	struct pci_bus *b, *bus;
->>   	struct pci_dev *pdev = NULL;
->>   	struct acpi_dmar_pci_path *path;
->>   	int count;
->>
->> -	bus = pci_find_bus(segment, scope->bus);
->> +	b = bus = pci_get_bus(segment, scope->bus);
->>   	path = (struct acpi_dmar_pci_path *)(scope + 1);
->>   	count = (scope->length - sizeof(struct acpi_dmar_device_scope))
->>   		/ sizeof(struct acpi_dmar_pci_path);
->> @@ -97,6 +97,8 @@ static int __init dmar_parse_one_dev_scope(struct acpi_dmar_device_scope *scope,
->>   		count --;
->>   		bus = pdev->subordinate;
->>   	}
->> +	pci_bus_put(b);
->> +
->>   	if (!pdev) {
->>   		pr_warn("Device scope device [%04x:%02x:%02x.%02x] not found\n",
->>   			segment, scope->bus, path->dev, path->fn);
->> --
->> 1.8.1.2
->>
+Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+---
+
+This is obviously a version rewritten to be recursive.  I'll also
+post a flat version, take your pick.
+
+ drivers/iommu/amd_iommu.c |   36 +++++++++++++++---------------------
+ 1 file changed, 15 insertions(+), 21 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 565c745..5496025 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -1906,32 +1906,26 @@ static void domain_id_free(int id)
+ 	write_unlock_irqrestore(&amd_iommu_devtable_lock, flags);
+ }
+ 
+-static void free_pagetable(struct protection_domain *domain)
++static void free_pagetable_level(int level, int max_level, u64 *pt)
+ {
+-	int i, j;
+-	u64 *p1, *p2, *p3;
++	if (level < max_level) {
++		int i;
++		for (i = 0; i < 512; ++i) {
++			if (IOMMU_PTE_PRESENT(pt[i]))
++				free_pagetable_level(level + 1, max_level,
++						     IOMMU_PTE_PAGE(pt[i]));
++		}
++	}
+ 
+-	p1 = domain->pt_root;
++	free_page((unsigned long)pt);
++}
+ 
+-	if (!p1)
++static void free_pagetable(struct protection_domain *domain)
++{
++	if (!domain->pt_root)
+ 		return;
+ 
+-	for (i = 0; i < 512; ++i) {
+-		if (!IOMMU_PTE_PRESENT(p1[i]))
+-			continue;
+-
+-		p2 = IOMMU_PTE_PAGE(p1[i]);
+-		for (j = 0; j < 512; ++j) {
+-			if (!IOMMU_PTE_PRESENT(p2[j]))
+-				continue;
+-			p3 = IOMMU_PTE_PAGE(p2[j]);
+-			free_page((unsigned long)p3);
+-		}
+-
+-		free_page((unsigned long)p2);
+-	}
+-
+-	free_page((unsigned long)p1);
++	free_pagetable_level(PAGE_MODE_1_LEVEL, domain->mode, domain->pt_root);
+ 
+ 	domain->pt_root = NULL;
+ }
