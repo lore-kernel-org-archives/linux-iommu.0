@@ -1,7 +1,7 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RESEND PATCH] iommu: Split iommu_unmaps
-Date: Mon, 17 Jun 2013 19:57:34 -0600
-Message-ID: <20130618015642.20826.30187.stgit@bling.home>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: DMA mapping API(IOMMU) for ARM64?
+Date: Tue, 18 Jun 2013 04:39:55 +0200
+Message-ID: <20130618.053955.305832937374936961.hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -15,112 +15,33 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Cc: "linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org" <linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, "catalin.marinas-5wv7dgnIgG8@public.gmane.org" <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "Arnd-r2nGTMty4D4@public.gmane.org" <Arnd-r2nGTMty4D4@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-iommu_map splits requests into pages that the iommu driver reports
-that it can handle.  The iommu_unmap path does not do the same.  This
-can cause problems not only from callers that might expect the same
-behavior as the map path, but even from the failure path of iommu_map,
-should it fail at a point where it has mapped and needs to unwind a
-set of pages that the iommu driver cannot handle directly.  amd_iommu,
-for example, will BUG_ON if asked to unmap a non power of 2 size.
+Hi,
 
-Fix this by extracting and generalizing the sizing code from the
-iommu_map path and use it for both map and unmap.
+Currently ARM64 supports swiotlb only as below[1]. AFAIU, swiotlb
+provides some kind of bounce buffer for some restricted H/Ws, and it
+cannot replace IOMMU H/W completely. So I'm wondering that we would
+need the IOMMU versions of dma_map_ops as Marek did for ARM32. If my
+understanding is correct, do you guys have any idea how it's going to
+be implemented? Can we reuse the current version of "iommu_ops" in
+"arch/arm/mm/dma-mapping.c" for ARM64 as well? Or do we need to
+rewrite 64bit version of iommu_ops completely in the same file as one
+with swiotlb, "arch/arm64/mm/dma-mapping.c"?
 
-Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/iommu.c |   63 +++++++++++++++++++++++++++----------------------
- 1 file changed, 35 insertions(+), 28 deletions(-)
+Any feedback would be really appreciated.
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index d8f98b1..4b0b56b 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -754,6 +754,38 @@ int iommu_domain_has_cap(struct iommu_domain *domain,
- }
- EXPORT_SYMBOL_GPL(iommu_domain_has_cap);
- 
-+static size_t iommu_pgsize(struct iommu_domain *domain,
-+			   unsigned long addr_merge, size_t size)
-+{
-+	unsigned int pgsize_idx;
-+	size_t pgsize;
-+
-+	/* Max page size that still fits into 'size' */
-+	pgsize_idx = __fls(size);
-+
-+	/* need to consider alignment requirements ? */
-+	if (likely(addr_merge)) {
-+		/* Max page size allowed by address */
-+		unsigned int align_pgsize_idx = __ffs(addr_merge);
-+		pgsize_idx = min(pgsize_idx, align_pgsize_idx);
-+	}
-+
-+	/* build a mask of acceptable page sizes */
-+	pgsize = (1UL << (pgsize_idx + 1)) - 1;
-+
-+	/* throw away page sizes not supported by the hardware */
-+	pgsize &= domain->ops->pgsize_bitmap;
-+
-+	/* make sure we're still sane */
-+	BUG_ON(!pgsize);
-+
-+	/* pick the biggest page */
-+	pgsize_idx = __fls(pgsize);
-+	pgsize = 1UL << pgsize_idx;
-+
-+	return pgsize;
-+}
-+
- int iommu_map(struct iommu_domain *domain, unsigned long iova,
- 	      phys_addr_t paddr, size_t size, int prot)
- {
-@@ -785,32 +817,7 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
- 				(unsigned long)paddr, (unsigned long)size);
- 
- 	while (size) {
--		unsigned long pgsize, addr_merge = iova | paddr;
--		unsigned int pgsize_idx;
--
--		/* Max page size that still fits into 'size' */
--		pgsize_idx = __fls(size);
--
--		/* need to consider alignment requirements ? */
--		if (likely(addr_merge)) {
--			/* Max page size allowed by both iova and paddr */
--			unsigned int align_pgsize_idx = __ffs(addr_merge);
--
--			pgsize_idx = min(pgsize_idx, align_pgsize_idx);
--		}
--
--		/* build a mask of acceptable page sizes */
--		pgsize = (1UL << (pgsize_idx + 1)) - 1;
--
--		/* throw away page sizes not supported by the hardware */
--		pgsize &= domain->ops->pgsize_bitmap;
--
--		/* make sure we're still sane */
--		BUG_ON(!pgsize);
--
--		/* pick the biggest page */
--		pgsize_idx = __fls(pgsize);
--		pgsize = 1UL << pgsize_idx;
-+		size_t pgsize = iommu_pgsize(domain, iova | paddr, size);
- 
- 		pr_debug("mapping: iova 0x%lx pa 0x%lx pgsize %lu\n", iova,
- 					(unsigned long)paddr, pgsize);
-@@ -863,9 +870,9 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
- 	 * or we hit an area that isn't mapped.
- 	 */
- 	while (unmapped < size) {
--		size_t left = size - unmapped;
-+		size_t pgsize = iommu_pgsize(domain, iova, size - unmapped);
- 
--		unmapped_page = domain->ops->unmap(domain, iova, left);
-+		unmapped_page = domain->ops->unmap(domain, iova, pgsize);
- 		if (!unmapped_page)
- 			break;
- 
+[1]:
+commit 09b55412469dfe6797244dc5836c17ed0c2f191b
+Author: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+Date:   Mon Mar 5 11:49:30 2012 +0000
+
+    arm64: DMA mapping API
+    
+    This patch adds support for the DMA mapping API. It uses dma_map_ops for
+    flexibility and it currently supports swiotlb. This patch could be
+    simplified further if the DMA accesses are coherent (not mandated by the
+    architecture) or if corresponding hooks are placed in the generic
+    swiotlb code to deal with cache maintenance.
