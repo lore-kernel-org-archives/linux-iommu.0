@@ -1,13 +1,11 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH] amd_iommu: Fix leak in free_pagetable()
-Date: Mon, 17 Jun 2013 19:52:14 -0600
-Message-ID: <20130618015116.20711.90269.stgit@bling.home>
-References: <20130618014459.20440.73844.stgit@bling.home>
+Subject: [RESEND PATCH] iommu: Split iommu_unmaps
+Date: Mon, 17 Jun 2013 19:57:34 -0600
+Message-ID: <20130618015642.20826.30187.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130618014459.20440.73844.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,74 +19,108 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-AMD IOMMU initializes domains with a 3 level page table by default
-and will dynamically size it up to a 6 level page table.  Sadly,
-free_pagetable() ignores this feature and statically frees as if
-it's a 3 level page table.  Add support for the extra levels.
+iommu_map splits requests into pages that the iommu driver reports
+that it can handle.  The iommu_unmap path does not do the same.  This
+can cause problems not only from callers that might expect the same
+behavior as the map path, but even from the failure path of iommu_map,
+should it fail at a point where it has mapped and needs to unwind a
+set of pages that the iommu driver cannot handle directly.  amd_iommu,
+for example, will BUG_ON if asked to unmap a non power of 2 size.
+
+Fix this by extracting and generalizing the sizing code from the
+iommu_map path and use it for both map and unmap.
 
 Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 ---
+ drivers/iommu/iommu.c |   63 +++++++++++++++++++++++++++----------------------
+ 1 file changed, 35 insertions(+), 28 deletions(-)
 
-Here's the flat version.  It's not terrible, but checkpatch whines
-about the level of nesting.
-
- drivers/iommu/amd_iommu.c |   32 ++++++++++++++++++++++++++++----
- 1 file changed, 28 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 565c745..95da421 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -1908,23 +1908,47 @@ static void domain_id_free(int id)
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index d8f98b1..4b0b56b 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -754,6 +754,38 @@ int iommu_domain_has_cap(struct iommu_domain *domain,
+ }
+ EXPORT_SYMBOL_GPL(iommu_domain_has_cap);
  
- static void free_pagetable(struct protection_domain *domain)
++static size_t iommu_pgsize(struct iommu_domain *domain,
++			   unsigned long addr_merge, size_t size)
++{
++	unsigned int pgsize_idx;
++	size_t pgsize;
++
++	/* Max page size that still fits into 'size' */
++	pgsize_idx = __fls(size);
++
++	/* need to consider alignment requirements ? */
++	if (likely(addr_merge)) {
++		/* Max page size allowed by address */
++		unsigned int align_pgsize_idx = __ffs(addr_merge);
++		pgsize_idx = min(pgsize_idx, align_pgsize_idx);
++	}
++
++	/* build a mask of acceptable page sizes */
++	pgsize = (1UL << (pgsize_idx + 1)) - 1;
++
++	/* throw away page sizes not supported by the hardware */
++	pgsize &= domain->ops->pgsize_bitmap;
++
++	/* make sure we're still sane */
++	BUG_ON(!pgsize);
++
++	/* pick the biggest page */
++	pgsize_idx = __fls(pgsize);
++	pgsize = 1UL << pgsize_idx;
++
++	return pgsize;
++}
++
+ int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 	      phys_addr_t paddr, size_t size, int prot)
  {
--	int i, j;
--	u64 *p1, *p2, *p3;
-+	int i, j, k, l, m, depth = domain->mode;
-+	u64 *p1, *p2, *p3, *p4, *p5, *p6;
+@@ -785,32 +817,7 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 				(unsigned long)paddr, (unsigned long)size);
  
- 	p1 = domain->pt_root;
+ 	while (size) {
+-		unsigned long pgsize, addr_merge = iova | paddr;
+-		unsigned int pgsize_idx;
+-
+-		/* Max page size that still fits into 'size' */
+-		pgsize_idx = __fls(size);
+-
+-		/* need to consider alignment requirements ? */
+-		if (likely(addr_merge)) {
+-			/* Max page size allowed by both iova and paddr */
+-			unsigned int align_pgsize_idx = __ffs(addr_merge);
+-
+-			pgsize_idx = min(pgsize_idx, align_pgsize_idx);
+-		}
+-
+-		/* build a mask of acceptable page sizes */
+-		pgsize = (1UL << (pgsize_idx + 1)) - 1;
+-
+-		/* throw away page sizes not supported by the hardware */
+-		pgsize &= domain->ops->pgsize_bitmap;
+-
+-		/* make sure we're still sane */
+-		BUG_ON(!pgsize);
+-
+-		/* pick the biggest page */
+-		pgsize_idx = __fls(pgsize);
+-		pgsize = 1UL << pgsize_idx;
++		size_t pgsize = iommu_pgsize(domain, iova | paddr, size);
  
- 	if (!p1)
- 		return;
+ 		pr_debug("mapping: iova 0x%lx pa 0x%lx pgsize %lu\n", iova,
+ 					(unsigned long)paddr, pgsize);
+@@ -863,9 +870,9 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
+ 	 * or we hit an area that isn't mapped.
+ 	 */
+ 	while (unmapped < size) {
+-		size_t left = size - unmapped;
++		size_t pgsize = iommu_pgsize(domain, iova, size - unmapped);
  
--	for (i = 0; i < 512; ++i) {
-+	for (i = 0; depth > 1 && i < 512; ++i) {
- 		if (!IOMMU_PTE_PRESENT(p1[i]))
- 			continue;
- 
- 		p2 = IOMMU_PTE_PAGE(p1[i]);
--		for (j = 0; j < 512; ++j) {
-+		for (j = 0; depth > 2 && j < 512; ++j) {
- 			if (!IOMMU_PTE_PRESENT(p2[j]))
- 				continue;
-+
- 			p3 = IOMMU_PTE_PAGE(p2[j]);
-+			for (k = 0; depth > 3 && k < 512; ++k) {
-+				if (!IOMMU_PTE_PRESENT(p3[k]))
-+					continue;
-+
-+				p4 = IOMMU_PTE_PAGE(p3[k]);
-+				for (l = 0; depth > 4 && l < 512; ++l) {
-+					if (!IOMMU_PTE_PRESENT(p4[l]))
-+						continue;
-+
-+					p5 = IOMMU_PTE_PAGE(p4[l]);
-+					for (m = 0; depth > 5 && m < 512; ++m) {
-+						if (!IOMMU_PTE_PRESENT(p5[m]))
-+							continue;
-+						p6 = IOMMU_PTE_PAGE(p5[m]);
-+						free_page((unsigned long)p6);
-+					}
-+
-+					free_page((unsigned long)p5);
-+				}
-+
-+				free_page((unsigned long)p4);
-+			}
-+
- 			free_page((unsigned long)p3);
- 		}
+-		unmapped_page = domain->ops->unmap(domain, iova, left);
++		unmapped_page = domain->ops->unmap(domain, iova, pgsize);
+ 		if (!unmapped_page)
+ 			break;
  
