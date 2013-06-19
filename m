@@ -1,18 +1,17 @@
 From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH 4/9] ARM: dma-mapping: NULLify dev->archdata.mapping
-	pointer on detach
-Date: Wed, 19 Jun 2013 10:59:33 +0200
-Message-ID: <51C172F5.8040500@samsung.com>
-References: <1370889285-22799-1-git-send-email-will.deacon@arm.com>
-	<1370889285-22799-5-git-send-email-will.deacon@arm.com>
-	<20130611.083455.1500863288897785600.hdoyu@nvidia.com>
-	<20130611085015.GC24729@mudshark.cambridge.arm.com>
-	<20130611123933.4d278ff4e056f395788ad060@nvidia.com>
+Subject: Re: DMA mapping API(IOMMU) for ARM64?
+Date: Wed, 19 Jun 2013 11:29:18 +0200
+Message-ID: <51C179EE.5030609@samsung.com>
+References: <20130618.053955.305832937374936961.hdoyu@nvidia.com>
+	<20130618101914.GB3539@mudshark.cambridge.arm.com>
+	<5159282.rrJMaZuYMv@wuerfel>
+	<20130618.140137.1551430695673122122.hdoyu@nvidia.com>
+	<20130618125054.GL9930@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <20130611123933.4d278ff4e056f395788ad060-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+In-reply-to: <20130618125054.GL9930-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,31 +21,61 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+Cc: "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org" <linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 Hello,
 
-On 6/11/2013 11:39 AM, Hiroshi Doyu wrote:
-> On Tue, 11 Jun 2013 10:50:15 +0200
-> Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
->
-> > On Tue, Jun 11, 2013 at 06:34:55AM +0100, Hiroshi Doyu wrote:
-> > > Hi Will,
+On 6/18/2013 2:50 PM, Catalin Marinas wrote:
+> On Tue, Jun 18, 2013 at 12:01:37PM +0100, Hiroshi Doyu wrote:
+> > Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> wrote @ Tue, 18 Jun 2013 12:32:44 +0200:
+> > > On Tuesday 18 June 2013 11:19:14 Will Deacon wrote:
+> > > > I've spoken briefly with Catalin about this and it seems like there might be
+> > > > *some* scope for sharing common dma-mapping code between architectures.
+> > > > There doesn't really need to be any architecture-specific details in
+> > > > allocating iova space and the interface to the iommu drivers is
+> > > > well-defined. The arch-specific stuff is bogged down in the non-coherent
+> > > > buffer management, but that doesn't necessarily equate to lots of code.
+> > > >
+> > > > So, the best bet would be to figure out how to split up what we have under
+> > > > arch/arm/ so that it can be re-used by arm64 and potentially other
+> > > > architectures (powerpc has some simple stuff for coherent mappings and some
+> > > > less-simple stuff for non-coherent buffers).
 > > >
-> > > Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote @ Mon, 10 Jun 2013 20:34:40 +0200:
-> > >
-> > > > The current code only clobbers a local variable, so the device is left
-> > > > with a stale mapping pointer.
-> > >
-> > > True. This's my bad. Thanks.
+> > > I'm sure that other architectures are interested in sharing the code.
+> > > Best move it into the global mm/ directory, at least the version for
+> > > coherent mappings.
 > >
-> > That's alright, it's easy to fix. Mind if I add your ack please?
+> > I'm guessing that this kind of unification usually takes some time
+> > since we need to factor out the common code from the different
+> > ${ARCH}/mm/dma-mapping.c. Also some of ${ARCH} has IOMMU support in
+> > it. So if we want to develop our 64-bit ARM with working DMA mapping
+> > API during this transition, the step to take would be:
+> >
+> > 1, Copy arch/arm/mm/dma-mapping.c arch/arm64/mm/dma-mapping.c(+swiotlb)
+> > 2, Adapt arch/arm64/mm/dma-mapping.c(+swiotlb) to 64bit compatible.
+> > 3, Factor out the common code from them into mm/dma-mapping.c
 >
-> Feel free to add: Acked-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> Or add the relevant code to something like lib/iommu-helper.c, convert
+> arm64 to use that and we can work on converting arm and other
+> architectures afterwards.
 
-Thanks for spotting the bug. I've taked the patch to my dma-mapping tree.
+I think that this would be the best way of providing iommu support for 
+dma mapping
+subsystem(s). I initially put it in arm/mm/dma-mapping.c because it was 
+the first
+approach of integrating generic IOMMU with DMA-mapping and it was simply 
+easier to
+have all the code in one place. Now, when second client of such approach 
+comes, it
+should be much easier to identify which part of the code is common and 
+which one is
+specific to particular implementation. Feel free to ask any questions if 
+you need
+help. I don't have access to any ARM64 machine or simulator, so I can 
+only review
+the code.
 
 Best regards
 -- 
