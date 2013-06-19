@@ -1,17 +1,18 @@
 From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH 3/9] ARM: dma-mapping: convert DMA direction into IOMMU
-	protection attributes
-Date: Wed, 19 Jun 2013 10:57:48 +0200
-Message-ID: <51C1728C.9090205@samsung.com>
+Subject: Re: [PATCH 4/9] ARM: dma-mapping: NULLify dev->archdata.mapping
+	pointer on detach
+Date: Wed, 19 Jun 2013 10:59:33 +0200
+Message-ID: <51C172F5.8040500@samsung.com>
 References: <1370889285-22799-1-git-send-email-will.deacon@arm.com>
-	<1370889285-22799-4-git-send-email-will.deacon@arm.com>
-	<51C16DAF.1090205@samsung.com>
-	<20130619085202.GC20351@mudshark.cambridge.arm.com>
+	<1370889285-22799-5-git-send-email-will.deacon@arm.com>
+	<20130611.083455.1500863288897785600.hdoyu@nvidia.com>
+	<20130611085015.GC24729@mudshark.cambridge.arm.com>
+	<20130611123933.4d278ff4e056f395788ad060@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <20130619085202.GC20351-MRww78TxoiP5vMa5CHWGZ34zcgK1vI+I0E9HWUfgJXw@public.gmane.org>
+In-reply-to: <20130611123933.4d278ff4e056f395788ad060-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,38 +22,31 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 Hello,
 
-On 6/19/2013 10:52 AM, Will Deacon wrote:
-> On Wed, Jun 19, 2013 at 09:37:03AM +0100, Marek Szyprowski wrote:
-> > Hello,
+On 6/11/2013 11:39 AM, Hiroshi Doyu wrote:
+> On Tue, 11 Jun 2013 10:50:15 +0200
+> Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
 >
-> Hi Marek,
->
-> > On 6/10/2013 8:34 PM, Will Deacon wrote:
-> > > IOMMU mappings take a prot parameter, identifying the protection bits
-> > > to enforce on the newly created mapping (READ or WRITE). The ARM
-> > > dma-mapping framework currently just passes 0 as the prot argument,
-> > > resulting in faulting mappings.
+> > On Tue, Jun 11, 2013 at 06:34:55AM +0100, Hiroshi Doyu wrote:
+> > > Hi Will,
 > > >
-> > > This patch infers the protection attributes based on the direction of
-> > > the DMA transfer.
+> > > Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote @ Mon, 10 Jun 2013 20:34:40 +0200:
 > > >
-> > > Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> > > Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> > > > The current code only clobbers a local variable, so the device is left
+> > > > with a stale mapping pointer.
+> > >
+> > > True. This's my bad. Thanks.
 > >
-> > Thanks for fixing this issue. Could I take this patch to my dma-mapping tree
-> > with other dma-mapping changes I've collected recently or do you want my ack
-> > and push it via other tree?
+> > That's alright, it's easy to fix. Mind if I add your ack please?
 >
-> Please, feel free to take it via the dma-mapping tree! That's probably the
-> best route for it and there's nothing that really depends on it anyway.
+> Feel free to add: Acked-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-Ok, thank I will put it on my tree. Thanks for your patches!
+Thanks for spotting the bug. I've taked the patch to my dma-mapping tree.
 
 Best regards
 -- 
