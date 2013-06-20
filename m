@@ -1,18 +1,14 @@
-From: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 2/5 v11] powerpc: Add iommu domain pointer to device
-	archdata
-Date: Thu, 20 Jun 2013 16:41:53 +0200
-Message-ID: <20130620144152.GB3589@8bytes.org>
-References: <1364500442-20927-1-git-send-email-Varun.Sethi@freescale.com>
-	<1364500442-20927-3-git-send-email-Varun.Sethi@freescale.com>
-	<AC9BAE34-A9CB-4A24-A357-0AA7734CE443@kernel.crashing.org>
-	<C5ECD7A89D1DC44195F34B25E172658D5CB5D4@039-SN2MPN1-011.039d.mgd.msft.net>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] iommu/omap: fix printk formats for dma_addr_t
+Date: Thu, 20 Jun 2013 16:47:51 +0200
+Message-ID: <20130620144751.GC3589@8bytes.org>
+References: <1369955438-51067-1-git-send-email-s-anna@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <C5ECD7A89D1DC44195F34B25E172658D5CB5D4-RL0Hj/+nBVCMXPU/2EZmt64g8xLGJsHaLnY5E4hWTkheoWH0uzbU5w@public.gmane.org>
+In-Reply-To: <1369955438-51067-1-git-send-email-s-anna-l0cyMroinI0@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,16 +18,18 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Kumar Gala <galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+To: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+Cc: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jun 20, 2013 at 02:29:30PM +0000, Sethi Varun-B16395 wrote:
-> Hi Joerg,
-> My PAMU driver patches depend on this patch which was Ack by Kumar. Should I resubmit this patch as well?
+On Thu, May 30, 2013 at 06:10:38PM -0500, Suman Anna wrote:
+> Fixed the following printk format warnings for dma_addr_t
+> for OMAP IOMMU.
+> 
+> drivers/iommu/omap-iommu.c: In function 'omap_iommu_iova_to_phys':
+> drivers/iommu/omap-iommu.c:1238:4: warning: format '%lx' expects type 'long unsigned int', but argument 4 has type 'dma_addr_t'
+> drivers/iommu/omap-iommu.c:1245:4: warning: format '%lx' expects type 'long unsigned int', but argument 4 has type 'dma_addr_t'
+> 
+> Signed-off-by: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
 
-Yes, please. Add the collected Acked-bys and submit everything that is
-missing in v3.10-rc6.
-
-
-	Joerg
+Applied to arm/omap, thanks.
