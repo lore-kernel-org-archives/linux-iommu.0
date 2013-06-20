@@ -1,17 +1,15 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2 1/2] iommu: Quirked PCIe bridge test and search function
-Date: Thu, 20 Jun 2013 18:15:38 +0200
-Message-ID: <20130620161538.GH3589@8bytes.org>
-References: <20130528183527.3318.5365.stgit@bling.home>
-	<20130528184020.3318.7800.stgit@bling.home>
-	<20130620135914.GS2575@8bytes.org>
-	<1371743091.32709.52.camel@ul30vt.home>
+Subject: Re: [PATCH] amd_iommu: Fix leak in free_pagetable()
+Date: Thu, 20 Jun 2013 20:28:08 +0200
+Message-ID: <20130620182808.GC11309@8bytes.org>
+References: <20130618014459.20440.73844.stgit@bling.home>
+	<20130618015116.20711.90269.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1371743091.32709.52.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
+In-Reply-To: <20130618015116.20711.90269.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,36 +20,165 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stephen-OTpzqLSitTUnbdJkjeBofR2eb7JE58TQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jun 20, 2013 at 09:44:51AM -0600, Alex Williamson wrote:
-> On Thu, 2013-06-20 at 15:59 +0200, Joerg Roedel wrote:
-> > On Tue, May 28, 2013 at 12:40:20PM -0600, Alex Williamson wrote:
-> > > +	if (!pci_is_root_bus(pdev->bus)) {
-> > > +		struct pci_dev *parent = pdev->bus->self;
-> > > +
-> > > +		if (pci_is_pcie(parent) &&
-> > > +		    pci_pcie_type(parent) != PCI_EXP_TYPE_PCI_BRIDGE)
-> > > +			return true;
-> > > +	}
-> > 
-> > Hmm, that looks a bit dangerous.
-> 
-> How so?  The algorithm seems pretty simple and logical.
+On Mon, Jun 17, 2013 at 07:52:14PM -0600, Alex Williamson wrote:
+>  static void free_pagetable(struct protection_domain *domain)
+>  {
+> -	int i, j;
+> -	u64 *p1, *p2, *p3;
+> +	int i, j, k, l, m, depth = domain->mode;
+> +	u64 *p1, *p2, *p3, *p4, *p5, *p6;
+>  
+>  	p1 = domain->pt_root;
+>  
+>  	if (!p1)
+>  		return;
+>  
+> -	for (i = 0; i < 512; ++i) {
+> +	for (i = 0; depth > 1 && i < 512; ++i) {
+>  		if (!IOMMU_PTE_PRESENT(p1[i]))
+>  			continue;
+>  
+>  		p2 = IOMMU_PTE_PAGE(p1[i]);
+> -		for (j = 0; j < 512; ++j) {
+> +		for (j = 0; depth > 2 && j < 512; ++j) {
+>  			if (!IOMMU_PTE_PRESENT(p2[j]))
+>  				continue;
+> +
+>  			p3 = IOMMU_PTE_PAGE(p2[j]);
+> +			for (k = 0; depth > 3 && k < 512; ++k) {
+> +				if (!IOMMU_PTE_PRESENT(p3[k]))
+> +					continue;
+> +
+> +				p4 = IOMMU_PTE_PAGE(p3[k]);
+> +				for (l = 0; depth > 4 && l < 512; ++l) {
+> +					if (!IOMMU_PTE_PRESENT(p4[l]))
+> +						continue;
+> +
+> +					p5 = IOMMU_PTE_PAGE(p4[l]);
+> +					for (m = 0; depth > 5 && m < 512; ++m) {
+> +						if (!IOMMU_PTE_PRESENT(p5[m]))
+> +							continue;
+> +						p6 = IOMMU_PTE_PAGE(p5[m]);
+> +						free_page((unsigned long)p6);
+> +					}
+> +
+> +					free_page((unsigned long)p5);
+> +				}
+> +
+> +				free_page((unsigned long)p4);
+> +			}
+> +
+>  			free_page((unsigned long)p3);
+>  		}
 
-It is simple, but it is still a heuristic that may fail at some point,
-no?
+Hmm, actually a recursive version would make more sense here. But since
+recursion is a bad idea in the kernel, how about this approach instead:
 
-> Actually, I believe Bjorn rejected the idea of a fixed list because this
-> problem is detectable.  He also doesn't want me messing with quirks to
-> pci_is_pcie() in PCI because he wants a 1:1 relation between that and
-> having a PCIe capability.  So, I'm stuck and this is where it's ended
-> up.  Thanks,
+>From d500d538ad1370679d05667663dcaf8603d529db Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Date: Thu, 20 Jun 2013 20:22:58 +0200
+Subject: [PATCH] iommu/amd: Fix memory leak in free_pagetable
 
-I think implementing such a list is much safer.
+The IOMMU pagetables can have up to 3 levels, but the code
+in free_pagetable() only releases the first 3 levels. Fix
+this leak by releasing all levels.
 
-Bjorn, why didn't you like that idea?
+Reported-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+---
+ drivers/iommu/amd_iommu.c |   73 ++++++++++++++++++++++++++++++---------------
+ 1 file changed, 49 insertions(+), 24 deletions(-)
 
-
-	Joerg
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 21d02b0..5cde682 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -1893,34 +1893,59 @@ static void domain_id_free(int id)
+ 	write_unlock_irqrestore(&amd_iommu_devtable_lock, flags);
+ }
+ 
++#define DEFINE_FREE_PT_FN(LVL, FN)				\
++static void free_pt_##LVL (unsigned long __pt)			\
++{								\
++	unsigned long p;					\
++	u64 *pt;						\
++	int i;							\
++								\
++	pt = (u64 *)__pt;					\
++								\
++	for (i = 0; i < 512; ++i) {				\
++		if (!IOMMU_PTE_PRESENT(pt[i]))			\
++			continue;				\
++								\
++		p = (unsigned long)IOMMU_PTE_PAGE(pt[i]);	\
++		FN(p);						\
++	}							\
++	free_page((unsigned long)pt);				\
++}
++
++DEFINE_FREE_PT_FN(l2, free_page)
++DEFINE_FREE_PT_FN(l3, free_pt_l2)
++DEFINE_FREE_PT_FN(l4, free_pt_l3)
++DEFINE_FREE_PT_FN(l5, free_pt_l4)
++DEFINE_FREE_PT_FN(l6, free_pt_l5)
++
+ static void free_pagetable(struct protection_domain *domain)
+ {
+-	int i, j;
+-	u64 *p1, *p2, *p3;
+-
+-	p1 = domain->pt_root;
+-
+-	if (!p1)
+-		return;
+-
+-	for (i = 0; i < 512; ++i) {
+-		if (!IOMMU_PTE_PRESENT(p1[i]))
+-			continue;
++	unsigned long root = (unsigned long)domain->pt_root;
+ 
+-		p2 = IOMMU_PTE_PAGE(p1[i]);
+-		for (j = 0; j < 512; ++j) {
+-			if (!IOMMU_PTE_PRESENT(p2[j]))
+-				continue;
+-			p3 = IOMMU_PTE_PAGE(p2[j]);
+-			free_page((unsigned long)p3);
+-		}
+-
+-		free_page((unsigned long)p2);
++	switch (domain->mode) {
++	case PAGE_MODE_NONE:
++		break;
++	case PAGE_MODE_1_LEVEL:
++		free_page(root);
++		break;
++	case PAGE_MODE_2_LEVEL:
++		free_pt_l2(root);
++		break;
++	case PAGE_MODE_3_LEVEL:
++		free_pt_l3(root);
++		break;
++	case PAGE_MODE_4_LEVEL:
++		free_pt_l4(root);
++		break;
++	case PAGE_MODE_5_LEVEL:
++		free_pt_l5(root);
++		break;
++	case PAGE_MODE_6_LEVEL:
++		free_pt_l6(root);
++		break;
++	default:
++		BUG();
+ 	}
+-
+-	free_page((unsigned long)p1);
+-
+-	domain->pt_root = NULL;
+ }
+ 
+ static void free_gcr3_tbl_level1(u64 *tbl)
+-- 
+1.7.9.5
