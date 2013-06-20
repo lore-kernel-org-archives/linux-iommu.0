@@ -1,41 +1,39 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] iommu: amd/intel: Remove multifunction assumption around
- grouping
-Date: Thu, 20 Jun 2013 17:22:48 +0200
-Message-ID: <20130620152248.GF3589@8bytes.org>
-References: <20130530183855.14612.15585.stgit@bling.home>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [RESEND PATCH] iommu: Split iommu_unmaps
+Date: Thu, 20 Jun 2013 17:27:11 +0200
+Message-ID: <20130620152711.GG3589@8bytes.org>
+References: <20130618015642.20826.30187.stgit@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20130530183855.14612.15585.stgit@bling.home>
-Sender: linux-pci-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: iommu@lists.linux-foundation.org, dwmw2@infradead.org, linux-pci@vger.kernel.org, ddutile@redhat.com, linux-kernel@vger.kernel.org
+In-Reply-To: <20130618015642.20826.30187.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, May 30, 2013 at 12:39:18PM -0600, Alex Williamson wrote:
-> If a device is multifunction and does not have ACS enabled then we
-> assume that the entire package lacks ACS and use function 0 as the
-> base of the group.  The PCIe spec however states that components are
-> permitted to implement ACS on some, none, or all of their applicable
-> functions.  It's therefore conceivable that function 0 may be fully
-> independent and support ACS while other functions do not.  Instead
-> use the lowest function of the slot that does not have ACS enabled
-> as the base of the group.  This may be the current device, which is
-> intentional.  So long as we use a consistent algorithm, all the
-> non-ACS functions will be grouped together and ACS functions will
-> get separate groups.
+On Mon, Jun 17, 2013 at 07:57:34PM -0600, Alex Williamson wrote:
+> iommu_map splits requests into pages that the iommu driver reports
+> that it can handle.  The iommu_unmap path does not do the same.  This
+> can cause problems not only from callers that might expect the same
+> behavior as the map path, but even from the failure path of iommu_map,
+> should it fail at a point where it has mapped and needs to unwind a
+> set of pages that the iommu driver cannot handle directly.  amd_iommu,
+> for example, will BUG_ON if asked to unmap a non power of 2 size.
 > 
-> Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
-> ---
->  drivers/iommu/amd_iommu.c   |   25 +++++++++++++++++++------
->  drivers/iommu/intel-iommu.c |   25 +++++++++++++++++++------
+> Fix this by extracting and generalizing the sizing code from the
+> iommu_map path and use it for both map and unmap.
 
-Didn't really fit into any of my existing branches. Applied it to
-x86/vt-d because it is probably not worth creating a new x86-specific
-branch just for this patch.
+Very true, thanks for fixing this.
 
-Thanks,
-
-	Joerg
+Applied to the core branch.
