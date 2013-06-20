@@ -1,57 +1,178 @@
-From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [Linaro-mm-sig] [RFC 3/3] iommu/tegra: smmu: Support read-only
- mapping
-Date: Thu, 20 Jun 2013 09:27:17 +0200
-Message-ID: <20130620.102717.424970523102380476.hdoyu@nvidia.com>
-References: <1371707384-30037-1-git-send-email-hdoyu@nvidia.com><1371707384-30037-4-git-send-email-hdoyu@nvidia.com><CAH9JG2VUCJErBNwT0_u_9niaSWUza5gJ-+q8OOJhrrdw5D-hUg@mail.gmail.com>
+From: Nishanth Peethambaran <nishanth.p-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [Linaro-mm-sig] [RFC 2/3] ARM: dma-mapping: Pass DMA attrs as
+ IOMMU prot
+Date: Thu, 20 Jun 2013 13:37:00 +0530
+Message-ID: <CAMcxFTRnnCnPnvMi89r7rUsN4xeYzZGqy9s5v5ukm_fJ_d_RGg@mail.gmail.com>
+References: <1371707384-30037-1-git-send-email-hdoyu@nvidia.com>
+	<1371707384-30037-3-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAH9JG2VUCJErBNwT0_u_9niaSWUza5gJ-+q8OOJhrrdw5D-hUg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <1371707384-30037-3-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: "kmpark-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <kmpark-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org" <linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org" <linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Kyungmin,
+Hi,
 
-Kyungmin Park <kmpark-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org> wrote @ Thu, 20 Jun 2013 08:50:14 +0200:
+It would be better to define a prot flag bit in iommu API and convert
+the attrs to prot flag bit in dma-mapping aPI before calling the iommu
+API.
 
-> On Thu, Jun 20, 2013 at 2:49 PM, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote:
-> > Support read-only mapping via struct dma_attrs.
-> >
-> > Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> > ---
-> >  drivers/iommu/tegra-smmu.c | 41 +++++++++++++++++++++++++++++------------
-> >  1 file changed, 29 insertions(+), 12 deletions(-)
-> >
-> > diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-> > index fab1f19..3aff4cd 100644
-> > --- a/drivers/iommu/tegra-smmu.c
-> > +++ b/drivers/iommu/tegra-smmu.c
-> > @@ -862,12 +862,13 @@ static size_t __smmu_iommu_unmap_largepage(struct smmu_as *as, dma_addr_t iova)
-> >  }
-> >
-> >  static int __smmu_iommu_map_pfn(struct smmu_as *as, dma_addr_t iova,
-> > -                                unsigned long pfn)
-> > +                               unsigned long pfn, int prot)
-> Can you find 'prot' is used at other arch? In previous patch, you cast
+On Thu, Jun 20, 2013 at 11:19 AM, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote:
+>
+> Pass DMA attribute as IOMMU property, which can be proccessed in the
+> backend implementation of IOMMU. For example, DMA_ATTR_READ_ONLY can
+> be translated into each IOMMU H/W implementaion.
+>
+> Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> ---
+>  arch/arm/mm/dma-mapping.c | 34 +++++++++++++++++++++-------------
+>  1 file changed, 21 insertions(+), 13 deletions(-)
+>
+> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+> index 4152ed6..cbc6768 100644
+> --- a/arch/arm/mm/dma-mapping.c
+> +++ b/arch/arm/mm/dma-mapping.c
+> @@ -1254,7 +1254,8 @@ err:
+>   */
+>  static dma_addr_t
+>  ____iommu_create_mapping(struct device *dev, dma_addr_t *req,
+> -                        struct page **pages, size_t size)
+> +                        struct page **pages, size_t size,
+> +                        struct dma_attrs *attrs)
+>  {
+>         struct dma_iommu_mapping *mapping = dev->archdata.mapping;
+>         unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> @@ -1280,7 +1281,7 @@ ____iommu_create_mapping(struct device *dev, dma_addr_t *req,
+>                                 break;
+>
+>                 len = (j - i) << PAGE_SHIFT;
+> -               ret = iommu_map(mapping->domain, iova, phys, len, 0);
+> +               ret = iommu_map(mapping->domain, iova, phys, len, (int)attrs);
 
-{amd,intel}_iommu_map() take the IOMMU standard flags below and
-translate it into each H/W dependent bits.
+Use dma_get_attr and translate the READ_ONLY attr to a new READ_ONLY
+prot flag bit which needs to be defined in iommu.h
 
-#define IOMMU_READ	(1)
-#define IOMMU_WRITE	(2)
-#define IOMMU_CACHE	(4) /* DMA cache coherency */
+>                 if (ret < 0)
+>                         goto fail;
+>                 iova += len;
+> @@ -1294,9 +1295,10 @@ fail:
+>  }
+>
+>  static dma_addr_t
+> -__iommu_create_mapping(struct device *dev, struct page **pages, size_t size)
+> +__iommu_create_mapping(struct device *dev, struct page **pages, size_t size,
+> +                      struct dma_attrs *attrs)
+>  {
+> -       return ____iommu_create_mapping(dev, NULL, pages, size);
+> +       return ____iommu_create_mapping(dev, NULL, pages, size, attrs);
+>  }
+>
+>  static int __iommu_remove_mapping(struct device *dev, dma_addr_t iova, size_t size)
+> @@ -1332,7 +1334,7 @@ static struct page **__iommu_get_pages(void *cpu_addr, struct dma_attrs *attrs)
+>  }
+>
+>  static void *__iommu_alloc_atomic(struct device *dev, size_t size,
+> -                                 dma_addr_t *handle)
+> +                                 dma_addr_t *handle, struct dma_attrs *attrs)
+>  {
+>         struct page *page;
+>         void *addr;
+> @@ -1341,7 +1343,7 @@ static void *__iommu_alloc_atomic(struct device *dev, size_t size,
+>         if (!addr)
+>                 return NULL;
+>
+> -       *handle = __iommu_create_mapping(dev, &page, size);
+> +       *handle = __iommu_create_mapping(dev, &page, size, attrs);
+>         if (*handle == DMA_ERROR_CODE)
+>                 goto err_mapping;
+>
+> @@ -1378,17 +1380,20 @@ static void *arm_iommu_alloc_attrs(struct device *dev, size_t size,
+>         size = PAGE_ALIGN(size);
+>
+>         if (gfp & GFP_ATOMIC)
+> -               return __iommu_alloc_atomic(dev, size, handle);
+> +
+> +               return __iommu_alloc_atomic(dev, size, handle, attrs);
+>
+>         pages = __iommu_alloc_buffer(dev, size, gfp);
+>         if (!pages)
+>                 return NULL;
+>
+>         if (*handle == DMA_ERROR_CODE)
+> -               *handle = __iommu_create_mapping(dev, pages, size);
+> +               *handle = __iommu_create_mapping(dev, pages, size, attrs);
+>         else
+> -               *handle = ____iommu_create_mapping(dev, handle, pages, size);
+> +               *handle = ____iommu_create_mapping(dev, handle, pages, size,
+> +                                                  attrs);
+>
+> +       *handle = __iommu_create_mapping(dev, pages, size, attrs);
+>         if (*handle == DMA_ERROR_CODE)
+>                 goto err_buffer;
+>
+> @@ -1513,7 +1518,7 @@ static int __map_sg_chunk(struct device *dev, struct scatterlist *sg,
+>
+>  skip_cmaint:
+>         count = size >> PAGE_SHIFT;
+> -       ret = iommu_map_sg(mapping->domain, iova_base, sg, count, 0);
+> +       ret = iommu_map_sg(mapping->domain, iova_base, sg, count, (int)attrs);
 
-The others like OMAP/MSM pass their H/W dependent bits all the way. I
-think that they don't use IOMMU via DMA mapping API.
+Use dma_get_attr and translate the READ_ONLY attr to a new READ_ONLY
+prot flag bit which needs to be defined in iommu.h
 
-> it as 'int' but below code cast it as 'struct dma_attr' again.
-> doesn't it better to use 'struct dma_attr' as parameter to avoid
-> double cast? Of course you have to modify existing APIs to use 'struct
-> dma_attr'.
+>         if (WARN_ON(ret < 0))
+>                 goto fail;
+>
+> @@ -1716,7 +1721,8 @@ static dma_addr_t arm_coherent_iommu_map_page(struct device *dev, struct page *p
+>         if (dma_addr == DMA_ERROR_CODE)
+>                 return dma_addr;
+>
+> -       ret = iommu_map(mapping->domain, dma_addr, page_to_phys(page), len, 0);
+> +       ret = iommu_map(mapping->domain, dma_addr, page_to_phys(page), len,
+> +                       (int)attrs);
 
-If DMA mapping API is considered as the standard frontend of
-IOMMU(API), that may be an option.
+Use dma_get_attr and translate the READ_ONLY attr to a new READ_ONLY
+prot flag bit which needs to be defined in iommu.h
+
+>         if (ret < 0)
+>                 goto fail;
+>
+> @@ -1756,7 +1762,8 @@ static dma_addr_t arm_iommu_map_page_at(struct device *dev, struct page *page,
+>         if (!dma_get_attr(DMA_ATTR_SKIP_CPU_SYNC, attrs))
+>                 __dma_page_cpu_to_dev(page, offset, size, dir);
+>
+> -       ret = iommu_map(mapping->domain, dma_addr, page_to_phys(page), len, 0);
+> +       ret = iommu_map(mapping->domain, dma_addr, page_to_phys(page), len,
+> +                       (int)attrs);
+
+Use dma_get_attr and translate the READ_ONLY attr to a new READ_ONLY
+prot flag bit which needs to be defined in iommu.h
+
+>         if (ret < 0)
+>                 return DMA_ERROR_CODE;
+>
+> @@ -1778,7 +1785,8 @@ static dma_addr_t arm_iommu_map_pages(struct device *dev, struct page **pages,
+>                         __dma_page_cpu_to_dev(pages[i], 0, PAGE_SIZE, dir);
+>         }
+>
+> -       ret = iommu_map_pages(mapping->domain, dma_handle, pages, count, 0);
+> +       ret = iommu_map_pages(mapping->domain, dma_handle, pages, count,
+> +                             (int)attrs);
+
+Use dma_get_attr and translate the READ_ONLY attr to a new READ_ONLY
+prot flag bit which needs to be defined in iommu.h
+
+>         if (ret < 0)
+>                 return DMA_ERROR_CODE;
+>
+> --
+> 1.8.1.5
+>
+>
+> _______________________________________________
+> Linaro-mm-sig mailing list
+> Linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org
+> http://lists.linaro.org/mailman/listinfo/linaro-mm-sig
