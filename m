@@ -1,163 +1,140 @@
 From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 3/3] iommu/tegra: smmu: Support read-only mapping
-Date: Thu, 20 Jun 2013 13:58:44 +0300
-Message-ID: <1371725924-13957-4-git-send-email-hdoyu@nvidia.com>
+Subject: [PATCH 2/3] ARM: dma-mapping: Pass DMA attrs as IOMMU prot
+Date: Thu, 20 Jun 2013 13:58:43 +0300
+Message-ID: <1371725924-13957-3-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Support read-only mapping via struct dma_attrs.
+Pass DMA attribute as IOMMU property, which can be proccessed in the
+backend implementation of IOMMU. For example, DMA_ATTR_READ_ONLY can
+be translated into each IOMMU H/W implementaion.
 
 Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/tegra-smmu.c | 41 +++++++++++++++++++++++++++++------------
- 1 file changed, 29 insertions(+), 12 deletions(-)
+ arch/arm/mm/dma-mapping.c | 34 +++++++++++++++++++++-------------
+ 1 file changed, 21 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index fab1f19..3aff4cd 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -862,12 +862,13 @@ static size_t __smmu_iommu_unmap_largepage(struct smmu_as *as, dma_addr_t iova)
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index 4152ed6..cbc6768 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -1254,7 +1254,8 @@ err:
+  */
+ static dma_addr_t
+ ____iommu_create_mapping(struct device *dev, dma_addr_t *req,
+-			 struct page **pages, size_t size)
++			 struct page **pages, size_t size,
++			 struct dma_attrs *attrs)
+ {
+ 	struct dma_iommu_mapping *mapping = dev->archdata.mapping;
+ 	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+@@ -1280,7 +1281,7 @@ ____iommu_create_mapping(struct device *dev, dma_addr_t *req,
+ 				break;
+ 
+ 		len = (j - i) << PAGE_SHIFT;
+-		ret = iommu_map(mapping->domain, iova, phys, len, 0);
++		ret = iommu_map(mapping->domain, iova, phys, len, (int)attrs);
+ 		if (ret < 0)
+ 			goto fail;
+ 		iova += len;
+@@ -1294,9 +1295,10 @@ fail:
  }
  
- static int __smmu_iommu_map_pfn(struct smmu_as *as, dma_addr_t iova,
--				 unsigned long pfn)
-+				unsigned long pfn, int prot)
+ static dma_addr_t
+-__iommu_create_mapping(struct device *dev, struct page **pages, size_t size)
++__iommu_create_mapping(struct device *dev, struct page **pages, size_t size,
++		       struct dma_attrs *attrs)
  {
- 	struct smmu_device *smmu = as->smmu;
- 	unsigned long *pte;
- 	unsigned int *count;
+-	return ____iommu_create_mapping(dev, NULL, pages, size);
++	return ____iommu_create_mapping(dev, NULL, pages, size, attrs);
+ }
+ 
+ static int __iommu_remove_mapping(struct device *dev, dma_addr_t iova, size_t size)
+@@ -1332,7 +1334,7 @@ static struct page **__iommu_get_pages(void *cpu_addr, struct dma_attrs *attrs)
+ }
+ 
+ static void *__iommu_alloc_atomic(struct device *dev, size_t size,
+-				  dma_addr_t *handle)
++				  dma_addr_t *handle, struct dma_attrs *attrs)
+ {
  	struct page *page;
-+	int attrs = as->pte_attr;
+ 	void *addr;
+@@ -1341,7 +1343,7 @@ static void *__iommu_alloc_atomic(struct device *dev, size_t size,
+ 	if (!addr)
+ 		return NULL;
  
- 	pte = locate_pte(as, iova, true, &page, &count);
- 	if (WARN_ON(!pte))
-@@ -875,7 +876,11 @@ static int __smmu_iommu_map_pfn(struct smmu_as *as, dma_addr_t iova,
+-	*handle = __iommu_create_mapping(dev, &page, size);
++	*handle = __iommu_create_mapping(dev, &page, size, attrs);
+ 	if (*handle == DMA_ERROR_CODE)
+ 		goto err_mapping;
  
- 	if (*pte == _PTE_VACANT(iova))
- 		(*count)++;
--	*pte = SMMU_PFN_TO_PTE(pfn, as->pte_attr);
+@@ -1378,17 +1380,20 @@ static void *arm_iommu_alloc_attrs(struct device *dev, size_t size,
+ 	size = PAGE_ALIGN(size);
+ 
+ 	if (gfp & GFP_ATOMIC)
+-		return __iommu_alloc_atomic(dev, size, handle);
 +
-+	if (dma_get_attr(DMA_ATTR_READ_ONLY, (struct dma_attrs *)prot))
-+		attrs &= ~_WRITABLE;
-+
-+	*pte = SMMU_PFN_TO_PTE(pfn, attrs);
- 	FLUSH_CPU_DCACHE(pte, page, sizeof(*pte));
- 	flush_ptc_and_tlb(smmu, as, iova, pte, page, 0);
- 	put_signature(as, iova, pfn);
-@@ -883,23 +888,27 @@ static int __smmu_iommu_map_pfn(struct smmu_as *as, dma_addr_t iova,
- }
++		return __iommu_alloc_atomic(dev, size, handle, attrs);
  
- static int __smmu_iommu_map_page(struct smmu_as *as, dma_addr_t iova,
--				 phys_addr_t pa)
-+				 phys_addr_t pa, int prot)
- {
- 	unsigned long pfn = __phys_to_pfn(pa);
+ 	pages = __iommu_alloc_buffer(dev, size, gfp);
+ 	if (!pages)
+ 		return NULL;
  
--	return __smmu_iommu_map_pfn(as, iova, pfn);
-+	return __smmu_iommu_map_pfn(as, iova, pfn, prot);
- }
+ 	if (*handle == DMA_ERROR_CODE)
+-		*handle = __iommu_create_mapping(dev, pages, size);
++		*handle = __iommu_create_mapping(dev, pages, size, attrs);
+ 	else
+-		*handle = ____iommu_create_mapping(dev, handle, pages, size);
++		*handle = ____iommu_create_mapping(dev, handle, pages, size,
++						   attrs);
  
- static int __smmu_iommu_map_largepage(struct smmu_as *as, dma_addr_t iova,
--				 phys_addr_t pa)
-+				 phys_addr_t pa, int prot)
- {
- 	unsigned long pdn = SMMU_ADDR_TO_PDN(iova);
- 	unsigned long *pdir = (unsigned long *)page_address(as->pdir_page);
-+	int attrs = _PDE_ATTR;
++	*handle = __iommu_create_mapping(dev, pages, size, attrs);
+ 	if (*handle == DMA_ERROR_CODE)
+ 		goto err_buffer;
  
- 	if (pdir[pdn] != _PDE_VACANT(pdn))
- 		return -EINVAL;
+@@ -1513,7 +1518,7 @@ static int __map_sg_chunk(struct device *dev, struct scatterlist *sg,
  
--	pdir[pdn] = SMMU_ADDR_TO_PDN(pa) << 10 | _PDE_ATTR;
-+	if (dma_get_attr(DMA_ATTR_READ_ONLY, (struct dma_attrs *)prot))
-+		attrs &= ~_WRITABLE;
-+
-+	pdir[pdn] = SMMU_ADDR_TO_PDN(pa) << 10 | attrs;
- 	FLUSH_CPU_DCACHE(&pdir[pdn], as->pdir_page, sizeof pdir[pdn]);
- 	flush_ptc_and_tlb(as->smmu, as, iova, &pdir[pdn], as->pdir_page, 1);
+ skip_cmaint:
+ 	count = size >> PAGE_SHIFT;
+-	ret = iommu_map_sg(mapping->domain, iova_base, sg, count, 0);
++	ret = iommu_map_sg(mapping->domain, iova_base, sg, count, (int)attrs);
+ 	if (WARN_ON(ret < 0))
+ 		goto fail;
  
-@@ -912,7 +921,8 @@ static int smmu_iommu_map(struct iommu_domain *domain, unsigned long iova,
- 	struct smmu_as *as = domain->priv;
- 	unsigned long flags;
- 	int err;
--	int (*fn)(struct smmu_as *as, dma_addr_t iova, phys_addr_t pa);
-+	int (*fn)(struct smmu_as *as, dma_addr_t iova, phys_addr_t pa,
-+		  int prot);
+@@ -1716,7 +1721,8 @@ static dma_addr_t arm_coherent_iommu_map_page(struct device *dev, struct page *p
+ 	if (dma_addr == DMA_ERROR_CODE)
+ 		return dma_addr;
  
- 	dev_dbg(as->smmu->dev, "[%d] %08lx:%08x\n", as->asid, iova, pa);
+-	ret = iommu_map(mapping->domain, dma_addr, page_to_phys(page), len, 0);
++	ret = iommu_map(mapping->domain, dma_addr, page_to_phys(page), len,
++			(int)attrs);
+ 	if (ret < 0)
+ 		goto fail;
  
-@@ -929,7 +939,7 @@ static int smmu_iommu_map(struct iommu_domain *domain, unsigned long iova,
+@@ -1756,7 +1762,8 @@ static dma_addr_t arm_iommu_map_page_at(struct device *dev, struct page *page,
+ 	if (!dma_get_attr(DMA_ATTR_SKIP_CPU_SYNC, attrs))
+ 		__dma_page_cpu_to_dev(page, offset, size, dir);
+ 
+-	ret = iommu_map(mapping->domain, dma_addr, page_to_phys(page), len, 0);
++	ret = iommu_map(mapping->domain, dma_addr, page_to_phys(page), len,
++			(int)attrs);
+ 	if (ret < 0)
+ 		return DMA_ERROR_CODE;
+ 
+@@ -1778,7 +1785,8 @@ static dma_addr_t arm_iommu_map_pages(struct device *dev, struct page **pages,
+ 			__dma_page_cpu_to_dev(pages[i], 0, PAGE_SIZE, dir);
  	}
  
- 	spin_lock_irqsave(&as->lock, flags);
--	err = fn(as, iova, pa);
-+	err = fn(as, iova, pa, prot);
- 	spin_unlock_irqrestore(&as->lock, flags);
- 	return err;
- }
-@@ -943,6 +953,10 @@ static int smmu_iommu_map_pages(struct iommu_domain *domain, unsigned long iova,
- 	unsigned long *pdir = page_address(as->pdir_page);
- 	int err = 0;
- 	bool flush_all = (total > SZ_512) ? true : false;
-+	int attrs = as->pte_attr;
-+
-+	if (dma_get_attr(DMA_ATTR_READ_ONLY, (struct dma_attrs *)prot))
-+		attrs &= ~_WRITABLE;
+-	ret = iommu_map_pages(mapping->domain, dma_handle, pages, count, 0);
++	ret = iommu_map_pages(mapping->domain, dma_handle, pages, count,
++			      (int)attrs);
+ 	if (ret < 0)
+ 		return DMA_ERROR_CODE;
  
- 	spin_lock_irqsave(&as->lock, flags);
- 
-@@ -977,8 +991,7 @@ static int smmu_iommu_map_pages(struct iommu_domain *domain, unsigned long iova,
- 			if (*pte == _PTE_VACANT(iova + i * PAGE_SIZE))
- 				(*rest)++;
- 
--			*pte = SMMU_PFN_TO_PTE(page_to_pfn(pages[i]),
--					       as->pte_attr);
-+			*pte = SMMU_PFN_TO_PTE(page_to_pfn(pages[i]), attrs);
- 		}
- 
- 		pte = &ptbl[ptn];
-@@ -1010,6 +1023,10 @@ static int smmu_iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
- 	bool flush_all = (nents * PAGE_SIZE > SZ_512) ? true : false;
- 	struct smmu_as *as = domain->priv;
- 	struct smmu_device *smmu = as->smmu;
-+	int attrs = as->pte_attr;
-+
-+	if (dma_get_attr(DMA_ATTR_READ_ONLY, (struct dma_attrs *)prot))
-+		attrs &= ~_WRITABLE;
- 
- 	for (count = 0, s = sgl; count < nents; s = sg_next(s)) {
- 		phys_addr_t phys = page_to_phys(sg_page(s));
-@@ -1053,7 +1070,7 @@ static int smmu_iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
- 					(*rest)++;
- 				}
- 
--				*pte = SMMU_PFN_TO_PTE(pfn + i, as->pte_attr);
-+				*pte = SMMU_PFN_TO_PTE(pfn + i, attrs);
- 			}
- 
- 			pte = &ptbl[ptn];
-@@ -1191,7 +1208,7 @@ static int smmu_iommu_attach_dev(struct iommu_domain *domain,
- 		struct page *page;
- 
- 		page = as->smmu->avp_vector_page;
--		__smmu_iommu_map_pfn(as, 0, page_to_pfn(page));
-+		__smmu_iommu_map_pfn(as, 0, page_to_pfn(page), 0);
- 
- 		pr_debug("Reserve \"page zero\" \
- 			for AVP vectors using a common dummy\n");
 -- 
 1.8.1.5
