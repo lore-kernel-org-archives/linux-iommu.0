@@ -1,59 +1,59 @@
-From: Nishanth Peethambaran <nishanth.p-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [Linaro-mm-sig] [RFC 2/3] ARM: dma-mapping: Pass DMA attrs as
- IOMMU prot
-Date: Thu, 20 Jun 2013 18:19:09 +0530
-Message-ID: <CAMcxFTQPUMMMagFioyENGMhHFCiUUvPkjurT+oDGa3HdF_cOwg@mail.gmail.com>
-References: <CAMcxFTS0dUUEfGj-=-cb_rdfy+qWvtsaoR6Tv+-x05XX0mZmmw@mail.gmail.com>
-	<201306201213.13644.arnd@arndb.de>
-	<20130620.133407.798194318297047071.hdoyu@nvidia.com>
-	<201306201257.58419.arnd@arndb.de>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 1/2] iommu: Quirked PCIe bridge test and search function
+Date: Thu, 20 Jun 2013 15:59:14 +0200
+Message-ID: <20130620135914.GS2575@8bytes.org>
+References: <20130528183527.3318.5365.stgit@bling.home>
+	<20130528184020.3318.7800.stgit@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <201306201257.58419.arnd-r2nGTMty4D4@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "catalin.marinas-5wv7dgnIgG8@public.gmane.org" <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org" <linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20130528184020.3318.7800.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: stephen-OTpzqLSitTUnbdJkjeBofR2eb7JE58TQ@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jun 20, 2013 at 4:27 PM, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> wrote:
-> On Thursday 20 June 2013, Hiroshi Doyu wrote:
->> Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> wrote @ Thu, 20 Jun 2013 12:13:13 +0200:
->>
->> > On Thursday 20 June 2013, Hiroshi Doyu wrote:
->> > > > If devices allocate via dma-mapping API, physical mem allocation, iova
->> > > > allocation and iommu mapping happens internally.
->> > > > Devices may allocate physical memory using any allocator (say ION
->> > > > including carveout area), use "iommu mapping" API which will do iova
->> > > > allocation and iommu mapping. The prot flags could be useful in this
->> > > > case as well - not sure whether we would need dma-attrs here.
->> > >
->> > > I haven't followed ION recently, but can't ION backed by DMA mapping
->> > > API instead of using IOMMU API directly?
->> >
->> > For a GPU with an IOMMU, you typically want per-process IOMMU contexts,
->> > which are only available when using the IOMMU API directly, as the
->> > dma-mapping abstraction uses only one context for kernel space.
->>
->> Yes, we had some experiment for switching IOMMU context with DMA
->> mapping API. We needed to add some new DMA mapping API, and didn't
->> look so nice at that time. What do you think to introduce multiple
->> context or switching context in dma-mapping abstruction?
->
-> My feeling is that drivers with the need for multiple contexts
-> are better off using the iommu API, since that is what it was
-> made for. The dma-mapping abstraction really tries to hide the
-> bus address assignment, while users with multiple contexts typically
-> also want to control the bus addresses.
->
->         Arnd
+On Tue, May 28, 2013 at 12:40:20PM -0600, Alex Williamson wrote:
+> +bool iommu_pci_is_pcie_bridge(struct pci_dev *pdev)
+> +{
+> +	if (!pdev->subordinate)
+> +		return false;
+> +
+> +	if (pci_is_pcie(pdev))
+> +		return true;
+> +
+> +#ifdef CONFIG_PCI_QUIRKS
+> +	/*
+> +	 * If we're not on the root bus, look one device upstream of the
+> +	 * current device.  If that device is PCIe and is not a PCIe-to-PCI
+> +	 * bridge, then the current device is effectively PCIe as it must
+> +	 * be the PCIe-to-PCI bridge.  This handles several bridges that
+> +	 * violate the PCIe spec by not exposing a PCIe capability:
+> +	 * https://bugzilla.kernel.org/show_bug.cgi?id=44881
+> +	 */
+> +	if (!pci_is_root_bus(pdev->bus)) {
+> +		struct pci_dev *parent = pdev->bus->self;
+> +
+> +		if (pci_is_pcie(parent) &&
+> +		    pci_pcie_type(parent) != PCI_EXP_TYPE_PCI_BRIDGE)
+> +			return true;
+> +	}
 
-ION is more of a physical memory allocator supporting buddy pages as
-well as memory reserved at boot-time. DMA type of heap is only one of
-the types
-of heap. For system heap, ION provides an sg_table which device will
-have to map it using iommu API to get dma_address for the device. Even
-for DMA type of heap, each device will have to map the pages to its
-own iommu as Arnd mentioned.
+Hmm, that looks a bit dangerous. Do we have a list of PCI
+vendor/device-ids of these broken bridges to match against instead of
+some open-coded heuristics?
 
-- Nishanth Peethambaran
+That would probably also help to bring this into the PCI code.
+
+
+	Joerg
