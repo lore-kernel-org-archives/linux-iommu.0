@@ -1,58 +1,49 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC 0/3] How to pass IOMMU map attr via DMA API?
-Date: Thu, 20 Jun 2013 10:31:52 +0100
-Message-ID: <20130620093152.GE2842@mudshark.cambridge.arm.com>
-References: <1371707384-30037-1-git-send-email-hdoyu@nvidia.com>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [Linaro-mm-sig] [RFC 2/3] ARM: dma-mapping: Pass DMA attrs as
+ IOMMU prot
+Date: Thu, 20 Jun 2013 11:54:31 +0200
+Message-ID: <20130620.125431.1161068035083905855.hdoyu@nvidia.com>
+References: <CAMcxFTRnnCnPnvMi89r7rUsN4xeYzZGqy9s5v5ukm_fJ_d_RGg@mail.gmail.com><20130620.112439.1330557591655135630.hdoyu@nvidia.com><CAMcxFTS0dUUEfGj-=-cb_rdfy+qWvtsaoR6Tv+-x05XX0mZmmw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1371707384-30037-1-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org" <linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAMcxFTS0dUUEfGj-=-cb_rdfy+qWvtsaoR6Tv+-x05XX0mZmmw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "catalin.marinas-5wv7dgnIgG8@public.gmane.org" <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "nishanth.p-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <nishanth.p-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org" <linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Hiroshi,
+Nishanth Peethambaran <nishanth.p-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote @ Thu, 20 Jun 2013 10:55:32 +0200:
 
-On Thu, Jun 20, 2013 at 06:49:41AM +0100, Hiroshi Doyu wrote:
-> In Tegra SoC, IOMMU can set some mapping attribute for each page, for
-> exmaple, READable, and WRITEable. We'd like to use this feature
-> *newly* for robustness, where read-only pages can be protected from
-> being overwritten by wrong operation. We have been using IOMMU via DMA
-> mapping API(ARM). DMA mapping API currently doesn't use "prot"
-> parameter when calling IOMMU API. So this series tries to pass "struct
-> dma_attrs *attrs" via "int prot" in IOMMU API. I'm not so sure if this
-> implementation is right or not because:
-> 
-> - Casting (struct dma_attrs *) to (int) in DMA API doesn't look nice.
-> - IOMMU layer needs to cast (int) back to (struct dma_attrs *) again,
->   which can be considered as violation of layers.
-> 
-> If you have any implementations/suggestions, it would be really helpful.
-> 
-> This series isn't applied cleanly but this is posted to request for
-> comments.
-> 
-> Hiroshi Doyu (3):
->   common: DMA-mapping: add DMA_ATTR_READ_ONLY attribute
->   ARM: dma-mapping: Pass DMA attrs as IOMMU prot
->   iommu/tegra: smmu: Support read-only mapping
+> Thinking again on it, I feel the translation of dma-attr should happen
+> when dma-mapping code makes calls to " iommu mapping" API.
+> "iommu mapping" API which does iova management and make iommu API
+> calls could be taken out from dma-mapping.c, for which I see
+> discussion already happening for arm64.
 
-These patches don't seem to have made it to the linux-arm-kernel list
-(either in my inbox or the list archive). Could you try and resend them please?
+According to the discussion ARM64:dma-mapping, I got an implression
+that IOVA management part in ARM:dma-mapping API would be a new common
+module(ie: /lib/iommu-helper.c), but still IOMMU API itself would
+reamin as primitive as what they are.
 
-Also: how do they interact with my patch here?:
++---------------------------------
+|     DMA mapping API
+|                            +-----------------
++--------------+-----------+ | DMA mapping API($ARCH)
+|   IOMMU API  |  IOVA MGT | +------------------
++--------------+-----------+
+|IOMMU API(H/W)|
++--------------+
+|  IOMMU H/W   |
++--------------+
 
-  http://lists.infradead.org/pipermail/linux-arm-kernel/2013-June/175124.html
+> If devices allocate via dma-mapping API, physical mem allocation, iova
+> allocation and iommu mapping happens internally.
+> Devices may allocate physical memory using any allocator (say ION
+> including carveout area), use "iommu mapping" API which will do iova
+> allocation and iommu mapping. The prot flags could be useful in this
+> case as well - not sure whether we would need dma-attrs here.
 
-Will
+I haven't followed ION recently, but can't ION backed by DMA mapping
+API instead of using IOMMU API directly?
