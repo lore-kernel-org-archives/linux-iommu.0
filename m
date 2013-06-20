@@ -1,39 +1,62 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [RESEND PATCH] iommu: Split iommu_unmaps
-Date: Thu, 20 Jun 2013 17:27:11 +0200
-Message-ID: <20130620152711.GG3589@8bytes.org>
-References: <20130618015642.20826.30187.stgit@bling.home>
+From: Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH v2 1/2] iommu: Quirked PCIe bridge test and search
+ function
+Date: Thu, 20 Jun 2013 09:44:51 -0600
+Message-ID: <1371743091.32709.52.camel@ul30vt.home>
+References: <20130528183527.3318.5365.stgit@bling.home>
+	 <20130528184020.3318.7800.stgit@bling.home>
+	 <20130620135914.GS2575@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20130618015642.20826.30187.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20130620135914.GS2575@8bytes.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, dwmw2@infradead.org, stephen@networkplumber.org, linux-pci@vger.kernel.org, ddutile@redhat.com, Bjorn Helgaas <bhelgaas@google.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jun 17, 2013 at 07:57:34PM -0600, Alex Williamson wrote:
-> iommu_map splits requests into pages that the iommu driver reports
-> that it can handle.  The iommu_unmap path does not do the same.  This
-> can cause problems not only from callers that might expect the same
-> behavior as the map path, but even from the failure path of iommu_map,
-> should it fail at a point where it has mapped and needs to unwind a
-> set of pages that the iommu driver cannot handle directly.  amd_iommu,
-> for example, will BUG_ON if asked to unmap a non power of 2 size.
+On Thu, 2013-06-20 at 15:59 +0200, Joerg Roedel wrote:
+> On Tue, May 28, 2013 at 12:40:20PM -0600, Alex Williamson wrote:
+> > +bool iommu_pci_is_pcie_bridge(struct pci_dev *pdev)
+> > +{
+> > +	if (!pdev->subordinate)
+> > +		return false;
+> > +
+> > +	if (pci_is_pcie(pdev))
+> > +		return true;
+> > +
+> > +#ifdef CONFIG_PCI_QUIRKS
+> > +	/*
+> > +	 * If we're not on the root bus, look one device upstream of the
+> > +	 * current device.  If that device is PCIe and is not a PCIe-to-PCI
+> > +	 * bridge, then the current device is effectively PCIe as it must
+> > +	 * be the PCIe-to-PCI bridge.  This handles several bridges that
+> > +	 * violate the PCIe spec by not exposing a PCIe capability:
+> > +	 * https://bugzilla.kernel.org/show_bug.cgi?id=44881
+> > +	 */
+> > +	if (!pci_is_root_bus(pdev->bus)) {
+> > +		struct pci_dev *parent = pdev->bus->self;
+> > +
+> > +		if (pci_is_pcie(parent) &&
+> > +		    pci_pcie_type(parent) != PCI_EXP_TYPE_PCI_BRIDGE)
+> > +			return true;
+> > +	}
 > 
-> Fix this by extracting and generalizing the sizing code from the
-> iommu_map path and use it for both map and unmap.
+> Hmm, that looks a bit dangerous.
 
-Very true, thanks for fixing this.
+How so?  The algorithm seems pretty simple and logical.
 
-Applied to the core branch.
+>  Do we have a list of PCI
+> vendor/device-ids of these broken bridges to match against instead of
+> some open-coded heuristics?
+> 
+> That would probably also help to bring this into the PCI code.
+
+Actually, I believe Bjorn rejected the idea of a fixed list because this
+problem is detectable.  He also doesn't want me messing with quirks to
+pci_is_pcie() in PCI because he wants a 1:1 relation between that and
+having a PCIe capability.  So, I'm stuck and this is where it's ended
+up.  Thanks,
+
+Alex
