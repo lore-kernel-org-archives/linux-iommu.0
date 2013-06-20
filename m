@@ -1,15 +1,15 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2 1/2] iommu: Quirked PCIe bridge test and search function
-Date: Thu, 20 Jun 2013 15:59:14 +0200
-Message-ID: <20130620135914.GS2575@8bytes.org>
-References: <20130528183527.3318.5365.stgit@bling.home>
-	<20130528184020.3318.7800.stgit@bling.home>
+Subject: Re: [PATCH 1/2 v15] iommu/fsl: Add additional iommu attributes
+	required by the PAMU driver.
+Date: Thu, 20 Jun 2013 16:05:11 +0200
+Message-ID: <20130620140511.GT2575@8bytes.org>
+References: <1366803351-17429-1-git-send-email-Varun.Sethi@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20130528184020.3318.7800.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+In-Reply-To: <1366803351-17429-1-git-send-email-Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,41 +19,27 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: stephen-OTpzqLSitTUnbdJkjeBofR2eb7JE58TQ@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+To: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Cc: galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, May 28, 2013 at 12:40:20PM -0600, Alex Williamson wrote:
-> +bool iommu_pci_is_pcie_bridge(struct pci_dev *pdev)
-> +{
-> +	if (!pdev->subordinate)
-> +		return false;
-> +
-> +	if (pci_is_pcie(pdev))
-> +		return true;
-> +
-> +#ifdef CONFIG_PCI_QUIRKS
-> +	/*
-> +	 * If we're not on the root bus, look one device upstream of the
-> +	 * current device.  If that device is PCIe and is not a PCIe-to-PCI
-> +	 * bridge, then the current device is effectively PCIe as it must
-> +	 * be the PCIe-to-PCI bridge.  This handles several bridges that
-> +	 * violate the PCIe spec by not exposing a PCIe capability:
-> +	 * https://bugzilla.kernel.org/show_bug.cgi?id=44881
-> +	 */
-> +	if (!pci_is_root_bus(pdev->bus)) {
-> +		struct pci_dev *parent = pdev->bus->self;
-> +
-> +		if (pci_is_pcie(parent) &&
-> +		    pci_pcie_type(parent) != PCI_EXP_TYPE_PCI_BRIDGE)
-> +			return true;
-> +	}
+Varun,
 
-Hmm, that looks a bit dangerous. Do we have a list of PCI
-vendor/device-ids of these broken bridges to match against instead of
-some open-coded heuristics?
+On Wed, Apr 24, 2013 at 05:05:50PM +0530, Varun Sethi wrote:
+> Added the following domain attributes for the FSL PAMU driver:
+> 1. Added new iommu stash attribute, which allows setting of the
+>    LIODN specific stash id parameter through IOMMU API.
+> 2. Added an attribute for enabling/disabling DMA to a particular
+>    memory window.
+> 3. Added domain attribute to check for PAMUV1 specific constraints.
+> 
+> Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 
-That would probably also help to bring this into the PCI code.
+Can you please rebase the driver tp v3.10-rc6 and resend asap? I will
+give it another review then and request AlexW to look over the
+iommu-group stuff. So we can probably get this merged for v3.11.
 
+
+Thank,
 
 	Joerg
