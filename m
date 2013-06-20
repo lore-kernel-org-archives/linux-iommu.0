@@ -1,71 +1,32 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC 0/3] How to pass IOMMU map attr via DMA API?
-Date: Thu, 20 Jun 2013 11:12:22 +0100
-Message-ID: <20130620101222.GF2842@mudshark.cambridge.arm.com>
-References: <1371707384-30037-1-git-send-email-hdoyu@nvidia.com>
-	<20130620093152.GE2842@mudshark.cambridge.arm.com>
-	<20130620.125929.2250094502232662356.hdoyu@nvidia.com>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [Linaro-mm-sig] [RFC 2/3] ARM: dma-mapping: Pass DMA attrs as IOMMU prot
+Date: Thu, 20 Jun 2013 12:13:13 +0200
+Message-ID: <201306201213.13644.arnd@arndb.de>
+References: <CAMcxFTRnnCnPnvMi89r7rUsN4xeYzZGqy9s5v5ukm_fJ_d_RGg@mail.gmail.com> <CAMcxFTS0dUUEfGj-=-cb_rdfy+qWvtsaoR6Tv+-x05XX0mZmmw@mail.gmail.com> <20130620.125431.1161068035083905855.hdoyu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20130620.125929.2250094502232662356.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20130620.125431.1161068035083905855.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org" <linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Cc: "m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "catalin.marinas-5wv7dgnIgG8@public.gmane.org" <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "nishanth.p-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <nishanth.p-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org" <linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jun 20, 2013 at 10:59:29AM +0100, Hiroshi Doyu wrote:
-> Hi Will,
-
-Hi Hiroshi,
-
-> Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote @ Thu, 20 Jun 2013 11:31:52 +0200:
+On Thursday 20 June 2013, Hiroshi Doyu wrote:
+> > If devices allocate via dma-mapping API, physical mem allocation, iova
+> > allocation and iommu mapping happens internally.
+> > Devices may allocate physical memory using any allocator (say ION
+> > including carveout area), use "iommu mapping" API which will do iova
+> > allocation and iommu mapping. The prot flags could be useful in this
+> > case as well - not sure whether we would need dma-attrs here.
 > 
-> > > Hiroshi Doyu (3):
-> > >   common: DMA-mapping: add DMA_ATTR_READ_ONLY attribute
-> > >   ARM: dma-mapping: Pass DMA attrs as IOMMU prot
-> > >   iommu/tegra: smmu: Support read-only mapping
-> > 
-> > These patches don't seem to have made it to the linux-arm-kernel list
-> > (either in my inbox or the list archive). Could you try and resend them please?
-> 
-> I'm sorry but linux-arm-kernel list someitmes requires me moderators
-> approval. I don't know why. I'll find a way to work around.
+> I haven't followed ION recently, but can't ION backed by DMA mapping
+> API instead of using IOMMU API directly?
 
-Strange. It would definitely be good to get that fixed!
+For a GPU with an IOMMU, you typically want per-process IOMMU contexts,
+which are only available when using the IOMMU API directly, as the
+dma-mapping abstraction uses only one context for kernel space.
 
-> Here are links for the original post:
-> 
-> http://lists.linuxfoundation.org/pipermail/iommu/2013-June/005860.html
-> http://lists.linuxfoundation.org/pipermail/iommu/2013-June/005861.html
-> http://lists.linuxfoundation.org/pipermail/iommu/2013-June/005862.html
-> http://lists.linuxfoundation.org/pipermail/iommu/2013-June/005863.html
-
-Thanks, but I can't reply inline to those :)
-
-> > Also: how do they interact with my patch here?:
-> > 
-> >   http://lists.infradead.org/pipermail/linux-arm-kernel/2013-June/175124.html
-> 
-> This conversion looks reasonable enough, but some platform may need
-> more attrs to pass IOMMU like OMAP.
-> 
->   #define IOMMU_FLAG	(IOVMF_ENDIAN_LITTLE | IOVMF_ELSZ_8)
-> 
-> How can we deal with those cases?
-
-Well, if we have weird and wonderful flags like this, which are
-IOMMU-specific, then I'd suggest short-circuiting the flags altogether and
-putting them inside somewhere like dev_archdata.iommu.
-
-Will
+	Arnd
