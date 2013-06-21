@@ -1,15 +1,15 @@
-From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [PATCH 0/3] iommu/amd: IOMMU Error Reporting/Handling/Filtering
-Date: Fri, 21 Jun 2013 17:59:33 +0200
-Message-ID: <20130621155933.GA24385@pd.tnic>
-References: <1369250155-12226-1-git-send-email-suravee.suthikulpanit@amd.com>
-	<20130621151459.GK11309@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFC 0/3] How to pass IOMMU map attr via DMA API?
+Date: Fri, 21 Jun 2013 18:03:44 +0200
+Message-ID: <20130621160344.GM11309@8bytes.org>
+References: <1371707384-30037-1-git-send-email-hdoyu@nvidia.com>
+	<51C3FE27.5070702@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20130621151459.GK11309-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <51C3FE27.5070702-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,23 +19,25 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jun 21, 2013 at 05:15:00PM +0200, Joerg Roedel wrote:
-> Instead of extending this bad scaling dmesg error-reporting mechanism,
-> I would very much like to see an integration of IOMMU error handling
-> into the EDAC framework.
+On Fri, Jun 21, 2013 at 09:17:59AM +0200, Marek Szyprowski wrote:
+> Using DMA attributes for this seems to be a bad idea. The dma direction
+> parameter is much more appropriate. Will Deacon recently posted a patch
+> which does it right, see:
+> 
+> https://git.linaro.org/gitweb?p=people/mszyprowski/linux-dma-mapping.git;a=commit;h=8fc3749bd31d139db58f874e093255fe62505968
 
-Wouldn't just adding a tracepoint and collecting the logs in debugfs be
-enough? This would at least avoid spamming syslog with the messages.
+Agreed, that is one usecase the dma-direction parameter was made for. In
+particular:
 
-More sophisticated error handling can be done later...
+	DMA_FROM_DEVICE		-> Write only mapping
+	DMA_TO_DEVICE 		-> Read only mapping
+	DMA_BIDIRECTIONAL	-> Read/Write mapping
 
--- 
-Regards/Gruss,
-    Boris.
+So no need to use the dma attributes for that.
 
-Sent from a fat crate under my desk. Formatting is fine.
---
+
+	Joerg
