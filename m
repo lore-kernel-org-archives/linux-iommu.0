@@ -1,17 +1,11 @@
-From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [PATCH 0/3] iommu/amd: IOMMU Error Reporting/Handling/Filtering
-Date: Fri, 21 Jun 2013 19:36:25 +0200
-Message-ID: <20130621173625.GH22006@pd.tnic>
-References: <1369250155-12226-1-git-send-email-suravee.suthikulpanit@amd.com>
-	<20130621151459.GK11309@8bytes.org>
-	<20130621155933.GA24385@pd.tnic>
-	<20130621162455.GN11309@8bytes.org>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH] iommu/amd: Only unmap large pages from the first pte
+Date: Fri, 21 Jun 2013 14:33:19 -0600
+Message-ID: <20130621203242.7475.19737.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20130621162455.GN11309-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,27 +15,50 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jun 21, 2013 at 06:24:55PM +0200, Joerg Roedel wrote:
-> I would rather not create another user-space interface for this which
-> we then have to keep forever because someone started using it. What
-> we need is a well defined mechanism to report these kernel metrics to
-> userspace which can then do with it whatever it wants. I think EDAC
-> can provide that interface.
+If we use a large mapping, the expectation is that only unmaps from
+the first pte in the superpage are supported.  Unmaps from offsets
+into the superpage should fail (ie. return zero sized unmap).  In the
+current code, unmapping from an offset clears the size of the full
+mapping starting from an offset.  For instance, if we map a 16k
+physically contiguous range at IOVA 0x0 with a large page, then
+attempt to unmap 4k at offset 12k, 4 ptes are cleared (12k - 28k) and
+the unmap returns 16k unmapped.  This potentially incorrectly clears
+valid mappings and confuses drivers like VFIO that use the unmap size
+to release pinned pages.
 
-What exactly do you think it should provide? A fast way to carry error
-info to userspace (tracepoint) or some sort of error collection and
-evaluation (need to do it yourself anyway - there's no such thing in
-EDAC).
+Fix by refusing to unmap from offsets into the page.
 
-IOW, what specific functionality in EDAC are you actually thinking of?
+Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+---
+ drivers/iommu/amd_iommu.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
--- 
-Regards/Gruss,
-    Boris.
-
-Sent from a fat crate under my desk. Formatting is fine.
---
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 21d02b0..a3c3389 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -1484,6 +1484,10 @@ static unsigned long iommu_unmap_page(struct protection_domain *dom,
+ 
+ 			/* Large PTE found which maps this address */
+ 			unmap_size = PTE_PAGE_SIZE(*pte);
++
++			/* Only unmap from the first pte in the page */
++			if ((unmap_size - 1) & bus_addr)
++				break;
+ 			count      = PAGE_SIZE_PTE_COUNT(unmap_size);
+ 			for (i = 0; i < count; i++)
+ 				pte[i] = 0ULL;
+@@ -1493,7 +1497,7 @@ static unsigned long iommu_unmap_page(struct protection_domain *dom,
+ 		unmapped += unmap_size;
+ 	}
+ 
+-	BUG_ON(!is_power_of_2(unmapped));
++	BUG_ON(unmapped && !is_power_of_2(unmapped));
+ 
+ 	return unmapped;
+ }
