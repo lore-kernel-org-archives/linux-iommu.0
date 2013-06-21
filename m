@@ -1,19 +1,16 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 7/9] documentation: iommu: add description of ARM System
-	MMU binding
-Date: Fri, 21 Jun 2013 17:41:40 +0100
-Message-ID: <20130621164139.GK7766@mudshark.cambridge.arm.com>
-References: <1370889285-22799-1-git-send-email-will.deacon@arm.com>
-	<1370889285-22799-8-git-send-email-will.deacon@arm.com>
-	<20130620200845.GF11309@8bytes.org>
-	<20130621095729.GA7766@mudshark.cambridge.arm.com>
-	<20130621135507.GI11309@8bytes.org>
+From: Shuah Khan <shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 0/3] iommu/amd: IOMMU Error Reporting/Handling/Filtering
+Date: Fri, 21 Jun 2013 10:44:06 -0600
+Message-ID: <CAKocOOM42mpRRt1ziYaUfTfrsRDL5nLM=yUPEGinUvmQXA=x=w@mail.gmail.com>
+References: <1369250155-12226-1-git-send-email-suravee.suthikulpanit@amd.com>
+	<20130621151459.GK11309@8bytes.org>
+	<20130621155933.GA24385@pd.tnic>
+	<20130621162455.GN11309@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20130621135507.GI11309-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20130621162455.GN11309-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,27 +21,34 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Cc: shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jun 21, 2013 at 02:55:08PM +0100, Joerg Roedel wrote:
-> On Fri, Jun 21, 2013 at 10:57:29AM +0100, Will Deacon wrote:
-> > This is a common driver that will support any IOMMUs compatible with v1 or
-> > v2 of the ARM SMMU architecture. Currently, that includes SMMUs known
-> > informatively as MMU-400, MMU-401 and MMU-500. I had a look at the other
-> > IOMMU drivers in the kernel and they seem to be driving incompatible IOMMUs,
-> > so I don't see how this driver can replace those.
-> > 
-> > However, we'll hopefully see ARM SMMU-compatible devices turning up soon (I
-> > know of many SoCs in development that are looking at them).
-> 
-> That sounds great. So in the future there will be a single driver for
-> most future SOCs. This is a real improvement over the current situation.
-> 
-> From NVidia is another driver with 'smmu' in its name, is that one also
-> incompatible?
+On Fri, Jun 21, 2013 at 10:24 AM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> On Fri, Jun 21, 2013 at 05:59:33PM +0200, Borislav Petkov wrote:
+>> On Fri, Jun 21, 2013 at 05:15:00PM +0200, Joerg Roedel wrote:
+>> > Instead of extending this bad scaling dmesg error-reporting mechanism,
+>> > I would very much like to see an integration of IOMMU error handling
+>> > into the EDAC framework.
+>>
+>> Wouldn't just adding a tracepoint and collecting the logs in debugfs be
+>> enough? This would at least avoid spamming syslog with the messages.
+>
+> I would rather not create another user-space interface for this which we
+> then have to keep forever because someone started using it. What we need
+> is a well defined mechanism to report these kernel metrics to userspace
+> which can then do with it whatever it wants. I think EDAC can provide
+> that interface.
+>
 
-Yup. I even checked with Stephen Warren before I started my driver, just in
-case :)
+I think it makes prefect sense to use EDAC as a common frame-work for
+iommu errors as well.
+Especially if and when APEI evolves to cover IOMMU tables (both Intel
+VT-d and AMD) , since
+EDAC is already capable of working with APEI, using EDAC will work
+well on platforms that support
+APEI as well as the ones that don't.
 
-Will
+-- Shuah
+Shuah Khan, Linux Kernel Developer - Open Source Group Samsung Research
+America (Silicon Valley) shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org | (970) 672-0658
