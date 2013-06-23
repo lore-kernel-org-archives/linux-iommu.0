@@ -1,14 +1,14 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu: Fix compiler warning on pr_debug
-Date: Sun, 23 Jun 2013 13:49:31 +0200
-Message-ID: <20130623114930.GA2557@8bytes.org>
-References: <20130621153331.2881.35589.stgit@bling.home>
+Subject: Re: [PATCH] iommu/amd: Only unmap large pages from the first pte
+Date: Sun, 23 Jun 2013 14:00:25 +0200
+Message-ID: <20130623120020.GB2557@8bytes.org>
+References: <20130621203242.7475.19737.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20130621153331.2881.35589.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+In-Reply-To: <20130621203242.7475.19737.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,24 +22,21 @@ To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jun 21, 2013 at 09:33:50AM -0600, Alex Williamson wrote:
-> Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> ---
->  drivers/iommu/iommu.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+On Fri, Jun 21, 2013 at 02:33:19PM -0600, Alex Williamson wrote:
+> If we use a large mapping, the expectation is that only unmaps from
+> the first pte in the superpage are supported.  Unmaps from offsets
+> into the superpage should fail (ie. return zero sized unmap).  In the
+> current code, unmapping from an offset clears the size of the full
+> mapping starting from an offset.  For instance, if we map a 16k
+> physically contiguous range at IOVA 0x0 with a large page, then
+> attempt to unmap 4k at offset 12k, 4 ptes are cleared (12k - 28k) and
+> the unmap returns 16k unmapped.  This potentially incorrectly clears
+> valid mappings and confuses drivers like VFIO that use the unmap size
+> to release pinned pages.
 > 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 4b0b56b..ab1fa19 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -820,7 +820,7 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
->  		size_t pgsize = iommu_pgsize(domain, iova | paddr, size);
->  
->  		pr_debug("mapping: iova 0x%lx pa 0x%lx pgsize %lu\n", iova,
-> -					(unsigned long)paddr, pgsize);
-> +			 (unsigned long)paddr, (unsigned long)pgsize);
->  
->  		ret = domain->ops->map(domain, iova, paddr, pgsize, prot);
->  		if (ret)
+> Fix by refusing to unmap from offsets into the page.
+> 
+> Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 
-Applied to core branch, thanks.
+Applied, thanks for fixing this.
