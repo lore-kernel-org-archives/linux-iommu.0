@@ -1,37 +1,43 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH V2] iommu: Use %pa and %zx instead of casting
-Date: Sun, 23 Jun 2013 21:38:48 +0200
-Message-ID: <CAMuHMdWHGmVpaqzMr9WZ++S9KcU=XL1c2Jdb7vDFxPD7=jbidg@mail.gmail.com>
-References: <20130621153331.2881.35589.stgit@bling.home>
-	<20130623114930.GA2557@8bytes.org>
-	<1372009427.3137.54.camel@joe-AO722>
-	<CAMuHMdWb4WK9ZuJ-vwdywgDSSbZTnnS1emF02VzrUgrSt5VKsg@mail.gmail.com>
-	<1372015744.3137.74.camel@joe-AO722>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC 0/3] How to pass IOMMU map attr via DMA API?
+Date: Mon, 24 Jun 2013 08:17:59 +0300
+Message-ID: <20130624081759.76e66d42bbf7c2c54ed1975c@nvidia.com>
+References: <1371707384-30037-1-git-send-email-hdoyu@nvidia.com>
+	<51C3FE27.5070702@samsung.com>
+	<20130621160344.GM11309@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1372015744.3137.74.camel@joe-AO722>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joe Perches <joe@perches.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20130621160344.GM11309-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org" <linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, Jun 23, 2013 at 9:29 PM, Joe Perches <joe@perches.com> wrote:
->> While we're at it, paddr is phys_addr_t (which can be 32-bit or 64-bit),
->> so it should be cast to unsigned long long (instead of unsigned long),
->> and printed using %llx (instead of %lx).
->
-> Sounds good to me, except using %pa instead is better still.
+On Fri, 21 Jun 2013 18:03:44 +0200
+Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
 
-Thanks, you're right. Still not used to this newish %pa...
+> On Fri, Jun 21, 2013 at 09:17:59AM +0200, Marek Szyprowski wrote:
+> > Using DMA attributes for this seems to be a bad idea. The dma direction
+> > parameter is much more appropriate. Will Deacon recently posted a patch
+> > which does it right, see:
+> > 
+> > https://git.linaro.org/gitweb?p=people/mszyprowski/linux-dma-mapping.git;a=commit;h=8fc3749bd31d139db58f874e093255fe62505968
+> 
+> Agreed, that is one usecase the dma-direction parameter was made for. In
+> particular:
+> 
+> 	DMA_FROM_DEVICE		-> Write only mapping
+> 	DMA_TO_DEVICE 		-> Read only mapping
+> 	DMA_BIDIRECTIONAL	-> Read/Write mapping
+> 
+> So no need to use the dma attributes for that.
 
-Gr{oetje,eeting}s,
+Ok, thanks. One more question, IOMMU H/W sometimes supports more
+platform specific attributes than READ/WRITE. For example, in OMAP,
 
-                        Geert
+  #define IOMMU_FLAG	(IOVMF_ENDIAN_LITTLE | IOVMF_ELSZ_8)
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Is there any way to deal with those platform specific attrs from DMA
+mapping API POV?
