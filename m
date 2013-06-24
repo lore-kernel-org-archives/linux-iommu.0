@@ -1,16 +1,13 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 3/3 v16] iommu/fsl: Freescale PAMU driver and iommu
-	implementation.
-Date: Mon, 24 Jun 2013 12:34:35 +0200
-Message-ID: <20130624103435.GB2778@8bytes.org>
-References: <1371744089-17780-1-git-send-email-Varun.Sethi@freescale.com>
-	<1371744089-17780-2-git-send-email-Varun.Sethi@freescale.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH v2 3/3] MAINTAINERS: add entry for ARM system MMU driver
+Date: Mon, 24 Jun 2013 18:31:26 +0100
+Message-ID: <1372095086-15681-4-git-send-email-will.deacon@arm.com>
+References: <1372095086-15681-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1371744089-17780-2-git-send-email-Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+In-Reply-To: <1372095086-15681-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,20 +17,34 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, Timur Tabi <timur-N01EOCouUvQ@public.gmane.org>, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jun 20, 2013 at 09:31:28PM +0530, Varun Sethi wrote:
-> This patch provides the PAMU driver (fsl_pamu.c) and the corresponding IOMMU
-> API implementation (fsl_pamu_domain.c). The PAMU hardware driver (fsl_pamu.c)
-> has been derived from the work done by Ashish Kalra and Timur Tabi.
+Add myself as maintainer for the ARM system MMU driver.
 
-AlexW,
+Acked-by: Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>
+Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+---
+ MAINTAINERS | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-can you please have a look at the group-code again and ack the patch if
-it looks right to you?
-
-Thanks,
-
-	Joerg
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 5be702c..1eb2a72 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1310,6 +1310,12 @@ T:	git git://git.xilinx.com/linux-xlnx.git
+ S:	Supported
+ F:	arch/arm/mach-zynq/
+ 
++ARM SMMU DRIVER
++M:	Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
++L:	linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org (moderated for non-subscribers)
++S:	Maintained
++F:	drivers/iommu/arm-smmu.c
++
+ ARM64 PORT (AARCH64 ARCHITECTURE)
+ M:	Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+ M:	Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+-- 
+1.8.2.2
