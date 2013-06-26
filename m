@@ -1,11 +1,14 @@
-From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 15/23] iommu/tegra: smmu: Calculate ASID register offset by ID
-Date: Wed, 26 Jun 2013 12:28:18 +0300
-Message-ID: <1372238906-9346-16-git-send-email-hdoyu@nvidia.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 0/3] Add support for ARM SMMU architectures 1 and 2
+Date: Wed, 26 Jun 2013 11:48:05 +0200
+Message-ID: <20130626094805.GS11309@8bytes.org>
+References: <1372095086-15681-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1372095086-15681-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,31 +18,23 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Calculate ASID register offset by ID so that we can get rid of SoC
-specific MACROs. This is needed for the unified SMMU driver over Tegra
-SoCs.
+On Mon, Jun 24, 2013 at 06:31:23PM +0100, Will Deacon wrote:
+> Will Deacon (3):
+>   documentation: iommu: add description of ARM System MMU binding
+>   iommu: add support for ARM Ltd. System MMU architecture
+>   MAINTAINERS: add entry for ARM system MMU driver
+> 
+>  .../devicetree/bindings/iommu/arm,smmu.txt         |   70 +
+>  MAINTAINERS                                        |    6 +
+>  drivers/iommu/Kconfig                              |   13 +
+>  drivers/iommu/Makefile                             |    1 +
+>  drivers/iommu/arm-smmu.c                           | 1969 ++++++++++++++++++++
+>  5 files changed, 2059 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iommu/arm,smmu.txt
+>  create mode 100644 drivers/iommu/arm-smmu.c
 
-Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/tegra-smmu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 35f4a16..95c6c80 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -256,7 +256,7 @@ static const u32 smmu_hwgrp_asid_reg[] = {
- 	HWGRP_INIT(VDE),
- 	HWGRP_INIT(VI),
- };
--#define HWGRP_ASID_REG(x) (smmu_hwgrp_asid_reg[x])
-+#define HWGRP_ASID_REG(x) ((x) * sizeof(u32) + SMMU_AFI_ASID)
- 
- /*
-  * Per client for address space
--- 
-1.8.1.5
+Applied this series to the new arm/smmu branch, thanks Will.
