@@ -1,19 +1,18 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 7/9] documentation: iommu: add description of ARM System
-	MMU binding
-Date: Wed, 26 Jun 2013 18:42:31 +0100
-Message-ID: <20130626174231.GH10333@mudshark.cambridge.arm.com>
-References: <1370889285-22799-1-git-send-email-will.deacon@arm.com>
-	<1370889285-22799-8-git-send-email-will.deacon@arm.com>
-	<CALRxmdBxFWoRKv+bUu8VEwNNcAJUej9jM2V8N0rrqrr_Vpe8fQ@mail.gmail.com>
-	<20130626133941.GD7417@mudshark.cambridge.arm.com>
-	<CALRxmdCycFK2wW=C4aU79mudSaT+2vU8nzXxepdstubg+YSdQg@mail.gmail.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2 1/2] iommu: Quirked PCIe bridge test and search function
+Date: Wed, 26 Jun 2013 12:45:58 -0600
+Message-ID: <1372272358.30572.560.camel@ul30vt.home>
+References: <20130528183527.3318.5365.stgit@bling.home>
+	<20130528184020.3318.7800.stgit@bling.home>
+	<20130620135914.GS2575@8bytes.org>
+	<1371743091.32709.52.camel@ul30vt.home>
+	<20130620161538.GH3589@8bytes.org>
+	<CAErSpo5_P9tPdmpq2XO-X-d5NUWFG8Nbm_byKOkd5d4b8UMcMQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CALRxmdCycFK2wW=C4aU79mudSaT+2vU8nzXxepdstubg+YSdQg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <CAErSpo5_P9tPdmpq2XO-X-d5NUWFG8Nbm_byKOkd5d4b8UMcMQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,56 +22,55 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Stuart Yoder <b08248-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org Discuss" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Hemminger <stephen-OTpzqLSitTUnbdJkjeBofR2eb7JE58TQ@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jun 26, 2013 at 05:19:48PM +0100, Stuart Yoder wrote:
-> On Wed, Jun 26, 2013 at 8:39 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> > I'd suggest looking at the driver I posted to get a gist of how the parsing
-> > code works, but suffice to say that we describe both the number of
-> > interrupts and the actual interrupt numbers here.
+On Tue, 2013-06-25 at 22:20 -0600, Bjorn Helgaas wrote:
+> On Thu, Jun 20, 2013 at 10:15 AM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> > On Thu, Jun 20, 2013 at 09:44:51AM -0600, Alex Williamson wrote:
+> >> On Thu, 2013-06-20 at 15:59 +0200, Joerg Roedel wrote:
+> >> > On Tue, May 28, 2013 at 12:40:20PM -0600, Alex Williamson wrote:
+> >> > > + if (!pci_is_root_bus(pdev->bus)) {
+> >> > > +         struct pci_dev *parent = pdev->bus->self;
+> >> > > +
+> >> > > +         if (pci_is_pcie(parent) &&
+> >> > > +             pci_pcie_type(parent) != PCI_EXP_TYPE_PCI_BRIDGE)
+> >> > > +                 return true;
+> >> > > + }
+> >> >
+> >> > Hmm, that looks a bit dangerous.
+> >>
+> >> How so?  The algorithm seems pretty simple and logical.
+> >
+> > It is simple, but it is still a heuristic that may fail at some point,
+> > no?
+> >
+> >> Actually, I believe Bjorn rejected the idea of a fixed list because this
+> >> problem is detectable.  He also doesn't want me messing with quirks to
+> >> pci_is_pcie() in PCI because he wants a 1:1 relation between that and
+> >> having a PCIe capability.  So, I'm stuck and this is where it's ended
+> >> up.  Thanks,
+> >
+> > I think implementing such a list is much safer.
+> >
+> > Bjorn, why didn't you like that idea?
 > 
-> I understand that the number of interrupts and actual interrupt numbers
-> are described here, but was referring to the _meaning_ of the interrupt
-> numbers.   A binding for a device with 2 interrupts, a TX and RX would
-> normally identify which interrupt specifier is for TX and which is for RX.
-> 
-> Based on your code, the 2 global interrupts seem to be the secure
-> and non-secure fault interrupts...which your driver does not differentiate.
-> However, the device tree is describing hardware and  you can't assume
-> that all drivers don't care which is which.
+> Sorry, I can't remember, and I haven't been able to find the
+> discussion where I said that.  I think the current patches are all in
+> drivers/iommu, and if a list makes sense there, it's fine with me.
 
-Currently, the driver only works when Linux is running as non-secure, which is
-becoming more and more common since it is required to be able to make use of
-hyp mode.
+Here's the comment I remember
 
-There are actually two global interrupts for SMMUv1 and SMMUv2, which
-correspond to configuration faults and `other' global faults.
+https://bugzilla.kernel.org/show_bug.cgi?id=44881#c7
 
-> If there are other interrupts added in the future like the performance interrupt
-> the definition could be expanded to add that.
+        Comment #7 From Bjorn Helgaas 2012-08-23 15:58:39
+        [snip]
+        I doubt the upstream device is at fault.  More likely the
+        downstream device is really a PCIe device (a PCIe-to-PCI bridge)
+        but just fails to report a PCIe capability.  I think this
+        situation is likely too common to deal with via quirks, so we'll
+        have to figure out a way to just make this work.
 
-PMU interrupts would like have a separate property, since the PMU would be
-driven by a largely independent piece of code.
-
-> But a question.... why do you need the #global-interrupts property
-> at all?   Is the number of "global" interrupts really implementation dependent?
-> Does't a specific compatible string imply the number of interrupts that there
-> actually are?
-
-Integrators have a nasty habit of ORing interrupts together or not wiring
-them at all and I don't want to be caught out by that.
-
-> > What bus hierarchy? If I have two SMMU device nodes, how do I infer any
-> > topological information without an explicit linkage?
-> 
-> I really don't know anything about SMMU chaining, but am inferring what
-> this might look like.   Does the "child" SMMU look just like another
-> mmu-master to the parent?   If so, why not just use the mmu-masters
-> property to establish the relationship.
-
-No, the child SMMU does not look like a master. It can remaster upstream
-StreamIDs, for example.
-
-Will
+Thanks,
+Alex
