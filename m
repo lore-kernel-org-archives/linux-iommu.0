@@ -1,74 +1,58 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 06/23] ARM: dt: tegra114: iommu: Add "nvidia,swgroups"
-Date: Wed, 26 Jun 2013 12:52:17 +0200
-Message-ID: <20130626105216.GL27083@manwe>
-References: <1372238906-9346-7-git-send-email-hdoyu@nvidia.com>
+Subject: Re: [PATCH 11/23] iommu/tegra: smmu: Add of_mach_id for T114
+Date: Wed, 26 Jun 2013 12:56:42 +0200
+Message-ID: <20130626105641.GM27083@manwe>
+References: <1372238906-9346-12-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Jbyekxk18hnEXT0m"
+	protocol="application/pgp-signature"; boundary="YIwHDYD8sUXtBKvt"
 Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1372238906-9346-7-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1372238906-9346-12-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 
---Jbyekxk18hnEXT0m
+--YIwHDYD8sUXtBKvt
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jun 26, 2013 at 12:28:09PM +0300, Hiroshi Doyu wrote:
-> This is a bitmap that indicates which HardWare Accelerators(HWA) are
-> supported on Tegra114 SoC.
->=20
-> Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> ---
->  arch/arm/boot/dts/tegra114.dtsi | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/arch/arm/boot/dts/tegra114.dtsi b/arch/arm/boot/dts/tegra114=
-=2Edtsi
-> index 1f45cf5..715b5d6 100644
-> --- a/arch/arm/boot/dts/tegra114.dtsi
-> +++ b/arch/arm/boot/dts/tegra114.dtsi
-> @@ -323,7 +323,7 @@
->  		       0x70019228 0x074>;
->  		nvidia,#asids =3D <4>;
->  		dma-window =3D <0 0x40000000>;
-> -		nvidia,swgroups =3D <0x18659fe>;
-> +		nvidia,swgroups =3D <0x00000000 0x01b659fe>;
->  		nvidia,ahb =3D <&ahb>;
->  	};
+On Wed, Jun 26, 2013 at 12:28:14PM +0300, Hiroshi Doyu wrote:
+> Add of_mach_id for T114
 
-It seems like an nvidia,tegra114-smmu.txt file is missing from the
-Documentation/devicetree/bindings/iommu directory. And similarily to my
-comment for the tegra30.dtsi update this could be a symbolic value such
-as TEGRA114_SWGID_ALL.
+I don't think of_mach_id is the right word. Why not use a subject such
+as "iommu/tegra: smmu: Add Tegra114 support". And instead of duplicating
+the subject in the commit message, perhaps you can say instead that for
+Tegra114 the SMMU is the same as for Tegra30 (which I assume here given
+that no code changes are required).
+
+And we really need the nvidia,tegra114-smmu.txt binding documentation.
+Either that or update the nvidia,tegra30-smmu.txt with Tegra114 specific
+information.
 
 Thierry
 
---Jbyekxk18hnEXT0m
+--YIwHDYD8sUXtBKvt
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.20 (GNU/Linux)
 
-iQIcBAEBAgAGBQJRysfgAAoJEN0jrNd/PrOhwH8P/1hJX4W5Wqxz/k9EcQ9alGsW
-P4mTsPYfKLglvMLpRGd/U1ztEKgbiZkAXyj0W3x3Wh4u2aeCJMrKNmzm88BdEiV1
-suV7GHrx3zVxeMaDR2IQ22UeCLTLJ15p3of7PsFfZRn2Q8tKjssIBCk6oeEx/NND
-AM2aI5opV360OwplB9ETWtmjZtTwYG81cwFuomfyWxFI9zjIp1iyqwi7YCT479xA
-gV3B3roRu1igbzWJLgn5cOuPf24cdUFCOGqdlkr7CR2cAQcgFNk7Qjzm6o8oqd/3
-OLlg2PNt1ZBW9u4XbQh+dhYxOKQGkomuczjmm3a+5zxcCcgOH7hn6oO+3cze5A+R
-sixvk23Njma6rHiO2i5nARXYtjS8R+FnGrB3q4EbYMK9hyPmvjYOYst7Sc+lqDk+
-lrd8dzBIedi6dzHNboQYER8eosgRez+5+Ide/C4Fl+YYbRRjPWrNN7S7FPxI7CRj
-0wDMoDptP4DtUh2iuk00ntjyXUEU7M4L4bMGkSA/m00vMj4yWIKD8s4ApXX/Iktt
-u8ux0BiAbo5wKTjPVR2pbAAPxgqQOdrQj7e/d2iFtCTGXs3ONEtlzd5raupDhwBm
-BcAGDyn794sCyGkYsqJpHQPg0BChkZMUG9L3aXI2UxKjK15Etx4pt4UL192sCCTq
-QssJIn9tHWYkRPYx1rUs
-=mEVu
+iQIcBAEBAgAGBQJRysjpAAoJEN0jrNd/PrOhAPsP/05YlESph+AHCwXzJ2LRocPr
+Q0IJHqlyyo3SyJv4qoEZbYUqPDHdUNN7VtfI8xdJVp7ORbsLbMAU5a5uDTzsg84X
+jlYNNYHcHmI8nlwpvMRrKnDU7kTq2jjkc6PaQkzyDWo26kgoQE0A916LFF13L4k9
+Cz1CGMLiB0ZZhm1VuI1HZCP2YMZukTS9oFsS61TvDWxTM0dhiCfiQa96H/ATd1FV
+UXm5vT+XtoLQ6PqRiBpTY1Ns++C/xat1hvYC+Ecs4Mbon/ZrLc7P4bhFAeYBKh+O
+kFefvzs5YBZhgomP2/8B8o1AHT21SaWyG8W8WnOjNp1IEPHR1XWUnTx4qRkIl54H
+bT1letR+KU7qVxlmJOCF56Ktvs5jh7tt3UMwdVBpUgYqBBM9lOb3b7tVq9RsQe9K
+Eovv+B2+UWmQPxU72cGISjM8Wt6BA10NpvOGJmhsKy+iCcoLW+huVne4QOMYvWwg
+uof2myJNnxcKi2N3r3XG7/rbXfHDbyHm6vi/NridRu0Zi1qKDDy0JeH7nvX2roNQ
+UqzI5CPZZmV4tvnXp2nmiWJxHWPzRboBlQ7lx78zKI3pO0y+IM6SaS4VxVB08hcn
+dp88Tn4diB+75RNCg9egz+kfuyHjMEp8G74NGwZKeXVE560Iqm2Nad2ocEJsmPBI
+hNzxebNtYXfv/Bs0wz/8
+=uJ+m
 -----END PGP SIGNATURE-----
 
---Jbyekxk18hnEXT0m--
+--YIwHDYD8sUXtBKvt--
