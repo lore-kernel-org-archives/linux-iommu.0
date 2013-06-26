@@ -1,111 +1,71 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 21/23] iommu/tegra: smmu: Get swgroup ID from DT
-Date: Wed, 26 Jun 2013 13:12:21 +0200
-Message-ID: <20130626111220.GQ27083@manwe>
-References: <1372238906-9346-22-git-send-email-hdoyu@nvidia.com>
+Subject: Re: [PATCH 18/23] iommu/tegra: smmu: Workaround PCIe IOMMU'able
+Date: Wed, 26 Jun 2013 13:15:37 +0200
+Message-ID: <20130626111537.GR27083@manwe>
+References: <1372238906-9346-19-git-send-email-hdoyu@nvidia.com>
+ <20130626110626.GO27083@manwe>
+ <20130626.140906.1216615781918366349.hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="SvyA5ywaG/v2A5dH"
+	protocol="application/pgp-signature"; boundary="Q8a9NmTVi5AMeZ2v"
 Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1372238906-9346-22-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20130626.140906.1216615781918366349.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
---SvyA5ywaG/v2A5dH
+--Q8a9NmTVi5AMeZ2v
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jun 26, 2013 at 12:28:24PM +0300, Hiroshi Doyu wrote:
-> Get swgroup ID from DT. "nvidia,swgroups" indicates which swgroup IDs
-> a device belongs to.
+On Wed, Jun 26, 2013 at 01:09:06PM +0200, Hiroshi Doyu wrote:
+> Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote @ Wed, 26 Jun 2013 13:06:=
+27 +0200:
 >=20
-> Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> ---
->  arch/arm/boot/dts/tegra30.dtsi |  1 -
->  drivers/iommu/tegra-smmu.c     | 20 +++++++++++++++++++-
->  2 files changed, 19 insertions(+), 2 deletions(-)
+> > * PGP Signed by an unknown key
+> >=20
+> > On Wed, Jun 26, 2013 at 12:28:21PM +0300, Hiroshi Doyu wrote:
+> > > Make PCIe work as it is. IOMMU support can be implemented later.
+> > >=20
+> > > Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> > > ---
+> > >  drivers/iommu/tegra-smmu.c | 3 +++
+> > >  1 file changed, 3 insertions(+)
+> >=20
+> > Can you provide more information about what the problem is here? Why is
+> > PCIe not working when mapped through the IOMMU?
 >=20
-> diff --git a/arch/arm/boot/dts/tegra30.dtsi b/arch/arm/boot/dts/tegra30.d=
-tsi
-> index 7c480f2..a116737 100644
-> --- a/arch/arm/boot/dts/tegra30.dtsi
-> +++ b/arch/arm/boot/dts/tegra30.dtsi
-> @@ -1,6 +1,5 @@
->  #include <dt-bindings/clock/tegra30-car.h>
->  #include <dt-bindings/gpio/tegra-gpio.h>
-> -#include <dt-bindings/iommu/tegra-swgid.h>
->  #include <dt-bindings/interrupt-controller/arm-gic.h>
-> =20
->  #include "skeleton.dtsi"
-> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-> index 50eb843..96dbef3 100644
-> --- a/drivers/iommu/tegra-smmu.c
-> +++ b/drivers/iommu/tegra-smmu.c
-> @@ -314,6 +314,24 @@ static inline void smmu_write(struct smmu_device *sm=
-mu, u32 val, size_t offs)
-> =20
->  #define smmu_client_hwgrp(c)	(c->as->smmu->swgroups)
-> =20
-> +static u64 tegra_smmu_of_get_swgids(struct device *dev)
-> +{
-> +	size_t bytes;
-> +	const char *propname =3D "nvidia,memory-clients";
-> +	const __be32 *prop;
-> +	int i;
-> +	u64 swgids =3D 0;
-> +
-> +	prop =3D of_get_property(dev->of_node, propname, &bytes);
-> +	if (!prop || !bytes)
-> +		return 0;
-> +
-> +	for (i =3D 0; i < bytes / sizeof(u32); i++, prop++)
-> +		swgids |=3D 1ULL << be32_to_cpup(prop);
-> +
-> +	return swgids;
-> +}
-> +
->  static int __smmu_client_set_hwgrp(struct smmu_client *c,
->  				   u64 map, int on)
->  {
-> @@ -725,7 +743,7 @@ static int smmu_iommu_attach_dev(struct iommu_domain =
-*domain,
->  		return -ENOMEM;
->  	client->dev =3D dev;
->  	client->as =3D as;
-> -	map =3D smmu->swgroups;
-> +	map =3D tegra_smmu_of_get_swgids(dev);
->  	if (!map)
->  		return -EINVAL;
+> I haven't had a code to register PCI device as IOMMU'able as
+> ops->add_device() does for platform_devices. I'll add this comment.
 
-Shouldn't this be part of an earlier patch ("[PATCH 17/23] iommu/tegra:
-smmu: Use swgroups instead of pdata")? What's the reason for the split?
+Okay, that should be solved then when we merge the PCIe driver. I hope
+that can happen soon.
 
 Thierry
 
---SvyA5ywaG/v2A5dH
+--Q8a9NmTVi5AMeZ2v
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.20 (GNU/Linux)
 
-iQIcBAEBAgAGBQJRysyUAAoJEN0jrNd/PrOhuSUP/2QiGsJnjV+DJ6QFoeXeE27U
-o/y9z9bnQ6aYvOVS5ENTWebD5524quqn/nBXNOCMIcwuE8wNn+EuHLaY93VfUlR/
-InqUq+jDDl7QvJMabMPfmWTR4D/9IOKUf3CxFIN9IppfujMqmrnAUzbiobjisYAq
-pdaAL1eFgLsBNCTy3cH+v2z921YWEbIyu2j9QgYSd6gbx6ICLPyVBs6wfkvEP7zF
-PS2o68dbWQDxKSOdKYTuwnRcxotvHgfCREJjcj81d1pu/hja10T94uzQmsEun/VQ
-/Vzsz5I+yCIxyastDgKcVfHXF4JPkPhlQZgYRXoLSwRm9J4ZnrhYkdn/Oy8Faoga
-odQep5krTY3GlOcqRZmDU0dCmZV2cBncSs49cy78qoGr46wweBFFqxnazN2eJGPu
-K5CqFuzSy9u0yS+Kn7aTqvp7x78AfykGfgwvRTpRuFEvt+KNNJ5LhXtWFqAZGfd8
-of6zdxSdPJhhxx10UMjL9is1Vo2aO2jbX5tjEA0hzW7F/FthIxTpBEW0fzqXiY8Z
-x11ApjTuf7k2fQCawI1/thfNjiYSqJW5f0XKTmsOCggQQR+GAr+k6iSjod2Ylzrk
-+RxV+X5YBiaDgtz9y/x2way2EC+u2V2iQHJTZGaMbJC3Xgb5QrlIgYGL05wW6aKg
-cQ6HEa7ym4djT0IAkaqS
-=Vsv4
+iQIcBAEBAgAGBQJRys1ZAAoJEN0jrNd/PrOhOSYQAMGzs4dTD/mlJ2q8UWGj5+zN
+mhIxG3mpX9yjJDOCmwyB1bN0V+G7x1NmSkWlh5YQoW0WaRBhPoiVwAiIqbttp9k1
+ipHCQr5sIKUBoYftWVLS1CKqM6RDjfGTFbv2mR9qoRftH46lrKlU1JzpQRVp7HJo
+EO0M28WTtBHxSbJvPL2vkW9LstBYolaRg9lOROSGtC95b7gJIcTFGXxHnobWKEst
+h88K7w2I/NagVm4LWiy+CHvqzdocp72XjzztRSwt/PbnpaItLtpK9V5wYG8NkwAp
+0mYyjAOfKIk83qtu57Y+EgNMWrrINXSFyONo4plzicRzB4Xr0n1qpASisG+kpkik
+jR7nRujPK7KfoQ6ShgHQ3wHFLbNbAKNVcWBf+OO9vdD+TO5Xqlu5k5tePVdbvPg+
+iJ2P6I7GsfcZL4i6eW2SaWr/rK0hnyEDHCdCSHUf3GC9WS5Q5x+ETQ64G6S78Jjt
+3V9R8xi9pvSLaK76lK/erRyeAofjVppH5HMiqblL69P4EYacQXTk4MtkZPAStoku
+/27fQZPc862+8Kw8oCvnlTkqwa7VAdBo70xhY13f1HHGLdDwKdOdg7uEKUguxgZJ
+opmamQZffXi7DmtLmaNGMVwQ9+DKfI1nTBYevzl9A/PgHysr8S+fzoFCfMJwkdV4
+VOzVVJjYTQq6OL4Plge2
+=YrJv
 -----END PGP SIGNATURE-----
 
---SvyA5ywaG/v2A5dH--
+--Q8a9NmTVi5AMeZ2v--
