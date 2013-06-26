@@ -1,7 +1,7 @@
 From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 08/23] ARM: dt: tegra114: Register AHB/IOMMU device first
-Date: Wed, 26 Jun 2013 12:28:11 +0300
-Message-ID: <1372238906-9346-9-git-send-email-hdoyu@nvidia.com>
+Subject: [PATCH 13/23] iommu/tegra: smmu: Create default IOVA maps
+Date: Wed, 26 Jun 2013 12:28:16 +0300
+Message-ID: <1372238906-9346-14-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -19,72 +19,78 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Move up AHB/IOMMU to register them earlier than others. IOMMU needs
-AHB, and IOMMU needs to register all platform devices as
-IOMMU'able. So AHB/IOMMU needs to be instanciated at very beginning.
+Create default IOVA maps at boot-up which can be attached to devices.
 
 Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- arch/arm/boot/dts/tegra114.dtsi | 33 +++++++++++++++++----------------
- 1 file changed, 17 insertions(+), 16 deletions(-)
+ drivers/iommu/tegra-smmu.c | 28 ++++++++++++++++++++++++++--
+ 1 file changed, 26 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/tegra114.dtsi b/arch/arm/boot/dts/tegra114.dtsi
-index 980a3b1..180186f 100644
---- a/arch/arm/boot/dts/tegra114.dtsi
-+++ b/arch/arm/boot/dts/tegra114.dtsi
-@@ -16,6 +16,23 @@
- 		serial3 = &uartd;
- 	};
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index 3e03c69..1617c90 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -319,6 +319,8 @@ struct smmu_device {
  
-+	/* FIXME: ahb/iommu needs to be populated first. */
-+	ahb: ahb {
-+		compatible = "nvidia,tegra114-ahb", "nvidia,tegra30-ahb";
-+		reg = <0x6000c004 0x14c>;
-+	};
+ 	struct device_node *ahb;
+ 
++	struct dma_iommu_mapping **map;
 +
-+	iommu {
-+		compatible = "nvidia,tegra114-smmu", "nvidia,tegra30-smmu";
-+		reg = <0x70019010 0x02c
-+		       0x700191f0 0x010
-+		       0x70019228 0x074>;
-+		nvidia,#asids = <4>;
-+		dma-window = <0 0x40000000>;
-+		nvidia,swgroups = <0x00000000 0x01b659fe>;
-+		nvidia,ahb = <&ahb>;
-+	};
+ 	int		num_as;
+ 	struct smmu_as	as[0];		/* Run-time allocated array */
+ };
+@@ -1144,6 +1146,26 @@ static int tegra_smmu_resume(struct device *dev)
+ 	return err;
+ }
+ 
++static int tegra_smmu_create_default_map(struct smmu_device *smmu)
++{
++	int i;
 +
- 	gic: interrupt-controller {
- 		compatible = "arm,cortex-a15-gic";
- 		#interrupt-cells = <3>;
-@@ -84,11 +101,6 @@
- 		clocks = <&tegra_car TEGRA114_CLK_APBDMA>;
- 	};
++	for (i = 0; i < smmu->num_as; i++) {
++		dma_addr_t base = smmu->iovmm_base;
++		size_t size = smmu->page_count << PAGE_SHIFT;
++
++		smmu->map[i] = arm_iommu_create_mapping(&platform_bus_type,
++							base, size, 0);
++		if (WARN_ON(IS_ERR(smmu->map[i])))
++			return -EINVAL;
++
++		dev_dbg(smmu->dev, "map:%p %08x-%08x\n",
++			smmu->map[i], base, base + size - 1);
++	}
++
++	return 0;
++}
++
+ static int tegra_smmu_probe(struct platform_device *pdev)
+ {
+ 	struct smmu_device *smmu;
+@@ -1160,13 +1182,15 @@ static int tegra_smmu_probe(struct platform_device *pdev)
+ 	if (of_property_read_u32(dev->of_node, "nvidia,#asids", &asids))
+ 		return -ENODEV;
  
--	ahb: ahb {
--		compatible = "nvidia,tegra114-ahb", "nvidia,tegra30-ahb";
--		reg = <0x6000c004 0x14c>;
--	};
--
- 	gpio: gpio {
- 		compatible = "nvidia,tegra114-gpio", "nvidia,tegra30-gpio";
- 		reg = <0x6000d000 0x1000>;
-@@ -317,17 +329,6 @@
- 		clock-names = "pclk", "clk32k_in";
- 	};
+-	bytes = sizeof(*smmu) + asids * sizeof(*smmu->as);
++	bytes = sizeof(*smmu) + asids * (sizeof(*smmu->as) +
++					 sizeof(struct dma_iommu_mapping *));
+ 	smmu = devm_kzalloc(dev, bytes, GFP_KERNEL);
+ 	if (!smmu) {
+ 		dev_err(dev, "failed to allocate smmu_device\n");
+ 		return -ENOMEM;
+ 	}
  
--	iommu {
--		compatible = "nvidia,tegra114-smmu", "nvidia,tegra30-smmu";
--		reg = <0x70019010 0x02c
--		       0x700191f0 0x010
--		       0x70019228 0x074>;
--		nvidia,#asids = <4>;
--		dma-window = <0 0x40000000>;
--		nvidia,swgroups = <0x00000000 0x01b659fe>;
--		nvidia,ahb = <&ahb>;
--	};
--
- 	ahub {
- 		compatible = "nvidia,tegra114-ahub";
- 		reg = <0x70080000 0x200>,
++	smmu->map = (struct dma_iommu_mapping **)(smmu->as + asids);
+ 	smmu->nregs = pdev->num_resources;
+ 	smmu->regs = devm_kzalloc(dev, 2 * smmu->nregs * sizeof(*smmu->regs),
+ 				  GFP_KERNEL);
+@@ -1238,7 +1262,7 @@ static int tegra_smmu_probe(struct platform_device *pdev)
+ 	smmu_debugfs_create(smmu);
+ 	smmu_handle = smmu;
+ 	bus_set_iommu(&platform_bus_type, &smmu_iommu_ops);
+-	return 0;
++	return tegra_smmu_create_default_map(smmu);
+ }
+ 
+ static int tegra_smmu_remove(struct platform_device *pdev)
 -- 
 1.8.1.5
