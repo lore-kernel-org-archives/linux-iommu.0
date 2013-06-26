@@ -1,69 +1,78 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 03/23] ARM: dt: tegra30: iommu: Add
- "nvidia,memory-clients"
-Date: Wed, 26 Jun 2013 12:33:54 +0200
-Message-ID: <20130626103354.GH27083@manwe>
-References: <1372238906-9346-4-git-send-email-hdoyu@nvidia.com>
- <20130626101816.GE27083@manwe>
+Subject: Re: [PATCH 01/23] ARM: tegra: Create a DT header defining swgroups ID
+Date: Wed, 26 Jun 2013 12:38:17 +0200
+Message-ID: <20130626103816.GI27083@manwe>
+References: <1372238906-9346-2-git-send-email-hdoyu@nvidia.com>
+ <20130626100648.GC27083@manwe>
+ <20130626.133141.857713230994773030.hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="ISKrrfpKsPiF35CV"
+	protocol="application/pgp-signature"; boundary="zqjkMoGlbUJ91oFe"
 Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20130626101816.GE27083@manwe>
+In-Reply-To: <20130626.133141.857713230994773030.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
---ISKrrfpKsPiF35CV
+--zqjkMoGlbUJ91oFe
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jun 26, 2013 at 12:18:17PM +0200, Thierry Reding wrote:
-> On Wed, Jun 26, 2013 at 12:28:06PM +0300, Hiroshi Doyu wrote:
-> [...]
-> > diff --git a/Documentation/devicetree/bindings/iommu/nvidia,tegra30-smm=
-u.txt b/Documentation/devicetree/bindings/iommu/nvidia,tegra30-smmu.txt
-> [...]
-> > @@ -23,3 +24,13 @@ Example:
-> >  		nvidia,swgroups =3D <0x00000000 0x000779ff>;
-> >  		nvidia,ahb =3D <&ahb>;
-> >  	};
-> > +
-> > +	host1x {
-> > +		compatible =3D "nvidia,tegra30-host1x", "simple-bus";
-> > +		nvidia,memory-clients =3D <SWGID_HC>;
+On Wed, Jun 26, 2013 at 12:31:41PM +0200, Hiroshi Doyu wrote:
+> Hi Thierry,
 >=20
-> And this could use the SWGID(HC) to match up with how GPIOs are
-> referenced in the DTS files.
+> Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote @ Wed, 26 Jun 2013 12:06:=
+49 +0200:
+> ...
+> > I'm not entirely sure where to find these mappings in the TRM. I see
+> > that there's a list of the groups in 15.10.11, but where do the numbers
+> > come from?
+>=20
+> To convert swgroup ID bit to register address,
+>=20
+> #define HWGRP_ASID_REG(x) ((x) * sizeof(u32) + SMMU_AFI_ASID)
+>=20
+> in "[PATCH 15/23] iommu/tegra: smmu: Calculate ASID register offset by ID"
 
-Scratch that. SWGID() yields a mask for the corresponding swgroup so
-it's not the same thing.
+Oh, I see. Thanks for pointing that out.
+
+> > And why are some of the names aliased? If it's for
+> > readability only maybe we could add some more for SWGID_HC ->
+> > SWGID_HOST1X and perhaps SWGID_NV -> SWGID_GR3D.
+>=20
+> I used the exact same name from TRM register definition. I thought
+> that same naming in TRM may be better since this bit is converted to
+> register, but I'm quite open to rename if needed.
+
+I think it's fine to keep the names from the TRM. I was just wondering
+why some groups can be referenced using multiple names, like ISP2 -> ISP
+and MSENC -> MPE.
 
 Thierry
 
---ISKrrfpKsPiF35CV
+--zqjkMoGlbUJ91oFe
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.20 (GNU/Linux)
 
-iQIcBAEBAgAGBQJRysOSAAoJEN0jrNd/PrOhdnUP/1VxUWesJx3hTUampPW/gUDT
-lwmS+ltwKWS/Lz9KqNB3K7GDy+/zKR8BohMvokvG79wrfp75mx5dkin8jYt6gpbq
-cvx2ZyNsmYXE9GC1JMGZu51nifYGCXgLSc5AhvTG6fCittOXN/iWYmXFH4YyOUlG
-6/CcpUP3J/I6/yaPnizwZrgSfuFMazNMpc+kZ/ApGwNJadgNn8AW/+/r/4Dn8GKr
-PRV2zoR57BTWXsA5ltOosJX4a+RM+nq6abUWyQdq1mxzFHjvzyrdduxbIdCoIcPX
-gZq7QwMIE7J867fzNV+14+w3Lj2+ITQHzpDly2YlmcLEF76JyfQ93zMfrmYn4p5u
-WkJcypfZkD0cyd9Pqk+DldRrlGUl7Yr+zj3RoSZahEmOBl4Z//daIE4xIkQzy3GO
-ViHXdBSfYGCGgY4CJmI58RPEZDAuT8JFc3RS8XLPS7PtAXbp9vsLBBihGiyIg2fe
-q6gB+/eRqpOoyLASJKjcXZGBLAchE0hKMErFczJl8bbIENQxlFlzy/pTkkcwVrQw
-e6mpTd9R5cbGYtwS4RbXW02DllF/v6jHSoEmCVRy7Xu6fm/KwLJsOwMqbb9XMZzI
-3oyJwRpPjGn+S39BZMJlW2j4DHmIgtZZHK/gtD/fT5sUnwkDkhd3tvQ2MuKd4o+1
-gdEtgX9GP3IiKyQCJFQt
-=dqiB
+iQIcBAEBAgAGBQJRysSYAAoJEN0jrNd/PrOhuFIQAIr7iNbk/vdPMV5KINXG5aKO
+nV9PlShoZAzeIiyRxe332sWQNK4Ry/xkMyUsr6oNIo4pnYxEXln94n9D3dzIRQUS
+V2Q6Hdm/1ZsLJ+uRJVQm9+EIuTsXH6W4dSXZwHnYK4THDtdpTka25hDCpRnyWkLf
+DZHgM6AOVd8yqMCZPqll1WVMhGp0mcmELdOrnotAkWOHFm1gqjNHIaqOhVBE3AlO
+y98UkKBgdPnaS/UVHCrf3jroZe9oTKFoAuhuQYtINgs1ahY547W3SxrcIu/SINY9
+hr6iszjV5eruFWVcGAzQj3fb13l0/N2gg4WilLBQSyZEtzjRBnD7Dpl0ftFoC6da
+KVGVNmdXQcBp6ubWKxJZjnNrALfFl2ONldJj2bI8TlmtuasRfGN7eDGj7iDBDnSz
+uXBJWJND44CJ9ks+CwNmfimxzXUrWOFgtbVIjJaP5H+2oJbBXRD+LIY86AlwEZH/
+UEiLiRDaKaRC8uH1IX6v6O0eE5fSq9Si5zvI4C6SB5uM4e3/gDXjd39dnV99/Ejm
+I0qoBmtjWRS92Eb7RWNJXkVSFvnuk34TYhkWXJ57B4eD1S/kOUUZnIJO8X+g6+zl
+jGVD0pT7pLSjnWZqC4KUgiIse8y6p2hycdOwVmh3LxfcHgMQQRNCcaDyVNx1bX5C
+6Sr3bL2jUFlCuo2GQmk9
+=z4A3
 -----END PGP SIGNATURE-----
 
---ISKrrfpKsPiF35CV--
+--zqjkMoGlbUJ91oFe--
