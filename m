@@ -1,8 +1,8 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+From: Stuart Yoder <b08248-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Subject: Re: [PATCH 7/9] documentation: iommu: add description of ARM System
 	MMU binding
-Date: Fri, 28 Jun 2013 10:06:35 +0100
-Message-ID: <20130628090635.GB29002@mudshark.cambridge.arm.com>
+Date: Fri, 28 Jun 2013 11:03:57 -0500
+Message-ID: <CALRxmdB4EANJDU1D4dPz_gon4_C_nLGQmMmoP0MyAR-bz2v-PA@mail.gmail.com>
 References: <1370889285-22799-1-git-send-email-will.deacon@arm.com>
 	<1370889285-22799-8-git-send-email-will.deacon@arm.com>
 	<CALRxmdBxFWoRKv+bUu8VEwNNcAJUej9jM2V8N0rrqrr_Vpe8fQ@mail.gmail.com>
@@ -10,12 +10,12 @@ References: <1370889285-22799-1-git-send-email-will.deacon@arm.com>
 	<CALRxmdCycFK2wW=C4aU79mudSaT+2vU8nzXxepdstubg+YSdQg@mail.gmail.com>
 	<20130626174231.GH10333@mudshark.cambridge.arm.com>
 	<CALRxmdD5fyp06xW+z=rWagJc_bcJmpr1H9Zbdf=xbg9cCzvVfw@mail.gmail.com>
+	<20130628090635.GB29002@mudshark.cambridge.arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CALRxmdD5fyp06xW+z=rWagJc_bcJmpr1H9Zbdf=xbg9cCzvVfw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <20130628090635.GB29002-MRww78TxoiP5vMa5CHWGZ34zcgK1vI+I0E9HWUfgJXw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,53 +25,73 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Stuart Yoder <b08248-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org Discuss" <devicetree-discuss-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jun 27, 2013 at 07:22:30PM +0100, Stuart Yoder wrote:
-> On Wed, Jun 26, 2013 at 12:42 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> > On Wed, Jun 26, 2013 at 05:19:48PM +0100, Stuart Yoder wrote:
-> >> On Wed, Jun 26, 2013 at 8:39 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> >> > I'd suggest looking at the driver I posted to get a gist of how the parsing
-> >> > code works, but suffice to say that we describe both the number of
-> >> > interrupts and the actual interrupt numbers here.
-> >>
-> >> I understand that the number of interrupts and actual interrupt numbers
-> >> are described here, but was referring to the _meaning_ of the interrupt
-> >> numbers.   A binding for a device with 2 interrupts, a TX and RX would
-> >> normally identify which interrupt specifier is for TX and which is for RX.
-> >>
-> >> Based on your code, the 2 global interrupts seem to be the secure
-> >> and non-secure fault interrupts...which your driver does not differentiate.
-> >> However, the device tree is describing hardware and  you can't assume
-> >> that all drivers don't care which is which.
-> >
-> > Currently, the driver only works when Linux is running as non-secure, which is
-> > becoming more and more common since it is required to be able to make use of
-> > hyp mode.
-> >
-> > There are actually two global interrupts for SMMUv1 and SMMUv2, which
-> > correspond to configuration faults and `other' global faults.
-> 
-> So, why don't we define which interrupt is which in this binding?
-> ...e.g. "The first
-> interrupt specifier is for the configuration access fault interrupt, the second
-> interrupt specifier is for other global faults."
+On Fri, Jun 28, 2013 at 4:06 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> On Thu, Jun 27, 2013 at 07:22:30PM +0100, Stuart Yoder wrote:
+>> On Wed, Jun 26, 2013 at 12:42 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+>> > On Wed, Jun 26, 2013 at 05:19:48PM +0100, Stuart Yoder wrote:
+>> >> On Wed, Jun 26, 2013 at 8:39 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+>> >> > I'd suggest looking at the driver I posted to get a gist of how the parsing
+>> >> > code works, but suffice to say that we describe both the number of
+>> >> > interrupts and the actual interrupt numbers here.
+>> >>
+>> >> I understand that the number of interrupts and actual interrupt numbers
+>> >> are described here, but was referring to the _meaning_ of the interrupt
+>> >> numbers.   A binding for a device with 2 interrupts, a TX and RX would
+>> >> normally identify which interrupt specifier is for TX and which is for RX.
+>> >>
+>> >> Based on your code, the 2 global interrupts seem to be the secure
+>> >> and non-secure fault interrupts...which your driver does not differentiate.
+>> >> However, the device tree is describing hardware and  you can't assume
+>> >> that all drivers don't care which is which.
+>> >
+>> > Currently, the driver only works when Linux is running as non-secure, which is
+>> > becoming more and more common since it is required to be able to make use of
+>> > hyp mode.
+>> >
+>> > There are actually two global interrupts for SMMUv1 and SMMUv2, which
+>> > correspond to configuration faults and `other' global faults.
+>>
+>> So, why don't we define which interrupt is which in this binding?
+>> ...e.g. "The first
+>> interrupt specifier is for the configuration access fault interrupt, the second
+>> interrupt specifier is for other global faults."
+>
+> Well, first of all, they're both global interrupts and the handler will have
+> to go and access exactly the same registers to deal with the fault, so you
+> don't really gain anything.
 
-Well, first of all, they're both global interrupts and the handler will have
-to go and access exactly the same registers to deal with the fault, so you
-don't really gain anything.
+It should be up to the OS to handle 2 interrupts the same, not
+something
 
-However, the main reason is that you need to be able to handle:
+> However, the main reason is that you need to be able to handle:
+>
+>   (1) Only one of the interrupts is routed to the interrupt controller
+>   (2) The interrupts are ORd into a single line
 
-  (1) Only one of the interrupts is routed to the interrupt controller
-  (2) The interrupts are ORd into a single line
+That's a particular SoC implementation, no?  It shouldn't
+dictate the SMMU binding.
 
-> How else is software supposed to know which interrupt corresponds to what
-> event.
+If they are ORed then the interrupt controller can't distinguish them
+and both interrupt specifiers should have the _same_ interrupt number:
 
-It really doesn't care. It can't, otherwise we break in the above
-situations.
++                #global-interrupts = <2>;
++                interrupts = <0 32 4>,
++                             <0 32 4>,
 
-Will
+(...or perhaps only define 1 global interrupt-- interrupt 32)
+
+If an implementation chose to not OR them, then they will
+have different interrupt numbers and need to be distinguished:
+
++                #global-interrupts = <2>;
++                interrupts = <0 32 4>,
++                             <0 33 4>,
+
+...and in that case the binding needs to differentiate which
+is which.
+
+Stuart
