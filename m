@@ -1,77 +1,37 @@
-From: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 3/3 v18] iommu/fsl: Freescale PAMU driver and iommu
-	implementation.
-Date: Mon, 1 Jul 2013 14:36:35 +0000
-Message-ID: <C5ECD7A89D1DC44195F34B25E172658D0A34A7F5@039-SN2MPN1-011.039d.mgd.msft.net>
-References: <1372673475-20929-1-git-send-email-Varun.Sethi@freescale.com>
-	<1372689326.30572.788.camel@ul30vt.home>
+From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Subject: Re: [PATCH 03/23] ARM: dt: tegra30: iommu: Add "nvidia,memory-clients"
+Date: Mon, 01 Jul 2013 17:07:46 -0600
+Message-ID: <51D20BC2.4090302@wwwdotorg.org>
+References: <1372238906-9346-4-git-send-email-hdoyu@nvidia.com> <20130626101816.GE27083@manwe>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1372689326.30572.788.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Timur Tabi <timur-N01EOCouUvQ@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20130626101816.GE27083@manwe>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Thanks Alex.
+On 06/26/2013 04:18 AM, Thierry Reding wrote:
+> On Wed, Jun 26, 2013 at 12:28:06PM +0300, Hiroshi Doyu wrote: 
+> [...]
+>> diff --git
+>> a/Documentation/devicetree/bindings/iommu/nvidia,tegra30-smmu.txt
+>> b/Documentation/devicetree/bindings/iommu/nvidia,tegra30-smmu.txt
+>
+>> 
+[...]
+>> @@ -23,3 +24,13 @@ Example: nvidia,swgroups = <0x00000000
+>> 0x000779ff>; nvidia,ahb = <&ahb>; }; + +	host1x { +		compatible =
+>> "nvidia,tegra30-host1x", "simple-bus"; +		nvidia,memory-clients =
+>> <SWGID_HC>;
+> 
+> And this could use the SWGID(HC) to match up with how GPIOs are 
+> referenced in the DTS files.
 
-> -----Original Message-----
-> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> Sent: Monday, July 01, 2013 8:05 PM
-> To: Sethi Varun-B16395
-> Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-
-> dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org; galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org; Yoder Stuart-B08248;
-> Wood Scott-B07421; Timur Tabi
-> Subject: Re: [PATCH 3/3 v18] iommu/fsl: Freescale PAMU driver and iommu
-> implementation.
-> 
-> On Mon, 2013-07-01 at 15:41 +0530, Varun Sethi wrote:
-> > Following is a brief description of the PAMU hardware:
-> > PAMU determines what action to take and whether to authorize the
-> > action on the basis of the memory address, a Logical IO Device Number
-> > (LIODN), and PAACT table (logically) indexed by LIODN and address.
-> > Hardware devices which need to access memory must provide an LIODN in
-> addition to the memory address.
-> >
-> > Peripheral Access Authorization and Control Tables (PAACTs) are the
-> > primary data structures used by PAMU. A PAACT is a table of peripheral
-> > access authorization and control entries (PAACE).Each PAACE defines
-> > the range of I/O bus address space that is accessible by the LIOD and
-> > the associated access capabilities.
-> >
-> > There are two types of PAACTs: primary PAACT (PPAACT) and secondary
-> > PAACT (SPAACT).A given physical I/O device may be able to act as one
-> > or more independent logical I/O devices (LIODs). Each such logical I/O
-> > device is assigned an identifier called logical I/O device number
-> > (LIODN). A LIODN is allocated a contiguous portion of the I/O bus
-> > address space called the DSA window for performing DSA operations. The
-> > DSA window may optionally be divided into multiple sub-windows, each
-> > of which may be used to map to a region in system storage space. The
-> > first sub-window is referred to as the primary sub-window and the
-> remaining are called secondary sub-windows.
-> >
-> > This patch provides the PAMU driver (fsl_pamu.c) and the corresponding
-> > IOMMU API implementation (fsl_pamu_domain.c). The PAMU hardware driver
-> > (fsl_pamu.c) has been derived from the work done by Ashish Kalra and
-> Timur Tabi.
-> >
-> > Signed-off-by: Timur Tabi <timur-N01EOCouUvQ@public.gmane.org>
-> > Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-> > ---
-> 
-> For iommu group support
-> 
-> Acked-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> 
+I only made TEGRA_GPIO(bank, id) a macro because there was a regular
+bank/id structure to the GPIO numbering. I haven't read these patches
+yet, but I assume SWGIDs are just a flat numbering space with
+arbitrarily assigned number in HW, so there's no much point saying
+SWGID(X) rather than SWGID_X.
