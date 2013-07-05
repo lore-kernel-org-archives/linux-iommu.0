@@ -1,98 +1,63 @@
 From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v2 13/22] iommu/tegra: smmu: Create default IOVA maps
-Date: Fri, 5 Jul 2013 13:44:48 +0300
-Message-ID: <1373021097-32420-14-git-send-email-hdoyu@nvidia.com>
+Subject: [PATCH v2 21/22] iommu/tegra: smmu: Support Multiple ASID
+Date: Fri, 5 Jul 2013 13:44:56 +0300
+Message-ID: <1373021097-32420-22-git-send-email-hdoyu@nvidia.com>
 References: <1373021097-32420-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <1373021097-32420-1-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Create default IOVA maps at boot-up which can be attached to devices.
+Support Multiple Address Space(AS). Tegra SMMU can have multiple
+ASes. We reserve 2 of them for static assignment, AS[0] for system
+default, AS[1] for AHB clusters as protected domain from others, where
+there are many traditional pheripheral devices like USB, SD/MMC. They
+should be isolated from some smart devices like host1x for system
+robustness. Even if smart devices behaves wrongly, the traditional
+devices(SD/MMC, USB) wouldn't be affected, and the system could
+continue most likely.
 
 Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/tegra-smmu.c |   28 ++++++++++++++++++++++++++--
- 1 file changed, 26 insertions(+), 2 deletions(-)
+ drivers/iommu/tegra-smmu.c |   15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 3e03c69..1617c90 100644
+index 8a9434e..1945815 100644
 --- a/drivers/iommu/tegra-smmu.c
 +++ b/drivers/iommu/tegra-smmu.c
-@@ -319,6 +319,8 @@ struct smmu_device {
- 
- 	struct device_node *ahb;
- 
-+	struct dma_iommu_mapping **map;
-+
- 	int		num_as;
- 	struct smmu_as	as[0];		/* Run-time allocated array */
- };
-@@ -1144,6 +1146,26 @@ static int tegra_smmu_resume(struct device *dev)
- 	return err;
- }
- 
-+static int tegra_smmu_create_default_map(struct smmu_device *smmu)
-+{
-+	int i;
-+
-+	for (i = 0; i < smmu->num_as; i++) {
-+		dma_addr_t base = smmu->iovmm_base;
-+		size_t size = smmu->page_count << PAGE_SHIFT;
-+
-+		smmu->map[i] = arm_iommu_create_mapping(&platform_bus_type,
-+							base, size, 0);
-+		if (WARN_ON(IS_ERR(smmu->map[i])))
-+			return -EINVAL;
-+
-+		dev_dbg(smmu->dev, "map:%p %08x-%08x\n",
-+			smmu->map[i], base, base + size - 1);
-+	}
-+
-+	return 0;
-+}
-+
- static int tegra_smmu_probe(struct platform_device *pdev)
+@@ -904,7 +904,18 @@ enum {
+ static int smmu_iommu_add_device(struct device *dev)
  {
- 	struct smmu_device *smmu;
-@@ -1160,13 +1182,15 @@ static int tegra_smmu_probe(struct platform_device *pdev)
- 	if (of_property_read_u32(dev->of_node, "nvidia,#asids", &asids))
- 		return -ENODEV;
+ 	int err;
+-	struct dma_iommu_mapping *map = smmu_handle->map[SYSTEM_DEFAULT];
++	u64 swgroup;
++	struct dma_iommu_mapping *map = NULL;
++
++	swgroup = smmu_of_get_memory_client(dev);
++	switch (swgroup) {
++	case TEGRA_SWGROUP_BIT(PPCS):
++		map = smmu_handle->map[SYSTEM_PROTECTED];
++		break;
++	default:
++		map = smmu_handle->map[SYSTEM_DEFAULT];
++		break;
++	}
  
--	bytes = sizeof(*smmu) + asids * sizeof(*smmu->as);
-+	bytes = sizeof(*smmu) + asids * (sizeof(*smmu->as) +
-+					 sizeof(struct dma_iommu_mapping *));
- 	smmu = devm_kzalloc(dev, bytes, GFP_KERNEL);
- 	if (!smmu) {
- 		dev_err(dev, "failed to allocate smmu_device\n");
- 		return -ENOMEM;
+ 	if (!map)
+ 		goto out;
+@@ -915,7 +926,7 @@ static int smmu_iommu_add_device(struct device *dev)
+ 		return err;
  	}
- 
-+	smmu->map = (struct dma_iommu_mapping **)(smmu->as + asids);
- 	smmu->nregs = pdev->num_resources;
- 	smmu->regs = devm_kzalloc(dev, 2 * smmu->nregs * sizeof(*smmu->regs),
- 				  GFP_KERNEL);
-@@ -1238,7 +1262,7 @@ static int tegra_smmu_probe(struct platform_device *pdev)
- 	smmu_debugfs_create(smmu);
- 	smmu_handle = smmu;
- 	bus_set_iommu(&platform_bus_type, &smmu_iommu_ops);
--	return 0;
-+	return tegra_smmu_create_default_map(smmu);
+ out:
+-	dev_dbg(dev, "Attached to map %p\n", map);
++	dev_dbg(dev, "Attached to map %p, swgroup:%08llx\n", map, swgroup);
+ 	return 0;
  }
  
- static int tegra_smmu_remove(struct platform_device *pdev)
 -- 
 1.7.9.5
