@@ -1,7 +1,8 @@
 From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v2 10/22] iommu/tegra: smmu: Move IOMMU to core_initcall
-Date: Fri, 5 Jul 2013 13:44:45 +0300
-Message-ID: <1373021097-32420-11-git-send-email-hdoyu@nvidia.com>
+Subject: [PATCH v2 12/22] iommu/tegra: smmu: Select ARM_DMA_USE_IOMMU in
+	Kconfig
+Date: Fri, 5 Jul 2013 13:44:47 +0300
+Message-ID: <1373021097-32420-13-git-send-email-hdoyu@nvidia.com>
 References: <1373021097-32420-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,27 +22,25 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Move IOMMU to core_initcall in order to instanciate this device earlier
-than others since IOMMU driver needs to reigster other platform
-devices as IOMMU'able.
+SMMU expects ARM_DMA_USE_IOMMU to be enabled to use DMA mapping API by
+default.
 
 Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/tegra-smmu.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/Kconfig |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index f6f120e..4c16c90 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -1288,7 +1288,7 @@ static void __exit tegra_smmu_exit(void)
- 	platform_driver_unregister(&tegra_smmu_driver);
- }
- 
--subsys_initcall(tegra_smmu_init);
-+core_initcall(tegra_smmu_init);
- module_exit(tegra_smmu_exit);
- 
- MODULE_DESCRIPTION("IOMMU API for SMMU in Tegra30");
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 820d85c..cd9318b 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -160,6 +160,7 @@ config TEGRA_IOMMU_SMMU
+ 	bool "Tegra SMMU IOMMU Support"
+ 	depends on ARCH_TEGRA && TEGRA_AHB
+ 	select IOMMU_API
++	select ARM_DMA_USE_IOMMU
+ 	help
+ 	  Enables support for remapping discontiguous physical memory
+ 	  shared with the operating system into contiguous I/O virtual
 -- 
 1.7.9.5
