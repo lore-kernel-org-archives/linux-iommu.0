@@ -1,7 +1,7 @@
 From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v2 02/22] ARM: tegra: Populate AHB/IOMMU earlier than others
-Date: Fri, 5 Jul 2013 13:44:37 +0300
-Message-ID: <1373021097-32420-3-git-send-email-hdoyu@nvidia.com>
+Subject: [PATCH v2 04/22] ARM: dt: tegra30: iommu: Add "nvidia,swgroup"
+Date: Fri, 5 Jul 2013 13:44:39 +0300
+Message-ID: <1373021097-32420-5-git-send-email-hdoyu@nvidia.com>
 References: <1373021097-32420-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,56 +21,33 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Populate AHB/IOMMU earlier than others. IOMMU depends on AHB. IOMMU
-needs to be instanciated earlier than others so that IOMMU can
-register other platform devices as IOMMU'able. Once IOMMU is
-populated, IOMMU/AHB nodes are detached to prevent another
-registeration.
+This is a bitmap that indicates which HardWare Accelerators(HWA) are
+supported on Tegra30 SoC.
 
 Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- arch/arm/mach-tegra/tegra.c |   22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ arch/arm/boot/dts/tegra30.dtsi |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm/mach-tegra/tegra.c b/arch/arm/mach-tegra/tegra.c
-index 0d1e412..fe432d1 100644
---- a/arch/arm/mach-tegra/tegra.c
-+++ b/arch/arm/mach-tegra/tegra.c
-@@ -80,6 +80,26 @@ static struct of_dev_auxdata tegra20_auxdata_lookup[] __initdata = {
- 	{}
- };
+diff --git a/arch/arm/boot/dts/tegra30.dtsi b/arch/arm/boot/dts/tegra30.dtsi
+index d8783f0..4a9594e 100644
+--- a/arch/arm/boot/dts/tegra30.dtsi
++++ b/arch/arm/boot/dts/tegra30.dtsi
+@@ -1,6 +1,7 @@
+ #include <dt-bindings/clock/tegra30-car.h>
+ #include <dt-bindings/gpio/tegra-gpio.h>
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/memory/tegra-swgroup.h>
  
-+static void tegra_of_platform_populate_iommu(void)
-+{
-+	int i;
-+	struct platform_device *pdev;
-+	const char * const path[] = {"/ahb", "/iommu", };
-+
-+	for (i = 0; i < ARRAY_SIZE(path); i++) {
-+		struct device_node *np;
-+
-+		np  = of_find_node_by_path(path[i]);
-+		if (!np)
-+			break;
-+
-+		pdev = of_platform_device_create(np, NULL, NULL);
-+		of_node_put(np);
-+		if (!pdev)
-+			break;
-+	}
-+}
-+
- static void __init tegra_dt_init(void)
- {
- 	struct soc_device_attribute *soc_dev_attr;
-@@ -107,6 +127,8 @@ static void __init tegra_dt_init(void)
+ #include "skeleton.dtsi"
  
- 	parent = soc_device_to_device(soc_dev);
+@@ -461,6 +462,7 @@
+ 		       0x7000f228 0x05c>;
+ 		nvidia,#asids = <4>;		/* # of ASIDs */
+ 		dma-window = <0 0x40000000>;	/* IOVA start & length */
++		nvidia,swgroup = TEGRA30_SWGROUP_ALL;
+ 		nvidia,ahb = <&ahb>;
+ 	};
  
-+	tegra_of_platform_populate_iommu();
-+
- 	/*
- 	 * Finished with the static registrations now; fill in the missing
- 	 * devices
 -- 
 1.7.9.5
