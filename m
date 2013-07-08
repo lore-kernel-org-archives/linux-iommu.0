@@ -1,15 +1,14 @@
-From: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v2 2/3] iommu: add support for ARM Ltd. System MMU
-	architecture
-Date: Mon, 08 Jul 2013 09:34:23 -0700
-Message-ID: <51DAEA0F.2030808@codeaurora.org>
-References: <1372095086-15681-1-git-send-email-will.deacon@arm.com>
-	<1372095086-15681-3-git-send-email-will.deacon@arm.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2 0/2] iommu/intel: Quirk non-compliant PCIe-to-PCI
+	bridges
+Date: Mon, 08 Jul 2013 11:07:20 -0600
+Message-ID: <1373303240.2602.28.camel@ul30vt.home>
+References: <20130528183527.3318.5365.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1372095086-15681-3-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20130528183527.3318.5365.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,34 +18,54 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: stephen-OTpzqLSitTUnbdJkjeBofR2eb7JE58TQ@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 6/24/2013 10:31 AM, Will Deacon wrote:
-> This patch adds support for SMMUs implementing the ARM System MMU
-> architecture versions 1 or 2. Both arm and arm64 are supported, although
-> the v7s descriptor format is not used.
+Joerg,
+
+Where do we stand on this series?  You had a concern that the heuristic
+used in patch 1/ could be dangerous.  The suggestion for detecting the
+issue was actually from Bjorn who replied with his rationale.  Do you
+want to go in the direction of a fixed whitelist or do you agree that
+even if the heuristic breaks it provides better behavior than what we
+have now?  Thanks,
+
+Alex
+
+
+On Tue, 2013-05-28 at 12:40 -0600, Alex Williamson wrote:
+> This series tries to address:
 > 
-> Cc: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-> Cc: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> https://bugzilla.kernel.org/show_bug.cgi?id=44881
+> 
+> Where pci_find_upstream_pcie_bridge() gets lost trying to find the
+> upstream PCIe-to-PCI bridge for a device because the bridge doesn't
+> expose a PCIe capability.  To do this, we add a iommu_pci_is_pcie_bridge
+> function which includes a quirk to look to the next upstream device
+> as a sanity check.  We can then replace pci_find_upstream_pcie_bridge
+> with a function that's a bit more generic and less tied to intel-iommu
+> eccentricities.
+> 
+> v2 uses the same logic as v1, but moves the search and match code to
+> IOMMU-core since PCI-core doesn't want it.  v1 has several reports
+> from users that this solves the problem they have in the above bz.
+> Thanks,
+> 
+> Alex
+> 
 > ---
-> +/* Maximum number of stream IDs assigned to a single device */
-> +#define MAX_MASTER_STREAMIDS		8
-> +
-
-Hi Will,
-
-We have designs that require more than 8 Stream IDs. Instead of hard
-coding it to max of 8 can you make this dynamic?
-
-Thanks,
-
-Olav Haugan
-
--- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-hosted by The Linux Foundation
+> 
+> Alex Williamson (2):
+>       iommu: Quirked PCIe bridge test and search function
+>       intel-iommu: Convert to iommu_pci_find_upstream + iommu_pci_is_pcie_bridge
+> 
+> 
+>  drivers/iommu/Kconfig               |    5 ++
+>  drivers/iommu/Makefile              |    1 
+>  drivers/iommu/intel-iommu.c         |   77 ++++++++++++++++++++++-------------
+>  drivers/iommu/intel_irq_remapping.c |   15 +++++--
+>  drivers/iommu/pci.c                 |   69 +++++++++++++++++++++++++++++++
+>  drivers/iommu/pci.h                 |   23 ++++++++++
+>  6 files changed, 157 insertions(+), 33 deletions(-)
+>  create mode 100644 drivers/iommu/pci.c
