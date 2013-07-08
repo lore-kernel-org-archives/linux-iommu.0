@@ -1,166 +1,148 @@
-From: Cho KyongHo <pullip.cho@samsung.com>
-Subject: [PATCH v7 5/9] iommu/exynos: change rwlock to spinlock
-Date: Fri, 05 Jul 2013 21:29:26 +0900
-Message-ID: <002d01ce797b$49c441a0$dd4cc4e0$@samsung.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [git pull] IOMMU Updates for v3.11
+Date: Mon, 8 Jul 2013 10:02:18 +0200
+Message-ID: <20130708080204.GA3289@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-language: ko
-Sender: linux-kernel-owner@vger.kernel.org
-To: 'Linux ARM Kernel' <linux-arm-kernel@lists.infradead.org>, 'Linux IOMMU' <iommu@lists.linux-foundation.org>, 'Linux Kernel' <linux-kernel@vger.kernel.org>, 'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>
-Cc: 'Hyunwoong Kim' <khw0178.kim@samsung.com>, 'Joerg Roedel' <joro@8bytes.org>, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Prathyush' <prathyush.k@samsung.com>, 'Rahul Sharma' <rahul.sharma@samsung.com>, 'Subash Patel' <supash.ramaswamy@linaro.org>, 'Keyyoung Park' <keyyoung.park@samsung.com>, 'Grant Grundler' <grundler@chromium.org>
+Content-Type: multipart/mixed; boundary="===============1500962459280569038=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Since acquiring read_lock is not more frequent than write_lock, it is
-not beneficial to use rwlock, this commit changes rwlock to spinlock.
 
-Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
----
- drivers/iommu/exynos-iommu.c |   32 ++++++++++++++++----------------
- 1 files changed, 16 insertions(+), 16 deletions(-)
+--===============1500962459280569038==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="jRHKVT23PllUwdXP"
+Content-Disposition: inline
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 390f8b7..6793661 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -175,7 +175,7 @@ struct sysmmu_drvdata {
- 	void __iomem **sfrbases;
- 	struct clk *clk[2];
- 	int activations;
--	rwlock_t lock;
-+	spinlock_t lock;
- 	struct iommu_domain *domain;
- 	sysmmu_fault_handler_t fault_handler;
- 	unsigned long pgtable;
-@@ -259,7 +259,7 @@ void exynos_sysmmu_set_prefbuf(struct device *dev,
- 	BUG_ON((base0 + size0) <= base0);
- 	BUG_ON((size1 > 0) && ((base1 + size1) <= base1));
- 
--	read_lock_irqsave(&data->lock, flags);
-+	spin_lock_irqsave(&data->lock, flags);
- 	if (!is_sysmmu_active(data))
- 		goto finish;
- 
-@@ -289,7 +289,7 @@ void exynos_sysmmu_set_prefbuf(struct device *dev,
- 		}
- 	}
- finish:
--	read_unlock_irqrestore(&data->lock, flags);
-+	spin_unlock_irqrestore(&data->lock, flags);
- }
- 
- static void __set_fault_handler(struct sysmmu_drvdata *data,
-@@ -297,9 +297,9 @@ static void __set_fault_handler(struct sysmmu_drvdata *data,
- {
- 	unsigned long flags;
- 
--	write_lock_irqsave(&data->lock, flags);
-+	spin_lock_irqsave(&data->lock, flags);
- 	data->fault_handler = handler;
--	write_unlock_irqrestore(&data->lock, flags);
-+	spin_unlock_irqrestore(&data->lock, flags);
- }
- 
- void exynos_sysmmu_set_fault_handler(struct device *dev,
-@@ -347,7 +347,7 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
- 
- 	int i, ret = -ENOSYS;
- 
--	read_lock(&data->lock);
-+	spin_lock(&data->lock);
- 
- 	WARN_ON(!is_sysmmu_active(data));
- 
-@@ -391,7 +391,7 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
- 	if (itype != SYSMMU_FAULT_UNKNOWN)
- 		sysmmu_unblock(data->sfrbases[i]);
- 
--	read_unlock(&data->lock);
-+	spin_unlock(&data->lock);
- 
- 	return IRQ_HANDLED;
- }
-@@ -402,7 +402,7 @@ static bool __exynos_sysmmu_disable(struct sysmmu_drvdata *data)
- 	bool disabled = false;
- 	int i;
- 
--	write_lock_irqsave(&data->lock, flags);
-+	spin_lock_irqsave(&data->lock, flags);
- 
- 	if (!set_sysmmu_inactive(data))
- 		goto finish;
-@@ -419,7 +419,7 @@ static bool __exynos_sysmmu_disable(struct sysmmu_drvdata *data)
- 	data->pgtable = 0;
- 	data->domain = NULL;
- finish:
--	write_unlock_irqrestore(&data->lock, flags);
-+	spin_unlock_irqrestore(&data->lock, flags);
- 
- 	if (disabled)
- 		dev_dbg(data->sysmmu, "(%s) Disabled\n", data->dbgname);
-@@ -442,7 +442,7 @@ static int __exynos_sysmmu_enable(struct sysmmu_drvdata *data,
- 	int i, ret = 0;
- 	unsigned long flags;
- 
--	write_lock_irqsave(&data->lock, flags);
-+	spin_lock_irqsave(&data->lock, flags);
- 
- 	if (!set_sysmmu_active(data)) {
- 		if (WARN_ON(pgtable != data->pgtable)) {
-@@ -481,7 +481,7 @@ static int __exynos_sysmmu_enable(struct sysmmu_drvdata *data,
- 
- 	dev_dbg(data->sysmmu, "(%s) Enabled\n", data->dbgname);
- finish:
--	write_unlock_irqrestore(&data->lock, flags);
-+	spin_unlock_irqrestore(&data->lock, flags);
- 
- 	return ret;
- }
-@@ -528,7 +528,7 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova)
- 	unsigned long flags;
- 	struct sysmmu_drvdata *data = dev_get_drvdata(dev->archdata.iommu);
- 
--	read_lock_irqsave(&data->lock, flags);
-+	spin_lock_irqsave(&data->lock, flags);
- 
- 	if (is_sysmmu_active(data)) {
- 		int i;
-@@ -545,7 +545,7 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova)
- 			data->dbgname);
- 	}
- 
--	read_unlock_irqrestore(&data->lock, flags);
-+	spin_unlock_irqrestore(&data->lock, flags);
- }
- 
- void exynos_sysmmu_tlb_invalidate(struct device *dev)
-@@ -553,7 +553,7 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
- 	unsigned long flags;
- 	struct sysmmu_drvdata *data = dev_get_drvdata(dev->archdata.iommu);
- 
--	read_lock_irqsave(&data->lock, flags);
-+	spin_lock_irqsave(&data->lock, flags);
- 
- 	if (is_sysmmu_active(data)) {
- 		int i;
-@@ -569,7 +569,7 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
- 			data->dbgname);
- 	}
- 
--	read_unlock_irqrestore(&data->lock, flags);
-+	spin_unlock_irqrestore(&data->lock, flags);
- }
- 
- static int exynos_sysmmu_probe(struct platform_device *pdev)
-@@ -666,7 +666,7 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
- 	}
- 
- 	data->sysmmu = dev;
--	rwlock_init(&data->lock);
-+	spin_lock_init(&data->lock);
- 	INIT_LIST_HEAD(&data->node);
- 
- 	__set_fault_handler(data, &default_fault_handler);
--- 
-1.7.2.5
+
+--jRHKVT23PllUwdXP
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Hi Linus,
+
+The following changes since commit 9e895ace5d82df8929b16f58e9f515f6d54ab82d:
+
+  Linux 3.10-rc7 (2013-06-22 09:47:31 -1000)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v3.11
+
+for you to fetch changes up to 01ce784acfa69a171afe6ec3f85a959546f2d18a:
+
+  Merge branches 'x86/vt-d', 'arm/omap', 'core', 'x86/amd' and 'arm/smmu' into next (2013-06-25 23:34:29 +0200)
+
+----------------------------------------------------------------
+
+IOMMU Updates for Linux 3.11
+
+A few updates this time, most important and exiciting (to me) is:
+
+	* The new ARM SMMU driver. This is a common IOMMU driver that will
+	  hopefully be used in a lot of upcoming ARM chips. So the mess in the
+	  past where every SOC had its own IOMMU will be over.
+
+Besides that:
+
+	* Some important fixes in the IOMMU unmap path. There are fixes in the
+	  common code and also in the AMD IOMMU driver.
+	* Other random fixes
+
+----------------------------------------------------------------
+Alex Williamson (4):
+      iommu/{vt-d,amd}: Remove multifunction assumption around grouping
+      iommu: Split iommu_unmaps
+      iommu: Fix compiler warning on pr_debug
+      iommu/amd: Only unmap large pages from the first pte
+
+Andy Lutomirski (1):
+      iommu/vt-d: Downgrade the warning if enabling irq remapping fails
+
+Joe Perches (1):
+      iommu: Use %pa and %zx instead of casting
+
+Joerg Roedel (2):
+      iommu/amd: Fix memory leak in free_pagetable
+      Merge branches 'x86/vt-d', 'arm/omap', 'core', 'x86/amd' and 'arm/smmu' into next
+
+Li, Zhen-Hua (1):
+      iommu/vt-d: DMAR reporting table needs at least one DRHD
+
+Suman Anna (2):
+      iommu/omap: fix printk formats for dma_addr_t
+      iommu/omap: fix checkpatch warnings in omap iommu code
+
+Will Deacon (3):
+      documentation/iommu: Add description of ARM System MMU binding
+      iommu/arm: Add support for ARM Ltd. System MMU architecture
+      MAINTAINERS: add entry for ARM system MMU driver
+
+ .../devicetree/bindings/iommu/arm,smmu.txt         |   70 +
+ MAINTAINERS                                        |    6 +
+ drivers/iommu/Kconfig                              |   13 +
+ drivers/iommu/Makefile                             |    1 +
+ drivers/iommu/amd_iommu.c                          |  104 +-
+ drivers/iommu/arm-smmu.c                           | 1969 ++++++++++++++++++++
+ drivers/iommu/dmar.c                               |    4 +
+ drivers/iommu/intel-iommu.c                        |   25 +-
+ drivers/iommu/intel_irq_remapping.c                |    3 +-
+ drivers/iommu/iommu.c                              |   86 +-
+ drivers/iommu/omap-iommu.c                         |   15 +-
+ drivers/iommu/omap-iopgtable.h                     |    2 +-
+ drivers/iommu/omap-iovmm.c                         |    4 +-
+ 13 files changed, 2212 insertions(+), 90 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iommu/arm,smmu.txt
+ create mode 100644 drivers/iommu/arm-smmu.c
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+
+--jRHKVT23PllUwdXP
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+
+iQIcBAEBAgAGBQJR2nH8AAoJECvwRC2XARrj65EQAM1PoiexYrU7SkU1Vf799xU1
+RlvSXPwDYjjJjmECzhR8iVQREw8n6I/9itQ15uaMwdDNWCUI47hk0WbqxJLRqHEN
+uicdiNteeJbSUtyZkiZDMcy0y6DVm1WgNMoZLy+7SpYvDQRsKNYIeKMVzbAvMJDc
+kThcELUVhsngTW6uRxVbF3P/Lg8Lfzz9Hn168EUm3saDFRpuWdCsDA3V3aLPOU5X
+GUtgih++rfCcl71GhSKDFkql9p3aWuvsfA/c6A+CwUaAEM2jR1KY4+fIysEOgkf0
+kDjjMpSrgT+RQsYUVA1memVrU/kg+2uUsEOtHBgYbJaWB2RPjcCvf4U5FCY9I21Q
+kTCRk4rKk+y3SU3EVlsdz96kNUJqk64y1x9NoAQaVec8xRX9xWgtSPXbbEJuYYZm
+qtv7Qs3R3ILWeg0darU4xBu4pb/UAVjzOTExCdIx4sEqBintXxmfajYUXPwIy4vQ
+ddttFnnWd0g5BsqSPCZ2U+5V+qKjUL0Rnbi4sNLdCk8zoweKcP39HY7rbJROvBOl
+neOoeTyQD3VLID/T6Ih4Yiyd948YfHmj0uy0IMcE6okY5uVc8U1GYgIPuqsOWWYT
+y/jWR2eaE1h2rykCz7lxQVyMZZVGEYOjfE37LCOzn3ch+nfS+xMgvfOEq4rLv4ac
+aUPaNXbCby35jHhI2m7C
+=n49T
+-----END PGP SIGNATURE-----
+
+--jRHKVT23PllUwdXP--
+
+
+
+--===============1500962459280569038==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============1500962459280569038==--
