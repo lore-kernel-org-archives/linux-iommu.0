@@ -1,13 +1,11 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC PATCH 1/2] pci: Create PCIe requester ID interface
-Date: Wed, 10 Jul 2013 16:10:39 -0600
-Message-ID: <20130710221039.3045.70542.stgit@bling.home>
-References: <20130710215954.3045.89568.stgit@bling.home>
+Subject: [RFC PATCH 0/2] pci/iommu: PCIe requester ID interface
+Date: Wed, 10 Jul 2013 16:10:32 -0600
+Message-ID: <20130710215954.3045.89568.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130710215954.3045.89568.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,214 +19,28 @@ To: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
 Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This provides interfaces for drivers to discover the visible PCIe
-requester ID for a device, for things like IOMMU setup, and iterate
-over the device chain from requestee to requester, including DMA
-quirks at each step.
+I took Bjorn's requester ID interface, or more appropriately my
+interpretation of the interface, through a full (apparently) working
+implementation.  This is the result.  It's quite a nice cleanup for
+intel-iommu.  I think this kills two birds with one stone, we quirk
+PCIe-to-PCI bridges that don't have a PCIe capability (bz44881) and we
+also apply DMA quirks to all devices for dma_ops, which should fix
+devices like Ricoh and Marvell chips that do DMA from the wrong
+requester ID (still no ghost requester ID support, but that may be
+easier to add now).
 
-Suggested-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+If this seems like the right direction I'll update other users of
+pci_find_upstream_pcie_bridge() and abolish that function.  Thanks,
+
+Alex
+
 ---
- drivers/pci/search.c |  170 ++++++++++++++++++++++++++++++++++++++++++++++++++
- include/linux/pci.h  |    7 ++
- 2 files changed, 177 insertions(+)
 
-diff --git a/drivers/pci/search.c b/drivers/pci/search.c
-index d0627fa..2cca84b 100644
---- a/drivers/pci/search.c
-+++ b/drivers/pci/search.c
-@@ -18,6 +18,176 @@ DECLARE_RWSEM(pci_bus_sem);
- EXPORT_SYMBOL_GPL(pci_bus_sem);
- 
- /*
-+ * pci_has_pcie_requester_id - Does @dev have a PCIe requester ID
-+ * @dev: device to test
-+ */
-+static bool pci_has_pcie_requester_id(struct pci_dev *dev)
-+{
-+	/*
-+	 * XXX There's no indicator of the bus type, conventional PCI vs
-+	 * PCI-X vs PCI-e, but we assume that a caller looking for a PCIe
-+	 * requester ID is a native PCIe based system (such as VT-d or
-+	 * AMD-Vi).  It's common that PCIe root complex devices do not
-+	 * include a PCIe capability, but we can assume they are PCIe
-+	 * devices based on their topology.
-+	 */
-+	if (pci_is_pcie(dev) || pci_is_root_bus(dev->bus))
-+		return true;
-+
-+	/*
-+	 * PCI-X devices have a requester ID, but the bridge may still take
-+	 * ownership of transactions and create a requester ID.  We therefore
-+	 * assume that the PCI-X requester ID is not the same one used on PCIe.
-+	 */
-+
-+#ifdef CONFIG_PCI_QUIRKS
-+	/*
-+	 * Quirk for PCIe-to-PCI bridges which do not expose a PCIe capability.
-+	 * If the device is a bridge, look to the next device upstream of it.
-+	 * If that device is PCIe and not a PCIe-to-PCI bridge, then by
-+	 * deduction, the device must be PCIe and therefore has a requester ID.
-+	 */
-+	if (dev->subordinate) {
-+		struct pci_dev *parent = dev->bus->self;
-+
-+		if (pci_is_pcie(parent) &&
-+		    pci_pcie_type(parent) != PCI_EXP_TYPE_PCI_BRIDGE)
-+			return true;
-+	}
-+#endif
-+
-+	return false;
-+}
-+
-+/*
-+ * pci_has_visible_pcie_requester_id - Can @bridge see @dev's requester ID?
-+ * @dev: requester device
-+ * @bridge: upstream bridge (or NULL for root bus)
-+ */
-+static bool pci_has_visible_pcie_requester_id(struct pci_dev *dev,
-+					      struct pci_dev *bridge)
-+{
-+	/*
-+	 * The entire path must be tested, if any step does not have a
-+	 * requester ID, the chain is broken.  This allows us to support
-+	 * topologies with PCIe requester ID gaps, ex: PCIe-PCI-PCIe
-+	 */
-+	while (dev != bridge) {
-+		if (!pci_has_pcie_requester_id(dev))
-+			return false;
-+
-+		if (pci_is_root_bus(dev->bus))
-+			return !bridge; /* false if we don't hit @bridge */
-+
-+		dev = dev->bus->self;
-+	}
-+
-+	return true;
-+}
-+
-+/*
-+ * pci_get_visible_pcie_requester - Get requester for @requestee below @bridge
-+ * @requestee: requester device
-+ * @bridge: upstream bridge (or NULL for root bus)
-+ */
-+struct pci_dev *pci_get_visible_pcie_requester(struct pci_dev *requestee,
-+					       struct pci_dev *bridge)
-+{
-+	struct pci_dev *requester = requestee;
-+
-+	while (requester != bridge) {
-+		requester = pci_get_dma_source(requester);
-+		pci_dev_put(requester); /* XXX skip ref cnt */
-+
-+		if (pci_has_visible_pcie_requester_id(requester, bridge))
-+			return requester;
-+
-+		if (pci_is_root_bus(requester->bus))
-+			return NULL; /* @bridge not parent to @requestee */
-+
-+		requester = requester->bus->self;
-+	}
-+
-+	return requester;
-+}
-+
-+#define PCI_REQUESTER_ID(dev)	(((dev)->bus->number << 8) | (dev)->devfn)
-+#define PCI_BRIDGE_REQUESTER_ID(dev)	((dev)->subordinate->number << 8)
-+
-+u16 pci_requester_id(struct pci_dev *requester, struct pci_dev *requestee)
-+{
-+	if ((requester == requestee) ||
-+	    (!pci_is_pcie(requester) && pci_is_root_bus(requester->bus)))
-+		return PCI_REQUESTER_ID(requester);
-+
-+	return PCI_BRIDGE_REQUESTER_ID(requester);
-+}
-+
-+static int pci_do_requester_callback(struct pci_dev *dev,
-+				     int (*fn)(struct pci_dev *,
-+					       u16 id, void *),
-+				     void *data)
-+{
-+	struct pci_dev *dma_dev;
-+	int ret;
-+
-+	ret = fn(dev, PCI_REQUESTER_ID(dev), data);
-+	if (ret)
-+		return ret;
-+
-+	dma_dev = pci_get_dma_source(dev);
-+	pci_dev_put(dma_dev); /* XXX skip ref cnt */
-+	if (dma_dev == dev)
-+		return 0;
-+
-+	return fn(dma_dev, PCI_REQUESTER_ID(dma_dev), data);
-+}
-+
-+/*
-+ * pcie_for_each_requester - Call callback @fn on each devices and DMA source
-+ *                           from @requestee to the PCIe requester ID visible
-+ *                           to @bridge.
-+ * @requestee: Starting device
-+ * @bridge: upstream bridge (or NULL for root bus)
-+ * @fn: callback function
-+ * @data: data to pass to callback
-+ */
-+int pcie_for_each_requester(struct pci_dev *requestee, struct pci_dev *bridge,
-+			    int (*fn)(struct pci_dev *, u16 id, void *),
-+			    void *data)
-+{
-+	struct pci_dev *requester;
-+	struct pci_dev *dev;
-+	int ret = 0;
-+
-+	requester = pci_get_visible_pcie_requester(requestee, bridge);
-+	if (!requester)
-+		return -EINVAL;
-+
-+	for (dev = requestee; dev != requester; dev = dev->bus->self) {
-+		ret = pci_do_requester_callback(dev, fn, data);
-+		if (ret)
-+			return ret;
-+
-+		if (pci_is_root_bus(dev->bus))
-+			return -EINVAL;
-+	}
-+
-+	/*
-+	 * If the requester is not the same as the requestee, then the
-+	 * requester is a bridge and uses the bridge requester ID.  However,
-+	 * an exception to this rule is if the bridge is a legacy PCI bridge
-+	 * attached to the root complex.  In this case, we handle it like
-+	 * any other device.
-+	 */
-+	if (requester != requestee &&
-+	    !(!pci_is_pcie(requester) && pci_is_root_bus(requester->bus)))
-+		return fn(requester, PCI_BRIDGE_REQUESTER_ID(requester), data);
-+
-+	return pci_do_requester_callback(requester, fn, data);
-+}
-+
-+/*
-  * find the upstream PCIe-to-PCI bridge of a PCI device
-  * if the device is PCIE, return NULL
-  * if the device isn't connected to a PCIe bridge (that is its parent is a
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 3a24e4f..b33824d 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1873,6 +1873,13 @@ static inline struct eeh_dev *pci_dev_to_eeh_dev(struct pci_dev *pdev)
- }
- #endif
- 
-+struct pci_dev *pci_get_visible_pcie_requester(struct pci_dev *requestee,
-+					       struct pci_dev *bridge);
-+u16 pci_requester_id(struct pci_dev *requester, struct pci_dev *requestee);
-+int pcie_for_each_requester(struct pci_dev *requestee, struct pci_dev *bridge,
-+			    int (*fn)(struct pci_dev *, u16 id, void *),
-+			    void *data);
-+
- /**
-  * pci_find_upstream_pcie_bridge - find upstream PCIe-to-PCI bridge of a device
-  * @pdev: the PCI device
+Alex Williamson (2):
+      pci: Create PCIe requester ID interface
+      iommu/intel: Make use of PCIe requester ID interface
+
+
+ drivers/iommu/intel-iommu.c |  164 ++++++++++++++++-------------------------
+ drivers/pci/search.c        |  170 +++++++++++++++++++++++++++++++++++++++++++
+ include/linux/pci.h         |    7 ++
