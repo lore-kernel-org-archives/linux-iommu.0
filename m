@@ -1,22 +1,18 @@
-From: Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
-Subject: Re: WARNING: at drivers/iommu/dmar.c:484 warn_invalid_dmar with
-	Intel Motherboard
-Date: Tue, 9 Jul 2013 20:55:23 -0700
-Message-ID: <20130710035523.GB13149@roeck-us.net>
-References: <20130709202406.GA11867@roeck-us.net>
-	<CAErSpo6Ma1TnBP-UGGhWFN1rj48y+yTS=VmVw_s30_FWgjfdpg@mail.gmail.com>
-	<20130709223106.GA16429@roeck-us.net>
-	<20130709232252.GB2676@sequoia2.sous-sol.org>
-	<20130709234331.GA10833@roeck-us.net>
-	<20130710000511.GC2676@sequoia2.sous-sol.org>
-	<20130710001828.GA32072@roeck-us.net>
-	<1373417595.26127.27.camel@dwoodhou-mobl5.ger.corp.intel.com>
+From: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: VFIO and scheduled SR-IOV cards
+Date: Wed, 10 Jul 2013 13:23:55 +0300
+Message-ID: <20130710102355.GB10203@redhat.com>
+References: <20130603163305.GC4094@irqsave.net>
+	<1370282529.30975.344.camel@ul30vt.home>
+	<51ACE1B5.2050102@redhat.com>
+	<1370285865.30975.361.camel@ul30vt.home>
+	<20130604155030.GA5991@irqsave.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1373417595.26127.27.camel-NkH8fLdbH5RE2VDN4QcBkG7IUlhRatedral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <20130604155030.GA5991-J9ArbTHlV+bR7s880joybQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,35 +22,57 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: Chris Wright <chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: =?iso-8859-1?Q?Beno=EEt?= Canet <benoit.canet-J9ArbTHlV+bR7s880joybQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jul 10, 2013 at 01:53:15AM +0100, David Woodhouse wrote:
-> On Tue, 2013-07-09 at 17:18 -0700, Guenter Roeck wrote:
-> > 
-> > I meant warning as in pr_warn or dev_warn, not WARNING as in traceback.
-> > Keep in mind that a casual user doesn't expect to see a traceback and will tend
-> > to get alarmed. Several bugs have been filed against this "issue" in various
-> > distributions, which is not surprising given the alarmist message.
-> > What is the point of that ?
-> 
-> It is warning you that your hardware is broken. Take it back to the
-> place from which you purchased it, and ask for your money back if it
-> isn't fixed.
-> 
-> (Slightly) more seriously, this level of warning *does* get things
-> fixed, and when kerneloops was running it made it very easy to track
-> this kind of issue and apply pressure where it was needed to improve
-> quality.
-> 
-> Any user who has taken the trouble to file bugs has *also* taken it up
-> with their firmware vendor, I hope?
-> 
-No idea ... but have you ever tried that as a private entity ?
+On Tue, Jun 04, 2013 at 05:50:30PM +0200, Beno=EEt Canet wrote:
+> =
 
-If there is a secret list of people to contact at vendor X to get things
-like this one fixed, please let me know ;).
+> Hello,
+> =
 
-Thanks,
-Guenter
+> More informations on how the hardware works.
+> =
+
+> -Each VF will have its own memory and MMR, etc.
+> That means the resources are not shared.
+> =
+
+> -Each VF will have its own bus number, function number and device number.
+> That means request ID is separated for each VF.
+> =
+
+> There is also VF save/restore area for the switch.
+> =
+
+> A VF regular memory (not MMR) is still accessible after a switch out.
+> =
+
+> But when a function VF1 is scheduled a read to a MRR of VF number 0 could=
+ return
+> the value of the same MMR in VF number 1 because VF number 1 is switched =
+on and
+> the PF processor is busy servicing VF number 1.
+> =
+
+> This could confuse the guest VF driver so the unmap and block or a same g=
+oal
+> achieving technique is required.
+> =
+
+> I hope these informations makes the area of the problem to solve narrower.
+> =
+
+> Best regards
+> =
+
+> Beno=EEt Canet
+
+Confused.
+You have one VF accessing BAR of another VF?
+Why?
+
+-- =
+
+MST
