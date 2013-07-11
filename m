@@ -1,19 +1,20 @@
-From: Chris Wright <chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org>
+From: Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
 Subject: Re: WARNING: at drivers/iommu/dmar.c:484 warn_invalid_dmar with
 	Intel Motherboard
-Date: Thu, 11 Jul 2013 12:00:54 -0700
-Message-ID: <20130711190054.GC24833@sequoia2.sous-sol.org>
+Date: Thu, 11 Jul 2013 13:59:02 -0700
+Message-ID: <20130711205902.GB22605@roeck-us.net>
 References: <20130709202406.GA11867@roeck-us.net>
 	<CAErSpo6Ma1TnBP-UGGhWFN1rj48y+yTS=VmVw_s30_FWgjfdpg@mail.gmail.com>
 	<20130709223106.GA16429@roeck-us.net>
 	<20130709232252.GB2676@sequoia2.sous-sol.org>
 	<20130709234331.GA10833@roeck-us.net>
+	<20130711190054.GC24833@sequoia2.sous-sol.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20130709234331.GA10833-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
+In-Reply-To: <20130711190054.GC24833-k0AF34rgNAQdGiBX8rKX95cPDiHTxzko@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,19 +24,37 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
-Cc: Chris Wright <chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Chris Wright <chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org>
+Cc: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-* Guenter Roeck (linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org) wrote:
-> On Tue, Jul 09, 2013 at 04:22:52PM -0700, Chris Wright wrote:
-> > One thing I've seen is the BIOS zeroing the base register address when
-> > VT-d is disabled in BIOS.  So, Guenter, a "fix" may be simply enabling
-> > VT-d in the BIOS.
-> > 
-> Ah, yes, I think I may have that disabled. I'll check it tonight.
+On Thu, Jul 11, 2013 at 12:00:54PM -0700, Chris Wright wrote:
+> * Guenter Roeck (linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org) wrote:
+> > On Tue, Jul 09, 2013 at 04:22:52PM -0700, Chris Wright wrote:
+> > > One thing I've seen is the BIOS zeroing the base register address when
+> > > VT-d is disabled in BIOS.  So, Guenter, a "fix" may be simply enabling
+> > > VT-d in the BIOS.
+> > > 
+> > Ah, yes, I think I may have that disabled. I'll check it tonight.
+> 
+> Did you find out if BIOS change fixed this?
+> 
+No, it didn't. Enabling or disabling virtualization in the BIOS did not make
+a difference. It looks like there is a bad DMAR table entry (with address 0)
+in the ACPI data. In case you are interested how it looks like:
 
-Did you find out if BIOS change fixed this?
+DMAR @ 0xcb3f3f90
+  0000: 44 4d 41 52 90 00 00 00 01 d5 49 4e 54 45 4c 20  DMAR......INTEL
+  0010: 44 48 38 37 52 4c 20 20 40 01 00 00 49 4e 54 4c  DH87RL  @...INTL
+  0020: 01 00 00 00 26 00 00 00 00 00 00 00 00 00 00 00  ....&...........
+  0030: 00 00 10 00 01 00 00 00 00 00 00 00 00 00 00 00  ................
+  0040: 01 00 30 00 00 00 00 00 00 b0 eb cb 00 00 00 00  ..0.............
+  0050: ff 9f ec cb 00 00 00 00 01 08 00 00 00 00 1d 00  ................
+  0060: 01 08 00 00 00 00 1a 00 01 08 00 00 00 00 14 00  ................
+  0070: 01 00 20 00 00 00 00 00 00 00 00 d7 00 00 00 00  .. .............
+  0080: ff ff 1f df 00 00 00 00 01 08 00 00 00 00 02 00  ................
 
-thanks,
--chris
+Turns out the i7-4770K doesn't support VT-d, so my current understanding
+is that there should be no DMAR table in the first place.
+
+Guenter
