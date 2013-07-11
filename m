@@ -1,59 +1,156 @@
-From: Grant Grundler <grundler@chromium.org>
-Subject: Re: [PATCH v7 00/12] iommu/exynos: Fixes and Enhancements of System
- MMU driver with DT
-Date: Thu, 11 Jul 2013 10:22:59 -0700
-Message-ID: <CANEJEGvajhgzUPG6ppbjwBb4-9TdU9em3T_SejBpz8NCjGHYTQ@mail.gmail.com>
-References: <002801ce797b$3d2fbc80$b78f3580$@samsung.com>
+From: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Subject: Re: [PATCH v7 3/9] iommu/exynos: fix page table maintenance
+Date: Thu, 11 Jul 2013 19:37:47 +0200
+Message-ID: <1933986.4vddYccClk@amdc1032>
+References: <002b01ce797b$44d4ad10$ce7e0730$@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <002801ce797b$3d2fbc80$b78f3580$@samsung.com>
+In-reply-to: <002b01ce797b$44d4ad10$ce7e0730$@samsung.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Cho KyongHo <pullip.cho@samsung.com>
-Cc: Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux Kernel <linux-kernel@vger.kernel.org>, Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>, Hyunwoong Kim <khw0178.kim@samsung.com>, Joerg Roedel <joro@8bytes.org>, Kukjin Kim <kgene.kim@samsung.com>, Prathyush <prathyush.k@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Subash Patel <supash.ramaswamy@linaro.org>, Keyyoung Park <keyyoung.park@samsung.com>, Grant Grundler <grundler@chromium.org>, Doug Anderson <dianders@chromium.org>
+Cc: 'Linux ARM Kernel' <linux-arm-kernel@lists.infradead.org>, 'Linux IOMMU' <iommu@lists.linux-foundation.org>, 'Linux Kernel' <linux-kernel@vger.kernel.org>, 'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>, 'Hyunwoong Kim' <khw0178.kim@samsung.com>, 'Joerg Roedel' <joro@8bytes.org>, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Prathyush' <prathyush.k@samsung.com>, 'Rahul Sharma' <rahul.sharma@samsung.com>, 'Subash Patel' <supash.ramaswamy@linaro.org>, 'Keyyoung Park' <keyyoung.park@samsung.com>, 'Grant Grundler' <grundler@chromium.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jul 5, 2013 at 5:29 AM, Cho KyongHo <pullip.cho@samsung.com> wrote:
-> The current exynos-iommu(System MMU) driver does not work autonomously
-> since it is lack of support for power management of peripheral blocks.
-...
-> Patch summary:
-> [PATCH v7 1/9] iommu/exynos: do not include removed header
-> [PATCH v7 2/9] iommu/exynos: add missing cache flush for removed page table entries
-> [PATCH v7 3/9] iommu/exynos: fix page table maintenance
-> [PATCH v7 4/9] iommu/exynos: allocate lv2 page table from own slab
-> [PATCH v7 5/9] iommu/exynos: change rwlock to spinlock
-> [PATCH v7 6/9] clk: exynos5250: add gate clock descriptions of System MMU
-> [PATCH v7 7/9] ARM: dts: Add description of System MMU of Exynos SoCs
-> [PATCH v7 8/9] iommu/exynos: support for device tree
-> [PATCH v7 9/9] iommu/exynos: add bus notifier for registering System MMU
 
-Cho,
-Of the above patches, nearly all have been applied to chromeos-3.8
-(kernel-next git tree) by Doug Anderson and others.
+Hi,
 
-AFAICT, the only ones not applied are:
-   [v7,3/9] iommu/exynos: fix page table maintenance
-   [v7,6/9] clk: exynos5250: add gate clock descriptions of System MMU
-(conflicts in this one)
-   [v7,7/9] ARM: dts: Add description of System MMU of Exynos SoCs
-(depends on 6/9)
+Some minor nitpicks below.
 
-We also already have parts of:
-   [v7,9/9] iommu/exynos: add bus notifier for registering System MMU
+On Friday, July 05, 2013 09:29:18 PM Cho KyongHo wrote:
+> This prevents allocating lv2 page table for the lv1 page table entry
+> that already has 1MB page mapping. In addition some BUG_ON() is
+> changed to WARN_ON().
+> 
+> Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
+> ---
+>  drivers/iommu/exynos-iommu.c |   34 ++++++++++++++++++++++++++--------
+>  1 files changed, 26 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> index e3be3e5..2bfe9fa 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+> @@ -862,12 +862,14 @@ static unsigned long *alloc_lv2entry(unsigned long *sent, unsigned long iova,
+>  		pent = kzalloc(LV2TABLE_SIZE, GFP_ATOMIC);
+>  		BUG_ON((unsigned long)pent & (LV2TABLE_SIZE - 1));
+>  		if (!pent)
+> -			return NULL;
+> +			return ERR_PTR(-ENOMEM);
+>  
+>  		*sent = mk_lv1ent_page(__pa(pent));
+>  		*pgcounter = NUM_LV2ENTRIES;
+>  		pgtable_flush(pent, pent + NUM_LV2ENTRIES);
+>  		pgtable_flush(sent, sent + 1);
+> +	} else if (lv1ent_section(sent)) {
+> +		return ERR_PTR(-EADDRINUSE);
+>  	}
+>  
+>  	return page_entry(sent, iova);
+> @@ -944,16 +946,16 @@ static int exynos_iommu_map(struct iommu_domain *domain, unsigned long iova,
+>  		pent = alloc_lv2entry(entry, iova,
+>  					&priv->lv2entcnt[lv1ent_offset(iova)]);
+>  
+> -		if (!pent)
+> -			ret = -ENOMEM;
+> +		if (IS_ERR(pent))
+> +			ret = PTR_ERR(pent);
+>  		else
+>  			ret = lv2set_page(pent, paddr, size,
+>  					&priv->lv2entcnt[lv1ent_offset(iova)]);
+>  	}
+>  
+>  	if (ret) {
+> -		pr_debug("%s: Failed to map iova 0x%lx/0x%x bytes\n",
+> -							__func__, iova, size);
+> +		pr_err("%s: Failed(%d) to map iova 0x%#x bytes @ %#lx\n",
+> +						__func__, ret, size, iova);
+>  	}
 
-Some of those are being further discussed but I've lost track now
-exactly which ones.
+Intendation is a bit weird, it should be more like:
 
-I'm telling you about chromeos-3.8 status since the adopted changes
-have been reviewed (by me and others) are being tested manually here
-on several different Samsung Exynos platforms (including 5250 which is
-our "snow" platform). Not sure how you should to mark those patches
-since they aren't identical to your changes (which apply to post 3.10
-kernels, not 3.8).  You might consider splitting those patches out
-from the 4 I've listed above to get that series accepted upstream
-since the additional review/testing should provide some confidence
-those patches are good.
+		pr_err("%s: Failed(%d) to map iova 0x%#x bytes @ %#lx\n",
+			__func__, ret, size, iova);
 
-cheers,
-grant
+to be consistent with the rest of the driver.
+
+You could have also removed superfluous braces while at it.
+
+>  	spin_unlock_irqrestore(&priv->pgtablelock, flags);
+> @@ -968,6 +970,7 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
+>  	struct sysmmu_drvdata *data;
+>  	unsigned long flags;
+>  	unsigned long *ent;
+> +	size_t err_page;
+>  
+>  	BUG_ON(priv->pgtable == NULL);
+>  
+> @@ -976,7 +979,8 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
+>  	ent = section_entry(priv->pgtable, iova);
+>  
+>  	if (lv1ent_section(ent)) {
+> -		BUG_ON(size < SECT_SIZE);
+> +		if (WARN_ON(size < SECT_SIZE))
+> +			goto err;
+>  
+>  		*ent = 0;
+>  		pgtable_flush(ent, ent + 1);
+> @@ -1008,7 +1012,8 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
+>  	}
+>  
+>  	/* lv1ent_large(ent) == true here */
+> -	BUG_ON(size < LPAGE_SIZE);
+> +	if (WARN_ON(size < LPAGE_SIZE))
+> +		goto err;
+>  
+>  	memset(ent, 0, sizeof(*ent) * SPAGES_PER_LPAGE);
+>  	pgtable_flush(ent, ent + SPAGES_PER_LPAGE);
+> @@ -1023,8 +1028,21 @@ done:
+>  		sysmmu_tlb_invalidate_entry(data->dev, iova);
+>  	spin_unlock_irqrestore(&priv->lock, flags);
+>  
+> -
+>  	return size;
+> +err:
+> +	spin_unlock_irqrestore(&priv->pgtablelock, flags);
+> +
+> +	err_page = (
+> +		((unsigned long)ent - (unsigned long)priv->pgtable)
+> +			< (NUM_LV1ENTRIES * sizeof(long))
+
+Maybe you could add LV1TABLE_SIZE define and use it here (there is
+already a LV2TABLE_SIZE define)?
+
+> +			   ) ?  SECT_SIZE : LPAGE_SIZE;
+
+It also seems that err_page should be of unsigned long type, no need
+to make it size_t one.
+
+The above code is quite ugly currently, it could be rewritten into
+something prettier, i.e.:
+
+	err_page = (unsigned long)ent - (unsigned long)priv->pgtable;
+	err_page = (err_page < LV1TABLE_SIZE) ? SECT_SIZE : LPAGE_SIZE;
+
+> +	pr_err("%s: Failed due to size(%#lx) @ %#x is"\
+> +		" smaller than page size %#x\n",
+> +		__func__, iova, size, err_page);
+
+Aren't iova and size arguments interchanged here?
+
+> +
+> +	       return 0;
+
+There is an intendation issue here (extra whitespaces).
+
+> +
+>  }
+>  
+>  static phys_addr_t exynos_iommu_iova_to_phys(struct iommu_domain *domain,
+
+Best regards,
+--
+Bartlomiej Zolnierkiewicz
+Samsung R&D Institute Poland
+Samsung Electronics
