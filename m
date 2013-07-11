@@ -1,14 +1,21 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC PATCH v2 2/2] iommu/intel: Make use of PCIe requester ID
-	interface
-Date: Thu, 11 Jul 2013 15:03:34 -0600
-Message-ID: <20130711210334.1701.99104.stgit@bling.home>
-References: <20130711204439.1701.90503.stgit@bling.home>
+From: Chris Wright <chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org>
+Subject: Re: WARNING: at drivers/iommu/dmar.c:484 warn_invalid_dmar with
+	Intel Motherboard
+Date: Thu, 11 Jul 2013 15:31:51 -0700
+Message-ID: <20130711223151.GD24833@sequoia2.sous-sol.org>
+References: <20130709202406.GA11867@roeck-us.net>
+	<CAErSpo6Ma1TnBP-UGGhWFN1rj48y+yTS=VmVw_s30_FWgjfdpg@mail.gmail.com>
+	<20130709223106.GA16429@roeck-us.net>
+	<20130709232252.GB2676@sequoia2.sous-sol.org>
+	<20130709234331.GA10833@roeck-us.net>
+	<20130711190054.GC24833@sequoia2.sous-sol.org>
+	<20130711205902.GB22605@roeck-us.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130711204439.1701.90503.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20130711205902.GB22605-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,259 +25,126 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+To: Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
+Cc: Chris Wright <chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This eliminates uses of pci_find_upstream_pcie_bridge() and
-incorporates DMA quirks into dma_ops path.
+* Guenter Roeck (linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org) wrote:
+> On Thu, Jul 11, 2013 at 12:00:54PM -0700, Chris Wright wrote:
+> > * Guenter Roeck (linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org) wrote:
+> > > On Tue, Jul 09, 2013 at 04:22:52PM -0700, Chris Wright wrote:
+> > > > One thing I've seen is the BIOS zeroing the base register address when
+> > > > VT-d is disabled in BIOS.  So, Guenter, a "fix" may be simply enabling
+> > > > VT-d in the BIOS.
+> > > > 
+> > > Ah, yes, I think I may have that disabled. I'll check it tonight.
+> > 
+> > Did you find out if BIOS change fixed this?
+> > 
+> No, it didn't. Enabling or disabling virtualization in the BIOS did not make
+> a difference. It looks like there is a bad DMAR table entry (with address 0)
+> in the ACPI data. In case you are interested how it looks like:
+> 
+> DMAR @ 0xcb3f3f90
+>   0000: 44 4d 41 52 90 00 00 00 01 d5 49 4e 54 45 4c 20  DMAR......INTEL
+>   0010: 44 48 38 37 52 4c 20 20 40 01 00 00 49 4e 54 4c  DH87RL  @...INTL
+>   0020: 01 00 00 00 26 00 00 00 00 00 00 00 00 00 00 00  ....&...........
+>   0030: 00 00 10 00 01 00 00 00 00 00 00 00 00 00 00 00  ................
+>   0040: 01 00 30 00 00 00 00 00 00 b0 eb cb 00 00 00 00  ..0.............
+>   0050: ff 9f ec cb 00 00 00 00 01 08 00 00 00 00 1d 00  ................
+>   0060: 01 08 00 00 00 00 1a 00 01 08 00 00 00 00 14 00  ................
+>   0070: 01 00 20 00 00 00 00 00 00 00 00 d7 00 00 00 00  .. .............
+>   0080: ff ff 1f df 00 00 00 00 01 08 00 00 00 00 02 00  ................
+> 
+> Turns out the i7-4770K doesn't support VT-d, so my current understanding
+> is that there should be no DMAR table in the first place.
 
-Suggested-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/intel-iommu.c         |  164 ++++++++++++++---------------------
- drivers/iommu/intel_irq_remapping.c |    2 
- 2 files changed, 65 insertions(+), 101 deletions(-)
+OK, thanks for follow-up.  You can see why the warnings are there now.
+This is your decoded DMAR table...has valid looking RMRR regions, and
+mostly valid looking DRHD (minus the invalid base address).
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index b4f0e28..51488cb 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -1675,80 +1675,59 @@ static int domain_context_mapping_one(struct dmar_domain *domain, int segment,
- 	return 0;
- }
- 
--static int
--domain_context_mapping(struct dmar_domain *domain, struct pci_dev *pdev,
--			int translation)
-+struct context_mapping_info {
-+	struct dmar_domain *domain;
-+	int translation;
-+};
-+
-+static int context_mapping(struct pci_dev *dev, u16 requester_id, void *data)
- {
--	int ret;
--	struct pci_dev *tmp, *parent;
-+	struct context_mapping_info *info = data;
-+	u8 bus = requester_id >> 8;
-+	u8 devfn = requester_id & 0xFF;
- 
--	ret = domain_context_mapping_one(domain, pci_domain_nr(pdev->bus),
--					 pdev->bus->number, pdev->devfn,
--					 translation);
--	if (ret)
--		return ret;
-+	return domain_context_mapping_one(info->domain, pci_domain_nr(dev->bus),
-+					  bus, devfn, info->translation);
-+}
- 
--	/* dependent device mapping */
--	tmp = pci_find_upstream_pcie_bridge(pdev);
--	if (!tmp)
--		return 0;
--	/* Secondary interface's bus number and devfn 0 */
--	parent = pdev->bus->self;
--	while (parent != tmp) {
--		ret = domain_context_mapping_one(domain,
--						 pci_domain_nr(parent->bus),
--						 parent->bus->number,
--						 parent->devfn, translation);
--		if (ret)
--			return ret;
--		parent = parent->bus->self;
--	}
--	if (pci_is_pcie(tmp)) /* this is a PCIe-to-PCI bridge */
--		return domain_context_mapping_one(domain,
--					pci_domain_nr(tmp->subordinate),
--					tmp->subordinate->number, 0,
--					translation);
--	else /* this is a legacy PCI bridge */
--		return domain_context_mapping_one(domain,
--						  pci_domain_nr(tmp->bus),
--						  tmp->bus->number,
--						  tmp->devfn,
--						  translation);
-+static int domain_context_mapping(struct dmar_domain *domain,
-+				  struct pci_dev *pdev, int translation)
-+{
-+	struct context_mapping_info info = {
-+		.domain = domain,
-+		.translation = translation,
-+	};
-+
-+	return pcie_for_each_requester(pdev, NULL, context_mapping, &info);
-+}
-+
-+static int is_context_mapped(struct pci_dev *dev, u16 requester_id, void *data)
-+{
-+	struct intel_iommu *iommu = data;
-+	u8 bus = requester_id >> 8;
-+	u8 devfn = requester_id & 0xFF;
-+
-+	if (!device_context_mapped(iommu, bus, devfn))
-+		return 1; /* stop */
-+
-+	return 0;
- }
- 
- static int domain_context_mapped(struct pci_dev *pdev)
- {
--	int ret;
--	struct pci_dev *tmp, *parent;
- 	struct intel_iommu *iommu;
-+	int ret;
- 
--	iommu = device_to_iommu(pci_domain_nr(pdev->bus), pdev->bus->number,
--				pdev->devfn);
-+	iommu = device_to_iommu(pci_domain_nr(pdev->bus),
-+				pdev->bus->number, pdev->devfn);
- 	if (!iommu)
- 		return -ENODEV;
- 
--	ret = device_context_mapped(iommu, pdev->bus->number, pdev->devfn);
--	if (!ret)
--		return ret;
--	/* dependent device mapping */
--	tmp = pci_find_upstream_pcie_bridge(pdev);
--	if (!tmp)
-+	ret = pcie_for_each_requester(pdev, NULL, is_context_mapped, iommu);
-+	if (ret < 0)
- 		return ret;
--	/* Secondary interface's bus number and devfn 0 */
--	parent = pdev->bus->self;
--	while (parent != tmp) {
--		ret = device_context_mapped(iommu, parent->bus->number,
--					    parent->devfn);
--		if (!ret)
--			return ret;
--		parent = parent->bus->self;
--	}
--	if (pci_is_pcie(tmp))
--		return device_context_mapped(iommu, tmp->subordinate->number,
--					     0);
--	else
--		return device_context_mapped(iommu, tmp->bus->number,
--					     tmp->devfn);
-+
-+	return (ret == 0);
- }
- 
- /* Returns a number of VTD pages, but aligned to MM page size */
-@@ -1975,6 +1954,7 @@ static struct dmar_domain *get_domain_for_dev(struct pci_dev *pdev, int gaw)
- 	struct dmar_drhd_unit *drhd;
- 	struct device_domain_info *info, *tmp;
- 	struct pci_dev *dev_tmp;
-+	u16 requester_id;
- 	unsigned long flags;
- 	int bus = 0, devfn = 0;
- 	int segment;
-@@ -1986,15 +1966,11 @@ static struct dmar_domain *get_domain_for_dev(struct pci_dev *pdev, int gaw)
- 
- 	segment = pci_domain_nr(pdev->bus);
- 
--	dev_tmp = pci_find_upstream_pcie_bridge(pdev);
--	if (dev_tmp) {
--		if (pci_is_pcie(dev_tmp)) {
--			bus = dev_tmp->subordinate->number;
--			devfn = 0;
--		} else {
--			bus = dev_tmp->bus->number;
--			devfn = dev_tmp->devfn;
--		}
-+	dev_tmp = pci_get_visible_pcie_requester(pdev, NULL, &requester_id);
-+	if (dev_tmp && dev_tmp != pdev) {
-+		bus = requester_id >> 8;
-+		devfn = requester_id & 0xFF;
-+
- 		spin_lock_irqsave(&device_domain_lock, flags);
- 		list_for_each_entry(info, &device_domain_list, global) {
- 			if (info->segment == segment &&
-@@ -3749,31 +3725,24 @@ int __init intel_iommu_init(void)
- 	return 0;
- }
- 
-+static int detach_requester(struct pci_dev *dev, u16 requester_id, void *data)
-+{
-+	struct intel_iommu *iommu = data;
-+	u8 bus = requester_id >> 8;
-+	u8 devfn = requester_id & 0xFF;
-+
-+	iommu_detach_dev(iommu, bus, devfn);
-+	return 0;
-+}
-+
- static void iommu_detach_dependent_devices(struct intel_iommu *iommu,
- 					   struct pci_dev *pdev)
- {
--	struct pci_dev *tmp, *parent;
--
- 	if (!iommu || !pdev)
- 		return;
- 
--	/* dependent device detach */
--	tmp = pci_find_upstream_pcie_bridge(pdev);
--	/* Secondary interface's bus number and devfn 0 */
--	if (tmp) {
--		parent = pdev->bus->self;
--		while (parent != tmp) {
--			iommu_detach_dev(iommu, parent->bus->number,
--					 parent->devfn);
--			parent = parent->bus->self;
--		}
--		if (pci_is_pcie(tmp)) /* this is a PCIe-to-PCI bridge */
--			iommu_detach_dev(iommu,
--				tmp->subordinate->number, 0);
--		else /* this is a legacy PCI bridge */
--			iommu_detach_dev(iommu, tmp->bus->number,
--					 tmp->devfn);
--	}
-+	/* XXX What if there's something else using his path? */
-+	pcie_for_each_requester(pdev, NULL, detach_requester, iommu);
- }
- 
- static void domain_remove_one_dev_info(struct dmar_domain *domain,
-@@ -4158,7 +4127,7 @@ static int intel_iommu_domain_has_cap(struct iommu_domain *domain,
- static int intel_iommu_add_device(struct device *dev)
- {
- 	struct pci_dev *pdev = to_pci_dev(dev);
--	struct pci_dev *bridge, *dma_pdev = NULL;
-+	struct pci_dev *dma_pdev = NULL;
- 	struct iommu_group *group;
- 	int ret;
- 
-@@ -4166,16 +4135,11 @@ static int intel_iommu_add_device(struct device *dev)
- 			     pdev->bus->number, pdev->devfn))
- 		return -ENODEV;
- 
--	bridge = pci_find_upstream_pcie_bridge(pdev);
--	if (bridge) {
--		if (pci_is_pcie(bridge))
--			dma_pdev = pci_get_domain_bus_and_slot(
--						pci_domain_nr(pdev->bus),
--						bridge->subordinate->number, 0);
--		if (!dma_pdev)
--			dma_pdev = pci_dev_get(bridge);
--	} else
--		dma_pdev = pci_dev_get(pdev);
-+	dma_pdev = pci_get_visible_pcie_requester(pdev, NULL, NULL);
-+	if (!dma_pdev)
-+		return -EINVAL;
-+
-+	dma_pdev = pci_dev_get(dma_pdev);
- 
- 	/* Account for quirked devices */
- 	swap_pci_ref(&dma_pdev, pci_get_dma_source(dma_pdev));
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 5b19b2d..31214fe 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -385,7 +385,7 @@ static int set_msi_sid(struct irte *irte, struct pci_dev *dev)
- 		return 0;
- 	}
- 
--	bridge = pci_find_upstream_pcie_bridge(dev);
-+	bridge = pci_get_visible_pcie_requester(dev, NULL, NULL);
- 	if (bridge) {
- 		if (pci_is_pcie(bridge))/* this is a PCIe-to-PCI/PCIX bridge */
- 			set_irte_sid(irte, SVT_VERIFY_BUS, SQ_ALL_16,
+
+/*
+ * Intel ACPI Component Architecture
+ * AML Disassembler version 20100528
+ *
+ * Disassembly of /tmp/dmar, Thu Jul 11 15:24:28 2013
+ *
+ * ACPI Data Table [DMAR]
+ *
+ * Format: [HexOffset DecimalOffset ByteLength]  FieldName : FieldValue
+ */
+
+[000h 0000  4]                    Signature : "DMAR"    /* DMA Remapping table */
+[004h 0004  4]                 Table Length : 00000090
+[008h 0008  1]                     Revision : 01
+[009h 0009  1]                     Checksum : D5
+[00Ah 0010  6]                       Oem ID : "INTEL "
+[010h 0016  8]                 Oem Table ID : "DH87RL  "
+[018h 0024  4]                 Oem Revision : 00000140
+[01Ch 0028  4]              Asl Compiler ID : "INTL"
+[020h 0032  4]        Asl Compiler Revision : 00000001
+
+[024h 0036  1]           Host Address Width : 26
+[025h 0037  1]                        Flags : 00
+
+[030h 0048  2]                Subtable Type : 0000 <Hardware Unit Definition>
+[032h 0050  2]                       Length : 0010
+[034h 0052  1]                        Flags : 01
+[035h 0053  1]                     Reserved : 00
+[036h 0054  2]           PCI Segment Number : 0000
+[038h 0056  8]        Register Base Address : 0000000000000000
+
+[040h 0064  2]                Subtable Type : 0001 <Reserved Memory Region>
+[042h 0066  2]                       Length : 0030
+[044h 0068  2]                     Reserved : 0000
+[046h 0070  2]           PCI Segment Number : 0000
+[048h 0072  8]                 Base Address : 00000000CBEBB000
+[050h 0080  8]          End Address (limit) : 00000000CBEC9FFF
+
+[058h 0088  1]      Device Scope Entry Type : 01
+[059h 0089  1]                 Entry Length : 08
+[05Ah 0090  2]                     Reserved : 0000
+[05Ch 0092  1]               Enumeration ID : 00
+[05Dh 0093  1]               PCI Bus Number : 00
+[05Eh 0094  2]                     PCI Path : [1D, 00]
+
+[060h 0096  1]      Device Scope Entry Type : 01
+[061h 0097  1]                 Entry Length : 08
+[062h 0098  2]                     Reserved : 0000
+[064h 0100  1]               Enumeration ID : 00
+[065h 0101  1]               PCI Bus Number : 00
+[066h 0102  2]                     PCI Path : [1A, 00]
+
+[068h 0104  1]      Device Scope Entry Type : 01
+[069h 0105  1]                 Entry Length : 08
+[06Ah 0106  2]                     Reserved : 0000
+[06Ch 0108  1]               Enumeration ID : 00
+[06Dh 0109  1]               PCI Bus Number : 00
+[06Eh 0110  2]                     PCI Path : [14, 00]
+
+[070h 0112  2]                Subtable Type : 0001 <Reserved Memory Region>
+[072h 0114  2]                       Length : 0020
+[074h 0116  2]                     Reserved : 0000
+[076h 0118  2]           PCI Segment Number : 0000
+[078h 0120  8]                 Base Address : 00000000D7000000
+[080h 0128  8]          End Address (limit) : 00000000DF1FFFFF
+
+[088h 0136  1]      Device Scope Entry Type : 01
+[089h 0137  1]                 Entry Length : 08
+[08Ah 0138  2]                     Reserved : 0000
+[08Ch 0140  1]               Enumeration ID : 00
+[08Dh 0141  1]               PCI Bus Number : 00
+[08Eh 0142  2]                     PCI Path : [02, 00]
+
+Raw Table Data
+
+  0000: 44 4D 41 52 90 00 00 00 01 D5 49 4E 54 45 4C 20  DMAR......INTEL 
+  0010: 44 48 38 37 52 4C 20 20 40 01 00 00 49 4E 54 4C  DH87RL  @...INTL
+  0020: 01 00 00 00 26 00 00 00 00 00 00 00 00 00 00 00  ....&...........
+  0030: 00 00 10 00 01 00 00 00 00 00 00 00 00 00 00 00  ................
+  0040: 01 00 30 00 00 00 00 00 00 B0 EB CB 00 00 00 00  ..0.............
+  0050: FF 9F EC CB 00 00 00 00 01 08 00 00 00 00 1D 00  ................
+  0060: 01 08 00 00 00 00 1A 00 01 08 00 00 00 00 14 00  ................
+  0070: 01 00 20 00 00 00 00 00 00 00 00 D7 00 00 00 00  .. .............
+  0080: FF FF 1F DF 00 00 00 00 01 08 00 00 00 00 02 00  ................
