@@ -1,60 +1,51 @@
-From: Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
-Subject: Re: WARNING: at drivers/iommu/dmar.c:484 warn_invalid_dmar with
-	Intel Motherboard
-Date: Thu, 11 Jul 2013 13:59:02 -0700
-Message-ID: <20130711205902.GB22605@roeck-us.net>
-References: <20130709202406.GA11867@roeck-us.net>
-	<CAErSpo6Ma1TnBP-UGGhWFN1rj48y+yTS=VmVw_s30_FWgjfdpg@mail.gmail.com>
-	<20130709223106.GA16429@roeck-us.net>
-	<20130709232252.GB2676@sequoia2.sous-sol.org>
-	<20130709234331.GA10833@roeck-us.net>
-	<20130711190054.GC24833@sequoia2.sous-sol.org>
+From: Alex Williamson <alex.williamson@redhat.com>
+Subject: [RFC PATCH v2 0/2] pci/iommu: PCIe requester ID interface
+Date: Thu, 11 Jul 2013 15:03:18 -0600
+Message-ID: <20130711204439.1701.90503.stgit@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20130711190054.GC24833-k0AF34rgNAQdGiBX8rKX95cPDiHTxzko@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Chris Wright <chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org>
-Cc: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: bhelgaas@google.com
+Cc: linux-pci@vger.kernel.org, joro@8bytes.org, iommu@lists.linux-foundation.org, acooks@gmail.com, ddutile@redhat.com, dwmw2@infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jul 11, 2013 at 12:00:54PM -0700, Chris Wright wrote:
-> * Guenter Roeck (linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org) wrote:
-> > On Tue, Jul 09, 2013 at 04:22:52PM -0700, Chris Wright wrote:
-> > > One thing I've seen is the BIOS zeroing the base register address when
-> > > VT-d is disabled in BIOS.  So, Guenter, a "fix" may be simply enabling
-> > > VT-d in the BIOS.
-> > > 
-> > Ah, yes, I think I may have that disabled. I'll check it tonight.
-> 
-> Did you find out if BIOS change fixed this?
-> 
-No, it didn't. Enabling or disabling virtualization in the BIOS did not make
-a difference. It looks like there is a bad DMAR table entry (with address 0)
-in the ACPI data. In case you are interested how it looks like:
+v2: second pass at refining the interface.  Rolled pci_requester_id
+into pci_get_visible_pcie_requester.  Fixed some bus walk issues.
 
-DMAR @ 0xcb3f3f90
-  0000: 44 4d 41 52 90 00 00 00 01 d5 49 4e 54 45 4c 20  DMAR......INTEL
-  0010: 44 48 38 37 52 4c 20 20 40 01 00 00 49 4e 54 4c  DH87RL  @...INTL
-  0020: 01 00 00 00 26 00 00 00 00 00 00 00 00 00 00 00  ....&...........
-  0030: 00 00 10 00 01 00 00 00 00 00 00 00 00 00 00 00  ................
-  0040: 01 00 30 00 00 00 00 00 00 b0 eb cb 00 00 00 00  ..0.............
-  0050: ff 9f ec cb 00 00 00 00 01 08 00 00 00 00 1d 00  ................
-  0060: 01 08 00 00 00 00 1a 00 01 08 00 00 00 00 14 00  ................
-  0070: 01 00 20 00 00 00 00 00 00 00 00 d7 00 00 00 00  .. .............
-  0080: ff ff 1f df 00 00 00 00 01 08 00 00 00 00 02 00  ................
+Another obscure issue that I forgot to mention that this should fix
+is gaps in requester IDs.  If you had:
 
-Turns out the i7-4770K doesn't support VT-d, so my current understanding
-is that there should be no DMAR table in the first place.
+ ---pcie--->[pcie2pci]---pci--->[pci2pcie]---pcie--->[endpoint]
 
-Guenter
+I think the current code would try to use the endpoint requester id and
+fail.  This code will use the pcie2pci->secondary as the requester id.
+This may not even be that obscure of a bug if a PCIe ASIC is soldered
+to a pci2pcie bridge to make a compatible conventional PCI card.
+
+The diffstat for pci improves a bit when we remove:
+pci_find_upstream_pci_bridge:
+
+ drivers/iommu/intel-iommu.c         |  164 ++++++++++-----------------
+ drivers/iommu/intel_irq_remapping.c |    2 
+ drivers/pci/search.c                |  215 +++++++++++++++++++++++++++++++-----
+ include/linux/pci.h                 |   16 +-
+ 4 files changed, 260 insertions(+), 137 deletions(-)
+
+Comments?  Thanks,
+
+Alex
+
+---
+
+Alex Williamson (2):
+      pci: Create PCIe requester ID interface
+      iommu/intel: Make use of PCIe requester ID interface
+
+
+ drivers/iommu/intel-iommu.c         |  164 +++++++++++------------------
+ drivers/iommu/intel_irq_remapping.c |    2 
+ drivers/pci/search.c                |  198 +++++++++++++++++++++++++++++++++++
+ include/linux/pci.h                 |    7 +
+ 4 files changed, 270 insertions(+), 101 deletions(-)
