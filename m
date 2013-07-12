@@ -1,150 +1,179 @@
-From: Chris Wright <chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org>
-Subject: Re: WARNING: at drivers/iommu/dmar.c:484 warn_invalid_dmar with
-	Intel Motherboard
-Date: Thu, 11 Jul 2013 15:31:51 -0700
-Message-ID: <20130711223151.GD24833@sequoia2.sous-sol.org>
-References: <20130709202406.GA11867@roeck-us.net>
-	<CAErSpo6Ma1TnBP-UGGhWFN1rj48y+yTS=VmVw_s30_FWgjfdpg@mail.gmail.com>
-	<20130709223106.GA16429@roeck-us.net>
-	<20130709232252.GB2676@sequoia2.sous-sol.org>
-	<20130709234331.GA10833@roeck-us.net>
-	<20130711190054.GC24833@sequoia2.sous-sol.org>
-	<20130711205902.GB22605@roeck-us.net>
+From: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Subject: Re: [PATCH v7 5/9] iommu/exynos: change rwlock to spinlock
+Date: Fri, 12 Jul 2013 17:30:33 +0200
+Message-ID: <13890783.WKk2X4EVm4@amdc1032>
+References: <002d01ce797b$49c441a0$dd4cc4e0$@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20130711205902.GB22605-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
-Cc: Chris Wright <chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <002d01ce797b$49c441a0$dd4cc4e0$@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Cho KyongHo <pullip.cho@samsung.com>
+Cc: 'Linux ARM Kernel' <linux-arm-kernel@lists.infradead.org>, 'Linux IOMMU' <iommu@lists.linux-foundation.org>, 'Linux Kernel' <linux-kernel@vger.kernel.org>, 'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>, 'Hyunwoong Kim' <khw0178.kim@samsung.com>, 'Joerg Roedel' <joro@8bytes.org>, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Prathyush' <prathyush.k@samsung.com>, 'Rahul Sharma' <rahul.sharma@samsung.com>, 'Subash Patel' <supash.ramaswamy@linaro.org>, 'Keyyoung Park' <keyyoung.park@samsung.com>, 'Grant Grundler' <grundler@chromium.org>
 List-Id: iommu@lists.linux-foundation.org
 
-* Guenter Roeck (linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org) wrote:
-> On Thu, Jul 11, 2013 at 12:00:54PM -0700, Chris Wright wrote:
-> > * Guenter Roeck (linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org) wrote:
-> > > On Tue, Jul 09, 2013 at 04:22:52PM -0700, Chris Wright wrote:
-> > > > One thing I've seen is the BIOS zeroing the base register address when
-> > > > VT-d is disabled in BIOS.  So, Guenter, a "fix" may be simply enabling
-> > > > VT-d in the BIOS.
-> > > > 
-> > > Ah, yes, I think I may have that disabled. I'll check it tonight.
-> > 
-> > Did you find out if BIOS change fixed this?
-> > 
-> No, it didn't. Enabling or disabling virtualization in the BIOS did not make
-> a difference. It looks like there is a bad DMAR table entry (with address 0)
-> in the ACPI data. In case you are interested how it looks like:
+
+Hi,
+
+On Friday, July 05, 2013 09:29:26 PM Cho KyongHo wrote:
+> Since acquiring read_lock is not more frequent than write_lock, it is
+> not beneficial to use rwlock, this commit changes rwlock to spinlock.
+
+This change is not of a "fix type" and is not required to make the driver
+work so it would probably be best to move it to the end of a patch series
+(IOW just making it the last patch in the series).
+
+Best regards,
+--
+Bartlomiej Zolnierkiewicz
+Samsung R&D Institute Poland
+Samsung Electronics
+
+> Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
+> ---
+>  drivers/iommu/exynos-iommu.c |   32 ++++++++++++++++----------------
+>  1 files changed, 16 insertions(+), 16 deletions(-)
 > 
-> DMAR @ 0xcb3f3f90
->   0000: 44 4d 41 52 90 00 00 00 01 d5 49 4e 54 45 4c 20  DMAR......INTEL
->   0010: 44 48 38 37 52 4c 20 20 40 01 00 00 49 4e 54 4c  DH87RL  @...INTL
->   0020: 01 00 00 00 26 00 00 00 00 00 00 00 00 00 00 00  ....&...........
->   0030: 00 00 10 00 01 00 00 00 00 00 00 00 00 00 00 00  ................
->   0040: 01 00 30 00 00 00 00 00 00 b0 eb cb 00 00 00 00  ..0.............
->   0050: ff 9f ec cb 00 00 00 00 01 08 00 00 00 00 1d 00  ................
->   0060: 01 08 00 00 00 00 1a 00 01 08 00 00 00 00 14 00  ................
->   0070: 01 00 20 00 00 00 00 00 00 00 00 d7 00 00 00 00  .. .............
->   0080: ff ff 1f df 00 00 00 00 01 08 00 00 00 00 02 00  ................
-> 
-> Turns out the i7-4770K doesn't support VT-d, so my current understanding
-> is that there should be no DMAR table in the first place.
-
-OK, thanks for follow-up.  You can see why the warnings are there now.
-This is your decoded DMAR table...has valid looking RMRR regions, and
-mostly valid looking DRHD (minus the invalid base address).
-
-
-/*
- * Intel ACPI Component Architecture
- * AML Disassembler version 20100528
- *
- * Disassembly of /tmp/dmar, Thu Jul 11 15:24:28 2013
- *
- * ACPI Data Table [DMAR]
- *
- * Format: [HexOffset DecimalOffset ByteLength]  FieldName : FieldValue
- */
-
-[000h 0000  4]                    Signature : "DMAR"    /* DMA Remapping table */
-[004h 0004  4]                 Table Length : 00000090
-[008h 0008  1]                     Revision : 01
-[009h 0009  1]                     Checksum : D5
-[00Ah 0010  6]                       Oem ID : "INTEL "
-[010h 0016  8]                 Oem Table ID : "DH87RL  "
-[018h 0024  4]                 Oem Revision : 00000140
-[01Ch 0028  4]              Asl Compiler ID : "INTL"
-[020h 0032  4]        Asl Compiler Revision : 00000001
-
-[024h 0036  1]           Host Address Width : 26
-[025h 0037  1]                        Flags : 00
-
-[030h 0048  2]                Subtable Type : 0000 <Hardware Unit Definition>
-[032h 0050  2]                       Length : 0010
-[034h 0052  1]                        Flags : 01
-[035h 0053  1]                     Reserved : 00
-[036h 0054  2]           PCI Segment Number : 0000
-[038h 0056  8]        Register Base Address : 0000000000000000
-
-[040h 0064  2]                Subtable Type : 0001 <Reserved Memory Region>
-[042h 0066  2]                       Length : 0030
-[044h 0068  2]                     Reserved : 0000
-[046h 0070  2]           PCI Segment Number : 0000
-[048h 0072  8]                 Base Address : 00000000CBEBB000
-[050h 0080  8]          End Address (limit) : 00000000CBEC9FFF
-
-[058h 0088  1]      Device Scope Entry Type : 01
-[059h 0089  1]                 Entry Length : 08
-[05Ah 0090  2]                     Reserved : 0000
-[05Ch 0092  1]               Enumeration ID : 00
-[05Dh 0093  1]               PCI Bus Number : 00
-[05Eh 0094  2]                     PCI Path : [1D, 00]
-
-[060h 0096  1]      Device Scope Entry Type : 01
-[061h 0097  1]                 Entry Length : 08
-[062h 0098  2]                     Reserved : 0000
-[064h 0100  1]               Enumeration ID : 00
-[065h 0101  1]               PCI Bus Number : 00
-[066h 0102  2]                     PCI Path : [1A, 00]
-
-[068h 0104  1]      Device Scope Entry Type : 01
-[069h 0105  1]                 Entry Length : 08
-[06Ah 0106  2]                     Reserved : 0000
-[06Ch 0108  1]               Enumeration ID : 00
-[06Dh 0109  1]               PCI Bus Number : 00
-[06Eh 0110  2]                     PCI Path : [14, 00]
-
-[070h 0112  2]                Subtable Type : 0001 <Reserved Memory Region>
-[072h 0114  2]                       Length : 0020
-[074h 0116  2]                     Reserved : 0000
-[076h 0118  2]           PCI Segment Number : 0000
-[078h 0120  8]                 Base Address : 00000000D7000000
-[080h 0128  8]          End Address (limit) : 00000000DF1FFFFF
-
-[088h 0136  1]      Device Scope Entry Type : 01
-[089h 0137  1]                 Entry Length : 08
-[08Ah 0138  2]                     Reserved : 0000
-[08Ch 0140  1]               Enumeration ID : 00
-[08Dh 0141  1]               PCI Bus Number : 00
-[08Eh 0142  2]                     PCI Path : [02, 00]
-
-Raw Table Data
-
-  0000: 44 4D 41 52 90 00 00 00 01 D5 49 4E 54 45 4C 20  DMAR......INTEL 
-  0010: 44 48 38 37 52 4C 20 20 40 01 00 00 49 4E 54 4C  DH87RL  @...INTL
-  0020: 01 00 00 00 26 00 00 00 00 00 00 00 00 00 00 00  ....&...........
-  0030: 00 00 10 00 01 00 00 00 00 00 00 00 00 00 00 00  ................
-  0040: 01 00 30 00 00 00 00 00 00 B0 EB CB 00 00 00 00  ..0.............
-  0050: FF 9F EC CB 00 00 00 00 01 08 00 00 00 00 1D 00  ................
-  0060: 01 08 00 00 00 00 1A 00 01 08 00 00 00 00 14 00  ................
-  0070: 01 00 20 00 00 00 00 00 00 00 00 D7 00 00 00 00  .. .............
-  0080: FF FF 1F DF 00 00 00 00 01 08 00 00 00 00 02 00  ................
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> index 390f8b7..6793661 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+> @@ -175,7 +175,7 @@ struct sysmmu_drvdata {
+>  	void __iomem **sfrbases;
+>  	struct clk *clk[2];
+>  	int activations;
+> -	rwlock_t lock;
+> +	spinlock_t lock;
+>  	struct iommu_domain *domain;
+>  	sysmmu_fault_handler_t fault_handler;
+>  	unsigned long pgtable;
+> @@ -259,7 +259,7 @@ void exynos_sysmmu_set_prefbuf(struct device *dev,
+>  	BUG_ON((base0 + size0) <= base0);
+>  	BUG_ON((size1 > 0) && ((base1 + size1) <= base1));
+>  
+> -	read_lock_irqsave(&data->lock, flags);
+> +	spin_lock_irqsave(&data->lock, flags);
+>  	if (!is_sysmmu_active(data))
+>  		goto finish;
+>  
+> @@ -289,7 +289,7 @@ void exynos_sysmmu_set_prefbuf(struct device *dev,
+>  		}
+>  	}
+>  finish:
+> -	read_unlock_irqrestore(&data->lock, flags);
+> +	spin_unlock_irqrestore(&data->lock, flags);
+>  }
+>  
+>  static void __set_fault_handler(struct sysmmu_drvdata *data,
+> @@ -297,9 +297,9 @@ static void __set_fault_handler(struct sysmmu_drvdata *data,
+>  {
+>  	unsigned long flags;
+>  
+> -	write_lock_irqsave(&data->lock, flags);
+> +	spin_lock_irqsave(&data->lock, flags);
+>  	data->fault_handler = handler;
+> -	write_unlock_irqrestore(&data->lock, flags);
+> +	spin_unlock_irqrestore(&data->lock, flags);
+>  }
+>  
+>  void exynos_sysmmu_set_fault_handler(struct device *dev,
+> @@ -347,7 +347,7 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
+>  
+>  	int i, ret = -ENOSYS;
+>  
+> -	read_lock(&data->lock);
+> +	spin_lock(&data->lock);
+>  
+>  	WARN_ON(!is_sysmmu_active(data));
+>  
+> @@ -391,7 +391,7 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
+>  	if (itype != SYSMMU_FAULT_UNKNOWN)
+>  		sysmmu_unblock(data->sfrbases[i]);
+>  
+> -	read_unlock(&data->lock);
+> +	spin_unlock(&data->lock);
+>  
+>  	return IRQ_HANDLED;
+>  }
+> @@ -402,7 +402,7 @@ static bool __exynos_sysmmu_disable(struct sysmmu_drvdata *data)
+>  	bool disabled = false;
+>  	int i;
+>  
+> -	write_lock_irqsave(&data->lock, flags);
+> +	spin_lock_irqsave(&data->lock, flags);
+>  
+>  	if (!set_sysmmu_inactive(data))
+>  		goto finish;
+> @@ -419,7 +419,7 @@ static bool __exynos_sysmmu_disable(struct sysmmu_drvdata *data)
+>  	data->pgtable = 0;
+>  	data->domain = NULL;
+>  finish:
+> -	write_unlock_irqrestore(&data->lock, flags);
+> +	spin_unlock_irqrestore(&data->lock, flags);
+>  
+>  	if (disabled)
+>  		dev_dbg(data->sysmmu, "(%s) Disabled\n", data->dbgname);
+> @@ -442,7 +442,7 @@ static int __exynos_sysmmu_enable(struct sysmmu_drvdata *data,
+>  	int i, ret = 0;
+>  	unsigned long flags;
+>  
+> -	write_lock_irqsave(&data->lock, flags);
+> +	spin_lock_irqsave(&data->lock, flags);
+>  
+>  	if (!set_sysmmu_active(data)) {
+>  		if (WARN_ON(pgtable != data->pgtable)) {
+> @@ -481,7 +481,7 @@ static int __exynos_sysmmu_enable(struct sysmmu_drvdata *data,
+>  
+>  	dev_dbg(data->sysmmu, "(%s) Enabled\n", data->dbgname);
+>  finish:
+> -	write_unlock_irqrestore(&data->lock, flags);
+> +	spin_unlock_irqrestore(&data->lock, flags);
+>  
+>  	return ret;
+>  }
+> @@ -528,7 +528,7 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova)
+>  	unsigned long flags;
+>  	struct sysmmu_drvdata *data = dev_get_drvdata(dev->archdata.iommu);
+>  
+> -	read_lock_irqsave(&data->lock, flags);
+> +	spin_lock_irqsave(&data->lock, flags);
+>  
+>  	if (is_sysmmu_active(data)) {
+>  		int i;
+> @@ -545,7 +545,7 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova)
+>  			data->dbgname);
+>  	}
+>  
+> -	read_unlock_irqrestore(&data->lock, flags);
+> +	spin_unlock_irqrestore(&data->lock, flags);
+>  }
+>  
+>  void exynos_sysmmu_tlb_invalidate(struct device *dev)
+> @@ -553,7 +553,7 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
+>  	unsigned long flags;
+>  	struct sysmmu_drvdata *data = dev_get_drvdata(dev->archdata.iommu);
+>  
+> -	read_lock_irqsave(&data->lock, flags);
+> +	spin_lock_irqsave(&data->lock, flags);
+>  
+>  	if (is_sysmmu_active(data)) {
+>  		int i;
+> @@ -569,7 +569,7 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
+>  			data->dbgname);
+>  	}
+>  
+> -	read_unlock_irqrestore(&data->lock, flags);
+> +	spin_unlock_irqrestore(&data->lock, flags);
+>  }
+>  
+>  static int exynos_sysmmu_probe(struct platform_device *pdev)
+> @@ -666,7 +666,7 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
+>  	}
+>  
+>  	data->sysmmu = dev;
+> -	rwlock_init(&data->lock);
+> +	spin_lock_init(&data->lock);
+>  	INIT_LIST_HEAD(&data->node);
+>  
+>  	__set_fault_handler(data, &default_fault_handler);
