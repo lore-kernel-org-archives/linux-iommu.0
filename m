@@ -1,14 +1,15 @@
 From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [PATCH v2 04/22] ARM: dt: tegra30: iommu: Add "nvidia,swgroup"
-Date: Tue, 16 Jul 2013 17:10:32 -0600
-Message-ID: <51E5D2E8.5060200@wwwdotorg.org>
+Subject: Re: [PATCH v2 05/22] ARM: dt: tegra30: iommu: Add "nvidia,
+	memory-client"
+Date: Tue, 16 Jul 2013 17:14:33 -0600
+Message-ID: <51E5D3D9.2090608@wwwdotorg.org>
 References: <1373021097-32420-1-git-send-email-hdoyu@nvidia.com>
-	<1373021097-32420-5-git-send-email-hdoyu@nvidia.com>
+	<1373021097-32420-6-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1373021097-32420-5-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1373021097-32420-6-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,22 +24,39 @@ Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy
 List-Id: iommu@lists.linux-foundation.org
 
 On 07/05/2013 04:44 AM, Hiroshi Doyu wrote:
-> This is a bitmap that indicates which HardWare Accelerators(HWA) are
-> supported on Tegra30 SoC.
+> Add "nvidia,memory-client" to identify which swgroup ID a device
+> belongs to.
+
+This property also isn't in the documentation.
+
+Again, if client devices are required to have this new property, the DT
+isn't backwards-compatible; fail:-(
 
 > diff --git a/arch/arm/boot/dts/tegra30.dtsi b/arch/arm/boot/dts/tegra30.dtsi
 
-> +		nvidia,swgroup = TEGRA30_SWGROUP_ALL;
+> +		nvidia,memory-client = <TEGRA_SWGROUP_HC>;
 
-That property isn't in the binding document. We can't add properties
-that aren't documented.
+What if there's more than one SMMU in the system, e.g. since there are
+multiple different master-capable buses? Including the SMMU phandle in
+the property seems like a good idea so that the SMMU driver knows which
+devices are affected by it (although a bus structure with affected
+devices under the SMMU represented as nodes under the SMMU DT node seems
+a slightly more direct way of representing that, although that solution
+does only support systems where bus-master transactions flow up the bus
+structure in the same way that CPU transactions flow down it).
 
-Macros should not include structural syntax; the < > around the cell
-value is part of the macro the way you've written it, but shouldn't be.
-It'd be simpler to just write:
+What about:
 
-	nvidia,swgroup = <0x00000000 0x000779ff>;
+nvidia,smmu = <&smmu TEGRA_SWGROUP_HC>;
 
-We should only extend the binding in a backwards-compatible fashion, so
-we can't require that DTs contain this value. At least, there should be
-a default value defined for when the property doesn't exist.
+?
+
+> @@ -69,6 +75,8 @@
+>  			reg = <0x54180000 0x00040000>;
+>  			clocks = <&tegra_car 24 &tegra_car 98>;
+>  			clock-names = "3d", "3d2";
+> +			nvidia,memory-client = <TEGRA_SWGROUP_NV
+> +						TEGRA_SWGROUP_NV2>;
+
+Oh, if there can be more than one, I suggest adding "s" to the end of
+the property name.
