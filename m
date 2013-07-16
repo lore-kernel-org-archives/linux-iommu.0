@@ -1,47 +1,80 @@
-From: Cho KyongHo <pullip.cho@samsung.com>
-Subject: RE: [PATCH v7 3/9] iommu/exynos: fix page table maintenance
-Date: Tue, 16 Jul 2013 22:07:46 +0900
-Message-ID: <002101ce8225$775a71e0$660f55a0$@samsung.com>
-References: <002b01ce797b$44d4ad10$ce7e0730$@samsung.com>
- <1933986.4vddYccClk@amdc1032> <009a01ce814d$840b48c0$8c21da40$@samsung.com>
- <CANEJEGs_8a9dPCYtDT8u2NEv5HUUD5gcdmRmbsrKU-_aagztgg@mail.gmail.com>
+From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Subject: Re: [PATCH v2 01/22] [HACK] of: dev_node has struct device pointer
+Date: Tue, 16 Jul 2013 16:57:03 -0600
+Message-ID: <51E5CFBF.5080407@wwwdotorg.org>
+References: <1373021097-32420-1-git-send-email-hdoyu@nvidia.com>
+	<1373021097-32420-2-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <CANEJEGs_8a9dPCYtDT8u2NEv5HUUD5gcdmRmbsrKU-_aagztgg@mail.gmail.com>
-Content-language: ko
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: 'Grant Grundler' <grundler@chromium.org>
-Cc: 'Bartlomiej Zolnierkiewicz' <b.zolnierkie@samsung.com>, 'Linux ARM Kernel' <linux-arm-kernel@lists.infradead.org>, 'Linux IOMMU' <iommu@lists.linux-foundation.org>, 'Linux Kernel' <linux-kernel@vger.kernel.org>, 'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>, 'Hyunwoong Kim' <khw0178.kim@samsung.com>, 'Joerg Roedel' <joro@8bytes.org>, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Prathyush' <prathyush.k@samsung.com>, 'Rahul Sharma' <rahul.sharma@samsung.com>, 'Subash Patel' <supash.ramaswamy@linaro.org>, 'Keyyoung Park' <keyyoung.park@samsung.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1373021097-32420-2-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-> From: grundler@google.com [mailto:grundler@google.com] On Behalf Of Grant Grundler
-> Sent: Tuesday, July 16, 2013 1:19 AM
-> 
-> On Mon, Jul 15, 2013 at 4:21 AM, Cho KyongHo <pullip.cho@samsung.com> wrote:
-> ...
-> >> Maybe you could add LV1TABLE_SIZE define and use it here (there is
-> >> already a LV2TABLE_SIZE define)?
-> >
-> > Yes. But, LV2TABLE_SIZE is used in more places than one.
-> > I do not feel that it is needed to define LV1TABLE_SIZE for the single line.
-> 
-> Cho,
-> #define's are part of the code "documentation". Doesn't really matter
-> how often it's used. I think Bartlomiej's suggestion is a good one.
-> 
-> Key is to use "consistent" names so they makes sense to someone not
-> familiar with the code. In this case, we want to show this use is the
-> same way LV2TABLE_SIZE is used and serves the same purpose.
-> 
-Ok.
-I agree the error handling code is not pretty to understand.
-I will change it in the next patch.
+On 07/05/2013 04:44 AM, Hiroshi Doyu wrote:
+> To prevent of_platform_populate() from trying to populate duplicate
+> devices if a device has been already populated.
 
-> cheers.
-> grant
+You need to send drivers/of patches to the DT maintainer and
+devicetree-discuss mailing list.
 
-Thank you.
+> Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> ---
+> Need to take care of early_platform_devices, or alternative solution.
 
-Cho KyongHo.
+I assume that's a TODO item... Are you planning on fleshing out this
+patch to address that issue?
+
+> diff --git a/drivers/of/base.c b/drivers/of/base.c
+
+> +struct device *of_get_device(const struct device_node *node)
+> +{
+> +	struct device *dev;
+> +	unsigned long flags;
+> +
+> +	raw_spin_lock_irqsave(&devtree_lock, flags);
+> +	dev = node->dev;
+> +	raw_spin_unlock_irqrestore(&devtree_lock, flags);
+
+The read (and write in of_set_device()) aren't atomic already? I guess
+perhaps they aren't necessarily. It sure seems like some higher-level
+locking is needed in of_platform_create_pdata() though, since there's
+quite a window there between the get() and set() calls. Or, is there
+already some locking in place above that, in which case, I 'm not sure
+why there's a need for this level of locking here...
+
+> diff --git a/drivers/of/platform.c b/drivers/of/platform.c
+
+> +	tmp = of_get_device(np);
+> +	if (tmp) {
+> +		dev_info(tmp, "Already populated\n");
+> +		return to_platform_device(tmp);
+> +	}
+
+Did you check all callers of this function to make sure that they also
+don't do any kind of double-processing?
+
+
+> diff --git a/include/linux/of.h b/include/linux/of.h
+
+> @@ -60,6 +60,9 @@ struct device_node {
+>  	struct	kref kref;
+>  	unsigned long _flags;
+>  	void	*data;
+> +
+> +	struct device *dev;		/* Set only after populated */
+> +
+>  #if defined(CONFIG_SPARC)
+
+Are the extra blank lines needed?
