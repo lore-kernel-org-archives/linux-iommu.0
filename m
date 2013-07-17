@@ -1,53 +1,35 @@
-From: Myron Stowe <myron.stowe@gmail.com>
-Subject: Linux Plumbers ACPI/PM, PCI Microconference
-Date: Tue, 16 Jul 2013 20:21:26 -0600
-Message-ID: <CAL-B5D03ki8NHsM6EuESTH2K-Eh+XyFHNXPDYwgDq+oagDjtMQ@mail.gmail.com>
+From: Shuah Khan <shuahkhan@gmail.com>
+Subject: Re: Linux Plumbers ACPI/PM, PCI Microconference
+Date: Wed, 17 Jul 2013 08:31:55 -0600
+Message-ID: <CAKocOOOgEb5h1dZWP_2UqBKhSK9U-kxKUbvTdzHfds=RiDzNJg@mail.gmail.com>
+References: <CAL-B5D03ki8NHsM6EuESTH2K-Eh+XyFHNXPDYwgDq+oagDjtMQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <CAL-B5D03ki8NHsM6EuESTH2K-Eh+XyFHNXPDYwgDq+oagDjtMQ@mail.gmail.com>
 Sender: linux-acpi-owner@vger.kernel.org
-To: linux-pci <linux-pci@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+To: Myron Stowe <myron.stowe@gmail.com>
+Cc: linux-pci <linux-pci@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, shuah.kh@samsung.com, Shuah Khan <shuahkhan@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Linux Plumbers has approved an ACPI/PM, PCI microconference. The
-overview page is here:
+Myron,
 
-http://wiki.linuxplumbersconf.org/2013:pci_subsystem
+On Tue, Jul 16, 2013 at 8:21 PM, Myron Stowe <myron.stowe@gmail.com> wrote:
 
-We would like to start receiving volunteers for presenting topics of
-interest.  There is a lot of activity in these subsystems so please
-respond by submitting presentation or discussion proposals that you
-would be willing to cover for consideration.  You should also feel
-free to submit ideas as proposals that others could cover.  The
-instructions for submitting ideas should be at:
+>
+> Shuah - You brought up the idea about "Converting drivers from Legacy
+> PM ops to dev_pm_ops"; would you like to present what you have
+> done/encountered so far?
+>
 
-http://www.linuxplumbersconf.org/2013/submitting-topic/
+Awesome. Yes, I would like to present what I have done so far and I do
+have a couple of things that could benefit from a face to face
+discussion which would help me make progress on the rest of the work
+that needs to get done.
 
-This is the "Plumbers" conference so topics concerning userspace
-interaction with the kernel and not just topics concerning pure kernel
-subsystem internals would be greatly welcomed.  As a possible aid
-towards promoting topics for submissions we have listed a few
-candidates that seem to meet the criteria in the microconference
-proposals wiki located at
-http://wiki.linuxplumbersconf.org/2013:pci_subsystem
+Thanks for putting this item on the agenda.
 
-Last year, we had a good discussion on general issues in PCI space -
-that also might be worth giving updates on.
+-- Shuah
 
-If you have topics that you would like to add, wait until the
-instructions get posted at the link above. If you are impatient, feel
-free to email me directly (but probably best to drop the broad mailing
-lists from the reply).
-
-Thanks!
-
-Len, Bjorn, Myron, Rafael
-
-
-
-Yinghai - An update on host bridge hot-add capabilities, what is in
-place and what still remains to be done, would seem like a good topic.
-
-Shuah - You brought up the idea about "Converting drivers from Legacy
-PM ops to dev_pm_ops"; would you like to present what you have
-done/encountered so far?
+Shuah Khan, Linux Kernel Developer - Open Source Group Samsung Research
+America (Silicon Valley) shuah.kh@samsung.com | (970) 672-0658
