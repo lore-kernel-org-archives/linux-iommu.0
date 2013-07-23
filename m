@@ -1,54 +1,67 @@
-From: Kai Huang <mail.kai.huang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: greetings
-Date: Mon, 22 Jul 2013 01:24:54 +0800
-Message-ID: <CANqQZNE0ggWzZroEFFuJNFuBnABsP7VHNyh30-5P=+F-TU_06w@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, figo1802-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, albcamus-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, clin-pghWNbHTmq7QT0dZR+AlfA@public.gmane.org, xiaoxu0915-PkbjNfxxIARBDgjK7y7TUQ@public.gmane.org, hkflyster-PkbjNfxxIARBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, cody_kai-k+cT0dCbe1g@public.gmane.org, leo-8d+Lob4vi6JWk0Htik3J/w@public.gmane.org, limeixia052-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, jilly-QMVPZaku54v/PtFMR13I2A@public.gmane.org, rsvp-dEQiMlfYlSzYtjvyW6yDsg@public.gmane.org, cathywwl327-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, hufh2004-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, whsunflower-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, WendyFang-INIyZp0QMDBpfZW5I2bhc8zWQAQhF3cR@public.gmane.org, madhurao-FYB4Gu1CFyUAvxtiuMwx3w@public.gmane.org, pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org, stepanm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, maggie.zhang-Gw91ZOl37AIS+FvcfC7Uqw@public.gmane.org, limeixia052-KN7UnAbNpbg@public.gmane.org, zhangkeli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, helen-syh7hp3bE41JsNfz3m1ccw@public.gmane.org, wwshao-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, mail.kai.huang-I18gQtBQK2l/ekNLOble2Q@public.gmane.org, chrisw-69jw2NvuJkxg9hUCZPvPmw@public.gmane.org, phelps.zhang-LDR2a++NUJE@public.gmane.org, 173204947-9uewiaClKEY@public.gmane.org, jean.guyader-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, simonyang-N/EWZ4IZtgKZox4op4iWzw@public.gmane.org, linux-pci-q7rQbLoQdy39qxiX1TGQuw@public.gmane.org, jing.a.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, li-zhen.you-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, lianghong1175@hotma
+From: Antonios Motakis <a.motakis@virtualopensystems.com>
+Subject: [PATCH] iommu/exynos: add devices attached to the System MMU to an IOMMU group
+Date: Tue, 23 Jul 2013 12:01:32 +0200
+Message-ID: <1374573694-30595-1-git-send-email-a.motakis@virtualopensystems.com>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org
+Cc: kvmarm@lists.cs.columbia.edu, Antonios Motakis <a.motakis@virtualopensystems.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Sachin Kamat <sachin.kamat@linaro.org>, Jiri Kosina <jkosina@suse.cz>, Wei Yongjun <yongjun_wei@trendmicro.com.cn>, open list <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
- http://shopatvei.com/shslm/fcwhrebg
+IOMMU groups are expected by certain users of the IOMMU API,
+e.g. VFIO. Since each device is behind its own System MMU, we
+can allocate a new IOMMU group for each device.
 
+This patch depends on Cho KyongHo's patch series titled "[PATCH v7 00/12]
+iommu/exynos: Fixes and Enhancements of System MMU driver with DT",
+applied on a Linux 3.10.1 kernel. It has been tested on the Arndale board.
 
+Signed-off-by: Antonios Motakis <a.motakis@virtualopensystems.com>
+---
+ drivers/iommu/exynos-iommu.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- mail.kai.huang
-
-
-
-
-
-
-
-
-
-
-
- 7/21/2013 6:24:46 PM
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 51d43bb..9f39eaa 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -1134,6 +1134,28 @@ static phys_addr_t exynos_iommu_iova_to_phys(struct iommu_domain *domain,
+ 	return phys;
+ }
+ 
++static int exynos_iommu_add_device(struct device *dev)
++{
++	struct iommu_group *group;
++	int ret;
++
++	group = iommu_group_alloc();
++	if (IS_ERR(group)) {
++		dev_err(dev, "Failed to allocate IOMMU group\n");
++		return PTR_ERR(group);
++	}
++
++	ret = iommu_group_add_device(group, dev);
++	iommu_group_put(group);
++
++	return ret;
++}
++
++static void exynos_iommu_remove_device(struct device *dev)
++{
++	iommu_group_remove_device(dev);
++}
++
+ static struct iommu_ops exynos_iommu_ops = {
+ 	.domain_init = &exynos_iommu_domain_init,
+ 	.domain_destroy = &exynos_iommu_domain_destroy,
+@@ -1142,6 +1164,8 @@ static struct iommu_ops exynos_iommu_ops = {
+ 	.map = &exynos_iommu_map,
+ 	.unmap = &exynos_iommu_unmap,
+ 	.iova_to_phys = &exynos_iommu_iova_to_phys,
++	.add_device	= exynos_iommu_add_device,
++	.remove_device	= exynos_iommu_remove_device,
+ 	.pgsize_bitmap = SECT_SIZE | LPAGE_SIZE | SPAGE_SIZE,
+ };
+ 
+-- 
+1.8.1.2
