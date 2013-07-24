@@ -1,406 +1,154 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH v2 1/2] pci: Create PCIe requester ID interface
-Date: Tue, 23 Jul 2013 17:21:43 -0600
-Message-ID: <1374621703.15429.98.camel@ul30vt.home>
-References: <20130711204439.1701.90503.stgit@bling.home>
-	<20130711210326.1701.56478.stgit@bling.home>
-	<20130723223533.GB19765@google.com>
+From: Takao Indoh <indou.takao@jp.fujitsu.com>
+Subject: Re: [PATCH v2] PCI: Reset PCIe devices to stop ongoing DMA
+Date: Wed, 24 Jul 2013 15:29:58 +0900
+Message-ID: <51EF7466.20703@jp.fujitsu.com>
+References: <1368509365-2260-1-git-send-email-indou.takao@jp.fujitsu.com> <CAErSpo4t_2Xw76p3Z9FVzyyK-MBovavDu9D=pYoPMjESSxgT=w@mail.gmail.com> <51B19DF3.2070009@jp.fujitsu.com> <CAErSpo6dfEnzriHD_aWZB_3E-kSzauhNRHPd+VuFX5HONVKgqw@mail.gmail.com> <51B6BEDB.3000509@jp.fujitsu.com> <CAErSpo5u8qGALt6C+tuPYXdd2YgyMH6fnPnA+afUteEZ7kY0iw@mail.gmail.com> <51B93221.2040505@jp.fujitsu.com> <CAErSpo5tVK-Z3aOdMTzab-S8o5zLVtDOFQ8-LSYpUgbrJSsxuw@mail.gmail.com> <51BA7BB6.1080104@jp.fujitsu.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-2022-JP
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130723223533.GB19765-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <51BA7BB6.1080104@jp.fujitsu.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: bhelgaas@google.com
+Cc: linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, kexec@lists.infradead.org, ishii.hironobu@jp.fujitsu.com, ddutile@redhat.com, bill.sumner@hp.com, alex.williamson@redhat.com, vgoyal@redhat.com, hbabu@us.ibm.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2013-07-23 at 16:35 -0600, Bjorn Helgaas wrote:
-> On Thu, Jul 11, 2013 at 03:03:27PM -0600, Alex Williamson wrote:
-> > This provides interfaces for drivers to discover the visible PCIe
-> > requester ID for a device, for things like IOMMU setup, and iterate
+Sorry for letting this discussion slide, I was busy on other works:-(
+Anyway, the summary of previous discussion is:
+- My patch adds new initcall(fs_initcall) to reset all PCIe endpoints on
+  boot. This expects PCI enumeration is done before IOMMU
+  initialization as follows.
+    (1) PCI enumeration
+    (2) fs_initcall ---> device reset
+    (3) IOMMU initialization
+- This works on x86, but does not work on other architecture because
+  IOMMU is initialized before PCI enumeration on some architectures. So,
+  device reset should be done where IOMMU is initialized instead of
+  initcall.
+- Or, as another idea, we can reset devices in first kernel(panic kernel)
+
+Resetting devices in panic kernel is against kdump policy and seems not to
+be good idea. So I think adding reset code into iommu initialization is
+better. I'll post patches for that.
+
+Another discussion point is how to handle buggy devices. Resetting buggy
+devices makes system more unstable. One of ideas is using boot parameter
+so that user can choose to reset devices or not. An existed parameter
+"reset_devices" is not helpful for this purpose because it is always
+necessary for kdump and user cannot get rid of it. Introducing new boot
+parameter seems to be unpopular for maintainers. Any ideas?
+
+Thanks,
+Takao Indoh
+
+(2013/06/14 11:11), Takao Indoh wrote:
+> (2013/06/13 12:41), Bjorn Helgaas wrote:
+>> On Wed, Jun 12, 2013 at 8:44 PM, Takao Indoh <indou.takao@jp.fujitsu.com> wrote:
+>>> (2013/06/12 13:45), Bjorn Helgaas wrote:
+>>>> [+cc Vivek, Haren; sorry I didn't think to add you earlier]
+>>>>
+>>>> On Tue, Jun 11, 2013 at 12:08 AM, Takao Indoh
+>>>> <indou.takao@jp.fujitsu.com> wrote:
+>>>>> (2013/06/11 11:20), Bjorn Helgaas wrote:
+>>>>
+>>>>>> I'm not sure you need to reset legacy devices (or non-PCI devices)
+>>>>>> yet, but the current hook isn't anchored anywhere -- it's just an
+>>>>>> fs_initcall() that doesn't give the reader any clue about the
+>>>>>> connection between the reset and the problem it's solving.
+>>>>>>
+>>>>>> If we do something like this patch, I think it needs to be done at the
+>>>>>> point where we enable or disable the IOMMU.  That way, it's connected
+>>>>>> to the important event, and there's a clue about how to make
+>>>>>> corresponding fixes for other IOMMUs.
+>>>>>
+>>>>> Ok. pci_iommu_init() is appropriate place to add this hook?
+>>>>
+>>>> I looked at various IOMMU init places today, and it's far more
+>>>> complicated and varied than I had hoped.
+>>>>
+>>>> This reset scheme depends on enumerating PCI devices before we
+>>>> initialize the IOMMU used by those devices.  x86 works that way today,
+>>>> but not all architectures do (see the sparc pci_fire_pbm_init(), for
+>>>
+>>> Sorry, could you tell me which part depends on architecture?
+>>
+>> Your patch works if PCIe devices are reset before the kdump kernel
+>> enables the IOMMU.  On x86, this is possible because PCI enumeration
+>> happens before the IOMMU initialization.  On sparc, the IOMMU is
+>> initialized before PCI devices are enumerated, so there would still be
+>> a window where ongoing DMA could cause an IOMMU error.
 > 
-> IDs (plural)
-
-How does a device can't have multiple requester IDs?  Reading below, I'm
-not sure we're on the same page for the purpose of this patch.
-
-> > over the device chain from requestee to requester, including DMA
-> > quirks at each step.
+> Ok, understood, thanks.
 > 
-> "requestee" doesn't make sense to me.  The "-ee" suffix added to a verb
-> normally makes a noun that refers to the object of the action.  So
-> "requestee" sounds like it means something like "target" or "responder,"
-> but that's not what you mean here.
-
-Hmm, ok.  I figured a request-er makes a request on behalf of a
-request-ee.  Suggestions?
-
-> > Suggested-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-> > Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> > ---
-> >  drivers/pci/search.c |  198 ++++++++++++++++++++++++++++++++++++++++++++++++++
-> >  include/linux/pci.h  |    7 ++
-> >  2 files changed, 205 insertions(+)
-> > 
-> > diff --git a/drivers/pci/search.c b/drivers/pci/search.c
-> > index d0627fa..4759c02 100644
-> > --- a/drivers/pci/search.c
-> > +++ b/drivers/pci/search.c
-> > @@ -18,6 +18,204 @@ DECLARE_RWSEM(pci_bus_sem);
-> >  EXPORT_SYMBOL_GPL(pci_bus_sem);
-> >  
-> >  /*
-> > + * pci_has_pcie_requester_id - Does @dev have a PCIe requester ID
-> > + * @dev: device to test
-> > + */
-> > +static bool pci_has_pcie_requester_id(struct pci_dev *dev)
-> > +{
-> > +	/*
-> > +	 * XXX There's no indicator of the bus type, conventional PCI vs
-> > +	 * PCI-X vs PCI-e, but we assume that a caller looking for a PCIe
-> > +	 * requester ID is a native PCIe based system (such as VT-d or
-> > +	 * AMD-Vi).  It's common that PCIe root complex devices do not
-> > +	 * include a PCIe capability, but we can assume they are PCIe
-> > +	 * devices based on their topology.
-> > +	 */
-> > +	if (pci_is_pcie(dev) || pci_is_root_bus(dev->bus))
-> > +		return true;
-> > +
-> > +	/*
-> > +	 * PCI-X devices have a requester ID, but the bridge may still take
-> > +	 * ownership of transactions and create a requester ID.  We therefore
-> > +	 * assume that the PCI-X requester ID is not the same one used on PCIe.
-> > +	 */
-> > +
-> > +#ifdef CONFIG_PCI_QUIRKS
-> > +	/*
-> > +	 * Quirk for PCIe-to-PCI bridges which do not expose a PCIe capability.
-> > +	 * If the device is a bridge, look to the next device upstream of it.
-> > +	 * If that device is PCIe and not a PCIe-to-PCI bridge, then by
-> > +	 * deduction, the device must be PCIe and therefore has a requester ID.
-> > +	 */
-> > +	if (dev->subordinate) {
-> > +		struct pci_dev *parent = dev->bus->self;
-> > +
-> > +		if (pci_is_pcie(parent) &&
-> > +		    pci_pcie_type(parent) != PCI_EXP_TYPE_PCI_BRIDGE)
-> > +			return true;
-> > +	}
-> > +#endif
-> > +
-> > +	return false;
-> > +}
-> > +
-> > +/*
-> > + * pci_has_visible_pcie_requester_id - Can @bridge see @dev's requester ID?
-> > + * @dev: requester device
-> > + * @bridge: upstream bridge (or NULL for root bus)
-> > + */
-> > +static bool pci_has_visible_pcie_requester_id(struct pci_dev *dev,
-> > +					      struct pci_dev *bridge)
-> > +{
-> > +	/*
-> > +	 * The entire path must be tested, if any step does not have a
-> > +	 * requester ID, the chain is broken.  This allows us to support
-> > +	 * topologies with PCIe requester ID gaps, ex: PCIe-PCI-PCIe
-> > +	 */
-> > +	while (dev != bridge) {
-> > +		if (!pci_has_pcie_requester_id(dev))
-> > +			return false;
-> > +
-> > +		if (pci_is_root_bus(dev->bus))
-> > +			return !bridge; /* false if we don't hit @bridge */
-> > +
-> > +		dev = dev->bus->self;
-> > +	}
-> > +
-> > +	return true;
-> > +}
-> > +
-> > +/*
-> > + * Legacy PCI bridges within a root complex (ex. Intel 82801) report
-> > + * a different requester ID than a standard PCIe-to-PCI bridge.  Instead
-> > + * of using (subordinate << 8 | 0) the use (bus << 8 | devfn), like a
+> Hmmm, it seems to be difficult to find out method which is common to
+> all architectures. So, what I can do for now is introducing reset scheme
+> which is only for x86.
 > 
-> s/the/they/
+> 1) Change this patch so that it work only on x86 platform. For example
+>     call this reset code from x86_init.iommu.iommu_init() instead of
+>     fs_initcall.
 > 
-> Did you learn about this empirically?  Intel spec?  I wonder if there's
-> some way to derive this from the PCIe specs.
-
-It's in the current intel-iommu logic, pretty much anywhere it uses
-pci_find_upstream_pcie_bridge() it follows that up with a pci_is_pcie()
-check.  If it's PCIe, it uses a traditional PCIe-to-PCI bridge ID.  If
-it's a legacy PCI bridge it uses the bridge ID itself.
-
-static int
-domain_context_mapping(struct dmar_domain *domain, struct pci_dev *pdev,
-                        int translation)
-{
-...
-        /* dependent device mapping */
-        tmp = pci_find_upstream_pcie_bridge(pdev);
-        if (!tmp)
-                return 0;
-...
-        if (pci_is_pcie(tmp)) /* this is a PCIe-to-PCI bridge */
-                return domain_context_mapping_one(domain,
-                                        pci_domain_nr(tmp->subordinate),
-                                        tmp->subordinate->number, 0,
-                                        translation);
-        else /* this is a legacy PCI bridge */
-                return domain_context_mapping_one(domain,
-                                                  pci_domain_nr(tmp->bus),
-                                                  tmp->bus->number,
-                                                  tmp->devfn,
-                                                  translation);
-
-The 82801 reference is from looking at when this would actually happen
-on one of my own systems.
-
-
-> > + * standard PCIe endpoint.  This function detects them.
-> > + *
-> > + * XXX Is this Intel vendor ID specific?
-> > + */
-> > +static bool pci_bridge_uses_endpoint_requester(struct pci_dev *bridge)
-> > +{
-> > +	if (!pci_is_pcie(bridge) && pci_is_root_bus(bridge->bus))
-> > +		return true;
-> > +
-> > +	return false;
-> > +}
-> > +
-> > +#define PCI_REQUESTER_ID(dev)	(((dev)->bus->number << 8) | (dev)->devfn)
-> > +#define PCI_BRIDGE_REQUESTER_ID(dev)	((dev)->subordinate->number << 8)
-> > +
-> > +/*
-> > + * pci_get_visible_pcie_requester - Get requester and requester ID for
-> > + *                                  @requestee below @bridge
-> > + * @requestee: requester device
-> > + * @bridge: upstream bridge (or NULL for root bus)
-> > + * @requester_id: location to store requester ID or NULL
-> > + */
-> > +struct pci_dev *pci_get_visible_pcie_requester(struct pci_dev *requestee,
-> > +					       struct pci_dev *bridge,
-> > +					       u16 *requester_id)
+> Or another idea is:
 > 
-> I'm not sure it makes sense to return a struct pci_dev here because
-> there's no requirement that a requester ID correspond to an actual
-> pci_dev.
-
-That's why this function is named get_.._requester instead of requester
-ID.  I believe there still has to be a struct pci_dev that does the
-request, but the requester ID for that device may not actually match.
-So I return both.  In a PCIe-to-PCI bridge case, the pci_dev is the
-bridge, but the requester ID is either the bridge bus|devfn or
-subordinate|0 depending on the topology.  If we want to support "ghost
-functions", we can return the real pci_dev and a ghost requester ID.
-
-I think if we used just a requester ID, it ends up being extremely
-difficult to pass that into anything else since we then have to search
-again for where that requester ID is rooted.
-
-> > +{
-> > +	struct pci_dev *requester = requestee;
-> > +
-> > +	while (requester != bridge) {
-> > +		requester = pci_get_dma_source(requester);
-> > +		pci_dev_put(requester); /* XXX skip ref cnt */
-> > +
-> > +		if (pci_has_visible_pcie_requester_id(requester, bridge))
+> 2) Enumerate PCI devices in IOMMU layer. That is:
+>     PCI layer
+>       Just provide interface to reset given strcut pci_dev. Maybe
+>       pci_reset_function() looks good for this purpose.
+>     IOMMU layer
+>       Determine which devices should be reset. On kernel boot, check if
+>       IOMMU is already active or not, and if active, check IOMMU page
+>       table and reset devices whose entry exists there.
 > 
-> If we acquire the "requester" pointer via a ref-counting interface,
-> it's illegal to use the pointer after dropping the reference, isn't it?
-> Maybe that's what you mean by the "XXX" comment.
-
-
-Yes, I was just following your RFC lead and didn't want to deal with
-reference counting until this approach had enough traction.
-
-
-> > +			break;
-> > +
-> > +		if (pci_is_root_bus(requester->bus))
-> > +			return NULL; /* @bridge not parent to @requestee */
-> > +
-> > +		requester = requester->bus->self;
-> > +	}
-> > +
-> > +	if (requester_id) {
-> > +		if (requester->bus != requestee->bus &&
-> > +		    !pci_bridge_uses_endpoint_requester(requester))
-> > +			*requester_id = PCI_BRIDGE_REQUESTER_ID(requester);
-> > +		else
-> > +			*requester_id = PCI_REQUESTER_ID(requester);
-> > +	}
-> > +
-> > +	return requester;
-> > +}
-> > +
-> > +static int pci_do_requester_callback(struct pci_dev **dev,
-> > +				     int (*fn)(struct pci_dev *,
-> > +					       u16 id, void *),
-> > +				     void *data)
-> > +{
-> > +	struct pci_dev *dma_dev;
-> > +	int ret;
-> > +
-> > +	ret = fn(*dev, PCI_REQUESTER_ID(*dev), data);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	dma_dev = pci_get_dma_source(*dev);
-> > +	pci_dev_put(dma_dev); /* XXX skip ref cnt */
-> > +	if (dma_dev == *dev)
+>> Of course, it might be possible to reorganize the sparc code to to the
+>> IOMMU init *after* it enumerates PCI devices.  But I think that change
+>> would be hard to justify.
+>>
+>> And I think even on x86, it would be better if we did the IOMMU init
+>> before PCI enumeration -- the PCI devices depend on the IOMMU, so
+>> logically the IOMMU should be initialized first so the PCI devices can
+>> be associated with it as they are enumerated.
 > 
-> Same ref count question as above.
+> So third idea is:
 > 
-> > +		return 0;
-> > +
-> > +	ret = fn(dma_dev, PCI_REQUESTER_ID(dma_dev), data);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	*dev = dma_dev;
-> > +	return 0;
-> > +}
-> > +
-> > +/*
-> > + * pcie_for_each_requester - Call callback @fn on each devices and DMA source
-> > + *                           from @requestee to the PCIe requester ID visible
-> > + *                           to @bridge.
+> 3) Do reset before PCI enumeration(arch_initcall_sync or somewhere). We
+>     need to implement new code to enumerate PCI devices and reset them
+>     for this purpose.
 > 
-> Transactions from a device may appear with one of several requester IDs,
-> but there's not necessarily an actual pci_dev for each ID, so I think the
-> caller reads better if it's "...for_each_requester_id()"
-
-Wouldn't you expect to pass a requester ID into a function with that
-name?  I'm pretty sure I had it named that at one point but thought the
-parameters made more sense this way.  I'll see if I can think of a
-better name.
-
-> The "Call X on each devices and DMA source from Y to the requester ID"
-> part doesn't quite make a sentence.
-
-
-Ok
-
-> > + * @requestee: Starting device
-> > + * @bridge: upstream bridge (or NULL for root bus)
+> Idea 2 is not difficult to implement, but one problem is that this
+> method may be dangerous. We need to scan IOMMU page table which is used
+> in previous kernel, but it may be broken. Idea 3 seems to be difficult
+> to implement...
 > 
-> You should say something about the significance of @bridge.  I think the
-> point is to call @fn for every possible requester ID @bridge could see for
-> transactions from @requestee.  This is a way to learn the requester IDs an
-> IOMMU at @bridge needs to be prepared for.
-
-I can add something.  @bridge is supposed to be for bridge-based IOMMUs.
-Essentially it's just a stopping point.  There might be PCI topology
-upstream of @bridge, but if you only want the requester ID seen by the
-bridge, you don't care.
-
-> > + * @fn: callback function
-> > + * @data: data to pass to callback
-> > + */
-> > +int pcie_for_each_requester(struct pci_dev *requestee, struct pci_dev *bridge,
-> > +			    int (*fn)(struct pci_dev *, u16 id, void *),
-> > +			    void *data)
-> > +{
-> > +	struct pci_dev *requester;
-> > +	struct pci_dev *dev = requestee;
-> > +	int ret = 0;
-> > +
-> > +	requester = pci_get_visible_pcie_requester(requestee, bridge, NULL);
-> > +	if (!requester)
-> > +		return -EINVAL;
-> > +
-> > +	do {
-> > +		ret = pci_do_requester_callback(&dev, fn, data);
-> > +		if (ret)
-> > +			return ret;
-> > +
-> > +		if (dev == requester)
-> > +			return 0;
-> > +
-> > +		/*
-> > +		 * We always consider root bus devices to have a visible
-> > +		 * requester ID, therefore this should never be true.
-> > +		 */
-> > +		BUG_ON(pci_is_root_bus(dev->bus));
 > 
-> What are we going to do if somebody hits this BUG_ON()?  If it's impossible
-> to hit, we should just remove it.  If it's possible to hit it in some weird
-> topology you didn't consider, we should see IOMMU faults for any requester
-> ID we neglected to map, and that fault would be a better debugging hint
-> than a BUG_ON() here.
-
-It's mostly for readability.  I've learned that we never what to look at
-dev->bus->self without first testing pci_is_root_bus(dev->bus), so if I
-was reading this code I'd stumble when I got here and spend too long
-looking around for the assumption that makes it not needed.  I suppose I
-could just make it a comment, but I thought why not make it official w/
-a BUG.
-
-> > +
-> > +		dev = dev->bus->self;
-> > +
-> > +	} while (dev != requester);
-> > +
-> > +	/*
-> > +	 * If we've made it here, @requester is a bridge upstream from
-> > +	 * @requestee.
-> > +	 */
-> > +	if (pci_bridge_uses_endpoint_requester(requester))
-> > +		return pci_do_requester_callback(&requester, fn, data);
-> > +
-> > +	return fn(requester, PCI_BRIDGE_REQUESTER_ID(requester), data);
-> > +}
-> > +
-> > +/*
-> >   * find the upstream PCIe-to-PCI bridge of a PCI device
-> >   * if the device is PCIE, return NULL
-> >   * if the device isn't connected to a PCIe bridge (that is its parent is a
-> > diff --git a/include/linux/pci.h b/include/linux/pci.h
-> > index 3a24e4f..94e81d1 100644
-> > --- a/include/linux/pci.h
-> > +++ b/include/linux/pci.h
-> > @@ -1873,6 +1873,13 @@ static inline struct eeh_dev *pci_dev_to_eeh_dev(struct pci_dev *pdev)
-> >  }
-> >  #endif
-> >  
-> > +struct pci_dev *pci_get_visible_pcie_requester(struct pci_dev *requestee,
-> > +					       struct pci_dev *bridge,
-> > +					       u16 *requester_id);
+>>
+>>>> example).  And I think conceptually, the IOMMU should be enumerated
+>>>> and initialized *before* the devices that use it.
+>>>>
+>>>> So I'm uncomfortable with that aspect of this scheme.
+>>>>
+>>>> It would be at least conceivable to reset the devices in the system
+>>>> kernel, before the kexec.  I know we want to do as little as possible
+>>>> in the crashing kernel, but it's at least a possibility, and it might
+>>>> be cleaner.
+>>>
+>>> I bet this will be not accepted by kdump maintainer. Everything in panic
+>>> kernel is unreliable.
+>>
+>> kdump is inherently unreliable.  The kdump kernel doesn't start from
+>> an arbitrary machine state.  We don't expect it to tolerate all CPUs
+>> running, for example.  Maybe it should be expected to tolerate PCI
+>> devices running, either.
 > 
-> The structure of this interface implies that there is only one visible
-> requester ID, but the whole point of this patch is that a transaction from
-> @requestee may appear with one of several requester IDs.  So which one will
-> this return?
-
-I thought the point of this patch was to have an integrated interface
-for finding the requester ID and doing something across all devices with
-that requester ID and thereby remove pci_find_upstream_pcie_bridge(),
-provide a way to quirk broken PCIe-to-PCI bridge and quirk dma_ops for
-devices that use the wrong requester ID.  In what case does a device
-appear to have multiple requester IDs?  We have cases where devices use
-the wrong requester ID, but AFAIK they only use a single wrong requester
-ID.  Thanks,
-
-Alex
-
-> > +int pcie_for_each_requester(struct pci_dev *requestee, struct pci_dev *bridge,
-> > +			    int (*fn)(struct pci_dev *, u16 id, void *),
-> > +			    void *data);
-> > +
-> >  /**
-> >   * pci_find_upstream_pcie_bridge - find upstream PCIe-to-PCI bridge of a device
-> >   * @pdev: the PCI device
-> > 
+> What I wanted to say is that any resources of first kernel are
+> unreliable. Under panic situation, struct pci_dev tree may be broken, or
+> pci_lock may be already hold by someone, etc. So, if we do this in first
+> kernel, maybe kdump needs its own code to enumerate PCI devices and
+> reset them.
+> 
+> Vivek?
+> 
+> Thanks,
+> Takao Indoh
+> 
+> 
+> 
