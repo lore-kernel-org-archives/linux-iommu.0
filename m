@@ -1,284 +1,176 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+From: Bjorn Helgaas <bhelgaas@google.com>
 Subject: Re: [RFC PATCH v2 1/2] pci: Create PCIe requester ID interface
-Date: Wed, 24 Jul 2013 15:22:46 -0600
-Message-ID: <1374700966.16522.19.camel@ul30vt.home>
+Date: Wed, 24 Jul 2013 17:24:27 -0600
+Message-ID: <20130724232427.GA9272@google.com>
 References: <20130711204439.1701.90503.stgit@bling.home>
-	<20130711210326.1701.56478.stgit@bling.home>
-	<20130723223533.GB19765@google.com> <51F03C1B.2070002@redhat.com>
+ <20130711210326.1701.56478.stgit@bling.home>
+ <20130723223533.GB19765@google.com>
+ <1374621703.15429.98.camel@ul30vt.home>
+ <CAErSpo6bcGCjqdxn-bz_vjo+HsAiOxDu=--mD7veEZ9f7k+gyA@mail.gmail.com>
+ <1374689548.5208.62.camel@ul30vt.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <51F03C1B.2070002-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1374689548.5208.62.camel@ul30vt.home>
+Sender: linux-pci-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, Andrew Cooks <acooks@gmail.com>, Don Dutile <ddutile@redhat.com>, David Woodhouse <dwmw2@infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gV2VkLCAyMDEzLTA3LTI0IGF0IDE2OjQyIC0wNDAwLCBEb24gRHV0aWxlIHdyb3RlOgo+IE9u
-IDA3LzIzLzIwMTMgMDY6MzUgUE0sIEJqb3JuIEhlbGdhYXMgd3JvdGU6Cj4gPiBPbiBUaHUsIEp1
-bCAxMSwgMjAxMyBhdCAwMzowMzoyN1BNIC0wNjAwLCBBbGV4IFdpbGxpYW1zb24gd3JvdGU6Cj4g
-Pj4gVGhpcyBwcm92aWRlcyBpbnRlcmZhY2VzIGZvciBkcml2ZXJzIHRvIGRpc2NvdmVyIHRoZSB2
-aXNpYmxlIFBDSWUKPiA+PiByZXF1ZXN0ZXIgSUQgZm9yIGEgZGV2aWNlLCBmb3IgdGhpbmdzIGxp
-a2UgSU9NTVUgc2V0dXAsIGFuZCBpdGVyYXRlCj4gPgo+ID4gSURzIChwbHVyYWwpCj4gPgo+IGEg
-c2luZ2xlIGRldmljZSBkb2VzIG5vdCBoYXZlIG11bHRpcGxlIHJlcXVlc3RlciBpZCdzOwo+IGNh
-biBoYXZlIG11bHRpcGxlIHRhZy1pZCdzICh0aGF0IGFyZSBpZ25vcmVkIGluIHRoaXMgc2l0dWF0
-aW9uLCBidXQKPiBjYW4gYmUgdXNlZCBieSBzd2l0Y2hlcyBmb3Igb3JkZXJpbmcgcHVycG9zZXMp
-LCBidXQgdGhlcmUncyBvbmx5IDEvZmNuCj4gKGV4Y2VwdCBmb3IgdGhvc2UgcXVpcmtlciBwZGV2
-cyEpLgo+IAo+ID4+IG92ZXIgdGhlIGRldmljZSBjaGFpbiBmcm9tIHJlcXVlc3RlZSB0byByZXF1
-ZXN0ZXIsIGluY2x1ZGluZyBETUEKPiA+PiBxdWlya3MgYXQgZWFjaCBzdGVwLgo+ID4KPiA+ICJy
-ZXF1ZXN0ZWUiIGRvZXNuJ3QgbWFrZSBzZW5zZSB0byBtZS4gIFRoZSAiLWVlIiBzdWZmaXggYWRk
-ZWQgdG8gYSB2ZXJiCj4gPiBub3JtYWxseSBtYWtlcyBhIG5vdW4gdGhhdCByZWZlcnMgdG8gdGhl
-IG9iamVjdCBvZiB0aGUgYWN0aW9uLiAgU28KPiA+ICJyZXF1ZXN0ZWUiIHNvdW5kcyBsaWtlIGl0
-IG1lYW5zIHNvbWV0aGluZyBsaWtlICJ0YXJnZXQiIG9yICJyZXNwb25kZXIsIgo+ID4gYnV0IHRo
-YXQncyBub3Qgd2hhdCB5b3UgbWVhbiBoZXJlLgo+ID4KPiBzb3JyeSwgSSBkaWRuJ3QgZm9sbG93
-IHRoZSByZXF1ZXN0ZXIvcmVxdWVzdGVlIHRlcm1pbm9sb2d5IGVpdGhlci4uLgo+IAo+ID4+IFN1
-Z2dlc3RlZC1ieTogQmpvcm4gSGVsZ2FhczxiaGVsZ2Fhc0Bnb29nbGUuY29tPgo+ID4+IFNpZ25l
-ZC1vZmYtYnk6IEFsZXggV2lsbGlhbXNvbjxhbGV4LndpbGxpYW1zb25AcmVkaGF0LmNvbT4KPiA+
-PiAtLS0KPiA+PiAgIGRyaXZlcnMvcGNpL3NlYXJjaC5jIHwgIDE5OCArKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKwo+ID4+ICAgaW5jbHVkZS9saW51eC9w
-Y2kuaCAgfCAgICA3ICsrCj4gPj4gICAyIGZpbGVzIGNoYW5nZWQsIDIwNSBpbnNlcnRpb25zKCsp
-Cj4gPj4KPiA+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9wY2kvc2VhcmNoLmMgYi9kcml2ZXJzL3Bj
-aS9zZWFyY2guYwo+ID4+IGluZGV4IGQwNjI3ZmEuLjQ3NTljMDIgMTAwNjQ0Cj4gPj4gLS0tIGEv
-ZHJpdmVycy9wY2kvc2VhcmNoLmMKPiA+PiArKysgYi9kcml2ZXJzL3BjaS9zZWFyY2guYwo+ID4+
-IEBAIC0xOCw2ICsxOCwyMDQgQEAgREVDTEFSRV9SV1NFTShwY2lfYnVzX3NlbSk7Cj4gPj4gICBF
-WFBPUlRfU1lNQk9MX0dQTChwY2lfYnVzX3NlbSk7Cj4gPj4KPiA+PiAgIC8qCj4gPj4gKyAqIHBj
-aV9oYXNfcGNpZV9yZXF1ZXN0ZXJfaWQgLSBEb2VzIEBkZXYgaGF2ZSBhIFBDSWUgcmVxdWVzdGVy
-IElECj4gPj4gKyAqIEBkZXY6IGRldmljZSB0byB0ZXN0Cj4gPj4gKyAqLwo+ID4+ICtzdGF0aWMg
-Ym9vbCBwY2lfaGFzX3BjaWVfcmVxdWVzdGVyX2lkKHN0cnVjdCBwY2lfZGV2ICpkZXYpCj4gPj4g
-K3sKPiA+PiArCS8qCj4gPj4gKwkgKiBYWFggVGhlcmUncyBubyBpbmRpY2F0b3Igb2YgdGhlIGJ1
-cyB0eXBlLCBjb252ZW50aW9uYWwgUENJIHZzCj4gPj4gKwkgKiBQQ0ktWCB2cyBQQ0ktZSwgYnV0
-IHdlIGFzc3VtZSB0aGF0IGEgY2FsbGVyIGxvb2tpbmcgZm9yIGEgUENJZQo+ID4+ICsJICogcmVx
-dWVzdGVyIElEIGlzIGEgbmF0aXZlIFBDSWUgYmFzZWQgc3lzdGVtIChzdWNoIGFzIFZULWQgb3IK
-PiA+PiArCSAqIEFNRC1WaSkuICBJdCdzIGNvbW1vbiB0aGF0IFBDSWUgcm9vdCBjb21wbGV4IGRl
-dmljZXMgZG8gbm90Cj4gY291bGQgdGhlIGFib3ZlIGNvbW1lbnQgYmUgeDg2LWlvbW11LW5ldXRy
-YWw/Cj4gYnkgZGVmaW5pdGlvbiBvZiBQQ0llLCBhbGwgZGV2aWNlcyBoYXZlIGEgcmVxdWVzdGVy
-IGlkIChtaW4uIHRvIGFjY2VwdCBjZmcgY3ljbGVzKTsKPiByZXEnZCBpZiBzb3VyY2Ugb2YgcmVh
-ZC93cml0ZSByZXF1ZXN0cywgcmVhZCBjb21wbGV0aW9ucy4KCkkgYWdyZWUgY29tcGxldGVseSwg
-dGhlIHF1ZXN0aW9uIGlzIHdoZXRoZXIgd2UgaGF2ZSBhIFBDSWUgcm9vdCBjb21wbGV4Cm9yIGEg
-Y29udmVudGlvbmFsIFBDSSBob3N0IGJ1cy4gIEkgZG9uJ3QgdGhpbmsgd2UgaGF2ZSBhbnkgd2F5
-IHRvIHRlbGwsCnNvIEknbSBhc3N1bWluZyBwY2lfaXNfcm9vdF9idXMoKSBpbmRpY2F0ZXMgd2Un
-cmUgb24gYSBQQ0llIHJvb3QgY29tcGxleAphbmQgdGhlcmVmb3JlIGhhdmUgcmVxdWVzdGVyIElE
-cy4gIElmIHRoZXJlJ3Mgc29tZSB3YXkgdG8gZGV0ZXJtaW5lIHRoaXMKbGV0IG1lIGtub3cgYW5k
-IHdlIGNhbiBhdm9pZCBhbnkga2luZCBvZiBhc3N1bXB0aW9uLgoKPiA+PiArCSAqIGluY2x1ZGUg
-YSBQQ0llIGNhcGFiaWxpdHksIGJ1dCB3ZSBjYW4gYXNzdW1lIHRoZXkgYXJlIFBDSWUKPiA+PiAr
-CSAqIGRldmljZXMgYmFzZWQgb24gdGhlaXIgdG9wb2xvZ3kuCj4gPj4gKwkgKi8KPiA+PiArCWlm
-IChwY2lfaXNfcGNpZShkZXYpIHx8IHBjaV9pc19yb290X2J1cyhkZXYtPmJ1cykpCj4gPj4gKwkJ
-cmV0dXJuIHRydWU7Cj4gPj4gKwo+ID4+ICsJLyoKPiA+PiArCSAqIFBDSS1YIGRldmljZXMgaGF2
-ZSBhIHJlcXVlc3RlciBJRCwgYnV0IHRoZSBicmlkZ2UgbWF5IHN0aWxsIHRha2UKPiA+PiArCSAq
-IG93bmVyc2hpcCBvZiB0cmFuc2FjdGlvbnMgYW5kIGNyZWF0ZSBhIHJlcXVlc3RlciBJRC4gIFdl
-IHRoZXJlZm9yZQo+ID4+ICsJICogYXNzdW1lIHRoYXQgdGhlIFBDSS1YIHJlcXVlc3RlciBJRCBp
-cyBub3QgdGhlIHNhbWUgb25lIHVzZWQgb24gUENJZS4KPiA+PiArCSAqLwo+ID4+ICsKPiA+PiAr
-I2lmZGVmIENPTkZJR19QQ0lfUVVJUktTCj4gPj4gKwkvKgo+ID4+ICsJICogUXVpcmsgZm9yIFBD
-SWUtdG8tUENJIGJyaWRnZXMgd2hpY2ggZG8gbm90IGV4cG9zZSBhIFBDSWUgY2FwYWJpbGl0eS4K
-PiA+PiArCSAqIElmIHRoZSBkZXZpY2UgaXMgYSBicmlkZ2UsIGxvb2sgdG8gdGhlIG5leHQgZGV2
-aWNlIHVwc3RyZWFtIG9mIGl0Lgo+ID4+ICsJICogSWYgdGhhdCBkZXZpY2UgaXMgUENJZSBhbmQg
-bm90IGEgUENJZS10by1QQ0kgYnJpZGdlLCB0aGVuIGJ5Cj4gPj4gKwkgKiBkZWR1Y3Rpb24sIHRo
-ZSBkZXZpY2UgbXVzdCBiZSBQQ0llIGFuZCB0aGVyZWZvcmUgaGFzIGEgcmVxdWVzdGVyIElELgo+
-ID4+ICsJICovCj4gPj4gKwlpZiAoZGV2LT5zdWJvcmRpbmF0ZSkgewo+ID4+ICsJCXN0cnVjdCBw
-Y2lfZGV2ICpwYXJlbnQgPSBkZXYtPmJ1cy0+c2VsZjsKPiA+PiArCj4gPj4gKwkJaWYgKHBjaV9p
-c19wY2llKHBhcmVudCkmJgo+ID4+ICsJCSAgICBwY2lfcGNpZV90eXBlKHBhcmVudCkgIT0gUENJ
-X0VYUF9UWVBFX1BDSV9CUklER0UpCj4gPj4gKwkJCXJldHVybiB0cnVlOwo+ID4+ICsJfQo+ID4+
-ICsjZW5kaWYKPiA+PiArCj4gPj4gKwlyZXR1cm4gZmFsc2U7Cj4gPj4gK30KPiA+PiArCj4gPj4g
-Ky8qCj4gPj4gKyAqIHBjaV9oYXNfdmlzaWJsZV9wY2llX3JlcXVlc3Rlcl9pZCAtIENhbiBAYnJp
-ZGdlIHNlZSBAZGV2J3MgcmVxdWVzdGVyIElEPwo+ID4+ICsgKiBAZGV2OiByZXF1ZXN0ZXIgZGV2
-aWNlCj4gPj4gKyAqIEBicmlkZ2U6IHVwc3RyZWFtIGJyaWRnZSAob3IgTlVMTCBmb3Igcm9vdCBi
-dXMpCj4gPj4gKyAqLwo+ID4+ICtzdGF0aWMgYm9vbCBwY2lfaGFzX3Zpc2libGVfcGNpZV9yZXF1
-ZXN0ZXJfaWQoc3RydWN0IHBjaV9kZXYgKmRldiwKPiA+PiArCQkJCQkgICAgICBzdHJ1Y3QgcGNp
-X2RldiAqYnJpZGdlKQo+ID4+ICt7Cj4gPj4gKwkvKgo+ID4+ICsJICogVGhlIGVudGlyZSBwYXRo
-IG11c3QgYmUgdGVzdGVkLCBpZiBhbnkgc3RlcCBkb2VzIG5vdCBoYXZlIGEKPiA+PiArCSAqIHJl
-cXVlc3RlciBJRCwgdGhlIGNoYWluIGlzIGJyb2tlbi4gIFRoaXMgYWxsb3dzIHVzIHRvIHN1cHBv
-cnQKPiA+PiArCSAqIHRvcG9sb2dpZXMgd2l0aCBQQ0llIHJlcXVlc3RlciBJRCBnYXBzLCBleDog
-UENJZS1QQ0ktUENJZQo+ID4+ICsJICovCj4gPj4gKwl3aGlsZSAoZGV2ICE9IGJyaWRnZSkgewo+
-ID4+ICsJCWlmICghcGNpX2hhc19wY2llX3JlcXVlc3Rlcl9pZChkZXYpKQo+ID4+ICsJCQlyZXR1
-cm4gZmFsc2U7Cj4gPj4gKwo+ID4+ICsJCWlmIChwY2lfaXNfcm9vdF9idXMoZGV2LT5idXMpKQo+
-ID4+ICsJCQlyZXR1cm4gIWJyaWRnZTsgLyogZmFsc2UgaWYgd2UgZG9uJ3QgaGl0IEBicmlkZ2Ug
-Ki8KPiA+PiArCj4gPj4gKwkJZGV2ID0gZGV2LT5idXMtPnNlbGY7Cj4gPj4gKwl9Cj4gPj4gKwo+
-ID4+ICsJcmV0dXJuIHRydWU7Cj4gPj4gK30KPiA+PiArCj4gPj4gKy8qCj4gPj4gKyAqIExlZ2Fj
-eSBQQ0kgYnJpZGdlcyB3aXRoaW4gYSByb290IGNvbXBsZXggKGV4LiBJbnRlbCA4MjgwMSkgcmVw
-b3J0Cj4gPj4gKyAqIGEgZGlmZmVyZW50IHJlcXVlc3RlciBJRCB0aGFuIGEgc3RhbmRhcmQgUENJ
-ZS10by1QQ0kgYnJpZGdlLiAgSW5zdGVhZAo+IEZpcnN0LCBJJ20gYXNzdW1pbmcgeW91IG1lYW4g
-dGhhdCBkZXZpY2VzIGJlaGluZCBhIExlZ2FjeSBQQ0kgYnJpZGdlIHdpdGhpbiBhIHJvb3QgY29t
-cGxleAo+IGdldCBhc3NpZ25lZCBJRHMgZGlmZmVyZW50IHRoYW4gc3RkIFBDSWUtdG8tUENJIGJy
-aWRnZXMgKGFzIHF1b3RlZCBiZWxvdykuCgpZZXMKCj4gPj4gKyAqIG9mIHVzaW5nIChzdWJvcmRp
-bmF0ZTw8ICA4IHwgMCkgdGhlIHVzZSAoYnVzPDwgIDggfCBkZXZmbiksIGxpa2UgYQo+ID4KPiA+
-IHMvdGhlL3RoZXkvCj4gPgo+IHdlbGwsIHRoZSBQUEJzIHNob3VsZCBpbmplY3QgdGhlaXIgKHNl
-Y29uZGFyeSA8PCA4IHwgMCksIG5vdCBzdWJvcmRpbmF0ZS4KPiAgRnJvbSB0aGUgUENJIEV4cHJl
-c3MgdG8gUENJL1BDSS1YIEJyaWRnZSBzcGVjLCB2MS4wOgo+IFRoZSBUYWcgaXMgcmVhc3NpZ25l
-ZCBieSB0aGUgYnJpZGdlIGFjY29yZGluZyB0byB0aGUgcnVsZXMgb3V0bGluZWQgaW4gdGhlIGZv
-bGxvd2luZyBzZWN0aW9ucy4gSWYgdGhlCj4gYnJpZGdlIGdlbmVyYXRlcyBhIG5ldyBSZXF1ZXN0
-ZXIgSUQgZm9yIGEgdHJhbnNhY3Rpb24gZm9yd2FyZGVkIGZyb20gdGhlIHNlY29uZGFyeSBpbnRl
-cmZhY2UgdG8gdGhlCj4gcHJpbWFyeSBpbnRlcmZhY2UsIHRoZSBicmlkZ2UgYXNzaWducyB0aGUg
-UENJIEV4cHJlc3MgUmVxdWVzdGVyIElEIHVzaW5nIGl0cyBzZWNvbmRhcnkgaW50ZXJmYWNl4oCZ
-cwo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgIF5eXl5eXl5eXgo+IEJ1cyBOdW1iZXIgYW5kIHNldHMg
-Ym90aCB0aGUgRGV2aWNlIE51bWJlciBhbmQgRnVuY3Rpb24gTnVtYmVyIGZpZWxkcyB0byB6ZXJv
-Lgo+IF5eXl5eXl5eXl4KCkknbSByZWZlcnJpbmcgdG8gKHBkZXYtPnN1Ym9yZGluYXRlLT5udW1i
-ZXIgPDwgOCB8IDApIHZzCihwZGV2LT5idXMtPm51bWJlciA8PCA4IHwgcGRldi0+ZGV2Zm4pLiAg
-VGhlIHN1Ym9yZGluYXRlIHN0cnVjdCBwY2lfYnVzCmlzIHRoZSBzZWNvbmRhcnkgaW50ZXJmYWNl
-IGJ1cy4KCj4gQXMgZm9yIHRoZSA4MjgwMSwgbG9va3MgbGlrZSB0aGV5IHRvb2sgdGhpcyBwYXJ0
-IG9mIHRoZSBQQ0llIHNwZWMgdG8gaGVhcnQ6Cj4gKFBDSWUgdjMgc3BlYywgc2VjdGlvbiAyLjIu
-Ni4yIFRyYW5zYWN0aW9uIERlc2NyaXB0b3IgLSBUcmFuc2FjdGlvbiBJRCBGaWVsZCk6Cj4gRXhj
-ZXB0aW9uOiBUaGUgYXNzaWdubWVudCBvZiBCdXMgYW5kIERldmljZSBOdW1iZXJzIHRvIHRoZSBE
-ZXZpY2VzIHdpdGhpbiBhIFJvb3QgQ29tcGxleCwKPiBhbmQgdGhlIERldmljZSBOdW1iZXJzIHRv
-IHRoZSBEb3duc3RyZWFtIFBvcnRzIHdpdGhpbiBhIFN3aXRjaCwgbWF5IGJlIGRvbmUgaW4gYW4K
-PiBpbXBsZW1lbnRhdGlvbiBzcGVjaWZpYyB3YXkuCj4gT2J2aW91c2x5LCB5b3UncmUgbWlzc2lu
-ZyB0aGUgJ2ltcGxlbWVudGF0aW9uLXNwZWNpZmljIHdheScgY29tcGlsZXIuLi4gOy0pCgpTbyB0
-aGlzIGlzIHBvdGVudGlhbGx5IEludGVsIHNwZWNpZmljLiAgSG93IGNhbiB3ZSB0ZWxsIGl0J3Mg
-YW4gSW50ZWwKcm9vdCBjb21wbGV4PwoKPiBhdzogd2hpY2ggJ2J1cycgZG8geW91IG1lYW4gYWJv
-dmUgaW4gICcoYnVzPDwgIDggfCBkZXZmbiknID8KCihwZGV2LT5idXMtPm51bWJlciA8PCA4IHwg
-cGRldi0+ZGV2Zm4pCgo+ID4gRGlkIHlvdSBsZWFybiBhYm91dCB0aGlzIGVtcGlyaWNhbGx5PyAg
-SW50ZWwgc3BlYz8gIEkgd29uZGVyIGlmIHRoZXJlJ3MKPiA+IHNvbWUgd2F5IHRvIGRlcml2ZSB0
-aGlzIGZyb20gdGhlIFBDSWUgc3BlY3MuCj4gPgo+ID4+ICsgKiBzdGFuZGFyZCBQQ0llIGVuZHBv
-aW50LiAgVGhpcyBmdW5jdGlvbiBkZXRlY3RzIHRoZW0uCj4gPj4gKyAqCj4gPj4gKyAqIFhYWCBJ
-cyB0aGlzIEludGVsIHZlbmRvciBJRCBzcGVjaWZpYz8KPiA+PiArICovCj4gPj4gK3N0YXRpYyBi
-b29sIHBjaV9icmlkZ2VfdXNlc19lbmRwb2ludF9yZXF1ZXN0ZXIoc3RydWN0IHBjaV9kZXYgKmJy
-aWRnZSkKPiA+PiArewo+ID4+ICsJaWYgKCFwY2lfaXNfcGNpZShicmlkZ2UpJiYgIHBjaV9pc19y
-b290X2J1cyhicmlkZ2UtPmJ1cykpCj4gPj4gKwkJcmV0dXJuIHRydWU7Cj4gPj4gKwo+ID4+ICsJ
-cmV0dXJuIGZhbHNlOwo+ID4+ICt9Cj4gPj4gKwo+ID4+ICsjZGVmaW5lIFBDSV9SRVFVRVNURVJf
-SUQoZGV2KQkoKChkZXYpLT5idXMtPm51bWJlcjw8ICA4KSB8IChkZXYpLT5kZXZmbikKPiA+PiAr
-I2RlZmluZSBQQ0lfQlJJREdFX1JFUVVFU1RFUl9JRChkZXYpCSgoZGV2KS0+c3Vib3JkaW5hdGUt
-Pm51bWJlcjw8ICA4KQo+ID4+ICsKPiA+PiArLyoKPiA+PiArICogcGNpX2dldF92aXNpYmxlX3Bj
-aWVfcmVxdWVzdGVyIC0gR2V0IHJlcXVlc3RlciBhbmQgcmVxdWVzdGVyIElEIGZvcgo+ID4+ICsg
-KiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBAcmVxdWVzdGVlIGJlbG93IEBicmlk
-Z2UKPiA+PiArICogQHJlcXVlc3RlZTogcmVxdWVzdGVyIGRldmljZQo+ID4+ICsgKiBAYnJpZGdl
-OiB1cHN0cmVhbSBicmlkZ2UgKG9yIE5VTEwgZm9yIHJvb3QgYnVzKQo+ID4+ICsgKiBAcmVxdWVz
-dGVyX2lkOiBsb2NhdGlvbiB0byBzdG9yZSByZXF1ZXN0ZXIgSUQgb3IgTlVMTAo+ID4+ICsgKi8K
-PiA+PiArc3RydWN0IHBjaV9kZXYgKnBjaV9nZXRfdmlzaWJsZV9wY2llX3JlcXVlc3RlcihzdHJ1
-Y3QgcGNpX2RldiAqcmVxdWVzdGVlLAo+ID4+ICsJCQkJCSAgICAgICBzdHJ1Y3QgcGNpX2RldiAq
-YnJpZGdlLAo+ID4+ICsJCQkJCSAgICAgICB1MTYgKnJlcXVlc3Rlcl9pZCkKPiA+Cj4gPiBJJ20g
-bm90IHN1cmUgaXQgbWFrZXMgc2Vuc2UgdG8gcmV0dXJuIGEgc3RydWN0IHBjaV9kZXYgaGVyZSBi
-ZWNhdXNlCj4gPiB0aGVyZSdzIG5vIHJlcXVpcmVtZW50IHRoYXQgYSByZXF1ZXN0ZXIgSUQgY29y
-cmVzcG9uZCB0byBhbiBhY3R1YWwKPiA+IHBjaV9kZXYuCj4gPgo+IHdlbGwsIEkgd291bGQgZXhw
-ZWN0IHRoZSBvbmx5IGNhbGxlcnMgd291bGQgYmUgZm9yIHN1YnN5cyAoaW9tbXUncykKPiBzZWFy
-Y2hpbmcgdG8gZmluZCByZXF1ZXN0ZXItaWQgZm9yIGEgcGRldiwgYi9jIGlmIGEgcGRldiBkb2Vz
-bid0IGV4aXN0LAo+IHRoZW4gdGhlIGRldmljZSAoYW5kIHJlcXVlc3Rlci1pZCkgZG9lc24ndCBl
-eGlzdC4uLiA6LS8KCk9uZSBvZiB0aGUgY2FzZXMgQmpvcm4gaXMgcmVmZXJyaW5nIHRvIGlzIHBy
-b2JhYmx5IHRoZSBzaW1wbGUgY2FzZSBvZiBhClBDSWUtdG8tUENJIGJyaWRnZS4gIFRoZSByZXF1
-ZXN0ZXIgSUQgaXMgKGJyaWRnZS0+c3Vib3JkaW5hdGUtPm51bWJlciA8PAo4IHwgMCksIHdoaWNo
-IGlzIG5vdCBhbiBhY3R1YWwgZGV2aWNlLiAgQXMgY29kZWQgaGVyZSwgdGhlIGZ1bmN0aW9uCnJl
-dHVybnMgYnJpZGdlLCBidXQgcmVxdWVzdGVyX2lkIGlzIChicmlkZ2UtPnN1Ym9yZGluYXRlLT5u
-dW1iZXIgPDwgOCB8CjApLgoKPiA+PiArewo+ID4+ICsJc3RydWN0IHBjaV9kZXYgKnJlcXVlc3Rl
-ciA9IHJlcXVlc3RlZTsKPiA+PiArCj4gPj4gKwl3aGlsZSAocmVxdWVzdGVyICE9IGJyaWRnZSkg
-ewo+ID4+ICsJCXJlcXVlc3RlciA9IHBjaV9nZXRfZG1hX3NvdXJjZShyZXF1ZXN0ZXIpOwo+ID4+
-ICsJCXBjaV9kZXZfcHV0KHJlcXVlc3Rlcik7IC8qIFhYWCBza2lwIHJlZiBjbnQgKi8KPiA+PiAr
-Cj4gPj4gKwkJaWYgKHBjaV9oYXNfdmlzaWJsZV9wY2llX3JlcXVlc3Rlcl9pZChyZXF1ZXN0ZXIs
-IGJyaWRnZSkpCj4gPgo+ID4gSWYgd2UgYWNxdWlyZSB0aGUgInJlcXVlc3RlciIgcG9pbnRlciB2
-aWEgYSByZWYtY291bnRpbmcgaW50ZXJmYWNlLAo+ID4gaXQncyBpbGxlZ2FsIHRvIHVzZSB0aGUg
-cG9pbnRlciBhZnRlciBkcm9wcGluZyB0aGUgcmVmZXJlbmNlLCBpc24ndCBpdD8KPiA+IE1heWJl
-IHRoYXQncyB3aGF0IHlvdSBtZWFuIGJ5IHRoZSAiWFhYIiBjb21tZW50Lgo+ID4KPiA+PiArCQkJ
-YnJlYWs7Cj4gPj4gKwo+ID4+ICsJCWlmIChwY2lfaXNfcm9vdF9idXMocmVxdWVzdGVyLT5idXMp
-KQo+ID4+ICsJCQlyZXR1cm4gTlVMTDsgLyogQGJyaWRnZSBub3QgcGFyZW50IHRvIEByZXF1ZXN0
-ZWUgKi8KPiA+PiArCj4gPj4gKwkJcmVxdWVzdGVyID0gcmVxdWVzdGVyLT5idXMtPnNlbGY7Cj4g
-Pj4gKwl9Cj4gPj4gKwo+ID4+ICsJaWYgKHJlcXVlc3Rlcl9pZCkgewo+ID4+ICsJCWlmIChyZXF1
-ZXN0ZXItPmJ1cyAhPSByZXF1ZXN0ZWUtPmJ1cyYmCj4gPj4gKwkJICAgICFwY2lfYnJpZGdlX3Vz
-ZXNfZW5kcG9pbnRfcmVxdWVzdGVyKHJlcXVlc3RlcikpCj4gPj4gKwkJCSpyZXF1ZXN0ZXJfaWQg
-PSBQQ0lfQlJJREdFX1JFUVVFU1RFUl9JRChyZXF1ZXN0ZXIpOwo+ID4+ICsJCWVsc2UKPiA+PiAr
-CQkJKnJlcXVlc3Rlcl9pZCA9IFBDSV9SRVFVRVNURVJfSUQocmVxdWVzdGVyKTsKPiA+PiArCX0K
-PiA+PiArCj4gPj4gKwlyZXR1cm4gcmVxdWVzdGVyOwo+ID4+ICt9Cj4gPj4gKwo+ID4+ICtzdGF0
-aWMgaW50IHBjaV9kb19yZXF1ZXN0ZXJfY2FsbGJhY2soc3RydWN0IHBjaV9kZXYgKipkZXYsCj4g
-Pj4gKwkJCQkgICAgIGludCAoKmZuKShzdHJ1Y3QgcGNpX2RldiAqLAo+ID4+ICsJCQkJCSAgICAg
-ICB1MTYgaWQsIHZvaWQgKiksCj4gPj4gKwkJCQkgICAgIHZvaWQgKmRhdGEpCj4gPj4gK3sKPiA+
-PiArCXN0cnVjdCBwY2lfZGV2ICpkbWFfZGV2Owo+ID4+ICsJaW50IHJldDsKPiA+PiArCj4gPj4g
-KwlyZXQgPSBmbigqZGV2LCBQQ0lfUkVRVUVTVEVSX0lEKCpkZXYpLCBkYXRhKTsKPiA+PiArCWlm
-IChyZXQpCj4gPj4gKwkJcmV0dXJuIHJldDsKPiA+PiArCj4gPj4gKwlkbWFfZGV2ID0gcGNpX2dl
-dF9kbWFfc291cmNlKCpkZXYpOwo+ID4+ICsJcGNpX2Rldl9wdXQoZG1hX2Rldik7IC8qIFhYWCBz
-a2lwIHJlZiBjbnQgKi8KPiA+PiArCWlmIChkbWFfZGV2ID09ICpkZXYpCj4gPgo+ID4gU2FtZSBy
-ZWYgY291bnQgcXVlc3Rpb24gYXMgYWJvdmUuCj4gPgo+ID4+ICsJCXJldHVybiAwOwo+ID4+ICsK
-PiA+PiArCXJldCA9IGZuKGRtYV9kZXYsIFBDSV9SRVFVRVNURVJfSUQoZG1hX2RldiksIGRhdGEp
-Owo+ID4+ICsJaWYgKHJldCkKPiA+PiArCQlyZXR1cm4gcmV0Owo+ID4+ICsKPiA+PiArCSpkZXYg
-PSBkbWFfZGV2Owo+ID4+ICsJcmV0dXJuIDA7Cj4gPj4gK30KPiA+PiArCj4gPj4gKy8qCj4gPj4g
-KyAqIHBjaWVfZm9yX2VhY2hfcmVxdWVzdGVyIC0gQ2FsbCBjYWxsYmFjayBAZm4gb24gZWFjaCBk
-ZXZpY2VzIGFuZCBETUEgc291cmNlCj4gPj4gKyAqICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ZnJvbSBAcmVxdWVzdGVlIHRvIHRoZSBQQ0llIHJlcXVlc3RlciBJRCB2aXNpYmxlCj4gPj4gKyAq
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgdG8gQGJyaWRnZS4KPiA+Cj4gPiBUcmFuc2FjdGlv
-bnMgZnJvbSBhIGRldmljZSBtYXkgYXBwZWFyIHdpdGggb25lIG9mIHNldmVyYWwgcmVxdWVzdGVy
-IElEcywKPiA+IGJ1dCB0aGVyZSdzIG5vdCBuZWNlc3NhcmlseSBhbiBhY3R1YWwgcGNpX2RldiBm
-b3IgZWFjaCBJRCwgc28gSSB0aGluayB0aGUKPiBkaXR0byBhYm92ZTsgaGF2ZSB0byBoYXZlIGEg
-cGRldiBmb3IgZWFjaCBpZC4uLi4KPiAKPiA+IGNhbGxlciByZWFkcyBiZXR0ZXIgaWYgaXQncyAi
-Li4uZm9yX2VhY2hfcmVxdWVzdGVyX2lkKCkiCj4gPgo+ID4gVGhlICJDYWxsIFggb24gZWFjaCBk
-ZXZpY2VzIGFuZCBETUEgc291cmNlIGZyb20gWSB0byB0aGUgcmVxdWVzdGVyIElEIgo+ID4gcGFy
-dCBkb2Vzbid0IHF1aXRlIG1ha2UgYSBzZW50ZW5jZS4KPiA+Cj4gPj4gKyAqIEByZXF1ZXN0ZWU6
-IFN0YXJ0aW5nIGRldmljZQo+ID4+ICsgKiBAYnJpZGdlOiB1cHN0cmVhbSBicmlkZ2UgKG9yIE5V
-TEwgZm9yIHJvb3QgYnVzKQo+ID4KPiA+IFlvdSBzaG91bGQgc2F5IHNvbWV0aGluZyBhYm91dCB0
-aGUgc2lnbmlmaWNhbmNlIG9mIEBicmlkZ2UuICBJIHRoaW5rIHRoZQo+ID4gcG9pbnQgaXMgdG8g
-Y2FsbCBAZm4gZm9yIGV2ZXJ5IHBvc3NpYmxlIHJlcXVlc3RlciBJRCBAYnJpZGdlIGNvdWxkIHNl
-ZSBmb3IKPiA+IHRyYW5zYWN0aW9ucyBmcm9tIEByZXF1ZXN0ZWUuICBUaGlzIGlzIGEgd2F5IHRv
-IGxlYXJuIHRoZSByZXF1ZXN0ZXIgSURzIGFuCj4gPiBJT01NVSBhdCBAYnJpZGdlIG5lZWRzIHRv
-IGJlIHByZXBhcmVkIGZvci4KPiA+Cj4gPj4gKyAqIEBmbjogY2FsbGJhY2sgZnVuY3Rpb24KPiA+
-PiArICogQGRhdGE6IGRhdGEgdG8gcGFzcyB0byBjYWxsYmFjawo+ID4+ICsgKi8KPiA+PiAraW50
-IHBjaWVfZm9yX2VhY2hfcmVxdWVzdGVyKHN0cnVjdCBwY2lfZGV2ICpyZXF1ZXN0ZWUsIHN0cnVj
-dCBwY2lfZGV2ICpicmlkZ2UsCj4gPj4gKwkJCSAgICBpbnQgKCpmbikoc3RydWN0IHBjaV9kZXYg
-KiwgdTE2IGlkLCB2b2lkICopLAo+ID4+ICsJCQkgICAgdm9pZCAqZGF0YSkKPiA+PiArewo+ID4+
-ICsJc3RydWN0IHBjaV9kZXYgKnJlcXVlc3RlcjsKPiA+PiArCXN0cnVjdCBwY2lfZGV2ICpkZXYg
-PSByZXF1ZXN0ZWU7Cj4gPj4gKwlpbnQgcmV0ID0gMDsKPiA+PiArCj4gPj4gKwlyZXF1ZXN0ZXIg
-PSBwY2lfZ2V0X3Zpc2libGVfcGNpZV9yZXF1ZXN0ZXIocmVxdWVzdGVlLCBicmlkZ2UsIE5VTEwp
-Owo+ID4+ICsJaWYgKCFyZXF1ZXN0ZXIpCj4gPj4gKwkJcmV0dXJuIC1FSU5WQUw7Cj4gPj4gKwo+
-ID4+ICsJZG8gewo+ID4+ICsJCXJldCA9IHBjaV9kb19yZXF1ZXN0ZXJfY2FsbGJhY2soJmRldiwg
-Zm4sIGRhdGEpOwo+ID4+ICsJCWlmIChyZXQpCj4gPj4gKwkJCXJldHVybiByZXQ7Cj4gPj4gKwo+
-ID4+ICsJCWlmIChkZXYgPT0gcmVxdWVzdGVyKQo+ID4+ICsJCQlyZXR1cm4gMDsKPiA+PiArCj4g
-Pj4gKwkJLyoKPiA+PiArCQkgKiBXZSBhbHdheXMgY29uc2lkZXIgcm9vdCBidXMgZGV2aWNlcyB0
-byBoYXZlIGEgdmlzaWJsZQo+ID4+ICsJCSAqIHJlcXVlc3RlciBJRCwgdGhlcmVmb3JlIHRoaXMg
-c2hvdWxkIG5ldmVyIGJlIHRydWUuCj4gPj4gKwkJICovCj4gPj4gKwkJQlVHX09OKHBjaV9pc19y
-b290X2J1cyhkZXYtPmJ1cykpOwo+ID4KPiA+IFdoYXQgYXJlIHdlIGdvaW5nIHRvIGRvIGlmIHNv
-bWVib2R5IGhpdHMgdGhpcyBCVUdfT04oKT8gIElmIGl0J3MgaW1wb3NzaWJsZQo+ID4gdG8gaGl0
-LCB3ZSBzaG91bGQganVzdCByZW1vdmUgaXQuICBJZiBpdCdzIHBvc3NpYmxlIHRvIGhpdCBpdCBp
-biBzb21lIHdlaXJkCj4gPiB0b3BvbG9neSB5b3UgZGlkbid0IGNvbnNpZGVyLCB3ZSBzaG91bGQg
-c2VlIElPTU1VIGZhdWx0cyBmb3IgYW55IHJlcXVlc3Rlcgo+ID4gSUQgd2UgbmVnbGVjdGVkIHRv
-IG1hcCwgYW5kIHRoYXQgZmF1bHQgd291bGQgYmUgYSBiZXR0ZXIgZGVidWdnaW5nIGhpbnQKPiA+
-IHRoYW4gYSBCVUdfT04oKSBoZXJlLgo+ID4KPiBhY2NvcmRpbmcgdG8gc3BlYywgYWxsIHBkZXYn
-cyBoYXZlIGEgcmVxdWVzdGVyLWlkLCBldmVuIFJDIG9uZXMsIGFsYmVpdAo+ICJpbXBsZW1lbnRh
-dGlvbiBzcGVjaWZpYyIuLi4KPiAKPiA+PiArCj4gPj4gKwkJZGV2ID0gZGV2LT5idXMtPnNlbGY7
-Cj4gPj4gKwo+ID4+ICsJfSB3aGlsZSAoZGV2ICE9IHJlcXVlc3Rlcik7Cj4gPj4gKwo+ID4+ICsJ
-LyoKPiA+PiArCSAqIElmIHdlJ3ZlIG1hZGUgaXQgaGVyZSwgQHJlcXVlc3RlciBpcyBhIGJyaWRn
-ZSB1cHN0cmVhbSBmcm9tCj4gPj4gKwkgKiBAcmVxdWVzdGVlLgo+ID4+ICsJICovCj4gPj4gKwlp
-ZiAocGNpX2JyaWRnZV91c2VzX2VuZHBvaW50X3JlcXVlc3RlcihyZXF1ZXN0ZXIpKQo+ID4+ICsJ
-CXJldHVybiBwY2lfZG9fcmVxdWVzdGVyX2NhbGxiYWNrKCZyZXF1ZXN0ZXIsIGZuLCBkYXRhKTsK
-PiA+PiArCj4gPj4gKwlyZXR1cm4gZm4ocmVxdWVzdGVyLCBQQ0lfQlJJREdFX1JFUVVFU1RFUl9J
-RChyZXF1ZXN0ZXIpLCBkYXRhKTsKPiA+PiArfQo+ID4+ICsKPiA+PiArLyoKPiA+PiAgICAqIGZp
-bmQgdGhlIHVwc3RyZWFtIFBDSWUtdG8tUENJIGJyaWRnZSBvZiBhIFBDSSBkZXZpY2UKPiA+PiAg
-ICAqIGlmIHRoZSBkZXZpY2UgaXMgUENJRSwgcmV0dXJuIE5VTEwKPiA+PiAgICAqIGlmIHRoZSBk
-ZXZpY2UgaXNuJ3QgY29ubmVjdGVkIHRvIGEgUENJZSBicmlkZ2UgKHRoYXQgaXMgaXRzIHBhcmVu
-dCBpcyBhCj4gPj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvcGNpLmggYi9pbmNsdWRlL2xp
-bnV4L3BjaS5oCj4gPj4gaW5kZXggM2EyNGU0Zi4uOTRlODFkMSAxMDA2NDQKPiA+PiAtLS0gYS9p
-bmNsdWRlL2xpbnV4L3BjaS5oCj4gPj4gKysrIGIvaW5jbHVkZS9saW51eC9wY2kuaAo+ID4+IEBA
-IC0xODczLDYgKzE4NzMsMTMgQEAgc3RhdGljIGlubGluZSBzdHJ1Y3QgZWVoX2RldiAqcGNpX2Rl
-dl90b19lZWhfZGV2KHN0cnVjdCBwY2lfZGV2ICpwZGV2KQo+ID4+ICAgfQo+ID4+ICAgI2VuZGlm
-Cj4gPj4KPiA+PiArc3RydWN0IHBjaV9kZXYgKnBjaV9nZXRfdmlzaWJsZV9wY2llX3JlcXVlc3Rl
-cihzdHJ1Y3QgcGNpX2RldiAqcmVxdWVzdGVlLAo+ID4+ICsJCQkJCSAgICAgICBzdHJ1Y3QgcGNp
-X2RldiAqYnJpZGdlLAo+ID4+ICsJCQkJCSAgICAgICB1MTYgKnJlcXVlc3Rlcl9pZCk7Cj4gPgo+
-ID4gVGhlIHN0cnVjdHVyZSBvZiB0aGlzIGludGVyZmFjZSBpbXBsaWVzIHRoYXQgdGhlcmUgaXMg
-b25seSBvbmUgdmlzaWJsZQo+ID4gcmVxdWVzdGVyIElELCBidXQgdGhlIHdob2xlIHBvaW50IG9m
-IHRoaXMgcGF0Y2ggaXMgdGhhdCBhIHRyYW5zYWN0aW9uIGZyb20KPiA+IEByZXF1ZXN0ZWUgbWF5
-IGFwcGVhciB3aXRoIG9uZSBvZiBzZXZlcmFsIHJlcXVlc3RlciBJRHMuICBTbyB3aGljaCBvbmUg
-d2lsbAo+ID4gdGhpcyByZXR1cm4/Cj4gPgo+IEFyZSB0aGVyZSBkZXZpY2VzIHRoYXQgdXNlIG11
-bHRpcGxlIHJlcXVlc3RlciBpZCdzPwo+IEkga25vdyB3ZSBoYXZlIG9uZXMgdGhhdCB1c2UgdGhl
-IHdyb25nIGlkLgo+IElmIHdlIHdhbnQgdG8gaGFuZGxlIHRoZSBtdWx0aXBsZSByZXF1ZXN0ZXIt
-aWQncyBwZXIgcGRldiwKPiB3ZSBjb3VsZCBwYXNzIGluIGEgcHRyIHRvIGFuIGluaXRpYWwgcmVx
-dWVzdGVyLWlkOyBpZiBudWxsLCBnaXZlIG1lIGZpcnN0Owo+IGlmICFudWxsLCBnaXZlIG1lIG5l
-eHQgb25lOyAgd291bGQgYWxzbyBuZWVkIGEgZmxhZyByZXR1cm5lZCB0byBpbmRpY2F0ZQo+IHRo
-ZXJlIGlzIG1vcmUgdGhhbiAxLgo+IG51bGwtcnRuIHdoZW4gcGFzcyBpbiAhbnVsbCByZWYsIG1l
-YW5zIHRoZSBlbmQuCj4gICAuLi4gc2xlZGdlLWhhbW1lciArIG5haWwgPz8/CgpUaGF0IGRvZXMg
-bm90IHNvdW5kIHNhZmUuICBBZ2FpbiwgdGhpcyBpcyB3aHkgSSB0aGluayB0aGUKcGNpZV9mb3Jf
-ZWFjaF9yZXF1ZXN0ZXIoKSB3b3Jrcy4gIEdpdmVuIGEgcmVxdWVzdGVyLCBjYWxsIGZuKCkgb24g
-ZXZlcnkKZGV2aWNlIHdpdGggdGhlIHNhbWUgcmVxdWVzdGVyIElELiAgVGhhdCBtZWFucyB3aGVu
-IHlvdSBoYXZlIGEgYnJpZGdlLAp3ZSBjYWxsIGl0IGZvciB0aGUgYnJpZGdlIGFuZCBldmVyeSBk
-ZXZpY2UgYW5kIGV2ZXJ5IGRldmljZSBxdWlyayBiZWhpbmQKdGhlIGJyaWRnZSwgZnVsbHkgcG9w
-dWxhdGluZyBjb250ZXh0IGVudHJpZXMgZm9yIGFsbCBvZiB0aGVtLiAgVGhhbmtzLAoKQWxleAoK
-PiA+PiAraW50IHBjaWVfZm9yX2VhY2hfcmVxdWVzdGVyKHN0cnVjdCBwY2lfZGV2ICpyZXF1ZXN0
-ZWUsIHN0cnVjdCBwY2lfZGV2ICpicmlkZ2UsCj4gPj4gKwkJCSAgICBpbnQgKCpmbikoc3RydWN0
-IHBjaV9kZXYgKiwgdTE2IGlkLCB2b2lkICopLAo+ID4+ICsJCQkgICAgdm9pZCAqZGF0YSk7Cj4g
-Pj4gKwo+ID4+ICAgLyoqCj4gPj4gICAgKiBwY2lfZmluZF91cHN0cmVhbV9wY2llX2JyaWRnZSAt
-IGZpbmQgdXBzdHJlYW0gUENJZS10by1QQ0kgYnJpZGdlIG9mIGEgZGV2aWNlCj4gPj4gICAgKiBA
-cGRldjogdGhlIFBDSSBkZXZpY2UKPiA+Pgo+IAoKCgpfX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGlu
-dXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxt
-YW4vbGlzdGluZm8vaW9tbXU=
+On Wed, Jul 24, 2013 at 12:12:28PM -0600, Alex Williamson wrote:
+> On Wed, 2013-07-24 at 10:47 -0600, Bjorn Helgaas wrote:
+> > On Tue, Jul 23, 2013 at 5:21 PM, Alex Williamson
+> > <alex.williamson@redhat.com> wrote:
+> > > On Tue, 2013-07-23 at 16:35 -0600, Bjorn Helgaas wrote:
+> > >> On Thu, Jul 11, 2013 at 03:03:27PM -0600, Alex Williamson wrote:
+> >   As the DMA
+> > transaction propagates through the fabric, it may be tagged by bridges
+> > with different requester IDs.
+> > 
+> > The requester IDs are needed outside PCI (by IOMMU drivers), but I'm
+> > not sure the intermediate pci_devs are.
+> 
+> A u16 requester ID doesn't mean much on it's own though, it's not
+> necessarily even unique.  A requester ID associated with the context of
+> a pci_dev is unique and gives us a reference point if we need to perform
+> another operation on that requester ID.
+
+A u16 requester ID better mean something to an IOMMU -- it's all the
+IOMMU can use to look up the correct mapping.  That's why we have to
+give the iterator something to define the scope to iterate over.  The
+same requester ID could mean something totally unrelated in a
+different scope, e.g., below a different IOMMU.
+
+> > Returning both a pci_dev and a requester ID makes it more complicated.
+> >  At the hardware level, transactions contain only a requester ID, and
+> > bridges can either drop it, pass it unchanged, or assign a new one.  I
+> > think the code will be simpler if we just model that.
+> 
+> I'm not convinced.  Patch 2/2 makes use of both the returned pci_dev and
+> the returned requester ID and it's a huge simplification overall.
+
+The IOMMU driver makes mappings so DMA from device A can reach a
+buffer.  It needs to know about device A, and it needs to know what
+source IDs might appear on those DMA transactions.  Why would it need
+to know anything about any bridges between A and the IOMMU?
+
+> > My thought was to pass a pci_dev (the originator of the DMA, which I
+> > would call the "requester") and a callback.  The callback would accept
+> > the requester pci_dev (always the same requester device) and a
+> > requester ID.
+> > 
+> > This would call @fn for each possible requester ID for transactions
+> > from the device.  IOMMU drivers should only need the requester ID to
+> > manage mappings; they shouldn't need a pci_dev corresponding to any
+> > intermediate bridges.
+> 
+> This implementation is almost the same with the only change being that
+> the pci_dev passed to the callback is the one most closely associated
+> with the requester ID.  For the IOMMU driver, it doesn't matter since
+> it's only using the requester ID, but why would the callback care about
+> the original requester?  If it needed to do something device specific,
+> it's going to care about the closest device to the requester ID.
+
+If this can be done without passing a pci_dev at all to the callback,
+that would be even better.  If a caller needed the original pci_dev,
+it could always pass it via the "void *data".
+
+I don't see the point of passing a "device closest to the requester
+ID."  What would the IOMMU do with that?  As far as the IOMMU is
+concerned, the requester ID could be an arbitrary number completely
+unrelated to a pci_dev.
+
+> > >> > +struct pci_dev *pci_get_visible_pcie_requester(struct pci_dev *requestee,
+> > >> > +                                          struct pci_dev *bridge,
+> > >> > +                                          u16 *requester_id);
+> > >>
+> > >> The structure of this interface implies that there is only one visible
+> > >> requester ID, but the whole point of this patch is that a transaction from
+> > >> @requestee may appear with one of several requester IDs.  So which one will
+> > >> this return?
+> > >
+> > > I thought the point of this patch was to have an integrated interface
+> > > for finding the requester ID and doing something across all devices with
+> > > that requester ID
+> > 
+> > Oh, here's the difference in our understanding.  "Doing something
+> > across all devices with that requester ID" sounds like identifying the
+> > set of devices that have to be handled as a group by the IOMMU.
+> > That's certainly an issue, but I wasn't considering it at all.
+> > 
+> > I was only concerned with the question of a single device that
+> > requires multiple IOMMU mappings because DMA requests might use any of
+> > several source IDs.  This is mentioned in sec 3.6.1.1 of the VT-d
+> > spec, i.e., "requests arriving with the source-id in the original
+> > PCI-X transaction or the source-id provided by the bridge. ...
+> > software must program multiple context entries, each corresponding to
+> > the possible set of source-ids."
+> > 
+> > My thought was that the IOMMU driver would use
+> > pcie_for_each_requester_id() and have the callback set up a mapping
+> > for one requester ID each time it was called.
+> 
+> Which is exactly what pcie_for_each_requester() does, but I try to solve
+> the problem of a single device that needs multiple context entries the
+> same as a bridge that masks multiple devices.
+
+I'm not sure I understand your point yet, but I think it's better to
+think of this as computing the set of requester IDs we might see from
+a given device.  If we think of it as finding the set of devices that
+use a given requester ID, then we have to worry about that set being
+modified by hotplug.
+
+> > > and thereby remove pci_find_upstream_pcie_bridge(),
+> > > provide a way to quirk broken PCIe-to-PCI bridge and quirk dma_ops for
+> > > devices that use the wrong requester ID.  In what case does a device
+> > > appear to have multiple requester IDs?  We have cases where devices use
+> > > the wrong requester ID, but AFAIK they only use a single wrong requester
+> > > ID.
+> > 
+> > I think the example in sec 3.6.1.1 answers this, doesn't it?
+> 
+> It does, in summary we have to be prepared that a transaction from a
+> device behind a PCIe-to-PCI/X bridge may use either the device requester
+> ID (bus|devfn) or the bridge (subordinate|0) requester ID.  This is why
+> pcie_for_each_requester() makes sense to me, we iterate across all
+> requesters that may use the same requester ID.
+
+Let's say device A and B use the same requester ID because they're
+behind a bridge.  What happens if we map a buffer for A and then
+hot-remove B?  Here's what I think your proposal would do:
+
+  map buffer for A
+    callback for A
+    callback for B
+  hot-remove B
+  unmap buffer for A
+    callback for A
+
+We never do an unmap callback for B, so if we did anything while
+mapping, it will never be undone.
+
+> If we had a
+> pcie_for_each_requester_id() how would we handle that?  Do we call it
+> once for the (bus|devfn) requester ID of the device we're trying to map
+> and then call it again for the (subordinate|0) requester ID of the
+> bridge?  That's almost how pci_find_upstream_pcie_bridge() is used and
+> it ends up putting a lot of the logic into the driver.  
+
+That *is* what I'm proposing (calling the callback once for each
+possible requester ID that could be seen on DMA from the device).  In
+my opinion, the problem with pci_find_upstream_pcie_bridge() is that
+you only get one device back from it, and the driver has to roll its
+own looping.
+
+> How do we write
+> a pcie_for_each_requester_id() function that can uniquely identify a PCI
+> hierarchy to traverse in the presences of multiple domains?  
+
+I must be missing something in your question.  If we give
+pcie_for_each_requester_id() the requester pci_dev, that uniquely
+identifies the PCI hierarchy.  Then it's just a question of how far up
+the hierarchy we need to go, and the bridge (or bus) argument tells us
+that.
+
+Bjorn
