@@ -1,14 +1,16 @@
-From: Shuah Khan <shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: Linux Plumbers ACPI/PM, PCI Microconference
-Date: Wed, 24 Jul 2013 10:30:33 -0600
-Message-ID: <CAKocOOOW6+eqb6GTsWLgonQQ7uy5R10t6L_T3jaTN9qSbetVeQ@mail.gmail.com>
-References: <CAL-B5D03ki8NHsM6EuESTH2K-Eh+XyFHNXPDYwgDq+oagDjtMQ@mail.gmail.com>
-	<CAErSpo7TexM5-7Z=8H+B5=49-GzoKd_prn=LbMFZWV9rpdn__A@mail.gmail.com>
+From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC PATCH v2 1/2] pci: Create PCIe requester ID interface
+Date: Wed, 24 Jul 2013 10:47:19 -0600
+Message-ID: <CAErSpo6bcGCjqdxn-bz_vjo+HsAiOxDu=--mD7veEZ9f7k+gyA@mail.gmail.com>
+References: <20130711204439.1701.90503.stgit@bling.home>
+	<20130711210326.1701.56478.stgit@bling.home>
+	<20130723223533.GB19765@google.com>
+	<1374621703.15429.98.camel@ul30vt.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAErSpo7TexM5-7Z=8H+B5=49-GzoKd_prn=LbMFZWV9rpdn__A-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <1374621703.15429.98.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,37 +20,131 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-pci <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Myron Stowe <myron.stowe-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jul 23, 2013 at 10:06 AM, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org> wrote:
-> On Tue, Jul 16, 2013 at 8:21 PM, Myron Stowe <myron.stowe-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
->> Linux Plumbers has approved an ACPI/PM, PCI microconference. The
->> overview page is here:
+On Tue, Jul 23, 2013 at 5:21 PM, Alex Williamson
+<alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+> On Tue, 2013-07-23 at 16:35 -0600, Bjorn Helgaas wrote:
+>> On Thu, Jul 11, 2013 at 03:03:27PM -0600, Alex Williamson wrote:
+>> > This provides interfaces for drivers to discover the visible PCIe
+>> > requester ID for a device, for things like IOMMU setup, and iterate
 >>
->> http://wiki.linuxplumbersconf.org/2013:pci_subsystem
+>> IDs (plural)
+>
+> How does a device can't have multiple requester IDs?  Reading below, I'm
+> not sure we're on the same page for the purpose of this patch.
+
+>> "requestee" doesn't make sense to me.  The "-ee" suffix added to a verb
+>> normally makes a noun that refers to the object of the action.  So
+>> "requestee" sounds like it means something like "target" or "responder,"
+>> but that's not what you mean here.
+>
+> Hmm, ok.  I figured a request-er makes a request on behalf of a
+> request-ee.  Suggestions?
+
+I would expect a request-er to make a request *to* a request-ee, just
+like a grant-or makes a grant to a grant-ee.  My suggestion is to use
+"requester" consistently for only the originator of a DMA transaction.
+ Any devices above it are by definition "bridges".  As the DMA
+transaction propagates through the fabric, it may be tagged by bridges
+with different requester IDs.
+
+The requester IDs are needed outside PCI (by IOMMU drivers), but I'm
+not sure the intermediate pci_devs are.
+
+>> > + * pci_get_visible_pcie_requester - Get requester and requester ID for
+>> > + *                                  @requestee below @bridge
+>> > + * @requestee: requester device
+>> > + * @bridge: upstream bridge (or NULL for root bus)
+>> > + * @requester_id: location to store requester ID or NULL
+>> > + */
+>> > +struct pci_dev *pci_get_visible_pcie_requester(struct pci_dev *requestee,
+>> > +                                          struct pci_dev *bridge,
+>> > +                                          u16 *requester_id)
 >>
->> We would like to start receiving volunteers for presenting topics of
->> interest.  There is a lot of activity in these subsystems so please
->> respond by submitting presentation or discussion proposals that you
->> would be willing to cover for consideration.  You should also feel
->> free to submit ideas as proposals that others could cover.
+>> I'm not sure it makes sense to return a struct pci_dev here because
+>> there's no requirement that a requester ID correspond to an actual
+>> pci_dev.
 >
-> Somebody else privately suggested these ARM/PCI topics:
+> That's why this function is named get_.._requester instead of requester
+> ID.  I believe there still has to be a struct pci_dev that does the
+> request, but the requester ID for that device may not actually match.
+> So I return both.  In a PCIe-to-PCI bridge case, the pci_dev is the
+> bridge, but the requester ID is either the bridge bus|devfn or
+> subordinate|0 depending on the topology.  If we want to support "ghost
+> functions", we can return the real pci_dev and a ghost requester ID.
 >
->> -> how it's been cleaned up to be more common across arm-32 machines
->> -> dependencies on dtb
->> -> future use/dependency(s) on ACPI
->> -> hotplug support issues (if any; acpi (host-bridge) vs <whatever ARM uses> ?)
->
-> and I'm interested in those as well.  There seems to be a lot of
-> activity in that area.  In addition, I'm interested in ARM IOMMU
-> support.  I see drivers/iommu/arm-smmu.c, but it's brand-new and I
-> haven't looked at it at all.
->
+> I think if we used just a requester ID, it ends up being extremely
+> difficult to pass that into anything else since we then have to search
+> again for where that requester ID is rooted.
 
-I second this topic. I am interested in ARM/iommu space also.
+Returning both a pci_dev and a requester ID makes it more complicated.
+ At the hardware level, transactions contain only a requester ID, and
+bridges can either drop it, pass it unchanged, or assign a new one.  I
+think the code will be simpler if we just model that.
 
-thanks,
--- Shuah
+>> > + * pcie_for_each_requester - Call callback @fn on each devices and DMA source
+>> > + *                           from @requestee to the PCIe requester ID visible
+>> > + *                           to @bridge.
+>>
+>> Transactions from a device may appear with one of several requester IDs,
+>> but there's not necessarily an actual pci_dev for each ID, so I think the
+>> caller reads better if it's "...for_each_requester_id()"
+>
+> Wouldn't you expect to pass a requester ID into a function with that
+> name?  I'm pretty sure I had it named that at one point but thought the
+> parameters made more sense this way.  I'll see if I can think of a
+> better name.
+
+My thought was to pass a pci_dev (the originator of the DMA, which I
+would call the "requester") and a callback.  The callback would accept
+the requester pci_dev (always the same requester device) and a
+requester ID.
+
+This would call @fn for each possible requester ID for transactions
+from the device.  IOMMU drivers should only need the requester ID to
+manage mappings; they shouldn't need a pci_dev corresponding to any
+intermediate bridges.
+
+>> > +struct pci_dev *pci_get_visible_pcie_requester(struct pci_dev *requestee,
+>> > +                                          struct pci_dev *bridge,
+>> > +                                          u16 *requester_id);
+>>
+>> The structure of this interface implies that there is only one visible
+>> requester ID, but the whole point of this patch is that a transaction from
+>> @requestee may appear with one of several requester IDs.  So which one will
+>> this return?
+>
+> I thought the point of this patch was to have an integrated interface
+> for finding the requester ID and doing something across all devices with
+> that requester ID
+
+Oh, here's the difference in our understanding.  "Doing something
+across all devices with that requester ID" sounds like identifying the
+set of devices that have to be handled as a group by the IOMMU.
+That's certainly an issue, but I wasn't considering it at all.
+
+I was only concerned with the question of a single device that
+requires multiple IOMMU mappings because DMA requests might use any of
+several source IDs.  This is mentioned in sec 3.6.1.1 of the VT-d
+spec, i.e., "requests arriving with the source-id in the original
+PCI-X transaction or the source-id provided by the bridge. ...
+software must program multiple context entries, each corresponding to
+the possible set of source-ids."
+
+My thought was that the IOMMU driver would use
+pcie_for_each_requester_id() and have the callback set up a mapping
+for one requester ID each time it was called.
+
+> and thereby remove pci_find_upstream_pcie_bridge(),
+> provide a way to quirk broken PCIe-to-PCI bridge and quirk dma_ops for
+> devices that use the wrong requester ID.  In what case does a device
+> appear to have multiple requester IDs?  We have cases where devices use
+> the wrong requester ID, but AFAIK they only use a single wrong requester
+> ID.
+
+I think the example in sec 3.6.1.1 answers this, doesn't it?
+
+Bjorn
