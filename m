@@ -1,15 +1,15 @@
-From: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Subject: Re: [RFC PATCH v2 1/2] pci: Create PCIe requester ID interface
-Date: Wed, 24 Jul 2013 16:42:03 -0400
-Message-ID: <51F03C1B.2070002@redhat.com>
+Date: Wed, 24 Jul 2013 15:22:46 -0600
+Message-ID: <1374700966.16522.19.camel@ul30vt.home>
 References: <20130711204439.1701.90503.stgit@bling.home>
 	<20130711210326.1701.56478.stgit@bling.home>
-	<20130723223533.GB19765@google.com>
+	<20130723223533.GB19765@google.com> <51F03C1B.2070002@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; Format="flowed"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130723223533.GB19765-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <51F03C1B.2070002-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,378 +19,266 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+To: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 07/23/2013 06:35 PM, Bjorn Helgaas wrote:
-> On Thu, Jul 11, 2013 at 03:03:27PM -0600, Alex Williamson wrote:
->> This provides interfaces for drivers to discover the visible PCIe
->> requester ID for a device, for things like IOMMU setup, and iterate
->
-> IDs (plural)
->
-a single device does not have multiple requester id's;
-can have multiple tag-id's (that are ignored in this situation, but
-can be used by switches for ordering purposes), but there's only 1/fcn
-(except for those quirker pdevs!).
-
->> over the device chain from requestee to requester, including DMA
->> quirks at each step.
->
-> "requestee" doesn't make sense to me.  The "-ee" suffix added to a verb
-> normally makes a noun that refers to the object of the action.  So
-> "requestee" sounds like it means something like "target" or "responder,"
-> but that's not what you mean here.
->
-sorry, I didn't follow the requester/requestee terminology either...
-
->> Suggested-by: Bjorn Helgaas<bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
->> Signed-off-by: Alex Williamson<alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
->> ---
->>   drivers/pci/search.c |  198 ++++++++++++++++++++++++++++++++++++++++++=
-++++++++
->>   include/linux/pci.h  |    7 ++
->>   2 files changed, 205 insertions(+)
->>
->> diff --git a/drivers/pci/search.c b/drivers/pci/search.c
->> index d0627fa..4759c02 100644
->> --- a/drivers/pci/search.c
->> +++ b/drivers/pci/search.c
->> @@ -18,6 +18,204 @@ DECLARE_RWSEM(pci_bus_sem);
->>   EXPORT_SYMBOL_GPL(pci_bus_sem);
->>
->>   /*
->> + * pci_has_pcie_requester_id - Does @dev have a PCIe requester ID
->> + * @dev: device to test
->> + */
->> +static bool pci_has_pcie_requester_id(struct pci_dev *dev)
->> +{
->> +	/*
->> +	 * XXX There's no indicator of the bus type, conventional PCI vs
->> +	 * PCI-X vs PCI-e, but we assume that a caller looking for a PCIe
->> +	 * requester ID is a native PCIe based system (such as VT-d or
->> +	 * AMD-Vi).  It's common that PCIe root complex devices do not
-could the above comment be x86-iommu-neutral?
-by definition of PCIe, all devices have a requester id (min. to accept cfg =
-cycles);
-req'd if source of read/write requests, read completions.
-
->> +	 * include a PCIe capability, but we can assume they are PCIe
->> +	 * devices based on their topology.
->> +	 */
->> +	if (pci_is_pcie(dev) || pci_is_root_bus(dev->bus))
->> +		return true;
->> +
->> +	/*
->> +	 * PCI-X devices have a requester ID, but the bridge may still take
->> +	 * ownership of transactions and create a requester ID.  We therefore
->> +	 * assume that the PCI-X requester ID is not the same one used on PCIe.
->> +	 */
->> +
->> +#ifdef CONFIG_PCI_QUIRKS
->> +	/*
->> +	 * Quirk for PCIe-to-PCI bridges which do not expose a PCIe capability.
->> +	 * If the device is a bridge, look to the next device upstream of it.
->> +	 * If that device is PCIe and not a PCIe-to-PCI bridge, then by
->> +	 * deduction, the device must be PCIe and therefore has a requester ID.
->> +	 */
->> +	if (dev->subordinate) {
->> +		struct pci_dev *parent =3D dev->bus->self;
->> +
->> +		if (pci_is_pcie(parent)&&
->> +		    pci_pcie_type(parent) !=3D PCI_EXP_TYPE_PCI_BRIDGE)
->> +			return true;
->> +	}
->> +#endif
->> +
->> +	return false;
->> +}
->> +
->> +/*
->> + * pci_has_visible_pcie_requester_id - Can @bridge see @dev's requester=
- ID?
->> + * @dev: requester device
->> + * @bridge: upstream bridge (or NULL for root bus)
->> + */
->> +static bool pci_has_visible_pcie_requester_id(struct pci_dev *dev,
->> +					      struct pci_dev *bridge)
->> +{
->> +	/*
->> +	 * The entire path must be tested, if any step does not have a
->> +	 * requester ID, the chain is broken.  This allows us to support
->> +	 * topologies with PCIe requester ID gaps, ex: PCIe-PCI-PCIe
->> +	 */
->> +	while (dev !=3D bridge) {
->> +		if (!pci_has_pcie_requester_id(dev))
->> +			return false;
->> +
->> +		if (pci_is_root_bus(dev->bus))
->> +			return !bridge; /* false if we don't hit @bridge */
->> +
->> +		dev =3D dev->bus->self;
->> +	}
->> +
->> +	return true;
->> +}
->> +
->> +/*
->> + * Legacy PCI bridges within a root complex (ex. Intel 82801) report
->> + * a different requester ID than a standard PCIe-to-PCI bridge.  Instead
-First, I'm assuming you mean that devices behind a Legacy PCI bridge within=
- a root complex
-get assigned IDs different than std PCIe-to-PCI bridges (as quoted below).
-
->> + * of using (subordinate<<  8 | 0) the use (bus<<  8 | devfn), like a
->
-> s/the/they/
->
-well, the PPBs should inject their (secondary << 8 | 0), not subordinate.
- From the PCI Express to PCI/PCI-X Bridge spec, v1.0:
-The Tag is reassigned by the bridge according to the rules outlined in the =
-following sections. If the
-bridge generates a new Requester ID for a transaction forwarded from the se=
-condary interface to the
-primary interface, the bridge assigns the PCI Express Requester ID using it=
-s secondary interface=92s
-                                                                           =
-   ^^^^^^^^^
-Bus Number and sets both the Device Number and Function Number fields to ze=
-ro.
-^^^^^^^^^^
-
-As for the 82801, looks like they took this part of the PCIe spec to heart:
-(PCIe v3 spec, section 2.2.6.2 Transaction Descriptor - Transaction ID Fiel=
-d):
-Exception: The assignment of Bus and Device Numbers to the Devices within a=
- Root Complex,
-and the Device Numbers to the Downstream Ports within a Switch, may be done=
- in an
-implementation specific way.
-Obviously, you're missing the 'implementation-specific way' compiler... ;-)
-
-aw: which 'bus' do you mean above in  '(bus<<  8 | devfn)' ?
-
-
-> Did you learn about this empirically?  Intel spec?  I wonder if there's
-> some way to derive this from the PCIe specs.
->
->> + * standard PCIe endpoint.  This function detects them.
->> + *
->> + * XXX Is this Intel vendor ID specific?
->> + */
->> +static bool pci_bridge_uses_endpoint_requester(struct pci_dev *bridge)
->> +{
->> +	if (!pci_is_pcie(bridge)&&  pci_is_root_bus(bridge->bus))
->> +		return true;
->> +
->> +	return false;
->> +}
->> +
->> +#define PCI_REQUESTER_ID(dev)	(((dev)->bus->number<<  8) | (dev)->devfn)
->> +#define PCI_BRIDGE_REQUESTER_ID(dev)	((dev)->subordinate->number<<  8)
->> +
->> +/*
->> + * pci_get_visible_pcie_requester - Get requester and requester ID for
->> + *                                  @requestee below @bridge
->> + * @requestee: requester device
->> + * @bridge: upstream bridge (or NULL for root bus)
->> + * @requester_id: location to store requester ID or NULL
->> + */
->> +struct pci_dev *pci_get_visible_pcie_requester(struct pci_dev *requeste=
-e,
->> +					       struct pci_dev *bridge,
->> +					       u16 *requester_id)
->
-> I'm not sure it makes sense to return a struct pci_dev here because
-> there's no requirement that a requester ID correspond to an actual
-> pci_dev.
->
-well, I would expect the only callers would be for subsys (iommu's)
-searching to find requester-id for a pdev, b/c if a pdev doesn't exist,
-then the device (and requester-id) doesn't exist... :-/
-
->> +{
->> +	struct pci_dev *requester =3D requestee;
->> +
->> +	while (requester !=3D bridge) {
->> +		requester =3D pci_get_dma_source(requester);
->> +		pci_dev_put(requester); /* XXX skip ref cnt */
->> +
->> +		if (pci_has_visible_pcie_requester_id(requester, bridge))
->
-> If we acquire the "requester" pointer via a ref-counting interface,
-> it's illegal to use the pointer after dropping the reference, isn't it?
-> Maybe that's what you mean by the "XXX" comment.
->
->> +			break;
->> +
->> +		if (pci_is_root_bus(requester->bus))
->> +			return NULL; /* @bridge not parent to @requestee */
->> +
->> +		requester =3D requester->bus->self;
->> +	}
->> +
->> +	if (requester_id) {
->> +		if (requester->bus !=3D requestee->bus&&
->> +		    !pci_bridge_uses_endpoint_requester(requester))
->> +			*requester_id =3D PCI_BRIDGE_REQUESTER_ID(requester);
->> +		else
->> +			*requester_id =3D PCI_REQUESTER_ID(requester);
->> +	}
->> +
->> +	return requester;
->> +}
->> +
->> +static int pci_do_requester_callback(struct pci_dev **dev,
->> +				     int (*fn)(struct pci_dev *,
->> +					       u16 id, void *),
->> +				     void *data)
->> +{
->> +	struct pci_dev *dma_dev;
->> +	int ret;
->> +
->> +	ret =3D fn(*dev, PCI_REQUESTER_ID(*dev), data);
->> +	if (ret)
->> +		return ret;
->> +
->> +	dma_dev =3D pci_get_dma_source(*dev);
->> +	pci_dev_put(dma_dev); /* XXX skip ref cnt */
->> +	if (dma_dev =3D=3D *dev)
->
-> Same ref count question as above.
->
->> +		return 0;
->> +
->> +	ret =3D fn(dma_dev, PCI_REQUESTER_ID(dma_dev), data);
->> +	if (ret)
->> +		return ret;
->> +
->> +	*dev =3D dma_dev;
->> +	return 0;
->> +}
->> +
->> +/*
->> + * pcie_for_each_requester - Call callback @fn on each devices and DMA =
-source
->> + *                           from @requestee to the PCIe requester ID v=
-isible
->> + *                           to @bridge.
->
-> Transactions from a device may appear with one of several requester IDs,
-> but there's not necessarily an actual pci_dev for each ID, so I think the
-ditto above; have to have a pdev for each id....
-
-> caller reads better if it's "...for_each_requester_id()"
->
-> The "Call X on each devices and DMA source from Y to the requester ID"
-> part doesn't quite make a sentence.
->
->> + * @requestee: Starting device
->> + * @bridge: upstream bridge (or NULL for root bus)
->
-> You should say something about the significance of @bridge.  I think the
-> point is to call @fn for every possible requester ID @bridge could see for
-> transactions from @requestee.  This is a way to learn the requester IDs an
-> IOMMU at @bridge needs to be prepared for.
->
->> + * @fn: callback function
->> + * @data: data to pass to callback
->> + */
->> +int pcie_for_each_requester(struct pci_dev *requestee, struct pci_dev *=
-bridge,
->> +			    int (*fn)(struct pci_dev *, u16 id, void *),
->> +			    void *data)
->> +{
->> +	struct pci_dev *requester;
->> +	struct pci_dev *dev =3D requestee;
->> +	int ret =3D 0;
->> +
->> +	requester =3D pci_get_visible_pcie_requester(requestee, bridge, NULL);
->> +	if (!requester)
->> +		return -EINVAL;
->> +
->> +	do {
->> +		ret =3D pci_do_requester_callback(&dev, fn, data);
->> +		if (ret)
->> +			return ret;
->> +
->> +		if (dev =3D=3D requester)
->> +			return 0;
->> +
->> +		/*
->> +		 * We always consider root bus devices to have a visible
->> +		 * requester ID, therefore this should never be true.
->> +		 */
->> +		BUG_ON(pci_is_root_bus(dev->bus));
->
-> What are we going to do if somebody hits this BUG_ON()?  If it's impossib=
-le
-> to hit, we should just remove it.  If it's possible to hit it in some wei=
-rd
-> topology you didn't consider, we should see IOMMU faults for any requester
-> ID we neglected to map, and that fault would be a better debugging hint
-> than a BUG_ON() here.
->
-according to spec, all pdev's have a requester-id, even RC ones, albeit
-"implementation specific"...
-
->> +
->> +		dev =3D dev->bus->self;
->> +
->> +	} while (dev !=3D requester);
->> +
->> +	/*
->> +	 * If we've made it here, @requester is a bridge upstream from
->> +	 * @requestee.
->> +	 */
->> +	if (pci_bridge_uses_endpoint_requester(requester))
->> +		return pci_do_requester_callback(&requester, fn, data);
->> +
->> +	return fn(requester, PCI_BRIDGE_REQUESTER_ID(requester), data);
->> +}
->> +
->> +/*
->>    * find the upstream PCIe-to-PCI bridge of a PCI device
->>    * if the device is PCIE, return NULL
->>    * if the device isn't connected to a PCIe bridge (that is its parent =
-is a
->> diff --git a/include/linux/pci.h b/include/linux/pci.h
->> index 3a24e4f..94e81d1 100644
->> --- a/include/linux/pci.h
->> +++ b/include/linux/pci.h
->> @@ -1873,6 +1873,13 @@ static inline struct eeh_dev *pci_dev_to_eeh_dev(=
-struct pci_dev *pdev)
->>   }
->>   #endif
->>
->> +struct pci_dev *pci_get_visible_pcie_requester(struct pci_dev *requeste=
-e,
->> +					       struct pci_dev *bridge,
->> +					       u16 *requester_id);
->
-> The structure of this interface implies that there is only one visible
-> requester ID, but the whole point of this patch is that a transaction from
-> @requestee may appear with one of several requester IDs.  So which one wi=
-ll
-> this return?
->
-Are there devices that use multiple requester id's?
-I know we have ones that use the wrong id.
-If we want to handle the multiple requester-id's per pdev,
-we could pass in a ptr to an initial requester-id; if null, give me first;
-if !null, give me next one;  would also need a flag returned to indicate
-there is more than 1.
-null-rtn when pass in !null ref, means the end.
-  ... sledge-hammer + nail ???
-
->> +int pcie_for_each_requester(struct pci_dev *requestee, struct pci_dev *=
-bridge,
->> +			    int (*fn)(struct pci_dev *, u16 id, void *),
->> +			    void *data);
->> +
->>   /**
->>    * pci_find_upstream_pcie_bridge - find upstream PCIe-to-PCI bridge of=
- a device
->>    * @pdev: the PCI device
->>
+T24gV2VkLCAyMDEzLTA3LTI0IGF0IDE2OjQyIC0wNDAwLCBEb24gRHV0aWxlIHdyb3RlOgo+IE9u
+IDA3LzIzLzIwMTMgMDY6MzUgUE0sIEJqb3JuIEhlbGdhYXMgd3JvdGU6Cj4gPiBPbiBUaHUsIEp1
+bCAxMSwgMjAxMyBhdCAwMzowMzoyN1BNIC0wNjAwLCBBbGV4IFdpbGxpYW1zb24gd3JvdGU6Cj4g
+Pj4gVGhpcyBwcm92aWRlcyBpbnRlcmZhY2VzIGZvciBkcml2ZXJzIHRvIGRpc2NvdmVyIHRoZSB2
+aXNpYmxlIFBDSWUKPiA+PiByZXF1ZXN0ZXIgSUQgZm9yIGEgZGV2aWNlLCBmb3IgdGhpbmdzIGxp
+a2UgSU9NTVUgc2V0dXAsIGFuZCBpdGVyYXRlCj4gPgo+ID4gSURzIChwbHVyYWwpCj4gPgo+IGEg
+c2luZ2xlIGRldmljZSBkb2VzIG5vdCBoYXZlIG11bHRpcGxlIHJlcXVlc3RlciBpZCdzOwo+IGNh
+biBoYXZlIG11bHRpcGxlIHRhZy1pZCdzICh0aGF0IGFyZSBpZ25vcmVkIGluIHRoaXMgc2l0dWF0
+aW9uLCBidXQKPiBjYW4gYmUgdXNlZCBieSBzd2l0Y2hlcyBmb3Igb3JkZXJpbmcgcHVycG9zZXMp
+LCBidXQgdGhlcmUncyBvbmx5IDEvZmNuCj4gKGV4Y2VwdCBmb3IgdGhvc2UgcXVpcmtlciBwZGV2
+cyEpLgo+IAo+ID4+IG92ZXIgdGhlIGRldmljZSBjaGFpbiBmcm9tIHJlcXVlc3RlZSB0byByZXF1
+ZXN0ZXIsIGluY2x1ZGluZyBETUEKPiA+PiBxdWlya3MgYXQgZWFjaCBzdGVwLgo+ID4KPiA+ICJy
+ZXF1ZXN0ZWUiIGRvZXNuJ3QgbWFrZSBzZW5zZSB0byBtZS4gIFRoZSAiLWVlIiBzdWZmaXggYWRk
+ZWQgdG8gYSB2ZXJiCj4gPiBub3JtYWxseSBtYWtlcyBhIG5vdW4gdGhhdCByZWZlcnMgdG8gdGhl
+IG9iamVjdCBvZiB0aGUgYWN0aW9uLiAgU28KPiA+ICJyZXF1ZXN0ZWUiIHNvdW5kcyBsaWtlIGl0
+IG1lYW5zIHNvbWV0aGluZyBsaWtlICJ0YXJnZXQiIG9yICJyZXNwb25kZXIsIgo+ID4gYnV0IHRo
+YXQncyBub3Qgd2hhdCB5b3UgbWVhbiBoZXJlLgo+ID4KPiBzb3JyeSwgSSBkaWRuJ3QgZm9sbG93
+IHRoZSByZXF1ZXN0ZXIvcmVxdWVzdGVlIHRlcm1pbm9sb2d5IGVpdGhlci4uLgo+IAo+ID4+IFN1
+Z2dlc3RlZC1ieTogQmpvcm4gSGVsZ2FhczxiaGVsZ2Fhc0Bnb29nbGUuY29tPgo+ID4+IFNpZ25l
+ZC1vZmYtYnk6IEFsZXggV2lsbGlhbXNvbjxhbGV4LndpbGxpYW1zb25AcmVkaGF0LmNvbT4KPiA+
+PiAtLS0KPiA+PiAgIGRyaXZlcnMvcGNpL3NlYXJjaC5jIHwgIDE5OCArKysrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKwo+ID4+ICAgaW5jbHVkZS9saW51eC9w
+Y2kuaCAgfCAgICA3ICsrCj4gPj4gICAyIGZpbGVzIGNoYW5nZWQsIDIwNSBpbnNlcnRpb25zKCsp
+Cj4gPj4KPiA+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9wY2kvc2VhcmNoLmMgYi9kcml2ZXJzL3Bj
+aS9zZWFyY2guYwo+ID4+IGluZGV4IGQwNjI3ZmEuLjQ3NTljMDIgMTAwNjQ0Cj4gPj4gLS0tIGEv
+ZHJpdmVycy9wY2kvc2VhcmNoLmMKPiA+PiArKysgYi9kcml2ZXJzL3BjaS9zZWFyY2guYwo+ID4+
+IEBAIC0xOCw2ICsxOCwyMDQgQEAgREVDTEFSRV9SV1NFTShwY2lfYnVzX3NlbSk7Cj4gPj4gICBF
+WFBPUlRfU1lNQk9MX0dQTChwY2lfYnVzX3NlbSk7Cj4gPj4KPiA+PiAgIC8qCj4gPj4gKyAqIHBj
+aV9oYXNfcGNpZV9yZXF1ZXN0ZXJfaWQgLSBEb2VzIEBkZXYgaGF2ZSBhIFBDSWUgcmVxdWVzdGVy
+IElECj4gPj4gKyAqIEBkZXY6IGRldmljZSB0byB0ZXN0Cj4gPj4gKyAqLwo+ID4+ICtzdGF0aWMg
+Ym9vbCBwY2lfaGFzX3BjaWVfcmVxdWVzdGVyX2lkKHN0cnVjdCBwY2lfZGV2ICpkZXYpCj4gPj4g
+K3sKPiA+PiArCS8qCj4gPj4gKwkgKiBYWFggVGhlcmUncyBubyBpbmRpY2F0b3Igb2YgdGhlIGJ1
+cyB0eXBlLCBjb252ZW50aW9uYWwgUENJIHZzCj4gPj4gKwkgKiBQQ0ktWCB2cyBQQ0ktZSwgYnV0
+IHdlIGFzc3VtZSB0aGF0IGEgY2FsbGVyIGxvb2tpbmcgZm9yIGEgUENJZQo+ID4+ICsJICogcmVx
+dWVzdGVyIElEIGlzIGEgbmF0aXZlIFBDSWUgYmFzZWQgc3lzdGVtIChzdWNoIGFzIFZULWQgb3IK
+PiA+PiArCSAqIEFNRC1WaSkuICBJdCdzIGNvbW1vbiB0aGF0IFBDSWUgcm9vdCBjb21wbGV4IGRl
+dmljZXMgZG8gbm90Cj4gY291bGQgdGhlIGFib3ZlIGNvbW1lbnQgYmUgeDg2LWlvbW11LW5ldXRy
+YWw/Cj4gYnkgZGVmaW5pdGlvbiBvZiBQQ0llLCBhbGwgZGV2aWNlcyBoYXZlIGEgcmVxdWVzdGVy
+IGlkIChtaW4uIHRvIGFjY2VwdCBjZmcgY3ljbGVzKTsKPiByZXEnZCBpZiBzb3VyY2Ugb2YgcmVh
+ZC93cml0ZSByZXF1ZXN0cywgcmVhZCBjb21wbGV0aW9ucy4KCkkgYWdyZWUgY29tcGxldGVseSwg
+dGhlIHF1ZXN0aW9uIGlzIHdoZXRoZXIgd2UgaGF2ZSBhIFBDSWUgcm9vdCBjb21wbGV4Cm9yIGEg
+Y29udmVudGlvbmFsIFBDSSBob3N0IGJ1cy4gIEkgZG9uJ3QgdGhpbmsgd2UgaGF2ZSBhbnkgd2F5
+IHRvIHRlbGwsCnNvIEknbSBhc3N1bWluZyBwY2lfaXNfcm9vdF9idXMoKSBpbmRpY2F0ZXMgd2Un
+cmUgb24gYSBQQ0llIHJvb3QgY29tcGxleAphbmQgdGhlcmVmb3JlIGhhdmUgcmVxdWVzdGVyIElE
+cy4gIElmIHRoZXJlJ3Mgc29tZSB3YXkgdG8gZGV0ZXJtaW5lIHRoaXMKbGV0IG1lIGtub3cgYW5k
+IHdlIGNhbiBhdm9pZCBhbnkga2luZCBvZiBhc3N1bXB0aW9uLgoKPiA+PiArCSAqIGluY2x1ZGUg
+YSBQQ0llIGNhcGFiaWxpdHksIGJ1dCB3ZSBjYW4gYXNzdW1lIHRoZXkgYXJlIFBDSWUKPiA+PiAr
+CSAqIGRldmljZXMgYmFzZWQgb24gdGhlaXIgdG9wb2xvZ3kuCj4gPj4gKwkgKi8KPiA+PiArCWlm
+IChwY2lfaXNfcGNpZShkZXYpIHx8IHBjaV9pc19yb290X2J1cyhkZXYtPmJ1cykpCj4gPj4gKwkJ
+cmV0dXJuIHRydWU7Cj4gPj4gKwo+ID4+ICsJLyoKPiA+PiArCSAqIFBDSS1YIGRldmljZXMgaGF2
+ZSBhIHJlcXVlc3RlciBJRCwgYnV0IHRoZSBicmlkZ2UgbWF5IHN0aWxsIHRha2UKPiA+PiArCSAq
+IG93bmVyc2hpcCBvZiB0cmFuc2FjdGlvbnMgYW5kIGNyZWF0ZSBhIHJlcXVlc3RlciBJRC4gIFdl
+IHRoZXJlZm9yZQo+ID4+ICsJICogYXNzdW1lIHRoYXQgdGhlIFBDSS1YIHJlcXVlc3RlciBJRCBp
+cyBub3QgdGhlIHNhbWUgb25lIHVzZWQgb24gUENJZS4KPiA+PiArCSAqLwo+ID4+ICsKPiA+PiAr
+I2lmZGVmIENPTkZJR19QQ0lfUVVJUktTCj4gPj4gKwkvKgo+ID4+ICsJICogUXVpcmsgZm9yIFBD
+SWUtdG8tUENJIGJyaWRnZXMgd2hpY2ggZG8gbm90IGV4cG9zZSBhIFBDSWUgY2FwYWJpbGl0eS4K
+PiA+PiArCSAqIElmIHRoZSBkZXZpY2UgaXMgYSBicmlkZ2UsIGxvb2sgdG8gdGhlIG5leHQgZGV2
+aWNlIHVwc3RyZWFtIG9mIGl0Lgo+ID4+ICsJICogSWYgdGhhdCBkZXZpY2UgaXMgUENJZSBhbmQg
+bm90IGEgUENJZS10by1QQ0kgYnJpZGdlLCB0aGVuIGJ5Cj4gPj4gKwkgKiBkZWR1Y3Rpb24sIHRo
+ZSBkZXZpY2UgbXVzdCBiZSBQQ0llIGFuZCB0aGVyZWZvcmUgaGFzIGEgcmVxdWVzdGVyIElELgo+
+ID4+ICsJICovCj4gPj4gKwlpZiAoZGV2LT5zdWJvcmRpbmF0ZSkgewo+ID4+ICsJCXN0cnVjdCBw
+Y2lfZGV2ICpwYXJlbnQgPSBkZXYtPmJ1cy0+c2VsZjsKPiA+PiArCj4gPj4gKwkJaWYgKHBjaV9p
+c19wY2llKHBhcmVudCkmJgo+ID4+ICsJCSAgICBwY2lfcGNpZV90eXBlKHBhcmVudCkgIT0gUENJ
+X0VYUF9UWVBFX1BDSV9CUklER0UpCj4gPj4gKwkJCXJldHVybiB0cnVlOwo+ID4+ICsJfQo+ID4+
+ICsjZW5kaWYKPiA+PiArCj4gPj4gKwlyZXR1cm4gZmFsc2U7Cj4gPj4gK30KPiA+PiArCj4gPj4g
+Ky8qCj4gPj4gKyAqIHBjaV9oYXNfdmlzaWJsZV9wY2llX3JlcXVlc3Rlcl9pZCAtIENhbiBAYnJp
+ZGdlIHNlZSBAZGV2J3MgcmVxdWVzdGVyIElEPwo+ID4+ICsgKiBAZGV2OiByZXF1ZXN0ZXIgZGV2
+aWNlCj4gPj4gKyAqIEBicmlkZ2U6IHVwc3RyZWFtIGJyaWRnZSAob3IgTlVMTCBmb3Igcm9vdCBi
+dXMpCj4gPj4gKyAqLwo+ID4+ICtzdGF0aWMgYm9vbCBwY2lfaGFzX3Zpc2libGVfcGNpZV9yZXF1
+ZXN0ZXJfaWQoc3RydWN0IHBjaV9kZXYgKmRldiwKPiA+PiArCQkJCQkgICAgICBzdHJ1Y3QgcGNp
+X2RldiAqYnJpZGdlKQo+ID4+ICt7Cj4gPj4gKwkvKgo+ID4+ICsJICogVGhlIGVudGlyZSBwYXRo
+IG11c3QgYmUgdGVzdGVkLCBpZiBhbnkgc3RlcCBkb2VzIG5vdCBoYXZlIGEKPiA+PiArCSAqIHJl
+cXVlc3RlciBJRCwgdGhlIGNoYWluIGlzIGJyb2tlbi4gIFRoaXMgYWxsb3dzIHVzIHRvIHN1cHBv
+cnQKPiA+PiArCSAqIHRvcG9sb2dpZXMgd2l0aCBQQ0llIHJlcXVlc3RlciBJRCBnYXBzLCBleDog
+UENJZS1QQ0ktUENJZQo+ID4+ICsJICovCj4gPj4gKwl3aGlsZSAoZGV2ICE9IGJyaWRnZSkgewo+
+ID4+ICsJCWlmICghcGNpX2hhc19wY2llX3JlcXVlc3Rlcl9pZChkZXYpKQo+ID4+ICsJCQlyZXR1
+cm4gZmFsc2U7Cj4gPj4gKwo+ID4+ICsJCWlmIChwY2lfaXNfcm9vdF9idXMoZGV2LT5idXMpKQo+
+ID4+ICsJCQlyZXR1cm4gIWJyaWRnZTsgLyogZmFsc2UgaWYgd2UgZG9uJ3QgaGl0IEBicmlkZ2Ug
+Ki8KPiA+PiArCj4gPj4gKwkJZGV2ID0gZGV2LT5idXMtPnNlbGY7Cj4gPj4gKwl9Cj4gPj4gKwo+
+ID4+ICsJcmV0dXJuIHRydWU7Cj4gPj4gK30KPiA+PiArCj4gPj4gKy8qCj4gPj4gKyAqIExlZ2Fj
+eSBQQ0kgYnJpZGdlcyB3aXRoaW4gYSByb290IGNvbXBsZXggKGV4LiBJbnRlbCA4MjgwMSkgcmVw
+b3J0Cj4gPj4gKyAqIGEgZGlmZmVyZW50IHJlcXVlc3RlciBJRCB0aGFuIGEgc3RhbmRhcmQgUENJ
+ZS10by1QQ0kgYnJpZGdlLiAgSW5zdGVhZAo+IEZpcnN0LCBJJ20gYXNzdW1pbmcgeW91IG1lYW4g
+dGhhdCBkZXZpY2VzIGJlaGluZCBhIExlZ2FjeSBQQ0kgYnJpZGdlIHdpdGhpbiBhIHJvb3QgY29t
+cGxleAo+IGdldCBhc3NpZ25lZCBJRHMgZGlmZmVyZW50IHRoYW4gc3RkIFBDSWUtdG8tUENJIGJy
+aWRnZXMgKGFzIHF1b3RlZCBiZWxvdykuCgpZZXMKCj4gPj4gKyAqIG9mIHVzaW5nIChzdWJvcmRp
+bmF0ZTw8ICA4IHwgMCkgdGhlIHVzZSAoYnVzPDwgIDggfCBkZXZmbiksIGxpa2UgYQo+ID4KPiA+
+IHMvdGhlL3RoZXkvCj4gPgo+IHdlbGwsIHRoZSBQUEJzIHNob3VsZCBpbmplY3QgdGhlaXIgKHNl
+Y29uZGFyeSA8PCA4IHwgMCksIG5vdCBzdWJvcmRpbmF0ZS4KPiAgRnJvbSB0aGUgUENJIEV4cHJl
+c3MgdG8gUENJL1BDSS1YIEJyaWRnZSBzcGVjLCB2MS4wOgo+IFRoZSBUYWcgaXMgcmVhc3NpZ25l
+ZCBieSB0aGUgYnJpZGdlIGFjY29yZGluZyB0byB0aGUgcnVsZXMgb3V0bGluZWQgaW4gdGhlIGZv
+bGxvd2luZyBzZWN0aW9ucy4gSWYgdGhlCj4gYnJpZGdlIGdlbmVyYXRlcyBhIG5ldyBSZXF1ZXN0
+ZXIgSUQgZm9yIGEgdHJhbnNhY3Rpb24gZm9yd2FyZGVkIGZyb20gdGhlIHNlY29uZGFyeSBpbnRl
+cmZhY2UgdG8gdGhlCj4gcHJpbWFyeSBpbnRlcmZhY2UsIHRoZSBicmlkZ2UgYXNzaWducyB0aGUg
+UENJIEV4cHJlc3MgUmVxdWVzdGVyIElEIHVzaW5nIGl0cyBzZWNvbmRhcnkgaW50ZXJmYWNl4oCZ
+cwo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgIF5eXl5eXl5eXgo+IEJ1cyBOdW1iZXIgYW5kIHNldHMg
+Ym90aCB0aGUgRGV2aWNlIE51bWJlciBhbmQgRnVuY3Rpb24gTnVtYmVyIGZpZWxkcyB0byB6ZXJv
+Lgo+IF5eXl5eXl5eXl4KCkknbSByZWZlcnJpbmcgdG8gKHBkZXYtPnN1Ym9yZGluYXRlLT5udW1i
+ZXIgPDwgOCB8IDApIHZzCihwZGV2LT5idXMtPm51bWJlciA8PCA4IHwgcGRldi0+ZGV2Zm4pLiAg
+VGhlIHN1Ym9yZGluYXRlIHN0cnVjdCBwY2lfYnVzCmlzIHRoZSBzZWNvbmRhcnkgaW50ZXJmYWNl
+IGJ1cy4KCj4gQXMgZm9yIHRoZSA4MjgwMSwgbG9va3MgbGlrZSB0aGV5IHRvb2sgdGhpcyBwYXJ0
+IG9mIHRoZSBQQ0llIHNwZWMgdG8gaGVhcnQ6Cj4gKFBDSWUgdjMgc3BlYywgc2VjdGlvbiAyLjIu
+Ni4yIFRyYW5zYWN0aW9uIERlc2NyaXB0b3IgLSBUcmFuc2FjdGlvbiBJRCBGaWVsZCk6Cj4gRXhj
+ZXB0aW9uOiBUaGUgYXNzaWdubWVudCBvZiBCdXMgYW5kIERldmljZSBOdW1iZXJzIHRvIHRoZSBE
+ZXZpY2VzIHdpdGhpbiBhIFJvb3QgQ29tcGxleCwKPiBhbmQgdGhlIERldmljZSBOdW1iZXJzIHRv
+IHRoZSBEb3duc3RyZWFtIFBvcnRzIHdpdGhpbiBhIFN3aXRjaCwgbWF5IGJlIGRvbmUgaW4gYW4K
+PiBpbXBsZW1lbnRhdGlvbiBzcGVjaWZpYyB3YXkuCj4gT2J2aW91c2x5LCB5b3UncmUgbWlzc2lu
+ZyB0aGUgJ2ltcGxlbWVudGF0aW9uLXNwZWNpZmljIHdheScgY29tcGlsZXIuLi4gOy0pCgpTbyB0
+aGlzIGlzIHBvdGVudGlhbGx5IEludGVsIHNwZWNpZmljLiAgSG93IGNhbiB3ZSB0ZWxsIGl0J3Mg
+YW4gSW50ZWwKcm9vdCBjb21wbGV4PwoKPiBhdzogd2hpY2ggJ2J1cycgZG8geW91IG1lYW4gYWJv
+dmUgaW4gICcoYnVzPDwgIDggfCBkZXZmbiknID8KCihwZGV2LT5idXMtPm51bWJlciA8PCA4IHwg
+cGRldi0+ZGV2Zm4pCgo+ID4gRGlkIHlvdSBsZWFybiBhYm91dCB0aGlzIGVtcGlyaWNhbGx5PyAg
+SW50ZWwgc3BlYz8gIEkgd29uZGVyIGlmIHRoZXJlJ3MKPiA+IHNvbWUgd2F5IHRvIGRlcml2ZSB0
+aGlzIGZyb20gdGhlIFBDSWUgc3BlY3MuCj4gPgo+ID4+ICsgKiBzdGFuZGFyZCBQQ0llIGVuZHBv
+aW50LiAgVGhpcyBmdW5jdGlvbiBkZXRlY3RzIHRoZW0uCj4gPj4gKyAqCj4gPj4gKyAqIFhYWCBJ
+cyB0aGlzIEludGVsIHZlbmRvciBJRCBzcGVjaWZpYz8KPiA+PiArICovCj4gPj4gK3N0YXRpYyBi
+b29sIHBjaV9icmlkZ2VfdXNlc19lbmRwb2ludF9yZXF1ZXN0ZXIoc3RydWN0IHBjaV9kZXYgKmJy
+aWRnZSkKPiA+PiArewo+ID4+ICsJaWYgKCFwY2lfaXNfcGNpZShicmlkZ2UpJiYgIHBjaV9pc19y
+b290X2J1cyhicmlkZ2UtPmJ1cykpCj4gPj4gKwkJcmV0dXJuIHRydWU7Cj4gPj4gKwo+ID4+ICsJ
+cmV0dXJuIGZhbHNlOwo+ID4+ICt9Cj4gPj4gKwo+ID4+ICsjZGVmaW5lIFBDSV9SRVFVRVNURVJf
+SUQoZGV2KQkoKChkZXYpLT5idXMtPm51bWJlcjw8ICA4KSB8IChkZXYpLT5kZXZmbikKPiA+PiAr
+I2RlZmluZSBQQ0lfQlJJREdFX1JFUVVFU1RFUl9JRChkZXYpCSgoZGV2KS0+c3Vib3JkaW5hdGUt
+Pm51bWJlcjw8ICA4KQo+ID4+ICsKPiA+PiArLyoKPiA+PiArICogcGNpX2dldF92aXNpYmxlX3Bj
+aWVfcmVxdWVzdGVyIC0gR2V0IHJlcXVlc3RlciBhbmQgcmVxdWVzdGVyIElEIGZvcgo+ID4+ICsg
+KiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBAcmVxdWVzdGVlIGJlbG93IEBicmlk
+Z2UKPiA+PiArICogQHJlcXVlc3RlZTogcmVxdWVzdGVyIGRldmljZQo+ID4+ICsgKiBAYnJpZGdl
+OiB1cHN0cmVhbSBicmlkZ2UgKG9yIE5VTEwgZm9yIHJvb3QgYnVzKQo+ID4+ICsgKiBAcmVxdWVz
+dGVyX2lkOiBsb2NhdGlvbiB0byBzdG9yZSByZXF1ZXN0ZXIgSUQgb3IgTlVMTAo+ID4+ICsgKi8K
+PiA+PiArc3RydWN0IHBjaV9kZXYgKnBjaV9nZXRfdmlzaWJsZV9wY2llX3JlcXVlc3RlcihzdHJ1
+Y3QgcGNpX2RldiAqcmVxdWVzdGVlLAo+ID4+ICsJCQkJCSAgICAgICBzdHJ1Y3QgcGNpX2RldiAq
+YnJpZGdlLAo+ID4+ICsJCQkJCSAgICAgICB1MTYgKnJlcXVlc3Rlcl9pZCkKPiA+Cj4gPiBJJ20g
+bm90IHN1cmUgaXQgbWFrZXMgc2Vuc2UgdG8gcmV0dXJuIGEgc3RydWN0IHBjaV9kZXYgaGVyZSBi
+ZWNhdXNlCj4gPiB0aGVyZSdzIG5vIHJlcXVpcmVtZW50IHRoYXQgYSByZXF1ZXN0ZXIgSUQgY29y
+cmVzcG9uZCB0byBhbiBhY3R1YWwKPiA+IHBjaV9kZXYuCj4gPgo+IHdlbGwsIEkgd291bGQgZXhw
+ZWN0IHRoZSBvbmx5IGNhbGxlcnMgd291bGQgYmUgZm9yIHN1YnN5cyAoaW9tbXUncykKPiBzZWFy
+Y2hpbmcgdG8gZmluZCByZXF1ZXN0ZXItaWQgZm9yIGEgcGRldiwgYi9jIGlmIGEgcGRldiBkb2Vz
+bid0IGV4aXN0LAo+IHRoZW4gdGhlIGRldmljZSAoYW5kIHJlcXVlc3Rlci1pZCkgZG9lc24ndCBl
+eGlzdC4uLiA6LS8KCk9uZSBvZiB0aGUgY2FzZXMgQmpvcm4gaXMgcmVmZXJyaW5nIHRvIGlzIHBy
+b2JhYmx5IHRoZSBzaW1wbGUgY2FzZSBvZiBhClBDSWUtdG8tUENJIGJyaWRnZS4gIFRoZSByZXF1
+ZXN0ZXIgSUQgaXMgKGJyaWRnZS0+c3Vib3JkaW5hdGUtPm51bWJlciA8PAo4IHwgMCksIHdoaWNo
+IGlzIG5vdCBhbiBhY3R1YWwgZGV2aWNlLiAgQXMgY29kZWQgaGVyZSwgdGhlIGZ1bmN0aW9uCnJl
+dHVybnMgYnJpZGdlLCBidXQgcmVxdWVzdGVyX2lkIGlzIChicmlkZ2UtPnN1Ym9yZGluYXRlLT5u
+dW1iZXIgPDwgOCB8CjApLgoKPiA+PiArewo+ID4+ICsJc3RydWN0IHBjaV9kZXYgKnJlcXVlc3Rl
+ciA9IHJlcXVlc3RlZTsKPiA+PiArCj4gPj4gKwl3aGlsZSAocmVxdWVzdGVyICE9IGJyaWRnZSkg
+ewo+ID4+ICsJCXJlcXVlc3RlciA9IHBjaV9nZXRfZG1hX3NvdXJjZShyZXF1ZXN0ZXIpOwo+ID4+
+ICsJCXBjaV9kZXZfcHV0KHJlcXVlc3Rlcik7IC8qIFhYWCBza2lwIHJlZiBjbnQgKi8KPiA+PiAr
+Cj4gPj4gKwkJaWYgKHBjaV9oYXNfdmlzaWJsZV9wY2llX3JlcXVlc3Rlcl9pZChyZXF1ZXN0ZXIs
+IGJyaWRnZSkpCj4gPgo+ID4gSWYgd2UgYWNxdWlyZSB0aGUgInJlcXVlc3RlciIgcG9pbnRlciB2
+aWEgYSByZWYtY291bnRpbmcgaW50ZXJmYWNlLAo+ID4gaXQncyBpbGxlZ2FsIHRvIHVzZSB0aGUg
+cG9pbnRlciBhZnRlciBkcm9wcGluZyB0aGUgcmVmZXJlbmNlLCBpc24ndCBpdD8KPiA+IE1heWJl
+IHRoYXQncyB3aGF0IHlvdSBtZWFuIGJ5IHRoZSAiWFhYIiBjb21tZW50Lgo+ID4KPiA+PiArCQkJ
+YnJlYWs7Cj4gPj4gKwo+ID4+ICsJCWlmIChwY2lfaXNfcm9vdF9idXMocmVxdWVzdGVyLT5idXMp
+KQo+ID4+ICsJCQlyZXR1cm4gTlVMTDsgLyogQGJyaWRnZSBub3QgcGFyZW50IHRvIEByZXF1ZXN0
+ZWUgKi8KPiA+PiArCj4gPj4gKwkJcmVxdWVzdGVyID0gcmVxdWVzdGVyLT5idXMtPnNlbGY7Cj4g
+Pj4gKwl9Cj4gPj4gKwo+ID4+ICsJaWYgKHJlcXVlc3Rlcl9pZCkgewo+ID4+ICsJCWlmIChyZXF1
+ZXN0ZXItPmJ1cyAhPSByZXF1ZXN0ZWUtPmJ1cyYmCj4gPj4gKwkJICAgICFwY2lfYnJpZGdlX3Vz
+ZXNfZW5kcG9pbnRfcmVxdWVzdGVyKHJlcXVlc3RlcikpCj4gPj4gKwkJCSpyZXF1ZXN0ZXJfaWQg
+PSBQQ0lfQlJJREdFX1JFUVVFU1RFUl9JRChyZXF1ZXN0ZXIpOwo+ID4+ICsJCWVsc2UKPiA+PiAr
+CQkJKnJlcXVlc3Rlcl9pZCA9IFBDSV9SRVFVRVNURVJfSUQocmVxdWVzdGVyKTsKPiA+PiArCX0K
+PiA+PiArCj4gPj4gKwlyZXR1cm4gcmVxdWVzdGVyOwo+ID4+ICt9Cj4gPj4gKwo+ID4+ICtzdGF0
+aWMgaW50IHBjaV9kb19yZXF1ZXN0ZXJfY2FsbGJhY2soc3RydWN0IHBjaV9kZXYgKipkZXYsCj4g
+Pj4gKwkJCQkgICAgIGludCAoKmZuKShzdHJ1Y3QgcGNpX2RldiAqLAo+ID4+ICsJCQkJCSAgICAg
+ICB1MTYgaWQsIHZvaWQgKiksCj4gPj4gKwkJCQkgICAgIHZvaWQgKmRhdGEpCj4gPj4gK3sKPiA+
+PiArCXN0cnVjdCBwY2lfZGV2ICpkbWFfZGV2Owo+ID4+ICsJaW50IHJldDsKPiA+PiArCj4gPj4g
+KwlyZXQgPSBmbigqZGV2LCBQQ0lfUkVRVUVTVEVSX0lEKCpkZXYpLCBkYXRhKTsKPiA+PiArCWlm
+IChyZXQpCj4gPj4gKwkJcmV0dXJuIHJldDsKPiA+PiArCj4gPj4gKwlkbWFfZGV2ID0gcGNpX2dl
+dF9kbWFfc291cmNlKCpkZXYpOwo+ID4+ICsJcGNpX2Rldl9wdXQoZG1hX2Rldik7IC8qIFhYWCBz
+a2lwIHJlZiBjbnQgKi8KPiA+PiArCWlmIChkbWFfZGV2ID09ICpkZXYpCj4gPgo+ID4gU2FtZSBy
+ZWYgY291bnQgcXVlc3Rpb24gYXMgYWJvdmUuCj4gPgo+ID4+ICsJCXJldHVybiAwOwo+ID4+ICsK
+PiA+PiArCXJldCA9IGZuKGRtYV9kZXYsIFBDSV9SRVFVRVNURVJfSUQoZG1hX2RldiksIGRhdGEp
+Owo+ID4+ICsJaWYgKHJldCkKPiA+PiArCQlyZXR1cm4gcmV0Owo+ID4+ICsKPiA+PiArCSpkZXYg
+PSBkbWFfZGV2Owo+ID4+ICsJcmV0dXJuIDA7Cj4gPj4gK30KPiA+PiArCj4gPj4gKy8qCj4gPj4g
+KyAqIHBjaWVfZm9yX2VhY2hfcmVxdWVzdGVyIC0gQ2FsbCBjYWxsYmFjayBAZm4gb24gZWFjaCBk
+ZXZpY2VzIGFuZCBETUEgc291cmNlCj4gPj4gKyAqICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ZnJvbSBAcmVxdWVzdGVlIHRvIHRoZSBQQ0llIHJlcXVlc3RlciBJRCB2aXNpYmxlCj4gPj4gKyAq
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgdG8gQGJyaWRnZS4KPiA+Cj4gPiBUcmFuc2FjdGlv
+bnMgZnJvbSBhIGRldmljZSBtYXkgYXBwZWFyIHdpdGggb25lIG9mIHNldmVyYWwgcmVxdWVzdGVy
+IElEcywKPiA+IGJ1dCB0aGVyZSdzIG5vdCBuZWNlc3NhcmlseSBhbiBhY3R1YWwgcGNpX2RldiBm
+b3IgZWFjaCBJRCwgc28gSSB0aGluayB0aGUKPiBkaXR0byBhYm92ZTsgaGF2ZSB0byBoYXZlIGEg
+cGRldiBmb3IgZWFjaCBpZC4uLi4KPiAKPiA+IGNhbGxlciByZWFkcyBiZXR0ZXIgaWYgaXQncyAi
+Li4uZm9yX2VhY2hfcmVxdWVzdGVyX2lkKCkiCj4gPgo+ID4gVGhlICJDYWxsIFggb24gZWFjaCBk
+ZXZpY2VzIGFuZCBETUEgc291cmNlIGZyb20gWSB0byB0aGUgcmVxdWVzdGVyIElEIgo+ID4gcGFy
+dCBkb2Vzbid0IHF1aXRlIG1ha2UgYSBzZW50ZW5jZS4KPiA+Cj4gPj4gKyAqIEByZXF1ZXN0ZWU6
+IFN0YXJ0aW5nIGRldmljZQo+ID4+ICsgKiBAYnJpZGdlOiB1cHN0cmVhbSBicmlkZ2UgKG9yIE5V
+TEwgZm9yIHJvb3QgYnVzKQo+ID4KPiA+IFlvdSBzaG91bGQgc2F5IHNvbWV0aGluZyBhYm91dCB0
+aGUgc2lnbmlmaWNhbmNlIG9mIEBicmlkZ2UuICBJIHRoaW5rIHRoZQo+ID4gcG9pbnQgaXMgdG8g
+Y2FsbCBAZm4gZm9yIGV2ZXJ5IHBvc3NpYmxlIHJlcXVlc3RlciBJRCBAYnJpZGdlIGNvdWxkIHNl
+ZSBmb3IKPiA+IHRyYW5zYWN0aW9ucyBmcm9tIEByZXF1ZXN0ZWUuICBUaGlzIGlzIGEgd2F5IHRv
+IGxlYXJuIHRoZSByZXF1ZXN0ZXIgSURzIGFuCj4gPiBJT01NVSBhdCBAYnJpZGdlIG5lZWRzIHRv
+IGJlIHByZXBhcmVkIGZvci4KPiA+Cj4gPj4gKyAqIEBmbjogY2FsbGJhY2sgZnVuY3Rpb24KPiA+
+PiArICogQGRhdGE6IGRhdGEgdG8gcGFzcyB0byBjYWxsYmFjawo+ID4+ICsgKi8KPiA+PiAraW50
+IHBjaWVfZm9yX2VhY2hfcmVxdWVzdGVyKHN0cnVjdCBwY2lfZGV2ICpyZXF1ZXN0ZWUsIHN0cnVj
+dCBwY2lfZGV2ICpicmlkZ2UsCj4gPj4gKwkJCSAgICBpbnQgKCpmbikoc3RydWN0IHBjaV9kZXYg
+KiwgdTE2IGlkLCB2b2lkICopLAo+ID4+ICsJCQkgICAgdm9pZCAqZGF0YSkKPiA+PiArewo+ID4+
+ICsJc3RydWN0IHBjaV9kZXYgKnJlcXVlc3RlcjsKPiA+PiArCXN0cnVjdCBwY2lfZGV2ICpkZXYg
+PSByZXF1ZXN0ZWU7Cj4gPj4gKwlpbnQgcmV0ID0gMDsKPiA+PiArCj4gPj4gKwlyZXF1ZXN0ZXIg
+PSBwY2lfZ2V0X3Zpc2libGVfcGNpZV9yZXF1ZXN0ZXIocmVxdWVzdGVlLCBicmlkZ2UsIE5VTEwp
+Owo+ID4+ICsJaWYgKCFyZXF1ZXN0ZXIpCj4gPj4gKwkJcmV0dXJuIC1FSU5WQUw7Cj4gPj4gKwo+
+ID4+ICsJZG8gewo+ID4+ICsJCXJldCA9IHBjaV9kb19yZXF1ZXN0ZXJfY2FsbGJhY2soJmRldiwg
+Zm4sIGRhdGEpOwo+ID4+ICsJCWlmIChyZXQpCj4gPj4gKwkJCXJldHVybiByZXQ7Cj4gPj4gKwo+
+ID4+ICsJCWlmIChkZXYgPT0gcmVxdWVzdGVyKQo+ID4+ICsJCQlyZXR1cm4gMDsKPiA+PiArCj4g
+Pj4gKwkJLyoKPiA+PiArCQkgKiBXZSBhbHdheXMgY29uc2lkZXIgcm9vdCBidXMgZGV2aWNlcyB0
+byBoYXZlIGEgdmlzaWJsZQo+ID4+ICsJCSAqIHJlcXVlc3RlciBJRCwgdGhlcmVmb3JlIHRoaXMg
+c2hvdWxkIG5ldmVyIGJlIHRydWUuCj4gPj4gKwkJICovCj4gPj4gKwkJQlVHX09OKHBjaV9pc19y
+b290X2J1cyhkZXYtPmJ1cykpOwo+ID4KPiA+IFdoYXQgYXJlIHdlIGdvaW5nIHRvIGRvIGlmIHNv
+bWVib2R5IGhpdHMgdGhpcyBCVUdfT04oKT8gIElmIGl0J3MgaW1wb3NzaWJsZQo+ID4gdG8gaGl0
+LCB3ZSBzaG91bGQganVzdCByZW1vdmUgaXQuICBJZiBpdCdzIHBvc3NpYmxlIHRvIGhpdCBpdCBp
+biBzb21lIHdlaXJkCj4gPiB0b3BvbG9neSB5b3UgZGlkbid0IGNvbnNpZGVyLCB3ZSBzaG91bGQg
+c2VlIElPTU1VIGZhdWx0cyBmb3IgYW55IHJlcXVlc3Rlcgo+ID4gSUQgd2UgbmVnbGVjdGVkIHRv
+IG1hcCwgYW5kIHRoYXQgZmF1bHQgd291bGQgYmUgYSBiZXR0ZXIgZGVidWdnaW5nIGhpbnQKPiA+
+IHRoYW4gYSBCVUdfT04oKSBoZXJlLgo+ID4KPiBhY2NvcmRpbmcgdG8gc3BlYywgYWxsIHBkZXYn
+cyBoYXZlIGEgcmVxdWVzdGVyLWlkLCBldmVuIFJDIG9uZXMsIGFsYmVpdAo+ICJpbXBsZW1lbnRh
+dGlvbiBzcGVjaWZpYyIuLi4KPiAKPiA+PiArCj4gPj4gKwkJZGV2ID0gZGV2LT5idXMtPnNlbGY7
+Cj4gPj4gKwo+ID4+ICsJfSB3aGlsZSAoZGV2ICE9IHJlcXVlc3Rlcik7Cj4gPj4gKwo+ID4+ICsJ
+LyoKPiA+PiArCSAqIElmIHdlJ3ZlIG1hZGUgaXQgaGVyZSwgQHJlcXVlc3RlciBpcyBhIGJyaWRn
+ZSB1cHN0cmVhbSBmcm9tCj4gPj4gKwkgKiBAcmVxdWVzdGVlLgo+ID4+ICsJICovCj4gPj4gKwlp
+ZiAocGNpX2JyaWRnZV91c2VzX2VuZHBvaW50X3JlcXVlc3RlcihyZXF1ZXN0ZXIpKQo+ID4+ICsJ
+CXJldHVybiBwY2lfZG9fcmVxdWVzdGVyX2NhbGxiYWNrKCZyZXF1ZXN0ZXIsIGZuLCBkYXRhKTsK
+PiA+PiArCj4gPj4gKwlyZXR1cm4gZm4ocmVxdWVzdGVyLCBQQ0lfQlJJREdFX1JFUVVFU1RFUl9J
+RChyZXF1ZXN0ZXIpLCBkYXRhKTsKPiA+PiArfQo+ID4+ICsKPiA+PiArLyoKPiA+PiAgICAqIGZp
+bmQgdGhlIHVwc3RyZWFtIFBDSWUtdG8tUENJIGJyaWRnZSBvZiBhIFBDSSBkZXZpY2UKPiA+PiAg
+ICAqIGlmIHRoZSBkZXZpY2UgaXMgUENJRSwgcmV0dXJuIE5VTEwKPiA+PiAgICAqIGlmIHRoZSBk
+ZXZpY2UgaXNuJ3QgY29ubmVjdGVkIHRvIGEgUENJZSBicmlkZ2UgKHRoYXQgaXMgaXRzIHBhcmVu
+dCBpcyBhCj4gPj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvcGNpLmggYi9pbmNsdWRlL2xp
+bnV4L3BjaS5oCj4gPj4gaW5kZXggM2EyNGU0Zi4uOTRlODFkMSAxMDA2NDQKPiA+PiAtLS0gYS9p
+bmNsdWRlL2xpbnV4L3BjaS5oCj4gPj4gKysrIGIvaW5jbHVkZS9saW51eC9wY2kuaAo+ID4+IEBA
+IC0xODczLDYgKzE4NzMsMTMgQEAgc3RhdGljIGlubGluZSBzdHJ1Y3QgZWVoX2RldiAqcGNpX2Rl
+dl90b19lZWhfZGV2KHN0cnVjdCBwY2lfZGV2ICpwZGV2KQo+ID4+ICAgfQo+ID4+ICAgI2VuZGlm
+Cj4gPj4KPiA+PiArc3RydWN0IHBjaV9kZXYgKnBjaV9nZXRfdmlzaWJsZV9wY2llX3JlcXVlc3Rl
+cihzdHJ1Y3QgcGNpX2RldiAqcmVxdWVzdGVlLAo+ID4+ICsJCQkJCSAgICAgICBzdHJ1Y3QgcGNp
+X2RldiAqYnJpZGdlLAo+ID4+ICsJCQkJCSAgICAgICB1MTYgKnJlcXVlc3Rlcl9pZCk7Cj4gPgo+
+ID4gVGhlIHN0cnVjdHVyZSBvZiB0aGlzIGludGVyZmFjZSBpbXBsaWVzIHRoYXQgdGhlcmUgaXMg
+b25seSBvbmUgdmlzaWJsZQo+ID4gcmVxdWVzdGVyIElELCBidXQgdGhlIHdob2xlIHBvaW50IG9m
+IHRoaXMgcGF0Y2ggaXMgdGhhdCBhIHRyYW5zYWN0aW9uIGZyb20KPiA+IEByZXF1ZXN0ZWUgbWF5
+IGFwcGVhciB3aXRoIG9uZSBvZiBzZXZlcmFsIHJlcXVlc3RlciBJRHMuICBTbyB3aGljaCBvbmUg
+d2lsbAo+ID4gdGhpcyByZXR1cm4/Cj4gPgo+IEFyZSB0aGVyZSBkZXZpY2VzIHRoYXQgdXNlIG11
+bHRpcGxlIHJlcXVlc3RlciBpZCdzPwo+IEkga25vdyB3ZSBoYXZlIG9uZXMgdGhhdCB1c2UgdGhl
+IHdyb25nIGlkLgo+IElmIHdlIHdhbnQgdG8gaGFuZGxlIHRoZSBtdWx0aXBsZSByZXF1ZXN0ZXIt
+aWQncyBwZXIgcGRldiwKPiB3ZSBjb3VsZCBwYXNzIGluIGEgcHRyIHRvIGFuIGluaXRpYWwgcmVx
+dWVzdGVyLWlkOyBpZiBudWxsLCBnaXZlIG1lIGZpcnN0Owo+IGlmICFudWxsLCBnaXZlIG1lIG5l
+eHQgb25lOyAgd291bGQgYWxzbyBuZWVkIGEgZmxhZyByZXR1cm5lZCB0byBpbmRpY2F0ZQo+IHRo
+ZXJlIGlzIG1vcmUgdGhhbiAxLgo+IG51bGwtcnRuIHdoZW4gcGFzcyBpbiAhbnVsbCByZWYsIG1l
+YW5zIHRoZSBlbmQuCj4gICAuLi4gc2xlZGdlLWhhbW1lciArIG5haWwgPz8/CgpUaGF0IGRvZXMg
+bm90IHNvdW5kIHNhZmUuICBBZ2FpbiwgdGhpcyBpcyB3aHkgSSB0aGluayB0aGUKcGNpZV9mb3Jf
+ZWFjaF9yZXF1ZXN0ZXIoKSB3b3Jrcy4gIEdpdmVuIGEgcmVxdWVzdGVyLCBjYWxsIGZuKCkgb24g
+ZXZlcnkKZGV2aWNlIHdpdGggdGhlIHNhbWUgcmVxdWVzdGVyIElELiAgVGhhdCBtZWFucyB3aGVu
+IHlvdSBoYXZlIGEgYnJpZGdlLAp3ZSBjYWxsIGl0IGZvciB0aGUgYnJpZGdlIGFuZCBldmVyeSBk
+ZXZpY2UgYW5kIGV2ZXJ5IGRldmljZSBxdWlyayBiZWhpbmQKdGhlIGJyaWRnZSwgZnVsbHkgcG9w
+dWxhdGluZyBjb250ZXh0IGVudHJpZXMgZm9yIGFsbCBvZiB0aGVtLiAgVGhhbmtzLAoKQWxleAoK
+PiA+PiAraW50IHBjaWVfZm9yX2VhY2hfcmVxdWVzdGVyKHN0cnVjdCBwY2lfZGV2ICpyZXF1ZXN0
+ZWUsIHN0cnVjdCBwY2lfZGV2ICpicmlkZ2UsCj4gPj4gKwkJCSAgICBpbnQgKCpmbikoc3RydWN0
+IHBjaV9kZXYgKiwgdTE2IGlkLCB2b2lkICopLAo+ID4+ICsJCQkgICAgdm9pZCAqZGF0YSk7Cj4g
+Pj4gKwo+ID4+ICAgLyoqCj4gPj4gICAgKiBwY2lfZmluZF91cHN0cmVhbV9wY2llX2JyaWRnZSAt
+IGZpbmQgdXBzdHJlYW0gUENJZS10by1QQ0kgYnJpZGdlIG9mIGEgZGV2aWNlCj4gPj4gICAgKiBA
+cGRldjogdGhlIFBDSSBkZXZpY2UKPiA+Pgo+IAoKCgpfX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGlu
+dXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxt
+YW4vbGlzdGluZm8vaW9tbXU=
