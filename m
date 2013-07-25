@@ -1,67 +1,75 @@
-From: Vivek Goyal <vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2] PCI: Reset PCIe devices to stop ongoing DMA
-Date: Thu, 25 Jul 2013 10:24:46 -0400
-Message-ID: <20130725142446.GK11993@redhat.com>
-References: <1368509365-2260-1-git-send-email-indou.takao@jp.fujitsu.com>
-	<CAErSpo4t_2Xw76p3Z9FVzyyK-MBovavDu9D=pYoPMjESSxgT=w@mail.gmail.com>
-	<51B19DF3.2070009@jp.fujitsu.com>
-	<CAErSpo6dfEnzriHD_aWZB_3E-kSzauhNRHPd+VuFX5HONVKgqw@mail.gmail.com>
-	<51B6BEDB.3000509@jp.fujitsu.com>
-	<CAErSpo5u8qGALt6C+tuPYXdd2YgyMH6fnPnA+afUteEZ7kY0iw@mail.gmail.com>
-	<51B93221.2040505@jp.fujitsu.com>
-	<CAErSpo5tVK-Z3aOdMTzab-S8o5zLVtDOFQ8-LSYpUgbrJSsxuw@mail.gmail.com>
-	<51BA7BB6.1080104@jp.fujitsu.com> <51EF7466.20703@jp.fujitsu.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <51EF7466.20703-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hbabu-r/Jw6+rmf7HQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, bill.sumner-VXdhtT5mjnY@public.gmane.org
+From: Antonios Motakis <a.motakis@virtualopensystems.com>
+Subject: [PATCHv2 1/2] iommu/exynos: add devices attached to the System MMU to an IOMMU group
+Date: Thu, 25 Jul 2013 17:34:59 +0200
+Message-ID: <1374766502-14823-1-git-send-email-a.motakis@virtualopensystems.com>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org
+Cc: kvmarm@lists.cs.columbia.edu, Antonios Motakis <a.motakis@virtualopensystems.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Sachin Kamat <sachin.kamat@linaro.org>, Varun Sethi <Varun.Sethi@freescale.com>, open list <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jul 24, 2013 at 03:29:58PM +0900, Takao Indoh wrote:
-> Sorry for letting this discussion slide, I was busy on other works:-(
-> Anyway, the summary of previous discussion is:
-> - My patch adds new initcall(fs_initcall) to reset all PCIe endpoints on
->   boot. This expects PCI enumeration is done before IOMMU
->   initialization as follows.
->     (1) PCI enumeration
->     (2) fs_initcall ---> device reset
->     (3) IOMMU initialization
-> - This works on x86, but does not work on other architecture because
->   IOMMU is initialized before PCI enumeration on some architectures. So,
->   device reset should be done where IOMMU is initialized instead of
->   initcall.
-> - Or, as another idea, we can reset devices in first kernel(panic kernel)
-> 
-> Resetting devices in panic kernel is against kdump policy and seems not to
-> be good idea. So I think adding reset code into iommu initialization is
-> better. I'll post patches for that.
+IOMMU groups are expected by certain users of the IOMMU API,
+e.g. VFIO. Since each device is behind its own System MMU, we
+can allocate a new IOMMU group for each device.
 
-I don't understand all the details but I agree that idea of trying to
-reset IOMMU in crashed kernel might not fly.
+This patch depends on Cho KyongHo's patch series titled "[PATCH v7 00/12]
+iommu/exynos: Fixes and Enhancements of System MMU driver with DT",
+applied on a Linux 3.10.1 kernel. It has been tested on the Arndale board.
 
-> 
-> Another discussion point is how to handle buggy devices. Resetting buggy
-> devices makes system more unstable. One of ideas is using boot parameter
-> so that user can choose to reset devices or not.
+Changes since in v2:
+- Removed possibility for minor memory leak in case of
+  misbehaving platform drivers
 
-So who would decide which device is buggy and don't reset it. Give
-some details here.
+Signed-off-by: Antonios Motakis <a.motakis@virtualopensystems.com>
+---
+ drivers/iommu/exynos-iommu.c | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-Can't we simply blacklist associated module, so that it never loads
-and then it never tries to reset the devices?
-
-Thanks
-Vivek
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 51d43bb..c7dd4b5 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -1134,6 +1134,32 @@ static phys_addr_t exynos_iommu_iova_to_phys(struct iommu_domain *domain,
+ 	return phys;
+ }
+ 
++static int exynos_iommu_add_device(struct device *dev)
++{
++	struct iommu_group *group;
++	int ret;
++
++	group = iommu_group_get(dev);
++
++	if (!group) {
++		group = iommu_group_alloc();
++		if (IS_ERR(group)) {
++			dev_err(dev, "Failed to allocate IOMMU group\n");
++			return PTR_ERR(group);
++		}
++	}
++
++	ret = iommu_group_add_device(group, dev);
++	iommu_group_put(group);
++
++	return ret;
++}
++
++static void exynos_iommu_remove_device(struct device *dev)
++{
++	iommu_group_remove_device(dev);
++}
++
+ static struct iommu_ops exynos_iommu_ops = {
+ 	.domain_init = &exynos_iommu_domain_init,
+ 	.domain_destroy = &exynos_iommu_domain_destroy,
+@@ -1142,6 +1168,8 @@ static struct iommu_ops exynos_iommu_ops = {
+ 	.map = &exynos_iommu_map,
+ 	.unmap = &exynos_iommu_unmap,
+ 	.iova_to_phys = &exynos_iommu_iova_to_phys,
++	.add_device	= exynos_iommu_add_device,
++	.remove_device	= exynos_iommu_remove_device,
+ 	.pgsize_bitmap = SECT_SIZE | LPAGE_SIZE | SPAGE_SIZE,
+ };
+ 
+-- 
+1.8.1.2
