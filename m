@@ -1,51 +1,96 @@
-From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH v2] PCI: Reset PCIe devices to stop ongoing DMA
-Date: Thu, 25 Jul 2013 11:00:46 -0600
-Message-ID: <CAErSpo5B7NzVfxwW3bQnfK+iK+DrRsWQd2Cm14z5PWNnRHWL5w@mail.gmail.com>
-References: <1368509365-2260-1-git-send-email-indou.takao@jp.fujitsu.com>
- <CAErSpo4t_2Xw76p3Z9FVzyyK-MBovavDu9D=pYoPMjESSxgT=w@mail.gmail.com>
- <51B19DF3.2070009@jp.fujitsu.com> <CAErSpo6dfEnzriHD_aWZB_3E-kSzauhNRHPd+VuFX5HONVKgqw@mail.gmail.com>
- <51B6BEDB.3000509@jp.fujitsu.com> <CAErSpo5u8qGALt6C+tuPYXdd2YgyMH6fnPnA+afUteEZ7kY0iw@mail.gmail.com>
- <51B93221.2040505@jp.fujitsu.com> <CAErSpo5tVK-Z3aOdMTzab-S8o5zLVtDOFQ8-LSYpUgbrJSsxuw@mail.gmail.com>
- <51BA7BB6.1080104@jp.fujitsu.com> <51EF7466.20703@jp.fujitsu.com>
+From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC PATCH v2 1/2] pci: Create PCIe requester ID interface
+Date: Thu, 25 Jul 2013 11:19:58 -0600
+Message-ID: <20130725171958.GB9272@google.com>
+References: <20130711204439.1701.90503.stgit@bling.home>
+	<20130711210326.1701.56478.stgit@bling.home>
+	<20130723223533.GB19765@google.com> <51F03C1B.2070002@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <51EF7466.20703@jp.fujitsu.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Takao Indoh <indou.takao@jp.fujitsu.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, "kexec@lists.infradead.org" <kexec@lists.infradead.org>, "ishii.hironobu@jp.fujitsu.com" <ishii.hironobu@jp.fujitsu.com>, Don Dutile <ddutile@redhat.com>, "Sumner, William" <bill.sumner@hp.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, Vivek Goyal <vgoyal@redhat.com>, Haren Myneni <hbabu@us.ibm.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <51F03C1B.2070002-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jul 24, 2013 at 12:29 AM, Takao Indoh
-<indou.takao@jp.fujitsu.com> wrote:
-> Sorry for letting this discussion slide, I was busy on other works:-(
-> Anyway, the summary of previous discussion is:
-> - My patch adds new initcall(fs_initcall) to reset all PCIe endpoints on
->   boot. This expects PCI enumeration is done before IOMMU
->   initialization as follows.
->     (1) PCI enumeration
->     (2) fs_initcall ---> device reset
->     (3) IOMMU initialization
-> - This works on x86, but does not work on other architecture because
->   IOMMU is initialized before PCI enumeration on some architectures. So,
->   device reset should be done where IOMMU is initialized instead of
->   initcall.
-> - Or, as another idea, we can reset devices in first kernel(panic kernel)
->
-> Resetting devices in panic kernel is against kdump policy and seems not to
-> be good idea. So I think adding reset code into iommu initialization is
-> better. I'll post patches for that.
+On Wed, Jul 24, 2013 at 04:42:03PM -0400, Don Dutile wrote:
+> On 07/23/2013 06:35 PM, Bjorn Helgaas wrote:
+> >On Thu, Jul 11, 2013 at 03:03:27PM -0600, Alex Williamson wrote:
+> >>This provides interfaces for drivers to discover the visible PCIe
+> >>requester ID for a device, for things like IOMMU setup, and iterate
+> >
+> >IDs (plural)
+> >
+> a single device does not have multiple requester id's;
+> can have multiple tag-id's (that are ignored in this situation, but
+> can be used by switches for ordering purposes), but there's only 1/fcn
+> (except for those quirker pdevs!).
 
-Of course nobody *wants* to do anything in the panic kernel.  But
-simply saying "it's against kdump policy and seems not to be a good
-idea" is not a technical argument.  There are things that are
-impractical to do in the kdump kernel, so they have to be done in the
-panic kernel even though we know the kernel is unreliable and the
-attempt may fail.
+Generally a device does not have multiple requester IDs, but the
+IOMMU may see one of several requester IDs for DMAs from a given
+device because bridges may take ownership of those transactions (sec
+3.6.1.1 of the VT-d spec).
 
-My point about IOMMU and PCI initialization order doesn't go away just
-because it doesn't fit "kdump policy."  Having system initialization
-occur in a logical order is far more important than making kdump work.
+Just to be clear, I envision this whole interface as being
+specifically for use by IOMMU drivers, so I'm only trying to provide
+what's necessary to build IOMMU mappings.
+
+> >>+ * pci_get_visible_pcie_requester - Get requester and requester ID for
+> >>+ *                                  @requestee below @bridge
+> >>+ * @requestee: requester device
+> >>+ * @bridge: upstream bridge (or NULL for root bus)
+> >>+ * @requester_id: location to store requester ID or NULL
+> >>+ */
+> >>+struct pci_dev *pci_get_visible_pcie_requester(struct pci_dev *requestee,
+> >>+					       struct pci_dev *bridge,
+> >>+					       u16 *requester_id)
+> >
+> >I'm not sure it makes sense to return a struct pci_dev here because
+> >there's no requirement that a requester ID correspond to an actual
+> >pci_dev.
+> >
+> well, I would expect the only callers would be for subsys (iommu's)
+> searching to find requester-id for a pdev, b/c if a pdev doesn't exist,
+> then the device (and requester-id) doesn't exist... :-/
+
+> >>+ * pcie_for_each_requester - Call callback @fn on each devices and DMA source
+> >>+ *                           from @requestee to the PCIe requester ID visible
+> >>+ *                           to @bridge.
+> >
+> >Transactions from a device may appear with one of several requester IDs,
+> >but there's not necessarily an actual pci_dev for each ID, so I think the
+> ditto above; have to have a pdev for each id....
+
+This *might* be true, but I don't think we should rely on it.  For
+example:
+
+  00:1c.0 PCIe to PCI bridge to [bus 01]
+  01:01.0 PCI endpoint
+
+The bridge will take ownership of DMA transactions from the 01:01.0
+endpoint.  An IOMMU on bus 00 will see a bridge-assigned requester
+ID of 01:00.0 (subordinate bus number, devfn zero), but there is no
+01:00.0 device.
+
+Maybe the rules of conventional PCI require a device zero (I don't
+remember), but even if they do, it's ugly to rely on that here
+because I don't think device 01:00.0 is relevant to mappings for
+device 01:01.0.
+
+Obviously we also have to be aware that 01:00.0 and 01:01.0 can't be
+isolated from each other, but I think that issue is separate from
+the question of what requester IDs have to be mapped to make 01:01.0
+work.
 
 Bjorn
