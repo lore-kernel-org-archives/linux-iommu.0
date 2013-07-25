@@ -1,7 +1,7 @@
 From: Shuah Khan <shuah.kh@samsung.com>
-Subject: [PATCH 1/4] iommu: Add event tracing feature to iommu - Add iommu trace events
-Date: Thu, 25 Jul 2013 07:15:02 -0600
-Message-ID: <7b0b388ea2e8f1d245450a8ec34755f608618224.1374711464.git.shuah.kh@samsung.com>
+Subject: [PATCH 3/4] iommu: Add event tracing feature to iommu - amd_iommu driver trace events
+Date: Thu, 25 Jul 2013 07:15:04 -0600
+Message-ID: <647a953ffac9a572cc580118c6ca27a706b7c4f2.1374711464.git.shuah.kh@samsung.com>
 References: <cover.1374711464.git.shuah.kh@samsung.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1374711464.git.shuah.kh@samsung.com>
@@ -29,8 +29,8 @@ iommu:attach_device_to_domain
 iommu:detach_device_from_domain
 
 iommu_map_unmap class events can be enabled to trigger when iommu map and
-unmap iommu ops. Trace information includes iova, physical address (map event
-only), and size.
+unmap iommu ops complete. Trace information includes iova, physical address
+(map event only), and size.
 
 iommu:unmap
 iommu:map
@@ -45,189 +45,87 @@ iommu:amd_event
 
 Signed-off-by: Shuah Khan <shuah.kh@samsung.com>
 ---
- include/trace/events/iommu.h |  174 ++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 174 insertions(+)
- create mode 100644 include/trace/events/iommu.h
+ drivers/iommu/amd_iommu.c |   19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/include/trace/events/iommu.h b/include/trace/events/iommu.h
-new file mode 100644
-index 0000000..3d8d5e8
---- /dev/null
-+++ b/include/trace/events/iommu.h
-@@ -0,0 +1,174 @@
-+/*
-+ * iommu trace points
-+ *
-+ * Copyright (C) 2013 Shuah Khan <shuah.kh@samsung.com>
-+ *
-+ */
-+#undef TRACE_SYSTEM
-+#define TRACE_SYSTEM iommu
-+
-+#if !defined(_TRACE_IOMMU_H) || defined(TRACE_HEADER_MULTI_READ)
-+#define _TRACE_IOMMU_H
-+
-+#include <linux/tracepoint.h>
-+#include <linux/pci.h>
-+
-+struct device;
-+
-+DECLARE_EVENT_CLASS(iommu_group_event,
-+
-+	TP_PROTO(int group_id, struct device *dev),
-+
-+	TP_ARGS(group_id, dev),
-+
-+	TP_STRUCT__entry(
-+		__field(int, gid)
-+		__string(device, dev_name(dev))
-+	),
-+
-+	TP_fast_assign(
-+		__entry->gid = group_id;
-+		__assign_str(device, dev_name(dev));
-+	),
-+
-+	TP_printk("IOMMU: groupID=%d device=%s",
-+			__entry->gid, __get_str(device)
-+	)
-+);
-+
-+DEFINE_EVENT(iommu_group_event, add_device_to_group,
-+
-+	TP_PROTO(int group_id, struct device *dev),
-+
-+	TP_ARGS(group_id, dev)
-+
-+);
-+
-+DEFINE_EVENT(iommu_group_event, remove_device_from_group,
-+
-+	TP_PROTO(int group_id, struct device *dev),
-+
-+	TP_ARGS(group_id, dev)
-+);
-+
-+DECLARE_EVENT_CLASS(iommu_device_event,
-+
-+	TP_PROTO(struct device *dev),
-+
-+	TP_ARGS(dev),
-+
-+	TP_STRUCT__entry(
-+		__string(device, dev_name(dev))
-+	),
-+
-+	TP_fast_assign(
-+		__assign_str(device, dev_name(dev));
-+	),
-+
-+	TP_printk("IOMMU: device=%s", __get_str(device)
-+	)
-+);
-+
-+DEFINE_EVENT(iommu_device_event, attach_device_to_domain,
-+
-+	TP_PROTO(struct device *dev),
-+
-+	TP_ARGS(dev)
-+);
-+
-+DEFINE_EVENT(iommu_device_event, detach_device_from_domain,
-+
-+	TP_PROTO(struct device *dev),
-+
-+	TP_ARGS(dev)
-+);
-+
-+DECLARE_EVENT_CLASS(iommu_map_unmap,
-+
-+	TP_PROTO(unsigned long iova, phys_addr_t paddr, size_t size),
-+
-+	TP_ARGS(iova, paddr, size),
-+
-+	TP_STRUCT__entry(
-+		__field(u64, iova)
-+		__field(u64, paddr)
-+		__field(int, size)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->iova = iova;
-+		__entry->paddr = paddr;
-+		__entry->size = size;
-+	),
-+
-+	TP_printk("IOMMU: iova=0x%016llx paddr=0x%016llx size=0x%x",
-+			__entry->iova, __entry->paddr, __entry->size
-+	)
-+);
-+
-+DEFINE_EVENT(iommu_map_unmap, map,
-+
-+	TP_PROTO(unsigned long iova, phys_addr_t paddr, size_t size),
-+
-+	TP_ARGS(iova, paddr, size)
-+);
-+
-+DEFINE_EVENT_PRINT(iommu_map_unmap, unmap,
-+
-+	TP_PROTO(unsigned long iova, phys_addr_t paddr, size_t size),
-+
-+	TP_ARGS(iova, paddr, size),
-+
-+	TP_printk("IOMMU: iova=0x%016llx size=0x%x",
-+			__entry->iova, __entry->size
-+	)
-+);
-+
-+DECLARE_EVENT_CLASS(iommu_amd_event,
-+
-+	TP_PROTO(char *event_str, int type, int domain_id, int device_id,
-+		 u64 address, int flags),
-+
-+	TP_ARGS(event_str, type, domain_id, device_id, address, flags),
-+
-+	TP_STRUCT__entry(
-+		__string(event_str, event_str)
-+		__field(int, type)
-+		__field(int, domain_id)
-+		__field(int, device_id)
-+		__field(u64, address)
-+		__field(int, flags)
-+	),
-+
-+	TP_fast_assign(
-+		__assign_str(event_str, event_str);
-+		__entry->type = type;
-+		__entry->domain_id = domain_id;
-+		__entry->device_id = device_id;
-+		__entry->address = address;
-+		__entry->flags = flags;
-+	),
-+
-+	TP_printk("IOMMU:%s 0x%02x %02x:%02x.%x d=0x%04x a=0x%016llx f=0x%04x",
-+			__get_str(event_str),
-+			__entry->type,
-+			PCI_BUS_NUM(__entry->device_id),
-+			PCI_SLOT(__entry->device_id),
-+			PCI_FUNC(__entry->device_id),
-+			__entry->domain_id,
-+			__entry->address, __entry->flags
-+	)
-+);
-+
-+DEFINE_EVENT(iommu_amd_event, amd_event,
-+
-+	TP_PROTO(char *event_str, int type, int domain_id, int device_id,
-+		 u64 address, int flags),
-+
-+	TP_ARGS(event_str, type, domain_id, device_id, address, flags)
-+);
-+
-+#endif /* _TRACE_IOMMU_H */
-+
-+/* This part must be outside protection */
-+#include <trace/define_trace.h>
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 6dc6594..10ac042 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -42,6 +42,7 @@
+ #include <asm/iommu.h>
+ #include <asm/gart.h>
+ #include <asm/dma.h>
++#include <trace/events/iommu.h>
+ 
+ #include "amd_iommu_proto.h"
+ #include "amd_iommu_types.h"
+@@ -659,6 +660,8 @@ retry:
+ 		       "address=0x%016llx flags=0x%04x]\n",
+ 		       PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 		       address, flags);
++		trace_amd_event("ILLEGAL_DEV_TABLE_ENTRY", type, domid,
++				      devid, address, flags);
+ 		dump_dte_entry(devid);
+ 		break;
+ 	case EVENT_TYPE_IO_FAULT:
+@@ -666,41 +669,57 @@ retry:
+ 		       "domain=0x%04x address=0x%016llx flags=0x%04x]\n",
+ 		       PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 		       domid, address, flags);
++		trace_amd_event("IO_PAGE_FAULT", type, domid,
++				      devid, address, flags);
+ 		break;
+ 	case EVENT_TYPE_DEV_TAB_ERR:
+ 		printk("DEV_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
+ 		       "address=0x%016llx flags=0x%04x]\n",
+ 		       PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 		       address, flags);
++		trace_amd_event("DEV_TAB_HARDWARE_ERROR", type, domid,
++				      devid, address, flags);
+ 		break;
+ 	case EVENT_TYPE_PAGE_TAB_ERR:
+ 		printk("PAGE_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
+ 		       "domain=0x%04x address=0x%016llx flags=0x%04x]\n",
+ 		       PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 		       domid, address, flags);
++		trace_amd_event("PAGE_TAB_HARDWARE_ERROR", type, domid,
++				      devid, address, flags);
+ 		break;
+ 	case EVENT_TYPE_ILL_CMD:
+ 		printk("ILLEGAL_COMMAND_ERROR address=0x%016llx]\n", address);
++		trace_amd_event("ILLEGAL_COMMAND_ERROR", type, domid,
++				      devid, address, flags);
+ 		dump_command(address);
+ 		break;
+ 	case EVENT_TYPE_CMD_HARD_ERR:
+ 		printk("COMMAND_HARDWARE_ERROR address=0x%016llx "
+ 		       "flags=0x%04x]\n", address, flags);
++		trace_amd_event("COMMAND_HARDWARE_ERROR", type, domid,
++				      devid, address, flags);
+ 		break;
+ 	case EVENT_TYPE_IOTLB_INV_TO:
+ 		printk("IOTLB_INV_TIMEOUT device=%02x:%02x.%x "
+ 		       "address=0x%016llx]\n",
+ 		       PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 		       address);
++		trace_amd_event("IOTLB_INV_TIMEOUT", type, domid,
++				      devid, address, flags);
+ 		break;
+ 	case EVENT_TYPE_INV_DEV_REQ:
+ 		printk("INVALID_DEVICE_REQUEST device=%02x:%02x.%x "
+ 		       "address=0x%016llx flags=0x%04x]\n",
+ 		       PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 		       address, flags);
++		trace_amd_event("INVALID_DEVICE_REQUEST", type, domid,
++				      devid, address, flags);
+ 		break;
+ 	default:
+ 		printk(KERN_ERR "UNKNOWN type=0x%02x]\n", type);
++		trace_amd_event("UNKNOWN", type, domid,
++				      devid, address, flags);
+ 	}
+ 
+ 	memset(__evt, 0, 4 * sizeof(u32));
 -- 
 1.7.10.4
