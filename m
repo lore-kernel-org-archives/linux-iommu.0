@@ -1,37 +1,67 @@
-From: Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: [PATCH 0/4] iommu: Add event tracing feature to iommu
-Date: Thu, 25 Jul 2013 09:27:21 -0400
-Message-ID: <1374758841.3356.174.camel@gandalf.local.home>
-References: <cover.1374711464.git.shuah.kh@samsung.com>
+From: Vivek Goyal <vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2] PCI: Reset PCIe devices to stop ongoing DMA
+Date: Thu, 25 Jul 2013 10:24:46 -0400
+Message-ID: <20130725142446.GK11993@redhat.com>
+References: <1368509365-2260-1-git-send-email-indou.takao@jp.fujitsu.com>
+	<CAErSpo4t_2Xw76p3Z9FVzyyK-MBovavDu9D=pYoPMjESSxgT=w@mail.gmail.com>
+	<51B19DF3.2070009@jp.fujitsu.com>
+	<CAErSpo6dfEnzriHD_aWZB_3E-kSzauhNRHPd+VuFX5HONVKgqw@mail.gmail.com>
+	<51B6BEDB.3000509@jp.fujitsu.com>
+	<CAErSpo5u8qGALt6C+tuPYXdd2YgyMH6fnPnA+afUteEZ7kY0iw@mail.gmail.com>
+	<51B93221.2040505@jp.fujitsu.com>
+	<CAErSpo5tVK-Z3aOdMTzab-S8o5zLVtDOFQ8-LSYpUgbrJSsxuw@mail.gmail.com>
+	<51BA7BB6.1080104@jp.fujitsu.com> <51EF7466.20703@jp.fujitsu.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1374711464.git.shuah.kh@samsung.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Shuah Khan <shuah.kh@samsung.com>
-Cc: joro@8bytes.org, alex.williamson@redhat.com, Varun.Sethi@freescale.com, aik@ozlabs.ru, joe@perches.com, fweisbec@gmail.com, mingo@redhat.com, tony@atomide.com, ohad@wizery.com, andreas.herrmann@calxeda.com, will.deacon@arm.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, shuahkhan@gmail.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <51EF7466.20703-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hbabu-r/Jw6+rmf7HQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, bill.sumner-VXdhtT5mjnY@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 2013-07-25 at 07:15 -0600, Shuah Khan wrote:
-
-> Shuah Khan (4):
->   iommu: Add event tracing feature to iommu - Add iommu trace events
->   iommu: Add event tracing feature to iommu - export trace events
->   iommu: Add event tracing feature to iommu - amd_iommu driver trace
->     events
->   iommu: Add event tracing feature to iommu - iommu driver trace events
+On Wed, Jul 24, 2013 at 03:29:58PM +0900, Takao Indoh wrote:
+> Sorry for letting this discussion slide, I was busy on other works:-(
+> Anyway, the summary of previous discussion is:
+> - My patch adds new initcall(fs_initcall) to reset all PCIe endpoints on
+>   boot. This expects PCI enumeration is done before IOMMU
+>   initialization as follows.
+>     (1) PCI enumeration
+>     (2) fs_initcall ---> device reset
+>     (3) IOMMU initialization
+> - This works on x86, but does not work on other architecture because
+>   IOMMU is initialized before PCI enumeration on some architectures. So,
+>   device reset should be done where IOMMU is initialized instead of
+>   initcall.
+> - Or, as another idea, we can reset devices in first kernel(panic kernel)
 > 
->  drivers/iommu/Makefile       |    1 +
->  drivers/iommu/amd_iommu.c    |   19 +++++
->  drivers/iommu/iommu-traces.c |   27 +++++++
->  drivers/iommu/iommu.c        |   17 ++++-
->  include/trace/events/iommu.h |  174 ++++++++++++++++++++++++++++++++++++++++++
->  5 files changed, 237 insertions(+), 1 deletion(-)
->  create mode 100644 drivers/iommu/iommu-traces.c
->  create mode 100644 include/trace/events/iommu.h
+> Resetting devices in panic kernel is against kdump policy and seems not to
+> be good idea. So I think adding reset code into iommu initialization is
+> better. I'll post patches for that.
 
-I don't know what the maintainer thinks, but usually new tracepoints
-like this are done as one patch. Not four.
+I don't understand all the details but I agree that idea of trying to
+reset IOMMU in crashed kernel might not fly.
 
--- Steve
+> 
+> Another discussion point is how to handle buggy devices. Resetting buggy
+> devices makes system more unstable. One of ideas is using boot parameter
+> so that user can choose to reset devices or not.
+
+So who would decide which device is buggy and don't reset it. Give
+some details here.
+
+Can't we simply blacklist associated module, so that it never loads
+and then it never tries to reset the devices?
+
+Thanks
+Vivek
