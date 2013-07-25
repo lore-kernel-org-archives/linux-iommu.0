@@ -1,97 +1,37 @@
-From: Shuah Khan <shuah.kh@samsung.com>
-Subject: [PATCH 2/4] iommu: Add event tracing feature to iommu - export trace events
-Date: Thu, 25 Jul 2013 07:15:03 -0600
-Message-ID: <9c521d0f7b74339d3717273238c89640bdb04602.1374711464.git.shuah.kh@samsung.com>
+From: Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH 0/4] iommu: Add event tracing feature to iommu
+Date: Thu, 25 Jul 2013 09:27:21 -0400
+Message-ID: <1374758841.3356.174.camel@gandalf.local.home>
 References: <cover.1374711464.git.shuah.kh@samsung.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1374711464.git.shuah.kh@samsung.com>
-In-Reply-To: <cover.1374711464.git.shuah.kh@samsung.com>
-References: <cover.1374711464.git.shuah.kh@samsung.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: joro@8bytes.org, alex.williamson@redhat.com, Varun.Sethi@freescale.com, aik@ozlabs.ru, joe@perches.com, rostedt@goodmis.org, fweisbec@gmail.com, mingo@redhat.com, tony@atomide.com, ohad@wizery.com, andreas.herrmann@calxeda.com, will.deacon@arm.com
-Cc: Shuah Khan <shuah.kh@samsung.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, shuahkhan@gmail.com
+To: Shuah Khan <shuah.kh@samsung.com>
+Cc: joro@8bytes.org, alex.williamson@redhat.com, Varun.Sethi@freescale.com, aik@ozlabs.ru, joe@perches.com, fweisbec@gmail.com, mingo@redhat.com, tony@atomide.com, ohad@wizery.com, andreas.herrmann@calxeda.com, will.deacon@arm.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, shuahkhan@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-Add tracing feature to iommu driver to report various iommu events. Classes
-iommu_group, iommu_device, iommu_map_unmap, and iommu_amd_event are defined.
+On Thu, 2013-07-25 at 07:15 -0600, Shuah Khan wrote:
 
-iommu_group class events can be enabled to trigger when devices get added
-to and removed from an iommu group. Trace information includes iommu group
-id and device name.
+> Shuah Khan (4):
+>   iommu: Add event tracing feature to iommu - Add iommu trace events
+>   iommu: Add event tracing feature to iommu - export trace events
+>   iommu: Add event tracing feature to iommu - amd_iommu driver trace
+>     events
+>   iommu: Add event tracing feature to iommu - iommu driver trace events
+> 
+>  drivers/iommu/Makefile       |    1 +
+>  drivers/iommu/amd_iommu.c    |   19 +++++
+>  drivers/iommu/iommu-traces.c |   27 +++++++
+>  drivers/iommu/iommu.c        |   17 ++++-
+>  include/trace/events/iommu.h |  174 ++++++++++++++++++++++++++++++++++++++++++
+>  5 files changed, 237 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/iommu/iommu-traces.c
+>  create mode 100644 include/trace/events/iommu.h
 
-iommu:add_device_to_group
-iommu:remove_device_from_group
+I don't know what the maintainer thinks, but usually new tracepoints
+like this are done as one patch. Not four.
 
-iommu_device class events can be enabled to trigger when devices are attached
-to and detached from a domain. Trace information includes device name.
-
-iommu:attach_device_to_domain
-iommu:detach_device_from_domain
-
-iommu_map_unmap class events can be enabled to trigger when iommu map and
-unmap iommu ops complete. Trace information includes iova, physical address
-(map event only), and size.
-
-iommu:unmap
-iommu:map
-
-iommu_amd_event class can be enabled to trigger when AMD IOMMU driver finds
-events when it polls the IOMMU Event Log. Trace information includes the
-event string derived from the event type in human friendly form, event type,
-id of the domain the device is placed in, device (bus number, slot number,
-and function number), address associated with the event, and flags.
-
-iommu:amd_event
-
-Signed-off-by: Shuah Khan <shuah.kh@samsung.com>
----
- drivers/iommu/Makefile       |    1 +
- drivers/iommu/iommu-traces.c |   27 +++++++++++++++++++++++++++
- 2 files changed, 28 insertions(+)
- create mode 100644 drivers/iommu/iommu-traces.c
-
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index bbe7041..9015c45 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -1,4 +1,5 @@
- obj-$(CONFIG_IOMMU_API) += iommu.o
-+obj-$(CONFIG_IOMMU_API) += iommu-traces.o
- obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
- obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o msm_iommu_dev.o
- obj-$(CONFIG_AMD_IOMMU) += amd_iommu.o amd_iommu_init.o
-diff --git a/drivers/iommu/iommu-traces.c b/drivers/iommu/iommu-traces.c
-new file mode 100644
-index 0000000..5b92e4c
---- /dev/null
-+++ b/drivers/iommu/iommu-traces.c
-@@ -0,0 +1,27 @@
-+/*
-+ * iommu trace points
-+ *
-+ * Copyright (C) 2013 Shuah Khan <shuah.kh@samsung.com>
-+ *
-+ */
-+
-+#include <linux/string.h>
-+#include <linux/types.h>
-+
-+#define CREATE_TRACE_POINTS
-+#include <trace/events/iommu.h>
-+
-+/* iommu_group_event */
-+EXPORT_TRACEPOINT_SYMBOL_GPL(add_device_to_group);
-+EXPORT_TRACEPOINT_SYMBOL_GPL(remove_device_from_group);
-+
-+/* iommu_device_event */
-+EXPORT_TRACEPOINT_SYMBOL_GPL(attach_device_to_domain);
-+EXPORT_TRACEPOINT_SYMBOL_GPL(detach_device_from_domain);
-+
-+/* iommu_map_unmap */
-+EXPORT_TRACEPOINT_SYMBOL_GPL(map);
-+EXPORT_TRACEPOINT_SYMBOL_GPL(unmap);
-+
-+/* iommu_amd_event */
-+EXPORT_TRACEPOINT_SYMBOL_GPL(amd_event);
--- 
-1.7.10.4
+-- Steve
