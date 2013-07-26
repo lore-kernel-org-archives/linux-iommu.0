@@ -1,8 +1,7 @@
 From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v8 08/12] iommu/exynos: remove prefetch buffer setting when
-	enabling System MMU
-Date: Fri, 26 Jul 2013 20:28:49 +0900
-Message-ID: <003e01ce89f3$4cdb45e0$e691d1a0$@samsung.com>
+Subject: [PATCH v8 09/12] iommu/exynos: remove custom fault handler
+Date: Fri, 26 Jul 2013 20:29:06 +0900
+Message-ID: <003f01ce89f3$56ce9340$046bb9c0$@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -21,83 +20,156 @@ To: 'Linux ARM Kernel' <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public
 Cc: 'Kukjin Kim' <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Hyunwoong Kim' <khw0178.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Prathyush' <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Grant Grundler' <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, 'Keyyoung Park' <keyyoung.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Subash Patel' <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Sachin Kamat' <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Antonios Motakis' <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, 'Rahul Sharma' <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Prefetch buffer must be handled accurately, exact range of a buffer,
-frame by frame manually. Otherwise, it may causes page fault or
-deadlock in System MMU.
-Thus this patch removes prefetch buffer setting when System MMU is
-initialized(enabled).
+This commit removes custom fault handler. The device drivers that
+need to register fault handler can register
+with iommu_set_fault_handler().
 
 Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/exynos-iommu.c |   32 +++++++++++++++++++++++++++-----
- 1 files changed, 27 insertions(+), 5 deletions(-)
+ drivers/iommu/exynos-iommu.c |   71 ++++++++++--------------------------------
+ 1 files changed, 17 insertions(+), 54 deletions(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index cfc02ed..87f6bb7 100644
+index 87f6bb7..f9853fe 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -80,6 +80,8 @@
- #define CTRL_BLOCK	0x7
- #define CTRL_DISABLE	0x0
+@@ -131,16 +131,6 @@ enum exynos_sysmmu_inttype {
+ 	SYSMMU_FAULTS_NUM
+ };
  
-+#define CFG_FLPDCACHE	(1 << 20) /* System MMU 3.2+ only */
-+
- #define REG_MMU_CTRL		0x000
- #define REG_MMU_CFG		0x004
- #define REG_MMU_STATUS		0x008
-@@ -96,6 +98,9 @@
- 
- #define REG_MMU_VERSION		0x034
- 
-+#define MMU_MAJ_VER(reg)	(reg >> 28)
-+#define MMU_MIN_VER(reg)	((reg >> 21) & 0x7F)
-+
- #define REG_PB0_SADDR		0x04C
- #define REG_PB0_EADDR		0x050
- #define REG_PB1_SADDR		0x054
-@@ -200,6 +205,22 @@ static bool is_sysmmu_active(struct sysmmu_drvdata *data)
- 	return data->activations > 0;
+-/*
+- * @itype: type of fault.
+- * @pgtable_base: the physical address of page table base. This is 0 if @itype
+- *                is SYSMMU_BUSERROR.
+- * @fault_addr: the device (virtual) address that the System MMU tried to
+- *             translated. This is 0 if @itype is SYSMMU_BUSERROR.
+- */
+-typedef int (*sysmmu_fault_handler_t)(enum exynos_sysmmu_inttype itype,
+-			unsigned long pgtable_base, unsigned long fault_addr);
+-
+ static unsigned short fault_reg_offset[SYSMMU_FAULTS_NUM] = {
+ 	REG_PAGE_FAULT_ADDR,
+ 	REG_AR_FAULT_ADDR,
+@@ -181,7 +171,6 @@ struct sysmmu_drvdata {
+ 	int activations;
+ 	rwlock_t lock;
+ 	struct iommu_domain *domain;
+-	sysmmu_fault_handler_t fault_handler;
+ 	unsigned long pgtable;
+ 	void __iomem *sfrbases[0];
+ };
+@@ -313,34 +302,17 @@ finish:
+ 	read_unlock_irqrestore(&data->lock, flags);
  }
  
-+static unsigned int __sysmmu_version(struct sysmmu_drvdata *data,
-+				     int idx, unsigned int *minor)
-+{
-+	unsigned long major;
-+
-+	major = readl(data->sfrbases[idx] + REG_MMU_VERSION);
-+
-+	if (minor)
-+		*minor = MMU_MIN_VER(major);
-+
-+	if (MMU_MAJ_VER(major) > 3)
-+		return 1;
-+
-+	return MMU_MAJ_VER(major);
-+}
-+
- static void sysmmu_unblock(void __iomem *sfrbase)
+-static void __set_fault_handler(struct sysmmu_drvdata *data,
+-					sysmmu_fault_handler_t handler)
+-{
+-	unsigned long flags;
+-
+-	write_lock_irqsave(&data->lock, flags);
+-	data->fault_handler = handler;
+-	write_unlock_irqrestore(&data->lock, flags);
+-}
+-
+-void exynos_sysmmu_set_fault_handler(struct device *dev,
+-					sysmmu_fault_handler_t handler)
+-{
+-	struct sysmmu_drvdata *data = dev_get_drvdata(dev->archdata.iommu);
+-
+-	__set_fault_handler(data, handler);
+-}
+-
+-static int default_fault_handler(enum exynos_sysmmu_inttype itype,
+-		     unsigned long pgtable_base, unsigned long fault_addr)
++static void show_fault_information(const char *name,
++		enum exynos_sysmmu_inttype itype,
++		unsigned long pgtable_base, unsigned long fault_addr)
  {
- 	__raw_writel(CTRL_ENABLE, sfrbase + REG_MMU_CTRL);
-@@ -460,14 +481,15 @@ static int __exynos_sysmmu_enable(struct sysmmu_drvdata *data,
- 	data->pgtable = pgtable;
+ 	unsigned long *ent;
  
- 	for (i = 0; i < data->nsfrs; i++) {
-+		unsigned int min;
-+
- 		__sysmmu_set_ptbase(data->sfrbases[i], pgtable);
+ 	if ((itype >= SYSMMU_FAULTS_NUM) || (itype < SYSMMU_PAGEFAULT))
+ 		itype = SYSMMU_FAULT_UNKNOWN;
  
--		if ((readl(data->sfrbases[i] + REG_MMU_VERSION) >> 28) == 3) {
--			/* System MMU version is 3.x */
--			__raw_writel((1 << 12) | (2 << 28),
-+		if ((__sysmmu_version(data, i, &min) == 3) && (min > 1)) {
-+			unsigned long cfg;
-+			cfg = __raw_readl(data->sfrbases[i] + REG_MMU_CFG);
-+			__raw_writel(cfg | CFG_FLPDCACHE,
- 					data->sfrbases[i] + REG_MMU_CFG);
--			__sysmmu_set_prefbuf(data->sfrbases[i], 0, -1, 0);
--			__sysmmu_set_prefbuf(data->sfrbases[i], 0, -1, 1);
- 		}
+-	pr_err("%s occurred at 0x%lx(Page table base: 0x%lx)\n",
+-			sysmmu_fault_name[itype], fault_addr, pgtable_base);
++	pr_err("%s occurred at 0x%lx by %s(Page table base: 0x%lx)\n",
++		sysmmu_fault_name[itype], fault_addr, name, pgtable_base);
  
- 		__raw_writel(CTRL_ENABLE, data->sfrbases[i] + REG_MMU_CTRL);
+ 	ent = section_entry(__va(pgtable_base), fault_addr);
+ 	pr_err("\tLv1 entry: 0x%lx\n", *ent);
+@@ -353,16 +325,12 @@ static int default_fault_handler(enum exynos_sysmmu_inttype itype,
+ 	pr_err("Generating Kernel OOPS... because it is unrecoverable.\n");
+ 
+ 	BUG();
+-
+-	return 0;
+ }
+ 
+ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
+ {
+ 	/* SYSMMU is in blocked when interrupt occurred. */
+ 	struct sysmmu_drvdata *data = dev_id;
+-	struct resource *irqres;
+-	struct platform_device *pdev;
+ 	enum exynos_sysmmu_inttype itype;
+ 	unsigned long addr = -1;
+ 
+@@ -372,14 +340,15 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
+ 
+ 	WARN_ON(!is_sysmmu_active(data));
+ 
+-	pdev = to_platform_device(data->sysmmu);
+-	for (i = 0; i < (pdev->num_resources / 2); i++) {
+-		irqres = platform_get_resource(pdev, IORESOURCE_IRQ, i);
++	for (i = 0; i < data->nsfrs; i++) {
++		struct resource *irqres;
++		irqres = platform_get_resource(to_platform_device(data->sysmmu),
++						IORESOURCE_IRQ, i);
+ 		if (irqres && ((int)irqres->start == irq))
+ 			break;
+ 	}
+ 
+-	if (i == pdev->num_resources) {
++	if (i == data->nsfrs) {
+ 		itype = SYSMMU_FAULT_UNKNOWN;
+ 	} else {
+ 		itype = (enum exynos_sysmmu_inttype)
+@@ -395,19 +364,15 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
+ 		ret = report_iommu_fault(data->domain, data->dev,
+ 				addr, itype);
+ 
+-	if ((ret == -ENOSYS) && data->fault_handler) {
+-		unsigned long base = data->pgtable;
+-		if (itype != SYSMMU_FAULT_UNKNOWN)
+-			base = __raw_readl(
+-					data->sfrbases[i] + REG_PT_BASE_ADDR);
+-		ret = data->fault_handler(itype, base, addr);
+-	}
+-
+ 	if (!ret && (itype != SYSMMU_FAULT_UNKNOWN))
+ 		__raw_writel(1 << itype, data->sfrbases[i] + REG_INT_CLEAR);
+-	else
+-		dev_dbg(data->sysmmu, "%s is not handled.\n",
+-				sysmmu_fault_name[itype]);
++	else {
++		unsigned long ba = data->pgtable;
++		if (itype != SYSMMU_FAULT_UNKNOWN)
++			ba = __raw_readl(data->sfrbases[i] + REG_PT_BASE_ADDR);
++		show_fault_information(dev_name(data->sysmmu),
++					itype, ba, addr);
++	}
+ 
+ 	if (itype != SYSMMU_FAULT_UNKNOWN)
+ 		sysmmu_unblock(data->sfrbases[i]);
+@@ -644,8 +609,6 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
+ 
+ 	pm_runtime_enable(dev);
+ 
+-	__set_fault_handler(data, &default_fault_handler);
+-
+ 	data->sysmmu = dev;
+ 	data->clk = devm_clk_get(dev, "sysmmu");
+ 	if (IS_ERR(data->clk)) {
 -- 
 1.7.2.5
