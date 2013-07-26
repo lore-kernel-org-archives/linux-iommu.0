@@ -1,44 +1,55 @@
-From: Cho KyongHo <pullip.cho@samsung.com>
-Subject: [PATCH v8 01/12] iommu/exynos: do not include removed header
-Date: Fri, 26 Jul 2013 20:26:10 +0900
-Message-ID: <003701ce89f2$eda94ef0$c8fbecd0$@samsung.com>
+From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: [PATCH v8 02/12] iommu/exynos: add missing cache flush for removed
+	page table entries
+Date: Fri, 26 Jul 2013 20:26:28 +0900
+Message-ID: <003801ce89f2$f8952d20$e9bf8760$@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-language: ko
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: 'Linux ARM Kernel' <linux-arm-kernel@lists.infradead.org>, 'Linux IOMMU' <iommu@lists.linux-foundation.org>, 'Linux Kernel' <linux-kernel@vger.kernel.org>, 'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>
-Cc: 'Hyunwoong Kim' <khw0178.kim@samsung.com>, 'Joerg Roedel' <joro@8bytes.org>, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Prathyush' <prathyush.k@samsung.com>, 'Rahul Sharma' <rahul.sharma@samsung.com>, 'Subash Patel' <supash.ramaswamy@linaro.org>, 'Keyyoung Park' <keyyoung.park@samsung.com>, 'Grant Grundler' <grundler@chromium.org>, 'Antonios Motakis' <a.motakis@virtualopensystems.com>, kvmarm@lists.cs.columbia.edu, 'Sachin Kamat' <sachin.kamat@linaro.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: 'Linux ARM Kernel' <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, 'Linux IOMMU' <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, 'Linux Kernel' <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, 'Linux Samsung SOC' <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: 'Kukjin Kim' <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Hyunwoong Kim' <khw0178.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Prathyush' <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Grant Grundler' <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, 'Keyyoung Park' <keyyoung.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Subash Patel' <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Sachin Kamat' <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Antonios Motakis' <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, 'Rahul Sharma' <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This commit remove <mach/sysmmu.h> which is removed.
+This commit adds cache flush for removed small and large page entries
+in exynos_iommu_unmap(). Missing cache flush of removed page table
+entries can cause missing page fault interrupt when a master IP
+accesses an unmapped area.
 
-Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
+Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/exynos-iommu.c |    3 +--
- 1 files changed, 1 insertions(+), 2 deletions(-)
+ drivers/iommu/exynos-iommu.c |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 3f32d64..233f382 100644
+index 233f382..e3be3e5 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -12,6 +12,7 @@
- #define DEBUG
- #endif
+@@ -1002,6 +1002,7 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
+ 	if (lv2ent_small(ent)) {
+ 		*ent = 0;
+ 		size = SPAGE_SIZE;
++		pgtable_flush(ent, ent +1);
+ 		priv->lv2entcnt[lv1ent_offset(iova)] += 1;
+ 		goto done;
+ 	}
+@@ -1010,6 +1011,7 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
+ 	BUG_ON(size < LPAGE_SIZE);
  
-+#include <linux/kernel.h>
- #include <linux/io.h>
- #include <linux/interrupt.h>
- #include <linux/platform_device.h>
-@@ -29,8 +30,6 @@
- #include <asm/cacheflush.h>
- #include <asm/pgtable.h>
+ 	memset(ent, 0, sizeof(*ent) * SPAGES_PER_LPAGE);
++	pgtable_flush(ent, ent + SPAGES_PER_LPAGE);
  
--#include <mach/sysmmu.h>
--
- /* We does not consider super section mapping (16MB) */
- #define SECT_ORDER 20
- #define LPAGE_ORDER 16
+ 	size = LPAGE_SIZE;
+ 	priv->lv2entcnt[lv1ent_offset(iova)] += SPAGES_PER_LPAGE;
 -- 
 1.7.2.5
