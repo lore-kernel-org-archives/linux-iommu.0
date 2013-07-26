@@ -1,182 +1,68 @@
-From: Cho KyongHo <pullip.cho@samsung.com>
-Subject: [PATCH v8 11/12] iommu/exynos: change rwlock to spinlock
-Date: Fri, 26 Jul 2013 20:30:42 +0900
-Message-ID: <004101ce89f3$90200980$b0601c80$@samsung.com>
+From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: [PATCH v8 12/12] iommu/exynos: return 0 if iommu_attach_device()
+	successes
+Date: Fri, 26 Jul 2013 20:31:01 +0900
+Message-ID: <004201ce89f3$9b849a20$d28dce60$@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-language: ko
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: 'Linux ARM Kernel' <linux-arm-kernel@lists.infradead.org>, 'Linux IOMMU' <iommu@lists.linux-foundation.org>, 'Linux Kernel' <linux-kernel@vger.kernel.org>, 'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>
-Cc: 'Hyunwoong Kim' <khw0178.kim@samsung.com>, 'Joerg Roedel' <joro@8bytes.org>, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Prathyush' <prathyush.k@samsung.com>, 'Rahul Sharma' <rahul.sharma@samsung.com>, 'Subash Patel' <supash.ramaswamy@linaro.org>, 'Keyyoung Park' <keyyoung.park@samsung.com>, 'Grant Grundler' <grundler@chromium.org>, 'Antonios Motakis' <a.motakis@virtualopensystems.com>, kvmarm@lists.cs.columbia.edu, 'Sachin Kamat' <sachin.kamat@linaro.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: 'Linux ARM Kernel' <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, 'Linux IOMMU' <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, 'Linux Kernel' <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, 'Linux Samsung SOC' <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: 'Kukjin Kim' <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Hyunwoong Kim' <khw0178.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Prathyush' <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Grant Grundler' <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, 'Keyyoung Park' <keyyoung.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Subash Patel' <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Sachin Kamat' <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Antonios Motakis' <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, 'Rahul Sharma' <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Since acquiring read_lock is not more frequent than write_lock, it is
-not beneficial to use rwlock, this commit changes rwlock to spinlock.
+iommu_attach_device() against exynos-iommu positive integer on success
+if the caller calls iommu_attach_device() with the same iommu_domain
+multiple times without call to iommu_detach_device() to inform the
+caller how many calls to iommu_detach_device() to really detach iommu.
 
-Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
+However the convention of the return value of success of common API is
+zero, this patch makes iommu_attach_device() call against exynos-iommu
+always return zero if the given device is successfully attached to
+the given iommu_domain even though it is already attached to the same
+iommu_domain.
+
+Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/exynos-iommu.c |   36 ++++++++++++++++++------------------
- 1 files changed, 18 insertions(+), 18 deletions(-)
+ drivers/iommu/exynos-iommu.c |   13 +++++++------
+ 1 files changed, 7 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index c62c244..51e5b35 100644
+index 51e5b35..6eed6d6 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -187,7 +187,7 @@ struct sysmmu_drvdata {
- 	struct clk *clk;
- 	struct clk *clk_master;
- 	int activations;
--	rwlock_t lock;
-+	spinlock_t lock;
- 	struct iommu_domain *domain;
- 	bool runtime_active;
- 	unsigned long pgtable;
-@@ -287,7 +287,7 @@ void exynos_sysmmu_set_prefbuf(struct device *dev,
- 	BUG_ON((base0 + size0) <= base0);
- 	BUG_ON((size1 > 0) && ((base1 + size1) <= base1));
+@@ -882,15 +882,16 @@ static int exynos_iommu_attach_device(struct iommu_domain *domain,
  
--	read_lock_irqsave(&data->lock, flags);
-+	spin_lock_irqsave(&data->lock, flags);
- 	if (!is_sysmmu_active(data))
- 		goto finish;
+ 	spin_unlock_irqrestore(&priv->lock, flags);
  
-@@ -319,7 +319,7 @@ void exynos_sysmmu_set_prefbuf(struct device *dev,
- 	}
- 	clk_disable(data->clk_master);
- finish:
--	read_unlock_irqrestore(&data->lock, flags);
-+	spin_unlock_irqrestore(&data->lock, flags);
+-	if (ret < 0)
++	if (ret < 0) {
+ 		dev_err(dev, "%s: Failed to attach IOMMU with pgtable %#lx\n",
+ 				__func__, __pa(priv->pgtable));
+-	else
+-		dev_dbg(dev, "%s: Attached IOMMU with pgtable 0x%lx%s\n",
+-					__func__, __pa(priv->pgtable),
+-					(ret == 0) ? "" : ", again");
++		return ret;
++	}
+ 
+-	return ret;
++	dev_dbg(dev, "%s: Attached IOMMU with pgtable 0x%lx%s\n",
++		__func__, __pa(priv->pgtable), (ret == 0) ? "" : ", again");
++
++	return 0;
  }
  
- static void show_fault_information(const char *name,
-@@ -371,7 +371,7 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
- 
- 	if (client)
- 		spin_lock(&client->lock);
--	read_lock(&data->lock);
-+	spin_lock(&data->lock);
- 
- 	if (i == data->nsfrs) {
- 		itype = SYSMMU_FAULT_UNKNOWN;
-@@ -402,7 +402,7 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
- 	if (itype != SYSMMU_FAULT_UNKNOWN)
- 		sysmmu_unblock(data->sfrbases[i]);
- 
--	read_unlock(&data->lock);
-+	spin_unlock(&data->lock);
- 	if (client)
- 		spin_unlock(&client->lock);
- 
-@@ -429,7 +429,7 @@ static bool __sysmmu_disable(struct sysmmu_drvdata *data)
- 	bool disabled;
- 	unsigned long flags;
- 
--	write_lock_irqsave(&data->lock, flags);
-+	spin_lock_irqsave(&data->lock, flags);
- 
- 	disabled = set_sysmmu_inactive(data);
- 
-@@ -446,7 +446,7 @@ static bool __sysmmu_disable(struct sysmmu_drvdata *data)
- 					data->activations);
- 	}
- 
--	write_unlock_irqrestore(&data->lock, flags);
-+	spin_unlock_irqrestore(&data->lock, flags);
- 
- 	return disabled;
- }
-@@ -493,7 +493,7 @@ static int __sysmmu_enable(struct sysmmu_drvdata *data,
- 	int ret = 0;
- 	unsigned long flags;
- 
--	write_lock_irqsave(&data->lock, flags);
-+	spin_lock_irqsave(&data->lock, flags);
- 	if (set_sysmmu_active(data)) {
- 		data->pgtable = pgtable;
- 		data->domain = domain;
-@@ -511,7 +511,7 @@ static int __sysmmu_enable(struct sysmmu_drvdata *data,
- 	if (WARN_ON(ret < 0))
- 		set_sysmmu_inactive(data); /* decrement count */
- 
--	write_unlock_irqrestore(&data->lock, flags);
-+	spin_unlock_irqrestore(&data->lock, flags);
- 
- 	return ret;
- }
-@@ -602,7 +602,7 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova)
- 
- 		data = dev_get_drvdata(client->sysmmu[i]);
- 
--		read_lock_irqsave(&data->lock, flags);
-+		spin_lock_irqsave(&data->lock, flags);
- 		if (is_sysmmu_active(data) && data->runtime_active) {
- 			int i;
- 			clk_enable(data->clk_master);
-@@ -615,7 +615,7 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova)
- 				"disabled. Skipping TLB invalidation @ %#lx\n",
- 				iova);
- 		}
--		read_unlock_irqrestore(&data->lock, flags);
-+		spin_unlock_irqrestore(&data->lock, flags);
- 	}
- }
- 
-@@ -630,7 +630,7 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
- 
- 		data = dev_get_drvdata(client->sysmmu[i]);
- 
--		read_lock_irqsave(&data->lock, flags);
-+		spin_lock_irqsave(&data->lock, flags);
- 		if (is_sysmmu_active(data) &&
- 				data->runtime_active) {
- 			int i;
-@@ -646,7 +646,7 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
- 		} else {
- 			dev_dbg(dev, "disabled. Skipping TLB invalidation\n");
- 		}
--		read_unlock_irqrestore(&data->lock, flags);
-+		spin_unlock_irqrestore(&data->lock, flags);
- 	}
- }
- 
-@@ -735,7 +735,7 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
- 
- 	data->runtime_active = !pm_runtime_enabled(dev);
- 
--	rwlock_init(&data->lock);
-+	spin_lock_init(&data->lock);
- 	INIT_LIST_HEAD(&data->node);
- 
- 	platform_set_drvdata(pdev, data);
-@@ -749,11 +749,11 @@ static int sysmmu_suspend(struct device *dev)
- {
- 	struct sysmmu_drvdata *data = dev_get_drvdata(dev);
- 	unsigned long flags;
--	read_lock_irqsave(&data->lock, flags);
-+	spin_lock_irqsave(&data->lock, flags);
- 	if (is_sysmmu_active(data) &&
- 		(!pm_runtime_enabled(dev) || data->runtime_active))
- 		__sysmmu_disable_nocount(data);
--	read_unlock_irqrestore(&data->lock, flags);
-+	spin_unlock_irqrestore(&data->lock, flags);
- 	return 0;
- }
- 
-@@ -761,11 +761,11 @@ static int sysmmu_resume(struct device *dev)
- {
- 	struct sysmmu_drvdata *data = dev_get_drvdata(dev);
- 	unsigned long flags;
--	read_lock_irqsave(&data->lock, flags);
-+	spin_lock_irqsave(&data->lock, flags);
- 	if (is_sysmmu_active(data) &&
- 		(!pm_runtime_enabled(dev) || data->runtime_active))
- 		__sysmmu_enable_nocount(data);
--	read_unlock_irqrestore(&data->lock, flags);
-+	spin_unlock_irqrestore(&data->lock, flags);
- 	return 0;
- }
- #endif
+ static void exynos_iommu_detach_device(struct iommu_domain *domain,
 -- 
 1.7.2.5
