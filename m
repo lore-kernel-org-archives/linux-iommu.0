@@ -1,166 +1,91 @@
-From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v8 03/12] iommu/exynos: fix page table maintenance
-Date: Fri, 26 Jul 2013 20:27:11 +0900
-Message-ID: <003901ce89f3$126c0390$37440ab0$@samsung.com>
+From: Cho KyongHo <pullip.cho@samsung.com>
+Subject: [PATCH v8 04/12] iommu/exynos: allocate lv2 page table from own slab
+Date: Fri, 26 Jul 2013 20:27:29 +0900
+Message-ID: <003a01ce89f3$1cb475d0$561d6170$@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
 Content-language: ko
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: 'Linux ARM Kernel' <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, 'Linux IOMMU' <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, 'Linux Kernel' <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, 'Linux Samsung SOC' <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: 'Kukjin Kim' <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Hyunwoong Kim' <khw0178.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Prathyush' <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Grant Grundler' <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, 'Keyyoung Park' <keyyoung.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Subash Patel' <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Sachin Kamat' <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Antonios Motakis' <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, 'Rahul Sharma' <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: 'Linux ARM Kernel' <linux-arm-kernel@lists.infradead.org>, 'Linux IOMMU' <iommu@lists.linux-foundation.org>, 'Linux Kernel' <linux-kernel@vger.kernel.org>, 'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>
+Cc: 'Hyunwoong Kim' <khw0178.kim@samsung.com>, 'Joerg Roedel' <joro@8bytes.org>, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Prathyush' <prathyush.k@samsung.com>, 'Rahul Sharma' <rahul.sharma@samsung.com>, 'Subash Patel' <supash.ramaswamy@linaro.org>, 'Keyyoung Park' <keyyoung.park@samsung.com>, 'Grant Grundler' <grundler@chromium.org>, 'Antonios Motakis' <a.motakis@virtualopensystems.com>, kvmarm@lists.cs.columbia.edu, 'Sachin Kamat' <sachin.kamat@linaro.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This prevents allocating lv2 page table for the lv1 page table entry
-that already has 1MB page mapping. In addition some BUG_ON() is
-changed to WARN_ON().
+Since kmalloc() does not guarantee that the allignment of 1KiB when it
+allocates 1KiB, it is required to allocate lv2 page table from own
+slab that guarantees alignment of 1KiB
 
-Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
 ---
- drivers/iommu/exynos-iommu.c |   52 +++++++++++++++++++++++++++++------------
- 1 files changed, 37 insertions(+), 15 deletions(-)
+ drivers/iommu/exynos-iommu.c |   24 ++++++++++++++++++++----
+ 1 files changed, 20 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index e3be3e5..6c4ecce 100644
+index 6c4ecce..093eea5 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -52,11 +52,11 @@
- #define lv2ent_large(pent) ((*(pent) & 3) == 1)
+@@ -100,6 +100,8 @@
+ #define REG_PB1_SADDR		0x054
+ #define REG_PB1_EADDR		0x058
  
- #define section_phys(sent) (*(sent) & SECT_MASK)
--#define section_offs(iova) ((iova) & 0xFFFFF)
-+#define section_offs(iova) ((iova) & ~SECT_MASK)
- #define lpage_phys(pent) (*(pent) & LPAGE_MASK)
--#define lpage_offs(iova) ((iova) & 0xFFFF)
-+#define lpage_offs(iova) ((iova) & ~LPAGE_MASK)
- #define spage_phys(pent) (*(pent) & SPAGE_MASK)
--#define spage_offs(iova) ((iova) & 0xFFF)
-+#define spage_offs(iova) ((iova) & ~SPAGE_MASK)
++static struct kmem_cache *lv2table_kmem_cache;
++
+ static unsigned long *section_entry(unsigned long *pgtable, unsigned long iova)
+ {
+ 	return pgtable + lv1ent_offset(iova);
+@@ -765,7 +767,8 @@ static void exynos_iommu_domain_destroy(struct iommu_domain *domain)
  
- #define lv1ent_offset(iova) ((iova) >> SECT_ORDER)
- #define lv2ent_offset(iova) (((iova) & 0xFF000) >> SPAGE_ORDER)
-@@ -862,12 +862,14 @@ static unsigned long *alloc_lv2entry(unsigned long *sent, unsigned long iova,
- 		pent = kzalloc(LV2TABLE_SIZE, GFP_ATOMIC);
+ 	for (i = 0; i < NUM_LV1ENTRIES; i++)
+ 		if (lv1ent_page(priv->pgtable + i))
+-			kfree(__va(lv2table_base(priv->pgtable + i)));
++			kmem_cache_free(lv2table_kmem_cache,
++					__va(lv2table_base(priv->pgtable + i)));
+ 
+ 	free_pages((unsigned long)priv->pgtable, 2);
+ 	free_pages((unsigned long)priv->lv2entcnt, 1);
+@@ -859,7 +862,7 @@ static unsigned long *alloc_lv2entry(unsigned long *sent, unsigned long iova,
+ 	if (lv1ent_fault(sent)) {
+ 		unsigned long *pent;
+ 
+-		pent = kzalloc(LV2TABLE_SIZE, GFP_ATOMIC);
++		pent = kmem_cache_zalloc(lv2table_kmem_cache, GFP_ATOMIC);
  		BUG_ON((unsigned long)pent & (LV2TABLE_SIZE - 1));
  		if (!pent)
--			return NULL;
-+			return ERR_PTR(-ENOMEM);
+ 			return ERR_PTR(-ENOMEM);
+@@ -884,7 +887,7 @@ static int lv1set_section(unsigned long *sent, phys_addr_t paddr, short *pgcnt)
+ 		if (*pgcnt != NUM_LV2ENTRIES)
+ 			return -EADDRINUSE;
  
- 		*sent = mk_lv1ent_page(__pa(pent));
- 		*pgcounter = NUM_LV2ENTRIES;
- 		pgtable_flush(pent, pent + NUM_LV2ENTRIES);
- 		pgtable_flush(sent, sent + 1);
-+	} else if (lv1ent_section(sent)) {
-+		return ERR_PTR(-EADDRINUSE);
+-		kfree(page_entry(sent, 0));
++		kmem_cache_free(lv2table_kmem_cache, page_entry(sent, 0));
+ 
+ 		*pgcnt = 0;
  	}
- 
- 	return page_entry(sent, iova);
-@@ -894,6 +896,12 @@ static int lv1set_section(unsigned long *sent, phys_addr_t paddr, short *pgcnt)
- 	return 0;
- }
- 
-+static void clear_page_table(unsigned long *ent, int n)
-+{
-+	if (n > 0)
-+		memset(ent, 0, sizeof(*ent) * n);
-+}
-+
- static int lv2set_page(unsigned long *pent, phys_addr_t paddr, size_t size,
- 								short *pgcnt)
+@@ -1092,10 +1095,23 @@ static int __init exynos_iommu_init(void)
  {
-@@ -908,7 +916,7 @@ static int lv2set_page(unsigned long *pent, phys_addr_t paddr, size_t size,
- 		int i;
- 		for (i = 0; i < SPAGES_PER_LPAGE; i++, pent++) {
- 			if (!lv2ent_fault(pent)) {
--				memset(pent, 0, sizeof(*pent) * i);
-+				clear_page_table(pent - i, i);
- 				return -EADDRINUSE;
- 			}
+ 	int ret;
  
-@@ -944,17 +952,16 @@ static int exynos_iommu_map(struct iommu_domain *domain, unsigned long iova,
- 		pent = alloc_lv2entry(entry, iova,
- 					&priv->lv2entcnt[lv1ent_offset(iova)]);
++	lv2table_kmem_cache = kmem_cache_create("exynos-iommu-lv2table",
++				LV2TABLE_SIZE, LV2TABLE_SIZE, 0, NULL);
++	if (!lv2table_kmem_cache) {
++		pr_err("%s: Failed to create kmem cache\n", __func__);
++		return -ENOMEM;
++	}
++
+ 	ret = platform_driver_register(&exynos_sysmmu_driver);
  
--		if (!pent)
--			ret = -ENOMEM;
-+		if (IS_ERR(pent))
-+			ret = PTR_ERR(pent);
- 		else
- 			ret = lv2set_page(pent, paddr, size,
- 					&priv->lv2entcnt[lv1ent_offset(iova)]);
- 	}
- 
--	if (ret) {
--		pr_debug("%s: Failed to map iova 0x%lx/0x%x bytes\n",
--							__func__, iova, size);
--	}
-+	if (ret)
-+		pr_err("%s: Failed(%d) to map 0x%#x bytes @ %#lx\n",
-+			__func__, ret, size, iova);
- 
- 	spin_unlock_irqrestore(&priv->pgtablelock, flags);
- 
-@@ -968,6 +975,7 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
- 	struct sysmmu_drvdata *data;
- 	unsigned long flags;
- 	unsigned long *ent;
-+	size_t err_pgsize;
- 
- 	BUG_ON(priv->pgtable == NULL);
- 
-@@ -976,7 +984,10 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
- 	ent = section_entry(priv->pgtable, iova);
- 
- 	if (lv1ent_section(ent)) {
--		BUG_ON(size < SECT_SIZE);
-+		if (WARN_ON(size < SECT_SIZE)) {
-+			err_pgsize = SECT_SIZE;
-+			goto err;
-+		}
- 
- 		*ent = 0;
- 		pgtable_flush(ent, ent + 1);
-@@ -1008,9 +1019,12 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
- 	}
- 
- 	/* lv1ent_large(ent) == true here */
--	BUG_ON(size < LPAGE_SIZE);
-+	if (WARN_ON(size < LPAGE_SIZE)) {
-+		err_pgsize = LPAGE_SIZE;
-+		goto err;
+ 	if (ret == 0)
+-		bus_set_iommu(&platform_bus_type, &exynos_iommu_ops);
++		ret = bus_set_iommu(&platform_bus_type, &exynos_iommu_ops);
++
++	if (ret) {
++		pr_err("%s: Failed to register exynos-iommu driver.\n",
++								__func__);
++		kmem_cache_destroy(lv2table_kmem_cache);
 +	}
  
--	memset(ent, 0, sizeof(*ent) * SPAGES_PER_LPAGE);
-+	clear_page_table(ent, SPAGES_PER_LPAGE);
- 	pgtable_flush(ent, ent + SPAGES_PER_LPAGE);
- 
- 	size = LPAGE_SIZE;
-@@ -1023,8 +1037,16 @@ done:
- 		sysmmu_tlb_invalidate_entry(data->dev, iova);
- 	spin_unlock_irqrestore(&priv->lock, flags);
- 
--
- 	return size;
-+err:
-+	spin_unlock_irqrestore(&priv->pgtablelock, flags);
-+
-+	pr_err("%s: Failed due to size(%#x) @ %#lx is"\
-+		" smaller than page size %#x\n",
-+		__func__, size, iova, err_pgsize);
-+
-+	return 0;
-+
+ 	return ret;
  }
- 
- static phys_addr_t exynos_iommu_iova_to_phys(struct iommu_domain *domain,
 -- 
 1.7.2.5
