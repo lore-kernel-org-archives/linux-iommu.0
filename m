@@ -1,188 +1,190 @@
 From: Grant Grundler <grundler@chromium.org>
-Subject: Re: [PATCH v8 03/12] iommu/exynos: fix page table maintenance
-Date: Fri, 26 Jul 2013 09:16:59 -0700
-Message-ID: <CANEJEGvp1msjkMLN-8TfykYXmrT+sq8dMkNsVEoh9i2vDoh=tg@mail.gmail.com>
-References: <003901ce89f3$126c0390$37440ab0$@samsung.com>
+Subject: Re: [PATCH v8 11/12] iommu/exynos: change rwlock to spinlock
+Date: Fri, 26 Jul 2013 10:16:48 -0700
+Message-ID: <CANEJEGv0Bj=iMD=O2jPUc4u918mNQ_CuLvjc2P9ztRrKVKP0iQ@mail.gmail.com>
+References: <004101ce89f3$90200980$b0601c80$@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <003901ce89f3$126c0390$37440ab0$@samsung.com>
+In-Reply-To: <004101ce89f3$90200980$b0601c80$@samsung.com>
 Sender: linux-samsung-soc-owner@vger.kernel.org
 To: Cho KyongHo <pullip.cho@samsung.com>
 Cc: Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux Kernel <linux-kernel@vger.kernel.org>, Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>, Hyunwoong Kim <khw0178.kim@samsung.com>, Joerg Roedel <joro@8bytes.org>, Kukjin Kim <kgene.kim@samsung.com>, Prathyush <prathyush.k@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Subash Patel <supash.ramaswamy@linaro.org>, Keyyoung Park <keyyoung.park@samsung.com>, Grant Grundler <grundler@chromium.org>, Antonios Motakis <a.motakis@virtualopensystems.com>, kvmarm@lists.cs.columbia.edu, Sachin Kamat <sachin.kamat@linaro.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jul 26, 2013 at 4:27 AM, Cho KyongHo <pullip.cho@samsung.com> wrote:
-> This prevents allocating lv2 page table for the lv1 page table entry
-> that already has 1MB page mapping. In addition some BUG_ON() is
-> changed to WARN_ON().
+On Fri, Jul 26, 2013 at 4:30 AM, Cho KyongHo <pullip.cho@samsung.com> wrote:
+> Since acquiring read_lock is not more frequent than write_lock, it is
+> not beneficial to use rwlock, this commit changes rwlock to spinlock.
 >
 > Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
 
 Reviewed-by: Grant Grundler <grundler@chromium.org>
 
-In reviewing this, I noticed another issue that is related, but not
-caused by this patch. See below.
+cheers,
+grant
 
 > ---
->  drivers/iommu/exynos-iommu.c |   52 +++++++++++++++++++++++++++++------------
->  1 files changed, 37 insertions(+), 15 deletions(-)
+>  drivers/iommu/exynos-iommu.c |   36 ++++++++++++++++++------------------
+>  1 files changed, 18 insertions(+), 18 deletions(-)
 >
 > diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> index e3be3e5..6c4ecce 100644
+> index c62c244..51e5b35 100644
 > --- a/drivers/iommu/exynos-iommu.c
 > +++ b/drivers/iommu/exynos-iommu.c
-> @@ -52,11 +52,11 @@
->  #define lv2ent_large(pent) ((*(pent) & 3) == 1)
+> @@ -187,7 +187,7 @@ struct sysmmu_drvdata {
+>         struct clk *clk;
+>         struct clk *clk_master;
+>         int activations;
+> -       rwlock_t lock;
+> +       spinlock_t lock;
+>         struct iommu_domain *domain;
+>         bool runtime_active;
+>         unsigned long pgtable;
+> @@ -287,7 +287,7 @@ void exynos_sysmmu_set_prefbuf(struct device *dev,
+>         BUG_ON((base0 + size0) <= base0);
+>         BUG_ON((size1 > 0) && ((base1 + size1) <= base1));
 >
->  #define section_phys(sent) (*(sent) & SECT_MASK)
-> -#define section_offs(iova) ((iova) & 0xFFFFF)
-> +#define section_offs(iova) ((iova) & ~SECT_MASK)
->  #define lpage_phys(pent) (*(pent) & LPAGE_MASK)
-> -#define lpage_offs(iova) ((iova) & 0xFFFF)
-> +#define lpage_offs(iova) ((iova) & ~LPAGE_MASK)
->  #define spage_phys(pent) (*(pent) & SPAGE_MASK)
-> -#define spage_offs(iova) ((iova) & 0xFFF)
-> +#define spage_offs(iova) ((iova) & ~SPAGE_MASK)
+> -       read_lock_irqsave(&data->lock, flags);
+> +       spin_lock_irqsave(&data->lock, flags);
+>         if (!is_sysmmu_active(data))
+>                 goto finish;
 >
->  #define lv1ent_offset(iova) ((iova) >> SECT_ORDER)
->  #define lv2ent_offset(iova) (((iova) & 0xFF000) >> SPAGE_ORDER)
-> @@ -862,12 +862,14 @@ static unsigned long *alloc_lv2entry(unsigned long *sent, unsigned long iova,
->                 pent = kzalloc(LV2TABLE_SIZE, GFP_ATOMIC);
->                 BUG_ON((unsigned long)pent & (LV2TABLE_SIZE - 1));
->                 if (!pent)
-> -                       return NULL;
-> +                       return ERR_PTR(-ENOMEM);
+> @@ -319,7 +319,7 @@ void exynos_sysmmu_set_prefbuf(struct device *dev,
+>         }
+>         clk_disable(data->clk_master);
+>  finish:
+> -       read_unlock_irqrestore(&data->lock, flags);
+> +       spin_unlock_irqrestore(&data->lock, flags);
+>  }
 >
->                 *sent = mk_lv1ent_page(__pa(pent));
->                 *pgcounter = NUM_LV2ENTRIES;
->                 pgtable_flush(pent, pent + NUM_LV2ENTRIES);
->                 pgtable_flush(sent, sent + 1);
-> +       } else if (lv1ent_section(sent)) {
-> +               return ERR_PTR(-EADDRINUSE);
+>  static void show_fault_information(const char *name,
+> @@ -371,7 +371,7 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
+>
+>         if (client)
+>                 spin_lock(&client->lock);
+> -       read_lock(&data->lock);
+> +       spin_lock(&data->lock);
+>
+>         if (i == data->nsfrs) {
+>                 itype = SYSMMU_FAULT_UNKNOWN;
+> @@ -402,7 +402,7 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
+>         if (itype != SYSMMU_FAULT_UNKNOWN)
+>                 sysmmu_unblock(data->sfrbases[i]);
+>
+> -       read_unlock(&data->lock);
+> +       spin_unlock(&data->lock);
+>         if (client)
+>                 spin_unlock(&client->lock);
+>
+> @@ -429,7 +429,7 @@ static bool __sysmmu_disable(struct sysmmu_drvdata *data)
+>         bool disabled;
+>         unsigned long flags;
+>
+> -       write_lock_irqsave(&data->lock, flags);
+> +       spin_lock_irqsave(&data->lock, flags);
+>
+>         disabled = set_sysmmu_inactive(data);
+>
+> @@ -446,7 +446,7 @@ static bool __sysmmu_disable(struct sysmmu_drvdata *data)
+>                                         data->activations);
 >         }
 >
->         return page_entry(sent, iova);
-> @@ -894,6 +896,12 @@ static int lv1set_section(unsigned long *sent, phys_addr_t paddr, short *pgcnt)
+> -       write_unlock_irqrestore(&data->lock, flags);
+> +       spin_unlock_irqrestore(&data->lock, flags);
+>
+>         return disabled;
+>  }
+> @@ -493,7 +493,7 @@ static int __sysmmu_enable(struct sysmmu_drvdata *data,
+>         int ret = 0;
+>         unsigned long flags;
+>
+> -       write_lock_irqsave(&data->lock, flags);
+> +       spin_lock_irqsave(&data->lock, flags);
+>         if (set_sysmmu_active(data)) {
+>                 data->pgtable = pgtable;
+>                 data->domain = domain;
+> @@ -511,7 +511,7 @@ static int __sysmmu_enable(struct sysmmu_drvdata *data,
+>         if (WARN_ON(ret < 0))
+>                 set_sysmmu_inactive(data); /* decrement count */
+>
+> -       write_unlock_irqrestore(&data->lock, flags);
+> +       spin_unlock_irqrestore(&data->lock, flags);
+>
+>         return ret;
+>  }
+> @@ -602,7 +602,7 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova)
+>
+>                 data = dev_get_drvdata(client->sysmmu[i]);
+>
+> -               read_lock_irqsave(&data->lock, flags);
+> +               spin_lock_irqsave(&data->lock, flags);
+>                 if (is_sysmmu_active(data) && data->runtime_active) {
+>                         int i;
+>                         clk_enable(data->clk_master);
+> @@ -615,7 +615,7 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova)
+>                                 "disabled. Skipping TLB invalidation @ %#lx\n",
+>                                 iova);
+>                 }
+> -               read_unlock_irqrestore(&data->lock, flags);
+> +               spin_unlock_irqrestore(&data->lock, flags);
+>         }
+>  }
+>
+> @@ -630,7 +630,7 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
+>
+>                 data = dev_get_drvdata(client->sysmmu[i]);
+>
+> -               read_lock_irqsave(&data->lock, flags);
+> +               spin_lock_irqsave(&data->lock, flags);
+>                 if (is_sysmmu_active(data) &&
+>                                 data->runtime_active) {
+>                         int i;
+> @@ -646,7 +646,7 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
+>                 } else {
+>                         dev_dbg(dev, "disabled. Skipping TLB invalidation\n");
+>                 }
+> -               read_unlock_irqrestore(&data->lock, flags);
+> +               spin_unlock_irqrestore(&data->lock, flags);
+>         }
+>  }
+>
+> @@ -735,7 +735,7 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
+>
+>         data->runtime_active = !pm_runtime_enabled(dev);
+>
+> -       rwlock_init(&data->lock);
+> +       spin_lock_init(&data->lock);
+>         INIT_LIST_HEAD(&data->node);
+>
+>         platform_set_drvdata(pdev, data);
+> @@ -749,11 +749,11 @@ static int sysmmu_suspend(struct device *dev)
+>  {
+>         struct sysmmu_drvdata *data = dev_get_drvdata(dev);
+>         unsigned long flags;
+> -       read_lock_irqsave(&data->lock, flags);
+> +       spin_lock_irqsave(&data->lock, flags);
+>         if (is_sysmmu_active(data) &&
+>                 (!pm_runtime_enabled(dev) || data->runtime_active))
+>                 __sysmmu_disable_nocount(data);
+> -       read_unlock_irqrestore(&data->lock, flags);
+> +       spin_unlock_irqrestore(&data->lock, flags);
 >         return 0;
 >  }
 >
-> +static void clear_page_table(unsigned long *ent, int n)
-> +{
-> +       if (n > 0)
-> +               memset(ent, 0, sizeof(*ent) * n);
-> +}
-> +
->  static int lv2set_page(unsigned long *pent, phys_addr_t paddr, size_t size,
->                                                                 short *pgcnt)
+> @@ -761,11 +761,11 @@ static int sysmmu_resume(struct device *dev)
 >  {
-> @@ -908,7 +916,7 @@ static int lv2set_page(unsigned long *pent, phys_addr_t paddr, size_t size,
->                 int i;
->                 for (i = 0; i < SPAGES_PER_LPAGE; i++, pent++) {
->                         if (!lv2ent_fault(pent)) {
-> -                               memset(pent, 0, sizeof(*pent) * i);
-> +                               clear_page_table(pent - i, i);
->                                 return -EADDRINUSE;
-
-I am wondering about two issues with this error handling:
-1) we don't call pgtable_flush() in this case - I think just for
-consistency we should - don't rush to add since my next comment is to
-change this error handling completely.
-
-2) If  -EADDRINUSE is correct, why does the code clear the IO Page
-table entries?
-
-   I think this error path should either
-   (a) BUG_ON (ie panic) since this is an inconsistency between
-generic IOMMU page allocation and chip specific IOMMU mapping code OR
-   (b) WARN_ON, not clear the entries, and hope whoever was using it
-can finish using the system before crashing or gracefully shutting
-down.
-
-In any case, I'm pretty sure this code needs to change and it should
-be in a follow up to this series.
-
-thanks,
-grant
-
->                         }
->
-> @@ -944,17 +952,16 @@ static int exynos_iommu_map(struct iommu_domain *domain, unsigned long iova,
->                 pent = alloc_lv2entry(entry, iova,
->                                         &priv->lv2entcnt[lv1ent_offset(iova)]);
->
-> -               if (!pent)
-> -                       ret = -ENOMEM;
-> +               if (IS_ERR(pent))
-> +                       ret = PTR_ERR(pent);
->                 else
->                         ret = lv2set_page(pent, paddr, size,
->                                         &priv->lv2entcnt[lv1ent_offset(iova)]);
->         }
->
-> -       if (ret) {
-> -               pr_debug("%s: Failed to map iova 0x%lx/0x%x bytes\n",
-> -                                                       __func__, iova, size);
-> -       }
-> +       if (ret)
-> +               pr_err("%s: Failed(%d) to map 0x%#x bytes @ %#lx\n",
-> +                       __func__, ret, size, iova);
->
->         spin_unlock_irqrestore(&priv->pgtablelock, flags);
->
-> @@ -968,6 +975,7 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
->         struct sysmmu_drvdata *data;
+>         struct sysmmu_drvdata *data = dev_get_drvdata(dev);
 >         unsigned long flags;
->         unsigned long *ent;
-> +       size_t err_pgsize;
->
->         BUG_ON(priv->pgtable == NULL);
->
-> @@ -976,7 +984,10 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
->         ent = section_entry(priv->pgtable, iova);
->
->         if (lv1ent_section(ent)) {
-> -               BUG_ON(size < SECT_SIZE);
-> +               if (WARN_ON(size < SECT_SIZE)) {
-> +                       err_pgsize = SECT_SIZE;
-> +                       goto err;
-> +               }
->
->                 *ent = 0;
->                 pgtable_flush(ent, ent + 1);
-> @@ -1008,9 +1019,12 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
->         }
->
->         /* lv1ent_large(ent) == true here */
-> -       BUG_ON(size < LPAGE_SIZE);
-> +       if (WARN_ON(size < LPAGE_SIZE)) {
-> +               err_pgsize = LPAGE_SIZE;
-> +               goto err;
-> +       }
->
-> -       memset(ent, 0, sizeof(*ent) * SPAGES_PER_LPAGE);
-> +       clear_page_table(ent, SPAGES_PER_LPAGE);
->         pgtable_flush(ent, ent + SPAGES_PER_LPAGE);
->
->         size = LPAGE_SIZE;
-> @@ -1023,8 +1037,16 @@ done:
->                 sysmmu_tlb_invalidate_entry(data->dev, iova);
->         spin_unlock_irqrestore(&priv->lock, flags);
->
-> -
->         return size;
-> +err:
-> +       spin_unlock_irqrestore(&priv->pgtablelock, flags);
-> +
-> +       pr_err("%s: Failed due to size(%#x) @ %#lx is"\
-> +               " smaller than page size %#x\n",
-> +               __func__, size, iova, err_pgsize);
-> +
-> +       return 0;
-> +
+> -       read_lock_irqsave(&data->lock, flags);
+> +       spin_lock_irqsave(&data->lock, flags);
+>         if (is_sysmmu_active(data) &&
+>                 (!pm_runtime_enabled(dev) || data->runtime_active))
+>                 __sysmmu_enable_nocount(data);
+> -       read_unlock_irqrestore(&data->lock, flags);
+> +       spin_unlock_irqrestore(&data->lock, flags);
+>         return 0;
 >  }
->
->  static phys_addr_t exynos_iommu_iova_to_phys(struct iommu_domain *domain,
+>  #endif
 > --
 > 1.7.2.5
 >
