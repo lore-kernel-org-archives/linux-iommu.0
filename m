@@ -1,37 +1,21 @@
-From: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+From: Takao Indoh <indou.takao@jp.fujitsu.com>
 Subject: Re: [PATCH v2] PCI: Reset PCIe devices to stop ongoing DMA
-Date: Mon, 29 Jul 2013 09:20:21 +0900
-Message-ID: <51F5B545.5050300@jp.fujitsu.com>
-References: <1368509365-2260-1-git-send-email-indou.takao@jp.fujitsu.com>
-	<CAErSpo4t_2Xw76p3Z9FVzyyK-MBovavDu9D=pYoPMjESSxgT=w@mail.gmail.com>
-	<51B19DF3.2070009@jp.fujitsu.com>
-	<CAErSpo6dfEnzriHD_aWZB_3E-kSzauhNRHPd+VuFX5HONVKgqw@mail.gmail.com>
-	<51B6BEDB.3000509@jp.fujitsu.com>
-	<CAErSpo5u8qGALt6C+tuPYXdd2YgyMH6fnPnA+afUteEZ7kY0iw@mail.gmail.com>
-	<51B93221.2040505@jp.fujitsu.com>
-	<CAErSpo5tVK-Z3aOdMTzab-S8o5zLVtDOFQ8-LSYpUgbrJSsxuw@mail.gmail.com>
-	<51BA7BB6.1080104@jp.fujitsu.com> <51EF7466.20703@jp.fujitsu.com>
-	<20130725142446.GK11993@redhat.com>
+Date: Mon, 29 Jul 2013 09:37:58 +0900
+Message-ID: <51F5B966.9080405@jp.fujitsu.com>
+References: <1368509365-2260-1-git-send-email-indou.takao@jp.fujitsu.com> <CAErSpo4t_2Xw76p3Z9FVzyyK-MBovavDu9D=pYoPMjESSxgT=w@mail.gmail.com> <51B19DF3.2070009@jp.fujitsu.com> <CAErSpo6dfEnzriHD_aWZB_3E-kSzauhNRHPd+VuFX5HONVKgqw@mail.gmail.com> <51B6BEDB.3000509@jp.fujitsu.com> <CAErSpo5u8qGALt6C+tuPYXdd2YgyMH6fnPnA+afUteEZ7kY0iw@mail.gmail.com> <51B93221.2040505@jp.fujitsu.com> <CAErSpo5tVK-Z3aOdMTzab-S8o5zLVtDOFQ8-LSYpUgbrJSsxuw@mail.gmail.com> <51BA7BB6.1080104@jp.fujitsu.com> <51EF7466.20703@jp.fujitsu.com> <CAErSpo5B7NzVfxwW3bQnfK+iK+DrRsWQd2Cm14z5PWNnRHWL5w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-2022-JP
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130725142446.GK11993-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hbabu-r/Jw6+rmf7HQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, bill.sumner-VXdhtT5mjnY@public.gmane.org
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <CAErSpo5B7NzVfxwW3bQnfK+iK+DrRsWQd2Cm14z5PWNnRHWL5w@mail.gmail.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: bhelgaas@google.com
+Cc: linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, kexec@lists.infradead.org, ishii.hironobu@jp.fujitsu.com, ddutile@redhat.com, bill.sumner@hp.com, alex.williamson@redhat.com, vgoyal@redhat.com, hbabu@us.ibm.com
 List-Id: iommu@lists.linux-foundation.org
 
-(2013/07/25 23:24), Vivek Goyal wrote:
-> On Wed, Jul 24, 2013 at 03:29:58PM +0900, Takao Indoh wrote:
+(2013/07/26 2:00), Bjorn Helgaas wrote:
+> On Wed, Jul 24, 2013 at 12:29 AM, Takao Indoh
+> <indou.takao@jp.fujitsu.com> wrote:
 >> Sorry for letting this discussion slide, I was busy on other works:-(
 >> Anyway, the summary of previous discussion is:
 >> - My patch adds new initcall(fs_initcall) to reset all PCIe endpoints on
@@ -50,32 +34,40 @@ List-Id: iommu@lists.linux-foundation.org
 >> be good idea. So I think adding reset code into iommu initialization is
 >> better. I'll post patches for that.
 > 
-> I don't understand all the details but I agree that idea of trying to
-> reset IOMMU in crashed kernel might not fly.
-> 
->>
->> Another discussion point is how to handle buggy devices. Resetting buggy
->> devices makes system more unstable. One of ideas is using boot parameter
->> so that user can choose to reset devices or not.
-> 
-> So who would decide which device is buggy and don't reset it. Give
-> some details here.
+> Of course nobody *wants* to do anything in the panic kernel.  But
+> simply saying "it's against kdump policy and seems not to be a good
+> idea" is not a technical argument.  There are things that are
+> impractical to do in the kdump kernel, so they have to be done in the
+> panic kernel even though we know the kernel is unreliable and the
+> attempt may fail.
 
-I found the case that kdump does not work after resetting devices and
-it works when removing reset patch. The cause of problem is a bug of
-PCIe switch chip. If there is boot parameter not to reset devices,
-user can use it as workaround.
+Accessing kernel data in panic kernel causes panic again, so
+- Don't touch kernel data in panic situation
+- Jump to kdump kernel as quickly as possible, and do things in safe
+  kernel
+These are basic "kdump policy". Of course if there are any works which
+we cannot do in kdump kernel and can do only in panic kernel, for
+example saving registers or stopping cpus, we should do them in panic
+kernel.
 
-I think in this case we should add PCI quirk to avoid this buggy
-hardware, but we need to wait errata from vendor and it basically takes
-long time.
+Resetting devices in panic kernel is worth considering if we can safely
+find pci_dev and reset it, but I have no idea how to do that because
+for example struct pci_dev may be borken.
 
 > 
-> Can't we simply blacklist associated module, so that it never loads
-> and then it never tries to reset the devices?
-> 
+> My point about IOMMU and PCI initialization order doesn't go away just
+> because it doesn't fit "kdump policy."  Having system initialization
+> occur in a logical order is far more important than making kdump work.
 
-So you mean that device reset should be done on its driver loading?
+My next plan is as follows. I think this is matched to logical order
+on boot.
+
+drivers/pci/pci.c
+- Add function to reset bus, for example, pci_reset_bus(struct pci_bus *bus)
+
+drivers/iommu/intel-iommu.c
+- On initialization, if IOMMU is already enabled, call this bus reset
+  function before disabling and re-enabling IOMMU.
 
 Thanks,
 Takao Indoh
