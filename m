@@ -1,73 +1,42 @@
-From: Takao Indoh <indou.takao@jp.fujitsu.com>
-Subject: Re: [PATCH v2] PCI: Reset PCIe devices to stop ongoing DMA
-Date: Mon, 29 Jul 2013 09:37:58 +0900
-Message-ID: <51F5B966.9080405@jp.fujitsu.com>
-References: <1368509365-2260-1-git-send-email-indou.takao@jp.fujitsu.com> <CAErSpo4t_2Xw76p3Z9FVzyyK-MBovavDu9D=pYoPMjESSxgT=w@mail.gmail.com> <51B19DF3.2070009@jp.fujitsu.com> <CAErSpo6dfEnzriHD_aWZB_3E-kSzauhNRHPd+VuFX5HONVKgqw@mail.gmail.com> <51B6BEDB.3000509@jp.fujitsu.com> <CAErSpo5u8qGALt6C+tuPYXdd2YgyMH6fnPnA+afUteEZ7kY0iw@mail.gmail.com> <51B93221.2040505@jp.fujitsu.com> <CAErSpo5tVK-Z3aOdMTzab-S8o5zLVtDOFQ8-LSYpUgbrJSsxuw@mail.gmail.com> <51BA7BB6.1080104@jp.fujitsu.com> <51EF7466.20703@jp.fujitsu.com> <CAErSpo5B7NzVfxwW3bQnfK+iK+DrRsWQd2Cm14z5PWNnRHWL5w@mail.gmail.com>
+From: Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v8 06/12] ARM: dts: Add description of System MMU of
+	Exynos SoCs
+Date: Mon, 29 Jul 2013 12:07:56 +0530
+Message-ID: <CAK9yfHy2btp1W+5-GiVQnkffDnJ-CgqXuAjGktkiKYyf7kKQbQ@mail.gmail.com>
+References: <003c01ce89f3$3abc4bc0$b034e340$@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-2022-JP
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <CAErSpo5B7NzVfxwW3bQnfK+iK+DrRsWQd2Cm14z5PWNnRHWL5w@mail.gmail.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: bhelgaas@google.com
-Cc: linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, kexec@lists.infradead.org, ishii.hironobu@jp.fujitsu.com, ddutile@redhat.com, bill.sumner@hp.com, alex.williamson@redhat.com, vgoyal@redhat.com, hbabu@us.ibm.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <003c01ce89f3$3abc4bc0$b034e340$@samsung.com>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: Linux Samsung SOC <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Hyunwoong Kim <khw0178.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Prathyush <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Keyyoung Park <keyyoung.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Subash Patel <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Rahul Sharma <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-(2013/07/26 2:00), Bjorn Helgaas wrote:
-> On Wed, Jul 24, 2013 at 12:29 AM, Takao Indoh
-> <indou.takao@jp.fujitsu.com> wrote:
->> Sorry for letting this discussion slide, I was busy on other works:-(
->> Anyway, the summary of previous discussion is:
->> - My patch adds new initcall(fs_initcall) to reset all PCIe endpoints on
->>    boot. This expects PCI enumeration is done before IOMMU
->>    initialization as follows.
->>      (1) PCI enumeration
->>      (2) fs_initcall ---> device reset
->>      (3) IOMMU initialization
->> - This works on x86, but does not work on other architecture because
->>    IOMMU is initialized before PCI enumeration on some architectures. So,
->>    device reset should be done where IOMMU is initialized instead of
->>    initcall.
->> - Or, as another idea, we can reset devices in first kernel(panic kernel)
->>
->> Resetting devices in panic kernel is against kdump policy and seems not to
->> be good idea. So I think adding reset code into iommu initialization is
->> better. I'll post patches for that.
-> 
-> Of course nobody *wants* to do anything in the panic kernel.  But
-> simply saying "it's against kdump policy and seems not to be a good
-> idea" is not a technical argument.  There are things that are
-> impractical to do in the kdump kernel, so they have to be done in the
-> panic kernel even though we know the kernel is unreliable and the
-> attempt may fail.
+Hi KyongHo,
 
-Accessing kernel data in panic kernel causes panic again, so
-- Don't touch kernel data in panic situation
-- Jump to kdump kernel as quickly as possible, and do things in safe
-  kernel
-These are basic "kdump policy". Of course if there are any works which
-we cannot do in kdump kernel and can do only in panic kernel, for
-example saving registers or stopping cpus, we should do them in panic
-kernel.
+On 26 July 2013 16:58, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org> wrote:
+> Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> ---
+>  .../bindings/iommu/samsung,exynos4210-sysmmu.txt   |  103 +++++++
+>  arch/arm/boot/dts/exynos4.dtsi                     |  122 ++++++++
+>  arch/arm/boot/dts/exynos4210.dtsi                  |   25 ++
+>  arch/arm/boot/dts/exynos4x12.dtsi                  |   76 +++++
+>  arch/arm/boot/dts/exynos5250.dtsi                  |  291 ++++++++++++++++++++
+>  5 files changed, 617 insertions(+), 0 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
 
-Resetting devices in panic kernel is worth considering if we can safely
-find pci_dev and reset it, but I have no idea how to do that because
-for example struct pci_dev may be borken.
+This patch does not apply on the mainline Linus' tree (3.11-rc2). Please rebase.
 
-> 
-> My point about IOMMU and PCI initialization order doesn't go away just
-> because it doesn't fit "kdump policy."  Having system initialization
-> occur in a logical order is far more important than making kdump work.
-
-My next plan is as follows. I think this is matched to logical order
-on boot.
-
-drivers/pci/pci.c
-- Add function to reset bus, for example, pci_reset_bus(struct pci_bus *bus)
-
-drivers/iommu/intel-iommu.c
-- On initialization, if IOMMU is already enabled, call this bus reset
-  function before disabling and re-enabling IOMMU.
-
-Thanks,
-Takao Indoh
+-- 
+With warm regards,
+Sachin
