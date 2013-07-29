@@ -1,82 +1,66 @@
-From: Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH v8 03/12] iommu/exynos: fix page table maintenance
-Date: Mon, 29 Jul 2013 09:22:01 -0700
-Message-ID: <CANEJEGs-fMeK2yzwyx-jr6iCnNbaG0owC12-i3c8hqjUkpQbPA@mail.gmail.com>
-References: <003901ce89f3$126c0390$37440ab0$@samsung.com>
-	<CANEJEGvp1msjkMLN-8TfykYXmrT+sq8dMkNsVEoh9i2vDoh=tg@mail.gmail.com>
-	<004e01ce8c3c$9480f9d0$bd82ed70$@samsung.com>
+From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Subject: Re: [PATCH v2 21/22] iommu/tegra: smmu: Support Multiple ASID
+Date: Mon, 29 Jul 2013 11:41:23 -0600
+Message-ID: <51F6A943.8000004@wwwdotorg.org>
+References: <1373021097-32420-1-git-send-email-hdoyu@nvidia.com><1373021097-32420-22-git-send-email-hdoyu@nvidia.com><51E8535A.30605@wwwdotorg.org> <20130729.133155.1836775489422797370.hdoyu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <004e01ce8c3c$9480f9d0$bd82ed70$@samsung.com>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Linux Samsung SOC <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Hyunwoong Kim <khw0178.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Prathyush <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Keyyoung Park <keyyoung.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Subash Patel <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Rahul Sharma <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20130729.133155.1836775489422797370.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jul 29, 2013 at 2:18 AM, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org> wrote:
-...
->> > @@ -908,7 +916,7 @@ static int lv2set_page(unsigned long *pent, phys_addr_t paddr, size_t size,
->> >                 int i;
->> >                 for (i = 0; i < SPAGES_PER_LPAGE; i++, pent++) {
->> >                         if (!lv2ent_fault(pent)) {
->> > -                               memset(pent, 0, sizeof(*pent) * i);
->> > +                               clear_page_table(pent - i, i);
->> >                                 return -EADDRINUSE;
+On 07/29/2013 04:31 AM, Hiroshi Doyu wrote:
+> Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote @ Thu, 18 Jul 2013 22:43:06 +0200:
+> 
+>> On 07/05/2013 04:44 AM, Hiroshi Doyu wrote:
+>>> Support Multiple Address Space(AS). Tegra SMMU can have multiple
+>>> ASes. We reserve 2 of them for static assignment, AS[0] for system
+>>> default, AS[1] for AHB clusters as protected domain from others, where
+>>> there are many traditional pheripheral devices like USB, SD/MMC. They
+>>> should be isolated from some smart devices like host1x for system
+>>> robustness. Even if smart devices behaves wrongly, the traditional
+>>> devices(SD/MMC, USB) wouldn't be affected, and the system could
+>>> continue most likely.
 >>
->> I am wondering about two issues with this error handling:
->> 1) we don't call pgtable_flush() in this case - I think just for
->> consistency we should - don't rush to add since my next comment is to
->> change this error handling completely.
+>>> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
 >>
-> clear_page_table() is called for the page table entries that are already
-> fault pages. That is why it does not contain cache flush.
->
->> 2) If  -EADDRINUSE is correct, why does the code clear the IO Page
->> table entries?
+>>>  static int smmu_iommu_add_device(struct device *dev)
+>>>  {
+>>>  	int err;
+>>> -	struct dma_iommu_mapping *map = smmu_handle->map[SYSTEM_DEFAULT];
+>>> +	u64 swgroup;
+>>> +	struct dma_iommu_mapping *map = NULL;
+>>> +
+>>> +	swgroup = smmu_of_get_memory_client(dev);
+>>> +	switch (swgroup) {
+>>> +	case TEGRA_SWGROUP_BIT(PPCS):
+>>> +		map = smmu_handle->map[SYSTEM_PROTECTED];
+>>> +		break;
+>>> +	default:
+>>> +		map = smmu_handle->map[SYSTEM_DEFAULT];
 >>
->>    I think this error path should either
->>    (a) BUG_ON (ie panic) since this is an inconsistency between
->> generic IOMMU page allocation and chip specific IOMMU mapping code OR
->>    (b) WARN_ON, not clear the entries, and hope whoever was using it
->> can finish using the system before crashing or gracefully shutting
->> down.
->>
->> In any case, I'm pretty sure this code needs to change and it should
->> be in a follow up to this series.
->
-> Yes, you're right. But I worried the case that a kernel module calls IOMMU API
-> functions directly and does not want to make kernel panic when it tries to map
-> a region that is already in use.
+>> I already mentioned this, but just for completeness: What is
+>> smmu->num_as <= SYSTEM_DEFAULT?
+> 
+> I think that this belongs to the system operation policy. Which H/W
+> should be configured to which Address Space(AS). This put all AHB
+> clients(PPCS) into AS[1](SYSTEM_PROTECTED), and the rest into
+> AS[0](SYSTEM_DEFAULT). AHB clients are mainly traditional H/Ws like
+> USB and SD/MMC so that they should be kept separated from the smart
+> IOMMU clients like host1x.
+> 
+> Is there any place to configure this kind of board specific policy
+> rather than here?
 
-Using a DMA address for a different physical page while the current
-mapping is still active can only be a bug. I can confidently say there
-is no way to map the same DMA address twice (at least not for a single
-page table.)  We can try to fail the mapping somehow and WARN_ON to
-indicate we had a "Re-Use before free" type bug.
+I'm not sure that answers the question I asked.
 
-> I also wonder if the such kernel module exists.
-
-I believe the kernel will never do this.
-
-> WARN_ON is also a good idea.
-
-After this series goes in, post another patch and I'd be happy to
-review that as well.
-
-After thinking about it more, I'm also ok with removing this code.
-It's a very "defensive" code to catch errors in the generic IOMMU code
-that probably no longer exist. Or maybe just make it
-"CONFIG_DEBUG_IOMMU_ALLOC" or something like that.
-
-cheers,
-grant
+I mean that the driver expects that two AS always exist;
+SYSTEM_PROTECTED and SYSTEM_DEFAULT. However, the set of extant ASs is
+IIRC defined by the DT content. What if the DT doesn't define two ASs?
+Shouldn't there at least be an error-check for this case, so the driver
+doesn't just blindly continue and access smmu_handle->map[1] when the
+map[] array only has 1 entry?
