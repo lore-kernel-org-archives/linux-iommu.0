@@ -1,56 +1,56 @@
 From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 01/22] [HACK] of: dev_node has struct device pointer
-Date: Mon, 29 Jul 2013 12:13:44 +0200
-Message-ID: <20130729.131344.1221933042559369096.hdoyu@nvidia.com>
-References: <1373021097-32420-2-git-send-email-hdoyu@nvidia.com><51E5CFBF.5080407@wwwdotorg.org><20130716231629.GA12189@dhcp-172-17-186-34.nvidia.com>
+Subject: Re: [PATCH v2 21/22] iommu/tegra: smmu: Support Multiple ASID
+Date: Mon, 29 Jul 2013 12:31:55 +0200
+Message-ID: <20130729.133155.1836775489422797370.hdoyu@nvidia.com>
+References: <1373021097-32420-1-git-send-email-hdoyu@nvidia.com><1373021097-32420-22-git-send-email-hdoyu@nvidia.com><51E8535A.30605@wwwdotorg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130716231629.GA12189-RcKxWJ4Cfj3FNiLNb7+IINdj8bHVeoWogfoxzgwHRXE@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org" <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Cc: "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org" <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <51E8535A.30605-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org" <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote @ Wed, 17 Jul 2013 01:16:30 +0200:
+Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote @ Thu, 18 Jul 2013 22:43:06 +0200:
 
-> * PGP Signed by an unknown key
+> On 07/05/2013 04:44 AM, Hiroshi Doyu wrote:
+> > Support Multiple Address Space(AS). Tegra SMMU can have multiple
+> > ASes. We reserve 2 of them for static assignment, AS[0] for system
+> > default, AS[1] for AHB clusters as protected domain from others, where
+> > there are many traditional pheripheral devices like USB, SD/MMC. They
+> > should be isolated from some smart devices like host1x for system
+> > robustness. Even if smart devices behaves wrongly, the traditional
+> > devices(SD/MMC, USB) wouldn't be affected, and the system could
+> > continue most likely.
 > 
-> On Tue, Jul 16, 2013 at 04:57:03PM -0600, Stephen Warren wrote:
-> > On 07/05/2013 04:44 AM, Hiroshi Doyu wrote:
-> > > To prevent of_platform_populate() from trying to populate duplicate
-> > > devices if a device has been already populated.
-> > 
-> > You need to send drivers/of patches to the DT maintainer and
-> > devicetree-discuss mailing list.
-> > 
-> > > Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> > > ---
-> > > Need to take care of early_platform_devices, or alternative solution.
-> > 
-> > I assume that's a TODO item... Are you planning on fleshing out this
-> > patch to address that issue?
->
-> There was some more discussion about it, which can be found in the
-> following thread:
+> > diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
 > 
-> 	https://lists.ozlabs.org/pipermail/devicetree-discuss/2013-June/036934.html
+> >  static int smmu_iommu_add_device(struct device *dev)
+> >  {
+> >  	int err;
+> > -	struct dma_iommu_mapping *map = smmu_handle->map[SYSTEM_DEFAULT];
+> > +	u64 swgroup;
+> > +	struct dma_iommu_mapping *map = NULL;
+> > +
+> > +	swgroup = smmu_of_get_memory_client(dev);
+> > +	switch (swgroup) {
+> > +	case TEGRA_SWGROUP_BIT(PPCS):
+> > +		map = smmu_handle->map[SYSTEM_PROTECTED];
+> > +		break;
+> > +	default:
+> > +		map = smmu_handle->map[SYSTEM_DEFAULT];
 > 
-> That's one of the last messages and it should have most of the
-> background. If not you may have to walk up the thread for more context.
-> In a nutshell I raised the question as to why we can't simply call
-> of_platform_populate() earlier and side-step all the workarounds that
-> have found their way into the kernel to side-step the issue of their not
-> being a struct device associated with the struct device_node.
+> I already mentioned this, but just for completeness: What is
+> smmu->num_as <= SYSTEM_DEFAULT?
 
-This is the thread which Lorenzo started originally. He may have some
-plan to implement/proceed with this, Lorenzo?
+I think that this belongs to the system operation policy. Which H/W
+should be configured to which Address Space(AS). This put all AHB
+clients(PPCS) into AS[1](SYSTEM_PROTECTED), and the rest into
+AS[0](SYSTEM_DEFAULT). AHB clients are mainly traditional H/Ws like
+USB and SD/MMC so that they should be kept separated from the smart
+IOMMU clients like host1x.
+
+Is there any place to configure this kind of board specific policy
+rather than here?
