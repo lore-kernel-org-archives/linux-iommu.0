@@ -1,121 +1,63 @@
-From: Cho KyongHo <pullip.cho@samsung.com>
-Subject: RE: [PATCH v8 08/12] iommu/exynos: remove prefetch buffer setting when
- enabling System MMU
-Date: Mon, 29 Jul 2013 16:32:25 +0900
-Message-ID: <003d01ce8c2d$c5c349d0$5149dd70$@samsung.com>
-References: <003e01ce89f3$4cdb45e0$e691d1a0$@samsung.com>
- <CANEJEGtWTZHZEr=XzPXHFbJtP7U5JFD-o58kRjLe23XaTzv=fA@mail.gmail.com>
+From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: RE: [PATCH v8 06/12] ARM: dts: Add description of System MMU of Exynos
+	SoCs
+Date: Mon, 29 Jul 2013 16:57:22 +0900
+Message-ID: <003e01ce8c31$41d0c450$c5724cf0$@samsung.com>
+References: <003c01ce89f3$3abc4bc0$b034e340$@samsung.com>
+	<CAK9yfHy2btp1W+5-GiVQnkffDnJ-CgqXuAjGktkiKYyf7kKQbQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <CANEJEGtWTZHZEr=XzPXHFbJtP7U5JFD-o58kRjLe23XaTzv=fA@mail.gmail.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-reply-to: 
 Content-language: ko
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: 'Grant Grundler' <grundler@chromium.org>
-Cc: 'Linux ARM Kernel' <linux-arm-kernel@lists.infradead.org>, 'Linux IOMMU' <iommu@lists.linux-foundation.org>, 'Linux Kernel' <linux-kernel@vger.kernel.org>, 'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>, 'Hyunwoong Kim' <khw0178.kim@samsung.com>, 'Joerg Roedel' <joro@8bytes.org>, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Prathyush' <prathyush.k@samsung.com>, 'Rahul Sharma' <rahul.sharma@samsung.com>, 'Subash Patel' <supash.ramaswamy@linaro.org>, 'Keyyoung Park' <keyyoung.park@samsung.com>, 'Antonios Motakis' <a.motakis@virtualopensystems.com>, kvmarm@lists.cs.columbia.edu, 'Sachin Kamat' <sachin.kamat@linaro.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: 'Sachin Kamat' <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: 'Linux Samsung SOC' <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, 'Hyunwoong Kim' <khw0178.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Prathyush' <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Grant Grundler' <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, 'Keyyoung Park' <keyyoung.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Subash Patel' <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Linux Kernel' <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, 'Linux IOMMU' <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, 'Kukjin Kim' <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Antonios Motakis' <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, 'Linux ARM Kernel' <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, 'Rahul Sharma' <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 > -----Original Message-----
-> From: grundler@google.com [mailto:grundler@google.com] On Behalf Of Grant Grundler
-> Sent: Saturday, July 27, 2013 2:36 AM
+> From: Cho KyongHo [mailto:pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org]
+> Sent: Monday, July 29, 2013 4:20 PM
 > 
-> On Fri, Jul 26, 2013 at 4:28 AM, Cho KyongHo <pullip.cho@samsung.com> wrote:
-> > Prefetch buffer must be handled accurately, exact range of a buffer,
-> > frame by frame manually. Otherwise, it may causes page fault or
-> > deadlock in System MMU.
-> > Thus this patch removes prefetch buffer setting when System MMU is
-> > initialized(enabled).
+> > -----Original Message-----
+> > From: Sachin Kamat [mailto:sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org]
+> > Sent: Monday, July 29, 2013 3:38 PM
 > >
-> > Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
+> > Hi KyongHo,
+> >
+> > On 26 July 2013 16:58, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org> wrote:
+> > > Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> > > ---
+> > >  .../bindings/iommu/samsung,exynos4210-sysmmu.txt   |  103 +++++++
+> > >  arch/arm/boot/dts/exynos4.dtsi                     |  122 ++++++++
+> > >  arch/arm/boot/dts/exynos4210.dtsi                  |   25 ++
+> > >  arch/arm/boot/dts/exynos4x12.dtsi                  |   76 +++++
+> > >  arch/arm/boot/dts/exynos5250.dtsi                  |  291 ++++++++++++++++++++
+> > >  5 files changed, 617 insertions(+), 0 deletions(-)
+> > >  create mode 100644 Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
+> >
+> > This patch does not apply on the mainline Linus' tree (3.11-rc2). Please rebase.
+> >
 > 
-> Reviewed-by: Grant Grundler <grundler@chromium.org>
-> 
-> BTW, cscope doesn't find any callers of exynos_sysmmu_enable().
-> Want to submit another patch to remove it?
-> 
-> (Note I'm talking about exynos_sysmmu_enable() without "__" prefix).
+> OK. I will rebase the next patches on that.
 
-Oh, I missed removing that function.
-
-Thank you.
+I don't get any conflict both on the latest of Linus's tree (3.11-rc3)
+and for-next branch  of Samsung git.
+Can you show me the diff?
 
 > 
-> cheers,
-> grant
+> Thank you.
 > 
-> > ---
-> >  drivers/iommu/exynos-iommu.c |   32 +++++++++++++++++++++++++++-----
-> >  1 files changed, 27 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> > index cfc02ed..87f6bb7 100644
-> > --- a/drivers/iommu/exynos-iommu.c
-> > +++ b/drivers/iommu/exynos-iommu.c
-> > @@ -80,6 +80,8 @@
-> >  #define CTRL_BLOCK     0x7
-> >  #define CTRL_DISABLE   0x0
-> >
-> > +#define CFG_FLPDCACHE  (1 << 20) /* System MMU 3.2+ only */
-> > +
-> >  #define REG_MMU_CTRL           0x000
-> >  #define REG_MMU_CFG            0x004
-> >  #define REG_MMU_STATUS         0x008
-> > @@ -96,6 +98,9 @@
-> >
-> >  #define REG_MMU_VERSION                0x034
-> >
-> > +#define MMU_MAJ_VER(reg)       (reg >> 28)
-> > +#define MMU_MIN_VER(reg)       ((reg >> 21) & 0x7F)
-> > +
-> >  #define REG_PB0_SADDR          0x04C
-> >  #define REG_PB0_EADDR          0x050
-> >  #define REG_PB1_SADDR          0x054
-> > @@ -200,6 +205,22 @@ static bool is_sysmmu_active(struct sysmmu_drvdata *data)
-> >         return data->activations > 0;
-> >  }
-> >
-> > +static unsigned int __sysmmu_version(struct sysmmu_drvdata *data,
-> > +                                    int idx, unsigned int *minor)
-> > +{
-> > +       unsigned long major;
-> > +
-> > +       major = readl(data->sfrbases[idx] + REG_MMU_VERSION);
-> > +
-> > +       if (minor)
-> > +               *minor = MMU_MIN_VER(major);
-> > +
-> > +       if (MMU_MAJ_VER(major) > 3)
-> > +               return 1;
-> > +
-> > +       return MMU_MAJ_VER(major);
-> > +}
-> > +
-> >  static void sysmmu_unblock(void __iomem *sfrbase)
-> >  {
-> >         __raw_writel(CTRL_ENABLE, sfrbase + REG_MMU_CTRL);
-> > @@ -460,14 +481,15 @@ static int __exynos_sysmmu_enable(struct sysmmu_drvdata *data,
-> >         data->pgtable = pgtable;
-> >
-> >         for (i = 0; i < data->nsfrs; i++) {
-> > +               unsigned int min;
-> > +
-> >                 __sysmmu_set_ptbase(data->sfrbases[i], pgtable);
-> >
-> > -               if ((readl(data->sfrbases[i] + REG_MMU_VERSION) >> 28) == 3) {
-> > -                       /* System MMU version is 3.x */
-> > -                       __raw_writel((1 << 12) | (2 << 28),
-> > +               if ((__sysmmu_version(data, i, &min) == 3) && (min > 1)) {
-> > +                       unsigned long cfg;
-> > +                       cfg = __raw_readl(data->sfrbases[i] + REG_MMU_CFG);
-> > +                       __raw_writel(cfg | CFG_FLPDCACHE,
-> >                                         data->sfrbases[i] + REG_MMU_CFG);
-> > -                       __sysmmu_set_prefbuf(data->sfrbases[i], 0, -1, 0);
-> > -                       __sysmmu_set_prefbuf(data->sfrbases[i], 0, -1, 1);
-> >                 }
-> >
-> >                 __raw_writel(CTRL_ENABLE, data->sfrbases[i] + REG_MMU_CTRL);
+> Cho KyongHo.
 > > --
-> > 1.7.2.5
-> >
-> >
+> > With warm regards,
+> > Sachin
