@@ -1,105 +1,136 @@
-From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [PATCH v2 16/22] iommu/tegra: smmu: Get "nvidia,swgroup" from
- DT
-Date: Mon, 29 Jul 2013 12:00:06 -0600
-Message-ID: <51F6ADA6.3040006@wwwdotorg.org>
-References: <1373021097-32420-1-git-send-email-hdoyu@nvidia.com><1373021097-32420-17-git-send-email-hdoyu@nvidia.com><51E84FFA.8020509@wwwdotorg.org> <20130729.143950.524913713971518557.hdoyu@nvidia.com>
+From: Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [RFC PATCH v2 1/2] pci: Create PCIe requester ID interface
+Date: Mon, 29 Jul 2013 15:02:19 -0600
+Message-ID: <CAErSpo7pfCtTm5Cq=VixPTKMpM4VQpDr+ZmS5qMw32z6ABu0xQ@mail.gmail.com>
+References: <20130711204439.1701.90503.stgit@bling.home> <20130711210326.1701.56478.stgit@bling.home>
+ <20130723223533.GB19765@google.com> <1374621703.15429.98.camel@ul30vt.home>
+ <CAErSpo6bcGCjqdxn-bz_vjo+HsAiOxDu=--mD7veEZ9f7k+gyA@mail.gmail.com>
+ <1374689548.5208.62.camel@ul30vt.home> <20130724232427.GA9272@google.com>
+ <1374775016.2642.116.camel@ul30vt.home> <20130726215435.GB20021@google.com> <1375113975.2642.208.camel@ul30vt.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20130729.143950.524913713971518557.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1375113975.2642.208.camel@ul30vt.home>
+Sender: linux-pci-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, Andrew Cooks <acooks@gmail.com>, Don Dutile <ddutile@redhat.com>, David Woodhouse <dwmw2@infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 07/29/2013 05:39 AM, Hiroshi Doyu wrote:
-> Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote @ Thu, 18 Jul 2013 22:28:42 +0200:
-> 
->> On 07/05/2013 04:44 AM, Hiroshi Doyu wrote:
->>> This provides the info about which H/W Accelerators are supported on
->>> Tegra SoC. This info is passed from DT. This is necessary to have the
->>> unified SMMU driver among Tegra SoCs. Instead of using platform data,
->>> DT passes "nvidia,swgroup" now. DT is mandatory in Tegra.
+On Mon, Jul 29, 2013 at 10:06 AM, Alex Williamson
+<alex.williamson@redhat.com> wrote:
+> On Fri, 2013-07-26 at 15:54 -0600, Bjorn Helgaas wrote:
+>> On Thu, Jul 25, 2013 at 11:56:56AM -0600, Alex Williamson wrote:
+
+>> The "most closely associated device" idea seems confusing to
+>> describe and think about.  I think you want to use it as part of
+>> grouping devices into domains.  But I think we should attack that
+>> problem separately.  For grouping or isolation questions, we have
+>> to pay attention to things like ACS, which are not relevant for
+>> mapping.
+>
+> We are only touch isolation insofar as providing an interface for a
+> driver to determine the point in the PCI topology where the requester ID
+> is rooted.  Yes, grouping can make use of that, but I object to the idea
+> that we're approaching some slippery slope of rolling multiple concepts
+> into this patch.  What I'm proposing here is strictly a requester ID
+> interface.  I believe that providing a way for a caller to determine
+> that two devices have a requester ID rooted at the same point in the PCI
+> topology is directly relevant to that interface.
+>
+> pci_find_upstream_pcie_bridge() attempts to do this same thing.
+> Unfortunately, the interface is convoluted, it doesn't handle quirks,
+> and it requires a great deal of work by the caller to then walk the
+> topology and create requester IDs at each step.  This also indicates
+> that at each step, the requester ID is associated with some pci_dev.
+> Providing a pci_dev is simply showing our work and providing context to
+> the requester ID (ie. here's the requester ID and the step along the
+> path from which it was derived.  Here's your top level requester ID and
+> the point in the topology where it's based).
+
+What does the driver *do* with the pci_dev?  If it's not necessary,
+then showing our work and providing context just complicates the
+interface and creates opportunities for mistakes.  If we're creating
+IOMMU mappings, only the requester ID is needed.
+
+I think you used get_domain_for_dev() and intel_iommu_add_device() as
+examples, but as far as I can tell, they use the pci_dev as a way to
+learn about isolation.  For that purpose, I don't think you want an
+iterator -- you only want to know about the single pci_dev that's the
+root of the isolation domain, and requester IDs really aren't
+relevant.
+
+>> > If we look at an endpoint device like A, only A
+>> > has A's requester ID.  Therefore, why would for_each_requester_id(A)
+>> > traverse up to Y?
 >>
->>> diff --git a/Documentation/devicetree/bindings/iommu/nvidia,tegra30-smmu.txt b/Documentation/devicetree/bindings/iommu/nvidia,tegra30-smmu.txt
+>> Even if A is a PCIe device, we have to traverse upwards to find any
+>> bridges that might drop A's requester ID or take ownership, e.g., if
+>> we have this:
 >>
->>> +- nvidia,swgroups: A bitmap of supported HardWare Accelerators(HWA).
->>> +  Each bit represents one swgroup. The assignments may be found in header
->>> +  file <dt-bindings/memory/tegra-swgroup.h>.
+>>   00:1c.0 PCIe-to-PCI bridge to [bus 01-02]
+>>   01:00.0 PCI-to-PCIe bridge to [bus 02]
+>>   02:00.0 PCIe endpoint A
 >>
->> There needs to be a default for this field if one is not specified so
->> that existing DTs continue to work without modification.
-> 
-> Only enabling PPCS(AHB) can be an option because PPCS has SD/MMC where
-> rootfs can be located ususally.
+>> the IOMMU has to look for requester-ID 0100.
+>
+> And I believe this patch handles this case correctly; I mentioned this
+> exact example in the v2 RFC cover letter.  This is another example where
+> pci_find_upstream_pcie_bridge() will currently fail.
 
-There's no reason that the root filesystem has to be on SD/MMC. Either
-way, the DT binding shouldn't be influenced by the root fs location at all.
+OK, I was just trying to answer your question "why we would need to
+traverse up to Y."  But apparently we agree about that.
 
-I think more explanation of exactly what this property does and why is
-required.
-
->> How many cells big is this property?
-> 
-> 64
-
-I assume that's bits, so 2 cells? To be clear: the document needs to
-include this information, not just this email thread.
-
->> Is this really a bitmap of HWAs? Surely it's a bitmap of SMMU client
->> IDs?
-> 
-> At least this info can be used for PMC too.
-
-How and why? A complete explanation of how the SMMU and PMC are expected
-to interact is required.
-
-The PMC DT binding should include all information related to the PMC;
-the binding definitions probably shouldn't expect a PMC driver to go
-grovelling in an SMMU node to find information.
-
-> .....
->>> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+>> > Y can take ownership and become the requester for A,
+>> > but if we were to call for_each_requester_id(Y), wouldn't you expect the
+>> > callback to happen on {Y, A, B} since all of those can use that
+>> > requester ID?
 >>
->>> @@ -265,7 +265,7 @@ struct smmu_client {
->>>  	struct device		*dev;
->>>  	struct list_head	list;
->>>  	struct smmu_as		*as;
->>> -	u32			hwgrp;
->>> +	u64			hwgrp;
->>
->> Why is that "hwgrp" not "swgrp"? Don't they represent the same
->> thing?
-> 
-> They are same but initial SMMU driver used the term "hwgroup". Should
-> this be renamed with another patch or can it be left as it is?
+>> No.  If I call for_each_requester_id(Y), I'm expecting the callback
+>> to happen for each requester ID that could be used for transactions
+>> originated by *Y*.  I'm trying to make an IOMMU mapping for use by
+>> Y, so any devices downstream of Y, e.g., A and B, are irrelevant.
+>
+> Ok, you think of for_each_requester_id() the same as I think of
+> for_each_requester().  Can we split the difference and call it
+> pci_dev_for_each_requester_id()?
 
-I thought there had already been a patch to do this rename. Was it not
-complete? If so, that work should probably be completed.
+Sure.
 
-> ....
->>>  static int __smmu_client_set_hwgrp(struct smmu_client *c,
->>> -				   unsigned long map, int on)
->>> +				   u64 map, int on)
->>>  {
->>>  	int i;
->>>  	struct smmu_as *as = c->as;
->>> @@ -398,12 +400,11 @@ static int __smmu_client_set_hwgrp(struct smmu_client *c,
->>>  	if (!on)
->>>  		map = smmu_client_hwgrp(c);
->>>  
->>> -	for_each_set_bit(i, &map, HWGRP_COUNT) {
->>> +	for_each_set_bit(i, (unsigned long *)&map,
->>> +			 sizeof(map) * BITS_PER_BYTE) {
->>
->> Why change the type if it just forces you to add this cast?
-> 
-> u32 map; -> u64 map;
-> 
-> for_each_set_bit() expects "unsigned long *" for any length of bitmap.
+>> I think a lot of the confusion here is because we're trying to solve
+>> both two questions at once: (1) what requester-IDs need to be mapped
+>> to handle DMA from a device, and (2) what devices can't be isolated
+>> from each other and must be in the same domain. ...
+>
+> Don't we already have this split in the code?
+>
+> (1) pcie_for_each_requester
+>     (or pci_dev_for_each_requester_id)
+>
+> (2) pci_get_visible_pcie_requester
+>     (or pci_get_visible_pcie_requester_id)
+>
+> Note however that (2) does not impose anything about domains or
+> isolation, it is strictly based on PCI topology.  It's left to the
+> caller to determine how that translates to IOMMU domains, but the
+> typical case is trivial.
 
-Shouldn't the map just be an "unsigned long map[]" then, so no casts are
-needed anywhere? Equally, that pointer could just be passed to the
-function rather than copying the data to the stack?
+Can you expand on this a little bit?  What's involved in translating
+the pci_get_visible_pcie_requester() result to an IOMMU domain?  Is
+there something IOMMU-specific about this?
+
+I assume that for any given PCI device A, there's a subtree of devices
+that the IOMMU can't distinguish from A, and that this subtree is not
+IOMMU-specific so it's reasonable to to have a PCI interface to
+compute it.  An IOMMU driver might want to expand the domain to
+include more devices, of course, and *that* seems like something to
+leave to the driver.
+
+I'm also assuming that a pci_dev (the root of the subtree) is a good
+way to identify this set of indistinguishable devices because it's
+easy to test whether a device B is part of it.  But the requester ID
+seems redundant in this case because you can just associate an IOMMU
+domain with the pci_dev.
+
+Where does ACS come into the picture?
+
+Bjorn
