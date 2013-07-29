@@ -1,112 +1,218 @@
-From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2] PCI: Reset PCIe devices to stop ongoing DMA
-Date: Mon, 29 Jul 2013 08:17:33 -0600
-Message-ID: <CAErSpo4JtG5qVJb-nCywe3vkft=-cDeRDKn_V92RCZ-sGXpwbg@mail.gmail.com>
-References: <1368509365-2260-1-git-send-email-indou.takao@jp.fujitsu.com>
-	<CAErSpo4t_2Xw76p3Z9FVzyyK-MBovavDu9D=pYoPMjESSxgT=w@mail.gmail.com>
-	<51B19DF3.2070009@jp.fujitsu.com>
-	<CAErSpo6dfEnzriHD_aWZB_3E-kSzauhNRHPd+VuFX5HONVKgqw@mail.gmail.com>
-	<51B6BEDB.3000509@jp.fujitsu.com>
-	<CAErSpo5u8qGALt6C+tuPYXdd2YgyMH6fnPnA+afUteEZ7kY0iw@mail.gmail.com>
-	<51B93221.2040505@jp.fujitsu.com>
-	<CAErSpo5tVK-Z3aOdMTzab-S8o5zLVtDOFQ8-LSYpUgbrJSsxuw@mail.gmail.com>
-	<51BA7BB6.1080104@jp.fujitsu.com> <51EF7466.20703@jp.fujitsu.com>
-	<CAErSpo5B7NzVfxwW3bQnfK+iK+DrRsWQd2Cm14z5PWNnRHWL5w@mail.gmail.com>
-	<51F5B966.9080405@jp.fujitsu.com>
+From: Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [RFC PATCH v2 1/2] pci: Create PCIe requester ID interface
+Date: Mon, 29 Jul 2013 10:06:15 -0600
+Message-ID: <1375113975.2642.208.camel@ul30vt.home>
+References: <20130711204439.1701.90503.stgit@bling.home>
+	 <20130711210326.1701.56478.stgit@bling.home>
+	 <20130723223533.GB19765@google.com> <1374621703.15429.98.camel@ul30vt.home>
+	 <CAErSpo6bcGCjqdxn-bz_vjo+HsAiOxDu=--mD7veEZ9f7k+gyA@mail.gmail.com>
+	 <1374689548.5208.62.camel@ul30vt.home> <20130724232427.GA9272@google.com>
+	 <1374775016.2642.116.camel@ul30vt.home> <20130726215435.GB20021@google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <51F5B966.9080405-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
-Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Haren Myneni <hbabu-r/Jw6+rmf7HQT0dZR+AlfA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Vivek Goyal <vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org" <ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org>, "Sumner, William" <bill.sumner-VXdhtT5mjnY@public.gmane.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20130726215435.GB20021@google.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, Andrew Cooks <acooks@gmail.com>, Don Dutile <ddutile@redhat.com>, David Woodhouse <dwmw2@infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, Jul 28, 2013 at 6:37 PM, Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org> wrote:
-> (2013/07/26 2:00), Bjorn Helgaas wrote:
->> On Wed, Jul 24, 2013 at 12:29 AM, Takao Indoh
->> <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org> wrote:
->>> Sorry for letting this discussion slide, I was busy on other works:-(
->>> Anyway, the summary of previous discussion is:
->>> - My patch adds new initcall(fs_initcall) to reset all PCIe endpoints on
->>>    boot. This expects PCI enumeration is done before IOMMU
->>>    initialization as follows.
->>>      (1) PCI enumeration
->>>      (2) fs_initcall ---> device reset
->>>      (3) IOMMU initialization
->>> - This works on x86, but does not work on other architecture because
->>>    IOMMU is initialized before PCI enumeration on some architectures. So,
->>>    device reset should be done where IOMMU is initialized instead of
->>>    initcall.
->>> - Or, as another idea, we can reset devices in first kernel(panic kernel)
->>>
->>> Resetting devices in panic kernel is against kdump policy and seems not to
->>> be good idea. So I think adding reset code into iommu initialization is
->>> better. I'll post patches for that.
->>
->> Of course nobody *wants* to do anything in the panic kernel.  But
->> simply saying "it's against kdump policy and seems not to be a good
->> idea" is not a technical argument.  There are things that are
->> impractical to do in the kdump kernel, so they have to be done in the
->> panic kernel even though we know the kernel is unreliable and the
->> attempt may fail.
->
-> Accessing kernel data in panic kernel causes panic again, so
-> - Don't touch kernel data in panic situation
-> - Jump to kdump kernel as quickly as possible, and do things in safe
->   kernel
-> These are basic "kdump policy". Of course if there are any works which
-> we cannot do in kdump kernel and can do only in panic kernel, for
-> example saving registers or stopping cpus, we should do them in panic
-> kernel.
->
-> Resetting devices in panic kernel is worth considering if we can safely
-> find pci_dev and reset it, but I have no idea how to do that because
-> for example struct pci_dev may be borken.
+On Fri, 2013-07-26 at 15:54 -0600, Bjorn Helgaas wrote:
+> On Thu, Jul 25, 2013 at 11:56:56AM -0600, Alex Williamson wrote:
+> > On Wed, 2013-07-24 at 17:24 -0600, Bjorn Helgaas wrote:
+> > > On Wed, Jul 24, 2013 at 12:12:28PM -0600, Alex Williamson wrote:
+> > > > On Wed, 2013-07-24 at 10:47 -0600, Bjorn Helgaas wrote:
+> > > > > On Tue, Jul 23, 2013 at 5:21 PM, Alex Williamson
+> > > > > <alex.williamson@redhat.com> wrote:
+> > > > > > On Tue, 2013-07-23 at 16:35 -0600, Bjorn Helgaas wrote:
+> > > > > >> On Thu, Jul 11, 2013 at 03:03:27PM -0600, Alex Williamson wrote:
+> > > > >   As the DMA
+> > > > > transaction propagates through the fabric, it may be tagged by bridges
+> > > > > with different requester IDs.
+> > > > > 
+> > > > > The requester IDs are needed outside PCI (by IOMMU drivers), but I'm
+> > > > > not sure the intermediate pci_devs are.
+> > > > 
+> > > > A u16 requester ID doesn't mean much on it's own though, it's not
+> > > > necessarily even unique.  A requester ID associated with the context of
+> > > > a pci_dev is unique and gives us a reference point if we need to perform
+> > > > another operation on that requester ID.
+> > > 
+> > > A u16 requester ID better mean something to an IOMMU -- it's all the
+> > > IOMMU can use to look up the correct mapping.  That's why we have to
+> > > give the iterator something to define the scope to iterate over.  The
+> > > same requester ID could mean something totally unrelated in a
+> > > different scope, e.g., below a different IOMMU.
+> > 
+> > The point I'm trying to make is that a requester ID depends on it's
+> > context (minimally, the PCI segment).  The caller can assume the context
+> > based on the calling parameters or we can provide context in the form of
+> > an associated pci_dev.  I chose the latter path because I prefer
+> > explicit interfaces and it has some usefulness in the intel-iommu
+> > implementation.
+> > 
+> > For instance, get_domain_for_dev() first looks to see if a pci_dev
+> > already has a domain.  If it doesn't, we want to look to see if there's
+> > an upstream device that would use the same requester ID that already has
+> > a domain.  If our get-requester-ID-for-device function returns only the
+> > requester ID, we don't know if that requester ID is the device we're
+> > searching from or some upstream device.  Therefore we potentially do an
+> > unnecessary search for the domain.
+> > 
+> > The other user is intel_iommu_add_device() where we're trying to build
+> > IOMMU groups.  Visibility is the first requirement of an IOMMU group.
+> > If the IOMMU cannot distinguish between devices, they must be part of
+> > the same IOMMU group.  Here we want to find the pci_dev that hosts the
+> > requester ID.  I don't even know how we'd implement this with a function
+> > that only returned the requester ID.  Perhaps we'd have to walk upstream
+> > from the device calling the get-requester-ID-for-device function at each
+> > step and noticing when it changed.  That moves significant logic back
+> > into the caller code.
+> > ...
+> 
+> > > I don't see the point of passing a "device closest to the requester
+> > > ID."  What would the IOMMU do with that?  As far as the IOMMU is
+> > > concerned, the requester ID could be an arbitrary number completely
+> > > unrelated to a pci_dev.
+> > 
+> > Do you have an example of a case where a requester ID doesn't have some
+> > association to a pci_dev?
+> 
+> I think our confusion here is the same as what Don & I have been
+> hashing out -- I'm saying a requester ID fabricated by a bridge
+> need not correspond to a specific pci_dev, and you probably mean
+> that every requester ID is by definition the result of *some* PCI
+> device making a DMA request.
 
-Nobody can guarantee that the panic kernel can do *anything* safely
-because any arbitrary kernel data or text may be corrupted.  But if
-you consider any specific data structure, e.g., CPU or PCI device
-lists, it's not very likely that it will be corrupted.
+Yes
 
->> My point about IOMMU and PCI initialization order doesn't go away just
->> because it doesn't fit "kdump policy."  Having system initialization
->> occur in a logical order is far more important than making kdump work.
->
-> My next plan is as follows. I think this is matched to logical order
-> on boot.
->
-> drivers/pci/pci.c
-> - Add function to reset bus, for example, pci_reset_bus(struct pci_bus *bus)
->
-> drivers/iommu/intel-iommu.c
-> - On initialization, if IOMMU is already enabled, call this bus reset
->   function before disabling and re-enabling IOMMU.
+> > ...
+> > Furthermore, if we have:
+> > 
+> >      -- A
+> >     /
+> > X--Y
+> >     \
+> >      -- B
+> > ... 
+> 
+> > Let me go back to the X-Y-A|B example above to see if I can explain why
+> > pcie_for_each_requester_id() doesn't make sense to me.  Generally a
+> > for_each_foo function should iterate across all things with the same
+> > foo.  So a for_each_requester_id should iterate across all things with
+> > the same requester ID.  
+> 
+> Hm, that's not the way I think of for_each_FOO() interfaces.  I
+> think of it as "execute the body (or callback) for every possible
+> FOO", where FOO is different each time.  for_each_pci_dev(),
+> pci_bus_for_each_resource(), for_each_zone(), for_each_cpu(), etc.,
+> work like that.
 
-I raised this issue because of arches like sparc that enumerate the
-IOMMU before the PCI devices that use it.  In that situation, I think
-you're proposing this:
+Most of these aren't relevant because they iterate over everything.  I
+think they only show that if we had a pci_for_each_requester_id() that
+it should iterate over every possible PCI requester ID in the system and
+the same could be said for pci_for_each_requester().
 
-  panic kernel
-    enable IOMMU
-    panic
-  kdump kernel
-    initialize IOMMU (already enabled)
-      pci_reset_bus
-      disable IOMMU
-      enable IOMMU
-    enumerate PCI devices
+pci_bus_for_each_resource() is the only one we can build from; for all
+resources on a bus.  We want all requester IDs for a pci_dev.  Does that
+perhaps mean it should be called pci_dev_for_each_requester_id()?  I'd
+be ok with that name, but I think it even more implies that a pci_dev is
+associated with a requester ID.
 
-But the problem is that when you call pci_reset_bus(), you haven't
-enumerated the PCI devices, so you don't know what to reset.
+> But the more important question is what arguments we give to the
+> callback.  My proposal was to map
+> 
+>   {pci_dev -> {requester-ID-A, requester-ID-B, ...}}
+> 
+> Yours is to map
+> 
+>   {pci_dev -> {{pci_dev-A, requester-ID-A}, {pci_dev-B, requester-ID-B}, ...}}
+> 
+> i.e., your callback gets both a pci_dev and a requester-ID.  I'm
+> trying to figure out how you handle cases where requester-id-A
+> doesn't have a corresponding pci_dev-A.  I guess you pass the device
+> most closely associated with requester-id-A
 
-Bjorn
+Yes
+
+> The "most closely associated device" idea seems confusing to
+> describe and think about.  I think you want to use it as part of
+> grouping devices into domains.  But I think we should attack that
+> problem separately.  For grouping or isolation questions, we have
+> to pay attention to things like ACS, which are not relevant for
+> mapping.
+
+We are only touch isolation insofar as providing an interface for a
+driver to determine the point in the PCI topology where the requester ID
+is rooted.  Yes, grouping can make use of that, but I object to the idea
+that we're approaching some slippery slope of rolling multiple concepts
+into this patch.  What I'm proposing here is strictly a requester ID
+interface.  I believe that providing a way for a caller to determine
+that two devices have a requester ID rooted at the same point in the PCI
+topology is directly relevant to that interface.
+
+pci_find_upstream_pcie_bridge() attempts to do this same thing.
+Unfortunately, the interface is convoluted, it doesn't handle quirks,
+and it requires a great deal of work by the caller to then walk the
+topology and create requester IDs at each step.  This also indicates
+that at each step, the requester ID is associated with some pci_dev.
+Providing a pci_dev is simply showing our work and providing context to
+the requester ID (ie. here's the requester ID and the step along the
+path from which it was derived.  Here's your top level requester ID and
+the point in the topology where it's based).
+
+> > If we look at an endpoint device like A, only A
+> > has A's requester ID.  Therefore, why would for_each_requester_id(A)
+> > traverse up to Y?
+> 
+> Even if A is a PCIe device, we have to traverse upwards to find any
+> bridges that might drop A's requester ID or take ownership, e.g., if
+> we have this:
+> 
+>   00:1c.0 PCIe-to-PCI bridge to [bus 01-02]
+>   01:00.0 PCI-to-PCIe bridge to [bus 02]
+>   02:00.0 PCIe endpoint A
+> 
+> the IOMMU has to look for requester-ID 0100.
+
+And I believe this patch handles this case correctly; I mentioned this
+exact example in the v2 RFC cover letter.  This is another example where
+pci_find_upstream_pcie_bridge() will currently fail.
+
+> > Y can take ownership and become the requester for A,
+> > but if we were to call for_each_requester_id(Y), wouldn't you expect the
+> > callback to happen on {Y, A, B} since all of those can use that
+> > requester ID?
+> 
+> No.  If I call for_each_requester_id(Y), I'm expecting the callback
+> to happen for each requester ID that could be used for transactions
+> originated by *Y*.  I'm trying to make an IOMMU mapping for use by
+> Y, so any devices downstream of Y, e.g., A and B, are irrelevant.
+
+Ok, you think of for_each_requester_id() the same as I think of
+for_each_requester().  Can we split the difference and call it
+pci_dev_for_each_requester_id()?
+
+> I think a lot of the confusion here is because we're trying to solve
+> both two questions at once: (1) what requester-IDs need to be mapped
+> to handle DMA from a device, and (2) what devices can't be isolated
+> from each other and must be in the same domain.  I think things will
+> be simpler if we can deal with those separately.  Even if it ends up
+> being more code, at least each piece will be easier to understand by
+> itself.
+
+Don't we already have this split in the code?
+
+(1) pcie_for_each_requester
+    (or pci_dev_for_each_requester_id)
+
+(2) pci_get_visible_pcie_requester
+    (or pci_get_visible_pcie_requester_id)
+
+Note however that (2) does not impose anything about domains or
+isolation, it is strictly based on PCI topology.  It's left to the
+caller to determine how that translates to IOMMU domains, but the
+typical case is trivial.  Thanks,
+
+Alex
