@@ -1,72 +1,209 @@
-From: Sachin Kamat <sachin.kamat@linaro.org>
-Subject: Re: [PATCH v8 06/12] ARM: dts: Add description of System MMU of
- Exynos SoCs
-Date: Mon, 29 Jul 2013 13:35:28 +0530
-Message-ID: <CAK9yfHyeOQZzf_3Nv-fmuYdZtL8dzZequdx2ZddnUyXDn66bOg@mail.gmail.com>
-References: <003c01ce89f3$3abc4bc0$b034e340$@samsung.com>
-	<CAK9yfHy2btp1W+5-GiVQnkffDnJ-CgqXuAjGktkiKYyf7kKQbQ@mail.gmail.com>
-	<003e01ce8c31$41d0c450$c5724cf0$@samsung.com>
+From: Cho KyongHo <pullip.cho@samsung.com>
+Subject: RE: [PATCH v8 03/12] iommu/exynos: fix page table maintenance
+Date: Mon, 29 Jul 2013 18:18:25 +0900
+Message-ID: <004e01ce8c3c$9480f9d0$bd82ed70$@samsung.com>
+References: <003901ce89f3$126c0390$37440ab0$@samsung.com>
+ <CANEJEGvp1msjkMLN-8TfykYXmrT+sq8dMkNsVEoh9i2vDoh=tg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <003e01ce8c31$41d0c450$c5724cf0$@samsung.com>
+In-reply-to: <CANEJEGvp1msjkMLN-8TfykYXmrT+sq8dMkNsVEoh9i2vDoh=tg@mail.gmail.com>
+Content-language: ko
 Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Cho KyongHo <pullip.cho@samsung.com>
-Cc: Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux Kernel <linux-kernel@vger.kernel.org>, Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>, Hyunwoong Kim <khw0178.kim@samsung.com>, Joerg Roedel <joro@8bytes.org>, Kukjin Kim <kgene.kim@samsung.com>, Prathyush <prathyush.k@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Subash Patel <supash.ramaswamy@linaro.org>, Keyyoung Park <keyyoung.park@samsung.com>, Grant Grundler <grundler@chromium.org>, Antonios Motakis <a.motakis@virtualopensystems.com>, kvmarm@lists.cs.columbia.edu
+To: 'Grant Grundler' <grundler@chromium.org>
+Cc: 'Linux ARM Kernel' <linux-arm-kernel@lists.infradead.org>, 'Linux IOMMU' <iommu@lists.linux-foundation.org>, 'Linux Kernel' <linux-kernel@vger.kernel.org>, 'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>, 'Hyunwoong Kim' <khw0178.kim@samsung.com>, 'Joerg Roedel' <joro@8bytes.org>, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Prathyush' <prathyush.k@samsung.com>, 'Rahul Sharma' <rahul.sharma@samsung.com>, 'Subash Patel' <supash.ramaswamy@linaro.org>, 'Keyyoung Park' <keyyoung.park@samsung.com>, 'Antonios Motakis' <a.motakis@virtualopensystems.com>, kvmarm@lists.cs.columbia.edu, 'Sachin Kamat' <sachin.kamat@linaro.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 29 July 2013 13:27, Cho KyongHo <pullip.cho@samsung.com> wrote:
->> -----Original Message-----
->> From: Cho KyongHo [mailto:pullip.cho@samsung.com]
->> Sent: Monday, July 29, 2013 4:20 PM
->>
->> > -----Original Message-----
->> > From: Sachin Kamat [mailto:sachin.kamat@linaro.org]
->> > Sent: Monday, July 29, 2013 3:38 PM
->> >
->> > Hi KyongHo,
->> >
->> > On 26 July 2013 16:58, Cho KyongHo <pullip.cho@samsung.com> wrote:
->> > > Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
->> > > ---
->> > >  .../bindings/iommu/samsung,exynos4210-sysmmu.txt   |  103 +++++++
->> > >  arch/arm/boot/dts/exynos4.dtsi                     |  122 ++++++++
->> > >  arch/arm/boot/dts/exynos4210.dtsi                  |   25 ++
->> > >  arch/arm/boot/dts/exynos4x12.dtsi                  |   76 +++++
->> > >  arch/arm/boot/dts/exynos5250.dtsi                  |  291 ++++++++++++++++++++
->> > >  5 files changed, 617 insertions(+), 0 deletions(-)
->> > >  create mode 100644 Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
->> >
->> > This patch does not apply on the mainline Linus' tree (3.11-rc2). Please rebase.
->> >
->>
->> OK. I will rebase the next patches on that.
->
-> I don't get any conflict both on the latest of Linus's tree (3.11-rc3)
-> and for-next branch  of Samsung git.
-> Can you show me the diff?
->
+> -----Original Message-----
+> From: grundler@google.com [mailto:grundler@google.com] On Behalf Of Grant Grundler
+> Sent: Saturday, July 27, 2013 1:17 AM
+> To: Cho KyongHo
+> 
+> On Fri, Jul 26, 2013 at 4:27 AM, Cho KyongHo <pullip.cho@samsung.com> wrote:
+> > This prevents allocating lv2 page table for the lv1 page table entry
+> > that already has 1MB page mapping. In addition some BUG_ON() is
+> > changed to WARN_ON().
+> >
+> > Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
+> 
+> Reviewed-by: Grant Grundler <grundler@chromium.org>
+> 
+> In reviewing this, I noticed another issue that is related, but not
+> caused by this patch. See below.
+> 
+> > ---
+> >  drivers/iommu/exynos-iommu.c |   52 +++++++++++++++++++++++++++++------------
+> >  1 files changed, 37 insertions(+), 15 deletions(-)
+> >
+> > diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> > index e3be3e5..6c4ecce 100644
+> > --- a/drivers/iommu/exynos-iommu.c
+> > +++ b/drivers/iommu/exynos-iommu.c
+> > @@ -52,11 +52,11 @@
+> >  #define lv2ent_large(pent) ((*(pent) & 3) == 1)
+> >
+> >  #define section_phys(sent) (*(sent) & SECT_MASK)
+> > -#define section_offs(iova) ((iova) & 0xFFFFF)
+> > +#define section_offs(iova) ((iova) & ~SECT_MASK)
+> >  #define lpage_phys(pent) (*(pent) & LPAGE_MASK)
+> > -#define lpage_offs(iova) ((iova) & 0xFFFF)
+> > +#define lpage_offs(iova) ((iova) & ~LPAGE_MASK)
+> >  #define spage_phys(pent) (*(pent) & SPAGE_MASK)
+> > -#define spage_offs(iova) ((iova) & 0xFFF)
+> > +#define spage_offs(iova) ((iova) & ~SPAGE_MASK)
+> >
+> >  #define lv1ent_offset(iova) ((iova) >> SECT_ORDER)
+> >  #define lv2ent_offset(iova) (((iova) & 0xFF000) >> SPAGE_ORDER)
+> > @@ -862,12 +862,14 @@ static unsigned long *alloc_lv2entry(unsigned long *sent, unsigned long iova,
+> >                 pent = kzalloc(LV2TABLE_SIZE, GFP_ATOMIC);
+> >                 BUG_ON((unsigned long)pent & (LV2TABLE_SIZE - 1));
+> >                 if (!pent)
+> > -                       return NULL;
+> > +                       return ERR_PTR(-ENOMEM);
+> >
+> >                 *sent = mk_lv1ent_page(__pa(pent));
+> >                 *pgcounter = NUM_LV2ENTRIES;
+> >                 pgtable_flush(pent, pent + NUM_LV2ENTRIES);
+> >                 pgtable_flush(sent, sent + 1);
+> > +       } else if (lv1ent_section(sent)) {
+> > +               return ERR_PTR(-EADDRINUSE);
+> >         }
+> >
+> >         return page_entry(sent, iova);
+> > @@ -894,6 +896,12 @@ static int lv1set_section(unsigned long *sent, phys_addr_t paddr, short *pgcnt)
+> >         return 0;
+> >  }
+> >
+> > +static void clear_page_table(unsigned long *ent, int n)
+> > +{
+> > +       if (n > 0)
+> > +               memset(ent, 0, sizeof(*ent) * n);
+> > +}
+> > +
+> >  static int lv2set_page(unsigned long *pent, phys_addr_t paddr, size_t size,
+> >                                                                 short *pgcnt)
+> >  {
+> > @@ -908,7 +916,7 @@ static int lv2set_page(unsigned long *pent, phys_addr_t paddr, size_t size,
+> >                 int i;
+> >                 for (i = 0; i < SPAGES_PER_LPAGE; i++, pent++) {
+> >                         if (!lv2ent_fault(pent)) {
+> > -                               memset(pent, 0, sizeof(*pent) * i);
+> > +                               clear_page_table(pent - i, i);
+> >                                 return -EADDRINUSE;
+> 
+> I am wondering about two issues with this error handling:
+> 1) we don't call pgtable_flush() in this case - I think just for
+> consistency we should - don't rush to add since my next comment is to
+> change this error handling completely.
+> 
+clear_page_table() is called for the page table entries that are already
+fault pages. That is why it does not contain cache flush.
 
-I get the following error when I do git am on this patch (linus' tree
-3.11-rc3). Other patches apply fine.
+> 2) If  -EADDRINUSE is correct, why does the code clear the IO Page
+> table entries?
+> 
+>    I think this error path should either
+>    (a) BUG_ON (ie panic) since this is an inconsistency between
+> generic IOMMU page allocation and chip specific IOMMU mapping code OR
+>    (b) WARN_ON, not clear the entries, and hope whoever was using it
+> can finish using the system before crashing or gracefully shutting
+> down.
+> 
+> In any case, I'm pretty sure this code needs to change and it should
+> be in a follow up to this series.
 
-Applying: ARM: dts: Add description of System MMU of Exynos SoCs
-<local_path>/linux/.git/rebase-apply/patch:120: new blank line at EOF.
-+
-error: patch failed: arch/arm/boot/dts/exynos4.dtsi:161
-error: arch/arm/boot/dts/exynos4.dtsi: patch does not apply
-error: patch failed: arch/arm/boot/dts/exynos4210.dtsi:119
-error: arch/arm/boot/dts/exynos4210.dtsi: patch does not apply
-error: patch failed: arch/arm/boot/dts/exynos4x12.dtsi:79
-error: arch/arm/boot/dts/exynos4x12.dtsi: patch does not apply
-error: patch failed: arch/arm/boot/dts/exynos5250.dtsi:614
-error: arch/arm/boot/dts/exynos5250.dtsi: patch does not apply
-Patch failed at 0001 ARM: dts: Add description of System MMU of Exynos SoCs
-When you have resolved this problem run "git am --resolved".
-If you would prefer to skip this patch, instead run "git am --skip".
-To restore the original branch and stop patching run "git am --abort".
+Yes, you're right. But I worried the case that a kernel module calls IOMMU API
+functions directly and does not want to make kernel panic when it tries to map
+a region that is already in use.
+I also wonder if the such kernel module exists.
+WARN_ON is also a good idea.
 
+Thank you.
 
--- 
-With warm regards,
-Sachin
+> 
+> thanks,
+> grant
+> 
+> >                         }
+> >
+> > @@ -944,17 +952,16 @@ static int exynos_iommu_map(struct iommu_domain *domain, unsigned long iova,
+> >                 pent = alloc_lv2entry(entry, iova,
+> >                                         &priv->lv2entcnt[lv1ent_offset(iova)]);
+> >
+> > -               if (!pent)
+> > -                       ret = -ENOMEM;
+> > +               if (IS_ERR(pent))
+> > +                       ret = PTR_ERR(pent);
+> >                 else
+> >                         ret = lv2set_page(pent, paddr, size,
+> >                                         &priv->lv2entcnt[lv1ent_offset(iova)]);
+> >         }
+> >
+> > -       if (ret) {
+> > -               pr_debug("%s: Failed to map iova 0x%lx/0x%x bytes\n",
+> > -                                                       __func__, iova, size);
+> > -       }
+> > +       if (ret)
+> > +               pr_err("%s: Failed(%d) to map 0x%#x bytes @ %#lx\n",
+> > +                       __func__, ret, size, iova);
+> >
+> >         spin_unlock_irqrestore(&priv->pgtablelock, flags);
+> >
+> > @@ -968,6 +975,7 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
+> >         struct sysmmu_drvdata *data;
+> >         unsigned long flags;
+> >         unsigned long *ent;
+> > +       size_t err_pgsize;
+> >
+> >         BUG_ON(priv->pgtable == NULL);
+> >
+> > @@ -976,7 +984,10 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
+> >         ent = section_entry(priv->pgtable, iova);
+> >
+> >         if (lv1ent_section(ent)) {
+> > -               BUG_ON(size < SECT_SIZE);
+> > +               if (WARN_ON(size < SECT_SIZE)) {
+> > +                       err_pgsize = SECT_SIZE;
+> > +                       goto err;
+> > +               }
+> >
+> >                 *ent = 0;
+> >                 pgtable_flush(ent, ent + 1);
+> > @@ -1008,9 +1019,12 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
+> >         }
+> >
+> >         /* lv1ent_large(ent) == true here */
+> > -       BUG_ON(size < LPAGE_SIZE);
+> > +       if (WARN_ON(size < LPAGE_SIZE)) {
+> > +               err_pgsize = LPAGE_SIZE;
+> > +               goto err;
+> > +       }
+> >
+> > -       memset(ent, 0, sizeof(*ent) * SPAGES_PER_LPAGE);
+> > +       clear_page_table(ent, SPAGES_PER_LPAGE);
+> >         pgtable_flush(ent, ent + SPAGES_PER_LPAGE);
+> >
+> >         size = LPAGE_SIZE;
+> > @@ -1023,8 +1037,16 @@ done:
+> >                 sysmmu_tlb_invalidate_entry(data->dev, iova);
+> >         spin_unlock_irqrestore(&priv->lock, flags);
+> >
+> > -
+> >         return size;
+> > +err:
+> > +       spin_unlock_irqrestore(&priv->pgtablelock, flags);
+> > +
+> > +       pr_err("%s: Failed due to size(%#x) @ %#lx is"\
+> > +               " smaller than page size %#x\n",
+> > +               __func__, size, iova, err_pgsize);
+> > +
+> > +       return 0;
+> > +
+> >  }
+> >
+> >  static phys_addr_t exynos_iommu_iova_to_phys(struct iommu_domain *domain,
+> > --
+> > 1.7.2.5
+> >
+> >
