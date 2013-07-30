@@ -1,306 +1,476 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH v2 1/2] pci: Create PCIe requester ID interface
-Date: Mon, 29 Jul 2013 16:55:23 -0600
-Message-ID: <1375138523.2642.368.camel@ul30vt.home>
-References: <20130711204439.1701.90503.stgit@bling.home>
-	<20130711210326.1701.56478.stgit@bling.home>
-	<20130723223533.GB19765@google.com>
-	<1374621703.15429.98.camel@ul30vt.home>
-	<CAErSpo6bcGCjqdxn-bz_vjo+HsAiOxDu=--mD7veEZ9f7k+gyA@mail.gmail.com>
-	<1374689548.5208.62.camel@ul30vt.home>
-	<20130724232427.GA9272@google.com>
-	<1374775016.2642.116.camel@ul30vt.home>
-	<20130726215435.GB20021@google.com>
-	<1375113975.2642.208.camel@ul30vt.home>
-	<51F6D8BB.4040901@redhat.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <51F6D8BB.4040901-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open
-	list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+From: Shuah Khan <shuah.kh@samsung.com>
+Subject: [PATCH v2] iommu: Add event tracing feature to iommu
+Date: Mon, 29 Jul 2013 19:22:46 -0600
+Message-ID: <1375147366-2922-1-git-send-email-shuah.kh@samsung.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org, alex.williamson@redhat.com, Varun.Sethi@freescale.com, aik@ozlabs.ru, joe@perches.com, rostedt@goodmis.org, fweisbec@gmail.com, mingo@redhat.com, tony@atomide.com, ohad@wizery.com, andreas.herrmann@calxeda.com, will.deacon@arm.com
+Cc: Shuah Khan <shuah.kh@samsung.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, shuahkhan@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2013-07-29 at 17:03 -0400, Don Dutile wrote:
-> On 07/29/2013 12:06 PM, Alex Williamson wrote:
-> > On Fri, 2013-07-26 at 15:54 -0600, Bjorn Helgaas wrote:
-> >> On Thu, Jul 25, 2013 at 11:56:56AM -0600, Alex Williamson wrote:
-> >>> On Wed, 2013-07-24 at 17:24 -0600, Bjorn Helgaas wrote:
-> >>>> On Wed, Jul 24, 2013 at 12:12:28PM -0600, Alex Williamson wrote:
-> >>>>> On Wed, 2013-07-24 at 10:47 -0600, Bjorn Helgaas wrote:
-> >>>>>> On Tue, Jul 23, 2013 at 5:21 PM, Alex Williamson
-> >>>>>> <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>  wrote:
-> >>>>>>> On Tue, 2013-07-23 at 16:35 -0600, Bjorn Helgaas wrote:
-> >>>>>>>> On Thu, Jul 11, 2013 at 03:03:27PM -0600, Alex Williamson wrote:
-> >>>>>>    As the DMA
-> >>>>>> transaction propagates through the fabric, it may be tagged by bridges
-> >>>>>> with different requester IDs.
-> >>>>>>
-> >>>>>> The requester IDs are needed outside PCI (by IOMMU drivers), but I'm
-> >>>>>> not sure the intermediate pci_devs are.
-> >>>>>
-> >>>>> A u16 requester ID doesn't mean much on it's own though, it's not
-> >>>>> necessarily even unique.  A requester ID associated with the context of
-> >>>>> a pci_dev is unique and gives us a reference point if we need to perform
-> >>>>> another operation on that requester ID.
-> >>>>
-> >>>> A u16 requester ID better mean something to an IOMMU -- it's all the
-> >>>> IOMMU can use to look up the correct mapping.  That's why we have to
-> >>>> give the iterator something to define the scope to iterate over.  The
-> >>>> same requester ID could mean something totally unrelated in a
-> >>>> different scope, e.g., below a different IOMMU.
-> >>>
-> >>> The point I'm trying to make is that a requester ID depends on it's
-> >>> context (minimally, the PCI segment).  The caller can assume the context
-> >>> based on the calling parameters or we can provide context in the form of
-> >>> an associated pci_dev.  I chose the latter path because I prefer
-> >>> explicit interfaces and it has some usefulness in the intel-iommu
-> >>> implementation.
-> >>>
-> >>> For instance, get_domain_for_dev() first looks to see if a pci_dev
-> >>> already has a domain.  If it doesn't, we want to look to see if there's
-> >>> an upstream device that would use the same requester ID that already has
-> >>> a domain.  If our get-requester-ID-for-device function returns only the
-> >>> requester ID, we don't know if that requester ID is the device we're
-> >>> searching from or some upstream device.  Therefore we potentially do an
-> >>> unnecessary search for the domain.
-> >>>
-> >>> The other user is intel_iommu_add_device() where we're trying to build
-> >>> IOMMU groups.  Visibility is the first requirement of an IOMMU group.
-> >>> If the IOMMU cannot distinguish between devices, they must be part of
-> >>> the same IOMMU group.  Here we want to find the pci_dev that hosts the
-> >>> requester ID.  I don't even know how we'd implement this with a function
-> >>> that only returned the requester ID.  Perhaps we'd have to walk upstream
-> >>> from the device calling the get-requester-ID-for-device function at each
-> >>> step and noticing when it changed.  That moves significant logic back
-> >>> into the caller code.
-> >>> ...
-> >>
-> >>>> I don't see the point of passing a "device closest to the requester
-> >>>> ID."  What would the IOMMU do with that?  As far as the IOMMU is
-> >>>> concerned, the requester ID could be an arbitrary number completely
-> >>>> unrelated to a pci_dev.
-> >>>
-> >>> Do you have an example of a case where a requester ID doesn't have some
-> >>> association to a pci_dev?
-> >>
-> >> I think our confusion here is the same as what Don&  I have been
-> >> hashing out -- I'm saying a requester ID fabricated by a bridge
-> >> need not correspond to a specific pci_dev, and you probably mean
-> >> that every requester ID is by definition the result of *some* PCI
-> >> device making a DMA request.
-> >
-> > Yes
-> >
-> >>> ...
-> >>> Furthermore, if we have:
-> >>>
-> >>>       -- A
-> >>>      /
-> >>> X--Y
-> >>>      \
-> >>>       -- B
-> >>> ...
-> >>
-> >>> Let me go back to the X-Y-A|B example above to see if I can explain why
-> >>> pcie_for_each_requester_id() doesn't make sense to me.  Generally a
-> >>> for_each_foo function should iterate across all things with the same
-> >>> foo.  So a for_each_requester_id should iterate across all things with
-> >>> the same requester ID.
-> >>
-> >> Hm, that's not the way I think of for_each_FOO() interfaces.  I
-> >> think of it as "execute the body (or callback) for every possible
-> >> FOO", where FOO is different each time.  for_each_pci_dev(),
-> >> pci_bus_for_each_resource(), for_each_zone(), for_each_cpu(), etc.,
-> >> work like that.
-> >
-> > Most of these aren't relevant because they iterate over everything.  I
-> > think they only show that if we had a pci_for_each_requester_id() that
-> > it should iterate over every possible PCI requester ID in the system and
-> > the same could be said for pci_for_each_requester().
-> >
-> Lost me here.... I thought the functions took in a pdev, so it'll only
-> iterate on the segment that pdev is associated with.
+Add tracing feature to iommu to report various iommu events. Classes
+iommu_group, iommu_device, iommu_map_unmap, and iommu_amd_event are defined.
 
-Right, but how does the callback function know the segment we're
-traversing?  Without a pci_dev a requester ID could belong to any PCI
-segment.  It would be up to the caller to provide context in the opaque
-pointer.
+iommu_group class events can be enabled to trigger when devices get added
+to and removed from an iommu group. Trace information includes iommu group
+id and device name.
 
-> > pci_bus_for_each_resource() is the only one we can build from; for all
-> > resources on a bus.  We want all requester IDs for a pci_dev.  Does that
-> > perhaps mean it should be called pci_dev_for_each_requester_id()?  I'd
-> > be ok with that name, but I think it even more implies that a pci_dev is
-> > associated with a requester ID.
-> >
-> and the fcn call name changes have equally lost me here.
-> AIUI, IOMMUs want to call a PCI core function with a pdev, asking for
-> the req-id's that the pdev may generate to the IOMMU when performing DMA.
-> that doesn't strike me as a for-each-requester-id() but a 'get-requester-id()'
-> operation.
+iommu:add_device_to_group
+iommu:remove_device_from_group
 
-But we have to support multiple requester IDs per endpoint.  As Bjorn
-pointed out in the spec, a PCI-X bridge may pass the requester ID or
-take ownership of the transaction.  Therefore we need to add both the
-"endpoint" and the (bridge->secondary->number << 8 | 0) requester IDs.
-We could do a get-requester-id() interface, but then the caller must
-walk upstream through each device that may possibly take ownership of
-the transactions.  That leaves a lot of logic in the caller versus a
-for-each-requester-id() operation.
+iommu_device class events can be enabled to trigger when devices are attached
+to and detached from a domain. Trace information includes device name.
 
+iommu:attach_device_to_domain
+iommu:detach_device_from_domain
 
-> >> But the more important question is what arguments we give to the
-> >> callback.  My proposal was to map
-> >>
-> >>    {pci_dev ->  {requester-ID-A, requester-ID-B, ...}}
-> >>
-> >> Yours is to map
-> >>
-> >>    {pci_dev ->  {{pci_dev-A, requester-ID-A}, {pci_dev-B, requester-ID-B}, ...}}
-> >>
-> >> i.e., your callback gets both a pci_dev and a requester-ID.  I'm
-> >> trying to figure out how you handle cases where requester-id-A
-> >> doesn't have a corresponding pci_dev-A.  I guess you pass the device
-> >> most closely associated with requester-id-A
-> >
-> > Yes
-> >
-> >> The "most closely associated device" idea seems confusing to
-> >> describe and think about.  I think you want to use it as part of
-> >> grouping devices into domains.  But I think we should attack that
-> >> problem separately.  For grouping or isolation questions, we have
-> >> to pay attention to things like ACS, which are not relevant for
-> >> mapping.
-> >
-> > We are only touch isolation insofar as providing an interface for a
-> > driver to determine the point in the PCI topology where the requester ID
-> > is rooted.  Yes, grouping can make use of that, but I object to the idea
-> > that we're approaching some slippery slope of rolling multiple concepts
-> > into this patch.  What I'm proposing here is strictly a requester ID
-> > interface.  I believe that providing a way for a caller to determine
-> > that two devices have a requester ID rooted at the same point in the PCI
-> > topology is directly relevant to that interface.
-> >
-> I strongly agree here.  providing the pdev's associated with each req-id rtn'd
-> cannot hurt, and in fact, I believe it is an improvement, avoiding a potential
-> set of more interfaces that may be needed to do (segment, req-id)->pdev mapping/matching/get-ing.
-> 
-> 
-> > pci_find_upstream_pcie_bridge() attempts to do this same thing.
-> > Unfortunately, the interface is convoluted, it doesn't handle quirks,
-> > and it requires a great deal of work by the caller to then walk the
-> > topology and create requester IDs at each step.  This also indicates
-> > that at each step, the requester ID is associated with some pci_dev.
-> > Providing a pci_dev is simply showing our work and providing context to
-> > the requester ID (ie. here's the requester ID and the step along the
-> > path from which it was derived.  Here's your top level requester ID and
-> > the point in the topology where it's based).
-> >
-> IMO, getting rid of pci_find_upstream_pcie_bridge() gets non-PCI code
-> out of the biz of knowing too much about PCI topology and the idiosyncracies
-> around req-id's, and the proposed interface cleans up the IOMMU (PCI) support.
-> Having the IOMMU api get the pdev rtn'd with a req-id, and then passing it
-> back to the core (for release/free) seems like the proper get/put logic
-> btwn the PCI core and another kernel subsystem.
-> 
-> >>> If we look at an endpoint device like A, only A
-> >>> has A's requester ID.  Therefore, why would for_each_requester_id(A)
-> >>> traverse up to Y?
-> >>
-> >> Even if A is a PCIe device, we have to traverse upwards to find any
-> >> bridges that might drop A's requester ID or take ownership, e.g., if
-> >> we have this:
-> >>
-> >>    00:1c.0 PCIe-to-PCI bridge to [bus 01-02]
-> >>    01:00.0 PCI-to-PCIe bridge to [bus 02]
-> >>    02:00.0 PCIe endpoint A
-> >>
-> >> the IOMMU has to look for requester-ID 0100.
-> >
-> > And I believe this patch handles this case correctly; I mentioned this
-> > exact example in the v2 RFC cover letter.  This is another example where
-> > pci_find_upstream_pcie_bridge() will currently fail.
-> >
-> +1
-> 
-> >>> Y can take ownership and become the requester for A,
-> >>> but if we were to call for_each_requester_id(Y), wouldn't you expect the
-> >>> callback to happen on {Y, A, B} since all of those can use that
-> >>> requester ID?
-> >>
-> >> No.  If I call for_each_requester_id(Y), I'm expecting the callback
-> >> to happen for each requester ID that could be used for transactions
-> >> originated by *Y*.  I'm trying to make an IOMMU mapping for use by
-> >> Y, so any devices downstream of Y, e.g., A and B, are irrelevant.
-> >
-> > Ok, you think of for_each_requester_id() the same as I think of
-> > for_each_requester().  Can we split the difference and call it
-> > pci_dev_for_each_requester_id()?
-> >
-> I can only ditto my sentiment above.
-> Can I toss in 'pci_get_requester_id()'?!? ... ;-)
+iommu_map_unmap class events can be enabled to trigger when iommu map and
+unmap iommu ops. Trace information includes iova, physical address (map event
+only), and size.
 
-I assume pci_get_requester_id() would return just the requester ID for a
-given device.  The problem with that is that it doesn't have much
-meaning.  What's the requester ID of a bridge?  It depends on whether
-the bridge is mastering the transaction (bridge->bus->number << 8 |
-bridge->devfn) or whether it's taking ownership of a transaction for a
-subordinate device (bridge->secondary->number << 8 | 0).  So we really
-want the for-each interface because then we have a set of devices and a
-vector through them.
+iommu:unmap
+iommu:map
 
-> >> I think a lot of the confusion here is because we're trying to solve
-> >> both two questions at once: (1) what requester-IDs need to be mapped
-> >> to handle DMA from a device, and (2) what devices can't be isolated
-> >> from each other and must be in the same domain.  I think things will
-> >> be simpler if we can deal with those separately.  Even if it ends up
-> >> being more code, at least each piece will be easier to understand by
-> >> itself.
-> >
-> > Don't we already have this split in the code?
-> >
-> > (1) pcie_for_each_requester
-> >      (or pci_dev_for_each_requester_id)
-> >
-> > (2) pci_get_visible_pcie_requester
-> >      (or pci_get_visible_pcie_requester_id)
-> >
-> again, unless you understand all of the mapped/coerced/modified request-id
-> of PCIe, PCIe-to-PCI(x) bridges, and the potential (RC, other) quirks,
-> these interface names are confusing. ....
-> ... that could be me, and I need to go back to look at patches and
-> the description of the functions, to see if they help to clarify their uses.
+iommu_amd_event class can be enabled to trigger when AMD IOMMU driver finds
+events when it polls the IOMMU Event Log. Trace information includes the
+event string derived from the event type in human friendly form, event type,
+id of the domain the device is placed in, device (bus number, slot number,
+and function number), address associated with the event, and flags.
 
-Perhaps it's time for a v3, but I'm not sure what all we've learned from
-v2 yet or what direction a v3 should take.  We've learned that root
-complex PCIe-to-PCI bridges use implementation specific requester IDs
-and we know that Intel uses the (bus|devfn) requester ID instead of the
-standard (secondary|0).  This should probably be handled as a quirk.
-We've renamed pcie_for_each_requester() to
-pci_dev_for_each_requester_id().  I don't know if we've renamed
-pci_get_visible_pcie_requester() yet, I was just trying to be consistent
-with naming by adding _id to the end.  Thanks,
+iommu:amd_event
 
-Alex
+Testing:
+The following is trace is generated when intel-iommu driver adds devices to
+to iommu groups during boot-time during its initialization:
 
-> > Note however that (2) does not impose anything about domains or
-> > isolation, it is strictly based on PCI topology.  It's left to the
-> > caller to determine how that translates to IOMMU domains, but the
-> > typical case is trivial.  Thanks,
-> >
-> +1, again.
-> 
-> > Alex
-> >
-> 
+       swapper/0-1     [003] ....     1.854793: add_device_to_group: IOMMU: groupID=0 device=0000:00:00.0
+       swapper/0-1     [003] ....     1.854797: add_device_to_group: IOMMU: groupID=1 device=0000:00:02.0
+
+Added trace calls to iommu_prepare_identity_map() for testing some of the
+conditions that are hard to trigger. Here is the trace from the testing:
+       swapper/0-1     [003] ....     1.854099: amd_event: IOMMU:Event 0x01 00:00.0 d=0x0010 a=0x00000000cb800000 f=0x0002
+       swapper/0-1     [003] ....     1.854101: remove_device_from_group: IOMMU: groupID=0 device=0000:00:02.0
+       swapper/0-1     [003] ....     1.854102: attach_device_to_domain: IOMMU: device=0000:00:02.0
+       swapper/0-1     [003] ....     1.854102: detach_device_from_domain: IOMMU: device=0000:00:02.0
+       swapper/0-1     [003] ....     1.854102: map: IOMMU: iova=0x00000000cb800000 paddr=0x00000000cf9fffff size=0x400
+       swapper/0-1     [003] ....     1.854102: unmap: IOMMU: iova=0x00000000cb800000 size=0x400
+
+Signed-off-by: Shuah Khan <shuah.kh@samsung.com>
+---
+Changes since v1: No code changes, generated a single patch.
+
+ drivers/iommu/Makefile       |    1 +
+ drivers/iommu/amd_iommu.c    |   19 +++++
+ drivers/iommu/intel-iommu.c  |   10 +++
+ drivers/iommu/iommu-traces.c |   27 +++++++
+ drivers/iommu/iommu.c        |   17 ++++-
+ include/trace/events/iommu.h |  174 ++++++++++++++++++++++++++++++++++++++++++
+ 6 files changed, 247 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/iommu/iommu-traces.c
+ create mode 100644 include/trace/events/iommu.h
+
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index bbe7041..9015c45 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -1,4 +1,5 @@
+ obj-$(CONFIG_IOMMU_API) += iommu.o
++obj-$(CONFIG_IOMMU_API) += iommu-traces.o
+ obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
+ obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o msm_iommu_dev.o
+ obj-$(CONFIG_AMD_IOMMU) += amd_iommu.o amd_iommu_init.o
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 6dc6594..10ac042 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -42,6 +42,7 @@
+ #include <asm/iommu.h>
+ #include <asm/gart.h>
+ #include <asm/dma.h>
++#include <trace/events/iommu.h>
+ 
+ #include "amd_iommu_proto.h"
+ #include "amd_iommu_types.h"
+@@ -659,6 +660,8 @@ retry:
+ 		       "address=0x%016llx flags=0x%04x]\n",
+ 		       PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 		       address, flags);
++		trace_amd_event("ILLEGAL_DEV_TABLE_ENTRY", type, domid,
++				      devid, address, flags);
+ 		dump_dte_entry(devid);
+ 		break;
+ 	case EVENT_TYPE_IO_FAULT:
+@@ -666,41 +669,57 @@ retry:
+ 		       "domain=0x%04x address=0x%016llx flags=0x%04x]\n",
+ 		       PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 		       domid, address, flags);
++		trace_amd_event("IO_PAGE_FAULT", type, domid,
++				      devid, address, flags);
+ 		break;
+ 	case EVENT_TYPE_DEV_TAB_ERR:
+ 		printk("DEV_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
+ 		       "address=0x%016llx flags=0x%04x]\n",
+ 		       PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 		       address, flags);
++		trace_amd_event("DEV_TAB_HARDWARE_ERROR", type, domid,
++				      devid, address, flags);
+ 		break;
+ 	case EVENT_TYPE_PAGE_TAB_ERR:
+ 		printk("PAGE_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
+ 		       "domain=0x%04x address=0x%016llx flags=0x%04x]\n",
+ 		       PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 		       domid, address, flags);
++		trace_amd_event("PAGE_TAB_HARDWARE_ERROR", type, domid,
++				      devid, address, flags);
+ 		break;
+ 	case EVENT_TYPE_ILL_CMD:
+ 		printk("ILLEGAL_COMMAND_ERROR address=0x%016llx]\n", address);
++		trace_amd_event("ILLEGAL_COMMAND_ERROR", type, domid,
++				      devid, address, flags);
+ 		dump_command(address);
+ 		break;
+ 	case EVENT_TYPE_CMD_HARD_ERR:
+ 		printk("COMMAND_HARDWARE_ERROR address=0x%016llx "
+ 		       "flags=0x%04x]\n", address, flags);
++		trace_amd_event("COMMAND_HARDWARE_ERROR", type, domid,
++				      devid, address, flags);
+ 		break;
+ 	case EVENT_TYPE_IOTLB_INV_TO:
+ 		printk("IOTLB_INV_TIMEOUT device=%02x:%02x.%x "
+ 		       "address=0x%016llx]\n",
+ 		       PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 		       address);
++		trace_amd_event("IOTLB_INV_TIMEOUT", type, domid,
++				      devid, address, flags);
+ 		break;
+ 	case EVENT_TYPE_INV_DEV_REQ:
+ 		printk("INVALID_DEVICE_REQUEST device=%02x:%02x.%x "
+ 		       "address=0x%016llx flags=0x%04x]\n",
+ 		       PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 		       address, flags);
++		trace_amd_event("INVALID_DEVICE_REQUEST", type, domid,
++				      devid, address, flags);
+ 		break;
+ 	default:
+ 		printk(KERN_ERR "UNKNOWN type=0x%02x]\n", type);
++		trace_amd_event("UNKNOWN", type, domid,
++				      devid, address, flags);
+ 	}
+ 
+ 	memset(__evt, 0, 4 * sizeof(u32));
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index eec0d3e..50e75a5 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -45,6 +45,7 @@
+ #include <asm/irq_remapping.h>
+ #include <asm/cacheflush.h>
+ #include <asm/iommu.h>
++#include <trace/events/iommu.h>
+ 
+ #include "irq_remapping.h"
+ #include "pci.h"
+@@ -2159,6 +2160,15 @@ static int iommu_prepare_identity_map(struct pci_dev *pdev,
+ 	printk(KERN_INFO
+ 	       "IOMMU: Setting identity map for device %s [0x%Lx - 0x%Lx]\n",
+ 	       pci_name(pdev), start, end);
++
++	{
++		trace_amd_event("Event", 0x1, pdev->devfn, 0, start, 2);
++		trace_remove_device_from_group(0, &pdev->dev);
++		trace_attach_device_to_domain(&pdev->dev);
++		trace_detach_device_from_domain(&pdev->dev);
++		trace_map(start, end, 1024);
++		trace_unmap(start, end, 1024);
++	}
+ 	
+ 	if (end < start) {
+ 		WARN(1, "Your BIOS is broken; RMRR ends before it starts!\n"
+diff --git a/drivers/iommu/iommu-traces.c b/drivers/iommu/iommu-traces.c
+new file mode 100644
+index 0000000..5b92e4c
+--- /dev/null
++++ b/drivers/iommu/iommu-traces.c
+@@ -0,0 +1,27 @@
++/*
++ * iommu trace points
++ *
++ * Copyright (C) 2013 Shuah Khan <shuah.kh@samsung.com>
++ *
++ */
++
++#include <linux/string.h>
++#include <linux/types.h>
++
++#define CREATE_TRACE_POINTS
++#include <trace/events/iommu.h>
++
++/* iommu_group_event */
++EXPORT_TRACEPOINT_SYMBOL_GPL(add_device_to_group);
++EXPORT_TRACEPOINT_SYMBOL_GPL(remove_device_from_group);
++
++/* iommu_device_event */
++EXPORT_TRACEPOINT_SYMBOL_GPL(attach_device_to_domain);
++EXPORT_TRACEPOINT_SYMBOL_GPL(detach_device_from_domain);
++
++/* iommu_map_unmap */
++EXPORT_TRACEPOINT_SYMBOL_GPL(map);
++EXPORT_TRACEPOINT_SYMBOL_GPL(unmap);
++
++/* iommu_amd_event */
++EXPORT_TRACEPOINT_SYMBOL_GPL(amd_event);
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index fbe9ca7..8e77110 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -29,6 +29,7 @@
+ #include <linux/idr.h>
+ #include <linux/notifier.h>
+ #include <linux/err.h>
++#include <trace/events/iommu.h>
+ 
+ static struct kset *iommu_group_kset;
+ static struct ida iommu_group_ida;
+@@ -363,6 +364,8 @@ rename:
+ 	/* Notify any listeners about change to group. */
+ 	blocking_notifier_call_chain(&group->notifier,
+ 				     IOMMU_GROUP_NOTIFY_ADD_DEVICE, dev);
++
++	trace_add_device_to_group(group->id, dev);
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(iommu_group_add_device);
+@@ -399,6 +402,8 @@ void iommu_group_remove_device(struct device *dev)
+ 	sysfs_remove_link(group->devices_kobj, device->name);
+ 	sysfs_remove_link(&dev->kobj, "iommu_group");
+ 
++	trace_remove_device_from_group(group->id, dev);
++
+ 	kfree(device->name);
+ 	kfree(device);
+ 	dev->iommu_group = NULL;
+@@ -680,10 +685,16 @@ EXPORT_SYMBOL_GPL(iommu_domain_free);
+ 
+ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
+ {
++	int ret;
+ 	if (unlikely(domain->ops->attach_dev == NULL))
+ 		return -ENODEV;
+ 
+-	return domain->ops->attach_dev(domain, dev);
++	ret = domain->ops->attach_dev(domain, dev);
++
++	if (!ret)
++		trace_attach_device_to_domain(dev);
++
++	return ret;
+ }
+ EXPORT_SYMBOL_GPL(iommu_attach_device);
+ 
+@@ -693,6 +704,7 @@ void iommu_detach_device(struct iommu_domain *domain, struct device *dev)
+ 		return;
+ 
+ 	domain->ops->detach_dev(domain, dev);
++	trace_detach_device_from_domain(dev);
+ }
+ EXPORT_SYMBOL_GPL(iommu_detach_device);
+ 
+@@ -832,6 +844,8 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 	/* unroll mapping in case something went wrong */
+ 	if (ret)
+ 		iommu_unmap(domain, orig_iova, orig_size - size);
++	else
++		trace_map(iova, paddr, size);
+ 
+ 	return ret;
+ }
+@@ -880,6 +894,7 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
+ 		unmapped += unmapped_page;
+ 	}
+ 
++	trace_unmap(iova, 0, size);
+ 	return unmapped;
+ }
+ EXPORT_SYMBOL_GPL(iommu_unmap);
+diff --git a/include/trace/events/iommu.h b/include/trace/events/iommu.h
+new file mode 100644
+index 0000000..3d8d5e8
+--- /dev/null
++++ b/include/trace/events/iommu.h
+@@ -0,0 +1,174 @@
++/*
++ * iommu trace points
++ *
++ * Copyright (C) 2013 Shuah Khan <shuah.kh@samsung.com>
++ *
++ */
++#undef TRACE_SYSTEM
++#define TRACE_SYSTEM iommu
++
++#if !defined(_TRACE_IOMMU_H) || defined(TRACE_HEADER_MULTI_READ)
++#define _TRACE_IOMMU_H
++
++#include <linux/tracepoint.h>
++#include <linux/pci.h>
++
++struct device;
++
++DECLARE_EVENT_CLASS(iommu_group_event,
++
++	TP_PROTO(int group_id, struct device *dev),
++
++	TP_ARGS(group_id, dev),
++
++	TP_STRUCT__entry(
++		__field(int, gid)
++		__string(device, dev_name(dev))
++	),
++
++	TP_fast_assign(
++		__entry->gid = group_id;
++		__assign_str(device, dev_name(dev));
++	),
++
++	TP_printk("IOMMU: groupID=%d device=%s",
++			__entry->gid, __get_str(device)
++	)
++);
++
++DEFINE_EVENT(iommu_group_event, add_device_to_group,
++
++	TP_PROTO(int group_id, struct device *dev),
++
++	TP_ARGS(group_id, dev)
++
++);
++
++DEFINE_EVENT(iommu_group_event, remove_device_from_group,
++
++	TP_PROTO(int group_id, struct device *dev),
++
++	TP_ARGS(group_id, dev)
++);
++
++DECLARE_EVENT_CLASS(iommu_device_event,
++
++	TP_PROTO(struct device *dev),
++
++	TP_ARGS(dev),
++
++	TP_STRUCT__entry(
++		__string(device, dev_name(dev))
++	),
++
++	TP_fast_assign(
++		__assign_str(device, dev_name(dev));
++	),
++
++	TP_printk("IOMMU: device=%s", __get_str(device)
++	)
++);
++
++DEFINE_EVENT(iommu_device_event, attach_device_to_domain,
++
++	TP_PROTO(struct device *dev),
++
++	TP_ARGS(dev)
++);
++
++DEFINE_EVENT(iommu_device_event, detach_device_from_domain,
++
++	TP_PROTO(struct device *dev),
++
++	TP_ARGS(dev)
++);
++
++DECLARE_EVENT_CLASS(iommu_map_unmap,
++
++	TP_PROTO(unsigned long iova, phys_addr_t paddr, size_t size),
++
++	TP_ARGS(iova, paddr, size),
++
++	TP_STRUCT__entry(
++		__field(u64, iova)
++		__field(u64, paddr)
++		__field(int, size)
++	),
++
++	TP_fast_assign(
++		__entry->iova = iova;
++		__entry->paddr = paddr;
++		__entry->size = size;
++	),
++
++	TP_printk("IOMMU: iova=0x%016llx paddr=0x%016llx size=0x%x",
++			__entry->iova, __entry->paddr, __entry->size
++	)
++);
++
++DEFINE_EVENT(iommu_map_unmap, map,
++
++	TP_PROTO(unsigned long iova, phys_addr_t paddr, size_t size),
++
++	TP_ARGS(iova, paddr, size)
++);
++
++DEFINE_EVENT_PRINT(iommu_map_unmap, unmap,
++
++	TP_PROTO(unsigned long iova, phys_addr_t paddr, size_t size),
++
++	TP_ARGS(iova, paddr, size),
++
++	TP_printk("IOMMU: iova=0x%016llx size=0x%x",
++			__entry->iova, __entry->size
++	)
++);
++
++DECLARE_EVENT_CLASS(iommu_amd_event,
++
++	TP_PROTO(char *event_str, int type, int domain_id, int device_id,
++		 u64 address, int flags),
++
++	TP_ARGS(event_str, type, domain_id, device_id, address, flags),
++
++	TP_STRUCT__entry(
++		__string(event_str, event_str)
++		__field(int, type)
++		__field(int, domain_id)
++		__field(int, device_id)
++		__field(u64, address)
++		__field(int, flags)
++	),
++
++	TP_fast_assign(
++		__assign_str(event_str, event_str);
++		__entry->type = type;
++		__entry->domain_id = domain_id;
++		__entry->device_id = device_id;
++		__entry->address = address;
++		__entry->flags = flags;
++	),
++
++	TP_printk("IOMMU:%s 0x%02x %02x:%02x.%x d=0x%04x a=0x%016llx f=0x%04x",
++			__get_str(event_str),
++			__entry->type,
++			PCI_BUS_NUM(__entry->device_id),
++			PCI_SLOT(__entry->device_id),
++			PCI_FUNC(__entry->device_id),
++			__entry->domain_id,
++			__entry->address, __entry->flags
++	)
++);
++
++DEFINE_EVENT(iommu_amd_event, amd_event,
++
++	TP_PROTO(char *event_str, int type, int domain_id, int device_id,
++		 u64 address, int flags),
++
++	TP_ARGS(event_str, type, domain_id, device_id, address, flags)
++);
++
++#endif /* _TRACE_IOMMU_H */
++
++/* This part must be outside protection */
++#include <trace/define_trace.h>
+-- 
+1.7.10.4
