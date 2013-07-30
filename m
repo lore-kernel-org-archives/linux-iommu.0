@@ -1,43 +1,55 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2 0/2] iommu/intel: Quirk non-compliant PCIe-to-PCI
-	bridges
-Date: Tue, 30 Jul 2013 13:52:59 +0200
-Message-ID: <20130730115259.GL28811@8bytes.org>
-References: <20130528183527.3318.5365.stgit@bling.home>
-	<1373303240.2602.28.camel@ul30vt.home>
+From: Shuah Khan <shuah.kh@samsung.com>
+Subject: Re: [PATCH v2] iommu: Add event tracing feature to iommu
+Date: Tue, 30 Jul 2013 14:18:20 +0000
+Message-ID: <B8EFE96D1287C24090BAD9D858E15E6174E456@sisaex01sj>
+References: <1375147366-2922-1-git-send-email-shuah.kh@samsung.com>
+ <1375147768.2075.91.camel@joe-AO722>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1373303240.2602.28.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: stephen-OTpzqLSitTUnbdJkjeBofR2eb7JE58TQ@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joe Perches <joe@perches.com>
+Cc: "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "Varun.Sethi@freescale.com" <Varun.Sethi@freescale.com>, "aik@ozlabs.ru" <aik@ozlabs.ru>, "rostedt@goodmis.org" <rostedt@goodmis.org>, "fweisbec@gmail.com" <fweisbec@gmail.com>, "mingo@redhat.com" <mingo@redhat.com>, "tony@atomide.com" <tony@atomide.com>, "ohad@wizery.com" <ohad@wizery.com>, "andreas.herrmann@calxeda.com" <andreas.herrmann@calxeda.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "shuahkhan@gmail.com" <shuahkhan@gmail.com>, Shuah Khan <shuah.kh@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-(sorry for the delay)
+On 07/29/2013 07:30 PM, Joe Perches wrote:
+> On Mon, 2013-07-29 at 19:22 -0600, Shuah Khan wrote:
+>> Add tracing feature to iommu to report various iommu events. Classes
+>> iommu_group, iommu_device, iommu_map_unmap, and iommu_amd_event are defined.
+>
+> Hi again Shuah
+>
+>> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> []
+>> @@ -2159,6 +2160,15 @@ static int iommu_prepare_identity_map(struct pci_dev *pdev,
+>>   	printk(KERN_INFO
+>>   	       "IOMMU: Setting identity map for device %s [0x%Lx - 0x%Lx]\n",
+>>   	       pci_name(pdev), start, end);
+>> +
+>> +	{
+>> +		trace_amd_event("Event", 0x1, pdev->devfn, 0, start, 2);
+>> +		trace_remove_device_from_group(0, &pdev->dev);
+>> +		trace_attach_device_to_domain(&pdev->dev);
+>> +		trace_detach_device_from_domain(&pdev->dev);
+>> +		trace_map(start, end, 1024);
+>> +		trace_unmap(start, end, 1024);
+>> +	}
+>
+> Aren't these parentheses superfluous and
+> so the indent too deep too?
+>
 
-On Mon, Jul 08, 2013 at 11:07:20AM -0600, Alex Williamson wrote:
-> Where do we stand on this series?  You had a concern that the heuristic
-> used in patch 1/ could be dangerous.  The suggestion for detecting the
-> issue was actually from Bjorn who replied with his rationale.  Do you
-> want to go in the direction of a fixed whitelist or do you agree that
-> even if the heuristic breaks it provides better behavior than what we
-> have now?  Thanks,
+Hi Joe,
 
-So if this workaround should still live in the IOMMU code (after your
-discussion with Bjorn) you can either convince me that the heuristic
-will never fail or you resend a version that uses a list of known to be
-broken bridges to match against.
+That is the test code, I included by mistake. I had these changes 
+sitting uncommitted in my tree for testing and I accidentally generated 
+the patch with them. I am going to send a patch without this file.
 
+I should remember to not rush things at the end of day and create noise. :(
 
-	Joerg
+-- Shuah
+
+Shuah Khan, Linux Kernel Developer - Open Source Group Samsung Research 
+America (Silicon Valley) shuah.kh@samsung.com | (970) 672-0658
