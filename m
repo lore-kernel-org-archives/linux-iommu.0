@@ -1,47 +1,50 @@
-From: Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v2] iommu: Add event tracing feature to iommu
-Date: Mon, 29 Jul 2013 18:29:28 -0700
-Message-ID: <1375147768.2075.91.camel@joe-AO722>
-References: <1375147366-2922-1-git-send-email-shuah.kh@samsung.com>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2 03/22] ARM: tegra: Create a DT header defining
+ swgroups ID
+Date: Tue, 30 Jul 2013 07:56:55 +0300
+Message-ID: <20130730075655.b488047ac938342df3c90fa1@nvidia.com>
+References: <1373021097-32420-1-git-send-email-hdoyu@nvidia.com>
+	<1373021097-32420-4-git-send-email-hdoyu@nvidia.com>
+	<51E5D220.1070708@wwwdotorg.org>
+	<20130729.135336.943359637886118972.hdoyu@nvidia.com>
+	<51F6AA2B.7050509@wwwdotorg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="US-ASCII"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1375147366-2922-1-git-send-email-shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, fweisbec-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org, tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <51F6AA2B.7050509-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Joseph Lo <josephl-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2013-07-29 at 19:22 -0600, Shuah Khan wrote:
-> Add tracing feature to iommu to report various iommu events. Classes
-> iommu_group, iommu_device, iommu_map_unmap, and iommu_amd_event are defined.
+On Mon, 29 Jul 2013 19:45:15 +0200
+Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote:
 
-Hi again Shuah
+> On 07/29/2013 04:53 AM, Hiroshi Doyu wrote:
+> > Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote @ Wed, 17 Jul 2013 01:07:12 +0200:
+> > 
+> >> On 07/05/2013 04:44 AM, Hiroshi Doyu wrote:
+> >>> Create a header file to define the swgroup IDs used by the IOMMU(SMMU)
+> >>> binding. "swgroup" is a group of H/W clients in Tegra SoC from S/W POV.
+> >>>
+> >>> This will allow the same header to be used by both device tree files,
+> >>> and drivers implementing this binding, which guarantees that the two
+> >>> stay in sync. This also makes device trees more readable by using names
+> >>> instead of magic numbers.
+> >>
+> >> Why does the driver need these constants; shouldn't it simply support
+> >> 0..n SW group IDs that all work the same way? Or, is there some reason
+> >> for it to know the identities?
+> >>
+> >>> diff --git a/include/dt-bindings/memory/tegra-swgroup.h b/include/dt-bindings/memory/tegra-swgroup.h
+> >>
+> >> s/memory/iommu/?
+> > 
+> > This info would be used in PMC code as well, which H/W belongs to
+> > which swgroup. So I use the term "memory(-client)" instead of "iommu".
+> 
+> Why does the PMC care? An explanation of exactly what SW needs to know
+> about these groups and why would be a good idea.
 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-[]
-> @@ -2159,6 +2160,15 @@ static int iommu_prepare_identity_map(struct pci_dev *pdev,
->  	printk(KERN_INFO
->  	       "IOMMU: Setting identity map for device %s [0x%Lx - 0x%Lx]\n",
->  	       pci_name(pdev), start, end);
-> +
-> +	{
-> +		trace_amd_event("Event", 0x1, pdev->devfn, 0, start, 2);
-> +		trace_remove_device_from_group(0, &pdev->dev);
-> +		trace_attach_device_to_domain(&pdev->dev);
-> +		trace_detach_device_from_domain(&pdev->dev);
-> +		trace_map(start, end, 1024);
-> +		trace_unmap(start, end, 1024);
-> +	}
-
-Aren't these parentheses superfluous and
-so the indent too deep too?
+Joseph, can you explain a bit here?
