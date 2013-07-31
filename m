@@ -1,22 +1,14 @@
-From: Vivek Goyal <vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2] PCI: Reset PCIe devices to stop ongoing DMA
-Date: Wed, 31 Jul 2013 12:09:45 -0400
-Message-ID: <20130731160944.GA1577@redhat.com>
-References: <CAErSpo4t_2Xw76p3Z9FVzyyK-MBovavDu9D=pYoPMjESSxgT=w@mail.gmail.com>
-	<51B19DF3.2070009@jp.fujitsu.com>
-	<CAErSpo6dfEnzriHD_aWZB_3E-kSzauhNRHPd+VuFX5HONVKgqw@mail.gmail.com>
-	<51B6BEDB.3000509@jp.fujitsu.com>
-	<CAErSpo5u8qGALt6C+tuPYXdd2YgyMH6fnPnA+afUteEZ7kY0iw@mail.gmail.com>
-	<51B93221.2040505@jp.fujitsu.com>
-	<CAErSpo5tVK-Z3aOdMTzab-S8o5zLVtDOFQ8-LSYpUgbrJSsxuw@mail.gmail.com>
-	<51BA7BB6.1080104@jp.fujitsu.com> <51EF7466.20703@jp.fujitsu.com>
-	<CAErSpo5B7NzVfxwW3bQnfK+iK+DrRsWQd2Cm14z5PWNnRHWL5w@mail.gmail.com>
+From: Shuah Khan <shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [Announcement] Linux Plumbers ACPI/PM, PCI Microconference
+Date: Wed, 31 Jul 2013 10:35:05 -0600
+Message-ID: <CAKocOOPOqqS80D23z6xTVSNYYYWZ7ACg9MtSMz_hTqVA3Duo0w@mail.gmail.com>
+References: <CAL-B5D03ki8NHsM6EuESTH2K-Eh+XyFHNXPDYwgDq+oagDjtMQ@mail.gmail.com>
+	<1755363.sGc8nLIQOW@vostro.rjw.lan>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CAErSpo5B7NzVfxwW3bQnfK+iK+DrRsWQd2Cm14z5PWNnRHWL5w-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <1755363.sGc8nLIQOW-sKB8Sp2ER+y1GS7QM15AGw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,78 +18,50 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Haren Myneni <hbabu-r/Jw6+rmf7HQT0dZR+AlfA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org" <ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org>, "Sumner, William" <bill.sumner-VXdhtT5mjnY@public.gmane.org>
+To: "Rafael J. Wysocki" <rjw-KKrjLPT3xs0@public.gmane.org>
+Cc: shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux PM list <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-pci <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ACPI Devel Maling List <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Myron Stowe <myron.stowe-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jul 25, 2013 at 11:00:46AM -0600, Bjorn Helgaas wrote:
-> On Wed, Jul 24, 2013 at 12:29 AM, Takao Indoh
-> <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org> wrote:
-> > Sorry for letting this discussion slide, I was busy on other works:-(
-> > Anyway, the summary of previous discussion is:
-> > - My patch adds new initcall(fs_initcall) to reset all PCIe endpoints on
-> >   boot. This expects PCI enumeration is done before IOMMU
-> >   initialization as follows.
-> >     (1) PCI enumeration
-> >     (2) fs_initcall ---> device reset
-> >     (3) IOMMU initialization
-> > - This works on x86, but does not work on other architecture because
-> >   IOMMU is initialized before PCI enumeration on some architectures. So,
-> >   device reset should be done where IOMMU is initialized instead of
-> >   initcall.
-> > - Or, as another idea, we can reset devices in first kernel(panic kernel)
-> >
-> > Resetting devices in panic kernel is against kdump policy and seems not to
-> > be good idea. So I think adding reset code into iommu initialization is
-> > better. I'll post patches for that.
-> 
-> Of course nobody *wants* to do anything in the panic kernel.  But
-> simply saying "it's against kdump policy and seems not to be a good
-> idea" is not a technical argument.  There are things that are
-> impractical to do in the kdump kernel, so they have to be done in the
-> panic kernel even though we know the kernel is unreliable and the
-> attempt may fail.
+On Wed, Jul 31, 2013 at 5:40 AM, Rafael J. Wysocki <rjw-KKrjLPT3xs0@public.gmane.org> wrote:
+> Hi All,
+>
+> The original announcement didn't go to linux-pm, so again:
+>
+> On Tuesday, July 16, 2013 08:21:26 PM Myron Stowe wrote:
+>> Linux Plumbers has approved an ACPI/PM, PCI microconference. The
+>> overview page is here:
+>>
+>> http://wiki.linuxplumbersconf.org/2013:pci_subsystem
+>>
+>> We would like to start receiving volunteers for presenting topics of
+>> interest.  There is a lot of activity in these subsystems so please
+>> respond by submitting presentation or discussion proposals that you
+>> would be willing to cover for consideration.  You should also feel
+>> free to submit ideas as proposals that others could cover.  The
+>> instructions for submitting ideas should be at:
+>>
+>> http://www.linuxplumbersconf.org/2013/submitting-topic/
+>
+> If anyone who's going to attend the Linux Plumbers Conf this year is interested
+> in any particular topic for discussion during the ACPI/PM+PCI uconf, please
+> submit a formal topic proposal at:
+>
+> http://www.linuxplumbersconf.org/2013/ocw/events/LPC2013/proposals/new
+>
+> If you submit a topic, that doesn't mean you'll be expected to present anything
+> (if accepted).  In fact, we are mostly interested in discussion topics and we'd
+> like to know what is important to people.
+>
+> That said if you have a (short) presentation to make, please submit it too.
+>
+> We'll appreciate all submissions very much.
+>
 
-I think resetting all devices in crashed kernel is really a lot of
-code. If there is a small piece of code, it can still be considered.
+What I have mind is a discussion topic for the Mini-conference, which
+in-line with what you are asking for.
+I will add it to the web. Thanks for pinging me on this.
 
-I don't know much about IOMMU or PCI or PCIE. But I am taking one step
-back and discuss again the idea of not resetting the IOMMU in second
-kernel.
+-- Shuah
 
-I think resetting the bus is a good idea but just resetting PCIE
-will solve only part of the problem and we will same issues with
-devices on other buses.
-
-So what sounds more appealing if we could fix this particular
-problem at IOMMU level first (and continue to develp patches for
-resetting various buses).
-
-In the past also these ideas have been proposed that continue to
-use translation table from first kernel. Retain those mappings and
-don't reset IOMMU. Reserve some space for kdump mappings in first
-kernel and use that reserved mapping space in second kernel. It
-never got implemented though.
-
-Bjorn, so what's the fundamental problem with this idea?
-
-Also, what's wrong with DMAR error. If some device tried to do DMA,
-and DMA was blocked because IOMMU got reset and mappings are no more
-there, why does it lead to failure. Shouldn't we just reate limit 
-error messages in such case and if device is needed, anyway driver
-will reset it.
-
-Other problem mentioned in this thread is PCI SERR. What is it? Is
-it some kind of error device reports if it can't do DMA successfully.
-Can these errors be simply ignored kdump kernel? This problem sounds
-similar to a device keeping interrupt asserted in second kernel and
-kernel simply disables the interrupt line if nobody claims the
-interrupt.
-
-IOW, it feels to me that we should handle the issue (DMAR error) at
-IOMMU level first (instead of trying to make sure that by the time
-we get to initialize IOMMU(), all devices in system have been quiesced
-and nobody is doing DMA).
-
-Thanks
-Vivek
+Shuah Khan, Linux Kernel Developer - Open Source Group Samsung Research
+America (Silicon Valley) shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org | (970) 672-0658
