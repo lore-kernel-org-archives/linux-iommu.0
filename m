@@ -1,14 +1,13 @@
-From: Andrew Cooks <acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: AMD IOMMU: Please support Marvell 88SE91xx SATA Controllers
-Date: Wed, 31 Jul 2013 19:07:21 +0800
-Message-ID: <CAJtEV7bAVKVW4YZwmFDjMs7F3tab+ifpnVcq3jBqFa9gvtL+8A@mail.gmail.com>
-References: <519A93F0.8070606@gmx.ch> <20130521203526.GE7424@8bytes.org>
-	<51D3E691.8030307@gmx.ch> <20130730113954.GK28811@8bytes.org>
+From: "Rafael J. Wysocki" <rjw-KKrjLPT3xs0@public.gmane.org>
+Subject: [Announcement] Linux Plumbers ACPI/PM, PCI Microconference
+Date: Wed, 31 Jul 2013 13:40:14 +0200
+Message-ID: <1755363.sGc8nLIQOW@vostro.rjw.lan>
+References: <CAL-B5D03ki8NHsM6EuESTH2K-Eh+XyFHNXPDYwgDq+oagDjtMQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130730113954.GK28811-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <CAL-B5D03ki8NHsM6EuESTH2K-Eh+XyFHNXPDYwgDq+oagDjtMQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,39 +17,42 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Manfred Schwarb <manfred99-OI3hZJvNYWs@public.gmane.org>
+To: linux-pci <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, ACPI Devel Maling List <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux PM list <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Myron Stowe <myron.stowe-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg
+Hi All,
 
-On Tue, Jul 30, 2013 at 7:39 PM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
-> Hi Andrew,
->
-> On Wed, Jul 03, 2013 at 10:53:37AM +0200, Manfred Schwarb wrote:
->> Am 21.05.2013 22:35, schrieb Joerg Roedel:
->> >On Mon, May 20, 2013 at 11:21:52PM +0200, Manfred Schwarb wrote:
->> >>Is anybody working on this issue for the AMD part? I would be very
->> >>grateful if such support could be added to the linux kernel. I would
->> >>be prepared to test patches, if needed.
->
-> Somehow the workaround for Intel didn't make it upstream. Do you plan to
-> continue working on the workaround?
+The original announcement didn't go to linux-pm, so again:
 
-I think some of the issues that prevented the workaround from being
-merged will be addressed by Alex Williamson's PCIe requester ID
-interface patch set, which is currently being discussed[1].
+On Tuesday, July 16, 2013 08:21:26 PM Myron Stowe wrote:
+> Linux Plumbers has approved an ACPI/PM, PCI microconference. The
+> overview page is here:
+> 
+> http://wiki.linuxplumbersconf.org/2013:pci_subsystem
+> 
+> We would like to start receiving volunteers for presenting topics of
+> interest.  There is a lot of activity in these subsystems so please
+> respond by submitting presentation or discussion proposals that you
+> would be willing to cover for consideration.  You should also feel
+> free to submit ideas as proposals that others could cover.  The
+> instructions for submitting ideas should be at:
+> 
+> http://www.linuxplumbersconf.org/2013/submitting-topic/
 
-That patch should bring the pci_get_dma_source() workaround into the
-main dma ops path, after which it can be changed to allow for devices
-that use multiple or otherwise incorrect requestor ids.
+If anyone who's going to attend the Linux Plumbers Conf this year is interested
+in any particular topic for discussion during the ACPI/PM+PCI uconf, please
+submit a formal topic proposal at:
 
-[1] http://thread.gmane.org/gmane.linux.kernel.pci/23876/focus=2599
->
-> I reused a few parts of your VT-d patch to implement the workaround for
-> AMD, there is surely potential to have some common code between the
-> IOMMU drivers for this.
+http://www.linuxplumbersconf.org/2013/ocw/events/LPC2013/proposals/new
 
-Thanks for that.
+If you submit a topic, that doesn't mean you'll be expected to present anything
+(if accepted).  In fact, we are mostly interested in discussion topics and we'd
+like to know what is important to people.
 
-a.
+That said if you have a (short) presentation to make, please submit it too.
+
+We'll appreciate all submissions very much.
+
+Thanks,
+Rafael
