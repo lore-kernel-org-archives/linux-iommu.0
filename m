@@ -1,14 +1,22 @@
-From: Manfred Schwarb <manfred99-OI3hZJvNYWs@public.gmane.org>
-Subject: Re: [PATCH] iommu/amd: Add quirk for broken Marvell 88SE91xx SATA
-Date: Wed, 31 Jul 2013 17:07:30 +0200
-Message-ID: <51F92832.2070102@gmx.ch>
-References: <519A93F0.8070606@gmx.ch> <20130521203526.GE7424@8bytes.org>
-	<51D3E691.8030307@gmx.ch> <20130730113659.GJ28811@8bytes.org>
+From: Vivek Goyal <vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2] PCI: Reset PCIe devices to stop ongoing DMA
+Date: Wed, 31 Jul 2013 12:09:45 -0400
+Message-ID: <20130731160944.GA1577@redhat.com>
+References: <CAErSpo4t_2Xw76p3Z9FVzyyK-MBovavDu9D=pYoPMjESSxgT=w@mail.gmail.com>
+	<51B19DF3.2070009@jp.fujitsu.com>
+	<CAErSpo6dfEnzriHD_aWZB_3E-kSzauhNRHPd+VuFX5HONVKgqw@mail.gmail.com>
+	<51B6BEDB.3000509@jp.fujitsu.com>
+	<CAErSpo5u8qGALt6C+tuPYXdd2YgyMH6fnPnA+afUteEZ7kY0iw@mail.gmail.com>
+	<51B93221.2040505@jp.fujitsu.com>
+	<CAErSpo5tVK-Z3aOdMTzab-S8o5zLVtDOFQ8-LSYpUgbrJSsxuw@mail.gmail.com>
+	<51BA7BB6.1080104@jp.fujitsu.com> <51EF7466.20703@jp.fujitsu.com>
+	<CAErSpo5B7NzVfxwW3bQnfK+iK+DrRsWQd2Cm14z5PWNnRHWL5w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130730113659.GJ28811-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAErSpo5B7NzVfxwW3bQnfK+iK+DrRsWQd2Cm14z5PWNnRHWL5w-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,144 +26,78 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Haren Myneni <hbabu-r/Jw6+rmf7HQT0dZR+AlfA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org" <ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org>, "Sumner, William" <bill.sumner-VXdhtT5mjnY@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+On Thu, Jul 25, 2013 at 11:00:46AM -0600, Bjorn Helgaas wrote:
+> On Wed, Jul 24, 2013 at 12:29 AM, Takao Indoh
+> <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org> wrote:
+> > Sorry for letting this discussion slide, I was busy on other works:-(
+> > Anyway, the summary of previous discussion is:
+> > - My patch adds new initcall(fs_initcall) to reset all PCIe endpoints on
+> >   boot. This expects PCI enumeration is done before IOMMU
+> >   initialization as follows.
+> >     (1) PCI enumeration
+> >     (2) fs_initcall ---> device reset
+> >     (3) IOMMU initialization
+> > - This works on x86, but does not work on other architecture because
+> >   IOMMU is initialized before PCI enumeration on some architectures. So,
+> >   device reset should be done where IOMMU is initialized instead of
+> >   initcall.
+> > - Or, as another idea, we can reset devices in first kernel(panic kernel)
+> >
+> > Resetting devices in panic kernel is against kdump policy and seems not to
+> > be good idea. So I think adding reset code into iommu initialization is
+> > better. I'll post patches for that.
+> 
+> Of course nobody *wants* to do anything in the panic kernel.  But
+> simply saying "it's against kdump policy and seems not to be a good
+> idea" is not a technical argument.  There are things that are
+> impractical to do in the kdump kernel, so they have to be done in the
+> panic kernel even though we know the kernel is unreliable and the
+> attempt may fail.
 
-Thanks, Joerg!
+I think resetting all devices in crashed kernel is really a lot of
+code. If there is a small piece of code, it can still be considered.
 
-Am 30.07.2013 13:37, schrieb Joerg Roedel:
-> Hi Manfred,
->
-> On Wed, Jul 03, 2013 at 10:53:37AM +0200, Manfred Schwarb wrote:
->>> I will look into the best way to port this to the AMD IOMMU driver. Will
->>> send you a patch for testing when I have somthing.
->>>
->>
->> Any news on this? Had you time to look at this issue?
->
-> Can you test the attached patch please? It applies to v3.11-rc3. I
-> compiled and boot-tested it, but I don't have a broken Marvell
-> controller myself, so not sure if the patch works.
->
+I don't know much about IOMMU or PCI or PCIE. But I am taking one step
+back and discuss again the idea of not resetting the IOMMU in second
+kernel.
 
-I tried this patch with 3.11-rc3 on opensuse 12.1, doing an "make oldconfig"
-and choosing defaults for the new items.
-This linux version seems to have some issues with my somewhat ancient user
-space, boot hangs quite early without any special messages (independent of
-iommu settings). However, in the "failsafe" mode I was able to boot.
+I think resetting the bus is a good idea but just resetting PCIE
+will solve only part of the problem and we will same issues with
+devices on other buses.
 
-When turning on iommu support in BIOS, I got a timeout at fsck/mount time
-for the second disk on the Marvell controller. The first one did work
-straight on. Then I got to the rescue prompt, where I did a "mount -a", and
-hey, also the second disk started working, I could read and write to this
-disk also.
+So what sounds more appealing if we could fix this particular
+problem at IOMMU level first (and continue to develp patches for
+resetting various buses).
 
-Things seem to work halfway therefore. The timeout for the second attached
-disk is repeatable. When doing the "mount -a", first some kernel boot messages
-appeared, as if this command unblocked some unfinished disk initialization
-or so.
-The boot logs (boot.msg) where nearly identical for the iommu and no-iommu
-case. But I was not able to get your additional print into the log file,
-I tried "loglevel=6" on the command line and setting /proc/sys/kernel/printk
-in /etc/init.d/boot.local, to no avail.
+In the past also these ideas have been proposed that continue to
+use translation table from first kernel. Retain those mappings and
+don't reset IOMMU. Reserve some space for kdump mappings in first
+kernel and use that reserved mapping space in second kernel. It
+never got implemented though.
 
-Hope this helps somewhat,
-cheers,
+Bjorn, so what's the fundamental problem with this idea?
 
-Manfred
+Also, what's wrong with DMAR error. If some device tried to do DMA,
+and DMA was blocked because IOMMU got reset and mappings are no more
+there, why does it lead to failure. Shouldn't we just reate limit 
+error messages in such case and if device is needed, anyway driver
+will reset it.
 
+Other problem mentioned in this thread is PCI SERR. What is it? Is
+it some kind of error device reports if it can't do DMA successfully.
+Can these errors be simply ignored kdump kernel? This problem sounds
+similar to a device keeping interrupt asserted in second kernel and
+kernel simply disables the interrupt line if nobody claims the
+interrupt.
 
-> Thanks,
->
-> 	Joerg
->
->>From 04c7d4ea2171780656c4c8ff3500a97ea45aabcb Mon Sep 17 00:00:00 2001
-> From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> Date: Tue, 30 Jul 2013 13:10:54 +0200
-> Subject: [PATCH] iommu/amd: Add quirk for broken Marvell 88SE91xx SATA
->   controllers
->
-> These controlers use the wrong requestor id when sending DMA
-> requests. Add a quirk for this to the AMD IOMMU driver to
-> make them work with IOMMU enabled.
->
-> Signed-off-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> ---
->   drivers/iommu/amd_iommu_init.c |   54 ++++++++++++++++++++++++++++++++++++++++
->   1 file changed, 54 insertions(+)
->
-> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-> index 7acbf35..f4e0c82 100644
-> --- a/drivers/iommu/amd_iommu_init.c
-> +++ b/drivers/iommu/amd_iommu_init.c
-> @@ -1025,6 +1025,58 @@ static void __init free_iommu_all(void)
->   }
->
->   /*
-> + * Update IOMMU data structures to handle broken devices
-> + */
-> +static const struct pci_dev_merge_functions {
-> +	u16 vendor;
-> +	u16 device;
-> +} pci_dev_merge_fn_devs[] = {
-> +	{ PCI_VENDOR_ID_MARVELL_EXT, 0x9123 },
-> +	{ PCI_VENDOR_ID_MARVELL_EXT, 0x9125 },
-> +	{ PCI_VENDOR_ID_MARVELL_EXT, 0x9128 },
-> +	{ PCI_VENDOR_ID_MARVELL_EXT, 0x9130 },
-> +	{ PCI_VENDOR_ID_MARVELL_EXT, 0x9172 },
-> +	{ 0 }
-> +};
-> +
-> +static void amd_iommu_merge_fn_quirk(struct pci_dev *pdev)
-> +{
-> +	const struct pci_dev_merge_functions *fn;
-> +
-> +	for (fn = pci_dev_merge_fn_devs; fn->vendor; fn++) {
-> +		u16 base_devid, devid, i;
-> +
-> +		if ((pdev->vendor != fn->vendor && fn->vendor != PCI_ANY_ID) ||
-> +		    (pdev->device != fn->device && fn->device != PCI_ANY_ID))
-> +			continue;
-> +
-> +		pr_info("AMD-Vi: Applying merge-fn quirk for device %s\n",
-> +			dev_name(&pdev->dev));
-> +
-> +		devid      = PCI_DEVID(pdev->bus->number, pdev->devfn);
-> +		base_devid = PCI_DEVID(PCI_BUS_NUM(devid),
-> +				       PCI_DEVFN(PCI_SLOT(devid), 0));
-> +
-> +		/* Update alias table */
-> +		for (i = 1; i < 8; ++i)
-> +			amd_iommu_alias_table[base_devid + i] = devid;
-> +	}
-> +}
-> +
-> +static void amd_iommu_pci_quirks(void)
-> +{
-> +        struct pci_dev *pdev = NULL;
-> +
-> +	for_each_pci_dev(pdev) {
-> +		/*
-> +		 * Check for known PCI devices that use
-> +		 * the wrong requestor id
-> +		 */
-> +		amd_iommu_merge_fn_quirk(pdev);
-> +	}
-> +}
-> +
-> +/*
->    * Family15h Model 10h-1fh erratum 746 (IOMMU Logging May Stall Translations)
->    * Workaround:
->    *     BIOS should disable L2B micellaneous clock gating by setting
-> @@ -1337,6 +1389,8 @@ static int __init amd_iommu_init_pci(void)
->   			break;
->   	}
->
-> +	amd_iommu_pci_quirks();
-> +
->   	ret = amd_iommu_init_devices();
->
->   	print_iommu_info();
->
+IOW, it feels to me that we should handle the issue (DMAR error) at
+IOMMU level first (instead of trying to make sure that by the time
+we get to initialize IOMMU(), all devices in system have been quiesced
+and nobody is doing DMA).
+
+Thanks
+Vivek
