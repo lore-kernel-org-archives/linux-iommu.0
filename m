@@ -1,91 +1,66 @@
-From: Vivek Goyal <vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2] PCI: Reset PCIe devices to stop ongoing DMA
-Date: Wed, 31 Jul 2013 15:56:23 -0400
-Message-ID: <20130731195622.GC1577@redhat.com>
-References: <CAErSpo5u8qGALt6C+tuPYXdd2YgyMH6fnPnA+afUteEZ7kY0iw@mail.gmail.com>
-	<51B93221.2040505@jp.fujitsu.com>
-	<CAErSpo5tVK-Z3aOdMTzab-S8o5zLVtDOFQ8-LSYpUgbrJSsxuw@mail.gmail.com>
-	<51BA7BB6.1080104@jp.fujitsu.com> <51EF7466.20703@jp.fujitsu.com>
-	<CAErSpo5B7NzVfxwW3bQnfK+iK+DrRsWQd2Cm14z5PWNnRHWL5w@mail.gmail.com>
-	<51F5B966.9080405@jp.fujitsu.com>
-	<CAErSpo4JtG5qVJb-nCywe3vkft=-cDeRDKn_V92RCZ-sGXpwbg@mail.gmail.com>
-	<51F758B6.9090204@jp.fujitsu.com>
-	<CAErSpo7TNhQO0dx_xZvF=dU2fSWTFf8x=xUJcEsbadJkv8ktuQ@mail.gmail.com>
+From: "Rafael J. Wysocki" <rjw@sisk.pl>
+Subject: Re: [Announcement] Linux Plumbers ACPI/PM, PCI Microconference
+Date: Wed, 31 Jul 2013 23:17:36 +0200
+Message-ID: <7183196.Ov6Qetq3lO@vostro.rjw.lan>
+References: <CAL-B5D03ki8NHsM6EuESTH2K-Eh+XyFHNXPDYwgDq+oagDjtMQ@mail.gmail.com>
+	<1755363.sGc8nLIQOW@vostro.rjw.lan>
+	<CAKocOOPOqqS80D23z6xTVSNYYYWZ7ACg9MtSMz_hTqVA3Duo0w@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CAErSpo7TNhQO0dx_xZvF=dU2fSWTFf8x=xUJcEsbadJkv8ktuQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Haren Myneni <hbabu-r/Jw6+rmf7HQT0dZR+AlfA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org" <ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org>, "Sumner, William" <bill.sumner-VXdhtT5mjnY@public.gmane.org>
+Return-path: <virtualization-bounces@lists.linux-foundation.org>
+In-Reply-To: <CAKocOOPOqqS80D23z6xTVSNYYYWZ7ACg9MtSMz_hTqVA3Duo0w@mail.gmail.com>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>,
+	<mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
+List-Post: <mailto:virtualization@lists.linux-foundation.org>
+List-Help: <mailto:virtualization-request@lists.linux-foundation.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/virtualization>,
+	<mailto:virtualization-request@lists.linux-foundation.org?subject=subscribe>
+Sender: virtualization-bounces@lists.linux-foundation.org
+Errors-To: virtualization-bounces@lists.linux-foundation.org
+To: Shuah Khan <shuahkhan@gmail.com>
+Cc: shuah.kh@samsung.com, kvm@vger.kernel.org, Linux PM list <linux-pm@vger.kernel.org>, linux-pci <linux-pci@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, virtualization@lists.linux-foundation.org, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, iommu@lists.linux-foundation.org, Myron Stowe <myron.stowe@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jul 30, 2013 at 09:59:16AM -0600, Bjorn Helgaas wrote:
-> On Tue, Jul 30, 2013 at 12:09 AM, Takao Indoh
-> <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org> wrote:
-> > (2013/07/29 23:17), Bjorn Helgaas wrote:
-> >> On Sun, Jul 28, 2013 at 6:37 PM, Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org> wrote:
-> >>> (2013/07/26 2:00), Bjorn Helgaas wrote:
-> 
-> >>>> My point about IOMMU and PCI initialization order doesn't go away just
-> >>>> because it doesn't fit "kdump policy."  Having system initialization
-> >>>> occur in a logical order is far more important than making kdump work.
-> >>>
-> >>> My next plan is as follows. I think this is matched to logical order
-> >>> on boot.
-> >>>
-> >>> drivers/pci/pci.c
-> >>> - Add function to reset bus, for example, pci_reset_bus(struct pci_bus *bus)
-> >>>
-> >>> drivers/iommu/intel-iommu.c
-> >>> - On initialization, if IOMMU is already enabled, call this bus reset
-> >>>    function before disabling and re-enabling IOMMU.
-> >>
-> >> I raised this issue because of arches like sparc that enumerate the
-> >> IOMMU before the PCI devices that use it.  In that situation, I think
-> >> you're proposing this:
-> >>
-> >>    panic kernel
-> >>      enable IOMMU
-> >>      panic
-> >>    kdump kernel
-> >>      initialize IOMMU (already enabled)
-> >>        pci_reset_bus
-> >>        disable IOMMU
-> >>        enable IOMMU
-> >>      enumerate PCI devices
-> >>
-> >> But the problem is that when you call pci_reset_bus(), you haven't
-> >> enumerated the PCI devices, so you don't know what to reset.
+On Wednesday, July 31, 2013 10:35:05 AM Shuah Khan wrote:
+> On Wed, Jul 31, 2013 at 5:40 AM, Rafael J. Wysocki <rjw@sisk.pl> wrote:
+> > Hi All,
 > >
-> > Right, so my idea is adding reset code into "intel-iommu.c". intel-iommu
-> > initialization is based on the assumption that enumeration of PCI devices
-> > is already done. We can find target device from IOMMU page table instead
-> > of scanning all devices in pci tree.
+> > The original announcement didn't go to linux-pm, so again:
 > >
-> > Therefore, this idea is only for intel-iommu. Other architectures need
-> > to implement their own reset code.
+> > On Tuesday, July 16, 2013 08:21:26 PM Myron Stowe wrote:
+> >> Linux Plumbers has approved an ACPI/PM, PCI microconference. The
+> >> overview page is here:
+> >>
+> >> http://wiki.linuxplumbersconf.org/2013:pci_subsystem
+> >>
+> >> We would like to start receiving volunteers for presenting topics of
+> >> interest.  There is a lot of activity in these subsystems so please
+> >> respond by submitting presentation or discussion proposals that you
+> >> would be willing to cover for consideration.  You should also feel
+> >> free to submit ideas as proposals that others could cover.  The
+> >> instructions for submitting ideas should be at:
+> >>
+> >> http://www.linuxplumbersconf.org/2013/submitting-topic/
+> >
+> > If anyone who's going to attend the Linux Plumbers Conf this year is interested
+> > in any particular topic for discussion during the ACPI/PM+PCI uconf, please
+> > submit a formal topic proposal at:
+> >
+> > http://www.linuxplumbersconf.org/2013/ocw/events/LPC2013/proposals/new
+> >
+> > If you submit a topic, that doesn't mean you'll be expected to present anything
+> > (if accepted).  In fact, we are mostly interested in discussion topics and we'd
+> > like to know what is important to people.
+> >
+> > That said if you have a (short) presentation to make, please submit it too.
+> >
+> > We'll appreciate all submissions very much.
+> >
 > 
-> That's my point.  I'm opposed to adding code to PCI when it only
-> benefits x86 and we know other arches will need a fundamentally
-> different design.  I would rather have a design that can work for all
-> arches.
+> What I have mind is a discussion topic for the Mini-conference, which
+> in-line with what you are asking for.
+> I will add it to the web.
 
-I agree. It makes sense to work on a design which works for all
-arches.
-
-And that's when I feel that handling this problem at IOMMU level
-makes more sense, if we can.
-
-Thanks
-Vivek
+Thank you!
