@@ -1,66 +1,72 @@
-From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: RE: [PATCH v8 07/12] iommu/exynos: support for device tree
-Date: Thu, 01 Aug 2013 22:14:03 +0900
-Message-ID: <003a01ce8eb8$fe946db0$fbbd4910$@samsung.com>
-References: <003d01ce89f3$44ec2cf0$cec486d0$@samsung.com>
-	<1743111.Ek7FldnHal@flatron>
+From: Vivek Goyal <vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2] PCI: Reset PCIe devices to stop ongoing DMA
+Date: Thu, 1 Aug 2013 09:20:17 -0400
+Message-ID: <20130801132017.GA15235@redhat.com>
+References: <1368509365-2260-1-git-send-email-indou.takao@jp.fujitsu.com>
+ <51F85BCC.2070103@jp.fujitsu.com>
+ <CAErSpo4yJ2yqCWv7GT7jWSVd_8SktU=xJXT78m8Vxp_wLA4Fow@mail.gmail.com>
+ <1699397.FXoFYIGzbk@vostro.rjw.lan> <51FA015E.10901@jp.fujitsu.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <1743111.Ek7FldnHal@flatron>
-Content-language: ko
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: 'Tomasz Figa' <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: 'Linux Samsung SOC' <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, 'Hyunwoong Kim' <khw0178.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Prathyush' <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Grant Grundler' <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, 'Keyyoung Park' <keyyoung.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Subash Patel' <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Linux Kernel' <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, 'Sachin Kamat' <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Linux IOMMU' <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, 'Kukjin Kim' <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Antonios Motakis' <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, 'Linux ARM Kernel' <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, 'Rahul Sharma' <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Return-path: <kexec-bounces+glkk-kexec=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <51FA015E.10901-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/kexec>,
+ <mailto:kexec-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/kexec/>
+List-Post: <mailto:kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:kexec-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/kexec>,
+ <mailto:kexec-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "kexec" <kexec-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: kexec-bounces+glkk-kexec=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+Cc: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rjw-KKrjLPT3xs0@public.gmane.org, hbabu-r/Jw6+rmf7HQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, bill.sumner-VXdhtT5mjnY@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-> -----Original Message-----
-> From: Tomasz Figa [mailto:tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org]
-> Sent: Saturday, July 27, 2013 11:07 PM
+On Thu, Aug 01, 2013 at 03:34:06PM +0900, Takao Indoh wrote:
+> (2013/08/01 6:23), Rafael J. Wysocki wrote:
+> > On Wednesday, July 31, 2013 03:08:03 PM Bjorn Helgaas wrote:
+> >> [+cc Rafael, linux-acpi]
+> >>
+> >> On Tue, Jul 30, 2013 at 6:35 PM, Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org> wrote:
+> >>
+> >>> On x86, currently IOMMU initialization run *after* PCI enumeration, but
+> >>> what you are talking about is that it should be changed so that x86
+> >>> IOMMU initialization is done *before* PCI enumeration like sparc, right?
+> >>
+> >> Yes.  I don't know whether or when that initialization order will ever
+> >> be changed, but I do think we should avoid building more
+> >> infrastructure that depends on the current order.
+> >>
+> >> Changing the order is a pretty big deal because it's a lot more than
+> >> just the IOMMU.  Basically I think we should be enumerating ACPI
+> >> devices, including the IOMMU, before PCI devices, but there's a lot of
+> >> legacy involved in that area.  Added Rafael in case he has any
+> >> thoughts.
+> > 
+> > Well, actually, I'm not really familiar with IOMMUs, sorry.
+> > 
+> > I do think that initializing IOMMU before PCI enumeration would be better,
+> > however.  At least if the ordering should be the same on all architectures,
+> > which I suppose is the case, that's the one I'd choose.
 > 
-> Hi,
-> 
-> On Friday 26 of July 2013 20:28:36 Cho KyongHo wrote:
-> > This commit adds device tree support for System MMU.
-> > This also include the following changes and enhancements:
-> >
-> > * use managed device helper functions.
-> > Simplyfies System MMU device driver.
-> >
-> > * use only a single clock descriptor.
-> > System MMU device descriptor is seperate if it is imposible to make
-> > a single clock descriptor to make a device descriptor for a group of
-> > System MMUs.
-> >
-> > * removed dbgname member from sysmmu_drvdata structure.
-> > debugging kernel message for a System MMU is distinguisheable with the
-> > name of device descroptors.
-> >
-> > Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> > ---
-> >  drivers/iommu/Kconfig        |    5 +-
-> >  drivers/iommu/exynos-iommu.c |  182
-> > ++++++++++++++++-------------------------- 2 files changed, 70
-> > insertions(+), 117 deletions(-)
-> 
-> Whenever you introduce or modify (extend) a device tree binding please
-> don't forget about reflecting that in documentation
-> (Documentation/devicetree/bindings) and CCing devicetree mailing list
-> (devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org). Both of these steps are necessary to get any
-> device tree stuff merged.
-> 
+> Ok guys. If x86 IOMMU maintainer also thinks changing order is
+> necessary, maybe I need to give up device reset in kdump kernel and
+> consider doing it in panic kernel.
 
-Oh I see.
-Thank you for advice.
+I don't think trying to reset all the devices in panic kernel is
+a good idea.
 
-> Best regards,
-> Tomasz
+We need to handle the problem at IOMMU level first which is 
+independent of whether devices have been reset or not.
+
+IOW, we should have the capability to initialize IOMMU first
+and be able to deal with devices which are doing DMA.
+
+I am not against doing device reset and it most likely is a good thing
+but it should happen in second kernel and not in crashed kernel.
+
+Thanks
+Vivek
