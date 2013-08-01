@@ -1,72 +1,69 @@
-From: Vivek Goyal <vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2] PCI: Reset PCIe devices to stop ongoing DMA
-Date: Thu, 1 Aug 2013 09:20:17 -0400
-Message-ID: <20130801132017.GA15235@redhat.com>
-References: <1368509365-2260-1-git-send-email-indou.takao@jp.fujitsu.com>
- <51F85BCC.2070103@jp.fujitsu.com>
- <CAErSpo4yJ2yqCWv7GT7jWSVd_8SktU=xJXT78m8Vxp_wLA4Fow@mail.gmail.com>
- <1699397.FXoFYIGzbk@vostro.rjw.lan> <51FA015E.10901@jp.fujitsu.com>
+From: Shuah Khan <shuah.kh@samsung.com>
+Subject: Re: [Announcement] Linux Plumbers ACPI/PM, PCI Microconference
+Date: Thu, 01 Aug 2013 19:45:35 +0000
+Message-ID: <B8EFE96D1287C24090BAD9D858E15E617505EB@sisaex01sj>
+References: <CAL-B5D03ki8NHsM6EuESTH2K-Eh+XyFHNXPDYwgDq+oagDjtMQ@mail.gmail.com>
+ <1755363.sGc8nLIQOW@vostro.rjw.lan>
+ <CAKocOOPOqqS80D23z6xTVSNYYYWZ7ACg9MtSMz_hTqVA3Duo0w@mail.gmail.com>
+ <7183196.Ov6Qetq3lO@vostro.rjw.lan>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <kexec-bounces+glkk-kexec=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <51FA015E.10901-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/kexec>,
- <mailto:kexec-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/kexec/>
-List-Post: <mailto:kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:kexec-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/kexec>,
- <mailto:kexec-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "kexec" <kexec-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: kexec-bounces+glkk-kexec=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
-Cc: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rjw-KKrjLPT3xs0@public.gmane.org, hbabu-r/Jw6+rmf7HQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, bill.sumner-VXdhtT5mjnY@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-pm-owner@vger.kernel.org>
+Content-language: en-US
+Sender: linux-pm-owner@vger.kernel.org
+To: "Rafael J. Wysocki" <rjw@sisk.pl>
+Cc: Shuah Khan <shuahkhan@gmail.com>, linux-pci <linux-pci@vger.kernel.org>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, Linux PM list <linux-pm@vger.kernel.org>, Myron Stowe <myron.stowe@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Shuah Khan <shuah.kh@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Aug 01, 2013 at 03:34:06PM +0900, Takao Indoh wrote:
-> (2013/08/01 6:23), Rafael J. Wysocki wrote:
-> > On Wednesday, July 31, 2013 03:08:03 PM Bjorn Helgaas wrote:
-> >> [+cc Rafael, linux-acpi]
-> >>
-> >> On Tue, Jul 30, 2013 at 6:35 PM, Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org> wrote:
-> >>
-> >>> On x86, currently IOMMU initialization run *after* PCI enumeration, but
-> >>> what you are talking about is that it should be changed so that x86
-> >>> IOMMU initialization is done *before* PCI enumeration like sparc, right?
-> >>
-> >> Yes.  I don't know whether or when that initialization order will ever
-> >> be changed, but I do think we should avoid building more
-> >> infrastructure that depends on the current order.
-> >>
-> >> Changing the order is a pretty big deal because it's a lot more than
-> >> just the IOMMU.  Basically I think we should be enumerating ACPI
-> >> devices, including the IOMMU, before PCI devices, but there's a lot of
-> >> legacy involved in that area.  Added Rafael in case he has any
-> >> thoughts.
-> > 
-> > Well, actually, I'm not really familiar with IOMMUs, sorry.
-> > 
-> > I do think that initializing IOMMU before PCI enumeration would be better,
-> > however.  At least if the ordering should be the same on all architectures,
-> > which I suppose is the case, that's the one I'd choose.
-> 
-> Ok guys. If x86 IOMMU maintainer also thinks changing order is
-> necessary, maybe I need to give up device reset in kdump kernel and
-> consider doing it in panic kernel.
+On 07/31/2013 03:07 PM, Rafael J. Wysocki wrote:
+> On Wednesday, July 31, 2013 10:35:05 AM Shuah Khan wrote:
+>> On Wed, Jul 31, 2013 at 5:40 AM, Rafael J. Wysocki <rjw@sisk.pl> wrote:
+>>> Hi All,
+>>>
+>>> The original announcement didn't go to linux-pm, so again:
+>>>
+>>> On Tuesday, July 16, 2013 08:21:26 PM Myron Stowe wrote:
+>>>> Linux Plumbers has approved an ACPI/PM, PCI microconference. The
+>>>> overview page is here:
+>>>>
+>>>> http://wiki.linuxplumbersconf.org/2013:pci_subsystem
+>>>>
+>>>> We would like to start receiving volunteers for presenting topics of
+>>>> interest.  There is a lot of activity in these subsystems so please
+>>>> respond by submitting presentation or discussion proposals that you
+>>>> would be willing to cover for consideration.  You should also feel
+>>>> free to submit ideas as proposals that others could cover.  The
+>>>> instructions for submitting ideas should be at:
+>>>>
+>>>> http://www.linuxplumbersconf.org/2013/submitting-topic/
+>>>
+>>> If anyone who's going to attend the Linux Plumbers Conf this year is interested
+>>> in any particular topic for discussion during the ACPI/PM+PCI uconf, please
+>>> submit a formal topic proposal at:
+>>>
+>>> http://www.linuxplumbersconf.org/2013/ocw/events/LPC2013/proposals/new
+>>>
+>>> If you submit a topic, that doesn't mean you'll be expected to present anything
+>>> (if accepted).  In fact, we are mostly interested in discussion topics and we'd
+>>> like to know what is important to people.
+>>>
+>>> That said if you have a (short) presentation to make, please submit it too.
+>>>
+>>> We'll appreciate all submissions very much.
+>>>
+>>
+>> What I have mind is a discussion topic for the Mini-conference, which
+>> in-line with what you are asking for.
+>> I will add it to the web.
+>
+> Thank you!
 
-I don't think trying to reset all the devices in panic kernel is
-a good idea.
+Rafael,
 
-We need to handle the problem at IOMMU level first which is 
-independent of whether devices have been reset or not.
+Done. I submitted a topic for discussion.
 
-IOW, we should have the capability to initialize IOMMU first
-and be able to deal with devices which are doing DMA.
+-- Shuah
 
-I am not against doing device reset and it most likely is a good thing
-but it should happen in second kernel and not in crashed kernel.
-
-Thanks
-Vivek
+Shuah Khan, Linux Kernel Developer - Open Source Group Samsung Research 
+America (Silicon Valley) shuah.kh@samsung.com | (970) 672-0658
