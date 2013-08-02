@@ -1,25 +1,14 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH v2 1/2] pci: Create PCIe requester ID interface
-Date: Fri, 02 Aug 2013 10:59:55 -0600
-Message-ID: <1375462795.31262.327.camel@ul30vt.home>
-References: <20130711204439.1701.90503.stgit@bling.home>
-	<20130711210326.1701.56478.stgit@bling.home>
-	<20130723223533.GB19765@google.com>
-	<1374621703.15429.98.camel@ul30vt.home>
-	<CAErSpo6bcGCjqdxn-bz_vjo+HsAiOxDu=--mD7veEZ9f7k+gyA@mail.gmail.com>
-	<1374689548.5208.62.camel@ul30vt.home>
-	<20130724232427.GA9272@google.com>
-	<1374775016.2642.116.camel@ul30vt.home>
-	<20130726215435.GB20021@google.com>
-	<1375113975.2642.208.camel@ul30vt.home>
-	<CAErSpo7pfCtTm5Cq=VixPTKMpM4VQpDr+ZmS5qMw32z6ABu0xQ@mail.gmail.com>
-	<1375137140.2642.349.camel@ul30vt.home>
-	<CAErSpo5+-r3qMca1_Kvt3jJ6OP6Q7--4VmTo3fWJ0y4CPewgEQ@mail.gmail.com>
+From: Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH v8 06/12] ARM: dts: Add description of System MMU of Exynos
+	SoCs
+Date: Fri, 02 Aug 2013 19:14:06 +0200
+Message-ID: <27536111.odlCO093Zi@amdc1032>
+References: <003c01ce89f3$3abc4bc0$b034e340$@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAErSpo5+-r3qMca1_Kvt3jJ6OP6Q7--4VmTo3fWJ0y4CPewgEQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-reply-to: <003c01ce89f3$3abc4bc0$b034e340$@samsung.com>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -29,183 +18,765 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: 'Linux Samsung SOC' <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, 'Hyunwoong Kim' <khw0178.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Prathyush' <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Grant Grundler' <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, 'Keyyoung Park' <keyyoung.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Subash Patel' <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Linux Kernel' <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, 'Sachin Kamat' <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Linux IOMMU' <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, 'Kukjin Kim' <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Antonios Motakis' <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, 'Linux ARM Kernel' <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, 'Rahul Sharma' <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 2013-08-01 at 16:08 -0600, Bjorn Helgaas wrote:
-> On Mon, Jul 29, 2013 at 4:32 PM, Alex Williamson
-> <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> > On Mon, 2013-07-29 at 15:02 -0600, Bjorn Helgaas wrote:
-> >> On Mon, Jul 29, 2013 at 10:06 AM, Alex Williamson
-> >> <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> >> > On Fri, 2013-07-26 at 15:54 -0600, Bjorn Helgaas wrote:
-> >> >> On Thu, Jul 25, 2013 at 11:56:56AM -0600, Alex Williamson wrote:
-> >>
-> >> >> The "most closely associated device" idea seems confusing to
-> >> >> describe and think about.  I think you want to use it as part of
-> >> >> grouping devices into domains.  But I think we should attack that
-> >> >> problem separately.  For grouping or isolation questions, we have
-> >> >> to pay attention to things like ACS, which are not relevant for
-> >> >> mapping.
-> >> >
-> >> > We are only touch isolation insofar as providing an interface for a
-> >> > driver to determine the point in the PCI topology where the requester ID
-> >> > is rooted.  Yes, grouping can make use of that, but I object to the idea
-> >> > that we're approaching some slippery slope of rolling multiple concepts
-> >> > into this patch.  What I'm proposing here is strictly a requester ID
-> >> > interface.  I believe that providing a way for a caller to determine
-> >> > that two devices have a requester ID rooted at the same point in the PCI
-> >> > topology is directly relevant to that interface.
-> >> >
-> >> > pci_find_upstream_pcie_bridge() attempts to do this same thing.
-> >> > Unfortunately, the interface is convoluted, it doesn't handle quirks,
-> >> > and it requires a great deal of work by the caller to then walk the
-> >> > topology and create requester IDs at each step.  This also indicates
-> >> > that at each step, the requester ID is associated with some pci_dev.
-> >> > Providing a pci_dev is simply showing our work and providing context to
-> >> > the requester ID (ie. here's the requester ID and the step along the
-> >> > path from which it was derived.  Here's your top level requester ID and
-> >> > the point in the topology where it's based).
-> >>
-> >> What does the driver *do* with the pci_dev?  If it's not necessary,
-> >> then showing our work and providing context just complicates the
-> >> interface and creates opportunities for mistakes.  If we're creating
-> >> IOMMU mappings, only the requester ID is needed.
-> >
-> > It's true, I don't have a use for the pci_dev in
-> > pci_dev_for_each_requester_id() today.  But I think providing the
-> > context for a requester ID is valuable information.  Otherwise we have
-> > to make assumptions about the requester ID.  For example, if I have
-> > devices in different PCI segments with the same requester ID the
-> > callback function only knows that those are actually different requester
-> > IDs from information the caller provides itself in the opaque pointer.
-> > This is the case with intel-iommu, but why would we design an API that
-> > requires the caller to provide that kind of context?
-> 
-> The caller already has to provide context, e.g., the domain in which
-> to create a mapping, anyway via the opaque pointer.  So I would argue
-> that it's pointless to supply context twice in different ways.
-> 
-> We only have one caller of pci_dev_for_each_requester_id() anyway
-> (intel-iommu.c).  That seems really strange to me.  All I can assume
-> is that other IOMMU drivers *should* be doing something like this, but
-> aren't yet.  Anyway, since we only have one user, why not just provide
-> the minimum (only the requester ID), and add the pci_dev later if a
-> requirement for it turns up?
 
+Hi,
 
-Ok, I can do that.  I think we only have one user because intel-iommu is
-the only in-tree user of pci_find_upstream_pcie_bridge().  I know the
-powerpc folks have been using similar code though.  amd_iommu bypasses
-because they generate an alias table based on information for firmware.
-That replaces some of this manual grep'ing through the topology.
-Perhaps Joerg could comment about whether this is a useful interface for
-amd_iommu.
-
-> >  I also provide the
-> > pci_dev because I think both the pci_dev_for_each_requester_id() and
-> > pci_get_visible_pcie_requester() should provide similar APIs.  There's
-> > an association of a requester ID to a pci_dev.  Why hide that?
+On Friday, July 26, 2013 08:28:19 PM Cho KyongHo wrote:
+> Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> ---
+>  .../bindings/iommu/samsung,exynos4210-sysmmu.txt   |  103 +++++++
+>  arch/arm/boot/dts/exynos4.dtsi                     |  122 ++++++++
+>  arch/arm/boot/dts/exynos4210.dtsi                  |   25 ++
+>  arch/arm/boot/dts/exynos4x12.dtsi                  |   76 +++++
+>  arch/arm/boot/dts/exynos5250.dtsi                  |  291 ++++++++++++++++++++
+>  5 files changed, 617 insertions(+), 0 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
 > 
-> Information hiding is a basic idea of abstraction and encapsulation.
-> If we don't hide unnecessary information, we end up with unnecessary
-> dependencies.
-> 
-> >> I think you used get_domain_for_dev() and intel_iommu_add_device() as
-> >> examples, but as far as I can tell, they use the pci_dev as a way to
-> >> learn about isolation.  For that purpose, I don't think you want an
-> >> iterator -- you only want to know about the single pci_dev that's the
-> >> root of the isolation domain, and requester IDs really aren't
-> >> relevant.
-> >
-> > See get_domain_for_dev() in patch 2/2.  It uses the returned pci_dev to
-> > know whether the requester ID is rooted upstream or at the device
-> > itself.  If upstream, it then uses the requester ID to search for an
-> > existing domain.  The requester ID is relevant here.  If the returned
-> > pci_dev is the device itself, it proceeds to allocate a domain because
-> > the code path has already checked whether the device itself belongs to a
-> > domain.
-> 
-> I guess I got myself confused here.  get_domain_for_dev() uses
-> pci_get_visible_pcie_requester(), not pci_dev_for_each_requester_id().
-> 
-> >> > (1) pcie_for_each_requester
-> >> >     (or pci_dev_for_each_requester_id)
-> >> >
-> >> > (2) pci_get_visible_pcie_requester
-> >> >     (or pci_get_visible_pcie_requester_id)
-> >> >
-> >> > Note however that (2) does not impose anything about domains or
-> >> > isolation, it is strictly based on PCI topology.  It's left to the
-> >> > caller to determine how that translates to IOMMU domains, but the
-> >> > typical case is trivial.
-> >>
-> >> Can you expand on this a little bit?  What's involved in translating
-> >> the pci_get_visible_pcie_requester() result to an IOMMU domain?  Is
-> >> there something IOMMU-specific about this?
-> >
-> > I try not to make any assumptions about what's required to get from a
-> > pci_dev/requester ID to a domain.  The IOMMU may only be able to filter
-> > a subset of the requester ID, for instance what if it has no function
-> > level visibility, or perhaps only bus level visibility.  intel-iommu has
-> > full BDF granularity, so it's perhaps the simplest case.
-> >
-> >> I assume that for any given PCI device A, there's a subtree of devices
-> >> that the IOMMU can't distinguish from A, and that this subtree is not
-> >> IOMMU-specific so it's reasonable to to have a PCI interface to
-> >> compute it.  An IOMMU driver might want to expand the domain to
-> >> include more devices, of course, and *that* seems like something to
-> >> leave to the driver.
-> >
-> > Yes, I agree.  We're only trying to determine the PCI bus level
-> > visibility, anything else is left to the IOMMU driver.
-> >
-> >> I'm also assuming that a pci_dev (the root of the subtree) is a good
-> >> way to identify this set of indistinguishable devices because it's
-> >> easy to test whether a device B is part of it.  But the requester ID
-> >> seems redundant in this case because you can just associate an IOMMU
-> >> domain with the pci_dev.
-> >
-> > I don't think we want to assume that an IOMMU driver bases a domain on a
-> > pci_dev or a BDF.  That's specific to the driver.  The requester ID is
-> > not redundant though since it depends on topology and quirks.  A given
-> > pci_dev may have it's own legitimate requester ID or a quirk, where the
-> > quirk may be specific to the device or architected, like a bridge using
-> > the (bridge->subordinate->number << 8 | 0) requester ID.
-> >
-> >> Where does ACS come into the picture?
-> >
-> > ACS determines whether a transaction must necessarily reach the IOMMU
-> > without being redirected.  Therefore once we figure out the point at
-> > which we have bus level granularity for a transaction, we look upstream
-> > to determine if a transaction must necessarily reach the IOMMU.  In the
-> > case of intel-iommu, IOMMU groups are only dependent on the visibility
-> > provided by the PCI topology and the isolation guaranteed through ACS,
-> > but it's up to the IOMMU driver to determine whether there are
-> > additional constraints.  Thanks,
-> 
-> What code will look for ACS support and enablement?  Do you envision
-> that being in the IOMMU code or somewhere in PCI?  I was hoping that
-> the isolation/domain identification stuff could be fairly generic, but
-> it sounds like that's not the case so I'm guessing the interesting
-> parts of it will be in IOMMU code.
+> diff --git a/Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
+> b/Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
+> new file mode 100644
+> index 0000000..92f0a33
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
+> @@ -0,0 +1,103 @@
+> +Samsung Exynos4210 IOMMU H/W, System MMU (System Memory Management Unit)
+> +
+> +Samsung's Exynos architecture contains System MMU that enables scattered
+> +physical memory chunks visible as a contiguous region to DMA-capable peripheral
+> +devices like MFC, FIMC, FIMD, GScaler, FIMC-IS and so forth.
+> +
+> +System MMU is a sort of IOMMU and support identical translation table format to
+> +ARMv7 translation tables with minimum set of page properties including access
+> +permissions, shareability and security protection. In addition, System MMU has
+> +another capabilities like L2 TLB or block-fetch buffers to minimize translation
+> +latency.
+> +
+> +A System MMU is dedicated to a single master peripheral device.  Thus, it is
+> +important to specify the correct System MMU in the device node of its master
+> +device. Whereas a System MMU is dedicated to a master device, the master device
+> +may have more than one System MMU.
+> +
+> +Required properties:
+> +- compatible: Should be "samsung,exynos4210-sysmmu"
+> +- reg: A tuple of base address and size of System MMU registers.
+> +- interrupt-parent: The phandle of the interrupt controller of System MMU
+> +- interrupts: A tuple of numbers that indicates the interrupt source.
+> +- clock-names: Should be "sysmmu" if the System MMU is needed to gate its clock.
+> +               Please refer to the following documents:
+> +	       Documentation/devicetree/bindings/clock/clock-bindings.txt
+> +	       Documentation/devicetree/bindings/clock/exynos4-clock.txt
+> +	       Documentation/devicetree/bindings/clock/exynos5250-clock.txt
+> +	       Optional "master" if the clock to the System MMU is gated by
+> +	       another gate clock other than "sysmmu". The System MMU driver
+> +	       sets "master" the parent of "sysmmu".
+> +	       Exynos4 SoCs, there needs no "master" clocks.
+> +	       Exynos5 SoCs, some System MMUs must have "master" clocks.
+> +- clocks: Required if the System MMU is needed to gate its clock.
+> +	  Please refer to the documents listed above.
+> +- samsung,power-domain: Required if the System MMU is needed to gate its power.
+> +	  Please refer to the following document:
+> +	  Documentation/devicetree/bindings/arm/exynos/power_domain.txt
+> +
+> +Required properties for the master peripheral devices:
+> +- iommu: phandles to the System MMUs of the device
+> +
+> +Examples:
+> +A System MMU is dedicated to a single master device.
+> +	gsc_0:  gsc@0x13e00000 {
+> +		compatible = "samsung,exynos5-gsc";
+> +		reg = <0x13e00000 0x1000>;
+> +		interrupts = <0 85 0>;
+> +		samsung,power-domain = <&pd_gsc>;
+> +		clocks = <&clock 256>;
+> +		clock-names = "gscl";
+> +		iommu = <&sysmmu_gsc1>;
+> +	};
+> +
+> +	sysmmu_gsc0: sysmmu@13E80000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x13E80000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-gsc0";
+> +		interrupts = <2 0>;
+> +		clock-names = "sysmmu", "master";
+> +		clocks = <&clock 262>, <&clock 256>;
+> +		samsung,power-domain = <&pd_gsc>;
+> +		status = "ok";
+> +	};
+> +
+> +MFC has 2 System MMUs for each port that MFC is attached. Thus it seems natural
+> +to define 2 System MMUs for each port of the MFC:
 
-ACS support is currently in the IOMMUs and it's pretty much a mirror
-image in both intel-iommu and amd_iommu (and soon powerpc), so it's
-another good opportunity to create something to facilitate it.  The
-specific IOMMU drivers are definitely more involved in determining
-device visibility since that directly translates into their page table
-entries, but ACS determines isolation, which is generic and determined
-exclusively by device capabilities and quirks.
+Marek Szyprowski (added to cc:) has a patch fixing MFC to create separate
+mfc_l and mfc_r devices (like it was in the past). Using this patch it
+would be possible to bind sysmmu_mfc_l to mfc_l device and sysmmu_mfc_r to
+mfc_r device. This probably also requires adding some MFC specific handling
+in a device tree node and to the new master's device PM ops (in patch #10)
+as previously (in our trees) sysmmu_mfc r device was set as parent of
+sysmmu_mfc_l device which in turn was a parent for main MFC device (to make
+runtime Power Management work). However because MFC is the only device
+requiring use of multiple System MMUs above changes would allow us (unless
+I'm missing something?) to use just one System MMU device per struct
+exynos_iommu_client instance (making driver a lot simpler).
 
-> So I think I'm willing to go along with
-> pci_get_visible_pcie_requester() returning both a pci_dev and a
-> requester ID.  Is a single one of each sufficient?  I guess it is -- I
-> don't see any loops around where you're calling it.
+> +	mfc: codec@13400000 {
+> +		compatible = "samsung,mfc-v5";
+> +		reg = <0x13400000 0x10000>;
+> +		interrupts = <0 94 0>;
+> +		samsung,power-domain = <&pd_mfc>;
+> +		clocks = <&clock 170>, <&clock 273>;
+> +		clock-names = "sclk_mfc", "mfc";
+> +		status = "ok";
+> +		iommu = <&sysmmu_mfc_l>, <&sysmmu_mfc_r>;
+> +	};
+> +
+> +	sysmmu_mfc_l: sysmmu@13620000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x13620000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-mfc-l";
+> +		interrupts = <5 5>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 274>;
+> +		samsung,power-domain = <&pd_mfc>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_mfc_r: sysmmu@13630000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x13630000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-mfc-r";
+> +		interrupts = <5 6>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 275>;
+> +		samsung,power-domain = <&pd_mfc>;
+> +		status = "ok";
+> +	};
+> +
+> diff --git a/arch/arm/boot/dts/exynos4.dtsi b/arch/arm/boot/dts/exynos4.dtsi
+> index 359694c..ba74ee8 100644
+> --- a/arch/arm/boot/dts/exynos4.dtsi
+> +++ b/arch/arm/boot/dts/exynos4.dtsi
+> @@ -161,6 +161,7 @@
+>  		interrupts = <0 94 0>;
+>  		samsung,power-domain = <&pd_mfc>;
+>  		status = "disabled";
+> +		iommu = <&sysmmu_mfc_l>, <&sysmmu_mfc_r>;
+>  	};
+>  
+>  	serial@13800000 {
+> @@ -395,5 +396,126 @@
+>  		clock-names = "sclk_fimd", "fimd";
+>  		samsung,power-domain = <&pd_lcd0>;
+>  		status = "disabled";
+> +		iommu = <&sysmmu_fimd0>;
+> +	};
+> +
+> +	sysmmu_mfc_l: sysmmu@13620000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x13620000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-mfc-l";
+> +		interrupts = <5 5>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 274>;
+> +		samsung,power-domain = <&pd_mfc>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_mfc_r: sysmmu@13630000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x13630000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-mfc-r";
+> +		interrupts = <5 6>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 275>;
+> +		samsung,power-domain = <&pd_mfc>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_tv: sysmmu@13E20000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x13E20000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-tv";
+> +		interrupts = <5 4>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 272>;
+> +		samsung,power-domain = <&pd_tv>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimc0: sysmmu@11A20000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x11A20000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-fimc0";
+> +		interrupts = <4 2>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 263>;
+> +		samsung,power-domain = <&pd_cam>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimc1: sysmmu@11A30000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x11A30000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-fimc1";
+> +		interrupts = <4 3>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 264>;
+> +		samsung,power-domain = <&pd_cam>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimc2: sysmmu@11A40000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x11A40000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-fimc2";
+> +		interrupts = <4 4>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 265>;
+> +		samsung,power-domain = <&pd_cam>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimc3: sysmmu@11A50000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x11A50000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-fimc3";
+> +		interrupts = <4 5>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 266>;
+> +		samsung,power-domain = <&pd_cam>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_jpeg: sysmmu@11A60000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x11A60000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-jpeg";
+> +		interrupts = <4 6>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 267>;
+> +		samsung,power-domain = <&pd_cam>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_rotator: sysmmu@12A30000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x12A30000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-rotator";
+> +		interrupts = <5 0>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 281>;
+> +		samsung,power-domain = <&pd_lcd0>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimd0: sysmmu@11E20000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x11E20000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-fimd0";
+> +		interrupts = <5 2>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 287>;
+> +		samsung,power-domain = <&pd_lcd0>;
+> +		status = "ok";
+>  	};
+>  };
+> diff --git a/arch/arm/boot/dts/exynos4210.dtsi b/arch/arm/boot/dts/exynos4210.dtsi
+> index 54710de..09b13da 100644
+> --- a/arch/arm/boot/dts/exynos4210.dtsi
+> +++ b/arch/arm/boot/dts/exynos4210.dtsi
+> @@ -119,5 +119,30 @@
+>  		reg = <0x12800000 0x1000>;
+>  		interrupts = <0 89 0>;
+>  		status = "disabled";
+> +		iommu = <&sysmmu_g2d>;
+> +	};
+> +
+> +	sysmmu_g2d: sysmmu@12A20000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x12A20000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-g2d";
+> +		interrupts = <4 7>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 280>;
+> +		samsung,power-domain = <&pd_lcd0>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimd1: sysmmu@12220000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-fimd1";
+> +		reg = <0x12220000 0x1000>;
+> +		interrupts = <5 3>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 291>;
+> +		samsung,power-domain = <&pd_lcd1>;
+> +		status = "ok";
+>  	};
+>  };
+> diff --git a/arch/arm/boot/dts/exynos4x12.dtsi b/arch/arm/boot/dts/exynos4x12.dtsi
+> index e3380a7..681db32 100644
+> --- a/arch/arm/boot/dts/exynos4x12.dtsi
+> +++ b/arch/arm/boot/dts/exynos4x12.dtsi
+> @@ -79,4 +79,80 @@
+>  		interrupts = <0 89 0>;
+>  		status = "disabled";
+>  	};
+> +
+> +	sysmmu_g2d: sysmmu@10A40000{
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x10A40000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-g2d";
+> +		interrupts = <4 7>;
+> +		clock-names = "sysmmu";
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimc_isp: sysmmu@12260000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x12260000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-fimc_isp";
+> +		interrupts = <16 2>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 362>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimc_drc: sysmmu@12270000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x12270000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-fimc_drc";
+> +		interrupts = <16 3>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 363>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimc_fd: sysmmu@122A0000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x122A0000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-fimc_fd";
+> +		interrupts = <16 4>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 364>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimc_mcuctl: sysmmu@122B0000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x122B0000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-fimc_mcuctl";
+> +		interrupts = <16 5>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 376>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimc_lite0: sysmmu@123B0000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x123B0000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-fimc_lite0";
+> +		interrupts = <16 0>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 366>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimc_lite1: sysmmu@123C0000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x123C0000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-fimc_lite1";
+> +		interrupts = <16 1>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 365>;
+> +		status = "ok";
+> +	};
+>  };
+> diff --git a/arch/arm/boot/dts/exynos5250.dtsi b/arch/arm/boot/dts/exynos5250.dtsi
+> index fc9fb3d..130d23d 100644
+> --- a/arch/arm/boot/dts/exynos5250.dtsi
+> +++ b/arch/arm/boot/dts/exynos5250.dtsi
+> @@ -66,6 +66,16 @@
+>  		reg = <0x10044040 0x20>;
+>  	};
+>  
+> +	pd_isp: mfc-power-domain@0x10044020 {
+> +		compatible = "samsung,exynos4210-pd";
+> +		reg = <0x10044020 0x20>;
+> +	};
+> +
+> +	pd_disp1: mfc-power-domain@0x100440A0 {
+> +		compatible = "samsung,exynos4210-pd";
+> +		reg = <0x100440A0 0x20>;
+> +	};
+> +
+>  	clock: clock-controller@0x10010000 {
+>  		compatible = "samsung,exynos5250-clock";
+>  		reg = <0x10010000 0x30000>;
+> @@ -180,6 +190,7 @@
+>  		reg = <0x11000000 0x10000>;
+>  		interrupts = <0 96 0>;
+>  		samsung,power-domain = <&pd_mfc>;
+> +		iommu = <&sysmmu_mfc_l &sysmmu_mfc_l>;
 
-Great!  I'm still trying to figure out how to handle the quirk around
-Intel PCI-to-PCI bridge on the root complex as just another quirk.  I
-respin another version once I have that worked out.  Thanks,
+Shouldn't it be:
 
-Alex
+	iommu = <&sysmmu_mfc_l>, <&sysmmu_mfc_r>;
+
+?
+
+Best regards,
+--
+Bartlomiej Zolnierkiewicz
+Samsung R&D Institute Poland
+Samsung Electronics
+
+>  	};
+>  
+>  	rtc {
+> @@ -571,6 +582,7 @@
+>  		samsung,power-domain = <&pd_gsc>;
+>  		clocks = <&clock 256>;
+>  		clock-names = "gscl";
+> +		iommu = <&sysmmu_gsc1>;
+>  	};
+>  
+>  	gsc_1:  gsc@0x13e10000 {
+> @@ -580,6 +592,7 @@
+>  		samsung,power-domain = <&pd_gsc>;
+>  		clocks = <&clock 257>;
+>  		clock-names = "gscl";
+> +		iommu = <&sysmmu_gsc1>;
+>  	};
+>  
+>  	gsc_2:  gsc@0x13e20000 {
+> @@ -589,6 +602,7 @@
+>  		samsung,power-domain = <&pd_gsc>;
+>  		clocks = <&clock 258>;
+>  		clock-names = "gscl";
+> +		iommu = <&sysmmu_gsc2>;
+>  	};
+>  
+>  	gsc_3:  gsc@0x13e30000 {
+> @@ -598,6 +612,7 @@
+>  		samsung,power-domain = <&pd_gsc>;
+>  		clocks = <&clock 259>;
+>  		clock-names = "gscl";
+> +		iommu = <&sysmmu_gsc3>;
+>  	};
+>  
+>  	hdmi {
+> @@ -614,6 +629,7 @@
+>  		compatible = "samsung,exynos5-mixer";
+>  		reg = <0x14450000 0x10000>;
+>  		interrupts = <0 94 0>;
+> +		iommu = <&sysmmu_tv>;
+>  	};
+>  
+>  	dp-controller {
+> @@ -638,5 +654,280 @@
+>  		interrupts = <18 4>, <18 5>, <18 6>;
+>  		clocks = <&clock 133>, <&clock 339>;
+>  		clock-names = "sclk_fimd", "fimd";
+> +		iommu = <&sysmmu_fimd1>;
+> +	};
+> +
+> +	sysmmu_mfc_l: sysmmu@11210000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x11210000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-mfc_l";
+> +		interrupts = <8 5>;
+> +		clock-names = "sysmmu", "master";
+> +		clocks = <&clock 267>, <&clock 266>;
+> +		samsung,power-domain = <&pd_mfc>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_mfc_r: sysmmu@11200000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x11200000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-mfc_r";
+> +		interrupts = <6 2>;
+> +		clock-names = "sysmmu", "master";
+> +		clocks = <&clock 268>, <&clock 266>;
+> +		samsung,power-domain = <&pd_mfc>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_tv: sysmmu@14650000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x14650000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-tv";
+> +		interrupts = <7 4>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 349>;
+> +		samsung,power-domain = <&pd_disp1>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_gsc0: sysmmu@13E80000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x13E80000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-gsc0";
+> +		interrupts = <2 0>;
+> +		clock-names = "sysmmu", "master";
+> +		clocks = <&clock 262>, <&clock 256>;
+> +		samsung,power-domain = <&pd_gsc>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_gsc1: sysmmu@13E90000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x13E90000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-gsc1";
+> +		interrupts = <2 2>;
+> +		clock-names = "sysmmu", "master";
+> +		clocks = <&clock 263>, <&clock 257>;
+> +		samsung,power-domain = <&pd_gsc>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_gsc2: sysmmu@13EA0000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x13EA0000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-gsc2";
+> +		interrupts = <2 4>;
+> +		clock-names = "sysmmu", "master";
+> +		clocks = <&clock 264>, <&clock 258>;
+> +		samsung,power-domain = <&pd_gsc>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_gsc3: sysmmu@13EB0000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x13EB0000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-gsc3";
+> +		interrupts = <2 6>;
+> +		clock-names = "sysmmu", "master";
+> +		clocks = <&clock 265>, <&clock 259>;
+> +		samsung,power-domain = <&pd_gsc>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimd1: sysmmu@14640000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x14640000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-fimd1";
+> +		interrupts = <3 2>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 350>;
+> +		samsung,power-domain = <&pd_disp1>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_rotator: sysmmu@11D40000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x11D40000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-rotator";
+> +		interrupts = <4 0>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 272>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimc_isp: sysmmu@13260000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x13260000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-fimc_isp";
+> +		interrupts = <10 6>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 361>;
+> +		samsung,power-domain = <&pd_isp>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimc_drc: sysmmu@13270000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x13270000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-fimc_drc";
+> +		interrupts = <11 6>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 362>;
+> +		samsung,power-domain = <&pd_isp>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimc_fd: sysmmu@132A0000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x132A0000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-fimc_fd";
+> +		interrupts = <5 0>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 363>;
+> +		samsung,power-domain = <&pd_isp>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimc_scc: sysmmu@13280000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x13280000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-fimc_scalerc";
+> +		interrupts = <5 2>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 364>;
+> +		samsung,power-domain = <&pd_isp>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimc_scp: sysmmu@13290000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x13290000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-fimc_scalerp";
+> +		interrupts = <3 6>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 365>;
+> +		samsung,power-domain = <&pd_isp>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimc_mcuctl: sysmmu@132B0000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x132B0000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-fimc_mcuctl";
+> +		interrupts = <5 4>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 366>;
+> +		samsung,power-domain = <&pd_isp>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimc_odc: sysmmu@132C0000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x132C0000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-fimc_odc";
+> +		interrupts = <11 0>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 367>;
+> +		samsung,power-domain = <&pd_isp>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimc_dis0: sysmmu@132D0000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x132D0000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-fimc_dis0";
+> +		interrupts = <10 4>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 368>;
+> +		samsung,power-domain = <&pd_isp>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimc_dis1: sysmmu@132E0000{
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x132E0000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-fimc_dis1";
+> +		interrupts = <9 4>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 369>;
+> +		samsung,power-domain = <&pd_isp>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimc_3dnr: sysmmu@132F0000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x132F0000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-fimc_3dnr";
+> +		interrupts = <5 6>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 370>;
+> +		samsung,power-domain = <&pd_isp>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimc_lite0: sysmmu@13C40000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x13C40000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-fimc_lite0";
+> +		interrupts = <3 4>;
+> +		clock-names = "sysmmu", "master";
+> +		clocks = <&clock 346>, <&clock 345>;
+> +		samsung,power-domain = <&pd_gsc>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimc_lite1: sysmmu@13C50000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x13C50000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-fimc_lite1";
+> +		interrupts = <24 1>;
+> +		clock-names = "sysmmu", "master";
+> +		clocks = <&clock 347>, <&clock 345>;
+> +		samsung,power-domain = <&pd_gsc>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimc_jpeg: sysmmu@11F20000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x11F20000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-jpeg";
+> +		interrupts = <4 2>;
+> +		clock-names = "sysmmu", "master";
+> +		clocks = <&clock 273>, <&clock 270>;
+> +		samsung,power-domain = <&pd_gsc>;
+> +		status = "ok";
+> +	};
+> +
+> +	sysmmu_fimc_2d: sysmmu@10A60000 {
+> +		compatible = "samsung,exynos4210-sysmmu";
+> +		reg = <0x10A60000 0x1000>;
+> +		interrupt-parent = <&combiner>;
+> +		interrupt-names = "sysmmu-2d";
+> +		interrupts = <24 5>;
+> +		clock-names = "sysmmu";
+> +		clocks = <&clock 361>;
+> +		status = "ok";
+>  	};
+>  };
