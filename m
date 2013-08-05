@@ -1,159 +1,286 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH v8 06/12] ARM: dts: Add description of System MMU of Exynos
- SoCs
-Date: Mon, 05 Aug 2013 15:34:58 +0200
-Message-ID: <51FFAA02.50407@samsung.com>
-References: <003c01ce89f3$3abc4bc0$b034e340$@samsung.com>
- <27536111.odlCO093Zi@amdc1032> <003c01ce91cd$427fad70$c77f0850$@samsung.com>
- <1429191.3FDem6vW0S@amdc1032>
+From: Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCH 2/3] Initial skeleton of VFIO support for Device Tree
+ based devices
+Date: Mon, 5 Aug 2013 14:37:58 +0100
+Message-ID: <20130805133757.GF9910@e106331-lin.cambridge.arm.com>
+References: <1375708632-26356-1-git-send-email-a.motakis@virtualopensystems.com>
+ <1375708632-26356-3-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <1429191.3FDem6vW0S@amdc1032>
+Content-Disposition: inline
+In-Reply-To: <1375708632-26356-3-git-send-email-a.motakis@virtualopensystems.com>
 Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Cc: Cho KyongHo <pullip.cho@samsung.com>, 'Linux ARM Kernel' <linux-arm-kernel@lists.infradead.org>, 'Linux IOMMU' <iommu@lists.linux-foundation.org>, 'Linux Kernel' <linux-kernel@vger.kernel.org>, 'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>, 'Hyunwoong Kim' <khw0178.kim@samsung.com>, 'Joerg Roedel' <joro@8bytes.org>, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Prathyush' <prathyush.k@samsung.com>, 'Rahul Sharma' <rahul.sharma@samsung.com>, 'Subash Patel' <supash.ramaswamy@linaro.org>, 'Keyyoung Park' <keyyoung.park@samsung.com>, 'Grant Grundler' <grundler@chromium.org>, 'Antonios Motakis' <a.motakis@virtualopensystems.com>, kvmarm@lists.cs.columbia.edu, 'Sachin Kamat' <sachin.kamat@linaro.org>
+To: Antonios Motakis <a.motakis@virtualopensystems.com>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "agraf@suse.de" <agraf@suse.de>, "B08248@freescale.com" <B08248@freescale.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, pawel.moll@arm.com, swarren@wwwdotorg.org, ian.campbell@citrix.com, grant.likely@linaro.org, tomasz.figa@gmail.com, rob.herring@calxeda.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
+[adding DT maintainers to Cc]
 
-On 8/5/2013 3:09 PM, Bartlomiej Zolnierkiewicz wrote:
-> On Monday, August 05, 2013 08:16:40 PM Cho KyongHo wrote:
-> > > -----Original Message-----
-> > > From: Bartlomiej Zolnierkiewicz [mailto:b.zolnierkie@samsung.com]
-> > > Sent: Saturday, August 03, 2013 2:14 AM
-> > >
-> > > Hi,
-> > >
-> > > On Friday, July 26, 2013 08:28:19 PM Cho KyongHo wrote:
-> > > > Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
-> > > > ---
-> > > >  .../bindings/iommu/samsung,exynos4210-sysmmu.txt   |  103 +++++++
-> > > >  arch/arm/boot/dts/exynos4.dtsi                     |  122 ++++++++
-> > > >  arch/arm/boot/dts/exynos4210.dtsi                  |   25 ++
-> > > >  arch/arm/boot/dts/exynos4x12.dtsi                  |   76 +++++
-> > > >  arch/arm/boot/dts/exynos5250.dtsi                  |  291 ++++++++++++++++++++
-> > > >  5 files changed, 617 insertions(+), 0 deletions(-)
-> > > >  create mode 100644 Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
-> > > >
-> > > > diff --git a/Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
-> > > > b/Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
-> > > > new file mode 100644
-> > > > index 0000000..92f0a33
-> > > > --- /dev/null
-> > > > +++ b/Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
-> > > > @@ -0,0 +1,103 @@
-> > > > +Samsung Exynos4210 IOMMU H/W, System MMU (System Memory Management Unit)
-> > > > +
-> > > > +Samsung's Exynos architecture contains System MMU that enables scattered
-> > > > +physical memory chunks visible as a contiguous region to DMA-capable peripheral
-> > > > +devices like MFC, FIMC, FIMD, GScaler, FIMC-IS and so forth.
-> > > > +
-> > > > +System MMU is a sort of IOMMU and support identical translation table format to
-> > > > +ARMv7 translation tables with minimum set of page properties including access
-> > > > +permissions, shareability and security protection. In addition, System MMU has
-> > > > +another capabilities like L2 TLB or block-fetch buffers to minimize translation
-> > > > +latency.
-> > > > +
-> > > > +A System MMU is dedicated to a single master peripheral device.  Thus, it is
-> > > > +important to specify the correct System MMU in the device node of its master
-> > > > +device. Whereas a System MMU is dedicated to a master device, the master device
-> > > > +may have more than one System MMU.
-> > > > +
-> > > > +Required properties:
-> > > > +- compatible: Should be "samsung,exynos4210-sysmmu"
-> > > > +- reg: A tuple of base address and size of System MMU registers.
-> > > > +- interrupt-parent: The phandle of the interrupt controller of System MMU
-> > > > +- interrupts: A tuple of numbers that indicates the interrupt source.
-> > > > +- clock-names: Should be "sysmmu" if the System MMU is needed to gate its clock.
-> > > > +               Please refer to the following documents:
-> > > > +	       Documentation/devicetree/bindings/clock/clock-bindings.txt
-> > > > +	       Documentation/devicetree/bindings/clock/exynos4-clock.txt
-> > > > +	       Documentation/devicetree/bindings/clock/exynos5250-clock.txt
-> > > > +	       Optional "master" if the clock to the System MMU is gated by
-> > > > +	       another gate clock other than "sysmmu". The System MMU driver
-> > > > +	       sets "master" the parent of "sysmmu".
-> > > > +	       Exynos4 SoCs, there needs no "master" clocks.
-> > > > +	       Exynos5 SoCs, some System MMUs must have "master" clocks.
-> > > > +- clocks: Required if the System MMU is needed to gate its clock.
-> > > > +	  Please refer to the documents listed above.
-> > > > +- samsung,power-domain: Required if the System MMU is needed to gate its power.
-> > > > +	  Please refer to the following document:
-> > > > +	  Documentation/devicetree/bindings/arm/exynos/power_domain.txt
-> > > > +
-> > > > +Required properties for the master peripheral devices:
-> > > > +- iommu: phandles to the System MMUs of the device
-> > > > +
-> > > > +Examples:
-> > > > +A System MMU is dedicated to a single master device.
-> > > > +	gsc_0:  gsc@0x13e00000 {
-> > > > +		compatible = "samsung,exynos5-gsc";
-> > > > +		reg = <0x13e00000 0x1000>;
-> > > > +		interrupts = <0 85 0>;
-> > > > +		samsung,power-domain = <&pd_gsc>;
-> > > > +		clocks = <&clock 256>;
-> > > > +		clock-names = "gscl";
-> > > > +		iommu = <&sysmmu_gsc1>;
-> > > > +	};
-> > > > +
-> > > > +	sysmmu_gsc0: sysmmu@13E80000 {
-> > > > +		compatible = "samsung,exynos4210-sysmmu";
-> > > > +		reg = <0x13E80000 0x1000>;
-> > > > +		interrupt-parent = <&combiner>;
-> > > > +		interrupt-names = "sysmmu-gsc0";
-> > > > +		interrupts = <2 0>;
-> > > > +		clock-names = "sysmmu", "master";
-> > > > +		clocks = <&clock 262>, <&clock 256>;
-> > > > +		samsung,power-domain = <&pd_gsc>;
-> > > > +		status = "ok";
-> > > > +	};
-> > > > +
-> > > > +MFC has 2 System MMUs for each port that MFC is attached. Thus it seems natural
-> > > > +to define 2 System MMUs for each port of the MFC:
-> > >
-> > > Marek Szyprowski (added to cc:) has a patch fixing MFC to create separate
-> > > mfc_l and mfc_r devices (like it was in the past). Using this patch it
-> > > would be possible to bind sysmmu_mfc_l to mfc_l device and sysmmu_mfc_r to
-> > > mfc_r device. This probably also requires adding some MFC specific handling
-> > > in a device tree node and to the new master's device PM ops (in patch #10)
-> > > as previously (in our trees) sysmmu_mfc r device was set as parent of
-> > > sysmmu_mfc_l device which in turn was a parent for main MFC device (to make
-> > > runtime Power Management work). However because MFC is the only device
-> > > requiring use of multiple System MMUs above changes would allow us (unless
-> > > I'm missing something?) to use just one System MMU device per struct
-> > > exynos_iommu_client instance (making driver a lot simpler).
-> > >
-> >
-> > Does it mean that we can make the exynos-iommu driver simpler
-> > with Marek Szyprowski's patch?
->
-> I think so and you probably need to change MFC handling anyway because
-> MFC driver does DMA allocations per mfc_l/mfc_r devices and not per main
-> device (at least in the upstream kernels).
->
-> [ Marek, could you please resfresh and post your patch on the list? ]
+On Mon, Aug 05, 2013 at 02:17:11PM +0100, Antonios Motakis wrote:
+> Platform devices in the Linux kernel are usually managed by the DT
+> interface. This patch forms the base to support these kind of devices
+> with VFIO.
+> 
+> Signed-off-by: Antonios Motakis <a.motakis@virtualopensystems.com>
+> ---
+>  drivers/vfio/Kconfig      |  10 +++
+>  drivers/vfio/Makefile     |   1 +
+>  drivers/vfio/vfio_dt.c    | 187 ++++++++++++++++++++++++++++++++++++++++++++++
+>  include/uapi/linux/vfio.h |   1 +
+>  4 files changed, 199 insertions(+)
+>  create mode 100644 drivers/vfio/vfio_dt.c
+> 
+> diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
+> index 1f84eda..a77a2e4 100644
+> --- a/drivers/vfio/Kconfig
+> +++ b/drivers/vfio/Kconfig
+> @@ -13,4 +13,14 @@ menuconfig VFIO
+>  
+>  	  If you don't know what to do here, say N.
+>  
+> +config VFIO_DT
+> +	tristate "VFIO support for Device Tree devices"
+> +	depends on VFIO && EVENTFD
+> +	help
+> +	  Support for the VFIO Device Tree driver.  This is required to make
+> +	  use of platform devices present on Device Tree nodes using the VFIO
+> +	  framework.
+> +
+> +	  If you don't know what to do here, say N.
+> +
+>  source "drivers/vfio/pci/Kconfig"
+> diff --git a/drivers/vfio/Makefile b/drivers/vfio/Makefile
+> index 2398d4a..d599a67 100644
+> --- a/drivers/vfio/Makefile
+> +++ b/drivers/vfio/Makefile
+> @@ -1,3 +1,4 @@
+>  obj-$(CONFIG_VFIO) += vfio.o
+>  obj-$(CONFIG_VFIO_IOMMU_TYPE1) += vfio_iommu_type1.o
+>  obj-$(CONFIG_VFIO_PCI) += pci/
+> +obj-$(CONFIG_VFIO_DT) += vfio_dt.o
+> diff --git a/drivers/vfio/vfio_dt.c b/drivers/vfio/vfio_dt.c
+> new file mode 100644
+> index 0000000..ad4d31d
+> --- /dev/null
+> +++ b/drivers/vfio/vfio_dt.c
+> @@ -0,0 +1,187 @@
+> +/*
+> + * Copyright (C) 2013 - Virtual Open Systems
+> + * Author: Antonios Motakis <a.motakis@virtualopensystems.com>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License, version 2, as
+> + * published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + *
+> + * You should have received a copy of the GNU General Public License
+> + * along with this program; if not, write to the Free Software
+> + * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+> + */
+> +
+> +#include <linux/device.h>
+> +#include <linux/eventfd.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/iommu.h>
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/notifier.h>
+> +#include <linux/pm_runtime.h>
+> +#include <linux/slab.h>
+> +#include <linux/types.h>
+> +#include <linux/uaccess.h>
+> +#include <linux/vfio.h>
+> +
+> +#define DRIVER_VERSION  "0.1"
+> +#define DRIVER_AUTHOR   "Antonios Motakis <a.motakis@virtualopensystems.com>"
+> +#define DRIVER_DESC     "VFIO Device Tree devices - User Level meta-driver"
+> +
+> +struct vfio_dt_device {
+> +	struct platform_device	*pdev;
+> +};
+> +
+> +static void vfio_dt_release(void *device_data)
+> +{
+> +	module_put(THIS_MODULE);
+> +}
+> +
+> +static int vfio_dt_open(void *device_data)
+> +{
+> +	if (!try_module_get(THIS_MODULE))
+> +		return -ENODEV;
+> +
+> +	return 0;
+> +}
+> +
+> +static long vfio_dt_ioctl(void *device_data,
+> +			   unsigned int cmd, unsigned long arg)
+> +{
+> +	struct vfio_dt_device *vdev = device_data;
+> +	unsigned long minsz;
+> +
+> +	if (cmd == VFIO_DEVICE_GET_INFO) {
+> +		struct vfio_device_info info;
+> +
+> +		minsz = offsetofend(struct vfio_device_info, num_irqs);
+> +
+> +		if (copy_from_user(&info, (void __user *)arg, minsz))
+> +			return -EFAULT;
+> +
+> +		if (info.argsz < minsz)
+> +			return -EINVAL;
+> +
+> +		info.flags = VFIO_DEVICE_FLAGS_DT;
+> +		info.num_regions = 0;
+> +		info.num_irqs = 0;
+> +
+> +		return copy_to_user((void __user *)arg, &info, minsz);
+> +
+> +	} else if (cmd == VFIO_DEVICE_GET_REGION_INFO)
+> +		return -EINVAL;
+> +
+> +	else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
+> +		return -EINVAL;
+> +
+> +	else if (cmd == VFIO_DEVICE_SET_IRQS)
+> +		return -EINVAL;
+> +
+> +	else if (cmd == VFIO_DEVICE_RESET)
+> +		return -EINVAL;
+> +
+> +	return -ENOTTY;
+> +}
+> +
+> +static ssize_t vfio_dt_read(void *device_data, char __user *buf,
+> +			     size_t count, loff_t *ppos)
+> +{
+> +	return 0;
+> +}
+> +
+> +static ssize_t vfio_dt_write(void *device_data, const char __user *buf,
+> +			      size_t count, loff_t *ppos)
+> +{
+> +	return 0;
+> +}
+> +
+> +static int vfio_dt_mmap(void *device_data, struct vm_area_struct *vma)
+> +{
+> +	return -EINVAL;
+> +}
+> +
+> +static const struct vfio_device_ops vfio_dt_ops = {
+> +	.name		= "vfio-dts",
+> +	.open		= vfio_dt_open,
+> +	.release	= vfio_dt_release,
+> +	.ioctl		= vfio_dt_ioctl,
+> +	.read		= vfio_dt_read,
+> +	.write		= vfio_dt_write,
+> +	.mmap		= vfio_dt_mmap,
+> +};
+> +
+> +static int vfio_dt_probe(struct platform_device *pdev)
+> +{
+> +	struct vfio_dt_device *vdev;
+> +	struct iommu_group *group;
+> +	int ret;
+> +
+> +	group = iommu_group_get(&pdev->dev);
+> +	if (!group) {
+> +		pr_err("VFIO: No IOMMU group for device %s\n", pdev->name);
+> +		return -EINVAL;
+> +	}
+> +
+> +	vdev = kzalloc(sizeof(*vdev), GFP_KERNEL);
+> +	if (!vdev) {
+> +		iommu_group_put(group);
+> +		return -ENOMEM;
+> +	}
+> +
+> +	vdev->pdev = pdev;
+> +
+> +	ret = vfio_add_group_dev(&pdev->dev, &vfio_dt_ops, vdev);
+> +	if (ret) {
+> +		iommu_group_put(group);
+> +		kfree(vdev);
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static int vfio_dt_remove(struct platform_device *pdev)
+> +{
+> +	struct vfio_dt_device *vdev;
+> +
+> +	vdev = vfio_del_group_dev(&pdev->dev);
+> +	if (!vdev)
+> +		return -EINVAL;
+> +
+> +	iommu_group_put(pdev->dev.iommu_group);
+> +	kfree(vdev);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct of_device_id vfio_dt_match[] = {
+> +	/* In the future, we can implement a better mechanism to bind the
+> +	 * module to any device. For now add the compatible property to the
+> +	 * dtb of the devices we want to use.	*/
+> +	{
+> +		.compatible = "vfio-dt",
+> +	},
+> +	{},
+> +};
 
-My proposal for cleaning up MFC's bindings is available here:
+This definitely doesn't belong in the dt. It's purely a Linux
+abstraction and does not represent a piece of hardware or common
+interface.
 
-http://thread.gmane.org/gmane.linux.kernel.samsung-soc/21536/
+We need to think of a better mechanism for binding the module to these
+devices now.
 
-> BTW There is an additional problem with combining System MMU devices per
-> one main device - it limits available address space (which in case of MFC
-> is very limited by hardware design).
->
-> > It is welcome but I don't think it covers all topologies of System MMU and
-> > master H/W. Those are getting more complex.
->
-> Could you please be more specific? I know about FIMC ISP subsystem but
-> it doesn't require combining System MMUs. Are there any other examples of
-> complex System MMU + master H/W topologies?
->
-> Anyway I think that System MMUs should not be combined (as it is done in
-> patch #10) and should be binded per "memport" devices and not per main
-> device (as done in this patch).
+Thanks,
+Mark.
 
-Best regards
--- 
-Marek Szyprowski
-Samsung R&D Institute Poland
+> +MODULE_DEVICE_TABLE(of, vfio_dt_match);
+> +
+> +static struct platform_driver vfio_dt_driver = {
+> +	.probe		= vfio_dt_probe,
+> +	.remove		= vfio_dt_remove,
+> +	.driver	= {
+> +		.name	= "vfio-dt",
+> +		.owner	= THIS_MODULE,
+> +		.of_match_table = vfio_dt_match,
+> +	},
+> +};
+> +
+> +module_platform_driver(vfio_dt_driver);
+> +
+> +MODULE_VERSION(DRIVER_VERSION);
+> +MODULE_LICENSE("GPL v2");
+> +MODULE_AUTHOR(DRIVER_AUTHOR);
+> +MODULE_DESCRIPTION(DRIVER_DESC);
+> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+> index 284ff24..1e4bef2 100644
+> --- a/include/uapi/linux/vfio.h
+> +++ b/include/uapi/linux/vfio.h
+> @@ -147,6 +147,7 @@ struct vfio_device_info {
+>  	__u32	flags;
+>  #define VFIO_DEVICE_FLAGS_RESET	(1 << 0)	/* Device supports reset */
+>  #define VFIO_DEVICE_FLAGS_PCI	(1 << 1)	/* vfio-pci device */
+> +#define VFIO_DEVICE_FLAGS_DT	(1 << 2)	/* vfio-dt device */
+>  	__u32	num_regions;	/* Max region index + 1 */
+>  	__u32	num_irqs;	/* Max IRQ index + 1 */
+>  };
+> -- 
+> 1.8.1.2
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> 
