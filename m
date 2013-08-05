@@ -1,135 +1,159 @@
-From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [PATCH 3/3] Return info for device and its memory regions and
-	interrupts
-Date: Mon,  5 Aug 2013 15:17:12 +0200
-Message-ID: <1375708632-26356-4-git-send-email-a.motakis@virtualopensystems.com>
-References: <1375708632-26356-1-git-send-email-a.motakis@virtualopensystems.com>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH v8 06/12] ARM: dts: Add description of System MMU of Exynos
+ SoCs
+Date: Mon, 05 Aug 2013 15:34:58 +0200
+Message-ID: <51FFAA02.50407@samsung.com>
+References: <003c01ce89f3$3abc4bc0$b034e340$@samsung.com>
+ <27536111.odlCO093Zi@amdc1032> <003c01ce91cd$427fad70$c77f0850$@samsung.com>
+ <1429191.3FDem6vW0S@amdc1032>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1375708632-26356-1-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Cc: linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <1429191.3FDem6vW0S@amdc1032>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Cc: Cho KyongHo <pullip.cho@samsung.com>, 'Linux ARM Kernel' <linux-arm-kernel@lists.infradead.org>, 'Linux IOMMU' <iommu@lists.linux-foundation.org>, 'Linux Kernel' <linux-kernel@vger.kernel.org>, 'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>, 'Hyunwoong Kim' <khw0178.kim@samsung.com>, 'Joerg Roedel' <joro@8bytes.org>, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Prathyush' <prathyush.k@samsung.com>, 'Rahul Sharma' <rahul.sharma@samsung.com>, 'Subash Patel' <supash.ramaswamy@linaro.org>, 'Keyyoung Park' <keyyoung.park@samsung.com>, 'Grant Grundler' <grundler@chromium.org>, 'Antonios Motakis' <a.motakis@virtualopensystems.com>, kvmarm@lists.cs.columbia.edu, 'Sachin Kamat' <sachin.kamat@linaro.org>
 List-Id: iommu@lists.linux-foundation.org
 
-A VFIO userspace driver will start by opening the VFIO device
-that corresponds to an IOMMU group, and will use the ioctl interface
-to get the basic device info, such as number of memory regions and
-interrupts, and their properties.
+Hello,
 
-This patch implements the IOCTLs:
- - VFIO_DEVICE_GET_INFO
- - VFIO_DEVICE_GET_REGION_INFO
- - VFIO_DEVICE_GET_IRQ_INFO
+On 8/5/2013 3:09 PM, Bartlomiej Zolnierkiewicz wrote:
+> On Monday, August 05, 2013 08:16:40 PM Cho KyongHo wrote:
+> > > -----Original Message-----
+> > > From: Bartlomiej Zolnierkiewicz [mailto:b.zolnierkie@samsung.com]
+> > > Sent: Saturday, August 03, 2013 2:14 AM
+> > >
+> > > Hi,
+> > >
+> > > On Friday, July 26, 2013 08:28:19 PM Cho KyongHo wrote:
+> > > > Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
+> > > > ---
+> > > >  .../bindings/iommu/samsung,exynos4210-sysmmu.txt   |  103 +++++++
+> > > >  arch/arm/boot/dts/exynos4.dtsi                     |  122 ++++++++
+> > > >  arch/arm/boot/dts/exynos4210.dtsi                  |   25 ++
+> > > >  arch/arm/boot/dts/exynos4x12.dtsi                  |   76 +++++
+> > > >  arch/arm/boot/dts/exynos5250.dtsi                  |  291 ++++++++++++++++++++
+> > > >  5 files changed, 617 insertions(+), 0 deletions(-)
+> > > >  create mode 100644 Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
+> > > >
+> > > > diff --git a/Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
+> > > > b/Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
+> > > > new file mode 100644
+> > > > index 0000000..92f0a33
+> > > > --- /dev/null
+> > > > +++ b/Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
+> > > > @@ -0,0 +1,103 @@
+> > > > +Samsung Exynos4210 IOMMU H/W, System MMU (System Memory Management Unit)
+> > > > +
+> > > > +Samsung's Exynos architecture contains System MMU that enables scattered
+> > > > +physical memory chunks visible as a contiguous region to DMA-capable peripheral
+> > > > +devices like MFC, FIMC, FIMD, GScaler, FIMC-IS and so forth.
+> > > > +
+> > > > +System MMU is a sort of IOMMU and support identical translation table format to
+> > > > +ARMv7 translation tables with minimum set of page properties including access
+> > > > +permissions, shareability and security protection. In addition, System MMU has
+> > > > +another capabilities like L2 TLB or block-fetch buffers to minimize translation
+> > > > +latency.
+> > > > +
+> > > > +A System MMU is dedicated to a single master peripheral device.  Thus, it is
+> > > > +important to specify the correct System MMU in the device node of its master
+> > > > +device. Whereas a System MMU is dedicated to a master device, the master device
+> > > > +may have more than one System MMU.
+> > > > +
+> > > > +Required properties:
+> > > > +- compatible: Should be "samsung,exynos4210-sysmmu"
+> > > > +- reg: A tuple of base address and size of System MMU registers.
+> > > > +- interrupt-parent: The phandle of the interrupt controller of System MMU
+> > > > +- interrupts: A tuple of numbers that indicates the interrupt source.
+> > > > +- clock-names: Should be "sysmmu" if the System MMU is needed to gate its clock.
+> > > > +               Please refer to the following documents:
+> > > > +	       Documentation/devicetree/bindings/clock/clock-bindings.txt
+> > > > +	       Documentation/devicetree/bindings/clock/exynos4-clock.txt
+> > > > +	       Documentation/devicetree/bindings/clock/exynos5250-clock.txt
+> > > > +	       Optional "master" if the clock to the System MMU is gated by
+> > > > +	       another gate clock other than "sysmmu". The System MMU driver
+> > > > +	       sets "master" the parent of "sysmmu".
+> > > > +	       Exynos4 SoCs, there needs no "master" clocks.
+> > > > +	       Exynos5 SoCs, some System MMUs must have "master" clocks.
+> > > > +- clocks: Required if the System MMU is needed to gate its clock.
+> > > > +	  Please refer to the documents listed above.
+> > > > +- samsung,power-domain: Required if the System MMU is needed to gate its power.
+> > > > +	  Please refer to the following document:
+> > > > +	  Documentation/devicetree/bindings/arm/exynos/power_domain.txt
+> > > > +
+> > > > +Required properties for the master peripheral devices:
+> > > > +- iommu: phandles to the System MMUs of the device
+> > > > +
+> > > > +Examples:
+> > > > +A System MMU is dedicated to a single master device.
+> > > > +	gsc_0:  gsc@0x13e00000 {
+> > > > +		compatible = "samsung,exynos5-gsc";
+> > > > +		reg = <0x13e00000 0x1000>;
+> > > > +		interrupts = <0 85 0>;
+> > > > +		samsung,power-domain = <&pd_gsc>;
+> > > > +		clocks = <&clock 256>;
+> > > > +		clock-names = "gscl";
+> > > > +		iommu = <&sysmmu_gsc1>;
+> > > > +	};
+> > > > +
+> > > > +	sysmmu_gsc0: sysmmu@13E80000 {
+> > > > +		compatible = "samsung,exynos4210-sysmmu";
+> > > > +		reg = <0x13E80000 0x1000>;
+> > > > +		interrupt-parent = <&combiner>;
+> > > > +		interrupt-names = "sysmmu-gsc0";
+> > > > +		interrupts = <2 0>;
+> > > > +		clock-names = "sysmmu", "master";
+> > > > +		clocks = <&clock 262>, <&clock 256>;
+> > > > +		samsung,power-domain = <&pd_gsc>;
+> > > > +		status = "ok";
+> > > > +	};
+> > > > +
+> > > > +MFC has 2 System MMUs for each port that MFC is attached. Thus it seems natural
+> > > > +to define 2 System MMUs for each port of the MFC:
+> > >
+> > > Marek Szyprowski (added to cc:) has a patch fixing MFC to create separate
+> > > mfc_l and mfc_r devices (like it was in the past). Using this patch it
+> > > would be possible to bind sysmmu_mfc_l to mfc_l device and sysmmu_mfc_r to
+> > > mfc_r device. This probably also requires adding some MFC specific handling
+> > > in a device tree node and to the new master's device PM ops (in patch #10)
+> > > as previously (in our trees) sysmmu_mfc r device was set as parent of
+> > > sysmmu_mfc_l device which in turn was a parent for main MFC device (to make
+> > > runtime Power Management work). However because MFC is the only device
+> > > requiring use of multiple System MMUs above changes would allow us (unless
+> > > I'm missing something?) to use just one System MMU device per struct
+> > > exynos_iommu_client instance (making driver a lot simpler).
+> > >
+> >
+> > Does it mean that we can make the exynos-iommu driver simpler
+> > with Marek Szyprowski's patch?
+>
+> I think so and you probably need to change MFC handling anyway because
+> MFC driver does DMA allocations per mfc_l/mfc_r devices and not per main
+> device (at least in the upstream kernels).
+>
+> [ Marek, could you please resfresh and post your patch on the list? ]
 
-Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
----
- drivers/vfio/vfio_dt.c | 60 ++++++++++++++++++++++++++++++++++++++++++++------
- 1 file changed, 53 insertions(+), 7 deletions(-)
+My proposal for cleaning up MFC's bindings is available here:
 
-diff --git a/drivers/vfio/vfio_dt.c b/drivers/vfio/vfio_dt.c
-index ad4d31d..817c552 100644
---- a/drivers/vfio/vfio_dt.c
-+++ b/drivers/vfio/vfio_dt.c
-@@ -28,6 +28,10 @@
- #include <linux/types.h>
- #include <linux/uaccess.h>
- #include <linux/vfio.h>
-+#include <linux/of.h>
-+#include <linux/of_address.h>
-+#include <linux/of_irq.h>
-+#include <linux/of_platform.h>
- 
- #define DRIVER_VERSION  "0.1"
- #define DRIVER_AUTHOR   "Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>"
-@@ -54,10 +58,13 @@ static long vfio_dt_ioctl(void *device_data,
- 			   unsigned int cmd, unsigned long arg)
- {
- 	struct vfio_dt_device *vdev = device_data;
-+	struct device_node *of_node = vdev->pdev->dev.of_node;
- 	unsigned long minsz;
- 
- 	if (cmd == VFIO_DEVICE_GET_INFO) {
- 		struct vfio_device_info info;
-+		struct resource res;
-+		int cnt = 0;
- 
- 		minsz = offsetofend(struct vfio_device_info, num_irqs);
- 
-@@ -68,18 +75,57 @@ static long vfio_dt_ioctl(void *device_data,
- 			return -EINVAL;
- 
- 		info.flags = VFIO_DEVICE_FLAGS_DT;
--		info.num_regions = 0;
--		info.num_irqs = 0;
-+
-+		while (!of_address_to_resource(of_node, cnt, &res))
-+			cnt++;
-+
-+		info.num_regions = cnt;
-+
-+		info.num_irqs = of_irq_count(of_node);
- 
- 		return copy_to_user((void __user *)arg, &info, minsz);
- 
--	} else if (cmd == VFIO_DEVICE_GET_REGION_INFO)
--		return -EINVAL;
-+	} else if (cmd == VFIO_DEVICE_GET_REGION_INFO) {
-+		struct vfio_region_info info;
-+		struct resource res;
- 
--	else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
--		return -EINVAL;
-+		minsz = offsetofend(struct vfio_region_info, offset);
-+
-+		if (copy_from_user(&info, (void __user *)arg, minsz))
-+			return -EFAULT;
-+
-+		if (info.argsz < minsz)
-+			return -EINVAL;
-+
-+		if(of_address_to_resource(of_node, info.index, &res))
-+			return -EINVAL;
-+
-+		info.offset = res.start;	/* map phys addr with offset */
-+		info.size = resource_size(&res);
-+		info.flags = 0;
-+
-+		return copy_to_user((void __user *)arg, &info, minsz);	
-+
-+	} else if (cmd == VFIO_DEVICE_GET_IRQ_INFO) {
-+		struct vfio_irq_info info;
-+		struct resource res;
-+
-+		minsz = offsetofend(struct vfio_irq_info, count);
-+
-+		if (copy_from_user(&info, (void __user *)arg, minsz))
-+			return -EFAULT;
-+
-+		if (info.argsz < minsz)
-+			return -EINVAL;
-+
-+		of_irq_to_resource(of_node, info.index, &res);
-+
-+		info.flags = 0;
-+		info.count = 1;
-+
-+		return copy_to_user((void __user *)arg, &info, minsz);
- 
--	else if (cmd == VFIO_DEVICE_SET_IRQS)
-+	} else if (cmd == VFIO_DEVICE_SET_IRQS)
- 		return -EINVAL;
- 
- 	else if (cmd == VFIO_DEVICE_RESET)
+http://thread.gmane.org/gmane.linux.kernel.samsung-soc/21536/
+
+> BTW There is an additional problem with combining System MMU devices per
+> one main device - it limits available address space (which in case of MFC
+> is very limited by hardware design).
+>
+> > It is welcome but I don't think it covers all topologies of System MMU and
+> > master H/W. Those are getting more complex.
+>
+> Could you please be more specific? I know about FIMC ISP subsystem but
+> it doesn't require combining System MMUs. Are there any other examples of
+> complex System MMU + master H/W topologies?
+>
+> Anyway I think that System MMUs should not be combined (as it is done in
+> patch #10) and should be binded per "memport" devices and not per main
+> device (as done in this patch).
+
+Best regards
 -- 
-1.8.1.2
+Marek Szyprowski
+Samsung R&D Institute Poland
