@@ -1,8 +1,7 @@
 From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v9 00/16] iommu/exynos: Fixes and Enhancements of System MMU
-	driver with DT
-Date: Thu, 08 Aug 2013 18:37:10 +0900
-Message-ID: <002401ce941a$dad907c0$908b1740$@samsung.com>
+Subject: [PATCH v9 01/16] iommu/exynos: do not include removed header
+Date: Thu, 08 Aug 2013 18:37:25 +0900
+Message-ID: <002501ce941a$e3d87f40$ab897dc0$@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -21,121 +20,33 @@ To: 'Linux ARM Kernel' <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public
 Cc: 'Kukjin Kim' <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Prathyush' <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Grant Grundler' <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, 'Subash Patel' <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Sachin Kamat' <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Antonios Motakis' <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, 'Rahul Sharma' <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The current exynos-iommu(System MMU) driver does not work autonomously
-since it is lack of support for power management of peripheral blocks.
-For example, MFC device driver must ensure that its System MMU is disabled
-before MFC block is power-down not to invalidate IOTLB in the System MMU
-when I/O memory mapping is changed. Because a System MMU resides in the
-same H/W block, access to control registers of System MMU while the H/W
-block is turned off must be prohibited.
+This commit remove <mach/sysmmu.h> which is removed.
 
-This set of changes solves the above problem with setting each System MMUs
-as the parent of the device which owns the System MMU to receive the
-information when the device is turned off or turned on.
+Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+---
+ drivers/iommu/exynos-iommu.c |    3 +--
+ 1 files changed, 1 insertions(+), 2 deletions(-)
 
-Another big change to the driver is the support for devicetree.
-The bindings for System MMU is described in
-Documentation/devicetree/bindings/arm/samsung/system-mmu.txt
-
-In addition, this patchset also includes several bug fixes and enhancements
-of the current driver.
-
-Change log:
-v9:
-- Rebased on the following branches
-  git.linaro.org/git-ro/people/mturquette/linux.git/clk-next
-  git.kernel.org/pub/scm/linux/kernel/git/kgene/linux-samsung.git/samsung-next
-  git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/master (3.11-rc4)
-- Split "add bus notifier for registering System MMU" into 5 patches
-- Call clk_prepare() that was missing in v8.
-- Fixed base address of sysmmu_tv in exynos4210.dtsi
-- BUG_ON() instead of return -EADDRINUSE when trying mapping on an mapped area
-- Moved camif_top to 317 in drivers/clk/samsung/clk-exynos5250.c
-- Removed 'iommu' property from 'codec'(mfc) node
-- Does not make 'master' clock to be the parent of 'sysmmu' clock.
-   'master' clock is enabled before accessing control registers of System MMU
-   and disabled after the access.
-
-v8:
-- Reordered patch list: moved "change rwloc to spinlock" to the last.
-- Fixed remained bug in "fix page table maintenance".
-- Always return 0 from exynos_iommu_attach_device().
-- Removed prefetch buffer setting when System MMU is enabled
-  due to the restriction of prefetch buffers:
-  A prefetch buffer must not hit from more than one DMA.
-  For instance with GScalers, if a single prefetch buffer is initialized
-  with 0x0 ~ 0xFFFFFFFF and a GScaler works on source buffer at 0x10000000
-  and target buffer @ 0x20000000, the System MMU may be got deadlock.
-  Clients must initialize prefetch buffers with custom function defined
-  in exynos-iommu drivers whenever they need to enable prefetch buffers.
-- The clock of System MMU has no relationship with the clock of its master H/W.
-  The clock of master H/W is always enabled when exynos-iommu driver needs to
-  access MMIO area and disabled as soon as the access finishes.
-- Removed err_page variable used in exynos_iommu_unmap() in the previous patch
-  "fix page table maintenance".
-- Split a big patch "add bus notifier for registering System MMU".
-   Extracted the following 2 patches: 9/12 and 10/12.
-- And some additional fixes...
-
-v7:
-- Rebased on the stable 3.10
-- Registered PM domains and gate clocks with DT
-- Changed connection method between a System MMU and its master H/W
-   'mmu-master' property in the node of System MMU
-   --> 'iommu' property in the node of master H/W
-- Marking device descriptor of master H/W of a System MMU with bus notifier.
-- Power management (PM_RUNTIME, PM_SLEEP) of System MMUs with gpd_dev_ops
-   of Generic IO Powerdomain. gpd_dev_ops are set to the master H/Ws
-   before they are probed in the bus notifier.
-- Removed additional debugging features like debugfs entries and
-   version names.
-- Removed support for advanced features of System MMU 3.2 and 3.3
-   the current IOMMU API cannot handle the feature
-  (A kind of L2 TLB that fetches several consequence page table entries.
-   It must be initialized by the driver of master H/W whenever it works.)
-
-v6:
-- Rebased on the branch, next/iommu-exynos of
-  git.kernel.org/pub/scm/linux/kernel/git/kgene/linux-samsung.git
-
-v5:
-- new bugfix: patch 01
-- Reordered patches
-  * patch 01 ~ 05: Bugfix and enhancements of the existing driver
-  * patch 06 ~ 10: Device Tree support and callbacks for power management
-  * patch 11     : System MMU 3.2 and 3.3 support
-  * patch 12 ~ 14: Debugging features
-- Additional code compaction
-
-v4:
-- Remove Change-Id from v3 patches
-- Change the order of the third and the first patch
-  Thanks to Kukjin Kim.
-- Fix memory leak when allocating and assigning exynos_iommu_owner to client
-  device if the client device has multiple System MMUs.
-  Thanks to Rahul Sharma.
-
-v3:
-- Fix prefetch buffer flag definition for System MMU 3.3 (patch 10/12)
-- Fix incorrect setting for SET_RUNTIME_PM_OPS (patch 09/12)
-  Thanks to Prathyush.
-
-v2:
-- Split the patch to iommu/exynos into 9 patches
-- Support for System MMU 3.3
-- Some code compaction
-
-Patch summary:
-
-Diffstats:
- .../devicetree/bindings/clock/exynos5250-clock.txt |   26 +
- .../bindings/iommu/samsung,exynos4210-sysmmu.txt   |  103 ++
- arch/arm/boot/dts/exynos4.dtsi                     |  122 +++
- arch/arm/boot/dts/exynos4210.dtsi                  |   25 +
- arch/arm/boot/dts/exynos4x12.dtsi                  |   82 ++
- arch/arm/boot/dts/exynos5250.dtsi                  |  290 ++++++
- drivers/clk/samsung/clk-exynos4.c                  |   27 +-
- drivers/clk/samsung/clk-exynos5250.c               |   57 +-
- drivers/iommu/Kconfig                              |    5 +-
- drivers/iommu/exynos-iommu.c                       | 1061 +++++++++++++-------
- 10 files changed, 1423 insertions(+), 375 deletions(-)
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 3f32d64..233f382 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -12,6 +12,7 @@
+ #define DEBUG
+ #endif
+ 
++#include <linux/kernel.h>
+ #include <linux/io.h>
+ #include <linux/interrupt.h>
+ #include <linux/platform_device.h>
+@@ -29,8 +30,6 @@
+ #include <asm/cacheflush.h>
+ #include <asm/pgtable.h>
+ 
+-#include <mach/sysmmu.h>
+-
+ /* We does not consider super section mapping (16MB) */
+ #define SECT_ORDER 20
+ #define LPAGE_ORDER 16
+-- 
+1.7.2.5
