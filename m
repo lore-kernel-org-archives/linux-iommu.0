@@ -1,8 +1,7 @@
 From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v9 02/16] iommu/exynos: add missing cache flush for removed
-	page table entries
-Date: Thu, 08 Aug 2013 18:37:34 +0900
-Message-ID: <002601ce941a$e987ba50$bc972ef0$@samsung.com>
+Subject: [PATCH v9 04/16] iommu/exynos: allocate lv2 page table from own slab
+Date: Thu, 08 Aug 2013 18:38:04 +0900
+Message-ID: <002801ce941a$fb6369e0$f22a3da0$@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -21,36 +20,80 @@ To: 'Linux ARM Kernel' <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public
 Cc: 'Kukjin Kim' <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Prathyush' <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Grant Grundler' <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, 'Subash Patel' <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Sachin Kamat' <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Antonios Motakis' <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, 'Rahul Sharma' <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This commit adds cache flush for removed small and large page entries
-in exynos_iommu_unmap(). Missing cache flush of removed page table
-entries can cause missing page fault interrupt when a master IP
-accesses an unmapped area.
+Since kmalloc() does not guarantee that the allignment of 1KiB when it
+allocates 1KiB, it is required to allocate lv2 page table from own
+slab that guarantees alignment of 1KiB
 
-Tested-by: Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/exynos-iommu.c |    2 ++
- 1 files changed, 2 insertions(+), 0 deletions(-)
+ drivers/iommu/exynos-iommu.c |   24 ++++++++++++++++++++----
+ 1 files changed, 20 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 233f382..d545a25 100644
+index d90e6fa..a318049 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -1002,6 +1002,7 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
- 	if (lv2ent_small(ent)) {
- 		*ent = 0;
- 		size = SPAGE_SIZE;
-+		pgtable_flush(ent, ent + 1);
- 		priv->lv2entcnt[lv1ent_offset(iova)] += 1;
- 		goto done;
+@@ -100,6 +100,8 @@
+ #define REG_PB1_SADDR		0x054
+ #define REG_PB1_EADDR		0x058
+ 
++static struct kmem_cache *lv2table_kmem_cache;
++
+ static unsigned long *section_entry(unsigned long *pgtable, unsigned long iova)
+ {
+ 	return pgtable + lv1ent_offset(iova);
+@@ -765,7 +767,8 @@ static void exynos_iommu_domain_destroy(struct iommu_domain *domain)
+ 
+ 	for (i = 0; i < NUM_LV1ENTRIES; i++)
+ 		if (lv1ent_page(priv->pgtable + i))
+-			kfree(__va(lv2table_base(priv->pgtable + i)));
++			kmem_cache_free(lv2table_kmem_cache,
++					__va(lv2table_base(priv->pgtable + i)));
+ 
+ 	free_pages((unsigned long)priv->pgtable, 2);
+ 	free_pages((unsigned long)priv->lv2entcnt, 1);
+@@ -861,7 +864,7 @@ static unsigned long *alloc_lv2entry(unsigned long *sent, unsigned long iova,
+ 	if (lv1ent_fault(sent)) {
+ 		unsigned long *pent;
+ 
+-		pent = kzalloc(LV2TABLE_SIZE, GFP_ATOMIC);
++		pent = kmem_cache_zalloc(lv2table_kmem_cache, GFP_ATOMIC);
+ 		BUG_ON((unsigned long)pent & (LV2TABLE_SIZE - 1));
+ 		if (!pent)
+ 			return ERR_PTR(-ENOMEM);
+@@ -881,7 +884,7 @@ static int lv1set_section(unsigned long *sent, phys_addr_t paddr, short *pgcnt)
+ 
+ 	if (lv1ent_page(sent)) {
+ 		BUG_ON(*pgcnt != NUM_LV2ENTRIES);
+-		kfree(page_entry(sent, 0));
++		kmem_cache_free(lv2table_kmem_cache, page_entry(sent, 0));
+ 		*pgcnt = 0;
  	}
-@@ -1010,6 +1011,7 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
- 	BUG_ON(size < LPAGE_SIZE);
  
- 	memset(ent, 0, sizeof(*ent) * SPAGES_PER_LPAGE);
-+	pgtable_flush(ent, ent + SPAGES_PER_LPAGE);
+@@ -1082,10 +1085,23 @@ static int __init exynos_iommu_init(void)
+ {
+ 	int ret;
  
- 	size = LPAGE_SIZE;
- 	priv->lv2entcnt[lv1ent_offset(iova)] += SPAGES_PER_LPAGE;
++	lv2table_kmem_cache = kmem_cache_create("exynos-iommu-lv2table",
++				LV2TABLE_SIZE, LV2TABLE_SIZE, 0, NULL);
++	if (!lv2table_kmem_cache) {
++		pr_err("%s: Failed to create kmem cache\n", __func__);
++		return -ENOMEM;
++	}
++
+ 	ret = platform_driver_register(&exynos_sysmmu_driver);
+ 
+ 	if (ret == 0)
+-		bus_set_iommu(&platform_bus_type, &exynos_iommu_ops);
++		ret = bus_set_iommu(&platform_bus_type, &exynos_iommu_ops);
++
++	if (ret) {
++		pr_err("%s: Failed to register exynos-iommu driver.\n",
++								__func__);
++		kmem_cache_destroy(lv2table_kmem_cache);
++	}
+ 
+ 	return ret;
+ }
 -- 
 1.7.2.5
