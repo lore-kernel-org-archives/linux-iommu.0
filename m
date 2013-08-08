@@ -1,8 +1,8 @@
 From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v9 05/16] clk: exynos: add gate clock descriptions of System
-	MMU
-Date: Thu, 08 Aug 2013 18:38:14 +0900
-Message-ID: <002901ce941b$0130db50$039291f0$@samsung.com>
+Subject: [PATCH v9 06/16] ARM: dts: Add description of System MMU of Exynos
+	SoCs
+Date: Thu, 08 Aug 2013 18:38:35 +0900
+Message-ID: <002a01ce941b$0d9a31c0$28ce9540$@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -21,198 +21,733 @@ To: 'Linux ARM Kernel' <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public
 Cc: 'Kukjin Kim' <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Prathyush' <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Grant Grundler' <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, 'Subash Patel' <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Sachin Kamat' <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Antonios Motakis' <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, 'Rahul Sharma' <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This adds gate clocks of all System MMUs and their master IPs
-that are not apeared in clk-exynos5250.c
-Also fixes GATE_IP_ACP to 0x18800 and changed GATE_DA to GATE
-for System MMU clocks in clk-exynos4.c
-
 Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- .../devicetree/bindings/clock/exynos5250-clock.txt |   26 +++++++++
- drivers/clk/samsung/clk-exynos4.c                  |   27 +++------
- drivers/clk/samsung/clk-exynos5250.c               |   57 ++++++++++++++++----
- 3 files changed, 82 insertions(+), 28 deletions(-)
+ .../bindings/iommu/samsung,exynos4210-sysmmu.txt   |  103 +++++++
+ arch/arm/boot/dts/exynos4.dtsi                     |  122 ++++++++
+ arch/arm/boot/dts/exynos4210.dtsi                  |   25 ++
+ arch/arm/boot/dts/exynos4x12.dtsi                  |   82 ++++++
+ arch/arm/boot/dts/exynos5250.dtsi                  |  290 ++++++++++++++++++++
+ 5 files changed, 622 insertions(+), 0 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
 
-diff --git a/Documentation/devicetree/bindings/clock/exynos5250-clock.txt
-b/Documentation/devicetree/bindings/clock/exynos5250-clock.txt
-index 24765c1..9c76710 100644
---- a/Documentation/devicetree/bindings/clock/exynos5250-clock.txt
-+++ b/Documentation/devicetree/bindings/clock/exynos5250-clock.txt
-@@ -159,6 +159,32 @@ clock which they consume.
-   mixer			343
-   hdmi			344
-   g2d			345
-+  smmu_fimc_lite0	346
-+  smmu_fimc_lite1	347
-+  smmu_fimc_lite2	348
-+  smmu_tv		349
-+  smmu_fimd1		350
-+  smmu_2d		351
-+  fimc_isp		352
-+  fimc_drc		353
-+  fimc_fd		354
-+  fimc_scc		355
-+  fimc_scp		356
-+  fimc_mcuctl		357
-+  fimc_odc		358
-+  fimc_dis		359
-+  fimc_3dnr		360
-+  smmu_fimc_isp		361
-+  smmu_fimc_drc		362
-+  smmu_fimc_fd		363
-+  smmu_fimc_scc		364
-+  smmu_fimc_scp		365
-+  smmu_fimc_mcuctl	366
-+  smmu_fimc_odc		367
-+  smmu_fimc_dis0	368
-+  smmu_fimc_dis1	369
-+  smmu_fimc_3dnr	370
-+  camif_top		371
- 
- 
-    [Clock Muxes]
-diff --git a/drivers/clk/samsung/clk-exynos4.c b/drivers/clk/samsung/clk-exynos4.c
-index 68f9a4a..92dcf03 100644
---- a/drivers/clk/samsung/clk-exynos4.c
-+++ b/drivers/clk/samsung/clk-exynos4.c
-@@ -705,29 +705,20 @@ static struct samsung_gate_clock exynos4_gate_clks[] __initdata = {
- 			GATE_IP_CAM, 4, 0, 0, "fimc"),
- 	GATE_DA(csis1, "s5p-mipi-csis.1", "csis1", "aclk160",
- 			GATE_IP_CAM, 5, 0, 0, "fimc"),
--	GATE_DA(smmu_fimc0, "exynos-sysmmu.5", "smmu_fimc0", "aclk160",
--			GATE_IP_CAM, 7, 0, 0, "sysmmu"),
--	GATE_DA(smmu_fimc1, "exynos-sysmmu.6", "smmu_fimc1", "aclk160",
--			GATE_IP_CAM, 8, 0, 0, "sysmmu"),
--	GATE_DA(smmu_fimc2, "exynos-sysmmu.7", "smmu_fimc2", "aclk160",
--			GATE_IP_CAM, 9, 0, 0, "sysmmu"),
--	GATE_DA(smmu_fimc3, "exynos-sysmmu.8", "smmu_fimc3", "aclk160",
--			GATE_IP_CAM, 10, 0, 0, "sysmmu"),
--	GATE_DA(smmu_jpeg, "exynos-sysmmu.3", "smmu_jpeg", "aclk160",
--			GATE_IP_CAM, 11, 0, 0, "sysmmu"),
-+	GATE(smmu_fimc0, "smmu_fimc0", "aclk160", GATE_IP_CAM, 7, 0, 0),
-+	GATE(smmu_fimc1, "smmu_fimc1", "aclk160", GATE_IP_CAM, 8, 0, 0),
-+	GATE(smmu_fimc2, "smmu_fimc2", "aclk160", GATE_IP_CAM, 9, 0, 0),
-+	GATE(smmu_fimc3, "smmu_fimc3", "aclk160", GATE_IP_CAM, 10, 0, 0),
-+	GATE(smmu_jpeg, "smmu_jpeg", "aclk160", GATE_IP_CAM, 11, 0, 0),
- 	GATE(pixelasyncm0, "pxl_async0", "aclk160", GATE_IP_CAM, 17, 0, 0),
- 	GATE(pixelasyncm1, "pxl_async1", "aclk160", GATE_IP_CAM, 18, 0, 0),
--	GATE_DA(smmu_tv, "exynos-sysmmu.2", "smmu_tv", "aclk160",
--			GATE_IP_TV, 4, 0, 0, "sysmmu"),
-+	GATE(smmu_tv, "smmu_tv", "aclk160", GATE_IP_TV, 4, 0, 0),
- 	GATE_DA(mfc, "s5p-mfc", "mfc", "aclk100", GATE_IP_MFC, 0, 0, 0, "mfc"),
--	GATE_DA(smmu_mfcl, "exynos-sysmmu.0", "smmu_mfcl", "aclk100",
--			GATE_IP_MFC, 1, 0, 0, "sysmmu"),
--	GATE_DA(smmu_mfcr, "exynos-sysmmu.1", "smmu_mfcr", "aclk100",
--			GATE_IP_MFC, 2, 0, 0, "sysmmu"),
-+	GATE(smmu_mfcl, "smmu_mfcl", "aclk100", GATE_IP_MFC, 1, 0, 0),
-+	GATE(smmu_mfcr, "smmu_mfcr", "aclk100", GATE_IP_MFC, 2, 0, 0),
- 	GATE_DA(fimd0, "exynos4-fb.0", "fimd0", "aclk160",
- 			GATE_IP_LCD0, 0, 0, 0, "fimd"),
--	GATE_DA(smmu_fimd0, "exynos-sysmmu.10", "smmu_fimd0", "aclk160",
--			GATE_IP_LCD0, 4, 0, 0, "sysmmu"),
-+	GATE(smmu_fimd0, "smmu_fimd0", "aclk160", GATE_IP_LCD0, 4, 0, 0),
- 	GATE_DA(pdma0, "dma-pl330.0", "pdma0", "aclk133",
- 			GATE_IP_FSYS, 0, 0, 0, "dma"),
- 	GATE_DA(pdma1, "dma-pl330.1", "pdma1", "aclk133",
-diff --git a/drivers/clk/samsung/clk-exynos5250.c b/drivers/clk/samsung/clk-exynos5250.c
-index df3628c..e945fcf 100644
---- a/drivers/clk/samsung/clk-exynos5250.c
-+++ b/drivers/clk/samsung/clk-exynos5250.c
-@@ -64,6 +64,8 @@
- #define DIV_PERIC3		0x10564
- #define DIV_PERIC4		0x10568
- #define DIV_PERIC5		0x1056c
-+#define GATE_IP_ISP0		0x0C800
-+#define GATE_IP_ISP1		0x0C800
- #define GATE_IP_GSCL		0x10920
- #define GATE_IP_MFC		0x1092c
- #define GATE_IP_GEN		0x10934
-@@ -75,7 +77,7 @@
- #define SRC_CDREX		0x20200
- #define PLL_DIV2_SEL		0x20a24
- #define GATE_IP_DISP1		0x10928
--#define GATE_IP_ACP		0x10000
-+#define GATE_IP_ACP		0x18800
- 
- /* list of PLLs to be registered */
- enum exynos5250_plls {
-@@ -121,6 +123,13 @@ enum exynos5250_clks {
- 	hsi2c3, chipid, sysreg, pmu, cmu_top, cmu_core, cmu_mem, tzpc0, tzpc1,
- 	tzpc2, tzpc3, tzpc4, tzpc5, tzpc6, tzpc7, tzpc8, tzpc9, hdmi_cec, mct,
- 	wdt, rtc, tmu, fimd1, mie1, dsim0, dp, mixer, hdmi, g2d,
-+	smmu_fimc_lite0 = 346, smmu_fimc_lite1, smmu_fimc_lite2,
-+	smmu_tv, smmu_fimd1, smmu_2d,
-+	fimc_isp, fimc_drc, fimc_fd, fimc_scc, fimc_scp, fimc_mcuctl, fimc_odc,
-+	fimc_dis, fimc_3dnr,
-+	smmu_fimc_isp, smmu_fimc_drc, smmu_fimc_fd, smmu_fimc_scc,
-+	smmu_fimc_scp, smmu_fimc_mcuctl, smmu_fimc_odc, smmu_fimc_dis0,
-+	smmu_fimc_dis1, smmu_fimc_3dnr, camif_top,
- 
- 	/* mux clocks */
- 	mout_hdmi = 1024,
-@@ -349,19 +358,26 @@ static struct samsung_gate_clock exynos5250_gate_clks[] __initdata = {
- 	GATE(gscl3, "gscl3", "aclk266", GATE_IP_GSCL, 3, 0, 0),
- 	GATE(gscl_wa, "gscl_wa", "div_gscl_wa", GATE_IP_GSCL, 5, 0, 0),
- 	GATE(gscl_wb, "gscl_wb", "div_gscl_wb", GATE_IP_GSCL, 6, 0, 0),
--	GATE(smmu_gscl0, "smmu_gscl0", "aclk266", GATE_IP_GSCL, 7, 0, 0),
--	GATE(smmu_gscl1, "smmu_gscl1", "aclk266", GATE_IP_GSCL, 8, 0, 0),
--	GATE(smmu_gscl2, "smmu_gscl2", "aclk266", GATE_IP_GSCL, 9, 0, 0),
--	GATE(smmu_gscl3, "smmu_gscl3", "aclk266", GATE_IP_GSCL, 10, 0, 0),
-+	GATE(smmu_gscl0, "smmu_gscl0", "none", GATE_IP_GSCL, 7, 0, 0),
-+	GATE(smmu_gscl1, "smmu_gscl1", "none", GATE_IP_GSCL, 8, 0, 0),
-+	GATE(smmu_gscl2, "smmu_gscl2", "none", GATE_IP_GSCL, 9, 0, 0),
-+	GATE(smmu_gscl3, "smmu_gscl3", "none", GATE_IP_GSCL, 10, 0, 0),
-+	GATE(camif_top, "camif_top", "aclk266", GATE_IP_GSCL, 4, 0, 0),
-+	GATE(smmu_fimc_lite0, "smmu_fimc_lite0", "none",
-+						GATE_IP_GSCL, 12, 0, 0),
-+	GATE(smmu_fimc_lite1, "smmu_fimc_lite1", "none",
-+						GATE_IP_GSCL, 13, 0, 0),
-+	GATE(smmu_fimc_lite2, "smmu_fimc_lite2", "none",
-+						GATE_IP_GSCL, 14, 0, 0),
- 	GATE(mfc, "mfc", "aclk333", GATE_IP_MFC, 0, 0, 0),
--	GATE(smmu_mfcl, "smmu_mfcl", "aclk333", GATE_IP_MFC, 1, 0, 0),
--	GATE(smmu_mfcr, "smmu_mfcr", "aclk333", GATE_IP_MFC, 2, 0, 0),
-+	GATE(smmu_mfcr, "smmu_mfcr", "none", GATE_IP_MFC, 1, 0, 0),
-+	GATE(smmu_mfcl, "smmu_mfcl", "none", GATE_IP_MFC, 2, 0, 0),
- 	GATE(rotator, "rotator", "aclk266", GATE_IP_GEN, 1, 0, 0),
- 	GATE(jpeg, "jpeg", "aclk166", GATE_IP_GEN, 2, 0, 0),
- 	GATE(mdma1, "mdma1", "aclk266", GATE_IP_GEN, 4, 0, 0),
--	GATE(smmu_rotator, "smmu_rotator", "aclk266", GATE_IP_GEN, 6, 0, 0),
--	GATE(smmu_jpeg, "smmu_jpeg", "aclk166", GATE_IP_GEN, 7, 0, 0),
--	GATE(smmu_mdma1, "smmu_mdma1", "aclk266", GATE_IP_GEN, 9, 0, 0),
-+	GATE(smmu_rotator, "smmu_rotator", "none", GATE_IP_GEN, 6, 0, 0),
-+	GATE(smmu_jpeg, "smmu_jpeg", "none", GATE_IP_GEN, 7, 0, 0),
-+	GATE(smmu_mdma1, "smmu_mdma1", "none", GATE_IP_GEN, 9, 0, 0),
- 	GATE(pdma0, "pdma0", "aclk200", GATE_IP_FSYS, 1, 0, 0),
- 	GATE(pdma1, "pdma1", "aclk200", GATE_IP_FSYS, 2, 0, 0),
- 	GATE(sata, "sata", "aclk200", GATE_IP_FSYS, 6, 0, 0),
-@@ -492,6 +508,27 @@ static struct samsung_gate_clock exynos5250_gate_clks[] __initdata = {
- 	GATE(mixer, "mixer", "aclk200", GATE_IP_DISP1, 5, 0, 0),
- 	GATE(hdmi, "hdmi", "aclk200", GATE_IP_DISP1, 6, 0, 0),
- 	GATE(g2d, "g2d", "aclk200", GATE_IP_ACP, 3, 0, 0),
-+	GATE(smmu_tv, "smmu_tv", "none", GATE_IP_DISP1, 2, 0, 0),
-+	GATE(smmu_fimd1, "smmu_fimd1", "none", GATE_IP_DISP1, 8, 0, 0),
+diff --git a/Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
+b/Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
+new file mode 100644
+index 0000000..92f0a33
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
+@@ -0,0 +1,103 @@
++Samsung Exynos4210 IOMMU H/W, System MMU (System Memory Management Unit)
 +
-+	GATE(smmu_fimc_isp, "smmu_fimc_isp", "none", GATE_IP_ISP0, 8, 0, 0),
-+	GATE(smmu_fimc_drc, "smmu_fimc_drc", "none", GATE_IP_ISP0, 9, 0, 0),
-+	GATE(smmu_fimc_fd, "smmu_fimc_fd", "none", GATE_IP_ISP0, 10, 0, 0),
-+	GATE(smmu_fimc_scc, "smmu_fimc_scc", "none",
-+							GATE_IP_ISP0, 11, 0, 0),
-+	GATE(smmu_fimc_scp, "smmu_fimc_scp", "none",
-+							GATE_IP_ISP0, 12, 0, 0),
-+	GATE(smmu_fimc_mcuctl, "smmu_fimc_mcuctl", "none",
-+							GATE_IP_ISP0, 13, 0, 0),
-+	GATE(smmu_fimc_odc, "smmu_fimc_odc", "none", GATE_IP_ISP1, 4, 0, 0),
-+	GATE(smmu_fimc_dis0, "smmu_fimc_dis0", "none",
-+							GATE_IP_ISP1, 5, 0, 0),
-+	GATE(smmu_fimc_dis1, "smmu_fimc_dis1", "none",
-+							GATE_IP_ISP1, 6, 0, 0),
-+	GATE(smmu_fimc_3dnr, "smmu_fimc_3dnr", "none",
-+							GATE_IP_ISP1, 7, 0, 0),
++Samsung's Exynos architecture contains System MMU that enables scattered
++physical memory chunks visible as a contiguous region to DMA-capable peripheral
++devices like MFC, FIMC, FIMD, GScaler, FIMC-IS and so forth.
 +
-+	GATE(smmu_2d, "smmu_2d", "none", GATE_IP_ACP, 7, 0, 0),
++System MMU is a sort of IOMMU and support identical translation table format to
++ARMv7 translation tables with minimum set of page properties including access
++permissions, shareability and security protection. In addition, System MMU has
++another capabilities like L2 TLB or block-fetch buffers to minimize translation
++latency.
++
++A System MMU is dedicated to a single master peripheral device.  Thus, it is
++important to specify the correct System MMU in the device node of its master
++device. Whereas a System MMU is dedicated to a master device, the master device
++may have more than one System MMU.
++
++Required properties:
++- compatible: Should be "samsung,exynos4210-sysmmu"
++- reg: A tuple of base address and size of System MMU registers.
++- interrupt-parent: The phandle of the interrupt controller of System MMU
++- interrupts: A tuple of numbers that indicates the interrupt source.
++- clock-names: Should be "sysmmu" if the System MMU is needed to gate its clock.
++               Please refer to the following documents:
++	       Documentation/devicetree/bindings/clock/clock-bindings.txt
++	       Documentation/devicetree/bindings/clock/exynos4-clock.txt
++	       Documentation/devicetree/bindings/clock/exynos5250-clock.txt
++	       Optional "master" if the clock to the System MMU is gated by
++	       another gate clock other than "sysmmu". The System MMU driver
++	       sets "master" the parent of "sysmmu".
++	       Exynos4 SoCs, there needs no "master" clocks.
++	       Exynos5 SoCs, some System MMUs must have "master" clocks.
++- clocks: Required if the System MMU is needed to gate its clock.
++	  Please refer to the documents listed above.
++- samsung,power-domain: Required if the System MMU is needed to gate its power.
++	  Please refer to the following document:
++	  Documentation/devicetree/bindings/arm/exynos/power_domain.txt
++
++Required properties for the master peripheral devices:
++- iommu: phandles to the System MMUs of the device
++
++Examples:
++A System MMU is dedicated to a single master device.
++	gsc_0:  gsc@0x13e00000 {
++		compatible = "samsung,exynos5-gsc";
++		reg = <0x13e00000 0x1000>;
++		interrupts = <0 85 0>;
++		samsung,power-domain = <&pd_gsc>;
++		clocks = <&clock 256>;
++		clock-names = "gscl";
++		iommu = <&sysmmu_gsc1>;
++	};
++
++	sysmmu_gsc0: sysmmu@13E80000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x13E80000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-gsc0";
++		interrupts = <2 0>;
++		clock-names = "sysmmu", "master";
++		clocks = <&clock 262>, <&clock 256>;
++		samsung,power-domain = <&pd_gsc>;
++		status = "ok";
++	};
++
++MFC has 2 System MMUs for each port that MFC is attached. Thus it seems natural
++to define 2 System MMUs for each port of the MFC:
++
++	mfc: codec@13400000 {
++		compatible = "samsung,mfc-v5";
++		reg = <0x13400000 0x10000>;
++		interrupts = <0 94 0>;
++		samsung,power-domain = <&pd_mfc>;
++		clocks = <&clock 170>, <&clock 273>;
++		clock-names = "sclk_mfc", "mfc";
++		status = "ok";
++		iommu = <&sysmmu_mfc_l>, <&sysmmu_mfc_r>;
++	};
++
++	sysmmu_mfc_l: sysmmu@13620000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x13620000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-mfc-l";
++		interrupts = <5 5>;
++		clock-names = "sysmmu";
++		clocks = <&clock 274>;
++		samsung,power-domain = <&pd_mfc>;
++		status = "ok";
++	};
++
++	sysmmu_mfc_r: sysmmu@13630000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x13630000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-mfc-r";
++		interrupts = <5 6>;
++		clock-names = "sysmmu";
++		clocks = <&clock 275>;
++		samsung,power-domain = <&pd_mfc>;
++		status = "ok";
++	};
++
+diff --git a/arch/arm/boot/dts/exynos4.dtsi b/arch/arm/boot/dts/exynos4.dtsi
+index 597cfcf..6265984 100644
+--- a/arch/arm/boot/dts/exynos4.dtsi
++++ b/arch/arm/boot/dts/exynos4.dtsi
+@@ -251,6 +251,7 @@
+ 		clocks = <&clock 170>, <&clock 273>;
+ 		clock-names = "sclk_mfc", "mfc";
+ 		status = "disabled";
++		iommu = <&sysmmu_mfc_l>, <&sysmmu_mfc_r>;
+ 	};
+ 
+ 	serial@13800000 {
+@@ -485,5 +486,126 @@
+ 		clock-names = "sclk_fimd", "fimd";
+ 		samsung,power-domain = <&pd_lcd0>;
+ 		status = "disabled";
++		iommu = <&sysmmu_fimd0>;
++	};
++
++	sysmmu_mfc_l: sysmmu@13620000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x13620000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-mfc-l";
++		interrupts = <5 5>;
++		clock-names = "sysmmu";
++		clocks = <&clock 274>;
++		samsung,power-domain = <&pd_mfc>;
++		status = "ok";
++	};
++
++	sysmmu_mfc_r: sysmmu@13630000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x13630000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-mfc-r";
++		interrupts = <5 6>;
++		clock-names = "sysmmu";
++		clocks = <&clock 275>;
++		samsung,power-domain = <&pd_mfc>;
++		status = "ok";
++	};
++
++	sysmmu_tv: sysmmu@12E20000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x12E20000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-tv";
++		interrupts = <5 4>;
++		clock-names = "sysmmu";
++		clocks = <&clock 272>;
++		samsung,power-domain = <&pd_tv>;
++		status = "ok";
++	};
++
++	sysmmu_fimc0: sysmmu@11A20000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x11A20000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-fimc0";
++		interrupts = <4 2>;
++		clock-names = "sysmmu";
++		clocks = <&clock 263>;
++		samsung,power-domain = <&pd_cam>;
++		status = "ok";
++	};
++
++	sysmmu_fimc1: sysmmu@11A30000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x11A30000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-fimc1";
++		interrupts = <4 3>;
++		clock-names = "sysmmu";
++		clocks = <&clock 264>;
++		samsung,power-domain = <&pd_cam>;
++		status = "ok";
++	};
++
++	sysmmu_fimc2: sysmmu@11A40000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x11A40000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-fimc2";
++		interrupts = <4 4>;
++		clock-names = "sysmmu";
++		clocks = <&clock 265>;
++		samsung,power-domain = <&pd_cam>;
++		status = "ok";
++	};
++
++	sysmmu_fimc3: sysmmu@11A50000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x11A50000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-fimc3";
++		interrupts = <4 5>;
++		clock-names = "sysmmu";
++		clocks = <&clock 266>;
++		samsung,power-domain = <&pd_cam>;
++		status = "ok";
++	};
++
++	sysmmu_jpeg: sysmmu@11A60000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x11A60000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-jpeg";
++		interrupts = <4 6>;
++		clock-names = "sysmmu";
++		clocks = <&clock 267>;
++		samsung,power-domain = <&pd_cam>;
++		status = "ok";
++	};
++
++	sysmmu_rotator: sysmmu@12A30000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x12A30000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-rotator";
++		interrupts = <5 0>;
++		clock-names = "sysmmu";
++		clocks = <&clock 281>;
++		samsung,power-domain = <&pd_lcd0>;
++		status = "ok";
++	};
++
++	sysmmu_fimd0: sysmmu@11E20000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x11E20000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-fimd0";
++		interrupts = <5 2>;
++		clock-names = "sysmmu";
++		clocks = <&clock 287>;
++		samsung,power-domain = <&pd_lcd0>;
++		status = "ok";
+ 	};
  };
+diff --git a/arch/arm/boot/dts/exynos4210.dtsi b/arch/arm/boot/dts/exynos4210.dtsi
+index 057d682..6b0012b 100644
+--- a/arch/arm/boot/dts/exynos4210.dtsi
++++ b/arch/arm/boot/dts/exynos4210.dtsi
+@@ -124,6 +124,31 @@
+ 		clocks = <&clock 177>, <&clock 277>;
+ 		clock-names = "sclk_fimg2d", "fimg2d";
+ 		status = "disabled";
++		iommu = <&sysmmu_g2d>;
++	};
++
++	sysmmu_g2d: sysmmu@12A20000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x12A20000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-g2d";
++		interrupts = <4 7>;
++		clock-names = "sysmmu";
++		clocks = <&clock 280>;
++		samsung,power-domain = <&pd_lcd0>;
++		status = "ok";
++	};
++
++	sysmmu_fimd1: sysmmu@12220000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-fimd1";
++		reg = <0x12220000 0x1000>;
++		interrupts = <5 3>;
++		clock-names = "sysmmu";
++		clocks = <&clock 291>;
++		samsung,power-domain = <&pd_lcd1>;
++		status = "ok";
+ 	};
  
- static __initdata struct samsung_pll_rate_table vpll_24mhz_tbl[] = {
+ 	camera {
+diff --git a/arch/arm/boot/dts/exynos4x12.dtsi b/arch/arm/boot/dts/exynos4x12.dtsi
+index ad531fe..fcfe118 100644
+--- a/arch/arm/boot/dts/exynos4x12.dtsi
++++ b/arch/arm/boot/dts/exynos4x12.dtsi
+@@ -176,4 +176,86 @@
+ 			};
+ 		};
+ 	};
++
++	sysmmu_g2d: sysmmu@10A40000{
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x10A40000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-g2d";
++		interrupts = <4 7>;
++		clock-names = "sysmmu";
++		status = "ok";
++	};
++
++	sysmmu_fimc_isp: sysmmu@12260000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x12260000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-fimc_isp";
++		interrupts = <16 2>;
++		samsung,power-domain = <&pd_isp>;
++		clock-names = "sysmmu";
++		clocks = <&clock 362>;
++		status = "ok";
++	};
++
++	sysmmu_fimc_drc: sysmmu@12270000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x12270000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-fimc_drc";
++		interrupts = <16 3>;
++		samsung,power-domain = <&pd_isp>;
++		clock-names = "sysmmu";
++		clocks = <&clock 363>;
++		status = "ok";
++	};
++
++	sysmmu_fimc_fd: sysmmu@122A0000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x122A0000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-fimc_fd";
++		interrupts = <16 4>;
++		samsung,power-domain = <&pd_isp>;
++		clock-names = "sysmmu";
++		clocks = <&clock 364>;
++		status = "ok";
++	};
++
++	sysmmu_fimc_mcuctl: sysmmu@122B0000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x122B0000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-fimc_mcuctl";
++		interrupts = <16 5>;
++		samsung,power-domain = <&pd_isp>;
++		clock-names = "sysmmu";
++		clocks = <&clock 376>;
++		status = "ok";
++	};
++
++	sysmmu_fimc_lite0: sysmmu@123B0000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x123B0000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-fimc_lite0";
++		interrupts = <16 0>;
++		samsung,power-domain = <&pd_isp>;
++		clock-names = "sysmmu";
++		clocks = <&clock 366>;
++		status = "ok";
++	};
++
++	sysmmu_fimc_lite1: sysmmu@123C0000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x123C0000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-fimc_lite1";
++		interrupts = <16 1>;
++		samsung,power-domain = <&pd_isp>;
++		clock-names = "sysmmu";
++		clocks = <&clock 365>;
++		status = "ok";
++	};
+ };
+diff --git a/arch/arm/boot/dts/exynos5250.dtsi b/arch/arm/boot/dts/exynos5250.dtsi
+index 88589b7..c91c9d3 100644
+--- a/arch/arm/boot/dts/exynos5250.dtsi
++++ b/arch/arm/boot/dts/exynos5250.dtsi
+@@ -78,6 +78,16 @@
+ 		reg = <0x10044040 0x20>;
+ 	};
+ 
++	pd_isp: isp-power-domain@0x10044020 {
++		compatible = "samsung,exynos4210-pd";
++		reg = <0x10044020 0x20>;
++	};
++
++	pd_disp1: disp1-power-domain@0x100440A0 {
++		compatible = "samsung,exynos4210-pd";
++		reg = <0x100440A0 0x20>;
++	};
++
+ 	clock: clock-controller@10010000 {
+ 		compatible = "samsung,exynos5250-clock";
+ 		reg = <0x10010000 0x30000>;
+@@ -577,6 +587,7 @@
+ 		samsung,power-domain = <&pd_gsc>;
+ 		clocks = <&clock 256>;
+ 		clock-names = "gscl";
++		iommu = <&sysmmu_gsc1>;
+ 	};
+ 
+ 	gsc_1:  gsc@13e10000 {
+@@ -586,6 +597,7 @@
+ 		samsung,power-domain = <&pd_gsc>;
+ 		clocks = <&clock 257>;
+ 		clock-names = "gscl";
++		iommu = <&sysmmu_gsc1>;
+ 	};
+ 
+ 	gsc_2:  gsc@13e20000 {
+@@ -595,6 +607,7 @@
+ 		samsung,power-domain = <&pd_gsc>;
+ 		clocks = <&clock 258>;
+ 		clock-names = "gscl";
++		iommu = <&sysmmu_gsc2>;
+ 	};
+ 
+ 	gsc_3:  gsc@13e30000 {
+@@ -604,6 +617,7 @@
+ 		samsung,power-domain = <&pd_gsc>;
+ 		clocks = <&clock 259>;
+ 		clock-names = "gscl";
++		iommu = <&sysmmu_gsc3>;
+ 	};
+ 
+ 	hdmi {
+@@ -620,6 +634,7 @@
+ 		compatible = "samsung,exynos5250-mixer";
+ 		reg = <0x14450000 0x10000>;
+ 		interrupts = <0 94 0>;
++		iommu = <&sysmmu_tv>;
+ 	};
+ 
+ 	dp-controller {
+@@ -646,5 +661,280 @@
+ 		interrupts = <18 4>, <18 5>, <18 6>;
+ 		clocks = <&clock 133>, <&clock 339>;
+ 		clock-names = "sclk_fimd", "fimd";
++		iommu = <&sysmmu_fimd1>;
++	};
++
++	sysmmu_mfc_l: sysmmu@11210000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x11210000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-mfc_l";
++		interrupts = <8 5>;
++		clock-names = "sysmmu", "master";
++		clocks = <&clock 267>, <&clock 266>;
++		samsung,power-domain = <&pd_mfc>;
++		status = "ok";
++	};
++
++	sysmmu_mfc_r: sysmmu@11200000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x11200000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-mfc_r";
++		interrupts = <6 2>;
++		clock-names = "sysmmu", "master";
++		clocks = <&clock 268>, <&clock 266>;
++		samsung,power-domain = <&pd_mfc>;
++		status = "ok";
++	};
++
++	sysmmu_tv: sysmmu@14650000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x14650000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-tv";
++		interrupts = <7 4>;
++		clock-names = "sysmmu";
++		clocks = <&clock 349>;
++		samsung,power-domain = <&pd_disp1>;
++		status = "ok";
++	};
++
++	sysmmu_gsc0: sysmmu@13E80000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x13E80000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-gsc0";
++		interrupts = <2 0>;
++		clock-names = "sysmmu", "master";
++		clocks = <&clock 262>, <&clock 256>;
++		samsung,power-domain = <&pd_gsc>;
++		status = "ok";
++	};
++
++	sysmmu_gsc1: sysmmu@13E90000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x13E90000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-gsc1";
++		interrupts = <2 2>;
++		clock-names = "sysmmu", "master";
++		clocks = <&clock 263>, <&clock 257>;
++		samsung,power-domain = <&pd_gsc>;
++		status = "ok";
++	};
++
++	sysmmu_gsc2: sysmmu@13EA0000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x13EA0000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-gsc2";
++		interrupts = <2 4>;
++		clock-names = "sysmmu", "master";
++		clocks = <&clock 264>, <&clock 258>;
++		samsung,power-domain = <&pd_gsc>;
++		status = "ok";
++	};
++
++	sysmmu_gsc3: sysmmu@13EB0000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x13EB0000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-gsc3";
++		interrupts = <2 6>;
++		clock-names = "sysmmu", "master";
++		clocks = <&clock 265>, <&clock 259>;
++		samsung,power-domain = <&pd_gsc>;
++		status = "ok";
++	};
++
++	sysmmu_fimd1: sysmmu@14640000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x14640000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-fimd1";
++		interrupts = <3 2>;
++		clock-names = "sysmmu";
++		clocks = <&clock 350>;
++		samsung,power-domain = <&pd_disp1>;
++		status = "ok";
++	};
++
++	sysmmu_rotator: sysmmu@11D40000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x11D40000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-rotator";
++		interrupts = <4 0>;
++		clock-names = "sysmmu";
++		clocks = <&clock 272>;
++		status = "ok";
++	};
++
++	sysmmu_fimc_isp: sysmmu@13260000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x13260000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-fimc_isp";
++		interrupts = <10 6>;
++		clock-names = "sysmmu";
++		clocks = <&clock 361>;
++		samsung,power-domain = <&pd_isp>;
++		status = "ok";
++	};
++
++	sysmmu_fimc_drc: sysmmu@13270000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x13270000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-fimc_drc";
++		interrupts = <11 6>;
++		clock-names = "sysmmu";
++		clocks = <&clock 362>;
++		samsung,power-domain = <&pd_isp>;
++		status = "ok";
++	};
++
++	sysmmu_fimc_fd: sysmmu@132A0000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x132A0000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-fimc_fd";
++		interrupts = <5 0>;
++		clock-names = "sysmmu";
++		clocks = <&clock 363>;
++		samsung,power-domain = <&pd_isp>;
++		status = "ok";
++	};
++
++	sysmmu_fimc_scc: sysmmu@13280000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x13280000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-fimc_scalerc";
++		interrupts = <5 2>;
++		clock-names = "sysmmu";
++		clocks = <&clock 364>;
++		samsung,power-domain = <&pd_isp>;
++		status = "ok";
++	};
++
++	sysmmu_fimc_scp: sysmmu@13290000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x13290000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-fimc_scalerp";
++		interrupts = <3 6>;
++		clock-names = "sysmmu";
++		clocks = <&clock 365>;
++		samsung,power-domain = <&pd_isp>;
++		status = "ok";
++	};
++
++	sysmmu_fimc_mcuctl: sysmmu@132B0000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x132B0000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-fimc_mcuctl";
++		interrupts = <5 4>;
++		clock-names = "sysmmu";
++		clocks = <&clock 366>;
++		samsung,power-domain = <&pd_isp>;
++		status = "ok";
++	};
++
++	sysmmu_fimc_odc: sysmmu@132C0000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x132C0000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-fimc_odc";
++		interrupts = <11 0>;
++		clock-names = "sysmmu";
++		clocks = <&clock 367>;
++		samsung,power-domain = <&pd_isp>;
++		status = "ok";
++	};
++
++	sysmmu_fimc_dis0: sysmmu@132D0000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x132D0000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-fimc_dis0";
++		interrupts = <10 4>;
++		clock-names = "sysmmu";
++		clocks = <&clock 368>;
++		samsung,power-domain = <&pd_isp>;
++		status = "ok";
++	};
++
++	sysmmu_fimc_dis1: sysmmu@132E0000{
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x132E0000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-fimc_dis1";
++		interrupts = <9 4>;
++		clock-names = "sysmmu";
++		clocks = <&clock 369>;
++		samsung,power-domain = <&pd_isp>;
++		status = "ok";
++	};
++
++	sysmmu_fimc_3dnr: sysmmu@132F0000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x132F0000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-fimc_3dnr";
++		interrupts = <5 6>;
++		clock-names = "sysmmu";
++		clocks = <&clock 370>;
++		samsung,power-domain = <&pd_isp>;
++		status = "ok";
++	};
++
++	sysmmu_fimc_lite0: sysmmu@13C40000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x13C40000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-fimc_lite0";
++		interrupts = <3 4>;
++		clock-names = "sysmmu", "master";
++		clocks = <&clock 346>, <&clock 345>;
++		samsung,power-domain = <&pd_gsc>;
++		status = "ok";
++	};
++
++	sysmmu_fimc_lite1: sysmmu@13C50000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x13C50000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-fimc_lite1";
++		interrupts = <24 1>;
++		clock-names = "sysmmu", "master";
++		clocks = <&clock 347>, <&clock 345>;
++		samsung,power-domain = <&pd_gsc>;
++		status = "ok";
++	};
++
++	sysmmu_fimc_jpeg: sysmmu@11F20000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x11F20000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-jpeg";
++		interrupts = <4 2>;
++		clock-names = "sysmmu", "master";
++		clocks = <&clock 273>, <&clock 270>;
++		samsung,power-domain = <&pd_gsc>;
++		status = "ok";
++	};
++
++	sysmmu_fimc_2d: sysmmu@10A60000 {
++		compatible = "samsung,exynos4210-sysmmu";
++		reg = <0x10A60000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupt-names = "sysmmu-2d";
++		interrupts = <24 5>;
++		clock-names = "sysmmu";
++		clocks = <&clock 361>;
++		status = "ok";
+ 	};
+ };
 -- 
 1.7.2.5
