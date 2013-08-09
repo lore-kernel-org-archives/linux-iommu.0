@@ -1,71 +1,78 @@
-From: Tomasz Figa <t.figa@samsung.com>
-Subject: Re: [PATCH v9 07/16] iommu/exynos: support for device tree
-Date: Fri, 09 Aug 2013 17:02:02 +0200
-Message-ID: <33568604.vCtP4hvQ1q@amdc1227>
-References: <002b01ce941b$160a88a0$421f99e0$@samsung.com>
- <20130809153730.83d3a5ba419def5424bcbb0e@samsung.com>
- <CAL_JsqKM_YP0Cj3Uo7TeCVcKcbzzsuK3yxTSn6pG8qGFOnZAiA@mail.gmail.com>
+From: Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH v2] iommu: Add event tracing feature to iommu
+Date: Fri, 09 Aug 2013 16:41:58 +0000
+Message-ID: <B8EFE96D1287C24090BAD9D858E15E61761EFF@sisaex02sj>
+References: <1375196229-2784-1-git-send-email-shuah.kh@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-reply-to: <CAL_JsqKM_YP0Cj3Uo7TeCVcKcbzzsuK3yxTSn6pG8qGFOnZAiA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robherring2@gmail.com>
-Cc: Cho KyongHo <pullip.cho@samsung.com>, Tomasz Figa <tomasz.figa@gmail.com>, Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux Kernel <linux-kernel@vger.kernel.org>, Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, Kukjin Kim <kgene.kim@samsung.com>, Prathyush <prathyush.k@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Subash Patel <supash.ramaswamy@linaro.org>, Grant Grundler <grundler@chromium.org>, Antonios Motakis <a.motakis@virtualopensystems.com>, kvmarm@lists.cs.columbia.edu, Sachin Kamat <sachin.kamat@linaro.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org" <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org" <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, "fweisbec-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <fweisbec-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org" <rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org>, "tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org" <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org" <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Friday 09 of August 2013 08:28:09 Rob Herring wrote:
-> On Fri, Aug 9, 2013 at 1:37 AM, Cho KyongHo <pullip.cho@samsung.com> 
-wrote:
-> > On Fri, 09 Aug 2013 00:41:25 +0200, Tomasz Figa wrote:
-> >> Hi KyongHo,
-> >> 
-> >> On Thursday 08 of August 2013 18:38:49 Cho KyongHo wrote:
-> >> > This commit adds device tree support for System MMU.
-> >> > This also include the following changes and enhancements:
-> >> > 
-> >> > * use managed device helper functions.
-> >> > Simplyfies System MMU device driver.
-> >> > 
-> >> > * use only a single clock descriptor.
-> >> > System MMU device descriptor is seperate if it is imposible to make
-> >> > a single clock descriptor to make a device descriptor for a group of
-> >> > System MMUs.
-> >> > 
-> >> > * removed dbgname member from sysmmu_drvdata structure.
-> >> > debugging kernel message for a System MMU is distinguisheable with
-> >> > the
-> >> > name of device descroptors.
-> >> 
-> >> Please put all these three changes in separate patches. This patch is
-> >> hard to review with all the changes mixed together...
-> 
-> Agreed.
-> 
-> > Ok.
-> > 
-> >> In addition, I believe this is the patch that should be adding device
-> >> tree binding documentation, not the 6/16 one, as this is where
-> >> actually support for this binding gets added to the kernel.
-> > 
-> > Oh, I didn't know that devicetree binding description and
-> > implementation need to be in the same patch.
-> > I will do as you advised.
-> 
-> Actually, I prefer the binding docs be separate patches. The reason
-> being so we can get closer to having them in a separate repository.
-> Also, then the binding can be acked separately from the kernel
-> implementation using the binding.
+On 07/30/2013 08:57 AM, Shuah Khan wrote:
+> Add tracing feature to iommu to report various iommu events. Classes
+> iommu_group, iommu_device, iommu_map_unmap, and iommu_amd_event are defined.
+>
+> iommu_group class events can be enabled to trigger when devices get added
+> to and removed from an iommu group. Trace information includes iommu group
+> id and device name.
+>
+> iommu:add_device_to_group
+> iommu:remove_device_from_group
+>
+> iommu_device class events can be enabled to trigger when devices are attached
+> to and detached from a domain. Trace information includes device name.
+>
+> iommu:attach_device_to_domain
+> iommu:detach_device_from_domain
+>
+> iommu_map_unmap class events can be enabled to trigger when iommu map and
+> unmap iommu ops. Trace information includes iova, physical address (map event
+> only), and size.
+>
+> iommu:unmap
+> iommu:map
+>
+> iommu_amd_event class can be enabled to trigger when AMD IOMMU driver finds
+> events when it polls the IOMMU Event Log. Trace information includes the
+> event string derived from the event type in human friendly form, event type,
+> id of the domain the device is placed in, device (bus number, slot number,
+> and function number), address associated with the event, and flags.
+>
+> iommu:amd_event
+>
+> Testing:
+> The following is trace is generated when intel-iommu driver adds devices to
+> to iommu groups during boot-time during its initialization:
+>
+>         swapper/0-1     [003] ....     1.854793: add_device_to_group: IOMMU: groupID=0 device=0000:00:00.0
+>         swapper/0-1     [003] ....     1.854797: add_device_to_group: IOMMU: groupID=1 device=0000:00:02.0
+>
+> Added trace calls to iommu_prepare_identity_map() for testing some of the
+> conditions that are hard to trigger. Here is the trace from the testing:
+>         swapper/0-1     [003] ....     1.854099: amd_event: IOMMU:ILLEGAL_DEV_TABLE_ENTRY 0x01 00:00.0 d=0x0010 a=0x00000000cb800000 f=0x0002
+>         swapper/0-1     [003] ....     1.854101: remove_device_from_group: IOMMU: groupID=0 device=0000:00:02.0
+>         swapper/0-1     [003] ....     1.854102: attach_device_to_domain: IOMMU: device=0000:00:02.0
+>         swapper/0-1     [003] ....     1.854102: detach_device_from_domain: IOMMU: device=0000:00:02.0
+>         swapper/0-1     [003] ....     1.854102: map: IOMMU: iova=0x00000000cb800000 paddr=0x00000000cf9fffff size=0x400
+>         swapper/0-1     [003] ....     1.854102: unmap: IOMMU: iova=0x00000000cb800000 size=0x400
+>
 
-OK. This is a good point. So maybe let's fully define this order to be as 
-following (and have first best practice for the DT binding best practices 
-that need to be defined):
+Any comments on this patch? Is this a reasonable approach?
 
-Bindings documentation should be added with a separate patch, before any 
-user of these bindings is introduced.
+-- Shuah
 
-What do you think?
-
-Best regards,
-Tomasz
+Shuah Khan, Linux Kernel Developer - Open Source Group Samsung Research 
+America (Silicon Valley) shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org | (970) 672-0658
