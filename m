@@ -1,14 +1,15 @@
-From: Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v9 14/16] iommu/exynos: add support for power management
-	subsystems.
-Date: Fri, 09 Aug 2013 01:03:05 +0200
-Message-ID: <1949492.N82v2nAcIY@flatron>
-References: <003201ce941b$6e5a90e0$4b0fb2a0$@samsung.com>
+From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH v9 06/16] ARM: dts: Add description of System MMU of Exynos
+	SoCs
+Date: Fri, 09 Aug 2013 09:45:30 +0900
+Message-ID: <20130809094530.b1d3f3fe3ea96092c23d9fba@samsung.com>
+References: <002a01ce941b$0d9a31c0$28ce9540$@samsung.com>
+	<520376CE.3000109@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <003201ce941b$6e5a90e0$4b0fb2a0$@samsung.com>
+In-reply-to: <520376CE.3000109-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,248 +19,269 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+To: Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, 'Linux Samsung SOC' <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, 'Prathyush' <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Grant Grundler' <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, 'Subash Patel' <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Linux Kernel' <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, 'Sachin Kamat' <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Linux IOMMU' <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, 'Kukjin Kim' <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Antonios Motakis' <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, 'Linux ARM Kernel' <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, 'Rahul Sharma' <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi KyongHo,
+On Thu, 08 Aug 2013 12:45:34 +0200, Sylwester Nawrocki wrote:
 
-nit: Please drop the trailing dot at the end of patch subject.
-
-On Thursday 08 of August 2013 18:41:17 Cho KyongHo wrote:
-> This adds support for Advance Power Management and Runtime Power
-> Management.
-
-This patch adds support for system-wide and runtime power management.
-
-> Since System MMU is located in the same local power domain of its
-> master H/W, System MMU must be initialized before it is working if
-> its power domain was ever turned off. TLB invalidation according to
-> unmapping on page tables must also be performed while power domain is
-> turned on.
+> Hi,
 > 
-> This patch ensures that resume and runtime_resume(restore_state)
-> functions in this driver is called before the calls to resume and
-> runtime_resume callback functions in the drivers of master H/Ws.
-> Likewise, suspend and runtime_suspend(save_state) functions in this
-> driver is called after the calls to suspend and runtime_suspend in the
-> drivers of master H/Ws.
+> On 08/08/2013 11:38 AM, Cho KyongHo wrote:
 > 
-> In order to get benefit of this support, the master H/W and its System
-> MMU must resides in the same power domain in terms of Linux kernel. If
-> a master H/W does not use generic I/O power domain, its driver must
-> call iommu_attach_device() after its local power domain is turned on,
-> iommu_detach_device before turned off.
-
-I don't get the point of this last paragraph. What a power domain can be 
-in other terms? Is there any other way to support power domains on Exynos 
-than generic power domains?
-
-> Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> ---
->  drivers/iommu/exynos-iommu.c |  235
-> +++++++++++++++++++++++++++++++++++++++++- 1 files changed, 231
-> insertions(+), 4 deletions(-)
+> How about something along the lines of:
 > 
-> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> index 9e64483..56aead9 100644
-> --- a/drivers/iommu/exynos-iommu.c
-> +++ b/drivers/iommu/exynos-iommu.c
-> @@ -28,6 +28,7 @@
->  #include <linux/export.h>
->  #include <linux/of.h>
->  #include <linux/of_platform.h>
-> +#include <linux/pm_domain.h>
->  #include <linux/notifier.h>
+> "This patch adds dts entries for the SYSMMU devices found on Exynos4
+> and Exynos5 SoC series and the SYSMMU binding documentation."
 > 
->  #include <asm/cacheflush.h>
-> @@ -186,6 +187,7 @@ struct sysmmu_drvdata {
->  	int activations;
->  	rwlock_t lock;
->  	struct iommu_domain *domain;
-> +	bool runtime_active;
->  	unsigned long pgtable;
->  	void __iomem *sfrbases[0];
->  };
-> @@ -438,7 +440,8 @@ static bool __sysmmu_disable(struct sysmmu_drvdata
-> *data) data->pgtable = 0;
->  		data->domain = NULL;
+> instead of this empty changelog ?
+
+Ok. I thought that the title of this patch is self-explanatory.
+But I agree with you this needs more specific description.
+
 > 
-> -		__sysmmu_disable_nocount(data);
-> +		if (data->runtime_active)
-> +			__sysmmu_disable_nocount(data);
+> > Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> > ---
+> >  .../bindings/iommu/samsung,exynos4210-sysmmu.txt   |  103 +++++++
+> >  arch/arm/boot/dts/exynos4.dtsi                     |  122 ++++++++
+> >  arch/arm/boot/dts/exynos4210.dtsi                  |   25 ++
+> >  arch/arm/boot/dts/exynos4x12.dtsi                  |   82 ++++++
+> >  arch/arm/boot/dts/exynos5250.dtsi                  |  290 ++++++++++++++++++++
+> >  5 files changed, 622 insertions(+), 0 deletions(-)
+> >  create mode 100644 Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
+> > 
+> > diff --git a/Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
+> > b/Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
+> > new file mode 100644
+> > index 0000000..92f0a33
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
+> > @@ -0,0 +1,103 @@
+> > +Samsung Exynos4210 IOMMU H/W, System MMU (System Memory Management Unit)
+> > +
+> > +Samsung's Exynos architecture contains System MMU that enables scattered
+> > +physical memory chunks visible as a contiguous region to DMA-capable peripheral
+> > +devices like MFC, FIMC, FIMD, GScaler, FIMC-IS and so forth.
 > 
->  		dev_dbg(data->sysmmu, "Disabled\n");
->  	} else  {
-> @@ -505,7 +508,8 @@ static int __sysmmu_enable(struct sysmmu_drvdata
-> *data, data->pgtable = pgtable;
->  		data->domain = domain;
+> s/so forth/and more ?
+
+Sorry but I think that it is not a matter.
+
 > 
-> -		__sysmmu_enable_nocount(data);
-> +		if (data->runtime_active)
-> +			__sysmmu_enable_nocount(data);
+> > +
+> > +System MMU is a sort of IOMMU and support identical translation table format to
 > 
->  		dev_dbg(data->sysmmu, "Enabled\n");
->  	} else {
-> @@ -609,7 +613,7 @@ static void sysmmu_tlb_invalidate_entry(struct
-> device *dev, unsigned long iova) data =
-> dev_get_drvdata(client->sysmmu[i]);
+> s/support/supports ?
+
+Ok.
+
 > 
->  		read_lock_irqsave(&data->lock, flags);
-> -		if (is_sysmmu_active(data)) {
-> +		if (is_sysmmu_active(data) && data->runtime_active) {
->  			int i;
->  			clk_enable(data->clk_master);
->  			for (i = 0; i < data->nsfrs; i++)
-> @@ -637,7 +641,8 @@ void exynos_sysmmu_tlb_invalidate(struct device
-> *dev) data = dev_get_drvdata(client->sysmmu[i]);
+> > +ARMv7 translation tables with minimum set of page properties including access
+> > +permissions, shareability and security protection. In addition, System MMU has
+> > +another capabilities like L2 TLB or block-fetch buffers to minimize translation
+> > +latency.
+> > +
+> > +A System MMU is dedicated to a single master peripheral device.  Thus, it is
+> > +important to specify the correct System MMU in the device node of its master
+> > +device. Whereas a System MMU is dedicated to a master device, the master device
+> > +may have more than one System MMU.
+> > +
+> > +Required properties:
+> > +- compatible: Should be "samsung,exynos4210-sysmmu"
+> > +- reg: A tuple of base address and size of System MMU registers.
+> > +- interrupt-parent: The phandle of the interrupt controller of System MMU
+> > +- interrupts: A tuple of numbers that indicates the interrupt source.
 > 
->  		read_lock_irqsave(&data->lock, flags);
-> -		if (is_sysmmu_active(data)) {
-> +		if (is_sysmmu_active(data) &&
-> +				data->runtime_active) {
-
-nit: The whole if condition fits into single line.
-
->  			int i;
->  			for (i = 0; i < data->nsfrs; i++) {
->  				clk_enable(data->clk_master);
-> @@ -711,6 +716,8 @@ static int __init exynos_sysmmu_probe(struct
-> platform_device *pdev) }
->  	}
+> The interrupt specifier depends on the interrupt controller (interrupt-parent). 
+> So it might not always be a "tuple of numbers". It's probably better to say,
+> e.g.:
 > 
-> +	pm_runtime_enable(dev);
-> +
->  	data->sysmmu = dev;
+> - interrupts: Should contain the SYSMMU controller interrupt.
 > 
->  	data->clk = devm_clk_get(dev, "sysmmu");
-> @@ -736,6 +743,8 @@ static int __init exynos_sysmmu_probe(struct
-> platform_device *pdev) return ret;
->  	}
+
+Yes.
+You are correct.
+The description assumes the interrupt controler is Interrupt Combiner in Exynos SoCs.
+But actually, the interrupt controller can be GIC or something else.
+The description needs to be changed.
+
+> > +- clock-names: Should be "sysmmu" if the System MMU is needed to gate its clock.
+> > +               Please refer to the following documents:
+> > +	       Documentation/devicetree/bindings/clock/clock-bindings.txt
+> > +	       Documentation/devicetree/bindings/clock/exynos4-clock.txt
+> > +	       Documentation/devicetree/bindings/clock/exynos5250-clock.txt
 > 
-> +	data->runtime_active = !pm_runtime_enabled(dev);
-> +
->  	rwlock_init(&data->lock);
+> You could replace "Documentation/devicetree/bindings/clock" with "../clock"
 > 
->  	platform_set_drvdata(pdev, data);
-> @@ -744,6 +753,34 @@ static int __init exynos_sysmmu_probe(struct
-> platform_device *pdev) return ret;
->  }
+
+Ok.
+
+> > +	       Optional "master" if the clock to the System MMU is gated by
+> > +	       another gate clock other than "sysmmu". The System MMU driver
+> > +	       sets "master" the parent of "sysmmu".
+> > +	       Exynos4 SoCs, there needs no "master" clocks.
+> > +	       Exynos5 SoCs, some System MMUs must have "master" clocks.
+> > +- clocks: Required if the System MMU is needed to gate its clock.
+> > +	  Please refer to the documents listed above.
+> > +- samsung,power-domain: Required if the System MMU is needed to gate its power.
 > 
-> +#ifdef CONFIG_PM_SLEEP
-> +static int sysmmu_suspend(struct device *dev)
-> +{
-> +	struct sysmmu_drvdata *data = dev_get_drvdata(dev);
-> +	unsigned long flags;
-> +	read_lock_irqsave(&data->lock, flags);
-> +	if (is_sysmmu_active(data) &&
-> +		(!pm_runtime_enabled(dev) || data->runtime_active))
-> +		__sysmmu_disable_nocount(data);
-> +	read_unlock_irqrestore(&data->lock, flags);
-> +	return 0;
-> +}
-> +
-> +static int sysmmu_resume(struct device *dev)
-> +{
-> +	struct sysmmu_drvdata *data = dev_get_drvdata(dev);
-> +	unsigned long flags;
-> +	read_lock_irqsave(&data->lock, flags);
-> +	if (is_sysmmu_active(data) &&
-> +		(!pm_runtime_enabled(dev) || data->runtime_active))
-> +		__sysmmu_enable_nocount(data);
-> +	read_unlock_irqrestore(&data->lock, flags);
-> +	return 0;
-> +}
-> +#endif
-> +
-> +static SIMPLE_DEV_PM_OPS(sysmmu_pm_ops, sysmmu_suspend, sysmmu_resume);
-> +
->  #ifdef CONFIG_OF
->  static struct of_device_id sysmmu_of_match[] __initconst = {
->  	{ .compatible	= "samsung,exynos4210-sysmmu", },
-> @@ -756,6 +793,7 @@ static struct platform_driver exynos_sysmmu_driver
-> __refdata = { .driver	= {
->  		.owner		= THIS_MODULE,
->  		.name		= "exynos-sysmmu",
-> +		.pm		= &sysmmu_pm_ops,
->  		.of_match_table	= of_match_ptr(sysmmu_of_match),
->  	}
->  };
-> @@ -1141,6 +1179,163 @@ static int __init exynos_iommu_init(void)
->  }
->  subsys_initcall(exynos_iommu_init);
+> Isn't it required always when an SoC support Power Domains and the SYSMMU
+> belongs to a power domain ? Perhaps something like:
 > 
-> +#ifdef CONFIG_PM_SLEEP
-> +static int sysmmu_pm_genpd_suspend(struct device *dev)
-> +{
-> +	struct exynos_iommu_client *client = dev->archdata.iommu;
-> +	int ret = 0;
-> +	int i;
-> +
-> +	for (i = 0; i < client->num_sysmmu; i++) {
-> +		ret = pm_generic_suspend(client->sysmmu[i]);
-> +		if (ret)
-> +			break;
-> +	}
-> +
-> +	if (!ret)
-> +		ret = pm_generic_suspend(dev);
-> +
-> +	if (ret) {
-> +		int j;
-> +
-> +		for (j = 0; j < i; j++)
-> +			pm_generic_resume(client->sysmmu[j]);
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static int sysmmu_pm_genpd_resume(struct device *dev)
-> +{
-> +	struct exynos_iommu_client *client = dev->archdata.iommu;
-> +	int ret = 0;
-> +	int i;
-> +
-> +	for (i = 0; i < client->num_sysmmu; i++) {
-> +		ret = pm_generic_resume(client->sysmmu[i]);
-> +		if (ret)
-> +			break;
+> - samsung,power-domain: Required if the System MMU belongs to a Power Domain.
+> 
+> would be more appropriate ?
+> 
 
-Error handling here can be cleaned up a lot.
+Acutally, if System MMU and its master H/W is not registered to a generic IO powerdomain,
+RPM and APM is not applicable to System MMU because of the implementation of System MMU
+driver relies on dev_pm_ops callbacks of generic IO powerdomain.
+I am still searching a better way like introducing bus_type for System MMU.
+Any advice about it is welcome.
 
-s/break/goto err_suspend/
+> > +	  Please refer to the following document:
+> > +	  Documentation/devicetree/bindings/arm/exynos/power_domain.txt
+> > +
+> > +Required properties for the master peripheral devices:
+> > +- iommu: phandles to the System MMUs of the device
+> > +
+> > +Examples:
+> > +A System MMU is dedicated to a single master device.
+> > +	gsc_0:  gsc@0x13e00000 {
+> > +		compatible = "samsung,exynos5-gsc";
+> > +		reg = <0x13e00000 0x1000>;
+> > +		interrupts = <0 85 0>;
+> > +		samsung,power-domain = <&pd_gsc>;
+> > +		clocks = <&clock 256>;
+> > +		clock-names = "gscl";
+> 
+> You could omit all the above properties, perhaps just leaving
+> 'compatible' property, simply replacing them with:
+> 		...
+> 
+> since the only relevant property hers is 'iommu' ? Just a suggestion
+> though.
+> 
+> > +		iommu = <&sysmmu_gsc1>;
+> 
 
-> +	}
-> +
-> +	if (!ret)
+Ok.
 
-Now you can drop this check.
+> Shouldn't this be:
+> 
+> 		iommu = <&sysmmu_gsc0>;
+> ? 
 
-> +		ret = pm_generic_resume(dev);
+No, you are right. It is my fault :)
 
-	ret = pm_generic_resume(dev);
-	if (ret)
-		goto err_suspend;
+> It also probably makes sense to put the SYMMU device node above 
+> the master device node.
+> 
 
-	return 0;
+Ok. 
 
-> +
+> > +	};
+> > +
+> > +	sysmmu_gsc0: sysmmu@13E80000 {
+> > +		compatible = "samsung,exynos4210-sysmmu";
+> > +		reg = <0x13E80000 0x1000>;
+> > +		interrupt-parent = <&combiner>;
+> > +		interrupt-names = "sysmmu-gsc0";
+> > +		interrupts = <2 0>;
+> > +		clock-names = "sysmmu", "master";
+> > +		clocks = <&clock 262>, <&clock 256>;
+> > +		samsung,power-domain = <&pd_gsc>;
+> > +		status = "ok";
+> > +	};
+> > +
+> > +MFC has 2 System MMUs for each port that MFC is attached. Thus it seems natural
+> > +to define 2 System MMUs for each port of the MFC:
+> > +
+> > +	mfc: codec@13400000 {
+> > +		compatible = "samsung,mfc-v5";
+> > +		reg = <0x13400000 0x10000>;
+> > +		interrupts = <0 94 0>;
+> > +		samsung,power-domain = <&pd_mfc>;
+> > +		clocks = <&clock 170>, <&clock 273>;
+> > +		clock-names = "sclk_mfc", "mfc";
+> > +		status = "ok";
+> > +		iommu = <&sysmmu_mfc_l>, <&sysmmu_mfc_r>;
+> > +	};
+> 
+> How about putting this node as last one in this example ?
 
-err_suspend:
-> +	if (ret) {
+Ok.
 
-This check can be dropped here as well now.
+> 
+> > +	sysmmu_mfc_l: sysmmu@13620000 {
+> > +		compatible = "samsung,exynos4210-sysmmu";
+> > +		reg = <0x13620000 0x1000>;
+> > +		interrupt-parent = <&combiner>;
+> > +		interrupt-names = "sysmmu-mfc-l";
+> > +		interrupts = <5 5>;
+> > +		clock-names = "sysmmu";
+> > +		clocks = <&clock 274>;
+> > +		samsung,power-domain = <&pd_mfc>;
+> > +		status = "ok";
+> > +	};
+> > +
+> > +	sysmmu_mfc_r: sysmmu@13630000 {
+> > +		compatible = "samsung,exynos4210-sysmmu";
+> > +		reg = <0x13630000 0x1000>;
+> > +		interrupt-parent = <&combiner>;
+> > +		interrupt-names = "sysmmu-mfc-r";
+> > +		interrupts = <5 6>;
+> > +		clock-names = "sysmmu";
+> > +		clocks = <&clock 275>;
+> > +		samsung,power-domain = <&pd_mfc>;
+> > +		status = "ok";
+> > +	};
+> > +
+> > diff --git a/arch/arm/boot/dts/exynos4.dtsi b/arch/arm/boot/dts/exynos4.dtsi
+> > index 597cfcf..6265984 100644
+> > --- a/arch/arm/boot/dts/exynos4.dtsi
+> > +++ b/arch/arm/boot/dts/exynos4.dtsi
+> > @@ -251,6 +251,7 @@
+> >  		clocks = <&clock 170>, <&clock 273>;
+> >  		clock-names = "sclk_mfc", "mfc";
+> >  		status = "disabled";
+> > +		iommu = <&sysmmu_mfc_l>, <&sysmmu_mfc_r>;
+> >  	};
+> >  
+> >  	serial@13800000 {
+> > @@ -485,5 +486,126 @@
+> >  		clock-names = "sclk_fimd", "fimd";
+> >  		samsung,power-domain = <&pd_lcd0>;
+> >  		status = "disabled";
+> > +		iommu = <&sysmmu_fimd0>;
+> > +	};
+> > +
+> > +	sysmmu_mfc_l: sysmmu@13620000 {
+> > +		compatible = "samsung,exynos4210-sysmmu";
+> > +		reg = <0x13620000 0x1000>;
+> > +		interrupt-parent = <&combiner>;
+> > +		interrupt-names = "sysmmu-mfc-l";
+> 
+> Do you really need 'interrupt-names' property, when there is only
+> one interrupt in each node. Isn't it just a leftover from previous
+> iterations ? I can't see it mentioned in the binding documentation.
 
-> +		int j;
-> +
-> +		for (j = 0; j < i; j++)
-> +			pm_generic_suspend(client->sysmmu[j]);
-> +	}
-> +
-> +	return ret;
-> +}
-> +#endif
+interrupt-names are optional for System MMU driver as you know.
+The driver does not use it currently but interrupt-name can be used
+for printing shorter name of a Sytsem MMU than dev_name(dev).
 
-Best regards,
-Tomasz
+> 
+> > +		interrupts = <5 5>;
+> > +		clock-names = "sysmmu";
+> > +		clocks = <&clock 274>;
+> > +		samsung,power-domain = <&pd_mfc>;
+> > +		status = "ok";
+> > +	};
+> 
+> 
+> Thanks,
+> Sylwester
+
+Thank you for kind and detailed review!
+
+KyongHo.
