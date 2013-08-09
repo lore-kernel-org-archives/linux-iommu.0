@@ -1,16 +1,17 @@
 From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v9 03/16] iommu/exynos: fix page table maintenance
-Date: Fri, 09 Aug 2013 17:33:57 +0900
-Message-ID: <20130809173357.841dad5f7a648604f597c18d@samsung.com>
-References: <002701ce941a$eecebdb0$cc6c3910$@samsung.com>
-	<1516548.d7oQuzQS7g@amdc1227>
-	<20130809131520.270b7be7454b1862b146e592@samsung.com>
-	<2636561.5XtHkCUpfO@flatron>
+Subject: Re: [PATCH v9 04/16] iommu/exynos: allocate lv2 page table from own
+	slab
+Date: Fri, 09 Aug 2013 17:51:56 +0900
+Message-ID: <20130809175156.c7ffc68b865e4bca48ef47dd@samsung.com>
+References: <002801ce941a$fb6369e0$f22a3da0$@samsung.com>
+	<2544843.sndV7usHTj@amdc1227>
+	<20130809145849.790a9800f4f9893b30e54a1c@samsung.com>
+	<2101296.S6JDU5igl3@flatron>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <2636561.5XtHkCUpfO@flatron>
+In-reply-to: <2101296.S6JDU5igl3@flatron>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,180 +25,171 @@ To: Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, 'Linux Samsung SOC' <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, 'Prathyush' <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Grant Grundler' <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Tomasz Figa <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Subash Patel' <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Linux Kernel' <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, 'Sachin Kamat' <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Linux IOMMU' <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, 'Kukjin Kim' <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Antonios Motakis' <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, 'Linux ARM Kernel' <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, 'Rahul Sharma' <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 09 Aug 2013 09:47:28 +0200, Tomasz Figa wrote:
+On Fri, 09 Aug 2013 09:55:30 +0200, Tomasz Figa wrote:
 > Hi KyongHo,
 > 
-> On Friday 09 of August 2013 13:15:20 Cho KyongHo wrote:
-> > On Thu, 08 Aug 2013 15:54:50 +0200, Tomasz Figa wrote:
-> > > On Thursday 08 of August 2013 18:37:43 Cho KyongHo wrote:
-> > > > This prevents allocating lv2 page table for the lv1 page table entry
+> On Friday 09 of August 2013 14:58:49 Cho KyongHo wrote:
+> > On Thu, 08 Aug 2013 16:00:18 +0200, Tomasz Figa wrote:
+> > > On Thursday 08 of August 2013 18:38:04 Cho KyongHo wrote:
+> > > > Since kmalloc() does not guarantee that the allignment of 1KiB when
+> > > > it
+> > > > allocates 1KiB, it is required to allocate lv2 page table from own
+> > > > slab that guarantees alignment of 1KiB
 > > > > 
-> > >   ^ What this is this this about? :)
-> > 
-> > As you might indicate, 'this' means this patch :)
-> 
-> Yep, I was just nitpicking, but still I would go with something among 
-> following lines:
-> 
-> 8<---
-> Currently if lv2 page table allocation is requested for a lv1 page table 
-> entry that already has 1MB page mapping, the driver returns -EADDRINUSE. 
-> However this case should not happen, unless there is a bug in the generic 
-> IOMMU allocator, so BUG_ON() is the right error handling here, which is 
-> implemented by this patch.
-> --->8
-> 
-> > > > that already has 1MB page mapping. In addition, changed to BUG_ON
-> > > > instead of returning -EADDRINUSE.
-> > > 
-> > > The change mentioned in last sentence should be a separate patch.
-> > 
-> > Ok :)
-> 
-> Well, actually I was confused by subject of this patch.
-> 
-> It looks like this change is actually the main part of it and the only 
-> unrelated changes are using defined macros for page masks and introduction 
-> of clear_page_table() function. Since we both agreed that the latter can 
-> be dropped only the former should be separated from this patch.
-> 
-> Maybe you could use following patch subject:
-> 
-> iommu/exynos: fix handling of possible BUG cases in page table setup code
-> 
-
-Your title looks much better. Thanks.
-
-Initially, this patch is created for handling -EADDRINUSE correctly but
-it is changed :). I missed to change the subject.
-
 > > > > Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 > > > > ---
 > > > > 
-> > > >  drivers/iommu/exynos-iommu.c |   68
-> > > > 
-> > > > ++++++++++++++++++++++++----------------- 1 files changed, 40
-> > > > insertions(+), 28 deletions(-)
+> > > >  drivers/iommu/exynos-iommu.c |   24 ++++++++++++++++++++----
+> > > >  1 files changed, 20 insertions(+), 4 deletions(-)
 > > > > 
 > > > > diff --git a/drivers/iommu/exynos-iommu.c
-> > > > b/drivers/iommu/exynos-iommu.c index d545a25..d90e6fa 100644
+> > > > b/drivers/iommu/exynos-iommu.c index d90e6fa..a318049 100644
 > > > > --- a/drivers/iommu/exynos-iommu.c
 > > > > +++ b/drivers/iommu/exynos-iommu.c
-> > > > @@ -52,11 +52,11 @@
+> > > > @@ -100,6 +100,8 @@
 > > > > 
-> > > >  #define lv2ent_large(pent) ((*(pent) & 3) == 1)
-> > > >  
-> > > >  #define section_phys(sent) (*(sent) & SECT_MASK)
+> > > >  #define REG_PB1_SADDR		0x054
+> > > >  #define REG_PB1_EADDR		0x058
 > > > > 
-> > > > -#define section_offs(iova) ((iova) & 0xFFFFF)
-> > > > +#define section_offs(iova) ((iova) & ~SECT_MASK)
-> > > > 
-> > > >  #define lpage_phys(pent) (*(pent) & LPAGE_MASK)
-> > > > 
-> > > > -#define lpage_offs(iova) ((iova) & 0xFFFF)
-> > > > +#define lpage_offs(iova) ((iova) & ~LPAGE_MASK)
-> > > > 
-> > > >  #define spage_phys(pent) (*(pent) & SPAGE_MASK)
-> > > > 
-> > > > -#define spage_offs(iova) ((iova) & 0xFFF)
-> > > > +#define spage_offs(iova) ((iova) & ~SPAGE_MASK)
-> > > > 
-> > > >  #define lv1ent_offset(iova) ((iova) >> SECT_ORDER)
-> > > >  #define lv2ent_offset(iova) (((iova) & 0xFF000) >> SPAGE_ORDER)
-> > > > 
-> > > > @@ -856,13 +856,15 @@ finish:
-> > > >  static unsigned long *alloc_lv2entry(unsigned long *sent, unsigned
-> > > >  long
-> > > > 
-> > > > iova, short *pgcounter)
-> > > > 
-> > > >  {
-> > > > 
-> > > > +	BUG_ON(lv1ent_section(sent));
-> > > 
-> > > Is this condition really a critical one, to the point that the system
-> > > should not continue execution?
-> > 
-> > Discussed with Grant. He thought that creating mapping on a valid
-> > mapping is just a BUG and I finally agreed with him. Is there a case
-> > that the condition in BUG_ON is true intentionally?
-> 
-> Yes, he explained this as well. It's fine for me then.
-> 
+> > > > +static struct kmem_cache *lv2table_kmem_cache;
 > > > > +
 > > > > 
-> > > >  	if (lv1ent_fault(sent)) {
+> > > >  static unsigned long *section_entry(unsigned long *pgtable,
+> > > >  unsigned
+> > > > 
+> > > > long iova) {
+> > > > 
+> > > >  	return pgtable + lv1ent_offset(iova);
+> > > > 
+> > > > @@ -765,7 +767,8 @@ static void exynos_iommu_domain_destroy(struct
+> > > > iommu_domain *domain)
+> > > > 
+> > > >  	for (i = 0; i < NUM_LV1ENTRIES; i++)
 > > > >  	
+> > > >  		if (lv1ent_page(priv->pgtable + i))
+> > > > 
+> > > > -			kfree(__va(lv2table_base(priv->pgtable + i)));
+> > > > +			kmem_cache_free(lv2table_kmem_cache,
+> > > > +					__va(lv2table_base(priv->pgtable + 
+> i)));
+> > > > 
+> > > >  	free_pages((unsigned long)priv->pgtable, 2);
+> > > >  	free_pages((unsigned long)priv->lv2entcnt, 1);
+> > > > 
+> > > > @@ -861,7 +864,7 @@ static unsigned long *alloc_lv2entry(unsigned
+> > > > long
+> > > > *sent, unsigned long iova, if (lv1ent_fault(sent)) {
+> > > > 
 > > > >  		unsigned long *pent;
-> > > >  		
-> > > >  		pent = kzalloc(LV2TABLE_SIZE, GFP_ATOMIC);
+> > > > 
+> > > > -		pent = kzalloc(LV2TABLE_SIZE, GFP_ATOMIC);
+> > > > +		pent = kmem_cache_zalloc(lv2table_kmem_cache, GFP_ATOMIC);
+> > > > 
 > > > >  		BUG_ON((unsigned long)pent & (LV2TABLE_SIZE - 1));
 > > > >  		if (!pent)
+> > > >  		
+> > > >  			return ERR_PTR(-ENOMEM);
 > > > > 
-> > > > -			return NULL;
-> > > > +			return ERR_PTR(-ENOMEM);
+> > > > @@ -881,7 +884,7 @@ static int lv1set_section(unsigned long *sent,
+> > > > phys_addr_t paddr, short *pgcnt)
 > > > > 
-> > > >  		*sent = mk_lv1ent_page(__pa(pent));
-> > > >  		*pgcounter = NUM_LV2ENTRIES;
-> > > > 
-> > > > @@ -875,15 +877,11 @@ static unsigned long *alloc_lv2entry(unsigned
-> > > > long *sent, unsigned long iova,
-> > > > 
-> > > >  static int lv1set_section(unsigned long *sent, phys_addr_t paddr,
-> > > >  short
-> > > > 
-> > > > *pgcnt) {
-> > > > -	if (lv1ent_section(sent))
-> > > > -		return -EADDRINUSE;
-> > > > +	BUG_ON(lv1ent_section(sent));
-> > > 
-> > > Ditto.
-> > > 
 > > > >  	if (lv1ent_page(sent)) {
+> > > >  	
+> > > >  		BUG_ON(*pgcnt != NUM_LV2ENTRIES);
 > > > > 
-> > > > -		if (*pgcnt != NUM_LV2ENTRIES)
-> > > > -			return -EADDRINUSE;
-> > > > -
-> > > > +		BUG_ON(*pgcnt != NUM_LV2ENTRIES);
-> > > 
-> > > Ditto.
-> > > 
-> > > >  		kfree(page_entry(sent, 0));
-> > > > 
-> > > > -
+> > > > -		kfree(page_entry(sent, 0));
+> > > > +		kmem_cache_free(lv2table_kmem_cache, page_entry(sent, 0));
 > > > > 
 > > > >  		*pgcnt = 0;
 > > > >  	
 > > > >  	}
 > > > > 
-> > > > @@ -894,24 +892,24 @@ static int lv1set_section(unsigned long *sent,
-> > > > phys_addr_t paddr, short *pgcnt) return 0;
+> > > > @@ -1082,10 +1085,23 @@ static int __init exynos_iommu_init(void)
 > > > > 
-> > > >  }
+> > > >  {
+> > > >  
+> > > >  	int ret;
 > > > > 
-> > > > +static void clear_page_table(unsigned long *ent, int n)
-> > > > +{
-> > > > +	if (n > 0)
-> > > > +		memset(ent, 0, sizeof(*ent) * n);
-> > > > +}
+> > > > +	lv2table_kmem_cache = kmem_cache_create("exynos-iommu-lv2table",
+> > > > +				LV2TABLE_SIZE, LV2TABLE_SIZE, 0, NULL);
+> > > > +	if (!lv2table_kmem_cache) {
+> > > > +		pr_err("%s: Failed to create kmem cache\n", __func__);
+> > > > +		return -ENOMEM;
+> > > > +	}
+> > > > +
+> > > > 
+> > > >  	ret = platform_driver_register(&exynos_sysmmu_driver);
+> > > >  	
+> > > >  	if (ret == 0)
+> > > > 
+> > > > -		bus_set_iommu(&platform_bus_type, &exynos_iommu_ops);
+> > > > +		ret = bus_set_iommu(&platform_bus_type, 
+> &exynos_iommu_ops);
+> > > > +
+> > > > +	if (ret) {
+> > > > +		pr_err("%s: Failed to register exynos-iommu driver.\n",
+> > > > +								__func__);
+> > > > +		kmem_cache_destroy(lv2table_kmem_cache);
+> > > > +	}
 > > > 
-> > > I don't see the point of creating this function. It seems to be used
-> > > only once, in addition with a constant as n, so the check for n > 0
-> > > is unnecessary.
+> > > What about making the return value handling here cleaner? For example:
+> > > 	lv2table_kmem_cache = kmem_cache_create("exynos-iommu-lv2table",
+> > > 	
+> > > 				LV2TABLE_SIZE, LV2TABLE_SIZE, 0, NULL);
+> > > 	
+> > > 	if (!lv2table_kmem_cache) {
+> > > 	
+> > > 		...
+> > > 		return -ENOMEM;
+> > > 	
+> > > 	}
+> > > 	
+> > > 	ret = platform_driver_register(&exynos_sysmmu_driver);
+> > > 	if (ret) {
+> > > 	
+> > > 		...
+> > > 		goto err_destroy_kmem_cache;
+> > > 	
+> > > 	}
+> > > 	
+> > > 	ret = bus_set_iommu(&platform_bus_type, &exynos_iommu_ops);
+> > > 	if (ret) {
+> > > 	
+> > > 		...
+> > > 		goto err_platform_unregister;
+> > > 	
+> > > 	}
+> > > 	
+> > > 	return 0;
 > > > 
-> > > And even if there is a need for this change, it should be done in
-> > > separate patch, as this one is not about stylistic changes, but
-> > > fixing page table maintenance (at least based on your commit
-> > > message).
+> > > err_platform_unregister:
+> > > 	...
+> > > 
+> > > err_destroy_kmem_cache:
+> > > 	...
+> > > 	return ret;
+> > > 
+> > > }
 > > 
-> > I know what you are concerning about.
-> > It was introduced in v8 patches to recover previous fault entries before
-> > returning -EADDRINUSE. It is still remained though "return -EADDRINUSE"
-> > is changed into BUG_ON().
-> > I also think that it needs to be removed.
+> > Thank you for suggestion.
+> > I think you are worrying about missing the information who makes 'ret'
+> > non-zero.
 > 
-> OK, thanks.
+> Oh, this is a valid point, but it was more a nitpick about the coding 
+> style. Single path error handling (with goto) is widely used in the kernel 
+> in cases when more than one thing has to be undone and so I suggested this 
+> method of error handling here as well.
 > 
+> > Ok. I will process it separately.
+> 
+> Since this patch adds most of the error handling to this function, I think 
+> it should be fine to do it as a part of this patch.
+> 
+
+I meant 'separately' that checking all return values each.
+I think it can be simpler without goto.
+There are just 2 cases to rollback previous changes in that function.
+
 > Best regards,
 > Tomasz
 > 
