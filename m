@@ -1,184 +1,283 @@
-From: Tomasz Figa <tomasz.figa@gmail.com>
-Subject: Re: [PATCH v9 03/16] iommu/exynos: fix page table maintenance
-Date: Fri, 09 Aug 2013 09:47:28 +0200
-Message-ID: <2636561.5XtHkCUpfO@flatron>
-References: <002701ce941a$eecebdb0$cc6c3910$@samsung.com> <1516548.d7oQuzQS7g@amdc1227> <20130809131520.270b7be7454b1862b146e592@samsung.com>
+From: Cho KyongHo <pullip.cho@samsung.com>
+Subject: Re: [PATCH v9 14/16] iommu/exynos: add support for power management
+ subsystems.
+Date: Fri, 09 Aug 2013 16:49:43 +0900
+Message-ID: <20130809164943.fe4b673e92b3f7680562f29b@samsung.com>
+References: <003201ce941b$6e5a90e0$4b0fb2a0$@samsung.com>
+ <1949492.N82v2nAcIY@flatron>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <20130809131520.270b7be7454b1862b146e592@samsung.com>
+In-reply-to: <1949492.N82v2nAcIY@flatron>
 Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Cho KyongHo <pullip.cho@samsung.com>
-Cc: Tomasz Figa <t.figa@samsung.com>, 'Linux ARM Kernel' <linux-arm-kernel@lists.infradead.org>, 'Linux IOMMU' <iommu@lists.linux-foundation.org>, 'Linux Kernel' <linux-kernel@vger.kernel.org>, 'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>, devicetree@vger.kernel.org, 'Joerg Roedel' <joro@8bytes.org>, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Prathyush' <prathyush.k@samsung.com>, 'Rahul Sharma' <rahul.sharma@samsung.com>, 'Subash Patel' <supash.ramaswamy@linaro.org>, 'Grant Grundler' <grundler@chromium.org>, 'Antonios Motakis' <a.motakis@virtualopensystems.com>, kvmarm@lists.cs.columbia.edu, 'Sachin Kamat' <sachin.kamat@linaro.org>
+To: Tomasz Figa <tomasz.figa@gmail.com>
+Cc: 'Linux ARM Kernel' <linux-arm-kernel@lists.infradead.org>, 'Linux IOMMU' <iommu@lists.linux-foundation.org>, 'Linux Kernel' <linux-kernel@vger.kernel.org>, 'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>, devicetree@vger.kernel.org, 'Joerg Roedel' <joro@8bytes.org>, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Prathyush' <prathyush.k@samsung.com>, 'Rahul Sharma' <rahul.sharma@samsung.com>, 'Subash Patel' <supash.ramaswamy@linaro.org>, 'Grant Grundler' <grundler@chromium.org>, 'Antonios Motakis' <a.motakis@virtualopensystems.com>, kvmarm@lists.cs.columbia.edu, 'Sachin Kamat' <sachin.kamat@linaro.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi KyongHo,
-
-On Friday 09 of August 2013 13:15:20 Cho KyongHo wrote:
-> On Thu, 08 Aug 2013 15:54:50 +0200, Tomasz Figa wrote:
-> > On Thursday 08 of August 2013 18:37:43 Cho KyongHo wrote:
-> > > This prevents allocating lv2 page table for the lv1 page table entry
-> > > 
-> >   ^ What this is this this about? :)
+On Fri, 09 Aug 2013 01:03:05 +0200, Tomasz Figa wrote:
+> Hi KyongHo,
 > 
-> As you might indicate, 'this' means this patch :)
-
-Yep, I was just nitpicking, but still I would go with something among 
-following lines:
-
-8<---
-Currently if lv2 page table allocation is requested for a lv1 page table 
-entry that already has 1MB page mapping, the driver returns -EADDRINUSE. 
-However this case should not happen, unless there is a bug in the generic 
-IOMMU allocator, so BUG_ON() is the right error handling here, which is 
-implemented by this patch.
---->8
-
-> > > that already has 1MB page mapping. In addition, changed to BUG_ON
-> > > instead of returning -EADDRINUSE.
-> > 
-> > The change mentioned in last sentence should be a separate patch.
+> nit: Please drop the trailing dot at the end of patch subject.
 > 
-> Ok :)
 
-Well, actually I was confused by subject of this patch.
+Oh. I didn't catch that.
+Thank you.
 
-It looks like this change is actually the main part of it and the only 
-unrelated changes are using defined macros for page masks and introduction 
-of clear_page_table() function. Since we both agreed that the latter can 
-be dropped only the former should be separated from this patch.
-
-Maybe you could use following patch subject:
-
-iommu/exynos: fix handling of possible BUG cases in page table setup code
-
-> > > Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
-> > > ---
-> > > 
-> > >  drivers/iommu/exynos-iommu.c |   68
-> > > 
-> > > ++++++++++++++++++++++++----------------- 1 files changed, 40
-> > > insertions(+), 28 deletions(-)
-> > > 
-> > > diff --git a/drivers/iommu/exynos-iommu.c
-> > > b/drivers/iommu/exynos-iommu.c index d545a25..d90e6fa 100644
-> > > --- a/drivers/iommu/exynos-iommu.c
-> > > +++ b/drivers/iommu/exynos-iommu.c
-> > > @@ -52,11 +52,11 @@
-> > > 
-> > >  #define lv2ent_large(pent) ((*(pent) & 3) == 1)
-> > >  
-> > >  #define section_phys(sent) (*(sent) & SECT_MASK)
-> > > 
-> > > -#define section_offs(iova) ((iova) & 0xFFFFF)
-> > > +#define section_offs(iova) ((iova) & ~SECT_MASK)
-> > > 
-> > >  #define lpage_phys(pent) (*(pent) & LPAGE_MASK)
-> > > 
-> > > -#define lpage_offs(iova) ((iova) & 0xFFFF)
-> > > +#define lpage_offs(iova) ((iova) & ~LPAGE_MASK)
-> > > 
-> > >  #define spage_phys(pent) (*(pent) & SPAGE_MASK)
-> > > 
-> > > -#define spage_offs(iova) ((iova) & 0xFFF)
-> > > +#define spage_offs(iova) ((iova) & ~SPAGE_MASK)
-> > > 
-> > >  #define lv1ent_offset(iova) ((iova) >> SECT_ORDER)
-> > >  #define lv2ent_offset(iova) (((iova) & 0xFF000) >> SPAGE_ORDER)
-> > > 
-> > > @@ -856,13 +856,15 @@ finish:
-> > >  static unsigned long *alloc_lv2entry(unsigned long *sent, unsigned
-> > >  long
-> > > 
-> > > iova, short *pgcounter)
-> > > 
-> > >  {
-> > > 
-> > > +	BUG_ON(lv1ent_section(sent));
-> > 
-> > Is this condition really a critical one, to the point that the system
-> > should not continue execution?
+> On Thursday 08 of August 2013 18:41:17 Cho KyongHo wrote:
+> > This adds support for Advance Power Management and Runtime Power
+> > Management.
 > 
-> Discussed with Grant. He thought that creating mapping on a valid
-> mapping is just a BUG and I finally agreed with him. Is there a case
-> that the condition in BUG_ON is true intentionally?
-
-Yes, he explained this as well. It's fine for me then.
-
-> > > +
-> > > 
-> > >  	if (lv1ent_fault(sent)) {
-> > >  	
-> > >  		unsigned long *pent;
-> > >  		
-> > >  		pent = kzalloc(LV2TABLE_SIZE, GFP_ATOMIC);
-> > >  		BUG_ON((unsigned long)pent & (LV2TABLE_SIZE - 1));
-> > >  		if (!pent)
-> > > 
-> > > -			return NULL;
-> > > +			return ERR_PTR(-ENOMEM);
-> > > 
-> > >  		*sent = mk_lv1ent_page(__pa(pent));
-> > >  		*pgcounter = NUM_LV2ENTRIES;
-> > > 
-> > > @@ -875,15 +877,11 @@ static unsigned long *alloc_lv2entry(unsigned
-> > > long *sent, unsigned long iova,
-> > > 
-> > >  static int lv1set_section(unsigned long *sent, phys_addr_t paddr,
-> > >  short
-> > > 
-> > > *pgcnt) {
-> > > -	if (lv1ent_section(sent))
-> > > -		return -EADDRINUSE;
-> > > +	BUG_ON(lv1ent_section(sent));
-> > 
-> > Ditto.
-> > 
-> > >  	if (lv1ent_page(sent)) {
-> > > 
-> > > -		if (*pgcnt != NUM_LV2ENTRIES)
-> > > -			return -EADDRINUSE;
-> > > -
-> > > +		BUG_ON(*pgcnt != NUM_LV2ENTRIES);
-> > 
-> > Ditto.
-> > 
-> > >  		kfree(page_entry(sent, 0));
-> > > 
-> > > -
-> > > 
-> > >  		*pgcnt = 0;
-> > >  	
-> > >  	}
-> > > 
-> > > @@ -894,24 +892,24 @@ static int lv1set_section(unsigned long *sent,
-> > > phys_addr_t paddr, short *pgcnt) return 0;
-> > > 
-> > >  }
-> > > 
-> > > +static void clear_page_table(unsigned long *ent, int n)
-> > > +{
-> > > +	if (n > 0)
-> > > +		memset(ent, 0, sizeof(*ent) * n);
-> > > +}
-> > 
-> > I don't see the point of creating this function. It seems to be used
-> > only once, in addition with a constant as n, so the check for n > 0
-> > is unnecessary.
-> > 
-> > And even if there is a need for this change, it should be done in
-> > separate patch, as this one is not about stylistic changes, but
-> > fixing page table maintenance (at least based on your commit
-> > message).
+> This patch adds support for system-wide and runtime power management.
 > 
-> I know what you are concerning about.
-> It was introduced in v8 patches to recover previous fault entries before
-> returning -EADDRINUSE. It is still remained though "return -EADDRINUSE"
-> is changed into BUG_ON().
-> I also think that it needs to be removed.
 
-OK, thanks.
+Ok.
 
-Best regards,
-Tomasz
+> > Since System MMU is located in the same local power domain of its
+> > master H/W, System MMU must be initialized before it is working if
+> > its power domain was ever turned off. TLB invalidation according to
+> > unmapping on page tables must also be performed while power domain is
+> > turned on.
+> > 
+> > This patch ensures that resume and runtime_resume(restore_state)
+> > functions in this driver is called before the calls to resume and
+> > runtime_resume callback functions in the drivers of master H/Ws.
+> > Likewise, suspend and runtime_suspend(save_state) functions in this
+> > driver is called after the calls to suspend and runtime_suspend in the
+> > drivers of master H/Ws.
+> > 
+> > In order to get benefit of this support, the master H/W and its System
+> > MMU must resides in the same power domain in terms of Linux kernel. If
+> > a master H/W does not use generic I/O power domain, its driver must
+> > call iommu_attach_device() after its local power domain is turned on,
+> > iommu_detach_device before turned off.
+> 
+> I don't get the point of this last paragraph. What a power domain can be 
+> in other terms? Is there any other way to support power domains on Exynos 
+> than generic power domains?
+> 
+
+I just addressed the case a device driver turns off local power of its
+device without the help of generic I/O powerdomain.
+
+> > Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
+> > ---
+> >  drivers/iommu/exynos-iommu.c |  235
+> > +++++++++++++++++++++++++++++++++++++++++- 1 files changed, 231
+> > insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> > index 9e64483..56aead9 100644
+> > --- a/drivers/iommu/exynos-iommu.c
+> > +++ b/drivers/iommu/exynos-iommu.c
+> > @@ -28,6 +28,7 @@
+> >  #include <linux/export.h>
+> >  #include <linux/of.h>
+> >  #include <linux/of_platform.h>
+> > +#include <linux/pm_domain.h>
+> >  #include <linux/notifier.h>
+> > 
+> >  #include <asm/cacheflush.h>
+> > @@ -186,6 +187,7 @@ struct sysmmu_drvdata {
+> >  	int activations;
+> >  	rwlock_t lock;
+> >  	struct iommu_domain *domain;
+> > +	bool runtime_active;
+> >  	unsigned long pgtable;
+> >  	void __iomem *sfrbases[0];
+> >  };
+> > @@ -438,7 +440,8 @@ static bool __sysmmu_disable(struct sysmmu_drvdata
+> > *data) data->pgtable = 0;
+> >  		data->domain = NULL;
+> > 
+> > -		__sysmmu_disable_nocount(data);
+> > +		if (data->runtime_active)
+> > +			__sysmmu_disable_nocount(data);
+> > 
+> >  		dev_dbg(data->sysmmu, "Disabled\n");
+> >  	} else  {
+> > @@ -505,7 +508,8 @@ static int __sysmmu_enable(struct sysmmu_drvdata
+> > *data, data->pgtable = pgtable;
+> >  		data->domain = domain;
+> > 
+> > -		__sysmmu_enable_nocount(data);
+> > +		if (data->runtime_active)
+> > +			__sysmmu_enable_nocount(data);
+> > 
+> >  		dev_dbg(data->sysmmu, "Enabled\n");
+> >  	} else {
+> > @@ -609,7 +613,7 @@ static void sysmmu_tlb_invalidate_entry(struct
+> > device *dev, unsigned long iova) data =
+> > dev_get_drvdata(client->sysmmu[i]);
+> > 
+> >  		read_lock_irqsave(&data->lock, flags);
+> > -		if (is_sysmmu_active(data)) {
+> > +		if (is_sysmmu_active(data) && data->runtime_active) {
+> >  			int i;
+> >  			clk_enable(data->clk_master);
+> >  			for (i = 0; i < data->nsfrs; i++)
+> > @@ -637,7 +641,8 @@ void exynos_sysmmu_tlb_invalidate(struct device
+> > *dev) data = dev_get_drvdata(client->sysmmu[i]);
+> > 
+> >  		read_lock_irqsave(&data->lock, flags);
+> > -		if (is_sysmmu_active(data)) {
+> > +		if (is_sysmmu_active(data) &&
+> > +				data->runtime_active) {
+> 
+> nit: The whole if condition fits into single line.
+
+Ok.
+
+> 
+> >  			int i;
+> >  			for (i = 0; i < data->nsfrs; i++) {
+> >  				clk_enable(data->clk_master);
+> > @@ -711,6 +716,8 @@ static int __init exynos_sysmmu_probe(struct
+> > platform_device *pdev) }
+> >  	}
+> > 
+> > +	pm_runtime_enable(dev);
+> > +
+> >  	data->sysmmu = dev;
+> > 
+> >  	data->clk = devm_clk_get(dev, "sysmmu");
+> > @@ -736,6 +743,8 @@ static int __init exynos_sysmmu_probe(struct
+> > platform_device *pdev) return ret;
+> >  	}
+> > 
+> > +	data->runtime_active = !pm_runtime_enabled(dev);
+> > +
+> >  	rwlock_init(&data->lock);
+> > 
+> >  	platform_set_drvdata(pdev, data);
+> > @@ -744,6 +753,34 @@ static int __init exynos_sysmmu_probe(struct
+> > platform_device *pdev) return ret;
+> >  }
+> > 
+> > +#ifdef CONFIG_PM_SLEEP
+> > +static int sysmmu_suspend(struct device *dev)
+> > +{
+> > +	struct sysmmu_drvdata *data = dev_get_drvdata(dev);
+> > +	unsigned long flags;
+> > +	read_lock_irqsave(&data->lock, flags);
+> > +	if (is_sysmmu_active(data) &&
+> > +		(!pm_runtime_enabled(dev) || data->runtime_active))
+> > +		__sysmmu_disable_nocount(data);
+> > +	read_unlock_irqrestore(&data->lock, flags);
+> > +	return 0;
+> > +}
+> > +
+> > +static int sysmmu_resume(struct device *dev)
+> > +{
+> > +	struct sysmmu_drvdata *data = dev_get_drvdata(dev);
+> > +	unsigned long flags;
+> > +	read_lock_irqsave(&data->lock, flags);
+> > +	if (is_sysmmu_active(data) &&
+> > +		(!pm_runtime_enabled(dev) || data->runtime_active))
+> > +		__sysmmu_enable_nocount(data);
+> > +	read_unlock_irqrestore(&data->lock, flags);
+> > +	return 0;
+> > +}
+> > +#endif
+> > +
+> > +static SIMPLE_DEV_PM_OPS(sysmmu_pm_ops, sysmmu_suspend, sysmmu_resume);
+> > +
+> >  #ifdef CONFIG_OF
+> >  static struct of_device_id sysmmu_of_match[] __initconst = {
+> >  	{ .compatible	= "samsung,exynos4210-sysmmu", },
+> > @@ -756,6 +793,7 @@ static struct platform_driver exynos_sysmmu_driver
+> > __refdata = { .driver	= {
+> >  		.owner		= THIS_MODULE,
+> >  		.name		= "exynos-sysmmu",
+> > +		.pm		= &sysmmu_pm_ops,
+> >  		.of_match_table	= of_match_ptr(sysmmu_of_match),
+> >  	}
+> >  };
+> > @@ -1141,6 +1179,163 @@ static int __init exynos_iommu_init(void)
+> >  }
+> >  subsys_initcall(exynos_iommu_init);
+> > 
+> > +#ifdef CONFIG_PM_SLEEP
+> > +static int sysmmu_pm_genpd_suspend(struct device *dev)
+> > +{
+> > +	struct exynos_iommu_client *client = dev->archdata.iommu;
+> > +	int ret = 0;
+> > +	int i;
+> > +
+> > +	for (i = 0; i < client->num_sysmmu; i++) {
+> > +		ret = pm_generic_suspend(client->sysmmu[i]);
+> > +		if (ret)
+> > +			break;
+> > +	}
+> > +
+> > +	if (!ret)
+> > +		ret = pm_generic_suspend(dev);
+> > +
+> > +	if (ret) {
+> > +		int j;
+> > +
+> > +		for (j = 0; j < i; j++)
+> > +			pm_generic_resume(client->sysmmu[j]);
+> > +	}
+> > +
+> > +	return ret;
+> > +}
+> > +
+> > +static int sysmmu_pm_genpd_resume(struct device *dev)
+> > +{
+> > +	struct exynos_iommu_client *client = dev->archdata.iommu;
+> > +	int ret = 0;
+> > +	int i;
+> > +
+> > +	for (i = 0; i < client->num_sysmmu; i++) {
+> > +		ret = pm_generic_resume(client->sysmmu[i]);
+> > +		if (ret)
+> > +			break;
+> 
+> Error handling here can be cleaned up a lot.
+> 
+> s/break/goto err_suspend/
+> 
+> > +	}
+> > +
+> > +	if (!ret)
+> 
+> Now you can drop this check.
+> 
+> > +		ret = pm_generic_resume(dev);
+> 
+> 	ret = pm_generic_resume(dev);
+> 	if (ret)
+> 		goto err_suspend;
+> 
+> 	return 0;
+> 
+> > +
+> 
+> err_suspend:
+> > +	if (ret) {
+> 
+> This check can be dropped here as well now.
+> 
+
+Ok.
+
+Let me think about it :)
+
+Thank you!
+
+KyongHo.
+
+> > +		int j;
+> > +
+> > +		for (j = 0; j < i; j++)
+> > +			pm_generic_suspend(client->sysmmu[j]);
+> > +	}
+> > +
+> > +	return ret;
+> > +}
+> > +#endif
+> 
+> Best regards,
+> Tomasz
+> 
