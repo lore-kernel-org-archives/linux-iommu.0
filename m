@@ -1,229 +1,187 @@
-From: Tomasz Figa <tomasz.figa@gmail.com>
-Subject: Re: [PATCH v9 00/16] iommu/exynos: Fixes and Enhancements of System MMU driver with DT
-Date: Fri, 09 Aug 2013 09:51:22 +0200
-Message-ID: <4157684.uh6jPsifpa@flatron>
-References: <002401ce941a$dad907c0$908b1740$@samsung.com> <2763595.7SYUCgBHXZ@amdc1227> <20130809100016.a22e5938a829f229eb5df00f@samsung.com>
+From: Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v9 04/16] iommu/exynos: allocate lv2 page table from own
+	slab
+Date: Fri, 09 Aug 2013 09:55:30 +0200
+Message-ID: <2101296.S6JDU5igl3@flatron>
+References: <002801ce941a$fb6369e0$f22a3da0$@samsung.com>
+	<2544843.sndV7usHTj@amdc1227>
+	<20130809145849.790a9800f4f9893b30e54a1c@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <20130809100016.a22e5938a829f229eb5df00f@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Cho KyongHo <pullip.cho@samsung.com>
-Cc: Tomasz Figa <t.figa@samsung.com>, 'Linux ARM Kernel' <linux-arm-kernel@lists.infradead.org>, 'Linux IOMMU' <iommu@lists.linux-foundation.org>, 'Linux Kernel' <linux-kernel@vger.kernel.org>, 'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>, devicetree@vger.kernel.org, 'Joerg Roedel' <joro@8bytes.org>, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Prathyush' <prathyush.k@samsung.com>, 'Rahul Sharma' <rahul.sharma@samsung.com>, 'Subash Patel' <supash.ramaswamy@linaro.org>, 'Grant Grundler' <grundler@chromium.org>, 'Antonios Motakis' <a.motakis@virtualopensystems.com>, kvmarm@lists.cs.columbia.edu, 'Sachin Kamat' <sachin.kamat@linaro.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20130809145849.790a9800f4f9893b30e54a1c-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, 'Linux Samsung SOC' <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, 'Prathyush' <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Grant Grundler' <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Tomasz Figa <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Subash Patel' <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Linux Kernel' <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, 'Sachin Kamat' <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Linux IOMMU' <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, 'Kukjin Kim' <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Antonios Motakis' <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, 'Linux ARM Kernel' <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, 'Rahul Sharma' <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 Hi KyongHo,
 
-On Friday 09 of August 2013 10:00:16 Cho KyongHo wrote:
-> On Thu, 08 Aug 2013 14:13:57 +0200, Tomasz Figa wrote:
-> > Hi KyongHo,
+On Friday 09 of August 2013 14:58:49 Cho KyongHo wrote:
+> On Thu, 08 Aug 2013 16:00:18 +0200, Tomasz Figa wrote:
+> > On Thursday 08 of August 2013 18:38:04 Cho KyongHo wrote:
+> > > Since kmalloc() does not guarantee that the allignment of 1KiB when
+> > > it
+> > > allocates 1KiB, it is required to allocate lv2 page table from own
+> > > slab that guarantees alignment of 1KiB
+> > > 
+> > > Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> > > ---
+> > > 
+> > >  drivers/iommu/exynos-iommu.c |   24 ++++++++++++++++++++----
+> > >  1 files changed, 20 insertions(+), 4 deletions(-)
+> > > 
+> > > diff --git a/drivers/iommu/exynos-iommu.c
+> > > b/drivers/iommu/exynos-iommu.c index d90e6fa..a318049 100644
+> > > --- a/drivers/iommu/exynos-iommu.c
+> > > +++ b/drivers/iommu/exynos-iommu.c
+> > > @@ -100,6 +100,8 @@
+> > > 
+> > >  #define REG_PB1_SADDR		0x054
+> > >  #define REG_PB1_EADDR		0x058
+> > > 
+> > > +static struct kmem_cache *lv2table_kmem_cache;
+> > > +
+> > > 
+> > >  static unsigned long *section_entry(unsigned long *pgtable,
+> > >  unsigned
+> > > 
+> > > long iova) {
+> > > 
+> > >  	return pgtable + lv1ent_offset(iova);
+> > > 
+> > > @@ -765,7 +767,8 @@ static void exynos_iommu_domain_destroy(struct
+> > > iommu_domain *domain)
+> > > 
+> > >  	for (i = 0; i < NUM_LV1ENTRIES; i++)
+> > >  	
+> > >  		if (lv1ent_page(priv->pgtable + i))
+> > > 
+> > > -			kfree(__va(lv2table_base(priv->pgtable + i)));
+> > > +			kmem_cache_free(lv2table_kmem_cache,
+> > > +					__va(lv2table_base(priv->pgtable + 
+i)));
+> > > 
+> > >  	free_pages((unsigned long)priv->pgtable, 2);
+> > >  	free_pages((unsigned long)priv->lv2entcnt, 1);
+> > > 
+> > > @@ -861,7 +864,7 @@ static unsigned long *alloc_lv2entry(unsigned
+> > > long
+> > > *sent, unsigned long iova, if (lv1ent_fault(sent)) {
+> > > 
+> > >  		unsigned long *pent;
+> > > 
+> > > -		pent = kzalloc(LV2TABLE_SIZE, GFP_ATOMIC);
+> > > +		pent = kmem_cache_zalloc(lv2table_kmem_cache, GFP_ATOMIC);
+> > > 
+> > >  		BUG_ON((unsigned long)pent & (LV2TABLE_SIZE - 1));
+> > >  		if (!pent)
+> > >  		
+> > >  			return ERR_PTR(-ENOMEM);
+> > > 
+> > > @@ -881,7 +884,7 @@ static int lv1set_section(unsigned long *sent,
+> > > phys_addr_t paddr, short *pgcnt)
+> > > 
+> > >  	if (lv1ent_page(sent)) {
+> > >  	
+> > >  		BUG_ON(*pgcnt != NUM_LV2ENTRIES);
+> > > 
+> > > -		kfree(page_entry(sent, 0));
+> > > +		kmem_cache_free(lv2table_kmem_cache, page_entry(sent, 0));
+> > > 
+> > >  		*pgcnt = 0;
+> > >  	
+> > >  	}
+> > > 
+> > > @@ -1082,10 +1085,23 @@ static int __init exynos_iommu_init(void)
+> > > 
+> > >  {
+> > >  
+> > >  	int ret;
+> > > 
+> > > +	lv2table_kmem_cache = kmem_cache_create("exynos-iommu-lv2table",
+> > > +				LV2TABLE_SIZE, LV2TABLE_SIZE, 0, NULL);
+> > > +	if (!lv2table_kmem_cache) {
+> > > +		pr_err("%s: Failed to create kmem cache\n", __func__);
+> > > +		return -ENOMEM;
+> > > +	}
+> > > +
+> > > 
+> > >  	ret = platform_driver_register(&exynos_sysmmu_driver);
+> > >  	
+> > >  	if (ret == 0)
+> > > 
+> > > -		bus_set_iommu(&platform_bus_type, &exynos_iommu_ops);
+> > > +		ret = bus_set_iommu(&platform_bus_type, 
+&exynos_iommu_ops);
+> > > +
+> > > +	if (ret) {
+> > > +		pr_err("%s: Failed to register exynos-iommu driver.\n",
+> > > +								__func__);
+> > > +		kmem_cache_destroy(lv2table_kmem_cache);
+> > > +	}
 > > 
-> > Just a little hint for future:
+> > What about making the return value handling here cleaner? For example:
+> > 	lv2table_kmem_cache = kmem_cache_create("exynos-iommu-lv2table",
+> > 	
+> > 				LV2TABLE_SIZE, LV2TABLE_SIZE, 0, NULL);
+> > 	
+> > 	if (!lv2table_kmem_cache) {
+> > 	
+> > 		...
+> > 		return -ENOMEM;
+> > 	
+> > 	}
+> > 	
+> > 	ret = platform_driver_register(&exynos_sysmmu_driver);
+> > 	if (ret) {
+> > 	
+> > 		...
+> > 		goto err_destroy_kmem_cache;
+> > 	
+> > 	}
+> > 	
+> > 	ret = bus_set_iommu(&platform_bus_type, &exynos_iommu_ops);
+> > 	if (ret) {
+> > 	
+> > 		...
+> > 		goto err_platform_unregister;
+> > 	
+> > 	}
+> > 	
+> > 	return 0;
 > > 
-> > To make reviewing your patches easier, please send all patches (01 and
-> > further) as a follow up (reply) to cover letter of the series (patch
-> > 00).
+> > err_platform_unregister:
+> > 	...
 > > 
-> > This can be achieved by using --thread switch of git send-email for
-> > example.
+> > err_destroy_kmem_cache:
+> > 	...
+> > 	return ret;
+> > 
+> > }
 > 
-> Thank you for advice.
-> However, git send-email and something like that is prohibitted by the
-> security policy of my company :(
+> Thank you for suggestion.
+> I think you are worrying about missing the information who makes 'ret'
+> non-zero.
 
-Oh, that's not nice, but well, such things happen, so I can understand 
-this.
+Oh, this is a valid point, but it was more a nitpick about the coding 
+style. Single path error handling (with goto) is widely used in the kernel 
+in cases when more than one thing has to be undone and so I suggested this 
+method of error handling here as well.
 
-> I used an email client in windows O/S.
-> 
-> I need more consideration to the patches are sent in the order of
-> patches.
+> Ok. I will process it separately.
 
-OK. It should be still possible to send the cover letter first and then 
-remaining patches are replies to the cover letter. This would be really 
-appreciated by reviewers and maintainer applying such series afterwards.
+Since this patch adds most of the error handling to this function, I think 
+it should be fine to do it as a part of this patch.
 
 Best regards,
 Tomasz
-
-> Thank you.
-> 
-> KyongHo.
-> 
-> > Best regards,
-> > Tomasz
-> > 
-> > On Thursday 08 of August 2013 18:37:10 Cho KyongHo wrote:
-> > > The current exynos-iommu(System MMU) driver does not work
-> > > autonomously
-> > > since it is lack of support for power management of peripheral
-> > > blocks.
-> > > For example, MFC device driver must ensure that its System MMU is
-> > > disabled before MFC block is power-down not to invalidate IOTLB in
-> > > the
-> > > System MMU when I/O memory mapping is changed. Because a System MMU
-> > > resides in the same H/W block, access to control registers of System
-> > > MMU while the H/W block is turned off must be prohibited.
-> > > 
-> > > This set of changes solves the above problem with setting each
-> > > System
-> > > MMUs as the parent of the device which owns the System MMU to
-> > > receive
-> > > the information when the device is turned off or turned on.
-> > > 
-> > > Another big change to the driver is the support for devicetree.
-> > > The bindings for System MMU is described in
-> > > Documentation/devicetree/bindings/arm/samsung/system-mmu.txt
-> > > 
-> > > In addition, this patchset also includes several bug fixes and
-> > > enhancements of the current driver.
-> > > 
-> > > Change log:
-> > > v9:
-> > > - Rebased on the following branches
-> > > 
-> > >   git.linaro.org/git-ro/people/mturquette/linux.git/clk-next
-> > > 
-> > > git.kernel.org/pub/scm/linux/kernel/git/kgene/linux-samsung.git/sams
-> > > ung- next
-> > > git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/master
-> > > (3.11-rc4) - Split "add bus notifier for registering System MMU"
-> > > into 5 patches - Call clk_prepare() that was missing in v8.
-> > > - Fixed base address of sysmmu_tv in exynos4210.dtsi
-> > > - BUG_ON() instead of return -EADDRINUSE when trying mapping on an
-> > > mapped area - Moved camif_top to 317 in
-> > > drivers/clk/samsung/clk-exynos5250.c - Removed 'iommu' property
-> > > from 'codec'(mfc) node
-> > > - Does not make 'master' clock to be the parent of 'sysmmu' clock.
-> > > 
-> > >    'master' clock is enabled before accessing control registers of
-> > >    System
-> > > 
-> > > MMU and disabled after the access.
-> > > 
-> > > v8:
-> > > - Reordered patch list: moved "change rwloc to spinlock" to the
-> > > last.
-> > > - Fixed remained bug in "fix page table maintenance".
-> > > - Always return 0 from exynos_iommu_attach_device().
-> > > - Removed prefetch buffer setting when System MMU is enabled
-> > > 
-> > >   due to the restriction of prefetch buffers:
-> > >   A prefetch buffer must not hit from more than one DMA.
-> > >   For instance with GScalers, if a single prefetch buffer is
-> > >   initialized
-> > >   with 0x0 ~ 0xFFFFFFFF and a GScaler works on source buffer at
-> > > 
-> > > 0x10000000 and target buffer @ 0x20000000, the System MMU may be got
-> > > deadlock. Clients must initialize prefetch buffers with custom
-> > > function
-> > > defined in exynos-iommu drivers whenever they need to enable
-> > > prefetch
-> > > buffers. - The clock of System MMU has no relationship with the
-> > > clock of its master H/W. The clock of master H/W is always enabled
-> > > when exynos-iommu driver needs to access MMIO area and disabled as
-> > > soon as the access finishes. - Removed err_page variable used in
-> > > exynos_iommu_unmap() in the previous patch "fix page table
-> > > maintenance". - Split a big patch "add bus notifier for registering
-> > > System MMU".> > 
-> > >    Extracted the following 2 patches: 9/12 and 10/12.
-> > > 
-> > > - And some additional fixes...
-> > > 
-> > > v7:
-> > > - Rebased on the stable 3.10
-> > > - Registered PM domains and gate clocks with DT
-> > > - Changed connection method between a System MMU and its master H/W
-> > > 
-> > >    'mmu-master' property in the node of System MMU
-> > >    --> 'iommu' property in the node of master H/W
-> > > 
-> > > - Marking device descriptor of master H/W of a System MMU with bus
-> > > notifier. - Power management (PM_RUNTIME, PM_SLEEP) of System MMUs
-> > > with
-> > > gpd_dev_ops of Generic IO Powerdomain. gpd_dev_ops are set to the
-> > > master H/Ws before they are probed in the bus notifier.
-> > > - Removed additional debugging features like debugfs entries and
-> > > 
-> > >    version names.
-> > > 
-> > > - Removed support for advanced features of System MMU 3.2 and 3.3
-> > > 
-> > >    the current IOMMU API cannot handle the feature
-> > >   
-> > >   (A kind of L2 TLB that fetches several consequence page table
-> > >   entries.
-> > >   
-> > >    It must be initialized by the driver of master H/W whenever it
-> > >    works.)
-> > > 
-> > > v6:
-> > > - Rebased on the branch, next/iommu-exynos of
-> > > 
-> > >   git.kernel.org/pub/scm/linux/kernel/git/kgene/linux-samsung.git
-> > > 
-> > > v5:
-> > > - new bugfix: patch 01
-> > > - Reordered patches
-> > > 
-> > >   * patch 01 ~ 05: Bugfix and enhancements of the existing driver
-> > >   * patch 06 ~ 10: Device Tree support and callbacks for power
-> > >   management
-> > > 
-> > > * patch 11     : System MMU 3.2 and 3.3 support
-> > > 
-> > >   * patch 12 ~ 14: Debugging features
-> > > 
-> > > - Additional code compaction
-> > > 
-> > > v4:
-> > > - Remove Change-Id from v3 patches
-> > > - Change the order of the third and the first patch
-> > > 
-> > >   Thanks to Kukjin Kim.
-> > > 
-> > > - Fix memory leak when allocating and assigning exynos_iommu_owner
-> > > to
-> > > client device if the client device has multiple System MMUs.
-> > > 
-> > >   Thanks to Rahul Sharma.
-> > > 
-> > > v3:
-> > > - Fix prefetch buffer flag definition for System MMU 3.3 (patch
-> > > 10/12)
-> > > - Fix incorrect setting for SET_RUNTIME_PM_OPS (patch 09/12)
-> > > 
-> > >   Thanks to Prathyush.
-> > > 
-> > > v2:
-> > > - Split the patch to iommu/exynos into 9 patches
-> > > - Support for System MMU 3.3
-> > > - Some code compaction
-> > > 
-> > > Patch summary:
-> > > 
-> > > Diffstats:
-> > >  .../devicetree/bindings/clock/exynos5250-clock.txt |   26 +
-> > >  .../bindings/iommu/samsung,exynos4210-sysmmu.txt   |  103 ++
-> > >  arch/arm/boot/dts/exynos4.dtsi                     |  122 +++
-> > >  arch/arm/boot/dts/exynos4210.dtsi                  |   25 +
-> > >  arch/arm/boot/dts/exynos4x12.dtsi                  |   82 ++
-> > >  arch/arm/boot/dts/exynos5250.dtsi                  |  290 ++++++
-> > >  drivers/clk/samsung/clk-exynos4.c                  |   27 +-
-> > >  drivers/clk/samsung/clk-exynos5250.c               |   57 +-
-> > >  drivers/iommu/Kconfig                              |    5 +-
-> > >  drivers/iommu/exynos-iommu.c                       | 1061
-> > > 
-> > > +++++++++++++------- 10 files changed, 1423 insertions(+), 375
-> > > deletions(-)
-> > > 
-> > > --
-> > > To unsubscribe from this list: send the line "unsubscribe
-> > > linux-samsung-soc" in the body of a message to
-> > > majordomo@vger.kernel.org More majordomo info at 
-> > > http://vger.kernel.org/majordomo-info.html
-> --
-> To unsubscribe from this list: send the line "unsubscribe devicetree" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
