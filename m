@@ -1,200 +1,59 @@
-From: Tomasz Figa <t.figa@samsung.com>
-Subject: Re: [PATCH v9 04/16] iommu/exynos: allocate lv2 page table from own
- slab
-Date: Fri, 09 Aug 2013 11:35:20 +0200
-Message-ID: <12183506.4f14O99EfL@amdc1227>
-References: <002801ce941a$fb6369e0$f22a3da0$@samsung.com>
- <2101296.S6JDU5igl3@flatron>
- <20130809175156.c7ffc68b865e4bca48ef47dd@samsung.com>
+From: Rob Herring <robherring2@gmail.com>
+Subject: Re: [PATCH v9 07/16] iommu/exynos: support for device tree
+Date: Fri, 9 Aug 2013 08:28:09 -0500
+Message-ID: <CAL_JsqKM_YP0Cj3Uo7TeCVcKcbzzsuK3yxTSn6pG8qGFOnZAiA@mail.gmail.com>
+References: <002b01ce941b$160a88a0$421f99e0$@samsung.com>
+	<5396565.vjlSOm37Vf@flatron>
+	<20130809153730.83d3a5ba419def5424bcbb0e@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <20130809175156.c7ffc68b865e4bca48ef47dd@samsung.com>
+In-Reply-To: <20130809153730.83d3a5ba419def5424bcbb0e@samsung.com>
 Sender: linux-samsung-soc-owner@vger.kernel.org
 To: Cho KyongHo <pullip.cho@samsung.com>
-Cc: Tomasz Figa <tomasz.figa@gmail.com>, 'Linux ARM Kernel' <linux-arm-kernel@lists.infradead.org>, 'Linux IOMMU' <iommu@lists.linux-foundation.org>, 'Linux Kernel' <linux-kernel@vger.kernel.org>, 'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>, devicetree@vger.kernel.org, 'Joerg Roedel' <joro@8bytes.org>, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Prathyush' <prathyush.k@samsung.com>, 'Rahul Sharma' <rahul.sharma@samsung.com>, 'Subash Patel' <supash.ramaswamy@linaro.org>, 'Grant Grundler' <grundler@chromium.org>, 'Antonios Motakis' <a.motakis@virtualopensystems.com>, kvmarm@lists.cs.columbia.edu, 'Sachin Kamat' <sachin.kamat@linaro.org>
+Cc: Tomasz Figa <tomasz.figa@gmail.com>, Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux Kernel <linux-kernel@vger.kernel.org>, Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, Kukjin Kim <kgene.kim@samsung.com>, Prathyush <prathyush.k@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Subash Patel <supash.ramaswamy@linaro.org>, Grant Grundler <grundler@chromium.org>, Antonios Motakis <a.motakis@virtualopensystems.com>, kvmarm@lists.cs.columbia.edu, Sachin Kamat <sachin.kamat@linaro.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Friday 09 of August 2013 17:51:56 Cho KyongHo wrote:
-> On Fri, 09 Aug 2013 09:55:30 +0200, Tomasz Figa wrote:
-> > Hi KyongHo,
-> > 
-> > On Friday 09 of August 2013 14:58:49 Cho KyongHo wrote:
-> > > On Thu, 08 Aug 2013 16:00:18 +0200, Tomasz Figa wrote:
-> > > > On Thursday 08 of August 2013 18:38:04 Cho KyongHo wrote:
-> > > > > Since kmalloc() does not guarantee that the allignment of 1KiB
-> > > > > when
-> > > > > it
-> > > > > allocates 1KiB, it is required to allocate lv2 page table from
-> > > > > own
-> > > > > slab that guarantees alignment of 1KiB
-> > > > > 
-> > > > > Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
-> > > > > ---
-> > > > > 
-> > > > >  drivers/iommu/exynos-iommu.c |   24 ++++++++++++++++++++----
-> > > > >  1 files changed, 20 insertions(+), 4 deletions(-)
-> > > > > 
-> > > > > diff --git a/drivers/iommu/exynos-iommu.c
-> > > > > b/drivers/iommu/exynos-iommu.c index d90e6fa..a318049 100644
-> > > > > --- a/drivers/iommu/exynos-iommu.c
-> > > > > +++ b/drivers/iommu/exynos-iommu.c
-> > > > > @@ -100,6 +100,8 @@
-> > > > > 
-> > > > >  #define REG_PB1_SADDR		0x054
-> > > > >  #define REG_PB1_EADDR		0x058
-> > > > > 
-> > > > > +static struct kmem_cache *lv2table_kmem_cache;
-> > > > > +
-> > > > > 
-> > > > >  static unsigned long *section_entry(unsigned long *pgtable,
-> > > > >  unsigned
-> > > > > 
-> > > > > long iova) {
-> > > > > 
-> > > > >  	return pgtable + lv1ent_offset(iova);
-> > > > > 
-> > > > > @@ -765,7 +767,8 @@ static void
-> > > > > exynos_iommu_domain_destroy(struct
-> > > > > iommu_domain *domain)
-> > > > > 
-> > > > >  	for (i = 0; i < NUM_LV1ENTRIES; i++)
-> > > > >  	
-> > > > >  		if (lv1ent_page(priv->pgtable + i))
-> > > > > 
-> > > > > -			kfree(__va(lv2table_base(priv->pgtable + i)));
-> > > > > +			kmem_cache_free(lv2table_kmem_cache,
-> > > > > +					__va(lv2table_base(priv->pgtable +
-> > 
-> > i)));
-> > 
-> > > > >  	free_pages((unsigned long)priv->pgtable, 2);
-> > > > >  	free_pages((unsigned long)priv->lv2entcnt, 1);
-> > > > > 
-> > > > > @@ -861,7 +864,7 @@ static unsigned long *alloc_lv2entry(unsigned
-> > > > > long
-> > > > > *sent, unsigned long iova, if (lv1ent_fault(sent)) {
-> > > > > 
-> > > > >  		unsigned long *pent;
-> > > > > 
-> > > > > -		pent = kzalloc(LV2TABLE_SIZE, GFP_ATOMIC);
-> > > > > +		pent = kmem_cache_zalloc(lv2table_kmem_cache, GFP_ATOMIC);
-> > > > > 
-> > > > >  		BUG_ON((unsigned long)pent & (LV2TABLE_SIZE - 1));
-> > > > >  		if (!pent)
-> > > > >  		
-> > > > >  			return ERR_PTR(-ENOMEM);
-> > > > > 
-> > > > > @@ -881,7 +884,7 @@ static int lv1set_section(unsigned long
-> > > > > *sent,
-> > > > > phys_addr_t paddr, short *pgcnt)
-> > > > > 
-> > > > >  	if (lv1ent_page(sent)) {
-> > > > >  	
-> > > > >  		BUG_ON(*pgcnt != NUM_LV2ENTRIES);
-> > > > > 
-> > > > > -		kfree(page_entry(sent, 0));
-> > > > > +		kmem_cache_free(lv2table_kmem_cache, page_entry(sent, 0));
-> > > > > 
-> > > > >  		*pgcnt = 0;
-> > > > >  	
-> > > > >  	}
-> > > > > 
-> > > > > @@ -1082,10 +1085,23 @@ static int __init exynos_iommu_init(void)
-> > > > > 
-> > > > >  {
-> > > > >  
-> > > > >  	int ret;
-> > > > > 
-> > > > > +	lv2table_kmem_cache =
-> > > > > kmem_cache_create("exynos-iommu-lv2table",
-> > > > > +				LV2TABLE_SIZE, LV2TABLE_SIZE, 0, NULL);
-> > > > > +	if (!lv2table_kmem_cache) {
-> > > > > +		pr_err("%s: Failed to create kmem cache\n", __func__);
-> > > > > +		return -ENOMEM;
-> > > > > +	}
-> > > > > +
-> > > > > 
-> > > > >  	ret = platform_driver_register(&exynos_sysmmu_driver);
-> > > > >  	
-> > > > >  	if (ret == 0)
-> > > > > 
-> > > > > -		bus_set_iommu(&platform_bus_type, &exynos_iommu_ops);
-> > > > > +		ret = bus_set_iommu(&platform_bus_type,
-> > 
-> > &exynos_iommu_ops);
-> > 
-> > > > > +
-> > > > > +	if (ret) {
-> > > > > +		pr_err("%s: Failed to register exynos-iommu driver.\n",
-> > > > > +								__func__);
-> > > > > +		kmem_cache_destroy(lv2table_kmem_cache);
-> > > > > +	}
-> > > > 
-> > > > What about making the return value handling here cleaner? For 
-example:
-> > > > 	lv2table_kmem_cache = kmem_cache_create("exynos-iommu-lv2table",
-> > > > 	
-> > > > 				LV2TABLE_SIZE, LV2TABLE_SIZE, 0, NULL);
-> > > > 	
-> > > > 	if (!lv2table_kmem_cache) {
-> > > > 	
-> > > > 		...
-> > > > 		return -ENOMEM;
-> > > > 	
-> > > > 	}
-> > > > 	
-> > > > 	ret = platform_driver_register(&exynos_sysmmu_driver);
-> > > > 	if (ret) {
-> > > > 	
-> > > > 		...
-> > > > 		goto err_destroy_kmem_cache;
-> > > > 	
-> > > > 	}
-> > > > 	
-> > > > 	ret = bus_set_iommu(&platform_bus_type, &exynos_iommu_ops);
-> > > > 	if (ret) {
-> > > > 	
-> > > > 		...
-> > > > 		goto err_platform_unregister;
-> > > > 	
-> > > > 	}
-> > > > 	
-> > > > 	return 0;
-> > > > 
-> > > > err_platform_unregister:
-> > > > 	...
-> > > > 
-> > > > err_destroy_kmem_cache:
-> > > > 	...
-> > > > 	return ret;
-> > > > 
-> > > > }
-> > > 
-> > > Thank you for suggestion.
-> > > I think you are worrying about missing the information who makes
-> > > 'ret'
-> > > non-zero.
-> > 
-> > Oh, this is a valid point, but it was more a nitpick about the coding
-> > style. Single path error handling (with goto) is widely used in the
-> > kernel in cases when more than one thing has to be undone and so I
-> > suggested this method of error handling here as well.
-> > 
-> > > Ok. I will process it separately.
-> > 
-> > Since this patch adds most of the error handling to this function, I
-> > think it should be fine to do it as a part of this patch.
-> 
-> I meant 'separately' that checking all return values each.
-> I think it can be simpler without goto.
+On Fri, Aug 9, 2013 at 1:37 AM, Cho KyongHo <pullip.cho@samsung.com> wrote:
+> On Fri, 09 Aug 2013 00:41:25 +0200, Tomasz Figa wrote:
+>> Hi KyongHo,
+>>
+>> On Thursday 08 of August 2013 18:38:49 Cho KyongHo wrote:
+>> > This commit adds device tree support for System MMU.
+>> > This also include the following changes and enhancements:
+>> >
+>> > * use managed device helper functions.
+>> > Simplyfies System MMU device driver.
+>> >
+>> > * use only a single clock descriptor.
+>> > System MMU device descriptor is seperate if it is imposible to make
+>> > a single clock descriptor to make a device descriptor for a group of
+>> > System MMUs.
+>> >
+>> > * removed dbgname member from sysmmu_drvdata structure.
+>> > debugging kernel message for a System MMU is distinguisheable with the
+>> > name of device descroptors.
+>>
+>> Please put all these three changes in separate patches. This patch is hard
+>> to review with all the changes mixed together...
+
+Agreed.
+
+>>
 >
-> There are just 2 cases to rollback previous changes in that function.
+> Ok.
+>
+>> In addition, I believe this is the patch that should be adding device tree
+>> binding documentation, not the 6/16 one, as this is where actually support
+>> for this binding gets added to the kernel.
+>
+> Oh, I didn't know that devicetree binding description and implementation need
+> to be in the same patch.
+> I will do as you advised.
 
-It might end up with less lines, but having roll back in single place is 
-more readable. That's why it's the preferred error handling way in Linux 
-kernel, if you have more than one action to undo on your error path.
+Actually, I prefer the binding docs be separate patches. The reason
+being so we can get closer to having them in a separate repository.
+Also, then the binding can be acked separately from the kernel
+implementation using the binding.
 
-Best regards,
-Tomasz
+Rob
