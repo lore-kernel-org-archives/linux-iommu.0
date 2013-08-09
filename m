@@ -1,18 +1,14 @@
 From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v8 06/12] ARM: dts: Add description of System MMU of Exynos
-	SoCs
-Date: Fri, 09 Aug 2013 11:24:36 +0900
-Message-ID: <20130809112436.8e44545cd503ca5a2b55a8cd@samsung.com>
-References: <003c01ce89f3$3abc4bc0$b034e340$@samsung.com>
-	<003801ce8eb7$d7647f10$862d7d30$@samsung.com>
-	<CAL_Jsq+_5GekzXpjWrtKZi2jWuxHSJxkPmVC4zmakfjAYai=eA@mail.gmail.com>
-	<5354557.DijgoUKjW2@flatron>
-	<20130808214343.GA19383@mudshark.cambridge.arm.com>
+Subject: Re: [PATCH v9 01/16] iommu/exynos: do not include removed header
+Date: Fri, 09 Aug 2013 13:01:33 +0900
+Message-ID: <20130809130133.fea18aa350c831ece07188e3@samsung.com>
+References: <002501ce941a$e3d87f40$ab897dc0$@samsung.com>
+	<21505674.fdNgPGp76O@amdc1227>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <20130808214343.GA19383-MRww78TxoiP5vMa5CHWGZ34zcgK1vI+I0E9HWUfgJXw@public.gmane.org>
+In-reply-to: <21505674.fdNgPGp76O@amdc1227>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,46 +18,73 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Linux Samsung SOC <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Hyunwoong Kim <khw0178.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Prathyush <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Keyyoung Park <keyyoung.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Subash Patel <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Rahul Sharma <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+To: Tomasz Figa <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, 'Linux Samsung SOC' <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, 'Prathyush' <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Grant Grundler' <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, 'Subash Patel' <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Linux Kernel' <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, 'Sachin Kamat' <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Linux IOMMU' <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, 'Kukjin Kim' <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Antonios Motakis' <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, 'Linux ARM Kernel' <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, 'Rahul Sharma' <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 08 Aug 2013 22:43:43 +0100, Will Deacon wrote:
-> On Thu, Aug 08, 2013 at 10:38:10PM +0100, Tomasz Figa wrote:
-> > On Thursday 08 of August 2013 08:09:49 Rob Herring wrote:
-> > > On Thu, Aug 1, 2013 at 8:05 AM, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org> 
-> > wrote:
-> > > > Should this align with ARM System MMU bindings?
-> > > > System MMU in Exynos SoC is different from ARM System MMU.
-> > > > It does not follows the specifications of ARM System MMU.
-> > > 
-> > > I'm not saying the h/w is the same or even the same spec, but how you
-> > > describe a master to iommu connection needs to be done in the same
-> > > way. This should be done in the same way for ALL iommu's. And if what
-> > > is defined does not work for you, then we need to understand that and
-> > > fix the binding now.
-> > 
-> > +1
-> > 
-> > All IOMMUs should use a generic IOMMU Device Tree bindings (and in 
-> > general, the same should be true for all Device Tree bindings).
-> > 
-> > This means that if we already have some bindings for IOMMU, then they 
-> > should be reused if possible or extended if there is anything missing.
-> > 
-> > Of course there might be things that such generic bindings can't specify. 
-> > In this case device-specific properties can be introduced, but this is 
-> > last resort.
+On Thu, 08 Aug 2013 15:42:24 +0200, Tomasz Figa wrote:
+> Hi KyongHo,
 > 
-> I'm also happy to discuss and/or review bindings in light of what we did for
-> the ARM SMMU.
+> On Thursday 08 of August 2013 18:37:25 Cho KyongHo wrote:
+> > This commit remove <mach/sysmmu.h> which is removed.
 > 
-> Will
+> I would prefer a more meaningful commit message, something among following 
+> lines:
+> 
+> 8<---
+> Commit 25e9d28d92 (ARM: EXYNOS: remove system mmu initialization from 
+> exynos tree) removed arch/arm/mach-exynos/mach/sysmmu.h header without 
+> removing remaining use of it from exynos-iommu driver, thus causing a 
+> compilation error.
+> 
+> This patch fixes the error by removing respective include line from exynos-
+> iommu.c.
+> --->8
+> 
 
-Rob, I now understood what you are talking about.
-Do you mean the binding description is lack of details about connection
-betwen  System MMU and its master?
+Ok.
 
-thanks.
+> Also a sentence explaining why linux/kernel.h header must be included would 
+> be nice.
+> 
+> > Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> 
+> Please note that as far as I'm aware of, tags should be made using western 
+> name writing convention, i.e. starting with first name.
+> 
+
+Oh, I didn't think that the order of family/given names are the matter.
+I don't care about changing the order.
+
+Thanks.
 
 KyongHo.
+
+> Best regards,
+> Tomasz
+> 
+> > ---
+> >  drivers/iommu/exynos-iommu.c |    3 +--
+> >  1 files changed, 1 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> > index 3f32d64..233f382 100644
+> > --- a/drivers/iommu/exynos-iommu.c
+> > +++ b/drivers/iommu/exynos-iommu.c
+> > @@ -12,6 +12,7 @@
+> >  #define DEBUG
+> >  #endif
+> > 
+> > +#include <linux/kernel.h>
+> >  #include <linux/io.h>
+> >  #include <linux/interrupt.h>
+> >  #include <linux/platform_device.h>
+> > @@ -29,8 +30,6 @@
+> >  #include <asm/cacheflush.h>
+> >  #include <asm/pgtable.h>
+> > 
+> > -#include <mach/sysmmu.h>
+> > -
+> >  /* We does not consider super section mapping (16MB) */
+> >  #define SECT_ORDER 20
+> >  #define LPAGE_ORDER 16
