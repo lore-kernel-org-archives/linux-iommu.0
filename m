@@ -1,283 +1,229 @@
-From: Cho KyongHo <pullip.cho@samsung.com>
-Subject: Re: [PATCH v9 14/16] iommu/exynos: add support for power management
- subsystems.
-Date: Fri, 09 Aug 2013 16:49:43 +0900
-Message-ID: <20130809164943.fe4b673e92b3f7680562f29b@samsung.com>
-References: <003201ce941b$6e5a90e0$4b0fb2a0$@samsung.com>
- <1949492.N82v2nAcIY@flatron>
+From: Tomasz Figa <tomasz.figa@gmail.com>
+Subject: Re: [PATCH v9 00/16] iommu/exynos: Fixes and Enhancements of System MMU driver with DT
+Date: Fri, 09 Aug 2013 09:51:22 +0200
+Message-ID: <4157684.uh6jPsifpa@flatron>
+References: <002401ce941a$dad907c0$908b1740$@samsung.com> <2763595.7SYUCgBHXZ@amdc1227> <20130809100016.a22e5938a829f229eb5df00f@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <1949492.N82v2nAcIY@flatron>
+In-Reply-To: <20130809100016.a22e5938a829f229eb5df00f@samsung.com>
 Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Tomasz Figa <tomasz.figa@gmail.com>
-Cc: 'Linux ARM Kernel' <linux-arm-kernel@lists.infradead.org>, 'Linux IOMMU' <iommu@lists.linux-foundation.org>, 'Linux Kernel' <linux-kernel@vger.kernel.org>, 'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>, devicetree@vger.kernel.org, 'Joerg Roedel' <joro@8bytes.org>, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Prathyush' <prathyush.k@samsung.com>, 'Rahul Sharma' <rahul.sharma@samsung.com>, 'Subash Patel' <supash.ramaswamy@linaro.org>, 'Grant Grundler' <grundler@chromium.org>, 'Antonios Motakis' <a.motakis@virtualopensystems.com>, kvmarm@lists.cs.columbia.edu, 'Sachin Kamat' <sachin.kamat@linaro.org>
+To: Cho KyongHo <pullip.cho@samsung.com>
+Cc: Tomasz Figa <t.figa@samsung.com>, 'Linux ARM Kernel' <linux-arm-kernel@lists.infradead.org>, 'Linux IOMMU' <iommu@lists.linux-foundation.org>, 'Linux Kernel' <linux-kernel@vger.kernel.org>, 'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>, devicetree@vger.kernel.org, 'Joerg Roedel' <joro@8bytes.org>, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Prathyush' <prathyush.k@samsung.com>, 'Rahul Sharma' <rahul.sharma@samsung.com>, 'Subash Patel' <supash.ramaswamy@linaro.org>, 'Grant Grundler' <grundler@chromium.org>, 'Antonios Motakis' <a.motakis@virtualopensystems.com>, kvmarm@lists.cs.columbia.edu, 'Sachin Kamat' <sachin.kamat@linaro.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 09 Aug 2013 01:03:05 +0200, Tomasz Figa wrote:
-> Hi KyongHo,
-> 
-> nit: Please drop the trailing dot at the end of patch subject.
-> 
+Hi KyongHo,
 
-Oh. I didn't catch that.
-Thank you.
+On Friday 09 of August 2013 10:00:16 Cho KyongHo wrote:
+> On Thu, 08 Aug 2013 14:13:57 +0200, Tomasz Figa wrote:
+> > Hi KyongHo,
+> > 
+> > Just a little hint for future:
+> > 
+> > To make reviewing your patches easier, please send all patches (01 and
+> > further) as a follow up (reply) to cover letter of the series (patch
+> > 00).
+> > 
+> > This can be achieved by using --thread switch of git send-email for
+> > example.
+> 
+> Thank you for advice.
+> However, git send-email and something like that is prohibitted by the
+> security policy of my company :(
 
-> On Thursday 08 of August 2013 18:41:17 Cho KyongHo wrote:
-> > This adds support for Advance Power Management and Runtime Power
-> > Management.
-> 
-> This patch adds support for system-wide and runtime power management.
-> 
+Oh, that's not nice, but well, such things happen, so I can understand 
+this.
 
-Ok.
+> I used an email client in windows O/S.
+> 
+> I need more consideration to the patches are sent in the order of
+> patches.
 
-> > Since System MMU is located in the same local power domain of its
-> > master H/W, System MMU must be initialized before it is working if
-> > its power domain was ever turned off. TLB invalidation according to
-> > unmapping on page tables must also be performed while power domain is
-> > turned on.
-> > 
-> > This patch ensures that resume and runtime_resume(restore_state)
-> > functions in this driver is called before the calls to resume and
-> > runtime_resume callback functions in the drivers of master H/Ws.
-> > Likewise, suspend and runtime_suspend(save_state) functions in this
-> > driver is called after the calls to suspend and runtime_suspend in the
-> > drivers of master H/Ws.
-> > 
-> > In order to get benefit of this support, the master H/W and its System
-> > MMU must resides in the same power domain in terms of Linux kernel. If
-> > a master H/W does not use generic I/O power domain, its driver must
-> > call iommu_attach_device() after its local power domain is turned on,
-> > iommu_detach_device before turned off.
-> 
-> I don't get the point of this last paragraph. What a power domain can be 
-> in other terms? Is there any other way to support power domains on Exynos 
-> than generic power domains?
-> 
+OK. It should be still possible to send the cover letter first and then 
+remaining patches are replies to the cover letter. This would be really 
+appreciated by reviewers and maintainer applying such series afterwards.
 
-I just addressed the case a device driver turns off local power of its
-device without the help of generic I/O powerdomain.
+Best regards,
+Tomasz
 
-> > Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
-> > ---
-> >  drivers/iommu/exynos-iommu.c |  235
-> > +++++++++++++++++++++++++++++++++++++++++- 1 files changed, 231
-> > insertions(+), 4 deletions(-)
+> Thank you.
+> 
+> KyongHo.
+> 
+> > Best regards,
+> > Tomasz
 > > 
-> > diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> > index 9e64483..56aead9 100644
-> > --- a/drivers/iommu/exynos-iommu.c
-> > +++ b/drivers/iommu/exynos-iommu.c
-> > @@ -28,6 +28,7 @@
-> >  #include <linux/export.h>
-> >  #include <linux/of.h>
-> >  #include <linux/of_platform.h>
-> > +#include <linux/pm_domain.h>
-> >  #include <linux/notifier.h>
-> > 
-> >  #include <asm/cacheflush.h>
-> > @@ -186,6 +187,7 @@ struct sysmmu_drvdata {
-> >  	int activations;
-> >  	rwlock_t lock;
-> >  	struct iommu_domain *domain;
-> > +	bool runtime_active;
-> >  	unsigned long pgtable;
-> >  	void __iomem *sfrbases[0];
-> >  };
-> > @@ -438,7 +440,8 @@ static bool __sysmmu_disable(struct sysmmu_drvdata
-> > *data) data->pgtable = 0;
-> >  		data->domain = NULL;
-> > 
-> > -		__sysmmu_disable_nocount(data);
-> > +		if (data->runtime_active)
-> > +			__sysmmu_disable_nocount(data);
-> > 
-> >  		dev_dbg(data->sysmmu, "Disabled\n");
-> >  	} else  {
-> > @@ -505,7 +508,8 @@ static int __sysmmu_enable(struct sysmmu_drvdata
-> > *data, data->pgtable = pgtable;
-> >  		data->domain = domain;
-> > 
-> > -		__sysmmu_enable_nocount(data);
-> > +		if (data->runtime_active)
-> > +			__sysmmu_enable_nocount(data);
-> > 
-> >  		dev_dbg(data->sysmmu, "Enabled\n");
-> >  	} else {
-> > @@ -609,7 +613,7 @@ static void sysmmu_tlb_invalidate_entry(struct
-> > device *dev, unsigned long iova) data =
-> > dev_get_drvdata(client->sysmmu[i]);
-> > 
-> >  		read_lock_irqsave(&data->lock, flags);
-> > -		if (is_sysmmu_active(data)) {
-> > +		if (is_sysmmu_active(data) && data->runtime_active) {
-> >  			int i;
-> >  			clk_enable(data->clk_master);
-> >  			for (i = 0; i < data->nsfrs; i++)
-> > @@ -637,7 +641,8 @@ void exynos_sysmmu_tlb_invalidate(struct device
-> > *dev) data = dev_get_drvdata(client->sysmmu[i]);
-> > 
-> >  		read_lock_irqsave(&data->lock, flags);
-> > -		if (is_sysmmu_active(data)) {
-> > +		if (is_sysmmu_active(data) &&
-> > +				data->runtime_active) {
-> 
-> nit: The whole if condition fits into single line.
-
-Ok.
-
-> 
-> >  			int i;
-> >  			for (i = 0; i < data->nsfrs; i++) {
-> >  				clk_enable(data->clk_master);
-> > @@ -711,6 +716,8 @@ static int __init exynos_sysmmu_probe(struct
-> > platform_device *pdev) }
-> >  	}
-> > 
-> > +	pm_runtime_enable(dev);
-> > +
-> >  	data->sysmmu = dev;
-> > 
-> >  	data->clk = devm_clk_get(dev, "sysmmu");
-> > @@ -736,6 +743,8 @@ static int __init exynos_sysmmu_probe(struct
-> > platform_device *pdev) return ret;
-> >  	}
-> > 
-> > +	data->runtime_active = !pm_runtime_enabled(dev);
-> > +
-> >  	rwlock_init(&data->lock);
-> > 
-> >  	platform_set_drvdata(pdev, data);
-> > @@ -744,6 +753,34 @@ static int __init exynos_sysmmu_probe(struct
-> > platform_device *pdev) return ret;
-> >  }
-> > 
-> > +#ifdef CONFIG_PM_SLEEP
-> > +static int sysmmu_suspend(struct device *dev)
-> > +{
-> > +	struct sysmmu_drvdata *data = dev_get_drvdata(dev);
-> > +	unsigned long flags;
-> > +	read_lock_irqsave(&data->lock, flags);
-> > +	if (is_sysmmu_active(data) &&
-> > +		(!pm_runtime_enabled(dev) || data->runtime_active))
-> > +		__sysmmu_disable_nocount(data);
-> > +	read_unlock_irqrestore(&data->lock, flags);
-> > +	return 0;
-> > +}
-> > +
-> > +static int sysmmu_resume(struct device *dev)
-> > +{
-> > +	struct sysmmu_drvdata *data = dev_get_drvdata(dev);
-> > +	unsigned long flags;
-> > +	read_lock_irqsave(&data->lock, flags);
-> > +	if (is_sysmmu_active(data) &&
-> > +		(!pm_runtime_enabled(dev) || data->runtime_active))
-> > +		__sysmmu_enable_nocount(data);
-> > +	read_unlock_irqrestore(&data->lock, flags);
-> > +	return 0;
-> > +}
-> > +#endif
-> > +
-> > +static SIMPLE_DEV_PM_OPS(sysmmu_pm_ops, sysmmu_suspend, sysmmu_resume);
-> > +
-> >  #ifdef CONFIG_OF
-> >  static struct of_device_id sysmmu_of_match[] __initconst = {
-> >  	{ .compatible	= "samsung,exynos4210-sysmmu", },
-> > @@ -756,6 +793,7 @@ static struct platform_driver exynos_sysmmu_driver
-> > __refdata = { .driver	= {
-> >  		.owner		= THIS_MODULE,
-> >  		.name		= "exynos-sysmmu",
-> > +		.pm		= &sysmmu_pm_ops,
-> >  		.of_match_table	= of_match_ptr(sysmmu_of_match),
-> >  	}
-> >  };
-> > @@ -1141,6 +1179,163 @@ static int __init exynos_iommu_init(void)
-> >  }
-> >  subsys_initcall(exynos_iommu_init);
-> > 
-> > +#ifdef CONFIG_PM_SLEEP
-> > +static int sysmmu_pm_genpd_suspend(struct device *dev)
-> > +{
-> > +	struct exynos_iommu_client *client = dev->archdata.iommu;
-> > +	int ret = 0;
-> > +	int i;
-> > +
-> > +	for (i = 0; i < client->num_sysmmu; i++) {
-> > +		ret = pm_generic_suspend(client->sysmmu[i]);
-> > +		if (ret)
-> > +			break;
-> > +	}
-> > +
-> > +	if (!ret)
-> > +		ret = pm_generic_suspend(dev);
-> > +
-> > +	if (ret) {
-> > +		int j;
-> > +
-> > +		for (j = 0; j < i; j++)
-> > +			pm_generic_resume(client->sysmmu[j]);
-> > +	}
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +static int sysmmu_pm_genpd_resume(struct device *dev)
-> > +{
-> > +	struct exynos_iommu_client *client = dev->archdata.iommu;
-> > +	int ret = 0;
-> > +	int i;
-> > +
-> > +	for (i = 0; i < client->num_sysmmu; i++) {
-> > +		ret = pm_generic_resume(client->sysmmu[i]);
-> > +		if (ret)
-> > +			break;
-> 
-> Error handling here can be cleaned up a lot.
-> 
-> s/break/goto err_suspend/
-> 
-> > +	}
-> > +
-> > +	if (!ret)
-> 
-> Now you can drop this check.
-> 
-> > +		ret = pm_generic_resume(dev);
-> 
-> 	ret = pm_generic_resume(dev);
-> 	if (ret)
-> 		goto err_suspend;
-> 
-> 	return 0;
-> 
-> > +
-> 
-> err_suspend:
-> > +	if (ret) {
-> 
-> This check can be dropped here as well now.
-> 
-
-Ok.
-
-Let me think about it :)
-
-Thank you!
-
-KyongHo.
-
-> > +		int j;
-> > +
-> > +		for (j = 0; j < i; j++)
-> > +			pm_generic_suspend(client->sysmmu[j]);
-> > +	}
-> > +
-> > +	return ret;
-> > +}
-> > +#endif
-> 
-> Best regards,
-> Tomasz
-> 
+> > On Thursday 08 of August 2013 18:37:10 Cho KyongHo wrote:
+> > > The current exynos-iommu(System MMU) driver does not work
+> > > autonomously
+> > > since it is lack of support for power management of peripheral
+> > > blocks.
+> > > For example, MFC device driver must ensure that its System MMU is
+> > > disabled before MFC block is power-down not to invalidate IOTLB in
+> > > the
+> > > System MMU when I/O memory mapping is changed. Because a System MMU
+> > > resides in the same H/W block, access to control registers of System
+> > > MMU while the H/W block is turned off must be prohibited.
+> > > 
+> > > This set of changes solves the above problem with setting each
+> > > System
+> > > MMUs as the parent of the device which owns the System MMU to
+> > > receive
+> > > the information when the device is turned off or turned on.
+> > > 
+> > > Another big change to the driver is the support for devicetree.
+> > > The bindings for System MMU is described in
+> > > Documentation/devicetree/bindings/arm/samsung/system-mmu.txt
+> > > 
+> > > In addition, this patchset also includes several bug fixes and
+> > > enhancements of the current driver.
+> > > 
+> > > Change log:
+> > > v9:
+> > > - Rebased on the following branches
+> > > 
+> > >   git.linaro.org/git-ro/people/mturquette/linux.git/clk-next
+> > > 
+> > > git.kernel.org/pub/scm/linux/kernel/git/kgene/linux-samsung.git/sams
+> > > ung- next
+> > > git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/master
+> > > (3.11-rc4) - Split "add bus notifier for registering System MMU"
+> > > into 5 patches - Call clk_prepare() that was missing in v8.
+> > > - Fixed base address of sysmmu_tv in exynos4210.dtsi
+> > > - BUG_ON() instead of return -EADDRINUSE when trying mapping on an
+> > > mapped area - Moved camif_top to 317 in
+> > > drivers/clk/samsung/clk-exynos5250.c - Removed 'iommu' property
+> > > from 'codec'(mfc) node
+> > > - Does not make 'master' clock to be the parent of 'sysmmu' clock.
+> > > 
+> > >    'master' clock is enabled before accessing control registers of
+> > >    System
+> > > 
+> > > MMU and disabled after the access.
+> > > 
+> > > v8:
+> > > - Reordered patch list: moved "change rwloc to spinlock" to the
+> > > last.
+> > > - Fixed remained bug in "fix page table maintenance".
+> > > - Always return 0 from exynos_iommu_attach_device().
+> > > - Removed prefetch buffer setting when System MMU is enabled
+> > > 
+> > >   due to the restriction of prefetch buffers:
+> > >   A prefetch buffer must not hit from more than one DMA.
+> > >   For instance with GScalers, if a single prefetch buffer is
+> > >   initialized
+> > >   with 0x0 ~ 0xFFFFFFFF and a GScaler works on source buffer at
+> > > 
+> > > 0x10000000 and target buffer @ 0x20000000, the System MMU may be got
+> > > deadlock. Clients must initialize prefetch buffers with custom
+> > > function
+> > > defined in exynos-iommu drivers whenever they need to enable
+> > > prefetch
+> > > buffers. - The clock of System MMU has no relationship with the
+> > > clock of its master H/W. The clock of master H/W is always enabled
+> > > when exynos-iommu driver needs to access MMIO area and disabled as
+> > > soon as the access finishes. - Removed err_page variable used in
+> > > exynos_iommu_unmap() in the previous patch "fix page table
+> > > maintenance". - Split a big patch "add bus notifier for registering
+> > > System MMU".> > 
+> > >    Extracted the following 2 patches: 9/12 and 10/12.
+> > > 
+> > > - And some additional fixes...
+> > > 
+> > > v7:
+> > > - Rebased on the stable 3.10
+> > > - Registered PM domains and gate clocks with DT
+> > > - Changed connection method between a System MMU and its master H/W
+> > > 
+> > >    'mmu-master' property in the node of System MMU
+> > >    --> 'iommu' property in the node of master H/W
+> > > 
+> > > - Marking device descriptor of master H/W of a System MMU with bus
+> > > notifier. - Power management (PM_RUNTIME, PM_SLEEP) of System MMUs
+> > > with
+> > > gpd_dev_ops of Generic IO Powerdomain. gpd_dev_ops are set to the
+> > > master H/Ws before they are probed in the bus notifier.
+> > > - Removed additional debugging features like debugfs entries and
+> > > 
+> > >    version names.
+> > > 
+> > > - Removed support for advanced features of System MMU 3.2 and 3.3
+> > > 
+> > >    the current IOMMU API cannot handle the feature
+> > >   
+> > >   (A kind of L2 TLB that fetches several consequence page table
+> > >   entries.
+> > >   
+> > >    It must be initialized by the driver of master H/W whenever it
+> > >    works.)
+> > > 
+> > > v6:
+> > > - Rebased on the branch, next/iommu-exynos of
+> > > 
+> > >   git.kernel.org/pub/scm/linux/kernel/git/kgene/linux-samsung.git
+> > > 
+> > > v5:
+> > > - new bugfix: patch 01
+> > > - Reordered patches
+> > > 
+> > >   * patch 01 ~ 05: Bugfix and enhancements of the existing driver
+> > >   * patch 06 ~ 10: Device Tree support and callbacks for power
+> > >   management
+> > > 
+> > > * patch 11     : System MMU 3.2 and 3.3 support
+> > > 
+> > >   * patch 12 ~ 14: Debugging features
+> > > 
+> > > - Additional code compaction
+> > > 
+> > > v4:
+> > > - Remove Change-Id from v3 patches
+> > > - Change the order of the third and the first patch
+> > > 
+> > >   Thanks to Kukjin Kim.
+> > > 
+> > > - Fix memory leak when allocating and assigning exynos_iommu_owner
+> > > to
+> > > client device if the client device has multiple System MMUs.
+> > > 
+> > >   Thanks to Rahul Sharma.
+> > > 
+> > > v3:
+> > > - Fix prefetch buffer flag definition for System MMU 3.3 (patch
+> > > 10/12)
+> > > - Fix incorrect setting for SET_RUNTIME_PM_OPS (patch 09/12)
+> > > 
+> > >   Thanks to Prathyush.
+> > > 
+> > > v2:
+> > > - Split the patch to iommu/exynos into 9 patches
+> > > - Support for System MMU 3.3
+> > > - Some code compaction
+> > > 
+> > > Patch summary:
+> > > 
+> > > Diffstats:
+> > >  .../devicetree/bindings/clock/exynos5250-clock.txt |   26 +
+> > >  .../bindings/iommu/samsung,exynos4210-sysmmu.txt   |  103 ++
+> > >  arch/arm/boot/dts/exynos4.dtsi                     |  122 +++
+> > >  arch/arm/boot/dts/exynos4210.dtsi                  |   25 +
+> > >  arch/arm/boot/dts/exynos4x12.dtsi                  |   82 ++
+> > >  arch/arm/boot/dts/exynos5250.dtsi                  |  290 ++++++
+> > >  drivers/clk/samsung/clk-exynos4.c                  |   27 +-
+> > >  drivers/clk/samsung/clk-exynos5250.c               |   57 +-
+> > >  drivers/iommu/Kconfig                              |    5 +-
+> > >  drivers/iommu/exynos-iommu.c                       | 1061
+> > > 
+> > > +++++++++++++------- 10 files changed, 1423 insertions(+), 375
+> > > deletions(-)
+> > > 
+> > > --
+> > > To unsubscribe from this list: send the line "unsubscribe
+> > > linux-samsung-soc" in the body of a message to
+> > > majordomo@vger.kernel.org More majordomo info at 
+> > > http://vger.kernel.org/majordomo-info.html
+> --
+> To unsubscribe from this list: send the line "unsubscribe devicetree" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
