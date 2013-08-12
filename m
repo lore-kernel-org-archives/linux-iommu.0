@@ -1,17 +1,16 @@
 From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v9 04/16] iommu/exynos: allocate lv2 page table from own
-	slab
-Date: Mon, 12 Aug 2013 10:59:57 +0900
-Message-ID: <20130812105957.918cc24dc835034365525cbc@samsung.com>
-References: <002801ce941a$fb6369e0$f22a3da0$@samsung.com>
-	<2101296.S6JDU5igl3@flatron>
-	<20130809175156.c7ffc68b865e4bca48ef47dd@samsung.com>
-	<12183506.4f14O99EfL@amdc1227>
+Subject: Re: [PATCH v9 07/16] iommu/exynos: support for device tree
+Date: Mon, 12 Aug 2013 11:13:30 +0900
+Message-ID: <20130812111330.f854810269e876140aa55634@samsung.com>
+References: <002b01ce941b$160a88a0$421f99e0$@samsung.com>
+	<5396565.vjlSOm37Vf@flatron>
+	<20130809153730.83d3a5ba419def5424bcbb0e@samsung.com>
+	<3801687.TzcQoMh0Oe@flatron>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <12183506.4f14O99EfL@amdc1227>
+In-reply-to: <3801687.TzcQoMh0Oe@flatron>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,202 +20,565 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tomasz Figa <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, 'Linux Samsung SOC' <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, 'Prathyush' <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Grant Grundler' <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, 'Subash Patel' <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, 'Linux Kernel' <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, 'Sachin Kamat' <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Linux IOMMU' <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, 'Kukjin Kim' <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Antonios Motakis' <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, 'Linux ARM Kernel' <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, 'Rahul Sharma' <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+To: Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, 'Linux Samsung SOC' <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, 'Prathyush' <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Grant Grundler' <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, 'Subash Patel' <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Linux Kernel' <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, 'Sachin Kamat' <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, 'Linux IOMMU' <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, 'Kukjin Kim' <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Antonios Motakis' <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, 'Linux ARM Kernel' <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, 'Rahul Sharma' <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 09 Aug 2013 11:35:20 +0200, Tomasz Figa wrote:
-> On Friday 09 of August 2013 17:51:56 Cho KyongHo wrote:
-> > On Fri, 09 Aug 2013 09:55:30 +0200, Tomasz Figa wrote:
+On Fri, 09 Aug 2013 10:30:11 +0200, Tomasz Figa wrote:
+> On Friday 09 of August 2013 15:37:30 Cho KyongHo wrote:
+> > On Fri, 09 Aug 2013 00:41:25 +0200, Tomasz Figa wrote:
 > > > Hi KyongHo,
 > > > 
-> > > On Friday 09 of August 2013 14:58:49 Cho KyongHo wrote:
-> > > > On Thu, 08 Aug 2013 16:00:18 +0200, Tomasz Figa wrote:
-> > > > > On Thursday 08 of August 2013 18:38:04 Cho KyongHo wrote:
-> > > > > > Since kmalloc() does not guarantee that the allignment of 1KiB
-> > > > > > when
-> > > > > > it
-> > > > > > allocates 1KiB, it is required to allocate lv2 page table from
-> > > > > > own
-> > > > > > slab that guarantees alignment of 1KiB
-> > > > > > 
-> > > > > > Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> > > > > > ---
-> > > > > > 
-> > > > > >  drivers/iommu/exynos-iommu.c |   24 ++++++++++++++++++++----
-> > > > > >  1 files changed, 20 insertions(+), 4 deletions(-)
-> > > > > > 
-> > > > > > diff --git a/drivers/iommu/exynos-iommu.c
-> > > > > > b/drivers/iommu/exynos-iommu.c index d90e6fa..a318049 100644
-> > > > > > --- a/drivers/iommu/exynos-iommu.c
-> > > > > > +++ b/drivers/iommu/exynos-iommu.c
-> > > > > > @@ -100,6 +100,8 @@
-> > > > > > 
-> > > > > >  #define REG_PB1_SADDR		0x054
-> > > > > >  #define REG_PB1_EADDR		0x058
-> > > > > > 
-> > > > > > +static struct kmem_cache *lv2table_kmem_cache;
-> > > > > > +
-> > > > > > 
-> > > > > >  static unsigned long *section_entry(unsigned long *pgtable,
-> > > > > >  unsigned
-> > > > > > 
-> > > > > > long iova) {
-> > > > > > 
-> > > > > >  	return pgtable + lv1ent_offset(iova);
-> > > > > > 
-> > > > > > @@ -765,7 +767,8 @@ static void
-> > > > > > exynos_iommu_domain_destroy(struct
-> > > > > > iommu_domain *domain)
-> > > > > > 
-> > > > > >  	for (i = 0; i < NUM_LV1ENTRIES; i++)
-> > > > > >  	
-> > > > > >  		if (lv1ent_page(priv->pgtable + i))
-> > > > > > 
-> > > > > > -			kfree(__va(lv2table_base(priv->pgtable + i)));
-> > > > > > +			kmem_cache_free(lv2table_kmem_cache,
-> > > > > > +					__va(lv2table_base(priv->pgtable +
-> > > 
-> > > i)));
-> > > 
-> > > > > >  	free_pages((unsigned long)priv->pgtable, 2);
-> > > > > >  	free_pages((unsigned long)priv->lv2entcnt, 1);
-> > > > > > 
-> > > > > > @@ -861,7 +864,7 @@ static unsigned long *alloc_lv2entry(unsigned
-> > > > > > long
-> > > > > > *sent, unsigned long iova, if (lv1ent_fault(sent)) {
-> > > > > > 
-> > > > > >  		unsigned long *pent;
-> > > > > > 
-> > > > > > -		pent = kzalloc(LV2TABLE_SIZE, GFP_ATOMIC);
-> > > > > > +		pent = kmem_cache_zalloc(lv2table_kmem_cache, GFP_ATOMIC);
-> > > > > > 
-> > > > > >  		BUG_ON((unsigned long)pent & (LV2TABLE_SIZE - 1));
-> > > > > >  		if (!pent)
-> > > > > >  		
-> > > > > >  			return ERR_PTR(-ENOMEM);
-> > > > > > 
-> > > > > > @@ -881,7 +884,7 @@ static int lv1set_section(unsigned long
-> > > > > > *sent,
-> > > > > > phys_addr_t paddr, short *pgcnt)
-> > > > > > 
-> > > > > >  	if (lv1ent_page(sent)) {
-> > > > > >  	
-> > > > > >  		BUG_ON(*pgcnt != NUM_LV2ENTRIES);
-> > > > > > 
-> > > > > > -		kfree(page_entry(sent, 0));
-> > > > > > +		kmem_cache_free(lv2table_kmem_cache, page_entry(sent, 0));
-> > > > > > 
-> > > > > >  		*pgcnt = 0;
-> > > > > >  	
-> > > > > >  	}
-> > > > > > 
-> > > > > > @@ -1082,10 +1085,23 @@ static int __init exynos_iommu_init(void)
-> > > > > > 
-> > > > > >  {
-> > > > > >  
-> > > > > >  	int ret;
-> > > > > > 
-> > > > > > +	lv2table_kmem_cache =
-> > > > > > kmem_cache_create("exynos-iommu-lv2table",
-> > > > > > +				LV2TABLE_SIZE, LV2TABLE_SIZE, 0, NULL);
-> > > > > > +	if (!lv2table_kmem_cache) {
-> > > > > > +		pr_err("%s: Failed to create kmem cache\n", __func__);
-> > > > > > +		return -ENOMEM;
-> > > > > > +	}
-> > > > > > +
-> > > > > > 
-> > > > > >  	ret = platform_driver_register(&exynos_sysmmu_driver);
-> > > > > >  	
-> > > > > >  	if (ret == 0)
-> > > > > > 
-> > > > > > -		bus_set_iommu(&platform_bus_type, &exynos_iommu_ops);
-> > > > > > +		ret = bus_set_iommu(&platform_bus_type,
-> > > 
-> > > &exynos_iommu_ops);
-> > > 
-> > > > > > +
-> > > > > > +	if (ret) {
-> > > > > > +		pr_err("%s: Failed to register exynos-iommu driver.\n",
-> > > > > > +								__func__);
-> > > > > > +		kmem_cache_destroy(lv2table_kmem_cache);
-> > > > > > +	}
-> > > > > 
-> > > > > What about making the return value handling here cleaner? For 
-> example:
-> > > > > 	lv2table_kmem_cache = kmem_cache_create("exynos-iommu-lv2table",
-> > > > > 	
-> > > > > 				LV2TABLE_SIZE, LV2TABLE_SIZE, 0, NULL);
-> > > > > 	
-> > > > > 	if (!lv2table_kmem_cache) {
-> > > > > 	
-> > > > > 		...
-> > > > > 		return -ENOMEM;
-> > > > > 	
-> > > > > 	}
-> > > > > 	
-> > > > > 	ret = platform_driver_register(&exynos_sysmmu_driver);
-> > > > > 	if (ret) {
-> > > > > 	
-> > > > > 		...
-> > > > > 		goto err_destroy_kmem_cache;
-> > > > > 	
-> > > > > 	}
-> > > > > 	
-> > > > > 	ret = bus_set_iommu(&platform_bus_type, &exynos_iommu_ops);
-> > > > > 	if (ret) {
-> > > > > 	
-> > > > > 		...
-> > > > > 		goto err_platform_unregister;
-> > > > > 	
-> > > > > 	}
-> > > > > 	
-> > > > > 	return 0;
-> > > > > 
-> > > > > err_platform_unregister:
-> > > > > 	...
-> > > > > 
-> > > > > err_destroy_kmem_cache:
-> > > > > 	...
-> > > > > 	return ret;
-> > > > > 
-> > > > > }
+> > > On Thursday 08 of August 2013 18:38:49 Cho KyongHo wrote:
+> > > > This commit adds device tree support for System MMU.
+> > > > This also include the following changes and enhancements:
 > > > > 
-> > > > Thank you for suggestion.
-> > > > I think you are worrying about missing the information who makes
-> > > > 'ret'
-> > > > non-zero.
+> > > > * use managed device helper functions.
+> > > > Simplyfies System MMU device driver.
+> > > > 
+> > > > * use only a single clock descriptor.
+> > > > System MMU device descriptor is seperate if it is imposible to make
+> > > > a single clock descriptor to make a device descriptor for a group of
+> > > > System MMUs.
+> > > > 
+> > > > * removed dbgname member from sysmmu_drvdata structure.
+> > > > debugging kernel message for a System MMU is distinguisheable with
+> > > > the
+> > > > name of device descroptors.
 > > > 
-> > > Oh, this is a valid point, but it was more a nitpick about the coding
-> > > style. Single path error handling (with goto) is widely used in the
-> > > kernel in cases when more than one thing has to be undone and so I
-> > > suggested this method of error handling here as well.
-> > > 
-> > > > Ok. I will process it separately.
-> > > 
-> > > Since this patch adds most of the error handling to this function, I
-> > > think it should be fine to do it as a part of this patch.
+> > > Please put all these three changes in separate patches. This patch is
+> > > hard to review with all the changes mixed together...
 > > 
-> > I meant 'separately' that checking all return values each.
-> > I think it can be simpler without goto.
-> >
-> > There are just 2 cases to rollback previous changes in that function.
+> > Ok.
+> > 
+> > > In addition, I believe this is the patch that should be adding device
+> > > tree binding documentation, not the 6/16 one, as this is where
+> > > actually support for this binding gets added to the kernel.
+> > 
+> > Oh, I didn't know that devicetree binding description and implementation
+> > need to be in the same patch.
+> > I will do as you advised.
 > 
-> It might end up with less lines, but having roll back in single place is 
-> more readable. That's why it's the preferred error handling way in Linux 
-> kernel, if you have more than one action to undo on your error path.
+> Thanks. We are still missing a "best practices" document about device tree 
+> binding development, so it might not be clear.
 > 
 
-I fully understand what you are concerning about and I also agree.
-Actually it is simple choice without any side effect.
-It is just a preference.
-I will change it into 'goto'.
-Then we can determine what looks better :) 
+I saw Rob Herring has different idea about the seperation of patches.
+Let's talk about it more.
+
+> > > > Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> > > > ---
+> > > > 
+> > > >  drivers/iommu/Kconfig        |    5 +-
+> > > >  drivers/iommu/exynos-iommu.c |  186
+> > > > 
+> > > > ++++++++++++++++------------------------- 2 files changed, 75
+> > > > insertions(+), 116 deletions(-)
+> > > > 
+> > > > diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> > > > index 820d85c..9ad45f1 100644
+> > > > --- a/drivers/iommu/Kconfig
+> > > > +++ b/drivers/iommu/Kconfig
+> > > > @@ -168,16 +168,15 @@ config TEGRA_IOMMU_SMMU
+> > > > 
+> > > >  config EXYNOS_IOMMU
+> > > >  
+> > > >  	bool "Exynos IOMMU Support"
+> > > > 
+> > > > -	depends on ARCH_EXYNOS && EXYNOS_DEV_SYSMMU
+> > > > +	depends on ARCH_EXYNOS
+> > > > 
+> > > >  	select IOMMU_API
+> > > > 
+> > > > +	default n
+> > > > 
+> > > >  	help
+> > > >  	
+> > > >  	  Support for the IOMMU(System MMU) of Samsung Exynos application
+> > > >  	  processor family. This enables H/W multimedia accellerators to
+> > > 
+> > > see
+> > > 
+> > > >  	  non-linear physical memory chunks as a linear memory in their
+> > > >  	  address spaces
+> > > > 
+> > > > -	  If unsure, say N here.
+> > > > -
+> > > > 
+> > > >  config EXYNOS_IOMMU_DEBUG
+> > > >  
+> > > >  	bool "Debugging log for Exynos IOMMU"
+> > > >  	depends on EXYNOS_IOMMU
+> > > > 
+> > > > diff --git a/drivers/iommu/exynos-iommu.c
+> > > > b/drivers/iommu/exynos-iommu.c index a318049..0ee73e8 100644
+> > > > --- a/drivers/iommu/exynos-iommu.c
+> > > > +++ b/drivers/iommu/exynos-iommu.c
+> > > > @@ -26,6 +26,7 @@
+> > > > 
+> > > >  #include <linux/list.h>
+> > > >  #include <linux/memblock.h>
+> > > >  #include <linux/export.h>
+> > > > 
+> > > > +#include <linux/of.h>
+> > > > 
+> > > >  #include <asm/cacheflush.h>
+> > > >  #include <asm/pgtable.h>
+> > > > 
+> > > > @@ -170,15 +171,14 @@ struct sysmmu_drvdata {
+> > > > 
+> > > >  	struct list_head node; /* entry of exynos_iommu_domain.clients */
+> > > >  	struct device *sysmmu;	/* System MMU's device descriptor */
+> > > >  	struct device *dev;	/* Owner of system MMU */
+> > > > 
+> > > > -	char *dbgname;
+> > > > 
+> > > >  	int nsfrs;
+> > > > 
+> > > > -	void __iomem **sfrbases;
+> > > > -	struct clk *clk[2];
+> > > > +	struct clk *clk;
+> > > > 
+> > > >  	int activations;
+> > > >  	rwlock_t lock;
+> > > >  	struct iommu_domain *domain;
+> > > >  	sysmmu_fault_handler_t fault_handler;
+> > > >  	unsigned long pgtable;
+> > > > 
+> > > > +	void __iomem *sfrbases[0];
+> > > > 
+> > > >  };
+> > > >  
+> > > >  static bool set_sysmmu_active(struct sysmmu_drvdata *data)
+> > > > 
+> > > > @@ -385,8 +385,8 @@ static irqreturn_t exynos_sysmmu_irq(int irq,
+> > > > void
+> > > > *dev_id) if (!ret && (itype != SYSMMU_FAULT_UNKNOWN))
+> > > > 
+> > > >  		__raw_writel(1 << itype, data->sfrbases[i] +
+> > > 
+> > > REG_INT_CLEAR);
+> > > 
+> > > >  	else
+> > > > 
+> > > > -		dev_dbg(data->sysmmu, "(%s) %s is not handled.\n",
+> > > > -				data->dbgname, sysmmu_fault_name[itype]);
+> > > > +		dev_dbg(data->sysmmu, "%s is not handled.\n",
+> > > > +				sysmmu_fault_name[itype]);
+> > > > 
+> > > >  	if (itype != SYSMMU_FAULT_UNKNOWN)
+> > > >  	
+> > > >  		sysmmu_unblock(data->sfrbases[i]);
+> > > > 
+> > > > @@ -410,10 +410,8 @@ static bool __exynos_sysmmu_disable(struct
+> > > > sysmmu_drvdata *data) for (i = 0; i < data->nsfrs; i++)
+> > > > 
+> > > >  		__raw_writel(CTRL_DISABLE, data->sfrbases[i] +
+> > > 
+> > > REG_MMU_CTRL);
+> > > 
+> > > > -	if (data->clk[1])
+> > > > -		clk_disable(data->clk[1]);
+> > > > -	if (data->clk[0])
+> > > > -		clk_disable(data->clk[0]);
+> > > > +	if (data->clk)
+> > > > +		clk_disable(data->clk);
+> > > > 
+> > > >  	disabled = true;
+> > > >  	data->pgtable = 0;
+> > > > 
+> > > > @@ -422,10 +420,10 @@ finish:
+> > > >  	write_unlock_irqrestore(&data->lock, flags);
+> > > >  	
+> > > >  	if (disabled)
+> > > > 
+> > > > -		dev_dbg(data->sysmmu, "(%s) Disabled\n", data->dbgname);
+> > > > +		dev_dbg(data->sysmmu, "Disabled\n");
+> > > > 
+> > > >  	else
+> > > > 
+> > > > -		dev_dbg(data->sysmmu, "(%s) %d times left to be
+> > > 
+> > > disabled\n",
+> > > 
+> > > > -					data->dbgname, data->activations);
+> > > > +		dev_dbg(data->sysmmu, "%d times left to be disabled\n",
+> > > > +					data->activations);
+> > > > 
+> > > >  	return disabled;
+> > > >  
+> > > >  }
+> > > > 
+> > > > @@ -452,14 +450,12 @@ static int __exynos_sysmmu_enable(struct
+> > > > sysmmu_drvdata *data, ret = 1;
+> > > > 
+> > > >  		}
+> > > > 
+> > > > -		dev_dbg(data->sysmmu, "(%s) Already enabled\n", data-
+> > > >
+> > > >dbgname);
+> > > >
+> > > > +		dev_dbg(data->sysmmu, "Already enabled\n");
+> > > > 
+> > > >  		goto finish;
+> > > >  	
+> > > >  	}
+> > > > 
+> > > > -	if (data->clk[0])
+> > > > -		clk_enable(data->clk[0]);
+> > > > -	if (data->clk[1])
+> > > > -		clk_enable(data->clk[1]);
+> > > > +	if (data->clk)
+> > > > +		clk_enable(data->clk);
+> > > > 
+> > > >  	data->pgtable = pgtable;
+> > > > 
+> > > > @@ -479,7 +475,7 @@ static int __exynos_sysmmu_enable(struct
+> > > > sysmmu_drvdata *data,
+> > > > 
+> > > >  	data->domain = domain;
+> > > > 
+> > > > -	dev_dbg(data->sysmmu, "(%s) Enabled\n", data->dbgname);
+> > > > +	dev_dbg(data->sysmmu, "Enabled\n");
+> > > > 
+> > > >  finish:
+> > > >  	write_unlock_irqrestore(&data->lock, flags);
+> > > > 
+> > > > @@ -495,7 +491,7 @@ int exynos_sysmmu_enable(struct device *dev,
+> > > > unsigned long pgtable)
+> > > > 
+> > > >  	ret = pm_runtime_get_sync(data->sysmmu);
+> > > >  	if (ret < 0) {
+> > > > 
+> > > > -		dev_dbg(data->sysmmu, "(%s) Failed to enable\n", data-
+> > > >
+> > > >dbgname);
+> > > >
+> > > > +		dev_dbg(data->sysmmu, "Failed to enable\n");
+> > > > 
+> > > >  		return ret;
+> > > >  	
+> > > >  	}
+> > > > 
+> > > > @@ -503,8 +499,8 @@ int exynos_sysmmu_enable(struct device *dev,
+> > > > unsigned long pgtable) if (WARN_ON(ret < 0)) {
+> > > > 
+> > > >  		pm_runtime_put(data->sysmmu);
+> > > >  		dev_err(data->sysmmu,
+> > > > 
+> > > > -			"(%s) Already enabled with page table %#lx\n",
+> > > > -			data->dbgname, data->pgtable);
+> > > > +			"Already enabled with page table %#lx\n",
+> > > > +			data->pgtable);
+> > > > 
+> > > >  	} else {
+> > > >  	
+> > > >  		data->dev = dev;
+> > > >  	
+> > > >  	}
+> > > > 
+> > > > @@ -540,9 +536,7 @@ static void sysmmu_tlb_invalidate_entry(struct
+> > > > device *dev, unsigned long iova) }
+> > > > 
+> > > >  		}
+> > > >  	
+> > > >  	} else {
+> > > > 
+> > > > -		dev_dbg(data->sysmmu,
+> > > > -			"(%s) Disabled. Skipping invalidating TLB.\n",
+> > > > -			data->dbgname);
+> > > > +		dev_dbg(data->sysmmu, "Disabled. Skipping invalidating
+> > > 
+> > > TLB.\n");
+> > > 
+> > > >  	}
+> > > >  	
+> > > >  	read_unlock_irqrestore(&data->lock, flags);
+> > > > 
+> > > > @@ -564,141 +558,107 @@ void exynos_sysmmu_tlb_invalidate(struct
+> > > > device
+> > > > *dev) }
+> > > > 
+> > > >  		}
+> > > >  	
+> > > >  	} else {
+> > > > 
+> > > > -		dev_dbg(data->sysmmu,
+> > > > -			"(%s) Disabled. Skipping invalidating TLB.\n",
+> > > > -			data->dbgname);
+> > > > +		dev_dbg(data->sysmmu, "Disabled. Skipping invalidating
+> > > 
+> > > TLB.\n");
+> > > 
+> > > >  	}
+> > > >  	
+> > > >  	read_unlock_irqrestore(&data->lock, flags);
+> > > >  
+> > > >  }
+> > > > 
+> > > > -static int exynos_sysmmu_probe(struct platform_device *pdev)
+> > > > +static int __init exynos_sysmmu_probe(struct platform_device *pdev)
+> > > > 
+> > > >  {
+> > > >  
+> > > >  	int i, ret;
+> > > > 
+> > > > -	struct device *dev;
+> > > > +	struct device *dev = &pdev->dev;
+> > > > 
+> > > >  	struct sysmmu_drvdata *data;
+> > > > 
+> > > > -	dev = &pdev->dev;
+> > > > -
+> > > > -	data = kzalloc(sizeof(*data), GFP_KERNEL);
+> > > > -	if (!data) {
+> > > > -		dev_dbg(dev, "Not enough memory\n");
+> > > > -		ret = -ENOMEM;
+> > > > -		goto err_alloc;
+> > > > +	if (pdev->num_resources == 0) {
+> > > > +		dev_err(dev, "No System MMU resource defined\n");
+> > > > +		return -ENODEV;
+> > > > 
+> > > >  	}
+> > > > 
+> > > > -	ret = dev_set_drvdata(dev, data);
+> > > > -	if (ret) {
+> > > > -		dev_dbg(dev, "Unabled to initialize driver data\n");
+> > > > -		goto err_init;
+> > > > +	data = devm_kzalloc(dev,
+> > > > +			sizeof(*data) +
+> > > > +			sizeof(*data->sfrbases) * (pdev->num_resources /
+> > > 
+> > > 2),
+> > > 
+> > > > +			GFP_KERNEL);
+> > > > +	if (!data) {
+> > > > +		dev_err(dev, "Not enough memory for initialization\n");
+> > > 
+> > > nit: This message is not necessary, as kmalloc() already prints a
+> > > message if allocation error occurs.
+> > 
+> > Ok.
+> > 
+> > > > +		return -ENOMEM;
+> > > > 
+> > > >  	}
+> > > >  	
+> > > >  	data->nsfrs = pdev->num_resources / 2;
+> > > 
+> > > As Marek and Bart already mentioned before, please (oh please, really
+> > > please) finally remove this brokenness from this driver.
+> > > 
+> > > A device driver should not do this kind of abstraction, emulating one
+> > > instance of particular IP from multiple instances. This is a task for
+> > > the IOMMU core and this is already supported by IOMMU domains, which
+> > > is the right way to achieve a single virtual address space for
+> > > multiple IOMMUs.
+> > Let me show some example.
+> > FIMD in Exynos5250 has a single System MMU.
+> > FIMD in Exynos5420 has 2 System MMUs.
+> > I wanted to show the FIMD driver the same view of System MMU.
+> > Otherwise, FIMD driver must aware of how the System MMUs are connected
+> > with FIMD.
+> > 
+> > If it is responsible for the device drivers of master H/Ws, System MMU
+> > driver can be much more simpler which I also prefer :)
+> 
+> Yes, it is responsibility of FIMD driver to add all its IOMMUs into the 
+> same domain or into any other configuration it wants.
+> 
+> For example by some extension, the driver might want to have separate 
+> address spaces for each IOMMU and this would not be possible with current 
+> configuration of SysMMU driver.
+> 
+
+Ok. I will post seperate series of patches for this issue later.
+I think it is better to discuss because it is change in design.
+
+> > > > -	data->sfrbases = kmalloc(sizeof(*data->sfrbases) * data->nsfrs,
+> > > > -
+> > > 
+> > > GFP_KERNEL);
+> > > 
+> > > > -	if (data->sfrbases == NULL) {
+> > > > -		dev_dbg(dev, "Not enough memory\n");
+> > > > -		ret = -ENOMEM;
+> > > > -		goto err_init;
+> > > > -	}
+> > > > 
+> > > >  	for (i = 0; i < data->nsfrs; i++) {
+> > > >  	
+> > > >  		struct resource *res;
+> > > > 
+> > > > +
+> > > > 
+> > > >  		res = platform_get_resource(pdev, IORESOURCE_MEM, i);
+> > > >  		if (!res) {
+> > > > 
+> > > > -			dev_dbg(dev, "Unable to find IOMEM region\n");
+> > > > -			ret = -ENOENT;
+> > > > -			goto err_res;
+> > > > +			dev_err(dev, "Unable to find IOMEM region\n");
+> > > > +			return -ENOENT;
+> > > > 
+> > > >  		}
+> > > > 
+> > > > -		data->sfrbases[i] = ioremap(res->start,
+> > > 
+> > > resource_size(res));
+> > > 
+> > > > +		data->sfrbases[i] = devm_request_and_ioremap(dev, res);
+> > > 
+> > > devm_request_and_ioremap() is deprecated. Please use
+> > > devm_ioremap_resource().
+> > 
+> > Oh. Thanks.
+> > 
+> > > >  		if (!data->sfrbases[i]) {
+> > > 
+> > > In case of devm_ioremap_resource() remember to adjust this check to
+> > > check for IS_ERR, not for NULL.
+> > 
+> > Ok. Thanks.
+> > 
+> > > > -			dev_dbg(dev, "Unable to map IOMEM @ PA:%#x\n",
+> > > > -							res->start);
+> > > > -			ret = -ENOENT;
+> > > > -			goto err_res;
+> > > > +			dev_err(dev, "Unable to map IOMEM @ %#x\n", res-
+> > > >
+> > > >start);
+> > > 
+> > > This message will not be needed with devm_ioremap_resource() as it
+> > > already prints a message if an error occurs.
+> > 
+> > Ok.
+> > 
+> > > > +			return -EBUSY;
+> > > > 
+> > > >  		}
+> > > >  	
+> > > >  	}
+> > > >  	
+> > > >  	for (i = 0; i < data->nsfrs; i++) {
+> > > > 
+> > > > -		ret = platform_get_irq(pdev, i);
+> > > > -		if (ret <= 0) {
+> > > > -			dev_dbg(dev, "Unable to find IRQ resource\n");
+> > > > -			goto err_irq;
+> > > > +		int irq;
+> > > > +
+> > > > +		irq = platform_get_irq(pdev, i);
+> > > > +		if (irq <= 0) {
+> > > > +			dev_err(dev, "Unable to find IRQ resource\n");
+> > > > +			return -ENOENT;
+> > > > 
+> > > >  		}
+> > > > 
+> > > > -		ret = request_irq(ret, exynos_sysmmu_irq, 0,
+> > > > -					dev_name(dev), data);
+> > > > +		ret = devm_request_irq(dev, irq, exynos_sysmmu_irq,
+> > > > +					0, dev_name(dev), data);
+> > > > 
+> > > >  		if (ret) {
+> > > > 
+> > > > -			dev_dbg(dev, "Unabled to register interrupt
+> > > 
+> > > handler\n");
+> > > 
+> > > > -			goto err_irq;
+> > > > +			dev_err(dev, "Unable to register handler to irq
+> > > 
+> > > %d\n",
+> > > 
+> > > > +				irq);
+> > > > +			return ret;
+> > > > 
+> > > >  		}
+> > > >  	
+> > > >  	}
+> > > > 
+> > > > -	if (dev_get_platdata(dev)) {
+> > > > -		char *deli, *beg;
+> > > > -		struct sysmmu_platform_data *platdata =
+> > > 
+> > > dev_get_platdata(dev);
+> > > 
+> > > > -
+> > > > -		beg = platdata->clockname;
+> > > > -
+> > > > -		for (deli = beg; (*deli != '\0') && (*deli != ',');
+> > > 
+> > > deli++)
+> > > 
+> > > > -			/* NOTHING */;
+> > > > +	pm_runtime_enable(dev);
+> > > > 
+> > > > -		if (*deli == '\0')
+> > > > -			deli = NULL;
+> > > > -		else
+> > > > -			*deli = '\0';
+> > > > -
+> > > > -		data->clk[0] = clk_get(dev, beg);
+> > > > -		if (IS_ERR(data->clk[0])) {
+> > > > -			data->clk[0] = NULL;
+> > > > -			dev_dbg(dev, "No clock descriptor registered\n");
+> > > > -		}
+> > > > +	__set_fault_handler(data, &default_fault_handler);
+> > > > 
+> > > > -		if (data->clk[0] && deli) {
+> > > > -			*deli = ',';
+> > > > -			data->clk[1] = clk_get(dev, deli + 1);
+> > > > -			if (IS_ERR(data->clk[1]))
+> > > > -				data->clk[1] = NULL;
+> > > > -		}
+> > > > +	data->sysmmu = dev;
+> > > > +	data->clk = devm_clk_get(dev, "sysmmu");
+> > > > +	if (IS_ERR(data->clk)) {
+> > > > +		dev_info(dev, "No gate clock found!\n");
+> > > > +		data->clk = NULL;
+> > > 
+> > > Just a note: In common clock framework NULL is a valid value for a
+> > > struct clk *, which should not be interpreted as a pointer, but as an
+> > > opaque cookie. This is material for separate patch, but this should
+> > > be fixed all around this driver so data->clk is for IS_ERR instead.
+> > 
+> > Error returned by devm_clk_get("sysmmu") is not an error actually.
+> > More specifically, -ENOENT returned by devm_clk_get("sysmmu") is not an
+> > error. It just means that a System MMU does not have to gating its
+> > clock. However, it is required to check if the error retruned is
+> > -ENOENT.
+> 
+> I agree with this. Since the clock is optional for this driver, the -
+> ENOENT error case is not an error for it.
+> 
+> > data->clk must be NULL if 'sysmmu' clock is not specified for a System
+> > MMU because clk_enable(data->clk) is called regardless of the value in
+> > data->clk.
+> 
+> Still, the return value convention for Common Clock Framework is that 
+> clk_get() can return a NULL and the driver must interpret this as a valid 
+> clock handle (for a dummy clock for example) that can be passed to further 
+> clock operations, such as clk_prepare() or clk_enable().
+> 
+> This is why the driver should not reserve NULL as its own value meaning 
+> that the clock is not present, but should rather check for IS_ERR 
+> everywhere to find out whether the clock was acquired at probe.
+> 
+> Separate patch fixing this would be nice.
+> 
+
+Ok. I understand that it must not be assumed that NULL as the arguement
+of clk_enable()/prepare() is ignored.
+I will change this patch not to call clk_enable/disable
+if IS_ERR(data->clk) is true.
 
 Thank you.
 
-KyongHo.
-
+> > Thank you for review :)
+> 
+> You're welcome. Thank you for your work on this series. :)
+> 
 > Best regards,
 > Tomasz
 > 
