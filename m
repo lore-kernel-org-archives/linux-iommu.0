@@ -1,15 +1,15 @@
-From: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 0/4] iommu: arm smmu: driver updates for 3.12
-Date: Wed, 14 Aug 2013 12:13:18 +0200
-Message-ID: <20130814101317.GD4491@8bytes.org>
-References: <1375294888-10826-1-git-send-email-will.deacon@arm.com>
-	<20130812114520.GB25995@mudshark.cambridge.arm.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 14/16] amd_iommu: clean up unnecessary MSI/MSI-X
+	capability find
+Date: Wed, 14 Aug 2013 12:20:09 +0200
+Message-ID: <20130814102007.GE4491@8bytes.org>
+References: <1375967556-6248-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20130812114520.GB25995-MRww78TxoiP5vMa5CHWGZ34zcgK1vI+I0E9HWUfgJXw@public.gmane.org>
+In-Reply-To: <1375967556-6248-1-git-send-email-wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,22 +19,21 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jiang.liu-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+On Thu, Aug 08, 2013 at 09:12:36PM +0800, Yijing Wang wrote:
+> PCI core will initialize device MSI/MSI-X capability in
+> pci_msi_init_pci_dev(). So device driver should use
+> pci_dev->msi_cap/msix_cap to determine whether the device
+> support MSI/MSI-X instead of using
+> pci_find_capability(pci_dev, PCI_CAP_ID_MSI/MSIX).
+> Access to PCIe device config space again will consume more time.
+> 
+> Signed-off-by: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 
-On Mon, Aug 12, 2013 at 12:45:20PM +0100, Will Deacon wrote:
-> Could you queue these for 3.12 please?
-
-Done. Queued the patches into the arm/smmu branch and will include it
-into next, thanks.
-
-I also fixed the commit-headlines. Please prefix your iommu-patches with
-'iommu/arm-smmu: ' next time and start the description after the colon
-with a capital letter.
-
-Thanks,
-
-	Joerg
+Applied to x86/amd, thanks.
