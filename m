@@ -1,43 +1,39 @@
-From: Sethi Varun-B16395 <B16395@freescale.com>
-Subject: RE: [PATCH 1/3] powerpc: Add iommu domain pointer to device archdata
-Date: Wed, 14 Aug 2013 16:44:18 +0000
-Message-ID: <C5ECD7A89D1DC44195F34B25E172658D0A42F5C6@039-SN2MPN1-013.039d.mgd.msft.net>
-References: <1373863857-27239-1-git-send-email-Varun.Sethi@freescale.com>
- <20130814094802.GC4491@8bytes.org>
- <C5ECD7A89D1DC44195F34B25E172658D0A42CDB5@039-SN2MPN1-013.039d.mgd.msft.net>
- <20130814161522.GP28811@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] intel-iommu: Fix leaks in pagetable freeing
+Date: Wed, 14 Aug 2013 22:23:51 +0200
+Message-ID: <20130814202350.GA3493@8bytes.org>
+References: <20130615161614.2107.41044.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20130814161522.GP28811@8bytes.org>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, "galak@kernel.crashing.org" <galak@kernel.crashing.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, Yoder Stuart-B08248 <B08248@freescale.com>, Wood Scott-B07421 <B07421@freescale.com>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20130615161614.2107.41044.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Thanks Joerg.
+On Sat, Jun 15, 2013 at 10:27:19AM -0600, Alex Williamson wrote:
+> At best the current code only seems to free the leaf pagetables and
+> the root.  If you're unlucky enough to have a large gap (like any
+> QEMU guest with more than 3G of memory), only the first chunk of leaf
+> pagetables are freed (plus the root).  This is a massive memory leak.
+> This patch re-writes the pagetable freeing function to use a
+> recursive algorithm and manages to not only free all the pagetables,
+> but does it without any apparent performance loss versus the current
+> broken version.
+> 
+> Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 
-> -----Original Message-----
-> From: Joerg Roedel [mailto:joro@8bytes.org]
-> Sent: Wednesday, August 14, 2013 9:45 PM
-> To: Sethi Varun-B16395
-> Cc: iommu@lists.linux-foundation.org; linuxppc-dev@lists.ozlabs.org;
-> linux-kernel@vger.kernel.org; benh@kernel.crashing.org;
-> galak@kernel.crashing.org; alex.williamson@redhat.com; Yoder Stuart-
-> B08248; Wood Scott-B07421
-> Subject: Re: [PATCH 1/3] powerpc: Add iommu domain pointer to device
-> archdata
-> 
-> On Wed, Aug 14, 2013 at 09:56:11AM +0000, Sethi Varun-B16395 wrote:
-> > Please find the .config file attached with this mail.
-> 
-> Fantastic, thanks. The build works fine, I'll include the driver into my
-> next-branch. I also have two minor clean-up patches on-top, just if you
-> where wondering.
-> 
-> 
-> 	Joerg
-> 
-> 
+Applied to iommu/fixes, thanks Alex. Will send this for v3.11 after a
+couple of days in next.
