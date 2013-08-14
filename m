@@ -1,32 +1,62 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/2] drivers/iommu/amd_iommu.c: fix resource leak in
-	iommu_init_device()
-Date: Wed, 14 Aug 2013 22:25:19 +0200
-Message-ID: <20130814202518.GB3493@8bytes.org>
-References: <51828529.90900@stud.fit.vutbr.cz>
+From: Grant Grundler <grundler@chromium.org>
+Subject: Re: [PATCH v9 03/16] iommu/exynos: fix page table maintenance
+Date: Wed, 14 Aug 2013 13:54:53 -0700
+Message-ID: <CANEJEGveOtGs8XEYFnnXoZ575bqKRkc3AMikr_1x02cNikwTng@mail.gmail.com>
+References: <002701ce941a$eecebdb0$cc6c3910$@samsung.com>
+	<1516548.d7oQuzQS7g@amdc1227>
+	<CANEJEGu1ponghpfvyUsQX16+TZWUV+0KXJ7AehjXpju2N_H+Ew@mail.gmail.com>
+	<20130814104938.GF4491@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <51828529.90900-qjZHU19XGF/maGwbMATS8qVXKuFTiq87@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Radmila =?iso-8859-1?Q?Kompov=E1?= <xkompo00-qjZHU19XGF/maGwbMATS8qVXKuFTiq87@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <20130814104938.GF4491@8bytes.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Grant Grundler <grundler@chromium.org>, Tomasz Figa <t.figa@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux Kernel <linux-kernel@vger.kernel.org>, Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>, devicetree@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Prathyush <prathyush.k@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Subash Patel <supash.ramaswamy@linaro.org>, Antonios Motakis <a.motakis@virtualopensystems.com>, kvmarm@lists.cs.columbia.edu, Sachin Kamat <sachin.kamat@linaro.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, May 02, 2013 at 05:24:25PM +0200, Radmila Kompov=E1 wrote:
-> Detected by cppcheck.
-> =
+On Wed, Aug 14, 2013 at 3:49 AM, Joerg Roedel <joro@8bytes.org> wrote:
+> On Thu, Aug 08, 2013 at 11:28:44AM -0700, Grant Grundler wrote:
+>> I can't speak to the previous BUG_ON(). I believe the EADDRESSINUSE
+>> failures could be either WARN_ON or BUG_ON.   This condition is
+>> clearly a bug in the generic IOMMU allocator and I think that's why
+>> KyongHo Cho used BUG_ON.
+>>
+>> Handing out duplicate addresses will generally lead to some sort of
+>> data corruption or other fault depending on how robust the underlying
+>> device drivers are written.  So my preference is a BUG_ON to
+>> immediately flag this condition instead of hoping a device driver will
+>> correctly handling the dma mapping failure (Some do, most currently
+>> don't).
+>>
+>> WARN_ON() + return -EADDRESSINUSE would be a good alternative.
+>
+> Even if it is a real BUG condition, I don't think it is worth to stop
+> execution at this point. It makes debugging harder and the system less
+> reliable. I prefer to go with the WARN_ON and an error return value.
 
-> Signed-off-by: Kamil Dudka <kdudka-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+I'm ok with WARN_ON and an error return value. This is "valid"
+behavior.  I expect this bug to never happen but if and when it does,
+I want a clear symptom (e.g. WARN_ON) that it happened.
 
-Applied to x86/amd, thanks.
+My concern is that historically, drivers did not get an error return
+value on failure:
+    ftp://193.166.3.4/pub/linux/kernel/v2.3/patch-html/patch-2.3.47/linux_Documentation_DMA-mapping.txt.html
+
+or later:
+    https://www.kernel.org/pub/linux/kernel/people/marcelo/linux-2.4/Documentation/DMA-mapping.txt
+
+And thus, some drivers don't check or attempt to handle mapping
+failures based on this existing code. Here is a recent example:
+     http://comments.gmane.org/gmane.linux.network/272969
+
+I hope very few or none of those exist since Neil Horman demonstrated
+"dma debugging" can flag this behavior.
+
+Just for fun, I'll include this link : (apperently 2003 was a good
+year for DMA talks :)
+     http://ols.fedoraproject.org/OLS/Reprints-2003/LinuxSymposium2003-2side.pdf
+     (three talks on DMA issues)
+
+thanks
+grant
