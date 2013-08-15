@@ -1,7 +1,7 @@
 From: Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH 7/7] iommu: Change iommu driver to call unmap trace event
-Date: Thu, 15 Aug 2013 11:59:29 -0600
-Message-ID: <ce1724941d6bf36a82f7299159b5d64d86ac6458.1376587771.git.shuah.kh@samsung.com>
+Subject: [PATCH 6/7] iommu: Change iommu driver to call map trace event
+Date: Thu, 15 Aug 2013 11:59:28 -0600
+Message-ID: <51ddfdfb1f2e624fdf7fc1f3fa610eb5a932c17e.1376587771.git.shuah.kh@samsung.com>
 References: <cover.1376587770.git.shuah.kh@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,32 +23,33 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0
 Cc: Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Change iommu driver to call unmap trace event. This iommu_map_unmap class
-event can be enabled to trigger when iommu unmap iommu ops is called. Trace
-information includes iova, physical address (map event only), and size.
+Change iommu driver to call map trace event. This iommu_map_unmap class event
+can be enabled to trigger when iommu map iommu ops is called. Trace information
+includes iova, physical address (map event only), and size.
 
 Testing:
 Added trace calls to iommu_prepare_identity_map() for testing some of the
 conditions that are hard to trigger. Here is the trace from the testing:
 
-       swapper/0-1     [003] ....     1.854102: unmap: IOMMU: iova=0x00000000cb800000 size=0x400
+       swapper/0-1     [003] ....     1.854102: map: IOMMU: iova=0x00000000cb800000 paddr=0x00000000cf9fffff size=0x400
 
 Signed-off-by: Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/iommu.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/iommu.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index ea49fe8..d8c53c7 100644
+index b630754..ea49fe8 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -892,6 +892,7 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
- 		unmapped += unmapped_page;
- 	}
+@@ -842,6 +842,8 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 	/* unroll mapping in case something went wrong */
+ 	if (ret)
+ 		iommu_unmap(domain, orig_iova, orig_size - size);
++	else
++		trace_map(iova, paddr, size);
  
-+	trace_unmap(iova, 0, size);
- 	return unmapped;
+ 	return ret;
  }
- EXPORT_SYMBOL_GPL(iommu_unmap);
 -- 
 1.7.10.4
