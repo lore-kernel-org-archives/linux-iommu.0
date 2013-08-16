@@ -1,46 +1,45 @@
-From: Cho KyongHo <pullip.cho@samsung.com>
-Subject: Re: [PATCH 2/2] iommu/exynos: Follow kernel coding style for
- __sysmmu_enable return type
-Date: Fri, 16 Aug 2013 20:21:51 +0900
-Message-ID: <20130816202151.b47fae1e9ed249d06baa37d1@samsung.com>
-References: <1374766502-14823-1-git-send-email-a.motakis@virtualopensystems.com>
- <1374766502-14823-2-git-send-email-a.motakis@virtualopensystems.com>
- <003101ce89ed$52317330$f6945990$@samsung.com>
- <20130814131547.GA5889@8bytes.org>
+From: Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: [PATCH 0/2] iommu: Add iommu_fault class event to iommu trace
+Date: Fri, 16 Aug 2013 11:20:15 -0600
+Message-ID: <cover.1376672275.git.shuah.kh@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <20130814131547.GA5889@8bytes.org>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: 'Joerg Roedel' <joro@8bytes.org>
-Cc: 'Antonios Motakis' <a.motakis@virtualopensystems.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, kvmarm@lists.cs.columbia.edu, 'Sachin Kamat' <sachin.kamat@linaro.org>, 'Varun Sethi' <Varun.Sethi@freescale.com>, 'open list' <linux-kernel@vger.kernel.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, udknight-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org, fweisbec-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 14 Aug 2013 15:15:49 +0200, 'Joerg Roedel' wrote:
-> KyongHo,
-> 
-> On Fri, Jul 26, 2013 at 07:46:01PM +0900, Cho KyongHo wrote:
-> > __sysmmu_enable() must return 1 if it is called with the same page table.
-> > I have fixed it exynos_iommu_attach_device() to always return zero on success
-> > in the next patchset which I will post today.
-> > 
-> > Thank you.
-> 
-> When you are fine with these patches please put them on-top of your
-> patch-set when you re-submit. I will take them from there then.
-> 
+This patch set adds iommu_fault class event to iommu trace. iommu_fault class
+event can be enabled to trigger when an iommu fault occurs. This trace event
+is intended to be called to report the fault information. Trace information
+includes driver name, device name, iova, and flags.
 
-Ok.
+iommu_fault:report_fault
 
-Antonios,
+This patch set depends on the previous patch set that added iommu tracing
+feature. Reference:
 
-Would you mind
-if I submit your 2 patches on top of my patches with your signed-off?
+http://www.kernelhub.org/?msg=313155&p=2
+http://www.kernelhub.org/?msg=313156&p=2
 
-KyongHo.
+Shuah Khan (2):
+  iommu: Add iommu_fault class event to iommu trace
+  iommu: Change iommu driver to call report_fault trace event
 
-> 
-> 	Joerg
-> 
-> 
+ drivers/iommu/iommu-traces.c |    3 +++
+ include/linux/iommu.h        |    2 ++
+ include/trace/events/iommu.h |   33 +++++++++++++++++++++++++++++++++
+ 3 files changed, 38 insertions(+)
+
+-- 
+1.7.10.4
