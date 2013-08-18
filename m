@@ -1,16 +1,18 @@
-From: Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH 2/2] iommu: Change iommu driver to call report_fault trace
-	event
-Date: Fri, 16 Aug 2013 11:20:17 -0600
-Message-ID: <035c998d4a5508ba999a9c87ea70c73dc130e804.1376672275.git.shuah.kh@samsung.com>
-References: <cover.1376672275.git.shuah.kh@samsung.com>
+From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Subject: Re: [PATCH 2/2] iommu/exynos: Follow kernel coding style for
+	__sysmmu_enable return type
+Date: Sun, 18 Aug 2013 15:33:07 +0200
+Message-ID: <CAG8rG2zf8CUu+1qRURRhvX8RsNx8CLXJU85qnsFjCvm0FYYuRg@mail.gmail.com>
+References: <1374766502-14823-1-git-send-email-a.motakis@virtualopensystems.com>
+	<1374766502-14823-2-git-send-email-a.motakis@virtualopensystems.com>
+	<003101ce89ed$52317330$f6945990$@samsung.com>
+	<20130814131547.GA5889@8bytes.org>
+	<20130816202151.b47fae1e9ed249d06baa37d1@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1376672275.git.shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-In-Reply-To: <cover.1376672275.git.shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-References: <cover.1376672275.git.shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+In-Reply-To: <20130816202151.b47fae1e9ed249d06baa37d1-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,44 +22,37 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, udknight-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org, fweisbec-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Cc: Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+To: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: Linux Samsung SOC <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Change iommu driver report_iommu_fault() to call report_fault trace event.
-This iommu_fault class event can be enabled to trigger when an iommu fault
-occurs. Trace information includes driver name, device name, iova, and flags.
+Yes, of course, I have no objections.
 
-Testing:
-Added trace calls to iommu_prepare_identity_map() for testing some of the
-conditions that are hard to trigger. Here is the trace from the testing:
-
-       swapper/0-1     [003] ....     1.926331: report_fault: IOMMU:pci 0000:00:1d.0 iova=0x00000000cadc6000 flags=0x0001
-
-Signed-off-by: Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
----
- include/linux/iommu.h |    2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 3aeb730..9d1c051 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -22,6 +22,7 @@
- #include <linux/errno.h>
- #include <linux/err.h>
- #include <linux/types.h>
-+#include <trace/events/iommu.h>
- 
- #define IOMMU_READ	(1)
- #define IOMMU_WRITE	(2)
-@@ -211,6 +212,7 @@ static inline int report_iommu_fault(struct iommu_domain *domain,
- 		ret = domain->handler(domain, dev, iova, flags,
- 						domain->handler_token);
- 
-+	trace_report_fault(dev, iova, flags);
- 	return ret;
- }
- 
--- 
-1.7.10.4
+On Fri, Aug 16, 2013 at 1:21 PM, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org> wrote:
+> On Wed, 14 Aug 2013 15:15:49 +0200, 'Joerg Roedel' wrote:
+>> KyongHo,
+>>
+>> On Fri, Jul 26, 2013 at 07:46:01PM +0900, Cho KyongHo wrote:
+>> > __sysmmu_enable() must return 1 if it is called with the same page table.
+>> > I have fixed it exynos_iommu_attach_device() to always return zero on success
+>> > in the next patchset which I will post today.
+>> >
+>> > Thank you.
+>>
+>> When you are fine with these patches please put them on-top of your
+>> patch-set when you re-submit. I will take them from there then.
+>>
+>
+> Ok.
+>
+> Antonios,
+>
+> Would you mind
+> if I submit your 2 patches on top of my patches with your signed-off?
+>
+> KyongHo.
+>
+>>
+>>       Joerg
+>>
+>>
