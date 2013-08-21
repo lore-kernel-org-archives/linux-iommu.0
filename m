@@ -1,16 +1,11 @@
-From: Manfred Schwarb <manfred99-OI3hZJvNYWs@public.gmane.org>
-Subject: Re: [PATCH] iommu/amd: Add quirk for broken Marvell 88SE91xx SATA
-Date: Mon, 19 Aug 2013 11:50:53 +0200
-Message-ID: <5211EA7D.1050400@gmx.ch>
-References: <519A93F0.8070606@gmx.ch> <20130521203526.GE7424@8bytes.org>
-	<51D3E691.8030307@gmx.ch> <20130730113659.GJ28811@8bytes.org>
-	<51F92832.2070102@gmx.ch> <51FB7C08.40708@gmx.ch>
-	<20130802094326.GM28811@8bytes.org>
+From: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+Subject: [PATCH] intel-iommu: Quiesce devices before disabling IOMMU
+Date: Wed, 21 Aug 2013 16:15:54 +0900
+Message-ID: <1377069354-5056-1-git-send-email-indou.takao@jp.fujitsu.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130802094326.GM28811-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,58 +15,116 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+This patch quiesces devices before disabling IOMMU on boot to stop
+ongoing DMA. In intel_iommu_init(), check context entries and if there
+is entry whose present bit is set then reset corresponding device.
 
-Am 02.08.2013 11:43, schrieb Joerg Roedel:
-> Hi Manfred,
->
-> On Fri, Aug 02, 2013 at 11:29:44AM +0200, Manfred Schwarb wrote:
->> Sorry, I completely goofed my testing, my apology.
->> I thought both disks I looked at were hanging on the builtin Marvell 88SE9172,
->> but one disk is attached to a Marvell 88SE9123 PCIe card.
->>
->> So the picture is much clearer now:
->>
->> The disk hanging on the Marvell 88SE9123 PCIe card gives without the patch
->>    ata14.00 failed to IDENTIFY(I/O Error, err_mask=0x4)
->> With the patch, this controller works flawless.
->>
->> The disk hanging on the built-in Marvell 88SE9172 (soldered on the mainboard)
->> gives with and without the patch
->>    ata20.00 failed to IDENTIFY(INIT_DEV_PARAMS failed, err_mask=0x80)
->>
->> So the patch works for my PCIe card, but not for my mainboard controller.
->
-> Thanks for testing the patch. Can you please find out the PCI vendor and
-> device-ids for the on-board and the PCIe STATA controlers? A dmesg after
-> the boot would also be helpful. In short I need the output of (as root):
->
-> # dmesg
-> # lscpi -vvv
-> # lspci -nvvv
->
->
+When IOMMU is already enabled on boot, it is disabled and new DMAR table
+is created and then re-enabled in intel_iommu_init(). This causes DMAR
+faults if there are in-flight DMAs.
 
-Have you any idea what is going wrong with my on-board controller? Is perhaps the
-quirk applied too late, and some device identification is done even before the
-quirk becomes active? If you need some specific debug output, just ask.
+This causes problem on kdump. Devices are working in first kernel, and
+after switching to second kernel and initializing IOMMU, many DMAR faults
+occur and it causes problems like driver error or PCI SERR, at last
+kdump fails. This patch fixes this problem.
 
-It seems the "requester" patches are somewhat stalled, so would it make sense
-to apply the Intel/AMD patches nevertheless [even for 3.12?], they can do no harm,
-I think, impact would be restricted to some few devices.
+Signed-off-by: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
 
 
-Cheers,
-Manfred
+NOTE:
+To reset devices this patch uses bus reset interface introduced by
+following commits in PCI "next" branch.
 
+64e8674fbe6bc848333a9b7e19f8cc019dde9eab
+5c32b35b004f5ef70dcf62bbc42b8bed1e50b471
+2e35afaefe64946caaecfacaf7fb568e46185e88
+608c388122c72e1bf11ba8113434eb3d0c40c32d
+77cb985ad4acbe66a92ead1bb826deffa47dd33f
+090a3c5322e900f468b3205b76d0837003ad57b2
+a6cbaadea0af9b4aa6eee2882f2aa761ab91a4f8
+de0c548c33429cc78fd47a3c190c6d00b0e4e441
+1b95ce8fc9c12fdb60047f2f9950f29e76e7c66d
+---
+ drivers/iommu/intel-iommu.c |   55 ++++++++++++++++++++++++++++++++++++++++++-
+ 1 files changed, 54 insertions(+), 1 deletions(-)
 
-> Thanks,
->
-> 	Joerg
->
->
->
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index eec0d3e..efb98eb 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -3663,6 +3663,56 @@ static struct notifier_block device_nb = {
+ 	.notifier_call = device_notifier,
+ };
+ 
++/* Reset PCI devices if its entry exists in DMAR table */
++static void __init iommu_reset_devices(struct intel_iommu *iommu, u16 segment)
++{
++	u64 addr;
++	struct root_entry *root;
++	struct context_entry *context;
++	int bus, devfn;
++	struct pci_dev *dev;
++
++	addr = dmar_readq(iommu->reg + DMAR_RTADDR_REG);
++	if (!addr)
++		return;
++
++	/*
++	 *  In the case of kdump, ioremap is needed because root-entry table
++	 *  exists in first kernel's memory area which is not mapped in second
++	 *  kernel
++	 */
++	root = (struct root_entry *)ioremap(addr, PAGE_SIZE);
++	if (!root)
++		return;
++
++	for (bus = 0; bus < ROOT_ENTRY_NR; bus++) {
++		if (!root_present(&root[bus]))
++			continue;
++
++		context = (struct context_entry *)ioremap(
++			root[bus].val & VTD_PAGE_MASK, PAGE_SIZE);
++		if (!context)
++			continue;
++
++		for (devfn = 0; devfn < ROOT_ENTRY_NR; devfn++) {
++			if (!context_present(&context[devfn]))
++				continue;
++
++			dev = pci_get_domain_bus_and_slot(segment, bus, devfn);
++			if (!dev)
++				continue;
++
++			if (!pci_reset_bus(dev->bus)) /* go to next bus */
++				break;
++			else /* Try per-function reset */
++				pci_reset_function(dev);
++
++		}
++		iounmap(context);
++	}
++	iounmap(root);
++}
++
+ int __init intel_iommu_init(void)
+ {
+ 	int ret = 0;
+@@ -3687,8 +3737,11 @@ int __init intel_iommu_init(void)
+ 			continue;
+ 
+ 		iommu = drhd->iommu;
+-		if (iommu->gcmd & DMA_GCMD_TE)
++		if (iommu->gcmd & DMA_GCMD_TE) {
++			if (reset_devices)
++				iommu_reset_devices(iommu, drhd->segment);
+ 			iommu_disable_translation(iommu);
++		}
+ 	}
+ 
+ 	if (dmar_dev_scope_init() < 0) {
+-- 
+1.7.1
