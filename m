@@ -1,13 +1,11 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] On unmap, flush IOMMU TLB and return correct size
-Date: Wed, 04 Sep 2013 22:58:40 -0600
-Message-ID: <1378357120.3246.224.camel@ul30vt.home>
-References: <CE4D489F.41EE8%hshankar@netapp.com>
+From: "Shankar, Hari" <Hari.Shankar-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>
+Subject: bug in intel_iommu_unmap()
+Date: Sun, 1 Sep 2013 20:26:10 +0000
+Message-ID: <CE48F11D.4142A%hshankar@netapp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="_004_CE48F11D4142Ahshankarnetappcom_"
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CE4D489F.41EE8%hshankar-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,147 +15,120 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Shankar, Hari" <Hari.Shankar-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>
+To: "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 Cc: "Singh, Varinder" <Varinder.Singh-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>, "Sundaram,
 	Rajesh" <Rajesh.Sundaram-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>, "Kimmel,
-	Jeff" <jeff.kimmel-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "Spiller,
-	John" <John.Spiller-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>
+	Jeff" <jeff.kimmel-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Spiller, John" <John.Spiller-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 2013-09-05 at 04:05 +0000, Shankar, Hari wrote:
-> Hi Alex,
-> See inline,
-> 
-> On 9/2/13 9:25 PM, "Alex Williamson" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> 
-> >Hi Hari,
-> >
-> >On Mon, 2013-09-02 at 02:24 +0000, Shankar, Hari wrote:
-> >> Patch Description: The patch is for Intel IOMMU driver. It forces IOMMU
-> >>TLB flush for the particular domain and return correct unmap size when
-> >>intel_iommu_unmap() is called
-> >
-> >"Patch Description:" is unnecessary.  Look at other commits that have
-> >touched this file to get an idea how to format the subject and commit
-> >log:
-> >
-> >http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/log/drivers
-> >/iommu/intel-iommu.c
-> >
-> >Sign-off should go here, not below the patch.  Subject should include a
-> >subsystem, such as "iommu/intel:" or "intel-iommu:".  Also a good idea
-> >to provide some justification why this is necessary for stable (unmaps
-> >from userspace through vfio results in coherency issue...)
-> >
-> >> The patch is generated on Linux kernel version 3.6.11
-> >
-> >This should be noted, but not part of the commit message.  See section
-> >15 of SubmittingPatches and note the additional comments between the
-> >"---" marker and the beginning of the patch.
-> >
-> >> --- linux/drivers/iommu/intel-iommu.c.orig      2013-09-01
-> >>10:10:14.723958000 -0700
-> >> +++ linux/drivers/iommu/intel-iommu.c   2013-09-01 18:22:58.497578000
-> >>-0700
-> >> @@ -4060,14 +4060,31 @@ static size_t intel_iommu_unmap(struct i
-> >
-> >Tabs seem to have been clobbered in your patch, scripts/checkpatch.pl
-> >will note this for you.
-> >
-> >>  {
-> >>         struct dmar_domain *dmar_domain = domain->priv;
-> >>         int order;
-> >> +       struct intel_iommu *iommu;
-> >> +       unsigned long start_pfn, last_pfn;
-> >> +       unsigned int npages;
-> >> +       int iommu_id, num, ndomains;
-> >> 
-> >> -       order = dma_pte_clear_range(dmar_domain, iova >> VTD_PAGE_SHIFT,
-> >> -                           (iova + size - 1) >> VTD_PAGE_SHIFT);
-> >> +       start_pfn = iova >> VTD_PAGE_SHIFT;
-> >> +       last_pfn = (iova + size - 1) >> VTD_PAGE_SHIFT;
-> >> +       order = dma_pte_clear_range(dmar_domain, start_pfn, last_pfn);
-> >> +       last_pfn |= (1UL << order) - 1;
-> >> +       npages = last_pfn - start_pfn + 1;
-> >
-> >Doesn't order tell us npages more directly?  npages = 1UL << order?
-> 
-> 
-> [Hari] 1UL << order formula will not work for all cases. Jeff Kimmel
-> (cc'ed) has a good explanation for that. Jeff's response below,
-> 
-> <Jeff>
-> If start_pfn is always aligned modulo (1 << order),
-> then '1UL << order' would get the same npages value, but if
-> start_pfn is not guaranteed to have such alignment, then '1UL << order'
-> would
-> produce an incorrect npages value.  For example, start_pfn could fall in
-> some range that was mapped with small pages, but the range could end in a
-> region mapped with large pages.
-> 
-> </Jeff>
+--_004_CE48F11D4142Ahshankarnetappcom_
+Content-Type: multipart/alternative;
+	boundary="_000_CE48F11D4142Ahshankarnetappcom_"
 
-I think iommu_map()/iommu_unmap() only passes naturally aligned regions
-to the iommu drivers, so I don't think we need to worry about that.
-Feel free to verify.
+--_000_CE48F11D4142Ahshankarnetappcom_
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-> >> +       for_each_set_bit(iommu_id, dmar_domain->iommu_bmp,
-> >>g_num_of_iommus) {
-> >> +               iommu = g_iommus[iommu_id];
-> >> 
-> >> -       if (dmar_domain->max_addr == iova + size)
-> >> +               /*
-> >> +                * find bit position of dmar_domain
-> >> +                */
-> >> +               ndomains = cap_ndoms(iommu->cap);
-> >> +               for_each_set_bit(num, iommu->domain_ids, ndomains)
-> >> +                       if (iommu->domains[num] == dmar_domain)
-> >> +                               iommu_flush_iotlb_psi(iommu, num,
-> >> +                                                       start_pfn,
-> >>npages, 0);
-> >
-> >This second bitmap search seems unnecessary, I think
-> >iommu_flush_iotlb_psi wants dmar_domain->id as the second parameter in
-> >all cases, not num.  So this could be reduced to :
-> >
-> >for_each_set_bit(iommu_id, dmar_domain->iommu_bmp, g_num_of_iommus)
-> >	iommu_flush_iotlb_psi(g_iommus[iommu_id], dmar_domain->id, start_pfn,
-> >npages, 0);
-> 
-> [Hari] For VFIO, iommu_alloc_vm_domain() is called to get VM domain and
-> has DOMAIN_FLAG_VIRTUAL_MACHINE flag set. In this case, domain->id is
-> derived from static variable 'vm_domid' and not by using
-> find_first_zero_bit in iommu->domain_ids, which in-turn also claims a slot
-> on iommu->domains[] array, see iommu_attach_domain(). For domain with
-> DOMAIN_FLAG_VIRTUAL_MACHINE flag, domain id is actually derived later in
-> domain_context_mapping_one(), logic under 'if (domain->flags &
-> DOMAIN_FLAG_VIRTUAL_MACHINE'. As you can see domain->id for VM domain is
-> not the actual domain id and can also conflict with non VM domain as
-> vm_domid starts from 0. Using domain->id in the loop will give wrong
-> result. Using second loop and passing 'num' makes sure we always select
-> the right domain to flush.
+Hi David,
+NetApp is using Linux VFIO code for user space drivers. We recently ran int=
+o a memory corruption bug which was root caused to lack of IOMMU TLB flush =
+in intel_iommu_unmap() routine.
 
-Ok, that does sound familiar.  I agree, you do need to search the
-bitmaps.  Thanks,
+While reviewing the code we also figured that the unmap routine always retu=
+rns size only for one page rather than the total unmapped size. Since VFIO =
+unmaps one page at a time, the problem isn't exposed
 
-Alex
+Alex Williamson suggested that you're the maintainer of the code so sending=
+ to you for review.
 
-> >> +       }
-> >> +       if (dmar_domain->max_addr <= iova + (npages << VTD_PAGE_SHIFT))
-> >>                 dmar_domain->max_addr = iova;
-> >> -
-> >> -       return PAGE_SIZE << order;
-> >> +       return npages << VTD_PAGE_SHIFT;
-> >>  }
-> >> 
-> >>  static phys_addr_t intel_iommu_iova_to_phys(struct iommu_domain
-> >>*domain,
-> >> 
-> >> Signed-off-by: Hari Shankar <hshankar-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>
-> >> cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> >
-> >Please configure your mailer to drop the html version.  Thanks,
-> >
-> >Alex
-> >
-> 
+Diff for the changes is attached and is generated on Linux kernel version 3=
+.6.11
+
+Hari.
+
+--_000_CE48F11D4142Ahshankarnetappcom_
+Content-Type: text/html; charset="us-ascii"
+Content-ID: <1E8A5284563A204FA279BACE7A032BD0-c5HhxtLuC0z3oGB3hsPCZA@public.gmane.org>
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii"=
+>
+</head>
+<body style=3D"word-wrap: break-word; -webkit-nbsp-mode: space; -webkit-lin=
+e-break: after-white-space; color: rgb(0, 0, 0); font-size: 14px; font-fami=
+ly: Calibri, sans-serif; ">
+<div>Hi David,</div>
+<div>NetApp is using Linux VFIO code for user space drivers. We recently ra=
+n into a memory corruption bug which was root caused to lack of IOMMU TLB f=
+lush in&nbsp;intel_iommu_unmap() routine.&nbsp;</div>
+<div><br>
+</div>
+<div>While reviewing the code we also figured&nbsp;that the unmap routine&n=
+bsp;always returns size only for one page rather than the total unmapped si=
+ze. Since VFIO unmaps one page at a time, the problem isn't exposed</div>
+<div><br>
+</div>
+<div>Alex Williamson suggested that you're the maintainer of the code so se=
+nding to you for review.</div>
+<div><br>
+</div>
+<div>Diff for the changes is attached and is generated on&nbsp;Linux kernel=
+ version 3.6.11</div>
+<div><br>
+</div>
+<div>Hari.</div>
+</body>
+</html>
+
+--_000_CE48F11D4142Ahshankarnetappcom_--
+
+--_004_CE48F11D4142Ahshankarnetappcom_
+Content-Type: text/plain; name="intel_iommu_unmap_patch.txt"
+Content-Description: intel_iommu_unmap_patch.txt
+Content-Disposition: attachment; filename="intel_iommu_unmap_patch.txt";
+	size=1695; creation-date="Sun, 01 Sep 2013 20:26:09 GMT";
+	modification-date="Sun, 01 Sep 2013 20:26:09 GMT"
+Content-ID: <89C4F83DFDA9D44683F3758D87E2E1AC-c5HhxtLuC0z3oGB3hsPCZA@public.gmane.org>
+Content-Transfer-Encoding: base64
+
+LS0tIGRyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYy5vcmlnICAgIDIwMTMtMDktMDEgMTA6MTA6
+MTQuNzIzOTU4MDAwIC0wNzAwCisrKyBkcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMgMjAxMy0w
+OS0wMSAxMDoxNzoyMi40Mjg0MTIwMDAgLTA3MDAKQEAgLTQwNjAsMTQgKzQwNjAsMzQgQEAgc3Rh
+dGljIHNpemVfdCBpbnRlbF9pb21tdV91bm1hcChzdHJ1Y3QgaQogewogICAgICAgIHN0cnVjdCBk
+bWFyX2RvbWFpbiAqZG1hcl9kb21haW4gPSBkb21haW4tPnByaXY7CiAgICAgICAgaW50IG9yZGVy
+OworICAgICAgIHN0cnVjdCBpbnRlbF9pb21tdSAqaW9tbXU7CisgICAgICAgdW5zaWduZWQgbG9u
+ZyBzdGFydF9wZm4sIGxhc3RfcGZuOworICAgICAgIHVuc2lnbmVkIGludCBucGFnZXM7CisgICAg
+ICAgaW50IGlvbW11X2lkLCBudW0sIG5kb21haW5zOwoKLSAgICAgICBvcmRlciA9IGRtYV9wdGVf
+Y2xlYXJfcmFuZ2UoZG1hcl9kb21haW4sIGlvdmEgPj4gVlREX1BBR0VfU0hJRlQsCi0gICAgICAg
+ICAgICAgICAgICAgICAgICAgICAoaW92YSArIHNpemUgLSAxKSA+PiBWVERfUEFHRV9TSElGVCk7
+CisgICAgICAgc3RhcnRfcGZuID0gaW92YSA+PiBWVERfUEFHRV9TSElGVDsKKyAgICAgICBsYXN0
+X3BmbiA9IChpb3ZhICsgc2l6ZSAtIDEpID4+IFZURF9QQUdFX1NISUZUOworICAgICAgIG9yZGVy
+ID0gZG1hX3B0ZV9jbGVhcl9yYW5nZShkbWFyX2RvbWFpbiwgc3RhcnRfcGZuLCBsYXN0X3Bmbik7
+CgotICAgICAgIGlmIChkbWFyX2RvbWFpbi0+bWF4X2FkZHIgPT0gaW92YSArIHNpemUpCi0gICAg
+ICAgICAgICAgICBkbWFyX2RvbWFpbi0+bWF4X2FkZHIgPSBpb3ZhOworICAgICAgIGxhc3RfcGZu
+IHw9ICgxVUwgPDwgb3JkZXIpIC0gMTsKKyAgICAgICBucGFnZXMgPSBsYXN0X3BmbiAtIHN0YXJ0
+X3BmbiArIDE7CisKKyAgICAgICBmb3JfZWFjaF9zZXRfYml0KGlvbW11X2lkLCBkbWFyX2RvbWFp
+bi0+aW9tbXVfYm1wLCBnX251bV9vZl9pb21tdXMpIHsKKyAgICAgICAgICAgICAgIGlvbW11ID0g
+Z19pb21tdXNbaW9tbXVfaWRdOwoKLSAgICAgICByZXR1cm4gUEFHRV9TSVpFIDw8IG9yZGVyOwor
+ICAgICAgICAgICAgICAgLyoKKyAgICAgICAgICAgICAgICAqIGZpbmQgYml0IHBvc2l0aW9uIG9m
+IGRtYXJfZG9tYWluCisgICAgICAgICAgICAgICAgKi8KKyAgICAgICAgICAgICAgIG5kb21haW5z
+ID0gY2FwX25kb21zKGlvbW11LT5jYXApOworICAgICAgICAgICAgICAgZm9yX2VhY2hfc2V0X2Jp
+dChudW0sIGlvbW11LT5kb21haW5faWRzLCBuZG9tYWlucykKKyAgICAgICAgICAgICAgICAgICAg
+ICAgaWYgKGlvbW11LT5kb21haW5zW251bV0gPT0gZG1hcl9kb21haW4pCisgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgaW9tbXVfZmx1c2hfaW90bGJfcHNpKGlvbW11LCBudW0sIHN0YXJ0
+X3BmbiwgbnBhZ2VzLCAwKTsKKyAgICAgICB9CisKKyAgICAgICBpZiAoZG1hcl9kb21haW4tPm1h
+eF9hZGRyIDw9IGlvdmEgKyAobnBhZ2VzIDw8IFZURF9QQUdFX1NISUZUKSkKKyAgICAgICAgICAg
+ICAgIGRtYXJfZG9tYWluLT5tYXhfYWRkciA9IGlvdmE7CisKKyAgICAgICByZXR1cm4gbnBhZ2Vz
+IDw8IFZURF9QQUdFX1NISUZUOwogfQoKIHN0YXRpYyBwaHlzX2FkZHJfdCBpbnRlbF9pb21tdV9p
+b3ZhX3RvX3BoeXMoc3RydWN0IGlvbW11X2RvbWFpbiAqZG9tYWluLAoK
+
+--_004_CE48F11D4142Ahshankarnetappcom_
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--_004_CE48F11D4142Ahshankarnetappcom_--
