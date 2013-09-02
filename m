@@ -1,12 +1,10 @@
 From: "Shankar, Hari" <Hari.Shankar-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>
-Subject: Re: bug in intel_iommu_unmap()
-Date: Mon, 2 Sep 2013 01:54:32 +0000
-Message-ID: <CE493D74.414FF%hshankar@netapp.com>
-References: <CE48F11D.4142A%hshankar@netapp.com>
+Subject: [PATCH] On unmap, flush IOMMU TLB and return correct size
+Date: Mon, 2 Sep 2013 02:24:20 +0000
+Message-ID: <CE494510.41547%hshankar@netapp.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============4028847496147214152=="
+Content-Type: multipart/mixed; boundary="===============5555623574710580053=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CE48F11D.4142A%hshankar-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -23,56 +21,70 @@ Cc: "Singh, Varinder" <Varinder.Singh-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>, 
 	Jeff" <jeff.kimmel-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Spiller, John" <John.Spiller-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
---===============4028847496147214152==
+--===============5555623574710580053==
 Content-Language: en-US
 Content-Type: multipart/alternative;
-	boundary="_000_CE493D74414FFhshankarnetappcom_"
+	boundary="_000_CE49451041547hshankarnetappcom_"
 
---_000_CE493D74414FFhshankarnetappcom_
+--_000_CE49451041547hshankarnetappcom_
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-Please ignore this email. Per suggestion from Alex, I will send another ema=
-il to fix some style points related to the patch. Thanks Alex for pointing =
-it out.
+Patch Description: The patch is for Intel IOMMU driver. It forces IOMMU TLB=
+ flush for the particular domain and return correct unmap size when intel_i=
+ommu_unmap() is called
 
-Hari.
+The patch is generated on Linux kernel version 3.6.11
 
-From: <Shankar>, Hari <Hari.Shankar-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org<mailto:Hari.Shankar@netapp.c=
-om>>
-Date: Sunday, September 1, 2013 1:26 PM
-To: "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org<mailto:dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org<=
-mailto:dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org<mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+c@public.gmane.org=
-rg>" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org<mailto:iommu-cunTk1MwBs9QetFLy7KEmxxBWXNxL4zz@public.gmane.org=
-org>>, "Kimmel, Jeff" <jeff.kimmel-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org<mailto:jeff.kimmel-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org=
->>, "Spiller, John" <John.Spiller-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org<mailto:John.Spiller-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org=
->>, "Singh, Varinder" <Varinder.Singh-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org<mailto:Varinder.Singh@neta=
-pp.com>>, "Sundaram, Rajesh" <Rajesh.Sundaram-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org<mailto:Rajesh.Sund=
-aram-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org<mailto:alex.=
-williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>>
-Subject: bug in intel_iommu_unmap()
+--- linux/drivers/iommu/intel-iommu.c.orig      2013-09-01 10:10:14.7239580=
+00 -0700
++++ linux/drivers/iommu/intel-iommu.c   2013-09-01 18:22:58.497578000 -0700
+@@ -4060,14 +4060,31 @@ static size_t intel_iommu_unmap(struct i
+ {
+        struct dmar_domain *dmar_domain =3D domain->priv;
+        int order;
++       struct intel_iommu *iommu;
++       unsigned long start_pfn, last_pfn;
++       unsigned int npages;
++       int iommu_id, num, ndomains;
 
-Hi David,
-NetApp is using Linux VFIO code for user space drivers. We recently ran int=
-o a memory corruption bug which was root caused to lack of IOMMU TLB flush =
-in intel_iommu_unmap() routine.
+-       order =3D dma_pte_clear_range(dmar_domain, iova >> VTD_PAGE_SHIFT,
+-                           (iova + size - 1) >> VTD_PAGE_SHIFT);
++       start_pfn =3D iova >> VTD_PAGE_SHIFT;
++       last_pfn =3D (iova + size - 1) >> VTD_PAGE_SHIFT;
++       order =3D dma_pte_clear_range(dmar_domain, start_pfn, last_pfn);
++       last_pfn |=3D (1UL << order) - 1;
++       npages =3D last_pfn - start_pfn + 1;
++       for_each_set_bit(iommu_id, dmar_domain->iommu_bmp, g_num_of_iommus)=
+ {
++               iommu =3D g_iommus[iommu_id];
 
-While reviewing the code we also figured that the unmap routine always retu=
-rns size only for one page rather than the total unmapped size. Since VFIO =
-unmaps one page at a time, the problem isn't exposed
+-       if (dmar_domain->max_addr =3D=3D iova + size)
++               /*
++                * find bit position of dmar_domain
++                */
++               ndomains =3D cap_ndoms(iommu->cap);
++               for_each_set_bit(num, iommu->domain_ids, ndomains)
++                       if (iommu->domains[num] =3D=3D dmar_domain)
++                               iommu_flush_iotlb_psi(iommu, num,
++                                                       start_pfn, npages, =
+0);
++       }
++       if (dmar_domain->max_addr <=3D iova + (npages << VTD_PAGE_SHIFT))
+                dmar_domain->max_addr =3D iova;
+-
+-       return PAGE_SIZE << order;
++       return npages << VTD_PAGE_SHIFT;
+ }
 
-Alex Williamson suggested that you're the maintainer of the code so sending=
- to you for review.
+ static phys_addr_t intel_iommu_iova_to_phys(struct iommu_domain *domain,
 
-Diff for the changes is attached and is generated on Linux kernel version 3=
-.6.11
+Signed-off-by: Hari Shankar <hshankar-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>
+cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 
-Hari.
-
---_000_CE493D74414FFhshankarnetappcom_
+--_000_CE49451041547hshankarnetappcom_
 Content-Type: text/html; charset="us-ascii"
-Content-ID: <0D1DE198C3224049A47304671399F2E3-c5HhxtLuC0z3oGB3hsPCZA@public.gmane.org>
+Content-ID: <2CAC1C3F89237E42B269A332586949D2-c5HhxtLuC0z3oGB3hsPCZA@public.gmane.org>
 Content-Transfer-Encoding: quoted-printable
 
 <html>
@@ -81,82 +93,104 @@ Content-Transfer-Encoding: quoted-printable
 >
 </head>
 <body style=3D"word-wrap: break-word; -webkit-nbsp-mode: space; -webkit-lin=
-e-break: after-white-space; color: rgb(0, 0, 0); font-size: 14px; font-fami=
-ly: Calibri, sans-serif; ">
-<div>Please ignore this email. Per suggestion from Alex, I will send anothe=
-r email to fix some style points related to the patch. Thanks Alex for poin=
-ting it out.</div>
+e-break: after-white-space; font-family: Calibri, sans-serif; font-size: 14=
+px; color: rgb(0, 0, 0); ">
+<div>Patch Description: The patch is for&nbsp;Intel IOMMU driver. It&nbsp;f=
+orces IOMMU TLB flush for the particular domain and return correct unmap si=
+ze when intel_iommu_unmap() is called</div>
+<div></div>
 <div><br>
 </div>
-<div>Hari.</div>
-<div><br>
-</div>
-<span id=3D"OLK_SRC_BODY_SECTION">
-<div style=3D"font-family:Calibri; font-size:11pt; text-align:left; color:b=
-lack; BORDER-BOTTOM: medium none; BORDER-LEFT: medium none; PADDING-BOTTOM:=
- 0in; PADDING-LEFT: 0in; PADDING-RIGHT: 0in; BORDER-TOP: #b5c4df 1pt solid;=
- BORDER-RIGHT: medium none; PADDING-TOP: 3pt">
-<span style=3D"font-weight:bold">From: </span>&lt;Shankar&gt;, Hari &lt;<a =
-href=3D"mailto:Hari.Shankar-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org">Hari.Shankar-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org</a>&gt;<br>
-<span style=3D"font-weight:bold">Date: </span>Sunday, September 1, 2013 1:2=
-6 PM<br>
-<span style=3D"font-weight:bold">To: </span>&quot;<a href=3D"mailto:dwmw2@i=
-nfradead.org">dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org</a>&quot; &lt;<a href=3D"mailto:dwmw2@inf=
-radead.org">dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org</a>&gt;<br>
-<span style=3D"font-weight:bold">Cc: </span>&quot;<a href=3D"mailto:iommu@l=
-ists.linux-foundation.org">iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org</a>&quot; &lt;<=
-a href=3D"mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org">iommu-cunTk1MwBs9QetFLy7KEm3ANibfEOA+W@public.gmane.org=
-tion.org</a>&gt;, &quot;Kimmel, Jeff&quot; &lt;<a href=3D"mailto:jeff.kimme=
-l@netapp.com">jeff.kimmel-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org</a>&gt;,
- &quot;Spiller, John&quot; &lt;<a href=3D"mailto:John.Spiller-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org">J=
-ohn.Spiller-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org</a>&gt;, &quot;Singh, Varinder&quot; &lt;<a href=3D"=
-mailto:Varinder.Singh-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org">Varinder.Singh-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org</a>&gt;, &quot;=
-Sundaram, Rajesh&quot; &lt;<a href=3D"mailto:Rajesh.Sundaram-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org">Ra=
-jesh.Sundaram-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org</a>&gt;,
- Alex Williamson &lt;<a href=3D"mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org">alex.wil=
-liamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org</a>&gt;<br>
-<span style=3D"font-weight:bold">Subject: </span>bug in intel_iommu_unmap()=
-<br>
-</div>
+<div>The patch is generated on Linux kernel version 3.6.11</div>
 <div><br>
 </div>
 <div>
-<div style=3D"word-wrap: break-word; -webkit-nbsp-mode: space; -webkit-line=
--break: after-white-space; color: rgb(0, 0, 0); font-size: 14px; font-famil=
-y: Calibri, sans-serif; ">
-<div>Hi David,</div>
-<div>NetApp is using Linux VFIO code for user space drivers. We recently ra=
-n into a memory corruption bug which was root caused to lack of IOMMU TLB f=
-lush in&nbsp;intel_iommu_unmap() routine.&nbsp;</div>
+<div>--- linux/drivers/iommu/intel-iommu.c.orig &nbsp; &nbsp; &nbsp;2013-09=
+-01 10:10:14.723958000 -0700</div>
+<div>&#43;&#43;&#43; linux/drivers/iommu/intel-iommu.c &nbsp; 2013-09-01 18=
+:22:58.497578000 -0700</div>
+<div>@@ -4060,14 &#43;4060,31 @@ static size_t intel_iommu_unmap(struct i</=
+div>
+<div>&nbsp;{</div>
+<div>&nbsp; &nbsp; &nbsp; &nbsp; struct dmar_domain *dmar_domain =3D domain=
+-&gt;priv;</div>
+<div>&nbsp; &nbsp; &nbsp; &nbsp; int order;</div>
+<div>&#43; &nbsp; &nbsp; &nbsp; struct intel_iommu *iommu;</div>
+<div>&#43; &nbsp; &nbsp; &nbsp; unsigned long start_pfn, last_pfn;</div>
+<div>&#43; &nbsp; &nbsp; &nbsp; unsigned int npages;</div>
+<div>&#43; &nbsp; &nbsp; &nbsp; int iommu_id, num, ndomains;</div>
 <div><br>
 </div>
-<div>While reviewing the code we also figured&nbsp;that the unmap routine&n=
-bsp;always returns size only for one page rather than the total unmapped si=
-ze. Since VFIO unmaps one page at a time, the problem isn't exposed</div>
+<div>- &nbsp; &nbsp; &nbsp; order =3D dma_pte_clear_range(dmar_domain, iova=
+ &gt;&gt; VTD_PAGE_SHIFT,</div>
+<div>- &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp=
+; &nbsp; &nbsp; &nbsp; (iova &#43; size - 1) &gt;&gt; VTD_PAGE_SHIFT);</div=
+>
+<div>&#43; &nbsp; &nbsp; &nbsp; start_pfn =3D iova &gt;&gt; VTD_PAGE_SHIFT;=
+</div>
+<div>&#43; &nbsp; &nbsp; &nbsp; last_pfn =3D (iova &#43; size - 1) &gt;&gt;=
+ VTD_PAGE_SHIFT;</div>
+<div>&#43; &nbsp; &nbsp; &nbsp; order =3D dma_pte_clear_range(dmar_domain, =
+start_pfn, last_pfn);</div>
+<div>&#43; &nbsp; &nbsp; &nbsp; last_pfn |=3D (1UL &lt;&lt; order) - 1;</di=
+v>
+<div>&#43; &nbsp; &nbsp; &nbsp; npages =3D last_pfn - start_pfn &#43; 1;</d=
+iv>
+<div>&#43; &nbsp; &nbsp; &nbsp; for_each_set_bit(iommu_id, dmar_domain-&gt;=
+iommu_bmp, g_num_of_iommus) {</div>
+<div>&#43; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; iommu =3D g_iom=
+mus[iommu_id];</div>
 <div><br>
 </div>
-<div>Alex Williamson suggested that you're the maintainer of the code so se=
-nding to you for review.</div>
+<div>- &nbsp; &nbsp; &nbsp; if (dmar_domain-&gt;max_addr =3D=3D iova &#43; =
+size)</div>
+<div>&#43; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; /*</div>
+<div>&#43; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;* find bi=
+t position of dmar_domain</div>
+<div>&#43; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;*/</div>
+<div>&#43; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ndomains =3D ca=
+p_ndoms(iommu-&gt;cap);</div>
+<div>&#43; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; for_each_set_bi=
+t(num, iommu-&gt;domain_ids, ndomains)</div>
+<div>&#43; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &=
+nbsp; &nbsp; if (iommu-&gt;domains[num] =3D=3D dmar_domain)</div>
+<div>&#43; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &=
+nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; iommu_flush_iotlb_psi(iommu, num,<=
+/div>
+<div>&#43; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &=
+nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;=
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; start_pfn, npages, 0);</d=
+iv>
+<div>&#43; &nbsp; &nbsp; &nbsp; }</div>
+<div>&#43; &nbsp; &nbsp; &nbsp; if (dmar_domain-&gt;max_addr &lt;=3D iova &=
+#43; (npages &lt;&lt; VTD_PAGE_SHIFT))</div>
+<div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; dmar_domain-&g=
+t;max_addr =3D iova;</div>
+<div>-</div>
+<div>- &nbsp; &nbsp; &nbsp; return PAGE_SIZE &lt;&lt; order;</div>
+<div>&#43; &nbsp; &nbsp; &nbsp; return npages &lt;&lt; VTD_PAGE_SHIFT;</div=
+>
+<div>&nbsp;}</div>
 <div><br>
 </div>
-<div>Diff for the changes is attached and is generated on&nbsp;Linux kernel=
- version 3.6.11</div>
+<div>&nbsp;static phys_addr_t intel_iommu_iova_to_phys(struct iommu_domain =
+*domain,</div>
 <div><br>
 </div>
-<div>Hari.</div>
+<div>Signed-off-by: Hari Shankar &lt;hshankar-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org&gt;</div>
+<div>cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org</div>
 </div>
-</div>
-</span>
+<div></div>
 </body>
 </html>
 
---_000_CE493D74414FFhshankarnetappcom_--
+--_000_CE49451041547hshankarnetappcom_--
 
---===============4028847496147214152==
+--===============5555623574710580053==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============4028847496147214152==--
+--===============5555623574710580053==--
