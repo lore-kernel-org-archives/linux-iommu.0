@@ -1,65 +1,109 @@
-From: Wei Yang <weiyang@linux.vnet.ibm.com>
-Subject: Re: [PATCH] iommu: WARN_ON when removing a device with no
- iommu_group associated
-Date: Tue, 3 Sep 2013 11:15:44 +0800
-Message-ID: <20130903031544.GA16232@weiyang.vnet.ibm.com>
-References: <1377222911-12144-1-git-send-email-weiyang@linux.vnet.ibm.com>
- <1377228807.25163.33.camel@ul30vt.home>
-Reply-To: Wei Yang <weiyang@linux.vnet.ibm.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH] On unmap, flush IOMMU TLB and return correct size
+Date: Mon, 02 Sep 2013 22:25:40 -0600
+Message-ID: <1378182340.3246.19.camel@ul30vt.home>
+References: <CE494510.41547%hshankar@netapp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1377228807.25163.33.camel@ul30vt.home>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: Wei Yang <weiyang@linux.vnet.ibm.com>, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, aik@ozlabs.ru, paulus@au1.ibm.com, benh@au1.ibm.com, iommu <iommu@lists.linux-foundation.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CE494510.41547%hshankar-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Shankar, Hari" <Hari.Shankar-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>
+Cc: "Singh, Varinder" <Varinder.Singh-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>, "Sundaram,
+	Rajesh" <Rajesh.Sundaram-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>, "Kimmel,
+	Jeff" <jeff.kimmel-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "Spiller,
+	John" <John.Spiller-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Any more comments? Or this one is not proper?
+Hi Hari,
 
-On Thu, Aug 22, 2013 at 09:33:27PM -0600, Alex Williamson wrote:
->[+cc iommu]
->
->On Fri, 2013-08-23 at 09:55 +0800, Wei Yang wrote:
->> When removing a device from the system, iommu_group driver will try to
->> disconnect it from its group. While in some cases, one device may not
->> associated with any iommu_group. For example, not enough DMA address space.
->> 
->> In the generic bus notification, it will check dev->iommu_group before calling
->> iommu_group_remove_device(). While in some cases, developers may call
->> iommu_group_remove_device() in a different code path and without check. For
->> those devices with dev->iommu_group set to NULL, kernel will crash.
->> 
->> This patch gives a warning and return when trying to remove a device from an
->> iommu_group with dev->iommu_group set to NULL. This helps to indicate some bad
->> behavior and also guard the kernel.
->> 
->> Signed-off-by: Wei Yang <weiyang@linux.vnet.ibm.com>
->
->Acked-by: Alex Williamson <alex.williamson@redhat.com>
->
->> ---
->>  drivers/iommu/iommu.c |    3 +++
->>  1 files changed, 3 insertions(+), 0 deletions(-)
->> 
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index fbe9ca7..43396f0 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -379,6 +379,9 @@ void iommu_group_remove_device(struct device *dev)
->>  	struct iommu_group *group = dev->iommu_group;
->>  	struct iommu_device *tmp_device, *device = NULL;
->>  
->> +	if (WARN_ON(!group))
->> +		return;
->> +
->>  	/* Pre-notify listeners that a device is being removed. */
->>  	blocking_notifier_call_chain(&group->notifier,
->>  				     IOMMU_GROUP_NOTIFY_DEL_DEVICE, dev);
->
->
+On Mon, 2013-09-02 at 02:24 +0000, Shankar, Hari wrote:
+> Patch Description: The patch is for Intel IOMMU driver. It forces IOMMU TLB flush for the particular domain and return correct unmap size when intel_iommu_unmap() is called
 
--- 
-Richard Yang
-Help you, Help me
+"Patch Description:" is unnecessary.  Look at other commits that have
+touched this file to get an idea how to format the subject and commit
+log:
+
+http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/log/drivers/iommu/intel-iommu.c
+
+Sign-off should go here, not below the patch.  Subject should include a
+subsystem, such as "iommu/intel:" or "intel-iommu:".  Also a good idea
+to provide some justification why this is necessary for stable (unmaps
+from userspace through vfio results in coherency issue...)
+
+> The patch is generated on Linux kernel version 3.6.11
+
+This should be noted, but not part of the commit message.  See section
+15 of SubmittingPatches and note the additional comments between the
+"---" marker and the beginning of the patch.
+
+> --- linux/drivers/iommu/intel-iommu.c.orig      2013-09-01 10:10:14.723958000 -0700
+> +++ linux/drivers/iommu/intel-iommu.c   2013-09-01 18:22:58.497578000 -0700
+> @@ -4060,14 +4060,31 @@ static size_t intel_iommu_unmap(struct i
+
+Tabs seem to have been clobbered in your patch, scripts/checkpatch.pl
+will note this for you.
+
+>  {
+>         struct dmar_domain *dmar_domain = domain->priv;
+>         int order;
+> +       struct intel_iommu *iommu;
+> +       unsigned long start_pfn, last_pfn;
+> +       unsigned int npages;
+> +       int iommu_id, num, ndomains;
+> 
+> -       order = dma_pte_clear_range(dmar_domain, iova >> VTD_PAGE_SHIFT,
+> -                           (iova + size - 1) >> VTD_PAGE_SHIFT);
+> +       start_pfn = iova >> VTD_PAGE_SHIFT;
+> +       last_pfn = (iova + size - 1) >> VTD_PAGE_SHIFT;
+> +       order = dma_pte_clear_range(dmar_domain, start_pfn, last_pfn);
+> +       last_pfn |= (1UL << order) - 1;
+> +       npages = last_pfn - start_pfn + 1;
+
+Doesn't order tell us npages more directly?  npages = 1UL << order?
+
+> +       for_each_set_bit(iommu_id, dmar_domain->iommu_bmp, g_num_of_iommus) {
+> +               iommu = g_iommus[iommu_id];
+> 
+> -       if (dmar_domain->max_addr == iova + size)
+> +               /*
+> +                * find bit position of dmar_domain
+> +                */
+> +               ndomains = cap_ndoms(iommu->cap);
+> +               for_each_set_bit(num, iommu->domain_ids, ndomains)
+> +                       if (iommu->domains[num] == dmar_domain)
+> +                               iommu_flush_iotlb_psi(iommu, num,
+> +                                                       start_pfn, npages, 0);
+
+This second bitmap search seems unnecessary, I think
+iommu_flush_iotlb_psi wants dmar_domain->id as the second parameter in
+all cases, not num.  So this could be reduced to :
+
+for_each_set_bit(iommu_id, dmar_domain->iommu_bmp, g_num_of_iommus)
+	iommu_flush_iotlb_psi(g_iommus[iommu_id], dmar_domain->id, start_pfn, npages, 0);
+
+> +       }
+> +       if (dmar_domain->max_addr <= iova + (npages << VTD_PAGE_SHIFT))
+>                 dmar_domain->max_addr = iova;
+> -
+> -       return PAGE_SIZE << order;
+> +       return npages << VTD_PAGE_SHIFT;
+>  }
+> 
+>  static phys_addr_t intel_iommu_iova_to_phys(struct iommu_domain *domain,
+> 
+> Signed-off-by: Hari Shankar <hshankar-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>
+> cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+
+Please configure your mailer to drop the html version.  Thanks,
+
+Alex
