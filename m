@@ -1,35 +1,43 @@
-From: "Li, Zhen-Hua" <zhen-hual@hp.com>
-Subject: [PATCH 1/1] x86/iommu: correct ICS register offset
-Date: Fri, 13 Sep 2013 14:27:32 +0800
-Message-ID: <1379053652-29206-1-git-send-email-zhen-hual@hp.com>
+From: Stephen Warren <swarren@wwwdotorg.org>
+Subject: [PATCH] MAINTAINERS: add overall IOMMU section
+Date: Fri, 13 Sep 2013 13:10:27 -0600
+Message-ID: <1379099427-29362-1-git-send-email-swarren@wwwdotorg.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Cc: "Li, Zhen-Hua" <zhen-hual@hp.com>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>, linux-kernel@vger.kernel.org, Stephen Warren <swarren@nvidia.com>
 List-Id: iommu@lists.linux-foundation.org
 
-According to Intel Vt-D specs, the offset of Invalidation complete
-status register should be 0x9C, not 0x98.
+From: Stephen Warren <swarren@nvidia.com>
 
-See Intel's VT-d spec, Revision 1.3, Chapter 10.4, Page 98;
+I believe that Joerg Roedel is at least the path through which
+drivers/iommu changes should be merged. Add a MAINTAINERS entry to
+make this clear, so that he's Cd'd on all relevant patches. This is
+relevant for non-AMD/Intel IOMMUs, where get_maintainers.pl doesn't
+currently remind anyone to Cc Joerg on patches.
 
-Signed-off-by: Li, Zhen-Hua <zhen-hual@hp.com>
+Signed-off-by: Stephen Warren <swarren@nvidia.com>
 ---
- include/linux/intel-iommu.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ MAINTAINERS | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 78e2ada..d380c5e 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -55,7 +55,7 @@
- #define DMAR_IQT_REG	0x88	/* Invalidation queue tail register */
- #define DMAR_IQ_SHIFT	4	/* Invalidation queue head/tail shift */
- #define DMAR_IQA_REG	0x90	/* Invalidation queue addr register */
--#define DMAR_ICS_REG	0x98	/* Invalidation complete status register */
-+#define DMAR_ICS_REG	0x9c	/* Invalidation complete status register */
- #define DMAR_IRTA_REG	0xb8    /* Interrupt remapping table addr register */
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 6d0dabe..81415f6 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -4457,6 +4457,13 @@ L:	linux-serial@vger.kernel.org
+ S:	Maintained
+ F:	drivers/tty/serial/ioc3_serial.c
  
- #define OFFSET_STRIDE		(9)
++IOMMU DRIVERS
++M:	Joerg Roedel <joro@8bytes.org>
++L:	iommu@lists.linux-foundation.org
++T:	git git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
++S:	Maintained
++F:	drivers/iommu/
++
+ IP MASQUERADING
+ M:	Juanjo Ciarlante <jjciarla@raiz.uncu.edu.ar>
+ S:	Maintained
 -- 
-1.8.4.rc3
+1.8.1.5
