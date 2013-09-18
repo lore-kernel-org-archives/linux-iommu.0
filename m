@@ -1,12 +1,11 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [GIT PULL] iommu/arm-smmu: fixes for 3.12
-Date: Tue, 17 Sep 2013 14:19:49 +0100
-Message-ID: <20130917131949.GD29356@mudshark.cambridge.arm.com>
+From: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+Subject: [PATCH v2] intel-iommu: Quiesce devices before disabling IOMMU
+Date: Wed, 18 Sep 2013 15:09:01 +0900
+Message-ID: <1379484541-4496-1-git-send-email-indou.takao@jp.fujitsu.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,41 +15,116 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+This patch quiesces devices before disabling IOMMU on boot to stop
+ongoing DMA. In intel_iommu_init(), check context entries and if there
+is entry whose present bit is set then reset corresponding device.
 
-Please can you pull this handful of ARM SMMU driver fixes for 3.12?
-They're all trivial fixes, but weren't fixed until days before 3.11 was
-released, so I've added CC: stable tags.
+When IOMMU is already enabled on boot, it is disabled and new DMAR table
+is created and then re-enabled in intel_iommu_init(). This causes DMAR
+faults if there are in-flight DMAs.
 
-Cheers,
+This causes problem on kdump. Devices are working in first kernel, and
+after switching to second kernel and initializing IOMMU, many DMAR
+faults occur and it causes problems like driver error or PCI SERR, at
+last kdump fails. This patch fixes this problem.
 
-Will
+Changelog:
+v2:
+- Add CONTEXT_ENTRY_NR
 
---->8
+v1:
+https://lkml.org/lkml/2013/8/21/71
 
-The following changes since commit 272b98c6455f00884f0350f775c5342358ebb73f:
+Signed-off-by: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+---
+ drivers/iommu/intel-iommu.c |   56 ++++++++++++++++++++++++++++++++++++++++++-
+ 1 files changed, 55 insertions(+), 1 deletions(-)
 
-  Linux 3.12-rc1 (2013-09-16 16:17:51 -0400)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/fixes
-
-for you to fetch changes up to fd90cecbde065eac6ecc3ef38abace725ad27010:
-
-  iommu/arm-smmu: don't enable SMMU device until probing has completed (2013-09-17 12:03:11 +0100)
-
-----------------------------------------------------------------
-Dan Carpenter (2):
-      iommu/arm-smmu: fix a signedness bug
-      iommu/arm-smmu: fix iommu_present() test in init
-
-Will Deacon (1):
-      iommu/arm-smmu: don't enable SMMU device until probing has completed
-
- drivers/iommu/arm-smmu.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index eec0d3e..d0e8aff 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -224,6 +224,7 @@ struct context_entry {
+ 	u64 lo;
+ 	u64 hi;
+ };
++#define CONTEXT_ENTRY_NR (VTD_PAGE_SIZE/sizeof(struct context_entry))
+ 
+ static inline bool context_present(struct context_entry *context)
+ {
+@@ -3663,6 +3664,56 @@ static struct notifier_block device_nb = {
+ 	.notifier_call = device_notifier,
+ };
+ 
++/* Reset PCI devices if its entry exists in DMAR table */
++static void __init iommu_reset_devices(struct intel_iommu *iommu, u16 segment)
++{
++	u64 addr;
++	struct root_entry *root;
++	struct context_entry *context;
++	int bus, devfn;
++	struct pci_dev *dev;
++
++	addr = dmar_readq(iommu->reg + DMAR_RTADDR_REG);
++	if (!addr)
++		return;
++
++	/*
++	 *  In the case of kdump, ioremap is needed because root-entry table
++	 *  exists in first kernel's memory area which is not mapped in second
++	 *  kernel
++	 */
++	root = (struct root_entry *)ioremap(addr, PAGE_SIZE);
++	if (!root)
++		return;
++
++	for (bus = 0; bus < ROOT_ENTRY_NR; bus++) {
++		if (!root_present(&root[bus]))
++			continue;
++
++		context = (struct context_entry *)ioremap(
++			root[bus].val & VTD_PAGE_MASK, PAGE_SIZE);
++		if (!context)
++			continue;
++
++		for (devfn = 0; devfn < CONTEXT_ENTRY_NR; devfn++) {
++			if (!context_present(&context[devfn]))
++				continue;
++
++			dev = pci_get_domain_bus_and_slot(segment, bus, devfn);
++			if (!dev)
++				continue;
++
++			if (!pci_reset_bus(dev->bus)) /* go to next bus */
++				break;
++			else /* Try per-function reset */
++				pci_reset_function(dev);
++
++		}
++		iounmap(context);
++	}
++	iounmap(root);
++}
++
+ int __init intel_iommu_init(void)
+ {
+ 	int ret = 0;
+@@ -3687,8 +3738,11 @@ int __init intel_iommu_init(void)
+ 			continue;
+ 
+ 		iommu = drhd->iommu;
+-		if (iommu->gcmd & DMA_GCMD_TE)
++		if (iommu->gcmd & DMA_GCMD_TE) {
++			if (reset_devices)
++				iommu_reset_devices(iommu, drhd->segment);
+ 			iommu_disable_translation(iommu);
++		}
+ 	}
+ 
+ 	if (dmar_dev_scope_init() < 0) {
+-- 
+1.7.1
