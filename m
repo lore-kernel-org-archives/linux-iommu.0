@@ -1,7 +1,7 @@
 From: Bharat Bhushan <r65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: [PATCH 2/7] iommu: add api to get iommu_domain of a device
-Date: Thu, 19 Sep 2013 12:59:18 +0530
-Message-ID: <1379575763-2091-3-git-send-email-Bharat.Bhushan@freescale.com>
+Subject: [PATCH 3/7] fsl iommu: add get_dev_iommu_domain
+Date: Thu, 19 Sep 2013 12:59:19 +0530
+Message-ID: <1379575763-2091-4-git-send-email-Bharat.Bhushan@freescale.com>
 References: <1379575763-2091-1-git-send-email-Bharat.Bhushan@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -20,68 +20,66 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This api return the iommu domain to which the device is attached.
-The iommu_domain is required for making API calls related to iommu.
-Follow up patches which use this API to know iommu maping.
+From: Bharat Bhushan <bharat.bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+
+returns the iommu_domain of the requested device for fsl pamu.
+
+Use PCI controller dev struct for pci devices as current LIODN schema
+assign LIODN to PCI controller not PCI device. This will be corrected
+with proper LIODN schema.
 
 Signed-off-by: Bharat Bhushan <bharat.bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 ---
- drivers/iommu/iommu.c |   10 ++++++++++
- include/linux/iommu.h |    7 +++++++
- 2 files changed, 17 insertions(+), 0 deletions(-)
+ drivers/iommu/fsl_pamu_domain.c |   30 ++++++++++++++++++++++++++++++
+ 1 files changed, 30 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index fbe9ca7..6ac5f50 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -696,6 +696,16 @@ void iommu_detach_device(struct iommu_domain *domain, struct device *dev)
- }
- EXPORT_SYMBOL_GPL(iommu_detach_device);
- 
-+struct iommu_domain *iommu_get_dev_domain(struct device *dev)
-+{
-+	struct iommu_ops *ops = dev->bus->iommu_ops;
-+
-+	if (unlikely(ops == NULL || ops->get_dev_iommu_domain == NULL))
-+		return NULL;
-+
-+	return ops->get_dev_iommu_domain(dev);
-+}
-+EXPORT_SYMBOL_GPL(iommu_get_dev_domain);
- /*
-  * IOMMU groups are really the natrual working unit of the IOMMU, but
-  * the IOMMU API works on domains and devices.  Bridge that gap by
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 7ea319e..fa046bd 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -127,6 +127,7 @@ struct iommu_ops {
- 	int (*domain_set_windows)(struct iommu_domain *domain, u32 w_count);
- 	/* Get the numer of window per domain */
- 	u32 (*domain_get_windows)(struct iommu_domain *domain);
-+	struct iommu_domain *(*get_dev_iommu_domain)(struct device *dev);
- 
- 	unsigned long pgsize_bitmap;
- };
-@@ -190,6 +191,7 @@ extern int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
- 				      phys_addr_t offset, u64 size,
- 				      int prot);
- extern void iommu_domain_window_disable(struct iommu_domain *domain, u32 wnd_nr);
-+extern struct iommu_domain *iommu_get_dev_domain(struct device *dev);
- /**
-  * report_iommu_fault() - report about an IOMMU fault to the IOMMU framework
-  * @domain: the iommu domain where the fault has happened
-@@ -284,6 +286,11 @@ static inline void iommu_domain_window_disable(struct iommu_domain *domain,
- {
+diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+index 14d803a..1d0dfe3 100644
+--- a/drivers/iommu/fsl_pamu_domain.c
++++ b/drivers/iommu/fsl_pamu_domain.c
+@@ -1140,6 +1140,35 @@ static u32 fsl_pamu_get_windows(struct iommu_domain *domain)
+ 	return dma_domain->win_cnt;
  }
  
-+static inline struct iommu_domain *iommu_get_dev_domain(struct device *dev)
++static struct iommu_domain *fsl_get_dev_domain(struct device *dev)
 +{
++	struct pci_controller *pci_ctl;
++	struct device_domain_info *info;
++	struct pci_dev *pdev;
++
++	/*
++	 * Use PCI controller dev struct for pci devices as current
++	 * LIODN schema assign LIODN to PCI controller not PCI device
++	 * This should get corrected with proper LIODN schema.
++	 */
++	if (dev->bus == &pci_bus_type) {
++		pdev = to_pci_dev(dev);
++		pci_ctl = pci_bus_to_host(pdev->bus);
++		/*
++		 * make dev point to pci controller device
++		 * so we can get the LIODN programmed by
++		 * u-boot.
++		 */
++		dev = pci_ctl->parent;
++	}
++
++	info = dev->archdata.iommu_domain;
++	if (info && info->domain)
++		return info->domain->iommu_domain;
++
 +	return NULL;
 +}
 +
- static inline phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
- {
- 	return 0;
+ static struct iommu_ops fsl_pamu_ops = {
+ 	.domain_init	= fsl_pamu_domain_init,
+ 	.domain_destroy = fsl_pamu_domain_destroy,
+@@ -1155,6 +1184,7 @@ static struct iommu_ops fsl_pamu_ops = {
+ 	.domain_get_attr = fsl_pamu_get_domain_attr,
+ 	.add_device	= fsl_pamu_add_device,
+ 	.remove_device	= fsl_pamu_remove_device,
++	.get_dev_iommu_domain = fsl_get_dev_domain,
+ };
+ 
+ int pamu_domain_init()
 -- 
 1.7.0.4
