@@ -1,198 +1,323 @@
-From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: Re: [PATCH] intel-iommu: Quiesce devices before disabling IOMMU
-Date: Wed, 18 Sep 2013 06:29:12 -0500
-Message-ID: <1379503752.753.52.camel@shinybook.infradead.org>
-References: <1377069354-5056-1-git-send-email-indou.takao@jp.fujitsu.com>
-	<1378717669.2627.239.camel@shinybook.infradead.org>
-	<522EB171.6000909@jp.fujitsu.com>
+From: Bharat Bhushan <r65777@freescale.com>
+Subject: [PATCH 1/7] powerpc: Add interface to get msi region information
+Date: Thu, 19 Sep 2013 12:59:17 +0530
+Message-ID: <1379575763-2091-2-git-send-email-Bharat.Bhushan@freescale.com>
+References: <1379575763-2091-1-git-send-email-Bharat.Bhushan@freescale.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============2408588699957520002=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <522EB171.6000909-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1379575763-2091-1-git-send-email-Bharat.Bhushan@freescale.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: alex.williamson@redhat.com, joro@8bytes.org, benh@kernel.crashing.org, galak@kernel.crashing.org, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org, agraf@suse.de, scottwood@freescale.com, iommu@lists.linux-foundation.org
+Cc: Bharat Bhushan <Bharat.Bhushan@freescale.com>, Bharat Bhushan <bharat.bhushan@freescale.com>
 List-Id: iommu@lists.linux-foundation.org
 
+This patch adds interface to get following information
+  - Number of MSI regions (which is number of MSI banks for powerpc).
+  - Get the region address range: Physical page which have the
+     address/addresses used for generating MSI interrupt
+     and size of the page.
 
---===============2408588699957520002==
-Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-UYHTUbRL4QrcCq0kQ8a8"
+These are required to create IOMMU (Freescale PAMU) mapping for
+devices which are directly assigned using VFIO.
 
+Signed-off-by: Bharat Bhushan <bharat.bhushan@freescale.com>
+---
+ arch/powerpc/include/asm/machdep.h |    8 +++++++
+ arch/powerpc/include/asm/pci.h     |    2 +
+ arch/powerpc/kernel/msi.c          |   18 ++++++++++++++++
+ arch/powerpc/sysdev/fsl_msi.c      |   39 +++++++++++++++++++++++++++++++++--
+ arch/powerpc/sysdev/fsl_msi.h      |   11 ++++++++-
+ drivers/pci/msi.c                  |   26 ++++++++++++++++++++++++
+ include/linux/msi.h                |    8 +++++++
+ include/linux/pci.h                |   13 ++++++++++++
+ 8 files changed, 120 insertions(+), 5 deletions(-)
 
---=-UYHTUbRL4QrcCq0kQ8a8
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-On Tue, 2013-09-10 at 14:43 +0900, Takao Indoh wrote:
-> (2013/09/09 18:07), David Woodhouse wrote:
-> > If the driver is so broken that it cannot get the device working again
-> > after a fault, surely the driver needs to be fixed?
->=20
-> Yes,this problem may be solved by fixing driver. Actually megaraid sas
-> driver is recently fixed for this problem. (See commit 6431f5d7)
->=20
-> But I think root cause of this problem is initializing IOMMU while DMA
-> is still working, and I want to solve the root cause rather than
-> handling it in each driver, otherwise we have to fix driver each time we
-> find this kind of problem.
-
-But if the driver is broken and cannot actually recover from hardware
-issues, the driver needs to be fixed *anyway*. We shouldn't be papering
-over the problem.
-
-> > For the IOMMU code to reset individual devices, just because they still
-> > have an active DMA mapping even if they're not *doing* DMA, seems wrong=
-.
-> =20
-> Right, current code is resetting devices which *may* be doing DMA. The
-> ideal way is finding devices which are actually doing DMA and reset only
-> them but I don't know how we can do this, though I think current code
-> is sufficient.
-
-No, that's not the ideal way either. Their DMA will be blocked, and
-they'll stop (or at least we'll stop getting an interrupt and reporting
-their DMA faults, if the hardware *is* so broken that it keeps trying
-over and over again). The new driver will come up and reset the device,
-and all will be well.
-
-Do not paper over driver bugs. You are just *encouraging* brokenness.
-
-We need to fix the 'fault storm' issue, by setting the FPD bit in the
-context-entry for offending devices when appropriate, and then clearing
-it again when appropriate too. But for the IOMMU code to go out and
-trigger a PCI reset of random devices and buses is ABSOLUTELY WRONG.
-
-Do Not Do This.
-
---=20
-dwmw2
-
-
---=-UYHTUbRL4QrcCq0kQ8a8
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIISxDCCBjQw
-ggQcoAMCAQICAR4wDQYJKoZIhvcNAQEFBQAwfTELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0
-Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxKTAn
-BgNVBAMTIFN0YXJ0Q29tIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MB4XDTA3MTAyNDIxMDE1NVoX
-DTE3MTAyNDIxMDE1NVowgYwxCzAJBgNVBAYTAklMMRYwFAYDVQQKEw1TdGFydENvbSBMdGQuMSsw
-KQYDVQQLEyJTZWN1cmUgRGlnaXRhbCBDZXJ0aWZpY2F0ZSBTaWduaW5nMTgwNgYDVQQDEy9TdGFy
-dENvbSBDbGFzcyAxIFByaW1hcnkgSW50ZXJtZWRpYXRlIENsaWVudCBDQTCCASIwDQYJKoZIhvcN
-AQEBBQADggEPADCCAQoCggEBAMcJg8zOLdgasSmkLhOrlr6KMoOMpohBllVHrdRvEg/q6r8jR+EK
-75xCGhR8ToREoqe7zM9/UnC6TS2y9UKTpT1v7RSMzR0t6ndl0TWBuUr/UXBhPk+Kmy7bI4yW4urC
-+y7P3/1/X7U8ocb8VpH/Clt+4iq7nirMcNh6qJR+xjOhV+VHzQMALuGYn5KZmc1NbJQYclsGkDxD
-z2UbFqE2+6vIZoL+jb9x4Pa5gNf1TwSDkOkikZB1xtB4ZqtXThaABSONdfmv/Z1pua3FYxnCFmdr
-/+N2JLKutIxMYqQOJebr/f/h5t95m4JgrM3Y/w7YX9d7YAL9jvN4SydHsU6n65cCAwEAAaOCAa0w
-ggGpMA8GA1UdEwEB/wQFMAMBAf8wDgYDVR0PAQH/BAQDAgEGMB0GA1UdDgQWBBRTcu2SnODaywFc
-fH6WNU7y1LhRgjAfBgNVHSMEGDAWgBROC+8apEBbpRdphzDKNGhD0EGu8jBmBggrBgEFBQcBAQRa
-MFgwJwYIKwYBBQUHMAGGG2h0dHA6Ly9vY3NwLnN0YXJ0c3NsLmNvbS9jYTAtBggrBgEFBQcwAoYh
-aHR0cDovL3d3dy5zdGFydHNzbC5jb20vc2ZzY2EuY3J0MFsGA1UdHwRUMFIwJ6AloCOGIWh0dHA6
-Ly93d3cuc3RhcnRzc2wuY29tL3Nmc2NhLmNybDAnoCWgI4YhaHR0cDovL2NybC5zdGFydHNzbC5j
-b20vc2ZzY2EuY3JsMIGABgNVHSAEeTB3MHUGCysGAQQBgbU3AQIBMGYwLgYIKwYBBQUHAgEWImh0
-dHA6Ly93d3cuc3RhcnRzc2wuY29tL3BvbGljeS5wZGYwNAYIKwYBBQUHAgEWKGh0dHA6Ly93d3cu
-c3RhcnRzc2wuY29tL2ludGVybWVkaWF0ZS5wZGYwDQYJKoZIhvcNAQEFBQADggIBAAqDCH14qywG
-XLhjjF6uHLkjd02hcdh9hrw+VUsv+q1eeQWB21jWj3kJ96AUlPCoEGZ/ynJNScWy6QMVQjbbMXlt
-UfO4n4bGGdKo3awPWp61tjAFgraLJgDk+DsSvUD6EowjMTNx25GQgyYJ5RPIzKKR9tQW8gGK+2+R
-HxkUCTbYFnL6kl8Ch507rUdPPipJ9CgJFws3kDS3gOS5WFMxcjO5DwKfKSETEPrHh7p5shuuNktv
-sv6hxHTLhiMKX893gxdT3XLS9OKmCv87vkINQcNEcIIoFWbP9HORz9v3vQwR4e3ksLc2JZOAFK+s
-sS5XMEoznzpihEP0PLc4dCBYjbvSD7kxgDwZ+Aj8Q9PkbvE9sIPP7ON0fz095HdThKjiVJe6vofq
-+n6b1NBc8XdrQvBmunwxD5nvtTW4vtN6VY7mUCmxsCieuoBJ9OlqmsVWQvifIYf40dJPZkk9YgGT
-zWLpXDSfLSplbY2LL9C9U0ptvjcDjefLTvqSFc7tw1sEhF0n/qpA2r0GpvkLRDmcSwVyPvmjFBGq
-Up/pNy8ZuPGQmHwFi2/14+xeSUDG2bwnsYJQG2EdJCB6luQ57GEnTA/yKZSTKI8dDQa8Sd3zfXb1
-9mOgSF0bBdXbuKhEpuP9wirslFe6fQ1t5j5R0xi72MZ8ikMu1RQZKCyDbMwazlHiMIIGQjCCBSqg
-AwIBAgIDBoXOMA0GCSqGSIb3DQEBBQUAMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRD
-b20gTHRkLjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYG
-A1UEAxMvU3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0EwHhcN
-MTMwNTAyMDYyMDQ2WhcNMTQwNTAzMTIxNDAyWjBdMRkwFwYDVQQNExBNd0k3ODIxNTRpV21lZVkw
-MRwwGgYDVQQDDBNkd213MkBpbmZyYWRlYWQub3JnMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZy
-YWRlYWQub3JnMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvWGuRDHiXVpOgaFkBaz8
-c3jQTfiEw7j0iKZnktCQi0xjY29QJ7GwL+fgQlbofXgYTm8E9fWERvw2tAy2BxHzAPguBzziS7JN
-hsGP9lf3L8hFJBvmdyyyj8b9A6Oi7s3JLtMRWIvyvE+DbuTkP+htuT4+XuTJr8Y5yIqd1WXr2gJk
-ANr77vTyjeNxceevP58Tqr0f+4v5g6+vNARO3bk3SaVQPDUTwGrpoPtLh3d+mQzZ4iiW3MwQS7Wr
-UVT3l2aTVHCpgtAaBs3zHWarvmIqhbWj8zdcnELNzwqTrOjaoWxuWY4k05GGfzmdjOBUiL7FDNvI
-ZwweJEPwJAQI72YhUwIDAQABo4IC2TCCAtUwCQYDVR0TBAIwADALBgNVHQ8EBAMCBLAwHQYDVR0l
-BBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMB0GA1UdDgQWBBSs0hZhUgQwqGVXzLuH6pJH0hMZwTAf
-BgNVHSMEGDAWgBRTcu2SnODaywFcfH6WNU7y1LhRgjAeBgNVHREEFzAVgRNkd213MkBpbmZyYWRl
-YWQub3JnMIIBTAYDVR0gBIIBQzCCAT8wggE7BgsrBgEEAYG1NwECAzCCASowLgYIKwYBBQUHAgEW
-Imh0dHA6Ly93d3cuc3RhcnRzc2wuY29tL3BvbGljeS5wZGYwgfcGCCsGAQUFBwICMIHqMCcWIFN0
-YXJ0Q29tIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MAMCAQEagb5UaGlzIGNlcnRpZmljYXRlIHdh
-cyBpc3N1ZWQgYWNjb3JkaW5nIHRvIHRoZSBDbGFzcyAxIFZhbGlkYXRpb24gcmVxdWlyZW1lbnRz
-IG9mIHRoZSBTdGFydENvbSBDQSBwb2xpY3ksIHJlbGlhbmNlIG9ubHkgZm9yIHRoZSBpbnRlbmRl
-ZCBwdXJwb3NlIGluIGNvbXBsaWFuY2Ugb2YgdGhlIHJlbHlpbmcgcGFydHkgb2JsaWdhdGlvbnMu
-MDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwuc3RhcnRzc2wuY29tL2NydHUxLWNybC5jcmww
-gY4GCCsGAQUFBwEBBIGBMH8wOQYIKwYBBQUHMAGGLWh0dHA6Ly9vY3NwLnN0YXJ0c3NsLmNvbS9z
-dWIvY2xhc3MxL2NsaWVudC9jYTBCBggrBgEFBQcwAoY2aHR0cDovL2FpYS5zdGFydHNzbC5jb20v
-Y2VydHMvc3ViLmNsYXNzMS5jbGllbnQuY2EuY3J0MCMGA1UdEgQcMBqGGGh0dHA6Ly93d3cuc3Rh
-cnRzc2wuY29tLzANBgkqhkiG9w0BAQUFAAOCAQEACFLDQnyO8+XA/TiTltjJ/ZAvM+qmBEKN43Vd
-+Wio2lM/Wq/scJpkupXGHrl9CueobkDxMAogXbMxqLZYO13PvgjMh+PHxDPnQv8EGxOig+k/Hqvc
-qEdTlm9YEHcbXbWS6XB+zRO7VVIpGMYQ1f1qCOcukxmwIm6iMSHXbOr/7paQm4bO0ULptjBotfiO
-Zo6q8No6SroQlOSyc6v8FYSxTNIAXMaM2FYkjqrxgdnJmSIAfr11gROuF69WuOICxP0zTEjJle+7
-aO9lUWNaWMWPMyFSNCxF6kkRuvUCami7vlhLOTRC1kb+OMhx7keN9At3tdTI3rtuFeSB1Pa3VXVs
-0DCCBkIwggUqoAMCAQICAwaFzjANBgkqhkiG9w0BAQUFADCBjDELMAkGA1UEBhMCSUwxFjAUBgNV
-BAoTDVN0YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNp
-Z25pbmcxODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xp
-ZW50IENBMB4XDTEzMDUwMjA2MjA0NloXDTE0MDUwMzEyMTQwMlowXTEZMBcGA1UEDRMQTXdJNzgy
-MTU0aVdtZWVZMDEcMBoGA1UEAwwTZHdtdzJAaW5mcmFkZWFkLm9yZzEiMCAGCSqGSIb3DQEJARYT
-ZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL1hrkQx
-4l1aToGhZAWs/HN40E34hMO49IimZ5LQkItMY2NvUCexsC/n4EJW6H14GE5vBPX1hEb8NrQMtgcR
-8wD4Lgc84kuyTYbBj/ZX9y/IRSQb5ncsso/G/QOjou7NyS7TEViL8rxPg27k5D/obbk+Pl7kya/G
-OciKndVl69oCZADa++708o3jcXHnrz+fE6q9H/uL+YOvrzQETt25N0mlUDw1E8Bq6aD7S4d3fpkM
-2eIoltzMEEu1q1FU95dmk1RwqYLQGgbN8x1mq75iKoW1o/M3XJxCzc8Kk6zo2qFsblmOJNORhn85
-nYzgVIi+xQzbyGcMHiRD8CQECO9mIVMCAwEAAaOCAtkwggLVMAkGA1UdEwQCMAAwCwYDVR0PBAQD
-AgSwMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDBDAdBgNVHQ4EFgQUrNIWYVIEMKhlV8y7
-h+qSR9ITGcEwHwYDVR0jBBgwFoAUU3Ltkpzg2ssBXHx+ljVO8tS4UYIwHgYDVR0RBBcwFYETZHdt
-dzJAaW5mcmFkZWFkLm9yZzCCAUwGA1UdIASCAUMwggE/MIIBOwYLKwYBBAGBtTcBAgMwggEqMC4G
-CCsGAQUFBwIBFiJodHRwOi8vd3d3LnN0YXJ0c3NsLmNvbS9wb2xpY3kucGRmMIH3BggrBgEFBQcC
-AjCB6jAnFiBTdGFydENvbSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTADAgEBGoG+VGhpcyBjZXJ0
-aWZpY2F0ZSB3YXMgaXNzdWVkIGFjY29yZGluZyB0byB0aGUgQ2xhc3MgMSBWYWxpZGF0aW9uIHJl
-cXVpcmVtZW50cyBvZiB0aGUgU3RhcnRDb20gQ0EgcG9saWN5LCByZWxpYW5jZSBvbmx5IGZvciB0
-aGUgaW50ZW5kZWQgcHVycG9zZSBpbiBjb21wbGlhbmNlIG9mIHRoZSByZWx5aW5nIHBhcnR5IG9i
-bGlnYXRpb25zLjA2BgNVHR8ELzAtMCugKaAnhiVodHRwOi8vY3JsLnN0YXJ0c3NsLmNvbS9jcnR1
-MS1jcmwuY3JsMIGOBggrBgEFBQcBAQSBgTB/MDkGCCsGAQUFBzABhi1odHRwOi8vb2NzcC5zdGFy
-dHNzbC5jb20vc3ViL2NsYXNzMS9jbGllbnQvY2EwQgYIKwYBBQUHMAKGNmh0dHA6Ly9haWEuc3Rh
-cnRzc2wuY29tL2NlcnRzL3N1Yi5jbGFzczEuY2xpZW50LmNhLmNydDAjBgNVHRIEHDAahhhodHRw
-Oi8vd3d3LnN0YXJ0c3NsLmNvbS8wDQYJKoZIhvcNAQEFBQADggEBAAhSw0J8jvPlwP04k5bYyf2Q
-LzPqpgRCjeN1XfloqNpTP1qv7HCaZLqVxh65fQrnqG5A8TAKIF2zMai2WDtdz74IzIfjx8Qz50L/
-BBsTooPpPx6r3KhHU5ZvWBB3G121kulwfs0Tu1VSKRjGENX9agjnLpMZsCJuojEh12zq/+6WkJuG
-ztFC6bYwaLX4jmaOqvDaOkq6EJTksnOr/BWEsUzSAFzGjNhWJI6q8YHZyZkiAH69dYETrhevVrji
-AsT9M0xIyZXvu2jvZVFjWljFjzMhUjQsRepJEbr1Ampou75YSzk0QtZG/jjIce5HjfQLd7XUyN67
-bhXkgdT2t1V1bNAxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0
-Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2
-BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMG
-hc4wCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
-DxcNMTMwOTE4MTEyOTEyWjAjBgkqhkiG9w0BCQQxFgQUTZ1rE0LXknZBsQXwwf/1P/OE+wMwgaUG
-CSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4x
-KzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0
-YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMGhc4wgacGCyqG
-SIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjEr
-MCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMvU3Rh
-cnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAwaFzjANBgkqhkiG
-9w0BAQEFAASCAQCURQFcxyd8Ow6PICv1054iVFQYbsx1ra5yfZsY7OEhzgxgk/hm3J2NDyBJizsa
-xNT6VaixB5G2U58sDxtA6rQidemAfopp3NpovjM6bsAZCMfRGahpYegtH41u69Vdsm9z+DNtNzRP
-ka4ewGeNIX/Jg6LwNWc78ThtpmpxRlQxk19zc/77hLBrz3Rjzbobv2TGDFWvKwiE4fBUax40Eaet
-IiN1gUO5dw94z7FrovfPnKp1p3egNZiPKWpHtj5XQAvZ6xvLghfpAdpcIyRwlvH3Sz/pBprXvMH0
-cKrDFT8duPGOCZ0yY3kQmxpwqWTmUg0VcIH75jlRuTcKR6lHZ+OaAAAAAAAA
-
-
---=-UYHTUbRL4QrcCq0kQ8a8--
-
-
---===============2408588699957520002==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============2408588699957520002==--
+diff --git a/arch/powerpc/include/asm/machdep.h b/arch/powerpc/include/asm/machdep.h
+index 8b48090..8d1b787 100644
+--- a/arch/powerpc/include/asm/machdep.h
++++ b/arch/powerpc/include/asm/machdep.h
+@@ -30,6 +30,7 @@ struct file;
+ struct pci_controller;
+ struct kimage;
+ struct pci_host_bridge;
++struct msi_region;
+ 
+ struct machdep_calls {
+ 	char		*name;
+@@ -124,6 +125,13 @@ struct machdep_calls {
+ 	int		(*setup_msi_irqs)(struct pci_dev *dev,
+ 					  int nvec, int type);
+ 	void		(*teardown_msi_irqs)(struct pci_dev *dev);
++
++	/* Returns the number of MSI regions (banks) */
++	int		(*msi_get_region_count)(void);
++
++	/* Returns the requested region's address and size */
++	int		(*msi_get_region)(int region_num,
++					  struct msi_region *region);
+ #endif
+ 
+ 	void		(*restart)(char *cmd);
+diff --git a/arch/powerpc/include/asm/pci.h b/arch/powerpc/include/asm/pci.h
+index 6653f27..e575349 100644
+--- a/arch/powerpc/include/asm/pci.h
++++ b/arch/powerpc/include/asm/pci.h
+@@ -117,6 +117,8 @@ extern int pci_proc_domain(struct pci_bus *bus);
+ #define arch_setup_msi_irqs arch_setup_msi_irqs
+ #define arch_teardown_msi_irqs arch_teardown_msi_irqs
+ #define arch_msi_check_device arch_msi_check_device
++#define arch_msi_get_region_count arch_msi_get_region_count
++#define arch_msi_get_region arch_msi_get_region
+ 
+ struct vm_area_struct;
+ /* Map a range of PCI memory or I/O space for a device into user space */
+diff --git a/arch/powerpc/kernel/msi.c b/arch/powerpc/kernel/msi.c
+index 8bbc12d..1a67787 100644
+--- a/arch/powerpc/kernel/msi.c
++++ b/arch/powerpc/kernel/msi.c
+@@ -13,6 +13,24 @@
+ 
+ #include <asm/machdep.h>
+ 
++int arch_msi_get_region_count(void)
++{
++	if (ppc_md.msi_get_region_count) {
++		pr_debug("msi: Using platform get_region_count routine.\n");
++		return ppc_md.msi_get_region_count();
++	}
++	return 0;
++}
++
++int arch_msi_get_region(int region_num, struct msi_region *region)
++{
++	if (ppc_md.msi_get_region) {
++		pr_debug("msi: Using platform get_region routine.\n");
++		return ppc_md.msi_get_region(region_num, region);
++	}
++	return 0;
++}
++
+ int arch_msi_check_device(struct pci_dev* dev, int nvec, int type)
+ {
+ 	if (!ppc_md.setup_msi_irqs || !ppc_md.teardown_msi_irqs) {
+diff --git a/arch/powerpc/sysdev/fsl_msi.c b/arch/powerpc/sysdev/fsl_msi.c
+index ab02db3..ed045cb 100644
+--- a/arch/powerpc/sysdev/fsl_msi.c
++++ b/arch/powerpc/sysdev/fsl_msi.c
+@@ -96,6 +96,34 @@ static int fsl_msi_init_allocator(struct fsl_msi *msi_data)
+ 	return 0;
+ }
+ 
++static int fsl_msi_get_region_count(void)
++{
++	int count = 0;
++	struct fsl_msi *msi_data;
++
++	list_for_each_entry(msi_data, &msi_head, list)
++		count++;
++
++	return count;
++}
++
++static int fsl_msi_get_region(int region_num, struct msi_region *region)
++{
++	struct fsl_msi *msi_data;
++
++	list_for_each_entry(msi_data, &msi_head, list) {
++		if (msi_data->bank_index == region_num) {
++			region->region_num = msi_data->bank_index;
++			/* Setting PAGE_SIZE as MSIIR is a 4 byte register */
++			region->size = PAGE_SIZE;
++			region->addr = msi_data->msiir & ~(region->size - 1);
++			return 0;
++		}
++	}
++
++	return -ENODEV;
++}
++
+ static int fsl_msi_check_device(struct pci_dev *pdev, int nvec, int type)
+ {
+ 	if (type == PCI_CAP_ID_MSIX)
+@@ -137,7 +165,8 @@ static void fsl_compose_msi_msg(struct pci_dev *pdev, int hwirq,
+ 	if (reg && (len == sizeof(u64)))
+ 		address = be64_to_cpup(reg);
+ 	else
+-		address = fsl_pci_immrbar_base(hose) + msi_data->msiir_offset;
++		address = fsl_pci_immrbar_base(hose) +
++			   (msi_data->msiir & 0xfffff);
+ 
+ 	msg->address_lo = lower_32_bits(address);
+ 	msg->address_hi = upper_32_bits(address);
+@@ -376,6 +405,7 @@ static int fsl_of_msi_probe(struct platform_device *dev)
+ 	int len;
+ 	u32 offset;
+ 	static const u32 all_avail[] = { 0, NR_MSI_IRQS };
++	static int bank_index;
+ 
+ 	match = of_match_device(fsl_of_msi_ids, &dev->dev);
+ 	if (!match)
+@@ -419,8 +449,8 @@ static int fsl_of_msi_probe(struct platform_device *dev)
+ 				dev->dev.of_node->full_name);
+ 			goto error_out;
+ 		}
+-		msi->msiir_offset =
+-			features->msiir_offset + (res.start & 0xfffff);
++		msi->msiir = res.start + features->msiir_offset;
++		printk("msi->msiir = %llx\n", msi->msiir);
+ 	}
+ 
+ 	msi->feature = features->fsl_pic_ip;
+@@ -470,6 +500,7 @@ static int fsl_of_msi_probe(struct platform_device *dev)
+ 		}
+ 	}
+ 
++	msi->bank_index = bank_index++;
+ 	list_add_tail(&msi->list, &msi_head);
+ 
+ 	/* The multiple setting ppc_md.setup_msi_irqs will not harm things */
+@@ -477,6 +508,8 @@ static int fsl_of_msi_probe(struct platform_device *dev)
+ 		ppc_md.setup_msi_irqs = fsl_setup_msi_irqs;
+ 		ppc_md.teardown_msi_irqs = fsl_teardown_msi_irqs;
+ 		ppc_md.msi_check_device = fsl_msi_check_device;
++		ppc_md.msi_get_region_count = fsl_msi_get_region_count;
++		ppc_md.msi_get_region = fsl_msi_get_region;
+ 	} else if (ppc_md.setup_msi_irqs != fsl_setup_msi_irqs) {
+ 		dev_err(&dev->dev, "Different MSI driver already installed!\n");
+ 		err = -ENODEV;
+diff --git a/arch/powerpc/sysdev/fsl_msi.h b/arch/powerpc/sysdev/fsl_msi.h
+index 8225f86..6bd5cfc 100644
+--- a/arch/powerpc/sysdev/fsl_msi.h
++++ b/arch/powerpc/sysdev/fsl_msi.h
+@@ -29,12 +29,19 @@ struct fsl_msi {
+ 	struct irq_domain *irqhost;
+ 
+ 	unsigned long cascade_irq;
+-
+-	u32 msiir_offset; /* Offset of MSIIR, relative to start of CCSR */
++	dma_addr_t msiir; /* MSIIR Address in CCSR */
+ 	void __iomem *msi_regs;
+ 	u32 feature;
+ 	int msi_virqs[NR_MSI_REG];
+ 
++	/*
++	 * During probe each bank is assigned a index number.
++	 * index number ranges from 0 to 2^32.
++	 * Example  MSI bank 1 = 0
++	 * MSI bank 2 = 1, and so on.
++	 */
++	int bank_index;
++
+ 	struct msi_bitmap bitmap;
+ 
+ 	struct list_head list;          /* support multiple MSI banks */
+diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
+index aca7578..6d85c15 100644
+--- a/drivers/pci/msi.c
++++ b/drivers/pci/msi.c
+@@ -30,6 +30,20 @@ static int pci_msi_enable = 1;
+ 
+ /* Arch hooks */
+ 
++#ifndef arch_msi_get_region_count
++int arch_msi_get_region_count(void)
++{
++	return 0;
++}
++#endif
++
++#ifndef arch_msi_get_region
++int arch_msi_get_region(int region_num, struct msi_region *region)
++{
++	return 0;
++}
++#endif
++
+ #ifndef arch_msi_check_device
+ int arch_msi_check_device(struct pci_dev *dev, int nvec, int type)
+ {
+@@ -903,6 +917,18 @@ void pci_disable_msi(struct pci_dev *dev)
+ }
+ EXPORT_SYMBOL(pci_disable_msi);
+ 
++int msi_get_region_count(void)
++{
++	return arch_msi_get_region_count();
++}
++EXPORT_SYMBOL(msi_get_region_count);
++
++int msi_get_region(int region_num, struct msi_region *region)
++{
++	return arch_msi_get_region(region_num, region);
++}
++EXPORT_SYMBOL(msi_get_region);
++
+ /**
+  * pci_msix_table_size - return the number of device's MSI-X table entries
+  * @dev: pointer to the pci_dev data structure of MSI-X device function
+diff --git a/include/linux/msi.h b/include/linux/msi.h
+index ee66f3a..ae32601 100644
+--- a/include/linux/msi.h
++++ b/include/linux/msi.h
+@@ -50,6 +50,12 @@ struct msi_desc {
+ 	struct kobject kobj;
+ };
+ 
++struct msi_region {
++	int region_num;
++	dma_addr_t addr;
++	size_t size;
++};
++
+ /*
+  * The arch hook for setup up msi irqs
+  */
+@@ -58,5 +64,7 @@ void arch_teardown_msi_irq(unsigned int irq);
+ int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type);
+ void arch_teardown_msi_irqs(struct pci_dev *dev);
+ int arch_msi_check_device(struct pci_dev* dev, int nvec, int type);
++int arch_msi_get_region_count(void);
++int arch_msi_get_region(int region_num, struct msi_region *region);
+ 
+ #endif /* LINUX_MSI_H */
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 186540d..2b26a59 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -1126,6 +1126,7 @@ struct msix_entry {
+ 	u16	entry;	/* driver uses to specify entry, OS writes */
+ };
+ 
++struct msi_region;
+ 
+ #ifndef CONFIG_PCI_MSI
+ static inline int pci_enable_msi_block(struct pci_dev *dev, unsigned int nvec)
+@@ -1168,6 +1169,16 @@ static inline int pci_msi_enabled(void)
+ {
+ 	return 0;
+ }
++
++static inline int msi_get_region_count(void)
++{
++	return 0;
++}
++
++static inline int msi_get_region(int region_num, struct msi_region *region)
++{
++	return 0;
++}
+ #else
+ int pci_enable_msi_block(struct pci_dev *dev, unsigned int nvec);
+ int pci_enable_msi_block_auto(struct pci_dev *dev, unsigned int *maxvec);
+@@ -1180,6 +1191,8 @@ void pci_disable_msix(struct pci_dev *dev);
+ void msi_remove_pci_irq_vectors(struct pci_dev *dev);
+ void pci_restore_msi_state(struct pci_dev *dev);
+ int pci_msi_enabled(void);
++int msi_get_region_count(void);
++int msi_get_region(int region_num, struct msi_region *region);
+ #endif
+ 
+ #ifdef CONFIG_PCIEPORTBUS
+-- 
+1.7.0.4
