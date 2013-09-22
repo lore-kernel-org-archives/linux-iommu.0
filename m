@@ -1,13 +1,12 @@
-From: Bharat Bhushan <r65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: [PATCH 7/7] vfio pci: Add vfio iommu implementation for FSL_PAMU
-Date: Thu, 19 Sep 2013 12:59:23 +0530
-Message-ID: <1379575763-2091-8-git-send-email-Bharat.Bhushan@freescale.com>
-References: <1379575763-2091-1-git-send-email-Bharat.Bhushan@freescale.com>
+From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: Re: [PATCH] On unmap, flush IOMMU TLB and return correct size
+Date: Sat, 21 Sep 2013 21:59:00 -0500
+Message-ID: <1379818740.2547.51.camel@shinybook.infradead.org>
+References: <CE494510.41547%hshankar@netapp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============3255765739127998600=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1379575763-2091-1-git-send-email-Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+In-Reply-To: <CE494510.41547%hshankar-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,1142 +16,490 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Shankar, Hari" <Hari.Shankar-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Singh, Varinder" <Varinder.Singh-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>, "Sundaram,
+	Rajesh" <Rajesh.Sundaram-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>, "Spiller,
+	John" <John.Spiller-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>, "Kimmel, Jeff" <jeff.kimmel-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds vfio iommu support for Freescale IOMMU
-(PAMU - Peripheral Access Management Unit).
 
-The Freescale PAMU is an aperture-based IOMMU with the following
-characteristics.  Each device has an entry in a table in memory
-describing the iova->phys mapping. The mapping has:
-  -an overall aperture that is power of 2 sized, and has a start iova that
-   is naturally aligned
-  -has 1 or more windows within the aperture
-  -number of windows must be power of 2, max is 256
-  -size of each window is determined by aperture size / # of windows
-  -iova of each window is determined by aperture start iova / # of windows
-  -the mapped region in each window can be different than
-   the window size...mapping must power of 2
-  -physical address of the mapping must be naturally aligned
-   with the mapping size
+--===============3255765739127998600==
+Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
+	boundary="=-dnB42FBdoO4OBOdS+YwO"
 
-Some of the code is derived from TYPE1 iommu (driver/vfio/vfio_iommu_type1.c).
 
-Signed-off-by: Bharat Bhushan <bharat.bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
----
- drivers/vfio/Kconfig               |    6 +
- drivers/vfio/Makefile              |    1 +
- drivers/vfio/vfio_iommu_fsl_pamu.c |  952 ++++++++++++++++++++++++++++++++++++
- include/uapi/linux/vfio.h          |  100 ++++
- 4 files changed, 1059 insertions(+), 0 deletions(-)
- create mode 100644 drivers/vfio/vfio_iommu_fsl_pamu.c
+--=-dnB42FBdoO4OBOdS+YwO
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
-index 26b3d9d..7d1da26 100644
---- a/drivers/vfio/Kconfig
-+++ b/drivers/vfio/Kconfig
-@@ -8,11 +8,17 @@ config VFIO_IOMMU_SPAPR_TCE
- 	depends on VFIO && SPAPR_TCE_IOMMU
- 	default n
- 
-+config VFIO_IOMMU_FSL_PAMU
-+	tristate
-+	depends on VFIO
-+	default n
-+
- menuconfig VFIO
- 	tristate "VFIO Non-Privileged userspace driver framework"
- 	depends on IOMMU_API
- 	select VFIO_IOMMU_TYPE1 if X86
- 	select VFIO_IOMMU_SPAPR_TCE if (PPC_POWERNV || PPC_PSERIES)
-+	select VFIO_IOMMU_FSL_PAMU if FSL_PAMU
- 	help
- 	  VFIO provides a framework for secure userspace device drivers.
- 	  See Documentation/vfio.txt for more details.
-diff --git a/drivers/vfio/Makefile b/drivers/vfio/Makefile
-index c5792ec..7461350 100644
---- a/drivers/vfio/Makefile
-+++ b/drivers/vfio/Makefile
-@@ -1,4 +1,5 @@
- obj-$(CONFIG_VFIO) += vfio.o
- obj-$(CONFIG_VFIO_IOMMU_TYPE1) += vfio_iommu_common.o vfio_iommu_type1.o
- obj-$(CONFIG_VFIO_IOMMU_SPAPR_TCE) += vfio_iommu_common.o vfio_iommu_spapr_tce.o
-+obj-$(CONFIG_VFIO_IOMMU_FSL_PAMU) += vfio_iommu_common.o vfio_iommu_fsl_pamu.o
- obj-$(CONFIG_VFIO_PCI) += pci/
-diff --git a/drivers/vfio/vfio_iommu_fsl_pamu.c b/drivers/vfio/vfio_iommu_fsl_pamu.c
-new file mode 100644
-index 0000000..b29365f
---- /dev/null
-+++ b/drivers/vfio/vfio_iommu_fsl_pamu.c
-@@ -0,0 +1,952 @@
-+/*
-+ * VFIO: IOMMU DMA mapping support for FSL PAMU IOMMU
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License, version 2, as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program; if not, write to the Free Software
-+ * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-+ *
-+ * Copyright (C) 2013 Freescale Semiconductor, Inc.
-+ *
-+ *     Author: Bharat Bhushan <bharat.bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-+ *
-+ * This file is derived from driver/vfio/vfio_iommu_type1.c
-+ *
-+ * The Freescale PAMU is an aperture-based IOMMU with the following
-+ * characteristics.  Each device has an entry in a table in memory
-+ * describing the iova->phys mapping. The mapping has:
-+ *  -an overall aperture that is power of 2 sized, and has a start iova that
-+ *   is naturally aligned
-+ *  -has 1 or more windows within the aperture
-+ *     -number of windows must be power of 2, max is 256
-+ *     -size of each window is determined by aperture size / # of windows
-+ *     -iova of each window is determined by aperture start iova / # of windows
-+ *     -the mapped region in each window can be different than
-+ *      the window size...mapping must power of 2
-+ *     -physical address of the mapping must be naturally aligned
-+ *      with the mapping size
-+ */
-+
-+#include <linux/compat.h>
-+#include <linux/device.h>
-+#include <linux/fs.h>
-+#include <linux/iommu.h>
-+#include <linux/module.h>
-+#include <linux/mm.h>
-+#include <linux/pci.h>		/* pci_bus_type */
-+#include <linux/sched.h>
-+#include <linux/slab.h>
-+#include <linux/uaccess.h>
-+#include <linux/vfio.h>
-+#include <linux/workqueue.h>
-+#include <linux/hugetlb.h>
-+#include <linux/msi.h>
-+#include <asm/fsl_pamu_stash.h>
-+
-+#include "vfio_iommu_common.h"
-+
-+#define DRIVER_VERSION  "0.1"
-+#define DRIVER_AUTHOR   "Bharat Bhushan <bharat.bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>"
-+#define DRIVER_DESC     "FSL PAMU IOMMU driver for VFIO"
-+
-+struct vfio_iommu {
-+	struct iommu_domain	*domain;
-+	struct mutex		lock;
-+	dma_addr_t		aperture_start;
-+	dma_addr_t		aperture_end;
-+	dma_addr_t		page_size;	/* Maximum mapped Page size */
-+	int			nsubwindows;	/* Number of subwindows */
-+	struct rb_root		dma_list;
-+	struct list_head	msi_dma_list;
-+	struct list_head	group_list;
-+};
-+
-+struct vfio_dma {
-+	struct rb_node		node;
-+	dma_addr_t		iova;		/* Device address */
-+	unsigned long		vaddr;		/* Process virtual addr */
-+	size_t			size;		/* Number of pages */
-+	int			prot;		/* IOMMU_READ/WRITE */
-+};
-+
-+struct vfio_msi_dma {
-+	struct list_head	next;
-+	dma_addr_t		iova;		/* Device address */
-+	int			bank_id;
-+	int			prot;		/* IOMMU_READ/WRITE */
-+};
-+
-+struct vfio_group {
-+	struct iommu_group	*iommu_group;
-+	struct list_head	next;
-+};
-+
-+static struct vfio_dma *vfio_find_dma(struct vfio_iommu *iommu,
-+				      dma_addr_t start, size_t size)
+On Mon, 2013-09-02 at 02:24 +0000, Shankar, Hari wrote:
+> Patch Description: The patch is for Intel IOMMU driver. It forces
+> IOMMU TLB flush for the particular domain and return correct unmap
+> size when intel_iommu_unmap() is called
+
+I *hate* the bizarre calling convention for iommu_unmap(). Is it
+actually clearly documented anywhere? Why on earth is it not just
+returning void, and expected to unmap what it was *asked* to unmap?
+
+I keep getting patches which "fix" the return value, with no clear
+explanation of what it's actually supposed to do. I ask sometimes, but
+the answer is always so weird that I end up forgetting it again.
+
+The main user seems to be kvm_iommu_put_pages() in virt/kvm/iommu.c
+which appears to be *designed* to get poor performance, making a single
+call (with associated clflush and IOTLB flush) for every individual
+*page* instead of just unmapping a whole virtual range at a time.
+
+One thing you neglected to fix in this patch is the fact that the
+intel_iommu_unmap() function doesn't call dma_pte_free_pagetable() after
+it calls dma_pte_clear_range(). For reasons not entirely clear to me,
+adding that call fixes a significant performance issue where the time
+taken to do unmaps is exponential w.r.t. the size of the region.
+
+And in fact, if we fix that then you suffer the same bug that exists
+everywhere *else* we do unmaps... which is that we actually need to
+flush the IOTLB (with the IH bit cleared) *before* we free the page
+table pages, because the hardware could have cached them and could still
+be doing a page walk after you've returned the pages to the pool.
+
+Here's a completely untested work-in-progress that attempts to fix that.
+I'll be able to test it myself on about Tuesday when I'm home from New
+Orleans and awake...
+
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 15e9b57..69980a1 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -413,6 +413,7 @@ struct deferred_flush_tables {
+ 	int next;
+ 	struct iova *iova[HIGH_WATER_MARK];
+ 	struct dmar_domain *domain[HIGH_WATER_MARK];
++	struct page *freelist[HIGH_WATER_MARK];
+ };
+=20
+ static struct deferred_flush_tables *deferred_flush;
+@@ -945,6 +946,114 @@ static void dma_pte_free_pagetable(struct dmar_domain=
+ *domain,
+ 	}
+ }
+=20
++/* When a page at a given level is being unlinked from its parent, we don'=
+t
++   need to *modify* it at all. All we need to do is make a list of all the
++   pages which can be freed just as soon as we've flushed the IOTLB and we
++   know the hardware page-walk will no longer touch them.
++   The 'pte' argument is the *parent* PTE, pointing to the page that is to
++   be freed. */
++static struct page *dma_pte_list_pagetables(struct dmar_domain *domain, in=
+t level,
++					    struct dma_pte *pte, struct page *freelist)
 +{
-+	struct rb_node *node = iommu->dma_list.rb_node;
++	struct page *pg;
 +
-+	while (node) {
-+		struct vfio_dma *dma = rb_entry(node, struct vfio_dma, node);
++	pg =3D pfn_to_page(dma_pte_addr(pte) >> PAGE_SHIFT);
++	pg->freelist =3D freelist;
++	freelist =3D pg;
 +
-+		if (start + size <= dma->iova)
-+			node = node->rb_left;
-+		else if (start >= dma->iova + dma->size)
-+			node = node->rb_right;
-+		else
-+			return dma;
++	if (level > 1) {
++		pte =3D page_address(pg);
++
++		do {
++			if (dma_pte_present(pte) && !dma_pte_superpage(pte))
++				freelist =3D dma_pte_list_pagetables(domain, level - 1, pte, freelist)=
+;
++
++		} while (!first_pte_in_page(++pte));
 +	}
 +
-+	return NULL;
++	return freelist;
 +}
 +
-+static void vfio_insert_dma(struct vfio_iommu *iommu, struct vfio_dma *new)
++static struct page *dma_pte_clear_level(struct dmar_domain *domain, int le=
+vel,
++					struct dma_pte *pte, unsigned long pfn,
++					unsigned long start_pfn, unsigned long last_pfn,
++					struct page *freelist)
 +{
-+	struct rb_node **link = &iommu->dma_list.rb_node, *parent = NULL;
-+	struct vfio_dma *dma;
++	struct dma_pte *first_pte =3D NULL, *last_pte =3D NULL;
 +
-+	while (*link) {
-+		parent = *link;
-+		dma = rb_entry(parent, struct vfio_dma, node);
++	pfn =3D max(start_pfn, pfn);
++	pte =3D &pte[pfn_level_offset(pfn, level)];
 +
-+		if (new->iova + new->size <= dma->iova)
-+			link = &(*link)->rb_left;
-+		else
-+			link = &(*link)->rb_right;
-+	}
++	do {
++		unsigned long level_pfn;
++		struct dma_pte *level_pte;
 +
-+	rb_link_node(&new->node, parent, link);
-+	rb_insert_color(&new->node, &iommu->dma_list);
-+}
++		if (!dma_pte_present(pte))
++			goto next;
 +
-+static void vfio_remove_dma(struct vfio_iommu *iommu, struct vfio_dma *old)
-+{
-+	rb_erase(&old->node, &iommu->dma_list);
-+}
++		level_pfn =3D pfn & level_mask(level - 1);
++		level_pte =3D phys_to_virt(dma_pte_addr(pte));
 +
-+static int iova_to_win(struct vfio_iommu *iommu, dma_addr_t iova)
-+{
-+	u64 offset = iova - iommu->aperture_start;
-+	do_div(offset, iommu->page_size);
-+	return (int) offset;
-+}
++		/* If range covers entire pagetable, free it */
++		if (start_pfn <=3D level_pfn &&
++		    last_pfn >=3D level_pfn + level_size(level)) {
 +
-+static int vfio_disable_iommu_domain(struct vfio_iommu *iommu)
-+{
-+	int enable = 0;
-+	return iommu_domain_set_attr(iommu->domain,
-+				     DOMAIN_ATTR_FSL_PAMU_ENABLE, &enable);
-+}
++			/* These suborbinate page tables are going away entirely. Don't
++			   bother to clear them; we're just going to *free* them. */
++			if (level > 1 && !dma_pte_superpage(pte))
++				freelist =3D dma_pte_list_pagetables(domain, level - 1, pte, freelist)=
+;
 +
-+static int vfio_enable_iommu_domain(struct vfio_iommu *iommu)
-+{
-+	int enable = 1;
-+	return iommu_domain_set_attr(iommu->domain,
-+				     DOMAIN_ATTR_FSL_PAMU_ENABLE, &enable);
-+}
-+
-+/* Unmap DMA region */
-+static int vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
-+			    dma_addr_t iova, size_t *size)
-+{
-+	dma_addr_t start = iova;
-+	int win, win_start, win_end;
-+	long unlocked = 0;
-+	unsigned int nr_pages;
-+
-+	nr_pages = iommu->page_size / PAGE_SIZE;
-+	win_start = iova_to_win(iommu, iova);
-+	win_end = iova_to_win(iommu, iova + *size - 1);
-+
-+	/* Release the pinned pages */
-+	for (win = win_start; win <= win_end; iova += iommu->page_size, win++) {
-+		unsigned long pfn;
-+
-+		pfn = iommu_iova_to_phys(iommu->domain, iova) >> PAGE_SHIFT;
-+		if (!pfn)
-+			continue;
-+
-+		iommu_domain_window_disable(iommu->domain, win);
-+
-+		unlocked += vfio_unpin_pages(pfn, nr_pages, dma->prot, 1);
-+	}
-+
-+	vfio_lock_acct(-unlocked);
-+	*size = iova - start;
-+	return 0;
-+}
-+
-+static int vfio_remove_dma_overlap(struct vfio_iommu *iommu, dma_addr_t start,
-+				   size_t *size, struct vfio_dma *dma)
-+{
-+	size_t offset, overlap, tmp;
-+	struct vfio_dma *split;
-+	int ret;
-+
-+	if (!*size)
-+		return 0;
-+
-+	/*
-+	 * Existing dma region is completely covered, unmap all.  This is
-+	 * the likely case since userspace tends to map and unmap buffers
-+	 * in one shot rather than multiple mappings within a buffer.
-+	 */
-+	if (likely(start <= dma->iova &&
-+		   start + *size >= dma->iova + dma->size)) {
-+		*size = dma->size;
-+		ret = vfio_unmap_unpin(iommu, dma, dma->iova, size);
-+		if (ret)
-+			return ret;
-+
-+		/*
-+		 * Did we remove more than we have?  Should never happen
-+		 * since a vfio_dma is contiguous in iova and vaddr.
-+		 */
-+		WARN_ON(*size != dma->size);
-+
-+		vfio_remove_dma(iommu, dma);
-+		kfree(dma);
-+		return 0;
-+	}
-+
-+	/* Overlap low address of existing range */
-+	if (start <= dma->iova) {
-+		overlap = start + *size - dma->iova;
-+		ret = vfio_unmap_unpin(iommu, dma, dma->iova, &overlap);
-+		if (ret)
-+			return ret;
-+
-+		vfio_remove_dma(iommu, dma);
-+
-+		/*
-+		 * Check, we may have removed to whole vfio_dma.  If not
-+		 * fixup and re-insert.
-+		 */
-+		if (overlap < dma->size) {
-+			dma->iova += overlap;
-+			dma->vaddr += overlap;
-+			dma->size -= overlap;
-+			vfio_insert_dma(iommu, dma);
-+		} else
-+			kfree(dma);
-+
-+		*size = overlap;
-+		return 0;
-+	}
-+
-+	/* Overlap high address of existing range */
-+	if (start + *size >= dma->iova + dma->size) {
-+		offset = start - dma->iova;
-+		overlap = dma->size - offset;
-+
-+		ret = vfio_unmap_unpin(iommu, dma, start, &overlap);
-+		if (ret)
-+			return ret;
-+
-+		dma->size -= overlap;
-+		*size = overlap;
-+		return 0;
-+	}
-+
-+	/* Split existing */
-+
-+	/*
-+	 * Allocate our tracking structure early even though it may not
-+	 * be used.  An Allocation failure later loses track of pages and
-+	 * is more difficult to unwind.
-+	 */
-+	split = kzalloc(sizeof(*split), GFP_KERNEL);
-+	if (!split)
-+		return -ENOMEM;
-+
-+	offset = start - dma->iova;
-+
-+	ret = vfio_unmap_unpin(iommu, dma, start, size);
-+	if (ret || !*size) {
-+		kfree(split);
-+		return ret;
-+	}
-+
-+	tmp = dma->size;
-+
-+	/* Resize the lower vfio_dma in place, before the below insert */
-+	dma->size = offset;
-+
-+	/* Insert new for remainder, assuming it didn't all get unmapped */
-+	if (likely(offset + *size < tmp)) {
-+		split->size = tmp - offset - *size;
-+		split->iova = dma->iova + offset + *size;
-+		split->vaddr = dma->vaddr + offset + *size;
-+		split->prot = dma->prot;
-+		vfio_insert_dma(iommu, split);
-+	} else
-+		kfree(split);
-+
-+	return 0;
-+}
-+
-+/* Map DMA region */
-+static int vfio_dma_map(struct vfio_iommu *iommu, dma_addr_t iova,
-+			  unsigned long vaddr, long npage, int prot)
-+{
-+	int ret = 0, i;
-+	size_t size;
-+	unsigned int win, nr_subwindows;
-+	dma_addr_t iovamap;
-+
-+	/* total size to be mapped */
-+	size = npage << PAGE_SHIFT;
-+	do_div(size, iommu->page_size);
-+	nr_subwindows  = size;
-+	size = npage << PAGE_SHIFT;
-+	iovamap = iova;
-+	for (i = 0; i < nr_subwindows; i++) {
-+		unsigned long pfn;
-+		unsigned long nr_pages;
-+		dma_addr_t mapsize;
-+		struct vfio_dma *dma = NULL;
-+
-+		win = iova_to_win(iommu, iovamap);
-+		if (iovamap != iommu->aperture_start + iommu->page_size * win) {
-+			pr_err("%s iova(%llx) unalligned to window size %llx\n",
-+				__func__, iovamap, iommu->page_size);
-+			ret = -EINVAL;
-+			break;
++			dma_clear_pte(pte);
++			if (!first_pte)
++				first_pte =3D pte;
++			last_pte =3D pte;
++		} else {
++			/* Recurse down into a level that isn't *entirely* obsolete */
++			freelist =3D dma_pte_clear_level(domain, level - 1, level_pte,
++						       level_pfn, start_pfn, last_pfn, freelist);
 +		}
++next:
++		pfn +=3D level_size(level);
++	} while (!first_pte_in_page(++pte) && pfn <=3D last_pfn);
 +
-+		mapsize = min(iova + size - iovamap, iommu->page_size);
-+		/*
-+		 * FIXME: Currently we only support mapping page-size
-+		 * of subwindow-size.
-+		 */
-+		if (mapsize < iommu->page_size) {
-+			pr_err("%s iova (%llx) not alligned to window size %llx\n",
-+				__func__, iovamap, iommu->page_size);
-+			ret = -EINVAL;
-+			break;
-+		}
++	if (first_pte)
++		domain_flush_cache(domain, first_pte,
++				   (void *)++last_pte - (void *)first_pte);
 +
-+		nr_pages = mapsize >> PAGE_SHIFT;
-+
-+		/* Pin a contiguous chunk of memory */
-+		ret = vfio_pin_pages(vaddr, nr_pages, prot, &pfn);
-+		if (ret != nr_pages) {
-+			pr_err("%s unable to pin pages = %lx, pinned(%lx/%lx)\n",
-+				__func__, vaddr, npage, nr_pages);
-+			ret = -EINVAL;
-+			break;
-+		}
-+
-+		ret = iommu_domain_window_enable(iommu->domain, win,
-+						 (phys_addr_t)pfn << PAGE_SHIFT,
-+						 mapsize, prot);
-+		if (ret) {
-+			pr_err("%s unable to iommu_map()\n", __func__);
-+			ret = -EINVAL;
-+			break;
-+		}
-+
-+		/*
-+		 * Check if we abut a region below - nothing below 0.
-+		 * This is the most likely case when mapping chunks of
-+		 * physically contiguous regions within a virtual address
-+		 * range.  Update the abutting entry in place since iova
-+		 * doesn't change.
-+		 */
-+		if (likely(iovamap)) {
-+			struct vfio_dma *tmp;
-+			tmp = vfio_find_dma(iommu, iovamap - 1, 1);
-+			if (tmp && tmp->prot == prot &&
-+			    tmp->vaddr + tmp->size == vaddr) {
-+				tmp->size += mapsize;
-+				dma = tmp;
-+			}
-+		}
-+
-+		/*
-+		 * Check if we abut a region above - nothing above ~0 + 1.
-+		 * If we abut above and below, remove and free.  If only
-+		 * abut above, remove, modify, reinsert.
-+		 */
-+		if (likely(iovamap + mapsize)) {
-+			struct vfio_dma *tmp;
-+			tmp = vfio_find_dma(iommu, iovamap + mapsize, 1);
-+			if (tmp && tmp->prot == prot &&
-+			    tmp->vaddr == vaddr + mapsize) {
-+				vfio_remove_dma(iommu, tmp);
-+				if (dma) {
-+					dma->size += tmp->size;
-+					kfree(tmp);
-+				} else {
-+					tmp->size += mapsize;
-+					tmp->iova = iovamap;
-+					tmp->vaddr = vaddr;
-+					vfio_insert_dma(iommu, tmp);
-+					dma = tmp;
-+				}
-+			}
-+		}
-+
-+		if (!dma) {
-+			dma = kzalloc(sizeof(*dma), GFP_KERNEL);
-+			if (!dma) {
-+				iommu_unmap(iommu->domain, iovamap, mapsize);
-+				vfio_unpin_pages(pfn, npage, prot, true);
-+				ret = -ENOMEM;
-+				break;
-+			}
-+
-+			dma->size = mapsize;
-+			dma->iova = iovamap;
-+			dma->vaddr = vaddr;
-+			dma->prot = prot;
-+			vfio_insert_dma(iommu, dma);
-+		}
-+
-+		iovamap += mapsize;
-+		vaddr += mapsize;
-+	}
-+
-+        if (ret) {
-+                struct vfio_dma *tmp;
-+                while ((tmp = vfio_find_dma(iommu, iova, size))) {
-+                        int r = vfio_remove_dma_overlap(iommu, iova,
-+                                                        &size, tmp);
-+                        if (WARN_ON(r || !size))
-+                                break;
-+                }
-+        }
-+
-+	vfio_enable_iommu_domain(iommu);
-+	return 0;
++	return freelist;
 +}
 +
-+static int vfio_dma_do_map(struct vfio_iommu *iommu,
-+			   struct vfio_iommu_type1_dma_map *map)
++/* We can't just free the pages because the IOMMU may still be walking
++   the page tables, and may have cached the intermediate levels. The
++   pages can only be freed after the IOTLB flush has been done. */
++struct page *domain_unmap(struct dmar_domain *domain,
++			  unsigned long start_pfn,
++			  unsigned long last_pfn)
 +{
-+	dma_addr_t iova = map->iova;
-+	size_t size = map->size;
-+	unsigned long vaddr = map->vaddr;
-+	int ret = 0, prot = 0;
-+	long npage;
++	int addr_width =3D agaw_to_width(domain->agaw) - VTD_PAGE_SHIFT;
++	struct page *freelist =3D NULL;
 +
-+	/* READ/WRITE from device perspective */
-+	if (map->flags & VFIO_DMA_MAP_FLAG_WRITE)
-+		prot |= IOMMU_WRITE;
-+	if (map->flags & VFIO_DMA_MAP_FLAG_READ)
-+		prot |= IOMMU_READ;
++	BUG_ON(addr_width < BITS_PER_LONG && start_pfn >> addr_width);
++	BUG_ON(addr_width < BITS_PER_LONG && last_pfn >> addr_width);
++	BUG_ON(start_pfn > last_pfn);
 +
-+	if (!prot)
-+		return -EINVAL; /* No READ/WRITE? */
++	/* we don't need lock here; nobody else touches the iova range */
++	freelist =3D dma_pte_clear_level(domain, agaw_to_level(domain->agaw),
++				       domain->pgd, 0, start_pfn, last_pfn, NULL);
 +
-+	/* Don't allow IOVA wrap */
-+	if (iova + size && iova + size < iova)
-+		return -EINVAL;
-+
-+	/* Don't allow virtual address wrap */
-+	if (vaddr + size && vaddr + size < vaddr)
-+		return -EINVAL;
-+
-+	/*
-+	 * FIXME: Currently we only support mapping page-size
-+	 * of subwindow-size.
-+	 */
-+	if (size < iommu->page_size)
-+		return -EINVAL;
-+
-+	npage = size >> PAGE_SHIFT;
-+	if (!npage)
-+		return -EINVAL;
-+
-+	mutex_lock(&iommu->lock);
-+
-+	if (vfio_find_dma(iommu, iova, size)) {
-+		ret = -EEXIST;
-+		goto out_lock;
-+	}
-+
-+	vfio_dma_map(iommu, iova, vaddr, npage, prot);
-+
-+out_lock:
-+	mutex_unlock(&iommu->lock);
-+	return ret;
++	return freelist;
 +}
 +
-+static int vfio_dma_do_unmap(struct vfio_iommu *iommu,
-+			     struct vfio_iommu_type1_dma_unmap *unmap)
++void dma_free_pagelist(struct page *freelist)
 +{
-+	struct vfio_dma *dma;
-+	size_t unmapped = 0, size;
-+	int ret = 0;
++	struct page *pg;
 +
-+	mutex_lock(&iommu->lock);
-+
-+	while ((dma = vfio_find_dma(iommu, unmap->iova, unmap->size))) {
-+		size = unmap->size;
-+		ret = vfio_remove_dma_overlap(iommu, unmap->iova, &size, dma);
-+		if (ret || !size)
-+			break;
-+		unmapped += size;
++	while ((pg =3D freelist)) {
++		freelist =3D pg->freelist;
++		free_pgtable_page(pg);
 +	}
-+
-+	mutex_unlock(&iommu->lock);
-+
-+	/*
-+	 * We may unmap more than requested, update the unmap struct so
-+	 * userspace can know.
-+	 */
-+	unmap->size = unmapped;
-+
-+	return ret;
 +}
 +
-+static int vfio_handle_get_attr(struct vfio_iommu *iommu,
-+			 struct vfio_pamu_attr *pamu_attr)
-+{
-+	switch (pamu_attr->attribute) {
-+	case VFIO_ATTR_GEOMETRY: {
-+		struct iommu_domain_geometry geom;
-+		if (iommu_domain_get_attr(iommu->domain,
-+				      DOMAIN_ATTR_GEOMETRY, &geom)) {
-+			pr_err("%s Error getting domain geometry\n",
-+			       __func__);
-+			return -EFAULT;
-+		}
-+
-+		pamu_attr->attr_info.attr.aperture_start = geom.aperture_start;
-+		pamu_attr->attr_info.attr.aperture_end = geom.aperture_end;
-+		break;
-+	}
-+	case VFIO_ATTR_WINDOWS: {
-+		u32 count;
-+		if (iommu_domain_get_attr(iommu->domain,
-+				      DOMAIN_ATTR_WINDOWS, &count)) {
-+			pr_err("%s Error getting domain windows\n",
-+			       __func__);
-+			return -EFAULT;
-+		}
-+
-+		pamu_attr->attr_info.windows = count;
-+		break;
-+	}
-+	case VFIO_ATTR_PAMU_STASH: {
-+		struct pamu_stash_attribute stash;
-+		if (iommu_domain_get_attr(iommu->domain,
-+				      DOMAIN_ATTR_FSL_PAMU_STASH, &stash)) {
-+			pr_err("%s Error getting domain windows\n",
-+			       __func__);
-+			return -EFAULT;
-+		}
-+
-+		pamu_attr->attr_info.stash.cpu = stash.cpu;
-+		pamu_attr->attr_info.stash.cache = stash.cache;
-+		break;
-+	}
-+
-+	default:
-+		pr_err("%s Error: Invalid attribute (%d)\n",
-+			 __func__, pamu_attr->attribute);
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int vfio_handle_set_attr(struct vfio_iommu *iommu,
-+			 struct vfio_pamu_attr *pamu_attr)
-+{
-+	switch (pamu_attr->attribute) {
-+	case VFIO_ATTR_GEOMETRY: {
-+		struct iommu_domain_geometry geom;
-+
-+		geom.aperture_start = pamu_attr->attr_info.attr.aperture_start;
-+		geom.aperture_end = pamu_attr->attr_info.attr.aperture_end;
-+		iommu->aperture_start = geom.aperture_start;
-+		iommu->aperture_end = geom.aperture_end;
-+		geom.force_aperture = 1;
-+		if (iommu_domain_set_attr(iommu->domain,
-+					  DOMAIN_ATTR_GEOMETRY, &geom)) {
-+			pr_err("%s Error setting domain geometry\n", __func__);
-+			return -EFAULT;
-+		}
-+
-+		break;
-+	}
-+	case VFIO_ATTR_WINDOWS: {
-+		u32 count = pamu_attr->attr_info.windows;
-+		u64 size;
-+		if (count > 256) {
-+			pr_err("Number of subwindows requested (%d) is 256\n",
-+				count);
-+			return -EINVAL;
-+		}
-+		iommu->nsubwindows = pamu_attr->attr_info.windows;
-+		size = iommu->aperture_end - iommu->aperture_start + 1;
-+		do_div(size, count);
-+		iommu->page_size = size;
-+		if (iommu_domain_set_attr(iommu->domain,
-+				      DOMAIN_ATTR_WINDOWS, &count)) {
-+			pr_err("%s Error getting domain windows\n",
-+			       __func__);
-+			return -EFAULT;
-+		}
-+
-+		break;
-+	}
-+	case VFIO_ATTR_PAMU_STASH: {
-+		struct pamu_stash_attribute stash;
-+
-+		stash.cpu = pamu_attr->attr_info.stash.cpu;
-+		stash.cache = pamu_attr->attr_info.stash.cache;
-+		if (iommu_domain_set_attr(iommu->domain,
-+				      DOMAIN_ATTR_FSL_PAMU_STASH, &stash)) {
-+			pr_err("%s Error getting domain windows\n",
-+			       __func__);
-+			return -EFAULT;
-+		}
-+		break;
-+	}
-+
-+	default:
-+		pr_err("%s Error: Invalid attribute (%d)\n",
-+			 __func__, pamu_attr->attribute);
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int vfio_msi_map(struct vfio_iommu *iommu,
-+			struct vfio_pamu_msi_bank_map *msi_map, int prot)
-+{
-+	struct msi_region region;
-+	int window;
-+	int ret;
-+
-+	ret = msi_get_region(msi_map->msi_bank_index, &region);
-+	if (ret) {
-+		pr_err("%s MSI region (%d) not found\n", __func__,
-+		       msi_map->msi_bank_index);
-+		return ret;
-+	}
-+
-+	window = iova_to_win(iommu, msi_map->iova);
-+	ret = iommu_domain_window_enable(iommu->domain, window, region.addr,
-+					 region.size, prot);
-+	if (ret) {
-+		pr_err("%s Error: unable to map msi region\n", __func__);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int vfio_do_msi_map(struct vfio_iommu *iommu,
-+			struct vfio_pamu_msi_bank_map *msi_map)
-+{
-+	struct vfio_msi_dma *msi_dma;
-+	int ret, prot = 0;
-+
-+	/* READ/WRITE from device perspective */
-+	if (msi_map->flags & VFIO_DMA_MAP_FLAG_WRITE)
-+		prot |= IOMMU_WRITE;
-+	if (msi_map->flags & VFIO_DMA_MAP_FLAG_READ)
-+		prot |= IOMMU_READ;
-+
-+	if (!prot)
-+		return -EINVAL; /* No READ/WRITE? */
-+
-+	ret = vfio_msi_map(iommu, msi_map, prot);
-+	if (ret)
-+		return ret;
-+
-+	msi_dma = kzalloc(sizeof(*msi_dma), GFP_KERNEL);
-+	if (!msi_dma)
-+		return -ENOMEM;
-+
-+	msi_dma->iova = msi_map->iova;
-+	msi_dma->bank_id = msi_map->msi_bank_index;
-+	list_add(&msi_dma->next, &iommu->msi_dma_list);
-+	return 0;
-+}
-+
-+static void vfio_msi_unmap(struct vfio_iommu *iommu, dma_addr_t iova)
-+{
-+	int window;
-+	window = iova_to_win(iommu, iova);
-+	iommu_domain_window_disable(iommu->domain, window);
-+}
-+
-+static int vfio_do_msi_unmap(struct vfio_iommu *iommu,
-+			     struct vfio_pamu_msi_bank_unmap *msi_unmap)
-+{
-+	struct vfio_msi_dma *mdma, *mdma_tmp;
-+
-+	list_for_each_entry_safe(mdma, mdma_tmp, &iommu->msi_dma_list, next) {
-+		if (mdma->iova == msi_unmap->iova) {
-+			vfio_msi_unmap(iommu, mdma->iova);
-+			list_del(&mdma->next);
-+			kfree(mdma);
-+			return 0;
-+		}
-+	}
-+
-+	return -EINVAL;
-+}
-+static void *vfio_iommu_fsl_pamu_open(unsigned long arg)
-+{
-+	struct vfio_iommu *iommu;
-+
-+	if (arg != VFIO_FSL_PAMU_IOMMU)
-+		return ERR_PTR(-EINVAL);
-+
-+	iommu = kzalloc(sizeof(*iommu), GFP_KERNEL);
-+	if (!iommu)
-+		return ERR_PTR(-ENOMEM);
-+
-+	INIT_LIST_HEAD(&iommu->group_list);
-+	iommu->dma_list = RB_ROOT;
-+	INIT_LIST_HEAD(&iommu->msi_dma_list);
-+	mutex_init(&iommu->lock);
-+
-+	/*
-+	 * Wish we didn't have to know about bus_type here.
-+	 */
-+	iommu->domain = iommu_domain_alloc(&pci_bus_type);
-+	if (!iommu->domain) {
-+		kfree(iommu);
-+		return ERR_PTR(-EIO);
-+	}
-+
-+	return iommu;
-+}
-+
-+static void vfio_iommu_fsl_pamu_release(void *iommu_data)
-+{
-+	struct vfio_iommu *iommu = iommu_data;
-+	struct vfio_group *group, *group_tmp;
-+	struct vfio_msi_dma *mdma, *mdma_tmp;
-+	struct rb_node *node;
-+
-+	list_for_each_entry_safe(group, group_tmp, &iommu->group_list, next) {
-+		iommu_detach_group(iommu->domain, group->iommu_group);
-+		list_del(&group->next);
-+		kfree(group);
-+	}
-+
-+	while ((node = rb_first(&iommu->dma_list))) {
-+		struct vfio_dma *dma = rb_entry(node, struct vfio_dma, node);
-+		size_t size = dma->size;
-+		vfio_remove_dma_overlap(iommu, dma->iova, &size, dma);
-+		if (WARN_ON(!size))
-+			break;
-+	}
-+
-+	list_for_each_entry_safe(mdma, mdma_tmp, &iommu->msi_dma_list, next) {
-+		vfio_msi_unmap(iommu, mdma->iova);
-+		list_del(&mdma->next);
-+		kfree(mdma);
-+	}
-+
-+	iommu_domain_free(iommu->domain);
-+	iommu->domain = NULL;
-+	kfree(iommu);
-+}
-+
-+static long vfio_iommu_fsl_pamu_ioctl(void *iommu_data,
-+				   unsigned int cmd, unsigned long arg)
-+{
-+	struct vfio_iommu *iommu = iommu_data;
-+	unsigned long minsz;
-+
-+	if (cmd == VFIO_CHECK_EXTENSION) {
-+		switch (arg) {
-+		case VFIO_FSL_PAMU_IOMMU:
-+			return 1;
-+		default:
-+			return 0;
-+		}
-+	} else if (cmd == VFIO_IOMMU_MAP_DMA) {
-+		struct vfio_iommu_type1_dma_map map;
-+		uint32_t mask = VFIO_DMA_MAP_FLAG_READ |
-+				VFIO_DMA_MAP_FLAG_WRITE;
-+
-+		minsz = offsetofend(struct vfio_iommu_type1_dma_map, size);
-+
-+		if (copy_from_user(&map, (void __user *)arg, minsz))
-+			return -EFAULT;
-+
-+		if (map.argsz < minsz || map.flags & ~mask)
-+			return -EINVAL;
-+
-+		return vfio_dma_do_map(iommu, &map);
-+
-+	} else if (cmd == VFIO_IOMMU_UNMAP_DMA) {
-+		struct vfio_iommu_type1_dma_unmap unmap;
-+		long ret;
-+
-+		minsz = offsetofend(struct vfio_iommu_type1_dma_unmap, size);
-+
-+		if (copy_from_user(&unmap, (void __user *)arg, minsz))
-+			return -EFAULT;
-+
-+		if (unmap.argsz < minsz || unmap.flags)
-+			return -EINVAL;
-+
-+		ret = vfio_dma_do_unmap(iommu, &unmap);
-+		if (ret)
-+			return ret;
-+
-+		return copy_to_user((void __user *)arg, &unmap, minsz);
-+	} else if (cmd == VFIO_IOMMU_PAMU_GET_ATTR) {
-+		struct vfio_pamu_attr pamu_attr;
-+
-+		minsz = offsetofend(struct vfio_pamu_attr, attr_info);
-+		if (copy_from_user(&pamu_attr, (void __user *)arg, minsz))
-+			return -EFAULT;
-+
-+		if (pamu_attr.argsz < minsz)
-+			return -EINVAL;
-+
-+		vfio_handle_get_attr(iommu, &pamu_attr);
-+
-+		copy_to_user((void __user *)arg, &pamu_attr, minsz);
-+		return 0;
-+	} else if (cmd == VFIO_IOMMU_PAMU_SET_ATTR) {
-+		struct vfio_pamu_attr pamu_attr;
-+
-+		minsz = offsetofend(struct vfio_pamu_attr, attr_info);
-+		if (copy_from_user(&pamu_attr, (void __user *)arg, minsz))
-+			return -EFAULT;
-+
-+		if (pamu_attr.argsz < minsz)
-+			return -EINVAL;
-+
-+		vfio_handle_set_attr(iommu, &pamu_attr);
-+		return 0;
-+	} else if (cmd == VFIO_IOMMU_PAMU_GET_MSI_BANK_COUNT) {
-+		return msi_get_region_count();
-+	} else if (cmd == VFIO_IOMMU_PAMU_MAP_MSI_BANK) {
-+		struct vfio_pamu_msi_bank_map msi_map;
-+
-+		minsz = offsetofend(struct vfio_pamu_msi_bank_map, iova);
-+		if (copy_from_user(&msi_map, (void __user *)arg, minsz))
-+			return -EFAULT;
-+
-+		if (msi_map.argsz < minsz)
-+			return -EINVAL;
-+
-+		vfio_do_msi_map(iommu, &msi_map);
-+		return 0;
-+	} else if (cmd == VFIO_IOMMU_PAMU_UNMAP_MSI_BANK) {
-+		struct vfio_pamu_msi_bank_unmap msi_unmap;
-+
-+		minsz = offsetofend(struct vfio_pamu_msi_bank_unmap, iova);
-+		if (copy_from_user(&msi_unmap, (void __user *)arg, minsz))
-+			return -EFAULT;
-+
-+		if (msi_unmap.argsz < minsz)
-+			return -EINVAL;
-+
-+		vfio_do_msi_unmap(iommu, &msi_unmap);
-+		return 0;
-+
-+	}
-+
-+	return -ENOTTY;
-+}
-+
-+static int vfio_iommu_fsl_pamu_attach_group(void *iommu_data,
-+					 struct iommu_group *iommu_group)
-+{
-+	struct vfio_iommu *iommu = iommu_data;
-+	struct vfio_group *group, *tmp;
-+	int ret;
-+
-+	group = kzalloc(sizeof(*group), GFP_KERNEL);
-+	if (!group)
-+		return -ENOMEM;
-+
-+	mutex_lock(&iommu->lock);
-+
-+	list_for_each_entry(tmp, &iommu->group_list, next) {
-+		if (tmp->iommu_group == iommu_group) {
-+			mutex_unlock(&iommu->lock);
-+			kfree(group);
-+			return -EINVAL;
-+		}
-+	}
-+
-+	ret = iommu_attach_group(iommu->domain, iommu_group);
-+	if (ret) {
-+		mutex_unlock(&iommu->lock);
-+		kfree(group);
-+		return ret;
-+	}
-+
-+	group->iommu_group = iommu_group;
-+	list_add(&group->next, &iommu->group_list);
-+
-+	mutex_unlock(&iommu->lock);
-+
-+	return 0;
-+}
-+
-+static void vfio_iommu_fsl_pamu_detach_group(void *iommu_data,
-+					  struct iommu_group *iommu_group)
-+{
-+	struct vfio_iommu *iommu = iommu_data;
-+	struct vfio_group *group;
-+
-+	mutex_lock(&iommu->lock);
-+
-+	list_for_each_entry(group, &iommu->group_list, next) {
-+		if (group->iommu_group == iommu_group) {
-+			iommu_detach_group(iommu->domain, iommu_group);
-+			list_del(&group->next);
-+			kfree(group);
-+			break;
-+		}
-+	}
-+
-+	mutex_unlock(&iommu->lock);
-+}
-+
-+static const struct vfio_iommu_driver_ops vfio_iommu_driver_ops_fsl_pamu = {
-+	.name		= "vfio-iommu-fsl_pamu",
-+	.owner		= THIS_MODULE,
-+	.open		= vfio_iommu_fsl_pamu_open,
-+	.release	= vfio_iommu_fsl_pamu_release,
-+	.ioctl		= vfio_iommu_fsl_pamu_ioctl,
-+	.attach_group	= vfio_iommu_fsl_pamu_attach_group,
-+	.detach_group	= vfio_iommu_fsl_pamu_detach_group,
-+};
-+
-+static int __init vfio_iommu_fsl_pamu_init(void)
-+{
-+	if (!iommu_present(&pci_bus_type))
-+		return -ENODEV;
-+
-+	return vfio_register_iommu_driver(&vfio_iommu_driver_ops_fsl_pamu);
-+}
-+
-+static void __exit vfio_iommu_fsl_pamu_cleanup(void)
-+{
-+	vfio_unregister_iommu_driver(&vfio_iommu_driver_ops_fsl_pamu);
-+}
-+
-+module_init(vfio_iommu_fsl_pamu_init);
-+module_exit(vfio_iommu_fsl_pamu_cleanup);
-+
-+MODULE_VERSION(DRIVER_VERSION);
-+MODULE_LICENSE("GPL v2");
-+MODULE_AUTHOR(DRIVER_AUTHOR);
-+MODULE_DESCRIPTION(DRIVER_DESC);
-diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-index 0fd47f5..d359055 100644
---- a/include/uapi/linux/vfio.h
-+++ b/include/uapi/linux/vfio.h
-@@ -23,6 +23,7 @@
- 
- #define VFIO_TYPE1_IOMMU		1
- #define VFIO_SPAPR_TCE_IOMMU		2
-+#define VFIO_FSL_PAMU_IOMMU		3
- 
- /*
-  * The IOCTL interface is designed for extensibility by embedding the
-@@ -451,4 +452,103 @@ struct vfio_iommu_spapr_tce_info {
- 
- /* ***************************************************************** */
- 
-+/*********** APIs for VFIO_PAMU type only ****************/
-+/*
-+ * VFIO_IOMMU_PAMU_GET_ATTR - _IO(VFIO_TYPE, VFIO_BASE + 17,
-+ *				  struct vfio_pamu_attr)
-+ *
-+ * Gets the iommu attributes for the current vfio container.
-+ * Caller sets argsz and attribute.  The ioctl fills in
-+ * the provided struct vfio_pamu_attr based on the attribute
-+ * value that was set.
-+ * Return: 0 on success, -errno on failure
-+ */
-+struct vfio_pamu_attr {
-+	__u32	argsz;
-+	__u32	flags;	/* no flags currently */
-+#define VFIO_ATTR_GEOMETRY	0
-+#define VFIO_ATTR_WINDOWS	1
-+#define VFIO_ATTR_PAMU_STASH	2
-+	__u32	attribute;
-+
-+	union {
-+		/* VFIO_ATTR_GEOMETRY */
-+		struct {
-+			/* first addr that can be mapped */
-+			__u64 aperture_start;
-+			/* last addr that can be mapped */
-+			__u64 aperture_end;
-+		} attr;
-+
-+		/* VFIO_ATTR_WINDOWS */
-+		__u32 windows;  /* number of windows in the aperture
-+				 * initially this will be the max number
-+				 * of windows that can be set
-+				 */
-+		/* VFIO_ATTR_PAMU_STASH */
-+		struct {
-+			__u32 cpu;	/* CPU number for stashing */
-+			__u32 cache;	/* cache ID for stashing */
-+		} stash;
-+	} attr_info;
-+};
-+#define VFIO_IOMMU_PAMU_GET_ATTR  _IO(VFIO_TYPE, VFIO_BASE + 17)
-+
-+/*
-+ * VFIO_IOMMU_PAMU_SET_ATTR - _IO(VFIO_TYPE, VFIO_BASE + 18,
-+ *				  struct vfio_pamu_attr)
-+ *
-+ * Sets the iommu attributes for the current vfio container.
-+ * Caller sets struct vfio_pamu attr, including argsz and attribute and
-+ * setting any fields that are valid for the attribute.
-+ * Return: 0 on success, -errno on failure
-+ */
-+#define VFIO_IOMMU_PAMU_SET_ATTR  _IO(VFIO_TYPE, VFIO_BASE + 18)
-+
-+/*
-+ * VFIO_IOMMU_PAMU_GET_MSI_BANK_COUNT - _IO(VFIO_TYPE, VFIO_BASE + 19, __u32)
-+ *
-+ * Returns the number of MSI banks for this platform.  This tells user space
-+ * how many aperture windows should be reserved for MSI banks when setting
-+ * the PAMU geometry and window count.
-+ * Return: __u32 bank count on success, -errno on failure
-+ */
-+#define VFIO_IOMMU_PAMU_GET_MSI_BANK_COUNT _IO(VFIO_TYPE, VFIO_BASE + 19)
-+
-+/*
-+ * VFIO_IOMMU_PAMU_MAP_MSI_BANK - _IO(VFIO_TYPE, VFIO_BASE + 20,
-+ *				      struct vfio_pamu_msi_bank_map)
-+ *
-+ * Maps the MSI bank at the specified index and iova.  User space must
-+ * call this ioctl once for each MSI bank (count of banks is returned by
-+ * VFIO_IOMMU_PAMU_GET_MSI_BANK_COUNT).
-+ * Caller provides struct vfio_pamu_msi_bank_map with all fields set.
-+ * Return: 0 on success, -errno on failure
-+ */
-+
-+struct vfio_pamu_msi_bank_map {
-+	__u32	argsz;
-+	__u32	flags;		/* no flags currently */
-+	__u32	msi_bank_index;	/* the index of the MSI bank */
-+	__u64	iova;		/* the iova the bank is to be mapped to */
-+};
-+#define VFIO_IOMMU_PAMU_MAP_MSI_BANK  _IO(VFIO_TYPE, VFIO_BASE + 20)
-+
-+/*
-+ * VFIO_IOMMU_PAMU_UNMAP_MSI_BANK - _IO(VFIO_TYPE, VFIO_BASE + 21,
-+ *					struct vfio_pamu_msi_bank_unmap)
-+ *
-+ * Unmaps the MSI bank at the specified iova.
-+ * Caller provides struct vfio_pamu_msi_bank_unmap with all fields set.
-+ * Operates on VFIO file descriptor (/dev/vfio/vfio).
-+ * Return: 0 on success, -errno on failure
-+ */
-+
-+struct vfio_pamu_msi_bank_unmap {
-+	__u32	argsz;
-+	__u32	flags;	/* no flags currently */
-+	__u64	iova;	/* the iova to be unmapped to */
-+};
-+#define VFIO_IOMMU_PAMU_UNMAP_MSI_BANK  _IO(VFIO_TYPE, VFIO_BASE + 21)
-+
- #endif /* _UAPIVFIO_H */
--- 
-1.7.0.4
+ /* iommu handling */
+ static int iommu_alloc_root_entry(struct intel_iommu *iommu)
+ {
+@@ -1054,7 +1163,7 @@ static void __iommu_flush_iotlb(struct intel_iommu *i=
+ommu, u16 did,
+ 		break;
+ 	case DMA_TLB_PSI_FLUSH:
+ 		val =3D DMA_TLB_PSI_FLUSH|DMA_TLB_IVT|DMA_TLB_DID(did);
+-		/* Note: always flush non-leaf currently */
++		/* IH bit is passed in as part of address */
+ 		val_iva =3D size_order | addr;
+ 		break;
+ 	default:
+@@ -1165,13 +1274,15 @@ static void iommu_flush_dev_iotlb(struct dmar_domai=
+n *domain,
+ }
+=20
+ static void iommu_flush_iotlb_psi(struct intel_iommu *iommu, u16 did,
+-				  unsigned long pfn, unsigned int pages, int map)
++				  unsigned long pfn, unsigned int pages, int ih, int map)
+ {
+ 	unsigned int mask =3D ilog2(__roundup_pow_of_two(pages));
+ 	uint64_t addr =3D (uint64_t)pfn << VTD_PAGE_SHIFT;
+=20
+ 	BUG_ON(pages =3D=3D 0);
+=20
++	if (ih)
++		ih =3D 1 << 6;
+ 	/*
+ 	 * Fallback to domain selective flush if no PSI support or the size is
+ 	 * too big.
+@@ -1182,7 +1293,7 @@ static void iommu_flush_iotlb_psi(struct intel_iommu =
+*iommu, u16 did,
+ 		iommu->flush.flush_iotlb(iommu, did, 0, 0,
+ 						DMA_TLB_DSI_FLUSH);
+ 	else
+-		iommu->flush.flush_iotlb(iommu, did, addr, mask,
++		iommu->flush.flush_iotlb(iommu, did, addr | ih, mask,
+ 						DMA_TLB_PSI_FLUSH);
+=20
+ 	/*
+@@ -2850,7 +2961,7 @@ static dma_addr_t __intel_map_single(struct device *h=
+wdev, phys_addr_t paddr,
+=20
+ 	/* it's a non-present to present mapping. Only flush if caching mode */
+ 	if (cap_caching_mode(iommu->cap))
+-		iommu_flush_iotlb_psi(iommu, domain->id, mm_to_dma_pfn(iova->pfn_lo), si=
+ze, 1);
++		iommu_flush_iotlb_psi(iommu, domain->id, mm_to_dma_pfn(iova->pfn_lo), si=
+ze, 0, 1);
+ 	else
+ 		iommu_flush_write_buffer(iommu);
+=20
+@@ -2902,13 +3013,16 @@ static void flush_unmaps(void)
+ 			/* On real hardware multiple invalidations are expensive */
+ 			if (cap_caching_mode(iommu->cap))
+ 				iommu_flush_iotlb_psi(iommu, domain->id,
+-				iova->pfn_lo, iova->pfn_hi - iova->pfn_lo + 1, 0);
++					iova->pfn_lo, iova->pfn_hi - iova->pfn_lo + 1,
++					!deferred_flush[i].freelist[j], 0);
+ 			else {
+ 				mask =3D ilog2(mm_to_dma_pfn(iova->pfn_hi - iova->pfn_lo + 1));
+ 				iommu_flush_dev_iotlb(deferred_flush[i].domain[j],
+ 						(uint64_t)iova->pfn_lo << PAGE_SHIFT, mask);
+ 			}
+ 			__free_iova(&deferred_flush[i].domain[j]->iovad, iova);
++			if (deferred_flush[i].freelist[j])
++				dma_free_pagelist(deferred_flush[i].freelist[j]);
+ 		}
+ 		deferred_flush[i].next =3D 0;
+ 	}
+@@ -2925,7 +3039,7 @@ static void flush_unmaps_timeout(unsigned long data)
+ 	spin_unlock_irqrestore(&async_umap_flush_lock, flags);
+ }
+=20
+-static void add_unmap(struct dmar_domain *dom, struct iova *iova)
++static void add_unmap(struct dmar_domain *dom, struct iova *iova, struct p=
+age *freelist)
+ {
+ 	unsigned long flags;
+ 	int next, iommu_id;
+@@ -2941,6 +3055,7 @@ static void add_unmap(struct dmar_domain *dom, struct=
+ iova *iova)
+ 	next =3D deferred_flush[iommu_id].next;
+ 	deferred_flush[iommu_id].domain[next] =3D dom;
+ 	deferred_flush[iommu_id].iova[next] =3D iova;
++	deferred_flush[iommu_id].freelist[next] =3D freelist;
+ 	deferred_flush[iommu_id].next++;
+=20
+ 	if (!timer_on) {
+@@ -2960,6 +3075,7 @@ static void intel_unmap_page(struct device *dev, dma_=
+addr_t dev_addr,
+ 	unsigned long start_pfn, last_pfn;
+ 	struct iova *iova;
+ 	struct intel_iommu *iommu;
++	struct page *freelist;
+=20
+ 	if (iommu_no_mapping(dev))
+ 		return;
+@@ -2980,19 +3096,16 @@ static void intel_unmap_page(struct device *dev, dm=
+a_addr_t dev_addr,
+ 	pr_debug("Device %s unmapping: pfn %lx-%lx\n",
+ 		 pci_name(pdev), start_pfn, last_pfn);
+=20
+-	/*  clear the whole page */
+-	dma_pte_clear_range(domain, start_pfn, last_pfn);
+-
+-	/* free page tables */
+-	dma_pte_free_pagetable(domain, start_pfn, last_pfn);
++	freelist =3D domain_unmap(domain, start_pfn, last_pfn);
+=20
+ 	if (intel_iommu_strict) {
+ 		iommu_flush_iotlb_psi(iommu, domain->id, start_pfn,
+-				      last_pfn - start_pfn + 1, 0);
++				      last_pfn - start_pfn + 1, !freelist, 0);
+ 		/* free iova */
+ 		__free_iova(&domain->iovad, iova);
++		dma_free_pagelist(freelist);
+ 	} else {
+-		add_unmap(domain, iova);
++		add_unmap(domain, iova, freelist);
+ 		/*
+ 		 * queue up the release of the unmap to save the 1/6th of the
+ 		 * cpu used up by the iotlb flush operation...
+@@ -3054,6 +3167,7 @@ static void intel_unmap_sg(struct device *hwdev, stru=
+ct scatterlist *sglist,
+ 	unsigned long start_pfn, last_pfn;
+ 	struct iova *iova;
+ 	struct intel_iommu *iommu;
++	struct page *freelist;
+=20
+ 	if (iommu_no_mapping(hwdev))
+ 		return;
+@@ -3071,19 +3185,16 @@ static void intel_unmap_sg(struct device *hwdev, st=
+ruct scatterlist *sglist,
+ 	start_pfn =3D mm_to_dma_pfn(iova->pfn_lo);
+ 	last_pfn =3D mm_to_dma_pfn(iova->pfn_hi + 1) - 1;
+=20
+-	/*  clear the whole page */
+-	dma_pte_clear_range(domain, start_pfn, last_pfn);
+-
+-	/* free page tables */
+-	dma_pte_free_pagetable(domain, start_pfn, last_pfn);
++	freelist =3D domain_unmap(domain, start_pfn, last_pfn);
+=20
+ 	if (intel_iommu_strict) {
+ 		iommu_flush_iotlb_psi(iommu, domain->id, start_pfn,
+-				      last_pfn - start_pfn + 1, 0);
++				      last_pfn - start_pfn + 1, !freelist, 0);
+ 		/* free iova */
+ 		__free_iova(&domain->iovad, iova);
++		dma_free_pagelist(freelist);
+ 	} else {
+-		add_unmap(domain, iova);
++		add_unmap(domain, iova, freelist);
+ 		/*
+ 		 * queue up the release of the unmap to save the 1/6th of the
+ 		 * cpu used up by the iotlb flush operation...
+@@ -3166,7 +3277,7 @@ static int intel_map_sg(struct device *hwdev, struct =
+scatterlist *sglist, int ne
+=20
+ 	/* it's a non-present to present mapping. Only flush if caching mode */
+ 	if (cap_caching_mode(iommu->cap))
+-		iommu_flush_iotlb_psi(iommu, domain->id, start_vpfn, size, 1);
++		iommu_flush_iotlb_psi(iommu, domain->id, start_vpfn, size, 0, 1);
+ 	else
+ 		iommu_flush_write_buffer(iommu);
+=20
+@@ -4116,7 +4227,10 @@ static size_t intel_iommu_unmap(struct iommu_domain =
+*domain,
+ 	int order;
+=20
+ 	order =3D dma_pte_clear_range(dmar_domain, iova >> VTD_PAGE_SHIFT,
+-			    (iova + size - 1) >> VTD_PAGE_SHIFT);
++				    (iova + size - 1) >> VTD_PAGE_SHIFT);
++
++	dma_pte_free_pagetable(dmar_domain, iova >> VTD_PAGE_SHIFT,
++			       (iova + size - 1) >> VTD_PAGE_SHIFT);
+=20
+ 	if (dmar_domain->max_addr =3D=3D iova + size)
+ 		dmar_domain->max_addr =3D iova;
+
+
+
+--=20
+David Woodhouse                            Open Source Technology Centre
+David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
+
+--=-dnB42FBdoO4OBOdS+YwO
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIISxDCCBjQw
+ggQcoAMCAQICAR4wDQYJKoZIhvcNAQEFBQAwfTELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0
+Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxKTAn
+BgNVBAMTIFN0YXJ0Q29tIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MB4XDTA3MTAyNDIxMDE1NVoX
+DTE3MTAyNDIxMDE1NVowgYwxCzAJBgNVBAYTAklMMRYwFAYDVQQKEw1TdGFydENvbSBMdGQuMSsw
+KQYDVQQLEyJTZWN1cmUgRGlnaXRhbCBDZXJ0aWZpY2F0ZSBTaWduaW5nMTgwNgYDVQQDEy9TdGFy
+dENvbSBDbGFzcyAxIFByaW1hcnkgSW50ZXJtZWRpYXRlIENsaWVudCBDQTCCASIwDQYJKoZIhvcN
+AQEBBQADggEPADCCAQoCggEBAMcJg8zOLdgasSmkLhOrlr6KMoOMpohBllVHrdRvEg/q6r8jR+EK
+75xCGhR8ToREoqe7zM9/UnC6TS2y9UKTpT1v7RSMzR0t6ndl0TWBuUr/UXBhPk+Kmy7bI4yW4urC
++y7P3/1/X7U8ocb8VpH/Clt+4iq7nirMcNh6qJR+xjOhV+VHzQMALuGYn5KZmc1NbJQYclsGkDxD
+z2UbFqE2+6vIZoL+jb9x4Pa5gNf1TwSDkOkikZB1xtB4ZqtXThaABSONdfmv/Z1pua3FYxnCFmdr
+/+N2JLKutIxMYqQOJebr/f/h5t95m4JgrM3Y/w7YX9d7YAL9jvN4SydHsU6n65cCAwEAAaOCAa0w
+ggGpMA8GA1UdEwEB/wQFMAMBAf8wDgYDVR0PAQH/BAQDAgEGMB0GA1UdDgQWBBRTcu2SnODaywFc
+fH6WNU7y1LhRgjAfBgNVHSMEGDAWgBROC+8apEBbpRdphzDKNGhD0EGu8jBmBggrBgEFBQcBAQRa
+MFgwJwYIKwYBBQUHMAGGG2h0dHA6Ly9vY3NwLnN0YXJ0c3NsLmNvbS9jYTAtBggrBgEFBQcwAoYh
+aHR0cDovL3d3dy5zdGFydHNzbC5jb20vc2ZzY2EuY3J0MFsGA1UdHwRUMFIwJ6AloCOGIWh0dHA6
+Ly93d3cuc3RhcnRzc2wuY29tL3Nmc2NhLmNybDAnoCWgI4YhaHR0cDovL2NybC5zdGFydHNzbC5j
+b20vc2ZzY2EuY3JsMIGABgNVHSAEeTB3MHUGCysGAQQBgbU3AQIBMGYwLgYIKwYBBQUHAgEWImh0
+dHA6Ly93d3cuc3RhcnRzc2wuY29tL3BvbGljeS5wZGYwNAYIKwYBBQUHAgEWKGh0dHA6Ly93d3cu
+c3RhcnRzc2wuY29tL2ludGVybWVkaWF0ZS5wZGYwDQYJKoZIhvcNAQEFBQADggIBAAqDCH14qywG
+XLhjjF6uHLkjd02hcdh9hrw+VUsv+q1eeQWB21jWj3kJ96AUlPCoEGZ/ynJNScWy6QMVQjbbMXlt
+UfO4n4bGGdKo3awPWp61tjAFgraLJgDk+DsSvUD6EowjMTNx25GQgyYJ5RPIzKKR9tQW8gGK+2+R
+HxkUCTbYFnL6kl8Ch507rUdPPipJ9CgJFws3kDS3gOS5WFMxcjO5DwKfKSETEPrHh7p5shuuNktv
+sv6hxHTLhiMKX893gxdT3XLS9OKmCv87vkINQcNEcIIoFWbP9HORz9v3vQwR4e3ksLc2JZOAFK+s
+sS5XMEoznzpihEP0PLc4dCBYjbvSD7kxgDwZ+Aj8Q9PkbvE9sIPP7ON0fz095HdThKjiVJe6vofq
++n6b1NBc8XdrQvBmunwxD5nvtTW4vtN6VY7mUCmxsCieuoBJ9OlqmsVWQvifIYf40dJPZkk9YgGT
+zWLpXDSfLSplbY2LL9C9U0ptvjcDjefLTvqSFc7tw1sEhF0n/qpA2r0GpvkLRDmcSwVyPvmjFBGq
+Up/pNy8ZuPGQmHwFi2/14+xeSUDG2bwnsYJQG2EdJCB6luQ57GEnTA/yKZSTKI8dDQa8Sd3zfXb1
+9mOgSF0bBdXbuKhEpuP9wirslFe6fQ1t5j5R0xi72MZ8ikMu1RQZKCyDbMwazlHiMIIGQjCCBSqg
+AwIBAgIDBoXOMA0GCSqGSIb3DQEBBQUAMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRD
+b20gTHRkLjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYG
+A1UEAxMvU3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0EwHhcN
+MTMwNTAyMDYyMDQ2WhcNMTQwNTAzMTIxNDAyWjBdMRkwFwYDVQQNExBNd0k3ODIxNTRpV21lZVkw
+MRwwGgYDVQQDDBNkd213MkBpbmZyYWRlYWQub3JnMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZy
+YWRlYWQub3JnMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvWGuRDHiXVpOgaFkBaz8
+c3jQTfiEw7j0iKZnktCQi0xjY29QJ7GwL+fgQlbofXgYTm8E9fWERvw2tAy2BxHzAPguBzziS7JN
+hsGP9lf3L8hFJBvmdyyyj8b9A6Oi7s3JLtMRWIvyvE+DbuTkP+htuT4+XuTJr8Y5yIqd1WXr2gJk
+ANr77vTyjeNxceevP58Tqr0f+4v5g6+vNARO3bk3SaVQPDUTwGrpoPtLh3d+mQzZ4iiW3MwQS7Wr
+UVT3l2aTVHCpgtAaBs3zHWarvmIqhbWj8zdcnELNzwqTrOjaoWxuWY4k05GGfzmdjOBUiL7FDNvI
+ZwweJEPwJAQI72YhUwIDAQABo4IC2TCCAtUwCQYDVR0TBAIwADALBgNVHQ8EBAMCBLAwHQYDVR0l
+BBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMB0GA1UdDgQWBBSs0hZhUgQwqGVXzLuH6pJH0hMZwTAf
+BgNVHSMEGDAWgBRTcu2SnODaywFcfH6WNU7y1LhRgjAeBgNVHREEFzAVgRNkd213MkBpbmZyYWRl
+YWQub3JnMIIBTAYDVR0gBIIBQzCCAT8wggE7BgsrBgEEAYG1NwECAzCCASowLgYIKwYBBQUHAgEW
+Imh0dHA6Ly93d3cuc3RhcnRzc2wuY29tL3BvbGljeS5wZGYwgfcGCCsGAQUFBwICMIHqMCcWIFN0
+YXJ0Q29tIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MAMCAQEagb5UaGlzIGNlcnRpZmljYXRlIHdh
+cyBpc3N1ZWQgYWNjb3JkaW5nIHRvIHRoZSBDbGFzcyAxIFZhbGlkYXRpb24gcmVxdWlyZW1lbnRz
+IG9mIHRoZSBTdGFydENvbSBDQSBwb2xpY3ksIHJlbGlhbmNlIG9ubHkgZm9yIHRoZSBpbnRlbmRl
+ZCBwdXJwb3NlIGluIGNvbXBsaWFuY2Ugb2YgdGhlIHJlbHlpbmcgcGFydHkgb2JsaWdhdGlvbnMu
+MDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwuc3RhcnRzc2wuY29tL2NydHUxLWNybC5jcmww
+gY4GCCsGAQUFBwEBBIGBMH8wOQYIKwYBBQUHMAGGLWh0dHA6Ly9vY3NwLnN0YXJ0c3NsLmNvbS9z
+dWIvY2xhc3MxL2NsaWVudC9jYTBCBggrBgEFBQcwAoY2aHR0cDovL2FpYS5zdGFydHNzbC5jb20v
+Y2VydHMvc3ViLmNsYXNzMS5jbGllbnQuY2EuY3J0MCMGA1UdEgQcMBqGGGh0dHA6Ly93d3cuc3Rh
+cnRzc2wuY29tLzANBgkqhkiG9w0BAQUFAAOCAQEACFLDQnyO8+XA/TiTltjJ/ZAvM+qmBEKN43Vd
++Wio2lM/Wq/scJpkupXGHrl9CueobkDxMAogXbMxqLZYO13PvgjMh+PHxDPnQv8EGxOig+k/Hqvc
+qEdTlm9YEHcbXbWS6XB+zRO7VVIpGMYQ1f1qCOcukxmwIm6iMSHXbOr/7paQm4bO0ULptjBotfiO
+Zo6q8No6SroQlOSyc6v8FYSxTNIAXMaM2FYkjqrxgdnJmSIAfr11gROuF69WuOICxP0zTEjJle+7
+aO9lUWNaWMWPMyFSNCxF6kkRuvUCami7vlhLOTRC1kb+OMhx7keN9At3tdTI3rtuFeSB1Pa3VXVs
+0DCCBkIwggUqoAMCAQICAwaFzjANBgkqhkiG9w0BAQUFADCBjDELMAkGA1UEBhMCSUwxFjAUBgNV
+BAoTDVN0YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNp
+Z25pbmcxODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xp
+ZW50IENBMB4XDTEzMDUwMjA2MjA0NloXDTE0MDUwMzEyMTQwMlowXTEZMBcGA1UEDRMQTXdJNzgy
+MTU0aVdtZWVZMDEcMBoGA1UEAwwTZHdtdzJAaW5mcmFkZWFkLm9yZzEiMCAGCSqGSIb3DQEJARYT
+ZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL1hrkQx
+4l1aToGhZAWs/HN40E34hMO49IimZ5LQkItMY2NvUCexsC/n4EJW6H14GE5vBPX1hEb8NrQMtgcR
+8wD4Lgc84kuyTYbBj/ZX9y/IRSQb5ncsso/G/QOjou7NyS7TEViL8rxPg27k5D/obbk+Pl7kya/G
+OciKndVl69oCZADa++708o3jcXHnrz+fE6q9H/uL+YOvrzQETt25N0mlUDw1E8Bq6aD7S4d3fpkM
+2eIoltzMEEu1q1FU95dmk1RwqYLQGgbN8x1mq75iKoW1o/M3XJxCzc8Kk6zo2qFsblmOJNORhn85
+nYzgVIi+xQzbyGcMHiRD8CQECO9mIVMCAwEAAaOCAtkwggLVMAkGA1UdEwQCMAAwCwYDVR0PBAQD
+AgSwMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDBDAdBgNVHQ4EFgQUrNIWYVIEMKhlV8y7
+h+qSR9ITGcEwHwYDVR0jBBgwFoAUU3Ltkpzg2ssBXHx+ljVO8tS4UYIwHgYDVR0RBBcwFYETZHdt
+dzJAaW5mcmFkZWFkLm9yZzCCAUwGA1UdIASCAUMwggE/MIIBOwYLKwYBBAGBtTcBAgMwggEqMC4G
+CCsGAQUFBwIBFiJodHRwOi8vd3d3LnN0YXJ0c3NsLmNvbS9wb2xpY3kucGRmMIH3BggrBgEFBQcC
+AjCB6jAnFiBTdGFydENvbSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTADAgEBGoG+VGhpcyBjZXJ0
+aWZpY2F0ZSB3YXMgaXNzdWVkIGFjY29yZGluZyB0byB0aGUgQ2xhc3MgMSBWYWxpZGF0aW9uIHJl
+cXVpcmVtZW50cyBvZiB0aGUgU3RhcnRDb20gQ0EgcG9saWN5LCByZWxpYW5jZSBvbmx5IGZvciB0
+aGUgaW50ZW5kZWQgcHVycG9zZSBpbiBjb21wbGlhbmNlIG9mIHRoZSByZWx5aW5nIHBhcnR5IG9i
+bGlnYXRpb25zLjA2BgNVHR8ELzAtMCugKaAnhiVodHRwOi8vY3JsLnN0YXJ0c3NsLmNvbS9jcnR1
+MS1jcmwuY3JsMIGOBggrBgEFBQcBAQSBgTB/MDkGCCsGAQUFBzABhi1odHRwOi8vb2NzcC5zdGFy
+dHNzbC5jb20vc3ViL2NsYXNzMS9jbGllbnQvY2EwQgYIKwYBBQUHMAKGNmh0dHA6Ly9haWEuc3Rh
+cnRzc2wuY29tL2NlcnRzL3N1Yi5jbGFzczEuY2xpZW50LmNhLmNydDAjBgNVHRIEHDAahhhodHRw
+Oi8vd3d3LnN0YXJ0c3NsLmNvbS8wDQYJKoZIhvcNAQEFBQADggEBAAhSw0J8jvPlwP04k5bYyf2Q
+LzPqpgRCjeN1XfloqNpTP1qv7HCaZLqVxh65fQrnqG5A8TAKIF2zMai2WDtdz74IzIfjx8Qz50L/
+BBsTooPpPx6r3KhHU5ZvWBB3G121kulwfs0Tu1VSKRjGENX9agjnLpMZsCJuojEh12zq/+6WkJuG
+ztFC6bYwaLX4jmaOqvDaOkq6EJTksnOr/BWEsUzSAFzGjNhWJI6q8YHZyZkiAH69dYETrhevVrji
+AsT9M0xIyZXvu2jvZVFjWljFjzMhUjQsRepJEbr1Ampou75YSzk0QtZG/jjIce5HjfQLd7XUyN67
+bhXkgdT2t1V1bNAxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0
+Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2
+BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMG
+hc4wCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
+DxcNMTMwOTIyMDI1OTAwWjAjBgkqhkiG9w0BCQQxFgQU2v6h00d77r1VfmbKllq0bDqybzgwgaUG
+CSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4x
+KzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0
+YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMGhc4wgacGCyqG
+SIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjEr
+MCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMvU3Rh
+cnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAwaFzjANBgkqhkiG
+9w0BAQEFAASCAQBxXF70cdP7h4xLj5AkFnLttBn7h0BONy4s78yg5hG3ncJLDe4jFxUa/ymnaQcq
+pYDKT7ANxMfzAaHlmq542IksTBsxI6Cu2FMf48Dzvem8Ovmf1foR+7H3pWBOK72nDpeCSzWhj8hL
+TgLgUCbF61CYRDvTrVffJNicEjjD/N/QRWKMX7qOR/QJs9VveMW9P6f55m2XHHFQ1//rokgqRrVJ
+N2+83zIbtfgFdN2rQOFI5eBz+fSSFEsWWkW1CeGJT9W5rMHhEs1WQ2y/qNf3OiJ2uSXkirUTLGhx
+WxUmmKggeLp5allP8YYYH3kv5eFIw3D0wKwhdYfo5YkHJ+PbXm1nAAAAAAAA
+
+
+--=-dnB42FBdoO4OBOdS+YwO--
+
+
+--===============3255765739127998600==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============3255765739127998600==--
