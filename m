@@ -1,16 +1,16 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 4/7] iommu/arm-smmu: Check for num_context_irqs > 0 to
-	avoid divide by zero exception
-Date: Tue, 24 Sep 2013 16:40:48 +0100
-Message-ID: <20130924154048.GE20774@mudshark.cambridge.arm.com>
+Subject: Re: [PATCH 6/7] iommu/arm-smmu: Add module parameter
+	arm-smmu=off|force_isolation
+Date: Tue, 24 Sep 2013 16:42:18 +0100
+Message-ID: <20130924154218.GF20774@mudshark.cambridge.arm.com>
 References: <1380035221-11576-1-git-send-email-andreas.herrmann@calxeda.com>
-	<1380035221-11576-5-git-send-email-andreas.herrmann@calxeda.com>
+	<1380035221-11576-7-git-send-email-andreas.herrmann@calxeda.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1380035221-11576-5-git-send-email-andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+In-Reply-To: <1380035221-11576-7-git-send-email-andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,37 +24,70 @@ To: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVHVlLCBTZXAgMjQsIDIwMTMgYXQgMDQ6MDY6NThQTSArMDEwMCwgQW5kcmVhcyBIZXJybWFu
-biB3cm90ZToKPiBXaXRoIHRoZSByaWdodCAob3Igd3Jvbmc7LSkgZGVmaW5pdGlvbiBvZiB2MSBT
-TU1VIG5vZGUgaW4gRFRCIGl0IGlzCj4gcG9zc2libGUgdG8gdHJpZ2dlciBhIGRpdmlzaW9uIGJ5
-IHplcm8gaW4gYXJtX3NtbXVfaW5pdF9kb21haW5fY29udGV4dAo+IChpZiBudW1iZXIgb2YgY29u
-dGV4dCBpcnFzIGlzIDApOgo+IAo+ICAgICAgICBpZiAoc21tdS0+dmVyc2lvbiA9PSAxKSB7Cj4g
-ICAgICAgICAgICAgICAgcm9vdF9jZmctPmlycHRuZHggPSBhdG9taWNfaW5jX3JldHVybigmc21t
-dS0+aXJwdG5keCk7Cj4gIOKGkiAgICAgICAgICAgICByb290X2NmZy0+aXJwdG5keCAlPSBzbW11
-LT5udW1fY29udGV4dF9pcnFzOwo+ICAgICAgICB9IGVsc2Ugewo+IAo+IEF2b2lkIHRoaXMgYnkg
-Y2hlY2tpbmcgZm9yIG51bV9jb250ZXh0X2lycXMgPiAwIGJlZm9yZSB0cnlpbmcgdG8KPiBhc3Np
-Z24gaW50ZXJydXB0cyB0byBjb250ZXh0cy4KPiAKPiBTaWduZWQtb2ZmLWJ5OiBBbmRyZWFzIEhl
-cnJtYW5uIDxhbmRyZWFzLmhlcnJtYW5uQGNhbHhlZGEuY29tPgo+IC0tLQo+ICBkcml2ZXJzL2lv
-bW11L2FybS1zbW11LmMgfCAgIDMxICsrKysrKysrKysrKysrKysrLS0tLS0tLS0tLS0tLS0KPiAg
-MSBmaWxlIGNoYW5nZWQsIDE3IGluc2VydGlvbnMoKyksIDE0IGRlbGV0aW9ucygtKQo+IAo+IGRp
-ZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2FybS1zbW11LmMgYi9kcml2ZXJzL2lvbW11L2FybS1z
-bW11LmMKPiBpbmRleCBmNWE4NTZlLi4wZGZkMjU1IDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvaW9t
-bXUvYXJtLXNtbXUuYwo+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYwo+IEBAIC04Mjgs
-MjEgKzgyOCwyNCBAQCBzdGF0aWMgaW50IGFybV9zbW11X2luaXRfZG9tYWluX2NvbnRleHQoc3Ry
-dWN0IGlvbW11X2RvbWFpbiAqZG9tYWluLAo+ICAJCXJldHVybiByZXQ7Cj4gIAo+ICAJcm9vdF9j
-ZmctPmNibmR4ID0gcmV0Owo+IC0JaWYgKHNtbXUtPnZlcnNpb24gPT0gMSkgewo+IC0JCXJvb3Rf
-Y2ZnLT5pcnB0bmR4ID0gYXRvbWljX2luY19yZXR1cm4oJnNtbXUtPmlycHRuZHgpOwo+IC0JCXJv
-b3RfY2ZnLT5pcnB0bmR4ICU9IHNtbXUtPm51bV9jb250ZXh0X2lycXM7Cj4gLQl9IGVsc2Ugewo+
-IC0JCXJvb3RfY2ZnLT5pcnB0bmR4ID0gcm9vdF9jZmctPmNibmR4Owo+IC0JfQo+ICAKPiAtCWly
-cSA9IHNtbXUtPmlycXNbc21tdS0+bnVtX2dsb2JhbF9pcnFzICsgcm9vdF9jZmctPmlycHRuZHhd
-Owo+IC0JcmV0ID0gcmVxdWVzdF9pcnEoaXJxLCBhcm1fc21tdV9jb250ZXh0X2ZhdWx0LCBJUlFG
-X1NIQVJFRCwKPiAtCQkJICAiYXJtLXNtbXUtY29udGV4dC1mYXVsdCIsIGRvbWFpbik7Cj4gLQlp
-ZiAoSVNfRVJSX1ZBTFVFKHJldCkpIHsKPiAtCQlkZXZfZXJyKHNtbXUtPmRldiwgImZhaWxlZCB0
-byByZXF1ZXN0IGNvbnRleHQgSVJRICVkICgldSlcbiIsCj4gLQkJCXJvb3RfY2ZnLT5pcnB0bmR4
-LCBpcnEpOwo+IC0JCXJvb3RfY2ZnLT5pcnB0bmR4ID0gLTE7Cj4gLQkJZ290byBvdXRfZnJlZV9j
-b250ZXh0Owo+ICsJaWYgKHNtbXUtPm51bV9jb250ZXh0X2lycXMpIHsKCkNhbiB3ZSBtb3ZlIHRo
-aXMgY2hlY2sgdG8gcHJvYmUgdGltZSwgdG8gYXZvaWQgcmUtZXZhbHVhdGluZyBpdCBldmVyeSB0
-aW1lCndlIGluaXRpYWxpc2UgYSBuZXcgZG9tYWluPwoKV2lsbApfX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlz
-dHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3Jn
-L21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On Tue, Sep 24, 2013 at 04:07:00PM +0100, Andreas Herrmann wrote:
+>   arm-smmu=	arm-smmu driver option
+> 
+> 	off	Disable arm-smmu driver (ie. ignore available SMMUs)
+> 
+> 	force_isolation
+> 		Try to attach each master device on every SMMU to a
+> 		separate iommu_domain.
+> 
+> Default is that driver detects SMMUs but no translation is configured
+> (transactions just bypass translation process).
+> 
+> Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+> ---
+>  drivers/iommu/arm-smmu.c |   26 ++++++++++++++++++++++++++
+>  1 file changed, 26 insertions(+)
+> 
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 3eb2259..251564e 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -399,6 +399,9 @@ struct arm_smmu_domain {
+>  static DEFINE_SPINLOCK(arm_smmu_devices_lock);
+>  static LIST_HEAD(arm_smmu_devices);
+>  
+> +static bool arm_smmu_disabled;
+> +static bool arm_smmu_force_isolation;
+> +
+>  static struct arm_smmu_master *find_smmu_master(struct arm_smmu_device *smmu,
+>  						struct device_node *dev_node)
+>  {
+> @@ -1837,6 +1840,9 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+>  	struct of_phandle_args masterspec;
+>  	int num_irqs, i, err;
+>  
+> +	if (arm_smmu_disabled)
+> +		return -ENODEV;
+> +
+>  	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
+>  	if (!smmu) {
+>  		dev_err(dev, "failed to allocate arm_smmu_device\n");
+> @@ -2022,6 +2028,23 @@ static struct platform_driver arm_smmu_driver = {
+>  	.remove	= arm_smmu_device_remove,
+>  };
+>  
+> +static int __init arm_smmu_parse_options(char *str)
+> +{
+> +	if (*str) {
+> +		str++;
+> +		if (!strncmp(str, "off", 3))
+> +			arm_smmu_disabled = true;
+> +		else if(!strncmp(str, "force_isolation", 15))
+> +			arm_smmu_force_isolation = true;
+> +		else {
+> +			pr_warn("arm_smmu: invalid parameter (\"%s\")\n", str);
+> +			return 0;
+> +		}
+> +	}
+> +	return 1;
+> +}
+> +__setup("arm-smmu", arm_smmu_parse_options);
+
+If this is going to be a common function for IOMMUs, let's instead move the
+command-line parsing out into the generic IOMMU layer, then have an optional
+callback into the low-level IOMMU driver for enabling/disabling it.
+
+Will
