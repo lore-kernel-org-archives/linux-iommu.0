@@ -1,15 +1,16 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/1] x86/iommu: correct ICS register offset
-Date: Tue, 24 Sep 2013 13:05:53 +0200
-Message-ID: <20130924110551.GC4532@8bytes.org>
-References: <1379053652-29206-1-git-send-email-zhen-hual@hp.com>
-	<52381505.4010701@hp.com>
+From: Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH 1/2] iommu: Add iommu_fault class event to iommu trace
+Date: Tue, 24 Sep 2013 06:39:49 -0600
+Message-ID: <52418815.20701@samsung.com>
+References: <cover.1376672275.git.shuah.kh@samsung.com>
+	<7a14c27d8341e53f2aed7b80e08a4480d89eac5e.1376672275.git.shuah.kh@samsung.com>
+	<20130924104855.GB4532@8bytes.org>
+Reply-To: shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <52381505.4010701-VXdhtT5mjnY@public.gmane.org>
+In-reply-to: <20130924104855.GB4532-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,18 +20,37 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: ZhenHua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, fweisbec-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, udknight-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Sep 17, 2013 at 04:38:29PM +0800, ZhenHua wrote:
-> Hi Guys,
->     Though  DMAR_ICS_REG is not used yet, I think this patch is
-> necessary. So please take a look at it.
+On 09/24/2013 04:48 AM, Joerg Roedel wrote:
+> On Fri, Aug 16, 2013 at 11:20:16AM -0600, Shuah Khan wrote:
+>> +DEFINE_EVENT(iommu_fault, report_fault,
+>> +
+>> +	TP_PROTO(struct device *dev, unsigned long iova, int flags),
+>> +
+>> +	TP_ARGS(dev, iova, flags)
+>> +);
+>
+> I am not entirely happy with the naming. It is better to name the class
+> iommu_error and the page-fault event io_page_fault. This makes it more
+> clear what kind of fault it is.
+>
+>
+> 	Joerg
+>
+>
 
-You are right, my Spec says the same. It doesn't matter much since the
-register seems to be unused in the VT-d driver. I applied the patch to
-iommu/fixes anyway.
+Joerg,
 
+Yes, iommu_error and io_page_fault sounds better. I will rename and send 
+the updated patch.
 
-	Joerg
+-- Shuah
+
+-- 
+Shuah Khan
+Senior Linux Kernel Developer - Open Source Group
+Samsung Research America(Silicon Valley)
+shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org | (970) 672-0658
