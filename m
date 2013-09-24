@@ -1,14 +1,14 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] MAINTAINERS: add overall IOMMU section
-Date: Tue, 24 Sep 2013 12:31:07 +0200
-Message-ID: <20130924103106.GB3815@8bytes.org>
-References: <1379099427-29362-1-git-send-email-swarren@wwwdotorg.org>
+Subject: Re: [PATCH 0/7] iommu: Add event tracing feature to iommu
+Date: Tue, 24 Sep 2013 12:38:17 +0200
+Message-ID: <20130924103816.GA4532@8bytes.org>
+References: <cover.1376587770.git.shuah.kh@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1379099427-29362-1-git-send-email-swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+In-Reply-To: <cover.1376587770.git.shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,21 +18,20 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Cc: Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, fweisbec-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org, tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org, joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Sep 13, 2013 at 01:10:27PM -0600, Stephen Warren wrote:
-> I believe that Joerg Roedel is at least the path through which
-> drivers/iommu changes should be merged. Add a MAINTAINERS entry to
-> make this clear, so that he's Cd'd on all relevant patches. This is
-> relevant for non-AMD/Intel IOMMUs, where get_maintainers.pl doesn't
-> currently remind anyone to Cc Joerg on patches.
+On Thu, Aug 15, 2013 at 11:59:22AM -0600, Shuah Khan wrote:
+> Shuah Khan (7):
+>   iommu: Add event tracing feature to iommu
+>   iommu: Change iommu driver to call add_device_to_group trace event
+>   iommu: Change iommu driver to call remove_device_to_group trace event
+>   iommu: Change iommu driver to call attach_device_to_domain trace
+>     event
+>   iommu: Change iommu driver to call detach_device_to_domain trace
+>     event
+>   iommu: Change iommu driver to call map trace event
+>   iommu: Change iommu driver to call unmap trace event
 
-Applied to iommu/fixes, thanks Stephen.
-
-I always hesitated a bit to do that, but if it makes me Cc'ed on all
-iommu patches from now on it is probably ok ;)
-
-
-	Joerg
+Applied to tracing branch, thanks Shuah.
