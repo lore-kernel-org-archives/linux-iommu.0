@@ -1,12 +1,12 @@
 From: Andreas Herrmann <andreas.herrmann@calxeda.com>
-Subject: [PATCH 3/7] ARM: dma-mapping: Always pass proper prot flags to
- iommu_map()
-Date: Tue, 24 Sep 2013 17:06:57 +0200
-Message-ID: <1380035221-11576-4-git-send-email-andreas.herrmann@calxeda.com>
+Subject: [PATCH 4/7] iommu/arm-smmu: Check for num_context_irqs > 0 to avoid
+ divide by zero exception
+Date: Tue, 24 Sep 2013 17:06:58 +0200
+Message-ID: <1380035221-11576-5-git-send-email-andreas.herrmann@calxeda.com>
 References: <1380035221-11576-1-git-send-email-andreas.herrmann@calxeda.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1380035221-11576-1-git-send-email-andreas.herrmann@calxeda.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
@@ -19,72 +19,46 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Will Deacon <will.deacon@arm.com>
-Cc: Andreas Herrmann <andreas.herrmann@calxeda.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Andreas Herrmann <andreas.herrmann@calxeda.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-... otherwise it is impossible for the low level iommu driver to
-figure out which pte flags should be used.
-
-In __map_sg_chunk we can derive the flags from dma_data_direction.
-
-In __iommu_create_mapping we should treat the memory like
-DMA_BIDIRECTIONAL and pass both IOMMU_READ and IOMMU_WRITE to
-iommu_map.
-__iommu_create_mapping is used during dma_alloc_coherent (via
-arm_iommu_alloc_attrs).  AFAIK dma_alloc_coherent is responsible for
-allocation _and_ mapping.  I think this implies that access to the
-mapped pages should be allowed.
-
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Signed-off-by: Andreas Herrmann <andreas.herrmann@calxeda.com>
----
- arch/arm/mm/dma-mapping.c |   20 ++++++++++++++++++--
- 1 file changed, 18 insertions(+), 2 deletions(-)
-
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index f5e1a84..95abed8 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -1232,7 +1232,8 @@ __iommu_create_mapping(struct device *dev, struct page **pages, size_t size)
- 				break;
- 
- 		len = (j - i) << PAGE_SHIFT;
--		ret = iommu_map(mapping->domain, iova, phys, len, 0);
-+		ret = iommu_map(mapping->domain, iova, phys, len,
-+				IOMMU_READ|IOMMU_WRITE);
- 		if (ret < 0)
- 			goto fail;
- 		iova += len;
-@@ -1444,6 +1445,7 @@ static int __map_sg_chunk(struct device *dev, struct scatterlist *sg,
- 	int ret = 0;
- 	unsigned int count;
- 	struct scatterlist *s;
-+	int prot;
- 
- 	size = PAGE_ALIGN(size);
- 	*handle = DMA_ERROR_CODE;
-@@ -1460,7 +1462,21 @@ static int __map_sg_chunk(struct device *dev, struct scatterlist *sg,
- 			!dma_get_attr(DMA_ATTR_SKIP_CPU_SYNC, attrs))
- 			__dma_page_cpu_to_dev(sg_page(s), s->offset, s->length, dir);
- 
--		ret = iommu_map(mapping->domain, iova, phys, len, 0);
-+		switch (dir) {
-+		case DMA_BIDIRECTIONAL:
-+			prot = IOMMU_READ | IOMMU_WRITE;
-+			break;
-+		case DMA_TO_DEVICE:
-+			prot = IOMMU_READ;
-+			break;
-+		case DMA_FROM_DEVICE:
-+			prot = IOMMU_WRITE;
-+			break;
-+		default:
-+			prot = 0;
-+		}
-+
-+		ret = iommu_map(mapping->domain, iova, phys, len, prot);
- 		if (ret < 0)
- 			goto fail;
- 		count += len >> PAGE_SHIFT;
--- 
-1.7.9.5
+V2l0aCB0aGUgcmlnaHQgKG9yIHdyb25nOy0pIGRlZmluaXRpb24gb2YgdjEgU01NVSBub2RlIGlu
+IERUQiBpdCBpcwpwb3NzaWJsZSB0byB0cmlnZ2VyIGEgZGl2aXNpb24gYnkgemVybyBpbiBhcm1f
+c21tdV9pbml0X2RvbWFpbl9jb250ZXh0CihpZiBudW1iZXIgb2YgY29udGV4dCBpcnFzIGlzIDAp
+OgoKICAgICAgIGlmIChzbW11LT52ZXJzaW9uID09IDEpIHsKICAgICAgICAgICAgICAgcm9vdF9j
+ZmctPmlycHRuZHggPSBhdG9taWNfaW5jX3JldHVybigmc21tdS0+aXJwdG5keCk7CiDihpIgICAg
+ICAgICAgICAgcm9vdF9jZmctPmlycHRuZHggJT0gc21tdS0+bnVtX2NvbnRleHRfaXJxczsKICAg
+ICAgIH0gZWxzZSB7CgpBdm9pZCB0aGlzIGJ5IGNoZWNraW5nIGZvciBudW1fY29udGV4dF9pcnFz
+ID4gMCBiZWZvcmUgdHJ5aW5nIHRvCmFzc2lnbiBpbnRlcnJ1cHRzIHRvIGNvbnRleHRzLgoKU2ln
+bmVkLW9mZi1ieTogQW5kcmVhcyBIZXJybWFubiA8YW5kcmVhcy5oZXJybWFubkBjYWx4ZWRhLmNv
+bT4KLS0tCiBkcml2ZXJzL2lvbW11L2FybS1zbW11LmMgfCAgIDMxICsrKysrKysrKysrKysrKysr
+LS0tLS0tLS0tLS0tLS0KIDEgZmlsZSBjaGFuZ2VkLCAxNyBpbnNlcnRpb25zKCspLCAxNCBkZWxl
+dGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2FybS1zbW11LmMgYi9kcml2ZXJz
+L2lvbW11L2FybS1zbW11LmMKaW5kZXggZjVhODU2ZS4uMGRmZDI1NSAxMDA2NDQKLS0tIGEvZHJp
+dmVycy9pb21tdS9hcm0tc21tdS5jCisrKyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYwpAQCAt
+ODI4LDIxICs4MjgsMjQgQEAgc3RhdGljIGludCBhcm1fc21tdV9pbml0X2RvbWFpbl9jb250ZXh0
+KHN0cnVjdCBpb21tdV9kb21haW4gKmRvbWFpbiwKIAkJcmV0dXJuIHJldDsKIAogCXJvb3RfY2Zn
+LT5jYm5keCA9IHJldDsKLQlpZiAoc21tdS0+dmVyc2lvbiA9PSAxKSB7Ci0JCXJvb3RfY2ZnLT5p
+cnB0bmR4ID0gYXRvbWljX2luY19yZXR1cm4oJnNtbXUtPmlycHRuZHgpOwotCQlyb290X2NmZy0+
+aXJwdG5keCAlPSBzbW11LT5udW1fY29udGV4dF9pcnFzOwotCX0gZWxzZSB7Ci0JCXJvb3RfY2Zn
+LT5pcnB0bmR4ID0gcm9vdF9jZmctPmNibmR4OwotCX0KIAotCWlycSA9IHNtbXUtPmlycXNbc21t
+dS0+bnVtX2dsb2JhbF9pcnFzICsgcm9vdF9jZmctPmlycHRuZHhdOwotCXJldCA9IHJlcXVlc3Rf
+aXJxKGlycSwgYXJtX3NtbXVfY29udGV4dF9mYXVsdCwgSVJRRl9TSEFSRUQsCi0JCQkgICJhcm0t
+c21tdS1jb250ZXh0LWZhdWx0IiwgZG9tYWluKTsKLQlpZiAoSVNfRVJSX1ZBTFVFKHJldCkpIHsK
+LQkJZGV2X2VycihzbW11LT5kZXYsICJmYWlsZWQgdG8gcmVxdWVzdCBjb250ZXh0IElSUSAlZCAo
+JXUpXG4iLAotCQkJcm9vdF9jZmctPmlycHRuZHgsIGlycSk7Ci0JCXJvb3RfY2ZnLT5pcnB0bmR4
+ID0gLTE7Ci0JCWdvdG8gb3V0X2ZyZWVfY29udGV4dDsKKwlpZiAoc21tdS0+bnVtX2NvbnRleHRf
+aXJxcykgeworCQlpZiAoc21tdS0+dmVyc2lvbiA9PSAxKSB7CisJCQlyb290X2NmZy0+aXJwdG5k
+eCA9IGF0b21pY19pbmNfcmV0dXJuKCZzbW11LT5pcnB0bmR4KTsKKwkJCXJvb3RfY2ZnLT5pcnB0
+bmR4ICU9IHNtbXUtPm51bV9jb250ZXh0X2lycXM7CisJCX0gZWxzZSB7CisJCQlyb290X2NmZy0+
+aXJwdG5keCA9IHJvb3RfY2ZnLT5jYm5keDsKKwkJfQorCisJCWlycSA9IHNtbXUtPmlycXNbc21t
+dS0+bnVtX2dsb2JhbF9pcnFzICsgcm9vdF9jZmctPmlycHRuZHhdOworCQlyZXQgPSByZXF1ZXN0
+X2lycShpcnEsIGFybV9zbW11X2NvbnRleHRfZmF1bHQsIElSUUZfU0hBUkVELAorCQkJCSJhcm0t
+c21tdS1jb250ZXh0LWZhdWx0IiwgZG9tYWluKTsKKwkJaWYgKElTX0VSUl9WQUxVRShyZXQpKSB7
+CisJCQlkZXZfZXJyKHNtbXUtPmRldiwgImZhaWxlZCB0byByZXF1ZXN0IGNvbnRleHQgSVJRICVk
+ICgldSlcbiIsCisJCQkJcm9vdF9jZmctPmlycHRuZHgsIGlycSk7CisJCQlyb290X2NmZy0+aXJw
+dG5keCA9IC0xOworCQkJZ290byBvdXRfZnJlZV9jb250ZXh0OworCQl9CiAJfQogCiAJcm9vdF9j
+ZmctPnNtbXUgPSBzbW11OwotLSAKMS43LjkuNQoKCl9fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4
+LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9y
+Zy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
