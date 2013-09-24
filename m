@@ -1,16 +1,14 @@
-From: Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH 1/2] iommu: Add iommu_fault class event to iommu trace
-Date: Tue, 24 Sep 2013 06:39:49 -0600
-Message-ID: <52418815.20701@samsung.com>
-References: <cover.1376672275.git.shuah.kh@samsung.com>
-	<7a14c27d8341e53f2aed7b80e08a4480d89eac5e.1376672275.git.shuah.kh@samsung.com>
-	<20130924104855.GB4532@8bytes.org>
-Reply-To: shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2] intel-iommu: Quiesce devices before disabling IOMMU
+Date: Tue, 24 Sep 2013 15:16:23 +0200
+Message-ID: <20130924131621.GC5150@8bytes.org>
+References: <1379484541-4496-1-git-send-email-indou.takao@jp.fujitsu.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <20130924104855.GB4532-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1379484541-4496-1-git-send-email-indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,37 +18,51 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, fweisbec-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, udknight-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org
+To: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+Cc: bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 09/24/2013 04:48 AM, Joerg Roedel wrote:
-> On Fri, Aug 16, 2013 at 11:20:16AM -0600, Shuah Khan wrote:
->> +DEFINE_EVENT(iommu_fault, report_fault,
->> +
->> +	TP_PROTO(struct device *dev, unsigned long iova, int flags),
->> +
->> +	TP_ARGS(dev, iova, flags)
->> +);
->
-> I am not entirely happy with the naming. It is better to name the class
-> iommu_error and the page-fault event io_page_fault. This makes it more
-> clear what kind of fault it is.
->
->
-> 	Joerg
->
->
+On Wed, Sep 18, 2013 at 03:09:01PM +0900, Takao Indoh wrote:
+> +	/*
+> +	 *  In the case of kdump, ioremap is needed because root-entry table
+> +	 *  exists in first kernel's memory area which is not mapped in second
+> +	 *  kernel
+> +	 */
+> +	root = (struct root_entry *)ioremap(addr, PAGE_SIZE);
+> +	if (!root)
+> +		return;
+> +
+> +	for (bus = 0; bus < ROOT_ENTRY_NR; bus++) {
+> +		if (!root_present(&root[bus]))
+> +			continue;
+> +
+> +		context = (struct context_entry *)ioremap(
+> +			root[bus].val & VTD_PAGE_MASK, PAGE_SIZE);
+> +		if (!context)
+> +			continue;
+> +
+> +		for (devfn = 0; devfn < CONTEXT_ENTRY_NR; devfn++) {
+> +			if (!context_present(&context[devfn]))
+> +				continue;
+> +
+> +			dev = pci_get_domain_bus_and_slot(segment, bus, devfn);
+> +			if (!dev)
+> +				continue;
+> +
+> +			if (!pci_reset_bus(dev->bus)) /* go to next bus */
+> +				break;
+> +			else /* Try per-function reset */
+> +				pci_reset_function(dev);
+> +
+> +		}
+> +		iounmap(context);
+> +	}
+> +	iounmap(root);
 
-Joerg,
+I am not convinced that this is the right approach. If a device wasn't
+translated by VT-d in the old kernel doesn't mean it will not be
+translated in the new kernel. How about unconditionally resetting all
+PCI busses and/or functions here before IOMMU initialization proceeds?
 
-Yes, iommu_error and io_page_fault sounds better. I will rename and send 
-the updated patch.
 
--- Shuah
-
--- 
-Shuah Khan
-Senior Linux Kernel Developer - Open Source Group
-Samsung Research America(Silicon Valley)
-shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org | (970) 672-0658
+	Joerg
