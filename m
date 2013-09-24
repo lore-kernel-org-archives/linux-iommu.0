@@ -1,17 +1,17 @@
 From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH 2/7] iommu/arm-smmu: Calculate SMMU_CB_BASE from smmu
-	register values
-Date: Tue, 24 Sep 2013 20:07:20 +0200
-Message-ID: <20130924180720.GV4845@alberich>
+Subject: Re: [PATCH 7/7] iommu/arm-smmu: Clear global and context bank fault
+	status and syndrome registers
+Date: Tue, 24 Sep 2013 20:32:47 +0200
+Message-ID: <20130924183247.GW4845@alberich>
 References: <1380035221-11576-1-git-send-email-andreas.herrmann@calxeda.com>
-	<1380035221-11576-3-git-send-email-andreas.herrmann@calxeda.com>
-	<20130924153457.GC20774@mudshark.cambridge.arm.com>
+	<1380035221-11576-8-git-send-email-andreas.herrmann@calxeda.com>
+	<20130924154252.GG20774@mudshark.cambridge.arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20130924153457.GC20774-MRww78TxoiP5vMa5CHWGZ34zcgK1vI+I0E9HWUfgJXw@public.gmane.org>
+In-Reply-To: <20130924154252.GG20774-MRww78TxoiP5vMa5CHWGZ34zcgK1vI+I0E9HWUfgJXw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,77 +25,43 @@ To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Sep 24, 2013 at 11:34:57AM -0400, Will Deacon wrote:
-> On Tue, Sep 24, 2013 at 04:06:56PM +0100, Andreas Herrmann wrote:
-> > Currently it is derived from smmu resource size. If the resource size
-> > is wrongly specified (e.g. too large) this leads to a miscalculation
-> > and can cause undefined behaviour when context bank registers are
-> > modified.
-> > 
+On Tue, Sep 24, 2013 at 11:42:52AM -0400, Will Deacon wrote:
+> On Tue, Sep 24, 2013 at 04:07:01PM +0100, Andreas Herrmann wrote:
 > > Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 > > ---
-> >  drivers/iommu/arm-smmu.c |    7 +++++--
-> >  1 file changed, 5 insertions(+), 2 deletions(-)
+> >  drivers/iommu/arm-smmu.c |    9 +++++++++
+> >  1 file changed, 9 insertions(+)
 > > 
 > > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> > index 97b764b..f5a856e 100644
+> > index 251564e..a499146 100644
 > > --- a/drivers/iommu/arm-smmu.c
 > > +++ b/drivers/iommu/arm-smmu.c
-> > @@ -207,7 +207,7 @@
-> >  #define CBA2R_RW64_64BIT		(1 << 0)
+> > @@ -645,6 +645,10 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
+> >  	stage1 = root_cfg->cbar != CBAR_TYPE_S2_TRANS;
+> >  	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, root_cfg->cbndx);
 > >  
-> >  /* Translation context bank */
-> > -#define ARM_SMMU_CB_BASE(smmu)		((smmu)->base + ((smmu)->size >> 1))
-> > +#define ARM_SMMU_CB_BASE(smmu)		((smmu)->cb_base)
-> >  #define ARM_SMMU_CB(smmu, n)		((n) * (smmu)->pagesize)
+> > +	/* clear fsr */
+> > +	writel_relaxed(0xffffffff, cb_base + ARM_SMMU_CB_FSR);
+> > +	writel_relaxed(0, cb_base + ARM_SMMU_CB_FSYNR0);
+> > +
+> >  	/* CBAR */
+> >  	reg = root_cfg->cbar;
+> >  	if (smmu->version == 1)
+> > @@ -1570,6 +1574,11 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+> >  	int i = 0;
+> >  	u32 scr0 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sCR0);
 > >  
-> >  #define ARM_SMMU_CB_SCTLR		0x0
-> > @@ -339,6 +339,7 @@ struct arm_smmu_device {
-> >  	struct device_node		*parent_of_node;
-> >  
-> >  	void __iomem			*base;
-> > +	void __iomem			*cb_base;
-> >  	unsigned long			size;
-> >  	unsigned long			pagesize;
-> >  
-> > @@ -1701,7 +1702,9 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
-> >  
-> >  	/* Check that we ioremapped enough */
-> >  	size = 1 << (((id >> ID1_NUMPAGENDXB_SHIFT) & ID1_NUMPAGENDXB_MASK) + 1);
-> > -	size *= (smmu->pagesize << 1);
-> > +	size *= smmu->pagesize;
-> > +	smmu->cb_base = smmu->base + size;
-> > +	size *= 2;
-> >  	if (smmu->size < size)
-> >  		dev_warn(smmu->dev,
-> >  			 "device is 0x%lx bytes but only mapped 0x%lx!\n",
+> > +	/* clear global FSRs */
+> > +	writel(0xffffffff, gr0_base + ARM_SMMU_GR0_sGFSR);
+> > +	writel(0, gr0_base + ARM_SMMU_GR0_sGFSYNR0);
+> > +	writel(0, gr0_base + ARM_SMMU_GR0_sGFSYNR1);
 > 
-> Hmm, this is a tricky one. We know that we have an inconsistency (i.e. the
-> DT and the hardware don't agree on the size of the device) but we warn and
-> attempt to continue with the value from the DT. I don't think that trusting
-> the hardware is the right thing to do in this case, since it's not possible
-> to change so we should let the DT act as an override.
+> Why do you need this?
 
-> In other words: if the device tree is wrong, go fix it.
-
-Yes, I've found this issue with a wrong DT. With the original code
-there was some weirdness when setting certain context bank
-registers. (Identifying the root cause was not straight forward.)
-
-I think it's somehow odd not to trust the hardware values in the first
-place and to add (right from the beginning) a quirk for potential
-implementation bugs. Are there already implementations that use wrong
-register values that are required to determine the partitioning of the
-SMMU address space?
-
-If there is a mismatch it's hard to say which value is the correct
-one. I think there are three options:
-(1) just print a warning about the mismatch
-(2) print a warning + override based on DT
-(3) print a warning + override based on DT + have an option to switch
-    off the override
-
-So, what's your choice?
+According to the spec the status and syndrome registers have
+unknown/unpredictable reset values. So better set known values before
+we start to use these registers (ie. handle faults where we read
+them). No?
 
 
 Andreas
