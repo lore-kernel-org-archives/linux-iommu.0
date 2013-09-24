@@ -1,12 +1,12 @@
 From: Andreas Herrmann <andreas.herrmann@calxeda.com>
-Subject: [PATCH 4/7] iommu/arm-smmu: Check for num_context_irqs > 0 to avoid
- divide by zero exception
-Date: Tue, 24 Sep 2013 17:06:58 +0200
-Message-ID: <1380035221-11576-5-git-send-email-andreas.herrmann@calxeda.com>
+Subject: [PATCH 5/7] iommu/arm-smmu: Add function that isolates all masters
+ for all SMMUs
+Date: Tue, 24 Sep 2013 17:06:59 +0200
+Message-ID: <1380035221-11576-6-git-send-email-andreas.herrmann@calxeda.com>
 References: <1380035221-11576-1-git-send-email-andreas.herrmann@calxeda.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1380035221-11576-1-git-send-email-andreas.herrmann@calxeda.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
@@ -22,43 +22,97 @@ To: Will Deacon <will.deacon@arm.com>
 Cc: Andreas Herrmann <andreas.herrmann@calxeda.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-V2l0aCB0aGUgcmlnaHQgKG9yIHdyb25nOy0pIGRlZmluaXRpb24gb2YgdjEgU01NVSBub2RlIGlu
-IERUQiBpdCBpcwpwb3NzaWJsZSB0byB0cmlnZ2VyIGEgZGl2aXNpb24gYnkgemVybyBpbiBhcm1f
-c21tdV9pbml0X2RvbWFpbl9jb250ZXh0CihpZiBudW1iZXIgb2YgY29udGV4dCBpcnFzIGlzIDAp
-OgoKICAgICAgIGlmIChzbW11LT52ZXJzaW9uID09IDEpIHsKICAgICAgICAgICAgICAgcm9vdF9j
-ZmctPmlycHRuZHggPSBhdG9taWNfaW5jX3JldHVybigmc21tdS0+aXJwdG5keCk7CiDihpIgICAg
-ICAgICAgICAgcm9vdF9jZmctPmlycHRuZHggJT0gc21tdS0+bnVtX2NvbnRleHRfaXJxczsKICAg
-ICAgIH0gZWxzZSB7CgpBdm9pZCB0aGlzIGJ5IGNoZWNraW5nIGZvciBudW1fY29udGV4dF9pcnFz
-ID4gMCBiZWZvcmUgdHJ5aW5nIHRvCmFzc2lnbiBpbnRlcnJ1cHRzIHRvIGNvbnRleHRzLgoKU2ln
-bmVkLW9mZi1ieTogQW5kcmVhcyBIZXJybWFubiA8YW5kcmVhcy5oZXJybWFubkBjYWx4ZWRhLmNv
-bT4KLS0tCiBkcml2ZXJzL2lvbW11L2FybS1zbW11LmMgfCAgIDMxICsrKysrKysrKysrKysrKysr
-LS0tLS0tLS0tLS0tLS0KIDEgZmlsZSBjaGFuZ2VkLCAxNyBpbnNlcnRpb25zKCspLCAxNCBkZWxl
-dGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2FybS1zbW11LmMgYi9kcml2ZXJz
-L2lvbW11L2FybS1zbW11LmMKaW5kZXggZjVhODU2ZS4uMGRmZDI1NSAxMDA2NDQKLS0tIGEvZHJp
-dmVycy9pb21tdS9hcm0tc21tdS5jCisrKyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYwpAQCAt
-ODI4LDIxICs4MjgsMjQgQEAgc3RhdGljIGludCBhcm1fc21tdV9pbml0X2RvbWFpbl9jb250ZXh0
-KHN0cnVjdCBpb21tdV9kb21haW4gKmRvbWFpbiwKIAkJcmV0dXJuIHJldDsKIAogCXJvb3RfY2Zn
-LT5jYm5keCA9IHJldDsKLQlpZiAoc21tdS0+dmVyc2lvbiA9PSAxKSB7Ci0JCXJvb3RfY2ZnLT5p
-cnB0bmR4ID0gYXRvbWljX2luY19yZXR1cm4oJnNtbXUtPmlycHRuZHgpOwotCQlyb290X2NmZy0+
-aXJwdG5keCAlPSBzbW11LT5udW1fY29udGV4dF9pcnFzOwotCX0gZWxzZSB7Ci0JCXJvb3RfY2Zn
-LT5pcnB0bmR4ID0gcm9vdF9jZmctPmNibmR4OwotCX0KIAotCWlycSA9IHNtbXUtPmlycXNbc21t
-dS0+bnVtX2dsb2JhbF9pcnFzICsgcm9vdF9jZmctPmlycHRuZHhdOwotCXJldCA9IHJlcXVlc3Rf
-aXJxKGlycSwgYXJtX3NtbXVfY29udGV4dF9mYXVsdCwgSVJRRl9TSEFSRUQsCi0JCQkgICJhcm0t
-c21tdS1jb250ZXh0LWZhdWx0IiwgZG9tYWluKTsKLQlpZiAoSVNfRVJSX1ZBTFVFKHJldCkpIHsK
-LQkJZGV2X2VycihzbW11LT5kZXYsICJmYWlsZWQgdG8gcmVxdWVzdCBjb250ZXh0IElSUSAlZCAo
-JXUpXG4iLAotCQkJcm9vdF9jZmctPmlycHRuZHgsIGlycSk7Ci0JCXJvb3RfY2ZnLT5pcnB0bmR4
-ID0gLTE7Ci0JCWdvdG8gb3V0X2ZyZWVfY29udGV4dDsKKwlpZiAoc21tdS0+bnVtX2NvbnRleHRf
-aXJxcykgeworCQlpZiAoc21tdS0+dmVyc2lvbiA9PSAxKSB7CisJCQlyb290X2NmZy0+aXJwdG5k
-eCA9IGF0b21pY19pbmNfcmV0dXJuKCZzbW11LT5pcnB0bmR4KTsKKwkJCXJvb3RfY2ZnLT5pcnB0
-bmR4ICU9IHNtbXUtPm51bV9jb250ZXh0X2lycXM7CisJCX0gZWxzZSB7CisJCQlyb290X2NmZy0+
-aXJwdG5keCA9IHJvb3RfY2ZnLT5jYm5keDsKKwkJfQorCisJCWlycSA9IHNtbXUtPmlycXNbc21t
-dS0+bnVtX2dsb2JhbF9pcnFzICsgcm9vdF9jZmctPmlycHRuZHhdOworCQlyZXQgPSByZXF1ZXN0
-X2lycShpcnEsIGFybV9zbW11X2NvbnRleHRfZmF1bHQsIElSUUZfU0hBUkVELAorCQkJCSJhcm0t
-c21tdS1jb250ZXh0LWZhdWx0IiwgZG9tYWluKTsKKwkJaWYgKElTX0VSUl9WQUxVRShyZXQpKSB7
-CisJCQlkZXZfZXJyKHNtbXUtPmRldiwgImZhaWxlZCB0byByZXF1ZXN0IGNvbnRleHQgSVJRICVk
-ICgldSlcbiIsCisJCQkJcm9vdF9jZmctPmlycHRuZHgsIGlycSk7CisJCQlyb290X2NmZy0+aXJw
-dG5keCA9IC0xOworCQkJZ290byBvdXRfZnJlZV9jb250ZXh0OworCQl9CiAJfQogCiAJcm9vdF9j
-ZmctPnNtbXUgPSBzbW11OwotLSAKMS43LjkuNQoKCl9fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4
-LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9y
-Zy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
+Each device is put into its own protection domain (if possible).
+For configuration with one or just a view masters per SMMU that
+is easy to achieve.
+
+In case of many devices per SMMU (e.g. MMU-500 with it's distributed
+translation support) isolation of each device might not be possible --
+depending on number of available SMR groups and/or context banks.
+
+Derive dma_base and size from (coherent_)dma_mask of device
+
+Signed-off-by: Andreas Herrmann <andreas.herrmann@calxeda.com>
+---
+ drivers/iommu/arm-smmu.c |   59 ++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 59 insertions(+)
+
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 0dfd255..3eb2259 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -46,6 +46,7 @@
+ #include <linux/amba/bus.h>
+ 
+ #include <asm/pgalloc.h>
++#include <asm/dma-iommu.h>
+ 
+ /* Maximum number of stream IDs assigned to a single device */
+ #define MAX_MASTER_STREAMIDS		8
+@@ -1768,6 +1769,64 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+ 	return 0;
+ }
+ 
++extern struct platform_device *of_find_device_by_node(struct device_node *np);
++
++static int arm_smmu_isolate_devices(void)
++{
++	struct dma_iommu_mapping *mapping;
++	struct arm_smmu_device *smmu;
++	struct rb_node *rbn;
++	struct arm_smmu_master *master;
++	struct platform_device *pdev;
++	struct device *dev;
++	void __iomem *gr0_base;
++	u32 cr0;
++	int ret = 0;
++	size_t size;
++
++	list_for_each_entry(smmu, &arm_smmu_devices, list) {
++		rbn = rb_first(&smmu->masters);
++		while (rbn) {
++			master = container_of(rbn, struct arm_smmu_master, node);
++			pdev = of_find_device_by_node(master->of_node);
++			if (!pdev)
++				break;
++			dev = &pdev->dev;
++
++			size = (size_t) dev->coherent_dma_mask;
++			size = size ? : (unsigned long) dev->dma_mask;
++			if (!size) {
++				dev_warn(dev, "(coherent_)dma_mask not set\n");
++				continue;
++			}
++
++			mapping = arm_iommu_create_mapping(&platform_bus_type,
++							0, size, 0);
++			if (IS_ERR(mapping)) {
++				ret = PTR_ERR(mapping);
++				dev_info(dev, "arm_iommu_create_mapping failed\n");
++				goto out;
++			}
++
++			ret = arm_iommu_attach_device(dev, mapping);
++			if (ret < 0) {
++				dev_info(dev, "arm_iommu_attach_device failed\n");
++				arm_iommu_release_mapping(mapping);
++			}
++			rbn = rb_next(rbn);
++		}
++
++		gr0_base = ARM_SMMU_GR0(smmu);
++		cr0 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sCR0);
++		cr0 |= sCR0_USFCFG;
++		writel(cr0, gr0_base + ARM_SMMU_GR0_sCR0);
++	}
++
++out:
++	return ret;
++}
++
++
+ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ {
+ 	struct resource *res;
+-- 
+1.7.9.5
