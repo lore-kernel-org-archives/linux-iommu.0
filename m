@@ -1,14 +1,15 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 0/7] iommu: Add event tracing feature to iommu
-Date: Tue, 24 Sep 2013 12:38:17 +0200
-Message-ID: <20130924103816.GA4532@8bytes.org>
-References: <cover.1376587770.git.shuah.kh@samsung.com>
+Subject: Re: [PATCH 1/2] iommu: Add iommu_fault class event to iommu trace
+Date: Tue, 24 Sep 2013 12:48:57 +0200
+Message-ID: <20130924104855.GB4532@8bytes.org>
+References: <cover.1376672275.git.shuah.kh@samsung.com>
+	<7a14c27d8341e53f2aed7b80e08a4480d89eac5e.1376672275.git.shuah.kh@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <cover.1376587770.git.shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+In-Reply-To: <7a14c27d8341e53f2aed7b80e08a4480d89eac5e.1376672275.git.shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,19 +20,20 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, fweisbec-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org, tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org, joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, fweisbec-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, udknight-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Aug 15, 2013 at 11:59:22AM -0600, Shuah Khan wrote:
-> Shuah Khan (7):
->   iommu: Add event tracing feature to iommu
->   iommu: Change iommu driver to call add_device_to_group trace event
->   iommu: Change iommu driver to call remove_device_to_group trace event
->   iommu: Change iommu driver to call attach_device_to_domain trace
->     event
->   iommu: Change iommu driver to call detach_device_to_domain trace
->     event
->   iommu: Change iommu driver to call map trace event
->   iommu: Change iommu driver to call unmap trace event
+On Fri, Aug 16, 2013 at 11:20:16AM -0600, Shuah Khan wrote:
+> +DEFINE_EVENT(iommu_fault, report_fault,
+> +
+> +	TP_PROTO(struct device *dev, unsigned long iova, int flags),
+> +
+> +	TP_ARGS(dev, iova, flags)
+> +);
 
-Applied to tracing branch, thanks Shuah.
+I am not entirely happy with the naming. It is better to name the class
+iommu_error and the page-fault event io_page_fault. This makes it more
+clear what kind of fault it is.
+
+
+	Joerg
