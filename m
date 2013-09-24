@@ -1,17 +1,14 @@
 From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH 1/7] iommu/arm-smmu: Switch to arch_initcall for driver
- registration
-Date: Tue, 24 Sep 2013 16:19:46 +0100
-Message-ID: <20130924151946.GA20774@mudshark.cambridge.arm.com>
+Subject: Re: [PATCH 0/7]: iommu/arm-smmu: Misc fixes/adaptions
+Date: Tue, 24 Sep 2013 16:31:34 +0100
+Message-ID: <20130924153133.GB20774@mudshark.cambridge.arm.com>
 References: <1380035221-11576-1-git-send-email-andreas.herrmann@calxeda.com>
- <1380035221-11576-2-git-send-email-andreas.herrmann@calxeda.com>
- <20130924151430.GT4845@alberich>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <20130924151430.GT4845@alberich>
+In-Reply-To: <1380035221-11576-1-git-send-email-andreas.herrmann@calxeda.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -25,21 +22,14 @@ To: Andreas Herrmann <andreas.herrmann@calxeda.com>
 Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Sep 24, 2013 at 04:14:30PM +0100, Andreas Herrmann wrote:
-> iommu/arm-smmu: Remove bogus semicolon from if conditions
-> 
-> Those prevented proper registration of arm_smmu_ops.
-> 
-> Signed-off-by: Andreas Herrmann <andreas.herrmann@calxeda.com>
-> ---
->  drivers/iommu/arm-smmu.c |    4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> Will,
-> 
-> It seems that I've managed to exclude the very first patch of the
-> series. Here it is.
+On Tue, Sep 24, 2013 at 04:06:54PM +0100, Andreas Herrmann wrote:
+> Hi,
 
-No worries; I already have a fix for this and Joerg pulled it today.
+Hi Andreas,
+
+> Following patches fix misc issues, that I've seen when using arm-smmu
+> driver with MMU-400.
+
+Thanks for the patches! I'll respond to each one in turn.
 
 Will
