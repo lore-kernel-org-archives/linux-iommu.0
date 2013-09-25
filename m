@@ -1,16 +1,19 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] On unmap, flush IOMMU TLB and return correct size
-Date: Wed, 25 Sep 2013 11:36:28 -0600
-Message-ID: <1380130588.3030.342.camel@ul30vt.home>
-References: <CE494510.41547%hshankar@netapp.com>
-	<1379818740.2547.51.camel@shinybook.infradead.org>
-	<20130925155459.GA20372@8bytes.org>
-	<1380125113.28494.14.camel@i7.infradead.org>
+From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH 7/7] iommu/arm-smmu: Clear global and context bank fault
+	status and syndrome registers
+Date: Wed, 25 Sep 2013 20:20:03 +0200
+Message-ID: <20130925182003.GD4845@alberich>
+References: <1380035221-11576-1-git-send-email-andreas.herrmann@calxeda.com>
+	<1380035221-11576-8-git-send-email-andreas.herrmann@calxeda.com>
+	<20130924154252.GG20774@mudshark.cambridge.arm.com>
+	<20130924183247.GW4845@alberich>
+	<20130925164917.GG14502@mudshark.cambridge.arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1380125113.28494.14.camel-W2I5cNIroUsVm/YvaOjsyQ@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20130925164917.GG14502-MRww78TxoiP5vMa5CHWGZ34zcgK1vI+I0E9HWUfgJXw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,62 +23,56 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: "Singh, Varinder" <Varinder.Singh-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>, "Sundaram,
-	Rajesh" <Rajesh.Sundaram-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>, "Kimmel,
-	Jeff" <jeff.kimmel-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Shankar, Hari" <Hari.Shankar-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>, "Spiller,
-	John" <John.Spiller-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2013-09-25 at 17:05 +0100, David Woodhouse wrote:
-> On Wed, 2013-09-25 at 17:54 +0200, Joerg Roedel wrote:
-> > On Sat, Sep 21, 2013 at 09:59:00PM -0500, David Woodhouse wrote:
-> > > I *hate* the bizarre calling convention for iommu_unmap(). Is it
-> > > actually clearly documented anywhere? Why on earth is it not just
-> > > returning void, and expected to unmap what it was *asked* to unmap?
+On Wed, Sep 25, 2013 at 12:49:18PM -0400, Will Deacon wrote:
+> On Tue, Sep 24, 2013 at 07:32:47PM +0100, Andreas Herrmann wrote:
+> > On Tue, Sep 24, 2013 at 11:42:52AM -0400, Will Deacon wrote:
+> > > On Tue, Sep 24, 2013 at 04:07:01PM +0100, Andreas Herrmann wrote:
+> > > > Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+> > > > ---
+> > > >  drivers/iommu/arm-smmu.c |    9 +++++++++
+> > > >  1 file changed, 9 insertions(+)
+> > > > 
+> > > > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> > > > index 251564e..a499146 100644
+> > > > --- a/drivers/iommu/arm-smmu.c
+> > > > +++ b/drivers/iommu/arm-smmu.c
+> > > > @@ -645,6 +645,10 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
+> > > >  	stage1 = root_cfg->cbar != CBAR_TYPE_S2_TRANS;
+> > > >  	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, root_cfg->cbndx);
+> > > >  
+> > > > +	/* clear fsr */
+> > > > +	writel_relaxed(0xffffffff, cb_base + ARM_SMMU_CB_FSR);
+> > > > +	writel_relaxed(0, cb_base + ARM_SMMU_CB_FSYNR0);
+> > > > +
+> > > >  	/* CBAR */
+> > > >  	reg = root_cfg->cbar;
+> > > >  	if (smmu->version == 1)
+> > > > @@ -1570,6 +1574,11 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+> > > >  	int i = 0;
+> > > >  	u32 scr0 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sCR0);
+> > > >  
+> > > > +	/* clear global FSRs */
+> > > > +	writel(0xffffffff, gr0_base + ARM_SMMU_GR0_sGFSR);
+> > > > +	writel(0, gr0_base + ARM_SMMU_GR0_sGFSYNR0);
+> > > > +	writel(0, gr0_base + ARM_SMMU_GR0_sGFSYNR1);
+> > > 
+> > > Why do you need this?
 > > 
-> > Yeah, I agree that this should be documented since it is quite
-> > non-standard/non-obvious behaviour of a function. The reason the
-> > interface was implemented this way is that the caller should not need to
-> > know (or keep track of) the page-size which was used to map a given iova.
+> > According to the spec the status and syndrome registers have
+> > unknown/unpredictable reset values. So better set known values before
+> > we start to use these registers (ie. handle faults where we read
+> > them). No?
 > 
-> Why would it ever care? If it *happens* to map something that can use
-> large pages, yay!. If it subsequently breaks apart those large pages by
-> unmapping 4KiB in the middle, let the IOMMU driver break that apart.
+> Sure, but the only time these are made visible should be if we take a fault,
+> in which case the registers should contain something meaningful. I guess I
+> could see a problem if there is a shared interrupt line for faults though,
+> so a cut-down version of your patch (just clearing ARM_SMMU_GR0_sGFSR and
+> the ARM_SMMU_CB_FSR registers) should be enough.
 
-Can this be done atomically?  I thought part of the reason for this
-interface was that iommu drivers typically couldn't replace a huge page
-with multiple smaller pages in the presence of DMA.
+Agreed.
 
-> And why are we not allowed to unmap more than a single page at a time?
-> 
-> Doing unmaps in small pieces (with a full flush between every one) is
-> *horribly* slow.
-
-While we call iommu_unmap with PAGE_SIZE, we certainly expect that
-larger chunks will be used if they were mapped that way.
-
-> > So the interface is basically, that you give an iova and a size and the
-> > iommu driver unmaps _at_least_ a region of that size. But if you ask for
-> > a 4k region which is mapped by a 2M page then the whole 2M are unmapped.
-> > The return value tells you how much was actually unmapped.
-> > 
-> > Not the best interface, I know. We should come up with a better way to
-> > handle this.
-> 
-> Seriously, just the address and the size. Let the IOMMU code deal with
-> whether it can *actually* use large pages on the particular set of
-> IOMMUs that are in use for the devices you've added to the domain so
-> far.
-
-You're contradicting yourself here.  Just let the iommu deal with it,
-but now you're raising concerns that Intel may be mixing super page
-IOMMU hardware with non-super page IOMMU hardware on the same box, so I
-do need to be concerned, yet there's no interface to discover super page
-support.  What happens if my IOMMU domain makes use of super pages and
-then I add a new device behind a new IOMMU without hardware super page
-support?  We have the same problem with snoop control already.  There's
-no atomic re-mapping interface, so KVM just pretends it can unmap and
-remap without anyone noticing.  Thanks,
-
-Alex
+Andreas
