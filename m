@@ -1,14 +1,18 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 2/7] iommu: add api to get iommu_domain of a device
-Date: Wed, 25 Sep 2013 10:45:33 -0600
-Message-ID: <1380127533.3030.319.camel@ul30vt.home>
-References: <1379575763-2091-1-git-send-email-Bharat.Bhushan@freescale.com>
-	<1379575763-2091-3-git-send-email-Bharat.Bhushan@freescale.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 7/7] iommu/arm-smmu: Clear global and context bank fault
+	status and syndrome registers
+Date: Wed, 25 Sep 2013 17:49:18 +0100
+Message-ID: <20130925164917.GG14502@mudshark.cambridge.arm.com>
+References: <1380035221-11576-1-git-send-email-andreas.herrmann@calxeda.com>
+	<1380035221-11576-8-git-send-email-andreas.herrmann@calxeda.com>
+	<20130924154252.GG20774@mudshark.cambridge.arm.com>
+	<20130924183247.GW4845@alberich>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1379575763-2091-3-git-send-email-Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20130924183247.GW4845@alberich>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,76 +22,55 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bharat Bhushan <r65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: agraf-l3A5Bk7waGM@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+To: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 2013-09-19 at 12:59 +0530, Bharat Bhushan wrote:
-> This api return the iommu domain to which the device is attached.
-> The iommu_domain is required for making API calls related to iommu.
-> Follow up patches which use this API to know iommu maping.
+On Tue, Sep 24, 2013 at 07:32:47PM +0100, Andreas Herrmann wrote:
+> On Tue, Sep 24, 2013 at 11:42:52AM -0400, Will Deacon wrote:
+> > On Tue, Sep 24, 2013 at 04:07:01PM +0100, Andreas Herrmann wrote:
+> > > Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+> > > ---
+> > >  drivers/iommu/arm-smmu.c |    9 +++++++++
+> > >  1 file changed, 9 insertions(+)
+> > > 
+> > > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> > > index 251564e..a499146 100644
+> > > --- a/drivers/iommu/arm-smmu.c
+> > > +++ b/drivers/iommu/arm-smmu.c
+> > > @@ -645,6 +645,10 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
+> > >  	stage1 = root_cfg->cbar != CBAR_TYPE_S2_TRANS;
+> > >  	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, root_cfg->cbndx);
+> > >  
+> > > +	/* clear fsr */
+> > > +	writel_relaxed(0xffffffff, cb_base + ARM_SMMU_CB_FSR);
+> > > +	writel_relaxed(0, cb_base + ARM_SMMU_CB_FSYNR0);
+> > > +
+> > >  	/* CBAR */
+> > >  	reg = root_cfg->cbar;
+> > >  	if (smmu->version == 1)
+> > > @@ -1570,6 +1574,11 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+> > >  	int i = 0;
+> > >  	u32 scr0 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sCR0);
+> > >  
+> > > +	/* clear global FSRs */
+> > > +	writel(0xffffffff, gr0_base + ARM_SMMU_GR0_sGFSR);
+> > > +	writel(0, gr0_base + ARM_SMMU_GR0_sGFSYNR0);
+> > > +	writel(0, gr0_base + ARM_SMMU_GR0_sGFSYNR1);
+> > 
+> > Why do you need this?
 > 
-> Signed-off-by: Bharat Bhushan <bharat.bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-> ---
->  drivers/iommu/iommu.c |   10 ++++++++++
->  include/linux/iommu.h |    7 +++++++
->  2 files changed, 17 insertions(+), 0 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index fbe9ca7..6ac5f50 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -696,6 +696,16 @@ void iommu_detach_device(struct iommu_domain *domain, struct device *dev)
->  }
->  EXPORT_SYMBOL_GPL(iommu_detach_device);
->  
-> +struct iommu_domain *iommu_get_dev_domain(struct device *dev)
-> +{
-> +	struct iommu_ops *ops = dev->bus->iommu_ops;
-> +
-> +	if (unlikely(ops == NULL || ops->get_dev_iommu_domain == NULL))
-> +		return NULL;
-> +
-> +	return ops->get_dev_iommu_domain(dev);
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_get_dev_domain);
+> According to the spec the status and syndrome registers have
+> unknown/unpredictable reset values. So better set known values before
+> we start to use these registers (ie. handle faults where we read
+> them). No?
 
-What prevents this from racing iommu_domain_free()?  There's no
-references acquired, so there's no reason for the caller to assume the
-pointer is valid.
+Sure, but the only time these are made visible should be if we take a fault,
+in which case the registers should contain something meaningful. I guess I
+could see a problem if there is a shared interrupt line for faults though,
+so a cut-down version of your patch (just clearing ARM_SMMU_GR0_sGFSR and
+the ARM_SMMU_CB_FSR registers) should be enough.
 
->  /*
->   * IOMMU groups are really the natrual working unit of the IOMMU, but
->   * the IOMMU API works on domains and devices.  Bridge that gap by
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 7ea319e..fa046bd 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -127,6 +127,7 @@ struct iommu_ops {
->  	int (*domain_set_windows)(struct iommu_domain *domain, u32 w_count);
->  	/* Get the numer of window per domain */
->  	u32 (*domain_get_windows)(struct iommu_domain *domain);
-> +	struct iommu_domain *(*get_dev_iommu_domain)(struct device *dev);
->  
->  	unsigned long pgsize_bitmap;
->  };
-> @@ -190,6 +191,7 @@ extern int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
->  				      phys_addr_t offset, u64 size,
->  				      int prot);
->  extern void iommu_domain_window_disable(struct iommu_domain *domain, u32 wnd_nr);
-> +extern struct iommu_domain *iommu_get_dev_domain(struct device *dev);
->  /**
->   * report_iommu_fault() - report about an IOMMU fault to the IOMMU framework
->   * @domain: the iommu domain where the fault has happened
-> @@ -284,6 +286,11 @@ static inline void iommu_domain_window_disable(struct iommu_domain *domain,
->  {
->  }
->  
-> +static inline struct iommu_domain *iommu_get_dev_domain(struct device *dev)
-> +{
-> +	return NULL;
-> +}
-> +
->  static inline phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
->  {
->  	return 0;
+Cheers,
+
+Will
