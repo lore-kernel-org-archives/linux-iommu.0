@@ -1,14 +1,17 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v4 0/2] iommu: Add iommu_error class event to iommu trace
-Date: Wed, 25 Sep 2013 11:11:12 +0200
-Message-ID: <20130925091104.GA2850@8bytes.org>
-References: <cover.1380056222.git.shuah.kh@samsung.com>
+From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH 4/7] iommu/arm-smmu: Check for num_context_irqs > 0 to
+	avoid divide by zero exception
+Date: Wed, 25 Sep 2013 12:50:10 +0200
+Message-ID: <20130925105010.GA4845@alberich>
+References: <1380035221-11576-1-git-send-email-andreas.herrmann@calxeda.com>
+	<1380035221-11576-5-git-send-email-andreas.herrmann@calxeda.com>
+	<20130924154048.GE20774@mudshark.cambridge.arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <cover.1380056222.git.shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+In-Reply-To: <20130924154048.GE20774-MRww78TxoiP5vMa5CHWGZ34zcgK1vI+I0E9HWUfgJXw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,13 +21,46 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, fweisbec-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, udknight-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Sep 24, 2013 at 03:21:18PM -0600, Shuah Khan wrote:
-> Shuah Khan (2):
->   iommu: Add iommu_error class event to iommu trace
->   iommu: Change iommu driver to call io_page_fault trace event
-
-Applied to the tracing branch, thanks Shuah.
+T24gVHVlLCBTZXAgMjQsIDIwMTMgYXQgMTE6NDA6NDhBTSAtMDQwMCwgV2lsbCBEZWFjb24gd3Jv
+dGU6Cj4gT24gVHVlLCBTZXAgMjQsIDIwMTMgYXQgMDQ6MDY6NThQTSArMDEwMCwgQW5kcmVhcyBI
+ZXJybWFubiB3cm90ZToKPiA+IFdpdGggdGhlIHJpZ2h0IChvciB3cm9uZzstKSBkZWZpbml0aW9u
+IG9mIHYxIFNNTVUgbm9kZSBpbiBEVEIgaXQgaXMKPiA+IHBvc3NpYmxlIHRvIHRyaWdnZXIgYSBk
+aXZpc2lvbiBieSB6ZXJvIGluIGFybV9zbW11X2luaXRfZG9tYWluX2NvbnRleHQKPiA+IChpZiBu
+dW1iZXIgb2YgY29udGV4dCBpcnFzIGlzIDApOgo+ID4gCj4gPiAgICAgICAgaWYgKHNtbXUtPnZl
+cnNpb24gPT0gMSkgewo+ID4gICAgICAgICAgICAgICAgcm9vdF9jZmctPmlycHRuZHggPSBhdG9t
+aWNfaW5jX3JldHVybigmc21tdS0+aXJwdG5keCk7Cj4gPiAg4oaSICAgICAgICAgICAgIHJvb3Rf
+Y2ZnLT5pcnB0bmR4ICU9IHNtbXUtPm51bV9jb250ZXh0X2lycXM7Cj4gPiAgICAgICAgfSBlbHNl
+IHsKPiA+IAo+ID4gQXZvaWQgdGhpcyBieSBjaGVja2luZyBmb3IgbnVtX2NvbnRleHRfaXJxcyA+
+IDAgYmVmb3JlIHRyeWluZyB0bwo+ID4gYXNzaWduIGludGVycnVwdHMgdG8gY29udGV4dHMuCj4g
+PiAKPiA+IFNpZ25lZC1vZmYtYnk6IEFuZHJlYXMgSGVycm1hbm4gPGFuZHJlYXMuaGVycm1hbm5A
+Y2FseGVkYS5jb20+Cj4gPiAtLS0KPiA+ICBkcml2ZXJzL2lvbW11L2FybS1zbW11LmMgfCAgIDMx
+ICsrKysrKysrKysrKysrKysrLS0tLS0tLS0tLS0tLS0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgMTcg
+aW5zZXJ0aW9ucygrKSwgMTQgZGVsZXRpb25zKC0pCj4gPiAKPiA+IGRpZmYgLS1naXQgYS9kcml2
+ZXJzL2lvbW11L2FybS1zbW11LmMgYi9kcml2ZXJzL2lvbW11L2FybS1zbW11LmMKPiA+IGluZGV4
+IGY1YTg1NmUuLjBkZmQyNTUgMTAwNjQ0Cj4gPiAtLS0gYS9kcml2ZXJzL2lvbW11L2FybS1zbW11
+LmMKPiA+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYwo+ID4gQEAgLTgyOCwyMSArODI4
+LDI0IEBAIHN0YXRpYyBpbnQgYXJtX3NtbXVfaW5pdF9kb21haW5fY29udGV4dChzdHJ1Y3QgaW9t
+bXVfZG9tYWluICpkb21haW4sCj4gPiAgCQlyZXR1cm4gcmV0Owo+ID4gIAo+ID4gIAlyb290X2Nm
+Zy0+Y2JuZHggPSByZXQ7Cj4gPiAtCWlmIChzbW11LT52ZXJzaW9uID09IDEpIHsKPiA+IC0JCXJv
+b3RfY2ZnLT5pcnB0bmR4ID0gYXRvbWljX2luY19yZXR1cm4oJnNtbXUtPmlycHRuZHgpOwo+ID4g
+LQkJcm9vdF9jZmctPmlycHRuZHggJT0gc21tdS0+bnVtX2NvbnRleHRfaXJxczsKPiA+IC0JfSBl
+bHNlIHsKPiA+IC0JCXJvb3RfY2ZnLT5pcnB0bmR4ID0gcm9vdF9jZmctPmNibmR4Owo+ID4gLQl9
+Cj4gPiAgCj4gPiAtCWlycSA9IHNtbXUtPmlycXNbc21tdS0+bnVtX2dsb2JhbF9pcnFzICsgcm9v
+dF9jZmctPmlycHRuZHhdOwo+ID4gLQlyZXQgPSByZXF1ZXN0X2lycShpcnEsIGFybV9zbW11X2Nv
+bnRleHRfZmF1bHQsIElSUUZfU0hBUkVELAo+ID4gLQkJCSAgImFybS1zbW11LWNvbnRleHQtZmF1
+bHQiLCBkb21haW4pOwo+ID4gLQlpZiAoSVNfRVJSX1ZBTFVFKHJldCkpIHsKPiA+IC0JCWRldl9l
+cnIoc21tdS0+ZGV2LCAiZmFpbGVkIHRvIHJlcXVlc3QgY29udGV4dCBJUlEgJWQgKCV1KVxuIiwK
+PiA+IC0JCQlyb290X2NmZy0+aXJwdG5keCwgaXJxKTsKPiA+IC0JCXJvb3RfY2ZnLT5pcnB0bmR4
+ID0gLTE7Cj4gPiAtCQlnb3RvIG91dF9mcmVlX2NvbnRleHQ7Cj4gPiArCWlmIChzbW11LT5udW1f
+Y29udGV4dF9pcnFzKSB7Cj4gCj4gQ2FuIHdlIG1vdmUgdGhpcyBjaGVjayB0byBwcm9iZSB0aW1l
+LCB0byBhdm9pZCByZS1ldmFsdWF0aW5nIGl0IGV2ZXJ5IHRpbWUKPiB3ZSBpbml0aWFsaXNlIGEg
+bmV3IGRvbWFpbj8KClllcywgSSdsbCBtb3ZlIHRoaXMgY2hlY2sgYW5kIGlzc3VlIGFuIGVycm9y
+IG1lc3NhZ2Ugd2hlbiB0aGVyZSBpcyBub3QKYXQgbGVhc3Qgb25lIGNvbnRleHQgaW50ZXJydXB0
+IGF2YWlsYWJsZS4KCkFuZHJlYXMKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRp
+b24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZv
+L2lvbW11
