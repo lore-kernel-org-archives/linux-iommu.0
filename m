@@ -1,12 +1,17 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 1/3] MSM: Remove iommu include from
-	drivers/gpu/drm/msm/mdp4/mdp4_kms.c
-Date: Wed, 25 Sep 2013 16:49:40 +0200
-Message-ID: <1380120582-9068-1-git-send-email-joro@8bytes.org>
+From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH 6/7] iommu/arm-smmu: Add module parameter
+	arm-smmu=off|force_isolation
+Date: Wed, 25 Sep 2013 16:56:37 +0200
+Message-ID: <20130925145637.GB4845@alberich>
+References: <1380035221-11576-1-git-send-email-andreas.herrmann@calxeda.com>
+	<1380035221-11576-7-git-send-email-andreas.herrmann@calxeda.com>
+	<20130924154218.GF20774@mudshark.cambridge.arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20130924154218.GF20774-MRww78TxoiP5vMa5CHWGZ34zcgK1vI+I0E9HWUfgJXw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,30 +21,78 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The include file has been removed and the file does not
-need it anyway, so remove it. Fixes a compile error.
+On Tue, Sep 24, 2013 at 11:42:18AM -0400, Will Deacon wrote:
+> On Tue, Sep 24, 2013 at 04:07:00PM +0100, Andreas Herrmann wrote:
+> >   arm-smmu=	arm-smmu driver option
+> > 
+> > 	off	Disable arm-smmu driver (ie. ignore available SMMUs)
+> > 
+> > 	force_isolation
+> > 		Try to attach each master device on every SMMU to a
+> > 		separate iommu_domain.
+> > 
+> > Default is that driver detects SMMUs but no translation is configured
+> > (transactions just bypass translation process).
+> > 
+> > Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+> > ---
+> >  drivers/iommu/arm-smmu.c |   26 ++++++++++++++++++++++++++
+> >  1 file changed, 26 insertions(+)
+> > 
+> > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> > index 3eb2259..251564e 100644
+> > --- a/drivers/iommu/arm-smmu.c
+> > +++ b/drivers/iommu/arm-smmu.c
+> > @@ -399,6 +399,9 @@ struct arm_smmu_domain {
+> >  static DEFINE_SPINLOCK(arm_smmu_devices_lock);
+> >  static LIST_HEAD(arm_smmu_devices);
+> >  
+> > +static bool arm_smmu_disabled;
+> > +static bool arm_smmu_force_isolation;
+> > +
+> >  static struct arm_smmu_master *find_smmu_master(struct arm_smmu_device *smmu,
+> >  						struct device_node *dev_node)
+> >  {
+> > @@ -1837,6 +1840,9 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+> >  	struct of_phandle_args masterspec;
+> >  	int num_irqs, i, err;
+> >  
+> > +	if (arm_smmu_disabled)
+> > +		return -ENODEV;
+> > +
+> >  	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
+> >  	if (!smmu) {
+> >  		dev_err(dev, "failed to allocate arm_smmu_device\n");
+> > @@ -2022,6 +2028,23 @@ static struct platform_driver arm_smmu_driver = {
+> >  	.remove	= arm_smmu_device_remove,
+> >  };
+> >  
+> > +static int __init arm_smmu_parse_options(char *str)
+> > +{
+> > +	if (*str) {
+> > +		str++;
+> > +		if (!strncmp(str, "off", 3))
+> > +			arm_smmu_disabled = true;
+> > +		else if(!strncmp(str, "force_isolation", 15))
+> > +			arm_smmu_force_isolation = true;
+> > +		else {
+> > +			pr_warn("arm_smmu: invalid parameter (\"%s\")\n", str);
+> > +			return 0;
+> > +		}
+> > +	}
+> > +	return 1;
+> > +}
+> > +__setup("arm-smmu", arm_smmu_parse_options);
+> 
+> If this is going to be a common function for IOMMUs, let's instead move the
+> command-line parsing out into the generic IOMMU layer, then have an optional
+> callback into the low-level IOMMU driver for enabling/disabling it.
 
-Signed-off-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
----
- drivers/gpu/drm/msm/mdp4/mdp4_kms.c |    2 --
- 1 file changed, 2 deletions(-)
+Makes sense and I am currently looking into it.
 
-diff --git a/drivers/gpu/drm/msm/mdp4/mdp4_kms.c b/drivers/gpu/drm/msm/mdp4/mdp4_kms.c
-index 5db5bba..bc7fd11 100644
---- a/drivers/gpu/drm/msm/mdp4/mdp4_kms.c
-+++ b/drivers/gpu/drm/msm/mdp4/mdp4_kms.c
-@@ -19,8 +19,6 @@
- #include "msm_drv.h"
- #include "mdp4_kms.h"
- 
--#include <mach/iommu.h>
--
- static struct mdp4_platform_config *mdp4_get_config(struct platform_device *dev);
- 
- static int mdp4_hw_init(struct msm_kms *kms)
--- 
-1.7.9.5
+
+Andreas
