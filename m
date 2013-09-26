@@ -1,22 +1,14 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] On unmap, flush IOMMU TLB and return correct size
-Date: Wed, 25 Sep 2013 16:40:13 -0600
-Message-ID: <1380148813.5197.106.camel@ul30vt.home>
-References: <CE494510.41547%hshankar@netapp.com>
-	<1379818740.2547.51.camel@shinybook.infradead.org>
-	<20130925155459.GA20372@8bytes.org>
-	<1380125113.28494.14.camel@i7.infradead.org>
-	<1380130588.3030.342.camel@ul30vt.home>
-	<1380135148.28494.26.camel@i7.infradead.org>
-	<1380138243.5197.20.camel@ul30vt.home>
-	<1380139886.28494.31.camel@i7.infradead.org>
-	<1380145560.5197.94.camel@ul30vt.home>
-	<1380147348.28494.37.camel@i7.infradead.org>
+From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Subject: Re: [PATCH 1/1] x86/iommu: correct ICS register offset
+Date: Thu, 26 Sep 2013 09:35:45 +0800
+Message-ID: <52438F71.30909@hp.com>
+References: <1379053652-29206-1-git-send-email-zhen-hual@hp.com>
+	<52381505.4010701@hp.com> <20130924110551.GC4532@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1380147348.28494.37.camel-W2I5cNIroUsVm/YvaOjsyQ@public.gmane.org>
+In-Reply-To: <20130924110551.GC4532-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,66 +18,27 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: "Singh, Varinder" <Varinder.Singh-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>, "Sundaram,
-	Rajesh" <Rajesh.Sundaram-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>, "Kimmel,
-	Jeff" <jeff.kimmel-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Shankar, Hari" <Hari.Shankar-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>, "Spiller,
-	John" <John.Spiller-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gV2VkLCAyMDEzLTA5LTI1IGF0IDIzOjE1ICswMTAwLCBEYXZpZCBXb29kaG91c2Ugd3JvdGU6
-Cj4gT24gV2VkLCAyMDEzLTA5LTI1IGF0IDE1OjQ2IC0wNjAwLCBBbGV4IFdpbGxpYW1zb24gd3Jv
-dGU6Cj4gPiBPbiBXZWQsIDIwMTMtMDktMjUgYXQgMjE6MTEgKzAxMDAsIERhdmlkIFdvb2Rob3Vz
-ZSB3cm90ZToKPiA+ID4gSSB3b3VsZG4ndCBib3RoZXIgdG8gZ28gbG9va2luZyBmb3Igb3Bwb3J0
-dW5pdGllcyB0byB1c2Ugc3VwZXIgcGFnZXMgaWYKPiA+ID4gd2UgcmVtb3ZlIHRoZSBsYXN0IG5v
-bi1TUC1jYXBhYmxlIElPTU1VIGZyb20gdGhlIGRvbWFpbi4KPiA+IAo+ID4gSSBwcmVkaWN0IGJ1
-Z3MgZ2V0dGluZyBmaWxlZCBpZiBhIGd1ZXN0IHNlZXMgYSBwZXJmb3JtYW5jZSBoaXQgYWZ0ZXIK
-PiA+IGFkZGluZyBhIGRldmljZSB0aGF0IGlzIG5vdCByZXN0b3JlZCB3aGVuIHRoZSBkZXZpY2Ug
-aXMgcmVtb3ZlZC4gIElmCj4gPiBvbmx5IHdlIGNvdWxkIGFzc3VtZSBhIHNpbWlsYXIgZmVhdHVy
-ZSBzZXQgYW1vbmcgSU9NTVVzIGluIGEgc3lzdGVtLgo+IAo+IE9rLCBmaW5lLiBBcyBsb25nIGFz
-IHlvdSBkb24ndCBoYXZlICp0b28qIG11Y2ggbWFwcGVkLCB0aGF0IHNob3VsZG4ndAo+IHN1Y2sg
-dG9vIG11Y2guCgpPZiBjb3Vyc2UgaWYgd2Uga25ldyB0aGlzIHdhcyBnb2luZyB0byBoYXBwZW4g
-aW4gYWR2YW5jZSBvZiBhdHRhY2hpbmcKdGhlIG5ldyBkZXZpY2UsIEkgd29uZGVyIGlmIHdlIG1p
-Z2h0IG9wdCB0byBtYW5hZ2UgaXQgd2l0aCBhIHNlcGFyYXRlCklPTU1VIGRvbWFpbi4KCj4gPiA+
-ID4gPiBGV0lXIHdlIGN1cnJlbnRseSBzY3JldyB1cCB0aGUgaGFuZGxpbmcgb2YgY2FjaGUtY29o
-ZXJlbnQgdnMuCj4gPiA+ID4gPiBub24tY29oZXJlbnQgcGFnZSB0YWJsZXMgdG9vLiBUaGF0IG9u
-ZSB3YW50cyBhIHdiaW52ZCBzb21ld2hlcmUgd2hlbiB3ZQo+ID4gPiA+ID4gYWRkIGEgbm9uLWNv
-aGVyZW50IElPTU1VIHRvIHRoZSBkb21haW4uCj4gPiA+ID4gCj4gPiA+ID4gWW91J3JlIG5vdCBz
-ZWxsaW5nIHRoZSAidHJ1c3QgdGhlIElPTU1VIGRyaXZlciIgc3RvcnkgdmVyeSB3ZWxsIGhlcmUu
-Cj4gPiA+ID4gQ2FuIHdlIGFzc3VtZSB0aGF0IHRoZSBJT01NVV9DQUNIRSBmbGFnIChTTlApIGlz
-IGlnbm9yZWQgYXBwcm9wcmlhdGVseQo+ID4gPiA+IGJ5IG5vbi1jb2hlcmVudCBJT01NVXM/ICBJ
-cyB0aGVyZSBhbnkgZG93bnNpZGUgdG8gaWdub3JpbmcgaXQgYW5kIGFsd2F5cwo+ID4gPiA+IHNl
-dHRpbmcgU05QIGluIHRoZSBJT01NVSBwYWdlIHRhYmxlcz8gIEFNRCBJT01NVSBpZ25vcmVzIGl0
-LCBidXQgaXQncwo+ID4gPiA+IGFsc28gYWx3YXlzIGNhY2hlIGNvaGVyZW50LiAgVGhhbmtzLAo+
-ID4gPiAKPiA+ID4gU05QIGlzIGEgc2VwYXJhdGUgaXNzdWUuIEknbSBzcGVha2luZyBvZiBjYWNo
-ZSBjb2hlcmVuY3kgb2YgdGhlIGhhcmR3YXJlCj4gPiA+IHBhZ2UgdGFibGUgd2FsayDigJQgdGhl
-IGZlYXR1cmUgYml0IHRoYXQgYWxsIHRoZSBob3JyaWQgY2xmbHVzaCBjYWxscyBhcmUKPiA+ID4g
-cHJlZGljYXRlZCBvbi4KPiA+ID4gCj4gPiA+IEFnYWluLCB0aGlzIGlzIGp1c3QgYSBidWcuIFdl
-ICpzaG91bGQqIGJlIGdldHRpbmcgdGhpcyByaWdodCwgYnV0IGRvbid0Cj4gPiA+IHlldC4KPiA+
-IAo+ID4gQW5kIGZvciBETUFfUFRFX1NOUD8gIGludGVsX2lvbW11X21hcCgpIHdvbid0IGxldCB1
-cyBzZXQgdGhpcyBiaXQgaWYgdGhlCj4gPiBkb21haW4gY29udGFpbnMgYSBoYXJkd2FyZSB1bml0
-IHRoYXQgZG9lc24ndCBzdXBwb3J0IGVjYXAuU0MsIGJ1dCBpdAo+ID4gYWxzbyBkb2Vzbid0IHVw
-ZGF0ZSBleGlzdGluZyBtYXBwaW5ncy4gIEJhcnJpbmcgaGFyZHdhcmUgYnVncywgaXQgc2VlbXMK
-PiA+IG11Y2ggZWFzaWVyIHRvIHVuY29uZGl0aW9uYWxseSBzZXQgRE1BX1BURV9TTlAgYnV0IHN0
-aWxsIGFkdmVydGlzZQo+ID4gSU9NTVVfQ0FQX0NBQ0hFX0NPSEVSRU5DWSBiYXNlZCBvbiB0aGUg
-Y29tcG9zaXRpb24gb2YgdGhlIGRvbWFpbi4KPiA+IE90aGVyd2lzZSB3ZSBoYXZlIHRvIHJlamVj
-dCBhZGRpbmcgZGV2aWNlcyB0byBhIGRvbWFpbiB0aGF0IGNoYW5nZSB0aGUKPiA+IGNvaGVyZW5j
-eSBvbmNlIERNQSBtYXBwaW5ncyBhcmUgaW4gcGxheSBvciBuZXZlciBzZXQgSU9NTVVfQ0FDSEUg
-YW5kCj4gPiBhZHZlcnRpc2UgdG8gS1ZNIHRoYXQgdGhlIGRvbWFpbiBpcyBhbHdheXMgbm9uLWNv
-aGVyZW50LiAgVGhhbmtzLAo+IAo+IEl0J3Mgbm90IHRoYXQgdGhlIGRvbWFpbiBpcyBub24tY29o
-ZXJlbnQsIGlzIGl0PyBUaGUgU05QIGJpdCBhbGxvd3MgeW91Cj4gdG8gKmZvcmNlKiBhIFBDSWUg
-RE1BIHJlcXVlc3QgdG8gc25vb3AgdGhlIENQVSBjYWNoZSwgZXZlbiBpZiBpdCBkaWRuJ3QKPiAq
-cmVxdWVzdCogdGhhdC4KPiAKPiBJZiB5b3VyIGRldmljZSBpcyBhY3R1YWxseSAqdHJ5aW5nKiB0
-byBkbyBjYWNoZS1jb2hlcmVudCAoaS5lLiBzbm9vcGluZykKPiBETUEsIHN1cmVseSB0aGF0IHdv
-cmtzIHJlZ2FyZGxlc3Mgb2YgdGhlIERNQV9QVEVfU05QIHNldHRpbmc/Cj4gCj4gT3IgYW0gSSBt
-aXNzaW5nIHNvbWV0aGluZz8KCkl0J3MgdGhlIG9wcG9zaXRlLCBkZXZpY2VzIGFyZSB0cnlpbmcg
-dG8gZG8gTm8tU25vb3AgdHJhbnNhY3Rpb25zIGFuZApLVk0gd291bGQgcmVhbGx5IHJhdGhlciBw
-cmVmZXIgd2JpbnZkIHdhcyBhIG5vLW9wIHNpbmNlIGVtdWxhdGVkIGRldmljZXMKZG9uJ3QgbmVl
-ZCBpdC4gIFdlIHRoZXJlZm9yZSBuZWVkIHRvIHRvZ2dsZSBLVk0ncyBiZWhhdmlvciB3aGVuIHdl
-IGhhdmUKYW4gYXNzaWduZWQgZGV2aWNlIGF0dGFjaGVkIHRvIGFuIElPTU1VIGRvbWFpbiB3aGVy
-ZSB0aGUgaGFyZHdhcmUgaXNuJ3QKc3RyaXBwaW5nIHRoZSBOby1Tbm9vcCBhdHRyaWJ1dGUuICBT
-b21lIGdyYXBoaWNzIGNhcmRzIHNlZW0gdG8gbWFrZSB1c2UKb2YgdGhpcyBhbmQgd2lsbCBnZXQg
-ZXJyb3IgY29kZXMgbG9hZGluZyB0aGVpciBkcml2ZXIgaWYgaXQgZG9lc24ndAp3b3JrLiAgVGhh
-bmtzLAoKQWxleAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0
-dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+Joerg,
+     Thank you for reviewing this patch.
+
+ZhenHua
+
+On 09/24/2013 07:05 PM, Joerg Roedel wrote:
+> On Tue, Sep 17, 2013 at 04:38:29PM +0800, ZhenHua wrote:
+>> Hi Guys,
+>>      Though  DMAR_ICS_REG is not used yet, I think this patch is
+>> necessary. So please take a look at it.
+> You are right, my Spec says the same. It doesn't matter much since the
+> register seems to be unused in the VT-d driver. I applied the patch to
+> iommu/fixes anyway.
+>
+>
+> 	Joerg
+>
+>
+> .
+>
