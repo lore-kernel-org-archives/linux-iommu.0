@@ -1,8 +1,8 @@
 From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH 4/9] iommu/arm-smmu: Check for num_context_irqs > 0 to avoid
-	divide by zero exception
-Date: Fri, 27 Sep 2013 00:36:16 +0200
-Message-ID: <1380234982-1677-5-git-send-email-andreas.herrmann@calxeda.com>
+Subject: [PATCH 5/9] iommu/arm-smmu: Clear global and context bank fault
+	status registers
+Date: Fri, 27 Sep 2013 00:36:17 +0200
+Message-ID: <1380234982-1677-6-git-send-email-andreas.herrmann@calxeda.com>
 References: <1380234982-1677-1-git-send-email-andreas.herrmann@calxeda.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,49 +22,38 @@ To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-With the right (or wrong;-) definition of v1 SMMU node in DTB it is
-possible to trigger a division by zero in arm_smmu_init_domain_context
-(if number of context irqs is 0):
-
-       if (smmu->version == 1) {
-               root_cfg->irptndx = atomic_inc_return(&smmu->irptndx);
- =>            root_cfg->irptndx %= smmu->num_context_irqs;
-       } else {
-
-Avoid this by checking for num_context_irqs > 0 when probing
-for SMMU devices.
-
-Rationale: Assuming that at least one context bank for non-secure
-usage is provided per SMMU, it follows (from ARM SMMU Architecture
-Spec) that at least one context interrupt must be available.
-
-Also remove the line of code that derived num_context_irqs from
-num_irqs and num_global_irqs. If DT is wrong and interrupt property
-contains less interrupts than num_global_irqs this would set
-num_context_irqs to a big u32 value which most likely causes trouble
-in other parts of the driver.
+After reset these registers have unknown values.
+This might cause problems when evaluating SMMU_GFSR and/or SMMU_CB_FSR
+in handlers for combined interrupts.
 
 Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/iommu/arm-smmu.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 4307fbc..de9dd60 100644
+index de9dd60..9d31ad9 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -1822,7 +1822,11 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 			 num_irqs, smmu->num_global_irqs);
- 		smmu->num_global_irqs = num_irqs;
- 	}
--	smmu->num_context_irqs = num_irqs - smmu->num_global_irqs;
-+
-+	if (!smmu->num_context_irqs) {
-+		dev_err(dev, "no context interrupt specified in DT\n");
-+		return -ENODEV;
-+	}
+@@ -642,6 +642,9 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
+ 	stage1 = root_cfg->cbar != CBAR_TYPE_S2_TRANS;
+ 	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, root_cfg->cbndx);
  
- 	smmu->irqs = devm_kzalloc(dev, sizeof(*smmu->irqs) * num_irqs,
- 				  GFP_KERNEL);
++	/* clear fsr */
++	writel_relaxed(0xffffffff, cb_base + ARM_SMMU_CB_FSR);
++
+ 	/* CBAR */
+ 	reg = root_cfg->cbar;
+ 	if (smmu->version == 1)
+@@ -1564,6 +1567,9 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+ 	int i = 0;
+ 	u32 scr0 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sCR0);
+ 
++	/* clear global FSRs */
++	writel(0xffffffff, gr0_base + ARM_SMMU_GR0_sGFSR);
++
+ 	/* Mark all SMRn as invalid and all S2CRn as bypass */
+ 	for (i = 0; i < smmu->num_mapping_groups; ++i) {
+ 		writel_relaxed(~SMR_VALID, gr0_base + ARM_SMMU_GR0_SMR(i));
 -- 
 1.7.9.5
