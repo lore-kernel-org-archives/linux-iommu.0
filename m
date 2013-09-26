@@ -1,8 +1,8 @@
 From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH 2/9] iommu/arm-smmu: Calculate SMMU_CB_BASE from smmu register
-	values
-Date: Fri, 27 Sep 2013 00:36:14 +0200
-Message-ID: <1380234982-1677-3-git-send-email-andreas.herrmann@calxeda.com>
+Subject: [PATCH 4/9] iommu/arm-smmu: Check for num_context_irqs > 0 to avoid
+	divide by zero exception
+Date: Fri, 27 Sep 2013 00:36:16 +0200
+Message-ID: <1380234982-1677-5-git-send-email-andreas.herrmann@calxeda.com>
 References: <1380234982-1677-1-git-send-email-andreas.herrmann@calxeda.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,68 +22,49 @@ To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Currently it is derived from smmu resource size.  In case of a
-mismatchin between the two calculations trust DT more than register
-values and overwrite cb_base.
+With the right (or wrong;-) definition of v1 SMMU node in DTB it is
+possible to trigger a division by zero in arm_smmu_init_domain_context
+(if number of context irqs is 0):
+
+       if (smmu->version == 1) {
+               root_cfg->irptndx = atomic_inc_return(&smmu->irptndx);
+ =>            root_cfg->irptndx %= smmu->num_context_irqs;
+       } else {
+
+Avoid this by checking for num_context_irqs > 0 when probing
+for SMMU devices.
+
+Rationale: Assuming that at least one context bank for non-secure
+usage is provided per SMMU, it follows (from ARM SMMU Architecture
+Spec) that at least one context interrupt must be available.
+
+Also remove the line of code that derived num_context_irqs from
+num_irqs and num_global_irqs. If DT is wrong and interrupt property
+contains less interrupts than num_global_irqs this would set
+num_context_irqs to a big u32 value which most likely causes trouble
+in other parts of the driver.
 
 Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c |   17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
+ drivers/iommu/arm-smmu.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 6808577..4307fbc 100644
+index 4307fbc..de9dd60 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -207,7 +207,7 @@
- #define CBA2R_RW64_64BIT		(1 << 0)
- 
- /* Translation context bank */
--#define ARM_SMMU_CB_BASE(smmu)		((smmu)->base + ((smmu)->size >> 1))
-+#define ARM_SMMU_CB_BASE(smmu)		((smmu)->cb_base)
- #define ARM_SMMU_CB(smmu, n)		((n) * (smmu)->pagesize)
- 
- #define ARM_SMMU_CB_SCTLR		0x0
-@@ -339,6 +339,7 @@ struct arm_smmu_device {
- 	struct device_node		*parent_of_node;
- 
- 	void __iomem			*base;
-+	void __iomem			*cb_base;
- 	unsigned long			size;
- 	unsigned long			pagesize;
- 
-@@ -1622,6 +1623,7 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
- 	unsigned long size;
- 	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
- 	u32 id;
-+	unsigned long t;
- 
- 	dev_notice(smmu->dev, "probing hardware configuration...\n");
- 
-@@ -1702,12 +1704,23 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
- 
- 	/* Check that we ioremapped enough */
- 	size = 1 << (((id >> ID1_NUMPAGENDXB_SHIFT) & ID1_NUMPAGENDXB_MASK) + 1);
--	size *= (smmu->pagesize << 1);
-+	size *= smmu->pagesize;
-+	smmu->cb_base = smmu->base + size;
-+	size *= 2;
+@@ -1822,7 +1822,11 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 			 num_irqs, smmu->num_global_irqs);
+ 		smmu->num_global_irqs = num_irqs;
+ 	}
+-	smmu->num_context_irqs = num_irqs - smmu->num_global_irqs;
 +
- 	if (smmu->size < size)
- 		dev_warn(smmu->dev,
- 			 "device is 0x%lx bytes but only mapped 0x%lx!\n",
- 			 size, smmu->size);
- 
-+	t = (unsigned long) smmu->base + (smmu->size >> 1);
-+	if ((unsigned long)smmu->cb_base != t) {
-+		dev_warn(smmu->dev, "address space mismatch, "
-+			"overwriting cb_base (old: 0x%lx, new: 0x%lx)\n",
-+			(unsigned long) smmu->cb_base, t);
-+		smmu->cb_base = (void *) t;
++	if (!smmu->num_context_irqs) {
++		dev_err(dev, "no context interrupt specified in DT\n");
++		return -ENODEV;
 +	}
-+
- 	smmu->num_s2_context_banks = (id >> ID1_NUMS2CB_SHIFT) &
- 				      ID1_NUMS2CB_MASK;
- 	smmu->num_context_banks = (id >> ID1_NUMCB_SHIFT) & ID1_NUMCB_MASK;
+ 
+ 	smmu->irqs = devm_kzalloc(dev, sizeof(*smmu->irqs) * num_irqs,
+ 				  GFP_KERNEL);
 -- 
 1.7.9.5
