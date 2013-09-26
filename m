@@ -1,8 +1,8 @@
 From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH 3/9] ARM: dma-mapping: Always pass proper prot flags to
-	iommu_map()
-Date: Fri, 27 Sep 2013 00:36:15 +0200
-Message-ID: <1380234982-1677-4-git-send-email-andreas.herrmann@calxeda.com>
+Subject: [PATCH 2/9] iommu/arm-smmu: Calculate SMMU_CB_BASE from smmu register
+	values
+Date: Fri, 27 Sep 2013 00:36:14 +0200
+Message-ID: <1380234982-1677-3-git-send-email-andreas.herrmann@calxeda.com>
 References: <1380234982-1677-1-git-send-email-andreas.herrmann@calxeda.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,106 +22,68 @@ To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-... otherwise it is impossible for the low level iommu driver to
-figure out which pte flags should be used.
+Currently it is derived from smmu resource size.  In case of a
+mismatchin between the two calculations trust DT more than register
+values and overwrite cb_base.
 
-In __map_sg_chunk we can derive the flags from dma_data_direction.
-
-In __iommu_create_mapping we should treat the memory like
-DMA_BIDIRECTIONAL and pass both IOMMU_READ and IOMMU_WRITE to
-iommu_map.
-__iommu_create_mapping is used during dma_alloc_coherent (via
-arm_iommu_alloc_attrs).  AFAIK dma_alloc_coherent is responsible for
-allocation _and_ mapping.  I think this implies that access to the
-mapped pages should be allowed.
-
-Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 ---
- arch/arm/mm/dma-mapping.c |   43 ++++++++++++++++++++++++++++---------------
- 1 file changed, 28 insertions(+), 15 deletions(-)
+ drivers/iommu/arm-smmu.c |   17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index f5e1a84..1272ed2 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -1232,7 +1232,8 @@ __iommu_create_mapping(struct device *dev, struct page **pages, size_t size)
- 				break;
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 6808577..4307fbc 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -207,7 +207,7 @@
+ #define CBA2R_RW64_64BIT		(1 << 0)
  
- 		len = (j - i) << PAGE_SHIFT;
--		ret = iommu_map(mapping->domain, iova, phys, len, 0);
-+		ret = iommu_map(mapping->domain, iova, phys, len,
-+				IOMMU_READ|IOMMU_WRITE);
- 		if (ret < 0)
- 			goto fail;
- 		iova += len;
-@@ -1431,6 +1432,27 @@ static int arm_iommu_get_sgtable(struct device *dev, struct sg_table *sgt,
- 					 GFP_KERNEL);
- }
+ /* Translation context bank */
+-#define ARM_SMMU_CB_BASE(smmu)		((smmu)->base + ((smmu)->size >> 1))
++#define ARM_SMMU_CB_BASE(smmu)		((smmu)->cb_base)
+ #define ARM_SMMU_CB(smmu, n)		((n) * (smmu)->pagesize)
  
-+static int __dma_direction_to_prot(enum dma_data_direction dir)
-+{
-+	int prot;
+ #define ARM_SMMU_CB_SCTLR		0x0
+@@ -339,6 +339,7 @@ struct arm_smmu_device {
+ 	struct device_node		*parent_of_node;
+ 
+ 	void __iomem			*base;
++	void __iomem			*cb_base;
+ 	unsigned long			size;
+ 	unsigned long			pagesize;
+ 
+@@ -1622,6 +1623,7 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+ 	unsigned long size;
+ 	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
+ 	u32 id;
++	unsigned long t;
+ 
+ 	dev_notice(smmu->dev, "probing hardware configuration...\n");
+ 
+@@ -1702,12 +1704,23 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+ 
+ 	/* Check that we ioremapped enough */
+ 	size = 1 << (((id >> ID1_NUMPAGENDXB_SHIFT) & ID1_NUMPAGENDXB_MASK) + 1);
+-	size *= (smmu->pagesize << 1);
++	size *= smmu->pagesize;
++	smmu->cb_base = smmu->base + size;
++	size *= 2;
 +
-+	switch (dir) {
-+	case DMA_BIDIRECTIONAL:
-+		prot = IOMMU_READ | IOMMU_WRITE;
-+		break;
-+	case DMA_TO_DEVICE:
-+		prot = IOMMU_READ;
-+		break;
-+	case DMA_FROM_DEVICE:
-+		prot = IOMMU_WRITE;
-+		break;
-+	default:
-+		prot = 0;
+ 	if (smmu->size < size)
+ 		dev_warn(smmu->dev,
+ 			 "device is 0x%lx bytes but only mapped 0x%lx!\n",
+ 			 size, smmu->size);
+ 
++	t = (unsigned long) smmu->base + (smmu->size >> 1);
++	if ((unsigned long)smmu->cb_base != t) {
++		dev_warn(smmu->dev, "address space mismatch, "
++			"overwriting cb_base (old: 0x%lx, new: 0x%lx)\n",
++			(unsigned long) smmu->cb_base, t);
++		smmu->cb_base = (void *) t;
 +	}
 +
-+	return prot;
-+}
-+
- /*
-  * Map a part of the scatter-gather list into contiguous io address space
-  */
-@@ -1444,6 +1466,7 @@ static int __map_sg_chunk(struct device *dev, struct scatterlist *sg,
- 	int ret = 0;
- 	unsigned int count;
- 	struct scatterlist *s;
-+	int prot;
- 
- 	size = PAGE_ALIGN(size);
- 	*handle = DMA_ERROR_CODE;
-@@ -1460,7 +1483,9 @@ static int __map_sg_chunk(struct device *dev, struct scatterlist *sg,
- 			!dma_get_attr(DMA_ATTR_SKIP_CPU_SYNC, attrs))
- 			__dma_page_cpu_to_dev(sg_page(s), s->offset, s->length, dir);
- 
--		ret = iommu_map(mapping->domain, iova, phys, len, 0);
-+		prot = __dma_direction_to_prot(dir);
-+
-+		ret = iommu_map(mapping->domain, iova, phys, len, prot);
- 		if (ret < 0)
- 			goto fail;
- 		count += len >> PAGE_SHIFT;
-@@ -1665,19 +1690,7 @@ static dma_addr_t arm_coherent_iommu_map_page(struct device *dev, struct page *p
- 	if (dma_addr == DMA_ERROR_CODE)
- 		return dma_addr;
- 
--	switch (dir) {
--	case DMA_BIDIRECTIONAL:
--		prot = IOMMU_READ | IOMMU_WRITE;
--		break;
--	case DMA_TO_DEVICE:
--		prot = IOMMU_READ;
--		break;
--	case DMA_FROM_DEVICE:
--		prot = IOMMU_WRITE;
--		break;
--	default:
--		prot = 0;
--	}
-+	prot = __dma_direction_to_prot(dir);
- 
- 	ret = iommu_map(mapping->domain, dma_addr, page_to_phys(page), len, prot);
- 	if (ret < 0)
+ 	smmu->num_s2_context_banks = (id >> ID1_NUMS2CB_SHIFT) &
+ 				      ID1_NUMS2CB_MASK;
+ 	smmu->num_context_banks = (id >> ID1_NUMCB_SHIFT) & ID1_NUMCB_MASK;
 -- 
 1.7.9.5
