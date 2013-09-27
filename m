@@ -1,22 +1,20 @@
 From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH] iommu/arm-smmu: Check for num_context_irqs > 0 to avoid
-	divide by zero exception
-Date: Fri, 27 Sep 2013 16:30:48 +0200
-Message-ID: <20130927143048.GR3315@alberich>
+Subject: [PATCH] iommu/arm-smmu: Refine check for proper size of mapped region
+Date: Fri, 27 Sep 2013 16:33:56 +0200
+Message-ID: <20130927143356.GS3315@alberich>
 References: <1380234982-1677-1-git-send-email-andreas.herrmann@calxeda.com>
-	<1380234982-1677-5-git-send-email-andreas.herrmann@calxeda.com>
-	<20130927084154.GB8319@mudshark.cambridge.arm.com>
-	<20130927090348.GF3315@alberich>
-	<20130927102307.GE9057@mudshark.cambridge.arm.com>
-	<20130927103949.GM3315@alberich>
-	<20130927104802.GF9057@mudshark.cambridge.arm.com>
-	<20130927110756.GP3315@alberich>
+	<1380234982-1677-3-git-send-email-andreas.herrmann@calxeda.com>
+	<20130927095157.GA9057@mudshark.cambridge.arm.com>
+	<20130927102359.GL3315@alberich>
+	<20130927105153.GG9057@mudshark.cambridge.arm.com>
+	<20130927110521.GO3315@alberich>
+	<20130927110832.GC9520@mudshark.cambridge.arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20130927110756.GP3315@alberich>
+In-Reply-To: <20130927110832.GC9520-MRww78TxoiP5vMa5CHWGZ34zcgK1vI+I0E9HWUfgJXw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -31,42 +29,52 @@ Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-
 List-Id: iommu@lists.linux-foundation.org
 
 
-With the right (or wrong;-) definition of v1 SMMU node in DTB it is
-possible to trigger a division by zero in arm_smmu_init_domain_context
-(if number of context irqs is 0):
+There is already a check to print a warning if the size of SMMU
+address space (calculated from SMMU register values) is greater than
+the size of the mapped memory region (e.g. passed via DT to the
+driver).
 
-       if (smmu->version == 1) {
-               root_cfg->irptndx = atomic_inc_return(&smmu->irptndx);
- =>            root_cfg->irptndx %= smmu->num_context_irqs;
-       } else {
+Adapt this check to print also a warning in case the mapped region is
+larger than the SMMU address space.
 
-Avoid this by checking for num_context_irqs > 0 when probing
-for SMMU devices.
+Such a mismatch could be intentional (to fix wrong register values).
+If its not intentional (e.g. due to wrong DT information) this will
+very likely cause a malfunction of the driver as SMMU_CB_BASE is
+derived from the size of the mapped region. The warning helps to
+identify the root cause in this case.
 
 Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c |    7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/iommu/arm-smmu.c |    9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
+
+FYI, posted the patch to the mail thread for reference.
+I'll send updated patches as a series asap.
+
+
+Andreas
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index d19676c..7d07561 100644
+index 548f5d1..d19676c 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -1803,12 +1803,11 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 			smmu->num_context_irqs++;
- 	}
+@@ -1700,13 +1700,12 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+ 	id = readl_relaxed(gr0_base + ARM_SMMU_GR0_ID1);
+ 	smmu->pagesize = (id & ID1_PAGESIZE) ? SZ_64K : SZ_4K;
  
--	if (num_irqs < smmu->num_global_irqs) {
-+	if (!smmu->num_context_irqs) {
- 		dev_warn(dev, "found %d interrupts but expected at least %d\n",
--			 num_irqs, smmu->num_global_irqs);
--		smmu->num_global_irqs = num_irqs;
-+			 num_irqs, smmu->num_global_irqs + 1);
-+		return -ENODEV;
- 	}
--	smmu->num_context_irqs = num_irqs - smmu->num_global_irqs;
+-	/* Check that we ioremapped enough */
++	/* Check for size mismatch of SMMU address space from mapped region */
+ 	size = 1 << (((id >> ID1_NUMPAGENDXB_SHIFT) & ID1_NUMPAGENDXB_MASK) + 1);
+ 	size *= (smmu->pagesize << 1);
+-	if (smmu->size < size)
+-		dev_warn(smmu->dev,
+-			 "device is 0x%lx bytes but only mapped 0x%lx!\n",
+-			 size, smmu->size);
++	if (smmu->size != size)
++		dev_warn(smmu->dev, "SMMU address space size (0x%lx) differs "
++			"from mapped region size (0x%lx)!\n", size, smmu->size);
  
- 	smmu->irqs = devm_kzalloc(dev, sizeof(*smmu->irqs) * num_irqs,
- 				  GFP_KERNEL);
+ 	smmu->num_s2_context_banks = (id >> ID1_NUMS2CB_SHIFT) &
+ 				      ID1_NUMS2CB_MASK;
 -- 
 1.7.9.5
