@@ -1,16 +1,16 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 4/9] iommu/arm-smmu: Check for num_context_irqs > 0 to
-	avoid divide by zero exception
-Date: Fri, 27 Sep 2013 09:41:54 +0100
-Message-ID: <20130927084154.GB8319@mudshark.cambridge.arm.com>
+Subject: Re: [PATCH 5/9] iommu/arm-smmu: Clear global and context bank fault
+	status registers
+Date: Fri, 27 Sep 2013 09:52:56 +0100
+Message-ID: <20130927085255.GC8319@mudshark.cambridge.arm.com>
 References: <1380234982-1677-1-git-send-email-andreas.herrmann@calxeda.com>
-	<1380234982-1677-5-git-send-email-andreas.herrmann@calxeda.com>
+	<1380234982-1677-6-git-send-email-andreas.herrmann@calxeda.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1380234982-1677-5-git-send-email-andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+In-Reply-To: <1380234982-1677-6-git-send-email-andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,55 +24,49 @@ To: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Sep 26, 2013 at 11:36:16PM +0100, Andreas Herrmann wrote:
-> With the right (or wrong;-) definition of v1 SMMU node in DTB it is
-> possible to trigger a division by zero in arm_smmu_init_domain_context
-> (if number of context irqs is 0):
-> 
->        if (smmu->version == 1) {
->                root_cfg->irptndx = atomic_inc_return(&smmu->irptndx);
->  =>            root_cfg->irptndx %= smmu->num_context_irqs;
->        } else {
-> 
-> Avoid this by checking for num_context_irqs > 0 when probing
-> for SMMU devices.
-> 
-> Rationale: Assuming that at least one context bank for non-secure
-> usage is provided per SMMU, it follows (from ARM SMMU Architecture
-> Spec) that at least one context interrupt must be available.
-
-One problem with this reasoning is that the interrupt line might just not be
-wired up to the GIC, despite existing on the SMMU. Still, we needn't solve
-that now (let's wait for somebody to build it first...).
-
-> Also remove the line of code that derived num_context_irqs from
-> num_irqs and num_global_irqs. If DT is wrong and interrupt property
-> contains less interrupts than num_global_irqs this would set
-> num_context_irqs to a big u32 value which most likely causes trouble
-> in other parts of the driver.
+On Thu, Sep 26, 2013 at 11:36:17PM +0100, Andreas Herrmann wrote:
+> After reset these registers have unknown values.
+> This might cause problems when evaluating SMMU_GFSR and/or SMMU_CB_FSR
+> in handlers for combined interrupts.
 > 
 > Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 > ---
->  drivers/iommu/arm-smmu.c |    6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
-> 
+>  drivers/iommu/arm-smmu.c |    6 ++++++
+>  1 file changed, 6 insertions(+)
+
+<pedantry> Your capitalisation of fsr vs FSR is inconsistent </pedantry>
+
 > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 4307fbc..de9dd60 100644
+> index de9dd60..9d31ad9 100644
 > --- a/drivers/iommu/arm-smmu.c
 > +++ b/drivers/iommu/arm-smmu.c
-> @@ -1822,7 +1822,11 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
->  			 num_irqs, smmu->num_global_irqs);
->  		smmu->num_global_irqs = num_irqs;
->  	}
-> -	smmu->num_context_irqs = num_irqs - smmu->num_global_irqs;
+> @@ -642,6 +642,9 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
+>  	stage1 = root_cfg->cbar != CBAR_TYPE_S2_TRANS;
+>  	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, root_cfg->cbndx);
+>  
+> +	/* clear fsr */
+> +	writel_relaxed(0xffffffff, cb_base + ARM_SMMU_CB_FSR);
 
-Why are you deleting this line?
+I think this is too late, since we've already requested the IRQ line for
+this context bank by the time we get here. There are two options (afaict):
 
-> +
-> +	if (!smmu->num_context_irqs) {
-> +		dev_err(dev, "no context interrupt specified in DT\n");
+ (1) Clear the CB FSRs during probe *and* during domain destruction
 
-I'd avoid mentioning "DT" in the log message, just in case this ever starts
-probing from something else.
+ (2) Delay request_irq until after the context bank has been initialised
+
+Also, rather than 0xffffffff, FSR_IGN | FSR_FAULT is probably clearer.
+
+>  	/* CBAR */
+>  	reg = root_cfg->cbar;
+>  	if (smmu->version == 1)
+> @@ -1564,6 +1567,9 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+>  	int i = 0;
+>  	u32 scr0 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sCR0);
+>  
+> +	/* clear global FSRs */
+> +	writel(0xffffffff, gr0_base + ARM_SMMU_GR0_sGFSR);
+
+For this guy, a read of the register and a write back is probably better than
+writing 1s to all the reserved bits.
 
 Will
