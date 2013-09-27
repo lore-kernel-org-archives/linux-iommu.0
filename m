@@ -1,16 +1,16 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 3/9] ARM: dma-mapping: Always pass proper prot flags to
-	iommu_map()
-Date: Fri, 27 Sep 2013 09:35:24 +0100
-Message-ID: <20130927083523.GA8319@mudshark.cambridge.arm.com>
+Subject: Re: [PATCH 4/9] iommu/arm-smmu: Check for num_context_irqs > 0 to
+	avoid divide by zero exception
+Date: Fri, 27 Sep 2013 09:41:54 +0100
+Message-ID: <20130927084154.GB8319@mudshark.cambridge.arm.com>
 References: <1380234982-1677-1-git-send-email-andreas.herrmann@calxeda.com>
-	<1380234982-1677-4-git-send-email-andreas.herrmann@calxeda.com>
+	<1380234982-1677-5-git-send-email-andreas.herrmann@calxeda.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1380234982-1677-4-git-send-email-andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+In-Reply-To: <1380234982-1677-5-git-send-email-andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,25 +24,55 @@ To: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Sep 26, 2013 at 11:36:15PM +0100, Andreas Herrmann wrote:
-> ... otherwise it is impossible for the low level iommu driver to
-> figure out which pte flags should be used.
+On Thu, Sep 26, 2013 at 11:36:16PM +0100, Andreas Herrmann wrote:
+> With the right (or wrong;-) definition of v1 SMMU node in DTB it is
+> possible to trigger a division by zero in arm_smmu_init_domain_context
+> (if number of context irqs is 0):
 > 
-> In __map_sg_chunk we can derive the flags from dma_data_direction.
+>        if (smmu->version == 1) {
+>                root_cfg->irptndx = atomic_inc_return(&smmu->irptndx);
+>  =>            root_cfg->irptndx %= smmu->num_context_irqs;
+>        } else {
 > 
-> In __iommu_create_mapping we should treat the memory like
-> DMA_BIDIRECTIONAL and pass both IOMMU_READ and IOMMU_WRITE to
-> iommu_map.
-> __iommu_create_mapping is used during dma_alloc_coherent (via
-> arm_iommu_alloc_attrs).  AFAIK dma_alloc_coherent is responsible for
-> allocation _and_ mapping.  I think this implies that access to the
-> mapped pages should be allowed.
+> Avoid this by checking for num_context_irqs > 0 when probing
+> for SMMU devices.
 > 
-> Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> Rationale: Assuming that at least one context bank for non-secure
+> usage is provided per SMMU, it follows (from ARM SMMU Architecture
+> Spec) that at least one context interrupt must be available.
+
+One problem with this reasoning is that the interrupt line might just not be
+wired up to the GIC, despite existing on the SMMU. Still, we needn't solve
+that now (let's wait for somebody to build it first...).
+
+> Also remove the line of code that derived num_context_irqs from
+> num_irqs and num_global_irqs. If DT is wrong and interrupt property
+> contains less interrupts than num_global_irqs this would set
+> num_context_irqs to a big u32 value which most likely causes trouble
+> in other parts of the driver.
+> 
 > Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+> ---
+>  drivers/iommu/arm-smmu.c |    6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 4307fbc..de9dd60 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -1822,7 +1822,11 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+>  			 num_irqs, smmu->num_global_irqs);
+>  		smmu->num_global_irqs = num_irqs;
+>  	}
+> -	smmu->num_context_irqs = num_irqs - smmu->num_global_irqs;
 
-  Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Why are you deleting this line?
 
-This one should go via the dma-mapping tree.
+> +
+> +	if (!smmu->num_context_irqs) {
+> +		dev_err(dev, "no context interrupt specified in DT\n");
+
+I'd avoid mentioning "DT" in the log message, just in case this ever starts
+probing from something else.
 
 Will
