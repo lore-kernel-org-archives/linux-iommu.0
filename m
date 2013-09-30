@@ -1,14 +1,15 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 6/7] VFIO: Update documentation for VFIO_IOMMU_TYPE1 driver
-Date: Mon, 30 Sep 2013 11:39:26 -0600
-Message-ID: <1380562766.2674.176.camel@ul30vt.home>
+Subject: Re: [PATCH 3/7] Return info for device and its memory regions and
+	interrupts
+Date: Mon, 30 Sep 2013 11:39:36 -0600
+Message-ID: <1380562776.2674.177.camel@ul30vt.home>
 References: <1380554923-17818-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1380554923-17818-7-git-send-email-a.motakis@virtualopensystems.com>
+	<1380554923-17818-4-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1380554923-17818-7-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+In-Reply-To: <1380554923-17818-4-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,51 +24,118 @@ Cc: linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76
 List-Id: iommu@lists.linux-foundation.org
 
 On Mon, 2013-09-30 at 17:28 +0200, Antonios Motakis wrote:
-> The VFIO documentation is slightly out of date. This minor correction
-> replaces references to VFIO_IOMMU_X86 with the correct reference to
-> VFIO_IOMMU_TYPE1
+> A VFIO userspace driver will start by opening the VFIO device
+> that corresponds to an IOMMU group, and will use the ioctl interface
+> to get the basic device info, such as number of memory regions and
+> interrupts, and their properties.
+> 
+> This patch implements the IOCTLs:
+>  - VFIO_DEVICE_GET_INFO
+>  - VFIO_DEVICE_GET_REGION_INFO
+>  - VFIO_DEVICE_GET_IRQ_INFO
 > 
 > Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 > ---
->  Documentation/vfio.txt | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
+>  drivers/vfio/vfio_platform.c | 60 ++++++++++++++++++++++++++++++++++++++------
+>  1 file changed, 53 insertions(+), 7 deletions(-)
 > 
-> diff --git a/Documentation/vfio.txt b/Documentation/vfio.txt
-> index 8eda363..b4eafa6 100644
-> --- a/Documentation/vfio.txt
-> +++ b/Documentation/vfio.txt
-> @@ -167,8 +167,8 @@ group and can access them as follows:
->  	int container, group, device, i;
->  	struct vfio_group_status group_status =
->  					{ .argsz = sizeof(group_status) };
-> -	struct vfio_iommu_x86_info iommu_info = { .argsz = sizeof(iommu_info) };
-> -	struct vfio_iommu_x86_dma_map dma_map = { .argsz = sizeof(dma_map) };
-> +	struct vfio_iommu_type1_info iommu_info = { .argsz = sizeof(iommu_info) };
-> +	struct vfio_iommu_type1_dma_map dma_map = { .argsz = sizeof(dma_map) };
->  	struct vfio_device_info device_info = { .argsz = sizeof(device_info) };
+> diff --git a/drivers/vfio/vfio_platform.c b/drivers/vfio/vfio_platform.c
+> index b9686b0..a0abcfa 100644
+> --- a/drivers/vfio/vfio_platform.c
+> +++ b/drivers/vfio/vfio_platform.c
+> @@ -28,6 +28,10 @@
+>  #include <linux/types.h>
+>  #include <linux/uaccess.h>
+>  #include <linux/vfio.h>
+> +#include <linux/of.h>
+> +#include <linux/of_address.h>
+> +#include <linux/of_irq.h>
+> +#include <linux/of_platform.h>
 >  
->  	/* Create a new container */
-> @@ -177,7 +177,7 @@ group and can access them as follows:
->  	if (ioctl(container, VFIO_GET_API_VERSION) != VFIO_API_VERSION)
->  		/* Unknown API version */
+>  #define DRIVER_VERSION  "0.1"
+>  #define DRIVER_AUTHOR   "Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>"
+> @@ -54,10 +58,13 @@ static long vfio_platform_ioctl(void *device_data,
+>  			   unsigned int cmd, unsigned long arg)
+>  {
+>  	struct vfio_platform_device *vdev = device_data;
+> +	struct device_node *of_node = vdev->pdev->dev.of_node;
+>  	unsigned long minsz;
 >  
-> -	if (!ioctl(container, VFIO_CHECK_EXTENSION, VFIO_X86_IOMMU))
-> +	if (!ioctl(container, VFIO_CHECK_EXTENSION, VFIO_TYPE1_IOMMU))
->  		/* Doesn't support the IOMMU driver we want. */
+>  	if (cmd == VFIO_DEVICE_GET_INFO) {
+>  		struct vfio_device_info info;
+> +		struct resource res;
+> +		int cnt = 0;
 >  
->  	/* Open the group */
-> @@ -193,7 +193,7 @@ group and can access them as follows:
->  	ioctl(group, VFIO_GROUP_SET_CONTAINER, &container);
+>  		minsz = offsetofend(struct vfio_device_info, num_irqs);
 >  
->  	/* Enable the IOMMU model we want */
-> -	ioctl(container, VFIO_SET_IOMMU, VFIO_X86_IOMMU)
-> +	ioctl(container, VFIO_SET_IOMMU, VFIO_TYPE1_IOMMU)
+> @@ -68,18 +75,57 @@ static long vfio_platform_ioctl(void *device_data,
+>  			return -EINVAL;
 >  
->  	/* Get addition IOMMU info */
->  	ioctl(container, VFIO_IOMMU_GET_INFO, &iommu_info);
+>  		info.flags = VFIO_DEVICE_FLAGS_PLATFORM;
+> -		info.num_regions = 0;
+> -		info.num_irqs = 0;
+> +
+> +		while (!of_address_to_resource(of_node, cnt, &res))
+> +			cnt++;
+> +
+> +		info.num_regions = cnt;
+> +
+> +		info.num_irqs = of_irq_count(of_node);
+>  
+>  		return copy_to_user((void __user *)arg, &info, minsz);
+>  
+> -	} else if (cmd == VFIO_DEVICE_GET_REGION_INFO)
+> -		return -EINVAL;
+> +	} else if (cmd == VFIO_DEVICE_GET_REGION_INFO) {
+> +		struct vfio_region_info info;
+> +		struct resource res;
+>  
+> -	else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
+> -		return -EINVAL;
+> +		minsz = offsetofend(struct vfio_region_info, offset);
+> +
+> +		if (copy_from_user(&info, (void __user *)arg, minsz))
+> +			return -EFAULT;
+> +
+> +		if (info.argsz < minsz)
+> +			return -EINVAL;
+> +
+> +		if(of_address_to_resource(of_node, info.index, &res))
+> +			return -EINVAL;
+> +
+> +		info.offset = res.start;	/* map phys addr with offset */
+> +		info.size = resource_size(&res);
+> +		info.flags = 0;
+> +
+> +		return copy_to_user((void __user *)arg, &info, minsz);
+> +
+> +	} else if (cmd == VFIO_DEVICE_GET_IRQ_INFO) {
+> +		struct vfio_irq_info info;
+> +		struct resource res;
+> +
+> +		minsz = offsetofend(struct vfio_irq_info, count);
+> +
+> +		if (copy_from_user(&info, (void __user *)arg, minsz))
+> +			return -EFAULT;
+> +
+> +		if (info.argsz < minsz)
+> +			return -EINVAL;
+> +
+> +		of_irq_to_resource(of_node, info.index, &res);
+> +
+> +		info.flags = 0;
+> +		info.count = 1;
+> +
+> +		return copy_to_user((void __user *)arg, &info, minsz);
+>  
+> -	else if (cmd == VFIO_DEVICE_SET_IRQS)
+> +	} else if (cmd == VFIO_DEVICE_SET_IRQS)
+>  		return -EINVAL;
+>  
+>  	else if (cmd == VFIO_DEVICE_RESET)
 
+I notice all the open firmware calls here and I'm curious, will all
+platform devices be making use of open firmware?  I don't know if this
+is synonymous with device tree or not.  Thanks,
 
-Your tree seems out of date, we've already got these:
-
-https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/Documentation/vfio.txt?id=dac09b57c0ff57e55dd6fa5109076c8af0468a75
-https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/Documentation/vfio.txt?id=b0e59b85abd42f8a525ff032d5063457e1378808
+Alex 
