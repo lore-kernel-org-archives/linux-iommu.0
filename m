@@ -1,111 +1,81 @@
-From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH] iommu/arm-smmu: Clear global and context bank fault status
-	registers
-Date: Mon, 30 Sep 2013 15:56:21 +0200
-Message-ID: <20130930135621.GW3315@alberich>
-References: <1380234982-1677-1-git-send-email-andreas.herrmann@calxeda.com>
-	<1380234982-1677-6-git-send-email-andreas.herrmann@calxeda.com>
-	<20130927085255.GC8319@mudshark.cambridge.arm.com>
-	<20130930135401.GV3315@alberich>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20130930135401.GV3315@alberich>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+From: Antonios Motakis <a.motakis@virtualopensystems.com>
+Subject: [RFC PATCH v2 0/7] VFIO for device tree based platform devices (work in progress)
+Date: Mon, 30 Sep 2013 17:28:36 +0200
+Message-ID: <1380554923-17818-1-git-send-email-a.motakis@virtualopensystems.com>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: kvmarm@lists.cs.columbia.edu, alex.williamson@redhat.com
+Cc: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, kvm@vger.kernel.org, agraf@suse.de, B08248@freescale.com, tech@virtualopensystems.com, Antonios Motakis <a.motakis@virtualopensystems.com>
 List-Id: iommu@lists.linux-foundation.org
 
+This is a preview of the base work, towards VFIO support on ARM platforms
+with an IOMMU. It forms a base on to which to implement the functionality
+necessary to enable using device tree devices on ARM (and other platforms
+based on device trees) with VFIO.
 
-After reset these registers have unknown values.
-This might cause problems when evaluating SMMU_GFSR and/or SMMU_CB_FSR
-in handlers for combined interrupts.
+This patch series has been subjected to limited testing on the Arndale board
+(with the Exynos 5250 System MMU). More extensive testing will follow as more
+features are implemented.
 
-Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
----
- drivers/iommu/arm-smmu.c |   27 ++++++++++++++++++++-------
- 1 file changed, 20 insertions(+), 7 deletions(-)
+It depends on Cho KyongHo's patch series "iommu/exynos: Fixes and Enhancements
+of System MMU driver with DT", applied on a Linux 3.10.1 kernel, and also my
+own "iommu/exynos: add devices attached to the System MMU to an IOMMU group".
+Those patches are required at least in order to test the proposed module on
+Arndale.
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 579b6f8..cbbf597 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -631,6 +631,12 @@ static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
- 	return IRQ_HANDLED;
- }
- 
-+static void arm_smmu_clear_cb_fsr(struct arm_smmu_device *smmu, u8 cbndx)
-+{
-+	void __iomem *cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cbndx);
-+	writel_relaxed(FSR_FAULT, cb_base + ARM_SMMU_CB_FSR);
-+}
-+
- static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
- {
- 	u32 reg;
-@@ -838,6 +844,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 		root_cfg->irptndx = root_cfg->cbndx;
- 	}
- 
-+	arm_smmu_clear_cb_fsr(smmu, root_cfg->cbndx);
- 	irq = smmu->irqs[smmu->num_global_irqs + root_cfg->irptndx];
- 	ret = request_irq(irq, arm_smmu_context_fault, IRQF_SHARED,
- 			  "arm-smmu-context-fault", domain);
-@@ -1564,7 +1571,11 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
- 	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
- 	void __iomem *sctlr_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB_SCTLR;
- 	int i = 0;
--	u32 scr0 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sCR0);
-+	u32 val;
-+
-+	/* clear global FSR */
-+	val = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSR);
-+	writel(val, gr0_base + ARM_SMMU_GR0_sGFSR);
- 
- 	/* Mark all SMRn as invalid and all S2CRn as bypass */
- 	for (i = 0; i < smmu->num_mapping_groups; ++i) {
-@@ -1581,24 +1592,26 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
- 	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_TLBIALLH);
- 	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_TLBIALLNSNH);
- 
-+	val = readl_relaxed(gr0_base + ARM_SMMU_GR0_sCR0);
-+
- 	/* Enable fault reporting */
--	scr0 |= (sCR0_GFRE | sCR0_GFIE | sCR0_GCFGFRE | sCR0_GCFGFIE);
-+	val |= (sCR0_GFRE | sCR0_GFIE | sCR0_GCFGFRE | sCR0_GCFGFIE);
- 
- 	/* Disable TLB broadcasting. */
--	scr0 |= (sCR0_VMIDPNE | sCR0_PTM);
-+	val |= (sCR0_VMIDPNE | sCR0_PTM);
- 
- 	/* Enable client access, but bypass when no mapping is found */
--	scr0 &= ~(sCR0_CLIENTPD | sCR0_USFCFG);
-+	val &= ~(sCR0_CLIENTPD | sCR0_USFCFG);
- 
- 	/* Disable forced broadcasting */
--	scr0 &= ~sCR0_FB;
-+	val &= ~sCR0_FB;
- 
- 	/* Don't upgrade barriers */
--	scr0 &= ~(sCR0_BSU_MASK << sCR0_BSU_SHIFT);
-+	val &= ~(sCR0_BSU_MASK << sCR0_BSU_SHIFT);
- 
- 	/* Push the button */
- 	arm_smmu_tlb_sync(smmu);
--	writel(scr0, gr0_base + ARM_SMMU_GR0_sCR0);
-+	writel(val, gr0_base + ARM_SMMU_GR0_sCR0);
- }
- 
- static int arm_smmu_id_size_to_bits(int size)
+The API used is identical to the existing VFIO API that is also used with
+PCI devices. Only devices that include a basic set of IRQs and memory regions
+are targeted; devices with complicated relationships with other devices on the
+device tree are not taken into account at this stage.
+
+The following IOCTLs have been found to be working on the Arndale with no
+changes to VFIO:
+ - VFIO_GET_API_VERSION
+ - VFIO_CHECK_EXTENSION
+The TYPE1 fix proposed here enables the following IOCTLs:
+ - VFIO_GROUP_GET_STATUS
+ - VFIO_GROUP_SET_CONTAINER
+ - VFIO_SET_IOMMU
+ - VFIO_IOMMU_GET_INFO
+ - VFIO_IOMMU_MAP_DMA
+The VFIO platform driver proposed here implements the following:
+ - VFIO_GROUP_GET_DEVICE_FD
+ - VFIO_DEVICE_GET_INFO
+ - VFIO_DEVICE_GET_REGION_INFO
+ - VFIO_DEVICE_GET_IRQ_INFO
+In addition, the VFIO platform driver implements the following through
+the VFIO device file descriptor:
+ - MMAPing memory regions to the virtual address space of the VFIO user.
+ - Read / write of memory regions directly through the file descriptor.
+
+What still needs to be done, includes:
+ - IRQs / IRQFD support.
+ - The API is not currently extended with device tree specific information.
+ - Proper binding of the VFIO_DT driver to devices; currently to test the
+   driver, one has to edit the device tree and add "vfio" to the
+   compatible property. However Linux does not support OF drivers that
+   can be dynamically bound to any device.
+ - More extensive testing with a functioning device doing DMA.
+ - QEMU / KVM support.
+
+Antonios Motakis (7):
+  VFIO_IOMMU_TYPE1 workaround to build for platform devices
+  Initial skeleton of VFIO support for Device Tree based devices
+  Return info for device and its memory regions and interrupts
+  VFIO: DT: Support MMAP of MMIO regions
+  VFIO: DT: Read and write support for the device fd
+  VFIO: Update documentation for VFIO_IOMMU_TYPE1 driver
+  VFIO: VFIO_PLATFORM: Update documentation for platform specific
+    devices
+
+ Documentation/vfio.txt          |  25 +++-
+ drivers/vfio/Kconfig            |  13 +-
+ drivers/vfio/Makefile           |   1 +
+ drivers/vfio/vfio_iommu_type1.c |  22 ++-
+ drivers/vfio/vfio_platform.c    | 308 ++++++++++++++++++++++++++++++++++++++++
+ include/uapi/linux/vfio.h       |   1 +
+ 6 files changed, 361 insertions(+), 9 deletions(-)
+ create mode 100644 drivers/vfio/vfio_platform.c
+
 -- 
-1.7.9.5
+1.8.1.2
