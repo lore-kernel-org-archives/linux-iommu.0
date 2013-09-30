@@ -1,7 +1,7 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [PATCH 5/7] VFIO: DT: Read and write support for the device fd
-Date: Mon, 30 Sep 2013 17:28:41 +0200
-Message-ID: <1380554923-17818-6-git-send-email-a.motakis@virtualopensystems.com>
+Subject: [PATCH 6/7] VFIO: Update documentation for VFIO_IOMMU_TYPE1 driver
+Date: Mon, 30 Sep 2013 17:28:42 +0200
+Message-ID: <1380554923-17818-7-git-send-email-a.motakis@virtualopensystems.com>
 References: <1380554923-17818-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,75 +21,47 @@ To: kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, alex.williamson-H+
 Cc: linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-VFIO returns a file descriptor which we can use to manipulate the memory
-regions of the device. Since some memory regions we cannot mmap due to
-security concerns, we also allow to read and write to this file descriptor
-directly.
+The VFIO documentation is slightly out of date. This minor correction
+replaces references to VFIO_IOMMU_X86 with the correct reference to
+VFIO_IOMMU_TYPE1
 
 Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 ---
- drivers/vfio/vfio_platform.c | 37 ++++++++++++++++++++++++++++++++++---
- 1 file changed, 34 insertions(+), 3 deletions(-)
+ Documentation/vfio.txt | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/vfio/vfio_platform.c b/drivers/vfio/vfio_platform.c
-index 6364316..b92d7bb 100644
---- a/drivers/vfio/vfio_platform.c
-+++ b/drivers/vfio/vfio_platform.c
-@@ -102,7 +102,8 @@ static long vfio_platform_ioctl(void *device_data,
+diff --git a/Documentation/vfio.txt b/Documentation/vfio.txt
+index 8eda363..b4eafa6 100644
+--- a/Documentation/vfio.txt
++++ b/Documentation/vfio.txt
+@@ -167,8 +167,8 @@ group and can access them as follows:
+ 	int container, group, device, i;
+ 	struct vfio_group_status group_status =
+ 					{ .argsz = sizeof(group_status) };
+-	struct vfio_iommu_x86_info iommu_info = { .argsz = sizeof(iommu_info) };
+-	struct vfio_iommu_x86_dma_map dma_map = { .argsz = sizeof(dma_map) };
++	struct vfio_iommu_type1_info iommu_info = { .argsz = sizeof(iommu_info) };
++	struct vfio_iommu_type1_dma_map dma_map = { .argsz = sizeof(dma_map) };
+ 	struct vfio_device_info device_info = { .argsz = sizeof(device_info) };
  
- 		info.offset = res.start;	/* map phys addr with offset */
- 		info.size = resource_size(&res);
--		info.flags = 0;
-+		info.flags = VFIO_REGION_INFO_FLAG_READ
-+				| VFIO_REGION_INFO_FLAG_WRITE;
- 		/* Only regions addressed with PAGE granularity can be MMAPed
- 		 * securely. */
- 		if (!(info.offset & ~PAGE_MASK) && !(info.size & ~PAGE_MASK))
-@@ -153,13 +154,43 @@ static bool is_in_resource(struct resource res, u64 addr, u64 size)
- static ssize_t vfio_platform_read(void *device_data, char __user *buf,
- 			     size_t count, loff_t *ppos)
- {
--	return 0;
-+	struct vfio_platform_device *vdev = device_data;
-+	struct device_node *of_node = vdev->pdev->dev.of_node;
-+	struct resource res;
-+	int i;
-+
-+	for (i = 0; !of_address_to_resource(of_node, i, &res); i++) {
-+		if (!is_in_resource(res, *ppos, count))
-+			continue;
-+
-+		if (copy_to_user(buf, ppos, count))
-+			return -EFAULT;
-+		else
-+			return count;
-+	}
-+
-+	return -EINVAL;
- }
+ 	/* Create a new container */
+@@ -177,7 +177,7 @@ group and can access them as follows:
+ 	if (ioctl(container, VFIO_GET_API_VERSION) != VFIO_API_VERSION)
+ 		/* Unknown API version */
  
- static ssize_t vfio_platform_write(void *device_data, const char __user *buf,
- 			      size_t count, loff_t *ppos)
- {
--	return 0;
-+	struct vfio_platform_device *vdev = device_data;
-+	struct device_node *of_node = vdev->pdev->dev.of_node;
-+	struct resource res;
-+	int i;
-+
-+	for (i = 0; !of_address_to_resource(of_node, i, &res); i++) {
-+		if (!is_in_resource(res, *ppos, count))
-+			continue;
-+
-+		if (copy_from_user(ppos, buf, count))
-+			return -EFAULT;
-+		else
-+			return count;
-+	}
-+
-+	return -EINVAL;
- }
+-	if (!ioctl(container, VFIO_CHECK_EXTENSION, VFIO_X86_IOMMU))
++	if (!ioctl(container, VFIO_CHECK_EXTENSION, VFIO_TYPE1_IOMMU))
+ 		/* Doesn't support the IOMMU driver we want. */
  
- static int vfio_platform_mmap(void *device_data, struct vm_area_struct *vma)
+ 	/* Open the group */
+@@ -193,7 +193,7 @@ group and can access them as follows:
+ 	ioctl(group, VFIO_GROUP_SET_CONTAINER, &container);
+ 
+ 	/* Enable the IOMMU model we want */
+-	ioctl(container, VFIO_SET_IOMMU, VFIO_X86_IOMMU)
++	ioctl(container, VFIO_SET_IOMMU, VFIO_TYPE1_IOMMU)
+ 
+ 	/* Get addition IOMMU info */
+ 	ioctl(container, VFIO_IOMMU_GET_INFO, &iommu_info);
 -- 
 1.8.1.2
