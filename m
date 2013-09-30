@@ -1,19 +1,15 @@
-From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v6 07/12] ARM: EXYNOS: remove system mmu initialization
-	from exynos tree
-Date: Mon, 30 Sep 2013 11:34:34 +0900
-Message-ID: <20130930113434.4890db899def8d5797567aa4@samsung.com>
-References: <003a01cde30b$e13c1910$a3b44b30$%cho@samsung.com>
-	<CAOw6vbJfi7UhwxgFKmMzO91fnywWZNTRVDLLSWQOkbbU=C5ndA@mail.gmail.com>
-	<20130930093500.ffa527f8f5f004e02a9cb187@samsung.com>
-	<CAOw6vbKSQ2xTj7__D5F40vRLxU5Yt1NH4zEp4WcRtB1rVK5gQQ@mail.gmail.com>
-	<20130930105234.73b5380ec08bf4cc6b2c9677@samsung.com>
-	<CALiw-2HwQvpHCoJw0JyGn87ZV1vuvqMtPv8i+AcVGQHnAKtEJw@mail.gmail.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH 3/9] ARM: dma-mapping: Always pass proper prot flags to
+	iommu_map()
+Date: Mon, 30 Sep 2013 15:40:58 +0200
+Message-ID: <52497F6A.2090505@samsung.com>
+References: <1380234982-1677-1-git-send-email-andreas.herrmann@calxeda.com>
+	<1380234982-1677-4-git-send-email-andreas.herrmann@calxeda.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <CALiw-2HwQvpHCoJw0JyGn87ZV1vuvqMtPv8i+AcVGQHnAKtEJw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-reply-to: <1380234982-1677-4-git-send-email-andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,41 +19,120 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Olof Johansson <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>
-Cc: Linux Samsung SOC <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Hyunwoong Kim <khw0178.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Prathyush <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Subash Patel <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Sean Paul <seanpaul-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Rahul Sharma <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+To: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+Cc: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, 29 Sep 2013 19:03:06 -0700, Olof Johansson wrote:
-> Hi,
-> 
-> 2013/9/29 Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>:
-> 
-> > Ah, I remember that this is merged.
-> > I agreed to merge this patch because iommu driver need to be completely changed.
-> > Whenever I change exynos-iommu driver, synchronizing samsung-next and iommu-next
-> > branches is a big challenge.
-> > Thus I decided to remove dependencies to samsung-next branch.
-> > But I didn't know that the rest of the new driver is not merged soon. :(
-> > I am sorry about that.
-> >
-> > new patch (v10) will be posted soon.
-> 
-> Will the v10 patch set be incremental based on v6?
-> 
-The single patch 07/12 is merged to mainline from v6 patches.
-v10 patch is more advanced than v6.
-Of course, much more is changed.
-You can refer the v9 patch what is changed since v6.
+Hello,
 
-> How have you tested v10 on mainline?
-> 
+On 2013-09-27 00:36, Andreas Herrmann wrote:
+> ... otherwise it is impossible for the low level iommu driver to
+> figure out which pte flags should be used.
+>
+> In __map_sg_chunk we can derive the flags from dma_data_direction.
+>
+> In __iommu_create_mapping we should treat the memory like
+> DMA_BIDIRECTIONAL and pass both IOMMU_READ and IOMMU_WRITE to
+> iommu_map.
+> __iommu_create_mapping is used during dma_alloc_coherent (via
+> arm_iommu_alloc_attrs).  AFAIK dma_alloc_coherent is responsible for
+> allocation _and_ mapping.  I think this implies that access to the
+> mapped pages should be allowed.
+>
+> Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 
-I just test if the System MMU is correctly enabled and disabled,
-if page table is correctly maintained.
-It is done with IOMMU API call from custom driver/device and applications.
+Thanks pointing the issue and preparing the patch. I will push it to the 
+dma-mapping fixes branch.
 
-The test does not involve working with master IPs such as MFC, FIMC and so on.
+> ---
+>   arch/arm/mm/dma-mapping.c |   43 ++++++++++++++++++++++++++++---------------
+>   1 file changed, 28 insertions(+), 15 deletions(-)
+>
+> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+> index f5e1a84..1272ed2 100644
+> --- a/arch/arm/mm/dma-mapping.c
+> +++ b/arch/arm/mm/dma-mapping.c
+> @@ -1232,7 +1232,8 @@ __iommu_create_mapping(struct device *dev, struct page **pages, size_t size)
+>   				break;
+>   
+>   		len = (j - i) << PAGE_SHIFT;
+> -		ret = iommu_map(mapping->domain, iova, phys, len, 0);
+> +		ret = iommu_map(mapping->domain, iova, phys, len,
+> +				IOMMU_READ|IOMMU_WRITE);
+>   		if (ret < 0)
+>   			goto fail;
+>   		iova += len;
+> @@ -1431,6 +1432,27 @@ static int arm_iommu_get_sgtable(struct device *dev, struct sg_table *sgt,
+>   					 GFP_KERNEL);
+>   }
+>   
+> +static int __dma_direction_to_prot(enum dma_data_direction dir)
+> +{
+> +	int prot;
+> +
+> +	switch (dir) {
+> +	case DMA_BIDIRECTIONAL:
+> +		prot = IOMMU_READ | IOMMU_WRITE;
+> +		break;
+> +	case DMA_TO_DEVICE:
+> +		prot = IOMMU_READ;
+> +		break;
+> +	case DMA_FROM_DEVICE:
+> +		prot = IOMMU_WRITE;
+> +		break;
+> +	default:
+> +		prot = 0;
+> +	}
+> +
+> +	return prot;
+> +}
+> +
+>   /*
+>    * Map a part of the scatter-gather list into contiguous io address space
+>    */
+> @@ -1444,6 +1466,7 @@ static int __map_sg_chunk(struct device *dev, struct scatterlist *sg,
+>   	int ret = 0;
+>   	unsigned int count;
+>   	struct scatterlist *s;
+> +	int prot;
+>   
+>   	size = PAGE_ALIGN(size);
+>   	*handle = DMA_ERROR_CODE;
+> @@ -1460,7 +1483,9 @@ static int __map_sg_chunk(struct device *dev, struct scatterlist *sg,
+>   			!dma_get_attr(DMA_ATTR_SKIP_CPU_SYNC, attrs))
+>   			__dma_page_cpu_to_dev(sg_page(s), s->offset, s->length, dir);
+>   
+> -		ret = iommu_map(mapping->domain, iova, phys, len, 0);
+> +		prot = __dma_direction_to_prot(dir);
+> +
+> +		ret = iommu_map(mapping->domain, iova, phys, len, prot);
+>   		if (ret < 0)
+>   			goto fail;
+>   		count += len >> PAGE_SHIFT;
+> @@ -1665,19 +1690,7 @@ static dma_addr_t arm_coherent_iommu_map_page(struct device *dev, struct page *p
+>   	if (dma_addr == DMA_ERROR_CODE)
+>   		return dma_addr;
+>   
+> -	switch (dir) {
+> -	case DMA_BIDIRECTIONAL:
+> -		prot = IOMMU_READ | IOMMU_WRITE;
+> -		break;
+> -	case DMA_TO_DEVICE:
+> -		prot = IOMMU_READ;
+> -		break;
+> -	case DMA_FROM_DEVICE:
+> -		prot = IOMMU_WRITE;
+> -		break;
+> -	default:
+> -		prot = 0;
+> -	}
+> +	prot = __dma_direction_to_prot(dir);
+>   
+>   	ret = iommu_map(mapping->domain, dma_addr, page_to_phys(page), len, prot);
+>   	if (ret < 0)
 
-> Thanks,
-> 
-> -Olof
+Best regards
+-- 
+Marek Szyprowski
+Samsung R&D Institute Poland
