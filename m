@@ -1,7 +1,8 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [PATCH 6/7] VFIO: Update documentation for VFIO_IOMMU_TYPE1 driver
-Date: Mon, 30 Sep 2013 17:28:42 +0200
-Message-ID: <1380554923-17818-7-git-send-email-a.motakis@virtualopensystems.com>
+Subject: [PATCH 7/7] VFIO: VFIO_PLATFORM: Update documentation for platform
+	specific devices
+Date: Mon, 30 Sep 2013 17:28:43 +0200
+Message-ID: <1380554923-17818-8-git-send-email-a.motakis@virtualopensystems.com>
 References: <1380554923-17818-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,47 +22,43 @@ To: kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, alex.williamson-H+
 Cc: linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The VFIO documentation is slightly out of date. This minor correction
-replaces references to VFIO_IOMMU_X86 with the correct reference to
-VFIO_IOMMU_TYPE1
+Update Documentation/vfio.txt with information regarding the device tree
+based platform devices support.
 
-Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+What is still missing in this RFC series, is information on how to bind
+the driver to platform devices, as there is currently for PCI. This will
+be added when proper VFIO driver binding is implemented.
 ---
- Documentation/vfio.txt | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ Documentation/vfio.txt | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
 diff --git a/Documentation/vfio.txt b/Documentation/vfio.txt
-index 8eda363..b4eafa6 100644
+index b4eafa6..e8daa2b 100644
 --- a/Documentation/vfio.txt
 +++ b/Documentation/vfio.txt
-@@ -167,8 +167,8 @@ group and can access them as follows:
- 	int container, group, device, i;
- 	struct vfio_group_status group_status =
- 					{ .argsz = sizeof(group_status) };
--	struct vfio_iommu_x86_info iommu_info = { .argsz = sizeof(iommu_info) };
--	struct vfio_iommu_x86_dma_map dma_map = { .argsz = sizeof(dma_map) };
-+	struct vfio_iommu_type1_info iommu_info = { .argsz = sizeof(iommu_info) };
-+	struct vfio_iommu_type1_dma_map dma_map = { .argsz = sizeof(dma_map) };
- 	struct vfio_device_info device_info = { .argsz = sizeof(device_info) };
+@@ -237,6 +237,23 @@ group and can access them as follows:
+ 	/* Gratuitous device reset and go... */
+ 	ioctl(device, VFIO_DEVICE_RESET);
  
- 	/* Create a new container */
-@@ -177,7 +177,7 @@ group and can access them as follows:
- 	if (ioctl(container, VFIO_GET_API_VERSION) != VFIO_API_VERSION)
- 		/* Unknown API version */
++For platform devices, if a device has multiple regions and multiple IRQs the
++index that will be assigned by VFIO to those resources will correspond to the
++order within the associated "reg" and "interrupt" properties in the device tree
++representation of the target device.
++
++For example, if a device is represented like this in the device tree:
++
++        reg = <0x101e2000 0x1000 0x101e4000 0x1000>;
++        interrupts = <24 25 26 27>;
++
++Region #0 is 0x101e2000, region #1 is 0x101e4000
++Interrupt #0 is 24, and so on.
++
++Additionally for a platform device, unlike PCI devices, an offset referring to
++a region within a VFIO device file descriptor will match the physical address
++of that region as defined in the device tree.
++
+ VFIO User API
+ -------------------------------------------------------------------------------
  
--	if (!ioctl(container, VFIO_CHECK_EXTENSION, VFIO_X86_IOMMU))
-+	if (!ioctl(container, VFIO_CHECK_EXTENSION, VFIO_TYPE1_IOMMU))
- 		/* Doesn't support the IOMMU driver we want. */
- 
- 	/* Open the group */
-@@ -193,7 +193,7 @@ group and can access them as follows:
- 	ioctl(group, VFIO_GROUP_SET_CONTAINER, &container);
- 
- 	/* Enable the IOMMU model we want */
--	ioctl(container, VFIO_SET_IOMMU, VFIO_X86_IOMMU)
-+	ioctl(container, VFIO_SET_IOMMU, VFIO_TYPE1_IOMMU)
- 
- 	/* Get addition IOMMU info */
- 	ioctl(container, VFIO_IOMMU_GET_INFO, &iommu_info);
 -- 
 1.8.1.2
