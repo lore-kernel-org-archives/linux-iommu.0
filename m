@@ -1,15 +1,14 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/7] VFIO_IOMMU_TYPE1 workaround to build for platform
-	devices
-Date: Mon, 30 Sep 2013 11:39:42 -0600
-Message-ID: <1380562782.2674.178.camel@ul30vt.home>
+Subject: Re: [RFC PATCH v2 0/7] VFIO for device tree based platform devices
+	(work in progress)
+Date: Mon, 30 Sep 2013 11:42:48 -0600
+Message-ID: <1380562968.2674.180.camel@ul30vt.home>
 References: <1380554923-17818-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1380554923-17818-2-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1380554923-17818-2-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+In-Reply-To: <1380554923-17818-1-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,93 +23,76 @@ Cc: linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76
 List-Id: iommu@lists.linux-foundation.org
 
 On Mon, 2013-09-30 at 17:28 +0200, Antonios Motakis wrote:
-> This is a workaround to make the VFIO_IOMMU_TYPE1 driver usable with
-> platform devices instead of PCI. A future permanent fix should support
-> both. This is required in order to use the Exynos SMMU, or ARM SMMU
-> driver with VFIO.
+> This is a preview of the base work, towards VFIO support on ARM platforms
+> with an IOMMU. It forms a base on to which to implement the functionality
+> necessary to enable using device tree devices on ARM (and other platforms
+> based on device trees) with VFIO.
 > 
-> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-> ---
->  drivers/vfio/Kconfig            |  2 +-
->  drivers/vfio/vfio_iommu_type1.c | 22 ++++++++++++++++++----
->  2 files changed, 19 insertions(+), 5 deletions(-)
+> This patch series has been subjected to limited testing on the Arndale board
+> (with the Exynos 5250 System MMU). More extensive testing will follow as more
+> features are implemented.
 > 
-> diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
-> index 7cd5dec..1f84eda 100644
-> --- a/drivers/vfio/Kconfig
-> +++ b/drivers/vfio/Kconfig
-> @@ -6,7 +6,7 @@ config VFIO_IOMMU_TYPE1
->  menuconfig VFIO
->  	tristate "VFIO Non-Privileged userspace driver framework"
->  	depends on IOMMU_API
-> -	select VFIO_IOMMU_TYPE1 if X86
-> +	select VFIO_IOMMU_TYPE1 if X86 || ARM
->  	help
->  	  VFIO provides a framework for secure userspace device drivers.
->  	  See Documentation/vfio.txt for more details.
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index 6f3fbc4..d7e6a12 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -30,7 +30,8 @@
->  #include <linux/iommu.h>
->  #include <linux/module.h>
->  #include <linux/mm.h>
-> -#include <linux/pci.h>		/* pci_bus_type */
-> +#include <linux/pci.h>			/* pci_bus_type */
-> +#include <linux/platform_device.h>	/* platform_bus_type */
->  #include <linux/sched.h>
->  #include <linux/slab.h>
->  #include <linux/uaccess.h>
-> @@ -46,6 +47,8 @@ module_param_named(allow_unsafe_interrupts,
->  		   allow_unsafe_interrupts, bool, S_IRUGO | S_IWUSR);
->  MODULE_PARM_DESC(allow_unsafe_interrupts,
->  		 "Enable VFIO IOMMU support for on platforms without interrupt remapping support.");
-> +static struct bus_type *iommu_bus_type = NULL;
-> +static bool require_cap_intr_remap = false;
->  
->  struct vfio_iommu {
->  	struct iommu_domain	*domain;
-> @@ -612,7 +615,8 @@ static void *vfio_iommu_type1_open(unsigned long arg)
->  	/*
->  	 * Wish we didn't have to know about bus_type here.
->  	 */
-> -	iommu->domain = iommu_domain_alloc(&pci_bus_type);
-> +	iommu->domain = iommu_domain_alloc(iommu_bus_type);
-> +
->  	if (!iommu->domain) {
->  		kfree(iommu);
->  		return ERR_PTR(-EIO);
-> @@ -624,7 +628,7 @@ static void *vfio_iommu_type1_open(unsigned long arg)
->  	 * the way.  Fortunately we know interrupt remapping is global for
->  	 * our iommus.
->  	 */
-> -	if (!allow_unsafe_interrupts &&
-> +	if (require_cap_intr_remap && !allow_unsafe_interrupts &&
->  	    !iommu_domain_has_cap(iommu->domain, IOMMU_CAP_INTR_REMAP)) {
->  		pr_warn("%s: No interrupt remapping support.  Use the module param \"allow_unsafe_interrupts\" to enable VFIO IOMMU support on this platform\n",
->  		       __func__);
-> @@ -733,7 +737,17 @@ static const struct vfio_iommu_driver_ops vfio_iommu_driver_ops_type1 = {
->  
->  static int __init vfio_iommu_type1_init(void)
->  {
-> -	if (!iommu_present(&pci_bus_type))
-> +#ifdef CONFIG_PCI
-> +	if (iommu_present(&pci_bus_type)) {
-> +		iommu_bus_type = &pci_bus_type;
-> +		/* For PCI targets, IOMMU_CAP_INTR_REMAP is required */
-> +		require_cap_intr_remap = true;
-> +	}
-> +#endif
-> +	if (!iommu_bus_type && iommu_present(&platform_bus_type))
-> +		iommu_bus_type = &platform_bus_type;
-> +
-> +	if(!iommu_bus_type)
->  		return -ENODEV;
->  
->  	return vfio_register_iommu_driver(&vfio_iommu_driver_ops_type1);
+> It depends on Cho KyongHo's patch series "iommu/exynos: Fixes and Enhancements
+> of System MMU driver with DT", applied on a Linux 3.10.1 kernel, and also my
+> own "iommu/exynos: add devices attached to the System MMU to an IOMMU group".
+> Those patches are required at least in order to test the proposed module on
+> Arndale.
+> 
+> The API used is identical to the existing VFIO API that is also used with
+> PCI devices. Only devices that include a basic set of IRQs and memory regions
+> are targeted; devices with complicated relationships with other devices on the
+> device tree are not taken into account at this stage.
+> 
+> The following IOCTLs have been found to be working on the Arndale with no
+> changes to VFIO:
+>  - VFIO_GET_API_VERSION
+>  - VFIO_CHECK_EXTENSION
+> The TYPE1 fix proposed here enables the following IOCTLs:
+>  - VFIO_GROUP_GET_STATUS
+>  - VFIO_GROUP_SET_CONTAINER
+>  - VFIO_SET_IOMMU
+>  - VFIO_IOMMU_GET_INFO
+>  - VFIO_IOMMU_MAP_DMA
+> The VFIO platform driver proposed here implements the following:
+>  - VFIO_GROUP_GET_DEVICE_FD
+>  - VFIO_DEVICE_GET_INFO
+>  - VFIO_DEVICE_GET_REGION_INFO
+>  - VFIO_DEVICE_GET_IRQ_INFO
+> In addition, the VFIO platform driver implements the following through
+> the VFIO device file descriptor:
+>  - MMAPing memory regions to the virtual address space of the VFIO user.
+>  - Read / write of memory regions directly through the file descriptor.
+> 
+> What still needs to be done, includes:
+>  - IRQs / IRQFD support.
+>  - The API is not currently extended with device tree specific information.
+>  - Proper binding of the VFIO_DT driver to devices; currently to test the
+>    driver, one has to edit the device tree and add "vfio" to the
+>    compatible property. However Linux does not support OF drivers that
+>    can be dynamically bound to any device.
+>  - More extensive testing with a functioning device doing DMA.
+>  - QEMU / KVM support.
+> 
+> Antonios Motakis (7):
+>   VFIO_IOMMU_TYPE1 workaround to build for platform devices
+>   Initial skeleton of VFIO support for Device Tree based devices
+>   Return info for device and its memory regions and interrupts
+>   VFIO: DT: Support MMAP of MMIO regions
+>   VFIO: DT: Read and write support for the device fd
+>   VFIO: Update documentation for VFIO_IOMMU_TYPE1 driver
+>   VFIO: VFIO_PLATFORM: Update documentation for platform specific
+>     devices
+> 
+>  Documentation/vfio.txt          |  25 +++-
+>  drivers/vfio/Kconfig            |  13 +-
+>  drivers/vfio/Makefile           |   1 +
+>  drivers/vfio/vfio_iommu_type1.c |  22 ++-
+>  drivers/vfio/vfio_platform.c    | 308 ++++++++++++++++++++++++++++++++++++++++
+>  include/uapi/linux/vfio.h       |   1 +
+>  6 files changed, 361 insertions(+), 9 deletions(-)
+>  create mode 100644 drivers/vfio/vfio_platform.c
 
-Is it possible to have a system with both PCI and platform devices?  How
-would you support that?  Thanks,
+Looks like a good first pass to me, I'll be interested to see what the
+other platform device folks think.  Thanks,
 
 Alex
