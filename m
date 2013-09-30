@@ -1,81 +1,273 @@
-From: Antonios Motakis <a.motakis@virtualopensystems.com>
-Subject: [RFC PATCH v2 0/7] VFIO for device tree based platform devices (work in progress)
-Date: Mon, 30 Sep 2013 17:28:36 +0200
-Message-ID: <1380554923-17818-1-git-send-email-a.motakis@virtualopensystems.com>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: kvmarm@lists.cs.columbia.edu, alex.williamson@redhat.com
-Cc: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, kvm@vger.kernel.org, agraf@suse.de, B08248@freescale.com, tech@virtualopensystems.com, Antonios Motakis <a.motakis@virtualopensystems.com>
+From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Subject: [PATCH 2/7] Initial skeleton of VFIO support for Device Tree based
+	devices
+Date: Mon, 30 Sep 2013 17:28:38 +0200
+Message-ID: <1380554923-17818-3-git-send-email-a.motakis@virtualopensystems.com>
+References: <1380554923-17818-1-git-send-email-a.motakis@virtualopensystems.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1380554923-17818-1-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This is a preview of the base work, towards VFIO support on ARM platforms
-with an IOMMU. It forms a base on to which to implement the functionality
-necessary to enable using device tree devices on ARM (and other platforms
-based on device trees) with VFIO.
+Platform devices in the Linux kernel are usually managed by the DT
+interface. This patch forms the base to support these kind of devices
+with VFIO.
 
-This patch series has been subjected to limited testing on the Arndale board
-(with the Exynos 5250 System MMU). More extensive testing will follow as more
-features are implemented.
-
-It depends on Cho KyongHo's patch series "iommu/exynos: Fixes and Enhancements
-of System MMU driver with DT", applied on a Linux 3.10.1 kernel, and also my
-own "iommu/exynos: add devices attached to the System MMU to an IOMMU group".
-Those patches are required at least in order to test the proposed module on
-Arndale.
-
-The API used is identical to the existing VFIO API that is also used with
-PCI devices. Only devices that include a basic set of IRQs and memory regions
-are targeted; devices with complicated relationships with other devices on the
-device tree are not taken into account at this stage.
-
-The following IOCTLs have been found to be working on the Arndale with no
-changes to VFIO:
- - VFIO_GET_API_VERSION
- - VFIO_CHECK_EXTENSION
-The TYPE1 fix proposed here enables the following IOCTLs:
- - VFIO_GROUP_GET_STATUS
- - VFIO_GROUP_SET_CONTAINER
- - VFIO_SET_IOMMU
- - VFIO_IOMMU_GET_INFO
- - VFIO_IOMMU_MAP_DMA
-The VFIO platform driver proposed here implements the following:
- - VFIO_GROUP_GET_DEVICE_FD
- - VFIO_DEVICE_GET_INFO
- - VFIO_DEVICE_GET_REGION_INFO
- - VFIO_DEVICE_GET_IRQ_INFO
-In addition, the VFIO platform driver implements the following through
-the VFIO device file descriptor:
- - MMAPing memory regions to the virtual address space of the VFIO user.
- - Read / write of memory regions directly through the file descriptor.
-
-What still needs to be done, includes:
- - IRQs / IRQFD support.
- - The API is not currently extended with device tree specific information.
- - Proper binding of the VFIO_DT driver to devices; currently to test the
-   driver, one has to edit the device tree and add "vfio" to the
-   compatible property. However Linux does not support OF drivers that
-   can be dynamically bound to any device.
- - More extensive testing with a functioning device doing DMA.
- - QEMU / KVM support.
-
-Antonios Motakis (7):
-  VFIO_IOMMU_TYPE1 workaround to build for platform devices
-  Initial skeleton of VFIO support for Device Tree based devices
-  Return info for device and its memory regions and interrupts
-  VFIO: DT: Support MMAP of MMIO regions
-  VFIO: DT: Read and write support for the device fd
-  VFIO: Update documentation for VFIO_IOMMU_TYPE1 driver
-  VFIO: VFIO_PLATFORM: Update documentation for platform specific
-    devices
-
- Documentation/vfio.txt          |  25 +++-
- drivers/vfio/Kconfig            |  13 +-
- drivers/vfio/Makefile           |   1 +
- drivers/vfio/vfio_iommu_type1.c |  22 ++-
- drivers/vfio/vfio_platform.c    | 308 ++++++++++++++++++++++++++++++++++++++++
- include/uapi/linux/vfio.h       |   1 +
- 6 files changed, 361 insertions(+), 9 deletions(-)
+Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+---
+ drivers/vfio/Kconfig         |  11 +++
+ drivers/vfio/Makefile        |   1 +
+ drivers/vfio/vfio_platform.c | 187 +++++++++++++++++++++++++++++++++++++++++++
+ include/uapi/linux/vfio.h    |   1 +
+ 4 files changed, 200 insertions(+)
  create mode 100644 drivers/vfio/vfio_platform.c
 
+diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
+index 1f84eda..35254b7 100644
+--- a/drivers/vfio/Kconfig
++++ b/drivers/vfio/Kconfig
+@@ -13,4 +13,15 @@ menuconfig VFIO
+ 
+ 	  If you don't know what to do here, say N.
+ 
++config VFIO_PLATFORM
++	tristate "VFIO support for device tree based platform devices"
++	depends on VFIO && EVENTFD && OF
++	help
++	  Support for platform devices with VFIO. This is required to make
++	  use of platform devices present on device tree nodes using the VFIO
++	  framework. Devices that are not described in the device tree cannot
++	  be used by this driver.
++
++	  If you don't know what to do here, say N.
++
+ source "drivers/vfio/pci/Kconfig"
+diff --git a/drivers/vfio/Makefile b/drivers/vfio/Makefile
+index 2398d4a..575c8dd 100644
+--- a/drivers/vfio/Makefile
++++ b/drivers/vfio/Makefile
+@@ -1,3 +1,4 @@
+ obj-$(CONFIG_VFIO) += vfio.o
+ obj-$(CONFIG_VFIO_IOMMU_TYPE1) += vfio_iommu_type1.o
+ obj-$(CONFIG_VFIO_PCI) += pci/
++obj-$(CONFIG_VFIO_PLATFORM) += vfio_platform.o
+diff --git a/drivers/vfio/vfio_platform.c b/drivers/vfio/vfio_platform.c
+new file mode 100644
+index 0000000..b9686b0
+--- /dev/null
++++ b/drivers/vfio/vfio_platform.c
+@@ -0,0 +1,187 @@
++/*
++ * Copyright (C) 2013 - Virtual Open Systems
++ * Author: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License, version 2, as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
++ */
++
++#include <linux/device.h>
++#include <linux/eventfd.h>
++#include <linux/interrupt.h>
++#include <linux/iommu.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/notifier.h>
++#include <linux/pm_runtime.h>
++#include <linux/slab.h>
++#include <linux/types.h>
++#include <linux/uaccess.h>
++#include <linux/vfio.h>
++
++#define DRIVER_VERSION  "0.1"
++#define DRIVER_AUTHOR   "Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>"
++#define DRIVER_DESC     "VFIO Device Tree devices - User Level meta-driver"
++
++struct vfio_platform_device {
++	struct platform_device	*pdev;
++};
++
++static void vfio_platform_release(void *device_data)
++{
++	module_put(THIS_MODULE);
++}
++
++static int vfio_platform_open(void *device_data)
++{
++	if (!try_module_get(THIS_MODULE))
++		return -ENODEV;
++
++	return 0;
++}
++
++static long vfio_platform_ioctl(void *device_data,
++			   unsigned int cmd, unsigned long arg)
++{
++	struct vfio_platform_device *vdev = device_data;
++	unsigned long minsz;
++
++	if (cmd == VFIO_DEVICE_GET_INFO) {
++		struct vfio_device_info info;
++
++		minsz = offsetofend(struct vfio_device_info, num_irqs);
++
++		if (copy_from_user(&info, (void __user *)arg, minsz))
++			return -EFAULT;
++
++		if (info.argsz < minsz)
++			return -EINVAL;
++
++		info.flags = VFIO_DEVICE_FLAGS_PLATFORM;
++		info.num_regions = 0;
++		info.num_irqs = 0;
++
++		return copy_to_user((void __user *)arg, &info, minsz);
++
++	} else if (cmd == VFIO_DEVICE_GET_REGION_INFO)
++		return -EINVAL;
++
++	else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
++		return -EINVAL;
++
++	else if (cmd == VFIO_DEVICE_SET_IRQS)
++		return -EINVAL;
++
++	else if (cmd == VFIO_DEVICE_RESET)
++		return -EINVAL;
++
++	return -ENOTTY;
++}
++
++static ssize_t vfio_platform_read(void *device_data, char __user *buf,
++			     size_t count, loff_t *ppos)
++{
++	return 0;
++}
++
++static ssize_t vfio_platform_write(void *device_data, const char __user *buf,
++			      size_t count, loff_t *ppos)
++{
++	return 0;
++}
++
++static int vfio_platform_mmap(void *device_data, struct vm_area_struct *vma)
++{
++	return -EINVAL;
++}
++
++static const struct vfio_device_ops vfio_platform_ops = {
++	.name		= "vfio-platform",
++	.open		= vfio_platform_open,
++	.release	= vfio_platform_release,
++	.ioctl		= vfio_platform_ioctl,
++	.read		= vfio_platform_read,
++	.write		= vfio_platform_write,
++	.mmap		= vfio_platform_mmap,
++};
++
++static int vfio_platform_probe(struct platform_device *pdev)
++{
++	struct vfio_platform_device *vdev;
++	struct iommu_group *group;
++	int ret;
++
++	group = iommu_group_get(&pdev->dev);
++	if (!group) {
++		pr_err("VFIO: No IOMMU group for device %s\n", pdev->name);
++		return -EINVAL;
++	}
++
++	vdev = kzalloc(sizeof(*vdev), GFP_KERNEL);
++	if (!vdev) {
++		iommu_group_put(group);
++		return -ENOMEM;
++	}
++
++	vdev->pdev = pdev;
++
++	ret = vfio_add_group_dev(&pdev->dev, &vfio_platform_ops, vdev);
++	if (ret) {
++		iommu_group_put(group);
++		kfree(vdev);
++	}
++
++	return ret;
++}
++
++static int vfio_platform_remove(struct platform_device *pdev)
++{
++	struct vfio_platform_device *vdev;
++
++	vdev = vfio_del_group_dev(&pdev->dev);
++	if (!vdev)
++		return -EINVAL;
++
++	iommu_group_put(pdev->dev.iommu_group);
++	kfree(vdev);
++
++	return 0;
++}
++
++static const struct of_device_id vfio_platform_match[] = {
++	/* Before this series can be applied, we shall implement a better
++	 * mechanism to bind the module to any device. For now add the
++	 * compatible property to the dtb of the devices we want to use. */
++	{
++		.compatible = "vfio",
++	},
++	{},
++};
++MODULE_DEVICE_TABLE(of, vfio_platform_match);
++
++static struct platform_driver vfio_platform_driver = {
++	.probe		= vfio_platform_probe,
++	.remove		= vfio_platform_remove,
++	.driver	= {
++		.name	= "vfio-platform",
++		.owner	= THIS_MODULE,
++		.of_match_table = vfio_platform_match,
++	},
++};
++
++module_platform_driver(vfio_platform_driver);
++
++MODULE_VERSION(DRIVER_VERSION);
++MODULE_LICENSE("GPL v2");
++MODULE_AUTHOR(DRIVER_AUTHOR);
++MODULE_DESCRIPTION(DRIVER_DESC);
+diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+index 284ff24..8d7434d 100644
+--- a/include/uapi/linux/vfio.h
++++ b/include/uapi/linux/vfio.h
+@@ -147,6 +147,7 @@ struct vfio_device_info {
+ 	__u32	flags;
+ #define VFIO_DEVICE_FLAGS_RESET	(1 << 0)	/* Device supports reset */
+ #define VFIO_DEVICE_FLAGS_PCI	(1 << 1)	/* vfio-pci device */
++#define VFIO_DEVICE_FLAGS_PLATFORM (1 << 2)	/* vfio-platform device */
+ 	__u32	num_regions;	/* Max region index + 1 */
+ 	__u32	num_irqs;	/* Max IRQ index + 1 */
+ };
 -- 
 1.8.1.2
