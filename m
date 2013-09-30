@@ -1,19 +1,14 @@
-From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu: Clear global and context bank fault
-	status registers
-Date: Mon, 30 Sep 2013 19:17:16 +0200
-Message-ID: <20130930171716.GX3315@alberich>
-References: <1380234982-1677-1-git-send-email-andreas.herrmann@calxeda.com>
-	<1380234982-1677-6-git-send-email-andreas.herrmann@calxeda.com>
-	<20130927085255.GC8319@mudshark.cambridge.arm.com>
-	<20130930135401.GV3315@alberich> <20130930135621.GW3315@alberich>
-	<20130930160615.GG26036@mudshark.cambridge.arm.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 6/7] VFIO: Update documentation for VFIO_IOMMU_TYPE1 driver
+Date: Mon, 30 Sep 2013 11:39:26 -0600
+Message-ID: <1380562766.2674.176.camel@ul30vt.home>
+References: <1380554923-17818-1-git-send-email-a.motakis@virtualopensystems.com>
+	<1380554923-17818-7-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20130930160615.GG26036-MRww78TxoiP5vMa5CHWGZ34zcgK1vI+I0E9HWUfgJXw@public.gmane.org>
+In-Reply-To: <1380554923-17818-7-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,78 +18,56 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Cc: linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Sep 30, 2013 at 12:06:15PM -0400, Will Deacon wrote:
-> On Mon, Sep 30, 2013 at 02:56:21PM +0100, Andreas Herrmann wrote:
-> > 
-> > After reset these registers have unknown values.
-> > This might cause problems when evaluating SMMU_GFSR and/or SMMU_CB_FSR
-> > in handlers for combined interrupts.
-> > 
-> > Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-> > ---
-> >  drivers/iommu/arm-smmu.c |   27 ++++++++++++++++++++-------
-> >  1 file changed, 20 insertions(+), 7 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> > index 579b6f8..cbbf597 100644
-> > --- a/drivers/iommu/arm-smmu.c
-> > +++ b/drivers/iommu/arm-smmu.c
-> > @@ -631,6 +631,12 @@ static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
-> >  	return IRQ_HANDLED;
-> >  }
-> >  
-> > +static void arm_smmu_clear_cb_fsr(struct arm_smmu_device *smmu, u8 cbndx)
-> > +{
-> > +	void __iomem *cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cbndx);
-> > +	writel_relaxed(FSR_FAULT, cb_base + ARM_SMMU_CB_FSR);
-> > +}
+On Mon, 2013-09-30 at 17:28 +0200, Antonios Motakis wrote:
+> The VFIO documentation is slightly out of date. This minor correction
+> replaces references to VFIO_IOMMU_X86 with the correct reference to
+> VFIO_IOMMU_TYPE1
 > 
-> Hmm, why not just stick this in arm_smmu_init_context_bank...
-
-Because we should clear the FSR before we call request_irq.
-Otherwise we might handle interrupts although the context bank is not
-enabled.
-
-Moving request_irq after arm_smmu_init_context_bank is not optimal
-either. (We should have configured the context interrupt before
-translation is enabled. Otherwise it's possible to miss a fault.)
-
-> >  static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
-> >  {
-> >  	u32 reg;
-> > @@ -838,6 +844,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
-> >  		root_cfg->irptndx = root_cfg->cbndx;
-> >  	}
-> >  
-> > +	arm_smmu_clear_cb_fsr(smmu, root_cfg->cbndx);
+> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+> ---
+>  Documentation/vfio.txt | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
 > 
-> ... then move that function call here instead of where it currently is?
+> diff --git a/Documentation/vfio.txt b/Documentation/vfio.txt
+> index 8eda363..b4eafa6 100644
+> --- a/Documentation/vfio.txt
+> +++ b/Documentation/vfio.txt
+> @@ -167,8 +167,8 @@ group and can access them as follows:
+>  	int container, group, device, i;
+>  	struct vfio_group_status group_status =
+>  					{ .argsz = sizeof(group_status) };
+> -	struct vfio_iommu_x86_info iommu_info = { .argsz = sizeof(iommu_info) };
+> -	struct vfio_iommu_x86_dma_map dma_map = { .argsz = sizeof(dma_map) };
+> +	struct vfio_iommu_type1_info iommu_info = { .argsz = sizeof(iommu_info) };
+> +	struct vfio_iommu_type1_dma_map dma_map = { .argsz = sizeof(dma_map) };
+>  	struct vfio_device_info device_info = { .argsz = sizeof(device_info) };
+>  
+>  	/* Create a new container */
+> @@ -177,7 +177,7 @@ group and can access them as follows:
+>  	if (ioctl(container, VFIO_GET_API_VERSION) != VFIO_API_VERSION)
+>  		/* Unknown API version */
+>  
+> -	if (!ioctl(container, VFIO_CHECK_EXTENSION, VFIO_X86_IOMMU))
+> +	if (!ioctl(container, VFIO_CHECK_EXTENSION, VFIO_TYPE1_IOMMU))
+>  		/* Doesn't support the IOMMU driver we want. */
+>  
+>  	/* Open the group */
+> @@ -193,7 +193,7 @@ group and can access them as follows:
+>  	ioctl(group, VFIO_GROUP_SET_CONTAINER, &container);
+>  
+>  	/* Enable the IOMMU model we want */
+> -	ioctl(container, VFIO_SET_IOMMU, VFIO_X86_IOMMU)
+> +	ioctl(container, VFIO_SET_IOMMU, VFIO_TYPE1_IOMMU)
+>  
+>  	/* Get addition IOMMU info */
+>  	ioctl(container, VFIO_IOMMU_GET_INFO, &iommu_info);
 
-See above.
 
-> >  	irq = smmu->irqs[smmu->num_global_irqs + root_cfg->irptndx];
-> >  	ret = request_irq(irq, arm_smmu_context_fault, IRQF_SHARED,
-> >  			  "arm-smmu-context-fault", domain);
-> > @@ -1564,7 +1571,11 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
-> >  	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
-> >  	void __iomem *sctlr_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB_SCTLR;
-> >  	int i = 0;
-> > -	u32 scr0 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sCR0);
-> > +	u32 val;
-> 
-> I guess we have to dilute the meaning of the variable, but perhaps `reg' is
-> slightly more indicative than `val'?
+Your tree seems out of date, we've already got these:
 
-Will change that.
-
-> Do you plan to post all your patches as a new series (it's hard to keep
-> track of what to pick)?
-
-Yes.
-
-
-Andreas
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/Documentation/vfio.txt?id=dac09b57c0ff57e55dd6fa5109076c8af0468a75
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/Documentation/vfio.txt?id=b0e59b85abd42f8a525ff032d5063457e1378808
