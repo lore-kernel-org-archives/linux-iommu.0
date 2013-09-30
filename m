@@ -1,8 +1,7 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [PATCH 3/7] Return info for device and its memory regions and
-	interrupts
-Date: Mon, 30 Sep 2013 17:28:39 +0200
-Message-ID: <1380554923-17818-4-git-send-email-a.motakis@virtualopensystems.com>
+Subject: [PATCH 4/7] VFIO: DT: Support MMAP of MMIO regions
+Date: Mon, 30 Sep 2013 17:28:40 +0200
+Message-ID: <1380554923-17818-5-git-send-email-a.motakis@virtualopensystems.com>
 References: <1380554923-17818-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,114 +21,79 @@ To: kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, alex.williamson-H+
 Cc: linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-A VFIO userspace driver will start by opening the VFIO device
-that corresponds to an IOMMU group, and will use the ioctl interface
-to get the basic device info, such as number of memory regions and
-interrupts, and their properties.
-
-This patch implements the IOCTLs:
- - VFIO_DEVICE_GET_INFO
- - VFIO_DEVICE_GET_REGION_INFO
- - VFIO_DEVICE_GET_IRQ_INFO
-
 Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 ---
- drivers/vfio/vfio_platform.c | 60 ++++++++++++++++++++++++++++++++++++++------
- 1 file changed, 53 insertions(+), 7 deletions(-)
+ drivers/vfio/vfio_platform.c | 44 ++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 44 insertions(+)
 
 diff --git a/drivers/vfio/vfio_platform.c b/drivers/vfio/vfio_platform.c
-index b9686b0..a0abcfa 100644
+index a0abcfa..6364316 100644
 --- a/drivers/vfio/vfio_platform.c
 +++ b/drivers/vfio/vfio_platform.c
-@@ -28,6 +28,10 @@
- #include <linux/types.h>
- #include <linux/uaccess.h>
- #include <linux/vfio.h>
-+#include <linux/of.h>
-+#include <linux/of_address.h>
-+#include <linux/of_irq.h>
-+#include <linux/of_platform.h>
- 
- #define DRIVER_VERSION  "0.1"
- #define DRIVER_AUTHOR   "Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>"
-@@ -54,10 +58,13 @@ static long vfio_platform_ioctl(void *device_data,
- 			   unsigned int cmd, unsigned long arg)
- {
- 	struct vfio_platform_device *vdev = device_data;
-+	struct device_node *of_node = vdev->pdev->dev.of_node;
- 	unsigned long minsz;
- 
- 	if (cmd == VFIO_DEVICE_GET_INFO) {
- 		struct vfio_device_info info;
-+		struct resource res;
-+		int cnt = 0;
- 
- 		minsz = offsetofend(struct vfio_device_info, num_irqs);
- 
-@@ -68,18 +75,57 @@ static long vfio_platform_ioctl(void *device_data,
- 			return -EINVAL;
- 
- 		info.flags = VFIO_DEVICE_FLAGS_PLATFORM;
--		info.num_regions = 0;
--		info.num_irqs = 0;
-+
-+		while (!of_address_to_resource(of_node, cnt, &res))
-+			cnt++;
-+
-+		info.num_regions = cnt;
-+
-+		info.num_irqs = of_irq_count(of_node);
+@@ -103,6 +103,10 @@ static long vfio_platform_ioctl(void *device_data,
+ 		info.offset = res.start;	/* map phys addr with offset */
+ 		info.size = resource_size(&res);
+ 		info.flags = 0;
++		/* Only regions addressed with PAGE granularity can be MMAPed
++		 * securely. */
++		if (!(info.offset & ~PAGE_MASK) && !(info.size & ~PAGE_MASK))
++			info.flags |= VFIO_REGION_INFO_FLAG_MMAP;
  
  		return copy_to_user((void __user *)arg, &info, minsz);
  
--	} else if (cmd == VFIO_DEVICE_GET_REGION_INFO)
--		return -EINVAL;
-+	} else if (cmd == VFIO_DEVICE_GET_REGION_INFO) {
-+		struct vfio_region_info info;
-+		struct resource res;
+@@ -134,6 +138,18 @@ static long vfio_platform_ioctl(void *device_data,
+ 	return -ENOTTY;
+ }
  
--	else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
--		return -EINVAL;
-+		minsz = offsetofend(struct vfio_region_info, offset);
++static bool is_in_resource(struct resource res, u64 addr, u64 size)
++{
++	if (addr < res.start)
++		return false;
++	if (addr > res.end)
++		return false;
++	if (addr + size - 1 > res.end)
++		return false;
 +
-+		if (copy_from_user(&info, (void __user *)arg, minsz))
-+			return -EFAULT;
++	return true;
++}
 +
-+		if (info.argsz < minsz)
-+			return -EINVAL;
-+
-+		if(of_address_to_resource(of_node, info.index, &res))
-+			return -EINVAL;
-+
-+		info.offset = res.start;	/* map phys addr with offset */
-+		info.size = resource_size(&res);
-+		info.flags = 0;
-+
-+		return copy_to_user((void __user *)arg, &info, minsz);
-+
-+	} else if (cmd == VFIO_DEVICE_GET_IRQ_INFO) {
-+		struct vfio_irq_info info;
-+		struct resource res;
-+
-+		minsz = offsetofend(struct vfio_irq_info, count);
-+
-+		if (copy_from_user(&info, (void __user *)arg, minsz))
-+			return -EFAULT;
-+
-+		if (info.argsz < minsz)
-+			return -EINVAL;
-+
-+		of_irq_to_resource(of_node, info.index, &res);
-+
-+		info.flags = 0;
-+		info.count = 1;
-+
-+		return copy_to_user((void __user *)arg, &info, minsz);
+ static ssize_t vfio_platform_read(void *device_data, char __user *buf,
+ 			     size_t count, loff_t *ppos)
+ {
+@@ -148,6 +164,34 @@ static ssize_t vfio_platform_write(void *device_data, const char __user *buf,
  
--	else if (cmd == VFIO_DEVICE_SET_IRQS)
-+	} else if (cmd == VFIO_DEVICE_SET_IRQS)
- 		return -EINVAL;
+ static int vfio_platform_mmap(void *device_data, struct vm_area_struct *vma)
+ {
++	struct vfio_platform_device *vdev = device_data;
++	struct device_node *of_node = vdev->pdev->dev.of_node;
++	u64 req_len = vma->vm_end - vma->vm_start;
++	u64 addr = vma->vm_pgoff << PAGE_SHIFT;
++	struct resource res;
++	int i;
++
++	if (vma->vm_end < vma->vm_start)
++		return -EINVAL;
++	if (vma->vm_start & ~PAGE_MASK)
++		return -EINVAL;
++	if (vma->vm_end & ~PAGE_MASK)
++		return -EINVAL;
++	if ((vma->vm_flags & VM_SHARED) == 0)
++		return -EINVAL;
++
++	for (i = 0; !of_address_to_resource(of_node, i, &res); i++) {
++		if (!is_in_resource(res, addr, req_len))
++			continue;
++
++		vma->vm_private_data = vdev;
++		vma->vm_flags |= VM_IO | VM_DONTEXPAND | VM_DONTDUMP;
++		vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
++
++		return remap_pfn_range(vma, vma->vm_start, addr,
++				       req_len, vma->vm_page_prot);
++	}
++
+ 	return -EINVAL;
+ }
  
- 	else if (cmd == VFIO_DEVICE_RESET)
 -- 
 1.8.1.2
