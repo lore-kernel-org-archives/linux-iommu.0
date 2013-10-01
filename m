@@ -1,8 +1,7 @@
 From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH 3/6] iommu/arm-smmu: Check for num_context_irqs > 0 to avoid
-	divide by zero exception
-Date: Tue,  1 Oct 2013 14:39:07 +0200
-Message-ID: <1380631150-10783-4-git-send-email-andreas.herrmann@calxeda.com>
+Subject: [PATCH 4/6] iommu/arm-smmu: Print context fault information
+Date: Tue,  1 Oct 2013 14:39:08 +0200
+Message-ID: <1380631150-10783-5-git-send-email-andreas.herrmann@calxeda.com>
 References: <1380631150-10783-1-git-send-email-andreas.herrmann@calxeda.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,42 +21,27 @@ To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-With the right (or wrong;-) definition of v1 SMMU node in DTB it is
-possible to trigger a division by zero in arm_smmu_init_domain_context
-(if number of context irqs is 0):
-
-       if (smmu->version == 1) {
-               root_cfg->irptndx = atomic_inc_return(&smmu->irptndx);
- =>            root_cfg->irptndx %= smmu->num_context_irqs;
-       } else {
-
-Avoid this by checking for num_context_irqs > 0 when probing
-for SMMU devices.
+Print context fault information when the fault was not handled by
+report_iommu_fault.
 
 Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c |    7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/iommu/arm-smmu.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index d19676c..7d07561 100644
+index 7d07561..579b6f8 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -1803,12 +1803,11 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 			smmu->num_context_irqs++;
+@@ -590,6 +590,9 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+ 		ret = IRQ_HANDLED;
+ 		resume = RESUME_RETRY;
+ 	} else {
++		dev_err_ratelimited(smmu->dev, "context fault: iova=0x%08lx, "
++				"fsynr=0x%x, cb=%d\n",
++				iova, fsynr, root_cfg->cbndx);
+ 		ret = IRQ_NONE;
+ 		resume = RESUME_TERMINATE;
  	}
- 
--	if (num_irqs < smmu->num_global_irqs) {
-+	if (!smmu->num_context_irqs) {
- 		dev_warn(dev, "found %d interrupts but expected at least %d\n",
--			 num_irqs, smmu->num_global_irqs);
--		smmu->num_global_irqs = num_irqs;
-+			 num_irqs, smmu->num_global_irqs + 1);
-+		return -ENODEV;
- 	}
--	smmu->num_context_irqs = num_irqs - smmu->num_global_irqs;
- 
- 	smmu->irqs = devm_kzalloc(dev, sizeof(*smmu->irqs) * num_irqs,
- 				  GFP_KERNEL);
 -- 
 1.7.9.5
