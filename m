@@ -1,67 +1,92 @@
 From: Yoder Stuart-B08248 <B08248@freescale.com>
-Subject: RE: [PATCH 1/7] VFIO_IOMMU_TYPE1 workaround to build for platform
- devices
-Date: Wed, 2 Oct 2013 12:55:40 +0000
-Message-ID: <9F6FE96B71CF29479FF1CDC8046E15036D3D28@039-SN1MPN1-003.039d.mgd.msft.net>
+Subject: RE: [PATCH 3/7] Return info for device and its memory regions and
+ interrupts
+Date: Wed, 2 Oct 2013 13:03:10 +0000
+Message-ID: <9F6FE96B71CF29479FF1CDC8046E15036D3D3A@039-SN1MPN1-003.039d.mgd.msft.net>
 References: <1380554923-17818-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1380554923-17818-2-git-send-email-a.motakis@virtualopensystems.com>
-	<1380562782.2674.178.camel@ul30vt.home>
-	<9F6FE96B71CF29479FF1CDC8046E15036D37D9@039-SN1MPN1-003.039d.mgd.msft.net>
- <CAG8rG2yAp2+RhUcHb78VD0GoiT6NBftX1JCqSmyNf+iP5N3now@mail.gmail.com>
+	<1380554923-17818-4-git-send-email-a.motakis@virtualopensystems.com>
+	<1380562776.2674.177.camel@ul30vt.home>
+	<CAG8rG2yPXX9WtmhJqYMNE_3x4RNGkb1BDab8F3Pk8KUhntM9fg@mail.gmail.com>
+	<9F6FE96B71CF29479FF1CDC8046E15036D3803@039-SN1MPN1-003.039d.mgd.msft.net>
+ <CAG8rG2ypiSUqfhqLTxgv0+Sh9DO9KAscJy0CmCrr_oG3tmGAgA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 8BIT
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <CAG8rG2yAp2+RhUcHb78VD0GoiT6NBftX1JCqSmyNf+iP5N3now@mail.gmail.com>
+In-Reply-To: <CAG8rG2ypiSUqfhqLTxgv0+Sh9DO9KAscJy0CmCrr_oG3tmGAgA@mail.gmail.com>
 Content-Language: en-US
 Sender: linux-samsung-soc-owner@vger.kernel.org
 To: Antonios Motakis <a.motakis@virtualopensystems.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "agraf@suse.de" <agraf@suse.de>, "tech@virtualopensystems.com" <tech@virtualopensystems.com>, "kim.phillips@linaro.org" <kim.phillips@linaro.org>
+Cc: Alex Williamson <alex.williamson@redhat.com>, kvm-arm <kvmarm@lists.cs.columbia.edu>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>, KVM devel mailing list <kvm@vger.kernel.org>, Alexander Graf <agraf@suse.de>, VirtualOpenSystems Technical Team <tech@virtualopensystems.com>
 List-Id: iommu@lists.linux-foundation.org
 
 
 
 > -----Original Message-----
 > From: Antonios Motakis [mailto:a.motakis@virtualopensystems.com]
-> Sent: Wednesday, October 02, 2013 6:14 AM
+> Sent: Wednesday, October 02, 2013 6:22 AM
 > To: Yoder Stuart-B08248
-> Cc: Alex Williamson; kvmarm@lists.cs.columbia.edu; iommu@lists.linux-
-> foundation.org; linux-samsung-soc@vger.kernel.org; kvm@vger.kernel.org;
-> agraf@suse.de; tech@virtualopensystems.com; kim.phillips@linaro.org
-> Subject: Re: [PATCH 1/7] VFIO_IOMMU_TYPE1 workaround to build for
-> platform devices
+> Cc: Alex Williamson; kvm-arm; Linux IOMMU; Linux Samsung SOC; KVM devel
+> mailing list; Alexander Graf; VirtualOpenSystems Technical Team
+> Subject: Re: [PATCH 3/7] Return info for device and its memory regions
+> and interrupts
 > 
-> On Tue, Oct 1, 2013 at 9:21 PM, Yoder Stuart-B08248
+> On Tue, Oct 1, 2013 at 9:32 PM, Yoder Stuart-B08248
 > <B08248@freescale.com> wrote:
-> >> >  static int __init vfio_iommu_type1_init(void)
-> >> >  {
-> >> > -   if (!iommu_present(&pci_bus_type))
-> >> > +#ifdef CONFIG_PCI
-> >> > +   if (iommu_present(&pci_bus_type)) {
-> >> > +           iommu_bus_type = &pci_bus_type;
-> >> > +           /* For PCI targets, IOMMU_CAP_INTR_REMAP is required */
-> >> > +           require_cap_intr_remap = true;
-> >> > +   }
-> >> > +#endif
-> >> > +   if (!iommu_bus_type && iommu_present(&platform_bus_type))
-> >> > +           iommu_bus_type = &platform_bus_type;
-> >> > +
-> >> > +   if(!iommu_bus_type)
-> >> >             return -ENODEV;
-> >> >
-> >> >     return vfio_register_iommu_driver(&vfio_iommu_driver_ops_type1);
+> >> Antonios Motakis wrote
+> >> > Alex Williamson <alex.williamson@redhat.com> wrote:
+> >> > I notice all the open firmware calls here and I'm curious,
+> >> > will all platform devices be making use of open firmware?
+> >> > I don't know if this is synonymous with device tree or not.
+> >> > Thanks,
 > >>
-> >> Is it possible to have a system with both PCI and platform devices?
-> How
-> >> would you support that?  Thanks,
+> >> This VFIO driver will support only devices implemented
+> >> on the device tree. While there can be platform devices
+> >> outside the device tree, I don't think it makes sense
+> >> to support them from the same driver. This is why I
+> >> originally called the driver VFIO_DT, however I renamed
+> >> it to VFIO_PLATFORM after feedback from the first
+> >> RFC. However personally, I still think the VFIO_DT name
+> >> is more appropriate since we don't support all platform
+> >> devices, only those that use the device tree.
 > >
-> > It most certainly is a requirement to support both.  This is how
-> > all of our (FSL) SoCs will expect to work.
+> > But there is no 'device tree' bus.  The bus type we're
+> > dealing with is a platform bus.
+> >
+> > vfio for platform devices should be independent of whether
+> > the device was discovered in a device tree or not.
+> > All you're doing is exposing mappable regions and IRQs
+> > to user space and it does not matter where the info originated.
+> >
+> > You should be using platform bus structs here not
+> > reparsing device tree nodes.  The struct
+> > platform_device already has resource info in the
+> > struct:
+> >
+> > struct platform_device {
+> >         const char      *name;
+> >         u32             id;
+> >         struct device   dev;
+> >         u32             num_resources;
+> >         struct resource *resource;
+> > };
+> >
+> > Stuart
 > >
 > 
-> Both with an IOMMU present?
+> I will look into this. However, can we rely to have access to all
+> device resources through platform abstractions, for every type of
+> platform device
 
-Yes.  We expect to be able to pass through PCI devices and
-platform devices at the same time...all with IOMMU isolation.
+The only resources we care about in vfio are mappable regions
+and irqs.  So, yes I think we can rely on access to those
+resources.
+
+> It seems to me that platform devices that are not
+> backed by a specific description mechanism (such as device tree) may
+> include a lot of hard coded values etc in their drivers.
+
+If the platform device struct does not have reg/irq resources described
+then we can't expose them to user space with vfio.
 
 Stuart
