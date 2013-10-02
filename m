@@ -1,73 +1,46 @@
 From: Alexander Graf <agraf@suse.de>
-Subject: Re: [PATCH 3/7] Return info for device and its memory regions and interrupts
-Date: Wed, 2 Oct 2013 14:12:27 +0200
-Message-ID: <05391347-DD79-47BD-A569-7887E38DE60E@suse.de>
-References: <1380554923-17818-1-git-send-email-a.motakis@virtualopensystems.com> <1380554923-17818-4-git-send-email-a.motakis@virtualopensystems.com> <1380562776.2674.177.camel@ul30vt.home> <CAG8rG2yPXX9WtmhJqYMNE_3x4RNGkb1BDab8F3Pk8KUhntM9fg@mail.gmail.com> <9F6FE96B71CF29479FF1CDC8046E15036D3803@039-SN1MPN1-003.039d.mgd.msft.net> <CAG8rG2ypiSUqfhqLTxgv0+Sh9DO9KAscJy0CmCrr_oG3tmGAgA@mail.gmail.com>
+Subject: Re: [PATCH 1/7] VFIO_IOMMU_TYPE1 workaround to build for platform devices
+Date: Wed, 2 Oct 2013 14:14:54 +0200
+Message-ID: <170DCB6D-6185-4C8A-977A-4DADF82DB274@suse.de>
+References: <1380554923-17818-1-git-send-email-a.motakis@virtualopensystems.com> <1380554923-17818-2-git-send-email-a.motakis@virtualopensystems.com> <1380562782.2674.178.camel@ul30vt.home> <9F6FE96B71CF29479FF1CDC8046E15036D37D9@039-SN1MPN1-003.039d.mgd.msft.net>
 Mime-Version: 1.0 (Apple Message framework v1278)
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <CAG8rG2ypiSUqfhqLTxgv0+Sh9DO9KAscJy0CmCrr_oG3tmGAgA@mail.gmail.com>
+In-Reply-To: <9F6FE96B71CF29479FF1CDC8046E15036D37D9@039-SN1MPN1-003.039d.mgd.msft.net>
 Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Antonios Motakis <a.motakis@virtualopensystems.com>
-Cc: Yoder Stuart-B08248 <B08248@freescale.com>, Alex Williamson <alex.williamson@redhat.com>, kvm-arm <kvmarm@lists.cs.columbia.edu>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>, KVM devel mailing list <kvm@vger.kernel.org>, VirtualOpenSystems Technical Team <tech@virtualopensystems.com>
+To: Yoder Stuart-B08248 <B08248@freescale.com>
+Cc: Alex Williamson <alex.williamson@redhat.com>, Antonios Motakis <a.motakis@virtualopensystems.com>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "tech@virtualopensystems.com" <tech@virtualopensystems.com>, "'kim.phillips@linaro.org'" <kim.phillips@linaro.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
-On 02.10.2013, at 13:21, Antonios Motakis wrote:
+On 01.10.2013, at 21:21, Yoder Stuart-B08248 wrote:
 
-> On Tue, Oct 1, 2013 at 9:32 PM, Yoder Stuart-B08248
-> <B08248@freescale.com> wrote:
->>> Antonios Motakis wrote
->>>> Alex Williamson <alex.williamson@redhat.com> wrote:
->>>> I notice all the open firmware calls here and I'm curious,
->>>> will all platform devices be making use of open firmware?
->>>> I don't know if this is synonymous with device tree or not.
->>>> Thanks,
+>>> static int __init vfio_iommu_type1_init(void)
+>>> {
+>>> -	if (!iommu_present(&pci_bus_type))
+>>> +#ifdef CONFIG_PCI
+>>> +	if (iommu_present(&pci_bus_type)) {
+>>> +		iommu_bus_type = &pci_bus_type;
+>>> +		/* For PCI targets, IOMMU_CAP_INTR_REMAP is required */
+>>> +		require_cap_intr_remap = true;
+>>> +	}
+>>> +#endif
+>>> +	if (!iommu_bus_type && iommu_present(&platform_bus_type))
+>>> +		iommu_bus_type = &platform_bus_type;
+>>> +
+>>> +	if(!iommu_bus_type)
+>>> 		return -ENODEV;
 >>> 
->>> This VFIO driver will support only devices implemented
->>> on the device tree. While there can be platform devices
->>> outside the device tree, I don't think it makes sense
->>> to support them from the same driver. This is why I
->>> originally called the driver VFIO_DT, however I renamed
->>> it to VFIO_PLATFORM after feedback from the first
->>> RFC. However personally, I still think the VFIO_DT name
->>> is more appropriate since we don't support all platform
->>> devices, only those that use the device tree.
+>>> 	return vfio_register_iommu_driver(&vfio_iommu_driver_ops_type1);
 >> 
->> But there is no 'device tree' bus.  The bus type we're
->> dealing with is a platform bus.
->> 
->> vfio for platform devices should be independent of whether
->> the device was discovered in a device tree or not.
->> All you're doing is exposing mappable regions and IRQs
->> to user space and it does not matter where the info originated.
->> 
->> You should be using platform bus structs here not
->> reparsing device tree nodes.  The struct
->> platform_device already has resource info in the
->> struct:
->> 
->> struct platform_device {
->>        const char      *name;
->>        u32             id;
->>        struct device   dev;
->>        u32             num_resources;
->>        struct resource *resource;
->> };
->> 
->> Stuart
->> 
+>> Is it possible to have a system with both PCI and platform devices?  How
+>> would you support that?  Thanks,
 > 
-> I will look into this. However, can we rely to have access to all
-> device resources through platform abstractions, for every type of
-> platform device? It seems to me that platform devices that are not
-> backed by a specific description mechanism (such as device tree) may
-> include a lot of hard coded values etc in their drivers.
+> It most certainly is a requirement to support both.  This is how
+> all of our (FSL) SoCs will expect to work.
 
-The same can be true for device tree based drivers. We should tell user space which device tree node this is based off of so it can go and find properties itself, similar to how a kernel driver can still read dt properties for a platform device. But this is optional - we could just as well give user space a hint on an acpi interface.
-
-What exactly would you consider not abstracted information that the kernel driver would need to know about? All cases I can think of (reset logic, power constraints) are very device specific and would require a new vfio-dt-mydevice driver on top of your generic framework to handle these small device specific bits.
+I thought the PCI bus emits a cookie that the system wide IOMMU can then use to differentiate the origin of the transaction? So the same IOMMU can be used for PCI as well as platform routing.
 
 
 Alex
