@@ -1,14 +1,17 @@
-From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [PATCH] intel-iommu: Fix leaks in pagetable freeing
-Date: Wed, 2 Oct 2013 10:44:31 +0200
-Message-ID: <20131002084431.GA20568@pd.tnic>
-References: <20130615161614.2107.41044.stgit@bling.home>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 6/6] iommu/arm-smmu: Support buggy implemenations where
+	all config accesses are secure
+Date: Wed, 2 Oct 2013 11:44:47 +0100
+Message-ID: <20131002104447.GE28311@mudshark.cambridge.arm.com>
+References: <1380631150-10783-1-git-send-email-andreas.herrmann@calxeda.com>
+	<1380631150-10783-7-git-send-email-andreas.herrmann@calxeda.com>
+	<524ACE13.4020309@gmail.com> <20131001181709.GZ3315@alberich>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20130615161614.2107.41044.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+In-Reply-To: <20131001181709.GZ3315@alberich>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,156 +21,61 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+To: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, Jun 15, 2013 at 10:27:19AM -0600, Alex Williamson wrote:
-> At best the current code only seems to free the leaf pagetables and
-> the root.  If you're unlucky enough to have a large gap (like any
-> QEMU guest with more than 3G of memory), only the first chunk of leaf
-> pagetables are freed (plus the root).  This is a massive memory leak.
-> This patch re-writes the pagetable freeing function to use a
-> recursive algorithm and manages to not only free all the pagetables,
-> but does it without any apparent performance loss versus the current
-> broken version.
+On Tue, Oct 01, 2013 at 07:17:09PM +0100, Andreas Herrmann wrote:
+> On Tue, Oct 01, 2013 at 09:28:51AM -0400, Rob Herring wrote:
+> > On 10/01/2013 07:39 AM, Andreas Herrmann wrote:
+> > > In such a case we have to use secure aliases of some non-secure
+> > > registers.
+> > > 
+> > > This behaviour is controlled via a flag in smmu->bugs. It is set
+> > > based on DT information when probing an SMMU device.
+> > 
+> > Perhaps quirks would be a nicer word...
 > 
-> Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> ---
+> In fact it might be better to rename this as "options".
+> For device isolation I had added a flag to indicate this in
+> smmu->features.
+> But it might be better to not mix hardware features with software
+> features or options.
+
+Yes, I also didn't like the mixing of hardware and software features, but I
+couldn't think of a good way to separate them out. Sounds like you might be
+on to something.
+
+> So what do you (Will and Rob) think about a change like
 > 
-> Suggesting for stable, would like to see some soak time, but it's
-> hard to imagine this being any worse than the current code.
+>  struct arm_smmu_device {
+>    ...
+> 
+>  #define ARM_SMMU_FEAT_COHERENT_WALK     (1 << 0)
+>  #define ARM_SMMU_FEAT_STREAM_MATCH      (1 << 1)
+>  #define ARM_SMMU_FEAT_TRANS_S1          (1 << 2)
+>  #define ARM_SMMU_FEAT_TRANS_S2          (1 << 3)
+>  #define ARM_SMMU_FEAT_TRANS_NESTED      (1 << 4)
+>          u32                             features;
+> + #define ARM_SMMU_OPT_SECURE_CFG_ACCESS  (1 << 0)
+> + #define ARM_SMMU_OPT_ISOLATE_DEVICES    (1 << 1)
+> +        u32                             options;
+>          int                             version;
 
-Btw, I have a backport for the 3.0.x series which builds fine here, in
-case you guys are interested :)
+I'm ok with this change, but it gets you guys off the hook with your broken
+integration!
 
---
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Date: Sat, 15 Jun 2013 10:27:19 -0600
-Subject: [PATCH] intel-iommu: Fix leaks in pagetable freeing
+>    ...
+>  }
+> 
+> DT property "calxeda,smmu-secure-cfg-access" would set
+> ARM_SMMU_OPT_SECURE_CFG_ACCESS and
+> DT property "linux,arm-smmu-isolate-devices" would set
+> ARM_SMMU_OPT_ISOLATE_DEVICES.
+> 
+> (Maybe in future there will be more driver options. )
 
-upstream commit: 3269ee0bd6686baf86630300d528500ac5b516d7
+Yeah, and you could probably go all out with macros to generate this stuff
+based on compatible string and OPT #define too.
 
-At best the current code only seems to free the leaf pagetables and
-the root.  If you're unlucky enough to have a large gap (like any
-QEMU guest with more than 3G of memory), only the first chunk of leaf
-pagetables are freed (plus the root).  This is a massive memory leak.
-This patch re-writes the pagetable freeing function to use a
-recursive algorithm and manages to not only free all the pagetables,
-but does it without any apparent performance loss versus the current
-broken version.
-
-Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Reviewed-by: Marcelo Tosatti <mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Signed-off-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Signed-off-by: Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>
----
- drivers/pci/intel-iommu.c | 72 +++++++++++++++++++++++------------------------
- 1 file changed, 35 insertions(+), 37 deletions(-)
-
-diff --git a/drivers/pci/intel-iommu.c b/drivers/pci/intel-iommu.c
-index ae762ecc658b..68baf178cede 100644
---- a/drivers/pci/intel-iommu.c
-+++ b/drivers/pci/intel-iommu.c
-@@ -853,56 +853,54 @@ static int dma_pte_clear_range(struct dmar_domain *domain,
- 	return order;
- }
- 
-+static void dma_pte_free_level(struct dmar_domain *domain, int level,
-+			       struct dma_pte *pte, unsigned long pfn,
-+			       unsigned long start_pfn, unsigned long last_pfn)
-+{
-+	pfn = max(start_pfn, pfn);
-+	pte = &pte[pfn_level_offset(pfn, level)];
-+
-+	do {
-+		unsigned long level_pfn;
-+		struct dma_pte *level_pte;
-+
-+		if (!dma_pte_present(pte) || dma_pte_superpage(pte))
-+			goto next;
-+
-+		level_pfn = pfn & level_mask(level - 1);
-+		level_pte = phys_to_virt(dma_pte_addr(pte));
-+
-+		if (level > 2)
-+			dma_pte_free_level(domain, level - 1, level_pte,
-+					   level_pfn, start_pfn, last_pfn);
-+
-+		/* If range covers entire pagetable, free it */
-+		if (!(start_pfn > level_pfn ||
-+		      last_pfn < level_pfn + level_size(level))) {
-+			dma_clear_pte(pte);
-+			domain_flush_cache(domain, pte, sizeof(*pte));
-+			free_pgtable_page(level_pte);
-+		}
-+next:
-+		pfn += level_size(level);
-+	} while (!first_pte_in_page(++pte) && pfn <= last_pfn);
-+}
-+
- /* free page table pages. last level pte should already be cleared */
- static void dma_pte_free_pagetable(struct dmar_domain *domain,
- 				   unsigned long start_pfn,
- 				   unsigned long last_pfn)
- {
- 	int addr_width = agaw_to_width(domain->agaw) - VTD_PAGE_SHIFT;
--	struct dma_pte *first_pte, *pte;
--	int total = agaw_to_level(domain->agaw);
--	int level;
--	unsigned long tmp;
--	int large_page = 2;
- 
- 	BUG_ON(addr_width < BITS_PER_LONG && start_pfn >> addr_width);
- 	BUG_ON(addr_width < BITS_PER_LONG && last_pfn >> addr_width);
- 	BUG_ON(start_pfn > last_pfn);
- 
- 	/* We don't need lock here; nobody else touches the iova range */
--	level = 2;
--	while (level <= total) {
--		tmp = align_to_level(start_pfn, level);
--
--		/* If we can't even clear one PTE at this level, we're done */
--		if (tmp + level_size(level) - 1 > last_pfn)
--			return;
--
--		do {
--			large_page = level;
--			first_pte = pte = dma_pfn_level_pte(domain, tmp, level, &large_page);
--			if (large_page > level)
--				level = large_page + 1;
--			if (!pte) {
--				tmp = align_to_level(tmp + 1, level + 1);
--				continue;
--			}
--			do {
--				if (dma_pte_present(pte)) {
--					free_pgtable_page(phys_to_virt(dma_pte_addr(pte)));
--					dma_clear_pte(pte);
--				}
--				pte++;
--				tmp += level_size(level);
--			} while (!first_pte_in_page(pte) &&
--				 tmp + level_size(level) - 1 <= last_pfn);
-+	dma_pte_free_level(domain, agaw_to_level(domain->agaw),
-+			   domain->pgd, 0, start_pfn, last_pfn);
- 
--			domain_flush_cache(domain, first_pte,
--					   (void *)pte - (void *)first_pte);
--			
--		} while (tmp && tmp + level_size(level) - 1 <= last_pfn);
--		level++;
--	}
- 	/* free pgd */
- 	if (start_pfn == 0 && last_pfn == DOMAIN_MAX_PFN(domain->gaw)) {
- 		free_pgtable_page(domain->pgd);
--- 
-1.8.4
-
--- 
-Regards/Gruss,
-    Boris.
-
-Sent from a fat crate under my desk. Formatting is fine.
---
+Will
