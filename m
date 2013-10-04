@@ -1,206 +1,89 @@
-From: Bhushan Bharat-R65777 <R65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 1/7] powerpc: Add interface to get msi region information
-Date: Fri, 4 Oct 2013 05:19:10 +0000
-Message-ID: <6A3DF150A5B70D4F9B66A25E3F7C888D0718FA58@039-SN2MPN1-011.039d.mgd.msft.net>
+From: Bhushan Bharat-R65777 <R65777@freescale.com>
+Subject: RE: [PATCH 2/7] iommu: add api to get iommu_domain of a device
+Date: Fri, 4 Oct 2013 09:54:22 +0000
+Message-ID: <6A3DF150A5B70D4F9B66A25E3F7C888D0718FD1C@039-SN2MPN1-011.039d.mgd.msft.net>
 References: <1379575763-2091-1-git-send-email-Bharat.Bhushan@freescale.com>
-	<1379575763-2091-2-git-send-email-Bharat.Bhushan@freescale.com>
-	<20130924235812.GD9302@google.com>
+	 <1379575763-2091-3-git-send-email-Bharat.Bhushan@freescale.com>
+ <1380127533.3030.319.camel@ul30vt.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130924235812.GD9302-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1380127533.3030.319.camel@ul30vt.home>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: "joro@8bytes.org" <joro@8bytes.org>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, "galak@kernel.crashing.org" <galak@kernel.crashing.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "agraf@suse.de" <agraf@suse.de>, Wood Scott-B07421 <B07421@freescale.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-> -----Original Message-----
-> From: linux-pci-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org [mailto:linux-pci-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org]
-> On Behalf Of Bjorn Helgaas
-> Sent: Wednesday, September 25, 2013 5:28 AM
-> To: Bhushan Bharat-R65777
-> Cc: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org;
-> galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linuxppc-
-> dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org; Wood Scott-
-> B07421; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Bhushan Bharat-R65777
-> Subject: Re: [PATCH 1/7] powerpc: Add interface to get msi region information
-> 
-> On Thu, Sep 19, 2013 at 12:59:17PM +0530, Bharat Bhushan wrote:
-> > This patch adds interface to get following information
-> >   - Number of MSI regions (which is number of MSI banks for powerpc).
-> >   - Get the region address range: Physical page which have the
-> >      address/addresses used for generating MSI interrupt
-> >      and size of the page.
-> >
-> > These are required to create IOMMU (Freescale PAMU) mapping for
-> > devices which are directly assigned using VFIO.
-> >
-> > Signed-off-by: Bharat Bhushan <bharat.bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-> > ---
-> >  arch/powerpc/include/asm/machdep.h |    8 +++++++
-> >  arch/powerpc/include/asm/pci.h     |    2 +
-> >  arch/powerpc/kernel/msi.c          |   18 ++++++++++++++++
-> >  arch/powerpc/sysdev/fsl_msi.c      |   39 +++++++++++++++++++++++++++++++++--
-> >  arch/powerpc/sysdev/fsl_msi.h      |   11 ++++++++-
-> >  drivers/pci/msi.c                  |   26 ++++++++++++++++++++++++
-> >  include/linux/msi.h                |    8 +++++++
-> >  include/linux/pci.h                |   13 ++++++++++++
-> >  8 files changed, 120 insertions(+), 5 deletions(-)
-> >
-> > ...
-> 
-> > diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c index
-> > aca7578..6d85c15 100644
-> > --- a/drivers/pci/msi.c
-> > +++ b/drivers/pci/msi.c
-> > @@ -30,6 +30,20 @@ static int pci_msi_enable = 1;
-> >
-> >  /* Arch hooks */
-> >
-> > +#ifndef arch_msi_get_region_count
-> > +int arch_msi_get_region_count(void)
-> > +{
-> > +	return 0;
-> > +}
-> > +#endif
-> > +
-> > +#ifndef arch_msi_get_region
-> > +int arch_msi_get_region(int region_num, struct msi_region *region) {
-> > +	return 0;
-> > +}
-> > +#endif
-> 
-> This #define strategy is gone; see 4287d824 ("PCI: use weak functions for MSI
-> arch-specific functions").  Please use the weak function strategy for your new
-> MSI region functions.
-
-ok
-
-> 
-> > +
-> >  #ifndef arch_msi_check_device
-> >  int arch_msi_check_device(struct pci_dev *dev, int nvec, int type)  {
-> > @@ -903,6 +917,18 @@ void pci_disable_msi(struct pci_dev *dev)  }
-> > EXPORT_SYMBOL(pci_disable_msi);
-> >
-> > +int msi_get_region_count(void)
-> > +{
-> > +	return arch_msi_get_region_count();
-> > +}
-> > +EXPORT_SYMBOL(msi_get_region_count);
-> > +
-> > +int msi_get_region(int region_num, struct msi_region *region) {
-> > +	return arch_msi_get_region(region_num, region); }
-> > +EXPORT_SYMBOL(msi_get_region);
-> 
-> Please split these interface additions, i.e., the drivers/pci/msi.c,
-> include/linux/msi.h, and include/linux/pci.h changes, into a separate patch.
-
-ok
-
-> 
-> I don't know enough about VFIO to understand why these new interfaces are
-> needed.  Is this the first VFIO IOMMU driver?  I see vfio_iommu_spapr_tce.c and
-> vfio_iommu_type1.c but I don't know if they're comparable to the Freescale PAMU.
-> Do other VFIO IOMMU implementations support MSI?  If so, do they handle the
-> problem of mapping the MSI regions in a different way?
-
-PAMU is an aperture type of IOMMU while other are paging type, So they are completely different from what PAMU is and handle that differently.
-
-> 
-> >  /**
-> >   * pci_msix_table_size - return the number of device's MSI-X table entries
-> >   * @dev: pointer to the pci_dev data structure of MSI-X device
-> > function diff --git a/include/linux/msi.h b/include/linux/msi.h index
-> > ee66f3a..ae32601 100644
-> > --- a/include/linux/msi.h
-> > +++ b/include/linux/msi.h
-> > @@ -50,6 +50,12 @@ struct msi_desc {
-> >  	struct kobject kobj;
-> >  };
-> >
-> > +struct msi_region {
-> > +	int region_num;
-> > +	dma_addr_t addr;
-> > +	size_t size;
-> > +};
-> 
-> This needs some sort of explanatory comment.
-
-Ok
-
--Bharat
-
-> 
-> >  /*
-> >   * The arch hook for setup up msi irqs
-> >   */
-> > @@ -58,5 +64,7 @@ void arch_teardown_msi_irq(unsigned int irq);  int
-> > arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type);  void
-> > arch_teardown_msi_irqs(struct pci_dev *dev);  int
-> > arch_msi_check_device(struct pci_dev* dev, int nvec, int type);
-> > +int arch_msi_get_region_count(void);
-> > +int arch_msi_get_region(int region_num, struct msi_region *region);
-> >
-> >  #endif /* LINUX_MSI_H */
-> > diff --git a/include/linux/pci.h b/include/linux/pci.h index
-> > 186540d..2b26a59 100644
-> > --- a/include/linux/pci.h
-> > +++ b/include/linux/pci.h
-> > @@ -1126,6 +1126,7 @@ struct msix_entry {
-> >  	u16	entry;	/* driver uses to specify entry, OS writes */
-> >  };
-> >
-> > +struct msi_region;
-> >
-> >  #ifndef CONFIG_PCI_MSI
-> >  static inline int pci_enable_msi_block(struct pci_dev *dev, unsigned
-> > int nvec) @@ -1168,6 +1169,16 @@ static inline int
-> > pci_msi_enabled(void)  {
-> >  	return 0;
-> >  }
-> > +
-> > +static inline int msi_get_region_count(void) {
-> > +	return 0;
-> > +}
-> > +
-> > +static inline int msi_get_region(int region_num, struct msi_region
-> > +*region) {
-> > +	return 0;
-> > +}
-> >  #else
-> >  int pci_enable_msi_block(struct pci_dev *dev, unsigned int nvec);
-> > int pci_enable_msi_block_auto(struct pci_dev *dev, unsigned int
-> > *maxvec); @@ -1180,6 +1191,8 @@ void pci_disable_msix(struct pci_dev
-> > *dev);  void msi_remove_pci_irq_vectors(struct pci_dev *dev);  void
-> > pci_restore_msi_state(struct pci_dev *dev);  int
-> > pci_msi_enabled(void);
-> > +int msi_get_region_count(void);
-> > +int msi_get_region(int region_num, struct msi_region *region);
-> >  #endif
-> >
-> >  #ifdef CONFIG_PCIEPORTBUS
-> > --
-> > 1.7.0.4
-> >
-> >
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe linux-pci"
-> > in the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org More majordomo
-> > info at  http://vger.kernel.org/majordomo-info.html
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-pci" in the body
-> of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org More majordomo info at
-> http://vger.kernel.org/majordomo-info.html
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogbGludXgtcGNpLW93bmVy
+QHZnZXIua2VybmVsLm9yZyBbbWFpbHRvOmxpbnV4LXBjaS1vd25lckB2Z2VyLmtlcm5lbC5vcmdd
+DQo+IE9uIEJlaGFsZiBPZiBBbGV4IFdpbGxpYW1zb24NCj4gU2VudDogV2VkbmVzZGF5LCBTZXB0
+ZW1iZXIgMjUsIDIwMTMgMTA6MTYgUE0NCj4gVG86IEJodXNoYW4gQmhhcmF0LVI2NTc3Nw0KPiBD
+Yzogam9yb0A4Ynl0ZXMub3JnOyBiZW5oQGtlcm5lbC5jcmFzaGluZy5vcmc7IGdhbGFrQGtlcm5l
+bC5jcmFzaGluZy5vcmc7IGxpbnV4LQ0KPiBrZXJuZWxAdmdlci5rZXJuZWwub3JnOyBsaW51eHBw
+Yy1kZXZAbGlzdHMub3psYWJzLm9yZzsgbGludXgtDQo+IHBjaUB2Z2VyLmtlcm5lbC5vcmc7IGFn
+cmFmQHN1c2UuZGU7IFdvb2QgU2NvdHQtQjA3NDIxOyBpb21tdUBsaXN0cy5saW51eC0NCj4gZm91
+bmRhdGlvbi5vcmc7IEJodXNoYW4gQmhhcmF0LVI2NTc3Nw0KPiBTdWJqZWN0OiBSZTogW1BBVENI
+IDIvN10gaW9tbXU6IGFkZCBhcGkgdG8gZ2V0IGlvbW11X2RvbWFpbiBvZiBhIGRldmljZQ0KPiAN
+Cj4gT24gVGh1LCAyMDEzLTA5LTE5IGF0IDEyOjU5ICswNTMwLCBCaGFyYXQgQmh1c2hhbiB3cm90
+ZToNCj4gPiBUaGlzIGFwaSByZXR1cm4gdGhlIGlvbW11IGRvbWFpbiB0byB3aGljaCB0aGUgZGV2
+aWNlIGlzIGF0dGFjaGVkLg0KPiA+IFRoZSBpb21tdV9kb21haW4gaXMgcmVxdWlyZWQgZm9yIG1h
+a2luZyBBUEkgY2FsbHMgcmVsYXRlZCB0byBpb21tdS4NCj4gPiBGb2xsb3cgdXAgcGF0Y2hlcyB3
+aGljaCB1c2UgdGhpcyBBUEkgdG8ga25vdyBpb21tdSBtYXBpbmcuDQo+ID4NCj4gPiBTaWduZWQt
+b2ZmLWJ5OiBCaGFyYXQgQmh1c2hhbiA8YmhhcmF0LmJodXNoYW5AZnJlZXNjYWxlLmNvbT4NCj4g
+PiAtLS0NCj4gPiAgZHJpdmVycy9pb21tdS9pb21tdS5jIHwgICAxMCArKysrKysrKysrDQo+ID4g
+IGluY2x1ZGUvbGludXgvaW9tbXUuaCB8ICAgIDcgKysrKysrKw0KPiA+ICAyIGZpbGVzIGNoYW5n
+ZWQsIDE3IGluc2VydGlvbnMoKyksIDAgZGVsZXRpb25zKC0pDQo+ID4NCj4gPiBkaWZmIC0tZ2l0
+IGEvZHJpdmVycy9pb21tdS9pb21tdS5jIGIvZHJpdmVycy9pb21tdS9pb21tdS5jIGluZGV4DQo+
+ID4gZmJlOWNhNy4uNmFjNWY1MCAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL2lvbW11L2lvbW11
+LmMNCj4gPiArKysgYi9kcml2ZXJzL2lvbW11L2lvbW11LmMNCj4gPiBAQCAtNjk2LDYgKzY5Niwx
+NiBAQCB2b2lkIGlvbW11X2RldGFjaF9kZXZpY2Uoc3RydWN0IGlvbW11X2RvbWFpbg0KPiA+ICpk
+b21haW4sIHN0cnVjdCBkZXZpY2UgKmRldikgIH0NCj4gPiBFWFBPUlRfU1lNQk9MX0dQTChpb21t
+dV9kZXRhY2hfZGV2aWNlKTsNCj4gPg0KPiA+ICtzdHJ1Y3QgaW9tbXVfZG9tYWluICppb21tdV9n
+ZXRfZGV2X2RvbWFpbihzdHJ1Y3QgZGV2aWNlICpkZXYpIHsNCj4gPiArCXN0cnVjdCBpb21tdV9v
+cHMgKm9wcyA9IGRldi0+YnVzLT5pb21tdV9vcHM7DQo+ID4gKw0KPiA+ICsJaWYgKHVubGlrZWx5
+KG9wcyA9PSBOVUxMIHx8IG9wcy0+Z2V0X2Rldl9pb21tdV9kb21haW4gPT0gTlVMTCkpDQo+ID4g
+KwkJcmV0dXJuIE5VTEw7DQo+ID4gKw0KPiA+ICsJcmV0dXJuIG9wcy0+Z2V0X2Rldl9pb21tdV9k
+b21haW4oZGV2KTsgfQ0KPiA+ICtFWFBPUlRfU1lNQk9MX0dQTChpb21tdV9nZXRfZGV2X2RvbWFp
+bik7DQo+IA0KPiBXaGF0IHByZXZlbnRzIHRoaXMgZnJvbSByYWNpbmcgaW9tbXVfZG9tYWluX2Zy
+ZWUoKT8gIFRoZXJlJ3Mgbm8gcmVmZXJlbmNlcw0KPiBhY3F1aXJlZCwgc28gdGhlcmUncyBubyBy
+ZWFzb24gZm9yIHRoZSBjYWxsZXIgdG8gYXNzdW1lIHRoZSBwb2ludGVyIGlzIHZhbGlkLg0KDQpT
+b3JyeSBmb3IgbGF0ZSBxdWVyeSwgc29tZWhvdyB0aGlzIGVtYWlsIHdlbnQgaW50byBhIGZvbGRl
+ciBhbmQgZXNjYXBlZDsNCg0KSnVzdCB0byBiZSBzdXJlLCB0aGVyZSBpcyBub3QgbG9jayBhdCBn
+ZW5lcmljICJzdHJ1Y3QgaW9tbXVfZG9tYWluIiwgYnV0IElQIHNwZWNpZmljIHN0cnVjdHVyZSAo
+bGluayBGU0wgZG9tYWluKSBsaW5rZWQgaW4gaW9tbXVfZG9tYWluLT5wcml2IGhhdmUgYSBsb2Nr
+LCBzbyB3ZSBuZWVkIHRvIGVuc3VyZSB0aGlzIHJhY2UgaW4gRlNMIGlvbW11IGNvZGUgKHNheSBk
+cml2ZXJzL2lvbW11L2ZzbF9wYW11X2RvbWFpbi5jKSwgcmlnaHQ/DQoNClRoYW5rcw0KLUJoYXJh
+dA0KDQo+IA0KPiA+ICAvKg0KPiA+ICAgKiBJT01NVSBncm91cHMgYXJlIHJlYWxseSB0aGUgbmF0
+cnVhbCB3b3JraW5nIHVuaXQgb2YgdGhlIElPTU1VLCBidXQNCj4gPiAgICogdGhlIElPTU1VIEFQ
+SSB3b3JrcyBvbiBkb21haW5zIGFuZCBkZXZpY2VzLiAgQnJpZGdlIHRoYXQgZ2FwIGJ5DQo+ID4g
+ZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvaW9tbXUuaCBiL2luY2x1ZGUvbGludXgvaW9tbXUu
+aCBpbmRleA0KPiA+IDdlYTMxOWUuLmZhMDQ2YmQgMTAwNjQ0DQo+ID4gLS0tIGEvaW5jbHVkZS9s
+aW51eC9pb21tdS5oDQo+ID4gKysrIGIvaW5jbHVkZS9saW51eC9pb21tdS5oDQo+ID4gQEAgLTEy
+Nyw2ICsxMjcsNyBAQCBzdHJ1Y3QgaW9tbXVfb3BzIHsNCj4gPiAgCWludCAoKmRvbWFpbl9zZXRf
+d2luZG93cykoc3RydWN0IGlvbW11X2RvbWFpbiAqZG9tYWluLCB1MzIgd19jb3VudCk7DQo+ID4g
+IAkvKiBHZXQgdGhlIG51bWVyIG9mIHdpbmRvdyBwZXIgZG9tYWluICovDQo+ID4gIAl1MzIgKCpk
+b21haW5fZ2V0X3dpbmRvd3MpKHN0cnVjdCBpb21tdV9kb21haW4gKmRvbWFpbik7DQo+ID4gKwlz
+dHJ1Y3QgaW9tbXVfZG9tYWluICooKmdldF9kZXZfaW9tbXVfZG9tYWluKShzdHJ1Y3QgZGV2aWNl
+ICpkZXYpOw0KPiA+DQo+ID4gIAl1bnNpZ25lZCBsb25nIHBnc2l6ZV9iaXRtYXA7DQo+ID4gIH07
+DQo+ID4gQEAgLTE5MCw2ICsxOTEsNyBAQCBleHRlcm4gaW50IGlvbW11X2RvbWFpbl93aW5kb3df
+ZW5hYmxlKHN0cnVjdCBpb21tdV9kb21haW4NCj4gKmRvbWFpbiwgdTMyIHduZF9uciwNCj4gPiAg
+CQkJCSAgICAgIHBoeXNfYWRkcl90IG9mZnNldCwgdTY0IHNpemUsDQo+ID4gIAkJCQkgICAgICBp
+bnQgcHJvdCk7DQo+ID4gIGV4dGVybiB2b2lkIGlvbW11X2RvbWFpbl93aW5kb3dfZGlzYWJsZShz
+dHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW4sDQo+ID4gdTMyIHduZF9ucik7DQo+ID4gK2V4dGVy
+biBzdHJ1Y3QgaW9tbXVfZG9tYWluICppb21tdV9nZXRfZGV2X2RvbWFpbihzdHJ1Y3QgZGV2aWNl
+ICpkZXYpOw0KPiA+ICAvKioNCj4gPiAgICogcmVwb3J0X2lvbW11X2ZhdWx0KCkgLSByZXBvcnQg
+YWJvdXQgYW4gSU9NTVUgZmF1bHQgdG8gdGhlIElPTU1VIGZyYW1ld29yaw0KPiA+ICAgKiBAZG9t
+YWluOiB0aGUgaW9tbXUgZG9tYWluIHdoZXJlIHRoZSBmYXVsdCBoYXMgaGFwcGVuZWQgQEAgLTI4
+NCw2DQo+ID4gKzI4NiwxMSBAQCBzdGF0aWMgaW5saW5lIHZvaWQgaW9tbXVfZG9tYWluX3dpbmRv
+d19kaXNhYmxlKHN0cnVjdA0KPiA+IGlvbW11X2RvbWFpbiAqZG9tYWluLCAgeyAgfQ0KPiA+DQo+
+ID4gK3N0YXRpYyBpbmxpbmUgc3RydWN0IGlvbW11X2RvbWFpbiAqaW9tbXVfZ2V0X2Rldl9kb21h
+aW4oc3RydWN0IGRldmljZQ0KPiA+ICsqZGV2KSB7DQo+ID4gKwlyZXR1cm4gTlVMTDsNCj4gPiAr
+fQ0KPiA+ICsNCj4gPiAgc3RhdGljIGlubGluZSBwaHlzX2FkZHJfdCBpb21tdV9pb3ZhX3RvX3Bo
+eXMoc3RydWN0IGlvbW11X2RvbWFpbg0KPiA+ICpkb21haW4sIGRtYV9hZGRyX3QgaW92YSkgIHsN
+Cj4gPiAgCXJldHVybiAwOw0KPiANCj4gDQo+IA0KPiAtLQ0KPiBUbyB1bnN1YnNjcmliZSBmcm9t
+IHRoaXMgbGlzdDogc2VuZCB0aGUgbGluZSAidW5zdWJzY3JpYmUgbGludXgtcGNpIiBpbiB0aGUg
+Ym9keQ0KPiBvZiBhIG1lc3NhZ2UgdG8gbWFqb3Jkb21vQHZnZXIua2VybmVsLm9yZyBNb3JlIG1h
+am9yZG9tbyBpbmZvIGF0DQo+IGh0dHA6Ly92Z2VyLmtlcm5lbC5vcmcvbWFqb3Jkb21vLWluZm8u
+aHRtbA0KDQo=
