@@ -1,89 +1,155 @@
-From: Bhushan Bharat-R65777 <R65777@freescale.com>
+From: Bhushan Bharat-R65777 <R65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 Subject: RE: [PATCH 2/7] iommu: add api to get iommu_domain of a device
-Date: Fri, 4 Oct 2013 09:54:22 +0000
-Message-ID: <6A3DF150A5B70D4F9B66A25E3F7C888D0718FD1C@039-SN2MPN1-011.039d.mgd.msft.net>
+Date: Fri, 4 Oct 2013 10:42:23 +0000
+Message-ID: <6A3DF150A5B70D4F9B66A25E3F7C888D0718FDC3@039-SN2MPN1-011.039d.mgd.msft.net>
 References: <1379575763-2091-1-git-send-email-Bharat.Bhushan@freescale.com>
-	 <1379575763-2091-3-git-send-email-Bharat.Bhushan@freescale.com>
- <1380127533.3030.319.camel@ul30vt.home>
+	<1379575763-2091-3-git-send-email-Bharat.Bhushan@freescale.com>
+	<1380127533.3030.319.camel@ul30vt.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1380127533.3030.319.camel@ul30vt.home>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Language: en-US
-Sender: linux-pci-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: "joro@8bytes.org" <joro@8bytes.org>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, "galak@kernel.crashing.org" <galak@kernel.crashing.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "agraf@suse.de" <agraf@suse.de>, Wood Scott-B07421 <B07421@freescale.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Bhushan Bharat-R65777 <R65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogbGludXgtcGNpLW93bmVy
-QHZnZXIua2VybmVsLm9yZyBbbWFpbHRvOmxpbnV4LXBjaS1vd25lckB2Z2VyLmtlcm5lbC5vcmdd
-DQo+IE9uIEJlaGFsZiBPZiBBbGV4IFdpbGxpYW1zb24NCj4gU2VudDogV2VkbmVzZGF5LCBTZXB0
-ZW1iZXIgMjUsIDIwMTMgMTA6MTYgUE0NCj4gVG86IEJodXNoYW4gQmhhcmF0LVI2NTc3Nw0KPiBD
-Yzogam9yb0A4Ynl0ZXMub3JnOyBiZW5oQGtlcm5lbC5jcmFzaGluZy5vcmc7IGdhbGFrQGtlcm5l
-bC5jcmFzaGluZy5vcmc7IGxpbnV4LQ0KPiBrZXJuZWxAdmdlci5rZXJuZWwub3JnOyBsaW51eHBw
-Yy1kZXZAbGlzdHMub3psYWJzLm9yZzsgbGludXgtDQo+IHBjaUB2Z2VyLmtlcm5lbC5vcmc7IGFn
-cmFmQHN1c2UuZGU7IFdvb2QgU2NvdHQtQjA3NDIxOyBpb21tdUBsaXN0cy5saW51eC0NCj4gZm91
-bmRhdGlvbi5vcmc7IEJodXNoYW4gQmhhcmF0LVI2NTc3Nw0KPiBTdWJqZWN0OiBSZTogW1BBVENI
-IDIvN10gaW9tbXU6IGFkZCBhcGkgdG8gZ2V0IGlvbW11X2RvbWFpbiBvZiBhIGRldmljZQ0KPiAN
-Cj4gT24gVGh1LCAyMDEzLTA5LTE5IGF0IDEyOjU5ICswNTMwLCBCaGFyYXQgQmh1c2hhbiB3cm90
-ZToNCj4gPiBUaGlzIGFwaSByZXR1cm4gdGhlIGlvbW11IGRvbWFpbiB0byB3aGljaCB0aGUgZGV2
-aWNlIGlzIGF0dGFjaGVkLg0KPiA+IFRoZSBpb21tdV9kb21haW4gaXMgcmVxdWlyZWQgZm9yIG1h
-a2luZyBBUEkgY2FsbHMgcmVsYXRlZCB0byBpb21tdS4NCj4gPiBGb2xsb3cgdXAgcGF0Y2hlcyB3
-aGljaCB1c2UgdGhpcyBBUEkgdG8ga25vdyBpb21tdSBtYXBpbmcuDQo+ID4NCj4gPiBTaWduZWQt
-b2ZmLWJ5OiBCaGFyYXQgQmh1c2hhbiA8YmhhcmF0LmJodXNoYW5AZnJlZXNjYWxlLmNvbT4NCj4g
-PiAtLS0NCj4gPiAgZHJpdmVycy9pb21tdS9pb21tdS5jIHwgICAxMCArKysrKysrKysrDQo+ID4g
-IGluY2x1ZGUvbGludXgvaW9tbXUuaCB8ICAgIDcgKysrKysrKw0KPiA+ICAyIGZpbGVzIGNoYW5n
-ZWQsIDE3IGluc2VydGlvbnMoKyksIDAgZGVsZXRpb25zKC0pDQo+ID4NCj4gPiBkaWZmIC0tZ2l0
-IGEvZHJpdmVycy9pb21tdS9pb21tdS5jIGIvZHJpdmVycy9pb21tdS9pb21tdS5jIGluZGV4DQo+
-ID4gZmJlOWNhNy4uNmFjNWY1MCAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL2lvbW11L2lvbW11
-LmMNCj4gPiArKysgYi9kcml2ZXJzL2lvbW11L2lvbW11LmMNCj4gPiBAQCAtNjk2LDYgKzY5Niwx
-NiBAQCB2b2lkIGlvbW11X2RldGFjaF9kZXZpY2Uoc3RydWN0IGlvbW11X2RvbWFpbg0KPiA+ICpk
-b21haW4sIHN0cnVjdCBkZXZpY2UgKmRldikgIH0NCj4gPiBFWFBPUlRfU1lNQk9MX0dQTChpb21t
-dV9kZXRhY2hfZGV2aWNlKTsNCj4gPg0KPiA+ICtzdHJ1Y3QgaW9tbXVfZG9tYWluICppb21tdV9n
-ZXRfZGV2X2RvbWFpbihzdHJ1Y3QgZGV2aWNlICpkZXYpIHsNCj4gPiArCXN0cnVjdCBpb21tdV9v
-cHMgKm9wcyA9IGRldi0+YnVzLT5pb21tdV9vcHM7DQo+ID4gKw0KPiA+ICsJaWYgKHVubGlrZWx5
-KG9wcyA9PSBOVUxMIHx8IG9wcy0+Z2V0X2Rldl9pb21tdV9kb21haW4gPT0gTlVMTCkpDQo+ID4g
-KwkJcmV0dXJuIE5VTEw7DQo+ID4gKw0KPiA+ICsJcmV0dXJuIG9wcy0+Z2V0X2Rldl9pb21tdV9k
-b21haW4oZGV2KTsgfQ0KPiA+ICtFWFBPUlRfU1lNQk9MX0dQTChpb21tdV9nZXRfZGV2X2RvbWFp
-bik7DQo+IA0KPiBXaGF0IHByZXZlbnRzIHRoaXMgZnJvbSByYWNpbmcgaW9tbXVfZG9tYWluX2Zy
-ZWUoKT8gIFRoZXJlJ3Mgbm8gcmVmZXJlbmNlcw0KPiBhY3F1aXJlZCwgc28gdGhlcmUncyBubyBy
-ZWFzb24gZm9yIHRoZSBjYWxsZXIgdG8gYXNzdW1lIHRoZSBwb2ludGVyIGlzIHZhbGlkLg0KDQpT
-b3JyeSBmb3IgbGF0ZSBxdWVyeSwgc29tZWhvdyB0aGlzIGVtYWlsIHdlbnQgaW50byBhIGZvbGRl
-ciBhbmQgZXNjYXBlZDsNCg0KSnVzdCB0byBiZSBzdXJlLCB0aGVyZSBpcyBub3QgbG9jayBhdCBn
-ZW5lcmljICJzdHJ1Y3QgaW9tbXVfZG9tYWluIiwgYnV0IElQIHNwZWNpZmljIHN0cnVjdHVyZSAo
-bGluayBGU0wgZG9tYWluKSBsaW5rZWQgaW4gaW9tbXVfZG9tYWluLT5wcml2IGhhdmUgYSBsb2Nr
-LCBzbyB3ZSBuZWVkIHRvIGVuc3VyZSB0aGlzIHJhY2UgaW4gRlNMIGlvbW11IGNvZGUgKHNheSBk
-cml2ZXJzL2lvbW11L2ZzbF9wYW11X2RvbWFpbi5jKSwgcmlnaHQ/DQoNClRoYW5rcw0KLUJoYXJh
-dA0KDQo+IA0KPiA+ICAvKg0KPiA+ICAgKiBJT01NVSBncm91cHMgYXJlIHJlYWxseSB0aGUgbmF0
-cnVhbCB3b3JraW5nIHVuaXQgb2YgdGhlIElPTU1VLCBidXQNCj4gPiAgICogdGhlIElPTU1VIEFQ
-SSB3b3JrcyBvbiBkb21haW5zIGFuZCBkZXZpY2VzLiAgQnJpZGdlIHRoYXQgZ2FwIGJ5DQo+ID4g
-ZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvaW9tbXUuaCBiL2luY2x1ZGUvbGludXgvaW9tbXUu
-aCBpbmRleA0KPiA+IDdlYTMxOWUuLmZhMDQ2YmQgMTAwNjQ0DQo+ID4gLS0tIGEvaW5jbHVkZS9s
-aW51eC9pb21tdS5oDQo+ID4gKysrIGIvaW5jbHVkZS9saW51eC9pb21tdS5oDQo+ID4gQEAgLTEy
-Nyw2ICsxMjcsNyBAQCBzdHJ1Y3QgaW9tbXVfb3BzIHsNCj4gPiAgCWludCAoKmRvbWFpbl9zZXRf
-d2luZG93cykoc3RydWN0IGlvbW11X2RvbWFpbiAqZG9tYWluLCB1MzIgd19jb3VudCk7DQo+ID4g
-IAkvKiBHZXQgdGhlIG51bWVyIG9mIHdpbmRvdyBwZXIgZG9tYWluICovDQo+ID4gIAl1MzIgKCpk
-b21haW5fZ2V0X3dpbmRvd3MpKHN0cnVjdCBpb21tdV9kb21haW4gKmRvbWFpbik7DQo+ID4gKwlz
-dHJ1Y3QgaW9tbXVfZG9tYWluICooKmdldF9kZXZfaW9tbXVfZG9tYWluKShzdHJ1Y3QgZGV2aWNl
-ICpkZXYpOw0KPiA+DQo+ID4gIAl1bnNpZ25lZCBsb25nIHBnc2l6ZV9iaXRtYXA7DQo+ID4gIH07
-DQo+ID4gQEAgLTE5MCw2ICsxOTEsNyBAQCBleHRlcm4gaW50IGlvbW11X2RvbWFpbl93aW5kb3df
-ZW5hYmxlKHN0cnVjdCBpb21tdV9kb21haW4NCj4gKmRvbWFpbiwgdTMyIHduZF9uciwNCj4gPiAg
-CQkJCSAgICAgIHBoeXNfYWRkcl90IG9mZnNldCwgdTY0IHNpemUsDQo+ID4gIAkJCQkgICAgICBp
-bnQgcHJvdCk7DQo+ID4gIGV4dGVybiB2b2lkIGlvbW11X2RvbWFpbl93aW5kb3dfZGlzYWJsZShz
-dHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW4sDQo+ID4gdTMyIHduZF9ucik7DQo+ID4gK2V4dGVy
-biBzdHJ1Y3QgaW9tbXVfZG9tYWluICppb21tdV9nZXRfZGV2X2RvbWFpbihzdHJ1Y3QgZGV2aWNl
-ICpkZXYpOw0KPiA+ICAvKioNCj4gPiAgICogcmVwb3J0X2lvbW11X2ZhdWx0KCkgLSByZXBvcnQg
-YWJvdXQgYW4gSU9NTVUgZmF1bHQgdG8gdGhlIElPTU1VIGZyYW1ld29yaw0KPiA+ICAgKiBAZG9t
-YWluOiB0aGUgaW9tbXUgZG9tYWluIHdoZXJlIHRoZSBmYXVsdCBoYXMgaGFwcGVuZWQgQEAgLTI4
-NCw2DQo+ID4gKzI4NiwxMSBAQCBzdGF0aWMgaW5saW5lIHZvaWQgaW9tbXVfZG9tYWluX3dpbmRv
-d19kaXNhYmxlKHN0cnVjdA0KPiA+IGlvbW11X2RvbWFpbiAqZG9tYWluLCAgeyAgfQ0KPiA+DQo+
-ID4gK3N0YXRpYyBpbmxpbmUgc3RydWN0IGlvbW11X2RvbWFpbiAqaW9tbXVfZ2V0X2Rldl9kb21h
-aW4oc3RydWN0IGRldmljZQ0KPiA+ICsqZGV2KSB7DQo+ID4gKwlyZXR1cm4gTlVMTDsNCj4gPiAr
-fQ0KPiA+ICsNCj4gPiAgc3RhdGljIGlubGluZSBwaHlzX2FkZHJfdCBpb21tdV9pb3ZhX3RvX3Bo
-eXMoc3RydWN0IGlvbW11X2RvbWFpbg0KPiA+ICpkb21haW4sIGRtYV9hZGRyX3QgaW92YSkgIHsN
-Cj4gPiAgCXJldHVybiAwOw0KPiANCj4gDQo+IA0KPiAtLQ0KPiBUbyB1bnN1YnNjcmliZSBmcm9t
-IHRoaXMgbGlzdDogc2VuZCB0aGUgbGluZSAidW5zdWJzY3JpYmUgbGludXgtcGNpIiBpbiB0aGUg
-Ym9keQ0KPiBvZiBhIG1lc3NhZ2UgdG8gbWFqb3Jkb21vQHZnZXIua2VybmVsLm9yZyBNb3JlIG1h
-am9yZG9tbyBpbmZvIGF0DQo+IGh0dHA6Ly92Z2VyLmtlcm5lbC5vcmcvbWFqb3Jkb21vLWluZm8u
-aHRtbA0KDQo=
+
+
+> -----Original Message-----
+> From: Bhushan Bharat-R65777
+> Sent: Friday, October 04, 2013 3:24 PM
+> To: 'Alex Williamson'
+> Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org; galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org; linux-
+> kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-
+> pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org; Wood Scott-B07421; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
+> foundation.org
+> Subject: RE: [PATCH 2/7] iommu: add api to get iommu_domain of a device
+> 
+> 
+> 
+> > -----Original Message-----
+> > From: linux-pci-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > [mailto:linux-pci-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org]
+> > On Behalf Of Alex Williamson
+> > Sent: Wednesday, September 25, 2013 10:16 PM
+> > To: Bhushan Bharat-R65777
+> > Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org;
+> > galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org; linux- kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+> > linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux- pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+> > agraf-l3A5Bk7waGM@public.gmane.org; Wood Scott-B07421; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org foundation.org;
+> > Bhushan Bharat-R65777
+> > Subject: Re: [PATCH 2/7] iommu: add api to get iommu_domain of a
+> > device
+> >
+> > On Thu, 2013-09-19 at 12:59 +0530, Bharat Bhushan wrote:
+> > > This api return the iommu domain to which the device is attached.
+> > > The iommu_domain is required for making API calls related to iommu.
+> > > Follow up patches which use this API to know iommu maping.
+> > >
+> > > Signed-off-by: Bharat Bhushan <bharat.bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+> > > ---
+> > >  drivers/iommu/iommu.c |   10 ++++++++++
+> > >  include/linux/iommu.h |    7 +++++++
+> > >  2 files changed, 17 insertions(+), 0 deletions(-)
+> > >
+> > > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c index
+> > > fbe9ca7..6ac5f50 100644
+> > > --- a/drivers/iommu/iommu.c
+> > > +++ b/drivers/iommu/iommu.c
+> > > @@ -696,6 +696,16 @@ void iommu_detach_device(struct iommu_domain
+> > > *domain, struct device *dev)  }
+> > > EXPORT_SYMBOL_GPL(iommu_detach_device);
+> > >
+> > > +struct iommu_domain *iommu_get_dev_domain(struct device *dev) {
+> > > +	struct iommu_ops *ops = dev->bus->iommu_ops;
+> > > +
+> > > +	if (unlikely(ops == NULL || ops->get_dev_iommu_domain == NULL))
+> > > +		return NULL;
+> > > +
+> > > +	return ops->get_dev_iommu_domain(dev); }
+> > > +EXPORT_SYMBOL_GPL(iommu_get_dev_domain);
+> >
+> > What prevents this from racing iommu_domain_free()?  There's no
+> > references acquired, so there's no reason for the caller to assume the pointer
+> is valid.
+> 
+> Sorry for late query, somehow this email went into a folder and escaped;
+> 
+> Just to be sure, there is not lock at generic "struct iommu_domain", but IP
+> specific structure (link FSL domain) linked in iommu_domain->priv have a lock,
+> so we need to ensure this race in FSL iommu code (say
+> drivers/iommu/fsl_pamu_domain.c), right?
+
+Further thinking of this, there are more problems here:
+ - Like MSI subsystem will call iommu_get_dev_domain(), which will take a lock, find the domain pointer, release the lock, and return the domain
+ - Now if domain in freed up
+ - While MSI subsystem tries to do work on domain (like get_attribute/set_attribute etc) ???
+
+So can we do like iommu_get_dev_domain() will return domain with the lock held, and iommu_put_dev_domain() will release the lock? And iommu_get_dev_domain() must always be followed by iommu_get_dev_domain()
+
+Thanks
+-Bharat
+
+> 
+> Thanks
+> -Bharat
+> 
+> >
+> > >  /*
+> > >   * IOMMU groups are really the natrual working unit of the IOMMU, but
+> > >   * the IOMMU API works on domains and devices.  Bridge that gap by
+> > > diff --git a/include/linux/iommu.h b/include/linux/iommu.h index
+> > > 7ea319e..fa046bd 100644
+> > > --- a/include/linux/iommu.h
+> > > +++ b/include/linux/iommu.h
+> > > @@ -127,6 +127,7 @@ struct iommu_ops {
+> > >  	int (*domain_set_windows)(struct iommu_domain *domain, u32 w_count);
+> > >  	/* Get the numer of window per domain */
+> > >  	u32 (*domain_get_windows)(struct iommu_domain *domain);
+> > > +	struct iommu_domain *(*get_dev_iommu_domain)(struct device *dev);
+> > >
+> > >  	unsigned long pgsize_bitmap;
+> > >  };
+> > > @@ -190,6 +191,7 @@ extern int iommu_domain_window_enable(struct
+> > > iommu_domain
+> > *domain, u32 wnd_nr,
+> > >  				      phys_addr_t offset, u64 size,
+> > >  				      int prot);
+> > >  extern void iommu_domain_window_disable(struct iommu_domain
+> > > *domain,
+> > > u32 wnd_nr);
+> > > +extern struct iommu_domain *iommu_get_dev_domain(struct device
+> > > +*dev);
+> > >  /**
+> > >   * report_iommu_fault() - report about an IOMMU fault to the IOMMU
+> framework
+> > >   * @domain: the iommu domain where the fault has happened @@ -284,6
+> > > +286,11 @@ static inline void iommu_domain_window_disable(struct
+> > > iommu_domain *domain,  {  }
+> > >
+> > > +static inline struct iommu_domain *iommu_get_dev_domain(struct
+> > > +device
+> > > +*dev) {
+> > > +	return NULL;
+> > > +}
+> > > +
+> > >  static inline phys_addr_t iommu_iova_to_phys(struct iommu_domain
+> > > *domain, dma_addr_t iova)  {
+> > >  	return 0;
+> >
+> >
+> >
+> > --
+> > To unsubscribe from this list: send the line "unsubscribe linux-pci"
+> > in the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org More majordomo
+> > info at http://vger.kernel.org/majordomo-info.html
