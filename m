@@ -1,80 +1,100 @@
-From: Rob Herring <robherring2@gmail.com>
-Subject: Re: [PATCH v8 06/12] ARM: dts: Add description of System MMU of
- Exynos SoCs
-Date: Mon, 7 Oct 2013 08:44:54 -0500
-Message-ID: <CAL_JsqLny8sOgn9y0Tm9-Vq_3YPdtqkr5nTJ67Y0Zx1hDmduNQ@mail.gmail.com>
-References: <003c01ce89f3$3abc4bc0$b034e340$@samsung.com>
+From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH 7/9] iommu/arm-smmu: Add function that conditionally
+	isolates all masters of all SMMUs
+Date: Mon, 7 Oct 2013 17:42:27 +0200
+Message-ID: <20131007154227.GC2935@alberich>
+References: <1380234982-1677-1-git-send-email-andreas.herrmann@calxeda.com>
+	<1380234982-1677-8-git-send-email-andreas.herrmann@calxeda.com>
+	<20130927130001.GF9520@mudshark.cambridge.arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <003c01ce89f3$3abc4bc0$b034e340$@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Cho KyongHo <pullip.cho@samsung.com>
-Cc: Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux Kernel <linux-kernel@vger.kernel.org>, Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>, Kukjin Kim <kgene.kim@samsung.com>, Hyunwoong Kim <khw0178.kim@samsung.com>, Prathyush <prathyush.k@samsung.com>, Grant Grundler <grundler@chromium.org>, Joerg Roedel <joro@8bytes.org>, Keyyoung Park <keyyoung.park@samsung.com>, Subash Patel <supash.ramaswamy@linaro.org>, Sachin Kamat <sachin.kamat@linaro.org>, Antonios Motakis <a.motakis@virtualopensystems.com>, kvmarm@lists.cs.columbia.edu, Rahul Sharma <rahul.sharma@samsung.com>, Will Deacon <will.deacon@arm.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20130927130001.GF9520-MRww78TxoiP5vMa5CHWGZ34zcgK1vI+I0E9HWUfgJXw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jul 26, 2013 at 6:28 AM, Cho KyongHo <pullip.cho@samsung.com> wrote:
-> Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
-> ---
->  .../bindings/iommu/samsung,exynos4210-sysmmu.txt   |  103 +++++++
->  arch/arm/boot/dts/exynos4.dtsi                     |  122 ++++++++
->  arch/arm/boot/dts/exynos4210.dtsi                  |   25 ++
->  arch/arm/boot/dts/exynos4x12.dtsi                  |   76 +++++
->  arch/arm/boot/dts/exynos5250.dtsi                  |  291 ++++++++++++++++++++
->  5 files changed, 617 insertions(+), 0 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
+On Fri, Sep 27, 2013 at 09:00:01AM -0400, Will Deacon wrote:
+> Hi Andreas,
+> 
+> On Thu, Sep 26, 2013 at 11:36:19PM +0100, Andreas Herrmann wrote:
+> > (Depending on DT information and module parameters) each device is put
+> > into its own protection domain (if possible).  For configuration with
+> > one or just a few masters per SMMU that is easy to achieve.
+> > 
+> > In case of many devices per SMMU (e.g. MMU-500 with it's distributed
+> > translation support) isolation of each device might not be possible --
+> > depending on number of available SMR groups and/or context banks.
+> > 
+> > Default is that device isolation is contolled per SMMU with SMMU node
+> > property "linux,arm-smmu-isolate-devices" in a DT. If the property is
+> > set for an SMMU node device isolation is performed.
+> > 
+> > Also introduce a module parameter:
+> 
+> Actually, I think I'd rather do away with the module paramater / command
+> line option altogether in favour of DT.
+> 
+> > +extern struct platform_device *of_find_device_by_node(struct device_node *np);
+> > +
+> > +static int arm_smmu_isolate_devices(void)
+> > +{
+> > +	struct dma_iommu_mapping *mapping;
+> > +	struct arm_smmu_device *smmu;
+> > +	struct rb_node *rbn;
+> > +	struct arm_smmu_master *master;
+> > +	struct platform_device *pdev;
+> > +	struct device *dev;
+> > +	void __iomem *gr0_base;
+> > +	u32 cr0;
+> > +	int ret = 0;
+> > +	size_t size;
+> > +
+> > +	list_for_each_entry(smmu, &arm_smmu_devices, list) {
+> > +		if (arm_smmu_disable_isolation ||
+> > +			(!(smmu->features & ARM_SMMU_FEAT_ISOLATE_DEVICES)
+> > +				&& !arm_smmu_force_isolation))
+> > +			continue;
+> > +		rbn = rb_first(&smmu->masters);
+> > +		while (rbn) {
+> > +			master = container_of(rbn, struct arm_smmu_master, node);
+> > +			pdev = of_find_device_by_node(master->of_node);
+> > +			if (!pdev)
+> > +				break;
+> > +			dev = &pdev->dev;
+> > +
+> > +			size = (size_t) dev->coherent_dma_mask;
+> > +			size = size ? : (unsigned long) dev->dma_mask;
+> 
+> Hmm, this could be *huge* with 64-bit capable DMA controllers (think LPAE).
+
+Yes, agreed.
+(And even for 32-bit DMA this requires a large bitmap_size for the
+mapping.)
+
+> Russell also has some pending dma mask cleanup, which might break some
+> assumptions here:
 >
-> diff --git a/Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
-> b/Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
-> new file mode 100644
-> index 0000000..92f0a33
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
-> @@ -0,0 +1,103 @@
-> +Samsung Exynos4210 IOMMU H/W, System MMU (System Memory Management Unit)
-> +
-> +Samsung's Exynos architecture contains System MMU that enables scattered
-> +physical memory chunks visible as a contiguous region to DMA-capable peripheral
-> +devices like MFC, FIMC, FIMD, GScaler, FIMC-IS and so forth.
-> +
-> +System MMU is a sort of IOMMU and support identical translation table format to
-> +ARMv7 translation tables with minimum set of page properties including access
-> +permissions, shareability and security protection. In addition, System MMU has
-> +another capabilities like L2 TLB or block-fetch buffers to minimize translation
-> +latency.
-> +
-> +A System MMU is dedicated to a single master peripheral device.  Thus, it is
-> +important to specify the correct System MMU in the device node of its master
-> +device. Whereas a System MMU is dedicated to a master device, the master device
-> +may have more than one System MMU.
-> +
-> +Required properties:
-> +- compatible: Should be "samsung,exynos4210-sysmmu"
-> +- reg: A tuple of base address and size of System MMU registers.
-> +- interrupt-parent: The phandle of the interrupt controller of System MMU
-> +- interrupts: A tuple of numbers that indicates the interrupt source.
-> +- clock-names: Should be "sysmmu" if the System MMU is needed to gate its clock.
-> +               Please refer to the following documents:
-> +              Documentation/devicetree/bindings/clock/clock-bindings.txt
-> +              Documentation/devicetree/bindings/clock/exynos4-clock.txt
-> +              Documentation/devicetree/bindings/clock/exynos5250-clock.txt
-> +              Optional "master" if the clock to the System MMU is gated by
-> +              another gate clock other than "sysmmu". The System MMU driver
-> +              sets "master" the parent of "sysmmu".
-> +              Exynos4 SoCs, there needs no "master" clocks.
-> +              Exynos5 SoCs, some System MMUs must have "master" clocks.
-> +- clocks: Required if the System MMU is needed to gate its clock.
-> +         Please refer to the documents listed above.
-> +- samsung,power-domain: Required if the System MMU is needed to gate its power.
-> +         Please refer to the following document:
-> +         Documentation/devicetree/bindings/arm/exynos/power_domain.txt
-> +
-> +Required properties for the master peripheral devices:
-> +- iommu: phandles to the System MMUs of the device
+> http://lists.infradead.org/pipermail/linux-arm-kernel/2013-September/199397.html
+> 
+> (namely that we're offsetting everything from zero).
 
-You have not addressed my comments from the last version. We do not
-need 2 (or more) different ways to describe the connection between
-masters and iommu's. Use mmu-masters property here to describe the
-connection.
+What do you think is a reasonable general value for the size of a
+mapping? (Do we need a DT property to specify this?)
 
-Rob
+What about a size of 128 MB -- if I'm not mistaken this requires a
+bitmap_size of 4K.
+
+
+Andreas
