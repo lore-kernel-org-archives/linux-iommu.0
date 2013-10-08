@@ -1,82 +1,40 @@
-From: Scott Wood <scottwood@freescale.com>
+From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 Subject: Re: [PATCH 1/7] powerpc: Add interface to get msi region information
-Date: Tue, 8 Oct 2013 17:57:17 -0500
-Message-ID: <1381273037.7979.298.camel@snotra.buserror.net>
+Date: Tue, 8 Oct 2013 17:25:40 -0600
+Message-ID: <CAErSpo7+7SHVcOJkHkW5cjb6pN+bqYeRdPBA=MVX0RLz=-pP6Q@mail.gmail.com>
 References: <1379575763-2091-1-git-send-email-Bharat.Bhushan@freescale.com>
-	 <1379575763-2091-2-git-send-email-Bharat.Bhushan@freescale.com>
+	<1379575763-2091-2-git-send-email-Bharat.Bhushan@freescale.com>
+	<1381273037.7979.298.camel@snotra.buserror.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1379575763-2091-2-git-send-email-Bharat.Bhushan@freescale.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bharat Bhushan <r65777@freescale.com>
-Cc: alex.williamson@redhat.com, joro@8bytes.org, benh@kernel.crashing.org, galak@kernel.crashing.org, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org, agraf@suse.de, iommu@lists.linux-foundation.org, Bharat Bhushan <Bharat.Bhushan@freescale.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1381273037.7979.298.camel-88ow+0ZRuxG2UiBs7uKeOtHuzzzSOjJt@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Cc: Alexander Graf <agraf-l3A5Bk7waGM@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kumar Gala <galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Bharat Bhushan <r65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, linuxppc-dev <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 2013-09-19 at 12:59 +0530, Bharat Bhushan wrote:
-> @@ -376,6 +405,7 @@ static int fsl_of_msi_probe(struct platform_device *dev)
->  	int len;
->  	u32 offset;
->  	static const u32 all_avail[] = { 0, NR_MSI_IRQS };
-> +	static int bank_index;
->  
->  	match = of_match_device(fsl_of_msi_ids, &dev->dev);
->  	if (!match)
-> @@ -419,8 +449,8 @@ static int fsl_of_msi_probe(struct platform_device *dev)
->  				dev->dev.of_node->full_name);
->  			goto error_out;
->  		}
-> -		msi->msiir_offset =
-> -			features->msiir_offset + (res.start & 0xfffff);
-> +		msi->msiir = res.start + features->msiir_offset;
-> +		printk("msi->msiir = %llx\n", msi->msiir);
+>> -     u32 msiir_offset; /* Offset of MSIIR, relative to start of CCSR */
+>> +     dma_addr_t msiir; /* MSIIR Address in CCSR */
+>
+> Are you sure dma_addr_t is right here, versus phys_addr_t?  It implies
+> that it's the output of the DMA API, but I don't think the DMA API is
+> used in the MSI driver.  Perhaps it should be, but we still want the raw
+> physical address to pass on to VFIO.
 
-dev_dbg or remove
+I don't know what "msiir" is used for, but if it's an address you
+program into a PCI device, then it's a dma_addr_t even if you didn't
+get it from the DMA API.  Maybe "bus_addr_t" would have been a more
+suggestive name than "dma_addr_t".  That said, I have no idea how this
+relates to VFIO.
 
->  	}
->  
->  	msi->feature = features->fsl_pic_ip;
-> @@ -470,6 +500,7 @@ static int fsl_of_msi_probe(struct platform_device *dev)
->  		}
->  	}
->  
-> +	msi->bank_index = bank_index++;
-
-What if multiple MSIs are boing probed in parallel?  bank_index is not
-atomic.
-
-> diff --git a/arch/powerpc/sysdev/fsl_msi.h b/arch/powerpc/sysdev/fsl_msi.h
-> index 8225f86..6bd5cfc 100644
-> --- a/arch/powerpc/sysdev/fsl_msi.h
-> +++ b/arch/powerpc/sysdev/fsl_msi.h
-> @@ -29,12 +29,19 @@ struct fsl_msi {
->  	struct irq_domain *irqhost;
->  
->  	unsigned long cascade_irq;
-> -
-> -	u32 msiir_offset; /* Offset of MSIIR, relative to start of CCSR */
-> +	dma_addr_t msiir; /* MSIIR Address in CCSR */
-
-Are you sure dma_addr_t is right here, versus phys_addr_t?  It implies
-that it's the output of the DMA API, but I don't think the DMA API is
-used in the MSI driver.  Perhaps it should be, but we still want the raw
-physical address to pass on to VFIO.
-
->  	void __iomem *msi_regs;
->  	u32 feature;
->  	int msi_virqs[NR_MSI_REG];
->  
-> +	/*
-> +	 * During probe each bank is assigned a index number.
-> +	 * index number ranges from 0 to 2^32.
-> +	 * Example  MSI bank 1 = 0
-> +	 * MSI bank 2 = 1, and so on.
-> +	 */
-> +	int bank_index;
-
-2^32 doesn't fit in "int" (nor does 2^32 - 1).
-
-Just say that indices start at 0.
-
--Scott
+Bjorn
