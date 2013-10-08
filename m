@@ -1,236 +1,63 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 2/7] iommu: add api to get iommu_domain of a device
-Date: Mon, 07 Oct 2013 21:13:00 -0600
-Message-ID: <1381201980.6330.4.camel@ul30vt.home>
+From: Bhushan Bharat-R65777 <R65777@freescale.com>
+Subject: RE: [PATCH 2/7] iommu: add api to get iommu_domain of a device
+Date: Tue, 8 Oct 2013 03:42:45 +0000
+Message-ID: <6A3DF150A5B70D4F9B66A25E3F7C888D071950B2@039-SN2MPN1-011.039d.mgd.msft.net>
 References: <1379575763-2091-1-git-send-email-Bharat.Bhushan@freescale.com>
-	<1379575763-2091-3-git-send-email-Bharat.Bhushan@freescale.com>
-	<1380127533.3030.319.camel@ul30vt.home>
-	<6A3DF150A5B70D4F9B66A25E3F7C888D0718FD1C@039-SN2MPN1-011.039d.mgd.msft.net>
-	<1380901507.2673.204.camel@ul30vt.home>
-	<6A3DF150A5B70D4F9B66A25E3F7C888D07190F35@039-SN2MPN1-011.039d.mgd.msft.net>
-	<1380906772.25705.19.camel@ul30vt.home>
-	<6A3DF150A5B70D4F9B66A25E3F7C888D07191143@039-SN2MPN1-011.039d.mgd.msft.net>
-	<1380910322.25705.56.camel@ul30vt.home>
-	<6A3DF150A5B70D4F9B66A25E3F7C888D0719385B@039-SN2MPN1-011.039d.mgd.msft.net>
+	 <1379575763-2091-3-git-send-email-Bharat.Bhushan@freescale.com>
+	 <1380127533.3030.319.camel@ul30vt.home>
+	 <6A3DF150A5B70D4F9B66A25E3F7C888D0718FD1C@039-SN2MPN1-011.039d.mgd.msft.net>
+	 <1380901507.2673.204.camel@ul30vt.home>
+	 <6A3DF150A5B70D4F9B66A25E3F7C888D07190F35@039-SN2MPN1-011.039d.mgd.msft.net>
+	 <1380906772.25705.19.camel@ul30vt.home>
+	 <6A3DF150A5B70D4F9B66A25E3F7C888D07191143@039-SN2MPN1-011.039d.mgd.msft.net>
+	 <1380910322.25705.56.camel@ul30vt.home>
+	 <6A3DF150A5B70D4F9B66A25E3F7C888D0719385B@039-SN2MPN1-011.039d.mgd.msft.net>
+ <1381201980.6330.4.camel@ul30vt.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <6A3DF150A5B70D4F9B66A25E3F7C888D0719385B-RL0Hj/+nBVCMXPU/2EZmt64g8xLGJsHaLnY5E4hWTkheoWH0uzbU5w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bhushan Bharat-R65777 <R65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1381201980.6330.4.camel@ul30vt.home>
+Content-Language: en-US
+Sender: linux-pci-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: "joro@8bytes.org" <joro@8bytes.org>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, "galak@kernel.crashing.org" <galak@kernel.crashing.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "agraf@suse.de" <agraf@suse.de>, Wood Scott-B07421 <B07421@freescale.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2013-10-07 at 05:46 +0000, Bhushan Bharat-R65777 wrote:
-> 
-> > -----Original Message-----
-> > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > Sent: Friday, October 04, 2013 11:42 PM
-> > To: Bhushan Bharat-R65777
-> > Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org; galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org; linux-
-> > kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-
-> > pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org; Wood Scott-B07421; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
-> > foundation.org
-> > Subject: Re: [PATCH 2/7] iommu: add api to get iommu_domain of a device
-> > 
-> > On Fri, 2013-10-04 at 17:23 +0000, Bhushan Bharat-R65777 wrote:
-> > >
-> > > > -----Original Message-----
-> > > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > > > Sent: Friday, October 04, 2013 10:43 PM
-> > > > To: Bhushan Bharat-R65777
-> > > > Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org;
-> > > > galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org; linux- kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > > linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux- pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > > agraf-l3A5Bk7waGM@public.gmane.org; Wood Scott-B07421; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org foundation.org
-> > > > Subject: Re: [PATCH 2/7] iommu: add api to get iommu_domain of a
-> > > > device
-> > > >
-> > > > On Fri, 2013-10-04 at 16:47 +0000, Bhushan Bharat-R65777 wrote:
-> > > > >
-> > > > > > -----Original Message-----
-> > > > > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > > > > > Sent: Friday, October 04, 2013 9:15 PM
-> > > > > > To: Bhushan Bharat-R65777
-> > > > > > Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org;
-> > > > > > galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org; linux- kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > > > > linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux- pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > > > > agraf-l3A5Bk7waGM@public.gmane.org; Wood Scott-B07421; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
-> > > > > > foundation.org
-> > > > > > Subject: Re: [PATCH 2/7] iommu: add api to get iommu_domain of a
-> > > > > > device
-> > > > > >
-> > > > > > On Fri, 2013-10-04 at 09:54 +0000, Bhushan Bharat-R65777 wrote:
-> > > > > > >
-> > > > > > > > -----Original Message-----
-> > > > > > > > From: linux-pci-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > > > > > > > [mailto:linux-pci-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org]
-> > > > > > > > On Behalf Of Alex Williamson
-> > > > > > > > Sent: Wednesday, September 25, 2013 10:16 PM
-> > > > > > > > To: Bhushan Bharat-R65777
-> > > > > > > > Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org;
-> > > > > > > > galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org; linux- kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > > > > > > linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux- pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > > > > > > agraf-l3A5Bk7waGM@public.gmane.org; Wood Scott-B07421; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
-> > > > > > > > foundation.org; Bhushan Bharat-R65777
-> > > > > > > > Subject: Re: [PATCH 2/7] iommu: add api to get iommu_domain
-> > > > > > > > of a device
-> > > > > > > >
-> > > > > > > > On Thu, 2013-09-19 at 12:59 +0530, Bharat Bhushan wrote:
-> > > > > > > > > This api return the iommu domain to which the device is attached.
-> > > > > > > > > The iommu_domain is required for making API calls related to
-> > iommu.
-> > > > > > > > > Follow up patches which use this API to know iommu maping.
-> > > > > > > > >
-> > > > > > > > > Signed-off-by: Bharat Bhushan
-> > > > > > > > > <bharat.bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-> > > > > > > > > ---
-> > > > > > > > >  drivers/iommu/iommu.c |   10 ++++++++++
-> > > > > > > > >  include/linux/iommu.h |    7 +++++++
-> > > > > > > > >  2 files changed, 17 insertions(+), 0 deletions(-)
-> > > > > > > > >
-> > > > > > > > > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > > > > > > > > index
-> > > > > > > > > fbe9ca7..6ac5f50 100644
-> > > > > > > > > --- a/drivers/iommu/iommu.c
-> > > > > > > > > +++ b/drivers/iommu/iommu.c
-> > > > > > > > > @@ -696,6 +696,16 @@ void iommu_detach_device(struct
-> > > > > > > > > iommu_domain *domain, struct device *dev)  }
-> > > > > > > > > EXPORT_SYMBOL_GPL(iommu_detach_device);
-> > > > > > > > >
-> > > > > > > > > +struct iommu_domain *iommu_get_dev_domain(struct device *dev) {
-> > > > > > > > > +	struct iommu_ops *ops = dev->bus->iommu_ops;
-> > > > > > > > > +
-> > > > > > > > > +	if (unlikely(ops == NULL || ops->get_dev_iommu_domain ==
-> > NULL))
-> > > > > > > > > +		return NULL;
-> > > > > > > > > +
-> > > > > > > > > +	return ops->get_dev_iommu_domain(dev); }
-> > > > > > > > > +EXPORT_SYMBOL_GPL(iommu_get_dev_domain);
-> > > > > > > >
-> > > > > > > > What prevents this from racing iommu_domain_free()?  There's
-> > > > > > > > no references acquired, so there's no reason for the caller
-> > > > > > > > to assume the
-> > > > > > pointer is valid.
-> > > > > > >
-> > > > > > > Sorry for late query, somehow this email went into a folder
-> > > > > > > and escaped;
-> > > > > > >
-> > > > > > > Just to be sure, there is not lock at generic "struct
-> > > > > > > iommu_domain", but IP
-> > > > > > specific structure (link FSL domain) linked in
-> > > > > > iommu_domain->priv have a lock, so we need to ensure this race
-> > > > > > in FSL iommu code (say drivers/iommu/fsl_pamu_domain.c), right?
-> > > > > >
-> > > > > > No, it's not sufficient to make sure that your use of the
-> > > > > > interface is race free.  The interface itself needs to be
-> > > > > > designed so that it's difficult to use incorrectly.
-> > > > >
-> > > > > So we can define iommu_get_dev_domain()/iommu_put_dev_domain();
-> > > > > iommu_get_dev_domain() will return domain with the lock held, and
-> > > > > iommu_put_dev_domain() will release the lock? And
-> > > > > iommu_get_dev_domain() must always be followed by
-> > > > > iommu_get_dev_domain().
-> > > >
-> > > > What lock?  get/put are generally used for reference counting, not
-> > > > locking in the kernel.
-> > > >
-> > > > > > That's not the case here.  This is a backdoor to get the iommu
-> > > > > > domain from the iommu driver regardless of who is using it or how.
-> > > > > > The iommu domain is created and managed by vfio, so shouldn't we
-> > > > > > be looking at how to do this through vfio?
-> > > > >
-> > > > > Let me first describe what we are doing here:
-> > > > > During initialization:-
-> > > > >  - vfio talks to MSI system to know the MSI-page and size
-> > > > >  - vfio then interacts with iommu to map the MSI-page in iommu
-> > > > > (IOVA is decided by userspace and physical address is the
-> > > > > MSI-page)
-> > > > >  - So the IOVA subwindow mapping is created in iommu and yes VFIO
-> > > > > know about
-> > > > this mapping.
-> > > > >
-> > > > > Now do SET_IRQ(MSI/MSIX) ioctl:
-> > > > >  - calls pci_enable_msix()/pci_enable_msi_block(): which is
-> > > > > supposed to set
-> > > > MSI address/data in device.
-> > > > >  - So in current implementation (this patchset) msi-subsystem gets
-> > > > > the IOVA
-> > > > from iommu via this defined interface.
-> > > > >  - Are you saying that rather than getting this from iommu, we
-> > > > > should get this
-> > > > from vfio? What difference does this make?
-> > > >
-> > > > Yes, you just said above that vfio knows the msi to iova mapping, so
-> > > > why go outside of vfio to find it later?  The difference is one case
-> > > > you can have a proper reference to data structures to make sure the
-> > > > pointer you get back actually has meaning at the time you're using
-> > > > it vs the code here where you're defining an API that returns a
-> > > > meaningless value
-> > >
-> > > With FSL-PAMU we will always get consistant data from iommu or vfio-data
-> > structure.
-> > 
-> > Great, but you're trying to add a generic API to the IOMMU subsystem that's
-> > difficult to use correctly.  The fact that you use it correctly does not justify
-> > the API.
-> > 
-> > > > because you can't check or
-> > > > enforce that an arbitrary caller is using it correctly.
-> > >
-> > > I am not sure what is arbitrary caller? pdev is known to vfio, so vfio
-> > > will only make pci_enable_msix()/pci_enable_msi_block() for this pdev.
-> > > If anyother code makes then it is some other unexpectedly thing
-> > > happening in system, no?
-> > 
-> > What's proposed here is a generic IOMMU API.  Anybody can call this.
-> > What if the host SCSI driver decides to go get the iommu domain for it's device
-> > (or any other device)?  Does that fit your usage model?
-> > 
-> > > >  It's not maintainable.
-> > > > Thanks,
-> > >
-> > > I do not have any issue with this as well, can you also describe the
-> > > type of API you are envisioning; I can think of defining some function
-> > > in vfio.c/vfio_iommu*.c, make them global and declare then in
-> > > include/Linux/vfio.h And include <Linux/vfio.h> in caller file
-> > > (arch/powerpc/kernel/msi.c)
-> > 
-> > Do you really want module dependencies between vfio and your core kernel MSI
-> > setup?  Look at the vfio external user interface that we've already defined.
-> > That allows other components of the kernel to get a proper reference to a vfio
-> > group.  From there you can work out how to get what you want.  Another
-> > alternative is that vfio could register an MSI to IOVA mapping with architecture
-> > code when the mapping is created.  The MSI setup path could then do a lookup in
-> > architecture code for the mapping.  You could even store the MSI to IOVA mapping
-> > in VFIO and create an interface where SET_IRQ passes that mapping into setup
-> > code.
-> 
-> Ok, What I want is to get IOVA associated with a physical address
-> (physical address of MSI-bank).
-> And currently I do not see a way to know IOVA of a physical address
-> and doing all this domain get and then search through all of
-> iommu-windows of that domain.
-> 
-> What if we add an iommu-API which can return the IOVA mapping of a
-> physical address. Current use case is setting up MSI's for aperture
-> type of IOMMU also getting a phys_to_iova() mapping is independent of
-> VFIO, your thought?
-
-A physical address can be mapped to multiple IOVAs, so the interface
-seems flawed by design.  It also has the same problem as above, it's a
-backdoor that can be called asynchronous to the owner of the domain, so
-what reason is there to believe the result?  It just replaces an
-iommu_domain pointer with an IOVA.  VFIO knows this mapping, so why are
-we trying to go behind its back and ask the IOMMU?  Thanks,
-
-Alex
+PiA+ID4gRG8geW91IHJlYWxseSB3YW50IG1vZHVsZSBkZXBlbmRlbmNpZXMgYmV0d2VlbiB2Zmlv
+IGFuZCB5b3VyIGNvcmUNCj4gPiA+IGtlcm5lbCBNU0kgc2V0dXA/ICBMb29rIGF0IHRoZSB2Zmlv
+IGV4dGVybmFsIHVzZXIgaW50ZXJmYWNlIHRoYXQgd2UndmUNCj4gYWxyZWFkeSBkZWZpbmVkLg0K
+PiA+ID4gVGhhdCBhbGxvd3Mgb3RoZXIgY29tcG9uZW50cyBvZiB0aGUga2VybmVsIHRvIGdldCBh
+IHByb3BlciByZWZlcmVuY2UNCj4gPiA+IHRvIGEgdmZpbyBncm91cC4gIEZyb20gdGhlcmUgeW91
+IGNhbiB3b3JrIG91dCBob3cgdG8gZ2V0IHdoYXQgeW91DQo+ID4gPiB3YW50LiAgQW5vdGhlciBh
+bHRlcm5hdGl2ZSBpcyB0aGF0IHZmaW8gY291bGQgcmVnaXN0ZXIgYW4gTVNJIHRvDQo+ID4gPiBJ
+T1ZBIG1hcHBpbmcgd2l0aCBhcmNoaXRlY3R1cmUgY29kZSB3aGVuIHRoZSBtYXBwaW5nIGlzIGNy
+ZWF0ZWQuDQo+ID4gPiBUaGUgTVNJIHNldHVwIHBhdGggY291bGQgdGhlbiBkbyBhIGxvb2t1cCBp
+biBhcmNoaXRlY3R1cmUgY29kZSBmb3INCj4gPiA+IHRoZSBtYXBwaW5nLiAgWW91IGNvdWxkIGV2
+ZW4gc3RvcmUgdGhlIE1TSSB0byBJT1ZBIG1hcHBpbmcgaW4gVkZJTw0KPiA+ID4gYW5kIGNyZWF0
+ZSBhbiBpbnRlcmZhY2Ugd2hlcmUgU0VUX0lSUSBwYXNzZXMgdGhhdCBtYXBwaW5nIGludG8gc2V0
+dXAgY29kZS4NCj4gPg0KPiA+IE9rLCBXaGF0IEkgd2FudCBpcyB0byBnZXQgSU9WQSBhc3NvY2lh
+dGVkIHdpdGggYSBwaHlzaWNhbCBhZGRyZXNzDQo+ID4gKHBoeXNpY2FsIGFkZHJlc3Mgb2YgTVNJ
+LWJhbmspLg0KPiA+IEFuZCBjdXJyZW50bHkgSSBkbyBub3Qgc2VlIGEgd2F5IHRvIGtub3cgSU9W
+QSBvZiBhIHBoeXNpY2FsIGFkZHJlc3MNCj4gPiBhbmQgZG9pbmcgYWxsIHRoaXMgZG9tYWluIGdl
+dCBhbmQgdGhlbiBzZWFyY2ggdGhyb3VnaCBhbGwgb2YNCj4gPiBpb21tdS13aW5kb3dzIG9mIHRo
+YXQgZG9tYWluLg0KPiA+DQo+ID4gV2hhdCBpZiB3ZSBhZGQgYW4gaW9tbXUtQVBJIHdoaWNoIGNh
+biByZXR1cm4gdGhlIElPVkEgbWFwcGluZyBvZiBhDQo+ID4gcGh5c2ljYWwgYWRkcmVzcy4gQ3Vy
+cmVudCB1c2UgY2FzZSBpcyBzZXR0aW5nIHVwIE1TSSdzIGZvciBhcGVydHVyZQ0KPiA+IHR5cGUg
+b2YgSU9NTVUgYWxzbyBnZXR0aW5nIGEgcGh5c190b19pb3ZhKCkgbWFwcGluZyBpcyBpbmRlcGVu
+ZGVudCBvZg0KPiA+IFZGSU8sIHlvdXIgdGhvdWdodD8NCj4gDQo+IEEgcGh5c2ljYWwgYWRkcmVz
+cyBjYW4gYmUgbWFwcGVkIHRvIG11bHRpcGxlIElPVkFzLCBzbyB0aGUgaW50ZXJmYWNlIHNlZW1z
+DQo+IGZsYXdlZCBieSBkZXNpZ24uICBJdCBhbHNvIGhhcyB0aGUgc2FtZSBwcm9ibGVtIGFzIGFi
+b3ZlLCBpdCdzIGEgYmFja2Rvb3IgdGhhdA0KPiBjYW4gYmUgY2FsbGVkIGFzeW5jaHJvbm91cyB0
+byB0aGUgb3duZXIgb2YgdGhlIGRvbWFpbiwgc28gd2hhdCByZWFzb24gaXMgdGhlcmUNCj4gdG8g
+YmVsaWV2ZSB0aGUgcmVzdWx0PyAgSXQganVzdCByZXBsYWNlcyBhbiBpb21tdV9kb21haW4gcG9p
+bnRlciB3aXRoIGFuIElPVkEuDQo+IFZGSU8ga25vd3MgdGhpcyBtYXBwaW5nLCBzbyB3aHkgYXJl
+IHdlIHRyeWluZyB0byBnbyBiZWhpbmQgaXRzIGJhY2sgYW5kIGFzayB0aGUNCj4gSU9NTVU/DQpJ
+T01NVSBpcyB0aGUgZmluYWwgcGxhY2Ugd2hlcmUgbWFwcGluZyBpcyBjcmVhdGVkLCBzbyBtYXkg
+YmUgdG9kYXkgaXQgaXMgY2FsbGluZyBvbiBiZWhhbGYgb2YgVkZJTywgdG9tb3Jyb3cgaXQgY2Fu
+IGJlIGZvciBub3JtYWwgTGludXggb3Igc29tZSBvdGhlciBpbnRlcmZhY2UuIEJ1dCBJIGFtIGZp
+bmUgdG8gZGlyZWN0bHkgdGFsayB0byB2ZmlvIGFuZCB3aWxsIG5vdCB0cnkgdG8gc29sdmUgYSBw
+cm9ibGVtIHdoaWNoIGRvZXMgbm90IGV4aXN0cyB0b2RheS4NCg0KTVNJIHN1YnN5c3RlbSBrbm93
+cyBwZGV2IChwY2kgZGV2aWNlKSBhbmQgcGh5c2ljYWwgYWRkcmVzcywgdGhlbiB3aGF0IGludGVy
+ZmFjZSBpdCB3aWxsIHVzZSB0byBnZXQgdGhlIElPVkEgZnJvbSBWRklPPw0KDQpUaGFua3MNCi1C
+aGFyYXQNCg0KPiAgVGhhbmtzLA0KPiANCj4gQWxleA0KPiANCg0K
