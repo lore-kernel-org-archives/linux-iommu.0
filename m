@@ -1,7 +1,7 @@
 From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH 2/5] iommu/arm-smmu: Introduce bus notifier block
-Date: Tue,  8 Oct 2013 11:27:21 +0200
-Message-ID: <1381224444-27303-3-git-send-email-andreas.herrmann@calxeda.com>
+Subject: [PATCH 3/5] iommu/arm-smmu: Introduce stream ID masking
+Date: Tue,  8 Oct 2013 11:27:22 +0200
+Message-ID: <1381224444-27303-4-git-send-email-andreas.herrmann@calxeda.com>
 References: <1381224444-27303-1-git-send-email-andreas.herrmann@calxeda.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,109 +21,145 @@ To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-At the moment just handle BUS_NOTIFY_BIND_DRIVER to conditionally
-isolate all master devices for an SMMU.
+Ie. use a mask based on smr_mask_bits to map all stream IDs of an SMMU
+to one context.
 
-Depending on DT information each device is put into its own protection
-domain (if possible).  For configuration with one or just a few
-masters per SMMU that is easy to achieve.
+This behaviour is controlled per SMMU node with DT property
+"arm,smmu-mask-stream-ids" and is only allowed if just a single master
+is attached to an SMMU. If the option is specified, all stream-ids
+that are provided in DT for the single master have no relevance.
 
-In case of many devices per SMMU (e.g. MMU-500 with it's distributed
-translation support) isolation of each device might not be possible --
-depending on number of available SMR groups and/or context banks.
-
-Default is that device isolation is contolled per SMMU with SMMU node
-property "arm,smmu-isolate-devices" in a DT. If this property is set
-for an SMMU node, device isolation is performed.
-
-W/o device isolation the driver detects SMMUs but no translation is
-configured (transactions just bypass translation process).
-
-Note that for device isolation dma_base and size are fixed as 0 and
-SZ_128M at the moment.
+This is useful/convenient if a master has more than 8 stream-ids or if
+not all stream-ids are known for a master device.
 
 Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c |   53 ++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 53 insertions(+)
+ drivers/iommu/arm-smmu.c |   43 +++++++++++++++++++++++++++++++------------
+ 1 file changed, 31 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index b127f0f..9a73618 100644
+index 9a73618..e2dbcbb 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -46,6 +46,7 @@
- #include <linux/amba/bus.h>
+@@ -359,6 +359,7 @@ struct arm_smmu_device {
  
- #include <asm/pgalloc.h>
-+#include <asm/dma-iommu.h>
+ 	u32				num_mapping_groups;
+ 	DECLARE_BITMAP(smr_map, ARM_SMMU_MAX_SMRS);
++	u32				smr_mask_bits;
  
- /* Maximum number of stream IDs assigned to a single device */
- #define MAX_MASTER_STREAMIDS		8
-@@ -1996,6 +1997,56 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+ 	unsigned long			input_size;
+ 	unsigned long			s1_output_size;
+@@ -370,6 +371,7 @@ struct arm_smmu_device {
+ 
+ 	struct list_head		list;
+ 	struct rb_root			masters;
++	u32				num_masters;
+ };
+ 
+ struct arm_smmu_cfg {
+@@ -403,6 +405,7 @@ static LIST_HEAD(arm_smmu_devices);
+ /* driver options */
+ enum arm_smmu_option {
+ 	ISOLATE_DEVICES = 0,
++	MASK_STREAM_IDS,
+ 	OPTION_MAX,
+ };
+ 
+@@ -413,6 +416,7 @@ struct arm_smmu_option_prop {
+ 
+ static struct arm_smmu_option_prop arm_smmu_options [] = {
+ 	{ ISOLATE_DEVICES, "arm,smmu-isolate-devices" },
++	{ MASK_STREAM_IDS, "arm,smmu-mask-stream-ids" },
+ 	{ OPTION_MAX, NULL},
+ };
+ 
+@@ -488,6 +492,7 @@ static int insert_smmu_master(struct arm_smmu_device *smmu,
+ 
+ 	rb_link_node(&master->node, parent, new);
+ 	rb_insert_color(&master->node, &smmu->masters);
++	smmu->num_masters++;
  	return 0;
  }
  
-+static int arm_smmu_device_notifier(struct notifier_block *nb,
-+				unsigned long action, void *data)
-+{
-+	struct device *dev = data;
-+	struct dma_iommu_mapping *mapping;
-+	struct arm_smmu_device *smmu;
-+	void __iomem *gr0_base;
-+	u32 cr0;
-+	int ret;
-+
-+	switch (action) {
-+	case BUS_NOTIFY_BIND_DRIVER:
-+
-+		arm_smmu_add_device(dev);
-+		smmu = dev->archdata.iommu;
-+		if (!smmu || !(arm_smmu_has_option(smmu, ISOLATE_DEVICES)))
-+			break;
-+
-+		mapping = arm_iommu_create_mapping(&platform_bus_type,
-+						0, SZ_128M, 0);
-+		if (IS_ERR(mapping)) {
-+			ret = PTR_ERR(mapping);
-+			dev_info(dev, "arm_iommu_create_mapping failed\n");
-+			break;
+@@ -520,8 +525,19 @@ static int register_smmu_master(struct arm_smmu_device *smmu,
+ 	master->of_node		= masterspec->np;
+ 	master->num_streamids	= masterspec->args_count;
+ 
+-	for (i = 0; i < master->num_streamids; ++i)
+-		master->streamids[i] = masterspec->args[i];
++	if (arm_smmu_has_option(smmu, MASK_STREAM_IDS)) {
++		if (smmu->num_masters) {
++			dev_err(dev, "option %s not supported with multiple masters\n",
++				arm_smmu_options[MASK_STREAM_IDS].prop);
++			return -EINVAL;
 +		}
-+
-+		ret = arm_iommu_attach_device(dev, mapping);
-+		if (ret < 0) {
-+			dev_info(dev, "arm_iommu_attach_device failed\n");
-+			arm_iommu_release_mapping(mapping);
-+		}
-+
-+		gr0_base = ARM_SMMU_GR0_NS(smmu);
-+		cr0 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sCR0);
-+		cr0 |= sCR0_USFCFG;
-+		writel(cr0, gr0_base + ARM_SMMU_GR0_sCR0);
-+
-+		break;
-+
-+	default:
-+		break;
++		/* set fixed streamid (0) that will be used for masking */
++		master->num_streamids = 1;
++		master->streamids[0] = 0;
++	} else {
++		for (i = 0; i < master->num_streamids; ++i)
++			master->streamids[i] = masterspec->args[i];
 +	}
-+
-+	return 0;
-+}
-+
-+static struct notifier_block device_nb = {
-+	.notifier_call = arm_smmu_device_notifier,
-+};
-+
- #ifdef CONFIG_OF
- static struct of_device_id arm_smmu_of_match[] = {
- 	{ .compatible = "arm,smmu-v1", },
-@@ -2032,6 +2083,8 @@ static int __init arm_smmu_init(void)
- 	if (!iommu_present(&amba_bustype))
- 		bus_set_iommu(&amba_bustype, &arm_smmu_ops);
  
-+	bus_register_notifier(&platform_bus_type, &device_nb);
-+
- 	return 0;
+ 	return insert_smmu_master(smmu, master);
  }
+@@ -1063,17 +1079,20 @@ static int arm_smmu_master_configure_smrs(struct arm_smmu_device *smmu,
+ 			goto err_free_smrs;
+ 		}
  
+-		smrs[i] = (struct arm_smmu_smr) {
+-			.idx	= idx,
+-			.mask	= 0, /* We don't currently share SMRs */
+-			.id	= master->streamids[i],
+-		};
++		smrs[i].idx = idx;
++		smrs[i].id = master->streamids[i];
++
++		if (arm_smmu_has_option(smmu, MASK_STREAM_IDS))
++			smrs[i].mask = smmu->smr_mask_bits;
++		else
++			smrs[i].mask = 0;
+ 	}
+ 
+ 	/* It worked! Now, poke the actual hardware */
+ 	for (i = 0; i < master->num_streamids; ++i) {
+ 		u32 reg = SMR_VALID | smrs[i].id << SMR_ID_SHIFT |
+ 			  smrs[i].mask << SMR_MASK_SHIFT;
++		dev_dbg(smmu->dev, "SMR%d: 0x%x\n", smrs[i].idx, reg);
+ 		writel_relaxed(reg, gr0_base + ARM_SMMU_GR0_SMR(smrs[i].idx));
+ 	}
+ 
+@@ -1726,7 +1745,7 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+ 	}
+ 
+ 	if (id & ID0_SMS) {
+-		u32 smr, sid, mask;
++		u32 smr, sid;
+ 
+ 		smmu->features |= ARM_SMMU_FEAT_STREAM_MATCH;
+ 		smmu->num_mapping_groups = (id >> ID0_NUMSMRG_SHIFT) &
+@@ -1742,18 +1761,18 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+ 		writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
+ 		smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
+ 
+-		mask = (smr >> SMR_MASK_SHIFT) & SMR_MASK_MASK;
++		smmu->smr_mask_bits = (smr >> SMR_MASK_SHIFT) & SMR_MASK_MASK;
+ 		sid = (smr >> SMR_ID_SHIFT) & SMR_ID_MASK;
+-		if ((mask & sid) != sid) {
++		if ((smmu->smr_mask_bits & sid) != sid) {
+ 			dev_err(smmu->dev,
+ 				"SMR mask bits (0x%x) insufficient for ID field (0x%x)\n",
+-				mask, sid);
++				smmu->smr_mask_bits, sid);
+ 			return -ENODEV;
+ 		}
+ 
+ 		dev_notice(smmu->dev,
+ 			   "\tstream matching with %u register groups, mask 0x%x",
+-			   smmu->num_mapping_groups, mask);
++			   smmu->num_mapping_groups, smmu->smr_mask_bits);
+ 	}
+ 
+ 	/* ID1 */
 -- 
 1.7.9.5
