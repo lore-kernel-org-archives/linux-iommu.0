@@ -1,79 +1,82 @@
-From: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 3/5] iommu/arm-smmu: Introduce stream ID masking
-Date: Tue, 08 Oct 2013 13:43:50 -0500
-Message-ID: <52545266.6010400@gmail.com>
-References: <1381224444-27303-1-git-send-email-andreas.herrmann@calxeda.com>
-	<1381224444-27303-4-git-send-email-andreas.herrmann@calxeda.com>
-	<20131008151007.GD21189@mudshark.cambridge.arm.com>
-	<20131008152008.GE2935@alberich> <20131008164021.GH2935@alberich>
-	<20131008165920.GG21189@mudshark.cambridge.arm.com>
+From: Scott Wood <scottwood@freescale.com>
+Subject: Re: [PATCH 1/7] powerpc: Add interface to get msi region information
+Date: Tue, 8 Oct 2013 17:57:17 -0500
+Message-ID: <1381273037.7979.298.camel@snotra.buserror.net>
+References: <1379575763-2091-1-git-send-email-Bharat.Bhushan@freescale.com>
+	 <1379575763-2091-2-git-send-email-Bharat.Bhushan@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20131008165920.GG21189-MRww78TxoiP5vMa5CHWGZ34zcgK1vI+I0E9HWUfgJXw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1379575763-2091-2-git-send-email-Bharat.Bhushan@freescale.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Bharat Bhushan <r65777@freescale.com>
+Cc: alex.williamson@redhat.com, joro@8bytes.org, benh@kernel.crashing.org, galak@kernel.crashing.org, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org, agraf@suse.de, iommu@lists.linux-foundation.org, Bharat Bhushan <Bharat.Bhushan@freescale.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 10/08/2013 11:59 AM, Will Deacon wrote:
-> On Tue, Oct 08, 2013 at 05:40:21PM +0100, Andreas Herrmann wrote:
->> On Tue, Oct 08, 2013 at 05:20:08PM +0200, Andreas Herrmann wrote:
->> To be more specific: For SATA I'd need to specify 10 StreamIds. This
->> would
->>
->> (1) exceed MAX_MASTER_STREAMIDS (currently it's 8)
->>
->>    (Can easily be fixed by adapting a macro.)
->>
->> (2) exceed number of available SMR groups to map the IDs to a context.
->>
->>    This can be solved by caclulating an appropriate mask for the
->>    mapping (but with a non-power-of-two number of StreamIds that's
->>    already non-trivial -- for the trivial case I have some code to do
->>    this).
->>
->> Both problems are avoided by introducing this patch -- use
->> smr_mask_bits to map all StreamIDs to the same context and be done
->> with it. (for the "single-master-SMMU" case)
-> 
-> The problem is, this information *really* doesn't belong in the device tree,
-> but I think computing the general case dynamically is incredibly difficult
-> too (and requires *complete* topological information in the device-tree, so
-> you don't accidentally pull in other devices).
+On Thu, 2013-09-19 at 12:59 +0530, Bharat Bhushan wrote:
+> @@ -376,6 +405,7 @@ static int fsl_of_msi_probe(struct platform_device *dev)
+>  	int len;
+>  	u32 offset;
+>  	static const u32 all_avail[] = { 0, NR_MSI_IRQS };
+> +	static int bank_index;
+>  
+>  	match = of_match_device(fsl_of_msi_ids, &dev->dev);
+>  	if (!match)
+> @@ -419,8 +449,8 @@ static int fsl_of_msi_probe(struct platform_device *dev)
+>  				dev->dev.of_node->full_name);
+>  			goto error_out;
+>  		}
+> -		msi->msiir_offset =
+> -			features->msiir_offset + (res.start & 0xfffff);
+> +		msi->msiir = res.start + features->msiir_offset;
+> +		printk("msi->msiir = %llx\n", msi->msiir);
 
-Couldn't this information be implied from the DT when you have no
-streamID and only a single mmu-master?
+dev_dbg or remove
 
-Rob
+>  	}
+>  
+>  	msi->feature = features->fsl_pic_ip;
+> @@ -470,6 +500,7 @@ static int fsl_of_msi_probe(struct platform_device *dev)
+>  		}
+>  	}
+>  
+> +	msi->bank_index = bank_index++;
 
->> PS: I think (2) needs to be addressed sooner or later. We should use
->>     only as many SMR groups as really required -- ie. use masking of
->>     StreamIds if possible. If more than one StreamID is given for a
->>     master it might be possible to calculate a mask for a
->>     (power-of-two) number of adjacent StreamIds and then use only one
->>     SMR group to map these IDs to a context. (But I think that should
->>     only be done if multiple masters are attached to an SMMU.)
-> 
-> I spent a few weeks looking at doing minimal SMR grouping whilst writing the
-> driver and ended up convincing myself that it's an NP-complete problem (I
-> tried a reduction involving Hamiltonian Cycles). Of course, if you have some
-> ideas here, we can try to implement something for a constrained instance of
-> the problem.
-> 
-> For example, a simple solution is to xor all the IDs together and check no
-> other IDs fall under the resulting mask. However, this again relies on the
-> DT telling us complete topological information as well as the IDs being
-> organised in a particular way.
-> 
-> Will
-> 
+What if multiple MSIs are boing probed in parallel?  bank_index is not
+atomic.
+
+> diff --git a/arch/powerpc/sysdev/fsl_msi.h b/arch/powerpc/sysdev/fsl_msi.h
+> index 8225f86..6bd5cfc 100644
+> --- a/arch/powerpc/sysdev/fsl_msi.h
+> +++ b/arch/powerpc/sysdev/fsl_msi.h
+> @@ -29,12 +29,19 @@ struct fsl_msi {
+>  	struct irq_domain *irqhost;
+>  
+>  	unsigned long cascade_irq;
+> -
+> -	u32 msiir_offset; /* Offset of MSIIR, relative to start of CCSR */
+> +	dma_addr_t msiir; /* MSIIR Address in CCSR */
+
+Are you sure dma_addr_t is right here, versus phys_addr_t?  It implies
+that it's the output of the DMA API, but I don't think the DMA API is
+used in the MSI driver.  Perhaps it should be, but we still want the raw
+physical address to pass on to VFIO.
+
+>  	void __iomem *msi_regs;
+>  	u32 feature;
+>  	int msi_virqs[NR_MSI_REG];
+>  
+> +	/*
+> +	 * During probe each bank is assigned a index number.
+> +	 * index number ranges from 0 to 2^32.
+> +	 * Example  MSI bank 1 = 0
+> +	 * MSI bank 2 = 1, and so on.
+> +	 */
+> +	int bank_index;
+
+2^32 doesn't fit in "int" (nor does 2^32 - 1).
+
+Just say that indices start at 0.
+
+-Scott
