@@ -1,63 +1,92 @@
-From: Bhushan Bharat-R65777 <R65777@freescale.com>
-Subject: RE: [PATCH 2/7] iommu: add api to get iommu_domain of a device
-Date: Tue, 8 Oct 2013 03:42:45 +0000
-Message-ID: <6A3DF150A5B70D4F9B66A25E3F7C888D071950B2@039-SN2MPN1-011.039d.mgd.msft.net>
-References: <1379575763-2091-1-git-send-email-Bharat.Bhushan@freescale.com>
-	 <1379575763-2091-3-git-send-email-Bharat.Bhushan@freescale.com>
-	 <1380127533.3030.319.camel@ul30vt.home>
-	 <6A3DF150A5B70D4F9B66A25E3F7C888D0718FD1C@039-SN2MPN1-011.039d.mgd.msft.net>
-	 <1380901507.2673.204.camel@ul30vt.home>
-	 <6A3DF150A5B70D4F9B66A25E3F7C888D07190F35@039-SN2MPN1-011.039d.mgd.msft.net>
-	 <1380906772.25705.19.camel@ul30vt.home>
-	 <6A3DF150A5B70D4F9B66A25E3F7C888D07191143@039-SN2MPN1-011.039d.mgd.msft.net>
-	 <1380910322.25705.56.camel@ul30vt.home>
-	 <6A3DF150A5B70D4F9B66A25E3F7C888D0719385B@039-SN2MPN1-011.039d.mgd.msft.net>
- <1381201980.6330.4.camel@ul30vt.home>
+From: Cho KyongHo <pullip.cho@samsung.com>
+Subject: Re: [PATCH v8 06/12] ARM: dts: Add description of System MMU of Exynos
+ SoCs
+Date: Tue, 08 Oct 2013 13:38:53 +0900
+Message-ID: <20131008133853.8b8277b70d69e05edd011945@samsung.com>
+References: <003c01ce89f3$3abc4bc0$b034e340$@samsung.com>
+ <CAL_JsqLny8sOgn9y0Tm9-Vq_3YPdtqkr5nTJ67Y0Zx1hDmduNQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1381201980.6330.4.camel@ul30vt.home>
-Content-Language: en-US
-Sender: linux-pci-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: "joro@8bytes.org" <joro@8bytes.org>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, "galak@kernel.crashing.org" <galak@kernel.crashing.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "agraf@suse.de" <agraf@suse.de>, Wood Scott-B07421 <B07421@freescale.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <CAL_JsqLny8sOgn9y0Tm9-Vq_3YPdtqkr5nTJ67Y0Zx1hDmduNQ@mail.gmail.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Rob Herring <robherring2@gmail.com>
+Cc: Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux Kernel <linux-kernel@vger.kernel.org>, Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>, Kukjin Kim <kgene.kim@samsung.com>, Hyunwoong Kim <khw0178.kim@samsung.com>, Prathyush <prathyush.k@samsung.com>, Grant Grundler <grundler@chromium.org>, Joerg Roedel <joro@8bytes.org>, Keyyoung Park <keyyoung.park@samsung.com>, Subash Patel <supash.ramaswamy@linaro.org>, Sachin Kamat <sachin.kamat@linaro.org>, Antonios Motakis <a.motakis@virtualopensystems.com>, kvmarm@lists.cs.columbia.edu, Rahul Sharma <rahul.sharma@samsung.com>, Will Deacon <will.deacon@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-PiA+ID4gRG8geW91IHJlYWxseSB3YW50IG1vZHVsZSBkZXBlbmRlbmNpZXMgYmV0d2VlbiB2Zmlv
-IGFuZCB5b3VyIGNvcmUNCj4gPiA+IGtlcm5lbCBNU0kgc2V0dXA/ICBMb29rIGF0IHRoZSB2Zmlv
-IGV4dGVybmFsIHVzZXIgaW50ZXJmYWNlIHRoYXQgd2UndmUNCj4gYWxyZWFkeSBkZWZpbmVkLg0K
-PiA+ID4gVGhhdCBhbGxvd3Mgb3RoZXIgY29tcG9uZW50cyBvZiB0aGUga2VybmVsIHRvIGdldCBh
-IHByb3BlciByZWZlcmVuY2UNCj4gPiA+IHRvIGEgdmZpbyBncm91cC4gIEZyb20gdGhlcmUgeW91
-IGNhbiB3b3JrIG91dCBob3cgdG8gZ2V0IHdoYXQgeW91DQo+ID4gPiB3YW50LiAgQW5vdGhlciBh
-bHRlcm5hdGl2ZSBpcyB0aGF0IHZmaW8gY291bGQgcmVnaXN0ZXIgYW4gTVNJIHRvDQo+ID4gPiBJ
-T1ZBIG1hcHBpbmcgd2l0aCBhcmNoaXRlY3R1cmUgY29kZSB3aGVuIHRoZSBtYXBwaW5nIGlzIGNy
-ZWF0ZWQuDQo+ID4gPiBUaGUgTVNJIHNldHVwIHBhdGggY291bGQgdGhlbiBkbyBhIGxvb2t1cCBp
-biBhcmNoaXRlY3R1cmUgY29kZSBmb3INCj4gPiA+IHRoZSBtYXBwaW5nLiAgWW91IGNvdWxkIGV2
-ZW4gc3RvcmUgdGhlIE1TSSB0byBJT1ZBIG1hcHBpbmcgaW4gVkZJTw0KPiA+ID4gYW5kIGNyZWF0
-ZSBhbiBpbnRlcmZhY2Ugd2hlcmUgU0VUX0lSUSBwYXNzZXMgdGhhdCBtYXBwaW5nIGludG8gc2V0
-dXAgY29kZS4NCj4gPg0KPiA+IE9rLCBXaGF0IEkgd2FudCBpcyB0byBnZXQgSU9WQSBhc3NvY2lh
-dGVkIHdpdGggYSBwaHlzaWNhbCBhZGRyZXNzDQo+ID4gKHBoeXNpY2FsIGFkZHJlc3Mgb2YgTVNJ
-LWJhbmspLg0KPiA+IEFuZCBjdXJyZW50bHkgSSBkbyBub3Qgc2VlIGEgd2F5IHRvIGtub3cgSU9W
-QSBvZiBhIHBoeXNpY2FsIGFkZHJlc3MNCj4gPiBhbmQgZG9pbmcgYWxsIHRoaXMgZG9tYWluIGdl
-dCBhbmQgdGhlbiBzZWFyY2ggdGhyb3VnaCBhbGwgb2YNCj4gPiBpb21tdS13aW5kb3dzIG9mIHRo
-YXQgZG9tYWluLg0KPiA+DQo+ID4gV2hhdCBpZiB3ZSBhZGQgYW4gaW9tbXUtQVBJIHdoaWNoIGNh
-biByZXR1cm4gdGhlIElPVkEgbWFwcGluZyBvZiBhDQo+ID4gcGh5c2ljYWwgYWRkcmVzcy4gQ3Vy
-cmVudCB1c2UgY2FzZSBpcyBzZXR0aW5nIHVwIE1TSSdzIGZvciBhcGVydHVyZQ0KPiA+IHR5cGUg
-b2YgSU9NTVUgYWxzbyBnZXR0aW5nIGEgcGh5c190b19pb3ZhKCkgbWFwcGluZyBpcyBpbmRlcGVu
-ZGVudCBvZg0KPiA+IFZGSU8sIHlvdXIgdGhvdWdodD8NCj4gDQo+IEEgcGh5c2ljYWwgYWRkcmVz
-cyBjYW4gYmUgbWFwcGVkIHRvIG11bHRpcGxlIElPVkFzLCBzbyB0aGUgaW50ZXJmYWNlIHNlZW1z
-DQo+IGZsYXdlZCBieSBkZXNpZ24uICBJdCBhbHNvIGhhcyB0aGUgc2FtZSBwcm9ibGVtIGFzIGFi
-b3ZlLCBpdCdzIGEgYmFja2Rvb3IgdGhhdA0KPiBjYW4gYmUgY2FsbGVkIGFzeW5jaHJvbm91cyB0
-byB0aGUgb3duZXIgb2YgdGhlIGRvbWFpbiwgc28gd2hhdCByZWFzb24gaXMgdGhlcmUNCj4gdG8g
-YmVsaWV2ZSB0aGUgcmVzdWx0PyAgSXQganVzdCByZXBsYWNlcyBhbiBpb21tdV9kb21haW4gcG9p
-bnRlciB3aXRoIGFuIElPVkEuDQo+IFZGSU8ga25vd3MgdGhpcyBtYXBwaW5nLCBzbyB3aHkgYXJl
-IHdlIHRyeWluZyB0byBnbyBiZWhpbmQgaXRzIGJhY2sgYW5kIGFzayB0aGUNCj4gSU9NTVU/DQpJ
-T01NVSBpcyB0aGUgZmluYWwgcGxhY2Ugd2hlcmUgbWFwcGluZyBpcyBjcmVhdGVkLCBzbyBtYXkg
-YmUgdG9kYXkgaXQgaXMgY2FsbGluZyBvbiBiZWhhbGYgb2YgVkZJTywgdG9tb3Jyb3cgaXQgY2Fu
-IGJlIGZvciBub3JtYWwgTGludXggb3Igc29tZSBvdGhlciBpbnRlcmZhY2UuIEJ1dCBJIGFtIGZp
-bmUgdG8gZGlyZWN0bHkgdGFsayB0byB2ZmlvIGFuZCB3aWxsIG5vdCB0cnkgdG8gc29sdmUgYSBw
-cm9ibGVtIHdoaWNoIGRvZXMgbm90IGV4aXN0cyB0b2RheS4NCg0KTVNJIHN1YnN5c3RlbSBrbm93
-cyBwZGV2IChwY2kgZGV2aWNlKSBhbmQgcGh5c2ljYWwgYWRkcmVzcywgdGhlbiB3aGF0IGludGVy
-ZmFjZSBpdCB3aWxsIHVzZSB0byBnZXQgdGhlIElPVkEgZnJvbSBWRklPPw0KDQpUaGFua3MNCi1C
-aGFyYXQNCg0KPiAgVGhhbmtzLA0KPiANCj4gQWxleA0KPiANCg0K
+On Mon, 07 Oct 2013 08:44:54 -0500, Rob Herring wrote:
+> On Fri, Jul 26, 2013 at 6:28 AM, Cho KyongHo <pullip.cho@samsung.com> wrote:
+> > Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
+> > ---
+> >  .../bindings/iommu/samsung,exynos4210-sysmmu.txt   |  103 +++++++
+> >  arch/arm/boot/dts/exynos4.dtsi                     |  122 ++++++++
+> >  arch/arm/boot/dts/exynos4210.dtsi                  |   25 ++
+> >  arch/arm/boot/dts/exynos4x12.dtsi                  |   76 +++++
+> >  arch/arm/boot/dts/exynos5250.dtsi                  |  291 ++++++++++++++++++++
+> >  5 files changed, 617 insertions(+), 0 deletions(-)
+> >  create mode 100644 Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
+> >
+> > diff --git a/Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
+> > b/Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
+> > new file mode 100644
+> > index 0000000..92f0a33
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/iommu/samsung,exynos4210-sysmmu.txt
+> > @@ -0,0 +1,103 @@
+> > +Samsung Exynos4210 IOMMU H/W, System MMU (System Memory Management Unit)
+> > +
+> > +Samsung's Exynos architecture contains System MMU that enables scattered
+> > +physical memory chunks visible as a contiguous region to DMA-capable peripheral
+> > +devices like MFC, FIMC, FIMD, GScaler, FIMC-IS and so forth.
+> > +
+> > +System MMU is a sort of IOMMU and support identical translation table format to
+> > +ARMv7 translation tables with minimum set of page properties including access
+> > +permissions, shareability and security protection. In addition, System MMU has
+> > +another capabilities like L2 TLB or block-fetch buffers to minimize translation
+> > +latency.
+> > +
+> > +A System MMU is dedicated to a single master peripheral device.  Thus, it is
+> > +important to specify the correct System MMU in the device node of its master
+> > +device. Whereas a System MMU is dedicated to a master device, the master device
+> > +may have more than one System MMU.
+> > +
+> > +Required properties:
+> > +- compatible: Should be "samsung,exynos4210-sysmmu"
+> > +- reg: A tuple of base address and size of System MMU registers.
+> > +- interrupt-parent: The phandle of the interrupt controller of System MMU
+> > +- interrupts: A tuple of numbers that indicates the interrupt source.
+> > +- clock-names: Should be "sysmmu" if the System MMU is needed to gate its clock.
+> > +               Please refer to the following documents:
+> > +              Documentation/devicetree/bindings/clock/clock-bindings.txt
+> > +              Documentation/devicetree/bindings/clock/exynos4-clock.txt
+> > +              Documentation/devicetree/bindings/clock/exynos5250-clock.txt
+> > +              Optional "master" if the clock to the System MMU is gated by
+> > +              another gate clock other than "sysmmu". The System MMU driver
+> > +              sets "master" the parent of "sysmmu".
+> > +              Exynos4 SoCs, there needs no "master" clocks.
+> > +              Exynos5 SoCs, some System MMUs must have "master" clocks.
+> > +- clocks: Required if the System MMU is needed to gate its clock.
+> > +         Please refer to the documents listed above.
+> > +- samsung,power-domain: Required if the System MMU is needed to gate its power.
+> > +         Please refer to the following document:
+> > +         Documentation/devicetree/bindings/arm/exynos/power_domain.txt
+> > +
+> > +Required properties for the master peripheral devices:
+> > +- iommu: phandles to the System MMUs of the device
+> 
+> You have not addressed my comments from the last version. We do not
+> need 2 (or more) different ways to describe the connection between
+> masters and iommu's. Use mmu-masters property here to describe the
+> connection.
+> 
+
+Sorry, I forgot to reply.
+I just thought the meaning of your comment that it should be align with ARM System MMU.
+I now understand and it should be changed to mmu-masters property
+because it is now in the kernel.
+
+Thank you.
+
+
+> Rob
