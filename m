@@ -1,7 +1,7 @@
 From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH 1/7] iommu/arm-smmu: Introduce driver option handling
-Date: Thu, 10 Oct 2013 00:38:00 +0200
-Message-ID: <1381358286-27065-2-git-send-email-andreas.herrmann@calxeda.com>
+Subject: [PATCH 2/7] iommu/arm-smmu: Introduce bus notifier block
+Date: Thu, 10 Oct 2013 00:38:01 +0200
+Message-ID: <1381358286-27065-3-git-send-email-andreas.herrmann@calxeda.com>
 References: <1381358286-27065-1-git-send-email-andreas.herrmann@calxeda.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,83 +21,109 @@ To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Introduce handling of driver options. Options are set based on DT
-information when probing an SMMU device. The first option introduced
-is "arm,smmu-isolate-devices". (It will be used in the bus notifier
-block.)
+At the moment just handle BUS_NOTIFY_BIND_DRIVER to conditionally
+isolate all master devices for an SMMU.
+
+Depending on DT information each device is put into its own protection
+domain (if possible).  For configuration with one or just a few
+masters per SMMU that is easy to achieve.
+
+In case of many devices per SMMU (e.g. MMU-500 with it's distributed
+translation support) isolation of each device might not be possible --
+depending on number of available SMR groups and/or context banks.
+
+Default is that device isolation is contolled per SMMU with SMMU node
+property "arm,smmu-isolate-devices" in a DT. If this property is set
+for an SMMU node, device isolation is performed.
+
+W/o device isolation the driver detects SMMUs but no translation is
+configured (transactions just bypass translation process).
+
+Note that for device isolation dma_base and size are fixed as 0 and
+SZ_128M at the moment.
 
 Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c |   36 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
+ drivers/iommu/arm-smmu.c |   53 ++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 53 insertions(+)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index b632bcd..478c8ad 100644
+index 478c8ad..87239e8 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -47,6 +47,9 @@
+@@ -46,6 +46,7 @@
+ #include <linux/amba/bus.h>
  
  #include <asm/pgalloc.h>
++#include <asm/dma-iommu.h>
  
-+/* Driver options */
-+#define ARM_SMMU_OPT_ISOLATE_DEVICES		(1 << 0)
-+
- /* Maximum number of stream IDs assigned to a single device */
- #define MAX_MASTER_STREAMIDS		8
+ /* Driver options */
+ #define ARM_SMMU_OPT_ISOLATE_DEVICES		(1 << 0)
+@@ -1983,6 +1984,56 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+ 	return 0;
+ }
  
-@@ -348,6 +351,7 @@ struct arm_smmu_device {
- #define ARM_SMMU_FEAT_TRANS_S2		(1 << 3)
- #define ARM_SMMU_FEAT_TRANS_NESTED	(1 << 4)
- 	u32				features;
-+	u32				options;
- 	int				version;
- 
- 	u32				num_context_banks;
-@@ -398,6 +402,36 @@ struct arm_smmu_domain {
- static DEFINE_SPINLOCK(arm_smmu_devices_lock);
- static LIST_HEAD(arm_smmu_devices);
- 
-+struct arm_smmu_option_prop {
-+	u32 opt;
-+	const char *prop;
-+};
-+
-+static struct arm_smmu_option_prop arm_smmu_options [] = {
-+	{ ARM_SMMU_OPT_ISOLATE_DEVICES, "arm,smmu-isolate-devices" },
-+	{ 0, NULL},
-+};
-+
-+static void check_driver_options(struct arm_smmu_device *smmu)
++static int arm_smmu_device_notifier(struct notifier_block *nb,
++				unsigned long action, void *data)
 +{
-+	int i = 0;
-+	do {
-+		if (of_property_read_bool(smmu->dev->of_node,
-+						arm_smmu_options[i].prop))
-+			smmu->options |= arm_smmu_options[i].opt;
-+	} while (arm_smmu_options[++i].opt);
++	struct device *dev = data;
++	struct dma_iommu_mapping *mapping;
++	struct arm_smmu_device *smmu;
++	void __iomem *gr0_base;
++	u32 cr0;
++	int ret;
++
++	switch (action) {
++	case BUS_NOTIFY_BIND_DRIVER:
++
++		arm_smmu_add_device(dev);
++		smmu = dev->archdata.iommu;
++		if (!smmu || !(smmu->options & ARM_SMMU_OPT_ISOLATE_DEVICES))
++			break;
++
++		mapping = arm_iommu_create_mapping(&platform_bus_type,
++						0, SZ_128M, 0);
++		if (IS_ERR(mapping)) {
++			ret = PTR_ERR(mapping);
++			dev_info(dev, "arm_iommu_create_mapping failed\n");
++			break;
++		}
++
++		ret = arm_iommu_attach_device(dev, mapping);
++		if (ret < 0) {
++			dev_info(dev, "arm_iommu_attach_device failed\n");
++			arm_iommu_release_mapping(mapping);
++		}
++
++		gr0_base = ARM_SMMU_GR0_NS(smmu);
++		cr0 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sCR0);
++		cr0 |= sCR0_USFCFG;
++		writel(cr0, gr0_base + ARM_SMMU_GR0_sCR0);
++
++		break;
++
++	default:
++		break;
++	}
++
++	return 0;
 +}
 +
-+static const char *get_driver_option_property(u32 opt)
-+{
-+	int i = 0;
-+	do {
-+		if (arm_smmu_options[i].opt == opt)
-+			return arm_smmu_options[i].prop;
-+	} while (arm_smmu_options[++i].opt);
-+	return NULL;
-+}
++static struct notifier_block device_nb = {
++	.notifier_call = arm_smmu_device_notifier,
++};
 +
- static struct arm_smmu_master *find_smmu_master(struct arm_smmu_device *smmu,
- 						struct device_node *dev_node)
- {
-@@ -1791,6 +1825,8 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 	}
- 	smmu->dev = dev;
+ #ifdef CONFIG_OF
+ static struct of_device_id arm_smmu_of_match[] = {
+ 	{ .compatible = "arm,smmu-v1", },
+@@ -2019,6 +2070,8 @@ static int __init arm_smmu_init(void)
+ 	if (!iommu_present(&amba_bustype))
+ 		bus_set_iommu(&amba_bustype, &arm_smmu_ops);
  
-+	check_driver_options(smmu);
++	bus_register_notifier(&platform_bus_type, &device_nb);
 +
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (!res) {
- 		dev_err(dev, "missing base address/size\n");
+ 	return 0;
+ }
+ 
 -- 
 1.7.9.5
