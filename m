@@ -1,7 +1,7 @@
 From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH 5/7] ARM: dts: Add nodes for SMMUs on Calxeda ECX-2000
-Date: Thu, 10 Oct 2013 00:38:04 +0200
-Message-ID: <1381358286-27065-6-git-send-email-andreas.herrmann@calxeda.com>
+Subject: [PATCH 7/7] iommu/arm-smmu: Introduce automatic stream-id-masking
+Date: Thu, 10 Oct 2013 00:38:06 +0200
+Message-ID: <1381358286-27065-8-git-send-email-andreas.herrmann@calxeda.com>
 References: <1381358286-27065-1-git-send-email-andreas.herrmann@calxeda.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,120 +21,170 @@ To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+Try to determine a mask that can be used for all StreamIDs of a master
+device. This allows to use just one SMR group instead of
+number-of-streamids SMR groups for a master device.
+
 Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 ---
- arch/arm/boot/dts/ecx-2000.dts    |   45 +++++++++++++++++++++++++++++++++++--
- arch/arm/boot/dts/ecx-common.dtsi |    9 +++++---
- 2 files changed, 49 insertions(+), 5 deletions(-)
+ drivers/iommu/arm-smmu.c |   79 ++++++++++++++++++++++++++++++++++++----------
+ 1 file changed, 63 insertions(+), 16 deletions(-)
 
-diff --git a/arch/arm/boot/dts/ecx-2000.dts b/arch/arm/boot/dts/ecx-2000.dts
-index 139b40c..270f052 100644
---- a/arch/arm/boot/dts/ecx-2000.dts
-+++ b/arch/arm/boot/dts/ecx-2000.dts
-@@ -76,10 +76,11 @@
- 	};
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 91316a8..4e8ceab 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -28,6 +28,7 @@
+  *	- Context fault reporting
+  */
  
- 	soc {
--		ranges = <0x00000000 0x00000000 0x00000000 0xffffffff>;
-+		ranges = <0x0 0x0 0x0 0xffffffff>;
++#define DEBUG
+ #define pr_fmt(fmt) "arm-smmu: " fmt
  
- 		timer {
--			compatible = "arm,cortex-a15-timer", "arm,armv7-timer"; 			interrupts = <1 13 0xf08>,
-+			compatible = "arm,cortex-a15-timer", "arm,armv7-timer";
-+			interrupts = <1 13 0xf08>,
- 				<1 14 0xf08>,
- 				<1 11 0xf08>,
- 				<1 10 0xf08>;
-@@ -103,6 +104,46 @@
- 			interrupts = <0 76 4  0 75 4  0 74 4  0 73 4>;
- 		};
- 	};
+ #include <linux/delay.h>
+@@ -341,6 +342,9 @@ struct arm_smmu_master {
+ 	struct rb_node			node;
+ 	int				num_streamids;
+ 	u16				streamids[MAX_MASTER_STREAMIDS];
++	int				num_smrs;
++	u16				smr_mask;
++	u16				smr_id;
+ 
+ 	/*
+ 	 * We only need to allocate these on the root SMMU, as we
+@@ -530,14 +534,11 @@ static int register_smmu_master(struct arm_smmu_device *smmu,
+ 					ARM_SMMU_OPT_MASK_STREAM_IDS));
+ 			return -EINVAL;
+ 		}
+-		/* set fixed streamid (0) that will be used for masking */
+-		master->num_streamids = 1;
+-		master->streamids[0] = 0;
+-	} else {
+-		for (i = 0; i < master->num_streamids; ++i)
+-			master->streamids[i] = masterspec->args[i];
+ 	}
+ 
++	for (i = 0; i < master->num_streamids; ++i)
++		master->streamids[i] = masterspec->args[i];
 +
-+	soc@920000000 {
-+		ranges = <0x9 0x20000000 0x9 0x20000000 0x290000>;
-+		#address-cells = <2>;
-+		#size-cells = <1>;
-+		compatible = "simple-bus";
-+		interrupt-parent = <&intc>;
+ 	return insert_smmu_master(smmu, master);
+ }
+ 
+@@ -1049,6 +1050,41 @@ static void arm_smmu_domain_destroy(struct iommu_domain *domain)
+ 	kfree(smmu_domain);
+ }
+ 
++/*
++ * no duplicates streamids please
++ */
++static void determine_smr_mapping(struct arm_smmu_device *smmu,
++				struct arm_smmu_master *master)
++{
++	int nr_sid;
++	u16 i, v1, v2, const_mask;
 +
-+		smmu_mac0: smmu@920000000 {
-+			compatible = "arm,mmu-400";
-+			reg = <0x9 0x20000000 0x10000>;
-+			#global-interrupts = <1>;
-+			interrupts = <0 106 4 0 106 4>;
-+			mmu-masters = <&mac0 0 1>;
-+			arm,smmu-secure-config-access;
-+			arm,smmu-isolate-devices;
-+		};
++	if (smmu->options & ARM_SMMU_OPT_MASK_STREAM_IDS) {
++		master->smr_mask = smmu->smr_mask_bits;
++		master->smr_id = 0;
++		return;
++	}
 +
-+		smmu_mac1: smmu@920080000 {
-+			compatible = "arm,mmu-400";
-+			reg = <0x9 0x20080000 0x10000>;
-+			#global-interrupts = <1>;
-+			interrupts = <0 108 4 0 108 4>;
-+			mmu-masters = <&mac1 0 1>;
-+			arm,smmu-secure-config-access;
-+			arm,smmu-isolate-devices;
-+		};
++	nr_sid = master->num_streamids;
++	if (!is_power_of_2(nr_sid))
++		return;
 +
-+		smmu_sata: smmu@920180000 {
-+			compatible = "arm,mmu-400";
-+			reg = <0x00000009 0x20180000 0x10000>;
-+			mmu-masters = <&sata>;
-+			#global-interrupts = <1>;
-+			interrupts = <0 114 4 0 114 4>;
-+			arm,smmu-secure-config-access;
-+			arm,smmu-isolate-devices;
-+			arm,smmu-mask-stream-ids;
-+		};
-+	};
++	v1 = 0;
++	v2 = -1;
++	for (i = 0; i < nr_sid; i++) {
++		v1 |= master->streamids[i];	/* for const 0 bits */
++		v2 &= ~(master->streamids[i]);	/* const 1 bits */
++	}
++	const_mask = (~v1) | v2;	/* const bits (either 0 or 1) */
 +
- };
++	v1 = hweight16(~const_mask);
++	if ((1 << v1) == nr_sid) {
++		/* if smr_mask is set, only 1 SMR group is used smr[0] = 0 */
++		master->smr_mask = ~const_mask;
++		master->smr_id = v1 & const_mask;
++	}
++}
++
+ static int arm_smmu_master_configure_smrs(struct arm_smmu_device *smmu,
+ 					  struct arm_smmu_master *master)
+ {
+@@ -1062,15 +1098,22 @@ static int arm_smmu_master_configure_smrs(struct arm_smmu_device *smmu,
+ 	if (master->smrs)
+ 		return -EEXIST;
  
- /include/ "ecx-common.dtsi"
-diff --git a/arch/arm/boot/dts/ecx-common.dtsi b/arch/arm/boot/dts/ecx-common.dtsi
-index e8559b7..50e401e 100644
---- a/arch/arm/boot/dts/ecx-common.dtsi
-+++ b/arch/arm/boot/dts/ecx-common.dtsi
-@@ -25,7 +25,7 @@
- 		compatible = "simple-bus";
- 		interrupt-parent = <&intc>;
+-	smrs = kmalloc(sizeof(*smrs) * master->num_streamids, GFP_KERNEL);
++	determine_smr_mapping(smmu, master);
++
++	if (master->smr_mask)
++		master->num_smrs = 1;
++	else
++		master->num_smrs = master->num_streamids;
++
++	smrs = kmalloc(sizeof(*smrs) * master->num_smrs, GFP_KERNEL);
+ 	if (!smrs) {
+ 		dev_err(smmu->dev, "failed to allocate %d SMRs for master %s\n",
+-			master->num_streamids, master->of_node->name);
++			master->num_smrs, master->of_node->name);
+ 		return -ENOMEM;
+ 	}
  
--		sata@ffe08000 {
-+		sata: sata@ffe08000 {
- 			compatible = "calxeda,hb-ahci";
- 			reg = <0xffe08000 0x10000>;
- 			interrupts = <0 83 4>;
-@@ -35,6 +35,7 @@
- 					     &combophy0 3>;
- 			calxeda,sgpio-gpio =<&gpioh 5 1 &gpioh 6 1 &gpioh 7 1>;
- 			calxeda,led-order = <4 0 1 2 3>;
-+			#stream-id-cells = <0>;
- 		};
+ 	/* Allocate the SMRs on the root SMMU */
+-	for (i = 0; i < master->num_streamids; ++i) {
++	for (i = 0; i < master->num_smrs; ++i) {
+ 		int idx = __arm_smmu_alloc_bitmap(smmu->smr_map, 0,
+ 						  smmu->num_mapping_groups);
+ 		if (IS_ERR_VALUE(idx)) {
+@@ -1079,16 +1122,18 @@ static int arm_smmu_master_configure_smrs(struct arm_smmu_device *smmu,
+ 		}
  
- 		sdhci@ffe0e000 {
-@@ -208,18 +209,20 @@
- 			clock-names = "apb_pclk";
- 		};
+ 		smrs[i].idx = idx;
+-		smrs[i].id = master->streamids[i];
  
--		ethernet@fff50000 {
-+		mac0: ethernet@fff50000 {
- 			compatible = "calxeda,hb-xgmac";
- 			reg = <0xfff50000 0x1000>;
- 			interrupts = <0 77 4  0 78 4  0 79 4>;
- 			dma-coherent;
-+			#stream-id-cells = <2>;
- 		};
+-		if (smmu->options & ARM_SMMU_OPT_MASK_STREAM_IDS)
+-			smrs[i].mask = smmu->smr_mask_bits;
+-		else
++		if (master->smr_mask) {
++			smrs[i].mask = master->smr_mask;
++			smrs[i].id = master->smr_id;
++		} else {
+ 			smrs[i].mask = 0;
++			smrs[i].id = master->streamids[i];
++		}
+ 	}
  
--		ethernet@fff51000 {
-+		mac1: ethernet@fff51000 {
- 			compatible = "calxeda,hb-xgmac";
- 			reg = <0xfff51000 0x1000>;
- 			interrupts = <0 80 4  0 81 4  0 82 4>;
- 			dma-coherent;
-+			#stream-id-cells = <2>;
- 		};
+ 	/* It worked! Now, poke the actual hardware */
+-	for (i = 0; i < master->num_streamids; ++i) {
++	for (i = 0; i < master->num_smrs; ++i) {
+ 		u32 reg = SMR_VALID | smrs[i].id << SMR_ID_SHIFT |
+ 			  smrs[i].mask << SMR_MASK_SHIFT;
+ 		dev_dbg(smmu->dev, "SMR%d: 0x%x\n", smrs[i].idx, reg);
+@@ -1139,7 +1184,7 @@ static void arm_smmu_bypass_stream_mapping(struct arm_smmu_device *smmu,
+ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
+ 				      struct arm_smmu_master *master)
+ {
+-	int i, ret;
++	int i, ret, num_s2crs;
+ 	struct arm_smmu_device *parent, *smmu = smmu_domain->root_cfg.smmu;
+ 	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
  
- 		combophy0: combo-phy@fff58000 {
+@@ -1163,11 +1208,13 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
+ 	}
+ 
+ 	/* Now we're at the root, time to point at our context bank */
+-	for (i = 0; i < master->num_streamids; ++i) {
++	num_s2crs = master->num_smrs ? master->num_smrs : master->num_streamids;
++	for (i = 0; i < num_s2crs; ++i) {
+ 		u32 idx, s2cr;
+ 		idx = master->smrs ? master->smrs[i].idx : master->streamids[i];
+ 		s2cr = (S2CR_TYPE_TRANS << S2CR_TYPE_SHIFT) |
+ 		       (smmu_domain->root_cfg.cbndx << S2CR_CBNDX_SHIFT);
++		dev_dbg(smmu->dev, "S2CR%d: 0x%x\n", idx, s2cr);
+ 		writel_relaxed(s2cr, gr0_base + ARM_SMMU_GR0_S2CR(idx));
+ 	}
+ 
 -- 
 1.7.9.5
