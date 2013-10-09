@@ -1,51 +1,71 @@
-From: Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: Re: [PATCH 1/7] powerpc: Add interface to get msi region information
-Date: Tue, 8 Oct 2013 18:35:25 -0500
-Message-ID: <1381275325.7979.320.camel@snotra.buserror.net>
+From: Bhushan Bharat-R65777 <R65777@freescale.com>
+Subject: RE: [PATCH 1/7] powerpc: Add interface to get msi region information
+Date: Wed, 9 Oct 2013 04:47:19 +0000
+Message-ID: <6A3DF150A5B70D4F9B66A25E3F7C888D071A1526@039-SN2MPN1-011.039d.mgd.msft.net>
 References: <1379575763-2091-1-git-send-email-Bharat.Bhushan@freescale.com>
-	<1379575763-2091-2-git-send-email-Bharat.Bhushan@freescale.com>
-	<1381273037.7979.298.camel@snotra.buserror.net>
-	<CAErSpo7+7SHVcOJkHkW5cjb6pN+bqYeRdPBA=MVX0RLz=-pP6Q@mail.gmail.com>
+	 <1379575763-2091-2-git-send-email-Bharat.Bhushan@freescale.com>
+ <1381273037.7979.298.camel@snotra.buserror.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAErSpo7+7SHVcOJkHkW5cjb6pN+bqYeRdPBA=MVX0RLz=-pP6Q-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: Alexander Graf <agraf-l3A5Bk7waGM@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kumar Gala <galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Bharat Bhushan <r65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, linuxppc-dev <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1381273037.7979.298.camel@snotra.buserror.net>
+Content-Language: en-US
+Sender: linux-pci-owner@vger.kernel.org
+To: Wood Scott-B07421 <B07421@freescale.com>
+Cc: "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "joro@8bytes.org" <joro@8bytes.org>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, "galak@kernel.crashing.org" <galak@kernel.crashing.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "agraf@suse.de" <agraf@suse.de>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2013-10-08 at 17:25 -0600, Bjorn Helgaas wrote:
-> >> -     u32 msiir_offset; /* Offset of MSIIR, relative to start of CCSR */
-> >> +     dma_addr_t msiir; /* MSIIR Address in CCSR */
-> >
-> > Are you sure dma_addr_t is right here, versus phys_addr_t?  It implies
-> > that it's the output of the DMA API, but I don't think the DMA API is
-> > used in the MSI driver.  Perhaps it should be, but we still want the raw
-> > physical address to pass on to VFIO.
-> 
-> I don't know what "msiir" is used for, but if it's an address you
-> program into a PCI device, then it's a dma_addr_t even if you didn't
-> get it from the DMA API.  Maybe "bus_addr_t" would have been a more
-> suggestive name than "dma_addr_t".  That said, I have no idea how this
-> relates to VFIO.
-
-It's a bit awkward because it gets used both as something to program
-into a PCI device (and it's probably a bug that the DMA API doesn't get
-used), and also (if I understand the current plans correctly) as a
-physical address to give to VFIO to be a destination address in an IOMMU
-mapping.  So I think the value we keep here should be a phys_addr_t (it
-comes straight from the MMIO address in the device tree), which gets
-trivially turned into a dma_addr_t by the non-VFIO code path because
-there's currently no translation there.
-
--Scott
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogV29vZCBTY290dC1CMDc0
+MjENCj4gU2VudDogV2VkbmVzZGF5LCBPY3RvYmVyIDA5LCAyMDEzIDQ6MjcgQU0NCj4gVG86IEJo
+dXNoYW4gQmhhcmF0LVI2NTc3Nw0KPiBDYzogYWxleC53aWxsaWFtc29uQHJlZGhhdC5jb207IGpv
+cm9AOGJ5dGVzLm9yZzsgYmVuaEBrZXJuZWwuY3Jhc2hpbmcub3JnOw0KPiBnYWxha0BrZXJuZWwu
+Y3Jhc2hpbmcub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyBsaW51eHBwYy0NCj4g
+ZGV2QGxpc3RzLm96bGFicy5vcmc7IGxpbnV4LXBjaUB2Z2VyLmtlcm5lbC5vcmc7IGFncmFmQHN1
+c2UuZGU7DQo+IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnOyBCaHVzaGFuIEJoYXJh
+dC1SNjU3NzcNCj4gU3ViamVjdDogUmU6IFtQQVRDSCAxLzddIHBvd2VycGM6IEFkZCBpbnRlcmZh
+Y2UgdG8gZ2V0IG1zaSByZWdpb24gaW5mb3JtYXRpb24NCj4gDQo+IE9uIFRodSwgMjAxMy0wOS0x
+OSBhdCAxMjo1OSArMDUzMCwgQmhhcmF0IEJodXNoYW4gd3JvdGU6DQo+ID4gQEAgLTM3Niw2ICs0
+MDUsNyBAQCBzdGF0aWMgaW50IGZzbF9vZl9tc2lfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2Rldmlj
+ZSAqZGV2KQ0KPiA+ICAJaW50IGxlbjsNCj4gPiAgCXUzMiBvZmZzZXQ7DQo+ID4gIAlzdGF0aWMg
+Y29uc3QgdTMyIGFsbF9hdmFpbFtdID0geyAwLCBOUl9NU0lfSVJRUyB9Ow0KPiA+ICsJc3RhdGlj
+IGludCBiYW5rX2luZGV4Ow0KPiA+DQo+ID4gIAltYXRjaCA9IG9mX21hdGNoX2RldmljZShmc2xf
+b2ZfbXNpX2lkcywgJmRldi0+ZGV2KTsNCj4gPiAgCWlmICghbWF0Y2gpDQo+ID4gQEAgLTQxOSw4
+ICs0NDksOCBAQCBzdGF0aWMgaW50IGZzbF9vZl9tc2lfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2Rl
+dmljZSAqZGV2KQ0KPiA+ICAJCQkJZGV2LT5kZXYub2Zfbm9kZS0+ZnVsbF9uYW1lKTsNCj4gPiAg
+CQkJZ290byBlcnJvcl9vdXQ7DQo+ID4gIAkJfQ0KPiA+IC0JCW1zaS0+bXNpaXJfb2Zmc2V0ID0N
+Cj4gPiAtCQkJZmVhdHVyZXMtPm1zaWlyX29mZnNldCArIChyZXMuc3RhcnQgJiAweGZmZmZmKTsN
+Cj4gPiArCQltc2ktPm1zaWlyID0gcmVzLnN0YXJ0ICsgZmVhdHVyZXMtPm1zaWlyX29mZnNldDsN
+Cj4gPiArCQlwcmludGsoIm1zaS0+bXNpaXIgPSAlbGx4XG4iLCBtc2ktPm1zaWlyKTsNCj4gDQo+
+IGRldl9kYmcgb3IgcmVtb3ZlDQoNCk9vcHMsIHNvcnJ5IGl0IHdhcyBsZWZ0b3ZlciBvZiBkZWJ1
+Z2dpbmcgOigNCg0KPiANCj4gPiAgCX0NCj4gPg0KPiA+ICAJbXNpLT5mZWF0dXJlID0gZmVhdHVy
+ZXMtPmZzbF9waWNfaXA7IEBAIC00NzAsNiArNTAwLDcgQEAgc3RhdGljIGludA0KPiA+IGZzbF9v
+Zl9tc2lfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqZGV2KQ0KPiA+ICAJCX0NCj4gPiAg
+CX0NCj4gPg0KPiA+ICsJbXNpLT5iYW5rX2luZGV4ID0gYmFua19pbmRleCsrOw0KPiANCj4gV2hh
+dCBpZiBtdWx0aXBsZSBNU0lzIGFyZSBib2luZyBwcm9iZWQgaW4gcGFyYWxsZWw/DQoNCk9oaCwg
+SSBoYXZlIG5vdCB0aG91Z2h0IHRoYXQgaXQgY2FuIGJlIGNhbGxlZCBpbiBwYXJhbGxlbA0KDQo+
+ICBiYW5rX2luZGV4IGlzIG5vdCBhdG9taWMuDQoNCldpbGwgZGVjbGFyZSBiYW5rX2ludGV4IGFz
+IGF0b21pY190IGFuZCB1c2UgYXRvbWljX2luY19yZXR1cm4oJmJhbmtfaW5kZXgpDQoNCj4gDQo+
+ID4gZGlmZiAtLWdpdCBhL2FyY2gvcG93ZXJwYy9zeXNkZXYvZnNsX21zaS5oDQo+ID4gYi9hcmNo
+L3Bvd2VycGMvc3lzZGV2L2ZzbF9tc2kuaCBpbmRleCA4MjI1Zjg2Li42YmQ1Y2ZjIDEwMDY0NA0K
+PiA+IC0tLSBhL2FyY2gvcG93ZXJwYy9zeXNkZXYvZnNsX21zaS5oDQo+ID4gKysrIGIvYXJjaC9w
+b3dlcnBjL3N5c2Rldi9mc2xfbXNpLmgNCj4gPiBAQCAtMjksMTIgKzI5LDE5IEBAIHN0cnVjdCBm
+c2xfbXNpIHsNCj4gPiAgCXN0cnVjdCBpcnFfZG9tYWluICppcnFob3N0Ow0KPiA+DQo+ID4gIAl1
+bnNpZ25lZCBsb25nIGNhc2NhZGVfaXJxOw0KPiA+IC0NCj4gPiAtCXUzMiBtc2lpcl9vZmZzZXQ7
+IC8qIE9mZnNldCBvZiBNU0lJUiwgcmVsYXRpdmUgdG8gc3RhcnQgb2YgQ0NTUiAqLw0KPiA+ICsJ
+ZG1hX2FkZHJfdCBtc2lpcjsgLyogTVNJSVIgQWRkcmVzcyBpbiBDQ1NSICovDQo+IA0KPiBBcmUg
+eW91IHN1cmUgZG1hX2FkZHJfdCBpcyByaWdodCBoZXJlLCB2ZXJzdXMgcGh5c19hZGRyX3Q/ICBJ
+dCBpbXBsaWVzIHRoYXQgaXQncw0KPiB0aGUgb3V0cHV0IG9mIHRoZSBETUEgQVBJLCBidXQgSSBk
+b24ndCB0aGluayB0aGUgRE1BIEFQSSBpcyB1c2VkIGluIHRoZSBNU0kNCj4gZHJpdmVyLiAgUGVy
+aGFwcyBpdCBzaG91bGQgYmUsIGJ1dCB3ZSBzdGlsbCB3YW50IHRoZSByYXcgcGh5c2ljYWwgYWRk
+cmVzcyB0bw0KPiBwYXNzIG9uIHRvIFZGSU8uDQoNCkxvb2tpbmcgdGhyb3VnaCB0aGUgY29udmVy
+c2F0aW9uIEkgd2lsbCBtYWtlIHRoaXMgcGh5c19hZGRyX3QNCg0KPiANCj4gPiAgCXZvaWQgX19p
+b21lbSAqbXNpX3JlZ3M7DQo+ID4gIAl1MzIgZmVhdHVyZTsNCj4gPiAgCWludCBtc2lfdmlycXNb
+TlJfTVNJX1JFR107DQo+ID4NCj4gPiArCS8qDQo+ID4gKwkgKiBEdXJpbmcgcHJvYmUgZWFjaCBi
+YW5rIGlzIGFzc2lnbmVkIGEgaW5kZXggbnVtYmVyLg0KPiA+ICsJICogaW5kZXggbnVtYmVyIHJh
+bmdlcyBmcm9tIDAgdG8gMl4zMi4NCj4gPiArCSAqIEV4YW1wbGUgIE1TSSBiYW5rIDEgPSAwDQo+
+ID4gKwkgKiBNU0kgYmFuayAyID0gMSwgYW5kIHNvIG9uLg0KPiA+ICsJICovDQo+ID4gKwlpbnQg
+YmFua19pbmRleDsNCj4gDQo+IDJeMzIgZG9lc24ndCBmaXQgaW4gImludCIgKG5vciBkb2VzIDJe
+MzIgLSAxKS4NCg0KUmlnaHQgOigNCg0KPiANCj4gSnVzdCBzYXkgdGhhdCBpbmRpY2VzIHN0YXJ0
+IGF0IDAuDQoNCldpbGwgY29ycmVjdCB0aGlzDQoNClRoYW5rcw0KLUJoYXJhdA0KDQo+IA0KPiAt
+U2NvdHQNCj4gDQoNCg==
