@@ -1,91 +1,70 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v10 20/20] iommu/exynos: add devices attached to the
-	System MMU to an IOMMU group
-Date: Thu, 10 Oct 2013 14:54:29 -0600
-Message-ID: <1381438469.2796.58.camel@ul30vt.home>
-References: <20131007105844.a260f37a9a941bed894adca3@samsung.com>
+From: Sethi Varun-B16395 <B16395@freescale.com>
+Subject: RE: [PATCH 1/7] powerpc: Add interface to get msi region information
+Date: Thu, 10 Oct 2013 21:13:21 +0000
+Message-ID: <C5ECD7A89D1DC44195F34B25E172658D0A52BC9D@039-SN2MPN1-013.039d.mgd.msft.net>
+References: <1379575763-2091-1-git-send-email-Bharat.Bhushan@freescale.com>
+ <1379575763-2091-2-git-send-email-Bharat.Bhushan@freescale.com>
+ <20130924235812.GD9302@google.com>
+ <6A3DF150A5B70D4F9B66A25E3F7C888D0718FA58@039-SN2MPN1-011.039d.mgd.msft.net>
+ <CAErSpo742BOxzxRaFQn+UnsNday4_8LM6+3G6=cfp9DHecPxDg@mail.gmail.com>
+ <20131008170228.GD17455@8bytes.org>
+ <6A3DF150A5B70D4F9B66A25E3F7C888D07196054@039-SN2MPN1-011.039d.mgd.msft.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20131007105844.a260f37a9a941bed894adca3-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Linux DeviceTree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Samsung SOC <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Prathyush <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Subash Patel <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Tomasz Figa <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Rahul Sharma <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <6A3DF150A5B70D4F9B66A25E3F7C888D07196054@039-SN2MPN1-011.039d.mgd.msft.net>
+Content-Language: en-US
+Sender: linux-pci-owner@vger.kernel.org
+To: Bhushan Bharat-R65777 <R65777@freescale.com>, "joro@8bytes.org" <joro@8bytes.org>, Bjorn Helgaas <bhelgaas@google.com>
+Cc: "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, "galak@kernel.crashing.org" <galak@kernel.crashing.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "agraf@suse.de" <agraf@suse.de>, Wood Scott-B07421 <B07421@freescale.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2013-10-07 at 10:58 +0900, Cho KyongHo wrote:
-> Patch written by Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>:
-> 
-> IOMMU groups are expected by certain users of the IOMMU API,
-> e.g. VFIO. Since each device is behind its own System MMU, we
-> can allocate a new IOMMU group for each device.
-> 
-> Reviewd-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-> ---
->  drivers/iommu/exynos-iommu.c |   28 ++++++++++++++++++++++++++++
->  1 files changed, 28 insertions(+), 0 deletions(-)
-> 
-> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> index 5025338..24505a0 100644
-> --- a/drivers/iommu/exynos-iommu.c
-> +++ b/drivers/iommu/exynos-iommu.c
-> @@ -1028,6 +1028,32 @@ static phys_addr_t exynos_iommu_iova_to_phys(struct iommu_domain *domain,
->  	return phys;
->  }
->  
-> +static int exynos_iommu_add_device(struct device *dev)
-> +{
-> +	struct iommu_group *group;
-> +	int ret;
-> +
-> +	group = iommu_group_get(dev);
 
-Seems reasonable, my only nit would be whether it's really an error to
-get a group back from the above call.  If devices are always isolated
-and IOMMU groups are always singleton, it would be an error to find one
-already associated with the device.  Right?  Thanks,
 
-Alex
+> -----Original Message-----
+> From: linux-kernel-owner@vger.kernel.org [mailto:linux-kernel-
+> owner@vger.kernel.org] On Behalf Of Bhushan Bharat-R65777
+> Sent: Tuesday, October 08, 2013 10:40 PM
+> To: joro@8bytes.org; Bjorn Helgaas
+> Cc: alex.williamson@redhat.com; benh@kernel.crashing.org;
+> galak@kernel.crashing.org; linux-kernel@vger.kernel.org; linuxppc-
+> dev@lists.ozlabs.org; linux-pci@vger.kernel.org; agraf@suse.de; Wood
+> Scott-B07421; iommu@lists.linux-foundation.org
+> Subject: RE: [PATCH 1/7] powerpc: Add interface to get msi region
+> information
+> 
+> 
+> 
+> > -----Original Message-----
+> > From: joro@8bytes.org [mailto:joro@8bytes.org]
+> > Sent: Tuesday, October 08, 2013 10:32 PM
+> > To: Bjorn Helgaas
+> > Cc: Bhushan Bharat-R65777; alex.williamson@redhat.com;
+> > benh@kernel.crashing.org; galak@kernel.crashing.org;
+> > linux-kernel@vger.kernel.org; linuxppc- dev@lists.ozlabs.org;
+> > linux-pci@vger.kernel.org; agraf@suse.de; Wood Scott- B07421;
+> > iommu@lists.linux-foundation.org
+> > Subject: Re: [PATCH 1/7] powerpc: Add interface to get msi region
+> > information
+> >
+> > On Tue, Oct 08, 2013 at 10:47:49AM -0600, Bjorn Helgaas wrote:
+> > > I still have no idea what an "aperture type IOMMU" is, other than
+> > > that it is "different."
+> >
+> > An aperture based IOMMU is basically any GART-like IOMMU which can
+> > only remap a small window (the aperture) of the DMA address space. DMA
+> > outside of that window is either blocked completly or passed through
+> untranslated.
+> 
+> It is completely blocked for Freescale PAMU.
+> So for this type of iommu what we have to do is to create a MSI mapping
+> just after guest physical address, Example: guest have a 512M of memory
+> then we create window of 1G (because of power of 2 requirement), then we
+> have to FIT MSI just after 512M of guest.
 
-> +
-> +	if (!group) {
-> +		group = iommu_group_alloc();
-> +		if (IS_ERR(group)) {
-> +			dev_err(dev, "Failed to allocate IOMMU group\n");
-> +			return PTR_ERR(group);
-> +		}
-> +	}
-> +
-> +	ret = iommu_group_add_device(group, dev);
-> +	iommu_group_put(group);
-> +
-> +	return ret;
-> +}
-> +
-> +static void exynos_iommu_remove_device(struct device *dev)
-> +{
-> +	iommu_group_remove_device(dev);
-> +}
-> +
->  static struct iommu_ops exynos_iommu_ops = {
->  	.domain_init = &exynos_iommu_domain_init,
->  	.domain_destroy = &exynos_iommu_domain_destroy,
-> @@ -1036,6 +1062,8 @@ static struct iommu_ops exynos_iommu_ops = {
->  	.map = &exynos_iommu_map,
->  	.unmap = &exynos_iommu_unmap,
->  	.iova_to_phys = &exynos_iommu_iova_to_phys,
-> +	.add_device = &exynos_iommu_add_device,
-> +	.remove_device = &exynos_iommu_remove_device,
->  	.pgsize_bitmap = SECT_SIZE | LPAGE_SIZE | SPAGE_SIZE,
->  };
->  
+[Sethi Varun-B16395] PAMU (FSL IOMMU) has a concept of primary window and subwindows. Primary window corresponds to the complete guest iova address space (including MSI space), with respect to IOMMU_API this is termed as geometry . IOVA Base of subwindow is determined from the number of subwindows (configurable using iommu API). Subwindows allow for handling physically discontiguous memory. PAMU translates device iova accesses to actual physical address. MSI mapping would be addressed by a subwindow, with iova base starting at the end of the guest iova space. 
+
+VFIO code creates a PAMU  window (also defines number of subwindow) to map the guest iova space + msi space. The interface defined by this patch queries the PAMU driver to get the iova mapping for the msi region assigned to the PCIe device (assigned to the guest).
+
+-Varun
