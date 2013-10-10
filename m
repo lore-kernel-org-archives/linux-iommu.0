@@ -1,24 +1,14 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 2/7] iommu: add api to get iommu_domain of a device
-Date: Thu, 10 Oct 2013 14:41:38 -0600
-Message-ID: <1381437698.2796.53.camel@ul30vt.home>
-References: <1379575763-2091-1-git-send-email-Bharat.Bhushan@freescale.com>
-	<1379575763-2091-3-git-send-email-Bharat.Bhushan@freescale.com>
-	<1380127533.3030.319.camel@ul30vt.home>
-	<6A3DF150A5B70D4F9B66A25E3F7C888D0718FD1C@039-SN2MPN1-011.039d.mgd.msft.net>
-	<1380901507.2673.204.camel@ul30vt.home>
-	<6A3DF150A5B70D4F9B66A25E3F7C888D07190F35@039-SN2MPN1-011.039d.mgd.msft.net>
-	<1380906772.25705.19.camel@ul30vt.home>
-	<6A3DF150A5B70D4F9B66A25E3F7C888D07191143@039-SN2MPN1-011.039d.mgd.msft.net>
-	<1380910322.25705.56.camel@ul30vt.home>
-	<6A3DF150A5B70D4F9B66A25E3F7C888D0719385B@039-SN2MPN1-011.039d.mgd.msft.net>
-	<1381201980.6330.4.camel@ul30vt.home>
-	<C5ECD7A89D1DC44195F34B25E172658D0A52BAC7@039-SN2MPN1-013.039d.mgd.msft.net>
+Subject: Re: [PATCH v10 20/20] iommu/exynos: add devices attached to the
+	System MMU to an IOMMU group
+Date: Thu, 10 Oct 2013 14:54:29 -0600
+Message-ID: <1381438469.2796.58.camel@ul30vt.home>
+References: <20131007105844.a260f37a9a941bed894adca3@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <C5ECD7A89D1DC44195F34B25E172658D0A52BAC7-RL0Hj/+nBVDYdknt8GnhQq4g8xLGJsHaLnY5E4hWTkheoWH0uzbU5w@public.gmane.org>
+In-Reply-To: <20131007105844.a260f37a9a941bed894adca3-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -28,237 +18,74 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, "galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Bhushan Bharat-R65777 <R65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+To: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: Linux DeviceTree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Samsung SOC <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Prathyush <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Subash Patel <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Tomasz Figa <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Rahul Sharma <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 2013-10-10 at 20:09 +0000, Sethi Varun-B16395 wrote:
+On Mon, 2013-10-07 at 10:58 +0900, Cho KyongHo wrote:
+> Patch written by Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>:
 > 
-> > -----Original Message-----
-> > From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
-> > bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Alex Williamson
-> > Sent: Tuesday, October 08, 2013 8:43 AM
-> > To: Bhushan Bharat-R65777
-> > Cc: agraf-l3A5Bk7waGM@public.gmane.org; Wood Scott-B07421; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org; linuxppc-
-> > dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-> > Subject: Re: [PATCH 2/7] iommu: add api to get iommu_domain of a device
-> > 
-> > On Mon, 2013-10-07 at 05:46 +0000, Bhushan Bharat-R65777 wrote:
-> > >
-> > > > -----Original Message-----
-> > > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > > > Sent: Friday, October 04, 2013 11:42 PM
-> > > > To: Bhushan Bharat-R65777
-> > > > Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org;
-> > > > galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org; linux- kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > > linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux- pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > > agraf-l3A5Bk7waGM@public.gmane.org; Wood Scott-B07421; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org foundation.org
-> > > > Subject: Re: [PATCH 2/7] iommu: add api to get iommu_domain of a
-> > > > device
-> > > >
-> > > > On Fri, 2013-10-04 at 17:23 +0000, Bhushan Bharat-R65777 wrote:
-> > > > >
-> > > > > > -----Original Message-----
-> > > > > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > > > > > Sent: Friday, October 04, 2013 10:43 PM
-> > > > > > To: Bhushan Bharat-R65777
-> > > > > > Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org;
-> > > > > > galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org; linux- kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > > > > linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux- pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > > > > agraf-l3A5Bk7waGM@public.gmane.org; Wood Scott-B07421; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
-> > > > > > foundation.org
-> > > > > > Subject: Re: [PATCH 2/7] iommu: add api to get iommu_domain of a
-> > > > > > device
-> > > > > >
-> > > > > > On Fri, 2013-10-04 at 16:47 +0000, Bhushan Bharat-R65777 wrote:
-> > > > > > >
-> > > > > > > > -----Original Message-----
-> > > > > > > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > > > > > > > Sent: Friday, October 04, 2013 9:15 PM
-> > > > > > > > To: Bhushan Bharat-R65777
-> > > > > > > > Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org;
-> > > > > > > > galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org; linux- kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > > > > > > linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux- pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > > > > > > agraf-l3A5Bk7waGM@public.gmane.org; Wood Scott-B07421; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
-> > > > > > > > foundation.org
-> > > > > > > > Subject: Re: [PATCH 2/7] iommu: add api to get iommu_domain
-> > > > > > > > of a device
-> > > > > > > >
-> > > > > > > > On Fri, 2013-10-04 at 09:54 +0000, Bhushan Bharat-R65777
-> > wrote:
-> > > > > > > > >
-> > > > > > > > > > -----Original Message-----
-> > > > > > > > > > From: linux-pci-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > > > > > > > > > [mailto:linux-pci-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org]
-> > > > > > > > > > On Behalf Of Alex Williamson
-> > > > > > > > > > Sent: Wednesday, September 25, 2013 10:16 PM
-> > > > > > > > > > To: Bhushan Bharat-R65777
-> > > > > > > > > > Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org;
-> > > > > > > > > > galak-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org; linux-
-> > > > > > > > > > kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org;
-> > > > > > > > > > linux- pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org; Wood
-> > > > > > > > > > Scott-B07421; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org foundation.org; Bhushan
-> > > > > > > > > > Bharat-R65777
-> > > > > > > > > > Subject: Re: [PATCH 2/7] iommu: add api to get
-> > > > > > > > > > iommu_domain of a device
-> > > > > > > > > >
-> > > > > > > > > > On Thu, 2013-09-19 at 12:59 +0530, Bharat Bhushan wrote:
-> > > > > > > > > > > This api return the iommu domain to which the device is
-> > attached.
-> > > > > > > > > > > The iommu_domain is required for making API calls
-> > > > > > > > > > > related to
-> > > > iommu.
-> > > > > > > > > > > Follow up patches which use this API to know iommu
-> > maping.
-> > > > > > > > > > >
-> > > > > > > > > > > Signed-off-by: Bharat Bhushan
-> > > > > > > > > > > <bharat.bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-> > > > > > > > > > > ---
-> > > > > > > > > > >  drivers/iommu/iommu.c |   10 ++++++++++
-> > > > > > > > > > >  include/linux/iommu.h |    7 +++++++
-> > > > > > > > > > >  2 files changed, 17 insertions(+), 0 deletions(-)
-> > > > > > > > > > >
-> > > > > > > > > > > diff --git a/drivers/iommu/iommu.c
-> > > > > > > > > > > b/drivers/iommu/iommu.c index
-> > > > > > > > > > > fbe9ca7..6ac5f50 100644
-> > > > > > > > > > > --- a/drivers/iommu/iommu.c
-> > > > > > > > > > > +++ b/drivers/iommu/iommu.c
-> > > > > > > > > > > @@ -696,6 +696,16 @@ void iommu_detach_device(struct
-> > > > > > > > > > > iommu_domain *domain, struct device *dev)  }
-> > > > > > > > > > > EXPORT_SYMBOL_GPL(iommu_detach_device);
-> > > > > > > > > > >
-> > > > > > > > > > > +struct iommu_domain *iommu_get_dev_domain(struct
-> > device *dev) {
-> > > > > > > > > > > +	struct iommu_ops *ops = dev->bus->iommu_ops;
-> > > > > > > > > > > +
-> > > > > > > > > > > +	if (unlikely(ops == NULL ||
-> > > > > > > > > > > +ops->get_dev_iommu_domain ==
-> > > > NULL))
-> > > > > > > > > > > +		return NULL;
-> > > > > > > > > > > +
-> > > > > > > > > > > +	return ops->get_dev_iommu_domain(dev); }
-> > > > > > > > > > > +EXPORT_SYMBOL_GPL(iommu_get_dev_domain);
-> > > > > > > > > >
-> > > > > > > > > > What prevents this from racing iommu_domain_free()?
-> > > > > > > > > > There's no references acquired, so there's no reason for
-> > > > > > > > > > the caller to assume the
-> > > > > > > > pointer is valid.
-> > > > > > > > >
-> > > > > > > > > Sorry for late query, somehow this email went into a
-> > > > > > > > > folder and escaped;
-> > > > > > > > >
-> > > > > > > > > Just to be sure, there is not lock at generic "struct
-> > > > > > > > > iommu_domain", but IP
-> > > > > > > > specific structure (link FSL domain) linked in
-> > > > > > > > iommu_domain->priv have a lock, so we need to ensure this
-> > > > > > > > race in FSL iommu code (say drivers/iommu/fsl_pamu_domain.c),
-> > right?
-> > > > > > > >
-> > > > > > > > No, it's not sufficient to make sure that your use of the
-> > > > > > > > interface is race free.  The interface itself needs to be
-> > > > > > > > designed so that it's difficult to use incorrectly.
-> > > > > > >
-> > > > > > > So we can define
-> > > > > > > iommu_get_dev_domain()/iommu_put_dev_domain();
-> > > > > > > iommu_get_dev_domain() will return domain with the lock held,
-> > > > > > > and
-> > > > > > > iommu_put_dev_domain() will release the lock? And
-> > > > > > > iommu_get_dev_domain() must always be followed by
-> > > > > > > iommu_get_dev_domain().
-> > > > > >
-> > > > > > What lock?  get/put are generally used for reference counting,
-> > > > > > not locking in the kernel.
-> > > > > >
-> > > > > > > > That's not the case here.  This is a backdoor to get the
-> > > > > > > > iommu domain from the iommu driver regardless of who is using
-> > it or how.
-> > > > > > > > The iommu domain is created and managed by vfio, so
-> > > > > > > > shouldn't we be looking at how to do this through vfio?
-> > > > > > >
-> > > > > > > Let me first describe what we are doing here:
-> > > > > > > During initialization:-
-> > > > > > >  - vfio talks to MSI system to know the MSI-page and size
-> > > > > > >  - vfio then interacts with iommu to map the MSI-page in iommu
-> > > > > > > (IOVA is decided by userspace and physical address is the
-> > > > > > > MSI-page)
-> > > > > > >  - So the IOVA subwindow mapping is created in iommu and yes
-> > > > > > > VFIO know about
-> > > > > > this mapping.
-> > > > > > >
-> > > > > > > Now do SET_IRQ(MSI/MSIX) ioctl:
-> > > > > > >  - calls pci_enable_msix()/pci_enable_msi_block(): which is
-> > > > > > > supposed to set
-> > > > > > MSI address/data in device.
-> > > > > > >  - So in current implementation (this patchset) msi-subsystem
-> > > > > > > gets the IOVA
-> > > > > > from iommu via this defined interface.
-> > > > > > >  - Are you saying that rather than getting this from iommu, we
-> > > > > > > should get this
-> > > > > > from vfio? What difference does this make?
-> > > > > >
-> > > > > > Yes, you just said above that vfio knows the msi to iova
-> > > > > > mapping, so why go outside of vfio to find it later?  The
-> > > > > > difference is one case you can have a proper reference to data
-> > > > > > structures to make sure the pointer you get back actually has
-> > > > > > meaning at the time you're using it vs the code here where
-> > > > > > you're defining an API that returns a meaningless value
-> > > > >
-> > > > > With FSL-PAMU we will always get consistant data from iommu or
-> > > > > vfio-data
-> > > > structure.
-> > > >
-> > > > Great, but you're trying to add a generic API to the IOMMU subsystem
-> > > > that's difficult to use correctly.  The fact that you use it
-> > > > correctly does not justify the API.
-> > > >
-> > > > > > because you can't check or
-> > > > > > enforce that an arbitrary caller is using it correctly.
-> > > > >
-> > > > > I am not sure what is arbitrary caller? pdev is known to vfio, so
-> > > > > vfio will only make pci_enable_msix()/pci_enable_msi_block() for
-> > this pdev.
-> > > > > If anyother code makes then it is some other unexpectedly thing
-> > > > > happening in system, no?
-> > > >
-> > > > What's proposed here is a generic IOMMU API.  Anybody can call this.
-> > > > What if the host SCSI driver decides to go get the iommu domain for
-> > > > it's device (or any other device)?  Does that fit your usage model?
-> > > >
-> > > > > >  It's not maintainable.
-> > > > > > Thanks,
-> > > > >
-> > > > > I do not have any issue with this as well, can you also describe
-> > > > > the type of API you are envisioning; I can think of defining some
-> > > > > function in vfio.c/vfio_iommu*.c, make them global and declare
-> > > > > then in include/Linux/vfio.h And include <Linux/vfio.h> in caller
-> > > > > file
-> > > > > (arch/powerpc/kernel/msi.c)
-> > > >
-> > > > Do you really want module dependencies between vfio and your core
-> > > > kernel MSI setup?  Look at the vfio external user interface that
-> > we've already defined.
-> > > > That allows other components of the kernel to get a proper reference
-> > > > to a vfio group.  From there you can work out how to get what you
-> > > > want.  Another alternative is that vfio could register an MSI to
-> > > > IOVA mapping with architecture code when the mapping is created.
-> > > > The MSI setup path could then do a lookup in architecture code for
-> > > > the mapping.  You could even store the MSI to IOVA mapping in VFIO
-> > > > and create an interface where SET_IRQ passes that mapping into setup
-> > code.
-> [Sethi Varun-B16395] What you are suggesting is that the MSI setup
-> path queries the vfio subsystem for the mapping, rather than directly
-> querying the iommu subsystem. So, say if we add an interface for
-> getting MSI to IOVA mapping in the msi setup path, wouldn't this again
-> be specific to vfio? I reckon that this interface would again ppc
-> machine specific interface.
+> IOMMU groups are expected by certain users of the IOMMU API,
+> e.g. VFIO. Since each device is behind its own System MMU, we
+> can allocate a new IOMMU group for each device.
+> 
+> Reviewd-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+> ---
+>  drivers/iommu/exynos-iommu.c |   28 ++++++++++++++++++++++++++++
+>  1 files changed, 28 insertions(+), 0 deletions(-)
+> 
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> index 5025338..24505a0 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+> @@ -1028,6 +1028,32 @@ static phys_addr_t exynos_iommu_iova_to_phys(struct iommu_domain *domain,
+>  	return phys;
+>  }
+>  
+> +static int exynos_iommu_add_device(struct device *dev)
+> +{
+> +	struct iommu_group *group;
+> +	int ret;
+> +
+> +	group = iommu_group_get(dev);
 
-Sure, if this is a generic MSI setup path then clearly vfio should not
-be involved.  But by that same notion, if this is a generic MSI setup
-path, how can the proposed solutions guarantee that the iommu_domain or
-iova returned is still valid in all cases?  It's racy.  If the caller
-trying to setup MSI has the information needed, why doesn't it pass it
-in as part of the setup?  Thanks,
+Seems reasonable, my only nit would be whether it's really an error to
+get a group back from the above call.  If devices are always isolated
+and IOMMU groups are always singleton, it would be an error to find one
+already associated with the device.  Right?  Thanks,
 
 Alex
+
+> +
+> +	if (!group) {
+> +		group = iommu_group_alloc();
+> +		if (IS_ERR(group)) {
+> +			dev_err(dev, "Failed to allocate IOMMU group\n");
+> +			return PTR_ERR(group);
+> +		}
+> +	}
+> +
+> +	ret = iommu_group_add_device(group, dev);
+> +	iommu_group_put(group);
+> +
+> +	return ret;
+> +}
+> +
+> +static void exynos_iommu_remove_device(struct device *dev)
+> +{
+> +	iommu_group_remove_device(dev);
+> +}
+> +
+>  static struct iommu_ops exynos_iommu_ops = {
+>  	.domain_init = &exynos_iommu_domain_init,
+>  	.domain_destroy = &exynos_iommu_domain_destroy,
+> @@ -1036,6 +1062,8 @@ static struct iommu_ops exynos_iommu_ops = {
+>  	.map = &exynos_iommu_map,
+>  	.unmap = &exynos_iommu_unmap,
+>  	.iova_to_phys = &exynos_iommu_iova_to_phys,
+> +	.add_device = &exynos_iommu_add_device,
+> +	.remove_device = &exynos_iommu_remove_device,
+>  	.pgsize_bitmap = SECT_SIZE | LPAGE_SIZE | SPAGE_SIZE,
+>  };
+>  
