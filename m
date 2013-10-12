@@ -1,11 +1,14 @@
-From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [PATCH] VFIO: vfio_iommu_type1: fix bug caused by break in nested loop
-Date: Fri, 11 Oct 2013 17:47:31 +0200
-Message-ID: <1381506452-2069-1-git-send-email-a.motakis@virtualopensystems.com>
+From: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH 1/2] iommu/fsl: Factor out PCI specific code.
+Date: Sat, 12 Oct 2013 07:20:12 +0000
+Message-ID: <C5ECD7A89D1DC44195F34B25E172658D0A53259E@039-SN2MPN1-013.039d.mgd.msft.net>
+References: <1381343194-24059-1-git-send-email-Varun.Sethi@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1381343194-24059-1-git-send-email-Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,124 +18,213 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: agraf-l3A5Bk7waGM@public.gmane.org, B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org
+To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-In vfio_iommu_type1.c there is a bug in vfio_dma_do_map, when checking
-that pages are not already mapped. Since the check is being done in a
-for loop nested within the main loop, breaking out of it does not create
-the intended behavior. If the underlying IOMMU driver returns a non-NULL
-value, this will be ignored and mapping the DMA range will be attempted
-anyway, leading to unpredictable behavior.
+Hi Joerg,
+Please consider these patches for 3.12.
 
-This interracts badly with the ARM SMMU driver issue fixed in the patch
-that was submitted with the title:
-"[PATCH 2/2] ARM: SMMU: return NULL on error in arm_smmu_iova_to_phys"
-Both fixes are required in order to use the vfio_iommu_type1 driver
-with an ARM SMMU.
+Regards
+Varun
 
-This patch refactors the function slightly, in order to also make this
-kind of bug less likely.
-
-Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
----
- drivers/vfio/vfio_iommu_type1.c | 40 +++++++++++++++++++++-------------------
- 1 file changed, 21 insertions(+), 19 deletions(-)
-
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index fa72a71..023ba12 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -548,6 +548,8 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
- 	long npage;
- 	int ret = 0, prot = 0;
- 	uint64_t mask;
-+	struct vfio_dma *dma = NULL;
-+	unsigned long pfn;
- 
- 	end = map->iova + map->size;
- 
-@@ -590,8 +592,6 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
- 	}
- 
- 	for (iova = map->iova; iova < end; iova += size, vaddr += size) {
--		struct vfio_dma *dma = NULL;
--		unsigned long pfn;
- 		long i;
- 
- 		/* Pin a contiguous chunk of memory */
-@@ -600,16 +600,15 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
- 		if (npage <= 0) {
- 			WARN_ON(!npage);
- 			ret = (int)npage;
--			break;
-+			goto out;
- 		}
- 
- 		/* Verify pages are not already mapped */
- 		for (i = 0; i < npage; i++) {
- 			if (iommu_iova_to_phys(iommu->domain,
- 					       iova + (i << PAGE_SHIFT))) {
--				vfio_unpin_pages(pfn, npage, prot, true);
- 				ret = -EBUSY;
--				break;
-+				goto out_unpin;
- 			}
- 		}
- 
-@@ -619,8 +618,7 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
- 		if (ret) {
- 			if (ret != -EBUSY ||
- 			    map_try_harder(iommu, iova, pfn, npage, prot)) {
--				vfio_unpin_pages(pfn, npage, prot, true);
--				break;
-+				goto out_unpin;
- 			}
- 		}
- 
-@@ -675,9 +673,8 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
- 			dma = kzalloc(sizeof(*dma), GFP_KERNEL);
- 			if (!dma) {
- 				iommu_unmap(iommu->domain, iova, size);
--				vfio_unpin_pages(pfn, npage, prot, true);
- 				ret = -ENOMEM;
--				break;
-+				goto out_unpin;
- 			}
- 
- 			dma->size = size;
-@@ -688,16 +685,21 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
- 		}
- 	}
- 
--	if (ret) {
--		struct vfio_dma *tmp;
--		iova = map->iova;
--		size = map->size;
--		while ((tmp = vfio_find_dma(iommu, iova, size))) {
--			int r = vfio_remove_dma_overlap(iommu, iova,
--							&size, tmp);
--			if (WARN_ON(r || !size))
--				break;
--		}
-+	WARN_ON(ret);
-+	mutex_unlock(&iommu->lock);
-+	return ret;
-+
-+out_unpin:
-+	vfio_unpin_pages(pfn, npage, prot, true);
-+
-+out:
-+	iova = map->iova;
-+	size = map->size;
-+	while ((dma = vfio_find_dma(iommu, iova, size))) {
-+		int r = vfio_remove_dma_overlap(iommu, iova,
-+						&size, dma);
-+		if (WARN_ON(r || !size))
-+			break;
- 	}
- 
- 	mutex_unlock(&iommu->lock);
--- 
-1.8.1.2
+> -----Original Message-----
+> From: Sethi Varun-B16395
+> Sent: Wednesday, October 09, 2013 11:57 PM
+> To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-
+> dev-uLR06cmDAlbs2ve5o0e2fw@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Yoder Stuart-B08248;
+> alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+> Cc: Sethi Varun-B16395
+> Subject: [PATCH 1/2] iommu/fsl: Factor out PCI specific code.
+> 
+> Factor out PCI specific code in the PAMU driver.
+> 
+> Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+> ---
+>  drivers/iommu/fsl_pamu_domain.c |   81 +++++++++++++++++++--------------
+> ------
+>  1 file changed, 40 insertions(+), 41 deletions(-)
+> 
+> diff --git a/drivers/iommu/fsl_pamu_domain.c
+> b/drivers/iommu/fsl_pamu_domain.c index c857c30..e02e1de 100644
+> --- a/drivers/iommu/fsl_pamu_domain.c
+> +++ b/drivers/iommu/fsl_pamu_domain.c
+> @@ -677,13 +677,9 @@ static int handle_attach_device(struct
+> fsl_dma_domain *dma_domain,
+>  	return ret;
+>  }
+> 
+> -static int fsl_pamu_attach_device(struct iommu_domain *domain,
+> -				  struct device *dev)
+> +static void check_for_pci_dma_device(struct device **dev)
+>  {
+> -	struct fsl_dma_domain *dma_domain = domain->priv;
+> -	const u32 *liodn;
+> -	u32 liodn_cnt;
+> -	int len, ret = 0;
+> +#ifdef CONFIG_PCI
+>  	struct pci_dev *pdev = NULL;
+>  	struct pci_controller *pci_ctl;
+> 
+> @@ -691,25 +687,38 @@ static int fsl_pamu_attach_device(struct
+> iommu_domain *domain,
+>  	 * Use LIODN of the PCI controller while attaching a
+>  	 * PCI device.
+>  	 */
+> -	if (dev->bus == &pci_bus_type) {
+> -		pdev = to_pci_dev(dev);
+> +	if ((*dev)->bus == &pci_bus_type) {
+> +		pdev = to_pci_dev(*dev);
+>  		pci_ctl = pci_bus_to_host(pdev->bus);
+>  		/*
+>  		 * make dev point to pci controller device
+>  		 * so we can get the LIODN programmed by
+>  		 * u-boot.
+>  		 */
+> -		dev = pci_ctl->parent;
+> +		*dev = pci_ctl->parent;
+>  	}
+> +#endif
+> +}
+> 
+> -	liodn = of_get_property(dev->of_node, "fsl,liodn", &len);
+> +static int fsl_pamu_attach_device(struct iommu_domain *domain,
+> +				  struct device *dev)
+> +{
+> +	struct fsl_dma_domain *dma_domain = domain->priv;
+> +	struct device *dma_dev = dev;
+> +	const u32 *liodn;
+> +	u32 liodn_cnt;
+> +	int len, ret = 0;
+> +
+> +	check_for_pci_dma_device(&dma_dev);
+> +
+> +	liodn = of_get_property(dma_dev->of_node, "fsl,liodn", &len);
+>  	if (liodn) {
+>  		liodn_cnt = len / sizeof(u32);
+>  		ret = handle_attach_device(dma_domain, dev,
+>  					 liodn, liodn_cnt);
+>  	} else {
+>  		pr_debug("missing fsl,liodn property at %s\n",
+> -		          dev->of_node->full_name);
+> +		          dma_dev->of_node->full_name);
+>  			ret = -EINVAL;
+>  	}
+> 
+> @@ -720,32 +729,18 @@ static void fsl_pamu_detach_device(struct
+> iommu_domain *domain,
+>  				      struct device *dev)
+>  {
+>  	struct fsl_dma_domain *dma_domain = domain->priv;
+> +	struct device *dma_dev = dev;
+>  	const u32 *prop;
+>  	int len;
+> -	struct pci_dev *pdev = NULL;
+> -	struct pci_controller *pci_ctl;
+> 
+> -	/*
+> -	 * Use LIODN of the PCI controller while detaching a
+> -	 * PCI device.
+> -	 */
+> -	if (dev->bus == &pci_bus_type) {
+> -		pdev = to_pci_dev(dev);
+> -		pci_ctl = pci_bus_to_host(pdev->bus);
+> -		/*
+> -		 * make dev point to pci controller device
+> -		 * so we can get the LIODN programmed by
+> -		 * u-boot.
+> -		 */
+> -		dev = pci_ctl->parent;
+> -	}
+> +	check_for_pci_dma_device(&dma_dev);
+> 
+> -	prop = of_get_property(dev->of_node, "fsl,liodn", &len);
+> +	prop = of_get_property(dma_dev->of_node, "fsl,liodn", &len);
+>  	if (prop)
+>  		detach_device(dev, dma_domain);
+>  	else
+>  		pr_debug("missing fsl,liodn property at %s\n",
+> -		          dev->of_node->full_name);
+> +		          dma_dev->of_node->full_name);
+>  }
+> 
+>  static  int configure_domain_geometry(struct iommu_domain *domain, void
+> *data) @@ -905,6 +900,7 @@ static struct iommu_group
+> *get_device_iommu_group(struct device *dev)
+>  	return group;
+>  }
+> 
+> +#ifdef CONFIG_PCI
+>  static  bool check_pci_ctl_endpt_part(struct pci_controller *pci_ctl)  {
+>  	u32 version;
+> @@ -945,13 +941,18 @@ static struct iommu_group
+> *get_shared_pci_device_group(struct pci_dev *pdev)
+>  	return NULL;
+>  }
+> 
+> -static struct iommu_group *get_pci_device_group(struct pci_dev *pdev)
+> +static struct iommu_group *get_pci_device_group(struct device *dev)
+>  {
+>  	struct pci_controller *pci_ctl;
+>  	bool pci_endpt_partioning;
+>  	struct iommu_group *group = NULL;
+> -	struct pci_dev *bridge, *dma_pdev = NULL;
+> +	struct pci_dev *bridge, *pdev;
+> +	struct pci_dev *dma_pdev = NULL;
+> 
+> +	pdev = to_pci_dev(dev);
+> +	/* Don't create device groups for virtual PCI bridges */
+> +	if (pdev->subordinate)
+> +		return NULL;
+>  	pci_ctl = pci_bus_to_host(pdev->bus);
+>  	pci_endpt_partioning = check_pci_ctl_endpt_part(pci_ctl);
+>  	/* We can partition PCIe devices so assign device group to the
+> device */ @@ -1044,11 +1045,11 @@ root_bus:
+> 
+>  	return group;
+>  }
+> +#endif
+> 
+>  static int fsl_pamu_add_device(struct device *dev)  {
+>  	struct iommu_group *group = NULL;
+> -	struct pci_dev *pdev;
+>  	const u32 *prop;
+>  	int ret, len;
+> 
+> @@ -1056,19 +1057,15 @@ static int fsl_pamu_add_device(struct device
+> *dev)
+>  	 * For platform devices we allocate a separate group for
+>  	 * each of the devices.
+>  	 */
+> -	if (dev->bus == &pci_bus_type) {
+> -		pdev = to_pci_dev(dev);
+> -		/* Don't create device groups for virtual PCI bridges */
+> -		if (pdev->subordinate)
+> -			return 0;
+> -
+> -		group = get_pci_device_group(pdev);
+> -
+> -	} else {
+> +	if (dev->bus == &platform_bus_type) {
+>  		prop = of_get_property(dev->of_node, "fsl,liodn", &len);
+>  		if (prop)
+>  			group = get_device_iommu_group(dev);
+>  	}
+> +#ifdef CONFIG_PCI
+> +	else
+> +		group = get_pci_device_group(dev);
+> +#endif
+> 
+>  	if (!group || IS_ERR(group))
+>  		return PTR_ERR(group);
+> @@ -1166,7 +1163,9 @@ int pamu_domain_init()
+>  		return ret;
+> 
+>  	bus_set_iommu(&platform_bus_type, &fsl_pamu_ops);
+> +#ifdef CONFIG_PCI
+>  	bus_set_iommu(&pci_bus_type, &fsl_pamu_ops);
+> +#endif
+> 
+>  	return ret;
+>  }
+> --
+> 1.7.9.5
