@@ -1,18 +1,15 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 2/2] ARM: SMMU: return NULL on error in
-	arm_smmu_iova_to_phys
-Date: Mon, 14 Oct 2013 18:09:48 +0100
-Message-ID: <20131014170948.GS10491@mudshark.cambridge.arm.com>
-References: <1381497887-14586-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1381497887-14586-2-git-send-email-a.motakis@virtualopensystems.com>
-	<20131014124837.GD10491@mudshark.cambridge.arm.com>
-	<CAG8rG2yE=xWmYP_bOy7=jzWEQKNkbgk-9_Jecnx_XXx=jC9i_Q@mail.gmail.com>
+From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 1/3] iommu/fsl: Factor out PCI specific code.
+Date: Mon, 14 Oct 2013 18:16:11 -0600
+Message-ID: <20131015001611.GA9203@google.com>
+References: <1381609954-15283-1-git-send-email-Varun.Sethi@freescale.com>
+	<1381609954-15283-2-git-send-email-Varun.Sethi@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CAG8rG2yE=xWmYP_bOy7=jzWEQKNkbgk-9_Jecnx_XXx=jC9i_Q-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <1381609954-15283-2-git-send-email-Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,49 +19,226 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Cc: open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, "B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, "moderated list:ARM SMMU DRIVER" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Cc: stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, r65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org, scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Oct 14, 2013 at 04:17:51PM +0100, Antonios Motakis wrote:
-> On Mon, Oct 14, 2013 at 2:48 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> > On Fri, Oct 11, 2013 at 02:24:47PM +0100, Antonios Motakis wrote:
-> >> The return value of arm_smmu_iova_to_phys is directly passed to the
-> >> user of the IOMMU API via iommu_iova_to_phys; however the ARM SMMU
-> >> driver returns -EINVAL on error, which is not consistent with the
-> >> rest of the drivers implementing the IOMMU API. VFIO also relies on
-> >> the call returning NULL when a page has not been mapped already.
-> >>
-> >> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-> >> ---
-> >>  drivers/iommu/arm-smmu.c | 5 +----
-> >>  1 file changed, 1 insertion(+), 4 deletions(-)
-> >>
-> >> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> >> index 8b71332..fe81b20 100644
-> >> --- a/drivers/iommu/arm-smmu.c
-> >> +++ b/drivers/iommu/arm-smmu.c
-> >> @@ -1480,10 +1480,7 @@ static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
-> >>
-> >>  err_unlock:
-> >>       spin_unlock(&smmu_domain->lock);
-> >> -     dev_warn(smmu->dev,
-> >> -              "invalid (corrupt?) page tables detected for iova 0x%llx\n",
-> >> -              (unsigned long long)iova);
-> >> -     return -EINVAL;
-> >> +     return NULL;
-> >
-> > Why are you removing the warning message?
+On Sun, Oct 13, 2013 at 02:02:32AM +0530, Varun Sethi wrote:
+> Factor out PCI specific code in the PAMU driver.
 > 
-> VFIO will exercise this code path every time when mapping DMA memory.
-> This is normal and VFIO *expects* the function to fail - it is only if
-> the function succeeds that VFIO needs to back down from the DMA
-> mapping and fail.
+> Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+> ---
+>  drivers/iommu/fsl_pamu_domain.c |   81 +++++++++++++++++++--------------------
+>  1 file changed, 40 insertions(+), 41 deletions(-)
 > 
-> This means that there would be a warning every time a VFIO user maps
-> some memory for DMA use, even though nothing went wrong.
+> diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+> index c857c30..e02e1de 100644
+> --- a/drivers/iommu/fsl_pamu_domain.c
+> +++ b/drivers/iommu/fsl_pamu_domain.c
+> @@ -677,13 +677,9 @@ static int handle_attach_device(struct fsl_dma_domain *dma_domain,
+>  	return ret;
+>  }
+>  
+> -static int fsl_pamu_attach_device(struct iommu_domain *domain,
+> -				  struct device *dev)
+> +static void check_for_pci_dma_device(struct device **dev)
 
-Ok, in which case it might be worth reworking arm_smmu_iova_to_phys to treat
-{pgd,pud,pmd,pte}_none different from {pgd,pud,pmd,pte}_bad.
+"check_for_pci_dma_device()" doesn't give a good clue about what the
+function returns.  And why return something via a reference parameter
+when you could return it directly?
 
-Will
+>  {
+> -	struct fsl_dma_domain *dma_domain = domain->priv;
+> -	const u32 *liodn;
+> -	u32 liodn_cnt;
+> -	int len, ret = 0;
+> +#ifdef CONFIG_PCI
+>  	struct pci_dev *pdev = NULL;
+>  	struct pci_controller *pci_ctl;
+
+This is sort of a goofy looking function.  It would read much better as
+something like this:
+
+      struct device *dma_dev = dev;
+
+  #ifdef CONFIG_PCI
+      if (...) {
+          dma_dev = ...;
+      }
+  #endif
+
+      return dma_dev;
+
+Does this need to care about reference counting when you return a pointer
+to a different device?
+
+Bjorn
+
+>  
+> @@ -691,25 +687,38 @@ static int fsl_pamu_attach_device(struct iommu_domain *domain,
+>  	 * Use LIODN of the PCI controller while attaching a
+>  	 * PCI device.
+>  	 */
+> -	if (dev->bus == &pci_bus_type) {
+> -		pdev = to_pci_dev(dev);
+> +	if ((*dev)->bus == &pci_bus_type) {
+> +		pdev = to_pci_dev(*dev);
+>  		pci_ctl = pci_bus_to_host(pdev->bus);
+>  		/*
+>  		 * make dev point to pci controller device
+>  		 * so we can get the LIODN programmed by
+>  		 * u-boot.
+>  		 */
+> -		dev = pci_ctl->parent;
+> +		*dev = pci_ctl->parent;
+>  	}
+> +#endif
+> +}
+>  
+> -	liodn = of_get_property(dev->of_node, "fsl,liodn", &len);
+> +static int fsl_pamu_attach_device(struct iommu_domain *domain,
+> +				  struct device *dev)
+> +{
+> +	struct fsl_dma_domain *dma_domain = domain->priv;
+> +	struct device *dma_dev = dev;
+> +	const u32 *liodn;
+> +	u32 liodn_cnt;
+> +	int len, ret = 0;
+> +
+> +	check_for_pci_dma_device(&dma_dev);
+> +
+> +	liodn = of_get_property(dma_dev->of_node, "fsl,liodn", &len);
+>  	if (liodn) {
+>  		liodn_cnt = len / sizeof(u32);
+>  		ret = handle_attach_device(dma_domain, dev,
+>  					 liodn, liodn_cnt);
+>  	} else {
+>  		pr_debug("missing fsl,liodn property at %s\n",
+> -		          dev->of_node->full_name);
+> +		          dma_dev->of_node->full_name);
+>  			ret = -EINVAL;
+>  	}
+>  
+> @@ -720,32 +729,18 @@ static void fsl_pamu_detach_device(struct iommu_domain *domain,
+>  				      struct device *dev)
+>  {
+>  	struct fsl_dma_domain *dma_domain = domain->priv;
+> +	struct device *dma_dev = dev;
+>  	const u32 *prop;
+>  	int len;
+> -	struct pci_dev *pdev = NULL;
+> -	struct pci_controller *pci_ctl;
+>  
+> -	/*
+> -	 * Use LIODN of the PCI controller while detaching a
+> -	 * PCI device.
+> -	 */
+> -	if (dev->bus == &pci_bus_type) {
+> -		pdev = to_pci_dev(dev);
+> -		pci_ctl = pci_bus_to_host(pdev->bus);
+> -		/*
+> -		 * make dev point to pci controller device
+> -		 * so we can get the LIODN programmed by
+> -		 * u-boot.
+> -		 */
+> -		dev = pci_ctl->parent;
+> -	}
+> +	check_for_pci_dma_device(&dma_dev);
+>  
+> -	prop = of_get_property(dev->of_node, "fsl,liodn", &len);
+> +	prop = of_get_property(dma_dev->of_node, "fsl,liodn", &len);
+>  	if (prop)
+>  		detach_device(dev, dma_domain);
+>  	else
+>  		pr_debug("missing fsl,liodn property at %s\n",
+> -		          dev->of_node->full_name);
+> +		          dma_dev->of_node->full_name);
+>  }
+>  
+>  static  int configure_domain_geometry(struct iommu_domain *domain, void *data)
+> @@ -905,6 +900,7 @@ static struct iommu_group *get_device_iommu_group(struct device *dev)
+>  	return group;
+>  }
+>  
+> +#ifdef CONFIG_PCI
+>  static  bool check_pci_ctl_endpt_part(struct pci_controller *pci_ctl)
+>  {
+>  	u32 version;
+> @@ -945,13 +941,18 @@ static struct iommu_group *get_shared_pci_device_group(struct pci_dev *pdev)
+>  	return NULL;
+>  }
+>  
+> -static struct iommu_group *get_pci_device_group(struct pci_dev *pdev)
+> +static struct iommu_group *get_pci_device_group(struct device *dev)
+>  {
+>  	struct pci_controller *pci_ctl;
+>  	bool pci_endpt_partioning;
+>  	struct iommu_group *group = NULL;
+> -	struct pci_dev *bridge, *dma_pdev = NULL;
+> +	struct pci_dev *bridge, *pdev;
+> +	struct pci_dev *dma_pdev = NULL;
+>  
+> +	pdev = to_pci_dev(dev);
+> +	/* Don't create device groups for virtual PCI bridges */
+> +	if (pdev->subordinate)
+> +		return NULL;
+>  	pci_ctl = pci_bus_to_host(pdev->bus);
+>  	pci_endpt_partioning = check_pci_ctl_endpt_part(pci_ctl);
+>  	/* We can partition PCIe devices so assign device group to the device */
+> @@ -1044,11 +1045,11 @@ root_bus:
+>  
+>  	return group;
+>  }
+> +#endif
+>  
+>  static int fsl_pamu_add_device(struct device *dev)
+>  {
+>  	struct iommu_group *group = NULL;
+> -	struct pci_dev *pdev;
+>  	const u32 *prop;
+>  	int ret, len;
+>  
+> @@ -1056,19 +1057,15 @@ static int fsl_pamu_add_device(struct device *dev)
+>  	 * For platform devices we allocate a separate group for
+>  	 * each of the devices.
+>  	 */
+> -	if (dev->bus == &pci_bus_type) {
+> -		pdev = to_pci_dev(dev);
+> -		/* Don't create device groups for virtual PCI bridges */
+> -		if (pdev->subordinate)
+> -			return 0;
+> -
+> -		group = get_pci_device_group(pdev);
+> -
+> -	} else {
+> +	if (dev->bus == &platform_bus_type) {
+>  		prop = of_get_property(dev->of_node, "fsl,liodn", &len);
+>  		if (prop)
+>  			group = get_device_iommu_group(dev);
+>  	}
+> +#ifdef CONFIG_PCI
+> +	else
+> +		group = get_pci_device_group(dev);
+> +#endif
+>  
+>  	if (!group || IS_ERR(group))
+>  		return PTR_ERR(group);
+> @@ -1166,7 +1163,9 @@ int pamu_domain_init()
+>  		return ret;
+>  
+>  	bus_set_iommu(&platform_bus_type, &fsl_pamu_ops);
+> +#ifdef CONFIG_PCI
+>  	bus_set_iommu(&pci_bus_type, &fsl_pamu_ops);
+> +#endif
+>  
+>  	return ret;
+>  }
+> -- 
+> 1.7.9.5
+> 
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
