@@ -1,15 +1,16 @@
-From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/3] iommu/fsl: Factor out PCI specific code.
-Date: Mon, 14 Oct 2013 18:16:11 -0600
-Message-ID: <20131015001611.GA9203@google.com>
+From: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH 1/3] iommu/fsl: Factor out PCI specific code.
+Date: Tue, 15 Oct 2013 14:35:41 +0000
+Message-ID: <C5ECD7A89D1DC44195F34B25E172658D0A53D863@039-SN2MPN1-013.039d.mgd.msft.net>
 References: <1381609954-15283-1-git-send-email-Varun.Sethi@freescale.com>
 	<1381609954-15283-2-git-send-email-Varun.Sethi@freescale.com>
+	<20131015001611.GA9203@google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1381609954-15283-2-git-send-email-Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+In-Reply-To: <20131015001611.GA9203-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,226 +20,76 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, r65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org, scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Bhushan Bharat-R65777 <R65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, Oct 13, 2013 at 02:02:32AM +0530, Varun Sethi wrote:
-> Factor out PCI specific code in the PAMU driver.
+
+
+> -----Original Message-----
+> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
+> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Bjorn Helgaas
+> Sent: Tuesday, October 15, 2013 5:46 AM
+> To: Sethi Varun-B16395
+> Cc: Yoder Stuart-B08248; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
+> foundation.org; Bhushan Bharat-R65777; Wood Scott-B07421; linuxppc-
+> dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+> Subject: Re: [PATCH 1/3] iommu/fsl: Factor out PCI specific code.
 > 
-> Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-> ---
->  drivers/iommu/fsl_pamu_domain.c |   81 +++++++++++++++++++--------------------
->  1 file changed, 40 insertions(+), 41 deletions(-)
+> On Sun, Oct 13, 2013 at 02:02:32AM +0530, Varun Sethi wrote:
+> > Factor out PCI specific code in the PAMU driver.
+> >
+> > Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+> > ---
+> >  drivers/iommu/fsl_pamu_domain.c |   81 +++++++++++++++++++------------
+> --------
+> >  1 file changed, 40 insertions(+), 41 deletions(-)
+> >
+> > diff --git a/drivers/iommu/fsl_pamu_domain.c
+> > b/drivers/iommu/fsl_pamu_domain.c index c857c30..e02e1de 100644
+> > --- a/drivers/iommu/fsl_pamu_domain.c
+> > +++ b/drivers/iommu/fsl_pamu_domain.c
+> > @@ -677,13 +677,9 @@ static int handle_attach_device(struct
+> fsl_dma_domain *dma_domain,
+> >  	return ret;
+> >  }
+> >
+> > -static int fsl_pamu_attach_device(struct iommu_domain *domain,
+> > -				  struct device *dev)
+> > +static void check_for_pci_dma_device(struct device **dev)
 > 
-> diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
-> index c857c30..e02e1de 100644
-> --- a/drivers/iommu/fsl_pamu_domain.c
-> +++ b/drivers/iommu/fsl_pamu_domain.c
-> @@ -677,13 +677,9 @@ static int handle_attach_device(struct fsl_dma_domain *dma_domain,
->  	return ret;
->  }
->  
-> -static int fsl_pamu_attach_device(struct iommu_domain *domain,
-> -				  struct device *dev)
-> +static void check_for_pci_dma_device(struct device **dev)
-
-"check_for_pci_dma_device()" doesn't give a good clue about what the
-function returns.  And why return something via a reference parameter
-when you could return it directly?
-
->  {
-> -	struct fsl_dma_domain *dma_domain = domain->priv;
-> -	const u32 *liodn;
-> -	u32 liodn_cnt;
-> -	int len, ret = 0;
-> +#ifdef CONFIG_PCI
->  	struct pci_dev *pdev = NULL;
->  	struct pci_controller *pci_ctl;
-
-This is sort of a goofy looking function.  It would read much better as
-something like this:
-
-      struct device *dma_dev = dev;
-
-  #ifdef CONFIG_PCI
-      if (...) {
-          dma_dev = ...;
-      }
-  #endif
-
-      return dma_dev;
-
-Does this need to care about reference counting when you return a pointer
-to a different device?
-
-Bjorn
-
->  
-> @@ -691,25 +687,38 @@ static int fsl_pamu_attach_device(struct iommu_domain *domain,
->  	 * Use LIODN of the PCI controller while attaching a
->  	 * PCI device.
->  	 */
-> -	if (dev->bus == &pci_bus_type) {
-> -		pdev = to_pci_dev(dev);
-> +	if ((*dev)->bus == &pci_bus_type) {
-> +		pdev = to_pci_dev(*dev);
->  		pci_ctl = pci_bus_to_host(pdev->bus);
->  		/*
->  		 * make dev point to pci controller device
->  		 * so we can get the LIODN programmed by
->  		 * u-boot.
->  		 */
-> -		dev = pci_ctl->parent;
-> +		*dev = pci_ctl->parent;
->  	}
-> +#endif
-> +}
->  
-> -	liodn = of_get_property(dev->of_node, "fsl,liodn", &len);
-> +static int fsl_pamu_attach_device(struct iommu_domain *domain,
-> +				  struct device *dev)
-> +{
-> +	struct fsl_dma_domain *dma_domain = domain->priv;
-> +	struct device *dma_dev = dev;
-> +	const u32 *liodn;
-> +	u32 liodn_cnt;
-> +	int len, ret = 0;
-> +
-> +	check_for_pci_dma_device(&dma_dev);
-> +
-> +	liodn = of_get_property(dma_dev->of_node, "fsl,liodn", &len);
->  	if (liodn) {
->  		liodn_cnt = len / sizeof(u32);
->  		ret = handle_attach_device(dma_domain, dev,
->  					 liodn, liodn_cnt);
->  	} else {
->  		pr_debug("missing fsl,liodn property at %s\n",
-> -		          dev->of_node->full_name);
-> +		          dma_dev->of_node->full_name);
->  			ret = -EINVAL;
->  	}
->  
-> @@ -720,32 +729,18 @@ static void fsl_pamu_detach_device(struct iommu_domain *domain,
->  				      struct device *dev)
->  {
->  	struct fsl_dma_domain *dma_domain = domain->priv;
-> +	struct device *dma_dev = dev;
->  	const u32 *prop;
->  	int len;
-> -	struct pci_dev *pdev = NULL;
-> -	struct pci_controller *pci_ctl;
->  
-> -	/*
-> -	 * Use LIODN of the PCI controller while detaching a
-> -	 * PCI device.
-> -	 */
-> -	if (dev->bus == &pci_bus_type) {
-> -		pdev = to_pci_dev(dev);
-> -		pci_ctl = pci_bus_to_host(pdev->bus);
-> -		/*
-> -		 * make dev point to pci controller device
-> -		 * so we can get the LIODN programmed by
-> -		 * u-boot.
-> -		 */
-> -		dev = pci_ctl->parent;
-> -	}
-> +	check_for_pci_dma_device(&dma_dev);
->  
-> -	prop = of_get_property(dev->of_node, "fsl,liodn", &len);
-> +	prop = of_get_property(dma_dev->of_node, "fsl,liodn", &len);
->  	if (prop)
->  		detach_device(dev, dma_domain);
->  	else
->  		pr_debug("missing fsl,liodn property at %s\n",
-> -		          dev->of_node->full_name);
-> +		          dma_dev->of_node->full_name);
->  }
->  
->  static  int configure_domain_geometry(struct iommu_domain *domain, void *data)
-> @@ -905,6 +900,7 @@ static struct iommu_group *get_device_iommu_group(struct device *dev)
->  	return group;
->  }
->  
-> +#ifdef CONFIG_PCI
->  static  bool check_pci_ctl_endpt_part(struct pci_controller *pci_ctl)
->  {
->  	u32 version;
-> @@ -945,13 +941,18 @@ static struct iommu_group *get_shared_pci_device_group(struct pci_dev *pdev)
->  	return NULL;
->  }
->  
-> -static struct iommu_group *get_pci_device_group(struct pci_dev *pdev)
-> +static struct iommu_group *get_pci_device_group(struct device *dev)
->  {
->  	struct pci_controller *pci_ctl;
->  	bool pci_endpt_partioning;
->  	struct iommu_group *group = NULL;
-> -	struct pci_dev *bridge, *dma_pdev = NULL;
-> +	struct pci_dev *bridge, *pdev;
-> +	struct pci_dev *dma_pdev = NULL;
->  
-> +	pdev = to_pci_dev(dev);
-> +	/* Don't create device groups for virtual PCI bridges */
-> +	if (pdev->subordinate)
-> +		return NULL;
->  	pci_ctl = pci_bus_to_host(pdev->bus);
->  	pci_endpt_partioning = check_pci_ctl_endpt_part(pci_ctl);
->  	/* We can partition PCIe devices so assign device group to the device */
-> @@ -1044,11 +1045,11 @@ root_bus:
->  
->  	return group;
->  }
-> +#endif
->  
->  static int fsl_pamu_add_device(struct device *dev)
->  {
->  	struct iommu_group *group = NULL;
-> -	struct pci_dev *pdev;
->  	const u32 *prop;
->  	int ret, len;
->  
-> @@ -1056,19 +1057,15 @@ static int fsl_pamu_add_device(struct device *dev)
->  	 * For platform devices we allocate a separate group for
->  	 * each of the devices.
->  	 */
-> -	if (dev->bus == &pci_bus_type) {
-> -		pdev = to_pci_dev(dev);
-> -		/* Don't create device groups for virtual PCI bridges */
-> -		if (pdev->subordinate)
-> -			return 0;
-> -
-> -		group = get_pci_device_group(pdev);
-> -
-> -	} else {
-> +	if (dev->bus == &platform_bus_type) {
->  		prop = of_get_property(dev->of_node, "fsl,liodn", &len);
->  		if (prop)
->  			group = get_device_iommu_group(dev);
->  	}
-> +#ifdef CONFIG_PCI
-> +	else
-> +		group = get_pci_device_group(dev);
-> +#endif
->  
->  	if (!group || IS_ERR(group))
->  		return PTR_ERR(group);
-> @@ -1166,7 +1163,9 @@ int pamu_domain_init()
->  		return ret;
->  
->  	bus_set_iommu(&platform_bus_type, &fsl_pamu_ops);
-> +#ifdef CONFIG_PCI
->  	bus_set_iommu(&pci_bus_type, &fsl_pamu_ops);
-> +#endif
->  
->  	return ret;
->  }
-> -- 
-> 1.7.9.5
+> "check_for_pci_dma_device()" doesn't give a good clue about what the
+> function returns.  And why return something via a reference parameter
+> when you could return it directly?
+[Sethi Varun-B16395] I will rename the function to get_dma_device and make it return a pointer.
 > 
+> >  {
+> > -	struct fsl_dma_domain *dma_domain = domain->priv;
+> > -	const u32 *liodn;
+> > -	u32 liodn_cnt;
+> > -	int len, ret = 0;
+> > +#ifdef CONFIG_PCI
+> >  	struct pci_dev *pdev = NULL;
+> >  	struct pci_controller *pci_ctl;
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
+> This is sort of a goofy looking function.  It would read much better as
+> something like this:
+> 
+[Sethi Varun-B16395] Will make the change.
+
+>       struct device *dma_dev = dev;
+> 
+>   #ifdef CONFIG_PCI
+>       if (...) {
+>           dma_dev = ...;
+>       }
+>   #endif
+> 
+>       return dma_dev;
+> 
+> Does this need to care about reference counting when you return a pointer
+> to a different device?
+> 
+[Sethi Varun-B16395] Reference counting isn't required, as we are just obtaining the LIODN value from the PCI controller.
+
+-Varun
