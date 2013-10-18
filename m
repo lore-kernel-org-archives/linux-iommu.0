@@ -1,195 +1,83 @@
-From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCHv3 17/19] ARM: dt: tegra30: iommu: Add "nvidia,memory-clients"
-Date: Fri, 18 Oct 2013 13:26:58 +0300
-Message-ID: <1382092020-13170-18-git-send-email-hdoyu@nvidia.com>
-References: <1382092020-13170-1-git-send-email-hdoyu@nvidia.com>
+From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Subject: Re: [PATCH 1/2] ARM: SMMU: add devices attached to the SMMU to an
+	IOMMU group
+Date: Fri, 18 Oct 2013 12:29:59 +0200
+Message-ID: <CAG8rG2wC-O=5quLHT_7vHvTOk-ymRsbYqoVG8YU742wWWRMSKA@mail.gmail.com>
+References: <1381497887-14586-1-git-send-email-a.motakis@virtualopensystems.com>
+	<20131014124815.GC10491@mudshark.cambridge.arm.com>
+	<CAG8rG2wftreREPnCbH8cKtsHD4TXBFAYGfY0ZMmsX3UW757r4Q@mail.gmail.com>
+	<20131014170719.GR10491@mudshark.cambridge.arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1382092020-13170-1-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20131014170719.GR10491-MRww78TxoiP5vMa5CHWGZ34zcgK1vI+I0E9HWUfgJXw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, "B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, "moderated list:ARM SMMU DRIVER" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Add "nvidia,memory-clients" to identify which swgroup ID a device
-belongs to.
+On Mon, Oct 14, 2013 at 7:07 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> On Mon, Oct 14, 2013 at 04:13:15PM +0100, Antonios Motakis wrote:
+>> On Mon, Oct 14, 2013 at 2:48 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+>> > > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>> > > index 0f45a48..8b71332 100644
+>> > > --- a/drivers/iommu/arm-smmu.c
+>> > > +++ b/drivers/iommu/arm-smmu.c
+>> > > @@ -1502,6 +1502,8 @@ static int arm_smmu_add_device(struct device *dev)
+>> > >  {
+>> > >       struct arm_smmu_device *child, *parent, *smmu;
+>> > >       struct arm_smmu_master *master = NULL;
+>> > > +     struct iommu_group *group;
+>> > > +     int ret;
+>> > >
+>> > >       spin_lock(&arm_smmu_devices_lock);
+>> > >       list_for_each_entry(parent, &arm_smmu_devices, list) {
+>> > > @@ -1534,13 +1536,27 @@ static int arm_smmu_add_device(struct device *dev)
+>> > >       if (!master)
+>> > >               return -ENODEV;
+>> > >
+>> > > +     group = iommu_group_get(dev);
+>> >
+>> > I'm not especially familiar with IOMMU groups (I understand them as the
+>> > minimum translation granularity, which would mean single StreamID for the
+>> > ARM SMMU), but under what circumstances would you expect to receive a
+>> > non-NULL group here? I can't see any other code adding devices to groups
+>> > (outside of other drivers)...
+>> >
+>>
+>> You are right, only other IOMMU drivers will add a device to a group.
+>> There was a discussion about this when I posted a similar patch for
+>> the Exynos System MMU driver, see
+>> http://lists.infradead.org/pipermail/linux-arm-kernel/2013-July/185675.html
+>>
+>> The idea is to check in the case of add_device() being called multiple
+>> times, which is not the case most of the time, but still a sane
+>> safeguard.
+>
+> Ok, but it feels a bit weird. The current code (arm_smmu_add_device)
+> basically does a bunch of sanity checking against the DT data in order to
+> find where the master sits in the device topology. Then it updates
+> dev->archdata.iommu to point at the relevant SMMU instance.
+>
+> So, the interesting case is where the device was previously associated with
+> a *different* IOMMU. In that case, the current code clobbers the iommu field
+> with the new smmu, whereas the new code could end up getting very confused
+> with respect to IOMMU groups.
+>
+> A better way is probably to check that dev->archdata.iommu is NULL before we
+> assign to it. If not, then spit out a warning and return an error. That
+> would also mean you could get rid of the group get/put calls.
+>
 
-Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
----
- arch/arm/boot/dts/tegra30.dtsi | 22 +++++++++++++++++++++-
- 1 file changed, 21 insertions(+), 1 deletion(-)
+Good point, this is a better way to handle this. I'll respin based on this.
 
-diff --git a/arch/arm/boot/dts/tegra30.dtsi b/arch/arm/boot/dts/tegra30.dtsi
-index dfd3ca9..4173a2a 100644
---- a/arch/arm/boot/dts/tegra30.dtsi
-+++ b/arch/arm/boot/dts/tegra30.dtsi
-@@ -1,6 +1,7 @@
- #include <dt-bindings/clock/tegra30-car.h>
- #include <dt-bindings/gpio/tegra-gpio.h>
- #include <dt-bindings/interrupt-controller/arm-gic.h>
-+#include <dt-bindings/memory/tegra-swgroup.h>
- 
- #include "skeleton.dtsi"
- 
-@@ -92,6 +93,7 @@
- 		interrupts = <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>, /* syncpt */
- 			     <GIC_SPI 67 IRQ_TYPE_LEVEL_HIGH>; /* general */
- 		clocks = <&tegra_car TEGRA30_CLK_HOST1X>;
-+		nvidia,memory-clients = <&smmu TEGRA_SWGROUP_HC>;
- 
- 		#address-cells = <1>;
- 		#size-cells = <1>;
-@@ -103,6 +105,7 @@
- 			reg = <0x54040000 0x00040000>;
- 			interrupts = <GIC_SPI 68 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&tegra_car TEGRA30_CLK_MPE>;
-+			nvidia,memory-clients = <&smmu TEGRA_SWGROUP_MPE>;
- 		};
- 
- 		vi {
-@@ -110,6 +113,7 @@
- 			reg = <0x54080000 0x00040000>;
- 			interrupts = <GIC_SPI 69 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&tegra_car TEGRA30_CLK_VI>;
-+			nvidia,memory-clients = <&smmu TEGRA_SWGROUP_VI>;
- 		};
- 
- 		epp {
-@@ -117,6 +121,7 @@
- 			reg = <0x540c0000 0x00040000>;
- 			interrupts = <GIC_SPI 70 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&tegra_car TEGRA30_CLK_EPP>;
-+			nvidia,memory-clients = <&smmu TEGRA_SWGROUP_EPP>;
- 		};
- 
- 		isp {
-@@ -124,6 +129,7 @@
- 			reg = <0x54100000 0x00040000>;
- 			interrupts = <GIC_SPI 71 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&tegra_car TEGRA30_CLK_ISP>;
-+			nvidia,memory-clients = <&smmu TEGRA_SWGROUP_ISP>;
- 		};
- 
- 		gr2d {
-@@ -131,6 +137,7 @@
- 			reg = <0x54140000 0x00040000>;
- 			interrupts = <GIC_SPI 72 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&tegra_car TEGRA30_CLK_GR2D>;
-+			nvidia,memory-clients = <&smmu TEGRA_SWGROUP_G2>;
- 		};
- 
- 		gr3d {
-@@ -138,6 +145,8 @@
- 			reg = <0x54180000 0x00040000>;
- 			clocks = <&tegra_car 24 &tegra_car 98>;
- 			clock-names = "3d", "3d2";
-+			nvidia,memory-clients = <&smmu TEGRA_SWGROUP_NV
-+						TEGRA_SWGROUP_NV2>;
- 		};
- 
- 		dc@54200000 {
-@@ -147,6 +156,7 @@
- 			clocks = <&tegra_car TEGRA30_CLK_DISP1>,
- 				 <&tegra_car TEGRA30_CLK_PLL_P>;
- 			clock-names = "disp1", "parent";
-+			nvidia,memory-clients = <&smmu TEGRA_SWGROUP_DC>;
- 
- 			rgb {
- 				status = "disabled";
-@@ -160,6 +170,7 @@
- 			clocks = <&tegra_car TEGRA30_CLK_DISP2>,
- 				 <&tegra_car TEGRA30_CLK_PLL_P>;
- 			clock-names = "disp2", "parent";
-+			nvidia,memory-clients = <&smmu TEGRA_SWGROUP_DCB>;
- 
- 			rgb {
- 				status = "disabled";
-@@ -316,6 +327,7 @@
- 		interrupts = <GIC_SPI 36 IRQ_TYPE_LEVEL_HIGH>;
- 		nvidia,dma-request-selector = <&apbdma 8>;
- 		clocks = <&tegra_car TEGRA30_CLK_UARTA>;
-+		nvidia,memory-clients = <&smmu TEGRA_SWGROUP_PPCS>;
- 		status = "disabled";
- 	};
- 
-@@ -326,6 +338,7 @@
- 		interrupts = <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>;
- 		nvidia,dma-request-selector = <&apbdma 9>;
- 		clocks = <&tegra_car TEGRA30_CLK_UARTB>;
-+		nvidia,memory-clients = <&smmu TEGRA_SWGROUP_PPCS>;
- 		status = "disabled";
- 	};
- 
-@@ -336,6 +349,7 @@
- 		interrupts = <GIC_SPI 46 IRQ_TYPE_LEVEL_HIGH>;
- 		nvidia,dma-request-selector = <&apbdma 10>;
- 		clocks = <&tegra_car TEGRA30_CLK_UARTC>;
-+		nvidia,memory-clients = <&smmu TEGRA_SWGROUP_PPCS>;
- 		status = "disabled";
- 	};
- 
-@@ -346,6 +360,7 @@
- 		interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>;
- 		nvidia,dma-request-selector = <&apbdma 19>;
- 		clocks = <&tegra_car TEGRA30_CLK_UARTD>;
-+		nvidia,memory-clients = <&smmu TEGRA_SWGROUP_PPCS>;
- 		status = "disabled";
- 	};
- 
-@@ -356,6 +371,7 @@
- 		interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_HIGH>;
- 		nvidia,dma-request-selector = <&apbdma 20>;
- 		clocks = <&tegra_car TEGRA30_CLK_UARTE>;
-+		nvidia,memory-clients = <&smmu TEGRA_SWGROUP_PPCS>;
- 		status = "disabled";
- 	};
- 
-@@ -524,7 +540,7 @@
- 		interrupts = <GIC_SPI 77 IRQ_TYPE_LEVEL_HIGH>;
- 	};
- 
--	iommu {
-+	smmu: iommu {
- 		compatible = "nvidia,tegra30-smmu";
- 		reg = <0x7000f010 0x02c
- 		       0x7000f1f0 0x010
-@@ -605,6 +621,7 @@
- 		reg = <0x78000000 0x200>;
- 		interrupts = <GIC_SPI 14 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&tegra_car TEGRA30_CLK_SDMMC1>;
-+		nvidia,memory-clients = <&smmu TEGRA_SWGROUP_PPCS>;
- 		status = "disabled";
- 	};
- 
-@@ -613,6 +630,7 @@
- 		reg = <0x78000200 0x200>;
- 		interrupts = <GIC_SPI 15 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&tegra_car TEGRA30_CLK_SDMMC2>;
-+		nvidia,memory-clients = <&smmu TEGRA_SWGROUP_PPCS>;
- 		status = "disabled";
- 	};
- 
-@@ -621,6 +639,7 @@
- 		reg = <0x78000400 0x200>;
- 		interrupts = <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&tegra_car TEGRA30_CLK_SDMMC3>;
-+		nvidia,memory-clients = <&smmu TEGRA_SWGROUP_PPCS>;
- 		status = "disabled";
- 	};
- 
-@@ -629,6 +648,7 @@
- 		reg = <0x78000600 0x200>;
- 		interrupts = <GIC_SPI 31 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&tegra_car TEGRA30_CLK_SDMMC4>;
-+		nvidia,memory-clients = <&smmu TEGRA_SWGROUP_PPCS>;
- 		status = "disabled";
- 	};
- 
--- 
-1.8.1.5
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Will
