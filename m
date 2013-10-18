@@ -1,8 +1,8 @@
-From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [PATCH v2] ARM: SMMU: add devices attached to the SMMU to an IOMMU
-	group
-Date: Fri, 18 Oct 2013 17:08:29 +0200
-Message-ID: <1382108910-18049-1-git-send-email-a.motakis@virtualopensystems.com>
+From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+Subject: [PATCH v3 0/6] iommu/arm-smmu: Misc modifications to support SMMUs on
+	Calxeda ECX-2000
+Date: Fri, 18 Oct 2013 22:13:09 +0200
+Message-ID: <1382127195-15261-1-git-send-email-andreas.herrmann@calxeda.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -16,65 +16,50 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "moderated list:ARM SMMU DRIVER" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-IOMMU groups are expected by certain users of the IOMMU API,
-e.g. VFIO. Add new devices found by the SMMU driver to an IOMMU
-group to satisfy those users.
+Hi,
 
-Changes from v1:
- * Added check that dev->archdata.iommu has not been set already by an IOMMU
-   driver. This way we can also skip checking for an existing IOMMU group.
+Here is v3 of arm-smmu changes to support SMMUs on Calxeda ECX-2000.
 
-Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
----
- drivers/iommu/arm-smmu.c | 19 ++++++++++++++++++-
- 1 file changed, 18 insertions(+), 1 deletion(-)
+Esp. I've reworked the automatic StreamID masking. With this I try to
+keep the number of used SMRs as low as possible. Of course it still
+depends on some kind of reasonable ordering of StreamIDs for a master.
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 0f45a48..6762885 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1502,6 +1502,13 @@ static int arm_smmu_add_device(struct device *dev)
- {
- 	struct arm_smmu_device *child, *parent, *smmu;
- 	struct arm_smmu_master *master = NULL;
-+	struct iommu_group *group;
-+	int ret;
-+
-+	if (dev->archdata.iommu) {
-+		dev_warn(dev, "IOMMU driver already assigned to device\n");
-+		return -EINVAL;
-+	}
- 
- 	spin_lock(&arm_smmu_devices_lock);
- 	list_for_each_entry(parent, &arm_smmu_devices, list) {
-@@ -1534,13 +1541,23 @@ static int arm_smmu_add_device(struct device *dev)
- 	if (!master)
- 		return -ENODEV;
- 
-+	group = iommu_group_alloc();
-+	if (IS_ERR(group)) {
-+		dev_err(dev, "Failed to allocate IOMMU group\n");
-+		return PTR_ERR(group);
-+	}
-+
-+	ret = iommu_group_add_device(group, dev);
-+	iommu_group_put(group);
- 	dev->archdata.iommu = smmu;
--	return 0;
-+
-+	return ret;
- }
- 
- static void arm_smmu_remove_device(struct device *dev)
- {
- 	dev->archdata.iommu = NULL;
-+	iommu_group_remove_device(dev);
- }
- 
- static struct iommu_ops arm_smmu_ops = {
--- 
-1.8.1.2
+The general problem to determine the least number of mask/id pairs to
+use for a given number of StreamIDs is not easy to solve.  But I think
+the solution provided with patch 4 plus considering that we have some
+influence how the StreamIDs are ordered (eg. when provided in DT) is
+sufficient for kernel usage.
+
+Here an example of SMR-usage for 3 SMMUs, each with one master device
+and having StreamIDs 0-9, 0-1 and 0-1:
+
+ arm-smmu 920180000.smmu: SMR0: 0x80070000
+ arm-smmu 920180000.smmu: SMR1: 0x80010008
+ arm-smmu 920180000.smmu: S2CR0: 0x0
+ arm-smmu 920180000.smmu: S2CR1: 0x0
+ arm-smmu 920000000.smmu: SMR0: 0x80010000
+ arm-smmu 920000000.smmu: S2CR0: 0x0
+ arm-smmu 920080000.smmu: SMR0: 0x80010000
+ arm-smmu 920080000.smmu: S2CR0: 0x0
+
+
+Changelog:
+v3:
+- Reworked automatic StreamID masking (I think the previous posted
+  version was buggy anyway). It repeatedly tries to determine mask/id
+  pairs for stream matching.
+- Removed the patch that introduced support to mask all StreamIDs
+  of a master device.
+- Removed setting of flag sCR0_USFCFG in arm_smmu_device_notifier.
+v2:
+  http://marc.info/?l=linux-arm-kernel&m=138135834704855
+v1:
+   http://marc.info/?l=linux-arm-kernel&m=138122450023564
+
+
+Regards,
+Andreas
