@@ -1,61 +1,80 @@
-From: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 0/3 v2] iommu/fsl: PAMU driver fixes.
-Date: Thu, 17 Oct 2013 13:47:38 +0000
-Message-ID: <C5ECD7A89D1DC44195F34B25E172658D0A5456C2@039-SN2MPN1-013.039d.mgd.msft.net>
-References: <1381922582-28724-1-git-send-email-Varun.Sethi@freescale.com>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCHv3 00/19] Unifying SMMU driver among Tegra SoCs
+Date: Fri, 18 Oct 2013 13:26:41 +0300
+Message-ID: <1382092020-13170-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1381922582-28724-1-git-send-email-Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sethi Varun-B16395 <B16395-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Wood Scott-B07421 <B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Bhushan Bharat-R65777 <R65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
-Please consider these patches for 3.12.
+Hi,
 
-Regards
-Varun
+This series provides:
 
-> -----Original Message-----
-> From: Sethi Varun-B16395
-> Sent: Wednesday, October 16, 2013 4:53 PM
-> To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-
-> dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Yoder Stuart-B08248;
-> Wood Scott-B07421; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; Bhushan Bharat-R65777
-> Cc: Sethi Varun-B16395
-> Subject: [PATCH 0/3 v2] iommu/fsl: PAMU driver fixes.
-> 
-> The first patch fixes a build failure, when we try to build for a
-> Freescale platform without PCI support.
-> 
-> The second patch enables a default DMA window for the device, once it's
-> detached from a domain. In case of vfio, once device is detached from a
-> guest it can be again used by the host.
-> 
-> The last patch adds the maintainer entry for the Freescale PAMU driver.
-> 
-> Varun Sethi (3):
->   iommu/fsl: Factor out PCI specific code.
->   iommu/fsl: Enable default DMA window for PCIe devices once detached
->   Add maintainers entry for the Freescale PAMU driver.
-> 
->  MAINTAINERS                     |    7 ++
->  drivers/iommu/fsl_pamu.c        |   43 ++++++++++---
->  drivers/iommu/fsl_pamu.h        |    1 +
->  drivers/iommu/fsl_pamu_domain.c |  134 +++++++++++++++++++++++++--------
-> ------
->  4 files changed, 128 insertions(+), 57 deletions(-)
-> 
-> --
-> 1.7.9.5
+(1) Unified SMMU driver among Tegra SoCs
+(2) Multiple Address Space support(MASID) in IOMMU(SMMMU)
+(3) Tegra IOMMU'able devices, most of platform devices are IOMMU'able.
+
+There's some discussion[1] about device population order, which could
+solve the following patches.
+
+  patch 1: [HACK] of: dev_node has struct device pointer
+  patch 2: [HACK] ARM: tegra: Populate AHB/IOMMU earlier than others
+  patch 3: [HACK] amba: Move AHB to core_initcall
+  patch 4: [HACK] iommu/tegra: smmu: Move IOMMU to core_initcall
+
+Tested IOMMU functionality with T30 SD/MMC. Any further testing with
+T114 and/or other devices would be really appreciated.
+
+v3:
+Updated based on Stephen Warren's feedback
+
+v2:
+Updated based on Thierry Reding's and Stephen Warren's feedback
+
+v2: http://lists.infradead.org/pipermail/linux-arm-kernel/2013-July/181888.html
+v1: http://lists.infradead.org/pipermail/linux-arm-kernel/2013-June/180267.html
+
+Available in the git repository at:
+
+  git://git-HoETi0wPbwRDw2glCA4ptUEOCMrvLtNR@public.gmane.org/user/hdoyu/linux.git smmu-upstreaming@20131018
+
+Hiroshi Doyu (19):
+  [HACK] of: dev_node has struct device pointer
+  [HACK] ARM: tegra: Populate AHB/IOMMU earlier than others
+  [HACK] amba: Move AHB to core_initcall
+  [HACK] iommu/tegra: smmu: Move IOMMU to core_initcall
+  ARM: dt: tegra114: iommu: Fix IOMMU register address
+  iommu/tegra: smmu: Select ARM_DMA_USE_IOMMU in Kconfig
+  iommu/tegra: smmu: Create default IOVA maps
+  iommu/tegra: smmu: Register platform_device to IOMMU dynamically
+  iommu/tegra: smmu: Calculate ASID register offset by ID
+  iommu/tegra: smmu: Get "nvidia,swgroups" from DT
+  ARM: dt: tegra30: iommu: Add "nvidia,swgroups"
+  ARM: dt: tegra114: iommu: Add "nvidia,swgroups"
+  iommu/tegra: smmu: Workaround PCIe IOMMU'able
+  iommu/tegra: smmu: Get "nvidia,memory-clients" from DT
+  ARM: tegra: Create a DT header defining SWGROUP ID
+  iommu/tegra: smmu: Use dt-bindings MACRO
+  ARM: dt: tegra30: iommu: Add "nvidia,memory-clients"
+  ARM: dt: tegra114: iommu: Add "nvidia,memory-clients"
+  iommu/tegra: smmu: Support Multiple ASID
+
+ .../bindings/iommu/nvidia,tegra30-smmu.txt         |  22 ++-
+ arch/arm/boot/dts/tegra114.dtsi                    |  15 +-
+ arch/arm/boot/dts/tegra30.dtsi                     |  23 ++-
+ arch/arm/mach-tegra/tegra.c                        |  22 +++
+ drivers/amba/tegra-ahb.c                           |   7 +-
+ drivers/iommu/Kconfig                              |   1 +
+ drivers/iommu/tegra-smmu.c                         | 198 ++++++++++++---------
+ drivers/of/platform.c                              |   6 +
+ include/dt-bindings/memory/tegra-swgroup.h         |  46 +++++
+ include/linux/of.h                                 |   1 +
+ 10 files changed, 253 insertions(+), 88 deletions(-)
+ create mode 100644 include/dt-bindings/memory/tegra-swgroup.h
+
+-- 
+1.8.1.5
