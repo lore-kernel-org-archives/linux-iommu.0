@@ -1,7 +1,7 @@
 From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCHv3 18/19] ARM: dt: tegra114: iommu: Add "nvidia, memory-clients"
-Date: Fri, 18 Oct 2013 13:26:59 +0300
-Message-ID: <1382092020-13170-19-git-send-email-hdoyu@nvidia.com>
+Subject: [PATCHv3 19/19] iommu/tegra: smmu: Support Multiple ASID
+Date: Fri, 18 Oct 2013 13:27:00 +0300
+Message-ID: <1382092020-13170-20-git-send-email-hdoyu@nvidia.com>
 References: <1382092020-13170-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -17,70 +17,56 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add "nvidia,memory-clients" to identify which swgroup ID a device
-belongs to.
+Support Multiple Address Space(AS). Tegra SMMU can have multiple
+ASes. We reserve 2 of them for static assignment, AS[0] for system
+default, AS[1] for AHB clusters as protected domain from others, where
+there are many traditional pheripheral devices like USB, SD/MMC. They
+should be isolated from some smart devices like host1x for system
+robustness. Even if smart devices behaves wrongly, the traditional
+devices(SD/MMC, USB) wouldn't be affected, and the system could
+continue most likely.
 
 Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- arch/arm/boot/dts/tegra114.dtsi | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/iommu/tegra-smmu.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/tegra114.dtsi b/arch/arm/boot/dts/tegra114.dtsi
-index 4626e8a..db22daa 100644
---- a/arch/arm/boot/dts/tegra114.dtsi
-+++ b/arch/arm/boot/dts/tegra114.dtsi
-@@ -1,6 +1,7 @@
- #include <dt-bindings/clock/tegra114-car.h>
- #include <dt-bindings/gpio/tegra-gpio.h>
- #include <dt-bindings/interrupt-controller/arm-gic.h>
-+#include <dt-bindings/memory/tegra-swgroup.h>
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index 66406b7..e703741 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -925,7 +925,18 @@ enum {
+ static int smmu_iommu_add_device(struct device *dev)
+ {
+ 	int err;
+-	struct dma_iommu_mapping *map = smmu_handle->map[SYSTEM_DEFAULT];
++	u64 swgroups;
++	struct dma_iommu_mapping *map = NULL;
++
++	swgroups = smmu_of_get_memory_client(dev);
++	switch (swgroups) {
++	case TEGRA_SWGROUP_BIT(PPCS):
++		map = smmu_handle->map[SYSTEM_PROTECTED];
++		break;
++	default:
++		map = smmu_handle->map[SYSTEM_DEFAULT];
++		break;
++	}
  
- #include "skeleton.dtsi"
+ 	if (!map)
+ 		goto out;
+@@ -935,7 +946,7 @@ static int smmu_iommu_add_device(struct device *dev)
+ 		return err;
  
-@@ -316,7 +317,7 @@
- 		clock-names = "pclk", "clk32k_in";
- 	};
- 
--	iommu {
-+	smmu: iommu {
- 		compatible = "nvidia,tegra114-smmu", "nvidia,tegra30-smmu";
- 		reg = <0x70019010 0x02c
- 		       0x700191f0 0x010
-@@ -403,6 +404,7 @@
- 		reg = <0x78000000 0x200>;
- 		interrupts = <GIC_SPI 14 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&tegra_car TEGRA114_CLK_SDMMC1>;
-+		nvidia,memory-clients = <&smmu TEGRA_SWGROUP_PPCS>;
- 		status = "disable";
- 	};
- 
-@@ -411,6 +413,7 @@
- 		reg = <0x78000200 0x200>;
- 		interrupts = <GIC_SPI 15 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&tegra_car TEGRA114_CLK_SDMMC2>;
-+		nvidia,memory-clients = <&smmu TEGRA_SWGROUP_PPCS>;
- 		status = "disable";
- 	};
- 
-@@ -419,6 +422,7 @@
- 		reg = <0x78000400 0x200>;
- 		interrupts = <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&tegra_car TEGRA114_CLK_SDMMC3>;
-+		nvidia,memory-clients = <&smmu TEGRA_SWGROUP_PPCS>;
- 		status = "disable";
- 	};
- 
-@@ -427,6 +431,7 @@
- 		reg = <0x78000600 0x200>;
- 		interrupts = <GIC_SPI 31 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&tegra_car TEGRA114_CLK_SDMMC4>;
-+		nvidia,memory-clients = <&smmu TEGRA_SWGROUP_PPCS>;
- 		status = "disable";
- 	};
+ out:
+-	dev_dbg(dev, "Attached to map %p\n", map);
++	dev_dbg(dev, "Attached to map %p, swgroup:%08llx\n", map, swgroups);
+ 	return 0;
+ }
  
 -- 
 1.8.1.5
