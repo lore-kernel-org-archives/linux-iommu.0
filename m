@@ -1,36 +1,92 @@
 From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCHv3 11/19] ARM: dt: tegra30: iommu: Add "nvidia,swgroups"
-Date: Fri, 18 Oct 2013 13:26:52 +0300
-Message-ID: <1382092020-13170-12-git-send-email-hdoyu@nvidia.com>
+Subject: [PATCHv3 15/19] ARM: tegra: Create a DT header defining SWGROUP ID
+Date: Fri, 18 Oct 2013 13:26:56 +0300
+Message-ID: <1382092020-13170-16-git-send-email-hdoyu@nvidia.com>
 References: <1382092020-13170-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 In-Reply-To: <1382092020-13170-1-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This is a bitmap that indicates which HardWare Accelerators(HWA) are
-supported on Tegra30 SoC.
+Create a header file to define the swgroup IDs used by the IOMMU(SMMU)
+binding. "swgroups" is a group of H/W clients which Tegra SoCs
+support. This unique ID can be used to calculate MC_SMMU_<swgroup
+name>_ASID_0 register offset and MC_<swgroup name>_HOTRESET_*_0
+register bit. This will allow the same header to be used by both
+device tree files, and drivers implementing this binding, which
+guarantees that the two stay in sync. This also makes device trees
+more readable by using names instead of magic numbers.
 
 Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- arch/arm/boot/dts/tegra30.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+ include/dt-bindings/memory/tegra-swgroup.h | 46 ++++++++++++++++++++++++++++++
+ 1 file changed, 46 insertions(+)
+ create mode 100644 include/dt-bindings/memory/tegra-swgroup.h
 
-diff --git a/arch/arm/boot/dts/tegra30.dtsi b/arch/arm/boot/dts/tegra30.dtsi
-index 0022c12..dfd3ca9 100644
---- a/arch/arm/boot/dts/tegra30.dtsi
-+++ b/arch/arm/boot/dts/tegra30.dtsi
-@@ -531,6 +531,7 @@
- 		       0x7000f228 0x05c>;
- 		nvidia,#asids = <4>;		/* # of ASIDs */
- 		dma-window = <0 0x40000000>;	/* IOVA start & length */
-+		nvidia,swgroups = <0x00000000 0x000779ff>;
- 		nvidia,ahb = <&ahb>;
- 	};
- 
+diff --git a/include/dt-bindings/memory/tegra-swgroup.h b/include/dt-bindings/memory/tegra-swgroup.h
+new file mode 100644
+index 0000000..434cdcb
+--- /dev/null
++++ b/include/dt-bindings/memory/tegra-swgroup.h
+@@ -0,0 +1,46 @@
++/*
++ * This header provides constants for binding nvidia,swgroup ID
++ */
++
++#ifndef _DT_BINDINGS_MEMORY_TEGRA_SWGROUP_H
++#define _DT_BINDINGS_MEMORY_TEGRA_SWGROUP_H
++
++#define TEGRA_SWGROUP_AFI	0	/* 0x238 */
++#define TEGRA_SWGROUP_AVPC	1	/* 0x23c */
++#define TEGRA_SWGROUP_DC	2	/* 0x240 */
++#define TEGRA_SWGROUP_DCB	3	/* 0x244 */
++#define TEGRA_SWGROUP_EPP	4	/* 0x248 */
++#define TEGRA_SWGROUP_G2	5	/* 0x24c */
++#define TEGRA_SWGROUP_HC	6	/* 0x250 */
++#define TEGRA_SWGROUP_HDA	7	/* 0x254 */
++#define TEGRA_SWGROUP_ISP	8	/* 0x258 */
++#define TEGRA_SWGROUP_ISP2	SWGROUP_ISP
++#define TEGRA_SWGROUP_DC14	9	/* 0x490 *//* Exceptionally non-linear */
++#define TEGRA_SWGROUP_DC12	10	/* 0xa88 *//* Exceptionally non-linear */
++#define TEGRA_SWGROUP_MPE	11	/* 0x264 */
++#define TEGRA_SWGROUP_MSENC	SWGROUP_MPE
++#define TEGRA_SWGROUP_NV	12	/* 0x268 */
++#define TEGRA_SWGROUP_NV2	13	/* 0x26c */
++#define TEGRA_SWGROUP_PPCS	14	/* 0x270 */
++#define TEGRA_SWGROUP_SATA2	15	/* 0x274 */
++#define TEGRA_SWGROUP_SATA	16	/* 0x278 */
++#define TEGRA_SWGROUP_VDE	17	/* 0x27c */
++#define TEGRA_SWGROUP_VI	18	/* 0x280 */
++#define TEGRA_SWGROUP_VIC	19	/* 0x284 */
++#define TEGRA_SWGROUP_XUSB_HOST	20	/* 0x288 */
++#define TEGRA_SWGROUP_XUSB_DEV	21	/* 0x28c */
++#define TEGRA_SWGROUP_A9AVP	22	/* 0x290 */
++#define TEGRA_SWGROUP_TSEC	23	/* 0x294 */
++#define TEGRA_SWGROUP_PPCS1	24	/* 0x298 */
++#define TEGRA_SWGROUP_SDMMC1A	25	/* 0xa94 *//* Linear shift starts from here */
++#define TEGRA_SWGROUP_SDMMC2A	26	/* 0xa98 */
++#define TEGRA_SWGROUP_SDMMC3A	27	/* 0xa9c */
++#define TEGRA_SWGROUP_SDMMC4A	28	/* 0xaa0 */
++#define TEGRA_SWGROUP_ISP2B	29	/* 0xaa4 */
++#define TEGRA_SWGROUP_GPU	30	/* 0xaa8 */
++#define TEGRA_SWGROUP_GPUB	31	/* 0xaac */
++#define TEGRA_SWGROUP_PPCS2	32	/* 0xab0 */
++
++#define TEGRA_SWGROUP_BIT(x)	(1ULL << TEGRA_SWGROUP_##x)
++
++#endif /* _DT_BINDINGS_MEMORY_TEGRA_SWGROUP_H */
 -- 
 1.8.1.5
