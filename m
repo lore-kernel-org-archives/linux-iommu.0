@@ -1,32 +1,105 @@
 From: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCHv3 10/19] iommu/tegra: smmu: Get "nvidia,swgroups" from DT
-Date: Thu, 24 Oct 2013 09:58:11 +0100
-Message-ID: <20131024085811.A3F2CC4039D@trevor.secretlab.ca>
-References: <1382092020-13170-1-git-send-email-hdoyu@nvidia.com> <1382092020-13170-11-git-send-email-hdoyu@nvidia.com>
+Subject: Re: [PATCHv3 14/19] iommu/tegra: smmu: Get "nvidia,memory-clients" from DT
+Date: Thu, 24 Oct 2013 10:01:06 +0100
+Message-ID: <20131024090106.8802EC4039D@trevor.secretlab.ca>
+References: <1382092020-13170-1-git-send-email-hdoyu@nvidia.com> <1382092020-13170-15-git-send-email-hdoyu@nvidia.com>
 Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1382092020-13170-11-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1382092020-13170-15-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 18 Oct 2013 13:26:51 +0300, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote:
-> This provides the info about which H/W Accelerators are supported on
-> Tegra SoC. This info is passed from DT. This is necessary to have the
-> unified SMMU driver among Tegra SoCs. Instead of using platform data,
-> DT passes "nvidia,swgroups" now. DT is mandatory in Tegra.
+On Fri, 18 Oct 2013 13:26:55 +0300, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote:
+> This provides the info about which swgroups a device belongs to. This
+> info is passed from DT. This is necessary for the unified SMMU driver
+> among Tegra SoCs since each has different H/W accelerators.
 > 
 > Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 > ---
-> @@ -1200,6 +1193,9 @@ static int tegra_smmu_probe(struct platform_device *pdev)
->  	if (of_property_read_u32(dev->of_node, "nvidia,#asids", &asids))
->  		return -ENODEV;
+>  .../bindings/iommu/nvidia,tegra30-smmu.txt         | 16 ++++++++++++-
+>  drivers/iommu/tegra-smmu.c                         | 27 ++++++++++++++++++++--
+>  2 files changed, 40 insertions(+), 3 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/nvidia,tegra30-smmu.txt b/Documentation/devicetree/bindings/iommu/nvidia,tegra30-smmu.txt
+> index 6a844b3..7456104 100644
+> --- a/Documentation/devicetree/bindings/iommu/nvidia,tegra30-smmu.txt
+> +++ b/Documentation/devicetree/bindings/iommu/nvidia,tegra30-smmu.txt
+> @@ -13,9 +13,12 @@ Required properties:
+>    file <dt-bindings/memory/tegra-swgroup.h>. Its max is 64. 2 cells
+>    are required. This unique ID info can be used to calculate
+>    MC_SMMU_<SWGROUP name>_ASID_0 offset and HOTRESET bit.
+> +- nvidia,memory-clients: phandle to a smmu device which a device is
+> +  attached to and indicates which swgroups a device belongs to(SWGROUP ID).
+> +  SWGROUP ID is from 0 to 63, and a device can belong to multiple SWGROUPS.
 >  
-> +	if (of_property_read_u64(dev->of_node, "nvidia,swgroups", &swgroups))
-> +		return -ENODEV;
+>  Example:
+> -	smmu {
+> +	smmu: iommu {
+>  		compatible = "nvidia,tegra30-smmu";
+>  		reg = <0x7000f010 0x02c
+>  		       0x7000f1f0 0x010
+> @@ -25,3 +28,14 @@ Example:
+>  		nvidia,swgroups = <0x00000000 0x000779ff>;
+>  		nvidia,ahb = <&ahb>;
+>  	};
 > +
+> +	host1x {
+> +		compatible = "nvidia,tegra30-host1x", "simple-bus";
+> +		nvidia,memory-clients = <&smmu TEGRA_SWGROUP_HC>;
+> +		....
+> +		gr3d {
+> +			compatible = "nvidia,tegra30-gr3d";
+> +			nvidia,memory-clients = <&smmu TEGRA_SWGROUP_NV
+> +						       TEGRA_SWGROUP_NV2>;
+> +			....
+> +		};
+> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+> index f0ff48e..1db9e89 100644
+> --- a/drivers/iommu/tegra-smmu.c
+> +++ b/drivers/iommu/tegra-smmu.c
+> @@ -368,6 +368,29 @@ static inline void smmu_write(struct smmu_device *smmu, u32 val, size_t offs)
+>  
+>  #define smmu_client_hwgrp(c)	(c->as->smmu->swgroups)
+>  
+> +static u64 smmu_of_get_memory_client(struct device *dev)
+> +{
+> +	size_t bytes;
+> +	const char *propname = "nvidia,memory-clients";
+> +	const __be32 *prop;
+> +	int i;
+> +	u64 swgroup = 0;
+> +	struct device_node *np;
+> +
+> +	np = of_parse_phandle(dev->of_node, propname, 0);
+> +	if (np != smmu_handle->dev->of_node)
+> +		return ~0;
+> +
+> +	prop = of_get_property(dev->of_node, propname, &bytes);
+> +	if (!prop || !bytes)
+> +		return ~0;
+> +
+> +	for (i = 1; i < bytes / sizeof(u32); i++, prop++)
+> +		swgroup |= 1ULL << be32_to_cpup(prop);
+> +
+> +	return swgroup;
+> +}
+> +
+>  static int __smmu_client_set_hwgrp(struct smmu_client *c,
+>  				   u64 map, int on)
+>  {
+> @@ -779,8 +802,8 @@ static int smmu_iommu_attach_dev(struct iommu_domain *domain,
+>  		return -ENOMEM;
+>  	client->dev = dev;
+>  	client->as = as;
+> -	map = smmu->swgroups;
+> -	if (!map)
+> +	map = smmu_of_get_memory_client(dev);
+> +	if (map == ~0)
+>  		return -EINVAL;
 
-Best practice: A new property has been created here. If the property
-isn't present, then it should default to the previous meaning instead of
-outright failing. (or make a strong argument that no one is using this
-yet and therefore is not breakage).
+Ditto to my previous comment. Can you return the currently used value if
+the property isn't present? (it's okay to warn at the same time, but it
+is best to avoid breakage).
+
+g.
