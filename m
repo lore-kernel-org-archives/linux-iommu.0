@@ -1,66 +1,85 @@
-From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH 6/6] documentation/iommu: Update description of ARM System MMU
-	binding
-Date: Fri, 18 Oct 2013 22:13:15 +0200
-Message-ID: <1382127195-15261-7-git-send-email-andreas.herrmann@calxeda.com>
-References: <1382127195-15261-1-git-send-email-andreas.herrmann@calxeda.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1382127195-15261-1-git-send-email-andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCHv3 01/19] [HACK] of: dev_node has struct device pointer
+Date: Thu, 24 Oct 2013 09:55:31 +0100
+Message-ID: <20131024085531.680A4C4039D@trevor.secretlab.ca>
+References: <1382092020-13170-1-git-send-email-hdoyu@nvidia.com> <1382092020-13170-2-git-send-email-hdoyu@nvidia.com>
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1382092020-13170-2-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds descriptions fore new properties of device tree
-binding for the ARM SMMU architecture. These properties control
-arm-smmu driver options.
+On Fri, 18 Oct 2013 13:26:42 +0300, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote:
+> To prevent of_platform_populate() from trying to populate duplicate
+> devices if a device has been already populated.
+> 
+> Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> ---
+>  drivers/of/platform.c | 6 ++++++
+>  include/linux/of.h    | 1 +
+>  2 files changed, 7 insertions(+)
+> 
+> diff --git a/drivers/of/platform.c b/drivers/of/platform.c
+> index 9b439ac..994cea4 100644
+> --- a/drivers/of/platform.c
+> +++ b/drivers/of/platform.c
+> @@ -208,6 +208,11 @@ static struct platform_device *of_platform_device_create_pdata(
+>  	if (!of_device_is_available(np))
+>  		return NULL;
+>  
+> +	if (np->dev) {
+> +		dev_info(np->dev, "Already populated\n");
+> +		return to_platform_device(np->dev);
+> +	}
+> +
 
-Cc: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
----
- .../devicetree/bindings/iommu/arm,smmu.txt         |   12 ++++++++++++
- 1 file changed, 12 insertions(+)
+This looks racy if the intent is to prevent a device from being created
+twice. If two threads call of_platform_device_create() in parallel, this
+will fail to properly protect against dual creation. Checking the node
+and marking it as used needs to be atomic.
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-index e34c6cd..de88cf9 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-@@ -48,6 +48,17 @@ conditions.
-                   from the mmu-masters towards memory) node for this
-                   SMMU.
- 
-+- arm,smmu-isolate-devices : Enable device isolation for all masters
-+                             of this SMMU. Ie. each master will be
-+                             attached to its own iommu domain.
-+
-+- arm,smmu-secure-config-access : Enable proper handling of buggy
-+                                  implementations that always use
-+                                  secure access to SMMU configuration
-+                                  registers. In this case non-secure
-+                                  aliases of secure registers have to
-+                                  be used during SMMU configuration.
-+
- Example:
- 
-         smmu {
-@@ -67,4 +78,5 @@ Example:
-                  */
-                 mmu-masters = <&dma0 0xd01d 0xd01e>,
-                               <&dma1 0xd11c>;
-+                arm,smmu-isolate-devices;
-         };
--- 
-1.7.9.5
+>  	dev = of_device_alloc(np, bus_id, parent);
+>  	if (!dev)
+>  		return NULL;
+> @@ -232,6 +237,7 @@ static struct platform_device *of_platform_device_create_pdata(
+>  		return NULL;
+>  	}
+>  
+> +	np->dev = &dev->dev;
+>  	return dev;
+>  }
+>  
+> diff --git a/include/linux/of.h b/include/linux/of.h
+> index f95aee3..638a88a 100644
+> --- a/include/linux/of.h
+> +++ b/include/linux/of.h
+> @@ -60,6 +60,7 @@ struct device_node {
+>  	struct	kref kref;
+>  	unsigned long _flags;
+>  	void	*data;
+> +	struct device *dev;		/* Set only after populated */
+
+Is this being used merely to indicate that a device has been processed
+by of_platform_device_create()? Or do you intend to dereference this
+pointer? I've avoided putting the struct device in to the device_node
+structure up to this point simply becuase there aren't any good clues
+for what /kind/ of device it actually points to. I worry that bad
+assumptions will get made when other subsystems try to use the
+same pointer. ie. if one subsystem creates its own device and sets this
+pointer, and then of_platform_device_create() comes along behind, sees
+that it is already created, and then returns a platform_device pointer
+*for something that isn't a struct platform_device*. This is very bad.
+
+Instead of using a pointer to the struct device, would a flag be
+sufficient for your purposes? Would it be fine to return NULL if the
+device has already been created?
+
+g.
+
+>  #if defined(CONFIG_SPARC)
+>  	const char *path_component_name;
+>  	unsigned int unique_id;
+> -- 
+> 1.8.1.5
+> 
