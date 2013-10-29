@@ -1,68 +1,45 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH] iommu/intel: SNP bit is not dependent on iommu domain
-	coherency
-Date: Tue, 29 Oct 2013 10:21:34 -0600
-Message-ID: <20131029162126.23362.58786.stgit@bling.home>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH 00/19] Enable various Renesas drivers on all ARM platforms
+Date: Tue, 29 Oct 2013 09:28:48 -0700
+Message-ID: <CACRpkdbKk=n=6tU=9fD05Gu9utpQSZ1qrK7EqLf5qwaV7eHBWA@mail.gmail.com>
+References: <1383004027-25036-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-mtd-bounces+gldm-linux-mtd-36=gmane.org@lists.infradead.org>
+In-Reply-To: <1383004027-25036-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mtd>,
+ <mailto:linux-mtd-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-mtd/>
+List-Post: <mailto:linux-mtd@lists.infradead.org>
+List-Help: <mailto:linux-mtd-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mtd>,
+ <mailto:linux-mtd-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-mtd" <linux-mtd-bounces@lists.infradead.org>
+Errors-To: linux-mtd-bounces+gldm-linux-mtd-36=gmane.org@lists.infradead.org
+To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Cc: "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>, Guennadi Liakhovetski <g.liakhovetski+renesas@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>, Vinod Koul <vinod.koul@intel.com>, Joerg Roedel <joro@8bytes.org>, Wolfram Sang <wsa@the-dreams.de>, Magnus Damm <magnus.damm@gmail.com>, Eduardo Valentin <eduardo.valentin@ti.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux Input <linux-input@vger.kernel.org>, Zhang Rui <rui.zhang@intel.com>, Chris Ball <cjb@laptop.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>"linux-pwm@vger.kernel.org" <linu>
 List-Id: iommu@lists.linux-foundation.org
 
-The setting of the SNP bit in the intel-iommu page tables should not
-be dependent on the current capability of the iommu domain.  The
-current VT-d spec (2.2) indicates the SNP bit is "treated as
-reserved[0] by hardware implementations not supporting Snoop Control".
-Furthermore, section 3.7.3 indicates:
+On Mon, Oct 28, 2013 at 4:46 PM, Laurent Pinchart
+<laurent.pinchart+renesas@ideasonboard.com> wrote:
 
-  If the Snoop Control (SC) field in extended capability Register is
-  reported as 0, snoop behavior for access to the page mapped through
-  second-level translation is determined by the no-snoop attribute in
-  the request.
+> If you believe the issue should be solved in a different way (for instance by
+> removing the architecture dependency completely) please reply to the cover
+> letter to let other maintainers chime in.
 
-This all seems to indicate that hardware incapable of Snoop Control
-will handle the SNP bit as zero regardless of the value stored in
-the PTE.
+I have no real opinions on whether this is a good itermediate step towards
+complete arch-independence or not, but I just noticed that you still
+have the <mach/*> hierarchy in mach-shmobile/include/mach/*, and
+grep:ing around this seems totally unnecessary, I think it would be
+easy to produce a patch set eliminating <mach/*> from shmobile.
 
-The trouble with the current implementation is that mapping flags
-depend on the state of the iommu domain at the time of the mapping,
-yet no attempt is made to update existing mappings when the iommu
-domain composition changes.  This leaves the iommu domain in a state
-where some mappings may enforce coherency, others do not, and the user
-of the IOMMU API has no ability to later enable the desired flags
-atomically with respect to DMA.
+(Usually we will just move all the headers down into the
+mach-shmobile folder.)
 
-If we always honor the IOMMU_CACHE flag then an IOMMU API user who
-specifies IOMMU_CACHE for all mappings can assume that the coherency
-of the mappings within a domain follow the coherency capability of
-the domain itself.
+Yours,
+Linus Walleij
 
-Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/intel-iommu.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 15e9b57..c46c6a6 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -4084,7 +4084,7 @@ static int intel_iommu_map(struct iommu_domain *domain,
- 		prot |= DMA_PTE_READ;
- 	if (iommu_prot & IOMMU_WRITE)
- 		prot |= DMA_PTE_WRITE;
--	if ((iommu_prot & IOMMU_CACHE) && dmar_domain->iommu_snooping)
-+	if (iommu_prot & IOMMU_CACHE)
- 		prot |= DMA_PTE_SNP;
- 
- 	max_addr = iova + size;
+______________________________________________________
+Linux MTD discussion mailing list
+http://lists.infradead.org/mailman/listinfo/linux-mtd/
