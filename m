@@ -1,44 +1,66 @@
-From: Artem Bityutskiy <dedekind1@gmail.com>
-Subject: Re: [PATCH 00/19] Enable various Renesas drivers on all ARM platforms
-Date: Tue, 29 Oct 2013 15:54:27 +0200
-Message-ID: <1383054867.29619.34.camel@sauron.fi.intel.com>
-References: <1383004027-25036-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
- <Pine.LNX.4.64.1310291009121.8404@axis700.grange>
- <1383051980.29619.33.camel@sauron.fi.intel.com> <1844190.ApyucSZX8W@avalon>
-Reply-To: dedekind1@gmail.com
+From: Yoder Stuart-B08248 <B08248@freescale.com>
+Subject: RE: [PATCH 1/7] VFIO_IOMMU_TYPE1 workaround to build for platform
+ devices
+Date: Tue, 29 Oct 2013 15:57:50 +0000
+Message-ID: <9F6FE96B71CF29479FF1CDC8046E15036EE62C@039-SN1MPN1-002.039d.mgd.msft.net>
+References: <1380554923-17818-1-git-send-email-a.motakis@virtualopensystems.com>
+	<1380554923-17818-2-git-send-email-a.motakis@virtualopensystems.com>
+	<1380562782.2674.178.camel@ul30vt.home>
+	<9F6FE96B71CF29479FF1CDC8046E15036D37D9@039-SN1MPN1-003.039d.mgd.msft.net>
+ <CAG8rG2yAp2+RhUcHb78VD0GoiT6NBftX1JCqSmyNf+iP5N3now@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1844190.ApyucSZX8W@avalon>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: linux-fbdev@vger.kernel.org, linux-sh@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Guennadi Liakhovetski <g.liakhovetski+renesas@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, "David S. Miller" <davem@davemloft.net>, Vinod Koul <vinod.koul@intel.com>, Joerg Roedel <joro@8bytes.org>, Wolfram Sang <wsa@the-dreams.de>, Magnus Damm <magnus.damm@gmail.com>, Eduardo Valentin <eduardo.valentin@ti.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-serial@vger.kernel.org, linux-input@vger.kernel.org, Zhang Rui <rui.zhang@intel.com>, Chris Ball <cjb@laptop.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-media@vger.kernel.org, linux-pwm@vger.kernel.org, Samuel Ortiz <samuel@sortiz.org>, linux-pm@vger.kernel.org, Ian
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <CAG8rG2yAp2+RhUcHb78VD0GoiT6NBftX1JCqSmyNf+iP5N3now@mail.gmail.com>
+Content-Language: en-US
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Antonios Motakis <a.motakis@virtualopensystems.com>
+Cc: Alex Williamson <alex.williamson@redhat.com>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "agraf@suse.de" <agraf@suse.de>, "tech@virtualopensystems.com" <tech@virtualopensystems.com>, "kim.phillips@linaro.org" <kim.phillips@linaro.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2013-10-29 at 14:22 +0100, Laurent Pinchart wrote:
-> > Also, if ARM dependency is ever removed, all these should become 'n' by
-> > default in the Kconfig, in order to make sure they do not slip into
-> > defconfigs of different architectures.
+
+
+> -----Original Message-----
+> From: Antonios Motakis [mailto:a.motakis@virtualopensystems.com]
+> Sent: Wednesday, October 02, 2013 6:14 AM
+> To: Yoder Stuart-B08248
+> Cc: Alex Williamson; kvmarm@lists.cs.columbia.edu; iommu@lists.linux-
+> foundation.org; linux-samsung-soc@vger.kernel.org; kvm@vger.kernel.org;
+> agraf@suse.de; tech@virtualopensystems.com; kim.phillips@linaro.org
+> Subject: Re: [PATCH 1/7] VFIO_IOMMU_TYPE1 workaround to build for
+> platform devices
 > 
-> The idea is that, if ARM is neither a compile-time nor runtime dependency, it 
-> should not be specified in Kconfig. However, if the IP core has never been 
-> used on anything but SuperH and ARM, I don't think clobbering the config 
-> process with drivers that can't be used on the target architecture would be a 
-> really good idea, especially now that we have a COMPILE_TEST Kconfig option. 
-> My preference does goes to SUPERH || ARM || COMPILE_TEST over no dependency at 
-> all.
+> On Tue, Oct 1, 2013 at 9:21 PM, Yoder Stuart-B08248
+> <B08248@freescale.com> wrote:
+> >> >  static int __init vfio_iommu_type1_init(void)
+> >> >  {
+> >> > -   if (!iommu_present(&pci_bus_type))
+> >> > +#ifdef CONFIG_PCI
+> >> > +   if (iommu_present(&pci_bus_type)) {
+> >> > +           iommu_bus_type = &pci_bus_type;
+> >> > +           /* For PCI targets, IOMMU_CAP_INTR_REMAP is required */
+> >> > +           require_cap_intr_remap = true;
+> >> > +   }
+> >> > +#endif
+> >> > +   if (!iommu_bus_type && iommu_present(&platform_bus_type))
+> >> > +           iommu_bus_type = &platform_bus_type;
+> >> > +
+> >> > +   if(!iommu_bus_type)
+> >> >             return -ENODEV;
+> >> >
+> >> >     return vfio_register_iommu_driver(&vfio_iommu_driver_ops_type1);
+> >>
+> >> Is it possible to have a system with both PCI and platform devices?
+> How
+> >> would you support that?  Thanks,
+> >
+> > It most certainly is a requirement to support both.  This is how
+> > all of our (FSL) SoCs will expect to work.
+> >
+> 
+> Both with an IOMMU present?
 
-Ah, OK, I missed the entire COMPILE_TEST story.
+Yes.
 
--- 
-Best Regards,
-Artem Bityutskiy
+Stuart
