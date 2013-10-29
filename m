@@ -1,79 +1,68 @@
-From: Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH 00/19] Enable various Renesas drivers on all ARM platforms
-Date: Tue, 29 Oct 2013 09:04:49 -0700
-Message-ID: <20131029160449.GD16686@sirena.org.uk>
-References: <1383004027-25036-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
- <20131029060427.GF11580@verge.net.au>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH] iommu/intel: SNP bit is not dependent on iommu domain
+	coherency
+Date: Tue, 29 Oct 2013 10:21:34 -0600
+Message-ID: <20131029162126.23362.58786.stgit@bling.home>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0643476374379051913=="
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20131029060427.GF11580@verge.net.au>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Simon Horman <horms@verge.net.au>
-Cc: linux-fbdev@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>, Linus Walleij <linus.walleij@linaro.org>, Guennadi Liakhovetski <g.liakhovetski+renesas@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Vinod Koul <vinod.koul@intel.com>, Joerg Roedel <joro@8bytes.org>, linux-sh@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>, Eduardo Valentin <eduardo.valentin@ti.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-serial@vger.kernel.org, linux-input@vger.kernel.org, Zhang Rui <rui.zhang@intel.com>, Chris Ball <cjb@laptop.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-media@vger.kernel.org, linux-pwm@vger.kernel.org, Samuel Ortiz <samuel@sortiz.org>, linux-pm@vger.kernel.org, Ian Molton <ian@mnementh.co.uk>, linux-arm-ker
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+The setting of the SNP bit in the intel-iommu page tables should not
+be dependent on the current capability of the iommu domain.  The
+current VT-d spec (2.2) indicates the SNP bit is "treated as
+reserved[0] by hardware implementations not supporting Snoop Control".
+Furthermore, section 3.7.3 indicates:
 
---===============0643476374379051913==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="2iBwrppp/7QCDedR"
-Content-Disposition: inline
+  If the Snoop Control (SC) field in extended capability Register is
+  reported as 0, snoop behavior for access to the page mapped through
+  second-level translation is determined by the no-snoop attribute in
+  the request.
 
+This all seems to indicate that hardware incapable of Snoop Control
+will handle the SNP bit as zero regardless of the value stored in
+the PTE.
 
---2iBwrppp/7QCDedR
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+The trouble with the current implementation is that mapping flags
+depend on the state of the iommu domain at the time of the mapping,
+yet no attempt is made to update existing mappings when the iommu
+domain composition changes.  This leaves the iommu domain in a state
+where some mappings may enforce coherency, others do not, and the user
+of the IOMMU API has no ability to later enable the desired flags
+atomically with respect to DMA.
 
-On Tue, Oct 29, 2013 at 03:04:27PM +0900, Simon Horman wrote:
+If we always honor the IOMMU_CACHE flag then an IOMMU API user who
+specifies IOMMU_CACHE for all mappings can assume that the coherency
+of the mappings within a domain follow the coherency capability of
+the domain itself.
 
-> I think this is a step in a good direction.
-> However, I think it would be even better if the architecture dependency was
-> removed completely.
+Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/intel-iommu.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Yes, please.
-
---2iBwrppp/7QCDedR
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJSb9yZAAoJELSic+t+oim9bYwP/iUUXI14zyW5LzIhwP6LBlEr
-FOYrZVwQxqUbnA4hDctQCmrA9VikBRNUmlDoUx+xxNNRLd7Zelm2iC8xQh4U1JJX
-9pJ/yv1FHi4EBNmWRK7gL9RXEUM7U4Jt1/nPgW64Kw7ooMwsKmMssrDmwm8xorRD
-iFvd4kY6ZiYz1m5Qvn1rQM05qskN1xGR0jdaxhH8DMCkhA0UyGhLoeFWXDy68T1A
-fsJQrF5mRjO/DNqgI/DqetC8gGy1gjyqETra6Ah730luxYN8bZxbmmbjBc4pYDtY
-7pjRnqVjPMCG+seGgAzlCkgk8t56mHfkrzSRnF0IZ4q5PW4uY1QpzuEs2vB3SI/A
-bS3SD8i71t88jsQ0G/skXAbme0Rl2J+7al3DDMJpUf8yCbFQTZoeFSbe75PgA5Dl
-C6D/7nuK8BIQw5/SV+iCVFN99nKXvJZHFc8wdB7YbXnSQCUdmCLnbkkjYS7HxkQ/
-4OB+XjOgVcGeDCjJrL38LrarJIu588qHe6Cz+8wlJvmV/B9pRWwsXNz2OzU8gSPp
-9RKDNPrpaF+aEoYONBJkHIJf8nqBKipk4xFOmOVxEoMA8oGCAAKltM/ktJdgdfir
-Kb+MgiqubYkjFUFJ08WBqs+L63H4mHQ3JcYAw9NsAiKf1XKJuwdIwddhPlrgTvrQ
-HY0P0bFfzdsgfQfvQ5gC
-=3XLW
------END PGP SIGNATURE-----
-
---2iBwrppp/7QCDedR--
-
-
---===============0643476374379051913==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-linux-arm-kernel mailing list
-linux-arm-kernel@lists.infradead.org
-http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-
---===============0643476374379051913==--
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 15e9b57..c46c6a6 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -4084,7 +4084,7 @@ static int intel_iommu_map(struct iommu_domain *domain,
+ 		prot |= DMA_PTE_READ;
+ 	if (iommu_prot & IOMMU_WRITE)
+ 		prot |= DMA_PTE_WRITE;
+-	if ((iommu_prot & IOMMU_CACHE) && dmar_domain->iommu_snooping)
++	if (iommu_prot & IOMMU_CACHE)
+ 		prot |= DMA_PTE_SNP;
+ 
+ 	max_addr = iova + size;
