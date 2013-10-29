@@ -1,305 +1,138 @@
-From: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 2/7] Initial skeleton of VFIO support for Device Tree
-	based	devices
-Date: Mon, 28 Oct 2013 21:29:35 -0400
-Message-ID: <526F0F7F.1040509@redhat.com>
-References: <1380554923-17818-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1380554923-17818-3-git-send-email-a.motakis@virtualopensystems.com>
-	<6A3DF150A5B70D4F9B66A25E3F7C888D0718A4AC@039-SN2MPN1-011.039d.mgd.msft.net>
+From: Simon Horman <horms@verge.net.au>
+Subject: Re: [PATCH 00/19] Enable various Renesas drivers on all ARM platforms
+Date: Tue, 29 Oct 2013 15:04:27 +0900
+Message-ID: <20131029060427.GF11580@verge.net.au>
+References: <1383004027-25036-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <6A3DF150A5B70D4F9B66A25E3F7C888D0718A4AC-RL0Hj/+nBVCMXPU/2EZmt64g8xLGJsHaLnY5E4hWTkheoWH0uzbU5w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bhushan Bharat-R65777 <R65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <1383004027-25036-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Cc: linux-fbdev@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>, Linus Walleij <linus.walleij@linaro.org>, Guennadi Liakhovetski <g.liakhovetski+renesas@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, Joerg Roedel <joro@8bytes.org>, linux-sh@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>, Eduardo Valentin <eduardo.valentin@ti.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-serial@vger.kernel.org, linux-input@vger.kernel.org, Zhang Rui <rui.zhang@intel.com>, Chris Ball <cjb@laptop.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-media@vger.kernel.org, linux-pwm@vger.kernel.org, Samuel Ortiz <samuel@sortiz.org>, linux-pm@vger.kernel.org, Ian Molton <ian@mnementh.co.uk>, Mark Brown <broonie@kernel.org>, linux-arm-kernel@lists.infradead.org, Ser
 List-Id: iommu@lists.linux-foundation.org
 
-On 09/30/2013 11:37 AM, Bhushan Bharat-R65777 wrote:
->
->
->> -----Original Message-----
->> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
->> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Antonios Motakis
->> Sent: Monday, September 30, 2013 8:59 PM
->> To: kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
->> Cc: linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org; Yoder
->> Stuart-B08248; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Antonios Motakis;
->> tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org
->> Subject: [PATCH 2/7] Initial skeleton of VFIO support for Device Tree based
->> devices
->>
->> Platform devices in the Linux kernel are usually managed by the DT interface.
->> This patch forms the base to support these kind of devices with VFIO.
->>
->> Signed-off-by: Antonios Motakis<a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
->> ---
->>   drivers/vfio/Kconfig         |  11 +++
->>   drivers/vfio/Makefile        |   1 +
->>   drivers/vfio/vfio_platform.c | 187 +++++++++++++++++++++++++++++++++++++++++++
->>   include/uapi/linux/vfio.h    |   1 +
->>   4 files changed, 200 insertions(+)
->>   create mode 100644 drivers/vfio/vfio_platform.c
->>
->> diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig index 1f84eda..35254b7
->> 100644
->> --- a/drivers/vfio/Kconfig
->> +++ b/drivers/vfio/Kconfig
->> @@ -13,4 +13,15 @@ menuconfig VFIO
->>
->>   	  If you don't know what to do here, say N.
->>
->> +config VFIO_PLATFORM
->> +	tristate "VFIO support for device tree based platform devices"
->> +	depends on VFIO&&  EVENTFD&&  OF
->> +	help
->> +	  Support for platform devices with VFIO. This is required to make
->> +	  use of platform devices present on device tree nodes using the VFIO
->> +	  framework. Devices that are not described in the device tree cannot
->> +	  be used by this driver.
->> +
->> +	  If you don't know what to do here, say N.
->> +
->>   source "drivers/vfio/pci/Kconfig"
->> diff --git a/drivers/vfio/Makefile b/drivers/vfio/Makefile index
->> 2398d4a..575c8dd 100644
->> --- a/drivers/vfio/Makefile
->> +++ b/drivers/vfio/Makefile
->> @@ -1,3 +1,4 @@
->>   obj-$(CONFIG_VFIO) += vfio.o
->>   obj-$(CONFIG_VFIO_IOMMU_TYPE1) += vfio_iommu_type1.o
->>   obj-$(CONFIG_VFIO_PCI) += pci/
->> +obj-$(CONFIG_VFIO_PLATFORM) += vfio_platform.o
->> diff --git a/drivers/vfio/vfio_platform.c b/drivers/vfio/vfio_platform.c new
->
-> We can make this parallel to PCI, something like drivers/vfio/platform/platform.c
->
-pls, no.  'platform' is too generic, and it really means 'arm-dt' ... so can
-move it to the arch/arm space, and have it's kconfig conditional on ARM&&VFIO.
-if kept under drivers/vfio, then use a better directory name that ties it to arm-dt.
-thanks.
-- Don
+On Tue, Oct 29, 2013 at 12:46:48AM +0100, Laurent Pinchart wrote:
+> Hello,
+> 
+> This patch series, based on v3.12-rc7, prepares various Renesas drivers
+> for migration to multiplatform kernels by enabling their compilation or
+> otherwise fixing them on all ARM platforms. The patches are pretty
+> straightforward and are described in their commit message.
+> 
+> I'd like to get all these patches merged in v3.14. As they will need to go
+> through their respective subsystems' trees, I would appreciate if all
+> maintainers involved could notify me when they merge patches from this series
+> in their tree to help me tracking the merge status. I don't plan to send pull
+> requests individually for these patches, and I will repost patches
+> individually if changes are requested during review.
+> 
+> If you believe the issue should be solved in a different way (for instance by
+> removing the architecture dependency completely) please reply to the cover
+> letter to let other maintainers chime in.
 
+I think this is a step in a good direction.
+However, I think it would be even better if the architecture dependency was
+removed completely.
 
-> -Bharat
->
->> file mode 100644 index 0000000..b9686b0
->> --- /dev/null
->> +++ b/drivers/vfio/vfio_platform.c
->> @@ -0,0 +1,187 @@
->> +/*
->> + * Copyright (C) 2013 - Virtual Open Systems
->> + * Author: Antonios Motakis<a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
->> + *
->> + * This program is free software; you can redistribute it and/or modify
->> + * it under the terms of the GNU General Public License, version 2, as
->> + * published by the Free Software Foundation.
->> + *
->> + * This program is distributed in the hope that it will be useful,
->> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
->> + * GNU General Public License for more details.
->> + *
->> + * You should have received a copy of the GNU General Public License
->> + * along with this program; if not, write to the Free Software
->> + * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
->> + */
->> +
->> +#include<linux/device.h>
->> +#include<linux/eventfd.h>
->> +#include<linux/interrupt.h>
->> +#include<linux/iommu.h>
->> +#include<linux/module.h>
->> +#include<linux/mutex.h>
->> +#include<linux/notifier.h>
->> +#include<linux/pm_runtime.h>
->> +#include<linux/slab.h>
->> +#include<linux/types.h>
->> +#include<linux/uaccess.h>
->> +#include<linux/vfio.h>
->> +
->> +#define DRIVER_VERSION  "0.1"
->> +#define DRIVER_AUTHOR   "Antonios Motakis<a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>"
->> +#define DRIVER_DESC     "VFIO Device Tree devices - User Level meta-driver"
->> +
->> +struct vfio_platform_device {
->> +	struct platform_device	*pdev;
->> +};
->> +
->> +static void vfio_platform_release(void *device_data) {
->> +	module_put(THIS_MODULE);
->> +}
->> +
->> +static int vfio_platform_open(void *device_data) {
->> +	if (!try_module_get(THIS_MODULE))
->> +		return -ENODEV;
->> +
->> +	return 0;
->> +}
->> +
->> +static long vfio_platform_ioctl(void *device_data,
->> +			   unsigned int cmd, unsigned long arg) {
->> +	struct vfio_platform_device *vdev = device_data;
->> +	unsigned long minsz;
->> +
->> +	if (cmd == VFIO_DEVICE_GET_INFO) {
->> +		struct vfio_device_info info;
->> +
->> +		minsz = offsetofend(struct vfio_device_info, num_irqs);
->> +
->> +		if (copy_from_user(&info, (void __user *)arg, minsz))
->> +			return -EFAULT;
->> +
->> +		if (info.argsz<  minsz)
->> +			return -EINVAL;
->> +
->> +		info.flags = VFIO_DEVICE_FLAGS_PLATFORM;
->> +		info.num_regions = 0;
->> +		info.num_irqs = 0;
->> +
->> +		return copy_to_user((void __user *)arg,&info, minsz);
->> +
->> +	} else if (cmd == VFIO_DEVICE_GET_REGION_INFO)
->> +		return -EINVAL;
->> +
->> +	else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
->> +		return -EINVAL;
->> +
->> +	else if (cmd == VFIO_DEVICE_SET_IRQS)
->> +		return -EINVAL;
->> +
->> +	else if (cmd == VFIO_DEVICE_RESET)
->> +		return -EINVAL;
->> +
->> +	return -ENOTTY;
->> +}
->> +
->> +static ssize_t vfio_platform_read(void *device_data, char __user *buf,
->> +			     size_t count, loff_t *ppos)
->> +{
->> +	return 0;
->> +}
->> +
->> +static ssize_t vfio_platform_write(void *device_data, const char __user *buf,
->> +			      size_t count, loff_t *ppos)
->> +{
->> +	return 0;
->> +}
->> +
->> +static int vfio_platform_mmap(void *device_data, struct vm_area_struct
->> +*vma) {
->> +	return -EINVAL;
->> +}
->> +
->> +static const struct vfio_device_ops vfio_platform_ops = {
->> +	.name		= "vfio-platform",
->> +	.open		= vfio_platform_open,
->> +	.release	= vfio_platform_release,
->> +	.ioctl		= vfio_platform_ioctl,
->> +	.read		= vfio_platform_read,
->> +	.write		= vfio_platform_write,
->> +	.mmap		= vfio_platform_mmap,
->> +};
->> +
->> +static int vfio_platform_probe(struct platform_device *pdev) {
->> +	struct vfio_platform_device *vdev;
->> +	struct iommu_group *group;
->> +	int ret;
->> +
->> +	group = iommu_group_get(&pdev->dev);
->> +	if (!group) {
->> +		pr_err("VFIO: No IOMMU group for device %s\n", pdev->name);
->> +		return -EINVAL;
->> +	}
->> +
->> +	vdev = kzalloc(sizeof(*vdev), GFP_KERNEL);
->> +	if (!vdev) {
->> +		iommu_group_put(group);
->> +		return -ENOMEM;
->> +	}
->> +
->> +	vdev->pdev = pdev;
->> +
->> +	ret = vfio_add_group_dev(&pdev->dev,&vfio_platform_ops, vdev);
->> +	if (ret) {
->> +		iommu_group_put(group);
->> +		kfree(vdev);
->> +	}
->> +
->> +	return ret;
->> +}
->> +
->> +static int vfio_platform_remove(struct platform_device *pdev) {
->> +	struct vfio_platform_device *vdev;
->> +
->> +	vdev = vfio_del_group_dev(&pdev->dev);
->> +	if (!vdev)
->> +		return -EINVAL;
->> +
->> +	iommu_group_put(pdev->dev.iommu_group);
->> +	kfree(vdev);
->> +
->> +	return 0;
->> +}
->> +
->> +static const struct of_device_id vfio_platform_match[] = {
->> +	/* Before this series can be applied, we shall implement a better
->> +	 * mechanism to bind the module to any device. For now add the
->> +	 * compatible property to the dtb of the devices we want to use. */
->> +	{
->> +		.compatible = "vfio",
->> +	},
->> +	{},
->> +};
->> +MODULE_DEVICE_TABLE(of, vfio_platform_match);
->> +
->> +static struct platform_driver vfio_platform_driver = {
->> +	.probe		= vfio_platform_probe,
->> +	.remove		= vfio_platform_remove,
->> +	.driver	= {
->> +		.name	= "vfio-platform",
->> +		.owner	= THIS_MODULE,
->> +		.of_match_table = vfio_platform_match,
->> +	},
->> +};
->> +
->> +module_platform_driver(vfio_platform_driver);
->> +
->> +MODULE_VERSION(DRIVER_VERSION);
->> +MODULE_LICENSE("GPL v2");
->> +MODULE_AUTHOR(DRIVER_AUTHOR);
->> +MODULE_DESCRIPTION(DRIVER_DESC);
->> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h index
->> 284ff24..8d7434d 100644
->> --- a/include/uapi/linux/vfio.h
->> +++ b/include/uapi/linux/vfio.h
->> @@ -147,6 +147,7 @@ struct vfio_device_info {
->>   	__u32	flags;
->>   #define VFIO_DEVICE_FLAGS_RESET	(1<<  0)	/* Device supports reset */
->>   #define VFIO_DEVICE_FLAGS_PCI	(1<<  1)	/* vfio-pci device */
->> +#define VFIO_DEVICE_FLAGS_PLATFORM (1<<  2)	/* vfio-platform device */
->>   	__u32	num_regions;	/* Max region index + 1 */
->>   	__u32	num_irqs;	/* Max IRQ index + 1 */
->>   };
->> --
->> 1.8.1.2
->>
->> _______________________________________________
->> iommu mailing list
->> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
->> https://lists.linuxfoundation.org/mailman/listinfo/iommu
->
->
+> 
+> Cc: Chris Ball <cjb@laptop.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: David Woodhouse <dwmw2@infradead.org>
+> Cc: dmaengine@vger.kernel.org
+> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> Cc: Eduardo Valentin <eduardo.valentin@ti.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Guennadi Liakhovetski <g.liakhovetski+renesas@gmail.com>
+> Cc: Ian Molton <ian@mnementh.co.uk>
+> Cc: iommu@lists.linux-foundation.org
+> Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: linux-fbdev@vger.kernel.org
+> Cc: linux-i2c@vger.kernel.org
+> Cc: linux-input@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Cc: linux-media@vger.kernel.org
+> Cc: linux-mmc@vger.kernel.org
+> Cc: linux-mtd@lists.infradead.org
+> Cc: linux-pm@vger.kernel.org
+> Cc: linux-pwm@vger.kernel.org
+> Cc: linux-serial@vger.kernel.org
+> Cc: linux-spi@vger.kernel.org
+> Cc: Magnus Damm <magnus.damm@gmail.com>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Mauro Carvalho Chehab <m.chehab@samsung.com>
+> Cc: netdev@vger.kernel.org
+> Cc: Samuel Ortiz <samuel@sortiz.org>
+> Cc: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
+> Cc: Vinod Koul <vinod.koul@intel.com>
+> Cc: Wolfram Sang <wsa@the-dreams.de>
+> Cc: Zhang Rui <rui.zhang@intel.com>
+> 
+> Laurent Pinchart (19):
+>   serial: sh-sci: Enable the driver on all ARM platforms
+>   DMA: shdma: Enable the driver on all ARM platforms
+>   i2c: sh_mobile: Enable the driver on all ARM platforms
+>   input: sh_keysc: Enable the driver on all ARM platforms
+>   iommu: shmobile: Enable the driver on all ARM platforms
+>   i2c: rcar: Enable the driver on all ARM platforms
+>   v4l: sh_vou: Enable the driver on all ARM platforms
+>   mmc: sdhi: Enable the driver on all ARM platforms
+>   mmc: sh_mmcif: Enable the driver on all ARM platforms
+>   mtd: sh_flctl: Enable the driver on all ARM platforms
+>   net: sh_eth: Set receive alignment correctly on all ARM platforms
+>   irda: sh_irda: Enable the driver on all ARM platforms
+>   pinctrl: sh-pfc: Enable the driver on all ARM platforms
+>   pwm: pwm-renesas-tpu: Enable the driver on all ARM platforms
+>   sh: intc: Enable the driver on all ARM platforms
+>   spi: sh_msiof: Enable the driver on all ARM platforms
+>   spi: sh_hspi: Enable the driver on all ARM platforms
+>   thermal: rcar-thermal: Enable the driver on all ARM platforms
+>   fbdev: sh-mobile-lcdcfb: Enable the driver on all ARM platforms
+> 
+>  drivers/dma/sh/Kconfig                | 2 +-
+>  drivers/dma/sh/shdmac.c               | 6 +++---
+>  drivers/i2c/busses/Kconfig            | 4 ++--
+>  drivers/input/keyboard/Kconfig        | 2 +-
+>  drivers/iommu/Kconfig                 | 2 +-
+>  drivers/media/platform/Kconfig        | 2 +-
+>  drivers/mmc/host/Kconfig              | 4 ++--
+>  drivers/mmc/host/tmio_mmc_dma.c       | 2 +-
+>  drivers/mtd/nand/Kconfig              | 2 +-
+>  drivers/net/ethernet/renesas/sh_eth.c | 2 +-
+>  drivers/net/ethernet/renesas/sh_eth.h | 2 +-
+>  drivers/net/irda/Kconfig              | 2 +-
+>  drivers/pinctrl/Makefile              | 2 +-
+>  drivers/pinctrl/sh-pfc/Kconfig        | 2 +-
+>  drivers/pwm/Kconfig                   | 2 +-
+>  drivers/sh/intc/Kconfig               | 2 +-
+>  drivers/spi/Kconfig                   | 4 ++--
+>  drivers/thermal/Kconfig               | 2 +-
+>  drivers/tty/serial/Kconfig            | 2 +-
+>  drivers/video/Kconfig                 | 6 +++---
+>  20 files changed, 27 insertions(+), 27 deletions(-)
+> 
+> -- 
+> Regards,
+> 
+> Laurent Pinchart
+> 
+> 
 > _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> 
