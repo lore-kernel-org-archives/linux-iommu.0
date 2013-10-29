@@ -1,18 +1,16 @@
 From: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/7] VFIO_IOMMU_TYPE1 workaround to build for platform
-	devices
-Date: Mon, 28 Oct 2013 21:17:26 -0400
-Message-ID: <526F0CA6.5080307@redhat.com>
+Subject: Re: [PATCH 2/7] Initial skeleton of VFIO support for Device Tree
+	based	devices
+Date: Mon, 28 Oct 2013 21:29:35 -0400
+Message-ID: <526F0F7F.1040509@redhat.com>
 References: <1380554923-17818-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1380554923-17818-2-git-send-email-a.motakis@virtualopensystems.com>
-	<1380562782.2674.178.camel@ul30vt.home>
-	<9F6FE96B71CF29479FF1CDC8046E15036D37D9@039-SN1MPN1-003.039d.mgd.msft.net>
-	<170DCB6D-6185-4C8A-977A-4DADF82DB274@suse.de>
+	<1380554923-17818-3-git-send-email-a.motakis@virtualopensystems.com>
+	<6A3DF150A5B70D4F9B66A25E3F7C888D0718A4AC@039-SN2MPN1-011.039d.mgd.msft.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <170DCB6D-6185-4C8A-977A-4DADF82DB274-l3A5Bk7waGM@public.gmane.org>
+In-Reply-To: <6A3DF150A5B70D4F9B66A25E3F7C888D0718A4AC-RL0Hj/+nBVCMXPU/2EZmt64g8xLGJsHaLnY5E4hWTkheoWH0uzbU5w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,45 +20,284 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alexander Graf <agraf-l3A5Bk7waGM@public.gmane.org>
-Cc: "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "'kim.phillips-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org'" <kim.phillips-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>
+To: Bhushan Bharat-R65777 <R65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Cc: "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Yoder Stuart-B08248 <B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 10/02/2013 08:14 AM, Alexander Graf wrote:
+On 09/30/2013 11:37 AM, Bhushan Bharat-R65777 wrote:
 >
-> On 01.10.2013, at 21:21, Yoder Stuart-B08248 wrote:
 >
->>>> static int __init vfio_iommu_type1_init(void)
->>>> {
->>>> -	if (!iommu_present(&pci_bus_type))
->>>> +#ifdef CONFIG_PCI
->>>> +	if (iommu_present(&pci_bus_type)) {
->>>> +		iommu_bus_type =&pci_bus_type;
->>>> +		/* For PCI targets, IOMMU_CAP_INTR_REMAP is required */
->>>> +		require_cap_intr_remap = true;
->>>> +	}
->>>> +#endif
->>>> +	if (!iommu_bus_type&&  iommu_present(&platform_bus_type))
->>>> +		iommu_bus_type =&platform_bus_type;
->>>> +
->>>> +	if(!iommu_bus_type)
->>>> 		return -ENODEV;
->>>>
->>>> 	return vfio_register_iommu_driver(&vfio_iommu_driver_ops_type1);
->>>
->>> Is it possible to have a system with both PCI and platform devices?  How
->>> would you support that?  Thanks,
+>> -----Original Message-----
+>> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
+>> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Antonios Motakis
+>> Sent: Monday, September 30, 2013 8:59 PM
+>> To: kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+>> Cc: linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org; Yoder
+>> Stuart-B08248; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Antonios Motakis;
+>> tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org
+>> Subject: [PATCH 2/7] Initial skeleton of VFIO support for Device Tree based
+>> devices
 >>
->> It most certainly is a requirement to support both.  This is how
->> all of our (FSL) SoCs will expect to work.
+>> Platform devices in the Linux kernel are usually managed by the DT interface.
+>> This patch forms the base to support these kind of devices with VFIO.
+>>
+>> Signed-off-by: Antonios Motakis<a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+>> ---
+>>   drivers/vfio/Kconfig         |  11 +++
+>>   drivers/vfio/Makefile        |   1 +
+>>   drivers/vfio/vfio_platform.c | 187 +++++++++++++++++++++++++++++++++++++++++++
+>>   include/uapi/linux/vfio.h    |   1 +
+>>   4 files changed, 200 insertions(+)
+>>   create mode 100644 drivers/vfio/vfio_platform.c
+>>
+>> diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig index 1f84eda..35254b7
+>> 100644
+>> --- a/drivers/vfio/Kconfig
+>> +++ b/drivers/vfio/Kconfig
+>> @@ -13,4 +13,15 @@ menuconfig VFIO
+>>
+>>   	  If you don't know what to do here, say N.
+>>
+>> +config VFIO_PLATFORM
+>> +	tristate "VFIO support for device tree based platform devices"
+>> +	depends on VFIO&&  EVENTFD&&  OF
+>> +	help
+>> +	  Support for platform devices with VFIO. This is required to make
+>> +	  use of platform devices present on device tree nodes using the VFIO
+>> +	  framework. Devices that are not described in the device tree cannot
+>> +	  be used by this driver.
+>> +
+>> +	  If you don't know what to do here, say N.
+>> +
+>>   source "drivers/vfio/pci/Kconfig"
+>> diff --git a/drivers/vfio/Makefile b/drivers/vfio/Makefile index
+>> 2398d4a..575c8dd 100644
+>> --- a/drivers/vfio/Makefile
+>> +++ b/drivers/vfio/Makefile
+>> @@ -1,3 +1,4 @@
+>>   obj-$(CONFIG_VFIO) += vfio.o
+>>   obj-$(CONFIG_VFIO_IOMMU_TYPE1) += vfio_iommu_type1.o
+>>   obj-$(CONFIG_VFIO_PCI) += pci/
+>> +obj-$(CONFIG_VFIO_PLATFORM) += vfio_platform.o
+>> diff --git a/drivers/vfio/vfio_platform.c b/drivers/vfio/vfio_platform.c new
 >
-> I thought the PCI bus emits a cookie that the system wide IOMMU can then use to differentiate the origin of the transaction? So the same IOMMU can be used for PCI as well as platform routing.
+> We can make this parallel to PCI, something like drivers/vfio/platform/platform.c
 >
-*can* be the same IOMMU, yes;
-have to, no, so there can be multiple IOMMUs of different types.
+pls, no.  'platform' is too generic, and it really means 'arm-dt' ... so can
+move it to the arch/arm space, and have it's kconfig conditional on ARM&&VFIO.
+if kept under drivers/vfio, then use a better directory name that ties it to arm-dt.
+thanks.
+- Don
 
+
+> -Bharat
 >
-> Alex
+>> file mode 100644 index 0000000..b9686b0
+>> --- /dev/null
+>> +++ b/drivers/vfio/vfio_platform.c
+>> @@ -0,0 +1,187 @@
+>> +/*
+>> + * Copyright (C) 2013 - Virtual Open Systems
+>> + * Author: Antonios Motakis<a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+>> + *
+>> + * This program is free software; you can redistribute it and/or modify
+>> + * it under the terms of the GNU General Public License, version 2, as
+>> + * published by the Free Software Foundation.
+>> + *
+>> + * This program is distributed in the hope that it will be useful,
+>> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+>> + * GNU General Public License for more details.
+>> + *
+>> + * You should have received a copy of the GNU General Public License
+>> + * along with this program; if not, write to the Free Software
+>> + * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+>> + */
+>> +
+>> +#include<linux/device.h>
+>> +#include<linux/eventfd.h>
+>> +#include<linux/interrupt.h>
+>> +#include<linux/iommu.h>
+>> +#include<linux/module.h>
+>> +#include<linux/mutex.h>
+>> +#include<linux/notifier.h>
+>> +#include<linux/pm_runtime.h>
+>> +#include<linux/slab.h>
+>> +#include<linux/types.h>
+>> +#include<linux/uaccess.h>
+>> +#include<linux/vfio.h>
+>> +
+>> +#define DRIVER_VERSION  "0.1"
+>> +#define DRIVER_AUTHOR   "Antonios Motakis<a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>"
+>> +#define DRIVER_DESC     "VFIO Device Tree devices - User Level meta-driver"
+>> +
+>> +struct vfio_platform_device {
+>> +	struct platform_device	*pdev;
+>> +};
+>> +
+>> +static void vfio_platform_release(void *device_data) {
+>> +	module_put(THIS_MODULE);
+>> +}
+>> +
+>> +static int vfio_platform_open(void *device_data) {
+>> +	if (!try_module_get(THIS_MODULE))
+>> +		return -ENODEV;
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static long vfio_platform_ioctl(void *device_data,
+>> +			   unsigned int cmd, unsigned long arg) {
+>> +	struct vfio_platform_device *vdev = device_data;
+>> +	unsigned long minsz;
+>> +
+>> +	if (cmd == VFIO_DEVICE_GET_INFO) {
+>> +		struct vfio_device_info info;
+>> +
+>> +		minsz = offsetofend(struct vfio_device_info, num_irqs);
+>> +
+>> +		if (copy_from_user(&info, (void __user *)arg, minsz))
+>> +			return -EFAULT;
+>> +
+>> +		if (info.argsz<  minsz)
+>> +			return -EINVAL;
+>> +
+>> +		info.flags = VFIO_DEVICE_FLAGS_PLATFORM;
+>> +		info.num_regions = 0;
+>> +		info.num_irqs = 0;
+>> +
+>> +		return copy_to_user((void __user *)arg,&info, minsz);
+>> +
+>> +	} else if (cmd == VFIO_DEVICE_GET_REGION_INFO)
+>> +		return -EINVAL;
+>> +
+>> +	else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
+>> +		return -EINVAL;
+>> +
+>> +	else if (cmd == VFIO_DEVICE_SET_IRQS)
+>> +		return -EINVAL;
+>> +
+>> +	else if (cmd == VFIO_DEVICE_RESET)
+>> +		return -EINVAL;
+>> +
+>> +	return -ENOTTY;
+>> +}
+>> +
+>> +static ssize_t vfio_platform_read(void *device_data, char __user *buf,
+>> +			     size_t count, loff_t *ppos)
+>> +{
+>> +	return 0;
+>> +}
+>> +
+>> +static ssize_t vfio_platform_write(void *device_data, const char __user *buf,
+>> +			      size_t count, loff_t *ppos)
+>> +{
+>> +	return 0;
+>> +}
+>> +
+>> +static int vfio_platform_mmap(void *device_data, struct vm_area_struct
+>> +*vma) {
+>> +	return -EINVAL;
+>> +}
+>> +
+>> +static const struct vfio_device_ops vfio_platform_ops = {
+>> +	.name		= "vfio-platform",
+>> +	.open		= vfio_platform_open,
+>> +	.release	= vfio_platform_release,
+>> +	.ioctl		= vfio_platform_ioctl,
+>> +	.read		= vfio_platform_read,
+>> +	.write		= vfio_platform_write,
+>> +	.mmap		= vfio_platform_mmap,
+>> +};
+>> +
+>> +static int vfio_platform_probe(struct platform_device *pdev) {
+>> +	struct vfio_platform_device *vdev;
+>> +	struct iommu_group *group;
+>> +	int ret;
+>> +
+>> +	group = iommu_group_get(&pdev->dev);
+>> +	if (!group) {
+>> +		pr_err("VFIO: No IOMMU group for device %s\n", pdev->name);
+>> +		return -EINVAL;
+>> +	}
+>> +
+>> +	vdev = kzalloc(sizeof(*vdev), GFP_KERNEL);
+>> +	if (!vdev) {
+>> +		iommu_group_put(group);
+>> +		return -ENOMEM;
+>> +	}
+>> +
+>> +	vdev->pdev = pdev;
+>> +
+>> +	ret = vfio_add_group_dev(&pdev->dev,&vfio_platform_ops, vdev);
+>> +	if (ret) {
+>> +		iommu_group_put(group);
+>> +		kfree(vdev);
+>> +	}
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static int vfio_platform_remove(struct platform_device *pdev) {
+>> +	struct vfio_platform_device *vdev;
+>> +
+>> +	vdev = vfio_del_group_dev(&pdev->dev);
+>> +	if (!vdev)
+>> +		return -EINVAL;
+>> +
+>> +	iommu_group_put(pdev->dev.iommu_group);
+>> +	kfree(vdev);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static const struct of_device_id vfio_platform_match[] = {
+>> +	/* Before this series can be applied, we shall implement a better
+>> +	 * mechanism to bind the module to any device. For now add the
+>> +	 * compatible property to the dtb of the devices we want to use. */
+>> +	{
+>> +		.compatible = "vfio",
+>> +	},
+>> +	{},
+>> +};
+>> +MODULE_DEVICE_TABLE(of, vfio_platform_match);
+>> +
+>> +static struct platform_driver vfio_platform_driver = {
+>> +	.probe		= vfio_platform_probe,
+>> +	.remove		= vfio_platform_remove,
+>> +	.driver	= {
+>> +		.name	= "vfio-platform",
+>> +		.owner	= THIS_MODULE,
+>> +		.of_match_table = vfio_platform_match,
+>> +	},
+>> +};
+>> +
+>> +module_platform_driver(vfio_platform_driver);
+>> +
+>> +MODULE_VERSION(DRIVER_VERSION);
+>> +MODULE_LICENSE("GPL v2");
+>> +MODULE_AUTHOR(DRIVER_AUTHOR);
+>> +MODULE_DESCRIPTION(DRIVER_DESC);
+>> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h index
+>> 284ff24..8d7434d 100644
+>> --- a/include/uapi/linux/vfio.h
+>> +++ b/include/uapi/linux/vfio.h
+>> @@ -147,6 +147,7 @@ struct vfio_device_info {
+>>   	__u32	flags;
+>>   #define VFIO_DEVICE_FLAGS_RESET	(1<<  0)	/* Device supports reset */
+>>   #define VFIO_DEVICE_FLAGS_PCI	(1<<  1)	/* vfio-pci device */
+>> +#define VFIO_DEVICE_FLAGS_PLATFORM (1<<  2)	/* vfio-platform device */
+>>   	__u32	num_regions;	/* Max region index + 1 */
+>>   	__u32	num_irqs;	/* Max IRQ index + 1 */
+>>   };
+>> --
+>> 1.8.1.2
+>>
+>> _______________________________________________
+>> iommu mailing list
+>> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+>
 >
 > _______________________________________________
 > iommu mailing list
