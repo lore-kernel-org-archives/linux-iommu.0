@@ -1,17 +1,15 @@
 From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [PATCHv3 01/19] [HACK] of: dev_node has struct device pointer
-Date: Wed, 30 Oct 2013 15:58:58 -0600
-Message-ID: <52718122.9000206@wwwdotorg.org>
-References: <20131024.122115.1035609747068925560.hdoyu@nvidia.com>
-	<20131025001038.77299C403B6@trevor.secretlab.ca>
-	<20131025075652.GB19622@ulmo.nvidia.com>
-	<20131025.112549.2040849946958069337.hdoyu@nvidia.com>
-	<20131025091104.GG19622@ulmo.nvidia.com>
+Subject: Re: [PATCHv3 02/19] [HACK] ARM: tegra: Populate AHB/IOMMU earlier
+	than others
+Date: Wed, 30 Oct 2013 16:01:09 -0600
+Message-ID: <527181A5.4060005@wwwdotorg.org>
+References: <1382092020-13170-1-git-send-email-hdoyu@nvidia.com>
+	<1382092020-13170-3-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20131025091104.GG19622-AwZRO8vwLAwmlAP/+Wk3EA@public.gmane.org>
+In-Reply-To: <1382092020-13170-3-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,38 +19,20 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 10/25/2013 03:11 AM, Thierry Reding wrote:
-...
-> So my proposed solution for the IOMMU case is to treat it the same
-> as any other resources. Perhaps resource isn't the right word, but
-> at the core the issue is the same. A device requires the services
-> of an IOMMU so that it can be put into the correct address space.
-> If the IOMMU is not available yet it cannot do that, so we simply
-> return -EPROBE_DEFER and cause the probe to be retried later.
+On 10/18/2013 04:26 AM, Hiroshi Doyu wrote:
+> Populate AHB/IOMMU earlier than others. IOMMU depends on AHB. IOMMU
+> needs to be instanciated earlier than others so that IOMMU can
+> register other platform devices as IOMMU'able. Once IOMMU is
+> populated, IOMMU/AHB nodes are detached to prevent another
+> registeration.
 
-Personally, I view deferred probe as being used when one device
-requires either a resource /or/ a service provided by another, not
-/just/ when there's a resource dependency. Hence, I think it fits
-perfectly here.
+I think NAK on patches 2-4; this is just too fragile, and the opposite
+direction of where we've been going.
 
-So I agree with Thierry: In other words, I think the solution is for
-all devices that are affected by an IOMMU to have a property such as:
-
-iommu = <&iommu_phandle iommu_specifier>;
-
-(and the DT node for the IOMMU will contain e.g. an #iommu-cells property)
-
-... and for the driver to explicitly parse that property, and wait
-until the driver for iommu_phandle is ready. Exactly the same as any
-other resource/service dependency.
-
-That will solve all the problems.
-
-The only downside is that every driver needs to contain code to parse
-that property. However, I think that's just one function call; the
-actual implementation of that function can be unified somewhere inside
-core code in drivers/iommu/.
+Also once we get to ARMv8, we apparently won't be able to have a per-SoC
+file like tegra.c in which to put hacks like this, so it'll never work
+there even if it does for ARMv7.
