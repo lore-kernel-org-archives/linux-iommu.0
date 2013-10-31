@@ -1,34 +1,54 @@
-From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [PATCHv3 15/19] ARM: tegra: Create a DT header defining SWGROUP
- ID
-Date: Wed, 30 Oct 2013 16:48:38 -0600
-Message-ID: <52718CC6.5@wwwdotorg.org>
-References: <1382092020-13170-1-git-send-email-hdoyu@nvidia.com> <1382092020-13170-16-git-send-email-hdoyu@nvidia.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH 2/6] iommu/arm-smmu: Introduce bus notifier block
+Date: Thu, 31 Oct 2013 00:46:53 +0000
+Message-ID: <20131031004653.GB28613@mudshark.cambridge.arm.com>
+References: <1382127195-15261-1-git-send-email-andreas.herrmann@calxeda.com>
+ <1382127195-15261-3-git-send-email-andreas.herrmann@calxeda.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1382092020-13170-16-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <1382127195-15261-3-git-send-email-andreas.herrmann@calxeda.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Andreas Herrmann <andreas.herrmann@calxeda.com>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 10/18/2013 04:26 AM, Hiroshi Doyu wrote:
-> Create a header file to define the swgroup IDs used by the IOMMU(SMMU)
-> binding. "swgroups" is a group of H/W clients which Tegra SoCs
-> support. This unique ID can be used to calculate MC_SMMU_<swgroup
-> name>_ASID_0 register offset and MC_<swgroup name>_HOTRESET_*_0
-> register bit. This will allow the same header to be used by both
-> device tree files, and drivers implementing this binding, which
-> guarantees that the two stay in sync. This also makes device trees
-> more readable by using names instead of magic numbers.
+On Fri, Oct 18, 2013 at 09:13:11PM +0100, Andreas Herrmann wrote:
+> At the moment just handle BUS_NOTIFY_BIND_DRIVER to conditionally
+> isolate all master devices for an SMMU.
+> 
+> Depending on DT information each device is put into its own protection
+> domain (if possible).  For configuration with one or just a few
+> masters per SMMU that is easy to achieve.
+> 
+> In case of many devices per SMMU (e.g. MMU-500 with it's distributed
+> translation support) isolation of each device might not be possible --
+> depending on number of available SMR groups and/or context banks.
+> 
+> Default is that device isolation is contolled per SMMU with SMMU node
+> property "arm,smmu-isolate-devices" in a DT. If this property is set
+> for an SMMU node, device isolation is performed.
+> 
+> W/o device isolation the driver detects SMMUs but no translation is
+> configured (transactions just bypass translation process).
+> 
+> Note that for device isolation dma_base and size are fixed as 0 and
+> SZ_128M at the moment.
 
-> diff --git a/include/dt-bindings/memory/tegra-swgroup.h b/include/dt-bindings/memory/tegra-swgroup.h
+I still think we need to solve the base/size issue before these can be
+merged (the option parsing code in patch 1 looks fine).
 
-> +#define TEGRA_SWGROUP_PPCS2	32	/* 0xab0 */
-> +
-> +#define TEGRA_SWGROUP_BIT(x)	(1ULL << TEGRA_SWGROUP_##x)
+Maybe we could it all on demand by registering a fault handler with an
+empty IOMMU domain?
 
-Isn't the DT match all 32-bit, such that the ULL suffix does nothing,
-and TEGRA_SWGROUP_BIT(PPCS2) == 1<<32 == fail?
+Will
