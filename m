@@ -1,70 +1,90 @@
-From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 Subject: Re: [PATCHv3 05/19] ARM: dt: tegra114: iommu: Fix IOMMU register
-	address
-Date: Thu, 31 Oct 2013 09:51:27 -0700
-Message-ID: <20131031165127.GB3037@kartoffel>
-References: <1382092020-13170-1-git-send-email-hdoyu@nvidia.com>
-	<1382092020-13170-6-git-send-email-hdoyu@nvidia.com>
+ address
+Date: Thu, 31 Oct 2013 18:05:24 +0100
+Message-ID: <20131031.190524.343708041257755667.hdoyu@nvidia.com>
+References: <1382092020-13170-1-git-send-email-hdoyu@nvidia.com><1382092020-13170-6-git-send-email-hdoyu@nvidia.com><20131031165127.GB3037@kartoffel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1382092020-13170-6-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Content-Type: multipart/mixed;
+	boundary="_002_20131031190524343708041257755667hdoyunvidiacom_"
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20131031165127.GB3037@kartoffel>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Cc: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Oct 18, 2013 at 11:26:46AM +0100, Hiroshi Doyu wrote:
-> Fix IOMMU register address.
-> 
-> Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> ---
->  arch/arm/boot/dts/tegra114.dtsi | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/arch/arm/boot/dts/tegra114.dtsi b/arch/arm/boot/dts/tegra114.dtsi
-> index 2905145..8d42787 100644
-> --- a/arch/arm/boot/dts/tegra114.dtsi
-> +++ b/arch/arm/boot/dts/tegra114.dtsi
-> @@ -318,9 +318,9 @@
->  
->  	iommu {
->  		compatible = "nvidia,tegra114-smmu", "nvidia,tegra30-smmu";
-> -		reg = <0x7000f010 0x02c
-> -		       0x7000f1f0 0x010
-> -		       0x7000f228 0x074>;
-> +		reg = <0x70019010 0x02c
-> +		       0x700191f0 0x010
-> +		       0x70019228 0x074>;
+--_002_20131031190524343708041257755667hdoyunvidiacom_
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-Minor cleanup/consistency request: as all these lines are changing anyway,
-would you mind bracketing each entry individually:
+Hi Mark,
 
-		reg = <0x70019010 0x02c>,
-		      <0x700191f0 0x010>,
-		      <0x70019228 0x074>;
+Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org> wrote @ Thu, 31 Oct 2013 17:51:27 +0100=
+:
 
-Cheers,
-Mark.
+> On Fri, Oct 18, 2013 at 11:26:46AM +0100, Hiroshi Doyu wrote:
+> > Fix IOMMU register address.
+> >=20
+> > Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> > ---
+> >  arch/arm/boot/dts/tegra114.dtsi | 6 +++---
+> >  1 file changed, 3 insertions(+), 3 deletions(-)
+> >=20
+> > diff --git a/arch/arm/boot/dts/tegra114.dtsi b/arch/arm/boot/dts/tegra1=
+14.dtsi
+> > index 2905145..8d42787 100644
+> > --- a/arch/arm/boot/dts/tegra114.dtsi
+> > +++ b/arch/arm/boot/dts/tegra114.dtsi
+> > @@ -318,9 +318,9 @@
+> > =20
+> >  	iommu {
+> >  		compatible =3D "nvidia,tegra114-smmu", "nvidia,tegra30-smmu";
+> > -		reg =3D <0x7000f010 0x02c
+> > -		       0x7000f1f0 0x010
+> > -		       0x7000f228 0x074>;
+> > +		reg =3D <0x70019010 0x02c
+> > +		       0x700191f0 0x010
+> > +		       0x70019228 0x074>;
+>=20
+> Minor cleanup/consistency request: as all these lines are changing anyway=
+,
+> would you mind bracketing each entry individually:
+>=20
+> 		reg =3D <0x70019010 0x02c>,
+> 		      <0x700191f0 0x010>,
+> 		      <0x70019228 0x074>;
 
->  		nvidia,#asids = <4>;
->  		dma-window = <0 0x40000000>;
->  		nvidia,swgroups = <0x18659fe>;
-> -- 
-> 1.8.1.5
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe devicetree" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+No, at all. Attached the updated "[PATCHv3' 05/19]".
+
+--_002_20131031190524343708041257755667hdoyunvidiacom_
+Content-Type: text/x-patch;
+	name="0001-ARM-dt-tegra114-iommu-Fix-IOMMU-register-address.patch"
+Content-Description: 0001-ARM-dt-tegra114-iommu-Fix-IOMMU-register-address.patch
+Content-Disposition: attachment;
+	filename="0001-ARM-dt-tegra114-iommu-Fix-IOMMU-register-address.patch";
+	size=1042; creation-date="Thu, 31 Oct 2013 17:05:32 GMT";
+	modification-date="Thu, 31 Oct 2013 17:05:32 GMT"
+Content-Transfer-Encoding: base64
+
+RnJvbSBkNTQ1YzI3OWQxYWY5ZTgxNzQzZTY2OGM1ZDk5YjE0NzFjMWU1MzViIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQ0KRnJvbTogSGlyb3NoaSBEb3l1IDxoZG95dUBudmlkaWEuY29tPg0KRGF0
+ZTogTW9uLCAxNyBKdW4gMjAxMyAxNTozNzozNSArMDMwMA0KU3ViamVjdDogW1BBVENIdjMnIDA1
+LzE5XSBBUk06IGR0OiB0ZWdyYTExNDogaW9tbXU6IEZpeCBJT01NVSByZWdpc3RlciBhZGRyZXNz
+DQoNCkZpeCBJT01NVSByZWdpc3RlciBhZGRyZXNzLg0KDQpTaWduZWQtb2ZmLWJ5OiBIaXJvc2hp
+IERveXUgPGhkb3l1QG52aWRpYS5jb20+DQotLS0NCnYzJzogVXBkYXRlIHRoZSBmb3JtYXQgc3Vn
+Z2VzdGVkIGJ5IE1hcmsgUnV0bGFuZC4NCi0tLQ0KIGFyY2gvYXJtL2Jvb3QvZHRzL3RlZ3JhMTE0
+LmR0c2kgfCA2ICsrKy0tLQ0KIDEgZmlsZSBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKyksIDMgZGVs
+ZXRpb25zKC0pDQoNCmRpZmYgLS1naXQgYS9hcmNoL2FybS9ib290L2R0cy90ZWdyYTExNC5kdHNp
+IGIvYXJjaC9hcm0vYm9vdC9kdHMvdGVncmExMTQuZHRzaQ0KaW5kZXggMjkwNTE0NS4uYmIxOGFl
+NSAxMDA2NDQNCi0tLSBhL2FyY2gvYXJtL2Jvb3QvZHRzL3RlZ3JhMTE0LmR0c2kNCisrKyBiL2Fy
+Y2gvYXJtL2Jvb3QvZHRzL3RlZ3JhMTE0LmR0c2kNCkBAIC0zMTgsOSArMzE4LDkgQEANCiANCiAJ
+aW9tbXUgew0KIAkJY29tcGF0aWJsZSA9ICJudmlkaWEsdGVncmExMTQtc21tdSIsICJudmlkaWEs
+dGVncmEzMC1zbW11IjsNCi0JCXJlZyA9IDwweDcwMDBmMDEwIDB4MDJjDQotCQkgICAgICAgMHg3
+MDAwZjFmMCAweDAxMA0KLQkJICAgICAgIDB4NzAwMGYyMjggMHgwNzQ+Ow0KKwkJcmVnID0gPDB4
+NzAwMTkwMTAgMHgwMmM+LA0KKwkJICAgICAgIDB4NzAwMTkxZjAgMHgwMTA+LA0KKwkJICAgICAg
+IDB4NzAwMTkyMjggMHgwNzQ+Ow0KIAkJbnZpZGlhLCNhc2lkcyA9IDw0PjsNCiAJCWRtYS13aW5k
+b3cgPSA8MCAweDQwMDAwMDAwPjsNCiAJCW52aWRpYSxzd2dyb3VwcyA9IDwweDE4NjU5ZmU+Ow0K
+LS0gDQoxLjguMS41DQoNCg==
+
+--_002_20131031190524343708041257755667hdoyunvidiacom_--
