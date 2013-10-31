@@ -1,54 +1,36 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH 2/6] iommu/arm-smmu: Introduce bus notifier block
-Date: Thu, 31 Oct 2013 00:46:53 +0000
-Message-ID: <20131031004653.GB28613@mudshark.cambridge.arm.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 3/6] iommu/arm-smmu: Support buggy implementations where
+	all config accesses are secure
+Date: Thu, 31 Oct 2013 00:48:44 +0000
+Message-ID: <20131031004844.GC28613@mudshark.cambridge.arm.com>
 References: <1382127195-15261-1-git-send-email-andreas.herrmann@calxeda.com>
- <1382127195-15261-3-git-send-email-andreas.herrmann@calxeda.com>
+	<1382127195-15261-4-git-send-email-andreas.herrmann@calxeda.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1382127195-15261-3-git-send-email-andreas.herrmann@calxeda.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Andreas Herrmann <andreas.herrmann@calxeda.com>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <1382127195-15261-4-git-send-email-andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Oct 18, 2013 at 09:13:11PM +0100, Andreas Herrmann wrote:
-> At the moment just handle BUS_NOTIFY_BIND_DRIVER to conditionally
-> isolate all master devices for an SMMU.
+On Fri, Oct 18, 2013 at 09:13:12PM +0100, Andreas Herrmann wrote:
+> In such a case we have to use secure aliases of some non-secure
+> registers.
 > 
-> Depending on DT information each device is put into its own protection
-> domain (if possible).  For configuration with one or just a few
-> masters per SMMU that is easy to achieve.
-> 
-> In case of many devices per SMMU (e.g. MMU-500 with it's distributed
-> translation support) isolation of each device might not be possible --
-> depending on number of available SMR groups and/or context banks.
-> 
-> Default is that device isolation is contolled per SMMU with SMMU node
-> property "arm,smmu-isolate-devices" in a DT. If this property is set
-> for an SMMU node, device isolation is performed.
-> 
-> W/o device isolation the driver detects SMMUs but no translation is
-> configured (transactions just bypass translation process).
-> 
-> Note that for device isolation dma_base and size are fixed as 0 and
-> SZ_128M at the moment.
+> This handling is switched on by DT property
+> "arm,smmu-secure-config-access" for an SMMU node.
 
-I still think we need to solve the base/size issue before these can be
-merged (the option parsing code in patch 1 looks fine).
-
-Maybe we could it all on demand by registering a fault handler with an
-empty IOMMU domain?
+This looks fine, but won't apply without the device isolation changes.
 
 Will
