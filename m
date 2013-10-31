@@ -1,17 +1,15 @@
-From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCHv3 15/19] ARM: tegra: Create a DT header defining SWGROUP ID
-Date: Thu, 31 Oct 2013 10:46:06 -0700
-Message-ID: <20131031174606.GG3037@kartoffel>
-References: <1382092020-13170-1-git-send-email-hdoyu@nvidia.com>
-	<1382092020-13170-16-git-send-email-hdoyu@nvidia.com>
-	<52718CC6.5@wwwdotorg.org>
-	<20131031.101942.530833331841957251.hdoyu@nvidia.com>
+From: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v3] iommu: shmobile: Enable the driver on all ARM platforms
+Date: Thu, 31 Oct 2013 10:49:45 -0700
+Message-ID: <20131031174945.GI2493@sirena.org.uk>
+References: <1383132043-5190-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+	<20131030112625.GZ16735@n2100.arm.linux.org.uk>
+	<1652955.Gs3XDiEUHO@avalon> <20131030162854.GB2493@sirena.org.uk>
+	<20131031060305.GU1603@verge.net.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============0508239824670900975=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20131031.101942.530833331841957251.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20131031060305.GU1603-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,37 +19,69 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org" <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+To: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Oct 31, 2013 at 08:19:42AM +0000, Hiroshi Doyu wrote:
-> Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote @ Wed, 30 Oct 2013 23:48:38 +0100:
-> 
-> > On 10/18/2013 04:26 AM, Hiroshi Doyu wrote:
-> > > Create a header file to define the swgroup IDs used by the IOMMU(SMMU)
-> > > binding. "swgroups" is a group of H/W clients which Tegra SoCs
-> > > support. This unique ID can be used to calculate MC_SMMU_<swgroup
-> > > name>_ASID_0 register offset and MC_<swgroup name>_HOTRESET_*_0
-> > > register bit. This will allow the same header to be used by both
-> > > device tree files, and drivers implementing this binding, which
-> > > guarantees that the two stay in sync. This also makes device trees
-> > > more readable by using names instead of magic numbers.
-> > 
-> > > diff --git a/include/dt-bindings/memory/tegra-swgroup.h b/include/dt-bindings/memory/tegra-swgroup.h
-> > 
-> > > +#define TEGRA_SWGROUP_PPCS2	32	/* 0xab0 */
-> > > +
-> > > +#define TEGRA_SWGROUP_BIT(x)	(1ULL << TEGRA_SWGROUP_##x)
-> > 
-> > Isn't the DT match all 32-bit, such that the ULL suffix does nothing,
-> 
-> For the future Tegra SoC, the number of HWA grows a bit more, and it's
-> supposed that "64" would be enough.
 
-Does DTC accept 64-bit values as-is? I recall DTC shouting at me in the past,
-and having to split values across two u32 cells (i.e. <0xffffffff 0xffffffff>
-rather than <0xffffffffffffffff>).
+--===============0508239824670900975==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="mu9njEoJVcULXJK5"
+Content-Disposition: inline
 
-Thanks,
-Mark.
+
+--mu9njEoJVcULXJK5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Thu, Oct 31, 2013 at 03:03:05PM +0900, Simon Horman wrote:
+> On Wed, Oct 30, 2013 at 09:28:54AM -0700, Mark Brown wrote:
+> > On Wed, Oct 30, 2013 at 12:40:12PM +0100, Laurent Pinchart wrote:
+
+> > > > For similar reasons as x86, can we please think about using:
+> >=20
+> > > > 	depends on ARM
+> > > > 	depends on ARCH_SHMOBILE || ARCH_SHMOBILE_MULTI || COMPILE_TEST
+
+> > I'd read the above as saying the code needs ARM to build at all and that
+> > the hardware will only ever appear on SHMOBILE.
+
+> I am curious to know the value of "depends ARM".
+> Is it to aid the reading that you spelt out?
+
+That's a function of the compile time dependencies, if ARM is required
+to build then it needs to be an unconditional dependency.
+
+--mu9njEoJVcULXJK5
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJScpg1AAoJELSic+t+oim9G+sP/Rmpi2B9OiuHSNWqL/4ODXYG
+EbjlQZy4om0HpdthkkDPOut71c7gR4sqtn9wtex+leCU/VXA4PnhpThyrLnpkWpU
+V/S6p3k+hXRJI2jV/R11cr9+buMlJbPNq2RV46exwLGP31zcVrlrim3FKnDUT5bO
+uW5cuExUhlncFMmK/BnAN6SaUudAcilJ2FyC2QaIC8w+HzH/yb1FuBIMrVz+HRPt
+UORjJXWfNj52i210qGPnSayM0rG/SXsubVq0C/ufOMQ2HAB6lgjs+JFjoONWFJE9
+JNXwib3FtTTllkyW/GUKgAUg35RZL4BZoAqg/kF91ABG76GVviX7CPLMSADnvum+
+fvhfac95SWhhymAPq2N9AnuUtxGgPMhUxVFKiXtLuTS3ws72u8skOe7rVI/AOLQ4
+xI2mmD5Hyu+1EAZR18Z1ecLl/tVrE5pNdJnnMM0jZ/s5gxd1mh1djDXFKXD/+0ka
+ra6s6mT1fKXN1WCcT069o5UtNsR1RZxE6n76kvMs26K1XReK5DIXMENfNDVQ6qoI
+NCMGUBrJX50viCpFMrW6305qkKQlc8nf/WnGjHJygVXnQLARtpf+tMmj8nOt+cYI
+VsRqb/XcaH+hHiPOox12UUEmdIihDM/U8eit/4e9vTyYJZCeuyWWaPkp4o9rBQnT
+/ewx8aq1WETESmPxLRx8
+=xjJx
+-----END PGP SIGNATURE-----
+
+--mu9njEoJVcULXJK5--
+
+--===============0508239824670900975==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============0508239824670900975==--
