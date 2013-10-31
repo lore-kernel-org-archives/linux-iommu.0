@@ -1,19 +1,18 @@
 From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCHv3 05/19] ARM: dt: tegra114: iommu: Fix IOMMU register
-	address
-Date: Thu, 31 Oct 2013 10:34:33 -0700
-Message-ID: <20131031173433.GE3037@kartoffel>
-References: <1382092020-13170-6-git-send-email-hdoyu@nvidia.com>
-	<20131031165127.GB3037@kartoffel>
-	<20131031.190524.343708041257755667.hdoyu@nvidia.com>
-	<20131031.191126.1326472797634956722.hdoyu@nvidia.com>
+Subject: Re: [PATCHv3 14/19] iommu/tegra: smmu: Get "nvidia,memory-clients"
+	from DT
+Date: Thu, 31 Oct 2013 10:40:29 -0700
+Message-ID: <20131031174028.GF3037@kartoffel>
+References: <1382092020-13170-1-git-send-email-hdoyu@nvidia.com>
+	<1382092020-13170-15-git-send-email-hdoyu@nvidia.com>
+	<52718BB4.4090007@wwwdotorg.org>
+	<20131031.101808.1830527808656695540.hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20131031.191126.1326472797634956722.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <20131031.101808.1830527808656695540.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,86 +23,56 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org" <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Oct 31, 2013 at 05:11:26PM +0000, Hiroshi Doyu wrote:
-> Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote @ Thu, 31 Oct 2013 19:05:24 +0200 (EET):
+On Thu, Oct 31, 2013 at 08:18:08AM +0000, Hiroshi Doyu wrote:
+> Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote @ Wed, 30 Oct 2013 23:44:04 +0100:
 > 
-> > Hi Mark,
+> > > +	host1x {
+> > > +		compatible = "nvidia,tegra30-host1x", "simple-bus";
+> > > +		nvidia,memory-clients = <&smmu TEGRA_SWGROUP_HC>;
+> > > +		....
+> > > +		gr3d {
+> > > +			compatible = "nvidia,tegra30-gr3d";
+> > > +			nvidia,memory-clients = <&smmu TEGRA_SWGROUP_NV
+> > > +						       TEGRA_SWGROUP_NV2>;
 > > 
-> > Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org> wrote @ Thu, 31 Oct 2013 17:51:27 +0100:
-> > 
-> > > On Fri, Oct 18, 2013 at 11:26:46AM +0100, Hiroshi Doyu wrote:
-> > > > Fix IOMMU register address.
-> > > > 
-> > > > Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> > > > ---
-> > > >  arch/arm/boot/dts/tegra114.dtsi | 6 +++---
-> > > >  1 file changed, 3 insertions(+), 3 deletions(-)
-> > > > 
-> > > > diff --git a/arch/arm/boot/dts/tegra114.dtsi b/arch/arm/boot/dts/tegra114.dtsi
-> > > > index 2905145..8d42787 100644
-> > > > --- a/arch/arm/boot/dts/tegra114.dtsi
-> > > > +++ b/arch/arm/boot/dts/tegra114.dtsi
-> > > > @@ -318,9 +318,9 @@
-> > > >  
-> > > >  	iommu {
-> > > >  		compatible = "nvidia,tegra114-smmu", "nvidia,tegra30-smmu";
-> > > > -		reg = <0x7000f010 0x02c
-> > > > -		       0x7000f1f0 0x010
-> > > > -		       0x7000f228 0x074>;
-> > > > +		reg = <0x70019010 0x02c
-> > > > +		       0x700191f0 0x010
-> > > > +		       0x70019228 0x074>;
-> > > 
-> > > Minor cleanup/consistency request: as all these lines are changing anyway,
-> > > would you mind bracketing each entry individually:
-> > > 
-> > > 		reg = <0x70019010 0x02c>,
-> > > 		      <0x700191f0 0x010>,
-> > > 		      <0x70019228 0x074>;
-> > 
-> > No, at all. Attached the updated "[PATCHv3' 05/19]".
+> > Why one cell for the host1x property, and two cells for the gr3d
+> > property; shouldn't they be the same length?
 > 
-> Oops, here's the right one, "[PATCHv3'' 05/19]".
+> That can vary. Even a single device node in DT can belong to multiple
+> software groups.
 
-:)
+Same with ARM SMMU.
 
-Acked-by: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+> 
+> > > diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+> > 
+> > > +static u64 smmu_of_get_memory_client(struct device *dev)
+> > 
+> > > +	np = of_parse_phandle(dev->of_node, propname, 0);
+> > > +	if (np != smmu_handle->dev->of_node)
+> > > +		return ~0;
+> > > +
+> > > +	prop = of_get_property(dev->of_node, propname, &bytes);
+> > > +	if (!prop || !bytes)
+> > > +		return ~0;
+> > 
+> > of_parse_phandle_with_fixed_args() might be a good fit here, or perhaps
+> > require a property #smmu-cells in the SMMU node, thus allowing the
+> > non-fixed-length of_parse_phandle_with_args() to be used here.
+> 
+> I once considered of_parse_phandle_with_args() but I couldn't use that
+> since "#smmu-cells" needed to be fixed in smmu node, not in client
+> node. In this case, the number of argument(number of swgroup IDs)
+> varies per client device.
 
-Cheers,
+For the ARM SMMU binding, each device has a #stream-id-cells property
+describing how many IDs it has, and then the SMMU node has a phandle+args
+linkage to each of the devices attached to it, describing their stream IDs.
+While this does have some limitations (a device can't be plugged into multiple
+SMMUs with a different number of IDs), it seems generally sane.
+
+Thanks,
 Mark.
-
-> From 156a6ad059f902590094570697cb33e5b892d835 Mon Sep 17 00:00:00 2001
-> From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> Date: Mon, 17 Jun 2013 15:37:35 +0300
-> Subject: [PATCHv3'' 1/1] ARM: dt: tegra114: iommu: Fix IOMMU register address
-> 
-> Fix IOMMU register address.
-> 
-> Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> ---
->  arch/arm/boot/dts/tegra114.dtsi | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/arch/arm/boot/dts/tegra114.dtsi b/arch/arm/boot/dts/tegra114.dtsi
-> index 2905145..e629042 100644
-> --- a/arch/arm/boot/dts/tegra114.dtsi
-> +++ b/arch/arm/boot/dts/tegra114.dtsi
-> @@ -318,9 +318,9 @@
->  
->  	iommu {
->  		compatible = "nvidia,tegra114-smmu", "nvidia,tegra30-smmu";
-> -		reg = <0x7000f010 0x02c
-> -		       0x7000f1f0 0x010
-> -		       0x7000f228 0x074>;
-> +		reg = <0x70019010 0x02c>,
-> +		      <0x700191f0 0x010>,
-> +		      <0x70019228 0x074>;
->  		nvidia,#asids = <4>;
->  		dma-window = <0 0x40000000>;
->  		nvidia,swgroups = <0x18659fe>;
-> -- 
-> 1.8.1.5
-> 
