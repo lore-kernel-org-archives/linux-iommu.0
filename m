@@ -1,42 +1,32 @@
-From: Tushar Behera <tushar.behera@linaro.org>
-Subject: [PATCH 3/5] iommu/arm-smmu: Use devm_ioremap_resource
-Date: Thu, 31 Oct 2013 16:38:05 +0530
-Message-ID: <1383217687-12037-4-git-send-email-tushar.behera@linaro.org>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH 3/5] iommu/arm-smmu: Use devm_ioremap_resource
+Date: Thu, 31 Oct 2013 15:59:34 +0000
+Message-ID: <20131031155933.GA30623@mudshark.cambridge.arm.com>
 References: <1383217687-12037-1-git-send-email-tushar.behera@linaro.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1383217687-12037-1-git-send-email-tushar.behera@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: patches@linaro.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>
+ <1383217687-12037-4-git-send-email-tushar.behera@linaro.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <1383217687-12037-4-git-send-email-tushar.behera@linaro.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Tushar Behera <tushar.behera@linaro.org>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Joerg Roedel <joro@8bytes.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "patches@linaro.org" <patches@linaro.org>
 List-Id: iommu@lists.linux-foundation.org
 
-While at it, propagate the error code.
+On Thu, Oct 31, 2013 at 11:08:05AM +0000, Tushar Behera wrote:
+> While at it, propagate the error code.
 
-Signed-off-by: Tushar Behera <tushar.behera@linaro.org>
-CC: linux-arm-kernel@lists.infradead.org
-CC: iommu@lists.linux-foundation.org
-CC: Will Deacon <will.deacon@arm.com>
-CC: Joerg Roedel <joro@8bytes.org>
----
- drivers/iommu/arm-smmu.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Thanks, but I already have an equivalent patch queued which Joerg is going
+to pull real soon now (right, Joerg? :p).
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 2349d62..fe275b3 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1790,9 +1790,9 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 	}
- 
- 	smmu->size = resource_size(res);
--	smmu->base = devm_request_and_ioremap(dev, res);
--	if (!smmu->base)
--		return -EADDRNOTAVAIL;
-+	smmu->base = devm_ioremap_resource(dev, res);
-+	if (IS_ERR(smmu->base))
-+		return PTR_ERR(smmu->base);
- 
- 	if (of_property_read_u32(dev->of_node, "#global-interrupts",
- 				 &smmu->num_global_irqs)) {
--- 
-1.7.9.5
+Will
