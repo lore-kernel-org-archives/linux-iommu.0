@@ -1,51 +1,42 @@
 From: Tushar Behera <tushar.behera@linaro.org>
-Subject: [PATCH 0/5] Remove remaining instances of devm_request_and_ioremap
-Date: Thu, 31 Oct 2013 16:38:02 +0530
-Message-ID: <1383217687-12037-1-git-send-email-tushar.behera@linaro.org>
-Return-path: <linux-doc-owner@vger.kernel.org>
-Sender: linux-doc-owner@vger.kernel.org
+Subject: [PATCH 3/5] iommu/arm-smmu: Use devm_ioremap_resource
+Date: Thu, 31 Oct 2013 16:38:05 +0530
+Message-ID: <1383217687-12037-4-git-send-email-tushar.behera@linaro.org>
+References: <1383217687-12037-1-git-send-email-tushar.behera@linaro.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1383217687-12037-1-git-send-email-tushar.behera@linaro.org>
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org
-Cc: patches@linaro.org, dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org, linux-mips@linux-mips.org, linux-watchdog@vger.kernel.org, David Airlie <airlied@linux.ie>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joerg Roedel <joro@8bytes.org>, John Crispin <blogic@openwrt.org>, Ralf Baechle <ralf@linux-mips.org>, Rob Landley <rob@landley.net>, Russell King <rmk+kernel@arm.linux.org.uk>, Will Deacon <will.deacon@arm.com>, Wim Van Sebroeck <wim@iguana.be>
+Cc: patches@linaro.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>
 List-Id: iommu@lists.linux-foundation.org
 
-devm_request_and_ioremap is now obsolete and is replaced by
-devm_ioremap_resource. Update the remaining places where
-devm_request_and_ioremap is still used and remove its definition.
+While at it, propagate the error code.
 
-The patches are based on next-20131030.
-
-Tushar Behera (5):
-  MIPS: ralink: Use devm_ioremap_resource
-  DRM: Armada: Use devm_ioremap_resource
-  iommu/arm-smmu: Use devm_ioremap_resource
-  watchdog: ralink: Use devm_ioremap_resource
-  lib: devres: Remove deprecated devm_request_and_ioremap
-
- Documentation/driver-model/devres.txt |    1 -
- arch/mips/ralink/timer.c              |    2 +-
- drivers/gpu/drm/armada/armada_crtc.c  |    8 +++-----
- drivers/iommu/arm-smmu.c              |    6 +++---
- drivers/watchdog/rt2880_wdt.c         |    2 +-
- include/linux/device.h                |    2 --
- lib/devres.c                          |   28 ----------------------------
- 7 files changed, 8 insertions(+), 41 deletions(-)
-
-CC: dri-devel@lists.freedesktop.org
-CC: iommu@lists.linux-foundation.org
+Signed-off-by: Tushar Behera <tushar.behera@linaro.org>
 CC: linux-arm-kernel@lists.infradead.org
-CC: linux-doc@vger.kernel.org
-CC: linux-mips@linux-mips.org
-CC: linux-watchdog@vger.kernel.org
-CC: David Airlie <airlied@linux.ie>
-CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC: Joerg Roedel <joro@8bytes.org>
-CC: John Crispin <blogic@openwrt.org>
-CC: Ralf Baechle <ralf@linux-mips.org>
-CC: Rob Landley <rob@landley.net>
-CC: Russell King <rmk+kernel@arm.linux.org.uk>
+CC: iommu@lists.linux-foundation.org
 CC: Will Deacon <will.deacon@arm.com>
-CC: Wim Van Sebroeck <wim@iguana.be>
+CC: Joerg Roedel <joro@8bytes.org>
+---
+ drivers/iommu/arm-smmu.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 2349d62..fe275b3 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1790,9 +1790,9 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	smmu->size = resource_size(res);
+-	smmu->base = devm_request_and_ioremap(dev, res);
+-	if (!smmu->base)
+-		return -EADDRNOTAVAIL;
++	smmu->base = devm_ioremap_resource(dev, res);
++	if (IS_ERR(smmu->base))
++		return PTR_ERR(smmu->base);
+ 
+ 	if (of_property_read_u32(dev->of_node, "#global-interrupts",
+ 				 &smmu->num_global_irqs)) {
 -- 
 1.7.9.5
-
