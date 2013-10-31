@@ -1,13 +1,16 @@
-From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCHv3 01/19] [HACK] of: dev_node has struct device pointer
-Date: Thu, 31 Oct 2013 17:46:03 +0100
-Message-ID: <20131031.184603.979300613649357798.hdoyu@nvidia.com>
-References: <52718122.9000206@wwwdotorg.org><20131031.101232.80781047726461143.hdoyu@nvidia.com><527286CC.9080404@wwwdotorg.org>
+From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCHv3 12/19] ARM: dt: tegra114: iommu: Add "nvidia,swgroups"
+Date: Thu, 31 Oct 2013 09:46:52 -0700
+Message-ID: <20131031164651.GA3037@kartoffel>
+References: <1382092020-13170-1-git-send-email-hdoyu@nvidia.com>
+	<1382092020-13170-13-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <527286CC.9080404-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1382092020-13170-13-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,44 +20,43 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org" <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote @ Thu, 31 Oct 2013 17:35:24 +0100:
+On Fri, Oct 18, 2013 at 11:26:53AM +0100, Hiroshi Doyu wrote:
+> This is a bitmap that indicates which HardWare Accelerators(HWA) are
+> supported on Tegra114 SoC.
 
-...
-> >> ... and for the driver to explicitly parse that property, and wait
-> >> until the driver for iommu_phandle is ready. Exactly the same as any
-> >> other resource/service dependency.
-> >>
-> >> That will solve all the problems.
-> >>
-> >> The only downside is that every driver needs to contain code to parse
-> >> that property. However, I think that's just one function call; the
-> >> actual implementation of that function can be unified somewhere inside
-> >> core code in drivers/iommu/.
-> > 
-> > Yes, but only missing part now is that, we could do this with
-> > "bus_notifier", but the current bus_notifier doesn't have the feature
-> > to return error(-EPROBE_DEFER). This could be modified so that
-> > bus_notifier could return (-EPROBE_DEFER) to postpone
-> > probing. Alternatively this could be done in some core probe code as
-> > well as Thierry pointed out.
-> > 
-> > [1] In the reply of "[PATCHv3 14/19] iommu/tegra: smmu: Get "nvidia,memory-clients" from DT"
+The title and patch disagree here; the patch _changes_ the existing
+nvidia,swgroups property, and the commit message doesn't explain why.
+
+Mark.
+
 > 
-> I think this should be done explicitly in drivers. It's much
-> simpler,
-
-Yes, we need to insert some IOMMU specific code in driver?
-
-> and doesn't encode any knowledge of driver-specific bindings into some
-> common bus notifier code.
-
-I think that we cannot do that in drivers. We want to use drivers as
-they are without any modifications indicating its dependency on
-IOMMU because most of drivers are existing ones which nvidia doesn't
-implement. We want to set up any IOMMU related thingy implicitly,
-hided from driver. That's why we need to do this in bus_notifier or
-driver core code.
+> Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> ---
+>  arch/arm/boot/dts/tegra114.dtsi | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm/boot/dts/tegra114.dtsi b/arch/arm/boot/dts/tegra114.dtsi
+> index 8d42787..4626e8a 100644
+> --- a/arch/arm/boot/dts/tegra114.dtsi
+> +++ b/arch/arm/boot/dts/tegra114.dtsi
+> @@ -323,7 +323,7 @@
+>  		       0x70019228 0x074>;
+>  		nvidia,#asids = <4>;
+>  		dma-window = <0 0x40000000>;
+> -		nvidia,swgroups = <0x18659fe>;
+> +		nvidia,swgroups = <0x00000000 0x01b659fe>;
+>  		nvidia,ahb = <&ahb>;
+>  	};
+>  
+> -- 
+> 1.8.1.5
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe devicetree" in
+> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
