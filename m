@@ -1,59 +1,51 @@
-From: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 2/2] IOMMU: Use list_for_each_entry_safe() for
-	dmar_domain->devices traversal
-Date: Thu, 31 Oct 2013 17:26:04 +0800
-Message-ID: <1383211564-39716-1-git-send-email-wangyijing@huawei.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+From: Tushar Behera <tushar.behera@linaro.org>
+Subject: [PATCH 0/5] Remove remaining instances of devm_request_and_ioremap
+Date: Thu, 31 Oct 2013 16:38:02 +0530
+Message-ID: <1383217687-12037-1-git-send-email-tushar.behera@linaro.org>
+Return-path: <linux-doc-owner@vger.kernel.org>
+Sender: linux-doc-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: patches@linaro.org, dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org, linux-mips@linux-mips.org, linux-watchdog@vger.kernel.org, David Airlie <airlied@linux.ie>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joerg Roedel <joro@8bytes.org>, John Crispin <blogic@openwrt.org>, Ralf Baechle <ralf@linux-mips.org>, Rob Landley <rob@landley.net>, Russell King <rmk+kernel@arm.linux.org.uk>, Will Deacon <will.deacon@arm.com>, Wim Van Sebroeck <wim@iguana.be>
 List-Id: iommu@lists.linux-foundation.org
 
-Replace list_for_each_safe() + list_entry() with the simpler
-list_for_each_entry_safe().
+devm_request_and_ioremap is now obsolete and is replaced by
+devm_ioremap_resource. Update the remaining places where
+devm_request_and_ioremap is still used and remove its definition.
 
-Signed-off-by: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/intel-iommu.c |    6 ++----
- 1 files changed, 2 insertions(+), 4 deletions(-)
+The patches are based on next-20131030.
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 15e9b57..98faa1d 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3777,11 +3777,10 @@ static void iommu_detach_dependent_devices(struct intel_iommu *iommu,
- static void domain_remove_one_dev_info(struct dmar_domain *domain,
- 					  struct pci_dev *pdev)
- {
--	struct device_domain_info *info;
-+	struct device_domain_info *info, *tmp;
- 	struct intel_iommu *iommu;
- 	unsigned long flags;
- 	int found = 0;
--	struct list_head *entry, *tmp;
- 
- 	iommu = device_to_iommu(pci_domain_nr(pdev->bus), pdev->bus->number,
- 				pdev->devfn);
-@@ -3789,8 +3788,7 @@ static void domain_remove_one_dev_info(struct dmar_domain *domain,
- 		return;
- 
- 	spin_lock_irqsave(&device_domain_lock, flags);
--	list_for_each_safe(entry, tmp, &domain->devices) {
--		info = list_entry(entry, struct device_domain_info, link);
-+	list_for_each_entry_safe(info, tmp, &domain->devices, link) {
- 		if (info->segment == pci_domain_nr(pdev->bus) &&
- 		    info->bus == pdev->bus->number &&
- 		    info->devfn == pdev->devfn) {
+Tushar Behera (5):
+  MIPS: ralink: Use devm_ioremap_resource
+  DRM: Armada: Use devm_ioremap_resource
+  iommu/arm-smmu: Use devm_ioremap_resource
+  watchdog: ralink: Use devm_ioremap_resource
+  lib: devres: Remove deprecated devm_request_and_ioremap
+
+ Documentation/driver-model/devres.txt |    1 -
+ arch/mips/ralink/timer.c              |    2 +-
+ drivers/gpu/drm/armada/armada_crtc.c  |    8 +++-----
+ drivers/iommu/arm-smmu.c              |    6 +++---
+ drivers/watchdog/rt2880_wdt.c         |    2 +-
+ include/linux/device.h                |    2 --
+ lib/devres.c                          |   28 ----------------------------
+ 7 files changed, 8 insertions(+), 41 deletions(-)
+
+CC: dri-devel@lists.freedesktop.org
+CC: iommu@lists.linux-foundation.org
+CC: linux-arm-kernel@lists.infradead.org
+CC: linux-doc@vger.kernel.org
+CC: linux-mips@linux-mips.org
+CC: linux-watchdog@vger.kernel.org
+CC: David Airlie <airlied@linux.ie>
+CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC: Joerg Roedel <joro@8bytes.org>
+CC: John Crispin <blogic@openwrt.org>
+CC: Ralf Baechle <ralf@linux-mips.org>
+CC: Rob Landley <rob@landley.net>
+CC: Russell King <rmk+kernel@arm.linux.org.uk>
+CC: Will Deacon <will.deacon@arm.com>
+CC: Wim Van Sebroeck <wim@iguana.be>
+
 -- 
-1.7.1
+1.7.9.5
+
