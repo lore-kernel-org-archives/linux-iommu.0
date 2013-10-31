@@ -1,13 +1,14 @@
 From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCHv3 10/19] iommu/tegra: smmu: Get "nvidia,swgroups" from DT
-Date: Thu, 31 Oct 2013 09:17:17 +0100
-Message-ID: <20131031.101717.1419377840657413108.hdoyu@nvidia.com>
-References: <1382092020-13170-1-git-send-email-hdoyu@nvidia.com><1382092020-13170-11-git-send-email-hdoyu@nvidia.com><5271893C.6000507@wwwdotorg.org>
+Subject: Re: [PATCHv3 14/19] iommu/tegra: smmu: Get "nvidia,memory-clients"
+	from DT
+Date: Thu, 31 Oct 2013 09:18:08 +0100
+Message-ID: <20131031.101808.1830527808656695540.hdoyu@nvidia.com>
+References: <1382092020-13170-1-git-send-email-hdoyu@nvidia.com><1382092020-13170-15-git-send-email-hdoyu@nvidia.com><52718BB4.4090007@wwwdotorg.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5271893C.6000507-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+In-Reply-To: <52718BB4.4090007-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,49 +22,40 @@ To: "swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org" <swarren-3lzwWm7+Weoh9ZMKE
 Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote @ Wed, 30 Oct 2013 23:33:32 +0100:
+Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote @ Wed, 30 Oct 2013 23:44:04 +0100:
 
-> > +  are required. This unique ID info can be used to calculate
-> > +  MC_SMMU_<SWGROUP name>_ASID_0 offset and HOTRESET bit.
+> > +	host1x {
+> > +		compatible = "nvidia,tegra30-host1x", "simple-bus";
+> > +		nvidia,memory-clients = <&smmu TEGRA_SWGROUP_HC>;
+> > +		....
+> > +		gr3d {
+> > +			compatible = "nvidia,tegra30-gr3d";
+> > +			nvidia,memory-clients = <&smmu TEGRA_SWGROUP_NV
+> > +						       TEGRA_SWGROUP_NV2>;
 > 
-> I'm afraid I still don't quite understand what a swgroup is.
+> Why one cell for the host1x property, and two cells for the gr3d
+> property; shouldn't they be the same length?
+
+That can vary. Even a single device node in DT can belong to multiple
+software groups.
+
+> > diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
 > 
-> IIUC, the HW works like this based on comments in a previous patch:
+> > +static u64 smmu_of_get_memory_client(struct device *dev)
 > 
-> Each bus-master attached to the MMU passes a "memory client ID" along
-> with the transaction. Some devices can generate transactions with
-> different "memory client IDs". There is a mapping inside the SMMU from
-> "memory client ID" to "address space ID". (I don't know what form that
-> mapping takes; can you point out where it's set up?). Each "address
-> space ID" has its own set of page tables.
+> > +	np = of_parse_phandle(dev->of_node, propname, 0);
+> > +	if (np != smmu_handle->dev->of_node)
+> > +		return ~0;
+> > +
+> > +	prop = of_get_property(dev->of_node, propname, &bytes);
+> > +	if (!prop || !bytes)
+> > +		return ~0;
+> 
+> of_parse_phandle_with_fixed_args() might be a good fit here, or perhaps
+> require a property #smmu-cells in the SMMU node, thus allowing the
+> non-fixed-length of_parse_phandle_with_args() to be used here.
 
-Right.
-"memory client ID" is used to find out MC_SMMU_<swgroup>_ASID_0
-register. This register is used to associate <swgroup> to address
-space(AS). <swgroup> == H/W. <swgroup> can be attached to any AS.
-
-> Is "swgroup" simply another name for "memory client ID"? If so, it'd
-> be good to use just one term consistently.
-
-I used the name "memory client ID" because this ID can be used to find
-out HOTRESET bit in MC_CLIENT_HOTRESET_*_0 registers in addition to
-find the MC_SMMU_<swgroup>_ASID_0 offset. But maybe it's easy to use
-the consistent name as "swgroup". If laster HOTRESET wants automatic
-calculation they could borrow/redefine the same ID list, just
-replacing the prefix. What do you think?
-
-> Assuming "swgroup" is "memory client ID",
-
-Yes
-
-> why can't the driver just
-> create a list/... of known swgroups at runtime, based on the swgroup
-> values that each device uses, which would presumably be either
-> hard-coded in the client device's driver, or represented in the DT smmu
-> property's "iommu specifier" value.
-
-Why we have "nvidia,swgroups" is just to avoid a device node having a
-wrong "nvidia,memory-clients" which is not supported by that Tegra
-SoC, which could crash kernel eventually. This info may be residual
-since we define both "nvidia,swgroups" and "nvidia,memory-clients" at
-once in DT. I'll remove "nvidia,swgroups" in SMMU node.
+I once considered of_parse_phandle_with_args() but I couldn't use that
+since "#smmu-cells" needed to be fixed in smmu node, not in client
+node. In this case, the number of argument(number of swgroup IDs)
+varies per client device.
