@@ -1,41 +1,50 @@
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH v3] iommu: shmobile: Enable the driver on all ARM
- platforms
-Date: Fri, 1 Nov 2013 09:39:30 +0900
-Message-ID: <20131101003930.GJ6818@verge.net.au>
-References: <1383132043-5190-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
- <20131030112625.GZ16735@n2100.arm.linux.org.uk>
- <1652955.Gs3XDiEUHO@avalon>
- <20131030162854.GB2493@sirena.org.uk>
- <20131031060305.GU1603@verge.net.au>
- <20131031174945.GI2493@sirena.org.uk>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCHv3 01/19] [HACK] of: dev_node has struct device pointer
+Date: Fri, 1 Nov 2013 08:49:09 +0200
+Message-ID: <20131101084909.5ed79987aa3aeb13b14e3f08@nvidia.com>
+References: <52718122.9000206@wwwdotorg.org>
+	<20131031.101232.80781047726461143.hdoyu@nvidia.com>
+	<527286CC.9080404@wwwdotorg.org>
+	<20131031.184603.979300613649357798.hdoyu@nvidia.com>
+	<52729912.9050800@wwwdotorg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-sh-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20131031174945.GI2493@sirena.org.uk>
-Sender: linux-sh-owner@vger.kernel.org
-To: Mark Brown <broonie@kernel.org>
-Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-sh@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <52729912.9050800-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Cc: "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Oct 31, 2013 at 10:49:45AM -0700, Mark Brown wrote:
-> On Thu, Oct 31, 2013 at 03:03:05PM +0900, Simon Horman wrote:
-> > On Wed, Oct 30, 2013 at 09:28:54AM -0700, Mark Brown wrote:
-> > > On Wed, Oct 30, 2013 at 12:40:12PM +0100, Laurent Pinchart wrote:
+On Thu, 31 Oct 2013 18:53:22 +0100
+Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote:
+...
+> We're talking about memory-mapped on-SoC devices here, that generally
+> only exist inside Tegra SoCs.
 > 
-> > > > > For similar reasons as x86, can we please think about using:
-> > > 
-> > > > > 	depends on ARM
-> > > > > 	depends on ARCH_SHMOBILE || ARCH_SHMOBILE_MULTI || COMPILE_TEST
-> 
-> > > I'd read the above as saying the code needs ARM to build at all and that
-> > > the hardware will only ever appear on SHMOBILE.
-> 
-> > I am curious to know the value of "depends ARM".
-> > Is it to aid the reading that you spelt out?
-> 
-> That's a function of the compile time dependencies, if ARM is required
-> to build then it needs to be an unconditional dependency.
+> Even ignoring that (i.e. expanding the argument to arbitrary modules),
+> having drivers that perform bus-master transactions call a function
+> of_iommu_attach() or similar, which does nothing if the device isn't
+> behind an IOMMU but otherwise does whatever is required, seems like it
+> isn't much of an imposition.
 
-Thanks, sorry for missing the obvious.
+Where do you expect of_iommu_attach() to be called?
+I thought something below:
+
+	Modified drivers/base/dd.c
+diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+index 35fa368..92ec2e9 100644
+--- a/drivers/base/dd.c
++++ b/drivers/base/dd.c
+@@ -278,6 +278,10 @@ static int really_probe(struct device *dev, struct device_driver *drv)
+ 	if (ret)
+ 		goto probe_failed;
+ 
++	ret = of_iommu_attach(dev);
++	if (ret)
++		goto probe_failed;
++
+ 	if (driver_sysfs_add(dev)) {
+ 		printk(KERN_ERR "%s: driver_sysfs_add(%s) failed\n",
+ 			__func__, dev_name(dev));
