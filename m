@@ -1,15 +1,14 @@
-From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v10 00/20] iommu/exynos: Fixes and Enhancements of System
-	MMU driver with DT
-Date: Fri, 01 Nov 2013 21:37:45 +0900
-Message-ID: <20131101213745.68172e8d47182cc64a591775@samsung.com>
-References: <20131007105212.1c2a9e29166ff4b4a33468f8@samsung.com>
-	<20131101114224.GG17455@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: VT-d and x2apic: broken resume after suspend to ram
+Date: Fri, 1 Nov 2013 14:07:10 +0100
+Message-ID: <20131101130702.GA3348@8bytes.org>
+References: <CA+MoWDqoBxuFhBsf_rVBT1C8=mwj02hXgPfuWnjY4yeVa-84cA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <20131101114224.GG17455-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CA+MoWDqoBxuFhBsf_rVBT1C8=mwj02hXgPfuWnjY4yeVa-84cA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,63 +18,38 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Linux DeviceTree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Samsung SOC <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Prathyush <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Tomasz Figa <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Subash Patel <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Rahul Sharma <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+To: Peter Senna Tschudin <peter.senna-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Seiji Aguchi <seiji.aguchi-7rDLJAbr9SE@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 01 Nov 2013 12:42:24 +0100, Joerg Roedel wrote:
-> On Mon, Oct 07, 2013 at 10:52:12AM +0900, Cho KyongHo wrote:
-> > Patch summary:
-> > [PATCH 01/20] iommu/exynos: do not include removed header
-> > [PATCH 02/20] iommu/exynos: add missing cache flush for removed page table entries
-> > [PATCH 03/20] iommu/exynos: change error handling when page table update is failed
-> > [PATCH 04/20] iommu/exynos: fix L2TLB invalidation
-> > [PATCH 05/20] iommu/exynos: allocate lv2 page table from own slab
-> > [PATCH 06/20] iommu/exynos: always enable runtime PM
-> > [PATCH 07/20] iommu/exynos: always use a single clock descriptor
-> > [PATCH 08/20] iommu/exynos: remove dbgname from drvdata of a System MMU
-> > [PATCH 09/20] iommu/exynos: use managed device helper functions
-> > [PATCH 10/20] clk: exynos: add gate clock descriptions of System MMU
-> > [PATCH 11/20] ARM: dts: Add description of System MMU of Exynos SoCs
-> > [PATCH 12/20] iommu/exynos: support for device tree
-> > [PATCH 13/20] iommu/exynos: gating clocks of master H/W
-> > [PATCH 14/20] iommu/exynos: remove custom fault handler
-> > [PATCH 15/20] iommu/exynos: remove calls to Runtime PM API functions
-> > [PATCH 16/20] iommu/exynos: turn on useful configuration options
-> > [PATCH 17/20] iommu/exynos: add support for power management subsystems.
-> > [PATCH 18/20] iommu/exynos: change rwlock to spinlock
-> > [PATCH 19/20] iommu/exynos: return 0 if iommu_attach_device() successes
-> > [PATCH 20/20] iommu/exynos: add devices attached to the System MMU to an IOMMU group
-> > 
-> > Diffstats:
-> >  .../devicetree/bindings/clock/exynos5250-clock.txt |   28 +
-> >  .../devicetree/bindings/clock/exynos5420-clock.txt |    3 +
-> >  .../bindings/iommu/samsung,exynos4210-sysmmu.txt   |   76 ++
-> >  arch/arm/boot/dts/exynos4.dtsi                     |  105 ++
-> >  arch/arm/boot/dts/exynos4210.dtsi                  |   21 +
-> >  arch/arm/boot/dts/exynos4x12.dtsi                  |   82 ++
-> >  arch/arm/boot/dts/exynos5250.dtsi                  |  262 +++++
-> >  arch/arm/boot/dts/exynos5420.dtsi                  |  296 ++++++
-> >  drivers/clk/samsung/clk-exynos5250.c               |   49 +-
-> >  drivers/clk/samsung/clk-exynos5420.c               |   12 +-
-> >  drivers/iommu/Kconfig                              |    5 +-
-> >  drivers/iommu/exynos-iommu.c                       | 1033 +++++++++++++-------
-> >  12 files changed, 1585 insertions(+), 387 deletions(-)
-> 
-> What is the state of this series? It would be good to have some
-> Acked-bys and/or Reviewed-bys on it.
-> 
+Hi Peter,
 
-I am preparing next patches to apply Alex Williamson's comment that
-description of IOMMU's masters must be aligned with ARM SMMU.
-
-It is delayed due to my jobs in the office.
-
-I will post the next patche series in two weeks.
-
-Thanks.
-
+On Fri, Nov 01, 2013 at 01:37:36PM +0100, Peter Senna Tschudin wrote:
+> I have one notebook that is failing to resume after suspend to ram.
+> I've filled a bug report back on the 2.6.41 days:
 > 
-> 	Joerg
+> https://bugzilla.redhat.com/show_bug.cgi?id=787299
 > 
+> The issue is that trying to resume after suspending to ram freezes the
+> computer. The resume starts well, but then it hangs.
 > 
+> Yesterday I found that this may be related to VT-d / x2apic. If I
+> disable VT-d on the BIOS, suspend / resume works fine. If I enable
+> VT-d and pass nox2apic as boot parameter to Kernel suspend and resume
+> works fine. I would like some pointers to fix this issue. Can you help
+> me?
+> 
+> Only when I have VT-d enabled, dmesg gives me additional output:
+> [    0.023913] IOAPIC id 2 under DRHD base  0xfed91000 IOMMU 1
+> [    0.024080] Enabled IRQ remapping in x2apic mode
+> [    0.024081] Enabling x2apic
+> [    0.024082] Enabled x2apic
+> [    0.024087] Switched APIC routing to cluster x2apic.
+> 
+> The notebook is Toshiba R830-10p with i7-2620M.
+
+Which kernels have you tried? Does it happen with all of them or is
+there a kernel-version where this started?
+
+
+	Joerg
