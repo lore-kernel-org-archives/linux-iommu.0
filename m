@@ -1,15 +1,13 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 Subject: Re: [PATCHv3 01/19] [HACK] of: dev_node has struct device pointer
-Date: Fri, 1 Nov 2013 10:53:50 +0100
-Message-ID: <20131101095349.GI27864@ulmo.nvidia.com>
-References: <20131025091104.GG19622@ulmo.nvidia.com>
-	<52718122.9000206@wwwdotorg.org> <20131030224108.GA6939@mithrandir>
-	<20131031.101405.2229107340254709582.hdoyu@nvidia.com>
-	<52728754.60307@wwwdotorg.org>
+Date: Fri, 1 Nov 2013 10:59:19 +0100
+Message-ID: <20131101.115919.351108054879013006.hdoyu@nvidia.com>
+References: <20131031.184603.979300613649357798.hdoyu@nvidia.com><52729912.9050800@wwwdotorg.org><20131101094644.GG27864@ulmo.nvidia.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============2511476189858324374=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <52728754.60307-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+In-Reply-To: <20131101094644.GG27864-AwZRO8vwLAwmlAP/+Wk3EA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,95 +17,84 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+To: "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org" <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote @ Fri, 1 Nov 2013 10:46:45 +0100:
 
---===============2511476189858324374==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="ZOudaV4lSIjFTlHv"
-Content-Disposition: inline
+> * PGP Signed by an unknown key
+> 
+> On Thu, Oct 31, 2013 at 11:53:22AM -0600, Stephen Warren wrote:
+> > On 10/31/2013 10:46 AM, Hiroshi Doyu wrote:
+> > > Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote @ Thu, 31 Oct 2013 17:35:24 +0100:
+> > > 
+> > > ...
+> > >>>> ... and for the driver to explicitly parse that property, and wait
+> > >>>> until the driver for iommu_phandle is ready. Exactly the same as any
+> > >>>> other resource/service dependency.
+> > >>>>
+> > >>>> That will solve all the problems.
+> > >>>>
+> > >>>> The only downside is that every driver needs to contain code to parse
+> > >>>> that property. However, I think that's just one function call; the
+> > >>>> actual implementation of that function can be unified somewhere inside
+> > >>>> core code in drivers/iommu/.
+> > >>>
+> > >>> Yes, but only missing part now is that, we could do this with
+> > >>> "bus_notifier", but the current bus_notifier doesn't have the feature
+> > >>> to return error(-EPROBE_DEFER). This could be modified so that
+> > >>> bus_notifier could return (-EPROBE_DEFER) to postpone
+> > >>> probing. Alternatively this could be done in some core probe code as
+> > >>> well as Thierry pointed out.
+> > >>>
+> > >>> [1] In the reply of "[PATCHv3 14/19] iommu/tegra: smmu: Get "nvidia,memory-clients" from DT"
+> > >>
+> > >> I think this should be done explicitly in drivers. It's much
+> > >> simpler,
+> > > 
+> > > Yes, we need to insert some IOMMU specific code in driver?
+> > > 
+> > >> and doesn't encode any knowledge of driver-specific bindings into some
+> > >> common bus notifier code.
+> > > 
+> > > I think that we cannot do that in drivers. We want to use drivers as
+> > > they are without any modifications indicating its dependency on
+> > > IOMMU because most of drivers are existing ones which nvidia doesn't
+> > > implement. We want to set up any IOMMU related thingy implicitly,
+> > > hided from driver. That's why we need to do this in bus_notifier or
+> > > driver core code.
+> > 
+> > We're talking about memory-mapped on-SoC devices here, that generally
+> > only exist inside Tegra SoCs.
+> > 
+> > Even ignoring that (i.e. expanding the argument to arbitrary modules),
+> > having drivers that perform bus-master transactions call a function
+> > of_iommu_attach() or similar, which does nothing if the device isn't
+> > behind an IOMMU but otherwise does whatever is required, seems like it
+> > isn't much of an imposition.
+> > 
+> > If this turns out to be something that lots of devices benefit from, we
+> > could do the same thing that pinctrl does for "hogs", and make the
+> > function call in the driver core. But note that's still part of the
+> > probing flow (just implemented in the driver core) rather than bus
+> > notifier based, hence keeps the same simplicity.
+> 
+> That's exactly what I was proposing in the first place. I did the same
+> thing in my patches for late interrupt reference resolution. The reason
+> why I think it makes sense to put it into the core is that it's
+> something that likely most devices will have to do anyway. And it also
+> is completely transparent to drivers, right? If they aren't attached to
+> an IOMMU then they just aren't but will continue to work properly. And
+> as you said, having it in the core makes drivers simpler, while at the
+> same time keeping the explicitness of having a function call (rather
+> than a somewhat obfuscated bus notifier) and the flexibility of deferred
+> probing.
 
-
---ZOudaV4lSIjFTlHv
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Thu, Oct 31, 2013 at 10:37:40AM -0600, Stephen Warren wrote:
-> On 10/31/2013 02:14 AM, Hiroshi Doyu wrote:
-> > Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote @ Wed, 30 Oct 2013 23:4=
-1:09 +0100:
-> >=20
-> >> My earlier proposal for deferred interrupt reference resolution actual=
-ly
-> >> tries to solve that problem within the core. Essentially what it does =
-is
-> >> add a new function that gets called right before the driver's .probe()
-> >> function, so that it can parse standard resources and services from DT,
-> >> such as the interrupts property. This could theoretically be done for
-> >> other resources such as reg as well, but it really only matters where
-> >> the resource can be dynamic (as is the case for interrupts).
-> >>
-> >> In this case I would envision a standard OF function to associate a
-> >> device with its IOMMU. Perhaps something like:
-> >>
-> >> 	int of_iommu_attach(struct device *dev);
-> >>
-> >> That could be called by the core independent of the specific device and
-> >> IOMMU. IOMMU-specifics can probably be handled using .of_xlate(), quite
-> >> in a similar way to GPIO or regulators.
-> >>
-> >> That way drivers can remain agnostic of the IOMMU while still being ab=
-le
-> >> to take advantage of deferred probing.
-> >=20
-> > This could be simpler than making "bus_notifier" return "-EPROBE_DEFER".
-> >=20
-> > The disadvantage of this is that we may need to provide the similar
-> > of_<"subsystem">_attach() per subsytem if needed.
->=20
-> Well, "per subsystem" here means per subsystem that is providing
-> resources, not per subsystem that is consuming resources. How many
-> subsystems are you expecting to provide resources like this? At present,
-> I believe IOMMU is the only subsystem missing some kind of API for
-> clients to acquire the relevant resource. I don't think there's any
-> scalability problem here.
-
-Furthermore if the subsystem wants to provide resources then it needs
-such a function anyway, so there really isn't any overhead here.
-
-Thierry
-
---ZOudaV4lSIjFTlHv
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJSc3otAAoJEN0jrNd/PrOhbSEQAJCK8J2ks2NXs/JNMdaRcMVQ
-0xy8oPATYTHnw/HdNQG46CGbFUzuKsHZrbFY9mA8qEX4Yiy0AWVlZ/8rgE+VKXYD
-CqyIrusRARdB5NdqtOkLGkvQAtlqx+aGgr0DB6y4xbE6FLeiPUue/rEwTYGl+20M
-ualDsimW9HyphbnSp/n5Aw07BFSfhtVVj5OqKjwmM7P+xuD6LHIo4plG83QhiBUV
-22PuZ4AhhwKAcAosepyHldYhO1he+hxF0nOhl6ntdsfHmShyE514uVbABVjhNkDz
-vgq7j5oBICvIQHCCsiQbLwIQrOGtmDsA2s/R1EKhbBtb11doYL+lXM+QeV5YK5XR
-UBwxoXoWoEi9O0CG66S++jNWhEC0eUiKx5Mh15mLW6+HT45g0qc5zG8LnUUpAF22
-BdspoXeEzCr9mKY85WHi1iXatIK4oan579khbHzKbnOyUbHQUX++LTc4t9978Qpy
-84bfDAmZB4jzgIhw7aJ8quF5M84wQMMo7vmaS5NM3KNz+DSelDvIYT8sI4MehnPG
-cHvfi2+9GsmPPP0jf/QTPWVCwmUvooAXm7oMqnpg8DIAfiUKqsHnbnGJ4WIL1vqx
-oniBhgjrHDrRFKw3jySzOj0MmfKcRtO3/PRkcHA/0kHrNEe1SFJj7sWPWp8a7KD4
-XVESYM/LqoU91ZO4/cXe
-=Zp7z
------END PGP SIGNATURE-----
-
---ZOudaV4lSIjFTlHv--
-
---===============2511476189858324374==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============2511476189858324374==--
+One idea is that, rather than inserting a hook(function) per
+subsystems in driver core, if we invent a new /special section/ which
+collects all hooks in sequence like initcalls, the subsystem just
+would declare a hook function for that special section. All hooks in
+that section can be called from driver core iterately. Then we
+wouldn't touch driver core code at all, once we insert a func to call
+hooks repeatedly. Looks simpler than tweaking bus notifier.
