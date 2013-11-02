@@ -1,14 +1,15 @@
 From: Marcelo Tosatti <mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] KVM: IOMMU: hva align mapping page size
-Date: Fri, 1 Nov 2013 23:14:33 -0200
-Message-ID: <20131102011433.GA30381@amt.cnet>
-References: <20131101160855.GB5052@psuche>
+Subject: Re: BUG unpinning 1 GiB huge pages with KVM PCI assignment
+Date: Fri, 1 Nov 2013 23:17:09 -0200
+Message-ID: <20131102011709.GB30381@amt.cnet>
+References: <20131028193756.GA1653@psuche> <20131029231943.GA29828@psuche>
+	<20131101174734.GA27370@amt.cnet> <20131101180126.GD7961@psuche>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20131101160855.GB5052@psuche>
+In-Reply-To: <20131101180126.GD7961@psuche>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,52 +20,26 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Greg Edwards <gedwards-LfVdkaOWEx8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Nov 01, 2013 at 10:08:55AM -0600, Greg Edwards wrote:
-> When determining the page size we could use to map with the IOMMU, the
-> page size should be aligned with the hva, not the gfn.  The gfn may not
-> reflect the real alignment within the hugetlbfs file.
+On Fri, Nov 01, 2013 at 12:01:26PM -0600, Greg Edwards wrote:
+> >> Is it expected the same pages might be mapped in multiple memslots?  I
+> >> noticed the gfn overlap check in __kvm_set_memory_region().
+> >>
+> >> It appears pfn_to_dma_pte() is behaving as expected, given half the huge
+> >> page is still mapped.  Do I have that correct?  If so, then we really
+> >> can't rely on iommu_iova_to_phys() alone to determine if its safe to
+> >> unpin a page in kvm_iommu_put_pages().
+> >>
+> >> Ideas on how to best handle this condition?
+> >
+> > iommu_unmap should grab lpage_level bits from the virtual address
+> > (should fix the BUG), and should return correct number of freed pfns in
+> > case of large ptes (should fix the leak). Will send a patch shortly.
 > 
-> Most of the time, this works fine.  However, if the hugetlbfs file is
-> backed by non-contiguous huge pages, a multi-huge page memslot starts at
-> an unaligned offset within the hugetlbfs file, and the gfn is aligned
-> with respect to the huge page size, kvm_host_page_size() will return the
-> huge page size and we will use that to map with the IOMMU.
+> Thanks, Marcelo.  This patch also fixes the BUG:
 > 
-> When we later unpin that same memslot, the IOMMU returns the unmap size
-> as the huge page size, and we happily unpin that many pfns in
-> monotonically increasing order, not realizing we are spanning
-> non-contiguous huge pages and partially unpin the wrong huge page.
-> 
-> Instead, ensure the IOMMU mapping page size is aligned with the hva
-> corresponding to the gfn, which does reflect the alignment within the
-> hugetlbfs file.
-> 
-> Signed-off-by: Greg Edwards <gedwards-LfVdkaOWEx8@public.gmane.org>
-> Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> ---
-> This resolves the bug previously reported (and misdiagnosed) here:
-> 
->  http://www.spinics.net/lists/kvm/msg97599.html
-> 
->  virt/kvm/iommu.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/virt/kvm/iommu.c b/virt/kvm/iommu.c
-> index 72a130b..0e2ff32 100644
-> --- a/virt/kvm/iommu.c
-> +++ b/virt/kvm/iommu.c
-> @@ -99,8 +99,8 @@ int kvm_iommu_map_pages(struct kvm *kvm, struct kvm_memory_slot *slot)
->  		while ((gfn + (page_size >> PAGE_SHIFT)) > end_gfn)
->  			page_size >>= 1;
->  
-> -		/* Make sure gfn is aligned to the page size we want to map */
-> -		while ((gfn << PAGE_SHIFT) & (page_size - 1))
-> +		/* Make sure hva is aligned to the page size we want to map */
-> +		while (__gfn_to_hva_memslot(slot, gfn) & (page_size - 1))
->  			page_size >>= 1;
+> http://www.spinics.net/lists/kvm/msg97784.html
 
-gfn should be aligned to page size as well (IOMMU requirement), so don't
-drop that check.
+Was using an old tree, without leak bug fixes from present upstream.
