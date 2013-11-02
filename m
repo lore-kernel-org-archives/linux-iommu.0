@@ -1,14 +1,14 @@
-From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [PATCHv3 01/19] [HACK] of: dev_node has struct device pointer
-Date: Fri, 01 Nov 2013 15:45:19 -0600
-Message-ID: <527420EF.1070102@wwwdotorg.org>
-References: <20131031.184603.979300613649357798.hdoyu@nvidia.com><52729912.9050800@wwwdotorg.org><20131101094644.GG27864@ulmo.nvidia.com>
-	<20131101.115919.351108054879013006.hdoyu@nvidia.com>
+From: Marcelo Tosatti <mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH] KVM: IOMMU: hva align mapping page size
+Date: Fri, 1 Nov 2013 23:14:33 -0200
+Message-ID: <20131102011433.GA30381@amt.cnet>
+References: <20131101160855.GB5052@psuche>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20131101.115919.351108054879013006.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20131101160855.GB5052@psuche>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,19 +18,53 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+To: Greg Edwards <gedwards-LfVdkaOWEx8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/01/2013 03:59 AM, Hiroshi Doyu wrote:
-...
-> One idea is that, rather than inserting a hook(function) per
-> subsystems in driver core, if we invent a new /special section/ which
-> collects all hooks in sequence like initcalls, the subsystem just
-> would declare a hook function for that special section. All hooks in
-> that section can be called from driver core iterately. Then we
-> wouldn't touch driver core code at all, once we insert a func to call
-> hooks repeatedly. Looks simpler than tweaking bus notifier.
+On Fri, Nov 01, 2013 at 10:08:55AM -0600, Greg Edwards wrote:
+> When determining the page size we could use to map with the IOMMU, the
+> page size should be aligned with the hva, not the gfn.  The gfn may not
+> reflect the real alignment within the hugetlbfs file.
+> 
+> Most of the time, this works fine.  However, if the hugetlbfs file is
+> backed by non-contiguous huge pages, a multi-huge page memslot starts at
+> an unaligned offset within the hugetlbfs file, and the gfn is aligned
+> with respect to the huge page size, kvm_host_page_size() will return the
+> huge page size and we will use that to map with the IOMMU.
+> 
+> When we later unpin that same memslot, the IOMMU returns the unmap size
+> as the huge page size, and we happily unpin that many pfns in
+> monotonically increasing order, not realizing we are spanning
+> non-contiguous huge pages and partially unpin the wrong huge page.
+> 
+> Instead, ensure the IOMMU mapping page size is aligned with the hva
+> corresponding to the gfn, which does reflect the alignment within the
+> hugetlbfs file.
+> 
+> Signed-off-by: Greg Edwards <gedwards-LfVdkaOWEx8@public.gmane.org>
+> Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> ---
+> This resolves the bug previously reported (and misdiagnosed) here:
+> 
+>  http://www.spinics.net/lists/kvm/msg97599.html
+> 
+>  virt/kvm/iommu.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/virt/kvm/iommu.c b/virt/kvm/iommu.c
+> index 72a130b..0e2ff32 100644
+> --- a/virt/kvm/iommu.c
+> +++ b/virt/kvm/iommu.c
+> @@ -99,8 +99,8 @@ int kvm_iommu_map_pages(struct kvm *kvm, struct kvm_memory_slot *slot)
+>  		while ((gfn + (page_size >> PAGE_SHIFT)) > end_gfn)
+>  			page_size >>= 1;
+>  
+> -		/* Make sure gfn is aligned to the page size we want to map */
+> -		while ((gfn << PAGE_SHIFT) & (page_size - 1))
+> +		/* Make sure hva is aligned to the page size we want to map */
+> +		while (__gfn_to_hva_memslot(slot, gfn) & (page_size - 1))
+>  			page_size >>= 1;
 
-That sounds like a lot of effort to avoid adding a simple function call
-to the core's probe path.
+gfn should be aligned to page size as well (IOMMU requirement), so don't
+drop that check.
