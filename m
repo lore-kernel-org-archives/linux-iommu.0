@@ -1,13 +1,14 @@
 From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCHv3 01/19] [HACK] of: dev_node has struct device pointer
-Date: Mon, 4 Nov 2013 07:42:48 +0100
-Message-ID: <20131104.084248.48379321856602699.hdoyu@nvidia.com>
-References: <20131101094644.GG27864@ulmo.nvidia.com><20131101.115919.351108054879013006.hdoyu@nvidia.com><527420EF.1070102@wwwdotorg.org>
+Subject: Re: [PATCHv3 14/19] iommu/tegra: smmu: Get "nvidia,memory-clients"
+	from DT
+Date: Mon, 4 Nov 2013 07:48:13 +0100
+Message-ID: <20131104.084813.2059745202151730750.hdoyu@nvidia.com>
+References: <5273D214.90106@wwwdotorg.org><20131101163404.GC2442@mudshark.cambridge.arm.com><5273DF45.8050505@wwwdotorg.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <527420EF.1070102-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+In-Reply-To: <5273DF45.8050505-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,25 +19,33 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: "swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org" <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: "Mark.Rutland-5wv7dgnIgG8@public.gmane.org" <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote @ Fri, 1 Nov 2013 22:45:19 +0100:
+Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote @ Fri, 1 Nov 2013 18:05:09 +0100:
 
-> On 11/01/2013 03:59 AM, Hiroshi Doyu wrote:
-> ...
-> > One idea is that, rather than inserting a hook(function) per
-> > subsystems in driver core, if we invent a new /special section/ which
-> > collects all hooks in sequence like initcalls, the subsystem just
-> > would declare a hook function for that special section. All hooks in
-> > that section can be called from driver core iterately. Then we
-> > wouldn't touch driver core code at all, once we insert a func to call
-> > hooks repeatedly. Looks simpler than tweaking bus notifier.
+> > What are the requirements for Tegra? If the IOMMU isn't initialised, does it
+> > act as a passthrough?
 > 
-> That sounds like a lot of effort to avoid adding a simple function call
-> to the core's probe path.
+> I believe so, yes. In particular we have the following register bits:
+> 
+> 1) Register bit AHB_ARBITRATION_XBAR_CTRL_SMMU_INIT_DONE is an overall
+> SMMU enable flag. This sits outside the SMMU module itself, but the SMMU
+> probe function requests drivers/amba/tegra-ahb.c:tegra_ahb_enable_smmu()
+> to go enable it.
+> 
+> 2) Each memory client ID has a bit in SMMU_TRANSLATION_ENABLE_* to
+> enable translation for the client. This is also enabled during the SMMU
+> probe function.
+> 
+> 3) Each swgroup ID has a register indicating which ASID to use for
+> translation, and an associated enable bit. These are also set up during
+> SMMU probe at present.
+> 
+> I believe when any of those bits aren't enabled, the SMMU is a
+> pass-through, considering that I'm pretty sure if I disable the SMMU
+> driver in the kernel, everything will still work just fine.
 
-True.
-
-Can be implemented/revisited later if needed after we once have a
-simple function call, of_iommu_attach() in drvier core.
+Yes, and this is also one of the requirements that we always need to
+make sure that all Tegra peripheal devices work with and without
+IOMMU, mainly for debugging purpose.
