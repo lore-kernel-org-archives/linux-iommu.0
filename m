@@ -1,14 +1,15 @@
-From: Greg Edwards <gedwards-LfVdkaOWEx8@public.gmane.org>
-Subject: Re: intel-iommu: iova_to_phys: fill in bits from iova when large pte
-Date: Mon, 4 Nov 2013 10:07:54 -0700
-Message-ID: <20131104170754.GA7317@psuche>
-References: <20131102014511.GA29838@amt.cnet>
+From: Marcelo Tosatti <mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2] KVM: IOMMU: hva align mapping page size
+Date: Mon, 4 Nov 2013 18:14:03 -0200
+Message-ID: <20131104201403.GA15044@amt.cnet>
+References: <20131101160855.GB5052@psuche> <20131102011433.GA30381@amt.cnet>
+	<20131104160812.GA6026@psuche>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20131102014511.GA29838-I4X2Mt4zSy4@public.gmane.org>
+In-Reply-To: <20131104160812.GA6026@psuche>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,19 +19,37 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marcelo Tosatti <mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Greg Edwards <gedwards-LfVdkaOWEx8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Nov 01, 2013 at 06:45:12PM -0700, Marcelo Tosatti wrote:
->
-> intel_iommu_iova_to_phys returns incorrect physical address
-> when iova is translated by large pte.
->
-> Fill in bits from iova when creating the physical address.
+On Mon, Nov 04, 2013 at 09:08:12AM -0700, Greg Edwards wrote:
+> When determining the page size we could use to map with the IOMMU, the
+> page size should also be aligned with the hva, not just the gfn.  The
+> gfn may not reflect the real alignment within the hugetlbfs file.
+> 
+> Signed-off-by: Greg Edwards <gedwards-LfVdkaOWEx8@public.gmane.org>
+> Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> ---
+>  virt/kvm/iommu.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/virt/kvm/iommu.c b/virt/kvm/iommu.c
+> index 72a130b..c329c8f 100644
+> --- a/virt/kvm/iommu.c
+> +++ b/virt/kvm/iommu.c
+> @@ -103,6 +103,10 @@ int kvm_iommu_map_pages(struct kvm *kvm, struct kvm_memory_slot *slot)
+>  		while ((gfn << PAGE_SHIFT) & (page_size - 1))
+>  			page_size >>= 1;
+>  
+> +		/* Make sure hva is aligned to the page size we want to map */
+> +		while (__gfn_to_hva_memslot(slot, gfn) & (page_size - 1))
+> +			page_size >>= 1;
+> +
+>  		/*
+>  		 * Pin all pages we are about to map in memory. This is
+>  		 * important because we unmap and unpin in 4kb steps later.
+> -- 
+> 1.8.3.2
 
-Marcelo, for what it's worth, this patch alone didn't fix the BUG when
-using KVM PCI assignment with huge pages.  I still needed the hva
-alignment patch as well.
-
-Greg
+Reviewed-by: Marcelo Tosatti <mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
