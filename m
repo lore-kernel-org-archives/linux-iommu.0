@@ -1,12 +1,13 @@
-From: Marcelo Tosatti <mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: intel-iommu: iova_to_phys: fill in bits from iova when large pte
-Date: Fri, 1 Nov 2013 23:45:12 -0200
-Message-ID: <20131102014511.GA29838@amt.cnet>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCHv3 01/19] [HACK] of: dev_node has struct device pointer
+Date: Mon, 4 Nov 2013 07:42:48 +0100
+Message-ID: <20131104.084248.48379321856602699.hdoyu@nvidia.com>
+References: <20131101094644.GG27864@ulmo.nvidia.com><20131101.115919.351108054879013006.hdoyu@nvidia.com><527420EF.1070102@wwwdotorg.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
+In-Reply-To: <527420EF.1070102-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,77 +17,26 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org" <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote @ Fri, 1 Nov 2013 22:45:19 +0100:
 
-intel_iommu_iova_to_phys returns incorrect physical address 
-when iova is translated by large pte.
+> On 11/01/2013 03:59 AM, Hiroshi Doyu wrote:
+> ...
+> > One idea is that, rather than inserting a hook(function) per
+> > subsystems in driver core, if we invent a new /special section/ which
+> > collects all hooks in sequence like initcalls, the subsystem just
+> > would declare a hook function for that special section. All hooks in
+> > that section can be called from driver core iterately. Then we
+> > wouldn't touch driver core code at all, once we insert a func to call
+> > hooks repeatedly. Looks simpler than tweaking bus notifier.
+> 
+> That sounds like a lot of effort to avoid adding a simple function call
+> to the core's probe path.
 
-Fill in bits from iova when creating the physical address.
+True.
 
-Signed-off-by: Marcelo Tosatti <mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 15e9b57..f8f2988 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -774,7 +774,8 @@ out:
- }
- 
- static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
--				      unsigned long pfn, int target_level)
-+				      unsigned long pfn, int target_level,
-+				      int *large_page)
- {
- 	int addr_width = agaw_to_width(domain->agaw) - VTD_PAGE_SHIFT;
- 	struct dma_pte *parent, *pte = NULL;
-@@ -790,8 +791,15 @@ static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
- 
- 		offset = pfn_level_offset(pfn, level);
- 		pte = &parent[offset];
--		if (!target_level && (dma_pte_superpage(pte) || !dma_pte_present(pte)))
--			break;
-+		if (!target_level) {
-+			if (!dma_pte_present(pte))
-+				break;
-+			if (dma_pte_superpage(pte)) {
-+				if (large_page)
-+					*large_page = level;
-+				break;
-+			}
-+		}
- 		if (level == target_level)
- 			break;
- 
-@@ -1824,7 +1832,8 @@ static int __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
- 		if (!pte) {
- 			largepage_lvl = hardware_largepage_caps(domain, iov_pfn, phys_pfn, sg_res);
- 
--			first_pte = pte = pfn_to_dma_pte(domain, iov_pfn, largepage_lvl);
-+			first_pte = pte = pfn_to_dma_pte(domain, iov_pfn,
-+							 largepage_lvl, NULL);
- 			if (!pte)
- 				return -ENOMEM;
- 			/* It is large page*/
-@@ -4129,11 +4138,17 @@ static phys_addr_t intel_iommu_iova_to_phys(struct iommu_domain *domain,
- {
- 	struct dmar_domain *dmar_domain = domain->priv;
- 	struct dma_pte *pte;
--	u64 phys = 0;
-+	u64 phys = 0, iova_mask;
-+	int large_page = 1;
- 
--	pte = pfn_to_dma_pte(dmar_domain, iova >> VTD_PAGE_SHIFT, 0);
--	if (pte)
-+	pte = pfn_to_dma_pte(dmar_domain, iova >> VTD_PAGE_SHIFT, 0,
-+			     &large_page);
-+	if (pte) {
- 		phys = dma_pte_addr(pte);
-+		large_page--;
-+		iova_mask = (1ULL << (VTD_PAGE_SHIFT+(large_page*9)))-1;
-+		phys |= iova & iova_mask;
-+	}
- 
- 	return phys;
- }
+Can be implemented/revisited later if needed after we once have a
+simple function call, of_iommu_attach() in drvier core.
