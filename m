@@ -1,192 +1,86 @@
 From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCHv4 6/7] iommu/tegra: smmu: Rename hwgrp -> swgroups
-Date: Mon, 11 Nov 2013 10:31:57 +0200
-Message-ID: <1384158718-4756-7-git-send-email-hdoyu@nvidia.com>
-References: <1384158718-4756-1-git-send-email-hdoyu@nvidia.com>
+Subject: Re: Report from 2013 ARM kernel summit
+Date: Mon, 11 Nov 2013 10:47:23 +0100
+Message-ID: <20131111.114723.1885845500744256130.hdoyu@nvidia.com>
+References: <CACxGe6stYhZOc=MfGj8BgtG8zp6eh=jRFGUbFn1SSYRtw+zryA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1384158718-4756-1-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <CACxGe6stYhZOc=MfGj8BgtG8zp6eh=jRFGUbFn1SSYRtw+zryA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org
-Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: "grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org" <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Cc: "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "ksummit-2013-discuss-cunTk1MwBs98uUxBSJOaYoYkZiVZrdSR2LY78lusg7I@public.gmane.org" <ksummit-2013-discuss-cunTk1MwBs98uUxBSJOaYoYkZiVZrdSR2LY78lusg7I@public.gmane.org>, "olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org" <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, "lwn-T1hC0tSOHrs@public.gmane.org" <lwn-T1hC0tSOHrs@public.gmane.org>, "paul-DWxLp4Yu+b8AvxtiuMwx3w@public.gmane.org" <paul-DWxLp4Yu+b8AvxtiuMwx3w@public.gmane.org>, "khilman-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <khilman-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "broonie-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <broonie-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Use the correct term for SWGROUP related variables and macros.
+Missed some MLs. Resending....
 
-The term "swgroup" is the collection of "memory client". A "memory
-client" usually represents a HardWare Accelerator(HWA) like
-GPU. Sometimes a strut device can belong to multiple "swgroup" so that
-"swgroup's'" is used here. This "swgroups" is the term used in Tegra
-TRM. Rename along with TRM.
+Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org> wrote @ Fri, 8 Nov 2013 14:20:46 +0100:
 
-Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
----
-Update:
-New for v4
----
- drivers/iommu/tegra-smmu.c | 44 +++++++++++++++++++++-----------------------
- 1 file changed, 21 insertions(+), 23 deletions(-)
+> Early Init, Deferred Probe and Init Order
+...
+> The big problem with deferring to initcalls is that the kernel doesn?t
+> have any information about dependencies between devices and so doesn?t
+> know what order to call modules in. Right now driver probe order is
+> roughly determined by kernel link order first, and registration order
+> second for devices populated during or after initcalls. Olof commented
+> that the current driver model is based on the assumption that devices
+> live in a single hierarchy. There is no easy way to add in dependency
+> data with the current structure, and in most cases dependencies aren?t
+> specifically on other devices, but rather on the service provided by
+> another device (ie, a GPIO line).
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index ab198ce..904c36a 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -193,14 +193,12 @@ enum {
- 
- #define NUM_SMMU_REG_BANKS	3
- 
--#define smmu_client_enable_hwgrp(c, m)	smmu_client_set_hwgrp(c, m, 1)
--#define smmu_client_disable_hwgrp(c)	smmu_client_set_hwgrp(c, 0, 0)
--#define __smmu_client_enable_hwgrp(c, m) __smmu_client_set_hwgrp(c, m, 1)
--#define __smmu_client_disable_hwgrp(c)	__smmu_client_set_hwgrp(c, 0, 0)
-+#define smmu_client_enable_swgroups(c, m) smmu_client_set_swgroups(c, m, 1)
-+#define smmu_client_disable_swgroups(c)	smmu_client_set_swgroups(c, 0, 0)
-+#define __smmu_client_enable_swgroups(c, m) __smmu_client_set_swgroups(c, m, 1)
-+#define __smmu_client_disable_swgroups(c) __smmu_client_set_swgroups(c, 0, 0)
- 
--#define HWGRP_INIT(client) [HWGRP_##client] = SMMU_##client##_ASID
--
--#define HWGRP_ASID_REG(x) ((x) * sizeof(u32) + SMMU_AFI_ASID)
-+#define SWGROUP_ASID_REG(x) ((x) * sizeof(u32) + SMMU_AFI_ASID)
- 
- /*
-  * Per client for address space
-@@ -211,7 +209,7 @@ struct smmu_client {
- 	struct device		*dev;
- 	struct list_head	list;
- 	struct smmu_as		*as;
--	u64			hwgrp;
-+	u64			swgroups;
- };
- 
- /*
-@@ -329,7 +327,7 @@ static inline void smmu_write(struct smmu_device *smmu, u32 val, size_t offs)
-  */
- #define FLUSH_SMMU_REGS(smmu)	smmu_read(smmu, SMMU_CONFIG)
- 
--static int __smmu_client_set_hwgrp(struct smmu_client *c,
-+static int __smmu_client_set_swgroups(struct smmu_client *c,
- 				   u64 map, int on)
- {
- 	int i;
-@@ -342,10 +340,10 @@ static int __smmu_client_set_hwgrp(struct smmu_client *c,
- 	if (on && !map)
- 		return -EINVAL;
- 	if (!on)
--		map = c->hwgrp;
-+		map = c->swgroups;
- 
- 	for_each_set_bit(i, bitmap, TEGRA_SWGROUP_MAX) {
--		offs = HWGRP_ASID_REG(i);
-+		offs = SWGROUP_ASID_REG(i);
- 		val = smmu_read(smmu, offs);
- 		if (on) {
- 			if (WARN_ON(val & mask))
-@@ -358,12 +356,12 @@ static int __smmu_client_set_hwgrp(struct smmu_client *c,
- 		smmu_write(smmu, val, offs);
- 	}
- 	FLUSH_SMMU_REGS(smmu);
--	c->hwgrp = map;
-+	c->swgroups = map;
- 	return 0;
- 
- err_hw_busy:
- 	for_each_set_bit(i, bitmap, TEGRA_SWGROUP_MAX) {
--		offs = HWGRP_ASID_REG(i);
-+		offs = SWGROUP_ASID_REG(i);
- 		val = smmu_read(smmu, offs);
- 		val &= ~mask;
- 		smmu_write(smmu, val, offs);
-@@ -371,7 +369,7 @@ err_hw_busy:
- 	return -EBUSY;
- }
- 
--static int smmu_client_set_hwgrp(struct smmu_client *c, u32 map, int on)
-+static int smmu_client_set_swgroups(struct smmu_client *c, u32 map, int on)
- {
- 	u32 val;
- 	unsigned long flags;
-@@ -379,7 +377,7 @@ static int smmu_client_set_hwgrp(struct smmu_client *c, u32 map, int on)
- 	struct smmu_device *smmu = as->smmu;
- 
- 	spin_lock_irqsave(&smmu->lock, flags);
--	val = __smmu_client_set_hwgrp(c, map, on);
-+	val = __smmu_client_set_swgroups(c, map, on);
- 	spin_unlock_irqrestore(&smmu->lock, flags);
- 	return val;
- }
-@@ -419,7 +417,7 @@ static int smmu_setup_regs(struct smmu_device *smmu)
- 		smmu_write(smmu, val, SMMU_PTB_DATA);
- 
- 		list_for_each_entry(c, &as->client, list)
--			__smmu_client_set_hwgrp(c, c->hwgrp, 1);
-+			__smmu_client_set_swgroups(c, c->swgroups, 1);
- 	}
- 
- 	smmu_write(smmu, smmu->translation_enable_0, SMMU_TRANSLATION_ENABLE_0);
-@@ -751,7 +749,7 @@ static int smmu_iommu_attach_dev(struct iommu_domain *domain,
- 
- 	client->dev = dev;
- 	client->as = as;
--	err = smmu_client_enable_hwgrp(client, client->hwgrp);
-+	err = smmu_client_enable_swgroups(client, client->swgroups);
- 	if (err)
- 		return -EINVAL;
- 
-@@ -771,7 +769,7 @@ static int smmu_iommu_attach_dev(struct iommu_domain *domain,
- 	 * Reserve "page zero" for AVP vectors using a common dummy
- 	 * page.
- 	 */
--	if (client->hwgrp & TEGRA_SWGROUP_BIT(AVPC)) {
-+	if (client->swgroups & TEGRA_SWGROUP_BIT(AVPC)) {
- 		struct page *page;
- 
- 		page = as->smmu->avp_vector_page;
-@@ -784,7 +782,7 @@ static int smmu_iommu_attach_dev(struct iommu_domain *domain,
- 	return 0;
- 
- err_client:
--	smmu_client_disable_hwgrp(client);
-+	smmu_client_disable_swgroups(client);
- 	spin_unlock(&as->client_lock);
- 	return err;
- }
-@@ -800,7 +798,7 @@ static void smmu_iommu_detach_dev(struct iommu_domain *domain,
- 
- 	list_for_each_entry(c, &as->client, list) {
- 		if (c->dev == dev) {
--			smmu_client_disable_hwgrp(c);
-+			smmu_client_disable_swgroups(c);
- 			list_del(&c->list);
- 			c->as = NULL;
- 			dev_dbg(smmu->dev,
-@@ -912,7 +910,7 @@ static int smmu_iommu_add_device(struct device *dev)
- 	if (!client)
- 		return -EINVAL;
- 
--	switch (client->hwgrp) {
-+	switch (client->swgroups) {
- 	case TEGRA_SWGROUP_BIT(PPCS):
- 		map = smmu_handle->map[SYSTEM_PROTECTED];
- 		break;
-@@ -925,7 +923,7 @@ static int smmu_iommu_add_device(struct device *dev)
- 		err = arm_iommu_attach_device(dev, map);
- 
- 	pr_debug("swgroups=%016llx map=%p err=%d %s\n",
--		 client->hwgrp, map, err, dev_name(dev));
-+		 client->swgroups, map, err, dev_name(dev));
- 
- 	return err;
- }
-@@ -1218,7 +1216,7 @@ static int register_smmu_client(struct smmu_device *smmu,
- 
- 	client->of_node = args->np;
- 	for (i = 0; i < args->args_count; i++)
--		client->hwgrp |= 1ULL << args->args[i];
-+		client->swgroups |= 1ULL << args->args[i];
- 
- 	return insert_smmu_client(smmu, client);
- }
--- 
-1.8.1.5
+I think that an IOMMU device is also the service provider for other
+devices, where an single IOMMU device resides in the bus to provide
+the address translation to the bus children.
+
+> Kumar is concerned that deferred probe won?t work in all situations. For
+> instance, what about a device that has an optional dependency? Does it
+> fail to probe in the hope that the dependency will show up later? It was
+
+Other devices don't know if the system has IOMMU or not. IOMMU'able
+devices' population can be deferred till IOMMU device is populated,
+but they don't know if there's really IOMMU device exists or not at
+their population time.
+
+....
+> The suggestion was made that it would be a really nice to have the core
+> kernel sort out probe order rather than using deferred probe. Grant
+> replied that deferred probe was designed as the simplest possible
+> solution to the problem, and by no means is he attached to it if someone
+> can come up with a better approach. He did consider other options that
+> put dependency resolution into the core, but it ended up pulling all
+> kinds of GPIO, IRQ, Clock and DMA details into the core which made it
+> quite complex.
+
+I have a problem to control the poplution order for IOMMU in Tegra
+SoC, and currently I haven't found any framework so that I inserted an
+IOMMU hook in the driver core[1] since I discussed with Stephen Warren
+and we thought that the number of those subsystem which requires this
+kind of control isn't so many. This patch depends on a certain DT
+bindings("#stream-id-cells") if a device has an dependency on IOMMU or
+not. But at least this doesn't require anything for a client driver
+side at all. The exsiting driver can be used as they are. The current
+design is:
+
+1, When a device is populated, it checks if that device is IOMMU'able
+   or not. This is identified by "#stream-id-cells" in DT. If
+   a device is normal(non IOMMU), a device is populated. If a device
+   is IOMMU'able, it continues to be checked.
+
+2, When an IOMMU device has been already populated,
+   "dev->bus->iommu_ops" is set. If so a device(client) is registered
+   as IOMMU'able, and the rest of population process continues. If not
+   set yet, a device population would be deferred til
+   "dev->bus->iommu_ops" is set.
+
+3, After an IOMMU device has been already populated, deferred
+   population will be continued.
+
+I'm not so sure if this dependecy on "#stream-id-cells" is acceptable
+or not, but I haven't any better idea right now.
+
+Any suggestion/hint would be really appreciated.
+
+[1]
+http://lists.linuxfoundation.org/pipermail/iommu/2013-November/006933.html
