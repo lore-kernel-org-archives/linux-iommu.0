@@ -1,13 +1,14 @@
-From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCHv4 5/7] iommu/tegra: smmu: Support "mmu-masters" binding
-Date: Mon, 11 Nov 2013 13:03:52 +0100
-Message-ID: <20131111.140352.730622703500692694.hdoyu@nvidia.com>
-References: <1384158718-4756-1-git-send-email-hdoyu@nvidia.com><1384158718-4756-6-git-send-email-hdoyu@nvidia.com><20131111113510.GG28302@mudshark.cambridge.arm.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH] iommu: Split iommu_unmaps
+Date: Mon, 11 Nov 2013 16:09:35 -0700
+Message-ID: <1384211375.22415.69.camel@ul30vt.home>
+References: <20130524171401.14099.78694.stgit@bling.home>
+	<1383842247.27315.117.camel@shinybook.infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20131111113510.GG28302-MRww78TxoiP5vMa5CHWGZ34zcgK1vI+I0E9HWUfgJXw@public.gmane.org>
+In-Reply-To: <1383842247.27315.117.camel-Fexsq3y4057IgHVZqg5X0TlWvGAXklZc@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,21 +18,61 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "Mark.Rutland-5wv7dgnIgG8@public.gmane.org" <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Lorenzo.Pieralisi-5wv7dgnIgG8@public.gmane.org" <Lorenzo.Pieralisi-5wv7dgnIgG8@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org" <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote @ Mon, 11 Nov 2013 12:35:10 +0100:
-
-> This code looks familiar ;)
-
-;)
- 
-> If this approach makes it past the DT guys, I wonder if there's any scope
-> for factoring out some of the arm-smmu code so that basic client
-> parsing/searching/registration can be made into a library?
-
-That's what I thought too. I just didn't proceed further till I get
-some feedback on this design first. As you suggested, some of arm,smmu
-part can be enough generic so that some other of IOMMU drivers can
-make use of that as a library.
+T24gVGh1LCAyMDEzLTExLTA3IGF0IDE2OjM3ICswMDAwLCBEYXZpZCBXb29kaG91c2Ugd3JvdGU6
+Cj4gT24gRnJpLCAyMDEzLTA1LTI0IGF0IDExOjE0IC0wNjAwLCBBbGV4IFdpbGxpYW1zb24gd3Jv
+dGU6Cj4gPiBpb21tdV9tYXAgc3BsaXRzIHJlcXVlc3RzIGludG8gcGFnZXMgdGhhdCB0aGUgaW9t
+bXUgZHJpdmVyIHJlcG9ydHMKPiA+IHRoYXQgaXQgY2FuIGhhbmRsZS4gIFRoZSBpb21tdV91bm1h
+cCBwYXRoIGRvZXMgbm90IGRvIHRoZSBzYW1lLiAgVGhpcwo+ID4gY2FuIGNhdXNlIHByb2JsZW1z
+IG5vdCBvbmx5IGZyb20gY2FsbGVycyB0aGF0IG1pZ2h0IGV4cGVjdCB0aGUgc2FtZQo+ID4gYmVo
+YXZpb3IgYXMgdGhlIG1hcCBwYXRoLCBidXQgZXZlbiBmcm9tIHRoZSBmYWlsdXJlIHBhdGggb2Yg
+aW9tbXVfbWFwLAo+ID4gc2hvdWxkIGl0IGZhaWwgYXQgYSBwb2ludCB3aGVyZSBpdCBoYXMgbWFw
+cGVkIGFuZCBuZWVkcyB0byB1bndpbmQgYQo+ID4gc2V0IG9mIHBhZ2VzIHRoYXQgdGhlIGlvbW11
+IGRyaXZlciBjYW5ub3QgaGFuZGxlIGRpcmVjdGx5LiAgYW1kX2lvbW11LAo+ID4gZm9yIGV4YW1w
+bGUsIHdpbGwgQlVHX09OIGlmIGFza2VkIHRvIHVubWFwIGEgbm9uIHBvd2VyIG9mIDIgc2l6ZS4K
+PiA+IAo+ID4gRml4IHRoaXMgYnkgZXh0cmFjdGluZyBhbmQgZ2VuZXJhbGl6aW5nIHRoZSBzaXpp
+bmcgY29kZSBmcm9tIHRoZQo+ID4gaW9tbXVfbWFwIHBhdGggYW5kIHVzZSBpdCBmb3IgYm90aCBt
+YXAgYW5kIHVubWFwLgo+ID4gCj4gPiBTaWduZWQtb2ZmLWJ5OiBBbGV4IFdpbGxpYW1zb24gPGFs
+ZXgud2lsbGlhbXNvbkByZWRoYXQuY29tPgo+IAo+IEljaywgdGhpcyBpcyBob3JyaWQgYW5kIGxv
+b2tzIGxpa2UgaXQgd2lsbCBpbnRyb2R1Y2UgYSBtYXNzaXZlCj4gcGVyZm9ybWFuY2UgaGl0LgoK
+Rm9yIHg4NiB0aGVyZSBhcmUgZXNzZW50aWFsbHkgdHdvIHVzZXJzIG9mIGlvbW11X3VubWFwKCks
+IEtWTSBhbmQgVkZJTy4KQm90aCBvZiB0aGVtIHRyeSB0byB1bm1hcCBhbiBpbmRpdmlkdWFsIHBh
+Z2UgYW5kIGxvb2sgYXQgdGhlIHJlc3VsdCB0bwpzZWUgaG93IG11Y2ggd2FzIGFjdHVhbGx5IHVu
+bWFwcGVkLiAgRXZlcnl0aGluZyBlbHNlIGFwcGVhcnMgdG8gYmUgZXJyb3IKcGF0aHMuICBTbyB3
+aGVyZSBleGFjdGx5IGlzIHRoaXMgbWFzc2l2ZSBwZXJmb3JtYW5jZSBoaXQ/Cgo+IFN1cmVseSB0
+aGUgYW5zd2VyIGlzIHRvIGZpeCB0aGUgQU1EIGRyaXZlciBzbyB0aGF0IGl0IHdpbGwganVzdCBn
+ZXQgb24KPiB3aXRoIGl0IGFuZCB1bm1hcCB0aGUge2FkZHJlc3MsIHJhbmdlfSB0aGF0IGl0J3Mg
+YXNrZWQgdG8gbWFwPwoKVGhlIElPTU1VIEFQSSBhbGxvd3MgaW9tbXUgZHJpdmVycyB0byBleHBv
+c2UgdGhlIHBhZ2Ugc2l6ZXMgdGhleQpzdXBwb3J0LiAgTWFwcGluZ3MgYXJlIGRvbmUgdXNpbmcg
+dGhlc2Ugc2l6ZXMgc28gaXQgb25seSBzZWVtcyBmYWlyIHRoYXQKdW5tYXBwaW5ncyBzaG91bGQg
+YXMgd2VsbC4gIEF0IGxlYXN0IHRoYXQncyB3aGF0IGFtZF9pb21tdSB3YXMKZXhwZWN0aW5nLgoK
+PiBBbmQgZml4IHRoZSBnZW5lcmljIGlvbW11X21hcCgpIGNvZGUgd2hpbGUgd2UncmUgYXQgaXQs
+IHRvIGRvIGl0IHRoZQo+IHNhbWUgd2F5Lgo+IAo+IElPVExCIGZsdXNoZXMgYXJlICpzbG93Kiwg
+YW5kIG9uIGNlcnRhaW4gaGFyZHdhcmUgd2l0aAo+IG5vbi1jYWNoZS1jb2hlcmVudCBwYWdlIHRh
+YmxlcyBldmVuIHRoZSBkY2FjaGUgZmx1c2ggZm9yIHRoZSBwYWdlIHRhYmxlCj4gaXMgc2xvdy4g
+SWYgeW91IGRlbGliZXJhdGVseSBicmVhayBpdCB1cCBpbnRvIGluZGl2aWR1YWwgcGFnZXMgYW5k
+IGRvCj4gdGhlIGZsdXNoIGJldHdlZW4gZWFjaCBvbmUsIHJhdGhlciB0aGFuIGp1c3QgdW5tYXBw
+aW5nIHRoZSByYW5nZSwgeW91Cj4gYXJlIHBlc3NpbWlzaW5nIHRoZSBwZXJmb3JtYW5jZSBxdWl0
+ZSBoYXJkLgo+IAo+IEEgd2hpbGUgYmFjaywgSSB3ZW50IHRocm91Z2ggdGhlIEludGVsIElPTU1V
+IGNvZGUgdG8gbWFrZSBzdXJlIGl0IHdhcwo+IGRvaW5nIHRoaXMgcmlnaHQg4oCUIGl0IHVzZWQg
+dG8gaGF2ZSB0aGlzIGtpbmQgb2YgYm9nb3NpdHkgd2l0aCByZXBlYXRlZAo+IHBlci1wYWdlIGNh
+Y2hlIGFuZCBJT1RMQiBmbHVzaGVzICppbnRlcm5hbGx5KiwgYW5kIHRoZSByZXN1bHRpbmcKPiBw
+ZXJmb3JtYW5jZSBpbXByb3ZlbWVudCB3YXMgc2hvd24gYXQgaHR0cDovL2RhdmlkLndvb2Rob3Uu
+c2UvaW9tbXUucG5nCj4gCj4gWW91IHdpbGwgYmFzaWNhbGx5IGJlIHVuZG9pbmcgdGhhdCB3b3Jr
+LCBieSBlbnN1cmluZyB0aGF0IHRoZSBsb3ctbGV2ZWwKPiBkcml2ZXIgbmV2ZXIgKnNlZXMqIHRo
+ZSBmdWxsIHJhbmdlLgoKVGhhdCBkYXRhIGlzIGZvciBkbWFfb3BzIGludGVyZmFjZXMsIG5vdCBJ
+T01NVSBBUEkuICBIb3cgaXMgY2hhbmdpbmcKaW9tbXVfdW5tYXAoKSBpbiB0aGlzIHdheSB1bmRv
+aW5nIGFueSBvZiB5b3VyIHByZXZpb3VzIHdvcms/Cgo+IElmIHRoZSBBTUQgZHJpdmVyIHJlYWxs
+eSBjYW4ndCBoYW5kbGUgbW9yZSB0aGFuIG9uZSBwYWdlIGF0IGEgdGltZSwgbGV0Cj4gaXQgbG9v
+cCBmb3IgKml0c2VsZiogb3ZlciB0aGUgcGFnZXMuCgpTdXJlLCBidXQgdGhhdCdzIGEgY2hhbmdl
+IHRvIHRoZSBBUEkgd2hlcmUgSSB0aGluayB0aGlzIGZpeCB3YXMKY29ycmVjdGluZyBhIGJ1ZyBp
+biB0aGUgaW1wbGVtZW50YXRpb24gb2YgdGhlIEFQSS4gIEFyZSB0aGVyZSB1c2VycyBvZgppb21t
+dV91bm1hcCgpIHRoYXQgSSBkb24ndCBrbm93IGFib3V0PyAgR2l2ZW4gdGhlIGluLXRyZWUgdXNl
+cnMsIHRoZXJlJ3MKbm90IHJlYWxseSBhIGNvbXBlbGxpbmcgYXJndW1lbnQgdG8gb3B0aW1pemUu
+ICBUaGFua3MsCgpBbGV4CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5v
+cmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9t
+bXU=
