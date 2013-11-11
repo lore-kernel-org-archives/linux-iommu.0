@@ -1,7 +1,7 @@
 From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCHv4 1/7] ARM: tegra: Create a DT header defining SWGROUP ID
-Date: Mon, 11 Nov 2013 10:31:52 +0200
-Message-ID: <1384158718-4756-2-git-send-email-hdoyu@nvidia.com>
+Subject: [PATCHv4 2/7] driver/core: Populate IOMMU'able devices in order
+Date: Mon, 11 Nov 2013 10:31:53 +0200
+Message-ID: <1384158718-4756-3-git-send-email-hdoyu@nvidia.com>
 References: <1384158718-4756-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,80 +12,124 @@ To: swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, mark.rutland-5wv7dgnIgG8@pu
 Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Create a header file to define the swgroup IDs used by the IOMMU(SMMU)
-binding. "swgroup" is a group of H/W clients which a Tegra SoC
-supports. This unique ID can be used to calculate MC_SMMU_<swgroup
-name>_ASID_0 register offset and MC_<swgroup name>_HOTRESET_*_0
-register bit. This will allow the same header to be used by both
-device tree files, and drivers implementing this binding, which
-guarantees that the two stay in sync. This also makes device trees
-more readable by using names instead of magic numbers. For HOTRESET
-bit shifting we need another conversion table, which will come later.
+An "IOMMU device" on the bus is poplulated first, "IOMMU'able devices"
+are done later.
+
+With CONFIG_OF_IOMMU, "#stream-id-cells" DT binding would be used to
+identify whether a device is IOMMU'able or not. If a device is
+IOMMU'able, we'll defer to populate that device till an iommu device
+is populated. Once an iommu device is populated, "dev->bus->iommu_ops"
+is set in the bus. Then, those defered IOMMU'able devices are
+populated and configured as IOMMU'abled with help of the already
+populated iommu device via iommu_ops->add_device().
 
 Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
 Update:
-This is almost same as the previous v3. Just TEGRA_SWGROUP_MAX is
-added.
-  [PATCHv3 15/19] ARM: tegra: Create a DT header defining SWGROUP ID
+This is newly added, and the successor of the following RFC:
+  [RFC][PATCHv3+ 1/2] driver/core: Add of_iommu_attach()
+  http://lists.linuxfoundation.org/pipermail/iommu/2013-November/006914.html
 ---
- include/dt-bindings/memory/tegra-swgroup.h | 48 ++++++++++++++++++++++++++++++
- 1 file changed, 48 insertions(+)
- create mode 100644 include/dt-bindings/memory/tegra-swgroup.h
+ drivers/base/dd.c        |  5 +++++
+ drivers/iommu/of_iommu.c | 33 +++++++++++++++++++++++++++++++++
+ include/linux/of_iommu.h |  7 +++++++
+ 3 files changed, 45 insertions(+)
 
-diff --git a/include/dt-bindings/memory/tegra-swgroup.h b/include/dt-bindings/memory/tegra-swgroup.h
-new file mode 100644
-index 0000000..ef41166
---- /dev/null
-+++ b/include/dt-bindings/memory/tegra-swgroup.h
-@@ -0,0 +1,48 @@
-+/*
-+ * This header provides constants for binding nvidia,swgroup ID
-+ */
+diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+index 35fa368..6e892d4 100644
+--- a/drivers/base/dd.c
++++ b/drivers/base/dd.c
+@@ -25,6 +25,7 @@
+ #include <linux/async.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/pinctrl/devinfo.h>
++#include <linux/of_iommu.h>
+ 
+ #include "base.h"
+ #include "power/power.h"
+@@ -273,6 +274,10 @@ static int really_probe(struct device *dev, struct device_driver *drv)
+ 
+ 	dev->driver = drv;
+ 
++	ret = of_iommu_attach(dev);
++	if (ret)
++		goto probe_failed;
 +
-+#ifndef _DT_BINDINGS_MEMORY_TEGRA_SWGROUP_H
-+#define _DT_BINDINGS_MEMORY_TEGRA_SWGROUP_H
+ 	/* If using pinctrl, bind pins now before probing */
+ 	ret = pinctrl_bind_pins(dev);
+ 	if (ret)
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index ee249bc..335bf6a 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -20,6 +20,8 @@
+ #include <linux/export.h>
+ #include <linux/limits.h>
+ #include <linux/of.h>
++#include <linux/device.h>
++#include <linux/iommu.h>
+ 
+ /**
+  * of_get_dma_window - Parse *dma-window property and returns 0 if found.
+@@ -88,3 +90,34 @@ int of_get_dma_window(struct device_node *dn, const char *prefix, int index,
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(of_get_dma_window);
 +
-+#define TEGRA_SWGROUP_AFI	0	/* 0x238 */
-+#define TEGRA_SWGROUP_AVPC	1	/* 0x23c */
-+#define TEGRA_SWGROUP_DC	2	/* 0x240 */
-+#define TEGRA_SWGROUP_DCB	3	/* 0x244 */
-+#define TEGRA_SWGROUP_EPP	4	/* 0x248 */
-+#define TEGRA_SWGROUP_G2	5	/* 0x24c */
-+#define TEGRA_SWGROUP_HC	6	/* 0x250 */
-+#define TEGRA_SWGROUP_HDA	7	/* 0x254 */
-+#define TEGRA_SWGROUP_ISP	8	/* 0x258 */
-+#define TEGRA_SWGROUP_ISP2	SWGROUP_ISP
-+#define TEGRA_SWGROUP_DC14	9	/* 0x490 *//* Exceptional non-linear */
-+#define TEGRA_SWGROUP_DC12	10	/* 0xa88 *//* Exceptional non-linear */
-+#define TEGRA_SWGROUP_MPE	11	/* 0x264 */
-+#define TEGRA_SWGROUP_MSENC	SWGROUP_MPE
-+#define TEGRA_SWGROUP_NV	12	/* 0x268 */
-+#define TEGRA_SWGROUP_NV2	13	/* 0x26c */
-+#define TEGRA_SWGROUP_PPCS	14	/* 0x270 */
-+#define TEGRA_SWGROUP_SATA2	15	/* 0x274 */
-+#define TEGRA_SWGROUP_SATA	16	/* 0x278 */
-+#define TEGRA_SWGROUP_VDE	17	/* 0x27c */
-+#define TEGRA_SWGROUP_VI	18	/* 0x280 */
-+#define TEGRA_SWGROUP_VIC	19	/* 0x284 */
-+#define TEGRA_SWGROUP_XUSB_HOST	20	/* 0x288 */
-+#define TEGRA_SWGROUP_XUSB_DEV	21	/* 0x28c */
-+#define TEGRA_SWGROUP_A9AVP	22	/* 0x290 */
-+#define TEGRA_SWGROUP_TSEC	23	/* 0x294 */
-+#define TEGRA_SWGROUP_PPCS1	24	/* 0x298 */
-+#define TEGRA_SWGROUP_SDMMC1A	25	/* 0xa94 *//* Linear shift again */
-+#define TEGRA_SWGROUP_SDMMC2A	26	/* 0xa98 */
-+#define TEGRA_SWGROUP_SDMMC3A	27	/* 0xa9c */
-+#define TEGRA_SWGROUP_SDMMC4A	28	/* 0xaa0 */
-+#define TEGRA_SWGROUP_ISP2B	29	/* 0xaa4 */
-+#define TEGRA_SWGROUP_GPU	30	/* 0xaa8 */
-+#define TEGRA_SWGROUP_GPUB	31	/* 0xaac */
-+#define TEGRA_SWGROUP_PPCS2	32	/* 0xab0 */
++static bool of_is_iommuable(struct device *dev)
++{
++	size_t bytes;
++	const __be32 *prop;
++	const char *propname = "#stream-id-cells";
 +
-+#define TEGRA_SWGROUP_MAX	64
++	prop = of_get_property(dev->of_node, propname, &bytes);
++	if (!prop || !bytes)
++		return false;
 +
-+#define TEGRA_SWGROUP_BIT(x)	(1ULL << TEGRA_SWGROUP_##x)
++	pr_debug("%s=%d %s\n", propname, bytes, dev_name(dev));
++	return true;
++}
 +
-+#endif /* _DT_BINDINGS_MEMORY_TEGRA_SWGROUP_H */
++int of_iommu_attach(struct device *dev)
++{
++	struct iommu_ops *ops;
++
++	if (!of_is_iommuable(dev))
++		return 0;
++
++	ops = dev->bus->iommu_ops;
++	if (!ops)
++		return -EPROBE_DEFER;
++
++	if (ops->add_device)
++		return ops->add_device(dev);
++
++	return 0;
++}
+diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
+index 51a560f..3457489 100644
+--- a/include/linux/of_iommu.h
++++ b/include/linux/of_iommu.h
+@@ -7,6 +7,8 @@ extern int of_get_dma_window(struct device_node *dn, const char *prefix,
+ 			     int index, unsigned long *busno, dma_addr_t *addr,
+ 			     size_t *size);
+ 
++extern int of_iommu_attach(struct device *dev);
++
+ #else
+ 
+ static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
+@@ -16,6 +18,11 @@ static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
+ 	return -EINVAL;
+ }
+ 
++static inline int of_iommu_attach(struct device *dev)
++{
++	return 0;
++}
++
+ #endif	/* CONFIG_OF_IOMMU */
+ 
+ #endif /* __OF_IOMMU_H */
 -- 
 1.8.1.5
