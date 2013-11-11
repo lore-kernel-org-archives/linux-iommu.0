@@ -1,53 +1,72 @@
-From: Yijing Wang <wangyijing@huawei.com>
-Subject: Re: [PATCH 1/1] IOMMU: Save pci device id instead of pci_dev* pointer
- for DMAR devices
-Date: Mon, 11 Nov 2013 08:55:04 +0800
-Message-ID: <52802AE8.6070803@huawei.com>
-References: <1383639898-48776-1-git-send-email-wangyijing@huawei.com> <1383639898-48776-2-git-send-email-wangyijing@huawei.com> <20131107180713.GA2955@google.com> <527C5D36.7050206@huawei.com> <CAErSpo73N2Th-4D5G8-60tMuGwqthfu-VNHVf3LF9+s2mQp53w@mail.gmail.com>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCHv4 0/7] Unifying SMMU driver among Tegra SoCs
+Date: Mon, 11 Nov 2013 10:31:51 +0200
+Message-ID: <1384158718-4756-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <CAErSpo73N2Th-4D5G8-60tMuGwqthfu-VNHVf3LF9+s2mQp53w@mail.gmail.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Joerg Roedel <joro@8bytes.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, David Woodhouse <dwmw2@infradead.org>, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Hanjun Guo <guohanjun@huawei.com>
+Content-Type: text/plain
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org
+Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
->> Hmmm, this is the thing I am most worried about. If we just only use
->> (pci_dev *) poninter in drhd->devices array as a identification. Change
->> (pci_dev *) pointer instead of pci device id segment:bus:devfn is safe.
->> Or, this is a wrong way to fix this issue. I don't know IOMMU driver much now,
->> so IOMMU guys any comments on this issue is welcome.
->>
->> If this is not safe, what about we both save pci device id and (pci_dev *) pointer
->> in drhd. So we can put pci_dev ref and set pci_dev * = NULL during device removed by bus notify, and
->> update (pci_dev *)pointer during device add.
-> 
-> I don't know the IOMMU drivers well either, but it seems like they
-> rely on notifications of device addition and removal (see
-> iommu_bus_notifier()).  It doesn't seem right for them to also use the
-> generic PCI interfaces like pci_get_domain_bus_and_slot() because the
-> IOMMU driver should already know what devices exist and their
-> lifetimes.  It seems like confusion to mix the two.  But I don't have
-> a concrete suggestion.
+Hi,
 
-Maybe you are right~, I will try to rework the patch and resend soon.
+This series provides:
 
-Thanks!
-Yijing.
+(1) Unified SMMU driver among Tegra SoCs
+(2) Multiple Address Space support(MASID) in IOMMU(SMMMU)
+(3) Tegra IOMMU'able devices, most of platform devices are IOMMU'able.
 
+There's been some discussion[1] about device population order, and I
+added a IOMMU hook in driver core:
 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
-> 
-> .
-> 
+  [PATCHv4 2/7] driver/core: Populate IOMMU'able devices in order
 
+which is based on the following RFC patch:
+
+  [RFC][PATCHv3+ 1/2] driver/core: Add of_iommu_attach()
+  http://lists.linuxfoundation.org/pipermail/iommu/2013-November/006914.html
+
+Tested IOMMU functionality with T30 SD/MMC. Any further testing with
+T114 and/or other devices would be really appreciated.
+
+v4:
+Add a hook in driver core to control device populatin order.
+Introduced arm,smmu "mmu-master" binding instead of tegra own.
+Removed DT patches from this series.
+
+v3:
+Updated based on Stephen Warren's feedback
+
+v2:
+Updated based on Thierry Reding's and Stephen Warren's feedback
+
+v2: http://lists.infradead.org/pipermail/linux-arm-kernel/2013-July/181888.html
+v1: http://lists.infradead.org/pipermail/linux-arm-kernel/2013-June/180267.html
+
+Available in the git repository at:
+
+  git://git-HoETi0wPbwRDw2glCA4ptUEOCMrvLtNR@public.gmane.org/user/hdoyu/linux.git smmu-upstreaming@20131111
+
+Hiroshi Doyu (7):
+  ARM: tegra: Create a DT header defining SWGROUP ID
+  driver/core: Populate IOMMU'able devices in order
+  iommu/tegra: smmu: Register IOMMU'able devices dynamically
+  iommu/tegra: smmu: Calculate ASID register offset by ID
+  iommu/tegra: smmu: Support "mmu-masters" binding
+  iommu/tegra: smmu: Rename hwgrp -> swgroups
+  iommu/tegra: smmu: Allow duplicate ASID wirte
+
+ .../bindings/iommu/nvidia,tegra30-smmu.txt         |  28 +-
+ drivers/base/dd.c                                  |   5 +
+ drivers/iommu/Kconfig                              |   1 +
+ drivers/iommu/of_iommu.c                           |  33 +++
+ drivers/iommu/tegra-smmu.c                         | 301 ++++++++++++++-------
+ include/dt-bindings/memory/tegra-swgroup.h         |  48 ++++
+ include/linux/of_iommu.h                           |   7 +
+ 7 files changed, 318 insertions(+), 105 deletions(-)
+ create mode 100644 include/dt-bindings/memory/tegra-swgroup.h
 
 -- 
-Thanks!
-Yijing
+1.8.1.5
