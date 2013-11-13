@@ -1,14 +1,14 @@
 From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [PATCHv4 5/7] iommu/tegra: smmu: Support "mmu-masters" binding
-Date: Tue, 12 Nov 2013 17:17:22 -0700
-Message-ID: <5282C512.5090900@wwwdotorg.org>
+Subject: Re: [PATCHv4 7/7] iommu/tegra: smmu: Allow duplicate ASID wirte
+Date: Tue, 12 Nov 2013 17:27:21 -0700
+Message-ID: <5282C769.9040202@wwwdotorg.org>
 References: <1384158718-4756-1-git-send-email-hdoyu@nvidia.com>
-	<1384158718-4756-6-git-send-email-hdoyu@nvidia.com>
+	<1384158718-4756-8-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1384158718-4756-6-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1384158718-4756-8-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,74 +23,46 @@ Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY7
 List-Id: iommu@lists.linux-foundation.org
 
 On 11/11/2013 01:31 AM, Hiroshi Doyu wrote:
-> Follow arm,smmu's "mmu-masters" binding.
+> The device, which belongs to the same ASID, can try to enable the same
+> ASID as the other swgroup devices. This should be allowed but just
+> skip the actual register write. If the write value is different, it
+> will return -EINVAL.
 
-> diff --git a/Documentation/devicetree/bindings/iommu/nvidia,tegra30-smmu.txt b/Documentation/devicetree/bindings/iommu/nvidia,tegra30-smmu.txt
+That's pretty confusing. I'm not at all sure I understand what it means.
 
-> +- mmu-masters   : A list of phandles to device nodes representing bus
-> +                  masters for which the SMMU can provide a translation
-> +                  and their corresponding StreamIDs (see example below).
-> +                  Each device node linked from this list must have a
-> +                  "#stream-id-cells" property, indicating the number of
-> +                  StreamIDs(swgroup ID) associated with it, which is defined
-> +		  in "include/dt-bindings/memory/tegra-swgroup.h".
+I /think/ you're saying that multiple devices can exist whose swgroup
+values are the same, and when setting up those devices, the ASID
+register for that swgroup gets written multiple times, once per device.
+This change allows that, assuming that all the different devices attempt
+to select the same ASID for that swgroup. If so,
 
-Some of those lines are indented with TABs, others with spaces.
-
-> +		mmu-masters = <&host1x TEGRA_SWGROUP_HC>,
-> +			      <&mpe TEGRA_SWGROUP_MPE>,
-> +			      <&vi TEGRA_SWGROUP_VI>,
-> +			      <&epp TEGRA_SWGROUP_EPP>,
-> +			      <&isp TEGRA_SWGROUP_ISP>,
-> +			      <&gr2d TEGRA_SWGROUP_G2>,
-> +			      <&gr3d TEGRA_SWGROUP_NV TEGRA_SWGROUP_NV2>,
-
-So right now, the driver is statically assigning clients to a couple of
-specific ASIDs. What if we want to configure that mapping from DT; does
-that make sense? Instead of mmu-masters being a list of <phandle
-streamid*>, should it be <phandle ASID streamid*> or <phandle (streamid
-ASID)*>?
-
-
-
+Giving some specific examples of devices with the same swgroup value
+would be useful. Along with sternly talking to the HW designers and
+telling them to just give everything unique IDs:-(
 
 > diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
 
->  struct smmu_client {
-...
-> -	u32			hwgrp;
-> +	u64			hwgrp;
+> @@ -346,8 +346,11 @@ static int __smmu_client_set_swgroups(struct smmu_client *c,
+>  		offs = SWGROUP_ASID_REG(i);
+>  		val = smmu_read(smmu, offs);
+>  		if (on) {
+> -			if (WARN_ON(val & mask))
+> -				goto err_hw_busy;
+> +			if (val) {
 
-I think that's used later with for_each_set_bit() etc. Should it be
-declared as an explicit bitmap object, or at least an unsigned long to
-directly match the bitmap APIs?
+Why only check this if (val)? Surely the check is valid if (val == 0)
+too; you don't want to go writing 0 into the ASID register if it's
+already configured to point at something else?
 
-Related, what if someone bumps <dt-bindings/memory/tegra-swgroup.h>'s
-TEGRA_SWGROUP_MAX to 96 without changing the code?
+Or, is "val" a bitmask of ASIDs, not an integer representing the ASID?
 
->  static int smmu_iommu_attach_dev(struct iommu_domain *domain,
->  				 struct device *dev)
-...
-> -	client = devm_kzalloc(smmu->dev, sizeof(*c), GFP_KERNEL);
-> +	client = find_smmu_client(smmu, dev->of_node);
->  	if (!client)
-... (deletions of replaced code)
->  		return -EINVAL;
+> +				if (WARN_ON(val != mask))
+> +					return -EINVAL;
+> +				goto skip;
+> +			}
+>  			val |= mask;
 
--ENODEV cursorily sounds better? Same in smmu_iommu_add_device().
+... I guess this would imply it's a bitmask.
 
-> @@ -1238,6 +1311,23 @@ static int tegra_smmu_probe(struct platform_device *pdev)
-
-> +	i = 0;
-> +	smmu->clients = RB_ROOT;
-> +	while (true) {
-> +		err = of_parse_phandle_with_args(dev->of_node, "mmu-masters",
-> +						 "#stream-id-cells", i, &args);
-> +		if (err)
-> +			break;
-
-An iterator macro similar to of_property_for_each_u32/string() might be
-nicer, which could replace all that with:
-
-of_property_for_each_phandle_with_args(dev->of_node, "mmu-masters",
-					"#stream-id-cells") {
+But then that begs the question: if (on) means that ASID mapping is
+being enabled, then isn't that invalid if (!mask)?
