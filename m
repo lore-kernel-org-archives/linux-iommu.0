@@ -1,14 +1,11 @@
-From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [PATCHv4 1/7] ARM: tegra: Create a DT header defining SWGROUP ID
-Date: Fri, 15 Nov 2013 09:44:43 -0700
-Message-ID: <52864F7B.901@wwwdotorg.org>
-References: <1384158718-4756-1-git-send-email-hdoyu@nvidia.com>	<1384158718-4756-2-git-send-email-hdoyu@nvidia.com>	<5282B036.9090604@wwwdotorg.org>
-	<20131115122926.9166a6693bb9378a7f2c1526@nvidia.com>
+From: "Liu, Jijiang" <jijiang.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH 4/9] xen: Add xen_create_contiguous_region
+Date: Wed, 13 Nov 2013 10:50:58 +0000
+Message-ID: <1ED644BD7E0A5F4091CF203DAFB8E4CC01BC2B54@SHSMSX101.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============8164422527538811542=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20131115122926.9166a6693bb9378a7f2c1526-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,77 +15,108 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/15/2013 03:29 AM, Hiroshi Doyu wrote:
-> On Tue, 12 Nov 2013 23:48:22 +0100
-> Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote:
-> 
->> On 11/11/2013 01:31 AM, Hiroshi Doyu wrote:
->>> Create a header file to define the swgroup IDs used by the IOMMU(SMMU)
->>> binding. "swgroup" is a group of H/W clients which a Tegra SoC
->>> supports. This unique ID can be used to calculate MC_SMMU_<swgroup
->>> name>_ASID_0 register offset and MC_<swgroup name>_HOTRESET_*_0
->>> register bit. This will allow the same header to be used by both
->>> device tree files, and drivers implementing this binding, which
->>> guarantees that the two stay in sync. This also makes device trees
->>> more readable by using names instead of magic numbers. For HOTRESET
->>> bit shifting we need another conversion table, which will come later.
->>
->>> diff --git a/include/dt-bindings/memory/tegra-swgroup.h b/include/dt-bindings/memory/tegra-swgroup.h
->>
->>> +#define TEGRA_SWGROUP_PPCS2	32	/* 0xab0 */
->>> +
->>> +#define TEGRA_SWGROUP_MAX	64
->>> +
->>> +#define TEGRA_SWGROUP_BIT(x)	(1ULL << TEGRA_SWGROUP_##x)
->>
->> If I put the following into a DT and compile it:
->>
->> #define TEGRA_SWGROUP_PPCS2	32	/* 0xab0 */
->> #define TEGRA_SWGROUP_BIT(x)	(1ULL << TEGRA_SWGROUP_##x)
->> / {
->> 	test-prop = <(TEGRA_SWGROUP_BIT(PPCS2))>;
->> };
->>
->> I get:
->>
->> Error: arch/arm/boot/dts/tegra20.dtsi:11.28-29 integer value out of
->> range 0000000000000020 (32 bits)
->> FATAL ERROR: Syntax error parsing input tree
->>
->> Is TEGRA_SWGROUP_BIT() not meant to be used in DT files? If it is, the
->> definition is broken. If it is not, it should be defined in the driver
->> not the header, since DT files have no use for it.
-> 
-> I'd like to use the macro in DT but what I want is 2 cells from 64 bit.
-> For the above example, I want the following 2 cell to be generated but I
-> haven't found any ways yet.
-> 
-> #define TEGRA_SWGROUP_PPCS2	32	/* 0xab0 */
-> #define TEGRA_SWGROUP_BIT(x)	(1ULL << TEGRA_SWGROUP_##x)
-> / {
->  	test-prop = <0x00000000 0x00000001>;
-> };
+--===============8164422527538811542==
+Content-Language: en-US
+Content-Type: multipart/alternative;
+	boundary="_000_1ED644BD7E0A5F4091CF203DAFB8E4CC01BC2B54SHSMSX101ccrcor_"
 
-I guess you'd need to do something like:
+--_000_1ED644BD7E0A5F4091CF203DAFB8E4CC01BC2B54SHSMSX101ccrcor_
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-#define MSW_OF_U64(x) ((x) >> 32)
-#define LSW_OF_U64(x) ((x) & 0xffffffff)
+Hi,
 
-... and use those to construct the two cells explicitly.
+I have a question about xen_create_contiguous_region function, in which ker=
+nel version was it introduced?
 
-Or, explicitly name TEGRA_SWGROUP_xxx so that it's obvious which go in
-the MSW and which in the LSW, and then:
+Thanks.
 
-#define TEGRA_SWGROUP_BIT(x)	(1ULL << (TEGRA_SWGROUP_##x % 32))
+--_000_1ED644BD7E0A5F4091CF203DAFB8E4CC01BC2B54SHSMSX101ccrcor_
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-It might also be possible to do:
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii"=
+>
+<meta name=3D"Generator" content=3D"Microsoft Word 14 (filtered medium)">
+<style><!--
+/* Font Definitions */
+@font-face
+	{font-family:\5B8B\4F53;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:\5B8B\4F53;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:"\@\5B8B\4F53";
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	text-align:justify;
+	text-justify:inter-ideograph;
+	font-size:10.5pt;
+	font-family:"Calibri","sans-serif";}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Calibri","sans-serif";
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-family:"Calibri","sans-serif";}
+/* Page Definitions */
+@page WordSection1
+	{size:612.0pt 792.0pt;
+	margin:72.0pt 90.0pt 72.0pt 90.0pt;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]-->
+</head>
+<body lang=3D"ZH-CN" link=3D"blue" vlink=3D"purple" style=3D"text-justify-t=
+rim:punctuation">
+<div class=3D"WordSection1">
+<p class=3D"MsoNormal"><span lang=3D"EN-US">Hi, <o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span lang=3D"EN-US"><o:p>&nbsp;</o:p></span></p>
+<p class=3D"MsoNormal"><span lang=3D"EN-US">I have a question about xen_cre=
+ate_contiguous_region function, in which kernel version was it introduced?<=
+o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span lang=3D"EN-US"><o:p>&nbsp;</o:p></span></p>
+<p class=3D"MsoNormal"><span lang=3D"EN-US">Thanks.<o:p></o:p></span></p>
+</div>
+</body>
+</html>
 
-#define TWO_U32_OF_U64(x) ((x) >> 32) ((x) & 0xffffffff)
+--_000_1ED644BD7E0A5F4091CF203DAFB8E4CC01BC2B54SHSMSX101ccrcor_--
 
-... which expands to both cells at once, although that's verging on
-hiding DT structure behind a macro, which isn't exceptionally great, but
-might be acceptable in this limited case.
+--===============8164422527538811542==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============8164422527538811542==--
