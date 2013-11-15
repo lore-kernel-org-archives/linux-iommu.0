@@ -1,18 +1,10 @@
-From: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCHv3 01/19] [HACK] of: dev_node has struct device pointer
-Date: Fri, 15 Nov 2013 16:31:06 +0900
-Message-ID: <20131115073106.D1BCEC407C6@trevor.secretlab.ca>
-References: <20131024.122115.1035609747068925560.hdoyu@nvidia.com> <
-	20131025001038.77299C403B6@trevor.secretlab.ca>
-	<20131025075652.GB19622@ ulmo.nvidia.com>
-	<20131025.112549.2040849946958069337.hdoyu@nvidia.com> <
-	20131025091104.GG19622@ulmo.nvidia.com>
-	<52718122.9000206@wwwdotorg.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Vacation Notice
+Date: Fri, 15 Nov 2013 17:10:26 +0100
+Message-ID: <20131115161010.GA2597@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============1122858682321470644=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <52718122.9000206-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,25 +14,68 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 30 Oct 2013 15:58:58 -0600, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote:
-> On 10/25/2013 03:11 AM, Thierry Reding wrote:
-> ...
-> > So my proposed solution for the IOMMU case is to treat it the same
-> > as any other resources. Perhaps resource isn't the right word, but
-> > at the core the issue is the same. A device requires the services
-> > of an IOMMU so that it can be put into the correct address space.
-> > If the IOMMU is not available yet it cannot do that, so we simply
-> > return -EPROBE_DEFER and cause the probe to be retried later.
-> 
-> Personally, I view deferred probe as being used when one device
-> requires either a resource /or/ a service provided by another, not
-> /just/ when there's a resource dependency. Hence, I think it fits
-> perfectly here.
 
-How are those two things different? :-)
+--===============1122858682321470644==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="BXVAT5kNtrzKuDFl"
+Content-Disposition: inline
 
-g.
+
+--BXVAT5kNtrzKuDFl
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Hi,
+
+this is just a short notice that I will be traveling through south-east
+Asia for the next 4 weeks and will probably not have internet access
+there.
+Alex Williamson will pick up IOMMU related fixes while I am gone and
+send them upstream, so feel free to send everything to him while I am
+gone :)
+I am back in Germany on December 15th, probably starting to pick up
+things again on the 16th.
+
+Thanks,
+
+	Joerg
+
+
+--BXVAT5kNtrzKuDFl
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+
+iQIcBAEBAgAGBQJShkdhAAoJECvwRC2XARrjriQP/jcJirPmPzpHO6QBMACwMr0b
+esFvZACd2Fff7z9dowgXHk498BXMNymfInRCHfJ9elKwGPOb2JbcILHnZmxkdV5l
+uVxdZ9ZjZRFBlvkbkL60PBmsDUbNGYfChwb4H1uONU1maPkk2pgoBzLRs8xDKSzv
+VQB+or2GODkdVptoNaM5gyxm5S3et9ZIJXzFDGgpbPmNXQouNFLAZC/oilpbDUM8
+BnFC/HSN1l3HHRWp0xmYTkq2gtvbym0G5J3eTDh5FCvTe5LrhebcypIRkjCmQTbO
+HDuIFwlNaIQRp0ztR6UEYOY1gZjDKuxx9cX0rEGwvvOSA9ebc2a8AaIBn5WWYWDj
+98nGXELDzX8RdPd9cnTilO19bodsQ23scJ1nx6uRtGP5FLppz52KtDIGpLT2ff0z
+552hJuiJeiNd/IJ1P9QGH0FH1nF8KhhhLywr/piOYUTf5pJaV4/9vVNgzQ+LAYLE
+rPg2X+322tt0LDSdLDAg8hCQrILUgUiU3vo+MdDNop/0HD/6piJ9haQu974NaQ4x
+zQT829cxKEZRMZe/9WhCzb5oAK4sQkqkdgKmKGgEPMOwEaE4vkqr1Vkoi2T3Uqbe
+bslxEVFZ4NW5fYPSbdsopCr57zfFVMdJpSLpWMVfPhUsuej/p3dvQCnrcQ/bXCGd
+XKlEl5/CFyJqCV1oCdOy
+=W61Z
+-----END PGP SIGNATURE-----
+
+--BXVAT5kNtrzKuDFl--
+
+
+
+--===============1122858682321470644==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============1122858682321470644==--
