@@ -1,8 +1,8 @@
 From: Wei Yongjun <weiyj.lk-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH -next] iommu/arm-smmu: fix error return code in
-	arm_smmu_device_dt_probe()
-Date: Fri, 15 Nov 2013 17:42:30 +0800
-Message-ID: <CAPgLHd8siM4ZpmaqHWa9JXFmcGBvvb6J=Vo2DvP5=zMQE0d0fA@mail.gmail.com>
+Subject: [PATCH -next] iommu/arm-smmu: fix potential NULL pointer dereference
+	in arm_smmu_map()
+Date: Fri, 15 Nov 2013 17:45:03 +0800
+Message-ID: <CAPgLHd8f7mj2fMXt5_HeCyEhqDP_twFoHH0SNpeBdQXhhqVYxA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -22,23 +22,25 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Wei Yongjun <yongjun_wei-zrsr2BFq86L20UzCJQGyNP8+0UxHXcjY@public.gmane.org>
 
-Fix to return -ENODEV instead of 0 when context interrupt number
-does no match in arm_smmu_device_dt_probe().
+The dereference should be moved below the NULL test.
 
 Signed-off-by: Wei Yongjun <yongjun_wei-zrsr2BFq86L20UzCJQGyNP8+0UxHXcjY@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/arm-smmu.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 2349d62..2bc977b 100644
+index 2349d62..a0cc0a5 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -1858,6 +1858,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 		dev_err(dev,
- 			"found only %d context interrupt(s) but %d required\n",
- 			smmu->num_context_irqs, smmu->num_context_banks);
-+		err = -ENODEV;
- 		goto out_put_parent;
- 	}
+@@ -1420,9 +1420,8 @@ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
+ 			phys_addr_t paddr, size_t size, int flags)
+ {
+ 	struct arm_smmu_domain *smmu_domain = domain->priv;
+-	struct arm_smmu_device *smmu = smmu_domain->leaf_smmu;
  
+-	if (!smmu_domain || !smmu)
++	if (!smmu_domain || !smmu_domain->leaf_smmu)
+ 		return -ENODEV;
+ 
+ 	/* Check for silent address truncation up the SMMU chain. */
