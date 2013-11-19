@@ -1,13 +1,11 @@
 From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCHv5 7/9] iommu/tegra: smmu: allow duplicate ASID wirte
-Date: Tue, 19 Nov 2013 11:33:11 +0200
-Message-ID: <1384853593-32202-8-git-send-email-hdoyu@nvidia.com>
-References: <1384853593-32202-1-git-send-email-hdoyu@nvidia.com>
+Subject: [PATCHv5 0/9] Unifying Tegra IOMMU(SMMU) driver among Tegra SoCs
+Date: Tue, 19 Nov 2013 11:33:04 +0200
+Message-ID: <1384853593-32202-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1384853593-32202-1-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,58 +19,86 @@ To: swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@pub
 Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The device, which belongs to the same ASID, can try to enable the same
-ASID as the other swgroup devices. This should be allowed but just
-skip the actual register write. If the write value is different, it
-will return -EINVAL.
+Hi,
 
-Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
----
+This series provide:
+
+(1) Unified IOMMU(SMMU) driver among Tegra SoCs
+(2) Multiple Address Space support(MASID) in IOMMU(SMMMU)
+(3) Tegra IOMMU'able devices, most of platform devices are IOMMU'able.
+
+There's been some discussion[1] about device population order, and for
+the solution I implemented an IOMMU hook in driver core:
+
+  [PATCHv5 2/9] driver/core: populate devices in order for IOMMUs
+
+which is based on:
+  http://lists.linuxfoundation.org/pipermail/iommu/2013-November/006933.html
+
+The main problem here is,
+
+IOMMU devices on the bus need to be poplulated first, then iommu
+master devices are done later.
+
+With CONFIG_OF_IOMMU, "iommus=" DT binding would be used to identify
+whether a device can be an iommu msater or not. If a device can, we'll
+defer to populate that device till an iommu device is populated. Once
+an iommu device is populated, "dev->bus->iommu_ops" is set in the
+bus. Then, those defered iommu master devices are populated and
+configured for IOMMU with help of the already populated iommu device
+via iommu_ops->add_device(). Multiple IOMMUs can be listed on this
+"iommus" binding so that a device can have multiple IOMMUs attached.
+
+Currenly this "iommus=" binding is used as the global binding.
+
+Tested IOMMU functionality with T30 SD/MMC. Any further testing with
+T114 and/or other devices would be really appreciated.
+
 v4:
-This was the part of v3, which isn't used any more.
-  [PATCHv3 10/19] iommu/tegra: smmu: Get "nvidia,swgroups" from DT
----
- drivers/iommu/tegra-smmu.c | 20 ++++++++------------
- 1 file changed, 8 insertions(+), 12 deletions(-)
+Add a hook in driver core to control device populatin order.
+Introduced arm,smmu "mmu-master" binding instead of tegra own.
+Removed DT patches from this series.
+  http://lists.linuxfoundation.org/pipermail/iommu/2013-November/006931.html
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index e915201a..c2ed075 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -418,9 +418,13 @@ static int __smmu_client_set_hwgrp(struct smmu_client *c,
- 		offs = HWGRP_ASID_REG(i);
- 		val = smmu_read(smmu, offs);
- 		if (on) {
--			if (WARN_ON(val & mask))
--				goto err_hw_busy;
--			val |= mask;
-+			if (val) {
-+				if (WARN_ON(val != mask))
-+					return -EINVAL;
-+				goto skip;
-+			}
-+
-+			val = mask;
- 			memcpy(c->hwgrp, map, sizeof(u64));
- 		} else {
- 			WARN_ON((val & mask) == mask);
-@@ -430,16 +434,8 @@ static int __smmu_client_set_hwgrp(struct smmu_client *c,
- 	}
- 
- 	FLUSH_SMMU_REGS(smmu);
-+skip:
- 	return 0;
--
--err_hw_busy:
--	for_each_set_bit(i, map, TEGRA_SWGROUP_MAX) {
--		offs = HWGRP_ASID_REG(i);
--		val = smmu_read(smmu, offs);
--		val &= ~mask;
--		smmu_write(smmu, val, offs);
--	}
--	return -EBUSY;
- }
- 
- static int smmu_client_set_hwgrp(struct smmu_client *c,
+v3:
+Updated based on Stephen Warren's feedback
+  http://lists.linuxfoundation.org/pipermail/iommu/2013-October/006724.html
+
+v2:
+Updated based on Thierry Reding's and Stephen Warren's feedback
+  http://lists.infradead.org/pipermail/linux-arm-kernel/2013-July/181888.html
+
+v1:
+  http://lists.infradead.org/pipermail/linux-arm-kernel/2013-June/180267.html
+
+Available in the git repository at:
+
+  git://git-HoETi0wPbwRDw2glCA4ptUEOCMrvLtNR@public.gmane.org/user/hdoyu/linux.git smmu-upstreaming@20131119
+
+
+Hiroshi Doyu (9):
+  of: introduce of_property_for_earch_phandle_with_args()
+  driver/core: populate devices in order for IOMMUs
+  ARM: tegra: create a DT header defining SWGROUP ID
+  iommu/tegra: smmu: register device to iommu dynamically
+  iommu/tegra: smmu: calculate ASID register offset by ID
+  iommu/tegra: smmu: get swgroups from DT "iommus="
+  iommu/tegra: smmu: allow duplicate ASID wirte
+  iommu/tegra: smmu: Rename hwgrp -> swgroups
+  [FOR TEST] ARM: dt: tegra30: add "iommus" binding
+
+ .../bindings/iommu/nvidia,tegra30-smmu.txt         |  17 +-
+ arch/arm/boot/dts/tegra30.dtsi                     |  23 +-
+ drivers/base/dd.c                                  |   5 +
+ drivers/iommu/Kconfig                              |   1 +
+ drivers/iommu/of_iommu.c                           |  22 ++
+ drivers/iommu/tegra-smmu.c                         | 334 +++++++++++++--------
+ include/dt-bindings/memory/tegra-swgroup.h         |  50 +++
+ include/linux/of.h                                 |   3 +
+ include/linux/of_iommu.h                           |   7 +
+ 9 files changed, 336 insertions(+), 126 deletions(-)
+ create mode 100644 include/dt-bindings/memory/tegra-swgroup.h
+
+[1] https://lists.ozlabs.org/pipermail/devicetree-discuss/2013-June/thread.html#36542
 -- 
 1.8.1.5
