@@ -1,20 +1,11 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH] iommu/fsl_pamu: use physical cpu index to find the
-	matched cpu nodes
-Date: Tue, 19 Nov 2013 03:09:08 +0000
-Message-ID: <C5ECD7A89D1DC44195F34B25E172658D0A5B971D@039-SN2MPN1-012.039d.mgd.msft.net>
-References: <1384457440.2144.15.camel@haiying-laptop>
-	<1384467025.1403.210.camel@snotra.buserror.net>
-	<C5ECD7A89D1DC44195F34B25E172658D0A5B0AE8@039-SN2MPN1-012.039d.mgd.msft.net>
-	<1384803449.1403.313.camel@snotra.buserror.net>
-	<C5ECD7A89D1DC44195F34B25E172658D0A5B966D@039-SN2MPN1-012.039d.mgd.msft.net>
-	<1384830256.1403.340.camel@snotra.buserror.net>
+From: Bharat Bhushan <r65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU (PAMU)
+Date: Tue, 19 Nov 2013 10:47:04 +0530
+Message-ID: <1384838233-24847-1-git-send-email-Bharat.Bhushan@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1384830256.1403.340.camel-88ow+0ZRuxG2UiBs7uKeOtHuzzzSOjJt@public.gmane.org>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,28 +15,71 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Haiying Wang <Haiying.Wang-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+From: Bharat Bhushan <bharat.bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 
+PAMU (FSL IOMMU) has a concept of primary window and subwindows.
+Primary window corresponds to the complete guest iova address space
+(including MSI space), with respect to IOMMU_API this is termed as
+geometry. IOVA Base of subwindow is determined from the number of
+subwindows (configurable using iommu API).
+MSI I/O page must be within the geometry and maximum supported
+subwindows, so MSI IO-page is setup just after guest memory iova space.
 
-> -----Original Message-----
-> From: Wood Scott-B07421
-> Sent: Tuesday, November 19, 2013 8:34 AM
-> To: Sethi Varun-B16395
-> Cc: Wang Haiying-R54964; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
-> foundation.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-> Subject: Re: [PATCH] iommu/fsl_pamu: use physical cpu index to find the
-> matched cpu nodes
-> 
-> On Mon, 2013-11-18 at 20:42 -0600, Varun Sethi wrote:
-> > For the DSP case again we have to set up the stash attribute. Are you
-> saying that this should be a separate attribute?
-> 
-> Not necessarily a separate attribute, but there should be some way to
-> distinguish whether you're providing a Linux cpu number or some external
-> stash destination.
-Yes, the current idea is to use a separate L2 cache type for the DSP cores (PAMU_DSP_L2_CACHE). DSP cores can stash only to the L2 cache.
+So patch 1/9-4/9(inclusive) are for defining the interface to get:
+  - Number of MSI regions (which is number of MSI banks for powerpc)
+  - MSI-region address range: Physical page which have the
+    address/addresses used for generating MSI interrupt
+    and size of the page.
 
--Varun
+Patch 5/9-7/9(inclusive) is defining the interface of setting up
+MSI iova-base for a msi region(bank) for a device. so that when
+msi-message will be composed then this configured iova will be used.
+Earlier we were using iommu interface for getting the configured iova
+which was not currect and Alex Williamson suggeested this type of interface.
+
+patch 8/9 moves some common functions in a separate file so that these
+can be used by FSL_PAMU implementation (next patch uses this).
+These will be used later for iommu-none implementation. I believe we
+can do more of this but will take step by step.
+
+Finally last patch actually adds the support for FSL-PAMU :)
+
+v1->v2
+ - Added interface for setting msi iova for a msi region for a device.
+   Earlier I added iommu interface for same but as per comment that is
+   removed and now created a direct interface between vfio and msi.
+ - Incorporated review comments (details is in individual patch)
+
+Bharat Bhushan (9):
+  pci:msi: add weak function for returning msi region info
+  pci: msi: expose msi region information functions
+  powerpc: pci: Add arch specific msi region interface
+  powerpc: msi: Extend the msi region interface to get info from
+    fsl_msi
+  pci/msi: interface to set an iova for a msi region
+  powerpc: pci: Extend msi iova page setup to arch specific
+  pci: msi: Extend msi iova setting interface to powerpc arch
+  vfio: moving some functions in common file
+  vfio pci: Add vfio iommu implementation for FSL_PAMU
+
+ arch/powerpc/include/asm/machdep.h |   10 +
+ arch/powerpc/kernel/msi.c          |   28 +
+ arch/powerpc/sysdev/fsl_msi.c      |  132 +++++-
+ arch/powerpc/sysdev/fsl_msi.h      |   25 +-
+ drivers/pci/msi.c                  |   35 ++
+ drivers/vfio/Kconfig               |    6 +
+ drivers/vfio/Makefile              |    5 +-
+ drivers/vfio/vfio_iommu_common.c   |  227 ++++++++
+ drivers/vfio/vfio_iommu_common.h   |   27 +
+ drivers/vfio/vfio_iommu_fsl_pamu.c | 1003 ++++++++++++++++++++++++++++++++++++
+ drivers/vfio/vfio_iommu_type1.c    |  206 +--------
+ include/linux/msi.h                |   14 +
+ include/linux/pci.h                |   21 +
+ include/uapi/linux/vfio.h          |  100 ++++
+ 14 files changed, 1623 insertions(+), 216 deletions(-)
+ create mode 100644 drivers/vfio/vfio_iommu_common.c
+ create mode 100644 drivers/vfio/vfio_iommu_common.h
+ create mode 100644 drivers/vfio/vfio_iommu_fsl_pamu.c
