@@ -1,11 +1,13 @@
 From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCHv5 0/9] Unifying Tegra IOMMU(SMMU) driver among Tegra SoCs
-Date: Tue, 19 Nov 2013 11:33:04 +0200
-Message-ID: <1384853593-32202-1-git-send-email-hdoyu@nvidia.com>
+Subject: [PATCHv5 2/9] driver/core: populate devices in order for IOMMUs
+Date: Tue, 19 Nov 2013 11:33:06 +0200
+Message-ID: <1384853593-32202-3-git-send-email-hdoyu@nvidia.com>
+References: <1384853593-32202-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1384853593-32202-1-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,24 +21,6 @@ To: swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@pub
 Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
-
-This series provide:
-
-(1) Unified IOMMU(SMMU) driver among Tegra SoCs
-(2) Multiple Address Space support(MASID) in IOMMU(SMMMU)
-(3) Tegra IOMMU'able devices, most of platform devices are IOMMU'able.
-
-There's been some discussion[1] about device population order, and for
-the solution I implemented an IOMMU hook in driver core:
-
-  [PATCHv5 2/9] driver/core: populate devices in order for IOMMUs
-
-which is based on:
-  http://lists.linuxfoundation.org/pipermail/iommu/2013-November/006933.html
-
-The main problem here is,
-
 IOMMU devices on the bus need to be poplulated first, then iommu
 master devices are done later.
 
@@ -49,56 +33,105 @@ configured for IOMMU with help of the already populated iommu device
 via iommu_ops->add_device(). Multiple IOMMUs can be listed on this
 "iommus" binding so that a device can have multiple IOMMUs attached.
 
-Currenly this "iommus=" binding is used as the global binding.
-
-Tested IOMMU functionality with T30 SD/MMC. Any further testing with
-T114 and/or other devices would be really appreciated.
+Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+---
+v5:
+Use "iommus=" binding instread of arm,smmu's "#stream-id-cells".
 
 v4:
-Add a hook in driver core to control device populatin order.
-Introduced arm,smmu "mmu-master" binding instead of tegra own.
-Removed DT patches from this series.
-  http://lists.linuxfoundation.org/pipermail/iommu/2013-November/006931.html
+This is newly added, and the successor of the following RFC:
+  [RFC][PATCHv3+ 1/2] driver/core: Add of_iommu_attach()
+  http://lists.linuxfoundation.org/pipermail/iommu/2013-November/006914.html
+---
+ drivers/base/dd.c        |  5 +++++
+ drivers/iommu/of_iommu.c | 22 ++++++++++++++++++++++
+ include/linux/of_iommu.h |  7 +++++++
+ 3 files changed, 34 insertions(+)
 
-v3:
-Updated based on Stephen Warren's feedback
-  http://lists.linuxfoundation.org/pipermail/iommu/2013-October/006724.html
-
-v2:
-Updated based on Thierry Reding's and Stephen Warren's feedback
-  http://lists.infradead.org/pipermail/linux-arm-kernel/2013-July/181888.html
-
-v1:
-  http://lists.infradead.org/pipermail/linux-arm-kernel/2013-June/180267.html
-
-Available in the git repository at:
-
-  git://git-HoETi0wPbwRDw2glCA4ptUEOCMrvLtNR@public.gmane.org/user/hdoyu/linux.git smmu-upstreaming@20131119
-
-
-Hiroshi Doyu (9):
-  of: introduce of_property_for_earch_phandle_with_args()
-  driver/core: populate devices in order for IOMMUs
-  ARM: tegra: create a DT header defining SWGROUP ID
-  iommu/tegra: smmu: register device to iommu dynamically
-  iommu/tegra: smmu: calculate ASID register offset by ID
-  iommu/tegra: smmu: get swgroups from DT "iommus="
-  iommu/tegra: smmu: allow duplicate ASID wirte
-  iommu/tegra: smmu: Rename hwgrp -> swgroups
-  [FOR TEST] ARM: dt: tegra30: add "iommus" binding
-
- .../bindings/iommu/nvidia,tegra30-smmu.txt         |  17 +-
- arch/arm/boot/dts/tegra30.dtsi                     |  23 +-
- drivers/base/dd.c                                  |   5 +
- drivers/iommu/Kconfig                              |   1 +
- drivers/iommu/of_iommu.c                           |  22 ++
- drivers/iommu/tegra-smmu.c                         | 334 +++++++++++++--------
- include/dt-bindings/memory/tegra-swgroup.h         |  50 +++
- include/linux/of.h                                 |   3 +
- include/linux/of_iommu.h                           |   7 +
- 9 files changed, 336 insertions(+), 126 deletions(-)
- create mode 100644 include/dt-bindings/memory/tegra-swgroup.h
-
-[1] https://lists.ozlabs.org/pipermail/devicetree-discuss/2013-June/thread.html#36542
+diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+index 35fa368..6e892d4 100644
+--- a/drivers/base/dd.c
++++ b/drivers/base/dd.c
+@@ -25,6 +25,7 @@
+ #include <linux/async.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/pinctrl/devinfo.h>
++#include <linux/of_iommu.h>
+ 
+ #include "base.h"
+ #include "power/power.h"
+@@ -273,6 +274,10 @@ static int really_probe(struct device *dev, struct device_driver *drv)
+ 
+ 	dev->driver = drv;
+ 
++	ret = of_iommu_attach(dev);
++	if (ret)
++		goto probe_failed;
++
+ 	/* If using pinctrl, bind pins now before probing */
+ 	ret = pinctrl_bind_pins(dev);
+ 	if (ret)
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index ee249bc..4aef2b2 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -20,6 +20,8 @@
+ #include <linux/export.h>
+ #include <linux/limits.h>
+ #include <linux/of.h>
++#include <linux/device.h>
++#include <linux/iommu.h>
+ 
+ /**
+  * of_get_dma_window - Parse *dma-window property and returns 0 if found.
+@@ -88,3 +90,23 @@ int of_get_dma_window(struct device_node *dn, const char *prefix, int index,
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(of_get_dma_window);
++
++int of_iommu_attach(struct device *dev)
++{
++	int i;
++	struct of_phandle_args args;
++	struct iommu_ops *ops = dev->bus->iommu_ops;
++
++	of_property_for_each_phandle_with_args(dev->of_node, "iommus",
++					       "#iommu-cells", i, &args) {
++		pr_debug("%s(i=%d) ops=%p %s\n",
++			 __func__, i, ops, dev_name(dev));
++
++		if (!ops)
++			return -EPROBE_DEFER;
++	}
++
++	if (i && ops->add_device)
++		return ops->add_device(dev);
++	return 0;
++}
+diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
+index 51a560f..3457489 100644
+--- a/include/linux/of_iommu.h
++++ b/include/linux/of_iommu.h
+@@ -7,6 +7,8 @@ extern int of_get_dma_window(struct device_node *dn, const char *prefix,
+ 			     int index, unsigned long *busno, dma_addr_t *addr,
+ 			     size_t *size);
+ 
++extern int of_iommu_attach(struct device *dev);
++
+ #else
+ 
+ static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
+@@ -16,6 +18,11 @@ static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
+ 	return -EINVAL;
+ }
+ 
++static inline int of_iommu_attach(struct device *dev)
++{
++	return 0;
++}
++
+ #endif	/* CONFIG_OF_IOMMU */
+ 
+ #endif /* __OF_IOMMU_H */
 -- 
 1.8.1.5
