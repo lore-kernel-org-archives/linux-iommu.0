@@ -1,72 +1,51 @@
 From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [PATCHv5 3/9] ARM: tegra: create a DT header defining SWGROUP ID
-Date: Tue, 19 Nov 2013 14:36:54 -0700
-Message-ID: <528BD9F6.3080008@wwwdotorg.org>
-References: <1384853593-32202-1-git-send-email-hdoyu@nvidia.com>
-	<1384853593-32202-4-git-send-email-hdoyu@nvidia.com>
+Subject: Re: [PATCHv5 4/9] iommu/tegra: smmu: register device to iommu dynamically
+Date: Tue, 19 Nov 2013 14:39:54 -0700
+Message-ID: <528BDAAA.4000203@wwwdotorg.org>
+References: <1384853593-32202-1-git-send-email-hdoyu@nvidia.com> <1384853593-32202-5-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1384853593-32202-4-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1384853593-32202-5-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 On 11/19/2013 02:33 AM, Hiroshi Doyu wrote:
-> Create a header file to define the swgroup IDs used by the IOMMU(SMMU)
-> binding. "swgroup" is a group of H/W clients which a Tegra SoC
-> supports. This unique ID can be used to calculate MC_SMMU_<swgroup
-> name>_ASID_0 register offset and MC_<swgroup name>_HOTRESET_*_0
-> register bit. This will allow the same header to be used by both
-> device tree files, and drivers implementing this binding, which
-> guarantees that the two stay in sync. This also makes device trees
-> more readable by using names instead of magic numbers. For HOTRESET
-> bit shifting we need another conversion table, which will come later.
+> platform_devices are registered as IOMMU'able dynamically via
+> add_device() and remove_device().
+> 
+> Tegra SMMU can have multiple address spaces(AS). IOMMU'able devices
+> can belong to one of them. Multiple IOVA maps are created at boot-up,
+> which can be attached to devices later. We reserve 2 of them for
+> static assignment, AS[0] for system default, AS[1] for AHB clusters as
+> protected domain from others, where there are many traditional
+> pheripheral devices like USB, SD/MMC. They should be isolated from
+> some smart devices like host1x for system robustness. Even if smart
+> devices behaves wrongly, the traditional devices(SD/MMC, USB) wouldn't
+> be affected, and the system could continue most likely. DMA API(ARM)
+> needs ARM_DMA_USE_IOMMU to be enabled.
 
-> diff --git a/include/dt-bindings/memory/tegra-swgroup.h b/include/dt-bindings/memory/tegra-swgroup.h
+> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
 
-> +#define TEGRA_SWGROUP_PPCS2	32	/* 0xab0 */
+> +static int smmu_iommu_add_device(struct device *dev)
+> +{
+> +	int err = -EPROBE_DEFER;
+> +	u32 swgroups = dev->platform_data;
+> +	struct dma_iommu_mapping *map = NULL;
 > +
-> +#define TWO_U32_OF_U64(x)	((x) & ~0UL) ((x) >> 32)
-> +#define TEGRA_SWGROUP_BIT(x)	(1ULL << TEGRA_SWGROUP_##x)
-> +#define TEGRA_SWGROUP_CELLS(x)	TWO_U32_OF_U64(TEGRA_SWGROUP_BIT(x))
+> +	if (test_bit(TEGRA_SWGROUP_PPCS, swgroups))
+> +		map = smmu_handle->map[SYSTEM_PROTECTED];
+> +	else
+> +		map = smmu_handle->map[SYSTEM_DEFAULT];
+> +
+> +	if (map)
+> +		err = arm_iommu_attach_device(dev, map);
+> +	else
+> +		return -EPROBE_DEFER;
 
-This still doesn't actually compile in dtc:
-
-$ cat > tmp.dts <<ENDOFHERE
-/dts-v1/;
-
-#define TEGRA_SWGROUP_PPCS2	32	/* 0xab0 */
-
-#define TWO_U32_OF_U64(x)	((x) & ~0UL) ((x) >> 32)
-#define TEGRA_SWGROUP_BIT(x)	(1ULL << TEGRA_SWGROUP_##x)
-#define TEGRA_SWGROUP_CELLS(x)	TWO_U32_OF_U64(TEGRA_SWGROUP_BIT(x))
-
-/ {
-    prop = <TEGRA_SWGROUP_CELLS(PPCS2)>;
-};
-ENDOFHERE
-
-$ gcc -nostdinc -undef -D__DTS__ -E -x assembler-with-cpp -o tmp.dts.i \
-	tmp.dts
-
-$ ./scripts/dtc/dtc -O dts -o tmp-compiled.dts -I dts tmp.dts.i
-Error: tmp.dts:10.35-36 integer value out of range 0000000000000020 \
-	(32 bits)
-FATAL ERROR: Syntax error parsing input tree
-
-The reason is that "& ~0UL" expands to "& 0xffffffffffffffff" since dtc
-doesn't know about the size difference between UL and ULL. You need to
-change that to "& 0xffffffff" and it works, at least in dtc.
-
-Please test!
+Given that patch 2 exists, if this test fails, then surely the
+appropriate error code is some fatal error, not -EPROBE_DEFER; any
+deferrals should have happened long before this point.
