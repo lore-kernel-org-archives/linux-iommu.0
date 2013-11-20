@@ -1,116 +1,73 @@
-From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: Re: [PATCH] iommu: Split iommu_unmaps
-Date: Wed, 20 Nov 2013 14:29:04 +0000
-Message-ID: <1384957744.15487.58.camel@shinybook.infradead.org>
-References: <20130524171401.14099.78694.stgit@bling.home>
-	<1383842247.27315.117.camel@shinybook.infradead.org>
-	<1384211375.22415.69.camel@ul30vt.home>
+From: David Woodhouse <dwmw2@infradead.org>
+Subject: Re: [PATCH 1/1] IOMMU: Save pci device id instead of pci_dev*
+ pointer for DMAR devices
+Date: Wed, 20 Nov 2013 15:59:52 +0000
+Message-ID: <1384963192.15487.76.camel@shinybook.infradead.org>
+References: <1383639898-48776-1-git-send-email-wangyijing@huawei.com>
+	 <1383639898-48776-2-git-send-email-wangyijing@huawei.com>
+	 <20131107180713.GA2955@google.com> <527C5D36.7050206@huawei.com>
+	 <CAErSpo73N2Th-4D5G8-60tMuGwqthfu-VNHVf3LF9+s2mQp53w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============7420730592377446108=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1384211375.22415.69.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
+	boundary="=-7vXI6I5zRthoFNa7Vw2J"
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <CAErSpo73N2Th-4D5G8-60tMuGwqthfu-VNHVf3LF9+s2mQp53w@mail.gmail.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Yijing Wang <wangyijing@huawei.com>, Vinod Koul <vinod.koul@intel.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, Hanjun Guo <guohanjun@huawei.com>, dmaengine@vger.kernel.org, Dan Williams <dan.j.williams@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============7420730592377446108==
-Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-uozoBV8YjNPTtHhsXq4u"
-
-
---=-uozoBV8YjNPTtHhsXq4u
+--=-7vXI6I5zRthoFNa7Vw2J
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 2013-11-11 at 16:09 -0700, Alex Williamson wrote:
-> On Thu, 2013-11-07 at 16:37 +0000, David Woodhouse wrote:
-> > On Fri, 2013-05-24 at 11:14 -0600, Alex Williamson wrote:
-> > > iommu_map splits requests into pages that the iommu driver reports
-> > > that it can handle.  The iommu_unmap path does not do the same.  This
-> > > can cause problems not only from callers that might expect the same
-> > > behavior as the map path, but even from the failure path of iommu_map=
-,
-> > > should it fail at a point where it has mapped and needs to unwind a
-> > > set of pages that the iommu driver cannot handle directly.  amd_iommu=
-,
-> > > for example, will BUG_ON if asked to unmap a non power of 2 size.
-> > >=20
-> > > Fix this by extracting and generalizing the sizing code from the
-> > > iommu_map path and use it for both map and unmap.
-> > >=20
-> > > Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> >=20
-> > Ick, this is horrid and looks like it will introduce a massive
-> > performance hit.
+On Fri, 2013-11-08 at 08:46 -0700, Bjorn Helgaas wrote:
 >=20
-> For x86 there are essentially two users of iommu_unmap(), KVM and VFIO.
-> Both of them try to unmap an individual page and look at the result to
-> see how much was actually unmapped.  Everything else appears to be error
-> paths.  So where exactly is this massive performance hit?
+> I don't know the IOMMU drivers well either, but it seems like they
+> rely on notifications of device addition and removal (see
+> iommu_bus_notifier()).  It doesn't seem right for them to also use the
+> generic PCI interfaces like pci_get_domain_bus_and_slot() because the
+> IOMMU driver should already know what devices exist and their
+> lifetimes.  It seems like confusion to mix the two.  But I don't have
+> a concrete suggestion.
 
-It's there, in the code that you describe. This patch is making that
-bogus behaviour even more firmly entrenched, and harder to fix.
+The generic IOMMU code has a notifier, and calls through to an
+->add_device() method in the specific IOMMU driver's iommu_ops.
 
-There are out-of-tree users of this IOMMU API too. And while it sucks
-that they are out-of-tree, they are working on fixing that. And I've
-been talking to them about performance issues they already see on the
-map side.
+The Intel IOMMU driver predates that, and its scheme for mapping devices
+to the correct DMAR unit is different. It happens entirely within the
+get_domain_for_dev() function, which happens when we're first asked to
+set up a mapping for a given device (when we don't already have the
+answer stashed in dev->archdata).
 
-> > Surely the answer is to fix the AMD driver so that it will just get on
-> > with it and unmap the {address, range} that it's asked to map?
->=20
-> The IOMMU API allows iommu drivers to expose the page sizes they
-> support.  Mappings are done using these sizes so it only seems fair that
-> unmappings should as well.  At least that's what amd_iommu was
-> expecting.
+I think we should add an ->add_device() method to the Intel IOMMU
+driver, and make it do much of what's in get_domain_for_dev() right now
+=E2=80=94 finding the "proxy" device (the upstream PCIe bridge or whatever)=
+, and
+then looking through the ACPI DMAR table to find which DMAR unit that's
+attached to. Then we stash that information (dmar, devfn) in
+dev->archdata, and get_domain_for_dev() still has *some* work to do,
+actually allocating a logical domain on the IOMMU in question, but not
+as much. And refcount the damn domain instead of playing the horrid
+tricks we currently do to hang it off the upstream proxy device *too*.
 
-This is silly.
+My main concern here is that the DMAR table contains the PCI bus numbers
+at boot time. Doing the lookup later will only work if we don't renumber
+busses. Or if we have a way to look things up based on the *original*
+bus number.
 
-The generic code has (almost) no business caring about the page sizes
-that the IOMMU driver will support. It should care about them *only* as
-an optimisation =E2=80=94 "hey, if you manage to give me 2MiB pages I can w=
-ork
-faster then". But it should *only* be an optimisation. Fundamentally,
-the map and unmap routines should just do as they're bloody told,
-without expecting their caller to break down the calls into individual
-pages.
+The Intel IOMMU also has a bus notifier of its own which it only uses to
+know when a driver is *detached*, so it can tear down the logical domain
+for the corresponding device. Would be nice to have the generic IOMMU
+notifier call a callback for us then too, perhaps.
 
-> That data is for dma_ops interfaces, not IOMMU API.  How is changing
-> iommu_unmap() in this way undoing any of your previous work?
-
-That data is for the core map/unmap functions, which are accessed
-through both APIs. While iommu_map() has the problem as you described,
-iommu_unmap() didn't, and surely it would have been seeing the same
-improvements... until this patch?
-
-> > If the AMD driver really can't handle more than one page at a time, let
-> > it loop for *itself* over the pages.
->=20
-> Sure, but that's a change to the API where I think this fix was
-> correcting a bug in the implementation of the API.  Are there users of
-> iommu_unmap() that I don't know about?  Given the in-tree users, there's
-> not really a compelling argument to optimize.  Thanks,
-
-It's a fix to a stupid API, yes. The current API has us manually marking
-the Intel IOMMU as supporting *all* sizes of pages, just so that this
-stupid "one page at a time" nonsense doesn't bite so hard... which
-should have raised alarm bells at the time we did it, really.
 
 --=20
 dwmw2
 
 
---=-uozoBV8YjNPTtHhsXq4u
+--=-7vXI6I5zRthoFNa7Vw2J
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -204,28 +161,18 @@ bhXkgdT2t1V1bNAxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0
 Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2
 BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMG
 hc4wCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
-DxcNMTMxMTIwMTQyOTA0WjAjBgkqhkiG9w0BCQQxFgQU+uJz1/nit5gNgzWJZMS/kBs8YDkwgaUG
+DxcNMTMxMTIwMTU1OTUyWjAjBgkqhkiG9w0BCQQxFgQUbx0vdf5/IVr6Afs8Gb43I7pIEYAwgaUG
 CSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4x
 KzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0
 YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMGhc4wgacGCyqG
 SIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjEr
 MCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMvU3Rh
 cnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAwaFzjANBgkqhkiG
-9w0BAQEFAASCAQA0LJDD41BrxZ1AOm5Rf7SVdrhmlO8pSU9dARiRvpTWdcWSEu9UZMLqHIp2wi9g
-MxZjG9SnQgmI1BBoGEEaEFimVvXtz3/mrjfVZMbgE3q0RxhzvlyemrL3zzqJ+E4j0De+yQhrX08e
-P1N9DQLXHdkF+crvslUc4KlDyAGdodVo3FZOAarGJP22mjRZlmBpKEU/6kRY9swWyjgFY9xL+hsv
-EgF9rOqCSAvpMqdGXnx1BUig9CxqYQm+3TuG/PRVPYS4A3HTC832hXkWSN27v6Z6kMAkJMq4cmAf
-Vsh4fpWf5ZG2p8aG18Nut2lPqVEDGhhHIOHZxAA/ovWjz2EUIvpDAAAAAAAA
+9w0BAQEFAASCAQCcbCGNoWHzZtzvwiqOxEuYNm0GQRFG7P0zUvB0c1L+91hSXhojXph2ecdyIiH1
+lRdjR2T4v5taM698Q0DfmUCClwHCMsxTgdF4k2pM+uutdpq0DpnwF+212rbqA34jdTFl+Kr1d5PD
+xx3hac4kn2df2HbtLC+DkqdkuAK5r3Jh3LRIj+x21R3MJCHWmTkYnn25RG/FAX2n/gxS+iZf+oWw
+0F32VPL1yfJ7DtXetaeAOhjtb4mhzEYJioHxlJWuRpjjp7ApMbgnbyGKLmevUx7d4+Mk0U5LF9iM
+Vs3JpSHRR3PIxI+57MCoJxiYWf8W8LJm1Z2rDYPmkCE13vg7rz+/AAAAAAAA
 
 
---=-uozoBV8YjNPTtHhsXq4u--
-
-
---===============7420730592377446108==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============7420730592377446108==--
+--=-7vXI6I5zRthoFNa7Vw2J--
