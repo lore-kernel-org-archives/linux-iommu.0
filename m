@@ -1,14 +1,13 @@
-From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [PATCHv5 6/9] iommu/tegra: smmu: get swgroups from DT "iommus="
-Date: Tue, 19 Nov 2013 14:52:01 -0700
-Message-ID: <528BDD81.1000507@wwwdotorg.org>
-References: <1384853593-32202-1-git-send-email-hdoyu@nvidia.com>
-	<1384853593-32202-7-git-send-email-hdoyu@nvidia.com>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCHv5 2/9] driver/core: populate devices in order for IOMMUs
+Date: Wed, 20 Nov 2013 04:17:08 +0100
+Message-ID: <20131120.051708.396722414386125310.hdoyu@nvidia.com>
+References: <20131119102506.GG31504@ulmo.nvidia.com><20131119.140351.1342214267287135109.hdoyu@nvidia.com><528BD6A7.3030908@wwwdotorg.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1384853593-32202-7-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <528BD6A7.3030908-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,65 +17,59 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: "swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org" <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Cc: "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/19/2013 02:33 AM, Hiroshi Doyu wrote:
-> This provides the info about which swgroups a device belongs to. This
-> info is passed from DT. This is necessary for the unified SMMU driver
-> among Tegra SoCs since each has different H/W accelerators.
+Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote @ Tue, 19 Nov 2013 22:22:47 +0100:
 
-> diff --git a/Documentation/devicetree/bindings/iommu/nvidia,tegra30-smmu.txt b/Documentation/devicetree/bindings/iommu/nvidia,tegra30-smmu.txt
+> On 11/19/2013 05:03 AM, Hiroshi Doyu wrote:
+> > Hi Thierry,
+> > 
+> > Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote @ Tue, 19 Nov 2013 11:25:07 +0100:
+> > 
+> >> From earlier discussions I thought the goal was to actually defer this
+> >> until all nodes referred to by the iommus property were actually
+> >> registered. The above only checks that the phandles can be resolved to
+> >> valid struct device_node:s. That doesn't mean that an actual IOMMU has
+> >> been registered for it, only that the devices have been created.
+> > 
+> > Currently "bus->iommu_ops" is set at the end of tegra_smmu_probe(). So
+> > if "bus->iommu_ops" is set, it means that an iommu instance is
+> > populated at that time.
+> 
+> Yes, but that's the register bus, upon which the device is a client, not
+> the bus upon which the device is a bus master. They aren't necessarily
+> the same.
+> 
+> There's no getting around the fact that, as Thierry said, you need to
+> search for a registered IOMMU device for each phandle, and defer probe
+> if any aren't registered yet.
+> 
+> If we do that, then you shouldn't need to look at the value of
+> dev->bus->iommu_ops at all; if all IOMMUs in the list were registered,
+> then iommu_ops must have been set when (one of them) was registered, and
+> if not, then it possibly wasn't, so defer probe.
+> 
+> That way, this code won't have to change if the core IOMMU code gets
+> extended to support multiple IOMMUs, devices mastering transactions onto
+> buses other than their register bus, etc.
 
->  - nvidia,#asids : # of ASIDs
->  - dma-window : IOVA start address and length.
->  - nvidia,ahb : phandle to the ahb bus connected to SMMU.
-> +- iommus: phandle to an iommu device which a device is
-> +  attached to and indicates which swgroups a device belongs to(SWGROUP ID).
-> +  SWGROUP ID is from 0 to 63, and a device can belong to multiple SWGROUPS.
+Does the above mean the following?
 
-I'm sure I've said this before:
+int of_iommu_attach(struct device *dev)
+{
+	int i;
+	struct of_phandle_args args;
 
-#iommu-cells isn't documented.
+	of_property_for_each_phandle_with_args(dev->of_node, "iommus",
+					       "#iommu-cells", i, &args)
+		if (!args->np->dev->driver)
+			return -EPROBE_DEFER;
+	return 0;
+}
 
-The list of properties you added to is a list of properties that the
-IOMMU node should contain. However, the iommus property is something
-that *client* nodes should contain, not the IOMMU node itself.
 
-Instead, I think you want something like:
+"args->np->dev->driver" needs the following patch:
 
--Required properties:
-+Required properties in the IOMMU node:
- ... the current list of properties
-+#iommu-cells. Should be 2. In client IOMMU specifiers, the two cells
-+  represent a 64-bit bitmask of SWGROUP IDs under which the device
-+  initiates transactions. The least significant word is first. See
-+  <dt-bindings/memory/tegra-swgroup.h> for a list of valid values.
-+
-+Required properties in device nodes affected by the IOMMU:
-+- iommus: A list of phandle plus specifier pairs for each IOMMU that
-+    affects master transactions initiated by the device. The number of
-+    cells in each specifier is defined by the #iommu-cells property in
-+    the IOMMU node referred to by the phandle. The meaning of the
-+    specifier cells is defined by the referenced IOMMU's binding.
-
-Aside from those layout/wording issues, this is certainly the binding
-that I think makes sense.
-
-> +	host1x {
-> +		compatible = "nvidia,tegra30-host1x", "simple-bus";
-> +		iommus = <&smmu TEGRA_SWGROUP_CELLS(HC)>;
-> +		....
-> +		gr3d {
-> +			compatible = "nvidia,tegra30-gr3d";
-> +			nvidia,memory-clients = <&smmu TEGRA_SWGROUP_CELLS(NV)
-> +						       TEGRA_SWGROUP_CELLS(NV2)>;
-
-I think you forgot to update "nvidia,memory-clients" to "iommus" there.
-
-> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-
-> +static int smmu_of_get_swgroups(struct device *dev, unsigned long *swgroups)
-
-This doesn't seem to be used by anything in this patch.
+  http://lists.linuxfoundation.org/pipermail/iommu/2013-July/006023.html
