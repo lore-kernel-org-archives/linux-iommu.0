@@ -1,78 +1,123 @@
-From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [PATCHv5 2/9] driver/core: populate devices in order for IOMMUs
-Date: Wed, 20 Nov 2013 09:30:35 -0700
-Message-ID: <528CE3AB.60806@wwwdotorg.org>
-References: <528BD6A7.3030908@wwwdotorg.org><20131120.051708.396722414386125310.hdoyu@nvidia.com><20131120131447.GA8279@ulmo.nvidia.com> <20131120.160359.1043627108929095327.hdoyu@nvidia.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU (PAMU)
+Date: Wed, 20 Nov 2013 11:47:23 -0700
+Message-ID: <1384973243.2879.361.camel@ul30vt.home>
+References: <1384838233-24847-1-git-send-email-Bharat.Bhushan@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20131120.160359.1043627108929095327.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1384838233-24847-1-git-send-email-Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Bharat Bhushan <r65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/20/2013 07:03 AM, Hiroshi Doyu wrote:
-> Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote @ Wed, 20 Nov 2013 14:14:48 +0100:
-
-(Yes, what Thierry said)
-
-> ....
->>> Does the above mean the following?
->>>
->>> int of_iommu_attach(struct device *dev)
->>> {
->>> 	int i;
->>> 	struct of_phandle_args args;
->>>
->>> 	of_property_for_each_phandle_with_args(dev->of_node, "iommus",
->>> 					       "#iommu-cells", i, &args)
->>> 		if (!args->np->dev->driver)
->>> 			return -EPROBE_DEFER;
->>> 	return 0;
->>> }
->>
->> Not quite. The above would only check that a driver was bound to the
->> device. But if that device isn't an IOMMU then this doesn't help you.
+On Tue, 2013-11-19 at 10:47 +0530, Bharat Bhushan wrote:
+> From: Bharat Bhushan <bharat.bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 > 
-> I thought that, as long as a device is a normal one, it's ok to let it
-> go to be populated.
-
-I don't understand what that means.
-
-> We only care about that, IOMMU devices comes
-> first, and clients should come later than IOMMUs, for population. In
-> the above if all IOMMUs are not populated, client devices are always
-> deferred. "args->np->dev" always points an IOMMU device in a
-> loop. Otherwise(no "iommus=") it goes out from the loop immediately.
-
-I'm not sure what that means. Perhaps you're sauying the dev->driver
-isn't set until the driver is probe()d for the device, so if
-dev->driver!=NULL, then we know the driver probed() successfully for it?
-That does go most of the way, but as Thierry pointed out, it doesn't
-guarantee that the dev->driver is an IOMMU driver, just that it's *some*
-driver. Perhaps this won't actually make any difference in practice, but
-AFAIK, all other subsystems do perform the strict check, so I don't see
-why the IOMMU subsystem shouldn't.
-
-...
-> There's the following case at least we have already had.
+> PAMU (FSL IOMMU) has a concept of primary window and subwindows.
+> Primary window corresponds to the complete guest iova address space
+> (including MSI space), with respect to IOMMU_API this is termed as
+> geometry. IOVA Base of subwindow is determined from the number of
+> subwindows (configurable using iommu API).
+> MSI I/O page must be within the geometry and maximum supported
+> subwindows, so MSI IO-page is setup just after guest memory iova space.
 > 
-> "memory controller"---"smmu_a"---bus--+--"smmu_b"--"device_a"
->                                       |
->                                       |
->                                       +--"device_b"
+> So patch 1/9-4/9(inclusive) are for defining the interface to get:
+>   - Number of MSI regions (which is number of MSI banks for powerpc)
+>   - MSI-region address range: Physical page which have the
+>     address/addresses used for generating MSI interrupt
+>     and size of the page.
 > 
-> "smmu_b" isn't related to a bus at all.
+> Patch 5/9-7/9(inclusive) is defining the interface of setting up
+> MSI iova-base for a msi region(bank) for a device. so that when
+> msi-message will be composed then this configured iova will be used.
+> Earlier we were using iommu interface for getting the configured iova
+> which was not currect and Alex Williamson suggeested this type of interface.
+> 
+> patch 8/9 moves some common functions in a separate file so that these
+> can be used by FSL_PAMU implementation (next patch uses this).
+> These will be used later for iommu-none implementation. I believe we
+> can do more of this but will take step by step.
+> 
+> Finally last patch actually adds the support for FSL-PAMU :)
 
-Yes, smmu_b is related to a bus.
+Patches 1-3: msi_get_region needs to return an error an error (probably
+-EINVAL) if called on a path where there's no backend implementation.
+Otherwise the caller doesn't know that the data in the region pointer
+isn't valid.
 
-Admittedly perhaps not a bus that the CPU can master transactions onto,
-but there's still a (perhaps point-point) bus that device_a masters, and
-smmu_b acts as a slave.
+Patches 5&6: same as above for msi_set_iova, return an error if no
+backend implementation.
 
-Note that not all buses in the diagram above are represented as bus
-objects in the Linux kernel (or even in DT), since those tend to
-concentrate only on representing buses that the CPU masters, rather than
-additionally representing buses that only HW devices master.
+Patch 7: Why does fsl_msi_del_iova_device bother to return anything if
+it's always zero?  Return -ENODEV when not found?
+
+Patch 9:
+
+vfio_handle_get_attr() passes random kernel data back to userspace in
+the event of iommu_domain_get_attr() error.
+
+vfio_handle_set_attr(): I don't see any data validation happening, is
+iommu_domain_set_attr() really that safe?
+
+For both of those, drop the pr_err on unknown attribute, it's sufficient
+to return error.
+
+Is VFIO_IOMMU_PAMU_GET_MSI_BANK_COUNT per aperture (ie. each vfio user
+has $COUNT regions at their disposal exclusively)?  Thanks,
+
+Alex
+
+> v1->v2
+>  - Added interface for setting msi iova for a msi region for a device.
+>    Earlier I added iommu interface for same but as per comment that is
+>    removed and now created a direct interface between vfio and msi.
+>  - Incorporated review comments (details is in individual patch)
+> 
+> Bharat Bhushan (9):
+>   pci:msi: add weak function for returning msi region info
+>   pci: msi: expose msi region information functions
+>   powerpc: pci: Add arch specific msi region interface
+>   powerpc: msi: Extend the msi region interface to get info from
+>     fsl_msi
+>   pci/msi: interface to set an iova for a msi region
+>   powerpc: pci: Extend msi iova page setup to arch specific
+>   pci: msi: Extend msi iova setting interface to powerpc arch
+>   vfio: moving some functions in common file
+>   vfio pci: Add vfio iommu implementation for FSL_PAMU
+> 
+>  arch/powerpc/include/asm/machdep.h |   10 +
+>  arch/powerpc/kernel/msi.c          |   28 +
+>  arch/powerpc/sysdev/fsl_msi.c      |  132 +++++-
+>  arch/powerpc/sysdev/fsl_msi.h      |   25 +-
+>  drivers/pci/msi.c                  |   35 ++
+>  drivers/vfio/Kconfig               |    6 +
+>  drivers/vfio/Makefile              |    5 +-
+>  drivers/vfio/vfio_iommu_common.c   |  227 ++++++++
+>  drivers/vfio/vfio_iommu_common.h   |   27 +
+>  drivers/vfio/vfio_iommu_fsl_pamu.c | 1003 ++++++++++++++++++++++++++++++++++++
+>  drivers/vfio/vfio_iommu_type1.c    |  206 +--------
+>  include/linux/msi.h                |   14 +
+>  include/linux/pci.h                |   21 +
+>  include/uapi/linux/vfio.h          |  100 ++++
+>  14 files changed, 1623 insertions(+), 216 deletions(-)
+>  create mode 100644 drivers/vfio/vfio_iommu_common.c
+>  create mode 100644 drivers/vfio/vfio_iommu_common.h
+>  create mode 100644 drivers/vfio/vfio_iommu_fsl_pamu.c
+> 
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
