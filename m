@@ -1,166 +1,124 @@
-From: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
-Subject: Re: [RFC PATCH] Crashdump Accepting Active IOMMU
-Date: Wed, 20 Nov 2013 12:19:06 +0900
-Message-ID: <528C2A2A.5020307@jp.fujitsu.com>
-References: <875D89B79D1D86448A583A7302C022A055A67790@G9W0337.americas.hpqcorp.net>
-	<5281CE7C.6080105@jp.fujitsu.com>
-	<875D89B79D1D86448A583A7302C022A055A8A530@G4W3299.americas.hpqcorp.net>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: Report from 2013 ARM kernel summit
+Date: Wed, 20 Nov 2013 07:39:55 +0100
+Message-ID: <20131120.083955.1386179068365424976.hdoyu@nvidia.com>
+References: <20131119.114054.663999769447782808.hdoyu@nvidia.com><20131119173524.GK11778@mudshark.cambridge.arm.com><528BCDCE.6070006@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <875D89B79D1D86448A583A7302C022A055A8A530-ErUWf8868h8SZAcGdq5asR6epYMZPwEe5NbjCUgZEJk@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: bill.sumner-VXdhtT5mjnY@public.gmane.org
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <528BCDCE.6070006-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org" <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "Mark.Rutland-5wv7dgnIgG8@public.gmane.org" <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "Lorenzo.Pieralisi-5wv7dgnIgG8@public.gmane.org" <Lorenzo.Pieralisi-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "ksummit-2013-discuss-cunTk1MwBs98uUxBSJOaYoYkZiVZrdSR2LY78lusg7I@public.gmane.org" <ksummit-2013-discuss-cunTk1MwBs98uUxBSJOaYoYkZiVZrdSR2LY78lusg7I@public.gmane.org>, "olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org" <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, "lwn-T1hC0tSOHrs@public.gmane.org" <lwn-T1hC0tSOHrs@public.gmane.org>, "paul-DWxLp4Yu+b8AvxtiuMwx3w@public.gmane.org" <paul-DWxLp4Yu+b8AvxtiuMwx3w@public.gmane.org>, "khilman-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <khilman-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "broonie-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <broonie-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-(2013/11/19 8:30), Sumner, William wrote:
-> Thank you for testing this RFC patch.  It is great to have confirmation that the code works in a different test environment.
-> 
-> You asked: "What is the status of this patch?"
-> I have made a few changes since the RFC version of this patch:
-> 
-> 1. Consolidated all of the operational code into the "copy..." functions.  The "process..." functions were primarily used for diagnostics and exploration; however, there was a small amount of operational code that used the "process..." functions. This operational code has been moved into the "copy..." functions.
-> 
-> 2. Removed the "Process ..." functions and the diagnostic code that ran on that function set.  This removed about 1/4 of the code -- which this operational patch no longer needs.  These portions of the RFC patch could be formatted as a separate patch and submitted independently at a later date.
-> 
-> 3. Re-formatted the code to the Linux Coding Standards.  The checkpatch script still finds some lines to complain about; however these lines are either (1) lines that I did not change, or (2) lines that only changed by adding a level of indent which pushed them over 80-characters, or (3) new lines whose intent is far clearer when longer than 80-characters (allowed by the Linux Coding Standards.)
-> 
-> 4. Updated the remaining debug print to be significantly more flexible.  This allows control over the amount of debug print to the console -- which can vary widely.
-> 
-> 5. Fixed a couple of minor bugs found by testing on a machine with a very large IO configuration.
-> 
-> 
-> You asked: " Do you have a plan to post new version?"
-> Yes.  I am in the process of dividing the code into a set of 6 or 7 patches, and completing the due-diligence on these patches before submitting them.
+Hi Rob,
 
-Ok, I'll wait for new patches!
+Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote @ Tue, 19 Nov 2013 21:45:02 +0100:
 
-Thanks,
-Takao Indoh
+> On 11/19/2013 11:35 AM, Will Deacon wrote:
+> > On Tue, Nov 19, 2013 at 09:40:54AM +0000, Hiroshi Doyu wrote:
+> >> Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org> wrote @ Fri, 15 Nov 2013 08:06:27 +0100:
+> >>> On Mon, 11 Nov 2013 10:47:23 +0100, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote:
+> >>>> 1, When a device is populated, it checks if that device is IOMMU'able
+> >>>>    or not. This is identified by "#stream-id-cells" in DT. If
+> >>>>    a device is normal(non IOMMU), a device is populated. If a device
+> >>>>    is IOMMU'able, it continues to be checked.
+> > 
+> > [...]
+> > 
+> >>>> I'm not so sure if this dependecy on "#stream-id-cells" is acceptable
+> >>>> or not, but I haven't any better idea right now.
+> >>>
+> >>> It seems a little fragile to me too. I'd rather the IOMMU requirement be
+> >>> described more explicitly.
+> 
+> I don't see how this can work. Typically you find a property and then
+> read the relevant #*-cells to determine the size. Having multiple cell
+> properties is asking for errors.
 
+The above was mentioned for PATCHv4 series[1], which used the arm,smmu
+DT bindings,  "#stream-id-cells" in clients and "mmu-masters" in
+iommu.
 
+In PATCHv5[2], we took the following DT binding where multiple cell
+properties seem to work ok.
+
+  smmu_a: iommu@xxxxxxxx {
+  	#iommu-cells = <2>;
+  	....
+  };
+  
+  smmu_b: iommu@xxxxxxxx {
+  	#iommu-cells = <3>;
+  	....
+  };
+  
+  device_a {
+  	 iommus = <&smmu_a param1 param2>,
+  	 	  <&smmu_b param1 param2 param3>;
+  };
+
+This can describe the relation between a device and an iommu
+independently. The number of params needed for each IOMMU can be
+sepcified by #iommu-cells in its iommu entry.
+
+  device_a <-> smmu_a, needs 2 params for a device
+  device_a <-> smmu_b, needs 3 params for a device
+
+For example, "smmu_a" can be an bus level global IOMMU where all child
+devices can be an master of "smmu_a", and "smmu_b" is a local IOMMU
+only for "device_a".
+
+"memory controller"---"smmu_a"---bus--+--"smmu_b"--"device_a"
+                                      |
+                                      |
+                                      +--"device_b"
+
+> >> I think that Will Deacon can do better than I.
+> > 
+> > I already commented briefly here:
+> > 
+> >   http://www.spinics.net/lists/devicetree/msg11513.html
+> > 
+> > basically deferring to DT people :)
+> > 
+> > Anyway, I'm happy to tighten up the IOMMU requirement description but
+> > *not* at the expense of breaking what we currently have for the ARM SMMU,
+> > which is being used by Calxeda.
+> > 
+> > Adding Andreas and Rob for input on potential binding additions to the SMMU.
 > 
-> Bill
+> The above proposal would be an incompatible change. However, I think we
+> could still deal with a change in this binding at this stage.
 > 
-> -----Original Message-----
-> From: Takao Indoh [mailto:indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org]
-> Sent: Tuesday, November 12, 2013 12:45 AM
-> To: Sumner, William; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-> Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
-> Subject: Re: [RFC PATCH] Crashdump Accepting Active IOMMU
-> 
-> Hi Bill,
-> 
-> What is the status of this patch? It works and DMA problems on kdump are
-> solved as far as I tested. Do you have a plan to post new version?
-> 
-> Thanks,
-> Takao Indoh
-> 
-> (2013/09/27 8:25), Sumner, William wrote:
->> This Request For Comment submission is primarily to solicit comments on a concept for how kdump can handle legacy DMA IO leftover from the panicked kernel and comments on early prototype code to implement it.  Some level of interest was noted when I proposed this concept in June; however, for generating serious discussion there is no substitute for a working prototype.
->>
->> This concept modifies the behavior of the iommu in the (new) crashdump kernel:
->> 1. to accept the iommu hardware in an active state,
->> 2. to leave the current translations in-place so that legacy DMA will continue using its current buffers until the device drivers in the crashdump kernel initialize and initialize their devices,
->> 3. to use different portions of the iova address ranges for the device drivers in the crashdump kernel than the iova ranges that were in-use at the time of the panic.
->>
->> Advantages of this concept:
->> 1. All manipulation of the IO-device is done by the Linux device-driver for that device.
->> 2. This concept behaves in a very similar manner to operation without an active iommu.
->> 3. Any activity between the IO-device and its RMRR areas is handled by the device-driver in the same manner as during a non-kdump boot.
->> 4. If an IO-device has no driver in the kdump kernel, it is simply left alone.  This supports the practice of creating a special kdump kernel without drivers for any devices that are not required for taking a crashdump.
->>
->>
->>
->> About the early-prototype code in the patch below:
->> --------------------------------------------------
->> 1. It works on one machine that reproduced the original problem -- still need to test it on a lot of other machines with various IO configurations.
->>
->> 2. Currently implemented for intel-iommu architecture only,
->>
->> 3. It is based near TOT from kernel.org.  The TOT version of 'crash' reads the dump that is produced.
->>
->> 4. It is definitely prototype-only and not yet ready to propose as a patch for inclusion into Linux proper.
->>
->> 5. Although this patch is not yet intended for incorporation into mainstream Linux, it should install and operate for anyone who wants to experiment with it.  Because this patch changes the low-level IO-operation, and because of its very-limited testing, I strongly advise against installing this patch on any system that contains production data.
->>
->> 6. For this RFC, I decided to leave-in all of the debugging, diagnostic, temporary, and test code so that it would be readily available.  In a (future) patch submission, much of this would need to be either eliminated, separated into a diagnostics area, moved under conditional compilation, or something else.  We'll see what the Linux community recommends.
->>
->>
->>
->> At a high level, this code:
->> ===========================
->> * is entirely within intel-iommu.c
->> * operates primarily during iommu initialization and device-driver initialization
->>
->> During intel-iommu hardware initialization:
->> -------------------------------------------
->> In intel_iommu_init(void)
->> * If (This is the crash kernel)
->>     .  Set flag: crashdump_accepting_active_iommu (all changes below check this)
->>     .  Skip disabling the iommu hardware translations
->>
->> In init_dmars()
->> * Duplicate the intel iommu translation tables from the old kernel in the new kernel
->>     . The root-entry table, all context-entry tables, and all page-translation-entry tables
->>     . The duplicate tables contain updated physical addresses to link them together.
->>     . The duplicate tables are mapped into kernel virtual addresses in the new kernel
->>       which allows most of the existing iommu code to operate without change.
->>     . Do some minimal sanity-checks during the copy
->>     . Place the address of the new root-entry structure into "struct intel_iommu"
->>
->> * Skip setting-up new domains for 'si', 'rmrr', 'isa'
->>     . Translations for 'rmrr' and 'isa' ranges have been copied from the old kernel
->>     . This prototype does not yet handle pass-through
->>
->> * Existing (unchanged) code near the end of dmar_init:
->>     . Loads the address of the (now new) root-entry structure from "struct intel_iommu"
->>       into the iommu hardware and does the iommu hardware flushes. This changes the
->>       active translation tables from the ones in the old kernel to the copies in the new kernel.
->>     . This is legal because the translations in the two sets of tables are currently identical:
->>         Intel(r) Virtualization Technology for Directed I/O. Architecture Specification,
->>         February 2011, Rev. 1.3  (section 11.2, paragraph 2)
->>
->> In iommu_init_domains()
->> * Mark as in-use all domain-id's from the old kernel
->>     . In case the new kernel contains a device that was not in the old kernel
->>       and a new, unused domain-id is actually needed, the bitmap will give us one.
->>
->> When a new domain is created for a device:
->> ------------------------------------------
->> * If (this device has a context in the old kernel)
->>     . Get domain-id, address-width, and IOVA ranges from the old kernel context;
->>     . Get address(page-entry-tables) from the copy in the new kernel;
->>     . And apply all of the above values to the new domain structure.
->> * Else
->>     . Create a new domain as normal
->>
->> I would very much like the advice of the Linux community on how to proceed.
->>
->> Signed-off-by: Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
->>
->> Bill
->>
->>
->>
->> >From c1c6102f2a82e9450c6e3ea76f250bb35e6b1992 Mon Sep 17 00:00:00 2001
->> From: Bill <bill.sumner-VXdhtT5mjnY@public.gmane.org>
->> Date: Thu, 26 Sep 2013 15:37:48 -0600
->> Subject: [PATCH] rfc-crashdump-accepting-active-iommu.patch
-> 
-> <<< NOTE: I deleted the code of my RFC patch from this email reply in order to shorten the email thread -- leaving only the original email header to make it easy to find the code in previous posts. -- Bill (Nov. 18, 2013) >>>
-> 
-> 
-> 
-> 
+> One way approach to handle this without changing the binding would be to
+> scan the DT for all iommu's up front and create a list of all nodes and
+> their iommu parent. The fact that the hierarchy is described in a way
+> that doesn't fit Linux well is really a Linux implementation detail.
+
+I may need some implementation to understand this further.
+
+> If changing the binding, a simple approach would be to allow
+> 'smmu-parent' to be a bus and/or device property and not just for
+> chained iommu's. This could be a global or bus property that is
+> inherited. Like interrupt-parent, you would have to deal with the parent
+> being itself. Also, perhaps iommu-parent would be a better name. In any
+> case, I'd like to see this all be a generic iommu binding.
+
+I guess that this would work.
+
+One concern to this may be that there might be the case where IOMMU
+hierarchy doesn't always follow the bus's one, I guess. I'm not so
+sure if it's an good example, but, platform_bus itself doesn't follow
+the actual bus hierarchy at all. But if we start to describe the bus
+hierarchy(adding a specific bus) we'll loose the benefit of
+platform_bus, where we can share almost all devices in a single
+driver.
+
+OTOH, do you see any limitations of point-to-point connections between
+a device and IOMMUs, described in the above "device_a" and "smmu_[a|b]"?
+
+[1] http://lists.linuxfoundation.org/pipermail/iommu/2013-November/006931.html
+[2] http://lists.linuxfoundation.org/pipermail/iommu/2013-November/007004.html
