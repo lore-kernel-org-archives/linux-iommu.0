@@ -1,13 +1,17 @@
-From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCHv6 13/13] [FOR TEST] ARM: dt: tegra30: add "iommus" binding
-Date: Thu, 21 Nov 2013 15:40:49 +0200
-Message-ID: <1385041249-7705-14-git-send-email-hdoyu@nvidia.com>
-References: <1385041249-7705-1-git-send-email-hdoyu@nvidia.com>
+From: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCHv5 1/9] of: introduce
+	of_property_for_earch_phandle_with_args()
+Date: Thu, 21 Nov 2013 15:56:49 +0000
+Message-ID: <20131121155649.48C96C406A3@trevor.secretlab.ca>
+References: <1384853593-32202-1-git-send-email-hdoyu@nvidia.com> <
+	1384853593-32202-2-git-send-email-hdoyu@nvidia.com>
+	<20131121124328. 46BC1C40A2C@trevor.secretlab.ca>
+	<20131121151218.befbb483c0cf09cdcd4cd4dd@ nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1385041249-7705-1-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20131121151218.befbb483c0cf09cdcd4cd4dd-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,202 +21,55 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org, robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org" <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-"iommus" binding implies that a device can be attached to IOMMU
-devices. An iommu device needs to set #iommus-cells in it. "iommus"
-can have multiple iommu device phandles as below if needed.
+On Thu, 21 Nov 2013 15:12:18 +0200, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote:
+> On Thu, 21 Nov 2013 13:43:28 +0100
+> Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
+> 
+> > On Tue, 19 Nov 2013 11:33:05 +0200, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote:
+> > > The following pattern of code is tempting:
+> > > 
+> > >   for (i = 0; !of_parse_phandle_with_args(np, list, cells, i, args); i++)
+> > > 
+> > > Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> > 
+> > That's a very minimal commit message. Can you elaborate please.
+> 
+> The above can be:
+> 
+> "
+>   The following pattern of code is tempting to add a new member for
+>   of_property_for_each_*() family as an idiom.
+>   
+>     for (i = 0;
+>         !of_parse_phandle_with_args(np, list, cells, i, args); i++)
+>                   <do something with "args">;
+> "
 
-  iommus = <&smmu arg1 arg2>,
-  	   <&gart arg1 arg2>;
+I really do like commit messages to be full enough that a future reader
+can figure out why a patch was written. ie:
 
-Not yet ready for merge. Need to add iommus for other devices.
+	"Iterating over a property containing a list of phandles with
+	arguments is a common operation for device drivers. This patch
+	adds a new of_property_for_each_phandle_with_args() macro to
+	make the iteration simpler."
 
-Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
----
-v5:
-Use "iommus=" instead of "mmu-masters".
+g.
 
-Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
----
- arch/arm/boot/dts/tegra30.dtsi | 23 ++++++++++++++++++++++-
- 1 file changed, 22 insertions(+), 1 deletion(-)
-
-diff --git a/arch/arm/boot/dts/tegra30.dtsi b/arch/arm/boot/dts/tegra30.dtsi
-index 2bd55cf..03b7887 100644
---- a/arch/arm/boot/dts/tegra30.dtsi
-+++ b/arch/arm/boot/dts/tegra30.dtsi
-@@ -1,6 +1,7 @@
- #include <dt-bindings/clock/tegra30-car.h>
- #include <dt-bindings/gpio/tegra-gpio.h>
- #include <dt-bindings/interrupt-controller/arm-gic.h>
-+#include <dt-bindings/memory/tegra-swgroup.h>
- 
- #include "skeleton.dtsi"
- 
-@@ -92,6 +93,7 @@
- 		interrupts = <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>, /* syncpt */
- 			     <GIC_SPI 67 IRQ_TYPE_LEVEL_HIGH>; /* general */
- 		clocks = <&tegra_car TEGRA30_CLK_HOST1X>;
-+		iommus = <&smmu TEGRA_SWGROUP_CELLS(HC)>;
- 
- 		#address-cells = <1>;
- 		#size-cells = <1>;
-@@ -103,6 +105,7 @@
- 			reg = <0x54040000 0x00040000>;
- 			interrupts = <GIC_SPI 68 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&tegra_car TEGRA30_CLK_MPE>;
-+			iommus = <&smmu TEGRA_SWGROUP_CELLS(MPE)>;
- 		};
- 
- 		vi {
-@@ -110,6 +113,7 @@
- 			reg = <0x54080000 0x00040000>;
- 			interrupts = <GIC_SPI 69 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&tegra_car TEGRA30_CLK_VI>;
-+			iommus = <&smmu TEGRA_SWGROUP_CELLS(VI)>;
- 		};
- 
- 		epp {
-@@ -117,6 +121,7 @@
- 			reg = <0x540c0000 0x00040000>;
- 			interrupts = <GIC_SPI 70 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&tegra_car TEGRA30_CLK_EPP>;
-+			iommus = <&smmu TEGRA_SWGROUP_CELLS(EPP)>;
- 		};
- 
- 		isp {
-@@ -124,6 +129,7 @@
- 			reg = <0x54100000 0x00040000>;
- 			interrupts = <GIC_SPI 71 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&tegra_car TEGRA30_CLK_ISP>;
-+			iommus = <&smmu TEGRA_SWGROUP_CELLS(ISP)>;
- 		};
- 
- 		gr2d {
-@@ -131,6 +137,7 @@
- 			reg = <0x54140000 0x00040000>;
- 			interrupts = <GIC_SPI 72 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&tegra_car TEGRA30_CLK_GR2D>;
-+			iommus = <&smmu TEGRA_SWGROUP_CELLS(G2)>;
- 		};
- 
- 		gr3d {
-@@ -139,6 +146,8 @@
- 			clocks = <&tegra_car TEGRA30_CLK_GR3D
- 				  &tegra_car TEGRA30_CLK_GR3D2>;
- 			clock-names = "3d", "3d2";
-+			iommus = <&smmu TEGRA_SWGROUP_CELLS(NV)
-+						TEGRA_SWGROUP_CELLS(NV2)>;
- 		};
- 
- 		dc@54200000 {
-@@ -148,6 +157,7 @@
- 			clocks = <&tegra_car TEGRA30_CLK_DISP1>,
- 				 <&tegra_car TEGRA30_CLK_PLL_P>;
- 			clock-names = "disp1", "parent";
-+			iommus = <&smmu TEGRA_SWGROUP_CELLS(DC)>;
- 
- 			rgb {
- 				status = "disabled";
-@@ -161,6 +171,7 @@
- 			clocks = <&tegra_car TEGRA30_CLK_DISP2>,
- 				 <&tegra_car TEGRA30_CLK_PLL_P>;
- 			clock-names = "disp2", "parent";
-+			iommus = <&smmu TEGRA_SWGROUP_CELLS(DCB)>;
- 
- 			rgb {
- 				status = "disabled";
-@@ -317,6 +328,7 @@
- 		interrupts = <GIC_SPI 36 IRQ_TYPE_LEVEL_HIGH>;
- 		nvidia,dma-request-selector = <&apbdma 8>;
- 		clocks = <&tegra_car TEGRA30_CLK_UARTA>;
-+		iommus = <&smmu TEGRA_SWGROUP_CELLS(PPCS)>;
- 		status = "disabled";
- 	};
- 
-@@ -327,6 +339,7 @@
- 		interrupts = <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>;
- 		nvidia,dma-request-selector = <&apbdma 9>;
- 		clocks = <&tegra_car TEGRA30_CLK_UARTB>;
-+		iommus = <&smmu TEGRA_SWGROUP_CELLS(PPCS)>;
- 		status = "disabled";
- 	};
- 
-@@ -337,6 +350,7 @@
- 		interrupts = <GIC_SPI 46 IRQ_TYPE_LEVEL_HIGH>;
- 		nvidia,dma-request-selector = <&apbdma 10>;
- 		clocks = <&tegra_car TEGRA30_CLK_UARTC>;
-+		iommus = <&smmu TEGRA_SWGROUP_CELLS(PPCS)>;
- 		status = "disabled";
- 	};
- 
-@@ -347,6 +361,7 @@
- 		interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>;
- 		nvidia,dma-request-selector = <&apbdma 19>;
- 		clocks = <&tegra_car TEGRA30_CLK_UARTD>;
-+		iommus = <&smmu TEGRA_SWGROUP_CELLS(PPCS)>;
- 		status = "disabled";
- 	};
- 
-@@ -357,6 +372,7 @@
- 		interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_HIGH>;
- 		nvidia,dma-request-selector = <&apbdma 20>;
- 		clocks = <&tegra_car TEGRA30_CLK_UARTE>;
-+		iommus = <&smmu TEGRA_SWGROUP_CELLS(PPCS)>;
- 		status = "disabled";
- 	};
- 
-@@ -525,7 +541,7 @@
- 		interrupts = <GIC_SPI 77 IRQ_TYPE_LEVEL_HIGH>;
- 	};
- 
--	iommu {
-+	smmu: iommu {
- 		compatible = "nvidia,tegra30-smmu";
- 		reg = <0x7000f010 0x02c
- 		       0x7000f1f0 0x010
-@@ -533,6 +549,7 @@
- 		nvidia,#asids = <4>;		/* # of ASIDs */
- 		dma-window = <0 0x40000000>;	/* IOVA start & length */
- 		nvidia,ahb = <&ahb>;
-+		#iommu-cells = <2>;
- 	};
- 
- 	ahub {
-@@ -605,6 +622,7 @@
- 		reg = <0x78000000 0x200>;
- 		interrupts = <GIC_SPI 14 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&tegra_car TEGRA30_CLK_SDMMC1>;
-+		iommus = <&smmu TEGRA_SWGROUP_CELLS(PPCS)>;
- 		status = "disabled";
- 	};
- 
-@@ -613,6 +631,7 @@
- 		reg = <0x78000200 0x200>;
- 		interrupts = <GIC_SPI 15 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&tegra_car TEGRA30_CLK_SDMMC2>;
-+		iommus = <&smmu TEGRA_SWGROUP_CELLS(PPCS)>;
- 		status = "disabled";
- 	};
- 
-@@ -621,6 +640,7 @@
- 		reg = <0x78000400 0x200>;
- 		interrupts = <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&tegra_car TEGRA30_CLK_SDMMC3>;
-+		iommus = <&smmu TEGRA_SWGROUP_CELLS(PPCS)>;
- 		status = "disabled";
- 	};
- 
-@@ -629,6 +649,7 @@
- 		reg = <0x78000600 0x200>;
- 		interrupts = <GIC_SPI 31 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&tegra_car TEGRA30_CLK_SDMMC4>;
-+		iommus = <&smmu TEGRA_SWGROUP_CELLS(PPCS)>;
- 		status = "disabled";
- 	};
- 
--- 
-1.8.1.5
+> 
+> Actual usage is here:
+> 
+>         int i;
+>         struct of_phandle_args args;
+> 
+>         of_property_for_each_phandle_with_args(dev->of_node, "iommus",
+>                                                "#iommu-cells", i, &args) {
+>                 pr_debug("%s(i=%d) %s\n", __func__, i, dev_name(dev));
+> 
+>                 if (!of_find_iommu_by_node(args.np))
+>                         return -EPROBE_DEFER;
+> 
+> Is this acceptable?
