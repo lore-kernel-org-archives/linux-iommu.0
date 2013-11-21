@@ -1,7 +1,7 @@
 From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCHv6 03/13] iommu/of: check if dependee iommu is ready or not
-Date: Thu, 21 Nov 2013 15:40:39 +0200
-Message-ID: <1385041249-7705-4-git-send-email-hdoyu@nvidia.com>
+Subject: [PATCHv6 04/13] driver/core: populate devices in order for IOMMUs
+Date: Thu, 21 Nov 2013 15:40:40 +0200
+Message-ID: <1385041249-7705-5-git-send-email-hdoyu@nvidia.com>
 References: <1385041249-7705-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -26,13 +26,14 @@ master devices are done later.
 
 With CONFIG_OF_IOMMU, "iommus=" DT binding would be used to identify
 whether a device can be an iommu msater or not. If a device can, we'll
-defer to populate that device till an depending iommu device is
-populated.
+defer to populate that device till an iommu device is populated. Then,
+those deferred iommu master devices are populated and configured with
+help of the already populated iommu device.
 
 Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
 v6:
-Spinned off only of_iommu part from:
+Spinned off only driver core part from:
   [PATCHv5 2/9] driver/core: populate devices in order for IOMMUs
 
 v5:
@@ -43,57 +44,31 @@ This is newly added, and the successor of the following RFC:
   [RFC][PATCHv3+ 1/2] driver/core: Add of_iommu_attach()
   http://lists.linuxfoundation.org/pipermail/iommu/2013-November/006914.html
 ---
- drivers/iommu/of_iommu.c | 16 ++++++++++++++++
- include/linux/of_iommu.h |  6 ++++++
- 2 files changed, 22 insertions(+)
+ drivers/base/dd.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 5d1aeb9..6ad4997e 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -125,3 +125,19 @@ int of_get_dma_window(struct device_node *dn, const char *prefix, int index,
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(of_get_dma_window);
-+
-+int of_iommu_attach(struct device *dev)
-+{
-+	int i;
-+	struct of_phandle_args args;
-+
-+	of_property_for_each_phandle_with_args(dev->of_node, "iommus",
-+					       "#iommu-cells", i, &args) {
-+		pr_debug("%s(i=%d) %s\n", __func__, i, dev_name(dev));
-+
-+		if (!of_find_iommu_by_node(args.np))
-+			return -EPROBE_DEFER;
-+	}
-+
-+	return 0;
-+}
-diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
-index a0aa9d4..14c9a5c 100644
---- a/include/linux/of_iommu.h
-+++ b/include/linux/of_iommu.h
-@@ -14,6 +14,7 @@ extern int of_get_dma_window(struct device_node *dn, const char *prefix,
+diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+index 0605176..0605f52 100644
+--- a/drivers/base/dd.c
++++ b/drivers/base/dd.c
+@@ -25,6 +25,7 @@
+ #include <linux/async.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/pinctrl/devinfo.h>
++#include <linux/of_iommu.h>
  
- extern void iommu_add(struct iommu *iommu);
- extern void iommu_del(struct iommu *iommu);
-+extern int of_iommu_attach(struct device *dev);
+ #include "base.h"
+ #include "power/power.h"
+@@ -273,6 +274,10 @@ static int really_probe(struct device *dev, struct device_driver *drv)
  
- #else
+ 	dev->driver = drv;
  
-@@ -32,6 +33,11 @@ static inline void iommu_del(struct iommu *iommu)
- {
- }
- 
-+static inline int of_iommu_attach(struct device *dev)
-+{
-+	return 0;
-+}
++	ret = of_iommu_attach(dev);
++	if (ret)
++		goto probe_failed;
 +
- #endif	/* CONFIG_OF_IOMMU */
- 
- #endif /* __OF_IOMMU_H */
+ 	/* If using pinctrl, bind pins now before probing */
+ 	ret = pinctrl_bind_pins(dev);
+ 	if (ret)
 -- 
 1.8.1.5
