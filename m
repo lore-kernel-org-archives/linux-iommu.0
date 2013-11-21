@@ -1,7 +1,8 @@
 From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCHv6 09/13] iommu/tegra: smmu: get swgroups from DT "iommus="
-Date: Thu, 21 Nov 2013 15:40:45 +0200
-Message-ID: <1385041249-7705-10-git-send-email-hdoyu@nvidia.com>
+Subject: [PATCHv6 08/13] iommu/tegra: smmu: calculate ASID register offset by
+	ID
+Date: Thu, 21 Nov 2013 15:40:44 +0200
+Message-ID: <1385041249-7705-9-git-send-email-hdoyu@nvidia.com>
 References: <1385041249-7705-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,297 +22,240 @@ To: swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@pub
 Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This provides the info about which swgroups a device belongs to. This
-info is passed from DT. This is necessary for the unified SMMU driver
-among Tegra SoCs since each has different H/W accelerators.
+ASID register offset is caclulated by SWGROUP ID so that we can get
+rid of old SoC specific MACROs. This ID conversion is needed for the
+unified SMMU driver over Tegra SoCs. We use dt-bindings MACRO instead
+of SoC dependent MACROs. The formula is:
+
+  MC_SMMU_<swgroup name>_ASID_0 = MC_SMMU_AFI_ASID_0 + ID * 4;
+
+Now SWGROUP ID is the global HardWare Accelerator(HWA) identifier
+among all Tegra SoC except Tegra2.
 
 Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
-v6:
-- Explained "#iommu-cells" in the binding document.
-- Fixed old "nvidia,memory-clients" with 'iommus" in the binding
-  document.
-- Move smmu_of_get_swgroups() here from the previous patch not to break
-  git bisecting.
-
 v5:
-"iommu=" in a device DT is used instead of "mmu-masters" in an iommu
-DT. This is "iommu=" version of:
+Added SMMU_ASID_BASE(== SMMU_AFI_ASID).
+Removed unused ASID offset definitions.
+Use 'unsigned long *' instead of u64 for swgroups bitmap.
 
-  [PATCHv4 5/7] iommu/tegra: smmu: Support "mmu-masters" binding
+v4:
+Combined the following patches from v3:
+[PATCHv3 09/19] iommu/tegra: smmu: Calculate ASID register offset by ID
+[PATCHv3 16/19] iommu/tegra: smmu: Use dt-bindings MACRO
 ---
- .../bindings/iommu/nvidia,tegra30-smmu.txt         |  30 ++++-
- drivers/iommu/tegra-smmu.c                         | 133 ++++++++++++++++++---
- 2 files changed, 144 insertions(+), 19 deletions(-)
+ drivers/iommu/tegra-smmu.c | 111 +++++++--------------------------------------
+ 1 file changed, 17 insertions(+), 94 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iommu/nvidia,tegra30-smmu.txt b/Documentation/devicetree/bindings/iommu/nvidia,tegra30-smmu.txt
-index 89fb543..fd53f54 100644
---- a/Documentation/devicetree/bindings/iommu/nvidia,tegra30-smmu.txt
-+++ b/Documentation/devicetree/bindings/iommu/nvidia,tegra30-smmu.txt
-@@ -1,6 +1,6 @@
- NVIDIA Tegra 30 IOMMU H/W, SMMU (System Memory Management Unit)
- 
--Required properties:
-+Required properties in the IOMMU node:
- - compatible : "nvidia,tegra30-smmu"
- - reg : Should contain 3 register banks(address and length) for each
-   of the SMMU register blocks.
-@@ -8,9 +8,23 @@ Required properties:
- - nvidia,#asids : # of ASIDs
- - dma-window : IOVA start address and length.
- - nvidia,ahb : phandle to the ahb bus connected to SMMU.
-+- iommus: phandle to an iommu device which a device is
-+  attached to and indicates which swgroups a device belongs to(SWGROUP ID).
-+  SWGROUP ID is from 0 to 63, and a device can belong to multiple SWGROUPS.
-+- #iommu-cells. Should be 2. In client IOMMU specifiers, the two cells
-+  represent a 64-bit bitmask of SWGROUP IDs under which the device
-+  initiates transactions. The least significant word is first. See
-+  <dt-bindings/memory/tegra-swgroup.h> for a list of valid values.
-+
-+Required properties in device nodes affected by the IOMMU:
-+- iommus: A list of phandle plus specifier pairs for each IOMMU that
-+  affects master transactions initiated by the device. The number of
-+  cells in each specifier is defined by the #iommu-cells property in
-+  the IOMMU node referred to by the phandle. The meaning of the
-+  specifier cells is defined by the referenced IOMMU's binding.
- 
- Example:
--	smmu {
-+	smmu: iommu {
- 		compatible = "nvidia,tegra30-smmu";
- 		reg = <0x7000f010 0x02c
- 		       0x7000f1f0 0x010
-@@ -18,4 +32,16 @@ Example:
- 		nvidia,#asids = <4>;		/* # of ASIDs */
- 		dma-window = <0 0x40000000>;	/* IOVA start & length */
- 		nvidia,ahb = <&ahb>;
-+		#iommu-cells = <2>;
- 	};
-+
-+	host1x {
-+		compatible = "nvidia,tegra30-host1x", "simple-bus";
-+		iommus = <&smmu TEGRA_SWGROUP_CELLS(HC)>;
-+		....
-+		gr3d {
-+			compatible = "nvidia,tegra30-gr3d";
-+			iommus = <&smmu TEGRA_SWGROUP_CELLS(NV)
-+					TEGRA_SWGROUP_CELLS(NV2)>;
-+			....
-+		};
 diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 6ab977a..1a1bcdf 100644
+index 99b4bd4..6ab977a 100644
 --- a/drivers/iommu/tegra-smmu.c
 +++ b/drivers/iommu/tegra-smmu.c
-@@ -190,6 +190,8 @@ enum {
+@@ -43,46 +43,6 @@
+ 
+ #include <dt-bindings/memory/tegra-swgroup.h>
+ 
+-enum smmu_hwgrp {
+-	HWGRP_AFI,
+-	HWGRP_AVPC,
+-	HWGRP_DC,
+-	HWGRP_DCB,
+-	HWGRP_EPP,
+-	HWGRP_G2,
+-	HWGRP_HC,
+-	HWGRP_HDA,
+-	HWGRP_ISP,
+-	HWGRP_MPE,
+-	HWGRP_NV,
+-	HWGRP_NV2,
+-	HWGRP_PPCS,
+-	HWGRP_SATA,
+-	HWGRP_VDE,
+-	HWGRP_VI,
+-
+-	HWGRP_COUNT,
+-
+-	HWGRP_END = ~0,
+-};
+-
+-#define HWG_AFI		(1 << HWGRP_AFI)
+-#define HWG_AVPC	(1 << HWGRP_AVPC)
+-#define HWG_DC		(1 << HWGRP_DC)
+-#define HWG_DCB		(1 << HWGRP_DCB)
+-#define HWG_EPP		(1 << HWGRP_EPP)
+-#define HWG_G2		(1 << HWGRP_G2)
+-#define HWG_HC		(1 << HWGRP_HC)
+-#define HWG_HDA		(1 << HWGRP_HDA)
+-#define HWG_ISP		(1 << HWGRP_ISP)
+-#define HWG_MPE		(1 << HWGRP_MPE)
+-#define HWG_NV		(1 << HWGRP_NV)
+-#define HWG_NV2		(1 << HWGRP_NV2)
+-#define HWG_PPCS	(1 << HWGRP_PPCS)
+-#define HWG_SATA	(1 << HWGRP_SATA)
+-#define HWG_VDE		(1 << HWGRP_VDE)
+-#define HWG_VI		(1 << HWGRP_VI)
+-
+ /* bitmap of the page sizes currently supported */
+ #define SMMU_IOMMU_PGSIZES	(SZ_4K)
+ 
+@@ -152,21 +112,7 @@ enum {
+ #define SMMU_TRANSLATION_ENABLE_2		0x230
+ 
+ #define SMMU_AFI_ASID	0x238   /* PCIE */
+-#define SMMU_AVPC_ASID	0x23c   /* AVP */
+-#define SMMU_DC_ASID	0x240   /* Display controller */
+-#define SMMU_DCB_ASID	0x244   /* Display controller B */
+-#define SMMU_EPP_ASID	0x248   /* Encoder pre-processor */
+-#define SMMU_G2_ASID	0x24c   /* 2D engine */
+-#define SMMU_HC_ASID	0x250   /* Host1x */
+-#define SMMU_HDA_ASID	0x254   /* High-def audio */
+-#define SMMU_ISP_ASID	0x258   /* Image signal processor */
+-#define SMMU_MPE_ASID	0x264   /* MPEG encoder */
+-#define SMMU_NV_ASID	0x268   /* (3D) */
+-#define SMMU_NV2_ASID	0x26c   /* (3D) */
+-#define SMMU_PPCS_ASID	0x270   /* AHB */
+-#define SMMU_SATA_ASID	0x278   /* SATA */
+-#define SMMU_VDE_ASID	0x27c   /* Video decoder */
+-#define SMMU_VI_ASID	0x280   /* Video input */
++#define SMMU_ASID_BASE	SMMU_AFI_ASID
+ 
+ #define SMMU_PDE_NEXT_SHIFT		28
+ 
+@@ -238,27 +184,7 @@ enum {
+ #define __smmu_client_enable_hwgrp(c, m) __smmu_client_set_hwgrp(c, m, 1)
+ #define __smmu_client_disable_hwgrp(c)	__smmu_client_set_hwgrp(c, 0, 0)
+ 
+-#define HWGRP_INIT(client) [HWGRP_##client] = SMMU_##client##_ASID
+-
+-static const u32 smmu_hwgrp_asid_reg[] = {
+-	HWGRP_INIT(AFI),
+-	HWGRP_INIT(AVPC),
+-	HWGRP_INIT(DC),
+-	HWGRP_INIT(DCB),
+-	HWGRP_INIT(EPP),
+-	HWGRP_INIT(G2),
+-	HWGRP_INIT(HC),
+-	HWGRP_INIT(HDA),
+-	HWGRP_INIT(ISP),
+-	HWGRP_INIT(MPE),
+-	HWGRP_INIT(NV),
+-	HWGRP_INIT(NV2),
+-	HWGRP_INIT(PPCS),
+-	HWGRP_INIT(SATA),
+-	HWGRP_INIT(VDE),
+-	HWGRP_INIT(VI),
+-};
+-#define HWGRP_ASID_REG(x) (smmu_hwgrp_asid_reg[x])
++#define HWGRP_ASID_REG(x) ((x) * sizeof(u32) + SMMU_ASID_BASE)
+ 
+ /*
   * Per client for address space
-  */
- struct smmu_client {
-+	struct device_node	*of_node;
-+	struct rb_node		node;
+@@ -267,7 +193,7 @@ struct smmu_client {
  	struct device		*dev;
  	struct list_head	list;
  	struct smmu_as		*as;
-@@ -233,6 +235,7 @@ struct smmu_device {
- 	spinlock_t	lock;
- 	char		*name;
- 	struct device	*dev;
-+	struct rb_root	clients;
- 	struct page *avp_vector_page;	/* dummy page shared by all AS's */
+-	u32			hwgrp;
++	unsigned long		hwgrp[2];
+ };
  
- 	/*
-@@ -310,6 +313,96 @@ static inline void smmu_write(struct smmu_device *smmu, u32 val, size_t offs)
+ /*
+@@ -384,41 +310,37 @@ static inline void smmu_write(struct smmu_device *smmu, u32 val, size_t offs)
   */
  #define FLUSH_SMMU_REGS(smmu)	smmu_read(smmu, SMMU_CONFIG)
  
-+static struct smmu_client *find_smmu_client(struct smmu_device *smmu,
-+					    struct device_node *dev_node)
-+{
-+	struct rb_node *node = smmu->clients.rb_node;
-+
-+	while (node) {
-+		struct smmu_client *client;
-+
-+		client = container_of(node, struct smmu_client, node);
-+		if (dev_node < client->of_node)
-+			node = node->rb_left;
-+		else if (dev_node > client->of_node)
-+			node = node->rb_right;
-+		else
-+			return client;
-+	}
-+
-+	return NULL;
-+}
-+
-+static int insert_smmu_client(struct smmu_device *smmu,
-+			      struct smmu_client *client)
-+{
-+	struct rb_node **new, *parent;
-+
-+	new = &smmu->clients.rb_node;
-+	parent = NULL;
-+	while (*new) {
-+		struct smmu_client *this;
-+		this = container_of(*new, struct smmu_client, node);
-+
-+		parent = *new;
-+		if (client->of_node < this->of_node)
-+			new = &((*new)->rb_left);
-+		else if (client->of_node > this->of_node)
-+			new = &((*new)->rb_right);
-+		else
-+			return -EEXIST;
-+	}
-+
-+	rb_link_node(&client->node, parent, new);
-+	rb_insert_color(&client->node, &smmu->clients);
-+	return 0;
-+}
-+
-+static int register_smmu_client(struct smmu_device *smmu,
-+				struct device *dev, unsigned long *swgroups)
-+{
-+	struct smmu_client *client;
-+
-+	client = find_smmu_client(smmu, dev->of_node);
-+	if (client) {
-+		dev_err(dev,
-+			"rejecting multiple registrations for client device %s\n",
-+			dev->of_node->full_name);
-+		return -EBUSY;
-+	}
-+
-+	client = devm_kzalloc(smmu->dev, sizeof(*client), GFP_KERNEL);
-+	if (!client)
-+		return -ENOMEM;
-+
-+	client->dev = dev;
-+	client->of_node = dev->of_node;
-+	memcpy(client->hwgrp, swgroups, sizeof(u64));
-+	return insert_smmu_client(smmu, client);
-+}
-+
-+static int smmu_of_get_swgroups(struct device *dev, unsigned long *swgroups)
-+{
-+	int i;
-+	struct of_phandle_args args;
-+
-+	of_property_for_each_phandle_with_args(dev->of_node, "iommus",
-+					       "#iommu-cells", i, &args) {
-+		if (args.np != smmu_handle->dev->of_node)
-+			continue;
-+
-+		BUG_ON(args.args_count != 2);
-+
-+		memcpy(swgroups, args.args, sizeof(u64));
-+		pr_debug("swgroups=%08lx %08lx ops=%p %s\n",
-+			 swgroups[0], swgroups[1],
-+			 dev->bus->iommu_ops, dev_name(dev));
-+		return 0;
-+	}
-+
-+	return -ENODEV;
-+}
-+
+-#define smmu_client_hwgrp(c) (u32)((c)->dev->platform_data)
+-
  static int __smmu_client_set_hwgrp(struct smmu_client *c,
- 				   unsigned long *map, int on)
+-				   unsigned long map, int on)
++				   unsigned long *map, int on)
  {
-@@ -719,21 +812,16 @@ static int smmu_iommu_attach_dev(struct iommu_domain *domain,
+ 	int i;
+ 	struct smmu_as *as = c->as;
+ 	u32 val, offs, mask = SMMU_ASID_ENABLE(as->asid);
+ 	struct smmu_device *smmu = as->smmu;
+ 
+-	WARN_ON(!on && map);
+-	if (on && !map)
+-		return -EINVAL;
+ 	if (!on)
+-		map = smmu_client_hwgrp(c);
++		map = c->hwgrp;
+ 
+-	for_each_set_bit(i, &map, HWGRP_COUNT) {
++	for_each_set_bit(i, map, TEGRA_SWGROUP_MAX) {
+ 		offs = HWGRP_ASID_REG(i);
+ 		val = smmu_read(smmu, offs);
+ 		if (on) {
+ 			if (WARN_ON(val & mask))
+ 				goto err_hw_busy;
+ 			val |= mask;
++			memcpy(c->hwgrp, map, sizeof(u64));
+ 		} else {
+ 			WARN_ON((val & mask) == mask);
+ 			val &= ~mask;
+ 		}
+ 		smmu_write(smmu, val, offs);
+ 	}
++
+ 	FLUSH_SMMU_REGS(smmu);
+-	c->hwgrp = map;
+ 	return 0;
+ 
+ err_hw_busy:
+-	for_each_set_bit(i, &map, HWGRP_COUNT) {
++	for_each_set_bit(i, map, TEGRA_SWGROUP_MAX) {
+ 		offs = HWGRP_ASID_REG(i);
+ 		val = smmu_read(smmu, offs);
+ 		val &= ~mask;
+@@ -427,17 +349,18 @@ err_hw_busy:
+ 	return -EBUSY;
+ }
+ 
+-static int smmu_client_set_hwgrp(struct smmu_client *c, u32 map, int on)
++static int smmu_client_set_hwgrp(struct smmu_client *c,
++				 unsigned long *map, int on)
+ {
+-	u32 val;
++	int err;
+ 	unsigned long flags;
+ 	struct smmu_as *as = c->as;
+ 	struct smmu_device *smmu = as->smmu;
+ 
+ 	spin_lock_irqsave(&smmu->lock, flags);
+-	val = __smmu_client_set_hwgrp(c, map, on);
++	err = __smmu_client_set_hwgrp(c, map, on);
+ 	spin_unlock_irqrestore(&smmu->lock, flags);
+-	return val;
++	return err;
+ }
+ 
+ /*
+@@ -796,7 +719,7 @@ static int smmu_iommu_attach_dev(struct iommu_domain *domain,
  	struct smmu_as *as = domain->priv;
  	struct smmu_device *smmu = as->smmu;
  	struct smmu_client *client, *c;
--	unsigned long *map;
+-	u32 map;
++	unsigned long *map;
  	int err;
  
--	client = devm_kzalloc(smmu->dev, sizeof(*c), GFP_KERNEL);
-+	client = find_smmu_client(smmu, dev->of_node);
- 	if (!client)
+ 	client = devm_kzalloc(smmu->dev, sizeof(*c), GFP_KERNEL);
+@@ -804,7 +727,7 @@ static int smmu_iommu_attach_dev(struct iommu_domain *domain,
  		return -ENOMEM;
--	client->dev = dev;
--	client->as = as;
--	map = (unsigned long *)dev->platform_data;
--	if (!map)
--		return -EINVAL;
+ 	client->dev = dev;
+ 	client->as = as;
+-	map = (unsigned long)dev->platform_data;
++	map = (unsigned long *)dev->platform_data;
+ 	if (!map)
+ 		return -EINVAL;
  
--	err = smmu_client_enable_hwgrp(client, map);
-+	client->as = as;
-+	err = smmu_client_enable_hwgrp(client, client->hwgrp);
- 	if (err)
--		goto err_hwgrp;
-+		return -EINVAL;
- 
- 	spin_lock(&as->client_lock);
- 	list_for_each_entry(c, &as->client, list) {
-@@ -751,7 +839,7 @@ static int smmu_iommu_attach_dev(struct iommu_domain *domain,
+@@ -828,7 +751,7 @@ static int smmu_iommu_attach_dev(struct iommu_domain *domain,
  	 * Reserve "page zero" for AVP vectors using a common dummy
  	 * page.
  	 */
--	if (test_bit(TEGRA_SWGROUP_AVPC, map)) {
-+	if (test_bit(TEGRA_SWGROUP_AVPC, client->hwgrp)) {
+-	if (map & HWG_AVPC) {
++	if (test_bit(TEGRA_SWGROUP_AVPC, map)) {
  		struct page *page;
  
  		page = as->smmu->avp_vector_page;
-@@ -766,8 +854,6 @@ static int smmu_iommu_attach_dev(struct iommu_domain *domain,
- err_client:
- 	smmu_client_disable_hwgrp(client);
- 	spin_unlock(&as->client_lock);
--err_hwgrp:
--	devm_kfree(smmu->dev, client);
- 	return err;
- }
- 
-@@ -784,7 +870,6 @@ static void smmu_iommu_detach_dev(struct iommu_domain *domain,
- 		if (c->dev == dev) {
- 			smmu_client_disable_hwgrp(c);
- 			list_del(&c->list);
--			devm_kfree(smmu->dev, c);
- 			c->as = NULL;
- 			dev_dbg(smmu->dev,
- 				"%s is detached\n", dev_name(c->dev));
-@@ -888,10 +973,23 @@ enum {
- 
- static int smmu_iommu_bound_driver(struct device *dev)
- {
--	int err = -EPROBE_DEFER;
--	u32 swgroups = dev->platform_data;
-+	int err;
-+	unsigned long swgroups[2];
- 	struct dma_iommu_mapping *map = NULL;
- 
-+	err = smmu_of_get_swgroups(dev, swgroups);
-+	if (err)
-+		return -ENODEV;
-+
-+	if (!find_smmu_client(smmu_handle, dev->of_node)) {
-+		err = register_smmu_client(smmu_handle, dev, swgroups);
-+		if (err) {
-+			dev_err(dev, "failed to add client %s\n",
-+				dev_name(dev));
-+			return -EINVAL;
-+		}
-+	}
-+
- 	if (test_bit(TEGRA_SWGROUP_PPCS, swgroups))
- 		map = smmu_handle->map[SYSTEM_PROTECTED];
- 	else
-@@ -902,8 +1000,8 @@ static int smmu_iommu_bound_driver(struct device *dev)
- 	else
- 		return -EPROBE_DEFER;
- 
--	pr_debug("swgroups=%08lx map=%p err=%d %s\n",
--		 swgroups, map, err, dev_name(dev));
-+	pr_debug("swgroups=%08lx %08lx map=%p err=%d %s\n",
-+		 swgroups[0], swgroups[1], map, err, dev_name(dev));
- 	return err;
- }
- 
-@@ -1156,6 +1254,7 @@ static int tegra_smmu_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 	}
- 
-+	smmu->clients = RB_ROOT;
- 	smmu->map = (struct dma_iommu_mapping **)(smmu->as + asids);
- 	smmu->nregs = pdev->num_resources;
- 	smmu->regs = devm_kzalloc(dev, 2 * smmu->nregs * sizeof(*smmu->regs),
 -- 
 1.8.1.5
