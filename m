@@ -1,7 +1,7 @@
 From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCHv6 10/13] iommu/tegra: smmu: allow duplicate ASID wirte
-Date: Thu, 21 Nov 2013 15:40:46 +0200
-Message-ID: <1385041249-7705-11-git-send-email-hdoyu@nvidia.com>
+Subject: [PATCHv6 11/13] iommu/tegra: smmu: Rename hwgrp -> swgroups
+Date: Thu, 21 Nov 2013 15:40:47 +0200
+Message-ID: <1385041249-7705-12-git-send-email-hdoyu@nvidia.com>
 References: <1385041249-7705-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,58 +21,155 @@ To: swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@pub
 Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The device, which belongs to the same ASID, can try to enable the same
-ASID as the other swgroup devices. This should be allowed but just
-skip the actual register write. If the write value is different, it
-will return -EINVAL.
+Use the correct term for SWGROUP related variables and macros.
+
+The term "swgroup" is the collection of "memory client". A "memory
+client" usually represents a HardWare Accelerator(HWA) like
+GPU. Sometimes a strut device can belong to multiple "swgroup" so that
+"swgroup's'" is used here. This "swgroups" is the term used in Tegra
+TRM. Rename along with TRM.
 
 Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
 v4:
-This was the part of v3, which isn't used any more.
-  [PATCHv3 10/19] iommu/tegra: smmu: Get "nvidia,swgroups" from DT
+New for v4
 ---
- drivers/iommu/tegra-smmu.c | 20 ++++++++------------
- 1 file changed, 8 insertions(+), 12 deletions(-)
+ drivers/iommu/tegra-smmu.c | 36 ++++++++++++++++++------------------
+ 1 file changed, 18 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 1a1bcdf..76356db 100644
+index 76356db..1544f7c 100644
 --- a/drivers/iommu/tegra-smmu.c
 +++ b/drivers/iommu/tegra-smmu.c
-@@ -418,9 +418,13 @@ static int __smmu_client_set_hwgrp(struct smmu_client *c,
- 		offs = HWGRP_ASID_REG(i);
- 		val = smmu_read(smmu, offs);
- 		if (on) {
--			if (WARN_ON(val & mask))
--				goto err_hw_busy;
--			val |= mask;
-+			if (val) {
-+				if (WARN_ON(val != mask))
-+					return -EINVAL;
-+				goto skip;
-+			}
-+
-+			val = mask;
- 			memcpy(c->hwgrp, map, sizeof(u64));
- 		} else {
- 			WARN_ON((val & mask) == mask);
-@@ -430,16 +434,8 @@ static int __smmu_client_set_hwgrp(struct smmu_client *c,
- 	}
+@@ -179,12 +179,12 @@ enum {
  
- 	FLUSH_SMMU_REGS(smmu);
-+skip:
- 	return 0;
--
--err_hw_busy:
--	for_each_set_bit(i, map, TEGRA_SWGROUP_MAX) {
--		offs = HWGRP_ASID_REG(i);
--		val = smmu_read(smmu, offs);
--		val &= ~mask;
--		smmu_write(smmu, val, offs);
--	}
--	return -EBUSY;
+ #define NUM_SMMU_REG_BANKS	3
+ 
+-#define smmu_client_enable_hwgrp(c, m)	smmu_client_set_hwgrp(c, m, 1)
+-#define smmu_client_disable_hwgrp(c)	smmu_client_set_hwgrp(c, 0, 0)
+-#define __smmu_client_enable_hwgrp(c, m) __smmu_client_set_hwgrp(c, m, 1)
+-#define __smmu_client_disable_hwgrp(c)	__smmu_client_set_hwgrp(c, 0, 0)
++#define smmu_client_enable_swgroups(c, m) smmu_client_set_swgroups(c, m, 1)
++#define smmu_client_disable_swgroups(c) smmu_client_set_swgroups(c, 0, 0)
++#define __smmu_client_enable_swgroups(c, m) __smmu_client_set_swgroups(c, m, 1)
++#define __smmu_client_disable_swgroups(c) __smmu_client_set_swgroups(c, 0, 0)
+ 
+-#define HWGRP_ASID_REG(x) ((x) * sizeof(u32) + SMMU_ASID_BASE)
++#define SWGROUPS_ASID_REG(x) ((x) * sizeof(u32) + SMMU_ASID_BASE)
+ 
+ /*
+  * Per client for address space
+@@ -195,7 +195,7 @@ struct smmu_client {
+ 	struct device		*dev;
+ 	struct list_head	list;
+ 	struct smmu_as		*as;
+-	unsigned long		hwgrp[2];
++	unsigned long		swgroups[2];
+ };
+ 
+ /*
+@@ -377,7 +377,7 @@ static int register_smmu_client(struct smmu_device *smmu,
+ 
+ 	client->dev = dev;
+ 	client->of_node = dev->of_node;
+-	memcpy(client->hwgrp, swgroups, sizeof(u64));
++	memcpy(client->swgroups, swgroups, sizeof(u64));
+ 	return insert_smmu_client(smmu, client);
  }
  
- static int smmu_client_set_hwgrp(struct smmu_client *c,
+@@ -403,7 +403,7 @@ static int smmu_of_get_swgroups(struct device *dev, unsigned long *swgroups)
+ 	return -ENODEV;
+ }
+ 
+-static int __smmu_client_set_hwgrp(struct smmu_client *c,
++static int __smmu_client_set_swgroups(struct smmu_client *c,
+ 				   unsigned long *map, int on)
+ {
+ 	int i;
+@@ -412,10 +412,10 @@ static int __smmu_client_set_hwgrp(struct smmu_client *c,
+ 	struct smmu_device *smmu = as->smmu;
+ 
+ 	if (!on)
+-		map = c->hwgrp;
++		map = c->swgroups;
+ 
+ 	for_each_set_bit(i, map, TEGRA_SWGROUP_MAX) {
+-		offs = HWGRP_ASID_REG(i);
++		offs = SWGROUPS_ASID_REG(i);
+ 		val = smmu_read(smmu, offs);
+ 		if (on) {
+ 			if (val) {
+@@ -425,7 +425,7 @@ static int __smmu_client_set_hwgrp(struct smmu_client *c,
+ 			}
+ 
+ 			val = mask;
+-			memcpy(c->hwgrp, map, sizeof(u64));
++			memcpy(c->swgroups, map, sizeof(u64));
+ 		} else {
+ 			WARN_ON((val & mask) == mask);
+ 			val &= ~mask;
+@@ -438,7 +438,7 @@ skip:
+ 	return 0;
+ }
+ 
+-static int smmu_client_set_hwgrp(struct smmu_client *c,
++static int smmu_client_set_swgroups(struct smmu_client *c,
+ 				 unsigned long *map, int on)
+ {
+ 	int err;
+@@ -447,7 +447,7 @@ static int smmu_client_set_hwgrp(struct smmu_client *c,
+ 	struct smmu_device *smmu = as->smmu;
+ 
+ 	spin_lock_irqsave(&smmu->lock, flags);
+-	err = __smmu_client_set_hwgrp(c, map, on);
++	err = __smmu_client_set_swgroups(c, map, on);
+ 	spin_unlock_irqrestore(&smmu->lock, flags);
+ 	return err;
+ }
+@@ -487,7 +487,7 @@ static int smmu_setup_regs(struct smmu_device *smmu)
+ 		smmu_write(smmu, val, SMMU_PTB_DATA);
+ 
+ 		list_for_each_entry(c, &as->client, list)
+-			__smmu_client_set_hwgrp(c, c->hwgrp, 1);
++			__smmu_client_set_swgroups(c, c->swgroups, 1);
+ 	}
+ 
+ 	smmu_write(smmu, smmu->translation_enable_0, SMMU_TRANSLATION_ENABLE_0);
+@@ -815,7 +815,7 @@ static int smmu_iommu_attach_dev(struct iommu_domain *domain,
+ 		return -ENOMEM;
+ 
+ 	client->as = as;
+-	err = smmu_client_enable_hwgrp(client, client->hwgrp);
++	err = smmu_client_enable_swgroups(client, client->swgroups);
+ 	if (err)
+ 		return -EINVAL;
+ 
+@@ -835,7 +835,7 @@ static int smmu_iommu_attach_dev(struct iommu_domain *domain,
+ 	 * Reserve "page zero" for AVP vectors using a common dummy
+ 	 * page.
+ 	 */
+-	if (test_bit(TEGRA_SWGROUP_AVPC, client->hwgrp)) {
++	if (test_bit(TEGRA_SWGROUP_AVPC, client->swgroups)) {
+ 		struct page *page;
+ 
+ 		page = as->smmu->avp_vector_page;
+@@ -848,7 +848,7 @@ static int smmu_iommu_attach_dev(struct iommu_domain *domain,
+ 	return 0;
+ 
+ err_client:
+-	smmu_client_disable_hwgrp(client);
++	smmu_client_disable_swgroups(client);
+ 	spin_unlock(&as->client_lock);
+ 	return err;
+ }
+@@ -864,7 +864,7 @@ static void smmu_iommu_detach_dev(struct iommu_domain *domain,
+ 
+ 	list_for_each_entry(c, &as->client, list) {
+ 		if (c->dev == dev) {
+-			smmu_client_disable_hwgrp(c);
++			smmu_client_disable_swgroups(c);
+ 			list_del(&c->list);
+ 			c->as = NULL;
+ 			dev_dbg(smmu->dev,
 -- 
 1.8.1.5
