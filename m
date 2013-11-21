@@ -1,137 +1,45 @@
-From: Yijing Wang <wangyijing@huawei.com>
-Subject: Re: [PATCH 1/1] IOMMU: Save pci device id instead of pci_dev* pointer
- for DMAR devices
-Date: Thu, 21 Nov 2013 14:21:38 +0800
-Message-ID: <528DA672.9020707@huawei.com>
-References: <1383639898-48776-1-git-send-email-wangyijing@huawei.com>	 <1383639898-48776-2-git-send-email-wangyijing@huawei.com>	 <20131107180713.GA2955@google.com> <527C5D36.7050206@huawei.com>	 <CAErSpo73N2Th-4D5G8-60tMuGwqthfu-VNHVf3LF9+s2mQp53w@mail.gmail.com> <1384963192.15487.76.camel@shinybook.infradead.org>
+From: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v2] Enhance dmar to support device hotplug
+Date: Thu, 21 Nov 2013 16:21:55 +0800
+Message-ID: <1385022116-228-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1384963192.15487.76.camel@shinybook.infradead.org>
-Sender: linux-pci-owner@vger.kernel.org
-To: David Woodhouse <dwmw2@infradead.org>, Bjorn Helgaas <bhelgaas@google.com>
-Cc: Vinod Koul <vinod.koul@intel.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, Hanjun Guo <guohanjun@huawei.com>, dmaengine@vger.kernel.org, Dan Williams <dan.j.williams@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2013/11/20 23:59, David Woodhouse wrote:
-> On Fri, 2013-11-08 at 08:46 -0700, Bjorn Helgaas wrote:
->>
->> I don't know the IOMMU drivers well either, but it seems like they
->> rely on notifications of device addition and removal (see
->> iommu_bus_notifier()).  It doesn't seem right for them to also use t=
-he
->> generic PCI interfaces like pci_get_domain_bus_and_slot() because th=
-e
->> IOMMU driver should already know what devices exist and their
->> lifetimes.  It seems like confusion to mix the two.  But I don't hav=
-e
->> a concrete suggestion.
->=20
+This is the v2 patch, the v1 link: http://marc.info/?l=linux-pci&m=138364004628824&w=2
 
-Hi David,
-   Thanks for your review and comment!
+v1->v2: keep (pci_dev *) pointer array in dmar_drhd_uni, only use pci device id
+		to update pci_dev * pointer info during device hotplug in intel iommu 
+		driver notifier.
 
-> The generic IOMMU code has a notifier, and calls through to an
-> ->add_device() method in the specific IOMMU driver's iommu_ops.
->=20
-> The Intel IOMMU driver predates that, and its scheme for mapping devi=
-ces
-> to the correct DMAR unit is different. It happens entirely within the
-> get_domain_for_dev() function, which happens when we're first asked t=
-o
-> set up a mapping for a given device (when we don't already have the
-> answer stashed in dev->archdata).
->=20
-> I think we should add an ->add_device() method to the Intel IOMMU
-> driver, and make it do much of what's in get_domain_for_dev() right n=
-ow
-> =E2=80=94 finding the "proxy" device (the upstream PCIe bridge or wha=
-tever), and
-> then looking through the ACPI DMAR table to find which DMAR unit that=
-'s
-> attached to. Then we stash that information (dmar, devfn) in
-> dev->archdata, and get_domain_for_dev() still has *some* work to do,
-> actually allocating a logical domain on the IOMMU in question, but no=
-t
-> as much. And refcount the damn domain instead of playing the horrid
-> tricks we currently do to hang it off the upstream proxy device *too*=
-=2E
+Currently, DMAR driver save target pci devices pointers for drhd/rmrr/atsr
+in (pci_dev *) array, but never update these info after initialization.
+It's not safe, because pci devices maybe hot added or removed during 
+system running. They will have new pci_dev * pointer. So if there have 
+two IOMMUs or more in system, these devices will find a wrong drhd during 
+DMA mapping. And DMAR faults will occur. This patch save pci device id 
+as well as (pci_dev *) to fix this issue. Pci device id will be used to update
+pci_dev * poninter during device hotplug in intel iommu driver notifier.
+Other, here use list to manage target devices for IOMMU, 
+we can easily use list helper.
 
-Intel IOMMU driver has an ->add_device() method already,   .add_device	=
-=3D intel_iommu_add_device,
-this method was used to update iommu group info. Since Intel IOMMU driv=
-er has
-its own notifier, so maybe it's a nice candidate to do something.
-Currently, dmar driver parse DMAR table and find the pci device id unde=
-r a specific
-DRHD. But only save the device pci_dev * pointer in devices array. So i=
-f this pci device
-was removed, this info became stale info. In the last version patch, I =
-use pci device id intead
-of pci_dev * pointer array completely. This maybe introduce some unsafe=
- issues. Because
-pci device maybe destroyed during process device dma mapping etc.
+Yijing Wang (1):
+  IOMMU: enhance dmar to support device hotplug
 
-So, I have rework the patch and try to save pci device id as well as pc=
-i_dev *pointer, like:
-
-struct dmar_device {
-   u16 segment;
-   u8 bus;
-   u8 devfn;  ----------->these tree will be used only when pci device =
-add or remove, we will use them to update pci_dev * pointer in intel io=
-mmu driver notifier.
-   struct list_head list;   -->add to DRHD device list.
-   struct pci_dev *pdev;   --->use to hold the pci device
-}
-
-What do you think about ?
-
-In this new patch, we won't change the Intel iommu driver much, just en=
-hance Intel driver iommu
-notifier to make DRHD device list always effect, not stale info.
-
-I will send out this new patch soon.
-
->=20
-> My main concern here is that the DMAR table contains the PCI bus numb=
-ers
-> at boot time. Doing the lookup later will only work if we don't renum=
-ber
-> busses. Or if we have a way to look things up based on the *original*
-> bus number.
-
-If we won't remove the pci device, the occupied buses won't be change, =
-I think.
-And because in the new patch, we still use pci_dev *pointer to find mat=
-ch DRHD, so
-this is not a regression.
-Since DMAR also use pci device id to identify the support device,
-I have not found anything instead of device id.
-
-In AMD IOMMU driver, it seems to use pci device id to identify drhd too=
-, although
-I just take a quickly glanced at it, maybe not correctly.
-
->=20
-> The Intel IOMMU also has a bus notifier of its own which it only uses=
- to
-> know when a driver is *detached*, so it can tear down the logical dom=
-ain
-> for the corresponding device. Would be nice to have the generic IOMMU
-> notifier call a callback for us then too, perhaps.
-
-Update the device info in Intel IOMMU driver is a good point.
-
-
-Thanks!
-Yijing.
-
->=20
->=20
-
-
---=20
-Thanks!
-Yijing
+ drivers/iommu/dmar.c        |   82 +++++++++++-----------
+ drivers/iommu/intel-iommu.c |  161 +++++++++++++++++++++++++++++-------------
+ include/linux/dmar.h        |   24 ++++--
+ 3 files changed, 167 insertions(+), 100 deletions(-)
