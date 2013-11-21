@@ -1,15 +1,15 @@
-From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [PATCHv5 2/9] driver/core: populate devices in order for IOMMUs
-Date: Thu, 21 Nov 2013 12:04:18 -0700
-Message-ID: <528E5932.1070105@wwwdotorg.org>
-References: <1384853593-32202-1-git-send-email-hdoyu@nvidia.com> <
-	1384853593-32202-3-git-send-email-hdoyu@nvidia.com>
-	<20131121131558.E5B82C40A2C@trevor.secretlab.ca>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU (PAMU)
+Date: Thu, 21 Nov 2013 13:43:23 -0700
+Message-ID: <1385066603.2879.414.camel@ul30vt.home>
+References: <1384838233-24847-1-git-send-email-Bharat.Bhushan@freescale.com>
+	<1384973243.2879.361.camel@ul30vt.home>
+	<6A3DF150A5B70D4F9B66A25E3F7C888D0721D9AC@039-SN2MPN1-012.039d.mgd.msft.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20131121131558.E5B82C40A2C-WNowdnHR2B42iJbIjFUEsiwD8/FfD2ys@public.gmane.org>
+In-Reply-To: <6A3DF150A5B70D4F9B66A25E3F7C888D0721D9AC-RL0Hj/+nBVDAtPZc1oz0FK4g8xLGJsHaLnY5E4hWTkheoWH0uzbU5w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,94 +19,105 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Bharat Bhushan <Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/21/2013 06:15 AM, Grant Likely wrote:
-> On Tue, 19 Nov 2013 11:33:06 +0200, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote:
->> IOMMU devices on the bus need to be poplulated first, then iommu
->> master devices are done later.
->>
->> With CONFIG_OF_IOMMU, "iommus=" DT binding would be used to identify
->> whether a device can be an iommu msater or not. If a device can, we'll
->> defer to populate that device till an iommu device is populated. Once
->> an iommu device is populated, "dev->bus->iommu_ops" is set in the
->> bus. Then, those defered iommu master devices are populated and
->> configured for IOMMU with help of the already populated iommu device
->> via iommu_ops->add_device(). Multiple IOMMUs can be listed on this
->> "iommus" binding so that a device can have multiple IOMMUs attached.
->>
->> Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
->> ---
->> v5:
->> Use "iommus=" binding instread of arm,smmu's "#stream-id-cells".
->>
->> v4:
->> This is newly added, and the successor of the following RFC:
->>   [RFC][PATCHv3+ 1/2] driver/core: Add of_iommu_attach()
->>   http://lists.linuxfoundation.org/pipermail/iommu/2013-November/006914.html
->> ---
->>  drivers/base/dd.c        |  5 +++++
->>  drivers/iommu/of_iommu.c | 22 ++++++++++++++++++++++
->>  include/linux/of_iommu.h |  7 +++++++
->>  3 files changed, 34 insertions(+)
->>
->> diff --git a/drivers/base/dd.c b/drivers/base/dd.c
->> index 35fa368..6e892d4 100644
->> --- a/drivers/base/dd.c
->> +++ b/drivers/base/dd.c
->> @@ -25,6 +25,7 @@
->>  #include <linux/async.h>
->>  #include <linux/pm_runtime.h>
->>  #include <linux/pinctrl/devinfo.h>
->> +#include <linux/of_iommu.h>
->>  
->>  #include "base.h"
->>  #include "power/power.h"
->> @@ -273,6 +274,10 @@ static int really_probe(struct device *dev, struct device_driver *drv)
->>  
->>  	dev->driver = drv;
->>  
->> +	ret = of_iommu_attach(dev);
->> +	if (ret)
->> +		goto probe_failed;
->> +
->>  	/* If using pinctrl, bind pins now before probing */
->>  	ret = pinctrl_bind_pins(dev);
->>  	if (ret)
+On Thu, 2013-11-21 at 11:20 +0000, Bharat Bhushan wrote:
 > 
-> I'm very concerned about this approach. Hooking into the core probe
-> path for things like this is not going to scale well. I'm not thrilled
-> with the pinctrl hook being here either, but that is already merged. :-(
-> Also, hooking in here is going affect every single device device driver
-> probe path, and a large number of them are never, ever, going to have
-> iommu interactions.
+> > -----Original Message-----
+> > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> > Sent: Thursday, November 21, 2013 12:17 AM
+> > To: Bhushan Bharat-R65777
+> > Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org; Wood Scott-B07421;
+> > Yoder Stuart-B08248; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-
+> > pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-
+> > kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Bhushan Bharat-R65777
+> > Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU (PAMU)
+> > 
+> > On Tue, 2013-11-19 at 10:47 +0530, Bharat Bhushan wrote:
+> > > From: Bharat Bhushan <bharat.bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+> > >
+> > > PAMU (FSL IOMMU) has a concept of primary window and subwindows.
+> > > Primary window corresponds to the complete guest iova address space
+> > > (including MSI space), with respect to IOMMU_API this is termed as
+> > > geometry. IOVA Base of subwindow is determined from the number of
+> > > subwindows (configurable using iommu API).
+> > > MSI I/O page must be within the geometry and maximum supported
+> > > subwindows, so MSI IO-page is setup just after guest memory iova space.
+> > >
+> > > So patch 1/9-4/9(inclusive) are for defining the interface to get:
+> > >   - Number of MSI regions (which is number of MSI banks for powerpc)
+> > >   - MSI-region address range: Physical page which have the
+> > >     address/addresses used for generating MSI interrupt
+> > >     and size of the page.
+> > >
+> > > Patch 5/9-7/9(inclusive) is defining the interface of setting up MSI
+> > > iova-base for a msi region(bank) for a device. so that when
+> > > msi-message will be composed then this configured iova will be used.
+> > > Earlier we were using iommu interface for getting the configured iova
+> > > which was not currect and Alex Williamson suggeested this type of interface.
+> > >
+> > > patch 8/9 moves some common functions in a separate file so that these
+> > > can be used by FSL_PAMU implementation (next patch uses this).
+> > > These will be used later for iommu-none implementation. I believe we
+> > > can do more of this but will take step by step.
+> > >
+> > > Finally last patch actually adds the support for FSL-PAMU :)
+> > 
+> > Patches 1-3: msi_get_region needs to return an error an error (probably
+> > -EINVAL) if called on a path where there's no backend implementation.
+> > Otherwise the caller doesn't know that the data in the region pointer isn't
+> > valid.
 > 
-> There needs to be a less invasive way of doing what you want. I still
-> feel like the individual device drivers themselves need to be aware that
-> they might be hooking through an IOMMU. Or, if they are hooking through
-> a bus like PCIe, then have the PCIe bus defer creating child devices
-> until the IOMMU is configured and in place.
+> will correct.
+> 
+> > 
+> > Patches 5&6: same as above for msi_set_iova, return an error if no backend
+> > implementation.
+> 
+> Ok
+> 
+> > 
+> > Patch 7: Why does fsl_msi_del_iova_device bother to return anything if it's
+> > always zero?  Return -ENODEV when not found?
+> 
+> Will make -ENODEV.
+> 
+> > 
+> > Patch 9:
+> > 
+> > vfio_handle_get_attr() passes random kernel data back to userspace in the event
+> > of iommu_domain_get_attr() error.
+> 
+> Will correct.
+> 
+> > 
+> > vfio_handle_set_attr(): I don't see any data validation happening, is
+> > iommu_domain_set_attr() really that safe?
+> 
+> We do not need any data validation here and iommu driver does whatever needed.
+> So yes,  iommu_domain_set_attr() is safe.
+> 
+> > 
+> > For both of those, drop the pr_err on unknown attribute, it's sufficient to
+> > return error.
+> 
+> ok
+> 
+> > 
+> > Is VFIO_IOMMU_PAMU_GET_MSI_BANK_COUNT per aperture (ie. each vfio user has
+> > $COUNT regions at their disposal exclusively)?
+> 
+> Number of msi-bank count is system wide and not per aperture, But will be setting windows for banks in the device aperture.
+> So say if we are direct assigning 2 pci device (both have different iommu group, so 2 aperture in iommu) to VM.
+> Now qemu can make only one call to know how many msi-banks are there but it must set sub-windows for all banks for both pci device in its respective aperture.
 
-I general though, couldn't any MMIO on-SoC device potentially be
-affected by an IOMMU? The point of putting the call to of_iommu_attach()
-here rather than inside individual driver's probe() is to avoid
-requiring "every" driver having to paste more boiler-plate into probe().
+I'm still confused.  What I want to make sure of is that the banks are
+independent per aperture.  For instance, if we have two separate
+userspace processes operating independently and they both chose to use
+msi bank zero for their device, that's bank zero within each aperture
+and doesn't interfere.  Or another way to ask is can a malicious user
+interfere with other users by using the wrong bank.  Thanks,
 
-Perhaps what we need is a flag in struct device to indicate that the
-driver/device is MMIO, and hence potentially affected by an IOMMU. would
-the following work better for you?
-
-+	if (drv->is_mmio) { // let's bikeshed on the field name:-)
-+		ret = of_iommu_attach(dev);
-+		if (ret)
-+			goto probe_failed;
-+	}
-
-I've often thought that struct device_driver (or similar) should declare
-the set of resources that a device needs (e.g. a list of GPIO names,
-regulator names, etc.), so that the driver core can parse all these
-standard properties from DT/... before calling the custom probe()
-function for all the non-standard stuff. This "is_mmio" flag would fit
-into that model well.
+Alex
