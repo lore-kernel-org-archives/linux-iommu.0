@@ -1,7 +1,7 @@
 From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCHv6 05/13] iommu/core: add ops->{bound,unbind}_driver()
-Date: Thu, 21 Nov 2013 15:40:41 +0200
-Message-ID: <1385041249-7705-6-git-send-email-hdoyu@nvidia.com>
+Subject: [PATCHv6 06/13] ARM: tegra: create a DT header defining SWGROUP ID
+Date: Thu, 21 Nov 2013 15:40:42 +0200
+Message-ID: <1385041249-7705-7-git-send-email-hdoyu@nvidia.com>
 References: <1385041249-7705-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,78 +21,88 @@ To: swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@pub
 Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-ops->{bound,unbind}_driver() functions are called at
-BUS_NOTIFY_{BOUND,UNBIND}_DRIVER respectively.
-
-This is necessary to control the device population order. IOMMU master
-devices depend on an IOMMU device instanciation. IOMMU master devices
-can be registered to an IOMMU only after it's successfully
-populated. This IOMMU registration is done via
-ops->bound_driver(). Currently this population can be deferred if
-depending IOMMU device hasn't yet been populated in driver core. This
-cannot be done via ops->add_device() since after add_device() device's
-population/instanciation can be still deferred via probe().
+Create a header file to define the swgroup IDs used by the IOMMU(SMMU)
+binding. "swgroup" is a group of H/W clients which a Tegra SoC
+supports. This unique ID can be used to calculate MC_SMMU_<swgroup
+name>_ASID_0 register offset and MC_<swgroup name>_HOTRESET_*_0
+register bit. This will allow the same header to be used by both
+device tree files, and drivers implementing this binding, which
+guarantees that the two stay in sync. This also makes device trees
+more readable by using names instead of magic numbers. For HOTRESET
+bit shifting we need another conversion table, which will come later.
 
 Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
 v6:
-New for v6.
----
- drivers/iommu/iommu.c | 13 +++++++++++--
- include/linux/iommu.h |  4 ++++
- 2 files changed, 15 insertions(+), 2 deletions(-)
+Use 0xffffffff instead of ~0UL since dtc expand this to ~0ULL.
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index e5555fc..5469d36 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -540,14 +540,23 @@ static int iommu_bus_notifier(struct notifier_block *nb,
- 	 * ADD/DEL call into iommu driver ops if provided, which may
- 	 * result in ADD/DEL notifiers to group->notifier
- 	 */
--	if (action == BUS_NOTIFY_ADD_DEVICE) {
-+	switch (action) {
-+	case BUS_NOTIFY_ADD_DEVICE:
- 		if (ops->add_device)
- 			return ops->add_device(dev);
--	} else if (action == BUS_NOTIFY_DEL_DEVICE) {
-+	case BUS_NOTIFY_DEL_DEVICE:
- 		if (ops->remove_device && dev->iommu_group) {
- 			ops->remove_device(dev);
- 			return 0;
- 		}
-+	case BUS_NOTIFY_BOUND_DRIVER:
-+		if (ops->bound_driver)
-+			ops->bound_driver(dev);
-+		break;
-+	case BUS_NOTIFY_UNBIND_DRIVER:
-+		if (ops->unbind_driver)
-+			ops->unbind_driver(dev);
-+		break;
- 	}
- 
- 	/*
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index a444c79..a0e92be 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -96,6 +96,8 @@ enum iommu_attr {
-  * @domain_has_cap: domain capabilities query
-  * @add_device: add device to iommu grouping
-  * @remove_device: remove device from iommu grouping
-+ * @bound_driver: called at BUS_NOTIFY_BOUND_DRIVER
-+ * @unbind_driver: called at BUS_NOTIFY_UNBIND_DRIVER
-  * @domain_get_attr: Query domain attributes
-  * @domain_set_attr: Change domain attributes
-  * @pgsize_bitmap: bitmap of supported page sizes
-@@ -114,6 +116,8 @@ struct iommu_ops {
- 			      unsigned long cap);
- 	int (*add_device)(struct device *dev);
- 	void (*remove_device)(struct device *dev);
-+	int (*bound_driver)(struct device *dev);
-+	void (*unbind_driver)(struct device *dev);
- 	int (*device_group)(struct device *dev, unsigned int *groupid);
- 	int (*domain_get_attr)(struct iommu_domain *domain,
- 			       enum iommu_attr attr, void *data);
+v5:
+Added new macro TEGRA_SWGROUP_CELLS() and WO_U32_OF_U64().
+
+v4:
+This is almost same as the previous v3. Just TEGRA_SWGROUP_MAX is
+added.
+  [PATCHv3 15/19] ARM: tegra: Create a DT header defining SWGROUP ID
+---
+ include/dt-bindings/memory/tegra-swgroup.h | 50 ++++++++++++++++++++++++++++++
+ 1 file changed, 50 insertions(+)
+ create mode 100644 include/dt-bindings/memory/tegra-swgroup.h
+
+diff --git a/include/dt-bindings/memory/tegra-swgroup.h b/include/dt-bindings/memory/tegra-swgroup.h
+new file mode 100644
+index 0000000..9c279f1
+--- /dev/null
++++ b/include/dt-bindings/memory/tegra-swgroup.h
+@@ -0,0 +1,50 @@
++/*
++ * This header provides constants for binding nvidia,swgroup ID
++ */
++
++#ifndef _DT_BINDINGS_MEMORY_TEGRA_SWGROUP_H
++#define _DT_BINDINGS_MEMORY_TEGRA_SWGROUP_H
++
++#define TEGRA_SWGROUP_AFI	0	/* 0x238 */
++#define TEGRA_SWGROUP_AVPC	1	/* 0x23c */
++#define TEGRA_SWGROUP_DC	2	/* 0x240 */
++#define TEGRA_SWGROUP_DCB	3	/* 0x244 */
++#define TEGRA_SWGROUP_EPP	4	/* 0x248 */
++#define TEGRA_SWGROUP_G2	5	/* 0x24c */
++#define TEGRA_SWGROUP_HC	6	/* 0x250 */
++#define TEGRA_SWGROUP_HDA	7	/* 0x254 */
++#define TEGRA_SWGROUP_ISP	8	/* 0x258 */
++#define TEGRA_SWGROUP_ISP2	SWGROUP_ISP
++#define TEGRA_SWGROUP_DC14	9	/* 0x490 *//* Exceptional non-linear */
++#define TEGRA_SWGROUP_DC12	10	/* 0xa88 *//* Exceptional non-linear */
++#define TEGRA_SWGROUP_MPE	11	/* 0x264 */
++#define TEGRA_SWGROUP_MSENC	SWGROUP_MPE
++#define TEGRA_SWGROUP_NV	12	/* 0x268 */
++#define TEGRA_SWGROUP_NV2	13	/* 0x26c */
++#define TEGRA_SWGROUP_PPCS	14	/* 0x270 */
++#define TEGRA_SWGROUP_SATA2	15	/* 0x274 */
++#define TEGRA_SWGROUP_SATA	16	/* 0x278 */
++#define TEGRA_SWGROUP_VDE	17	/* 0x27c */
++#define TEGRA_SWGROUP_VI	18	/* 0x280 */
++#define TEGRA_SWGROUP_VIC	19	/* 0x284 */
++#define TEGRA_SWGROUP_XUSB_HOST	20	/* 0x288 */
++#define TEGRA_SWGROUP_XUSB_DEV	21	/* 0x28c */
++#define TEGRA_SWGROUP_A9AVP	22	/* 0x290 */
++#define TEGRA_SWGROUP_TSEC	23	/* 0x294 */
++#define TEGRA_SWGROUP_PPCS1	24	/* 0x298 */
++#define TEGRA_SWGROUP_SDMMC1A	25	/* 0xa94 *//* Linear shift again */
++#define TEGRA_SWGROUP_SDMMC2A	26	/* 0xa98 */
++#define TEGRA_SWGROUP_SDMMC3A	27	/* 0xa9c */
++#define TEGRA_SWGROUP_SDMMC4A	28	/* 0xaa0 */
++#define TEGRA_SWGROUP_ISP2B	29	/* 0xaa4 */
++#define TEGRA_SWGROUP_GPU	30	/* 0xaa8 */
++#define TEGRA_SWGROUP_GPUB	31	/* 0xaac */
++#define TEGRA_SWGROUP_PPCS2	32	/* 0xab0 */
++
++#define TWO_U32_OF_U64(x)	((x) & 0xffffffff) ((x) >> 32)
++#define TEGRA_SWGROUP_BIT(x)	(1ULL << TEGRA_SWGROUP_##x)
++#define TEGRA_SWGROUP_CELLS(x)	TWO_U32_OF_U64(TEGRA_SWGROUP_BIT(x))
++
++#define TEGRA_SWGROUP_MAX	64
++
++#endif /* _DT_BINDINGS_MEMORY_TEGRA_SWGROUP_H */
 -- 
 1.8.1.5
