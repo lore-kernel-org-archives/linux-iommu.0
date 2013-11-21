@@ -1,17 +1,17 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU (PAMU)
-Date: Thu, 21 Nov 2013 14:00:48 -0700
-Message-ID: <1385067648.2879.421.camel@ul30vt.home>
-References: <1384838233-24847-1-git-send-email-Bharat.Bhushan@freescale.com>
-	<1384973243.2879.361.camel@ul30vt.home>
-	<6A3DF150A5B70D4F9B66A25E3F7C888D0721D9AC@039-SN2MPN1-012.039d.mgd.msft.net>
-	<1385066603.2879.414.camel@ul30vt.home>
-	<1385066835.1403.489.camel@snotra.buserror.net>
+From: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCHv5 1/9] of: introduce
+	of_property_for_earch_phandle_with_args()
+Date: Thu, 21 Nov 2013 15:36:03 -0600
+Message-ID: <CAL_JsqK_TRjt9KigRA4yXcvEq0XriGxCy+50CY-BdJd62vHLCg@mail.gmail.com>
+References: <1384853593-32202-1-git-send-email-hdoyu@nvidia.com>
+	<20131121151218.befbb483c0cf09cdcd4cd4dd@nvidia.com>
+	<20131121155649.48C96C406A3@trevor.secretlab.ca>
+	<20131121.192051.747601347584525020.hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1385066835.1403.489.camel-88ow+0ZRuxG2UiBs7uKeOtHuzzzSOjJt@public.gmane.org>
+In-Reply-To: <20131121.192051.747601347584525020.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,46 +21,46 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org" <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 2013-11-21 at 14:47 -0600, Scott Wood wrote:
-> On Thu, 2013-11-21 at 13:43 -0700, Alex Williamson wrote:
-> > On Thu, 2013-11-21 at 11:20 +0000, Bharat Bhushan wrote:
-> > > 
-> > > > -----Original Message-----
-> > > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > > > Sent: Thursday, November 21, 2013 12:17 AM
-> > > > To: Bhushan Bharat-R65777
-> > > > Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org; Wood Scott-B07421;
-> > > > Yoder Stuart-B08248; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-
-> > > > pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-
-> > > > kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Bhushan Bharat-R65777
-> > > > Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU (PAMU)
-> > > > 
-> > > > Is VFIO_IOMMU_PAMU_GET_MSI_BANK_COUNT per aperture (ie. each vfio user has
-> > > > $COUNT regions at their disposal exclusively)?
-> > > 
-> > > Number of msi-bank count is system wide and not per aperture, But will be setting windows for banks in the device aperture.
-> > > So say if we are direct assigning 2 pci device (both have different iommu group, so 2 aperture in iommu) to VM.
-> > > Now qemu can make only one call to know how many msi-banks are there but it must set sub-windows for all banks for both pci device in its respective aperture.
-> > 
-> > I'm still confused.  What I want to make sure of is that the banks are
-> > independent per aperture.  For instance, if we have two separate
-> > userspace processes operating independently and they both chose to use
-> > msi bank zero for their device, that's bank zero within each aperture
-> > and doesn't interfere.  Or another way to ask is can a malicious user
-> > interfere with other users by using the wrong bank.  Thanks,
-> 
-> They can interfere.  With this hardware, the only way to prevent that is
-> to make sure that a bank is not shared by multiple protection contexts.
-> For some of our users, though, I believe preventing this is less
-> important than the performance benefit.
+On Thu, Nov 21, 2013 at 11:20 AM, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote:
+> Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote @ Thu, 21 Nov 2013 16:56:49 +0100:
+>
+>> On Thu, 21 Nov 2013 15:12:18 +0200, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote:
+>> > On Thu, 21 Nov 2013 13:43:28 +0100
+>> > Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
+>> >
+>> > > On Tue, 19 Nov 2013 11:33:05 +0200, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote:
+>> > > > The following pattern of code is tempting:
+>> > > >
+>> > > >   for (i = 0; !of_parse_phandle_with_args(np, list, cells, i, args); i++)
+>> > > >
+>> > > > Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+>> > >
+>> > > That's a very minimal commit message. Can you elaborate please.
+>> >
+>> > The above can be:
+>> >
+>> > "
+>> >   The following pattern of code is tempting to add a new member for
+>> >   of_property_for_each_*() family as an idiom.
+>> >
+>> >     for (i = 0;
+>> >         !of_parse_phandle_with_args(np, list, cells, i, args); i++)
+>> >                   <do something with "args">;
+>> > "
+>>
+>> I really do like commit messages to be full enough that a future reader
+>> can figure out why a patch was written. ie:
+>
+> Updated as:
+>
+>   [PATCHv6+ 01/13] of: introduce of_property_for_earch_phandle_with_args()
 
-I think we need some sort of ownership model around the msi banks then.
-Otherwise there's nothing preventing another userspace from attempting
-an MSI based attack on other users, or perhaps even on the host.  VFIO
-can't allow that.  Thanks,
+You also have a typo in the subject.
 
-Alex
+s/earch/each/
+
+Rob
