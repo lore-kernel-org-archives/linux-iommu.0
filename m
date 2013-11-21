@@ -1,78 +1,55 @@
 From: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCHv5 2/9] driver/core: populate devices in order for IOMMUs
-Date: Thu, 21 Nov 2013 13:15:58 +0000
-Message-ID: <20131121131558.E5B82C40A2C@trevor.secretlab.ca>
-References: <1384853593-32202-1-git-send-email-hdoyu@nvidia.com> < 1384853593-32202-3-git-send-email-hdoyu@nvidia.com>
+Subject: Re: [PATCHv5 4/9] iommu/tegra: smmu: register device to iommu dynamically
+Date: Thu, 21 Nov 2013 13:23:22 +0000
+Message-ID: <20131121132322.EFDD1C40A2C@trevor.secretlab.ca>
+References: <1384853593-32202-1-git-send-email-hdoyu@nvidia.com> < 1384853593-32202-5-git-send-email-hdoyu@nvidia.com> <528BDAAA.4000203@ wwwdotorg.org>
 Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1384853593-32202-3-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <528BDAAA.4000203-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
 Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
-Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 19 Nov 2013 11:33:06 +0200, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote:
-> IOMMU devices on the bus need to be poplulated first, then iommu
-> master devices are done later.
+On Tue, 19 Nov 2013 14:39:54 -0700, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote:
+> On 11/19/2013 02:33 AM, Hiroshi Doyu wrote:
+> > platform_devices are registered as IOMMU'able dynamically via
+> > add_device() and remove_device().
+> > 
+> > Tegra SMMU can have multiple address spaces(AS). IOMMU'able devices
+> > can belong to one of them. Multiple IOVA maps are created at boot-up,
+> > which can be attached to devices later. We reserve 2 of them for
+> > static assignment, AS[0] for system default, AS[1] for AHB clusters as
+> > protected domain from others, where there are many traditional
+> > pheripheral devices like USB, SD/MMC. They should be isolated from
+> > some smart devices like host1x for system robustness. Even if smart
+> > devices behaves wrongly, the traditional devices(SD/MMC, USB) wouldn't
+> > be affected, and the system could continue most likely. DMA API(ARM)
+> > needs ARM_DMA_USE_IOMMU to be enabled.
 > 
-> With CONFIG_OF_IOMMU, "iommus=" DT binding would be used to identify
-> whether a device can be an iommu msater or not. If a device can, we'll
-> defer to populate that device till an iommu device is populated. Once
-> an iommu device is populated, "dev->bus->iommu_ops" is set in the
-> bus. Then, those defered iommu master devices are populated and
-> configured for IOMMU with help of the already populated iommu device
-> via iommu_ops->add_device(). Multiple IOMMUs can be listed on this
-> "iommus" binding so that a device can have multiple IOMMUs attached.
+> > diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
 > 
-> Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> ---
-> v5:
-> Use "iommus=" binding instread of arm,smmu's "#stream-id-cells".
+> > +static int smmu_iommu_add_device(struct device *dev)
+> > +{
+> > +	int err = -EPROBE_DEFER;
+> > +	u32 swgroups = dev->platform_data;
+> > +	struct dma_iommu_mapping *map = NULL;
+> > +
+> > +	if (test_bit(TEGRA_SWGROUP_PPCS, swgroups))
+> > +		map = smmu_handle->map[SYSTEM_PROTECTED];
+> > +	else
+> > +		map = smmu_handle->map[SYSTEM_DEFAULT];
+> > +
+> > +	if (map)
+> > +		err = arm_iommu_attach_device(dev, map);
+> > +	else
+> > +		return -EPROBE_DEFER;
 > 
-> v4:
-> This is newly added, and the successor of the following RFC:
->   [RFC][PATCHv3+ 1/2] driver/core: Add of_iommu_attach()
->   http://lists.linuxfoundation.org/pipermail/iommu/2013-November/006914.html
-> ---
->  drivers/base/dd.c        |  5 +++++
->  drivers/iommu/of_iommu.c | 22 ++++++++++++++++++++++
->  include/linux/of_iommu.h |  7 +++++++
->  3 files changed, 34 insertions(+)
-> 
-> diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-> index 35fa368..6e892d4 100644
-> --- a/drivers/base/dd.c
-> +++ b/drivers/base/dd.c
-> @@ -25,6 +25,7 @@
->  #include <linux/async.h>
->  #include <linux/pm_runtime.h>
->  #include <linux/pinctrl/devinfo.h>
-> +#include <linux/of_iommu.h>
->  
->  #include "base.h"
->  #include "power/power.h"
-> @@ -273,6 +274,10 @@ static int really_probe(struct device *dev, struct device_driver *drv)
->  
->  	dev->driver = drv;
->  
-> +	ret = of_iommu_attach(dev);
-> +	if (ret)
-> +		goto probe_failed;
-> +
->  	/* If using pinctrl, bind pins now before probing */
->  	ret = pinctrl_bind_pins(dev);
->  	if (ret)
+> Given that patch 2 exists, if this test fails, then surely the
+> appropriate error code is some fatal error, not -EPROBE_DEFER; any
+> deferrals should have happened long before this point.
 
-I'm very concerned about this approach. Hooking into the core probe
-path for things like this is not going to scale well. I'm not thrilled
-with the pinctrl hook being here either, but that is already merged. :-(
-Also, hooking in here is going affect every single device device driver
-probe path, and a large number of them are never, ever, going to have
-iommu interactions.
-
-There needs to be a less invasive way of doing what you want. I still
-feel like the individual device drivers themselves need to be aware that
-they might be hooking through an IOMMU. Or, if they are hooking through
-a bus like PCIe, then have the PCIe bus defer creating child devices
-until the IOMMU is configured and in place.
+Will need to be revisited. Patching into the core really_probe() like
+patch #2 does is a really bad approach which would mean that returning
+EPROBE_DEFER is appropriate here.
 
 g.
