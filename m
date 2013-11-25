@@ -1,19 +1,14 @@
-From: Bharat Bhushan <Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU (PAMU)
-Date: Mon, 25 Nov 2013 05:33:16 +0000
-Message-ID: <6A3DF150A5B70D4F9B66A25E3F7C888D0722C180@039-SN2MPN1-012.039d.mgd.msft.net>
-References: <1384838233-24847-1-git-send-email-Bharat.Bhushan@freescale.com>
-	<1384973243.2879.361.camel@ul30vt.home>
-	<6A3DF150A5B70D4F9B66A25E3F7C888D0721D9AC@039-SN2MPN1-012.039d.mgd.msft.net>
-	<1385066603.2879.414.camel@ul30vt.home>
-	<1385066835.1403.489.camel@snotra.buserror.net>
-	<1385067648.2879.421.camel@ul30vt.home>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCHv6 05/13] iommu/core: add ops->{bound,unbind}_driver()
+Date: Mon, 25 Nov 2013 15:49:37 +0200
+Message-ID: <20131125154937.d6dbe9aedc16aab335d92f99@nvidia.com>
+References: <1385041249-7705-1-git-send-email-hdoyu@nvidia.com>
+	<1385041249-7705-6-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1385067648.2879.421.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <1385041249-7705-6-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,79 +18,106 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org" <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Joerg,
 
+Do you have some time to review this patch along with the following ones?
 
-> -----Original Message-----
-> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> Sent: Friday, November 22, 2013 2:31 AM
-> To: Wood Scott-B07421
-> Cc: Bhushan Bharat-R65777; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org; Yoder
-> Stuart-B08248; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; linuxppc-
-> dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU (PAMU)
+  [PATCHv6 02/13] iommu/of: introduce a global iommu device list
+  http://lists.linuxfoundation.org/pipermail/iommu/2013-November/007050.html
+
+  [PATCHv6 03/13] iommu/of: check if dependee iommu is ready or not
+  http://lists.linuxfoundation.org/pipermail/iommu/2013-November/007051.html
+
+With those patches, now I'm trying to populate iommu master devices
+after an IOMMU device is populated. Originally [PATCHv6 02/13] was
+proposed by Thierry. I'm a bit afraid of adding new IOMMU API as
+this, but I think that this new {bound,unbind}_driver() is the right
+timiing that depeding devices are populated instead of add_device()
+since, even after add_device, a device won't be populated. I'm not so
+sure how this affects on the existing IOMMUs.
+
+It would be nice if you give some feedback on this.
+
+On Thu, 21 Nov 2013 14:40:41 +0100
+Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote:
+
+> ops->{bound,unbind}_driver() functions are called at
+> BUS_NOTIFY_{BOUND,UNBIND}_DRIVER respectively.
 > 
-> On Thu, 2013-11-21 at 14:47 -0600, Scott Wood wrote:
-> > On Thu, 2013-11-21 at 13:43 -0700, Alex Williamson wrote:
-> > > On Thu, 2013-11-21 at 11:20 +0000, Bharat Bhushan wrote:
-> > > >
-> > > > > -----Original Message-----
-> > > > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > > > > Sent: Thursday, November 21, 2013 12:17 AM
-> > > > > To: Bhushan Bharat-R65777
-> > > > > Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org; Wood
-> > > > > Scott-B07421; Yoder Stuart-B08248;
-> > > > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux- pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > > > linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux- kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > > > Bhushan Bharat-R65777
-> > > > > Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale
-> > > > > IOMMU (PAMU)
-> > > > >
-> > > > > Is VFIO_IOMMU_PAMU_GET_MSI_BANK_COUNT per aperture (ie. each
-> > > > > vfio user has $COUNT regions at their disposal exclusively)?
-> > > >
-> > > > Number of msi-bank count is system wide and not per aperture, But will be
-> setting windows for banks in the device aperture.
-> > > > So say if we are direct assigning 2 pci device (both have different iommu
-> group, so 2 aperture in iommu) to VM.
-> > > > Now qemu can make only one call to know how many msi-banks are there but
-> it must set sub-windows for all banks for both pci device in its respective
-> aperture.
-> > >
-> > > I'm still confused.  What I want to make sure of is that the banks
-> > > are independent per aperture.  For instance, if we have two separate
-> > > userspace processes operating independently and they both chose to
-> > > use msi bank zero for their device, that's bank zero within each
-> > > aperture and doesn't interfere.  Or another way to ask is can a
-> > > malicious user interfere with other users by using the wrong bank.
-> > > Thanks,
-> >
-> > They can interfere.
-
-Want to be sure of how they can interfere?
-
->>  With this hardware, the only way to prevent that
-> > is to make sure that a bank is not shared by multiple protection contexts.
-> > For some of our users, though, I believe preventing this is less
-> > important than the performance benefit.
-
-So should we let this patch series in without protection?
-
+> This is necessary to control the device population order. IOMMU master
+> devices depend on an IOMMU device instanciation. IOMMU master devices
+> can be registered to an IOMMU only after it's successfully
+> populated. This IOMMU registration is done via
+> ops->bound_driver(). Currently this population can be deferred if
+> depending IOMMU device hasn't yet been populated in driver core. This
+> cannot be done via ops->add_device() since after add_device() device's
+> population/instanciation can be still deferred via probe().
 > 
-> I think we need some sort of ownership model around the msi banks then.
-> Otherwise there's nothing preventing another userspace from attempting an MSI
-> based attack on other users, or perhaps even on the host.  VFIO can't allow
-> that.  Thanks,
-
-We have very few (3 MSI bank on most of chips), so we can not assign one to each userspace. What we can do is host and userspace does not share a MSI bank while userspace will share a MSI bank.
-
-
-Thanks
--Bharat
-
+> Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> ---
+> v6:
+> New for v6.
+> ---
+>  drivers/iommu/iommu.c | 13 +++++++++++--
+>  include/linux/iommu.h |  4 ++++
+>  2 files changed, 15 insertions(+), 2 deletions(-)
 > 
-> Alex
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index e5555fc..5469d36 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -540,14 +540,23 @@ static int iommu_bus_notifier(struct notifier_block *nb,
+>  	 * ADD/DEL call into iommu driver ops if provided, which may
+>  	 * result in ADD/DEL notifiers to group->notifier
+>  	 */
+> -	if (action == BUS_NOTIFY_ADD_DEVICE) {
+> +	switch (action) {
+> +	case BUS_NOTIFY_ADD_DEVICE:
+>  		if (ops->add_device)
+>  			return ops->add_device(dev);
+> -	} else if (action == BUS_NOTIFY_DEL_DEVICE) {
+> +	case BUS_NOTIFY_DEL_DEVICE:
+>  		if (ops->remove_device && dev->iommu_group) {
+>  			ops->remove_device(dev);
+>  			return 0;
+>  		}
+> +	case BUS_NOTIFY_BOUND_DRIVER:
+> +		if (ops->bound_driver)
+> +			ops->bound_driver(dev);
+> +		break;
+> +	case BUS_NOTIFY_UNBIND_DRIVER:
+> +		if (ops->unbind_driver)
+> +			ops->unbind_driver(dev);
+> +		break;
+>  	}
+>  
+>  	/*
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index a444c79..a0e92be 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -96,6 +96,8 @@ enum iommu_attr {
+>   * @domain_has_cap: domain capabilities query
+>   * @add_device: add device to iommu grouping
+>   * @remove_device: remove device from iommu grouping
+> + * @bound_driver: called at BUS_NOTIFY_BOUND_DRIVER
+> + * @unbind_driver: called at BUS_NOTIFY_UNBIND_DRIVER
+>   * @domain_get_attr: Query domain attributes
+>   * @domain_set_attr: Change domain attributes
+>   * @pgsize_bitmap: bitmap of supported page sizes
+> @@ -114,6 +116,8 @@ struct iommu_ops {
+>  			      unsigned long cap);
+>  	int (*add_device)(struct device *dev);
+>  	void (*remove_device)(struct device *dev);
+> +	int (*bound_driver)(struct device *dev);
+> +	void (*unbind_driver)(struct device *dev);
+>  	int (*device_group)(struct device *dev, unsigned int *groupid);
+>  	int (*domain_get_attr)(struct iommu_domain *domain,
+>  			       enum iommu_attr attr, void *data);
+> -- 
+> 1.8.1.5
 > 
