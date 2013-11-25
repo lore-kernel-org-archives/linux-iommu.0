@@ -1,19 +1,19 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU (PAMU)
-Date: Mon, 25 Nov 2013 09:38:13 -0700
-Message-ID: <1385397493.2879.557.camel@ul30vt.home>
-References: <1384838233-24847-1-git-send-email-Bharat.Bhushan@freescale.com>
-	<1384973243.2879.361.camel@ul30vt.home>
-	<6A3DF150A5B70D4F9B66A25E3F7C888D0721D9AC@039-SN2MPN1-012.039d.mgd.msft.net>
-	<1385066603.2879.414.camel@ul30vt.home>
-	<1385066835.1403.489.camel@snotra.buserror.net>
-	<1385067648.2879.421.camel@ul30vt.home>
-	<6A3DF150A5B70D4F9B66A25E3F7C888D0722C180@039-SN2MPN1-012.039d.mgd.msft.net>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCHv5 2/9] driver/core: populate devices in order for IOMMUs
+Date: Mon, 25 Nov 2013 17:39:00 +0000
+Message-ID: <20131125173900.GB28201@mudshark.cambridge.arm.com>
+References: <1384853593-32202-1-git-send-email-hdoyu@nvidia.com>
+	<1384853593-32202-3-git-send-email-hdoyu@nvidia.com>
+	<20131121131558.E5B82C40A2C@trevor.secretlab.ca>
+	<528E5932.1070105@wwwdotorg.org>
+	<20131122074111.155E2C40753@trevor.secretlab.ca>
+	<528F95FE.7080406@wwwdotorg.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <6A3DF150A5B70D4F9B66A25E3F7C888D0722C180-RL0Hj/+nBVDAtPZc1oz0FK4g8xLGJsHaLnY5E4hWTkheoWH0uzbU5w@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <528F95FE.7080406-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,85 +23,27 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bharat Bhushan <Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Lorenzo Pieralisi <Lorenzo.Pieralisi-5wv7dgnIgG8@public.gmane.org>, "swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, dave.martin-5wv7dgnIgG8@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2013-11-25 at 05:33 +0000, Bharat Bhushan wrote:
+On Fri, Nov 22, 2013 at 05:35:58PM +0000, Stephen Warren wrote:
+> On 11/22/2013 12:41 AM, Grant Likely wrote:
+> > It seems more that IOMMU attachment is closer to being a property of the
+> > bus rather than a property of the device itself. In that context it
+> > would make more sense for the bus device to hold off child device
+> > registration or probing until the IOMMU is available. That keeps the
+> > logic out of both the core code and the individual device drivers.
 > 
-> > -----Original Message-----
-> > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > Sent: Friday, November 22, 2013 2:31 AM
-> > To: Wood Scott-B07421
-> > Cc: Bhushan Bharat-R65777; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org; Yoder
-> > Stuart-B08248; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; linuxppc-
-> > dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU (PAMU)
-> > 
-> > On Thu, 2013-11-21 at 14:47 -0600, Scott Wood wrote:
-> > > On Thu, 2013-11-21 at 13:43 -0700, Alex Williamson wrote:
-> > > > On Thu, 2013-11-21 at 11:20 +0000, Bharat Bhushan wrote:
-> > > > >
-> > > > > > -----Original Message-----
-> > > > > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > > > > > Sent: Thursday, November 21, 2013 12:17 AM
-> > > > > > To: Bhushan Bharat-R65777
-> > > > > > Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org; Wood
-> > > > > > Scott-B07421; Yoder Stuart-B08248;
-> > > > > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux- pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > > > > linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux- kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > > > > Bhushan Bharat-R65777
-> > > > > > Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale
-> > > > > > IOMMU (PAMU)
-> > > > > >
-> > > > > > Is VFIO_IOMMU_PAMU_GET_MSI_BANK_COUNT per aperture (ie. each
-> > > > > > vfio user has $COUNT regions at their disposal exclusively)?
-> > > > >
-> > > > > Number of msi-bank count is system wide and not per aperture, But will be
-> > setting windows for banks in the device aperture.
-> > > > > So say if we are direct assigning 2 pci device (both have different iommu
-> > group, so 2 aperture in iommu) to VM.
-> > > > > Now qemu can make only one call to know how many msi-banks are there but
-> > it must set sub-windows for all banks for both pci device in its respective
-> > aperture.
-> > > >
-> > > > I'm still confused.  What I want to make sure of is that the banks
-> > > > are independent per aperture.  For instance, if we have two separate
-> > > > userspace processes operating independently and they both chose to
-> > > > use msi bank zero for their device, that's bank zero within each
-> > > > aperture and doesn't interfere.  Or another way to ask is can a
-> > > > malicious user interfere with other users by using the wrong bank.
-> > > > Thanks,
-> > >
-> > > They can interfere.
-> 
-> Want to be sure of how they can interfere?
+> The bus structure that DT and Linux know about is the register bus.
+> There's no reason that devices have to emit their master transactions
+> onto that same bus, or onto only that same bus.
 
-What happens if more than one user selects the same MSI bank?
-Minimally, wouldn't that result in the IOMMU blocking transactions from
-the previous user once the new user activates their mapping?
+Agreed. Dave (CC'd) and I actually had a lot of discussion around the DT bus
+abstractions last week and we ended up with a binding that looked sane enough
+to start a meaningful discussion in this area.
 
-> >>  With this hardware, the only way to prevent that
-> > > is to make sure that a bank is not shared by multiple protection contexts.
-> > > For some of our users, though, I believe preventing this is less
-> > > important than the performance benefit.
-> 
-> So should we let this patch series in without protection?
+Dave -- care to post what we came up with? It certainly has a bunch of
+overlap with the IOMMU problems being discussed here.
 
-No.
-
-> > 
-> > I think we need some sort of ownership model around the msi banks then.
-> > Otherwise there's nothing preventing another userspace from attempting an MSI
-> > based attack on other users, or perhaps even on the host.  VFIO can't allow
-> > that.  Thanks,
-> 
-> We have very few (3 MSI bank on most of chips), so we can not assign
-> one to each userspace. What we can do is host and userspace does not
-> share a MSI bank while userspace will share a MSI bank.
-
-Then you probably need VFIO to "own" the MSI bank and program devices
-into it rather than exposing the MSI banks to userspace to let them have
-direct access.  Thanks,
-
-Alex
+Will
