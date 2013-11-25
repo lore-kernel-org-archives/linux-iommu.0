@@ -1,49 +1,112 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCHv5 2/9] driver/core: populate devices in order for IOMMUs
-Date: Mon, 25 Nov 2013 17:39:00 +0000
-Message-ID: <20131125173900.GB28201@mudshark.cambridge.arm.com>
-References: <1384853593-32202-1-git-send-email-hdoyu@nvidia.com>
-	<1384853593-32202-3-git-send-email-hdoyu@nvidia.com>
-	<20131121131558.E5B82C40A2C@trevor.secretlab.ca>
-	<528E5932.1070105@wwwdotorg.org>
-	<20131122074111.155E2C40753@trevor.secretlab.ca>
-	<528F95FE.7080406@wwwdotorg.org>
+Subject: Re: Report from 2013 ARM kernel summit
+Date: Mon, 25 Nov 2013 18:03:52 +0000
+Message-ID: <20131125180352.GC28201@mudshark.cambridge.arm.com>
+References: <20131119.114054.663999769447782808.hdoyu@nvidia.com>
+ <20131119173524.GK11778@mudshark.cambridge.arm.com>
+ <528BCDCE.6070006@gmail.com>
+ <20131120.083955.1386179068365424976.hdoyu@nvidia.com>
+ <CAL_Jsq+AxEWhkOhxwAZ=+rpzDZ+yC1b3ZV541UhOu9kiwUhUdQ@mail.gmail.com>
+ <20131121110024.GA8395@mudshark.cambridge.arm.com>
+ <528E539C.8080603@wwwdotorg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <528F95FE.7080406-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+In-Reply-To: <528E539C.8080603-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Lorenzo Pieralisi <Lorenzo.Pieralisi-5wv7dgnIgG8@public.gmane.org>, "swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, dave.martin-5wv7dgnIgG8@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Cc: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "ksummit-2013-discuss-cunTk1MwBs98uUxBSJOaYoYkZiVZrdSR2LY78lusg7I@public.gmane.org" <ksummit-2013-discuss-cunTk1MwBs98uUxBSJOaYoYkZiVZrdSR2LY78lusg7I@public.gmane.org>, Lorenzo Pieralisi <Lorenzo.Pieralisi-5wv7dgnIgG8@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "khilman-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <khilman-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "broonie-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <broonie-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "paul-DWxLp4Yu+b8AvxtiuMwx3w@public.gmane.org" <paul-DWxLp4Yu+b8AvxtiuMwx3w@public.gmane.org>, "grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org" <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, "lwn-T1hC0tSOHrs@public.gmane.org" <lwn-T1hC0tSOHrs@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org" <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Nov 22, 2013 at 05:35:58PM +0000, Stephen Warren wrote:
-> On 11/22/2013 12:41 AM, Grant Likely wrote:
-> > It seems more that IOMMU attachment is closer to being a property of the
-> > bus rather than a property of the device itself. In that context it
-> > would make more sense for the bus device to hold off child device
-> > registration or probing until the IOMMU is available. That keeps the
-> > logic out of both the core code and the individual device drivers.
+Hi Stephen,
+
+On Thu, Nov 21, 2013 at 06:40:28PM +0000, Stephen Warren wrote:
+> On 11/21/2013 04:00 AM, Will Deacon wrote:
+> > On Wed, Nov 20, 2013 at 08:02:10PM +0000, Rob Herring wrote:
+> >> For the topology above where you are chaining iommu's, I think
+> >> something like this is more accurately describing the hierarchy:
+> >>
+> >>   smmu_b: iommu@xxxxxxxx {
+> >>         #iommu-cells = <3>;
+> >>          iommus = <&smmu_a param1 param2>;
+> >>        ....
+> >>   };
+> >>   device_a {
+> >>          iommus = <&smmu_b param1 param2 param3>;
+> >>   };
+> >>
+> >> I remember discussing this with Will and seem to recall some issue
+> >> with describing things this way. But looking at it now, I don't see
+> >> what that was.
+> > 
+> > I think it was the usual issue with StreamID remastering. For example, if
+>              ^^^ s/was/had/ I assume
+
+Take your pick!
+
+> > you had a device going into two chained IOMMUs, you need a way to relate the
+> > StreamIDs of the device to the remastered IDs coming out of the first SMMU.
 > 
-> The bus structure that DT and Linux know about is the register bus.
-> There's no reason that devices have to emit their master transactions
-> onto that same bus, or onto only that same bus.
+> That seems pretty easy to deal with. Am I missing something. Here's how
+> I assume that would work:
+> 
+> 1)
+> 
+> If the mapping is static in HW, then you simply have a table that
+> describes the remapping. A table representation could be in the DT or
+> the driver itself. Either way, any static mapping is a property of the
+> HW itself, so shouldn't need to leak into the client DT nodes at all, right?
+> 
+> That might look like:
+> 
+> smmu_a: iommu@xxxxxxxx {
+> 	#iommu-cells = <1>;
+> };
+> smmu_b: iommu@xxxxxxxx {
+> 	#iommu-cells = <1>;
+> 
+> 	// a) All stream IDs squashed down to 1 ID
+> 	iommus = <&smmu_a SMMU_B's_STREAM_ID_IN_SMMU_A>;
+> 
+> 	// OR b) stream IDs translated:
+> 	iommus = <&smmu_a 0>,
+> 		 <&smmu_a 1>,
+> 		 <&smmu_a 2> ...;
+> 	// this table could be in the driver instead
+> 	iommu-stream-id-map =
+> 		<DEV_A's_STREAM_ID_IN_SMMU_B 0>,
+> 		<DEV_B's_STREAM_ID_IN_SMMU_B 1>,
+> 		<DEV_C's_STREAM_ID_IN_SMMU_B 2>,
 
-Agreed. Dave (CC'd) and I actually had a lot of discussion around the DT bus
-abstractions last week and we ended up with a binding that looked sane enough
-to start a meaningful discussion in this area.
+Actually, something like this could work. I think we should also support the
+case where a range of IDs are `windowed' (i.e. there is a constant offset
+applied to incoming IDs to get the outgoing IDs) to avoid huge tables in
+some cases.
 
-Dave -- care to post what we came up with? It certainly has a bunch of
-overlap with the IOMMU problems being discussed here.
+> };
+> device_a {
+> 	iommus = <&smmu_b DEV_A's_STREAM_ID_IN_SMMU_B>;
+> };
+> 
+> or 2)
+> 
+> If the remapping is entirely dynamic, then you'd either need a table in
+> the DT to describe how to set it up for the particular use-case (similar
+> to the above), or a function in the driver to manage the mapping at
+> run-time, probably hooked into the of_xlate() of the parent IOMMU, which
+> would call into some function of the source IOMMU.
+> 
+> In other words, of_xlate for smmu_a would do both:
+> 
+> a) Parse the SMMU specifier in the client's iommus property
+> 
+> b) If the parse specifier represents a "dynamic stream ID device/IOMMU",
+> call some function in the client driver to find out which stream ID(s)
+> the parse iommus entry (specifier) represents.
+
+Sure. We just need to get the binding right so we're prepared when these
+platforms turn up. There's also the usual problem of continuing to support
+what we already do for existing SMMU bindings.
 
 Will
