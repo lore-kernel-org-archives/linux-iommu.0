@@ -1,12 +1,21 @@
-From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: [PATCH 00/15] Enable compilation of various Renesas drivers with
-	COMPILE_TEST
-Date: Wed, 27 Nov 2013 02:18:22 +0100
-Message-ID: <1385515117-23664-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+From: Bharat Bhushan <Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU (PAMU)
+Date: Wed, 27 Nov 2013 16:08:44 +0000
+Message-ID: <6A3DF150A5B70D4F9B66A25E3F7C888D07233D0E@039-SN2MPN1-012.039d.mgd.msft.net>
+References: <1384838233-24847-1-git-send-email-Bharat.Bhushan@freescale.com>
+	<1384973243.2879.361.camel@ul30vt.home>
+	<6A3DF150A5B70D4F9B66A25E3F7C888D0721D9AC@039-SN2MPN1-012.039d.mgd.msft.net>
+	<1385066603.2879.414.camel@ul30vt.home>
+	<1385066835.1403.489.camel@snotra.buserror.net>
+	<1385067648.2879.421.camel@ul30vt.home>
+	<6A3DF150A5B70D4F9B66A25E3F7C888D0722C180@039-SN2MPN1-012.039d.mgd.msft.net>
+	<1385397493.2879.557.camel@ul30vt.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1385397493.2879.557.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,116 +25,116 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Eduardo Valentin <eduardo.valentin-l0cyMroinI0@public.gmane.org>, Tomi Valkeinen <tomi.valkeinen-l0cyMroinI0@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Zhang Rui <rui.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Chris Ball <cjb-2X9k7bc8m7Mdnm+yROfE0A@public.gmane.org>, Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Samuel Ortiz <samuel-jcdQHdrhKHMdnm+yROfE0A@public.gmane.org>, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ian Molton <ian-zdned+2MO1+9FHfhHBbuYA@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
 
-This patch series enables driver compilation with COMPILE_TEST for various
-Renesas drivers. The approach taken here is to split the Kconfig depends line
-in two, with compile dependencies (if any) on one line and runtime
-dependencies (as a list of the platforms on which the hardware can be found)
-on another line. The runtime dependencies line is extended with
-|| COMPILE_TEST to enable test compilation. This clearly identifies compile
-dependencies, and allow test compilation while not clobbering the
-configuration menu with useless options in the normal case.
 
-The patches are based on top of v3.13-rc1. To avoid build warnings or errors
-during bisection the following patches sent to linux-sh and appropriate
-mailing lists should be applied first:
+> -----Original Message-----
+> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> Sent: Monday, November 25, 2013 10:08 PM
+> To: Bhushan Bharat-R65777
+> Cc: Wood Scott-B07421; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org; Yoder Stuart-
+> B08248; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; linuxppc-
+> dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU (PAMU)
+> 
+> On Mon, 2013-11-25 at 05:33 +0000, Bharat Bhushan wrote:
+> >
+> > > -----Original Message-----
+> > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> > > Sent: Friday, November 22, 2013 2:31 AM
+> > > To: Wood Scott-B07421
+> > > Cc: Bhushan Bharat-R65777; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org;
+> > > Yoder Stuart-B08248; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+> > > bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; linuxppc- dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org;
+> > > linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > > Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale
+> > > IOMMU (PAMU)
+> > >
+> > > On Thu, 2013-11-21 at 14:47 -0600, Scott Wood wrote:
+> > > > On Thu, 2013-11-21 at 13:43 -0700, Alex Williamson wrote:
+> > > > > On Thu, 2013-11-21 at 11:20 +0000, Bharat Bhushan wrote:
+> > > > > >
+> > > > > > > -----Original Message-----
+> > > > > > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> > > > > > > Sent: Thursday, November 21, 2013 12:17 AM
+> > > > > > > To: Bhushan Bharat-R65777
+> > > > > > > Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org;
+> > > > > > > Wood Scott-B07421; Yoder Stuart-B08248;
+> > > > > > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-
+> > > > > > > pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-
+> > > > > > > kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Bhushan Bharat-R65777
+> > > > > > > Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for
+> > > > > > > Freescale IOMMU (PAMU)
+> > > > > > >
+> > > > > > > Is VFIO_IOMMU_PAMU_GET_MSI_BANK_COUNT per aperture (ie. each
+> > > > > > > vfio user has $COUNT regions at their disposal exclusively)?
+> > > > > >
+> > > > > > Number of msi-bank count is system wide and not per aperture,
+> > > > > > But will be
+> > > setting windows for banks in the device aperture.
+> > > > > > So say if we are direct assigning 2 pci device (both have
+> > > > > > different iommu
+> > > group, so 2 aperture in iommu) to VM.
+> > > > > > Now qemu can make only one call to know how many msi-banks are
+> > > > > > there but
+> > > it must set sub-windows for all banks for both pci device in its
+> > > respective aperture.
+> > > > >
+> > > > > I'm still confused.  What I want to make sure of is that the
+> > > > > banks are independent per aperture.  For instance, if we have
+> > > > > two separate userspace processes operating independently and
+> > > > > they both chose to use msi bank zero for their device, that's
+> > > > > bank zero within each aperture and doesn't interfere.  Or
+> > > > > another way to ask is can a malicious user interfere with other users by
+> using the wrong bank.
+> > > > > Thanks,
+> > > >
+> > > > They can interfere.
+> >
+> > Want to be sure of how they can interfere?
+> 
+> What happens if more than one user selects the same MSI bank?
+> Minimally, wouldn't that result in the IOMMU blocking transactions from the
+> previous user once the new user activates their mapping?
 
-serial: sh-sci: Fix warnings due to improper casts and printk formats
-DMA: shdma: Fix warnings due to improper casts and printk formats
-DMA: shdma: Fix warnings due to declared but unused symbols
-DMA: shdma: Make sh_dmae_pm static
-v4l: sh_vou: Fix warnings due to improper casts and printk formats
-mmc: sh_mmcif: Factorize DMA channel request and configuration code
-mmc: sh_mmcif: Fix compilation warning on 64-bit platforms
-mtd: sh_flctl: Fix warnings due to improper casts
-fbdev: sh_mobile_lcdcfb: Don't use plain 0 as NULL pointer
-spi: sh-msiof: Fix warnings due to improper casts
-spi: rcar: Fix uninitialized variable warning
-spi: rcar: Fix pointer cast in the remove function
+Yes and no; With current implementation yes but with a minor change no. Later in this response I will explain how.
 
-For convenience I've pushed the whole series and its prerequisites to my git
-tree at
+> 
+> > >>  With this hardware, the only way to prevent that
+> > > > is to make sure that a bank is not shared by multiple protection contexts.
+> > > > For some of our users, though, I believe preventing this is less
+> > > > important than the performance benefit.
+> >
+> > So should we let this patch series in without protection?
+> 
+> No.
+> 
+> > >
+> > > I think we need some sort of ownership model around the msi banks then.
+> > > Otherwise there's nothing preventing another userspace from
+> > > attempting an MSI based attack on other users, or perhaps even on
+> > > the host.  VFIO can't allow that.  Thanks,
+> >
+> > We have very few (3 MSI bank on most of chips), so we can not assign
+> > one to each userspace. What we can do is host and userspace does not
+> > share a MSI bank while userspace will share a MSI bank.
+> 
+> Then you probably need VFIO to "own" the MSI bank and program devices into it
+> rather than exposing the MSI banks to userspace to let them have direct access.
 
-	git://linuxtv.org/pinchartl/fbdev.git clocks/ccf/multiarch-drivers
+Overall idea of exposing the details of msi regions to userspace are
+ 1) User space can define the aperture size to fit MSI mapping in IOMMU.
+ 2) setup iova for a MSI banks; which is just after guest memory. 
 
-The patches will need to go through their respective subsystem's trees. To
-help me tracking the mainlining state I'd appreciate if the respective
-maintainers could notify me when applying the patches to their trees. Before
-doing so I'd like to get an ack from Mark Brown and/or Russell King on the
-approach.
+But currently we expose the "size" and "address" of MSI banks, passing address is of no use and can be problematic.
+If we just provide the size of MSI bank to userspace then userspace cannot do anything wrong.
 
-Cc: dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: linux-spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Chris Ball <cjb-2X9k7bc8m7Mdnm+yROfE0A@public.gmane.org>
-Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Eduardo Valentin <eduardo.valentin-l0cyMroinI0@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: Guennadi Liakhovetski <g.liakhovetski-Mmb7MZpHnFY@public.gmane.org>
-Cc: Ian Molton <ian-zdned+2MO1+9FHfhHBbuYA@public.gmane.org>
-Cc: Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Mauro Carvalho Chehab <m.chehab-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
-Cc: Samuel Ortiz <samuel-jcdQHdrhKHMdnm+yROfE0A@public.gmane.org>
-Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Tomi Valkeinen <tomi.valkeinen-l0cyMroinI0@public.gmane.org>
-Cc: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>
-Cc: Zhang Rui <rui.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+While it is still the responsibility of host (MSI+VFIO) to compose MSI-address and MSI-data; so I think this should look fine.
 
-Laurent Pinchart (15):
-  i2c: shmobile/rcar: Restrict non-COMPILE_TEST compilation
-  input: sh_keysc: Restrict non-COMPILE_TEST compilation
-  serial: sh-sci: Restrict non-COMPILE_TEST compilation
-  iommu: shmobile: Enable driver compilation with COMPILE_TEST
-  DMA: shdma: Enable driver compilation with COMPILE_TEST
-  v4l: sh_vou: Enable driver compilation with COMPILE_TEST
-  mmc: sdhi: Enable driver compilation with COMPILE_TEST
-  mmc: sh_mmcif: Enable driver compilation with COMPILE_TEST
-  mtd: sh_flctl: Enable driver compilation with COMPILE_TEST
-  irda: sh_irda: Enable driver compilation with COMPILE_TEST
-  pwm: pwm-renesas-tpu: Enable driver compilation with COMPILE_TEST
-  thermal: rcar-thermal: Enable driver compilation with COMPILE_TEST
-  fbdev: sh-mobile-lcdcfb: Enable driver compilation with COMPILE_TEST
-  spi: sh-msiof: Enable driver compilation with COMPILE_TEST
-  sh: intc: Enable driver compilation with COMPILE_TEST
-
- drivers/dma/sh/Kconfig         | 2 +-
- drivers/i2c/busses/Kconfig     | 4 ++--
- drivers/input/keyboard/Kconfig | 2 +-
- drivers/iommu/Kconfig          | 1 +
- drivers/media/platform/Kconfig | 3 ++-
- drivers/mmc/host/Kconfig       | 6 ++++--
- drivers/mtd/nand/Kconfig       | 2 +-
- drivers/net/irda/Kconfig       | 3 ++-
- drivers/pwm/Kconfig            | 2 +-
- drivers/sh/intc/Kconfig        | 2 +-
- drivers/spi/Kconfig            | 3 ++-
- drivers/thermal/Kconfig        | 2 +-
- drivers/tty/serial/Kconfig     | 3 ++-
- drivers/video/Kconfig          | 8 +++++---
- 14 files changed, 26 insertions(+), 17 deletions(-)
-
--- 
-Regards,
-
-Laurent Pinchart
+> Thanks,
+> 
+> Alex
+> 
