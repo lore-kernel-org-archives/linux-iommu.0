@@ -1,140 +1,53 @@
-From: Bharat Bhushan <Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU (PAMU)
-Date: Wed, 27 Nov 2013 16:08:44 +0000
-Message-ID: <6A3DF150A5B70D4F9B66A25E3F7C888D07233D0E@039-SN2MPN1-012.039d.mgd.msft.net>
-References: <1384838233-24847-1-git-send-email-Bharat.Bhushan@freescale.com>
-	<1384973243.2879.361.camel@ul30vt.home>
-	<6A3DF150A5B70D4F9B66A25E3F7C888D0721D9AC@039-SN2MPN1-012.039d.mgd.msft.net>
-	<1385066603.2879.414.camel@ul30vt.home>
-	<1385066835.1403.489.camel@snotra.buserror.net>
-	<1385067648.2879.421.camel@ul30vt.home>
-	<6A3DF150A5B70D4F9B66A25E3F7C888D0722C180@039-SN2MPN1-012.039d.mgd.msft.net>
-	<1385397493.2879.557.camel@ul30vt.home>
+From: Simon Horman <horms@verge.net.au>
+Subject: Re: [PATCH 04/15] iommu: shmobile: Enable driver compilation with
+ COMPILE_TEST
+Date: Thu, 28 Nov 2013 16:36:51 +0900
+Message-ID: <20131128073651.GE24146@verge.net.au>
+References: <1385515117-23664-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+ <1385515117-23664-5-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1385397493.2879.557.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-sh-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1385515117-23664-5-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Cc: linux-sh@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-> -----Original Message-----
-> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> Sent: Monday, November 25, 2013 10:08 PM
-> To: Bhushan Bharat-R65777
-> Cc: Wood Scott-B07421; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org; Yoder Stuart-
-> B08248; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; linuxppc-
-> dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU (PAMU)
+On Wed, Nov 27, 2013 at 02:18:26AM +0100, Laurent Pinchart wrote:
+> This helps increasing build testing coverage.
 > 
-> On Mon, 2013-11-25 at 05:33 +0000, Bharat Bhushan wrote:
-> >
-> > > -----Original Message-----
-> > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > > Sent: Friday, November 22, 2013 2:31 AM
-> > > To: Wood Scott-B07421
-> > > Cc: Bhushan Bharat-R65777; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org;
-> > > Yoder Stuart-B08248; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> > > bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; linuxppc- dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org;
-> > > linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > > Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale
-> > > IOMMU (PAMU)
-> > >
-> > > On Thu, 2013-11-21 at 14:47 -0600, Scott Wood wrote:
-> > > > On Thu, 2013-11-21 at 13:43 -0700, Alex Williamson wrote:
-> > > > > On Thu, 2013-11-21 at 11:20 +0000, Bharat Bhushan wrote:
-> > > > > >
-> > > > > > > -----Original Message-----
-> > > > > > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > > > > > > Sent: Thursday, November 21, 2013 12:17 AM
-> > > > > > > To: Bhushan Bharat-R65777
-> > > > > > > Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org;
-> > > > > > > Wood Scott-B07421; Yoder Stuart-B08248;
-> > > > > > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-
-> > > > > > > pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-
-> > > > > > > kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Bhushan Bharat-R65777
-> > > > > > > Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for
-> > > > > > > Freescale IOMMU (PAMU)
-> > > > > > >
-> > > > > > > Is VFIO_IOMMU_PAMU_GET_MSI_BANK_COUNT per aperture (ie. each
-> > > > > > > vfio user has $COUNT regions at their disposal exclusively)?
-> > > > > >
-> > > > > > Number of msi-bank count is system wide and not per aperture,
-> > > > > > But will be
-> > > setting windows for banks in the device aperture.
-> > > > > > So say if we are direct assigning 2 pci device (both have
-> > > > > > different iommu
-> > > group, so 2 aperture in iommu) to VM.
-> > > > > > Now qemu can make only one call to know how many msi-banks are
-> > > > > > there but
-> > > it must set sub-windows for all banks for both pci device in its
-> > > respective aperture.
-> > > > >
-> > > > > I'm still confused.  What I want to make sure of is that the
-> > > > > banks are independent per aperture.  For instance, if we have
-> > > > > two separate userspace processes operating independently and
-> > > > > they both chose to use msi bank zero for their device, that's
-> > > > > bank zero within each aperture and doesn't interfere.  Or
-> > > > > another way to ask is can a malicious user interfere with other users by
-> using the wrong bank.
-> > > > > Thanks,
-> > > >
-> > > > They can interfere.
-> >
-> > Want to be sure of how they can interfere?
+> The driver doesn't compile on non-ARM platforms due to usage of the ARM
+> DMA IOMMU API, restrict compilation to ARM.
 > 
-> What happens if more than one user selects the same MSI bank?
-> Minimally, wouldn't that result in the IOMMU blocking transactions from the
-> previous user once the new user activates their mapping?
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: iommu@lists.linux-foundation.org
+> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 
-Yes and no; With current implementation yes but with a minor change no. Later in this response I will explain how.
+Acked-by: Simon Horman <horms+renesas@verge.net.au>
 
+> ---
+>  drivers/iommu/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> > >>  With this hardware, the only way to prevent that
-> > > > is to make sure that a bank is not shared by multiple protection contexts.
-> > > > For some of our users, though, I believe preventing this is less
-> > > > important than the performance benefit.
-> >
-> > So should we let this patch series in without protection?
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index 3e7fdbb..79bbc21 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -207,6 +207,7 @@ config SHMOBILE_IOMMU
+>  	bool "IOMMU for Renesas IPMMU/IPMMUI"
+>  	default n
+>  	depends on ARM
+> +	depends on SH_MOBILE || COMPILE_TEST
+>  	select IOMMU_API
+>  	select ARM_DMA_USE_IOMMU
+>  	select SHMOBILE_IPMMU
+> -- 
+> 1.8.3.2
 > 
-> No.
-> 
-> > >
-> > > I think we need some sort of ownership model around the msi banks then.
-> > > Otherwise there's nothing preventing another userspace from
-> > > attempting an MSI based attack on other users, or perhaps even on
-> > > the host.  VFIO can't allow that.  Thanks,
-> >
-> > We have very few (3 MSI bank on most of chips), so we can not assign
-> > one to each userspace. What we can do is host and userspace does not
-> > share a MSI bank while userspace will share a MSI bank.
-> 
-> Then you probably need VFIO to "own" the MSI bank and program devices into it
-> rather than exposing the MSI banks to userspace to let them have direct access.
-
-Overall idea of exposing the details of msi regions to userspace are
- 1) User space can define the aperture size to fit MSI mapping in IOMMU.
- 2) setup iova for a MSI banks; which is just after guest memory. 
-
-But currently we expose the "size" and "address" of MSI banks, passing address is of no use and can be problematic.
-If we just provide the size of MSI bank to userspace then userspace cannot do anything wrong.
-
-While it is still the responsibility of host (MSI+VFIO) to compose MSI-address and MSI-data; so I think this should look fine.
-
-> Thanks,
-> 
-> Alex
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-sh" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
