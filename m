@@ -1,170 +1,137 @@
-From: Bharat Bhushan <Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU (PAMU)
-Date: Thu, 28 Nov 2013 09:19:10 +0000
-Message-ID: <6A3DF150A5B70D4F9B66A25E3F7C888D0723624C@039-SN2MPN1-012.039d.mgd.msft.net>
+From: Bharat Bhushan <Bharat.Bhushan@freescale.com>
+Subject: RE: [PATCH 1/9 v2] pci:msi: add weak function for returning msi
+ region info
+Date: Thu, 28 Nov 2013 10:08:16 +0000
+Message-ID: <6A3DF150A5B70D4F9B66A25E3F7C888D072363E5@039-SN2MPN1-012.039d.mgd.msft.net>
 References: <1384838233-24847-1-git-send-email-Bharat.Bhushan@freescale.com>
-	<1384973243.2879.361.camel@ul30vt.home>
-	<6A3DF150A5B70D4F9B66A25E3F7C888D0721D9AC@039-SN2MPN1-012.039d.mgd.msft.net>
-	<1385066603.2879.414.camel@ul30vt.home>
-	<1385066835.1403.489.camel@snotra.buserror.net>
-	<1385067648.2879.421.camel@ul30vt.home>
-	<6A3DF150A5B70D4F9B66A25E3F7C888D0722C180@039-SN2MPN1-012.039d.mgd.msft.net>
-	<1385397493.2879.557.camel@ul30vt.home>
+ <1384838233-24847-2-git-send-email-Bharat.Bhushan@freescale.com>
+ <20131125233602.GA4066@google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20131125233602.GA4066@google.com>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bharat Bhushan <Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "joro@8bytes.org" <joro@8bytes.org>, "agraf@suse.de" <agraf@suse.de>, Scott Wood <scottwood@freescale.com>, Stuart Yoder <stuart.yoder@freescale.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
 
 > -----Original Message-----
-> From: Bhushan Bharat-R65777
-> Sent: Wednesday, November 27, 2013 9:39 PM
-> To: 'Alex Williamson'
-> Cc: Wood Scott-B07421; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org; Yoder Stuart-
-> B08248; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; linuxppc-
-> dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: RE: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU (PAMU)
+> From: linux-pci-owner@vger.kernel.org [mailto:linux-pci-owner@vger.kernel.org]
+> On Behalf Of Bjorn Helgaas
+> Sent: Tuesday, November 26, 2013 5:06 AM
+> To: Bhushan Bharat-R65777
+> Cc: alex.williamson@redhat.com; joro@8bytes.org; agraf@suse.de; Wood Scott-
+> B07421; Yoder Stuart-B08248; iommu@lists.linux-foundation.org; linux-
+> pci@vger.kernel.org; linuxppc-dev@lists.ozlabs.org; linux-
+> kernel@vger.kernel.org; Bhushan Bharat-R65777
+> Subject: Re: [PATCH 1/9 v2] pci:msi: add weak function for returning msi region
+> info
 > 
-> 
-> 
-> > -----Original Message-----
-> > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > Sent: Monday, November 25, 2013 10:08 PM
-> > To: Bhushan Bharat-R65777
-> > Cc: Wood Scott-B07421; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org; Yoder
-> > Stuart- B08248; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org;
-> > linuxppc- dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU
-> > (PAMU)
+> On Tue, Nov 19, 2013 at 10:47:05AM +0530, Bharat Bhushan wrote:
+> > In Aperture type of IOMMU (like FSL PAMU), VFIO-iommu system need to
+> > know the MSI region to map its window in h/w. This patch just defines
+> > the required weak functions only and will be used by followup patches.
 > >
-> > On Mon, 2013-11-25 at 05:33 +0000, Bharat Bhushan wrote:
-> > >
-> > > > -----Original Message-----
-> > > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > > > Sent: Friday, November 22, 2013 2:31 AM
-> > > > To: Wood Scott-B07421
-> > > > Cc: Bhushan Bharat-R65777; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > > agraf-l3A5Bk7waGM@public.gmane.org; Yoder Stuart-B08248;
-> > > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; linuxppc-
-> > > > dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > > > Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale
-> > > > IOMMU (PAMU)
-> > > >
-> > > > On Thu, 2013-11-21 at 14:47 -0600, Scott Wood wrote:
-> > > > > On Thu, 2013-11-21 at 13:43 -0700, Alex Williamson wrote:
-> > > > > > On Thu, 2013-11-21 at 11:20 +0000, Bharat Bhushan wrote:
-> > > > > > >
-> > > > > > > > -----Original Message-----
-> > > > > > > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > > > > > > > Sent: Thursday, November 21, 2013 12:17 AM
-> > > > > > > > To: Bhushan Bharat-R65777
-> > > > > > > > Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org;
-> > > > > > > > Wood Scott-B07421; Yoder Stuart-B08248;
-> > > > > > > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-
-> > > > > > > > pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-
-> > > > > > > > kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Bhushan Bharat-R65777
-> > > > > > > > Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for
-> > > > > > > > Freescale IOMMU (PAMU)
-> > > > > > > >
-> > > > > > > > Is VFIO_IOMMU_PAMU_GET_MSI_BANK_COUNT per aperture (ie.
-> > > > > > > > each vfio user has $COUNT regions at their disposal exclusively)?
-> > > > > > >
-> > > > > > > Number of msi-bank count is system wide and not per
-> > > > > > > aperture, But will be
-> > > > setting windows for banks in the device aperture.
-> > > > > > > So say if we are direct assigning 2 pci device (both have
-> > > > > > > different iommu
-> > > > group, so 2 aperture in iommu) to VM.
-> > > > > > > Now qemu can make only one call to know how many msi-banks
-> > > > > > > are there but
-> > > > it must set sub-windows for all banks for both pci device in its
-> > > > respective aperture.
-> > > > > >
-> > > > > > I'm still confused.  What I want to make sure of is that the
-> > > > > > banks are independent per aperture.  For instance, if we have
-> > > > > > two separate userspace processes operating independently and
-> > > > > > they both chose to use msi bank zero for their device, that's
-> > > > > > bank zero within each aperture and doesn't interfere.  Or
-> > > > > > another way to ask is can a malicious user interfere with
-> > > > > > other users by
-> > using the wrong bank.
-> > > > > > Thanks,
-> > > > >
-> > > > > They can interfere.
-> > >
-> > > Want to be sure of how they can interfere?
+> > Signed-off-by: Bharat Bhushan <bharat.bhushan@freescale.com>
+> > ---
+> > v1->v2
+> >  - Added description on "struct msi_region"
 > >
-> > What happens if more than one user selects the same MSI bank?
-> > Minimally, wouldn't that result in the IOMMU blocking transactions
-> > from the previous user once the new user activates their mapping?
+> >  drivers/pci/msi.c   |   22 ++++++++++++++++++++++
+> >  include/linux/msi.h |   14 ++++++++++++++
+> >  2 files changed, 36 insertions(+), 0 deletions(-)
+> >
+> > diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c index
+> > d5f90d6..2643a29 100644
+> > --- a/drivers/pci/msi.c
+> > +++ b/drivers/pci/msi.c
+> > @@ -67,6 +67,28 @@ int __weak arch_msi_check_device(struct pci_dev *dev, int
+> nvec, int type)
+> >  	return chip->check_device(chip, dev, nvec, type);  }
+> >
+> > +int __weak arch_msi_get_region_count(void) {
+> > +	return 0;
+> > +}
+> > +
+> > +int __weak arch_msi_get_region(int region_num, struct msi_region
+> > +*region) {
+> > +	return 0;
+> > +}
+> > +
+> > +int msi_get_region_count(void)
+> > +{
+> > +	return arch_msi_get_region_count();
+> > +}
+> > +EXPORT_SYMBOL(msi_get_region_count);
+> > +
+> > +int msi_get_region(int region_num, struct msi_region *region) {
+> > +	return arch_msi_get_region(region_num, region); }
+> > +EXPORT_SYMBOL(msi_get_region);
+> > +
+> >  int __weak arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int
+> > type)  {
+> >  	struct msi_desc *entry;
+> > diff --git a/include/linux/msi.h b/include/linux/msi.h index
+> > b17ead8..ade1480 100644
+> > --- a/include/linux/msi.h
+> > +++ b/include/linux/msi.h
+> > @@ -51,6 +51,18 @@ struct msi_desc {
+> >  };
+> >
+> >  /*
+> > + * This structure is used to get
+> > + * - physical address
+> > + * - size
+> > + * of a msi region
+> > + */
+> > +struct msi_region {
+> > +	int region_num; /* MSI region number */
+> > +	dma_addr_t addr; /* Address of MSI region */
+> > +	size_t size; /* Size of MSI region */ };
+> > +
+> > +/*
+> >   * The arch hooks to setup up msi irqs. Those functions are
+> >   * implemented as weak symbols so that they /can/ be overriden by
+> >   * architecture specific code if needed.
+> > @@ -64,6 +76,8 @@ void arch_restore_msi_irqs(struct pci_dev *dev, int
+> > irq);
+> >
+> >  void default_teardown_msi_irqs(struct pci_dev *dev);  void
+> > default_restore_msi_irqs(struct pci_dev *dev, int irq);
+> > +int arch_msi_get_region_count(void);
+> > +int arch_msi_get_region(int region_num, struct msi_region *region);
 > 
-> Yes and no; With current implementation yes but with a minor change no. Later in
-> this response I will explain how.
-> 
-> >
-> > > >>  With this hardware, the only way to prevent that
-> > > > > is to make sure that a bank is not shared by multiple protection
-> contexts.
-> > > > > For some of our users, though, I believe preventing this is less
-> > > > > important than the performance benefit.
-> > >
-> > > So should we let this patch series in without protection?
-> >
-> > No.
-> >
-> > > >
-> > > > I think we need some sort of ownership model around the msi banks then.
-> > > > Otherwise there's nothing preventing another userspace from
-> > > > attempting an MSI based attack on other users, or perhaps even on
-> > > > the host.  VFIO can't allow that.  Thanks,
-> > >
-> > > We have very few (3 MSI bank on most of chips), so we can not assign
-> > > one to each userspace. What we can do is host and userspace does not
-> > > share a MSI bank while userspace will share a MSI bank.
-> >
-> > Then you probably need VFIO to "own" the MSI bank and program devices
-> > into it rather than exposing the MSI banks to userspace to let them have
-> direct access.
-> 
-> Overall idea of exposing the details of msi regions to userspace are
->  1) User space can define the aperture size to fit MSI mapping in IOMMU.
->  2) setup iova for a MSI banks; which is just after guest memory.
-> 
-> But currently we expose the "size" and "address" of MSI banks, passing address
-> is of no use and can be problematic.
+> It doesn't look like any of this (struct msi_region, msi_get_region(),
+> msi_get_region_count()) is actually used by drivers/pci/msi.c, so I don't think
+> it needs to be declared in generic code.  It looks like it's only used in
+> drivers/vfio/vfio_iommu_fsl_pamu.c, where you already know you have an FSL
+> IOMMU, and you can just call FSL-specific interfaces directly.
 
-I am sorry, above information is not correct. Currently neither we expose "address" nor "size" to user space. We only expose number of MSI BANK count and userspace adds one sub-window for each bank.
+Thanks Bjorn,
 
-> If we just provide the size of MSI bank to userspace then userspace cannot do
-> anything wrong.
+Want to be sure of what you are suggesting.
 
-So userspace does not know address, so it cannot mmap and cause any interference by directly reading/writing.
-When user space makes VFIO_DEVICE_SET_IRQS ioctl for MSI type then VFIO with MSI layer compose and write MSI address and Data in actual device. This is all abstracted within host kernel.
+What I understood is that we define these (struct msi_region, msi_get_region(), msi_get_region_count()) in arch/powerpc/include/fsl_msi.h (a new file). Include this header file directly in driver/vfio/vfio_iommu_fsl_pamu.c
 
-Do we see any issue with this approach?
+Same also applies for msi_set_iova() in patch-5 ?
 
-Thanks
 -Bharat
 
 > 
-> While it is still the responsibility of host (MSI+VFIO) to compose MSI-address
-> and MSI-data; so I think this should look fine.
+> Bjorn
 > 
-> > Thanks,
 > >
-> > Alex
+> >  struct msi_chip {
+> >  	struct module *owner;
+> > --
+> > 1.7.0.4
 > >
+> >
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-pci" in the body
+> of a message to majordomo@vger.kernel.org More majordomo info at
+> http://vger.kernel.org/majordomo-info.html
