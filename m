@@ -1,137 +1,289 @@
-From: Bharat Bhushan <Bharat.Bhushan@freescale.com>
-Subject: RE: [PATCH 1/9 v2] pci:msi: add weak function for returning msi
- region info
-Date: Thu, 28 Nov 2013 10:08:16 +0000
-Message-ID: <6A3DF150A5B70D4F9B66A25E3F7C888D072363E5@039-SN2MPN1-012.039d.mgd.msft.net>
-References: <1384838233-24847-1-git-send-email-Bharat.Bhushan@freescale.com>
- <1384838233-24847-2-git-send-email-Bharat.Bhushan@freescale.com>
- <20131125233602.GA4066@google.com>
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: [RFC][PATCHv6++ 01/13] of: introduce
+ of_property_for_earch_phandle_with_args()
+Date: Thu, 28 Nov 2013 13:58:18 +0100
+Message-ID: <20131128.145818.1345100874304396564.hdoyu@nvidia.com>
+References: <1385041249-7705-2-git-send-email-hdoyu@nvidia.com><20131121.191720.1487772262083864095.hdoyu@nvidia.com><528E577C.2050506@wwwdotorg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20131125233602.GA4066@google.com>
-Content-Language: en-US
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "joro@8bytes.org" <joro@8bytes.org>, "agraf@suse.de" <agraf@suse.de>, Scott Wood <scottwood@freescale.com>, Stuart Yoder <stuart.yoder@freescale.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <528E577C.2050506-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org" <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Cc: "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, "galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote @ Thu, 21 Nov 2013 19:57:00 +0100:
 
-
-> -----Original Message-----
-> From: linux-pci-owner@vger.kernel.org [mailto:linux-pci-owner@vger.kernel.org]
-> On Behalf Of Bjorn Helgaas
-> Sent: Tuesday, November 26, 2013 5:06 AM
-> To: Bhushan Bharat-R65777
-> Cc: alex.williamson@redhat.com; joro@8bytes.org; agraf@suse.de; Wood Scott-
-> B07421; Yoder Stuart-B08248; iommu@lists.linux-foundation.org; linux-
-> pci@vger.kernel.org; linuxppc-dev@lists.ozlabs.org; linux-
-> kernel@vger.kernel.org; Bhushan Bharat-R65777
-> Subject: Re: [PATCH 1/9 v2] pci:msi: add weak function for returning msi region
-> info
-> 
-> On Tue, Nov 19, 2013 at 10:47:05AM +0530, Bharat Bhushan wrote:
-> > In Aperture type of IOMMU (like FSL PAMU), VFIO-iommu system need to
-> > know the MSI region to map its window in h/w. This patch just defines
-> > the required weak functions only and will be used by followup patches.
-> >
-> > Signed-off-by: Bharat Bhushan <bharat.bhushan@freescale.com>
+> On 11/21/2013 10:17 AM, Hiroshi Doyu wrote:
+> > Iterating over a property containing a list of phandles with arguments
+> > is a common operation for device drivers. This patch adds a new
+> > of_property_for_each_phandle_with_args() macro to make the iteration
+> > simpler.
+> > 
+> > Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 > > ---
-> > v1->v2
-> >  - Added description on "struct msi_region"
-> >
-> >  drivers/pci/msi.c   |   22 ++++++++++++++++++++++
-> >  include/linux/msi.h |   14 ++++++++++++++
-> >  2 files changed, 36 insertions(+), 0 deletions(-)
-> >
-> > diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c index
-> > d5f90d6..2643a29 100644
-> > --- a/drivers/pci/msi.c
-> > +++ b/drivers/pci/msi.c
-> > @@ -67,6 +67,28 @@ int __weak arch_msi_check_device(struct pci_dev *dev, int
-> nvec, int type)
-> >  	return chip->check_device(chip, dev, nvec, type);  }
-> >
-> > +int __weak arch_msi_get_region_count(void) {
-> > +	return 0;
-> > +}
-> > +
-> > +int __weak arch_msi_get_region(int region_num, struct msi_region
-> > +*region) {
-> > +	return 0;
-> > +}
-> > +
-> > +int msi_get_region_count(void)
-> > +{
-> > +	return arch_msi_get_region_count();
-> > +}
-> > +EXPORT_SYMBOL(msi_get_region_count);
-> > +
-> > +int msi_get_region(int region_num, struct msi_region *region) {
-> > +	return arch_msi_get_region(region_num, region); }
-> > +EXPORT_SYMBOL(msi_get_region);
-> > +
-> >  int __weak arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int
-> > type)  {
-> >  	struct msi_desc *entry;
-> > diff --git a/include/linux/msi.h b/include/linux/msi.h index
-> > b17ead8..ade1480 100644
-> > --- a/include/linux/msi.h
-> > +++ b/include/linux/msi.h
-> > @@ -51,6 +51,18 @@ struct msi_desc {
-> >  };
-> >
-> >  /*
-> > + * This structure is used to get
-> > + * - physical address
-> > + * - size
-> > + * of a msi region
-> > + */
-> > +struct msi_region {
-> > +	int region_num; /* MSI region number */
-> > +	dma_addr_t addr; /* Address of MSI region */
-> > +	size_t size; /* Size of MSI region */ };
-> > +
-> > +/*
-> >   * The arch hooks to setup up msi irqs. Those functions are
-> >   * implemented as weak symbols so that they /can/ be overriden by
-> >   * architecture specific code if needed.
-> > @@ -64,6 +76,8 @@ void arch_restore_msi_irqs(struct pci_dev *dev, int
-> > irq);
-> >
-> >  void default_teardown_msi_irqs(struct pci_dev *dev);  void
-> > default_restore_msi_irqs(struct pci_dev *dev, int irq);
-> > +int arch_msi_get_region_count(void);
-> > +int arch_msi_get_region(int region_num, struct msi_region *region);
+> > v6+:
+> > Use the description, which Grant Likely proposed, to be full enough
+> > that a future reader can figure out why a patch was written.
+> >   http://lists.linuxfoundation.org/pipermail/iommu/2013-November/007062.html
 > 
-> It doesn't look like any of this (struct msi_region, msi_get_region(),
-> msi_get_region_count()) is actually used by drivers/pci/msi.c, so I don't think
-> it needs to be declared in generic code.  It looks like it's only used in
-> drivers/vfio/vfio_iommu_fsl_pamu.c, where you already know you have an FSL
-> IOMMU, and you can just call FSL-specific interfaces directly.
-
-Thanks Bjorn,
-
-Want to be sure of what you are suggesting.
-
-What I understood is that we define these (struct msi_region, msi_get_region(), msi_get_region_count()) in arch/powerpc/include/fsl_msi.h (a new file). Include this header file directly in driver/vfio/vfio_iommu_fsl_pamu.c
-
-Same also applies for msi_set_iova() in patch-5 ?
-
--Bharat
-
+> This new version only addresses one of the concerns that Grant had,
+> namely the commit message.
 > 
-> Bjorn
+> > diff --git a/include/linux/of.h b/include/linux/of.h
 > 
-> >
-> >  struct msi_chip {
-> >  	struct module *owner;
-> > --
-> > 1.7.0.4
-> >
-> >
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-pci" in the body
-> of a message to majordomo@vger.kernel.org More majordomo info at
-> http://vger.kernel.org/majordomo-info.html
+> > +#define of_property_for_each_phandle_with_args(np, list, cells, i, args) \
+> > +	for (i = 0; !of_parse_phandle_with_args(np, list, cells, i, args); i++)
+> > +
+> 
+> Grant also wanted the actual implementation fixed so that it wasn't so
+> inefficient.
+> 
+> What this current patch does is basically:
+> 
+> for every entry in the property:
+>     for every entry in the property before the current index:
+>         parse the phandle+specifier
+> 
+> That's roughly O(n^2). (n is # entries in the property)
+> 
+> Instead, what should happen is:
+> 
+> for every entry in the property:
+>     parse the phandle+specifier
+>     yield the result
+> 
+> That's roughly O(n).
+> 
+> In other words, an implementation more along the lines of
+> include/linux/of.h's:
+> 
+> #define of_property_for_each_u32(np, propname, prop, p, u)      \
+>         for (prop = of_find_property(np, propname, NULL),       \
+>                 p = of_prop_next_u32(prop, NULL, &u);           \
+>                 p;                                              \
+>                 p = of_prop_next_u32(prop, p, &u))
+> 
+> ... so you'd need functions like of_prop_first_specifier() and
+> of_prop_next_specifier(), and perhaps some associated set of state
+> variables, perhaps with all the state wrapped into a single struct for
+> simplicity.
+
+Although I couldn't invent any struct to hold params and state here,
+I'd like you to review the following interface is ok or not.
+
+At first, I thought to refactor __of_parse_phandle_with_args() but
+it's a bit highly optimized by Stephen and it looked a bit hard to
+refactor without perf regressions. Instread, I introduced 2 new
+functions "of_parse_{first,next}_phandle_with_args()" to parse
+phandles.
+
+If this interface is ok, I'll include this into the next v7 series.
+
+-----8<-----8<-----8<-----8<-----8<-----8<-----8<-----8<-----8<-----
+From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+
+Iterating over a property containing a list of phandles with arguments
+is a common operation for device drivers. This patch adds a new
+of_property_for_each_phandle_with_args() macro to make the iteration
+simpler.
+
+Introduced "of_parse_{first,next}_phandle_with_args()", where "const
+__be32 **list" is used to hold the next list to be processed as a
+state pramameter, and both "of_parse_{first,next}_phandle_with_args()"
+returns the remaining list in the number of cell(4 byte). If any error
+happens, "list" is set NULL not to proceed the rest.
+
+Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+---
+v6++:
+Optimized to avoid O(n^2), suggested by Stephen Warren.
+http://lists.linuxfoundation.org/pipermail/iommu/2013-November/007066.html
+
+v6+:
+Use the description, which Grant Likely proposed, to be full enough
+that a future reader can figure out why a patch was written.
+
+v5:
+New patch for v5.
+
+Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+---
+ drivers/of/base.c  | 82 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/of.h | 52 ++++++++++++++++++++++++++++++++++
+ 2 files changed, 134 insertions(+)
+
+diff --git a/drivers/of/base.c b/drivers/of/base.c
+index f807d0e..3e29b10 100644
+--- a/drivers/of/base.c
++++ b/drivers/of/base.c
+@@ -1201,6 +1201,88 @@ void of_print_phandle_args(const char *msg, const struct of_phandle_args *args)
+ 	printk("\n");
+ }
+ 
++int __of_parse_next_phandle_with_args(const __be32 **plist,
++				      const char *cells_name, int cell_count,
++				      struct of_phandle_args *out_args)
++{
++	phandle phandle;
++	int i, count = 0, err;
++	struct device_node *dn;
++	const __be32 *list;
++
++	BUG_ON(!out_args);
++	BUG_ON(!cells_name && !cell_count);
++
++	/*
++	 * "*plist" should hold phandle, and it's updated to the next
++	 * phandle at return if no error.
++	 */
++	list = *plist;
++	out_args->np = NULL;
++
++	phandle = be32_to_cpup(list);
++	if (!phandle)
++		goto err_out;
++
++	dn = of_find_node_by_phandle(phandle);
++	if (!dn)
++		goto err_out;
++
++	if (cells_name) {
++		err = of_property_read_u32(dn, cells_name, &count);
++		if (err)
++			goto err_out;
++	} else {
++		count = cell_count;
++	}
++
++	out_args->np = dn;
++	out_args->args_count = count;
++	for (i = 0; i < count; i++)
++		out_args->args[i] = be32_to_cpup(list + 1 + i);
++
++	*plist = list + count + 1; /* update to the next list */
++	return count + 1;
++
++err_out:
++	*plist = NULL;
++	return -EINVAL;
++}
++EXPORT_SYMBOL_GPL(__of_parse_next_phandle_with_args);
++
++int __of_parse_first_phandle_with_args(const struct device_node *np,
++				       const __be32 **out_list,
++				       const char *list_name,
++				       const char *cells_name,
++				       int cell_count,
++				       struct of_phandle_args *out_args)
++{
++	int rem, count;
++	const __be32 *list;
++
++	list = of_get_property(np, list_name, &rem);
++	if (!list)
++		goto err_out;
++
++	rem /= sizeof(*list);
++	if (!rem)
++		goto err_out;
++
++	count = __of_parse_next_phandle_with_args(&list, cells_name,
++						  cell_count, out_args);
++	if (!list)
++		goto err_out;
++
++	rem -= count;
++	*out_list = list; /* update to the next list */
++	return rem;
++
++err_out:
++	*out_list = NULL;
++	return -EINVAL;
++}
++EXPORT_SYMBOL_GPL(__of_parse_first_phandle_with_args);
++
+ static int __of_parse_phandle_with_args(const struct device_node *np,
+ 					const char *list_name,
+ 					const char *cells_name,
+diff --git a/include/linux/of.h b/include/linux/of.h
+index 276c546..9f15622 100644
+--- a/include/linux/of.h
++++ b/include/linux/of.h
+@@ -303,6 +303,35 @@ extern int of_parse_phandle_with_fixed_args(const struct device_node *np,
+ extern int of_count_phandle_with_args(const struct device_node *np,
+ 	const char *list_name, const char *cells_name);
+ 
++extern int __of_parse_first_phandle_with_args(const struct device_node *np,
++					    const __be32 **out_list,
++					    const char *list_name,
++					    const char *cells_name,
++					    int cell_count,
++					    struct of_phandle_args *out_args);
++
++extern int __of_parse_next_phandle_with_args(const __be32 **plist,
++					   const char *cells_name,
++					   int cell_count,
++					   struct of_phandle_args *out_args);
++
++static inline int of_parse_first_phandle_with_args(const struct device_node *np,
++						   const __be32 **out_list,
++						   const char *list_name,
++						   const char *cells_name,
++						   struct of_phandle_args *out_args)
++{
++	return __of_parse_first_phandle_with_args(np, out_list, list_name,
++						  cells_name, 0, out_args);
++}
++
++static inline int of_parse_next_phandle_with_args(const __be32 **plist,
++						  const char *cells_name,
++						  struct of_phandle_args *out_args)
++{
++	return __of_parse_next_phandle_with_args(plist, cells_name, 0, out_args);
++}
++
+ extern void of_alias_scan(void * (*dt_alloc)(u64 size, u64 align));
+ extern int of_alias_get_id(struct device_node *np, const char *stem);
+ 
+@@ -527,6 +556,24 @@ static inline int of_count_phandle_with_args(struct device_node *np,
+ 	return -ENOSYS;
+ }
+ 
++static inline int __of_parse_first_phandle_with_args(
++	const struct device_node *np, const __be32 **out_list,
++	const char *list_name, const char *cells_name, int cell_count,
++	struct of_phandle_args *out_args)
++{
++	*out_list = NULL;
++	return -ENOSYS;
++}
++
++
++static inline int __of_parse_next_phandle_with_args(
++	const __be32 **plist, const char *cells_name, int cell_count,
++	struct of_phandle_args *out_args)
++{
++	*plist = NULL;
++	return -ENOSYS;
++}
++
+ static inline int of_alias_get_id(struct device_node *np, const char *stem)
+ {
+ 	return -ENOSYS;
+@@ -613,6 +660,11 @@ static inline int of_property_read_u32(const struct device_node *np,
+ 		s;						\
+ 		s = of_prop_next_string(prop, s))
+ 
++#define of_property_for_each_phandle_with_args(node, list, list_name, cells_name, rem,  args) \
++	for (rem = of_parse_first_phandle_with_args(node, &list, list_name, cells_name, &args); \
++	     list && rem >= 0;						\
++	     rem -= of_parse_next_phandle_with_args(&list, cells_name, &args))
++
+ #if defined(CONFIG_PROC_FS) && defined(CONFIG_PROC_DEVICETREE)
+ extern void proc_device_tree_add_node(struct device_node *, struct proc_dir_entry *);
+ extern void proc_device_tree_add_prop(struct proc_dir_entry *pde, struct property *prop);
+-- 
+1.8.1.5
