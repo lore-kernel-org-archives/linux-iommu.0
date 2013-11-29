@@ -1,11 +1,14 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 0/3] iommu: arm/smmu: fixes for 3.13
-Date: Fri, 29 Nov 2013 12:14:32 +0000
-Message-ID: <1385727275-19082-1-git-send-email-will.deacon@arm.com>
+Subject: [PATCH 2/3] iommu/arm-smmu: remove potential NULL dereference on
+	mapping path
+Date: Fri, 29 Nov 2013 12:14:34 +0000
+Message-ID: <1385727275-19082-3-git-send-email-will.deacon@arm.com>
+References: <1385727275-19082-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1385727275-19082-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,26 +22,31 @@ To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cu
 Cc: andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
+When handling mapping requests, we dereference the SMMU domain before
+checking that it is NULL. This patch fixes the issue by removing the check
+altogether, since we don't actually use the leaf_smmu when creating
+mappings.
 
-Here are a few fixes for the arm/smmu driver. I think the main one is
-fixing the locking around page-table walking/creating, which is probably
-a candidate for stable.
+Reported-by: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+---
+ drivers/iommu/arm-smmu.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-All comments welcome,
-
-Will
-
-
-Wei Yongjun (1):
-  iommu/arm-smmu: fix error return code in arm_smmu_device_dt_probe()
-
-Will Deacon (2):
-  iommu/arm-smmu: use mutex instead of spinlock for locking page tables
-  iommu/arm-smmu: remove potential NULL dereference on mapping path
-
- drivers/iommu/arm-smmu.c | 66 ++++++++++++++++++++----------------------------
- 1 file changed, 28 insertions(+), 38 deletions(-)
-
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 6dbcaa4433cd..ef77e3dd6dd2 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1423,9 +1423,8 @@ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
+ 			phys_addr_t paddr, size_t size, int flags)
+ {
+ 	struct arm_smmu_domain *smmu_domain = domain->priv;
+-	struct arm_smmu_device *smmu = smmu_domain->leaf_smmu;
+ 
+-	if (!smmu_domain || !smmu)
++	if (!smmu_domain)
+ 		return -ENODEV;
+ 
+ 	/* Check for silent address truncation up the SMMU chain. */
 -- 
 1.8.2.2
