@@ -1,7 +1,8 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 3/4] iommu: add IOMMU_EXEC flag for safely allowing XN mappings
-Date: Fri, 29 Nov 2013 12:15:49 +0000
-Message-ID: <1385727350-20032-4-git-send-email-will.deacon@arm.com>
+Subject: [PATCH 1/4] iommu/arm-smmu: add devices attached to the SMMU to an
+	IOMMU group
+Date: Fri, 29 Nov 2013 12:15:47 +0000
+Message-ID: <1385727350-20032-2-git-send-email-will.deacon@arm.com>
 References: <1385727350-20032-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,37 +19,64 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Whilst most IOMMU mappings should probably be non-executable, there
-may be cases (HSA?) where executable mappings are required.
+From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 
-This patch introduces a new mapping flag, IOMMU_EXEC, to indicate that
-the mapping should be mapped as executable.
+IOMMU groups are expected by certain users of the IOMMU API,
+e.g. VFIO. Add new devices found by the SMMU driver to an IOMMU
+group to satisfy those users.
 
+Acked-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- include/linux/iommu.h | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/iommu/arm-smmu.c | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index a444c790fa72..709a697c4e02 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -24,9 +24,10 @@
- #include <linux/types.h>
- #include <trace/events/iommu.h>
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index e46a88700b68..879da20617fb 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1494,6 +1494,13 @@ static int arm_smmu_add_device(struct device *dev)
+ {
+ 	struct arm_smmu_device *child, *parent, *smmu;
+ 	struct arm_smmu_master *master = NULL;
++	struct iommu_group *group;
++	int ret;
++
++	if (dev->archdata.iommu) {
++		dev_warn(dev, "IOMMU driver already assigned to device\n");
++		return -EINVAL;
++	}
  
--#define IOMMU_READ	(1)
--#define IOMMU_WRITE	(2)
--#define IOMMU_CACHE	(4) /* DMA cache coherency */
-+#define IOMMU_READ	(1 << 0)
-+#define IOMMU_WRITE	(1 << 1)
-+#define IOMMU_CACHE	(1 << 2) /* DMA cache coherency */
-+#define IOMMU_EXEC	(1 << 3)
+ 	spin_lock(&arm_smmu_devices_lock);
+ 	list_for_each_entry(parent, &arm_smmu_devices, list) {
+@@ -1526,13 +1533,23 @@ static int arm_smmu_add_device(struct device *dev)
+ 	if (!master)
+ 		return -ENODEV;
  
- struct iommu_ops;
- struct iommu_group;
++	group = iommu_group_alloc();
++	if (IS_ERR(group)) {
++		dev_err(dev, "Failed to allocate IOMMU group\n");
++		return PTR_ERR(group);
++	}
++
++	ret = iommu_group_add_device(group, dev);
++	iommu_group_put(group);
+ 	dev->archdata.iommu = smmu;
+-	return 0;
++
++	return ret;
+ }
+ 
+ static void arm_smmu_remove_device(struct device *dev)
+ {
+ 	dev->archdata.iommu = NULL;
++	iommu_group_remove_device(dev);
+ }
+ 
+ static struct iommu_ops arm_smmu_ops = {
 -- 
 1.8.2.2
