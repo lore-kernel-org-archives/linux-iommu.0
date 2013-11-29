@@ -1,88 +1,50 @@
 From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC][PATCHv6++ 01/13] of: introduce
- of_property_for_earch_phandle_with_args()
-Date: Thu, 28 Nov 2013 13:58:18 +0100
-Message-ID: <20131128.145818.1345100874304396564.hdoyu@nvidia.com>
-References: <1385041249-7705-2-git-send-email-hdoyu@nvidia.com><20131121.191720.1487772262083864095.hdoyu@nvidia.com><528E577C.2050506@wwwdotorg.org>
+Subject: [RFC][PATCHv6+++ 01/13] of: introduce
+	of_property_for_earch_phandle_with_args()
+Date: Fri, 29 Nov 2013 12:46:25 +0100
+Message-ID: <20131129.134625.431945240074254704.hdoyu@nvidia.com>
+References: <20131121.191720.1487772262083864095.hdoyu@nvidia.com><528E577C.2050506@wwwdotorg.org><20131128.145818.1345100874304396564.hdoyu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <528E577C.2050506-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20131128.145818.1345100874304396564.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: "swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org" <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Cc: "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, "galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org> wrote @ Thu, 21 Nov 2013 19:57:00 +0100:
-
-> On 11/21/2013 10:17 AM, Hiroshi Doyu wrote:
-> > Iterating over a property containing a list of phandles with arguments
-> > is a common operation for device drivers. This patch adds a new
-> > of_property_for_each_phandle_with_args() macro to make the iteration
-> > simpler.
+Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote @ Thu, 28 Nov 2013 14:58:18 +0200 (EET):
+....
+> > In other words, an implementation more along the lines of
+> > include/linux/of.h's:
 > > 
-> > Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> > ---
-> > v6+:
-> > Use the description, which Grant Likely proposed, to be full enough
-> > that a future reader can figure out why a patch was written.
-> >   http://lists.linuxfoundation.org/pipermail/iommu/2013-November/007062.html
+> > #define of_property_for_each_u32(np, propname, prop, p, u)      \
+> >         for (prop = of_find_property(np, propname, NULL),       \
+> >                 p = of_prop_next_u32(prop, NULL, &u);           \
+> >                 p;                                              \
+> >                 p = of_prop_next_u32(prop, p, &u))
+> > 
+> > ... so you'd need functions like of_prop_first_specifier() and
+> > of_prop_next_specifier(), and perhaps some associated set of state
+> > variables, perhaps with all the state wrapped into a single struct for
+> > simplicity.
 > 
-> This new version only addresses one of the concerns that Grant had,
-> namely the commit message.
-> 
-> > diff --git a/include/linux/of.h b/include/linux/of.h
-> 
-> > +#define of_property_for_each_phandle_with_args(np, list, cells, i, args) \
-> > +	for (i = 0; !of_parse_phandle_with_args(np, list, cells, i, args); i++)
-> > +
-> 
-> Grant also wanted the actual implementation fixed so that it wasn't so
-> inefficient.
-> 
-> What this current patch does is basically:
-> 
-> for every entry in the property:
->     for every entry in the property before the current index:
->         parse the phandle+specifier
-> 
-> That's roughly O(n^2). (n is # entries in the property)
-> 
-> Instead, what should happen is:
-> 
-> for every entry in the property:
->     parse the phandle+specifier
->     yield the result
-> 
-> That's roughly O(n).
-> 
-> In other words, an implementation more along the lines of
-> include/linux/of.h's:
-> 
-> #define of_property_for_each_u32(np, propname, prop, p, u)      \
->         for (prop = of_find_property(np, propname, NULL),       \
->                 p = of_prop_next_u32(prop, NULL, &u);           \
->                 p;                                              \
->                 p = of_prop_next_u32(prop, p, &u))
-> 
-> ... so you'd need functions like of_prop_first_specifier() and
-> of_prop_next_specifier(), and perhaps some associated set of state
-> variables, perhaps with all the state wrapped into a single struct for
-> simplicity.
+> Although I couldn't invent any struct to hold params and state here,
+> I'd like you to review the following interface is ok or not.
 
-Although I couldn't invent any struct to hold params and state here,
-I'd like you to review the following interface is ok or not.
+Tried again to introduce a new struct to keep track of iteration state
+as below:
 
-At first, I thought to refactor __of_parse_phandle_with_args() but
-it's a bit highly optimized by Stephen and it looked a bit hard to
-refactor without perf regressions. Instread, I introduced 2 new
-functions "of_parse_{first,next}_phandle_with_args()" to parse
-phandles.
-
-If this interface is ok, I'll include this into the next v7 series.
-
------8<-----8<-----8<-----8<-----8<-----8<-----8<-----8<-----8<-----
+----8<---------8<---------8<---------8<---------8<---------8<--
 From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
 Iterating over a property containing a list of phandles with arguments
@@ -90,17 +52,20 @@ is a common operation for device drivers. This patch adds a new
 of_property_for_each_phandle_with_args() macro to make the iteration
 simpler.
 
-Introduced "of_parse_{first,next}_phandle_with_args()", where "const
-__be32 **list" is used to hold the next list to be processed as a
-state pramameter, and both "of_parse_{first,next}_phandle_with_args()"
-returns the remaining list in the number of cell(4 byte). If any error
-happens, "list" is set NULL not to proceed the rest.
+Introduced a new struct "of_phandle_iter" to keep the state when
+iterating over the list.
 
 Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
+v6+++:
+Introduced a new struct "of_phandle_iter" to keep the state when
+iterating over the list.
+
 v6++:
 Optimized to avoid O(n^2), suggested by Stephen Warren.
 http://lists.linuxfoundation.org/pipermail/iommu/2013-November/007066.html
+
+I didn't introduce any struct to hold params and state here.
 
 v6+:
 Use the description, which Grant Likely proposed, to be full enough
@@ -111,176 +76,165 @@ New patch for v5.
 
 Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/of/base.c  | 82 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
- include/linux/of.h | 52 ++++++++++++++++++++++++++++++++++
- 2 files changed, 134 insertions(+)
+ drivers/of/base.c  | 71 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/of.h | 45 ++++++++++++++++++++++++++++++++++
+ 2 files changed, 116 insertions(+)
 
 diff --git a/drivers/of/base.c b/drivers/of/base.c
-index f807d0e..3e29b10 100644
+index f807d0e..16fb2d9 100644
 --- a/drivers/of/base.c
 +++ b/drivers/of/base.c
-@@ -1201,6 +1201,88 @@ void of_print_phandle_args(const char *msg, const struct of_phandle_args *args)
+@@ -1201,6 +1201,77 @@ void of_print_phandle_args(const char *msg, const struct of_phandle_args *args)
  	printk("\n");
  }
  
-+int __of_parse_next_phandle_with_args(const __be32 **plist,
-+				      const char *cells_name, int cell_count,
-+				      struct of_phandle_args *out_args)
++void of_phandle_iter_next(struct of_phandle_iter *iter,
++			  struct of_phandle_args *out_args)
 +{
 +	phandle phandle;
-+	int i, count = 0, err;
 +	struct device_node *dn;
-+	const __be32 *list;
++	int i, count = iter->cell_count;
 +
-+	BUG_ON(!out_args);
-+	BUG_ON(!cells_name && !cell_count);
++	iter->err = -EINVAL;
++	if (!iter->cells_name && !iter->cell_count)
++		return;
 +
-+	/*
-+	 * "*plist" should hold phandle, and it's updated to the next
-+	 * phandle at return if no error.
-+	 */
-+	list = *plist;
-+	out_args->np = NULL;
-+
-+	phandle = be32_to_cpup(list);
++	phandle = be32_to_cpup(iter->cur++);
 +	if (!phandle)
-+		goto err_out;
++		return;
 +
 +	dn = of_find_node_by_phandle(phandle);
 +	if (!dn)
-+		goto err_out;
++		return;
 +
-+	if (cells_name) {
-+		err = of_property_read_u32(dn, cells_name, &count);
-+		if (err)
-+			goto err_out;
-+	} else {
-+		count = cell_count;
-+	}
++	if (iter->cells_name)
++		if (of_property_read_u32(dn, iter->cells_name, &count))
++			return;
 +
 +	out_args->np = dn;
 +	out_args->args_count = count;
 +	for (i = 0; i < count; i++)
-+		out_args->args[i] = be32_to_cpup(list + 1 + i);
++		out_args->args[i] = be32_to_cpup(iter->cur++);
 +
-+	*plist = list + count + 1; /* update to the next list */
-+	return count + 1;
-+
-+err_out:
-+	*plist = NULL;
-+	return -EINVAL;
++	iter->err = 0;
 +}
-+EXPORT_SYMBOL_GPL(__of_parse_next_phandle_with_args);
++EXPORT_SYMBOL_GPL(of_phandle_iter_next);
 +
-+int __of_parse_first_phandle_with_args(const struct device_node *np,
-+				       const __be32 **out_list,
-+				       const char *list_name,
-+				       const char *cells_name,
-+				       int cell_count,
-+				       struct of_phandle_args *out_args)
++static void __of_phandle_iter_set(struct of_phandle_iter *iter,
++				  const struct device_node *np,
++				  const char *list_name)
 +{
-+	int rem, count;
-+	const __be32 *list;
++	size_t bytes;
++	const __be32 *prop;
 +
-+	list = of_get_property(np, list_name, &rem);
-+	if (!list)
-+		goto err_out;
++	prop = of_get_property(np, list_name, &bytes);
++	if (!prop) {
++		iter->err = -EINVAL;
++		return;
++	}
 +
-+	rem /= sizeof(*list);
-+	if (!rem)
-+		goto err_out;
-+
-+	count = __of_parse_next_phandle_with_args(&list, cells_name,
-+						  cell_count, out_args);
-+	if (!list)
-+		goto err_out;
-+
-+	rem -= count;
-+	*out_list = list; /* update to the next list */
-+	return rem;
-+
-+err_out:
-+	*out_list = NULL;
-+	return -EINVAL;
++	iter->cur = prop;
++	iter->end = prop + bytes / sizeof(*prop);
++	iter->err = 0;
 +}
-+EXPORT_SYMBOL_GPL(__of_parse_first_phandle_with_args);
++
++void of_phandle_iter_start(struct of_phandle_iter *iter,
++			   const struct device_node *np,
++			   const char *list_name,
++			   const char *cells_name,
++			   int cell_count,
++			   struct of_phandle_args *out_args)
++{
++	iter->err = -EINVAL;
++	if (!cells_name && !cell_count)
++		return;
++
++	iter->cells_name = cells_name;
++	iter->cell_count = cell_count;
++	__of_phandle_iter_set(iter, np, list_name);
++	if (iter->err)
++		return;
++
++	of_phandle_iter_next(iter, out_args);
++}
++EXPORT_SYMBOL_GPL(of_phandle_iter_start);
 +
  static int __of_parse_phandle_with_args(const struct device_node *np,
  					const char *list_name,
  					const char *cells_name,
 diff --git a/include/linux/of.h b/include/linux/of.h
-index 276c546..9f15622 100644
+index 276c546..1132b49 100644
 --- a/include/linux/of.h
 +++ b/include/linux/of.h
-@@ -303,6 +303,35 @@ extern int of_parse_phandle_with_fixed_args(const struct device_node *np,
+@@ -74,6 +74,18 @@ struct of_phandle_args {
+ 	uint32_t args[MAX_PHANDLE_ARGS];
+ };
+ 
++/*
++ * keep the state at iterating a list of phandles with variable number
++ * of args
++ */
++struct of_phandle_iter {
++	int		err;
++	const __be32	*cur;		/* current phandle */
++	const __be32	*end;		/* end of the last phandle */
++	const char	*cells_name;
++	int		cell_count;
++};
++
+ #ifdef CONFIG_OF_DYNAMIC
+ extern struct device_node *of_node_get(struct device_node *node);
+ extern void of_node_put(struct device_node *node);
+@@ -303,6 +315,16 @@ extern int of_parse_phandle_with_fixed_args(const struct device_node *np,
  extern int of_count_phandle_with_args(const struct device_node *np,
  	const char *list_name, const char *cells_name);
  
-+extern int __of_parse_first_phandle_with_args(const struct device_node *np,
-+					    const __be32 **out_list,
-+					    const char *list_name,
-+					    const char *cells_name,
-+					    int cell_count,
-+					    struct of_phandle_args *out_args);
++extern void of_phandle_iter_start(struct of_phandle_iter *iter,
++				  const struct device_node *np,
++				  const char *list_name,
++				  const char *cells_name,
++				  int cell_count,
++				  struct of_phandle_args *out_args);
 +
-+extern int __of_parse_next_phandle_with_args(const __be32 **plist,
-+					   const char *cells_name,
-+					   int cell_count,
-+					   struct of_phandle_args *out_args);
-+
-+static inline int of_parse_first_phandle_with_args(const struct device_node *np,
-+						   const __be32 **out_list,
-+						   const char *list_name,
-+						   const char *cells_name,
-+						   struct of_phandle_args *out_args)
-+{
-+	return __of_parse_first_phandle_with_args(np, out_list, list_name,
-+						  cells_name, 0, out_args);
-+}
-+
-+static inline int of_parse_next_phandle_with_args(const __be32 **plist,
-+						  const char *cells_name,
-+						  struct of_phandle_args *out_args)
-+{
-+	return __of_parse_next_phandle_with_args(plist, cells_name, 0, out_args);
-+}
++extern void of_phandle_iter_next(struct of_phandle_iter *iter,
++				 struct of_phandle_args *out_args);
 +
  extern void of_alias_scan(void * (*dt_alloc)(u64 size, u64 align));
  extern int of_alias_get_id(struct device_node *np, const char *stem);
  
-@@ -527,6 +556,24 @@ static inline int of_count_phandle_with_args(struct device_node *np,
+@@ -527,6 +549,22 @@ static inline int of_count_phandle_with_args(struct device_node *np,
  	return -ENOSYS;
  }
  
-+static inline int __of_parse_first_phandle_with_args(
-+	const struct device_node *np, const __be32 **out_list,
-+	const char *list_name, const char *cells_name, int cell_count,
-+	struct of_phandle_args *out_args)
++static inline void of_phandle_iter_start(struct of_phandle_iter *iter,
++					 const struct device_node *np,
++					 const char *list_name,
++					 const char *cells_name,
++					 const int cell_count,
++					 struct of_phandle_args *out_args)
 +{
-+	*out_list = NULL;
-+	return -ENOSYS;
++	iter->err = -ENOSYS;
 +}
 +
-+
-+static inline int __of_parse_next_phandle_with_args(
-+	const __be32 **plist, const char *cells_name, int cell_count,
-+	struct of_phandle_args *out_args)
++static inline void of_phandle_iter_next(struct of_phandle_iter *iter,
++					struct of_phandle_args *out_args)
 +{
-+	*plist = NULL;
-+	return -ENOSYS;
++	iter->err = -ENOSYS;
 +}
 +
  static inline int of_alias_get_id(struct device_node *np, const char *stem)
  {
  	return -ENOSYS;
-@@ -613,6 +660,11 @@ static inline int of_property_read_u32(const struct device_node *np,
+@@ -613,6 +651,13 @@ static inline int of_property_read_u32(const struct device_node *np,
  		s;						\
  		s = of_prop_next_string(prop, s))
  
-+#define of_property_for_each_phandle_with_args(node, list, list_name, cells_name, rem,  args) \
-+	for (rem = of_parse_first_phandle_with_args(node, &list, list_name, cells_name, &args); \
-+	     list && rem >= 0;						\
-+	     rem -= of_parse_next_phandle_with_args(&list, cells_name, &args))
++#define of_property_for_each_phandle_with_args(iter, node, list_name,	\
++					       cells_name, cell_count, out_args) \
++	for (of_phandle_iter_start(&iter, node, list_name,		\
++				   cells_name, cell_count, &out_args);	\
++	     !iter.err && iter.end - iter.cur >= 0 ;			\
++	     of_phandle_iter_next(&iter, &out_args))
 +
  #if defined(CONFIG_PROC_FS) && defined(CONFIG_PROC_DEVICETREE)
  extern void proc_device_tree_add_node(struct device_node *, struct proc_dir_entry *);
