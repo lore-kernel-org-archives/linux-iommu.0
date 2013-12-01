@@ -1,74 +1,86 @@
-From: Kim Phillips <kim.phillips@linaro.org>
-Subject: Re: [RFC PATCH v2 0/7] VFIO for device tree based platform devices
- (work in progress)
-Date: Sun, 1 Dec 2013 12:09:54 +0000
-Message-ID: <20131201120954.1d6cec431a99a7ad5f34da18@linaro.org>
-References: <1380554923-17818-1-git-send-email-a.motakis@virtualopensystems.com>
+From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Subject: Re: [RFC][PATCHv6+++ 01/13] of: introduce of_property_for_earch_phandle_with_args()
+Date: Sun, 01 Dec 2013 12:00:09 -0700
+Message-ID: <529B8739.60701@wwwdotorg.org>
+References: <20131121.191720.1487772262083864095.hdoyu@nvidia.com><528E577C.2050506@wwwdotorg.org><20131128.145818.1345100874304396564.hdoyu@nvidia.com> <20131129.134625.431945240074254704.hdoyu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <1380554923-17818-1-git-send-email-a.motakis@virtualopensystems.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: a.motakis@virtualopensystems.com
-Cc: kvmarm@lists.cs.columbia.edu, alex.williamson@redhat.com, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, kvm@vger.kernel.org, agraf@suse.de, B08248@freescale.com, tech@virtualopensystems.com
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20131129.134625.431945240074254704.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, "galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 30 Sep 2013 17:28:36 +0200
-Antonios Motakis <a.motakis@virtualopensystems.com> wrote:
-
-> This is a preview of the base work, towards VFIO support on ARM platforms
-> with an IOMMU. It forms a base on to which to implement the functionality
-> necessary to enable using device tree devices on ARM (and other platforms
-> based on device trees) with VFIO.
+On 11/29/2013 04:46 AM, Hiroshi Doyu wrote:
+...
+> Iterating over a property containing a list of phandles with arguments
+> is a common operation for device drivers. This patch adds a new
+> of_property_for_each_phandle_with_args() macro to make the iteration
+> simpler.
 > 
-> This patch series has been subjected to limited testing on the Arndale board
-> (with the Exynos 5250 System MMU). More extensive testing will follow as more
-> features are implemented.
+> Introduced a new struct "of_phandle_iter" to keep the state when
+> iterating over the list.
+> 
+> Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> ---
+> v6+++:
 
-Hi, I'm trying to attach the vfio-platform driver to an(y) iommu-backed
-device on the arndale.  I chose the relatively simple 'tv' device,
-isolated it in the arndale device tree (to get rid of any dependency
-conflicts), and, when I run Alex' vfio-correctness-tests [1], I get
-this:
+Surely that's v9; "+++" is rather unusual.
 
-# echo 14650000.sysmmu > /sys/bus/platform/devices/14650000.sysmmu/driver/unbind
-# echo 14650000.sysmmu > /sys/bus/platform/drivers/vfio-platform/bind
-# ls -l /sys/bus/platform/devices/14650000.sysmmu/iommu_group
-lrwxrwxrwx 1 root root 0 Oct  1 23:14 /sys/bus/platform/devices/14650000.sysmmu/iommu_group -> ../../kernel/iommu_groups/43
-# vfio-tests/vfio-correctness-tests 43
-[   84.567643] ------------[ cut here ]------------
-[   84.572258] WARNING: CPU: 0 PID: 1606 at drivers/iommu/exynos-iommu.c:472 __exynos_sysmmu_enable+0x170/0x184()
-[   84.582225] Modules linked in:
-[   84.585268] CPU: 0 PID: 1606 Comm: vfio-correctnes Not tainted 3.13.0-rc1-00296-gb703d74-dirty #46
-[   84.594219] [<c0014d20>] (unwind_backtrace+0x0/0xf4) from [<c0011648>] (show_stack+0x10/0x14)
-[   84.602719] [<c0011648>] (show_stack+0x10/0x14) from [<c0377948>] (dump_stack+0x7c/0xb0)
-[   84.610791] [<c0377948>] (dump_stack+0x7c/0xb0) from [<c001dc50>] (warn_slowpath_common+0x6c/0x88)
-[   84.619730] [<c001dc50>] (warn_slowpath_common+0x6c/0x88) from [<c001dd08>] (warn_slowpath_null+0x1c/0x24)
-[   84.629365] [<c001dd08>] (warn_slowpath_null+0x1c/0x24) from [<c02dace8>] (__exynos_sysmmu_enable+0x170/0x184)
-[   84.639348] [<c02dace8>] (__exynos_sysmmu_enable+0x170/0x184) from [<c02dad4c>] (exynos_iommu_attach_device+0x50/0x108)
-[   84.650111] [<c02dad4c>] (exynos_iommu_attach_device+0x50/0x108) from [<c02d939c>] (iommu_attach_device+0x64/0xb8)
-[   84.660440] [<c02d939c>] (iommu_attach_device+0x64/0xb8) from [<c02d92ec>] (iommu_group_for_each_dev+0x78/0x94)
-[   84.670509] [<c02d92ec>] (iommu_group_for_each_dev+0x78/0x94) from [<c0263678>] (vfio_iommu_type1_attach_group+0xd0/0x144)
-[   84.681530] [<c0263678>] (vfio_iommu_type1_attach_group+0xd0/0x144) from [<c02629e0>] (vfio_fops_unl_ioctl+0x3ac/0x460)
-[   84.692295] [<c02629e0>] (vfio_fops_unl_ioctl+0x3ac/0x460) from [<c00c1f14>] (do_vfs_ioctl+0x3f0/0x5b8)
-[   84.701668] [<c00c1f14>] (do_vfs_ioctl+0x3f0/0x5b8) from [<c00c2114>] (SyS_ioctl+0x38/0x60)
-[   84.710002] [<c00c2114>] (SyS_ioctl+0x38/0x60) from [<c000e1a0>] (ret_fast_syscall+0x0/0x30)
-[   84.718417] ---[ end trace a1400d7981f699ce ]---
-[   84.723071] vfio-platform 14650000.sysmmu: exynos_iommu_attach_device: Failed to attach IOMMU with pgtable 0x6eae8000
+> diff --git a/drivers/of/base.c b/drivers/of/base.c
 
-It's failing this test:
+> +void of_phandle_iter_next(struct of_phandle_iter *iter,
+> +			  struct of_phandle_args *out_args)
+> +{
+> +	phandle phandle;
+> +	struct device_node *dn;
+> +	int i, count = iter->cell_count;
+> +
+> +	iter->err = -EINVAL;
+> +	if (!iter->cells_name && !iter->cell_count)
+> +		return;
 
-        if (WARN_ON(!client))
-                return -ENODEV;
+Wasn't that already checked in _start()?
 
-but I haven't been able to figure out why...I have the exynos
-iommu v10 patchseries applied, and even though there's not much
-documentation available for this device, I figure this simple test is
-supposed to 'just work.'  Any ideas?
+Why not set err = -EINVAL inside the if, rather than setting it to an
+error value here by default, then having to over-write it at the end of
+the function?
 
-Thanks,
+> +static void __of_phandle_iter_set(struct of_phandle_iter *iter,
 
-Kim
+This is only used in one place; why not simply inline this into
+of_phandle_iter_start()? It would make the code simpler.
 
-[1] git://github.com/awilliam/tests.git
+> +void of_phandle_iter_start(struct of_phandle_iter *iter,
+
+> +	iter->cells_name = cells_name;
+> +	iter->cell_count = cell_count;
+
+Why not pass these values into of_phandle_iter_next() instead? There's
+no need to pass them just to _start() so they can be read by _next()
+instead.
+
+> diff --git a/include/linux/of.h b/include/linux/of.h
+
+> +/*
+> + * keep the state at iterating a list of phandles with variable number
+> + * of args
+> + */
+> +struct of_phandle_iter {
+> +	int		err;
+> +	const __be32	*cur;		/* current phandle */
+> +	const __be32	*end;		/* end of the last phandle */
+
+Can't you detect an error case by e.g. (cur == NULL) and thus avoid
+requiring an explicit err field?
+
+Together with removing:
+
+> +	const char	*cells_name;
+> +	int		cell_count;
+
+... then you'd only be left with cur/end, so I think you could get away
+without a struct at all, but simply "cur" as the iterator variable, plus
+"end" as the one temp variable.
