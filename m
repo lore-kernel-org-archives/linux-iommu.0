@@ -1,15 +1,15 @@
 From: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [Patch Part1 V2 07/17] iommu/vt-d. trivial: check suitable flag
+Subject: Re: [Patch Part1 V2 07/17] iommu/vt-d, trivial: check suitable flag
 	in function detect_intel_iommu()
-Date: Mon, 2 Dec 2013 09:42:52 +0800
-Message-ID: <529BE59C.8070003@huawei.com>
+Date: Mon, 2 Dec 2013 09:44:15 +0800
+Message-ID: <529BE5EF.7040706@huawei.com>
 References: <1385715030-20553-1-git-send-email-jiang.liu@linux.intel.com>
-	<1385715030-20553-9-git-send-email-jiang.liu@linux.intel.com>
+	<1385715030-20553-8-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1385715030-20553-9-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <1385715030-20553-8-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,8 +22,6 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Cc: dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
-
-This patch is the same as the last.:)
 
 On 2013/11/29 16:50, Jiang Liu wrote:
 > Flag irq_remapping_enabled is only set by intel_enable_irq_remapping(),
@@ -51,6 +49,7 @@ On 2013/11/29 16:50, Jiang Liu wrote:
 >  
 > 
 
+Reviewed-by: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 
 -- 
 Thanks!
