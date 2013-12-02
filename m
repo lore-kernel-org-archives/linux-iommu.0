@@ -1,86 +1,158 @@
-From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [RFC][PATCHv6+++ 01/13] of: introduce of_property_for_earch_phandle_with_args()
-Date: Sun, 01 Dec 2013 12:00:09 -0700
-Message-ID: <529B8739.60701@wwwdotorg.org>
-References: <20131121.191720.1487772262083864095.hdoyu@nvidia.com><528E577C.2050506@wwwdotorg.org><20131128.145818.1345100874304396564.hdoyu@nvidia.com> <20131129.134625.431945240074254704.hdoyu@nvidia.com>
+From: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [Patch Part1 V2 01/17] iommu/vt-d: use dedicated bitmap to track
+	remapping entry allocation status
+Date: Mon, 2 Dec 2013 09:38:26 +0800
+Message-ID: <529BE492.5020201@huawei.com>
+References: <1385715030-20553-1-git-send-email-jiang.liu@linux.intel.com>
+	<1385715030-20553-2-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20131129.134625.431945240074254704.hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, "galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1385715030-20553-2-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/29/2013 04:46 AM, Hiroshi Doyu wrote:
-...
-> Iterating over a property containing a list of phandles with arguments
-> is a common operation for device drivers. This patch adds a new
-> of_property_for_each_phandle_with_args() macro to make the iteration
-> simpler.
+Tested-and-reviewed-by: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+
+On 2013/11/29 16:50, Jiang Liu wrote:
+> Currently Intel interrupt remapping drivers uses the "present" flag bit
+> in remapping entry to track whether an entry is allocated or not.
+> It works as follow:
+> 1) allocate a remapping entry and set its "present" flag bit to 1
+> 2) compose other fields for the entry
+> 3) update the remapping entry with the composed value
 > 
-> Introduced a new struct "of_phandle_iter" to keep the state when
-> iterating over the list.
+> The remapping hardware may access the entry between step 1 and step 3,
+> which then obervers an entry with the "present" flag set but random
+> values in all other fields.
 > 
-> Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> This patch introduces a dedicated bitmap to track remapping entry
+> allocation status instead of sharing the "present" flag with hardware,
+> thus eliminate the race window. It also simplifies the implementation.
+> 
+> Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 > ---
-> v6+++:
-
-Surely that's v9; "+++" is rather unusual.
-
-> diff --git a/drivers/of/base.c b/drivers/of/base.c
-
-> +void of_phandle_iter_next(struct of_phandle_iter *iter,
-> +			  struct of_phandle_args *out_args)
-> +{
-> +	phandle phandle;
-> +	struct device_node *dn;
-> +	int i, count = iter->cell_count;
+>  drivers/iommu/intel_irq_remapping.c |   51 +++++++++++++++++------------------
+>  include/linux/intel-iommu.h         |    1 +
+>  2 files changed, 25 insertions(+), 27 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+> index bab10b1..282d392 100644
+> --- a/drivers/iommu/intel_irq_remapping.c
+> +++ b/drivers/iommu/intel_irq_remapping.c
+> @@ -72,7 +72,6 @@ static int alloc_irte(struct intel_iommu *iommu, int irq, u16 count)
+>  	u16 index, start_index;
+>  	unsigned int mask = 0;
+>  	unsigned long flags;
+> -	int i;
+>  
+>  	if (!count || !irq_iommu)
+>  		return -1;
+> @@ -96,32 +95,17 @@ static int alloc_irte(struct intel_iommu *iommu, int irq, u16 count)
+>  	}
+>  
+>  	raw_spin_lock_irqsave(&irq_2_ir_lock, flags);
+> -	do {
+> -		for (i = index; i < index + count; i++)
+> -			if  (table->base[i].present)
+> -				break;
+> -		/* empty index found */
+> -		if (i == index + count)
+> -			break;
+> -
+> -		index = (index + count) % INTR_REMAP_TABLE_ENTRIES;
+> -
+> -		if (index == start_index) {
+> -			raw_spin_unlock_irqrestore(&irq_2_ir_lock, flags);
+> -			printk(KERN_ERR "can't allocate an IRTE\n");
+> -			return -1;
+> -		}
+> -	} while (1);
+> -
+> -	for (i = index; i < index + count; i++)
+> -		table->base[i].present = 1;
+> -
+> -	cfg->remapped = 1;
+> -	irq_iommu->iommu = iommu;
+> -	irq_iommu->irte_index =  index;
+> -	irq_iommu->sub_handle = 0;
+> -	irq_iommu->irte_mask = mask;
+> -
+> +	index = bitmap_find_free_region(table->bitmap,
+> +					INTR_REMAP_TABLE_ENTRIES, mask);
+> +	if (index < 0) {
+> +		printk(KERN_ERR "can't allocate an IRTE\n");
+> +	} else {
+> +		cfg->remapped = 1;
+> +		irq_iommu->iommu = iommu;
+> +		irq_iommu->irte_index =  index;
+> +		irq_iommu->sub_handle = 0;
+> +		irq_iommu->irte_mask = mask;
+> +	}
+>  	raw_spin_unlock_irqrestore(&irq_2_ir_lock, flags);
+>  
+>  	return index;
+> @@ -254,6 +238,8 @@ static int clear_entries(struct irq_2_iommu *irq_iommu)
+>  		set_64bit(&entry->low, 0);
+>  		set_64bit(&entry->high, 0);
+>  	}
+> +	bitmap_release_region(iommu->ir_table->bitmap, index,
+> +			      irq_iommu->irte_mask);
+>  
+>  	return qi_flush_iec(iommu, index, irq_iommu->irte_mask);
+>  }
+> @@ -453,6 +439,7 @@ static int intel_setup_irq_remapping(struct intel_iommu *iommu, int mode)
+>  {
+>  	struct ir_table *ir_table;
+>  	struct page *pages;
+> +	unsigned long *bitmap;
+>  
+>  	ir_table = iommu->ir_table = kzalloc(sizeof(struct ir_table),
+>  					     GFP_ATOMIC);
+> @@ -470,7 +457,17 @@ static int intel_setup_irq_remapping(struct intel_iommu *iommu, int mode)
+>  		return -ENOMEM;
+>  	}
+>  
+> +	bitmap = kcalloc(BITS_TO_LONGS(INTR_REMAP_TABLE_ENTRIES),
+> +			 sizeof(long), GFP_ATOMIC);
+> +	if (bitmap == NULL) {
+> +		printk(KERN_ERR "failed to allocate bitmap\n");
+> +		__free_pages(pages, INTR_REMAP_PAGE_ORDER);
+> +		kfree(ir_table);
+> +		return -ENOMEM;
+> +	}
 > +
-> +	iter->err = -EINVAL;
-> +	if (!iter->cells_name && !iter->cell_count)
-> +		return;
+>  	ir_table->base = page_address(pages);
+> +	ir_table->bitmap = bitmap;
+>  
+>  	iommu_set_irq_remapping(iommu, mode);
+>  	return 0;
+> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+> index d380c5e..de1e5e9 100644
+> --- a/include/linux/intel-iommu.h
+> +++ b/include/linux/intel-iommu.h
+> @@ -288,6 +288,7 @@ struct q_inval {
+>  
+>  struct ir_table {
+>  	struct irte *base;
+> +	unsigned long *bitmap;
+>  };
+>  #endif
+>  
+> 
 
-Wasn't that already checked in _start()?
 
-Why not set err = -EINVAL inside the if, rather than setting it to an
-error value here by default, then having to over-write it at the end of
-the function?
-
-> +static void __of_phandle_iter_set(struct of_phandle_iter *iter,
-
-This is only used in one place; why not simply inline this into
-of_phandle_iter_start()? It would make the code simpler.
-
-> +void of_phandle_iter_start(struct of_phandle_iter *iter,
-
-> +	iter->cells_name = cells_name;
-> +	iter->cell_count = cell_count;
-
-Why not pass these values into of_phandle_iter_next() instead? There's
-no need to pass them just to _start() so they can be read by _next()
-instead.
-
-> diff --git a/include/linux/of.h b/include/linux/of.h
-
-> +/*
-> + * keep the state at iterating a list of phandles with variable number
-> + * of args
-> + */
-> +struct of_phandle_iter {
-> +	int		err;
-> +	const __be32	*cur;		/* current phandle */
-> +	const __be32	*end;		/* end of the last phandle */
-
-Can't you detect an error case by e.g. (cur == NULL) and thus avoid
-requiring an explicit err field?
-
-Together with removing:
-
-> +	const char	*cells_name;
-> +	int		cell_count;
-
-... then you'd only be left with cur/end, so I think you could get away
-without a struct at all, but simply "cur" as the iterator variable, plus
-"end" as the one temp variable.
+-- 
+Thanks!
+Yijing
