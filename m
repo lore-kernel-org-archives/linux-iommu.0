@@ -1,17 +1,13 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 2/3 v2] iommu/fsl: Enable default DMA window for PCIe
-	devices
-Date: Tue, 03 Dec 2013 11:34:52 -0700
-Message-ID: <1386095692.25738.279.camel@ul30vt.home>
-References: <1381922582-28724-1-git-send-email-Varun.Sethi@freescale.com>
-	<1381922582-28724-3-git-send-email-Varun.Sethi@freescale.com>
-	<1386020016.25738.240.camel@ul30vt.home>
-	<C5ECD7A89D1DC44195F34B25E172658D0A606B8F@039-SN2MPN1-011.039d.mgd.msft.net>
+From: Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
+Subject: [PATCH 0/6] Crashdump Accepting Active IOMMU
+Date: Tue,  3 Dec 2013 12:41:28 -0700
+Message-ID: <1386099694-4190-1-git-send-email-bill.sumner@hp.com>
+References: <Crashdump-Accepting-Active-IOMMU>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <C5ECD7A89D1DC44195F34B25E172658D0A606B8F-RL0Hj/+nBVCMXPU/2EZmt64g8xLGJsHaLnY5E4hWTkheoWH0uzbU5w@public.gmane.org>
+In-Reply-To: <Crashdump-Accepting-Active-IOMMU>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,171 +17,129 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, bill.sumner-VXdhtT5mjnY@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2013-12-03 at 18:15 +0000, Varun Sethi wrote:
-> 
-> > -----Original Message-----
-> > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > Sent: Tuesday, December 03, 2013 3:04 AM
-> > To: Sethi Varun-B16395
-> > Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linuxppc-
-> > dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Yoder Stuart-B08248;
-> > Wood Scott-B07421; Bhushan Bharat-R65777
-> > Subject: Re: [PATCH 2/3 v2] iommu/fsl: Enable default DMA window for PCIe
-> > devices
-> > 
-> > On Wed, 2013-10-16 at 16:53 +0530, Varun Sethi wrote:
-> > > Once the PCIe device assigned to a guest VM (via VFIO) gets detached
-> > > from the iommu domain (when guest terminates), its PAMU table entry is
-> > > disabled. So, this would prevent the device from being used once it's
-> > assigned back to the host.
-> > >
-> > > This patch allows for creation of a default DMA window corresponding
-> > > to the device and subsequently enabling the PAMU table entry. Before
-> > > we enable the entry, we ensure that the device's bus master capability
-> > is disabled (device quiesced).
-> > >
-> > > Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-> > > ---
-> > >  drivers/iommu/fsl_pamu.c        |   43 ++++++++++++++++++++++++++++---
-> > -----
-> > >  drivers/iommu/fsl_pamu.h        |    1 +
-> > >  drivers/iommu/fsl_pamu_domain.c |   46
-> > ++++++++++++++++++++++++++++++++++++---
-> > >  3 files changed, 78 insertions(+), 12 deletions(-)
-> > >
-> > > diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c index
-> > > cba0498..fb4a031 100644
-> > > --- a/drivers/iommu/fsl_pamu.c
-> > > +++ b/drivers/iommu/fsl_pamu.c
-> > > @@ -225,6 +225,21 @@ static struct paace *pamu_get_spaace(struct paace
-> > *paace, u32 wnum)
-> > >  	return spaace;
-> > >  }
-> > >
-> > > +/*
-> > > + * Defaul PPAACE settings for an LIODN.
-> > > + */
-> > > +static void setup_default_ppaace(struct paace *ppaace) {
-> > > +	pamu_init_ppaace(ppaace);
-> > > +	/* window size is 2^(WSE+1) bytes */
-> > > +	set_bf(ppaace->addr_bitfields, PPAACE_AF_WSE, 35);
-> > > +	ppaace->wbah = 0;
-> > > +	set_bf(ppaace->addr_bitfields, PPAACE_AF_WBAL, 0);
-> > > +	set_bf(ppaace->impl_attr, PAACE_IA_ATM,
-> > > +		PAACE_ATM_NO_XLATE);
-> > > +	set_bf(ppaace->addr_bitfields, PAACE_AF_AP,
-> > > +		PAACE_AP_PERMS_ALL);
-> > > +}
-> > >  /**
-> > >   * pamu_get_fspi_and_allocate() - Allocates fspi index and reserves
-> > subwindows
-> > >   *                                required for primary PAACE in the
-> > secondary
-> > > @@ -253,6 +268,24 @@ static unsigned long
-> > pamu_get_fspi_and_allocate(u32 subwin_cnt)
-> > >  	return (spaace_addr - (unsigned long)spaact) / (sizeof(struct
-> > > paace));  }
-> > >
-> > > +/* Reset the PAACE entry to the default state */ void
-> > > +enable_default_dma_window(int liodn) {
-> > > +	struct paace *ppaace;
-> > > +
-> > > +	ppaace = pamu_get_ppaace(liodn);
-> > > +	if (!ppaace) {
-> > > +		pr_debug("Invalid liodn entry\n");
-> > > +		return;
-> > > +	}
-> > > +
-> > > +	memset(ppaace, 0, sizeof(struct paace));
-> > > +
-> > > +	setup_default_ppaace(ppaace);
-> > > +	mb();
-> > > +	pamu_enable_liodn(liodn);
-> > > +}
-> > > +
-> > >  /* Release the subwindows reserved for a particular LIODN */  void
-> > > pamu_free_subwins(int liodn)  { @@ -752,15 +785,7 @@ static void
-> > > __init setup_liodns(void)
-> > >  				continue;
-> > >  			}
-> > >  			ppaace = pamu_get_ppaace(liodn);
-> > > -			pamu_init_ppaace(ppaace);
-> > > -			/* window size is 2^(WSE+1) bytes */
-> > > -			set_bf(ppaace->addr_bitfields, PPAACE_AF_WSE, 35);
-> > > -			ppaace->wbah = 0;
-> > > -			set_bf(ppaace->addr_bitfields, PPAACE_AF_WBAL, 0);
-> > > -			set_bf(ppaace->impl_attr, PAACE_IA_ATM,
-> > > -				PAACE_ATM_NO_XLATE);
-> > > -			set_bf(ppaace->addr_bitfields, PAACE_AF_AP,
-> > > -				PAACE_AP_PERMS_ALL);
-> > > +			setup_default_ppaace(ppaace);
-> > >  			if (of_device_is_compatible(node, "fsl,qman-portal"))
-> > >  				setup_qbman_paace(ppaace, QMAN_PORTAL_PAACE);
-> > >  			if (of_device_is_compatible(node, "fsl,qman")) diff --
-> > git
-> > > a/drivers/iommu/fsl_pamu.h b/drivers/iommu/fsl_pamu.h index
-> > > 8fc1a12..0edcbbbb 100644
-> > > --- a/drivers/iommu/fsl_pamu.h
-> > > +++ b/drivers/iommu/fsl_pamu.h
-> > > @@ -406,5 +406,6 @@ void get_ome_index(u32 *omi_index, struct device
-> > > *dev);  int  pamu_update_paace_stash(int liodn, u32 subwin, u32
-> > > value);  int pamu_disable_spaace(int liodn, u32 subwin);
-> > >  u32 pamu_get_max_subwin_cnt(void);
-> > > +void enable_default_dma_window(int liodn);
-> > >
-> > >  #endif  /* __FSL_PAMU_H */
-> > > diff --git a/drivers/iommu/fsl_pamu_domain.c
-> > > b/drivers/iommu/fsl_pamu_domain.c index 966ae70..dd6cafc 100644
-> > > --- a/drivers/iommu/fsl_pamu_domain.c
-> > > +++ b/drivers/iommu/fsl_pamu_domain.c
-> > > @@ -340,17 +340,57 @@ static inline struct device_domain_info
-> > *find_domain(struct device *dev)
-> > >  	return dev->archdata.iommu_domain;
-> > >  }
-> > >
-> > > +/* Disable device DMA capability and enable default DMA window */
-> > > +static void disable_device_dma(struct device_domain_info *info,
-> > > +				int enable_dma_window)
-> > 
-> > nit, bool?
-> > 
-> > > +{
-> > > +#ifdef CONFIG_PCI
-> > > +	if (info->dev->bus == &pci_bus_type) {
-> > > +		struct pci_dev *pdev = NULL;
-> > 
-> > nit, unnecessary initialization
-> > 
-> > > +		pdev = to_pci_dev(info->dev);
-> > > +		if (pci_is_enabled(pdev))
-> > > +			pci_disable_device(pdev);
-> > 
-> > This looks suspicious.  What's the case where you're finding devices
-> > where this is needed?  Logically the driver that called
-> > pci_enable_device() should also call pci_disabled_device() when it's
-> > done.  Maybe there's a case to be made that we can't rely on the driver,
-> > but then maybe there should be a pr_debug/info here to notify that
-> > somebody left the device running.  There might also be the question of
-> > whether you should test the busmaster bit in the command register rather
-> > than trusting these indirect paths if it's really for cleanup.  Thanks,
-> > 
-> Once the device is detached from the domain, we enable a default DMA
-> window for the device. Before enabling the default window, I want to
-> ensure that device DMA is disabled. VFIO subsystem handles this for
-> vfio-pci. But, can we assume that this would always be the case?
 
-That's what I'm asking.  It seems like pci_enable/disable_device is part
-of the driver API and every enable should have a matching disable.  If
-this is to catch cases where the disable never happened, then there
-should be some indication that the previous driver did something wrong
-and we should have some sort of printed warning.  Then there's also the
-question of whether this fully does what you want it to.  This is an
-indirect way of checking the busmaster bit in the command register.  If
-you really want to make sure it's disabled, is it sufficient or should
-we be reading the actual command register?  Thanks,
+The following series implements a fix for:
+A kdump problem about DMA that has been discussed for a long time. That is,
+when a kernel panics and boots into the kdump kernel, DMA started by the 
+panicked kernel is not stopped before the kdump kernel is booted and the 
+kdump kernel disables the IOMMU while this DMA continues.  This causes the
+IOMMU to stop translating the DMA addresses as IOVAs and begin to treat them 
+as physical memory addresses -- which causes the DMA to either:
+(1) generate DMAR errors or (2) generate PCI SERR errors or (3) transfer  
+data to or from incorrect areas of memory. Often this causes the dump to fail.
 
-Alex
+This patch set modifies the behavior of the iommu in the (new) crashdump kernel: 
+1. to accept the iommu hardware in an active state, 
+2. to leave the current translations in-place so that legacy DMA will continue
+   using its current buffers until the device drivers in the crashdump kernel
+   initialize and initialize their devices,
+3. to use different portions of the iova address ranges for the device drivers
+   in the crashdump kernel than the iova ranges that were in-use at the time
+   of the panic.  
+
+Advantages of this approach:
+1. All manipulation of the IO-device is done by the Linux device-driver
+   for that device.
+2. This approach behaves in a manner very similar to operation without an
+   active iommu.
+3. Any activity between the IO-device and its RMRR areas is handled by the
+   device-driver in the same manner as during a non-kdump boot.
+4. If an IO-device has no driver in the kdump kernel, it is simply left alone.
+   This supports the practice of creating a special kdump kernel without
+   drivers for any devices that are not required for taking a crashdump. 
+
+Changes since the RFC version of this patch:
+1. Consolidated all of the operational code into the "copy..." functions.
+   The "process..." functions were primarily used for diagnostics and
+   exploration; however, there was a small amount of operational code that
+   used the "process..." functions.
+   This operational code has been moved into the "copy..." functions.
+
+2. Removed the "Process ..." functions and the diagnostic code that ran
+   on that function set.  This removed about 1/4 of the code -- which this
+   operational patch set no longer needs.  These portions of the RFC patch
+   could be formatted as a separate patch and submitted independently
+   at a later date. 
+
+3. Re-formatted the code to the Linux Coding Standards.
+   The checkpatch script still finds some lines to complain about;
+   however most of these lines are either (1) lines that I did not change,
+   or (2) lines that only changed by adding a level of indent which pushed
+   them over 80-characters, or (3) new lines whose intent is far clearer when
+   longer than 80-characters.
+
+4. Updated the remaining debug print to be significantly more flexible.
+   This allows control over the amount of debug print to the console --
+   which can vary widely.
+
+5. Fixed a couple of minor bugs found by testing on a machine with a
+   very large IO configuration.
+
+At a high level, this code operates primarily during iommu initialization
+and device-driver initialization
+
+During intel-iommu hardware initialization:
+In intel_iommu_init(void)
+* If (This is the crash kernel)
+  .  Set flag: crashdump_accepting_active_iommu (all changes below check this)
+  .  Skip disabling the iommu hardware translations
+
+In init_dmars()
+* Duplicate the intel iommu translation tables from the old kernel
+  in the new kernel
+  . The root-entry table, all context-entry tables,
+    and all page-translation-entry tables
+  . The duplicate tables contain updated physical addresses to link them together.
+  . The duplicate tables are mapped into kernel virtual addresses
+    in the new kernel which allows most of the existing iommu code
+    to operate without change.
+  . Do some minimal sanity-checks during the copy
+  . Place the address of the new root-entry structure into "struct intel_iommu"
+
+* Skip setting-up new domains for 'si', 'rmrr', 'isa' 
+  . Translations for 'rmrr' and 'isa' ranges have been copied from the old kernel
+  . This patch has not yet been tested with iommu pass-through enabled
+
+* Existing (unchanged) code near the end of dmar_init:
+  . Loads the address of the (now new) root-entry structure from
+    "struct intel_iommu" into the iommu hardware and does the hardware flushes.
+    This changes the active translation tables from the ones in the old kernel
+    to the copies in the new kernel.
+  . This is legal because the translations in the two sets of tables are
+    currently identical:
+      Virtualization Technology for Directed I/O. Architecture Specification,
+      February 2011, Rev. 1.3  (section 11.2, paragraph 2) 
+
+In iommu_init_domains()
+* Mark as in-use all domain-id's from the old kernel
+  . In case the new kernel contains a device that was not in the old kernel
+    and a new, unused domain-id is actually needed, the bitmap will give us one.
+
+When a new domain is created for a device:
+* If (this device has a context in the old kernel)
+  . Get domain-id, address-width, and IOVA ranges from the old kernel context;
+  . Get address(page-entry-tables) from the copy in the new kernel;
+  . And apply all of the above values to the new domain structure.
+* Else
+  . Create a new domain as normal
+
+--- 
+Signed-off-by: Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
+
+Bill Sumner (6):
+  Crashdump-Accepting-Active-IOMMU-Flags-and-Prototypes
+  Crashdump-Accepting-Active-IOMMU-Utility-functions
+  Crashdump-Accepting-Active-IOMMU-Domain-Interfaces
+  Crashdump-Accepting-Active-IOMMU-Copy-Translations
+  Crashdump-Accepting-Active-IOMMU-Debug-Print-IOMMU
+  Crashdump-Accepting-Active-IOMMU-Call-From-Mainline
+
+ drivers/iommu/intel-iommu.c | 1292 ++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 1224 insertions(+), 68 deletions(-)
+
+-- 
+Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
