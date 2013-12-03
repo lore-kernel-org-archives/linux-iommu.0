@@ -1,7 +1,7 @@
 From: Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
-Subject: [PATCH 1/6] Crashdump-Accepting-Active-IOMMU-Flags-and-Prototypes
-Date: Tue,  3 Dec 2013 12:41:29 -0700
-Message-ID: <1386099694-4190-2-git-send-email-bill.sumner@hp.com>
+Subject: [PATCH 5/6] Crashdump-Accepting-Active-IOMMU-Debug-Print-IOMMU
+Date: Tue,  3 Dec 2013 12:41:33 -0700
+Message-ID: <1386099694-4190-6-git-send-email-bill.sumner@hp.com>
 References: <Crashdump-Accepting-Active-IOMMU>
 	<1386099694-4190-1-git-send-email-bill.sumner@hp.com>
 Mime-Version: 1.0
@@ -25,101 +25,92 @@ List-Id: iommu@lists.linux-foundation.org
 
 Signed-off-by: Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 75 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 75 insertions(+)
+ drivers/iommu/intel-iommu.c | 76 +++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 76 insertions(+)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 15e9b57..a0e8a76 100644
+index d9a49ad..19c1370 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -48,6 +48,7 @@
- 
- #include "irq_remapping.h"
- #include "pci.h"
-+#include <linux/crash_dump.h>
- 
- #define ROOT_SIZE		VTD_PAGE_SIZE
- #define CONTEXT_SIZE		VTD_PAGE_SIZE
-@@ -164,6 +165,80 @@ static inline unsigned long virt_to_dma_pfn(void *p)
- 	return page_to_dma_pfn(virt_to_page(p));
+@@ -5322,3 +5322,79 @@ static int copy_intel_iommu_translation_tables(struct dmar_drhd_unit *drhd,
+ 	return 0;
  }
- 
+ #endif /* CONFIG_CRASH_DUMP */
 +#ifdef CONFIG_CRASH_DUMP
-+/* ===================================================================
-+ * Crashdump Accepting Active IOMMU
-+ * Enhances the crashdump kernel to deal with an active iommu
-+ * and legacy DMA from the (old) panic'd kernel in a manner similar to how
-+ * legacy DMA is handled when no hardware iommu was in use by the old kernel --
-+ * allow the legacy DMA to continue into its current buffers.
-+ *
-+ * This code:
-+ * 1. accepts the iommu hardware in an active state from the old kernel,
-+ * 2. leaves the current translations in-place so that legacy DMA will
-+ *    continue to use its current buffers,
-+ * 3. allocates to the device drivers in the crashdump kernel
-+ *    portions of the iova address ranges that are different
-+ *    from the iova address ranges that were being used by the old kernel
-+ *    at the time of the panic.
-+ * -------------------------------------------------------------------
++
++
++/* =========================================================================
++ * Diagnostic print
++ * ------------------------------------------------------------------------
 + */
 +
-+/* Flags for Crashdump Accepting Active IOMMU */
-+
-+static int crashdump_accepting_active_iommu;	/* activate this feature */
-+static int intel_iommu_translation_tables_are_mapped;	/* table copy done */
-+
-+static struct {				/* run-time pr_debug() flags */
-+	unsigned in_crashdump:1;	/* if crashdump_accepting_active_iommu */
-+	unsigned domain_get:1;		/* pr_debug in domain_get* functions */
-+	unsigned copy_page_table:1;	/* enter/leave copy_page_table() */
-+	unsigned copy_page_addr:1;	/* enter/leave copy_page_addr() */
-+	unsigned addr_ranges:1;		/* accumulated addr ranges */
-+	unsigned reserved_ranges:1;	/* accumulated addr ranges reserved */
-+	unsigned page_addr:1;		/* adr(each page table) */
-+	unsigned enter_oldcopy:1;	/* enter oldcopy() parameters */
-+	unsigned leave_oldcopy:1;	/* leave oldcopy() parameters */
-+} pr_dbg  = {				/* Enable flags below here */
-+	.in_crashdump = 1,
-+	.domain_get = 1,
-+	.copy_page_table = 1,
-+	.copy_page_addr = 0,
-+	.addr_ranges = 0,
-+	.reserved_ranges = 0,
-+	.page_addr = 0,
-+	.enter_oldcopy = 0,
-+	.leave_oldcopy = 0,
++static struct intel_iommu_register_print {
++	int	len;		/* Length of register */
++	int	idx;		/* Index to read register */
++	char	reg[20];	/* Linux name of register */
++	char	txt[40];	/* Description */
++} intel_iommu_register_print_v[] = {
++	{1, DMAR_VER_REG,	"DMAR_VER_REG",		"Arch version supported by this IOMMU"},
++	{2, DMAR_CAP_REG,	"DMAR_CAP_REG",		"Hardware supported capabilities"},
++	{2, DMAR_ECAP_REG,	"DMAR_ECAP_REG",	"Extended capabilities supported"},
++	{1, DMAR_GCMD_REG,	"DMAR_GCMD_REG",	"Global command register"},
++	{1, DMAR_GSTS_REG,	"DMAR_GSTS_REG",	"Global status register "},
++	{2, DMAR_RTADDR_REG,	"DMAR_RTADDR_REG",	"Root entry table"},
++	{2, DMAR_CCMD_REG,	"DMAR_CCMD_REG",	"Context command reg"},
++	{1, DMAR_FSTS_REG,	"DMAR_FSTS_REG",	"Fault Status register"},
++	{1, DMAR_FECTL_REG,	"DMAR_FECTL_REG",	"Fault control register"},
++	{1, DMAR_FEDATA_REG,	"DMAR_FEDATA_REG",	"Fault event interrupt data register"},
++	{1, DMAR_FEADDR_REG,	"DMAR_FEADDR_REG",	"Fault event interrupt addr register"},
++	{1, DMAR_FEUADDR_REG,	"DMAR_FEUADDR_REG",	"Upper address register"},
++	{2, DMAR_AFLOG_REG,	"DMAR_AFLOG_REG",	"Advanced Fault control"},
++	{1, DMAR_PMEN_REG,	"DMAR_PMEN_REG",	"Enable Protected Memory Region"},
++	{1, DMAR_PLMBASE_REG,	"DMAR_PLMBASE_REG",	"PMRR Low addr"},
++	{1, DMAR_PLMLIMIT_REG,	"DMAR_PLMLIMIT_REG",	"PMRR low limit"},
++	{2, DMAR_PHMBASE_REG,	"DMAR_PHMBASE_REG",	"pmrr high base addr"},
++	{2, DMAR_PHMLIMIT_REG,	"DMAR_PHMLIMIT_REG",	"pmrr high limit"},
++	{2, DMAR_IQH_REG,	"DMAR_IQH_REG",		"Invalidation queue head register"},
++	{2, DMAR_IQT_REG,	"DMAR_IQT_REG",		"Invalidation queue tail register"},
++	{2, DMAR_IQA_REG,	"DMAR_IQA_REG",		"Invalidation queue addr register"},
++	{1, DMAR_ICS_REG,	"DMAR_ICS_REG",		"Invalidation complete status register"},
++	{2, DMAR_IRTA_REG,	"DMAR_IRTA_REG",	"Interrupt remapping table addr register"},
 +};
 +
-+/* Prototypes of interface functions for Crashdump Accepting Active IOMMU */
++static void print_intel_iommu_registers(struct dmar_drhd_unit *drhd)
++{
++	struct intel_iommu *iommu;	/* Virt adr(iommu hardware registers) */
++	unsigned long long q;		/* quadword scratch */
++	u32 ver;			/* DMAR_VER_REG */
 +
-+static int
-+copy_intel_iommu_translation_tables(struct dmar_drhd_unit *drhd,
-+	struct root_entry **root_old_p, struct root_entry **root_new_p);
++	int m = sizeof(intel_iommu_register_print_v) /
++		sizeof(intel_iommu_register_print_v[0]);
++	struct intel_iommu_register_print *p = &intel_iommu_register_print_v[0];
 +
-+static int
-+domain_get_did_from_old_kernel(struct intel_iommu *iommu, struct pci_dev *pdev);
++	iommu = drhd->iommu;
 +
-+static int
-+domain_get_gaw_from_old_kernel(struct intel_iommu *iommu, struct pci_dev *pdev);
++	pr_debug("ENTER %s\n", __func__);
++	ver = readl(iommu->reg + DMAR_VER_REG);
++	pr_debug("IOMMU %d: reg_base_addr %llx ver %d:%d cap %llx ecap %llx\n",
++		iommu->seq_id,
++		(unsigned long long)drhd->reg_base_addr,
++		DMAR_VER_MAJOR(ver), DMAR_VER_MINOR(ver),
++		(unsigned long long)iommu->cap,
++		(unsigned long long)iommu->ecap);
 +
-+static u64
-+domain_get_pgd_from_old_kernel(struct intel_iommu *iommu, struct pci_dev *pdev);
++	q = readq(iommu->reg + DMAR_RTADDR_REG);
++	pr_debug("IOMMU %d: DMAR_RTADDR_REG:0x%16.16llx\n", iommu->seq_id, q);
 +
-+static void
-+domain_get_ranges_from_old_kernel(struct dmar_domain *domain,
-+		  struct intel_iommu *iommu, struct pci_dev *pdev);
-+static int
-+intel_iommu_get_dids_from_old_kernel(struct intel_iommu *iommu);
++	for (; p < &intel_iommu_register_print_v[m]; p++)
++		if (p->len == 2)
++			pr_debug("0x%16.16llx %-20s %-40s\n",
++				(u64)readq(iommu->reg + p->idx), p->reg,
++						p->txt);
++		else
++			pr_debug("        0x%8.8x %-20s %-40s\n",
++				(u32)readl(iommu->reg + p->idx), p->reg,
++						p->txt);
 +
-+/* Debug-print functions for  Crashdump Accepting Active IOMMU */
-+
-+static void
-+print_intel_iommu_registers(struct dmar_drhd_unit *drhd);
-+#endif	/* CONFIG_CRASH_DUMP */
-+
-+
- /* global iommu list, set NULL for ignored DMAR units */
- static struct intel_iommu **g_iommus;
- 
++	pr_debug("LEAVE %s\n", __func__);
++}
++#endif /* CONFIG_CRASH_DUMP */
 -- 
 Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
