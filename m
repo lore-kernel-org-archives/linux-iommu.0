@@ -1,81 +1,47 @@
 From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 2/6] iommu/tegra124: smmu: convert swgroup ID to asid offset
-Date: Thu, 5 Dec 2013 14:25:15 +0200
-Message-ID: <1386246319-17851-3-git-send-email-hdoyu@nvidia.com>
-References: <1386246319-17851-1-git-send-email-hdoyu@nvidia.com>
+Subject: [PATCH 0/6] iommu/tegra124: smmu: add T124 enhancement
+Date: Thu, 5 Dec 2013 14:25:13 +0200
+Message-ID: <1386246319-17851-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1386246319-17851-1-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Provide a conversion table from swgroup ID to MC_SMMU_<swgroup
-name>_ASID_0 register offset to support non-linear conversion. This
-conversion used to be exactly linear but after T124 we need a
-conversion table to support non-linear cases. We would also need
-another table to convert swgroup ID to HOTRESET bit.
+Hi,
 
-Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/tegra-smmu.c | 21 ++++++++++++++++++---
- 1 file changed, 18 insertions(+), 3 deletions(-)
+The basics of Tegra SMMU has been same over generations except that
+each SoC has its own combination of HardWare Accelerators(HWA). This
+combination is presented by swgroup ID. This difference is handled by
+the previous "Unifying SMMU driver among Tegra SoCs" patch
+series[1]. For the new Tegra SoC 124 SMMU has been slightly
+enhanced. To support this minor changes, Tegra SMMU platfrom data is
+introduced. This data set can be choosen by DT ".comptibility"
+flag. If the further tegra SoC need to tweak those parameters, we can
+think of moving some of them into DT bindings eventually.
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index f63d54a..a723a1b 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -184,8 +184,6 @@ enum {
- #define __smmu_client_enable_swgroups(c, m) __smmu_client_set_swgroups(c, m, 1)
- #define __smmu_client_disable_swgroups(c) __smmu_client_set_swgroups(c, 0, 0)
- 
--#define SWGROUPS_ASID_REG(x) ((x) * sizeof(u32) + SMMU_ASID_BASE)
--
- /*
-  * Per client for address space
-  */
-@@ -314,6 +312,23 @@ static inline void smmu_write(struct smmu_device *smmu, u32 val, size_t offs)
-  */
- #define FLUSH_SMMU_REGS(smmu)	smmu_read(smmu, SMMU_CONFIG)
- 
-+static size_t smmu_get_asid_offset(int id)
-+{
-+	switch (id) {
-+	case TEGRA_SWGROUP_DC14:
-+		return 0x490;
-+	case TEGRA_SWGROUP_DC12:
-+		return 0xa88;
-+	case TEGRA_SWGROUP_AFI...TEGRA_SWGROUP_ISP:
-+	case TEGRA_SWGROUP_MPE...TEGRA_SWGROUP_PPCS1:
-+		return (id - TEGRA_SWGROUP_AFI) * sizeof(u32) + SMMU_ASID_BASE;
-+	case TEGRA_SWGROUP_SDMMC1A...63:
-+		return (id - TEGRA_SWGROUP_SDMMC1A) * sizeof(u32) + 0xa94;
-+	};
-+
-+	BUG();
-+}
-+
- static struct smmu_client *find_smmu_client(struct smmu_device *smmu,
- 					    struct device_node *dev_node)
- {
-@@ -416,7 +431,7 @@ static int __smmu_client_set_swgroups(struct smmu_client *c,
- 		map = c->swgroups;
- 
- 	for_each_set_bit(i, map, TEGRA_SWGROUP_MAX) {
--		offs = SWGROUPS_ASID_REG(i);
-+		offs = smmu_get_asid_offset(i);
- 		val = smmu_read(smmu, offs);
- 		if (on) {
- 			if (val) {
+This series depend on v6 of:
+     "[PATCHv6 00/13] Unifying SMMU driver among Tegra SoCs"[1]
+
+A whole patches is available in the git repository at:
+
+  git://git-HoETi0wPbwRDw2glCA4ptUEOCMrvLtNR@public.gmane.org/user/hdoyu/linux.git smmu-upstreaming@20131205
+
+Hiroshi Doyu (6):
+  iommu/tegra124: smmu: optionaly AHB enables SMMU
+  iommu/tegra124: smmu: convert swgroup ID to asid offset
+  iommu/tegra124: smmu: add support platform data
+  iommu/tegra124: smmu: support more than 32 bit pa
+  iommu/tegra124: smmu: {TLB,PTC} reset value per SoC
+  yiommu/tegra124: smmu: adjust TLB_FLUSH_ASID bit range
+
+ .../bindings/iommu/nvidia,tegra30-smmu.txt         |   4 +-
+ drivers/iommu/tegra-smmu.c                         | 157 +++++++++++++++------
+ 2 files changed, 115 insertions(+), 46 deletions(-)
+
 -- 
 1.8.1.5
+
+[1] http://lists.linuxfoundation.org/pipermail/iommu/2013-November/007048.html
