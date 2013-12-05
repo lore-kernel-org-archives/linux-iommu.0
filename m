@@ -1,41 +1,34 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCHv6 05/13] iommu/core: add ops->{bound,unbind}_driver()
-Date: Wed, 4 Dec 2013 10:01:36 +0000
-Message-ID: <20131204100136.GA10293@mudshark.cambridge.arm.com>
-References: <1385041249-7705-1-git-send-email-hdoyu@nvidia.com>
- <1385041249-7705-6-git-send-email-hdoyu@nvidia.com>
- <20131125154937.d6dbe9aedc16aab335d92f99@nvidia.com>
- <20131204094027.dad1288aec14551ec42f3743@nvidia.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20131204094027.dad1288aec14551ec42f3743-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Lorenzo Pieralisi <Lorenzo.Pieralisi-5wv7dgnIgG8@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org" <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+From: Brian Norris <computersforpeace@gmail.com>
+Subject: [PATCH] iommu: add missing include
+Date: Wed,  4 Dec 2013 17:22:53 -0800
+Message-ID: <1386206573-16158-1-git-send-email-computersforpeace@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Brian Norris <computersforpeace@gmail.com>, Linux Kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, Hiroshi DOYU <hdoyu@nvidia.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Hiroshi,
+Fix a warning in of_iommu.c:
 
-On Wed, Dec 04, 2013 at 07:40:27AM +0000, Hiroshi Doyu wrote:
-> On Mon, 25 Nov 2013 14:49:37 +0100
-> Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote:
-> 
-> > Hi Joerg,
-> > 
-> > Do you have some time to review this patch along with the following ones?
-> > 
-> >   [PATCHv6 02/13] iommu/of: introduce a global iommu device list
-> >   http://lists.linuxfoundation.org/pipermail/iommu/2013-November/007050.html
-> > 
-> >   [PATCHv6 03/13] iommu/of: check if dependee iommu is ready or not
-> >   http://lists.linuxfoundation.org/pipermail/iommu/2013-November/007051.html
-> 
-> Any chance to get some feedback on them?
+drivers/iommu/of_iommu.c:38:5: warning: no previous prototype for 'of_get_dma_window' [-Wmissing-prototypes]
 
-Joerg is on holiday at the moment, but Alex Williamson is serving as interim
-IOMMU maintainer at the moment. Adding him to CC, but this probably needs an
-Ack from Joerg regardless, so you will need to wait for him to come back.
+Signed-off-by: Brian Norris <computersforpeace@gmail.com>
+Cc: Hiroshi DOYU <hdoyu@nvidia.com>
+---
+ drivers/iommu/of_iommu.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Will
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index ee249bc959f8..e550ccb7634e 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -20,6 +20,7 @@
+ #include <linux/export.h>
+ #include <linux/limits.h>
+ #include <linux/of.h>
++#include <linux/of_iommu.h>
+ 
+ /**
+  * of_get_dma_window - Parse *dma-window property and returns 0 if found.
+-- 
+1.8.5
