@@ -1,54 +1,81 @@
 From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 1/6] iommu/tegra124: smmu: optionaly AHB enables SMMU
-Date: Thu, 5 Dec 2013 14:25:14 +0200
-Message-ID: <1386246319-17851-2-git-send-email-hdoyu@nvidia.com>
+Subject: [PATCH 2/6] iommu/tegra124: smmu: convert swgroup ID to asid offset
+Date: Thu, 5 Dec 2013 14:25:15 +0200
+Message-ID: <1386246319-17851-3-git-send-email-hdoyu@nvidia.com>
 References: <1386246319-17851-1-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 In-Reply-To: <1386246319-17851-1-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SMMU used to depend on AHB bus. AHB driver needs to be populated and
-AHB_XBAR_CTRL_SMMU_INIT_DONE bit needs to be set earliear than SMMU
-being populated. Later Tegra SoC (>= T124) doesn't need AHB to enable
-SMMU on AHB_XBAR_CTRL for AHB_XBAR_CTRL_SMMU_INIT_DONE any more. This
-setting bit is now optional, depending on DT passing ahb phandle or
-not.
+Provide a conversion table from swgroup ID to MC_SMMU_<swgroup
+name>_ASID_0 register offset to support non-linear conversion. This
+conversion used to be exactly linear but after T124 we need a
+conversion table to support non-linear cases. We would also need
+another table to convert swgroup ID to HOTRESET bit.
 
 Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/tegra-smmu.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/iommu/tegra-smmu.c | 21 ++++++++++++++++++---
+ 1 file changed, 18 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index d0f0ba7..f63d54a 100644
+index f63d54a..a723a1b 100644
 --- a/drivers/iommu/tegra-smmu.c
 +++ b/drivers/iommu/tegra-smmu.c
-@@ -500,7 +500,10 @@ static int smmu_setup_regs(struct smmu_device *smmu)
+@@ -184,8 +184,6 @@ enum {
+ #define __smmu_client_enable_swgroups(c, m) __smmu_client_set_swgroups(c, m, 1)
+ #define __smmu_client_disable_swgroups(c) __smmu_client_set_swgroups(c, 0, 0)
  
- 	smmu_flush_regs(smmu, 1);
- 
--	return tegra_ahb_enable_smmu(smmu->ahb);
-+	if (smmu->ahb)
-+		return tegra_ahb_enable_smmu(smmu->ahb);
-+
-+	return 0;
- }
- 
- static void flush_ptc_and_tlb(struct smmu_device *smmu,
-@@ -1284,9 +1287,6 @@ static int tegra_smmu_probe(struct platform_device *pdev)
- 		return -EINVAL;
- 
- 	smmu->ahb = of_parse_phandle(dev->of_node, "nvidia,ahb", 0);
--	if (!smmu->ahb)
--		return -ENODEV;
+-#define SWGROUPS_ASID_REG(x) ((x) * sizeof(u32) + SMMU_ASID_BASE)
 -
- 	smmu->iommu.dev = dev;
- 	smmu->num_as = asids;
- 	smmu->iovmm_base = base;
+ /*
+  * Per client for address space
+  */
+@@ -314,6 +312,23 @@ static inline void smmu_write(struct smmu_device *smmu, u32 val, size_t offs)
+  */
+ #define FLUSH_SMMU_REGS(smmu)	smmu_read(smmu, SMMU_CONFIG)
+ 
++static size_t smmu_get_asid_offset(int id)
++{
++	switch (id) {
++	case TEGRA_SWGROUP_DC14:
++		return 0x490;
++	case TEGRA_SWGROUP_DC12:
++		return 0xa88;
++	case TEGRA_SWGROUP_AFI...TEGRA_SWGROUP_ISP:
++	case TEGRA_SWGROUP_MPE...TEGRA_SWGROUP_PPCS1:
++		return (id - TEGRA_SWGROUP_AFI) * sizeof(u32) + SMMU_ASID_BASE;
++	case TEGRA_SWGROUP_SDMMC1A...63:
++		return (id - TEGRA_SWGROUP_SDMMC1A) * sizeof(u32) + 0xa94;
++	};
++
++	BUG();
++}
++
+ static struct smmu_client *find_smmu_client(struct smmu_device *smmu,
+ 					    struct device_node *dev_node)
+ {
+@@ -416,7 +431,7 @@ static int __smmu_client_set_swgroups(struct smmu_client *c,
+ 		map = c->swgroups;
+ 
+ 	for_each_set_bit(i, map, TEGRA_SWGROUP_MAX) {
+-		offs = SWGROUPS_ASID_REG(i);
++		offs = smmu_get_asid_offset(i);
+ 		val = smmu_read(smmu, offs);
+ 		if (on) {
+ 			if (val) {
 -- 
 1.8.1.5
