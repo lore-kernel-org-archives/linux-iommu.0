@@ -1,82 +1,137 @@
 From: Jiang Liu <jiang.liu@linux.intel.com>
-Subject: [Patch Part1 V2 05/20] iommu/vt-d, trivial: refine support of 64bit guest address
-Date: Fri,  6 Dec 2013 11:21:08 +0800
-Message-ID: <1386300083-6882-6-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part1 V2 09/20] iommu/vt-d: mark internal functions as static
+Date: Fri,  6 Dec 2013 11:21:12 +0800
+Message-ID: <1386300083-6882-10-git-send-email-jiang.liu@linux.intel.com>
 References: <1386300083-6882-1-git-send-email-jiang.liu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1386300083-6882-1-git-send-email-jiang.liu@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, Ashok Raj <ashok.raj@intel.com>, Yijing Wang <wangyijing@huawei.com>, Jiri Kosina <trivial@kernel.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, Tony Luck <tony.luck@intel.com>, Yinghai Lu <yinghai@kernel.org>, linux-pci@vger.kernel.org, dmaengine@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, Ashok Raj <ashok.raj@intel.com>, Yijing Wang <wangyijing@huawei.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, Tony Luck <tony.luck@intel.com>, Yinghai Lu <yinghai@kernel.org>, linux-pci@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-In Intel IOMMU driver, it calculate page table level from adjusted guest
-address width as 'level = (agaw - 30) / 9', which assumes (agaw -30)
-could be divided by 9. On the other hand, 64bit is a valid agaw and
-(64 - 30) can't be divided by 9, so it needs special handling.
-
-This patch enhances Intel IOMMU driver to correctly handle 64bit agaw.
-It's mainly for code readability because there's no hardware supporting
-64bit agaw yet.
+Function detect_intel_iommu()/alloc_iommu()/parse_ioapics_under_ir()
+are only used internally, so mark them as static.
 
 Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
 ---
- drivers/iommu/intel-iommu.c |   11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ drivers/iommu/dmar.c                |    9 ++++++---
+ drivers/iommu/intel_irq_remapping.c |    4 +++-
+ include/linux/dmar.h                |   12 +-----------
+ include/linux/intel-iommu.h         |    1 -
+ 4 files changed, 10 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 2398876..70bc071 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -63,6 +63,7 @@
- #define DEFAULT_DOMAIN_ADDRESS_WIDTH 48
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 9a76073..4bbd972 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -52,6 +52,8 @@ LIST_HEAD(dmar_drhd_units);
+ struct acpi_table_header * __initdata dmar_tbl;
+ static acpi_size dmar_tbl_size;
  
- #define MAX_AGAW_WIDTH 64
-+#define MAX_AGAW_PFN_WIDTH	(MAX_AGAW_WIDTH - VTD_PAGE_SHIFT)
- 
- #define __DOMAIN_MAX_PFN(gaw)  ((((uint64_t)1) << (gaw-VTD_PAGE_SHIFT)) - 1)
- #define __DOMAIN_MAX_ADDR(gaw) ((((uint64_t)1) << gaw) - 1)
-@@ -106,12 +107,12 @@ static inline int agaw_to_level(int agaw)
- 
- static inline int agaw_to_width(int agaw)
++static int alloc_iommu(struct dmar_drhd_unit *drhd);
++
+ static void __init dmar_register_drhd_unit(struct dmar_drhd_unit *drhd)
  {
--	return 30 + agaw * LEVEL_STRIDE;
-+	return min_t(int, 30 + agaw * LEVEL_STRIDE, MAX_AGAW_WIDTH);
+ 	/*
+@@ -498,7 +500,7 @@ static void warn_invalid_dmar(u64 addr, const char *message)
+ 		dmi_get_system_info(DMI_PRODUCT_VERSION));
  }
  
- static inline int width_to_agaw(int width)
+-int __init check_zero_address(void)
++static int __init check_zero_address(void)
  {
--	return (width - 30) / LEVEL_STRIDE;
-+	return DIV_ROUND_UP(width - 30, LEVEL_STRIDE);
+ 	struct acpi_table_dmar *dmar;
+ 	struct acpi_dmar_header *entry_header;
+@@ -548,7 +550,7 @@ failed:
+ 	return 0;
  }
  
- static inline unsigned int level_to_offset_bits(int level)
-@@ -141,7 +142,7 @@ static inline unsigned long align_to_level(unsigned long pfn, int level)
- 
- static inline unsigned long lvl_to_nr_pages(unsigned int lvl)
+-int __init detect_intel_iommu(void)
++static int __init detect_intel_iommu(void)
  {
--	return  1 << ((lvl - 1) * LEVEL_STRIDE);
-+	return  1 << min_t(int, (lvl - 1) * LEVEL_STRIDE, MAX_AGAW_PFN_WIDTH);
+ 	int ret;
+ 
+@@ -657,7 +659,7 @@ out:
+ 	return err;
  }
  
- /* VT-d pages must always be _smaller_ than MM pages. Otherwise things
-@@ -865,7 +866,6 @@ static int dma_pte_clear_range(struct dmar_domain *domain,
- 	int addr_width = agaw_to_width(domain->agaw) - VTD_PAGE_SHIFT;
- 	unsigned int large_page = 1;
- 	struct dma_pte *first_pte, *pte;
--	int order;
- 
- 	BUG_ON(addr_width < BITS_PER_LONG && start_pfn >> addr_width);
- 	BUG_ON(addr_width < BITS_PER_LONG && last_pfn >> addr_width);
-@@ -890,8 +890,7 @@ static int dma_pte_clear_range(struct dmar_domain *domain,
- 
- 	} while (start_pfn && start_pfn <= last_pfn);
- 
--	order = (large_page - 1) * 9;
--	return order;
-+	return min_t(int, (large_page - 1) * 9, MAX_AGAW_PFN_WIDTH);
+-int alloc_iommu(struct dmar_drhd_unit *drhd)
++static int alloc_iommu(struct dmar_drhd_unit *drhd)
+ {
+ 	struct intel_iommu *iommu;
+ 	u32 ver, sts;
+@@ -1374,4 +1376,5 @@ int __init dmar_ir_support(void)
+ 		return 0;
+ 	return dmar->flags & 0x1;
  }
++
+ IOMMU_INIT_POST(detect_intel_iommu);
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index 282d392..41e5798 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -40,6 +40,8 @@ static int ir_ioapic_num, ir_hpet_num;
  
- static void dma_pte_free_level(struct dmar_domain *domain, int level,
+ static DEFINE_RAW_SPINLOCK(irq_2_ir_lock);
+ 
++static int __init parse_ioapics_under_ir(void);
++
+ static struct irq_2_iommu *irq_2_iommu(unsigned int irq)
+ {
+ 	struct irq_cfg *cfg = irq_get_chip_data(irq);
+@@ -771,7 +773,7 @@ static int ir_parse_ioapic_hpet_scope(struct acpi_dmar_header *header,
+  * Finds the assocaition between IOAPIC's and its Interrupt-remapping
+  * hardware unit.
+  */
+-int __init parse_ioapics_under_ir(void)
++static int __init parse_ioapics_under_ir(void)
+ {
+ 	struct dmar_drhd_unit *drhd;
+ 	int ir_supported = 0;
+diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+index 8adfce0..f614357 100644
+--- a/include/linux/dmar.h
++++ b/include/linux/dmar.h
+@@ -33,6 +33,7 @@ struct acpi_dmar_header;
+ #define DMAR_X2APIC_OPT_OUT	0x2
+ 
+ struct intel_iommu;
++
+ #ifdef CONFIG_DMAR_TABLE
+ extern struct acpi_table_header *dmar_tbl;
+ struct dmar_drhd_unit {
+@@ -62,19 +63,8 @@ extern struct list_head dmar_drhd_units;
+ 
+ extern int dmar_table_init(void);
+ extern int dmar_dev_scope_init(void);
+-
+-/* Intel IOMMU detection */
+-extern int detect_intel_iommu(void);
+ extern int enable_drhd_fault_handling(void);
+-
+-extern int parse_ioapics_under_ir(void);
+-extern int alloc_iommu(struct dmar_drhd_unit *);
+ #else
+-static inline int detect_intel_iommu(void)
+-{
+-	return -ENODEV;
+-}
+-
+ static inline int dmar_table_init(void)
+ {
+ 	return -ENODEV;
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index de1e5e9..f2c4114 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -348,7 +348,6 @@ static inline void __iommu_flush_cache(
+ extern struct dmar_drhd_unit * dmar_find_matched_drhd_unit(struct pci_dev *dev);
+ extern int dmar_find_matched_atsr_unit(struct pci_dev *dev);
+ 
+-extern int alloc_iommu(struct dmar_drhd_unit *drhd);
+ extern void free_iommu(struct intel_iommu *iommu);
+ extern int dmar_enable_qi(struct intel_iommu *iommu);
+ extern void dmar_disable_qi(struct intel_iommu *iommu);
 -- 
 1.7.10.4
