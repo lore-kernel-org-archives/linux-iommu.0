@@ -1,201 +1,106 @@
-From: Bharat Bhushan <Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+From: Bharat Bhushan <Bharat.Bhushan@freescale.com>
 Subject: RE: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU (PAMU)
-Date: Fri, 6 Dec 2013 04:11:13 +0000
-Message-ID: <6A3DF150A5B70D4F9B66A25E3F7C888D07251EE4@039-SN2MPN1-012.039d.mgd.msft.net>
+Date: Fri, 6 Dec 2013 04:17:15 +0000
+Message-ID: <6A3DF150A5B70D4F9B66A25E3F7C888D07251EFF@039-SN2MPN1-012.039d.mgd.msft.net>
 References: <1384838233-24847-1-git-send-email-Bharat.Bhushan@freescale.com>
-	<1384973243.2879.361.camel@ul30vt.home>
-	<6A3DF150A5B70D4F9B66A25E3F7C888D0721D9AC@039-SN2MPN1-012.039d.mgd.msft.net>
-	<1385066603.2879.414.camel@ul30vt.home>
-	<1385066835.1403.489.camel@snotra.buserror.net>
-	<1385067648.2879.421.camel@ul30vt.home>
-	<6A3DF150A5B70D4F9B66A25E3F7C888D0722C180@039-SN2MPN1-012.039d.mgd.msft.net>
-	<1385397493.2879.557.camel@ul30vt.home>
-	<6A3DF150A5B70D4F9B66A25E3F7C888D0723624C@039-SN2MPN1-012.039d.mgd.msft.net>
-	<1386289316.7375.107.camel@snotra.buserror.net>
+	 <1384973243.2879.361.camel@ul30vt.home>
+	 <6A3DF150A5B70D4F9B66A25E3F7C888D0721D9AC@039-SN2MPN1-012.039d.mgd.msft.net>
+	 <1385066603.2879.414.camel@ul30vt.home>
+	 <1385066835.1403.489.camel@snotra.buserror.net>
+	 <1385067648.2879.421.camel@ul30vt.home>
+	 <6A3DF150A5B70D4F9B66A25E3F7C888D0722C180@039-SN2MPN1-012.039d.mgd.msft.net>
+ <1386288052.7375.100.camel@snotra.buserror.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1386289316.7375.107.camel-88ow+0ZRuxG2UiBs7uKeOtHuzzzSOjJt@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1386288052.7375.100.camel@snotra.buserror.net>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: Scott Wood <scottwood@freescale.com>
+Cc: Alex Williamson <alex.williamson@redhat.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "agraf@suse.de" <agraf@suse.de>, Stuart Yoder <stuart.yoder@freescale.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "bhelgaas@google.com" <bhelgaas@google.com>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-> -----Original Message-----
-> From: Wood Scott-B07421
-> Sent: Friday, December 06, 2013 5:52 AM
-> To: Bhushan Bharat-R65777
-> Cc: Alex Williamson; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org; Yoder Stuart-
-> B08248; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; linuxppc-
-> dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU (PAMU)
-> 
-> On Thu, 2013-11-28 at 03:19 -0600, Bharat Bhushan wrote:
-> >
-> > > -----Original Message-----
-> > > From: Bhushan Bharat-R65777
-> > > Sent: Wednesday, November 27, 2013 9:39 PM
-> > > To: 'Alex Williamson'
-> > > Cc: Wood Scott-B07421; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org;
-> > > Yoder Stuart- B08248; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> > > bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; linuxppc- dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org;
-> > > linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > > Subject: RE: [PATCH 0/9 v2] vfio-pci: add support for Freescale
-> > > IOMMU (PAMU)
-> > >
-> > >
-> > >
-> > > > -----Original Message-----
-> > > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > > > Sent: Monday, November 25, 2013 10:08 PM
-> > > > To: Bhushan Bharat-R65777
-> > > > Cc: Wood Scott-B07421; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org;
-> > > > Yoder
-> > > > Stuart- B08248; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> > > > bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org;
-> > > > linuxppc- dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > > > Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale
-> > > > IOMMU
-> > > > (PAMU)
-> > > >
-> > > > On Mon, 2013-11-25 at 05:33 +0000, Bharat Bhushan wrote:
-> > > > >
-> > > > > > -----Original Message-----
-> > > > > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > > > > > Sent: Friday, November 22, 2013 2:31 AM
-> > > > > > To: Wood Scott-B07421
-> > > > > > Cc: Bhushan Bharat-R65777; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > > > > agraf-l3A5Bk7waGM@public.gmane.org; Yoder Stuart-B08248;
-> > > > > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org;
-> > > > > > linuxppc- dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > > > > > Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for
-> > > > > > Freescale IOMMU (PAMU)
-> > > > > >
-> > > > > > On Thu, 2013-11-21 at 14:47 -0600, Scott Wood wrote:
-> > > > > > > On Thu, 2013-11-21 at 13:43 -0700, Alex Williamson wrote:
-> > > > > > > > On Thu, 2013-11-21 at 11:20 +0000, Bharat Bhushan wrote:
-> > > > > > > > >
-> > > > > > > > > > -----Original Message-----
-> > > > > > > > > > From: Alex Williamson
-> > > > > > > > > > [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > > > > > > > > > Sent: Thursday, November 21, 2013 12:17 AM
-> > > > > > > > > > To: Bhushan Bharat-R65777
-> > > > > > > > > > Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org;
-> > > > > > > > > > agraf-l3A5Bk7waGM@public.gmane.org; Wood Scott-B07421; Yoder Stuart-B08248;
-> > > > > > > > > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-
-> > > > > > > > > > pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org;
-> > > > > > > > > > linux- kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Bhushan Bharat-R65777
-> > > > > > > > > > Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for
-> > > > > > > > > > Freescale IOMMU (PAMU)
-> > > > > > > > > >
-> > > > > > > > > > Is VFIO_IOMMU_PAMU_GET_MSI_BANK_COUNT per aperture (ie.
-> > > > > > > > > > each vfio user has $COUNT regions at their disposal
-> exclusively)?
-> > > > > > > > >
-> > > > > > > > > Number of msi-bank count is system wide and not per
-> > > > > > > > > aperture, But will be
-> > > > > > setting windows for banks in the device aperture.
-> > > > > > > > > So say if we are direct assigning 2 pci device (both
-> > > > > > > > > have different iommu
-> > > > > > group, so 2 aperture in iommu) to VM.
-> > > > > > > > > Now qemu can make only one call to know how many
-> > > > > > > > > msi-banks are there but
-> > > > > > it must set sub-windows for all banks for both pci device in
-> > > > > > its respective aperture.
-> > > > > > > >
-> > > > > > > > I'm still confused.  What I want to make sure of is that
-> > > > > > > > the banks are independent per aperture.  For instance, if
-> > > > > > > > we have two separate userspace processes operating
-> > > > > > > > independently and they both chose to use msi bank zero for
-> > > > > > > > their device, that's bank zero within each aperture and
-> > > > > > > > doesn't interfere.  Or another way to ask is can a
-> > > > > > > > malicious user interfere with other users by
-> > > > using the wrong bank.
-> > > > > > > > Thanks,
-> > > > > > >
-> > > > > > > They can interfere.
-> > > > >
-> > > > > Want to be sure of how they can interfere?
-> > > >
-> > > > What happens if more than one user selects the same MSI bank?
-> > > > Minimally, wouldn't that result in the IOMMU blocking transactions
-> > > > from the previous user once the new user activates their mapping?
-> > >
-> > > Yes and no; With current implementation yes but with a minor change
-> > > no. Later in this response I will explain how.
-> > >
-> > > >
-> > > > > >>  With this hardware, the only way to prevent that
-> > > > > > > is to make sure that a bank is not shared by multiple
-> > > > > > > protection
-> > > contexts.
-> > > > > > > For some of our users, though, I believe preventing this is
-> > > > > > > less important than the performance benefit.
-> > > > >
-> > > > > So should we let this patch series in without protection?
-> > > >
-> > > > No.
-> > > >
-> > > > > >
-> > > > > > I think we need some sort of ownership model around the msi banks
-> then.
-> > > > > > Otherwise there's nothing preventing another userspace from
-> > > > > > attempting an MSI based attack on other users, or perhaps even
-> > > > > > on the host.  VFIO can't allow that.  Thanks,
-> > > > >
-> > > > > We have very few (3 MSI bank on most of chips), so we can not
-> > > > > assign one to each userspace. What we can do is host and
-> > > > > userspace does not share a MSI bank while userspace will share a MSI
-> bank.
-> > > >
-> > > > Then you probably need VFIO to "own" the MSI bank and program
-> > > > devices into it rather than exposing the MSI banks to userspace to
-> > > > let them have
-> > > direct access.
-> > >
-> > > Overall idea of exposing the details of msi regions to userspace are
-> > >  1) User space can define the aperture size to fit MSI mapping in IOMMU.
-> > >  2) setup iova for a MSI banks; which is just after guest memory.
-> > >
-> > > But currently we expose the "size" and "address" of MSI banks,
-> > > passing address is of no use and can be problematic.
-> >
-> > I am sorry, above information is not correct. Currently neither we expose
-> "address" nor "size" to user space. We only expose number of MSI BANK count and
-> userspace adds one sub-window for each bank.
-> >
-> > > If we just provide the size of MSI bank to userspace then userspace
-> > > cannot do anything wrong.
-> >
-> > So userspace does not know address, so it cannot mmap and cause any
-> interference by directly reading/writing.
-> 
-> That's security through obscurity...  Couldn't the malicious user find out the
-> address via other means, such as experimentation on another system over which
-> they have full control?  What would happen if the user reads from their device's
-> PCI config space?  Or gets the information via some back door in the PCI device
-> they own?  Or pokes throughout the address space looking for something that
-> generates an interrupt to its own device?
-
-So how to solve this problem, Any suggestion ?
-
-We have to map one window in PAMU for MSIs and a malicious user can ask its device to do DMA to MSI window region with any pair of address and data, which can lead to unexpected MSIs in system?
-
-Thanks
--Bharat
-
-> 
-> -Scott
-> 
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogV29vZCBTY290dC1CMDc0
+MjENCj4gU2VudDogRnJpZGF5LCBEZWNlbWJlciAwNiwgMjAxMyA1OjMxIEFNDQo+IFRvOiBCaHVz
+aGFuIEJoYXJhdC1SNjU3NzcNCj4gQ2M6IEFsZXggV2lsbGlhbXNvbjsgbGludXgtcGNpQHZnZXIu
+a2VybmVsLm9yZzsgYWdyYWZAc3VzZS5kZTsgWW9kZXIgU3R1YXJ0LQ0KPiBCMDgyNDg7IGlvbW11
+QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnOyBiaGVsZ2Fhc0Bnb29nbGUuY29tOyBsaW51eHBw
+Yy0NCj4gZGV2QGxpc3RzLm96bGFicy5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcN
+Cj4gU3ViamVjdDogUmU6IFtQQVRDSCAwLzkgdjJdIHZmaW8tcGNpOiBhZGQgc3VwcG9ydCBmb3Ig
+RnJlZXNjYWxlIElPTU1VIChQQU1VKQ0KPiANCj4gT24gU3VuLCAyMDEzLTExLTI0IGF0IDIzOjMz
+IC0wNjAwLCBCaGFyYXQgQmh1c2hhbiB3cm90ZToNCj4gPg0KPiA+ID4gLS0tLS1PcmlnaW5hbCBN
+ZXNzYWdlLS0tLS0NCj4gPiA+IEZyb206IEFsZXggV2lsbGlhbXNvbiBbbWFpbHRvOmFsZXgud2ls
+bGlhbXNvbkByZWRoYXQuY29tXQ0KPiA+ID4gU2VudDogRnJpZGF5LCBOb3ZlbWJlciAyMiwgMjAx
+MyAyOjMxIEFNDQo+ID4gPiBUbzogV29vZCBTY290dC1CMDc0MjENCj4gPiA+IENjOiBCaHVzaGFu
+IEJoYXJhdC1SNjU3Nzc7IGxpbnV4LXBjaUB2Z2VyLmtlcm5lbC5vcmc7IGFncmFmQHN1c2UuZGU7
+DQo+ID4gPiBZb2RlciBTdHVhcnQtQjA4MjQ4OyBpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9u
+Lm9yZzsNCj4gPiA+IGJoZWxnYWFzQGdvb2dsZS5jb207IGxpbnV4cHBjLSBkZXZAbGlzdHMub3ps
+YWJzLm9yZzsNCj4gPiA+IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCj4gPiA+IFN1Ympl
+Y3Q6IFJlOiBbUEFUQ0ggMC85IHYyXSB2ZmlvLXBjaTogYWRkIHN1cHBvcnQgZm9yIEZyZWVzY2Fs
+ZQ0KPiA+ID4gSU9NTVUgKFBBTVUpDQo+ID4gPg0KPiA+ID4gT24gVGh1LCAyMDEzLTExLTIxIGF0
+IDE0OjQ3IC0wNjAwLCBTY290dCBXb29kIHdyb3RlOg0KPiA+ID4gPiBPbiBUaHUsIDIwMTMtMTEt
+MjEgYXQgMTM6NDMgLTA3MDAsIEFsZXggV2lsbGlhbXNvbiB3cm90ZToNCj4gPiA+ID4gPiBPbiBU
+aHUsIDIwMTMtMTEtMjEgYXQgMTE6MjAgKzAwMDAsIEJoYXJhdCBCaHVzaGFuIHdyb3RlOg0KPiA+
+ID4gPiA+ID4NCj4gPiA+ID4gPiA+ID4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPiA+
+ID4gPiA+ID4gRnJvbTogQWxleCBXaWxsaWFtc29uIFttYWlsdG86YWxleC53aWxsaWFtc29uQHJl
+ZGhhdC5jb21dDQo+ID4gPiA+ID4gPiA+IFNlbnQ6IFRodXJzZGF5LCBOb3ZlbWJlciAyMSwgMjAx
+MyAxMjoxNyBBTQ0KPiA+ID4gPiA+ID4gPiBUbzogQmh1c2hhbiBCaGFyYXQtUjY1Nzc3DQo+ID4g
+PiA+ID4gPiA+IENjOiBqb3JvQDhieXRlcy5vcmc7IGJoZWxnYWFzQGdvb2dsZS5jb207IGFncmFm
+QHN1c2UuZGU7DQo+ID4gPiA+ID4gPiA+IFdvb2QgU2NvdHQtQjA3NDIxOyBZb2RlciBTdHVhcnQt
+QjA4MjQ4Ow0KPiA+ID4gPiA+ID4gPiBpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZzsg
+bGludXgtDQo+ID4gPiA+ID4gPiA+IHBjaUB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4cHBjLWRldkBs
+aXN0cy5vemxhYnMub3JnOyBsaW51eC0NCj4gPiA+ID4gPiA+ID4ga2VybmVsQHZnZXIua2VybmVs
+Lm9yZzsgQmh1c2hhbiBCaGFyYXQtUjY1Nzc3DQo+ID4gPiA+ID4gPiA+IFN1YmplY3Q6IFJlOiBb
+UEFUQ0ggMC85IHYyXSB2ZmlvLXBjaTogYWRkIHN1cHBvcnQgZm9yDQo+ID4gPiA+ID4gPiA+IEZy
+ZWVzY2FsZSBJT01NVSAoUEFNVSkNCj4gPiA+ID4gPiA+ID4NCj4gPiA+ID4gPiA+ID4gSXMgVkZJ
+T19JT01NVV9QQU1VX0dFVF9NU0lfQkFOS19DT1VOVCBwZXIgYXBlcnR1cmUgKGllLiBlYWNoDQo+
+ID4gPiA+ID4gPiA+IHZmaW8gdXNlciBoYXMgJENPVU5UIHJlZ2lvbnMgYXQgdGhlaXIgZGlzcG9z
+YWwgZXhjbHVzaXZlbHkpPw0KPiA+ID4gPiA+ID4NCj4gPiA+ID4gPiA+IE51bWJlciBvZiBtc2kt
+YmFuayBjb3VudCBpcyBzeXN0ZW0gd2lkZSBhbmQgbm90IHBlciBhcGVydHVyZSwNCj4gPiA+ID4g
+PiA+IEJ1dCB3aWxsIGJlDQo+ID4gPiBzZXR0aW5nIHdpbmRvd3MgZm9yIGJhbmtzIGluIHRoZSBk
+ZXZpY2UgYXBlcnR1cmUuDQo+ID4gPiA+ID4gPiBTbyBzYXkgaWYgd2UgYXJlIGRpcmVjdCBhc3Np
+Z25pbmcgMiBwY2kgZGV2aWNlIChib3RoIGhhdmUNCj4gPiA+ID4gPiA+IGRpZmZlcmVudCBpb21t
+dQ0KPiA+ID4gZ3JvdXAsIHNvIDIgYXBlcnR1cmUgaW4gaW9tbXUpIHRvIFZNLg0KPiA+ID4gPiA+
+ID4gTm93IHFlbXUgY2FuIG1ha2Ugb25seSBvbmUgY2FsbCB0byBrbm93IGhvdyBtYW55IG1zaS1i
+YW5rcyBhcmUNCj4gPiA+ID4gPiA+IHRoZXJlIGJ1dA0KPiA+ID4gaXQgbXVzdCBzZXQgc3ViLXdp
+bmRvd3MgZm9yIGFsbCBiYW5rcyBmb3IgYm90aCBwY2kgZGV2aWNlIGluIGl0cw0KPiA+ID4gcmVz
+cGVjdGl2ZSBhcGVydHVyZS4NCj4gPiA+ID4gPg0KPiA+ID4gPiA+IEknbSBzdGlsbCBjb25mdXNl
+ZC4gIFdoYXQgSSB3YW50IHRvIG1ha2Ugc3VyZSBvZiBpcyB0aGF0IHRoZQ0KPiA+ID4gPiA+IGJh
+bmtzIGFyZSBpbmRlcGVuZGVudCBwZXIgYXBlcnR1cmUuICBGb3IgaW5zdGFuY2UsIGlmIHdlIGhh
+dmUNCj4gPiA+ID4gPiB0d28gc2VwYXJhdGUgdXNlcnNwYWNlIHByb2Nlc3NlcyBvcGVyYXRpbmcg
+aW5kZXBlbmRlbnRseSBhbmQNCj4gPiA+ID4gPiB0aGV5IGJvdGggY2hvc2UgdG8gdXNlIG1zaSBi
+YW5rIHplcm8gZm9yIHRoZWlyIGRldmljZSwgdGhhdCdzDQo+ID4gPiA+ID4gYmFuayB6ZXJvIHdp
+dGhpbiBlYWNoIGFwZXJ0dXJlIGFuZCBkb2Vzbid0IGludGVyZmVyZS4gIE9yDQo+ID4gPiA+ID4g
+YW5vdGhlciB3YXkgdG8gYXNrIGlzIGNhbiBhIG1hbGljaW91cyB1c2VyIGludGVyZmVyZSB3aXRo
+IG90aGVyIHVzZXJzIGJ5DQo+IHVzaW5nIHRoZSB3cm9uZyBiYW5rLg0KPiA+ID4gPiA+IFRoYW5r
+cywNCj4gPiA+ID4NCj4gPiA+ID4gVGhleSBjYW4gaW50ZXJmZXJlLg0KPiA+DQo+ID4gV2FudCB0
+byBiZSBzdXJlIG9mIGhvdyB0aGV5IGNhbiBpbnRlcmZlcmU/DQo+IA0KPiBJZiBtb3JlIHRoYW4g
+b25lIFZGSU8gdXNlciBzaGFyZXMgdGhlIHNhbWUgTVNJIGdyb3VwLCBvbmUgb2YgdGhlIHVzZXJz
+IGNhbiBzZW5kDQo+IE1TSXMgdG8gYW5vdGhlciB1c2VyLCBieSB1c2luZyB0aGUgd3JvbmcgaW50
+ZXJydXB0IHdpdGhpbiB0aGUgYmFuay4gIFVuZXhwZWN0ZWQNCj4gTVNJcyBjb3VsZCBjYXVzZSBt
+aXNiZWhhdmlvciBvciBkZW5pYWwgb2Ygc2VydmljZS4NCj4gDQo+ID4gPj4gIFdpdGggdGhpcyBo
+YXJkd2FyZSwgdGhlIG9ubHkgd2F5IHRvIHByZXZlbnQgdGhhdA0KPiA+ID4gPiBpcyB0byBtYWtl
+IHN1cmUgdGhhdCBhIGJhbmsgaXMgbm90IHNoYXJlZCBieSBtdWx0aXBsZSBwcm90ZWN0aW9uIGNv
+bnRleHRzLg0KPiA+ID4gPiBGb3Igc29tZSBvZiBvdXIgdXNlcnMsIHRob3VnaCwgSSBiZWxpZXZl
+IHByZXZlbnRpbmcgdGhpcyBpcyBsZXNzDQo+ID4gPiA+IGltcG9ydGFudCB0aGFuIHRoZSBwZXJm
+b3JtYW5jZSBiZW5lZml0Lg0KPiA+DQo+ID4gU28gc2hvdWxkIHdlIGxldCB0aGlzIHBhdGNoIHNl
+cmllcyBpbiB3aXRob3V0IHByb3RlY3Rpb24/DQo+IA0KPiBObywgdGhlcmUgc2hvdWxkIGJlIHNv
+bWUgc29ydCBvZiBvcHQtaW4gbWVjaGFuaXNtIHNpbWlsYXIgdG8gSU9NTVUtbGVzcyBWRklPIC0t
+DQo+IGJ1dCBub3QgdGhlIHNhbWUgZXhhY3Qgb25lLCBzaW5jZSBvbmUgaXMgYSBtdWNoIG1vcmUg
+c2VyaW91cyBsb3NzIG9mIGlzb2xhdGlvbg0KPiB0aGFuIHRoZSBvdGhlci4NCg0KQ2FuIHlvdSBw
+bGVhc2UgZWxhYm9yYXRlICJvcHQtaW4gbWVjaGFuaXNtIj8NCg0KPiANCj4gPiA+IEkgdGhpbmsg
+d2UgbmVlZCBzb21lIHNvcnQgb2Ygb3duZXJzaGlwIG1vZGVsIGFyb3VuZCB0aGUgbXNpIGJhbmtz
+IHRoZW4uDQo+ID4gPiBPdGhlcndpc2UgdGhlcmUncyBub3RoaW5nIHByZXZlbnRpbmcgYW5vdGhl
+ciB1c2Vyc3BhY2UgZnJvbQ0KPiA+ID4gYXR0ZW1wdGluZyBhbiBNU0kgYmFzZWQgYXR0YWNrIG9u
+IG90aGVyIHVzZXJzLCBvciBwZXJoYXBzIGV2ZW4gb24NCj4gPiA+IHRoZSBob3N0LiAgVkZJTyBj
+YW4ndCBhbGxvdyB0aGF0LiAgVGhhbmtzLA0KPiA+DQo+ID4gV2UgaGF2ZSB2ZXJ5IGZldyAoMyBN
+U0kgYmFuayBvbiBtb3N0IG9mIGNoaXBzKSwgc28gd2UgY2FuIG5vdCBhc3NpZ24NCj4gPiBvbmUg
+dG8gZWFjaCB1c2Vyc3BhY2UuDQo+IA0KPiBUaGF0IGRlcGVuZHMgb24gaG93IG1hbnkgdXNlcnMg
+dGhlcmUgYXJlLg0KDQpXaGF0IEkgdGhpbmsgd2UgY2FuIGRvIGlzOg0KIC0gUmVzZXJ2ZSBvbmUg
+TVNJIHJlZ2lvbiBmb3IgaG9zdC4gSG9zdCB3aWxsIG5vdCBzaGFyZSBNU0kgcmVnaW9uIHdpdGgg
+R3Vlc3QuDQogLSBGb3IgdXB0byAyIEd1ZXN0IChNQVggbXNpIHdpdGggaG9zdCAtIDEpIGdpdmUg
+dGhlbiBzZXBhcmF0ZSBNU0kgc3ViIHJlZ2lvbnMNCiAtIEFkZGl0aW9uYWwgR3Vlc3Qgd2lsbCBz
+aGFyZSBNU0kgcmVnaW9uIHdpdGggb3RoZXIgZ3Vlc3QuDQoNCkFueSBiZXR0ZXIgc3VnZ2VzdGlv
+biBhcmUgbW9zdCB3ZWxjb21lLg0KDQpUaGFua3MNCi1CaGFyYXQNCj4gDQo+IC1TY290dA0KPiAN
+Cg0K
