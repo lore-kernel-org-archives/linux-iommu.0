@@ -1,7 +1,7 @@
 From: Jiang Liu <jiang.liu@linux.intel.com>
-Subject: [Patch Part1 V2 10/20] iommu/vt-d, trivial: use defined macro instead of hardcoding
-Date: Fri,  6 Dec 2013 11:21:13 +0800
-Message-ID: <1386300083-6882-11-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part1 V2 08/20] iommu/vt-d, trivial: clean up unused code
+Date: Fri,  6 Dec 2013 11:21:11 +0800
+Message-ID: <1386300083-6882-9-git-send-email-jiang.liu@linux.intel.com>
 References: <1386300083-6882-1-git-send-email-jiang.liu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1386300083-6882-1-git-send-email-jiang.liu@linux.intel.com>
@@ -10,26 +10,69 @@ To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Dan W
 Cc: Jiang Liu <jiang.liu@linux.intel.com>, Tony Luck <tony.luck@intel.com>, Yinghai Lu <yinghai@kernel.org>, linux-pci@vger.kernel.org, dmaengine@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Use defined macro instead of hardcoding in function set_ioapic_sid()
-for readability.
+Remove dead code from VT-d related files.
 
 Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
 ---
- drivers/iommu/intel_irq_remapping.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/dmar.c        |    2 --
+ drivers/iommu/intel-iommu.c |   25 -------------------------
+ 2 files changed, 27 deletions(-)
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 41e5798..50fd55c 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -324,7 +324,7 @@ static int set_ioapic_sid(struct irte *irte, int apic)
- 		return -1;
- 	}
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 70612a9..9a76073 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -1121,8 +1121,6 @@ static const char *irq_remap_fault_reasons[] =
+ 	"Blocked an interrupt request due to source-id verification failure",
+ };
  
--	set_irte_sid(irte, 1, 0, sid);
-+	set_irte_sid(irte, SVT_VERIFY_SID_SQ, SQ_ALL_16, sid);
- 
- 	return 0;
+-#define MAX_FAULT_REASON_IDX 	(ARRAY_SIZE(fault_reason_strings) - 1)
+-
+ const char *dmar_get_fault_reason(u8 fault_reason, int *fault_type)
+ {
+ 	if (fault_reason >= 0x20 && (fault_reason - 0x20 <
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 68bce9d..b5f13e4 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -289,26 +289,6 @@ static inline void dma_clear_pte(struct dma_pte *pte)
+ 	pte->val = 0;
  }
+ 
+-static inline void dma_set_pte_readable(struct dma_pte *pte)
+-{
+-	pte->val |= DMA_PTE_READ;
+-}
+-
+-static inline void dma_set_pte_writable(struct dma_pte *pte)
+-{
+-	pte->val |= DMA_PTE_WRITE;
+-}
+-
+-static inline void dma_set_pte_snp(struct dma_pte *pte)
+-{
+-	pte->val |= DMA_PTE_SNP;
+-}
+-
+-static inline void dma_set_pte_prot(struct dma_pte *pte, unsigned long prot)
+-{
+-	pte->val = (pte->val & ~3) | (prot & 3);
+-}
+-
+ static inline u64 dma_pte_addr(struct dma_pte *pte)
+ {
+ #ifdef CONFIG_64BIT
+@@ -319,11 +299,6 @@ static inline u64 dma_pte_addr(struct dma_pte *pte)
+ #endif
+ }
+ 
+-static inline void dma_set_pte_pfn(struct dma_pte *pte, unsigned long pfn)
+-{
+-	pte->val |= (uint64_t)pfn << VTD_PAGE_SHIFT;
+-}
+-
+ static inline bool dma_pte_present(struct dma_pte *pte)
+ {
+ 	return (pte->val & 3) != 0;
 -- 
 1.7.10.4
