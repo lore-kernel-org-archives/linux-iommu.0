@@ -1,7 +1,7 @@
 From: Jiang Liu <jiang.liu@linux.intel.com>
-Subject: [Patch Part1 V2 16/20] iommu/vt-d: release invalidation queue when destroying IOMMU unit
-Date: Fri,  6 Dec 2013 11:21:19 +0800
-Message-ID: <1386300083-6882-17-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part1 V2 14/20] iommu/vt-d: avoid double free in error recovery path
+Date: Fri,  6 Dec 2013 11:21:17 +0800
+Message-ID: <1386300083-6882-15-git-send-email-jiang.liu@linux.intel.com>
 References: <1386300083-6882-1-git-send-email-jiang.liu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1386300083-6882-1-git-send-email-jiang.liu@linux.intel.com>
@@ -10,30 +10,47 @@ To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Dan W
 Cc: Jiang Liu <jiang.liu@linux.intel.com>, Tony Luck <tony.luck@intel.com>, Yinghai Lu <yinghai@kernel.org>, linux-pci@vger.kernel.org, dmaengine@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Release associated invalidation queue when destroying IOMMU unit
-to avoid memory leak.
+The g_iommus array will be freed twice when failed to initialize IOMMU
+devices, which will cause system panic.
 
 Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
 ---
- drivers/iommu/dmar.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/iommu/intel-iommu.c |   14 +++-----------
+ 1 file changed, 3 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 812b596..a9d9d0f 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -745,6 +745,12 @@ static void free_iommu(struct intel_iommu *iommu)
- 		destroy_irq(iommu->irq);
- 	}
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index cbdb1ff..1a20171 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -1293,19 +1293,10 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
+ 	iommu->domains = NULL;
+ 	iommu->domain_ids = NULL;
  
-+	if (iommu->qi) {
-+		free_page((unsigned long)iommu->qi->desc);
-+		kfree(iommu->qi->desc_status);
-+		kfree(iommu->qi);
-+	}
+-	g_iommus[iommu->seq_id] = NULL;
+-
+-	/* if all iommus are freed, free g_iommus */
+-	for (i = 0; i < g_num_of_iommus; i++) {
+-		if (g_iommus[i])
+-			break;
+-	}
+-
+-	if (i == g_num_of_iommus)
+-		kfree(g_iommus);
+-
+ 	/* free context mapping */
+ 	free_context_table(iommu);
 +
- 	if (iommu->reg)
- 		unmap_iommu(iommu);
++	g_iommus[iommu->seq_id] = NULL;
+ }
+ 
+ static struct dmar_domain *alloc_domain(void)
+@@ -2621,6 +2612,7 @@ error:
+ 	for_each_active_iommu(iommu, drhd)
+ 		free_dmar_iommu(iommu);
+ 	kfree(g_iommus);
++	g_iommus = NULL;
+ 	return ret;
+ }
  
 -- 
 1.7.10.4
