@@ -1,137 +1,87 @@
 From: Jiang Liu <jiang.liu@linux.intel.com>
-Subject: [Patch Part1 V2 09/20] iommu/vt-d: mark internal functions as static
-Date: Fri,  6 Dec 2013 11:21:12 +0800
-Message-ID: <1386300083-6882-10-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part1 V2 15/20] iommu/vt-d: fix access after free issue in function free_dmar_iommu()
+Date: Fri,  6 Dec 2013 11:21:18 +0800
+Message-ID: <1386300083-6882-16-git-send-email-jiang.liu@linux.intel.com>
 References: <1386300083-6882-1-git-send-email-jiang.liu@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
 In-Reply-To: <1386300083-6882-1-git-send-email-jiang.liu@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, Ashok Raj <ashok.raj@intel.com>, Yijing Wang <wangyijing@huawei.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, Tony Luck <tony.luck@intel.com>, Yinghai Lu <yinghai@kernel.org>, linux-pci@vger.kernel.org
+Sender: linux-pci-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, Ashok Raj <ashok.raj@intel.com>, Yijing Wang <wangyijing@huawei.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, Tony Luck <tony.luck@intel.com>, Yinghai Lu <yinghai@kernel.org>, linux-pci@vger.kernel.org, dmaengine@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Function detect_intel_iommu()/alloc_iommu()/parse_ioapics_under_ir()
-are only used internally, so mark them as static.
+Function free_dmar_iommu() may access domain->iommu_lock by
+	spin_unlock_irqrestore(&domain->iommu_lock, flags);
+after freeing corresponding domain structure.
+
+Sample stack dump:
+[    8.912818] =========================
+[    8.917072] [ BUG: held lock freed! ]
+[    8.921335] 3.13.0-rc1-gerry+ #12 Not tainted
+[    8.926375] -------------------------
+[    8.930629] swapper/0/1 is freeing memory ffff880c23b56040-ffff880c23b5613f, with a lock still held there!
+[    8.941675]  (&(&domain->iommu_lock)->rlock){......}, at: [<ffffffff81dc775c>] init_dmars+0x72c/0x95b
+[    8.952582] 1 lock held by swapper/0/1:
+[    8.957031]  #0:  (&(&domain->iommu_lock)->rlock){......}, at: [<ffffffff81dc775c>] init_dmars+0x72c/0x95b
+[    8.968487]
+[    8.968487] stack backtrace:
+[    8.973602] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 3.13.0-rc1-gerry+ #12
+[    8.981556] Hardware name: Intel Corporation LH Pass ........../SVRBD-ROW_T, BIOS SE5C600.86B.99.99.x059.091020121352 09/10/2012
+[    8.994742]  ffff880c23b56040 ffff88042dd33c98 ffffffff815617fd ffff88042dd38b28
+[    9.003566]  ffff88042dd33cd0 ffffffff810a977a ffff880c23b56040 0000000000000086
+[    9.012403]  ffff88102c4923c0 ffff88042ddb4800 ffffffff81b1e8c0 ffff88042dd33d28
+[    9.021240] Call Trace:
+[    9.024138]  [<ffffffff815617fd>] dump_stack+0x4d/0x66
+[    9.030057]  [<ffffffff810a977a>] debug_check_no_locks_freed+0x15a/0x160
+[    9.037723]  [<ffffffff811aa1c2>] kmem_cache_free+0x62/0x5b0
+[    9.044225]  [<ffffffff81465e27>] domain_exit+0x197/0x1c0
+[    9.050418]  [<ffffffff81dc7788>] init_dmars+0x758/0x95b
+[    9.056527]  [<ffffffff81dc7dfa>] intel_iommu_init+0x351/0x438
+[    9.063207]  [<ffffffff81d8a711>] ? iommu_setup+0x27d/0x27d
+[    9.069601]  [<ffffffff81d8a739>] pci_iommu_init+0x28/0x52
+[    9.075910]  [<ffffffff81000342>] do_one_initcall+0x122/0x180
+[    9.082509]  [<ffffffff81077738>] ? parse_args+0x1e8/0x320
+[    9.088815]  [<ffffffff81d850e8>] kernel_init_freeable+0x1e1/0x26c
+[    9.095895]  [<ffffffff81d84833>] ? do_early_param+0x88/0x88
+[    9.102396]  [<ffffffff8154f580>] ? rest_init+0xd0/0xd0
+[    9.108410]  [<ffffffff8154f58e>] kernel_init+0xe/0x130
+[    9.114423]  [<ffffffff81574a2c>] ret_from_fork+0x7c/0xb0
+[    9.120612]  [<ffffffff8154f580>] ? rest_init+0xd0/0xd0
 
 Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
 ---
- drivers/iommu/dmar.c                |    9 ++++++---
- drivers/iommu/intel_irq_remapping.c |    4 +++-
- include/linux/dmar.h                |   12 +-----------
- include/linux/intel-iommu.h         |    1 -
- 4 files changed, 10 insertions(+), 16 deletions(-)
+ drivers/iommu/intel-iommu.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 9a76073..4bbd972 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -52,6 +52,8 @@ LIST_HEAD(dmar_drhd_units);
- struct acpi_table_header * __initdata dmar_tbl;
- static acpi_size dmar_tbl_size;
- 
-+static int alloc_iommu(struct dmar_drhd_unit *drhd);
-+
- static void __init dmar_register_drhd_unit(struct dmar_drhd_unit *drhd)
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 1a20171..fc3473b 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -1266,7 +1266,7 @@ static void vm_domain_exit(struct dmar_domain *domain);
+ static void free_dmar_iommu(struct intel_iommu *iommu)
  {
- 	/*
-@@ -498,7 +500,7 @@ static void warn_invalid_dmar(u64 addr, const char *message)
- 		dmi_get_system_info(DMI_PRODUCT_VERSION));
- }
+ 	struct dmar_domain *domain;
+-	int i;
++	int i, count;
+ 	unsigned long flags;
  
--int __init check_zero_address(void)
-+static int __init check_zero_address(void)
- {
- 	struct acpi_table_dmar *dmar;
- 	struct acpi_dmar_header *entry_header;
-@@ -548,7 +550,7 @@ failed:
- 	return 0;
- }
+ 	if ((iommu->domains) && (iommu->domain_ids)) {
+@@ -1275,13 +1275,14 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
+ 			clear_bit(i, iommu->domain_ids);
  
--int __init detect_intel_iommu(void)
-+static int __init detect_intel_iommu(void)
- {
- 	int ret;
+ 			spin_lock_irqsave(&domain->iommu_lock, flags);
+-			if (--domain->iommu_count == 0) {
++			count = --domain->iommu_count;
++			spin_unlock_irqrestore(&domain->iommu_lock, flags);
++			if (count == 0) {
+ 				if (domain->flags & DOMAIN_FLAG_VIRTUAL_MACHINE)
+ 					vm_domain_exit(domain);
+ 				else
+ 					domain_exit(domain);
+ 			}
+-			spin_unlock_irqrestore(&domain->iommu_lock, flags);
+ 		}
+ 	}
  
-@@ -657,7 +659,7 @@ out:
- 	return err;
- }
- 
--int alloc_iommu(struct dmar_drhd_unit *drhd)
-+static int alloc_iommu(struct dmar_drhd_unit *drhd)
- {
- 	struct intel_iommu *iommu;
- 	u32 ver, sts;
-@@ -1374,4 +1376,5 @@ int __init dmar_ir_support(void)
- 		return 0;
- 	return dmar->flags & 0x1;
- }
-+
- IOMMU_INIT_POST(detect_intel_iommu);
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 282d392..41e5798 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -40,6 +40,8 @@ static int ir_ioapic_num, ir_hpet_num;
- 
- static DEFINE_RAW_SPINLOCK(irq_2_ir_lock);
- 
-+static int __init parse_ioapics_under_ir(void);
-+
- static struct irq_2_iommu *irq_2_iommu(unsigned int irq)
- {
- 	struct irq_cfg *cfg = irq_get_chip_data(irq);
-@@ -771,7 +773,7 @@ static int ir_parse_ioapic_hpet_scope(struct acpi_dmar_header *header,
-  * Finds the assocaition between IOAPIC's and its Interrupt-remapping
-  * hardware unit.
-  */
--int __init parse_ioapics_under_ir(void)
-+static int __init parse_ioapics_under_ir(void)
- {
- 	struct dmar_drhd_unit *drhd;
- 	int ir_supported = 0;
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index 8adfce0..f614357 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -33,6 +33,7 @@ struct acpi_dmar_header;
- #define DMAR_X2APIC_OPT_OUT	0x2
- 
- struct intel_iommu;
-+
- #ifdef CONFIG_DMAR_TABLE
- extern struct acpi_table_header *dmar_tbl;
- struct dmar_drhd_unit {
-@@ -62,19 +63,8 @@ extern struct list_head dmar_drhd_units;
- 
- extern int dmar_table_init(void);
- extern int dmar_dev_scope_init(void);
--
--/* Intel IOMMU detection */
--extern int detect_intel_iommu(void);
- extern int enable_drhd_fault_handling(void);
--
--extern int parse_ioapics_under_ir(void);
--extern int alloc_iommu(struct dmar_drhd_unit *);
- #else
--static inline int detect_intel_iommu(void)
--{
--	return -ENODEV;
--}
--
- static inline int dmar_table_init(void)
- {
- 	return -ENODEV;
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index de1e5e9..f2c4114 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -348,7 +348,6 @@ static inline void __iommu_flush_cache(
- extern struct dmar_drhd_unit * dmar_find_matched_drhd_unit(struct pci_dev *dev);
- extern int dmar_find_matched_atsr_unit(struct pci_dev *dev);
- 
--extern int alloc_iommu(struct dmar_drhd_unit *drhd);
- extern void free_iommu(struct intel_iommu *iommu);
- extern int dmar_enable_qi(struct intel_iommu *iommu);
- extern void dmar_disable_qi(struct intel_iommu *iommu);
 -- 
 1.7.10.4
