@@ -1,79 +1,201 @@
-From: Jiang Liu <jiang.liu@linux.intel.com>
-Subject: [Patch Part1 V2 02/20] iommu/vt-d: fix PCI device reference leakage on error recovery path
-Date: Fri,  6 Dec 2013 11:21:05 +0800
-Message-ID: <1386300083-6882-3-git-send-email-jiang.liu@linux.intel.com>
-References: <1386300083-6882-1-git-send-email-jiang.liu@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1386300083-6882-1-git-send-email-jiang.liu@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, Ashok Raj <ashok.raj@intel.com>, Yijing Wang <wangyijing@huawei.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, Tony Luck <tony.luck@intel.com>, Yinghai Lu <yinghai@kernel.org>, linux-pci@vger.kernel.org
+From: Bharat Bhushan <Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU (PAMU)
+Date: Fri, 6 Dec 2013 04:11:13 +0000
+Message-ID: <6A3DF150A5B70D4F9B66A25E3F7C888D07251EE4@039-SN2MPN1-012.039d.mgd.msft.net>
+References: <1384838233-24847-1-git-send-email-Bharat.Bhushan@freescale.com>
+	<1384973243.2879.361.camel@ul30vt.home>
+	<6A3DF150A5B70D4F9B66A25E3F7C888D0721D9AC@039-SN2MPN1-012.039d.mgd.msft.net>
+	<1385066603.2879.414.camel@ul30vt.home>
+	<1385066835.1403.489.camel@snotra.buserror.net>
+	<1385067648.2879.421.camel@ul30vt.home>
+	<6A3DF150A5B70D4F9B66A25E3F7C888D0722C180@039-SN2MPN1-012.039d.mgd.msft.net>
+	<1385397493.2879.557.camel@ul30vt.home>
+	<6A3DF150A5B70D4F9B66A25E3F7C888D0723624C@039-SN2MPN1-012.039d.mgd.msft.net>
+	<1386289316.7375.107.camel@snotra.buserror.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1386289316.7375.107.camel-88ow+0ZRuxG2UiBs7uKeOtHuzzzSOjJt@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Function dmar_parse_dev_scope() should release the PCI device reference
-count gained in function dmar_parse_one_dev_scope() on error recovery,
-otherwise will cause PCI device object leakage.
 
-This patch also introduces dmar_free_dev_scope(), which will be used
-to support DMAR device hotplug.
 
-Reviewed-by: Yijing Wang <wangyijing@huawei.com>
-Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
----
- drivers/iommu/dmar.c |   14 ++++++++++++--
- include/linux/dmar.h |    1 +
- 2 files changed, 13 insertions(+), 2 deletions(-)
+> -----Original Message-----
+> From: Wood Scott-B07421
+> Sent: Friday, December 06, 2013 5:52 AM
+> To: Bhushan Bharat-R65777
+> Cc: Alex Williamson; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org; Yoder Stuart-
+> B08248; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; linuxppc-
+> dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU (PAMU)
+> 
+> On Thu, 2013-11-28 at 03:19 -0600, Bharat Bhushan wrote:
+> >
+> > > -----Original Message-----
+> > > From: Bhushan Bharat-R65777
+> > > Sent: Wednesday, November 27, 2013 9:39 PM
+> > > To: 'Alex Williamson'
+> > > Cc: Wood Scott-B07421; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org;
+> > > Yoder Stuart- B08248; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+> > > bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; linuxppc- dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org;
+> > > linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > > Subject: RE: [PATCH 0/9 v2] vfio-pci: add support for Freescale
+> > > IOMMU (PAMU)
+> > >
+> > >
+> > >
+> > > > -----Original Message-----
+> > > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> > > > Sent: Monday, November 25, 2013 10:08 PM
+> > > > To: Bhushan Bharat-R65777
+> > > > Cc: Wood Scott-B07421; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org;
+> > > > Yoder
+> > > > Stuart- B08248; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+> > > > bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org;
+> > > > linuxppc- dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > > > Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale
+> > > > IOMMU
+> > > > (PAMU)
+> > > >
+> > > > On Mon, 2013-11-25 at 05:33 +0000, Bharat Bhushan wrote:
+> > > > >
+> > > > > > -----Original Message-----
+> > > > > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> > > > > > Sent: Friday, November 22, 2013 2:31 AM
+> > > > > > To: Wood Scott-B07421
+> > > > > > Cc: Bhushan Bharat-R65777; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+> > > > > > agraf-l3A5Bk7waGM@public.gmane.org; Yoder Stuart-B08248;
+> > > > > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org;
+> > > > > > linuxppc- dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > > > > > Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for
+> > > > > > Freescale IOMMU (PAMU)
+> > > > > >
+> > > > > > On Thu, 2013-11-21 at 14:47 -0600, Scott Wood wrote:
+> > > > > > > On Thu, 2013-11-21 at 13:43 -0700, Alex Williamson wrote:
+> > > > > > > > On Thu, 2013-11-21 at 11:20 +0000, Bharat Bhushan wrote:
+> > > > > > > > >
+> > > > > > > > > > -----Original Message-----
+> > > > > > > > > > From: Alex Williamson
+> > > > > > > > > > [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> > > > > > > > > > Sent: Thursday, November 21, 2013 12:17 AM
+> > > > > > > > > > To: Bhushan Bharat-R65777
+> > > > > > > > > > Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org;
+> > > > > > > > > > agraf-l3A5Bk7waGM@public.gmane.org; Wood Scott-B07421; Yoder Stuart-B08248;
+> > > > > > > > > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-
+> > > > > > > > > > pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org;
+> > > > > > > > > > linux- kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Bhushan Bharat-R65777
+> > > > > > > > > > Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for
+> > > > > > > > > > Freescale IOMMU (PAMU)
+> > > > > > > > > >
+> > > > > > > > > > Is VFIO_IOMMU_PAMU_GET_MSI_BANK_COUNT per aperture (ie.
+> > > > > > > > > > each vfio user has $COUNT regions at their disposal
+> exclusively)?
+> > > > > > > > >
+> > > > > > > > > Number of msi-bank count is system wide and not per
+> > > > > > > > > aperture, But will be
+> > > > > > setting windows for banks in the device aperture.
+> > > > > > > > > So say if we are direct assigning 2 pci device (both
+> > > > > > > > > have different iommu
+> > > > > > group, so 2 aperture in iommu) to VM.
+> > > > > > > > > Now qemu can make only one call to know how many
+> > > > > > > > > msi-banks are there but
+> > > > > > it must set sub-windows for all banks for both pci device in
+> > > > > > its respective aperture.
+> > > > > > > >
+> > > > > > > > I'm still confused.  What I want to make sure of is that
+> > > > > > > > the banks are independent per aperture.  For instance, if
+> > > > > > > > we have two separate userspace processes operating
+> > > > > > > > independently and they both chose to use msi bank zero for
+> > > > > > > > their device, that's bank zero within each aperture and
+> > > > > > > > doesn't interfere.  Or another way to ask is can a
+> > > > > > > > malicious user interfere with other users by
+> > > > using the wrong bank.
+> > > > > > > > Thanks,
+> > > > > > >
+> > > > > > > They can interfere.
+> > > > >
+> > > > > Want to be sure of how they can interfere?
+> > > >
+> > > > What happens if more than one user selects the same MSI bank?
+> > > > Minimally, wouldn't that result in the IOMMU blocking transactions
+> > > > from the previous user once the new user activates their mapping?
+> > >
+> > > Yes and no; With current implementation yes but with a minor change
+> > > no. Later in this response I will explain how.
+> > >
+> > > >
+> > > > > >>  With this hardware, the only way to prevent that
+> > > > > > > is to make sure that a bank is not shared by multiple
+> > > > > > > protection
+> > > contexts.
+> > > > > > > For some of our users, though, I believe preventing this is
+> > > > > > > less important than the performance benefit.
+> > > > >
+> > > > > So should we let this patch series in without protection?
+> > > >
+> > > > No.
+> > > >
+> > > > > >
+> > > > > > I think we need some sort of ownership model around the msi banks
+> then.
+> > > > > > Otherwise there's nothing preventing another userspace from
+> > > > > > attempting an MSI based attack on other users, or perhaps even
+> > > > > > on the host.  VFIO can't allow that.  Thanks,
+> > > > >
+> > > > > We have very few (3 MSI bank on most of chips), so we can not
+> > > > > assign one to each userspace. What we can do is host and
+> > > > > userspace does not share a MSI bank while userspace will share a MSI
+> bank.
+> > > >
+> > > > Then you probably need VFIO to "own" the MSI bank and program
+> > > > devices into it rather than exposing the MSI banks to userspace to
+> > > > let them have
+> > > direct access.
+> > >
+> > > Overall idea of exposing the details of msi regions to userspace are
+> > >  1) User space can define the aperture size to fit MSI mapping in IOMMU.
+> > >  2) setup iova for a MSI banks; which is just after guest memory.
+> > >
+> > > But currently we expose the "size" and "address" of MSI banks,
+> > > passing address is of no use and can be problematic.
+> >
+> > I am sorry, above information is not correct. Currently neither we expose
+> "address" nor "size" to user space. We only expose number of MSI BANK count and
+> userspace adds one sub-window for each bank.
+> >
+> > > If we just provide the size of MSI bank to userspace then userspace
+> > > cannot do anything wrong.
+> >
+> > So userspace does not know address, so it cannot mmap and cause any
+> interference by directly reading/writing.
+> 
+> That's security through obscurity...  Couldn't the malicious user find out the
+> address via other means, such as experimentation on another system over which
+> they have full control?  What would happen if the user reads from their device's
+> PCI config space?  Or gets the information via some back door in the PCI device
+> they own?  Or pokes throughout the address space looking for something that
+> generates an interrupt to its own device?
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 8b452c9..c17dbf7 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -100,7 +100,6 @@ static int __init dmar_parse_one_dev_scope(struct acpi_dmar_device_scope *scope,
- 	if (!pdev) {
- 		pr_warn("Device scope device [%04x:%02x:%02x.%02x] not found\n",
- 			segment, scope->bus, path->device, path->function);
--		*dev = NULL;
- 		return 0;
- 	}
- 	if ((scope->entry_type == ACPI_DMAR_SCOPE_TYPE_ENDPOINT && \
-@@ -151,7 +150,7 @@ int __init dmar_parse_dev_scope(void *start, void *end, int *cnt,
- 			ret = dmar_parse_one_dev_scope(scope,
- 				&(*devices)[index], segment);
- 			if (ret) {
--				kfree(*devices);
-+				dmar_free_dev_scope(devices, cnt);
- 				return ret;
- 			}
- 			index ++;
-@@ -162,6 +161,17 @@ int __init dmar_parse_dev_scope(void *start, void *end, int *cnt,
- 	return 0;
- }
- 
-+void dmar_free_dev_scope(struct pci_dev ***devices, int *cnt)
-+{
-+	if (*devices && *cnt) {
-+		while (--*cnt >= 0)
-+			pci_dev_put((*devices)[*cnt]);
-+		kfree(*devices);
-+		*devices = NULL;
-+		*cnt = 0;
-+	}
-+}
-+
- /**
-  * dmar_parse_one_drhd - parses exactly one DMA remapping hardware definition
-  * structure which uniquely represent one DMA remapping hardware unit
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index b029d1a..8adfce0 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -159,6 +159,7 @@ extern int dmar_parse_one_rmrr(struct acpi_dmar_header *header);
- extern int dmar_parse_one_atsr(struct acpi_dmar_header *header);
- extern int dmar_parse_dev_scope(void *start, void *end, int *cnt,
- 				struct pci_dev ***devices, u16 segment);
-+extern void dmar_free_dev_scope(struct pci_dev ***devices, int *cnt);
- extern int intel_iommu_init(void);
- #else /* !CONFIG_INTEL_IOMMU: */
- static inline int intel_iommu_init(void) { return -ENODEV; }
--- 
-1.7.10.4
+So how to solve this problem, Any suggestion ?
+
+We have to map one window in PAMU for MSIs and a malicious user can ask its device to do DMA to MSI window region with any pair of address and data, which can lead to unexpected MSIs in system?
+
+Thanks
+-Bharat
+
+> 
+> -Scott
+> 
