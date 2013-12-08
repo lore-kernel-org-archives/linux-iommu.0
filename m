@@ -1,97 +1,73 @@
-From: Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU (PAMU)
-Date: Fri, 6 Dec 2013 18:22:58 -0600
-Message-ID: <1386375778.7375.203.camel@snotra.buserror.net>
-References: <1384838233-24847-1-git-send-email-Bharat.Bhushan@freescale.com>
-	<1384973243.2879.361.camel@ul30vt.home>
-	<6A3DF150A5B70D4F9B66A25E3F7C888D0721D9AC@039-SN2MPN1-012.039d.mgd.msft.net>
-	<1385066603.2879.414.camel@ul30vt.home>
-	<1385066835.1403.489.camel@snotra.buserror.net>
-	<1385067648.2879.421.camel@ul30vt.home>
-	<6A3DF150A5B70D4F9B66A25E3F7C888D0722C180@039-SN2MPN1-012.039d.mgd.msft.net>
-	<1385397493.2879.557.camel@ul30vt.home>
-	<6A3DF150A5B70D4F9B66A25E3F7C888D0723624C@039-SN2MPN1-012.039d.mgd.msft.net>
-	<1386289316.7375.107.camel@snotra.buserror.net>
-	<6A3DF150A5B70D4F9B66A25E3F7C888D07251EE4@039-SN2MPN1-012.039d.mgd.msft.net>
-	<1386356393.7375.118.camel@snotra.buserror.net>
-	<1386358226.25738.506.camel@ul30vt.home>
+From: Antonio Quartulli <antonio@meshcoding.com>
+Subject: Re: warn_slowpath_common in drivers/pci/search.c:44 on linux-3.4.0
+Date: Sun, 08 Dec 2013 15:26:34 +0100
+Message-ID: <52A4819A.50501@meshcoding.com>
+References: <20120526082551.GA2723@ritirata.org> <CAErSpo553_-AivRa7VbjHrFraHaO4NYoYR7A9Am5fkDP-CMvSA@mail.gmail.com> <20120529083552.GN2604@amd.com> <20120529085648.GA13941@ritirata.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1386358226.25738.506.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, Yoder Stuart-B08248 <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20120529085648.GA13941@ritirata.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: Joerg Roedel <joerg.roedel@amd.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 2013-12-06 at 12:30 -0700, Alex Williamson wrote:
-> On Fri, 2013-12-06 at 12:59 -0600, Scott Wood wrote:
-> > On Thu, 2013-12-05 at 22:11 -0600, Bharat Bhushan wrote:
-> > > 
-> > > > -----Original Message-----
-> > > > From: Wood Scott-B07421
-> > > > Sent: Friday, December 06, 2013 5:52 AM
-> > > > To: Bhushan Bharat-R65777
-> > > > Cc: Alex Williamson; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org; Yoder Stuart-
-> > > > B08248; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; linuxppc-
-> > > > dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > > > Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU (PAMU)
-> > > >
-> > > > On Thu, 2013-11-28 at 03:19 -0600, Bharat Bhushan wrote:
-> > > > >
-> > > > > > -----Original Message-----
-> > > > > > From: Bhushan Bharat-R65777
-> > > > > > Sent: Wednesday, November 27, 2013 9:39 PM
-> > > > > > To: 'Alex Williamson'
-> > > > > > Cc: Wood Scott-B07421; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org;
-> > > > > > Yoder Stuart- B08248; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> > > > > > bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; linuxppc- dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org;
-> > > > > > linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > > > > > Subject: RE: [PATCH 0/9 v2] vfio-pci: add support for Freescale
-> > > > > > IOMMU (PAMU)
-> > > > > >
-> > > > > > If we just provide the size of MSI bank to userspace then userspace
-> > > > > > cannot do anything wrong.
-> > > > >
-> > > > > So userspace does not know address, so it cannot mmap and cause any
-> > > > interference by directly reading/writing.
-> > > >
-> > > > That's security through obscurity...  Couldn't the malicious user find out the
-> > > > address via other means, such as experimentation on another system over which
-> > > > they have full control?  What would happen if the user reads from their device's
-> > > > PCI config space?  Or gets the information via some back door in the PCI device
-> > > > they own?  Or pokes throughout the address space looking for something that
-> > > > generates an interrupt to its own device?
-> > > 
-> > > So how to solve this problem, Any suggestion ?
-> > > 
-> > > We have to map one window in PAMU for MSIs and a malicious user can ask
-> > > its device to do DMA to MSI window region with any pair of address and
-> > > data, which can lead to unexpected MSIs in system?
-> > 
-> > I don't think there are any solutions other than to limit each bank to
-> > one user, unless the admin turns some knob that says they're OK with the
-> > partial loss of isolation.
+On 29/05/12 10:56, Antonio Quartulli wrote:
+> On Tue, May 29, 2012 at 10:35:53 +0200, Joerg Roedel wrote:
+>> Hi Antonio,
+>>
+>> On Sat, May 26, 2012 at 09:09:52AM -0600, Bjorn Helgaas wrote:
+>>> On Sat, May 26, 2012 at 2:25 AM, Antonio Quartulli <ordex@autistici.org> wrote:
+>>>> [    1.054279] WARNING: at drivers/pci/search.c:44 pci_find_upstream_pcie_bridge+0x5e/0x70()
+>>>> [    1.054385] Hardware name: Latitude E5420
+>>>> [    1.054457] Modules linked in:
+>>>> [    1.054568] Pid: 1, comm: swapper/0 Not tainted 3.4.0ordex+ #3
+>>>> [    1.054643] Call Trace:
+>>>> [    1.054716]  [<ffffffff81033d4a>] warn_slowpath_common+0x7a/0xb0
+>>>> [    1.054793]  [<ffffffff81033d95>] warn_slowpath_null+0x15/0x20
+>>>> [    1.054869]  [<ffffffff8123899e>] pci_find_upstream_pcie_bridge+0x5e/0x70
+>>>> [    1.054949]  [<ffffffff813babe7>] intel_iommu_device_group+0x77/0x100
+>>>> [    1.055027]  [<ffffffff813b52d5>] add_iommu_group+0x35/0x60
+>>>> [    1.055113]  [<ffffffff813b52a0>] ? bus_set_iommu+0x50/0x50
+>>>> [    1.055191]  [<ffffffff8132c586>] bus_for_each_dev+0x56/0x90
+>>>> [    1.055267]  [<ffffffff813b528b>] bus_set_iommu+0x3b/0x50
+>>>> [    1.055344]  [<ffffffff818c4920>] intel_iommu_init+0xab0/0xb3f
+>>>> [    1.055421]  [<ffffffff81120b26>] ? sys_mkdirat+0x76/0xd0
+>>>> [    1.055499]  [<ffffffff8189b0db>] ? memblock_find_dma_reserve+0x13d/0x13d
+>>>> [    1.055578]  [<ffffffff8189b0ee>] pci_iommu_init+0x13/0x3e
+>>>> [    1.055655]  [<ffffffff810001ca>] do_one_initcall+0x3a/0x170
+>>>> [    1.055732]  [<ffffffff81897c35>] kernel_init+0x148/0x1cc
+>>>> [    1.055807]  [<ffffffff81897588>] ? do_early_param+0x86/0x86
+>>>> [    1.055884]  [<ffffffff814fc914>] kernel_thread_helper+0x4/0x10
+>>>> [    1.055963]  [<ffffffff8105de60>] ? finish_task_switch+0x80/0x110
+>>>> [    1.056040]  [<ffffffff814fafdd>] ? retint_restore_args+0xe/0xe
+>>>> [    1.056126]  [<ffffffff81897aed>] ? start_kernel+0x30b/0x30b
+>>>> [    1.056203]  [<ffffffff814fc910>] ? gs_change+0xb/0xb
+>>
+>> Hmm, this looks like pci_find_upstream_pcie_bridge() found a PCIe device
+>> in the chain which is not a bridge. Can you please post the output of
+>> 'lspci -vvv' and 'lspci -t'?
+>>
 > 
-> Even if the admin does opt-in to an allow_unsafe_interrupts options, it
-> should still be reasonably difficult for one guest to interfere with the
-> other.  I don't think we want to rely on the blind luck of making the
-> full MSI bank accessible to multiple guests and hoping they don't step
-> on each other.  That probably means that vfio needs to manage the space
-> rather than the guest.  Thanks,
+> attached!
+> Some days ago I tried to put some printk in the code and, as far as I can
+> understand, you are right.
+> 
+> I hope my lspci output will help!
+> 
+> Cheers,
+> 
 
-Yes, the MSIs within a given bank would be allocated by the host kernel
-in any case (presumably by the MSI driver, not VFIO itself).  This is
-just about what happens if the MSI page is written to outside of the
-normal mechanism.
+Hi guys,
 
--Scott
+was there any progress about this?
+Right now I am using linux-3.10.22 and the WARNING is still present.
+The system seems to be working fine, but I don't know if this issue can
+trigger side effects or not.
+
+
+Cheers,
+
+-- 
+Antonio Quartulli
