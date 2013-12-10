@@ -1,7 +1,7 @@
-From: "Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU (PAMU)
-Date: Tue, 10 Dec 2013 05:37:14 +0000
-Message-ID: <34c6142137194b1cbd2336013ed3b10d@BN1PR03MB266.namprd03.prod.outlook.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU (PAMU)
+Date: Mon, 09 Dec 2013 22:53:20 -0700
+Message-ID: <1386654800.22974.2.camel@ul30vt.home>
 References: <1384838233-24847-1-git-send-email-Bharat.Bhushan@freescale.com>
 	<1384973243.2879.361.camel@ul30vt.home>
 	<6A3DF150A5B70D4F9B66A25E3F7C888D0721D9AC@039-SN2MPN1-012.039d.mgd.msft.net>
@@ -9,15 +9,18 @@ References: <1384838233-24847-1-git-send-email-Bharat.Bhushan@freescale.com>
 	<1385066835.1403.489.camel@snotra.buserror.net>
 	<1385067648.2879.421.camel@ul30vt.home>
 	<6A3DF150A5B70D4F9B66A25E3F7C888D0722C180@039-SN2MPN1-012.039d.mgd.msft.net>
-	<1386288052.7375.100.camel@snotra.buserror.net>
-	<6A3DF150A5B70D4F9B66A25E3F7C888D07251EFF@039-SN2MPN1-012.039d.mgd.msft.net>
-	<1386357907.7375.127.camel@snotra.buserror.net>
+	<1385397493.2879.557.camel@ul30vt.home>
+	<6A3DF150A5B70D4F9B66A25E3F7C888D0723624C@039-SN2MPN1-012.039d.mgd.msft.net>
+	<1386289316.7375.107.camel@snotra.buserror.net>
+	<6A3DF150A5B70D4F9B66A25E3F7C888D07251EE4@039-SN2MPN1-012.039d.mgd.msft.net>
+	<1386356393.7375.118.camel@snotra.buserror.net>
+	<1386358226.25738.506.camel@ul30vt.home>
+	<326a93628a9141a9abce97b7bb4e04fd@BN1PR03MB266.namprd03.prod.outlook.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1386357907.7375.127.camel-88ow+0ZRuxG2UiBs7uKeOtHuzzzSOjJt@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <326a93628a9141a9abce97b7bb4e04fd-1xfNCLzsyCo4Ngm60E62wOO6mTEJWrR4XA4E9RH9d+qIuWR1G4zioA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -27,101 +30,88 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: 'Wood Scott-B07421' <IMCEAEX-_O=MMS_OU=EXTERNAL+20+28FYDIBOHF25SPDLT+29_CN=RECIPIENTS_CN=F0FAAC8D7E74473A9EE1C45B068D838A-nA3rOoH6FIycE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>, "Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: "Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-> -----Original Message-----
-> From: Wood Scott-B07421
-> Sent: Saturday, December 07, 2013 12:55 AM
-> To: Bhushan Bharat-R65777
-> Cc: Alex Williamson; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org; Yoder Stuart-
-> B08248; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; linuxppc-
-> dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU (PAMU)
+On Tue, 2013-12-10 at 05:37 +0000, Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org wrote:
 > 
-> On Thu, 2013-12-05 at 22:17 -0600, Bharat Bhushan wrote:
-> >
-> > > -----Original Message-----
-> > > From: Wood Scott-B07421
-> > > Sent: Friday, December 06, 2013 5:31 AM
-> > > To: Bhushan Bharat-R65777
-> > > Cc: Alex Williamson; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org; Yoder
-> > > Stuart- B08248; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> > > bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; linuxppc- dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org;
-> > > linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > > Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale
-> > > IOMMU (PAMU)
-> > >
-> > > On Sun, 2013-11-24 at 23:33 -0600, Bharat Bhushan wrote:
+> > -----Original Message-----
+> > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> > Sent: Saturday, December 07, 2013 1:00 AM
+> > To: Wood Scott-B07421
+> > Cc: Bhushan Bharat-R65777; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org; Yoder
+> > Stuart-B08248; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; linuxppc-
+> > dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale IOMMU (PAMU)
+> > 
+> > On Fri, 2013-12-06 at 12:59 -0600, Scott Wood wrote:
+> > > On Thu, 2013-12-05 at 22:11 -0600, Bharat Bhushan wrote:
 > > > >
 > > > > > -----Original Message-----
-> > > > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > > > > Sent: Friday, November 22, 2013 2:31 AM
-> > > > > To: Wood Scott-B07421
-> > > > > Cc: Bhushan Bharat-R65777; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > > > agraf-l3A5Bk7waGM@public.gmane.org; Yoder Stuart-B08248;
-> > > > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; linuxppc-
-> > > > > dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > > > > From: Wood Scott-B07421
+> > > > > Sent: Friday, December 06, 2013 5:52 AM
+> > > > > To: Bhushan Bharat-R65777
+> > > > > Cc: Alex Williamson; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org;
+> > > > > Yoder Stuart- B08248; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+> > > > > bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; linuxppc- dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org;
+> > > > > linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 > > > > > Subject: Re: [PATCH 0/9 v2] vfio-pci: add support for Freescale
 > > > > > IOMMU (PAMU)
 > > > > >
-> > > > > On Thu, 2013-11-21 at 14:47 -0600, Scott Wood wrote:
-> > > > > > They can interfere.
+> > > > > On Thu, 2013-11-28 at 03:19 -0600, Bharat Bhushan wrote:
+> > > > > >
+> > > > > > > -----Original Message-----
+> > > > > > > From: Bhushan Bharat-R65777
+> > > > > > > Sent: Wednesday, November 27, 2013 9:39 PM
+> > > > > > > To: 'Alex Williamson'
+> > > > > > > Cc: Wood Scott-B07421; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+> > > > > > > agraf-l3A5Bk7waGM@public.gmane.org; Yoder Stuart- B08248;
+> > > > > > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org;
+> > > > > > > linuxppc- dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > > > > > > Subject: RE: [PATCH 0/9 v2] vfio-pci: add support for
+> > > > > > > Freescale IOMMU (PAMU)
+> > > > > > >
+> > > > > > > If we just provide the size of MSI bank to userspace then
+> > > > > > > userspace cannot do anything wrong.
+> > > > > >
+> > > > > > So userspace does not know address, so it cannot mmap and cause
+> > > > > > any
+> > > > > interference by directly reading/writing.
+> > > > >
+> > > > > That's security through obscurity...  Couldn't the malicious user
+> > > > > find out the address via other means, such as experimentation on
+> > > > > another system over which they have full control?  What would
+> > > > > happen if the user reads from their device's PCI config space?  Or
+> > > > > gets the information via some back door in the PCI device they
+> > > > > own?  Or pokes throughout the address space looking for something that
+> > generates an interrupt to its own device?
 > > > >
-> > > > Want to be sure of how they can interfere?
-> > >
-> > > If more than one VFIO user shares the same MSI group, one of the
-> > > users can send MSIs to another user, by using the wrong interrupt
-> > > within the bank.  Unexpected MSIs could cause misbehavior or denial of
-> service.
-> > >
-> > > > >>  With this hardware, the only way to prevent that
-> > > > > > is to make sure that a bank is not shared by multiple protection
-> contexts.
-> > > > > > For some of our users, though, I believe preventing this is
-> > > > > > less important than the performance benefit.
+> > > > So how to solve this problem, Any suggestion ?
 > > > >
-> > > > So should we let this patch series in without protection?
+> > > > We have to map one window in PAMU for MSIs and a malicious user can
+> > > > ask its device to do DMA to MSI window region with any pair of
+> > > > address and data, which can lead to unexpected MSIs in system?
 > > >
-> > > No, there should be some sort of opt-in mechanism similar to
-> > > IOMMU-less VFIO -- but not the same exact one, since one is a much
-> > > more serious loss of isolation than the other.
-> >
-> > Can you please elaborate "opt-in mechanism"?
+> > > I don't think there are any solutions other than to limit each bank to
+> > > one user, unless the admin turns some knob that says they're OK with
+> > > the partial loss of isolation.
+> > 
+> > Even if the admin does opt-in to an allow_unsafe_interrupts options, it should
+> > still be reasonably difficult for one guest to interfere with the other.  I
+> > don't think we want to rely on the blind luck of making the full MSI bank
+> > accessible to multiple guests and hoping they don't step on each other.
 > 
-> The system should be secure by default.  If the administrator wants to relax
-> protection in order to accomplish some functionality, that should require an
-> explicit request such as a write to a sysfs file.
+> Not sure how to solve in this case (sharing MSI page)
 > 
-> > > > > I think we need some sort of ownership model around the msi banks then.
-> > > > > Otherwise there's nothing preventing another userspace from
-> > > > > attempting an MSI based attack on other users, or perhaps even
-> > > > > on the host.  VFIO can't allow that.  Thanks,
-> > > >
-> > > > We have very few (3 MSI bank on most of chips), so we can not
-> > > > assign one to each userspace.
-> > >
-> > > That depends on how many users there are.
-> >
-> > What I think we can do is:
-> >  - Reserve one MSI region for host. Host will not share MSI region with Guest.
-> >  - For upto 2 Guest (MAX msi with host - 1) give then separate MSI sub
-> > regions
-> >  - Additional Guest will share MSI region with other guest.
-> >
-> > Any better suggestion are most welcome.
+> >  That probably means that vfio needs to manage the space rather than the guest.
 > 
-> If the administrator does not opt into this partial loss of isolation, then once
-> you run out of MSI groups, new users should not be able to set up MSIs.
+> What you mean by " vfio needs to manage the space rather than the guest"?
 
-So mean vfio should use Legacy when out of MSI banks?
+I mean there needs to be some kernel component managing the contents of
+the MSI page rather than just handing it out to the user and hoping for
+the best.  The user API also needs to remain the same whether the user
+has the MSI page exclusively or it's shared with others (kernel or
+users).  Thanks,
 
-Thanks
--Bharat
-
-> 
-> -Scott
-> 
+Alex
