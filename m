@@ -1,62 +1,90 @@
-From: Youquan Song <youquan.song@intel.com>
-Subject: [PATCH 3/3] dmar: reduce loop to find multi-devices owned by IOMMU
-Date: Fri, 13 Dec 2013 00:16:27 -0500
-Message-ID: <1386911787-25375-3-git-send-email-youquan.song@intel.com>
-References: <1386911787-25375-1-git-send-email-youquan.song@intel.com>
- <1386911787-25375-2-git-send-email-youquan.song@intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1386911787-25375-2-git-send-email-youquan.song@intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: David Woodhouse <dwmw2@infradead.org>, David Woodhouse <David.Woodhouse@intel.com>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Youquan Song <youquan.song@linux.intel.com>, Youquan Song <youquan.song@intel.com>, zhiyuan.zhou@intel.com
+From: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Subject: Re: [PATCHv7 04/12] driver/core: populate devices in order for IOMMUs
+Date: Thu, 12 Dec 2013 18:14:02 -0800
+Message-ID: <20131213021402.GB14192@kroah.com>
+References: <1386835033-4701-1-git-send-email-hdoyu@nvidia.com>
+	<1386835033-4701-5-git-send-email-hdoyu@nvidia.com>
+	<20131212113920.70E8BC40637@trevor.secretlab.ca>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20131212113920.70E8BC40637-WNowdnHR2B42iJbIjFUEsiwD8/FfD2ys@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When try to find if the iommu owns other devices in the domain except the 
-device will be moved. It will loop all devices under the domain if the removed
-device is the first device in domain devices list.
+On Thu, Dec 12, 2013 at 11:39:20AM +0000, Grant Likely wrote:
+> On Thu, 12 Dec 2013 09:57:05 +0200, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote:
+> > IOMMU devices on the bus need to be poplulated first, then iommu
+> > master devices are done later.
+> > 
+> > With CONFIG_OF_IOMMU, "iommus=" DT binding would be used to identify
+> > whether a device can be an iommu msater or not. If a device can, we'll
+> > defer to populate that device till an iommu device is populated. Then,
+> > those deferred iommu master devices are populated and configured with
+> > help of the already populated iommu device.
+> > 
+> > Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> > Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+> > ---
+> > This is related to the following discussion:
+> >   [RFC PATCH] Documentation: devicetree: add description for generic bus properties
+> >   http://lists.infradead.org/pipermail/linux-arm-kernel/2013-November/215042.html
+> > 
+> > v6:
+> > Spinned off only driver core part from:
+> >   [PATCHv5 2/9] driver/core: populate devices in order for IOMMUs
+> > 
+> > v5:
+> > Use "iommus=" binding instread of arm,smmu's "#stream-id-cells".
+> > 
+> > v4:
+> > This is newly added, and the successor of the following RFC:
+> >   [RFC][PATCHv3+ 1/2] driver/core: Add of_iommu_attach()
+> >   http://lists.linuxfoundation.org/pipermail/iommu/2013-November/006914.html
+> > 
+> > Signed-off-by: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> > ---
+> >  drivers/base/dd.c | 5 +++++
+> >  1 file changed, 5 insertions(+)
+> > 
+> > diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+> > index 0605176..0605f52 100644
+> > --- a/drivers/base/dd.c
+> > +++ b/drivers/base/dd.c
+> > @@ -25,6 +25,7 @@
+> >  #include <linux/async.h>
+> >  #include <linux/pm_runtime.h>
+> >  #include <linux/pinctrl/devinfo.h>
+> > +#include <linux/of_iommu.h>
+> >  
+> >  #include "base.h"
+> >  #include "power/power.h"
+> > @@ -273,6 +274,10 @@ static int really_probe(struct device *dev, struct device_driver *drv)
+> >  
+> >  	dev->driver = drv;
+> >  
+> > +	ret = of_iommu_attach(dev);
+> > +	if (ret)
+> > +		goto probe_failed;
+> > +
+> 
+> As discussed before, I really don't think hooking in to dd.c is the
+> right thing to do here, and certainly not as a device tree specific
+> function. ACPI or PCI described devices may have the same constraints
+> and those won't have DT descriptions.
 
-This patch will improve it and it only loop before find the removed device and
- one of other device, so save the loop time and make the code more clear.
+I agree, this shouldn't be in the driver core.
 
-Signed-off-by: Youquan Song <youquan.song@intel.com>
----
- drivers/iommu/intel-iommu.c |   15 ++++++---------
- 1 files changed, 6 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index aa821fc..9f3bf3f 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3785,7 +3785,7 @@ static void domain_remove_one_dev_info(struct dmar_domain *domain,
- 	struct device_domain_info *info, *tmp;
- 	struct intel_iommu *iommu;
- 	unsigned long flags;
--	int found = 0;
-+	int found = 0, del = 0;
- 
- 	iommu = device_to_iommu(pci_domain_nr(pdev->bus), pdev->bus->number,
- 				pdev->devfn);
-@@ -3806,16 +3806,13 @@ static void domain_remove_one_dev_info(struct dmar_domain *domain,
- 			free_devinfo_mem(info);
- 
- 			spin_lock_irqsave(&device_domain_lock, flags);
--
--			if (found)
--				break;
--			else
--				continue;
--		}
--
--		if (iommu == device_to_iommu(info->segment, info->bus,
-+			del = 1;
-+		} else if (iommu == device_to_iommu(info->segment, info->bus,
- 					    info->devfn))
- 			found = 1;
-+
-+		if (found & del)
-+			break;
- 	}
- 
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
--- 
-1.7.7.4
+greg k-h
