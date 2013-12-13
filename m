@@ -1,37 +1,49 @@
 From: Youquan Song <youquan.song@intel.com>
-Subject: [PATCH 1/3] dmar: Fix domain id not update to newly create
-Date: Fri, 13 Dec 2013 00:16:25 -0500
-Message-ID: <1386911787-25375-1-git-send-email-youquan.song@intel.com>
+Subject: [PATCH 2/3] dmar: Move the confuse comments to proper place
+Date: Fri, 13 Dec 2013 00:16:26 -0500
+Message-ID: <1386911787-25375-2-git-send-email-youquan.song@intel.com>
+References: <1386911787-25375-1-git-send-email-youquan.song@intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1386911787-25375-1-git-send-email-youquan.song@intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: David Woodhouse <dwmw2@infradead.org>, David Woodhouse <David.Woodhouse@intel.com>
 Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Youquan Song <youquan.song@linux.intel.com>, Youquan Song <youquan.song@intel.com>, zhiyuan.zhou@intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-At domain_context_mapping_one(), if the domain is still not assign domain id,
-it will assign a new domain_id for it, but the newly creating domain id is not
-update to domain, so the domain will keep an unkown domain id.
+the "found=1" should be "there are other device owned by the domain", the
+comments is put at wrong place and make the code reviewing confuse, so move it
+to the correct place.
 
-It will cause the issues: like flush wrong domain in iommu->flush.flush_iotlb,
-and free/release wrong domain.
-
-Tested-by: Zhiyuan Zhou <zhiyuan.zhou@intel.com>
 Signed-off-by: Youquan Song <youquan.song@intel.com>
 ---
- drivers/iommu/intel-iommu.c |    1 +
- 1 files changed, 1 insertions(+), 0 deletions(-)
+ drivers/iommu/intel-iommu.c |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 43b9bfe..9cd522f 100644
+index 9cd522f..aa821fc 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1625,6 +1625,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain, int segment,
+@@ -3813,10 +3813,6 @@ static void domain_remove_one_dev_info(struct dmar_domain *domain,
+ 				continue;
  		}
- 	}
  
-+	domain->id = id;
- 	context_set_domain_id(context, id);
+-		/* if there is no other devices under the same iommu
+-		 * owned by this domain, clear this iommu in iommu_bmp
+-		 * update iommu count and coherency
+-		 */
+ 		if (iommu == device_to_iommu(info->segment, info->bus,
+ 					    info->devfn))
+ 			found = 1;
+@@ -3824,6 +3820,10 @@ static void domain_remove_one_dev_info(struct dmar_domain *domain,
  
- 	if (translation != CONTEXT_TT_PASS_THROUGH) {
+ 	spin_unlock_irqrestore(&device_domain_lock, flags);
+ 
++	/* if there is no other devices under the same iommu
++	 * owned by this domain, clear this iommu in iommu_bmp
++	 * update iommu count and coherency
++	 */
+ 	if (found == 0) {
+ 		unsigned long tmp_flags;
+ 		spin_lock_irqsave(&domain->iommu_lock, tmp_flags);
 -- 
 1.7.7.4
