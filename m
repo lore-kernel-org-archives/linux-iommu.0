@@ -1,14 +1,14 @@
 From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [PATCHv7 02/12] iommu/of: introduce a global iommu device list
-Date: Mon, 16 Dec 2013 11:32:47 -0700
-Message-ID: <52AF474F.7080701@wwwdotorg.org>
+Subject: Re: [PATCHv7 03/12] iommu/of: check if dependee iommu is ready or not
+Date: Mon, 16 Dec 2013 11:34:12 -0700
+Message-ID: <52AF47A4.6010501@wwwdotorg.org>
 References: <1386835033-4701-1-git-send-email-hdoyu@nvidia.com>
-	<1386835033-4701-3-git-send-email-hdoyu@nvidia.com>
+	<1386835033-4701-4-git-send-email-hdoyu@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1386835033-4701-3-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1386835033-4701-4-git-send-email-hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,25 +23,29 @@ Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA
 List-Id: iommu@lists.linux-foundation.org
 
 On 12/12/2013 12:57 AM, Hiroshi Doyu wrote:
-> This enables to find an populated IOMMU device via a device node. This
-> can be used to see if an dependee IOMMU is populated or not to keep
-> correct device population order. Client devices need to wait an IOMMU
-> to be populated.
+> IOMMU devices on the bus need to be poplulated first, then iommu
+> master devices are done later.
 > 
-> Suggested by Thierry Reding and copied his example code.
+> With CONFIG_OF_IOMMU, "iommus=" DT binding would be used to identify
+> whether a device can be an iommu msater or not. If a device can, we'll
+> defer to populate that device till an depending iommu device is
+> populated.
 
 > diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
 
-> +static struct iommu *of_find_iommu_by_node(struct device_node *np)
+> +int of_iommu_attach(struct device *dev)
 > +{
-> +	struct iommu *iommu;
+> +	const __be32 *cur, *end;
+> +	struct of_phandle_args args;
 > +
-> +	mutex_lock(&iommus_lock);
-> +	list_for_each_entry(iommu, &iommus_list, list) {
-> +		if (iommu->dev->of_node == np) {
-> +			mutex_unlock(&iommus_lock);
+> +	of_property_for_each_phandle_with_args(dev->of_node, "iommus",
+> +				       "#iommu-cells", 0, args, cur, end) {
+> +		if (!of_find_iommu_by_node(args.np))
+> +			return -EPROBE_DEFER;
 
-Now that the list is unlocked, the IOMMU could be removed from the list,
-and the driver unregistered. Should you do something like
-iommu_get(iommu); before the mutex_unlock() call, and call iommu_put()
-somewhere (i.e. in the next patch ...)?
+I think that since of_find_iommu_by_node() should be calling
+iommu_get(iommu), the error-case here should loop over the IOMMUs that
+have successfully been acquired, and call iommu_put().
+
+You'd also want to implement of_iommu_detach() or iommu_detach() to undo
+the iommu_get()s that happen within this function.
