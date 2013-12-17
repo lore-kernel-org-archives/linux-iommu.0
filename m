@@ -1,124 +1,40 @@
-From: Florian Vaussard <florian.vaussard@epfl.ch>
-Subject: [PATCH 7/7] ARM: OMAP2+: Remove platform-specific omap-iommu
-Date: Tue, 17 Dec 2013 13:53:38 +0100
-Message-ID: <1387284818-28739-8-git-send-email-florian.vaussard@epfl.ch>
-References: <1387284818-28739-1-git-send-email-florian.vaussard@epfl.ch>
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1387284818-28739-1-git-send-email-florian.vaussard@epfl.ch>
-Sender: linux-omap-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, Tony Lindgren <tony@atomide.com>, =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>
-Cc: Rob Herring <rob.herring@calxeda.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Rob Landley <rob@landley.net>, Grant Likely <grant.likely@linaro.org>, Hiroshi Doyu <hdoyu@nvidia.com>, Florian Vaussard <florian.vaussard@epfl.ch>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: [PATCH 0/2] SH Mobile IOMMU fixes
+Date: Tue, 17 Dec 2013 18:18:48 +0100
+Message-ID: <1387300730-28783-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Nguyen Viet Dung <nv-dung-HEF513clHfp3+QwDJ9on6Q@public.gmane.org>, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-With full DT boot, the platform specific part of the OMAP iommu
-is not useful anymore.
+Hello,
 
-Signed-off-by: Florian Vaussard <florian.vaussard@epfl.ch>
----
- arch/arm/mach-omap2/Makefile     |  3 --
- arch/arm/mach-omap2/omap-iommu.c | 79 ----------------------------------------
- 2 files changed, 82 deletions(-)
- delete mode 100644 arch/arm/mach-omap2/omap-iommu.c
+These two small patches fix bugs in the SH Mobile IOMMU driver that result in
+crashes at runtime. Given that the bugs have been present in the driver since
+v3.9 there's no urgency to push the fixes to v3.13.
 
-diff --git a/arch/arm/mach-omap2/Makefile b/arch/arm/mach-omap2/Makefile
-index 35be79f..4e01b61 100644
---- a/arch/arm/mach-omap2/Makefile
-+++ b/arch/arm/mach-omap2/Makefile
-@@ -219,9 +219,6 @@ obj-$(CONFIG_SOC_DRA7XX)		+= omap_hwmod_7xx_data.o
- obj-$(CONFIG_OMAP3_EMU)			+= emu.o
- obj-$(CONFIG_HW_PERF_EVENTS)		+= pmu.o
- 
--iommu-$(CONFIG_OMAP_IOMMU)		:= omap-iommu.o
--obj-y					+= $(iommu-m) $(iommu-y)
--
- ifneq ($(CONFIG_TIDSPBRIDGE),)
- obj-y					+= dsp.o
- endif
-diff --git a/arch/arm/mach-omap2/omap-iommu.c b/arch/arm/mach-omap2/omap-iommu.c
-deleted file mode 100644
-index f1fab56..0000000
---- a/arch/arm/mach-omap2/omap-iommu.c
-+++ /dev/null
-@@ -1,79 +0,0 @@
--/*
-- * omap iommu: omap device registration
-- *
-- * Copyright (C) 2008-2009 Nokia Corporation
-- *
-- * Written by Hiroshi DOYU <Hiroshi.DOYU@nokia.com>
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License version 2 as
-- * published by the Free Software Foundation.
-- */
--
--#include <linux/of.h>
--#include <linux/module.h>
--#include <linux/platform_device.h>
--#include <linux/err.h>
--#include <linux/slab.h>
--
--#include <linux/platform_data/iommu-omap.h>
--#include "soc.h"
--#include "omap_hwmod.h"
--#include "omap_device.h"
--
--static int __init omap_iommu_dev_init(struct omap_hwmod *oh, void *unused)
--{
--	struct platform_device *pdev;
--	struct iommu_platform_data *pdata;
--	struct omap_mmu_dev_attr *a = (struct omap_mmu_dev_attr *)oh->dev_attr;
--	static int i;
--
--	pdata = kzalloc(sizeof(*pdata), GFP_KERNEL);
--	if (!pdata)
--		return -ENOMEM;
--
--	pdata->name = oh->name;
--	pdata->nr_tlb_entries = a->nr_tlb_entries;
--	pdata->da_start = a->da_start;
--	pdata->da_end = a->da_end;
--
--	if (oh->rst_lines_cnt == 1) {
--		pdata->reset_name = oh->rst_lines->name;
--		pdata->assert_reset = omap_device_assert_hardreset;
--		pdata->deassert_reset = omap_device_deassert_hardreset;
--	}
--
--	pdev = omap_device_build("omap-iommu", i, oh, pdata, sizeof(*pdata));
--
--	kfree(pdata);
--
--	if (IS_ERR(pdev)) {
--		pr_err("%s: device build err: %ld\n", __func__, PTR_ERR(pdev));
--		return PTR_ERR(pdev);
--	}
--
--	i++;
--
--	return 0;
--}
--
--static int __init omap_iommu_init(void)
--{
--	/* If dtb is there, the devices will be created dynamically */
--	if (of_have_populated_dt())
--		return -ENODEV;
--
--	return omap_hwmod_for_each_by_class("mmu", omap_iommu_dev_init, NULL);
--}
--/* must be ready before omap3isp is probed */
--omap_subsys_initcall(omap_iommu_init);
--
--static void __exit omap_iommu_exit(void)
--{
--	/* Do nothing */
--}
--module_exit(omap_iommu_exit);
--
--MODULE_AUTHOR("Hiroshi DOYU");
--MODULE_DESCRIPTION("omap iommu: omap device registration");
--MODULE_LICENSE("GPL v2");
+Laurent Pinchart (2):
+  iommu/shmobile: Allocate archdata with kzalloc()
+  iommu/shmobile: Turn the flush_lock mutex into a spinlock
+
+ drivers/iommu/shmobile-iommu.c |  3 +--
+ drivers/iommu/shmobile-ipmmu.c | 10 +++++-----
+ drivers/iommu/shmobile-ipmmu.h |  2 +-
+ 3 files changed, 7 insertions(+), 8 deletions(-)
+
 -- 
-1.8.1.2
+Regards,
 
+Laurent Pinchart
