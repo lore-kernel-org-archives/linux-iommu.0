@@ -1,82 +1,172 @@
-From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 2/2] iommu/shmobile: Turn the flush_lock mutex into a spinlock
-Date: Tue, 17 Dec 2013 18:18:50 +0100
-Message-ID: <1387300730-28783-3-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-References: <1387300730-28783-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1387300730-28783-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: linux-sh@vger.kernel.org, Simon Horman <horms@verge.net.au>, Nguyen Viet Dung <nv-dung@jinso.co.jp>
+From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC] dma-mapping: dma_alloc_coherent_mask return dma_addr_t
+Date: Tue, 17 Dec 2013 12:57:42 -0500
+Message-ID: <20131217175742.GA24093@phenom.dumpdata.com>
+References: <1386691537-10319-1-git-send-email-stefano.panella@citrix.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1386691537-10319-1-git-send-email-stefano.panella-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Stefano Panella <stefano.panella-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, shuah.khan-VXdhtT5mjnY@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org
+Cc: stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xen-devel-GuqFBffKawuEi8DpZVb4nw@public.gmane.org, joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org, zoltan.kiss-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org, maarten.lankhorst-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org, mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The lock is taken in atomic context, replace it with a spinlock.
+On Tue, Dec 10, 2013 at 04:05:37PM +0000, Stefano Panella wrote:
+> When running a 32bit kernel there are still some pci devices
+> capable of 64bit addressing (eg. sound/pci/hda/hda_intel.c)
+> 
+> If these drivers are setting:
+> 
+> dev->coherent_dma_mask = 0xFFFFFFFFFFFFFFFF
+> 
+> why dma_alloc_coherent_mask is returning unsigned long instead
+> of dma_addr_t resulting in truncation of the dma_mask to 32bit
+> if running a 32bit kernel?
 
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
----
- drivers/iommu/shmobile-ipmmu.c | 10 +++++-----
- drivers/iommu/shmobile-ipmmu.h |  2 +-
- 2 files changed, 6 insertions(+), 6 deletions(-)
+Ooops.
+> 
+> There are some examples where the dma_alloc_coherent running
+> 32bit kernel can return a machine address bigger than 32bit.
+> 
+> This can be true in particular if running  the 32bit kernel as a
+> pv dom0 under the Xen Hypervisor or PAE on bare metal.
+> 
+> In both cases it would be good if dma_alloc_coherent could return
+> a machine address bigger than 32bit so more constrained 32bit address
+> space could be used by devices not 64bit capable.
+> 
+> I am proposing this patch to eliminate this limitation but I agree
+> that there might be some more reasons to do it in the current way of
+> which I am not awere.
+> 
+> This is why I am just asking for a RFC.
+> 
+> The current patch apply to v3.13-rc3-74-g6c843f5
 
-diff --git a/drivers/iommu/shmobile-ipmmu.c b/drivers/iommu/shmobile-ipmmu.c
-index 8321f89..e3bc2e1 100644
---- a/drivers/iommu/shmobile-ipmmu.c
-+++ b/drivers/iommu/shmobile-ipmmu.c
-@@ -35,12 +35,12 @@ void ipmmu_tlb_flush(struct shmobile_ipmmu *ipmmu)
- 	if (!ipmmu)
- 		return;
- 
--	mutex_lock(&ipmmu->flush_lock);
-+	spin_lock(&ipmmu->flush_lock);
- 	if (ipmmu->tlb_enabled)
- 		ipmmu_reg_write(ipmmu, IMCTR1, IMCTR1_FLUSH | IMCTR1_TLBEN);
- 	else
- 		ipmmu_reg_write(ipmmu, IMCTR1, IMCTR1_FLUSH);
--	mutex_unlock(&ipmmu->flush_lock);
-+	spin_unlock(&ipmmu->flush_lock);
- }
- 
- void ipmmu_tlb_set(struct shmobile_ipmmu *ipmmu, unsigned long phys, int size,
-@@ -49,7 +49,7 @@ void ipmmu_tlb_set(struct shmobile_ipmmu *ipmmu, unsigned long phys, int size,
- 	if (!ipmmu)
- 		return;
- 
--	mutex_lock(&ipmmu->flush_lock);
-+	spin_lock(&ipmmu->flush_lock);
- 	switch (size) {
- 	default:
- 		ipmmu->tlb_enabled = 0;
-@@ -85,7 +85,7 @@ void ipmmu_tlb_set(struct shmobile_ipmmu *ipmmu, unsigned long phys, int size,
- 	}
- 	ipmmu_reg_write(ipmmu, IMTTBR, phys);
- 	ipmmu_reg_write(ipmmu, IMASID, asid);
--	mutex_unlock(&ipmmu->flush_lock);
-+	spin_unlock(&ipmmu->flush_lock);
- }
- 
- static int ipmmu_probe(struct platform_device *pdev)
-@@ -104,7 +104,7 @@ static int ipmmu_probe(struct platform_device *pdev)
- 		dev_err(&pdev->dev, "cannot allocate device data\n");
- 		return -ENOMEM;
- 	}
--	mutex_init(&ipmmu->flush_lock);
-+	spin_lock_init(&ipmmu->flush_lock);
- 	ipmmu->dev = &pdev->dev;
- 	ipmmu->ipmmu_base = devm_ioremap_nocache(&pdev->dev, res->start,
- 						resource_size(res));
-diff --git a/drivers/iommu/shmobile-ipmmu.h b/drivers/iommu/shmobile-ipmmu.h
-index 4d53684..9524743 100644
---- a/drivers/iommu/shmobile-ipmmu.h
-+++ b/drivers/iommu/shmobile-ipmmu.h
-@@ -14,7 +14,7 @@ struct shmobile_ipmmu {
- 	struct device *dev;
- 	void __iomem *ipmmu_base;
- 	int tlb_enabled;
--	struct mutex flush_lock;
-+	spinlock_t flush_lock;
- 	const char * const *dev_names;
- 	unsigned int num_dev_names;
- };
--- 
-1.8.3.2
+This looks to be already done for other parts of the kernel, see:
+commit 364230b9952143eb2062dc071e919fb751540ae8
+Author: Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+Date:   Thu Aug 1 15:29:29 2013 -0500
 
+    ARM: use phys_addr_t for DMA zone sizes
+    
+commit 6d7d5da7d75c6df676c8b72d32b02ff024438f0c
+Author: Magnus Damm <damm-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+Date:   Tue Oct 22 17:59:54 2013 +0100
+
+    ARM: 7864/1: Handle 64-bit memory in case of 32-bit phys_addr_t
+
+mmit dbd3fc3345390a989a033427aa915a0dfb62149f
+Author: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Date:   Mon Dec 10 11:24:42 2012 -0700
+
+    PCI: Use phys_addr_t for physical ROM address
+
+commit 7e6735c3578e76c270a2797225a4214176ba13ef
+Author: Cyril Chemparathy <cyril-l0cyMroinI0@public.gmane.org>
+Date:   Wed Sep 12 14:05:58 2012 -0400
+
+    /dev/mem: use phys_addr_t for physical addresses
+
+Where the phys_addr_t is used instead of unsigned long. This is
+doing it for the dma_addr_t.
+
+So I think this is the correct thing to do. We should CC more
+people thought.
+> 
+> Signed-off-by: Stefano Panella <stefano.panella-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org>
+> ---
+>  Documentation/DMA-API.txt          |    5 ++---
+>  arch/x86/include/asm/dma-mapping.h |    8 ++++----
+>  arch/x86/kernel/pci-dma.c          |    2 +-
+>  drivers/xen/swiotlb-xen.c          |    6 +++---
+>  4 files changed, 10 insertions(+), 11 deletions(-)
+> 
+> diff --git a/Documentation/DMA-API.txt b/Documentation/DMA-API.txt
+> index e865279..483458b 100644
+> --- a/Documentation/DMA-API.txt
+> +++ b/Documentation/DMA-API.txt
+> @@ -33,9 +33,8 @@ to make sure to flush the processor's write buffers before telling
+>  devices to read that memory.)
+>  
+>  This routine allocates a region of <size> bytes of consistent memory.
+> -It also returns a <dma_handle> which may be cast to an unsigned
+> -integer the same width as the bus and used as the physical address
+> -base of the region.
+> +It also returns a <dma_handle> which should be used as the physical 
+> +address base of the region.
+>  
+>  Returns: a pointer to the allocated region (in the processor's virtual
+>  address space) or NULL if the allocation failed.
+> diff --git a/arch/x86/include/asm/dma-mapping.h b/arch/x86/include/asm/dma-mapping.h
+> index 808dae6..6357810 100644
+> --- a/arch/x86/include/asm/dma-mapping.h
+> +++ b/arch/x86/include/asm/dma-mapping.h
+> @@ -100,10 +100,10 @@ dma_cache_sync(struct device *dev, void *vaddr, size_t size,
+>  	flush_write_buffers();
+>  }
+>  
+> -static inline unsigned long dma_alloc_coherent_mask(struct device *dev,
+> -						    gfp_t gfp)
+> +static inline dma_addr_t dma_alloc_coherent_mask(struct device *dev,
+> +						 gfp_t gfp)
+>  {
+> -	unsigned long dma_mask = 0;
+> +	dma_addr_t dma_mask = 0;
+>  
+>  	dma_mask = dev->coherent_dma_mask;
+>  	if (!dma_mask)
+> @@ -114,7 +114,7 @@ static inline unsigned long dma_alloc_coherent_mask(struct device *dev,
+>  
+>  static inline gfp_t dma_alloc_coherent_gfp_flags(struct device *dev, gfp_t gfp)
+>  {
+> -	unsigned long dma_mask = dma_alloc_coherent_mask(dev, gfp);
+> +	dma_addr_t dma_mask = dma_alloc_coherent_mask(dev, gfp);
+>  
+>  	if (dma_mask <= DMA_BIT_MASK(24))
+>  		gfp |= GFP_DMA;
+> diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
+> index 872079a..a061f7b 100644
+> --- a/arch/x86/kernel/pci-dma.c
+> +++ b/arch/x86/kernel/pci-dma.c
+> @@ -90,7 +90,7 @@ void *dma_generic_alloc_coherent(struct device *dev, size_t size,
+>  				 dma_addr_t *dma_addr, gfp_t flag,
+>  				 struct dma_attrs *attrs)
+>  {
+> -	unsigned long dma_mask;
+> +	dma_addr_t dma_mask;
+>  	struct page *page;
+>  	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+>  	dma_addr_t addr;
+> diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+> index 1eac073..6f75599 100644
+> --- a/drivers/xen/swiotlb-xen.c
+> +++ b/drivers/xen/swiotlb-xen.c
+> @@ -54,10 +54,10 @@
+>   */
+>  
+>  #ifndef CONFIG_X86
+> -static unsigned long dma_alloc_coherent_mask(struct device *dev,
+> -					    gfp_t gfp)
+> +static dma_addr_t dma_alloc_coherent_mask(struct device *dev,
+> +					  gfp_t gfp)
+>  {
+> -	unsigned long dma_mask = 0;
+> +	dma_addr_t dma_mask = 0;
+>  
+>  	dma_mask = dev->coherent_dma_mask;
+>  	if (!dma_mask)
+> -- 
+> 1.7.9.5
+> 
