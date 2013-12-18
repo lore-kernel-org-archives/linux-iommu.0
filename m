@@ -1,59 +1,52 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [GIT PULL] iommu/arm-smmu: updates for 3.14
-Date: Tue, 17 Dec 2013 18:08:54 +0000
-Message-ID: <20131217180854.GG349@mudshark.cambridge.arm.com>
+From: Simon Horman <horms@verge.net.au>
+Subject: Re: [PATCH 1/2] iommu/shmobile: Allocate archdata with kzalloc()
+Date: Wed, 18 Dec 2013 10:15:21 +0900
+Message-ID: <20131218011521.GI18992@verge.net.au>
+References: <1387300730-28783-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+ <1387300730-28783-2-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-sh-owner@vger.kernel.org>
 Content-Disposition: inline
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+In-Reply-To: <1387300730-28783-2-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Cc: iommu@lists.linux-foundation.org, linux-sh@vger.kernel.org, Nguyen Viet Dung <nv-dung@jinso.co.jp>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg, Alex,
+On Tue, Dec 17, 2013 at 06:18:49PM +0100, Laurent Pinchart wrote:
+> The archdata attached_list field isn't initialized, leading to random
+> crashes when accessed. Use kzalloc() to allocate the whole structure and
+> make sure all fields get initialized properly.
+> 
+> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 
-Please pull the arm-smmu updates below for 3.14. The main changes are adding
-an IOMMU_EXEC flag to allow for non-executable mappings (in response to work
-that rmk has done for the CPU-side of things) and automatically adding
-devices to an IOMMU group.
+Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
 
-Thanks,
-
-Will
-
---->8
-
-The following changes since commit 319e2e3f63c348a9b66db4667efa73178e18b17d:
-
-  Linux 3.13-rc4 (2013-12-15 12:31:33 -0800)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/updates
-
-for you to fetch changes up to cf2d45b19ddb361241f36d8c9f3d0b234a18459b:
-
-  iommu/arm-smmu: add support for IOMMU_EXEC (2013-12-16 19:30:32 +0000)
-
-----------------------------------------------------------------
-Antonios Motakis (1):
-      iommu/arm-smmu: add devices attached to the SMMU to an IOMMU group
-
-Will Deacon (3):
-      iommu/arm-smmu: use VA_BITS to determine arm64 virtual address space
-      iommu: add IOMMU_EXEC flag for safely allowing XN mappings
-      iommu/arm-smmu: add support for IOMMU_EXEC
-
- drivers/iommu/arm-smmu.c | 33 ++++++++++++++++++++++++++-------
- include/linux/iommu.h    |  7 ++++---
- 2 files changed, 30 insertions(+), 10 deletions(-)
+> ---
+>  drivers/iommu/shmobile-iommu.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/shmobile-iommu.c b/drivers/iommu/shmobile-iommu.c
+> index d572863..7a3b928 100644
+> --- a/drivers/iommu/shmobile-iommu.c
+> +++ b/drivers/iommu/shmobile-iommu.c
+> @@ -380,14 +380,13 @@ int ipmmu_iommu_init(struct shmobile_ipmmu *ipmmu)
+>  		kmem_cache_destroy(l1cache);
+>  		return -ENOMEM;
+>  	}
+> -	archdata = kmalloc(sizeof(*archdata), GFP_KERNEL);
+> +	archdata = kzalloc(sizeof(*archdata), GFP_KERNEL);
+>  	if (!archdata) {
+>  		kmem_cache_destroy(l1cache);
+>  		kmem_cache_destroy(l2cache);
+>  		return -ENOMEM;
+>  	}
+>  	spin_lock_init(&archdata->attach_lock);
+> -	archdata->attached = NULL;
+>  	archdata->ipmmu = ipmmu;
+>  	ipmmu_archdata = archdata;
+>  	bus_set_iommu(&platform_bus_type, &shmobile_iommu_ops);
+> -- 
+> 1.8.3.2
+> 
