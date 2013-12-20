@@ -1,16 +1,11 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCHv2 4/6] Crashdump-Accepting-Active-IOMMU-Copy-Translations
-Date: Fri, 20 Dec 2013 15:25:57 +0800
-Message-ID: <20131220072557.GA4382@dhcp-16-105.nay.redhat.com>
-References: <1387507787-14163-1-git-send-email-bill.sumner@hp.com>
-	<1387507787-14163-5-git-send-email-bill.sumner@hp.com>
-	<20131220060429.GB32194@dhcp-16-116.nay.redhat.com>
+From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Subject: [PATCH 1/1] x86/iommu: use bit structures for context_entry
+Date: Fri, 20 Dec 2013 16:45:01 +0800
+Message-ID: <1387529101-29769-1-git-send-email-zhen-hual@hp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20131220060429.GB32194-je1gSBvt1Tcx0jIIkfS+Ph/sF2h8X+2i0E9HWUfgJXw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,51 +15,99 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 12/20/13 at 02:04pm, Baoquan He wrote:
-> On 12/19/13 at 07:49pm, Bill Sumner wrote:
-> 
-> > +static int copy_page_addr(u64 page_addr, u32 shift, u32 bus, u32 devfn,
-> > +				u64 pte, struct dmar_domain *domain,
-> > +				void *parms)
-> > +{
-> > +	struct copy_page_addr_parms *ppap = parms;
-> > +
-> > +	u64 page_size = ((u64)1 << shift);	/* page_size */
-> > +	u64 pfn_lo;				/* For reserving IOVA range */
-> > +	u64 pfn_hi;				/* For reserving IOVA range */
-> > +	struct iova *iova_p;			/* For reserving IOVA range */
-> > +
-> > +	if (!ppap) {
-> > +		pr_err("ERROR: ppap is NULL: 0x%3.3x(%3.3d) DevFn: 0x%3.3x(%3.3d) Page: 0x%16.16llx Size: 0x%16.16llx(%lld)\n",
-> > +			bus, bus, devfn, devfn,  page_addr,
-> > +			page_size, page_size);
-> > +		return 0;
-> > +	}
-> > +
-> 
-> > +	/* Prepare for a new page */
-> > +	ppap->first     = 0;		/* Not first-time anymore */
-> > +	ppap->bus       = bus;
-> > +	ppap->devfn     = devfn;
-> > +	ppap->shift     = shift;
-> > +	ppap->pte       = pte;
-> > +	ppap->next_addr = page_addr + page_size; /* Next-expected page_addr */
-> > +
-> > +	ppap->page_addr = page_addr;	/* Addr(new page) */
-> > +	ppap->page_size = page_size;	/* Size(new page) */
-> > +
-> > +	ppap->domain    = domain;	/* adr(domain for the new range) */
-> 
-> Here I am confused, ppap is used to collect the copied ranges and
-> necessary information. To my understanding, this domain is the
-> dmar_domain which the 1st device is on. When ppat->last is set to 1,
-> among the whole collected range, there may be many domains. I just feel
-> not good for this. Is it OK to define a specific lock for ppap
-> structure, possibly? Please correct me if I am wrong.
+There is a structure named context_entry used by intel iommu, and there
+are some bit operations on it. Use bit structure may make these operations
+easy.
+Also the function context_set_address_root may cause problem because it uses
+ |= operation, not set the new value. And this patch can fix it.
 
-Well, check it again. It's not about the lock. Just all address is
-recorded in one dmar_domain.
+Signed-off-by: Li, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+---
+ drivers/iommu/intel-iommu.c | 37 +++++++++++++++++++++++++++----------
+ 1 file changed, 27 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 43b9bfe..65cd480 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -221,47 +221,64 @@ get_context_addr_from_root(struct root_entry *root)
+  * 8-23: domain id
+  */
+ struct context_entry {
+-	u64 lo;
+-	u64 hi;
++	union {
++		struct {
++			u64	present:1,
++				fpd:1,
++				translation_type:2,
++				reserved_l:8,
++				asr:52;
++		};
++		u64 lo;
++	};
++	union {
++		struct {
++			u64	aw:3,
++				avail:4,
++				reserved_h1:1,
++				did:16,
++				reserved_h2:40;
++		};
++		u64 hi;
++	};
+ };
+ 
+ static inline bool context_present(struct context_entry *context)
+ {
+-	return (context->lo & 1);
++	return context->present;
+ }
+ static inline void context_set_present(struct context_entry *context)
+ {
+-	context->lo |= 1;
++	context->present = 1;
+ }
+ 
+ static inline void context_set_fault_enable(struct context_entry *context)
+ {
+-	context->lo &= (((u64)-1) << 2) | 1;
++	context->fpd = 1;
+ }
+ 
+ static inline void context_set_translation_type(struct context_entry *context,
+ 						unsigned long value)
+ {
+-	context->lo &= (((u64)-1) << 4) | 3;
+-	context->lo |= (value & 3) << 2;
++	context->translation_type = value;
+ }
+ 
+ static inline void context_set_address_root(struct context_entry *context,
+ 					    unsigned long value)
+ {
+-	context->lo |= value & VTD_PAGE_MASK;
++	context->asr = value >> VTD_PAGE_SHIFT
+ }
+ 
+ static inline void context_set_address_width(struct context_entry *context,
+ 					     unsigned long value)
+ {
+-	context->hi |= value & 7;
++	context->aw  = value;
+ }
+ 
+ static inline void context_set_domain_id(struct context_entry *context,
+ 					 unsigned long value)
+ {
+-	context->hi |= (value & ((1 << 16) - 1)) << 8;
++	context->did = value;
+ }
+ 
+ static inline void context_clear_entry(struct context_entry *context)
+-- 
+1.8.4.3
