@@ -1,54 +1,156 @@
-From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Subject: Re: [PATCHv7 06/12] ARM: tegra: create a DT header defining SWGROUP ID
-Date: Wed, 18 Dec 2013 09:27:29 -0700
-Message-ID: <52B1CCF1.2040907@wwwdotorg.org>
-References: <1386835033-4701-1-git-send-email-hdoyu@nvidia.com>
-	<1386835033-4701-7-git-send-email-hdoyu@nvidia.com>
-	<52B1568F.1050305@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <52B1568F.1050305-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Mark Zhang <nvmarkzhang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Bill Sumner <bill.sumner@hp.com>
+Subject: [PATCHv2 0/6] Crashdump Accepting Active IOMMU
+Date: Thu, 19 Dec 2013 19:49:41 -0700
+Message-ID: <1387507787-14163-1-git-send-email-bill.sumner@hp.com>
+Return-path: <linux-pci-owner@vger.kernel.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: dwmw2@infradead.org, indou.takao@jp.fujitsu.com, bhe@redhat.com
+Cc: iommu@lists.linux-foundation.org, kexec@lists.infradead.org, alex.williamson@redhat.com, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, bill.sumner@hp.com, doug.hatch@hp.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 12/18/2013 01:02 AM, Mark Zhang wrote:
-> On 12/12/2013 03:57 PM, Hiroshi Doyu wrote:
->> Create a header file to define the swgroup IDs used by the IOMMU(SMMU)
->> binding. "swgroup" is a group of H/W clients which a Tegra SoC
->> supports. This unique ID can be used to calculate MC_SMMU_<swgroup
->> name>_ASID_0 register offset and MC_<swgroup name>_HOTRESET_*_0
->> register bit. This will allow the same header to be used by both
->> device tree files, and drivers implementing this binding, which
->> guarantees that the two stay in sync. This also makes device trees
->> more readable by using names instead of magic numbers. For HOTRESET
->> bit shifting we need another conversion table, which will come later.
 
->> diff --git a/include/dt-bindings/memory/tegra-swgroup.h b/include/dt-bindings/memory/tegra-swgroup.h
+Changes from previous submission:
+1. Moved up to Linux kernel top-of-tree of this week.
+2. Expanded the comments section of each patch so that the documentation
+   will appear in the commit logs. (Requested by Alex Williamson and one
+   internal reviewer)
+3. Corrected one line in the table which drives the diagnostic printing
+   of the IOMMU registers (Requested by one internal reviewer)
 
->> +#define TEGRA_SWGROUP_MPE	11	/* 0x264 */
->> +#define TEGRA_SWGROUP_MSENC	SWGROUP_MPE
-> 
-> Need to change this to:
-> 
-> #define TEGRA_SWGROUP_MSENC	11
-> 
-> The reason is that, this makes "TEGRA_SWGROUP_BIT" doesn't work. So if I
-> write "TEGRA_SWGROUP_CELLS(MSENC)" in dt, that causes a dt compiling error.
+Notes:
+1. This patch set is ready for extensive testing by the Linux community,
+   for discussion, and hopefully for acceptance into Linux mainstream.
+2. In order to support this testing, I have left a modest amount of
+   debug print enabled.  For testing, the amount of print can be increased
+   or decreased easily; and for production, can be completely turned-off.
+   Please see the bit-flags in struct 'pr_dbg'
 
-I guess it's because TEGRA_SWGROUP_BIT needs to expand its argument
-twice, which can be done.
+Testing:
+1. This patch set was re-tested on the machine that reproduced the problem
+   a. Without this patch set, crashdump console sees a large number of:
+      "dmar: DMAR:[DMA Write] Request device [04:00.0] fault addr fff69000
+      "DMAR:[fault reason 01] Present bit in root entry is clear"
+   b. With this patch set, none of the above messages are seen.
+2. This patch set has not yet been tested with hardware pass-through enabled.
 
-That all said, just defining all the names directly to constants is
-probably the most direct fix.
+
+Patch 0 file from previous submission:
+The following series implements a fix for:
+A kdump problem about DMA that has been discussed for a long time. That is,
+when a kernel panics and boots into the kdump kernel, DMA started by the 
+panicked kernel is not stopped before the kdump kernel is booted and the 
+kdump kernel disables the IOMMU while this DMA continues.  This causes the
+IOMMU to stop translating the DMA addresses as IOVAs and begin to treat them 
+as physical memory addresses -- which causes the DMA to either:
+(1) generate DMAR errors or (2) generate PCI SERR errors or (3) transfer  
+data to or from incorrect areas of memory. Often this causes the dump to fail.
+
+This patch set modifies the behavior of the iommu in the (new) crashdump kernel: 
+1. to accept the iommu hardware in an active state, 
+2. to leave the current translations in-place so that legacy DMA will continue
+   using its current buffers until the device drivers in the crashdump kernel
+   initialize and initialize their devices,
+3. to use different portions of the iova address ranges for the device drivers
+   in the crashdump kernel than the iova ranges that were in-use at the time
+   of the panic.  
+
+Advantages of this approach:
+1. All manipulation of the IO-device is done by the Linux device-driver
+   for that device.
+2. This approach behaves in a manner very similar to operation without an
+   active iommu.
+3. Any activity between the IO-device and its RMRR areas is handled by the
+   device-driver in the same manner as during a non-kdump boot.
+4. If an IO-device has no driver in the kdump kernel, it is simply left alone.
+   This supports the practice of creating a special kdump kernel without
+   drivers for any devices that are not required for taking a crashdump. 
+
+Changes since the RFC version of this patch:
+1. Consolidated all of the operational code into the "copy..." functions.
+   The "process..." functions were primarily used for diagnostics and
+   exploration; however, there was a small amount of operational code that
+   used the "process..." functions.
+   This operational code has been moved into the "copy..." functions.
+
+2. Removed the "Process ..." functions and the diagnostic code that ran
+   on that function set.  This removed about 1/4 of the code -- which this
+   operational patch set no longer needs.  These portions of the RFC patch
+   could be formatted as a separate patch and submitted independently
+   at a later date. 
+
+3. Re-formatted the code to the Linux Coding Standards.
+   The checkpatch script still finds some lines to complain about;
+   however most of these lines are either (1) lines that I did not change,
+   or (2) lines that only changed by adding a level of indent which pushed
+   them over 80-characters, or (3) new lines whose intent is far clearer when
+   longer than 80-characters.
+
+4. Updated the remaining debug print to be significantly more flexible.
+   This allows control over the amount of debug print to the console --
+   which can vary widely.
+
+5. Fixed a couple of minor bugs found by testing on a machine with a
+   very large IO configuration.
+
+At a high level, this code operates primarily during iommu initialization
+and device-driver initialization
+
+During intel-iommu hardware initialization:
+In intel_iommu_init(void)
+* If (This is the crash kernel)
+  .  Set flag: crashdump_accepting_active_iommu (all changes below check this)
+  .  Skip disabling the iommu hardware translations
+
+In init_dmars()
+* Duplicate the intel iommu translation tables from the old kernel
+  in the new kernel
+  . The root-entry table, all context-entry tables,
+    and all page-translation-entry tables
+  . The duplicate tables contain updated physical addresses to link them together.
+  . The duplicate tables are mapped into kernel virtual addresses
+    in the new kernel which allows most of the existing iommu code
+    to operate without change.
+  . Do some minimal sanity-checks during the copy
+  . Place the address of the new root-entry structure into "struct intel_iommu"
+
+* Skip setting-up new domains for 'si', 'rmrr', 'isa' 
+  . Translations for 'rmrr' and 'isa' ranges have been copied from the old kernel
+  . This patch has not yet been tested with iommu pass-through enabled
+
+* Existing (unchanged) code near the end of dmar_init:
+  . Loads the address of the (now new) root-entry structure from
+    "struct intel_iommu" into the iommu hardware and does the hardware flushes.
+    This changes the active translation tables from the ones in the old kernel
+    to the copies in the new kernel.
+  . This is legal because the translations in the two sets of tables are
+    currently identical:
+      Virtualization Technology for Directed I/O. Architecture Specification,
+      February 2011, Rev. 1.3  (section 11.2, paragraph 2) 
+
+In iommu_init_domains()
+* Mark as in-use all domain-id's from the old kernel
+  . In case the new kernel contains a device that was not in the old kernel
+    and a new, unused domain-id is actually needed, the bitmap will give us one.
+
+When a new domain is created for a device:
+* If (this device has a context in the old kernel)
+  . Get domain-id, address-width, and IOVA ranges from the old kernel context;
+  . Get address(page-entry-tables) from the copy in the new kernel;
+  . And apply all of the above values to the new domain structure.
+* Else
+  . Create a new domain as normal
+
+
+Bill Sumner (6):
+  Crashdump-Accepting-Active-IOMMU-Flags-and-Prototype
+  Crashdump-Accepting-Active-IOMMU-Utility-functions
+  Crashdump-Accepting-Active-IOMMU-Domain-Interfaces
+  Crashdump-Accepting-Active-IOMMU-Copy-Translations
+  Crashdump-Accepting-Active-IOMMU-Debug-Print-IOMMU
+  Crashdump-Accepting-Active-IOMMU-Call-From-Mainline
+
+ drivers/iommu/intel-iommu.c | 1292 ++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 1224 insertions(+), 68 deletions(-)
+
+-- 
+Bill Sumner <bill.sumner@hp.com>
