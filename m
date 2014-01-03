@@ -1,67 +1,86 @@
-From: "Chen, Gong" <gong.chen@linux.intel.com>
-Subject: Re: [RFC PATCHv3 02/11] iommu/omap: Use get_vm_area directly
-Date: Thu, 2 Jan 2014 21:40:38 -0500
-Message-ID: <20140103024038.GD1913@gchen.bj.intel.com>
-References: <1388699609-18214-1-git-send-email-lauraa@codeaurora.org>
- <1388699609-18214-3-git-send-email-lauraa@codeaurora.org>
+From: Yifan Zhang <yifan.zhangm@gmail.com>
+Subject: [PATCH] iommu/arm-smmu: change pud/pmd entry fill sequence
+Date: Fri, 3 Jan 2014 20:01:26 +0800
+Message-ID: <1388750486-5060-1-git-send-email-yifan.zhangm@gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Ycz6tD7Th1CMF4v7"
-Return-path: <owner-linux-mm@kvack.org>
-Content-Disposition: inline
-In-Reply-To: <1388699609-18214-3-git-send-email-lauraa@codeaurora.org>
-Sender: owner-linux-mm@kvack.org
-To: Laura Abbott <lauraa@codeaurora.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, Kyungmin Park <kmpark@infradead.org>, Dave Hansen <dave@sr71.net>, linux-mm@kvack.org, Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: will.deacon@arm.com, Catalin.Marinas@arm.com, joro@8bytes.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org
+Cc: Yifan Zhang <zhangyf@marvell.com>
 List-Id: iommu@lists.linux-foundation.org
 
+From: Yifan Zhang <zhangyf@marvell.com>
 
---Ycz6tD7Th1CMF4v7
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Pgd/pud entry should be filled only once when their next level pud/pmd
+created, the value should be pud/pmd start address, while in current
+code, pgd/pud entry is filled every time when pud/pmd walk occurs,
+the value is pud/pmd start address + iova pud/pmd index , this is
+incorrect; Besides, when pud/pmd are created, we need to add pud/pmd
+index, then pass to next level, while in currect code, if a new pud/pmd
+created, their iova pud/pmd index is not taken into account, only
+existing pud/pmd do. This patch change pud/pmd entry fill sequence,
+fixes the 2 bugs.
 
-On Thu, Jan 02, 2014 at 01:53:20PM -0800, Laura Abbott wrote:
-> diff --git a/drivers/iommu/omap-iovmm.c b/drivers/iommu/omap-iovmm.c
-> index d147259..6280d50 100644
-> --- a/drivers/iommu/omap-iovmm.c
-> +++ b/drivers/iommu/omap-iovmm.c
-> @@ -214,7 +214,7 @@ static void *vmap_sg(const struct sg_table *sgt)
->  	if (!total)
->  		return ERR_PTR(-EINVAL);
-> =20
-> -	new =3D __get_vm_area(total, VM_IOREMAP, VMALLOC_START, VMALLOC_END);
-> +	new =3D get_vm_area(total, VM_IOREMAP);
-This driver is a module but get_vm_area is not exported. You need to add
-one extra EXPORT_SYMBOL_GPL(get_vm_area).
+Signed-off-by: Yifan Zhang <zhangyf@marvell.com>
+---
+ drivers/iommu/arm-smmu.c |   14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-
---Ycz6tD7Th1CMF4v7
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.15 (GNU/Linux)
-
-iQIcBAEBAgAGBQJSxiMmAAoJEI01n1+kOSLH9xgP/AhHieQaiUiJ0LAI2it3pQQx
-dQiXOhvWANMFORGLj00UXRvQQlxs1jorUp4jxxUePWbqT+ZQvOVGIJZwmF3W0Vp3
-bPLWbVCcYM1x0AtEqFTC0MRieBCdwK3MOhLN3eVvurWyXyPJD73wVmOGEqpXkLoG
-cMMvfnf/w/V6fdTi3ryAwBn2E8aIrdLuU3FwooDSSl5PztLHXUSlkpqNrn5FnNBD
-JNil5+clc619Nw1W3IYoCkOYrFQoxVjLgRlS9MfhyKMP+wt/iJmu+t6kI+OYJouV
-OJRqjeu8syC8V+nZNkL/StzqthKTdCJbXJRy/GFFCePwzvacuEPmdAtQ3Dhyixvx
-EAVzj4DbL2xEiz+v8iFisu6vz7i12VoKoTqSlb/Bz6VCKpQQ34lzU+axjsPOgZrU
-4bDMlNdtGDPjASbjHxtSRfL+U6cJuDmH86zXenjzosBTD5MRnhOw80bagbejl30b
-E65cHCCGstx2O9D691QHCnoVY6Xubqmq5HhWXS8Exl+72FiAUaN5pcTtTjsYcn1q
-dyjPNfOTVhDMC/5mAMisiqxghMasXnMMUpDltc5s2mw5I5EnRQRSdfJzhJ75rxQW
-y3R9ibRlO4DMnb+eeXknulaw1P3psQ1KW39CA9nh8rHHLdZ10OaAGs97VwlWkiQw
-rUW2+MyROALPhKwm8NAy
-=ud7f
------END PGP SIGNATURE-----
-
---Ycz6tD7Th1CMF4v7--
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index e46a887..e3168a2 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1317,6 +1317,11 @@ static int arm_smmu_alloc_init_pmd(struct arm_smmu_device *smmu, pud_t *pud,
+ 		pmd = pmd_alloc_one(NULL, addr);
+ 		if (!pmd)
+ 			return -ENOMEM;
++
++		pud_populate(NULL, pud, pmd);
++		arm_smmu_flush_pgtable(smmu, pud, sizeof(*pud));
++
++		pmd += pmd_index(addr);
+ 	} else
+ #endif
+ 		pmd = pmd_offset(pud, addr);
+@@ -1325,8 +1330,6 @@ static int arm_smmu_alloc_init_pmd(struct arm_smmu_device *smmu, pud_t *pud,
+ 		next = pmd_addr_end(addr, end);
+ 		ret = arm_smmu_alloc_init_pte(smmu, pmd, addr, end, pfn,
+ 					      flags, stage);
+-		pud_populate(NULL, pud, pmd);
+-		arm_smmu_flush_pgtable(smmu, pud, sizeof(*pud));
+ 		phys += next - addr;
+ 	} while (pmd++, addr = next, addr < end);
+ 
+@@ -1346,6 +1349,11 @@ static int arm_smmu_alloc_init_pud(struct arm_smmu_device *smmu, pgd_t *pgd,
+ 		pud = pud_alloc_one(NULL, addr);
+ 		if (!pud)
+ 			return -ENOMEM;
++
++		pgd_populate(NULL, pgd, pud);
++		arm_smmu_flush_pgtable(smmu, pgd, sizeof(*pgd));
++
++		pud += pud_index(addr);
+ 	} else
+ #endif
+ 		pud = pud_offset(pgd, addr);
+@@ -1354,8 +1362,6 @@ static int arm_smmu_alloc_init_pud(struct arm_smmu_device *smmu, pgd_t *pgd,
+ 		next = pud_addr_end(addr, end);
+ 		ret = arm_smmu_alloc_init_pmd(smmu, pud, addr, next, phys,
+ 					      flags, stage);
+-		pgd_populate(NULL, pud, pgd);
+-		arm_smmu_flush_pgtable(smmu, pgd, sizeof(*pgd));
+ 		phys += next - addr;
+ 	} while (pud++, addr = next, addr < end);
+ 
+-- 
+1.7.9.5
