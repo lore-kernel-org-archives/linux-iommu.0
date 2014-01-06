@@ -1,7 +1,8 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part1 V3 09/20] iommu/vt-d: mark internal functions as static
-Date: Mon,  6 Jan 2014 14:18:16 +0800
-Message-ID: <1388989107-4795-10-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part1 V3 11/20] iommu/vt-d,
+	trivial: simplify code with existing macros
+Date: Mon,  6 Jan 2014 14:18:18 +0800
+Message-ID: <1388989107-4795-12-git-send-email-jiang.liu@linux.intel.com>
 References: <1388989107-4795-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -17,132 +18,301 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jiri Kosina <trivial-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Function detect_intel_iommu()/alloc_iommu()/parse_ioapics_under_ir()
-are only used internally, so mark them as static.
+Simplify vt-d related code with existing macros and introduce a new
+macro for_each_active_drhd_unit() to enumerate all active DRHD unit.
 
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/dmar.c                |    9 ++++++---
- drivers/iommu/intel_irq_remapping.c |    4 +++-
- include/linux/dmar.h                |   12 +-----------
- include/linux/intel-iommu.h         |    1 -
- 4 files changed, 10 insertions(+), 16 deletions(-)
+ drivers/iommu/dmar.c                |    7 ++---
+ drivers/iommu/intel-iommu.c         |   55 ++++++++---------------------------
+ drivers/iommu/intel_irq_remapping.c |   31 +++++++-------------
+ include/linux/dmar.h                |    4 +++
+ 4 files changed, 29 insertions(+), 68 deletions(-)
 
 diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index f5f7b7d..f02a4fd 100644
+index f02a4fd..7ecc7b8 100644
 --- a/drivers/iommu/dmar.c
 +++ b/drivers/iommu/dmar.c
-@@ -52,6 +52,8 @@ LIST_HEAD(dmar_drhd_units);
- struct acpi_table_header * __initdata dmar_tbl;
- static acpi_size dmar_tbl_size;
- 
-+static int alloc_iommu(struct dmar_drhd_unit *drhd);
-+
- static void __init dmar_register_drhd_unit(struct dmar_drhd_unit *drhd)
- {
- 	/*
-@@ -498,7 +500,7 @@ static void warn_invalid_dmar(u64 addr, const char *message)
- 		dmi_get_system_info(DMI_PRODUCT_VERSION));
- }
- 
--int __init check_zero_address(void)
-+static int __init check_zero_address(void)
- {
- 	struct acpi_table_dmar *dmar;
- 	struct acpi_dmar_header *entry_header;
-@@ -548,7 +550,7 @@ failed:
- 	return 0;
- }
- 
--int __init detect_intel_iommu(void)
-+static int __init detect_intel_iommu(void)
- {
- 	int ret;
- 
-@@ -649,7 +651,7 @@ out:
- 	return err;
- }
- 
--int alloc_iommu(struct dmar_drhd_unit *drhd)
-+static int alloc_iommu(struct dmar_drhd_unit *drhd)
- {
- 	struct intel_iommu *iommu;
- 	u32 ver, sts;
-@@ -1366,4 +1368,5 @@ int __init dmar_ir_support(void)
- 		return 0;
- 	return dmar->flags & 0x1;
- }
-+
- IOMMU_INIT_POST(detect_intel_iommu);
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 2616e8a..6712f1e 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -40,6 +40,8 @@ static int ir_ioapic_num, ir_hpet_num;
- 
- static DEFINE_RAW_SPINLOCK(irq_2_ir_lock);
- 
-+static int __init parse_ioapics_under_ir(void);
-+
- static struct irq_2_iommu *irq_2_iommu(unsigned int irq)
- {
- 	struct irq_cfg *cfg = irq_get_chip_data(irq);
-@@ -773,7 +775,7 @@ static int ir_parse_ioapic_hpet_scope(struct acpi_dmar_header *header,
-  * Finds the assocaition between IOAPIC's and its Interrupt-remapping
-  * hardware unit.
-  */
--int __init parse_ioapics_under_ir(void)
-+static int __init parse_ioapics_under_ir(void)
+@@ -1305,15 +1305,14 @@ int dmar_set_interrupt(struct intel_iommu *iommu)
+ int __init enable_drhd_fault_handling(void)
  {
  	struct dmar_drhd_unit *drhd;
++	struct intel_iommu *iommu;
+ 
+ 	/*
+ 	 * Enable fault control interrupt.
+ 	 */
+-	for_each_drhd_unit(drhd) {
+-		int ret;
+-		struct intel_iommu *iommu = drhd->iommu;
++	for_each_iommu(iommu, drhd) {
+ 		u32 fault_status;
+-		ret = dmar_set_interrupt(iommu);
++		int ret = dmar_set_interrupt(iommu);
+ 
+ 		if (ret) {
+ 			pr_err("DRHD %Lx: failed to enable fault, interrupt, ret %d\n",
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 751db33..9e67954 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -628,9 +628,7 @@ static struct intel_iommu *device_to_iommu(int segment, u8 bus, u8 devfn)
+ 	struct dmar_drhd_unit *drhd = NULL;
+ 	int i;
+ 
+-	for_each_drhd_unit(drhd) {
+-		if (drhd->ignored)
+-			continue;
++	for_each_active_drhd_unit(drhd) {
+ 		if (segment != drhd->segment)
+ 			continue;
+ 
+@@ -2470,11 +2468,7 @@ static int __init init_dmars(void)
+ 		goto error;
+ 	}
+ 
+-	for_each_drhd_unit(drhd) {
+-		if (drhd->ignored)
+-			continue;
+-
+-		iommu = drhd->iommu;
++	for_each_active_iommu(iommu, drhd) {
+ 		g_iommus[iommu->seq_id] = iommu;
+ 
+ 		ret = iommu_init_domains(iommu);
+@@ -2498,12 +2492,7 @@ static int __init init_dmars(void)
+ 	/*
+ 	 * Start from the sane iommu hardware state.
+ 	 */
+-	for_each_drhd_unit(drhd) {
+-		if (drhd->ignored)
+-			continue;
+-
+-		iommu = drhd->iommu;
+-
++	for_each_active_iommu(iommu, drhd) {
+ 		/*
+ 		 * If the queued invalidation is already initialized by us
+ 		 * (for example, while enabling interrupt-remapping) then
+@@ -2523,12 +2512,7 @@ static int __init init_dmars(void)
+ 		dmar_disable_qi(iommu);
+ 	}
+ 
+-	for_each_drhd_unit(drhd) {
+-		if (drhd->ignored)
+-			continue;
+-
+-		iommu = drhd->iommu;
+-
++	for_each_active_iommu(iommu, drhd) {
+ 		if (dmar_enable_qi(iommu)) {
+ 			/*
+ 			 * Queued Invalidate not enabled, use Register Based
+@@ -2611,17 +2595,16 @@ static int __init init_dmars(void)
+ 	 *   global invalidate iotlb
+ 	 *   enable translation
+ 	 */
+-	for_each_drhd_unit(drhd) {
++	for_each_iommu(iommu, drhd) {
+ 		if (drhd->ignored) {
+ 			/*
+ 			 * we always have to disable PMRs or DMA may fail on
+ 			 * this device
+ 			 */
+ 			if (force_on)
+-				iommu_disable_protect_mem_regions(drhd->iommu);
++				iommu_disable_protect_mem_regions(iommu);
+ 			continue;
+ 		}
+-		iommu = drhd->iommu;
+ 
+ 		iommu_flush_write_buffer(iommu);
+ 
+@@ -2643,12 +2626,8 @@ static int __init init_dmars(void)
+ 
+ 	return 0;
+ error:
+-	for_each_drhd_unit(drhd) {
+-		if (drhd->ignored)
+-			continue;
+-		iommu = drhd->iommu;
++	for_each_active_iommu(iommu, drhd)
+ 		free_iommu(iommu);
+-	}
+ 	kfree(g_iommus);
+ 	return ret;
+ }
+@@ -3296,9 +3275,9 @@ static void __init init_no_remapping_devices(void)
+ 		}
+ 	}
+ 
+-	for_each_drhd_unit(drhd) {
++	for_each_active_drhd_unit(drhd) {
+ 		int i;
+-		if (drhd->ignored || drhd->include_all)
++		if (drhd->include_all)
+ 			continue;
+ 
+ 		for (i = 0; i < drhd->devices_cnt; i++)
+@@ -3647,6 +3626,7 @@ int __init intel_iommu_init(void)
+ {
+ 	int ret = 0;
+ 	struct dmar_drhd_unit *drhd;
++	struct intel_iommu *iommu;
+ 
+ 	/* VT-d is required for a TXT/tboot launch, so enforce that */
+ 	force_on = tboot_force_iommu();
+@@ -3660,16 +3640,9 @@ int __init intel_iommu_init(void)
+ 	/*
+ 	 * Disable translation if already enabled prior to OS handover.
+ 	 */
+-	for_each_drhd_unit(drhd) {
+-		struct intel_iommu *iommu;
+-
+-		if (drhd->ignored)
+-			continue;
+-
+-		iommu = drhd->iommu;
++	for_each_active_iommu(iommu, drhd)
+ 		if (iommu->gcmd & DMA_GCMD_TE)
+ 			iommu_disable_translation(iommu);
+-	}
+ 
+ 	if (dmar_dev_scope_init() < 0) {
+ 		if (force_on)
+@@ -3912,11 +3885,7 @@ static void iommu_free_vm_domain(struct dmar_domain *domain)
+ 	unsigned long i;
+ 	unsigned long ndomains;
+ 
+-	for_each_drhd_unit(drhd) {
+-		if (drhd->ignored)
+-			continue;
+-		iommu = drhd->iommu;
+-
++	for_each_active_iommu(iommu, drhd) {
+ 		ndomains = cap_ndoms(iommu->cap);
+ 		for_each_set_bit(i, iommu->domain_ids, ndomains) {
+ 			if (iommu->domains[i] == domain) {
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index 451c7f1..ea425de 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -520,6 +520,7 @@ static int __init dmar_x2apic_optout(void)
+ static int __init intel_irq_remapping_supported(void)
+ {
+ 	struct dmar_drhd_unit *drhd;
++	struct intel_iommu *iommu;
+ 
+ 	if (disable_irq_remap)
+ 		return 0;
+@@ -538,12 +539,9 @@ static int __init intel_irq_remapping_supported(void)
+ 	if (!dmar_ir_support())
+ 		return 0;
+ 
+-	for_each_drhd_unit(drhd) {
+-		struct intel_iommu *iommu = drhd->iommu;
+-
++	for_each_iommu(iommu, drhd)
+ 		if (!ecap_ir_support(iommu->ecap))
+ 			return 0;
+-	}
+ 
+ 	return 1;
+ }
+@@ -551,6 +549,7 @@ static int __init intel_irq_remapping_supported(void)
+ static int __init intel_enable_irq_remapping(void)
+ {
+ 	struct dmar_drhd_unit *drhd;
++	struct intel_iommu *iommu;
+ 	bool x2apic_present;
+ 	int setup = 0;
+ 	int eim = 0;
+@@ -573,9 +572,7 @@ static int __init intel_enable_irq_remapping(void)
+ 				"Use 'intremap=no_x2apic_optout' to override BIOS request.\n");
+ 	}
+ 
+-	for_each_drhd_unit(drhd) {
+-		struct intel_iommu *iommu = drhd->iommu;
+-
++	for_each_iommu(iommu, drhd) {
+ 		/*
+ 		 * If the queued invalidation is already initialized,
+ 		 * shouldn't disable it.
+@@ -600,9 +597,7 @@ static int __init intel_enable_irq_remapping(void)
+ 	/*
+ 	 * check for the Interrupt-remapping support
+ 	 */
+-	for_each_drhd_unit(drhd) {
+-		struct intel_iommu *iommu = drhd->iommu;
+-
++	for_each_iommu(iommu, drhd) {
+ 		if (!ecap_ir_support(iommu->ecap))
+ 			continue;
+ 
+@@ -616,10 +611,8 @@ static int __init intel_enable_irq_remapping(void)
+ 	/*
+ 	 * Enable queued invalidation for all the DRHD's.
+ 	 */
+-	for_each_drhd_unit(drhd) {
+-		int ret;
+-		struct intel_iommu *iommu = drhd->iommu;
+-		ret = dmar_enable_qi(iommu);
++	for_each_iommu(iommu, drhd) {
++		int ret = dmar_enable_qi(iommu);
+ 
+ 		if (ret) {
+ 			printk(KERN_ERR "DRHD %Lx: failed to enable queued, "
+@@ -632,9 +625,7 @@ static int __init intel_enable_irq_remapping(void)
+ 	/*
+ 	 * Setup Interrupt-remapping for all the DRHD's now.
+ 	 */
+-	for_each_drhd_unit(drhd) {
+-		struct intel_iommu *iommu = drhd->iommu;
+-
++	for_each_iommu(iommu, drhd) {
+ 		if (!ecap_ir_support(iommu->ecap))
+ 			continue;
+ 
+@@ -778,19 +769,17 @@ static int ir_parse_ioapic_hpet_scope(struct acpi_dmar_header *header,
+ static int __init parse_ioapics_under_ir(void)
+ {
+ 	struct dmar_drhd_unit *drhd;
++	struct intel_iommu *iommu;
  	int ir_supported = 0;
+ 	int ioapic_idx;
+ 
+-	for_each_drhd_unit(drhd) {
+-		struct intel_iommu *iommu = drhd->iommu;
+-
++	for_each_iommu(iommu, drhd)
+ 		if (ecap_ir_support(iommu->ecap)) {
+ 			if (ir_parse_ioapic_hpet_scope(drhd->hdr, iommu))
+ 				return -1;
+ 
+ 			ir_supported = 1;
+ 		}
+-	}
+ 
+ 	if (!ir_supported)
+ 		return 0;
 diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index 8adfce0..f614357 100644
+index f614357..bd5026b 100644
 --- a/include/linux/dmar.h
 +++ b/include/linux/dmar.h
-@@ -33,6 +33,7 @@ struct acpi_dmar_header;
- #define DMAR_X2APIC_OPT_OUT	0x2
+@@ -53,6 +53,10 @@ extern struct list_head dmar_drhd_units;
+ #define for_each_drhd_unit(drhd) \
+ 	list_for_each_entry(drhd, &dmar_drhd_units, list)
  
- struct intel_iommu;
++#define for_each_active_drhd_unit(drhd)					\
++	list_for_each_entry(drhd, &dmar_drhd_units, list)		\
++		if (drhd->ignored) {} else
 +
- #ifdef CONFIG_DMAR_TABLE
- extern struct acpi_table_header *dmar_tbl;
- struct dmar_drhd_unit {
-@@ -62,19 +63,8 @@ extern struct list_head dmar_drhd_units;
- 
- extern int dmar_table_init(void);
- extern int dmar_dev_scope_init(void);
--
--/* Intel IOMMU detection */
--extern int detect_intel_iommu(void);
- extern int enable_drhd_fault_handling(void);
--
--extern int parse_ioapics_under_ir(void);
--extern int alloc_iommu(struct dmar_drhd_unit *);
- #else
--static inline int detect_intel_iommu(void)
--{
--	return -ENODEV;
--}
--
- static inline int dmar_table_init(void)
- {
- 	return -ENODEV;
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index de1e5e9..f2c4114 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -348,7 +348,6 @@ static inline void __iommu_flush_cache(
- extern struct dmar_drhd_unit * dmar_find_matched_drhd_unit(struct pci_dev *dev);
- extern int dmar_find_matched_atsr_unit(struct pci_dev *dev);
- 
--extern int alloc_iommu(struct dmar_drhd_unit *drhd);
- extern void free_iommu(struct intel_iommu *iommu);
- extern int dmar_enable_qi(struct intel_iommu *iommu);
- extern void dmar_disable_qi(struct intel_iommu *iommu);
+ #define for_each_active_iommu(i, drhd)					\
+ 	list_for_each_entry(drhd, &dmar_drhd_units, list)		\
+ 		if (i=drhd->iommu, drhd->ignored) {} else
 -- 
 1.7.10.4
