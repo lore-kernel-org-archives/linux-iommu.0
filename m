@@ -1,8 +1,8 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part1 V3 14/20] iommu/vt-d: avoid double free in error
-	recovery path
-Date: Mon,  6 Jan 2014 14:18:21 +0800
-Message-ID: <1388989107-4795-15-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part1 V3 13/20] iommu/vt-d: keep shared resources when failed
+	to initialize iommu devices
+Date: Mon,  6 Jan 2014 14:18:20 +0800
+Message-ID: <1388989107-4795-14-git-send-email-jiang.liu@linux.intel.com>
 References: <1388989107-4795-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,47 +22,263 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse
 Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The g_iommus array will be freed twice when failed to initialize IOMMU
-devices, so fix the double free.
+Data structure drhd->iommu is shared between DMA remapping driver and
+interrupt remapping driver, so DMA remapping driver shouldn't release
+drhd->iommu when it failed to initialize IOMMU devices. Otherwise it
+may cause invalid memory access to the interrupt remapping driver.
+
+Sample stack dump:
+[   13.315090] BUG: unable to handle kernel paging request at ffffc9000605a088
+[   13.323221] IP: [<ffffffff81461bac>] qi_submit_sync+0x15c/0x400
+[   13.330107] PGD 82f81e067 PUD c2f81e067 PMD 82e846067 PTE 0
+[   13.336818] Oops: 0002 [#1] SMP
+[   13.340757] Modules linked in:
+[   13.344422] CPU: 0 PID: 4 Comm: kworker/0:0 Not tainted 3.13.0-rc1-gerry+ #7
+[   13.352474] Hardware name: Intel Corporation LH Pass ........../SVRBD-ROW_T,                                               BIOS SE5C600.86B.99.99.x059.091020121352 09/10/2012
+[   13.365659] Workqueue: events work_for_cpu_fn
+[   13.370774] task: ffff88042ddf00d0 ti: ffff88042ddee000 task.ti: ffff88042dde                                              e000
+[   13.379389] RIP: 0010:[<ffffffff81461bac>]  [<ffffffff81461bac>] qi_submit_sy                                              nc+0x15c/0x400
+[   13.389055] RSP: 0000:ffff88042ddef940  EFLAGS: 00010002
+[   13.395151] RAX: 00000000000005e0 RBX: 0000000000000082 RCX: 0000000200000025
+[   13.403308] RDX: ffffc9000605a000 RSI: 0000000000000010 RDI: ffff88042ddb8610
+[   13.411446] RBP: ffff88042ddef9a0 R08: 00000000000005d0 R09: 0000000000000001
+[   13.419599] R10: 0000000000000000 R11: 000000000000005d R12: 000000000000005c
+[   13.427742] R13: ffff88102d84d300 R14: 0000000000000174 R15: ffff88042ddb4800
+[   13.435877] FS:  0000000000000000(0000) GS:ffff88043de00000(0000) knlGS:00000                                              00000000000
+[   13.445168] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   13.451749] CR2: ffffc9000605a088 CR3: 0000000001a0b000 CR4: 00000000000407f0
+[   13.459895] Stack:
+[   13.462297]  ffff88042ddb85d0 000000000000005d ffff88042ddef9b0 0000000000000                                              5d0
+[   13.471147]  00000000000005c0 ffff88042ddb8000 000000000000005c 0000000000000                                              015
+[   13.480001]  ffff88042ddb4800 0000000000000282 ffff88042ddefa40 ffff88042ddef                                              ac0
+[   13.488855] Call Trace:
+[   13.491771]  [<ffffffff8146848d>] modify_irte+0x9d/0xd0
+[   13.497778]  [<ffffffff8146886d>] intel_setup_ioapic_entry+0x10d/0x290
+[   13.505250]  [<ffffffff810a92a6>] ? trace_hardirqs_on_caller+0x16/0x1e0
+[   13.512824]  [<ffffffff810346b0>] ? default_init_apic_ldr+0x60/0x60
+[   13.519998]  [<ffffffff81468be0>] setup_ioapic_remapped_entry+0x20/0x30
+[   13.527566]  [<ffffffff8103683a>] io_apic_setup_irq_pin+0x12a/0x2c0
+[   13.534742]  [<ffffffff8136673b>] ? acpi_pci_irq_find_prt_entry+0x2b9/0x2d8
+[   13.544102]  [<ffffffff81037fd5>] io_apic_setup_irq_pin_once+0x85/0xa0
+[   13.551568]  [<ffffffff8103816f>] ? mp_find_ioapic_pin+0x8f/0xf0
+[   13.558434]  [<ffffffff81038044>] io_apic_set_pci_routing+0x34/0x70
+[   13.565621]  [<ffffffff8102f4cf>] mp_register_gsi+0xaf/0x1c0
+[   13.572111]  [<ffffffff8102f5ee>] acpi_register_gsi_ioapic+0xe/0x10
+[   13.579286]  [<ffffffff8102f33f>] acpi_register_gsi+0xf/0x20
+[   13.585779]  [<ffffffff81366b86>] acpi_pci_irq_enable+0x171/0x1e3
+[   13.592764]  [<ffffffff8146d771>] pcibios_enable_device+0x31/0x40
+[   13.599744]  [<ffffffff81320e9b>] do_pci_enable_device+0x3b/0x60
+[   13.606633]  [<ffffffff81322248>] pci_enable_device_flags+0xc8/0x120
+[   13.613887]  [<ffffffff813222f3>] pci_enable_device+0x13/0x20
+[   13.620484]  [<ffffffff8132fa7e>] pcie_port_device_register+0x1e/0x510
+[   13.627947]  [<ffffffff810a92a6>] ? trace_hardirqs_on_caller+0x16/0x1e0
+[   13.635510]  [<ffffffff810a947d>] ? trace_hardirqs_on+0xd/0x10
+[   13.642189]  [<ffffffff813302b8>] pcie_portdrv_probe+0x58/0xc0
+[   13.648877]  [<ffffffff81323ba5>] local_pci_probe+0x45/0xa0
+[   13.655266]  [<ffffffff8106bc44>] work_for_cpu_fn+0x14/0x20
+[   13.661656]  [<ffffffff8106fa79>] process_one_work+0x369/0x710
+[   13.668334]  [<ffffffff8106fa02>] ? process_one_work+0x2f2/0x710
+[   13.675215]  [<ffffffff81071d56>] ? worker_thread+0x46/0x690
+[   13.681714]  [<ffffffff81072194>] worker_thread+0x484/0x690
+[   13.688109]  [<ffffffff81071d10>] ? cancel_delayed_work_sync+0x20/0x20
+[   13.695576]  [<ffffffff81079c60>] kthread+0xf0/0x110
+[   13.701300]  [<ffffffff8108e7bf>] ? local_clock+0x3f/0x50
+[   13.707492]  [<ffffffff81079b70>] ? kthread_create_on_node+0x250/0x250
+[   13.714959]  [<ffffffff81574d2c>] ret_from_fork+0x7c/0xb0
+[   13.721152]  [<ffffffff81079b70>] ? kthread_create_on_node+0x250/0x250
+
 
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c |   14 +++-----------
- 1 file changed, 3 insertions(+), 11 deletions(-)
+ drivers/iommu/dmar.c          |   56 ++++++++++++++++++++++++++++-------------
+ drivers/iommu/intel-iommu.c   |   13 +++-------
+ include/linux/dma_remapping.h |    4 ---
+ include/linux/intel-iommu.h   |    1 -
+ 4 files changed, 43 insertions(+), 31 deletions(-)
 
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 7ecc7b8..302e037 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -53,6 +53,7 @@ struct acpi_table_header * __initdata dmar_tbl;
+ static acpi_size dmar_tbl_size;
+ 
+ static int alloc_iommu(struct dmar_drhd_unit *drhd);
++static void free_iommu(struct intel_iommu *iommu);
+ 
+ static void __init dmar_register_drhd_unit(struct dmar_drhd_unit *drhd)
+ {
+@@ -205,25 +206,28 @@ dmar_parse_one_drhd(struct acpi_dmar_header *header)
+ 	return 0;
+ }
+ 
++static void dmar_free_drhd(struct dmar_drhd_unit *dmaru)
++{
++	if (dmaru->devices && dmaru->devices_cnt)
++		dmar_free_dev_scope(&dmaru->devices, &dmaru->devices_cnt);
++	if (dmaru->iommu)
++		free_iommu(dmaru->iommu);
++	kfree(dmaru);
++}
++
+ static int __init dmar_parse_dev(struct dmar_drhd_unit *dmaru)
+ {
+ 	struct acpi_dmar_hardware_unit *drhd;
+-	int ret = 0;
+ 
+ 	drhd = (struct acpi_dmar_hardware_unit *) dmaru->hdr;
+ 
+ 	if (dmaru->include_all)
+ 		return 0;
+ 
+-	ret = dmar_parse_dev_scope((void *)(drhd + 1),
+-				((void *)drhd) + drhd->header.length,
+-				&dmaru->devices_cnt, &dmaru->devices,
+-				drhd->segment);
+-	if (ret) {
+-		list_del(&dmaru->list);
+-		kfree(dmaru);
+-	}
+-	return ret;
++	return dmar_parse_dev_scope((void *)(drhd + 1),
++				    ((void *)drhd) + drhd->header.length,
++				    &dmaru->devices_cnt, &dmaru->devices,
++				    drhd->segment);
+ }
+ 
+ #ifdef CONFIG_ACPI_NUMA
+@@ -435,7 +439,7 @@ dmar_find_matched_drhd_unit(struct pci_dev *dev)
+ int __init dmar_dev_scope_init(void)
+ {
+ 	static int dmar_dev_scope_initialized;
+-	struct dmar_drhd_unit *drhd, *drhd_n;
++	struct dmar_drhd_unit *drhd;
+ 	int ret = -ENODEV;
+ 
+ 	if (dmar_dev_scope_initialized)
+@@ -444,7 +448,7 @@ int __init dmar_dev_scope_init(void)
+ 	if (list_empty(&dmar_drhd_units))
+ 		goto fail;
+ 
+-	list_for_each_entry_safe(drhd, drhd_n, &dmar_drhd_units, list) {
++	list_for_each_entry(drhd, &dmar_drhd_units, list) {
+ 		ret = dmar_parse_dev(drhd);
+ 		if (ret)
+ 			goto fail;
+@@ -725,12 +729,13 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
+ 	return err;
+ }
+ 
+-void free_iommu(struct intel_iommu *iommu)
++static void free_iommu(struct intel_iommu *iommu)
+ {
+-	if (!iommu)
+-		return;
+-
+-	free_dmar_iommu(iommu);
++	if (iommu->irq) {
++		free_irq(iommu->irq, iommu);
++		irq_set_handler_data(iommu->irq, NULL);
++		destroy_irq(iommu->irq);
++	}
+ 
+ 	if (iommu->reg)
+ 		unmap_iommu(iommu);
+@@ -1368,4 +1373,21 @@ int __init dmar_ir_support(void)
+ 	return dmar->flags & 0x1;
+ }
+ 
++static int __init dmar_free_unused_resources(void)
++{
++	struct dmar_drhd_unit *dmaru, *dmaru_n;
++
++	/* DMAR units are in use */
++	if (irq_remapping_enabled || intel_iommu_enabled)
++		return 0;
++
++	list_for_each_entry_safe(dmaru, dmaru_n, &dmar_drhd_units, list) {
++		list_del(&dmaru->list);
++		dmar_free_drhd(dmaru);
++	}
++
++	return 0;
++}
++
++late_initcall(dmar_free_unused_resources);
+ IOMMU_INIT_POST(detect_intel_iommu);
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 60fa821..ccf7304 100644
+index ee536ad..60fa821 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1295,19 +1295,10 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
- 	iommu->domains = NULL;
- 	iommu->domain_ids = NULL;
+@@ -1265,7 +1265,7 @@ static int iommu_init_domains(struct intel_iommu *iommu)
+ static void domain_exit(struct dmar_domain *domain);
+ static void vm_domain_exit(struct dmar_domain *domain);
  
--	g_iommus[iommu->seq_id] = NULL;
--
--	/* if all iommus are freed, free g_iommus */
--	for (i = 0; i < g_num_of_iommus; i++) {
--		if (g_iommus[i])
--			break;
+-void free_dmar_iommu(struct intel_iommu *iommu)
++static void free_dmar_iommu(struct intel_iommu *iommu)
+ {
+ 	struct dmar_domain *domain;
+ 	int i;
+@@ -1290,15 +1290,10 @@ void free_dmar_iommu(struct intel_iommu *iommu)
+ 	if (iommu->gcmd & DMA_GCMD_TE)
+ 		iommu_disable_translation(iommu);
+ 
+-	if (iommu->irq) {
+-		/* This will mask the irq */
+-		free_irq(iommu->irq, iommu);
+-		irq_set_handler_data(iommu->irq, NULL);
+-		destroy_irq(iommu->irq);
 -	}
 -
--	if (i == g_num_of_iommus)
--		kfree(g_iommus);
--
- 	/* free context mapping */
- 	free_context_table(iommu);
-+
-+	g_iommus[iommu->seq_id] = NULL;
- }
+ 	kfree(iommu->domains);
+ 	kfree(iommu->domain_ids);
++	iommu->domains = NULL;
++	iommu->domain_ids = NULL;
  
- static struct dmar_domain *alloc_domain(void)
-@@ -2624,6 +2615,7 @@ error:
+ 	g_iommus[iommu->seq_id] = NULL;
+ 
+@@ -2627,7 +2622,7 @@ static int __init init_dmars(void)
+ 	return 0;
+ error:
  	for_each_active_iommu(iommu, drhd)
- 		free_dmar_iommu(iommu);
+-		free_iommu(iommu);
++		free_dmar_iommu(iommu);
  	kfree(g_iommus);
-+	g_iommus = NULL;
  	return ret;
  }
+diff --git a/include/linux/dma_remapping.h b/include/linux/dma_remapping.h
+index 57c9a8a..7ac17f5 100644
+--- a/include/linux/dma_remapping.h
++++ b/include/linux/dma_remapping.h
+@@ -27,7 +27,6 @@ struct root_entry;
  
+ 
+ #ifdef CONFIG_INTEL_IOMMU
+-extern void free_dmar_iommu(struct intel_iommu *iommu);
+ extern int iommu_calculate_agaw(struct intel_iommu *iommu);
+ extern int iommu_calculate_max_sagaw(struct intel_iommu *iommu);
+ extern int dmar_disabled;
+@@ -41,9 +40,6 @@ static inline int iommu_calculate_max_sagaw(struct intel_iommu *iommu)
+ {
+ 	return 0;
+ }
+-static inline void free_dmar_iommu(struct intel_iommu *iommu)
+-{
+-}
+ #define dmar_disabled	(1)
+ #define intel_iommu_enabled (0)
+ #endif
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index f2c4114..2c4bed5 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -348,7 +348,6 @@ static inline void __iommu_flush_cache(
+ extern struct dmar_drhd_unit * dmar_find_matched_drhd_unit(struct pci_dev *dev);
+ extern int dmar_find_matched_atsr_unit(struct pci_dev *dev);
+ 
+-extern void free_iommu(struct intel_iommu *iommu);
+ extern int dmar_enable_qi(struct intel_iommu *iommu);
+ extern void dmar_disable_qi(struct intel_iommu *iommu);
+ extern int dmar_reenable_qi(struct intel_iommu *iommu);
 -- 
 1.7.10.4
