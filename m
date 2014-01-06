@@ -1,12 +1,15 @@
-From: Yifan Zhang <yifan.zhangm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu: change pud/pmd entry fill sequence
-Date: Fri, 3 Jan 2014 20:08:44 +0800
-Message-ID: <CAGZxSSSuOx+YTryvr+ZXKDcUu-c7YQu+qekGNeQ5yAKedOrVvg@mail.gmail.com>
-References: <1388750486-5060-1-git-send-email-yifan.zhangm@gmail.com>
+From: "Li, ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Subject: Re: [PATCH 1/1] x86/iommu: use bit structures for context_entry
+Date: Mon, 06 Jan 2014 09:41:29 +0800
+Message-ID: <52CA09C9.7000205@hp.com>
+References: <1387529101-29769-1-git-send-email-zhen-hual@hp.com>
+	<CAOtp4KqUgSnwadP0T=aWYX7rRzDBn3qkuqMzceDBO0c_bhpFwQ@mail.gmail.com>
+	<E959C4978C3B6342920538CF579893F001D3C26D@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1699328659510897845=="
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1388750486-5060-1-git-send-email-yifan.zhangm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <E959C4978C3B6342920538CF579893F001D3C26D-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,215 +19,131 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org, Catalin.Marinas-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Yifan Zhang <zhangyf-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>
+To: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
---===============1699328659510897845==
-Content-Type: multipart/alternative; boundary=e89a8f3bae6f84c42304ef0fc588
+Yes, that's the problem. And some other structures like this, see "union 
+irte".
 
---e89a8f3bae6f84c42304ef0fc588
-Content-Type: text/plain; charset=ISO-8859-1
-
-Hi Will,
-
-I found current smmu driver may generate wrong page tables, after apply
-this patch, the result is correct. I have verified this patch on our
-platform.
-
-BR,
-Yifan
-
-
-On Fri, Jan 3, 2014 at 8:01 PM, Yifan Zhang <yifan.zhangm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-
-> From: Yifan Zhang <zhangyf-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>
+On 12/26/2013 01:12 PM, Wu, Feng wrote:
+> I think if using |= operation, it should use &= operation to clear those
+> bits first.
 >
-> Pgd/pud entry should be filled only once when their next level pud/pmd
-> created, the value should be pud/pmd start address, while in current
-> code, pgd/pud entry is filled every time when pud/pmd walk occurs,
-> the value is pud/pmd start address + iova pud/pmd index , this is
-> incorrect; Besides, when pud/pmd are created, we need to add pud/pmd
-> index, then pass to next level, while in currect code, if a new pud/pmd
-> created, their iova pud/pmd index is not taken into account, only
-> existing pud/pmd do. This patch change pud/pmd entry fill sequence,
-> fixes the 2 bugs.
+> Thanks,
 >
-> Signed-off-by: Yifan Zhang <zhangyf-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>
+> Feng
+>
+> *From:*iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> [mailto:iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] *On Behalf Of *Kai Huang
+> *Sent:* Thursday, December 26, 2013 9:55 AM
+> *To:* Li, Zhen-Hua
+> *Cc:* David Woodhouse; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+> linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> *Subject:* Re: [PATCH 1/1] x86/iommu: use bit structures for context_entry
+>
+> Just curious, why would |= operation cause problem? :)
+>
+> On Fri, Dec 20, 2013 at 4:45 PM, Li, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org
+> <mailto:zhen-hual-VXdhtT5mjnY@public.gmane.org>> wrote:
+>
+> There is a structure named context_entry used by intel iommu, and there
+> are some bit operations on it. Use bit structure may make these operations
+> easy.
+> Also the function context_set_address_root may cause problem because it uses
+>   |= operation, not set the new value. And this patch can fix it.
+>
+> Signed-off-by: Li, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org <mailto:zhen-hual-VXdhtT5mjnY@public.gmane.org>>
 > ---
->  drivers/iommu/arm-smmu.c |   14 ++++++++++----
->  1 file changed, 10 insertions(+), 4 deletions(-)
+>   drivers/iommu/intel-iommu.c | 37 +++++++++++++++++++++++++++----------
+>   1 file changed, 27 insertions(+), 10 deletions(-)
 >
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index e46a887..e3168a2 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -1317,6 +1317,11 @@ static int arm_smmu_alloc_init_pmd(struct
-> arm_smmu_device *smmu, pud_t *pud,
->                 pmd = pmd_alloc_one(NULL, addr);
->                 if (!pmd)
->                         return -ENOMEM;
-> +
-> +               pud_populate(NULL, pud, pmd);
-> +               arm_smmu_flush_pgtable(smmu, pud, sizeof(*pud));
-> +
-> +               pmd += pmd_index(addr);
->         } else
->  #endif
->                 pmd = pmd_offset(pud, addr);
-> @@ -1325,8 +1330,6 @@ static int arm_smmu_alloc_init_pmd(struct
-> arm_smmu_device *smmu, pud_t *pud,
->                 next = pmd_addr_end(addr, end);
->                 ret = arm_smmu_alloc_init_pte(smmu, pmd, addr, end, pfn,
->                                               flags, stage);
-> -               pud_populate(NULL, pud, pmd);
-> -               arm_smmu_flush_pgtable(smmu, pud, sizeof(*pud));
->                 phys += next - addr;
->         } while (pmd++, addr = next, addr < end);
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 43b9bfe..65cd480 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -221,47 +221,64 @@ get_context_addr_from_root(struct root_entry *root)
+>    * 8-23: domain id
+>    */
+>   struct context_entry {
+> -       u64 lo;
+> -       u64 hi;
+> +       union {
+> +               struct {
+> +                       u64     present:1,
+> +                               fpd:1,
+> +                               translation_type:2,
+> +                               reserved_l:8,
+> +                               asr:52;
+> +               };
+> +               u64 lo;
+> +       };
+> +       union {
+> +               struct {
+> +                       u64     aw:3,
+> +                               avail:4,
+> +                               reserved_h1:1,
+> +                               did:16,
+> +                               reserved_h2:40;
+> +               };
+> +               u64 hi;
+> +       };
+>   };
 >
-> @@ -1346,6 +1349,11 @@ static int arm_smmu_alloc_init_pud(struct
-> arm_smmu_device *smmu, pgd_t *pgd,
->                 pud = pud_alloc_one(NULL, addr);
->                 if (!pud)
->                         return -ENOMEM;
-> +
-> +               pgd_populate(NULL, pgd, pud);
-> +               arm_smmu_flush_pgtable(smmu, pgd, sizeof(*pgd));
-> +
-> +               pud += pud_index(addr);
->         } else
->  #endif
->                 pud = pud_offset(pgd, addr);
-> @@ -1354,8 +1362,6 @@ static int arm_smmu_alloc_init_pud(struct
-> arm_smmu_device *smmu, pgd_t *pgd,
->                 next = pud_addr_end(addr, end);
->                 ret = arm_smmu_alloc_init_pmd(smmu, pud, addr, next, phys,
->                                               flags, stage);
-> -               pgd_populate(NULL, pud, pgd);
-> -               arm_smmu_flush_pgtable(smmu, pgd, sizeof(*pgd));
->                 phys += next - addr;
->         } while (pud++, addr = next, addr < end);
+>   static inline bool context_present(struct context_entry *context)
+>   {
+> -       return (context->lo & 1);
+> +       return context->present;
+>   }
+>   static inline void context_set_present(struct context_entry *context)
+>   {
+> -       context->lo |= 1;
+> +       context->present = 1;
+>   }
 >
+>   static inline void context_set_fault_enable(struct context_entry *context)
+>   {
+> -       context->lo &= (((u64)-1) << 2) | 1;
+> +       context->fpd = 1;
+>   }
+>
+>   static inline void context_set_translation_type(struct context_entry
+> *context,
+>                                                  unsigned long value)
+>   {
+> -       context->lo &= (((u64)-1) << 4) | 3;
+> -       context->lo |= (value & 3) << 2;
+> +       context->translation_type = value;
+>   }
+>
+>   static inline void context_set_address_root(struct context_entry *context,
+>                                              unsigned long value)
+>   {
+> -       context->lo |= value & VTD_PAGE_MASK;
+> +       context->asr = value >> VTD_PAGE_SHIFT
+>   }
+>
+>   static inline void context_set_address_width(struct context_entry
+> *context,
+>                                               unsigned long value)
+>   {
+> -       context->hi |= value & 7;
+> +       context->aw  = value;
+>   }
+>
+>   static inline void context_set_domain_id(struct context_entry *context,
+>                                           unsigned long value)
+>   {
+> -       context->hi |= (value & ((1 << 16) - 1)) << 8;
+> +       context->did = value;
+>   }
+>
+>   static inline void context_clear_entry(struct context_entry *context)
 > --
-> 1.7.9.5
->
+> 1.8.4.3
 >
 > _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
 >
-
---e89a8f3bae6f84c42304ef0fc588
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Hi Will,<div><br></div><div>I found current smmu driver ma=
-y generate wrong page tables, after apply this patch, the result is correct=
-. I have verified this patch on our platform.</div><div><br></div><div>BR,<=
-/div>
-<div>Yifan</div></div><div class=3D"gmail_extra"><br><br><div class=3D"gmai=
-l_quote">On Fri, Jan 3, 2014 at 8:01 PM, Yifan Zhang <span dir=3D"ltr">&lt;=
-<a href=3D"mailto:yifan.zhangm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" target=3D"_blank">yifan.zhangm@gm=
-ail.com</a>&gt;</span> wrote:<br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex">From: Yifan Zhang &lt;<a href=3D"mailto:zhan=
-gyf-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org">zhangyf-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org</a>&gt;<br>
-<br>
-Pgd/pud entry should be filled only once when their next level pud/pmd<br>
-created, the value should be pud/pmd start address, while in current<br>
-code, pgd/pud entry is filled every time when pud/pmd walk occurs,<br>
-the value is pud/pmd start address + iova pud/pmd index , this is<br>
-incorrect; Besides, when pud/pmd are created, we need to add pud/pmd<br>
-index, then pass to next level, while in currect code, if a new pud/pmd<br>
-created, their iova pud/pmd index is not taken into account, only<br>
-existing pud/pmd do. This patch change pud/pmd entry fill sequence,<br>
-fixes the 2 bugs.<br>
-<br>
-Signed-off-by: Yifan Zhang &lt;<a href=3D"mailto:zhangyf-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org">zhang=
-yf-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org</a>&gt;<br>
----<br>
-=A0drivers/iommu/arm-smmu.c | =A0 14 ++++++++++----<br>
-=A01 file changed, 10 insertions(+), 4 deletions(-)<br>
-<br>
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c<br>
-index e46a887..e3168a2 100644<br>
---- a/drivers/iommu/arm-smmu.c<br>
-+++ b/drivers/iommu/arm-smmu.c<br>
-@@ -1317,6 +1317,11 @@ static int arm_smmu_alloc_init_pmd(struct arm_smmu_d=
-evice *smmu, pud_t *pud,<br>
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 pmd =3D pmd_alloc_one(NULL, addr);<br>
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 if (!pmd)<br>
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 return -ENOMEM;<br>
-+<br>
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 pud_populate(NULL, pud, pmd);<br>
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 arm_smmu_flush_pgtable(smmu, pud, sizeof(*pud=
-));<br>
-+<br>
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 pmd +=3D pmd_index(addr);<br>
-=A0 =A0 =A0 =A0 } else<br>
-=A0#endif<br>
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 pmd =3D pmd_offset(pud, addr);<br>
-@@ -1325,8 +1330,6 @@ static int arm_smmu_alloc_init_pmd(struct arm_smmu_de=
-vice *smmu, pud_t *pud,<br>
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 next =3D pmd_addr_end(addr, end);<br>
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 ret =3D arm_smmu_alloc_init_pte(smmu, pmd, =
-addr, end, pfn,<br>
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
- =A0 =A0 =A0 =A0 flags, stage);<br>
-- =A0 =A0 =A0 =A0 =A0 =A0 =A0 pud_populate(NULL, pud, pmd);<br>
-- =A0 =A0 =A0 =A0 =A0 =A0 =A0 arm_smmu_flush_pgtable(smmu, pud, sizeof(*pud=
-));<br>
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 phys +=3D next - addr;<br>
-=A0 =A0 =A0 =A0 } while (pmd++, addr =3D next, addr &lt; end);<br>
-<br>
-@@ -1346,6 +1349,11 @@ static int arm_smmu_alloc_init_pud(struct arm_smmu_d=
-evice *smmu, pgd_t *pgd,<br>
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 pud =3D pud_alloc_one(NULL, addr);<br>
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 if (!pud)<br>
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 return -ENOMEM;<br>
-+<br>
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 pgd_populate(NULL, pgd, pud);<br>
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 arm_smmu_flush_pgtable(smmu, pgd, sizeof(*pgd=
-));<br>
-+<br>
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 pud +=3D pud_index(addr);<br>
-=A0 =A0 =A0 =A0 } else<br>
-=A0#endif<br>
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 pud =3D pud_offset(pgd, addr);<br>
-@@ -1354,8 +1362,6 @@ static int arm_smmu_alloc_init_pud(struct arm_smmu_de=
-vice *smmu, pgd_t *pgd,<br>
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 next =3D pud_addr_end(addr, end);<br>
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 ret =3D arm_smmu_alloc_init_pmd(smmu, pud, =
-addr, next, phys,<br>
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
- =A0 =A0 =A0 =A0 flags, stage);<br>
-- =A0 =A0 =A0 =A0 =A0 =A0 =A0 pgd_populate(NULL, pud, pgd);<br>
-- =A0 =A0 =A0 =A0 =A0 =A0 =A0 arm_smmu_flush_pgtable(smmu, pgd, sizeof(*pgd=
-));<br>
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 phys +=3D next - addr;<br>
-=A0 =A0 =A0 =A0 } while (pud++, addr =3D next, addr &lt; end);<br>
-<span class=3D"HOEnZb"><font color=3D"#888888"><br>
---<br>
-1.7.9.5<br>
-<br>
-<br>
-_______________________________________________<br>
-linux-arm-kernel mailing list<br>
-<a href=3D"mailto:linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org">linux-arm-kernel@li=
-sts.infradead.org</a><br>
-<a href=3D"http://lists.infradead.org/mailman/listinfo/linux-arm-kernel" ta=
-rget=3D"_blank">http://lists.infradead.org/mailman/listinfo/linux-arm-kerne=
-l</a><br>
-</font></span></blockquote></div><br></div>
-
---e89a8f3bae6f84c42304ef0fc588--
-
---===============1699328659510897845==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============1699328659510897845==--
