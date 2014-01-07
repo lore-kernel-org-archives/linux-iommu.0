@@ -1,14 +1,16 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/1] x86/iommu: use bit structures for context_entry
-Date: Tue, 7 Jan 2014 15:41:09 +0100
-Message-ID: <20140107144108.GF2742@8bytes.org>
-References: <1387529101-29769-1-git-send-email-zhen-hual@hp.com>
+Subject: Re: [Patch Part1 V3 09/20] iommu/vt-d: mark internal functions as
+	static
+Date: Tue, 7 Jan 2014 16:25:27 +0100
+Message-ID: <20140107152523.GG2742@8bytes.org>
+References: <1388989107-4795-1-git-send-email-jiang.liu@linux.intel.com>
+	<1388989107-4795-10-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1387529101-29769-1-git-send-email-zhen-hual-VXdhtT5mjnY@public.gmane.org>
+In-Reply-To: <1388989107-4795-10-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,18 +20,16 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Dec 20, 2013 at 04:45:01PM +0800, Li, Zhen-Hua wrote:
-> There is a structure named context_entry used by intel iommu, and there
-> are some bit operations on it. Use bit structure may make these operations
-> easy.
-> Also the function context_set_address_root may cause problem because it uses
->  |= operation, not set the new value. And this patch can fix it.
+On Mon, Jan 06, 2014 at 02:18:16PM +0800, Jiang Liu wrote:
+> Function detect_intel_iommu()/alloc_iommu()/parse_ioapics_under_ir()
+> are only used internally, so mark them as static.
 
-What is the problem you are trying to fix here? Is it an actual bug?
+Doesn't seem to be true for detect_intel_iommu which is used in ia64
+setup code, no?
 
 
 	Joerg
