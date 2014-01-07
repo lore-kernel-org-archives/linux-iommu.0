@@ -1,12 +1,14 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part2 V1 00/14] Enhance DMAR drivers to handle PCI/memory
-	hotplug events
-Date: Tue,  7 Jan 2014 17:00:20 +0800
-Message-ID: <1389085234-22296-1-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part2 V1 01/14] iommu/vt-d: factor out dmar_alloc_dev_scope()
+	for later reuse
+Date: Tue,  7 Jan 2014 17:00:21 +0800
+Message-ID: <1389085234-22296-2-git-send-email-jiang.liu@linux.intel.com>
+References: <1389085234-22296-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1389085234-22296-1-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,46 +22,84 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse
 Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Intel DMA/interrupt remapping drivers scan available PCI/memory devices
-at startup and cache discovered hardware topologies. They don't update
-cached information if PCI/memory hotplug event happens at runtime, then
-the stale information may break DMA/interrupt remapping logic.
+Factor out function dmar_alloc_dev_scope() from dmar_parse_dev_scope()
+for later reuse.
 
-This patchset first (Patch 1-8) tries to introduces some helper
-functions and fixes several bugs, then (Patch 9,10) uses a global
-rwsem and RCU to protect global DMA/interrupt remapping data
-structures, and finally (Patch 11-14) hook PCI/memory hotplug events
-to update cached information.
+Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+---
+ drivers/iommu/dmar.c |   28 ++++++++++++++++------------
+ include/linux/dmar.h |    1 +
+ 2 files changed, 17 insertions(+), 12 deletions(-)
 
-It's also a preparation for supporting of DMA/interrupt remapping
-hotplug.
-
-Jiang Liu (14):
-  iommu/vt-d: factor out dmar_alloc_dev_scope() for later reuse
-  iommu/vt-d: move private structures and variables into intel-iommu.c
-  iommu/vt-d: simplify function get_domain_for_dev()
-  iommu/vt-d: free resources if failed to create domain for PCIe
-    endpoint
-  iommu/vt-d: create device_domain_info structure for intermediate P2P
-    bridges
-  iommu/vt-d: fix incorrect iommu_count for si_domain
-  iommu/vt-d: fix error in detect ATS capability
-  iommu/vt-d: introduce macro for_each_dev_scope() to walk device scope
-    entries
-  iommu/vt-d: introduce a rwsem to protect global data structures
-  iommu/vt-d: use RCU to protect global resources in interrupt context
-  iommu/vt-d, PCI: update DRHD/RMRR/ATSR device scope caches when PCI
-    hotplug happens
-  iommu/vt-d, PCI: unify the way to process DMAR device scope array
-  iommu/vt-d: update device to static identity domain mapping for PCI
-    hotplug
-  iommu/vt-d: update IOMMU state when memory hotplug happens
-
- drivers/iommu/dmar.c                |  412 +++++++++++++++++--------
- drivers/iommu/intel-iommu.c         |  583 +++++++++++++++++++++--------------
- drivers/iommu/intel_irq_remapping.c |  108 ++++---
- include/linux/dmar.h                |   75 +++--
- 4 files changed, 753 insertions(+), 425 deletions(-)
-
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 248332e..4a4c9a1 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -117,13 +117,9 @@ static int __init dmar_parse_one_dev_scope(struct acpi_dmar_device_scope *scope,
+ 	return 0;
+ }
+ 
+-int __init dmar_parse_dev_scope(void *start, void *end, int *cnt,
+-				struct pci_dev ***devices, u16 segment)
++void *dmar_alloc_dev_scope(void *start, void *end, int *cnt)
+ {
+ 	struct acpi_dmar_device_scope *scope;
+-	void * tmp = start;
+-	int index;
+-	int ret;
+ 
+ 	*cnt = 0;
+ 	while (start < end) {
+@@ -138,15 +134,24 @@ int __init dmar_parse_dev_scope(void *start, void *end, int *cnt,
+ 		start += scope->length;
+ 	}
+ 	if (*cnt == 0)
+-		return 0;
++		return NULL;
++
++	return kcalloc(*cnt, sizeof(struct pci_dev *), GFP_KERNEL);
++}
++
++int __init dmar_parse_dev_scope(void *start, void *end, int *cnt,
++				struct pci_dev ***devices, u16 segment)
++{
++	struct acpi_dmar_device_scope *scope;
++	int index, ret;
+ 
+-	*devices = kcalloc(*cnt, sizeof(struct pci_dev *), GFP_KERNEL);
+-	if (!*devices)
++	*devices = dmar_alloc_dev_scope(start, end, cnt);
++	if (*cnt == 0)
++		return 0;
++	else if (!*devices)
+ 		return -ENOMEM;
+ 
+-	start = tmp;
+-	index = 0;
+-	while (start < end) {
++	for (index = 0; start < end; start += scope->length) {
+ 		scope = start;
+ 		if (scope->entry_type == ACPI_DMAR_SCOPE_TYPE_ENDPOINT ||
+ 		    scope->entry_type == ACPI_DMAR_SCOPE_TYPE_BRIDGE) {
+@@ -158,7 +163,6 @@ int __init dmar_parse_dev_scope(void *start, void *end, int *cnt,
+ 			}
+ 			index ++;
+ 		}
+-		start += scope->length;
+ 	}
+ 
+ 	return 0;
+diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+index bd5026b..198eb09 100644
+--- a/include/linux/dmar.h
++++ b/include/linux/dmar.h
+@@ -151,6 +151,7 @@ struct dmar_atsr_unit {
+ int dmar_parse_rmrr_atsr_dev(void);
+ extern int dmar_parse_one_rmrr(struct acpi_dmar_header *header);
+ extern int dmar_parse_one_atsr(struct acpi_dmar_header *header);
++extern void *dmar_alloc_dev_scope(void *start, void *end, int *cnt);
+ extern int dmar_parse_dev_scope(void *start, void *end, int *cnt,
+ 				struct pci_dev ***devices, u16 segment);
+ extern void dmar_free_dev_scope(struct pci_dev ***devices, int *cnt);
 -- 
 1.7.10.4
