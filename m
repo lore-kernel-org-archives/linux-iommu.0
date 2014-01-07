@@ -1,8 +1,8 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part2 V1 01/14] iommu/vt-d: factor out dmar_alloc_dev_scope()
-	for later reuse
-Date: Tue,  7 Jan 2014 17:00:21 +0800
-Message-ID: <1389085234-22296-2-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part2 V1 02/14] iommu/vt-d: move private structures and
+	variables into intel-iommu.c
+Date: Tue,  7 Jan 2014 17:00:22 +0800
+Message-ID: <1389085234-22296-3-git-send-email-jiang.liu@linux.intel.com>
 References: <1389085234-22296-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,84 +22,119 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse
 Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Factor out function dmar_alloc_dev_scope() from dmar_parse_dev_scope()
-for later reuse.
+Move private structures and variables into intel-iommu.c, which will
+help to simplify locking policy for hotplug. Also delete redundant
+declarations.
 
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/dmar.c |   28 ++++++++++++++++------------
- include/linux/dmar.h |    1 +
- 2 files changed, 17 insertions(+), 12 deletions(-)
+ drivers/iommu/intel-iommu.c |   31 +++++++++++++++++++++++++------
+ include/linux/dmar.h        |   23 +----------------------
+ 2 files changed, 26 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 248332e..4a4c9a1 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -117,13 +117,9 @@ static int __init dmar_parse_one_dev_scope(struct acpi_dmar_device_scope *scope,
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 0863e25..1704e97 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -380,6 +380,29 @@ struct device_domain_info {
+ 	struct dmar_domain *domain; /* pointer to domain */
+ };
+ 
++struct dmar_rmrr_unit {
++	struct list_head list;		/* list of rmrr units	*/
++	struct acpi_dmar_header *hdr;	/* ACPI header		*/
++	u64	base_address;		/* reserved base address*/
++	u64	end_address;		/* reserved end address */
++	struct pci_dev **devices;	/* target devices */
++	int	devices_cnt;		/* target device count */
++};
++
++struct dmar_atsr_unit {
++	struct list_head list;		/* list of ATSR units */
++	struct acpi_dmar_header *hdr;	/* ACPI header */
++	struct pci_dev **devices;	/* target devices */
++	int devices_cnt;		/* target device count */
++	u8 include_all:1;		/* include all ports */
++};
++
++static LIST_HEAD(dmar_atsr_units);
++static LIST_HEAD(dmar_rmrr_units);
++
++#define for_each_rmrr_units(rmrr) \
++	list_for_each_entry(rmrr, &dmar_rmrr_units, list)
++
+ static void flush_unmaps_timeout(unsigned long data);
+ 
+ static DEFINE_TIMER(unmap_timer,  flush_unmaps_timeout, 0, 0);
+@@ -403,6 +426,8 @@ static int timer_on;
+ static long list_size;
+ 
+ static void domain_remove_dev_info(struct dmar_domain *domain);
++static void domain_remove_one_dev_info(struct dmar_domain *domain,
++				       struct pci_dev *pdev);
+ 
+ #ifdef CONFIG_INTEL_IOMMU_DEFAULT_ON
+ int dmar_disabled = 0;
+@@ -2243,8 +2268,6 @@ static int __init si_domain_init(int hw)
  	return 0;
  }
  
--int __init dmar_parse_dev_scope(void *start, void *end, int *cnt,
--				struct pci_dev ***devices, u16 segment)
-+void *dmar_alloc_dev_scope(void *start, void *end, int *cnt)
+-static void domain_remove_one_dev_info(struct dmar_domain *domain,
+-					  struct pci_dev *pdev);
+ static int identity_mapping(struct pci_dev *pdev)
  {
- 	struct acpi_dmar_device_scope *scope;
--	void * tmp = start;
--	int index;
--	int ret;
+ 	struct device_domain_info *info;
+@@ -3430,8 +3453,6 @@ static void __init init_iommu_pm_ops(void)
+ static inline void init_iommu_pm_ops(void) {}
+ #endif	/* CONFIG_PM */
  
- 	*cnt = 0;
- 	while (start < end) {
-@@ -138,15 +134,24 @@ int __init dmar_parse_dev_scope(void *start, void *end, int *cnt,
- 		start += scope->length;
- 	}
- 	if (*cnt == 0)
--		return 0;
-+		return NULL;
-+
-+	return kcalloc(*cnt, sizeof(struct pci_dev *), GFP_KERNEL);
-+}
-+
-+int __init dmar_parse_dev_scope(void *start, void *end, int *cnt,
-+				struct pci_dev ***devices, u16 segment)
-+{
-+	struct acpi_dmar_device_scope *scope;
-+	int index, ret;
+-LIST_HEAD(dmar_rmrr_units);
+-
+ static void __init dmar_register_rmrr_unit(struct dmar_rmrr_unit *rmrr)
+ {
+ 	list_add(&rmrr->list, &dmar_rmrr_units);
+@@ -3468,8 +3489,6 @@ rmrr_parse_dev(struct dmar_rmrr_unit *rmrru)
+ 				    rmrr->segment);
+ }
  
--	*devices = kcalloc(*cnt, sizeof(struct pci_dev *), GFP_KERNEL);
--	if (!*devices)
-+	*devices = dmar_alloc_dev_scope(start, end, cnt);
-+	if (*cnt == 0)
-+		return 0;
-+	else if (!*devices)
- 		return -ENOMEM;
- 
--	start = tmp;
--	index = 0;
--	while (start < end) {
-+	for (index = 0; start < end; start += scope->length) {
- 		scope = start;
- 		if (scope->entry_type == ACPI_DMAR_SCOPE_TYPE_ENDPOINT ||
- 		    scope->entry_type == ACPI_DMAR_SCOPE_TYPE_BRIDGE) {
-@@ -158,7 +163,6 @@ int __init dmar_parse_dev_scope(void *start, void *end, int *cnt,
- 			}
- 			index ++;
- 		}
--		start += scope->length;
- 	}
- 
- 	return 0;
+-static LIST_HEAD(dmar_atsr_units);
+-
+ int __init dmar_parse_one_atsr(struct acpi_dmar_header *hdr)
+ {
+ 	struct acpi_dmar_atsr *atsr;
 diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index bd5026b..198eb09 100644
+index 198eb09..dc8c7d5 100644
 --- a/include/linux/dmar.h
 +++ b/include/linux/dmar.h
-@@ -151,6 +151,7 @@ struct dmar_atsr_unit {
- int dmar_parse_rmrr_atsr_dev(void);
+@@ -127,28 +127,7 @@ extern int arch_setup_dmar_msi(unsigned int irq);
+ 
+ #ifdef CONFIG_INTEL_IOMMU
+ extern int iommu_detected, no_iommu;
+-extern struct list_head dmar_rmrr_units;
+-struct dmar_rmrr_unit {
+-	struct list_head list;		/* list of rmrr units	*/
+-	struct acpi_dmar_header *hdr;	/* ACPI header		*/
+-	u64	base_address;		/* reserved base address*/
+-	u64	end_address;		/* reserved end address */
+-	struct pci_dev **devices;	/* target devices */
+-	int	devices_cnt;		/* target device count */
+-};
+-
+-#define for_each_rmrr_units(rmrr) \
+-	list_for_each_entry(rmrr, &dmar_rmrr_units, list)
+-
+-struct dmar_atsr_unit {
+-	struct list_head list;		/* list of ATSR units */
+-	struct acpi_dmar_header *hdr;	/* ACPI header */
+-	struct pci_dev **devices;	/* target devices */
+-	int devices_cnt;		/* target device count */
+-	u8 include_all:1;		/* include all ports */
+-};
+-
+-int dmar_parse_rmrr_atsr_dev(void);
++extern int dmar_parse_rmrr_atsr_dev(void);
  extern int dmar_parse_one_rmrr(struct acpi_dmar_header *header);
  extern int dmar_parse_one_atsr(struct acpi_dmar_header *header);
-+extern void *dmar_alloc_dev_scope(void *start, void *end, int *cnt);
- extern int dmar_parse_dev_scope(void *start, void *end, int *cnt,
- 				struct pci_dev ***devices, u16 segment);
- extern void dmar_free_dev_scope(struct pci_dev ***devices, int *cnt);
+ extern void *dmar_alloc_dev_scope(void *start, void *end, int *cnt);
 -- 
 1.7.10.4
