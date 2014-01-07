@@ -1,43 +1,64 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu: change pud/pmd entry fill sequence
-Date: Mon, 6 Jan 2014 14:28:33 +0000
-Message-ID: <20140106142833.GC10449@mudshark.cambridge.arm.com>
-References: <1388750486-5060-1-git-send-email-yifan.zhangm@gmail.com>
+From: "Zhang, Yang Z" <yang.z.zhang@intel.com>
+Subject: RE: [PATCH] iommu/intel: SNP bit is not dependent on iommu domain
+ coherency
+Date: Tue, 7 Jan 2014 00:54:03 +0000
+Message-ID: <A9667DDFB95DB7438FA9D7D576C3D87E0A9A31C2@SHSMSX104.ccr.corp.intel.com>
+References: <20131029162126.23362.58786.stgit@bling.home>
+ <1387821199.30327.107.camel@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1388750486-5060-1-git-send-email-yifan.zhangm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yifan Zhang <yifan.zhangm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Yifan Zhang <zhangyf-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1387821199.30327.107.camel@bling.home>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>, David Woodhouse <dwmw2@infradead.org>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, iommu <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jan 03, 2014 at 12:01:26PM +0000, Yifan Zhang wrote:
-> From: Yifan Zhang <zhangyf-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>
-> 
-> Pgd/pud entry should be filled only once when their next level pud/pmd
-> created, the value should be pud/pmd start address, while in current
-> code, pgd/pud entry is filled every time when pud/pmd walk occurs,
-> the value is pud/pmd start address + iova pud/pmd index , this is
-> incorrect; Besides, when pud/pmd are created, we need to add pud/pmd
-> index, then pass to next level, while in currect code, if a new pud/pmd
-> created, their iova pud/pmd index is not taken into account, only
-> existing pud/pmd do. This patch change pud/pmd entry fill sequence,
-> fixes the 2 bugs.
-> 
-> Signed-off-by: Yifan Zhang <zhangyf-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>
-
-Thanks Yifan, this looks good to me. It's strange that I got the pte
-handling correct, but screwed up the equivalent pmd and pud code!
-
-Will
+QWxleCBXaWxsaWFtc29uIHdyb3RlIG9uIDIwMTMtMTItMjQ6DQo+IERhdmlkLA0KPiANCj4gQW55
+IGNvbW1lbnRzIG9uIHRoaXMgcGF0Y2g/ICBUaGFua3MsDQo+IA0KDQpIaSBBbGV4LA0KDQpUaGVy
+ZSBkbyBoYXZlIHNvbWUgSU9NTVVzIHdpbGwgdHJlYXQgU05QIGJpdCBpbiB0aGUgUFRFIGFzIHJl
+c2VydmVkICgwKSBhbmQgd2lsbCBjYXVzZSBhIHJlc2VydmVkIGZpZWxkIHZpb2xhdGlvbiBmYXVs
+dCBpZiBpdCBpcyBzZXQgYnV0IGhhcmR3YXJlIG5vdCBzdXBwb3J0IHNub29wLWNvbnRyb2woYml0
+IDcgaW4gRUNBUF9SRUcgaXMgMCkuIFNvIHlvdXIgcGF0Y2ggc2VlbXMgd3JvbmcgdG8gbWUuDQoN
+Cj4gQWxleA0KPiANCj4gT24gVHVlLCAyMDEzLTEwLTI5IGF0IDEwOjIxIC0wNjAwLCBBbGV4IFdp
+bGxpYW1zb24gd3JvdGU6DQo+PiBUaGUgc2V0dGluZyBvZiB0aGUgU05QIGJpdCBpbiB0aGUgaW50
+ZWwtaW9tbXUgcGFnZSB0YWJsZXMgc2hvdWxkIG5vdA0KPj4gYmUgZGVwZW5kZW50IG9uIHRoZSBj
+dXJyZW50IGNhcGFiaWxpdHkgb2YgdGhlIGlvbW11IGRvbWFpbi4gIFRoZQ0KPj4gY3VycmVudCBW
+VC1kIHNwZWMgKDIuMikgaW5kaWNhdGVzIHRoZSBTTlAgYml0IGlzICJ0cmVhdGVkIGFzDQo+PiBy
+ZXNlcnZlZFswXSBieSBoYXJkd2FyZSBpbXBsZW1lbnRhdGlvbnMgbm90IHN1cHBvcnRpbmcgU25v
+b3AgQ29udHJvbCIuDQo+PiBGdXJ0aGVybW9yZSwgc2VjdGlvbiAzLjcuMyBpbmRpY2F0ZXM6DQo+
+PiANCj4+ICAgSWYgdGhlIFNub29wIENvbnRyb2wgKFNDKSBmaWVsZCBpbiBleHRlbmRlZCBjYXBh
+YmlsaXR5IFJlZ2lzdGVyIGlzDQo+PiAgIHJlcG9ydGVkIGFzIDAsIHNub29wIGJlaGF2aW9yIGZv
+ciBhY2Nlc3MgdG8gdGhlIHBhZ2UgbWFwcGVkIHRocm91Z2gNCj4+ICAgc2Vjb25kLWxldmVsIHRy
+YW5zbGF0aW9uIGlzIGRldGVybWluZWQgYnkgdGhlIG5vLXNub29wIGF0dHJpYnV0ZSBpbg0KPj4g
+ICB0aGUgcmVxdWVzdC4NCj4+IFRoaXMgYWxsIHNlZW1zIHRvIGluZGljYXRlIHRoYXQgaGFyZHdh
+cmUgaW5jYXBhYmxlIG9mIFNub29wIENvbnRyb2wNCj4+IHdpbGwgaGFuZGxlIHRoZSBTTlAgYml0
+IGFzIHplcm8gcmVnYXJkbGVzcyBvZiB0aGUgdmFsdWUgc3RvcmVkIGluDQo+PiB0aGUgUFRFLg0K
+Pj4gDQo+PiBUaGUgdHJvdWJsZSB3aXRoIHRoZSBjdXJyZW50IGltcGxlbWVudGF0aW9uIGlzIHRo
+YXQgbWFwcGluZyBmbGFncw0KPj4gZGVwZW5kIG9uIHRoZSBzdGF0ZSBvZiB0aGUgaW9tbXUgZG9t
+YWluIGF0IHRoZSB0aW1lIG9mIHRoZSBtYXBwaW5nLA0KPj4geWV0IG5vIGF0dGVtcHQgaXMgbWFk
+ZSB0byB1cGRhdGUgZXhpc3RpbmcgbWFwcGluZ3Mgd2hlbiB0aGUgaW9tbXUNCj4+IGRvbWFpbiBj
+b21wb3NpdGlvbiBjaGFuZ2VzLiAgVGhpcyBsZWF2ZXMgdGhlIGlvbW11IGRvbWFpbiBpbiBhIHN0
+YXRlDQo+PiB3aGVyZSBzb21lIG1hcHBpbmdzIG1heSBlbmZvcmNlIGNvaGVyZW5jeSwgb3RoZXJz
+IGRvIG5vdCwgYW5kIHRoZQ0KPj4gdXNlciBvZiB0aGUgSU9NTVUgQVBJIGhhcyBubyBhYmlsaXR5
+IHRvIGxhdGVyIGVuYWJsZSB0aGUgZGVzaXJlZA0KPj4gZmxhZ3MgYXRvbWljYWxseSB3aXRoIHJl
+c3BlY3QgdG8gRE1BLg0KPj4gDQo+PiBJZiB3ZSBhbHdheXMgaG9ub3IgdGhlIElPTU1VX0NBQ0hF
+IGZsYWcgdGhlbiBhbiBJT01NVSBBUEkgdXNlciB3aG8NCj4+IHNwZWNpZmllcyBJT01NVV9DQUNI
+RSBmb3IgYWxsIG1hcHBpbmdzIGNhbiBhc3N1bWUgdGhhdCB0aGUgY29oZXJlbmN5DQo+PiBvZiB0
+aGUgbWFwcGluZ3Mgd2l0aGluIGEgZG9tYWluIGZvbGxvdyB0aGUgY29oZXJlbmN5IGNhcGFiaWxp
+dHkgb2YNCj4+IHRoZSBkb21haW4gaXRzZWxmLg0KPj4gDQo+PiBTaWduZWQtb2ZmLWJ5OiBBbGV4
+IFdpbGxpYW1zb24gPGFsZXgud2lsbGlhbXNvbkByZWRoYXQuY29tPg0KPj4gLS0tDQo+PiAgZHJp
+dmVycy9pb21tdS9pbnRlbC1pb21tdS5jIHwgICAgMiArLQ0KPj4gIDEgZmlsZSBjaGFuZ2VkLCAx
+IGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQ0KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9t
+bXUvaW50ZWwtaW9tbXUuYw0KPj4gYi9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMgaW5kZXgg
+MTVlOWI1Ny4uYzQ2YzZhNiAxMDA2NDQNCj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9t
+bXUuYw0KPj4gKysrIGIvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jDQo+PiBAQCAtNDA4NCw3
+ICs0MDg0LDcgQEAgc3RhdGljIGludCBpbnRlbF9pb21tdV9tYXAoc3RydWN0IGlvbW11X2RvbWFp
+bg0KPiAqZG9tYWluLA0KPj4gIAkJcHJvdCB8PSBETUFfUFRFX1JFQUQ7DQo+PiAgCWlmIChpb21t
+dV9wcm90ICYgSU9NTVVfV1JJVEUpDQo+PiAgCQlwcm90IHw9IERNQV9QVEVfV1JJVEU7DQo+PiAt
+CWlmICgoaW9tbXVfcHJvdCAmIElPTU1VX0NBQ0hFKSAmJiBkbWFyX2RvbWFpbi0+aW9tbXVfc25v
+b3BpbmcpDQo+PiArCWlmIChpb21tdV9wcm90ICYgSU9NTVVfQ0FDSEUpDQo+PiAgCQlwcm90IHw9
+IERNQV9QVEVfU05QOw0KPj4gIA0KPj4gIAltYXhfYWRkciA9IGlvdmEgKyBzaXplOw0KPiANCj4N
+Cg0KDQpCZXN0IHJlZ2FyZHMsDQpZYW5nDQoNCg0K
