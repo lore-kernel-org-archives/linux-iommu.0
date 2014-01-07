@@ -1,64 +1,106 @@
-From: "Zhang, Yang Z" <yang.z.zhang@intel.com>
-Subject: RE: [PATCH] iommu/intel: SNP bit is not dependent on iommu domain
- coherency
-Date: Tue, 7 Jan 2014 00:54:03 +0000
-Message-ID: <A9667DDFB95DB7438FA9D7D576C3D87E0A9A31C2@SHSMSX104.ccr.corp.intel.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH] iommu/intel: SNP bit is not dependent on iommu domain
+	coherency
+Date: Mon, 06 Jan 2014 21:40:04 -0700
+Message-ID: <1389069604.3209.110.camel@bling.home>
 References: <20131029162126.23362.58786.stgit@bling.home>
- <1387821199.30327.107.camel@bling.home>
+	<1387821199.30327.107.camel@bling.home>
+	<A9667DDFB95DB7438FA9D7D576C3D87E0A9A31C2@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1387821199.30327.107.camel@bling.home>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>, David Woodhouse <dwmw2@infradead.org>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, iommu <iommu@lists.linux-foundation.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <A9667DDFB95DB7438FA9D7D576C3D87E0A9A31C2-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Zhang, Yang Z" <yang.z.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-QWxleCBXaWxsaWFtc29uIHdyb3RlIG9uIDIwMTMtMTItMjQ6DQo+IERhdmlkLA0KPiANCj4gQW55
-IGNvbW1lbnRzIG9uIHRoaXMgcGF0Y2g/ICBUaGFua3MsDQo+IA0KDQpIaSBBbGV4LA0KDQpUaGVy
-ZSBkbyBoYXZlIHNvbWUgSU9NTVVzIHdpbGwgdHJlYXQgU05QIGJpdCBpbiB0aGUgUFRFIGFzIHJl
-c2VydmVkICgwKSBhbmQgd2lsbCBjYXVzZSBhIHJlc2VydmVkIGZpZWxkIHZpb2xhdGlvbiBmYXVs
-dCBpZiBpdCBpcyBzZXQgYnV0IGhhcmR3YXJlIG5vdCBzdXBwb3J0IHNub29wLWNvbnRyb2woYml0
-IDcgaW4gRUNBUF9SRUcgaXMgMCkuIFNvIHlvdXIgcGF0Y2ggc2VlbXMgd3JvbmcgdG8gbWUuDQoN
-Cj4gQWxleA0KPiANCj4gT24gVHVlLCAyMDEzLTEwLTI5IGF0IDEwOjIxIC0wNjAwLCBBbGV4IFdp
-bGxpYW1zb24gd3JvdGU6DQo+PiBUaGUgc2V0dGluZyBvZiB0aGUgU05QIGJpdCBpbiB0aGUgaW50
-ZWwtaW9tbXUgcGFnZSB0YWJsZXMgc2hvdWxkIG5vdA0KPj4gYmUgZGVwZW5kZW50IG9uIHRoZSBj
-dXJyZW50IGNhcGFiaWxpdHkgb2YgdGhlIGlvbW11IGRvbWFpbi4gIFRoZQ0KPj4gY3VycmVudCBW
-VC1kIHNwZWMgKDIuMikgaW5kaWNhdGVzIHRoZSBTTlAgYml0IGlzICJ0cmVhdGVkIGFzDQo+PiBy
-ZXNlcnZlZFswXSBieSBoYXJkd2FyZSBpbXBsZW1lbnRhdGlvbnMgbm90IHN1cHBvcnRpbmcgU25v
-b3AgQ29udHJvbCIuDQo+PiBGdXJ0aGVybW9yZSwgc2VjdGlvbiAzLjcuMyBpbmRpY2F0ZXM6DQo+
-PiANCj4+ICAgSWYgdGhlIFNub29wIENvbnRyb2wgKFNDKSBmaWVsZCBpbiBleHRlbmRlZCBjYXBh
-YmlsaXR5IFJlZ2lzdGVyIGlzDQo+PiAgIHJlcG9ydGVkIGFzIDAsIHNub29wIGJlaGF2aW9yIGZv
-ciBhY2Nlc3MgdG8gdGhlIHBhZ2UgbWFwcGVkIHRocm91Z2gNCj4+ICAgc2Vjb25kLWxldmVsIHRy
-YW5zbGF0aW9uIGlzIGRldGVybWluZWQgYnkgdGhlIG5vLXNub29wIGF0dHJpYnV0ZSBpbg0KPj4g
-ICB0aGUgcmVxdWVzdC4NCj4+IFRoaXMgYWxsIHNlZW1zIHRvIGluZGljYXRlIHRoYXQgaGFyZHdh
-cmUgaW5jYXBhYmxlIG9mIFNub29wIENvbnRyb2wNCj4+IHdpbGwgaGFuZGxlIHRoZSBTTlAgYml0
-IGFzIHplcm8gcmVnYXJkbGVzcyBvZiB0aGUgdmFsdWUgc3RvcmVkIGluDQo+PiB0aGUgUFRFLg0K
-Pj4gDQo+PiBUaGUgdHJvdWJsZSB3aXRoIHRoZSBjdXJyZW50IGltcGxlbWVudGF0aW9uIGlzIHRo
-YXQgbWFwcGluZyBmbGFncw0KPj4gZGVwZW5kIG9uIHRoZSBzdGF0ZSBvZiB0aGUgaW9tbXUgZG9t
-YWluIGF0IHRoZSB0aW1lIG9mIHRoZSBtYXBwaW5nLA0KPj4geWV0IG5vIGF0dGVtcHQgaXMgbWFk
-ZSB0byB1cGRhdGUgZXhpc3RpbmcgbWFwcGluZ3Mgd2hlbiB0aGUgaW9tbXUNCj4+IGRvbWFpbiBj
-b21wb3NpdGlvbiBjaGFuZ2VzLiAgVGhpcyBsZWF2ZXMgdGhlIGlvbW11IGRvbWFpbiBpbiBhIHN0
-YXRlDQo+PiB3aGVyZSBzb21lIG1hcHBpbmdzIG1heSBlbmZvcmNlIGNvaGVyZW5jeSwgb3RoZXJz
-IGRvIG5vdCwgYW5kIHRoZQ0KPj4gdXNlciBvZiB0aGUgSU9NTVUgQVBJIGhhcyBubyBhYmlsaXR5
-IHRvIGxhdGVyIGVuYWJsZSB0aGUgZGVzaXJlZA0KPj4gZmxhZ3MgYXRvbWljYWxseSB3aXRoIHJl
-c3BlY3QgdG8gRE1BLg0KPj4gDQo+PiBJZiB3ZSBhbHdheXMgaG9ub3IgdGhlIElPTU1VX0NBQ0hF
-IGZsYWcgdGhlbiBhbiBJT01NVSBBUEkgdXNlciB3aG8NCj4+IHNwZWNpZmllcyBJT01NVV9DQUNI
-RSBmb3IgYWxsIG1hcHBpbmdzIGNhbiBhc3N1bWUgdGhhdCB0aGUgY29oZXJlbmN5DQo+PiBvZiB0
-aGUgbWFwcGluZ3Mgd2l0aGluIGEgZG9tYWluIGZvbGxvdyB0aGUgY29oZXJlbmN5IGNhcGFiaWxp
-dHkgb2YNCj4+IHRoZSBkb21haW4gaXRzZWxmLg0KPj4gDQo+PiBTaWduZWQtb2ZmLWJ5OiBBbGV4
-IFdpbGxpYW1zb24gPGFsZXgud2lsbGlhbXNvbkByZWRoYXQuY29tPg0KPj4gLS0tDQo+PiAgZHJp
-dmVycy9pb21tdS9pbnRlbC1pb21tdS5jIHwgICAgMiArLQ0KPj4gIDEgZmlsZSBjaGFuZ2VkLCAx
-IGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQ0KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9t
-bXUvaW50ZWwtaW9tbXUuYw0KPj4gYi9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMgaW5kZXgg
-MTVlOWI1Ny4uYzQ2YzZhNiAxMDA2NDQNCj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9t
-bXUuYw0KPj4gKysrIGIvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jDQo+PiBAQCAtNDA4NCw3
-ICs0MDg0LDcgQEAgc3RhdGljIGludCBpbnRlbF9pb21tdV9tYXAoc3RydWN0IGlvbW11X2RvbWFp
-bg0KPiAqZG9tYWluLA0KPj4gIAkJcHJvdCB8PSBETUFfUFRFX1JFQUQ7DQo+PiAgCWlmIChpb21t
-dV9wcm90ICYgSU9NTVVfV1JJVEUpDQo+PiAgCQlwcm90IHw9IERNQV9QVEVfV1JJVEU7DQo+PiAt
-CWlmICgoaW9tbXVfcHJvdCAmIElPTU1VX0NBQ0hFKSAmJiBkbWFyX2RvbWFpbi0+aW9tbXVfc25v
-b3BpbmcpDQo+PiArCWlmIChpb21tdV9wcm90ICYgSU9NTVVfQ0FDSEUpDQo+PiAgCQlwcm90IHw9
-IERNQV9QVEVfU05QOw0KPj4gIA0KPj4gIAltYXhfYWRkciA9IGlvdmEgKyBzaXplOw0KPiANCj4N
-Cg0KDQpCZXN0IHJlZ2FyZHMsDQpZYW5nDQoNCg0K
+On Tue, 2014-01-07 at 00:54 +0000, Zhang, Yang Z wrote:
+> Alex Williamson wrote on 2013-12-24:
+> > David,
+> > 
+> > Any comments on this patch?  Thanks,
+> > 
+> 
+> Hi Alex,
+> 
+> There do have some IOMMUs will treat SNP bit in the PTE as reserved
+> (0) and will cause a reserved field violation fault if it is set but
+> hardware not support snoop-control(bit 7 in ECAP_REG is 0). So your
+> patch seems wrong to me.
+
+Thanks for the reply Yang.  So effectively IOMMU_CACHE (SNP) is unusable
+on intel-iommu if we want a domain that can manage any device in the
+system, right?  We have no way to atomically change the SNP bit across a
+domain so the only chance for enabling it is if all the DRHD units
+support snoop-control, but then a hot-added DRHD makes that impossible
+to predict.  Is there any way we can make intel-iommu "do the right
+thing"?  These are rather low-level implementation details of
+intel-iommu that I'd rather not know about as a user of the IOMMU API.
+Thanks,
+
+Alex  
+
+> > On Tue, 2013-10-29 at 10:21 -0600, Alex Williamson wrote:
+> >> The setting of the SNP bit in the intel-iommu page tables should not
+> >> be dependent on the current capability of the iommu domain.  The
+> >> current VT-d spec (2.2) indicates the SNP bit is "treated as
+> >> reserved[0] by hardware implementations not supporting Snoop Control".
+> >> Furthermore, section 3.7.3 indicates:
+> >> 
+> >>   If the Snoop Control (SC) field in extended capability Register is
+> >>   reported as 0, snoop behavior for access to the page mapped through
+> >>   second-level translation is determined by the no-snoop attribute in
+> >>   the request.
+> >> This all seems to indicate that hardware incapable of Snoop Control
+> >> will handle the SNP bit as zero regardless of the value stored in
+> >> the PTE.
+> >> 
+> >> The trouble with the current implementation is that mapping flags
+> >> depend on the state of the iommu domain at the time of the mapping,
+> >> yet no attempt is made to update existing mappings when the iommu
+> >> domain composition changes.  This leaves the iommu domain in a state
+> >> where some mappings may enforce coherency, others do not, and the
+> >> user of the IOMMU API has no ability to later enable the desired
+> >> flags atomically with respect to DMA.
+> >> 
+> >> If we always honor the IOMMU_CACHE flag then an IOMMU API user who
+> >> specifies IOMMU_CACHE for all mappings can assume that the coherency
+> >> of the mappings within a domain follow the coherency capability of
+> >> the domain itself.
+> >> 
+> >> Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> >> ---
+> >>  drivers/iommu/intel-iommu.c |    2 +-
+> >>  1 file changed, 1 insertion(+), 1 deletion(-)
+> >> diff --git a/drivers/iommu/intel-iommu.c
+> >> b/drivers/iommu/intel-iommu.c index 15e9b57..c46c6a6 100644
+> >> --- a/drivers/iommu/intel-iommu.c
+> >> +++ b/drivers/iommu/intel-iommu.c
+> >> @@ -4084,7 +4084,7 @@ static int intel_iommu_map(struct iommu_domain
+> > *domain,
+> >>  		prot |= DMA_PTE_READ;
+> >>  	if (iommu_prot & IOMMU_WRITE)
+> >>  		prot |= DMA_PTE_WRITE;
+> >> -	if ((iommu_prot & IOMMU_CACHE) && dmar_domain->iommu_snooping)
+> >> +	if (iommu_prot & IOMMU_CACHE)
+> >>  		prot |= DMA_PTE_SNP;
+> >>  
+> >>  	max_addr = iova + size;
+> > 
+> >
+> 
+> 
+> Best regards,
+> Yang
+> 
+> 
