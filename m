@@ -1,8 +1,8 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part2 V1 09/14] iommu/vt-d: introduce a rwsem to protect
-	global data structures
-Date: Tue,  7 Jan 2014 17:00:29 +0800
-Message-ID: <1389085234-22296-10-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part2 V1 10/14] iommu/vt-d: use RCU to protect global
+	resources in interrupt context
+Date: Tue,  7 Jan 2014 17:00:30 +0800
+Message-ID: <1389085234-22296-11-git-send-email-jiang.liu@linux.intel.com>
 References: <1389085234-22296-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,372 +22,338 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse
 Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Introduce a global rwsem dmar_global_lock, which will be used to
-protect DMAR related global data structures from DMAR/PCI/memory
-device hotplug operations in process context.
-
-DMA and interrupt remapping related data structures are read most,
-and only change when memory/PCI/DMAR hotplug event happens.
-So a global rwsem solution is adopted for balance between simplicity
-and performance.
-
-For interrupt remapping driver, function intel_irq_remapping_supported(),
-dmar_table_init(), intel_enable_irq_remapping(), disable_irq_remapping(),
-reenable_irq_remapping() and enable_drhd_fault_handling() etc
-are called during booting, suspending and resuming with interrupt
-disabled, so no need to take the global lock.
-
-For interrupt remapping entry allocation, the locking model is:
-	down_read(&dmar_global_lock);
-	/* Find corresponding iommu */
-	iommu = map_hpet_to_ir(id);
-	if (iommu)
-		/*
-		 * Allocate remapping entry and mark entry busy,
-		 * the IOMMU won't be hot-removed until the
-		 * allocated entry has been released.
-		 */
-		index = alloc_irte(iommu, irq, 1);
-	up_read(&dmar_global_lock);
-
-For DMA remmaping driver, we only uses the dmar_global_lock rwsem to
-protect functions which are only called in process context. For any
-function which may be called in interrupt context, we will use RCU
-to protect them in following patches.
+Global DMA and interrupt remapping resources may be accessed in
+interrupt context, so use RCU instead of rwsem to protect them
+in such cases.
 
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/dmar.c                |   19 +++++-
- drivers/iommu/intel-iommu.c         |    5 ++
- drivers/iommu/intel_irq_remapping.c |  108 +++++++++++++++++++++++------------
- include/linux/dmar.h                |    2 +
- 4 files changed, 95 insertions(+), 39 deletions(-)
+ drivers/iommu/dmar.c        |   33 ++++++++++++++++++++-------------
+ drivers/iommu/intel-iommu.c |   22 ++++++++++++++++++----
+ include/linux/dmar.h        |   30 ++++++++++++++++++++----------
+ 3 files changed, 58 insertions(+), 27 deletions(-)
 
 diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index ff33866..2831442 100644
+index 2831442..31c72d5 100644
 --- a/drivers/iommu/dmar.c
 +++ b/drivers/iommu/dmar.c
-@@ -43,10 +43,19 @@
+@@ -71,13 +71,13 @@ static void __init dmar_register_drhd_unit(struct dmar_drhd_unit *drhd)
+ 	 * the very end.
+ 	 */
+ 	if (drhd->include_all)
+-		list_add_tail(&drhd->list, &dmar_drhd_units);
++		list_add_tail_rcu(&drhd->list, &dmar_drhd_units);
+ 	else
+-		list_add(&drhd->list, &dmar_drhd_units);
++		list_add_rcu(&drhd->list, &dmar_drhd_units);
+ }
  
- #include "irq_remapping.h"
- 
--/* No locks are needed as DMA remapping hardware unit
-- * list is constructed at boot time and hotplug of
-- * these units are not supported by the architecture.
-+/*
-+ * Assumptions:
-+ * 1) The hotplug framework guarentees that DMAR unit will be hot-added
-+ *    before IO devices managed by that unit.
-+ * 2) The hotplug framework guarantees that DMAR unit will be hot-removed
-+ *    after IO devices managed by that unit.
-+ * 3) Hotplug events are rare.
-+ *
-+ * Locking rules for DMA and interrupt remapping related global data structures:
-+ * 1) Use dmar_global_lock in process context
-+ * 2) Use RCU in interrupt context
-  */
-+DECLARE_RWSEM(dmar_global_lock);
- LIST_HEAD(dmar_drhd_units);
- 
- struct acpi_table_header * __initdata dmar_tbl;
-@@ -565,6 +574,7 @@ static int __init detect_intel_iommu(void)
+ static int __init dmar_parse_one_dev_scope(struct acpi_dmar_device_scope *scope,
+-					   struct pci_dev **dev, u16 segment)
++					   struct pci_dev __rcu **dev, u16 segment)
  {
- 	int ret;
- 
-+	down_write(&dmar_global_lock);
- 	ret = dmar_table_detect();
- 	if (ret)
- 		ret = check_zero_address();
-@@ -582,6 +592,7 @@ static int __init detect_intel_iommu(void)
+ 	struct pci_bus *bus;
+ 	struct pci_dev *pdev = NULL;
+@@ -122,7 +122,9 @@ static int __init dmar_parse_one_dev_scope(struct acpi_dmar_device_scope *scope,
+ 			pci_name(pdev));
+ 		return -EINVAL;
  	}
- 	early_acpi_os_unmap_memory((void __iomem *)dmar_tbl, dmar_tbl_size);
- 	dmar_tbl = NULL;
-+	up_write(&dmar_global_lock);
- 
- 	return ret ? 1 : -ENODEV;
- }
-@@ -1394,10 +1405,12 @@ static int __init dmar_free_unused_resources(void)
- 	if (irq_remapping_enabled || intel_iommu_enabled)
- 		return 0;
- 
-+	down_write(&dmar_global_lock);
- 	list_for_each_entry_safe(dmaru, dmaru_n, &dmar_drhd_units, list) {
- 		list_del(&dmaru->list);
- 		dmar_free_drhd(dmaru);
- 	}
-+	up_write(&dmar_global_lock);
- 
+-	*dev = pdev;
++
++	rcu_assign_pointer(*dev, pdev);
++
  	return 0;
  }
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 7e043ca..25e9b84 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3627,6 +3627,7 @@ static int device_notifier(struct notifier_block *nb,
- 	if (!domain)
- 		return 0;
  
-+	down_read(&dmar_global_lock);
- 	if (action == BUS_NOTIFY_UNBOUND_DRIVER && !iommu_pass_through) {
- 		domain_remove_one_dev_info(domain, pdev);
+@@ -149,7 +151,7 @@ void *dmar_alloc_dev_scope(void *start, void *end, int *cnt)
+ }
  
-@@ -3635,6 +3636,7 @@ static int device_notifier(struct notifier_block *nb,
- 		    list_empty(&domain->devices))
- 			domain_exit(domain);
- 	}
-+	up_read(&dmar_global_lock);
- 
+ int __init dmar_parse_dev_scope(void *start, void *end, int *cnt,
+-				struct pci_dev ***devices, u16 segment)
++				struct pci_dev __rcu ***devices, u16 segment)
+ {
+ 	struct acpi_dmar_device_scope *scope;
+ 	int index, ret;
+@@ -177,7 +179,7 @@ int __init dmar_parse_dev_scope(void *start, void *end, int *cnt,
  	return 0;
  }
-@@ -3652,6 +3654,7 @@ int __init intel_iommu_init(void)
- 	/* VT-d is required for a TXT/tboot launch, so enforce that */
- 	force_on = tboot_force_iommu();
  
-+	down_write(&dmar_global_lock);
- 	if (dmar_table_init()) {
- 		if (force_on)
- 			panic("tboot: Failed to initialize DMAR table\n");
-@@ -3701,6 +3704,7 @@ int __init intel_iommu_init(void)
- 		printk(KERN_ERR "IOMMU: dmar init failed\n");
- 		goto out_free_reserved_range;
+-void dmar_free_dev_scope(struct pci_dev ***devices, int *cnt)
++void dmar_free_dev_scope(struct pci_dev __rcu ***devices, int *cnt)
+ {
+ 	int i;
+ 	struct pci_dev *tmp_dev;
+@@ -186,9 +188,10 @@ void dmar_free_dev_scope(struct pci_dev ***devices, int *cnt)
+ 		for_each_active_dev_scope(*devices, *cnt, i, tmp_dev)
+ 			pci_dev_put(tmp_dev);
+ 		kfree(*devices);
+-		*devices = NULL;
+-		*cnt = 0;
  	}
-+	up_write(&dmar_global_lock);
- 	printk(KERN_INFO
- 	"PCI-DMA: Intel(R) Virtualization Technology for Directed I/O\n");
++
++	*devices = NULL;
++	*cnt = 0;
+ }
  
-@@ -3726,6 +3730,7 @@ out_free_mempool:
- 	iommu_exit_mempool();
- out_free_dmar:
- 	intel_iommu_free_dmars();
-+	up_write(&dmar_global_lock);
+ /**
+@@ -410,7 +413,7 @@ parse_dmar_table(void)
  	return ret;
  }
  
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index f307a3f..009a2bb 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -38,6 +38,17 @@ static struct ioapic_scope ir_ioapic[MAX_IO_APICS];
- static struct hpet_scope ir_hpet[MAX_HPET_TBS];
- static int ir_ioapic_num, ir_hpet_num;
- 
-+/*
-+ * Lock ordering:
-+ * ->dmar_global_lock
-+ *	->irq_2_ir_lock
-+ *		->qi->q_lock
-+ *	->iommu->register_lock
-+ * Note:
-+ * intel_irq_remap_ops.{supported,prepare,enable,disable,reenable} are called
-+ * in single-threaded environment with interrupt disabled, so no need to tabke
-+ * the dmar_global_lock.
-+ */
- static DEFINE_RAW_SPINLOCK(irq_2_ir_lock);
- 
- static int __init parse_ioapics_under_ir(void);
-@@ -312,12 +323,14 @@ static int set_ioapic_sid(struct irte *irte, int apic)
- 	if (!irte)
- 		return -1;
- 
-+	down_read(&dmar_global_lock);
- 	for (i = 0; i < MAX_IO_APICS; i++) {
- 		if (ir_ioapic[i].id == apic) {
- 			sid = (ir_ioapic[i].bus << 8) | ir_ioapic[i].devfn;
- 			break;
- 		}
- 	}
-+	up_read(&dmar_global_lock);
- 
- 	if (sid == 0) {
- 		pr_warning("Failed to set source-id of IOAPIC (%d)\n", apic);
-@@ -337,12 +350,14 @@ static int set_hpet_sid(struct irte *irte, u8 id)
- 	if (!irte)
- 		return -1;
- 
-+	down_read(&dmar_global_lock);
- 	for (i = 0; i < MAX_HPET_TBS; i++) {
- 		if (ir_hpet[i].id == id) {
- 			sid = (ir_hpet[i].bus << 8) | ir_hpet[i].devfn;
- 			break;
- 		}
- 	}
-+	up_read(&dmar_global_lock);
- 
- 	if (sid == 0) {
- 		pr_warning("Failed to set source-id of HPET block (%d)\n", id);
-@@ -799,10 +814,16 @@ static int __init parse_ioapics_under_ir(void)
- 
- static int __init ir_dev_scope_init(void)
+-static int dmar_pci_device_match(struct pci_dev *devices[], int cnt,
++static int dmar_pci_device_match(struct pci_dev __rcu *devices[], int cnt,
+ 			  struct pci_dev *dev)
  {
-+	int ret;
+ 	int index;
+@@ -431,11 +434,12 @@ static int dmar_pci_device_match(struct pci_dev *devices[], int cnt,
+ struct dmar_drhd_unit *
+ dmar_find_matched_drhd_unit(struct pci_dev *dev)
+ {
+-	struct dmar_drhd_unit *dmaru = NULL;
++	struct dmar_drhd_unit *dmaru;
+ 	struct acpi_dmar_hardware_unit *drhd;
+ 
+ 	dev = pci_physfn(dev);
+ 
++	rcu_read_lock();
+ 	for_each_drhd_unit(dmaru) {
+ 		drhd = container_of(dmaru->hdr,
+ 				    struct acpi_dmar_hardware_unit,
+@@ -443,14 +447,17 @@ dmar_find_matched_drhd_unit(struct pci_dev *dev)
+ 
+ 		if (dmaru->include_all &&
+ 		    drhd->segment == pci_domain_nr(dev->bus))
+-			return dmaru;
++			goto out;
+ 
+ 		if (dmar_pci_device_match(dmaru->devices,
+ 					  dmaru->devices_cnt, dev))
+-			return dmaru;
++			goto out;
+ 	}
++	dmaru = NULL;
++out:
++	rcu_read_unlock();
+ 
+-	return NULL;
++	return dmaru;
+ }
+ 
+ int __init dmar_dev_scope_init(void)
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 25e9b84..91ecb95 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -385,14 +385,14 @@ struct dmar_rmrr_unit {
+ 	struct acpi_dmar_header *hdr;	/* ACPI header		*/
+ 	u64	base_address;		/* reserved base address*/
+ 	u64	end_address;		/* reserved end address */
+-	struct pci_dev **devices;	/* target devices */
++	struct pci_dev __rcu **devices;	/* target devices */
+ 	int	devices_cnt;		/* target device count */
+ };
+ 
+ struct dmar_atsr_unit {
+ 	struct list_head list;		/* list of ATSR units */
+ 	struct acpi_dmar_header *hdr;	/* ACPI header */
+-	struct pci_dev **devices;	/* target devices */
++	struct pci_dev __rcu **devices;	/* target devices */
+ 	int devices_cnt;		/* target device count */
+ 	u8 include_all:1;		/* include all ports */
+ };
+@@ -632,12 +632,15 @@ static void domain_update_iommu_superpage(struct dmar_domain *domain)
+ 	}
+ 
+ 	/* set iommu_superpage to the smallest common denominator */
++	rcu_read_lock();
+ 	for_each_active_iommu(iommu, drhd) {
+ 		mask &= cap_super_page_val(iommu->cap);
+ 		if (!mask) {
+ 			break;
+ 		}
+ 	}
++	rcu_read_unlock();
 +
- 	if (!irq_remapping_enabled)
+ 	domain->iommu_superpage = fls(mask);
+ }
+ 
+@@ -656,6 +659,7 @@ static struct intel_iommu *device_to_iommu(int segment, u8 bus, u8 devfn)
+ 	struct pci_dev *dev;
+ 	int i;
+ 
++	rcu_read_lock();
+ 	for_each_active_iommu(iommu, drhd) {
+ 		if (segment != drhd->segment)
+ 			continue;
+@@ -675,6 +679,7 @@ static struct intel_iommu *device_to_iommu(int segment, u8 bus, u8 devfn)
+ 	}
+ 	iommu = NULL;
+ out:
++	rcu_read_unlock();
+ 
+ 	return iommu;
+ }
+@@ -1538,9 +1543,11 @@ static void domain_exit(struct dmar_domain *domain)
+ 	/* free page tables */
+ 	dma_pte_free_pagetable(domain, 0, DOMAIN_MAX_PFN(domain->gaw));
+ 
++	rcu_read_lock();
+ 	for_each_active_iommu(iommu, drhd)
+ 		if (test_bit(iommu->seq_id, domain->iommu_bmp))
+ 			iommu_detach_domain(domain, iommu);
++	rcu_read_unlock();
+ 
+ 	free_domain_mem(domain);
+ }
+@@ -2334,6 +2341,7 @@ static bool device_has_rmrr(struct pci_dev *dev)
+ 	struct pci_dev *tmp;
+ 	int i;
+ 
++	rcu_read_lock();
+ 	for_each_rmrr_units(rmrr) {
+ 		/*
+ 		 * Return TRUE if this RMRR contains the device that
+@@ -2342,9 +2350,11 @@ static bool device_has_rmrr(struct pci_dev *dev)
+ 		for_each_active_dev_scope(rmrr->devices,
+ 					  rmrr->devices_cnt, i, tmp)
+ 			if (tmp == dev) {
++				rcu_read_unlock();
+ 				return true;
+ 			}
+ 	}
++	rcu_read_unlock();
+ 	return false;
+ }
+ 
+@@ -3506,7 +3516,7 @@ int __init dmar_parse_one_atsr(struct acpi_dmar_header *hdr)
+ 	atsru->hdr = hdr;
+ 	atsru->include_all = atsr->flags & 0x1;
+ 
+-	list_add(&atsru->list, &dmar_atsr_units);
++	list_add_rcu(&atsru->list, &dmar_atsr_units);
+ 
+ 	return 0;
+ }
+@@ -3568,6 +3578,7 @@ int dmar_find_matched_atsr_unit(struct pci_dev *dev)
+ 	if (!bridge)
  		return 0;
  
--	return dmar_dev_scope_init();
-+	down_write(&dmar_global_lock);
-+	ret = dmar_dev_scope_init();
-+	up_write(&dmar_global_lock);
-+
-+	return ret;
- }
- rootfs_initcall(ir_dev_scope_init);
- 
-@@ -883,23 +904,27 @@ static int intel_setup_ioapic_entry(int irq,
- 				    struct io_apic_irq_attr *attr)
- {
- 	int ioapic_id = mpc_ioapic_id(attr->ioapic);
--	struct intel_iommu *iommu = map_ioapic_to_ir(ioapic_id);
-+	struct intel_iommu *iommu;
- 	struct IR_IO_APIC_route_entry *entry;
- 	struct irte irte;
- 	int index;
- 
-+	down_read(&dmar_global_lock);
-+	iommu = map_ioapic_to_ir(ioapic_id);
- 	if (!iommu) {
- 		pr_warn("No mapping iommu for ioapic %d\n", ioapic_id);
--		return -ENODEV;
--	}
--
--	entry = (struct IR_IO_APIC_route_entry *)route_entry;
--
--	index = alloc_irte(iommu, irq, 1);
--	if (index < 0) {
--		pr_warn("Failed to allocate IRTE for ioapic %d\n", ioapic_id);
--		return -ENOMEM;
-+		index = -ENODEV;
-+	} else {
-+		index = alloc_irte(iommu, irq, 1);
-+		if (index < 0) {
-+			pr_warn("Failed to allocate IRTE for ioapic %d\n",
-+				ioapic_id);
-+			index = -ENOMEM;
-+		}
++	rcu_read_lock();
+ 	list_for_each_entry_rcu(atsru, &dmar_atsr_units, list) {
+ 		atsr = container_of(atsru->hdr, struct acpi_dmar_atsr, header);
+ 		if (atsr->segment != pci_domain_nr(dev->bus))
+@@ -3582,6 +3593,7 @@ int dmar_find_matched_atsr_unit(struct pci_dev *dev)
  	}
-+	up_read(&dmar_global_lock);
-+	if (index < 0)
-+		return index;
+ 	ret = 0;
+ out:
++	rcu_read_unlock();
  
- 	prepare_irte(&irte, vector, destination);
- 
-@@ -918,6 +943,7 @@ static int intel_setup_ioapic_entry(int irq,
- 		irte.avail, irte.vector, irte.dest_id,
- 		irte.sid, irte.sq, irte.svt);
- 
-+	entry = (struct IR_IO_APIC_route_entry *)route_entry;
- 	memset(entry, 0, sizeof(*entry));
- 
- 	entry->index2	= (index >> 15) & 0x1;
-@@ -1048,20 +1074,23 @@ static int intel_msi_alloc_irq(struct pci_dev *dev, int irq, int nvec)
- 	struct intel_iommu *iommu;
- 	int index;
- 
-+	down_read(&dmar_global_lock);
- 	iommu = map_dev_to_ir(dev);
- 	if (!iommu) {
- 		printk(KERN_ERR
- 		       "Unable to map PCI %s to iommu\n", pci_name(dev));
--		return -ENOENT;
-+		index = -ENOENT;
-+	} else {
-+		index = alloc_irte(iommu, irq, nvec);
-+		if (index < 0) {
-+			printk(KERN_ERR
-+			       "Unable to allocate %d IRTE for PCI %s\n",
-+			       nvec, pci_name(dev));
-+			index = -ENOSPC;
-+		}
+ 	return ret;
+ }
+@@ -3598,7 +3610,7 @@ int __init dmar_parse_rmrr_atsr_dev(void)
+ 			return ret;
  	}
-+	up_read(&dmar_global_lock);
  
--	index = alloc_irte(iommu, irq, nvec);
--	if (index < 0) {
--		printk(KERN_ERR
--		       "Unable to allocate %d IRTE for PCI %s\n", nvec,
--		       pci_name(dev));
--		return -ENOSPC;
--	}
- 	return index;
+-	list_for_each_entry(atsr, &dmar_atsr_units, list) {
++	list_for_each_entry_rcu(atsr, &dmar_atsr_units, list) {
+ 		ret = atsr_parse_dev(atsr);
+ 		if (ret)
+ 			return ret;
+@@ -3915,6 +3927,7 @@ static void iommu_free_vm_domain(struct dmar_domain *domain)
+ 	unsigned long i;
+ 	unsigned long ndomains;
+ 
++	rcu_read_lock();
+ 	for_each_active_iommu(iommu, drhd) {
+ 		ndomains = cap_ndoms(iommu->cap);
+ 		for_each_set_bit(i, iommu->domain_ids, ndomains) {
+@@ -3927,6 +3940,7 @@ static void iommu_free_vm_domain(struct dmar_domain *domain)
+ 			}
+ 		}
+ 	}
++	rcu_read_unlock();
  }
  
-@@ -1069,33 +1098,40 @@ static int intel_msi_setup_irq(struct pci_dev *pdev, unsigned int irq,
- 			       int index, int sub_handle)
- {
- 	struct intel_iommu *iommu;
-+	int ret = -ENOENT;
- 
-+	down_read(&dmar_global_lock);
- 	iommu = map_dev_to_ir(pdev);
--	if (!iommu)
--		return -ENOENT;
--	/*
--	 * setup the mapping between the irq and the IRTE
--	 * base index, the sub_handle pointing to the
--	 * appropriate interrupt remap table entry.
--	 */
--	set_irte_irq(irq, iommu, index, sub_handle);
-+	if (iommu) {
-+		/*
-+		 * setup the mapping between the irq and the IRTE
-+		 * base index, the sub_handle pointing to the
-+		 * appropriate interrupt remap table entry.
-+		 */
-+		set_irte_irq(irq, iommu, index, sub_handle);
-+		ret = 0;
-+	}
-+	up_read(&dmar_global_lock);
- 
--	return 0;
-+	return ret;
- }
- 
- static int intel_setup_hpet_msi(unsigned int irq, unsigned int id)
- {
--	struct intel_iommu *iommu = map_hpet_to_ir(id);
-+	int ret = -1;
-+	struct intel_iommu *iommu;
- 	int index;
- 
--	if (!iommu)
--		return -1;
--
--	index = alloc_irte(iommu, irq, 1);
--	if (index < 0)
--		return -1;
-+	down_read(&dmar_global_lock);
-+	iommu = map_hpet_to_ir(id);
-+	if (iommu) {
-+		index = alloc_irte(iommu, irq, 1);
-+		if (index >= 0)
-+			ret = 0;
-+	}
-+	up_read(&dmar_global_lock);
- 
--	return 0;
-+	return ret;
- }
- 
- struct irq_remap_ops intel_irq_remap_ops = {
+ static void vm_domain_exit(struct dmar_domain *domain)
 diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index 8aa7561..9572a4f 100644
+index 9572a4f..3e42960 100644
 --- a/include/linux/dmar.h
 +++ b/include/linux/dmar.h
-@@ -25,6 +25,7 @@
- #include <linux/types.h>
+@@ -26,6 +26,7 @@
  #include <linux/msi.h>
  #include <linux/irqreturn.h>
-+#include <linux/rwsem.h>
+ #include <linux/rwsem.h>
++#include <linux/rcupdate.h>
  
  struct acpi_dmar_header;
  
-@@ -48,6 +49,7 @@ struct dmar_drhd_unit {
- 	struct intel_iommu *iommu;
- };
- 
-+extern struct rw_semaphore dmar_global_lock;
+@@ -41,7 +42,7 @@ struct dmar_drhd_unit {
+ 	struct list_head list;		/* list of drhd units	*/
+ 	struct  acpi_dmar_header *hdr;	/* ACPI header		*/
+ 	u64	reg_base_addr;		/* register base address*/
+-	struct	pci_dev **devices; 	/* target device array	*/
++	struct	pci_dev __rcu **devices;/* target device array	*/
+ 	int	devices_cnt;		/* target device count	*/
+ 	u16	segment;		/* PCI domain		*/
+ 	u8	ignored:1; 		/* ignore drhd		*/
+@@ -53,22 +54,31 @@ extern struct rw_semaphore dmar_global_lock;
  extern struct list_head dmar_drhd_units;
  
  #define for_each_drhd_unit(drhd) \
+-	list_for_each_entry(drhd, &dmar_drhd_units, list)
++	list_for_each_entry_rcu(drhd, &dmar_drhd_units, list)
+ 
+ #define for_each_active_drhd_unit(drhd)					\
+-	list_for_each_entry(drhd, &dmar_drhd_units, list)		\
++	list_for_each_entry_rcu(drhd, &dmar_drhd_units, list)		\
+ 		if (drhd->ignored) {} else
+ 
+ #define for_each_active_iommu(i, drhd)					\
+-	list_for_each_entry(drhd, &dmar_drhd_units, list)		\
++	list_for_each_entry_rcu(drhd, &dmar_drhd_units, list)		\
+ 		if (i=drhd->iommu, drhd->ignored) {} else
+ 
+ #define for_each_iommu(i, drhd)						\
+-	list_for_each_entry(drhd, &dmar_drhd_units, list)		\
++	list_for_each_entry_rcu(drhd, &dmar_drhd_units, list)		\
+ 		if (i=drhd->iommu, 0) {} else 
+ 
++static inline bool dmar_rcu_check(void)
++{
++	return rwsem_is_locked(&dmar_global_lock) ||
++	       system_state == SYSTEM_BOOTING;
++}
++
++#define	dmar_rcu_dereference(p)	rcu_dereference_check((p), dmar_rcu_check())
++
+ #define	for_each_dev_scope(a, c, p, d)	\
+-	for ((p) = 0; ((d) = (p) < (c) ? (a)[(p)] : NULL, (p) < (c)); (p)++)
++	for ((p) = 0; ((d) = (p) < (c) ? dmar_rcu_dereference((a)[(p)]) : \
++			NULL, (p) < (c)); (p)++)
+ 
+ #define	for_each_active_dev_scope(a, c, p, d)	\
+ 	for_each_dev_scope((a), (c), (p), (d))	if (!(d)) { continue; } else
+@@ -76,6 +86,10 @@ extern struct list_head dmar_drhd_units;
+ extern int dmar_table_init(void);
+ extern int dmar_dev_scope_init(void);
+ extern int enable_drhd_fault_handling(void);
++extern void *dmar_alloc_dev_scope(void *start, void *end, int *cnt);
++extern int dmar_parse_dev_scope(void *start, void *end, int *cnt,
++				struct pci_dev __rcu ***devices, u16 segment);
++extern void dmar_free_dev_scope(struct pci_dev __rcu ***devices, int *cnt);
+ #else
+ static inline int dmar_table_init(void)
+ {
+@@ -138,10 +152,6 @@ extern int iommu_detected, no_iommu;
+ extern int dmar_parse_rmrr_atsr_dev(void);
+ extern int dmar_parse_one_rmrr(struct acpi_dmar_header *header);
+ extern int dmar_parse_one_atsr(struct acpi_dmar_header *header);
+-extern void *dmar_alloc_dev_scope(void *start, void *end, int *cnt);
+-extern int dmar_parse_dev_scope(void *start, void *end, int *cnt,
+-				struct pci_dev ***devices, u16 segment);
+-extern void dmar_free_dev_scope(struct pci_dev ***devices, int *cnt);
+ extern int intel_iommu_init(void);
+ #else /* !CONFIG_INTEL_IOMMU: */
+ static inline int intel_iommu_init(void) { return -ENODEV; }
 -- 
 1.7.10.4
