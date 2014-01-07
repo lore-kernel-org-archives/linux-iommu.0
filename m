@@ -1,8 +1,7 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part2 V1 06/14] iommu/vt-d: fix incorrect iommu_count for
-	si_domain
-Date: Tue,  7 Jan 2014 17:00:26 +0800
-Message-ID: <1389085234-22296-7-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part2 V1 07/14] iommu/vt-d: fix error in detect ATS capability
+Date: Tue,  7 Jan 2014 17:00:27 +0800
+Message-ID: <1389085234-22296-8-git-send-email-jiang.liu@linux.intel.com>
 References: <1389085234-22296-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,259 +21,193 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse
 Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The iommu_count for si_domain (static identity) is always zero,
-which will cause trouble when trying to tear down si_domain.
+Current Intel IOMMU driver only matches a PCIe root port with the first
+DRHD unit with the samge segment number. It will report false result
+if there are multiple DRHD units with the same segment number, thus fail
+to detect ATS capability for some PCIe devices.
 
-[   14.609681] IOMMU: Setting RMRR:
-[   14.613496] Ignoring identity map for HW passthrough device 0000:00:1a.0 [0xbdcfd000 - 0xbdd1dfff]
-[   14.623809] Ignoring identity map for HW passthrough device 0000:00:1d.0 [0xbdcfd000 - 0xbdd1dfff]
-[   14.634162] IOMMU: Prepare 0-16MiB unity mapping for LPC
-[   14.640329] Ignoring identity map for HW passthrough device 0000:00:1f.0 [0x0 - 0xffffff]
-[   14.673360] IOMMU: dmar init failed
-[   14.678157] kmem_cache_destroy iommu_devinfo: Slab cache still has objects
-[   14.686076] CPU: 12 PID: 1 Comm: swapper/0 Not tainted 3.13.0-rc1-gerry+ #59
-[   14.694176] Hardware name: Intel Corporation LH Pass ........../SVRBD-ROW_T, BIOS SE5C600.86B.99.99.x059.091020121352 09/10/2012
-[   14.707412]  0000000000000000 ffff88042dd33db0 ffffffff8156223d ffff880c2cc37c00
-[   14.716407]  ffff88042dd33dc8 ffffffff811790b1 ffff880c2d3533b8 ffff88042dd33e00
-[   14.725468]  ffffffff81dc7a6a ffffffff81b1e8e0 ffffffff81f84058 ffffffff81d8a711
-[   14.734464] Call Trace:
-[   14.737453]  [<ffffffff8156223d>] dump_stack+0x4d/0x66
-[   14.743430]  [<ffffffff811790b1>] kmem_cache_destroy+0xf1/0x100
-[   14.750279]  [<ffffffff81dc7a6a>] intel_iommu_init+0x122/0x56a
-[   14.757035]  [<ffffffff81d8a711>] ? iommu_setup+0x27d/0x27d
-[   14.763491]  [<ffffffff81d8a739>] pci_iommu_init+0x28/0x52
-[   14.769846]  [<ffffffff81000342>] do_one_initcall+0x122/0x180
-[   14.776506]  [<ffffffff81077738>] ? parse_args+0x1e8/0x320
-[   14.782866]  [<ffffffff81d850e8>] kernel_init_freeable+0x1e1/0x26c
-[   14.789994]  [<ffffffff81d84833>] ? do_early_param+0x88/0x88
-[   14.796556]  [<ffffffff8154ffc0>] ? rest_init+0xd0/0xd0
-[   14.802626]  [<ffffffff8154ffce>] kernel_init+0xe/0x130
-[   14.808698]  [<ffffffff815756ac>] ret_from_fork+0x7c/0xb0
-[   14.814963]  [<ffffffff8154ffc0>] ? rest_init+0xd0/0xd0
-[   14.821640] kmem_cache_destroy iommu_domain: Slab cache still has objects
-[   14.829456] CPU: 12 PID: 1 Comm: swapper/0 Not tainted 3.13.0-rc1-gerry+ #59
-[   14.837562] Hardware name: Intel Corporation LH Pass ........../SVRBD-ROW_T, BIOS SE5C600.86B.99.99.x059.091020121352 09/10/2012
-[   14.850803]  0000000000000000 ffff88042dd33db0 ffffffff8156223d ffff88102c1ee3c0
-[   14.861222]  ffff88042dd33dc8 ffffffff811790b1 ffff880c2d3533b8 ffff88042dd33e00
-[   14.870284]  ffffffff81dc7a76 ffffffff81b1e8e0 ffffffff81f84058 ffffffff81d8a711
-[   14.879271] Call Trace:
-[   14.882227]  [<ffffffff8156223d>] dump_stack+0x4d/0x66
-[   14.888197]  [<ffffffff811790b1>] kmem_cache_destroy+0xf1/0x100
-[   14.895034]  [<ffffffff81dc7a76>] intel_iommu_init+0x12e/0x56a
-[   14.901781]  [<ffffffff81d8a711>] ? iommu_setup+0x27d/0x27d
-[   14.908238]  [<ffffffff81d8a739>] pci_iommu_init+0x28/0x52
-[   14.914594]  [<ffffffff81000342>] do_one_initcall+0x122/0x180
-[   14.921244]  [<ffffffff81077738>] ? parse_args+0x1e8/0x320
-[   14.927598]  [<ffffffff81d850e8>] kernel_init_freeable+0x1e1/0x26c
-[   14.934738]  [<ffffffff81d84833>] ? do_early_param+0x88/0x88
-[   14.941309]  [<ffffffff8154ffc0>] ? rest_init+0xd0/0xd0
-[   14.947380]  [<ffffffff8154ffce>] kernel_init+0xe/0x130
-[   14.953430]  [<ffffffff815756ac>] ret_from_fork+0x7c/0xb0
-[   14.959689]  [<ffffffff8154ffc0>] ? rest_init+0xd0/0xd0
-[   14.966299] kmem_cache_destroy iommu_iova: Slab cache still has objects
-[   14.973923] CPU: 12 PID: 1 Comm: swapper/0 Not tainted 3.13.0-rc1-gerry+ #59
-[   14.982020] Hardware name: Intel Corporation LH Pass ........../SVRBD-ROW_T, BIOS SE5C600.86B.99.99.x059.091020121352 09/10/2012
-[   14.995263]  0000000000000000 ffff88042dd33db0 ffffffff8156223d ffff88042cb5c980
-[   15.004265]  ffff88042dd33dc8 ffffffff811790b1 ffff880c2d3533b8 ffff88042dd33e00
-[   15.013322]  ffffffff81dc7a82 ffffffff81b1e8e0 ffffffff81f84058 ffffffff81d8a711
-[   15.022318] Call Trace:
-[   15.025238]  [<ffffffff8156223d>] dump_stack+0x4d/0x66
-[   15.031202]  [<ffffffff811790b1>] kmem_cache_destroy+0xf1/0x100
-[   15.038038]  [<ffffffff81dc7a82>] intel_iommu_init+0x13a/0x56a
-[   15.044786]  [<ffffffff81d8a711>] ? iommu_setup+0x27d/0x27d
-[   15.051242]  [<ffffffff81d8a739>] pci_iommu_init+0x28/0x52
-[   15.057601]  [<ffffffff81000342>] do_one_initcall+0x122/0x180
-[   15.064254]  [<ffffffff81077738>] ? parse_args+0x1e8/0x320
-[   15.070608]  [<ffffffff81d850e8>] kernel_init_freeable+0x1e1/0x26c
-[   15.077747]  [<ffffffff81d84833>] ? do_early_param+0x88/0x88
-[   15.084300]  [<ffffffff8154ffc0>] ? rest_init+0xd0/0xd0
-[   15.090362]  [<ffffffff8154ffce>] kernel_init+0xe/0x130
-[   15.096431]  [<ffffffff815756ac>] ret_from_fork+0x7c/0xb0
-[   15.102693]  [<ffffffff8154ffc0>] ? rest_init+0xd0/0xd0
-[   15.189273] PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
+This patch refines function dmar_find_matched_atsr_unit() to search all
+DRHD units with the same segment number.
+
+An example DMAR table entries as below:
+[1D0h 0464  2]                Subtable Type : 0002 <Root Port ATS Capability>
+[1D2h 0466  2]                       Length : 0028
+[1D4h 0468  1]                        Flags : 00
+[1D5h 0469  1]                     Reserved : 00
+[1D6h 0470  2]           PCI Segment Number : 0000
+
+[1D8h 0472  1]      Device Scope Entry Type : 02
+[1D9h 0473  1]                 Entry Length : 08
+[1DAh 0474  2]                     Reserved : 0000
+[1DCh 0476  1]               Enumeration ID : 00
+[1DDh 0477  1]               PCI Bus Number : 00
+[1DEh 0478  2]                     PCI Path : [02, 00]
+
+[1E0h 0480  1]      Device Scope Entry Type : 02
+[1E1h 0481  1]                 Entry Length : 08
+[1E2h 0482  2]                     Reserved : 0000
+[1E4h 0484  1]               Enumeration ID : 00
+[1E5h 0485  1]               PCI Bus Number : 00
+[1E6h 0486  2]                     PCI Path : [03, 00]
+
+[1E8h 0488  1]      Device Scope Entry Type : 02
+[1E9h 0489  1]                 Entry Length : 08
+[1EAh 0490  2]                     Reserved : 0000
+[1ECh 0492  1]               Enumeration ID : 00
+[1EDh 0493  1]               PCI Bus Number : 00
+[1EEh 0494  2]                     PCI Path : [03, 02]
+
+[1F0h 0496  1]      Device Scope Entry Type : 02
+[1F1h 0497  1]                 Entry Length : 08
+[1F2h 0498  2]                     Reserved : 0000
+[1F4h 0500  1]               Enumeration ID : 00
+[1F5h 0501  1]               PCI Bus Number : 00
+[1F6h 0502  2]                     PCI Path : [03, 03]
+
+[1F8h 0504  2]                Subtable Type : 0002 <Root Port ATS Capability>
+[1FAh 0506  2]                       Length : 0020
+[1FCh 0508  1]                        Flags : 00
+[1FDh 0509  1]                     Reserved : 00
+[1FEh 0510  2]           PCI Segment Number : 0000
+
+[200h 0512  1]      Device Scope Entry Type : 02
+[201h 0513  1]                 Entry Length : 08
+[202h 0514  2]                     Reserved : 0000
+[204h 0516  1]               Enumeration ID : 00
+[205h 0517  1]               PCI Bus Number : 40
+[206h 0518  2]                     PCI Path : [02, 00]
+
+[208h 0520  1]      Device Scope Entry Type : 02
+[209h 0521  1]                 Entry Length : 08
+[20Ah 0522  2]                     Reserved : 0000
+[20Ch 0524  1]               Enumeration ID : 00
+[20Dh 0525  1]               PCI Bus Number : 40
+[20Eh 0526  2]                     PCI Path : [02, 02]
+
+[210h 0528  1]      Device Scope Entry Type : 02
+[211h 0529  1]                 Entry Length : 08
+[212h 0530  2]                     Reserved : 0000
+[214h 0532  1]               Enumeration ID : 00
+[215h 0533  1]               PCI Bus Number : 40
+[216h 0534  2]                     PCI Path : [03, 00]
+
+[218h 0536  2]                Subtable Type : 0002 <Root Port ATS Capability>
+[21Ah 0538  2]                       Length : 0020
+[21Ch 0540  1]                        Flags : 00
+[21Dh 0541  1]                     Reserved : 00
+[21Eh 0542  2]           PCI Segment Number : 0000
+
+[220h 0544  1]      Device Scope Entry Type : 02
+[221h 0545  1]                 Entry Length : 08
+[222h 0546  2]                     Reserved : 0000
+[224h 0548  1]               Enumeration ID : 00
+[225h 0549  1]               PCI Bus Number : 80
+[226h 0550  2]                     PCI Path : [02, 00]
+
+[228h 0552  1]      Device Scope Entry Type : 02
+[229h 0553  1]                 Entry Length : 08
+[22Ah 0554  2]                     Reserved : 0000
+[22Ch 0556  1]               Enumeration ID : 00
+[22Dh 0557  1]               PCI Bus Number : 80
+[22Eh 0558  2]                     PCI Path : [02, 02]
+
+[230h 0560  1]      Device Scope Entry Type : 02
+[231h 0561  1]                 Entry Length : 08
+[232h 0562  2]                     Reserved : 0000
+[234h 0564  1]               Enumeration ID : 00
+[235h 0565  1]               PCI Bus Number : 80
+[236h 0566  2]                     PCI Path : [03, 00]
+
+[238h 0568  2]                Subtable Type : 0002 <Root Port ATS Capability>
+[23Ah 0570  2]                       Length : 0020
+[23Ch 0572  1]                        Flags : 00
+[23Dh 0573  1]                     Reserved : 00
+[23Eh 0574  2]           PCI Segment Number : 0000
+
+[240h 0576  1]      Device Scope Entry Type : 02
+[241h 0577  1]                 Entry Length : 08
+[242h 0578  2]                     Reserved : 0000
+[244h 0580  1]               Enumeration ID : 00
+[245h 0581  1]               PCI Bus Number : C0
+[246h 0582  2]                     PCI Path : [02, 00]
+
+[248h 0584  1]      Device Scope Entry Type : 02
+[249h 0585  1]                 Entry Length : 08
+[24Ah 0586  2]                     Reserved : 0000
+[24Ch 0588  1]               Enumeration ID : 00
+[24Dh 0589  1]               PCI Bus Number : C0
+[24Eh 0590  2]                     PCI Path : [02, 02]
+
+[250h 0592  1]      Device Scope Entry Type : 02
+[251h 0593  1]                 Entry Length : 08
+[252h 0594  2]                     Reserved : 0000
+[254h 0596  1]               Enumeration ID : 00
+[255h 0597  1]               PCI Bus Number : C0
+[256h 0598  2]                     PCI Path : [03, 00]
 
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c |   64 ++++++++++++++++++++++++-------------------
- 1 file changed, 36 insertions(+), 28 deletions(-)
+ drivers/iommu/intel-iommu.c |   37 +++++++++++++++++--------------------
+ 1 file changed, 17 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index d5ad21d..7038b38 100644
+index 7038b38..b0028e2 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -425,7 +425,8 @@ static LIST_HEAD(unmaps_to_do);
- static int timer_on;
- static long list_size;
- 
--static void domain_remove_dev_info(struct dmar_domain *domain);
-+static void domain_remove_dev_info(struct dmar_domain *domain,
-+				   struct intel_iommu *match);
- static void domain_remove_one_dev_info(struct dmar_domain *domain,
- 				       struct pci_dev *pdev);
- 
-@@ -1300,15 +1301,22 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
- 		for_each_set_bit(i, iommu->domain_ids, cap_ndoms(iommu->cap)) {
- 			domain = iommu->domains[i];
- 			clear_bit(i, iommu->domain_ids);
-+			domain_remove_dev_info(domain, iommu);
- 
- 			spin_lock_irqsave(&domain->iommu_lock, flags);
--			count = --domain->iommu_count;
-+			if (test_and_clear_bit(iommu->seq_id,
-+					       domain->iommu_bmp))
-+				count = --domain->iommu_count;
-+			else
-+				count = 1;
- 			spin_unlock_irqrestore(&domain->iommu_lock, flags);
--			if (count == 0) {
--				if (domain->flags & DOMAIN_FLAG_VIRTUAL_MACHINE)
--					vm_domain_exit(domain);
--				else
--					domain_exit(domain);
-+
-+			/* Keep VM domains, user still has reference to them */
-+			if (count == 0 &&
-+			    !(domain->flags & DOMAIN_FLAG_VIRTUAL_MACHINE)) {
-+				domain_exit(domain);
-+				if (domain == si_domain)
-+					si_domain = NULL;
- 			}
- 		}
- 	}
-@@ -1336,8 +1344,11 @@ static struct dmar_domain *alloc_domain(void)
- 		return NULL;
- 
- 	domain->nid = -1;
-+	domain->iommu_count = 0;
- 	memset(domain->iommu_bmp, 0, sizeof(domain->iommu_bmp));
- 	domain->flags = 0;
-+	spin_lock_init(&domain->iommu_lock);
-+	INIT_LIST_HEAD(&domain->devices);
- 
- 	return domain;
- }
-@@ -1361,6 +1372,7 @@ static int iommu_attach_domain(struct dmar_domain *domain,
- 	}
- 
- 	domain->id = num;
-+	domain->iommu_count++;
- 	set_bit(num, iommu->domain_ids);
- 	set_bit(iommu->seq_id, domain->iommu_bmp);
- 	iommu->domains[num] = domain;
-@@ -1461,8 +1473,6 @@ static int domain_init(struct dmar_domain *domain, int guest_width)
- 	unsigned long sagaw;
- 
- 	init_iova_domain(&domain->iovad, DMA_32BIT_PFN);
--	spin_lock_init(&domain->iommu_lock);
--
- 	domain_reserve_special_ranges(domain);
- 
- 	/* calculate AGAW */
-@@ -1481,7 +1491,6 @@ static int domain_init(struct dmar_domain *domain, int guest_width)
- 			return -ENODEV;
- 	}
- 	domain->agaw = agaw;
--	INIT_LIST_HEAD(&domain->devices);
- 
- 	if (ecap_coherent(iommu->ecap))
- 		domain->iommu_coherency = 1;
-@@ -1494,7 +1503,6 @@ static int domain_init(struct dmar_domain *domain, int guest_width)
- 		domain->iommu_snooping = 0;
- 
- 	domain->iommu_superpage = fls(cap_super_page_val(iommu->cap));
--	domain->iommu_count = 1;
- 	domain->nid = iommu->node;
- 
- 	/* always allocate the top pgd */
-@@ -1518,7 +1526,7 @@ static void domain_exit(struct dmar_domain *domain)
- 	if (!intel_iommu_strict)
- 		flush_unmaps_timeout(0);
- 
--	domain_remove_dev_info(domain);
-+	domain_remove_dev_info(domain, NULL);
- 	/* destroy iovas */
- 	put_iova_domain(&domain->iovad);
- 
-@@ -1918,27 +1926,29 @@ static inline void unlink_domain_info(struct device_domain_info *info)
- 		info->dev->dev.archdata.iommu = NULL;
- }
- 
--static void domain_remove_dev_info(struct dmar_domain *domain)
-+static void domain_remove_dev_info(struct dmar_domain *domain,
-+				   struct intel_iommu *match)
+@@ -3556,37 +3556,34 @@ int dmar_find_matched_atsr_unit(struct pci_dev *dev)
  {
--	struct device_domain_info *info;
-+	struct device_domain_info *info, *tmp;
- 	unsigned long flags;
- 	struct intel_iommu *iommu;
-+	LIST_HEAD(list);
+ 	int i;
+ 	struct pci_bus *bus;
++	struct pci_dev *bridge = NULL;
+ 	struct acpi_dmar_atsr *atsr;
+ 	struct dmar_atsr_unit *atsru;
  
- 	spin_lock_irqsave(&device_domain_lock, flags);
--	while (!list_empty(&domain->devices)) {
--		info = list_entry(domain->devices.next,
--			struct device_domain_info, link);
--		unlink_domain_info(info);
--		spin_unlock_irqrestore(&device_domain_lock, flags);
-+	list_for_each_entry_safe(info, tmp, &domain->devices, link)
-+		if (!match || match == device_to_iommu(info->segment,
-+					info->bus, info->devfn)) {
-+			unlink_domain_info(info);
-+			list_add(&info->link, &list);
-+		}
-+	spin_unlock_irqrestore(&device_domain_lock, flags);
- 
-+	list_for_each_entry_safe(info, tmp, &list, link) {
- 		iommu_disable_dev_iotlb(info);
- 		iommu = device_to_iommu(info->segment, info->bus, info->devfn);
- 		iommu_detach_dev(iommu, info->bus, info->devfn);
- 		free_devinfo_mem(info);
+ 	dev = pci_physfn(dev);
 -
--		spin_lock_irqsave(&device_domain_lock, flags);
+-	list_for_each_entry(atsru, &dmar_atsr_units, list) {
+-		atsr = container_of(atsru->hdr, struct acpi_dmar_atsr, header);
+-		if (atsr->segment == pci_domain_nr(dev->bus))
+-			goto found;
+-	}
+-
+-	return 0;
+-
+-found:
+ 	for (bus = dev->bus; bus; bus = bus->parent) {
+-		struct pci_dev *bridge = bus->self;
+-
++		bridge = bus->self;
+ 		if (!bridge || !pci_is_pcie(bridge) ||
+ 		    pci_pcie_type(bridge) == PCI_EXP_TYPE_PCI_BRIDGE)
+ 			return 0;
+-
+-		if (pci_pcie_type(bridge) == PCI_EXP_TYPE_ROOT_PORT) {
+-			for (i = 0; i < atsru->devices_cnt; i++)
+-				if (atsru->devices[i] == bridge)
+-					return 1;
++		if (pci_pcie_type(bridge) == PCI_EXP_TYPE_ROOT_PORT)
+ 			break;
+-		}
  	}
--	spin_unlock_irqrestore(&device_domain_lock, flags);
++	if (!bridge)
++		return 0;
+ 
+-	if (atsru->include_all)
+-		return 1;
++	list_for_each_entry_rcu(atsru, &dmar_atsr_units, list) {
++		atsr = container_of(atsru->hdr, struct acpi_dmar_atsr, header);
++		if (atsr->segment != pci_domain_nr(dev->bus))
++			continue;
++
++		for (i = 0; i < atsru->devices_cnt; i++)
++			if (atsru->devices[i] == bridge)
++				return 1;
++
++		if (atsru->include_all)
++			return 1;
++	}
+ 
+ 	return 0;
  }
- 
- /*
-@@ -3862,8 +3872,11 @@ static struct dmar_domain *iommu_alloc_vm_domain(void)
- 
- 	domain->id = atomic_inc_return(&vm_domid);
- 	domain->nid = -1;
-+	domain->iommu_count = 0;
- 	memset(domain->iommu_bmp, 0, sizeof(domain->iommu_bmp));
- 	domain->flags = DOMAIN_FLAG_VIRTUAL_MACHINE;
-+	spin_lock_init(&domain->iommu_lock);
-+	INIT_LIST_HEAD(&domain->devices);
- 
- 	return domain;
- }
-@@ -3873,8 +3886,6 @@ static int md_domain_init(struct dmar_domain *domain, int guest_width)
- 	int adjust_width;
- 
- 	init_iova_domain(&domain->iovad, DMA_32BIT_PFN);
--	spin_lock_init(&domain->iommu_lock);
--
- 	domain_reserve_special_ranges(domain);
- 
- 	/* calculate AGAW */
-@@ -3882,9 +3893,6 @@ static int md_domain_init(struct dmar_domain *domain, int guest_width)
- 	adjust_width = guestwidth_to_adjustwidth(guest_width);
- 	domain->agaw = width_to_agaw(adjust_width);
- 
--	INIT_LIST_HEAD(&domain->devices);
--
--	domain->iommu_count = 0;
- 	domain->iommu_coherency = 0;
- 	domain->iommu_snooping = 0;
- 	domain->iommu_superpage = 0;
-@@ -3993,7 +4001,7 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
- 			    dmar_domain->flags & DOMAIN_FLAG_STATIC_IDENTITY)
- 				domain_remove_one_dev_info(old_domain, pdev);
- 			else
--				domain_remove_dev_info(old_domain);
-+				domain_remove_dev_info(old_domain, NULL);
- 		}
- 	}
- 
 -- 
 1.7.10.4
