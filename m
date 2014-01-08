@@ -1,16 +1,14 @@
-From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH] drm/msm: Fix link error with !MSM_IOMMU
-Date: Wed, 8 Jan 2014 14:53:45 -0500
-Message-ID: <CAF6AEGsrLR1ADoqiEixVsv8=E5zFVZeza3Q7AcBTY8xbZJbHgQ@mail.gmail.com>
-References: <1389134846-1000-1-git-send-email-joro@8bytes.org>
-	<20140107225345.GE29041@8bytes.org>
-	<CAF6AEGtHR9-oy+xaZM2bbJHnqhrwHiZeAC+asc7+Ds0x_hJeNQ@mail.gmail.com>
-	<20140108133514.GG29041@8bytes.org>
+From: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [Patch Part2 V1 00/14] Enhance DMAR drivers to handle PCI/memory
+	hotplug events
+Date: Wed, 8 Jan 2014 12:43:35 -0800
+Message-ID: <CAE9FiQUgfuQ9nXNOOCcYAKVeN05o+TX6e35qe5nSkyxB-DpyGg@mail.gmail.com>
+References: <1389085234-22296-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140108133514.GG29041-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1389085234-22296-1-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,43 +18,61 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 8, 2014 at 8:35 AM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
-> On Wed, Jan 08, 2014 at 08:23:49AM -0500, Rob Clark wrote:
->> On Tue, Jan 7, 2014 at 5:53 PM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
->> > On Tue, Jan 07, 2014 at 11:47:26PM +0100, Joerg Roedel wrote:
->> >> The DRM driver for MSM depends on symbols from the MSM
->> >> IOMMU driver. Add this dependency to the Kconfig file.
->> >>
->> >> Fixes this comile error:
->> >>
->> >>   Kernel: arch/arm/boot/zImage is ready
->> >>   ERROR: "msm_iommu_get_ctx" [drivers/gpu/drm/msm/msm.ko]
->> >>   undefined!
->> >>   make[2]: *** [__modpost] Error 1
->>
->> Thanks, I'll pull this into my pull req for 3.14 drm-next.. although,
->> after chatting with Stephen Boyd, I think we should eventually be able
->> to get rid of this (seems msm_iommu_get_ctx() was mainly for dealing
->> with secure playback (?))
+On Tue, Jan 7, 2014 at 1:00 AM, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
+> Intel DMA/interrupt remapping drivers scan available PCI/memory devices
+> at startup and cache discovered hardware topologies. They don't update
+> cached information if PCI/memory hotplug event happens at runtime, then
+> the stale information may break DMA/interrupt remapping logic.
 >
-> It is already in my next-branch. So if you are ok with the approach for
-> now there is no need for action. If you want it to go through your tree
-> anyway please let me know and I will drop it from mine.
-
-probably will be a slight merge conflict if it goes through your
-branch.. although should be easy enough to resolve, basically the
-result should look something like:
-
-  depends on (ARCH_MSM && ARCH_MSM8960 && MSM_IOMMU) || (ARM && COMPILE_TEST)
-
-BR,
--R
-
+> This patchset first (Patch 1-8) tries to introduces some helper
+> functions and fixes several bugs, then (Patch 9,10) uses a global
+> rwsem and RCU to protect global DMA/interrupt remapping data
+> structures, and finally (Patch 11-14) hook PCI/memory hotplug events
+> to update cached information.
 >
->         Joerg
+> It's also a preparation for supporting of DMA/interrupt remapping
+> hotplug.
 >
+> Jiang Liu (14):
+>   iommu/vt-d: factor out dmar_alloc_dev_scope() for later reuse
+>   iommu/vt-d: move private structures and variables into intel-iommu.c
+>   iommu/vt-d: simplify function get_domain_for_dev()
+>   iommu/vt-d: free resources if failed to create domain for PCIe
+>     endpoint
+>   iommu/vt-d: create device_domain_info structure for intermediate P2P
+>     bridges
+>   iommu/vt-d: fix incorrect iommu_count for si_domain
+>   iommu/vt-d: fix error in detect ATS capability
+>   iommu/vt-d: introduce macro for_each_dev_scope() to walk device scope
+>     entries
+>   iommu/vt-d: introduce a rwsem to protect global data structures
+>   iommu/vt-d: use RCU to protect global resources in interrupt context
+>   iommu/vt-d, PCI: update DRHD/RMRR/ATSR device scope caches when PCI
+>     hotplug happens
+>   iommu/vt-d, PCI: unify the way to process DMAR device scope array
+>   iommu/vt-d: update device to static identity domain mapping for PCI
+>     hotplug
+>   iommu/vt-d: update IOMMU state when memory hotplug happens
 >
+>  drivers/iommu/dmar.c                |  412 +++++++++++++++++--------
+>  drivers/iommu/intel-iommu.c         |  583 +++++++++++++++++++++--------------
+>  drivers/iommu/intel_irq_remapping.c |  108 ++++---
+>  include/linux/dmar.h                |   75 +++--
+>  4 files changed, 753 insertions(+), 425 deletions(-)
+
+
+Hi, Jiang,
+
+What is relationship between your two patchset with my iommu hotplug patchset?
+
+https://lkml.org/lkml/2014/1/2/527
+
+or yours will just replace mine?
+
+Thanks
+
+Yinghai
