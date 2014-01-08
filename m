@@ -1,44 +1,51 @@
-From: Kai Huang <dev.kai.huang@gmail.com>
-Subject: Re: [Patch Part2 V1 03/14] iommu/vt-d: simplify function get_domain_for_dev()
-Date: Wed, 8 Jan 2014 14:56:47 +0800
-Message-ID: <CAOtp4Krty4UQQjjjHgoUZr6kk+0pYcYyR0=FMOPa3YH0fVGeOw@mail.gmail.com>
-References: <1389085234-22296-1-git-send-email-jiang.liu@linux.intel.com>
-	<1389085234-22296-4-git-send-email-jiang.liu@linux.intel.com>
-	<CAOtp4KrK8yOktru+hgLSxYNZ67Nm2WYVGi2aGaJ3JJWLrdOq_g@mail.gmail.com>
-	<52CCE6AE.1070809@linux.intel.com>
-	<CAOtp4Kqo5m-uOKfr8WDwH1v3+23iSv9_329xS=K76Kpq-QXdVw@mail.gmail.com>
-	<52CCF0A9.70703@linux.intel.com>
+From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [Patch Part2 V1 03/14] iommu/vt-d: simplify function
+	get_domain_for_dev()
+Date: Wed, 08 Jan 2014 14:57:36 +0800
+Message-ID: <52CCF6E0.5070306@linux.intel.com>
+References: <1389085234-22296-1-git-send-email-jiang.liu@linux.intel.com>	<1389085234-22296-4-git-send-email-jiang.liu@linux.intel.com>	<CAOtp4KrK8yOktru+hgLSxYNZ67Nm2WYVGi2aGaJ3JJWLrdOq_g@mail.gmail.com>	<52CCE6AE.1070809@linux.intel.com>	<CAOtp4Kqo5m-uOKfr8WDwH1v3+23iSv9_329xS=K76Kpq-QXdVw@mail.gmail.com>	<52CCF0A9.70703@linux.intel.com>
 	<CAOtp4KpVbS6twWHukFWODDuwujG8BX6zYXOZiGRQM17f49UQ3w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <CAOtp4KpVbS6twWHukFWODDuwujG8BX6zYXOZiGRQM17f49UQ3w@mail.gmail.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Jiang Liu <jiang.liu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, Tony Luck <tony.luck@intel.com>, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAOtp4KpVbS6twWHukFWODDuwujG8BX6zYXOZiGRQM17f49UQ3w-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Kai Huang <dev.kai.huang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 8, 2014 at 2:48 PM, Kai Huang <dev.kai.huang@gmail.com> wrote:
-> On Wed, Jan 8, 2014 at 2:31 PM, Jiang Liu <jiang.liu@linux.intel.com> wrote:
+
+
+On 2014/1/8 14:48, Kai Huang wrote:
+> On Wed, Jan 8, 2014 at 2:31 PM, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
 >>
 >>
 >> On 2014/1/8 14:06, Kai Huang wrote:
->>> On Wed, Jan 8, 2014 at 1:48 PM, Jiang Liu <jiang.liu@linux.intel.com> wrote:
+>>> On Wed, Jan 8, 2014 at 1:48 PM, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
 >>>>
 >>>>
 >>>> On 2014/1/8 11:06, Kai Huang wrote:
 >>>>>
 >>>>>
 >>>>>
->>>>> On Tue, Jan 7, 2014 at 5:00 PM, Jiang Liu <jiang.liu@linux.intel.com
->>>>> <mailto:jiang.liu@linux.intel.com>> wrote:
+>>>>> On Tue, Jan 7, 2014 at 5:00 PM, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+>>>>> <mailto:jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>> wrote:
 >>>>>
 >>>>>     Function get_domain_for_dev() is a little complex, simplify it
 >>>>>     by factoring out dmar_search_domain_by_dev_info() and
 >>>>>     dmar_insert_dev_info().
 >>>>>
->>>>>     Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com
->>>>>     <mailto:jiang.liu@linux.intel.com>>
+>>>>>     Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+>>>>>     <mailto:jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>>
 >>>>>     ---
 >>>>>      drivers/iommu/intel-iommu.c |  161
 >>>>>     ++++++++++++++++++++-----------------------
@@ -153,25 +160,19 @@ On Wed, Jan 8, 2014 at 2:48 PM, Kai Huang <dev.kai.huang@gmail.com> wrote:
 > capabilities, so referencing the first IOMMU to check some
 > capabilities (that's what I see in code so far) should work for the
 > domain layer API.
->
-
-And just realized the domain_get_iommu just takes the domain as
-argument, so it's really not used to get the IOMMU from device. I am
-not sure in current code if there's such interface like
-get_iommu_from_device(struct pci_dev *dev) or not, probably we don't
-need it. :)
-
--Kai
-
+> 
 > But looks it's safe to set info->iommu in get_domain_for_dev anyway
 > (and remove it in iommu_support_dev_iotlb)? In this case it's easier
 > when we want to get IOMMU from info.
->
+> 
 > Of course, it's just my opinion, and probably is wrong, it's totally
 > up to you if want to do this or not. :)
->
+Actually I'm on your side, I think it's better to initialize info->iommu
+in function dmar_insert_dev_info() too. Will try that way.
+
+> 
 > -Kai
->
+> 
 >>>
 >>> -Kai
 >>>
@@ -348,8 +349,8 @@ need it. :)
 >>>>>
 >>>>>     _______________________________________________
 >>>>>     iommu mailing list
->>>>>     iommu@lists.linux-foundation.org
->>>>>     <mailto:iommu@lists.linux-foundation.org>
+>>>>>     iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+>>>>>     <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 >>>>>     https://lists.linuxfoundation.org/mailman/listinfo/iommu
 >>>>>
 >>>>>
