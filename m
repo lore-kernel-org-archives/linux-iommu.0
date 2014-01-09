@@ -1,15 +1,14 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH Trivial] intel-iommu: check return value of
-	device_to_iommu() before using it
-Date: Thu, 9 Jan 2014 13:01:35 +0100
-Message-ID: <20140109120135.GJ29041@8bytes.org>
-References: <52CE0252.4090106@oracle.com>
+Subject: Re: [patch] iommu/vt-d: signedness bug in alloc_irte()
+Date: Thu, 9 Jan 2014 13:06:43 +0100
+Message-ID: <20140109120643.GK29041@8bytes.org>
+References: <20140109053236.GE1265@elgon.mountain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <52CE0252.4090106-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20140109053236.GE1265-mgFCXtclrQlZLf2FXnZxJA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,31 +18,16 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: ethan zhao <ethan.zhao-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Cc: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+To: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kernel-janitors-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jan 09, 2014 at 09:58:42AM +0800, ethan zhao wrote:
->  drivers/iommu/intel-iommu.c |    2 ++
->  1 files changed, 2 insertions(+), 0 deletions(-)
+On Thu, Jan 09, 2014 at 08:32:36AM +0300, Dan Carpenter wrote:
+> "index" needs to be signed for the error handling to work.  I deleted a
+> little bit of obsolete cruft related to "index" and "start_index" as
+> well.
 > 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 40203ad..5b4531a 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -1105,6 +1105,8 @@ static struct device_domain_info
-> *iommu_support_dev_iotlb(
->      struct device_domain_info *info;
->      struct intel_iommu *iommu = device_to_iommu(segment, bus, devfn);
-> 
-> +    if (!iommu)
-> +        return NULL;
->      if (!ecap_dev_iotlb_support(iommu->ecap))
->          return NULL;
+> Fixes: 360eb3c5687e ('iommu/vt-d: use dedicated bitmap to track remapping entry allocation status')
+> Signed-off-by: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 
-This call can not fail, iommu_support_dev_iotlb() is only called from
-domain_context_mapping_one() which does the iommu==NULL check on its
-own before the call.
-
-
-	Joerg
+Applied, thanks Dan.
