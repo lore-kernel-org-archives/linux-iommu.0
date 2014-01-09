@@ -1,88 +1,68 @@
-From: ethan zhao <ethan.zhao@oracle.com>
-Subject: [PATCH Trivial] intel-iommu: check return value of device_to_iommu()
- before using it
-Date: Thu, 09 Jan 2014 09:58:42 +0800
-Message-ID: <52CE0252.4090106@oracle.com>
+From: Mark Zhang <nvmarkzhang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 4/6] iommu/tegra124: smmu: support more than 32 bit pa
+Date: Thu, 09 Jan 2014 10:28:01 +0800
+Message-ID: <52CE0931.2090405@gmail.com>
+References: <1386246319-17851-1-git-send-email-hdoyu@nvidia.com>
+	<1386246319-17851-5-git-send-email-hdoyu@nvidia.com>
+	<52CB8FD1.4070306@gmail.com>
+	<20140108134550.GF1592@ulmo.nvidia.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="------------030603040806070308050806"
-Return-path: <linux-pci-owner@vger.kernel.org>
-Sender: linux-pci-owner@vger.kernel.org
-To: joro@8bytes.org, dwmw2@infradead.org, yinghai@kernel.org, bhelgaas@google.com, jiang.liu@linux.intel.com
-Cc: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20140108134550.GF1592-AwZRO8vwLAwmlAP/+Wk3EA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Pavan Kunapuli <pkunapuli-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This is a multi-part message in MIME format.
---------------030603040806070308050806
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+On 01/08/2014 09:45 PM, Thierry Reding wrote:
+> On Tue, Jan 07, 2014 at 01:25:37PM +0800, Mark Zhang wrote:
+>> On 12/05/2013 08:25 PM, Hiroshi Doyu wrote:
+> [...]
+>>> @@ -526,6 +530,21 @@ static int smmu_setup_regs(struct smmu_device *smmu)
+>>>  	return 0;
+>>>  }
+>>>  
+>>> +static void flush_ptc_by_addr(struct smmu_device *smmu, unsigned long *pte,
+>>> +			      struct page *page)
+>>> +{
+>>> +	u32 val;
+>>> +
+>>> +	val = VA_PAGE_TO_PA_HI(pte, page);
+>>> +	if (val)
+>>> +		smmu_write(smmu, val, SMMU_PTC_FLUSH_1);
+>>> +
+>>
+>> This is not correct, according to my tests. We should write
+>> "SMMU_PTC_FLUSH_1" even when the "val" is zero.
+>>
+>> So I just copied Pavan's original work here, after applied this, the
+>> SMMU works correctly:
+>>
+>> -       val = VA_PAGE_TO_PA_HI(pte, page);
+>> -       if (val)
+>> +       if (!pte) {
+>> +               smmu_write(smmu, SMMU_PTC_FLUSH_TYPE_ALL, SMMU_PTC_FLUSH);
+>> +               return;
+>> +       }
+>> +
+>> +       if (of_machine_is_compatible("nvidia,tegra124")) {
+> 
+> This check should be replaced by some flag so we don't have to compare
+> strings every time the PTC is flushed.
+> 
 
-in function iommu_support_dev_iotlb(),return value of device_to_iommu()
-is used without checking, this could cause NULL pointer issue.
+Yes, I believe Hiroshi will consider this in his v8 series.
 
-this patch is for v3.12.6
-
-Signed-off-by: Ethan Zhao <ethan.zhao@oracle.com>
----
-  drivers/iommu/intel-iommu.c |    2 ++
-  1 files changed, 2 insertions(+), 0 deletions(-)
-
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 40203ad..5b4531a 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -1105,6 +1105,8 @@ static struct device_domain_info 
-*iommu_support_dev_iotlb(
-      struct device_domain_info *info;
-      struct intel_iommu *iommu = device_to_iommu(segment, bus, devfn);
-
-+    if (!iommu)
-+        return NULL;
-      if (!ecap_dev_iotlb_support(iommu->ecap))
-          return NULL;
-
--- 
-1.7.1
-
-
---------------030603040806070308050806
-Content-Type: text/x-patch;
- name="0001-intel-iommu-check-return-value-of-device_to_iommu-be.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
- filename*0="0001-intel-iommu-check-return-value-of-device_to_iommu-be.pa";
- filename*1="tch"
-
->From 27d8cdd3fcc6f4ff5cc2ba36d8d5ea0a97823a17 Mon Sep 17 00:00:00 2001
-From: ethan.zhao <ethan.zhao@oracle.com>
-Date: Thu, 9 Jan 2014 08:40:16 -0500
-Subject: [PATCH] intel-iommu: check return value of device_to_iommu() before using it
-
-in function iommu_support_dev_iotlb(),return value of device_to_iommu()
-is used without checking, this could cause NULL pointer issue.
-
-this patch is for v3.12.6
-
-Signed-off-by: Ethan Zhao <ethan.zhao@oracle.com>
----
- drivers/iommu/intel-iommu.c |    2 ++
- 1 files changed, 2 insertions(+), 0 deletions(-)
-
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 40203ad..5b4531a 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -1105,6 +1105,8 @@ static struct device_domain_info *iommu_support_dev_iotlb(
- 	struct device_domain_info *info;
- 	struct intel_iommu *iommu = device_to_iommu(segment, bus, devfn);
- 
-+	if (!iommu)
-+		return NULL;
- 	if (!ecap_dev_iotlb_support(iommu->ecap))
- 		return NULL;
- 
--- 
-1.7.1
-
-
---------------030603040806070308050806--
+Mark
+> Thierry
+> 
