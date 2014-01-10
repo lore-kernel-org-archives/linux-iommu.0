@@ -1,127 +1,137 @@
-From: "Li, ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Subject: Re: [PATCH 1/1] x86/iommu: use bit structures for context_entry
-Date: Fri, 10 Jan 2014 16:31:41 +0800
-Message-ID: <52CFAFED.1040505@hp.com>
-References: <1389342475-8540-1-git-send-email-zhen-hual@hp.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1389342475-8540-1-git-send-email-zhen-hual-VXdhtT5mjnY@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Cc: "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+From: Bill Sumner <bill.sumner@hp.com>
+Subject: [PATCHv3 0/6] Crashdump Accepting Active IOMMU
+Date: Fri, 10 Jan 2014 15:07:26 -0700
+Message-ID: <1389391652-52422-1-git-send-email-bill.sumner@hp.com>
+Return-path: <linux-pci-owner@vger.kernel.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: dwmw2@infradead.org, indou.takao@jp.fujitsu.com, bhe@redhat.com, joro@8bytes.org
+Cc: iommu@lists.linux-foundation.org, kexec@lists.infradead.org, alex.williamson@redhat.com, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, bill.sumner@hp.com, doug.hatch@hp.com, zhenhua@hp.com
 List-Id: iommu@lists.linux-foundation.org
 
-This patch is sent again because a ';' was missed in my last mail.
+v2->v3:
+1. Commented-out "#define DEBUG 1" to eliminate debug messages
+2. Updated the comments about changes in each version in all patches in the set.
+3. Fixed: one-line added to Copy-Translations" patch to initialize the iovad
+          struct as recommended by Baoquan He [bhe@redhat.com]
+          init_iova_domain(&domain->iovad, DMA_32BIT_PFN);
 
- > +	context->asr = value >> VTD_PAGE_SHIFT
+v1->v2:
+The following series implements a fix for:
+A kdump problem about DMA that has been discussed for a long time. That is,
+when a kernel panics and boots into the kdump kernel, DMA started by the 
+panicked kernel is not stopped before the kdump kernel is booted and the 
+kdump kernel disables the IOMMU while this DMA continues.  This causes the
+IOMMU to stop translating the DMA addresses as IOVAs and begin to treat them 
+as physical memory addresses -- which causes the DMA to either:
+(1) generate DMAR errors or (2) generate PCI SERR errors or (3) transfer  
+data to or from incorrect areas of memory. Often this causes the dump to fail.
 
-I corrected it and created a new one. And it is tested .
-Please use the latest one.
+This patch set modifies the behavior of the iommu in the (new) crashdump kernel: 
+1. to accept the iommu hardware in an active state, 
+2. to leave the current translations in-place so that legacy DMA will continue
+   using its current buffers until the device drivers in the crashdump kernel
+   initialize and initialize their devices,
+3. to use different portions of the iova address ranges for the device drivers
+   in the crashdump kernel than the iova ranges that were in-use at the time
+   of the panic.  
+
+Advantages of this approach:
+1. All manipulation of the IO-device is done by the Linux device-driver
+   for that device.
+2. This approach behaves in a manner very similar to operation without an
+   active iommu.
+3. Any activity between the IO-device and its RMRR areas is handled by the
+   device-driver in the same manner as during a non-kdump boot.
+4. If an IO-device has no driver in the kdump kernel, it is simply left alone.
+   This supports the practice of creating a special kdump kernel without
+   drivers for any devices that are not required for taking a crashdump. 
+
+Changes since the RFC version of this patch:
+1. Consolidated all of the operational code into the "copy..." functions.
+   The "process..." functions were primarily used for diagnostics and
+   exploration; however, there was a small amount of operational code that
+   used the "process..." functions.
+   This operational code has been moved into the "copy..." functions.
+
+2. Removed the "Process ..." functions and the diagnostic code that ran
+   on that function set.  This removed about 1/4 of the code -- which this
+   operational patch set no longer needs.  These portions of the RFC patch
+   could be formatted as a separate patch and submitted independently
+   at a later date. 
+
+3. Re-formatted the code to the Linux Coding Standards.
+   The checkpatch script still finds some lines to complain about;
+   however most of these lines are either (1) lines that I did not change,
+   or (2) lines that only changed by adding a level of indent which pushed
+   them over 80-characters, or (3) new lines whose intent is far clearer when
+   longer than 80-characters.
+
+4. Updated the remaining debug print to be significantly more flexible.
+   This allows control over the amount of debug print to the console --
+   which can vary widely.
+
+5. Fixed a couple of minor bugs found by testing on a machine with a
+   very large IO configuration.
+
+At a high level, this code operates primarily during iommu initialization
+and device-driver initialization
+
+During intel-iommu hardware initialization:
+In intel_iommu_init(void)
+* If (This is the crash kernel)
+  .  Set flag: crashdump_accepting_active_iommu (all changes below check this)
+  .  Skip disabling the iommu hardware translations
+
+In init_dmars()
+* Duplicate the intel iommu translation tables from the old kernel
+  in the new kernel
+  . The root-entry table, all context-entry tables,
+    and all page-translation-entry tables
+  . The duplicate tables contain updated physical addresses to link them together.
+  . The duplicate tables are mapped into kernel virtual addresses
+    in the new kernel which allows most of the existing iommu code
+    to operate without change.
+  . Do some minimal sanity-checks during the copy
+  . Place the address of the new root-entry structure into "struct intel_iommu"
+
+* Skip setting-up new domains for 'si', 'rmrr', 'isa' 
+  . Translations for 'rmrr' and 'isa' ranges have been copied from the old kernel
+  . This patch has not yet been tested with iommu pass-through enabled
+
+* Existing (unchanged) code near the end of dmar_init:
+  . Loads the address of the (now new) root-entry structure from
+    "struct intel_iommu" into the iommu hardware and does the hardware flushes.
+    This changes the active translation tables from the ones in the old kernel
+    to the copies in the new kernel.
+  . This is legal because the translations in the two sets of tables are
+    currently identical:
+      Virtualization Technology for Directed I/O. Architecture Specification,
+      February 2011, Rev. 1.3  (section 11.2, paragraph 2) 
+
+In iommu_init_domains()
+* Mark as in-use all domain-id's from the old kernel
+  . In case the new kernel contains a device that was not in the old kernel
+    and a new, unused domain-id is actually needed, the bitmap will give us one.
+
+When a new domain is created for a device:
+* If (this device has a context in the old kernel)
+  . Get domain-id, address-width, and IOVA ranges from the old kernel context;
+  . Get address(page-entry-tables) from the copy in the new kernel;
+  . And apply all of the above values to the new domain structure.
+* Else
+  . Create a new domain as normal
 
 
-Sorry for that.
+Bill Sumner (6):
+  Crashdump-Accepting-Active-IOMMU-Flags-and-Prototype
+  Crashdump-Accepting-Active-IOMMU-Utility-functions
+  Crashdump-Accepting-Active-IOMMU-Domain-Interfaces
+  Crashdump-Accepting-Active-IOMMU-Copy-Translations
+  Crashdump-Accepting-Active-IOMMU-Debug-Print-IOMMU
+  Crashdump-Accepting-Active-IOMMU-Call-From-Mainline
 
-ZhenHua
+ drivers/iommu/intel-iommu.c | 1293 ++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 1225 insertions(+), 68 deletions(-)
 
-On 01/10/2014 04:27 PM, Li, Zhen-Hua wrote:
-> There is a structure named context_entry used by intel iommu, and there
-> are some bit operations on it. Use bit structure may make these operations
-> easy.
-> Also the function context_set_address_root may cause problem because it uses
->   |= operation, not set the new value. And this patch can fix it.
->
-> Signed-off-by: Li, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-> ---
->   drivers/iommu/intel-iommu.c | 37 +++++++++++++++++++++++++++----------
->   1 file changed, 27 insertions(+), 10 deletions(-)
->
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 43b9bfe..65cd480 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -221,47 +221,64 @@ get_context_addr_from_root(struct root_entry *root)
->    * 8-23: domain id
->    */
->   struct context_entry {
-> -	u64 lo;
-> -	u64 hi;
-> +	union {
-> +		struct {
-> +			u64	present:1,
-> +				fpd:1,
-> +				translation_type:2,
-> +				reserved_l:8,
-> +				asr:52;
-> +		};
-> +		u64 lo;
-> +	};
-> +	union {
-> +		struct {
-> +			u64	aw:3,
-> +				avail:4,
-> +				reserved_h1:1,
-> +				did:16,
-> +				reserved_h2:40;
-> +		};
-> +		u64 hi;
-> +	};
->   };
->
->   static inline bool context_present(struct context_entry *context)
->   {
-> -	return (context->lo & 1);
-> +	return context->present;
->   }
->   static inline void context_set_present(struct context_entry *context)
->   {
-> -	context->lo |= 1;
-> +	context->present = 1;
->   }
->
->   static inline void context_set_fault_enable(struct context_entry *context)
->   {
-> -	context->lo &= (((u64)-1) << 2) | 1;
-> +	context->fpd = 1;
->   }
->
->   static inline void context_set_translation_type(struct context_entry *context,
->   						unsigned long value)
->   {
-> -	context->lo &= (((u64)-1) << 4) | 3;
-> -	context->lo |= (value & 3) << 2;
-> +	context->translation_type = value;
->   }
->
->   static inline void context_set_address_root(struct context_entry *context,
->   					    unsigned long value)
->   {
-> -	context->lo |= value & VTD_PAGE_MASK;
-> +	context->asr = value >> VTD_PAGE_SHIFT;
->   }
->
->   static inline void context_set_address_width(struct context_entry *context,
->   					     unsigned long value)
->   {
-> -	context->hi |= value & 7;
-> +	context->aw  = value;
->   }
->
->   static inline void context_set_domain_id(struct context_entry *context,
->   					 unsigned long value)
->   {
-> -	context->hi |= (value & ((1 << 16) - 1)) << 8;
-> +	context->did = value;
->   }
->
->   static inline void context_clear_entry(struct context_entry *context)
->
+-- 
+Bill Sumner <bill.sumner@hp.com>
