@@ -1,7 +1,7 @@
 From: Anthony DeRobertis <aderobertis-VnMYzjHJ8tfR7s880joybQ@public.gmane.org>
-Subject: PROBLEM: do_IRQ: [number] No irq handler for vector (irq -1) [resend]
-Date: Tue, 14 Jan 2014 14:53:20 -0500
-Message-ID: <52D595B0.2040109@metrics.net>
+Subject: PROBLEM: do_IRQ: [number] No irq handler for vector (irq -1)
+Date: Tue, 14 Jan 2014 12:41:55 -0500
+Message-ID: <52D576E3.8050006@metrics.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
@@ -22,8 +22,7 @@ I repeatedly get "No irq handler for vector" since upgrading to 3.12. I
 have confirmed it happens in git master as of yesterday morning 
 (061f49ec2d722f485237870f04544d8bec15a778). Fixed by disabling VT-d quirk.
 
-[please cc me on responses; I'm not subscribed to the list. Sending a 
-second time because the first time seems to have gotten lost.]
+[please cc me on responses; I'm not subscribed to the list]
 
 DETAILS:
 
@@ -63,14 +62,12 @@ sometimes use KVM, but don't redirect any real hardware to the VMs).
 
 Here is the patch I used to disable the quirk:
 
-diff --git a/drivers/iommu/intel_irq_remapping.c 
-b/drivers/iommu/intel_irq_remapping.c
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
 index bab10b1..a5bf817 100644
 --- a/drivers/iommu/intel_irq_remapping.c
 +++ b/drivers/iommu/intel_irq_remapping.c
 @@ -530,10 +530,11 @@ static int __init intel_irq_remapping_supported(void)
-                         "on a chipset that contains an erratum making 
-that\n"
+                         "on a chipset that contains an erratum making that\n"
                          "feature unstable.  To maintain system stability\n"
                          "interrupt remapping is being disabled.  Please\n"
 -                       "contact your BIOS vendor for an update\n");
@@ -82,7 +79,8 @@ that\n"
 -               return 0;
 +               return 0; */
          }
-          if (!dmar_ir_support())
+  
+         if (!dmar_ir_support())
 
 
 SYSTEM INFO:
@@ -106,12 +104,9 @@ fpu             : yes
 fpu_exception   : yes
 cpuid level     : 11
 wp              : yes
-flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge 
-mca cmov pat pse36 clflush dts acpi mmx f
-xsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon 
-pebs bts rep_good nopl xtopology nonsto
-p_tsc aperfmperf pni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr 
-pdcm sse4_1 sse4_2 popcnt lahf_lm ida dth
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx f
+xsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonsto
+p_tsc aperfmperf pni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm sse4_1 sse4_2 popcnt lahf_lm ida dth
 erm tpr_shadow vnmi flexpriority ept vpid
 bogomips        : 5612.59
 clflush size    : 64
@@ -125,252 +120,183 @@ power management:
 
 
 
-00:00.0 Host bridge: Intel Corporation 5520/5500/X58 I/O Hub to ESI Port 
-(rev 13)
+00:00.0 Host bridge: Intel Corporation 5520/5500/X58 I/O Hub to ESI Port (rev 13)
 	Subsystem: ASUSTeK Computer Inc. Device 836b
-	Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR- FastB2B- DisINTx-
+	Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
 	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-
 
-00:01.0 PCI bridge: Intel Corporation 5520/5500/X58 I/O Hub PCI Express 
-Root Port 1 (rev 13) (prog-if 00 [Normal decode])
-	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR+ FastB2B- DisINTx-
-	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast 
- >TAbort-SERR-TAbort-Reset- FastB2B-
+00:01.0 PCI bridge: Intel Corporation 5520/5500/X58 I/O Hub PCI Express Root Port 1 (rev 13) (prog-if 00 [Normal decode])
+	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR+ FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-TAbort-Reset- FastB2B-
 		PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
 	Capabilities:
 	Kernel driver in use: pcieport
 
-00:02.0 PCI bridge: Intel Corporation 5520/5500/X58 I/O Hub PCI Express 
-Root Port 2 (rev 13) (prog-if 00 [Normal decode])
-	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR+ FastB2B- DisINTx-
-	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast 
- >TAbort-SERR-TAbort-Reset- FastB2B-
+00:02.0 PCI bridge: Intel Corporation 5520/5500/X58 I/O Hub PCI Express Root Port 2 (rev 13) (prog-if 00 [Normal decode])
+	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR+ FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-TAbort-Reset- FastB2B-
 		PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
 	Capabilities:
 	Kernel driver in use: pcieport
 
-00:03.0 PCI bridge: Intel Corporation 5520/5500/X58 I/O Hub PCI Express 
-Root Port 3 (rev 13) (prog-if 00 [Normal decode])
-	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR+ FastB2B- DisINTx-
-	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast 
- >TAbort-SERR-TAbort-Reset- FastB2B-
+00:03.0 PCI bridge: Intel Corporation 5520/5500/X58 I/O Hub PCI Express Root Port 3 (rev 13) (prog-if 00 [Normal decode])
+	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR+ FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-TAbort-Reset- FastB2B-
 		PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
 	Capabilities:
 	Kernel driver in use: pcieport
 
-00:07.0 PCI bridge: Intel Corporation 5520/5500/X58 I/O Hub PCI Express 
-Root Port 7 (rev 13) (prog-if 00 [Normal decode])
-	Control: I/O- Mem- BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR+ FastB2B- DisINTx-
-	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast 
- >TAbort-SERR-TAbort-Reset- FastB2B-
+00:07.0 PCI bridge: Intel Corporation 5520/5500/X58 I/O Hub PCI Express Root Port 7 (rev 13) (prog-if 00 [Normal decode])
+	Control: I/O- Mem- BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR+ FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-TAbort-Reset- FastB2B-
 		PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
 	Capabilities:
 	Kernel driver in use: pcieport
 
-00:14.0 PIC: Intel Corporation 7500/5520/5500/X58 I/O Hub System 
-Management Registers (rev 13) (prog-if 00 [8259])
-	Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR- FastB2B- DisINTx-
+00:14.0 PIC: Intel Corporation 7500/5520/5500/X58 I/O Hub System Management Registers (rev 13) (prog-if 00 [8259])
+	Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
 	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-
 	Kernel driver in use: i7core_edac
 
-00:14.1 PIC: Intel Corporation 7500/5520/5500/X58 I/O Hub GPIO and 
-Scratch Pad Registers (rev 13) (prog-if 00 [8259])
-	Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR- FastB2B- DisINTx-
+00:14.1 PIC: Intel Corporation 7500/5520/5500/X58 I/O Hub GPIO and Scratch Pad Registers (rev 13) (prog-if 00 [8259])
+	Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
 	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-
 
-00:14.2 PIC: Intel Corporation 7500/5520/5500/X58 I/O Hub Control Status 
-and RAS Registers (rev 13) (prog-if 00 [8259])
-	Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR- FastB2B- DisINTx-
+00:14.2 PIC: Intel Corporation 7500/5520/5500/X58 I/O Hub Control Status and RAS Registers (rev 13) (prog-if 00 [8259])
+	Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
 	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-
 
-00:14.3 PIC: Intel Corporation 7500/5520/5500/X58 I/O Hub Throttle 
-Registers (rev 13) (prog-if 00 [8259])
-	Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR- FastB2B- DisINTx-
-	Status: Cap- 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast 
- >TAbort-SERR-TAbort-SERR-
+00:14.3 PIC: Intel Corporation 7500/5520/5500/X58 I/O Hub Throttle Registers (rev 13) (prog-if 00 [8259])
+	Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
+	Status: Cap- 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-TAbort-SERR-
 	Kernel driver in use: uhci_hcd
 
-00:1a.1 USB controller: Intel Corporation 82801JI (ICH10 Family) USB 
-UHCI Controller #5 (prog-if 00 [UHCI])
+00:1a.1 USB controller: Intel Corporation 82801JI (ICH10 Family) USB UHCI Controller #5 (prog-if 00 [UHCI])
 	Subsystem: ASUSTeK Computer Inc. P5Q Deluxe Motherboard
-	Control: I/O+ Mem- BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR- FastB2B- DisINTx-
+	Control: I/O+ Mem- BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
 	Status: Cap+ 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort-SERR-
 	Kernel driver in use: uhci_hcd
 
-00:1a.2 USB controller: Intel Corporation 82801JI (ICH10 Family) USB 
-UHCI Controller #6 (prog-if 00 [UHCI])
+00:1a.2 USB controller: Intel Corporation 82801JI (ICH10 Family) USB UHCI Controller #6 (prog-if 00 [UHCI])
 	Subsystem: ASUSTeK Computer Inc. P5Q Deluxe Motherboard
-	Control: I/O+ Mem- BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR- FastB2B- DisINTx-
+	Control: I/O+ Mem- BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
 	Status: Cap+ 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort-SERR-
 	Kernel driver in use: uhci_hcd
 
-00:1a.7 USB controller: Intel Corporation 82801JI (ICH10 Family) USB2 
-EHCI Controller #2 (prog-if 20 [EHCI])
+00:1a.7 USB controller: Intel Corporation 82801JI (ICH10 Family) USB2 EHCI Controller #2 (prog-if 20 [EHCI])
 	Subsystem: ASUSTeK Computer Inc. P5Q Deluxe Motherboard
-	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR+ FastB2B- DisINTx-
+	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR+ FastB2B- DisINTx-
 	Status: Cap+ 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort-SERR-
 	Kernel driver in use: ehci-pci
 
-00:1b.0 Audio device: Intel Corporation 82801JI (ICH10 Family) HD Audio 
-Controller
+00:1b.0 Audio device: Intel Corporation 82801JI (ICH10 Family) HD Audio Controller
 	Subsystem: ASUSTeK Computer Inc. Device 8436
-	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR+ FastB2B- DisINTx+
+	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR+ FastB2B- DisINTx+
 	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-
 	Kernel driver in use: snd_hda_intel
 
-00:1c.0 PCI bridge: Intel Corporation 82801JI (ICH10 Family) PCI Express 
-Root Port 1 (prog-if 00 [Normal decode])
-	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR+ FastB2B- DisINTx+
-	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast 
- >TAbort-SERR-TAbort-Reset- FastB2B-
+00:1c.0 PCI bridge: Intel Corporation 82801JI (ICH10 Family) PCI Express Root Port 1 (prog-if 00 [Normal decode])
+	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR+ FastB2B- DisINTx+
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-TAbort-Reset- FastB2B-
 		PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
 	Capabilities:
 	Kernel driver in use: pcieport
 
-00:1c.4 PCI bridge: Intel Corporation 82801JI (ICH10 Family) PCI Express 
-Root Port 5 (prog-if 00 [Normal decode])
-	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR+ FastB2B- DisINTx+
-	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast 
- >TAbort-SERR-TAbort-Reset- FastB2B-
+00:1c.4 PCI bridge: Intel Corporation 82801JI (ICH10 Family) PCI Express Root Port 5 (prog-if 00 [Normal decode])
+	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR+ FastB2B- DisINTx+
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-TAbort-Reset- FastB2B-
 		PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
 	Capabilities:
 	Kernel driver in use: pcieport
 
-00:1d.0 USB controller: Intel Corporation 82801JI (ICH10 Family) USB 
-UHCI Controller #1 (prog-if 00 [UHCI])
+00:1d.0 USB controller: Intel Corporation 82801JI (ICH10 Family) USB UHCI Controller #1 (prog-if 00 [UHCI])
 	Subsystem: ASUSTeK Computer Inc. P5Q Deluxe Motherboard
-	Control: I/O+ Mem- BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR- FastB2B- DisINTx-
+	Control: I/O+ Mem- BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
 	Status: Cap+ 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort-SERR-
 	Kernel driver in use: uhci_hcd
 
-00:1d.1 USB controller: Intel Corporation 82801JI (ICH10 Family) USB 
-UHCI Controller #2 (prog-if 00 [UHCI])
+00:1d.1 USB controller: Intel Corporation 82801JI (ICH10 Family) USB UHCI Controller #2 (prog-if 00 [UHCI])
 	Subsystem: ASUSTeK Computer Inc. P5Q Deluxe Motherboard
-	Control: I/O+ Mem- BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR- FastB2B- DisINTx-
+	Control: I/O+ Mem- BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
 	Status: Cap+ 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort-SERR-
 	Kernel driver in use: uhci_hcd
 
-00:1d.2 USB controller: Intel Corporation 82801JI (ICH10 Family) USB 
-UHCI Controller #3 (prog-if 00 [UHCI])
+00:1d.2 USB controller: Intel Corporation 82801JI (ICH10 Family) USB UHCI Controller #3 (prog-if 00 [UHCI])
 	Subsystem: ASUSTeK Computer Inc. P5Q Deluxe Motherboard
-	Control: I/O+ Mem- BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR- FastB2B- DisINTx-
+	Control: I/O+ Mem- BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
 	Status: Cap+ 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort-SERR-
 	Kernel driver in use: uhci_hcd
 
-00:1d.7 USB controller: Intel Corporation 82801JI (ICH10 Family) USB2 
-EHCI Controller #1 (prog-if 20 [EHCI])
+00:1d.7 USB controller: Intel Corporation 82801JI (ICH10 Family) USB2 EHCI Controller #1 (prog-if 20 [EHCI])
 	Subsystem: ASUSTeK Computer Inc. P5Q Deluxe Motherboard
-	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR+ FastB2B- DisINTx-
+	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR+ FastB2B- DisINTx-
 	Status: Cap+ 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort-SERR-
 	Kernel driver in use: ehci-pci
 
-00:1e.0 PCI bridge: Intel Corporation 82801 PCI Bridge (rev 90) (prog-if 
-01 [Subtractive decode])
-	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR+ FastB2B- DisINTx-
-	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast 
- >TAbort-SERR-TAbort-Reset- FastB2B-
+00:1e.0 PCI bridge: Intel Corporation 82801 PCI Bridge (rev 90) (prog-if 01 [Subtractive decode])
+	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR+ FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-TAbort-Reset- FastB2B-
 		PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
 	Capabilities:
 
-00:1f.0 ISA bridge: Intel Corporation 82801JIR (ICH10R) LPC Interface 
-Controller
+00:1f.0 ISA bridge: Intel Corporation 82801JIR (ICH10R) LPC Interface Controller
 	Subsystem: ASUSTeK Computer Inc. P5Q Deluxe Motherboard
-	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR- FastB2B- DisINTx-
+	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
 	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=medium >TAbort-SERR-
 	Kernel driver in use: lpc_ich
 
-00:1f.2 SATA controller: Intel Corporation 82801JI (ICH10 Family) SATA 
-AHCI Controller (prog-if 01 [AHCI 1.0])
+00:1f.2 SATA controller: Intel Corporation 82801JI (ICH10 Family) SATA AHCI Controller (prog-if 01 [AHCI 1.0])
 	Subsystem: ASUSTeK Computer Inc. P5Q Deluxe Motherboard
-	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR- FastB2B- DisINTx+
+	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx+
 	Status: Cap+ 66MHz+ UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort-SERR-
 	Kernel driver in use: ahci
 
 00:1f.3 SMBus: Intel Corporation 82801JI (ICH10 Family) SMBus Controller
 	Subsystem: ASUSTeK Computer Inc. P5Q Deluxe Motherboard
-	Control: I/O+ Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR+ FastB2B- DisINTx-
-	Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium 
- >TAbort-SERR-TAbort-SERR-
+	Control: I/O+ Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR+ FastB2B- DisINTx-
+	Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort-SERR-TAbort-SERR-
 	Kernel driver in use: ahci
 
-02:00.0 USB controller: NEC Corporation uPD720200 USB 3.0 Host 
-Controller (rev 04) (prog-if 30 [XHCI])
+02:00.0 USB controller: NEC Corporation uPD720200 USB 3.0 Host Controller (rev 04) (prog-if 30 [XHCI])
 	Subsystem: ASUSTeK Computer Inc. P8P67 Deluxe Motherboard
-	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR+ FastB2B- DisINTx+
+	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR+ FastB2B- DisINTx+
 	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-
 	Kernel driver in use: xhci_hcd
 
-03:00.0 VGA compatible controller: NVIDIA Corporation GF108 [GeForce GT 
-440] (rev a1) (prog-if 00 [VGA controller])
+03:00.0 VGA compatible controller: NVIDIA Corporation GF108 [GeForce GT 440] (rev a1) (prog-if 00 [VGA controller])
 	Subsystem: ASUSTeK Computer Inc. Device 83b7
-	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR+ FastB2B- DisINTx+
+	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR+ FastB2B- DisINTx+
 	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-
 	Kernel driver in use: nouveau
 
-03:00.1 Audio device: NVIDIA Corporation GF108 High Definition Audio 
-Controller (rev a1)
+03:00.1 Audio device: NVIDIA Corporation GF108 High Definition Audio Controller (rev a1)
 	Subsystem: ASUSTeK Computer Inc. Device 83b7
-	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR+ FastB2B- DisINTx-
+	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR+ FastB2B- DisINTx-
 	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-
 	Kernel driver in use: snd_hda_intel
 
-05:00.0 SATA controller: JMicron Technology Corp. JMB362 SATA Controller 
-(rev 10) (prog-if 01 [AHCI 1.0])
+05:00.0 SATA controller: JMicron Technology Corp. JMB362 SATA Controller (rev 10) (prog-if 01 [AHCI 1.0])
 	Subsystem: ASUSTeK Computer Inc. P8P67 Deluxe Motherboard
-	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR+ FastB2B- DisINTx-
+	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR+ FastB2B- DisINTx-
 	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-
 	Kernel driver in use: ahci
 
-07:01.0 Ethernet controller: Realtek Semiconductor Co., Ltd. 
-RTL-8110SC/8169SC Gigabit Ethernet (rev 10)
+07:01.0 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL-8110SC/8169SC Gigabit Ethernet (rev 10)
 	Subsystem: ASUSTeK Computer Inc. Device 820d
-	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV+ VGASnoop- ParErr- 
-Stepping- SERR+ FastB2B- DisINTx-
+	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV+ VGASnoop- ParErr- Stepping- SERR+ FastB2B- DisINTx-
 	Status: Cap+ 66MHz+ UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort-SERR-
 	Kernel driver in use: r8169
 
-07:02.0 FireWire (IEEE 1394): VIA Technologies, Inc. VT6306/7/8 [Fire 
-II(M)] IEEE 1394 OHCI Controller (rev c0) (prog-if 10 [OHCI])
+07:02.0 FireWire (IEEE 1394): VIA Technologies, Inc. VT6306/7/8 [Fire II(M)] IEEE 1394 OHCI Controller (rev c0) (prog-if 10 [OHCI])
 	Subsystem: ASUSTeK Computer Inc. Motherboard
-	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV+ VGASnoop- ParErr- 
-Stepping- SERR+ FastB2B- DisINTx-
+	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV+ VGASnoop- ParErr- Stepping- SERR+ FastB2B- DisINTx-
 	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=medium >TAbort-SERR-
 	Kernel driver in use: firewire_ohci
 
-ff:00.0 Host bridge: Intel Corporation Xeon 5500/Core i7 QuickPath 
-Architecture Generic Non-Core Registers (rev 05)
+ff:00.0 Host bridge: Intel Corporation Xeon 5500/Core i7 QuickPath Architecture Generic Non-Core Registers (rev 05)
 	Subsystem: Intel Corporation Device 8086
-	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
-Stepping- SERR- FastB2B- DisINTx-
-	Status: Cap- 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast 
- >TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-
+	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
+	Status: Cap- 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-
 
 
 
