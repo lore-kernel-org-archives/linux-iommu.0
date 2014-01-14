@@ -1,7 +1,8 @@
 From: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v2 4/5] memblock: introduce memblock_alloc_range()
-Date: Tue, 14 Jan 2014 23:13:49 +0900
-Message-ID: <1389708830-5841-5-git-send-email-akinobu.mita@gmail.com>
+Subject: [PATCH v2 5/5] cma: add placement specifier for "cma=" kernel
+	parameter
+Date: Tue, 14 Jan 2014 23:13:50 +0900
+Message-ID: <1389708830-5841-6-git-send-email-akinobu.mita@gmail.com>
 References: <1389708830-5841-1-git-send-email-akinobu.mita@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,9 +22,17 @@ To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, akpm-de/tnXTf+JLsfHDXv
 Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This introduces memblock_alloc_range() which allocates memblock from
-the specified range of physical address.  I would like to use this
-function to specify the location of CMA.
+Currently, "cma=" kernel parameter is used to specify the size of CMA,
+but we can't specify where it is located.  We want to locate CMA below
+4GB for devices only supporting 32-bit addressing on 64-bit systems
+without iommu.
+
+This enables to specify the placement of CMA by extending "cma=" kernel
+parameter.
+
+Examples:
+1. locate 64MB CMA below 4GB by "cma=64M@0-4G"
+2. locate 64MB CMA exact at 512MB by "cma=64M@512M"
 
 Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
@@ -39,72 +48,168 @@ Signed-off-by: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.or
 ---
 New patch from this version
 
- include/linux/memblock.h |  2 ++
- mm/memblock.c            | 27 ++++++++++++++++++++-------
- 2 files changed, 22 insertions(+), 7 deletions(-)
+ Documentation/kernel-parameters.txt |  7 +++++--
+ drivers/base/dma-contiguous.c       | 42 ++++++++++++++++++++++++++++---------
+ include/linux/dma-contiguous.h      |  9 +++++---
+ 3 files changed, 43 insertions(+), 15 deletions(-)
 
-diff --git a/include/linux/memblock.h b/include/linux/memblock.h
-index 77c60e5..95e0cfa 100644
---- a/include/linux/memblock.h
-+++ b/include/linux/memblock.h
-@@ -176,6 +176,8 @@ static inline bool memblock_bottom_up(void) { return false; }
- #define MEMBLOCK_ALLOC_ANYWHERE	(~(phys_addr_t)0)
- #define MEMBLOCK_ALLOC_ACCESSIBLE	0
+diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
+index b9e9bd8..fdfd1ff 100644
+--- a/Documentation/kernel-parameters.txt
++++ b/Documentation/kernel-parameters.txt
+@@ -577,8 +577,11 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+ 			Also note the kernel might malfunction if you disable
+ 			some critical bits.
  
-+phys_addr_t __init memblock_alloc_range(phys_addr_t size, phys_addr_t align,
-+					phys_addr_t start, phys_addr_t end);
- phys_addr_t memblock_alloc_base(phys_addr_t size, phys_addr_t align,
- 				phys_addr_t max_addr);
- phys_addr_t __memblock_alloc_base(phys_addr_t size, phys_addr_t align,
-diff --git a/mm/memblock.c b/mm/memblock.c
-index 53e477b..83b0542 100644
---- a/mm/memblock.c
-+++ b/mm/memblock.c
-@@ -864,25 +864,38 @@ int __init_memblock memblock_set_node(phys_addr_t base, phys_addr_t size,
- }
- #endif /* CONFIG_HAVE_MEMBLOCK_NODE_MAP */
+-	cma=nn[MG]	[ARM,KNL]
+-			Sets the size of kernel global memory area for contiguous
++	cma=nn[MG]@[start[MG][-end[MG]]]
++			[ARM,X86,KNL]
++			Sets the size of kernel global memory area for
++			contiguous memory allocations and optionally the
++			placement constraint by the physical address range of
+ 			memory allocations. For more information, see
+ 			include/linux/dma-contiguous.h
  
--static phys_addr_t __init memblock_alloc_base_nid(phys_addr_t size,
--					phys_addr_t align, phys_addr_t max_addr,
--					int nid)
-+static phys_addr_t __init memblock_alloc_range_nid(phys_addr_t size,
-+					phys_addr_t align, phys_addr_t start,
-+					phys_addr_t end, int nid)
+diff --git a/drivers/base/dma-contiguous.c b/drivers/base/dma-contiguous.c
+index 165c2c2..b056661 100644
+--- a/drivers/base/dma-contiguous.c
++++ b/drivers/base/dma-contiguous.c
+@@ -59,11 +59,22 @@ struct cma *dma_contiguous_default_area;
+  */
+ static const phys_addr_t size_bytes = CMA_SIZE_MBYTES * SZ_1M;
+ static phys_addr_t size_cmdline = -1;
++static phys_addr_t base_cmdline;
++static phys_addr_t limit_cmdline;
+ 
+ static int __init early_cma(char *p)
  {
- 	phys_addr_t found;
- 
- 	if (WARN_ON(!align))
- 		align = __alignof__(long long);
- 
--	/* align @size to avoid excessive fragmentation on reserved array */
--	size = round_up(size, align);
--
--	found = memblock_find_in_range_node(0, max_addr, size, align, nid);
-+	found = memblock_find_in_range_node(start, end, size, align, nid);
- 	if (found && !memblock_reserve(found, size))
- 		return found;
- 
+ 	pr_debug("%s(%s)\n", __func__, p);
+ 	size_cmdline = memparse(p, &p);
++	if (*p != '@')
++		return 0;
++	base_cmdline = memparse(p + 1, &p);
++	if (*p != '-') {
++		limit_cmdline = base_cmdline + size_cmdline;
++		return 0;
++	}
++	limit_cmdline = memparse(p + 1, &p);
++
  	return 0;
  }
- 
-+phys_addr_t __init memblock_alloc_range(phys_addr_t size, phys_addr_t align,
-+					phys_addr_t start, phys_addr_t end)
-+{
-+	return memblock_alloc_range_nid(size, align, start, end, MAX_NUMNODES);
-+}
-+
-+static phys_addr_t __init memblock_alloc_base_nid(phys_addr_t size,
-+					phys_addr_t align, phys_addr_t max_addr,
-+					int nid)
-+{
-+	/* align @size to avoid excessive fragmentation on reserved array */
-+	size = round_up(size, align);
-+
-+	return memblock_alloc_range_nid(size, align, 0, max_addr, nid);
-+}
-+
- phys_addr_t __init memblock_alloc_nid(phys_addr_t size, phys_addr_t align, int nid)
+ early_param("cma", early_cma);
+@@ -107,11 +118,18 @@ static inline __maybe_unused phys_addr_t cma_early_percent_memory(void)
+ void __init dma_contiguous_reserve(phys_addr_t limit)
  {
- 	return memblock_alloc_base_nid(size, align, MEMBLOCK_ALLOC_ACCESSIBLE, nid);
+ 	phys_addr_t selected_size = 0;
++	phys_addr_t selected_base = 0;
++	phys_addr_t selected_limit = limit;
++	bool fixed = false;
+ 
+ 	pr_debug("%s(limit %08lx)\n", __func__, (unsigned long)limit);
+ 
+ 	if (size_cmdline != -1) {
+ 		selected_size = size_cmdline;
++		selected_base = base_cmdline;
++		selected_limit = min_not_zero(limit_cmdline, limit);
++		if (base_cmdline + size_cmdline == limit_cmdline)
++			fixed = true;
+ 	} else {
+ #ifdef CONFIG_CMA_SIZE_SEL_MBYTES
+ 		selected_size = size_bytes;
+@@ -128,10 +146,12 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
+ 		pr_debug("%s: reserving %ld MiB for global area\n", __func__,
+ 			 (unsigned long)selected_size / SZ_1M);
+ 
+-		dma_contiguous_reserve_area(selected_size, 0, limit,
+-					    &dma_contiguous_default_area);
++		dma_contiguous_reserve_area(selected_size, selected_base,
++					    selected_limit,
++					    &dma_contiguous_default_area,
++					    fixed);
+ 	}
+-};
++}
+ 
+ static DEFINE_MUTEX(cma_mutex);
+ 
+@@ -187,15 +207,20 @@ core_initcall(cma_init_reserved_areas);
+  * @base: Base address of the reserved area optional, use 0 for any
+  * @limit: End address of the reserved memory (optional, 0 for any).
+  * @res_cma: Pointer to store the created cma region.
++ * @fixed: hint about where to place the reserved area
+  *
+  * This function reserves memory from early allocator. It should be
+  * called by arch specific code once the early allocator (memblock or bootmem)
+  * has been activated and all other subsystems have already allocated/reserved
+  * memory. This function allows to create custom reserved areas for specific
+  * devices.
++ *
++ * If @fixed is true, reserve contiguous area at exactly @base.  If false,
++ * reserve in range from @base to @limit.
+  */
+ int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
+-				       phys_addr_t limit, struct cma **res_cma)
++				       phys_addr_t limit, struct cma **res_cma,
++				       bool fixed)
+ {
+ 	struct cma *cma = &cma_areas[cma_area_count];
+ 	phys_addr_t alignment;
+@@ -221,18 +246,15 @@ int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
+ 	limit &= ~(alignment - 1);
+ 
+ 	/* Reserve memory */
+-	if (base) {
++	if (base && fixed) {
+ 		if (memblock_is_region_reserved(base, size) ||
+ 		    memblock_reserve(base, size) < 0) {
+ 			ret = -EBUSY;
+ 			goto err;
+ 		}
+ 	} else {
+-		/*
+-		 * Use __memblock_alloc_base() since
+-		 * memblock_alloc_base() panic()s.
+-		 */
+-		phys_addr_t addr = __memblock_alloc_base(size, alignment, limit);
++		phys_addr_t addr = memblock_alloc_range(size, alignment, base,
++							limit);
+ 		if (!addr) {
+ 			ret = -ENOMEM;
+ 			goto err;
+diff --git a/include/linux/dma-contiguous.h b/include/linux/dma-contiguous.h
+index 3b28f93..772eab5 100644
+--- a/include/linux/dma-contiguous.h
++++ b/include/linux/dma-contiguous.h
+@@ -88,7 +88,8 @@ static inline void dma_contiguous_set_default(struct cma *cma)
+ void dma_contiguous_reserve(phys_addr_t addr_limit);
+ 
+ int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
+-				       phys_addr_t limit, struct cma **res_cma);
++				       phys_addr_t limit, struct cma **res_cma,
++				       bool fixed);
+ 
+ /**
+  * dma_declare_contiguous() - reserve area for contiguous memory handling
+@@ -108,7 +109,7 @@ static inline int dma_declare_contiguous(struct device *dev, phys_addr_t size,
+ {
+ 	struct cma *cma;
+ 	int ret;
+-	ret = dma_contiguous_reserve_area(size, base, limit, &cma);
++	ret = dma_contiguous_reserve_area(size, base, limit, &cma, true);
+ 	if (ret == 0)
+ 		dev_set_cma_area(dev, cma);
+ 
+@@ -136,7 +137,9 @@ static inline void dma_contiguous_set_default(struct cma *cma) { }
+ static inline void dma_contiguous_reserve(phys_addr_t limit) { }
+ 
+ static inline int dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
+-				       phys_addr_t limit, struct cma **res_cma) {
++				       phys_addr_t limit, struct cma **res_cma,
++				       bool fixed)
++{
+ 	return -ENOSYS;
+ }
+ 
 -- 
 1.8.3.2
