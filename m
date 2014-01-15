@@ -1,16 +1,16 @@
-From: Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>
-Subject: Re: [PATCH 3/7] iommu/omap: Convert to devicetree
-Date: Wed, 15 Jan 2014 18:16:13 +0100
-Message-ID: <52D6C25D.8050005@epfl.ch>
-References: <1387284818-28739-1-git-send-email-florian.vaussard@epfl.ch>
-	<1387284818-28739-4-git-send-email-florian.vaussard@epfl.ch>
-	<1764051.JiGg1d3s1L@avalon> <20140102010150.GA9933@earth.universe>
-Reply-To: florian.vaussard-p8DiymsW2f8@public.gmane.org
+From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2 1/5] x86: make dma_alloc_coherent() return zeroed
+	memory if CMA is enabled
+Date: Wed, 15 Jan 2014 15:09:34 -0500
+Message-ID: <20140115200934.GC5201@phenom.dumpdata.com>
+References: <1389708830-5841-1-git-send-email-akinobu.mita@gmail.com>
+	<1389708830-5841-2-git-send-email-akinobu.mita@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140102010150.GA9933-SfvFxonMDyemK9LvCR3Hrw@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1389708830-5841-2-git-send-email-akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,26 +20,64 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, =?UTF-8?B?QmVub8OudCBDb3Vzc29u?= <bcousson-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Rob Landley <rob-VoJi6FS/r0vR7s880joybQ@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi
-
-On 01/02/2014 02:01 AM, Sebastian Reichel wrote:
-> Hi,
+On Tue, Jan 14, 2014 at 11:13:46PM +0900, Akinobu Mita wrote:
+> Calling dma_alloc_coherent() with __GFP_ZERO must return zeroed memory.
 > 
-> On Thu, Jan 02, 2014 at 01:13:42AM +0100, Laurent Pinchart wrote:
->>> +		.of_match_table = omap_iommu_of_match,
->>
->> If CONFIG_OF isn't defined (pretty unlikely I agree, but a possibility you 
->> seem to be prepared for nonetheless given the above #if), this will fail to 
->> compile.
-> 
-> FYI: This is avoided in other drivers by using
-> of_match_ptr(omap_iommu_of_match), which is replaced with NULL by
-> the preprocessor if CONFIG_OF is not defined.
-> 
+> But when the contiguous memory allocator (CMA) is enabled on x86 and
+> the memory region is allocated by dma_alloc_from_contiguous(), it
+> doesn't return zeroed memory.  Because dma_generic_alloc_coherent()
 
-Thank you for the hint.
+So why not fix it there to return zeroed out memory?
 
-Florian
+> forgot to fill the memory region with zero if it was allocated by
+> dma_alloc_from_contiguous()
+> 
+> Most implementations of dma_alloc_coherent() return zeroed memory
+> regardless of whether __GFP_ZERO is specified.  So this fixes it by
+> unconditionally zeroing the allocated memory region.
+> 
+> Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+> Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+> Cc: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> Cc: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+> Cc: Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> Cc: "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>
+> Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>
+> Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> Signed-off-by: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> ---
+> New patch from this version
+> 
+>  arch/x86/kernel/pci-dma.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
+> index 872079a..9644405 100644
+> --- a/arch/x86/kernel/pci-dma.c
+> +++ b/arch/x86/kernel/pci-dma.c
+> @@ -97,7 +97,6 @@ void *dma_generic_alloc_coherent(struct device *dev, size_t size,
+>  
+>  	dma_mask = dma_alloc_coherent_mask(dev, flag);
+>  
+> -	flag |= __GFP_ZERO;
+>  again:
+>  	page = NULL;
+>  	if (!(flag & GFP_ATOMIC))
+> @@ -118,7 +117,7 @@ again:
+>  
+>  		return NULL;
+>  	}
+> -
+> +	memset(page_address(page), 0, size);
+>  	*dma_addr = addr;
+>  	return page_address(page);
+>  }
+> -- 
+> 1.8.3.2
+> 
