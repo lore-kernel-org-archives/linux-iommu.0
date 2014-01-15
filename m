@@ -1,215 +1,423 @@
-From: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v2 5/5] cma: add placement specifier for "cma=" kernel
-	parameter
-Date: Tue, 14 Jan 2014 23:13:50 +0900
-Message-ID: <1389708830-5841-6-git-send-email-akinobu.mita@gmail.com>
-References: <1389708830-5841-1-git-send-email-akinobu.mita@gmail.com>
+From: Anthony DeRobertis <aderobertis@metrics.net>
+Subject: PROBLEM: do_IRQ: [number] No irq handler for vector (irq -1) [resend]
+Date: Wed, 15 Jan 2014 12:32:21 -0500
+Message-ID: <52D6C625.50802@metrics.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1389708830-5841-1-git-send-email-akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org
-Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linux-kernel mailing list <linux-kernel@vger.kernel.org>
+Cc: iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-Currently, "cma=" kernel parameter is used to specify the size of CMA,
-but we can't specify where it is located.  We want to locate CMA below
-4GB for devices only supporting 32-bit addressing on 64-bit systems
-without iommu.
+I repeatedly get "No irq handler for vector" since upgrading to 3.12. I 
+have confirmed it happens in git master as of yesterday morning 
+(061f49ec2d722f485237870f04544d8bec15a778). Fixed by disabling VT-d quirk.
 
-This enables to specify the placement of CMA by extending "cma=" kernel
-parameter.
+[please cc me on responses; I'm not subscribed to the list. Adding 
+linux-kernel because the iommu list seems broken.]
 
-Examples:
-1. locate 64MB CMA below 4GB by "cma=64M@0-4G"
-2. locate 64MB CMA exact at 512MB by "cma=64M@512M"
+DETAILS:
 
-Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Cc: Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>
-Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>
-Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Signed-off-by: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
----
-New patch from this version
+This is on a ASUS Sabertooth X58 board. Ever since upgrading to 3.12, 
+I've been flooded with messages like:
 
- Documentation/kernel-parameters.txt |  7 +++++--
- drivers/base/dma-contiguous.c       | 42 ++++++++++++++++++++++++++++---------
- include/linux/dma-contiguous.h      |  9 +++++---
- 3 files changed, 43 insertions(+), 15 deletions(-)
+Jan  5 19:06:46 Zia kernel: [292039.181501] do_IRQ: 1.76 No irq handler 
+for vector (irq -1)
+Jan  5 19:08:26 Zia kernel: [292138.390433] do_IRQ: 2.140 No irq handler 
+for vector (irq -1)
+Jan  5 19:40:16 Zia kernel: [294049.535992] do_IRQ: 1.84 No irq handler 
+for vector (irq -1)
+Jan  5 23:12:18 Zia kernel: [306774.882154] do_IRQ: 1.227 No irq handler 
+for vector (irq -1)
 
-diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
-index b9e9bd8..fdfd1ff 100644
---- a/Documentation/kernel-parameters.txt
-+++ b/Documentation/kernel-parameters.txt
-@@ -577,8 +577,11 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
- 			Also note the kernel might malfunction if you disable
- 			some critical bits.
- 
--	cma=nn[MG]	[ARM,KNL]
--			Sets the size of kernel global memory area for contiguous
-+	cma=nn[MG]@[start[MG][-end[MG]]]
-+			[ARM,X86,KNL]
-+			Sets the size of kernel global memory area for
-+			contiguous memory allocations and optionally the
-+			placement constraint by the physical address range of
- 			memory allocations. For more information, see
- 			include/linux/dma-contiguous.h
- 
-diff --git a/drivers/base/dma-contiguous.c b/drivers/base/dma-contiguous.c
-index 165c2c2..b056661 100644
---- a/drivers/base/dma-contiguous.c
-+++ b/drivers/base/dma-contiguous.c
-@@ -59,11 +59,22 @@ struct cma *dma_contiguous_default_area;
-  */
- static const phys_addr_t size_bytes = CMA_SIZE_MBYTES * SZ_1M;
- static phys_addr_t size_cmdline = -1;
-+static phys_addr_t base_cmdline;
-+static phys_addr_t limit_cmdline;
- 
- static int __init early_cma(char *p)
- {
- 	pr_debug("%s(%s)\n", __func__, p);
- 	size_cmdline = memparse(p, &p);
-+	if (*p != '@')
-+		return 0;
-+	base_cmdline = memparse(p + 1, &p);
-+	if (*p != '-') {
-+		limit_cmdline = base_cmdline + size_cmdline;
-+		return 0;
-+	}
-+	limit_cmdline = memparse(p + 1, &p);
-+
- 	return 0;
- }
- early_param("cma", early_cma);
-@@ -107,11 +118,18 @@ static inline __maybe_unused phys_addr_t cma_early_percent_memory(void)
- void __init dma_contiguous_reserve(phys_addr_t limit)
- {
- 	phys_addr_t selected_size = 0;
-+	phys_addr_t selected_base = 0;
-+	phys_addr_t selected_limit = limit;
-+	bool fixed = false;
- 
- 	pr_debug("%s(limit %08lx)\n", __func__, (unsigned long)limit);
- 
- 	if (size_cmdline != -1) {
- 		selected_size = size_cmdline;
-+		selected_base = base_cmdline;
-+		selected_limit = min_not_zero(limit_cmdline, limit);
-+		if (base_cmdline + size_cmdline == limit_cmdline)
-+			fixed = true;
- 	} else {
- #ifdef CONFIG_CMA_SIZE_SEL_MBYTES
- 		selected_size = size_bytes;
-@@ -128,10 +146,12 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
- 		pr_debug("%s: reserving %ld MiB for global area\n", __func__,
- 			 (unsigned long)selected_size / SZ_1M);
- 
--		dma_contiguous_reserve_area(selected_size, 0, limit,
--					    &dma_contiguous_default_area);
-+		dma_contiguous_reserve_area(selected_size, selected_base,
-+					    selected_limit,
-+					    &dma_contiguous_default_area,
-+					    fixed);
- 	}
--};
-+}
- 
- static DEFINE_MUTEX(cma_mutex);
- 
-@@ -187,15 +207,20 @@ core_initcall(cma_init_reserved_areas);
-  * @base: Base address of the reserved area optional, use 0 for any
-  * @limit: End address of the reserved memory (optional, 0 for any).
-  * @res_cma: Pointer to store the created cma region.
-+ * @fixed: hint about where to place the reserved area
-  *
-  * This function reserves memory from early allocator. It should be
-  * called by arch specific code once the early allocator (memblock or bootmem)
-  * has been activated and all other subsystems have already allocated/reserved
-  * memory. This function allows to create custom reserved areas for specific
-  * devices.
-+ *
-+ * If @fixed is true, reserve contiguous area at exactly @base.  If false,
-+ * reserve in range from @base to @limit.
-  */
- int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
--				       phys_addr_t limit, struct cma **res_cma)
-+				       phys_addr_t limit, struct cma **res_cma,
-+				       bool fixed)
- {
- 	struct cma *cma = &cma_areas[cma_area_count];
- 	phys_addr_t alignment;
-@@ -221,18 +246,15 @@ int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
- 	limit &= ~(alignment - 1);
- 
- 	/* Reserve memory */
--	if (base) {
-+	if (base && fixed) {
- 		if (memblock_is_region_reserved(base, size) ||
- 		    memblock_reserve(base, size) < 0) {
- 			ret = -EBUSY;
- 			goto err;
- 		}
- 	} else {
--		/*
--		 * Use __memblock_alloc_base() since
--		 * memblock_alloc_base() panic()s.
--		 */
--		phys_addr_t addr = __memblock_alloc_base(size, alignment, limit);
-+		phys_addr_t addr = memblock_alloc_range(size, alignment, base,
-+							limit);
- 		if (!addr) {
- 			ret = -ENOMEM;
- 			goto err;
-diff --git a/include/linux/dma-contiguous.h b/include/linux/dma-contiguous.h
-index 3b28f93..772eab5 100644
---- a/include/linux/dma-contiguous.h
-+++ b/include/linux/dma-contiguous.h
-@@ -88,7 +88,8 @@ static inline void dma_contiguous_set_default(struct cma *cma)
- void dma_contiguous_reserve(phys_addr_t addr_limit);
- 
- int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
--				       phys_addr_t limit, struct cma **res_cma);
-+				       phys_addr_t limit, struct cma **res_cma,
-+				       bool fixed);
- 
- /**
-  * dma_declare_contiguous() - reserve area for contiguous memory handling
-@@ -108,7 +109,7 @@ static inline int dma_declare_contiguous(struct device *dev, phys_addr_t size,
- {
- 	struct cma *cma;
- 	int ret;
--	ret = dma_contiguous_reserve_area(size, base, limit, &cma);
-+	ret = dma_contiguous_reserve_area(size, base, limit, &cma, true);
- 	if (ret == 0)
- 		dev_set_cma_area(dev, cma);
- 
-@@ -136,7 +137,9 @@ static inline void dma_contiguous_set_default(struct cma *cma) { }
- static inline void dma_contiguous_reserve(phys_addr_t limit) { }
- 
- static inline int dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
--				       phys_addr_t limit, struct cma **res_cma) {
-+				       phys_addr_t limit, struct cma **res_cma,
-+				       bool fixed)
-+{
- 	return -ENOSYS;
- }
- 
--- 
-1.8.3.2
+When first booting 3.12, I got the "This system BIOS has enabled 
+interrupt remapping on a chipset that contains an erratum making that 
+feature unstable.  To maintain system stability interrupt remapping is 
+being disabled. Please contact your BIOS vendor for an update" message. 
+I believe I also got the do_IRQ messages in that configuration, but am 
+not completely sure.
+
+After seeing that, I rebooted the machine and turned off VT-d in the 
+BIOS. The warning went away after that. However, the do_IRQ messages are 
+definitely present in that configuration.
+
+I have found one configuration that stops them. I turned back on VT-d in 
+the BIOS, and then disabled the fix
+"iommu/vt-d: add quirk for broken interrupt remapping on 55XX chipsets" 
+(03bbcb2e7e292838bb0244f5a7816d194c911d62).
+
+Also, I am running BIOS version 1402 (the latest), released 2012-08-29, 
+with the release notes "improve VT-d compatibility issue." The machine 
+has been perfectly stable, running pre-3.12 kernels with VT-d enabled 
+(though I'm not sure I'm actually really using that feature, as I 
+sometimes use KVM, but don't redirect any real hardware to the VMs).
+
+Here is the patch I used to disable the quirk:
+
+diff --git a/drivers/iommu/intel_irq_remapping.c 
+b/drivers/iommu/intel_irq_remapping.c
+index bab10b1..a5bf817 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -530,10 +530,11 @@ static int __init intel_irq_remapping_supported(void)
+                         "on a chipset that contains an erratum making 
+that\n"
+                         "feature unstable.  To maintain system stability\n"
+                         "interrupt remapping is being disabled.  Please\n"
+-                       "contact your BIOS vendor for an update\n");
+-               add_taint(TAINT_FIRMWARE_WORKAROUND, LOCKDEP_STILL_OK);
++                       "contact your BIOS vendor for an update\n"
++                       "Ignoring and leaving enabled anyway!\n");
++               /* add_taint(TAINT_FIRMWARE_WORKAROUND, LOCKDEP_STILL_OK);
+                 disable_irq_remap = 1;
+-               return 0;
++               return 0; */
+         }
+          if (!dmar_ir_support())
+
+
+SYSTEM INFO:
+
+processor       : 0
+vendor_id       : GenuineIntel
+cpu family      : 6
+model           : 26
+model name      : Intel(R) Core(TM) i7 CPU         930  @ 2.80GHz
+stepping        : 5
+microcode       : 0x19
+cpu MHz         : 1600.000
+cache size      : 8192 KB
+physical id     : 0
+siblings        : 8
+core id         : 0
+cpu cores       : 4
+apicid          : 0
+initial apicid  : 0
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 11
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge 
+mca cmov pat pse36 clflush dts acpi mmx f
+xsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon 
+pebs bts rep_good nopl xtopology nonsto
+p_tsc aperfmperf pni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr 
+pdcm sse4_1 sse4_2 popcnt lahf_lm ida dth
+erm tpr_shadow vnmi flexpriority ept vpid
+bogomips        : 5612.59
+clflush size    : 64
+cache_alignment : 64
+address sizes   : 36 bits physical, 48 bits virtual
+power management:
+
+... (repeats through 7)
+
+
+
+
+
+00:00.0 Host bridge: Intel Corporation 5520/5500/X58 I/O Hub to ESI Port 
+(rev 13)
+	Subsystem: ASUSTeK Computer Inc. Device 836b
+	Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR- FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-
+
+00:01.0 PCI bridge: Intel Corporation 5520/5500/X58 I/O Hub PCI Express 
+Root Port 1 (rev 13) (prog-if 00 [Normal decode])
+	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR+ FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast 
+ >TAbort-SERR-TAbort-Reset- FastB2B-
+		PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
+	Capabilities:
+	Kernel driver in use: pcieport
+
+00:02.0 PCI bridge: Intel Corporation 5520/5500/X58 I/O Hub PCI Express 
+Root Port 2 (rev 13) (prog-if 00 [Normal decode])
+	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR+ FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast 
+ >TAbort-SERR-TAbort-Reset- FastB2B-
+		PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
+	Capabilities:
+	Kernel driver in use: pcieport
+
+00:03.0 PCI bridge: Intel Corporation 5520/5500/X58 I/O Hub PCI Express 
+Root Port 3 (rev 13) (prog-if 00 [Normal decode])
+	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR+ FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast 
+ >TAbort-SERR-TAbort-Reset- FastB2B-
+		PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
+	Capabilities:
+	Kernel driver in use: pcieport
+
+00:07.0 PCI bridge: Intel Corporation 5520/5500/X58 I/O Hub PCI Express 
+Root Port 7 (rev 13) (prog-if 00 [Normal decode])
+	Control: I/O- Mem- BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR+ FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast 
+ >TAbort-SERR-TAbort-Reset- FastB2B-
+		PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
+	Capabilities:
+	Kernel driver in use: pcieport
+
+00:14.0 PIC: Intel Corporation 7500/5520/5500/X58 I/O Hub System 
+Management Registers (rev 13) (prog-if 00 [8259])
+	Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR- FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-
+	Kernel driver in use: i7core_edac
+
+00:14.1 PIC: Intel Corporation 7500/5520/5500/X58 I/O Hub GPIO and 
+Scratch Pad Registers (rev 13) (prog-if 00 [8259])
+	Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR- FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-
+
+00:14.2 PIC: Intel Corporation 7500/5520/5500/X58 I/O Hub Control Status 
+and RAS Registers (rev 13) (prog-if 00 [8259])
+	Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR- FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-
+
+00:14.3 PIC: Intel Corporation 7500/5520/5500/X58 I/O Hub Throttle 
+Registers (rev 13) (prog-if 00 [8259])
+	Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR- FastB2B- DisINTx-
+	Status: Cap- 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast 
+ >TAbort-SERR-TAbort-SERR-
+	Kernel driver in use: uhci_hcd
+
+00:1a.1 USB controller: Intel Corporation 82801JI (ICH10 Family) USB 
+UHCI Controller #5 (prog-if 00 [UHCI])
+	Subsystem: ASUSTeK Computer Inc. P5Q Deluxe Motherboard
+	Control: I/O+ Mem- BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR- FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort-SERR-
+	Kernel driver in use: uhci_hcd
+
+00:1a.2 USB controller: Intel Corporation 82801JI (ICH10 Family) USB 
+UHCI Controller #6 (prog-if 00 [UHCI])
+	Subsystem: ASUSTeK Computer Inc. P5Q Deluxe Motherboard
+	Control: I/O+ Mem- BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR- FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort-SERR-
+	Kernel driver in use: uhci_hcd
+
+00:1a.7 USB controller: Intel Corporation 82801JI (ICH10 Family) USB2 
+EHCI Controller #2 (prog-if 20 [EHCI])
+	Subsystem: ASUSTeK Computer Inc. P5Q Deluxe Motherboard
+	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR+ FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort-SERR-
+	Kernel driver in use: ehci-pci
+
+00:1b.0 Audio device: Intel Corporation 82801JI (ICH10 Family) HD Audio 
+Controller
+	Subsystem: ASUSTeK Computer Inc. Device 8436
+	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR+ FastB2B- DisINTx+
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-
+	Kernel driver in use: snd_hda_intel
+
+00:1c.0 PCI bridge: Intel Corporation 82801JI (ICH10 Family) PCI Express 
+Root Port 1 (prog-if 00 [Normal decode])
+	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR+ FastB2B- DisINTx+
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast 
+ >TAbort-SERR-TAbort-Reset- FastB2B-
+		PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
+	Capabilities:
+	Kernel driver in use: pcieport
+
+00:1c.4 PCI bridge: Intel Corporation 82801JI (ICH10 Family) PCI Express 
+Root Port 5 (prog-if 00 [Normal decode])
+	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR+ FastB2B- DisINTx+
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast 
+ >TAbort-SERR-TAbort-Reset- FastB2B-
+		PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
+	Capabilities:
+	Kernel driver in use: pcieport
+
+00:1d.0 USB controller: Intel Corporation 82801JI (ICH10 Family) USB 
+UHCI Controller #1 (prog-if 00 [UHCI])
+	Subsystem: ASUSTeK Computer Inc. P5Q Deluxe Motherboard
+	Control: I/O+ Mem- BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR- FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort-SERR-
+	Kernel driver in use: uhci_hcd
+
+00:1d.1 USB controller: Intel Corporation 82801JI (ICH10 Family) USB 
+UHCI Controller #2 (prog-if 00 [UHCI])
+	Subsystem: ASUSTeK Computer Inc. P5Q Deluxe Motherboard
+	Control: I/O+ Mem- BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR- FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort-SERR-
+	Kernel driver in use: uhci_hcd
+
+00:1d.2 USB controller: Intel Corporation 82801JI (ICH10 Family) USB 
+UHCI Controller #3 (prog-if 00 [UHCI])
+	Subsystem: ASUSTeK Computer Inc. P5Q Deluxe Motherboard
+	Control: I/O+ Mem- BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR- FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort-SERR-
+	Kernel driver in use: uhci_hcd
+
+00:1d.7 USB controller: Intel Corporation 82801JI (ICH10 Family) USB2 
+EHCI Controller #1 (prog-if 20 [EHCI])
+	Subsystem: ASUSTeK Computer Inc. P5Q Deluxe Motherboard
+	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR+ FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort-SERR-
+	Kernel driver in use: ehci-pci
+
+00:1e.0 PCI bridge: Intel Corporation 82801 PCI Bridge (rev 90) (prog-if 
+01 [Subtractive decode])
+	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR+ FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast 
+ >TAbort-SERR-TAbort-Reset- FastB2B-
+		PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
+	Capabilities:
+
+00:1f.0 ISA bridge: Intel Corporation 82801JIR (ICH10R) LPC Interface 
+Controller
+	Subsystem: ASUSTeK Computer Inc. P5Q Deluxe Motherboard
+	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR- FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=medium >TAbort-SERR-
+	Kernel driver in use: lpc_ich
+
+00:1f.2 SATA controller: Intel Corporation 82801JI (ICH10 Family) SATA 
+AHCI Controller (prog-if 01 [AHCI 1.0])
+	Subsystem: ASUSTeK Computer Inc. P5Q Deluxe Motherboard
+	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR- FastB2B- DisINTx+
+	Status: Cap+ 66MHz+ UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort-SERR-
+	Kernel driver in use: ahci
+
+00:1f.3 SMBus: Intel Corporation 82801JI (ICH10 Family) SMBus Controller
+	Subsystem: ASUSTeK Computer Inc. P5Q Deluxe Motherboard
+	Control: I/O+ Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR+ FastB2B- DisINTx-
+	Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium 
+ >TAbort-SERR-TAbort-SERR-
+	Kernel driver in use: ahci
+
+02:00.0 USB controller: NEC Corporation uPD720200 USB 3.0 Host 
+Controller (rev 04) (prog-if 30 [XHCI])
+	Subsystem: ASUSTeK Computer Inc. P8P67 Deluxe Motherboard
+	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR+ FastB2B- DisINTx+
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-
+	Kernel driver in use: xhci_hcd
+
+03:00.0 VGA compatible controller: NVIDIA Corporation GF108 [GeForce GT 
+440] (rev a1) (prog-if 00 [VGA controller])
+	Subsystem: ASUSTeK Computer Inc. Device 83b7
+	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR+ FastB2B- DisINTx+
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-
+	Kernel driver in use: nouveau
+
+03:00.1 Audio device: NVIDIA Corporation GF108 High Definition Audio 
+Controller (rev a1)
+	Subsystem: ASUSTeK Computer Inc. Device 83b7
+	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR+ FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-
+	Kernel driver in use: snd_hda_intel
+
+05:00.0 SATA controller: JMicron Technology Corp. JMB362 SATA Controller 
+(rev 10) (prog-if 01 [AHCI 1.0])
+	Subsystem: ASUSTeK Computer Inc. P8P67 Deluxe Motherboard
+	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR+ FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-SERR-
+	Kernel driver in use: ahci
+
+07:01.0 Ethernet controller: Realtek Semiconductor Co., Ltd. 
+RTL-8110SC/8169SC Gigabit Ethernet (rev 10)
+	Subsystem: ASUSTeK Computer Inc. Device 820d
+	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV+ VGASnoop- ParErr- 
+Stepping- SERR+ FastB2B- DisINTx-
+	Status: Cap+ 66MHz+ UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort-SERR-
+	Kernel driver in use: r8169
+
+07:02.0 FireWire (IEEE 1394): VIA Technologies, Inc. VT6306/7/8 [Fire 
+II(M)] IEEE 1394 OHCI Controller (rev c0) (prog-if 10 [OHCI])
+	Subsystem: ASUSTeK Computer Inc. Motherboard
+	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV+ VGASnoop- ParErr- 
+Stepping- SERR+ FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=medium >TAbort-SERR-
+	Kernel driver in use: firewire_ohci
+
+ff:00.0 Host bridge: Intel Corporation Xeon 5500/Core i7 QuickPath 
+Architecture Generic Non-Core Registers (rev 05)
+	Subsystem: Intel Corporation Device 8086
+	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR- FastB2B- DisINTx-
+	Status: Cap- 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast 
+ >TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-TAbort-SERR-
+
+
+
+
+
+Handle 0x0000, DMI type 0, 24 bytes
+BIOS Information
+         Vendor: American Megatrends Inc.
+         Version: 1402
+         Release Date: 08/09/2012
+         Address: 0xF0000
+         Runtime Size: 64 kB
+         ROM Size: 2048 kB
+         Characteristics:
+                 ISA is supported
+                 PCI is supported
+                 PNP is supported
+                 APM is supported
+                 BIOS is upgradeable
+                 BIOS shadowing is allowed
+                 ESCD support is available
+                 Boot from CD is supported
+                 Selectable boot is supported
+                 BIOS ROM is socketed
+                 EDD is supported
+                 5.25"/1.2 MB floppy services are supported (int 13h)
+                 3.5"/720 kB floppy services are supported (int 13h)
+                 3.5"/2.88 MB floppy services are supported (int 13h)
+                 Print screen service is supported (int 5h)
+                 8042 keyboard services are supported (int 9h)
+                 Serial services are supported (int 14h)
+                 Printer services are supported (int 17h)
+                 CGA/mono video services are supported (int 10h)
+                 ACPI is supported
+                 USB legacy is supported
+                 LS-120 boot is supported
+                 ATAPI Zip drive boot is supported
+                 BIOS boot specification is supported
+                 Targeted content distribution is supported
+         BIOS Revision: 8.15
+
+...
+
+Handle 0x0002, DMI type 2, 15 bytes
+Base Board Information
+         Manufacturer: ASUSTeK Computer INC.
+         Product Name: SABERTOOTH X58
+         Version: Rev 1.xx
+         Serial Number: 112835500000084
+         Asset Tag: To Be Filled By O.E.M.
+         Features:
+                 Board is a hosting board
+                 Board is replaceable
+         Location In Chassis: To Be Filled By O.E.M.
+         Chassis Handle: 0x0003
+         Type: Motherboard
+         Contained Object Handles: 0
