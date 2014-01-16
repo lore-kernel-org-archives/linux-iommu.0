@@ -1,7 +1,8 @@
 From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH 02/11] iommu/arm-smmu: Introduce bus notifier block
-Date: Thu, 16 Jan 2014 13:44:14 +0100
-Message-ID: <1389876263-25759-3-git-send-email-andreas.herrmann@calxeda.com>
+Subject: [PATCH 03/11] iommu/arm-smmu: Support buggy implementation where all
+	config accesses are secure
+Date: Thu, 16 Jan 2014 13:44:15 +0100
+Message-ID: <1389876263-25759-4-git-send-email-andreas.herrmann@calxeda.com>
 References: <1389876263-25759-1-git-send-email-andreas.herrmann@calxeda.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,101 +22,112 @@ To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-At the moment just handle BUS_NOTIFY_BIND_DRIVER to conditionally
-isolate all master devices for an SMMU.
+In such a case we have to use secure aliases of some non-secure
+registers.
 
-Depending on DT information each device is put into its own protection
-domain (if possible).  For configuration with one or just a few
-masters per SMMU that is easy to achieve.
-
-In case of many devices per SMMU (e.g. MMU-500 with it's distributed
-translation support) isolation of each device might not be possible --
-depending on number of available SMR groups and/or context banks.
-
-Default is that device isolation is contolled per SMMU with SMMU node
-property "arm,smmu-isolate-devices" in a DT. If this property is set
-for an SMMU node, device isolation is performed.
-
-W/o device isolation the driver detects SMMUs but no translation is
-configured (transactions just bypass translation process).
-
-Note that for device isolation dma_base and size are fixed as 0 and
-SZ_128M at the moment. Additional patches will address this
-restriction and allow automatic growth of mapping size.
+This handling is switched on by DT property
+"calxeda,smmu-secure-config-access" for an SMMU node.
 
 Cc: Andreas Herrmann <herrmann.der.user-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
 Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c |   45 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 45 insertions(+)
+ drivers/iommu/arm-smmu.c |   31 +++++++++++++++++++++----------
+ 1 file changed, 21 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 0b97d03..bc81dd0 100644
+index bc81dd0..823699e 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -46,6 +46,7 @@
- #include <linux/amba/bus.h>
- 
- #include <asm/pgalloc.h>
-+#include <asm/dma-iommu.h>
+@@ -50,6 +50,7 @@
  
  /* Driver options */
  #define ARM_SMMU_OPT_ISOLATE_DEVICES		(1 << 0)
-@@ -1964,6 +1965,48 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
- 	return 0;
++#define ARM_SMMU_OPT_SECURE_CONFIG_ACCESS	(1 << 1)
+ 
+ /* Maximum number of stream IDs assigned to a single device */
+ #define MAX_MASTER_STREAMIDS		8
+@@ -64,6 +65,15 @@
+ #define ARM_SMMU_GR0(smmu)		((smmu)->base)
+ #define ARM_SMMU_GR1(smmu)		((smmu)->base + (smmu)->pagesize)
+ 
++/*
++ * SMMU global address space with conditional offset to access secure aliases of
++ * non-secure registers (e.g. nsCR0: 0x400, nsGFSR: 0x448, nsGFSYNR0: 0x450)
++ */
++#define ARM_SMMU_GR0_NS(smmu)						\
++	((smmu)->base +							\
++		((smmu->options & ARM_SMMU_OPT_SECURE_CONFIG_ACCESS)	\
++			? 0x400 : 0))
++
+ /* Page table bits */
+ #define ARM_SMMU_PTE_PAGE		(((pteval_t)3) << 0)
+ #define ARM_SMMU_PTE_CONT		(((pteval_t)1) << 52)
+@@ -410,6 +420,7 @@ struct arm_smmu_option_prop {
+ 
+ static struct arm_smmu_option_prop arm_smmu_options [] = {
+ 	{ ARM_SMMU_OPT_ISOLATE_DEVICES, "arm,smmu-isolate-devices" },
++	{ ARM_SMMU_OPT_SECURE_CONFIG_ACCESS, "calxeda,smmu-secure-config-access" },
+ 	{ 0, NULL},
+ };
+ 
+@@ -639,16 +650,16 @@ static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
+ {
+ 	u32 gfsr, gfsynr0, gfsynr1, gfsynr2;
+ 	struct arm_smmu_device *smmu = dev;
+-	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
++	void __iomem *gr0_base = ARM_SMMU_GR0_NS(smmu);
+ 
+ 	gfsr = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSR);
+-	if (!gfsr)
+-		return IRQ_NONE;
+-
+ 	gfsynr0 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSYNR0);
+ 	gfsynr1 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSYNR1);
+ 	gfsynr2 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSYNR2);
+ 
++	if (!gfsr)
++		return IRQ_NONE;
++
+ 	dev_err_ratelimited(smmu->dev,
+ 		"Unexpected global fault, this could be serious\n");
+ 	dev_err_ratelimited(smmu->dev,
+@@ -1586,9 +1597,9 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+ 	int i = 0;
+ 	u32 reg;
+ 
+-	/* Clear Global FSR */
+-	reg = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSR);
+-	writel(reg, gr0_base + ARM_SMMU_GR0_sGFSR);
++	/* clear global FSR */
++	reg = readl_relaxed(ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sGFSR);
++	writel(reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sGFSR);
+ 
+ 	/* Mark all SMRn as invalid and all S2CRn as bypass */
+ 	for (i = 0; i < smmu->num_mapping_groups; ++i) {
+@@ -1608,7 +1619,7 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+ 	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_TLBIALLH);
+ 	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_TLBIALLNSNH);
+ 
+-	reg = readl_relaxed(gr0_base + ARM_SMMU_GR0_sCR0);
++	reg = readl_relaxed(ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
+ 
+ 	/* Enable fault reporting */
+ 	reg |= (sCR0_GFRE | sCR0_GFIE | sCR0_GCFGFRE | sCR0_GCFGFIE);
+@@ -1627,7 +1638,7 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+ 
+ 	/* Push the button */
+ 	arm_smmu_tlb_sync(smmu);
+-	writel_relaxed(reg, gr0_base + ARM_SMMU_GR0_sCR0);
++	writel(reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
  }
  
-+static int arm_smmu_device_notifier(struct notifier_block *nb,
-+				unsigned long action, void *data)
-+{
-+	struct device *dev = data;
-+	struct dma_iommu_mapping *mapping;
-+	struct arm_smmu_device *smmu;
-+	int ret;
-+
-+	switch (action) {
-+	case BUS_NOTIFY_BIND_DRIVER:
-+
-+		arm_smmu_add_device(dev);
-+		smmu = dev->archdata.iommu;
-+		if (!smmu || !(smmu->options & ARM_SMMU_OPT_ISOLATE_DEVICES))
-+			break;
-+
-+		mapping = arm_iommu_create_mapping(&platform_bus_type,
-+						0, SZ_128M, 0);
-+		if (IS_ERR(mapping)) {
-+			ret = PTR_ERR(mapping);
-+			dev_info(dev, "arm_iommu_create_mapping failed\n");
-+			break;
-+		}
-+
-+		ret = arm_iommu_attach_device(dev, mapping);
-+		if (ret < 0) {
-+			dev_info(dev, "arm_iommu_attach_device failed\n");
-+			arm_iommu_release_mapping(mapping);
-+		}
-+
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	return 0;
-+}
-+
-+static struct notifier_block device_nb = {
-+	.notifier_call = arm_smmu_device_notifier,
-+};
-+
- #ifdef CONFIG_OF
- static struct of_device_id arm_smmu_of_match[] = {
- 	{ .compatible = "arm,smmu-v1", },
-@@ -2000,6 +2043,8 @@ static int __init arm_smmu_init(void)
- 	if (!iommu_present(&amba_bustype))
- 		bus_set_iommu(&amba_bustype, &arm_smmu_ops);
+ static int arm_smmu_id_size_to_bits(int size)
+@@ -1961,7 +1972,7 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+ 		free_irq(smmu->irqs[i], smmu);
  
-+	bus_register_notifier(&platform_bus_type, &device_nb);
-+
+ 	/* Turn the thing off */
+-	writel_relaxed(sCR0_CLIENTPD, ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_sCR0);
++	writel(sCR0_CLIENTPD,ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
  	return 0;
  }
  
