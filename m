@@ -1,14 +1,14 @@
-From: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 08/11] of: Increase MAX_PHANDLE_ARGS
-Date: Thu, 16 Jan 2014 08:25:59 -0600
-Message-ID: <CAL_Jsq+fDUYne1OQAd4AeQw-JAoFBf0TCv4YVpy6Vt_UmdkA8A@mail.gmail.com>
-References: <1389876263-25759-1-git-send-email-andreas.herrmann@calxeda.com>
-	<1389876263-25759-9-git-send-email-andreas.herrmann@calxeda.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH v2 3/5] intel-iommu: integrate DMA CMA
+Date: Thu, 16 Jan 2014 15:28:04 +0100
+Message-ID: <52D7EC74.7030401@samsung.com>
+References: <1389708830-5841-1-git-send-email-akinobu.mita@gmail.com>
+	<1389708830-5841-4-git-send-email-akinobu.mita@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1389876263-25759-9-git-send-email-andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+In-reply-to: <1389708830-5841-4-git-send-email-akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,47 +18,113 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org
+Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jan 16, 2014 at 6:44 AM, Andreas Herrmann
-<andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org> wrote:
-> arm-smmu driver uses of_parse_phandle_with_args when parsing DT
-> information to determine stream IDs for a master device.
-> Thus the number of stream IDs per master device is bound by
-> MAX_PHANDLE_ARGS.
+Hello,
+
+On 2014-01-14 15:13, Akinobu Mita wrote:
+> This adds support for the DMA Contiguous Memory Allocator for intel-iommu.
+> This change enables dma_alloc_coherent() to allocate big contiguous
+> memory.
 >
-> To support Calxeda ECX-2000 hardware arm-smmu driver requires a
-> slightly higher value for MAX_PHANDLE_ARGS as this hardware has 10
-> stream IDs for one master device.
+> It is achieved in the same way as nommu_dma_ops currently does, i.e.
+> trying to allocate memory by dma_alloc_from_contiguous() and alloc_pages()
+> is used as a fallback.
 >
-> Cc: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Cc: Andreas Herrmann <herrmann.der.user-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-> Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-
-Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-
-One comment below...
-
+> Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+> Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+> Cc: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> Cc: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+> Cc: Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> Cc: "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>
+> Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>
+> Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> Signed-off-by: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 > ---
->  include/linux/of.h |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> No change from the previous version
 >
-> diff --git a/include/linux/of.h b/include/linux/of.h
-> index 276c546..0807af8 100644
-> --- a/include/linux/of.h
-> +++ b/include/linux/of.h
-> @@ -67,7 +67,7 @@ struct device_node {
->  #endif
->  };
+>   drivers/iommu/intel-iommu.c | 32 ++++++++++++++++++++++++--------
+>   1 file changed, 24 insertions(+), 8 deletions(-)
 >
-> -#define MAX_PHANDLE_ARGS 8
-> +#define MAX_PHANDLE_ARGS 10
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index fd426ca..172c2b0 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -3004,7 +3004,7 @@ static void *intel_alloc_coherent(struct device *hwdev, size_t size,
+>   				  dma_addr_t *dma_handle, gfp_t flags,
+>   				  struct dma_attrs *attrs)
+>   {
+> -	void *vaddr;
+> +	struct page *page = NULL;
+>   	int order;
+>   
+>   	size = PAGE_ALIGN(size);
+> @@ -3019,17 +3019,31 @@ static void *intel_alloc_coherent(struct device *hwdev, size_t size,
+>   			flags |= GFP_DMA32;
+>   	}
+>   
+> -	vaddr = (void *)__get_free_pages(flags, order);
+> -	if (!vaddr)
+> +	if (!(flags & GFP_ATOMIC)) {
 
-Just bump this to 16. This is normally just a temporary on the stack
-and 8 more words on the stack is not going to cost much.
+GFP_ATOMIC is not a flag, so please change the above check to:
+            if (flags & __GFP_WAIT)
 
-Rob
+I will also fix the similar issue in arch/x86/kernel/pci-dma.c
+
+> +		unsigned int count = size >> PAGE_SHIFT;
+> +
+> +		page = dma_alloc_from_contiguous(hwdev, count, order);
+> +		if (page && iommu_no_mapping(hwdev) &&
+> +		    page_to_phys(page) + size > hwdev->coherent_dma_mask) {
+> +			dma_release_from_contiguous(hwdev, page, count);
+> +			page = NULL;
+> +		}
+> +	}
+> +
+> +	if (!page)
+> +		page = alloc_pages(flags, order);
+> +	if (!page)
+>   		return NULL;
+> -	memset(vaddr, 0, size);
+> +	memset(page_address(page), 0, size);
+>   
+> -	*dma_handle = __intel_map_single(hwdev, virt_to_bus(vaddr), size,
+> +	*dma_handle = __intel_map_single(hwdev, page_to_phys(page), size,
+>   					 DMA_BIDIRECTIONAL,
+>   					 hwdev->coherent_dma_mask);
+>   	if (*dma_handle)
+> -		return vaddr;
+> -	free_pages((unsigned long)vaddr, order);
+> +		return page_address(page);
+> +	if (!dma_release_from_contiguous(hwdev, page, size >> PAGE_SHIFT))
+> +		__free_pages(page, order);
+> +
+>   	return NULL;
+>   }
+>   
+> @@ -3037,12 +3051,14 @@ static void intel_free_coherent(struct device *hwdev, size_t size, void *vaddr,
+>   				dma_addr_t dma_handle, struct dma_attrs *attrs)
+>   {
+>   	int order;
+> +	struct page *page = virt_to_page(vaddr);
+>   
+>   	size = PAGE_ALIGN(size);
+>   	order = get_order(size);
+>   
+>   	intel_unmap_page(hwdev, dma_handle, size, DMA_BIDIRECTIONAL, NULL);
+> -	free_pages((unsigned long)vaddr, order);
+> +	if (!dma_release_from_contiguous(hwdev, page, size >> PAGE_SHIFT))
+> +		__free_pages(page, order);
+>   }
+>   
+>   static void intel_unmap_sg(struct device *hwdev, struct scatterlist *sglist,
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
