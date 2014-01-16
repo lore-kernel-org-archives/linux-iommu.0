@@ -1,14 +1,14 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v2 3/5] intel-iommu: integrate DMA CMA
-Date: Thu, 16 Jan 2014 15:28:04 +0100
-Message-ID: <52D7EC74.7030401@samsung.com>
-References: <1389708830-5841-1-git-send-email-akinobu.mita@gmail.com>
-	<1389708830-5841-4-git-send-email-akinobu.mita@gmail.com>
+From: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 09/11] ARM: dts: Add nodes for SMMUs on Calxeda ECX-2000
+Date: Thu, 16 Jan 2014 08:30:26 -0600
+Message-ID: <CAL_JsqK2JUBEvCb-=eHFE_T=2AD0K_+V=NAeijzK2DrCwkaCOA@mail.gmail.com>
+References: <1389876263-25759-1-git-send-email-andreas.herrmann@calxeda.com>
+	<1389876263-25759-10-git-send-email-andreas.herrmann@calxeda.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <1389708830-5841-4-git-send-email-akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1389876263-25759-10-git-send-email-andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,113 +18,142 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org
-Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+Cc: Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
+On Thu, Jan 16, 2014 at 6:44 AM, Andreas Herrmann
+<andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org> wrote:
+> Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> Cc: Andreas Herrmann <herrmann.der.user-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+> Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 
-On 2014-01-14 15:13, Akinobu Mita wrote:
-> This adds support for the DMA Contiguous Memory Allocator for intel-iommu.
-> This change enables dma_alloc_coherent() to allocate big contiguous
-> memory.
->
-> It is achieved in the same way as nommu_dma_ops currently does, i.e.
-> trying to allocate memory by dma_alloc_from_contiguous() and alloc_pages()
-> is used as a fallback.
->
-> Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-> Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-> Cc: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> Cc: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-> Cc: Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> Cc: "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>
-> Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>
-> Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> Signed-off-by: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+One minor comment, but otherwise:
+
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+
 > ---
-> No change from the previous version
+>  arch/arm/boot/dts/ecx-2000.dts    |   44 +++++++++++++++++++++++++++++++++++--
+>  arch/arm/boot/dts/ecx-common.dtsi |    9 +++++---
+>  2 files changed, 48 insertions(+), 5 deletions(-)
 >
->   drivers/iommu/intel-iommu.c | 32 ++++++++++++++++++++++++--------
->   1 file changed, 24 insertions(+), 8 deletions(-)
+> diff --git a/arch/arm/boot/dts/ecx-2000.dts b/arch/arm/boot/dts/ecx-2000.dts
+> index 2ccbb57f..722de49 100644
+> --- a/arch/arm/boot/dts/ecx-2000.dts
+> +++ b/arch/arm/boot/dts/ecx-2000.dts
+> @@ -76,10 +76,11 @@
+>         };
 >
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index fd426ca..172c2b0 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -3004,7 +3004,7 @@ static void *intel_alloc_coherent(struct device *hwdev, size_t size,
->   				  dma_addr_t *dma_handle, gfp_t flags,
->   				  struct dma_attrs *attrs)
->   {
-> -	void *vaddr;
-> +	struct page *page = NULL;
->   	int order;
->   
->   	size = PAGE_ALIGN(size);
-> @@ -3019,17 +3019,31 @@ static void *intel_alloc_coherent(struct device *hwdev, size_t size,
->   			flags |= GFP_DMA32;
->   	}
->   
-> -	vaddr = (void *)__get_free_pages(flags, order);
-> -	if (!vaddr)
-> +	if (!(flags & GFP_ATOMIC)) {
-
-GFP_ATOMIC is not a flag, so please change the above check to:
-            if (flags & __GFP_WAIT)
-
-I will also fix the similar issue in arch/x86/kernel/pci-dma.c
-
-> +		unsigned int count = size >> PAGE_SHIFT;
+>         soc {
+> -               ranges = <0x00000000 0x00000000 0x00000000 0xffffffff>;
+> +               ranges = <0x0 0x0 0x0 0xffffffff>;
+>
+>                 timer {
+> -                       compatible = "arm,cortex-a15-timer", "arm,armv7-timer";                         interrupts = <1 13 0xf08>,
+> +                       compatible = "arm,cortex-a15-timer", "arm,armv7-timer";
+> +                       interrupts = <1 13 0xf08>,
+>                                 <1 14 0xf08>,
+>                                 <1 11 0xf08>,
+>                                 <1 10 0xf08>;
+> @@ -109,6 +110,45 @@
+>                         interrupts = <0 76 4  0 75 4  0 74 4  0 73 4>;
+>                 };
+>         };
 > +
-> +		page = dma_alloc_from_contiguous(hwdev, count, order);
-> +		if (page && iommu_no_mapping(hwdev) &&
-> +		    page_to_phys(page) + size > hwdev->coherent_dma_mask) {
-> +			dma_release_from_contiguous(hwdev, page, count);
-> +			page = NULL;
-> +		}
-> +	}
-> +
-> +	if (!page)
-> +		page = alloc_pages(flags, order);
-> +	if (!page)
->   		return NULL;
-> -	memset(vaddr, 0, size);
-> +	memset(page_address(page), 0, size);
->   
-> -	*dma_handle = __intel_map_single(hwdev, virt_to_bus(vaddr), size,
-> +	*dma_handle = __intel_map_single(hwdev, page_to_phys(page), size,
->   					 DMA_BIDIRECTIONAL,
->   					 hwdev->coherent_dma_mask);
->   	if (*dma_handle)
-> -		return vaddr;
-> -	free_pages((unsigned long)vaddr, order);
-> +		return page_address(page);
-> +	if (!dma_release_from_contiguous(hwdev, page, size >> PAGE_SHIFT))
-> +		__free_pages(page, order);
-> +
->   	return NULL;
->   }
->   
-> @@ -3037,12 +3051,14 @@ static void intel_free_coherent(struct device *hwdev, size_t size, void *vaddr,
->   				dma_addr_t dma_handle, struct dma_attrs *attrs)
->   {
->   	int order;
-> +	struct page *page = virt_to_page(vaddr);
->   
->   	size = PAGE_ALIGN(size);
->   	order = get_order(size);
->   
->   	intel_unmap_page(hwdev, dma_handle, size, DMA_BIDIRECTIONAL, NULL);
-> -	free_pages((unsigned long)vaddr, order);
-> +	if (!dma_release_from_contiguous(hwdev, page, size >> PAGE_SHIFT))
-> +		__free_pages(page, order);
->   }
->   
->   static void intel_unmap_sg(struct device *hwdev, struct scatterlist *sglist,
+> +       soc@920000000 {
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+I believe this and the other > 32-bit addresses below should be
+"soc@9,20000000".
+
+> +               ranges = <0x9 0x20000000 0x9 0x20000000 0x290000>;
+> +               #address-cells = <2>;
+> +               #size-cells = <1>;
+> +               compatible = "simple-bus";
+> +               interrupt-parent = <&intc>;
+> +
+> +               smmu_mac0: smmu@920000000 {
+> +                       compatible = "arm,mmu-400";
+> +                       reg = <0x9 0x20000000 0x10000>;
+> +                       #global-interrupts = <1>;
+> +                       interrupts = <0 106 4 0 106 4>;
+> +                       mmu-masters = <&mac0 0 1>;
+> +                       calxeda,smmu-secure-config-access;
+> +                       arm,smmu-isolate-devices;
+> +               };
+> +
+> +               smmu_mac1: smmu@920080000 {
+> +                       compatible = "arm,mmu-400";
+> +                       reg = <0x9 0x20080000 0x10000>;
+> +                       #global-interrupts = <1>;
+> +                       interrupts = <0 108 4 0 108 4>;
+> +                       mmu-masters = <&mac1 0 1>;
+> +                       calxeda,smmu-secure-config-access;
+> +                       arm,smmu-isolate-devices;
+> +               };
+> +
+> +               smmu_sata: smmu@920180000 {
+> +                       compatible = "arm,mmu-400";
+> +                       reg = <0x00000009 0x20180000 0x10000>;
+> +                       mmu-masters = <&sata 0 1 2 3 4 5 6 7 8 9>;
+> +                       #global-interrupts = <1>;
+> +                       interrupts = <0 114 4 0 114 4>;
+> +                       calxeda,smmu-secure-config-access;
+> +                       arm,smmu-isolate-devices;
+> +               };
+> +       };
+> +
+>  };
+>
+>  /include/ "ecx-common.dtsi"
+> diff --git a/arch/arm/boot/dts/ecx-common.dtsi b/arch/arm/boot/dts/ecx-common.dtsi
+> index b90045a..ad9b2fd 100644
+> --- a/arch/arm/boot/dts/ecx-common.dtsi
+> +++ b/arch/arm/boot/dts/ecx-common.dtsi
+> @@ -33,7 +33,7 @@
+>                 compatible = "simple-bus";
+>                 interrupt-parent = <&intc>;
+>
+> -               sata@ffe08000 {
+> +               sata: sata@ffe08000 {
+>                         compatible = "calxeda,hb-ahci";
+>                         reg = <0xffe08000 0x10000>;
+>                         interrupts = <0 83 4>;
+> @@ -43,6 +43,7 @@
+>                                              &combophy0 3>;
+>                         calxeda,sgpio-gpio =<&gpioh 5 1 &gpioh 6 1 &gpioh 7 1>;
+>                         calxeda,led-order = <4 0 1 2 3>;
+> +                       #stream-id-cells = <10>;
+>                 };
+>
+>                 sdhci@ffe0e000 {
+> @@ -210,18 +211,20 @@
+>                         clock-names = "apb_pclk";
+>                 };
+>
+> -               ethernet@fff50000 {
+> +               mac0: ethernet@fff50000 {
+>                         compatible = "calxeda,hb-xgmac";
+>                         reg = <0xfff50000 0x1000>;
+>                         interrupts = <0 77 4  0 78 4  0 79 4>;
+>                         dma-coherent;
+> +                       #stream-id-cells = <2>;
+>                 };
+>
+> -               ethernet@fff51000 {
+> +               mac1: ethernet@fff51000 {
+>                         compatible = "calxeda,hb-xgmac";
+>                         reg = <0xfff51000 0x1000>;
+>                         interrupts = <0 80 4  0 81 4  0 82 4>;
+>                         dma-coherent;
+> +                       #stream-id-cells = <2>;
+>                 };
+>
+>                 combophy0: combo-phy@fff58000 {
+> --
+> 1.7.9.5
+>
+>
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
