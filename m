@@ -1,14 +1,12 @@
 From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH 07/11] iommu/arm-smmu: Set MAX_MASTER_STREAMIDS to
-	MAX_PHANDLE_ARGS
-Date: Thu, 16 Jan 2014 13:44:19 +0100
-Message-ID: <1389876263-25759-8-git-send-email-andreas.herrmann@calxeda.com>
-References: <1389876263-25759-1-git-send-email-andreas.herrmann@calxeda.com>
+Subject: [PATCH v4 0/11] iommu/arm-smmu: Misc modifications to support SMMUs
+	on Calxeda ECX-2000
+Date: Thu, 16 Jan 2014 13:44:12 +0100
+Message-ID: <1389876263-25759-1-git-send-email-andreas.herrmann@calxeda.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1389876263-25759-1-git-send-email-andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,31 +17,32 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The DT parsing code that determines stream IDs uses
-of_parse_phandle_with_args and thus MAX_MASTER_STREAMIDS
-is always bound by MAX_PHANDLE_ARGS.
+Hi,
 
-Cc: Andreas Herrmann <herrmann.der.user-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
----
- drivers/iommu/arm-smmu.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Here is v4 of arm-smmu changes to support SMMUs on Calxeda ECX-2000.
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index a4e0c93..68bbe45 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -54,7 +54,7 @@
- #define ARM_SMMU_OPT_SECURE_CONFIG_ACCESS	(1 << 1)
- 
- /* Maximum number of stream IDs assigned to a single device */
--#define MAX_MASTER_STREAMIDS		8
-+#define MAX_MASTER_STREAMIDS		MAX_PHANDLE_ARGS
- 
- /* Maximum stream ID */
- #define ARM_SMMU_MAX_STREAMID		(SZ_64K - 1)
--- 
-1.7.9.5
+Patches are based on v3.13-rc8.
+
+Major change to previous version is new code that allows to extend an
+existing IOMMU address mapping. (last two patches)
+
+Changelog:
+v4:
+ - added support to extend the size of an IOMMU address mapping
+ - check for duplicate stream IDs
+ - Increase MAX_PHANDLE_ARGS
+ - misc minor changes of patch
+   "iommu/arm-smmu: Introduce automatic stream-id-masking"
+v3:
+  http://marc.info/?l=linux-arm-kernel&m=138212725606348
+v2:
+  http://marc.info/?l=linux-arm-kernel&m=138135834704855
+v1:
+   http://marc.info/?l=linux-arm-kernel&m=138122450023564
+
+
+Regards,
+Andreas
