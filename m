@@ -1,16 +1,16 @@
 From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH 08/11] of: Increase MAX_PHANDLE_ARGS
-Date: Fri, 17 Jan 2014 12:00:35 +0100
-Message-ID: <20140117110035.GU3471@alberich>
+Subject: Re: [PATCH 09/11] ARM: dts: Add nodes for SMMUs on Calxeda ECX-2000
+Date: Fri, 17 Jan 2014 12:01:19 +0100
+Message-ID: <20140117110108.GV3471@alberich>
 References: <1389876263-25759-1-git-send-email-andreas.herrmann@calxeda.com>
-	<1389876263-25759-9-git-send-email-andreas.herrmann@calxeda.com>
-	<CAL_Jsq+fDUYne1OQAd4AeQw-JAoFBf0TCv4YVpy6Vt_UmdkA8A@mail.gmail.com>
+	<1389876263-25759-10-git-send-email-andreas.herrmann@calxeda.com>
+	<CAL_JsqK2JUBEvCb-=eHFE_T=2AD0K_+V=NAeijzK2DrCwkaCOA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CAL_Jsq+fDUYne1OQAd4AeQw-JAoFBf0TCv4YVpy6Vt_UmdkA8A-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <CAL_JsqK2JUBEvCb-=eHFE_T=2AD0K_+V=NAeijzK2DrCwkaCOA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,50 +21,54 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Cc: Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jan 16, 2014 at 09:25:59AM -0500, Rob Herring wrote:
+On Thu, Jan 16, 2014 at 09:30:26AM -0500, Rob Herring wrote:
 > On Thu, Jan 16, 2014 at 6:44 AM, Andreas Herrmann
 > <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org> wrote:
-> > arm-smmu driver uses of_parse_phandle_with_args when parsing DT
-> > information to determine stream IDs for a master device.
-> > Thus the number of stream IDs per master device is bound by
-> > MAX_PHANDLE_ARGS.
-> >
-> > To support Calxeda ECX-2000 hardware arm-smmu driver requires a
-> > slightly higher value for MAX_PHANDLE_ARGS as this hardware has 10
-> > stream IDs for one master device.
-> >
-> > Cc: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 > > Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> > Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 > > Cc: Andreas Herrmann <herrmann.der.user-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
 > > Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 > 
+> One minor comment, but otherwise:
+> 
 > Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 > 
-> One comment below...
-> 
 > > ---
-> >  include/linux/of.h |    2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >  arch/arm/boot/dts/ecx-2000.dts    |   44 +++++++++++++++++++++++++++++++++++--
+> >  arch/arm/boot/dts/ecx-common.dtsi |    9 +++++---
+> >  2 files changed, 48 insertions(+), 5 deletions(-)
 > >
-> > diff --git a/include/linux/of.h b/include/linux/of.h
-> > index 276c546..0807af8 100644
-> > --- a/include/linux/of.h
-> > +++ b/include/linux/of.h
-> > @@ -67,7 +67,7 @@ struct device_node {
-> >  #endif
-> >  };
+> > diff --git a/arch/arm/boot/dts/ecx-2000.dts b/arch/arm/boot/dts/ecx-2000.dts
+> > index 2ccbb57f..722de49 100644
+> > --- a/arch/arm/boot/dts/ecx-2000.dts
+> > +++ b/arch/arm/boot/dts/ecx-2000.dts
+> > @@ -76,10 +76,11 @@
+> >         };
 > >
-> > -#define MAX_PHANDLE_ARGS 8
-> > +#define MAX_PHANDLE_ARGS 10
+> >         soc {
+> > -               ranges = <0x00000000 0x00000000 0x00000000 0xffffffff>;
+> > +               ranges = <0x0 0x0 0x0 0xffffffff>;
+> >
+> >                 timer {
+> > -                       compatible = "arm,cortex-a15-timer", "arm,armv7-timer";                         interrupts = <1 13 0xf08>,
+> > +                       compatible = "arm,cortex-a15-timer", "arm,armv7-timer";
+> > +                       interrupts = <1 13 0xf08>,
+> >                                 <1 14 0xf08>,
+> >                                 <1 11 0xf08>,
+> >                                 <1 10 0xf08>;
+> > @@ -109,6 +110,45 @@
+> >                         interrupts = <0 76 4  0 75 4  0 74 4  0 73 4>;
+> >                 };
+> >         };
+> > +
+> > +       soc@920000000 {
 > 
-> Just bump this to 16. This is normally just a temporary on the stack
-> and 8 more words on the stack is not going to cost much.
+> I believe this and the other > 32-bit addresses below should be
+> "soc@9,20000000".
 
-Yes, that seems reasonable.
+Will fix this.
 
 
 Thanks,
