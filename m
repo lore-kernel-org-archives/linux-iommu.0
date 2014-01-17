@@ -1,16 +1,16 @@
-From: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v2 1/5] x86: make dma_alloc_coherent() return zeroed
-	memory if CMA is enabled
-Date: Fri, 17 Jan 2014 08:34:38 +0900
-Message-ID: <CAC5umygcr0a_BfDJ9tB1EDry4UEwThG7WvkA8Dn27zO9RQab8Q@mail.gmail.com>
-References: <1389708830-5841-1-git-send-email-akinobu.mita@gmail.com>
-	<1389708830-5841-2-git-send-email-akinobu.mita@gmail.com>
-	<20140115200934.GC5201@phenom.dumpdata.com>
+From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH 08/11] of: Increase MAX_PHANDLE_ARGS
+Date: Fri, 17 Jan 2014 12:00:35 +0100
+Message-ID: <20140117110035.GU3471@alberich>
+References: <1389876263-25759-1-git-send-email-andreas.herrmann@calxeda.com>
+	<1389876263-25759-9-git-send-email-andreas.herrmann@calxeda.com>
+	<CAL_Jsq+fDUYne1OQAd4AeQw-JAoFBf0TCv4YVpy6Vt_UmdkA8A@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140115200934.GC5201-6K5HmflnPlqSPmnEAIUT9EEOCMrvLtNR@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAL_Jsq+fDUYne1OQAd4AeQw-JAoFBf0TCv4YVpy6Vt_UmdkA8A-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,25 +20,53 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+To: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-2014/1/16 Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>:
-> On Tue, Jan 14, 2014 at 11:13:46PM +0900, Akinobu Mita wrote:
->> Calling dma_alloc_coherent() with __GFP_ZERO must return zeroed memory.
->>
->> But when the contiguous memory allocator (CMA) is enabled on x86 and
->> the memory region is allocated by dma_alloc_from_contiguous(), it
->> doesn't return zeroed memory.  Because dma_generic_alloc_coherent()
->
-> So why not fix it there to return zeroed out memory?
+On Thu, Jan 16, 2014 at 09:25:59AM -0500, Rob Herring wrote:
+> On Thu, Jan 16, 2014 at 6:44 AM, Andreas Herrmann
+> <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org> wrote:
+> > arm-smmu driver uses of_parse_phandle_with_args when parsing DT
+> > information to determine stream IDs for a master device.
+> > Thus the number of stream IDs per master device is bound by
+> > MAX_PHANDLE_ARGS.
+> >
+> > To support Calxeda ECX-2000 hardware arm-smmu driver requires a
+> > slightly higher value for MAX_PHANDLE_ARGS as this hardware has 10
+> > stream IDs for one master device.
+> >
+> > Cc: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> > Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> > Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > Cc: Andreas Herrmann <herrmann.der.user-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+> > Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+> 
+> Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> 
+> One comment below...
+> 
+> > ---
+> >  include/linux/of.h |    2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/include/linux/of.h b/include/linux/of.h
+> > index 276c546..0807af8 100644
+> > --- a/include/linux/of.h
+> > +++ b/include/linux/of.h
+> > @@ -67,7 +67,7 @@ struct device_node {
+> >  #endif
+> >  };
+> >
+> > -#define MAX_PHANDLE_ARGS 8
+> > +#define MAX_PHANDLE_ARGS 10
+> 
+> Just bump this to 16. This is normally just a temporary on the stack
+> and 8 more words on the stack is not going to cost much.
 
-I thought it looked nicer than this patch as we can remove memset
-from all caller of dma_alloc_from_contiguous().  But if I look at
-the caller on arm, we can't simply remove the memset because
-__dma_clear_buffer() is used there for ensuring cache flushing and
-it is used in many places.
+Yes, that seems reasonable.
 
-Of course we can do redundant memset in dma_alloc_from_contiguous(),
-but now I think this patch is less impact for fixing this problem.
+
+Thanks,
+
+Andreas
