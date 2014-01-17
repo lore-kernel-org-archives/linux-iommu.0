@@ -1,15 +1,21 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [RFC][PATCH] Remove bus dependency for iommu_domain_alloc.
-Date: Fri, 17 Jan 2014 20:21:16 +0000
-Message-ID: <546cedebe8cb4a6d818d9a6c3ef941bf@BL2PR03MB468.namprd03.prod.outlook.com>
-References: <1389987042-27352-1-git-send-email-Varun.Sethi@freescale.com>
-	<1389989354.8705.89.camel@bling.home>
+From: Neil Horman <nhorman-2XuSBdqkA4R54TAoqtyWWQ@public.gmane.org>
+Subject: Re: PROBLEM: do_IRQ: [number] No irq handler for vector (irq -1)
+Date: Fri, 17 Jan 2014 15:27:12 -0500
+Message-ID: <20140117202712.GC19452@hmsreliant.think-freely.org>
+References: <52D576E3.8050006@metrics.net>
+	<1389844985.8705.45.camel@bling.home>
+	<20140116121617.GA9984@hmsreliant.think-freely.org>
+	<52D8120D.7090606@metrics.net>
+	<20140116182134.GC9984@hmsreliant.think-freely.org>
+	<52D83BF9.7040502@metrics.net>
+	<20140117140831.GA19452@hmsreliant.think-freely.org>
+	<52D97BFB.1020106@metrics.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1389989354.8705.89.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <52D97BFB.1020106-VnMYzjHJ8tfR7s880joybQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,74 +25,48 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Anthony DeRobertis <aderobertis-VnMYzjHJ8tfR7s880joybQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-> -----Original Message-----
-> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> Sent: Saturday, January 18, 2014 1:39 AM
-> To: Sethi Varun-B16395
-> Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-
-> kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: Re: [RFC][PATCH] Remove bus dependency for iommu_domain_alloc.
-> 
-> On Sat, 2014-01-18 at 01:00 +0530, Varun Sethi wrote:
-> > This patch attempts to remove iommu_domain_alloc function's dependency
-> on the bus type.
-> > This dependency is quiet restrictive in case of vfio, where it's
-> > possible to bind multiple iommu groups (from different bus types) to
-> the same iommu domain.
-> >
-> > This patch is based on the assumption, that there is a single iommu
-> > for all bus types on the system.
-> >
-> > We maintain a list of bus types (for which iommu ops are registered).
-> > In the iommu_domain_alloc function we ensure that all bus types
-> correspond to the same set of iommu operations.
-> 
-> Seems like this just kicks the problem down the road a little ways as I
-> expect the assumption isn't going to last long.  I think there's another
-> way to do this and we can do it entirely from within vfio_iommu_type1.
-> We have a problem on x86 that the IOMMU driver can be backed by multiple
-> IOMMU hardware devices.  These separate devices are architecturally
-> allowed to have different properties.  The property causing us trouble is
-> cache coherency.  Some hardware devices allow us to use IOMMU_CACHE as a
-> mapping attribute, others do not.  Therefore we cannot use a single IOMMU
-> domain to optimally handle all devices in a heterogeneous environment.
-> 
-> I think the solution to this is to have vfio_iommu_type1 transparently
-> support multiple IOMMU domains.  In the implementation of that, it seems
-> to make sense to move the iommu_domain_alloc() to the point where we
-> attach a group to the domain.  That means we can scan the devices in the
-[Sethi Varun-B16395] Multiple iommu groups can also share the same domain (as a part
-Of the same VFIO container). I am not sure how can we handle the case of iommu groups from
-Different bus types in vfio.
-
--Varun
-
-> domain to determine the bus.  I suppose there is still an assumption that
-> all the devices in a group are on the same bus, but since the group is
-> determined by the IOMMU and we already assume only a single IOMMU per
-> bus, I think we're ok.  I spent some time working on a patch to do this,
-> but it isn't quite finished.  I'll try to bandage the rough edges and
-> send it out as an RFC so you can see what I'm talking about.  Thanks,
-> 
-> Alex
-> 
-> > Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-> > ---
-> >  arch/arm/mm/dma-mapping.c             |    2 +-
-> >  drivers/gpu/drm/msm/msm_gpu.c         |    2 +-
-> >  drivers/iommu/amd_iommu_v2.c          |    2 +-
-> >  drivers/iommu/iommu.c                 |   32
-> +++++++++++++++++++++++++++++---
-> >  drivers/media/platform/omap3isp/isp.c |    2 +-
-> >  drivers/remoteproc/remoteproc_core.c  |    2 +-
-> >  drivers/vfio/vfio_iommu_type1.c       |    2 +-
-> >  include/linux/device.h                |    2 ++
-> >  include/linux/iommu.h                 |    4 ++--
-> >  virt/kvm/iommu.c                      |    2 +-
-> >  10 files changed, 40 insertions(+), 12 deletions(-)
+T24gRnJpLCBKYW4gMTcsIDIwMTQgYXQgMDE6NTI6NDNQTSAtMDUwMCwgQW50aG9ueSBEZVJvYmVy
+dGlzIHdyb3RlOgo+IE9uIDAxLzE3LzIwMTQgMDk6MDggQU0sIE5laWwgSG9ybWFuIHdyb3RlOgo+
+IAo+ID5JZiBkaXNhYmxlX2lycV9yZW1hcCBoYWQgYmVlbiBzZXQgYnkgbm9pbnRyZW1hcCwgdGhh
+dCBmdW5jdGlvbgo+ID5zaG91bGQgaGF2ZSByZXR1cm5lZCBpbW1lZGlhdGVseSwgYnV0IGluIHRl
+c3QgMiB5b3UgZ290IHRoZSAiVGhpcwo+ID5zeXN0ZW0gQklPUy4uIiB3YXJuaW5nLCBpbmRpY2F0
+aW5nIHRoYXQgZGlzYWJsZV9pcnFfcmVtYXAgd2FzIG5vdAo+ID5zZXQuCj4gCj4gTm8sIHRoYXQn
+cyBub3QgcmlnaHQuLi4KPiAKPiBhbnRob255QFppYTovdG1wL2lvbW11JCBscyAtbAo+IHRvdGFs
+IDIxNgo+IC1ydy1yLS1yLS0gMSByb290IHJvb3QgNzExNDEgSmFuIDE2IDE0OjQwIG5vLXBhdGNo
+LHZ0LWQ9b2ZmCj4gLXJ3LXItLXItLSAxIHJvb3Qgcm9vdCA3MTQ0OSBKYW4gMTYgMTQ6Mzcgbm8t
+cGF0Y2gsdnQtZD1vbgo+IC1ydy1yLS1yLS0gMSByb290IHJvb3QgNzI3NDYgSmFuIDE2IDE0OjU0
+IG5vLXBhdGNoLHZ0LWQ9b24sbm9pbnRyZW1hcCx3aXRoLWVycm9yCj4gYW50aG9ueUBaaWE6L3Rt
+cC9pb21tdSQgZ3JlcCAnc3lzdGVtIEJJT1MnICoKPiBuby1wYXRjaCx2dC1kPW9uOlsgICAgMC4w
+NjYyNjhdIFRoaXMgc3lzdGVtIEJJT1MgaGFzIGVuYWJsZWQgaW50ZXJydXB0IHJlbWFwcGluZwo+
+IAo+IAo+IFNvLCB3aGVuIEkgbG9vayBhdCBteSBjb3BpZXMgb2YgdGhlIGZpbGVzLCBpdHMgYXMg
+ZXhwZWN0ZWQuCj4gCj4gSSBwdXQgdGhlIHRlc3QgY2FzZXMgaW4gdGhlIG9yZGVyIDEsIDMsIDIg
+d2hlbiBwYXN0aW5nIGludG8gdGhlCj4gZW1haWzigJR0aGUgbGFiZWxzIGFyZSByaWdodCwgYnV0
+IHRoYXQgb3JkZXIgd2FzIHJhdGhlciBzdHVwaWQgb24gbXkKPiBwYXJ0LiBCdXQgeW91IG11c3Qg
+YmUgbG9va2luZyBhdCB0aGUgcmlnaHQgb25lLCBiZWNhdXNlIHlvdSBzZWUgdGhlCj4ga2VybmVs
+IG9wdGlvbiwgc28gSSdtIGNvbmZ1c2VkLgo+IAo+IEkgaGF2ZSBubyBpZGVhIHdoYXQgdGhlIG1h
+aWxpbmcgbGlzdCB3aWxsIGRvIHdpdGggdGhpcyBhdHRhY2htZW50LAo+IGFuZCBJIGFwb2xvZ2l6
+ZSBpbiBhZHZhbmNlIGlmIHlvdSBkb24ndCBsaWtlIGJpbmFyeSBhdHRhY2htZW50cywgYnV0Cj4g
+aGVyZSB0aGV5IGFyZSBhcyBhIC50Z3ouIFNob3VsZCBhdCBsZWFzdCB0YWtlIGNhcmUgb2YgdGhp
+cwo+IGNvbmZ1c2lvbi4KCgpPaywgdGhhdHMgYSBiaXQgbW9yZSBjbGVhciwgdGhhbmsgeW91LiAg
+VGhlIG9yZGVyIG9mIHRlc3RzIGRpZCBjb25mdXNlIG1lCmFwcGFyZW50bHkuCgpTbyB0aGF0IGNs
+YXJpZmllcyB0aGUgcmVzdWx0cyBzb21ld2hhdC4gIG5vaW50cmVtYXAgZG9lcyBpbiBmYWN0IGRv
+IGEgc29mdHdhcmUKZGlzYWJsZSBvZiBpcnEgcmVtYXBwaW5nLCBqdXN0IGxpa2UgdGhlIHBjaSBx
+dXJpayBkb2VzLiAgVGhhdHMgZ29vZC4gIFdoYXRzIGxlc3MKZ29vZCBpcyB0aGF0IHlvdSBzdGls
+bCBnZXQgdGhlIGlycSB2ZWN0b3IgZXJyb3Igd2l0aCBub2ludHJlbWFwIHNwZWNpZmllZC4KV2hp
+ZWwgdGhhdCBzdXBwb3J0cyB0aGUgYXNzZXJ0aW9uIHRoYXQgdGhlcmUgaXMgbm90aGluZyB3cm9u
+ZyB3aXRoIHRoZSB3YXkgdGhlCnBjaSBxdWlyayBkaXNhYmxlcyBpcnEgcmVtYXBwaW5nLCBpdCBk
+b2VzIHN1Z2dlc3QgdGhhdCB0aGUgbGlzdGVkIHN5bXB0b20gKHRoZQpubyB2ZWN0b3IgZm9yIGly
+cSAoLTEpIGVycm9yKSBpcyBiZWluZyB0cmlnZ2VyZWQgYnkgc29tZSBvdGhlciByb290IGNhdXNl
+LiAgQW5kCkkgYW0gdW5mb3J0dW5hdGVseSB1bnN1cmUgb2Ygd2hhdCB0aGF0IG1pZ2h0IGJlLiAg
+SSB3b3VsZCBzdWdnZXN0IHlvdSBsb29rCnRocm91Z2ggdGhhdCBlcnJhdGEgc2hlZXQgdGhhdCBJ
+IHJlZmVyZW5jZWQgaW4gdGhlIGluaXRpYWwgY29tbWl0IHRvIGZpeCB0aGUKcmVtYXBwaW5nIHBy
+b2JsZW0sIHRvIHNlZSBpZiB0aGVyZSBhcmUgb3RoZXIgY2hpcCBlcnJhdGEgd2hvJ3Mgc3ltcHRv
+bXMgbGVhZCB0bwppcnEgZHJhaW5hZ2UgZmFpbHVyZXMuICBXZSBtYXkgbmVlZCB0byBhZGQgYW5v
+dGhlciBxdWlyayB0byB0aGlzIGNoaXBzZXQuCgpSZWdhcmRzCk5laWwKCl9fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21t
+dUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlv
+bi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
