@@ -1,15 +1,19 @@
-From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v2 09/11] ARM: dts: Add nodes for SMMUs on Calxeda ECX-2000
-Date: Fri, 17 Jan 2014 12:16:11 +0100
-Message-ID: <20140117111611.GX3471@alberich>
-References: <1389876263-25759-1-git-send-email-andreas.herrmann@calxeda.com>
-	<1389876263-25759-10-git-send-email-andreas.herrmann@calxeda.com>
+From: Neil Horman <nhorman-2XuSBdqkA4R54TAoqtyWWQ@public.gmane.org>
+Subject: Re: PROBLEM: do_IRQ: [number] No irq handler for vector (irq -1)
+Date: Fri, 17 Jan 2014 09:08:31 -0500
+Message-ID: <20140117140831.GA19452@hmsreliant.think-freely.org>
+References: <52D576E3.8050006@metrics.net>
+	<1389844985.8705.45.camel@bling.home>
+	<20140116121617.GA9984@hmsreliant.think-freely.org>
+	<52D8120D.7090606@metrics.net>
+	<20140116182134.GC9984@hmsreliant.think-freely.org>
+	<52D83BF9.7040502@metrics.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1389876263-25759-10-git-send-email-andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+In-Reply-To: <52D83BF9.7040502-VnMYzjHJ8tfR7s880joybQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,128 +23,60 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Anthony DeRobertis <aderobertis-VnMYzjHJ8tfR7s880joybQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add nodes for SMMUs on Calxeda ECX-2000.
-
-Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Andreas Herrmann <herrmann.der.user-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
----
- arch/arm/boot/dts/ecx-2000.dts    |   44 +++++++++++++++++++++++++++++++++++--
- arch/arm/boot/dts/ecx-common.dtsi |    9 +++++---
- 2 files changed, 48 insertions(+), 5 deletions(-)
-
-diff --git a/arch/arm/boot/dts/ecx-2000.dts b/arch/arm/boot/dts/ecx-2000.dts
-index 2ccbb57f..dde23bb 100644
---- a/arch/arm/boot/dts/ecx-2000.dts
-+++ b/arch/arm/boot/dts/ecx-2000.dts
-@@ -76,10 +76,11 @@
- 	};
- 
- 	soc {
--		ranges = <0x00000000 0x00000000 0x00000000 0xffffffff>;
-+		ranges = <0x0 0x0 0x0 0xffffffff>;
- 
- 		timer {
--			compatible = "arm,cortex-a15-timer", "arm,armv7-timer"; 			interrupts = <1 13 0xf08>,
-+			compatible = "arm,cortex-a15-timer", "arm,armv7-timer";
-+			interrupts = <1 13 0xf08>,
- 				<1 14 0xf08>,
- 				<1 11 0xf08>,
- 				<1 10 0xf08>;
-@@ -109,6 +110,45 @@
- 			interrupts = <0 76 4  0 75 4  0 74 4  0 73 4>;
- 		};
- 	};
-+
-+	soc@9,20000000 {
-+		ranges = <0x9 0x20000000 0x9 0x20000000 0x290000>;
-+		#address-cells = <2>;
-+		#size-cells = <1>;
-+		compatible = "simple-bus";
-+		interrupt-parent = <&intc>;
-+
-+		smmu_mac0: smmu@9,20000000 {
-+			compatible = "arm,mmu-400";
-+			reg = <0x9 0x20000000 0x10000>;
-+			#global-interrupts = <1>;
-+			interrupts = <0 106 4 0 106 4>;
-+			mmu-masters = <&mac0 0 1>;
-+			calxeda,smmu-secure-config-access;
-+			arm,smmu-isolate-devices;
-+		};
-+
-+		smmu_mac1: smmu@9,20080000 {
-+			compatible = "arm,mmu-400";
-+			reg = <0x9 0x20080000 0x10000>;
-+			#global-interrupts = <1>;
-+			interrupts = <0 108 4 0 108 4>;
-+			mmu-masters = <&mac1 0 1>;
-+			calxeda,smmu-secure-config-access;
-+			arm,smmu-isolate-devices;
-+		};
-+
-+		smmu_sata: smmu@9,20180000 {
-+			compatible = "arm,mmu-400";
-+			reg = <0x9 0x20180000 0x10000>;
-+			mmu-masters = <&sata 0 1 2 3 4 5 6 7 8 9>;
-+			#global-interrupts = <1>;
-+			interrupts = <0 114 4 0 114 4>;
-+			calxeda,smmu-secure-config-access;
-+			arm,smmu-isolate-devices;
-+		};
-+	};
-+
- };
- 
- /include/ "ecx-common.dtsi"
-diff --git a/arch/arm/boot/dts/ecx-common.dtsi b/arch/arm/boot/dts/ecx-common.dtsi
-index b90045a..ad9b2fd 100644
---- a/arch/arm/boot/dts/ecx-common.dtsi
-+++ b/arch/arm/boot/dts/ecx-common.dtsi
-@@ -33,7 +33,7 @@
- 		compatible = "simple-bus";
- 		interrupt-parent = <&intc>;
- 
--		sata@ffe08000 {
-+		sata: sata@ffe08000 {
- 			compatible = "calxeda,hb-ahci";
- 			reg = <0xffe08000 0x10000>;
- 			interrupts = <0 83 4>;
-@@ -43,6 +43,7 @@
- 					     &combophy0 3>;
- 			calxeda,sgpio-gpio =<&gpioh 5 1 &gpioh 6 1 &gpioh 7 1>;
- 			calxeda,led-order = <4 0 1 2 3>;
-+			#stream-id-cells = <10>;
- 		};
- 
- 		sdhci@ffe0e000 {
-@@ -210,18 +211,20 @@
- 			clock-names = "apb_pclk";
- 		};
- 
--		ethernet@fff50000 {
-+		mac0: ethernet@fff50000 {
- 			compatible = "calxeda,hb-xgmac";
- 			reg = <0xfff50000 0x1000>;
- 			interrupts = <0 77 4  0 78 4  0 79 4>;
- 			dma-coherent;
-+			#stream-id-cells = <2>;
- 		};
- 
--		ethernet@fff51000 {
-+		mac1: ethernet@fff51000 {
- 			compatible = "calxeda,hb-xgmac";
- 			reg = <0xfff51000 0x1000>;
- 			interrupts = <0 80 4  0 81 4  0 82 4>;
- 			dma-coherent;
-+			#stream-id-cells = <2>;
- 		};
- 
- 		combophy0: combo-phy@fff58000 {
--- 
-1.7.9.5
+T24gVGh1LCBKYW4gMTYsIDIwMTQgYXQgMDM6MDc6MjFQTSAtMDUwMCwgQW50aG9ueSBEZVJvYmVy
+dGlzIHdyb3RlOgo+IE9uIDAxLzE2LzIwMTQgMDE6MjEgUE0sIE5laWwgSG9ybWFuIHdyb3RlOgo+
+ID5ZZXMsIFdoYXQgSSB3b3VsZCBsaWtlIHRvIHNlZSBpcyB5b3VyIGJhY2tvdXQgcGF0Y2ggcmVt
+b3ZlZCwgYW5kIHRoZSB0aGUKPiA+Zm9sbG93aW5nIHRlc3RzIHByZWZvcm1lZDoKPiA+Cj4gPjEp
+IFZULUQgb2ZmIGluIGJpb3MKPiA+MikgVlQtRCBvbiBpbiBiaW9zIGFuZCBub2ludHJlbWFwIHNw
+ZWNpZmllZCBvbiB0aGUgY29tbWFuZCBsaW5lCj4gPjMpIFZULUQgb24gaW4gYmlvcyBhbmQgbm9p
+bnRyZW1hcCBfbm90XyBzcGVjaWZpZWQgb24gdGhlIGNvbW1hbmQgbGluZQo+ID4KPiA+SWYgSSBj
+b3VsZCBzZWUgdGhlIGJvb3QgbG9ncyBmb3IgYWxsIG9mIHRob3NlIHRoYXQgd291bGQgYmUgaGVs
+cGZ1bC4gIFdoYXQgd291bGQKPiA+YmUgcGFydGljdWxhcmx5IGhlbHBmdWwgaXMgdG8ga25vdyBp
+ZiB0ZXN0ICgyKSByZXN1bHRzIGluIHRoZSBwcm9ibGVtCj4gPnJlcHJvZHVjaW5nLiAgSWYgaXQg
+ZG9lcyB0aGF0IHN1Z2dlc3RzIG91ciBhYmlsaXR5IHRvIGRpc2FibGUgaW50ZXJydXB0Cj4gPnJl
+bWFwcGluZyBpbiB0aGUga2VybmVsIGlzIHNvbWVob3cgaW5lZmZlY3RpdmUgb24geW91ciBzeXN0
+ZW0uCj4gCj4gKDIpIHJlc3VsdHMgaW4gdGhlIHByb2JsZW0gcmVwcm9kdWNpbmcuIFRvIGJlIGNs
+ZWFyLCBhbGwgdGhyZWUgdGVzdHMKPiBoYXZlIGJlZW4gZG9uZSB3aXRob3V0IG15IHBhdGNoIGFw
+cGxpZWQuIFRoZXkgd2VyZSBidWlsdCBmcm9tOgo+IAo+IG1hc3RlciAgICAgICAgICBhNmRhODNm
+IE1lcmdlIGJyYW5jaCAnbWVyZ2UnIG9mIGdpdDovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20vbGlu
+dXgva2VybmVsL2dpdC9iZW5oL3Bvd2VycGMKPiAKPiAKPiBUbyBnZXQgdGhlIGRtZXNnIGZvciAo
+MSkgYW5kICgzKSwgSSBib290ZWQgaW50byBzaW5nbGUgdXNlciwgYW5kCj4gZGlkbid0IGdvIGFu
+eSBmdXJ0aGVyLiAoMikgSSBmaXJzdCBib290ZWQgdG8gc2luZ2xlIHVzZXIsIGJ1dCB0aGVuCj4g
+Y29udGludWVkIG9u4oCUdGhhdCdzIHdoeSB5b3UnbGwgc2VlIHRoZSBtdWNoIGxhdGVyIHRpbWVz
+dGFtcCBsb2FkaW5nCj4gdHVuLCBldGMuCj4gCgpTbywgc29tZXRoaW5nIGp1c3QgZG9lc24ndCBy
+aW5nIHRydWUgaGVyZS4gIEluIHRlc3QgMiwgeW91IHNwZWNpZmllZCBub2ludHJlbWFwCm9uIHRo
+ZSBrZXJuZWwgY29tbWFuZCBsaW5lLCB3aGljaCBpcyBnb29kLiAgQnV0IHNwZWNpZnlpbmcgdGhh
+dCBvbiB0aGUga2VybmVsCmNvbW1hbmQgbGluZSBzZXRzIGRpc2FibGVfaXJxX3JlbWFwPTEuICBJ
+biBpbnRlbF9pcnFfcmVtYXBwaW5nX3N1cHBvcnRlZCwgdGhlCmNvZGUgcmVhZHMgYXMgZm9sbG93
+czoKCnN0YXRpYyBpbnQgX19pbml0IGludGVsX2lycV9yZW1hcHBpbmdfc3VwcG9ydGVkKHZvaWQp
+CnsKICAgICAgICBzdHJ1Y3QgZG1hcl9kcmhkX3VuaXQgKmRyaGQ7CgogICAgICAgIGlmIChkaXNh
+YmxlX2lycV9yZW1hcCkKICAgICAgICAgICAgICAgIHJldHVybiAwOwogICAgICAgIGlmIChpcnFf
+cmVtYXBfYnJva2VuKSB7CiAgICAgICAgICAgICAgICBwcmludGsoS0VSTl9XQVJOSU5HCiAgICAg
+ICAgICAgICAgICAgICAgICAgICJUaGlzIHN5c3RlbSBCSU9TIGhhcyBlbmFibGVkIGludGVycnVw
+dCByZW1hcHBpbmdcbiIKICAgICAgICAgICAgICAgICAgICAgICAgIm9uIGEgY2hpcHNldCB0aGF0
+IGNvbnRhaW5zIGFuIGVycmF0dW0gbWFraW5nIHRoYXRcbiIKICAgICAgICAgICAgICAgICAgICAg
+ICAgImZlYXR1cmUgdW5zdGFibGUuICBUbyBtYWludGFpbiBzeXN0ZW0gc3RhYmlsaXR5XG4iCiAg
+ICAgICAgICAgICAgICAgICAgICAgICJpbnRlcnJ1cHQgcmVtYXBwaW5nIGlzIGJlaW5nIGRpc2Fi
+bGVkLiAgUGxlYXNlXG4iCiAgICAgICAgICAgICAgICAgICAgICAgICJjb250YWN0IHlvdXIgQklP
+UyB2ZW5kb3IgZm9yIGFuIHVwZGF0ZVxuIik7CiAgICAgICAgICAgICAgICBhZGRfdGFpbnQoVEFJ
+TlRfRklSTVdBUkVfV09SS0FST1VORCwgTE9DS0RFUF9TVElMTF9PSyk7CiAgICAgICAgICAgICAg
+ICBkaXNhYmxlX2lycV9yZW1hcCA9IDE7CiAgICAgICAgICAgICAgICByZXR1cm4gMDsKICAgICAg
+ICB9Ci4uLgoKSWYgZGlzYWJsZV9pcnFfcmVtYXAgaGFkIGJlZW4gc2V0IGJ5IG5vaW50cmVtYXAs
+IHRoYXQgZnVuY3Rpb24gc2hvdWxkIGhhdmUKcmV0dXJuZWQgaW1tZWRpYXRlbHksIGJ1dCBpbiB0
+ZXN0IDIgeW91IGdvdCB0aGUgIlRoaXMgc3lzdGVtIEJJT1MuLiIgd2FybmluZywKaW5kaWNhdGlu
+ZyB0aGF0IGRpc2FibGVfaXJxX3JlbWFwIHdhcyBub3Qgc2V0LiAgSXQgc2VlbXMgdG8gbWUgc29t
+ZXRoaW5nIGlzCndyb25nIHdpdGggeW91ciBrZXJuZWwgYnVpbGQuICBJJ2Qgc3VnZ2VzdCBjb25m
+aXJtaW5nIHRoaXMgKG1pcyktYmVoYXZpb3IgYnkKYWRkaW5nIGEgcHJpbnRrIHRvIHRoZSBmdW5j
+dGlvbiBzZXR1cF9ub2ludHJlbWFwLCBpbmRpY2F0aW5nIHRoZSB2YWx1ZQpkaXNhYmxlX2lycV9y
+ZW1hcCBpcyBnZXR0aW5nIHNldCB0by4gIEkgd291bGQgYWxzbyBhZGQgYSBwcmludGsgdG8gdGhl
+IHN0YXJ0IG9mCmludGVsX2lycV9yZW1hcHBpbmdfc3VwcG9ydGVkIHRvIHByaW50IG91dCB0aGUg
+dmFsdWUgb2YgZGlzYWJsZV9pcnFfcmVtYXAgYWdhaW4sCnRvIGVuc3VyZSBpdCBoYXNuJ3QgY2hh
+bmdlZC4gIFRoYXQgc2hvdWxkIGdpdmUgdXMgc29tZSBhZGRpdGlvbmFsIGNsdWVzIGFzIHRvCndo
+YXRzIGdvaW5nIG9uLgoKUmVnYXJkcwpOZWlsCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgt
+Zm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4v
+bGlzdGluZm8vaW9tbXU=
