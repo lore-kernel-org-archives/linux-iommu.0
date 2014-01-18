@@ -1,21 +1,15 @@
-From: Anthony DeRobertis <aderobertis-VnMYzjHJ8tfR7s880joybQ@public.gmane.org>
-Subject: Re: PROBLEM: do_IRQ: [number] No irq handler for vector (irq -1)
-Date: Fri, 17 Jan 2014 17:33:31 -0500
-Message-ID: <52D9AFBB.5080203@metrics.net>
-References: <52D576E3.8050006@metrics.net>
-	<1389844985.8705.45.camel@bling.home>
-	<20140116121617.GA9984@hmsreliant.think-freely.org>
-	<52D8120D.7090606@metrics.net>
-	<20140116182134.GC9984@hmsreliant.think-freely.org>
-	<52D83BF9.7040502@metrics.net>
-	<20140117140831.GA19452@hmsreliant.think-freely.org>
-	<52D97BFB.1020106@metrics.net>
-	<20140117202712.GC19452@hmsreliant.think-freely.org>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH 02/11] iommu/arm-smmu: Introduce bus notifier block
+Date: Sat, 18 Jan 2014 20:59:53 +0000
+Message-ID: <419c2609cab14842b5258f7048ce6d43@BL2PR03MB468.namprd03.prod.outlook.com>
+References: <1389876263-25759-1-git-send-email-andreas.herrmann@calxeda.com>
+	<1389876263-25759-3-git-send-email-andreas.herrmann@calxeda.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140117202712.GC19452-B26myB8xz7F8NnZeBjwnZQMhkBWG/bsMQH7oEaQurus@public.gmane.org>
+In-Reply-To: <1389876263-25759-3-git-send-email-andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,37 +19,124 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Neil Horman <nhorman-2XuSBdqkA4R54TAoqtyWWQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/17/2014 03:27 PM, Neil Horman wrote:
 
-> I would suggest you look through that errata sheet that I referenced 
-> in the initial commit to fix the remapping problem, to see if there 
-> are other chip errata who's symptoms lead to irq drainage failures. We 
-> may need to add another quirk to this chipset. Regards Neil 
 
-OK, I started looking through the errata sheet. Let me stress I don't 
-normally read these things, so...
+> -----Original Message-----
+> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
+> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Andreas Herrmann
+> Sent: Thursday, January 16, 2014 6:14 PM
+> To: Will Deacon
+> Cc: Andreas Herrmann; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-arm-
+> kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+> Subject: [PATCH 02/11] iommu/arm-smmu: Introduce bus notifier block
+> 
+> At the moment just handle BUS_NOTIFY_BIND_DRIVER to conditionally isolate
+> all master devices for an SMMU.
+> 
+> Depending on DT information each device is put into its own protection
+> domain (if possible).  For configuration with one or just a few masters
+> per SMMU that is easy to achieve.
+> 
+> In case of many devices per SMMU (e.g. MMU-500 with it's distributed
+> translation support) isolation of each device might not be possible --
+> depending on number of available SMR groups and/or context banks.
+> 
+> Default is that device isolation is contolled per SMMU with SMMU node
+> property "arm,smmu-isolate-devices" in a DT. If this property is set for
+> an SMMU node, device isolation is performed.
+[Sethi Varun-B16395] What if the devices have to be assigned to different virtual machines? Would the absence of this property indicate that devices can't
+Be assigned to different virtual machines i.e. devices would be in the same iommu group?
 
-But the first thing I notice is that I tried to figure out what stepping 
-I have (in the Identification section), it says should look for vendor 
-ID 8086h and device ID 3403 or 3406. I have neither. I have 3405.
+> 
+> W/o device isolation the driver detects SMMUs but no translation is
+> configured (transactions just bypass translation process).
+> 
+[Sethi Varun-B16395] Would SMR and S2CR still be allocated?
 
-Which, appears to make sense, because this is not a Intel 5500/5520 
-chipset, its an Intel X58 chipset. That seems to have a different 
-specification update, despite being from the same family:
+> Note that for device isolation dma_base and size are fixed as 0 and
+> SZ_128M at the moment. Additional patches will address this restriction
+> and allow automatic growth of mapping size.
+> 
+> Cc: Andreas Herrmann <herrmann.der.user-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+> Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+> ---
+>  drivers/iommu/arm-smmu.c |   45
+> +++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 45 insertions(+)
+> 
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c index
+> 0b97d03..bc81dd0 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -46,6 +46,7 @@
+>  #include <linux/amba/bus.h>
+> 
+>  #include <asm/pgalloc.h>
+> +#include <asm/dma-iommu.h>
+> 
+>  /* Driver options */
+>  #define ARM_SMMU_OPT_ISOLATE_DEVICES		(1 << 0)
+> @@ -1964,6 +1965,48 @@ static int arm_smmu_device_remove(struct
+> platform_device *pdev)
+>  	return 0;
+>  }
+> 
+> +static int arm_smmu_device_notifier(struct notifier_block *nb,
+> +				unsigned long action, void *data)
+> +{
+> +	struct device *dev = data;
+> +	struct dma_iommu_mapping *mapping;
+> +	struct arm_smmu_device *smmu;
+> +	int ret;
+> +
+> +	switch (action) {
+> +	case BUS_NOTIFY_BIND_DRIVER:
+> +
+> +		arm_smmu_add_device(dev);
+[Sethi Varun-B16395] This would have already happened by virtue of the add_device iommu_ops.
 
-http://www.intel.com/content/dam/doc/specification-update/x58-express-specification-update.pdf
+> +		smmu = dev->archdata.iommu;
+> +		if (!smmu || !(smmu->options & ARM_SMMU_OPT_ISOLATE_DEVICES))
+> +			break;
+> +
+> +		mapping = arm_iommu_create_mapping(&platform_bus_type,
+> +						0, SZ_128M, 0);
+> +		if (IS_ERR(mapping)) {
+> +			ret = PTR_ERR(mapping);
+> +			dev_info(dev, "arm_iommu_create_mapping failed\n");
+> +			break;
+> +		}
+> +
+> +		ret = arm_iommu_attach_device(dev, mapping);
+> +		if (ret < 0) {
+> +			dev_info(dev, "arm_iommu_attach_device failed\n");
+> +			arm_iommu_release_mapping(mapping);
+> +		}
+> +
+> +		break;
+> +	default:
+> +		break;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static struct notifier_block device_nb = {
+> +	.notifier_call = arm_smmu_device_notifier, };
+> +
+>  #ifdef CONFIG_OF
+>  static struct of_device_id arm_smmu_of_match[] = {
+>  	{ .compatible = "arm,smmu-v1", },
+> @@ -2000,6 +2043,8 @@ static int __init arm_smmu_init(void)
+>  	if (!iommu_present(&amba_bustype))
+>  		bus_set_iommu(&amba_bustype, &arm_smmu_ops);
+> 
+> +	bus_register_notifier(&platform_bus_type, &device_nb);
+> +
+[Sethi Varun-B16395] Notifier was already registered for the platform bus via bus_set_iommu. You can actually register a iommu group (once iommu group gets created) notifier (iommu_group_register_notifier) and listen for the IOMMU_GROUP_NOTIFY_BIND_DRIVER event.
 
-00:00.0 Host bridge [0600]: Intel Corporation 5520/5500/X58 I/O Hub to ESI Port [8086:3405] (rev 13)
-
-so I have a X58, Stepping B3. Appears to be issue 69 instead, and is 
-supposed to happen on B3. Added back in July '09. Odd that Asus hasn't 
-yet heard... Especially since they didn't release the board until 2010.
-
-[Still trying to make my way through those documents.]
-
-PS: The linked bug report 
-https://bugzilla.redhat.com/show_bug.cgi?id=887006 is apparently secret :-(
+-Varun
