@@ -1,151 +1,68 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH] vfio/iommu_type1: Multi-IOMMU domain support
-Date: Mon, 20 Jan 2014 11:39:13 -0700
-Message-ID: <1390243153.8705.228.camel@bling.home>
-References: <20140117203126.11429.25235.stgit@gimli.home>
-	<4bc6dcb96df44b0e94152d9729958d60@BL2PR03MB468.namprd03.prod.outlook.com>
-	<1390234886.8705.142.camel@bling.home>
-	<f4597c60b5a04e8e8baa225a279abd0d@BL2PR03MB468.namprd03.prod.outlook.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <f4597c60b5a04e8e8baa225a279abd0d-AZ66ij2kwaacCcN9WK45f+O6mTEJWrR4XA4E9RH9d+qIuWR1G4zioA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+From: "George Spelvin" <linux@horizon.com>
+Subject: Re: [PATCH] Quirk for buggy dma source tags with Intel IOMMU.
+Date: 20 Jan 2014 14:01:02 -0500
+Message-ID: <20140120190102.13636.qmail@science.horizon.com>
+References: <CAJtEV7ZsM2YHHETRGNwXnGi7uq0mJen73i-Yp3EXoDrnni=o=g@mail.gmail.com>
+Return-path: <linux-ide-owner@vger.kernel.org>
+In-Reply-To: <CAJtEV7ZsM2YHHETRGNwXnGi7uq0mJen73i-Yp3EXoDrnni=o=g@mail.gmail.com>
+Sender: linux-ide-owner@vger.kernel.org
+To: acooks@gmail.com, linux@horizon.com
+Cc: iommu@lists.linux-foundation.org, linux-ide@vger.kernel.org, linux-pci@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2014-01-20 at 18:30 +0000, Varun Sethi wrote:
-> 
-> > -----Original Message-----
-> > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > Sent: Monday, January 20, 2014 9:51 PM
-> > To: Sethi Varun-B16395
-> > Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > Subject: Re: [RFC PATCH] vfio/iommu_type1: Multi-IOMMU domain support
-> > 
-> > On Mon, 2014-01-20 at 14:45 +0000, Varun Sethi wrote:
-> > >
-> > > > -----Original Message-----
-> > > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > > > Sent: Saturday, January 18, 2014 2:06 AM
-> > > > To: Sethi Varun-B16395
-> > > > Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > > > Subject: [RFC PATCH] vfio/iommu_type1: Multi-IOMMU domain support
-> > > >
-> > > > RFC: This is not complete but I want to share with Varun the
-> > > > dirrection I'm thinking about.  In particular, I'm really not sure
-> > > > if we want to introduce a "v2" interface version with slightly
-> > > > different unmap semantics.  QEMU doesn't care about the difference,
-> > > > but other users might.  Be warned, I'm not even sure if this code
-> > works at the moment.
-> > > > Thanks,
-> > > >
-> > > > Alex
-> > > >
-> > > >
-> > > > We currently have a problem that we cannot support advanced features
-> > > > of an IOMMU domain (ex. IOMMU_CACHE), because we have no guarantee
-> > > > that those features will be supported by all of the hardware units
-> > > > involved with the domain over its lifetime.  For instance, the Intel
-> > > > VT-d architecture does not require that all DRHDs support snoop
-> > > > control.  If we create a domain based on a device behind a DRHD that
-> > > > does support snoop control and enable SNP support via the
-> > > > IOMMU_CACHE mapping option, we cannot then add a device behind a
-> > > > DRHD which does not support snoop control or we'll get reserved bit
-> > > > faults from the SNP bit in the pagetables.  To add to the
-> > > > complexity, we can't know the properties of a domain until a device
-> > is attached.
-> > > [Sethi Varun-B16395] Effectively, it's the same iommu and iommu_ops
-> > > are common across all bus types. The hardware feature differences are
-> > > abstracted by the driver.
-> > 
-> > That's a simplifying assumption that is not made anywhere else in the
-> > code.  The IOMMU API allows entirely independent IOMMU drivers to
-> > register per bus_type.  There is no guarantee that all devices are backed
-> > by the same IOMMU hardware unit or make use of the same iommu_ops.
-> > 
-> [Sethi Varun-B16395] ok
-> 
-> > > > We could pass this problem off to userspace and require that a
-> > > > separate vfio container be used, but we don't know how to handle
-> > > > page accounting in that case.  How do we know that a page pinned in
-> > > > one container is the same page as a different container and avoid
-> > > > double billing the user for the page.
-> > > >
-> > > > The solution is therefore to support multiple IOMMU domains per
-> > > > container.  In the majority of cases, only one domain will be
-> > > > required since hardware is typically consistent within a system.
-> > > > However, this provides us the ability to validate compatibility of
-> > > > domains and support mixed environments where page table flags can be
-> > > > different between domains.
-> > > >
-> > > > To do this, our DMA tracking needs to change.  We currently try to
-> > > > coalesce user mappings into as few tracking entries as possible.
-> > > > The problem then becomes that we lose granularity of user mappings.
-> > > > We've never guaranteed that a user is able to unmap at a finer
-> > > > granularity than the original mapping, but we must honor the
-> > > > granularity of the original mapping.  This coalescing code is
-> > > > therefore removed, allowing only unmaps covering complete maps.  The
-> > > > change in accounting is fairly small here, a typical QEMU VM will
-> > > > start out with roughly a dozen entries, so it's arguable if this
-> > coalescing was ever needed.
-> > > >
-> > > > We also move IOMMU domain creation to the point where a group is
-> > > > attached to the container.  An interesting side-effect of this is
-> > > > that we now have access to the device at the time of domain creation
-> > > > and can probe the devices within the group to determine the bus_type.
-> > > > This finally makes vfio_iommu_type1 completely device/bus agnostic.
-> > > > In fact, each IOMMU domain can host devices on different buses
-> > > > managed by different physical IOMMUs, and present a single DMA
-> > > > mapping interface to the user.  When a new domain is created,
-> > > > mappings are replayed to bring the IOMMU pagetables up to the state
-> > > > of the current container.  And of course, DMA mapping and unmapping
-> > > > automatically traverse all of the configured IOMMU domains.
-> > > >
-> > > [Sethi Varun-B16395] This code still checks to see that devices being
-> > > attached to the domain are connected to the same bus type. If we
-> > > intend to merge devices from different bus types but attached to
-> > > compatible domains in to a single domain, why can't we avoid the bus
-> > > check? Why can't we remove the bus dependency from domain allocation?
-> > 
-> > So if I were to test iommu_ops instead of bus_type (ie. assume that if a
-> > if an IOMMU driver manages iommu_ops across bus_types that it can accept
-> > the devices), would that satisfy your concern?
-> [Sethi Varun-B16395] I think so. Checking for iommu_ops should allow iommu groups from different bus_types, to share a domain.
-> 
-> > 
-> > It may be possible to remove the bus_type dependency from domain
-> > allocation, but the IOMMU API currently makes the assumption that there's
-> > one IOMMU driver per bus_type.
-> [Sethi Varun-B16395] Is that a valid assumption?
+>> I massaged it a bit to fit my personal idea of "cleaner".
+>> The biggest logic change is the elimination of the fn_mapped
+>> variable from quirk_map_multi_requester_ids.
 
-Perhaps it's really more of a requirement than an assumption.
-Theoretically there is no reason we couldn't see a system with multiple
-IOMMUs requiring different IOMMU drivers on the same bus_type.  In
-practice, we don't.  We may need to change this in the future, but it's
-sufficient for now.
+> Thanks, that was detritus left over from debugging.
 
-> > Your fix to remove the bus_type
-> > dependency from iommu_domain_alloc() adds an assumption that there is
-> > only one IOMMU driver for all bus_types.  That may work on your platform,
-> > but I don't think it's a valid assumption in the general case.
-> [Sethi Varun-B16395] ok
-> 
-> > If you'd like to propose alternative ways to remove the bus_type
-> > dependency, please do.  Thanks,
-> >
-> [Sethi Varun-B16395] My main concern, was to allow devices from different bus types, to share the iommu domain. I am fine if this can be handled from within vfio.
+The code still does the exact same thing; I just derive the value from
+(fn_map & ((1<<fn)-1)) if it's required.
 
-Ok, I think it can.  Thanks,
+>> I also got rid of the "fn_map << fn" logic (which is never false).
 
-Alex
+> What if function 0 is not present? There were cases where the Marvell
+> 9172 only used function 1 (when only one port is in use). I don't
+> think it's safe to assume that function 0 is present when you're
+> trying to compensate for broken devices.
+
+Er... can you explain?  I did not change what the code *does* in the
+slightest, only the was it figures out what to do.
+
+I took this it out because it does nothing; it can be statically proved
+that the expression is always non-zero.
+
+Because "fn_map" is a non-zero 8-bit value and "fn" is an integer in
+the range 0-7, the value "fn_map << fn" is a non-zero 15-bit value.
+15 bits can't overflow (even on a PDP-11 with 16-bit ints), so this is
+a non-zero value, and the loop will never terminate because of it.
+
+It sure looked like a bug to me, but I couldn't figure out what it
+was supposed to do.  Can you enlighten me?  "fn_map >> fn" (shifting
+right rather than left) achieves early termination of the loop, but
+isn't essential.
+
+>> +       fn_map &= ~(1<<PCI_FUNC(pdev->devfn));  /* Skip the normal case */
+
+> Do you really find this "cleaner", as in more readable?
+
+I find it easier to think about fn_map as the bitmap of functions to
+be operated on.  Rather than have two conditions in the following loop.
+
+The confusing thing is "why are we skipping that function?"  (Because this
+is a quirk and the "normal case" has already been handled.)  It would be
+nicer if all the domain_context_mapping_one calls were grouped together.
+
+I would like to see if there's a clean way to combine this with phantom
+function support (which I haven't find the code for yet).
+
+>> +       for (i = pci_dev_dma_source_map; i->devfn; i++) {
+
+> The bug that Martin Oehrling pointed out in the ticket is still there.
+
+Ah, thank you; I had missed that that.  Yes, it should be testing
+i->vendor.  You really get devices using the wrong slot as well as
+function?  Wow!
+
+Using multiple functions is at least anticipated in the PCI spec,
+even if they do it wrong.
