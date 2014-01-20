@@ -1,1020 +1,455 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [RFC PATCH] vfio/iommu_type1: Multi-IOMMU domain support
-Date: Mon, 20 Jan 2014 14:45:09 +0000
-Message-ID: <4bc6dcb96df44b0e94152d9729958d60@BL2PR03MB468.namprd03.prod.outlook.com>
-References: <20140117203126.11429.25235.stgit@gimli.home>
+From: Andrew Cooks <acooks@gmail.com>
+Subject: Re: [PATCH] Quirk for buggy dma source tags with Intel IOMMU.
+Date: Mon, 20 Jan 2014 23:45:52 +0800
+Message-ID: <CAJtEV7ZsM2YHHETRGNwXnGi7uq0mJen73i-Yp3EXoDrnni=o=g@mail.gmail.com>
+References: <20140120131359.26728.qmail@science.horizon.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140117203126.11429.25235.stgit-GCcqpEzw8uZBDLzU/O5InQ@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20140120131359.26728.qmail@science.horizon.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: George Spelvin <linux@horizon.com>
+Cc: linux-ide@vger.kernel.org, "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
+On Mon, Jan 20, 2014 at 9:13 PM, George Spelvin <linux@horizon.com> wro=
+te:
+> This is requried for me to get a Marvell 9172 SATA controller working
+> with VT-d.
+>
+> Andrew Cooks wrote the original; see
+> https://bugzilla.kernel.org/show_bug.cgi?id=3D42679#c22
+>
+> Without it, I see the same symptoms as in that bug report:
+> the device is recognized, but probing the attached disk fails.
+>
+> I massaged it a bit to fit my personal idea of "cleaner".
+> The biggest logic change is the elimination of the fn_mapped
+> variable from quirk_map_multi_requester_ids.
 
+Thanks, that was detritus left over from debugging.
 
-> -----Original Message-----
-> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> Sent: Saturday, January 18, 2014 2:06 AM
-> To: Sethi Varun-B16395
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: [RFC PATCH] vfio/iommu_type1: Multi-IOMMU domain support
-> 
-> RFC: This is not complete but I want to share with Varun the dirrection
-> I'm thinking about.  In particular, I'm really not sure if we want to
-> introduce a "v2" interface version with slightly different unmap
-> semantics.  QEMU doesn't care about the difference, but other users
-> might.  Be warned, I'm not even sure if this code works at the moment.
-> Thanks,
-> 
-> Alex
-> 
-> 
-> We currently have a problem that we cannot support advanced features of
-> an IOMMU domain (ex. IOMMU_CACHE), because we have no guarantee that
-> those features will be supported by all of the hardware units involved
-> with the domain over its lifetime.  For instance, the Intel VT-d
-> architecture does not require that all DRHDs support snoop control.  If
-> we create a domain based on a device behind a DRHD that does support
-> snoop control and enable SNP support via the IOMMU_CACHE mapping option,
-> we cannot then add a device behind a DRHD which does not support snoop
-> control or we'll get reserved bit faults from the SNP bit in the
-> pagetables.  To add to the complexity, we can't know the properties of a
-> domain until a device is attached.
-[Sethi Varun-B16395] Effectively, it's the same iommu and iommu_ops are common across all bus types. The hardware feature differences are abstracted by the driver.
+> I also got rid of the "fn_map << fn" logic (which is never false).
 
-> 
-> We could pass this problem off to userspace and require that a separate
-> vfio container be used, but we don't know how to handle page accounting
-> in that case.  How do we know that a page pinned in one container is the
-> same page as a different container and avoid double billing the user for
-> the page.
-> 
-> The solution is therefore to support multiple IOMMU domains per
-> container.  In the majority of cases, only one domain will be required
-> since hardware is typically consistent within a system.  However, this
-> provides us the ability to validate compatibility of domains and support
-> mixed environments where page table flags can be different between
-> domains.
-> 
-> To do this, our DMA tracking needs to change.  We currently try to
-> coalesce user mappings into as few tracking entries as possible.  The
-> problem then becomes that we lose granularity of user mappings.  We've
-> never guaranteed that a user is able to unmap at a finer granularity than
-> the original mapping, but we must honor the granularity of the original
-> mapping.  This coalescing code is therefore removed, allowing only unmaps
-> covering complete maps.  The change in accounting is fairly small here, a
-> typical QEMU VM will start out with roughly a dozen entries, so it's
-> arguable if this coalescing was ever needed.
-> 
-> We also move IOMMU domain creation to the point where a group is attached
-> to the container.  An interesting side-effect of this is that we now have
-> access to the device at the time of domain creation and can probe the
-> devices within the group to determine the bus_type.
-> This finally makes vfio_iommu_type1 completely device/bus agnostic.
-> In fact, each IOMMU domain can host devices on different buses managed by
-> different physical IOMMUs, and present a single DMA mapping interface to
-> the user.  When a new domain is created, mappings are replayed to bring
-> the IOMMU pagetables up to the state of the current container.  And of
-> course, DMA mapping and unmapping automatically traverse all of the
-> configured IOMMU domains.
-> 
-[Sethi Varun-B16395] This code still checks to see that devices being attached to the domain are connected to the same bus type. If we intend to merge devices from different bus types but attached to compatible domains in to a single domain, why can't we avoid the bus check? Why can't we remove the bus dependency from domain allocation?
+What if function 0 is not present? There were cases where the Marvell
+9172 only used function 1 (when only one port is in use). I don't
+think it's safe to assume that function 0 is present when you're
+trying to compensate for broken devices.
 
+> I can vouch for quirk_map_multi_requester_ids working in my case;
+> I can't speak for quirk_map_requester_id.
 
-Regards
-Varun
+I've tested quirk_map_requester_id on a Thinkpad T410 with Ricoh IEEE
+1394 Controller.
 
-> Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> ---
-> 
->  drivers/vfio/vfio_iommu_type1.c |  631 ++++++++++++++++++++-------------
-> ------
->  include/uapi/linux/vfio.h       |    1
->  2 files changed, 329 insertions(+), 303 deletions(-)
-> 
-> diff --git a/drivers/vfio/vfio_iommu_type1.c
-> b/drivers/vfio/vfio_iommu_type1.c index 4fb7a8f..983aae5 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -30,7 +30,6 @@
->  #include <linux/iommu.h>
->  #include <linux/module.h>
->  #include <linux/mm.h>
-> -#include <linux/pci.h>		/* pci_bus_type */
->  #include <linux/rbtree.h>
->  #include <linux/sched.h>
->  #include <linux/slab.h>
-> @@ -55,11 +54,18 @@ MODULE_PARM_DESC(disable_hugepages,
->  		 "Disable VFIO IOMMU support for IOMMU hugepages.");
-> 
->  struct vfio_iommu {
-> -	struct iommu_domain	*domain;
-> +	struct list_head	domain_list;
->  	struct mutex		lock;
->  	struct rb_root		dma_list;
-> +	bool v2;
+> Who do I nudge about actually getting some variant of this merged?
+
+Thanks for your efforts to get this merged. If you look through the
+list archives you'll see that I've posted previous iterations of this
+before, without much enthusiasm.
+
+>
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.=
+c
+> index 43b9bfea48..4695865051 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -1677,6 +1677,111 @@ static int domain_context_mapping_one(struct =
+dmar_domain *domain, int segment,
+>         return 0;
+>  }
+>
+> +static void iommu_detach_dev(struct intel_iommu *iommu, u8 bus, u8 d=
+evfn);
+> +
+> +static void quirk_unmap_multi_requesters(struct pci_dev *pdev, u8 fn=
+_map)
+> +{
+> +       int fn;
+> +       struct intel_iommu *iommu =3D device_to_iommu(pci_domain_nr(p=
+dev->bus),
+> +                                               pdev->bus->number, pd=
+ev->devfn);
+> +
+> +       /* something must be seriously wrong if we can't lookup the i=
+ommu. */
+> +       BUG_ON(!iommu);
+> +
+> +       fn_map &=3D ~(1<<PCI_FUNC(pdev->devfn));  /* Skip the normal =
+case */
+
+Do you really find this "cleaner", as in more readable?
+
+> +
+> +       for (fn =3D 0; fn_map >> fn; fn++) {
+> +               if (fn_map & (1<<fn)) {
+> +                       iommu_detach_dev(iommu,
+> +                                       pdev->bus->number,
+> +                                       PCI_DEVFN(PCI_SLOT(pdev->devf=
+n), fn));
+> +                       dev_dbg(&pdev->dev,
+> +                               "requester id quirk; ghost func %d un=
+mapped",
+> +                               fn);
+> +               }
+> +       }
+> +}
+> +
+> +/* For quirky devices that use multiple requester ids. */
+> +static int quirk_map_multi_requester_ids(struct dmar_domain *domain,
+> +               struct pci_dev *pdev,
+> +               int translation)
+> +{
+> +       int fn, err =3D 0;
+> +       u8 fn_map =3D pci_multi_requesters(pdev);
+> +
+> +       /* this is the common, non-quirky case. */
+> +       if (!fn_map)
+> +               return 0;
+> +
+> +       fn_map &=3D ~(1<<PCI_FUNC(pdev->devfn));  /* Skip the normal =
+case */
+> +
+> +       for (fn =3D 0; fn_map >> fn; fn++) {
+> +               if (fn_map & (1<<fn)) {
+> +                       err =3D domain_context_mapping_one(domain,
+> +                                       pci_domain_nr(pdev->bus),
+> +                                       pdev->bus->number,
+> +                                       PCI_DEVFN(PCI_SLOT(pdev->devf=
+n), fn),
+> +                                       translation);
+> +                       if (err) {
+> +                               dev_err(&pdev->dev,
+> +                                       "mapping ghost func %d failed=
+", fn);
+> +                               quirk_unmap_multi_requesters(pdev,
+> +                                       fn_map & ((1<<fn)-1));
+> +                               return err;
+> +                       }
+> +                       dev_dbg(&pdev->dev,
+> +                               "requester id quirk; ghost func %d ma=
+pped", fn);
+> +               }
+> +       }
+> +       return 0;
+> +}
+> +
+> +
+> +static void quirk_unmap_requester_id(struct pci_dev *pdev)
+> +{
+> +       u8 devfn =3D pci_requester(pdev);
+> +       struct intel_iommu *iommu =3D device_to_iommu(pci_domain_nr(p=
+dev->bus),
+> +                                               pdev->bus->number, pd=
+ev->devfn);
+> +
+> +       /* something must be seriously wrong if we can't lookup the i=
+ommu. */
+> +       BUG_ON(!iommu);
+> +
+> +
+> +       if (pdev->devfn =3D=3D devfn)
+> +               return;
+> +
+> +       iommu_detach_dev(iommu, pdev->bus->number, devfn);
+> +       dev_dbg(&pdev->dev, "requester id quirk; bugged device unmapp=
+ed");
+> +}
+> +
+> +static int quirk_map_requester_id(struct dmar_domain *domain,
+> +               struct pci_dev *pdev,
+> +               int translation)
+> +{
+> +       u8 devfn =3D pci_requester(pdev);
+> +       int err;
+> +
+> +       dev_dbg(&pdev->dev,
+> +               "checking for incorrect pci requester id quirk...");
+> +
+> +       if (pdev->devfn =3D=3D devfn)
+> +               return 0;
+> +
+> +       err =3D domain_context_mapping_one(domain, pci_domain_nr(pdev=
+->bus),
+> +                       pdev->bus->number, devfn, translation);
+> +       if (err) {
+> +               dev_err(&pdev->dev,
+> +                       "requester id quirk: mapping dev %02x:%02x.%d=
+ failed",
+> +                       pdev->bus->number, PCI_SLOT(devfn), PCI_FUNC(=
+devfn));
+> +               return err;
+> +       }
+> +       dev_dbg(&pdev->dev,
+> +               "requester id quirk; dmar context entry added: %02x:%=
+02x.%d",
+> +               pdev->bus->number, PCI_SLOT(devfn), PCI_FUNC(devfn));
+> +       return 0;
+> +}
+> +
+>  static int
+>  domain_context_mapping(struct dmar_domain *domain, struct pci_dev *p=
+dev,
+>                         int translation)
+> @@ -1690,6 +1795,16 @@ domain_context_mapping(struct dmar_domain *dom=
+ain, struct pci_dev *pdev,
+>         if (ret)
+>                 return ret;
+>
+> +       /* quirk for devices using multiple pci requester ids */
+> +       ret =3D quirk_map_multi_requester_ids(domain, pdev, translati=
+on);
+> +       if (ret)
+> +               return ret;
+> +
+> +       /* quirk for devices single incorrect pci requester id */
+> +       ret =3D quirk_map_requester_id(domain, pdev, translation);
+> +       if (ret)
+> +               return ret;
+> +
+>         /* dependent device mapping */
+>         tmp =3D pci_find_upstream_pcie_bridge(pdev);
+>         if (!tmp)
+> @@ -3802,6 +3917,9 @@ static void domain_remove_one_dev_info(struct d=
+mar_domain *domain,
+>                         iommu_disable_dev_iotlb(info);
+>                         iommu_detach_dev(iommu, info->bus, info->devf=
+n);
+>                         iommu_detach_dependent_devices(iommu, pdev);
+> +                       quirk_unmap_multi_requesters(pdev,
+> +                                               pci_multi_requesters(=
+pdev));
+> +                       quirk_unmap_requester_id(pdev);
+>                         free_devinfo_mem(info);
+>
+>                         spin_lock_irqsave(&device_domain_lock, flags)=
+;
+> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+> index 3a02717473..500edde3d3 100644
+> --- a/drivers/pci/quirks.c
+> +++ b/drivers/pci/quirks.c
+> @@ -3336,6 +3336,10 @@ static struct pci_dev *pci_func_0_dma_source(s=
+truct pci_dev *dev)
+>         return pci_get_slot(dev->bus, PCI_DEVFN(PCI_SLOT(dev->devfn),=
+ 0));
+>  }
+>
+> +/* Table of source functions for real devices. The DMA requests for =
+the
+> + * device are tagged with a different real function as source. This =
+is
+> + * relevant to multifunction devices.
+> + */
+>  static const struct pci_dev_dma_source {
+>         u16 vendor;
+>         u16 device;
+> @@ -3362,7 +3366,8 @@ static const struct pci_dev_dma_source {
+>   * the device doing the DMA, but sometimes hardware is broken and wi=
+ll
+>   * tag the DMA as being sourced from a different device.  This funct=
+ion
+>   * allows that translation.  Note that the reference count of the
+> - * returned device is incremented on all paths.
+> + * returned device is incremented on all paths. Translation is done =
+when
+> + * the device is added to an IOMMU group.
+>   */
+>  struct pci_dev *pci_get_dma_source(struct pci_dev *dev)
+>  {
+> @@ -3423,6 +3428,144 @@ static int pci_quirk_amd_sb_acs(struct pci_de=
+v *dev, u16 acs_flags)
+>  #endif
+>  }
+>
+> +/* Table of multiple (ghost) source functions. Devices that may need=
+ this quirk
+> + * show the following behaviour:
+> + * 1. the device may use multiple PCI requester IDs during operation=
+,
+> + *     (eg. one pci transaction uses xx:yy.0, the next uses xx:yy.1)
+> + * 2. the requester ID may not match a known device.
+> + *     (eg. lspci does not show xx:yy.1 to be present)
+> + *
+> + * The bitmap contains all of the functions "in use" by the device.
+> + * See  https://bugzilla.redhat.com/show_bug.cgi?id=3D757166,
+> + * https://bugzilla.kernel.org/show_bug.cgi?id=3D42679
+> + * https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1089768
+> + */
+> +static const struct pci_dev_dma_multi_source_map {
+> +       u16 vendor;
+> +       u16 device;
+> +       u8 func_map;    /* bit map. lsb is fn 0. */
+> +} pci_dev_dma_multi_source_map[] =3D {
+> +        /* Reported by Patrick Bregman
+> +         * https://bugzilla.redhat.com/show_bug.cgi?id=3D863653 */
+> +       { PCI_VENDOR_ID_MARVELL_EXT, 0x9120, (1<<0)|(1<<1)},
+> +
+> +       /* Reported by  Pawe=C5=82 =C5=BBak, Korneliusz Jarz=C4=99bsk=
+i, Daniel Mayer
+> +        * https://bugzilla.kernel.org/show_bug.cgi?id=3D42679 and by
+> +        * Justin Piszcz  https://lkml.org/lkml/2012/11/24/94 */
+> +       { PCI_VENDOR_ID_MARVELL_EXT, 0x9123, (1<<0)|(1<<1)},
+> +
+> +       /* Used in a patch by Ying Chu
+> +        * https://bugzilla.redhat.com/show_bug.cgi?id=3D757166 */
+> +       { PCI_VENDOR_ID_MARVELL_EXT, 0x9125, (1<<0)|(1<<1)},
+> +
+> +       /* Reported by Robert Cicconetti
+> +        * https://bugzilla.kernel.org/show_bug.cgi?id=3D42679 and by
+> +        * Fernando https://bugzilla.redhat.com/show_bug.cgi?id=3D757=
+166 */
+> +       { PCI_VENDOR_ID_MARVELL_EXT, 0x9128, (1<<0)|(1<<1)},
+> +
+> +       /* Reported by Stijn Tintel
+> +        * https://bugzilla.kernel.org/show_bug.cgi?id=3D42679 */
+> +       { PCI_VENDOR_ID_MARVELL_EXT, 0x9130, (1<<0)|(1<<1)},
+> +
+> +       /* Reported by Gaudenz Steinlin
+> +        * https://lkml.org/lkml/2013/3/5/288 */
+> +       { PCI_VENDOR_ID_MARVELL_EXT, 0x9143, (1<<0)|(1<<1)},
+> +
+> +       /* Reported by Andrew Cooks
+> +        * https://bugzilla.kernel.org/show_bug.cgi?id=3D42679 */
+> +       { PCI_VENDOR_ID_MARVELL_EXT, 0x9172, (1<<0)|(1<<1)},
+> +
+> +       { 0 }
 > +};
 > +
-> +struct vfio_domain {
-> +	struct iommu_domain	*domain;
-> +	struct bus_type		*bus;
-> +	struct list_head	next;
->  	struct list_head	group_list;
-> -	bool			cache;
-> +	int			prot;		/* IOMMU_CACHE */
->  };
-> 
->  struct vfio_dma {
-> @@ -99,7 +105,7 @@ static struct vfio_dma *vfio_find_dma(struct
-> vfio_iommu *iommu,
->  	return NULL;
->  }
-> 
-> -static void vfio_insert_dma(struct vfio_iommu *iommu, struct vfio_dma
-> *new)
-> +static void vfio_link_dma(struct vfio_iommu *iommu, struct vfio_dma
-> +*new)
->  {
->  	struct rb_node **link = &iommu->dma_list.rb_node, *parent = NULL;
->  	struct vfio_dma *dma;
-> @@ -118,7 +124,7 @@ static void vfio_insert_dma(struct vfio_iommu *iommu,
-> struct vfio_dma *new)
->  	rb_insert_color(&new->node, &iommu->dma_list);  }
-> 
-> -static void vfio_remove_dma(struct vfio_iommu *iommu, struct vfio_dma
-> *old)
-> +static void vfio_unlink_dma(struct vfio_iommu *iommu, struct vfio_dma
-> +*old)
->  {
->  	rb_erase(&old->node, &iommu->dma_list);  } @@ -322,32 +328,39 @@
-> static long vfio_unpin_pages(unsigned long pfn, long npage,
->  	return unlocked;
->  }
-> 
-> -static int vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma
-> *dma,
-> -			    dma_addr_t iova, size_t *size)
-> +static void vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma
-> +*dma)
->  {
-> -	dma_addr_t start = iova, end = iova + *size;
-> +	dma_addr_t iova = dma->iova, end = dma->iova + dma->size;
-> +	struct vfio_domain *domain, *d;
->  	long unlocked = 0;
-> 
-> +	if (!dma->size)
-> +		return;
-> +	/*
-> +	 * We use the IOMMU to track the physical addresses, otherwise we'd
-> +	 * need a much more complicated tracking system.  Unfortunately
-> that
-> +	 * means we need to use one of the iommu domains to figure out the
-> +	 * pfns to unpin.  The rest need to be unmapped in advance so we
-> have
-> +	 * no iommu translations remaining when the pages are unpinned.
-> +	 */
-> +	domain = d = list_first_entry(&iommu->domain_list,
-> +				      struct vfio_domain, next);
-> +
-> +	list_for_each_entry_continue(d, &iommu->domain_list, next)
-> +		iommu_unmap(d->domain, dma->iova, dma->size);
-> +
->  	while (iova < end) {
->  		size_t unmapped;
->  		phys_addr_t phys;
-> 
-> -		/*
-> -		 * We use the IOMMU to track the physical address.  This
-> -		 * saves us from having a lot more entries in our mapping
-> -		 * tree.  The downside is that we don't track the size
-> -		 * used to do the mapping.  We request unmap of a single
-> -		 * page, but expect IOMMUs that support large pages to
-> -		 * unmap a larger chunk.
-> -		 */
-> -		phys = iommu_iova_to_phys(iommu->domain, iova);
-> +		phys = iommu_iova_to_phys(domain->domain, iova);
->  		if (WARN_ON(!phys)) {
->  			iova += PAGE_SIZE;
->  			continue;
->  		}
-> 
-> -		unmapped = iommu_unmap(iommu->domain, iova, PAGE_SIZE);
-> -		if (!unmapped)
-> +		unmapped = iommu_unmap(domain->domain, iova, PAGE_SIZE);
-> +		if (WARN_ON(!unmapped))
->  			break;
-> 
->  		unlocked += vfio_unpin_pages(phys >> PAGE_SHIFT, @@ -357,119
-> +370,26 @@ static int vfio_unmap_unpin(struct vfio_iommu *iommu, struct
-> vfio_dma *dma,
->  	}
-> 
->  	vfio_lock_acct(-unlocked);
-> -
-> -	*size = iova - start;
-> -
-> -	return 0;
->  }
-> 
-> -static int vfio_remove_dma_overlap(struct vfio_iommu *iommu, dma_addr_t
-> start,
-> -				   size_t *size, struct vfio_dma *dma)
-> +static void vfio_remove_dma(struct vfio_iommu *iommu, struct vfio_dma
-> +*dma)
->  {
-> -	size_t offset, overlap, tmp;
-> -	struct vfio_dma *split;
-> -	int ret;
-> -
-> -	if (!*size)
-> -		return 0;
-> -
-> -	/*
-> -	 * Existing dma region is completely covered, unmap all.  This is
-> -	 * the likely case since userspace tends to map and unmap buffers
-> -	 * in one shot rather than multiple mappings within a buffer.
-> -	 */
-> -	if (likely(start <= dma->iova &&
-> -		   start + *size >= dma->iova + dma->size)) {
-> -		*size = dma->size;
-> -		ret = vfio_unmap_unpin(iommu, dma, dma->iova, size);
-> -		if (ret)
-> -			return ret;
-> -
-> -		/*
-> -		 * Did we remove more than we have?  Should never happen
-> -		 * since a vfio_dma is contiguous in iova and vaddr.
-> -		 */
-> -		WARN_ON(*size != dma->size);
-> -
-> -		vfio_remove_dma(iommu, dma);
-> -		kfree(dma);
-> -		return 0;
-> -	}
-> -
-> -	/* Overlap low address of existing range */
-> -	if (start <= dma->iova) {
-> -		overlap = start + *size - dma->iova;
-> -		ret = vfio_unmap_unpin(iommu, dma, dma->iova, &overlap);
-> -		if (ret)
-> -			return ret;
-> -
-> -		vfio_remove_dma(iommu, dma);
-> -
-> -		/*
-> -		 * Check, we may have removed to whole vfio_dma.  If not
-> -		 * fixup and re-insert.
-> -		 */
-> -		if (overlap < dma->size) {
-> -			dma->iova += overlap;
-> -			dma->vaddr += overlap;
-> -			dma->size -= overlap;
-> -			vfio_insert_dma(iommu, dma);
-> -		} else
-> -			kfree(dma);
-> -
-> -		*size = overlap;
-> -		return 0;
-> -	}
-> -
-> -	/* Overlap high address of existing range */
-> -	if (start + *size >= dma->iova + dma->size) {
-> -		offset = start - dma->iova;
-> -		overlap = dma->size - offset;
-> -
-> -		ret = vfio_unmap_unpin(iommu, dma, start, &overlap);
-> -		if (ret)
-> -			return ret;
-> -
-> -		dma->size -= overlap;
-> -		*size = overlap;
-> -		return 0;
-> -	}
-> -
-> -	/* Split existing */
-> -
-> -	/*
-> -	 * Allocate our tracking structure early even though it may not
-> -	 * be used.  An Allocation failure later loses track of pages and
-> -	 * is more difficult to unwind.
-> -	 */
-> -	split = kzalloc(sizeof(*split), GFP_KERNEL);
-> -	if (!split)
-> -		return -ENOMEM;
-> -
-> -	offset = start - dma->iova;
-> -
-> -	ret = vfio_unmap_unpin(iommu, dma, start, size);
-> -	if (ret || !*size) {
-> -		kfree(split);
-> -		return ret;
-> -	}
-> -
-> -	tmp = dma->size;
-> +	vfio_unmap_unpin(iommu, dma);
-> +	vfio_unlink_dma(iommu, dma);
-> +	kfree(dma);
-> +}
-> 
-> -	/* Resize the lower vfio_dma in place, before the below insert */
-> -	dma->size = offset;
-> +static unsigned long vfio_pgsize_bitmap(struct vfio_iommu *iommu) {
-> +	struct vfio_domain *domain;
-> +	unsigned long bitmap = PAGE_MASK;
-> 
-> -	/* Insert new for remainder, assuming it didn't all get unmapped */
-> -	if (likely(offset + *size < tmp)) {
-> -		split->size = tmp - offset - *size;
-> -		split->iova = dma->iova + offset + *size;
-> -		split->vaddr = dma->vaddr + offset + *size;
-> -		split->prot = dma->prot;
-> -		vfio_insert_dma(iommu, split);
-> -	} else
-> -		kfree(split);
-> +	mutex_lock(&iommu->lock);
-> +	list_for_each_entry(domain, &iommu->domain_list, next)
-> +		bitmap &= domain->domain->ops->pgsize_bitmap;
-> +	mutex_unlock(&iommu->lock);
-> 
-> -	return 0;
-> +	return bitmap;
->  }
-> 
->  static int vfio_dma_do_unmap(struct vfio_iommu *iommu, @@ -477,10
-> +397,10 @@ static int vfio_dma_do_unmap(struct vfio_iommu *iommu,  {
->  	uint64_t mask;
->  	struct vfio_dma *dma;
-> -	size_t unmapped = 0, size;
-> +	size_t unmapped = 0;
->  	int ret = 0;
-> 
-> -	mask = ((uint64_t)1 << __ffs(iommu->domain->ops->pgsize_bitmap)) -
-> 1;
-> +	mask = ((uint64_t)1 << __ffs(vfio_pgsize_bitmap(iommu))) - 1;
-> 
->  	if (unmap->iova & mask)
->  		return -EINVAL;
-> @@ -491,20 +411,61 @@ static int vfio_dma_do_unmap(struct vfio_iommu
-> *iommu,
-> 
->  	mutex_lock(&iommu->lock);
-> 
-> +	/*
-> +	 * vfio-iommu-type1 (v1) - User mappings were coalesced together to
-> +	 * avoid tracking individual mappings.  This means that the
-> granularity
-> +	 * of the original mapping was lost and the user was allowed to
-> attempt
-> +	 * to unmap any range.  Depending on the contiguousness of physical
-> +	 * memory and page sizes supported by the IOMMU, arbitrary unmaps
-> may
-> +	 * or may not have worked.  We only guaranteed unmap granularity
-> +	 * matching the original mapping; even though it was untracked
-> here,
-> +	 * the original mappings are reflected in IOMMU mappings.  This
-> +	 * resulted in a couple unusual behaviors.  First, if a range is
-> not
-> +	 * able to be unmapped, ex. a set of 4k pages that was mapped as a
-> +	 * 2M hugepage into the IOMMU, the unmap ioctl returns success but
-> with
-> +	 * a zero sized unmap.  Also, if an unmap request overlaps the
-> first
-> +	 * address of a hugepage, the IOMMU will unmap the entire hugepage.
-> +	 * This also returns success and the returned unmap size reflects
-> the
-> +	 * actual size unmapped.
-> +	 *
-> +	 * We attempt to maintain compatibility with this interface, but we
-> +	 * take control out of the hands of the IOMMU.  An unmap request
-> offset
-> +	 * from the beginning of the original mapping will return success
-> with
-> +	 * zero sized unmap.  An unmap request covering the first iova of
-> +	 * mapping will unmap the entire range.
-> +	 *
-> +	 * The v2 version of this interface intends to be more
-> deterministic.
-> +	 * Unmap requests must fully cover previous mappings.  Multiple
-> +	 * mappings may still be unmaped by specifying large ranges, but
-> there
-> +	 * must not be any previous mappings bisected by the range.  An
-> error
-> +	 * will be returned if these conditions are not met.  The v2
-> interface
-> +	 * will only return success and a size of zero if there were no
-> +	 * mappings within the range.
-> +	 */
-> +	if (iommu->v2 ) {
-> +		dma = vfio_find_dma(iommu, unmap->iova, 0);
-> +		if (dma && dma->iova != unmap->iova) {
-> +			ret = -EINVAL;
-> +			goto unlock;
-> +		}
-> +		dma = vfio_find_dma(iommu, unmap->iova + unmap->size - 1, 0);
-> +		if (dma && dma->iova + dma->size != unmap->iova + unmap-
-> >size) {
-> +			ret = -EINVAL;
-> +			goto unlock;
-> +		}
-> +	}
-> +
->  	while ((dma = vfio_find_dma(iommu, unmap->iova, unmap->size))) {
-> -		size = unmap->size;
-> -		ret = vfio_remove_dma_overlap(iommu, unmap->iova, &size,
-> dma);
-> -		if (ret || !size)
-> +		if (!iommu->v2 && unmap->iova > dma->iova)
->  			break;
-> -		unmapped += size;
-> +		unmapped += dma->size;
-> +		vfio_remove_dma(iommu, dma);
->  	}
-> 
-> +unlock:
->  	mutex_unlock(&iommu->lock);
-> 
-> -	/*
-> -	 * We may unmap more than requested, update the unmap struct so
-> -	 * userspace can know.
-> -	 */
-> +	/* Report how much was unmapped */
->  	unmap->size = unmapped;
-> 
->  	return ret;
-> @@ -516,22 +477,47 @@ static int vfio_dma_do_unmap(struct vfio_iommu
-> *iommu,
->   * soon, so this is just a temporary workaround to break mappings down
-> into
->   * PAGE_SIZE.  Better to map smaller pages than nothing.
->   */
-> -static int map_try_harder(struct vfio_iommu *iommu, dma_addr_t iova,
-> +static int map_try_harder(struct vfio_domain *domain, dma_addr_t iova,
->  			  unsigned long pfn, long npage, int prot)  {
->  	long i;
->  	int ret;
-> 
->  	for (i = 0; i < npage; i++, pfn++, iova += PAGE_SIZE) {
-> -		ret = iommu_map(iommu->domain, iova,
-> +		ret = iommu_map(domain->domain, iova,
->  				(phys_addr_t)pfn << PAGE_SHIFT,
-> -				PAGE_SIZE, prot);
-> +				PAGE_SIZE, prot | domain->prot);
->  		if (ret)
->  			break;
->  	}
-> 
->  	for (; i < npage && i > 0; i--, iova -= PAGE_SIZE)
-> -		iommu_unmap(iommu->domain, iova, PAGE_SIZE);
-> +		iommu_unmap(domain->domain, iova, PAGE_SIZE);
-> +
-> +	return ret;
-> +}
-> +
-> +static int vfio_iommu_map(struct vfio_iommu *iommu, dma_addr_t iova,
-> +			  unsigned long pfn, long npage, int prot) {
-> +	struct vfio_domain *d;
-> +	int ret;
-> +
-> +	list_for_each_entry(d, &iommu->domain_list, next) {
-> +		ret = iommu_map(d->domain, iova, (phys_addr_t)pfn <<
-> PAGE_SHIFT,
-> +				npage << PAGE_SHIFT, prot | d->prot);
-> +		if (ret) {
-> +			if (ret != -EBUSY ||
-> +			    map_try_harder(d, iova, pfn, npage, prot))
-> +				goto unwind;
-> +		}
-> +	}
-> +
-> +	return 0;
-> +
-> +unwind:
-> +	list_for_each_entry_continue_reverse(d, &iommu->domain_list, next)
-> +		iommu_unmap(d->domain, iova, npage << PAGE_SHIFT);
-> 
->  	return ret;
->  }
-> @@ -545,12 +531,12 @@ static int vfio_dma_do_map(struct vfio_iommu
-> *iommu,
->  	long npage;
->  	int ret = 0, prot = 0;
->  	uint64_t mask;
-> -	struct vfio_dma *dma = NULL;
-> +	struct vfio_dma *dma;
->  	unsigned long pfn;
-> 
->  	end = map->iova + map->size;
-> 
-> -	mask = ((uint64_t)1 << __ffs(iommu->domain->ops->pgsize_bitmap)) -
-> 1;
-> +	mask = ((uint64_t)1 << __ffs(vfio_pgsize_bitmap(iommu))) - 1;
-> 
->  	/* READ/WRITE from device perspective */
->  	if (map->flags & VFIO_DMA_MAP_FLAG_WRITE) @@ -561,9 +547,6 @@
-> static int vfio_dma_do_map(struct vfio_iommu *iommu,
->  	if (!prot)
->  		return -EINVAL; /* No READ/WRITE? */
-> 
-> -	if (iommu->cache)
-> -		prot |= IOMMU_CACHE;
-> -
->  	if (vaddr & mask)
->  		return -EINVAL;
->  	if (map->iova & mask)
-> @@ -588,180 +571,249 @@ static int vfio_dma_do_map(struct vfio_iommu
-> *iommu,
->  		return -EEXIST;
->  	}
-> 
-> -	for (iova = map->iova; iova < end; iova += size, vaddr += size) {
-> -		long i;
-> +	dma = kzalloc(sizeof(*dma), GFP_KERNEL);
-> +	if (!dma) {
-> +		mutex_unlock(&iommu->lock);
-> +		return -ENOMEM;
-> +	}
-> 
-> +	dma->iova = map->iova;
-> +	dma->vaddr = map->vaddr;
-> +	dma->prot = prot;
-> +
-> +	/* Insert zero-sized and grow as we map chunks of it */
-> +	vfio_link_dma(iommu, dma);
-> +
-> +	for (iova = map->iova; iova < end; iova += size, vaddr += size) {
->  		/* Pin a contiguous chunk of memory */
->  		npage = vfio_pin_pages(vaddr, (end - iova) >> PAGE_SHIFT,
->  				       prot, &pfn);
->  		if (npage <= 0) {
->  			WARN_ON(!npage);
->  			ret = (int)npage;
-> -			goto out;
-> -		}
-> -
-> -		/* Verify pages are not already mapped */
-> -		for (i = 0; i < npage; i++) {
-> -			if (iommu_iova_to_phys(iommu->domain,
-> -					       iova + (i << PAGE_SHIFT))) {
-> -				ret = -EBUSY;
-> -				goto out_unpin;
-> -			}
-> +			break;
->  		}
-> 
-> -		ret = iommu_map(iommu->domain, iova,
-> -				(phys_addr_t)pfn << PAGE_SHIFT,
-> -				npage << PAGE_SHIFT, prot);
-> +		/* Map it! */
-> +		ret = vfio_iommu_map(iommu, iova, pfn, npage, prot);
->  		if (ret) {
-> -			if (ret != -EBUSY ||
-> -			    map_try_harder(iommu, iova, pfn, npage, prot)) {
-> -				goto out_unpin;
-> -			}
-> +			vfio_unpin_pages(pfn, npage, prot, true);
-> +			break;
->  		}
-> 
->  		size = npage << PAGE_SHIFT;
-> +		dma->size += size;
-> +	}
-> 
-> -		/*
-> -		 * Check if we abut a region below - nothing below 0.
-> -		 * This is the most likely case when mapping chunks of
-> -		 * physically contiguous regions within a virtual address
-> -		 * range.  Update the abutting entry in place since iova
-> -		 * doesn't change.
-> -		 */
-> -		if (likely(iova)) {
-> -			struct vfio_dma *tmp;
-> -			tmp = vfio_find_dma(iommu, iova - 1, 1);
-> -			if (tmp && tmp->prot == prot &&
-> -			    tmp->vaddr + tmp->size == vaddr) {
-> -				tmp->size += size;
-> -				iova = tmp->iova;
-> -				size = tmp->size;
-> -				vaddr = tmp->vaddr;
-> -				dma = tmp;
-> -			}
-> -		}
-> +	if (ret)
-> +		vfio_remove_dma(iommu, dma);
-> 
-> -		/*
-> -		 * Check if we abut a region above - nothing above ~0 + 1.
-> -		 * If we abut above and below, remove and free.  If only
-> -		 * abut above, remove, modify, reinsert.
-> -		 */
-> -		if (likely(iova + size)) {
-> -			struct vfio_dma *tmp;
-> -			tmp = vfio_find_dma(iommu, iova + size, 1);
-> -			if (tmp && tmp->prot == prot &&
-> -			    tmp->vaddr == vaddr + size) {
-> -				vfio_remove_dma(iommu, tmp);
-> -				if (dma) {
-> -					dma->size += tmp->size;
-> -					kfree(tmp);
-> -				} else {
-> -					size += tmp->size;
-> -					tmp->size = size;
-> -					tmp->iova = iova;
-> -					tmp->vaddr = vaddr;
-> -					vfio_insert_dma(iommu, tmp);
-> -					dma = tmp;
-> -				}
-> -			}
-> -		}
-> +	mutex_unlock(&iommu->lock);
-> +	return ret;
-> +}
-> +
-> +static int vfio_bus_type(struct device *dev, void *data) {
-> +	struct vfio_domain *domain = data;
-> +
-> +	if (domain->bus && domain->bus != dev->bus)
-> +		return -EINVAL;
-> +
-> +	domain->bus = dev->bus;
-> +
-> +	return 0;
-> +}
-> +
-> +static int vfio_iommu_replay(struct vfio_iommu *iommu,
-> +			     struct vfio_domain *domain)
+> +/*
+> + * The mapping of quirky requester ids is used when the device drive=
+r sets up
+> + * dma, if iommu is enabled.
+> + */
+> +u8 pci_multi_requesters(struct pci_dev *dev)
 > +{
-> +	struct vfio_domain *d;
-> +	struct rb_node *n;
-> +	int ret;
+> +       const struct pci_dev_dma_multi_source_map *i;
 > +
-> +	/* Arbitrarily pick the first domain in the list for lookups */
-> +	d = list_first_entry(&iommu->domain_list, struct vfio_domain,
-> next);
-> +	n = rb_first(&iommu->dma_list);
-> +
-> +	/* If there's not a domain, there better not be any mappings */
-> +	if (WARN_ON(n && !d))
-> +		return -EINVAL;
-> +
-> +	for (; n; n = rb_next(n)) {
-> +		struct vfio_dma *dma;
-> +		dma_addr_t iova;
-> +
-> +		dma = rb_entry(n, struct vfio_dma, node);
-> +		iova = dma->iova;
-> 
-> -		if (!dma) {
-> -			dma = kzalloc(sizeof(*dma), GFP_KERNEL);
-> -			if (!dma) {
-> -				iommu_unmap(iommu->domain, iova, size);
-> -				ret = -ENOMEM;
-> -				goto out_unpin;
-> +		while (iova < dma->iova + dma->size) {
-> +			phys_addr_t phys = iommu_iova_to_phys(d->domain, iova);
-> +			size_t size;
-> +
-> +			if (WARN_ON(!phys)) {
-> +				iova += PAGE_SIZE;
-> +				continue;
->  			}
-> 
-> -			dma->size = size;
-> -			dma->iova = iova;
-> -			dma->vaddr = vaddr;
-> -			dma->prot = prot;
-> -			vfio_insert_dma(iommu, dma);
-> -		}
-> -	}
-> +			size = PAGE_SIZE;
-> 
-> -	WARN_ON(ret);
-> -	mutex_unlock(&iommu->lock);
-> -	return ret;
-> +			while (iova + size < dma->iova + dma->size &&
-> +			       phys + size == iommu_iova_to_phys(d->domain,
-> +								 iova + size))
-> +				size += PAGE_SIZE;
-> 
-> -out_unpin:
-> -	vfio_unpin_pages(pfn, npage, prot, true);
-> +			ret = iommu_map(domain->domain, iova, phys,
-> +					size, dma->prot | domain->prot);
-> +			if (ret)
-> +				return ret;
-> 
-> -out:
-> -	iova = map->iova;
-> -	size = map->size;
-> -	while ((dma = vfio_find_dma(iommu, iova, size))) {
-> -		int r = vfio_remove_dma_overlap(iommu, iova,
-> -						&size, dma);
-> -		if (WARN_ON(r || !size))
-> -			break;
-> +			iova += size;
-> +		}
->  	}
-> 
-> -	mutex_unlock(&iommu->lock);
-> -	return ret;
-> +	return 0;
->  }
-> 
->  static int vfio_iommu_type1_attach_group(void *iommu_data,
->  					 struct iommu_group *iommu_group)
->  {
->  	struct vfio_iommu *iommu = iommu_data;
-> -	struct vfio_group *group, *tmp;
-> +	struct vfio_group *group, *g;
-> +	struct vfio_domain *domain, *d;
->  	int ret;
-> 
-> -	group = kzalloc(sizeof(*group), GFP_KERNEL);
-> -	if (!group)
-> -		return -ENOMEM;
-> -
->  	mutex_lock(&iommu->lock);
-> 
-> -	list_for_each_entry(tmp, &iommu->group_list, next) {
-> -		if (tmp->iommu_group == iommu_group) {
-> +	list_for_each_entry(d, &iommu->domain_list, next) {
-> +		list_for_each_entry(g, &d->group_list, next) {
-> +			if (g->iommu_group != iommu_group)
-> +				continue;
-> +
->  			mutex_unlock(&iommu->lock);
-> -			kfree(group);
->  			return -EINVAL;
->  		}
->  	}
-> 
-> -	/*
-> -	 * TODO: Domain have capabilities that might change as we add
-> -	 * groups (see iommu->cache, currently never set).  Check for
-> -	 * them and potentially disallow groups to be attached when it
-> -	 * would change capabilities (ugh).
-> -	 */
-> -	ret = iommu_attach_group(iommu->domain, iommu_group);
-> -	if (ret) {
-> -		mutex_unlock(&iommu->lock);
-> -		kfree(group);
-> -		return ret;
-> +	group = kzalloc(sizeof(*group), GFP_KERNEL);
-> +	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
-> +	if (!group || !domain) {
-> +		ret = -ENOMEM;
-> +		goto out_free;
->  	}
-> 
->  	group->iommu_group = iommu_group;
-> -	list_add(&group->next, &iommu->group_list);
-> +
-> +	/* Determine bus_type in order to allocate a domain */
-> +	ret = iommu_group_for_each_dev(iommu_group, domain, vfio_bus_type);
-> +	if (ret)
-> +		goto out_free;
-> +
-> +	domain->domain = iommu_domain_alloc(domain->bus);
-> +	if (!domain->domain) {
-> +		ret = -EIO;
-> +		goto out_free;
-> +	}
-> +
-> +	ret = iommu_attach_group(domain->domain, iommu_group);
-> +	if (ret)
-> +		goto out_domain;
-> +
-> +	INIT_LIST_HEAD(&domain->group_list);
-> +	list_add(&group->next, &domain->group_list);
-> +
-> +	if (!allow_unsafe_interrupts &&
-> +	    !iommu_domain_has_cap(domain->domain, IOMMU_CAP_INTR_REMAP)) {
-> +		pr_warn("%s: No interrupt remapping support.  Use the module
-> param \"allow_unsafe_interrupts\" to enable VFIO IOMMU support on this
-> platform\n",
-> +		       __func__);
-> +		ret = -EPERM;
-> +		goto out_detach;
-> +	}
-> +
-> +	if (iommu_domain_has_cap(domain->domain,
-> IOMMU_CAP_CACHE_COHERENCY))
-> +		domain->prot |= IOMMU_CACHE;
-> +
-> +	/* Try to match an existing compatible domain. */
-> +	list_for_each_entry(d, &iommu->domain_list, next) {
-> +		if (d->bus == domain->bus && d->prot == domain->prot) {
-> +			iommu_detach_group(domain->domain, iommu_group);
-> +			if (!iommu_attach_group(d->domain, iommu_group)) {
-> +				list_add(&group->next, &d->group_list);
-> +				iommu_domain_free(domain->domain);
-> +				kfree(domain);
-> +				mutex_unlock(&iommu->lock);
-> +				return 0;
-> +			}
-> +
-> +			ret = iommu_attach_group(domain->domain, iommu_group);
-> +			if (ret)
-> +				goto out_domain;
-> +		}
-> +	}
-> +
-> +	/* replay mappings on new domains */
-> +	ret = vfio_iommu_replay(iommu, domain);
-> +	if (ret)
-> +		goto out_detach;
-> +
-> +	list_add(&domain->next, &iommu->domain_list);
-> 
->  	mutex_unlock(&iommu->lock);
-> 
->  	return 0;
-> +
-> +out_detach:
-> +	iommu_detach_group(domain->domain, iommu_group);
-> +out_domain:
-> +	iommu_domain_free(domain->domain);
-> +out_free:
-> +	kfree(domain);
-> +	kfree(group);
-> +	mutex_unlock(&iommu->lock);
-> +	return ret;
+> +       for (i =3D pci_dev_dma_multi_source_map; i->func_map; i++) {
+> +               if ((i->vendor =3D=3D dev->vendor ||
+> +                    i->vendor =3D=3D (u16)PCI_ANY_ID) &&
+> +                   (i->device =3D=3D dev->device ||
+> +                    i->device =3D=3D (u16)PCI_ANY_ID)) {
+> +                       return i->func_map;
+> +               }
+> +       }
+> +       return 0;
 > +}
 > +
-> +static void vfio_iommu_unmap_unpin_all(struct vfio_iommu *iommu) {
-> +	struct rb_node *node;
+> +/* These are one-to-one translations for devices that use a single i=
+ncorrect
+> + * requester ID. The requester id may not be the BDF of a real devic=
+e.
+> + */
+> +static const struct pci_dev_dma_source_map {
+> +       u16 vendor;
+> +       u16 device;
+> +       u8  devfn;
+> +       u8  dma_devfn;
+> +} pci_dev_dma_source_map[] =3D {
 > +
-> +	while ((node = rb_first(&iommu->dma_list)))
-> +		vfio_remove_dma(iommu, rb_entry(node, struct vfio_dma,
-> node));
->  }
-> 
->  static void vfio_iommu_type1_detach_group(void *iommu_data,
->  					  struct iommu_group *iommu_group)  {
->  	struct vfio_iommu *iommu = iommu_data;
-> +	struct vfio_domain *domain;
->  	struct vfio_group *group;
-> 
->  	mutex_lock(&iommu->lock);
-> 
-> -	list_for_each_entry(group, &iommu->group_list, next) {
-> -		if (group->iommu_group == iommu_group) {
-> -			iommu_detach_group(iommu->domain, iommu_group);
-> +	list_for_each_entry(domain, &iommu->domain_list, next) {
-> +		list_for_each_entry(group, &domain->group_list, next) {
-> +			if (group->iommu_group != iommu_group)
-> +				continue;
+> +       /* Ricoh IEEE 1394 Controller */
+> +       {
+> +               PCI_VENDOR_ID_RICOH,
+> +               0xe832,
+> +               PCI_DEVFN(0x00, 3),
+> +               PCI_DEVFN(0x00, 0)
+> +       },
 > +
-> +			iommu_detach_group(domain->domain, iommu_group);
->  			list_del(&group->next);
->  			kfree(group);
-> -			break;
-> +			/*
-> +			 * Group ownership provides privilege, if the group
-> +			 * list is empty, the domain goes away.  If it's the
-> +			 * last domain, then all the mappings go away too.
-> +			 */
-> +			if (list_empty(&domain->group_list)) {
-> +				if (list_is_singular(&iommu->domain_list))
-> +					vfio_iommu_unmap_unpin_all(iommu);
-> +				iommu_domain_free(domain->domain);
-> +				list_del(&domain->next);
-> +				kfree(domain);
-> +			}
-> +			goto done;
->  		}
->  	}
-> 
-> +done:
->  	mutex_unlock(&iommu->lock);
+> +       /* Nils Caspar - Adaptec 3405
+> +        * http://www.mail-archive.com/centos@centos.org/msg90986.htm=
+l
+> +        * Jonathan McCune
+> +        * http://old-list-archives.xen.org/archives/html/xen-users/2=
+010-04/msg00535.html */
+> +       {
+> +               PCI_VENDOR_ID_ADAPTEC2,
+> +               0x028b,
+> +               PCI_DEVFN(0x0e, 0),
+> +               PCI_DEVFN(0x01, 0)
+> +       },
+> +
+> +       /* Mateusz Murawski - LSI SAS based MegaRAID
+> +        * https://lkml.org/lkml/2011/9/12/104
+> +        * M. Nunberg - Dell PERC 5/i Integrated RAID Controller
+> +        * http://lists.xen.org/archives/html/xen-devel/2010-05/msg01=
+563.html */
+> +       {
+> +               PCI_VENDOR_ID_LSI_LOGIC,
+> +               0x0411,
+> +               PCI_DEVFN(0x0e, 0),
+> +               PCI_DEVFN(0x08, 0)
+> +       },
+> +
+> +       /* Steven Dake, Markus Stockhausen - Mellanox 26428
+> +        * https://bugzilla.redhat.com/show_bug.cgi?id=3D713774
+> +        * Note: mellanox uses decimal product numbers, convert to he=
+x for PCI
+> +        * device ID. ie. 26428 =3D=3D 0x673c */
+> +       {
+> +               PCI_VENDOR_ID_MELLANOX,
+> +               0x673c,
+> +               PCI_DEVFN(0x00, 0),
+> +               PCI_DEVFN(0x00, 6)
+> +       },
+> +
+> +       { 0 }
+> +};
+> +
+> +u8 pci_requester(struct pci_dev *dev)
+> +{
+> +       const struct pci_dev_dma_source_map *i;
+> +
+> +       for (i =3D pci_dev_dma_source_map; i->devfn; i++) {
+
+The bug that Martin =C3=96hrling pointed out in the ticket is still the=
+re.
+
+> +               if ((i->vendor =3D=3D dev->vendor) &&
+> +                   (i->device =3D=3D dev->device) &&
+> +                   (i->devfn =3D=3D dev->devfn)) {
+> +                       return i->dma_devfn;
+> +               }
+> +       }
+> +       return dev->devfn;
+> +}
+> +
+> +
+>  static const struct pci_dev_acs_enabled {
+>         u16 vendor;
+>         u16 device;
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index a13d6825e5..3214fd2514 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -1632,6 +1632,8 @@ enum pci_fixup_pass {
+>  #ifdef CONFIG_PCI_QUIRKS
+>  void pci_fixup_device(enum pci_fixup_pass pass, struct pci_dev *dev)=
+;
+>  struct pci_dev *pci_get_dma_source(struct pci_dev *dev);
+> +u8 pci_multi_requesters(struct pci_dev *dev);
+> +u8 pci_requester(struct pci_dev *dev);
+>  int pci_dev_specific_acs_enabled(struct pci_dev *dev, u16 acs_flags)=
+;
+>  #else
+>  static inline void pci_fixup_device(enum pci_fixup_pass pass,
+> @@ -1640,6 +1642,14 @@ static inline struct pci_dev *pci_get_dma_sour=
+ce(struct pci_dev *dev)
+>  {
+>         return pci_dev_get(dev);
 >  }
-> 
-> @@ -769,40 +821,17 @@ static void *vfio_iommu_type1_open(unsigned long
-> arg)  {
->  	struct vfio_iommu *iommu;
-> 
-> -	if (arg != VFIO_TYPE1_IOMMU)
-> +	if (arg != VFIO_TYPE1_IOMMU || arg != VFIO_TYPE1v2_IOMMU)
->  		return ERR_PTR(-EINVAL);
-> 
->  	iommu = kzalloc(sizeof(*iommu), GFP_KERNEL);
->  	if (!iommu)
->  		return ERR_PTR(-ENOMEM);
-> 
-> -	INIT_LIST_HEAD(&iommu->group_list);
-> +	INIT_LIST_HEAD(&iommu->domain_list);
->  	iommu->dma_list = RB_ROOT;
->  	mutex_init(&iommu->lock);
-> -
-> -	/*
-> -	 * Wish we didn't have to know about bus_type here.
-> -	 */
-> -	iommu->domain = iommu_domain_alloc(&pci_bus_type);
-> -	if (!iommu->domain) {
-> -		kfree(iommu);
-> -		return ERR_PTR(-EIO);
-> -	}
-> -
-> -	/*
-> -	 * Wish we could specify required capabilities rather than create
-> -	 * a domain, see what comes out and hope it doesn't change along
-> -	 * the way.  Fortunately we know interrupt remapping is global for
-> -	 * our iommus.
-> -	 */
-> -	if (!allow_unsafe_interrupts &&
-> -	    !iommu_domain_has_cap(iommu->domain, IOMMU_CAP_INTR_REMAP)) {
-> -		pr_warn("%s: No interrupt remapping support.  Use the module
-> param \"allow_unsafe_interrupts\" to enable VFIO IOMMU support on this
-> platform\n",
-> -		       __func__);
-> -		iommu_domain_free(iommu->domain);
-> -		kfree(iommu);
-> -		return ERR_PTR(-EPERM);
-> -	}
-> +	iommu->v2 = (arg == VFIO_TYPE1v2_IOMMU);
-> 
->  	return iommu;
->  }
-> @@ -810,25 +839,24 @@ static void *vfio_iommu_type1_open(unsigned long
-> arg)  static void vfio_iommu_type1_release(void *iommu_data)  {
->  	struct vfio_iommu *iommu = iommu_data;
-> +	struct vfio_domain *domain, *domain_tmp;
->  	struct vfio_group *group, *group_tmp;
-> -	struct rb_node *node;
-> 
-> -	list_for_each_entry_safe(group, group_tmp, &iommu->group_list,
-> next) {
-> -		iommu_detach_group(iommu->domain, group->iommu_group);
-> -		list_del(&group->next);
-> -		kfree(group);
-> -	}
-> +	vfio_iommu_unmap_unpin_all(iommu);
-> 
-> -	while ((node = rb_first(&iommu->dma_list))) {
-> -		struct vfio_dma *dma = rb_entry(node, struct vfio_dma, node);
-> -		size_t size = dma->size;
-> -		vfio_remove_dma_overlap(iommu, dma->iova, &size, dma);
-> -		if (WARN_ON(!size))
-> -			break;
-> +	list_for_each_entry_safe(domain, domain_tmp,
-> +				 &iommu->domain_list, next) {
-> +		list_for_each_entry_safe(group, group_tmp,
-> +					 &domain->group_list, next) {
-> +			iommu_detach_group(domain->domain, group->iommu_group);
-> +			list_del(&group->next);
-> +			kfree(group);
-> +		}
-> +		iommu_domain_free(domain->domain);
-> +		list_del(&domain->next);
-> +		kfree(domain);
->  	}
-> 
-> -	iommu_domain_free(iommu->domain);
-> -	iommu->domain = NULL;
->  	kfree(iommu);
->  }
-> 
-> @@ -858,7 +886,7 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
-> 
->  		info.flags = 0;
-> 
-> -		info.iova_pgsizes = iommu->domain->ops->pgsize_bitmap;
-> +		info.iova_pgsizes = vfio_pgsize_bitmap(iommu);
-> 
->  		return copy_to_user((void __user *)arg, &info, minsz);
-> 
-> @@ -911,9 +939,6 @@ static const struct vfio_iommu_driver_ops
-> vfio_iommu_driver_ops_type1 = {
-> 
->  static int __init vfio_iommu_type1_init(void)  {
-> -	if (!iommu_present(&pci_bus_type))
-> -		return -ENODEV;
-> -
->  	return vfio_register_iommu_driver(&vfio_iommu_driver_ops_type1);
->  }
-> 
-> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h index
-> 0fd47f5..460fdf2 100644
-> --- a/include/uapi/linux/vfio.h
-> +++ b/include/uapi/linux/vfio.h
-> @@ -23,6 +23,7 @@
-> 
->  #define VFIO_TYPE1_IOMMU		1
->  #define VFIO_SPAPR_TCE_IOMMU		2
-> +#define VFIO_TYPE1v2_IOMMU		3
-> 
->  /*
->   * The IOCTL interface is designed for extensibility by embedding the
-> 
-> 
+> +u8 pci_multi_requesters(struct pci_dev *dev)
+> +{
+> +       return 0;
+> +}
+> +u8 pci_requester(struct pci_dev *dev)
+> +{
+> +       return dev->devfn;
+> +}
+>  static inline int pci_dev_specific_acs_enabled(struct pci_dev *dev,
+>                                                u16 acs_flags)
+>  {
+
+Thanks,
+
+a.
