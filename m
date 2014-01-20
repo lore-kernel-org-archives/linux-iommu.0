@@ -1,14 +1,15 @@
-From: "Dominguez, Caesar" <caesar.dominguez-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: Problem: dmar: DRHD: handling fault status reg 3 on Red Hat 6.5
-Date: Mon, 20 Jan 2014 17:49:56 +0000
-Message-ID: <05480ADF32EBAC4D92944581B85B69422BE3B50B@FMSMSX103.amr.corp.intel.com>
-References: <05480ADF32EBAC4D92944581B85B69422BE3ACB3@FMSMSX103.amr.corp.intel.com>
-	<1389844688.8705.43.camel@bling.home>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [RFC PATCH] vfio/iommu_type1: Multi-IOMMU domain support
+Date: Mon, 20 Jan 2014 18:30:42 +0000
+Message-ID: <f4597c60b5a04e8e8baa225a279abd0d@BL2PR03MB468.namprd03.prod.outlook.com>
+References: <20140117203126.11429.25235.stgit@gimli.home>
+	<4bc6dcb96df44b0e94152d9729958d60@BL2PR03MB468.namprd03.prod.outlook.com>
+	<1390234886.8705.142.camel@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1389844688.8705.43.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+In-Reply-To: <1390234886.8705.142.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -20,119 +21,124 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Reported RH bugzilla, https://bugzilla.redhat.com/
-https://bugzilla.redhat.com/show_bug.cgi?id=1054377
-Issue is only seen on Intel IGD (more details on previous link) when CPU is INTEL VT-D capable and using Red hat 6.5 , previous one 6.4 do not show this faults
-Not sure if this has already been reported or if Red hat has Patch for this issue.
 
 
------Original Message-----
-From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org] 
-Sent: Wednesday, January 15, 2014 9:58 PM
-To: Dominguez, Caesar
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Subject: Re: Problem: dmar: DRHD: handling fault status reg 3 on Red Hat 6.5
+> -----Original Message-----
+> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> Sent: Monday, January 20, 2014 9:51 PM
+> To: Sethi Varun-B16395
+> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Subject: Re: [RFC PATCH] vfio/iommu_type1: Multi-IOMMU domain support
+> 
+> On Mon, 2014-01-20 at 14:45 +0000, Varun Sethi wrote:
+> >
+> > > -----Original Message-----
+> > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> > > Sent: Saturday, January 18, 2014 2:06 AM
+> > > To: Sethi Varun-B16395
+> > > Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > > Subject: [RFC PATCH] vfio/iommu_type1: Multi-IOMMU domain support
+> > >
+> > > RFC: This is not complete but I want to share with Varun the
+> > > dirrection I'm thinking about.  In particular, I'm really not sure
+> > > if we want to introduce a "v2" interface version with slightly
+> > > different unmap semantics.  QEMU doesn't care about the difference,
+> > > but other users might.  Be warned, I'm not even sure if this code
+> works at the moment.
+> > > Thanks,
+> > >
+> > > Alex
+> > >
+> > >
+> > > We currently have a problem that we cannot support advanced features
+> > > of an IOMMU domain (ex. IOMMU_CACHE), because we have no guarantee
+> > > that those features will be supported by all of the hardware units
+> > > involved with the domain over its lifetime.  For instance, the Intel
+> > > VT-d architecture does not require that all DRHDs support snoop
+> > > control.  If we create a domain based on a device behind a DRHD that
+> > > does support snoop control and enable SNP support via the
+> > > IOMMU_CACHE mapping option, we cannot then add a device behind a
+> > > DRHD which does not support snoop control or we'll get reserved bit
+> > > faults from the SNP bit in the pagetables.  To add to the
+> > > complexity, we can't know the properties of a domain until a device
+> is attached.
+> > [Sethi Varun-B16395] Effectively, it's the same iommu and iommu_ops
+> > are common across all bus types. The hardware feature differences are
+> > abstracted by the driver.
+> 
+> That's a simplifying assumption that is not made anywhere else in the
+> code.  The IOMMU API allows entirely independent IOMMU drivers to
+> register per bus_type.  There is no guarantee that all devices are backed
+> by the same IOMMU hardware unit or make use of the same iommu_ops.
+> 
+[Sethi Varun-B16395] ok
 
-On Thu, 2014-01-16 at 01:11 +0000, Dominguez, Caesar wrote:
-> When attempting to boot a fresh Red hat 6.5 installation, kernel 
-> constantly show the following message.
+> > > We could pass this problem off to userspace and require that a
+> > > separate vfio container be used, but we don't know how to handle
+> > > page accounting in that case.  How do we know that a page pinned in
+> > > one container is the same page as a different container and avoid
+> > > double billing the user for the page.
+> > >
+> > > The solution is therefore to support multiple IOMMU domains per
+> > > container.  In the majority of cases, only one domain will be
+> > > required since hardware is typically consistent within a system.
+> > > However, this provides us the ability to validate compatibility of
+> > > domains and support mixed environments where page table flags can be
+> > > different between domains.
+> > >
+> > > To do this, our DMA tracking needs to change.  We currently try to
+> > > coalesce user mappings into as few tracking entries as possible.
+> > > The problem then becomes that we lose granularity of user mappings.
+> > > We've never guaranteed that a user is able to unmap at a finer
+> > > granularity than the original mapping, but we must honor the
+> > > granularity of the original mapping.  This coalescing code is
+> > > therefore removed, allowing only unmaps covering complete maps.  The
+> > > change in accounting is fairly small here, a typical QEMU VM will
+> > > start out with roughly a dozen entries, so it's arguable if this
+> coalescing was ever needed.
+> > >
+> > > We also move IOMMU domain creation to the point where a group is
+> > > attached to the container.  An interesting side-effect of this is
+> > > that we now have access to the device at the time of domain creation
+> > > and can probe the devices within the group to determine the bus_type.
+> > > This finally makes vfio_iommu_type1 completely device/bus agnostic.
+> > > In fact, each IOMMU domain can host devices on different buses
+> > > managed by different physical IOMMUs, and present a single DMA
+> > > mapping interface to the user.  When a new domain is created,
+> > > mappings are replayed to bring the IOMMU pagetables up to the state
+> > > of the current container.  And of course, DMA mapping and unmapping
+> > > automatically traverse all of the configured IOMMU domains.
+> > >
+> > [Sethi Varun-B16395] This code still checks to see that devices being
+> > attached to the domain are connected to the same bus type. If we
+> > intend to merge devices from different bus types but attached to
+> > compatible domains in to a single domain, why can't we avoid the bus
+> > check? Why can't we remove the bus dependency from domain allocation?
+> 
+> So if I were to test iommu_ops instead of bus_type (ie. assume that if a
+> if an IOMMU driver manages iommu_ops across bus_types that it can accept
+> the devices), would that satisfy your concern?
+[Sethi Varun-B16395] I think so. Checking for iommu_ops should allow iommu groups from different bus_types, to share a domain.
 
-Please report RHEL issues to the RH bugzilla, https://bugzilla.redhat.com/
+> 
+> It may be possible to remove the bus_type dependency from domain
+> allocation, but the IOMMU API currently makes the assumption that there's
+> one IOMMU driver per bus_type.
+[Sethi Varun-B16395] Is that a valid assumption?
 
-Include the full console log or dmesg.  Thanks,
+> Your fix to remove the bus_type
+> dependency from iommu_domain_alloc() adds an assumption that there is
+> only one IOMMU driver for all bus_types.  That may work on your platform,
+> but I don't think it's a valid assumption in the general case.
+[Sethi Varun-B16395] ok
 
-Alex
+> If you'd like to propose alternative ways to remove the bus_type
+> dependency, please do.  Thanks,
+>
+[Sethi Varun-B16395] My main concern, was to allow devices from different bus types, to share the iommu domain. I am fine if this can be handled from within vfio.
 
-> If user uses 6.4, none of this issue is seen.
-> 
->  
-> 
-> 06] PTE Read access is not set
-> 
-> dmar: DRHD: handling fault status reg 3
-> 
-> dmar: DMAR:[DMA Read] Request device [00:02.0] fault addr 7f800000
-> 
->  
-> 
-> This only is seeing on Red Hat 6.5, same system configuration using 
-> Red Hat 6.4, do not cause this issu
-> 
-> Current workaournd is to disable iommu
-> 
-> Using both options resolve the issue
-> 
-> Intel_iommu=igfx_off
-> 
-> Or
-> 
-> Intel_iommu=off
-> 
->  
-> 
-> I suspect of Kernel modules: i915, is there a Red Hat 6.5 bugzilla 
-> reporting this or should I look for a i915 module?
-> 
-> Since same module is used on Red hat 6.4. 
-> 
->  
-> 
-> Details device [00:02.0]
-> 
-> 00:02.0 VGA compatible controller: Intel Corporation Xeon E3-1200 v3 
-> Processor Integrated Graphics Controller (rev 06) (prog-if 00 [VGA
-> controller])
-> 
->      Subsystem: Intel Corporation Device 2212
-> 
->      Control: I/O+ Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop-
-> ParErr- Stepping- SERR- FastB2B- DisINTx-
-> 
->      Status: Cap+ 66MHz- UDF- FastB2B+ ParErr- DEVSEL=fast >TAbort-
-> <TAbort- <MAbort- >SERR- <PERR- INTx-
-> 
->      Interrupt: pin A routed to IRQ 16
-> 
->      Region 0: Memory at c0000000 (64-bit, non-prefetchable) [size=4M]
-> 
->      Region 2: Memory at b0000000 (64-bit, prefetchable) [size=256M]
-> 
->      Region 4: I/O ports at 6000 [size=64]
-> 
->      Expansion ROM at <unassigned> [disabled]
-> 
->      Capabilities: [90] MSI: Enable- Count=1/1 Maskable- 64bit-
-> 
->            Address: 00000000  Data: 0000
-> 
->      Capabilities: [d0] Power Management version 2
-> 
->            Flags: PMEClk- DSI+ D1- D2- AuxCurrent=0mA
-> PME(D0-,D1-,D2-,D3hot-,D3cold-)
-> 
->           Status: D0 NoSoftRst- PME-Enable- DSel=0 DScale=0 PME-
-> 
->      Capabilities: [a4] PCI Advanced Features
-> 
->            AFCap: TP+ FLR+
-> 
->            AFCtrl: FLR-
-> 
->            AFStatus: TP-
-> 
->      Kernel modules: i915
-> 
->  
-> 
->  
-> 
->  
-> 
-> 
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+-Varun
+ 
