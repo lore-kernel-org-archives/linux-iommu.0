@@ -1,15 +1,16 @@
-From: "Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [RFC PATCH] vfio/iommu_type1: Multi-IOMMU domain support
-Date: Tue, 21 Jan 2014 16:46:22 +0000
-Message-ID: <6435bb49d4714b24baaf707e76559a55@BN1PR03MB266.namprd03.prod.outlook.com>
-References: <20140117203126.11429.25235.stgit@gimli.home>
-	<4b9118cb4cc744bdb2e9c25fa32d6950@BL2PR03MB259.namprd03.prod.outlook.com>
-	<1390311348.8705.265.camel@bling.home>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH v3 02/11] iommu/arm-smmu: Introduce iommu_group notifier
+	block
+Date: Tue, 21 Jan 2014 17:48:02 +0000
+Message-ID: <e92c5fd617fb4068b4ec5de696527ee3@BL2PR03MB468.namprd03.prod.outlook.com>
+References: <1389876263-25759-1-git-send-email-andreas.herrmann@calxeda.com>
+	<1389876263-25759-3-git-send-email-andreas.herrmann@calxeda.com>
+	<20140120222814.GI3471@alberich>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1390311348.8705.265.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+In-Reply-To: <20140120222814.GI3471@alberich>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -20,92 +21,144 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
 
 > -----Original Message-----
-> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> Sent: Tuesday, January 21, 2014 7:06 PM
-> To: Bhushan Bharat-R65777
-> Cc: Sethi Varun-B16395; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-
-> kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: Re: [RFC PATCH] vfio/iommu_type1: Multi-IOMMU domain support
+> From: Andreas Herrmann [mailto:andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org]
+> Sent: Tuesday, January 21, 2014 3:58 AM
+> To: Will Deacon
+> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-arm-
+> kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; Andreas Herrmann; Sethi Varun-B16395
+> Subject: [PATCH v3 02/11] iommu/arm-smmu: Introduce iommu_group notifier
+> block
 > 
-> On Tue, 2014-01-21 at 07:27 +0000, Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org wrote:
-> > > +	domain->domain = iommu_domain_alloc(domain->bus);
-> > > +	if (!domain->domain) {
-> > > +		ret = -EIO;
-> > > +		goto out_free;
-> > > +	}
-> > > +
-> > > +	ret = iommu_attach_group(domain->domain, iommu_group);
-> > > +	if (ret)
-> > > +		goto out_domain;
-> > > +
-> > > +	INIT_LIST_HEAD(&domain->group_list);
-> > > +	list_add(&group->next, &domain->group_list);
-> > > +
-> > > +	if (!allow_unsafe_interrupts &&
-> > > +	    !iommu_domain_has_cap(domain->domain, IOMMU_CAP_INTR_REMAP)) {
-> > > +		pr_warn("%s: No interrupt remapping support.  Use the module
-> > > +param
-> > > \"allow_unsafe_interrupts\" to enable VFIO IOMMU support on this
-> > > platform\n",
-> > > +		       __func__);
-> > > +		ret = -EPERM;
-> > > +		goto out_detach;
-> > > +	}
-> > > +
-> > > +	if (iommu_domain_has_cap(domain->domain, IOMMU_CAP_CACHE_COHERENCY))
-> > > +		domain->prot |= IOMMU_CACHE;
-> > > +
-> > > +	/* Try to match an existing compatible domain. */
-> > > +	list_for_each_entry(d, &iommu->domain_list, next) {
-> > > +		if (d->bus == domain->bus && d->prot == domain->prot) {
-> >
-> > Are not we talking about allowing a domain to support different bus type if
-> domain/iommu-group properties matches.
 > 
-> This is where I was suggesting to Varun that we could test iommu_ops instead of
-> bus_type.
+> At the moment just handle IOMMU_GROUP_NOTIFY_BIND_DRIVER to conditionally
+> isolate all master devices for an SMMU.
 > 
-> > > +			iommu_detach_group(domain->domain, iommu_group);
-> > > +			if (!iommu_attach_group(d->domain, iommu_group)) {
-> > > +				list_add(&group->next, &d->group_list);
-> > > +				iommu_domain_free(domain->domain);
-> > > +				kfree(domain);
-> > > +				mutex_unlock(&iommu->lock);
-> > > +				return 0;
-> > > +			}
-> > > +
-> > > +			ret = iommu_attach_group(domain->domain, iommu_group);
-> > > +			if (ret)
-> > > +				goto out_domain;
-> > > +		}
-> > > +	}
-> > > +
-> > > +	/* replay mappings on new domains */
-> > > +	ret = vfio_iommu_replay(iommu, domain);
-> >
-> > IIUC; We created a new domain because an already existing domain does
-> > not have same attribute; say domain->prot; But in vfio_iommu_replay() we pick
-> up any domain, first domain, and create mapping accordingly.
-> > Should not we use attributes of this domain otherwise we may get "reserved bit
-> faults"?
+> Depending on DT information each device is put into its own protection
+> domain (if possible).  For configuration with one or just a few masters
+> per SMMU that is easy to achieve.
 > 
-> We use an existing domain to get the iova to physical mappings, should those not
-> be consistent regardless of the domain we pick?  We're not using any of the low
-> level attributes that could cause something like a reserved bit fault.  Thanks,
+> In case of many devices per SMMU (e.g. MMU-500 with it's distributed
+> translation support) isolation of each device might not be possible --
+> depending on number of available SMR groups and/or context banks.
+> 
+> Default is that device isolation is contolled per SMMU with SMMU node
+> property "arm,smmu-isolate-devices" in a DT. If this property is set for
+> an SMMU node, device isolation is performed.
+> 
+> W/o device isolation the driver detects SMMUs but no translation is
+> configured (transactions just bypass translation process).
+> 
+> Note that for device isolation dma_base and size are fixed as 0 and
+> SZ_128M at the moment. Additional patches will address this restriction
+> and allow automatic growth of mapping size.
+> 
+> Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+> Cc: Andreas Herrmann <herrmann.der.user-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+> Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+> ---
+>  drivers/iommu/arm-smmu.c |   44
+> ++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 44 insertions(+)
+> 
+> Hi Will,
+> 
+> This new patch addresses Varun's comments:
+>  - use iommu_group notifier instead of bus notifier
+>  - remove superfluous call to arm_smmu_add_device in
+>    notifier function
+> 
+> This patch depends on commit "iommu/arm-smmu: add devices attached to the
+> SMMU to an IOMMU group" as found in your git tree (e.g. in branch
+> iommu/devel or for-joerg/arm-smmu/updates).
+> 
+> 
+> Andreas
+> 
+> PS: This time with a proper adaption of the notifier function.
+> 
+> 
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c index
+> 0a5649f..da19bd6 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -46,6 +46,7 @@
+>  #include <linux/amba/bus.h>
+> 
+>  #include <asm/pgalloc.h>
+> +#include <asm/dma-iommu.h>
+> 
+>  /* Driver options */
+>  #define ARM_SMMU_OPT_ISOLATE_DEVICES		(1 << 0)
+> @@ -1517,6 +1518,47 @@ static int arm_smmu_domain_has_cap(struct
+> iommu_domain *domain,
+>  	return !!(cap & caps);
+>  }
+> 
+> +static int arm_smmu_group_notifier(struct notifier_block *nb,
+> +				unsigned long action, void *data)
+> +{
+> +	struct device *dev = data;
+> +	struct dma_iommu_mapping *mapping;
+> +	struct arm_smmu_device *smmu;
+> +	int ret;
+> +
+> +	switch (action) {
+> +	case IOMMU_GROUP_NOTIFY_BIND_DRIVER:
+> +
+> +		smmu = dev->archdata.iommu;
+> +		if (!smmu || !(smmu->options & ARM_SMMU_OPT_ISOLATE_DEVICES))
+> +			break;
+[Sethi Varun-B16395] Should this check be really done here? The "Isolate devices" property would allow us to set up iommu groups. My understanding is that if we specify the isolate devices property, then each device would have a separate iommu group otherwise all devices connected to the SMMU would share the iommu group.
 
-You are right, we use dma->addr etc from any domain and but uses "prot" from the domain passed to replay function().
-So effectively the only difference (from dma mapping perspective) between domains in a container is "prot"
+With that logic, we should link the mapping to the iommu group.
 
-Thanks
--Bharat
+-Varun
+
+> +
+> +		mapping = arm_iommu_create_mapping(&platform_bus_type,
+> +						0, SZ_128M, 0);
+> +		if (IS_ERR(mapping)) {
+> +			ret = PTR_ERR(mapping);
+> +			dev_info(dev, "arm_iommu_create_mapping failed\n");
+> +			break;
+> +		}
+> +
+> +		ret = arm_iommu_attach_device(dev, mapping);
+> +		if (ret < 0) {
+> +			dev_info(dev, "arm_iommu_attach_device failed\n");
+> +			arm_iommu_release_mapping(mapping);
+> +		}
+> +
+> +		break;
+> +	default:
+> +		break;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static struct notifier_block group_nb = {
+> +	.notifier_call = arm_smmu_group_notifier, };
+> +
+>  static int arm_smmu_add_device(struct device *dev)  {
+>  	struct arm_smmu_device *child, *parent, *smmu; @@ -1566,6 +1608,8
+> @@ static int arm_smmu_add_device(struct device *dev)
+>  		return PTR_ERR(group);
+>  	}
 > 
-> Alex
+> +	iommu_group_register_notifier(group, &group_nb);
+> +
+>  	ret = iommu_group_add_device(group, dev);
+>  	iommu_group_put(group);
+>  	dev->archdata.iommu = smmu;
+> --
+> 1.7.9.5
 > 
 > 
