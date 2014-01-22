@@ -1,10 +1,8 @@
-From: Anthony DeRobertis <aderobertis-VnMYzjHJ8tfR7s880joybQ@public.gmane.org>
+From: Neil Horman <nhorman-2XuSBdqkA4R54TAoqtyWWQ@public.gmane.org>
 Subject: Re: PROBLEM: do_IRQ: [number] No irq handler for vector (irq -1)
-Date: Wed, 22 Jan 2014 11:29:50 -0500
-Message-ID: <52DFF1FE.2080805@metrics.net>
-References: <52D576E3.8050006@metrics.net>
-	<1389844985.8705.45.camel@bling.home>
-	<20140116121617.GA9984@hmsreliant.think-freely.org>
+Date: Wed, 22 Jan 2014 13:17:08 -0500
+Message-ID: <20140122181707.GA14646@hmsreliant.think-freely.org>
+References: <20140116121617.GA9984@hmsreliant.think-freely.org>
 	<52D8120D.7090606@metrics.net>
 	<20140116182134.GC9984@hmsreliant.think-freely.org>
 	<52D83BF9.7040502@metrics.net>
@@ -13,11 +11,13 @@ References: <52D576E3.8050006@metrics.net>
 	<20140117202712.GC19452@hmsreliant.think-freely.org>
 	<52D9AFBB.5080203@metrics.net>
 	<20140120122630.GB22690@hmsreliant.think-freely.org>
+	<52DFF1FE.2080805@metrics.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; Format="flowed"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140120122630.GB22690-B26myB8xz7F8NnZeBjwnZQMhkBWG/bsMQH7oEaQurus@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <52DFF1FE.2080805-VnMYzjHJ8tfR7s880joybQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -27,31 +27,34 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Neil Horman <nhorman-2XuSBdqkA4R54TAoqtyWWQ@public.gmane.org>
+To: Anthony DeRobertis <aderobertis-VnMYzjHJ8tfR7s880joybQ@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/20/2014 07:26 AM, Neil Horman wrote:
-> Right, the X58 variant of the chipset should be covered by
-> 803075dba31c17af110e1d9a915fe7262165b213.  And it is, because we still ge=
-t the
-> remapping warning when you boot up.  Whats odd is that you're still seein=
-g the
-> issue, so there must be something else about your chipset that acting
-> differently than other X58's
-
-Indeed. X58 isn't exactly a weird chipset, I can't be the only person =
-
-with it...
-
-I've gone back to booting with my patch (the one which removes/disables =
-
-the quirk). and it continues to work fine. As long as I ignore Intel's =
-
-erratum.
-
-I'm not sure where to look next. Going to throw some random printk's in, =
-
-but I stress random=97I'm not familiar with the code or the hardware. =
-
-Suggestions of what to try next appreciated.
+T24gV2VkLCBKYW4gMjIsIDIwMTQgYXQgMTE6Mjk6NTBBTSAtMDUwMCwgQW50aG9ueSBEZVJvYmVy
+dGlzIHdyb3RlOgo+IE9uIDAxLzIwLzIwMTQgMDc6MjYgQU0sIE5laWwgSG9ybWFuIHdyb3RlOgo+
+ID5SaWdodCwgdGhlIFg1OCB2YXJpYW50IG9mIHRoZSBjaGlwc2V0IHNob3VsZCBiZSBjb3ZlcmVk
+IGJ5Cj4gPjgwMzA3NWRiYTMxYzE3YWYxMTBlMWQ5YTkxNWZlNzI2MjE2NWIyMTMuICBBbmQgaXQg
+aXMsIGJlY2F1c2Ugd2Ugc3RpbGwgZ2V0IHRoZQo+ID5yZW1hcHBpbmcgd2FybmluZyB3aGVuIHlv
+dSBib290IHVwLiAgV2hhdHMgb2RkIGlzIHRoYXQgeW91J3JlIHN0aWxsIHNlZWluZyB0aGUKPiA+
+aXNzdWUsIHNvIHRoZXJlIG11c3QgYmUgc29tZXRoaW5nIGVsc2UgYWJvdXQgeW91ciBjaGlwc2V0
+IHRoYXQgYWN0aW5nCj4gPmRpZmZlcmVudGx5IHRoYW4gb3RoZXIgWDU4J3MKPiAKPiBJbmRlZWQu
+IFg1OCBpc24ndCBleGFjdGx5IGEgd2VpcmQgY2hpcHNldCwgSSBjYW4ndCBiZSB0aGUgb25seQo+
+IHBlcnNvbiB3aXRoIGl0Li4uCj4gCllvdSdyZSBieSBubyBtZWFucyB0aGUgb25seSBwZXJzb24g
+d2l0aCBpdCwgYnV0IHlvdSBhcmUgdGhlIG9ubHkgcGVyc29uIHRoYXQgSQprbm93IG9mIHRoYXRz
+IGNvbXBsYWluaW5nIG9mIHRoZSBub24tZHJhaW5pbmcgaXJxIGlzc3VlIGFmdGVyIHRoZSBxdWly
+ayBkaXNhYmxlcwppbnRlcnJ1cHQgcmVtYXBwaW5nLCB3aGljaCBsZWFkcyBtZSB0byB0aGluayB0
+aGF0IHRoZXJlIGlzIHNvbWV0aGluZyBhYm91dCB5b3VyCng1OCBjaGlwc2V0IHRoYXQgZGlmZmVy
+cyBmcm9tIGV2ZXJ5b25lIGVsc2VzLgoKPiBJJ3ZlIGdvbmUgYmFjayB0byBib290aW5nIHdpdGgg
+bXkgcGF0Y2ggKHRoZSBvbmUgd2hpY2gKPiByZW1vdmVzL2Rpc2FibGVzIHRoZSBxdWlyaykuIGFu
+ZCBpdCBjb250aW51ZXMgdG8gd29yayBmaW5lLiBBcyBsb25nCj4gYXMgSSBpZ25vcmUgSW50ZWwn
+cyBlcnJhdHVtLgo+IAp3aGljaCBtYWtlcyBubyBzZW5zZSwgc2F2ZSBmb3IgdGhlIHBvc3NpYmls
+aXR5IHRoYXQgeW91IGhhdmUgZW5jb3VudGVyZWQgYQpkaWZmZXJlbnQgcHJvYmxlbSB0aGF0IGV4
+aGliaXRzIHRoZSBzYW1lIHN5bXB0b20gYXMgdGhlIGlycSByZW1hcHBpbmcgaXNzdWUuCgo+IEkn
+bSBub3Qgc3VyZSB3aGVyZSB0byBsb29rIG5leHQuIEdvaW5nIHRvIHRocm93IHNvbWUgcmFuZG9t
+IHByaW50aydzCj4gaW4sIGJ1dCBJIHN0cmVzcyByYW5kb23igJRJJ20gbm90IGZhbWlsaWFyIHdp
+dGggdGhlIGNvZGUgb3IgdGhlCj4gaGFyZHdhcmUuIFN1Z2dlc3Rpb25zIG9mIHdoYXQgdG8gdHJ5
+IG5leHQgYXBwcmVjaWF0ZWQuCj4gCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0
+aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5m
+by9pb21tdQ==
