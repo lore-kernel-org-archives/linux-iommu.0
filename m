@@ -1,17 +1,15 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH v3 02/11] iommu/arm-smmu: Introduce iommu_group notifier
-	block
-Date: Tue, 21 Jan 2014 17:48:02 +0000
-Message-ID: <e92c5fd617fb4068b4ec5de696527ee3@BL2PR03MB468.namprd03.prod.outlook.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 01/11] iommu/arm-smmu: Introduce driver option handling
+Date: Wed, 22 Jan 2014 11:51:43 +0000
+Message-ID: <20140122115143.GI1621@mudshark.cambridge.arm.com>
 References: <1389876263-25759-1-git-send-email-andreas.herrmann@calxeda.com>
-	<1389876263-25759-3-git-send-email-andreas.herrmann@calxeda.com>
-	<20140120222814.GI3471@alberich>
+	<1389876263-25759-2-git-send-email-andreas.herrmann@calxeda.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140120222814.GI3471@alberich>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <1389876263-25759-2-git-send-email-andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,144 +19,92 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+To: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Andreas,
 
+Couple of *tiny* comments.
 
-> -----Original Message-----
-> From: Andreas Herrmann [mailto:andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org]
-> Sent: Tuesday, January 21, 2014 3:58 AM
-> To: Will Deacon
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-arm-
-> kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; Andreas Herrmann; Sethi Varun-B16395
-> Subject: [PATCH v3 02/11] iommu/arm-smmu: Introduce iommu_group notifier
-> block
+On Thu, Jan 16, 2014 at 12:44:13PM +0000, Andreas Herrmann wrote:
+> Introduce handling of driver options. Options are set based on DT
+> information when probing an SMMU device. The first option introduced
+> is "arm,smmu-isolate-devices". (It will be used in the bus notifier
+> block.)
 > 
-> 
-> At the moment just handle IOMMU_GROUP_NOTIFY_BIND_DRIVER to conditionally
-> isolate all master devices for an SMMU.
-> 
-> Depending on DT information each device is put into its own protection
-> domain (if possible).  For configuration with one or just a few masters
-> per SMMU that is easy to achieve.
-> 
-> In case of many devices per SMMU (e.g. MMU-500 with it's distributed
-> translation support) isolation of each device might not be possible --
-> depending on number of available SMR groups and/or context banks.
-> 
-> Default is that device isolation is contolled per SMMU with SMMU node
-> property "arm,smmu-isolate-devices" in a DT. If this property is set for
-> an SMMU node, device isolation is performed.
-> 
-> W/o device isolation the driver detects SMMUs but no translation is
-> configured (transactions just bypass translation process).
-> 
-> Note that for device isolation dma_base and size are fixed as 0 and
-> SZ_128M at the moment. Additional patches will address this restriction
-> and allow automatic growth of mapping size.
-> 
-> Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 > Cc: Andreas Herrmann <herrmann.der.user-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
 > Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 > ---
->  drivers/iommu/arm-smmu.c |   44
-> ++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 44 insertions(+)
+>  drivers/iommu/arm-smmu.c |   29 +++++++++++++++++++++++++++++
+>  1 file changed, 29 insertions(+)
 > 
-> Hi Will,
-> 
-> This new patch addresses Varun's comments:
->  - use iommu_group notifier instead of bus notifier
->  - remove superfluous call to arm_smmu_add_device in
->    notifier function
-> 
-> This patch depends on commit "iommu/arm-smmu: add devices attached to the
-> SMMU to an IOMMU group" as found in your git tree (e.g. in branch
-> iommu/devel or for-joerg/arm-smmu/updates).
-> 
-> 
-> Andreas
-> 
-> PS: This time with a proper adaption of the notifier function.
-> 
-> 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c index
-> 0a5649f..da19bd6 100644
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index e46a887..0b97d03 100644
 > --- a/drivers/iommu/arm-smmu.c
 > +++ b/drivers/iommu/arm-smmu.c
-> @@ -46,6 +46,7 @@
->  #include <linux/amba/bus.h>
-> 
+> @@ -47,6 +47,9 @@
+>  
 >  #include <asm/pgalloc.h>
-> +#include <asm/dma-iommu.h>
-> 
->  /* Driver options */
->  #define ARM_SMMU_OPT_ISOLATE_DEVICES		(1 << 0)
-> @@ -1517,6 +1518,47 @@ static int arm_smmu_domain_has_cap(struct
-> iommu_domain *domain,
->  	return !!(cap & caps);
->  }
-> 
-> +static int arm_smmu_group_notifier(struct notifier_block *nb,
-> +				unsigned long action, void *data)
+>  
+> +/* Driver options */
+> +#define ARM_SMMU_OPT_ISOLATE_DEVICES		(1 << 0)
+
+You can move this...
+
+>  /* Maximum number of stream IDs assigned to a single device */
+>  #define MAX_MASTER_STREAMIDS		8
+>  
+> @@ -348,6 +351,7 @@ struct arm_smmu_device {
+>  #define ARM_SMMU_FEAT_TRANS_S2		(1 << 3)
+>  #define ARM_SMMU_FEAT_TRANS_NESTED	(1 << 4)
+>  	u32				features;
+
+... to here. Like the *_FEAT_* defines above.
+
+> +	u32				options;
+>  	int				version;
+>  
+>  	u32				num_context_banks;
+> @@ -398,6 +402,29 @@ struct arm_smmu_domain {
+>  static DEFINE_SPINLOCK(arm_smmu_devices_lock);
+>  static LIST_HEAD(arm_smmu_devices);
+>  
+> +struct arm_smmu_option_prop {
+> +	u32 opt;
+> +	const char *prop;
+> +};
+> +
+> +static struct arm_smmu_option_prop arm_smmu_options [] = {
+> +	{ ARM_SMMU_OPT_ISOLATE_DEVICES, "arm,smmu-isolate-devices" },
+> +	{ 0, NULL},
+> +};
+> +
+> +static void check_driver_options(struct arm_smmu_device *smmu)
 > +{
-> +	struct device *dev = data;
-> +	struct dma_iommu_mapping *mapping;
-> +	struct arm_smmu_device *smmu;
-> +	int ret;
-> +
-> +	switch (action) {
-> +	case IOMMU_GROUP_NOTIFY_BIND_DRIVER:
-> +
-> +		smmu = dev->archdata.iommu;
-> +		if (!smmu || !(smmu->options & ARM_SMMU_OPT_ISOLATE_DEVICES))
-> +			break;
-[Sethi Varun-B16395] Should this check be really done here? The "Isolate devices" property would allow us to set up iommu groups. My understanding is that if we specify the isolate devices property, then each device would have a separate iommu group otherwise all devices connected to the SMMU would share the iommu group.
-
-With that logic, we should link the mapping to the iommu group.
-
--Varun
-
-> +
-> +		mapping = arm_iommu_create_mapping(&platform_bus_type,
-> +						0, SZ_128M, 0);
-> +		if (IS_ERR(mapping)) {
-> +			ret = PTR_ERR(mapping);
-> +			dev_info(dev, "arm_iommu_create_mapping failed\n");
-> +			break;
+> +	int i = 0;
+> +	do {
+> +		if (of_property_read_bool(smmu->dev->of_node,
+> +						arm_smmu_options[i].prop)) {
+> +			smmu->options |= arm_smmu_options[i].opt;
+> +			dev_dbg(smmu->dev, "option %s\n",
+> +				arm_smmu_options[i].prop);
 > +		}
-> +
-> +		ret = arm_iommu_attach_device(dev, mapping);
-> +		if (ret < 0) {
-> +			dev_info(dev, "arm_iommu_attach_device failed\n");
-> +			arm_iommu_release_mapping(mapping);
-> +		}
-> +
-> +		break;
-> +	default:
-> +		break;
-> +	}
-> +
-> +	return 0;
+> +	} while (arm_smmu_options[++i].opt);
 > +}
 > +
-> +static struct notifier_block group_nb = {
-> +	.notifier_call = arm_smmu_group_notifier, };
-> +
->  static int arm_smmu_add_device(struct device *dev)  {
->  	struct arm_smmu_device *child, *parent, *smmu; @@ -1566,6 +1608,8
-> @@ static int arm_smmu_add_device(struct device *dev)
->  		return PTR_ERR(group);
+>  static struct arm_smmu_master *find_smmu_master(struct arm_smmu_device *smmu,
+>  						struct device_node *dev_node)
+>  {
+> @@ -1783,6 +1810,8 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
 >  	}
-> 
-> +	iommu_group_register_notifier(group, &group_nb);
-> +
->  	ret = iommu_group_add_device(group, dev);
->  	iommu_group_put(group);
->  	dev->archdata.iommu = smmu;
-> --
-> 1.7.9.5
-> 
-> 
+>  	smmu->dev = dev;
+>  
+> +	check_driver_options(smmu);
+
+I think parse_driver_opts is a better name. Also, if we called this after
+arm_smmu_device_cfg_probe, we could replace the dev_dbg with a dev_notice,
+since the user probably wants to know which options ended up getting
+enabled. Is there a reason you need to probe the option so early?
+
+Will
