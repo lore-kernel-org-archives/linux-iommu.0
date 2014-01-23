@@ -1,16 +1,17 @@
 From: Andreas Herrmann <herrmann.der.user-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-Subject: Re: [PATCH 01/11] iommu/arm-smmu: Introduce driver option handling
-Date: Thu, 23 Jan 2014 21:16:19 +0100
-Message-ID: <20140123201619.GD26399@alberich>
+Subject: Re: [PATCH 05/11] iommu/arm-smmu: Check for duplicate stream IDs
+	when registering master devices
+Date: Thu, 23 Jan 2014 22:17:49 +0100
+Message-ID: <20140123211749.GE26399@alberich>
 References: <1389876263-25759-1-git-send-email-andreas.herrmann@calxeda.com>
-	<1389876263-25759-2-git-send-email-andreas.herrmann@calxeda.com>
-	<20140122115143.GI1621@mudshark.cambridge.arm.com>
+	<1389876263-25759-6-git-send-email-andreas.herrmann@calxeda.com>
+	<20140122155302.GF14108@mudshark.cambridge.arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20140122115143.GI1621-MRww78TxoiP5vMa5CHWGZ34zcgK1vI+I0E9HWUfgJXw@public.gmane.org>
+In-Reply-To: <20140122155302.GF14108-MRww78TxoiP5vMa5CHWGZ34zcgK1vI+I0E9HWUfgJXw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,104 +25,52 @@ To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 22, 2014 at 11:51:43AM +0000, Will Deacon wrote:
-> Hi Andreas,
-> 
-> Couple of *tiny* comments.
-> 
-> On Thu, Jan 16, 2014 at 12:44:13PM +0000, Andreas Herrmann wrote:
-> > Introduce handling of driver options. Options are set based on DT
-> > information when probing an SMMU device. The first option introduced
-> > is "arm,smmu-isolate-devices". (It will be used in the bus notifier
-> > block.)
-> > 
-> > Cc: Andreas Herrmann <herrmann.der.user-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-> > Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-> > ---
-> >  drivers/iommu/arm-smmu.c |   29 +++++++++++++++++++++++++++++
-> >  1 file changed, 29 insertions(+)
-> > 
-> > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> > index e46a887..0b97d03 100644
-> > --- a/drivers/iommu/arm-smmu.c
-> > +++ b/drivers/iommu/arm-smmu.c
-> > @@ -47,6 +47,9 @@
-> >  
-> >  #include <asm/pgalloc.h>
-> >  
-> > +/* Driver options */
-> > +#define ARM_SMMU_OPT_ISOLATE_DEVICES		(1 << 0)
-> 
-> You can move this...
-> 
-> >  /* Maximum number of stream IDs assigned to a single device */
-> >  #define MAX_MASTER_STREAMIDS		8
-> >  
-> > @@ -348,6 +351,7 @@ struct arm_smmu_device {
-> >  #define ARM_SMMU_FEAT_TRANS_S2		(1 << 3)
-> >  #define ARM_SMMU_FEAT_TRANS_NESTED	(1 << 4)
-> >  	u32				features;
-> 
-> ... to here. Like the *_FEAT_* defines above.
-
-Ok.
-
-> > +	u32				options;
-> >  	int				version;
-> >  
-> >  	u32				num_context_banks;
-> > @@ -398,6 +402,29 @@ struct arm_smmu_domain {
-> >  static DEFINE_SPINLOCK(arm_smmu_devices_lock);
-> >  static LIST_HEAD(arm_smmu_devices);
-> >  
-> > +struct arm_smmu_option_prop {
-> > +	u32 opt;
-> > +	const char *prop;
-> > +};
-> > +
-> > +static struct arm_smmu_option_prop arm_smmu_options [] = {
-> > +	{ ARM_SMMU_OPT_ISOLATE_DEVICES, "arm,smmu-isolate-devices" },
-> > +	{ 0, NULL},
-> > +};
-> > +
-> > +static void check_driver_options(struct arm_smmu_device *smmu)
-> > +{
-> > +	int i = 0;
-> > +	do {
-> > +		if (of_property_read_bool(smmu->dev->of_node,
-> > +						arm_smmu_options[i].prop)) {
-> > +			smmu->options |= arm_smmu_options[i].opt;
-> > +			dev_dbg(smmu->dev, "option %s\n",
-> > +				arm_smmu_options[i].prop);
-> > +		}
-> > +	} while (arm_smmu_options[++i].opt);
-> > +}
-> > +
-> >  static struct arm_smmu_master *find_smmu_master(struct arm_smmu_device *smmu,
-> >  						struct device_node *dev_node)
-> >  {
-> > @@ -1783,6 +1810,8 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
-> >  	}
-> >  	smmu->dev = dev;
-> >  
-> > +	check_driver_options(smmu);
-> 
-> I think parse_driver_opts is a better name. Also, if we called this after
-> arm_smmu_device_cfg_probe, we could replace the dev_dbg with a dev_notice,
-> since the user probably wants to know which options ended up getting
-> enabled.
-
-Yes, that's right.
-(I was undecided on adding additional output because the properties
-can be checked under /proc/device-tree on a running system.)
-
-> Is there a reason you need to probe the option so early?
-
-There is no real requirement. Just the general consideration to be
-done with option parsing as early as possible. (And I think once I had
-some preliminary code in register_smmu_master that depended on it.)
-
-I'll move the call.
-
-
-Andreas
+T24gV2VkLCBKYW4gMjIsIDIwMTQgYXQgMDM6NTM6MDJQTSArMDAwMCwgV2lsbCBEZWFjb24gd3Jv
+dGU6Cj4gT24gVGh1LCBKYW4gMTYsIDIwMTQgYXQgMTI6NDQ6MTdQTSArMDAwMCwgQW5kcmVhcyBI
+ZXJybWFubiB3cm90ZToKPiA+IENjOiBBbmRyZWFzIEhlcnJtYW5uIDxoZXJybWFubi5kZXIudXNl
+ckBnb29nbGVtYWlsLmNvbT4KPiA+IFNpZ25lZC1vZmYtYnk6IEFuZHJlYXMgSGVycm1hbm4gPGFu
+ZHJlYXMuaGVycm1hbm5AY2FseGVkYS5jb20+Cj4gPiAtLS0KPiA+ICBkcml2ZXJzL2lvbW11L2Fy
+bS1zbW11LmMgfCAgIDI1ICsrKysrKysrKysrKysrKysrKysrKystLS0KPiA+ICAxIGZpbGUgY2hh
+bmdlZCwgMjIgaW5zZXJ0aW9ucygrKSwgMyBkZWxldGlvbnMoLSkKPiA+IAo+ID4gZGlmZiAtLWdp
+dCBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYwo+
+ID4gaW5kZXggMDJhODcxZS4uYTRlMGM5MyAxMDA2NDQKPiA+IC0tLSBhL2RyaXZlcnMvaW9tbXUv
+YXJtLXNtbXUuYwo+ID4gKysrIGIvZHJpdmVycy9pb21tdS9hcm0tc21tdS5jCj4gPiBAQCAtNTYs
+NiArNTYsOSBAQAo+ID4gIC8qIE1heGltdW0gbnVtYmVyIG9mIHN0cmVhbSBJRHMgYXNzaWduZWQg
+dG8gYSBzaW5nbGUgZGV2aWNlICovCj4gPiAgI2RlZmluZSBNQVhfTUFTVEVSX1NUUkVBTUlEUwkJ
+OAo+ID4gIAo+ID4gKy8qIE1heGltdW0gc3RyZWFtIElEICovCj4gPiArI2RlZmluZSBBUk1fU01N
+VV9NQVhfU1RSRUFNSUQJCShTWl82NEsgLSAxKQo+ID4gKwo+ID4gIC8qIE1heGltdW0gbnVtYmVy
+IG9mIGNvbnRleHQgYmFua3MgcGVyIFNNTVUgKi8KPiA+ICAjZGVmaW5lIEFSTV9TTU1VX01BWF9D
+QlMJCTEyOAo+ID4gIAo+ID4gQEAgLTM4Niw2ICszODksOCBAQCBzdHJ1Y3QgYXJtX3NtbXVfZGV2
+aWNlIHsKPiA+ICAJdTMyCQkJCXNtcl9tYXNrX21hc2s7Cj4gPiAgCXUzMgkJCQlzbXJfaWRfbWFz
+azsKPiA+ICAKPiA+ICsJdW5zaWduZWQgbG9uZwkJCSpzaWRzOwo+IAo+IERFQ0xBUkVfQklUTUFQ
+IGluc3RlYWQ/CgpJIHdhbnRlZCB0byBhbGxvY2F0ZSB0aGUgYml0bWFwIHdoaWNoIGJ0dyBhbGxv
+d3MgdXMgdG8gLi4uIFvihpIgc2VlIGVuZApvZiBtYWlsXQoKPiBIb3dldmVyLCB0aGF0J3MgYW4g
+OGsgYml0bWFwIGp1c3QgZm9yIHNhbml0eSBjaGVja2luZywgd2hpY2ggSSdtIG5vdAo+IHRvbyBm
+b25kIG9mLgoKWWVzLCBJIHRob3VnaHQgdGhlIHNhbWUuIEJ1dCBmaW5hbGx5IEkgdGhvdWdodCBp
+dCdzIHdvcnRoIGl0LgoKPiBHaXZlbiB0aGF0IHRoZSBtb3RpdmF0aW9uIGZvciB0aGUgY2hlY2tp
+bmcgd2FzIHlvdXIgc21yIGFsbG9jYXRvciwKPiBwZXJoYXBzIGl0J3Mgc3VmZmljaWVudCBqdXN0
+IHRvIGRvIHRoZSBjaGVja2luZyBvbiBhIHBlci1tYXN0ZXIKPiBiYXNpcywgd2hpY2ggd2UgY2Fu
+IGRvIHdpdGggdGhlIGV4aGF1c3RpdmUgc2VhcmNoIGVhY2ggdGltZS4KCkEgcGVyLW1hc3RlciBi
+YXNpcyBpcyBub3Qgc3VmZmljaWVudC4gSWYgeW91IGFyZ3VlIHRoYXQgc29tZW9uZSBjb3VsZApo
+YXZlIHNwZWNpZmllZCB0aGUgc2FtZSBzdHJlYW0gSUQgdHdpY2UgZm9yIG9uZSBtYXN0ZXIgaW4g
+RFQgaG93IGFyZQpjaGFuY2VzIHRoYXQgdGhlIHNhbWUgc3RyZWFtIElEIHNob3dzIHVwIHR3aWNl
+IGJ1dCBmb3IgZGlmZmVyZW50Cm1hc3RlciBkZXZpY2VzPwoKSSB0aGluayB3ZSBoYXZlIHRvIGNo
+ZWNrIHRoaXMgKGluZGVwZW5kZW50IG9mIG15IHNtciBhbGxvY2F0b3IpLgpJZiB0d28gbWFzdGVy
+cyBhY2NpZGVudGlhbGx5IHNoYXJlIHRoZS9hbiBJRDoKCiogU3RyZWFtIElEIG1hdGNoaW5nICh3
+L28gYSBtYXNrLCBqdXN0IHVzZSBvbmUgU01SIHRvIG1hcCBvbmUgc3RyZWFtCiAgSUQpOiBJdCBw
+cm9hYmx5IHdpbGwgY2F1c2UgYSBtdWx0aSBtYXRjaCB3aXRoIHVuZGlmaW5lZCBiZWhhdmlvdXIu
+CgoqIFN0cmVhbSBJRCBpbmRleGluZzogWW91IHdvdWxkIG92ZXJ3cml0ZSBhbiBhbHJlYWR5IHVz
+ZWQgUzJDUiAoaWYKICB0aGVyZSBhcmUgbm8gZnVydGhlciBwcmVjYXV0aW9ucykuCgpUaGF0IGlz
+IHdoeSBJIHRoaW5rIGEgY2hlY2sgdG8gcmVqZWN0IGR1cGxpY2F0ZSBzdHJlYW0gSURzIGFtb25n
+IGFsbAptYXN0ZXJzIGZvciBvbmUgU01NVSBpcyByZXF1aXJlZC4KCklmIHRoaXMgaXMgbmVlZGVk
+LCBleGhhdXN0aXZlIHNlYXJjaCBkb2Vzbid0IHNlZW0gdG8gYmUgYSBnb29kIGlkZWEsCmJlY2F1
+c2UgaWYgeW91IGhhdmUgYSBkaXN0cmlidXRlZCBTTU1VIC0tIG9uZSBUQ1UgKEkgdGhpbmsgdGhh
+dCdzCndoZXJlIHRoZSBTTVJzIGFyZSksIGFuZCBtYW55IFRCVXMgLS0geW91IG1pZ2h0IGhhdmUg
+c2V2ZXJhbCBtYXN0ZXIKZGV2aWNlcyBhdHRhY2hlZCAobWFueSBtb3JlIHRoYW4gaW4gY3VycmVu
+dCBzeXN0ZW1zKS4gRWFjaCBtYXN0ZXIKcG90ZW50aWFsbHkgaGFzIHNldmVyYWwgc3RyZWFtIElE
+cyAuLi4gIEVzcC4gaW4gdGhpcyBjYXNlIDhrIGZvciBkb2luZwp0aGUgY2hlY2sgaXNuJ3QgYW4g
+aXNzdWUuCgpNYXliZSBhIGNvbXByb21pc2UgaXMgdG8gCgouLi4gZnJlZSB0aGUgYml0bWFwIGFm
+dGVyIHRoZSBjaGVjayBpcyBkb25lLgoKCkFuZHJlYXMKX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxp
+bnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWls
+bWFuL2xpc3RpbmZvL2lvbW11
