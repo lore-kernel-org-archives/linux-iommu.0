@@ -1,24 +1,17 @@
-From: Andreas Herrmann <herrmann.der.user-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-Subject: Re: [PATCH v3 02/11] iommu/arm-smmu: Introduce iommu_group notifier
-	block
-Date: Fri, 24 Jan 2014 10:48:04 +0100
-Message-ID: <20140124094804.GG26399@alberich>
-References: <1389876263-25759-1-git-send-email-andreas.herrmann@calxeda.com>
-	<1389876263-25759-3-git-send-email-andreas.herrmann@calxeda.com>
-	<20140120222814.GI3471@alberich>
-	<e92c5fd617fb4068b4ec5de696527ee3@BL2PR03MB468.namprd03.prod.outlook.com>
-	<20140122122550.GA14108@mudshark.cambridge.arm.com>
-	<a73ef0128a0141eabf0a3b899f3afdae@DM2PR03MB479.namprd03.prod.outlook.com>
-	<20140122134028.GB14108@mudshark.cambridge.arm.com>
-	<aeebc7cf4084486790a5166cf83cb332@BL2PR03MB468.namprd03.prod.outlook.com>
-	<20140122153352.GE14108@mudshark.cambridge.arm.com>
-	<20140123192429.GB26399@alberich>
+From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2 2/5] x86: enable DMA CMA with swiotlb
+Date: Fri, 24 Jan 2014 13:06:35 -0500
+Message-ID: <20140124180635.GB15785@phenom.dumpdata.com>
+References: <1389708830-5841-1-git-send-email-akinobu.mita@gmail.com>
+	<1389708830-5841-3-git-send-email-akinobu.mita@gmail.com>
+	<20140115201224.GD5201@phenom.dumpdata.com>
+	<CAC5umyitWHvWiWn9B3wtTNBhbO7Rz_ghqmxhwu9caq40msnfAA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20140123192429.GB26399@alberich>
+In-Reply-To: <CAC5umyitWHvWiWn9B3wtTNBhbO7Rz_ghqmxhwu9caq40msnfAA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -28,38 +21,65 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jan 23, 2014 at 08:24:29PM +0100, Andreas Herrmann wrote:
-> On Wed, Jan 22, 2014 at 03:33:52PM +0000, Will Deacon wrote:
-> > On Wed, Jan 22, 2014 at 01:54:11PM +0000, Varun Sethi wrote:
-> > > > > > Ok, so are you suggesting that we perform the isolation mapping in
-> > > > > > arm_smmu_add_device and drop the notifier altogether?
-> > > > > I think that should be fine, until we want to delay mapping creation
-> > > > > till driver bind time.
-> > > > 
-> > > > Is there a hard dependency on that?
-> > > > 
-> > > Not sure, may be Andreas can answer that.
-> > 
-> > Ok. Andreas? I would have thought doing this *earlier* shouldn't be a
-> > problem (the DMA ops must be swizzled before the driver is probed).
+On Fri, Jan 17, 2014 at 08:32:09AM +0900, Akinobu Mita wrote:
+> 2014/1/16 Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>:
+> > On Tue, Jan 14, 2014 at 11:13:47PM +0900, Akinobu Mita wrote:
+> >> The DMA Contiguous Memory Allocator support on x86 is disabled when
+> >> swiotlb config option is enabled.  So DMA CMA is always disabled on
+> >> x86_64 because swiotlb is always enabled.  This attempts to support
+> >> for DMA CMA with enabling swiotlb config option.
+> >>
+> >> The contiguous memory allocator on x86 is integrated in the function
+> >> dma_generic_alloc_coherent() which is .alloc callback in nommu_dma_ops
+> >> for dma_alloc_coherent().
+> >>
+> >> x86_swiotlb_alloc_coherent() which is .alloc callback in swiotlb_dma_ops
+> >> tries to allocate with dma_generic_alloc_coherent() firstly and then
+> >> swiotlb_alloc_coherent() is called as a fallback.
+> >>
+> >> The main part of supporting DMA CMA with swiotlb is that changing
+> >> x86_swiotlb_free_coherent() which is .free callback in swiotlb_dma_ops
+> >> for dma_free_coherent() so that it can distinguish memory allocated by
+> >> dma_generic_alloc_coherent() from one allocated by swiotlb_alloc_coherent()
+> >> and release it with dma_generic_free_coherent() which can handle contiguous
+> >> memory.  This change requires making is_swiotlb_buffer() global function.
+> >>
+> >> This also needs to change .free callback in the dma_map_ops for amd_gart
+> >> and sta2x11, because these dma_ops are also using
+> >> dma_generic_alloc_coherent().
+> >>
+> >> Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> >> Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+> >> Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+> >> Cc: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> >> Cc: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+> >> Cc: Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> >> Cc: "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>
+> >> Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>
+> >> Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+> >> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> >> Signed-off-by: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> >> Acked-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> >> ---
+> >> No change from the previous version
+> >>
+> >>  arch/x86/Kconfig               | 2 +-
+> >>  arch/x86/include/asm/swiotlb.h | 7 +++++++
+> >>  arch/x86/kernel/amd_gart_64.c  | 2 +-
+> >>  arch/x86/kernel/pci-swiotlb.c  | 9 ++++++---
+> >>  arch/x86/pci/sta2x11-fixup.c   | 6 ++----
+> >>  include/linux/swiotlb.h        | 2 ++
+> >>  lib/swiotlb.c                  | 2 +-
+> >
+> > It looks reasonable from my perspective (as swiotlb maintainer).
+> >
+> > Not too thrilled about the  'is_swiotlb_buffer' but that code is
+> > quite small so it should be fast enough.
 > 
-> Yes, I think, there is no hard dependency.
-> 
-> (But still have to double check whether arm_smmu_add_device can be
-> used instead of the notifier. Will finally see this when doing some
-> tests.)
+> Thanks.  Can I get your Acked-by for this patch?
 
-I think we have to keep the notifier and delay mapping creation until
-device is bound to a driver.
-
-Otherwise we might create mappings for devices which might not be used
-at all. Who guarantees that the running kernel will have driver
-support for all devices? If there is no driver for a device why create
-a mapping for it -- no DMA will happen.
-
-
-Andreas
+Yes. Acked-by: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
