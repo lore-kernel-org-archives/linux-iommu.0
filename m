@@ -1,17 +1,18 @@
 From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 2/5] x86: enable DMA CMA with swiotlb
-Date: Fri, 24 Jan 2014 13:06:35 -0500
-Message-ID: <20140124180635.GB15785@phenom.dumpdata.com>
+Subject: Re: [PATCH v2 1/5] x86: make dma_alloc_coherent() return zeroed
+	memory if CMA is enabled
+Date: Fri, 24 Jan 2014 13:07:41 -0500
+Message-ID: <20140124180741.GC15785@phenom.dumpdata.com>
 References: <1389708830-5841-1-git-send-email-akinobu.mita@gmail.com>
-	<1389708830-5841-3-git-send-email-akinobu.mita@gmail.com>
-	<20140115201224.GD5201@phenom.dumpdata.com>
-	<CAC5umyitWHvWiWn9B3wtTNBhbO7Rz_ghqmxhwu9caq40msnfAA@mail.gmail.com>
+	<1389708830-5841-2-git-send-email-akinobu.mita@gmail.com>
+	<20140115200934.GC5201@phenom.dumpdata.com>
+	<CAC5umygcr0a_BfDJ9tB1EDry4UEwThG7WvkA8Dn27zO9RQab8Q@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CAC5umyitWHvWiWn9B3wtTNBhbO7Rz_ghqmxhwu9caq40msnfAA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <CAC5umygcr0a_BfDJ9tB1EDry4UEwThG7WvkA8Dn27zO9RQab8Q-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,61 +26,26 @@ To: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jan 17, 2014 at 08:32:09AM +0900, Akinobu Mita wrote:
+On Fri, Jan 17, 2014 at 08:34:38AM +0900, Akinobu Mita wrote:
 > 2014/1/16 Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>:
-> > On Tue, Jan 14, 2014 at 11:13:47PM +0900, Akinobu Mita wrote:
-> >> The DMA Contiguous Memory Allocator support on x86 is disabled when
-> >> swiotlb config option is enabled.  So DMA CMA is always disabled on
-> >> x86_64 because swiotlb is always enabled.  This attempts to support
-> >> for DMA CMA with enabling swiotlb config option.
+> > On Tue, Jan 14, 2014 at 11:13:46PM +0900, Akinobu Mita wrote:
+> >> Calling dma_alloc_coherent() with __GFP_ZERO must return zeroed memory.
 > >>
-> >> The contiguous memory allocator on x86 is integrated in the function
-> >> dma_generic_alloc_coherent() which is .alloc callback in nommu_dma_ops
-> >> for dma_alloc_coherent().
-> >>
-> >> x86_swiotlb_alloc_coherent() which is .alloc callback in swiotlb_dma_ops
-> >> tries to allocate with dma_generic_alloc_coherent() firstly and then
-> >> swiotlb_alloc_coherent() is called as a fallback.
-> >>
-> >> The main part of supporting DMA CMA with swiotlb is that changing
-> >> x86_swiotlb_free_coherent() which is .free callback in swiotlb_dma_ops
-> >> for dma_free_coherent() so that it can distinguish memory allocated by
-> >> dma_generic_alloc_coherent() from one allocated by swiotlb_alloc_coherent()
-> >> and release it with dma_generic_free_coherent() which can handle contiguous
-> >> memory.  This change requires making is_swiotlb_buffer() global function.
-> >>
-> >> This also needs to change .free callback in the dma_map_ops for amd_gart
-> >> and sta2x11, because these dma_ops are also using
-> >> dma_generic_alloc_coherent().
-> >>
-> >> Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> >> Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-> >> Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-> >> Cc: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> >> Cc: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-> >> Cc: Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> >> Cc: "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>
-> >> Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>
-> >> Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-> >> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> >> Signed-off-by: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> >> Acked-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> >> ---
-> >> No change from the previous version
-> >>
-> >>  arch/x86/Kconfig               | 2 +-
-> >>  arch/x86/include/asm/swiotlb.h | 7 +++++++
-> >>  arch/x86/kernel/amd_gart_64.c  | 2 +-
-> >>  arch/x86/kernel/pci-swiotlb.c  | 9 ++++++---
-> >>  arch/x86/pci/sta2x11-fixup.c   | 6 ++----
-> >>  include/linux/swiotlb.h        | 2 ++
-> >>  lib/swiotlb.c                  | 2 +-
+> >> But when the contiguous memory allocator (CMA) is enabled on x86 and
+> >> the memory region is allocated by dma_alloc_from_contiguous(), it
+> >> doesn't return zeroed memory.  Because dma_generic_alloc_coherent()
 > >
-> > It looks reasonable from my perspective (as swiotlb maintainer).
-> >
-> > Not too thrilled about the  'is_swiotlb_buffer' but that code is
-> > quite small so it should be fast enough.
+> > So why not fix it there to return zeroed out memory?
 > 
-> Thanks.  Can I get your Acked-by for this patch?
+> I thought it looked nicer than this patch as we can remove memset
+> from all caller of dma_alloc_from_contiguous().  But if I look at
+> the caller on arm, we can't simply remove the memset because
+> __dma_clear_buffer() is used there for ensuring cache flushing and
+> it is used in many places.
 
-Yes. Acked-by: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+OK, that should be part of the commit description.
+> 
+> Of course we can do redundant memset in dma_alloc_from_contiguous(),
+> but now I think this patch is less impact for fixing this problem.
+
+OK.
