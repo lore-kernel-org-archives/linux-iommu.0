@@ -1,23 +1,24 @@
-From: Neil Horman <nhorman-2XuSBdqkA4R54TAoqtyWWQ@public.gmane.org>
-Subject: Re: PROBLEM: do_IRQ: [number] No irq handler for vector (irq -1)
-Date: Thu, 23 Jan 2014 16:51:03 -0500
-Message-ID: <20140123215103.GB26800@hmsreliant.think-freely.org>
-References: <20140117140831.GA19452@hmsreliant.think-freely.org>
-	<52D97BFB.1020106@metrics.net>
-	<20140117202712.GC19452@hmsreliant.think-freely.org>
-	<52D9AFBB.5080203@metrics.net>
-	<20140120122630.GB22690@hmsreliant.think-freely.org>
-	<52DFF1FE.2080805@metrics.net>
-	<20140122181707.GA14646@hmsreliant.think-freely.org>
-	<52E01ED2.4080604@metrics.net>
-	<20140123123743.GA26800@hmsreliant.think-freely.org>
-	<52E16C56.9000709@metrics.net>
+From: Andreas Herrmann <herrmann.der.user-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+Subject: Re: [PATCH v3 02/11] iommu/arm-smmu: Introduce iommu_group notifier
+	block
+Date: Fri, 24 Jan 2014 10:48:04 +0100
+Message-ID: <20140124094804.GG26399@alberich>
+References: <1389876263-25759-1-git-send-email-andreas.herrmann@calxeda.com>
+	<1389876263-25759-3-git-send-email-andreas.herrmann@calxeda.com>
+	<20140120222814.GI3471@alberich>
+	<e92c5fd617fb4068b4ec5de696527ee3@BL2PR03MB468.namprd03.prod.outlook.com>
+	<20140122122550.GA14108@mudshark.cambridge.arm.com>
+	<a73ef0128a0141eabf0a3b899f3afdae@DM2PR03MB479.namprd03.prod.outlook.com>
+	<20140122134028.GB14108@mudshark.cambridge.arm.com>
+	<aeebc7cf4084486790a5166cf83cb332@BL2PR03MB468.namprd03.prod.outlook.com>
+	<20140122153352.GE14108@mudshark.cambridge.arm.com>
+	<20140123192429.GB26399@alberich>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <52E16C56.9000709-VnMYzjHJ8tfR7s880joybQ@public.gmane.org>
+In-Reply-To: <20140123192429.GB26399@alberich>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -27,116 +28,38 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Anthony DeRobertis <aderobertis-VnMYzjHJ8tfR7s880joybQ@public.gmane.org>, '@hmsreliant.think-freely.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jan 23, 2014 at 02:24:06PM -0500, Anthony DeRobertis wrote:
-> On 01/23/2014 07:37 AM, Neil Horman wrote:
-> >diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-> >index bab10b1..19f41ee 100644
-> >--- a/drivers/iommu/intel_irq_remapping.c
-> >+++ b/drivers/iommu/intel_irq_remapping.c
-> >@@ -533,6 +533,8 @@ static int __init intel_irq_remapping_supported(void)
-> >  			"contact your BIOS vendor for an update\n");
-> >  		add_taint(TAINT_FIRMWARE_WORKAROUND, LOCKDEP_STILL_OK);
-> >  		disable_irq_remap = 1;
-> >+		/* In case BIOS already enabled irq remapping */
-> >+		disable_irq_remapping();
-> >  		return 0;
-> >  	}
+On Thu, Jan 23, 2014 at 08:24:29PM +0100, Andreas Herrmann wrote:
+> On Wed, Jan 22, 2014 at 03:33:52PM +0000, Will Deacon wrote:
+> > On Wed, Jan 22, 2014 at 01:54:11PM +0000, Varun Sethi wrote:
+> > > > > > Ok, so are you suggesting that we perform the isolation mapping in
+> > > > > > arm_smmu_add_device and drop the notifier altogether?
+> > > > > I think that should be fine, until we want to delay mapping creation
+> > > > > till driver bind time.
+> > > > 
+> > > > Is there a hard dependency on that?
+> > > > 
+> > > Not sure, may be Andreas can answer that.
+> > 
+> > Ok. Andreas? I would have thought doing this *earlier* shouldn't be a
+> > problem (the DMA ops must be swizzled before the driver is probed).
 > 
-> I already tried that, well, similar (you need to declare
-> disable_irq_remapping above that or it won't compile). I also added
-> in some printks, to see what it is doing:
+> Yes, I think, there is no hard dependency.
 > 
-> diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-> index bab10b1..8a502d7 100644
-> --- a/drivers/iommu/intel_irq_remapping.c
-> +++ b/drivers/iommu/intel_irq_remapping.c
-> @@ -496,8 +496,13 @@ static void iommu_disable_irq_remapping(struct intel_iommu *iommu)
->         raw_spin_lock_irqsave(&iommu->register_lock, flags);
->         sts = dmar_readq(iommu->reg + DMAR_GSTS_REG);
-> -       if (!(sts & DMA_GSTS_IRES))
-> +       if (!(sts & DMA_GSTS_IRES)) {
-> +               printk(KERN_WARNING
-> +                      "Not disabling interrupt remapping, was not enabled.\n");
->                 goto end;
-> +       } else {
-> +               printk(KERN_INFO "Disabling interrupt remapping.\n");
-> +       }
->         iommu->gcmd &= ~DMA_GCMD_IRE;
->         writel(iommu->gcmd, iommu->reg + DMAR_GCMD_REG);
-> @@ -518,6 +523,8 @@ static int __init dmar_x2apic_optout(void)
->         return dmar->flags & DMAR_X2APIC_OPT_OUT;
->  }
-> +static void disable_irq_remapping(void);
-> +
->  static int __init intel_irq_remapping_supported(void)
->  {
->         struct dmar_drhd_unit *drhd;
-> @@ -533,6 +540,7 @@ static int __init intel_irq_remapping_supported(void)
->                         "contact your BIOS vendor for an update\n");
->                 add_taint(TAINT_FIRMWARE_WORKAROUND, LOCKDEP_STILL_OK);
->                 disable_irq_remap = 1;
-> +               disable_irq_remapping();
->                 return 0;
->         }
-> 
-> 
-> The result. Note this is two boots, I changed to printk messages to
-> something more understandable and rebooted to make sure there were
-> no brown paper bag bugs. So the do_IRQ bugs logs are the first boot,
-> the rest is the second boot:
-> 
-> [    0.063923] dmar: ATSR flags: 0x0
-> [    0.064075] This system BIOS has enabled interrupt remapping
-> [    0.064075] on a chipset that contains an erratum making that
-> [    0.064075] feature unstable.  To maintain system stability
-> [    0.064075] interrupt remapping is being disabled.  Please
-> [    0.064075] contact your BIOS vendor for an update
-> [    0.064226] Not disabling interrupt remapping, was not enabled.
-> [    0.064287] Not disabling interrupt remapping, was not enabled.
-> [    0.064408] Switched APIC routing to physical flat.
-> 
-> 
-> anthony@Zia:~$ dmesg | grep do_IRQ     # this is from the first boot
-> [ 2713.768956] do_IRQ: 40 callbacks suppressed
-> [ 2713.768963] do_IRQ: 0.132 No irq handler for vector (irq -1)
-> [ 3914.191481] do_IRQ: 3.219 No irq handler for vector (irq -1)
-> [12336.482217] do_IRQ: 3.106 No irq handler for vector (irq -1)
-> [19669.277859] do_IRQ: 2.136 No irq handler for vector (irq -1)
-> [31304.932672] do_IRQ: 2.204 No irq handler for vector (irq -1)
-> [35867.281432] do_IRQ: 2.135 No irq handler for vector (irq -1)
-> [43867.266257] do_IRQ: 1.174 No irq handler for vector (irq -1)
-> [50097.592403] do_IRQ: 3.81 No irq handler for vector (irq -1)
-> [55498.847866] do_IRQ: 0.92 No irq handler for vector (irq -1)
-> [57560.923165] do_IRQ: 0.199 No irq handler for vector (irq -1)
-> [57650.204418] do_IRQ: 0.120 No irq handler for vector (irq -1)
-> [72835.450862] do_IRQ: 0.163 No irq handler for vector (irq -1)
-> [76884.819496] do_IRQ: 2.68 No irq handler for vector (irq -1)
-> [77687.282915] do_IRQ: 2.216 No irq handler for vector (irq -1)
-> [77885.355992] do_IRQ: 2.185 No irq handler for vector (irq -1)
-> [78615.309285] do_IRQ: 12 callbacks suppressed
-> [78615.309291] do_IRQ: 3.45 No irq handler for vector (irq -1)
-> [78735.392357] do_IRQ: 6 callbacks suppressed
-> [78735.392362] do_IRQ: 2.173 No irq handler for vector (irq -1)
-> [79785.646442] do_IRQ: 6 callbacks suppressed
-> [79785.646449] do_IRQ: 1.53 No irq handler for vector (irq -1)
-> [79965.718447] do_IRQ: 8 callbacks suppressed
-> [79965.718453] do_IRQ: 0.150 No irq handler for vector (irq -1)
-> 
-> PS: Sent Asus a support request, to see if they have anything to say
-> about what the BIOS is doing with that erratum. Will let you know if
-> they respond with anything useful, I mostly expect "we don't support
-> Linux".
-Probably, unfortunately this puts us back at square 1.  The OS sees irq
-remapping as disabled, so theres nothing for the OS to do here.  So either the
-BIOS is lying to the OS, or the symptom you see here is the result of some other
-problem, but I couldn't tell you what.
+> (But still have to double check whether arm_smmu_add_device can be
+> used instead of the notifier. Will finally see this when doing some
+> tests.)
 
-Neil
+I think we have to keep the notifier and delay mapping creation until
+device is bound to a driver.
 
-> https://vip.asus.com/VIP2/Services/MailDetail/WTM20140124024244911
-> ... no idea if that link works for anyone but me.
-> 
+Otherwise we might create mappings for devices which might not be used
+at all. Who guarantees that the running kernel will have driver
+support for all devices? If there is no driver for a device why create
+a mapping for it -- no DMA will happen.
+
+
+Andreas
