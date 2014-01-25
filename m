@@ -1,14 +1,12 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCHv3 0/6] Crashdump Accepting Active IOMMU
-Date: Sat, 25 Jan 2014 10:44:18 +0800
-Message-ID: <20140125024418.GA1549@dhcp-17-102.nay.redhat.com>
-References: <1389391652-52422-1-git-send-email-bill.sumner@hp.com>
+From: Mark Derbyshire <mark-+evXrPDj4/c@public.gmane.org>
+Subject: [PATCH] iommu/amd: Add quirk for broken Marvell 88SE91xx SATA
+Date: Fri, 24 Jan 2014 21:10:13 -0700
+Message-ID: <8F5D7A6AD678AC8048FC0E15@mark.taom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1389391652-52422-1-git-send-email-bill.sumner-VXdhtT5mjnY@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,65 +16,53 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, zhenhua-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Tested this patchset on my local HP Z420 workstation, and it works very
-well.
+Thomas Kuther writes:
 
-Hi Bill,
+> I have the same board (990FXA-UD5) and the same problem.
+>
+> Applied the patch (against 3.12.2) and dmesg reads:
+> [    0.755642] AMD-Vi: Applying merge-fn quirk for device 0000:03:00.0
+> [    0.755648] AMD-Vi: Applying merge-fn quirk for device 0000:09:00.0
+>
+> 03:00 is the SATA controller, 09:00 the eSATA one.
+> ID's from `lscpi -nvvv` are identical to Manfred's.
+>
+> Also, the device works OK when passed through to a Qemu VM using
+> vfio-pci, so basically it does work when IOMMU is enabled, just not
+> on the host side.
+>
+> A fix would be great, I'm willing to test, too.
 
-Thanks for your effort.
+I have a GA-990FXA-UD3 board that fails similarly, although only the 
+eSATA onboard controller is affected (Marvell 88SE9172). In my case the 
+real device is 03:00.0, but the IO_PAGE_FAULTS come from 03:00.1. 
+Unfortunately 03:00.1 does not appear in the ACPI tables.
 
-There are several concerns from me.
+The conceptual problem with the patch for the above scenario is while 
+the alias table is set up to map 03:00.1 to 03:00.0, the code never 
+writes a device table entry for 03:00.1, making this effectively a 
+no-op. One way to get around this is to make 03:00.1 a device and 
+reverse the mapping from 03:00.0 to 03:00.1. While this doesn't 
+generalize to multiple functions, that isn't a problem for the devices 
+we're trying to fix.
 
-Firstly, I think the patch log need be rearanged. Patchset cover letter
-can contain information to express why, how briefly. If you think this
-is very useful, it can be split and put into patch log.
+I'm not advocating this as the proper approach, but if the lines in the 
+original patch:
 
-Then for each patch, patch log should be accurate and summary to
-describe why and how this patch really does. If you feel several patches
-have the corelation, they may need to be merged.
+		for (i = 1; i < 8; ++i)
+			amd_iommu_alias_table[base_devid + i] = devid;
 
-Secondly, each patch could get a seperate subject which tells what this
-patch really does. Even they are merged to kernel git tree, each of them
-is a independent commit. People can take to use or depend only one of
-them. Actually, I don't like current patch subject.
+are changed to:
 
-Thirdly, this patchset will be part of intel-iommu, though they only
-works for kdump kernel. As a subsystem, the style need be consistent. I
-like the debug method which introduces a struct pr_debug, however
-maintainers may not like it. Because a debug utility may bloat code and
-affect people's review. Personally I like refined code, the less the
-easier to review. Or put it as a independent patch at the end of the
-patchset, let maintainer decide whether it's OK to pull in.
+                amd_iommu_alias_table[devid] = base_devid + 1;
+                set_dev_entry_from_acpi(amd_iommu_rlookup_table[devid], 
+base_devid + 1, 0, 0);
 
-Sorry to say so much, I think this solution is truly the right way. As
-you know, it's a big problem for kdump when intel-iommu is active in 1st
-kernel. Because of this bug, many machines with intel-iommu have to be
-set intel-iommu=off, the performance is affected very much.
+my eSATA controller works fine on 3.12.6. I hope this helps in arriving 
+at the correct solution.
 
-Baoquan
-Thanks
-
-On 01/10/14 at 03:07pm, Bill Sumner wrote:
-> v2->v3:
-> 1. Commented-out "#define DEBUG 1" to eliminate debug messages
-> 2. Updated the comments about changes in each version in all patches in the set.
-> 3. Fixed: one-line added to Copy-Translations" patch to initialize the iovad
->           struct as recommended by Baoquan He [bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
->           init_iova_domain(&domain->iovad, DMA_32BIT_PFN);
-> 
-> v1->v2:
-> The following series implements a fix for:
-> A kdump problem about DMA that has been discussed for a long time. That is,
-> when a kernel panics and boots into the kdump kernel, DMA started by the 
-> panicked kernel is not stopped before the kdump kernel is booted and the 
-> kdump kernel disables the IOMMU while this DMA continues.  This causes the
-> IOMMU to stop translating the DMA addresses as IOVAs and begin to treat them 
-> as physical memory addresses -- which causes the DMA to either:
-> (1) generate DMAR errors or (2) generate PCI SERR errors or (3) transfer  
-> data to or from incorrect areas of memory. Often this causes the dump to fail.
-> 
- 
+Cheers,
+Mark
