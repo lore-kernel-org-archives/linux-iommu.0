@@ -1,17 +1,15 @@
-From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 1/5] x86: make dma_alloc_coherent() return zeroed
-	memory if CMA is enabled
-Date: Mon, 27 Jan 2014 10:23:42 -0500
-Message-ID: <20140127152342.GC20968@phenom.dumpdata.com>
-References: <1389708830-5841-1-git-send-email-akinobu.mita@gmail.com>
-	<1389708830-5841-2-git-send-email-akinobu.mita@gmail.com>
-	<52E66527.8010000@samsung.com>
+From: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC PATCH] vfio/iommu_type1: Multi-IOMMU domain support
+Date: Mon, 27 Jan 2014 16:17:27 -0500
+Message-ID: <52E6CCE7.4090708@redhat.com>
+References: <20140117203126.11429.25235.stgit@gimli.home>
+	<4bc6dcb96df44b0e94152d9729958d60@BL2PR03MB468.namprd03.prod.outlook.com>
+	<1390234886.8705.142.camel@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <52E66527.8010000-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+In-Reply-To: <1390234886.8705.142.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,75 +19,116 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jan 27, 2014 at 02:54:47PM +0100, Marek Szyprowski wrote:
-> Hello,
-> 
-> On 2014-01-14 15:13, Akinobu Mita wrote:
-> >Calling dma_alloc_coherent() with __GFP_ZERO must return zeroed memory.
-> >
-> >But when the contiguous memory allocator (CMA) is enabled on x86 and
-> >the memory region is allocated by dma_alloc_from_contiguous(), it
-> >doesn't return zeroed memory.  Because dma_generic_alloc_coherent()
-> >forgot to fill the memory region with zero if it was allocated by
-> >dma_alloc_from_contiguous()
-> 
-> I just wonder how it will work with high mem? I've didn't check the x86
-> dma mapping code yet, but page_address() works only for pages, which comes
-> from low memory. In other patches you have added an option to place CMA
-> area anywhere in the memory. Is the x86 pci dma code ready for the case
-> when cma area is put into high mem and direct mappings are not available?
+On 01/20/2014 11:21 AM, Alex Williamson wrote:
+> On Mon, 2014-01-20 at 14:45 +0000, Varun Sethi wrote:
+>>
+>>> -----Original Message-----
+>>> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+>>> Sent: Saturday, January 18, 2014 2:06 AM
+>>> To: Sethi Varun-B16395
+>>> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+>>> Subject: [RFC PATCH] vfio/iommu_type1: Multi-IOMMU domain support
+>>>
+>>> RFC: This is not complete but I want to share with Varun the dirrection
+>>> I'm thinking about.  In particular, I'm really not sure if we want to
+>>> introduce a "v2" interface version with slightly different unmap
+>>> semantics.  QEMU doesn't care about the difference, but other users
+>>> might.  Be warned, I'm not even sure if this code works at the moment.
+>>> Thanks,
+>>>
+>>> Alex
+>>>
+>>>
+>>> We currently have a problem that we cannot support advanced features of
+>>> an IOMMU domain (ex. IOMMU_CACHE), because we have no guarantee that
+>>> those features will be supported by all of the hardware units involved
+>>> with the domain over its lifetime.  For instance, the Intel VT-d
+>>> architecture does not require that all DRHDs support snoop control.  If
+>>> we create a domain based on a device behind a DRHD that does support
+>>> snoop control and enable SNP support via the IOMMU_CACHE mapping option,
+>>> we cannot then add a device behind a DRHD which does not support snoop
+>>> control or we'll get reserved bit faults from the SNP bit in the
+>>> pagetables.  To add to the complexity, we can't know the properties of a
+>>> domain until a device is attached.
+>> [Sethi Varun-B16395] Effectively, it's the same iommu and iommu_ops
+>> are common across all bus types. The hardware feature differences are
+>> abstracted by the driver.
+>
+> That's a simplifying assumption that is not made anywhere else in the
+> code.  The IOMMU API allows entirely independent IOMMU drivers to
+> register per bus_type.  There is no guarantee that all devices are
+> backed by the same IOMMU hardware unit or make use of the same
+> iommu_ops.
+>
+>>> We could pass this problem off to userspace and require that a separate
+>>> vfio container be used, but we don't know how to handle page accounting
+>>> in that case.  How do we know that a page pinned in one container is the
+>>> same page as a different container and avoid double billing the user for
+>>> the page.
+>>>
+>>> The solution is therefore to support multiple IOMMU domains per
+>>> container.  In the majority of cases, only one domain will be required
+>>> since hardware is typically consistent within a system.  However, this
+>>> provides us the ability to validate compatibility of domains and support
+>>> mixed environments where page table flags can be different between
+>>> domains.
+>>>
+>>> To do this, our DMA tracking needs to change.  We currently try to
+>>> coalesce user mappings into as few tracking entries as possible.  The
+>>> problem then becomes that we lose granularity of user mappings.  We've
+>>> never guaranteed that a user is able to unmap at a finer granularity than
+>>> the original mapping, but we must honor the granularity of the original
+>>> mapping.  This coalescing code is therefore removed, allowing only unmaps
+>>> covering complete maps.  The change in accounting is fairly small here, a
+>>> typical QEMU VM will start out with roughly a dozen entries, so it's
+>>> arguable if this coalescing was ever needed.
+>>>
+>>> We also move IOMMU domain creation to the point where a group is attached
+>>> to the container.  An interesting side-effect of this is that we now have
+>>> access to the device at the time of domain creation and can probe the
+>>> devices within the group to determine the bus_type.
+>>> This finally makes vfio_iommu_type1 completely device/bus agnostic.
+>>> In fact, each IOMMU domain can host devices on different buses managed by
+>>> different physical IOMMUs, and present a single DMA mapping interface to
+>>> the user.  When a new domain is created, mappings are replayed to bring
+>>> the IOMMU pagetables up to the state of the current container.  And of
+>>> course, DMA mapping and unmapping automatically traverse all of the
+>>> configured IOMMU domains.
+>>>
+>> [Sethi Varun-B16395] This code still checks to see that devices being
+>> attached to the domain are connected to the same bus type. If we
+>> intend to merge devices from different bus types but attached to
+>> compatible domains in to a single domain, why can't we avoid the bus
+>> check? Why can't we remove the bus dependency from domain allocation?
+>
+> So if I were to test iommu_ops instead of bus_type (ie. assume that if a
+> if an IOMMU driver manages iommu_ops across bus_types that it can accept
+> the devices), would that satisfy your concern?
+>
+> It may be possible to remove the bus_type dependency from domain
+> allocation, but the IOMMU API currently makes the assumption that
+> there's one IOMMU driver per bus_type.  Your fix to remove the bus_type
+> dependency from iommu_domain_alloc() adds an assumption that there is
+> only one IOMMU driver for all bus_types.  That may work on your
+> platform, but I don't think it's a valid assumption in the general case.
+> If you'd like to propose alternative ways to remove the bus_type
+> dependency, please do.  Thanks,
+>
+> Alex
+>
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+>
+Making iommu-ops per-bus, and not per-bus-type would solve the problem as well,
+as Joerg tried to do at one point.  ... would layer the proper IOMMU for a given
+device to the bus it masters. (makes more sense if thought in context of bus's &
+devices as objects, and object-oriented semantics ... a device would ask its bus
+for it's mapping services, not a 'bus-type'.
 
-Yes and no. The swiotbl_bounce does have the code to take that into account.
-But that is it - nothing else does - so I think you would run in the 
-possiblity of 'page_address' not providing an correct virtual address.
-
-> 
-> >Most implementations of dma_alloc_coherent() return zeroed memory
-> >regardless of whether __GFP_ZERO is specified.  So this fixes it by
-> >unconditionally zeroing the allocated memory region.
-> >
-> >Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> >Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-> >Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-> >Cc: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> >Cc: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-> >Cc: Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> >Cc: "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>
-> >Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>
-> >Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-> >Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> >Signed-off-by: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> >---
-> >New patch from this version
-> >
-> >  arch/x86/kernel/pci-dma.c | 3 +--
-> >  1 file changed, 1 insertion(+), 2 deletions(-)
-> >
-> >diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
-> >index 872079a..9644405 100644
-> >--- a/arch/x86/kernel/pci-dma.c
-> >+++ b/arch/x86/kernel/pci-dma.c
-> >@@ -97,7 +97,6 @@ void *dma_generic_alloc_coherent(struct device *dev, size_t size,
-> >  	dma_mask = dma_alloc_coherent_mask(dev, flag);
-> >-	flag |= __GFP_ZERO;
-> >  again:
-> >  	page = NULL;
-> >  	if (!(flag & GFP_ATOMIC))
-> >@@ -118,7 +117,7 @@ again:
-> >  		return NULL;
-> >  	}
-> >-
-> >+	memset(page_address(page), 0, size);
-> >  	*dma_addr = addr;
-> >  	return page_address(page);
-> >  }
-> 
-> Best regards
-> -- 
-> Marek Szyprowski, PhD
-> Samsung R&D Institute Poland
-> 
+-dd
