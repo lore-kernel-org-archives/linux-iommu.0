@@ -1,15 +1,25 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH] vfio/iommu_type1: Multi-IOMMU domain support
-Date: Mon, 27 Jan 2014 14:36:13 -0700
-Message-ID: <1390858573.2315.57.camel@bling.home>
-References: <20140117203126.11429.25235.stgit@gimli.home>
-	<4bc6dcb96df44b0e94152d9729958d60@BL2PR03MB468.namprd03.prod.outlook.com>
-	<1390234886.8705.142.camel@bling.home> <52E6CCE7.4090708@redhat.com>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH v3 02/11] iommu/arm-smmu: Introduce iommu_group notifier
+	block
+Date: Tue, 28 Jan 2014 11:00:35 +0000
+Message-ID: <991cc0024ea54cdb964f31de89c0b0ea@BL2PR03MB468.namprd03.prod.outlook.com>
+References: <1389876263-25759-1-git-send-email-andreas.herrmann@calxeda.com>
+	<1389876263-25759-3-git-send-email-andreas.herrmann@calxeda.com>
+	<20140120222814.GI3471@alberich>
+	<e92c5fd617fb4068b4ec5de696527ee3@BL2PR03MB468.namprd03.prod.outlook.com>
+	<20140122122550.GA14108@mudshark.cambridge.arm.com>
+	<a73ef0128a0141eabf0a3b899f3afdae@DM2PR03MB479.namprd03.prod.outlook.com>
+	<20140122134028.GB14108@mudshark.cambridge.arm.com>
+	<aeebc7cf4084486790a5166cf83cb332@BL2PR03MB468.namprd03.prod.outlook.com>
+	<20140122153352.GE14108@mudshark.cambridge.arm.com>
+	<3d0a888e122f490ba6bbc80b1aaa977c@BL2PR03MB468.namprd03.prod.outlook.com>
+	<20140123195718.GC26399@alberich>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <52E6CCE7.4090708-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20140123195718.GC26399@alberich>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,116 +29,102 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Andreas Herrmann <herrmann.der.user-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2014-01-27 at 16:17 -0500, Don Dutile wrote:
-> On 01/20/2014 11:21 AM, Alex Williamson wrote:
-> > On Mon, 2014-01-20 at 14:45 +0000, Varun Sethi wrote:
-> >>
-> >>> -----Original Message-----
-> >>> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> >>> Sent: Saturday, January 18, 2014 2:06 AM
-> >>> To: Sethi Varun-B16395
-> >>> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> >>> Subject: [RFC PATCH] vfio/iommu_type1: Multi-IOMMU domain support
-> >>>
-> >>> RFC: This is not complete but I want to share with Varun the dirrection
-> >>> I'm thinking about.  In particular, I'm really not sure if we want to
-> >>> introduce a "v2" interface version with slightly different unmap
-> >>> semantics.  QEMU doesn't care about the difference, but other users
-> >>> might.  Be warned, I'm not even sure if this code works at the moment.
-> >>> Thanks,
-> >>>
-> >>> Alex
-> >>>
-> >>>
-> >>> We currently have a problem that we cannot support advanced features of
-> >>> an IOMMU domain (ex. IOMMU_CACHE), because we have no guarantee that
-> >>> those features will be supported by all of the hardware units involved
-> >>> with the domain over its lifetime.  For instance, the Intel VT-d
-> >>> architecture does not require that all DRHDs support snoop control.  If
-> >>> we create a domain based on a device behind a DRHD that does support
-> >>> snoop control and enable SNP support via the IOMMU_CACHE mapping option,
-> >>> we cannot then add a device behind a DRHD which does not support snoop
-> >>> control or we'll get reserved bit faults from the SNP bit in the
-> >>> pagetables.  To add to the complexity, we can't know the properties of a
-> >>> domain until a device is attached.
-> >> [Sethi Varun-B16395] Effectively, it's the same iommu and iommu_ops
-> >> are common across all bus types. The hardware feature differences are
-> >> abstracted by the driver.
-> >
-> > That's a simplifying assumption that is not made anywhere else in the
-> > code.  The IOMMU API allows entirely independent IOMMU drivers to
-> > register per bus_type.  There is no guarantee that all devices are
-> > backed by the same IOMMU hardware unit or make use of the same
-> > iommu_ops.
-> >
-> >>> We could pass this problem off to userspace and require that a separate
-> >>> vfio container be used, but we don't know how to handle page accounting
-> >>> in that case.  How do we know that a page pinned in one container is the
-> >>> same page as a different container and avoid double billing the user for
-> >>> the page.
-> >>>
-> >>> The solution is therefore to support multiple IOMMU domains per
-> >>> container.  In the majority of cases, only one domain will be required
-> >>> since hardware is typically consistent within a system.  However, this
-> >>> provides us the ability to validate compatibility of domains and support
-> >>> mixed environments where page table flags can be different between
-> >>> domains.
-> >>>
-> >>> To do this, our DMA tracking needs to change.  We currently try to
-> >>> coalesce user mappings into as few tracking entries as possible.  The
-> >>> problem then becomes that we lose granularity of user mappings.  We've
-> >>> never guaranteed that a user is able to unmap at a finer granularity than
-> >>> the original mapping, but we must honor the granularity of the original
-> >>> mapping.  This coalescing code is therefore removed, allowing only unmaps
-> >>> covering complete maps.  The change in accounting is fairly small here, a
-> >>> typical QEMU VM will start out with roughly a dozen entries, so it's
-> >>> arguable if this coalescing was ever needed.
-> >>>
-> >>> We also move IOMMU domain creation to the point where a group is attached
-> >>> to the container.  An interesting side-effect of this is that we now have
-> >>> access to the device at the time of domain creation and can probe the
-> >>> devices within the group to determine the bus_type.
-> >>> This finally makes vfio_iommu_type1 completely device/bus agnostic.
-> >>> In fact, each IOMMU domain can host devices on different buses managed by
-> >>> different physical IOMMUs, and present a single DMA mapping interface to
-> >>> the user.  When a new domain is created, mappings are replayed to bring
-> >>> the IOMMU pagetables up to the state of the current container.  And of
-> >>> course, DMA mapping and unmapping automatically traverse all of the
-> >>> configured IOMMU domains.
-> >>>
-> >> [Sethi Varun-B16395] This code still checks to see that devices being
-> >> attached to the domain are connected to the same bus type. If we
-> >> intend to merge devices from different bus types but attached to
-> >> compatible domains in to a single domain, why can't we avoid the bus
-> >> check? Why can't we remove the bus dependency from domain allocation?
-> >
-> > So if I were to test iommu_ops instead of bus_type (ie. assume that if a
-> > if an IOMMU driver manages iommu_ops across bus_types that it can accept
-> > the devices), would that satisfy your concern?
-> >
-> > It may be possible to remove the bus_type dependency from domain
-> > allocation, but the IOMMU API currently makes the assumption that
-> > there's one IOMMU driver per bus_type.  Your fix to remove the bus_type
-> > dependency from iommu_domain_alloc() adds an assumption that there is
-> > only one IOMMU driver for all bus_types.  That may work on your
-> > platform, but I don't think it's a valid assumption in the general case.
-> > If you'd like to propose alternative ways to remove the bus_type
-> > dependency, please do.  Thanks,
 
-> >
-> Making iommu-ops per-bus, and not per-bus-type would solve the problem as well,
-> as Joerg tried to do at one point.  ... would layer the proper IOMMU for a given
-> device to the bus it masters. (makes more sense if thought in context of bus's &
-> devices as objects, and object-oriented semantics ... a device would ask its bus
-> for it's mapping services, not a 'bus-type'.
 
-Certainly that's where we'll need to be eventually, but it doesn't solve
-anything for us right now.  We can get everything we need with the IOMMU
-API now and it should be trivial to update for per-bus iommu_ops should
-they happen.  Thanks,
+> -----Original Message-----
+> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
+> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Andreas Herrmann
+> Sent: Friday, January 24, 2014 1:27 AM
+> To: Sethi Varun-B16395
+> Cc: Andreas Herrmann; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Will Deacon;
+> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+> Subject: Re: [PATCH v3 02/11] iommu/arm-smmu: Introduce iommu_group
+> notifier block
+> 
+> On Wed, Jan 22, 2014 at 07:07:40PM +0000, Varun Sethi wrote:
+> > > -----Original Message-----
+> > > From: Will Deacon [mailto:will.deacon-5wv7dgnIgG8@public.gmane.org]
+> > > Sent: Wednesday, January 22, 2014 9:04 PM
+> > > To: Sethi Varun-B16395
+> > > Cc: Andreas Herrmann; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-arm-
+> > > kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; Andreas Herrmann
+> > > Subject: Re: [PATCH v3 02/11] iommu/arm-smmu: Introduce iommu_group
+> > > notifier block
+> > >
+> > > On Wed, Jan 22, 2014 at 01:54:11PM +0000, Varun Sethi wrote:
+> > > > > > > Ok, so are you suggesting that we perform the isolation
+> > > > > > > mapping in arm_smmu_add_device and drop the notifier
+> altogether?
+> > > > > > I think that should be fine, until we want to delay mapping
+> > > > > > creation till driver bind time.
+> > > > >
+> > > > > Is there a hard dependency on that?
+> > > > >
+> > > > Not sure, may be Andreas can answer that.
+> > >
+> > > Ok. Andreas? I would have thought doing this *earlier* shouldn't be
+> > > a problem (the DMA ops must be swizzled before the driver is probed).
+> > >
+> > > > > > But the "isolate device" property should dictate iommu group
+> > > creation.
+> > > > >
+> > > > > The reason we added automatic group creation (per-device) is for
+> > > > > VFIO, which expects all devices to be in a group regardless of
+> > > > > the device isolation configuration.
+> > > > >
+> > > > IIUC, with the "isolate devices" property we ensure that there
+> > > > would be independent SMR and S2CR per device. Is that correct?
+> > >
+> > > Yes, as part of giving them independent sets of page tables.
+> > > Initially these tables don't have any valid mappings, but the
+> > > dma-mapping API will populate them in response to
+> dma_map_*/dma_alloc/etc.
+> > >
+> > > Not sure what this has to do with us putting devices into their own
+> > > groups...
+> 
+> > [Sethi Varun-B16395] Devices in an iommu group would share the dma
+> > mapping, so shouldn't they be sharing the SMR and context registers?
+> 
+> I aggree with the context but SMRs won't be shared. I think you just can
+> say that a certain subset of the available SMRs will be used to map all
+> devices in an iommu group to the same context. Depending on what
+> streamIDs each device has you might have to use separate SMRs for each
+> device to map it to the same context.
+[Sethi Varun-B16395] IIUC the SMRs would unique per device, but there is a possibility where the number of context registers are restricted?
+In that case IOMMU groups should correspond to unique stream IDs (and corresponding SMRs).
 
-Alex
+> 
+> > In case of the "isolate devices" property, each device would have its
+> > own SMR and context registers, thus allowing the devices to have
+> > independent mappings and allowing them to fall in separate iommu
+> > groups.
+> 
+> I aggree with Varun's view here. (Now that I take iommu groups into
+> consideration.)
+> 
+> But my goal with the "isolate devices" thing was twofold:
+> 
+> 1. actual make use of SMMU for address translation for all master
+>   devices (instead of just bypassing the SMMU)
+[Sethi Varun-B16395]  even if masters have to share translation? But from the patch it seemed that we are creating mapping only if we find the isolate devices property.
+> 
+> plus
+> 
+> 2. put each master into it's own domain to isolate it
+> 
+> The latter matches usage of separate iommu groups for devices. If we now
+> use the isolate devices property to just control whether master devices
+> fall into the same or separate iommu groups it seems to me we would need
+> to have another mechanism that triggers the creation of a mapping for a
+> group.
+> 
+> What do you think?
+> 
+[Sethi Varun-B16395] As mentioned before, we should be having iommu group per device (having a unique stream id). Isolate devices property just ensures that each device has a unique context. Now, for the devices for which we don't have the isolate device property, can't we have the multiple devices point to a common mapping. 
+
+-Varun
