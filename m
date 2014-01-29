@@ -1,25 +1,10 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH v3 02/11] iommu/arm-smmu: Introduce iommu_group notifier
-	block
-Date: Wed, 29 Jan 2014 19:19:03 +0000
-Message-ID: <fd76e563312749508e5f952f5d9b1391@BL2PR03MB468.namprd03.prod.outlook.com>
-References: <20140120222814.GI3471@alberich>
-	<e92c5fd617fb4068b4ec5de696527ee3@BL2PR03MB468.namprd03.prod.outlook.com>
-	<20140122122550.GA14108@mudshark.cambridge.arm.com>
-	<a73ef0128a0141eabf0a3b899f3afdae@DM2PR03MB479.namprd03.prod.outlook.com>
-	<20140122134028.GB14108@mudshark.cambridge.arm.com>
-	<aeebc7cf4084486790a5166cf83cb332@BL2PR03MB468.namprd03.prod.outlook.com>
-	<20140122153352.GE14108@mudshark.cambridge.arm.com>
-	<3d0a888e122f490ba6bbc80b1aaa977c@BL2PR03MB468.namprd03.prod.outlook.com>
-	<20140123195718.GC26399@alberich>
-	<991cc0024ea54cdb964f31de89c0b0ea@BL2PR03MB468.namprd03.prod.outlook.com>
-	<20140129141429.GD19326@alberich>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [git pull] IOMMU Updates for Linux v3.14
+Date: Wed, 29 Jan 2014 23:09:19 +0100
+Message-ID: <20140129220724.GA2941@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============7852533823626318866=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140129141429.GD19326@alberich>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -29,146 +14,167 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Andreas Herrmann <herrmann.der.user-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 
+--===============7852533823626318866==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="IJpNTDwzlM2Ie8A6"
+Content-Disposition: inline
 
-> -----Original Message-----
-> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
-> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Andreas Herrmann
-> Sent: Wednesday, January 29, 2014 7:44 PM
-> To: Sethi Varun-B16395
-> Cc: Andreas Herrmann; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Will Deacon;
-> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> Subject: Re: [PATCH v3 02/11] iommu/arm-smmu: Introduce iommu_group
-> notifier block
-> 
-> On Tue, Jan 28, 2014 at 11:00:35AM +0000, Varun Sethi wrote:
-> >
-> >
-> > > -----Original Message-----
-> > > From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
-> > > bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Andreas Herrmann
-> > > Sent: Friday, January 24, 2014 1:27 AM
-> > > To: Sethi Varun-B16395
-> > > Cc: Andreas Herrmann; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Will Deacon;
-> > > linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> > > Subject: Re: [PATCH v3 02/11] iommu/arm-smmu: Introduce iommu_group
-> > > notifier block
-> > >
-> > > On Wed, Jan 22, 2014 at 07:07:40PM +0000, Varun Sethi wrote:
-> > > > > -----Original Message-----
-> > > > > From: Will Deacon [mailto:will.deacon-5wv7dgnIgG8@public.gmane.org]
-> > > > > Sent: Wednesday, January 22, 2014 9:04 PM
-> > > > > To: Sethi Varun-B16395
-> > > > > Cc: Andreas Herrmann; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> > > > > linux-arm- kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; Andreas Herrmann
-> > > > > Subject: Re: [PATCH v3 02/11] iommu/arm-smmu: Introduce
-> > > > > iommu_group notifier block
-> > > > >
-> > > > > On Wed, Jan 22, 2014 at 01:54:11PM +0000, Varun Sethi wrote:
-> > > > > > > > > Ok, so are you suggesting that we perform the isolation
-> > > > > > > > > mapping in arm_smmu_add_device and drop the notifier
-> > > altogether?
-> > > > > > > > I think that should be fine, until we want to delay
-> > > > > > > > mapping creation till driver bind time.
-> > > > > > >
-> > > > > > > Is there a hard dependency on that?
-> > > > > > >
-> > > > > > Not sure, may be Andreas can answer that.
-> > > > >
-> > > > > Ok. Andreas? I would have thought doing this *earlier* shouldn't
-> > > > > be a problem (the DMA ops must be swizzled before the driver is
-> probed).
-> > > > >
-> > > > > > > > But the "isolate device" property should dictate iommu
-> > > > > > > > group
-> > > > > creation.
-> > > > > > >
-> > > > > > > The reason we added automatic group creation (per-device) is
-> > > > > > > for VFIO, which expects all devices to be in a group
-> > > > > > > regardless of the device isolation configuration.
-> > > > > > >
-> > > > > > IIUC, with the "isolate devices" property we ensure that there
-> > > > > > would be independent SMR and S2CR per device. Is that correct?
-> > > > >
-> > > > > Yes, as part of giving them independent sets of page tables.
-> > > > > Initially these tables don't have any valid mappings, but the
-> > > > > dma-mapping API will populate them in response to
-> > > dma_map_*/dma_alloc/etc.
-> > > > >
-> > > > > Not sure what this has to do with us putting devices into their
-> > > > > own groups...
-> > >
-> > > > [Sethi Varun-B16395] Devices in an iommu group would share the dma
-> > > > mapping, so shouldn't they be sharing the SMR and context
-> registers?
-> > >
-> > > I aggree with the context but SMRs won't be shared. I think you just
-> > > can say that a certain subset of the available SMRs will be used to
-> > > map all devices in an iommu group to the same context. Depending on
-> > > what streamIDs each device has you might have to use separate SMRs
-> > > for each device to map it to the same context.
-> 
-> > [Sethi Varun-B16395] IIUC the SMRs would unique per device, but there
-> > is a possibility where the number of context registers are restricted?
-> > In that case IOMMU groups should correspond to unique stream IDs (and
-> > corresponding SMRs).
-> 
-> > > > In case of the "isolate devices" property, each device would have
-> > > > its own SMR and context registers, thus allowing the devices to
-> > > > have independent mappings and allowing them to fall in separate
-> > > > iommu groups.
-> > >
-> > > I aggree with Varun's view here. (Now that I take iommu groups into
-> > > consideration.)
-> > >
-> > > But my goal with the "isolate devices" thing was twofold:
-> > >
-> > > 1. actual make use of SMMU for address translation for all master
-> > >   devices (instead of just bypassing the SMMU)
-> 
-> > [Sethi Varun-B16395] even if masters have to share translation? But
-> > from the patch it seemed that we are creating mapping only if we find
-> > the isolate devices property.
-> 
-> Yes, the patch creates mappings only if isolate-devices property is
-> given. Currently there is no trigger to create a common mapping for all
-> devices attached to the same SMMU.
-> 
-> > > plus
-> > >
-> > > 2. put each master into it's own domain to isolate it
-> > >
-> > > The latter matches usage of separate iommu groups for devices. If we
-> > > now use the isolate devices property to just control whether master
-> > > devices fall into the same or separate iommu groups it seems to me
-> > > we would need to have another mechanism that triggers the creation
-> > > of a mapping for a group.
-> > >
-> > > What do you think?
-> > >
-> 
-> > [Sethi Varun-B16395] As mentioned before, we should be having iommu
-> > group per device (having a unique stream id). Isolate devices property
-> > just ensures that each device has a unique context. Now, for the
-> > devices for which we don't have the isolate device property, can't we
-> > have the multiple devices point to a common mapping.
-> 
-> Hmm, the isolate-devices option is per SMMU. So if this is set for an
-> SMMU the driver tries to create a mapping per device. (And this is done
-> for all master devices of this SMMU.)
-> 
-> Are you requesting to change the default behaviour of the driver to
-> create a shared mapping in case the isolate-devices property is not
-> specified in DT for an SMMU node?
-> 
-> Or maybe your concern is that you have x master devices for an SMMU which
-> support y number of contexts and x > y? Which would imply that not all
-> devices can be isolated and some need to share a context?
-> 
-[Sethi Varun-B16395] I am trying to understand the requirement for the "isolate devices" property. Currently no default in mapping is created in the SMMU driver. The new property allows default mapping to be created for all masters. Why can't we create default mappings for all masters without this property?
 
--Varun
+--IJpNTDwzlM2Ie8A6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Hi Linus,
+
+
+The following changes since commit d6e0a2dd12f4067a5bcefb8bbd8ddbeff800afbc:
+
+  Linux 3.13-rc7 (2014-01-04 15:12:14 -0800)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v3.14
+
+for you to fetch changes up to dd1a175695edf662615e422d1c85eae875a411b2:
+
+  Merge branches 'arm/smmu', 'core', 'x86/vt-d', 'arm/shmobile', 'x86/amd', 'ppc/pamu', 'iommu/fixes' and 'arm/msm' into next (2014-01-09 13:06:59 +0100)
+
+----------------------------------------------------------------
+
+IOMMU Updates for Linux v3.14
+
+A few patches have been queued up for this merge window:
+
+	* Improvements for the ARM-SMMU driver
+	  (IOMMU_EXEC support, IOMMU group support)
+	* Updates and fixes for the shmobile IOMMU driver
+	* Various fixes to generic IOMMU code and the
+	  Intel IOMMU driver
+	* Some cleanups in IOMMU drivers (dev_is_pci() usage)
+
+----------------------------------------------------------------
+Alexey Kardashevskiy (1):
+      iommu: Add empty stub for iommu_group_get_by_id()
+
+Antonios Motakis (1):
+      iommu/arm-smmu: add devices attached to the SMMU to an IOMMU group
+
+Brian Norris (1):
+      iommu: add missing include
+
+Dan Carpenter (1):
+      iommu/vt-d: Fix signedness bug in alloc_irte()
+
+Jiang Liu (18):
+      iommu/vt-d: use dedicated bitmap to track remapping entry allocation status
+      iommu/vt-d: fix PCI device reference leakage on error recovery path
+      iommu/vt-d: fix a race window in allocating domain ID for virtual machines
+      iommu/vt-d: fix resource leakage on error recovery path in iommu_init_domains()
+      iommu/vt-d, trivial: refine support of 64bit guest address
+      iommu/vt-d, trivial: print correct domain id of static identity domain
+      iommu/vt-d, trivial: check suitable flag in function detect_intel_iommu()
+      iommu/vt-d, trivial: clean up unused code
+      iommu/vt-d: mark internal functions as static
+      iommu/vt-d, trivial: use defined macro instead of hardcoding
+      iommu/vt-d, trivial: simplify code with existing macros
+      iommu/vt-d: fix invalid memory access when freeing DMAR irq
+      iommu/vt-d: keep shared resources when failed to initialize iommu devices
+      iommu/vt-d: fix access after free issue in function free_dmar_iommu()
+      iommu/vt-d: release invalidation queue when destroying IOMMU unit
+      iommu/vt-d: fix wrong return value of dmar_table_init()
+      iommu/vt-d, trivial: clean sparse warnings
+      iommu/vt-d: free all resources if failed to initialize DMARs
+
+Joerg Roedel (3):
+      Merge branch 'for-joerg/arm-smmu/updates' of git://git.kernel.org/.../will/linux into arm/smmu
+      drm/msm: Fix link error with !MSM_IOMMU
+      Merge branches 'arm/smmu', 'core', 'x86/vt-d', 'arm/shmobile', 'x86/amd', 'ppc/pamu', 'iommu/fixes' and 'arm/msm' into next
+
+Laurent Pinchart (3):
+      iommu: shmobile: Enable driver compilation with COMPILE_TEST
+      iommu/shmobile: Allocate archdata with kzalloc()
+      iommu/shmobile: Turn the flush_lock mutex into a spinlock
+
+Rashika Kheria (3):
+      iommu/vt-d: Mark functions as static in dmar.c
+      iommu/vt-d: Mark functions as static in intel_irq_remapping.c
+      iommu/vt-d: Mark function eoi_ioapic_pin_remapped() as static in irq_remapping.c
+
+Upinder Malhi (umalhi) (1):
+      iommu: Rename domain_has_cap to iommu_domain_has_cap
+
+Will Deacon (3):
+      iommu/arm-smmu: use VA_BITS to determine arm64 virtual address space
+      iommu: add IOMMU_EXEC flag for safely allowing XN mappings
+      iommu/arm-smmu: add support for IOMMU_EXEC
+
+Yijing Wang (3):
+      iommu/amd: Use dev_is_pci() to check whether it is pci device
+      iommu/vt-d: Use dev_is_pci() to check whether it is pci device
+      iommu/fsl_pamu: Use dev_is_pci() to check whether it is pci device
+
+ drivers/gpu/drm/msm/Kconfig         |    1 +
+ drivers/iommu/Kconfig               |    1 +
+ drivers/iommu/amd_iommu.c           |    4 +-
+ drivers/iommu/arm-smmu.c            |   33 ++++--
+ drivers/iommu/dmar.c                |  135 +++++++++++++---------
+ drivers/iommu/fsl_pamu_domain.c     |    6 +-
+ drivers/iommu/intel-iommu.c         |  216 ++++++++++++++---------------------
+ drivers/iommu/intel_irq_remapping.c |  105 ++++++++---------
+ drivers/iommu/irq_remapping.c       |    6 +-
+ drivers/iommu/of_iommu.c            |    1 +
+ drivers/iommu/shmobile-iommu.c      |    3 +-
+ drivers/iommu/shmobile-ipmmu.c      |   10 +-
+ drivers/iommu/shmobile-ipmmu.h      |    2 +-
+ include/linux/dma_remapping.h       |    4 -
+ include/linux/dmar.h                |   13 ++-
+ include/linux/intel-iommu.h         |    3 +-
+ include/linux/iommu.h               |   16 ++-
+ 17 files changed, 279 insertions(+), 280 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+
+--IJpNTDwzlM2Ie8A6
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+
+iQIcBAEBAgAGBQJS6XucAAoJECvwRC2XARrjyMkQAM5QM4URBsruzwhF2vm/gnTd
+ZNTY8TTnjnjxBWuhL80nXOk2uQhOkE7GDDxN6ApUGfVdQAekVqH7FAt0SjoIw0bp
+ROMSgrPTT5Kbe7SztG7207l9P+niqJt5p1LbJ2Bhtg0Z43Yehk4bTdalqfhiU8cQ
+mOOxbUVSpD5iLfsYM30+Rr3FNtuqfEPpbFHKd5a4b0PkwzvNw0qM1Ly/syeX7fut
+0SgWXY15ongGWHagrg7JoIM7RLllyRprECfvenfASYuB9kiJFa92fK2kRR0C4zMV
+0/bUHt1KUL+gN9N8ZD8eeVAywR3vGvze6xl0LCwgtt4jiWJtNXU2IYlV1Lr6O2ti
+xPjVMtw/Tn8WaOjEwDCO8nXbTz15lbQvvxxF+JXzgq+7/qz97LPI6UArMA64Nfxj
+T+wLSlvI9jqDcqRG03BUo9JwABQr6r4sZo3fMSvCb9MuFqueXLE+Qz6NpQfpGCFJ
+fsenF9lkItyp+AMstj1A0RtBX0cglgcLDiTDTQrT7NkbVVcJUaYS/V79t6i7aEk1
+RWVcpYIx0G9Ped+zdCb2NTMc6oxYo4KbBWnaxlyvCmPjkTl2LpTKFqIogdsft82l
+3+RmEP/AKx14ZdhE64omJPw6U4GHWlJFZ4hmSPaYWeMqh1ujgjG9SLqRt069MN8B
+NBndwYQZNCLjT4291v4r
+=MRTW
+-----END PGP SIGNATURE-----
+
+--IJpNTDwzlM2Ie8A6--
+
+
+
+--===============7852533823626318866==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============7852533823626318866==--
