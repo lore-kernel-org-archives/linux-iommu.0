@@ -1,8 +1,8 @@
 From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH 2/6] iommu/arm-smmu: Support buggy implementation where all
-	config accesses are secure
-Date: Thu, 30 Jan 2014 19:18:05 +0100
-Message-ID: <1391105889-32718-3-git-send-email-andreas.herrmann@calxeda.com>
+Subject: [PATCH 3/6] iommu/arm-smmu: Check for duplicate stream IDs when
+	registering master devices
+Date: Thu, 30 Jan 2014 19:18:06 +0100
+Message-ID: <1391105889-32718-4-git-send-email-andreas.herrmann@calxeda.com>
 References: <1391105889-32718-1-git-send-email-andreas.herrmann@calxeda.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,114 +22,102 @@ To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-In such a case we have to use secure aliases of some non-secure
-registers.
+If DT information lists one stream ID twice for the master devices of
+an SMMU this can cause a multi match when stream ID matching is used.
+For stream ID indexing this might trigger an overwrite of an S2CR that
+is already in use.
 
-This handling is switched on by DT property
-"calxeda,smmu-secure-config-access" for an SMMU node.
+So better check for duplicates when DT information is parsed.
 
 Cc: Andreas Herrmann <herrmann.der.user-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
 Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c |   31 +++++++++++++++++++++----------
- 1 file changed, 21 insertions(+), 10 deletions(-)
+ drivers/iommu/arm-smmu.c |   31 ++++++++++++++++++++++++++-----
+ 1 file changed, 26 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 7111461..0438ec1 100644
+index 0438ec1..4a32fde 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -60,6 +60,15 @@
- #define ARM_SMMU_GR0(smmu)		((smmu)->base)
- #define ARM_SMMU_GR1(smmu)		((smmu)->base + (smmu)->pagesize)
+@@ -50,6 +50,9 @@
+ /* Maximum number of stream IDs assigned to a single device */
+ #define MAX_MASTER_STREAMIDS		8
  
-+/*
-+ * SMMU global address space with conditional offset to access secure aliases of
-+ * non-secure registers (e.g. nsCR0: 0x400, nsGFSR: 0x448, nsGFSYNR0: 0x450)
-+ */
-+#define ARM_SMMU_GR0_NS(smmu)						\
-+	((smmu)->base +							\
-+		((smmu->options & ARM_SMMU_OPT_SECURE_CONFIG_ACCESS)	\
-+			? 0x400 : 0))
++/* Maximum stream ID */
++#define ARM_SMMU_MAX_STREAMID		(SZ_64K - 1)
 +
- /* Page table bits */
- #define ARM_SMMU_PTE_PAGE		(((pteval_t)3) << 0)
- #define ARM_SMMU_PTE_CONT		(((pteval_t)1) << 52)
-@@ -350,6 +359,7 @@ struct arm_smmu_device {
- 	u32				features;
+ /* Maximum number of context banks per SMMU */
+ #define ARM_SMMU_MAX_CBS		128
  
- #define ARM_SMMU_OPT_ISOLATE_DEVICES	(1 << 0)
-+#define ARM_SMMU_OPT_SECURE_CONFIG_ACCESS (1 << 1)
- 	u32				options;
- 	int				version;
+@@ -482,9 +485,10 @@ static int insert_smmu_master(struct arm_smmu_device *smmu,
  
-@@ -408,6 +418,7 @@ struct arm_smmu_option_prop {
- 
- static struct arm_smmu_option_prop arm_smmu_options [] = {
- 	{ ARM_SMMU_OPT_ISOLATE_DEVICES, "arm,smmu-isolate-devices" },
-+	{ ARM_SMMU_OPT_SECURE_CONFIG_ACCESS, "calxeda,smmu-secure-config-access" },
- 	{ 0, NULL},
- };
- 
-@@ -637,16 +648,16 @@ static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
+ static int register_smmu_master(struct arm_smmu_device *smmu,
+ 				struct device *dev,
+-				struct of_phandle_args *masterspec)
++				struct of_phandle_args *masterspec,
++				unsigned long *smmu_sids)
  {
- 	u32 gfsr, gfsynr0, gfsynr1, gfsynr2;
- 	struct arm_smmu_device *smmu = dev;
--	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
-+	void __iomem *gr0_base = ARM_SMMU_GR0_NS(smmu);
+-	int i;
++	int i, sid;
+ 	struct arm_smmu_master *master;
  
- 	gfsr = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSR);
--	if (!gfsr)
--		return IRQ_NONE;
--
- 	gfsynr0 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSYNR0);
- 	gfsynr1 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSYNR1);
- 	gfsynr2 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSYNR2);
+ 	master = find_smmu_master(smmu, masterspec->np);
+@@ -509,8 +513,14 @@ static int register_smmu_master(struct arm_smmu_device *smmu,
+ 	master->of_node		= masterspec->np;
+ 	master->num_streamids	= masterspec->args_count;
  
-+	if (!gfsr)
-+		return IRQ_NONE;
+-	for (i = 0; i < master->num_streamids; ++i)
+-		master->streamids[i] = masterspec->args[i];
++	for (i = 0; i < master->num_streamids; ++i) {
++		sid = masterspec->args[i];
++		if (test_and_set_bit(sid, smmu_sids)) {
++			dev_err(dev, "duplicate stream ID (%d)\n", sid);
++			return -EEXIST;
++		}
++		master->streamids[i] = sid;
++	}
+ 
+ 	return insert_smmu_master(smmu, master);
+ }
+@@ -1828,6 +1838,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	struct rb_node *node;
+ 	struct of_phandle_args masterspec;
++	unsigned long *smmu_sids;
+ 	int num_irqs, i, err;
+ 
+ 	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
+@@ -1878,20 +1889,30 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 		smmu->irqs[i] = irq;
+ 	}
+ 
++	smmu_sids = kzalloc(BITS_TO_LONGS(ARM_SMMU_MAX_STREAMID) *
++			sizeof(long), GFP_KERNEL);
++	if (!smmu_sids) {
++		dev_err(dev,
++			"failed to allocate bitmap for stream ID tracking\n");
++		return -ENOMEM;
++	}
 +
- 	dev_err_ratelimited(smmu->dev,
- 		"Unexpected global fault, this could be serious\n");
- 	dev_err_ratelimited(smmu->dev,
-@@ -1601,9 +1612,9 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
- 	int i = 0;
- 	u32 reg;
+ 	i = 0;
+ 	smmu->masters = RB_ROOT;
+ 	while (!of_parse_phandle_with_args(dev->of_node, "mmu-masters",
+ 					   "#stream-id-cells", i,
+ 					   &masterspec)) {
+-		err = register_smmu_master(smmu, dev, &masterspec);
++		err = register_smmu_master(smmu, dev, &masterspec, smmu_sids);
+ 		if (err) {
+ 			dev_err(dev, "failed to add master %s\n",
+ 				masterspec.np->name);
++			kfree(smmu_sids);
+ 			goto out_put_masters;
+ 		}
  
--	/* Clear Global FSR */
--	reg = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSR);
--	writel(reg, gr0_base + ARM_SMMU_GR0_sGFSR);
-+	/* clear global FSR */
-+	reg = readl_relaxed(ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sGFSR);
-+	writel(reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sGFSR);
+ 		i++;
+ 	}
++	kfree(smmu_sids);
+ 	dev_notice(dev, "registered %d master devices\n", i);
  
- 	/* Mark all SMRn as invalid and all S2CRn as bypass */
- 	for (i = 0; i < smmu->num_mapping_groups; ++i) {
-@@ -1623,7 +1634,7 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
- 	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_TLBIALLH);
- 	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_TLBIALLNSNH);
- 
--	reg = readl_relaxed(gr0_base + ARM_SMMU_GR0_sCR0);
-+	reg = readl_relaxed(ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
- 
- 	/* Enable fault reporting */
- 	reg |= (sCR0_GFRE | sCR0_GFIE | sCR0_GCFGFRE | sCR0_GCFGFIE);
-@@ -1642,7 +1653,7 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
- 
- 	/* Push the button */
- 	arm_smmu_tlb_sync(smmu);
--	writel_relaxed(reg, gr0_base + ARM_SMMU_GR0_sCR0);
-+	writel(reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
- }
- 
- static int arm_smmu_id_size_to_bits(int size)
-@@ -1976,7 +1987,7 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
- 		free_irq(smmu->irqs[i], smmu);
- 
- 	/* Turn the thing off */
--	writel_relaxed(sCR0_CLIENTPD, ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_sCR0);
-+	writel(sCR0_CLIENTPD,ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
- 	return 0;
- }
- 
+ 	if ((dev_node = of_parse_phandle(dev->of_node, "smmu-parent", 0)))
 -- 
 1.7.9.5
