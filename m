@@ -1,19 +1,12 @@
 From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v2 08/11] of: Increase MAX_PHANDLE_ARGS
-Date: Thu, 30 Jan 2014 18:45:46 +0100
-Message-ID: <20140130174546.GF13543@alberich>
-References: <1389876263-25759-1-git-send-email-andreas.herrmann@calxeda.com>
-	<1389876263-25759-9-git-send-email-andreas.herrmann@calxeda.com>
-	<20140117110830.GW3471@alberich> <52E92842.3000001@amd.com>
-	<CAL_JsqLhzp5jUJPA91rNkQ07kCDYCDZLxw8LxxFEVP9b12e1Jw@mail.gmail.com>
-	<52E93360.1000904@amd.com> <20140129171611.GB13543@alberich>
-	<52E939CB.1020705@amd.com>
+Subject: [PATCH 0/6] iommu/arm-smmu: Misc modifications to support SMMUs on
+	Calxeda ECX-2000
+Date: Thu, 30 Jan 2014 19:18:03 +0100
+Message-ID: <1391105889-32718-1-git-send-email-andreas.herrmann@calxeda.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <52E939CB.1020705-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,54 +16,42 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 29, 2014 at 12:26:35PM -0500, Suravee Suthikulanit wrote:
-> On 1/29/2014 11:16 AM, Andreas Herrmann wrote:
-> > On Wed, Jan 29, 2014 at 11:59:12AM -0500, Suravee Suthikulanit wrote:
-> >> On 1/29/2014 10:57 AM, Rob Herring wrote:
-> >>>>> diff --git a/include/linux/of.h b/include/linux/of.h
-> >>>>>>> index 276c546..24e1b28 100644
-> >>>>>>> --- a/include/linux/of.h
-> >>>>>>> +++ b/include/linux/of.h
-> >>>>>>> @@ -67,7 +67,7 @@ struct device_node {
-> >>>>>>>    #endif
-> >>>>>>>    };
-> >>>>>>>
-> >>>>>>> -#define MAX_PHANDLE_ARGS 8
-> >>>>>>> +#define MAX_PHANDLE_ARGS 16
-> >>>>>
-> >>>>>
-> >>>>> Since the MMU-500 specify "Number of SMRs" upto 128 registers, shouldn't
-> >>>>> this be changed to be able to support 128 StreamIDs as well?  Although I am
-> >>>>> not sure if this would be too big to have on the stack per Rob's comment in
-> >>>>> the previous patch set.
-> >>> Do you actually need 128 now? If not, then we can deal with that when
-> >>> we get there. There are lots of things in spec's that are not actually
-> >>> implemented or supported.
-> >>
-> >> Actually, we are using 32 on the AMD system. So, do you think we can set
-> >> this to 32 instead?
-> >
-> > I think that's ok.
-> >
-> > But are we really talking about number of SMRs or number of StreamIDs
-> > per master device here? Ie. are you just having 32 SMRs for an SMMU on
-> > your AMD system or do you have master devices which have 32 StreamIDs?
-> >
-> > If it's just number of SMRs we don't need to modify this macro.
+Hi,
 
-> I am referring to the case where each mmu-master can have upto 32 streamID.
+This is v5 of my arm-smmu changes (to support SMMUs on Calxeda ECX-2000).
 
-Rob,
+Patches are based on v3.13.
 
-Do you agree on increasing MAX_PHANDLE_ARGS to 32?
-
-Or should this be done when someone (e.g. Suravee) submits a DTS
-update with an SMMU node description containing more than 16 stream
-IDs for a master device?
+Changes to previous version are
+- use iommu_group notifier instead of bus notifier
+- remove superfluous call to arm_smmu_add_device in
+  notifier function
+- free bitmap that's used for checking of duplicate stream IDs
+- hopefully addressed all issues for the "SMR allocator" patch
+  (see http://marc.info/?l=linux-arm-kernel&m=139040446813960)
+- reorder patches to put the notifier change last (in case there are
+  still objections to this the rest could be merged I think)
 
 
+I omitted the patches that are device-tree related (of, dts,
+documentation) or ARM dma-mapping.c related. I'll work on an update of
+the dma-mapping change (to automatically increase the mapping size)
+separately.
+
+Changelog:
+v4:
+  http://marc.info/?l=linux-arm-kernel&m=138988209913055
+v3:
+  http://marc.info/?l=linux-arm-kernel&m=138212725606348
+v2:
+  http://marc.info/?l=linux-arm-kernel&m=138135834704855
+v1:
+   http://marc.info/?l=linux-arm-kernel&m=138122450023564
+
+
+Regards,
 Andreas
