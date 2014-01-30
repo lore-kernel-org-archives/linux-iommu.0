@@ -1,7 +1,8 @@
 From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH 1/6] iommu/arm-smmu: Introduce driver option handling
-Date: Thu, 30 Jan 2014 19:18:04 +0100
-Message-ID: <1391105889-32718-2-git-send-email-andreas.herrmann@calxeda.com>
+Subject: [PATCH 2/6] iommu/arm-smmu: Support buggy implementation where all
+	config accesses are secure
+Date: Thu, 30 Jan 2014 19:18:05 +0100
+Message-ID: <1391105889-32718-3-git-send-email-andreas.herrmann@calxeda.com>
 References: <1391105889-32718-1-git-send-email-andreas.herrmann@calxeda.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,69 +22,114 @@ To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Introduce handling of driver options. Options are set based on DT
-information when probing an SMMU device. The first option introduced
-is "arm,smmu-isolate-devices". (It will be used in the iommu_group
-notifier block.)
+In such a case we have to use secure aliases of some non-secure
+registers.
+
+This handling is switched on by DT property
+"calxeda,smmu-secure-config-access" for an SMMU node.
 
 Cc: Andreas Herrmann <herrmann.der.user-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
 Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c |   28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+ drivers/iommu/arm-smmu.c |   31 +++++++++++++++++++++----------
+ 1 file changed, 21 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 879da20..7111461 100644
+index 7111461..0438ec1 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -348,6 +348,9 @@ struct arm_smmu_device {
- #define ARM_SMMU_FEAT_TRANS_S2		(1 << 3)
- #define ARM_SMMU_FEAT_TRANS_NESTED	(1 << 4)
- 	u32				features;
+@@ -60,6 +60,15 @@
+ #define ARM_SMMU_GR0(smmu)		((smmu)->base)
+ #define ARM_SMMU_GR1(smmu)		((smmu)->base + (smmu)->pagesize)
+ 
++/*
++ * SMMU global address space with conditional offset to access secure aliases of
++ * non-secure registers (e.g. nsCR0: 0x400, nsGFSR: 0x448, nsGFSYNR0: 0x450)
++ */
++#define ARM_SMMU_GR0_NS(smmu)						\
++	((smmu)->base +							\
++		((smmu->options & ARM_SMMU_OPT_SECURE_CONFIG_ACCESS)	\
++			? 0x400 : 0))
 +
-+#define ARM_SMMU_OPT_ISOLATE_DEVICES	(1 << 0)
-+	u32				options;
+ /* Page table bits */
+ #define ARM_SMMU_PTE_PAGE		(((pteval_t)3) << 0)
+ #define ARM_SMMU_PTE_CONT		(((pteval_t)1) << 52)
+@@ -350,6 +359,7 @@ struct arm_smmu_device {
+ 	u32				features;
+ 
+ #define ARM_SMMU_OPT_ISOLATE_DEVICES	(1 << 0)
++#define ARM_SMMU_OPT_SECURE_CONFIG_ACCESS (1 << 1)
+ 	u32				options;
  	int				version;
  
- 	u32				num_context_banks;
-@@ -398,6 +401,29 @@ struct arm_smmu_domain {
- static DEFINE_SPINLOCK(arm_smmu_devices_lock);
- static LIST_HEAD(arm_smmu_devices);
+@@ -408,6 +418,7 @@ struct arm_smmu_option_prop {
  
-+struct arm_smmu_option_prop {
-+	u32 opt;
-+	const char *prop;
-+};
-+
-+static struct arm_smmu_option_prop arm_smmu_options [] = {
-+	{ ARM_SMMU_OPT_ISOLATE_DEVICES, "arm,smmu-isolate-devices" },
-+	{ 0, NULL},
-+};
-+
-+static void parse_driver_options(struct arm_smmu_device *smmu)
-+{
-+	int i = 0;
-+	do {
-+		if (of_property_read_bool(smmu->dev->of_node,
-+						arm_smmu_options[i].prop)) {
-+			smmu->options |= arm_smmu_options[i].opt;
-+			dev_notice(smmu->dev, "option %s\n",
-+				arm_smmu_options[i].prop);
-+		}
-+	} while (arm_smmu_options[++i].opt);
-+}
-+
- static struct arm_smmu_master *find_smmu_master(struct arm_smmu_device *smmu,
- 						struct device_node *dev_node)
+ static struct arm_smmu_option_prop arm_smmu_options [] = {
+ 	{ ARM_SMMU_OPT_ISOLATE_DEVICES, "arm,smmu-isolate-devices" },
++	{ ARM_SMMU_OPT_SECURE_CONFIG_ACCESS, "calxeda,smmu-secure-config-access" },
+ 	{ 0, NULL},
+ };
+ 
+@@ -637,16 +648,16 @@ static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
  {
-@@ -1864,6 +1890,8 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 	if (err)
- 		goto out_put_parent;
+ 	u32 gfsr, gfsynr0, gfsynr1, gfsynr2;
+ 	struct arm_smmu_device *smmu = dev;
+-	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
++	void __iomem *gr0_base = ARM_SMMU_GR0_NS(smmu);
  
-+	parse_driver_options(smmu);
+ 	gfsr = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSR);
+-	if (!gfsr)
+-		return IRQ_NONE;
+-
+ 	gfsynr0 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSYNR0);
+ 	gfsynr1 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSYNR1);
+ 	gfsynr2 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSYNR2);
+ 
++	if (!gfsr)
++		return IRQ_NONE;
 +
- 	if (smmu->version > 1 &&
- 	    smmu->num_context_banks != smmu->num_context_irqs) {
- 		dev_err(dev,
+ 	dev_err_ratelimited(smmu->dev,
+ 		"Unexpected global fault, this could be serious\n");
+ 	dev_err_ratelimited(smmu->dev,
+@@ -1601,9 +1612,9 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+ 	int i = 0;
+ 	u32 reg;
+ 
+-	/* Clear Global FSR */
+-	reg = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSR);
+-	writel(reg, gr0_base + ARM_SMMU_GR0_sGFSR);
++	/* clear global FSR */
++	reg = readl_relaxed(ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sGFSR);
++	writel(reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sGFSR);
+ 
+ 	/* Mark all SMRn as invalid and all S2CRn as bypass */
+ 	for (i = 0; i < smmu->num_mapping_groups; ++i) {
+@@ -1623,7 +1634,7 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+ 	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_TLBIALLH);
+ 	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_TLBIALLNSNH);
+ 
+-	reg = readl_relaxed(gr0_base + ARM_SMMU_GR0_sCR0);
++	reg = readl_relaxed(ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
+ 
+ 	/* Enable fault reporting */
+ 	reg |= (sCR0_GFRE | sCR0_GFIE | sCR0_GCFGFRE | sCR0_GCFGFIE);
+@@ -1642,7 +1653,7 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+ 
+ 	/* Push the button */
+ 	arm_smmu_tlb_sync(smmu);
+-	writel_relaxed(reg, gr0_base + ARM_SMMU_GR0_sCR0);
++	writel(reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
+ }
+ 
+ static int arm_smmu_id_size_to_bits(int size)
+@@ -1976,7 +1987,7 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+ 		free_irq(smmu->irqs[i], smmu);
+ 
+ 	/* Turn the thing off */
+-	writel_relaxed(sCR0_CLIENTPD, ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_sCR0);
++	writel(sCR0_CLIENTPD,ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
+ 	return 0;
+ }
+ 
 -- 
 1.7.9.5
