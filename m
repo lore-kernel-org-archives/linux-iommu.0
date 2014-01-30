@@ -1,11 +1,15 @@
-From: "George Spelvin" <linux-gpGsJRJZ3PBBDgjK7y7TUQ@public.gmane.org>
-Subject: Who understand the IOMMU code?
-Date: 30 Jan 2014 15:12:19 -0500
-Message-ID: <20140130201219.20665.qmail@science.horizon.com>
+From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+Subject: [PATCH] documentation/iommu: Update description of ARM System MMU
+	binding
+Date: Thu, 30 Jan 2014 21:17:52 +0100
+Message-ID: <20140130201752.GJ13543@alberich>
+References: <1391105889-32718-1-git-send-email-andreas.herrmann@calxeda.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1391105889-32718-1-git-send-email-andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,46 +19,58 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
-Cc: acooks-Re5JQEeQqe+YEALZW0XXGg@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ""@gmail.com, linux-gpGsJRJZ3PBBDgjK7y7TUQ@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-I'm trying to add a quirk to the IOMMU code to handle certain buggy
-devices which use the wrong requester id (devfn) for PCIe requests.
-In my case, there are a number of Marvell SATA controllers, popular with
-motherboard manufacturers, which generate DMA from functions 0 and 1,
-even though they only support function 0.
 
-Andrew cooks wrote a working (but, to my eyes, ugly) patch; see
-https://bugzilla.kernel.org/show_bug.cgi?id=42679#c22
+This patch adds descriptions fore new properties of device tree
+binding for the ARM SMMU architecture. These properties control
+arm-smmu driver options.
 
-I'm trying to improve it, but even limiting myself to intel-iommu.c,
-it's definitely hairy.
+Cc: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Andreas Herrmann <herrmann.der.user-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+---
+ .../devicetree/bindings/iommu/arm,smmu.txt         |   11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-Right now, I'm trying to figure out where to remove the additional
-mapping.
+Hi Will,
 
-Currently I'm looking at adding another clear_context_table() call
-before iommu_detach_dev() in domain_remove_one_dev_info(); my goal is
-to piggyback on iommu_detach_dev's flush calls.
+I should have included this patch in the series as it describes the
+options introduced there.
 
-But I'm having trouble figuring out the whole device_domain_info list
-business.
 
-In particular, does the comparison of domain, bus, and
-devinfo ever produce a different result than just comparing
-info->dev to pdev?
+Andreas
 
-I have a flag in the pci_device warning about the quirk, but
-I'm having trouble finding the function that's the opposite of
-domain_context_mapping().
-
-Does anyone actually understand this stuff well enough to review my
-patches when I finish?  May I ask for a bit of guidance on the way?
-Right now I don't even understand the Intel iommu code, much less all
-ther others I should be patching for a full fix.
-
-The same code points would also be a good place to add phantom functions
-support some day.
-
-Thank you!
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+index e34c6cd..7ad8ff0 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+@@ -48,6 +48,16 @@ conditions.
+                   from the mmu-masters towards memory) node for this
+                   SMMU.
+ 
++- arm,smmu-isolate-devices : Enable device isolation for all masters
++                   of this SMMU. Ie. each master will be attached to
++                   its own iommu domain.
++
++- calxeda,smmu-secure-config-access : Enable proper handling of buggy
++                   implementations that always use secure access to
++                   SMMU configuration registers. In this case
++                   non-secure aliases of secure registers have to be
++                   used during SMMU configuration.
++
+ Example:
+ 
+         smmu {
+@@ -67,4 +77,5 @@ Example:
+                  */
+                 mmu-masters = <&dma0 0xd01d 0xd01e>,
+                               <&dma1 0xd11c>;
++                arm,smmu-isolate-devices;
+         };
+-- 
+1.7.9.5
