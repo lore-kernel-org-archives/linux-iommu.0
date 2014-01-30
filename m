@@ -1,10 +1,18 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [git pull] IOMMU Updates for Linux v3.14
-Date: Wed, 29 Jan 2014 23:09:19 +0100
-Message-ID: <20140129220724.GA2941@8bytes.org>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH 11/11] arm: dma-mapping: Add support to extend DMA IOMMU
+	mappings
+Date: Thu, 30 Jan 2014 09:28:51 +0100
+Message-ID: <52EA0D43.1010802@samsung.com>
+References: <1389876263-25759-1-git-send-email-andreas.herrmann@calxeda.com>
+	<1389876263-25759-12-git-send-email-andreas.herrmann@calxeda.com>
+	<52E8DE7D.5020801@samsung.com>
+	<20140129110537.GG26622@mudshark.cambridge.arm.com>
+	<20140129144017.GA13543@alberich>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============7852533823626318866=="
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-reply-to: <20140129144017.GA13543@alberich>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -14,167 +22,110 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Nicolas Pitre <nicolas.pitre-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Hello,
 
---===============7852533823626318866==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="IJpNTDwzlM2Ie8A6"
-Content-Disposition: inline
+On 2014-01-29 15:40, Andreas Herrmann wrote:
+> Hi Will, Marek,
+>
+> On Wed, Jan 29, 2014 at 06:05:37AM -0500, Will Deacon wrote:
+> > Hi Marek,
+> >
+> > On Wed, Jan 29, 2014 at 10:57:01AM +0000, Marek Szyprowski wrote:
+> > > On 2014-01-16 13:44, Andreas Herrmann wrote:
+> > > > Instead of using just one bitmap to keep track of IO virtual addresses
+> > > > (handed out for IOMMU use) introduce a list of iova_ranges (each
+> > > > having its own bitmap). This allows us to extend existing mappings
+> > > > when running out of iova space for a mapping.
+> > > >
+> > > > If there is not enough space in the mapping to service an IO virtual
+> > > > address allocation request, __alloc_iova() tries to extend the mapping
+> > > > -- by allocating another bitmap -- and makes another allocation
+> > > > attempt using the freshly allocated bitmap.
+> > > >
+> > > > This allows arm iommu drivers to start with a decent initial size when
+> > > > an dma_iommu_mapping is created and still to avoid running out of IO
+> > > > virtual addresses for the mapping.
+> > > >
+> > > > Tests were done on Calxeda ECX-2000 with smmu for sata and xgmac.
+> > > > I've used SZ_512K both for initial mapping size and grow_size.
+> > >
+> > > Thanks for implementing this feature! I remember it was discussed from
+> > > early beginning of arm dma iommu support, but I never had enough time
+> > > to actually implement it. I briefly checked the code and it look fine,
+> > > however I really wonder if we need separate grow_size parameter?
+> > > Personally I would simplify it to simply grow the bitmap by initial
+> > > size until it reaches the maximal size.
+> >
+> > That sounds sensible, but I also think it would be worth taking into account
+> > the page sizes supported by the IOMMU as well, since aligning to those makes
+> > sense from a TLB utilisation perspective.
+>
+> Meanwhile I also think that the grow_size parameter is overkill. Only
+> the initial mapping size and the maximum size really matter. Then we
+> could try to extend the mapping by initial mapping size and if this
+> fails (we might not have enough pages to serve such an allocation) we
+> could/should even fall back to allocate a single page (which should
+> give us at least a 16MB range).
+>
+> > > The whole concept of the simplified bitmap (where 1 bit != 1 page) for
+> > > iova allocation is a specific feature of this code and it has nothing
+> > > to the hardware. After thinking a bit more on the existing
+> > > implementation I've already observed that it is sometimes hard to
+> > > understand the parameters for arm_iommu_create_mapping() function,
+> > > especially the 'order' argument is ofter misunderstood. With your
+> > > patch we got two additional parameters. Maybe it will be much better
+> > > to use only 2 arguments: max_mapping_size and allocation_accuracy.
+> > > The initial bitmap size can be then calculated to fit it into single
+> > > memory page (that's quite important to avoid allocations larger that
+> > > a single memory page). 'allocation_accuracy' will serve the same way
+> > > as 'order' parameter now (but expressed in bytes rather than being
+> > > the multiplier for the number of pages). This way the
+> > > arm_iommu_create_mapping() function should be much easier to
+> > > understand, while keeping the implementation details hidden from the
+> > > caller.
+> >
+> > Hmm, I wouldn't guess the SI unit of accuracy to be bytes ;)
+>   
+> Have to think about the alignment argument and the last paragraph for
+> a while.
+>
+> All I can say now is that starting with a bitmap size that fits into a
+> single memory page doesn't sound right to me. The initial allocation
+> is "easy" (not GFP_ATOMIC) and thus I think we should start with a
+> larger bitmap. Say you have a device for which at runtime 512MB
+> mapping range are required and you use a 4k page for the bitmaps (each
+> tracking 16MB IOVA range) you'll have 32 bitmaps to maintain. Whereas
+> when you start with 128MB initial bitmap size and (successfully)
+> enhance the mapping by 128MB you just have to maintain 4 bitmaps.
 
+Huh? In the 'worst' case scenario (1 bit represents 1 page) a bitmap
+which occupies a single memory page holds 4096 bytes (PAGE SIZE) * 8
+(bits/byte) = 32768 bits, what gives us 32768 * 4KiB (PAGE SIZE) = 128MiB
+of address space, so for 512MiB mapping you just need at most 4 pages for
+bitmap.
 
---IJpNTDwzlM2Ie8A6
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Maybe the whole concept of simplified bitmap was already an over
+engineering from the beginning? I've added it to increase total supported
+mapping size (in my case I worked with devices which allocates quite
+large buffers), but now I see that it is not really needed if we have
+dynamically extended bitmaps.
 
-Hi Linus,
+BTW, I thought a bit more one your implementation and I think that it will
+be better to replace lists with simple arrays of bitmaps. We know the
+maximum number of sub-bitmaps from beginning and such approach will
+simplify iova freeing (no need for searching the address in a list).
 
+> But of course coming up with the right choice for the initial bitmap
+> size that fits all master devices is a hard thing to do ...
 
-The following changes since commit d6e0a2dd12f4067a5bcefb8bbd8ddbeff800afbc:
+Right, but the dynamically extended bitmaps will adapt to particular use
+cases, so the initial values doesn't really matter that much.
 
-  Linux 3.13-rc7 (2014-01-04 15:12:14 -0800)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v3.14
-
-for you to fetch changes up to dd1a175695edf662615e422d1c85eae875a411b2:
-
-  Merge branches 'arm/smmu', 'core', 'x86/vt-d', 'arm/shmobile', 'x86/amd', 'ppc/pamu', 'iommu/fixes' and 'arm/msm' into next (2014-01-09 13:06:59 +0100)
-
-----------------------------------------------------------------
-
-IOMMU Updates for Linux v3.14
-
-A few patches have been queued up for this merge window:
-
-	* Improvements for the ARM-SMMU driver
-	  (IOMMU_EXEC support, IOMMU group support)
-	* Updates and fixes for the shmobile IOMMU driver
-	* Various fixes to generic IOMMU code and the
-	  Intel IOMMU driver
-	* Some cleanups in IOMMU drivers (dev_is_pci() usage)
-
-----------------------------------------------------------------
-Alexey Kardashevskiy (1):
-      iommu: Add empty stub for iommu_group_get_by_id()
-
-Antonios Motakis (1):
-      iommu/arm-smmu: add devices attached to the SMMU to an IOMMU group
-
-Brian Norris (1):
-      iommu: add missing include
-
-Dan Carpenter (1):
-      iommu/vt-d: Fix signedness bug in alloc_irte()
-
-Jiang Liu (18):
-      iommu/vt-d: use dedicated bitmap to track remapping entry allocation status
-      iommu/vt-d: fix PCI device reference leakage on error recovery path
-      iommu/vt-d: fix a race window in allocating domain ID for virtual machines
-      iommu/vt-d: fix resource leakage on error recovery path in iommu_init_domains()
-      iommu/vt-d, trivial: refine support of 64bit guest address
-      iommu/vt-d, trivial: print correct domain id of static identity domain
-      iommu/vt-d, trivial: check suitable flag in function detect_intel_iommu()
-      iommu/vt-d, trivial: clean up unused code
-      iommu/vt-d: mark internal functions as static
-      iommu/vt-d, trivial: use defined macro instead of hardcoding
-      iommu/vt-d, trivial: simplify code with existing macros
-      iommu/vt-d: fix invalid memory access when freeing DMAR irq
-      iommu/vt-d: keep shared resources when failed to initialize iommu devices
-      iommu/vt-d: fix access after free issue in function free_dmar_iommu()
-      iommu/vt-d: release invalidation queue when destroying IOMMU unit
-      iommu/vt-d: fix wrong return value of dmar_table_init()
-      iommu/vt-d, trivial: clean sparse warnings
-      iommu/vt-d: free all resources if failed to initialize DMARs
-
-Joerg Roedel (3):
-      Merge branch 'for-joerg/arm-smmu/updates' of git://git.kernel.org/.../will/linux into arm/smmu
-      drm/msm: Fix link error with !MSM_IOMMU
-      Merge branches 'arm/smmu', 'core', 'x86/vt-d', 'arm/shmobile', 'x86/amd', 'ppc/pamu', 'iommu/fixes' and 'arm/msm' into next
-
-Laurent Pinchart (3):
-      iommu: shmobile: Enable driver compilation with COMPILE_TEST
-      iommu/shmobile: Allocate archdata with kzalloc()
-      iommu/shmobile: Turn the flush_lock mutex into a spinlock
-
-Rashika Kheria (3):
-      iommu/vt-d: Mark functions as static in dmar.c
-      iommu/vt-d: Mark functions as static in intel_irq_remapping.c
-      iommu/vt-d: Mark function eoi_ioapic_pin_remapped() as static in irq_remapping.c
-
-Upinder Malhi (umalhi) (1):
-      iommu: Rename domain_has_cap to iommu_domain_has_cap
-
-Will Deacon (3):
-      iommu/arm-smmu: use VA_BITS to determine arm64 virtual address space
-      iommu: add IOMMU_EXEC flag for safely allowing XN mappings
-      iommu/arm-smmu: add support for IOMMU_EXEC
-
-Yijing Wang (3):
-      iommu/amd: Use dev_is_pci() to check whether it is pci device
-      iommu/vt-d: Use dev_is_pci() to check whether it is pci device
-      iommu/fsl_pamu: Use dev_is_pci() to check whether it is pci device
-
- drivers/gpu/drm/msm/Kconfig         |    1 +
- drivers/iommu/Kconfig               |    1 +
- drivers/iommu/amd_iommu.c           |    4 +-
- drivers/iommu/arm-smmu.c            |   33 ++++--
- drivers/iommu/dmar.c                |  135 +++++++++++++---------
- drivers/iommu/fsl_pamu_domain.c     |    6 +-
- drivers/iommu/intel-iommu.c         |  216 ++++++++++++++---------------------
- drivers/iommu/intel_irq_remapping.c |  105 ++++++++---------
- drivers/iommu/irq_remapping.c       |    6 +-
- drivers/iommu/of_iommu.c            |    1 +
- drivers/iommu/shmobile-iommu.c      |    3 +-
- drivers/iommu/shmobile-ipmmu.c      |   10 +-
- drivers/iommu/shmobile-ipmmu.h      |    2 +-
- include/linux/dma_remapping.h       |    4 -
- include/linux/dmar.h                |   13 ++-
- include/linux/intel-iommu.h         |    3 +-
- include/linux/iommu.h               |   16 ++-
- 17 files changed, 279 insertions(+), 280 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
-
---IJpNTDwzlM2Ie8A6
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-
-iQIcBAEBAgAGBQJS6XucAAoJECvwRC2XARrjyMkQAM5QM4URBsruzwhF2vm/gnTd
-ZNTY8TTnjnjxBWuhL80nXOk2uQhOkE7GDDxN6ApUGfVdQAekVqH7FAt0SjoIw0bp
-ROMSgrPTT5Kbe7SztG7207l9P+niqJt5p1LbJ2Bhtg0Z43Yehk4bTdalqfhiU8cQ
-mOOxbUVSpD5iLfsYM30+Rr3FNtuqfEPpbFHKd5a4b0PkwzvNw0qM1Ly/syeX7fut
-0SgWXY15ongGWHagrg7JoIM7RLllyRprECfvenfASYuB9kiJFa92fK2kRR0C4zMV
-0/bUHt1KUL+gN9N8ZD8eeVAywR3vGvze6xl0LCwgtt4jiWJtNXU2IYlV1Lr6O2ti
-xPjVMtw/Tn8WaOjEwDCO8nXbTz15lbQvvxxF+JXzgq+7/qz97LPI6UArMA64Nfxj
-T+wLSlvI9jqDcqRG03BUo9JwABQr6r4sZo3fMSvCb9MuFqueXLE+Qz6NpQfpGCFJ
-fsenF9lkItyp+AMstj1A0RtBX0cglgcLDiTDTQrT7NkbVVcJUaYS/V79t6i7aEk1
-RWVcpYIx0G9Ped+zdCb2NTMc6oxYo4KbBWnaxlyvCmPjkTl2LpTKFqIogdsft82l
-3+RmEP/AKx14ZdhE64omJPw6U4GHWlJFZ4hmSPaYWeMqh1ujgjG9SLqRt069MN8B
-NBndwYQZNCLjT4291v4r
-=MRTW
------END PGP SIGNATURE-----
-
---IJpNTDwzlM2Ie8A6--
-
-
-
---===============7852533823626318866==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============7852533823626318866==--
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
