@@ -1,13 +1,15 @@
-From: Andrew Cooks <acooks-vYTEC60ixJUAvxtiuMwx3w@public.gmane.org>
-Subject: Re: Who understand the IOMMU code?
-Date: Fri, 31 Jan 2014 08:42:23 +0800
-Message-ID: <CAJtEV7YLC=iSbzWS8PWDo8JWY_fyaRckxtLC3aCqU7sx+O4UPQ@mail.gmail.com>
-References: <20140130201219.20665.qmail@science.horizon.com>
+From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: iommu/arm-smmu: Regression (sleeping function called from
+	invalid context)
+Date: Fri, 31 Jan 2014 09:46:23 +0100
+Message-ID: <20140131084623.GN13543@alberich>
+References: <20140130235552.GL13543@alberich>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140130201219.20665.qmail-FT9nftu9LUyCkawlElnc8EEOCMrvLtNR@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20140130235552.GL13543@alberich>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,98 +19,42 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: George Spelvin <linux-gpGsJRJZ3PBBDgjK7y7TUQ@public.gmane.org>
-Cc: fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, "open list:PCI SUBSYSTEM" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 31 January 2014 04:12, George Spelvin <linux-gpGsJRJZ3PBBDgjK7y7TUQ@public.gmane.org> wrote:
->
-> I'm trying to add a quirk to the IOMMU code to handle certain buggy
-> devices which use the wrong requester id (devfn) for PCIe requests.
-> In my case, there are a number of Marvell SATA controllers, popular with
-> motherboard manufacturers, which generate DMA from functions 0 and 1,
-> even though they only support function 0.
->
-> Andrew cooks wrote a working (but, to my eyes, ugly) patch; see
-> https://bugzilla.kernel.org/show_bug.cgi?id=42679#c22
->
-> I'm trying to improve it, but even limiting myself to intel-iommu.c,
-> it's definitely hairy.
+On Fri, Jan 31, 2014 at 12:55:52AM +0100, Andreas Herrmann wrote:
+> Hi Will,
+> 
+> Seems that commit a44a9791e778d9ccda50d5534028ed4057a9a45b
+> (iommu/arm-smmu: use mutex instead of spinlock for locking page tables)
+> introduced a regression.
+> 
+> At least I've hit
+> 
+>   BUG: scheduling while atomic: ksoftirqd/0/3/0x00000100
+>...
 
-What's hairy? The patch, the problem, or the iommu code?
+>   BUG: sleeping function called from invalid context at mm/page_alloc.c:2679
+>   in_atomic(): 1, irqs_disabled(): 128, pid: 0, name: swapper/0
+>   CPU: 0 PID: 0 Comm: swapper/0 Not tainted 3.13.0-00016-g6e90346 #413
+>   [<c0014740>] (unwind_backtrace+0x0/0xf8) from [<c00115b0>] (show_stack+0x10/0x14)
+>   [<c00115b0>] (show_stack+0x10/0x14) from [<c057ea24>] (dump_stack+0x74/0xa8)
+>   [<c057ea24>] (dump_stack+0x74/0xa8) from [<c00acc1c>] (__alloc_pages_nodemask+0x174/0x930)
+>   [<c00acc1c>] (__alloc_pages_nodemask+0x174/0x930) from [<c042a250>] (arm_smmu_handle_mapping+0x470/0x66c)
+>   [<c042a250>] (arm_smmu_handle_mapping+0x470/0x66c) from [<c0428e74>] (iommu_map+0xf0/0x148)
+>   [<c0428e74>] (iommu_map+0xf0/0x148) from [<c001935c>] (__map_sg_chunk+0x198/0x2d4)
+>...
 
-> Right now, I'm trying to figure out where to remove the additional
-> mapping.
+> Maybe that was the reason why the offending commit was introduced(?).
+> 
+> I think with the current code "atomic allocations" should be used when
+> IO page tables are created. With below patch I've not triggered above
+> errors.
 
-Which additional mapping? Are you implying that the patch adds redundant
-context entries or are you talking about folding the
-quirk_map_multi_requester_ids()
-and quirk_map_requester_id()  functions into the main code path?
-
-> Currently I'm looking at adding another clear_context_table() call
-> before iommu_detach_dev() in domain_remove_one_dev_info(); my goal is
-> to piggyback on iommu_detach_dev's flush calls.
->
-> But I'm having trouble figuring out the whole device_domain_info list
-> business.
->
-> In particular, does the comparison of domain, bus, and
-> devinfo ever produce a different result than just comparing
-> info->dev to pdev?
->
-> I have a flag in the pci_device warning about the quirk, but
-> I'm having trouble finding the function that's the opposite of
-> domain_context_mapping().
->
-> Does anyone actually understand this stuff well enough to review my
-> patches when I finish?  May I ask for a bit of guidance on the way?
-> Right now I don't even understand the Intel iommu code, much less all
-> ther others I should be patching for a full fix.
-
-Let me see if I understand you correctly.
-1) You don't like the simple patch that clearly shows the problem (and offers
-    a simple work-around), because it's too ugly.
-2) You complain that "this stuff" (presumably the stuff you didn't
-learn from the
-    ugly patch) is hard to understand.
-3) You question whether anyone else understands "this stuff".
-4) You want to know whether anyone is qualified to review your patch when
-    you 'finish it' ...
-5) ... as long as someone just help you a little bit?
-
-It that really what you meant?
-
-> The same code points would also be a good place to add phantom functions
-> support some day.
+I think allocating memory with GFP_KERNEL in this dma-mapping path
+doesn't seem to be a good idea. What if the DMA operation for which we
+modify IO page tables was triggered to free pages (page cache, swap)?
 
 
-I don't think you understood the relevance of Alex's patch set for a
-"PCIe requester ID interface", that I referred you to.
-
-Firstly, finding the full set of requester ids that an iommu might see for every
-pdev below it is a bigger problem than just quirky Marvell SATA controllers and
-phantom functions (which may or may not actually be used by anyone). PCIe
-bridges, even spec compliant ones, introduce similar issues.
-
-Secondly, that patch tries to unify the quirky and non quirky cases under the
-pcie_for_each_requester() function, which seems like the prefered approach.
-
-Thirdly, that patch was written and reviewed by people who do actually
-understand how "this stuff" works, so there is much to learn from it if you want
-to write the solution that is ultimately accepted into mainline and convince
-them that you can (and will) maintain it.
-
-Here's the link to the patch posting and review again:
-https://lists.linuxfoundation.org/pipermail/iommu/2013-July/006083.html
-
-When you've read and understood that discussion, have another look at the
-current domain_context_mapping() and try to see the resemblance between
-the handling of bridging, dependant devices and quirky devices.
-
-Ultimately, this isn't going anywhere until David Woodhouse, the Intel iommu
-maintainer, gets involved. I have not yet found the magical incantation to
-achieve that.
-
-May the odds be ever in your favour!
-
-a.
+Andreas
