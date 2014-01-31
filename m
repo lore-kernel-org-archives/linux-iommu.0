@@ -1,93 +1,82 @@
-From: "George Spelvin" <linux@horizon.com>
-Subject: Re: Who understand the IOMMU code?
-Date: 31 Jan 2014 05:06:10 -0500
-Message-ID: <20140131100610.9498.qmail@science.horizon.com>
-References: <CAJtEV7YLC=iSbzWS8PWDo8JWY_fyaRckxtLC3aCqU7sx+O4UPQ@mail.gmail.com>
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <CAJtEV7YLC=iSbzWS8PWDo8JWY_fyaRckxtLC3aCqU7sx+O4UPQ@mail.gmail.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: acooks@linux.com, linux@horizon.com
-Cc: dwmw2@infradead.org, fenghua.yu@intel.com, iommu@lists.linux-foundation.org, jiang.liu@linux.intel.com, linux-pci@vger.kernel.org
+From: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v2 08/11] of: Increase MAX_PHANDLE_ARGS
+Date: Fri, 31 Jan 2014 10:24:09 -0600
+Message-ID: <CAL_Jsq+=dm4kPk=e0h_up9=wvED4fd3MBtSNFxm2NEz_yag-uA@mail.gmail.com>
+References: <1389876263-25759-1-git-send-email-andreas.herrmann@calxeda.com>
+	<1389876263-25759-9-git-send-email-andreas.herrmann@calxeda.com>
+	<20140117110830.GW3471@alberich> <52E92842.3000001@amd.com>
+	<CAL_JsqLhzp5jUJPA91rNkQ07kCDYCDZLxw8LxxFEVP9b12e1Jw@mail.gmail.com>
+	<52E93360.1000904@amd.com> <20140129171611.GB13543@alberich>
+	<52E939CB.1020705@amd.com> <20140130174546.GF13543@alberich>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20140130174546.GF13543@alberich>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
->> I'm trying to improve it, but even limiting myself to intel-iommu.c,
->> it's definitely hairy.
-
-> What's hairy? The patch, the problem, or the iommu code?
-
-The iommu code.  The problem is pretty straightforward, it's just the
-existing code I'm trying to patch that's already large and complex and
-figuring out how to fit in as neatly as possible is a challenge.
-
->> Right now, I'm trying to figure out where to remove the additional
->> mapping.
-
-> Which additional mapping?
-
-The additional requester_id -> IOMMU domain mapping that is set up for
-the additional devfn(s).
-
-> Are you implying that the patch adds redundant context entries or
-> are you talking about folding the quirk_map_multi_requester_ids() and
-> quirk_map_requester_id() functions into the main code path?
-
-I'm working on a complete rewrite, using the existing PCI quirk system,
-although with yours as a base, and I'm having a hard time convincing
-myself that the quirk_unmap_* functions are in the right place.
-
-> Let me see if I understand you correctly.
-> 1) You don't like the simple patch that clearly shows the problem (and offers
->    a simple work-around), because it's too ugly.
-
-Yes.  I want something that can get merged upstream, and I don't think the
-existing one has much of a chance.  If nothing else, the linear search
-through exception lists each time a mapping is set up will quickly
-become a bottleneck.
-
-> 2) You complain that "this stuff" (presumably the stuff you didn't
->    learn from the ugly patch) is hard to understand.
-
-Well, the target of the complaint is my own knowledge.  I'm not claiming
-the complexity is *unnecessary*, just that it is hard to follow.
-
-> 3) You question whether anyone else understands "this stuff".
-> 4) You want to know whether anyone is qualified to review your patch when
->     you 'finish it' ...
-> 5) ... as long as someone just help you a little bit?
+On Thu, Jan 30, 2014 at 11:45 AM, Andreas Herrmann
+<andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org> wrote:
+> On Wed, Jan 29, 2014 at 12:26:35PM -0500, Suravee Suthikulanit wrote:
+>> On 1/29/2014 11:16 AM, Andreas Herrmann wrote:
+>> > On Wed, Jan 29, 2014 at 11:59:12AM -0500, Suravee Suthikulanit wrote:
+>> >> On 1/29/2014 10:57 AM, Rob Herring wrote:
+>> >>>>> diff --git a/include/linux/of.h b/include/linux/of.h
+>> >>>>>>> index 276c546..24e1b28 100644
+>> >>>>>>> --- a/include/linux/of.h
+>> >>>>>>> +++ b/include/linux/of.h
+>> >>>>>>> @@ -67,7 +67,7 @@ struct device_node {
+>> >>>>>>>    #endif
+>> >>>>>>>    };
+>> >>>>>>>
+>> >>>>>>> -#define MAX_PHANDLE_ARGS 8
+>> >>>>>>> +#define MAX_PHANDLE_ARGS 16
+>> >>>>>
+>> >>>>>
+>> >>>>> Since the MMU-500 specify "Number of SMRs" upto 128 registers, shouldn't
+>> >>>>> this be changed to be able to support 128 StreamIDs as well?  Although I am
+>> >>>>> not sure if this would be too big to have on the stack per Rob's comment in
+>> >>>>> the previous patch set.
+>> >>> Do you actually need 128 now? If not, then we can deal with that when
+>> >>> we get there. There are lots of things in spec's that are not actually
+>> >>> implemented or supported.
+>> >>
+>> >> Actually, we are using 32 on the AMD system. So, do you think we can set
+>> >> this to 32 instead?
+>> >
+>> > I think that's ok.
+>> >
+>> > But are we really talking about number of SMRs or number of StreamIDs
+>> > per master device here? Ie. are you just having 32 SMRs for an SMMU on
+>> > your AMD system or do you have master devices which have 32 StreamIDs?
+>> >
+>> > If it's just number of SMRs we don't need to modify this macro.
 >
-> It that really what you meant?
+>> I am referring to the case where each mmu-master can have upto 32 streamID.
+>
+> Rob,
+>
+> Do you agree on increasing MAX_PHANDLE_ARGS to 32?
 
-Pretty much.  Figuring out whose blessing I need and at least making
-initial contact seems like an obvious prerequisite to getting a patch
-merged,
+Yes, but more than that will require a closer look. Please get this
+into next early in the cycle.
 
-The help I need is primarily not breaking the existing code, which
-requires a clear understanding of what it's supposed to do.
+> Or should this be done when someone (e.g. Suravee) submits a DTS
+> update with an SMMU node description containing more than 16 stream
+> IDs for a master device?
 
-Really, I just want to find *someone* with authority in this area who
-responds to e-mail.  I can escalate to someone higher on the patch merge
-hierarchy, but I want to make it very clear that I tried before going
-that route.
+Well, I am inclined to not care having seen no upstream activity for
+AMD's platform.
 
-I was hoping that chatting to you on appropriate public mailing lists
-would attract some attention, but maybe I have to be more direct.
-
-> I don't think you understood the relevance of Alex's patch set for a
-> "PCIe requester ID interface", that I referred you to.
-
-I think I didn't understand it as well the first itme I read it.
-Certainly it's a nice cleanup, and would be a better place to put the
-relevant quirks.  If, as you say, it gets un-stalled.
-
-I've just now been re-reading the discussion, and it's a lot more
-comprehensible now that I've read a number of PCIe and IOMMU specification
-documents.
-
-I still have to wrap my head around ACS, though.  That also affects the
-code heavily.
-
-> Ultimately, this isn't going anywhere until David Woodhouse, the Intel iommu
-> maintainer, gets involved. I have not yet found the magical incantation to
-> achieve that.
-
-I may have to ask Joerg.
+Rob
