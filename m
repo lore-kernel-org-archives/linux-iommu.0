@@ -1,70 +1,93 @@
-From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: iommu/arm-smmu: Regression (sleeping function called from
-	invalid context)
-Date: Fri, 31 Jan 2014 10:58:09 +0100
-Message-ID: <20140131095809.GO13543@alberich>
-References: <20140130235552.GL13543@alberich> <20140131084623.GN13543@alberich>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20140131084623.GN13543@alberich>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: "George Spelvin" <linux@horizon.com>
+Subject: Re: Who understand the IOMMU code?
+Date: 31 Jan 2014 05:06:10 -0500
+Message-ID: <20140131100610.9498.qmail@science.horizon.com>
+References: <CAJtEV7YLC=iSbzWS8PWDo8JWY_fyaRckxtLC3aCqU7sx+O4UPQ@mail.gmail.com>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <CAJtEV7YLC=iSbzWS8PWDo8JWY_fyaRckxtLC3aCqU7sx+O4UPQ@mail.gmail.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: acooks@linux.com, linux@horizon.com
+Cc: dwmw2@infradead.org, fenghua.yu@intel.com, iommu@lists.linux-foundation.org, jiang.liu@linux.intel.com, linux-pci@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jan 31, 2014 at 09:46:23AM +0100, Andreas Herrmann wrote:
-> On Fri, Jan 31, 2014 at 12:55:52AM +0100, Andreas Herrmann wrote:
-> > Hi Will,
-> > 
-> > Seems that commit a44a9791e778d9ccda50d5534028ed4057a9a45b
-> > (iommu/arm-smmu: use mutex instead of spinlock for locking page tables)
-> > introduced a regression.
-> > 
-> > At least I've hit
-> > 
-> >   BUG: scheduling while atomic: ksoftirqd/0/3/0x00000100
-> >...
-> 
-> >   BUG: sleeping function called from invalid context at mm/page_alloc.c:2679
-> >   in_atomic(): 1, irqs_disabled(): 128, pid: 0, name: swapper/0
-> >   CPU: 0 PID: 0 Comm: swapper/0 Not tainted 3.13.0-00016-g6e90346 #413
-> >   [<c0014740>] (unwind_backtrace+0x0/0xf8) from [<c00115b0>] (show_stack+0x10/0x14)
-> >   [<c00115b0>] (show_stack+0x10/0x14) from [<c057ea24>] (dump_stack+0x74/0xa8)
-> >   [<c057ea24>] (dump_stack+0x74/0xa8) from [<c00acc1c>] (__alloc_pages_nodemask+0x174/0x930)
-> >   [<c00acc1c>] (__alloc_pages_nodemask+0x174/0x930) from [<c042a250>] (arm_smmu_handle_mapping+0x470/0x66c)
-> >   [<c042a250>] (arm_smmu_handle_mapping+0x470/0x66c) from [<c0428e74>] (iommu_map+0xf0/0x148)
-> >   [<c0428e74>] (iommu_map+0xf0/0x148) from [<c001935c>] (__map_sg_chunk+0x198/0x2d4)
-> >...
-> 
-> > Maybe that was the reason why the offending commit was introduced(?).
-> > 
-> > I think with the current code "atomic allocations" should be used when
-> > IO page tables are created. With below patch I've not triggered above
-> > errors.
-> 
-> I think allocating memory with GFP_KERNEL in this dma-mapping path
-> doesn't seem to be a good idea. What if the DMA operation for which we
-> modify IO page tables was triggered to free pages (page cache, swap)?
+>> I'm trying to improve it, but even limiting myself to intel-iommu.c,
+>> it's definitely hairy.
 
-I mean in case we run out of memory wouldn't we worsen the situation
-by triggering additional IO (and thus DMA)? Whereas when we let the
-mapping fail, the OS "just might have to wait a little bit" until
-other DMA activities are completed, pages unmapped and iova freed. The
-freed resources instantly can be used for further DMA activities.
+> What's hairy? The patch, the problem, or the iommu code?
 
-Hmm, but maybe I need to rethink this (and look more closely into
-page_alloc.c).
+The iommu code.  The problem is pretty straightforward, it's just the
+existing code I'm trying to patch that's already large and complex and
+figuring out how to fit in as neatly as possible is a challenge.
 
+>> Right now, I'm trying to figure out where to remove the additional
+>> mapping.
 
-Andreas
+> Which additional mapping?
+
+The additional requester_id -> IOMMU domain mapping that is set up for
+the additional devfn(s).
+
+> Are you implying that the patch adds redundant context entries or
+> are you talking about folding the quirk_map_multi_requester_ids() and
+> quirk_map_requester_id() functions into the main code path?
+
+I'm working on a complete rewrite, using the existing PCI quirk system,
+although with yours as a base, and I'm having a hard time convincing
+myself that the quirk_unmap_* functions are in the right place.
+
+> Let me see if I understand you correctly.
+> 1) You don't like the simple patch that clearly shows the problem (and offers
+>    a simple work-around), because it's too ugly.
+
+Yes.  I want something that can get merged upstream, and I don't think the
+existing one has much of a chance.  If nothing else, the linear search
+through exception lists each time a mapping is set up will quickly
+become a bottleneck.
+
+> 2) You complain that "this stuff" (presumably the stuff you didn't
+>    learn from the ugly patch) is hard to understand.
+
+Well, the target of the complaint is my own knowledge.  I'm not claiming
+the complexity is *unnecessary*, just that it is hard to follow.
+
+> 3) You question whether anyone else understands "this stuff".
+> 4) You want to know whether anyone is qualified to review your patch when
+>     you 'finish it' ...
+> 5) ... as long as someone just help you a little bit?
+>
+> It that really what you meant?
+
+Pretty much.  Figuring out whose blessing I need and at least making
+initial contact seems like an obvious prerequisite to getting a patch
+merged,
+
+The help I need is primarily not breaking the existing code, which
+requires a clear understanding of what it's supposed to do.
+
+Really, I just want to find *someone* with authority in this area who
+responds to e-mail.  I can escalate to someone higher on the patch merge
+hierarchy, but I want to make it very clear that I tried before going
+that route.
+
+I was hoping that chatting to you on appropriate public mailing lists
+would attract some attention, but maybe I have to be more direct.
+
+> I don't think you understood the relevance of Alex's patch set for a
+> "PCIe requester ID interface", that I referred you to.
+
+I think I didn't understand it as well the first itme I read it.
+Certainly it's a nice cleanup, and would be a better place to put the
+relevant quirks.  If, as you say, it gets un-stalled.
+
+I've just now been re-reading the discussion, and it's a lot more
+comprehensible now that I've read a number of PCIe and IOMMU specification
+documents.
+
+I still have to wrap my head around ACS, though.  That also affects the
+code heavily.
+
+> Ultimately, this isn't going anywhere until David Woodhouse, the Intel iommu
+> maintainer, gets involved. I have not yet found the magical incantation to
+> achieve that.
+
+I may have to ask Joerg.
