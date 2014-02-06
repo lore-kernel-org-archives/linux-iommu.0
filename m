@@ -1,17 +1,10 @@
 From: Ritesh Harjani <ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [Linaro-mm-sig] DMA mapping API(IOMMU) for ARM64?
-Date: Wed, 5 Feb 2014 21:40:39 +0530
-Message-ID: <CAD15agYTz79MxLfuG7KM4JvGyw74FjCtP-5u1ca1KcS0NMuXEQ@mail.gmail.com>
-References: <20130618.053955.305832937374936961.hdoyu@nvidia.com>
-	<20130618101914.GB3539@mudshark.cambridge.arm.com>
-	<5159282.rrJMaZuYMv@wuerfel>
-	<20130618.140137.1551430695673122122.hdoyu@nvidia.com>
-	<20130618125054.GL9930@arm.com> <51C0DA4F.1010405@redhat.com>
-	<20130619111137.GJ9261@MacBook-Pro.local>
+Subject: IOMMU DMA-mapping API for arm64 ?
+Date: Thu, 6 Feb 2014 10:35:45 +0530
+Message-ID: <CAD15agaA9c1+0svk_d97ZEcaOg6x_PGcbKVHM9dWAZ_t1T8FXw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0824720632019528824=="
+Content-Type: multipart/mixed; boundary="===============3897705288013158170=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20130619111137.GJ9261-jF64zX8BO082Zs7wWoiTUGZHpeb/A1Y/@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,194 +14,102 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
-Cc: Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>
+To: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, Ritesh Harjani <ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
---===============0824720632019528824==
-Content-Type: multipart/alternative; boundary=089e01633aa8746aba04f1aaffea
+--===============3897705288013158170==
+Content-Type: multipart/alternative; boundary=001a11c322746ca55704f1b5d323
 
---089e01633aa8746aba04f1aaffea
+--001a11c322746ca55704f1b5d323
 Content-Type: text/plain; charset=ISO-8859-1
 
-Hi All,
+Hi everyone,
 
-Frankly speaking, I didn't follow up this discussion until this point where
-I wanted to know whether we have iommu ops support in dma-mapping API for
-64BIT ARM Arch.
-If anyone can please provide some more info as what is the current status
-on this and is it completely supported now ?
+I tried looking for IOMMU support in ARM64 but what I was able to see is
+only swiotlb is currently supported.
 
+Based on my understanding for IOMMU support, we need DMA-MAPPING API to
+have IOMMU ops field, similar to what is present in arm32.
+I could see the iommu field added in dev_archdata in below mentioned patch
+(arch/arm64/include/asm/device.h), but there is no ops field in
+arch/arm64/mm/dma-mapping.c ?
+
+I also saw one mail discussion between you guys on what is the best place
+for adding iommu support in ARM64, but couldn't see any followed up patches
+for the same.
+
+Please tell us the current status/updates on the same. Your feedback will
+be greatly appreciated.
+
+
+commit 73150c983ac1f9b7653cfd3823b1ad4a44aad3bf
+Author: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Date:   Mon Jun 10 19:34:42 2013 +0100
+
+    arm64: device: add iommu pointer to device archdata
+
+    When using an IOMMU for device mappings, it is necessary to keep a
+    pointer between the device and the IOMMU to which it is attached in
+    order to obtain the correct IOMMU when attaching the device to a domain.
+
+    This patch adds an iommu pointer to the dev_archdata structure, in a
+    similar manner to other architectures (ARM, PowerPC, x86, ...).
+
+    Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+    Signed-off-by: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
 
 
 Thanks
 Ritesh
 
-
-
-
-
-On Wed, Jun 19, 2013 at 4:41 PM, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>wrote:
-
-> On Tue, Jun 18, 2013 at 11:08:15PM +0100, Don Dutile wrote:
-> > On 06/18/2013 08:50 AM, Catalin Marinas wrote:
-> > > On Tue, Jun 18, 2013 at 12:01:37PM +0100, Hiroshi Doyu wrote:
-> > >> Arnd Bergmann<arnd-r2nGTMty4D4@public.gmane.org>  wrote @ Tue, 18 Jun 2013 12:32:44
-> +0200:
-> > >>> On Tuesday 18 June 2013 11:19:14 Will Deacon wrote:
-> > >>>> I've spoken briefly with Catalin about this and it seems like there
-> might be
-> > >>>> *some* scope for sharing common dma-mapping code between
-> architectures.
-> > >>>> There doesn't really need to be any architecture-specific details in
-> > >>>> allocating iova space and the interface to the iommu drivers is
-> > >>>> well-defined. The arch-specific stuff is bogged down in the
-> non-coherent
-> > >>>> buffer management, but that doesn't necessarily equate to lots of
-> code.
-> > >>>>
-> > >>>> So, the best bet would be to figure out how to split up what we
-> have under
-> > >>>> arch/arm/ so that it can be re-used by arm64 and potentially other
-> > >>>> architectures (powerpc has some simple stuff for coherent mappings
-> and some
-> > >>>> less-simple stuff for non-coherent buffers).
-> > >>>
-> > >>> I'm sure that other architectures are interested in sharing the code.
-> > >>> Best move it into the global mm/ directory, at least the version for
-> > >>> coherent mappings.
-> > >>
-> > >> I'm guessing that this kind of unification usually takes some time
-> > >> since we need to factor out the common code from the different
-> > >> ${ARCH}/mm/dma-mapping.c. Also some of ${ARCH} has IOMMU support in
-> > >> it. So if we want to develop our 64-bit ARM with working DMA mapping
-> > >> API during this transition, the step to take would be:
-> > >>
-> > >> 1, Copy arch/arm/mm/dma-mapping.c
-> arch/arm64/mm/dma-mapping.c(+swiotlb)
-> > >> 2, Adapt arch/arm64/mm/dma-mapping.c(+swiotlb) to 64bit compatible.
-> > >> 3, Factor out the common code from them into mm/dma-mapping.c
-> > >
-> > > Or add the relevant code to something like lib/iommu-helper.c, convert
-> > > arm64 to use that and we can work on converting arm and other
-> > > architectures afterwards.
-> > >
-> > why not in current drivers/iommu directory ?
->
-> That's not really specific to the iommu driver implementation, they have
-> a clearly defined interface. For similarity with swiotlb and given that
-> we already have iommu-helper.c, lib/ looks best to me. Anyway, let's
-> first see how the code looks like, it can be moved later.
->
-> --
-> Catalin
->
-> _______________________________________________
-> Linaro-mm-sig mailing list
-> Linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org
-> http://lists.linaro.org/mailman/listinfo/linaro-mm-sig
->
-
---089e01633aa8746aba04f1aaffea
+--001a11c322746ca55704f1b5d323
 Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div><div>Hi All, <br><br></div>Frankly speaking, I didn&#=
-39;t follow up this discussion until this point where I wanted to know whet=
-her we have iommu ops support in dma-mapping API for 64BIT ARM Arch. <br></=
-div>
-<div>If anyone can please provide some more info as what is the current sta=
-tus on this and is it completely supported now ? <br><br><br><br></div><div=
->Thanks <br>Ritesh <br><br></div><div><br></div><br></div><div class=3D"gma=
-il_extra">
-<br><br><div class=3D"gmail_quote">On Wed, Jun 19, 2013 at 4:41 PM, Catalin=
- Marinas <span dir=3D"ltr">&lt;<a href=3D"mailto:catalin.marinas-5wv7dgnIgG8@public.gmane.org" t=
-arget=3D"_blank">catalin.marinas-5wv7dgnIgG8@public.gmane.org</a>&gt;</span> wrote:<br><blockquo=
-te class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc so=
-lid;padding-left:1ex">
-<div class=3D"HOEnZb"><div class=3D"h5">On Tue, Jun 18, 2013 at 11:08:15PM =
-+0100, Don Dutile wrote:<br>
-&gt; On 06/18/2013 08:50 AM, Catalin Marinas wrote:<br>
-&gt; &gt; On Tue, Jun 18, 2013 at 12:01:37PM +0100, Hiroshi Doyu wrote:<br>
-&gt; &gt;&gt; Arnd Bergmann&lt;<a href=3D"mailto:arnd-r2nGTMty4D4@public.gmane.org">arnd@arndb.=
-de</a>&gt; =A0wrote @ Tue, 18 Jun 2013 12:32:44 +0200:<br>
-&gt; &gt;&gt;&gt; On Tuesday 18 June 2013 11:19:14 Will Deacon wrote:<br>
-&gt; &gt;&gt;&gt;&gt; I&#39;ve spoken briefly with Catalin about this and i=
-t seems like there might be<br>
-&gt; &gt;&gt;&gt;&gt; *some* scope for sharing common dma-mapping code betw=
-een architectures.<br>
-&gt; &gt;&gt;&gt;&gt; There doesn&#39;t really need to be any architecture-=
-specific details in<br>
-&gt; &gt;&gt;&gt;&gt; allocating iova space and the interface to the iommu =
-drivers is<br>
-&gt; &gt;&gt;&gt;&gt; well-defined. The arch-specific stuff is bogged down =
-in the non-coherent<br>
-&gt; &gt;&gt;&gt;&gt; buffer management, but that doesn&#39;t necessarily e=
-quate to lots of code.<br>
-&gt; &gt;&gt;&gt;&gt;<br>
-&gt; &gt;&gt;&gt;&gt; So, the best bet would be to figure out how to split =
-up what we have under<br>
-&gt; &gt;&gt;&gt;&gt; arch/arm/ so that it can be re-used by arm64 and pote=
-ntially other<br>
-&gt; &gt;&gt;&gt;&gt; architectures (powerpc has some simple stuff for cohe=
-rent mappings and some<br>
-&gt; &gt;&gt;&gt;&gt; less-simple stuff for non-coherent buffers).<br>
-&gt; &gt;&gt;&gt;<br>
-&gt; &gt;&gt;&gt; I&#39;m sure that other architectures are interested in s=
-haring the code.<br>
-&gt; &gt;&gt;&gt; Best move it into the global mm/ directory, at least the =
-version for<br>
-&gt; &gt;&gt;&gt; coherent mappings.<br>
-&gt; &gt;&gt;<br>
-&gt; &gt;&gt; I&#39;m guessing that this kind of unification usually takes =
-some time<br>
-&gt; &gt;&gt; since we need to factor out the common code from the differen=
-t<br>
-&gt; &gt;&gt; ${ARCH}/mm/dma-mapping.c. Also some of ${ARCH} has IOMMU supp=
-ort in<br>
-&gt; &gt;&gt; it. So if we want to develop our 64-bit ARM with working DMA =
-mapping<br>
-&gt; &gt;&gt; API during this transition, the step to take would be:<br>
-&gt; &gt;&gt;<br>
-&gt; &gt;&gt; 1, Copy arch/arm/mm/dma-mapping.c arch/arm64/mm/dma-mapping.c=
-(+swiotlb)<br>
-&gt; &gt;&gt; 2, Adapt arch/arm64/mm/dma-mapping.c(+swiotlb) to 64bit compa=
-tible.<br>
-&gt; &gt;&gt; 3, Factor out the common code from them into mm/dma-mapping.c=
-<br>
-&gt; &gt;<br>
-&gt; &gt; Or add the relevant code to something like lib/iommu-helper.c, co=
-nvert<br>
-&gt; &gt; arm64 to use that and we can work on converting arm and other<br>
-&gt; &gt; architectures afterwards.<br>
-&gt; &gt;<br>
-&gt; why not in current drivers/iommu directory ?<br>
-<br>
-</div></div>That&#39;s not really specific to the iommu driver implementati=
-on, they have<br>
-a clearly defined interface. For similarity with swiotlb and given that<br>
-we already have iommu-helper.c, lib/ looks best to me. Anyway, let&#39;s<br=
->
-first see how the code looks like, it can be moved later.<br>
-<span class=3D"HOEnZb"><font color=3D"#888888"><br>
---<br>
-Catalin<br>
-</font></span><div class=3D"HOEnZb"><div class=3D"h5"><br>
-_______________________________________________<br>
-Linaro-mm-sig mailing list<br>
-<a href=3D"mailto:Linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org">Linaro-mm-sig-cunTk1MwBs/tYdAWNwuQyg@public.gmane.org=
-o.org</a><br>
-<a href=3D"http://lists.linaro.org/mailman/listinfo/linaro-mm-sig" target=
-=3D"_blank">http://lists.linaro.org/mailman/listinfo/linaro-mm-sig</a><br>
-</div></div></blockquote></div><br></div>
+<div dir=3D"ltr"><div><div><div><div>Hi everyone, <br><br></div>I tried loo=
+king for IOMMU support in ARM64 but what I was able to see is only swiotlb =
+is currently supported. <br><br></div>Based on my understanding for IOMMU s=
+upport, we need DMA-MAPPING API to have IOMMU ops field, similar to what is=
+ present in arm32. <br>
 
---089e01633aa8746aba04f1aaffea--
+</div>I could see the iommu field added in dev_archdata in below mentioned =
+patch (arch/arm64/include/asm/device.h), but there is no ops field in arch/=
+arm64/mm/dma-mapping.c ? <br><br></div><div>I also saw one mail discussion =
+between you guys on what is the best place for adding iommu support in ARM6=
+4, but couldn&#39;t see any followed up patches for the same. <br>
 
---===============0824720632019528824==
+<br></div><div>Please tell us the current status/updates on the same. Your =
+feedback will be greatly appreciated. <br></div><div><div><div><div><div><b=
+r><br>commit 73150c983ac1f9b7653cfd3823b1ad4a44aad3bf<br>Author: Will Deaco=
+n &lt;<a href=3D"mailto:will.deacon-5wv7dgnIgG8@public.gmane.org" target=3D"_blank">will.deacon@=
+arm.com</a>&gt;<br>
+
+Date:=A0=A0 Mon Jun 10 19:34:42 2013 +0100<br><br>=A0=A0=A0 arm64: device: =
+add iommu pointer to device archdata<br><br>=A0=A0=A0 When using an IOMMU f=
+or device mappings, it is necessary to keep a<br>=A0=A0=A0 pointer between =
+the device and the IOMMU to which it is attached in<br>
+
+=A0=A0=A0 order to obtain the correct IOMMU when attaching the device to a =
+domain.<br><br>=A0=A0=A0 This patch adds an iommu pointer to the dev_archda=
+ta structure, in a<br>=A0=A0=A0 similar manner to other architectures (ARM,=
+ PowerPC, x86, ...).<br>
+
+<br>=A0=A0=A0 Signed-off-by: Will Deacon &lt;<a href=3D"mailto:will.deacon@=
+arm.com" target=3D"_blank">will.deacon-5wv7dgnIgG8@public.gmane.org</a>&gt;<br>=A0=A0=A0 Signed-=
+off-by: Catalin Marinas &lt;<a href=3D"mailto:catalin.marinas-5wv7dgnIgG8@public.gmane.org" targ=
+et=3D"_blank">catalin.marinas-5wv7dgnIgG8@public.gmane.org</a>&gt;<br>
+
+<br><br></div><div>Thanks <br>Ritesh <br></div></div></div></div></div></di=
+v>
+
+--001a11c322746ca55704f1b5d323--
+
+--===============3897705288013158170==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============0824720632019528824==--
+--===============3897705288013158170==--
