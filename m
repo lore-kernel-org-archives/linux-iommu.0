@@ -1,8 +1,7 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [RFC PATCH v4 02/10] VFIO_IOMMU_TYPE1: Introduce the
-	VFIO_DMA_MAP_FLAG_EXEC flag
-Date: Sat,  8 Feb 2014 18:29:32 +0100
-Message-ID: <1391880580-471-3-git-send-email-a.motakis@virtualopensystems.com>
+Subject: [RFC PATCH v4 01/10] driver core: export driver_probe_device()
+Date: Sat,  8 Feb 2014 18:29:31 +0100
+Message-ID: <1391880580-471-2-git-send-email-a.motakis@virtualopensystems.com>
 References: <1391880580-471-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,59 +18,62 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
-Cc: B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org, R65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Cc: B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org, Dmitry Kasatkin <d.kasatkin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Toshi Kani <toshi.kani-VXdhtT5mjnY@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org, "Rafael J. Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>, B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, R65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org, Tejun Heo <tj-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Michal Hocko <mhocko-AlSwsSmVLrQ@public.gmane.org>, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The ARM SMMU driver expects the IOMMU_EXEC flag, otherwise it will
-set the page tables for a device as XN (execute never). This affects
-devices such as the ARM PL330 DMA Controller, which fails to operate
-if the XN flag is set on the memory it tries to fetch its instructions
-from.
+From: Kim Phillips <kim.phillips-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
-We introduce the VFIO_DMA_MAP_FLAG_EXEC to VFIO, and use it in
-VFIO_IOMMU_TYPE1 to set the IOMMU_EXEC flag. This way the user can
-control whether the XN flag will be set on the requested mappings.
+Needed by drivers, such as the vfio platform driver [1], seeking to
+bypass bind_store()'s driver_match_device(), and bind to any device
+via a private sysfs bind file.
 
-Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+[1] https://lkml.org/lkml/2013/12/11/522
+
+note: the EXPORT_SYMBOL is needed because vfio-platform can be built
+as a module.
+
+Signed-off-by: Kim Phillips <kim.phillips-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 ---
- drivers/vfio/vfio_iommu_type1.c | 5 ++++-
- include/uapi/linux/vfio.h       | 1 +
- 2 files changed, 5 insertions(+), 1 deletion(-)
+ drivers/base/base.h    | 1 -
+ drivers/base/dd.c      | 1 +
+ include/linux/device.h | 1 +
+ 3 files changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 4fb7a8f..ad7a1f6 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -557,6 +557,8 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
- 		prot |= IOMMU_WRITE;
- 	if (map->flags & VFIO_DMA_MAP_FLAG_READ)
- 		prot |= IOMMU_READ;
-+	if (map->flags & VFIO_DMA_MAP_FLAG_EXEC)
-+		prot |= IOMMU_EXEC;
+diff --git a/drivers/base/base.h b/drivers/base/base.h
+index 24f4242..fe25ad87 100644
+--- a/drivers/base/base.h
++++ b/drivers/base/base.h
+@@ -112,7 +112,6 @@ extern int bus_add_driver(struct device_driver *drv);
+ extern void bus_remove_driver(struct device_driver *drv);
  
- 	if (!prot)
- 		return -EINVAL; /* No READ/WRITE? */
-@@ -865,7 +867,8 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
- 	} else if (cmd == VFIO_IOMMU_MAP_DMA) {
- 		struct vfio_iommu_type1_dma_map map;
- 		uint32_t mask = VFIO_DMA_MAP_FLAG_READ |
--				VFIO_DMA_MAP_FLAG_WRITE;
-+				VFIO_DMA_MAP_FLAG_WRITE |
-+				VFIO_DMA_MAP_FLAG_EXEC;
+ extern void driver_detach(struct device_driver *drv);
+-extern int driver_probe_device(struct device_driver *drv, struct device *dev);
+ extern void driver_deferred_probe_del(struct device *dev);
+ static inline int driver_match_device(struct device_driver *drv,
+ 				      struct device *dev)
+diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+index 0605176..44f6184 100644
+--- a/drivers/base/dd.c
++++ b/drivers/base/dd.c
+@@ -384,6 +384,7 @@ int driver_probe_device(struct device_driver *drv, struct device *dev)
  
- 		minsz = offsetofend(struct vfio_iommu_type1_dma_map, size);
+ 	return ret;
+ }
++EXPORT_SYMBOL_GPL(driver_probe_device);
  
-diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-index 0fd47f5..d8e9e99 100644
---- a/include/uapi/linux/vfio.h
-+++ b/include/uapi/linux/vfio.h
-@@ -392,6 +392,7 @@ struct vfio_iommu_type1_dma_map {
- 	__u32	flags;
- #define VFIO_DMA_MAP_FLAG_READ (1 << 0)		/* readable from device */
- #define VFIO_DMA_MAP_FLAG_WRITE (1 << 1)	/* writable from device */
-+#define VFIO_DMA_MAP_FLAG_EXEC (1 << 2)		/* executable from device */
- 	__u64	vaddr;				/* Process virtual address */
- 	__u64	iova;				/* IO virtual address */
- 	__u64	size;				/* Size of mapping (bytes) */
+ static int __device_attach(struct device_driver *drv, void *data)
+ {
+diff --git a/include/linux/device.h b/include/linux/device.h
+index 952b010..ad80dd2 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -257,6 +257,7 @@ extern struct device_driver *driver_find(const char *name,
+ 					 struct bus_type *bus);
+ extern int driver_probe_done(void);
+ extern void wait_for_device_probe(void);
++extern int driver_probe_device(struct device_driver *drv, struct device *dev);
+ 
+ 
+ /* sysfs interface for exporting driver attributes */
 -- 
 1.8.3.2
