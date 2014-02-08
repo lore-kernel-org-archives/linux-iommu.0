@@ -1,7 +1,8 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [RFC PATCH v4 01/10] driver core: export driver_probe_device()
-Date: Sat,  8 Feb 2014 18:29:31 +0100
-Message-ID: <1391880580-471-2-git-send-email-a.motakis@virtualopensystems.com>
+Subject: [RFC PATCH v4 03/10] VFIO_IOMMU_TYPE1: workaround to build for
+	platform devices
+Date: Sat,  8 Feb 2014 18:29:33 +0100
+Message-ID: <1391880580-471-4-git-send-email-a.motakis@virtualopensystems.com>
 References: <1391880580-471-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,62 +19,93 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
-Cc: B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org, Dmitry Kasatkin <d.kasatkin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Toshi Kani <toshi.kani-VXdhtT5mjnY@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org, "Rafael J. Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>, B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, R65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org, Tejun Heo <tj-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Michal Hocko <mhocko-AlSwsSmVLrQ@public.gmane.org>, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Cc: B07421-KZfg59tc24xl57MIdRCFDg@public.gmane.org, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, B08248-KZfg59tc24xl57MIdRCFDg@public.gmane.org, R65777-KZfg59tc24xl57MIdRCFDg@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Kim Phillips <kim.phillips-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+This is a workaround to make the VFIO_IOMMU_TYPE1 driver usable with
+platform devices instead of PCI. A future permanent fix should support
+both. This is required in order to use the Exynos SMMU, or ARM SMMU
+driver with VFIO.
 
-Needed by drivers, such as the vfio platform driver [1], seeking to
-bypass bind_store()'s driver_match_device(), and bind to any device
-via a private sysfs bind file.
-
-[1] https://lkml.org/lkml/2013/12/11/522
-
-note: the EXPORT_SYMBOL is needed because vfio-platform can be built
-as a module.
-
-Signed-off-by: Kim Phillips <kim.phillips-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 ---
- drivers/base/base.h    | 1 -
- drivers/base/dd.c      | 1 +
- include/linux/device.h | 1 +
- 3 files changed, 2 insertions(+), 1 deletion(-)
+ drivers/vfio/Kconfig            |  2 +-
+ drivers/vfio/vfio_iommu_type1.c | 22 ++++++++++++++++++----
+ 2 files changed, 19 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/base/base.h b/drivers/base/base.h
-index 24f4242..fe25ad87 100644
---- a/drivers/base/base.h
-+++ b/drivers/base/base.h
-@@ -112,7 +112,6 @@ extern int bus_add_driver(struct device_driver *drv);
- extern void bus_remove_driver(struct device_driver *drv);
+diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
+index 26b3d9d..bd50721 100644
+--- a/drivers/vfio/Kconfig
++++ b/drivers/vfio/Kconfig
+@@ -11,7 +11,7 @@ config VFIO_IOMMU_SPAPR_TCE
+ menuconfig VFIO
+ 	tristate "VFIO Non-Privileged userspace driver framework"
+ 	depends on IOMMU_API
+-	select VFIO_IOMMU_TYPE1 if X86
++	select VFIO_IOMMU_TYPE1 if X86 || ARM
+ 	select VFIO_IOMMU_SPAPR_TCE if (PPC_POWERNV || PPC_PSERIES)
+ 	help
+ 	  VFIO provides a framework for secure userspace device drivers.
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index ad7a1f6..81e65f4 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -30,7 +30,8 @@
+ #include <linux/iommu.h>
+ #include <linux/module.h>
+ #include <linux/mm.h>
+-#include <linux/pci.h>		/* pci_bus_type */
++#include <linux/pci.h>			/* pci_bus_type */
++#include <linux/platform_device.h>	/* platform_bus_type */
+ #include <linux/rbtree.h>
+ #include <linux/sched.h>
+ #include <linux/slab.h>
+@@ -47,6 +48,8 @@ module_param_named(allow_unsafe_interrupts,
+ 		   allow_unsafe_interrupts, bool, S_IRUGO | S_IWUSR);
+ MODULE_PARM_DESC(allow_unsafe_interrupts,
+ 		 "Enable VFIO IOMMU support for on platforms without interrupt remapping support.");
++static struct bus_type *iommu_bus_type = NULL;
++static bool require_cap_intr_remap = false;
  
- extern void driver_detach(struct device_driver *drv);
--extern int driver_probe_device(struct device_driver *drv, struct device *dev);
- extern void driver_deferred_probe_del(struct device *dev);
- static inline int driver_match_device(struct device_driver *drv,
- 				      struct device *dev)
-diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-index 0605176..44f6184 100644
---- a/drivers/base/dd.c
-+++ b/drivers/base/dd.c
-@@ -384,6 +384,7 @@ int driver_probe_device(struct device_driver *drv, struct device *dev)
+ static bool disable_hugepages;
+ module_param_named(disable_hugepages,
+@@ -785,7 +788,8 @@ static void *vfio_iommu_type1_open(unsigned long arg)
+ 	/*
+ 	 * Wish we didn't have to know about bus_type here.
+ 	 */
+-	iommu->domain = iommu_domain_alloc(&pci_bus_type);
++	iommu->domain = iommu_domain_alloc(iommu_bus_type);
++
+ 	if (!iommu->domain) {
+ 		kfree(iommu);
+ 		return ERR_PTR(-EIO);
+@@ -797,7 +801,7 @@ static void *vfio_iommu_type1_open(unsigned long arg)
+ 	 * the way.  Fortunately we know interrupt remapping is global for
+ 	 * our iommus.
+ 	 */
+-	if (!allow_unsafe_interrupts &&
++	if (require_cap_intr_remap && !allow_unsafe_interrupts &&
+ 	    !iommu_domain_has_cap(iommu->domain, IOMMU_CAP_INTR_REMAP)) {
+ 		pr_warn("%s: No interrupt remapping support.  Use the module param \"allow_unsafe_interrupts\" to enable VFIO IOMMU support on this platform\n",
+ 		       __func__);
+@@ -914,7 +918,17 @@ static const struct vfio_iommu_driver_ops vfio_iommu_driver_ops_type1 = {
  
- 	return ret;
- }
-+EXPORT_SYMBOL_GPL(driver_probe_device);
- 
- static int __device_attach(struct device_driver *drv, void *data)
+ static int __init vfio_iommu_type1_init(void)
  {
-diff --git a/include/linux/device.h b/include/linux/device.h
-index 952b010..ad80dd2 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -257,6 +257,7 @@ extern struct device_driver *driver_find(const char *name,
- 					 struct bus_type *bus);
- extern int driver_probe_done(void);
- extern void wait_for_device_probe(void);
-+extern int driver_probe_device(struct device_driver *drv, struct device *dev);
+-	if (!iommu_present(&pci_bus_type))
++#ifdef CONFIG_PCI
++	if (iommu_present(&pci_bus_type)) {
++		iommu_bus_type = &pci_bus_type;
++		/* For PCI targets, IOMMU_CAP_INTR_REMAP is required */
++		require_cap_intr_remap = true;
++	}
++#endif
++	if (!iommu_bus_type && iommu_present(&platform_bus_type))
++		iommu_bus_type = &platform_bus_type;
++
++	if(!iommu_bus_type)
+ 		return -ENODEV;
  
- 
- /* sysfs interface for exporting driver attributes */
+ 	return vfio_register_iommu_driver(&vfio_iommu_driver_ops_type1);
 -- 
 1.8.3.2
