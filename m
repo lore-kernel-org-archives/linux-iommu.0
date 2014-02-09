@@ -1,7 +1,7 @@
 From: Richard Weinberger <richard@nod.at>
-Subject: [PATCH 10/28] Remove SH_MOBILE
-Date: Sun,  9 Feb 2014 19:47:48 +0100
-Message-ID: <1391971686-9517-11-git-send-email-richard@nod.at>
+Subject: [PATCH 04/28] Remove EXYNOS_DEV_SYSMMU
+Date: Sun,  9 Feb 2014 19:47:42 +0100
+Message-ID: <1391971686-9517-5-git-send-email-richard@nod.at>
 References: <1391971686-9517-1-git-send-email-richard@nod.at>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1391971686-9517-1-git-send-email-richard@nod.at>
@@ -14,22 +14,21 @@ The symbol is an orphan, get rid of it.
 
 Signed-off-by: Richard Weinberger <richard@nod.at>
 ---
- drivers/iommu/Kconfig | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/iommu/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 20d062d..68b047a 100644
+index 79bbc21..20d062d 100644
 --- a/drivers/iommu/Kconfig
 +++ b/drivers/iommu/Kconfig
-@@ -206,8 +206,7 @@ config SHMOBILE_IPMMU_TLB
- config SHMOBILE_IOMMU
- 	bool "IOMMU for Renesas IPMMU/IPMMUI"
- 	default n
--	depends on ARM
--	depends on SH_MOBILE || COMPILE_TEST
-+	depends on ARM || COMPILE_TEST
+@@ -178,7 +178,7 @@ config TEGRA_IOMMU_SMMU
+ 
+ config EXYNOS_IOMMU
+ 	bool "Exynos IOMMU Support"
+-	depends on ARCH_EXYNOS && EXYNOS_DEV_SYSMMU
++	depends on ARCH_EXYNOS
  	select IOMMU_API
- 	select ARM_DMA_USE_IOMMU
- 	select SHMOBILE_IPMMU
+ 	help
+ 	  Support for the IOMMU(System MMU) of Samsung Exynos application
 -- 
 1.8.4.2
