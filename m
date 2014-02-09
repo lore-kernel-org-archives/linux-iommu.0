@@ -1,40 +1,35 @@
-From: Paul Bolle <pebolle@tiscali.nl>
-Subject: [PATCH] iommu: shmobile: depend on ARCH_SHMOBILE
-Date: Sat, 08 Feb 2014 22:21:54 +0100
-Message-ID: <1391894514.19595.5.camel@x220>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+From: Richard Weinberger <richard@nod.at>
+Subject: [PATCH 10/28] Remove SH_MOBILE
+Date: Sun,  9 Feb 2014 19:47:48 +0100
+Message-ID: <1391971686-9517-11-git-send-email-richard@nod.at>
+References: <1391971686-9517-1-git-send-email-richard@nod.at>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1391971686-9517-1-git-send-email-richard@nod.at>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Simon Horman <horms+renesas@verge.net.au>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, open list <linux-kernel@vger.kernel.org>
+Cc: Richard Weinberger <richard@nod.at>
 List-Id: iommu@lists.linux-foundation.org
 
-Commit 78a2e12f51d9 ("iommu: shmobile: Enable driver compilation with
-COMPILE_TEST") added an optional dependency on SH_MOBILE. But that
-Kconfig symbol doesn't exist. It seems ARCH_SHMOBILE was intended. Use
-that.
+The symbol is an orphan, get rid of it.
 
-Signed-off-by: Paul Bolle <pebolle@tiscali.nl>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 ---
-Completely untested.
-
- drivers/iommu/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/Kconfig | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 79bbc21..df56e4c 100644
+index 20d062d..68b047a 100644
 --- a/drivers/iommu/Kconfig
 +++ b/drivers/iommu/Kconfig
-@@ -207,7 +207,7 @@ config SHMOBILE_IOMMU
+@@ -206,8 +206,7 @@ config SHMOBILE_IPMMU_TLB
+ config SHMOBILE_IOMMU
  	bool "IOMMU for Renesas IPMMU/IPMMUI"
  	default n
- 	depends on ARM
+-	depends on ARM
 -	depends on SH_MOBILE || COMPILE_TEST
-+	depends on ARCH_SHMOBILE || COMPILE_TEST
++	depends on ARM || COMPILE_TEST
  	select IOMMU_API
  	select ARM_DMA_USE_IOMMU
  	select SHMOBILE_IPMMU
 -- 
-1.8.5.3
+1.8.4.2
