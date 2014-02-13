@@ -1,54 +1,38 @@
-From: Suman Anna <s-anna@ti.com>
-Subject: [PATCH 4/4] ARM: dts: OMAP5: Add IOMMU nodes
-Date: Thu, 13 Feb 2014 12:22:56 -0600
-Message-ID: <1392315776-33197-5-git-send-email-s-anna@ti.com>
-References: <1392315776-33197-1-git-send-email-s-anna@ti.com>
+From: Olof Johansson <olof@lixom.net>
+Subject: Re: [PATCH] iommu/exynos: Remove driver
+Date: Thu, 13 Feb 2014 11:33:31 -0800
+Message-ID: <CAOesGMhH2WHvkaobewdnPeiThrWTfw0m4WWAZW98-iS2xdr+ow@mail.gmail.com>
+References: <1391716317-20300-1-git-send-email-olof@lixom.net>
+	<CAAQKjZMo6=dtur6NfvDY9=jVF=7VxHub=isnEwPw0+RKCq6xAg@mail.gmail.com>
+	<CAH9JG2Xoz1_Y7CV6FUiGAO9o5T7jtFUYqJpcAysLttwu4527zQ@mail.gmail.com>
+	<52F4E481.3050902@samsung.com>
+	<CAL5jtJmfwajFD0cnYt6gOfFsZ5hGbFi=5kv8g4x23fY6qGBOew@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1392315776-33197-1-git-send-email-s-anna@ti.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Benoit Cousson <bcousson@baylibre.com>, Tony Lindgren <tony@atomide.com>
-Cc: Florian Vaussard <florian.vaussard@epfl.ch>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Suman Anna <s-anna@ti.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <CAL5jtJmfwajFD0cnYt6gOfFsZ5hGbFi=5kv8g4x23fY6qGBOew@mail.gmail.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Kukjin Kim <kgene.kim@gmail.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Kyungmin Park <kmpark@infradead.org>, Inki Dae <inki.dae@samsung.com>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Joerg Roedel <joro@8bytes.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Sean Paul <seanpaul@chromium.org>, Tomasz Figa <t.figa@samsung.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, KyongHo Cho <pullip.cho@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-The IOMMU DT nodes have been added for the DSP and IPU
-subsystems. The MMUs in OMAP5 are identical to those in
-OMAP4, including the bus error back capability on IPU.
+On Mon, Feb 10, 2014 at 10:21 PM, Kukjin Kim <kgene.kim@gmail.com> wrote:
 
-Signed-off-by: Suman Anna <s-anna@ti.com>
----
- arch/arm/boot/dts/omap5.dtsi | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+> Just adding KyongHo Cho.
+>
+> If he can fixup for this time, it would be best solution because he knows
+> well than others, I think.
 
-diff --git a/arch/arm/boot/dts/omap5.dtsi b/arch/arm/boot/dts/omap5.dtsi
-index a72813a..a78fdaa 100644
---- a/arch/arm/boot/dts/omap5.dtsi
-+++ b/arch/arm/boot/dts/omap5.dtsi
-@@ -513,6 +513,23 @@
- 			dma-names = "tx", "rx";
- 		};
- 
-+		mmu_dsp: mmu@4a066000 {
-+			compatible = "ti,omap4-iommu";
-+			reg = <0x4a066000 0xff>;
-+			interrupts = <GIC_SPI 28 IRQ_TYPE_LEVEL_HIGH>;
-+			ti,hwmods = "mmu_dsp";
-+			dma-window = <0x20000000 0xdffff000>;
-+		};
-+
-+		mmu_ipu: mmu@55082000 {
-+			compatible = "ti,omap4-iommu";
-+			reg = <0x55082000 0xff>;
-+			interrupts = <GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>;
-+			ti,hwmods = "mmu_ipu";
-+			dma-window = <0 0xdffff000>;
-+			ti,iommu-bus-err-back;
-+		};
-+
- 		keypad: keypad@4ae1c000 {
- 			compatible = "ti,omap4-keypad";
- 			reg = <0x4ae1c000 0x400>;
--- 
-1.8.5.3
+It's not so much a matter of "fixup for this time", it's a about
+having ownership of the driver, making sure it works (and keeps
+working if there is related development). The posted patches have not
+been followed through on and the result is a broken driver. :(
 
+I definitely appreciate his expertise, and we should make sure that he
+gets to review the code, but if someone else is able to spend time on
+reworking the driver (or rewriting a newer one) and maintaining it
+longer-term, then we should not stop them from doing so. And there is
+no reason to keep broken stale code in the kernel meanwhile.
+
+
+-Olof
