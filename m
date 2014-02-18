@@ -1,7 +1,7 @@
 From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v2 1/4] misc: mic: Add include of <linux/irqreturn.h>
-Date: Tue, 18 Feb 2014 13:59:39 -0700
-Message-ID: <20140218205939.11014.41761.stgit@bhelgaas-glaptop.roam.corp.google.com>
+Subject: [PATCH v2 2/4] mei: Add include of <linux/irqreturn.h>
+Date: Tue, 18 Feb 2014 13:59:46 -0700
+Message-ID: <20140218205946.11014.13654.stgit@bhelgaas-glaptop.roam.corp.google.com>
 References: <20140218205925.11014.14973.stgit@bhelgaas-glaptop.roam.corp.google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -26,31 +26,18 @@ remove that from linux/pci.h, so add explicit includes where needed.
 
 Signed-off-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/misc/mic/card/mic_device.h |    1 +
- drivers/misc/mic/host/mic_device.h |    1 +
- 2 files changed, 2 insertions(+)
+ drivers/misc/mei/hw-me.h |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/misc/mic/card/mic_device.h b/drivers/misc/mic/card/mic_device.h
-index 347b9b3b7916..306f502be95e 100644
---- a/drivers/misc/mic/card/mic_device.h
-+++ b/drivers/misc/mic/card/mic_device.h
-@@ -29,6 +29,7 @@
+diff --git a/drivers/misc/mei/hw-me.h b/drivers/misc/mei/hw-me.h
+index 80bd829fbd9a..893d5119fa9b 100644
+--- a/drivers/misc/mei/hw-me.h
++++ b/drivers/misc/mei/hw-me.h
+@@ -20,6 +20,7 @@
+ #define _MEI_INTERFACE_H_
  
- #include <linux/workqueue.h>
- #include <linux/io.h>
+ #include <linux/mei.h>
 +#include <linux/irqreturn.h>
- 
- /**
-  * struct mic_intr_info - Contains h/w specific interrupt sources info
-diff --git a/drivers/misc/mic/host/mic_device.h b/drivers/misc/mic/host/mic_device.h
-index 1a6edce2ecde..0398c696d257 100644
---- a/drivers/misc/mic/host/mic_device.h
-+++ b/drivers/misc/mic/host/mic_device.h
-@@ -24,6 +24,7 @@
- #include <linux/cdev.h>
- #include <linux/idr.h>
- #include <linux/notifier.h>
-+#include <linux/irqreturn.h>
- 
- #include "mic_intr.h"
+ #include "mei_dev.h"
+ #include "client.h"
  
