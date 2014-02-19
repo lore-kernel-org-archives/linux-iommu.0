@@ -1,232 +1,62 @@
-From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part2 V2 17/17] iommu/vt-d: update IOMMU state when memory
-	hotplug happens
-Date: Wed, 19 Feb 2014 14:07:37 +0800
-Message-ID: <1392790057-32434-18-git-send-email-jiang.liu@linux.intel.com>
-References: <1392790057-32434-1-git-send-email-jiang.liu@linux.intel.com>
+From: "Winkler, Tomas" <tomas.winkler@intel.com>
+Subject: Re: [PATCH v2 2/4] mei: Add include of
+	<linux/irqreturn.h>
+Date: Wed, 19 Feb 2014 08:29:52 +0000
+Message-ID: <5B8DA87D05A7694D9FA63FD143655C1B1AF74107@HASMSX106.ger.corp.intel.com>
+References: <20140218205925.11014.14973.stgit@bhelgaas-glaptop.roam.corp.google.com>
+	<20140218205946.11014.13654.stgit@bhelgaas-glaptop.roam.corp.google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1392790057-32434-1-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Rafael J . Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Return-path: <e1000-devel-bounces@lists.sourceforge.net>
+In-Reply-To: <20140218205946.11014.13654.stgit@bhelgaas-glaptop.roam.corp.google.com>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/e1000-devel>,
+	<mailto:e1000-devel-request@lists.sourceforge.net?subject=unsubscribe>
+List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum_name=e1000-devel>
+List-Post: <mailto:e1000-devel@lists.sourceforge.net>
+List-Help: <mailto:e1000-devel-request@lists.sourceforge.net?subject=help>
+List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/e1000-devel>,
+	<mailto:e1000-devel-request@lists.sourceforge.net?subject=subscribe>
+Errors-To: e1000-devel-bounces@lists.sourceforge.net
+To: Bjorn Helgaas <bhelgaas@google.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>
+Cc: "e1000-devel@lists.sourceforge.net" <e1000-devel@lists.sourceforge.net>, Joerg Roedel <joro@8bytes.org>, "Dutt, Sudeep" <sudeep.dutt@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Arjan van de Ven <arjan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-If static identity domain is created, IOMMU driver needs to update
-si_domain page table when memory hotplug event happens. Otherwise
-PCI device DMA operations can't access the hot-added memory regions.
 
-Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
----
- drivers/iommu/intel-iommu.c |   71 ++++++++++++++++++++++++++++++++++++++++++-
- drivers/iommu/iova.c        |   64 ++++++++++++++++++++++++++++++++++----
- include/linux/iova.h        |    2 ++
- 3 files changed, 130 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index dd576c0..484d669 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -33,6 +33,7 @@
- #include <linux/dmar.h>
- #include <linux/dma-mapping.h>
- #include <linux/mempool.h>
-+#include <linux/memory.h>
- #include <linux/timer.h>
- #include <linux/iova.h>
- #include <linux/iommu.h>
-@@ -3683,6 +3684,73 @@ static struct notifier_block device_nb = {
- 	.notifier_call = device_notifier,
- };
- 
-+static int intel_iommu_memory_notifier(struct notifier_block *nb,
-+				       unsigned long val, void *v)
-+{
-+	struct memory_notify *mhp = v;
-+	unsigned long long start, end;
-+	unsigned long start_vpfn, last_vpfn;
-+
-+	switch (val) {
-+	case MEM_GOING_ONLINE:
-+		start = mhp->start_pfn << PAGE_SHIFT;
-+		end = ((mhp->start_pfn + mhp->nr_pages) << PAGE_SHIFT) - 1;
-+		if (iommu_domain_identity_map(si_domain, start, end)) {
-+			pr_warn("dmar: failed to build identity map for [%llx-%llx]\n",
-+				start, end);
-+			return NOTIFY_BAD;
-+		}
-+		break;
-+
-+	case MEM_OFFLINE:
-+	case MEM_CANCEL_ONLINE:
-+		start_vpfn = mm_to_dma_pfn(mhp->start_pfn);
-+		last_vpfn = mm_to_dma_pfn(mhp->start_pfn + mhp->nr_pages - 1);
-+		while (start_vpfn <= last_vpfn) {
-+			struct iova *iova;
-+			struct dmar_drhd_unit *drhd;
-+			struct intel_iommu *iommu;
-+
-+			iova = find_iova(&si_domain->iovad, start_vpfn);
-+			if (iova == NULL) {
-+				pr_debug("dmar: failed get IOVA for PFN %lx\n",
-+					 start_vpfn);
-+				break;
-+			}
-+
-+			iova = split_and_remove_iova(&si_domain->iovad, iova,
-+						     start_vpfn, last_vpfn);
-+			if (iova == NULL) {
-+				pr_warn("dmar: failed to split IOVA PFN [%lx-%lx]\n",
-+					start_vpfn, last_vpfn);
-+				return NOTIFY_BAD;
-+			}
-+
-+			rcu_read_lock();
-+			for_each_active_iommu(iommu, drhd)
-+				iommu_flush_iotlb_psi(iommu, si_domain->id,
-+					iova->pfn_lo,
-+					iova->pfn_hi - iova->pfn_lo + 1, 0);
-+			rcu_read_unlock();
-+			dma_pte_clear_range(si_domain, iova->pfn_lo,
-+					    iova->pfn_hi);
-+			dma_pte_free_pagetable(si_domain, iova->pfn_lo,
-+					       iova->pfn_hi);
-+
-+			start_vpfn = iova->pfn_hi + 1;
-+			free_iova_mem(iova);
-+		}
-+		break;
-+	}
-+
-+	return NOTIFY_OK;
-+}
-+
-+static struct notifier_block intel_iommu_memory_nb = {
-+	.notifier_call = intel_iommu_memory_notifier,
-+	.priority = 0
-+};
-+
- int __init intel_iommu_init(void)
- {
- 	int ret = -ENODEV;
-@@ -3755,8 +3823,9 @@ int __init intel_iommu_init(void)
- 	init_iommu_pm_ops();
- 
- 	bus_set_iommu(&pci_bus_type, &intel_iommu_ops);
--
- 	bus_register_notifier(&pci_bus_type, &device_nb);
-+	if (si_domain && !hw_pass_through)
-+		register_memory_notifier(&intel_iommu_memory_nb);
- 
- 	intel_iommu_enabled = 1;
- 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 67da6cff..f6b17e6 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -342,19 +342,30 @@ __is_range_overlap(struct rb_node *node,
- 	return 0;
- }
- 
-+static inline struct iova *
-+alloc_and_init_iova(unsigned long pfn_lo, unsigned long pfn_hi)
-+{
-+	struct iova *iova;
-+
-+	iova = alloc_iova_mem();
-+	if (iova) {
-+		iova->pfn_lo = pfn_lo;
-+		iova->pfn_hi = pfn_hi;
-+	}
-+
-+	return iova;
-+}
-+
- static struct iova *
- __insert_new_range(struct iova_domain *iovad,
- 	unsigned long pfn_lo, unsigned long pfn_hi)
- {
- 	struct iova *iova;
- 
--	iova = alloc_iova_mem();
--	if (!iova)
--		return iova;
-+	iova = alloc_and_init_iova(pfn_lo, pfn_hi);
-+	if (iova)
-+		iova_insert_rbtree(&iovad->rbroot, iova);
- 
--	iova->pfn_hi = pfn_hi;
--	iova->pfn_lo = pfn_lo;
--	iova_insert_rbtree(&iovad->rbroot, iova);
- 	return iova;
- }
- 
-@@ -433,3 +444,44 @@ copy_reserved_iova(struct iova_domain *from, struct iova_domain *to)
- 	}
- 	spin_unlock_irqrestore(&from->iova_rbtree_lock, flags);
- }
-+
-+struct iova *
-+split_and_remove_iova(struct iova_domain *iovad, struct iova *iova,
-+		      unsigned long pfn_lo, unsigned long pfn_hi)
-+{
-+	unsigned long flags;
-+	struct iova *prev = NULL, *next = NULL;
-+
-+	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
-+	if (iova->pfn_lo < pfn_lo) {
-+		prev = alloc_and_init_iova(iova->pfn_lo, pfn_lo - 1);
-+		if (prev == NULL)
-+			goto error;
-+	}
-+	if (iova->pfn_hi > pfn_hi) {
-+		next = alloc_and_init_iova(pfn_hi + 1, iova->pfn_hi);
-+		if (next == NULL)
-+			goto error;
-+	}
-+
-+	__cached_rbnode_delete_update(iovad, iova);
-+	rb_erase(&iova->node, &iovad->rbroot);
-+
-+	if (prev) {
-+		iova_insert_rbtree(&iovad->rbroot, prev);
-+		iova->pfn_lo = pfn_lo;
-+	}
-+	if (next) {
-+		iova_insert_rbtree(&iovad->rbroot, next);
-+		iova->pfn_hi = pfn_hi;
-+	}
-+	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-+
-+	return iova;
-+
-+error:
-+	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-+	if (prev)
-+		free_iova_mem(prev);
-+	return NULL;
-+}
-diff --git a/include/linux/iova.h b/include/linux/iova.h
-index 76a0759..3277f47 100644
---- a/include/linux/iova.h
-+++ b/include/linux/iova.h
-@@ -47,5 +47,7 @@ void copy_reserved_iova(struct iova_domain *from, struct iova_domain *to);
- void init_iova_domain(struct iova_domain *iovad, unsigned long pfn_32bit);
- struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn);
- void put_iova_domain(struct iova_domain *iovad);
-+struct iova *split_and_remove_iova(struct iova_domain *iovad,
-+	struct iova *iova, unsigned long pfn_lo, unsigned long pfn_hi);
- 
- #endif
--- 
-1.7.10.4
+> 
+> We currently include <linux/irqreturn.h> in <linux/pci.h>, but I'm about to
+> remove that from linux/pci.h, so add explicit includes where needed.
+> 
+> Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+> ---
+>  drivers/misc/mei/hw-me.h |    1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/misc/mei/hw-me.h b/drivers/misc/mei/hw-me.h
+> index 80bd829fbd9a..893d5119fa9b 100644
+> --- a/drivers/misc/mei/hw-me.h
+> +++ b/drivers/misc/mei/hw-me.h
+> @@ -20,6 +20,7 @@
+>  #define _MEI_INTERFACE_H_
+> 
+>  #include <linux/mei.h>
+> +#include <linux/irqreturn.h>
+>  #include "mei_dev.h"
+>  #include "client.h"
+
+
+Okay.
+> 
+
+------------------------------------------------------------------------------
+Managing the Performance of Cloud-Based Applications
+Take advantage of what the Cloud has to offer - Avoid Common Pitfalls.
+Read the Whitepaper.
+http://pubads.g.doubleclick.net/gampad/clk?id=121054471&iu=/4140/ostg.clktrk
+_______________________________________________
+E1000-devel mailing list
+E1000-devel@lists.sourceforge.net
+https://lists.sourceforge.net/lists/listinfo/e1000-devel
+To learn more about Intel&#174; Ethernet, visit http://communities.intel.com/community/wired
