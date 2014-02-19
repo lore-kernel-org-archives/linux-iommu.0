@@ -1,55 +1,56 @@
-From: Sudeep Dutt <sudeep.dutt@intel.com>
-Subject: Re: [PATCH v2 1/4] misc: mic: Add include of <linux/irqreturn.h>
-Date: Wed, 19 Feb 2014 09:09:49 -0800
-Message-ID: <1392829789.15950.13.camel@rbtaylor-desk1.amr.corp.intel.com>
+From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2 2/4] mei: Add include of <linux/irqreturn.h>
+Date: Wed, 19 Feb 2014 11:28:39 -0700
+Message-ID: <CAErSpo4k9xhDr=NFQdVAvDBtJEMHTKbMqC58iDCVPH5C3tAq=Q@mail.gmail.com>
 References: <20140218205925.11014.14973.stgit@bhelgaas-glaptop.roam.corp.google.com>
-	 <20140218205939.11014.41761.stgit@bhelgaas-glaptop.roam.corp.google.com>
+	<20140218205946.11014.13654.stgit@bhelgaas-glaptop.roam.corp.google.com>
+	<5B8DA87D05A7694D9FA63FD143655C1B1AF74107@HASMSX106.ger.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20140218205939.11014.41761.stgit@bhelgaas-glaptop.roam.corp.google.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: linux-pci@vger.kernel.org, e1000-devel@lists.sourceforge.net, Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org, Stephen Hemminger <stephen@networkplumber.org>, iommu@lists.linux-foundation.org, Tomas Winkler <tomas.winkler@intel.com>, Aaron F Brown <aaron.f.brown@intel.com>, Arjan van de Ven <arjan@linux.intel.com>, Sudeep Dutt <sudeep.dutt@intel.com>, Ashutosh Dixit <ashutosh.dixit@intel.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <5B8DA87D05A7694D9FA63FD143655C1B1AF74107-yLYCJVCiOGxT4JjzTwqWc7fspsVTdybXVpNB7YpNyf8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Winkler, Tomas" <tomas.winkler-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: "e1000-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org" <e1000-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Dutt,
+	Sudeep" <sudeep.dutt-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Hemminger <stephen-OTpzqLSitTUnbdJkjeBofR2eb7JE58TQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Brown, Aaron F" <aaron.f.brown-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Arjan van de Ven <arjan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2014-02-18 at 13:59 -0700, Bjorn Helgaas wrote:
-> We currently include <linux/irqreturn.h> in <linux/pci.h>, but I'm about to
-> remove that from linux/pci.h, so add explicit includes where needed.
-> 
-> Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-> ---
->  drivers/misc/mic/card/mic_device.h |    1 +
->  drivers/misc/mic/host/mic_device.h |    1 +
->  2 files changed, 2 insertions(+)
-> 
-> diff --git a/drivers/misc/mic/card/mic_device.h b/drivers/misc/mic/card/mic_device.h
-> index 347b9b3b7916..306f502be95e 100644
-> --- a/drivers/misc/mic/card/mic_device.h
-> +++ b/drivers/misc/mic/card/mic_device.h
-> @@ -29,6 +29,7 @@
->  
->  #include <linux/workqueue.h>
->  #include <linux/io.h>
-> +#include <linux/irqreturn.h>
->  
->  /**
->   * struct mic_intr_info - Contains h/w specific interrupt sources info
-> diff --git a/drivers/misc/mic/host/mic_device.h b/drivers/misc/mic/host/mic_device.h
-> index 1a6edce2ecde..0398c696d257 100644
-> --- a/drivers/misc/mic/host/mic_device.h
-> +++ b/drivers/misc/mic/host/mic_device.h
-> @@ -24,6 +24,7 @@
->  #include <linux/cdev.h>
->  #include <linux/idr.h>
->  #include <linux/notifier.h>
-> +#include <linux/irqreturn.h>
->  
->  #include "mic_intr.h"
->  
-> 
+On Wed, Feb 19, 2014 at 1:29 AM, Winkler, Tomas <tomas.winkler-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
+>
+>
+>>
+>> We currently include <linux/irqreturn.h> in <linux/pci.h>, but I'm about to
+>> remove that from linux/pci.h, so add explicit includes where needed.
+>>
+>> Signed-off-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+>> ---
+>>  drivers/misc/mei/hw-me.h |    1 +
+>>  1 file changed, 1 insertion(+)
+>>
+>> diff --git a/drivers/misc/mei/hw-me.h b/drivers/misc/mei/hw-me.h
+>> index 80bd829fbd9a..893d5119fa9b 100644
+>> --- a/drivers/misc/mei/hw-me.h
+>> +++ b/drivers/misc/mei/hw-me.h
+>> @@ -20,6 +20,7 @@
+>>  #define _MEI_INTERFACE_H_
+>>
+>>  #include <linux/mei.h>
+>> +#include <linux/irqreturn.h>
+>>  #include "mei_dev.h"
+>>  #include "client.h"
+>
+>
+> Okay.
 
-Acked-by: Sudeep Dutt <sudeep.dutt@intel.com>
+Thanks, I added this ack:
 
-Thanks,
+Acked-by: Tomas Winkler <tomas.winkler-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
