@@ -1,8 +1,7 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part2 V2 10/17] iommu/vt-d: check for NULL pointer when
-	freeing IOMMU data structure
-Date: Wed, 19 Feb 2014 14:07:30 +0800
-Message-ID: <1392790057-32434-11-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part2 V2 11/17] iommu/vt-d: fix error in detect ATS capability
+Date: Wed, 19 Feb 2014 14:07:31 +0800
+Message-ID: <1392790057-32434-12-git-send-email-jiang.liu@linux.intel.com>
 References: <1392790057-32434-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,82 +21,193 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse
 Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Domain id 0 will be assigned to invalid translation without allocating
-domain data structure if DMAR unit supports caching mode. So in function
-free_dmar_iommu(), we should check whether the domain pointer is NULL,
-otherwise it will cause system crash as below:
-[    6.790519] BUG: unable to handle kernel NULL pointer dereference at 00000000000000c8
-[    6.799520] IP: [<ffffffff810e2dc8>] __lock_acquire+0x11f8/0x1430
-[    6.806493] PGD 0
-[    6.817972] Oops: 0000 [#1] SMP DEBUG_PAGEALLOC
-[    6.823303] Modules linked in:
-[    6.826862] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 3.14.0-rc1+ #126
-[    6.834252] Hardware name: Intel Corporation BRICKLAND/BRICKLAND, BIOS BRIVTIN1.86B.0047.R00.1402050741 02/05/2014
-[    6.845951] task: ffff880455a80000 ti: ffff880455a88000 task.ti: ffff880455a88000
-[    6.854437] RIP: 0010:[<ffffffff810e2dc8>]  [<ffffffff810e2dc8>] __lock_acquire+0x11f8/0x1430
-[    6.864154] RSP: 0000:ffff880455a89ce0  EFLAGS: 00010046
-[    6.870179] RAX: 0000000000000046 RBX: 0000000000000002 RCX: 0000000000000000
-[    6.878249] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 00000000000000c8
-[    6.886318] RBP: ffff880455a89d40 R08: 0000000000000002 R09: 0000000000000001
-[    6.894387] R10: 0000000000000000 R11: 0000000000000001 R12: ffff880455a80000
-[    6.902458] R13: 0000000000000000 R14: 00000000000000c8 R15: 0000000000000000
-[    6.910520] FS:  0000000000000000(0000) GS:ffff88045b800000(0000) knlGS:0000000000000000
-[    6.919687] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    6.926198] CR2: 00000000000000c8 CR3: 0000000001e0e000 CR4: 00000000001407f0
-[    6.934269] Stack:
-[    6.936588]  ffffffffffffff10 ffffffff810f59db 0000000000000010 0000000000000246
-[    6.945219]  ffff880455a89d10 0000000000000000 ffffffff82bcb980 0000000000000046
-[    6.953850]  0000000000000000 0000000000000000 0000000000000002 0000000000000000
-[    6.962482] Call Trace:
-[    6.965300]  [<ffffffff810f59db>] ? vprintk_emit+0x4fb/0x5a0
-[    6.971716]  [<ffffffff810e3185>] lock_acquire+0x185/0x200
-[    6.977941]  [<ffffffff821fbbee>] ? init_dmars+0x839/0xa1d
-[    6.984167]  [<ffffffff81870b06>] _raw_spin_lock_irqsave+0x56/0x90
-[    6.991158]  [<ffffffff821fbbee>] ? init_dmars+0x839/0xa1d
-[    6.997380]  [<ffffffff821fbbee>] init_dmars+0x839/0xa1d
-[    7.003410]  [<ffffffff8147d575>] ? pci_get_dev_by_id+0x75/0xd0
-[    7.010119]  [<ffffffff821fc146>] intel_iommu_init+0x2f0/0x502
-[    7.016735]  [<ffffffff821a7947>] ? iommu_setup+0x27d/0x27d
-[    7.023056]  [<ffffffff821a796f>] pci_iommu_init+0x28/0x52
-[    7.029282]  [<ffffffff81002162>] do_one_initcall+0xf2/0x220
-[    7.035702]  [<ffffffff810a4a29>] ? parse_args+0x2c9/0x450
-[    7.041919]  [<ffffffff8219d1b1>] kernel_init_freeable+0x1c9/0x25b
-[    7.048919]  [<ffffffff8219c8d2>] ? do_early_param+0x8a/0x8a
-[    7.055336]  [<ffffffff8184d3f0>] ? rest_init+0x150/0x150
-[    7.061461]  [<ffffffff8184d3fe>] kernel_init+0xe/0x100
-[    7.067393]  [<ffffffff8187b5fc>] ret_from_fork+0x7c/0xb0
-[    7.073518]  [<ffffffff8184d3f0>] ? rest_init+0x150/0x150
-[    7.079642] Code: 01 76 18 89 05 46 04 36 01 41 be 01 00 00 00 e9 2f 02 00 00 0f 1f 80 00 00 00 00 41 be 01 00 00 00 e9 1d 02 00 00 0f 1f 44 00 00 <49> 81 3e c0 31 34 82 b8 01 00 00 00 0f 44 d8 41 83 ff 01 0f 87
-[    7.104944] RIP  [<ffffffff810e2dc8>] __lock_acquire+0x11f8/0x1430
-[    7.112008]  RSP <ffff880455a89ce0>
-[    7.115988] CR2: 00000000000000c8
-[    7.119784] ---[ end trace 13d756f0f462c538 ]---
-[    7.125034] note: swapper/0[1] exited with preempt_count 1
-[    7.131285] Kernel panic - not syncing: Attempted to kill init! exitcode=0x00000009
-[    7.131285]
+Current Intel IOMMU driver only matches a PCIe root port with the first
+DRHD unit with the samge segment number. It will report false result
+if there are multiple DRHD units with the same segment number, thus fail
+to detect ATS capability for some PCIe devices.
+
+This patch refines function dmar_find_matched_atsr_unit() to search all
+DRHD units with the same segment number.
+
+An example DMAR table entries as below:
+[1D0h 0464  2]                Subtable Type : 0002 <Root Port ATS Capability>
+[1D2h 0466  2]                       Length : 0028
+[1D4h 0468  1]                        Flags : 00
+[1D5h 0469  1]                     Reserved : 00
+[1D6h 0470  2]           PCI Segment Number : 0000
+
+[1D8h 0472  1]      Device Scope Entry Type : 02
+[1D9h 0473  1]                 Entry Length : 08
+[1DAh 0474  2]                     Reserved : 0000
+[1DCh 0476  1]               Enumeration ID : 00
+[1DDh 0477  1]               PCI Bus Number : 00
+[1DEh 0478  2]                     PCI Path : [02, 00]
+
+[1E0h 0480  1]      Device Scope Entry Type : 02
+[1E1h 0481  1]                 Entry Length : 08
+[1E2h 0482  2]                     Reserved : 0000
+[1E4h 0484  1]               Enumeration ID : 00
+[1E5h 0485  1]               PCI Bus Number : 00
+[1E6h 0486  2]                     PCI Path : [03, 00]
+
+[1E8h 0488  1]      Device Scope Entry Type : 02
+[1E9h 0489  1]                 Entry Length : 08
+[1EAh 0490  2]                     Reserved : 0000
+[1ECh 0492  1]               Enumeration ID : 00
+[1EDh 0493  1]               PCI Bus Number : 00
+[1EEh 0494  2]                     PCI Path : [03, 02]
+
+[1F0h 0496  1]      Device Scope Entry Type : 02
+[1F1h 0497  1]                 Entry Length : 08
+[1F2h 0498  2]                     Reserved : 0000
+[1F4h 0500  1]               Enumeration ID : 00
+[1F5h 0501  1]               PCI Bus Number : 00
+[1F6h 0502  2]                     PCI Path : [03, 03]
+
+[1F8h 0504  2]                Subtable Type : 0002 <Root Port ATS Capability>
+[1FAh 0506  2]                       Length : 0020
+[1FCh 0508  1]                        Flags : 00
+[1FDh 0509  1]                     Reserved : 00
+[1FEh 0510  2]           PCI Segment Number : 0000
+
+[200h 0512  1]      Device Scope Entry Type : 02
+[201h 0513  1]                 Entry Length : 08
+[202h 0514  2]                     Reserved : 0000
+[204h 0516  1]               Enumeration ID : 00
+[205h 0517  1]               PCI Bus Number : 40
+[206h 0518  2]                     PCI Path : [02, 00]
+
+[208h 0520  1]      Device Scope Entry Type : 02
+[209h 0521  1]                 Entry Length : 08
+[20Ah 0522  2]                     Reserved : 0000
+[20Ch 0524  1]               Enumeration ID : 00
+[20Dh 0525  1]               PCI Bus Number : 40
+[20Eh 0526  2]                     PCI Path : [02, 02]
+
+[210h 0528  1]      Device Scope Entry Type : 02
+[211h 0529  1]                 Entry Length : 08
+[212h 0530  2]                     Reserved : 0000
+[214h 0532  1]               Enumeration ID : 00
+[215h 0533  1]               PCI Bus Number : 40
+[216h 0534  2]                     PCI Path : [03, 00]
+
+[218h 0536  2]                Subtable Type : 0002 <Root Port ATS Capability>
+[21Ah 0538  2]                       Length : 0020
+[21Ch 0540  1]                        Flags : 00
+[21Dh 0541  1]                     Reserved : 00
+[21Eh 0542  2]           PCI Segment Number : 0000
+
+[220h 0544  1]      Device Scope Entry Type : 02
+[221h 0545  1]                 Entry Length : 08
+[222h 0546  2]                     Reserved : 0000
+[224h 0548  1]               Enumeration ID : 00
+[225h 0549  1]               PCI Bus Number : 80
+[226h 0550  2]                     PCI Path : [02, 00]
+
+[228h 0552  1]      Device Scope Entry Type : 02
+[229h 0553  1]                 Entry Length : 08
+[22Ah 0554  2]                     Reserved : 0000
+[22Ch 0556  1]               Enumeration ID : 00
+[22Dh 0557  1]               PCI Bus Number : 80
+[22Eh 0558  2]                     PCI Path : [02, 02]
+
+[230h 0560  1]      Device Scope Entry Type : 02
+[231h 0561  1]                 Entry Length : 08
+[232h 0562  2]                     Reserved : 0000
+[234h 0564  1]               Enumeration ID : 00
+[235h 0565  1]               PCI Bus Number : 80
+[236h 0566  2]                     PCI Path : [03, 00]
+
+[238h 0568  2]                Subtable Type : 0002 <Root Port ATS Capability>
+[23Ah 0570  2]                       Length : 0020
+[23Ch 0572  1]                        Flags : 00
+[23Dh 0573  1]                     Reserved : 00
+[23Eh 0574  2]           PCI Segment Number : 0000
+
+[240h 0576  1]      Device Scope Entry Type : 02
+[241h 0577  1]                 Entry Length : 08
+[242h 0578  2]                     Reserved : 0000
+[244h 0580  1]               Enumeration ID : 00
+[245h 0581  1]               PCI Bus Number : C0
+[246h 0582  2]                     PCI Path : [02, 00]
+
+[248h 0584  1]      Device Scope Entry Type : 02
+[249h 0585  1]                 Entry Length : 08
+[24Ah 0586  2]                     Reserved : 0000
+[24Ch 0588  1]               Enumeration ID : 00
+[24Dh 0589  1]               PCI Bus Number : C0
+[24Eh 0590  2]                     PCI Path : [02, 02]
+
+[250h 0592  1]      Device Scope Entry Type : 02
+[251h 0593  1]                 Entry Length : 08
+[252h 0594  2]                     Reserved : 0000
+[254h 0596  1]               Enumeration ID : 00
+[255h 0597  1]               PCI Bus Number : C0
+[256h 0598  2]                     PCI Path : [03, 00]
 
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/iommu/intel-iommu.c |   37 +++++++++++++++++--------------------
+ 1 file changed, 17 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index a27d3eb..afbc8d6 100644
+index afbc8d6..7732c43 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1297,6 +1297,13 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
+@@ -3562,37 +3562,34 @@ int dmar_find_matched_atsr_unit(struct pci_dev *dev)
+ {
+ 	int i;
+ 	struct pci_bus *bus;
++	struct pci_dev *bridge = NULL;
+ 	struct acpi_dmar_atsr *atsr;
+ 	struct dmar_atsr_unit *atsru;
  
- 	if ((iommu->domains) && (iommu->domain_ids)) {
- 		for_each_set_bit(i, iommu->domain_ids, cap_ndoms(iommu->cap)) {
-+			/*
-+			 * Domain id 0 is reserved for invalid translation
-+			 * if hardware supports caching mode.
-+			 */
-+			if (cap_caching_mode(iommu->cap) && i == 0)
-+				continue;
+ 	dev = pci_physfn(dev);
+-
+-	list_for_each_entry(atsru, &dmar_atsr_units, list) {
+-		atsr = container_of(atsru->hdr, struct acpi_dmar_atsr, header);
+-		if (atsr->segment == pci_domain_nr(dev->bus))
+-			goto found;
+-	}
+-
+-	return 0;
+-
+-found:
+ 	for (bus = dev->bus; bus; bus = bus->parent) {
+-		struct pci_dev *bridge = bus->self;
+-
++		bridge = bus->self;
+ 		if (!bridge || !pci_is_pcie(bridge) ||
+ 		    pci_pcie_type(bridge) == PCI_EXP_TYPE_PCI_BRIDGE)
+ 			return 0;
+-
+-		if (pci_pcie_type(bridge) == PCI_EXP_TYPE_ROOT_PORT) {
+-			for (i = 0; i < atsru->devices_cnt; i++)
+-				if (atsru->devices[i] == bridge)
+-					return 1;
++		if (pci_pcie_type(bridge) == PCI_EXP_TYPE_ROOT_PORT)
+ 			break;
+-		}
+ 	}
++	if (!bridge)
++		return 0;
+ 
+-	if (atsru->include_all)
+-		return 1;
++	list_for_each_entry_rcu(atsru, &dmar_atsr_units, list) {
++		atsr = container_of(atsru->hdr, struct acpi_dmar_atsr, header);
++		if (atsr->segment != pci_domain_nr(dev->bus))
++			continue;
 +
- 			domain = iommu->domains[i];
- 			clear_bit(i, iommu->domain_ids);
++		for (i = 0; i < atsru->devices_cnt; i++)
++			if (atsru->devices[i] == bridge)
++				return 1;
++
++		if (atsru->include_all)
++			return 1;
++	}
  
+ 	return 0;
+ }
 -- 
 1.7.10.4
