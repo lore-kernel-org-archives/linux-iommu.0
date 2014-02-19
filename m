@@ -1,62 +1,55 @@
-From: "Winkler, Tomas" <tomas.winkler@intel.com>
-Subject: Re: [PATCH v2 2/4] mei: Add include of
-	<linux/irqreturn.h>
-Date: Wed, 19 Feb 2014 08:29:52 +0000
-Message-ID: <5B8DA87D05A7694D9FA63FD143655C1B1AF74107@HASMSX106.ger.corp.intel.com>
+From: Sudeep Dutt <sudeep.dutt@intel.com>
+Subject: Re: [PATCH v2 1/4] misc: mic: Add include of <linux/irqreturn.h>
+Date: Wed, 19 Feb 2014 09:09:49 -0800
+Message-ID: <1392829789.15950.13.camel@rbtaylor-desk1.amr.corp.intel.com>
 References: <20140218205925.11014.14973.stgit@bhelgaas-glaptop.roam.corp.google.com>
-	<20140218205946.11014.13654.stgit@bhelgaas-glaptop.roam.corp.google.com>
+	 <20140218205939.11014.41761.stgit@bhelgaas-glaptop.roam.corp.google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <e1000-devel-bounces@lists.sourceforge.net>
-In-Reply-To: <20140218205946.11014.13654.stgit@bhelgaas-glaptop.roam.corp.google.com>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/e1000-devel>,
-	<mailto:e1000-devel-request@lists.sourceforge.net?subject=unsubscribe>
-List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum_name=e1000-devel>
-List-Post: <mailto:e1000-devel@lists.sourceforge.net>
-List-Help: <mailto:e1000-devel-request@lists.sourceforge.net?subject=help>
-List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/e1000-devel>,
-	<mailto:e1000-devel-request@lists.sourceforge.net?subject=subscribe>
-Errors-To: e1000-devel-bounces@lists.sourceforge.net
-To: Bjorn Helgaas <bhelgaas@google.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>
-Cc: "e1000-devel@lists.sourceforge.net" <e1000-devel@lists.sourceforge.net>, Joerg Roedel <joro@8bytes.org>, "Dutt, Sudeep" <sudeep.dutt@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Arjan van de Ven <arjan@linux.intel.com>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20140218205939.11014.41761.stgit@bhelgaas-glaptop.roam.corp.google.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: linux-pci@vger.kernel.org, e1000-devel@lists.sourceforge.net, Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org, Stephen Hemminger <stephen@networkplumber.org>, iommu@lists.linux-foundation.org, Tomas Winkler <tomas.winkler@intel.com>, Aaron F Brown <aaron.f.brown@intel.com>, Arjan van de Ven <arjan@linux.intel.com>, Sudeep Dutt <sudeep.dutt@intel.com>, Ashutosh Dixit <ashutosh.dixit@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-> 
+On Tue, 2014-02-18 at 13:59 -0700, Bjorn Helgaas wrote:
 > We currently include <linux/irqreturn.h> in <linux/pci.h>, but I'm about to
 > remove that from linux/pci.h, so add explicit includes where needed.
 > 
 > Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 > ---
->  drivers/misc/mei/hw-me.h |    1 +
->  1 file changed, 1 insertion(+)
+>  drivers/misc/mic/card/mic_device.h |    1 +
+>  drivers/misc/mic/host/mic_device.h |    1 +
+>  2 files changed, 2 insertions(+)
 > 
-> diff --git a/drivers/misc/mei/hw-me.h b/drivers/misc/mei/hw-me.h
-> index 80bd829fbd9a..893d5119fa9b 100644
-> --- a/drivers/misc/mei/hw-me.h
-> +++ b/drivers/misc/mei/hw-me.h
-> @@ -20,6 +20,7 @@
->  #define _MEI_INTERFACE_H_
-> 
->  #include <linux/mei.h>
+> diff --git a/drivers/misc/mic/card/mic_device.h b/drivers/misc/mic/card/mic_device.h
+> index 347b9b3b7916..306f502be95e 100644
+> --- a/drivers/misc/mic/card/mic_device.h
+> +++ b/drivers/misc/mic/card/mic_device.h
+> @@ -29,6 +29,7 @@
+>  
+>  #include <linux/workqueue.h>
+>  #include <linux/io.h>
 > +#include <linux/irqreturn.h>
->  #include "mei_dev.h"
->  #include "client.h"
-
-
-Okay.
+>  
+>  /**
+>   * struct mic_intr_info - Contains h/w specific interrupt sources info
+> diff --git a/drivers/misc/mic/host/mic_device.h b/drivers/misc/mic/host/mic_device.h
+> index 1a6edce2ecde..0398c696d257 100644
+> --- a/drivers/misc/mic/host/mic_device.h
+> +++ b/drivers/misc/mic/host/mic_device.h
+> @@ -24,6 +24,7 @@
+>  #include <linux/cdev.h>
+>  #include <linux/idr.h>
+>  #include <linux/notifier.h>
+> +#include <linux/irqreturn.h>
+>  
+>  #include "mic_intr.h"
+>  
 > 
 
-------------------------------------------------------------------------------
-Managing the Performance of Cloud-Based Applications
-Take advantage of what the Cloud has to offer - Avoid Common Pitfalls.
-Read the Whitepaper.
-http://pubads.g.doubleclick.net/gampad/clk?id=121054471&iu=/4140/ostg.clktrk
-_______________________________________________
-E1000-devel mailing list
-E1000-devel@lists.sourceforge.net
-https://lists.sourceforge.net/lists/listinfo/e1000-devel
-To learn more about Intel&#174; Ethernet, visit http://communities.intel.com/community/wired
+Acked-by: Sudeep Dutt <sudeep.dutt@intel.com>
+
+Thanks,
