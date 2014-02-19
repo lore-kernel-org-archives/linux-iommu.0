@@ -1,8 +1,8 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part2 V2 09/17] iommu/vt-d: fix incorrect iommu_count for
-	si_domain
-Date: Wed, 19 Feb 2014 14:07:29 +0800
-Message-ID: <1392790057-32434-10-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part2 V2 10/17] iommu/vt-d: check for NULL pointer when
+	freeing IOMMU data structure
+Date: Wed, 19 Feb 2014 14:07:30 +0800
+Message-ID: <1392790057-32434-11-git-send-email-jiang.liu@linux.intel.com>
 References: <1392790057-32434-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,106 +22,82 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse
 Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The iommu_count field in si_domain(static identity domain) is
-initialized to zero and never increases. It will underflow
-when tearing down iommu unit in function free_dmar_iommu()
-and leak memory. So refine code to correctly manage
-si_domain->iommu_count.
-
-Warning message caused by si_domain memory leak:
-[   14.609681] IOMMU: Setting RMRR:
-[   14.613496] Ignoring identity map for HW passthrough device 0000:00:1a.0 [0xbdcfd000 - 0xbdd1dfff]
-[   14.623809] Ignoring identity map for HW passthrough device 0000:00:1d.0 [0xbdcfd000 - 0xbdd1dfff]
-[   14.634162] IOMMU: Prepare 0-16MiB unity mapping for LPC
-[   14.640329] Ignoring identity map for HW passthrough device 0000:00:1f.0 [0x0 - 0xffffff]
-[   14.673360] IOMMU: dmar init failed
-[   14.678157] kmem_cache_destroy iommu_devinfo: Slab cache still has objects
-[   14.686076] CPU: 12 PID: 1 Comm: swapper/0 Not tainted 3.13.0-rc1-gerry+ #59
-[   14.694176] Hardware name: Intel Corporation LH Pass ........../SVRBD-ROW_T, BIOS SE5C600.86B.99.99.x059.091020121352 09/10/2012
-[   14.707412]  0000000000000000 ffff88042dd33db0 ffffffff8156223d ffff880c2cc37c00
-[   14.716407]  ffff88042dd33dc8 ffffffff811790b1 ffff880c2d3533b8 ffff88042dd33e00
-[   14.725468]  ffffffff81dc7a6a ffffffff81b1e8e0 ffffffff81f84058 ffffffff81d8a711
-[   14.734464] Call Trace:
-[   14.737453]  [<ffffffff8156223d>] dump_stack+0x4d/0x66
-[   14.743430]  [<ffffffff811790b1>] kmem_cache_destroy+0xf1/0x100
-[   14.750279]  [<ffffffff81dc7a6a>] intel_iommu_init+0x122/0x56a
-[   14.757035]  [<ffffffff81d8a711>] ? iommu_setup+0x27d/0x27d
-[   14.763491]  [<ffffffff81d8a739>] pci_iommu_init+0x28/0x52
-[   14.769846]  [<ffffffff81000342>] do_one_initcall+0x122/0x180
-[   14.776506]  [<ffffffff81077738>] ? parse_args+0x1e8/0x320
-[   14.782866]  [<ffffffff81d850e8>] kernel_init_freeable+0x1e1/0x26c
-[   14.789994]  [<ffffffff81d84833>] ? do_early_param+0x88/0x88
-[   14.796556]  [<ffffffff8154ffc0>] ? rest_init+0xd0/0xd0
-[   14.802626]  [<ffffffff8154ffce>] kernel_init+0xe/0x130
-[   14.808698]  [<ffffffff815756ac>] ret_from_fork+0x7c/0xb0
-[   14.814963]  [<ffffffff8154ffc0>] ? rest_init+0xd0/0xd0
-[   14.821640] kmem_cache_destroy iommu_domain: Slab cache still has objects
-[   14.829456] CPU: 12 PID: 1 Comm: swapper/0 Not tainted 3.13.0-rc1-gerry+ #59
-[   14.837562] Hardware name: Intel Corporation LH Pass ........../SVRBD-ROW_T, BIOS SE5C600.86B.99.99.x059.091020121352 09/10/2012
-[   14.850803]  0000000000000000 ffff88042dd33db0 ffffffff8156223d ffff88102c1ee3c0
-[   14.861222]  ffff88042dd33dc8 ffffffff811790b1 ffff880c2d3533b8 ffff88042dd33e00
-[   14.870284]  ffffffff81dc7a76 ffffffff81b1e8e0 ffffffff81f84058 ffffffff81d8a711
-[   14.879271] Call Trace:
-[   14.882227]  [<ffffffff8156223d>] dump_stack+0x4d/0x66
-[   14.888197]  [<ffffffff811790b1>] kmem_cache_destroy+0xf1/0x100
-[   14.895034]  [<ffffffff81dc7a76>] intel_iommu_init+0x12e/0x56a
-[   14.901781]  [<ffffffff81d8a711>] ? iommu_setup+0x27d/0x27d
-[   14.908238]  [<ffffffff81d8a739>] pci_iommu_init+0x28/0x52
-[   14.914594]  [<ffffffff81000342>] do_one_initcall+0x122/0x180
-[   14.921244]  [<ffffffff81077738>] ? parse_args+0x1e8/0x320
-[   14.927598]  [<ffffffff81d850e8>] kernel_init_freeable+0x1e1/0x26c
-[   14.934738]  [<ffffffff81d84833>] ? do_early_param+0x88/0x88
-[   14.941309]  [<ffffffff8154ffc0>] ? rest_init+0xd0/0xd0
-[   14.947380]  [<ffffffff8154ffce>] kernel_init+0xe/0x130
-[   14.953430]  [<ffffffff815756ac>] ret_from_fork+0x7c/0xb0
-[   14.959689]  [<ffffffff8154ffc0>] ? rest_init+0xd0/0xd0
-[   14.966299] kmem_cache_destroy iommu_iova: Slab cache still has objects
-[   14.973923] CPU: 12 PID: 1 Comm: swapper/0 Not tainted 3.13.0-rc1-gerry+ #59
-[   14.982020] Hardware name: Intel Corporation LH Pass ........../SVRBD-ROW_T, BIOS SE5C600.86B.99.99.x059.091020121352 09/10/2012
-[   14.995263]  0000000000000000 ffff88042dd33db0 ffffffff8156223d ffff88042cb5c980
-[   15.004265]  ffff88042dd33dc8 ffffffff811790b1 ffff880c2d3533b8 ffff88042dd33e00
-[   15.013322]  ffffffff81dc7a82 ffffffff81b1e8e0 ffffffff81f84058 ffffffff81d8a711
-[   15.022318] Call Trace:
-[   15.025238]  [<ffffffff8156223d>] dump_stack+0x4d/0x66
-[   15.031202]  [<ffffffff811790b1>] kmem_cache_destroy+0xf1/0x100
-[   15.038038]  [<ffffffff81dc7a82>] intel_iommu_init+0x13a/0x56a
-[   15.044786]  [<ffffffff81d8a711>] ? iommu_setup+0x27d/0x27d
-[   15.051242]  [<ffffffff81d8a739>] pci_iommu_init+0x28/0x52
-[   15.057601]  [<ffffffff81000342>] do_one_initcall+0x122/0x180
-[   15.064254]  [<ffffffff81077738>] ? parse_args+0x1e8/0x320
-[   15.070608]  [<ffffffff81d850e8>] kernel_init_freeable+0x1e1/0x26c
-[   15.077747]  [<ffffffff81d84833>] ? do_early_param+0x88/0x88
-[   15.084300]  [<ffffffff8154ffc0>] ? rest_init+0xd0/0xd0
-[   15.090362]  [<ffffffff8154ffce>] kernel_init+0xe/0x130
-[   15.096431]  [<ffffffff815756ac>] ret_from_fork+0x7c/0xb0
-[   15.102693]  [<ffffffff8154ffc0>] ? rest_init+0xd0/0xd0
-[   15.189273] PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
+Domain id 0 will be assigned to invalid translation without allocating
+domain data structure if DMAR unit supports caching mode. So in function
+free_dmar_iommu(), we should check whether the domain pointer is NULL,
+otherwise it will cause system crash as below:
+[    6.790519] BUG: unable to handle kernel NULL pointer dereference at 00000000000000c8
+[    6.799520] IP: [<ffffffff810e2dc8>] __lock_acquire+0x11f8/0x1430
+[    6.806493] PGD 0
+[    6.817972] Oops: 0000 [#1] SMP DEBUG_PAGEALLOC
+[    6.823303] Modules linked in:
+[    6.826862] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 3.14.0-rc1+ #126
+[    6.834252] Hardware name: Intel Corporation BRICKLAND/BRICKLAND, BIOS BRIVTIN1.86B.0047.R00.1402050741 02/05/2014
+[    6.845951] task: ffff880455a80000 ti: ffff880455a88000 task.ti: ffff880455a88000
+[    6.854437] RIP: 0010:[<ffffffff810e2dc8>]  [<ffffffff810e2dc8>] __lock_acquire+0x11f8/0x1430
+[    6.864154] RSP: 0000:ffff880455a89ce0  EFLAGS: 00010046
+[    6.870179] RAX: 0000000000000046 RBX: 0000000000000002 RCX: 0000000000000000
+[    6.878249] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 00000000000000c8
+[    6.886318] RBP: ffff880455a89d40 R08: 0000000000000002 R09: 0000000000000001
+[    6.894387] R10: 0000000000000000 R11: 0000000000000001 R12: ffff880455a80000
+[    6.902458] R13: 0000000000000000 R14: 00000000000000c8 R15: 0000000000000000
+[    6.910520] FS:  0000000000000000(0000) GS:ffff88045b800000(0000) knlGS:0000000000000000
+[    6.919687] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    6.926198] CR2: 00000000000000c8 CR3: 0000000001e0e000 CR4: 00000000001407f0
+[    6.934269] Stack:
+[    6.936588]  ffffffffffffff10 ffffffff810f59db 0000000000000010 0000000000000246
+[    6.945219]  ffff880455a89d10 0000000000000000 ffffffff82bcb980 0000000000000046
+[    6.953850]  0000000000000000 0000000000000000 0000000000000002 0000000000000000
+[    6.962482] Call Trace:
+[    6.965300]  [<ffffffff810f59db>] ? vprintk_emit+0x4fb/0x5a0
+[    6.971716]  [<ffffffff810e3185>] lock_acquire+0x185/0x200
+[    6.977941]  [<ffffffff821fbbee>] ? init_dmars+0x839/0xa1d
+[    6.984167]  [<ffffffff81870b06>] _raw_spin_lock_irqsave+0x56/0x90
+[    6.991158]  [<ffffffff821fbbee>] ? init_dmars+0x839/0xa1d
+[    6.997380]  [<ffffffff821fbbee>] init_dmars+0x839/0xa1d
+[    7.003410]  [<ffffffff8147d575>] ? pci_get_dev_by_id+0x75/0xd0
+[    7.010119]  [<ffffffff821fc146>] intel_iommu_init+0x2f0/0x502
+[    7.016735]  [<ffffffff821a7947>] ? iommu_setup+0x27d/0x27d
+[    7.023056]  [<ffffffff821a796f>] pci_iommu_init+0x28/0x52
+[    7.029282]  [<ffffffff81002162>] do_one_initcall+0xf2/0x220
+[    7.035702]  [<ffffffff810a4a29>] ? parse_args+0x2c9/0x450
+[    7.041919]  [<ffffffff8219d1b1>] kernel_init_freeable+0x1c9/0x25b
+[    7.048919]  [<ffffffff8219c8d2>] ? do_early_param+0x8a/0x8a
+[    7.055336]  [<ffffffff8184d3f0>] ? rest_init+0x150/0x150
+[    7.061461]  [<ffffffff8184d3fe>] kernel_init+0xe/0x100
+[    7.067393]  [<ffffffff8187b5fc>] ret_from_fork+0x7c/0xb0
+[    7.073518]  [<ffffffff8184d3f0>] ? rest_init+0x150/0x150
+[    7.079642] Code: 01 76 18 89 05 46 04 36 01 41 be 01 00 00 00 e9 2f 02 00 00 0f 1f 80 00 00 00 00 41 be 01 00 00 00 e9 1d 02 00 00 0f 1f 44 00 00 <49> 81 3e c0 31 34 82 b8 01 00 00 00 0f 44 d8 41 83 ff 01 0f 87
+[    7.104944] RIP  [<ffffffff810e2dc8>] __lock_acquire+0x11f8/0x1430
+[    7.112008]  RSP <ffff880455a89ce0>
+[    7.115988] CR2: 00000000000000c8
+[    7.119784] ---[ end trace 13d756f0f462c538 ]---
+[    7.125034] note: swapper/0[1] exited with preempt_count 1
+[    7.131285] Kernel panic - not syncing: Attempted to kill init! exitcode=0x00000009
+[    7.131285]
 
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/intel-iommu.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 6724772..a27d3eb 100644
+index a27d3eb..afbc8d6 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1365,6 +1365,7 @@ static int iommu_attach_domain(struct dmar_domain *domain,
- 	}
+@@ -1297,6 +1297,13 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
  
- 	domain->id = num;
-+	domain->iommu_count++;
- 	set_bit(num, iommu->domain_ids);
- 	set_bit(iommu->seq_id, domain->iommu_bmp);
- 	iommu->domains[num] = domain;
-@@ -1489,7 +1490,6 @@ static int domain_init(struct dmar_domain *domain, int guest_width)
- 		domain->iommu_snooping = 0;
+ 	if ((iommu->domains) && (iommu->domain_ids)) {
+ 		for_each_set_bit(i, iommu->domain_ids, cap_ndoms(iommu->cap)) {
++			/*
++			 * Domain id 0 is reserved for invalid translation
++			 * if hardware supports caching mode.
++			 */
++			if (cap_caching_mode(iommu->cap) && i == 0)
++				continue;
++
+ 			domain = iommu->domains[i];
+ 			clear_bit(i, iommu->domain_ids);
  
- 	domain->iommu_superpage = fls(cap_super_page_val(iommu->cap));
--	domain->iommu_count = 1;
- 	domain->nid = iommu->node;
- 
- 	/* always allocate the top pgd */
 -- 
 1.7.10.4
