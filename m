@@ -1,8 +1,8 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part2 V2 03/17] iommu/vt-d: avoid caching stale
-	domain_device_info when hot-removing PCI device
-Date: Wed, 19 Feb 2014 14:07:23 +0800
-Message-ID: <1392790057-32434-4-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part2 V2 04/17] iommu/vt-d: factor out dmar_alloc_dev_scope()
+	for later reuse
+Date: Wed, 19 Feb 2014 14:07:24 +0800
+Message-ID: <1392790057-32434-5-git-send-email-jiang.liu@linux.intel.com>
 References: <1392790057-32434-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,64 +22,84 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse
 Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Function device_notifier() in intel-iommu.c only remove domain_device_info
-data structure associated with a PCI device when handling PCI device
-driver unbinding events. If a PCI device has never been bound to a PCI
-device driver, there won't be BUS_NOTIFY_UNBOUND_DRIVER event when
-hot-removing the PCI device. So associated domain_device_info data
-structure may get lost.
-
-On the other hand, if iommu_pass_through is enabled, function
-iommu_prepare_static_indentify_mapping() will create domain_device_info
-data structure for each PCIe to PCIe bridge and PCIe endpoint,
-no matter whether there are drivers associated with those PCIe devices
-or not. So those domain_device_info data structures will get lost when
-hot-removing the assocated PCIe devices if they have never bound to
-any PCI device driver.
-
-To be even worse, it's not only an memory leak issue, but also an
-caching of stale information bug because the memory are kept in
-device_domain_list and domain->devices lists.
-
-Fix the bug by trying to remove domain_device_info data structure when
-handling BUS_NOTIFY_DEL_DEVICE event.
+Factor out function dmar_alloc_dev_scope() from dmar_parse_dev_scope()
+for later reuse.
 
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c |   17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+ drivers/iommu/dmar.c |   28 ++++++++++++++++------------
+ include/linux/dmar.h |    1 +
+ 2 files changed, 17 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index f75d3ae..5a411e8 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3603,18 +3603,19 @@ static int device_notifier(struct notifier_block *nb,
- 	if (iommu_dummy(pdev))
- 		return 0;
- 
-+	if (action != BUS_NOTIFY_UNBOUND_DRIVER &&
-+	    action != BUS_NOTIFY_DEL_DEVICE)
-+		return 0;
-+
- 	domain = find_domain(pdev);
- 	if (!domain)
- 		return 0;
- 
--	if (action == BUS_NOTIFY_UNBOUND_DRIVER) {
--		domain_remove_one_dev_info(domain, pdev);
--
--		if (!(domain->flags & DOMAIN_FLAG_VIRTUAL_MACHINE) &&
--		    !(domain->flags & DOMAIN_FLAG_STATIC_IDENTITY) &&
--		    list_empty(&domain->devices))
--			domain_exit(domain);
--	}
-+	domain_remove_one_dev_info(domain, pdev);
-+	if (!(domain->flags & DOMAIN_FLAG_VIRTUAL_MACHINE) &&
-+	    !(domain->flags & DOMAIN_FLAG_STATIC_IDENTITY) &&
-+	    list_empty(&domain->devices))
-+		domain_exit(domain);
- 
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 1581565..58dde75 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -117,13 +117,9 @@ static int __init dmar_parse_one_dev_scope(struct acpi_dmar_device_scope *scope,
  	return 0;
  }
+ 
+-int __init dmar_parse_dev_scope(void *start, void *end, int *cnt,
+-				struct pci_dev ***devices, u16 segment)
++void *dmar_alloc_dev_scope(void *start, void *end, int *cnt)
+ {
+ 	struct acpi_dmar_device_scope *scope;
+-	void * tmp = start;
+-	int index;
+-	int ret;
+ 
+ 	*cnt = 0;
+ 	while (start < end) {
+@@ -138,15 +134,24 @@ int __init dmar_parse_dev_scope(void *start, void *end, int *cnt,
+ 		start += scope->length;
+ 	}
+ 	if (*cnt == 0)
+-		return 0;
++		return NULL;
++
++	return kcalloc(*cnt, sizeof(struct pci_dev *), GFP_KERNEL);
++}
++
++int __init dmar_parse_dev_scope(void *start, void *end, int *cnt,
++				struct pci_dev ***devices, u16 segment)
++{
++	struct acpi_dmar_device_scope *scope;
++	int index, ret;
+ 
+-	*devices = kcalloc(*cnt, sizeof(struct pci_dev *), GFP_KERNEL);
+-	if (!*devices)
++	*devices = dmar_alloc_dev_scope(start, end, cnt);
++	if (*cnt == 0)
++		return 0;
++	else if (!*devices)
+ 		return -ENOMEM;
+ 
+-	start = tmp;
+-	index = 0;
+-	while (start < end) {
++	for (index = 0; start < end; start += scope->length) {
+ 		scope = start;
+ 		if (scope->entry_type == ACPI_DMAR_SCOPE_TYPE_ENDPOINT ||
+ 		    scope->entry_type == ACPI_DMAR_SCOPE_TYPE_BRIDGE) {
+@@ -158,7 +163,6 @@ int __init dmar_parse_dev_scope(void *start, void *end, int *cnt,
+ 			}
+ 			index ++;
+ 		}
+-		start += scope->length;
+ 	}
+ 
+ 	return 0;
+diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+index eccb0c0..1b08ce8 100644
+--- a/include/linux/dmar.h
++++ b/include/linux/dmar.h
+@@ -69,6 +69,7 @@ extern int dmar_table_init(void);
+ extern int dmar_dev_scope_init(void);
+ extern int dmar_parse_dev_scope(void *start, void *end, int *cnt,
+ 				struct pci_dev ***devices, u16 segment);
++extern void *dmar_alloc_dev_scope(void *start, void *end, int *cnt);
+ extern void dmar_free_dev_scope(struct pci_dev ***devices, int *cnt);
+ 
+ /* Intel IOMMU detection */
 -- 
 1.7.10.4
