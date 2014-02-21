@@ -1,8 +1,8 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 4/5] iommu/arm-smmu: clean up use of `flags' in page table
-	handling code
-Date: Fri, 21 Feb 2014 17:16:31 +0000
-Message-ID: <1393002992-24561-5-git-send-email-will.deacon@arm.com>
+Subject: [PATCH 2/5] iommu/arm-smmu: support buggy implementations with secure
+	cfg accesses
+Date: Fri, 21 Feb 2014 17:16:29 +0000
+Message-ID: <1393002992-24561-3-git-send-email-will.deacon@arm.com>
 References: <1393002992-24561-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,165 +19,154 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Commit 972157cac528 ("arm/smmu: Use irqsafe spinlock for domain lock")
-fixed our page table locks to be the irq{save,restore} variants, since
-the DMA mapping API can be invoked from interrupt context.
+From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 
-This patch cleans up our use of the flags variable so we can distinguish
-between IRQ flags (now `flags') and pte protection bits (now `prot').
+In such a case we have to use secure aliases of some non-secure
+registers.
 
+This handling is switched on by DT property
+"calxeda,smmu-secure-config-access" for an SMMU node.
+
+Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
+[will: merged with driver option handling patch]
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 38 +++++++++++++++++++-------------------
- 1 file changed, 19 insertions(+), 19 deletions(-)
+ drivers/iommu/arm-smmu.c | 58 +++++++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 48 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index e04fdcb4b9ba..83297fe0878d 100644
+index a3ce60887efa..e04fdcb4b9ba 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -1254,7 +1254,7 @@ static bool arm_smmu_pte_is_contiguous_range(unsigned long addr,
+@@ -60,6 +60,16 @@
+ #define ARM_SMMU_GR0(smmu)		((smmu)->base)
+ #define ARM_SMMU_GR1(smmu)		((smmu)->base + (smmu)->pagesize)
  
- static int arm_smmu_alloc_init_pte(struct arm_smmu_device *smmu, pmd_t *pmd,
- 				   unsigned long addr, unsigned long end,
--				   unsigned long pfn, int flags, int stage)
-+				   unsigned long pfn, int prot, int stage)
++/*
++ * SMMU global address space with conditional offset to access secure
++ * aliases of non-secure registers (e.g. nsCR0: 0x400, nsGFSR: 0x448,
++ * nsGFSYNR0: 0x450)
++ */
++#define ARM_SMMU_GR0_NS(smmu)						\
++	((smmu)->base +							\
++		((smmu->options & ARM_SMMU_OPT_SECURE_CFG_ACCESS)	\
++			? 0x400 : 0))
++
+ /* Page table bits */
+ #define ARM_SMMU_PTE_XN			(((pteval_t)3) << 53)
+ #define ARM_SMMU_PTE_CONT		(((pteval_t)1) << 52)
+@@ -351,6 +361,9 @@ struct arm_smmu_device {
+ #define ARM_SMMU_FEAT_TRANS_S2		(1 << 3)
+ #define ARM_SMMU_FEAT_TRANS_NESTED	(1 << 4)
+ 	u32				features;
++
++#define ARM_SMMU_OPT_SECURE_CFG_ACCESS (1 << 0)
++	u32				options;
+ 	int				version;
+ 
+ 	u32				num_context_banks;
+@@ -401,6 +414,29 @@ struct arm_smmu_domain {
+ static DEFINE_SPINLOCK(arm_smmu_devices_lock);
+ static LIST_HEAD(arm_smmu_devices);
+ 
++struct arm_smmu_option_prop {
++	u32 opt;
++	const char *prop;
++};
++
++static struct arm_smmu_option_prop arm_smmu_options [] = {
++	{ ARM_SMMU_OPT_SECURE_CFG_ACCESS, "calxeda,smmu-secure-config-access" },
++	{ 0, NULL},
++};
++
++static void parse_driver_options(struct arm_smmu_device *smmu)
++{
++	int i = 0;
++	do {
++		if (of_property_read_bool(smmu->dev->of_node,
++						arm_smmu_options[i].prop)) {
++			smmu->options |= arm_smmu_options[i].opt;
++			dev_notice(smmu->dev, "option %s\n",
++				arm_smmu_options[i].prop);
++		}
++	} while (arm_smmu_options[++i].opt);
++}
++
+ static struct arm_smmu_master *find_smmu_master(struct arm_smmu_device *smmu,
+ 						struct device_node *dev_node)
  {
- 	pte_t *pte, *start;
- 	pteval_t pteval = ARM_SMMU_PTE_PAGE | ARM_SMMU_PTE_AF | ARM_SMMU_PTE_XN;
-@@ -1276,28 +1276,28 @@ static int arm_smmu_alloc_init_pte(struct arm_smmu_device *smmu, pmd_t *pmd,
- 
- 	if (stage == 1) {
- 		pteval |= ARM_SMMU_PTE_AP_UNPRIV | ARM_SMMU_PTE_nG;
--		if (!(flags & IOMMU_WRITE) && (flags & IOMMU_READ))
-+		if (!(prot & IOMMU_WRITE) && (prot & IOMMU_READ))
- 			pteval |= ARM_SMMU_PTE_AP_RDONLY;
- 
--		if (flags & IOMMU_CACHE)
-+		if (prot & IOMMU_CACHE)
- 			pteval |= (MAIR_ATTR_IDX_CACHE <<
- 				   ARM_SMMU_PTE_ATTRINDX_SHIFT);
- 	} else {
- 		pteval |= ARM_SMMU_PTE_HAP_FAULT;
--		if (flags & IOMMU_READ)
-+		if (prot & IOMMU_READ)
- 			pteval |= ARM_SMMU_PTE_HAP_READ;
--		if (flags & IOMMU_WRITE)
-+		if (prot & IOMMU_WRITE)
- 			pteval |= ARM_SMMU_PTE_HAP_WRITE;
--		if (flags & IOMMU_CACHE)
-+		if (prot & IOMMU_CACHE)
- 			pteval |= ARM_SMMU_PTE_MEMATTR_OIWB;
- 		else
- 			pteval |= ARM_SMMU_PTE_MEMATTR_NC;
- 	}
- 
- 	/* If no access, create a faulting entry to avoid TLB fills */
--	if (flags & IOMMU_EXEC)
-+	if (prot & IOMMU_EXEC)
- 		pteval &= ~ARM_SMMU_PTE_XN;
--	else if (!(flags & (IOMMU_READ | IOMMU_WRITE)))
-+	else if (!(prot & (IOMMU_READ | IOMMU_WRITE)))
- 		pteval &= ~ARM_SMMU_PTE_PAGE;
- 
- 	pteval |= ARM_SMMU_PTE_SH_IS;
-@@ -1359,7 +1359,7 @@ static int arm_smmu_alloc_init_pte(struct arm_smmu_device *smmu, pmd_t *pmd,
- 
- static int arm_smmu_alloc_init_pmd(struct arm_smmu_device *smmu, pud_t *pud,
- 				   unsigned long addr, unsigned long end,
--				   phys_addr_t phys, int flags, int stage)
-+				   phys_addr_t phys, int prot, int stage)
+@@ -614,16 +650,16 @@ static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
  {
- 	int ret;
- 	pmd_t *pmd;
-@@ -1383,7 +1383,7 @@ static int arm_smmu_alloc_init_pmd(struct arm_smmu_device *smmu, pud_t *pud,
- 	do {
- 		next = pmd_addr_end(addr, end);
- 		ret = arm_smmu_alloc_init_pte(smmu, pmd, addr, end, pfn,
--					      flags, stage);
-+					      prot, stage);
- 		phys += next - addr;
- 	} while (pmd++, addr = next, addr < end);
+ 	u32 gfsr, gfsynr0, gfsynr1, gfsynr2;
+ 	struct arm_smmu_device *smmu = dev;
+-	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
++	void __iomem *gr0_base = ARM_SMMU_GR0_NS(smmu);
  
-@@ -1392,7 +1392,7 @@ static int arm_smmu_alloc_init_pmd(struct arm_smmu_device *smmu, pud_t *pud,
+ 	gfsr = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSR);
+-	if (!gfsr)
+-		return IRQ_NONE;
+-
+ 	gfsynr0 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSYNR0);
+ 	gfsynr1 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSYNR1);
+ 	gfsynr2 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSYNR2);
  
- static int arm_smmu_alloc_init_pud(struct arm_smmu_device *smmu, pgd_t *pgd,
- 				   unsigned long addr, unsigned long end,
--				   phys_addr_t phys, int flags, int stage)
-+				   phys_addr_t phys, int prot, int stage)
- {
- 	int ret = 0;
- 	pud_t *pud;
-@@ -1416,7 +1416,7 @@ static int arm_smmu_alloc_init_pud(struct arm_smmu_device *smmu, pgd_t *pgd,
- 	do {
- 		next = pud_addr_end(addr, end);
- 		ret = arm_smmu_alloc_init_pmd(smmu, pud, addr, next, phys,
--					      flags, stage);
-+					      prot, stage);
- 		phys += next - addr;
- 	} while (pud++, addr = next, addr < end);
++	if (!gfsr)
++		return IRQ_NONE;
++
+ 	dev_err_ratelimited(smmu->dev,
+ 		"Unexpected global fault, this could be serious\n");
+ 	dev_err_ratelimited(smmu->dev,
+@@ -1597,9 +1633,9 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+ 	int i = 0;
+ 	u32 reg;
  
-@@ -1425,7 +1425,7 @@ static int arm_smmu_alloc_init_pud(struct arm_smmu_device *smmu, pgd_t *pgd,
+-	/* Clear Global FSR */
+-	reg = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSR);
+-	writel(reg, gr0_base + ARM_SMMU_GR0_sGFSR);
++	/* clear global FSR */
++	reg = readl_relaxed(ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sGFSR);
++	writel(reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sGFSR);
  
- static int arm_smmu_handle_mapping(struct arm_smmu_domain *smmu_domain,
- 				   unsigned long iova, phys_addr_t paddr,
--				   size_t size, int flags)
-+				   size_t size, int prot)
- {
- 	int ret, stage;
- 	unsigned long end;
-@@ -1433,7 +1433,7 @@ static int arm_smmu_handle_mapping(struct arm_smmu_domain *smmu_domain,
- 	struct arm_smmu_cfg *root_cfg = &smmu_domain->root_cfg;
- 	pgd_t *pgd = root_cfg->pgd;
- 	struct arm_smmu_device *smmu = root_cfg->smmu;
--	unsigned long irqflags;
-+	unsigned long flags;
+ 	/* Mark all SMRn as invalid and all S2CRn as bypass */
+ 	for (i = 0; i < smmu->num_mapping_groups; ++i) {
+@@ -1619,7 +1655,7 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+ 	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_TLBIALLH);
+ 	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_TLBIALLNSNH);
  
- 	if (root_cfg->cbar == CBAR_TYPE_S2_TRANS) {
- 		stage = 2;
-@@ -1456,14 +1456,14 @@ static int arm_smmu_handle_mapping(struct arm_smmu_domain *smmu_domain,
- 	if (paddr & ~output_mask)
- 		return -ERANGE;
+-	reg = readl_relaxed(gr0_base + ARM_SMMU_GR0_sCR0);
++	reg = readl_relaxed(ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
  
--	spin_lock_irqsave(&smmu_domain->lock, irqflags);
-+	spin_lock_irqsave(&smmu_domain->lock, flags);
- 	pgd += pgd_index(iova);
- 	end = iova + size;
- 	do {
- 		unsigned long next = pgd_addr_end(iova, end);
+ 	/* Enable fault reporting */
+ 	reg |= (sCR0_GFRE | sCR0_GFIE | sCR0_GCFGFRE | sCR0_GCFGFIE);
+@@ -1638,7 +1674,7 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
  
- 		ret = arm_smmu_alloc_init_pud(smmu, pgd, iova, next, paddr,
--					      flags, stage);
-+					      prot, stage);
- 		if (ret)
- 			goto out_unlock;
- 
-@@ -1472,13 +1472,13 @@ static int arm_smmu_handle_mapping(struct arm_smmu_domain *smmu_domain,
- 	} while (pgd++, iova != end);
- 
- out_unlock:
--	spin_unlock_irqrestore(&smmu_domain->lock, irqflags);
-+	spin_unlock_irqrestore(&smmu_domain->lock, flags);
- 
- 	return ret;
+ 	/* Push the button */
+ 	arm_smmu_tlb_sync(smmu);
+-	writel_relaxed(reg, gr0_base + ARM_SMMU_GR0_sCR0);
++	writel(reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
  }
  
- static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
--			phys_addr_t paddr, size_t size, int flags)
-+			phys_addr_t paddr, size_t size, int prot)
- {
- 	struct arm_smmu_domain *smmu_domain = domain->priv;
+ static int arm_smmu_id_size_to_bits(int size)
+@@ -1885,6 +1921,8 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 	if (err)
+ 		goto out_put_parent;
  
-@@ -1489,7 +1489,7 @@ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
- 	if ((phys_addr_t)iova & ~smmu_domain->output_mask)
- 		return -ERANGE;
++	parse_driver_options(smmu);
++
+ 	if (smmu->version > 1 &&
+ 	    smmu->num_context_banks != smmu->num_context_irqs) {
+ 		dev_err(dev,
+@@ -1969,7 +2007,7 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+ 		free_irq(smmu->irqs[i], smmu);
  
--	return arm_smmu_handle_mapping(smmu_domain, iova, paddr, size, flags);
-+	return arm_smmu_handle_mapping(smmu_domain, iova, paddr, size, prot);
+ 	/* Turn the thing off */
+-	writel_relaxed(sCR0_CLIENTPD, ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_sCR0);
++	writel(sCR0_CLIENTPD,ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
+ 	return 0;
  }
  
- static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
 -- 
 1.8.2.2
