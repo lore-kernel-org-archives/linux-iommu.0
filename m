@@ -1,57 +1,49 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: [PATCH 0/5] iommu/arm-smmu: updates for 3.15
-Date: Fri, 21 Feb 2014 17:16:27 +0000
-Message-ID: <1393002992-24561-1-git-send-email-will.deacon@arm.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH 5/5] iommu/arm-smmu: provide option to dsb macro when
+	publishing tables
+Date: Fri, 21 Feb 2014 17:16:32 +0000
+Message-ID: <1393002992-24561-6-git-send-email-will.deacon@arm.com>
+References: <1393002992-24561-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: iommu@lists.linux-foundation.org
-Cc: Will Deacon <will.deacon@arm.com>, linux-arm-kernel@lists.infradead.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1393002992-24561-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
+On coherent systems, publishing new page tables to the SMMU walker is
+achieved with a dsb instruction. In fact, this can be a dsb(ishst) which
+also provides the mandatory barrier option for arm64.
 
-These are the arm-smmu updates I have queued for 3.15 and plan to send to
-Joerg sometime next week.
+Acked-by: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+---
+ drivers/iommu/arm-smmu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The main parts are for accessing the buggy Calxeda SMMU, which is wired
-as secure despite being non-secure. Unfortunately, the apparent demise
-of Calxeda means that Andreas is no longer working on this, so I had to
-extract what I could from a larger patchset (which wasn't yet ready for
-merging).
-
-On my side, there's some cosmetic changes after Joerg fixed some locks
-to use spin_lock_irq{save,restore} and also an optimisation to restrict
-the scope of our barrier when publishing page tables (now that ARM64 can
-accept the option).
-
-Feedback welcome,
-
-Will
-
-
-Andreas Herrmann (3):
-  iommu/arm-smmu: set MAX_MASTER_STREAMIDS to MAX_PHANDLE_ARGS
-  iommu/arm-smmu: support buggy implementations with secure cfg accesses
-  documentation/iommu: update description of ARM System MMU binding
-
-Will Deacon (2):
-  iommu/arm-smmu: clean up use of `flags' in page table handling code
-  iommu/arm-smmu: provide option to dsb macro when publishing tables
-
- .../devicetree/bindings/iommu/arm,smmu.txt         |   6 ++
- drivers/iommu/arm-smmu.c                           | 100 ++++++++++++++-------
- 2 files changed, 75 insertions(+), 31 deletions(-)
-
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 83297fe0878d..1da5b41afc31 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -678,7 +678,7 @@ static void arm_smmu_flush_pgtable(struct arm_smmu_device *smmu, void *addr,
+ 
+ 	/* Ensure new page tables are visible to the hardware walker */
+ 	if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK) {
+-		dsb();
++		dsb(ishst);
+ 	} else {
+ 		/*
+ 		 * If the SMMU can't walk tables in the CPU caches, treat them
 -- 
 1.8.2.2
