@@ -1,8 +1,8 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 5/5] iommu/arm-smmu: provide option to dsb macro when
-	publishing tables
-Date: Fri, 21 Feb 2014 17:16:32 +0000
-Message-ID: <1393002992-24561-6-git-send-email-will.deacon@arm.com>
+Subject: [PATCH 1/5] iommu/arm-smmu: set MAX_MASTER_STREAMIDS to
+	MAX_PHANDLE_ARGS
+Date: Fri, 21 Feb 2014 17:16:28 +0000
+Message-ID: <1393002992-24561-2-git-send-email-will.deacon@arm.com>
 References: <1393002992-24561-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,31 +19,33 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On coherent systems, publishing new page tables to the SMMU walker is
-achieved with a dsb instruction. In fact, this can be a dsb(ishst) which
-also provides the mandatory barrier option for arm64.
+From: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 
-Acked-by: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+The DT parsing code that determines stream IDs uses
+of_parse_phandle_with_args and thus MAX_MASTER_STREAMIDS
+is always bound by MAX_PHANDLE_ARGS.
+
+Signed-off-by: Andreas Herrmann <andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
  drivers/iommu/arm-smmu.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 83297fe0878d..1da5b41afc31 100644
+index 1d9ab39af29f..a3ce60887efa 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -678,7 +678,7 @@ static void arm_smmu_flush_pgtable(struct arm_smmu_device *smmu, void *addr,
+@@ -48,7 +48,7 @@
+ #include <asm/pgalloc.h>
  
- 	/* Ensure new page tables are visible to the hardware walker */
- 	if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK) {
--		dsb();
-+		dsb(ishst);
- 	} else {
- 		/*
- 		 * If the SMMU can't walk tables in the CPU caches, treat them
+ /* Maximum number of stream IDs assigned to a single device */
+-#define MAX_MASTER_STREAMIDS		8
++#define MAX_MASTER_STREAMIDS		MAX_PHANDLE_ARGS
+ 
+ /* Maximum number of context banks per SMMU */
+ #define ARM_SMMU_MAX_CBS		128
 -- 
 1.8.2.2
