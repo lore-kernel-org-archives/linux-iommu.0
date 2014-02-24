@@ -1,62 +1,75 @@
-From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Subject: Re: [PATCH 3/5] documentation/iommu: update description of ARM System
- MMU binding
-Date: Fri, 21 Feb 2014 21:57:37 +0300
-Message-ID: <5307A1A1.7070601@cogentembedded.com>
-References: <1393002992-24561-1-git-send-email-will.deacon@arm.com>
- <1393002992-24561-4-git-send-email-will.deacon@arm.com>
+From: Florian Vaussard <florian.vaussard@epfl.ch>
+Subject: Re: [PATCHv2 03/16] Documentation: dt: add OMAP iommu bindings
+Date: Mon, 24 Feb 2014 13:57:17 +0100
+Message-ID: <530B41AD.2030608@epfl.ch>
+References: <1392315347-32967-1-git-send-email-s-anna@ti.com> <1392315347-32967-4-git-send-email-s-anna@ti.com>
+Reply-To: florian.vaussard@epfl.ch
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1393002992-24561-4-git-send-email-will.deacon@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Will Deacon <will.deacon@arm.com>, iommu@lists.linux-foundation.org
-Cc: Andreas Herrmann <andreas.herrmann@calxeda.com>, Grant Likely <grant.likely@linaro.org>, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <1392315347-32967-4-git-send-email-s-anna@ti.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org
+Cc: Suman Anna <s-anna@ti.com>, Joerg Roedel <joro@8bytes.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hello.
+Hi,
 
-On 02/21/2014 08:16 PM, Will Deacon wrote:
-
-> From: Andreas Herrmann <andreas.herrmann@calxeda.com>
-
-> This patch adds descriptions for new properties of the device tree
-> binding for the ARM SMMU architecture. These properties control
-> arm-smmu driver options.
-
-> Cc: Grant Likely <grant.likely@linaro.org>
-> Acked-by: Rob Herring <robh@kernel.org>
-> Signed-off-by: Andreas Herrmann <andreas.herrmann@calxeda.com>
-> [will: removed device isolation property, as this has been dropped]
-> Signed-off-by: Will Deacon <will.deacon@arm.com>
+On 02/13/2014 07:15 PM, Suman Anna wrote:
+> From: Florian Vaussard <florian.vaussard@epfl.ch>
+> 
+> This patch adds the iommu bindings for all OMAP2+ SoCs. Apart from
+> the standard bindings used by OMAP peripherals, this patch uses a
+> 'dma-window' (already used by Tegra SMMU) and adds two OMAP custom
+> bindings - 'ti,#tlb-entries' and 'ti,iommu-bus-err-back'.
+> 
+> Signed-off-by: Florian Vaussard <florian.vaussard@epfl.ch>
+> [s-anna@ti.com: split bindings document, add dra7 and bus error back]
+> Signed-off-by: Suman Anna <s-anna@ti.com>
 > ---
->   Documentation/devicetree/bindings/iommu/arm,smmu.txt | 6 ++++++
->   1 file changed, 6 insertions(+)
+>  .../devicetree/bindings/iommu/ti,omap-iommu.txt    | 28 ++++++++++++++++++++++
+>  1 file changed, 28 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt b/Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt
+> new file mode 100644
+> index 0000000..116492d
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt
+> @@ -0,0 +1,28 @@
+> +OMAP2+ IOMMU
+> +
+> +Required properties:
+> +- compatible : Should be one of,
+> +		"ti,omap2-iommu" for OMAP2/OMAP3 IOMMU instances
+> +		"ti,omap4-iommu" for OMAP4/OMAP5 IOMMU instances
+> +		"ti,dra7-iommu" for DRA7xx IOMMU instances
+> +- ti,hwmods  : Name of the hwmod associated with the IOMMU instance
+> +- reg        : Address space for the configuration registers
+> +- interrupts : Interrupt specifier for the IOMMU instance
+> +- dma-window : IOVA start address and length
+> +
+> +Optional properties:
+> +- ti,#tlb-entries : Number of entries in the translation look-aside buffer.
+> +                    Should be either 8 or 32 (default: 32)
+> +- ti,iommu-bus-err-back : Indicates the IOMMU instance supports throwing
+> +		          back a bus error response on MMU faults.
+> +
+> +Example:
+> +	/* OMAP3 ISP MMU */
+> +	mmu_isp: mmu@480bd400 {
+> +		compatible = "ti,omap2-iommu";
+> +		reg = <0x480bd400 0x80>;
+> +		interrupts = <24>;
+> +		ti,hwmods = "mmu_isp";
+> +		ti,#tlb-entries = <8>;
+> +		dma-window = <0 0xfffff000>;
+> +	};
+> 
 
-> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> index e34c6cdd8ba8..d6d2f6dd437a 100644
-> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> @@ -48,6 +48,12 @@ conditions.
->                     from the mmu-masters towards memory) node for this
->                     SMMU.
->
-> +- calxeda,smmu-secure-config-access : Enable proper handling of buggy
-> +                  implementations that always use secure access to
-> +                  SMMU configuration registers. In this case non-secure
-> +		  aliases of secure registers have to be used during
-> +		  SMMU configuration.
+Any comments on this binding?
 
-    Could you indent the text uniformly, in this case probably with spaces 
-only (looking at the above property)?
+Regards,
+Florian
 
-WBR, Sergei
