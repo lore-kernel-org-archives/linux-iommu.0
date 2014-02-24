@@ -1,78 +1,49 @@
-From: Suman Anna <s-anna@ti.com>
-Subject: Re: [PATCHv2 03/16] Documentation: dt: add OMAP iommu bindings
-Date: Mon, 24 Feb 2014 12:09:36 -0600
-Message-ID: <530B8AE0.9020301@ti.com>
-References: <1392315347-32967-1-git-send-email-s-anna@ti.com> <1392315347-32967-4-git-send-email-s-anna@ti.com> <530B41AD.2030608@epfl.ch>
+From: Jon Mason <jdmason-zqedIHPRSYI@public.gmane.org>
+Subject: [PATCH] MAINTAINERS: Update Calgary IOMMU
+Date: Mon, 24 Feb 2014 15:59:23 -0700
+Message-ID: <1393282763-4137-1-git-send-email-jdmason@kudzu.us>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <530B41AD.2030608@epfl.ch>
-Sender: linux-omap-owner@vger.kernel.org
-To: florian.vaussard@epfl.ch, Tony Lindgren <tony@atomide.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, Kumar Gala <galak@codeaurora.org>, Rob Herring <robh+dt@kernel.org>
-Cc: Joerg Roedel <joro@8bytes.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Mark, Kumar, Rob,
+Update the contact info for Muli, clean-up my name, and update the
+mailing list to the IOMMU mailing list.
 
-> On 02/13/2014 07:15 PM, Suman Anna wrote:
->> From: Florian Vaussard <florian.vaussard@epfl.ch>
->>
->> This patch adds the iommu bindings for all OMAP2+ SoCs. Apart from
->> the standard bindings used by OMAP peripherals, this patch uses a
->> 'dma-window' (already used by Tegra SMMU) and adds two OMAP custom
->> bindings - 'ti,#tlb-entries' and 'ti,iommu-bus-err-back'.
->>
->> Signed-off-by: Florian Vaussard <florian.vaussard@epfl.ch>
->> [s-anna@ti.com: split bindings document, add dra7 and bus error back]
->> Signed-off-by: Suman Anna <s-anna@ti.com>
->> ---
->>   .../devicetree/bindings/iommu/ti,omap-iommu.txt    | 28 ++++++++++++++++++++++
->>   1 file changed, 28 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt
->>
->> diff --git a/Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt b/Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt
->> new file mode 100644
->> index 0000000..116492d
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt
->> @@ -0,0 +1,28 @@
->> +OMAP2+ IOMMU
->> +
->> +Required properties:
->> +- compatible : Should be one of,
->> +		"ti,omap2-iommu" for OMAP2/OMAP3 IOMMU instances
->> +		"ti,omap4-iommu" for OMAP4/OMAP5 IOMMU instances
->> +		"ti,dra7-iommu" for DRA7xx IOMMU instances
->> +- ti,hwmods  : Name of the hwmod associated with the IOMMU instance
->> +- reg        : Address space for the configuration registers
->> +- interrupts : Interrupt specifier for the IOMMU instance
->> +- dma-window : IOVA start address and length
->> +
->> +Optional properties:
->> +- ti,#tlb-entries : Number of entries in the translation look-aside buffer.
->> +                    Should be either 8 or 32 (default: 32)
->> +- ti,iommu-bus-err-back : Indicates the IOMMU instance supports throwing
->> +		          back a bus error response on MMU faults.
->> +
->> +Example:
->> +	/* OMAP3 ISP MMU */
->> +	mmu_isp: mmu@480bd400 {
->> +		compatible = "ti,omap2-iommu";
->> +		reg = <0x480bd400 0x80>;
->> +		interrupts = <24>;
->> +		ti,hwmods = "mmu_isp";
->> +		ti,#tlb-entries = <8>;
->> +		dma-window = <0 0xfffff000>;
->> +	};
->>
->
-> Any comments on this binding?
+Signed-off-by: Jon Mason <jdmason-zqedIHPRSYI@public.gmane.org>
+Cc: Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>
+---
+ MAINTAINERS | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Can one of you look through this binding and ack/suggest changes?
-As I mentioned in the cover letter, the optional properties usually 
-apply only to specific subsystems, so do let me know if this should be 
-handled using compatible string per subsystem per SoC rather than per SoC.
-
-regards
-Suman
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 85b3dd8..d8e8418 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2028,9 +2028,9 @@ F:	include/net/caif/
+ F:	net/caif/
+ 
+ CALGARY x86-64 IOMMU
+-M:	Muli Ben-Yehuda <muli-7z/5BgaJwgfQT0dZR+AlfA@public.gmane.org>
+-M:	"Jon D. Mason" <jdmason-zqedIHPRSYI@public.gmane.org>
+-L:	discuss-Wa75r+71Mmgdnm+yROfE0A@public.gmane.org
++M:	Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>
++M:	Jon Mason <jdmason-zqedIHPRSYI@public.gmane.org>
++L:	iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+ S:	Maintained
+ F:	arch/x86/kernel/pci-calgary_64.c
+ F:	arch/x86/kernel/tce_64.c
+-- 
+1.8.3.2
