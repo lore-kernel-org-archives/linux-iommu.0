@@ -1,75 +1,88 @@
-From: Florian Vaussard <florian.vaussard@epfl.ch>
-Subject: Re: [PATCHv2 03/16] Documentation: dt: add OMAP iommu bindings
-Date: Mon, 24 Feb 2014 13:57:17 +0100
-Message-ID: <530B41AD.2030608@epfl.ch>
-References: <1392315347-32967-1-git-send-email-s-anna@ti.com> <1392315347-32967-4-git-send-email-s-anna@ti.com>
-Reply-To: florian.vaussard@epfl.ch
+From: srikanth TS <srikantht.shivanand-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: (unknown)
+Date: Tue, 25 Feb 2014 00:12:21 +0900
+Message-ID: <CAM0G4zvu1BHcOrSgBuobvb-+fVsNWXjXdzZdV51T70B9_ZC4XQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1392315347-32967-4-git-send-email-s-anna@ti.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org
-Cc: Suman Anna <s-anna@ti.com>, Joerg Roedel <joro@8bytes.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: multipart/mixed; boundary="===============8024141206004734371=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: 
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sungjinn.chung-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ts.srikanth-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+--===============8024141206004734371==
+Content-Type: multipart/alternative; boundary=089e0160c660f3ba8b04f32865b7
 
-On 02/13/2014 07:15 PM, Suman Anna wrote:
-> From: Florian Vaussard <florian.vaussard@epfl.ch>
-> 
-> This patch adds the iommu bindings for all OMAP2+ SoCs. Apart from
-> the standard bindings used by OMAP peripherals, this patch uses a
-> 'dma-window' (already used by Tegra SMMU) and adds two OMAP custom
-> bindings - 'ti,#tlb-entries' and 'ti,iommu-bus-err-back'.
-> 
-> Signed-off-by: Florian Vaussard <florian.vaussard@epfl.ch>
-> [s-anna@ti.com: split bindings document, add dra7 and bus error back]
-> Signed-off-by: Suman Anna <s-anna@ti.com>
-> ---
->  .../devicetree/bindings/iommu/ti,omap-iommu.txt    | 28 ++++++++++++++++++++++
->  1 file changed, 28 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt b/Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt
-> new file mode 100644
-> index 0000000..116492d
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt
-> @@ -0,0 +1,28 @@
-> +OMAP2+ IOMMU
-> +
-> +Required properties:
-> +- compatible : Should be one of,
-> +		"ti,omap2-iommu" for OMAP2/OMAP3 IOMMU instances
-> +		"ti,omap4-iommu" for OMAP4/OMAP5 IOMMU instances
-> +		"ti,dra7-iommu" for DRA7xx IOMMU instances
-> +- ti,hwmods  : Name of the hwmod associated with the IOMMU instance
-> +- reg        : Address space for the configuration registers
-> +- interrupts : Interrupt specifier for the IOMMU instance
-> +- dma-window : IOVA start address and length
-> +
-> +Optional properties:
-> +- ti,#tlb-entries : Number of entries in the translation look-aside buffer.
-> +                    Should be either 8 or 32 (default: 32)
-> +- ti,iommu-bus-err-back : Indicates the IOMMU instance supports throwing
-> +		          back a bus error response on MMU faults.
-> +
-> +Example:
-> +	/* OMAP3 ISP MMU */
-> +	mmu_isp: mmu@480bd400 {
-> +		compatible = "ti,omap2-iommu";
-> +		reg = <0x480bd400 0x80>;
-> +		interrupts = <24>;
-> +		ti,hwmods = "mmu_isp";
-> +		ti,#tlb-entries = <8>;
-> +		dma-window = <0 0xfffff000>;
-> +	};
-> 
+--089e0160c660f3ba8b04f32865b7
+Content-Type: text/plain; charset=ISO-8859-1
 
-Any comments on this binding?
+Hi Will Deacon,
 
-Regards,
-Florian
 
+
+Currently SMMU driver expecting all stream ID used by respective master
+should be defined in the DT.
+
+We want to know how to handle in the case of virtual functions dynamically
+created and destroyed.
+
+Is PCI driver responsible for creating stream ID respective BDand
+requesting SMMU to add to the mapping table[stream Id to context mapping
+table]?
+
+Or is there any right way of doing it?
+
+
+
+WBRs,
+
+Srikanth.
+
+--089e0160c660f3ba8b04f32865b7
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><p style=3D"margin:0cm 0cm 0pt;font-family:&#39;Courier Ne=
+w&#39;;font-size:10pt"><span style=3D"font-size:10pt">Hi Will Deacon,</span=
+><br></p><p style=3D"margin:0cm 0cm 0pt;font-family:&#39;Courier New&#39;;f=
+ont-size:10pt">
+<span lang=3D"EN-US"><u></u>=A0<u></u></span></p><p style=3D"margin:0cm 0cm=
+ 0pt;font-family:&#39;Courier New&#39;;font-size:10pt"><span lang=3D"EN-US"=
+>Currently SMMU driver expecting all stream ID used by respective master sh=
+ould be defined in the DT.<u></u><u></u></span></p>
+<p style=3D"margin:0cm 0cm 0pt;font-family:&#39;Courier New&#39;;font-size:=
+10pt"><span lang=3D"EN-US">We want to know how to handle in the case of vir=
+tual functions dynamically created and destroyed.<u></u><u></u></span></p><=
+p style=3D"margin:0cm 0cm 0pt;font-family:&#39;Courier New&#39;;font-size:1=
+0pt">
+<span lang=3D"EN-US">Is PCI driver responsible for creating stream ID respe=
+ctive BDand requesting SMMU to add to the mapping table[stream Id to contex=
+t mapping table]?<u></u><u></u></span></p><p style=3D"margin:0cm 0cm 0pt;fo=
+nt-family:&#39;Courier New&#39;;font-size:10pt">
+<span lang=3D"EN-US">Or is there any right way of doing it?<u></u><u></u></=
+span></p><p style=3D"margin:0cm 0cm 0pt;font-family:&#39;Courier New&#39;;f=
+ont-size:10pt"><span lang=3D"EN-US"><u></u>=A0<u></u></span></p><p style=3D=
+"margin:0cm 0cm 0pt;font-family:&#39;Courier New&#39;;font-size:10pt">
+<span lang=3D"EN-US">WBRs,<u></u><u></u></span></p><p style=3D"margin:0cm 0=
+cm 0pt;font-family:&#39;Courier New&#39;;font-size:10pt"><span lang=3D"EN-U=
+S">Srikanth.</span></p></div>
+
+--089e0160c660f3ba8b04f32865b7--
+
+--===============8024141206004734371==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============8024141206004734371==--
