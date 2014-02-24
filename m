@@ -1,58 +1,78 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: your mail
-Date: Mon, 24 Feb 2014 17:28:50 +0000
-Message-ID: <20140224172850.GG2553@mudshark.cambridge.arm.com>
-References: <CAM0G4zvu1BHcOrSgBuobvb-+fVsNWXjXdzZdV51T70B9_ZC4XQ@mail.gmail.com>
+From: Suman Anna <s-anna@ti.com>
+Subject: Re: [PATCHv2 03/16] Documentation: dt: add OMAP iommu bindings
+Date: Mon, 24 Feb 2014 12:09:36 -0600
+Message-ID: <530B8AE0.9020301@ti.com>
+References: <1392315347-32967-1-git-send-email-s-anna@ti.com> <1392315347-32967-4-git-send-email-s-anna@ti.com> <530B41AD.2030608@epfl.ch>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CAM0G4zvu1BHcOrSgBuobvb-+fVsNWXjXdzZdV51T70B9_ZC4XQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: srikanth TS <srikantht.shivanand-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "sungjinn.chung-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <sungjinn.chung-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ts.srikanth-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <ts.srikanth-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <530B41AD.2030608@epfl.ch>
+Sender: linux-omap-owner@vger.kernel.org
+To: florian.vaussard@epfl.ch, Tony Lindgren <tony@atomide.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, Kumar Gala <galak@codeaurora.org>, Rob Herring <robh+dt@kernel.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Feb 24, 2014 at 03:12:21PM +0000, srikanth TS wrote:
-> Hi Will Deacon,
+Mark, Kumar, Rob,
 
-Hello,
+> On 02/13/2014 07:15 PM, Suman Anna wrote:
+>> From: Florian Vaussard <florian.vaussard@epfl.ch>
+>>
+>> This patch adds the iommu bindings for all OMAP2+ SoCs. Apart from
+>> the standard bindings used by OMAP peripherals, this patch uses a
+>> 'dma-window' (already used by Tegra SMMU) and adds two OMAP custom
+>> bindings - 'ti,#tlb-entries' and 'ti,iommu-bus-err-back'.
+>>
+>> Signed-off-by: Florian Vaussard <florian.vaussard@epfl.ch>
+>> [s-anna@ti.com: split bindings document, add dra7 and bus error back]
+>> Signed-off-by: Suman Anna <s-anna@ti.com>
+>> ---
+>>   .../devicetree/bindings/iommu/ti,omap-iommu.txt    | 28 ++++++++++++++++++++++
+>>   1 file changed, 28 insertions(+)
+>>   create mode 100644 Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt
+>>
+>> diff --git a/Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt b/Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt
+>> new file mode 100644
+>> index 0000000..116492d
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt
+>> @@ -0,0 +1,28 @@
+>> +OMAP2+ IOMMU
+>> +
+>> +Required properties:
+>> +- compatible : Should be one of,
+>> +		"ti,omap2-iommu" for OMAP2/OMAP3 IOMMU instances
+>> +		"ti,omap4-iommu" for OMAP4/OMAP5 IOMMU instances
+>> +		"ti,dra7-iommu" for DRA7xx IOMMU instances
+>> +- ti,hwmods  : Name of the hwmod associated with the IOMMU instance
+>> +- reg        : Address space for the configuration registers
+>> +- interrupts : Interrupt specifier for the IOMMU instance
+>> +- dma-window : IOVA start address and length
+>> +
+>> +Optional properties:
+>> +- ti,#tlb-entries : Number of entries in the translation look-aside buffer.
+>> +                    Should be either 8 or 32 (default: 32)
+>> +- ti,iommu-bus-err-back : Indicates the IOMMU instance supports throwing
+>> +		          back a bus error response on MMU faults.
+>> +
+>> +Example:
+>> +	/* OMAP3 ISP MMU */
+>> +	mmu_isp: mmu@480bd400 {
+>> +		compatible = "ti,omap2-iommu";
+>> +		reg = <0x480bd400 0x80>;
+>> +		interrupts = <24>;
+>> +		ti,hwmods = "mmu_isp";
+>> +		ti,#tlb-entries = <8>;
+>> +		dma-window = <0 0xfffff000>;
+>> +	};
+>>
+>
+> Any comments on this binding?
 
-> Currently SMMU driver expecting all stream ID used by respective master
-> should be defined in the DT.
-> 
-> We want to know how to handle in the case of virtual functions dynamically
-> created and destroyed.
-> 
-> Is PCI driver responsible for creating stream ID respective BDand
-> requesting SMMU to add to the mapping table[stream Id to context mapping
-> table]?
-> 
-> Or is there any right way of doing it?
+Can one of you look through this binding and ack/suggest changes?
+As I mentioned in the cover letter, the optional properties usually 
+apply only to specific subsystems, so do let me know if this should be 
+handled using compatible string per subsystem per SoC rather than per SoC.
 
-Correct, the driver currently doesn't support dynamic mappings (mainly
-because I didn't want to try and invent something that I couldn't test).
-
-There are a couple of ways to solve this:
-
-  (1) Add a way for a PCI RC to dynamically allocate StreamIDs on an SMMU
-      within a fixed range. That would probably need some code in the bus
-      layer, so that a bus notifier can kick and call back to the relevant
-      SMMU.
-
-  (2) Describe the RID -> SID mapping in the device-tree. We probably want
-      to avoid an enormous table, so this would only work for simple `SID =
-      RID + offset' or 'SID = RID & mask' cases.
-
-How do your IDs map to each other?
-
-Will
+regards
+Suman
