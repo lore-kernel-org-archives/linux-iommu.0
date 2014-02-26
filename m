@@ -1,75 +1,55 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH 3/4] ARM: dts: OMAP4: Add IOMMU nodes
-Date: Wed, 26 Feb 2014 22:05:17 +0100
-Message-ID: <5025565.C2g8cq3k2V@avalon>
-References: <1392315776-33197-1-git-send-email-s-anna@ti.com> <1392315776-33197-4-git-send-email-s-anna@ti.com>
+From: <suravee.suthikulpanit@amd.com>
+Subject: [PATCH 1/1] iommu/amd: Fix PASID format in INVALIDATE_IOTLB_PAGES command
+Date: Wed, 26 Feb 2014 15:49:31 -0600
+Message-ID: <1393451371-17894-1-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1392315776-33197-4-git-send-email-s-anna@ti.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Suman Anna <s-anna@ti.com>
-Cc: Benoit Cousson <bcousson@baylibre.com>, Tony Lindgren <tony@atomide.com>, Florian Vaussard <florian.vaussard@epfl.ch>, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, joro@8bytes.org
+Cc: linux-kernel@vger.kernel.org, Jay Cornwall <jay.cornwall@amd.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Suman,
+From: Jay Cornwall <jay.cornwall@amd.com>
 
-Thank you for the patch.
+This patch corrects the PASID format in the INVALIDATE_IOTLB_PAGES
+command, which was caused by incorrect information in
+the AMD IOMMU Architectural Specification v2.01 document.
 
-On Thursday 13 February 2014 12:22:55 Suman Anna wrote:
-> From: Florian Vaussard <florian.vaussard@epfl.ch>
-> 
-> Add the IOMMU nodes for the DSP and IPU subsystems. The external
-> address space for DSP starts at 0x20000000 in OMAP4 compared to
-> 0x11000000 in OMAP3, and the addresses beyond 0xE0000000 are
-> private address space for the Cortex-M3 cores in the IPU subsystem.
-> The MMU within the IPU sub-system also supports a bus error back
-> capability, not available on the DSP MMU.
-> 
-> Signed-off-by: Florian Vaussard <florian.vaussard@epfl.ch>
-> [s-anna@ti.com: dma-window updates and bus error back addition]
-> Signed-off-by: Suman Anna <s-anna@ti.com>
-> ---
->  arch/arm/boot/dts/omap4.dtsi | 17 +++++++++++++++++
->  1 file changed, 17 insertions(+)
-> 
-> diff --git a/arch/arm/boot/dts/omap4.dtsi b/arch/arm/boot/dts/omap4.dtsi
-> index d3f8a6e..1885f90 100644
-> --- a/arch/arm/boot/dts/omap4.dtsi
-> +++ b/arch/arm/boot/dts/omap4.dtsi
-> @@ -461,6 +461,23 @@
->  			dma-names = "tx", "rx";
->  		};
-> 
-> +		mmu_dsp: mmu@4a066000 {
-> +			compatible = "ti,omap4-iommu";
-> +			reg = <0x4a066000 0xff>;
-> +			interrupts = <GIC_SPI 28 IRQ_TYPE_LEVEL_HIGH>;
-> +			ti,hwmods = "mmu_dsp";
-> +			dma-window = <0x20000000 0xdffff000>;
-> +		};
-> +
-> +		mmu_ipu: mmu@55082000 {
-> +			compatible = "ti,omap4-iommu";
-> +			reg = <0x55082000 0xff>;
-> +			interrupts = <GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>;
-> +			ti,hwmods = "mmu_ipu";
-> +			dma-window = <0 0xdffff000>;
+    Incorrect format:
+         cmd->data[0][16:23] = PASID[7:0]
+         cmd->data[1][16:27] = PASID[19:8]
 
-I'm not too familiar with the M3 MPU in the OMAP4, but doesn't its memory map 
-also include other reserved regions, such as 0x55040000- 0x5505ffff to access 
-the ISS ?
+     Correct format:
+         cmd->data[0][16:23] = PASID[15:8]
+         cmd->data[1][16:23] = PASID[7:0]
 
-> +			ti,iommu-bus-err-back;
-> +		};
-> +
->  		wdt2: wdt@4a314000 {
->  			compatible = "ti,omap4-wdt", "ti,omap3-wdt";
->  			reg = <0x4a314000 0x80>;
+However, this does not affect the IOMMUv2 hardware implementation,
+and has been corrected since version 2.02 of the specification
+(available through AMD NDA).
 
+Signed-off-by: Jay Cornwall <jay.cornwall@amd.com>
+Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+---
+ drivers/iommu/amd_iommu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index faf0da4..1dd9f81 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -982,10 +982,10 @@ static void build_inv_iotlb_pasid(struct iommu_cmd *cmd, u16 devid, int pasid,
+ 	address &= ~(0xfffULL);
+ 
+ 	cmd->data[0]  = devid;
+-	cmd->data[0] |= (pasid & 0xff) << 16;
++	cmd->data[0] |= ((pasid >> 8) & 0xff) << 16;
+ 	cmd->data[0] |= (qdep  & 0xff) << 24;
+ 	cmd->data[1]  = devid;
+-	cmd->data[1] |= ((pasid >> 8) & 0xfff) << 16;
++	cmd->data[1] |= (pasid & 0xff) << 16;
+ 	cmd->data[2]  = lower_32_bits(address);
+ 	cmd->data[2] |= CMD_INV_IOMMU_PAGES_GN_MASK;
+ 	cmd->data[3]  = upper_32_bits(address);
 -- 
-Regards,
-
-Laurent Pinchart
-
+1.8.1.2
