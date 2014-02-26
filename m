@@ -1,111 +1,166 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCHv2 03/16] Documentation: dt: add OMAP iommu bindings
-Date: Wed, 26 Feb 2014 03:13:46 +0100
-Message-ID: <1552997.8jd4jgn3Ze@avalon>
-References: <1392315347-32967-1-git-send-email-s-anna@ti.com> <13151454.2tbkC7YZsi@avalon> <530D210B.3070602@ti.com>
+From: srikanth TS <srikantht.shivanand-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: RE: your mail
+Date: Wed, 26 Feb 2014 17:23:19 +0900
+Message-ID: <CAM0G4zv7nBLRdiXcFjiarXAhsbA+5MkdWHPysjpn=ydky72Piw@mail.gmail.com>
+References: <CAM0G4zvu1BHcOrSgBuobvb-+fVsNWXjXdzZdV51T70B9_ZC4XQ@mail.gmail.com>
+	<20140224172850.GG2553@mudshark.cambridge.arm.com>
+	<42a1041ac2df4a73a94dc4516969e35d@BL2PR03MB468.namprd03.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <530D210B.3070602@ti.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Suman Anna <s-anna@ti.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Tony Lindgren <tony@atomide.com>, Florian Vaussard <florian.vaussard@epfl.ch>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: multipart/mixed; boundary="===============3118327616030262043=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <42a1041ac2df4a73a94dc4516969e35d-AZ66ij2kwaacCcN9WK45f+O6mTEJWrR4XA4E9RH9d+qIuWR1G4zioA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sungjinn.chung-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ts.srikanth-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Suman,
+--===============3118327616030262043==
+Content-Type: multipart/alternative; boundary=089e015365e6d77ed704f34aea17
 
-On Tuesday 25 February 2014 17:02:35 Suman Anna wrote:
-> On 02/25/2014 03:26 PM, Laurent Pinchart wrote:
-> > On Thursday 13 February 2014 12:15:34 Suman Anna wrote:
-> >> From: Florian Vaussard <florian.vaussard@epfl.ch>
-> >> 
-> >> This patch adds the iommu bindings for all OMAP2+ SoCs. Apart from
-> >> the standard bindings used by OMAP peripherals, this patch uses a
-> >> 'dma-window' (already used by Tegra SMMU) and adds two OMAP custom
-> >> bindings - 'ti,#tlb-entries' and 'ti,iommu-bus-err-back'.
-> >> 
-> >> Signed-off-by: Florian Vaussard <florian.vaussard@epfl.ch>
-> >> [s-anna@ti.com: split bindings document, add dra7 and bus error back]
-> >> Signed-off-by: Suman Anna <s-anna@ti.com>
-> >> ---
-> >> 
-> >>   .../devicetree/bindings/iommu/ti,omap-iommu.txt    | 28
-> >>   +++++++++++++++++++
-> >>   1 file changed, 28 insertions(+)
-> >>   create mode 100644
-> >>   Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt
-> >> 
-> >> diff --git a/Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt
-> >> b/Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt new file mode
-> >> 100644
-> >> index 0000000..116492d
-> >> --- /dev/null
-> >> +++ b/Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt
-> >> @@ -0,0 +1,28 @@
-> >> +OMAP2+ IOMMU
-> >> +
-> >> +Required properties:
-> >> +- compatible : Should be one of,
-> >> +		"ti,omap2-iommu" for OMAP2/OMAP3 IOMMU instances
-> >> +		"ti,omap4-iommu" for OMAP4/OMAP5 IOMMU instances
-> >> +		"ti,dra7-iommu" for DRA7xx IOMMU instances
-> >> +- ti,hwmods  : Name of the hwmod associated with the IOMMU instance
-> >> +- reg        : Address space for the configuration registers
-> >> +- interrupts : Interrupt specifier for the IOMMU instance
-> >> +- dma-window : IOVA start address and length
-> > 
-> > Isn't the dma window more of a system configuration property than a
-> > hardware property ? How do you expect it to be set?
-> 
-> We are setting it based on the addressable range for the MMU.
+--089e015365e6d77ed704f34aea17
+Content-Type: text/plain; charset=ISO-8859-1
 
-A quick look at the ISP and IVA IOMMUs in the OMAP3 shows that both support 
-the full 4GB VA space. Why do you need to restrict it ?
-
-> We are reusing the existing defined property and it allows us to get rid of
-> the IOVA start and end addresses defined in the pre-DT OMAP iommu platform
-> data.
+On Feb 25, 2014 8:28 PM, "Varun Sethi" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org> wrote:
 >
-> >> +Optional properties:
-> >> +- ti,#tlb-entries : Number of entries in the translation look-aside
-> >> buffer. +                    Should be either 8 or 32 (default: 32)
-> >> +- ti,iommu-bus-err-back : Indicates the IOMMU instance supports throwing
-> >> +		          back a bus error response on MMU faults.
-> > 
-> > Do these features vary per IOMMU instance or per IOMMU model ? In the
-> > latter case they could be inferred from the compatible string by the
-> > driver without requiring them to be explicit in DT (whether you want to
-> > do so is left to you though).
-> 
-> Well, these are fixed features given an IOMMU instance, like the OMAP3
-> ISP is the only one that has 8 TLB entries, all the remaining ones have
-> 32, and the IPU iommu instances are the only ones that support the bus
-> error response back. I have no preference to any particular way, and
-> sure the driver can infer these easily based on unique compatible
-> strings per subsystem per SoC. I just happened to go with defining
-> compatible strings per SoC, with the optional properties differentiating
-> the fixed behavior between different IOMMU instances on that SoC. This
-> is where I was looking for some inputs/guidance from the DT bindings
-> maintainers on what is the preferred method.
+>
+>
+> > -----Original Message-----
+> > From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
+> > bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Will Deacon
+> > Sent: Monday, February 24, 2014 10:59 PM
+> > To: srikanth TS
+> > Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; sungjinn.chung-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org; linux-
+> > kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; ts.srikanth-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+> > Subject: Re: your mail
+> >
+> > On Mon, Feb 24, 2014 at 03:12:21PM +0000, srikanth TS wrote:
+> > > Hi Will Deacon,
+> >
+> > Hello,
+> >
+> > > Currently SMMU driver expecting all stream ID used by respective
+> > > master should be defined in the DT.
+> > >
+> > > We want to know how to handle in the case of virtual functions
+> > > dynamically created and destroyed.
+> > >
+> > > Is PCI driver responsible for creating stream ID respective BDand
+> > > requesting SMMU to add to the mapping table[stream Id to context
+> > > mapping table]?
+> > >
+> > > Or is there any right way of doing it?
+> >
+> > Correct, the driver currently doesn't support dynamic mappings (mainly
+> > because I didn't want to try and invent something that I couldn't test).
+> >
+> > There are a couple of ways to solve this:
+> >
+> >   (1) Add a way for a PCI RC to dynamically allocate StreamIDs on an
+SMMU
+> >       within a fixed range. That would probably need some code in the
+bus
+> >       layer, so that a bus notifier can kick and call back to the
+> > relevant
+> >       SMMU.
+> This could be done in add device notifier. I am working on similar(not
+PCI) hot plug device infrastructure for arm smmu driver. I will post an RFC
+patch by next week.
+Can you please explain with little more detail. We just want to make sure
+your idea fits in for pci iov also.
 
-I think you've made the right choice. I wasn't sure whether those parameters 
-varied across IOMMU instances of compatible devices (from a compatible string 
-point of view) or were constant. As they vary they should be expressed in DT.
+-Srikanth ts
+>
+> -Varun
+>
 
-> >> +Example:
-> >> +	/* OMAP3 ISP MMU */
-> >> +	mmu_isp: mmu@480bd400 {
-> >> +		compatible = "ti,omap2-iommu";
-> >> +		reg = <0x480bd400 0x80>;
-> >> +		interrupts = <24>;
-> >> +		ti,hwmods = "mmu_isp";
-> >> +		ti,#tlb-entries = <8>;
-> >> +		dma-window = <0 0xfffff000>;
-> >> +	};
+--089e015365e6d77ed704f34aea17
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
--- 
-Regards,
+<p dir=3D"ltr"><br>
+On Feb 25, 2014 8:28 PM, &quot;Varun Sethi&quot; &lt;<a href=3D"mailto:Varu=
+n.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org">Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org</a>&gt; wrote:<br>
+&gt;<br>
+&gt;<br>
+&gt;<br>
+&gt; &gt; -----Original Message-----<br>
+&gt; &gt; From: <a href=3D"mailto:iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org"=
+>iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org</a> [mailto:<a href=3D"mailto:iom=
+mu-">iommu-</a><br>
+&gt; &gt; <a href=3D"mailto:bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org">bounces@lis=
+ts.linux-foundation.org</a>] On Behalf Of Will Deacon<br>
+&gt; &gt; Sent: Monday, February 24, 2014 10:59 PM<br>
+&gt; &gt; To: srikanth TS<br>
+&gt; &gt; Cc: <a href=3D"mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org">iommu@lis=
+ts.linux-foundation.org</a>; <a href=3D"mailto:sungjinn.chung-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org">=
+sungjinn.chung-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org</a>; linux-<br>
+&gt; &gt; <a href=3D"mailto:kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org">kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org<=
+/a>; <a href=3D"mailto:ts.srikanth-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org">ts.srikanth-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org</a>=
+<br>
+&gt; &gt; Subject: Re: your mail<br>
+&gt; &gt;<br>
+&gt; &gt; On Mon, Feb 24, 2014 at 03:12:21PM +0000, srikanth TS wrote:<br>
+&gt; &gt; &gt; Hi Will Deacon,<br>
+&gt; &gt;<br>
+&gt; &gt; Hello,<br>
+&gt; &gt;<br>
+&gt; &gt; &gt; Currently SMMU driver expecting all stream ID used by respec=
+tive<br>
+&gt; &gt; &gt; master should be defined in the DT.<br>
+&gt; &gt; &gt;<br>
+&gt; &gt; &gt; We want to know how to handle in the case of virtual functio=
+ns<br>
+&gt; &gt; &gt; dynamically created and destroyed.<br>
+&gt; &gt; &gt;<br>
+&gt; &gt; &gt; Is PCI driver responsible for creating stream ID respective =
+BDand<br>
+&gt; &gt; &gt; requesting SMMU to add to the mapping table[stream Id to con=
+text<br>
+&gt; &gt; &gt; mapping table]?<br>
+&gt; &gt; &gt;<br>
+&gt; &gt; &gt; Or is there any right way of doing it?<br>
+&gt; &gt;<br>
+&gt; &gt; Correct, the driver currently doesn&#39;t support dynamic mapping=
+s (mainly<br>
+&gt; &gt; because I didn&#39;t want to try and invent something that I coul=
+dn&#39;t test).<br>
+&gt; &gt;<br>
+&gt; &gt; There are a couple of ways to solve this:<br>
+&gt; &gt;<br>
+&gt; &gt; =A0 (1) Add a way for a PCI RC to dynamically allocate StreamIDs =
+on an SMMU<br>
+&gt; &gt; =A0 =A0 =A0 within a fixed range. That would probably need some c=
+ode in the bus<br>
+&gt; &gt; =A0 =A0 =A0 layer, so that a bus notifier can kick and call back =
+to the<br>
+&gt; &gt; relevant<br>
+&gt; &gt; =A0 =A0 =A0 SMMU.<br>
+&gt; This could be done in add device notifier. I am working on similar(not=
+ PCI) hot plug device infrastructure for arm smmu driver. I will post an RF=
+C patch by next week.<br>
+Can you please explain with little more detail. We just want to make sure y=
+our idea fits in for pci iov also.</p>
+<p dir=3D"ltr">-Srikanth ts<br>
+&gt;<br>
+&gt; -Varun<br>
+&gt;<br>
+</p>
 
-Laurent Pinchart
+--089e015365e6d77ed704f34aea17--
 
+--===============3118327616030262043==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============3118327616030262043==--
