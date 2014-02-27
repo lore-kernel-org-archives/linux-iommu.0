@@ -1,11 +1,16 @@
-From: Ritesh Harjani <ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: IOMMU DMA-mapping API for arm64 ?
-Date: Thu, 27 Feb 2014 10:45:38 +0530
-Message-ID: <CAD15agaps45rZT5ko9JKP2CfRF_iTV+0JMDwa239ExgKrRzBYQ@mail.gmail.com>
+From: Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>
+Subject: Re: [PATCHv2 14/16] ARM: OMAP3: hwmod data: cleanup data for IOMMUs
+Date: Thu, 27 Feb 2014 10:16:05 +0100
+Message-ID: <530F0255.0@epfl.ch>
+References: <1392315347-32967-1-git-send-email-s-anna@ti.com>
+	<1392315347-32967-15-git-send-email-s-anna@ti.com>
+	<20140226171824.GH11654@atomide.com> <530E2B67.9050300@ti.com>
+Reply-To: florian.vaussard-p8DiymsW2f8@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <530E2B67.9050300-l0cyMroinI0@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,61 +20,35 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+To: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Everyone,
+Hi,
 
-I was going through some iommu code in arch/arm and of some other
-archs code. I have some doubts on this for refactoring and may need
-some suggestions from you guys.
-
-1. So, looking at other arch code, looks like they have their
-different way of implementation of iova management and buffer
-allocation. So to refactor the iommu common code out from arch/arm/ to
-lib/iommu-helper, do we need to take care across all arch  ?
-
-2. Should the approach be like take the common code(between arm/arm64)
-and move it into lib/iommu-helper.c ?
-
-Could someone give an example of what sort of code(will be better if
-this is little more specific) we are talking here to be taken out to
-lib/iommu-helper.c ? Earlier I was thinking of iova management can be
-taken out but then I saw it might not be suited across all archs.
-
-I am ready to do this work, but need some guidance from the experts .
-
-
-
-Thanks
-Ritesh
-
-
-
-
-
-
-On Thu, Feb 6, 2014 at 5:29 PM, Ritesh Harjani <ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-> On Thu, Feb 6, 2014 at 3:43 PM, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org> wrote:
->> On Thu, Feb 06, 2014 at 05:21:53AM +0000, Ritesh Harjani wrote:
->>> I also saw one mail discussion between you guys on what is the best place for
->>> adding iommu support in ARM64, but couldn't see any followed up patches for the
->>> same.
+On 02/26/2014 06:59 PM, Suman Anna wrote:
+> Tony,
+> 
+> On 02/26/2014 11:18 AM, Tony Lindgren wrote:
+>> * Suman Anna <s-anna-l0cyMroinI0@public.gmane.org> [140213 10:19]:
+>>> From: Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>
+>>>
+>>> The irq numbers, ocp address space and device attribute data
+>>> have all been cleaned up for OMAP3 IOMMUs. All this data is
+>>> populated via the corresponding dt node.
+>>>
+>>> Signed-off-by: Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>
+>>> Signed-off-by: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
 >>
->> The decision was to make take the iommu code from arch/arm and turn it
->> into a library similar to swiotlb which can be used by the arch code. It
->> is on our to-do list but no ETA yet. If you volunteer to help it would
->> be great ;)
->
-> Sure Catalin, will take out the common code from arch/arm and put into
-> lib/iommu-helper which is the best place as discussed in many mail
-> chains.
-> Let me see how far I can go. Will keep you posted.
->
+>> This will need to wait until we've made omap3 to be DT only
+>> as this will break idling of things for the legacy booting.
 >>
->> --
->> Catalin
->
-> Thanks
-> Ritesh
+> 
+> OK, will drop this and I will adjust Patch 9 to support the legacy boot
+> for OMAP3 ISP.
+> 
+
+BTW, Tony do you have a new window for omap3 to be DT onyl?
+
+Regards,
+Florian
