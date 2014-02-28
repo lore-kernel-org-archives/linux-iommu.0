@@ -1,47 +1,55 @@
-From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: [PATCH 2/2] iommu/arm-smmu: Return 0 on unmap failure
-Date: Fri, 28 Feb 2014 16:37:10 +0100
-Message-ID: <1393601830-4677-3-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-References: <1393601830-4677-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+From: Ben Dooks <ben.dooks@codethink.co.uk>
+Subject: Re: [PATCH 1/2] iommu: Add driver for Renesas VMSA-compatible IPMMU
+Date: Fri, 28 Feb 2014 15:37:00 +0000
+Message-ID: <5310AD1C.1050101@codethink.co.uk>
+References: <1393601099-4413-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <1393601099-4413-2-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1393601830-4677-1-git-send-email-laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1393601099-4413-2-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Cc: iommu@lists.linux-foundation.org, linux-sh@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-The IOMMU core expects the unmap operation to return the number of bytes
-that have been unmapped or 0 on failure, a negative return value being
-treated like a number of bytes.
+only minor issue so far:
 
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
----
- drivers/iommu/arm-smmu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> diff --git a/include/linux/platform_data/ipmmu-vmsa.h b/include/linux/platform_data/ipmmu-vmsa.h
+> new file mode 100644
+> index 0000000..8be27e0
+> --- /dev/null
+> +++ b/include/linux/platform_data/ipmmu-vmsa.h
+> @@ -0,0 +1,24 @@
+> +/*
+> + * IPMMU VMSA Platform Data
+> + *
+> + * Copyright (C) 2014 Reneses Electronics Coporation
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index c33a310..e7528f0 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1464,7 +1464,7 @@ static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
- 
- 	ret = arm_smmu_handle_mapping(smmu_domain, iova, 0, size, 0);
- 	arm_smmu_tlb_inv_context(&smmu_domain->root_cfg);
--	return ret ? ret : size;
-+	return ret ? 0 : size;
- }
- 
- static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
+typo
+
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation; version 2 of the License.
+> + */
+> +
+> +#ifndef __IPMMU_VMSA_H__
+> +#define __IPMMU_VMSA_H__
+> +
+> +struct ipmmu_vmsa_master {
+> +	const char *name;
+> +	unsigned int utlb;
+> +};
+> +
+> +struct ipmmu_vmsa_platform_data {
+> +	const struct ipmmu_vmsa_master *masters;
+> +	unsigned int num_masters;
+> +};
+> +
+> +#endif /* __IPMMU_VMSA_H__ */
+
+Also, what about the of-bindings?
+
 -- 
-1.8.3.2
+Ben Dooks				http://www.codethink.co.uk/
+Senior Engineer				Codethink - Providing Genius
