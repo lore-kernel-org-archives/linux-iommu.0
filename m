@@ -1,8 +1,7 @@
 From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: [PATCH 1/2] iommu/arm-smmu: Replace list walk with platform driver
-	data
-Date: Fri, 28 Feb 2014 16:37:09 +0100
-Message-ID: <1393601830-4677-2-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 2/2] iommu/arm-smmu: Return 0 on unmap failure
+Date: Fri, 28 Feb 2014 16:37:10 +0100
+Message-ID: <1393601830-4677-3-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1393601830-4677-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,52 +21,27 @@ To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Instead of walking the list of registered SMMU devices at remove time to
-locate the device being removed, set platform driver data at probe time
-to point to the SMMU and retrieve the pointer at remove time.
+The IOMMU core expects the unmap operation to return the number of bytes
+that have been unmapped or 0 on failure, a negative return value being
+treated like a number of bytes.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 15 ++++-----------
- 1 file changed, 4 insertions(+), 11 deletions(-)
+ drivers/iommu/arm-smmu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 1d9ab39..c33a310 100644
+index c33a310..e7528f0 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -1912,6 +1912,8 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 	list_add(&smmu->list, &arm_smmu_devices);
- 	spin_unlock(&arm_smmu_devices_lock);
+@@ -1464,7 +1464,7 @@ static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
  
-+	platform_set_drvdata(pdev, smmu);
-+
- 	arm_smmu_device_reset(smmu);
- 	return 0;
+ 	ret = arm_smmu_handle_mapping(smmu_domain, iova, 0, size, 0);
+ 	arm_smmu_tlb_inv_context(&smmu_domain->root_cfg);
+-	return ret ? ret : size;
++	return ret ? 0 : size;
+ }
  
-@@ -1937,22 +1939,13 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
- {
- 	int i;
- 	struct device *dev = &pdev->dev;
--	struct arm_smmu_device *curr, *smmu = NULL;
-+	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
- 	struct rb_node *node;
- 
- 	spin_lock(&arm_smmu_devices_lock);
--	list_for_each_entry(curr, &arm_smmu_devices, list) {
--		if (curr->dev == dev) {
--			smmu = curr;
--			list_del(&smmu->list);
--			break;
--		}
--	}
-+	list_del(&smmu->list);
- 	spin_unlock(&arm_smmu_devices_lock);
- 
--	if (!smmu)
--		return -ENODEV;
--
- 	if (smmu->parent_of_node)
- 		of_node_put(smmu->parent_of_node);
- 
+ static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
 -- 
 1.8.3.2
