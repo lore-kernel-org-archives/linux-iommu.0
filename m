@@ -1,69 +1,53 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: [GIT PULL] iommu/arm-smmu: updates for 3.15
-Date: Fri, 28 Feb 2014 11:05:25 +0000
-Message-ID: <20140228110525.GA674@mudshark.cambridge.arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: joro@8bytes.org
-Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 0/2] Renesas VMSA-compatible IPMMU driver
+Date: Fri, 28 Feb 2014 16:24:57 +0100
+Message-ID: <1393601099-4413-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Return-path: <linux-sh-owner@vger.kernel.org>
+Sender: linux-sh-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: linux-sh@vger.kernel.org, Ben Dooks <ben.dooks@codethink.co.uk>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+Hello,
 
-Please can you pull the following arm-smmu changes for 3.15?
+This patch set adds a new driver for the Renesas IOMMU found in the R-Car H2
+(r8a7790) and R-Car M2 (r8a7791) SoCs. Despite being called IPMMU like the
+IOMMU present in older ARM Sh Mobile SoCs, the hardware has nothing in common
+with the previous versions and thus requires a separate driver.
 
-The main changes are for accessing the buggy Calxeda SMMU, which is wired
-as secure despite being non-secure. Unfortunately, the apparent demise
-of Calxeda means that Andreas is no longer working on this, so I had to
-extract what I could from a larger patchset (which wasn't yet ready for
-merging in its entirety).
+This IPMMU is compatible with the ARM VMSA short- and long-descriptor formats
+(although some minor differences seem to exist, most probably due to hardware
+bugs). The register set, however, is not compatible with the MMU-400 or
+MMU-500. The existing arm-smmu driver can't thus be reused.
 
-On my side, there's some cosmetic changes after Joerg fixed some locks
-to use spin_lock_irq{save,restore} and also an optimisation to restrict
-the scope of our barrier when publishing page tables (now that ARM64 can
-accept the option).
+The second patch (not meant to be merged) in the set instanciates a platform
+device for the IPMMU MX and associates it with the DU. The IPMMU can then be
+tested using the rcar-du-drm driver. No modification is required to that
+driver, as IOMMU integration is handled transparently by the ARM DMA
+implementation.
 
-Cheers,
+One major problem still exist, in that the ARM DMA IOMMU backend doesn't seem
+to mmap memory correctly to userspace. Tests carried on with the KMS modetest
+application left the display hopelessly blank, until I decided to fill the KMS
+buffers with a test pattern from inside the kernel. Although this makes the
+IPMMU unusable at the moment, it shouldn't block review of the driver as it
+shouldn't be involved in the problem. I'm of course investigating this.
 
-Will
+Laurent Pinchart (2):
+  iommu: Add driver for Renesas VMSA-compatible IPMMU
+  [TEST] ARM: shmobile: koelsch-reference: Instantiate IPMMU-MX
 
---->8
+ arch/arm/mach-shmobile/board-koelsch-reference.c |   30 +
+ drivers/iommu/Kconfig                            |   12 +
+ drivers/iommu/Makefile                           |    1 +
+ drivers/iommu/ipmmu-vmsa.c                       | 1070 ++++++++++++++++++++++
+ include/linux/platform_data/ipmmu-vmsa.h         |   24 +
+ 5 files changed, 1137 insertions(+)
+ create mode 100644 drivers/iommu/ipmmu-vmsa.c
+ create mode 100644 include/linux/platform_data/ipmmu-vmsa.h
 
-The following changes since commit cfbf8d4857c26a8a307fb7cd258074c9dcd8c691:
+-- 
+Regards,
 
-  Linux 3.14-rc4 (2014-02-23 17:40:03 -0800)
+Laurent Pinchart
 
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/updates
-
-for you to fetch changes up to 34fb4b37b7b6da7dc34797d1abf234dd30b091d8:
-
-  iommu/arm-smmu: fix incorrect comment regarding TLB invalidation (2014-02-27 19:08:43 +0000)
-
-----------------------------------------------------------------
-Andreas Herrmann (3):
-      iommu/arm-smmu: set MAX_MASTER_STREAMIDS to MAX_PHANDLE_ARGS
-      iommu/arm-smmu: support buggy implementations with secure cfg accesses
-      documentation/iommu: update description of ARM System MMU binding
-
-Will Deacon (3):
-      iommu/arm-smmu: clean up use of `flags' in page table handling code
-      iommu/arm-smmu: provide option to dsb macro when publishing tables
-      iommu/arm-smmu: fix incorrect comment regarding TLB invalidation
-
- .../devicetree/bindings/iommu/arm,smmu.txt         |   6 ++
- drivers/iommu/arm-smmu.c                           | 105 ++++++++++++++-------
- 2 files changed, 77 insertions(+), 34 deletions(-)
