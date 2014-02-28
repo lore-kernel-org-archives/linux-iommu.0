@@ -1,60 +1,69 @@
-From: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCHv2 14/16] ARM: OMAP3: hwmod data: cleanup data for IOMMUs
-Date: Thu, 27 Feb 2014 16:25:03 -0800
-Message-ID: <20140228002502.GB14514@atomide.com>
-References: <1392315347-32967-1-git-send-email-s-anna@ti.com>
-	<1392315347-32967-15-git-send-email-s-anna@ti.com>
-	<20140226171824.GH11654@atomide.com> <530E2B67.9050300@ti.com>
-	<530F0255.0@epfl.ch>
+From: Will Deacon <will.deacon@arm.com>
+Subject: [GIT PULL] iommu/arm-smmu: updates for 3.15
+Date: Fri, 28 Feb 2014 11:05:25 +0000
+Message-ID: <20140228110525.GA674@mudshark.cambridge.arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <530F0255.0-p8DiymsW2f8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: joro@8bytes.org
+Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-* Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org> [140227 01:19]:
-> Hi,
-> 
-> On 02/26/2014 06:59 PM, Suman Anna wrote:
-> > Tony,
-> > 
-> > On 02/26/2014 11:18 AM, Tony Lindgren wrote:
-> >> * Suman Anna <s-anna-l0cyMroinI0@public.gmane.org> [140213 10:19]:
-> >>> From: Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>
-> >>>
-> >>> The irq numbers, ocp address space and device attribute data
-> >>> have all been cleaned up for OMAP3 IOMMUs. All this data is
-> >>> populated via the corresponding dt node.
-> >>>
-> >>> Signed-off-by: Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>
-> >>> Signed-off-by: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
-> >>
-> >> This will need to wait until we've made omap3 to be DT only
-> >> as this will break idling of things for the legacy booting.
-> >>
-> > 
-> > OK, will drop this and I will adjust Patch 9 to support the legacy boot
-> > for OMAP3 ISP.
-> > 
-> 
-> BTW, Tony do you have a new window for omap3 to be DT onyl?
+Hi Joerg,
 
-I think a good point would be when we have DSS working with DT,
-and have a .dts file for the Pandora board.
+Please can you pull the following arm-smmu changes for 3.15?
 
-Regards,
+The main changes are for accessing the buggy Calxeda SMMU, which is wired
+as secure despite being non-secure. Unfortunately, the apparent demise
+of Calxeda means that Andreas is no longer working on this, so I had to
+extract what I could from a larger patchset (which wasn't yet ready for
+merging in its entirety).
 
-Tony
+On my side, there's some cosmetic changes after Joerg fixed some locks
+to use spin_lock_irq{save,restore} and also an optimisation to restrict
+the scope of our barrier when publishing page tables (now that ARM64 can
+accept the option).
+
+Cheers,
+
+Will
+
+--->8
+
+The following changes since commit cfbf8d4857c26a8a307fb7cd258074c9dcd8c691:
+
+  Linux 3.14-rc4 (2014-02-23 17:40:03 -0800)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/updates
+
+for you to fetch changes up to 34fb4b37b7b6da7dc34797d1abf234dd30b091d8:
+
+  iommu/arm-smmu: fix incorrect comment regarding TLB invalidation (2014-02-27 19:08:43 +0000)
+
+----------------------------------------------------------------
+Andreas Herrmann (3):
+      iommu/arm-smmu: set MAX_MASTER_STREAMIDS to MAX_PHANDLE_ARGS
+      iommu/arm-smmu: support buggy implementations with secure cfg accesses
+      documentation/iommu: update description of ARM System MMU binding
+
+Will Deacon (3):
+      iommu/arm-smmu: clean up use of `flags' in page table handling code
+      iommu/arm-smmu: provide option to dsb macro when publishing tables
+      iommu/arm-smmu: fix incorrect comment regarding TLB invalidation
+
+ .../devicetree/bindings/iommu/arm,smmu.txt         |   6 ++
+ drivers/iommu/arm-smmu.c                           | 105 ++++++++++++++-------
+ 2 files changed, 77 insertions(+), 34 deletions(-)
