@@ -1,51 +1,62 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH 1/2] iommu/arm-smmu: Replace list walk with platform
-	driver data
-Date: Sun, 02 Mar 2014 18:59:27 +0100
-Message-ID: <4440723.cnxQ5HD11R@avalon>
-References: <1393601830-4677-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-	<1393601830-4677-2-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-	<20140228163837.GC30996@mudshark.cambridge.arm.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH 1/2] iommu: Add driver for Renesas VMSA-compatible IPMMU
+Date: Sun, 02 Mar 2014 22:00:33 +0100
+Message-ID: <9614296.npf9XYVJ8Q@avalon>
+References: <1393601099-4413-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <1393601099-4413-2-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <CAMuHMdUcrANSqUmS6QJkcms_bU=aYLBXjBUL5ep=k0eQxYzw6g@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140228163837.GC30996-MRww78TxoiP5vMa5CHWGZ34zcgK1vI+I0E9HWUfgJXw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <CAMuHMdUcrANSqUmS6QJkcms_bU=aYLBXjBUL5ep=k0eQxYzw6g@mail.gmail.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, iommu@lists.linux-foundation.org, Linux-sh list <linux-sh@vger.kernel.org>, Ben Dooks <ben.dooks@codethink.co.uk>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+Hi Geert,
 
-On Friday 28 February 2014 16:38:37 Will Deacon wrote:
-> Hi Laurent,
+Thank you for the review.
+
+On Friday 28 February 2014 18:48:22 Geert Uytterhoeven wrote:
+> On Fri, Feb 28, 2014 at 4:24 PM, Laurent Pinchart wrote:
+> > +/*
+> > + * VMSA that states in section B3.6.3 "Control of Secure or Non-secure
+> > memory
+>
+> VMSA states
 > 
-> On Fri, Feb 28, 2014 at 03:37:09PM +0000, Laurent Pinchart wrote:
-> > Instead of walking the list of registered SMMU devices at remove time to
-> > locate the device being removed, set platform driver data at probe time
-> > to point to the SMMU and retrieve the pointer at remove time.
+> > + * access, Long-descriptor format" that the NStable bit being set in a
+> > table + * descriptor will result in the NStable and NS bits of all child
+> > entries being + * ignored and considered as being set. The IPMMU seems
+> > not to comply with this, + * as it generates a secure access page fault
+> > if any of the NStable and NS bits + * isn't set when running in
+> > non-secure mode.
+> > + */
+> > 
+> > +       /*
+> > +        * TTBCR
+> > +        * We use long descriptor, with inner-shareable WBWA tables and
+> > allocate
+>
+> descriptors
 > 
-> What does this gain us other than a slight code shrinkage?
+> > +        * the whole 32-bit VA space to TTBR0.
+> > +        */
+> > 
+> > +       /*
+> > +        * Clear the error status flags. Unlike traditionnal interrupt
+> > flag
+> 
+> traditional
+> 
+> Sorry, only comments on the comments ;-)
 
-Just a slight code shrinkage. That's better than nothing, isn't it ? :-)
+I'll of course assume this means that the driver is perfect ;-)
 
-> If we could get rid of the arm_smmu_devices list, then I'd be more excited
-> by this change!
-
-Associating devices with IOMMUs is something that should be performed by the 
-IOMMU core. I might give this a try, but I'll be busy with other tasks for the 
-next couple of weeks.
+I'll fix all this in v2.
 
 -- 
 Regards,
 
 Laurent Pinchart
+
