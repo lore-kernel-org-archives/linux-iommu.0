@@ -1,48 +1,89 @@
-From: Suman Anna <s-anna@ti.com>
-Subject: Re: [PATCHv3 00/13] OMAP IOMMU DT adaptation for 3.15
-Date: Sun, 2 Mar 2014 23:35:30 -0600
-Message-ID: <531414A2.8040100@ti.com>
-References: <1393620164-14633-1-git-send-email-s-anna@ti.com> <20140228230000.GW13624@atomide.com>
+From: Ritesh Harjani <ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: IOMMU DMA-mapping API for arm64 ?
+Date: Mon, 3 Mar 2014 13:42:22 +0530
+Message-ID: <CAD15agZpoT9r7jJgWBgLtinsqgZW=dFLCDE-gmU94T03GeCwQw@mail.gmail.com>
+References: <CAD15agaps45rZT5ko9JKP2CfRF_iTV+0JMDwa239ExgKrRzBYQ@mail.gmail.com>
+	<20140227185211.GM30003@mudshark.cambridge.arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <20140228230000.GW13624@atomide.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Florian Vaussard <florian.vaussard@epfl.ch>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20140227185211.GM30003-MRww78TxoiP5vMa5CHWGZ34zcgK1vI+I0E9HWUfgJXw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Tony,
-
-On 02/28/2014 05:00 PM, Tony Lindgren wrote:
-> * Suman Anna <s-anna@ti.com> [140228 12:46]:
->> Hi Joerg, Tony,
->>
->> This is an updated series of the OMAP IOMMU DT adaptation intended
->> for 3.15 merge window, addressing the comments from the v2 series.
->> This series is rebased onto 3.14-rc4, and the only change to bindings
->> is to drop the dma-window property.
->>
->> The first 7 patches in the series are in drivers/iommu, with the first
->> 3 patches performing some cleanup. The DT bindings and adaptation are
->> done in patches 4 and 5.
->>
->> Tony,
->> Patches 8 through 13 are in arch/arm/mach-omap2 layer, so I am guessing
->> these would have to go through your tree. Of these, patches 8 and 9 are
->> cleanup fixes to get OMAP3 IVA MMU working, patches 10 & 11 are fixes
->> required with DT-boot for OMAP3/4, patches 12 & 13 add the OMAP5 support.
+On Fri, Feb 28, 2014 at 12:22 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> On Thu, Feb 27, 2014 at 05:15:38AM +0000, Ritesh Harjani wrote:
+>> Hi Everyone,
 >
-> Are patches 8 to 13 OK to apply separately from the iommu patches or
-> do they need to wait for the iommu patches to get merged first?
+> Hi Ritesh,
+
+Hi Will,
+
+>
+>> I was going through some iommu code in arch/arm and of some other
+>> archs code. I have some doubts on this for refactoring and may need
+>> some suggestions from you guys.
+>>
+>> 1. So, looking at other arch code, looks like they have their
+>> different way of implementation of iova management and buffer
+>> allocation. So to refactor the iommu common code out from arch/arm/ to
+>> lib/iommu-helper, do we need to take care across all arch  ?
+>
+> Whilst the code should compile for all architectures, I don't think you need
+> to go round porting them all to use it. That can happen in a piecemeal
+> fashion as they get ported over to the generic code. Initially, I see arm and
+> arm64 as the users.
+Got it.
+
+>
+>> 2. Should the approach be like take the common code(between arm/arm64)
+>> and move it into lib/iommu-helper.c ?
+>
+> Well, something along those lines. We should put some thought into what the
+> interfaces should look like, rather than blindly copying everything out as
+> it stands.
+>
+>> Could someone give an example of what sort of code(will be better if
+>> this is little more specific) we are talking here to be taken out to
+>> lib/iommu-helper.c ? Earlier I was thinking of iova management can be
+>> taken out but then I saw it might not be suited across all archs.
+>>
+>> I am ready to do this work, but need some guidance from the experts .
+>
+> Catalin can clarify here, but I think we'd basically want a generic
+> equivalent to arm_iommu_create_mapping and its associated halpers (i.e. the
+
+Do you mean here that dma_iommu_mapping structure can be taken out to
+incude/linux/iommu-helper.h ?
+Since arm_iommu_create_mapping strongly uses this structure. But if
+this is the case than it will be completely arm specific
+implementation.
+
+> dma_map_ops). The dma_map_ops will have generic parts (e.g. the interfaces
+> to the iommu API) but also architecturally-specific parts (e.g. cache
+> flushing for non-coherent devices), so that will need some thought.
 >
 
-Yeah, they don't have any direct dependencies. Patches 8, 9 and 12 are 
-totally independent. Patches 10, 11 and 13 add the needed platform data 
-or archdata to get the corresponding DT iommu devices functional by any 
-users (OMAP3 ISP is the only user in kernel). The only remote dependency 
-is the compatible string names used in the pdata-quirks.
+Architecturally-specific i.e. cache flush operations are not just for
+non-coherent devices. Irrespective of coherent/non-coherent dma_ops,
+every time we allocate the buffer by __iommu_alloc_buffer, we call for
+__dma_clear_buffer (which does cache_flushing operation).
 
-regards
-Suman
+Yes, but for non-coherent devices, during map_page/map_sg,  we do
+cache maintenance/invalidate/clean.
+
+> Once that's done, we can later look at hooking this into device-tree in
+> order to set the correct ops each device.
+>
+> Will
