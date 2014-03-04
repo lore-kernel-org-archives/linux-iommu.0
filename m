@@ -1,15 +1,15 @@
-From: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
-Subject: Re: [PATCHv3 00/13] OMAP IOMMU DT adaptation for 3.15
-Date: Tue, 4 Mar 2014 10:59:59 -0600
-Message-ID: <5316068F.3020003@ti.com>
-References: <1393620164-14633-1-git-send-email-s-anna@ti.com>
-	<20140228230000.GW13624@atomide.com>
-	<20140304160432.GG2799@8bytes.org>
+From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH 1/1] iommu/amd: Fix PASID format in INVALIDATE_IOTLB_PAGES
+	command
+Date: Tue, 4 Mar 2014 11:06:34 -0600
+Message-ID: <5316081A.9020008@amd.com>
+References: <1393451371-17894-1-git-send-email-suravee.suthikulpanit@amd.com>
+	<20140304141251.GB2799@8bytes.org> <5316051E.2030004@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140304160432.GG2799-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <5316051E.2030004-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,43 +19,54 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jay Cornwall <jay.cornwall-5C7GfCeVMHo@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Naru,
+	Kim" <Kim.Naru-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 03/04/2014 10:04 AM, Joerg Roedel wrote:
-> On Fri, Feb 28, 2014 at 03:00:00PM -0800, Tony Lindgren wrote:
->> * Suman Anna <s-anna-l0cyMroinI0@public.gmane.org> [140228 12:46]:
->>> Hi Joerg, Tony,
+On 3/4/2014 10:53 AM, Suravee Suthikulpanit wrote:
+> On 3/4/2014 8:12 AM, Joerg Roedel wrote:
+>> On Wed, Feb 26, 2014 at 03:49:31PM -0600,
+>> suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org wrote:
+>>> From: Jay Cornwall <jay.cornwall-5C7GfCeVMHo@public.gmane.org>
 >>>
->>> This is an updated series of the OMAP IOMMU DT adaptation intended
->>> for 3.15 merge window, addressing the comments from the v2 series.
->>> This series is rebased onto 3.14-rc4, and the only change to bindings
->>> is to drop the dma-window property.
+>>> This patch corrects the PASID format in the INVALIDATE_IOTLB_PAGES
+>>> command, which was caused by incorrect information in
+>>> the AMD IOMMU Architectural Specification v2.01 document.
 >>>
->>> The first 7 patches in the series are in drivers/iommu, with the first
->>> 3 patches performing some cleanup. The DT bindings and adaptation are
->>> done in patches 4 and 5.
+>>>      Incorrect format:
+>>>           cmd->data[0][16:23] = PASID[7:0]
+>>>           cmd->data[1][16:27] = PASID[19:8]
 >>>
->>> Tony,
->>> Patches 8 through 13 are in arch/arm/mach-omap2 layer, so I am guessing
->>> these would have to go through your tree. Of these, patches 8 and 9 are
->>> cleanup fixes to get OMAP3 IVA MMU working, patches 10 & 11 are fixes
->>> required with DT-boot for OMAP3/4, patches 12 & 13 add the OMAP5 support.
+>>>       Correct format:
+>>>           cmd->data[0][16:23] = PASID[15:8]
+>>>           cmd->data[1][16:23] = PASID[7:0]
+>>>
+>>> However, this does not affect the IOMMUv2 hardware implementation,
+>>> and has been corrected since version 2.02 of the specification
+>>> (available through AMD NDA).
+>>>
+>>> Signed-off-by: Jay Cornwall <jay.cornwall-5C7GfCeVMHo@public.gmane.org>
+>>> Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 >>
->> Are patches 8 to 13 OK to apply separately from the iommu patches or
->> do they need to wait for the iommu patches to get merged first?
+>> Applied, thanks.
+>>
+>> Does this mean that PASIDs are only 16 bits wide now from the former 20
+>> bits?
+>>
+>>
+>>
 >
-> Applied patches 1-7 to my arm/omap branch.
+> Thank you Joerg. The specification also state that this command format
+> does not support the maximum size of the PASID field. However, other
+> commands seem to still support 20-bit PASID.
 >
-> Tony, you can pull that branch into your tree if needed (when I pushed
-> it, which will happen today or tomorrow).
->
+> Suravee
 
-Tony,
-Can you also pull in the corresponding DTS node patches as well that go 
-along with this series.
-http://marc.info/?l=linux-omap&m=139362062805816&w=2
+Actually, just thinking about this again, even though we don't have 
+systems with 20-bit PASID yet (only up-to 16-bit), but for future proof, 
+we should add another logic to make sure that this logic won't try to 
+use the 20-bit PASID with this version of the command.  I'll send out 
+another patch soon.
 
-regards
-Suman
+Suravee
