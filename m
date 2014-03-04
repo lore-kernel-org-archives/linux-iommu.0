@@ -1,14 +1,15 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCHv3 0/6] Crashdump Accepting Active IOMMU
-Date: Tue, 4 Mar 2014 16:06:17 +0100
-Message-ID: <20140304150611.GE2799@8bytes.org>
-References: <1389391652-52422-1-git-send-email-bill.sumner@hp.com>
+Subject: Re: [PATCH] IOMMU: iommu module do not check NULL return of
+	kmem_cache_zalloc
+Date: Tue, 4 Mar 2014 16:41:18 +0100
+Message-ID: <20140304154117.GF2799@8bytes.org>
+References: <1392084773-16843-1-git-send-email-zhouzhouyi@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1389391652-52422-1-git-send-email-bill.sumner-VXdhtT5mjnY@public.gmane.org>
+In-Reply-To: <1392084773-16843-1-git-send-email-zhouzhouyi-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,43 +19,34 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
-Cc: bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, zhenhua-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+To: Zhouyi Zhou <zhouzhouyi-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Zhouyi Zhou <yizhouzhou-6xnC4QlcT6v/PtFMR13I2A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Bill,
-
-On Fri, Jan 10, 2014 at 03:07:26PM -0700, Bill Sumner wrote:
-> Bill Sumner (6):
->   Crashdump-Accepting-Active-IOMMU-Flags-and-Prototype
->   Crashdump-Accepting-Active-IOMMU-Utility-functions
->   Crashdump-Accepting-Active-IOMMU-Domain-Interfaces
->   Crashdump-Accepting-Active-IOMMU-Copy-Translations
->   Crashdump-Accepting-Active-IOMMU-Debug-Print-IOMMU
->   Crashdump-Accepting-Active-IOMMU-Call-From-Mainline
+On Tue, Feb 11, 2014 at 10:12:53AM +0800, Zhouyi Zhou wrote:
+> From: Zhouyi Zhou <yizhouzhou-6xnC4QlcT6v/PtFMR13I2A@public.gmane.org>
 > 
->  drivers/iommu/intel-iommu.c | 1293 ++++++++++++++++++++++++++++++++++++++++---
->  1 file changed, 1225 insertions(+), 68 deletions(-)
+> The function iopte_alloc do not check NULL return of kmem_cache_zalloc,
+> call iopte_free with argument 0 will panic.
+> 
+> Signed-off-by: Zhouyi Zhou <yizhouzhou-6xnC4QlcT6v/PtFMR13I2A@public.gmane.org>
+> ---
+>  drivers/iommu/omap-iommu.c |    3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+> index bcd78a7..5155714 100644
+> --- a/drivers/iommu/omap-iommu.c
+> +++ b/drivers/iommu/omap-iommu.c
+> @@ -551,7 +551,8 @@ static u32 *iopte_alloc(struct omap_iommu *obj, u32 *iopgd, u32 da)
+>  		dev_vdbg(obj->dev, "%s: a new pte:%p\n", __func__, iopte);
+>  	} else {
+>  		/* We raced, free the reduniovant table */
+> -		iopte_free(iopte);
+> +		if (iopte)
+> +			iopte_free(iopte);
 
-This is a pretty big change, before merging I would like to get more
-eyes on it. Please make sure you get more reviews on the code and the
-general concept. A few things I noticed while looking at it:
+Isn't it better to put the check into iopte_free?
 
-* You put a lot of code into #define CONFIG_CRASH_DUMP. Isn't the same
-  approach necessary to for KEXEC?
-
-* Please get rid of all the pr_debug stuff.
-
-* I think it makes sense to put the functions to access the IOMMU
-  configuration values of the old kernel into a new file. This is better
-  than adding over 1000 new lines to intel-iommu.c
-
-* I have seen your new single-patch for this change. A single patch with
-  more than 1200 changed lines is not something anyone is willing to
-  review. Please split the patches again in a meaningful and bisectable
-  way.
-
-
-Thanks,
 
 	Joerg
