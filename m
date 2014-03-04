@@ -1,15 +1,15 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/1] iommu/amd: Fix PASID format in
-	INVALIDATE_IOTLB_PAGES command
-Date: Tue, 4 Mar 2014 15:12:51 +0100
-Message-ID: <20140304141251.GB2799@8bytes.org>
-References: <1393451371-17894-1-git-send-email-suravee.suthikulpanit@amd.com>
+Subject: Re: [PATCH v2] IOMMU: enhance dmar to support device hotplug
+Date: Tue, 4 Mar 2014 15:31:58 +0100
+Message-ID: <20140304143158.GC2799@8bytes.org>
+References: <1385022116-228-1-git-send-email-wangyijing@huawei.com>
+	<1385022116-228-2-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1393451371-17894-1-git-send-email-suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <1385022116-228-2-git-send-email-wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,33 +19,44 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jay Cornwall <jay.cornwall-5C7GfCeVMHo@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Feb 26, 2014 at 03:49:31PM -0600, suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org wrote:
-> From: Jay Cornwall <jay.cornwall-5C7GfCeVMHo@public.gmane.org>
-> 
-> This patch corrects the PASID format in the INVALIDATE_IOTLB_PAGES
-> command, which was caused by incorrect information in
-> the AMD IOMMU Architectural Specification v2.01 document.
-> 
->     Incorrect format:
->          cmd->data[0][16:23] = PASID[7:0]
->          cmd->data[1][16:27] = PASID[19:8]
-> 
->      Correct format:
->          cmd->data[0][16:23] = PASID[15:8]
->          cmd->data[1][16:23] = PASID[7:0]
-> 
-> However, this does not affect the IOMMUv2 hardware implementation,
-> and has been corrected since version 2.02 of the specification
-> (available through AMD NDA).
-> 
-> Signed-off-by: Jay Cornwall <jay.cornwall-5C7GfCeVMHo@public.gmane.org>
-> Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+On Thu, Nov 21, 2013 at 04:21:56PM +0800, Yijing Wang wrote:
+> @@ -3641,21 +3681,42 @@ static int device_notifier(struct notifier_block *nb,
+>  	struct device *dev = data;
+>  	struct pci_dev *pdev = to_pci_dev(dev);
+>  	struct dmar_domain *domain;
+> +	struct dmar_device *dmar_dev;
+> +	struct dmar_drhd_unit *drhd;
+>  
+> -	if (iommu_no_mapping(dev))
+> -		return 0;
+> -
+> -	domain = find_domain(pdev);
+> -	if (!domain)
+> -		return 0;
+> +	switch (action) {
+> +	case BUS_NOTIFY_ADD_DEVICE:
+> +		for_each_drhd_unit(drhd)
+> +			list_for_each_entry(dmar_dev, &drhd->devices, list)
+> +				if (dmar_dev->segment == pci_domain_nr(pdev->bus)
+> +					&& dmar_dev->bus == pdev->bus->number
+> +					&& dmar_dev->devfn == pdev->devfn)
+> +					dmar_dev->pdev = pci_dev_get(pdev);
+> +		break;
+> +	case BUS_NOTIFY_DEL_DEVICE:
+> +		for_each_drhd_unit(drhd)
+> +			list_for_each_entry(dmar_dev, &drhd->devices, list)
+> +				if (dmar_dev->pdev == pdev) {
+> +					pci_dev_put(pdev);
+> +					dmar_dev->pdev = NULL;
+> +				}
 
-Applied, thanks.
+How is that synchronized with other users of this dmar_dev structure.
+Could it happen that you drop the device reference while other parts of
+the driver still use it?
 
-Does this mean that PASIDs are only 16 bits wide now from the former 20
-bits?
+
+	Joerg
