@@ -1,15 +1,15 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2] IOMMU: enhance dmar to support device hotplug
-Date: Tue, 4 Mar 2014 15:31:58 +0100
-Message-ID: <20140304143158.GC2799@8bytes.org>
-References: <1385022116-228-1-git-send-email-wangyijing@huawei.com>
-	<1385022116-228-2-git-send-email-wangyijing@huawei.com>
+Subject: Re: [PATCHv3 3/6] Crashdump-Accepting-Active-IOMMU-Domain-Interfaces
+Date: Tue, 4 Mar 2014 15:59:15 +0100
+Message-ID: <20140304145911.GD2799@8bytes.org>
+References: <1389391652-52422-1-git-send-email-bill.sumner@hp.com>
+	<1389391652-52422-4-git-send-email-bill.sumner@hp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1385022116-228-2-git-send-email-wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1389391652-52422-4-git-send-email-bill.sumner-VXdhtT5mjnY@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,44 +19,53 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Cc: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
+Cc: bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, zhenhua-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Nov 21, 2013 at 04:21:56PM +0800, Yijing Wang wrote:
-> @@ -3641,21 +3681,42 @@ static int device_notifier(struct notifier_block *nb,
->  	struct device *dev = data;
->  	struct pci_dev *pdev = to_pci_dev(dev);
->  	struct dmar_domain *domain;
-> +	struct dmar_device *dmar_dev;
-> +	struct dmar_drhd_unit *drhd;
->  
-> -	if (iommu_no_mapping(dev))
-> -		return 0;
-> -
-> -	domain = find_domain(pdev);
-> -	if (!domain)
-> -		return 0;
-> +	switch (action) {
-> +	case BUS_NOTIFY_ADD_DEVICE:
-> +		for_each_drhd_unit(drhd)
-> +			list_for_each_entry(dmar_dev, &drhd->devices, list)
-> +				if (dmar_dev->segment == pci_domain_nr(pdev->bus)
-> +					&& dmar_dev->bus == pdev->bus->number
-> +					&& dmar_dev->devfn == pdev->devfn)
-> +					dmar_dev->pdev = pci_dev_get(pdev);
-> +		break;
-> +	case BUS_NOTIFY_DEL_DEVICE:
-> +		for_each_drhd_unit(drhd)
-> +			list_for_each_entry(dmar_dev, &drhd->devices, list)
-> +				if (dmar_dev->pdev == pdev) {
-> +					pci_dev_put(pdev);
-> +					dmar_dev->pdev = NULL;
-> +				}
+On Fri, Jan 10, 2014 at 03:07:29PM -0700, Bill Sumner wrote:
+> +context_get_entry(struct context_entry *context_addr,
+> +			struct intel_iommu *iommu, u32 bus, int devfn)
+> +{
+> +	unsigned long long q;		/* quadword scratch */
+> +	struct root_entry *root_phys;	/* Phys adr (root table entry) */
+> +	struct root_entry  root_temp;	/* Local copy of root_entry */
+> +	struct context_entry *context_phys;	/* Phys adr */
+> +
+> +	if (pr_dbg.domain_get)
+> +		pr_debug("ENTER %s B:D:F=%2.2x:%2.2x:%1.1x &context_entry:0x%llx &intel_iommu:0x%llx\n",
+> +			__func__, bus, devfn>>3, devfn&7,
+> +			(u64)context_addr, (u64)iommu);
+> +
+> +	if (bus > 255)				/* Sanity check */
+> +		return -5;
+> +	if (devfn > 255 || devfn < 0)		/* Sanity check */
+> +		return -6;
+> +
+> +	q = readq(iommu->reg + DMAR_RTADDR_REG);
+> +	pr_debug("IOMMU %d: DMAR_RTADDR_REG:0x%16.16llx\n", iommu->seq_id, q);
+> +	if (!q)
+> +		return -1;
+> +
+> +	root_phys = (struct root_entry *) q;	/* Adr(base of vector) */
+> +	root_phys += bus;			/* Adr(entry we want) */
+> +
+> +	oldcopy(&root_temp, root_phys, sizeof(root_temp));
+> +
+> +	pr_debug("root_temp.val:0x%llx .rsvd1:0x%llx root_phys:0x%llx\n",
+> +		root_temp.val, root_temp.rsvd1, (u64)root_phys);
+> +
+> +	if (!root_present(&root_temp))
+> +		return -2;
+> +
+> +	pr_debug("B:D:F=%2.2x:%2.2x:%1.1x root_temp.val: %llx .rsvd1: %llx\n",
+> +		bus, devfn >> 3, devfn & 7, root_temp.val, root_temp.rsvd1);
+> +
+> +	if (root_temp.rsvd1)			/* If (root_entry is bad) */
+> +		return -3;
+> +
+> +	context_phys = get_context_phys_from_root(&root_temp);
+> +	if (!context_phys)
+> +		return -4;
 
-How is that synchronized with other users of this dmar_dev structure.
-Could it happen that you drop the device reference while other parts of
-the driver still use it?
-
-
-	Joerg
+What do all these magic return values mean? 
