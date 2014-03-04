@@ -1,15 +1,15 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] IOMMU: iommu module do not check NULL return of
-	kmem_cache_zalloc
-Date: Tue, 4 Mar 2014 16:41:18 +0100
-Message-ID: <20140304154117.GF2799@8bytes.org>
-References: <1392084773-16843-1-git-send-email-zhouzhouyi@gmail.com>
+Subject: Re: [PATCHv3 00/13] OMAP IOMMU DT adaptation for 3.15
+Date: Tue, 4 Mar 2014 17:04:32 +0100
+Message-ID: <20140304160432.GG2799@8bytes.org>
+References: <1393620164-14633-1-git-send-email-s-anna@ti.com>
+	<20140228230000.GW13624@atomide.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1392084773-16843-1-git-send-email-zhouzhouyi-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <20140228230000.GW13624-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,34 +19,36 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Zhouyi Zhou <zhouzhouyi-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Zhouyi Zhou <yizhouzhou-6xnC4QlcT6v/PtFMR13I2A@public.gmane.org>
+To: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Feb 11, 2014 at 10:12:53AM +0800, Zhouyi Zhou wrote:
-> From: Zhouyi Zhou <yizhouzhou-6xnC4QlcT6v/PtFMR13I2A@public.gmane.org>
+On Fri, Feb 28, 2014 at 03:00:00PM -0800, Tony Lindgren wrote:
+> * Suman Anna <s-anna-l0cyMroinI0@public.gmane.org> [140228 12:46]:
+> > Hi Joerg, Tony,
+> > 
+> > This is an updated series of the OMAP IOMMU DT adaptation intended
+> > for 3.15 merge window, addressing the comments from the v2 series.
+> > This series is rebased onto 3.14-rc4, and the only change to bindings
+> > is to drop the dma-window property.
+> > 
+> > The first 7 patches in the series are in drivers/iommu, with the first
+> > 3 patches performing some cleanup. The DT bindings and adaptation are
+> > done in patches 4 and 5.
+> > 
+> > Tony,
+> > Patches 8 through 13 are in arch/arm/mach-omap2 layer, so I am guessing
+> > these would have to go through your tree. Of these, patches 8 and 9 are
+> > cleanup fixes to get OMAP3 IVA MMU working, patches 10 & 11 are fixes
+> > required with DT-boot for OMAP3/4, patches 12 & 13 add the OMAP5 support.
 > 
-> The function iopte_alloc do not check NULL return of kmem_cache_zalloc,
-> call iopte_free with argument 0 will panic.
-> 
-> Signed-off-by: Zhouyi Zhou <yizhouzhou-6xnC4QlcT6v/PtFMR13I2A@public.gmane.org>
-> ---
->  drivers/iommu/omap-iommu.c |    3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-> index bcd78a7..5155714 100644
-> --- a/drivers/iommu/omap-iommu.c
-> +++ b/drivers/iommu/omap-iommu.c
-> @@ -551,7 +551,8 @@ static u32 *iopte_alloc(struct omap_iommu *obj, u32 *iopgd, u32 da)
->  		dev_vdbg(obj->dev, "%s: a new pte:%p\n", __func__, iopte);
->  	} else {
->  		/* We raced, free the reduniovant table */
-> -		iopte_free(iopte);
-> +		if (iopte)
-> +			iopte_free(iopte);
+> Are patches 8 to 13 OK to apply separately from the iommu patches or
+> do they need to wait for the iommu patches to get merged first?
 
-Isn't it better to put the check into iopte_free?
+Applied patches 1-7 to my arm/omap branch.
+
+Tony, you can pull that branch into your tree if needed (when I pushed
+it, which will happen today or tomorrow).
 
 
 	Joerg
