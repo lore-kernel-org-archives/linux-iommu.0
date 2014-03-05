@@ -1,36 +1,60 @@
-From: Suravee Suthikulanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH] iommu/amd: Fix logics to determine and checking max PASID
-Date: Wed, 5 Mar 2014 17:08:41 -0600
-Message-ID: <5317AE79.6090606@amd.com>
-References: <1394046068-3858-1-git-send-email-suravee.suthikulpanit@amd.com>
-	<20140305223544.GA2813@8bytes.org>
+From: Kyungmin Park <kmpark@infradead.org>
+Subject: Re: [PATCH] iommu/exynos: Remove driver
+Date: Thu, 6 Mar 2014 08:48:17 +0900
+Message-ID: <CAH9JG2WtV7HeJmjGDaNfHVbZiKG5aDznqxK+AYaTzK_bCud-TQ@mail.gmail.com>
+References: <1391716317-20300-1-git-send-email-olof@lixom.net>
+	<CAAQKjZMo6=dtur6NfvDY9=jVF=7VxHub=isnEwPw0+RKCq6xAg@mail.gmail.com>
+	<CAH9JG2Xoz1_Y7CV6FUiGAO9o5T7jtFUYqJpcAysLttwu4527zQ@mail.gmail.com>
+	<52F4E481.3050902@samsung.com>
+	<CAL5jtJmfwajFD0cnYt6gOfFsZ5hGbFi=5kv8g4x23fY6qGBOew@mail.gmail.com>
+	<CAOesGMhH2WHvkaobewdnPeiThrWTfw0m4WWAZW98-iS2xdr+ow@mail.gmail.com>
+	<001301cf291a$233fdc70$69bf9550$@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140305223544.GA2813-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jay.cornwall-5C7GfCeVMHo@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kim.naru-5C7GfCeVMHo@public.gmane.org
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <001301cf291a$233fdc70$69bf9550$@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Cho KyongHo <pullip.cho@samsung.com>
+Cc: Olof Johansson <olof@lixom.net>, Kukjin Kim <kgene.kim@gmail.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Inki Dae <inki.dae@samsung.com>, linux-samsung-soc@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, Sean Paul <seanpaul@chromium.org>, Tomasz Figa <t.figa@samsung.com>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 3/5/2014 4:35 PM, Joerg Roedel wrote:
->> -		cmd->data[1]  = pasid & PASID_MASK;
->> >+		cmd->data[1]  = pasid & amd_iommu_max_pasid;
-> ... masking out the other bits is redundant.
+On Fri, Feb 14, 2014 at 9:17 AM, Cho KyongHo <pullip.cho@samsung.com> wrote:
+>> -----Original Message-----
+>> From: Olof Johansson [mailto:olof@lixom.net]
+>> Sent: Friday, February 14, 2014 4:34 AM
+>>
+>> On Mon, Feb 10, 2014 at 10:21 PM, Kukjin Kim <kgene.kim@gmail.com> wrote:
+>>
+>> > Just adding KyongHo Cho.
+>> >
+>> > If he can fixup for this time, it would be best solution because he knows
+>> > well than others, I think.
+>>
+>> It's not so much a matter of "fixup for this time", it's a about
+>> having ownership of the driver, making sure it works (and keeps
+>> working if there is related development). The posted patches have not
+>> been followed through on and the result is a broken driver. :(
+>>
+>> I definitely appreciate his expertise, and we should make sure that he
+>> gets to review the code, but if someone else is able to spend time on
+>> reworking the driver (or rewriting a newer one) and maintaining it
+>> longer-term, then we should not stop them from doing so. And there is
+>> no reason to keep broken stale code in the kernel meanwhile.
+>>
 >
+> Thank you for your concerning.
+> I also definitely agree with you that the driver must work.
+> I am always concerning about it but it was not easy to make some time
+> for the patches.
 >
-> 	Joerg
+> I will continue to post the next version of patches, of course.
+> I think it is not far from now to show it.
 
-Agree.  I can take out the masking stuff here, but I think we should be 
-using the amd_iommu_max_pasid instead of hard coded PASID_MASK for the rest.
+Lots of time is going from last reply. there are two options.
+1. just waiting more
+2. remove it as patch and start it again by someone.
 
-Suravee
+what's the opinions?
+
+Thank you,
+Kyungmin Park
