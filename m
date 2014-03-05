@@ -1,49 +1,59 @@
-From: Suman Anna <s-anna@ti.com>
-Subject: Re: [PATCHv3 00/13] OMAP IOMMU DT adaptation for 3.15
-Date: Wed, 5 Mar 2014 14:07:01 -0600
-Message-ID: <531783E5.4090302@ti.com>
-References: <1393620164-14633-1-git-send-email-s-anna@ti.com> <20140228230000.GW13624@atomide.com> <20140304160432.GG2799@8bytes.org> <5316068F.3020003@ti.com> <20140305193326.GA7599@atomide.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] iommu/amd: Fix logics to determine and checking max PASID
+Date: Wed, 5 Mar 2014 23:35:45 +0100
+Message-ID: <20140305223544.GA2813@8bytes.org>
+References: <1394046068-3858-1-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <20140305193326.GA7599@atomide.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Florian Vaussard <florian.vaussard@epfl.ch>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1394046068-3858-1-git-send-email-suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jay.cornwall-5C7GfCeVMHo@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kim.naru-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Tony,
+On Wed, Mar 05, 2014 at 01:01:08PM -0600, suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org wrote:
+>  drivers/iommu/amd_iommu.c       |   26 +++++++++++++++++++++++---
+>  drivers/iommu/amd_iommu_init.c  |   15 ++++++++-------
+>  drivers/iommu/amd_iommu_types.h |    6 ++----
+>  drivers/iommu/amd_iommu_v2.c    |    2 +-
+>  4 files changed, 34 insertions(+), 15 deletions(-)
 
-On 03/05/2014 01:33 PM, Tony Lindgren wrote:
-> * Suman Anna <s-anna@ti.com> [140304 09:03]:
->> On 03/04/2014 10:04 AM, Joerg Roedel wrote:
->>>
->>> Applied patches 1-7 to my arm/omap branch.
->>>
->>> Tony, you can pull that branch into your tree if needed (when I pushed
->>> it, which will happen today or tomorrow).
->
-> OK thanks, looks like remaining patches compile just fine even without
-> it which is nice.
+Hmm, this looks a bit complicated. Since the inv_iotlb_pasid and
+complete_ppr command only support 16 bit pasids by specification, there
+is no way to support pasids with more than 16 bits in general anymore. I
+think the best way to handle it is to just change the PASID_MASK to
+0x0000ffff.
 
-Yes, I did test the boot specifically for this both with and without the 
-corresponding DTS nodes.
+>  static void build_inv_iotlb_pasid(struct iommu_cmd *cmd, u16 devid, int pasid,
+>  				  int qdep, u64 address, bool size)
+>  {
+> +	/* Note:
+> +	 * This command supports only 16-bit PASID.
+> +	 * Currently, hardware only implement upto 16-bit PASID
+> +	 * even though the spec says it could have upto 20 bits.
+> +	 * This is likely to be updated in the future revision of
+> +	 * IOMMU specs when the hardware with PASID > 16 bits
+> +	 * become available.
+> +	 */
+> +	BUG_ON(pasid > 0xFFFF);
 
->
->> Tony,
->> Can you also pull in the corresponding DTS node patches as well that
->> go along with this series.
->> http://marc.info/?l=linux-omap&m=139362062805816&w=2
->
-> They look OK to me, but looks like Benoit and Paul are not Cc:ed
-> on the hwmod changes. I suggest you resend just patches 8 - 13 and
-> the .dts changes as a new series with Benoit and Paul on Cc for
-> them so they have a chance to review and ack them.
+We can keep this as BUG_ON(pasid & ~PASID_MASK), but then ...
 
-OK, will do.
+> -		cmd->data[1]  = pasid & PASID_MASK;
+> +		cmd->data[1]  = pasid & amd_iommu_max_pasid;
 
-Thanks
-Suman
+... masking out the other bits is redundant.
 
 
+	Joerg
