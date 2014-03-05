@@ -1,15 +1,12 @@
-From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH 1/1] iommu/amd: Fix PASID format in INVALIDATE_IOTLB_PAGES
-	command
-Date: Tue, 4 Mar 2014 11:06:34 -0600
-Message-ID: <5316081A.9020008@amd.com>
-References: <1393451371-17894-1-git-send-email-suravee.suthikulpanit@amd.com>
-	<20140304141251.GB2799@8bytes.org> <5316051E.2030004@amd.com>
+From: Zhouyi Zhou <zhouzhouyi-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: Re: [PATCH] IOMMU: iommu module do not check NULL return of
+	kmem_cache_zalloc
+Date: Wed,  5 Mar 2014 10:31:17 +0800
+Message-ID: <1393986677-22160-1-git-send-email-yizhouzhou@ict.ac.cn>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5316051E.2030004-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,54 +16,66 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jay Cornwall <jay.cornwall-5C7GfCeVMHo@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Naru,
-	Kim" <Kim.Naru-5C7GfCeVMHo@public.gmane.org>
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Zhouyi Zhou <zhouzhouyi-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Zhouyi Zhou <yizhouzhou-6xnC4QlcT6v/PtFMR13I2A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 3/4/2014 10:53 AM, Suravee Suthikulpanit wrote:
-> On 3/4/2014 8:12 AM, Joerg Roedel wrote:
->> On Wed, Feb 26, 2014 at 03:49:31PM -0600,
->> suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org wrote:
->>> From: Jay Cornwall <jay.cornwall-5C7GfCeVMHo@public.gmane.org>
->>>
->>> This patch corrects the PASID format in the INVALIDATE_IOTLB_PAGES
->>> command, which was caused by incorrect information in
->>> the AMD IOMMU Architectural Specification v2.01 document.
->>>
->>>      Incorrect format:
->>>           cmd->data[0][16:23] = PASID[7:0]
->>>           cmd->data[1][16:27] = PASID[19:8]
->>>
->>>       Correct format:
->>>           cmd->data[0][16:23] = PASID[15:8]
->>>           cmd->data[1][16:23] = PASID[7:0]
->>>
->>> However, this does not affect the IOMMUv2 hardware implementation,
->>> and has been corrected since version 2.02 of the specification
->>> (available through AMD NDA).
->>>
->>> Signed-off-by: Jay Cornwall <jay.cornwall-5C7GfCeVMHo@public.gmane.org>
->>> Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
->>
->> Applied, thanks.
->>
->> Does this mean that PASIDs are only 16 bits wide now from the former 20
->> bits?
->>
->>
->>
->
-> Thank you Joerg. The specification also state that this command format
-> does not support the maximum size of the PASID field. However, other
-> commands seem to still support 20-bit PASID.
->
-> Suravee
+From: Zhouyi Zhou <zhouzhouyi-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 
-Actually, just thinking about this again, even though we don't have 
-systems with 20-bit PASID yet (only up-to 16-bit), but for future proof, 
-we should add another logic to make sure that this logic won't try to 
-use the 20-bit PASID with this version of the command.  I'll send out 
-another patch soon.
+On Tue, 4 Mar 2014 16:41:18 +0100
+Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
 
-Suravee
+> On Tue, Feb 11, 2014 at 10:12:53AM +0800, Zhouyi Zhou wrote:
+> > From: Zhouyi Zhou <yizhouzhou-6xnC4QlcT6v/PtFMR13I2A@public.gmane.org>
+> > 
+> > The function iopte_alloc do not check NULL return of kmem_cache_zalloc,
+> > call iopte_free with argument 0 will panic.
+> > 
+> > Signed-off-by: Zhouyi Zhou <yizhouzhou-6xnC4QlcT6v/PtFMR13I2A@public.gmane.org>
+> > ---
+> >  drivers/iommu/omap-iommu.c |    3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+> > index bcd78a7..5155714 100644
+> > --- a/drivers/iommu/omap-iommu.c
+> > +++ b/drivers/iommu/omap-iommu.c
+> > @@ -551,7 +551,8 @@ static u32 *iopte_alloc(struct omap_iommu *obj, u32 *iopgd, u32 da)
+> >    	      dev_vdbg(obj->dev, "%s: a new pte:%p\n", __func__, iopte);
+> >  	      } else {
+> >  	      	/* We raced, free the reduniovant table */
+> > -		   iopte_free(iopte);
+> > +			if (iopte)
+> > +				iopte_free(iopte);
+> 
+> Isn't it better to put the check into iopte_free?
+> 
+> 
+>	Joerg
+> 
+> 
+Thanks Joerg for reviewing
+Checking the null pointer in iopte_free guarantees kmem_cache_free
+is happy all the time.
+
+Signed-off-by: Zhouyi Zhou <yizhouzhou-6xnC4QlcT6v/PtFMR13I2A@public.gmane.org>
+Signed-off-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+
+---
+ drivers/iommu/omap-iommu.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index bcd78a7..51211e8 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -523,7 +523,8 @@ static void flush_iopte_range(u32 *first, u32 *last)
+ static void iopte_free(u32 *iopte)
+ {
+ 	/* Note: freed iopte's must be clean ready for re-use */
+-	kmem_cache_free(iopte_cachep, iopte);
++	if (iopte)
++		kmem_cache_free(iopte_cachep, iopte);
+ }
+ 
+ static u32 *iopte_alloc(struct omap_iommu *obj, u32 *iopgd, u32 da)
