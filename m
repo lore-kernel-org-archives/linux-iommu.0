@@ -1,12 +1,15 @@
-From: Zhouyi Zhou <zhouzhouyi-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: Re: [PATCH] IOMMU: iommu module do not check NULL return of
-	kmem_cache_zalloc
-Date: Wed,  5 Mar 2014 10:31:17 +0800
-Message-ID: <1393986677-22160-1-git-send-email-yizhouzhou@ict.ac.cn>
+From: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2] IOMMU: enhance dmar to support device hotplug
+Date: Wed, 5 Mar 2014 10:53:35 +0800
+Message-ID: <531691AF.2010604@huawei.com>
+References: <1385022116-228-1-git-send-email-wangyijing@huawei.com>
+	<1385022116-228-2-git-send-email-wangyijing@huawei.com>
+	<20140304143158.GC2799@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20140304143158.GC2799-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,66 +19,80 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Zhouyi Zhou <zhouzhouyi-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Zhouyi Zhou <yizhouzhou-6xnC4QlcT6v/PtFMR13I2A@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Zhouyi Zhou <zhouzhouyi-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-
-On Tue, 4 Mar 2014 16:41:18 +0100
-Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
-
-> On Tue, Feb 11, 2014 at 10:12:53AM +0800, Zhouyi Zhou wrote:
-> > From: Zhouyi Zhou <yizhouzhou-6xnC4QlcT6v/PtFMR13I2A@public.gmane.org>
-> > 
-> > The function iopte_alloc do not check NULL return of kmem_cache_zalloc,
-> > call iopte_free with argument 0 will panic.
-> > 
-> > Signed-off-by: Zhouyi Zhou <yizhouzhou-6xnC4QlcT6v/PtFMR13I2A@public.gmane.org>
-> > ---
-> >  drivers/iommu/omap-iommu.c |    3 ++-
-> >  1 file changed, 2 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-> > index bcd78a7..5155714 100644
-> > --- a/drivers/iommu/omap-iommu.c
-> > +++ b/drivers/iommu/omap-iommu.c
-> > @@ -551,7 +551,8 @@ static u32 *iopte_alloc(struct omap_iommu *obj, u32 *iopgd, u32 da)
-> >    	      dev_vdbg(obj->dev, "%s: a new pte:%p\n", __func__, iopte);
-> >  	      } else {
-> >  	      	/* We raced, free the reduniovant table */
-> > -		   iopte_free(iopte);
-> > +			if (iopte)
-> > +				iopte_free(iopte);
+On 2014/3/4 22:31, Joerg Roedel wrote:
+> On Thu, Nov 21, 2013 at 04:21:56PM +0800, Yijing Wang wrote:
+>> @@ -3641,21 +3681,42 @@ static int device_notifier(struct notifier_block *nb,
+>>  	struct device *dev = data;
+>>  	struct pci_dev *pdev = to_pci_dev(dev);
+>>  	struct dmar_domain *domain;
+>> +	struct dmar_device *dmar_dev;
+>> +	struct dmar_drhd_unit *drhd;
+>>  
+>> -	if (iommu_no_mapping(dev))
+>> -		return 0;
+>> -
+>> -	domain = find_domain(pdev);
+>> -	if (!domain)
+>> -		return 0;
+>> +	switch (action) {
+>> +	case BUS_NOTIFY_ADD_DEVICE:
+>> +		for_each_drhd_unit(drhd)
+>> +			list_for_each_entry(dmar_dev, &drhd->devices, list)
+>> +				if (dmar_dev->segment == pci_domain_nr(pdev->bus)
+>> +					&& dmar_dev->bus == pdev->bus->number
+>> +					&& dmar_dev->devfn == pdev->devfn)
+>> +					dmar_dev->pdev = pci_dev_get(pdev);
+>> +		break;
+>> +	case BUS_NOTIFY_DEL_DEVICE:
+>> +		for_each_drhd_unit(drhd)
+>> +			list_for_each_entry(dmar_dev, &drhd->devices, list)
+>> +				if (dmar_dev->pdev == pdev) {
+>> +					pci_dev_put(pdev);
+>> +					dmar_dev->pdev = NULL;
+>> +				}
 > 
-> Isn't it better to put the check into iopte_free?
-> 
-> 
->	Joerg
-> 
-> 
-Thanks Joerg for reviewing
-Checking the null pointer in iopte_free guarantees kmem_cache_free
-is happy all the time.
+> How is that synchronized with other users of this dmar_dev structure.
+> Could it happen that you drop the device reference while other parts of
+> the driver still use it?
 
-Signed-off-by: Zhouyi Zhou <yizhouzhou-6xnC4QlcT6v/PtFMR13I2A@public.gmane.org>
-Signed-off-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Hi Joerg,
+   Thanks for your review and comments!
+We use original struct dmar_drhd_unit->devices to attach the pci device to specific DMAR,
+eg. use dmar_find_matched_drhd_unit() to find the attached DMAR by pci_dev * pointer.
+So if the related pci_dev was removed, I think we can safely set dmar_dev->pdev = NULL;
+No pci device will use it again until the new pci device hot add.
 
----
- drivers/iommu/omap-iommu.c |    3 ++-
- 1 files changed, 2 insertions(+), 1 deletions(-)
+One problem in this solution is PCI bus number maybe changed after device hotplug,
+so use the bus,device,function id to update the dmar device scope maybe unreliable.
 
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index bcd78a7..51211e8 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -523,7 +523,8 @@ static void flush_iopte_range(u32 *first, u32 *last)
- static void iopte_free(u32 *iopte)
- {
- 	/* Note: freed iopte's must be clean ready for re-use */
--	kmem_cache_free(iopte_cachep, iopte);
-+	if (iopte)
-+		kmem_cache_free(iopte_cachep, iopte);
- }
- 
- static u32 *iopte_alloc(struct omap_iommu *obj, u32 *iopgd, u32 da)
+Jiang Liu also provide a solution to fix this problem by save device scope pathes,
+I think that's a good idea.
+
+link:http://lkml.org/lkml/2014/1/7/108
+
+Thanks!
+Yijing.
+
+
+> 
+> 
+> 	Joerg
+> 
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
+> 
+> .
+> 
+
+
+-- 
+Thanks!
+Yijing
