@@ -1,15 +1,15 @@
-From: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2] IOMMU: enhance dmar to support device hotplug
-Date: Wed, 5 Mar 2014 10:53:35 +0800
-Message-ID: <531691AF.2010604@huawei.com>
-References: <1385022116-228-1-git-send-email-wangyijing@huawei.com>
-	<1385022116-228-2-git-send-email-wangyijing@huawei.com>
-	<20140304143158.GC2799@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [Patch Part2 V2 00/17] Enhance DMAR drivers to handle PCI/memory
+	hotplug events
+Date: Wed, 5 Mar 2014 08:48:04 +0100
+Message-ID: <20140305074804.GE27471@8bytes.org>
+References: <1392790057-32434-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140304143158.GC2799-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1392790057-32434-1-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,80 +19,41 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Rafael J . Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2014/3/4 22:31, Joerg Roedel wrote:
-> On Thu, Nov 21, 2013 at 04:21:56PM +0800, Yijing Wang wrote:
->> @@ -3641,21 +3681,42 @@ static int device_notifier(struct notifier_block *nb,
->>  	struct device *dev = data;
->>  	struct pci_dev *pdev = to_pci_dev(dev);
->>  	struct dmar_domain *domain;
->> +	struct dmar_device *dmar_dev;
->> +	struct dmar_drhd_unit *drhd;
->>  
->> -	if (iommu_no_mapping(dev))
->> -		return 0;
->> -
->> -	domain = find_domain(pdev);
->> -	if (!domain)
->> -		return 0;
->> +	switch (action) {
->> +	case BUS_NOTIFY_ADD_DEVICE:
->> +		for_each_drhd_unit(drhd)
->> +			list_for_each_entry(dmar_dev, &drhd->devices, list)
->> +				if (dmar_dev->segment == pci_domain_nr(pdev->bus)
->> +					&& dmar_dev->bus == pdev->bus->number
->> +					&& dmar_dev->devfn == pdev->devfn)
->> +					dmar_dev->pdev = pci_dev_get(pdev);
->> +		break;
->> +	case BUS_NOTIFY_DEL_DEVICE:
->> +		for_each_drhd_unit(drhd)
->> +			list_for_each_entry(dmar_dev, &drhd->devices, list)
->> +				if (dmar_dev->pdev == pdev) {
->> +					pci_dev_put(pdev);
->> +					dmar_dev->pdev = NULL;
->> +				}
+On Wed, Feb 19, 2014 at 02:07:20PM +0800, Jiang Liu wrote:
+> Jiang Liu (17):
+>   iommu/vt-d: avoid double free of g_iommus on error recovery path
+>   iommu/vt-d: avoid caching stale domain_device_info and fix memory
+>     leak
+>   iommu/vt-d: avoid caching stale domain_device_info when hot-removing
+>     PCI device
+>   iommu/vt-d: factor out dmar_alloc_dev_scope() for later reuse
+>   iommu/vt-d: move private structures and variables into intel-iommu.c
+>   iommu/vt-d: simplify function get_domain_for_dev()
+>   iommu/vt-d: free resources if failed to create domain for PCIe
+>     endpoint
+>   iommu/vt-d: reduce duplicated code to handle virtual machine domains
+>   iommu/vt-d: fix incorrect iommu_count for si_domain
+>   iommu/vt-d: check for NULL pointer when freeing IOMMU data structure
+>   iommu/vt-d: fix error in detect ATS capability
+>   iommu/vt-d: introduce macro for_each_dev_scope() to walk device scope
+>     entries
+>   iommu/vt-d: introduce a rwsem to protect global data structures
+>   iommu/vt-d: use RCU to protect global resources in interrupt context
+>   iommu/vt-d, PCI: update DRHD/RMRR/ATSR device scope caches when PCI
+>     hotplug happens
+>   iommu/vt-d, PCI: unify the way to process DMAR device scope array
+>   iommu/vt-d: update IOMMU state when memory hotplug happens
 > 
-> How is that synchronized with other users of this dmar_dev structure.
-> Could it happen that you drop the device reference while other parts of
-> the driver still use it?
+>  drivers/iommu/dmar.c                |  412 +++++++++++++------
+>  drivers/iommu/intel-iommu.c         |  750 ++++++++++++++++++-----------------
+>  drivers/iommu/intel_irq_remapping.c |  108 +++--
+>  drivers/iommu/iova.c                |   64 ++-
+>  include/linux/dmar.h                |   74 ++--
+>  include/linux/iova.h                |    2 +
+>  6 files changed, 848 insertions(+), 562 deletions(-)
 
-Hi Joerg,
-   Thanks for your review and comments!
-We use original struct dmar_drhd_unit->devices to attach the pci device to specific DMAR,
-eg. use dmar_find_matched_drhd_unit() to find the attached DMAR by pci_dev * pointer.
-So if the related pci_dev was removed, I think we can safely set dmar_dev->pdev = NULL;
-No pci device will use it again until the new pci device hot add.
-
-One problem in this solution is PCI bus number maybe changed after device hotplug,
-so use the bus,device,function id to update the dmar device scope maybe unreliable.
-
-Jiang Liu also provide a solution to fix this problem by save device scope pathes,
-I think that's a good idea.
-
-link:http://lkml.org/lkml/2014/1/7/108
-
-Thanks!
-Yijing.
-
-
-> 
-> 
-> 	Joerg
-> 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
-> 
-> .
-> 
-
-
--- 
-Thanks!
-Yijing
+Applied, thanks Jiang.
