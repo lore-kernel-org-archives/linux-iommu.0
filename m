@@ -1,60 +1,57 @@
-From: Kyungmin Park <kmpark@infradead.org>
-Subject: Re: [PATCH] iommu/exynos: Remove driver
-Date: Thu, 6 Mar 2014 08:48:17 +0900
-Message-ID: <CAH9JG2WtV7HeJmjGDaNfHVbZiKG5aDznqxK+AYaTzK_bCud-TQ@mail.gmail.com>
-References: <1391716317-20300-1-git-send-email-olof@lixom.net>
-	<CAAQKjZMo6=dtur6NfvDY9=jVF=7VxHub=isnEwPw0+RKCq6xAg@mail.gmail.com>
-	<CAH9JG2Xoz1_Y7CV6FUiGAO9o5T7jtFUYqJpcAysLttwu4527zQ@mail.gmail.com>
-	<52F4E481.3050902@samsung.com>
-	<CAL5jtJmfwajFD0cnYt6gOfFsZ5hGbFi=5kv8g4x23fY6qGBOew@mail.gmail.com>
-	<CAOesGMhH2WHvkaobewdnPeiThrWTfw0m4WWAZW98-iS2xdr+ow@mail.gmail.com>
-	<001301cf291a$233fdc70$69bf9550$@samsung.com>
+From: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+Subject: [PATCH 08/10] ARM: dts: OMAP3: Add IVA IOMMU node
+Date: Wed, 5 Mar 2014 18:24:17 -0600
+Message-ID: <1394065459-16409-9-git-send-email-s-anna@ti.com>
+References: <1394065459-16409-1-git-send-email-s-anna@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <001301cf291a$233fdc70$69bf9550$@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Cho KyongHo <pullip.cho@samsung.com>
-Cc: Olof Johansson <olof@lixom.net>, Kukjin Kim <kgene.kim@gmail.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Inki Dae <inki.dae@samsung.com>, linux-samsung-soc@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, Sean Paul <seanpaul@chromium.org>, Tomasz Figa <t.figa@samsung.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1394065459-16409-1-git-send-email-s-anna-l0cyMroinI0@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Benoit Cousson <bcousson-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Paul Walmsley <paul-DWxLp4Yu+b8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Feb 14, 2014 at 9:17 AM, Cho KyongHo <pullip.cho@samsung.com> wrote:
->> -----Original Message-----
->> From: Olof Johansson [mailto:olof@lixom.net]
->> Sent: Friday, February 14, 2014 4:34 AM
->>
->> On Mon, Feb 10, 2014 at 10:21 PM, Kukjin Kim <kgene.kim@gmail.com> wrote:
->>
->> > Just adding KyongHo Cho.
->> >
->> > If he can fixup for this time, it would be best solution because he knows
->> > well than others, I think.
->>
->> It's not so much a matter of "fixup for this time", it's a about
->> having ownership of the driver, making sure it works (and keeps
->> working if there is related development). The posted patches have not
->> been followed through on and the result is a broken driver. :(
->>
->> I definitely appreciate his expertise, and we should make sure that he
->> gets to review the code, but if someone else is able to spend time on
->> reworking the driver (or rewriting a newer one) and maintaining it
->> longer-term, then we should not stop them from doing so. And there is
->> no reason to keep broken stale code in the kernel meanwhile.
->>
->
-> Thank you for your concerning.
-> I also definitely agree with you that the driver must work.
-> I am always concerning about it but it was not easy to make some time
-> for the patches.
->
-> I will continue to post the next version of patches, of course.
-> I think it is not far from now to show it.
+From: Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>
 
-Lots of time is going from last reply. there are two options.
-1. just waiting more
-2. remove it as patch and start it again by someone.
+Add the DT node for the IOMMU within the DSP subsystem. The entry
+is disabled to keep in line with the hwmod usage as intended by
+the deprecated CONFIG_OMAP_IOMMU_IVA2 flag.
 
-what's the opinions?
+Signed-off-by: Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>
+[s-anna-l0cyMroinI0@public.gmane.org: split the entry and disable the node]
+Signed-off-by: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+---
+ arch/arm/boot/dts/omap3.dtsi | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-Thank you,
-Kyungmin Park
+diff --git a/arch/arm/boot/dts/omap3.dtsi b/arch/arm/boot/dts/omap3.dtsi
+index f7a47e3..9574a9e 100644
+--- a/arch/arm/boot/dts/omap3.dtsi
++++ b/arch/arm/boot/dts/omap3.dtsi
+@@ -418,6 +418,14 @@
+ 			ti,#tlb-entries = <8>;
+ 		};
+ 
++		mmu_iva: mmu@5d000000 {
++			compatible = "ti,omap2-iommu";
++			reg = <0x5d000000 0x80>;
++			interrupts = <28>;
++			ti,hwmods = "mmu_iva";
++			status = "disabled";
++		};
++
+ 		wdt2: wdt@48314000 {
+ 			compatible = "ti,omap3-wdt";
+ 			reg = <0x48314000 0x80>;
+-- 
+1.9.0
