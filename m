@@ -1,160 +1,285 @@
-From: David Woodhouse <dwmw2@infradead.org>
-Subject: Re: [Patch Part2 V2 15/17] iommu/vt-d, PCI: update DRHD/RMRR/ATSR
- device scope caches when PCI hotplug happens
-Date: Thu, 06 Mar 2014 18:25:19 +0000
-Message-ID: <1394130319.9994.28.camel@i7.infradead.org>
-References: <1392790057-32434-1-git-send-email-jiang.liu@linux.intel.com>
-	 <1392790057-32434-16-git-send-email-jiang.liu@linux.intel.com>
+From: Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [RFC PATCH v4 01/10] driver core: export driver_probe_device()
+Date: Thu, 6 Mar 2014 22:25:01 +0000
+Message-ID: <1c713af1fe3d4e3e836553f20e44c737@DM2PR03MB352.namprd03.prod.outlook.com>
+References: <1391880580-471-1-git-send-email-a.motakis@virtualopensystems.com>
+	<1391880580-471-2-git-send-email-a.motakis@virtualopensystems.com>
+	<20140214222716.GA11838@kroah.com>
+	<ba7597fd8c9f4d91bbccfb42e31a165e@DM2PR03MB352.namprd03.prod.outlook.com>
+	<20140215024725.GA2542@kroah.com>
+	<7043e1edd9974de590dcb392cd8aff14@DM2PR03MB352.namprd03.prod.outlook.com>
+	<20140215173348.GA8056@kroah.com>
+	<b6374a0f30194969ba4622ff2f58ae65@DM2PR03MB352.namprd03.prod.outlook.com>
+	<20140220224337.GA20097@kroah.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-oSkpY1lVTtvwCjowpHad"
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1392790057-32434-16-git-send-email-jiang.liu@linux.intel.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Jiang Liu <jiang.liu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Yinghai Lu <yinghai@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>, Tony Luck <tony.luck@intel.com>, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20140220224337.GA20097-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org" <jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, "Rafael J. Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "agraf-l3A5Bk7waGM@public.gmane.org" <agraf-l3A5Bk7waGM@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Dmitry Kasatkin <d.kasatkin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Tejun Heo <tj-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Michal Hocko <mhocko-AlSwsSmVLrQ@public.gmane.org>, Toshi Kani <toshi.kani-VXdhtT5mjnY@public.gmane.org>, "a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
---=-oSkpY1lVTtvwCjowpHad
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Wed, 2014-02-19 at 14:07 +0800, Jiang Liu wrote:
-> Current Intel DMAR/IOMMU driver assumes that all PCI devices
-> associated
-> with DMAR/RMRR/ATSR device scope arrays are created at boot time and
-> won't change at runtime, so it caches pointers of associated PCI
+> -----Original Message-----
+> From: Greg KH [mailto:gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org]
+> Sent: Thursday, February 20, 2014 4:44 PM
+> To: Yoder Stuart-B08248
+> Cc: Antonios Motakis; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
+> kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-
+> kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org;
+> a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org; kim.phillips-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org;
+> jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Bhushan Bharat-R65777; Wood
+> Scott-B07421; christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org; Sethi Varun-
+> B16395; will.deacon-5wv7dgnIgG8@public.gmane.org; Tejun Heo; Rafael J. Wysocki; Guenter Roeck;
+> Toshi Kani; Joe Perches; Dmitry Kasatkin; Michal Hocko; Bjorn Helgaas
+> Subject: Re: [RFC PATCH v4 01/10] driver core: export
+> driver_probe_device()
+> 
+> On Thu, Feb 20, 2014 at 10:34:35PM +0000, Stuart Yoder wrote:
+> >
+> >
+> > > -----Original Message-----
+> > > From: Yoder Stuart-B08248
+> > > Sent: Saturday, February 15, 2014 12:19 PM
+> > > To: 'Greg KH'
+> > > Cc: Antonios Motakis; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
+> > > kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+> linux-
+> > > kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org;
+> > > a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org; kim.phillips-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org;
+> > > jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Bhushan Bharat-R65777;
+> Wood
+> > > Scott-B07421; christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org; Sethi
+> Varun-
+> > > B16395; will.deacon-5wv7dgnIgG8@public.gmane.org; Tejun Heo; Rafael J. Wysocki; Guenter
+> Roeck;
+> > > Toshi Kani; Joe Perches; Dmitry Kasatkin; Michal Hocko; Bjorn Helgaas
+> > > Subject: RE: [RFC PATCH v4 01/10] driver core: export
+> > > driver_probe_device()
+> > >
+> > >
+> > >
+> > > > -----Original Message-----
+> > > > From: Greg KH [mailto:gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org]
+> > > > Sent: Saturday, February 15, 2014 11:34 AM
+> > > > To: Yoder Stuart-B08248
+> > > > Cc: Antonios Motakis; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
+> > > > kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+> linux-
+> > > > kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org;
+> > > > a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org; kim.phillips-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org;
+> > > > jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Bhushan Bharat-R65777;
+> > > Wood
+> > > > Scott-B07421; christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; agraf-l3A5Bk7waGM@public.gmane.org; Sethi
+> Varun-
+> > > > B16395; will.deacon-5wv7dgnIgG8@public.gmane.org; Tejun Heo; Rafael J. Wysocki; Guenter
+> > > Roeck;
+> > > > Toshi Kani; Joe Perches; Dmitry Kasatkin; Michal Hocko; Bjorn
+> Helgaas
+> > > > Subject: Re: [RFC PATCH v4 01/10] driver core: export
+> > > > driver_probe_device()
+> > > >
+> > > > On Sat, Feb 15, 2014 at 04:33:44PM +0000, Stuart Yoder wrote:
+> > > > > > > Why?  driver_probe_device() allows a driver to explicitly
+> bind
+> > > > > > > to a specific device.   What is conceptually wrong with
+> allowing
+> > > > > > > that?
+> > > > > >
+> > > > > > Because that's not how a bus should work, and the fact that no
+> > > other
+> > > > > > subsystem in the kernel does that might be a hint you are
+> trying to
+> > > > do
+> > > > > > something a bit "wrong" here.
+> > > > >
+> > > > > Let me try to succinctly as I can describe the problem we are
+> trying
+> > > to
+> > > > > solve here...
+> > > > >
+> > > > > The vfio mechanism in the kernel (e.g. vfio-pci) allows devices
+> to be
+> > > > > exposed user space (via file descriptors), enabling user space
+> > > > > drivers.  So, for example to export an e1000 card to user space,
+> I do
+> > > > > this:
+> > > > >
+> > > > >    echo 0001:03:00.0 >
+> > > /sys/bus/pci/devices/0001:03:00.0/driver/unbind
+> > > > >    echo 8086 10d3 > /sys/bus/pci/drivers/vfio-pci/new_id
+> > > >
+> > > > What's wrong with using the "bind" file instead?  That picks a
+> specific
+> > > > device and binds it to a specific driver.  Or have we been down
+> this
+> > > > path before?  :)
+> > >
+> > > Yes we have :)  The "bind" file does not bypass device ID checks, so
+> > > it wouldn't work without new_id or a wildcard match of some kind.
+> > >
+> > > > And that is for a PCI "driver" not a totally separate bus, which it
+> > > > looks like you are wanting to do here.
+> > >
+> > > vfio-pci is a PCI driver, not a bus (drivers/vfio/pci/vfio_pci.c).
+> > >
+> > > > > The first step unbinds the target device (0001:03:00.0) from the
+> > > normal
+> > > > > e1000 driver.
+> > > > >
+> > > > > The second step causes the vfio-pci driver to bind to device
+> > > > 0001:03:00.0.
+> > > > > This second step tells vfio-pci that it now handles e1000 device
+> IDs,
+> > > > > and the vfio-pci drivers registers with the PCI bus to handle
+> '8086
+> > > > 10d3'.
+> > > > >
+> > > > > That works, but it is ugly.  We now have 2 active drivers
+> handling
+> > > > > the same device type...which introduces various possible race
+> > > > conditions.
+> > > > >
+> > > > > We never want vfio-pci to auto-bind to any new device that shows
+> up
+> > > > > on the PCI bus.  Binding a device to vfio-pci must be an explicit
+> > > > > action by an administrator.
+> > > >
+> > > > Then use the "bind" file.
+> > >
+> > > See above.
+> > >
+> > > > > You mentioned previously that user space can sort out the problem
+> > > > > of multiple drivers registered for handling the same device type.
+> > > > > That is true, but doesn't help here.   We don't want vfio-pci
+> > > > > to handle _all_ e1000 cards, just explicitly selected e1000
+> cards.
+> > > > >
+> > > > > We want the normal e1000 driver to be loaded and to bind to new
+> > > > > devices that may be hot-plugged.
+> > > >
+> > > > I want a pony too...
+> > >
+> > > It's not that difficult...this patch accomplishes it by
+> > > simply allowing drivers to call driver_probe_device().
+> > >
+> > > > > There are 2 proposed mechanisms that have been put forth, both of
+> > > > > which you have now rejected:
+> > > > >
+> > > > >    1.  sysfs_bind_only flag was proposed which would allow a vfio
+> > > > >        driver (like vfio-pci) to only bind by explicit request
+> > > through
+> > > > >        the sysfs 'bind' file.
+> > > >
+> > > > Why did I reject this?  What did the patch look like?
+> > >
+> > > https://lkml.org/lkml/2013/12/3/253
+> > >
+> > >
+> > > > >    2.  Have the vfio driver call driver_probe_device() to
+> explicitly
+> > > > bind
+> > > > >        a particular device instance to the driver.  Only change
+> we
+> > > need
+> > > > >        here is the EXPORT_SYMBOL.
+> > > >
+> > > > How are you going to prevent the driver from being bound to the
 > device
-> object. That assumption may be wrong now due to:
-> 1) introduction of PCI host bridge hotplug
-> 2) PCI device hotplug through sysfs interfaces.
-...
-> This patch introduces a new mechanism to update the DRHD/RMRR/ATSR
-> device scope caches by hooking PCI bus notification.
+> > > > in the core with this change?  How are you going to call this
+> function?
+> > > > When?  On what action of the user?
+> > >
+> > > The vfio-pci driver would create a sysfs object "vfio_bind".
+> > >
+> > > User would do:
+> > >    echo 0001:03:00.0 > /sys/bus/pci/drivers/vfio-pci/vfio_bind
+> > >
+> > > vfio-pci would call driver_probe_device() which binds
+> > > the specific device to the vfio-pci driver...and there is
+> > > no ambiguity.
+> > >
+> > > > > Are you in principle opposed to any mechanism that would allow 2
+> > > > drivers
+> > > > > to be resident/active and allow a sysadmin to explicitly bind a
+> > > > > particular device instance to the driver of their choice?
+> > > >
+> > > > No, that works today with the bind/unbind/new_id files, it's just
+> that
+> > > > you don't like it :)
+> > >
+> > > We don't like it because of the ambiguities/race-conditions with
+> > > the current situation.
+> > >
+> > > A vfio driver, like vfio-pci, certainly is a bit different than a
+> normal
+> > > driver, in that it really is not device ID aware.  It simply passes
+> > > through device resources (mappable regions, IRQs) to user space
+> without
+> > > interpreting or understanding them.  It is kind of a "meta" driver,
+> but
+> > > it is not a bus.  Every bus type would need its own vfio driver to
+> > > do this type of device pass through.
+> >
+> > Hi Greg,
+> >
+> > Any further thoughts on this?
+> 
+> Sorry, been swamped with other patches and stable stuff and not had a
+> time to look at it.  Give me a few days...
 
-Hm, this seems overly complex. Can't we just abandon the
-dmaru->devices[] array completely? In dmar_find_matched_drhd_unit()
-can't we just compare the path in the scope entries directly to the PCI
-device we are trying to find a DRHD for?
+Hi Greg, wanted to ping you on this again...
 
-We then cache the result in dev->archdata.iommu for ever (well, until
-hot-unplug) anyway, so it shouldn't even be any less efficient to do it
-on demand, right?
+I know some days have gone by, so let me summarize the issue-- vfio
+drivers in the kernel (regardless of bus type) need to bind to
+devices of any type.   There seem to be 3 approaches:
 
-That's true at least for dmar_find_matched_drhd_unit(). Perhaps we'd
-need to find a way to cache the result for
-dmar_find_matched_atsr_unit()?
+   1.  new_id -- (current approach) the user explicitly registers
+       each new device type with the vfio driver using the new_id
+       mechanism.
 
---=20
-dwmw2
+       Problem: multiple drivers will be resident that handle the
+       same device type...and there is nothing user space hotplug
+       infrastructure can do to help.
 
---=-oSkpY1lVTtvwCjowpHad
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
+   2.  "any id" -- the vfio driver could specify a wildcard match of
+       some kind so that it can bind to any possible device id.  However,
+       we don't want vfio grabbing all devices...just the ones we
+       explicitly want to pass to user space.
 
-MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIISxDCCBjQw
-ggQcoAMCAQICAR4wDQYJKoZIhvcNAQEFBQAwfTELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0
-Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxKTAn
-BgNVBAMTIFN0YXJ0Q29tIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MB4XDTA3MTAyNDIxMDE1NVoX
-DTE3MTAyNDIxMDE1NVowgYwxCzAJBgNVBAYTAklMMRYwFAYDVQQKEw1TdGFydENvbSBMdGQuMSsw
-KQYDVQQLEyJTZWN1cmUgRGlnaXRhbCBDZXJ0aWZpY2F0ZSBTaWduaW5nMTgwNgYDVQQDEy9TdGFy
-dENvbSBDbGFzcyAxIFByaW1hcnkgSW50ZXJtZWRpYXRlIENsaWVudCBDQTCCASIwDQYJKoZIhvcN
-AQEBBQADggEPADCCAQoCggEBAMcJg8zOLdgasSmkLhOrlr6KMoOMpohBllVHrdRvEg/q6r8jR+EK
-75xCGhR8ToREoqe7zM9/UnC6TS2y9UKTpT1v7RSMzR0t6ndl0TWBuUr/UXBhPk+Kmy7bI4yW4urC
-+y7P3/1/X7U8ocb8VpH/Clt+4iq7nirMcNh6qJR+xjOhV+VHzQMALuGYn5KZmc1NbJQYclsGkDxD
-z2UbFqE2+6vIZoL+jb9x4Pa5gNf1TwSDkOkikZB1xtB4ZqtXThaABSONdfmv/Z1pua3FYxnCFmdr
-/+N2JLKutIxMYqQOJebr/f/h5t95m4JgrM3Y/w7YX9d7YAL9jvN4SydHsU6n65cCAwEAAaOCAa0w
-ggGpMA8GA1UdEwEB/wQFMAMBAf8wDgYDVR0PAQH/BAQDAgEGMB0GA1UdDgQWBBRTcu2SnODaywFc
-fH6WNU7y1LhRgjAfBgNVHSMEGDAWgBROC+8apEBbpRdphzDKNGhD0EGu8jBmBggrBgEFBQcBAQRa
-MFgwJwYIKwYBBQUHMAGGG2h0dHA6Ly9vY3NwLnN0YXJ0c3NsLmNvbS9jYTAtBggrBgEFBQcwAoYh
-aHR0cDovL3d3dy5zdGFydHNzbC5jb20vc2ZzY2EuY3J0MFsGA1UdHwRUMFIwJ6AloCOGIWh0dHA6
-Ly93d3cuc3RhcnRzc2wuY29tL3Nmc2NhLmNybDAnoCWgI4YhaHR0cDovL2NybC5zdGFydHNzbC5j
-b20vc2ZzY2EuY3JsMIGABgNVHSAEeTB3MHUGCysGAQQBgbU3AQIBMGYwLgYIKwYBBQUHAgEWImh0
-dHA6Ly93d3cuc3RhcnRzc2wuY29tL3BvbGljeS5wZGYwNAYIKwYBBQUHAgEWKGh0dHA6Ly93d3cu
-c3RhcnRzc2wuY29tL2ludGVybWVkaWF0ZS5wZGYwDQYJKoZIhvcNAQEFBQADggIBAAqDCH14qywG
-XLhjjF6uHLkjd02hcdh9hrw+VUsv+q1eeQWB21jWj3kJ96AUlPCoEGZ/ynJNScWy6QMVQjbbMXlt
-UfO4n4bGGdKo3awPWp61tjAFgraLJgDk+DsSvUD6EowjMTNx25GQgyYJ5RPIzKKR9tQW8gGK+2+R
-HxkUCTbYFnL6kl8Ch507rUdPPipJ9CgJFws3kDS3gOS5WFMxcjO5DwKfKSETEPrHh7p5shuuNktv
-sv6hxHTLhiMKX893gxdT3XLS9OKmCv87vkINQcNEcIIoFWbP9HORz9v3vQwR4e3ksLc2JZOAFK+s
-sS5XMEoznzpihEP0PLc4dCBYjbvSD7kxgDwZ+Aj8Q9PkbvE9sIPP7ON0fz095HdThKjiVJe6vofq
-+n6b1NBc8XdrQvBmunwxD5nvtTW4vtN6VY7mUCmxsCieuoBJ9OlqmsVWQvifIYf40dJPZkk9YgGT
-zWLpXDSfLSplbY2LL9C9U0ptvjcDjefLTvqSFc7tw1sEhF0n/qpA2r0GpvkLRDmcSwVyPvmjFBGq
-Up/pNy8ZuPGQmHwFi2/14+xeSUDG2bwnsYJQG2EdJCB6luQ57GEnTA/yKZSTKI8dDQa8Sd3zfXb1
-9mOgSF0bBdXbuKhEpuP9wirslFe6fQ1t5j5R0xi72MZ8ikMu1RQZKCyDbMwazlHiMIIGQjCCBSqg
-AwIBAgIDBoXOMA0GCSqGSIb3DQEBBQUAMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRD
-b20gTHRkLjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYG
-A1UEAxMvU3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0EwHhcN
-MTMwNTAyMDYyMDQ2WhcNMTQwNTAzMTIxNDAyWjBdMRkwFwYDVQQNExBNd0k3ODIxNTRpV21lZVkw
-MRwwGgYDVQQDDBNkd213MkBpbmZyYWRlYWQub3JnMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZy
-YWRlYWQub3JnMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvWGuRDHiXVpOgaFkBaz8
-c3jQTfiEw7j0iKZnktCQi0xjY29QJ7GwL+fgQlbofXgYTm8E9fWERvw2tAy2BxHzAPguBzziS7JN
-hsGP9lf3L8hFJBvmdyyyj8b9A6Oi7s3JLtMRWIvyvE+DbuTkP+htuT4+XuTJr8Y5yIqd1WXr2gJk
-ANr77vTyjeNxceevP58Tqr0f+4v5g6+vNARO3bk3SaVQPDUTwGrpoPtLh3d+mQzZ4iiW3MwQS7Wr
-UVT3l2aTVHCpgtAaBs3zHWarvmIqhbWj8zdcnELNzwqTrOjaoWxuWY4k05GGfzmdjOBUiL7FDNvI
-ZwweJEPwJAQI72YhUwIDAQABo4IC2TCCAtUwCQYDVR0TBAIwADALBgNVHQ8EBAMCBLAwHQYDVR0l
-BBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMB0GA1UdDgQWBBSs0hZhUgQwqGVXzLuH6pJH0hMZwTAf
-BgNVHSMEGDAWgBRTcu2SnODaywFcfH6WNU7y1LhRgjAeBgNVHREEFzAVgRNkd213MkBpbmZyYWRl
-YWQub3JnMIIBTAYDVR0gBIIBQzCCAT8wggE7BgsrBgEEAYG1NwECAzCCASowLgYIKwYBBQUHAgEW
-Imh0dHA6Ly93d3cuc3RhcnRzc2wuY29tL3BvbGljeS5wZGYwgfcGCCsGAQUFBwICMIHqMCcWIFN0
-YXJ0Q29tIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MAMCAQEagb5UaGlzIGNlcnRpZmljYXRlIHdh
-cyBpc3N1ZWQgYWNjb3JkaW5nIHRvIHRoZSBDbGFzcyAxIFZhbGlkYXRpb24gcmVxdWlyZW1lbnRz
-IG9mIHRoZSBTdGFydENvbSBDQSBwb2xpY3ksIHJlbGlhbmNlIG9ubHkgZm9yIHRoZSBpbnRlbmRl
-ZCBwdXJwb3NlIGluIGNvbXBsaWFuY2Ugb2YgdGhlIHJlbHlpbmcgcGFydHkgb2JsaWdhdGlvbnMu
-MDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwuc3RhcnRzc2wuY29tL2NydHUxLWNybC5jcmww
-gY4GCCsGAQUFBwEBBIGBMH8wOQYIKwYBBQUHMAGGLWh0dHA6Ly9vY3NwLnN0YXJ0c3NsLmNvbS9z
-dWIvY2xhc3MxL2NsaWVudC9jYTBCBggrBgEFBQcwAoY2aHR0cDovL2FpYS5zdGFydHNzbC5jb20v
-Y2VydHMvc3ViLmNsYXNzMS5jbGllbnQuY2EuY3J0MCMGA1UdEgQcMBqGGGh0dHA6Ly93d3cuc3Rh
-cnRzc2wuY29tLzANBgkqhkiG9w0BAQUFAAOCAQEACFLDQnyO8+XA/TiTltjJ/ZAvM+qmBEKN43Vd
-+Wio2lM/Wq/scJpkupXGHrl9CueobkDxMAogXbMxqLZYO13PvgjMh+PHxDPnQv8EGxOig+k/Hqvc
-qEdTlm9YEHcbXbWS6XB+zRO7VVIpGMYQ1f1qCOcukxmwIm6iMSHXbOr/7paQm4bO0ULptjBotfiO
-Zo6q8No6SroQlOSyc6v8FYSxTNIAXMaM2FYkjqrxgdnJmSIAfr11gROuF69WuOICxP0zTEjJle+7
-aO9lUWNaWMWPMyFSNCxF6kkRuvUCami7vlhLOTRC1kb+OMhx7keN9At3tdTI3rtuFeSB1Pa3VXVs
-0DCCBkIwggUqoAMCAQICAwaFzjANBgkqhkiG9w0BAQUFADCBjDELMAkGA1UEBhMCSUwxFjAUBgNV
-BAoTDVN0YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNp
-Z25pbmcxODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xp
-ZW50IENBMB4XDTEzMDUwMjA2MjA0NloXDTE0MDUwMzEyMTQwMlowXTEZMBcGA1UEDRMQTXdJNzgy
-MTU0aVdtZWVZMDEcMBoGA1UEAwwTZHdtdzJAaW5mcmFkZWFkLm9yZzEiMCAGCSqGSIb3DQEJARYT
-ZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL1hrkQx
-4l1aToGhZAWs/HN40E34hMO49IimZ5LQkItMY2NvUCexsC/n4EJW6H14GE5vBPX1hEb8NrQMtgcR
-8wD4Lgc84kuyTYbBj/ZX9y/IRSQb5ncsso/G/QOjou7NyS7TEViL8rxPg27k5D/obbk+Pl7kya/G
-OciKndVl69oCZADa++708o3jcXHnrz+fE6q9H/uL+YOvrzQETt25N0mlUDw1E8Bq6aD7S4d3fpkM
-2eIoltzMEEu1q1FU95dmk1RwqYLQGgbN8x1mq75iKoW1o/M3XJxCzc8Kk6zo2qFsblmOJNORhn85
-nYzgVIi+xQzbyGcMHiRD8CQECO9mIVMCAwEAAaOCAtkwggLVMAkGA1UdEwQCMAAwCwYDVR0PBAQD
-AgSwMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDBDAdBgNVHQ4EFgQUrNIWYVIEMKhlV8y7
-h+qSR9ITGcEwHwYDVR0jBBgwFoAUU3Ltkpzg2ssBXHx+ljVO8tS4UYIwHgYDVR0RBBcwFYETZHdt
-dzJAaW5mcmFkZWFkLm9yZzCCAUwGA1UdIASCAUMwggE/MIIBOwYLKwYBBAGBtTcBAgMwggEqMC4G
-CCsGAQUFBwIBFiJodHRwOi8vd3d3LnN0YXJ0c3NsLmNvbS9wb2xpY3kucGRmMIH3BggrBgEFBQcC
-AjCB6jAnFiBTdGFydENvbSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTADAgEBGoG+VGhpcyBjZXJ0
-aWZpY2F0ZSB3YXMgaXNzdWVkIGFjY29yZGluZyB0byB0aGUgQ2xhc3MgMSBWYWxpZGF0aW9uIHJl
-cXVpcmVtZW50cyBvZiB0aGUgU3RhcnRDb20gQ0EgcG9saWN5LCByZWxpYW5jZSBvbmx5IGZvciB0
-aGUgaW50ZW5kZWQgcHVycG9zZSBpbiBjb21wbGlhbmNlIG9mIHRoZSByZWx5aW5nIHBhcnR5IG9i
-bGlnYXRpb25zLjA2BgNVHR8ELzAtMCugKaAnhiVodHRwOi8vY3JsLnN0YXJ0c3NsLmNvbS9jcnR1
-MS1jcmwuY3JsMIGOBggrBgEFBQcBAQSBgTB/MDkGCCsGAQUFBzABhi1odHRwOi8vb2NzcC5zdGFy
-dHNzbC5jb20vc3ViL2NsYXNzMS9jbGllbnQvY2EwQgYIKwYBBQUHMAKGNmh0dHA6Ly9haWEuc3Rh
-cnRzc2wuY29tL2NlcnRzL3N1Yi5jbGFzczEuY2xpZW50LmNhLmNydDAjBgNVHRIEHDAahhhodHRw
-Oi8vd3d3LnN0YXJ0c3NsLmNvbS8wDQYJKoZIhvcNAQEFBQADggEBAAhSw0J8jvPlwP04k5bYyf2Q
-LzPqpgRCjeN1XfloqNpTP1qv7HCaZLqVxh65fQrnqG5A8TAKIF2zMai2WDtdz74IzIfjx8Qz50L/
-BBsTooPpPx6r3KhHU5ZvWBB3G121kulwfs0Tu1VSKRjGENX9agjnLpMZsCJuojEh12zq/+6WkJuG
-ztFC6bYwaLX4jmaOqvDaOkq6EJTksnOr/BWEsUzSAFzGjNhWJI6q8YHZyZkiAH69dYETrhevVrji
-AsT9M0xIyZXvu2jvZVFjWljFjzMhUjQsRepJEbr1Ampou75YSzk0QtZG/jjIce5HjfQLd7XUyN67
-bhXkgdT2t1V1bNAxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0
-Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2
-BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMG
-hc4wCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
-DxcNMTQwMzA2MTgyNTE5WjAjBgkqhkiG9w0BCQQxFgQUqGFdWipw5oPNUqbaPO/wxt/AOFYwgaUG
-CSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4x
-KzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0
-YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMGhc4wgacGCyqG
-SIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjEr
-MCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMvU3Rh
-cnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAwaFzjANBgkqhkiG
-9w0BAQEFAASCAQBNWe40tWWnBW6V/7wl0J9xPt1carSX+pMsawQ1EIDMhBVXrUVrKyn9Gns79Nd6
-ZjLbD0yV6Jf5muR6t7QErXJqvR/CNTLX5k1iJxAUOKbSA1lDtCWVoOMGJzp8cQHLZFEdNUxcgItm
-ABrHi6m4fuvmOSsgVLYTLUzlhcQg+FHPbdb45vP/Zx6cZH5gRslXxQQfk2X08HubRzB/10af+tTq
-VqNQO6tx8ENh2oruOqIcsQ+wvNPsUVO6ZRm1t3JJhpc1zv6xA8Ssg+PN5N8JKA+mW4z1oC7dSZ4L
-7XEi+7IEcnXy5YY3CdpRsKEdAKdbnA/P452Ll+RnJF6UlysmzkJMAAAAAAAA
+       Proposed patch to support this was to create a new flag
+       "sysfs_bind_only" in struct device_driver.  When this flag
+       is set, the driver can only bind to devices via the sysfs
+       bind file.  This would allow the wildcard match to work.
+
+       Patch is here:
+       https://lkml.org/lkml/2013/12/3/253
+
+   3.  Driver initiated explicit bind -- with this approach the
+       vfio driver would create a private 'bind' sysfs object
+       and the user would echo the requested device into it:
+ 
+       echo 0001:03:00.0 > /sys/bus/pci/drivers/vfio-pci/vfio_bind
+
+       In order to make that work, the driver would need to call
+       driver_probe_device() and thus we need this patch:
+       https://lkml.org/lkml/2014/2/8/175
 
 
---=-oSkpY1lVTtvwCjowpHad--
+Thanks,
+Stuart
+
+
+ 
