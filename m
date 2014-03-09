@@ -1,207 +1,73 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: [RFC][PATCH] iommu/arm: Add hotplugged devices support for arm-smmu.
-Date: Sun, 9 Mar 2014 00:35:40 +0530
-Message-ID: <1394305540-16352-1-git-send-email-Varun.Sethi@freescale.com>
+From: KyongHo Cho <pullip.cho@samsung.com>
+Subject: Re: [PATCH] iommu/exynos: Remove driver
+Date: Sun, 9 Mar 2014 22:54:09 +0900
+Message-ID: <CAHQjnOP=cq4+wxjuOzKKHmp2vC1DUTwogiQkL=8NtNWZiBJ4jg@mail.gmail.com>
+References: <1391716317-20300-1-git-send-email-olof@lixom.net>
+	<CAAQKjZMo6=dtur6NfvDY9=jVF=7VxHub=isnEwPw0+RKCq6xAg@mail.gmail.com>
+	<CAH9JG2Xoz1_Y7CV6FUiGAO9o5T7jtFUYqJpcAysLttwu4527zQ@mail.gmail.com>
+	<52F4E481.3050902@samsung.com>
+	<CAL5jtJmfwajFD0cnYt6gOfFsZ5hGbFi=5kv8g4x23fY6qGBOew@mail.gmail.com>
+	<CAOesGMhH2WHvkaobewdnPeiThrWTfw0m4WWAZW98-iS2xdr+ow@mail.gmail.com>
+	<001301cf291a$233fdc70$69bf9550$@samsung.com>
+	<CAH9JG2WtV7HeJmjGDaNfHVbZiKG5aDznqxK+AYaTzK_bCud-TQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <CAH9JG2WtV7HeJmjGDaNfHVbZiKG5aDznqxK+AYaTzK_bCud-TQ@mail.gmail.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Kyungmin Park <kmpark@infradead.org>
+Cc: Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Inki Dae <inki.dae@samsung.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Kukjin Kim <kgene.kim@gmail.com>, Sean Paul <seanpaul@chromium.org>, Olof Johansson <olof@lixom.net>, Tomasz Figa <t.figa@samsung.com>, Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Currently the ARM SMMU driver only considers the bus master devices in the device
-tree. The master device and stream ID information is maintained per SMMU. Currently
-there is no mechanism for representing this information in case of PCI or hot
-plugged devices.
+On Thu, Mar 6, 2014 at 8:48 AM, Kyungmin Park <kmpark@infradead.org> wrote:
+> On Fri, Feb 14, 2014 at 9:17 AM, Cho KyongHo <pullip.cho@samsung.com> wrote:
+>>> -----Original Message-----
+>>> From: Olof Johansson [mailto:olof@lixom.net]
+>>> Sent: Friday, February 14, 2014 4:34 AM
+>>>
+>>> On Mon, Feb 10, 2014 at 10:21 PM, Kukjin Kim <kgene.kim@gmail.com> wrote:
+>>>
+>>> > Just adding KyongHo Cho.
+>>> >
+>>> > If he can fixup for this time, it would be best solution because he knows
+>>> > well than others, I think.
+>>>
+>>> It's not so much a matter of "fixup for this time", it's a about
+>>> having ownership of the driver, making sure it works (and keeps
+>>> working if there is related development). The posted patches have not
+>>> been followed through on and the result is a broken driver. :(
+>>>
+>>> I definitely appreciate his expertise, and we should make sure that he
+>>> gets to review the code, but if someone else is able to spend time on
+>>> reworking the driver (or rewriting a newer one) and maintaining it
+>>> longer-term, then we should not stop them from doing so. And there is
+>>> no reason to keep broken stale code in the kernel meanwhile.
+>>>
+>>
+>> Thank you for your concerning.
+>> I also definitely agree with you that the driver must work.
+>> I am always concerning about it but it was not easy to make some time
+>> for the patches.
+>>
+>> I will continue to post the next version of patches, of course.
+>> I think it is not far from now to show it.
+>
+> Lots of time is going from last reply. there are two options.
+> 1. just waiting more
+> 2. remove it as patch and start it again by someone.
+>
+> what's the opinions?
+>
 
-This RFC patch proposes a mechanism for representing this information for hot
-plugged/PCI devices.
+Please be patient until the patches are OK enough to post.
 
-Patch doesn't contain the add_device callback modification for hot plug devices.
-This would be bus specific and would be responsible for populating the hot plug
-devices masters list for the SMMU.
+The patches have lots of improvements and workarounds.
 
-Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
----
- drivers/iommu/arm-smmu.c |   93 ++++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 90 insertions(+), 3 deletions(-)
+Sorry for delaying the patches.
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 1d9ab39..6c10df4 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -327,6 +327,9 @@ struct arm_smmu_master {
- 	 * SMMU chain.
- 	 */
- 	struct rb_node			node;
-+	/* Following fields correspond to the hot plug masters */
-+	struct list_head			hotplug_masters_node;
-+	struct device			*dev;
- 	int				num_streamids;
- 	u16				streamids[MAX_MASTER_STREAMIDS];
- 
-@@ -371,6 +374,12 @@ struct arm_smmu_device {
- 
- 	struct list_head		list;
- 	struct rb_root			masters;
-+	/*
-+	 * Hot plug master list and lock to
-+	 * protect the list.
-+	 */
-+	struct list_head		hotplug_masters_list;
-+	spinlock_t			lock;
- };
- 
- struct arm_smmu_cfg {
-@@ -401,6 +410,31 @@ struct arm_smmu_domain {
- static DEFINE_SPINLOCK(arm_smmu_devices_lock);
- static LIST_HEAD(arm_smmu_devices);
- 
-+static int is_device_hotplug(struct device *dev)
-+{
-+	return (dev->bus != &platform_bus_type) &&
-+		 (dev->bus != &amba_bustype);
-+}
-+
-+static struct arm_smmu_master *find_smmu_hotplug_master(struct arm_smmu_device *smmu,
-+							struct device *dev)
-+{
-+	struct arm_smmu_master *master;
-+	unsigned long flags;
-+	bool found = 0;
-+
-+	spin_lock_irqsave(&smmu->lock, flags);
-+	list_for_each_entry(master, &smmu->hotplug_masters_list,
-+			    hotplug_masters_node)
-+		if (master->dev == dev) {
-+			found = 1;
-+			break;
-+		}
-+	spin_unlock_irqrestore(&smmu->lock, flags);
-+
-+	return found ? master : NULL;
-+}
-+
- static struct arm_smmu_master *find_smmu_master(struct arm_smmu_device *smmu,
- 						struct device_node *dev_node)
- {
-@@ -421,6 +455,36 @@ static struct arm_smmu_master *find_smmu_master(struct arm_smmu_device *smmu,
- 	return NULL;
- }
- 
-+static int remove_smmu_hotplug_master(struct arm_smmu_device *smmu,
-+				      struct device *dev)
-+{
-+	unsigned long flags;
-+	struct arm_smmu_master *master, *tmp;
-+	bool found = 0;
-+
-+	spin_lock_irqsave(&smmu->lock, flags);
-+	list_for_each_entry_safe(master, tmp, &smmu->hotplug_masters_list,
-+				 hotplug_masters_node)
-+		if (master->dev == dev) {
-+			found = 1;
-+			list_del(&master->hotplug_masters_node);
-+			break;
-+		}
-+	spin_unlock_irqrestore(&smmu->lock, flags);
-+
-+	return found ? 0 : -ENODEV;
-+}
-+
-+static void insert_smmu_hotplug_master(struct arm_smmu_device *smmu,
-+				       struct arm_smmu_master *master)
-+{
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&smmu->lock, flags);
-+	list_add(&master->hotplug_masters_node, &smmu->hotplug_masters_list);
-+	spin_unlock_irqrestore(&smmu->lock, flags);
-+}
-+
- static int insert_smmu_master(struct arm_smmu_device *smmu,
- 			      struct arm_smmu_master *master)
- {
-@@ -816,6 +880,15 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
- 	writel_relaxed(reg, cb_base + ARM_SMMU_CB_SCTLR);
- }
- 
-+static struct arm_smmu_master *get_smmu_master(struct arm_smmu_device *smmu,
-+					struct device *dev)
-+{
-+	if (is_device_hotplug(dev))
-+		return find_smmu_hotplug_master(smmu, dev);
-+	else
-+		return find_smmu_master(smmu, dev->of_node);
-+}
-+
- static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 					struct device *dev)
- {
-@@ -837,7 +910,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 		smmu_domain->output_mask &= (1ULL << smmu->s2_output_size) - 1;
- 	} while ((parent = find_parent_smmu(smmu)));
- 
--	if (!find_smmu_master(smmu, dev->of_node)) {
-+	if (!get_smmu_master(smmu, dev)) {
- 		dev_err(dev, "unable to find root SMMU for device\n");
- 		return -ENODEV;
- 	}
-@@ -1188,7 +1261,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 	spin_unlock_irqrestore(&smmu_domain->lock, flags);
- 
- 	/* Looks ok, so add the device to the domain */
--	master = find_smmu_master(smmu_domain->leaf_smmu, dev->of_node);
-+	master = get_smmu_master(smmu_domain->leaf_smmu, dev);
- 	if (!master)
- 		return -ENODEV;
- 
-@@ -1204,7 +1277,7 @@ static void arm_smmu_detach_dev(struct iommu_domain *domain, struct device *dev)
- 	struct arm_smmu_domain *smmu_domain = domain->priv;
- 	struct arm_smmu_master *master;
- 
--	master = find_smmu_master(smmu_domain->leaf_smmu, dev->of_node);
-+	master = get_smmu_master(smmu_domain->leaf_smmu, dev);
- 	if (master)
- 		arm_smmu_domain_remove_master(smmu_domain, master);
- }
-@@ -1570,6 +1643,15 @@ static int arm_smmu_add_device(struct device *dev)
- 
- static void arm_smmu_remove_device(struct device *dev)
- {
-+	if (is_device_hotplug(dev)) {
-+		int ret;
-+		struct arm_smmu_device *smmu = dev->archdata.iommu;
-+
-+		ret = remove_smmu_hotplug_master(smmu, dev);
-+		WARN_ON(ret);
-+		iommu_group_remove_device(dev);
-+	}
-+
- 	dev->archdata.iommu = NULL;
- 	iommu_group_remove_device(dev);
- }
-@@ -1864,6 +1946,11 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 
- 	i = 0;
- 	smmu->masters = RB_ROOT;
-+
-+	/* Intialize the hot plug masters list here */
-+	INIT_LIST_HEAD(&smmu->hotplug_masters_list);
-+	spin_lock_init(&smmu->lock);
-+
- 	while (!of_parse_phandle_with_args(dev->of_node, "mmu-masters",
- 					   "#stream-id-cells", i,
- 					   &masterspec)) {
--- 
-1.7.9.5
+One thing is certain, starting from scratch is not a good idea.
+Why not discuss with me to make exynos-iommu driver better?
+
+Thank you.
+
+KyongHo
