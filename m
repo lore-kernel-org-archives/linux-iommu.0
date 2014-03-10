@@ -1,67 +1,68 @@
-From: "Sumner, William" <bill.sumner-VXdhtT5mjnY@public.gmane.org>
-Subject: RE: [PATCHv3 0/6] Crashdump Accepting Active IOMMU
-Date: Mon, 10 Mar 2014 19:10:17 +0000
-Message-ID: <875D89B79D1D86448A583A7302C022A066E08AFE@G4W3212.americas.hpqcorp.net>
+From: "Sumner, William" <bill.sumner@hp.com>
+Subject: RE: [PATCHv3 3/6] Crashdump-Accepting-Active-IOMMU-Domain-Interfaces
+Date: Mon, 10 Mar 2014 19:23:11 +0000
+Message-ID: <875D89B79D1D86448A583A7302C022A066E08B1B@G4W3212.americas.hpqcorp.net>
 References: <1389391652-52422-1-git-send-email-bill.sumner@hp.com>
-	<20140304150611.GE2799@8bytes.org>
+ <1389391652-52422-4-git-send-email-bill.sumner@hp.com>
+ <20140304145911.GD2799@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140304150611.GE2799-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20140304145911.GD2799@8bytes.org>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, "Hatch,
-	Douglas B (HPS Linux PM)" <doug.hatch-VXdhtT5mjnY@public.gmane.org>, "ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org" <ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: "dwmw2@infradead.org" <dwmw2@infradead.org>, "indou.takao@jp.fujitsu.com" <indou.takao@jp.fujitsu.com>, "bhe@redhat.com" <bhe@redhat.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kexec@lists.infradead.org" <kexec@lists.infradead.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "ddutile@redhat.com" <ddutile@redhat.com>, "ishii.hironobu@jp.fujitsu.com" <ishii.hironobu@jp.fujitsu.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "Hatch, Douglas B (HPS Linux PM)" <doug.hatch@hp.com>, "Li, Zhen-Hua" <zhen-hual@hp.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+On Tue 3/4/2014 8:59 AM, Joerg Roedel wrote
+>On Fri, Jan 10, 2014 at 03:07:29PM -0700, Bill Sumner wrote:
+>> +context_get_entry(struct context_entry *context_addr,
+>> +			struct intel_iommu *iommu, u32 bus, int devfn) {
+>> +	unsigned long long q;		/* quadword scratch */
+>> +	struct root_entry *root_phys;	/* Phys adr (root table entry) */
+>> +	struct root_entry  root_temp;	/* Local copy of root_entry */
+>> +	struct context_entry *context_phys;	/* Phys adr */
+>> +
+>> +	if (pr_dbg.domain_get)
+>> +		pr_debug("ENTER %s B:D:F=%2.2x:%2.2x:%1.1x &context_entry:0x%llx &intel_iommu:0x%llx\n",
+>> +			__func__, bus, devfn>>3, devfn&7,
+>> +			(u64)context_addr, (u64)iommu);
+>> +
+>> +	if (bus > 255)				/* Sanity check */
+>> +		return -5;
+>> +	if (devfn > 255 || devfn < 0)		/* Sanity check */
+>> +		return -6;
+>> +
+>> +	q = readq(iommu->reg + DMAR_RTADDR_REG);
+>> +	pr_debug("IOMMU %d: DMAR_RTADDR_REG:0x%16.16llx\n", iommu->seq_id, q);
+>> +	if (!q)
+>> +		return -1;
+>> +
+>> +	root_phys = (struct root_entry *) q;	/* Adr(base of vector) */
+>> +	root_phys += bus;			/* Adr(entry we want) */
+>> +
+>> +	oldcopy(&root_temp, root_phys, sizeof(root_temp));
+>> +
+>> +	pr_debug("root_temp.val:0x%llx .rsvd1:0x%llx root_phys:0x%llx\n",
+>> +		root_temp.val, root_temp.rsvd1, (u64)root_phys);
+>> +
+>> +	if (!root_present(&root_temp))
+>> +		return -2;
+>> +
+>> +	pr_debug("B:D:F=%2.2x:%2.2x:%1.1x root_temp.val: %llx .rsvd1: %llx\n",
+>> +		bus, devfn >> 3, devfn & 7, root_temp.val, root_temp.rsvd1);
+>> +
+>> +	if (root_temp.rsvd1)			/* If (root_entry is bad) */
+>> +		return -3;
+>> +
+>> +	context_phys = get_context_phys_from_root(&root_temp);
+>> +	if (!context_phys)
+>> +		return -4;
+>
+>What do all these magic return values mean? 
 
-On Tue 3/4/2014 9:06 AM, Joerg Roedel wrote:
->
->On Fri, Jan 10, 2014 at 03:07:26PM -0700, Bill Sumner wrote:
->> Bill Sumner (6):
->>   Crashdump-Accepting-Active-IOMMU-Flags-and-Prototype
->>   Crashdump-Accepting-Active-IOMMU-Utility-functions
->>   Crashdump-Accepting-Active-IOMMU-Domain-Interfaces
->>   Crashdump-Accepting-Active-IOMMU-Copy-Translations
->>   Crashdump-Accepting-Active-IOMMU-Debug-Print-IOMMU
->>   Crashdump-Accepting-Active-IOMMU-Call-From-Mainline
->>
->>  drivers/iommu/intel-iommu.c | 1293
->> ++++++++++++++++++++++++++++++++++++++++---
->>  1 file changed, 1225 insertions(+), 68 deletions(-)
->
->This is a pretty big change, before merging I would like to get more eyes on it. Please make sure you get more reviews on the code and the general concept. A few things I noticed while looking at it:
-Yes, as I was developing this, I realized that it is far more code than most Linux submissions.  In addition to more eyes reviewing the code, I hope to see additional members of the community trying it out -- testing it on a wide variety of system configurations.  Let me encourage additional reviewers and testers to look at this fix to crashdump.
->
->* You put a lot of code into #define CONFIG_CRASH_DUMP. Isn't the same approach necessary to for KEXEC?
-Until I saw your email, I had been focused only on the immediate problem of fixing crashdump and had not considered using this approach in the more-general context of KEXEC.  It certainly looks like it could be useful with KEXEC as well.  
+They all mean "No value to return".  The different negative values are an artifact of the development where I wanted to make it easy not only to tell that something went wrong, but also to have enough detail to figure-out what happened without having to add code and repeat the test.  I will clean-up these in the next submission -- along with a few additional places where there are similar "leftovers".  
 
-I would like to take-on the effort of expanding this technique into KEXEC as a separate follow-on project so that the original "fix crashdump" project is not delayed.  On a quick look, I believe that the amount of additional code would be minimal; but the expansion of the testing matrix might be quite large.
->
->* Please get rid of all the pr_debug stuff.
-Will do.
->
->* I think it makes sense to put the functions to access the IOMMU
->  configuration values of the old kernel into a new file. This is better
->  than adding over 1000 new lines to intel-iommu.c
-Sounds good.  I will move these functions into a new file.
->
->* I have seen your new single-patch for this change. A single patch with
->  more than 1200 changed lines is not something anyone is willing to
->  review. Please split the patches again in a meaningful and bisectable
->  way.
-I will return to a multiple-patch set for future submissions.
-
-
--- Bill
+Bill
