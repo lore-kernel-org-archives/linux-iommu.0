@@ -1,16 +1,11 @@
-From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: Re: [Patch Part2 V2 15/17] iommu/vt-d, PCI: update DRHD/RMRR/ATSR
-	device scope caches when PCI hotplug happens
-Date: Mon, 10 Mar 2014 06:04:20 -0700
-Message-ID: <1394456660.2270.3.camel@shinybook.infradead.org>
-References: <1392790057-32434-1-git-send-email-jiang.liu@linux.intel.com>
-	<1392790057-32434-16-git-send-email-jiang.liu@linux.intel.com>
-	<1394130319.9994.28.camel@i7.infradead.org>
-	<531D7BE8.7060103@linux.intel.com>
+From: Ritesh Harjani <ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH] arm64: iommu: Refactoring common code.
+Date: Mon, 10 Mar 2014 22:02:50 +0530
+Message-ID: <CAD15agbWL0A_vO4Osgi=uC1JxkMQgL3gshU3Z7euZf5eVaU0VA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============6941364520549823831=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <531D7BE8.7060103-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,156 +15,481 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Rafael J . Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+To: Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Everyone,
 
---===============6941364520549823831==
-Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-+tWP9Ncx+FmSUMlXF+N5"
+Please find the following patch as refactoring of the common code out
+from arch/arm/mm/dma-mapping.c to lib/iommu-helper.c
 
+This is just an initial version of patch to get more details and to
+know if this is how we want to plan refactoring iommu code to
+lib/iommu-helper.
 
---=-+tWP9Ncx+FmSUMlXF+N5
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-On Mon, 2014-03-10 at 16:46 +0800, Jiang Liu wrote:
-> Hi David,
->         Good suggestion! It should make hotplug logic simpler too.
-> Will try to work out some patches for it.
-
-Before doing so, please be aware of the WIP at
-http://git.infradead.org/users/dwmw2/linux-andd.git
-
-This is the support for DMA mapping for ACPI devices. Largely thrown
-together on a plane above the Atlantic over the last day, so mostly
-untested, but a lot of it is fairly simply switching to using 'struct
-device' instead of assuming 'struct pci_dev' everywhere.
-
-For now I've taken the simple approach of using the ->devices array, and
-*expanding* it to contain the bus+devfn to use for ACPI devices too.
-
---=20
-dwmw2
+Please let me know the changes/suggestion which you think in this ?
 
 
---=-+tWP9Ncx+FmSUMlXF+N5
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIISxDCCBjQw
-ggQcoAMCAQICAR4wDQYJKoZIhvcNAQEFBQAwfTELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0
-Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxKTAn
-BgNVBAMTIFN0YXJ0Q29tIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MB4XDTA3MTAyNDIxMDE1NVoX
-DTE3MTAyNDIxMDE1NVowgYwxCzAJBgNVBAYTAklMMRYwFAYDVQQKEw1TdGFydENvbSBMdGQuMSsw
-KQYDVQQLEyJTZWN1cmUgRGlnaXRhbCBDZXJ0aWZpY2F0ZSBTaWduaW5nMTgwNgYDVQQDEy9TdGFy
-dENvbSBDbGFzcyAxIFByaW1hcnkgSW50ZXJtZWRpYXRlIENsaWVudCBDQTCCASIwDQYJKoZIhvcN
-AQEBBQADggEPADCCAQoCggEBAMcJg8zOLdgasSmkLhOrlr6KMoOMpohBllVHrdRvEg/q6r8jR+EK
-75xCGhR8ToREoqe7zM9/UnC6TS2y9UKTpT1v7RSMzR0t6ndl0TWBuUr/UXBhPk+Kmy7bI4yW4urC
-+y7P3/1/X7U8ocb8VpH/Clt+4iq7nirMcNh6qJR+xjOhV+VHzQMALuGYn5KZmc1NbJQYclsGkDxD
-z2UbFqE2+6vIZoL+jb9x4Pa5gNf1TwSDkOkikZB1xtB4ZqtXThaABSONdfmv/Z1pua3FYxnCFmdr
-/+N2JLKutIxMYqQOJebr/f/h5t95m4JgrM3Y/w7YX9d7YAL9jvN4SydHsU6n65cCAwEAAaOCAa0w
-ggGpMA8GA1UdEwEB/wQFMAMBAf8wDgYDVR0PAQH/BAQDAgEGMB0GA1UdDgQWBBRTcu2SnODaywFc
-fH6WNU7y1LhRgjAfBgNVHSMEGDAWgBROC+8apEBbpRdphzDKNGhD0EGu8jBmBggrBgEFBQcBAQRa
-MFgwJwYIKwYBBQUHMAGGG2h0dHA6Ly9vY3NwLnN0YXJ0c3NsLmNvbS9jYTAtBggrBgEFBQcwAoYh
-aHR0cDovL3d3dy5zdGFydHNzbC5jb20vc2ZzY2EuY3J0MFsGA1UdHwRUMFIwJ6AloCOGIWh0dHA6
-Ly93d3cuc3RhcnRzc2wuY29tL3Nmc2NhLmNybDAnoCWgI4YhaHR0cDovL2NybC5zdGFydHNzbC5j
-b20vc2ZzY2EuY3JsMIGABgNVHSAEeTB3MHUGCysGAQQBgbU3AQIBMGYwLgYIKwYBBQUHAgEWImh0
-dHA6Ly93d3cuc3RhcnRzc2wuY29tL3BvbGljeS5wZGYwNAYIKwYBBQUHAgEWKGh0dHA6Ly93d3cu
-c3RhcnRzc2wuY29tL2ludGVybWVkaWF0ZS5wZGYwDQYJKoZIhvcNAQEFBQADggIBAAqDCH14qywG
-XLhjjF6uHLkjd02hcdh9hrw+VUsv+q1eeQWB21jWj3kJ96AUlPCoEGZ/ynJNScWy6QMVQjbbMXlt
-UfO4n4bGGdKo3awPWp61tjAFgraLJgDk+DsSvUD6EowjMTNx25GQgyYJ5RPIzKKR9tQW8gGK+2+R
-HxkUCTbYFnL6kl8Ch507rUdPPipJ9CgJFws3kDS3gOS5WFMxcjO5DwKfKSETEPrHh7p5shuuNktv
-sv6hxHTLhiMKX893gxdT3XLS9OKmCv87vkINQcNEcIIoFWbP9HORz9v3vQwR4e3ksLc2JZOAFK+s
-sS5XMEoznzpihEP0PLc4dCBYjbvSD7kxgDwZ+Aj8Q9PkbvE9sIPP7ON0fz095HdThKjiVJe6vofq
-+n6b1NBc8XdrQvBmunwxD5nvtTW4vtN6VY7mUCmxsCieuoBJ9OlqmsVWQvifIYf40dJPZkk9YgGT
-zWLpXDSfLSplbY2LL9C9U0ptvjcDjefLTvqSFc7tw1sEhF0n/qpA2r0GpvkLRDmcSwVyPvmjFBGq
-Up/pNy8ZuPGQmHwFi2/14+xeSUDG2bwnsYJQG2EdJCB6luQ57GEnTA/yKZSTKI8dDQa8Sd3zfXb1
-9mOgSF0bBdXbuKhEpuP9wirslFe6fQ1t5j5R0xi72MZ8ikMu1RQZKCyDbMwazlHiMIIGQjCCBSqg
-AwIBAgIDBoXOMA0GCSqGSIb3DQEBBQUAMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRD
-b20gTHRkLjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYG
-A1UEAxMvU3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0EwHhcN
-MTMwNTAyMDYyMDQ2WhcNMTQwNTAzMTIxNDAyWjBdMRkwFwYDVQQNExBNd0k3ODIxNTRpV21lZVkw
-MRwwGgYDVQQDDBNkd213MkBpbmZyYWRlYWQub3JnMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZy
-YWRlYWQub3JnMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvWGuRDHiXVpOgaFkBaz8
-c3jQTfiEw7j0iKZnktCQi0xjY29QJ7GwL+fgQlbofXgYTm8E9fWERvw2tAy2BxHzAPguBzziS7JN
-hsGP9lf3L8hFJBvmdyyyj8b9A6Oi7s3JLtMRWIvyvE+DbuTkP+htuT4+XuTJr8Y5yIqd1WXr2gJk
-ANr77vTyjeNxceevP58Tqr0f+4v5g6+vNARO3bk3SaVQPDUTwGrpoPtLh3d+mQzZ4iiW3MwQS7Wr
-UVT3l2aTVHCpgtAaBs3zHWarvmIqhbWj8zdcnELNzwqTrOjaoWxuWY4k05GGfzmdjOBUiL7FDNvI
-ZwweJEPwJAQI72YhUwIDAQABo4IC2TCCAtUwCQYDVR0TBAIwADALBgNVHQ8EBAMCBLAwHQYDVR0l
-BBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMB0GA1UdDgQWBBSs0hZhUgQwqGVXzLuH6pJH0hMZwTAf
-BgNVHSMEGDAWgBRTcu2SnODaywFcfH6WNU7y1LhRgjAeBgNVHREEFzAVgRNkd213MkBpbmZyYWRl
-YWQub3JnMIIBTAYDVR0gBIIBQzCCAT8wggE7BgsrBgEEAYG1NwECAzCCASowLgYIKwYBBQUHAgEW
-Imh0dHA6Ly93d3cuc3RhcnRzc2wuY29tL3BvbGljeS5wZGYwgfcGCCsGAQUFBwICMIHqMCcWIFN0
-YXJ0Q29tIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MAMCAQEagb5UaGlzIGNlcnRpZmljYXRlIHdh
-cyBpc3N1ZWQgYWNjb3JkaW5nIHRvIHRoZSBDbGFzcyAxIFZhbGlkYXRpb24gcmVxdWlyZW1lbnRz
-IG9mIHRoZSBTdGFydENvbSBDQSBwb2xpY3ksIHJlbGlhbmNlIG9ubHkgZm9yIHRoZSBpbnRlbmRl
-ZCBwdXJwb3NlIGluIGNvbXBsaWFuY2Ugb2YgdGhlIHJlbHlpbmcgcGFydHkgb2JsaWdhdGlvbnMu
-MDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwuc3RhcnRzc2wuY29tL2NydHUxLWNybC5jcmww
-gY4GCCsGAQUFBwEBBIGBMH8wOQYIKwYBBQUHMAGGLWh0dHA6Ly9vY3NwLnN0YXJ0c3NsLmNvbS9z
-dWIvY2xhc3MxL2NsaWVudC9jYTBCBggrBgEFBQcwAoY2aHR0cDovL2FpYS5zdGFydHNzbC5jb20v
-Y2VydHMvc3ViLmNsYXNzMS5jbGllbnQuY2EuY3J0MCMGA1UdEgQcMBqGGGh0dHA6Ly93d3cuc3Rh
-cnRzc2wuY29tLzANBgkqhkiG9w0BAQUFAAOCAQEACFLDQnyO8+XA/TiTltjJ/ZAvM+qmBEKN43Vd
-+Wio2lM/Wq/scJpkupXGHrl9CueobkDxMAogXbMxqLZYO13PvgjMh+PHxDPnQv8EGxOig+k/Hqvc
-qEdTlm9YEHcbXbWS6XB+zRO7VVIpGMYQ1f1qCOcukxmwIm6iMSHXbOr/7paQm4bO0ULptjBotfiO
-Zo6q8No6SroQlOSyc6v8FYSxTNIAXMaM2FYkjqrxgdnJmSIAfr11gROuF69WuOICxP0zTEjJle+7
-aO9lUWNaWMWPMyFSNCxF6kkRuvUCami7vlhLOTRC1kb+OMhx7keN9At3tdTI3rtuFeSB1Pa3VXVs
-0DCCBkIwggUqoAMCAQICAwaFzjANBgkqhkiG9w0BAQUFADCBjDELMAkGA1UEBhMCSUwxFjAUBgNV
-BAoTDVN0YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNp
-Z25pbmcxODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xp
-ZW50IENBMB4XDTEzMDUwMjA2MjA0NloXDTE0MDUwMzEyMTQwMlowXTEZMBcGA1UEDRMQTXdJNzgy
-MTU0aVdtZWVZMDEcMBoGA1UEAwwTZHdtdzJAaW5mcmFkZWFkLm9yZzEiMCAGCSqGSIb3DQEJARYT
-ZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL1hrkQx
-4l1aToGhZAWs/HN40E34hMO49IimZ5LQkItMY2NvUCexsC/n4EJW6H14GE5vBPX1hEb8NrQMtgcR
-8wD4Lgc84kuyTYbBj/ZX9y/IRSQb5ncsso/G/QOjou7NyS7TEViL8rxPg27k5D/obbk+Pl7kya/G
-OciKndVl69oCZADa++708o3jcXHnrz+fE6q9H/uL+YOvrzQETt25N0mlUDw1E8Bq6aD7S4d3fpkM
-2eIoltzMEEu1q1FU95dmk1RwqYLQGgbN8x1mq75iKoW1o/M3XJxCzc8Kk6zo2qFsblmOJNORhn85
-nYzgVIi+xQzbyGcMHiRD8CQECO9mIVMCAwEAAaOCAtkwggLVMAkGA1UdEwQCMAAwCwYDVR0PBAQD
-AgSwMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDBDAdBgNVHQ4EFgQUrNIWYVIEMKhlV8y7
-h+qSR9ITGcEwHwYDVR0jBBgwFoAUU3Ltkpzg2ssBXHx+ljVO8tS4UYIwHgYDVR0RBBcwFYETZHdt
-dzJAaW5mcmFkZWFkLm9yZzCCAUwGA1UdIASCAUMwggE/MIIBOwYLKwYBBAGBtTcBAgMwggEqMC4G
-CCsGAQUFBwIBFiJodHRwOi8vd3d3LnN0YXJ0c3NsLmNvbS9wb2xpY3kucGRmMIH3BggrBgEFBQcC
-AjCB6jAnFiBTdGFydENvbSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTADAgEBGoG+VGhpcyBjZXJ0
-aWZpY2F0ZSB3YXMgaXNzdWVkIGFjY29yZGluZyB0byB0aGUgQ2xhc3MgMSBWYWxpZGF0aW9uIHJl
-cXVpcmVtZW50cyBvZiB0aGUgU3RhcnRDb20gQ0EgcG9saWN5LCByZWxpYW5jZSBvbmx5IGZvciB0
-aGUgaW50ZW5kZWQgcHVycG9zZSBpbiBjb21wbGlhbmNlIG9mIHRoZSByZWx5aW5nIHBhcnR5IG9i
-bGlnYXRpb25zLjA2BgNVHR8ELzAtMCugKaAnhiVodHRwOi8vY3JsLnN0YXJ0c3NsLmNvbS9jcnR1
-MS1jcmwuY3JsMIGOBggrBgEFBQcBAQSBgTB/MDkGCCsGAQUFBzABhi1odHRwOi8vb2NzcC5zdGFy
-dHNzbC5jb20vc3ViL2NsYXNzMS9jbGllbnQvY2EwQgYIKwYBBQUHMAKGNmh0dHA6Ly9haWEuc3Rh
-cnRzc2wuY29tL2NlcnRzL3N1Yi5jbGFzczEuY2xpZW50LmNhLmNydDAjBgNVHRIEHDAahhhodHRw
-Oi8vd3d3LnN0YXJ0c3NsLmNvbS8wDQYJKoZIhvcNAQEFBQADggEBAAhSw0J8jvPlwP04k5bYyf2Q
-LzPqpgRCjeN1XfloqNpTP1qv7HCaZLqVxh65fQrnqG5A8TAKIF2zMai2WDtdz74IzIfjx8Qz50L/
-BBsTooPpPx6r3KhHU5ZvWBB3G121kulwfs0Tu1VSKRjGENX9agjnLpMZsCJuojEh12zq/+6WkJuG
-ztFC6bYwaLX4jmaOqvDaOkq6EJTksnOr/BWEsUzSAFzGjNhWJI6q8YHZyZkiAH69dYETrhevVrji
-AsT9M0xIyZXvu2jvZVFjWljFjzMhUjQsRepJEbr1Ampou75YSzk0QtZG/jjIce5HjfQLd7XUyN67
-bhXkgdT2t1V1bNAxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0
-Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2
-BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMG
-hc4wCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
-DxcNMTQwMzEwMTMwNDIwWjAjBgkqhkiG9w0BCQQxFgQUGdFYfdcPmcDvRxpajsQqZ5hCZj4wgaUG
-CSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4x
-KzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0
-YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMGhc4wgacGCyqG
-SIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjEr
-MCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMvU3Rh
-cnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAwaFzjANBgkqhkiG
-9w0BAQEFAASCAQCNhEYppDH4T2HurOHCPkyvQaypTyNTwgHT7aGpXXkLdYWKHP4MRMR4Tiizq9E6
-XMhKxAYRCPgSKlUKH1fwWV8vbRCTW1qrTpwhtJjN31U64VIFhR6pr6cCfkaidsirSdJMEhTBGiR7
-3rpAFk8UgTmAk+QwEIAMzMvvffV8Lf5Fc/ifeimnRQvljEIN3TAzarJ0h6rv2zwwcXYxcEfm0U6K
-kXJyjRFmQrm/qq5J8am5IGrOgS46gWg+ZIXVaCOFwOhdjR67z+HzmvAUH54dk5pv/XEqIlSlYD0O
-vVh2ng4du7/0Q5JJH7o2/ktsP/UOQbJEqOD3+bDNjfR4EicRe/D4AAAAAAAA
 
 
---=-+tWP9Ncx+FmSUMlXF+N5--
+Taking out the common code of buffer allocation and mapping
+for iommu from arch/arm to lib/iommu-helper file.
 
+Signed-off-by: Ritesh Harjani <ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+---
+ arch/arm/mm/dma-mapping.c    | 159 +++++-----------------------------------
+ include/linux/iommu-helper.h |  22 ++++++
+ lib/iommu-helper.c           | 169 +++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 210 insertions(+), 140 deletions(-)
 
---===============6941364520549823831==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index 11b3914..71e0dbd 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -26,6 +26,7 @@
+ #include <linux/io.h>
+ #include <linux/vmalloc.h>
+ #include <linux/sizes.h>
++#include <linux/iommu-helper.h>
 
+ #include <asm/memory.h>
+ #include <asm/highmem.h>
+@@ -1119,124 +1120,26 @@ static struct page
+**__iommu_alloc_buffer(struct device *dev, size_t size,
+ {
+        struct page **pages;
+        int count = size >> PAGE_SHIFT;
+-       int array_size = count * sizeof(struct page *);
+        int i = 0;
 
---===============6941364520549823831==--
+-       if (array_size <= PAGE_SIZE)
+-               pages = kzalloc(array_size, gfp);
+-       else
+-               pages = vzalloc(array_size);
+-       if (!pages)
+-               return NULL;
+-
+-       if (dma_get_attr(DMA_ATTR_FORCE_CONTIGUOUS, attrs))
+-       {
+-               unsigned long order = get_order(size);
+-               struct page *page;
+-
+-               page = dma_alloc_from_contiguous(dev, count, order);
+-               if (!page)
+-                       goto error;
+-
+-               __dma_clear_buffer(page, size);
+-
+-               for (i = 0; i < count; i++)
+-                       pages[i] = page + i;
++       pages = iommu_lib_alloc_buffer(dev, size, gfp, attrs);
+
+-               return pages;
+-       }
+-
+-       /*
+-        * IOMMU can map any pages, so himem can also be used here
+-        */
+-       gfp |= __GFP_NOWARN | __GFP_HIGHMEM;
+-
+-       while (count) {
+-               int j, order = __fls(count);
+-
+-               pages[i] = alloc_pages(gfp, order);
+-               while (!pages[i] && order)
+-                       pages[i] = alloc_pages(gfp, --order);
+-               if (!pages[i])
+-                       goto error;
+-
+-               if (order) {
+-                       split_page(pages[i], order);
+-                       j = 1 << order;
+-                       while (--j)
+-                               pages[i + j] = pages[i] + j;
++       if (!pages) {
++               return NULL;
++       } else {
++               while (count--) {
++                       __dma_clear_buffer(pages[i], PAGE_SIZE);
++                       i++;
+                }
+-
+-               __dma_clear_buffer(pages[i], PAGE_SIZE << order);
+-               i += 1 << order;
+-               count -= 1 << order;
+        }
+-
+        return pages;
+-error:
+-       while (i--)
+-               if (pages[i])
+-                       __free_pages(pages[i], 0);
+-       if (array_size <= PAGE_SIZE)
+-               kfree(pages);
+-       else
+-               vfree(pages);
+-       return NULL;
++
+ }
+
+ static int __iommu_free_buffer(struct device *dev, struct page **pages,
+                               size_t size, struct dma_attrs *attrs)
+ {
+-       int count = size >> PAGE_SHIFT;
+-       int array_size = count * sizeof(struct page *);
+-       int i;
+-
+-       if (dma_get_attr(DMA_ATTR_FORCE_CONTIGUOUS, attrs)) {
+-               dma_release_from_contiguous(dev, pages[0], count);
+-       } else {
+-               for (i = 0; i < count; i++)
+-                       if (pages[i])
+-                               __free_pages(pages[i], 0);
+-       }
+-
+-       if (array_size <= PAGE_SIZE)
+-               kfree(pages);
+-       else
+-               vfree(pages);
+-       return 0;
+-}
+-
+-/*
+- * Create a CPU mapping for a specified pages
+- */
+-static void *
+-__iommu_alloc_remap(struct page **pages, size_t size, gfp_t gfp, pgprot_t prot,
+-                   const void *caller)
+-{
+-       unsigned int i, nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
+-       struct vm_struct *area;
+-       unsigned long p;
+-
+-       area = get_vm_area_caller(size, VM_ARM_DMA_CONSISTENT | VM_USERMAP,
+-                                 caller);
+-       if (!area)
+-               return NULL;
+-
+-       area->pages = pages;
+-       area->nr_pages = nr_pages;
+-       p = (unsigned long)area->addr;
+-
+-       for (i = 0; i < nr_pages; i++) {
+-               phys_addr_t phys = __pfn_to_phys(page_to_pfn(pages[i]));
+-               if (ioremap_page_range(p, p + PAGE_SIZE, phys, prot))
+-                       goto err;
+-               p += PAGE_SIZE;
+-       }
+-       return area->addr;
+-err:
+-       unmap_kernel_range((unsigned long)area->addr, size);
+-       vunmap(area->addr);
+-       return NULL;
++       return iommu_lib_free_buffer(dev, pages, size, attrs);
+ }
+
+ /*
+@@ -1246,51 +1149,24 @@ static dma_addr_t
+ __iommu_create_mapping(struct device *dev, struct page **pages, size_t size)
+ {
+        struct dma_iommu_mapping *mapping = dev->archdata.mapping;
+-       unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+        dma_addr_t dma_addr, iova;
+-       int i, ret = DMA_ERROR_CODE;
+
+        dma_addr = __alloc_iova(mapping, size);
+        if (dma_addr == DMA_ERROR_CODE)
+                return dma_addr;
+
+-       iova = dma_addr;
+-       for (i = 0; i < count; ) {
+-               unsigned int next_pfn = page_to_pfn(pages[i]) + 1;
+-               phys_addr_t phys = page_to_phys(pages[i]);
+-               unsigned int len, j;
+-
+-               for (j = i + 1; j < count; j++, next_pfn++)
+-                       if (page_to_pfn(pages[j]) != next_pfn)
+-                               break;
++       iova = iommu_lib_map(mapping->domain, pages, dma_addr, size);
++       if (iova == DMA_ERROR_CODE)
++               __free_iova(mapping, dma_addr, size);
+
+-               len = (j - i) << PAGE_SHIFT;
+-               ret = iommu_map(mapping->domain, iova, phys, len,
+-                               IOMMU_READ|IOMMU_WRITE);
+-               if (ret < 0)
+-                       goto fail;
+-               iova += len;
+-               i = j;
+-       }
+-       return dma_addr;
+-fail:
+-       iommu_unmap(mapping->domain, dma_addr, iova-dma_addr);
+-       __free_iova(mapping, dma_addr, size);
+-       return DMA_ERROR_CODE;
++       return iova;
+ }
+
+ static int __iommu_remove_mapping(struct device *dev, dma_addr_t
+iova, size_t size)
+ {
+        struct dma_iommu_mapping *mapping = dev->archdata.mapping;
+
+-       /*
+-        * add optional in-page offset from iova to size and align
+-        * result to page size
+-        */
+-       size = PAGE_ALIGN((iova & ~PAGE_MASK) + size);
+-       iova &= PAGE_MASK;
+-
+-       iommu_unmap(mapping->domain, iova, size);
++       iommu_lib_unmap(mapping->domain, iova, size);
+        __free_iova(mapping, iova, size);
+        return 0;
+ }
+@@ -1354,6 +1230,7 @@ static void *arm_iommu_alloc_attrs(struct device
+*dev, size_t size,
+        pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL);
+        struct page **pages;
+        void *addr = NULL;
++       unsigned long flags = 0;
+
+        *handle = DMA_ERROR_CODE;
+        size = PAGE_ALIGN(size);
+@@ -1381,7 +1258,9 @@ static void *arm_iommu_alloc_attrs(struct device
+*dev, size_t size,
+        if (dma_get_attr(DMA_ATTR_NO_KERNEL_MAPPING, attrs))
+                return pages;
+
+-       addr = __iommu_alloc_remap(pages, size, gfp, prot,
++       flags = VM_ARM_DMA_CONSISTENT | VM_USERMAP;
++
++       addr = iommu_lib_alloc_remap(pages, size, flags, prot,
+                                   __builtin_return_address(0));
+        if (!addr)
+                goto err_mapping;
+diff --git a/include/linux/iommu-helper.h b/include/linux/iommu-helper.h
+index 86bdeff..55d4797 100644
+--- a/include/linux/iommu-helper.h
++++ b/include/linux/iommu-helper.h
+@@ -2,6 +2,7 @@
+ #define _LINUX_IOMMU_HELPER_H
+
+ #include <linux/kernel.h>
++#include <linux/iommu.h>
+
+ static inline unsigned long iommu_device_max_index(unsigned long size,
+                                                   unsigned long offset,
+@@ -31,4 +32,25 @@ static inline unsigned long
+iommu_num_pages(unsigned long addr,
+        return DIV_ROUND_UP(size, io_page_size);
+ }
+
++extern struct page **iommu_lib_alloc_buffer(struct device *dev, size_t size,
++                                         gfp_t gfp, struct dma_attrs *attrs);
++
++extern int iommu_lib_free_buffer(struct device *dev, struct page **pages,
++                              size_t size, struct dma_attrs *attrs);
++
++extern dma_addr_t iommu_lib_map(struct iommu_domain *domain,
++                       struct page **pages, dma_addr_t iova, size_t size);
++
++extern void iommu_lib_unmap(struct iommu_domain *domain, dma_addr_t iova,
++                       size_t size);
++
++extern void *iommu_lib_alloc_remap(struct page **pages, size_t size,
++                               unsigned long flags, pgprot_t prot,
++                               const void *caller);
++
++
++
++
++
++
+ #endif
+diff --git a/lib/iommu-helper.c b/lib/iommu-helper.c
+index c27e269..4f80f9e 100644
+--- a/lib/iommu-helper.c
++++ b/lib/iommu-helper.c
+@@ -5,6 +5,13 @@
+ #include <linux/export.h>
+ #include <linux/bitmap.h>
+ #include <linux/bug.h>
++#include <linux/dma-mapping.h>
++#include <linux/dma-contiguous.h>
++#include <linux/slab.h>
++#include <linux/iommu.h>
++#include <linux/io.h>
++#include <linux/vmalloc.h>
++#include <linux/sizes.h>
+
+ int iommu_is_span_boundary(unsigned int index, unsigned int nr,
+                           unsigned long shift,
+@@ -39,3 +46,165 @@ again:
+        return -1;
+ }
+ EXPORT_SYMBOL(iommu_area_alloc);
++
++struct page **iommu_lib_alloc_buffer(struct device *dev, size_t size,
++                                         gfp_t gfp, struct dma_attrs *attrs)
++{
++       struct page **pages;
++       int count = size >> PAGE_SHIFT;
++       int array_size = count * sizeof(struct page *);
++       int i = 0;
++
++       if (array_size <= PAGE_SIZE)
++               pages = kzalloc(array_size, gfp);
++       else
++               pages = vzalloc(array_size);
++       if (!pages)
++               return NULL;
++
++       if (dma_get_attr(DMA_ATTR_FORCE_CONTIGUOUS, attrs)) {
++               unsigned long order = get_order(size);
++               struct page *page;
++
++               page = dma_alloc_from_contiguous(dev, count, order);
++               if (!page)
++                       goto error;
++
++               for (i = 0; i < count; i++)
++                       pages[i] = page + i;
++
++               return pages;
++       }
++
++       /*
++        * IOMMU can map any pages, so himem can also be used here
++        */
++       gfp |= __GFP_NOWARN | __GFP_HIGHMEM;
++
++       while (count) {
++               int j, order = __fls(count);
++
++               pages[i] = alloc_pages(gfp, order);
++               while (!pages[i] && order)
++                       pages[i] = alloc_pages(gfp, --order);
++               if (!pages[i])
++                       goto error;
++
++               if (order) {
++                       split_page(pages[i], order);
++                       j = 1 << order;
++                       while (--j)
++                               pages[i + j] = pages[i] + j;
++               }
++
++               i += 1 << order;
++               count -= 1 << order;
++       }
++
++       return pages;
++error:
++       while (i--)
++               if (pages[i])
++                       __free_pages(pages[i], 0);
++       if (array_size <= PAGE_SIZE)
++               kfree(pages);
++       else
++               vfree(pages);
++       return NULL;
++}
++
++int iommu_lib_free_buffer(struct device *dev, struct page **pages,
++                              size_t size, struct dma_attrs *attrs)
++{
++       int count = size >> PAGE_SHIFT;
++       int array_size = count * sizeof(struct page *);
++       int i;
++
++       if (dma_get_attr(DMA_ATTR_FORCE_CONTIGUOUS, attrs)) {
++               dma_release_from_contiguous(dev, pages[0], count);
++       } else {
++               for (i = 0; i < count; i++)
++                       if (pages[i])
++                               __free_pages(pages[i], 0);
++       }
++
++       if (array_size <= PAGE_SIZE)
++               kfree(pages);
++       else
++               vfree(pages);
++       return 0;
++}
++
++dma_addr_t iommu_lib_map(struct iommu_domain *domain, struct page **pages,
++                       dma_addr_t iova, size_t size)
++{
++       dma_addr_t dma_addr = iova;
++       unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
++       int i, ret = DMA_ERROR_CODE;
++
++       for (i = 0; i < count; ) {
++               unsigned int next_pfn = page_to_pfn(pages[i]) + 1;
++               phys_addr_t phys = page_to_phys(pages[i]);
++               unsigned int len, j;
++
++               for (j = i + 1; j < count; j++, next_pfn++)
++                       if (page_to_pfn(pages[j]) != next_pfn)
++                               break;
++
++               len = (j - i) << PAGE_SHIFT;
++               ret = iommu_map(domain, iova, phys, len,
++                               IOMMU_READ|IOMMU_WRITE);
++               if (ret < 0)
++                       goto fail;
++               iova += len;
++               i = j;
++       }
++       return dma_addr;
++fail:
++       iommu_unmap(domain, dma_addr, iova-dma_addr);
++       return DMA_ERROR_CODE;
++}
++
++void iommu_lib_unmap(struct iommu_domain *domain, dma_addr_t iova, size_t size)
++{
++       /*
++        * add optional in-page offset from iova to size and align
++        * result to page size
++        */
++       size = PAGE_ALIGN((iova & ~PAGE_MASK) + size);
++       iova &= PAGE_MASK;
++
++       iommu_unmap(domain, iova, size);
++}
++
++/*
++ * Create a CPU mapping for a specified pages
++ */
++void *iommu_lib_alloc_remap(struct page **pages, size_t size, unsigned long
++                               flags, pgprot_t prot, const void *caller)
++{
++       unsigned int i, nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
++       struct vm_struct *area;
++       unsigned long p;
++
++       area = get_vm_area_caller(size, flags, caller);
++
++       if (!area)
++               return NULL;
++
++       area->pages = pages;
++       area->nr_pages = nr_pages;
++       p = (unsigned long)area->addr;
++
++       for (i = 0; i < nr_pages; i++) {
++               phys_addr_t phys = __pfn_to_phys(page_to_pfn(pages[i]));
++               if (ioremap_page_range(p, p + PAGE_SIZE, phys, prot))
++                       goto err;
++               p += PAGE_SIZE;
++       }
++       return area->addr;
++err:
++       unmap_kernel_range((unsigned long)area->addr, size);
++       vunmap(area->addr);
++       return NULL;
++}
+--
+1.8.1.3
