@@ -1,87 +1,59 @@
-From: Tomasz Figa <tomasz.figa@gmail.com>
-Subject: Re: [PATCH] iommu/exynos: Remove driver
-Date: Mon, 10 Mar 2014 00:48:28 +0100
-Message-ID: <531CFDCC.5020302@gmail.com>
-References: <1391716317-20300-1-git-send-email-olof@lixom.net>	<CAAQKjZMo6=dtur6NfvDY9=jVF=7VxHub=isnEwPw0+RKCq6xAg@mail.gmail.com>	<CAH9JG2Xoz1_Y7CV6FUiGAO9o5T7jtFUYqJpcAysLttwu4527zQ@mail.gmail.com>	<52F4E481.3050902@samsung.com>	<CAL5jtJmfwajFD0cnYt6gOfFsZ5hGbFi=5kv8g4x23fY6qGBOew@mail.gmail.com>	<CAOesGMhH2WHvkaobewdnPeiThrWTfw0m4WWAZW98-iS2xdr+ow@mail.gmail.com>	<001301cf291a$233fdc70$69bf9550$@samsung.com>	<CAH9JG2WtV7HeJmjGDaNfHVbZiKG5aDznqxK+AYaTzK_bCud-TQ@mail.gmail.com> <CAHQjnOP=cq4+wxjuOzKKHmp2vC1DUTwogiQkL=8NtNWZiBJ4jg@mail.gmail.com>
+From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [Patch Part2 V2 15/17] iommu/vt-d, PCI: update DRHD/RMRR/ATSR
+	device scope caches when PCI hotplug happens
+Date: Mon, 10 Mar 2014 16:46:32 +0800
+Message-ID: <531D7BE8.7060103@linux.intel.com>
+References: <1392790057-32434-1-git-send-email-jiang.liu@linux.intel.com>	
+	<1392790057-32434-16-git-send-email-jiang.liu@linux.intel.com>
+	<1394130319.9994.28.camel@i7.infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <CAHQjnOP=cq4+wxjuOzKKHmp2vC1DUTwogiQkL=8NtNWZiBJ4jg@mail.gmail.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: KyongHo Cho <pullip.cho@samsung.com>, Kyungmin Park <kmpark@infradead.org>
-Cc: Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Inki Dae <inki.dae@samsung.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Kukjin Kim <kgene.kim@gmail.com>, Sean Paul <seanpaul@chromium.org>, Olof Johansson <olof@lixom.net>, Tomasz Figa <t.figa@samsung.com>, Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1394130319.9994.28.camel-W2I5cNIroUsVm/YvaOjsyQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Rafael J . Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi KyongHo,
+Hi David,
+	Good suggestion! It should make hotplug logic simpler too.
+Will try to work out some patches for it.
+Thanks!
+Gerry
 
-On 09.03.2014 14:54, KyongHo Cho wrote:
-> On Thu, Mar 6, 2014 at 8:48 AM, Kyungmin Park <kmpark@infradead.org> wrote:
->> On Fri, Feb 14, 2014 at 9:17 AM, Cho KyongHo <pullip.cho@samsung.com> wrote:
->>>> -----Original Message-----
->>>> From: Olof Johansson [mailto:olof@lixom.net]
->>>> Sent: Friday, February 14, 2014 4:34 AM
->>>>
->>>> On Mon, Feb 10, 2014 at 10:21 PM, Kukjin Kim <kgene.kim@gmail.com> wrote:
->>>>
->>>>> Just adding KyongHo Cho.
->>>>>
->>>>> If he can fixup for this time, it would be best solution because he knows
->>>>> well than others, I think.
->>>>
->>>> It's not so much a matter of "fixup for this time", it's a about
->>>> having ownership of the driver, making sure it works (and keeps
->>>> working if there is related development). The posted patches have not
->>>> been followed through on and the result is a broken driver. :(
->>>>
->>>> I definitely appreciate his expertise, and we should make sure that he
->>>> gets to review the code, but if someone else is able to spend time on
->>>> reworking the driver (or rewriting a newer one) and maintaining it
->>>> longer-term, then we should not stop them from doing so. And there is
->>>> no reason to keep broken stale code in the kernel meanwhile.
->>>>
->>>
->>> Thank you for your concerning.
->>> I also definitely agree with you that the driver must work.
->>> I am always concerning about it but it was not easy to make some time
->>> for the patches.
->>>
->>> I will continue to post the next version of patches, of course.
->>> I think it is not far from now to show it.
->>
->> Lots of time is going from last reply. there are two options.
->> 1. just waiting more
->> 2. remove it as patch and start it again by someone.
->>
->> what's the opinions?
->>
->
-> Please be patient until the patches are OK enough to post.
->
-> The patches have lots of improvements and workarounds.
->
-> Sorry for delaying the patches.
->
-> One thing is certain, starting from scratch is not a good idea.
-> Why not discuss with me to make exynos-iommu driver better?
-
-It is not a matter of starting from scratch or not, but rather of 
-getting a reasonable IOMMU driver for Exynos in mainline in reasonable 
-period of time. Usually it is much easier to just remove a stale driver 
-and quickly refactor all the code at once and then add a "new" driver, 
-than wasting time on submitting heaps of patches for a driver that is 
-not used and does not work anyway.
-
-In fact, we already have a working driver, based on heavily refactored 
-original one in our internal tree anyway and we are just wasting time on 
-waiting for next version of the original refactor series to come, while 
-we could simply drop current version from the kernel, squash all of any 
-changes to it into a one patch adding the new driver and submit it 
-instead. Of course care would be taken to preserve any authorship 
-information.
-
-Do you have some time frame in which you may post next version of the 
-series (and guaranteed time to work on it)?
-
-Best regards,
-Tomasz
+On 2014/3/7 2:25, David Woodhouse wrote:
+> On Wed, 2014-02-19 at 14:07 +0800, Jiang Liu wrote:
+>> Current Intel DMAR/IOMMU driver assumes that all PCI devices
+>> associated
+>> with DMAR/RMRR/ATSR device scope arrays are created at boot time and
+>> won't change at runtime, so it caches pointers of associated PCI
+>> device
+>> object. That assumption may be wrong now due to:
+>> 1) introduction of PCI host bridge hotplug
+>> 2) PCI device hotplug through sysfs interfaces.
+> ...
+>> This patch introduces a new mechanism to update the DRHD/RMRR/ATSR
+>> device scope caches by hooking PCI bus notification.
+> 
+> Hm, this seems overly complex. Can't we just abandon the
+> dmaru->devices[] array completely? In dmar_find_matched_drhd_unit()
+> can't we just compare the path in the scope entries directly to the PCI
+> device we are trying to find a DRHD for?
+> 
+> We then cache the result in dev->archdata.iommu for ever (well, until
+> hot-unplug) anyway, so it shouldn't even be any less efficient to do it
+> on demand, right?
+> 
+> That's true at least for dmar_find_matched_drhd_unit(). Perhaps we'd
+> need to find a way to cache the result for
+> dmar_find_matched_atsr_unit()?
+> 
