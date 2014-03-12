@@ -1,10 +1,9 @@
 From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: [PATCH] iommu/vt-d: Be less pessimistic about domain coherency
-	where possible
-Date: Tue, 11 Mar 2014 17:10:29 -0700
-Message-ID: <1394583029.2270.165.camel@shinybook.infradead.org>
+Subject: Fixing kvm_iommu_put_pages()
+Date: Tue, 11 Mar 2014 17:51:21 -0700
+Message-ID: <1394585481.2270.179.camel@shinybook.infradead.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============4680619919934616893=="
+Content-Type: multipart/mixed; boundary="===============2968646801703843184=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -16,94 +15,94 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: "Cesare Cantu (cantuc)" <cantuc-FYB4Gu1CFyUAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============4680619919934616893==
+--===============2968646801703843184==
 Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-R/Zc1H/VVdaJYxd3bgif"
+	boundary="=-D/BcVlzCaX5U26qAmTN9"
 
 
---=-R/Zc1H/VVdaJYxd3bgif
+--=-D/BcVlzCaX5U26qAmTN9
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-In commit 2e12bc29 ("intel-iommu: Default to non-coherent for domains
-unattached to iommus") we decided to err on the side of caution and
-always assume that it's possible that a device will be attached which is
-behind a non-coherent IOMMU.
+In kvm_iommu_put_pages() we use this bizarre and horrid API for
+iommu_unmap() where we call it to unmap PAGE_SIZE at a time, but if it
+actually finds a larger page than that in its page tables then it's
+allowed to unmap and return the larger size.
 
-In some cases, however, that just *cannot* happen. If there *are* no
-IOMMUs in the system which are non-coherent, then we don't need to do
-it. And flushing the dcache is a *significant* performance hit.
+For some IOMMUs including the Intel one, breaking unmaps into tiny
+chunks like this is *really* pessimal.
 
-Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
----
-In fact, even the overly cautious approach is broken because it's possible
-to add a coherent IOMMU, then set up some mappings and *then* add a non-
-coherent IOMMU.
+It looks like the actual reason it's done this way is because we need to
+unpin the underlying physical pages when we're done with them, and the
+only way we can do that is by doing it a page at a time calling
+iommu_iova_to_phys() on each page.=20
 
-What we really want to do is flush the dcache at the time a domain
-transitions from coherent to non-coherent. Except that would unfortunately
-involve doing wbinvd on *all* CPUs, and something vaguely equivalent on
-IA64 that I'm not sure even exists. Walking the page tables and manually
-doing a clflush_cache_range() on them all would also be theoretically
-possible but I'm fairly sure we don't want to do that...
+I wonder if this could be better handled by passing a callback function
+in to the iommu_unmap() function, which can be called for each physical
+address range that's unmapped.
 
- drivers/iommu/intel-iommu.c | 21 +++++++++++++++++----
- 1 file changed, 17 insertions(+), 4 deletions(-)
+That way, we wouldn't need all the cache and IOTLB flushing between the
+individual page unmaps; we could still just do it the quick way.
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 86bfc4b..0b16592 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -593,18 +593,31 @@ static struct intel_iommu *domain_get_iommu(struct dm=
-ar_domain *domain)
-=20
- static void domain_update_iommu_coherency(struct dmar_domain *domain)
+It would look something like this...
+
+diff --git a/virt/kvm/iommu.c b/virt/kvm/iommu.c
+index 0df7d4b..bf3f4f9 100644
+--- a/virt/kvm/iommu.c
++++ b/virt/kvm/iommu.c
+@@ -278,41 +278,14 @@ static void kvm_iommu_put_pages(struct kvm *kvm,
+ 				gfn_t base_gfn, unsigned long npages)
  {
--	int i;
+ 	struct iommu_domain *domain;
+-	gfn_t end_gfn, gfn;
+-	pfn_t pfn;
+-	u64 phys;
+=20
+ 	domain  =3D kvm->arch.iommu_domain;
+-	end_gfn =3D base_gfn + npages;
+-	gfn     =3D base_gfn;
+=20
+ 	/* check if iommu exists and in use */
+ 	if (!domain)
+ 		return;
+=20
+-	while (gfn < end_gfn) {
+-		unsigned long unmap_pages;
+-		size_t size;
 -
--	i =3D find_first_bit(domain->iommu_bmp, g_num_of_iommus);
-+	struct dmar_drhd_unit *drhd;
-+	struct intel_iommu *iommu;
-+	int i, found =3D 0;
-=20
--	domain->iommu_coherency =3D i < g_num_of_iommus ? 1 : 0;
-+	domain->iommu_coherency =3D 1;
-=20
- 	for_each_set_bit(i, domain->iommu_bmp, g_num_of_iommus) {
-+		found =3D 1;
- 		if (!ecap_coherent(g_iommus[i]->ecap)) {
- 			domain->iommu_coherency =3D 0;
- 			break;
- 		}
- 	}
-+	if (found)
-+		return;
-+
-+	/* No hardware attached; use lowest common denominator */
-+	rcu_read_lock();
-+	for_each_active_iommu(iommu, drhd) {
-+		if (!ecap_coherent(iommu->ecap)) {
-+			domain->iommu_coherency =3D 0;
-+			break;
-+		}
-+	}
-+	rcu_read_unlock();
+-		/* Get physical address */
+-		phys =3D iommu_iova_to_phys(domain, gfn_to_gpa(gfn));
+-
+-		if (!phys) {
+-			gfn++;
+-			continue;
+-		}
+-
+-		pfn  =3D phys >> PAGE_SHIFT;
+-
+-		/* Unmap address from IO address space */
+-		size       =3D iommu_unmap(domain, gfn_to_gpa(gfn), PAGE_SIZE);
+-		unmap_pages =3D 1ULL << get_order(size);
+-
+-		/* Unpin all pages we just unmapped to not leak any memory */
+-		kvm_unpin_pages(kvm, pfn, unmap_pages);
+-
+-		gfn +=3D unmap_pages;
+-	}
++	iommu_unmap(domain, gfn_to_gpa(base_gfn), npages << PAGE_SHIFT, kvm_unpin=
+_pages, kvm);
  }
 =20
- static void domain_update_iommu_snooping(struct dmar_domain *domain)
---=20
-1.8.5.3
-
+ void kvm_iommu_unmap_pages(struct kvm *kvm, struct kvm_memory_slot *slot)
 
 --=20
 David Woodhouse                            Open Source Technology Centre
 David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
 
---=-R/Zc1H/VVdaJYxd3bgif
+--=-D/BcVlzCaX5U26qAmTN9
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -197,28 +196,28 @@ bhXkgdT2t1V1bNAxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0
 Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2
 BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMG
 hc4wCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
-DxcNMTQwMzEyMDAxMDI5WjAjBgkqhkiG9w0BCQQxFgQUJhI/+m1MjTv1l7MM4jBQHVMlQskwgaUG
+DxcNMTQwMzEyMDA1MTIxWjAjBgkqhkiG9w0BCQQxFgQU/TUlwnhFgUyZKPwSjgvDVwP6KwAwgaUG
 CSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4x
 KzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0
 YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMGhc4wgacGCyqG
 SIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjEr
 MCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMvU3Rh
 cnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAwaFzjANBgkqhkiG
-9w0BAQEFAASCAQA4ifNgtuQIxxo4rCUbM4ThYNDIUISqVSII2gT6LrFzUjJ+EG/VYP8SmQVmr0Va
-6tXmltNT9OBHqsb686FQLT50ateg1DYw82y7JzfmAvIuyT0ViKqG1QMO9zwDTLy0RmoGAFb9jd8/
-Ipk5Ty8NydHqmZhYLoHks5nGFcjSRLMHW1Dqmsa85xQBmz+fxxF+V6u6/tNQh68gqLje6ykxd4UJ
-9MiskMunEdCQTQMx0f0n1b/9zAwaJCxd72IJYsHXfUQqvMHYsG32YO8vREKqpWeUhHxiNvOh+CI2
-5nLWNNhX2mI6xLhidQ9tfATE736ynPFU+pgAzVO+8gxD9MSIz3ceAAAAAAAA
+9w0BAQEFAASCAQA61/GqEQiTsn0D+OmG7x2+dlWYarMNF0BDdArwx+09EXPcaKIMVa/lRpd/ppSf
+Wy0SwEcV4HvWKpdizpv3WGqezEHSxqkYEq2tn8LAgxhv+vVv2+tQUlAKBu21FEfso5RGA6zJll4B
+O4UTPf5aJHz61t1FS0G93zvGoLcwyeeS3erxx/nkU+gZbfATXsaTxMhWJxLDrro/yUhs1QdlFTzr
+B3ZMcnvZJaj1Ry8vraIW2EP8VcqF4JggikUVseoZEPrhlh/AU9gGca7I3ynLV+CIzcjnsL6nV1qc
+a1S8fc7jabEYtJGtYClEXXFZ1GbHMfhTFJ0jwoHzG2/hBqt3Fsw6AAAAAAAA
 
 
---=-R/Zc1H/VVdaJYxd3bgif--
+--=-D/BcVlzCaX5U26qAmTN9--
 
 
---===============4680619919934616893==
+--===============2968646801703843184==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============4680619919934616893==--
+--===============2968646801703843184==--
