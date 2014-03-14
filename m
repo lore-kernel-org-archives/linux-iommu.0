@@ -1,7 +1,8 @@
 From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v11 14/27] iommu/exynos: gating clocks of master H/W
-Date: Fri, 14 Mar 2014 14:09:44 +0900
-Message-ID: <20140314140944.ebab0ec5997424ab7034d566@samsung.com>
+Subject: [PATCH v11 15/27] iommu/exynos: use convenient macro to handle gate
+	clocks
+Date: Fri, 14 Mar 2014 14:09:51 +0900
+Message-ID: <20140314140951.3d443a3096e80297c9fecef0@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -19,133 +20,120 @@ To: Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.g
 Cc: Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Prathyush <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Tomasz Figa <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Rahul Sharma <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch gates clocks of master H/W as well as clocks of System MMU
-if master clocks are specified.
+exynos-iommu driver must care about master H/W's gate clock as well as
+System MMU's gate clock. To enhance readability of the source code,
+macros to gate/ungate those clocks are defined.
 
-Some Exynos SoCs (i.e. GScalers in Exynos5250) have dependencies in
-the gating clocks of master H/W and its System MMU. If a H/W is the
-case, accessing control registers of System MMU is prohibited unless
-both of the gating clocks of System MMU and its master H/W.
-
-CC: Tomasz Figa <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/exynos-iommu.c |   35 ++++++++++++++++++++++++++++++-----
- 1 file changed, 30 insertions(+), 5 deletions(-)
+ drivers/iommu/exynos-iommu.c |   34 ++++++++++++++++++++++------------
+ 1 file changed, 22 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 34feb04..71e77f1 100644
+index 71e77f1..cef62d0 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -173,6 +173,7 @@ struct sysmmu_drvdata {
- 	struct device *dev;	/* Owner of system MMU */
- 	void __iomem *sfrbase;
- 	struct clk *clk;
-+	struct clk *clk_master;
- 	int activations;
- 	rwlock_t lock;
- 	struct iommu_domain *domain;
-@@ -301,6 +302,7 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
+@@ -101,6 +101,16 @@
+ #define REG_PB1_SADDR		0x054
+ #define REG_PB1_EADDR		0x058
+ 
++#define __clk_gate_ctrl(data, clk, en)	do {		\
++		if (data->clk)				\
++			clk_##en##able(data->clk);	\
++	} while (0)
++
++#define __sysmmu_clk_enable(data)	__clk_gate_ctrl(data, clk, en)
++#define __sysmmu_clk_disable(data)	__clk_gate_ctrl(data, clk, dis)
++#define __master_clk_enable(data)	__clk_gate_ctrl(data, clk_master, en)
++#define __master_clk_disable(data)	__clk_gate_ctrl(data, clk_master, dis)
++
+ static struct kmem_cache *lv2table_kmem_cache;
+ 
+ static unsigned long *section_entry(unsigned long *pgtable, unsigned long iova)
+@@ -302,7 +312,7 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
  
  	WARN_ON(!is_sysmmu_active(data));
  
-+	clk_enable(data->clk_master);
+-	clk_enable(data->clk_master);
++	__master_clk_enable(data);
  	itype = (enum exynos_sysmmu_inttype)
  		__ffs(__raw_readl(data->sfrbase + REG_INT_STATUS));
  	if (WARN_ON(!((itype >= 0) && (itype < SYSMMU_FAULT_UNKNOWN))))
-@@ -327,6 +329,8 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
+@@ -329,7 +339,7 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
  	if (itype != SYSMMU_FAULT_UNKNOWN)
  		sysmmu_unblock(data->sfrbase);
  
-+	clk_disable(data->clk_master);
-+
+-	clk_disable(data->clk_master);
++	__master_clk_disable(data);
+ 
  	read_unlock(&data->lock);
  
- 	return IRQ_HANDLED;
-@@ -342,10 +346,12 @@ static bool __exynos_sysmmu_disable(struct sysmmu_drvdata *data)
+@@ -346,12 +356,12 @@ static bool __exynos_sysmmu_disable(struct sysmmu_drvdata *data)
  	if (!set_sysmmu_inactive(data))
  		goto finish;
  
-+	clk_enable(data->clk_master);
-+
+-	clk_enable(data->clk_master);
++	__master_clk_enable(data);
+ 
  	__raw_writel(CTRL_DISABLE, data->sfrbase + REG_MMU_CTRL);
  
--	if (data->clk)
--		clk_disable(data->clk);
-+	clk_disable(data->clk);
-+	clk_disable(data->clk_master);
+-	clk_disable(data->clk);
+-	clk_disable(data->clk_master);
++	__sysmmu_clk_disable(data);
++	__master_clk_disable(data);
  
  	disabled = true;
  	data->pgtable = 0;
-@@ -388,15 +394,17 @@ static int __exynos_sysmmu_enable(struct sysmmu_drvdata *data,
- 		goto finish;
- 	}
+@@ -396,14 +406,14 @@ static int __exynos_sysmmu_enable(struct sysmmu_drvdata *data,
  
--	if (data->clk)
--		clk_enable(data->clk);
--
  	data->pgtable = pgtable;
  
-+	clk_enable(data->clk_master);
-+	clk_enable(data->clk);
-+
+-	clk_enable(data->clk_master);
+-	clk_enable(data->clk);
++	__master_clk_enable(data);
++	__sysmmu_clk_enable(data);
+ 
  	__sysmmu_set_ptbase(data->sfrbase, pgtable);
  
  	__raw_writel(CTRL_ENABLE, data->sfrbase + REG_MMU_CTRL);
  
-+	clk_disable(data->clk_master);
-+
+-	clk_disable(data->clk_master);
++	__master_clk_disable(data);
+ 
  	data->domain = domain;
  
- 	dev_dbg(data->sysmmu, "Enabled\n");
-@@ -453,6 +461,9 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova,
- 	if (is_sysmmu_active(data)) {
+@@ -462,7 +472,7 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova,
  		unsigned int maj;
  		unsigned int num_inv = 1;
-+
-+		clk_enable(data->clk_master);
-+
+ 
+-		clk_enable(data->clk_master);
++		__master_clk_enable(data);
+ 
  		maj = __raw_readl(data->sfrbase + REG_MMU_VERSION);
  		/*
- 		 * L2TLB invalidation required
-@@ -472,6 +483,7 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova,
+@@ -483,7 +493,7 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova,
  							num_inv);
  			sysmmu_unblock(data->sfrbase);
  		}
-+		clk_disable(data->clk_master);
+-		clk_disable(data->clk_master);
++		__master_clk_disable(data);
  	} else {
  		dev_dbg(data->sysmmu, "Disabled. Skipping invalidating TLB.\n");
  	}
-@@ -487,10 +499,12 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
+@@ -499,12 +509,12 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
  	read_lock_irqsave(&data->lock, flags);
  
  	if (is_sysmmu_active(data)) {
-+		clk_enable(data->clk_master);
+-		clk_enable(data->clk_master);
++		__master_clk_enable(data);
  		if (sysmmu_block(data->sfrbase)) {
  			__sysmmu_tlb_invalidate(data->sfrbase);
  			sysmmu_unblock(data->sfrbase);
  		}
-+		clk_disable(data->clk_master);
+-		clk_disable(data->clk_master);
++		__master_clk_disable(data);
  	} else {
  		dev_dbg(data->sysmmu, "Disabled. Skipping invalidating TLB.\n");
  	}
-@@ -544,6 +558,17 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
-+	data->clk_master = devm_clk_get(dev, "master");
-+	if (IS_ERR(data->clk_master))
-+		data->clk_master = NULL;
-+
-+	ret = clk_prepare(data->clk_master);
-+	if (ret) {
-+		clk_unprepare(data->clk);
-+		dev_err(dev, "Failed to prepare master's clk\n");
-+		return ret;
-+	}
-+
- 	data->sysmmu = dev;
- 	rwlock_init(&data->lock);
- 	INIT_LIST_HEAD(&data->node);
 -- 
 1.7.9.5
