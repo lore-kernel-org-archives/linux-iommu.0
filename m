@@ -1,56 +1,170 @@
-From: Tomasz Figa <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v11 20/27] iommu/exynos: allow having multiple System MMUs
-	for a master H/W
-Date: Fri, 14 Mar 2014 17:12:03 +0100
-Message-ID: <53232A53.4040708@samsung.com>
-References: <20140314141050.c8bedcb66532d277c496796d@samsung.com>
+From: Santosh Shilimkar <santosh.shilimkar@ti.com>
+Subject: Re: [PATCH 1/5] iommu/omap: Use the cache cleaning API
+Date: Fri, 14 Mar 2014 12:15:11 -0400
+Message-ID: <53232B0F.6090701@ti.com>
+References: <1394239574-2389-1-git-send-email-laurent.pinchart@ideasonboard.com> <1394239574-2389-2-git-send-email-laurent.pinchart@ideasonboard.com> <53226DD5.6070208@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <20140314141050.c8bedcb66532d277c496796d-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Linux DeviceTree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Samsung SOC <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Prathyush <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Rahul Sharma <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <53226DD5.6070208@ti.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: "Anna, Suman" <s-anna@ti.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Florian Vaussard <florian.vaussard@epfl.ch>, "sakari.ailus@iki.fi" <sakari.ailus@iki.fi>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi KyongHo,
++ Russell, Arnd
 
-On 14.03.2014 06:10, Cho KyongHo wrote:
-> Some master device descriptor like fimc-is which is an abstraction
-> of very complex H/W may have multiple System MMUs. For those devices,
-> the design of the link between System MMU and its master H/W is needed
-> to be reconsidered.
->
-> A link structure, sysmmu_list_data is introduced that provides a link
-> to master H/W and that has a pointer to the device descriptor of a
-> System MMU. Given a device descriptor of a master H/W, it is possible
-> to traverse all System MMUs that must be controlled along with the
-> master H/W.
+On Thursday 13 March 2014 10:47 PM, Anna, Suman wrote:
+> Hi Laurent,
+> 
+> On 03/07/2014 06:46 PM, Laurent Pinchart wrote:
+>> The page table entries must be cleaned from the cache before being
+>> accessed by the IOMMU. Instead of implementing cache management manually
+>> (and ignoring L2 cache), use clean_dcache_area() to make sure the
+>> entries are visible to the device.
+> 
+> Thanks for fixing this, this has been long pending. There have been some 
+> previous attempts at this as well by Ramesh Gupta, with the last thread 
+> (a long time now) being
+> http://marc.info/?t=134752035400001&r=1&w=2
+> 
+> Santosh,
+> Can you please take a look at this patch and provide your comments?
+> 
+> regards
+> Suman
+> 
+>>
+>> Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+>> ---
+>>   drivers/iommu/omap-iommu.c | 41 ++++++++++-------------------------------
+>>   1 file changed, 10 insertions(+), 31 deletions(-)
+>>
+>> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+>> index a893eca..bb605c9 100644
+>> --- a/drivers/iommu/omap-iommu.c
+>> +++ b/drivers/iommu/omap-iommu.c
+>> @@ -500,24 +500,9 @@ EXPORT_SYMBOL_GPL(omap_foreach_iommu_device);
+>>   /*
+>>    *	H/W pagetable operations
+>>    */
+>> -static void flush_iopgd_range(u32 *first, u32 *last)
+>> +static void flush_pgtable(void *addr, size_t size)
+>>   {
+>> -	/* FIXME: L2 cache should be taken care of if it exists */
+>> -	do {
+>> -		asm("mcr	p15, 0, %0, c7, c10, 1 @ flush_pgd"
+>> -		    : : "r" (first));
+>> -		first += L1_CACHE_BYTES / sizeof(*first);
+>> -	} while (first <= last);
+>> -}
+>> -
+>> -static void flush_iopte_range(u32 *first, u32 *last)
+>> -{
+>> -	/* FIXME: L2 cache should be taken care of if it exists */
+>> -	do {
+>> -		asm("mcr	p15, 0, %0, c7, c10, 1 @ flush_pte"
+>> -		    : : "r" (first));
+>> -		first += L1_CACHE_BYTES / sizeof(*first);
+>> -	} while (first <= last);
+>> +	clean_dcache_area(addr, size);
+I remember NAKing this approach in past and my stand remains same.
+The cache APIs which you are trying to use here are not suppose
+to be used outside.
 
-NAK.
+I think the right way to fix this is to make use of streaming APIs.
+If needed, IOMMU can have its own dma_ops for special case
+handling if any.
 
-A device driver should handle particular hardware instances separately, 
-without abstracting a virtual hardware instance consisting of multiple 
-physical ones.
+Russell, Arnd might have more ideas.
 
-If such abstraction is needed, it should be done above the exynos-iommu 
-driver, e.g. by something like iommu-composite driver that would 
-aggregate several IOMMUs. Keep in mind that such IOMMUs in a group could 
-be different, e.g. different Exynos SysMMU versions or even completely 
-different IPs handled by different drivers.
+>>   }
+>>
+>>   static void iopte_free(u32 *iopte)
+>> @@ -546,7 +531,7 @@ static u32 *iopte_alloc(struct omap_iommu *obj, u32 *iopgd, u32 da)
+>>   			return ERR_PTR(-ENOMEM);
+>>
+>>   		*iopgd = virt_to_phys(iopte) | IOPGD_TABLE;
+>> -		flush_iopgd_range(iopgd, iopgd);
+>> +		flush_pgtable(iopgd, sizeof(*iopgd));
+>>
+>>   		dev_vdbg(obj->dev, "%s: a new pte:%p\n", __func__, iopte);
+>>   	} else {
+>> @@ -575,7 +560,7 @@ static int iopgd_alloc_section(struct omap_iommu *obj, u32 da, u32 pa, u32 prot)
+>>   	}
+>>
+>>   	*iopgd = (pa & IOSECTION_MASK) | prot | IOPGD_SECTION;
+>> -	flush_iopgd_range(iopgd, iopgd);
+>> +	flush_pgtable(iopgd, sizeof(*iopgd));
+>>   	return 0;
+>>   }
+>>
+>> @@ -592,7 +577,7 @@ static int iopgd_alloc_super(struct omap_iommu *obj, u32 da, u32 pa, u32 prot)
+>>
+>>   	for (i = 0; i < 16; i++)
+>>   		*(iopgd + i) = (pa & IOSUPER_MASK) | prot | IOPGD_SUPER;
+>> -	flush_iopgd_range(iopgd, iopgd + 15);
+>> +	flush_pgtable(iopgd, sizeof(*iopgd) * 16);
+>>   	return 0;
+>>   }
+>>
+>> @@ -605,7 +590,7 @@ static int iopte_alloc_page(struct omap_iommu *obj, u32 da, u32 pa, u32 prot)
+>>   		return PTR_ERR(iopte);
+>>
+>>   	*iopte = (pa & IOPAGE_MASK) | prot | IOPTE_SMALL;
+>> -	flush_iopte_range(iopte, iopte);
+>> +	flush_pgtable(iopte, sizeof(*iopte));
+>>
+>>   	dev_vdbg(obj->dev, "%s: da:%08x pa:%08x pte:%p *pte:%08x\n",
+>>   		 __func__, da, pa, iopte, *iopte);
+>> @@ -619,18 +604,12 @@ static int iopte_alloc_large(struct omap_iommu *obj, u32 da, u32 pa, u32 prot)
+>>   	u32 *iopte = iopte_alloc(obj, iopgd, da);
+>>   	int i;
+>>
+>> -	if ((da | pa) & ~IOLARGE_MASK) {
+>> -		dev_err(obj->dev, "%s: %08x:%08x should aligned on %08lx\n",
+>> -			__func__, da, pa, IOLARGE_SIZE);
+>> -		return -EINVAL;
+>> -	}
+>> -
+>>   	if (IS_ERR(iopte))
+>>   		return PTR_ERR(iopte);
+>>
+>>   	for (i = 0; i < 16; i++)
+>>   		*(iopte + i) = (pa & IOLARGE_MASK) | prot | IOPTE_LARGE;
+>> -	flush_iopte_range(iopte, iopte + 15);
+>> +	flush_pgtable(iopte, sizeof(*iopte) * 16);
+>>   	return 0;
+>>   }
+>>
+>> @@ -733,7 +712,7 @@ static size_t iopgtable_clear_entry_core(struct omap_iommu *obj, u32 da)
+>>   		}
+>>   		bytes *= nent;
+>>   		memset(iopte, 0, nent * sizeof(*iopte));
+>> -		flush_iopte_range(iopte, iopte + (nent - 1) * sizeof(*iopte));
+>> +		flush_pgtable(iopte, sizeof(*iopte) * nent);
+>>
+>>   		/*
+>>   		 * do table walk to check if this table is necessary or not
+>> @@ -755,7 +734,7 @@ static size_t iopgtable_clear_entry_core(struct omap_iommu *obj, u32 da)
+>>   		bytes *= nent;
+>>   	}
+>>   	memset(iopgd, 0, nent * sizeof(*iopgd));
+>> -	flush_iopgd_range(iopgd, iopgd + (nent - 1) * sizeof(*iopgd));
+>> +	flush_pgtable(iopgd, sizeof(*iopgd) * nent);
+>>   out:
+>>   	return bytes;
+>>   }
+>> @@ -799,7 +778,7 @@ static void iopgtable_clear_entry_all(struct omap_iommu *obj)
+>>   			iopte_free(iopte_offset(iopgd, 0));
+>>
+>>   		*iopgd = 0;
+>> -		flush_iopgd_range(iopgd, iopgd);
+>> +		flush_pgtable(iopgd, sizeof(*iopgd));
+>>   	}
+>>
+>>   	flush_iotlb_all(obj);
+>>
+> 
 
-Still, I don't think there is a real need for such abstraction. Instead, 
-related drivers shall be fixed to properly handle multiple memory 
-masters and their IOMMUs.
-
-Best regards,
-Tomasz
