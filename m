@@ -1,14 +1,13 @@
 From: Tomasz Figa <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v11 10/27] iommu/exynos: use managed device helper
-	functions
-Date: Fri, 14 Mar 2014 14:28:36 +0100
-Message-ID: <53230404.6070601@samsung.com>
-References: <20140314140542.f4ded6c50dbd8a1d937bf354@samsung.com>
+Subject: Re: [PATCH v11 13/27] iommu/exynos: support for device tree
+Date: Fri, 14 Mar 2014 14:39:33 +0100
+Message-ID: <53230695.9080606@samsung.com>
+References: <20140314140935.e0652b58ce16591b54d0e10b@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <20140314140542.f4ded6c50dbd8a1d937bf354-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+In-reply-to: <20140314140935.e0652b58ce16591b54d0e10b-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,50 +23,83 @@ List-Id: iommu@lists.linux-foundation.org
 
 Hi KyongHo,
 
-On 14.03.2014 06:05, Cho KyongHo wrote:
-> This patch uses managed device helper functions in the probe().
+On 14.03.2014 06:09, Cho KyongHo wrote:
+> This commit adds device tree support for System MMU.
 >
 > Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 > ---
->   drivers/iommu/exynos-iommu.c |   64 +++++++++++++++++-------------------------
->   1 file changed, 26 insertions(+), 38 deletions(-)
+>   drivers/iommu/Kconfig        |    5 ++---
+>   drivers/iommu/exynos-iommu.c |   21 +++++++++++++++++----
+>   2 files changed, 19 insertions(+), 7 deletions(-)
 >
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index df56e4c..22af807 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -178,16 +178,15 @@ config TEGRA_IOMMU_SMMU
+>
+>   config EXYNOS_IOMMU
+>   	bool "Exynos IOMMU Support"
+> -	depends on ARCH_EXYNOS && EXYNOS_DEV_SYSMMU
+> +	depends on ARCH_EXYNOS
+>   	select IOMMU_API
+> +	default n
+>   	help
+>   	  Support for the IOMMU(System MMU) of Samsung Exynos application
+
+nit: There should be a white space before the opening parenthesis.
+
+>   	  processor family. This enables H/W multimedia accellerators to see
+
+typo: s/accellerators/accelerators/
+
+>   	  non-linear physical memory chunks as a linear memory in their
+>   	  address spaces
+>
+> -	  If unsure, say N here.
+> -
+>   config EXYNOS_IOMMU_DEBUG
+>   	bool "Debugging log for Exynos IOMMU"
+>   	depends on EXYNOS_IOMMU
 > diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> index 36e6b73..33b424d 100644
+> index 33b424d..34feb04 100644
 > --- a/drivers/iommu/exynos-iommu.c
 > +++ b/drivers/iommu/exynos-iommu.c
-> @@ -499,51 +499,48 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
+> @@ -26,6 +26,7 @@
+>   #include <linux/list.h>
+>   #include <linux/memblock.h>
+>   #include <linux/export.h>
+> +#include <linux/of.h>
 >
->   static int exynos_sysmmu_probe(struct platform_device *pdev)
+>   #include <asm/cacheflush.h>
+>   #include <asm/pgtable.h>
+> @@ -497,7 +498,7 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
+>   	read_unlock_irqrestore(&data->lock, flags);
+>   }
+>
+> -static int exynos_sysmmu_probe(struct platform_device *pdev)
+> +static int __init exynos_sysmmu_probe(struct platform_device *pdev)
 >   {
-> -	int ret;
-> +	int irq, ret;
+>   	int irq, ret;
 >   	struct device *dev = &pdev->dev;
->   	struct sysmmu_drvdata *data;
->   	struct resource *res;
+> @@ -557,11 +558,23 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
+>   	return 0;
+>   }
 >
-> -	data = kzalloc(sizeof(*data), GFP_KERNEL);
-> -	if (!data) {
-> -		dev_dbg(dev, "Not enough memory\n");
-> -		ret = -ENOMEM;
-> -		goto err_alloc;
-> -	}
-> +	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
-> +	if (!data)
-> +		return -ENOMEM;
->
->   	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->   	if (!res) {
-> -		dev_dbg(dev, "Unable to find IOMEM region\n");
-> -		ret = -ENOENT;
-> -		goto err_init;
-> +		dev_err(dev, "Unable to find IOMEM region\n");
-> +		return -ENOENT;
->   	}
+> -static struct platform_driver exynos_sysmmu_driver = {
+> -	.probe		= exynos_sysmmu_probe,
+> -	.driver		= {
+> +#ifdef CONFIG_OF
+> +static struct of_device_id sysmmu_of_match[] __initconst = {
+> +	{ .compatible	= "samsung,sysmmu-v1", },
+> +	{ .compatible	= "samsung,sysmmu-v2", },
+> +	{ .compatible	= "samsung,sysmmu-v3.1", },
+> +	{ .compatible	= "samsung,sysmmu-v3.2", },
+> +	{ .compatible	= "samsung,sysmmu-v3.3", },
 
-No need to check for error and print message, because 
-devm_ioremap_resource() already checks the passed resource and handles 
-error cases.
+Do you need all these compatible strings? I mean, are there any 
+implementation differences that can't be identified by reading IP 
+registers, such as REG_MMU_VERSION?
 
 Best regards,
 Tomasz
