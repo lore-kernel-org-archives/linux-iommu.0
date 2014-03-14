@@ -1,54 +1,61 @@
-From: Tomasz Figa <t.figa@samsung.com>
-Subject: Re: [PATCH v11 15/27] iommu/exynos: use convenient macro to handle
- gate clocks
-Date: Fri, 14 Mar 2014 14:43:42 +0100
-Message-ID: <5323078E.4060903@samsung.com>
-References: <20140314140951.3d443a3096e80297c9fecef0@samsung.com>
+From: Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v11 10/27] iommu/exynos: use managed device helper
+	functions
+Date: Fri, 14 Mar 2014 20:52:43 +0530
+Message-ID: <CAK9yfHw7zYaX9EYFE+m3Mh-u8Uiyubx-cS0EwPmfW+0weLiBKw@mail.gmail.com>
+References: <20140314140542.f4ded6c50dbd8a1d937bf354@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <20140314140951.3d443a3096e80297c9fecef0@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Cho KyongHo <pullip.cho@samsung.com>, Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>, Linux DeviceTree <devicetree@vger.kernel.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux Kernel <linux-kernel@vger.kernel.org>, Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>
-Cc: Antonios Motakis <a.motakis@virtualopensystems.com>, Grant Grundler <grundler@chromium.org>, Joerg Roedel <joro@8bytes.org>, Kukjin Kim <kgene.kim@samsung.com>, Prathyush <prathyush.k@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Sachin Kamat <sachin.kamat@linaro.org>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Varun Sethi <Varun.Sethi@freescale.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20140314140542.f4ded6c50dbd8a1d937bf354-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: Linux DeviceTree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Samsung SOC <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Prathyush <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Tomasz Figa <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Rahul Sharma <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 Hi KyongHo,
 
-On 14.03.2014 06:09, Cho KyongHo wrote:
-> exynos-iommu driver must care about master H/W's gate clock as well as
-> System MMU's gate clock. To enhance readability of the source code,
-> macros to gate/ungate those clocks are defined.
+On 14 March 2014 10:35, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org> wrote:
+> This patch uses managed device helper functions in the probe().
 >
-> Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
+> Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 > ---
->   drivers/iommu/exynos-iommu.c |   34 ++++++++++++++++++++++------------
->   1 file changed, 22 insertions(+), 12 deletions(-)
->
-> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> index 71e77f1..cef62d0 100644
-> --- a/drivers/iommu/exynos-iommu.c
-> +++ b/drivers/iommu/exynos-iommu.c
-> @@ -101,6 +101,16 @@
->   #define REG_PB1_SADDR		0x054
->   #define REG_PB1_EADDR		0x058
->
-> +#define __clk_gate_ctrl(data, clk, en)	do {		\
-> +		if (data->clk)				\
-> +			clk_##en##able(data->clk);	\
-> +	} while (0)
+[snip]
+
+> +       data->clk = devm_clk_get(dev, "sysmmu");
+> +       if (IS_ERR(data->clk)) {
+> +               dev_info(dev, "No gate clock found!\n");
+> +               data->clk = NULL;
+> +       }
+
+Why aren't you returning from here upon error?
+
 > +
-> +#define __sysmmu_clk_enable(data)	__clk_gate_ctrl(data, clk, en)
-> +#define __sysmmu_clk_disable(data)	__clk_gate_ctrl(data, clk, dis)
-> +#define __master_clk_enable(data)	__clk_gate_ctrl(data, clk_master, en)
-> +#define __master_clk_disable(data)	__clk_gate_ctrl(data, clk_master, dis)
-> +
+> +       ret = clk_prepare(data->clk);
+> +       if (ret) {
+> +               dev_err(dev, "Failed to prepare clk\n");
+> +               return ret;
+>         }
+>
+>         data->sysmmu = dev;
+> @@ -556,17 +553,8 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
+>
+>         pm_runtime_enable(dev);
+>
+> -       dev_dbg(dev, "Initialized\n");
+> +       dev_dbg(dev, "Probed and initialized\n");
 
-I'd say that such macros only obfuscate code, without any gains, as you 
-can see in diffstat - this patch adds more lines than it removes.
+This message looks redundant.
 
-Please drop this change.
-
-Best regards,
-Tomasz
+-- 
+With warm regards,
+Sachin
