@@ -1,108 +1,95 @@
-From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v11 27/27] iommu/exynos: enhanced error messages
-Date: Fri, 14 Mar 2014 14:14:31 +0900
-Message-ID: <20140314141431.320b055a618203746b1e3075@samsung.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH 5/5] iommu/omap: Fix map protection value handling
+Date: Fri, 14 Mar 2014 10:46:48 +0100
+Message-ID: <13414141.7HHPA8i3Vs@avalon>
+References: <1394239574-2389-1-git-send-email-laurent.pinchart@ideasonboard.com> <1394239574-2389-6-git-send-email-laurent.pinchart@ideasonboard.com> <53224845.1050901@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Linux DeviceTree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Samsung SOC <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Prathyush <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Tomasz Figa <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Rahul Sharma <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <53224845.1050901@ti.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Suman Anna <s-anna@ti.com>
+Cc: linux-omap@vger.kernel.org, iommu@lists.linux-foundation.org, Florian Vaussard <florian.vaussard@epfl.ch>, sakari.ailus@iki.fi
 List-Id: iommu@lists.linux-foundation.org
 
-Some redundant error message is removed and some error messages
-are changed to error level from debug level.
+Hi Suman,
 
-Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
----
- drivers/iommu/exynos-iommu.c |   23 +++++++++--------------
- 1 file changed, 9 insertions(+), 14 deletions(-)
+Thank you for the review.
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 4888383..b7f7731 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -1012,7 +1012,7 @@ static void exynos_iommu_detach_device(struct iommu_domain *domain,
- 		dev_dbg(dev, "%s: Detached IOMMU with pgtable %pa\n",
- 					__func__, &pgtable);
- 	} else {
--		dev_dbg(dev, "%s: No IOMMU is attached\n", __func__);
-+		dev_err(dev, "%s: No IOMMU is attached\n", __func__);
- 	}
- }
- 
-@@ -1112,10 +1112,8 @@ static int lv2set_page(sysmmu_pte_t *pent, phys_addr_t paddr, size_t size,
- 								short *pgcnt)
- {
- 	if (size == SPAGE_SIZE) {
--		if (!lv2ent_fault(pent)) {
--			WARN(1, "Trying mapping on 4KiB where mapping exists");
-+		if (WARN_ON(!lv2ent_fault(pent)))
- 			return -EADDRINUSE;
--		}
- 
- 		*pent = mk_lv2ent_spage(paddr);
- 		pgtable_flush(pent, pent + 1);
-@@ -1123,9 +1121,7 @@ static int lv2set_page(sysmmu_pte_t *pent, phys_addr_t paddr, size_t size,
- 	} else { /* size == LPAGE_SIZE */
- 		int i;
- 		for (i = 0; i < SPAGES_PER_LPAGE; i++, pent++) {
--			if (!lv2ent_fault(pent)) {
--				WARN(1,
--				"Trying mapping on 64KiB where mapping exists");
-+			if (WARN_ON(!lv2ent_fault(pent))) {
- 				if (i > 0)
- 					memset(pent - i, 0, sizeof(*pent) * i);
- 				return -EADDRINUSE;
-@@ -1198,8 +1194,8 @@ static int exynos_iommu_map(struct iommu_domain *domain, unsigned long l_iova,
- 	}
- 
- 	if (ret)
--		pr_debug("%s: Failed to map iova %#x/%#zx bytes\n",
--							__func__, iova, size);
-+		pr_err("%s: Failed(%d) to map %#zx bytes @ %#x\n",
-+			__func__, ret, size, iova);
- 
- 	spin_unlock_irqrestore(&priv->pgtablelock, flags);
- 
-@@ -1236,7 +1232,7 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
- 	ent = section_entry(priv->pgtable, iova);
- 
- 	if (lv1ent_section(ent)) {
--		if (size < SECT_SIZE) {
-+		if (WARN_ON(size < SECT_SIZE)) {
- 			err_pgsize = SECT_SIZE;
- 			goto err;
- 		}
-@@ -1271,7 +1267,7 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
- 	}
- 
- 	/* lv1ent_large(ent) == true here */
--	if (size < LPAGE_SIZE) {
-+	if (WARN_ON(size < LPAGE_SIZE)) {
- 		err_pgsize = LPAGE_SIZE;
- 		goto err;
- 	}
-@@ -1290,9 +1286,8 @@ done:
- err:
- 	spin_unlock_irqrestore(&priv->pgtablelock, flags);
- 
--	WARN(1,
--	"%s: Failed due to size(%#zx) @ %#x is smaller than page size %#zx\n",
--	__func__, size, iova, err_pgsize);
-+	pr_err("%s: Failed: size(%#zx) @ %#x is smaller than page size %#zx\n",
-+		__func__, size, iova, err_pgsize);
- 
- 	return 0;
- }
+On Thursday 13 March 2014 19:07:33 Suman Anna wrote:
+> On 03/07/2014 06:46 PM, Laurent Pinchart wrote:
+> > The prot flags passed to the IOMMU map handler are defined in
+> > include/linux/iommu.h as IOMMU_(READ|WRITE|CACHE|EXEC). However, the
+> > driver expects to receive MMU_RAM_* OMAP-specific flags. This causes
+> > IOMMU flags being interpreted as page sizes, leading to failures.
+> > 
+> > Hardcode the OMAP mapping parameters to little-endian, 8-bits and
+> > non-mixed page attributes. Furthermore, as the OMAP IOMMU doesn't
+> > support read-only or write-only mappings, ignore the prot value.
+> > 
+> > Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> > ---
+> > 
+> >   drivers/iommu/omap-iommu.c | 17 +++++++----------
+> >   1 file changed, 7 insertions(+), 10 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+> > index 59de3fc..9f7f1d4 100644
+> > --- a/drivers/iommu/omap-iommu.c
+> > +++ b/drivers/iommu/omap-iommu.c
+> > @@ -1016,8 +1016,7 @@ static void iopte_cachep_ctor(void *iopte)
+> >   	clean_dcache_area(iopte, IOPTE_TABLE_SIZE);
+> >   }
+> > 
+> > -static u32 iotlb_init_entry(struct iotlb_entry *e, u32 da, u32 pa,
+> > -				   u32 flags)
+> > +static u32 iotlb_init_entry(struct iotlb_entry *e, u32 da, u32 pa, int
+> > pgsz)
+> >   {
+> >   	memset(e, 0, sizeof(*e));
+> > 
+> > @@ -1025,10 +1024,10 @@ static u32 iotlb_init_entry(struct iotlb_entry *e,
+> > u32 da, u32 pa,
+> >   	e->pa		= pa;
+> >   	e->valid	= 1;
+> 
+> As I was looking through this, I found a small bug here. This is unrelated
+> to this patch, but you can fix it in the same patch. The e->valid value is
+> directly used in omap2_alloc_cr, so it should be initialized to MMU_CAM_V.
+> It is not a problem currently as PREFETCH_IOTLB is not used, if used, this
+> is overriding the size bit-fields when it prefetches the entry, which may
+> lead to an MMU fault.
+
+Good catch. As it's a separate issue, do you mind if I fix that in a separate 
+patch in v2 ?
+
+> >   	/* FIXME: add OMAP1 support */
+> > 
+> > -	e->pgsz		= flags & MMU_CAM_PGSZ_MASK;
+> > -	e->endian	= flags & MMU_RAM_ENDIAN_MASK;
+> > -	e->elsz		= flags & MMU_RAM_ELSZ_MASK;
+> > -	e->mixed	= flags & MMU_RAM_MIXED_MASK;
+> > +	e->pgsz		= pgsz;
+> > +	e->endian	= MMU_RAM_ENDIAN_LITTLE;
+> > +	e->elsz		= MMU_RAM_ELSZ_8;
+> > +	e->mixed	= 0;
+> 
+> Thanks, the change of these settings looks good overall. The only ones for
+> which it may apply anyway is just the Camera in OMAP2/OMAP3 (as per TRM,
+> endianness conversion supported only on writes anyway, so I am assuming that
+> we never use the combination), and OMAP2420 DSP, for which there is no
+> driver currently nor is the MMU being instantiated. All other processors are
+> pure little endian, and they even ignore the values written in these fields.
+> 
+> Please recheck the Camera subsystem once, and see if the e->elsz should be
+> set as MMU_RAM_ELSZ_NONE (I am not too familiar with the Camera usage, so
+> you are probably in a better place than me).
+
+I've tested MMU_RAM_ELSZ_NONE and it works fine. I'll update the patch in v2.
+
 -- 
-1.7.9.5
+Regards,
+
+Laurent Pinchart
+
