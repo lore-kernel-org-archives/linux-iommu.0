@@ -1,164 +1,208 @@
-From: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
-Subject: Re: [PATCH 1/5] iommu/omap: Use the cache cleaning API
-Date: Thu, 13 Mar 2014 21:47:49 -0500
-Message-ID: <53226DD5.6070208@ti.com>
-References: <1394239574-2389-1-git-send-email-laurent.pinchart@ideasonboard.com>
-	<1394239574-2389-2-git-send-email-laurent.pinchart@ideasonboard.com>
+From: Cho KyongHo <pullip.cho@samsung.com>
+Subject: [PATCH v11 00/27] iommu/exynos: Fixes and Enhancements of System MMU
+ driver with DT
+Date: Fri, 14 Mar 2014 13:59:08 +0900
+Message-ID: <20140314135908.91d5da82f455051e56bee4d6@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1394239574-2389-2-git-send-email-laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Santosh Shilimkar <santosh.shilimkar-l0cyMroinI0@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sakari.ailus-X3B1VOXEql0@public.gmane.org, Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>, Linux DeviceTree <devicetree@vger.kernel.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux Kernel <linux-kernel@vger.kernel.org>, Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>
+Cc: Antonios Motakis <a.motakis@virtualopensystems.com>, Grant Grundler <grundler@chromium.org>, Joerg Roedel <joro@8bytes.org>, Kukjin Kim <kgene.kim@samsung.com>, Prathyush <prathyush.k@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Sachin Kamat <sachin.kamat@linaro.org>, Subash Patel <supash.ramaswamy@linaro.org>, Varun Sethi <Varun.Sethi@freescale.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Tomasz Figa <t.figa@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Laurent,
+Sorry for the delayed posting the v11 patchset.
 
-On 03/07/2014 06:46 PM, Laurent Pinchart wrote:
-> The page table entries must be cleaned from the cache before being
-> accessed by the IOMMU. Instead of implementing cache management manually
-> (and ignoring L2 cache), use clean_dcache_area() to make sure the
-> entries are visible to the device.
+The current exynos-iommu(System MMU) driver does not work autonomously
+since it is lack of support for power management of peripheral blocks.
+For example, MFC device driver must ensure that its System MMU is disabled
+before MFC block is power-down not to invalidate IOTLB in the System MMU
+when I/O memory mapping is changed. Because a System MMU resides in the
+same H/W block, access to control registers of System MMU while the H/W
+block is turned off must be prohibited.
 
-Thanks for fixing this, this has been long pending. There have been some 
-previous attempts at this as well by Ramesh Gupta, with the last thread 
-(a long time now) being
-http://marc.info/?t=134752035400001&r=1&w=2
+This set of changes solves the above problem with setting each System MMUs
+as the parent of the device which owns the System MMU to receive the
+information when the device is turned off or turned on.
 
-Santosh,
-Can you please take a look at this patch and provide your comments?
+Another big change to the driver is the support for devicetree.
+The bindings for System MMU is described in
+Documentation/devicetree/bindings/arm/samsung/system-mmu.txt
 
-regards
-Suman
+In addition, this patchset also includes several bug fixes and enhancements
+of the current driver.
 
->
-> Signed-off-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-> ---
->   drivers/iommu/omap-iommu.c | 41 ++++++++++-------------------------------
->   1 file changed, 10 insertions(+), 31 deletions(-)
->
-> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-> index a893eca..bb605c9 100644
-> --- a/drivers/iommu/omap-iommu.c
-> +++ b/drivers/iommu/omap-iommu.c
-> @@ -500,24 +500,9 @@ EXPORT_SYMBOL_GPL(omap_foreach_iommu_device);
->   /*
->    *	H/W pagetable operations
->    */
-> -static void flush_iopgd_range(u32 *first, u32 *last)
-> +static void flush_pgtable(void *addr, size_t size)
->   {
-> -	/* FIXME: L2 cache should be taken care of if it exists */
-> -	do {
-> -		asm("mcr	p15, 0, %0, c7, c10, 1 @ flush_pgd"
-> -		    : : "r" (first));
-> -		first += L1_CACHE_BYTES / sizeof(*first);
-> -	} while (first <= last);
-> -}
-> -
-> -static void flush_iopte_range(u32 *first, u32 *last)
-> -{
-> -	/* FIXME: L2 cache should be taken care of if it exists */
-> -	do {
-> -		asm("mcr	p15, 0, %0, c7, c10, 1 @ flush_pte"
-> -		    : : "r" (first));
-> -		first += L1_CACHE_BYTES / sizeof(*first);
-> -	} while (first <= last);
-> +	clean_dcache_area(addr, size);
->   }
->
->   static void iopte_free(u32 *iopte)
-> @@ -546,7 +531,7 @@ static u32 *iopte_alloc(struct omap_iommu *obj, u32 *iopgd, u32 da)
->   			return ERR_PTR(-ENOMEM);
->
->   		*iopgd = virt_to_phys(iopte) | IOPGD_TABLE;
-> -		flush_iopgd_range(iopgd, iopgd);
-> +		flush_pgtable(iopgd, sizeof(*iopgd));
->
->   		dev_vdbg(obj->dev, "%s: a new pte:%p\n", __func__, iopte);
->   	} else {
-> @@ -575,7 +560,7 @@ static int iopgd_alloc_section(struct omap_iommu *obj, u32 da, u32 pa, u32 prot)
->   	}
->
->   	*iopgd = (pa & IOSECTION_MASK) | prot | IOPGD_SECTION;
-> -	flush_iopgd_range(iopgd, iopgd);
-> +	flush_pgtable(iopgd, sizeof(*iopgd));
->   	return 0;
->   }
->
-> @@ -592,7 +577,7 @@ static int iopgd_alloc_super(struct omap_iommu *obj, u32 da, u32 pa, u32 prot)
->
->   	for (i = 0; i < 16; i++)
->   		*(iopgd + i) = (pa & IOSUPER_MASK) | prot | IOPGD_SUPER;
-> -	flush_iopgd_range(iopgd, iopgd + 15);
-> +	flush_pgtable(iopgd, sizeof(*iopgd) * 16);
->   	return 0;
->   }
->
-> @@ -605,7 +590,7 @@ static int iopte_alloc_page(struct omap_iommu *obj, u32 da, u32 pa, u32 prot)
->   		return PTR_ERR(iopte);
->
->   	*iopte = (pa & IOPAGE_MASK) | prot | IOPTE_SMALL;
-> -	flush_iopte_range(iopte, iopte);
-> +	flush_pgtable(iopte, sizeof(*iopte));
->
->   	dev_vdbg(obj->dev, "%s: da:%08x pa:%08x pte:%p *pte:%08x\n",
->   		 __func__, da, pa, iopte, *iopte);
-> @@ -619,18 +604,12 @@ static int iopte_alloc_large(struct omap_iommu *obj, u32 da, u32 pa, u32 prot)
->   	u32 *iopte = iopte_alloc(obj, iopgd, da);
->   	int i;
->
-> -	if ((da | pa) & ~IOLARGE_MASK) {
-> -		dev_err(obj->dev, "%s: %08x:%08x should aligned on %08lx\n",
-> -			__func__, da, pa, IOLARGE_SIZE);
-> -		return -EINVAL;
-> -	}
-> -
->   	if (IS_ERR(iopte))
->   		return PTR_ERR(iopte);
->
->   	for (i = 0; i < 16; i++)
->   		*(iopte + i) = (pa & IOLARGE_MASK) | prot | IOPTE_LARGE;
-> -	flush_iopte_range(iopte, iopte + 15);
-> +	flush_pgtable(iopte, sizeof(*iopte) * 16);
->   	return 0;
->   }
->
-> @@ -733,7 +712,7 @@ static size_t iopgtable_clear_entry_core(struct omap_iommu *obj, u32 da)
->   		}
->   		bytes *= nent;
->   		memset(iopte, 0, nent * sizeof(*iopte));
-> -		flush_iopte_range(iopte, iopte + (nent - 1) * sizeof(*iopte));
-> +		flush_pgtable(iopte, sizeof(*iopte) * nent);
->
->   		/*
->   		 * do table walk to check if this table is necessary or not
-> @@ -755,7 +734,7 @@ static size_t iopgtable_clear_entry_core(struct omap_iommu *obj, u32 da)
->   		bytes *= nent;
->   	}
->   	memset(iopgd, 0, nent * sizeof(*iopgd));
-> -	flush_iopgd_range(iopgd, iopgd + (nent - 1) * sizeof(*iopgd));
-> +	flush_pgtable(iopgd, sizeof(*iopgd) * nent);
->   out:
->   	return bytes;
->   }
-> @@ -799,7 +778,7 @@ static void iopgtable_clear_entry_all(struct omap_iommu *obj)
->   			iopte_free(iopte_offset(iopgd, 0));
->
->   		*iopgd = 0;
-> -		flush_iopgd_range(iopgd, iopgd);
-> +		flush_pgtable(iopgd, sizeof(*iopgd));
->   	}
->
->   	flush_iotlb_all(obj);
->
+Change log:
+v11:
+- Rebased on the latest works on clock, arm/samsung, iommu branches
+- Change the property to link System MMU and its master H/W
+  'iommu' in the master's node -> 'mmu-masters' in the System MMU's node
+- Changed compatible string:
+  "samsung,sysmmu-v1"
+  "samsung,sysmmu-v2"
+  "samsung,sysmmu-v3.1"
+  "samsung,sysmmu-v3.2"
+  "samsung,sysmmu-v3.3"
+- Change the implementation of retrieving System MMU version -> simpler
+- Check NULL pointer before call to clk_enable() and clk_disable()
+- Allow a single master to link to multiple System MMUs.
+  (fimc-is, fimd/g2d/Scaler in Exynos5420)
+- Workarounds of known problems of System MMU
+- Code enhancements:
+  * Compilable for 64-bit
+  * Enhanced error messages
+
+v10:
+- Rebased on the following branches
+  git.linaro.org/git-ro/people/mturquette/linux.git/clk-next
+  git.kernel.org/pub/scm/linux/kernel/git/kgene/linux-samsung.git/for-next
+  git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git/next
+  git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/master (3.12-rc3)
+- Set parent clock to all System MMU clocks.
+- Add clock and DT descriptos for Exynos5420
+- Modified error handling in exynos_iommu_init()
+- Split "iommu/exynos: support for device tree" patch into the following 6 patches
+  iommu/exynos: handle only one instance of System MMU
+  iommu/exynos: always enable runtime PM
+  iommu/exynos: always use a single clock descriptor
+  iommu/exynos: remove dbgname from drvdata of a System MMU
+  iommu/exynos: use managed driver helper functions
+  iommu/exynos: support for device tree
+- Remove 'interrupt-names' and 'status' properties from DT
+- Change n:1 relationship between master:System MMU into 1:1 relationship.
+- Removed custom fault handler and print the status of System MMU
+  whenever System MMU fault is occurred.
+- Post Antonios Motakis's commit together:
+  "iommu/exynos: add devices attached to the System MMU to an IOMMU group"
+
+v9:
+- Rebased on the following branches
+  git.linaro.org/git-ro/people/mturquette/linux.git/clk-next
+  git.kernel.org/pub/scm/linux/kernel/git/kgene/linux-samsung.git/samsung-next
+  git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/master (3.11-rc4)
+- Split "add bus notifier for registering System MMU" into 5 patches
+- Call clk_prepare() that was missing in v8.
+- Fixed base address of sysmmu_tv in exynos4210.dtsi
+- BUG_ON() instead of return -EADDRINUSE when trying mapping on an mapped area
+- Moved camif_top to 317 in drivers/clk/samsung/clk-exynos5250.c
+- Removed 'iommu' property from 'codec'(mfc) node
+- Does not make 'master' clock to be the parent of 'sysmmu' clock.
+   'master' clock is enabled before accessing control registers of System MMU
+   and disabled after the access.
+
+v8:
+- Reordered patch list: moved "change rwloc to spinlock" to the last.
+- Fixed remained bug in "fix page table maintenance".
+- Always return 0 from exynos_iommu_attach_device().
+- Removed prefetch buffer setting when System MMU is enabled
+  due to the restriction of prefetch buffers:
+  A prefetch buffer must not hit from more than one DMA.
+  For instance with GScalers, if a single prefetch buffer is initialized
+  with 0x0 ~ 0xFFFFFFFF and a GScaler works on source buffer at 0x10000000
+  and target buffer @ 0x20000000, the System MMU may be got deadlock.
+  Clients must initialize prefetch buffers with custom function defined
+  in exynos-iommu drivers whenever they need to enable prefetch buffers.
+- The clock of System MMU has no relationship with the clock of its master H/W.
+  The clock of master H/W is always enabled when exynos-iommu driver needs to
+  access MMIO area and disabled as soon as the access finishes.
+- Removed err_page variable used in exynos_iommu_unmap() in the previous patch
+  "fix page table maintenance".
+- Split a big patch "add bus notifier for registering System MMU".
+   Extracted the following 2 patches: 9/12 and 10/12.
+- And some additional fixes...
+
+v7:
+- Rebased on the stable 3.10
+- Registered PM domains and gate clocks with DT
+- Changed connection method between a System MMU and its master H/W
+   'mmu-master' property in the node of System MMU
+   --> 'iommu' property in the node of master H/W
+- Marking device descriptor of master H/W of a System MMU with bus notifier.
+- Power management (PM_RUNTIME, PM_SLEEP) of System MMUs with gpd_dev_ops
+   of Generic IO Powerdomain. gpd_dev_ops are set to the master H/Ws
+   before they are probed in the bus notifier.
+- Removed additional debugging features like debugfs entries and
+   version names.
+- Removed support for advanced features of System MMU 3.2 and 3.3
+   the current IOMMU API cannot handle the feature
+  (A kind of L2 TLB that fetches several consequence page table entries.
+   It must be initialized by the driver of master H/W whenever it works.)
+
+v6:
+- Rebased on the branch, next/iommu-exynos of
+  git.kernel.org/pub/scm/linux/kernel/git/kgene/linux-samsung.git
+
+v5:
+- new bugfix: patch 01
+- Reordered patches
+  * patch 01 ~ 05: Bugfix and enhancements of the existing driver
+  * patch 06 ~ 10: Device Tree support and callbacks for power management
+  * patch 11     : System MMU 3.2 and 3.3 support
+  * patch 12 ~ 14: Debugging features
+- Additional code compaction
+
+v4:
+- Remove Change-Id from v3 patches
+- Change the order of the third and the first patch
+  Thanks to Kukjin Kim.
+- Fix memory leak when allocating and assigning exynos_iommu_owner to client
+  device if the client device has multiple System MMUs.
+  Thanks to Rahul Sharma.
+
+v3:
+- Fix prefetch buffer flag definition for System MMU 3.3 (patch 10/12)
+- Fix incorrect setting for SET_RUNTIME_PM_OPS (patch 09/12)
+  Thanks to Prathyush.
+
+v2:
+- Split the patch to iommu/exynos into 9 patches
+- Support for System MMU 3.3
+- Some code compaction
+
+
+Patch summary:
+[PATCH v11 01/27] iommu/exynos: do not include removed header
+[PATCH v11 02/27] iommu/exynos: add missing cache flush for removed page table entries
+[PATCH v11 03/27] iommu/exynos: change error handling when page table update is failed
+[PATCH v11 04/27] iommu/exynos: fix L2TLB invalidation
+[PATCH v11 05/27] iommu/exynos: remove prefetch buffer setting
+[PATCH v11 06/27] iommu/exynos: allocate lv2 page table from own slab
+[PATCH v11 07/27] iommu/exynos: always enable runtime PM
+[PATCH v11 08/27] iommu/exynos: always use a single clock descriptor
+[PATCH v11 09/27] iommu/exynos: remove dbgname from drvdata of a System MMU
+[PATCH v11 10/27] iommu/exynos: use managed device helper functions
+[PATCH v11 11/27] clk: exynos: add gate clock descriptions of System MMU
+[PATCH v11 12/27] ARM: dts: Add description of System MMU of Exynos SoCs
+[PATCH v11 13/27] iommu/exynos: support for device tree
+[PATCH v11 14/27] iommu/exynos: gating clocks of master H/W
+[PATCH v11 15/27] iommu/exynos: use convenient macro to handle gate clocks
+[PATCH v11 16/27] iommu/exynos: remove custom fault handler
+[PATCH v11 17/27] iommu/exynos: remove calls to Runtime PM API functions
+[PATCH v11 18/27] iommu/exynos: turn on useful configuration options
+[PATCH v11 19/27] iommu/exynos: add support for power management subsystems.
+[PATCH v11 20/27] iommu/exynos: allow having multiple System MMUs for a master H/W
+[PATCH v11 21/27] iommu/exynos: change rwlock to spinlock
+[PATCH v11 22/27] iommu/exynos: add devices attached to the System MMU to an IOMMU group
+[PATCH v11 23/27] iommu/exynos: fix address handling
+[PATCH v11 24/27] iommu/exynos: use exynos-iommu specific typedef
+[PATCH v11 25/27] iommu/exynos: use simpler function to get MMU version
+[PATCH v11 26/27] iommu/exynos: apply workaround of caching fault page table entries
+[PATCH v11 27/27] iommu/exynos: enhanced error messages
+
+Diffstats:
+ .../devicetree/bindings/clock/exynos5250-clock.txt |    3 +
+ .../devicetree/bindings/clock/exynos5420-clock.txt |    3 +
+ .../bindings/iommu/samsung,exynos4210-sysmmu.txt   |   86 ++
+ arch/arm/boot/dts/exynos4.dtsi                     |  107 ++
+ arch/arm/boot/dts/exynos4210.dtsi                  |   23 +-
+ arch/arm/boot/dts/exynos4x12.dtsi                  |   77 +-
+ arch/arm/boot/dts/exynos5250.dtsi                  |  266 +++-
+ arch/arm/boot/dts/exynos5420.dtsi                  |  205 ++-
+ drivers/clk/samsung/clk-exynos5250.c               |    5 +
+ drivers/clk/samsung/clk-exynos5420.c               |   13 +-
+ drivers/iommu/Kconfig                              |    5 +-
+ drivers/iommu/exynos-iommu.c                       | 1421 ++++++++++++++------
+ include/dt-bindings/clock/exynos5250.h             |    4 +
+ include/dt-bindings/clock/exynos5420.h             |    6 +-
+ 14 files changed, 1798 insertions(+), 426 deletions(-)
