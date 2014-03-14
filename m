@@ -1,105 +1,54 @@
-From: Tomasz Figa <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v11 13/27] iommu/exynos: support for device tree
-Date: Fri, 14 Mar 2014 14:39:33 +0100
-Message-ID: <53230695.9080606@samsung.com>
-References: <20140314140935.e0652b58ce16591b54d0e10b@samsung.com>
+From: Tomasz Figa <t.figa@samsung.com>
+Subject: Re: [PATCH v11 15/27] iommu/exynos: use convenient macro to handle
+ gate clocks
+Date: Fri, 14 Mar 2014 14:43:42 +0100
+Message-ID: <5323078E.4060903@samsung.com>
+References: <20140314140951.3d443a3096e80297c9fecef0@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <20140314140935.e0652b58ce16591b54d0e10b-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Linux DeviceTree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Samsung SOC <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Prathyush <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Rahul Sharma <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <20140314140951.3d443a3096e80297c9fecef0@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Cho KyongHo <pullip.cho@samsung.com>, Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>, Linux DeviceTree <devicetree@vger.kernel.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux Kernel <linux-kernel@vger.kernel.org>, Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>
+Cc: Antonios Motakis <a.motakis@virtualopensystems.com>, Grant Grundler <grundler@chromium.org>, Joerg Roedel <joro@8bytes.org>, Kukjin Kim <kgene.kim@samsung.com>, Prathyush <prathyush.k@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Sachin Kamat <sachin.kamat@linaro.org>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Varun Sethi <Varun.Sethi@freescale.com>
 List-Id: iommu@lists.linux-foundation.org
 
 Hi KyongHo,
 
 On 14.03.2014 06:09, Cho KyongHo wrote:
-> This commit adds device tree support for System MMU.
+> exynos-iommu driver must care about master H/W's gate clock as well as
+> System MMU's gate clock. To enhance readability of the source code,
+> macros to gate/ungate those clocks are defined.
 >
-> Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
 > ---
->   drivers/iommu/Kconfig        |    5 ++---
->   drivers/iommu/exynos-iommu.c |   21 +++++++++++++++++----
->   2 files changed, 19 insertions(+), 7 deletions(-)
+>   drivers/iommu/exynos-iommu.c |   34 ++++++++++++++++++++++------------
+>   1 file changed, 22 insertions(+), 12 deletions(-)
 >
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index df56e4c..22af807 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -178,16 +178,15 @@ config TEGRA_IOMMU_SMMU
->
->   config EXYNOS_IOMMU
->   	bool "Exynos IOMMU Support"
-> -	depends on ARCH_EXYNOS && EXYNOS_DEV_SYSMMU
-> +	depends on ARCH_EXYNOS
->   	select IOMMU_API
-> +	default n
->   	help
->   	  Support for the IOMMU(System MMU) of Samsung Exynos application
-
-nit: There should be a white space before the opening parenthesis.
-
->   	  processor family. This enables H/W multimedia accellerators to see
-
-typo: s/accellerators/accelerators/
-
->   	  non-linear physical memory chunks as a linear memory in their
->   	  address spaces
->
-> -	  If unsure, say N here.
-> -
->   config EXYNOS_IOMMU_DEBUG
->   	bool "Debugging log for Exynos IOMMU"
->   	depends on EXYNOS_IOMMU
 > diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> index 33b424d..34feb04 100644
+> index 71e77f1..cef62d0 100644
 > --- a/drivers/iommu/exynos-iommu.c
 > +++ b/drivers/iommu/exynos-iommu.c
-> @@ -26,6 +26,7 @@
->   #include <linux/list.h>
->   #include <linux/memblock.h>
->   #include <linux/export.h>
-> +#include <linux/of.h>
+> @@ -101,6 +101,16 @@
+>   #define REG_PB1_SADDR		0x054
+>   #define REG_PB1_EADDR		0x058
 >
->   #include <asm/cacheflush.h>
->   #include <asm/pgtable.h>
-> @@ -497,7 +498,7 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
->   	read_unlock_irqrestore(&data->lock, flags);
->   }
->
-> -static int exynos_sysmmu_probe(struct platform_device *pdev)
-> +static int __init exynos_sysmmu_probe(struct platform_device *pdev)
->   {
->   	int irq, ret;
->   	struct device *dev = &pdev->dev;
-> @@ -557,11 +558,23 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
->   	return 0;
->   }
->
-> -static struct platform_driver exynos_sysmmu_driver = {
-> -	.probe		= exynos_sysmmu_probe,
-> -	.driver		= {
-> +#ifdef CONFIG_OF
-> +static struct of_device_id sysmmu_of_match[] __initconst = {
-> +	{ .compatible	= "samsung,sysmmu-v1", },
-> +	{ .compatible	= "samsung,sysmmu-v2", },
-> +	{ .compatible	= "samsung,sysmmu-v3.1", },
-> +	{ .compatible	= "samsung,sysmmu-v3.2", },
-> +	{ .compatible	= "samsung,sysmmu-v3.3", },
+> +#define __clk_gate_ctrl(data, clk, en)	do {		\
+> +		if (data->clk)				\
+> +			clk_##en##able(data->clk);	\
+> +	} while (0)
+> +
+> +#define __sysmmu_clk_enable(data)	__clk_gate_ctrl(data, clk, en)
+> +#define __sysmmu_clk_disable(data)	__clk_gate_ctrl(data, clk, dis)
+> +#define __master_clk_enable(data)	__clk_gate_ctrl(data, clk_master, en)
+> +#define __master_clk_disable(data)	__clk_gate_ctrl(data, clk_master, dis)
+> +
 
-Do you need all these compatible strings? I mean, are there any 
-implementation differences that can't be identified by reading IP 
-registers, such as REG_MMU_VERSION?
+I'd say that such macros only obfuscate code, without any gains, as you 
+can see in diffstat - this patch adds more lines than it removes.
+
+Please drop this change.
 
 Best regards,
 Tomasz
