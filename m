@@ -1,8 +1,7 @@
 From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v11 09/27] iommu/exynos: remove dbgname from drvdata of a
-	System MMU
-Date: Fri, 14 Mar 2014 14:05:28 +0900
-Message-ID: <20140314140528.48f5eede3def262bb16d38ce@samsung.com>
+Subject: [PATCH v11 10/27] iommu/exynos: use managed device helper functions
+Date: Fri, 14 Mar 2014 14:05:42 +0900
+Message-ID: <20140314140542.f4ded6c50dbd8a1d937bf354@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -20,120 +19,112 @@ To: Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.g
 Cc: Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Prathyush <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Tomasz Figa <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Rahul Sharma <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch removes dbgname member from sysmmu_drvdata structure.
-Kernel message for debugging already has the name of a single
-System MMU node.
+This patch uses managed device helper functions in the probe().
 
 Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/exynos-iommu.c |   32 +++++++++++++-------------------
- 1 file changed, 13 insertions(+), 19 deletions(-)
+ drivers/iommu/exynos-iommu.c |   64 +++++++++++++++++-------------------------
+ 1 file changed, 26 insertions(+), 38 deletions(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index a4499b2..36e6b73 100644
+index 36e6b73..33b424d 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -170,7 +170,6 @@ struct sysmmu_drvdata {
- 	struct list_head node; /* entry of exynos_iommu_domain.clients */
- 	struct device *sysmmu;	/* System MMU's device descriptor */
- 	struct device *dev;	/* Owner of system MMU */
--	char *dbgname;
- 	void __iomem *sfrbase;
- 	struct clk *clk;
- 	int activations;
-@@ -321,8 +320,8 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
- 	if (!ret && (itype != SYSMMU_FAULT_UNKNOWN))
- 		__raw_writel(1 << itype, data->sfrbase + REG_INT_CLEAR);
- 	else
--		dev_dbg(data->sysmmu, "(%s) %s is not handled.\n",
--				data->dbgname, sysmmu_fault_name[itype]);
-+		dev_dbg(data->sysmmu, "%s is not handled.\n",
-+				sysmmu_fault_name[itype]);
+@@ -499,51 +499,48 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
  
- 	if (itype != SYSMMU_FAULT_UNKNOWN)
- 		sysmmu_unblock(data->sfrbase);
-@@ -354,10 +353,10 @@ finish:
- 	write_unlock_irqrestore(&data->lock, flags);
+ static int exynos_sysmmu_probe(struct platform_device *pdev)
+ {
+-	int ret;
++	int irq, ret;
+ 	struct device *dev = &pdev->dev;
+ 	struct sysmmu_drvdata *data;
+ 	struct resource *res;
  
- 	if (disabled)
--		dev_dbg(data->sysmmu, "(%s) Disabled\n", data->dbgname);
-+		dev_dbg(data->sysmmu, "Disabled\n");
- 	else
--		dev_dbg(data->sysmmu, "(%s) %d times left to be disabled\n",
--					data->dbgname, data->activations);
-+		dev_dbg(data->sysmmu, "%d times left to be disabled\n",
-+					data->activations);
+-	data = kzalloc(sizeof(*data), GFP_KERNEL);
+-	if (!data) {
+-		dev_dbg(dev, "Not enough memory\n");
+-		ret = -ENOMEM;
+-		goto err_alloc;
+-	}
++	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
++	if (!data)
++		return -ENOMEM;
  
- 	return disabled;
- }
-@@ -384,7 +383,7 @@ static int __exynos_sysmmu_enable(struct sysmmu_drvdata *data,
- 			ret = 1;
- 		}
- 
--		dev_dbg(data->sysmmu, "(%s) Already enabled\n", data->dbgname);
-+		dev_dbg(data->sysmmu, "Already enabled\n");
- 		goto finish;
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	if (!res) {
+-		dev_dbg(dev, "Unable to find IOMEM region\n");
+-		ret = -ENOENT;
+-		goto err_init;
++		dev_err(dev, "Unable to find IOMEM region\n");
++		return -ENOENT;
  	}
  
-@@ -399,7 +398,7 @@ static int __exynos_sysmmu_enable(struct sysmmu_drvdata *data,
+-	data->sfrbase = ioremap(res->start, resource_size(res));
+-	if (!data->sfrbase) {
+-		dev_dbg(dev, "Unable to map IOMEM @ PA:%#x\n", res->start);
+-		ret = -ENOENT;
+-		goto err_res;
+-	}
++	data->sfrbase = devm_ioremap_resource(dev, res);
++	if (IS_ERR(data->sfrbase))
++		return PTR_ERR(data->sfrbase);
  
- 	data->domain = domain;
- 
--	dev_dbg(data->sysmmu, "(%s) Enabled\n", data->dbgname);
-+	dev_dbg(data->sysmmu, "Enabled\n");
- finish:
- 	write_unlock_irqrestore(&data->lock, flags);
- 
-@@ -415,16 +414,15 @@ int exynos_sysmmu_enable(struct device *dev, unsigned long pgtable)
- 
- 	ret = pm_runtime_get_sync(data->sysmmu);
- 	if (ret < 0) {
--		dev_dbg(data->sysmmu, "(%s) Failed to enable\n", data->dbgname);
-+		dev_dbg(data->sysmmu, "Failed to enable\n");
- 		return ret;
+-	ret = platform_get_irq(pdev, 0);
+-	if (ret <= 0) {
++	irq = platform_get_irq(pdev, 0);
++	if (irq <= 0) {
+ 		dev_dbg(dev, "Unable to find IRQ resource\n");
+-		goto err_irq;
++		return irq;
  	}
  
- 	ret = __exynos_sysmmu_enable(data, pgtable, NULL);
- 	if (WARN_ON(ret < 0)) {
- 		pm_runtime_put(data->sysmmu);
--		dev_err(data->sysmmu,
--			"(%s) Already enabled with page table %#lx\n",
--			data->dbgname, data->pgtable);
-+		dev_err(data->sysmmu, "Already enabled with page table %#lx\n",
-+			data->pgtable);
- 	} else {
- 		data->dev = dev;
- 	}
-@@ -474,9 +472,7 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova,
- 			sysmmu_unblock(data->sfrbase);
- 		}
- 	} else {
--		dev_dbg(data->sysmmu,
--			"(%s) Disabled. Skipping invalidating TLB.\n",
--			data->dbgname);
-+		dev_dbg(data->sysmmu, "Disabled. Skipping invalidating TLB.\n");
+-	ret = request_irq(ret, exynos_sysmmu_irq, 0,
++	ret = devm_request_irq(dev, irq, exynos_sysmmu_irq, 0,
+ 				dev_name(dev), data);
+ 	if (ret) {
+-		dev_dbg(dev, "Unabled to register interrupt handler\n");
+-		goto err_irq;
++		dev_err(dev, "Unabled to register handler of irq %d\n", irq);
++		return ret;
  	}
  
- 	read_unlock_irqrestore(&data->lock, flags);
-@@ -495,9 +491,7 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
- 			sysmmu_unblock(data->sfrbase);
- 		}
- 	} else {
--		dev_dbg(data->sysmmu,
--			"(%s) Disabled. Skipping invalidating TLB.\n",
--			data->dbgname);
-+		dev_dbg(data->sysmmu, "Disabled. Skipping invalidating TLB.\n");
+-	if (dev_get_platdata(dev)) {
+-		data->clk = clk_get(dev, "sysmmu");
+-		if (IS_ERR(data->clk)) {
+-			data->clk = NULL;
+-			dev_dbg(dev, "No clock descriptor registered\n");
+-		}
++	data->clk = devm_clk_get(dev, "sysmmu");
++	if (IS_ERR(data->clk)) {
++		dev_info(dev, "No gate clock found!\n");
++		data->clk = NULL;
++	}
++
++	ret = clk_prepare(data->clk);
++	if (ret) {
++		dev_err(dev, "Failed to prepare clk\n");
++		return ret;
  	}
  
- 	read_unlock_irqrestore(&data->lock, flags);
-@@ -562,7 +556,7 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
+ 	data->sysmmu = dev;
+@@ -556,17 +553,8 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
  
  	pm_runtime_enable(dev);
  
--	dev_dbg(dev, "(%s) Initialized\n", data->dbgname);
-+	dev_dbg(dev, "Initialized\n");
+-	dev_dbg(dev, "Initialized\n");
++	dev_dbg(dev, "Probed and initialized\n");
  	return 0;
- err_irq:
- 	free_irq(platform_get_irq(pdev, 0), data);
+-err_irq:
+-	free_irq(platform_get_irq(pdev, 0), data);
+-err_res:
+-	iounmap(data->sfrbase);
+-err_init:
+-	kfree(data);
+-err_alloc:
+-	dev_err(dev, "Failed to initialize\n");
+-	return ret;
+ }
+ 
+ static struct platform_driver exynos_sysmmu_driver = {
 -- 
 1.7.9.5
