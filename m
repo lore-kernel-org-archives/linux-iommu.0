@@ -1,68 +1,125 @@
-From: Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH v11 02/27] iommu/exynos: add missing cache flush for
-	removed page table entries
-Date: Fri, 14 Mar 2014 23:35:59 -0700
-Message-ID: <CANEJEGvkoUEWoJ4Y5sXwAr2KHW0MESj-1cHQ31AVRasG0P8pzg@mail.gmail.com>
-References: <20140314140234.c972b52a96a4fe39acd09fe0@samsung.com>
+From: Santosh Shilimkar <santosh.shilimkar@ti.com>
+Subject: Re: [PATCH 1/5] iommu/omap: Use the cache cleaning API
+Date: Sat, 15 Mar 2014 13:54:39 -0400
+Message-ID: <532493DF.5010409@ti.com>
+References: <1394239574-2389-1-git-send-email-laurent.pinchart@ideasonboard.com> <53226DD5.6070208@ti.com> <53232B0F.6090701@ti.com> <1802456.J2x6TOUvAS@avalon> <5323418B.90805@ti.com> <5323B1C4.4090904@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140314140234.c972b52a96a4fe39acd09fe0-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Linux DeviceTree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Samsung SOC <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Prathyush <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Tomasz Figa <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Rahul Sharma <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <5323B1C4.4090904@ti.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Suman Anna <s-anna@ti.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Florian Vaussard <florian.vaussard@epfl.ch>, "sakari.ailus@iki.fi" <sakari.ailus@iki.fi>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>
 List-Id: iommu@lists.linux-foundation.org
 
-Please apply this. It's way overdue.  It fixes customer kernel crashes
-we've seen in the field.
+On Friday 14 March 2014 09:49 PM, Suman Anna wrote:
+> Hi Santosh, Laurent, Russell, Arnd,
+> 
+> On 03/14/2014 12:51 PM, Santosh Shilimkar wrote:
+>> On Friday 14 March 2014 12:38 PM, Laurent Pinchart wrote:
+>>> Hi Santosh,
+>>>
+>>> On Friday 14 March 2014 12:15:11 Santosh Shilimkar wrote:
+>>>> + Russell, Arnd
+>>>>
+>>>> On Thursday 13 March 2014 10:47 PM, Anna, Suman wrote:
+>>>>> On 03/07/2014 06:46 PM, Laurent Pinchart wrote:
+>>>>>> The page table entries must be cleaned from the cache before being
+>>>>>> accessed by the IOMMU. Instead of implementing cache management manually
+>>>>>> (and ignoring L2 cache), use clean_dcache_area() to make sure the
+>>>>>> entries are visible to the device.
+>>>>>
+>>>>> Thanks for fixing this, this has been long pending. There have been some
+>>>>> previous attempts at this as well by Ramesh Gupta, with the last thread
+>>>>> (a long time now) being
+>>>>> http://marc.info/?t=134752035400001&r=1&w=2
+>>>>>
+>>>>> Santosh,
+>>>>> Can you please take a look at this patch and provide your comments?
+>>>>>
+>>>>> regards
+>>>>> Suman
+>>>>>
+>>>>>> Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+>>>>>> ---
+>>>>>>
+>>>>>>    drivers/iommu/omap-iommu.c | 41 ++++++++++-----------------------------
+>>>>>>    1 file changed, 10 insertions(+), 31 deletions(-)
+>>>>>>
+>>>>>> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+>>>>>> index a893eca..bb605c9 100644
+>>>>>> --- a/drivers/iommu/omap-iommu.c
+>>>>>> +++ b/drivers/iommu/omap-iommu.c
+>>>>>> @@ -500,24 +500,9 @@ EXPORT_SYMBOL_GPL(omap_foreach_iommu_device);
+>>>>>>    /*
+>>>>>>     *    H/W pagetable operations
+>>>>>>     */
+>>>>>> -static void flush_iopgd_range(u32 *first, u32 *last)
+>>>>>> +static void flush_pgtable(void *addr, size_t size)
+>>>>>>    {
+>>>>>> -    /* FIXME: L2 cache should be taken care of if it exists */
+>>>>>> -    do {
+>>>>>> -        asm("mcr    p15, 0, %0, c7, c10, 1 @ flush_pgd"
+>>>>>> -            : : "r" (first));
+>>>>>> -        first += L1_CACHE_BYTES / sizeof(*first);
+>>>>>> -    } while (first <= last);
+>>>>>> -}
+>>>>>> -
+>>>>>> -static void flush_iopte_range(u32 *first, u32 *last)
+>>>>>> -{
+>>>>>> -    /* FIXME: L2 cache should be taken care of if it exists */
+>>>>>> -    do {
+>>>>>> -        asm("mcr    p15, 0, %0, c7, c10, 1 @ flush_pte"
+>>>>>> -            : : "r" (first));
+>>>>>> -        first += L1_CACHE_BYTES / sizeof(*first);
+>>>>>> -    } while (first <= last);
+>>>>>> +    clean_dcache_area(addr, size);
+>>>>
+>>>> I remember NAKing this approach in past and my stand remains same.
+>>>> The cache APIs which you are trying to use here are not suppose
+>>>> to be used outside.
+> 
+> So this particular change has a long history (have to dig through to educate myself). I have not seen clean_dcache_area attempted before, and I wasn't sure myself it it can be used here. Ramesh and Fernando definitely did start out with dmac_flush_range and outer_flush_range which was definitely nacked [1].
+> 
+OK. Please wrap the lines appropriately while replying.
 
-I'd also advocate for seeing this be applied to stable kernels.
+>>>
+>>> Please note that the omap-iommu driver already uses clean_dcache_area().
+>>> That's where I got the idea :-)
+>>>
+>> So that fall through the cracks then ;-)
+>>
+>>>> I think the right way to fix this is to make use of streaming APIs.
+>>>> If needed, IOMMU can have its own dma_ops for special case
+>>>> handling if any.
+>>>
+>>> I can replace clean_dcache_area() with dma_map_page() as done by the arm-smmu
+>>> driver. If that's fine I'll modify this patch accordingly in v2.
+>>>
+> 
+> Ramesh had also attempted to use dma_page_single() previously [2], and Russell has instead suggested to extend the cpu cache operations [3].
+> Ramesh had worked based on this suggestion and the series reached v6 [4] (same as link I mentioned above) and this is the last attempt on this, but the thread went silent.
+> 
+> I am wondering if that is still valid and is the right way to go, as this seems to be a common problem. I do see dmac_flush_range being used for similar purposes in msm_iommu.c and exynos-iommu.c, so looks like they also fell through the cracks.
+> 
+Thanks for the links. I think you should revive the v6 series unless and until
+RMK has some other suggestion. This can also help to remove the wrong usages
+from other IOMMU drivers as you pointed out.
 
-thanks,
-grant
+> Laurent,
+> Can you drop this patch out from v2 so that it is not clubbed with the small cleanup patches, and we can track this separately?
+> 
+Agree
 
-On Thu, Mar 13, 2014 at 10:02 PM, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org> wrote:
-> This commit adds cache flush for removed small and large page entries
-> in exynos_iommu_unmap(). Missing cache flush of removed page table
-> entries can cause missing page fault interrupt when a master IP
-> accesses an unmapped area.
->
-> Reviewed-by: Tomasz Figa <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> Tested-by: Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-> Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> ---
->  drivers/iommu/exynos-iommu.c |    2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> index 4876d35..1c3a397 100644
-> --- a/drivers/iommu/exynos-iommu.c
-> +++ b/drivers/iommu/exynos-iommu.c
-> @@ -958,6 +958,7 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
->         if (lv2ent_small(ent)) {
->                 *ent = 0;
->                 size = SPAGE_SIZE;
-> +               pgtable_flush(ent, ent + 1);
->                 priv->lv2entcnt[lv1ent_offset(iova)] += 1;
->                 goto done;
->         }
-> @@ -966,6 +967,7 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
->         BUG_ON(size < LPAGE_SIZE);
->
->         memset(ent, 0, sizeof(*ent) * SPAGES_PER_LPAGE);
-> +       pgtable_flush(ent, ent + SPAGES_PER_LPAGE);
->
->         size = LPAGE_SIZE;
->         priv->lv2entcnt[lv1ent_offset(iova)] += SPAGES_PER_LPAGE;
-> --
-> 1.7.9.5
->
+Regards,
+Santosh
+
+> 
+> [1] http://marc.info/?l=linux-omap&m=129907009019355&w=2
+> [2] http://marc.info/?t=130281804900005&r=1&w=2
+> [3] http://marc.info/?l=linux-omap&m=131310179423214&w=2
+> [4] http://marc.info/?t=134752035400001&r=1&w=2
+> 
+> 
+
