@@ -1,45 +1,111 @@
-From: Santosh Shilimkar <santosh.shilimkar@ti.com>
-Subject: Re: [PATCH 1/5] iommu/omap: Use the cache cleaning API
-Date: Fri, 14 Mar 2014 13:59:16 -0400
-Message-ID: <53234374.8010802@ti.com>
-References: <1394239574-2389-1-git-send-email-laurent.pinchart@ideasonboard.com> <53226DD5.6070208@ti.com> <53232B0F.6090701@ti.com> <201403141757.48824.arnd@arndb.de>
+From: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+Subject: Re: [PATCH 5/5] iommu/omap: Fix map protection value handling
+Date: Fri, 14 Mar 2014 19:16:53 -0500
+Message-ID: <53239BF5.1000006@ti.com>
+References: <1394239574-2389-1-git-send-email-laurent.pinchart@ideasonboard.com>
+	<1394239574-2389-6-git-send-email-laurent.pinchart@ideasonboard.com>
+	<53224845.1050901@ti.com> <13414141.7HHPA8i3Vs@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <201403141757.48824.arnd@arndb.de>
-Sender: linux-omap-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>, "Anna, Suman" <s-anna@ti.com>
-Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Florian Vaussard <florian.vaussard@epfl.ch>, "sakari.ailus@iki.fi" <sakari.ailus@iki.fi>, Russell King - ARM Linux <linux@arm.linux.org.uk>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <13414141.7HHPA8i3Vs@avalon>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sakari.ailus-X3B1VOXEql0@public.gmane.org, Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Friday 14 March 2014 12:57 PM, Arnd Bergmann wrote:
-> On Friday 14 March 2014, Santosh Shilimkar wrote:
->> I remember NAKing this approach in past and my stand remains same.
->> The cache APIs which you are trying to use here are not suppose
->> to be used outside.
+Hi Laurent,
+
+On 03/14/2014 04:46 AM, Laurent Pinchart wrote:
+> Hi Suman,
+>
+> Thank you for the review.
+>
+> On Thursday 13 March 2014 19:07:33 Suman Anna wrote:
+>> On 03/07/2014 06:46 PM, Laurent Pinchart wrote:
+>>> The prot flags passed to the IOMMU map handler are defined in
+>>> include/linux/iommu.h as IOMMU_(READ|WRITE|CACHE|EXEC). However, the
+>>> driver expects to receive MMU_RAM_* OMAP-specific flags. This causes
+>>> IOMMU flags being interpreted as page sizes, leading to failures.
+>>>
+>>> Hardcode the OMAP mapping parameters to little-endian, 8-bits and
+>>> non-mixed page attributes. Furthermore, as the OMAP IOMMU doesn't
+>>> support read-only or write-only mappings, ignore the prot value.
+>>>
+>>> Signed-off-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+>>> ---
+>>>
+>>>    drivers/iommu/omap-iommu.c | 17 +++++++----------
+>>>    1 file changed, 7 insertions(+), 10 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+>>> index 59de3fc..9f7f1d4 100644
+>>> --- a/drivers/iommu/omap-iommu.c
+>>> +++ b/drivers/iommu/omap-iommu.c
+>>> @@ -1016,8 +1016,7 @@ static void iopte_cachep_ctor(void *iopte)
+>>>    	clean_dcache_area(iopte, IOPTE_TABLE_SIZE);
+>>>    }
+>>>
+>>> -static u32 iotlb_init_entry(struct iotlb_entry *e, u32 da, u32 pa,
+>>> -				   u32 flags)
+>>> +static u32 iotlb_init_entry(struct iotlb_entry *e, u32 da, u32 pa, int
+>>> pgsz)
+>>>    {
+>>>    	memset(e, 0, sizeof(*e));
+>>>
+>>> @@ -1025,10 +1024,10 @@ static u32 iotlb_init_entry(struct iotlb_entry *e,
+>>> u32 da, u32 pa,
+>>>    	e->pa		= pa;
+>>>    	e->valid	= 1;
 >>
->> I think the right way to fix this is to make use of streaming APIs.
->> If needed, IOMMU can have its own dma_ops for special case
->> handling if any.
+>> As I was looking through this, I found a small bug here. This is unrelated
+>> to this patch, but you can fix it in the same patch. The e->valid value is
+>> directly used in omap2_alloc_cr, so it should be initialized to MMU_CAM_V.
+>> It is not a problem currently as PREFETCH_IOTLB is not used, if used, this
+>> is overriding the size bit-fields when it prefetches the entry, which may
+>> lead to an MMU fault.
+>
+> Good catch. As it's a separate issue, do you mind if I fix that in a separate
+> patch in v2 ?
+
+I actually have couple of minor cleanup patches as well. I will send 
+them out and you can include them with your series when you post v2.
+
+>
+>>>    	/* FIXME: add OMAP1 support */
+>>>
+>>> -	e->pgsz		= flags & MMU_CAM_PGSZ_MASK;
+>>> -	e->endian	= flags & MMU_RAM_ENDIAN_MASK;
+>>> -	e->elsz		= flags & MMU_RAM_ELSZ_MASK;
+>>> -	e->mixed	= flags & MMU_RAM_MIXED_MASK;
+>>> +	e->pgsz		= pgsz;
+>>> +	e->endian	= MMU_RAM_ENDIAN_LITTLE;
+>>> +	e->elsz		= MMU_RAM_ELSZ_8;
+>>> +	e->mixed	= 0;
 >>
->> Russell, Arnd might have more ideas.
-> 
-> I have a bad feeling about using the dma-mapping API within the
-> IOMMU code, because that driver is also used to implement the
-> dma-mapping API for devices attached to the IOMMU. It's possible
-> that it just works.
-> 
-Thats a good point.
+>> Thanks, the change of these settings looks good overall. The only ones for
+>> which it may apply anyway is just the Camera in OMAP2/OMAP3 (as per TRM,
+>> endianness conversion supported only on writes anyway, so I am assuming that
+>> we never use the combination), and OMAP2420 DSP, for which there is no
+>> driver currently nor is the MMU being instantiated. All other processors are
+>> pure little endian, and they even ignore the values written in these fields.
+>>
+>> Please recheck the Camera subsystem once, and see if the e->elsz should be
+>> set as MMU_RAM_ELSZ_NONE (I am not too familiar with the Camera usage, so
+>> you are probably in a better place than me).
+>
+> I've tested MMU_RAM_ELSZ_NONE and it works fine. I'll update the patch in v2.
+>
+Thanks for checking and confirming this.
 
-> Is the IOMMU actually designed to have page tables in noncoherent
-> memory? I would have expected that the iopt accesses must all be
-> done on dma_alloc_coherent() provided memory to guarantee proper
-> accesses.
-> 
-At least the OMAP one seems to use non-coherent memory which will
-need CMO.
-
-Regards,
-Santosh
-
+regards
+Suman
