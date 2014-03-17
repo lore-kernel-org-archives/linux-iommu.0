@@ -1,16 +1,15 @@
 From: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
-Subject: Re: [PATCH 1/5] iommu/omap: Use the cache cleaning API
-Date: Mon, 17 Mar 2014 14:16:51 -0500
-Message-ID: <53274A23.1040203@ti.com>
+Subject: Re: [PATCH 0/5] OMAP IOMMU fixes and IOMMU architecture questions
+Date: Mon, 17 Mar 2014 14:58:24 -0500
+Message-ID: <532753E0.10605@ti.com>
 References: <1394239574-2389-1-git-send-email-laurent.pinchart@ideasonboard.com>
-	<53226DD5.6070208@ti.com> <53232B0F.6090701@ti.com>
-	<1802456.J2x6TOUvAS@avalon> <5323418B.90805@ti.com>
-	<5323B1C4.4090904@ti.com> <532493DF.5010409@ti.com>
+	<53226A81.3090501@ti.com> <1523736.5PrLY3OqT5@avalon>
+	<20140316215455.GA2108@valkosipuli.retiisi.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <532493DF.5010409-l0cyMroinI0@public.gmane.org>
+In-Reply-To: <20140316215455.GA2108-S+BSfZ9RZZmRSg0ZkenSGLdO1Tsj/99ntUK59QYPAWc@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,130 +19,204 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Santosh Shilimkar <santosh.shilimkar-l0cyMroinI0@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Cc: Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "sakari.ailus-X3B1VOXEql0@public.gmane.org" <sakari.ailus-X3B1VOXEql0@public.gmane.org>, "linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>
+To: Sakari Ailus <sakari.ailus-X3B1VOXEql0@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Santosh,
+Hi Laurent, Sakari,
 
-On 03/15/2014 12:54 PM, Santosh Shilimkar wrote:
-> On Friday 14 March 2014 09:49 PM, Suman Anna wrote:
->> Hi Santosh, Laurent, Russell, Arnd,
+On 03/16/2014 04:54 PM, Sakari Ailus wrote:
+> Hi Laurent and Suman,
+>
+> On Fri, Mar 14, 2014 at 12:00:16PM +0100, Laurent Pinchart wrote:
+>> Hi Suman,
 >>
->> On 03/14/2014 12:51 PM, Santosh Shilimkar wrote:
->>> On Friday 14 March 2014 12:38 PM, Laurent Pinchart wrote:
->>>> Hi Santosh,
+>> (CC'ing Joerg Roedel and Marek Szyprowski for the core IOMMU discussion)
+>>
+>> On Thursday 13 March 2014 21:33:37 Suman Anna wrote:
+>>> On 03/07/2014 06:46 PM, Laurent Pinchart wrote:
+>>>> Hello,
 >>>>
->>>> On Friday 14 March 2014 12:15:11 Santosh Shilimkar wrote:
->>>>> + Russell, Arnd
->>>>>
->>>>> On Thursday 13 March 2014 10:47 PM, Anna, Suman wrote:
->>>>>> On 03/07/2014 06:46 PM, Laurent Pinchart wrote:
->>>>>>> The page table entries must be cleaned from the cache before being
->>>>>>> accessed by the IOMMU. Instead of implementing cache management manually
->>>>>>> (and ignoring L2 cache), use clean_dcache_area() to make sure the
->>>>>>> entries are visible to the device.
->>>>>>
->>>>>> Thanks for fixing this, this has been long pending. There have been some
->>>>>> previous attempts at this as well by Ramesh Gupta, with the last thread
->>>>>> (a long time now) being
->>>>>> http://marc.info/?t=134752035400001&r=1&w=2
->>>>>>
->>>>>> Santosh,
->>>>>> Can you please take a look at this patch and provide your comments?
->>>>>>
->>>>>> regards
->>>>>> Suman
->>>>>>
->>>>>>> Signed-off-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
->>>>>>> ---
->>>>>>>
->>>>>>>     drivers/iommu/omap-iommu.c | 41 ++++++++++-----------------------------
->>>>>>>     1 file changed, 10 insertions(+), 31 deletions(-)
->>>>>>>
->>>>>>> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
->>>>>>> index a893eca..bb605c9 100644
->>>>>>> --- a/drivers/iommu/omap-iommu.c
->>>>>>> +++ b/drivers/iommu/omap-iommu.c
->>>>>>> @@ -500,24 +500,9 @@ EXPORT_SYMBOL_GPL(omap_foreach_iommu_device);
->>>>>>>     /*
->>>>>>>      *    H/W pagetable operations
->>>>>>>      */
->>>>>>> -static void flush_iopgd_range(u32 *first, u32 *last)
->>>>>>> +static void flush_pgtable(void *addr, size_t size)
->>>>>>>     {
->>>>>>> -    /* FIXME: L2 cache should be taken care of if it exists */
->>>>>>> -    do {
->>>>>>> -        asm("mcr    p15, 0, %0, c7, c10, 1 @ flush_pgd"
->>>>>>> -            : : "r" (first));
->>>>>>> -        first += L1_CACHE_BYTES / sizeof(*first);
->>>>>>> -    } while (first <= last);
->>>>>>> -}
->>>>>>> -
->>>>>>> -static void flush_iopte_range(u32 *first, u32 *last)
->>>>>>> -{
->>>>>>> -    /* FIXME: L2 cache should be taken care of if it exists */
->>>>>>> -    do {
->>>>>>> -        asm("mcr    p15, 0, %0, c7, c10, 1 @ flush_pte"
->>>>>>> -            : : "r" (first));
->>>>>>> -        first += L1_CACHE_BYTES / sizeof(*first);
->>>>>>> -    } while (first <= last);
->>>>>>> +    clean_dcache_area(addr, size);
->>>>>
->>>>> I remember NAKing this approach in past and my stand remains same.
->>>>> The cache APIs which you are trying to use here are not suppose
->>>>> to be used outside.
+>>>> This patch set fixes miscellaneous issues with the OMAP IOMMU driver,
+>>>> found when trying to port the OMAP3 ISP away from omap-iovmm to the ARM
+>>>> DMA API. The biggest issue is fixed by patch 5/5, while the other patches
+>>>> fix smaller problems that I've noticed when reading the code, without
+>>>> experiencing them at runtime.
+>>>>
+>>>> I'd like to take this as an opportunity to discuss OMAP IOMMU integration
+>>>> with the ARM DMA mapping implementation. The idea is to hide the IOMMU
+>>>> completely behind the DMA mapping API, making it completely transparent
+>>>> to drivers.
+>>>
+>>> Thanks for starting the discussion.
+>>>
+>>>> A drivers will only need to allocate memory with dma_alloc_*, and behind
+>>>> the scene the ARM DMA mapping implementation will find out that the
+>>>> device is behind an IOMMU and will map the buffers through the IOMMU,
+>>>> returning an I/O VA address to the driver. No direct call to the OMAP
+>>>> IOMMU driver or to the IOMMU core should be necessary anymore.
+>>>>
+>>>> To use the IOMMU the ARM DMA implementation requires a VA mapping to be
+>>>> created with a call to arm_iommu_create_mapping() and to then be attached
+>>>> to the device with arm_iommu_attach_device(). This is currently not
+>>>> performed by the OMAP IOMMU driver, I have thus added that code to the
+>>>> OMAP3 ISP driver for now. I believe this to still be an improvement
+>>>> compared to the current situation, as it allows getting rid of custom
+>>>> memory allocation code in the OMAP3 ISP driver and custom I/O VA space
+>>>> management in omap-iovmm. However, that code should ideally be removed
+>>>> from the driver. The question is, where should it be moved to ?
+>>>>
+>>>> One possible solution would be to add the code to the OMAP IOMMU driver.
+>>>> However, this would require all OMAP IOMMU users to be converted to the
+>>>> ARM DMA API. I assume there would be issues that I don't foresee though.
+>>>
+>>> Yeah, I think this will pose some problems for the other main user of IOMMUs
+>>> - the remoteproc devices (DSP, Dual-Cortex M3/M4 processors in OMAP4 and
+>>> beyond). A remoteproc device also needs to map memory at specific addresses
+>>> for its code and data sections, and not rely on a I/O VA address being given
+>>> to it. The firmware sections are already linked at specific addresses, and
+>>> so remoteproc needs to allocate memory, load the firmware and map into
+>>> appropriate device addresses. We are doing this currently usage a
+>>> combination of CMA memory to get contiguous memory (there are some
+>>> restrictions for certain sections) and iommu_map/unmap API to program the
+>>> MMU with these pages. This usage is different from what is expected from
+>>> exchanging buffers, which can be allocated from a predefined mapping range.
+>>> Even that one is tricky if we need to support different cache
+>>> properties/attributes as the cache configuration is in general local to
+>>> these processors.
 >>
->> So this particular change has a long history (have to dig through to educate myself). I have not seen clean_dcache_area attempted before, and I wasn't sure myself it it can be used here. Ramesh and Fernando definitely did start out with dmac_flush_range and outer_flush_range which was definitely nacked [1].
->>
-> OK. Please wrap the lines appropriately while replying.
+>> Right, we indeed need two levels of API, one for drivers such as remoteproc
+>> that need direct control of the IOMMU, and one for drivers that only need to
+>> map buffers without any additional requirement. In the second case the drivers
+>> should ideally use the DMA mapping API not even be aware that an IOMMU is
+>> present. This would require moving the ARM mapping allocation out of the
+>> client driver.
 
-Hmm, weird. I don't see this with my other responses. But sorry for
-the trouble.
+Actually, I think there is one another use case, even with remoteprocs 
+which is to runtime map buffers. This is different from the firmware 
+management. The memory for buffers could have been allocated from other 
+subsystems, but remoteproc would need just to manage the VA space and map.
+
+>>
+>> The IOMMU core or the IOMMU driver will need to know whether the driver
+>> expects to control the IOMMU directly or to have it managed transparently. As
+>> this is a software configuration I don't think the information belongs to DT.
+>> The question is, how should this information be conveyed?
+
+Can this be done through iommu_domain_set_attr? But that means the 
+client driver has to dictate this. The iommu driver can be configured 
+appropriately based on this.
 
 >
+> The driver would need to know that, I think.
+>
+> Currently the DMA mapping API doesn't allow explicit addressing to IOVA
+> address space AFAIK. The IOMMU API does. It's a good question how to do this
+> as I don't think there's even a way for the driver to explicitly obtain
+> access to the IOMMU.
+>
+> The virtual address space allocation would need to take into account that
+> some of the address space is actually mapped outside it. The iova library
+> can do this already.
+>
+>>>> I'm not even sure whether the OMAP IOMMU driver would be the best place to
+>>>> put that code. Ideally VA spaces should be created by the platform
+>>>> somehow, and mapping of devices to IOMMUs should be handled by the IOMMU
+>>>> core instead of the IOMMU drivers. We're not there yet, and the path
+>>>> might not be straightforward, hence this attempt to start a constructive
+>>>> discussion.
 >>>>
->>>> Please note that the omap-iommu driver already uses clean_dcache_area().
->>>> That's where I got the idea :-)
->>>>
->>> So that fall through the cracks then ;-)
+>>>> A second completely unrelated problem that I'd like to get feedback on is
+>>>> the suspend/resume support in the OMAP IOMMU driver, or rather the lack
+>>>> thereof. The driver exports omap_iommu_save_ctx() and
+>>>> omap_iommu_restore_ctx() functions and expects the IOMMU users to call
+>>>> them directly. This is really hackish to say the least. A proper
+>>>> suspend/resume implementation shouldn't be difficult to implement, and
+>>>> I'm wondering whether the lack of proper power management support comes
+>>>> from historical reasons only, or if there are problems I might not have
+>>>> considered.
 >>>
->>>>> I think the right way to fix this is to make use of streaming APIs.
->>>>> If needed, IOMMU can have its own dma_ops for special case
->>>>> handling if any.
->>>>
->>>> I can replace clean_dcache_area() with dma_map_page() as done by the arm-smmu
->>>> driver. If that's fine I'll modify this patch accordingly in v2.
->>>>
+>>> Agreed, the current code definitely needs a cleanup and better organization
+>>> (like folding into runtime suspend ops). The main thing is that we need the
+>>> IOMMU to be activated as long as its parent device is active (like the
+>>> omap3isp or a remoteproc device). And this behaviour needs separation from
+>>> configuring it and programming for the first time. Only a user can dictate
+>>> when an IOMMU is not needed. So we either need an API to activate or have
+>>> access to the iommu's dev object somehow so that we can use the
+>>> pm_runtime_get/put API to hold a usage counter and let the runtime suspend
+>>> ops take care of save/restore without tearing down the domain or detaching
+>>> the device.
 >>
->> Ramesh had also attempted to use dma_page_single() previously [2], and Russell has instead suggested to extend the cpu cache operations [3].
->> Ramesh had worked based on this suggestion and the series reached v6 [4] (same as link I mentioned above) and this is the last attempt on this, but the thread went silent.
->>
->> I am wondering if that is still valid and is the right way to go, as this seems to be a common problem. I do see dmac_flush_range being used for similar purposes in msm_iommu.c and exynos-iommu.c, so looks like they also fell through the cracks.
->>
-> Thanks for the links. I think you should revive the v6 series unless and until
-> RMK has some other suggestion. This can also help to remove the wrong usages
-> from other IOMMU drivers as you pointed out.
+>> The OMAP IOMMU driver calls pm_runtime_get_sync() in iommu_enable(), and
+>> pm_runtime_put_sync() in iommu_disable(). The enable/disable functions are
+>> called in the attach and detach handlers (as well as in the fault handler for
+>> the disable function). As long as a device is attached the IOMMU will thus not
+>> be suspended by runtime PM, but could be suspended by system PM.
 
-OK, will do.
+This would all need some rearranging of course. It is also not about 
+just disabling the clocks, we may have to assert the resets as well, due 
+to couple of issues on OMAP4 and beyond.
+
+>>
+>> This leads to two separate issues. The first one is that the IOMMU will be
+>> powered on as long as a device is attached, even if the device isn't in use.
+>> This consumes power needlessly. It would probably be better to more the
+>> enable/disable calls to the map/unmap handlers, as the IOMMU should be powered
+>> off when no mapping exists (or am I missing something ?).
+>
+> In general, I wouldn't make the assumption that no mappings can exist if the
+> IOMMU is powered off. This would mean that just keeping buffers around for
+> later use would keep hardware powered. Memory allocation can be a very
+> time-consuming task which often is done when the entire system is booted up
+> (depending on the user space naturally), not when a particular device node
+> is opened.
+
+Yeah, agreed. remoteproc firmware memory will stay mapped in even when 
+we power off IOMMU, we just preserve the required IOMMU context. I 
+expect the suspend/resume code to preserve any locked TLBs and the TTB 
+address. The page table entries would be auto-preserved as long as we 
+don't free the table.
+
+>
+> That said, I don't have a good, obviously acceptable solution to propose to
+> this problem right now. I think the IOMMU power state should be rather bound
+> to the device's power state, but DMA mapping API doesn't know anything about
+> IOMMUs as such. I wonder what kind of a reception would such an addition to
+> the DMA mapping would receive. There are two things I could think of: either
+> make the potential IOMMU visible to the driver so the driver can use runtime
+> PM as usual, or add a function to the DMA mapping API to allow whatever
+> hardware used in the DMA accesses to power down (and up again when needed).
+>
+> The latter is hackish in my opinion but the former would also change the DMA
+> mapping API to a direction which not everyone would probably agree on.
+>
+> I'm personally fine with the above limitation on OMAP3 but in general it'd
+> be better to get around it.
+
+Once we add the iommus property to the client DT nodes, I think the 
+drivers should be able to retrieve the iommu dev object. So that should 
+allow both the IOMMU to be visible, as well as give access to invoke 
+runtime_pm functions on the iommu device.
+
+>
+>> The second issue is that the IOMMU and IOMMU users system PM suspend/resume
+>> callbacks are not synchronized. We need a guarantee that the IOMMU will be
+>> suspended after its users, and resumed before them. One option to fix this
+>> could be to use the suspend_late and resume_early PM operations (although I
+>> haven't checked whether that would work), but it's probably a bit hackish.
+>
+> I agree.
+>
+> The IOMMUs would indeed need to be resumed first. Hiroshi had a aptchset to
+> initialise and associate IOMMUs to devices using DT but it seems it's not
+> exactly going somewhere right now. I just mention this since basically the
+> same problem exists there.
+>
+> <URL:http://lists.linuxfoundation.org/pipermail/iommu/2013-November/index.html>
+
+Yeah, we haven't converted the current OMAP iommu users to DT yet, and I 
+would expect some changes in the OMAP IOMMU code once that series is 
+finalized.
 
 regards
 Suman
-
->
->> Laurent,
->> Can you drop this patch out from v2 so that it is not clubbed with the small cleanup patches, and we can track this separately?
->>
-> Agree
->
-> Regards,
-> Santosh
->
->>
->> [1] http://marc.info/?l=linux-omap&m=129907009019355&w=2
->> [2] http://marc.info/?t=130281804900005&r=1&w=2
->> [3] http://marc.info/?l=linux-omap&m=131310179423214&w=2
->> [4] http://marc.info/?t=134752035400001&r=1&w=2
->>
->>
->
