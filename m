@@ -1,71 +1,118 @@
-From: Cho KyongHo <pullip.cho@samsung.com>
-Subject: Re: [PATCH v11 10/27] iommu/exynos: use managed device helper functions
-Date: Tue, 18 Mar 2014 19:38:17 +0900
-Message-ID: <20140318193817.3448387b75e109e814b9c025@samsung.com>
-References: <20140314140542.f4ded6c50dbd8a1d937bf354@samsung.com>
- <53230404.6070601@samsung.com>
+From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH v11 13/27] iommu/exynos: support for device tree
+Date: Tue, 18 Mar 2014 19:52:10 +0900
+Message-ID: <20140318195210.14c953a70498f634032f35b7@samsung.com>
+References: <20140314140935.e0652b58ce16591b54d0e10b@samsung.com>
+	<53230695.9080606@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <53230404.6070601@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Tomasz Figa <t.figa@samsung.com>
-Cc: Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>, Linux DeviceTree <devicetree@vger.kernel.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux Kernel <linux-kernel@vger.kernel.org>, Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>, Antonios Motakis <a.motakis@virtualopensystems.com>, Grant Grundler <grundler@chromium.org>, Joerg Roedel <joro@8bytes.org>, Kukjin Kim <kgene.kim@samsung.com>, Prathyush <prathyush.k@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Sachin Kamat <sachin.kamat@linaro.org>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Varun Sethi <Varun.Sethi@freescale.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-reply-to: <53230695.9080606-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Tomasz Figa <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: Linux DeviceTree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Samsung SOC <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Prathyush <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Rahul Sharma <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 14 Mar 2014 14:28:36 +0100, Tomasz Figa wrote:
+On Fri, 14 Mar 2014 14:39:33 +0100, Tomasz Figa wrote:
 > Hi KyongHo,
 > 
-> On 14.03.2014 06:05, Cho KyongHo wrote:
-> > This patch uses managed device helper functions in the probe().
+> On 14.03.2014 06:09, Cho KyongHo wrote:
+> > This commit adds device tree support for System MMU.
 > >
-> > Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
+> > Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 > > ---
-> >   drivers/iommu/exynos-iommu.c |   64 +++++++++++++++++-------------------------
-> >   1 file changed, 26 insertions(+), 38 deletions(-)
+> >   drivers/iommu/Kconfig        |    5 ++---
+> >   drivers/iommu/exynos-iommu.c |   21 +++++++++++++++++----
+> >   2 files changed, 19 insertions(+), 7 deletions(-)
 > >
+> > diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> > index df56e4c..22af807 100644
+> > --- a/drivers/iommu/Kconfig
+> > +++ b/drivers/iommu/Kconfig
+> > @@ -178,16 +178,15 @@ config TEGRA_IOMMU_SMMU
+> >
+> >   config EXYNOS_IOMMU
+> >   	bool "Exynos IOMMU Support"
+> > -	depends on ARCH_EXYNOS && EXYNOS_DEV_SYSMMU
+> > +	depends on ARCH_EXYNOS
+> >   	select IOMMU_API
+> > +	default n
+> >   	help
+> >   	  Support for the IOMMU(System MMU) of Samsung Exynos application
+> 
+> nit: There should be a white space before the opening parenthesis.
+> 
+Ok. :)
+
+> >   	  processor family. This enables H/W multimedia accellerators to see
+> 
+> typo: s/accellerators/accelerators/
+> 
+
+Ok.
+
+> >   	  non-linear physical memory chunks as a linear memory in their
+> >   	  address spaces
+> >
+> > -	  If unsure, say N here.
+> > -
+> >   config EXYNOS_IOMMU_DEBUG
+> >   	bool "Debugging log for Exynos IOMMU"
+> >   	depends on EXYNOS_IOMMU
 > > diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> > index 36e6b73..33b424d 100644
+> > index 33b424d..34feb04 100644
 > > --- a/drivers/iommu/exynos-iommu.c
 > > +++ b/drivers/iommu/exynos-iommu.c
-> > @@ -499,51 +499,48 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
+> > @@ -26,6 +26,7 @@
+> >   #include <linux/list.h>
+> >   #include <linux/memblock.h>
+> >   #include <linux/export.h>
+> > +#include <linux/of.h>
 > >
-> >   static int exynos_sysmmu_probe(struct platform_device *pdev)
+> >   #include <asm/cacheflush.h>
+> >   #include <asm/pgtable.h>
+> > @@ -497,7 +498,7 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
+> >   	read_unlock_irqrestore(&data->lock, flags);
+> >   }
+> >
+> > -static int exynos_sysmmu_probe(struct platform_device *pdev)
+> > +static int __init exynos_sysmmu_probe(struct platform_device *pdev)
 > >   {
-> > -	int ret;
-> > +	int irq, ret;
+> >   	int irq, ret;
 > >   	struct device *dev = &pdev->dev;
-> >   	struct sysmmu_drvdata *data;
-> >   	struct resource *res;
+> > @@ -557,11 +558,23 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
+> >   	return 0;
+> >   }
 > >
-> > -	data = kzalloc(sizeof(*data), GFP_KERNEL);
-> > -	if (!data) {
-> > -		dev_dbg(dev, "Not enough memory\n");
-> > -		ret = -ENOMEM;
-> > -		goto err_alloc;
-> > -	}
-> > +	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
-> > +	if (!data)
-> > +		return -ENOMEM;
-> >
-> >   	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> >   	if (!res) {
-> > -		dev_dbg(dev, "Unable to find IOMEM region\n");
-> > -		ret = -ENOENT;
-> > -		goto err_init;
-> > +		dev_err(dev, "Unable to find IOMEM region\n");
-> > +		return -ENOENT;
-> >   	}
+> > -static struct platform_driver exynos_sysmmu_driver = {
+> > -	.probe		= exynos_sysmmu_probe,
+> > -	.driver		= {
+> > +#ifdef CONFIG_OF
+> > +static struct of_device_id sysmmu_of_match[] __initconst = {
+> > +	{ .compatible	= "samsung,sysmmu-v1", },
+> > +	{ .compatible	= "samsung,sysmmu-v2", },
+> > +	{ .compatible	= "samsung,sysmmu-v3.1", },
+> > +	{ .compatible	= "samsung,sysmmu-v3.2", },
+> > +	{ .compatible	= "samsung,sysmmu-v3.3", },
 > 
-> No need to check for error and print message, because 
-> devm_ioremap_resource() already checks the passed resource and handles 
-> error cases.
+> Do you need all these compatible strings? I mean, are there any 
+> implementation differences that can't be identified by reading IP 
+> registers, such as REG_MMU_VERSION?
 > 
 
-Yes but devm_ioremap_resource() just tells that the given 'res' is not
-correct. I think the message in the driver is more informative.
+Unfortunately, there is a SoC which overrides REG_MMU_VERSION with
+a value for RTL designers and it is not related to System MMU
+versions.
 
-Thanks.
+Thank you.
 
 KyongHo
