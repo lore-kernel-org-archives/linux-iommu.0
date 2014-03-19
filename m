@@ -1,76 +1,93 @@
-From: Jingoo Han <jg1.han@samsung.com>
-Subject: Re: [PATCH v11 10/27] iommu/exynos: use managed device helper
- functions
-Date: Wed, 19 Mar 2014 08:59:09 +0900
-Message-ID: <001201cf4306$0e16e540$2a44afc0$%han@samsung.com>
-References: <20140314140542.f4ded6c50dbd8a1d937bf354@samsung.com>
- <53230404.6070601@samsung.com>
- <20140318193817.3448387b75e109e814b9c025@samsung.com>
- <5328625B.508@samsung.com>
+From: Cho KyongHo <pullip.cho@samsung.com>
+Subject: Re: [PATCH v11 20/27] iommu/exynos: allow having multiple System MMUs
+ for a master H/W
+Date: Wed, 19 Mar 2014 09:39:29 +0900
+Message-ID: <20140319093929.d3a7cea131c626cf978e0ff1@samsung.com>
+References: <20140314141050.c8bedcb66532d277c496796d@samsung.com>
+ <53232A53.4040708@samsung.com>
+ <20140318220128.564740c88d06b86c9c5c10e3@samsung.com>
+ <532857A8.5060000@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-reply-to: <5328625B.508@samsung.com>
-Content-language: ko
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: 'Tomasz Figa' <t.figa@samsung.com>, 'Cho KyongHo' <pullip.cho@samsung.com>
-Cc: 'Linux DeviceTree' <devicetree@vger.kernel.org>, 'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>, 'Prathyush' <prathyush.k@samsung.com>, 'Grant Grundler' <grundler@chromium.org>, 'Joerg Roedel' <joro@8bytes.org>, 'Jingoo Han' <jg1.han@samsung.com>, 'Linux Kernel' <linux-kernel@vger.kernel.org>, 'Sachin Kamat' <sachin.kamat@linaro.org>, 'Linux IOMMU' <iommu@lists.linux-foundation.org>, 'Kukjin Kim' <kgene.kim@samsung.com>, 'Sylwester Nawrocki' <s.nawrocki@samsung.com>, 'Varun Sethi' <Varun.Sethi@freescale.com>, 'Antonios Motakis' <a.motakis@virtualopensystems.com>, 'Linux ARM Kernel' <linux-arm-kernel@lists.infradead.org>, 'Rahul Sharma' <rahul.sharma@samsung.com>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <532857A8.5060000@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Tomasz Figa <t.figa@samsung.com>
+Cc: Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>, Linux DeviceTree <devicetree@vger.kernel.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux Kernel <linux-kernel@vger.kernel.org>, Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>, Antonios Motakis <a.motakis@virtualopensystems.com>, Grant Grundler <grundler@chromium.org>, Joerg Roedel <joro@8bytes.org>, Kukjin Kim <kgene.kim@samsung.com>, Prathyush <prathyush.k@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Sachin Kamat <sachin.kamat@linaro.org>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Varun Sethi <Varun.Sethi@freescale.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wednesday, March 19, 2014 12:12 AM, Tomasz Figa wrote:
-> On 18.03.2014 11:38, Cho KyongHo wrote:
-> > On Fri, 14 Mar 2014 14:28:36 +0100, Tomasz Figa wrote:
-> >> On 14.03.2014 06:05, Cho KyongHo wrote:
-> >>> This patch uses managed device helper functions in the probe().
-> >>>
-> >>> Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
-> >>> ---
-> >>>    drivers/iommu/exynos-iommu.c |   64 +++++++++++++++++-------------------------
-> >>>    1 file changed, 26 insertions(+), 38 deletions(-)
-> >>>
-> >>> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> >>> index 36e6b73..33b424d 100644
-> >>> --- a/drivers/iommu/exynos-iommu.c
-> >>> +++ b/drivers/iommu/exynos-iommu.c
-
-[.....]
-
-> >>>    	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> >>>    	if (!res) {
-> >>> -		dev_dbg(dev, "Unable to find IOMEM region\n");
-> >>> -		ret = -ENOENT;
-> >>> -		goto err_init;
-> >>> +		dev_err(dev, "Unable to find IOMEM region\n");
-> >>> +		return -ENOENT;
-> >>>    	}
+On Tue, 18 Mar 2014 15:26:48 +0100, Tomasz Figa wrote:
+> 
+> 
+> On 18.03.2014 14:01, Cho KyongHo wrote:
+> > On Fri, 14 Mar 2014 17:12:03 +0100, Tomasz Figa wrote:
+> >> Hi KyongHo,
 > >>
-> >> No need to check for error and print message, because
-> >> devm_ioremap_resource() already checks the passed resource and handles
-> >> error cases.
+> >> On 14.03.2014 06:10, Cho KyongHo wrote:
+> >>> Some master device descriptor like fimc-is which is an abstraction
+> >>> of very complex H/W may have multiple System MMUs. For those devices,
+> >>> the design of the link between System MMU and its master H/W is needed
+> >>> to be reconsidered.
+> >>>
+> >>> A link structure, sysmmu_list_data is introduced that provides a link
+> >>> to master H/W and that has a pointer to the device descriptor of a
+> >>> System MMU. Given a device descriptor of a master H/W, it is possible
+> >>> to traverse all System MMUs that must be controlled along with the
+> >>> master H/W.
+> >>
+> >> NAK.
+> >>
+> >> A device driver should handle particular hardware instances separately,
+> >> without abstracting a virtual hardware instance consisting of multiple
+> >> physical ones.
+> >>
+> >> If such abstraction is needed, it should be done above the exynos-iommu
+> >> driver, e.g. by something like iommu-composite driver that would
+> >> aggregate several IOMMUs. Keep in mind that such IOMMUs in a group could
+> >> be different, e.g. different Exynos SysMMU versions or even completely
+> >> different IPs handled by different drivers.
+> >>
+> >> Still, I don't think there is a real need for such abstraction. Instead,
+> >> related drivers shall be fixed to properly handle multiple memory
+> >> masters and their IOMMUs.
 > >>
 > >
-> > Yes but devm_ioremap_resource() just tells that the given 'res' is not
-> > correct. I think the message in the driver is more informative.
+> > G2D, Scalers and FIMD of Exynos5420 has 2 System MMUs while aother SoC like
+> > Exynos5250 does not.
+> >
+> > I don't understand why you are negative to this approach.
+> > This is the simplest than the others.
+> >
+> > Let me show you an example.
+> > FIMC-IS driver just controls MCU in FIMC-IS subsystem and the firmware of
+> > the MCU controls all other peripherals in the subsystem. Each peripherals
+> > have their own System MMU. Moreover, the configuration of the peripherals
+> > varies according to the SoCs.
+> >
+> > If System MMU driver accepts multiple masters, everything is done in DT.
+> > But I worry that it is not easy if System MMU driver does not support
+> > multiple masters.
 > 
-> The common practice used in Linux kernel is to not duplicate such
-> messages. It is obvious that devm_ioremap_resource() printing such
-> message is related to an IOMEM resource anyway, as you can't used it
-> with other types of resources.
+> I believe I have stated enough reasons why this kind of implementation 
+> is bad. I'm not going to waste time repeating myself.
+> 
+> Your concerns presented above are valid, however they are not related to 
+> what is wrong with this patch. I have given you two proper ways to 
+> handle this, none should be forced upon particular IOMMU master drivers 
+> - their authors should have the chance to select the method that works 
+> best for them.
+> 
 
-+1
+I don't still understand why you think this patch is wrong.
+I think this is the best way not to think for all the driver developers
+about other things than their business logic.
 
-I agree with Tomasz Figa's opinion.
-These messages have been being removed from Linux kernel.
-Thank you.
+This does not hurt anyone and I think this is good enough.
 
-Best regards,
-Jingoo Han
+If you want to provide another layer between master device and system mmu
+as you mentioned, you do that. This patch does not restrict it.
+
+Regards,
+
+KyongHo
