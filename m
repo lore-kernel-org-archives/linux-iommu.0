@@ -1,8 +1,8 @@
 From: Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 Subject: Re: [PATCH v11 17/27] iommu/exynos: remove calls to Runtime PM API
 	functions
-Date: Wed, 19 Mar 2014 09:54:39 -0700
-Message-ID: <CANEJEGtK-XfTef3ko+Yq2RNFXohhuQjgamr-DRBmxR-SNzgkJg@mail.gmail.com>
+Date: Wed, 19 Mar 2014 10:03:33 -0700
+Message-ID: <CANEJEGuYz28dGT+264CYtG+Tk6htOq=u-t4PWMtsij32X0vJFA@mail.gmail.com>
 References: <20140314140843.ba055f28dd7ed59c46088029@samsung.com>
 	<5322FD14.5090602@samsung.com>
 	<20140318185605.0380c8dfe6559c06183092e5@samsung.com>
@@ -29,17 +29,21 @@ List-Id: iommu@lists.linux-foundation.org
 
 On Wed, Mar 19, 2014 at 6:12 AM, Tomasz Figa <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org> wrote:
 ...
->> Device driver is not only for the scholarship but also for the real use.
->
-> Huh? I'm not sure what kind of comment is this.
+> No. Proper Linux drivers must support deferred probing mechanism and there
+> should be no assumptions about probing orders. Using other initcall level
+> than module_initcall for particular drivers is strongly discouraged.
 
-I'm guessing Cho meant: "This isn't an academic exercise - I have a
-real use case that requires reference counting."
+That's true for "end-point" devices. It's not true for
+"infrastructure": Memory, CPU, DMA, Interrupt handling, etc. Those
+need to be in place before "normal" drivers get called. This SysMMU
+driver provides DMA services for "normal" device drivers. Or do I see
+that wrong?
 
-Cho needs to be more specific about his "Some driver needs enabling
-sysmmu" example. Then others would understand why/when the reference
-counting is needed. Ie walk through a real driver that exists today
-that depends on reference counting.
-
-cheers,
+thanks,
 grant
+
+ps. I've written IOMMU support for four different IOMMUs on three
+operating systems (See drivers/parisc for two linux examples). But I
+still feel like I at best have 80% understanding of how this one is
+organized/works. Abstract descriptions and convoluted code have been
+handicapping me (and lack of time to dig further).
