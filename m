@@ -1,10 +1,11 @@
 From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: [PATCH 3/4] iommu/vt-d: Honour intel_iommu=sp_off for non-VMM domains
-Date: Thu, 20 Mar 2014 12:00:38 +0000
-Message-ID: <1395316838.4880.98.camel@i7.infradead.org>
+Subject: [PATCH 4/4] iommu/vt-d: Be less pessimistic about domain coherency
+	where possible
+Date: Thu, 20 Mar 2014 12:00:52 +0000
+Message-ID: <1395316852.4880.99.camel@i7.infradead.org>
 References: <1395073392.4588.51.camel@i7.infradead.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============4347117164783729564=="
+Content-Type: multipart/mixed; boundary="===============6083041441493716146=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 In-Reply-To: <1395073392.4588.51.camel-W2I5cNIroUsVm/YvaOjsyQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
@@ -20,39 +21,71 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============4347117164783729564==
+--===============6083041441493716146==
 Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-VSb5RGraeOI0pdAAKd7I"
+	boundary="=-OlMkb4wwXnQx9y2ugFy7"
 
 
---=-VSb5RGraeOI0pdAAKd7I
+--=-OlMkb4wwXnQx9y2ugFy7
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 
+In commit 2e12bc29 ("intel-iommu: Default to non-coherent for domains
+unattached to iommus") we decided to err on the side of caution and
+always assume that it's possible that a device will be attached which is
+behind a non-coherent IOMMU.
+
+In some cases, however, that just *cannot* happen. If there *are* no
+IOMMUs in the system which are non-coherent, then we don't need to do
+it. And flushing the dcache is a *significant* performance hit.
+
 Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/iommu/intel-iommu.c | 21 +++++++++++++++++----
+ 1 file changed, 17 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index f5934fc..c3d4bc9 100644
+index c3d4bc9..1599cb1 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1624,7 +1624,11 @@ static int domain_init(struct dmar_domain *domain, i=
-nt guest_width)
- 	else
- 		domain->iommu_snooping =3D 0;
+@@ -592,18 +592,31 @@ static struct intel_iommu *domain_get_iommu(struct dm=
+ar_domain *domain)
 =20
--	domain->iommu_superpage =3D fls(cap_super_page_val(iommu->cap));
-+	if (intel_iommu_superpage)
-+		domain->iommu_superpage =3D fls(cap_super_page_val(iommu->cap));
-+	else
-+		domain->iommu_superpage =3D 0;
+ static void domain_update_iommu_coherency(struct dmar_domain *domain)
+ {
+-	int i;
+-
+-	i =3D find_first_bit(domain->iommu_bmp, g_num_of_iommus);
++	struct dmar_drhd_unit *drhd;
++	struct intel_iommu *iommu;
++	int i, found =3D 0;
+=20
+-	domain->iommu_coherency =3D i < g_num_of_iommus ? 1 : 0;
++	domain->iommu_coherency =3D 1;
+=20
+ 	for_each_set_bit(i, domain->iommu_bmp, g_num_of_iommus) {
++		found =3D 1;
+ 		if (!ecap_coherent(g_iommus[i]->ecap)) {
+ 			domain->iommu_coherency =3D 0;
+ 			break;
+ 		}
+ 	}
++	if (found)
++		return;
 +
- 	domain->nid =3D iommu->node;
++	/* No hardware attached; use lowest common denominator */
++	rcu_read_lock();
++	for_each_active_iommu(iommu, drhd) {
++		if (!ecap_coherent(iommu->ecap)) {
++			domain->iommu_coherency =3D 0;
++			break;
++		}
++	}
++	rcu_read_unlock();
+ }
 =20
- 	/* always allocate the top pgd */
+ static void domain_update_iommu_snooping(struct dmar_domain *domain)
 --=20
 1.8.5.3
 
@@ -60,7 +93,7 @@ nt guest_width)
 --=20
 dwmw2
 
---=-VSb5RGraeOI0pdAAKd7I
+--=-OlMkb4wwXnQx9y2ugFy7
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -154,28 +187,28 @@ bhXkgdT2t1V1bNAxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0
 Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2
 BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMG
 hc4wCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
-DxcNMTQwMzIwMTIwMDM4WjAjBgkqhkiG9w0BCQQxFgQUxlauG0bgn5ZM+JMpK/hBoOSYyHowgaUG
+DxcNMTQwMzIwMTIwMDUyWjAjBgkqhkiG9w0BCQQxFgQUl1I0GCIB0P8igNZCKD5i76RxYKQwgaUG
 CSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4x
 KzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0
 YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMGhc4wgacGCyqG
 SIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjEr
 MCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMvU3Rh
 cnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAwaFzjANBgkqhkiG
-9w0BAQEFAASCAQAHZwOLV7quqsaX4iIb4GYzQ7jGuKOdZO0E/7yA3LnyYG8KQQYbpZdCIt0B8+FG
-mS/tKYocCmcG/8bIG+3aH0HcrqOCQ5o54D6iwfSmDwNs3aAeQoUM3IgMou5GvUy4fdCWNg2ql5cI
-D3/CbTb0Mz547zkasa7V3fjee0RQPk3rnVApHAu+TmCIK/xj9g/oe8SF60iOQDf0B+9LJ+8JKO3m
-stSPqKeum6E678R4Yj+EN7G/FpcEvqKO0viertXGJ9ietlTIUSjDZMqFqj87QdJthSzDFuPwIUW7
-6OPbW0vi/MFDJAYaVuTK5HjGs7cYeyn1Dh2xBOJV6ymw0j7NzVptAAAAAAAA
+9w0BAQEFAASCAQCB3D92zy15Xu1UZ/bAaunFZ0xOvyVI/409zyew3il/RCIVTm0KImqAjZ/zXBQD
+sskSONyqens9B7Mc12eRuBlOW3BUOC/Qk1d8G0FC5KfmTshS7wzFEP9IOjYXmC8XE0Y/3Kcd883I
+Ngr7FE7zoxMndUZ7xEfedVAQJ4Gwr5P9uv3+bh2qaEhQd+kopF0HQ0/YxSo6Yz8Wou863kq0bYXW
+pVXHHDOi+tZSTGHMnGtHapcNj3+LufkVbQZfjxgbvan+TXbc2kT4KqSFdeywMfN4zXRtSLOny4PI
+8eIqws/7I3oAPqhoSVWatA7JOvyqPEEg5+m+nUdaa94i/Fq1biGsAAAAAAAA
 
 
---=-VSb5RGraeOI0pdAAKd7I--
+--=-OlMkb4wwXnQx9y2ugFy7--
 
 
---===============4347117164783729564==
+--===============6083041441493716146==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============4347117164783729564==--
+--===============6083041441493716146==--
