@@ -1,8 +1,7 @@
 From: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 18/33] iommu/vt-d: Make identity_mapping() take struct device
-	not struct pci_dev
-Date: Fri, 21 Mar 2014 17:18:59 +0000
-Message-ID: <1395422354-19762-19-git-send-email-David.Woodhouse@intel.com>
+Subject: [PATCH 02/33] iommu/vt-d: Parse ANDD records
+Date: Fri, 21 Mar 2014 17:18:43 +0000
+Message-ID: <1395422354-19762-3-git-send-email-David.Woodhouse@intel.com>
 References: <1395422354-19762-1-git-send-email-David.Woodhouse@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,38 +22,60 @@ List-Id: iommu@lists.linux-foundation.org
 
 Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iommu/dmar.c | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 81f52d3..4a028c9 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -2439,14 +2439,14 @@ static int __init si_domain_init(int hw)
- 	return 0;
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index b19f9f4..eb95020 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -373,6 +373,26 @@ static void dmar_free_drhd(struct dmar_drhd_unit *dmaru)
+ 	kfree(dmaru);
  }
  
--static int identity_mapping(struct pci_dev *pdev)
-+static int identity_mapping(struct device *dev)
- {
- 	struct device_domain_info *info;
++static int __init dmar_parse_one_andd(struct acpi_dmar_header *header)
++{
++	struct acpi_dmar_andd *andd = (void *)header;
++
++	/* Check for NUL termination within the designated length */
++	if (strnlen(andd->object_name, header->length - 8) == header->length - 8) {
++		WARN_TAINT(1, TAINT_FIRMWARE_WORKAROUND,
++			   "Your BIOS is broken; ANDD object name is not NUL-terminated\n"
++			   "BIOS vendor: %s; Ver: %s; Product Version: %s\n",
++			   dmi_get_system_info(DMI_BIOS_VENDOR),
++			   dmi_get_system_info(DMI_BIOS_VERSION),
++			   dmi_get_system_info(DMI_PRODUCT_VERSION));
++		return -EINVAL;
++	}
++	pr_info("ANDD device: %x name: %s\n", andd->device_number,
++		andd->object_name);
++
++	return 0;
++}
++
+ #ifdef CONFIG_ACPI_NUMA
+ static int __init
+ dmar_parse_one_rhsa(struct acpi_dmar_header *header)
+@@ -436,6 +456,10 @@ dmar_table_print_dmar_entry(struct acpi_dmar_header *header)
+ 		       (unsigned long long)rhsa->base_address,
+ 		       rhsa->proximity_domain);
+ 		break;
++	case ACPI_DMAR_TYPE_ANDD:
++		/* We don't print this here because we need to sanity-check
++		   it first. So print it in dmar_parse_one_andd() instead. */
++		break;
+ 	}
+ }
  
- 	if (likely(!iommu_identity_mapping))
- 		return 0;
- 
--	info = pdev->dev.archdata.iommu;
-+	info = dev->archdata.iommu;
- 	if (info && info != DUMMY_DEVICE_DOMAIN_INFO)
- 		return (info->domain == si_domain);
- 
-@@ -2903,7 +2903,7 @@ static int iommu_no_mapping(struct device *dev)
- 		return 0;
- 
- 	pdev = to_pci_dev(dev);
--	found = identity_mapping(pdev);
-+	found = identity_mapping(dev);
- 	if (found) {
- 		if (iommu_should_identity_map(pdev, 0))
- 			return 1;
+@@ -521,6 +545,9 @@ parse_dmar_table(void)
+ 			ret = dmar_parse_one_rhsa(entry_header);
+ #endif
+ 			break;
++		case ACPI_DMAR_TYPE_ANDD:
++			ret = dmar_parse_one_andd(entry_header);
++			break;
+ 		default:
+ 			pr_warn("Unknown DMAR structure type %d\n",
+ 				entry_header->type);
 -- 
 1.8.5.3
