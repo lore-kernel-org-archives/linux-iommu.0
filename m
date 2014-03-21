@@ -1,8 +1,7 @@
 From: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 24/33] iommu/vt-d: Make get_valid_domain_for_dev() take struct
-	device
-Date: Fri, 21 Mar 2014 17:19:05 +0000
-Message-ID: <1395422354-19762-25-git-send-email-David.Woodhouse@intel.com>
+Subject: [PATCH 29/33] iommu/vt-d: Remove pdev from iommu_no_mapping()
+Date: Fri, 21 Mar 2014 17:19:10 +0000
+Message-ID: <1395422354-19762-30-git-send-email-David.Woodhouse@intel.com>
 References: <1395422354-19762-1-git-send-email-David.Woodhouse@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,80 +22,63 @@ List-Id: iommu@lists.linux-foundation.org
 
 Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 26 ++++++++++++--------------
- 1 file changed, 12 insertions(+), 14 deletions(-)
+ drivers/iommu/intel-iommu.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 15371ec..41eafc3 100644
+index 3e15050..7b73c42 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -2862,26 +2862,24 @@ static struct iova *intel_alloc_iova(struct device *dev,
- 	return iova;
+@@ -2902,10 +2902,9 @@ static int iommu_dummy(struct device *dev)
+ 	return dev->archdata.iommu == DUMMY_DEVICE_DOMAIN_INFO;
  }
  
--static struct dmar_domain *__get_valid_domain_for_dev(struct pci_dev *pdev)
-+static struct dmar_domain *__get_valid_domain_for_dev(struct device *dev)
+-/* Check if the pdev needs to go through non-identity map and unmap process.*/
++/* Check if the dev needs to go through non-identity map and unmap process.*/
+ static int iommu_no_mapping(struct device *dev)
  {
- 	struct dmar_domain *domain;
- 	int ret;
+-	struct pci_dev *pdev;
+ 	int found;
  
--	domain = get_domain_for_dev(&pdev->dev, DEFAULT_DOMAIN_ADDRESS_WIDTH);
-+	domain = get_domain_for_dev(dev, DEFAULT_DOMAIN_ADDRESS_WIDTH);
- 	if (!domain) {
--		printk(KERN_ERR
--			"Allocating domain for %s failed", pci_name(pdev));
-+		printk(KERN_ERR "Allocating domain for %s failed",
-+		       dev_name(dev));
- 		return NULL;
- 	}
+ 	if (unlikely(!dev_is_pci(dev)))
+@@ -2917,10 +2916,9 @@ static int iommu_no_mapping(struct device *dev)
+ 	if (!iommu_identity_mapping)
+ 		return 0;
  
- 	/* make sure context mapping is ok */
--	if (unlikely(!domain_context_mapped(&pdev->dev))) {
--		ret = domain_context_mapping(domain, &pdev->dev,
--					     CONTEXT_TT_MULTI_LEVEL);
-+	if (unlikely(!domain_context_mapped(dev))) {
-+		ret = domain_context_mapping(domain, dev, CONTEXT_TT_MULTI_LEVEL);
- 		if (ret) {
--			printk(KERN_ERR
--				"Domain context map for %s failed",
--				pci_name(pdev));
-+			printk(KERN_ERR "Domain context map for %s failed",
+-	pdev = to_pci_dev(dev);
+ 	found = identity_mapping(dev);
+ 	if (found) {
+-		if (iommu_should_identity_map(&pdev->dev, 0))
++		if (iommu_should_identity_map(dev, 0))
+ 			return 1;
+ 		else {
+ 			/*
+@@ -2929,7 +2927,7 @@ static int iommu_no_mapping(struct device *dev)
+ 			 */
+ 			domain_remove_one_dev_info(si_domain, dev);
+ 			printk(KERN_INFO "32bit %s uses non-identity mapping\n",
+-			       pci_name(pdev));
 +			       dev_name(dev));
- 			return NULL;
+ 			return 0;
  		}
- 	}
-@@ -2889,12 +2887,12 @@ static struct dmar_domain *__get_valid_domain_for_dev(struct pci_dev *pdev)
- 	return domain;
- }
- 
--static inline struct dmar_domain *get_valid_domain_for_dev(struct pci_dev *dev)
-+static inline struct dmar_domain *get_valid_domain_for_dev(struct device *dev)
- {
- 	struct device_domain_info *info;
- 
- 	/* No lock here, assumes no domain exit in normal case */
--	info = dev->dev.archdata.iommu;
-+	info = dev->archdata.iommu;
- 	if (likely(info))
- 		return info->domain;
- 
-@@ -2975,7 +2973,7 @@ static dma_addr_t __intel_map_single(struct device *hwdev, phys_addr_t paddr,
- 	if (iommu_no_mapping(hwdev))
- 		return paddr;
- 
--	domain = get_valid_domain_for_dev(pdev);
-+	domain = get_valid_domain_for_dev(hwdev);
- 	if (!domain)
- 		return 0;
- 
-@@ -3280,7 +3278,7 @@ static int intel_map_sg(struct device *hwdev, struct scatterlist *sglist, int ne
- 	if (iommu_no_mapping(hwdev))
- 		return intel_nontranslate_map_sg(hwdev, sglist, nelems, dir);
- 
--	domain = get_valid_domain_for_dev(pdev);
-+	domain = get_valid_domain_for_dev(hwdev);
- 	if (!domain)
- 		return 0;
- 
+ 	} else {
+@@ -2937,7 +2935,7 @@ static int iommu_no_mapping(struct device *dev)
+ 		 * In case of a detached 64 bit DMA device from vm, the device
+ 		 * is put into si_domain for identity mapping.
+ 		 */
+-		if (iommu_should_identity_map(&pdev->dev, 0)) {
++		if (iommu_should_identity_map(dev, 0)) {
+ 			int ret;
+ 			ret = domain_add_dev_info(si_domain, dev,
+ 						  hw_pass_through ?
+@@ -2945,7 +2943,7 @@ static int iommu_no_mapping(struct device *dev)
+ 						  CONTEXT_TT_MULTI_LEVEL);
+ 			if (!ret) {
+ 				printk(KERN_INFO "64bit %s uses identity mapping\n",
+-				       pci_name(pdev));
++				       dev_name(dev));
+ 				return 1;
+ 			}
+ 		}
 -- 
 1.8.5.3
