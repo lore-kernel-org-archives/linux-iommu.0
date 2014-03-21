@@ -1,8 +1,8 @@
 From: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 04/33] iommu/vt-d: Change scope lists to struct device, bus,
-	devfn
-Date: Fri, 21 Mar 2014 17:18:45 +0000
-Message-ID: <1395422354-19762-5-git-send-email-David.Woodhouse@intel.com>
+Subject: [PATCH 09/33] iommu/vt-d: Pass iommu to domain_context_mapping_one()
+	and iommu_support_dev_iotlb()
+Date: Fri, 21 Mar 2014 17:18:50 +0000
+Message-ID: <1395422354-19762-10-git-send-email-David.Woodhouse@intel.com>
 References: <1395422354-19762-1-git-send-email-David.Woodhouse@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,322 +21,109 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-It's not only for PCI devices any more, and the scope information for an
-ACPI device provides the bus and devfn so that has to be stored here too.
-
 Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/dmar.c        | 41 ++++++++++++++++++++++-------------------
- drivers/iommu/intel-iommu.c | 43 +++++++++++++++++++++++++------------------
- include/linux/dmar.h        | 18 ++++++++++++------
- 3 files changed, 59 insertions(+), 43 deletions(-)
+ drivers/iommu/intel-iommu.c | 35 +++++++++++++++++------------------
+ 1 file changed, 17 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 4c6297d..34d271e 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -97,17 +97,17 @@ void *dmar_alloc_dev_scope(void *start, void *end, int *cnt)
- 	if (*cnt == 0)
- 		return NULL;
- 
--	return kcalloc(*cnt, sizeof(struct pci_dev *), GFP_KERNEL);
-+	return kcalloc(*cnt, sizeof(struct dmar_dev_scope), GFP_KERNEL);
- }
- 
--void dmar_free_dev_scope(struct pci_dev __rcu ***devices, int *cnt)
-+void dmar_free_dev_scope(struct dmar_dev_scope __rcu **devices, int *cnt)
- {
- 	int i;
--	struct pci_dev *tmp_dev;
-+	struct device *tmp_dev;
- 
- 	if (*devices && *cnt) {
- 		for_each_active_dev_scope(*devices, *cnt, i, tmp_dev)
--			pci_dev_put(tmp_dev);
-+			put_device(tmp_dev);
- 		kfree(*devices);
- 	}
- 
-@@ -191,10 +191,11 @@ static bool dmar_match_pci_path(struct dmar_pci_notify_info *info, int bus,
- /* Return: > 0 if match found, 0 if no match found, < 0 if error happens */
- int dmar_insert_dev_scope(struct dmar_pci_notify_info *info,
- 			  void *start, void*end, u16 segment,
--			  struct pci_dev __rcu **devices, int devices_cnt)
-+			  struct dmar_dev_scope __rcu *devices,
-+			  int devices_cnt)
- {
- 	int i, level;
--	struct pci_dev *tmp, *dev = info->dev;
-+	struct device *tmp, *dev = &info->dev->dev;
- 	struct acpi_dmar_device_scope *scope;
- 	struct acpi_dmar_pci_path *path;
- 
-@@ -213,16 +214,18 @@ int dmar_insert_dev_scope(struct dmar_pci_notify_info *info,
- 			continue;
- 
- 		if ((scope->entry_type == ACPI_DMAR_SCOPE_TYPE_ENDPOINT) ^
--		    (dev->hdr_type == PCI_HEADER_TYPE_NORMAL)) {
-+		    (info->dev->hdr_type == PCI_HEADER_TYPE_NORMAL)) {
- 			pr_warn("Device scope type does not match for %s\n",
--				pci_name(dev));
-+				pci_name(info->dev));
- 			return -EINVAL;
- 		}
- 
- 		for_each_dev_scope(devices, devices_cnt, i, tmp)
- 			if (tmp == NULL) {
--				rcu_assign_pointer(devices[i],
--						   pci_dev_get(dev));
-+				devices[i].bus = info->dev->bus->number;
-+				devices[i].devfn = info->dev->devfn;
-+				rcu_assign_pointer(devices[i].dev,
-+						   get_device(dev));
- 				return 1;
- 			}
- 		BUG_ON(i >= devices_cnt);
-@@ -232,19 +235,19 @@ int dmar_insert_dev_scope(struct dmar_pci_notify_info *info,
- }
- 
- int dmar_remove_dev_scope(struct dmar_pci_notify_info *info, u16 segment,
--			  struct pci_dev __rcu **devices, int count)
-+			  struct dmar_dev_scope __rcu *devices, int count)
- {
- 	int index;
--	struct pci_dev *tmp;
-+	struct device *tmp;
- 
- 	if (info->seg != segment)
- 		return 0;
- 
- 	for_each_active_dev_scope(devices, count, index, tmp)
--		if (tmp == info->dev) {
--			rcu_assign_pointer(devices[index], NULL);
-+		if (tmp == &info->dev->dev) {
-+			rcu_assign_pointer(devices[index].dev, NULL);
- 			synchronize_rcu();
--			pci_dev_put(tmp);
-+			put_device(tmp);
- 			return 1;
- 		}
- 
-@@ -562,15 +565,15 @@ parse_dmar_table(void)
- 	return ret;
- }
- 
--static int dmar_pci_device_match(struct pci_dev __rcu *devices[], int cnt,
--			  struct pci_dev *dev)
-+static int dmar_pci_device_match(struct dmar_dev_scope __rcu devices[],
-+				 int cnt, struct pci_dev *dev)
- {
- 	int index;
--	struct pci_dev *tmp;
-+	struct device *tmp;
- 
- 	while (dev) {
- 		for_each_active_dev_scope(devices, cnt, index, tmp)
--			if (dev == tmp)
-+			if (dev_is_pci(tmp) && dev == to_pci_dev(tmp))
- 				return 1;
- 
- 		/* Check our parent */
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 1599cb1..f38f482 100644
+index ccef436..1ab7c18 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -382,14 +382,14 @@ struct dmar_rmrr_unit {
- 	struct acpi_dmar_header *hdr;	/* ACPI header		*/
- 	u64	base_address;		/* reserved base address*/
- 	u64	end_address;		/* reserved end address */
--	struct pci_dev __rcu **devices;	/* target devices */
-+	struct dmar_dev_scope __rcu *devices;	/* target devices */
- 	int	devices_cnt;		/* target device count */
- };
- 
- struct dmar_atsr_unit {
- 	struct list_head list;		/* list of ATSR units */
- 	struct acpi_dmar_header *hdr;	/* ACPI header */
--	struct pci_dev __rcu **devices;	/* target devices */
-+	struct dmar_dev_scope __rcu *devices;	/* target devices */
- 	int devices_cnt;		/* target device count */
- 	u8 include_all:1;		/* include all ports */
- };
-@@ -669,7 +669,8 @@ static struct intel_iommu *device_to_iommu(int segment, u8 bus, u8 devfn)
- {
- 	struct dmar_drhd_unit *drhd = NULL;
- 	struct intel_iommu *iommu;
--	struct pci_dev *dev;
-+	struct device *dev;
-+	struct pci_dev *pdev;
- 	int i;
- 
- 	rcu_read_lock();
-@@ -679,11 +680,14 @@ static struct intel_iommu *device_to_iommu(int segment, u8 bus, u8 devfn)
- 
- 		for_each_active_dev_scope(drhd->devices,
- 					  drhd->devices_cnt, i, dev) {
--			if (dev->bus->number == bus && dev->devfn == devfn)
-+			if (!dev_is_pci(dev))
-+				continue;
-+			pdev = to_pci_dev(dev);
-+			if (pdev->bus->number == bus && pdev->devfn == devfn)
- 				goto out;
--			if (dev->subordinate &&
--			    dev->subordinate->number <= bus &&
--			    dev->subordinate->busn_res.end >= bus)
-+			if (pdev->subordinate &&
-+			    pdev->subordinate->number <= bus &&
-+			    pdev->subordinate->busn_res.end >= bus)
- 				goto out;
- 		}
- 
-@@ -2479,7 +2483,7 @@ static int domain_add_dev_info(struct dmar_domain *domain,
- static bool device_has_rmrr(struct pci_dev *dev)
- {
- 	struct dmar_rmrr_unit *rmrr;
--	struct pci_dev *tmp;
-+	struct device *tmp;
- 	int i;
- 
- 	rcu_read_lock();
-@@ -2490,7 +2494,7 @@ static bool device_has_rmrr(struct pci_dev *dev)
- 		 */
- 		for_each_active_dev_scope(rmrr->devices,
- 					  rmrr->devices_cnt, i, tmp)
--			if (tmp == dev) {
-+			if (tmp == &dev->dev) {
- 				rcu_read_unlock();
- 				return true;
- 			}
-@@ -2602,7 +2606,7 @@ static int __init init_dmars(void)
- {
- 	struct dmar_drhd_unit *drhd;
- 	struct dmar_rmrr_unit *rmrr;
--	struct pci_dev *pdev;
-+	struct device *dev;
- 	struct intel_iommu *iommu;
- 	int i, ret;
- 
-@@ -2746,8 +2750,10 @@ static int __init init_dmars(void)
- 	for_each_rmrr_units(rmrr) {
- 		/* some BIOS lists non-exist devices in DMAR table. */
- 		for_each_active_dev_scope(rmrr->devices, rmrr->devices_cnt,
--					  i, pdev) {
--			ret = iommu_prepare_rmrr_dev(rmrr, pdev);
-+					  i, dev) {
-+			if (!dev_is_pci(dev))
-+				continue;
-+			ret = iommu_prepare_rmrr_dev(rmrr, to_pci_dev(dev));
- 			if (ret)
- 				printk(KERN_ERR
- 				       "IOMMU: mapping reserved region failed\n");
-@@ -3434,7 +3440,7 @@ DECLARE_PCI_FIXUP_ENABLE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_IOAT_SNB, quir
- static void __init init_no_remapping_devices(void)
- {
- 	struct dmar_drhd_unit *drhd;
--	struct pci_dev *dev;
-+	struct device *dev;
- 	int i;
- 
- 	for_each_drhd_unit(drhd) {
-@@ -3442,7 +3448,7 @@ static void __init init_no_remapping_devices(void)
- 			for_each_active_dev_scope(drhd->devices,
- 						  drhd->devices_cnt, i, dev)
- 				break;
--			/* ignore DMAR unit if no pci devices exist */
-+			/* ignore DMAR unit if no devices exist */
- 			if (i == drhd->devices_cnt)
- 				drhd->ignored = 1;
- 		}
-@@ -3454,7 +3460,7 @@ static void __init init_no_remapping_devices(void)
- 
- 		for_each_active_dev_scope(drhd->devices,
- 					  drhd->devices_cnt, i, dev)
--			if (!IS_GFX_DEVICE(dev))
-+			if (!dev_is_pci(dev) || !IS_GFX_DEVICE(to_pci_dev(dev)))
- 				break;
- 		if (i < drhd->devices_cnt)
- 			continue;
-@@ -3467,7 +3473,7 @@ static void __init init_no_remapping_devices(void)
- 			drhd->ignored = 1;
- 			for_each_active_dev_scope(drhd->devices,
- 						  drhd->devices_cnt, i, dev)
--				dev->dev.archdata.iommu = DUMMY_DEVICE_DOMAIN_INFO;
-+				dev->archdata.iommu = DUMMY_DEVICE_DOMAIN_INFO;
- 		}
- 	}
+@@ -1240,13 +1240,13 @@ static void __iommu_flush_iotlb(struct intel_iommu *iommu, u16 did,
+ 			(unsigned long long)DMA_TLB_IAIG(val));
  }
-@@ -3691,7 +3697,8 @@ int dmar_find_matched_atsr_unit(struct pci_dev *dev)
+ 
+-static struct device_domain_info *iommu_support_dev_iotlb(
+-	struct dmar_domain *domain, int segment, u8 bus, u8 devfn)
++static struct device_domain_info *
++iommu_support_dev_iotlb (struct dmar_domain *domain, struct intel_iommu *iommu,
++			 u8 bus, u8 devfn)
  {
- 	int i, ret = 1;
- 	struct pci_bus *bus;
--	struct pci_dev *bridge = NULL, *tmp;
-+	struct pci_dev *bridge = NULL;
-+	struct device *tmp;
- 	struct acpi_dmar_atsr *atsr;
- 	struct dmar_atsr_unit *atsru;
+ 	int found = 0;
+ 	unsigned long flags;
+ 	struct device_domain_info *info;
+-	struct intel_iommu *iommu = device_to_iommu(segment, bus, devfn);
+ 	struct pci_dev *pdev;
  
-@@ -3714,7 +3721,7 @@ int dmar_find_matched_atsr_unit(struct pci_dev *dev)
- 			continue;
+ 	if (!ecap_dev_iotlb_support(iommu->ecap))
+@@ -1700,12 +1700,12 @@ static void domain_exit(struct dmar_domain *domain)
+ 	free_domain_mem(domain);
+ }
  
- 		for_each_dev_scope(atsru->devices, atsru->devices_cnt, i, tmp)
--			if (tmp == bridge)
-+			if (tmp == &bridge->dev)
- 				goto out;
+-static int domain_context_mapping_one(struct dmar_domain *domain, int segment,
+-				 u8 bus, u8 devfn, int translation)
++static int domain_context_mapping_one(struct dmar_domain *domain,
++				      struct intel_iommu *iommu,
++				      u8 bus, u8 devfn, int translation)
+ {
+ 	struct context_entry *context;
+ 	unsigned long flags;
+-	struct intel_iommu *iommu;
+ 	struct dma_pte *pgd;
+ 	unsigned long num;
+ 	unsigned long ndomains;
+@@ -1720,10 +1720,6 @@ static int domain_context_mapping_one(struct dmar_domain *domain, int segment,
+ 	BUG_ON(translation != CONTEXT_TT_PASS_THROUGH &&
+ 	       translation != CONTEXT_TT_MULTI_LEVEL);
  
- 		if (atsru->include_all)
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index 0a92e4d..4c2caab 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -36,13 +36,19 @@ struct acpi_dmar_header;
+-	iommu = device_to_iommu(segment, bus, devfn);
+-	if (!iommu)
+-		return -ENODEV;
+-
+ 	context = device_to_context_entry(iommu, bus, devfn);
+ 	if (!context)
+ 		return -ENOMEM;
+@@ -1781,7 +1777,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain, int segment,
+ 	context_set_domain_id(context, id);
  
- struct intel_iommu;
- 
-+struct dmar_dev_scope {
-+	struct device *dev;
-+	u8 bus;
-+	u8 devfn;
-+};
+ 	if (translation != CONTEXT_TT_PASS_THROUGH) {
+-		info = iommu_support_dev_iotlb(domain, segment, bus, devfn);
++		info = iommu_support_dev_iotlb(domain, iommu, bus, devfn);
+ 		translation = info ? CONTEXT_TT_DEV_IOTLB :
+ 				     CONTEXT_TT_MULTI_LEVEL;
+ 	}
+@@ -1836,8 +1832,14 @@ domain_context_mapping(struct dmar_domain *domain, struct pci_dev *pdev,
+ {
+ 	int ret;
+ 	struct pci_dev *tmp, *parent;
++	struct intel_iommu *iommu;
 +
- #ifdef CONFIG_DMAR_TABLE
- extern struct acpi_table_header *dmar_tbl;
- struct dmar_drhd_unit {
- 	struct list_head list;		/* list of drhd units	*/
- 	struct  acpi_dmar_header *hdr;	/* ACPI header		*/
- 	u64	reg_base_addr;		/* register base address*/
--	struct	pci_dev __rcu **devices;/* target device array	*/
-+	struct	dmar_dev_scope __rcu *devices;/* target device array	*/
- 	int	devices_cnt;		/* target device count	*/
- 	u16	segment;		/* PCI domain		*/
- 	u8	ignored:1; 		/* ignore drhd		*/
-@@ -86,7 +92,7 @@ static inline bool dmar_rcu_check(void)
- #define	dmar_rcu_dereference(p)	rcu_dereference_check((p), dmar_rcu_check())
++	iommu = device_to_iommu(pci_domain_nr(pdev->bus), pdev->bus->number,
++				pdev->devfn);
++	if (!iommu)
++		return -ENODEV;
  
- #define	for_each_dev_scope(a, c, p, d)	\
--	for ((p) = 0; ((d) = (p) < (c) ? dmar_rcu_dereference((a)[(p)]) : \
-+	for ((p) = 0; ((d) = (p) < (c) ? dmar_rcu_dereference((a)[(p)].dev) : \
- 			NULL, (p) < (c)); (p)++)
- 
- #define	for_each_active_dev_scope(a, c, p, d)	\
-@@ -95,15 +101,15 @@ static inline bool dmar_rcu_check(void)
- extern int dmar_table_init(void);
- extern int dmar_dev_scope_init(void);
- extern int dmar_parse_dev_scope(void *start, void *end, int *cnt,
--				struct pci_dev ***devices, u16 segment);
-+				struct dmar_dev_scope **devices, u16 segment);
- extern void *dmar_alloc_dev_scope(void *start, void *end, int *cnt);
--extern void dmar_free_dev_scope(struct pci_dev __rcu ***devices, int *cnt);
-+extern void dmar_free_dev_scope(struct dmar_dev_scope __rcu **devices, int *cnt);
- extern int dmar_insert_dev_scope(struct dmar_pci_notify_info *info,
- 				 void *start, void*end, u16 segment,
--				 struct pci_dev __rcu **devices,
-+				 struct dmar_dev_scope __rcu *devices,
- 				 int devices_cnt);
- extern int dmar_remove_dev_scope(struct dmar_pci_notify_info *info,
--				 u16 segment, struct pci_dev __rcu **devices,
-+				 u16 segment, struct dmar_dev_scope __rcu *devices,
- 				 int count);
- /* Intel IOMMU detection */
- extern int detect_intel_iommu(void);
+-	ret = domain_context_mapping_one(domain, pci_domain_nr(pdev->bus),
++	ret = domain_context_mapping_one(domain, iommu,
+ 					 pdev->bus->number, pdev->devfn,
+ 					 translation);
+ 	if (ret)
+@@ -1850,8 +1852,7 @@ domain_context_mapping(struct dmar_domain *domain, struct pci_dev *pdev,
+ 	/* Secondary interface's bus number and devfn 0 */
+ 	parent = pdev->bus->self;
+ 	while (parent != tmp) {
+-		ret = domain_context_mapping_one(domain,
+-						 pci_domain_nr(parent->bus),
++		ret = domain_context_mapping_one(domain, iommu,
+ 						 parent->bus->number,
+ 						 parent->devfn, translation);
+ 		if (ret)
+@@ -1859,13 +1860,11 @@ domain_context_mapping(struct dmar_domain *domain, struct pci_dev *pdev,
+ 		parent = parent->bus->self;
+ 	}
+ 	if (pci_is_pcie(tmp)) /* this is a PCIe-to-PCI bridge */
+-		return domain_context_mapping_one(domain,
+-					pci_domain_nr(tmp->subordinate),
++		return domain_context_mapping_one(domain, iommu,
+ 					tmp->subordinate->number, 0,
+ 					translation);
+ 	else /* this is a legacy PCI bridge */
+-		return domain_context_mapping_one(domain,
+-						  pci_domain_nr(tmp->bus),
++		return domain_context_mapping_one(domain, iommu,
+ 						  tmp->bus->number,
+ 						  tmp->devfn,
+ 						  translation);
 -- 
 1.8.5.3
