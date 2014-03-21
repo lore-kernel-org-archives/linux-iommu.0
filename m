@@ -1,8 +1,7 @@
 From: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 10/33] iommu/vt-d: Stop dmar_insert_dev_info() freeing domains
-	on losing race
-Date: Fri, 21 Mar 2014 17:18:51 +0000
-Message-ID: <1395422354-19762-11-git-send-email-David.Woodhouse@intel.com>
+Subject: [PATCH 03/33] iommu/vt-d: Allocate space for ACPI devices
+Date: Fri, 21 Mar 2014 17:18:44 +0000
+Message-ID: <1395422354-19762-4-git-send-email-David.Woodhouse@intel.com>
 References: <1395422354-19762-1-git-send-email-David.Woodhouse@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,98 +20,54 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-By moving this into get_domain_for_dev() we can make dmar_insert_dev_info()
-suitable for use with "special" domains such as the si_domain, which
-currently use domain_add_dev_info().
-
 Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 45 +++++++++++++++++++++------------------------
- 1 file changed, 21 insertions(+), 24 deletions(-)
+ drivers/iommu/dmar.c | 22 ++++++++++------------
+ 1 file changed, 10 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 1ab7c18..b50d1d6 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -2147,16 +2147,17 @@ dmar_search_domain_by_dev_info(int segment, int bus, int devfn)
- 	return NULL;
- }
- 
--static int dmar_insert_dev_info(int segment, int bus, int devfn,
--				struct device *dev, struct dmar_domain **domp)
-+static struct dmar_domain *dmar_insert_dev_info(int segment, int bus, int devfn,
-+						struct device *dev,
-+						struct dmar_domain *domain)
- {
--	struct dmar_domain *found, *domain = *domp;
-+	struct dmar_domain *found;
- 	struct device_domain_info *info;
- 	unsigned long flags;
- 
- 	info = alloc_devinfo_mem();
- 	if (!info)
--		return -ENOMEM;
-+		return NULL;
- 
- 	info->segment = segment;
- 	info->bus = bus;
-@@ -2174,19 +2175,17 @@ static int dmar_insert_dev_info(int segment, int bus, int devfn,
- 	if (found) {
- 		spin_unlock_irqrestore(&device_domain_lock, flags);
- 		free_devinfo_mem(info);
--		if (found != domain) {
--			domain_exit(domain);
--			*domp = found;
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index eb95020..4c6297d 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -84,7 +84,8 @@ void *dmar_alloc_dev_scope(void *start, void *end, int *cnt)
+ 	*cnt = 0;
+ 	while (start < end) {
+ 		scope = start;
+-		if (scope->entry_type == ACPI_DMAR_SCOPE_TYPE_ENDPOINT ||
++		if (scope->entry_type == ACPI_DMAR_SCOPE_TYPE_ACPI ||
++		    scope->entry_type == ACPI_DMAR_SCOPE_TYPE_ENDPOINT ||
+ 		    scope->entry_type == ACPI_DMAR_SCOPE_TYPE_BRIDGE)
+ 			(*cnt)++;
+ 		else if (scope->entry_type != ACPI_DMAR_SCOPE_TYPE_IOAPIC &&
+@@ -342,21 +343,18 @@ dmar_parse_one_drhd(struct acpi_dmar_header *header)
+ 	dmaru->reg_base_addr = drhd->address;
+ 	dmaru->segment = drhd->segment;
+ 	dmaru->include_all = drhd->flags & 0x1; /* BIT0: INCLUDE_ALL */
+-	if (!dmaru->include_all) {
+-		dmaru->devices = dmar_alloc_dev_scope((void *)(drhd + 1),
+-					((void *)drhd) + drhd->header.length,
+-					&dmaru->devices_cnt);
+-		if (dmaru->devices_cnt && dmaru->devices == NULL) {
+-			kfree(dmaru);
+-			return -ENOMEM;
 -		}
--	} else {
--		list_add(&info->link, &domain->devices);
--		list_add(&info->global, &device_domain_list);
--		if (dev)
--			dev->archdata.iommu = info;
--		spin_unlock_irqrestore(&device_domain_lock, flags);
-+		/* Caller must free the original domain */
-+		return found;
++	dmaru->devices = dmar_alloc_dev_scope((void *)(drhd + 1),
++					      ((void *)drhd) + drhd->header.length,
++					      &dmaru->devices_cnt);
++	if (dmaru->devices_cnt && dmaru->devices == NULL) {
++		kfree(dmaru);
++		return -ENOMEM;
  	}
  
--	return 0;
-+	list_add(&info->link, &domain->devices);
-+	list_add(&info->global, &device_domain_list);
-+	if (dev)
-+		dev->archdata.iommu = info;
-+	spin_unlock_irqrestore(&device_domain_lock, flags);
-+
-+	return domain;
- }
- 
- /* domain is initialized */
-@@ -2245,21 +2244,19 @@ static struct dmar_domain *get_domain_for_dev(struct pci_dev *pdev, int gaw)
- 
- 	/* register pcie-to-pci device */
- 	if (dev_tmp) {
--		if (dmar_insert_dev_info(segment, bus, devfn, NULL, &domain))
-+		domain = dmar_insert_dev_info(segment, bus, devfn, NULL, domain);
-+		if (!domain)
- 			goto error;
--		else
--			free = NULL;
+ 	ret = alloc_iommu(dmaru);
+ 	if (ret) {
+-		if (!dmaru->include_all)
+-			dmar_free_dev_scope(&dmaru->devices,
+-					    &dmaru->devices_cnt);
++		dmar_free_dev_scope(&dmaru->devices,
++				    &dmaru->devices_cnt);
+ 		kfree(dmaru);
+ 		return ret;
  	}
- 
- found_domain:
--	if (dmar_insert_dev_info(segment, pdev->bus->number, pdev->devfn,
--				 &pdev->dev, &domain) == 0)
--		return domain;
-+	domain = dmar_insert_dev_info(segment, pdev->bus->number, pdev->devfn,
-+				      &pdev->dev, domain);
- error:
--	if (free)
-+	if (free != domain)
- 		domain_exit(free);
--	/* recheck it here, maybe others set it */
--	return find_domain(&pdev->dev);
-+
-+	return domain;
- }
- 
- static int iommu_identity_mapping;
 -- 
 1.8.5.3
