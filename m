@@ -1,7 +1,8 @@
 From: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 25/33] iommu/vt-d: Remove some pointless to_pci_dev() calls
-Date: Fri, 21 Mar 2014 17:19:06 +0000
-Message-ID: <1395422354-19762-26-git-send-email-David.Woodhouse@intel.com>
+Subject: [PATCH 28/33] iommu/vt-d: Make domain_add_dev_info() take struct
+	device
+Date: Fri, 21 Mar 2014 17:19:09 +0000
+Message-ID: <1395422354-19762-29-git-send-email-David.Woodhouse@intel.com>
 References: <1395422354-19762-1-git-send-email-David.Woodhouse@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -20,85 +21,72 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Mostly made redundant by using dev_name() instead of pci_name(), and one
-instance of using *dev->dma_mask instead of pdev->dma_mask.
-
 Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+ drivers/iommu/intel-iommu.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 41eafc3..cfe08ea 100644
+index 270a25b..3e15050 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -2835,7 +2835,6 @@ static struct iova *intel_alloc_iova(struct device *dev,
- 				     struct dmar_domain *domain,
- 				     unsigned long nrpages, uint64_t dma_mask)
- {
--	struct pci_dev *pdev = to_pci_dev(dev);
- 	struct iova *iova = NULL;
- 
- 	/* Restrict dma_mask to the width that the iommu can handle */
-@@ -2855,7 +2854,7 @@ static struct iova *intel_alloc_iova(struct device *dev,
- 	iova = alloc_iova(&domain->iovad, nrpages, IOVA_PFN(dma_mask), 1);
- 	if (unlikely(!iova)) {
- 		printk(KERN_ERR "Allocating %ld-page iova for %s failed",
--		       nrpages, pci_name(pdev));
-+		       nrpages, dev_name(dev));
- 		return NULL;
- 	}
- 
-@@ -2959,7 +2958,6 @@ static int iommu_no_mapping(struct device *dev)
- static dma_addr_t __intel_map_single(struct device *hwdev, phys_addr_t paddr,
- 				     size_t size, int dir, u64 dma_mask)
- {
--	struct pci_dev *pdev = to_pci_dev(hwdev);
- 	struct dmar_domain *domain;
- 	phys_addr_t start_paddr;
- 	struct iova *iova;
-@@ -3018,7 +3016,7 @@ error:
- 	if (iova)
- 		__free_iova(&domain->iovad, iova);
- 	printk(KERN_ERR"Device %s request: %zx@%llx dir %d --- failed\n",
--		pci_name(pdev), size, (unsigned long long)paddr, dir);
-+		dev_name(hwdev), size, (unsigned long long)paddr, dir);
- 	return 0;
+@@ -2470,25 +2470,24 @@ static int identity_mapping(struct device *dev)
  }
  
-@@ -3115,7 +3113,6 @@ static void intel_unmap_page(struct device *dev, dma_addr_t dev_addr,
- 			     size_t size, enum dma_data_direction dir,
- 			     struct dma_attrs *attrs)
+ static int domain_add_dev_info(struct dmar_domain *domain,
+-			       struct pci_dev *pdev,
+-			       int translation)
++			       struct device *dev, int translation)
  {
--	struct pci_dev *pdev = to_pci_dev(dev);
- 	struct dmar_domain *domain;
- 	unsigned long start_pfn, last_pfn;
- 	struct iova *iova;
-@@ -3139,7 +3136,7 @@ static void intel_unmap_page(struct device *dev, dma_addr_t dev_addr,
- 	last_pfn = mm_to_dma_pfn(iova->pfn_hi + 1) - 1;
+ 	struct dmar_domain *ndomain;
+ 	struct intel_iommu *iommu;
+ 	u8 bus, devfn;
+ 	int ret;
  
- 	pr_debug("Device %s unmapping: pfn %lx-%lx\n",
--		 pci_name(pdev), start_pfn, last_pfn);
-+		 dev_name(dev), start_pfn, last_pfn);
+-	iommu = device_to_iommu(&pdev->dev, &bus, &devfn);
++	iommu = device_to_iommu(dev, &bus, &devfn);
+ 	if (!iommu)
+ 		return -ENODEV;
  
- 	freelist = domain_unmap(domain, start_pfn, last_pfn);
+-	ndomain = dmar_insert_dev_info(iommu, bus, devfn, &pdev->dev, domain);
++	ndomain = dmar_insert_dev_info(iommu, bus, devfn, dev, domain);
+ 	if (ndomain != domain)
+ 		return -EBUSY;
  
-@@ -3264,7 +3261,6 @@ static int intel_map_sg(struct device *hwdev, struct scatterlist *sglist, int ne
- 			enum dma_data_direction dir, struct dma_attrs *attrs)
- {
- 	int i;
--	struct pci_dev *pdev = to_pci_dev(hwdev);
- 	struct dmar_domain *domain;
- 	size_t size = 0;
- 	int prot = 0;
-@@ -3288,7 +3284,7 @@ static int intel_map_sg(struct device *hwdev, struct scatterlist *sglist, int ne
- 		size += aligned_nrpages(sg->offset, sg->length);
+-	ret = domain_context_mapping(domain, &pdev->dev, translation);
++	ret = domain_context_mapping(domain, dev, translation);
+ 	if (ret) {
+-		domain_remove_one_dev_info(domain, &pdev->dev);
++		domain_remove_one_dev_info(domain, dev);
+ 		return ret;
+ 	}
  
- 	iova = intel_alloc_iova(hwdev, domain, dma_to_mm_pfn(size),
--				pdev->dma_mask);
-+				*hwdev->dma_mask);
- 	if (!iova) {
- 		sglist->dma_length = 0;
- 		return 0;
+@@ -2607,7 +2606,7 @@ static int __init iommu_prepare_static_identity_mapping(int hw)
+ 
+ 	for_each_pci_dev(pdev) {
+ 		if (iommu_should_identity_map(&pdev->dev, 1)) {
+-			ret = domain_add_dev_info(si_domain, pdev,
++			ret = domain_add_dev_info(si_domain, &pdev->dev,
+ 					     hw ? CONTEXT_TT_PASS_THROUGH :
+ 						  CONTEXT_TT_MULTI_LEVEL);
+ 			if (ret) {
+@@ -2940,7 +2939,7 @@ static int iommu_no_mapping(struct device *dev)
+ 		 */
+ 		if (iommu_should_identity_map(&pdev->dev, 0)) {
+ 			int ret;
+-			ret = domain_add_dev_info(si_domain, pdev,
++			ret = domain_add_dev_info(si_domain, dev,
+ 						  hw_pass_through ?
+ 						  CONTEXT_TT_PASS_THROUGH :
+ 						  CONTEXT_TT_MULTI_LEVEL);
+@@ -4201,7 +4200,7 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
+ 		dmar_domain->agaw--;
+ 	}
+ 
+-	return domain_add_dev_info(dmar_domain, pdev, CONTEXT_TT_MULTI_LEVEL);
++	return domain_add_dev_info(dmar_domain, dev, CONTEXT_TT_MULTI_LEVEL);
+ }
+ 
+ static void intel_iommu_detach_device(struct iommu_domain *domain,
 -- 
 1.8.5.3
