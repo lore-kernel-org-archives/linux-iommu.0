@@ -1,8 +1,8 @@
 From: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 20/33] iommu/vt-d: Make domain_context_mapp{ed,
-	ing}() take struct device
-Date: Fri, 21 Mar 2014 17:19:01 +0000
-Message-ID: <1395422354-19762-21-git-send-email-David.Woodhouse@intel.com>
+Subject: [PATCH 24/33] iommu/vt-d: Make get_valid_domain_for_dev() take struct
+	device
+Date: Fri, 21 Mar 2014 17:19:05 +0000
+Message-ID: <1395422354-19762-25-git-send-email-David.Woodhouse@intel.com>
 References: <1395422354-19762-1-git-send-email-David.Woodhouse@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,109 +23,80 @@ List-Id: iommu@lists.linux-foundation.org
 
 Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 31 +++++++++++++++++--------------
- 1 file changed, 17 insertions(+), 14 deletions(-)
+ drivers/iommu/intel-iommu.c | 26 ++++++++++++--------------
+ 1 file changed, 12 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index a24611f..741fb1d 100644
+index 15371ec..41eafc3 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1840,24 +1840,25 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
+@@ -2862,26 +2862,24 @@ static struct iova *intel_alloc_iova(struct device *dev,
+ 	return iova;
  }
  
- static int
--domain_context_mapping(struct dmar_domain *domain, struct pci_dev *pdev,
--			int translation)
-+domain_context_mapping(struct dmar_domain *domain, struct device *dev,
-+		       int translation)
+-static struct dmar_domain *__get_valid_domain_for_dev(struct pci_dev *pdev)
++static struct dmar_domain *__get_valid_domain_for_dev(struct device *dev)
  {
+ 	struct dmar_domain *domain;
  	int ret;
--	struct pci_dev *tmp, *parent;
-+	struct pci_dev *pdev, *tmp, *parent;
- 	struct intel_iommu *iommu;
- 	u8 bus, devfn;
  
--	iommu = device_to_iommu(&pdev->dev, &bus, &devfn);
-+	iommu = device_to_iommu(dev, &bus, &devfn);
- 	if (!iommu)
- 		return -ENODEV;
- 
- 	ret = domain_context_mapping_one(domain, iommu, bus, devfn,
- 					 translation);
--	if (ret)
-+	if (ret || !dev_is_pci(dev))
- 		return ret;
- 
- 	/* dependent device mapping */
-+	pdev = to_pci_dev(dev);
- 	tmp = pci_find_upstream_pcie_bridge(pdev);
- 	if (!tmp)
- 		return 0;
-@@ -1882,21 +1883,23 @@ domain_context_mapping(struct dmar_domain *domain, struct pci_dev *pdev,
- 						  translation);
- }
- 
--static int domain_context_mapped(struct pci_dev *pdev)
-+static int domain_context_mapped(struct device *dev)
- {
- 	int ret;
--	struct pci_dev *tmp, *parent;
-+	struct pci_dev *pdev, *tmp, *parent;
- 	struct intel_iommu *iommu;
- 	u8 bus, devfn;
- 
--	iommu = device_to_iommu(&pdev->dev, &bus, &devfn);
-+	iommu = device_to_iommu(dev, &bus, &devfn);
- 	if (!iommu)
- 		return -ENODEV;
- 
- 	ret = device_context_mapped(iommu, bus, devfn);
--	if (!ret)
-+	if (!ret || !dev_is_pci(dev))
- 		return ret;
-+
- 	/* dependent device mapping */
-+	pdev = to_pci_dev(dev);
- 	tmp = pci_find_upstream_pcie_bridge(pdev);
- 	if (!tmp)
- 		return ret;
-@@ -2361,7 +2364,7 @@ static int iommu_prepare_identity_map(struct pci_dev *pdev,
- 		goto error;
- 
- 	/* context entry init */
--	ret = domain_context_mapping(domain, pdev, CONTEXT_TT_MULTI_LEVEL);
-+	ret = domain_context_mapping(domain, &pdev->dev, CONTEXT_TT_MULTI_LEVEL);
- 	if (ret)
- 		goto error;
- 
-@@ -2485,7 +2488,7 @@ static int domain_add_dev_info(struct dmar_domain *domain,
- 	if (ndomain != domain)
- 		return -EBUSY;
- 
--	ret = domain_context_mapping(domain, pdev, translation);
-+	ret = domain_context_mapping(domain, &pdev->dev, translation);
- 	if (ret) {
- 		domain_remove_one_dev_info(domain, pdev);
- 		return ret;
-@@ -2870,8 +2873,8 @@ static struct dmar_domain *__get_valid_domain_for_dev(struct pci_dev *pdev)
+-	domain = get_domain_for_dev(&pdev->dev, DEFAULT_DOMAIN_ADDRESS_WIDTH);
++	domain = get_domain_for_dev(dev, DEFAULT_DOMAIN_ADDRESS_WIDTH);
+ 	if (!domain) {
+-		printk(KERN_ERR
+-			"Allocating domain for %s failed", pci_name(pdev));
++		printk(KERN_ERR "Allocating domain for %s failed",
++		       dev_name(dev));
+ 		return NULL;
  	}
  
  	/* make sure context mapping is ok */
--	if (unlikely(!domain_context_mapped(pdev))) {
--		ret = domain_context_mapping(domain, pdev,
-+	if (unlikely(!domain_context_mapped(&pdev->dev))) {
-+		ret = domain_context_mapping(domain, &pdev->dev,
- 					     CONTEXT_TT_MULTI_LEVEL);
+-	if (unlikely(!domain_context_mapped(&pdev->dev))) {
+-		ret = domain_context_mapping(domain, &pdev->dev,
+-					     CONTEXT_TT_MULTI_LEVEL);
++	if (unlikely(!domain_context_mapped(dev))) {
++		ret = domain_context_mapping(domain, dev, CONTEXT_TT_MULTI_LEVEL);
  		if (ret) {
- 			printk(KERN_ERR
-@@ -4159,7 +4162,7 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
- 	u8 bus, devfn;
+-			printk(KERN_ERR
+-				"Domain context map for %s failed",
+-				pci_name(pdev));
++			printk(KERN_ERR "Domain context map for %s failed",
++			       dev_name(dev));
+ 			return NULL;
+ 		}
+ 	}
+@@ -2889,12 +2887,12 @@ static struct dmar_domain *__get_valid_domain_for_dev(struct pci_dev *pdev)
+ 	return domain;
+ }
  
- 	/* normally pdev is not mapped */
--	if (unlikely(domain_context_mapped(pdev))) {
-+	if (unlikely(domain_context_mapped(&pdev->dev))) {
- 		struct dmar_domain *old_domain;
+-static inline struct dmar_domain *get_valid_domain_for_dev(struct pci_dev *dev)
++static inline struct dmar_domain *get_valid_domain_for_dev(struct device *dev)
+ {
+ 	struct device_domain_info *info;
  
- 		old_domain = find_domain(dev);
+ 	/* No lock here, assumes no domain exit in normal case */
+-	info = dev->dev.archdata.iommu;
++	info = dev->archdata.iommu;
+ 	if (likely(info))
+ 		return info->domain;
+ 
+@@ -2975,7 +2973,7 @@ static dma_addr_t __intel_map_single(struct device *hwdev, phys_addr_t paddr,
+ 	if (iommu_no_mapping(hwdev))
+ 		return paddr;
+ 
+-	domain = get_valid_domain_for_dev(pdev);
++	domain = get_valid_domain_for_dev(hwdev);
+ 	if (!domain)
+ 		return 0;
+ 
+@@ -3280,7 +3278,7 @@ static int intel_map_sg(struct device *hwdev, struct scatterlist *sglist, int ne
+ 	if (iommu_no_mapping(hwdev))
+ 		return intel_nontranslate_map_sg(hwdev, sglist, nelems, dir);
+ 
+-	domain = get_valid_domain_for_dev(pdev);
++	domain = get_valid_domain_for_dev(hwdev);
+ 	if (!domain)
+ 		return 0;
+ 
 -- 
 1.8.5.3
