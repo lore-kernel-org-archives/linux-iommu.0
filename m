@@ -1,8 +1,8 @@
 From: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 07/33] iommu/vt-d: Make dmar_insert_dev_info() take struct
-	device instead of struct pci_dev
-Date: Fri, 21 Mar 2014 17:18:48 +0000
-Message-ID: <1395422354-19762-8-git-send-email-David.Woodhouse@intel.com>
+Subject: [PATCH 17/33] iommu/vt-d: Remove segment from struct
+	device_domain_info()
+Date: Fri, 21 Mar 2014 17:18:58 +0000
+Message-ID: <1395422354-19762-18-git-send-email-David.Woodhouse@intel.com>
 References: <1395422354-19762-1-git-send-email-David.Woodhouse@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,96 +21,95 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+It's accessible via info->iommu->segment so this is redundant.
+
 Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 21 ++++++++++-----------
- 1 file changed, 10 insertions(+), 11 deletions(-)
+ drivers/iommu/intel-iommu.c | 17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index db7e44b..85ec773 100644
+index 75ff1a1..81f52d3 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -2113,15 +2113,14 @@ static void domain_remove_dev_info(struct dmar_domain *domain)
- 
- /*
-  * find_domain
-- * Note: we use struct pci_dev->dev.archdata.iommu stores the info
-+ * Note: we use struct device->archdata.iommu stores the info
-  */
--static struct dmar_domain *
--find_domain(struct pci_dev *pdev)
-+static struct dmar_domain *find_domain(struct device *dev)
- {
+@@ -369,7 +369,6 @@ struct dmar_domain {
+ struct device_domain_info {
+ 	struct list_head link;	/* link to domain siblings */
+ 	struct list_head global; /* link to global list */
+-	int segment;		/* PCI domain */
+ 	u8 bus;			/* PCI bus number */
+ 	u8 devfn;		/* PCI devfn number */
+ 	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
+@@ -2136,7 +2135,7 @@ dmar_search_domain_by_dev_info(int segment, int bus, int devfn)
  	struct device_domain_info *info;
  
- 	/* No lock here, assumes no domain exit in normal case */
--	info = pdev->dev.archdata.iommu;
-+	info = dev->archdata.iommu;
- 	if (info)
- 		return info->domain;
- 	return NULL;
-@@ -2161,7 +2160,7 @@ static int dmar_insert_dev_info(int segment, int bus, int devfn,
+ 	list_for_each_entry(info, &device_domain_list, global)
+-		if (info->segment == segment && info->bus == bus &&
++		if (info->iommu->segment == segment && info->bus == bus &&
+ 		    info->devfn == devfn)
+ 			return info;
  
- 	spin_lock_irqsave(&device_domain_lock, flags);
- 	if (dev)
--		found = find_domain(dev);
-+		found = find_domain(&dev->dev);
- 	else
- 		found = dmar_search_domain_by_dev_info(segment, bus, devfn);
- 	if (found) {
-@@ -2193,7 +2192,7 @@ static struct dmar_domain *get_domain_for_dev(struct pci_dev *pdev, int gaw)
- 	int bus = 0, devfn = 0;
- 	int segment;
- 
--	domain = find_domain(pdev);
-+	domain = find_domain(&pdev->dev);
- 	if (domain)
- 		return domain;
- 
-@@ -2252,7 +2251,7 @@ error:
- 	if (free)
- 		domain_exit(free);
- 	/* recheck it here, maybe others set it */
--	return find_domain(pdev);
-+	return find_domain(&pdev->dev);
+@@ -2144,7 +2143,7 @@ dmar_search_domain_by_dev_info(int segment, int bus, int devfn)
  }
  
- static int iommu_identity_mapping;
-@@ -3108,7 +3107,7 @@ static void intel_unmap_page(struct device *dev, dma_addr_t dev_addr,
- 	if (iommu_no_mapping(dev))
- 		return;
+ static struct dmar_domain *dmar_insert_dev_info(struct intel_iommu *iommu,
+-						int segment, int bus, int devfn,
++						int bus, int devfn,
+ 						struct device *dev,
+ 						struct dmar_domain *domain)
+ {
+@@ -2156,7 +2155,6 @@ static struct dmar_domain *dmar_insert_dev_info(struct intel_iommu *iommu,
+ 	if (!info)
+ 		return NULL;
  
--	domain = find_domain(pdev);
-+	domain = find_domain(dev);
- 	BUG_ON(!domain);
+-	info->segment = segment;
+ 	info->bus = bus;
+ 	info->devfn = devfn;
+ 	info->dev = dev;
+@@ -2170,7 +2168,7 @@ static struct dmar_domain *dmar_insert_dev_info(struct intel_iommu *iommu,
+ 		found = find_domain(dev);
+ 	else {
+ 		struct device_domain_info *info2;
+-		info2 = dmar_search_domain_by_dev_info(segment, bus, devfn);
++		info2 = dmar_search_domain_by_dev_info(iommu->segment, bus, devfn);
+ 		if (info2)
+ 			found = info2->domain;
+ 	}
+@@ -2250,14 +2248,14 @@ static struct dmar_domain *get_domain_for_dev(struct pci_dev *pdev, int gaw)
  
- 	iommu = domain_get_iommu(domain);
-@@ -3200,7 +3199,7 @@ static void intel_unmap_sg(struct device *hwdev, struct scatterlist *sglist,
- 	if (iommu_no_mapping(hwdev))
- 		return;
+ 	/* register pcie-to-pci device */
+ 	if (dev_tmp) {
+-		domain = dmar_insert_dev_info(iommu, segment, bus, devfn, NULL,
++		domain = dmar_insert_dev_info(iommu, bus, devfn, NULL,
+ 					      domain);
+ 		if (!domain)
+ 			goto error;
+ 	}
  
--	domain = find_domain(pdev);
-+	domain = find_domain(hwdev);
- 	BUG_ON(!domain);
+ found_domain:
+-	domain = dmar_insert_dev_info(iommu, segment, pdev->bus->number,
++	domain = dmar_insert_dev_info(iommu, pdev->bus->number,
+ 				      pdev->devfn, &pdev->dev, domain);
+ error:
+ 	if (free != domain)
+@@ -2468,8 +2466,7 @@ static int domain_add_dev_info(struct dmar_domain *domain,
+ 	if (!iommu)
+ 		return -ENODEV;
  
- 	iommu = domain_get_iommu(domain);
-@@ -3808,7 +3807,7 @@ static int device_notifier(struct notifier_block *nb,
- 	    action != BUS_NOTIFY_DEL_DEVICE)
- 		return 0;
+-	ndomain = dmar_insert_dev_info(iommu, pci_domain_nr(pdev->bus),
+-				       pdev->bus->number, pdev->devfn,
++	ndomain = dmar_insert_dev_info(iommu, pdev->bus->number, pdev->devfn,
+ 				       &pdev->dev, domain);
+ 	if (ndomain != domain)
+ 		return -EBUSY;
+@@ -4031,7 +4028,7 @@ static void domain_remove_one_dev_info(struct dmar_domain *domain,
  
--	domain = find_domain(pdev);
-+	domain = find_domain(dev);
- 	if (!domain)
- 		return 0;
- 
-@@ -4147,7 +4146,7 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
- 	if (unlikely(domain_context_mapped(pdev))) {
- 		struct dmar_domain *old_domain;
- 
--		old_domain = find_domain(pdev);
-+		old_domain = find_domain(dev);
- 		if (old_domain) {
- 			if (dmar_domain->flags & DOMAIN_FLAG_VIRTUAL_MACHINE ||
- 			    dmar_domain->flags & DOMAIN_FLAG_STATIC_IDENTITY)
+ 	spin_lock_irqsave(&device_domain_lock, flags);
+ 	list_for_each_entry_safe(info, tmp, &domain->devices, link) {
+-		if (info->segment == pci_domain_nr(pdev->bus) &&
++		if (info->iommu->segment == pci_domain_nr(pdev->bus) &&
+ 		    info->bus == pdev->bus->number &&
+ 		    info->devfn == pdev->devfn) {
+ 			unlink_domain_info(info);
 -- 
 1.8.5.3
