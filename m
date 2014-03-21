@@ -1,11 +1,12 @@
 From: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 21/33] iommu/vt-d: Make get_domain_for_dev() take struct device
-Date: Fri, 21 Mar 2014 17:19:02 +0000
-Message-ID: <1395422354-19762-22-git-send-email-David.Woodhouse@intel.com>
+Subject: [PATCH 23/33] iommu/vt-d: Make iommu_should_identity_map() take
+	struct device
+Date: Fri, 21 Mar 2014 17:19:04 +0000
+Message-ID: <1395422354-19762-24-git-send-email-David.Woodhouse@intel.com>
 References: <1395422354-19762-1-git-send-email-David.Woodhouse@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 In-Reply-To: <1395422354-19762-1-git-send-email-David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
@@ -20,136 +21,114 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
----
- drivers/iommu/intel-iommu.c | 75 ++++++++++++++++++++++-----------------------
- 1 file changed, 36 insertions(+), 39 deletions(-)
-
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 741fb1d..05c5214 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -2207,52 +2207,51 @@ static struct dmar_domain *dmar_insert_dev_info(struct intel_iommu *iommu,
- }
- 
- /* domain is initialized */
--static struct dmar_domain *get_domain_for_dev(struct pci_dev *pdev, int gaw)
-+static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
- {
- 	struct dmar_domain *domain, *free = NULL;
- 	struct intel_iommu *iommu = NULL;
- 	struct device_domain_info *info;
--	struct dmar_drhd_unit *drhd;
--	struct pci_dev *dev_tmp;
-+	struct pci_dev *dev_tmp = NULL;
- 	unsigned long flags;
--	int bus = 0, devfn = 0;
--	int segment;
-+	u8 bus, devfn, bridge_bus, bridge_devfn;
- 
--	domain = find_domain(&pdev->dev);
-+	domain = find_domain(dev);
- 	if (domain)
- 		return domain;
- 
--	segment = pci_domain_nr(pdev->bus);
-+	if (dev_is_pci(dev)) {
-+		struct pci_dev *pdev = to_pci_dev(dev);
-+		u16 segment;
- 
--	dev_tmp = pci_find_upstream_pcie_bridge(pdev);
--	if (dev_tmp) {
--		if (pci_is_pcie(dev_tmp)) {
--			bus = dev_tmp->subordinate->number;
--			devfn = 0;
--		} else {
--			bus = dev_tmp->bus->number;
--			devfn = dev_tmp->devfn;
--		}
--		spin_lock_irqsave(&device_domain_lock, flags);
--		info = dmar_search_domain_by_dev_info(segment, bus, devfn);
--		if (info) {
--			iommu = info->iommu;
--			domain = info->domain;
-+		segment = pci_domain_nr(pdev->bus);
-+		dev_tmp = pci_find_upstream_pcie_bridge(pdev);
-+		if (dev_tmp) {
-+			if (pci_is_pcie(dev_tmp)) {
-+				bridge_bus = dev_tmp->subordinate->number;
-+				bridge_devfn = 0;
-+			} else {
-+				bridge_bus = dev_tmp->bus->number;
-+				bridge_devfn = dev_tmp->devfn;
-+			}
-+			spin_lock_irqsave(&device_domain_lock, flags);
-+			info = dmar_search_domain_by_dev_info(segment, bus, devfn);
-+			if (info) {
-+				iommu = info->iommu;
-+				domain = info->domain;
-+			}
-+			spin_unlock_irqrestore(&device_domain_lock, flags);
-+			/* pcie-pci bridge already has a domain, uses it */
-+			if (info)
-+				goto found_domain;
- 		}
--		spin_unlock_irqrestore(&device_domain_lock, flags);
--		if (info)
--			goto found_domain;
- 	}
- 
--	drhd = dmar_find_matched_drhd_unit(pdev);
--	if (!drhd) {
--		printk(KERN_ERR "IOMMU: can't find DMAR for device %s\n",
--			pci_name(pdev));
--		return NULL;
--	}
--	iommu = drhd->iommu;
-+	iommu = device_to_iommu(dev, &bus, &devfn);
-+	if (!iommu)
-+		goto error;
- 
--	/* Allocate and intialize new domain for the device */
-+	/* Allocate and initialize new domain for the device */
- 	domain = alloc_domain(false);
- 	if (!domain)
- 		goto error;
-@@ -2266,15 +2265,14 @@ static struct dmar_domain *get_domain_for_dev(struct pci_dev *pdev, int gaw)
- 
- 	/* register pcie-to-pci device */
- 	if (dev_tmp) {
--		domain = dmar_insert_dev_info(iommu, bus, devfn, NULL,
--					      domain);
-+		domain = dmar_insert_dev_info(iommu, bridge_bus, bridge_devfn,
-+					      NULL, domain);
- 		if (!domain)
- 			goto error;
- 	}
- 
- found_domain:
--	domain = dmar_insert_dev_info(iommu, pdev->bus->number,
--				      pdev->devfn, &pdev->dev, domain);
-+	domain = dmar_insert_dev_info(iommu, bus, devfn, dev, domain);
- error:
- 	if (free != domain)
- 		domain_exit(free);
-@@ -2320,7 +2318,7 @@ static int iommu_prepare_identity_map(struct pci_dev *pdev,
- 	struct dmar_domain *domain;
- 	int ret;
- 
--	domain = get_domain_for_dev(pdev, DEFAULT_DOMAIN_ADDRESS_WIDTH);
-+	domain = get_domain_for_dev(&pdev->dev, DEFAULT_DOMAIN_ADDRESS_WIDTH);
- 	if (!domain)
- 		return -ENOMEM;
- 
-@@ -2864,8 +2862,7 @@ static struct dmar_domain *__get_valid_domain_for_dev(struct pci_dev *pdev)
- 	struct dmar_domain *domain;
- 	int ret;
- 
--	domain = get_domain_for_dev(pdev,
--			DEFAULT_DOMAIN_ADDRESS_WIDTH);
-+	domain = get_domain_for_dev(&pdev->dev, DEFAULT_DOMAIN_ADDRESS_WIDTH);
- 	if (!domain) {
- 		printk(KERN_ERR
- 			"Allocating domain for %s failed", pci_name(pdev));
--- 
-1.8.5.3
+U2lnbmVkLW9mZi1ieTogRGF2aWQgV29vZGhvdXNlIDxEYXZpZC5Xb29kaG91c2VAaW50ZWwuY29t
+PgotLS0KIGRyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYyB8IDEwNyArKysrKysrKysrKysrKysr
+KysrKysrKy0tLS0tLS0tLS0tLS0tLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDU3IGluc2VydGlv
+bnMoKyksIDUwIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW50ZWwt
+aW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYwppbmRleCBhY2I5MjY4Li4xNTM3
+MWVjIDEwMDY0NAotLS0gYS9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMKKysrIGIvZHJpdmVy
+cy9pb21tdS9pbnRlbC1pb21tdS5jCkBAIC0yNTE4LDU4ICsyNTE4LDY1IEBAIHN0YXRpYyBib29s
+IGRldmljZV9oYXNfcm1ycihzdHJ1Y3QgZGV2aWNlICpkZXYpCiAJcmV0dXJuIGZhbHNlOwogfQog
+Ci1zdGF0aWMgaW50IGlvbW11X3Nob3VsZF9pZGVudGl0eV9tYXAoc3RydWN0IHBjaV9kZXYgKnBk
+ZXYsIGludCBzdGFydHVwKQorc3RhdGljIGludCBpb21tdV9zaG91bGRfaWRlbnRpdHlfbWFwKHN0
+cnVjdCBkZXZpY2UgKmRldiwgaW50IHN0YXJ0dXApCiB7CiAKLQkvKgotCSAqIFdlIHdhbnQgdG8g
+cHJldmVudCBhbnkgZGV2aWNlIGFzc29jaWF0ZWQgd2l0aCBhbiBSTVJSIGZyb20KLQkgKiBnZXR0
+aW5nIHBsYWNlZCBpbnRvIHRoZSBTSSBEb21haW4uIFRoaXMgaXMgZG9uZSBiZWNhdXNlCi0JICog
+cHJvYmxlbXMgZXhpc3Qgd2hlbiBkZXZpY2VzIGFyZSBtb3ZlZCBpbiBhbmQgb3V0IG9mIGRvbWFp
+bnMKLQkgKiBhbmQgdGhlaXIgcmVzcGVjdGl2ZSBSTVJSIGluZm8gaXMgbG9zdC4gV2UgZXhlbXB0
+IFVTQiBkZXZpY2VzCi0JICogZnJvbSB0aGlzIHByb2Nlc3MgZHVlIHRvIHRoZWlyIHVzYWdlIG9m
+IFJNUlJzIHRoYXQgYXJlIGtub3duCi0JICogdG8gbm90IGJlIG5lZWRlZCBhZnRlciBCSU9TIGhh
+bmQtb2ZmIHRvIE9TLgotCSAqLwotCWlmIChkZXZpY2VfaGFzX3JtcnIoJnBkZXYtPmRldikgJiYK
+LQkgICAgKHBkZXYtPmNsYXNzID4+IDgpICE9IFBDSV9DTEFTU19TRVJJQUxfVVNCKQotCQlyZXR1
+cm4gMDsKKwlpZiAoZGV2X2lzX3BjaShkZXYpKSB7CisJCXN0cnVjdCBwY2lfZGV2ICpwZGV2ID0g
+dG9fcGNpX2RldihkZXYpOwogCi0JaWYgKChpb21tdV9pZGVudGl0eV9tYXBwaW5nICYgSURFTlRN
+QVBfQVpBTElBKSAmJiBJU19BWkFMSUEocGRldikpCi0JCXJldHVybiAxOworCQkvKgorCQkgKiBX
+ZSB3YW50IHRvIHByZXZlbnQgYW55IGRldmljZSBhc3NvY2lhdGVkIHdpdGggYW4gUk1SUiBmcm9t
+CisJCSAqIGdldHRpbmcgcGxhY2VkIGludG8gdGhlIFNJIERvbWFpbi4gVGhpcyBpcyBkb25lIGJl
+Y2F1c2UKKwkJICogcHJvYmxlbXMgZXhpc3Qgd2hlbiBkZXZpY2VzIGFyZSBtb3ZlZCBpbiBhbmQg
+b3V0IG9mIGRvbWFpbnMKKwkJICogYW5kIHRoZWlyIHJlc3BlY3RpdmUgUk1SUiBpbmZvIGlzIGxv
+c3QuIFdlIGV4ZW1wdCBVU0IgZGV2aWNlcworCQkgKiBmcm9tIHRoaXMgcHJvY2VzcyBkdWUgdG8g
+dGhlaXIgdXNhZ2Ugb2YgUk1SUnMgdGhhdCBhcmUga25vd24KKwkJICogdG8gbm90IGJlIG5lZWRl
+ZCBhZnRlciBCSU9TIGhhbmQtb2ZmIHRvIE9TLgorCQkgKi8KKwkJaWYgKGRldmljZV9oYXNfcm1y
+cihkZXYpICYmCisJCSAgICAocGRldi0+Y2xhc3MgPj4gOCkgIT0gUENJX0NMQVNTX1NFUklBTF9V
+U0IpCisJCQlyZXR1cm4gMDsKIAotCWlmICgoaW9tbXVfaWRlbnRpdHlfbWFwcGluZyAmIElERU5U
+TUFQX0dGWCkgJiYgSVNfR0ZYX0RFVklDRShwZGV2KSkKLQkJcmV0dXJuIDE7CisJCWlmICgoaW9t
+bXVfaWRlbnRpdHlfbWFwcGluZyAmIElERU5UTUFQX0FaQUxJQSkgJiYgSVNfQVpBTElBKHBkZXYp
+KQorCQkJcmV0dXJuIDE7CiAKLQlpZiAoIShpb21tdV9pZGVudGl0eV9tYXBwaW5nICYgSURFTlRN
+QVBfQUxMKSkKLQkJcmV0dXJuIDA7CisJCWlmICgoaW9tbXVfaWRlbnRpdHlfbWFwcGluZyAmIElE
+RU5UTUFQX0dGWCkgJiYgSVNfR0ZYX0RFVklDRShwZGV2KSkKKwkJCXJldHVybiAxOwogCi0JLyoK
+LQkgKiBXZSB3YW50IHRvIHN0YXJ0IG9mZiB3aXRoIGFsbCBkZXZpY2VzIGluIHRoZSAxOjEgZG9t
+YWluLCBhbmQKLQkgKiB0YWtlIHRoZW0gb3V0IGxhdGVyIGlmIHdlIGZpbmQgdGhleSBjYW4ndCBh
+Y2Nlc3MgYWxsIG9mIG1lbW9yeS4KLQkgKgotCSAqIEhvd2V2ZXIsIHdlIGNhbid0IGRvIHRoaXMg
+Zm9yIFBDSSBkZXZpY2VzIGJlaGluZCBicmlkZ2VzLAotCSAqIGJlY2F1c2UgYWxsIFBDSSBkZXZp
+Y2VzIGJlaGluZCB0aGUgc2FtZSBicmlkZ2Ugd2lsbCBlbmQgdXAKLQkgKiB3aXRoIHRoZSBzYW1l
+IHNvdXJjZS1pZCBvbiB0aGVpciB0cmFuc2FjdGlvbnMuCi0JICoKLQkgKiBQcmFjdGljYWxseSBz
+cGVha2luZywgd2UgY2FuJ3QgY2hhbmdlIHRoaW5ncyBhcm91bmQgZm9yIHRoZXNlCi0JICogZGV2
+aWNlcyBhdCBydW4tdGltZSwgYmVjYXVzZSB3ZSBjYW4ndCBiZSBzdXJlIHRoZXJlJ2xsIGJlIG5v
+Ci0JICogRE1BIHRyYW5zYWN0aW9ucyBpbiBmbGlnaHQgZm9yIGFueSBvZiB0aGVpciBzaWJsaW5n
+cy4KLQkgKiAKLQkgKiBTbyBQQ0kgZGV2aWNlcyAodW5sZXNzIHRoZXkncmUgb24gdGhlIHJvb3Qg
+YnVzKSBhcyB3ZWxsIGFzCi0JICogdGhlaXIgcGFyZW50IFBDSS1QQ0kgb3IgUENJZS1QQ0kgYnJp
+ZGdlcyBtdXN0IGJlIGxlZnQgX291dF8gb2YKLQkgKiB0aGUgMToxIGRvbWFpbiwganVzdCBpbiBf
+Y2FzZV8gb25lIG9mIHRoZWlyIHNpYmxpbmdzIHR1cm5zIG91dAotCSAqIG5vdCB0byBiZSBhYmxl
+IHRvIG1hcCBhbGwgb2YgbWVtb3J5LgotCSAqLwotCWlmICghcGNpX2lzX3BjaWUocGRldikpIHsK
+LQkJaWYgKCFwY2lfaXNfcm9vdF9idXMocGRldi0+YnVzKSkKKwkJaWYgKCEoaW9tbXVfaWRlbnRp
+dHlfbWFwcGluZyAmIElERU5UTUFQX0FMTCkpCiAJCQlyZXR1cm4gMDsKLQkJaWYgKHBkZXYtPmNs
+YXNzID4+IDggPT0gUENJX0NMQVNTX0JSSURHRV9QQ0kpCisKKwkJLyoKKwkJICogV2Ugd2FudCB0
+byBzdGFydCBvZmYgd2l0aCBhbGwgZGV2aWNlcyBpbiB0aGUgMToxIGRvbWFpbiwgYW5kCisJCSAq
+IHRha2UgdGhlbSBvdXQgbGF0ZXIgaWYgd2UgZmluZCB0aGV5IGNhbid0IGFjY2VzcyBhbGwgb2Yg
+bWVtb3J5LgorCQkgKgorCQkgKiBIb3dldmVyLCB3ZSBjYW4ndCBkbyB0aGlzIGZvciBQQ0kgZGV2
+aWNlcyBiZWhpbmQgYnJpZGdlcywKKwkJICogYmVjYXVzZSBhbGwgUENJIGRldmljZXMgYmVoaW5k
+IHRoZSBzYW1lIGJyaWRnZSB3aWxsIGVuZCB1cAorCQkgKiB3aXRoIHRoZSBzYW1lIHNvdXJjZS1p
+ZCBvbiB0aGVpciB0cmFuc2FjdGlvbnMuCisJCSAqCisJCSAqIFByYWN0aWNhbGx5IHNwZWFraW5n
+LCB3ZSBjYW4ndCBjaGFuZ2UgdGhpbmdzIGFyb3VuZCBmb3IgdGhlc2UKKwkJICogZGV2aWNlcyBh
+dCBydW4tdGltZSwgYmVjYXVzZSB3ZSBjYW4ndCBiZSBzdXJlIHRoZXJlJ2xsIGJlIG5vCisJCSAq
+IERNQSB0cmFuc2FjdGlvbnMgaW4gZmxpZ2h0IGZvciBhbnkgb2YgdGhlaXIgc2libGluZ3MuCisJ
+CSAqCisJCSAqIFNvIFBDSSBkZXZpY2VzICh1bmxlc3MgdGhleSdyZSBvbiB0aGUgcm9vdCBidXMp
+IGFzIHdlbGwgYXMKKwkJICogdGhlaXIgcGFyZW50IFBDSS1QQ0kgb3IgUENJZS1QQ0kgYnJpZGdl
+cyBtdXN0IGJlIGxlZnQgX291dF8gb2YKKwkJICogdGhlIDE6MSBkb21haW4sIGp1c3QgaW4gX2Nh
+c2VfIG9uZSBvZiB0aGVpciBzaWJsaW5ncyB0dXJucyBvdXQKKwkJICogbm90IHRvIGJlIGFibGUg
+dG8gbWFwIGFsbCBvZiBtZW1vcnkuCisJCSAqLworCQlpZiAoIXBjaV9pc19wY2llKHBkZXYpKSB7
+CisJCQlpZiAoIXBjaV9pc19yb290X2J1cyhwZGV2LT5idXMpKQorCQkJCXJldHVybiAwOworCQkJ
+aWYgKHBkZXYtPmNsYXNzID4+IDggPT0gUENJX0NMQVNTX0JSSURHRV9QQ0kpCisJCQkJcmV0dXJu
+IDA7CisJCX0gZWxzZSBpZiAocGNpX3BjaWVfdHlwZShwZGV2KSA9PSBQQ0lfRVhQX1RZUEVfUENJ
+X0JSSURHRSkKIAkJCXJldHVybiAwOwotCX0gZWxzZSBpZiAocGNpX3BjaWVfdHlwZShwZGV2KSA9
+PSBQQ0lfRVhQX1RZUEVfUENJX0JSSURHRSkKLQkJcmV0dXJuIDA7CisJfSBlbHNlIHsKKwkJaWYg
+KGRldmljZV9oYXNfcm1ycihkZXYpKQorCQkJcmV0dXJuIDA7CisJfQogCi0JLyogCisJLyoKIAkg
+KiBBdCBib290IHRpbWUsIHdlIGRvbid0IHlldCBrbm93IGlmIGRldmljZXMgd2lsbCBiZSA2NC1i
+aXQgY2FwYWJsZS4KLQkgKiBBc3N1bWUgdGhhdCB0aGV5IHdpbGwgLS0gaWYgdGhleSB0dXJuIG91
+dCBub3QgdG8gYmUsIHRoZW4gd2UgY2FuIAorCSAqIEFzc3VtZSB0aGF0IHRoZXkgd2lsbCDigJQg
+aWYgdGhleSB0dXJuIG91dCBub3QgdG8gYmUsIHRoZW4gd2UgY2FuCiAJICogdGFrZSB0aGVtIG91
+dCBvZiB0aGUgMToxIGRvbWFpbiBsYXRlci4KIAkgKi8KIAlpZiAoIXN0YXJ0dXApIHsKQEAgLTI1
+NzcsMTMgKzI1ODQsMTMgQEAgc3RhdGljIGludCBpb21tdV9zaG91bGRfaWRlbnRpdHlfbWFwKHN0
+cnVjdCBwY2lfZGV2ICpwZGV2LCBpbnQgc3RhcnR1cCkKIAkJICogSWYgdGhlIGRldmljZSdzIGRt
+YV9tYXNrIGlzIGxlc3MgdGhhbiB0aGUgc3lzdGVtJ3MgbWVtb3J5CiAJCSAqIHNpemUgdGhlbiB0
+aGlzIGlzIG5vdCBhIGNhbmRpZGF0ZSBmb3IgaWRlbnRpdHkgbWFwcGluZy4KIAkJICovCi0JCXU2
+NCBkbWFfbWFzayA9IHBkZXYtPmRtYV9tYXNrOworCQl1NjQgZG1hX21hc2sgPSAqZGV2LT5kbWFf
+bWFzazsKIAotCQlpZiAocGRldi0+ZGV2LmNvaGVyZW50X2RtYV9tYXNrICYmCi0JCSAgICBwZGV2
+LT5kZXYuY29oZXJlbnRfZG1hX21hc2sgPCBkbWFfbWFzaykKLQkJCWRtYV9tYXNrID0gcGRldi0+
+ZGV2LmNvaGVyZW50X2RtYV9tYXNrOworCQlpZiAoZGV2LT5jb2hlcmVudF9kbWFfbWFzayAmJgor
+CQkgICAgZGV2LT5jb2hlcmVudF9kbWFfbWFzayA8IGRtYV9tYXNrKQorCQkJZG1hX21hc2sgPSBk
+ZXYtPmNvaGVyZW50X2RtYV9tYXNrOwogCi0JCXJldHVybiBkbWFfbWFzayA+PSBkbWFfZ2V0X3Jl
+cXVpcmVkX21hc2soJnBkZXYtPmRldik7CisJCXJldHVybiBkbWFfbWFzayA+PSBkbWFfZ2V0X3Jl
+cXVpcmVkX21hc2soZGV2KTsKIAl9CiAKIAlyZXR1cm4gMTsKQEAgLTI1OTksNyArMjYwNiw3IEBA
+IHN0YXRpYyBpbnQgX19pbml0IGlvbW11X3ByZXBhcmVfc3RhdGljX2lkZW50aXR5X21hcHBpbmco
+aW50IGh3KQogCQlyZXR1cm4gLUVGQVVMVDsKIAogCWZvcl9lYWNoX3BjaV9kZXYocGRldikgewot
+CQlpZiAoaW9tbXVfc2hvdWxkX2lkZW50aXR5X21hcChwZGV2LCAxKSkgeworCQlpZiAoaW9tbXVf
+c2hvdWxkX2lkZW50aXR5X21hcCgmcGRldi0+ZGV2LCAxKSkgewogCQkJcmV0ID0gZG9tYWluX2Fk
+ZF9kZXZfaW5mbyhzaV9kb21haW4sIHBkZXYsCiAJCQkJCSAgICAgaHcgPyBDT05URVhUX1RUX1BB
+U1NfVEhST1VHSCA6CiAJCQkJCQkgIENPTlRFWFRfVFRfTVVMVElfTEVWRUwpOwpAQCAtMjkxNyw3
+ICsyOTI0LDcgQEAgc3RhdGljIGludCBpb21tdV9ub19tYXBwaW5nKHN0cnVjdCBkZXZpY2UgKmRl
+dikKIAlwZGV2ID0gdG9fcGNpX2RldihkZXYpOwogCWZvdW5kID0gaWRlbnRpdHlfbWFwcGluZyhk
+ZXYpOwogCWlmIChmb3VuZCkgewotCQlpZiAoaW9tbXVfc2hvdWxkX2lkZW50aXR5X21hcChwZGV2
+LCAwKSkKKwkJaWYgKGlvbW11X3Nob3VsZF9pZGVudGl0eV9tYXAoJnBkZXYtPmRldiwgMCkpCiAJ
+CQlyZXR1cm4gMTsKIAkJZWxzZSB7CiAJCQkvKgpAQCAtMjkzNCw3ICsyOTQxLDcgQEAgc3RhdGlj
+IGludCBpb21tdV9ub19tYXBwaW5nKHN0cnVjdCBkZXZpY2UgKmRldikKIAkJICogSW4gY2FzZSBv
+ZiBhIGRldGFjaGVkIDY0IGJpdCBETUEgZGV2aWNlIGZyb20gdm0sIHRoZSBkZXZpY2UKIAkJICog
+aXMgcHV0IGludG8gc2lfZG9tYWluIGZvciBpZGVudGl0eSBtYXBwaW5nLgogCQkgKi8KLQkJaWYg
+KGlvbW11X3Nob3VsZF9pZGVudGl0eV9tYXAocGRldiwgMCkpIHsKKwkJaWYgKGlvbW11X3Nob3Vs
+ZF9pZGVudGl0eV9tYXAoJnBkZXYtPmRldiwgMCkpIHsKIAkJCWludCByZXQ7CiAJCQlyZXQgPSBk
+b21haW5fYWRkX2Rldl9pbmZvKHNpX2RvbWFpbiwgcGRldiwKIAkJCQkJCSAgaHdfcGFzc190aHJv
+dWdoID8KLS0gCjEuOC41LjMKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9u
+Lm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9p
+b21tdQ==
