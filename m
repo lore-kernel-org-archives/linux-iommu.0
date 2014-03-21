@@ -1,8 +1,8 @@
 From: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 01/33] iommu/vt-d: Add ACPI namespace device reporting
-	structures
-Date: Fri, 21 Mar 2014 17:18:42 +0000
-Message-ID: <1395422354-19762-2-git-send-email-David.Woodhouse@intel.com>
+Subject: [PATCH 11/33] iommu/vt-d: use dmar_insert_dev_info() from
+	dma_add_dev_info()
+Date: Fri, 21 Mar 2014 17:18:52 +0000
+Message-ID: <1395422354-19762-12-git-send-email-David.Woodhouse@intel.com>
 References: <1395422354-19762-1-git-send-email-David.Woodhouse@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,48 +23,49 @@ List-Id: iommu@lists.linux-foundation.org
 
 Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- include/acpi/actbl2.h | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ drivers/iommu/intel-iommu.c | 22 +++++++---------------
+ 1 file changed, 7 insertions(+), 15 deletions(-)
 
-diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
-index 094a906..da5b057 100644
---- a/include/acpi/actbl2.h
-+++ b/include/acpi/actbl2.h
-@@ -424,7 +424,8 @@ enum acpi_dmar_type {
- 	ACPI_DMAR_TYPE_RESERVED_MEMORY = 1,
- 	ACPI_DMAR_TYPE_ATSR = 2,
- 	ACPI_DMAR_HARDWARE_AFFINITY = 3,
--	ACPI_DMAR_TYPE_RESERVED = 4	/* 4 and greater are reserved */
-+	ACPI_DMAR_TYPE_ANDD = 4,
-+	ACPI_DMAR_TYPE_RESERVED = 5	/* 5 and greater are reserved */
- };
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index b50d1d6..3342d65 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -2452,29 +2452,21 @@ static int domain_add_dev_info(struct dmar_domain *domain,
+ 			       struct pci_dev *pdev,
+ 			       int translation)
+ {
++	struct dmar_domain *ndomain;
+ 	struct device_domain_info *info;
+ 	unsigned long flags;
+ 	int ret;
  
- /* DMAR Device Scope structure */
-@@ -445,7 +446,8 @@ enum acpi_dmar_scope_type {
- 	ACPI_DMAR_SCOPE_TYPE_BRIDGE = 2,
- 	ACPI_DMAR_SCOPE_TYPE_IOAPIC = 3,
- 	ACPI_DMAR_SCOPE_TYPE_HPET = 4,
--	ACPI_DMAR_SCOPE_TYPE_RESERVED = 5	/* 5 and greater are reserved */
-+	ACPI_DMAR_SCOPE_TYPE_ACPI = 5,
-+	ACPI_DMAR_SCOPE_TYPE_RESERVED = 6	/* 6 and greater are reserved */
- };
+-	info = alloc_devinfo_mem();
+-	if (!info)
+-		return -ENOMEM;
+-
+-	info->segment = pci_domain_nr(pdev->bus);
+-	info->bus = pdev->bus->number;
+-	info->devfn = pdev->devfn;
+-	info->dev = &pdev->dev;
+-	info->domain = domain;
+-
+-	spin_lock_irqsave(&device_domain_lock, flags);
+-	list_add(&info->link, &domain->devices);
+-	list_add(&info->global, &device_domain_list);
+-	pdev->dev.archdata.iommu = info;
+-	spin_unlock_irqrestore(&device_domain_lock, flags);
++	ndomain = dmar_insert_dev_info(pci_domain_nr(pdev->bus),
++				       pdev->bus->number, pdev->devfn,
++				       &pdev->dev, domain);
++	if (ndomain != domain)
++		return -EBUSY;
  
- struct acpi_dmar_pci_path {
-@@ -507,6 +509,15 @@ struct acpi_dmar_rhsa {
- 	u32 proximity_domain;
- };
- 
-+/* 4: ACPI Namespace Device Declaration Structure */
-+
-+struct acpi_dmar_andd {
-+	struct acpi_dmar_header header;
-+	u8 reserved[3];
-+	u8 device_number;
-+	u8 object_name[];
-+};
-+
- /*******************************************************************************
-  *
-  * HPET - High Precision Event Timer table
+ 	ret = domain_context_mapping(domain, pdev, translation);
+ 	if (ret) {
+ 		spin_lock_irqsave(&device_domain_lock, flags);
++		info = pdev->dev.archdata.iommu;
+ 		unlink_domain_info(info);
+ 		spin_unlock_irqrestore(&device_domain_lock, flags);
+ 		free_devinfo_mem(info);
 -- 
 1.8.5.3
