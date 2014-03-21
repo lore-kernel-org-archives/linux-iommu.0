@@ -1,7 +1,8 @@
 From: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 13/33] iommu/vt-d: Always store iommu in device_domain_info
-Date: Fri, 21 Mar 2014 17:18:54 +0000
-Message-ID: <1395422354-19762-14-git-send-email-David.Woodhouse@intel.com>
+Subject: [PATCH 15/33] iommu/vt-d: Remove device_to_iommu() call from
+	domain_remove_dev_info()
+Date: Fri, 21 Mar 2014 17:18:56 +0000
+Message-ID: <1395422354-19762-16-git-send-email-David.Woodhouse@intel.com>
 References: <1395422354-19762-1-git-send-email-David.Woodhouse@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -20,138 +21,47 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+This was problematic because it works by domain/bus/devfn and we want
+to make device_to_iommu() use only a struct device * (for handling non-PCI
+devices). Now that the iommu pointer is reliably stored in the
+device_domain_info, we don't need to look it up.
+
 Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 47 ++++++++++++++++++++++++++++++---------------
- 1 file changed, 31 insertions(+), 16 deletions(-)
+ drivers/iommu/intel-iommu.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 0751f6d..309ee18 100644
+index 7e540a0..75ff1a1 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1274,8 +1274,6 @@ iommu_support_dev_iotlb (struct dmar_domain *domain, struct intel_iommu *iommu,
- 	if (!dmar_find_matched_atsr_unit(pdev))
- 		return NULL;
- 
--	info->iommu = iommu;
--
- 	return info;
- }
- 
-@@ -2134,7 +2132,7 @@ static struct dmar_domain *find_domain(struct device *dev)
- 	return NULL;
- }
- 
--static inline struct dmar_domain *
-+static inline struct device_domain_info *
- dmar_search_domain_by_dev_info(int segment, int bus, int devfn)
+@@ -2084,7 +2084,6 @@ static void domain_remove_dev_info(struct dmar_domain *domain)
  {
  	struct device_domain_info *info;
-@@ -2142,16 +2140,17 @@ dmar_search_domain_by_dev_info(int segment, int bus, int devfn)
- 	list_for_each_entry(info, &device_domain_list, global)
- 		if (info->segment == segment && info->bus == bus &&
- 		    info->devfn == devfn)
--			return info->domain;
-+			return info;
- 
- 	return NULL;
- }
- 
--static struct dmar_domain *dmar_insert_dev_info(int segment, int bus, int devfn,
-+static struct dmar_domain *dmar_insert_dev_info(struct intel_iommu *iommu,
-+						int segment, int bus, int devfn,
- 						struct device *dev,
- 						struct dmar_domain *domain)
- {
--	struct dmar_domain *found;
-+	struct dmar_domain *found = NULL;
- 	struct device_domain_info *info;
- 	unsigned long flags;
- 
-@@ -2164,14 +2163,19 @@ static struct dmar_domain *dmar_insert_dev_info(int segment, int bus, int devfn,
- 	info->devfn = devfn;
- 	info->dev = dev;
- 	info->domain = domain;
-+	info->iommu = iommu;
- 	if (!dev)
- 		domain->flags |= DOMAIN_FLAG_P2P_MULTIPLE_DEVICES;
+ 	unsigned long flags, flags2;
+-	struct intel_iommu *iommu;
  
  	spin_lock_irqsave(&device_domain_lock, flags);
- 	if (dev)
- 		found = find_domain(dev);
--	else
--		found = dmar_search_domain_by_dev_info(segment, bus, devfn);
-+	else {
-+		struct device_domain_info *info2;
-+		info2 = dmar_search_domain_by_dev_info(segment, bus, devfn);
-+		if (info2)
-+			found = info2->domain;
-+	}
- 	if (found) {
+ 	while (!list_empty(&domain->devices)) {
+@@ -2094,16 +2093,15 @@ static void domain_remove_dev_info(struct dmar_domain *domain)
  		spin_unlock_irqrestore(&device_domain_lock, flags);
- 		free_devinfo_mem(info);
-@@ -2192,7 +2196,8 @@ static struct dmar_domain *dmar_insert_dev_info(int segment, int bus, int devfn,
- static struct dmar_domain *get_domain_for_dev(struct pci_dev *pdev, int gaw)
- {
- 	struct dmar_domain *domain, *free = NULL;
--	struct intel_iommu *iommu;
-+	struct intel_iommu *iommu = NULL;
-+	struct device_domain_info *info;
- 	struct dmar_drhd_unit *drhd;
- 	struct pci_dev *dev_tmp;
- 	unsigned long flags;
-@@ -2215,10 +2220,13 @@ static struct dmar_domain *get_domain_for_dev(struct pci_dev *pdev, int gaw)
- 			devfn = dev_tmp->devfn;
- 		}
- 		spin_lock_irqsave(&device_domain_lock, flags);
--		domain = dmar_search_domain_by_dev_info(segment, bus, devfn);
-+		info = dmar_search_domain_by_dev_info(segment, bus, devfn);
-+		if (info) {
-+			iommu = info->iommu;
-+			domain = info->domain;
-+		}
- 		spin_unlock_irqrestore(&device_domain_lock, flags);
--		/* pcie-pci bridge already has a domain, uses it */
--		if (domain)
-+		if (info)
- 			goto found_domain;
- 	}
  
-@@ -2244,14 +2252,15 @@ static struct dmar_domain *get_domain_for_dev(struct pci_dev *pdev, int gaw)
+ 		iommu_disable_dev_iotlb(info);
+-		iommu = device_to_iommu(info->segment, info->bus, info->devfn);
+-		iommu_detach_dev(iommu, info->bus, info->devfn);
++		iommu_detach_dev(info->iommu, info->bus, info->devfn);
  
- 	/* register pcie-to-pci device */
- 	if (dev_tmp) {
--		domain = dmar_insert_dev_info(segment, bus, devfn, NULL, domain);
-+		domain = dmar_insert_dev_info(iommu, segment, bus, devfn, NULL,
-+					      domain);
- 		if (!domain)
- 			goto error;
- 	}
- 
- found_domain:
--	domain = dmar_insert_dev_info(segment, pdev->bus->number, pdev->devfn,
--				      &pdev->dev, domain);
-+	domain = dmar_insert_dev_info(iommu, segment, pdev->bus->number,
-+				      pdev->devfn, &pdev->dev, domain);
- error:
- 	if (free != domain)
- 		domain_exit(free);
-@@ -2453,9 +2462,15 @@ static int domain_add_dev_info(struct dmar_domain *domain,
- 			       int translation)
- {
- 	struct dmar_domain *ndomain;
-+	struct intel_iommu *iommu;
- 	int ret;
- 
--	ndomain = dmar_insert_dev_info(pci_domain_nr(pdev->bus),
-+	iommu = device_to_iommu(pci_domain_nr(pdev->bus),
-+				pdev->bus->number, pdev->devfn);
-+	if (!iommu)
-+		return -ENODEV;
-+
-+	ndomain = dmar_insert_dev_info(iommu, pci_domain_nr(pdev->bus),
- 				       pdev->bus->number, pdev->devfn,
- 				       &pdev->dev, domain);
- 	if (ndomain != domain)
+ 		if (domain->flags & DOMAIN_FLAG_VIRTUAL_MACHINE) {
+-			iommu_detach_dependent_devices(iommu, info->dev);
++			iommu_detach_dependent_devices(info->iommu, info->dev);
+ 			/* clear this iommu in iommu_bmp, update iommu count
+ 			 * and capabilities
+ 			 */
+ 			spin_lock_irqsave(&domain->iommu_lock, flags2);
+-			if (test_and_clear_bit(iommu->seq_id,
++			if (test_and_clear_bit(info->iommu->seq_id,
+ 					       domain->iommu_bmp)) {
+ 				domain->iommu_count--;
+ 				domain_update_iommu_cap(domain);
 -- 
 1.8.5.3
