@@ -1,7 +1,7 @@
 From: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 31/33] iommu/vt-d: Remove to_pci_dev() in intel_map_page()
-Date: Fri, 21 Mar 2014 17:19:12 +0000
-Message-ID: <1395422354-19762-32-git-send-email-David.Woodhouse@intel.com>
+Subject: [PATCH 30/33] iommu/vt-d: Remove pdev from intel_iommu_attach_device()
+Date: Fri, 21 Mar 2014 17:19:11 +0000
+Message-ID: <1395422354-19762-31-git-send-email-David.Woodhouse@intel.com>
 References: <1395422354-19762-1-git-send-email-David.Woodhouse@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -20,25 +20,30 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-It might not be...
-
 Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/intel-iommu.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 9a66bf7..b1235dc 100644
+index 7b73c42..9a66bf7 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -3023,7 +3023,7 @@ static dma_addr_t intel_map_page(struct device *dev, struct page *page,
- 				 struct dma_attrs *attrs)
+@@ -4147,13 +4147,12 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
+ 				     struct device *dev)
  {
- 	return __intel_map_single(dev, page_to_phys(page) + offset, size,
--				  dir, to_pci_dev(dev)->dma_mask);
-+				  dir, *dev->dma_mask);
- }
+ 	struct dmar_domain *dmar_domain = domain->priv;
+-	struct pci_dev *pdev = to_pci_dev(dev);
+ 	struct intel_iommu *iommu;
+ 	int addr_width;
+ 	u8 bus, devfn;
  
- static void flush_unmaps(void)
+-	/* normally pdev is not mapped */
+-	if (unlikely(domain_context_mapped(&pdev->dev))) {
++	/* normally dev is not mapped */
++	if (unlikely(domain_context_mapped(dev))) {
+ 		struct dmar_domain *old_domain;
+ 
+ 		old_domain = find_domain(dev);
 -- 
 1.8.5.3
