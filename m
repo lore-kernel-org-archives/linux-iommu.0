@@ -1,7 +1,7 @@
 From: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 22/33] iommu/vt-d: Handle RMRRs for non-PCI devices
-Date: Fri, 21 Mar 2014 17:19:03 +0000
-Message-ID: <1395422354-19762-23-git-send-email-David.Woodhouse@intel.com>
+Subject: [PATCH 25/33] iommu/vt-d: Remove some pointless to_pci_dev() calls
+Date: Fri, 21 Mar 2014 17:19:06 +0000
+Message-ID: <1395422354-19762-26-git-send-email-David.Woodhouse@intel.com>
 References: <1395422354-19762-1-git-send-email-David.Woodhouse@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -20,123 +20,85 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Should hopefully never happen (RMRRs are an abomination) but while we're
-busy eliminating all the PCI assumptions, we might as well do it.
+Mostly made redundant by using dev_name() instead of pci_name(), and one
+instance of using *dev->dma_mask instead of pdev->dma_mask.
 
 Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 30 ++++++++++++++----------------
- 1 file changed, 14 insertions(+), 16 deletions(-)
+ drivers/iommu/intel-iommu.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 05c5214..acb9268 100644
+index 41eafc3..cfe08ea 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -2311,14 +2311,14 @@ static int iommu_domain_identity_map(struct dmar_domain *domain,
- 				  DMA_PTE_READ|DMA_PTE_WRITE);
- }
- 
--static int iommu_prepare_identity_map(struct pci_dev *pdev,
-+static int iommu_prepare_identity_map(struct device *dev,
- 				      unsigned long long start,
- 				      unsigned long long end)
+@@ -2835,7 +2835,6 @@ static struct iova *intel_alloc_iova(struct device *dev,
+ 				     struct dmar_domain *domain,
+ 				     unsigned long nrpages, uint64_t dma_mask)
  {
- 	struct dmar_domain *domain;
- 	int ret;
+-	struct pci_dev *pdev = to_pci_dev(dev);
+ 	struct iova *iova = NULL;
  
--	domain = get_domain_for_dev(&pdev->dev, DEFAULT_DOMAIN_ADDRESS_WIDTH);
-+	domain = get_domain_for_dev(dev, DEFAULT_DOMAIN_ADDRESS_WIDTH);
- 	if (!domain)
- 		return -ENOMEM;
- 
-@@ -2328,13 +2328,13 @@ static int iommu_prepare_identity_map(struct pci_dev *pdev,
- 	   up to start with in si_domain */
- 	if (domain == si_domain && hw_pass_through) {
- 		printk("Ignoring identity map for HW passthrough device %s [0x%Lx - 0x%Lx]\n",
--		       pci_name(pdev), start, end);
-+		       dev_name(dev), start, end);
- 		return 0;
+ 	/* Restrict dma_mask to the width that the iommu can handle */
+@@ -2855,7 +2854,7 @@ static struct iova *intel_alloc_iova(struct device *dev,
+ 	iova = alloc_iova(&domain->iovad, nrpages, IOVA_PFN(dma_mask), 1);
+ 	if (unlikely(!iova)) {
+ 		printk(KERN_ERR "Allocating %ld-page iova for %s failed",
+-		       nrpages, pci_name(pdev));
++		       nrpages, dev_name(dev));
+ 		return NULL;
  	}
  
- 	printk(KERN_INFO
- 	       "IOMMU: Setting identity map for device %s [0x%Lx - 0x%Lx]\n",
--	       pci_name(pdev), start, end);
-+	       dev_name(dev), start, end);
- 	
- 	if (end < start) {
- 		WARN(1, "Your BIOS is broken; RMRR ends before it starts!\n"
-@@ -2362,7 +2362,7 @@ static int iommu_prepare_identity_map(struct pci_dev *pdev,
- 		goto error;
- 
- 	/* context entry init */
--	ret = domain_context_mapping(domain, &pdev->dev, CONTEXT_TT_MULTI_LEVEL);
-+	ret = domain_context_mapping(domain, dev, CONTEXT_TT_MULTI_LEVEL);
- 	if (ret)
- 		goto error;
- 
-@@ -2374,12 +2374,12 @@ static int iommu_prepare_identity_map(struct pci_dev *pdev,
- }
- 
- static inline int iommu_prepare_rmrr_dev(struct dmar_rmrr_unit *rmrr,
--	struct pci_dev *pdev)
-+					 struct device *dev)
+@@ -2959,7 +2958,6 @@ static int iommu_no_mapping(struct device *dev)
+ static dma_addr_t __intel_map_single(struct device *hwdev, phys_addr_t paddr,
+ 				     size_t size, int dir, u64 dma_mask)
  {
--	if (pdev->dev.archdata.iommu == DUMMY_DEVICE_DOMAIN_INFO)
-+	if (dev->archdata.iommu == DUMMY_DEVICE_DOMAIN_INFO)
- 		return 0;
--	return iommu_prepare_identity_map(pdev, rmrr->base_address,
--		rmrr->end_address);
-+	return iommu_prepare_identity_map(dev, rmrr->base_address,
-+					  rmrr->end_address);
- }
- 
- #ifdef CONFIG_INTEL_IOMMU_FLOPPY_WA
-@@ -2393,7 +2393,7 @@ static inline void iommu_prepare_isa(void)
- 		return;
- 
- 	printk(KERN_INFO "IOMMU: Prepare 0-16MiB unity mapping for LPC\n");
--	ret = iommu_prepare_identity_map(pdev, 0, 16*1024*1024 - 1);
-+	ret = iommu_prepare_identity_map(&pdev->dev, 0, 16*1024*1024 - 1);
- 
- 	if (ret)
- 		printk(KERN_ERR "IOMMU: Failed to create 0-16MiB identity map; "
-@@ -2495,7 +2495,7 @@ static int domain_add_dev_info(struct dmar_domain *domain,
+-	struct pci_dev *pdev = to_pci_dev(hwdev);
+ 	struct dmar_domain *domain;
+ 	phys_addr_t start_paddr;
+ 	struct iova *iova;
+@@ -3018,7 +3016,7 @@ error:
+ 	if (iova)
+ 		__free_iova(&domain->iovad, iova);
+ 	printk(KERN_ERR"Device %s request: %zx@%llx dir %d --- failed\n",
+-		pci_name(pdev), size, (unsigned long long)paddr, dir);
++		dev_name(hwdev), size, (unsigned long long)paddr, dir);
  	return 0;
  }
  
--static bool device_has_rmrr(struct pci_dev *dev)
-+static bool device_has_rmrr(struct device *dev)
+@@ -3115,7 +3113,6 @@ static void intel_unmap_page(struct device *dev, dma_addr_t dev_addr,
+ 			     size_t size, enum dma_data_direction dir,
+ 			     struct dma_attrs *attrs)
  {
- 	struct dmar_rmrr_unit *rmrr;
- 	struct device *tmp;
-@@ -2509,7 +2509,7 @@ static bool device_has_rmrr(struct pci_dev *dev)
- 		 */
- 		for_each_active_dev_scope(rmrr->devices,
- 					  rmrr->devices_cnt, i, tmp)
--			if (tmp == &dev->dev) {
-+			if (tmp == dev) {
- 				rcu_read_unlock();
- 				return true;
- 			}
-@@ -2529,7 +2529,7 @@ static int iommu_should_identity_map(struct pci_dev *pdev, int startup)
- 	 * from this process due to their usage of RMRRs that are known
- 	 * to not be needed after BIOS hand-off to OS.
- 	 */
--	if (device_has_rmrr(pdev) &&
-+	if (device_has_rmrr(&pdev->dev) &&
- 	    (pdev->class >> 8) != PCI_CLASS_SERIAL_USB)
- 		return 0;
+-	struct pci_dev *pdev = to_pci_dev(dev);
+ 	struct dmar_domain *domain;
+ 	unsigned long start_pfn, last_pfn;
+ 	struct iova *iova;
+@@ -3139,7 +3136,7 @@ static void intel_unmap_page(struct device *dev, dma_addr_t dev_addr,
+ 	last_pfn = mm_to_dma_pfn(iova->pfn_hi + 1) - 1;
  
-@@ -2766,9 +2766,7 @@ static int __init init_dmars(void)
- 		/* some BIOS lists non-exist devices in DMAR table. */
- 		for_each_active_dev_scope(rmrr->devices, rmrr->devices_cnt,
- 					  i, dev) {
--			if (!dev_is_pci(dev))
--				continue;
--			ret = iommu_prepare_rmrr_dev(rmrr, to_pci_dev(dev));
-+			ret = iommu_prepare_rmrr_dev(rmrr, dev);
- 			if (ret)
- 				printk(KERN_ERR
- 				       "IOMMU: mapping reserved region failed\n");
+ 	pr_debug("Device %s unmapping: pfn %lx-%lx\n",
+-		 pci_name(pdev), start_pfn, last_pfn);
++		 dev_name(dev), start_pfn, last_pfn);
+ 
+ 	freelist = domain_unmap(domain, start_pfn, last_pfn);
+ 
+@@ -3264,7 +3261,6 @@ static int intel_map_sg(struct device *hwdev, struct scatterlist *sglist, int ne
+ 			enum dma_data_direction dir, struct dma_attrs *attrs)
+ {
+ 	int i;
+-	struct pci_dev *pdev = to_pci_dev(hwdev);
+ 	struct dmar_domain *domain;
+ 	size_t size = 0;
+ 	int prot = 0;
+@@ -3288,7 +3284,7 @@ static int intel_map_sg(struct device *hwdev, struct scatterlist *sglist, int ne
+ 		size += aligned_nrpages(sg->offset, sg->length);
+ 
+ 	iova = intel_alloc_iova(hwdev, domain, dma_to_mm_pfn(size),
+-				pdev->dma_mask);
++				*hwdev->dma_mask);
+ 	if (!iova) {
+ 		sglist->dma_length = 0;
+ 		return 0;
 -- 
 1.8.5.3
