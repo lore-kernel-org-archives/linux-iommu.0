@@ -1,7 +1,7 @@
 From: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 29/33] iommu/vt-d: Remove pdev from iommu_no_mapping()
-Date: Fri, 21 Mar 2014 17:19:10 +0000
-Message-ID: <1395422354-19762-30-git-send-email-David.Woodhouse@intel.com>
+Subject: [PATCH 22/33] iommu/vt-d: Handle RMRRs for non-PCI devices
+Date: Fri, 21 Mar 2014 17:19:03 +0000
+Message-ID: <1395422354-19762-23-git-send-email-David.Woodhouse@intel.com>
 References: <1395422354-19762-1-git-send-email-David.Woodhouse@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -20,65 +20,123 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+Should hopefully never happen (RMRRs are an abomination) but while we're
+busy eliminating all the PCI assumptions, we might as well do it.
+
 Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+ drivers/iommu/intel-iommu.c | 30 ++++++++++++++----------------
+ 1 file changed, 14 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 3e15050..7b73c42 100644
+index 05c5214..acb9268 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -2902,10 +2902,9 @@ static int iommu_dummy(struct device *dev)
- 	return dev->archdata.iommu == DUMMY_DEVICE_DOMAIN_INFO;
+@@ -2311,14 +2311,14 @@ static int iommu_domain_identity_map(struct dmar_domain *domain,
+ 				  DMA_PTE_READ|DMA_PTE_WRITE);
  }
  
--/* Check if the pdev needs to go through non-identity map and unmap process.*/
-+/* Check if the dev needs to go through non-identity map and unmap process.*/
- static int iommu_no_mapping(struct device *dev)
+-static int iommu_prepare_identity_map(struct pci_dev *pdev,
++static int iommu_prepare_identity_map(struct device *dev,
+ 				      unsigned long long start,
+ 				      unsigned long long end)
  {
--	struct pci_dev *pdev;
- 	int found;
+ 	struct dmar_domain *domain;
+ 	int ret;
  
- 	if (unlikely(!dev_is_pci(dev)))
-@@ -2917,10 +2916,9 @@ static int iommu_no_mapping(struct device *dev)
- 	if (!iommu_identity_mapping)
+-	domain = get_domain_for_dev(&pdev->dev, DEFAULT_DOMAIN_ADDRESS_WIDTH);
++	domain = get_domain_for_dev(dev, DEFAULT_DOMAIN_ADDRESS_WIDTH);
+ 	if (!domain)
+ 		return -ENOMEM;
+ 
+@@ -2328,13 +2328,13 @@ static int iommu_prepare_identity_map(struct pci_dev *pdev,
+ 	   up to start with in si_domain */
+ 	if (domain == si_domain && hw_pass_through) {
+ 		printk("Ignoring identity map for HW passthrough device %s [0x%Lx - 0x%Lx]\n",
+-		       pci_name(pdev), start, end);
++		       dev_name(dev), start, end);
+ 		return 0;
+ 	}
+ 
+ 	printk(KERN_INFO
+ 	       "IOMMU: Setting identity map for device %s [0x%Lx - 0x%Lx]\n",
+-	       pci_name(pdev), start, end);
++	       dev_name(dev), start, end);
+ 	
+ 	if (end < start) {
+ 		WARN(1, "Your BIOS is broken; RMRR ends before it starts!\n"
+@@ -2362,7 +2362,7 @@ static int iommu_prepare_identity_map(struct pci_dev *pdev,
+ 		goto error;
+ 
+ 	/* context entry init */
+-	ret = domain_context_mapping(domain, &pdev->dev, CONTEXT_TT_MULTI_LEVEL);
++	ret = domain_context_mapping(domain, dev, CONTEXT_TT_MULTI_LEVEL);
+ 	if (ret)
+ 		goto error;
+ 
+@@ -2374,12 +2374,12 @@ static int iommu_prepare_identity_map(struct pci_dev *pdev,
+ }
+ 
+ static inline int iommu_prepare_rmrr_dev(struct dmar_rmrr_unit *rmrr,
+-	struct pci_dev *pdev)
++					 struct device *dev)
+ {
+-	if (pdev->dev.archdata.iommu == DUMMY_DEVICE_DOMAIN_INFO)
++	if (dev->archdata.iommu == DUMMY_DEVICE_DOMAIN_INFO)
+ 		return 0;
+-	return iommu_prepare_identity_map(pdev, rmrr->base_address,
+-		rmrr->end_address);
++	return iommu_prepare_identity_map(dev, rmrr->base_address,
++					  rmrr->end_address);
+ }
+ 
+ #ifdef CONFIG_INTEL_IOMMU_FLOPPY_WA
+@@ -2393,7 +2393,7 @@ static inline void iommu_prepare_isa(void)
+ 		return;
+ 
+ 	printk(KERN_INFO "IOMMU: Prepare 0-16MiB unity mapping for LPC\n");
+-	ret = iommu_prepare_identity_map(pdev, 0, 16*1024*1024 - 1);
++	ret = iommu_prepare_identity_map(&pdev->dev, 0, 16*1024*1024 - 1);
+ 
+ 	if (ret)
+ 		printk(KERN_ERR "IOMMU: Failed to create 0-16MiB identity map; "
+@@ -2495,7 +2495,7 @@ static int domain_add_dev_info(struct dmar_domain *domain,
+ 	return 0;
+ }
+ 
+-static bool device_has_rmrr(struct pci_dev *dev)
++static bool device_has_rmrr(struct device *dev)
+ {
+ 	struct dmar_rmrr_unit *rmrr;
+ 	struct device *tmp;
+@@ -2509,7 +2509,7 @@ static bool device_has_rmrr(struct pci_dev *dev)
+ 		 */
+ 		for_each_active_dev_scope(rmrr->devices,
+ 					  rmrr->devices_cnt, i, tmp)
+-			if (tmp == &dev->dev) {
++			if (tmp == dev) {
+ 				rcu_read_unlock();
+ 				return true;
+ 			}
+@@ -2529,7 +2529,7 @@ static int iommu_should_identity_map(struct pci_dev *pdev, int startup)
+ 	 * from this process due to their usage of RMRRs that are known
+ 	 * to not be needed after BIOS hand-off to OS.
+ 	 */
+-	if (device_has_rmrr(pdev) &&
++	if (device_has_rmrr(&pdev->dev) &&
+ 	    (pdev->class >> 8) != PCI_CLASS_SERIAL_USB)
  		return 0;
  
--	pdev = to_pci_dev(dev);
- 	found = identity_mapping(dev);
- 	if (found) {
--		if (iommu_should_identity_map(&pdev->dev, 0))
-+		if (iommu_should_identity_map(dev, 0))
- 			return 1;
- 		else {
- 			/*
-@@ -2929,7 +2927,7 @@ static int iommu_no_mapping(struct device *dev)
- 			 */
- 			domain_remove_one_dev_info(si_domain, dev);
- 			printk(KERN_INFO "32bit %s uses non-identity mapping\n",
--			       pci_name(pdev));
-+			       dev_name(dev));
- 			return 0;
- 		}
- 	} else {
-@@ -2937,7 +2935,7 @@ static int iommu_no_mapping(struct device *dev)
- 		 * In case of a detached 64 bit DMA device from vm, the device
- 		 * is put into si_domain for identity mapping.
- 		 */
--		if (iommu_should_identity_map(&pdev->dev, 0)) {
-+		if (iommu_should_identity_map(dev, 0)) {
- 			int ret;
- 			ret = domain_add_dev_info(si_domain, dev,
- 						  hw_pass_through ?
-@@ -2945,7 +2943,7 @@ static int iommu_no_mapping(struct device *dev)
- 						  CONTEXT_TT_MULTI_LEVEL);
- 			if (!ret) {
- 				printk(KERN_INFO "64bit %s uses identity mapping\n",
--				       pci_name(pdev));
-+				       dev_name(dev));
- 				return 1;
- 			}
- 		}
+@@ -2766,9 +2766,7 @@ static int __init init_dmars(void)
+ 		/* some BIOS lists non-exist devices in DMAR table. */
+ 		for_each_active_dev_scope(rmrr->devices, rmrr->devices_cnt,
+ 					  i, dev) {
+-			if (!dev_is_pci(dev))
+-				continue;
+-			ret = iommu_prepare_rmrr_dev(rmrr, to_pci_dev(dev));
++			ret = iommu_prepare_rmrr_dev(rmrr, dev);
+ 			if (ret)
+ 				printk(KERN_ERR
+ 				       "IOMMU: mapping reserved region failed\n");
 -- 
 1.8.5.3
