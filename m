@@ -1,14 +1,15 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [GIT PULL] VT-d fixes and ACPI device mapping support for 3.15
-Date: Mon, 24 Mar 2014 16:44:53 +0100
-Message-ID: <20140324154449.GA2775@8bytes.org>
-References: <1395674279.4880.236.camel@i7.infradead.org>
+Subject: Re: [PATCH V2] iommu/amd: Fix logic to determine and checking max
+	PASID
+Date: Mon, 24 Mar 2014 16:48:06 +0100
+Message-ID: <20140324154806.GB2775@8bytes.org>
+References: <1394067258-5968-1-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1395674279.4880.236.camel-W2I5cNIroUsVm/YvaOjsyQ@public.gmane.org>
+In-Reply-To: <1394067258-5968-1-git-send-email-suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,37 +19,28 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jay.cornwall-5C7GfCeVMHo@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kim.naru-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Mar 24, 2014 at 03:17:59PM +0000, David Woodhouse wrote:
-> J=F6rg, please pull into your x86/vt-d branch from
-> =
+On Wed, Mar 05, 2014 at 06:54:18PM -0600, suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org wrote:
+> From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+> 
+> In reality, the spec can only support 16-bit PASID since
+> INVALIDATE_IOTLB_PAGES and COMPLETE_PPR_REQUEST commands only allow 16-bit
+> PASID. So, we updated the PASID_MASK accordingly and invoke BUG_ON
+> if the hardware is reporting PASmax more than 16-bit.
+> 
+> Besides, max PASID is defined as ((2^(PASmax+1)) - 1). The current does not
+> determine this correctly.
+> 
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+> Tested-by: Jay Cornwall <Jay.Cornwall-5C7GfCeVMHo@public.gmane.org>
 
-> 	git://git.infradead.org/iommu-2.6
-> =
+Applied, thanks.
 
-> This contains the two patch sets I've posted in the last week; first the
-> set which fixes the use-after-free issues with IOTLB flushes, adds some
-> missing IOTLB flushes and generally improves unmap performance. And then
-> the support for DMA mapping of ACPI devices.
-> =
+Btw, is there any publicly available driver/way/whatever for me to test the
+AMD IOMMUv2 code paths?
 
-> This contains a couple of fixes triggered by Fengguang's build-test
-> robots; one of which was posted as [PATCH 34/33] a few hours ago, and
-> the other of which just moves the 'segment' member of struct intel_iommu
-> outside the #ifdef CONFIG_INTEL_IOMMU since it's accessed from dmar.c
-> without that config option set. I've merged both of those fixes back
-> into the original offending patch, rather than putting them on top.
-> =
 
->  drivers/iommu/dmar.c        | 166 ++++++++---
->  drivers/iommu/intel-iommu.c | 979 ++++++++++++++++++++++++++++++++++++++=
-++-------------------------
->  include/acpi/actbl2.h       |  15 +-
->  include/linux/dmar.h        |  18 +-
->  include/linux/intel-iommu.h |   1 +
->  5 files changed, 759 insertions(+), 420 deletions(-)
-
-Pulled, thanks David.
+	Joerg
