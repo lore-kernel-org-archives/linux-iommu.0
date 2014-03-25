@@ -1,43 +1,191 @@
-From: "Cornwall, Jay" <Jay.Cornwall@amd.com>
-Subject: RE: [PATCH V2] iommu/amd: Fix logic to determine and checking max
- PASID
-Date: Mon, 24 Mar 2014 19:33:50 +0000
-Message-ID: <99CB3FADB756624A867BE9481439561C334AC1BF@satlexdag03.amd.com>
-References: <1394067258-5968-1-git-send-email-suravee.suthikulpanit@amd.com>
- <20140324154806.GB2775@8bytes.org>
+From: Eric Auger <eric.auger@linaro.org>
+Subject: Re: [RFC PATCH v4 06/10] VFIO_PLATFORM: Read and write support for
+ the device fd
+Date: Tue, 25 Mar 2014 17:43:24 +0100
+Message-ID: <5331B22C.6090100@linaro.org>
+References: <20140325110619.52107df5d6d0cf0476b33cd4@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20140324154806.GB2775@8bytes.org>
-Content-Language: en-US
+In-Reply-To: <20140325110619.52107df5d6d0cf0476b33cd4@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Naru, Kim" <Kim.Naru@amd.com>
+Cc: alex.williamson@redhat.com, kvmarm@lists.cs.columbia.edu, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org, tech@virtualopensystems.com, a.rigo@virtualopensystems.com, B08248@freescale.com, kim.phillips@linaro.org, jan.kiszka@siemens.com, kvm@vger.kernel.org, R65777@freescale.com, B07421@freescale.com, christoffer.dall@linaro.org, agraf@suse.de, B16395@freescale.com, will.deacon@arm.com, a.motakis@virtualopensystems.com
 List-Id: iommu@lists.linux-foundation.org
 
-Joerg Roedel wrote:
-
->On Wed, Mar 05, 2014 at 06:54:18PM -0600, suravee.suthikulpanit@amd.com wrote:
->> From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
->> 
->> In reality, the spec can only support 16-bit PASID since 
->> INVALIDATE_IOTLB_PAGES and COMPLETE_PPR_REQUEST commands only allow 
->> 16-bit PASID. So, we updated the PASID_MASK accordingly and invoke 
->>BUG_ON if the hardware is reporting PASmax more than 16-bit.
->> 
->>Besides, max PASID is defined as ((2^(PASmax+1)) - 1). The current 
->> does not determine this correctly.
->> 
->> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
->> Tested-by: Jay Cornwall <Jay.Cornwall@amd.com>
+> Date: Sat,  8 Feb 2014 18:29:36 +0100
+> VFIO returns a file descriptor which we can use to manipulate the memory
+> regions of the device. Since some memory regions we cannot mmap due to
+> security concerns, we also allow to read and write to this file descriptor
+> directly.
 > 
-> Applied, thanks.
+> Signed-off-by: Antonios Motakis <a.motakis@virtualopensystems.com>
+> Tested-by: Alvise Rigo <a.rigo@virtualopensystems.com>
+> ---
+>  drivers/vfio/platform/vfio_platform.c | 128 +++++++++++++++++++++++++++++++++-
+>  1 file changed, 125 insertions(+), 3 deletions(-)
 > 
-> Btw, is there any publicly available driver/way/whatever for me to test the AMD IOMMUv2 code paths?
+> diff --git a/drivers/vfio/platform/vfio_platform.c b/drivers/vfio/platform/vfio_platform.c
+> index f7db5c0..ee96078 100644
+> --- a/drivers/vfio/platform/vfio_platform.c
+> +++ b/drivers/vfio/platform/vfio_platform.c
+> @@ -55,7 +55,8 @@ static int vfio_platform_regions_init(struct vfio_platform_device *vdev)
+>  
+>  		region.addr = res->start;
+>  		region.size = resource_size(res);
+> -		region.flags = 0;
+> +		region.flags = VFIO_REGION_INFO_FLAG_READ
+> +				| VFIO_REGION_INFO_FLAG_WRITE;
+>  
+>  		vdev->region[i] = region;
+>  	}
+> @@ -150,13 +151,134 @@ static long vfio_platform_ioctl(void *device_data,
+>  static ssize_t vfio_platform_read(void *device_data, char __user *buf,
+>  			     size_t count, loff_t *ppos)
+>  {
+> -	return 0;
+> +	struct vfio_platform_device *vdev = device_data;
+> +	unsigned int *io;
+> +	int i;
+> +
+> +	for (i = 0; i < vdev->num_regions; i++) {
+> +		struct vfio_platform_region region = vdev->region[i];
+> +		unsigned int done = 0;
+> +		loff_t off;
+> +
+> +		if ((*ppos < region.addr)
+> +		     || (*ppos + count - 1) >= (region.addr + region.size))
+> +			continue;
+> +
+> +		io = ioremap_nocache(region.addr, region.size);
+> +
+> +		off = *ppos - region.addr;
+> +
+> +		while (count) {
+> +			size_t filled;
+> +
+> +			if (count >= 4 && !(off % 4)) {
+> +				u32 val;
+> +
+> +				val = ioread32(io + off);
 
-We are testing on a kernel development branch which enables ATS translation from shaders on the Kaveri APU. See drivers/gpu/hsa/radeon at http://cgit.freedesktop.org/~gabbayo/linux/ for the kernel driver.
+Hi Antonios,
 
-Testing requires some setup in user mode to construct a PM4 command stream and CIK assembly, similar to the DRM/Mesa UMD implementation. Even then, it is not possible to observe translations directly. Our testing is limited to indirect observations; e.g. modifying VA:PA mappings and ensuring shader loads/stores reflect expected results.
+I suspect there is an issue with the read address. Indeed io being an
+unsigned int* the read address is io + off x sizeof (unsigned int) ie.
+io+ offx4  whereas we expect to read io + off. declaring io as a void*
+corrects the issue (or void __iomem *io). Same issue on write.
 
-I don't know of a way to exercise the IOMMUv2 code paths without an IOTLB client.
+Best Regards
+
+Eric
+
+> +				if (copy_to_user(buf, &val, 4))
+> +					goto err;
+> +
+> +				filled = 4;
+> +			} else if (count >= 2 && !(off % 2)) {
+> +				u16 val;
+> +
+> +				val = ioread16(io + off);
+> +				if (copy_to_user(buf, &val, 2))
+> +					goto err;
+> +
+> +				filled = 2;
+> +			} else {
+> +				u8 val;
+> +
+> +				val = ioread8(io + off);
+> +				if (copy_to_user(buf, &val, 1))
+> +					goto err;
+> +
+> +				filled = 1;
+> +			}
+> +
+> +
+> +			count -= filled;
+> +			done += filled;
+> +			off += filled;
+> +			buf += filled;
+> +		}
+> +
+> +		iounmap(io);
+> +		return done;
+> +	}
+> +
+> +	return -EFAULT;
+> +
+> +err:
+> +	iounmap(io);
+> +	return -EFAULT;
+>  }
+>  
+>  static ssize_t vfio_platform_write(void *device_data, const char __user *buf,
+>  			      size_t count, loff_t *ppos)
+>  {
+> -	return 0;
+> +	struct vfio_platform_device *vdev = device_data;
+> +	unsigned int *io;
+> +	int i;
+> +
+> +	for (i = 0; i < vdev->num_regions; i++) {
+> +		struct vfio_platform_region region = vdev->region[i];
+> +		unsigned int done = 0;
+> +		loff_t off;
+> +
+> +		if ((*ppos < region.addr)
+> +		     || (*ppos + count - 1) >= (region.addr + region.size))
+> +			continue;
+> +
+> +		io = ioremap_nocache(region.addr, region.size);
+> +
+> +		off = *ppos - region.addr;
+> +
+> +		while (count) {
+> +			size_t filled;
+> +
+> +			if (count >= 4 && !(off % 4)) {
+> +				u32 val;
+> +
+> +				if (copy_from_user(&val, buf, 4))
+> +					goto err;
+> +				iowrite32(val, io + off);
+> +
+> +				filled = 4;
+> +			} else if (count >= 2 && !(off % 2)) {
+> +				u16 val;
+> +
+> +				if (copy_from_user(&val, buf, 2))
+> +					goto err;
+> +				iowrite16(val, io + off);
+> +
+> +				filled = 2;
+> +			} else {
+> +				u8 val;
+> +
+> +				if (copy_from_user(&val, buf, 1))
+> +					goto err;
+> +				iowrite8(val, io + off);
+> +
+> +				filled = 1;
+> +			}
+> +
+> +			count -= filled;
+> +			done += filled;
+> +			off += filled;
+> +			buf += filled;
+> +		}
+> +
+> +		iounmap(io);
+> +		return done;
+> +	}
+> +
+> +	return -EINVAL;
+> +
+> +err:
+> +	iounmap(io);
+> +	return -EFAULT;
+>  }
+>  
+>  static int vfio_platform_mmap(void *device_data, struct vm_area_struct *vma)
+> 
