@@ -1,10 +1,8 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 Subject: Re: mechanism to allow a driver to bind to any device
-Date: Wed, 26 Mar 2014 10:21:02 -0600
-Message-ID: <1395850862.632.247.camel@ul30vt.home>
-References: <1391880580-471-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1391880580-471-2-git-send-email-a.motakis@virtualopensystems.com>
-	<20140214222716.GA11838@kroah.com>
+Date: Wed, 26 Mar 2014 12:24:40 -0400
+Message-ID: <20140326162440.GA21368@phenom.dumpdata.com>
+References: <20140214222716.GA11838@kroah.com>
 	<ba7597fd8c9f4d91bbccfb42e31a165e@DM2PR03MB352.namprd03.prod.outlook.com>
 	<20140215024725.GA2542@kroah.com>
 	<7043e1edd9974de590dcb392cd8aff14@DM2PR03MB352.namprd03.prod.outlook.com>
@@ -18,6 +16,7 @@ Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
 In-Reply-To: <D45FC8F2-7807-4BBB-A253-8EFCD091D6BD-l3A5Bk7waGM@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -29,11 +28,11 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Alexander Graf <agraf-l3A5Bk7waGM@public.gmane.org>
-Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org" <jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Michal Hocko <mhocko-AlSwsSmVLrQ@public.gmane.org>, Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, "Rafael J.
-	Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Dmitry Kasatkin <d.kasatkin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Tejun Heo <tj-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Toshi Kani <toshi.kani-VXdhtT5mjnY@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9IKTv4iemRRA@public.gmane.org
+Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org" <jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Michal Hocko <mhocko-AlSwsSmVLrQ@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, "Rafael J. Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Dmitry Kasatkin <d.kasatkin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>, Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Toshi Kani <toshi.kani-VXdhtT5mjnY@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, iommu-cunTk1MwBs8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2014-03-26 at 23:06 +0800, Alexander Graf wrote:
+On Wed, Mar 26, 2014 at 11:06:02PM +0800, Alexander Graf wrote:
+> 
 > 
 > > Am 26.03.2014 um 22:40 schrieb Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>:
 > > 
@@ -95,6 +94,11 @@ On Wed, 2014-03-26 at 23:06 +0800, Alexander Graf wrote:
 > > Which I think is what is currently being done. Why is that not sufficient?
 > 
 > How would 'bind to vfio driver' look like?
+
+you echo the BDF to a 'new_slot' to setup an pci match entry (so that it
+can lookup from the BDF the device/vendor id). Then you echo the
+BDF to the 'bind'.
+
 > 
 > > The only thing I see in the URL is " That works, but it is ugly."
 > > There is some mention of race but I don't see how - if you do the 'unbind'
@@ -111,47 +115,20 @@ On Wed, 2014-03-26 at 23:06 +0800, Alexander Graf wrote:
 > 
 > If in between you hotplug add a card of the same type, it gets attached to vfio - even though the logical "default driver" would be the device specific driver.
 
-I've mentioned drivers_autoprobe in the past, but I'm not sure we're
-really factoring it into the discussion.  drivers_autoprobe allows us to
-toggle two points:
-
-a) When a new device is added whether we automatically give drivers a
-try at binding to it
-
-b) When a new driver is added whether it gets to try to bind to anything
-in the system
-
-So we do have a mechanism to avoid the race, but the problem is that it
-becomes the responsibility of userspace to:
-
-1) turn off drivers_autoprobe
-2) unbind/new_id/bind/remove_id
-3) turn on drivers_autoprobe
-4) call drivers_probe for anything added between 1) & 3)
-
-Is the question about the ugliness of the current solution whether it's
-unreasonable to ask userspace to do this?
-
-What we seem to be asking for above is more like an autoprobe flag per
-driver where there's some way for this special driver to opt out of auto
-probing.  Option 2. in Stuart's list does this by short-cutting ID
-matching so that a "match" is only found when using the sysfs bind path,
-option 3. enables a way for a driver to expose their own sysfs entry
-point for binding.  The latter feels particularly chaotic since drivers
-get to make-up their own bind mechanism.
-
-Another twist I'll throw in is that devices can be hot added to IOMMU
-groups that are in-use by userspace.  When that happens we'd like to be
-able to disable driver autoprobe of the device to avoid a host driver
-automatically binding to the device.  I wonder if instead of looking at
-the problem from the driver perspective, if we were to instead look at
-it from the device perspective if we might find a solution that would
-address both.  For instance, if devices had a driver_probe_id property
-that was by default set to their bus specific ID match ("$VENDOR
-$DEVICE" on PCI) could we use that to write new match IDs so that a
-device could only bind to a given driver?  Effectively we could then
-bind either using the current method of adding to the list of IDs a
-driver will match of changing the ID that a device would match.  Does
-that get us anywhere?  Thanks,
-
-Alex
+But that would not happen if you use BDF. So if you switch from using
+device/vendor id then you don't have this problem.
+> 
+> 
+> Alex
+> 
+> > 
+> >> 
+> >> Would like your comment on these options-- option #3 is preferred
+> >> and is literally a 2 line patch.
+> >> 
+> >> Thanks,
+> >> Stuart
+> >> _______________________________________________
+> >> iommu mailing list
+> >> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> >> https://lists.linuxfoundation.org/mailman/listinfo/iommu
