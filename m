@@ -1,393 +1,158 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: mechanism to allow a driver to bind to any device
-Date: Fri, 28 Mar 2014 11:10:23 -0600
-Message-ID: <1396026623.4502.34.camel@ul30vt.home>
-References: <20140215024725.GA2542@kroah.com>
-	<7043e1edd9974de590dcb392cd8aff14@DM2PR03MB352.namprd03.prod.outlook.com>
-	<20140215173348.GA8056@kroah.com>
-	<b6374a0f30194969ba4622ff2f58ae65@DM2PR03MB352.namprd03.prod.outlook.com>
-	<20140220224337.GA20097@kroah.com>
-	<54cd150235ba4954becdd12f725c5ebd@DM2PR03MB352.namprd03.prod.outlook.com>
-	<20140326144025.GA18387@phenom.dumpdata.com>
-	<D45FC8F2-7807-4BBB-A253-8EFCD091D6BD@suse.de>
-	<1395850862.632.247.camel@ul30vt.home>
-	<1395871761.632.316.camel@ul30vt.home>
-	<20140328165809.GA12659@phenom.dumpdata.com>
+From: David Woodhouse <dwmw2@infradead.org>
+Subject: Re: [patch] iommu/vt-d: returning free pointer in
+ get_domain_for_dev()
+Date: Fri, 28 Mar 2014 20:37:31 +0000
+Message-ID: <1396039051.8569.36.camel@i7.infradead.org>
+References: <20140328082950.GN25192@mwanda>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140328165809.GA12659-6K5HmflnPlqSPmnEAIUT9EEOCMrvLtNR@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org" <jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Michal Hocko <mhocko-AlSwsSmVLrQ@public.gmane.org>, Scott Wood <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, "Rafael J.
-	Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Alexander Graf <agraf-l3A5Bk7waGM@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Dmitry Kasatkin <d.kasatkin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Tejun Heo <tj-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Toshi Kani <toshi.kani-VXdhtT5mjnY@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel@vger.k>
+Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
+	boundary="=-CdoSeUH0VTsGrqp6sIBx"
+Return-path: <kernel-janitors-owner@vger.kernel.org>
+In-Reply-To: <20140328082950.GN25192@mwanda>
+Sender: kernel-janitors-owner@vger.kernel.org
+To: Dan Carpenter <dan.carpenter@oracle.com>
+Cc: kernel-janitors@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 2014-03-28 at 12:58 -0400, Konrad Rzeszutek Wilk wrote:
-> On Wed, Mar 26, 2014 at 04:09:21PM -0600, Alex Williamson wrote:
-> > On Wed, 2014-03-26 at 10:21 -0600, Alex Williamson wrote:
-> > > On Wed, 2014-03-26 at 23:06 +0800, Alexander Graf wrote:
-> > > > 
-> > > > > Am 26.03.2014 um 22:40 schrieb Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>:
-> > > > > 
-> > > > >> On Wed, Mar 26, 2014 at 01:40:32AM +0000, Stuart Yoder wrote:
-> > > > >> Hi Greg,
-> > > > >> 
-> > > > >> We (Linaro, Freescale, Virtual Open Systems) are trying get an issue
-> > > > >> closed that has been perculating for a while around creating a mechanism
-> > > > >> that will allow kernel drivers like vfio can bind to devices of any type.
-> > > > >> 
-> > > > >> This thread with you:
-> > > > >> http://www.spinics.net/lists/kvm-arm/msg08370.html
-> > > > >> ...seems to have died out, so am trying to get your response
-> > > > >> and will summarize again.  Vfio drivers in the kernel (regardless of
-> > > > >> bus type) need to bind to devices of any type.  The driver's function
-> > > > >> is to simply export hardware resources of any type to user space.
-> > > > >> 
-> > > > >> There are several approaches that have been proposed:
-> > > > > 
-> > > > > You seem to have missed the one I proposed.
-> > > > >> 
-> > > > >>   1.  new_id -- (current approach) the user explicitly registers
-> > > > >>       each new device type with the vfio driver using the new_id
-> > > > >>       mechanism.
-> > > > >> 
-> > > > >>       Problem: multiple drivers will be resident that handle the
-> > > > >>       same device type...and there is nothing user space hotplug
-> > > > >>       infrastructure can do to help.
-> > > > >> 
-> > > > >>   2.  "any id" -- the vfio driver could specify a wildcard match
-> > > > >>       of some kind in its ID match table which would allow it to
-> > > > >>       match and bind to any possible device id.  However,
-> > > > >>       we don't want the vfio driver grabbing _all_ devices...just the ones we
-> > > > >>       explicitly want to pass to user space.
-> > > > >> 
-> > > > >>       The proposed patch to support this was to create a new flag
-> > > > >>       "sysfs_bind_only" in struct device_driver.  When this flag
-> > > > >>       is set, the driver can only bind to devices via the sysfs
-> > > > >>       bind file.  This would allow the wildcard match to work.
-> > > > >> 
-> > > > >>       Patch is here:
-> > > > >>       https://lkml.org/lkml/2013/12/3/253
-> > > > >> 
-> > > > >>   3.  "Driver initiated explicit bind" -- with this approach the
-> > > > >>       vfio driver would create a private 'bind' sysfs object
-> > > > >>       and the user would echo the requested device into it:
-> > > > >> 
-> > > > >>       echo 0001:03:00.0 > /sys/bus/pci/drivers/vfio-pci/vfio_bind
-> > > > >> 
-> > > > >>       In order to make that work, the driver would need to call
-> > > > >>       driver_probe_device() and thus we need this patch:
-> > > > >>       https://lkml.org/lkml/2014/2/8/175
-> > > > > 
-> > > > > 4). Use the 'unbind' (from the original device) and 'bind' to vfio driver.
-> > > > 
-> > > > This is approach 2, no?
-> > > > 
-> > > > > 
-> > > > > Which I think is what is currently being done. Why is that not sufficient?
-> > > > 
-> > > > How would 'bind to vfio driver' look like?
-> > > > 
-> > > > > The only thing I see in the URL is " That works, but it is ugly."
-> > > > > There is some mention of race but I don't see how - if you do the 'unbind'
-> > > > > on the original driver and then bind the BDF to the VFIO how would you get
-> > > > > a race?
-> > > > 
-> > > > Typically on PCI, you do a
-> > > > 
-> > > >   - add wildcard (pci id) match to vfio driver
-> > > >   - unbind driver
-> > > >   -> reprobe
-> > > >   -> device attaches to vfio driver because it is the least recent match
-> > > >   - remove wildcard match from vfio driver
-> > > > 
-> > > > If in between you hotplug add a card of the same type, it gets attached to vfio - even though the logical "default driver" would be the device specific driver.
-> > > 
-> > > I've mentioned drivers_autoprobe in the past, but I'm not sure we're
-> > > really factoring it into the discussion.  drivers_autoprobe allows us to
-> > > toggle two points:
-> > > 
-> > > a) When a new device is added whether we automatically give drivers a
-> > > try at binding to it
-> > > 
-> > > b) When a new driver is added whether it gets to try to bind to anything
-> > > in the system
-> > > 
-> > > So we do have a mechanism to avoid the race, but the problem is that it
-> > > becomes the responsibility of userspace to:
-> > > 
-> > > 1) turn off drivers_autoprobe
-> > > 2) unbind/new_id/bind/remove_id
-> > > 3) turn on drivers_autoprobe
-> > > 4) call drivers_probe for anything added between 1) & 3)
-> > > 
-> > > Is the question about the ugliness of the current solution whether it's
-> > > unreasonable to ask userspace to do this?
-> > > 
-> > > What we seem to be asking for above is more like an autoprobe flag per
-> > > driver where there's some way for this special driver to opt out of auto
-> > > probing.  Option 2. in Stuart's list does this by short-cutting ID
-> > > matching so that a "match" is only found when using the sysfs bind path,
-> > > option 3. enables a way for a driver to expose their own sysfs entry
-> > > point for binding.  The latter feels particularly chaotic since drivers
-> > > get to make-up their own bind mechanism.
-> > > 
-> > > Another twist I'll throw in is that devices can be hot added to IOMMU
-> > > groups that are in-use by userspace.  When that happens we'd like to be
-> > > able to disable driver autoprobe of the device to avoid a host driver
-> > > automatically binding to the device.  I wonder if instead of looking at
-> > > the problem from the driver perspective, if we were to instead look at
-> > > it from the device perspective if we might find a solution that would
-> > > address both.  For instance, if devices had a driver_probe_id property
-> > > that was by default set to their bus specific ID match ("$VENDOR
-> > > $DEVICE" on PCI) could we use that to write new match IDs so that a
-> > > device could only bind to a given driver?  Effectively we could then
-> > > bind either using the current method of adding to the list of IDs a
-> > > driver will match of changing the ID that a device would match.  Does
-> > > that get us anywhere?  Thanks,
-> > 
-> > Here's one way this might work for PCI; note that we can do this
-> > entirely in the bus driver for PCI.  Bind/unbind would go like this:
-> > 
-> > # bind device to vfio-pci
-> > echo vfio-pci > /sys/bus/pci/devices/0000\:03\:00.0/preferred_driver
-> > echo 0000:03:00.0 > /sys/bus/pci/devices/0000\:03\:00.0/driver/unbind
-> > echo 0000:03:00.0 > /sys/bus/pci/drivers_probe
-> > 
-> > # bind device back to host driver
-> > echo > /sys/bus/pci/devices/0000\:03\:00.0/preferred_driver
-> > echo 0000:03:00.0 > /sys/bus/pci/devices/0000\:03\:00.0/driver/unbind
-> > echo 0000:03:00.0 > /sys/bus/pci/drivers_probe
-> > 
-> > When preferred_driver is set for a device it will match and bind only to
-> > a driver with a matching name.  This also means we can write random
-> > strings here to avoid a device being bound to any driver if we want.
-> > 
-> > In the example patch below I've put the preferred_driver in the struct
-> > pci_dev, but if this mechanism were adopted by multiple devices perhaps
-> > we could add it to struct device.  Would something like this work for
-> > platform devices?
-> > 
-> > Note 1, the below is just the core PCI driver change to support this,
-> > there's some trivial collateral damage from changing an exported
-> > function not shown here for brevity.
-> > 
-> > Note 2, PCI passes a struct pci_device_id to the driver probe function
-> > which would be NULL in the preferred driver case of the example below.
-> > We'd need to dynamically create one of these when calling the probe
-> > function to make this practical for drivers that use that data.  Thanks,
-> 
-> That is I think a much easier way. Thought I would just call
-> it 'override' instead of preferred_driver, since well, that is its
-> intent.
-> 
-> Thank you for prototyping it!
 
-I've realized since this first draft that returning NULL for the
-pci_device_id would be unexpected for a number of drivers and probably
-cause null pointer dereferences.  This is an implementation detail
-though, we probably want a static "any ID" pci_device_id to return in
-the case that there are no static table or dynid matches yet we still
-want the override to match.  This should result in a smaller patch.
-I'll wait for feasibility from the platform folks before I do another
-revision though.  Thanks,
+--=-CdoSeUH0VTsGrqp6sIBx
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Alex
- 
-> > Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> > 
-> > diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-> > index d911e0c..9425920 100644
-> > --- a/drivers/pci/pci-driver.c
-> > +++ b/drivers/pci/pci-driver.c
-> > @@ -203,17 +203,23 @@ ATTRIBUTE_GROUPS(pci_drv);
-> >   * Deprecated, don't use this as it will not catch any dynamic ids
-> >   * that a driver might want to check for.
-> >   */
-> > -const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
-> > -					 struct pci_dev *dev)
-> > +int pci_match_id(const struct pci_device_id *ids, struct pci_dev *dev,
-> > +		 const struct pci_device_id **id)
-> >  {
-> > +	if (id)
-> > +		*id = NULL;
-> > +
-> >  	if (ids) {
-> >  		while (ids->vendor || ids->subvendor || ids->class_mask) {
-> > -			if (pci_match_one_device(ids, dev))
-> > -				return ids;
-> > +			if (pci_match_one_device(ids, dev)) {
-> > +				if (id)
-> > +					*id = ids;
-> > +				return 1;
-> > +			}
-> >  			ids++;
-> >  		}
-> >  	}
-> > -	return NULL;
-> > +	return 0;
-> >  }
-> >  
-> >  /**
-> > @@ -225,22 +231,30 @@ const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
-> >   * system is in its list of supported devices.  Returns the matching
-> >   * pci_device_id structure or %NULL if there is no match.
-> >   */
-> > -static const struct pci_device_id *pci_match_device(struct pci_driver *drv,
-> > -						    struct pci_dev *dev)
-> > +static int pci_match_device(struct pci_driver *drv, struct pci_dev *dev,
-> > +			    const struct pci_device_id **id)
-> >  {
-> >  	struct pci_dynid *dynid;
-> >  
-> > +	if (id)
-> > +		*id = NULL;
-> > +
-> > +	if (dev->preferred_driver)
-> > +		return !strcmp(drv->name, dev->preferred_driver);
-> > +
-> >  	/* Look at the dynamic ids first, before the static ones */
-> >  	spin_lock(&drv->dynids.lock);
-> >  	list_for_each_entry(dynid, &drv->dynids.list, node) {
-> >  		if (pci_match_one_device(&dynid->id, dev)) {
-> >  			spin_unlock(&drv->dynids.lock);
-> > -			return &dynid->id;
-> > +			if (id)
-> > +				*id = &dynid->id;
-> > +			return 1;
-> >  		}
-> >  	}
-> >  	spin_unlock(&drv->dynids.lock);
-> >  
-> > -	return pci_match_id(drv->id_table, dev);
-> > +	return pci_match_id(drv->id_table, dev, id);
-> >  }
-> >  
-> >  struct drv_dev_and_id {
-> > @@ -342,8 +356,7 @@ __pci_device_probe(struct pci_driver *drv, struct pci_dev *pci_dev)
-> >  	if (!pci_dev->driver && drv->probe) {
-> >  		error = -ENODEV;
-> >  
-> > -		id = pci_match_device(drv, pci_dev);
-> > -		if (id)
-> > +		if (pci_match_device(drv, pci_dev, &id))
-> >  			error = pci_call_probe(drv, pci_dev, id);
-> >  		if (error >= 0)
-> >  			error = 0;
-> > @@ -1272,17 +1285,12 @@ static int pci_bus_match(struct device *dev, struct device_driver *drv)
-> >  {
-> >  	struct pci_dev *pci_dev = to_pci_dev(dev);
-> >  	struct pci_driver *pci_drv;
-> > -	const struct pci_device_id *found_id;
-> >  
-> >  	if (!pci_dev->match_driver)
-> >  		return 0;
-> >  
-> >  	pci_drv = to_pci_driver(drv);
-> > -	found_id = pci_match_device(pci_drv, pci_dev);
-> > -	if (found_id)
-> > -		return 1;
-> > -
-> > -	return 0;
-> > +	return pci_match_device(pci_drv, pci_dev, NULL);
-> >  }
-> >  
-> >  /**
-> > diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
-> > index 4e0acef..d6075f8 100644
-> > --- a/drivers/pci/pci-sysfs.c
-> > +++ b/drivers/pci/pci-sysfs.c
-> > @@ -222,6 +222,46 @@ static ssize_t enabled_show(struct device *dev,
-> >  }
-> >  static DEVICE_ATTR_RW(enabled);
-> >  
-> > +static ssize_t preferred_driver_store(struct device *dev,
-> > +				      struct device_attribute *attr,
-> > +				      const char *buf, size_t count)
-> > +{
-> > +	struct pci_dev *pdev = to_pci_dev(dev);
-> > +	char *preferred_driver, *old = pdev->preferred_driver;
-> > +
-> > +	if (count > PATH_MAX)
-> > +		return -EINVAL;
-> > +
-> > +	preferred_driver = kstrndup(buf, count, GFP_KERNEL);
-> > +	if (!preferred_driver)
-> > +		return -ENOMEM;
-> > +
-> > +	while (strlen(preferred_driver) &&
-> > +	       preferred_driver[strlen(preferred_driver) - 1] == '\n')
-> > +		preferred_driver[strlen(preferred_driver) - 1] = '\0';
-> > +
-> > +	if (strlen(preferred_driver)) {
-> > +		pdev->preferred_driver = preferred_driver;
-> > +	} else {
-> > +		kfree(preferred_driver);
-> > +		pdev->preferred_driver = NULL;
-> > +	}
-> > +			
-> > +	if (old)
-> > +		kfree(old);
-> > +
-> > +	return count;
-> > +}
-> > +
-> > +static ssize_t preferred_driver_show(struct device *dev,
-> > +				     struct device_attribute *attr, char *buf)
-> > +{
-> > +	struct pci_dev *pdev = to_pci_dev(dev);
-> > +
-> > +	return sprintf(buf, "%s\n", pdev->preferred_driver);
-> > +}
-> > +static DEVICE_ATTR_RW(preferred_driver);
-> > +
-> >  #ifdef CONFIG_NUMA
-> >  static ssize_t
-> >  numa_node_show(struct device *dev, struct device_attribute *attr, char *buf)
-> > @@ -521,6 +561,7 @@ static struct attribute *pci_dev_attrs[] = {
-> >  #if defined(CONFIG_PM_RUNTIME) && defined(CONFIG_ACPI)
-> >  	&dev_attr_d3cold_allowed.attr,
-> >  #endif
-> > +	&dev_attr_preferred_driver.attr,
-> >  	NULL,
-> >  };
-> >  
-> > diff --git a/include/linux/pci.h b/include/linux/pci.h
-> > index aab57b4..6fecb0a 100644
-> > --- a/include/linux/pci.h
-> > +++ b/include/linux/pci.h
-> > @@ -365,6 +365,7 @@ struct pci_dev {
-> >  #endif
-> >  	phys_addr_t rom; /* Physical address of ROM if it's not from the BAR */
-> >  	size_t romlen; /* Length of ROM if it's not from the BAR */
-> > +	char *preferred_driver; /* Preferred driver, supercedes ID matching */
-> >  };
-> >  
-> >  static inline struct pci_dev *pci_physfn(struct pci_dev *dev)
-> > @@ -1111,8 +1112,8 @@ int pci_add_dynid(struct pci_driver *drv,
-> >  		  unsigned int subvendor, unsigned int subdevice,
-> >  		  unsigned int class, unsigned int class_mask,
-> >  		  unsigned long driver_data);
-> > -const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
-> > -					 struct pci_dev *dev);
-> > +int pci_match_id(const struct pci_device_id *ids, struct pci_dev *dev,
-> > +		 const struct pci_device_id **id);
-> >  int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max,
-> >  		    int pass);
-> >  
-> > 
-> > 
-> > _______________________________________________
-> > iommu mailing list
-> > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> > https://lists.linuxfoundation.org/mailman/listinfo/iommu
+On Fri, 2014-03-28 at 11:29 +0300, Dan Carpenter wrote:
+> If we hit this error condition then we want to return a NULL pointer and
+> not a freed variable.
+>=20
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+>=20
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 6fbce01..69fa7da 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -2257,6 +2257,7 @@ static struct dmar_domain *get_domain_for_dev(struc=
+t device *dev, int gaw)
+>  		goto error;
+>  	if (iommu_attach_domain(domain, iommu)) {
+>  		free_domain_mem(domain);
+> +		domain =3D NULL;
+>  		goto error;
+>  	}
+>  	free =3D domain;
+
+Applied; thanks.
+
+
+--=20
+David Woodhouse                            Open Source Technology Centre
+David.Woodhouse@intel.com                              Intel Corporation
+
+--=-CdoSeUH0VTsGrqp6sIBx
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIISxDCCBjQw
+ggQcoAMCAQICAR4wDQYJKoZIhvcNAQEFBQAwfTELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0
+Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxKTAn
+BgNVBAMTIFN0YXJ0Q29tIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MB4XDTA3MTAyNDIxMDE1NVoX
+DTE3MTAyNDIxMDE1NVowgYwxCzAJBgNVBAYTAklMMRYwFAYDVQQKEw1TdGFydENvbSBMdGQuMSsw
+KQYDVQQLEyJTZWN1cmUgRGlnaXRhbCBDZXJ0aWZpY2F0ZSBTaWduaW5nMTgwNgYDVQQDEy9TdGFy
+dENvbSBDbGFzcyAxIFByaW1hcnkgSW50ZXJtZWRpYXRlIENsaWVudCBDQTCCASIwDQYJKoZIhvcN
+AQEBBQADggEPADCCAQoCggEBAMcJg8zOLdgasSmkLhOrlr6KMoOMpohBllVHrdRvEg/q6r8jR+EK
+75xCGhR8ToREoqe7zM9/UnC6TS2y9UKTpT1v7RSMzR0t6ndl0TWBuUr/UXBhPk+Kmy7bI4yW4urC
++y7P3/1/X7U8ocb8VpH/Clt+4iq7nirMcNh6qJR+xjOhV+VHzQMALuGYn5KZmc1NbJQYclsGkDxD
+z2UbFqE2+6vIZoL+jb9x4Pa5gNf1TwSDkOkikZB1xtB4ZqtXThaABSONdfmv/Z1pua3FYxnCFmdr
+/+N2JLKutIxMYqQOJebr/f/h5t95m4JgrM3Y/w7YX9d7YAL9jvN4SydHsU6n65cCAwEAAaOCAa0w
+ggGpMA8GA1UdEwEB/wQFMAMBAf8wDgYDVR0PAQH/BAQDAgEGMB0GA1UdDgQWBBRTcu2SnODaywFc
+fH6WNU7y1LhRgjAfBgNVHSMEGDAWgBROC+8apEBbpRdphzDKNGhD0EGu8jBmBggrBgEFBQcBAQRa
+MFgwJwYIKwYBBQUHMAGGG2h0dHA6Ly9vY3NwLnN0YXJ0c3NsLmNvbS9jYTAtBggrBgEFBQcwAoYh
+aHR0cDovL3d3dy5zdGFydHNzbC5jb20vc2ZzY2EuY3J0MFsGA1UdHwRUMFIwJ6AloCOGIWh0dHA6
+Ly93d3cuc3RhcnRzc2wuY29tL3Nmc2NhLmNybDAnoCWgI4YhaHR0cDovL2NybC5zdGFydHNzbC5j
+b20vc2ZzY2EuY3JsMIGABgNVHSAEeTB3MHUGCysGAQQBgbU3AQIBMGYwLgYIKwYBBQUHAgEWImh0
+dHA6Ly93d3cuc3RhcnRzc2wuY29tL3BvbGljeS5wZGYwNAYIKwYBBQUHAgEWKGh0dHA6Ly93d3cu
+c3RhcnRzc2wuY29tL2ludGVybWVkaWF0ZS5wZGYwDQYJKoZIhvcNAQEFBQADggIBAAqDCH14qywG
+XLhjjF6uHLkjd02hcdh9hrw+VUsv+q1eeQWB21jWj3kJ96AUlPCoEGZ/ynJNScWy6QMVQjbbMXlt
+UfO4n4bGGdKo3awPWp61tjAFgraLJgDk+DsSvUD6EowjMTNx25GQgyYJ5RPIzKKR9tQW8gGK+2+R
+HxkUCTbYFnL6kl8Ch507rUdPPipJ9CgJFws3kDS3gOS5WFMxcjO5DwKfKSETEPrHh7p5shuuNktv
+sv6hxHTLhiMKX893gxdT3XLS9OKmCv87vkINQcNEcIIoFWbP9HORz9v3vQwR4e3ksLc2JZOAFK+s
+sS5XMEoznzpihEP0PLc4dCBYjbvSD7kxgDwZ+Aj8Q9PkbvE9sIPP7ON0fz095HdThKjiVJe6vofq
++n6b1NBc8XdrQvBmunwxD5nvtTW4vtN6VY7mUCmxsCieuoBJ9OlqmsVWQvifIYf40dJPZkk9YgGT
+zWLpXDSfLSplbY2LL9C9U0ptvjcDjefLTvqSFc7tw1sEhF0n/qpA2r0GpvkLRDmcSwVyPvmjFBGq
+Up/pNy8ZuPGQmHwFi2/14+xeSUDG2bwnsYJQG2EdJCB6luQ57GEnTA/yKZSTKI8dDQa8Sd3zfXb1
+9mOgSF0bBdXbuKhEpuP9wirslFe6fQ1t5j5R0xi72MZ8ikMu1RQZKCyDbMwazlHiMIIGQjCCBSqg
+AwIBAgIDBoXOMA0GCSqGSIb3DQEBBQUAMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRD
+b20gTHRkLjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYG
+A1UEAxMvU3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0EwHhcN
+MTMwNTAyMDYyMDQ2WhcNMTQwNTAzMTIxNDAyWjBdMRkwFwYDVQQNExBNd0k3ODIxNTRpV21lZVkw
+MRwwGgYDVQQDDBNkd213MkBpbmZyYWRlYWQub3JnMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZy
+YWRlYWQub3JnMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvWGuRDHiXVpOgaFkBaz8
+c3jQTfiEw7j0iKZnktCQi0xjY29QJ7GwL+fgQlbofXgYTm8E9fWERvw2tAy2BxHzAPguBzziS7JN
+hsGP9lf3L8hFJBvmdyyyj8b9A6Oi7s3JLtMRWIvyvE+DbuTkP+htuT4+XuTJr8Y5yIqd1WXr2gJk
+ANr77vTyjeNxceevP58Tqr0f+4v5g6+vNARO3bk3SaVQPDUTwGrpoPtLh3d+mQzZ4iiW3MwQS7Wr
+UVT3l2aTVHCpgtAaBs3zHWarvmIqhbWj8zdcnELNzwqTrOjaoWxuWY4k05GGfzmdjOBUiL7FDNvI
+ZwweJEPwJAQI72YhUwIDAQABo4IC2TCCAtUwCQYDVR0TBAIwADALBgNVHQ8EBAMCBLAwHQYDVR0l
+BBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMB0GA1UdDgQWBBSs0hZhUgQwqGVXzLuH6pJH0hMZwTAf
+BgNVHSMEGDAWgBRTcu2SnODaywFcfH6WNU7y1LhRgjAeBgNVHREEFzAVgRNkd213MkBpbmZyYWRl
+YWQub3JnMIIBTAYDVR0gBIIBQzCCAT8wggE7BgsrBgEEAYG1NwECAzCCASowLgYIKwYBBQUHAgEW
+Imh0dHA6Ly93d3cuc3RhcnRzc2wuY29tL3BvbGljeS5wZGYwgfcGCCsGAQUFBwICMIHqMCcWIFN0
+YXJ0Q29tIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MAMCAQEagb5UaGlzIGNlcnRpZmljYXRlIHdh
+cyBpc3N1ZWQgYWNjb3JkaW5nIHRvIHRoZSBDbGFzcyAxIFZhbGlkYXRpb24gcmVxdWlyZW1lbnRz
+IG9mIHRoZSBTdGFydENvbSBDQSBwb2xpY3ksIHJlbGlhbmNlIG9ubHkgZm9yIHRoZSBpbnRlbmRl
+ZCBwdXJwb3NlIGluIGNvbXBsaWFuY2Ugb2YgdGhlIHJlbHlpbmcgcGFydHkgb2JsaWdhdGlvbnMu
+MDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwuc3RhcnRzc2wuY29tL2NydHUxLWNybC5jcmww
+gY4GCCsGAQUFBwEBBIGBMH8wOQYIKwYBBQUHMAGGLWh0dHA6Ly9vY3NwLnN0YXJ0c3NsLmNvbS9z
+dWIvY2xhc3MxL2NsaWVudC9jYTBCBggrBgEFBQcwAoY2aHR0cDovL2FpYS5zdGFydHNzbC5jb20v
+Y2VydHMvc3ViLmNsYXNzMS5jbGllbnQuY2EuY3J0MCMGA1UdEgQcMBqGGGh0dHA6Ly93d3cuc3Rh
+cnRzc2wuY29tLzANBgkqhkiG9w0BAQUFAAOCAQEACFLDQnyO8+XA/TiTltjJ/ZAvM+qmBEKN43Vd
++Wio2lM/Wq/scJpkupXGHrl9CueobkDxMAogXbMxqLZYO13PvgjMh+PHxDPnQv8EGxOig+k/Hqvc
+qEdTlm9YEHcbXbWS6XB+zRO7VVIpGMYQ1f1qCOcukxmwIm6iMSHXbOr/7paQm4bO0ULptjBotfiO
+Zo6q8No6SroQlOSyc6v8FYSxTNIAXMaM2FYkjqrxgdnJmSIAfr11gROuF69WuOICxP0zTEjJle+7
+aO9lUWNaWMWPMyFSNCxF6kkRuvUCami7vlhLOTRC1kb+OMhx7keN9At3tdTI3rtuFeSB1Pa3VXVs
+0DCCBkIwggUqoAMCAQICAwaFzjANBgkqhkiG9w0BAQUFADCBjDELMAkGA1UEBhMCSUwxFjAUBgNV
+BAoTDVN0YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNp
+Z25pbmcxODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xp
+ZW50IENBMB4XDTEzMDUwMjA2MjA0NloXDTE0MDUwMzEyMTQwMlowXTEZMBcGA1UEDRMQTXdJNzgy
+MTU0aVdtZWVZMDEcMBoGA1UEAwwTZHdtdzJAaW5mcmFkZWFkLm9yZzEiMCAGCSqGSIb3DQEJARYT
+ZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL1hrkQx
+4l1aToGhZAWs/HN40E34hMO49IimZ5LQkItMY2NvUCexsC/n4EJW6H14GE5vBPX1hEb8NrQMtgcR
+8wD4Lgc84kuyTYbBj/ZX9y/IRSQb5ncsso/G/QOjou7NyS7TEViL8rxPg27k5D/obbk+Pl7kya/G
+OciKndVl69oCZADa++708o3jcXHnrz+fE6q9H/uL+YOvrzQETt25N0mlUDw1E8Bq6aD7S4d3fpkM
+2eIoltzMEEu1q1FU95dmk1RwqYLQGgbN8x1mq75iKoW1o/M3XJxCzc8Kk6zo2qFsblmOJNORhn85
+nYzgVIi+xQzbyGcMHiRD8CQECO9mIVMCAwEAAaOCAtkwggLVMAkGA1UdEwQCMAAwCwYDVR0PBAQD
+AgSwMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDBDAdBgNVHQ4EFgQUrNIWYVIEMKhlV8y7
+h+qSR9ITGcEwHwYDVR0jBBgwFoAUU3Ltkpzg2ssBXHx+ljVO8tS4UYIwHgYDVR0RBBcwFYETZHdt
+dzJAaW5mcmFkZWFkLm9yZzCCAUwGA1UdIASCAUMwggE/MIIBOwYLKwYBBAGBtTcBAgMwggEqMC4G
+CCsGAQUFBwIBFiJodHRwOi8vd3d3LnN0YXJ0c3NsLmNvbS9wb2xpY3kucGRmMIH3BggrBgEFBQcC
+AjCB6jAnFiBTdGFydENvbSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTADAgEBGoG+VGhpcyBjZXJ0
+aWZpY2F0ZSB3YXMgaXNzdWVkIGFjY29yZGluZyB0byB0aGUgQ2xhc3MgMSBWYWxpZGF0aW9uIHJl
+cXVpcmVtZW50cyBvZiB0aGUgU3RhcnRDb20gQ0EgcG9saWN5LCByZWxpYW5jZSBvbmx5IGZvciB0
+aGUgaW50ZW5kZWQgcHVycG9zZSBpbiBjb21wbGlhbmNlIG9mIHRoZSByZWx5aW5nIHBhcnR5IG9i
+bGlnYXRpb25zLjA2BgNVHR8ELzAtMCugKaAnhiVodHRwOi8vY3JsLnN0YXJ0c3NsLmNvbS9jcnR1
+MS1jcmwuY3JsMIGOBggrBgEFBQcBAQSBgTB/MDkGCCsGAQUFBzABhi1odHRwOi8vb2NzcC5zdGFy
+dHNzbC5jb20vc3ViL2NsYXNzMS9jbGllbnQvY2EwQgYIKwYBBQUHMAKGNmh0dHA6Ly9haWEuc3Rh
+cnRzc2wuY29tL2NlcnRzL3N1Yi5jbGFzczEuY2xpZW50LmNhLmNydDAjBgNVHRIEHDAahhhodHRw
+Oi8vd3d3LnN0YXJ0c3NsLmNvbS8wDQYJKoZIhvcNAQEFBQADggEBAAhSw0J8jvPlwP04k5bYyf2Q
+LzPqpgRCjeN1XfloqNpTP1qv7HCaZLqVxh65fQrnqG5A8TAKIF2zMai2WDtdz74IzIfjx8Qz50L/
+BBsTooPpPx6r3KhHU5ZvWBB3G121kulwfs0Tu1VSKRjGENX9agjnLpMZsCJuojEh12zq/+6WkJuG
+ztFC6bYwaLX4jmaOqvDaOkq6EJTksnOr/BWEsUzSAFzGjNhWJI6q8YHZyZkiAH69dYETrhevVrji
+AsT9M0xIyZXvu2jvZVFjWljFjzMhUjQsRepJEbr1Ampou75YSzk0QtZG/jjIce5HjfQLd7XUyN67
+bhXkgdT2t1V1bNAxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0
+Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2
+BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMG
+hc4wCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
+DxcNMTQwMzI4MjAzNzMxWjAjBgkqhkiG9w0BCQQxFgQUk8aVrsoIl9l0ZdtTqXauxLpu8NEwgaUG
+CSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4x
+KzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0
+YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMGhc4wgacGCyqG
+SIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjEr
+MCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMvU3Rh
+cnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAwaFzjANBgkqhkiG
+9w0BAQEFAASCAQB+poDj3GYBVC709TCrqH2RDUfc+4WbkzEaV++3zM6QawuH31dZphSxTOFHcKY6
+VGwG2+iyLGH38jTsIkilT960nOrqeWuv6eJNE/aOC8nbY8LVLYuana3p2vdcb6n2vX07R9EmgATQ
+gXtCqlUBwi0tBtlUBZZraZ3M8c8AGEpuKCc7CaXWwO2YiuJbrzECzk6yI0qPe3/Z1TwjZvncHShJ
+c1OrW+TOoS5x+tt+qwlx3EGiSH4MM2fR3hvkyyAtOkq60S5Lv6c5Nx3qvi11YwIWOgDu8hxQPdac
++LcvPyWJQovgpA0jOse8OP+rJOP52kw9yAQRXQtXAiL/XbZBqs+QAAAAAAAA
+
+
+--=-CdoSeUH0VTsGrqp6sIBx--
+
