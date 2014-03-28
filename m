@@ -1,240 +1,99 @@
-From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: [PATCH 1/5] iommu/ipmmu-vmsa: Refactor micro-TLB lookup
-Date: Sat, 29 Mar 2014 00:36:17 +0100
-Message-ID: <1396049781-12941-2-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 3/5] iommu/ipmmu-vmsa: Add device tree support
+Date: Sat, 29 Mar 2014 00:36:19 +0100
+Message-ID: <1396049781-12941-4-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1396049781-12941-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1396049781-12941-1-git-send-email-laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1396049781-12941-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: linux-sh@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Cache the micro-TLB number in archdata allocated in the .add_device
-handler instead of looking it up when the deviced is attached and
-detached. This simplifies the .attach_dev and .detach_dev operations and
-prepares for DT support.
+Make platform data optional when the device is instantiated from DT and
+look up the micro-TLB number in the bus master DT node.
 
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 ---
- drivers/iommu/ipmmu-vmsa.c | 92 ++++++++++++++++++++++++++--------------------
- 1 file changed, 52 insertions(+), 40 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c | 37 +++++++++++++++++++++++++++++--------
+ 1 file changed, 29 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 7abadc6..ef03191 100644
+index ef03191..b56a05d 100644
 --- a/drivers/iommu/ipmmu-vmsa.c
 +++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -44,6 +44,11 @@ struct ipmmu_vmsa_domain {
- 	pgd_t *pgd;
- };
+@@ -16,6 +16,7 @@
+ #include <linux/io.h>
+ #include <linux/iommu.h>
+ #include <linux/module.h>
++#include <linux/of.h>
+ #include <linux/platform_data/ipmmu-vmsa.h>
+ #include <linux/platform_device.h>
+ #include <linux/sizes.h>
+@@ -828,16 +829,31 @@ static phys_addr_t ipmmu_iova_to_phys(struct iommu_domain *io_domain,
  
-+struct ipmmu_vmsa_archdata {
-+	struct ipmmu_vmsa_device *mmu;
-+	unsigned int utlb;
-+};
-+
- static DEFINE_SPINLOCK(ipmmu_devices_lock);
- static LIST_HEAD(ipmmu_devices);
- 
-@@ -265,14 +270,19 @@ static void ipmmu_tlb_invalidate(struct ipmmu_vmsa_domain *domain)
-  * Enable MMU translation for the microTLB.
-  */
- static void ipmmu_utlb_enable(struct ipmmu_vmsa_domain *domain,
--			      const struct ipmmu_vmsa_master *master)
-+			      unsigned int utlb)
+ static int ipmmu_find_utlb(struct ipmmu_vmsa_device *mmu, struct device *dev)
  {
- 	struct ipmmu_vmsa_device *mmu = domain->mmu;
- 
-+	/*
-+	 * TODO: Reference-count the microTLB as several bus masters can be
-+	 * connected to the same microTLB.
-+	 */
-+
- 	/* TODO: What should we set the ASID to ? */
--	ipmmu_write(mmu, IMUASID(master->utlb), 0);
-+	ipmmu_write(mmu, IMUASID(utlb), 0);
- 	/* TODO: Do we need to flush the microTLB ? */
--	ipmmu_write(mmu, IMUCTR(master->utlb),
-+	ipmmu_write(mmu, IMUCTR(utlb),
- 		    IMUCTR_TTSEL_MMU(domain->context_id) | IMUCTR_FLUSH |
- 		    IMUCTR_MMUEN);
- }
-@@ -281,11 +291,11 @@ static void ipmmu_utlb_enable(struct ipmmu_vmsa_domain *domain,
-  * Disable MMU translation for the microTLB.
-  */
- static void ipmmu_utlb_disable(struct ipmmu_vmsa_domain *domain,
--			       const struct ipmmu_vmsa_master *master)
-+			       unsigned int utlb)
- {
- 	struct ipmmu_vmsa_device *mmu = domain->mmu;
- 
--	ipmmu_write(mmu, IMUCTR(master->utlb), 0);
-+	ipmmu_write(mmu, IMUCTR(utlb), 0);
- }
- 
- static void ipmmu_flush_pgtable(struct ipmmu_vmsa_device *mmu, void *addr,
-@@ -674,21 +684,6 @@ static int ipmmu_handle_mapping(struct ipmmu_vmsa_domain *domain,
-  * IOMMU Operations
-  */
- 
--static const struct ipmmu_vmsa_master *
--ipmmu_find_master(struct ipmmu_vmsa_device *ipmmu, struct device *dev)
--{
--	const struct ipmmu_vmsa_master *master = ipmmu->pdata->masters;
+-	const struct ipmmu_vmsa_master *master = mmu->pdata->masters;
 -	const char *devname = dev_name(dev);
 -	unsigned int i;
--
--	for (i = 0; i < ipmmu->pdata->num_masters; ++i, ++master) {
++	struct of_phandle_args args;
++	int ret;
++
++	if (mmu->pdata) {
++		const struct ipmmu_vmsa_master *master = mmu->pdata->masters;
++		const char *devname = dev_name(dev);
++		unsigned int i;
++
++		for (i = 0; i < mmu->pdata->num_masters; ++i, ++master) {
++			if (strcmp(master->name, devname) == 0)
++				return master->utlb;
++		}
+ 
+-	for (i = 0; i < mmu->pdata->num_masters; ++i, ++master) {
 -		if (strcmp(master->name, devname) == 0)
--			return master;
--	}
--
--	return NULL;
--}
--
- static int ipmmu_domain_init(struct iommu_domain *io_domain)
- {
- 	struct ipmmu_vmsa_domain *domain;
-@@ -727,9 +722,9 @@ static void ipmmu_domain_destroy(struct iommu_domain *io_domain)
- static int ipmmu_attach_device(struct iommu_domain *io_domain,
- 			       struct device *dev)
- {
--	struct ipmmu_vmsa_device *mmu = dev->archdata.iommu;
-+	struct ipmmu_vmsa_archdata *archdata = dev->archdata.iommu;
-+	struct ipmmu_vmsa_device *mmu = archdata->mmu;
- 	struct ipmmu_vmsa_domain *domain = io_domain->priv;
--	const struct ipmmu_vmsa_master *master;
- 	unsigned long flags;
- 	int ret = 0;
- 
-@@ -759,11 +754,7 @@ static int ipmmu_attach_device(struct iommu_domain *io_domain,
- 	if (ret < 0)
- 		return ret;
- 
--	master = ipmmu_find_master(mmu, dev);
--	if (!master)
--		return -EINVAL;
--
--	ipmmu_utlb_enable(domain, master);
-+	ipmmu_utlb_enable(domain, archdata->utlb);
- 
- 	return 0;
- }
-@@ -771,14 +762,10 @@ static int ipmmu_attach_device(struct iommu_domain *io_domain,
- static void ipmmu_detach_device(struct iommu_domain *io_domain,
- 				struct device *dev)
- {
-+	struct ipmmu_vmsa_archdata *archdata = dev->archdata.iommu;
- 	struct ipmmu_vmsa_domain *domain = io_domain->priv;
--	const struct ipmmu_vmsa_master *master;
- 
--	master = ipmmu_find_master(domain->mmu, dev);
--	if (!master)
--		return;
--
--	ipmmu_utlb_disable(domain, master);
-+	ipmmu_utlb_disable(domain, archdata->utlb);
- 
- 	/*
- 	 * TODO: Optimize by disabling the context when no device is attached.
-@@ -839,11 +826,26 @@ static phys_addr_t ipmmu_iova_to_phys(struct iommu_domain *io_domain,
- 	return __pfn_to_phys(pte_pfn(pte)) | (iova & ~PAGE_MASK);
- }
- 
-+static int ipmmu_find_utlb(struct ipmmu_vmsa_device *mmu, struct device *dev)
-+{
-+	const struct ipmmu_vmsa_master *master = mmu->pdata->masters;
-+	const char *devname = dev_name(dev);
-+	unsigned int i;
-+
-+	for (i = 0; i < mmu->pdata->num_masters; ++i, ++master) {
-+		if (strcmp(master->name, devname) == 0)
-+			return master->utlb;
-+	}
-+
-+	return -1;
-+}
-+
- static int ipmmu_add_device(struct device *dev)
- {
--	const struct ipmmu_vmsa_master *master = NULL;
-+	struct ipmmu_vmsa_archdata *archdata;
- 	struct ipmmu_vmsa_device *mmu;
- 	struct iommu_group *group;
-+	int utlb = -1;
- 	int ret;
- 
- 	if (dev->archdata.iommu) {
-@@ -856,10 +858,10 @@ static int ipmmu_add_device(struct device *dev)
- 	spin_lock(&ipmmu_devices_lock);
- 
- 	list_for_each_entry(mmu, &ipmmu_devices, list) {
--		master = ipmmu_find_master(mmu, dev);
--		if (master) {
-+		utlb = ipmmu_find_utlb(mmu, dev);
-+		if (utlb >= 0) {
- 			/*
--			 * TODO Take a reference to the master to protect
-+			 * TODO Take a reference to the MMU to protect
- 			 * against device removal.
- 			 */
- 			break;
-@@ -868,10 +870,10 @@ static int ipmmu_add_device(struct device *dev)
- 
- 	spin_unlock(&ipmmu_devices_lock);
- 
--	if (!master)
-+	if (utlb < 0)
- 		return -ENODEV;
- 
--	if (!master->utlb >= mmu->num_utlbs)
-+	if (utlb >= mmu->num_utlbs)
- 		return -EINVAL;
- 
- 	/* Create a device group and add the device to it. */
-@@ -889,7 +891,15 @@ static int ipmmu_add_device(struct device *dev)
- 		return ret;
+-			return master->utlb;
++		return -1;
  	}
  
--	dev->archdata.iommu = mmu;
-+	archdata = kzalloc(sizeof(*archdata), GFP_KERNEL);
-+	if (!archdata) {
-+		ret = -ENOMEM;
-+		goto error;
-+	}
+-	return -1;
++	ret = of_parse_phandle_with_fixed_args(dev->of_node, "iommus",
++					       1, 0, &args);
++	if (ret < 0)
++		return -1;
 +
-+	archdata->mmu = mmu;
-+	archdata->utlb = utlb;
-+	dev->archdata.iommu = archdata;
- 
- 	/*
- 	 * Create the ARM mapping, used by the ARM DMA mapping core to allocate
-@@ -923,6 +933,7 @@ static int ipmmu_add_device(struct device *dev)
- 	return 0;
- 
- error:
-+	kfree(dev->archdata.iommu);
- 	dev->archdata.iommu = NULL;
- 	iommu_group_remove_device(dev);
- 	return ret;
-@@ -932,6 +943,7 @@ static void ipmmu_remove_device(struct device *dev)
- {
- 	arm_iommu_detach_device(dev);
- 	iommu_group_remove_device(dev);
-+	kfree(dev->archdata.iommu);
- 	dev->archdata.iommu = NULL;
++	if (args.np != mmu->dev->of_node)
++		return -1;
++
++	return args.args[0];
  }
  
+ static int ipmmu_add_device(struct device *dev)
+@@ -980,7 +996,7 @@ static int ipmmu_probe(struct platform_device *pdev)
+ 	int irq;
+ 	int ret;
+ 
+-	if (!pdev->dev.platform_data) {
++	if (!IS_ENABLED(CONFIG_OF) && !pdev->dev.platform_data) {
+ 		dev_err(&pdev->dev, "missing platform data\n");
+ 		return -EINVAL;
+ 	}
+@@ -1046,10 +1062,15 @@ static int ipmmu_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++static const struct of_device_id ipmmu_of_ids[] = {
++	{ .compatible = "renesas,ipmmu-vmsa", },
++};
++
+ static struct platform_driver ipmmu_driver = {
+ 	.driver = {
+ 		.owner = THIS_MODULE,
+ 		.name = "ipmmu-vmsa",
++		.of_match_table = of_match_ptr(ipmmu_of_ids),
+ 	},
+ 	.probe = ipmmu_probe,
+ 	.remove	= ipmmu_remove,
 -- 
 1.8.3.2
+
