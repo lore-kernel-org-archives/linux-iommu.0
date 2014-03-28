@@ -1,99 +1,64 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 3/5] iommu/ipmmu-vmsa: Add device tree support
-Date: Sat, 29 Mar 2014 00:36:19 +0100
-Message-ID: <1396049781-12941-4-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 2/5] iommu/ipmmu-vmsa: Add device tree bindings documentation
+Date: Sat, 29 Mar 2014 00:36:18 +0100
+Message-ID: <1396049781-12941-3-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1396049781-12941-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1396049781-12941-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Sender: linux-sh-owner@vger.kernel.org
 To: iommu@lists.linux-foundation.org
-Cc: linux-sh@vger.kernel.org
+Cc: linux-sh@vger.kernel.org, devicetree@vger.kernel.org, Will Deacon <will.deacon@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Make platform data optional when the device is instantiated from DT and
-look up the micro-TLB number in the bus master DT node.
-
+Cc: devicetree@vger.kernel.org
+Cc: Will Deacon <will.deacon@arm.com>
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 ---
- drivers/iommu/ipmmu-vmsa.c | 37 +++++++++++++++++++++++++++++--------
- 1 file changed, 29 insertions(+), 8 deletions(-)
+ .../bindings/iommu/renesas,ipmmu-vmsa.txt          | 35 ++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
 
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index ef03191..b56a05d 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -16,6 +16,7 @@
- #include <linux/io.h>
- #include <linux/iommu.h>
- #include <linux/module.h>
-+#include <linux/of.h>
- #include <linux/platform_data/ipmmu-vmsa.h>
- #include <linux/platform_device.h>
- #include <linux/sizes.h>
-@@ -828,16 +829,31 @@ static phys_addr_t ipmmu_iova_to_phys(struct iommu_domain *io_domain,
- 
- static int ipmmu_find_utlb(struct ipmmu_vmsa_device *mmu, struct device *dev)
- {
--	const struct ipmmu_vmsa_master *master = mmu->pdata->masters;
--	const char *devname = dev_name(dev);
--	unsigned int i;
-+	struct of_phandle_args args;
-+	int ret;
+diff --git a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
+new file mode 100644
+index 0000000..72e8590
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
+@@ -0,0 +1,35 @@
++* Renesas VMSA-Compatible IOMMU
 +
-+	if (mmu->pdata) {
-+		const struct ipmmu_vmsa_master *master = mmu->pdata->masters;
-+		const char *devname = dev_name(dev);
-+		unsigned int i;
++The IPMMU is an IOMMU implementation compatible with the ARM VMSA page tables.
++It provides address translation bus masters outside of the CPU, each connected
++to the IPMMU through a port called micro-TLB.
 +
-+		for (i = 0; i < mmu->pdata->num_masters; ++i, ++master) {
-+			if (strcmp(master->name, devname) == 0)
-+				return master->utlb;
-+		}
- 
--	for (i = 0; i < mmu->pdata->num_masters; ++i, ++master) {
--		if (strcmp(master->name, devname) == 0)
--			return master->utlb;
-+		return -1;
- 	}
- 
--	return -1;
-+	ret = of_parse_phandle_with_fixed_args(dev->of_node, "iommus",
-+					       1, 0, &args);
-+	if (ret < 0)
-+		return -1;
 +
-+	if (args.np != mmu->dev->of_node)
-+		return -1;
++Required Properties:
 +
-+	return args.args[0];
- }
- 
- static int ipmmu_add_device(struct device *dev)
-@@ -980,7 +996,7 @@ static int ipmmu_probe(struct platform_device *pdev)
- 	int irq;
- 	int ret;
- 
--	if (!pdev->dev.platform_data) {
-+	if (!IS_ENABLED(CONFIG_OF) && !pdev->dev.platform_data) {
- 		dev_err(&pdev->dev, "missing platform data\n");
- 		return -EINVAL;
- 	}
-@@ -1046,10 +1062,15 @@ static int ipmmu_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
-+static const struct of_device_id ipmmu_of_ids[] = {
-+	{ .compatible = "renesas,ipmmu-vmsa", },
-+};
++  - compatible: Must contain "renesas,ipmmu-vmsa".
++  - reg: Base address and size of the IPMMU registers.
++  - interrupts: Specifier for the MMU fault interrupt.
 +
- static struct platform_driver ipmmu_driver = {
- 	.driver = {
- 		.owner = THIS_MODULE,
- 		.name = "ipmmu-vmsa",
-+		.of_match_table = of_match_ptr(ipmmu_of_ids),
- 	},
- 	.probe = ipmmu_probe,
- 	.remove	= ipmmu_remove,
++
++Each bus master connected to an IPMMU must reference the IPMMU in its device
++node with the following property:
++
++  - iommus: A reference to the IPMMU in two cells. The first cell is a phandle
++    to the IPMMU and the second cell the number of the micro-TLB that the
++    device is connected to.
++
++
++Example: R8A7791 IPMMU-MX and VSP1-D0 bus master
++
++	ipmmu_mx: mmu@fe951800 {
++		compatible = "renasas,ipmmu-vmsa";
++		reg = <0 0xfe951800 0 0x800>;
++		interrupts = <0 222 IRQ_TYPE_LEVEL_HIGH>;
++	};
++
++	vsp1@fe928000 {
++		...
++		iommus = <&ipmmu_mx 13>;
++		...
++	};
 -- 
 1.8.3.2
 
