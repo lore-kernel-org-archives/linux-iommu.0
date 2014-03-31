@@ -1,14 +1,14 @@
 From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Subject: Re: [PATCH 3/5] iommu/ipmmu-vmsa: Add device tree support
-Date: Mon, 31 Mar 2014 10:45:00 +0200
-Message-ID: <CAMuHMdU7esZ35xe+iTRNbeXmD7bSHXEakTOrTfXEs8h5yQLFfA@mail.gmail.com>
+Subject: Re: [PATCH 4/5] ARM: shmobile: r8a7791: Add IPMMU DT nodes
+Date: Mon, 31 Mar 2014 10:52:28 +0200
+Message-ID: <CAMuHMdV5kV_cz3b1gW7qW_z22JtWd9BpoXN2=_XjBqJfcG-yWQ@mail.gmail.com>
 References: <1396049781-12941-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-	<1396049781-12941-4-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+	<1396049781-12941-5-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1396049781-12941-4-git-send-email-laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+In-Reply-To: <1396049781-12941-5-git-send-email-laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,27 +26,21 @@ Hi Laurent,
 
 On Sat, Mar 29, 2014 at 12:36 AM, Laurent Pinchart
 <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org> wrote:
-> @@ -828,16 +829,31 @@ static phys_addr_t ipmmu_iova_to_phys(struct iommu_domain *io_domain,
->
->  static int ipmmu_find_utlb(struct ipmmu_vmsa_device *mmu, struct device *dev)
->  {
+> +       ipmmu_sy0: mmu@e6280800 {
+> +               compatible = "renesas,ipmmu-vmsa";
+> +               reg = <0 0xe6280800 0 0x800>;
 
-> +       ret = of_parse_phandle_with_fixed_args(dev->of_node, "iommus",
-> +                                              1, 0, &args);
+Shouldn't this be "reg = <0 0xe6280000 0 0x1000>", i.e. expose both
+banks?
 
-drivers/of/base.c:of_parse_phandle_with_fixed_args():
+Is there any specific reason you're using the second bank of registers?
+These may read as zero, depending on the SoC mode.
 
-"Caller is responsible to call of_node_put() on the returned out_args->node
- pointer."
+> +               interrupts = <0 223 IRQ_TYPE_LEVEL_HIGH>;
+> +               status = "disabled";
+> +       };
 
-> +       if (ret < 0)
-> +               return -1;
-> +
-> +       if (args.np != mmu->dev->of_node)
-> +               return -1;
-> +
-> +       return args.args[0];
->  }
+Same comment for the other nodes.
 
 Gr{oetje,eeting}s,
 
