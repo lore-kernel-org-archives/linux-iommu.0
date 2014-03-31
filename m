@@ -1,54 +1,45 @@
-From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Subject: Re: [PATCH 4/5] ARM: shmobile: r8a7791: Add IPMMU DT nodes
-Date: Mon, 31 Mar 2014 10:52:28 +0200
-Message-ID: <CAMuHMdV5kV_cz3b1gW7qW_z22JtWd9BpoXN2=_XjBqJfcG-yWQ@mail.gmail.com>
-References: <1396049781-12941-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-	<1396049781-12941-5-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH 2/5] iommu/ipmmu-vmsa: Add device tree bindings documentation
+Date: Mon, 31 Mar 2014 12:18:04 +0200
+Message-ID: <2135036.3YMfppXtgo@avalon>
+References: <1396049781-12941-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <1396049781-12941-3-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <CAMuHMdUF6MmH_eK=SbG-q6Kai_q+5ufm-Vsd8z-bYKGj7Z-Spw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1396049781-12941-5-git-send-email-laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linux-sh list <linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <CAMuHMdUF6MmH_eK=SbG-q6Kai_q+5ufm-Vsd8z-bYKGj7Z-Spw@mail.gmail.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, iommu@lists.linux-foundation.org, Linux-sh list <linux-sh@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Will Deacon <will.deacon@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Laurent,
+Hi Geert,
 
-On Sat, Mar 29, 2014 at 12:36 AM, Laurent Pinchart
-<laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org> wrote:
-> +       ipmmu_sy0: mmu@e6280800 {
-> +               compatible = "renesas,ipmmu-vmsa";
-> +               reg = <0 0xe6280800 0 0x800>;
+On Monday 31 March 2014 10:39:48 Geert Uytterhoeven wrote:
+> On Sat, Mar 29, 2014 at 12:36 AM, Laurent Pinchart wrote:
+> > +Required Properties:
+> > +
+> > +  - compatible: Must contain "renesas,ipmmu-vmsa".
+> > +  - reg: Base address and size of the IPMMU registers.
+> > +  - interrupts: Specifier for the MMU fault interrupt.
+> 
+> Does it make sense to have a property for the number of micro-TLBs,
+> or is this handled transparently?
+> 
+> E.g. ipmmu_mx has 24 micro-TLBs, but ipmmu_mp has 30.
 
-Shouldn't this be "reg = <0 0xe6280000 0 0x1000>", i.e. expose both
-banks?
+The IPMMU driver doesn't need to know the number of micro-TLBs, so we should 
+be fine without specifying it in DT. The micro-TLBs are configured when a bus 
+master device is attached or detached, and at that point the device provides 
+its micro-TLB number.
 
-Is there any specific reason you're using the second bank of registers?
-These may read as zero, depending on the SoC mode.
+The only reason I can foresee why the number of micro-TLBs would be useful is 
+to iterate over micro-TLBs when the driver probes the device to disable them 
+all. A mask would probably be better than a number in that case, and I think 
+we can always add that later if we find a need for it.
 
-> +               interrupts = <0 223 IRQ_TYPE_LEVEL_HIGH>;
-> +               status = "disabled";
-> +       };
+-- 
+Regards,
 
-Same comment for the other nodes.
+Laurent Pinchart
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
