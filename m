@@ -1,57 +1,48 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH 3/5] iommu/ipmmu-vmsa: Add device tree support
-Date: Mon, 31 Mar 2014 16:09:41 +0200
-Message-ID: <4940423.MM1jLpQkNj@avalon>
-References: <1396049781-12941-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-	<1396049781-12941-4-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-	<CAMuHMdU7esZ35xe+iTRNbeXmD7bSHXEakTOrTfXEs8h5yQLFfA@mail.gmail.com>
+From: Ben Dooks <ben.dooks@codethink.co.uk>
+Subject: Re: [PATCH 4/5] ARM: shmobile: r8a7791: Add IPMMU DT nodes
+Date: Mon, 31 Mar 2014 15:30:00 +0100
+Message-ID: <53397BE8.6030707@codethink.co.uk>
+References: <1396049781-12941-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <1396049781-12941-5-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <CAMuHMdV5kV_cz3b1gW7qW_z22JtWd9BpoXN2=_XjBqJfcG-yWQ@mail.gmail.com> <2517875.vv2t3ch4DC@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAMuHMdU7esZ35xe+iTRNbeXmD7bSHXEakTOrTfXEs8h5yQLFfA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Linux-sh list <linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <2517875.vv2t3ch4DC@avalon>
+Sender: linux-sh-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, iommu@lists.linux-foundation.org, Linux-sh list <linux-sh@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Geert,
+On 31/03/14 15:01, Laurent Pinchart wrote:
+> Hi Geert,
+>
+> On Monday 31 March 2014 10:52:28 Geert Uytterhoeven wrote:
+>> On Sat, Mar 29, 2014 at 12:36 AM, Laurent Pinchart wrote:
+>>> +       ipmmu_sy0: mmu@e6280800 {
+>>> +               compatible = "renesas,ipmmu-vmsa";
+>>> +               reg = <0 0xe6280800 0 0x800>;
+>>
+>> Shouldn't this be "reg = <0 0xe6280000 0 0x1000>", i.e. expose both
+>> banks?
+>>
+>> Is there any specific reason you're using the second bank of registers?
+>> These may read as zero, depending on the SoC mode.
+>
+> That's a very good question, and I have no clear answer. According to the
+> datasheet the second bank of registers is an alias for the non-secure IPMMU
+> registers. It looks like we're running in secure mode (that's what I assume
+> the "CPU: All CPU(s) started in SVC mode." kernel log message means), and the
+> secure IPMMU didn't seem to be functional when I've tested it.
+>
+> This requires more investigation, but I'm not familiar with secure mode, and
+> the IPMMU documentation is really sparse in that area.
 
-On Monday 31 March 2014 10:45:00 Geert Uytterhoeven wrote:
-> On Sat, Mar 29, 2014 at 12:36 AM, Laurent Pinchart wrote:
-> > @@ -828,16 +829,31 @@ static phys_addr_t ipmmu_iova_to_phys(struct
-> > iommu_domain *io_domain,> 
-> >  static int ipmmu_find_utlb(struct ipmmu_vmsa_device *mmu, struct device
-> >  *dev) {
-> > 
-> > +       ret = of_parse_phandle_with_fixed_args(dev->of_node, "iommus",
-> > +                                              1, 0, &args);
-> 
-> drivers/of/base.c:of_parse_phandle_with_fixed_args():
-> 
-> "Caller is responsible to call of_node_put() on the returned out_args->node
->  pointer."
+The default for the R8A7790 is to start in secure-svc mode.
 
-Thank you for the review. I'll fix that in v2.
+I would test it in non-secure SVC but the security framework we
+are using blocks access to the IPMMU blocks :/
 
-> > +       if (ret < 0)
-> > +               return -1;
-> > +
-> > +       if (args.np != mmu->dev->of_node)
-> > +               return -1;
-> > +
-> > +       return args.args[0];
-> >  }
 
-- 
-Regards,
-
-Laurent Pinchart
+-- 
+Ben Dooks				http://www.codethink.co.uk/
+Senior Engineer				Codethink - Providing Genius
