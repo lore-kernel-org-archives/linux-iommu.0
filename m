@@ -1,33 +1,58 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 0/3] SH-Mobile IPMMU miscellaneous cleanups
-Date: Thu,  3 Apr 2014 01:49:19 +0200
-Message-ID: <1396482562-1851-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 3/3] iommu/shmobile: Use devm_ioremap_resource()
+Date: Thu,  3 Apr 2014 01:49:22 +0200
+Message-ID: <1396482562-1851-4-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+References: <1396482562-1851-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1396482562-1851-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Sender: linux-sh-owner@vger.kernel.org
 To: iommu@lists.linux-foundation.org
 Cc: linux-sh@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
+Replace the devm_ioremap_nocache() call with devm_ioremap_resource().
+This simplifies error checking.
 
-These three patches are small cleanups for the SH-Mobile IPMMU driver. Nothing
-special here, please see individual patches for details.
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+---
+ drivers/iommu/shmobile-ipmmu.c | 17 ++++++-----------
+ 1 file changed, 6 insertions(+), 11 deletions(-)
 
-I plan to send a pull request in a couple of days.
-
-Laurent Pinchart (2):
-  iommu/shmobile: Don't ignore the ipmmu_iommu_init() return value
-  iommu/shmobile: Use devm_ioremap_resource()
-
-Paul Bolle (1):
-  iommu/shmobile: Depend on ARCH_SHMOBILE
-
- drivers/iommu/Kconfig          |  2 +-
- drivers/iommu/shmobile-ipmmu.c | 20 +++++++-------------
- 2 files changed, 8 insertions(+), 14 deletions(-)
-
+diff --git a/drivers/iommu/shmobile-ipmmu.c b/drivers/iommu/shmobile-ipmmu.c
+index 6ba6110..bd97ade 100644
+--- a/drivers/iommu/shmobile-ipmmu.c
++++ b/drivers/iommu/shmobile-ipmmu.c
+@@ -94,11 +94,6 @@ static int ipmmu_probe(struct platform_device *pdev)
+ 	struct resource *res;
+ 	struct shmobile_ipmmu_platform_data *pdata = pdev->dev.platform_data;
+ 
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	if (!res) {
+-		dev_err(&pdev->dev, "cannot get platform resources\n");
+-		return -ENOENT;
+-	}
+ 	ipmmu = devm_kzalloc(&pdev->dev, sizeof(*ipmmu), GFP_KERNEL);
+ 	if (!ipmmu) {
+ 		dev_err(&pdev->dev, "cannot allocate device data\n");
+@@ -106,12 +101,12 @@ static int ipmmu_probe(struct platform_device *pdev)
+ 	}
+ 	spin_lock_init(&ipmmu->flush_lock);
+ 	ipmmu->dev = &pdev->dev;
+-	ipmmu->ipmmu_base = devm_ioremap_nocache(&pdev->dev, res->start,
+-						resource_size(res));
+-	if (!ipmmu->ipmmu_base) {
+-		dev_err(&pdev->dev, "ioremap_nocache failed\n");
+-		return -ENOMEM;
+-	}
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	ipmmu->ipmmu_base = devm_ioremap_resource(&pdev->dev, res);
++	if (IS_ERR(ipmmu->ipmmu_base))
++		return PTR_ERR(ipmmu->ipmmu_base);
++
+ 	ipmmu->dev_names = pdata->dev_names;
+ 	ipmmu->num_dev_names = pdata->num_dev_names;
+ 	platform_set_drvdata(pdev, ipmmu);
 -- 
-Regards,
-
-Laurent Pinchart
+1.8.3.2
 
