@@ -1,36 +1,46 @@
-From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 2/3] iommu/shmobile: Don't ignore the ipmmu_iommu_init() return value
-Date: Thu,  3 Apr 2014 01:49:21 +0200
-Message-ID: <1396482562-1851-3-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-References: <1396482562-1851-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1396482562-1851-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: linux-sh@vger.kernel.org
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH 0/2] ARM SMMU fixes
+Date: Thu, 03 Apr 2014 01:52:55 +0200
+Message-ID: <2243447.NTvYmPQWSB@avalon>
+References: <1393601830-4677-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1393601830-4677-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: iommu@lists.linux-foundation.org, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Will Deacon <will.deacon@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-The function can fail, don't ignore its error value.
+Hi Will,
 
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
----
- drivers/iommu/shmobile-ipmmu.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+On Friday 28 February 2014 16:37:08 Laurent Pinchart wrote:
+> Hello Will,
+> 
+> I've studied your arm-smmu driver as a base to write a Renesas IOMMU driver
+> and found two small issues. Here are patches to fix them. Please bear with
+> me if my understanding was incorrect and the patches wrong :-)
+> 
+> Laurent Pinchart (2):
+>   iommu/arm-smmu: Replace list walk with platform driver data
+>   iommu/arm-smmu: Return 0 on unmap failure
+> 
+>  drivers/iommu/arm-smmu.c | 17 +++++------------
+>  1 file changed, 5 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/iommu/shmobile-ipmmu.c b/drivers/iommu/shmobile-ipmmu.c
-index e3bc2e1..6ba6110 100644
---- a/drivers/iommu/shmobile-ipmmu.c
-+++ b/drivers/iommu/shmobile-ipmmu.c
-@@ -117,8 +117,7 @@ static int ipmmu_probe(struct platform_device *pdev)
- 	platform_set_drvdata(pdev, ipmmu);
- 	ipmmu_reg_write(ipmmu, IMCTR1, 0x0); /* disable TLB */
- 	ipmmu_reg_write(ipmmu, IMCTR2, 0x0); /* disable PMB */
--	ipmmu_iommu_init(ipmmu);
--	return 0;
-+	return ipmmu_iommu_init(ipmmu);
- }
- 
- static struct platform_driver ipmmu_driver = {
+Do you plan to take these patches (or at least patch 2/2) in your tree ? I can 
+send a pull request to Joerg if you give me your acked-by.
+
 -- 
-1.8.3.2
+Regards,
 
+Laurent Pinchart
