@@ -1,28 +1,12 @@
-From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH v2 1/2] pci: Create PCIe requester ID interface
-Date: Fri, 4 Apr 2014 09:00:07 -0600
-Message-ID: <CAErSpo4_WUXTXbte+coJ+Q5yboFYKkE-WAVM5SDUxH7c=w0orQ@mail.gmail.com>
-References: <20130711204439.1701.90503.stgit@bling.home>
-	<20130711210326.1701.56478.stgit@bling.home>
-	<20130723223533.GB19765@google.com>
-	<1374621703.15429.98.camel@ul30vt.home>
-	<CAErSpo6bcGCjqdxn-bz_vjo+HsAiOxDu=--mD7veEZ9f7k+gyA@mail.gmail.com>
-	<1374689548.5208.62.camel@ul30vt.home>
-	<20130724232427.GA9272@google.com>
-	<1374775016.2642.116.camel@ul30vt.home>
-	<20130726215435.GB20021@google.com>
-	<1375113975.2642.208.camel@ul30vt.home>
-	<CAErSpo7pfCtTm5Cq=VixPTKMpM4VQpDr+ZmS5qMw32z6ABu0xQ@mail.gmail.com>
-	<1375137140.2642.349.camel@ul30vt.home>
-	<CAErSpo5+-r3qMca1_Kvt3jJ6OP6Q7--4VmTo3fWJ0y4CPewgEQ@mail.gmail.com>
-	<1375462795.31262.327.camel@ul30vt.home>
-	<CAErSpo5p+6yt8ZyVuLnJTiKAWZWq9ixQQu78nD-bNFkw4ntWmw@mail.gmail.com>
-	<1396579914.3215.36.camel@ul30vt.home>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH] PCI: Introduce new device binding path using
+	pci_dev.driver_override
+Date: Fri, 04 Apr 2014 14:19:20 -0600
+Message-ID: <20140404201818.14389.86188.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1396579914.3215.36.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -32,34 +16,225 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, George Spelvin <linux-gpGsJRJZ3PBBDgjK7y7TUQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, libvir-list-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Apr 3, 2014 at 8:51 PM, Alex Williamson
-<alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> On Thu, 2014-04-03 at 15:48 -0600, Bjorn Helgaas wrote:
->> [+cc George]
->>
->> On Fri, Aug 2, 2013 at 10:59 AM, Alex Williamson
->> <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
->> > ...
->> > Great!  I'm still trying to figure out how to handle the quirk around
->> > Intel PCI-to-PCI bridge on the root complex as just another quirk.  I
->> > respin another version once I have that worked out.  Thanks,
->>
->> Is anything happening here?  These buggy IOMMU/DMA source problems,
->> e.g., [1], have been lingering a long time, and I don't know if we're
->> stuck because I haven't been giving them enough attention, or if we
->> don't really have a good solution yet.
->>
->> [1] https://bugzilla.kernel.org/show_bug.cgi?id=42679
->
-> Sorry, no.  This has completely dropped off my radar.  I'll try to
-> resurrect it and figure out how to move forward.  Thanks,
+The driver_override field allows us to specify the driver for a device
+rather than relying on the driver to provide a positive match of the
+device.  This shortcuts the existing process of looking up the vendor
+and device ID, adding them to the driver new_id, binding the device,
+then removing the ID, but it also provides a couple advantages.
 
-Not a problem; I'm just way behind on processing patches, so I'm
-trying to clean up my backlog and take care of things that are waiting
-on me.
+First, the above existing process allows the driver to bind to any
+device matching the new_id for the window where it's enabled.  This is
+often not desired, such as the case of trying to bind a single device
+to a meta driver like pci-stub or vfio-pci.  Using driver_override we
+can do this deterministically using:
 
-Bjorn
+echo pci-stub > /sys/bus/pci/devices/0000:03:00.0/driver_override
+echo 0000:03:00.0 > /sys/bus/pci/devices/0000:03:00.0/driver/unbind
+echo 0000:03:00.0 > /sys/bus/pci/drivers_probe
+
+Previously we could not invoke drivers_probe after adding a device
+to new_id for a driver as we get non-deterministic behavior whether
+the driver we intend or the standard driver will claim the device.
+Now it becomes a deterministic process, only the driver matching
+driver_override will probe the device.
+
+To return the device to the standard driver, we simply clear the
+driver_override and reprobe the device:
+
+echo > /sys/bus/pci/devices/0000:03:00.0/preferred_driver
+echo 0000:03:00.0 > /sys/bus/pci/devices/0000:03:00.0/driver/unbind
+echo 0000:03:00.0 > /sys/bus/pci/drivers_probe
+
+Another advantage to this approach is that we can specify a driver
+override to force a specific binding or prevent any binding.  For
+instance when an IOMMU group is exposed to userspace through VFIO
+we require that all devices within that group are owned by VFIO.
+However, devices can be hot-added into an IOMMU group, in which case
+we want to prevent the device from binding to any driver (preferred
+driver = "none") or perhaps have it automatically bind to vfio-pci.
+With driver_override it's a simple matter for this field to be set
+internally when the device is first discovered to prevent driver
+matches.
+
+Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+---
+
+Changes since RFC:
+ - Add ABI documentation (gregkh)
+ - Documentation wording clarification (Christoffer)
+
+Nobody puked on the RFC and platform folks have posted a working
+version of this for platform devices, so I guess the only thing left
+to do is formally propose this as a new driver binding mechanism.  I
+don't see much incentive to push this into the driver core since the
+match ultimately needs to be done by the bus driver.  I think this is
+therefore like new_id/remove_id where PCI and USB implement separate,
+but consistent interfaces.
+
+I've pruned the CC list a bit from the RFC, but I've added libvirt
+folks since I expect they would be the first userspace tool that would
+adopt this.  Thanks,
+
+Alex
+
+ Documentation/ABI/testing/sysfs-bus-pci |   21 ++++++++++++++++
+ drivers/pci/pci-driver.c                |   25 +++++++++++++++++--
+ drivers/pci/pci-sysfs.c                 |   40 +++++++++++++++++++++++++++++++
+ include/linux/pci.h                     |    1 +
+ 4 files changed, 84 insertions(+), 3 deletions(-)
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
+index a3c5a66..898ddc4 100644
+--- a/Documentation/ABI/testing/sysfs-bus-pci
++++ b/Documentation/ABI/testing/sysfs-bus-pci
+@@ -250,3 +250,24 @@ Description:
+ 		valid.  For example, writing a 2 to this file when sriov_numvfs
+ 		is not 0 and not 2 already will return an error. Writing a 10
+ 		when the value of sriov_totalvfs is 8 will return an error.
++
++What:		/sys/bus/pci/devices/.../driver_override
++Date:		April 2014
++Contact:	Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
++Description:
++		This file allows the driver for a device to be specified which
++		will override standard static and dynamic ID matching.  When
++		specified, only a driver with a name matching the value written
++		to driver_override will have an opportunity to bind to the
++		device.  The override is specified by writing a string to the
++		driver_override file (echo pci-stub > driver_override) and
++		may be cleared with an empty string (echo > driver_override).
++		This returns the device to standard matching rules binding.
++		Writing to driver_override does not automatically unbind the
++		device from its current driver or make any attempt to
++		automatically load the specified driver.  If no driver with a
++		matching name is currently loaded in the kernel, the device
++		will not bind to any driver.  This also allows devices to
++		opt-out of driver binding using a driver_override name such as
++		"none".  Only a single driver may be specified in the override,
++		there is no support for parsing delimiters.
+diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+index 25f0bc6..f780eb8 100644
+--- a/drivers/pci/pci-driver.c
++++ b/drivers/pci/pci-driver.c
+@@ -216,6 +216,13 @@ const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
+ 	return NULL;
+ }
+ 
++static const struct pci_device_id pci_device_id_any = {
++	.vendor = PCI_ANY_ID,
++	.device = PCI_ANY_ID,
++	.subvendor = PCI_ANY_ID,
++	.subdevice = PCI_ANY_ID,
++};
++
+ /**
+  * pci_match_device - Tell if a PCI device structure has a matching PCI device id structure
+  * @drv: the PCI driver to match against
+@@ -229,18 +236,30 @@ static const struct pci_device_id *pci_match_device(struct pci_driver *drv,
+ 						    struct pci_dev *dev)
+ {
+ 	struct pci_dynid *dynid;
++	const struct pci_device_id *found_id = NULL;
++
++	/* When driver_override is set, only bind to the matching driver */
++	if (dev->driver_override && strcmp(dev->driver_override, drv->name))
++		return NULL;
+ 
+ 	/* Look at the dynamic ids first, before the static ones */
+ 	spin_lock(&drv->dynids.lock);
+ 	list_for_each_entry(dynid, &drv->dynids.list, node) {
+ 		if (pci_match_one_device(&dynid->id, dev)) {
+-			spin_unlock(&drv->dynids.lock);
+-			return &dynid->id;
++			found_id = &dynid->id;
++			break;
+ 		}
+ 	}
+ 	spin_unlock(&drv->dynids.lock);
+ 
+-	return pci_match_id(drv->id_table, dev);
++	if (!found_id)
++		found_id = pci_match_id(drv->id_table, dev);
++
++	/* driver_override will always match, send a dummy id */
++	if (!found_id && dev->driver_override)
++		found_id = &pci_device_id_any;
++
++	return found_id;
+ }
+ 
+ struct drv_dev_and_id {
+diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
+index 276ef9c..70cb39d 100644
+--- a/drivers/pci/pci-sysfs.c
++++ b/drivers/pci/pci-sysfs.c
+@@ -510,6 +510,45 @@ static struct device_attribute sriov_numvfs_attr =
+ 		       sriov_numvfs_show, sriov_numvfs_store);
+ #endif /* CONFIG_PCI_IOV */
+ 
++static ssize_t driver_override_store(struct device *dev,
++				     struct device_attribute *attr,
++				     const char *buf, size_t count)
++{
++	struct pci_dev *pdev = to_pci_dev(dev);
++	char *driver_override, *old = pdev->driver_override;
++
++	if (count > PATH_MAX)
++		return -EINVAL;
++
++	driver_override = kstrndup(buf, count, GFP_KERNEL);
++	if (!driver_override)
++		return -ENOMEM;
++
++	while (strlen(driver_override) &&
++	       driver_override[strlen(driver_override) - 1] == '\n')
++		driver_override[strlen(driver_override) - 1] = '\0';
++
++	if (strlen(driver_override)) {
++		pdev->driver_override = driver_override;
++	} else {
++		kfree(driver_override);
++		pdev->driver_override = NULL;
++	}
++
++	kfree(old);
++
++	return count;
++}
++
++static ssize_t driver_override_show(struct device *dev,
++				    struct device_attribute *attr, char *buf)
++{
++	struct pci_dev *pdev = to_pci_dev(dev);
++
++	return sprintf(buf, "%s\n", pdev->driver_override);
++}
++static DEVICE_ATTR_RW(driver_override);
++
+ static struct attribute *pci_dev_attrs[] = {
+ 	&dev_attr_resource.attr,
+ 	&dev_attr_vendor.attr,
+@@ -532,6 +571,7 @@ static struct attribute *pci_dev_attrs[] = {
+ #if defined(CONFIG_PM_RUNTIME) && defined(CONFIG_ACPI)
+ 	&dev_attr_d3cold_allowed.attr,
+ #endif
++	&dev_attr_driver_override.attr,
+ 	NULL,
+ };
+ 
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 33aa2ca..6b666af 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -364,6 +364,7 @@ struct pci_dev {
+ #endif
+ 	phys_addr_t rom; /* Physical address of ROM if it's not from the BAR */
+ 	size_t romlen; /* Length of ROM if it's not from the BAR */
++	char *driver_override; /* Driver name to force a match */
+ };
+ 
+ static inline struct pci_dev *pci_physfn(struct pci_dev *dev)
