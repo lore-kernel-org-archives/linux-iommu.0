@@ -1,53 +1,58 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: [GIT PULL FOR v3.16] OMAP IOMMU fixes
-Date: Fri, 04 Apr 2014 00:11:52 +0200
-Message-ID: <2312051.xNuD1CfeZH@avalon>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC PATCH v2 1/2] pci: Create PCIe requester ID interface
+Date: Thu, 03 Apr 2014 20:51:54 -0600
+Message-ID: <1396579914.3215.36.camel@ul30vt.home>
+References: <20130711204439.1701.90503.stgit@bling.home>
+	<20130711210326.1701.56478.stgit@bling.home>
+	<20130723223533.GB19765@google.com>
+	<1374621703.15429.98.camel@ul30vt.home>
+	<CAErSpo6bcGCjqdxn-bz_vjo+HsAiOxDu=--mD7veEZ9f7k+gyA@mail.gmail.com>
+	<1374689548.5208.62.camel@ul30vt.home>
+	<20130724232427.GA9272@google.com>
+	<1374775016.2642.116.camel@ul30vt.home>
+	<20130726215435.GB20021@google.com>
+	<1375113975.2642.208.camel@ul30vt.home>
+	<CAErSpo7pfCtTm5Cq=VixPTKMpM4VQpDr+ZmS5qMw32z6ABu0xQ@mail.gmail.com>
+	<1375137140.2642.349.camel@ul30vt.home>
+	<CAErSpo5+-r3qMca1_Kvt3jJ6OP6Q7--4VmTo3fWJ0y4CPewgEQ@mail.gmail.com>
+	<1375462795.31262.327.camel@ul30vt.home>
+	<CAErSpo5p+6yt8ZyVuLnJTiKAWZWq9ixQQu78nD-bNFkw4ntWmw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-Sender: linux-omap-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, linux-omap@vger.kernel.org, Suman Anna <s-anna@ti.com>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAErSpo5p+6yt8ZyVuLnJTiKAWZWq9ixQQu78nD-bNFkw4ntWmw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, George Spelvin <linux-gpGsJRJZ3PBBDgjK7y7TUQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+On Thu, 2014-04-03 at 15:48 -0600, Bjorn Helgaas wrote:
+> [+cc George]
+> 
+> On Fri, Aug 2, 2013 at 10:59 AM, Alex Williamson
+> <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+> > ...
+> > Great!  I'm still trying to figure out how to handle the quirk around
+> > Intel PCI-to-PCI bridge on the root complex as just another quirk.  I
+> > respin another version once I have that worked out.  Thanks,
+> 
+> Is anything happening here?  These buggy IOMMU/DMA source problems,
+> e.g., [1], have been lingering a long time, and I don't know if we're
+> stuck because I haven't been giving them enough attention, or if we
+> don't really have a good solution yet.
+> 
+> [1] https://bugzilla.kernel.org/show_bug.cgi?id=42679
 
-The following changes since commit 8944b7d495a00ae44d19ce945b5032a86dcdf7f0:
+Sorry, no.  This has completely dropped off my radar.  I'll try to
+resurrect it and figure out how to move forward.  Thanks,
 
-  Merge branch 'next' (2014-03-04 23:41:51 +0100)
-
-are available in the git repository at:
-
-  git://linuxtv.org/pinchartl/media.git iommu/omap
-
-for you to fetch changes up to f42ed2dcc15e39a189458cfab69d7f2b902cc3e6:
-
-  iommu/omap: Fix map protection value handling (2014-04-03 23:35:39 +0200)
-
-I will need to base an OMAP3 ISP patch set on top of this, and I would like to 
-get it merged in v3.16 as well. In order to avoid bisection breakages, could 
-you merge this right on top of v3.15-rc1 when it will be out and provide a 
-stable branch that can then be merged in the Linux media tree ?
-
-
-----------------------------------------------------------------
-Laurent Pinchart (3):
-      iommu/omap: Fix 'no page for' debug message in flush_iotlb_page()
-      iommu/omap: Remove comment about supporting single page mappings only
-      iommu/omap: Fix map protection value handling
-
-Suman Anna (3):
-      iommu/omap: Correct init value of iotlb_entry valid field
-      iommu/omap: Remove omap_iommu_domain_has_cap() function
-      iommu/omap: Move to_iommu definition from omap-iopgtable.h
-
- drivers/iommu/omap-iommu.c     | 31 ++++++++++++-------------------
- drivers/iommu/omap-iopgtable.h |  3 ---
- 2 files changed, 12 insertions(+), 22 deletions(-)
-
--- 
-Regards,
-
-Laurent Pinchart
-
+Alex
