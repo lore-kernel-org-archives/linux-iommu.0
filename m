@@ -1,102 +1,191 @@
-From: Ritesh Harjani <ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH] iommu-groups: Add list_head for iommu groups
-Date: Mon, 7 Apr 2014 21:54:54 +0530
-Message-ID: <CAD15agYF5TCNa-0COxx3Po+7h4aKa=EW2oou_gftacfOev6CJg@mail.gmail.com>
-References: <CAD15agaN=ymK8JTPELNygF055r3zPyqmJ7bMVabL7pM8EusHjg@mail.gmail.com>
-	<1396620219.3215.46.camel@ul30vt.home>
-	<CAD15agZbUwvda+XG3hELJT5PQ_0j2Bya8Y9wOZcP5qg8binUzg@mail.gmail.com>
-	<1396880095.3215.89.camel@ul30vt.home>
+From: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCHv3 0/6] Crashdump Accepting Active IOMMU
+Date: Mon, 07 Apr 2014 16:43:21 -0400
+Message-ID: <53430DE9.9080303@redhat.com>
+References: <1389391652-52422-1-git-send-email-bill.sumner@hp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1396880095.3215.89.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <kexec-bounces+glkk-kexec=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <1389391652-52422-1-git-send-email-bill.sumner-VXdhtT5mjnY@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/kexec>,
+ <mailto:kexec-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/kexec/>
+List-Post: <mailto:kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:kexec-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/kexec>,
+ <mailto:kexec-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "kexec" <kexec-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: kexec-bounces+glkk-kexec=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
+Cc: indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, zhenhua-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Yes, Alex.
-
-Thanks for the suggestions.
-Ritesh
-
-
-On Mon, Apr 7, 2014 at 7:44 PM, Alex Williamson
-<alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> On Mon, 2014-04-07 at 15:23 +0530, Ritesh Harjani wrote:
->> On Fri, Apr 4, 2014 at 7:33 PM, Alex Williamson
->> <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
->> > On Fri, 2014-04-04 at 11:12 +0530, Ritesh Harjani wrote:
->> >> Hi All,
->> >>
->> >> Please find the below patch and let me know your suggestions on this.
->> >>
->> >> With this patch iommu groups can be linked and iommu driver will
->> >> get to know which all iommu groups belongs to a particular iommu device.
->> >>
->> >>
->> >>
->> >> Each iommu device might have multiple iommu groups,
->> >> with each group populated with many devices. With
->> >> this configuration, iommu driver may require a list
->> >> of iommu groups belonging to each iommu device.
->> >>
->> >> Add list_head struct entry in iommu_group.
->> >>
->> >> Signed-off-by: Ritesh Harjani <ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
->> >> ---
->> >>  drivers/iommu/iommu.c | 4 ++++
->> >>  1 file changed, 4 insertions(+)
->> >>
->> >> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> >> index e5555fc..70588dc 100644
->> >> --- a/drivers/iommu/iommu.c
->> >> +++ b/drivers/iommu/iommu.c
->> >> @@ -36,6 +36,10 @@ static struct ida iommu_group_ida;
->> >>  static struct mutex iommu_group_mutex;
->> >>
->> >>  struct iommu_group {
->> >> +       struct list_head list;  /* lower level iommu driver structure
->> >> +                                * may require list of iommu groups
->> >> +                                * belonging to that iommu device.
->> >> +                                */
->> >
->> >
->> > To have a list would require locking to manage that list, but you seem
->> > to imply that the iommu driver would be managing this list... but there
->> > might be multiple iommu drivers in a single system. Groups are
->> > currently independent of each other by design, trying to manage them in
->> > a list defeats that.
->>
->> HOW ??
->>
->> > There is also no example provided here of why we
->> > would need or even want to do this.  Thanks,
->>
->> Say multiple groups are linked to one iommu device. Each iommu_group maintains
->> one iommu_data specific to their group. Now, if iommu driver of a
->> iommu device wants
->> to query all the iommu groups and thus all devices which belongs to
->> this iommu hardware,
->> then in that it will be nice if iommu_group struct provides a list_entry ?
+On 01/10/2014 05:07 PM, Bill Sumner wrote:
+> v2->v3:
+> 1. Commented-out "#define DEBUG 1" to eliminate debug messages
+> 2. Updated the comments about changes in each version in all patches in the set.
+> 3. Fixed: one-line added to Copy-Translations" patch to initialize the iovad
+>            struct as recommended by Baoquan He [bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+>            init_iova_domain(&domain->iovad, DMA_32BIT_PFN);
 >
-> iommu_data is owned by the iommu driver, so if a driver wants to create
-> such a list, why would it not do so there?  What's being requested here
-> is an extension to a private data structure with no concrete example of
-> why this is needed.  Current users don't seem to have any need for this.
-> Furthermore struct iommu_group is intentionally opaque to everything
-> outside of iommu.c, so without either relocating this structure to a
-> header or adding a list service to the iommu group interfaces, the
-> change is completely useless.  Thanks,
+> v1->v2:
+> The following series implements a fix for:
+> A kdump problem about DMA that has been discussed for a long time. That is,
+> when a kernel panics and boots into the kdump kernel, DMA started by the
+> panicked kernel is not stopped before the kdump kernel is booted and the
+> kdump kernel disables the IOMMU while this DMA continues.  This causes the
+> IOMMU to stop translating the DMA addresses as IOVAs and begin to treat them
+> as physical memory addresses -- which causes the DMA to either:
+> (1) generate DMAR errors or (2) generate PCI SERR errors or (3) transfer
+> data to or from incorrect areas of memory. Often this causes the dump to fail.
 >
-> Alex
+> This patch set modifies the behavior of the iommu in the (new) crashdump kernel:
+> 1. to accept the iommu hardware in an active state,
+> 2. to leave the current translations in-place so that legacy DMA will continue
+>     using its current buffers until the device drivers in the crashdump kernel
+>     initialize and initialize their devices,
+> 3. to use different portions of the iova address ranges for the device drivers
+>     in the crashdump kernel than the iova ranges that were in-use at the time
+>     of the panic.
+>
+> Advantages of this approach:
+> 1. All manipulation of the IO-device is done by the Linux device-driver
+>     for that device.
+> 2. This approach behaves in a manner very similar to operation without an
+>     active iommu.
+
+Sorry to be late to the game.... finally getting out of a deep hole &
+asked to look at this proposal...
+
+Along this concept -- similar to operation without an active iommu --
+have you considered the following:
+a) if (this is crash kernel), turn *off* DMAR faults;
+b) if (this is crash kernel), isolate all device DMA in IOMMU
+b) as second kernel configures each device, have each device to use IOMMU hw-passthrough,
+      i.e., the equivalent of having no IOMMU for the second, kexec'd kernel
+   but, having the benefit of keeping all the other (potentially bad) devices
+   sequestered / isolated, until they are initialized & re-configured in the second kernel,
+    *if at all* -- note: kexec'd kernels may not enable/configure all devices that
+    existed in the first kernel (Bill: I'm sure you know this, but others may not).
+
+RMRR's that were previously setup could continue to work if they are skipped in step (b),
+unless the device has gone mad/bad.  In that case, re-parsing the RMRR may or may not
+clear up the issue.
+
+Additionally, a tidbit of information like "some servers force NMI's on DMAR faults,
+and cause a system reset, thereby, preventing a kdump to occur"
+should have been included as one reason to stop DMAR faults from occurring on kexec-boot,
+in addition to the fact that a flood of them can lock up a system.
+
+Again, just turning off DMAR fault reporting for the 'if (this is crash kernel)',
+short-term workaround sounds a whole lot less expensive to implement, as well as
+'if (this is crash kernel), force hw-passthrough'.
+
+If the IO devices are borked to the point that they won't complete DMA properly,
+with or without IOMMU, the system is dead anyhow, game over.
+
+Finally, copying the previous IOMMU state to the second kernel, and hoping
+that the cause of the kernel crash wasn't an errant DMA (e.g., due to a device going bad,
+or it's DMA-state being corrupted & causing an improper IO), is omitting an important failure
+case/space.
+Keeping the first-kernel DMA isolated (IOMMU on, all translations off, all DMAR faults off),
+and then allowing each device (driver) configuration to sanely reset the device &
+start a new (hw-passthrough) domain seems simpler and cleaner, for this dump-and-run kernel
+effort.
+
+- Don
+
+> 3. Any activity between the IO-device and its RMRR areas is handled by the
+>     device-driver in the same manner as during a non-kdump boot.
+> 4. If an IO-device has no driver in the kdump kernel, it is simply left alone.
+>     This supports the practice of creating a special kdump kernel without
+>     drivers for any devices that are not required for taking a crashdump.
+>
+> Changes since the RFC version of this patch:
+> 1. Consolidated all of the operational code into the "copy..." functions.
+>     The "process..." functions were primarily used for diagnostics and
+>     exploration; however, there was a small amount of operational code that
+>     used the "process..." functions.
+>     This operational code has been moved into the "copy..." functions.
+>
+> 2. Removed the "Process ..." functions and the diagnostic code that ran
+>     on that function set.  This removed about 1/4 of the code -- which this
+>     operational patch set no longer needs.  These portions of the RFC patch
+>     could be formatted as a separate patch and submitted independently
+>     at a later date.
+>
+> 3. Re-formatted the code to the Linux Coding Standards.
+>     The checkpatch script still finds some lines to complain about;
+>     however most of these lines are either (1) lines that I did not change,
+>     or (2) lines that only changed by adding a level of indent which pushed
+>     them over 80-characters, or (3) new lines whose intent is far clearer when
+>     longer than 80-characters.
+>
+> 4. Updated the remaining debug print to be significantly more flexible.
+>     This allows control over the amount of debug print to the console --
+>     which can vary widely.
+>
+> 5. Fixed a couple of minor bugs found by testing on a machine with a
+>     very large IO configuration.
+>
+> At a high level, this code operates primarily during iommu initialization
+> and device-driver initialization
+>
+> During intel-iommu hardware initialization:
+> In intel_iommu_init(void)
+> * If (This is the crash kernel)
+>    .  Set flag: crashdump_accepting_active_iommu (all changes below check this)
+>    .  Skip disabling the iommu hardware translations
+>
+> In init_dmars()
+> * Duplicate the intel iommu translation tables from the old kernel
+>    in the new kernel
+>    . The root-entry table, all context-entry tables,
+>      and all page-translation-entry tables
+>    . The duplicate tables contain updated physical addresses to link them together.
+>    . The duplicate tables are mapped into kernel virtual addresses
+>      in the new kernel which allows most of the existing iommu code
+>      to operate without change.
+>    . Do some minimal sanity-checks during the copy
+>    . Place the address of the new root-entry structure into "struct intel_iommu"
+>
+> * Skip setting-up new domains for 'si', 'rmrr', 'isa'
+>    . Translations for 'rmrr' and 'isa' ranges have been copied from the old kernel
+>    . This patch has not yet been tested with iommu pass-through enabled
+>
+> * Existing (unchanged) code near the end of dmar_init:
+>    . Loads the address of the (now new) root-entry structure from
+>      "struct intel_iommu" into the iommu hardware and does the hardware flushes.
+>      This changes the active translation tables from the ones in the old kernel
+>      to the copies in the new kernel.
+>    . This is legal because the translations in the two sets of tables are
+>      currently identical:
+>        Virtualization Technology for Directed I/O. Architecture Specification,
+>        February 2011, Rev. 1.3  (section 11.2, paragraph 2)
+>
+> In iommu_init_domains()
+> * Mark as in-use all domain-id's from the old kernel
+>    . In case the new kernel contains a device that was not in the old kernel
+>      and a new, unused domain-id is actually needed, the bitmap will give us one.
+>
+> When a new domain is created for a device:
+> * If (this device has a context in the old kernel)
+>    . Get domain-id, address-width, and IOVA ranges from the old kernel context;
+>    . Get address(page-entry-tables) from the copy in the new kernel;
+>    . And apply all of the above values to the new domain structure.
+> * Else
+>    . Create a new domain as normal
+>
+>
+> Bill Sumner (6):
+>    Crashdump-Accepting-Active-IOMMU-Flags-and-Prototype
+>    Crashdump-Accepting-Active-IOMMU-Utility-functions
+>    Crashdump-Accepting-Active-IOMMU-Domain-Interfaces
+>    Crashdump-Accepting-Active-IOMMU-Copy-Translations
+>    Crashdump-Accepting-Active-IOMMU-Debug-Print-IOMMU
+>    Crashdump-Accepting-Active-IOMMU-Call-From-Mainline
+>
+>   drivers/iommu/intel-iommu.c | 1293 ++++++++++++++++++++++++++++++++++++++++---
+>   1 file changed, 1225 insertions(+), 68 deletions(-)
 >
