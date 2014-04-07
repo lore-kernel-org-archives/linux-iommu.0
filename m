@@ -1,110 +1,100 @@
-From: Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [RFC PATCH] PCI: Introduce new device binding path using pci_dev.driver_override
-Date: Fri, 04 Apr 2014 19:07:29 -0700
-Message-ID: <533F6561.2090205@roeck-us.net>
-References: <20140401161851.18815.31108.stgit@bling.home>	<20140401185212.7229f2c114c7e95089f00e90@linaro.org>	<20140402002324.GA2662@kroah.com>	<20140402170638.51745f5c231a7632422e4cc5@linaro.org>	<1396479728.476.410.camel@ul30vt.home> <20140404203512.5b5ac8a134a71065518712c3@freescale.com>
+From: Ritesh Harjani <ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH] iommu-groups: Add list_head for iommu groups
+Date: Mon, 7 Apr 2014 15:23:54 +0530
+Message-ID: <CAD15agZbUwvda+XG3hELJT5PQ_0j2Bya8Y9wOZcP5qg8binUzg@mail.gmail.com>
+References: <CAD15agaN=ymK8JTPELNygF055r3zPyqmJ7bMVabL7pM8EusHjg@mail.gmail.com>
+	<1396620219.3215.46.camel@ul30vt.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20140404203512.5b5ac8a134a71065518712c3@freescale.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Kim Phillips <kim.phillips@freescale.com>, Alex Williamson <alex.williamson@redhat.com>
-Cc: Kim Phillips <kim.phillips@linaro.org>, gregkh@linuxfoundation.org, stuart.yoder@freescale.com, kvm@vger.kernel.org, jan.kiszka@siemens.com, will.deacon@arm.com, linux-kernel@vger.kernel.org, mhocko@suse.cz, bhelgaas@google.com, Varun.Sethi@freescale.com, kvmarm@lists.cs.columbia.edu, rafael.j.wysocki@intel.com, agraf@suse.de, linux-pci@vger.kernel.org, konrad.wilk@oracle.com, d.kasatkin@samsung.com, tj@kernel.org, scottwood@freescale.com, a.motakis@virtualopensystems.com, tech@virtualopensystems.com, Bharat.Bhushan@freescale.com, toshi.kani@hp.com, a.rigo@virtualopensystems.com, iommu@lists.linux-foundation.org, joe@perches.com, christoffer.dall@linaro.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1396620219.3215.46.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/04/2014 06:35 PM, Kim Phillips wrote:
-> Needed by platform device drivers, such as the vfio-platform driver [1],
-> in order to bypass the existing OF, ACPI, id_table and name string matches,
-> and successfully be able to be bound to any device, like so:
+On Fri, Apr 4, 2014 at 7:33 PM, Alex Williamson
+<alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+> On Fri, 2014-04-04 at 11:12 +0530, Ritesh Harjani wrote:
+>> Hi All,
+>>
+>> Please find the below patch and let me know your suggestions on this.
+>>
+>> With this patch iommu groups can be linked and iommu driver will
+>> get to know which all iommu groups belongs to a particular iommu device.
+>>
+>>
+>>
+>> Each iommu device might have multiple iommu groups,
+>> with each group populated with many devices. With
+>> this configuration, iommu driver may require a list
+>> of iommu groups belonging to each iommu device.
+>>
+>> Add list_head struct entry in iommu_group.
+>>
+>> Signed-off-by: Ritesh Harjani <ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>> ---
+>>  drivers/iommu/iommu.c | 4 ++++
+>>  1 file changed, 4 insertions(+)
+>>
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index e5555fc..70588dc 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -36,6 +36,10 @@ static struct ida iommu_group_ida;
+>>  static struct mutex iommu_group_mutex;
+>>
+>>  struct iommu_group {
+>> +       struct list_head list;  /* lower level iommu driver structure
+>> +                                * may require list of iommu groups
+>> +                                * belonging to that iommu device.
+>> +                                */
 >
-> echo vfio-platform > /sys/bus/platform/devices/fff51000.ethernet/driver_override
-> echo fff51000.ethernet > /sys/bus/platform/devices/fff51000.ethernet/driver/unbind
-> echo fff51000.ethernet > /sys/bus/platform/drivers_probe
 >
-> This mimics "PCI: Introduce new device binding path using
-> pci_dev.driver_override" [2], which is an interface enhancement
-> for more deterministic PCI device binding, e.g., when in the
-> presence of hotplug.
->
-> [1] http://lkml.iu.edu/hypermail/linux/kernel/1402.1/00177.html
-> [2] http://thread.gmane.org/gmane.linux.kernel.iommu/4605
->
-> Signed-off-by: Kim Phillips <kim.phillips@freescale.com>
-> ---
-> if this looks ok, should it be included in the next version of the
-> vfio-platform submission series, like last time ([1] above)?
->
->   Documentation/ABI/testing/sysfs-bus-platform | 17 ++++++++++
->   drivers/base/platform.c                      | 46 ++++++++++++++++++++++++++++
->   include/linux/platform_device.h              |  1 +
->   3 files changed, 64 insertions(+)
->   create mode 100644 Documentation/ABI/testing/sysfs-bus-platform
->
-> diff --git a/Documentation/ABI/testing/sysfs-bus-platform b/Documentation/ABI/testing/sysfs-bus-platform
-> new file mode 100644
-> index 0000000..6b14a6a
-> --- /dev/null
-> +++ b/Documentation/ABI/testing/sysfs-bus-platform
-> @@ -0,0 +1,17 @@
-> +What:		/sys/bus/platform/devices/.../driver_override
-> +Date:		April 2014
-> +Contact:	Kim Phillips <kim.phillips@freescale.com>
-> +Description:
-> +		This file allows the driver for a device to be specified
-> +		which will override standard OF, ACPI, ID table, and name
-> +		matching.  When specified, only a driver with a name matching
-> +		the value written to driver_override will have an opportunity
-> +		to bind to the device.  The override may be cleared by
-> +		writing an empty string (ex. echo > driver_override), returning
-> +		the device to standard matching rules binding.  Writing to
-> +		driver_override does not automatically unbind the device from
-> +		its current driver or make any attempt to automatically load
-> +		the specified driver name.  If no driver with a matching name
-> +		is currently loaded in the kernel, no match will be found.
-> +		This also allows devices to opt-out of driver binding using
-> +		a driver_override name such as "none".
-> diff --git a/drivers/base/platform.c b/drivers/base/platform.c
-> index e714709..ded1db1 100644
-> --- a/drivers/base/platform.c
-> +++ b/drivers/base/platform.c
-> @@ -22,6 +22,7 @@
->   #include <linux/pm_runtime.h>
->   #include <linux/idr.h>
->   #include <linux/acpi.h>
-> +#include <linux/limits.h>
->
->   #include "base.h"
->   #include "power/power.h"
-> @@ -690,8 +691,49 @@ static ssize_t modalias_show(struct device *dev, struct device_attribute *a,
->   }
->   static DEVICE_ATTR_RO(modalias);
->
-> +static ssize_t driver_override_store(struct device *dev,
-> +				     struct device_attribute *attr,
-> +				     const char *buf, size_t count)
-> +{
-> +	struct platform_device *pdev = to_platform_device(dev);
-> +	char *driver_override, *old = pdev->driver_override;
-> +
-> +	if (count > PATH_MAX)
-> +		return -EINVAL;
-> +
-> +	driver_override = kstrndup(buf, count, GFP_KERNEL);
-> +	if (!driver_override)
-> +		return -ENOMEM;
-> +
-> +	while (strlen(driver_override) &&
-> +	       driver_override[strlen(driver_override) - 1] == '\n')
-> +		driver_override[strlen(driver_override) - 1] = '\0';
-> +
+> To have a list would require locking to manage that list, but you seem
+> to imply that the iommu driver would be managing this list... but there
+> might be multiple iommu drivers in a single system. Groups are
+> currently independent of each other by design, trying to manage them in
+> a list defeats that.
 
-Seems to me that something like
+HOW ??
 
-	cp = strchr(driver_override, '\n');
-	if (cp)
-		*cp = '\0';
+> There is also no example provided here of why we
+> would need or even want to do this.  Thanks,
 
-would be much simpler.
+Say multiple groups are linked to one iommu device. Each iommu_group maintains
+one iommu_data specific to their group. Now, if iommu driver of a
+iommu device wants
+to query all the iommu groups and thus all devices which belongs to
+this iommu hardware,
+then in that it will be nice if iommu_group struct provides a list_entry ?
 
-Guenter
+Thanks
+Ritesh
+
+
+
+
+
+
+
+>
+> Alex
+>
+>>         struct kobject kobj;
+>>         struct kobject *devices_kobj;
+>>         struct list_head devices;
+>> --
+>> 1.8.1.3
+>
+>
+>
