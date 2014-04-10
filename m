@@ -1,75 +1,87 @@
-From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+From: Linda Knippers <linda.knippers@hp.com>
 Subject: Re: hpsa driver bug crack kernel down!
-Date: Thu, 10 Apr 2014 09:14:59 -0600
-Message-ID: <CAErSpo6EORf02WS1UqP8EMWfHij7W2J5B3ZOoBT90txV85uZZw@mail.gmail.com>
-References: <20140409023935.GE11839@dhcp-16-105.nay.redhat.com>
-	<1397083799.2608.20.camel@buesod1.americas.hpqcorp.net>
-	<1397084904.9519.62.camel@dabdike>
-	<1397085044.9519.63.camel@dabdike>
-	<1397086817.2608.25.camel@buesod1.americas.hpqcorp.net>
-	<1397087425.9519.67.camel@dabdike>
-	<1397089180.2608.27.camel@buesod1.americas.hpqcorp.net>
-	<CAErSpo4H=hcro8sMnt2MzDDVCROpASuUTQWBw37OxodHTyOfyw@mail.gmail.com>
-	<1397111557.2608.29.camel@buesod1.americas.hpqcorp.net>
-	<20140410071535.GX13491@8bytes.org>
-	<1397119587.19944.14.camel@shinybook.infradead.org>
+Date: Thu, 10 Apr 2014 11:36:51 -0400
+Message-ID: <5346BA93.5090904@hp.com>
+References: <20140409023935.GE11839@dhcp-16-105.nay.redhat.com>	<1397083799.2608.20.camel@buesod1.americas.hpqcorp.net>	<1397084904.9519.62.camel@dabdike>	<1397085044.9519.63.camel@dabdike>	<1397086817.2608.25.camel@buesod1.americas.hpqcorp.net>	<1397087425.9519.67.camel@dabdike>	<1397089180.2608.27.camel@buesod1.americas.hpqcorp.net>	<CAErSpo4H=hcro8sMnt2MzDDVCROpASuUTQWBw37OxodHTyOfyw@mail.gmail.com>	<1397111557.2608.29.camel@buesod1.americas.hpqcorp.net>	<20140410071535.GX13491@8bytes.org>	<1397119587.19944.14.camel@shinybook.infradead.org> <CAErSpo6EORf02WS1UqP8EMWfHij7W2J5B3ZOoBT90txV85uZZw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1397119587.19944.14.camel-Fexsq3y4057IgHVZqg5X0TlWvGAXklZc@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Woodhouse, David" <david.woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: "bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "James.Bottomley-JuX6DAaQMKPCXq6kfMZ53/egYHeGw8Jk@public.gmane.org" <James.Bottomley-JuX6DAaQMKPCXq6kfMZ53/egYHeGw8Jk@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "davidlohr-VXdhtT5mjnY@public.gmane.org" <davidlohr-VXdhtT5mjnY@public.gmane.org>, "scameron-3C9H9nn4BS4HL6m8NFMY+dBPR1lH4CV8@public.gmane.org" <scameron-3C9H9nn4BS4HL6m8NFMY+dBPR1lH4CV8@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <CAErSpo6EORf02WS1UqP8EMWfHij7W2J5B3ZOoBT90txV85uZZw@mail.gmail.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>, "Woodhouse, David" <david.woodhouse@intel.com>
+Cc: "bhe@redhat.com" <bhe@redhat.com>, "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "James.Bottomley@hansenpartnership.com" <James.Bottomley@hansenpartnership.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "davidlohr@hp.com" <davidlohr@hp.com>, "scameron@beardog.cce.hp.com" <scameron@beardog.cce.hp.com>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVGh1LCBBcHIgMTAsIDIwMTQgYXQgMjo0NiBBTSwgV29vZGhvdXNlLCBEYXZpZAo8ZGF2aWQu
-d29vZGhvdXNlQGludGVsLmNvbT4gd3JvdGU6Cgo+PiA+ID4gPj4gPiA+ID4gPiBETUFSOltmYXVs
-dCByZWFzb24gMDJdIFByZXNlbnQgYml0IGluIGNvbnRleHQgZW50cnkgaXMgY2xlYXIKPj4gPiA+
-ID4+ID4gPiA+ID4gZG1hcjogRFJIRDogaGFuZGxpbmcgZmF1bHQgc3RhdHVzIHJlZyA2MDIKPj4g
-PiA+ID4+ID4gPiA+ID4gZG1hcjogRE1BUjpbRE1BIFJlYWRdIFJlcXVlc3QgZGV2aWNlIFswMjow
-MC4wXSBmYXVsdCBhZGRyIDdmNjFlMDAwCj4KPiBUaGF0ICJQcmVzZW50IGJpdCBpbiBjb250ZXh0
-IGVudHJ5IGlzIGNsZWFyIiBmYXVsdCBtZWFucyB0aGF0IHdlIGhhdmUKPiBub3Qgc2V0IHVwICph
-bnkqIG1hcHBpbmdzIGZvciB0aGlzIFBDSSBkZXZpY2XigKYgb24gdGhpcyBJT01NVS4KPgo+PiA+
-IFllcywgc3BlY2lmaWNhbGx5IChmaW5hbGx5IGRvbmUgYmlzZWN0aW5nKToKPj4gPgo+PiA+IGNv
-bW1pdCAyZTQ1NTI4OTMwMzg4NjU4NjAzZWEyNGQ0OWNmNTI4NjdiOTI4ZDNlCj4+ID4gQXV0aG9y
-OiBKaWFuZyBMaXUgPGppYW5nLmxpdUBsaW51eC5pbnRlbC5jb20+Cj4+ID4gRGF0ZTogICBXZWQg
-RmViIDE5IDE0OjA3OjM2IDIwMTQgKzA4MDAKPj4gPgo+PiA+ICAgICBpb21tdS92dC1kOiBVbmlm
-eSB0aGUgd2F5IHRvIHByb2Nlc3MgRE1BUiBkZXZpY2Ugc2NvcGUgYXJyYXkKPgo+IFRoaXMgY29t
-bWl0IGlzIGFib3V0IGhvdyB3ZSBkZWNpZGUgd2hpY2ggSU9NTVUgYSBnaXZlbiBQQ0kgZGV2aWNl
-IGlzCj4gYXR0YWNoZWQgdG8uCj4KPiBUaHVzLCBteSBmaXJzdCBndWVzcyB3b3VsZCBiZSB0aGF0
-IHdlIGFyZSBxdWl0ZSBoYXBwaWx5IHNldHRpbmcgdXAgdGhlCj4gcmVxdWVzdGVkIERNQSBtYXBz
-IG9uIHRoZSAqd3JvbmcqIElPTU1VLCBhbmQgdGhlbiB0YWtpbmcgZmF1bHRzIHdoZW4gdGhlCj4g
-ZGV2aWNlIGFjdHVhbGx5IHRyaWVzIHRvIGRvIERNQS4KPgo+IEhvd2V2ZXIsIEknbSBub3QgMTAw
-JSBjb252aW5jZWQgb2YgdGhhdC4gVGhlIGZhdWx0IGFkZHJlc3MgbG9va3MKPiBzdXNwaWNpb3Vz
-bHkgbGlrZSBhIHRydWUgcGh5c2ljYWwgYWRkcmVzcywgbm90IGEgdmlydHVhbCBidXMgYWRkcmVz
-cyBvZgo+IHRoZSB0eXBlIHRoYXQgd2UnZCBub3JtYWxseSBhbGxvY2F0ZSBmb3IgYSBkbWFfbWFw
-Xyogb3BlcmF0aW9uLiBUaG9zZQo+IHdvdWxkIHN0YXJ0IGF0IDB4ZmZmZmYwMDAgYW5kIHdvcmsg
-ZG93bndhcmRzLCB0eXBpY2FsbHkuCgpJIGxpa2UgdGhlICJ3cm9uZyBJT01NVSAob3Igbm8gSU9N
-TVUgYXQgYWxsKSIgdGhlb3J5LiAgSWYgd2UgZGlkbid0CmNvbm5lY3QgdGhlIGRldmljZSB3aXRo
-IGFuIElPTU1VIGF0IGFsbCwgdGhhdCB3b3VsZCBleHBsYWluIHRoZSBkZXZpY2UKRE1BaW5nIGRp
-cmVjdGx5IHRvIGEgcGh5c2ljYWwgYWRkcmVzcywgd291bGRuJ3QgaXQ/Cgo+IERvIHlvdSBoYXZl
-ICdpb21tdT1wdCcgb24gdGhlIGtlcm5lbCBjb21tYW5kIGxpbmU/IENhbiBJIHNlZSB0aGUgZnVs
-bAo+IGRtZXNnIGFzIHRoaXMgc3lzdGVtIGJvb3RzLCBhbmQgYWxzbyBhIGNvcHkgb2YgdGhlIERN
-QVIgdGFibGU/Cj4KPiBXZSBzaG91bGQgYWxzbyByYXRlLWxpbWl0IERNQSBmYXVsdHMsIHdoaWNo
-IHdvdWxkIGF2b2lkIHRoZSBsb2NrdXAKPiBmYWlsdXJlIG1vZGUuIEJqb3JuLCB3aGF0IHNob3Vs
-ZCBhbiBJT01NVSBkcml2ZXIgKmRvKiB3aGVuIGl0IGRldGVjdHMKPiB0aGF0IGEgZGV2aWNlIGlz
-IGNyZWF0aW5nIGFuIGVuZGxlc3Mgc3RyZWFtIG9mIERNQSBmYXVsdHMgYW5kIGlzbid0Cj4gYWJv
-cnRpbmcgdGhlIHRyYW5zYWN0aW9uPwoKWW91IG1lbnRpb25lZCB0aGF0IFBPV0VSIHdpdGggRUVI
-IGRvZXMgc29tZXRoaW5nIGludGVsbGlnZW50IGluIHRoaXMKY2FzZSwgYnV0IEknbSBub3QgZmFt
-aWxpYXIgd2l0aCB0aGF0IGNvZGUuICBXZSBoYXZlIEFFUiBzdXBwb3J0LCB3aGljaApjYW4gcmVz
-dWx0IGluIHJlc2V0dGluZyBhIGRldmljZSwgYnV0IEkgdGhpbmsgRE1BIGZhdWx0cyBhcmUgcmVw
-b3J0ZWQKZGlmZmVyZW50bHksIGFuZCBJIGRvbid0IHRoaW5rIHRoZXJlJ3MgYW55IG5pY2UgZXhp
-c3Rpbmcgd2F5IGZvciBQQ0kKdG8gZGVhbCB3aXRoIHRoZW0uICBNYXliZSB0aGVyZSBzaG91bGQg
-YmUsIHRob3VnaC4KCkJqb3JuCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9u
-Lm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9p
-b21tdQ==
+On 4/10/2014 11:14 AM, Bjorn Helgaas wrote:
+> On Thu, Apr 10, 2014 at 2:46 AM, Woodhouse, David
+> <david.woodhouse@intel.com> wrote:
+>=20
+>>>>>>>>>>> DMAR:[fault reason 02] Present bit in context entry is clea=
+r
+>>>>>>>>>>> dmar: DRHD: handling fault status reg 602
+>>>>>>>>>>> dmar: DMAR:[DMA Read] Request device [02:00.0] fault addr 7=
+f61e000
+>>
+>> That "Present bit in context entry is clear" fault means that we hav=
+e
+>> not set up *any* mappings for this PCI device=E2=80=A6 on this IOMMU=
+=2E
+>>
+>>>> Yes, specifically (finally done bisecting):
+>>>>
+>>>> commit 2e45528930388658603ea24d49cf52867b928d3e
+>>>> Author: Jiang Liu <jiang.liu@linux.intel.com>
+>>>> Date:   Wed Feb 19 14:07:36 2014 +0800
+>>>>
+>>>>     iommu/vt-d: Unify the way to process DMAR device scope array
+>>
+>> This commit is about how we decide which IOMMU a given PCI device is
+>> attached to.
+>>
+>> Thus, my first guess would be that we are quite happily setting up t=
+he
+>> requested DMA maps on the *wrong* IOMMU, and then taking faults when=
+ the
+>> device actually tries to do DMA.
+>>
+>> However, I'm not 100% convinced of that. The fault address looks
+>> suspiciously like a true physical address, not a virtual bus address=
+ of
+>> the type that we'd normally allocate for a dma_map_* operation. Thos=
+e
+>> would start at 0xfffff000 and work downwards, typically.
+>=20
+> I like the "wrong IOMMU (or no IOMMU at all)" theory.  If we didn't
+> connect the device with an IOMMU at all, that would explain the devic=
+e
+> DMAing directly to a physical address, wouldn't it?
+>=20
+>> Do you have 'iommu=3Dpt' on the kernel command line? Can I see the f=
+ull
+>> dmesg as this system boots, and also a copy of the DMAR table?
+
+This will be really helpful information.  This box has devices with
+RMRR records and if they're not set up correctly, DMAR faults can occur=
+=2E
+
+>>
+>> We should also rate-limit DMA faults, which would avoid the lockup
+>> failure mode. Bjorn, what should an IOMMU driver *do* when it detect=
+s
+>> that a device is creating an endless stream of DMA faults and isn't
+>> aborting the transaction?
+>=20
+> You mentioned that POWER with EEH does something intelligent in this
+> case, but I'm not familiar with that code.  We have AER support, whic=
+h
+> can result in resetting a device, but I think DMA faults are reported
+> differently, and I don't think there's any nice existing way for PCI
+> to deal with them.  Maybe there should be, though.
+>=20
+> Bjorn
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+>=20
