@@ -1,75 +1,73 @@
-From: Shuah Khan <shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: hpsa driver bug crack kernel down!
-Date: Thu, 10 Apr 2014 17:17:44 -0600
-Message-ID: <CAKocOONaqGAaiesf_MUFXEOMDtX8R8kYuPQYAxLBfth7nAx3Jg@mail.gmail.com>
-References: <20140409023935.GE11839@dhcp-16-105.nay.redhat.com>
-	<1397083799.2608.20.camel@buesod1.americas.hpqcorp.net>
-	<1397084904.9519.62.camel@dabdike>
-	<1397085044.9519.63.camel@dabdike>
-	<1397086817.2608.25.camel@buesod1.americas.hpqcorp.net>
-	<1397087425.9519.67.camel@dabdike>
-	<1397089180.2608.27.camel@buesod1.americas.hpqcorp.net>
-	<CAErSpo4H=hcro8sMnt2MzDDVCROpASuUTQWBw37OxodHTyOfyw@mail.gmail.com>
-	<1397111557.2608.29.camel@buesod1.americas.hpqcorp.net>
-	<20140410204525.GC21815@beardog.cce.hp.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH 0/5] OMAP IOMMU fixes and IOMMU architecture questions
+Date: Fri, 11 Apr 2014 01:30:48 +0200
+Message-ID: <1524043.Lv0ElxSPX2@avalon>
+References: <1394239574-2389-1-git-send-email-laurent.pinchart@ideasonboard.com> <9980327.f1Bry2ysvR@avalon> <20140409150831.GW13491@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140410204525.GC21815-3C9H9nn4BS4HL6m8NFMY+dBPR1lH4CV8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: scameron-3C9H9nn4BS4HL6m8NFMY+dBPR1lH4CV8@public.gmane.org
-Cc: linux-scsi <linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, James Bottomley <James.Bottomley-JuX6DAaQMKPCXq6kfMZ53/egYHeGw8Jk@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Davidlohr Bueso <davidlohr-VXdhtT5mjnY@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <20140409150831.GW13491@8bytes.org>
+Sender: linux-omap-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Suman Anna <s-anna@ti.com>, linux-omap@vger.kernel.org, iommu@lists.linux-foundation.org, Florian Vaussard <florian.vaussard@epfl.ch>, sakari.ailus@iki.fi, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Apr 10, 2014 at 2:45 PM,  <scameron-3C9H9nn4BS4HL6m8NFMY+dBPR1lH4CV8@public.gmane.org> wrote:
->> > 3f583bc21977 BAD ("Merge tag 'iommu-updates-v3.15'")
->>
->> Yes, specifically (finally done bisecting):
->>
->> commit 2e45528930388658603ea24d49cf52867b928d3e
->> Author: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
->> Date:   Wed Feb 19 14:07:36 2014 +0800
->>
->>     iommu/vt-d: Unify the way to process DMAR device scope array
->>
->>     Now we have a PCI bus notification based mechanism to update DMAR
->>     device scope array, we could extend the mechanism to support boot
->>     time initialization too, which will help to unify and simplify
->>     the implementation.
->>
->>     Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
->>     Signed-off-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
->
-> My git bisect appears to be converging on something else, something
-> within the hpsa patches that I sent up recently, unfortunately for
-> me.  Will let you all know when it converges.
->
+Hi Joerg,
 
-This smells very much like the problem that was solved couple of years
-ago for SI domain. It is likely that path is broken with the DMAR
-device scope array change. Please take a look to see if the following
-no longer occurs. Looks like BIOS could be expecting this RMRR to be
-still mapped.
+On Wednesday 09 April 2014 17:08:31 Joerg Roedel wrote:
+> On Tue, Apr 08, 2014 at 05:02:37PM +0200, Laurent Pinchart wrote:
+> > On Tuesday 08 April 2014 15:43:22 Joerg Roedel wrote:
+> > > Who is "someone" in this case?
+> > 
+> > That's exactly the problem :-) The ARM DMA API implementation doesn't care
+> > who that "someone" is. Existing implementations call those functions
+> > either from the bus masters device drivers (in which case the drivers
+> > need to be IOMMU- aware, even if they use the DMA API and don't need to
+> > handle the IOMMU directly) or from the IOMMU drivers (in which case the
+> > bus masters device drivers don't have to care about the IOMMU, but
+> > without a way for drivers to handle the IOMMU directly when they need
+> > to). Possible other candidates are core IOMMU code or bus code.
+> 
+> That doesn't sound very transparent for the device drivers. All what you
+> describe above (attaching a device to its default domain for DMA-API)
+> should happen in the IOMMU driver. For the device driver it should make
+> no difference if there is an IOMMU or not.
 
-               /*
-                 * We want to prevent any device associated with an RMRR from
-                 * getting placed into the SI Domain. This is done because
-                 * problems exist when devices are moved in and out of domains
-                 * and their respective RMRR info is lost. We exempt USB devices
-                 * from this process due to their usage of RMRRs that are known
-                 * to not be needed after BIOS hand-off to OS.
-                 */
-                if (device_has_rmrr(dev) &&
-                    (pdev->class >> 8) != PCI_CLASS_SERIAL_USB)
-                        return 0;
+Creating the DMA API mapping and attaching the device to the domain are 
+definitely not transparent when performed by bus master device drivers. That's 
+just the current situation for several drivers, and we obviously want to 
+change it.
 
--- Shuah
+> > If we call arm_iommu_attach_device() from the IOMMU driver to get default
+> > transparent IOMMU handling, the function will then attach the device to
+> > the default domain with a call to iommu_attach_device().
+> 
+> If you have to call a function it is not transparent anymore.
+
+Sure it is, IOMMU handling is transparent for the bus master device (which is 
+the goal) when arm_iommu_attach_device() is called from the IOMMU driver.
+
+> > If a driver needs to handle the IOMMU directly, should it start by
+> > detaching the device from the ARM IOMMU domain ? We would need to be
+> > very careful with the assumptions made by the different layers, as
+> > they might not support a driver attaching a new domain to a device
+> > that already has a domain attached. I'd feel more comfortable with
+> > avoiding to attach the default domain to the device in the first
+> > place, but that might not be easily doable.
+> 
+> The way this is solved by others is that iommu_attach_device() automatically
+> detaches the device from its default (DMA-API) domain and attach it to the
+> device drivers own domain. On iommu_detach_device() the device is attached
+> back to the default domain.
+
+That might work, I'll need to give it a try. It will make the attach/detach 
+operations pretty complex though, with copies of the same code in all IOMMU 
+drivers. Refactoring will probably be needed, but I'll first see if I can get 
+it working properly without modifying the IOMMU core.
+
+-- 
+Regards,
+
+Laurent Pinchart
+
