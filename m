@@ -1,27 +1,16 @@
-From: Davidlohr Bueso <davidlohr-VXdhtT5mjnY@public.gmane.org>
-Subject: Re: hpsa driver bug crack kernel down!
-Date: Mon, 14 Apr 2014 09:47:49 -0700
-Message-ID: <1397494069.31076.9.camel@buesod1.americas.hpqcorp.net>
-References: <20140409023935.GE11839@dhcp-16-105.nay.redhat.com>
-	<1397083799.2608.20.camel@buesod1.americas.hpqcorp.net>
-	<1397084904.9519.62.camel@dabdike> <1397085044.9519.63.camel@dabdike>
-	<1397086817.2608.25.camel@buesod1.americas.hpqcorp.net>
-	<1397087425.9519.67.camel@dabdike>
-	<1397089180.2608.27.camel@buesod1.americas.hpqcorp.net>
-	<CAErSpo4H=hcro8sMnt2MzDDVCROpASuUTQWBw37OxodHTyOfyw@mail.gmail.com>
-	<1397111557.2608.29.camel@buesod1.americas.hpqcorp.net>
-	<20140410071535.GX13491@8bytes.org>
-	<1397119587.19944.14.camel@shinybook.infradead.org>
-	<1397146781.2608.46.camel@buesod1.americas.hpqcorp.net>
-	<1397207932.19944.58.camel@shinybook.infradead.org>
-	<1397490358.31076.6.camel@buesod1.americas.hpqcorp.net>
-	<534C0AA9.5080909@linux.intel.com>
-	<1397493858.31076.8.camel@buesod1.americas.hpqcorp.net>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 0/2] ARM SMMU fixes
+Date: Mon, 14 Apr 2014 17:58:58 +0100
+Message-ID: <20140414165858.GI12916@arm.com>
+References: <1393601830-4677-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+	<2243447.NTvYmPQWSB@avalon> <93132940.WGeAzvU3EP@avalon>
+	<53440057.6020703@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1397493858.31076.8.camel-5JQ4ckphU/8SZAcGdq5asR6epYMZPwEe5NbjCUgZEJk@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <53440057.6020703-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -31,28 +20,42 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: "Woodhouse, David" <david.woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "James.Bottomley-JuX6DAaQMKPCXq6kfMZ53/egYHeGw8Jk@public.gmane.org" <James.Bottomley-JuX6DAaQMKPCXq6kfMZ53/egYHeGw8Jk@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "scameron-3C9H9nn4BS4HL6m8NFMY+dBPR1lH4CV8@public.gmane.org" <scameron-3C9H9nn4BS4HL6m8NFMY+dBPR1lH4CV8@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+To: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2014-04-14 at 09:44 -0700, Davidlohr Bueso wrote:
-> On Tue, 2014-04-15 at 00:19 +0800, Jiang Liu wrote:
-> > Hi Davidlohr,
-> > 	Thanks for providing the DMAR table. According to the DMAR
-> > table, one bug in the iommu driver fails to handle this entry:
-> > [1D2h 0466   1]      Device Scope Entry Type : 01
-> > [1D3h 0467   1]                 Entry Length : 0A
-> > [1D4h 0468   2]                     Reserved : 0000
-> > [1D6h 0470   1]               Enumeration ID : 00
-> > [1D7h 0471   1]               PCI Bus Number : 00
-> > [1D8h 0472   2]                     PCI Path : 1C,04
-> > [1DAh 0474   2]                     PCI Path : 00,02
+On Tue, Apr 08, 2014 at 02:57:43PM +0100, Marc Zyngier wrote:
+> On 08/04/14 14:41, Laurent Pinchart wrote:
+> > I've obviously forgotten that Will was away for a month. CC'ing Marc Zyngier.
 > > 
-> > 	And the patch sent out by me should fix this bug. Could you please help
-> > to have a try?
+> > On Thursday 03 April 2014 01:52:55 Laurent Pinchart wrote:
+> >> On Friday 28 February 2014 16:37:08 Laurent Pinchart wrote:
+> >>> Hello Will,
+> >>>
+> >>> I've studied your arm-smmu driver as a base to write a Renesas IOMMU
+> >>> driver and found two small issues. Here are patches to fix them. Please
+> >>> bear with me if my understanding was incorrect and the patches wrong :-)
+> >>>
+> >>> Laurent Pinchart (2):
+> >>>   iommu/arm-smmu: Replace list walk with platform driver data
+> >>>   iommu/arm-smmu: Return 0 on unmap failure
+> >>>  
+> >>>  drivers/iommu/arm-smmu.c | 17 +++++------------
+> >>>  1 file changed, 5 insertions(+), 12 deletions(-)
+> >>
+> >> Do you plan to take these patches (or at least patch 2/2) in your tree ? I
+> >> can send a pull request to Joerg if you give me your acked-by.
+> > 
+> > Marc, would you like to handle this, or would you prefer to wait until Will 
+> > comes back ?
 > 
-> Sorry, I am unable to find any patches from you regarding this issue...
-> I must be missing something. Could you please point me to the lkml link?
+> Hi Laurent,
+> 
+> Yup, I'll have a look and stash them in a temp tree. Given that Will
+> will be back in about a week, he will have the final say.
 
-Never mind, I got it internally. I'll let you know  as soon as I can
-test it later today.
+I've already got the fix queued ("Return 0 on unmap failure") and plan to
+send it to Joerg this week. I think the other patch doesn't really add
+anything to the driver :)
+
+Will
