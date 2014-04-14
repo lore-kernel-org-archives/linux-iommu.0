@@ -1,24 +1,13 @@
-From: Davidlohr Bueso <davidlohr-VXdhtT5mjnY@public.gmane.org>
-Subject: Re: hpsa driver bug crack kernel down!
-Date: Mon, 14 Apr 2014 11:08:22 -0700
-Message-ID: <1397498902.31076.15.camel@buesod1.americas.hpqcorp.net>
-References: <20140409023935.GE11839@dhcp-16-105.nay.redhat.com>
-	<1397083799.2608.20.camel@buesod1.americas.hpqcorp.net>
-	<1397084904.9519.62.camel@dabdike> <1397085044.9519.63.camel@dabdike>
-	<1397086817.2608.25.camel@buesod1.americas.hpqcorp.net>
-	<1397087425.9519.67.camel@dabdike>
-	<1397089180.2608.27.camel@buesod1.americas.hpqcorp.net>
-	<CAErSpo4H=hcro8sMnt2MzDDVCROpASuUTQWBw37OxodHTyOfyw@mail.gmail.com>
-	<1397111557.2608.29.camel@buesod1.americas.hpqcorp.net>
-	<20140410071535.GX13491@8bytes.org>
-	<1397119587.19944.14.camel@shinybook.infradead.org>
-	<1397146781.2608.46.camel@buesod1.americas.hpqcorp.net>
-	<534BA30B.5040102@linux.intel.com>
+From: scameron-3C9H9nn4BS4HL6m8NFMY+dBPR1lH4CV8@public.gmane.org
+Subject: [PATCH] hpsa: fix NULL dereference in
+	hpsa_put_ctlr_into_performant_mode()
+Date: Mon, 14 Apr 2014 14:01:09 -0500
+Message-ID: <20140414190109.GD21686@beardog.cce.hp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <534BA30B.5040102-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Disposition: inline
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -28,20 +17,57 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: "Woodhouse, David" <david.woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, aswin-VXdhtT5mjnY@public.gmane.org, "James.Bottomley-JuX6DAaQMKPCXq6kfMZ53/egYHeGw8Jk@public.gmane.org" <James.Bottomley-JuX6DAaQMKPCXq6kfMZ53/egYHeGw8Jk@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "scameron-3C9H9nn4BS4HL6m8NFMY+dBPR1lH4CV8@public.gmane.org" <scameron-3C9H9nn4BS4HL6m8NFMY+dBPR1lH4CV8@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+To: James Bottomley <James.Bottomley-d9PhHud1JfjCXq6kfMZ53/egYHeGw8Jk@public.gmane.org>
+Cc: linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Davidlohr Bueso <davidlohr-VXdhtT5mjnY@public.gmane.org>, scameron-3C9H9nn4BS4HL6m8NFMY+dBPR1lH4CV8@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2014-04-14 at 16:57 +0800, Jiang Liu wrote:
-> Hi all,
-> 	I guess I found the root cause. It's a bug in matching
-> device scope, variable 'level' should be decreased when walking up PCI
-> topology.
-> 	Could you please help to test following patch?
-> Thanks!
-> Gerry
 
-Worked like a charm -- I no longer see all those DMAR messages and the
-hpsa hard lockup is gone, thanks. Feel free to add my:
+Initialize local variable trans_support before it is used rather
+than after.  It is supposed to contain the value of a register on the
+controller containing bits that describe which transport modes the
+controller supports (e.g. "performant", "ioaccel1",  "ioaccel2").  A
+NULL pointer dereference will almost certainly occur if trans_support
+is not initialized at the right point.  If for example the uninitialized
+trans_support value does not have the bit set for ioaccel2 support when it
+should be, then ioaccel2_alloc_cmds_and_bft() will not get called as it
+should be and the h->ioaccel2_blockFetchTable array will remain NULL
+instead of being allocated.  Too late, trans_support finally gets
+initialized with the correct value with ioaccel2 mode bit set,
+which later causes calc_bucket_map() to be called to fill in
+h->ioaccel2_blockFetchTable[].  However h->ioaccel2_blockFetchTable
+is NULL because it didn't get allocated because earlier trans_support
+wasn't initialized at the right point.
 
-Reported-and-tested-by: Davidlohr Bueso <davidlohr-VXdhtT5mjnY@public.gmane.org>
+Signed-off-by: Stephen M. Cameron <scameron-3C9H9nn4BS4HL6m8NFMY+dBPR1lH4CV8@public.gmane.org>
+---
+ drivers/scsi/hpsa.c |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/scsi/hpsa.c b/drivers/scsi/hpsa.c
+index 8cf4a0c..9a6e4a2 100644
+--- a/drivers/scsi/hpsa.c
++++ b/drivers/scsi/hpsa.c
+@@ -7463,6 +7463,10 @@ static void hpsa_put_ctlr_into_performant_mode(struct ctlr_info *h)
+ 	if (hpsa_simple_mode)
+ 		return;
+ 
++	trans_support = readl(&(h->cfgtable->TransportSupport));
++	if (!(trans_support & PERFORMANT_MODE))
++		return;
++
+ 	/* Check for I/O accelerator mode support */
+ 	if (trans_support & CFGTBL_Trans_io_accel1) {
+ 		transMethod |= CFGTBL_Trans_io_accel1 |
+@@ -7479,10 +7483,6 @@ static void hpsa_put_ctlr_into_performant_mode(struct ctlr_info *h)
+ 	}
+ 
+ 	/* TODO, check that this next line h->nreply_queues is correct */
+-	trans_support = readl(&(h->cfgtable->TransportSupport));
+-	if (!(trans_support & PERFORMANT_MODE))
+-		return;
+-
+ 	h->nreply_queues = h->msix_vector > 0 ? h->msix_vector : 1;
+ 	hpsa_get_max_perf_mode_cmds(h);
+ 	/* Performant mode ring buffer and supporting data structures */
+-- 
+1.7.1
