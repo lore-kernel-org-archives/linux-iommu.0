@@ -1,98 +1,92 @@
-From: Jiang Liu <jiang.liu@linux.intel.com>
-Subject: Re: hpsa driver bug crack kernel down!
-Date: Mon, 14 Apr 2014 16:57:47 +0800
-Message-ID: <534BA30B.5040102@linux.intel.com>
-References: <20140409023935.GE11839@dhcp-16-105.nay.redhat.com>	 <1397083799.2608.20.camel@buesod1.americas.hpqcorp.net>	 <1397084904.9519.62.camel@dabdike> <1397085044.9519.63.camel@dabdike>	 <1397086817.2608.25.camel@buesod1.americas.hpqcorp.net>	 <1397087425.9519.67.camel@dabdike>	 <1397089180.2608.27.camel@buesod1.americas.hpqcorp.net>	 <CAErSpo4H=hcro8sMnt2MzDDVCROpASuUTQWBw37OxodHTyOfyw@mail.gmail.com>	 <1397111557.2608.29.camel@buesod1.americas.hpqcorp.net>	 <20140410071535.GX13491@8bytes.org>	 <1397119587.19944.14.camel@shinybook.infradead.org> <1397146781.2608.46.camel@buesod1.americas.hpqcorp.net>
+From: James Bottomley <James.Bottomley-d9PhHud1JfjCXq6kfMZ53/egYHeGw8Jk@public.gmane.org>
+Subject: Re: [PATCH] hpsa: fix uninitialized trans_support in
+	hpsa_put_ctlr_into_performant_mode()
+Date: Mon, 14 Apr 2014 08:45:16 -0700
+Message-ID: <1397490316.2207.23.camel@dabdike.int.hansenpartnership.com>
+References: <20140410221704.GA22465@beardog.cce.hp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1397146781.2608.46.camel@buesod1.americas.hpqcorp.net>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Davidlohr Bueso <davidlohr@hp.com>, "Woodhouse, David" <david.woodhouse@intel.com>
-Cc: "joro@8bytes.org" <joro@8bytes.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "bhe@redhat.com" <bhe@redhat.com>, "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "James.Bottomley@hansenpartnership.com" <James.Bottomley@hansenpartnership.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "scameron@beardog.cce.hp.com" <scameron@beardog.cce.hp.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20140410221704.GA22465-3C9H9nn4BS4HL6m8NFMY+dBPR1lH4CV8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: scameron-3C9H9nn4BS4HL6m8NFMY+dBPR1lH4CV8@public.gmane.org
+Cc: linux-scsi <linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Davidlohr Bueso <davidlohr-VXdhtT5mjnY@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi all,
-	I guess I found the root cause. It's a bug in matching
-device scope, variable 'level' should be decreased when walking up PCI
-topology.
-	Could you please help to test following patch?
-Thanks!
-Gerry
+Your subject line is very tame.  It should be the one line summary of
+why we apply the patch, so it should read something like
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index f445c10..1f8308c 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -152,7 +152,7 @@ dmar_alloc_pci_notify_info(struct pci_dev *dev,
-unsigned long event)
-        info->seg =3D pci_domain_nr(dev->bus);
-        info->level =3D level;
-        if (event =3D=3D BUS_NOTIFY_ADD_DEVICE) {
--               for (tmp =3D dev, level--; tmp; tmp =3D tmp->bus->self)=
- {
-+               for (tmp =3D dev, level--; tmp; level--, tmp =3D
-tmp->bus->self) {
-                        info->path[level].device =3D PCI_SLOT(tmp->devf=
-n);
-                        info->path[level].function =3D PCI_FUNC(tmp->de=
-vfn);
-                        if (pci_is_root_bus(tmp->bus))
+ hpsa: fix NULL deref in performant mode
 
+On Thu, 2014-04-10 at 17:17 -0500, scameron-3C9H9nn4BS4HL6m8NFMY+dBPR1lH4CV8@public.gmane.org wrote:
+> Without this, you'll see a null pointer dereference in
+> hpsa_enter_performant_mode().
 
-On 2014/4/11 0:19, Davidlohr Bueso wrote:
-> On Thu, 2014-04-10 at 08:46 +0000, Woodhouse, David wrote:
->> On Thu, 2014-04-10 at 09:15 +0200, Joerg Roedel wrote:
->>> [+ David, VT-d maintainer ]
->>>
->>> Jiang, David, can you please have a look into this issue?
->>>
->>
->>>>>>>>>>> DMAR:[fault reason 02] Present bit in context entry is clea=
-r
->>>>>>>>>>> dmar: DRHD: handling fault status reg 602
->>>>>>>>>>> dmar: DMAR:[DMA Read] Request device [02:00.0] fault addr 7=
-f61e000
->>
->> That "Present bit in context entry is clear" fault means that we hav=
-e
->> not set up *any* mappings for this PCI device=E2=80=A6 on this IOMMU=
-=2E
->>
->>>> Yes, specifically (finally done bisecting):
->>>>
->>>> commit 2e45528930388658603ea24d49cf52867b928d3e
->>>> Author: Jiang Liu <jiang.liu@linux.intel.com>
->>>> Date:   Wed Feb 19 14:07:36 2014 +0800
->>>>
->>>>     iommu/vt-d: Unify the way to process DMAR device scope array
->>
->> This commit is about how we decide which IOMMU a given PCI device is
->> attached to.
->>
->> Thus, my first guess would be that we are quite happily setting up t=
-he
->> requested DMA maps on the *wrong* IOMMU, and then taking faults when=
- the
->> device actually tries to do DMA.
->>
->> However, I'm not 100% convinced of that. The fault address looks
->> suspiciously like a true physical address, not a virtual bus address=
- of
->> the type that we'd normally allocate for a dma_map_* operation. Thos=
-e
->> would start at 0xfffff000 and work downwards, typically.
->>
->> Do you have 'iommu=3Dpt' on the kernel command line?=20
->=20
-> No.
->=20
->> Can I see the full
->> dmesg as this system boots, and also a copy of the DMAR table?
->=20
-> Attaching a dmesg from one of the kernels that boots. It doesn't appe=
-ar
-> to have much of the related information... is there any debug config
-> option I can enable that might give you more data?
->=20
+The description should be more comprehensible.
+
+I'm clear that the use before initialisation is a bug ... I'm less clear
+on why it causes an oops.
+
+> Signed-off-by: Stephen M. Cameron <scameron-3C9H9nn4BS4HL6m8NFMY+dBPR1lH4CV8@public.gmane.org>
+> ---
+>  drivers/scsi/hpsa.c |    4 ++++
+>  1 files changed, 4 insertions(+), 0 deletions(-)
+> 
+> diff --git a/drivers/scsi/hpsa.c b/drivers/scsi/hpsa.c
+> index 8cf4a0c..ef4dfdd 100644
+> --- a/drivers/scsi/hpsa.c
+> +++ b/drivers/scsi/hpsa.c
+> @@ -7463,6 +7463,10 @@ static void hpsa_put_ctlr_into_performant_mode(struct ctlr_info *h)
+>  	if (hpsa_simple_mode)
+>  		return;
+>  
+> +	trans_support = readl(&(h->cfgtable->TransportSupport));
+> +	if (!(trans_support & PERFORMANT_MODE))
+> +		return;
+> +
+>  	/* Check for I/O accelerator mode support */
+>  	if (trans_support & CFGTBL_Trans_io_accel1) {
+>  		transMethod |= CFGTBL_Trans_io_accel1 |
+
+Shouldn't you be moving this check from its previous location, rather
+than adding a new one that makes the original obsolete?
+
+James
+
+---
+
+diff --git a/drivers/scsi/hpsa.c b/drivers/scsi/hpsa.c
+index 8cf4a0c..9a6e4a2 100644
+--- a/drivers/scsi/hpsa.c
++++ b/drivers/scsi/hpsa.c
+@@ -7463,6 +7463,10 @@ static void hpsa_put_ctlr_into_performant_mode(struct ctlr_info *h)
+ 	if (hpsa_simple_mode)
+ 		return;
+ 
++	trans_support = readl(&(h->cfgtable->TransportSupport));
++	if (!(trans_support & PERFORMANT_MODE))
++		return;
++
+ 	/* Check for I/O accelerator mode support */
+ 	if (trans_support & CFGTBL_Trans_io_accel1) {
+ 		transMethod |= CFGTBL_Trans_io_accel1 |
+@@ -7479,10 +7483,6 @@ static void hpsa_put_ctlr_into_performant_mode(struct ctlr_info *h)
+ 	}
+ 
+ 	/* TODO, check that this next line h->nreply_queues is correct */
+-	trans_support = readl(&(h->cfgtable->TransportSupport));
+-	if (!(trans_support & PERFORMANT_MODE))
+-		return;
+-
+ 	h->nreply_queues = h->msix_vector > 0 ? h->msix_vector : 1;
+ 	hpsa_get_max_perf_mode_cmds(h);
+ 	/* Performant mode ring buffer and supporting data structures */
