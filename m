@@ -1,7 +1,7 @@
 From: Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
-Subject: [PATCH 2/8] Consolidate all .h lines at front of intel-iommu.c file
-Date: Tue, 15 Apr 2014 17:09:03 -0600
-Message-ID: <1397603349-30930-3-git-send-email-bill.sumner@hp.com>
+Subject: [PATCH 4/8] Update iommu_attach_domain() and its callers
+Date: Tue, 15 Apr 2014 17:09:05 -0600
+Message-ID: <1397603349-30930-5-git-send-email-bill.sumner@hp.com>
 References: <1397603349-30930-1-git-send-email-bill.sumner@hp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,123 +21,75 @@ To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, indou.takao-+CUm20s59erQFUHtd
 Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, zhenhua-VXdhtT5mjnY@public.gmane.org, bill.sumner-VXdhtT5mjnY@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
- In intel-iommu.c, move downward the few lines near the
- front that should not move to an intel-iommu-private.h
- file (mostly data-item definitions) This leaves a
- consolidated block of the lines that would move to an
- intel-iommu-private.h file at the front of the file.
+ Allow specification of the domain-id for the new domain.
 
 
 Signed-off-by: Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 74 +++++++++++++++++++++++----------------------
- 1 file changed, 38 insertions(+), 36 deletions(-)
+ drivers/iommu/intel-iommu.c | 23 ++++++++++++++---------
+ 1 file changed, 14 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 8abcb6c..22298e9 100644
+index 4352731..0c00c2d 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -165,17 +165,6 @@ static inline unsigned long virt_to_dma_pfn(void *p)
- 	return page_to_dma_pfn(virt_to_page(p));
+@@ -1003,7 +1003,8 @@ static struct dmar_domain *alloc_domain(void)
  }
  
--/* global iommu list, set NULL for ignored DMAR units */
--static struct intel_iommu **g_iommus;
--
--static void __init check_tylersburg_isoch(void);
--static int rwbf_quirk;
--
--/*
-- * set to 1 to panic kernel if can't successfully enable VT-d
-- * (used when kernel is launched w/ TXT)
-- */
--static int force_on;
- 
- /*
-  * 0: Present
-@@ -314,15 +303,6 @@ static inline int first_pte_in_page(struct dma_pte *pte)
- 	return !((unsigned long)pte & ~VTD_PAGE_MASK);
- }
- 
--/*
-- * This domain is a statically identity mapping domain.
-- *	1. This domain creats a static 1:1 mapping to all usable memory.
-- *	2. It maps to each iommu if successful.
-- *	3. Each iommu mapps to this domain if successful.
-- */
--static struct dmar_domain *si_domain;
--static int hw_pass_through = 1;
--
- /* devices under the same p2p bridge are owned in one domain */
- #define DOMAIN_FLAG_P2P_MULTIPLE_DEVICES (1 << 0)
- 
-@@ -380,6 +360,44 @@ struct device_domain_info {
- 	struct dmar_domain *domain; /* pointer to domain */
- };
- 
-+static inline void *alloc_pgtable_page(int node)
-+{
-+	struct page *page;
-+	void *vaddr = NULL;
-+
-+	page = alloc_pages_node(node, GFP_ATOMIC | __GFP_ZERO, 0);
-+	if (page)
-+		vaddr = page_address(page);
-+	return vaddr;
-+}
-+
-+static inline void free_pgtable_page(void *vaddr)
-+{
-+	free_page((unsigned long)vaddr);
-+}
-+
-+
-+static void __init check_tylersburg_isoch(void);
-+
-+/* global iommu list, set NULL for ignored DMAR units */
-+static struct intel_iommu **g_iommus;
-+static int rwbf_quirk;
-+
-+/*
-+ * set to 1 to panic kernel if can't successfully enable VT-d
-+ * (used when kernel is launched w/ TXT)
-+ */
-+static int force_on;
-+
-+/*
-+ * This domain is a statically identity mapping domain.
-+ *	1. This domain creats a static 1:1 mapping to all usable memory.
-+ *	2. It maps to each iommu if successful.
-+ *	3. Each iommu mapps to this domain if successful.
-+ */
-+static struct dmar_domain *si_domain;
-+static int hw_pass_through = 1;
-+
- static void flush_unmaps_timeout(unsigned long data);
- 
- static DEFINE_TIMER(unmap_timer,  flush_unmaps_timeout, 0, 0);
-@@ -468,22 +486,6 @@ static struct kmem_cache *iommu_domain_cache;
- static struct kmem_cache *iommu_devinfo_cache;
- static struct kmem_cache *iommu_iova_cache;
- 
--static inline void *alloc_pgtable_page(int node)
--{
--	struct page *page;
--	void *vaddr = NULL;
--
--	page = alloc_pages_node(node, GFP_ATOMIC | __GFP_ZERO, 0);
--	if (page)
--		vaddr = page_address(page);
--	return vaddr;
--}
--
--static inline void free_pgtable_page(void *vaddr)
--{
--	free_page((unsigned long)vaddr);
--}
--
- static inline void *alloc_domain_mem(void)
+ static int iommu_attach_domain(struct dmar_domain *domain,
+-			       struct intel_iommu *iommu)
++			       struct intel_iommu *iommu,
++			       int domain_number)
  {
- 	return kmem_cache_alloc(iommu_domain_cache, GFP_ATOMIC);
+ 	int num;
+ 	unsigned long ndomains;
+@@ -1013,12 +1014,15 @@ static int iommu_attach_domain(struct dmar_domain *domain,
+ 
+ 	spin_lock_irqsave(&iommu->lock, flags);
+ 
+-	num = find_first_zero_bit(iommu->domain_ids, ndomains);
+-	if (num >= ndomains) {
+-		spin_unlock_irqrestore(&iommu->lock, flags);
+-		printk(KERN_ERR "IOMMU: no free domain ids\n");
+-		return -ENOMEM;
+-	}
++	if (domain_number < 0) {
++		num = find_first_zero_bit(iommu->domain_ids, ndomains);
++		if (num >= ndomains) {
++			spin_unlock_irqrestore(&iommu->lock, flags);
++			pr_err("IOMMU: no free domain ids\n");
++			return -ENOMEM;
++		}
++	} else
++		num = domain_number;
+ 
+ 	domain->id = num;
+ 	set_bit(num, iommu->domain_ids);
+@@ -1629,6 +1633,7 @@ static struct dmar_domain *get_domain_for_dev(struct pci_dev *pdev, int gaw)
+ 	int bus = 0, devfn = 0;
+ 	int segment;
+ 	int ret;
++	int did = -1;   /* Default to "no domain_id supplied" */
+ 
+ 	domain = find_domain(pdev);
+ 	if (domain)
+@@ -1675,7 +1680,7 @@ static struct dmar_domain *get_domain_for_dev(struct pci_dev *pdev, int gaw)
+ 	}
+ 	iommu = drhd->iommu;
+ 
+-	ret = iommu_attach_domain(domain, iommu);
++	ret = iommu_attach_domain(domain, iommu, did);
+ 	if (ret) {
+ 		free_domain_mem(domain);
+ 		goto error;
+@@ -1894,7 +1899,7 @@ static int __init si_domain_init(int hw)
+ 		return -EFAULT;
+ 
+ 	for_each_active_iommu(iommu, drhd) {
+-		ret = iommu_attach_domain(si_domain, iommu);
++		ret = iommu_attach_domain(si_domain, iommu, (int) -1);
+ 		if (ret) {
+ 			domain_exit(si_domain);
+ 			return -EFAULT;
 -- 
 Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
