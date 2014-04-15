@@ -1,8 +1,7 @@
 From: Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
-Subject: [PATCH 1/8] Fix a few existing lines that checkpatch.pl will complain
-	about later.
-Date: Tue, 15 Apr 2014 17:09:02 -0600
-Message-ID: <1397603349-30930-2-git-send-email-bill.sumner@hp.com>
+Subject: [PATCH 2/8] Consolidate all .h lines at front of intel-iommu.c file
+Date: Tue, 15 Apr 2014 17:09:03 -0600
+Message-ID: <1397603349-30930-3-git-send-email-bill.sumner@hp.com>
 References: <1397603349-30930-1-git-send-email-bill.sumner@hp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,83 +21,123 @@ To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, indou.takao-+CUm20s59erQFUHtd
 Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, zhenhua-VXdhtT5mjnY@public.gmane.org, bill.sumner-VXdhtT5mjnY@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Things like:
-1. no space before tabs
-2. no initialization of static variables to 0 or NULL
-3. no extra parentheses around the value on the 'return' statement
-4. no line over 80-characters
+ In intel-iommu.c, move downward the few lines near the
+ front that should not move to an intel-iommu-private.h
+ file (mostly data-item definitions) This leaves a
+ consolidated block of the lines that would move to an
+ intel-iommu-private.h file at the front of the file.
+
 
 Signed-off-by: Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/iommu/intel-iommu.c | 74 +++++++++++++++++++++++----------------------
+ 1 file changed, 38 insertions(+), 36 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index a22c86c..8abcb6c 100644
+index 8abcb6c..22298e9 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -72,7 +72,7 @@
-    to match. That way, we can use 'unsigned long' for PFNs with impunity. */
- #define DOMAIN_MAX_PFN(gaw)	((unsigned long) min_t(uint64_t, \
- 				__DOMAIN_MAX_PFN(gaw), (unsigned long)-1))
--#define DOMAIN_MAX_ADDR(gaw)	(((uint64_t)__DOMAIN_MAX_PFN(gaw)) << VTD_PAGE_SHIFT)
-+#define DOMAIN_MAX_ADDR(gaw) (((uint64_t)__DOMAIN_MAX_PFN(gaw)) << VTD_PAGE_SHIFT)
+@@ -165,17 +165,6 @@ static inline unsigned long virt_to_dma_pfn(void *p)
+ 	return page_to_dma_pfn(virt_to_page(p));
+ }
  
- #define IOVA_PFN(addr)		((addr) >> PAGE_SHIFT)
- #define DMA_32BIT_PFN		IOVA_PFN(DMA_BIT_MASK(32))
-@@ -175,7 +175,7 @@ static int rwbf_quirk;
-  * set to 1 to panic kernel if can't successfully enable VT-d
-  * (used when kernel is launched w/ TXT)
-  */
--static int force_on = 0;
-+static int force_on;
+-/* global iommu list, set NULL for ignored DMAR units */
+-static struct intel_iommu **g_iommus;
+-
+-static void __init check_tylersburg_isoch(void);
+-static int rwbf_quirk;
+-
+-/*
+- * set to 1 to panic kernel if can't successfully enable VT-d
+- * (used when kernel is launched w/ TXT)
+- */
+-static int force_on;
  
  /*
   * 0: Present
-@@ -190,7 +190,7 @@ struct root_entry {
- #define ROOT_ENTRY_NR (VTD_PAGE_SIZE/sizeof(struct root_entry))
- static inline bool root_present(struct root_entry *root)
- {
--	return (root->val & 1);
-+	return root->val & 1;
- }
- static inline void set_root_present(struct root_entry *root)
- {
-@@ -228,7 +228,7 @@ struct context_entry {
- 
- static inline bool context_present(struct context_entry *context)
- {
--	return (context->lo & 1);
-+	return context->lo & 1;
- }
- static inline void context_set_present(struct context_entry *context)
- {
-@@ -306,7 +306,7 @@ static inline bool dma_pte_present(struct dma_pte *pte)
- 
- static inline bool dma_pte_superpage(struct dma_pte *pte)
- {
--	return (pte->val & (1 << 7));
-+	return pte->val & (1 << 7);
+@@ -314,15 +303,6 @@ static inline int first_pte_in_page(struct dma_pte *pte)
+ 	return !((unsigned long)pte & ~VTD_PAGE_MASK);
  }
  
- static inline int first_pte_in_page(struct dma_pte *pte)
-@@ -317,7 +317,7 @@ static inline int first_pte_in_page(struct dma_pte *pte)
- /*
-  * This domain is a statically identity mapping domain.
-  *	1. This domain creats a static 1:1 mapping to all usable memory.
-- * 	2. It maps to each iommu if successful.
+-/*
+- * This domain is a statically identity mapping domain.
+- *	1. This domain creats a static 1:1 mapping to all usable memory.
+- *	2. It maps to each iommu if successful.
+- *	3. Each iommu mapps to this domain if successful.
+- */
+-static struct dmar_domain *si_domain;
+-static int hw_pass_through = 1;
+-
+ /* devices under the same p2p bridge are owned in one domain */
+ #define DOMAIN_FLAG_P2P_MULTIPLE_DEVICES (1 << 0)
+ 
+@@ -380,6 +360,44 @@ struct device_domain_info {
+ 	struct dmar_domain *domain; /* pointer to domain */
+ };
+ 
++static inline void *alloc_pgtable_page(int node)
++{
++	struct page *page;
++	void *vaddr = NULL;
++
++	page = alloc_pages_node(node, GFP_ATOMIC | __GFP_ZERO, 0);
++	if (page)
++		vaddr = page_address(page);
++	return vaddr;
++}
++
++static inline void free_pgtable_page(void *vaddr)
++{
++	free_page((unsigned long)vaddr);
++}
++
++
++static void __init check_tylersburg_isoch(void);
++
++/* global iommu list, set NULL for ignored DMAR units */
++static struct intel_iommu **g_iommus;
++static int rwbf_quirk;
++
++/*
++ * set to 1 to panic kernel if can't successfully enable VT-d
++ * (used when kernel is launched w/ TXT)
++ */
++static int force_on;
++
++/*
++ * This domain is a statically identity mapping domain.
++ *	1. This domain creats a static 1:1 mapping to all usable memory.
 + *	2. It maps to each iommu if successful.
-  *	3. Each iommu mapps to this domain if successful.
-  */
- static struct dmar_domain *si_domain;
-@@ -347,7 +347,7 @@ struct dmar_domain {
- 	DECLARE_BITMAP(iommu_bmp, IOMMU_UNITS_SUPPORTED);
- 					/* bitmap of iommus this domain uses*/
++ *	3. Each iommu mapps to this domain if successful.
++ */
++static struct dmar_domain *si_domain;
++static int hw_pass_through = 1;
++
+ static void flush_unmaps_timeout(unsigned long data);
  
--	struct list_head devices; 	/* all devices' list */
-+	struct list_head devices;	/* all devices' list */
- 	struct iova_domain iovad;	/* iova's that belong to this domain */
+ static DEFINE_TIMER(unmap_timer,  flush_unmaps_timeout, 0, 0);
+@@ -468,22 +486,6 @@ static struct kmem_cache *iommu_domain_cache;
+ static struct kmem_cache *iommu_devinfo_cache;
+ static struct kmem_cache *iommu_iova_cache;
  
- 	struct dma_pte	*pgd;		/* virtual address */
+-static inline void *alloc_pgtable_page(int node)
+-{
+-	struct page *page;
+-	void *vaddr = NULL;
+-
+-	page = alloc_pages_node(node, GFP_ATOMIC | __GFP_ZERO, 0);
+-	if (page)
+-		vaddr = page_address(page);
+-	return vaddr;
+-}
+-
+-static inline void free_pgtable_page(void *vaddr)
+-{
+-	free_page((unsigned long)vaddr);
+-}
+-
+ static inline void *alloc_domain_mem(void)
+ {
+ 	return kmem_cache_alloc(iommu_domain_cache, GFP_ATOMIC);
 -- 
 Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
