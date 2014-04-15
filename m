@@ -1,14 +1,14 @@
-From: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v3 5/5] cma: add placement specifier for "cma=" kernel
-	parameter
-Date: Tue, 15 Apr 2014 22:08:49 +0900
-Message-ID: <1397567329-3771-6-git-send-email-akinobu.mita@gmail.com>
-References: <1397567329-3771-1-git-send-email-akinobu.mita@gmail.com>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [PATCH 0/2] ARM SMMU fixes
+Date: Tue, 15 Apr 2014 17:55:07 +0200
+Message-ID: <15544035.e9eK8n7TO4@avalon>
+References: <1393601830-4677-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+	<53440057.6020703@arm.com> <20140414165858.GI12916@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1397567329-3771-1-git-send-email-akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <20140414165858.GI12916-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,219 +18,63 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org
-Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Currently, "cma=" kernel parameter is used to specify the size of CMA,
-but we can't specify where it is located.  We want to locate CMA below
-4GB for devices only supporting 32-bit addressing on 64-bit systems
-without iommu.
+Hi Will,
 
-This enables to specify the placement of CMA by extending "cma=" kernel
-parameter.
+On Monday 14 April 2014 17:58:58 Will Deacon wrote:
+> On Tue, Apr 08, 2014 at 02:57:43PM +0100, Marc Zyngier wrote:
+> > On 08/04/14 14:41, Laurent Pinchart wrote:
+> > > I've obviously forgotten that Will was away for a month. CC'ing Marc
+> > > Zyngier.
+> > >
+> > > On Thursday 03 April 2014 01:52:55 Laurent Pinchart wrote:
+> > >> On Friday 28 February 2014 16:37:08 Laurent Pinchart wrote:
+> > >>> Hello Will,
+> > >>> 
+> > >>> I've studied your arm-smmu driver as a base to write a Renesas IOMMU
+> > >>> driver and found two small issues. Here are patches to fix them.
+> > >>> Please bear with me if my understanding was incorrect and the patches
+> > >>> wrong :-)
+> > >>> 
+> > >>> Laurent Pinchart (2):
+> > >>>   iommu/arm-smmu: Replace list walk with platform driver data
+> > >>>   iommu/arm-smmu: Return 0 on unmap failure
+> > >>>  
+> > >>>  drivers/iommu/arm-smmu.c | 17 +++++------------
+> > >>>  1 file changed, 5 insertions(+), 12 deletions(-)
+> > >> 
+> > >> Do you plan to take these patches (or at least patch 2/2) in your tree
+> > >> ? I can send a pull request to Joerg if you give me your acked-by.
+> > > 
+> > > Marc, would you like to handle this, or would you prefer to wait until
+> > > Will comes back ?
+> > 
+> > Hi Laurent,
+> > 
+> > Yup, I'll have a look and stash them in a temp tree. Given that Will
+> > will be back in about a week, he will have the final say.
+> 
+> I've already got the fix queued ("Return 0 on unmap failure") and plan to
+> send it to Joerg this week.
 
-Examples:
-1. locate 64MB CMA below 4GB by "cma=64M@0-4G"
-2. locate 64MB CMA exact at 512MB by "cma=64M@512M"
+Thank you.
 
-Note that the DMA contiguous memory allocator on x86 assumes that
-page_address() works for the pages to allocate.  So this change requires
-to limit end address of contiguous memory area upto max_pfn_mapped to
-prevent from locating it on highmem area by the argument of
-dma_contiguous_reserve().
+> I think the other patch doesn't really add anything to the driver :)
 
-Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Cc: Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>
-Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>
-Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Signed-off-by: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
----
-* Change from v2
-- Avoid CMA area on highmem with cma= option, reported by Marek Szyprowski
+Fair enough, it's your driver, so the decision is yours :-)
 
- Documentation/kernel-parameters.txt |  7 +++++--
- arch/x86/kernel/setup.c             |  2 +-
- drivers/base/dma-contiguous.c       | 42 ++++++++++++++++++++++++++++---------
- include/linux/dma-contiguous.h      |  9 +++++---
- 4 files changed, 44 insertions(+), 16 deletions(-)
+On a different but related topic, I've written an ipmmu-vmsa.c driver for a 
+Renesas IOMMU. The IP core has custom registers but uses VMSA-compatible page 
+tables. What would you think about sharing the page table management code 
+between the two drivers ? The biggest difference between the two 
+implementations is that I've hardcoded the long descriptor format, while you 
+have reused more system MMU macros that make the arm-smmu driver use 2 or 3 
+levels of page tables depending on whether LPAE is disabled or enabled.
 
-diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
-index 03e50b4..8488e68 100644
---- a/Documentation/kernel-parameters.txt
-+++ b/Documentation/kernel-parameters.txt
-@@ -617,8 +617,11 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
- 			Also note the kernel might malfunction if you disable
- 			some critical bits.
- 
--	cma=nn[MG]	[ARM,KNL]
--			Sets the size of kernel global memory area for contiguous
-+	cma=nn[MG]@[start[MG][-end[MG]]]
-+			[ARM,X86,KNL]
-+			Sets the size of kernel global memory area for
-+			contiguous memory allocations and optionally the
-+			placement constraint by the physical address range of
- 			memory allocations. For more information, see
- 			include/linux/dma-contiguous.h
- 
-diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 09c76d2..78a0e62 100644
---- a/arch/x86/kernel/setup.c
-+++ b/arch/x86/kernel/setup.c
-@@ -1119,7 +1119,7 @@ void __init setup_arch(char **cmdline_p)
- 	setup_real_mode();
- 
- 	memblock_set_current_limit(get_max_mapped());
--	dma_contiguous_reserve(0);
-+	dma_contiguous_reserve(max_pfn_mapped << PAGE_SHIFT);
- 
- 	/*
- 	 * NOTE: On x86-32, only from this point on, fixmaps are ready for use.
-diff --git a/drivers/base/dma-contiguous.c b/drivers/base/dma-contiguous.c
-index 165c2c2..b056661 100644
---- a/drivers/base/dma-contiguous.c
-+++ b/drivers/base/dma-contiguous.c
-@@ -59,11 +59,22 @@ struct cma *dma_contiguous_default_area;
-  */
- static const phys_addr_t size_bytes = CMA_SIZE_MBYTES * SZ_1M;
- static phys_addr_t size_cmdline = -1;
-+static phys_addr_t base_cmdline;
-+static phys_addr_t limit_cmdline;
- 
- static int __init early_cma(char *p)
- {
- 	pr_debug("%s(%s)\n", __func__, p);
- 	size_cmdline = memparse(p, &p);
-+	if (*p != '@')
-+		return 0;
-+	base_cmdline = memparse(p + 1, &p);
-+	if (*p != '-') {
-+		limit_cmdline = base_cmdline + size_cmdline;
-+		return 0;
-+	}
-+	limit_cmdline = memparse(p + 1, &p);
-+
- 	return 0;
- }
- early_param("cma", early_cma);
-@@ -107,11 +118,18 @@ static inline __maybe_unused phys_addr_t cma_early_percent_memory(void)
- void __init dma_contiguous_reserve(phys_addr_t limit)
- {
- 	phys_addr_t selected_size = 0;
-+	phys_addr_t selected_base = 0;
-+	phys_addr_t selected_limit = limit;
-+	bool fixed = false;
- 
- 	pr_debug("%s(limit %08lx)\n", __func__, (unsigned long)limit);
- 
- 	if (size_cmdline != -1) {
- 		selected_size = size_cmdline;
-+		selected_base = base_cmdline;
-+		selected_limit = min_not_zero(limit_cmdline, limit);
-+		if (base_cmdline + size_cmdline == limit_cmdline)
-+			fixed = true;
- 	} else {
- #ifdef CONFIG_CMA_SIZE_SEL_MBYTES
- 		selected_size = size_bytes;
-@@ -128,10 +146,12 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
- 		pr_debug("%s: reserving %ld MiB for global area\n", __func__,
- 			 (unsigned long)selected_size / SZ_1M);
- 
--		dma_contiguous_reserve_area(selected_size, 0, limit,
--					    &dma_contiguous_default_area);
-+		dma_contiguous_reserve_area(selected_size, selected_base,
-+					    selected_limit,
-+					    &dma_contiguous_default_area,
-+					    fixed);
- 	}
--};
-+}
- 
- static DEFINE_MUTEX(cma_mutex);
- 
-@@ -187,15 +207,20 @@ core_initcall(cma_init_reserved_areas);
-  * @base: Base address of the reserved area optional, use 0 for any
-  * @limit: End address of the reserved memory (optional, 0 for any).
-  * @res_cma: Pointer to store the created cma region.
-+ * @fixed: hint about where to place the reserved area
-  *
-  * This function reserves memory from early allocator. It should be
-  * called by arch specific code once the early allocator (memblock or bootmem)
-  * has been activated and all other subsystems have already allocated/reserved
-  * memory. This function allows to create custom reserved areas for specific
-  * devices.
-+ *
-+ * If @fixed is true, reserve contiguous area at exactly @base.  If false,
-+ * reserve in range from @base to @limit.
-  */
- int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
--				       phys_addr_t limit, struct cma **res_cma)
-+				       phys_addr_t limit, struct cma **res_cma,
-+				       bool fixed)
- {
- 	struct cma *cma = &cma_areas[cma_area_count];
- 	phys_addr_t alignment;
-@@ -221,18 +246,15 @@ int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
- 	limit &= ~(alignment - 1);
- 
- 	/* Reserve memory */
--	if (base) {
-+	if (base && fixed) {
- 		if (memblock_is_region_reserved(base, size) ||
- 		    memblock_reserve(base, size) < 0) {
- 			ret = -EBUSY;
- 			goto err;
- 		}
- 	} else {
--		/*
--		 * Use __memblock_alloc_base() since
--		 * memblock_alloc_base() panic()s.
--		 */
--		phys_addr_t addr = __memblock_alloc_base(size, alignment, limit);
-+		phys_addr_t addr = memblock_alloc_range(size, alignment, base,
-+							limit);
- 		if (!addr) {
- 			ret = -ENOMEM;
- 			goto err;
-diff --git a/include/linux/dma-contiguous.h b/include/linux/dma-contiguous.h
-index 3b28f93..772eab5 100644
---- a/include/linux/dma-contiguous.h
-+++ b/include/linux/dma-contiguous.h
-@@ -88,7 +88,8 @@ static inline void dma_contiguous_set_default(struct cma *cma)
- void dma_contiguous_reserve(phys_addr_t addr_limit);
- 
- int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
--				       phys_addr_t limit, struct cma **res_cma);
-+				       phys_addr_t limit, struct cma **res_cma,
-+				       bool fixed);
- 
- /**
-  * dma_declare_contiguous() - reserve area for contiguous memory handling
-@@ -108,7 +109,7 @@ static inline int dma_declare_contiguous(struct device *dev, phys_addr_t size,
- {
- 	struct cma *cma;
- 	int ret;
--	ret = dma_contiguous_reserve_area(size, base, limit, &cma);
-+	ret = dma_contiguous_reserve_area(size, base, limit, &cma, true);
- 	if (ret == 0)
- 		dev_set_cma_area(dev, cma);
- 
-@@ -136,7 +137,9 @@ static inline void dma_contiguous_set_default(struct cma *cma) { }
- static inline void dma_contiguous_reserve(phys_addr_t limit) { }
- 
- static inline int dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
--				       phys_addr_t limit, struct cma **res_cma) {
-+				       phys_addr_t limit, struct cma **res_cma,
-+				       bool fixed)
-+{
- 	return -ENOSYS;
- }
- 
 -- 
-1.8.3.2
+Regards,
+
+Laurent Pinchart
