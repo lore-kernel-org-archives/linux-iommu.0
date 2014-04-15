@@ -1,69 +1,39 @@
-From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH] iommu/vt-d: fix bug in matching PCI devices with DRHD/RMRR
-	descriptors
-Date: Tue, 15 Apr 2014 10:35:35 +0800
-Message-ID: <1397529335-4834-1-git-send-email-jiang.liu@linux.intel.com>
+From: Paul Bolle <pebolle@tiscali.nl>
+Subject: Re: [PATCH 04/28] Remove EXYNOS_DEV_SYSMMU
+Date: Tue, 15 Apr 2014 11:33:16 +0200
+Message-ID: <1397554396.1985.31.camel@x220>
+References: <1391971686-9517-1-git-send-email-richard@nod.at>
+	 <1391971686-9517-5-git-send-email-richard@nod.at>
+	 <1391976496.25855.19.camel@x220>
+	 <CAK9yfHzP0ekboc-yi6FHvR3_rRiqcLC18pE2UynpxGYO0mUOsw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Woodhouse, David" <david.woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Davidlohr Bueso <davidlohr-VXdhtT5mjnY@public.gmane.org>
-Cc: "bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, aswin-VXdhtT5mjnY@public.gmane.org, James.Bottomley-JuX6DAaQMKPCXq6kfMZ53/egYHeGw8Jk@public.gmane.org, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, scameron-3C9H9nn4BS4HL6m8NFMY+dBPR1lH4CV8@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAK9yfHzP0ekboc-yi6FHvR3_rRiqcLC18pE2UynpxGYO0mUOsw@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sachin Kamat <sachin.kamat@linaro.org>, Olof Johansson <olof@lixom.net>
+Cc: Richard Weinberger <richard@nod.at>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Commit "59ce0515cdaf iommu/vt-d: Update DRHD/RMRR/ATSR device scope
-caches when PCI hotplug happens" introduces a bug, which fails to
-match PCI devices with DMAR device scope entries if PCI path array
-in the entry has more than one level.
+On Mon, 2014-02-10 at 10:02 +0530, Sachin Kamat wrote:
+> +cc linux-samsung-soc list
+> 
+> On 10 February 2014 01:38, Paul Bolle <pebolle@tiscali.nl> wrote:
+> > I noted this one about a year ago (see
+> > https://lkml.org/lkml/2013/3/5/401 ). By now I wonder whether
+> > EXYNOS_IOMMU (and everything depending on it) shouldn't be removed. That
+> > code has been unbuildable for at least a year now  (I have not checked
+> > how much code is involved).
+> 
+> 
+> Please refer to some on-going discussion about it at [1].
+> 
+> [1] http://thread.gmane.org/gmane.linux.kernel.samsung-soc/26842
 
-For example, it fails to handle
-[1D2h 0466   1]      Device Scope Entry Type : 01
-[1D3h 0467   1]                 Entry Length : 0A
-[1D4h 0468   2]                     Reserved : 0000
-[1D6h 0470   1]               Enumeration ID : 00
-[1D7h 0471   1]               PCI Bus Number : 00
-[1D8h 0472   2]                     PCI Path : 1C,04
-[1DAh 0474   2]                     PCI Path : 00,02
+It's not clear to me whether an actual decision was eventually made.
+Olof, does it make sense to rebase the patch (that Sachin linked to) on
+onto v3.15-rc1 and resubmit?
 
-And cause DMA failure on HP DL980 as:
-DMAR:[fault reason 02] Present bit in context entry is clear
-dmar: DRHD: handling fault status reg 602
-dmar: DMAR:[DMA Read] Request device [02:00.2] fault addr 7f61e000
 
-Reported-and-tested-by: Davidlohr Bueso <davidlohr-VXdhtT5mjnY@public.gmane.org>
-Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
----
-Hi David and Davidlohr,
-	I have made minor syntax change to the patch, but there should be no
-functional change.
-Thanks!
-Gerry
----
- drivers/iommu/dmar.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index f445c10df8df..39f8b717fe84 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -152,7 +152,8 @@ dmar_alloc_pci_notify_info(struct pci_dev *dev, unsigned long event)
- 	info->seg = pci_domain_nr(dev->bus);
- 	info->level = level;
- 	if (event == BUS_NOTIFY_ADD_DEVICE) {
--		for (tmp = dev, level--; tmp; tmp = tmp->bus->self) {
-+		for (tmp = dev; tmp; tmp = tmp->bus->self) {
-+			level--;
- 			info->path[level].device = PCI_SLOT(tmp->devfn);
- 			info->path[level].function = PCI_FUNC(tmp->devfn);
- 			if (pci_is_root_bus(tmp->bus))
--- 
-1.7.10.4
+Paul Bolle
