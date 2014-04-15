@@ -1,39 +1,84 @@
-From: Paul Bolle <pebolle@tiscali.nl>
-Subject: Re: [PATCH 04/28] Remove EXYNOS_DEV_SYSMMU
-Date: Tue, 15 Apr 2014 11:33:16 +0200
-Message-ID: <1397554396.1985.31.camel@x220>
-References: <1391971686-9517-1-git-send-email-richard@nod.at>
-	 <1391971686-9517-5-git-send-email-richard@nod.at>
-	 <1391976496.25855.19.camel@x220>
-	 <CAK9yfHzP0ekboc-yi6FHvR3_rRiqcLC18pE2UynpxGYO0mUOsw@mail.gmail.com>
+From: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v3 1/5] x86: make dma_alloc_coherent() return zeroed memory if
+	CMA is enabled
+Date: Tue, 15 Apr 2014 22:08:45 +0900
+Message-ID: <1397567329-3771-2-git-send-email-akinobu.mita@gmail.com>
+References: <1397567329-3771-1-git-send-email-akinobu.mita@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAK9yfHzP0ekboc-yi6FHvR3_rRiqcLC18pE2UynpxGYO0mUOsw@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sachin Kamat <sachin.kamat@linaro.org>, Olof Johansson <olof@lixom.net>
-Cc: Richard Weinberger <richard@nod.at>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1397567329-3771-1-git-send-email-akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org
+Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2014-02-10 at 10:02 +0530, Sachin Kamat wrote:
-> +cc linux-samsung-soc list
-> 
-> On 10 February 2014 01:38, Paul Bolle <pebolle@tiscali.nl> wrote:
-> > I noted this one about a year ago (see
-> > https://lkml.org/lkml/2013/3/5/401 ). By now I wonder whether
-> > EXYNOS_IOMMU (and everything depending on it) shouldn't be removed. That
-> > code has been unbuildable for at least a year now  (I have not checked
-> > how much code is involved).
-> 
-> 
-> Please refer to some on-going discussion about it at [1].
-> 
-> [1] http://thread.gmane.org/gmane.linux.kernel.samsung-soc/26842
+Calling dma_alloc_coherent() with __GFP_ZERO must return zeroed memory.
 
-It's not clear to me whether an actual decision was eventually made.
-Olof, does it make sense to rebase the patch (that Sachin linked to) on
-onto v3.15-rc1 and resubmit?
+But when the contiguous memory allocator (CMA) is enabled on x86 and
+the memory region is allocated by dma_alloc_from_contiguous(), it
+doesn't return zeroed memory.  Because dma_generic_alloc_coherent()
+forgot to fill the memory region with zero if it was allocated by
+dma_alloc_from_contiguous()
 
+Most implementations of dma_alloc_coherent() return zeroed memory
+regardless of whether __GFP_ZERO is specified.  So this fixes it by
+unconditionally zeroing the allocated memory region.
 
-Paul Bolle
+Alternatively, we could fix dma_alloc_from_contiguous() to return
+zeroed out memory and remove memset() from all caller of it.  But we
+can't simply remove the memset on arm because __dma_clear_buffer() is
+used there for ensuring cache flushing and it is used in many places.
+Of course we can do redundant memset in dma_alloc_from_contiguous(),
+but I think this patch is less impact for fixing this problem.
+
+Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Cc: Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>
+Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>
+Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Signed-off-by: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+---
+* Change from v2
+- update commit log to describe a possible alternative fix
+
+ arch/x86/kernel/pci-dma.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
+index f7d0672..a0ffe44 100644
+--- a/arch/x86/kernel/pci-dma.c
++++ b/arch/x86/kernel/pci-dma.c
+@@ -97,7 +97,6 @@ void *dma_generic_alloc_coherent(struct device *dev, size_t size,
+ 
+ 	dma_mask = dma_alloc_coherent_mask(dev, flag);
+ 
+-	flag |= __GFP_ZERO;
+ again:
+ 	page = NULL;
+ 	/* CMA can be used only in the context which permits sleeping */
+@@ -120,7 +119,7 @@ again:
+ 
+ 		return NULL;
+ 	}
+-
++	memset(page_address(page), 0, size);
+ 	*dma_addr = addr;
+ 	return page_address(page);
+ }
+-- 
+1.8.3.2
