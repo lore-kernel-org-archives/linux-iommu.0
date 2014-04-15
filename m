@@ -1,14 +1,12 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH 0/2] ARM SMMU fixes
-Date: Tue, 15 Apr 2014 17:55:07 +0200
-Message-ID: <15544035.e9eK8n7TO4@avalon>
-References: <1393601830-4677-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-	<53440057.6020703@arm.com> <20140414165858.GI12916@arm.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: [GIT PULL] iommu/arm-smmu: fixes for 3.15
+Date: Tue, 15 Apr 2014 17:21:06 +0100
+Message-ID: <20140415162106.GN17408@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140414165858.GI12916-5wv7dgnIgG8@public.gmane.org>
+Content-Disposition: inline
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,63 +16,40 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: marc.zyngier-5wv7dgnIgG8@public.gmane.org, binw-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+Hi Joerg,
 
-On Monday 14 April 2014 17:58:58 Will Deacon wrote:
-> On Tue, Apr 08, 2014 at 02:57:43PM +0100, Marc Zyngier wrote:
-> > On 08/04/14 14:41, Laurent Pinchart wrote:
-> > > I've obviously forgotten that Will was away for a month. CC'ing Marc
-> > > Zyngier.
-> > >
-> > > On Thursday 03 April 2014 01:52:55 Laurent Pinchart wrote:
-> > >> On Friday 28 February 2014 16:37:08 Laurent Pinchart wrote:
-> > >>> Hello Will,
-> > >>> 
-> > >>> I've studied your arm-smmu driver as a base to write a Renesas IOMMU
-> > >>> driver and found two small issues. Here are patches to fix them.
-> > >>> Please bear with me if my understanding was incorrect and the patches
-> > >>> wrong :-)
-> > >>> 
-> > >>> Laurent Pinchart (2):
-> > >>>   iommu/arm-smmu: Replace list walk with platform driver data
-> > >>>   iommu/arm-smmu: Return 0 on unmap failure
-> > >>>  
-> > >>>  drivers/iommu/arm-smmu.c | 17 +++++------------
-> > >>>  1 file changed, 5 insertions(+), 12 deletions(-)
-> > >> 
-> > >> Do you plan to take these patches (or at least patch 2/2) in your tree
-> > >> ? I can send a pull request to Joerg if you give me your acked-by.
-> > > 
-> > > Marc, would you like to handle this, or would you prefer to wait until
-> > > Will comes back ?
-> > 
-> > Hi Laurent,
-> > 
-> > Yup, I'll have a look and stash them in a temp tree. Given that Will
-> > will be back in about a week, he will have the final say.
-> 
-> I've already got the fix queued ("Return 0 on unmap failure") and plan to
-> send it to Joerg this week.
+Please can you pull the following two ARM SMMU fixes for 3.15? They address
+a problem with unmap return codes and a panic when unmapping a buffer larger
+than 2MB.
 
-Thank you.
+Cheers,
 
-> I think the other patch doesn't really add anything to the driver :)
+Will
 
-Fair enough, it's your driver, so the decision is yours :-)
+--->8
 
-On a different but related topic, I've written an ipmmu-vmsa.c driver for a 
-Renesas IOMMU. The IP core has custom registers but uses VMSA-compatible page 
-tables. What would you think about sharing the page table management code 
-between the two drivers ? The biggest difference between the two 
-implementations is that I've hardcoded the long descriptor format, while you 
-have reused more system MMU macros that make the arm-smmu driver use 2 or 3 
-levels of page tables depending on whether LPAE is disabled or enabled.
+The following changes since commit c9eaa447e77efe77b7fa4c953bd62de8297fd6c5:
 
--- 
-Regards,
+  Linux 3.15-rc1 (2014-04-13 14:18:35 -0700)
 
-Laurent Pinchart
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/fixes
+
+for you to fetch changes up to aca1bc4595c5757f01167ab5bfef2a4f8edfcf4f:
+
+  iommu/arm-smmu: fix panic in arm_smmu_alloc_init_pte (2014-04-15 12:23:11 +0100)
+
+----------------------------------------------------------------
+Bin Wang (1):
+      iommu/arm-smmu: fix panic in arm_smmu_alloc_init_pte
+
+Laurent Pinchart (1):
+      iommu/arm-smmu: Return 0 on unmap failure
+
+ drivers/iommu/arm-smmu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
