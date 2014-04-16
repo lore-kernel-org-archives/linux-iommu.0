@@ -1,56 +1,76 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [GIT PULL v2 FOR v3.16] OMAP IOMMU fixes
-Date: Wed, 16 Apr 2014 21:31:58 +0200
-Message-ID: <20140416192923.GA2742@8bytes.org>
-References: <2312051.xNuD1CfeZH@avalon>
- <20140416140107.GA3627@8bytes.org>
- <6806421.DjEURPCCWM@avalon>
- <1527771.aIpQeXENtj@avalon>
+From: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Subject: Re: [PATCH v3 1/5] x86: make dma_alloc_coherent() return zeroed
+	memory if CMA is enabled
+Date: Wed, 16 Apr 2014 12:44:06 -0700
+Message-ID: <20140416124406.b6a3f8c9f6e7eb7328ebb5cb@linux-foundation.org>
+References: <1397567329-3771-1-git-send-email-akinobu.mita@gmail.com>
+	<1397567329-3771-2-git-send-email-akinobu.mita@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-omap-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1527771.aIpQeXENtj@avalon>
-Sender: linux-omap-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: iommu@lists.linux-foundation.org, linux-omap@vger.kernel.org, Suman Anna <s-anna@ti.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1397567329-3771-2-git-send-email-akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 16, 2014 at 04:51:56PM +0200, Laurent Pinchart wrote:
-> The following changes since commit c9eaa447e77efe77b7fa4c953bd62de8297fd6c5:
-> 
->   Linux 3.15-rc1 (2014-04-13 14:18:35 -0700)
-> 
-> are available in the git repository at:
-> 
->   git://linuxtv.org/pinchartl/media.git iommu/omap
-> 
-> for you to fetch changes up to 286f600bc890347f7ec7bd50d33210d53a9095a3:
-> 
->   iommu/omap: Fix map protection value handling (2014-04-16 16:30:18 +0200)
-> 
-> Compared to the v1 pull request, the patches have been rebased directly on top 
-> of v3.15-rc1.
-> 
-> ----------------------------------------------------------------
-> Laurent Pinchart (3):
->       iommu/omap: Fix 'no page for' debug message in flush_iotlb_page()
->       iommu/omap: Remove comment about supporting single page mappings only
->       iommu/omap: Fix map protection value handling
-> 
-> Suman Anna (3):
->       iommu/omap: Correct init value of iotlb_entry valid field
->       iommu/omap: Remove omap_iommu_domain_has_cap() function
->       iommu/omap: Move to_iommu definition from omap-iopgtable.h
-> 
->  drivers/iommu/omap-iommu.c     | 31 ++++++++++++-------------------
->  drivers/iommu/omap-iopgtable.h |  3 ---
->  2 files changed, 12 insertions(+), 22 deletions(-)
+On Tue, 15 Apr 2014 22:08:45 +0900 Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
 
-Pulled, thanks Laurent. You can use the arm/omap branch to base your
-work on (when I pushed it, which will probably happen tomorrow).
+> Calling dma_alloc_coherent() with __GFP_ZERO must return zeroed memory.
+> 
+> But when the contiguous memory allocator (CMA) is enabled on x86 and
+> the memory region is allocated by dma_alloc_from_contiguous(), it
+> doesn't return zeroed memory.  Because dma_generic_alloc_coherent()
+> forgot to fill the memory region with zero if it was allocated by
+> dma_alloc_from_contiguous()
+> 
+> Most implementations of dma_alloc_coherent() return zeroed memory
+> regardless of whether __GFP_ZERO is specified.  So this fixes it by
+> unconditionally zeroing the allocated memory region.
+> 
+> Alternatively, we could fix dma_alloc_from_contiguous() to return
+> zeroed out memory and remove memset() from all caller of it.  But we
+> can't simply remove the memset on arm because __dma_clear_buffer() is
+> used there for ensuring cache flushing and it is used in many places.
+> Of course we can do redundant memset in dma_alloc_from_contiguous(),
+> but I think this patch is less impact for fixing this problem.
+
+But this patch does a duplicated memset if the page was allocated by
+alloc_pages_node()?
+
+Would it not be better to pass the gfp_t to dma_alloc_from_contiguous()
+and have it implement __GFP_ZERO?  That will fix thsi inefficiency,
+will be symmetrical with the other underlying allocators and should
+permit the appropriate fixups in arm?
 
 
-	Joerg
-
-
+> --- a/arch/x86/kernel/pci-dma.c
+> +++ b/arch/x86/kernel/pci-dma.c
+> @@ -97,7 +97,6 @@ void *dma_generic_alloc_coherent(struct device *dev, size_t size,
+>  
+>  	dma_mask = dma_alloc_coherent_mask(dev, flag);
+>  
+> -	flag |= __GFP_ZERO;
+>  again:
+>  	page = NULL;
+>  	/* CMA can be used only in the context which permits sleeping */
+> @@ -120,7 +119,7 @@ again:
+>  
+>  		return NULL;
+>  	}
+> -
+> +	memset(page_address(page), 0, size);
+>  	*dma_addr = addr;
+>  	return page_address(page);
+>  }
+> -- 
+> 1.8.3.2
