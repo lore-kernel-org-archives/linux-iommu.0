@@ -1,14 +1,23 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [GIT PULL] iommu/arm-smmu: fixes for 3.15
-Date: Wed, 16 Apr 2014 15:35:16 +0200
-Message-ID: <20140416133516.GA3577@8bytes.org>
-References: <20140415162106.GN17408@arm.com>
+From: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: hpsa driver bug crack kernel down!
+Date: Wed, 16 Apr 2014 15:37:40 +0200
+Message-ID: <20140416133739.GB3577@8bytes.org>
+References: <1397111557.2608.29.camel@buesod1.americas.hpqcorp.net>
+	<20140410071535.GX13491@8bytes.org>
+	<1397119587.19944.14.camel@shinybook.infradead.org>
+	<1397146781.2608.46.camel@buesod1.americas.hpqcorp.net>
+	<1397207932.19944.58.camel@shinybook.infradead.org>
+	<1397490358.31076.6.camel@buesod1.americas.hpqcorp.net>
+	<534C0AA9.5080909@linux.intel.com>
+	<1397493858.31076.8.camel@buesod1.americas.hpqcorp.net>
+	<1397494069.31076.9.camel@buesod1.americas.hpqcorp.net>
+	<1397495030.19944.198.camel@shinybook.infradead.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20140415162106.GN17408-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1397495030.19944.198.camel-Fexsq3y4057IgHVZqg5X0TlWvGAXklZc@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,33 +27,20 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: marc.zyngier-5wv7dgnIgG8@public.gmane.org, binw-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: "Woodhouse, David" <david.woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: "bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "James.Bottomley-JuX6DAaQMKPCXq6kfMZ53/egYHeGw8Jk@public.gmane.org" <James.Bottomley-JuX6DAaQMKPCXq6kfMZ53/egYHeGw8Jk@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Davidlohr Bueso <davidlohr-VXdhtT5mjnY@public.gmane.org>, "scameron-3C9H9nn4BS4HL6m8NFMY+dBPR1lH4CV8@public.gmane.org" <scameron-3C9H9nn4BS4HL6m8NFMY+dBPR1lH4CV8@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Apr 15, 2014 at 05:21:06PM +0100, Will Deacon wrote:
-> --->8
-> 
-> The following changes since commit c9eaa447e77efe77b7fa4c953bd62de8297fd6c5:
-> 
->   Linux 3.15-rc1 (2014-04-13 14:18:35 -0700)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/fixes
-> 
-> for you to fetch changes up to aca1bc4595c5757f01167ab5bfef2a4f8edfcf4f:
-> 
->   iommu/arm-smmu: fix panic in arm_smmu_alloc_init_pte (2014-04-15 12:23:11 +0100)
-> 
-> ----------------------------------------------------------------
-> Bin Wang (1):
->       iommu/arm-smmu: fix panic in arm_smmu_alloc_init_pte
-> 
-> Laurent Pinchart (1):
->       iommu/arm-smmu: Return 0 on unmap failure
-> 
->  drivers/iommu/arm-smmu.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+Hey David,
 
-Pulled, thanks Will.
+On Mon, Apr 14, 2014 at 05:03:51PM +0000, Woodhouse, David wrote:
+> Jiang, if you can then let me have a copy with a signed-off-by I'll
+> shepherd it upstream along with your other patch which is already in my
+> iommu-2.6.git tree.
+
+What is the state of these fixes? I plan to send out a pull-request
+before easter and hoped to include these fixes as well.
+
+Thanks,
+
+	Joerg
