@@ -1,61 +1,47 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH 0/2] ARM SMMU fixes
-Date: Wed, 16 Apr 2014 16:25:58 +0200
-Message-ID: <13460694.iQzMW2ZBpY@avalon>
-References: <1393601830-4677-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-	<15544035.e9eK8n7TO4@avalon> <20140416142206.GB2005@arm.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [GIT PULL FOR v3.16] OMAP IOMMU fixes
+Date: Wed, 16 Apr 2014 16:28:05 +0200
+Message-ID: <6806421.DjEURPCCWM@avalon>
+References: <2312051.xNuD1CfeZH@avalon> <20140416140107.GA3627@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140416142206.GB2005-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <20140416140107.GA3627@8bytes.org>
+Sender: linux-omap-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, linux-omap@vger.kernel.org, Suman Anna <s-anna@ti.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+Hi Joerg,
 
-On Wednesday 16 April 2014 15:22:06 Will Deacon wrote:
-> On Tue, Apr 15, 2014 at 04:55:07PM +0100, Laurent Pinchart wrote:
-> > Hi Will,
-> 
+On Wednesday 16 April 2014 16:01:07 Joerg Roedel wrote:
 > Hi Laurent,
 > 
-> > On a different but related topic, I've written an ipmmu-vmsa.c driver for
-> > a Renesas IOMMU. The IP core has custom registers but uses VMSA-compatible
-> > page tables. What would you think about sharing the page table management
-> > code between the two drivers ? The biggest difference between the two
-> > implementations is that I've hardcoded the long descriptor format, while
-> > you have reused more system MMU macros that make the arm-smmu driver use
-> > 2 or 3 levels of page tables depending on whether LPAE is disabled or
-> > enabled.
->
-> Actually, my driver also only supports the long-descriptor format, so the
-> code should be shareable. Things I support that you might have issues with
-> are:
+> On Fri, Apr 04, 2014 at 12:11:52AM +0200, Laurent Pinchart wrote:
+> > Laurent Pinchart (3):
+> >       iommu/omap: Fix 'no page for' debug message in flush_iotlb_page()
+> >       iommu/omap: Remove comment about supporting single page mappings
+> >       only
+> >       iommu/omap: Fix map protection value handling
+> > 
+> > Suman Anna (3):
+> >       iommu/omap: Correct init value of iotlb_entry valid field
+> >       iommu/omap: Remove omap_iommu_domain_has_cap() function
+> >       iommu/omap: Move to_iommu definition from omap-iopgtable.h
+> >  
+> >  drivers/iommu/omap-iommu.c     | 31 ++++++++++++-------------------
+> >  drivers/iommu/omap-iopgtable.h |  3 ---
+> >  2 files changed, 12 insertions(+), 22 deletions(-)
 > 
->  - Stage-1 and Stage-2 formats (although long-descriptor only)
->  - 4k and 64k pages (the latter for arm64 only)
->  - Contiguous pte hints
-> 
-> Do you have support for section mappings in your driver? That is something
-> I'd be keen to add for the ARM SMMU, but it really complicates the code.
+> Can you please rebase this to v3.15-rc1 and send a new pull request? I
+> get a lot of commits besides these when I pull into v3.15-rc1.
 
-I have pending patches for that, I still need to clean them up. I'll try to 
-post them in the next few days and I'll CC you. Discussing the implementation 
-will be easier with the code, so I propose resuming this thread in response to 
-the patches.
+Sure. The branch was based on top of your iommu master branch, I'll rebase on 
+top of v3.15-rc1 and resend a pull request.
 
 -- 
 Regards,
 
 Laurent Pinchart
+
