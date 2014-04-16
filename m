@@ -1,36 +1,22 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+From: Joerg Roedel <joro@8bytes.org>
 Subject: Re: [GIT PULL v2 FOR v3.16] OMAP IOMMU fixes
-Date: Wed, 16 Apr 2014 16:57:57 +0200
-Message-ID: <2719857.gpZoyjQAq7@avalon>
-References: <2312051.xNuD1CfeZH@avalon> <6806421.DjEURPCCWM@avalon>
-	<1527771.aIpQeXENtj@avalon>
+Date: Wed, 16 Apr 2014 21:31:58 +0200
+Message-ID: <20140416192923.GA2742@8bytes.org>
+References: <2312051.xNuD1CfeZH@avalon>
+ <20140416140107.GA3627@8bytes.org>
+ <6806421.DjEURPCCWM@avalon>
+ <1527771.aIpQeXENtj@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-omap-owner@vger.kernel.org>
+Content-Disposition: inline
 In-Reply-To: <1527771.aIpQeXENtj@avalon>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Sender: linux-omap-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: iommu@lists.linux-foundation.org, linux-omap@vger.kernel.org, Suman Anna <s-anna@ti.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
-
-Last but not least, could you please provide a stable branch with those 
-patches, directly on top of v3.15-rc1 ? I'll need to base OMAP3 ISP driver 
-patches on top of it.
-
-On Wednesday 16 April 2014 16:51:56 Laurent Pinchart wrote:
-> Hi Joerg,
-> 
+On Wed, Apr 16, 2014 at 04:51:56PM +0200, Laurent Pinchart wrote:
 > The following changes since commit c9eaa447e77efe77b7fa4c953bd62de8297fd6c5:
 > 
 >   Linux 3.15-rc1 (2014-04-13 14:18:35 -0700)
@@ -43,8 +29,8 @@ On Wednesday 16 April 2014 16:51:56 Laurent Pinchart wrote:
 > 
 >   iommu/omap: Fix map protection value handling (2014-04-16 16:30:18 +0200)
 > 
-> Compared to the v1 pull request, the patches have been rebased directly on
-> top of v3.15-rc1.
+> Compared to the v1 pull request, the patches have been rebased directly on top 
+> of v3.15-rc1.
 > 
 > ----------------------------------------------------------------
 > Laurent Pinchart (3):
@@ -61,7 +47,10 @@ On Wednesday 16 April 2014 16:51:56 Laurent Pinchart wrote:
 >  drivers/iommu/omap-iopgtable.h |  3 ---
 >  2 files changed, 12 insertions(+), 22 deletions(-)
 
--- 
-Regards,
+Pulled, thanks Laurent. You can use the arm/omap branch to base your
+work on (when I pushed it, which will probably happen tomorrow).
 
-Laurent Pinchart
+
+	Joerg
+
+
