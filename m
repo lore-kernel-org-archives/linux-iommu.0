@@ -1,60 +1,53 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [GIT PULL v2 FOR v3.16] OMAP IOMMU fixes
-Date: Thu, 17 Apr 2014 01:43:56 +0200
-Message-ID: <698874884.ItkCjuKUDv@avalon>
-References: <2312051.xNuD1CfeZH@avalon> <1527771.aIpQeXENtj@avalon> <20140416192923.GA2742@8bytes.org>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [PATCH v3] iommu: Add driver for Renesas VMSA-compatible IPMMU
+Date: Thu, 17 Apr 2014 12:14 +0200
+Message-ID: <3961471.IYYJh47THK@avalon>
+References: <1396435657-3922-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+	<69859225.EqNRcgoKS0@avalon> <20140409105703.GV13491@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <20140416192923.GA2742@8bytes.org>
-Sender: linux-omap-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, linux-omap@vger.kernel.org, Suman Anna <s-anna@ti.com>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20140409105703.GV13491-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 Hi Joerg,
 
-On Wednesday 16 April 2014 21:31:58 Joerg Roedel wrote:
-> On Wed, Apr 16, 2014 at 04:51:56PM +0200, Laurent Pinchart wrote:
-> > The following changes since commit 
-c9eaa447e77efe77b7fa4c953bd62de8297fd6c5:
-> >   Linux 3.15-rc1 (2014-04-13 14:18:35 -0700)
+On Wednesday 09 April 2014 12:57:03 Joerg Roedel wrote:
+> On Wed, Apr 09, 2014 at 12:43:57PM +0200, Laurent Pinchart wrote:
+> > On Wednesday 02 April 2014 12:47:37 Laurent Pinchart wrote:
+> > > Signed-off-by: Laurent Pinchart
+> > > <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+> > > ---
+> > > 
+> > >  drivers/iommu/Kconfig                    |   12 +
+> > >  drivers/iommu/Makefile                   |    1 +
+> > >  drivers/iommu/ipmmu-vmsa.c               | 1070 +++++++++++++++++++++++
+> > >  include/linux/platform_data/ipmmu-vmsa.h |   24 +
+> > >  4 files changed, 1107 insertions(+)
+> > >  create mode 100644 drivers/iommu/ipmmu-vmsa.c
+> > >  create mode 100644 include/linux/platform_data/ipmmu-vmsa.h
+> > > 
+> > > Joerg, could you please take this patch in your tree for v3.16 ?
 > > 
-> > are available in the git repository at:
-> >   git://linuxtv.org/pinchartl/media.git iommu/omap
-> > 
-> > for you to fetch changes up to 286f600bc890347f7ec7bd50d33210d53a9095a3:
-> >   iommu/omap: Fix map protection value handling (2014-04-16 16:30:18
-> >   +0200)
-> > 
-> > Compared to the v1 pull request, the patches have been rebased directly on
-> > top of v3.15-rc1.
-> > 
-> > ----------------------------------------------------------------
-> > 
-> > Laurent Pinchart (3):
-> >       iommu/omap: Fix 'no page for' debug message in flush_iotlb_page()
-> >       iommu/omap: Remove comment about supporting single page mappings
-> >       only
-> >       iommu/omap: Fix map protection value handling
-> > 
-> > Suman Anna (3):
-> >       iommu/omap: Correct init value of iotlb_entry valid field
-> >       iommu/omap: Remove omap_iommu_domain_has_cap() function
-> >       iommu/omap: Move to_iommu definition from omap-iopgtable.h
-> >  
-> >  drivers/iommu/omap-iommu.c     | 31 ++++++++++++-------------------
-> >  drivers/iommu/omap-iopgtable.h |  3 ---
-> >  2 files changed, 12 insertions(+), 22 deletions(-)
+> > Ping ?
 > 
-> Pulled, thanks Laurent. You can use the arm/omap branch to base your
-> work on (when I pushed it, which will probably happen tomorrow).
+> I am looking into this when the merge window is over.
 
-Thank you.
+I think it's over now :-)
 
 -- 
 Regards,
 
 Laurent Pinchart
-
