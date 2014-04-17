@@ -1,14 +1,13 @@
 From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH v3] iommu: Add driver for Renesas VMSA-compatible IPMMU
-Date: Thu, 17 Apr 2014 12:14 +0200
-Message-ID: <3961471.IYYJh47THK@avalon>
-References: <1396435657-3922-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-	<69859225.EqNRcgoKS0@avalon> <20140409105703.GV13491@8bytes.org>
+Subject: [GIT PULL FOR v3.16] SH-Mobile IPMMU miscellaneous cleanups
+Date: Thu, 17 Apr 2014 12:18:21 +0200
+Message-ID: <2764209.oq6GXMERSj@avalon>
+References: <1396482562-1851-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140409105703.GV13491-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1396482562-1851-1-git-send-email-laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,28 +23,28 @@ List-Id: iommu@lists.linux-foundation.org
 
 Hi Joerg,
 
-On Wednesday 09 April 2014 12:57:03 Joerg Roedel wrote:
-> On Wed, Apr 09, 2014 at 12:43:57PM +0200, Laurent Pinchart wrote:
-> > On Wednesday 02 April 2014 12:47:37 Laurent Pinchart wrote:
-> > > Signed-off-by: Laurent Pinchart
-> > > <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-> > > ---
-> > > 
-> > >  drivers/iommu/Kconfig                    |   12 +
-> > >  drivers/iommu/Makefile                   |    1 +
-> > >  drivers/iommu/ipmmu-vmsa.c               | 1070 +++++++++++++++++++++++
-> > >  include/linux/platform_data/ipmmu-vmsa.h |   24 +
-> > >  4 files changed, 1107 insertions(+)
-> > >  create mode 100644 drivers/iommu/ipmmu-vmsa.c
-> > >  create mode 100644 include/linux/platform_data/ipmmu-vmsa.h
-> > > 
-> > > Joerg, could you please take this patch in your tree for v3.16 ?
-> > 
-> > Ping ?
-> 
-> I am looking into this when the merge window is over.
+The following changes since commit c9eaa447e77efe77b7fa4c953bd62de8297fd6c5:
 
-I think it's over now :-)
+  Linux 3.15-rc1 (2014-04-13 14:18:35 -0700)
+
+are available in the git repository at:
+
+  git://linuxtv.org/pinchartl/fbdev.git iommu/for-v3.16
+
+for you to fetch changes up to b11762f8431b3a5cf1c156876e79efab7d7f80c4:
+
+  iommu/shmobile: Use devm_ioremap_resource() (2014-04-17 12:16:12 +0200)
+
+The patches have been sitting on the linux-sh and iommu mailing lists for more 
+than two weeks, I think they should be ripe now.
+
+----------------------------------------------------------------
+Laurent Pinchart (2):
+      iommu/shmobile: Don't ignore the ipmmu_iommu_init() return value
+      iommu/shmobile: Use devm_ioremap_resource()
+
+ drivers/iommu/shmobile-ipmmu.c | 20 +++++++-------------
+ 1 file changed, 7 insertions(+), 13 deletions(-)
 
 -- 
 Regards,
