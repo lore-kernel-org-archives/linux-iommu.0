@@ -1,11 +1,16 @@
-From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: [PATCH v2 0/5] Renesas VMSA-compatible IPMMU DT support
-Date: Thu, 17 Apr 2014 13:12:57 +0200
-Message-ID: <6626224.o7l75GClE1@avalon>
+From: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v3 1/5] x86: make dma_alloc_coherent() return zeroed
+	memory if CMA is enabled
+Date: Fri, 18 Apr 2014 00:40:42 +0900
+Message-ID: <CAC5umyhsF_kphgZwk=vBgHOso+SHL6PyMwFdqiuK04O_wfRDug@mail.gmail.com>
+References: <1397567329-3771-1-git-send-email-akinobu.mita@gmail.com>
+	<1397567329-3771-2-git-send-email-akinobu.mita@gmail.com>
+	<20140416124406.b6a3f8c9f6e7eb7328ebb5cb@linux-foundation.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20140416124406.b6a3f8c9f6e7eb7328ebb5cb-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,78 +20,70 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
+2014-04-17 4:44 GMT+09:00 Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>:
+> On Tue, 15 Apr 2014 22:08:45 +0900 Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+>
+>> Calling dma_alloc_coherent() with __GFP_ZERO must return zeroed memory.
+>>
+>> But when the contiguous memory allocator (CMA) is enabled on x86 and
+>> the memory region is allocated by dma_alloc_from_contiguous(), it
+>> doesn't return zeroed memory.  Because dma_generic_alloc_coherent()
+>> forgot to fill the memory region with zero if it was allocated by
+>> dma_alloc_from_contiguous()
+>>
+>> Most implementations of dma_alloc_coherent() return zeroed memory
+>> regardless of whether __GFP_ZERO is specified.  So this fixes it by
+>> unconditionally zeroing the allocated memory region.
+>>
+>> Alternatively, we could fix dma_alloc_from_contiguous() to return
+>> zeroed out memory and remove memset() from all caller of it.  But we
+>> can't simply remove the memset on arm because __dma_clear_buffer() is
+>> used there for ensuring cache flushing and it is used in many places.
+>> Of course we can do redundant memset in dma_alloc_from_contiguous(),
+>> but I think this patch is less impact for fixing this problem.
+>
+> But this patch does a duplicated memset if the page was allocated by
+> alloc_pages_node()?
 
-This patch set adds DT support to the Renesas VMSA-compatible IPMMU driver.
-The first patch refactors the driver to remove dependencies on platform data,
-the second patch adds the DT bindings documentation and the third patch
-implement them in the driver.
+You're right.  Clearing __GFP_ZERO bit in gfp flags before allocating by
+alloc_pages_node() can fix this duplicated memset.
 
-The next two patches show real-life examples for IPMMU DT bindings usage.
-Patch 4/5 adds IPMMU DT nodes to the r8a7791 SoC dtsi file, and patch 5/5
-enables IOMMU support for the VSP1 on the same platform.
+> Would it not be better to pass the gfp_t to dma_alloc_from_contiguous()
+> and have it implement __GFP_ZERO?  That will fix thsi inefficiency,
+> will be symmetrical with the other underlying allocators and should
+> permit the appropriate fixups in arm?
 
-The patches are based on top of the IPMMU driver previously submitted to the
-iommu mailing list. The last patch additionally requires to VSP1 DT support
-patch series previously submitted to the linux-media mailing list and is thus
-a test patch only at the moment, not meant to be merged yet.
+Sounds good.  If it also handles __GFP_WAIT, We can remove __GFP_WAIT
+check which is almost always required before calling
+dma_alloc_from_contiguous().
 
-The DT bindings are pretty simple, with only three standard properties in the
-IPMMU DT node. The driver doesn't need to know the number of micro-TLBs (a
-micro-TLB being a port to which a bus master device is attached, identified by
-a number similar in purpose to a stream ID), so I've decided not to specify it
-in DT. The micro-TLBs are configured when a bus master device is attached or
-detached, and at that point the device provides its micro-TLB number.
+>> --- a/arch/x86/kernel/pci-dma.c
+>> +++ b/arch/x86/kernel/pci-dma.c
+>> @@ -97,7 +97,6 @@ void *dma_generic_alloc_coherent(struct device *dev, size_t size,
+>>
+>>       dma_mask = dma_alloc_coherent_mask(dev, flag);
+>>
+>> -     flag |= __GFP_ZERO;
 
-The only reason I can foresee why the number of micro-TLBs would be useful is 
-to iterate over micro-TLBs when the driver probes the device to disable them 
-all. A mask would probably be better than a number in that case, and I think 
-we can always add that later if we find a need for it.
+I'll soon prepare a follow-up patch to clear __GFP_ZERO like
 
-The device to IOMMU association is represented in the bus master device nodes
-using an iommus property, similarly to interrupts or clocks. This model departs
-from the ARM SMMU DT bindings that represent the same information inside the
-IOMMU DT node. Will, please feel free to tell me if you believe this model
-isn't good.
++        flag &= ~__GFP_ZERO
 
-Every IPMMU instance serves multiple bus master devices and implements four
-independent page tables and TLBs. Each bus master can be freely assigned to one
-of the page tables, lowering the risk of TLB miss when multiple bus masters
-require address translation at the same time. I've decided not to express the
-bus master to page table association in DT as this seems to me to be a software
-configuration decision, not a hardware property. Feel free to disagree.
-
-As a side note, there's no API at the moment to configure that association. My
-plan is to assign bus masters to page tables automatically in the driver in a
-round-robin way. A more configurable solution might be needed later, but I
-believe that's out of scope of DT.
-
-Changes since v1:
-
-- Fixed typos
-- Add a missing of_node_put()
-
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-
-Laurent Pinchart (5):
-  iommu/ipmmu-vmsa: Refactor micro-TLB lookup
-  iommu/ipmmu-vmsa: Add device tree bindings documentation
-  iommu/ipmmu-vmsa: Add device tree support
-  ARM: shmobile: r8a7791: Add IPMMU DT nodes
-  ARM: shmobile: r8a7791: Enable IOMMU support for the VSP1
-
- .../bindings/iommu/renesas,ipmmu-vmsa.txt          |  35 ++++++
- arch/arm/boot/dts/r8a7791.dtsi                     |  54 ++++++++++
- drivers/iommu/ipmmu-vmsa.c                         | 117 +++++++++++++--------
- 3 files changed, 165 insertions(+), 41 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
-
--- 
-Regards,
-
-Laurent Pinchart
+>>  again:
+>>       page = NULL;
+>>       /* CMA can be used only in the context which permits sleeping */
+>> @@ -120,7 +119,7 @@ again:
+>>
+>>               return NULL;
+>>       }
+>> -
+>> +     memset(page_address(page), 0, size);
+>>       *dma_addr = addr;
+>>       return page_address(page);
+>>  }
+>> --
+>> 1.8.3.2
