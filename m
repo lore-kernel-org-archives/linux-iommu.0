@@ -1,14 +1,11 @@
-From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: [PATCH 4/9] iommu/ipmmu-vmsa: Set the PTE contiguous hint bit when
-	possible
-Date: Mon, 21 Apr 2014 16:13:04 +0200
-Message-ID: <1398089589-9181-5-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-References: <1398089589-9181-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+From: Kefeng Wang <wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH] iommu/arm-smmu: fix incorrect use of S2CR_TYPE_SHIFT
+Date: Fri, 18 Apr 2014 10:07:54 +0800
+Message-ID: <1397786874-11372-1-git-send-email-wangkefeng.wang@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1398089589-9181-1-git-send-email-laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,81 +15,30 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Kefeng Wang <wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The contiguous hint bit signals to the IOMMU that a range of 16 PTEs
-refer to physically contiguous memory. It improves performances by
-dividing the number of TLB lookups by 16, effectively implementing 64kB
-page sizes.
+There is already S2CR_TYPE_TRANS in S2CR_TYPE_TRANS macro,
+so drop the second shift.
 
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Signed-off-by: Kefeng Wang <wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/ipmmu-vmsa.c | 43 ++++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 40 insertions(+), 3 deletions(-)
+ drivers/iommu/arm-smmu.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 7c8c21e..1ce2115 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -210,6 +210,9 @@ static LIST_HEAD(ipmmu_devices);
- #define ARM_VMSA_PTE_MEMATTR_NC		(((pteval_t)0x5) << 2)
- #define ARM_VMSA_PTE_MEMATTR_DEV	(((pteval_t)0x1) << 2)
- 
-+#define ARM_VMSA_PTE_CONT_ENTRIES	16
-+#define ARM_VMSA_PTE_CONT_SIZE		(PAGE_SIZE * ARM_VMSA_PTE_CONT_ENTRIES)
-+
- #define IPMMU_PTRS_PER_PTE		512
- #define IPMMU_PTRS_PER_PMD		512
- #define IPMMU_PTRS_PER_PGD		4
-@@ -569,10 +572,44 @@ static int ipmmu_alloc_init_pte(struct ipmmu_vmsa_device *mmu, pmd_t *pmd,
- 	pteval |= ARM_VMSA_PTE_SH_IS;
- 	start = pte;
- 
--	/* Install the page table entries. */
-+	/*
-+	 * Install the page table entries.
-+	 *
-+	 * Set the contiguous hint in the PTEs where possible. The hint
-+	 * indicates a series of ARM_VMSA_PTE_CONT_ENTRIES PTEs mapping a
-+	 * physically contiguous region with the following constraints:
-+	 *
-+	 * - The region start is aligned to ARM_VMSA_PTE_CONT_SIZE
-+	 * - Each PTE in the region has the contiguous hint bit set
-+	 *
-+	 * We don't support partial unmapping so there's no need to care about
-+	 * clearing the contiguous hint from neighbour PTEs.
-+	 */
- 	do {
--		*pte++ = pfn_pte(pfn++, __pgprot(pteval));
--		addr += PAGE_SIZE;
-+		unsigned long chunk_end;
-+
-+		/*
-+		 * If the address is aligned to a contiguous region size and the
-+		 * mapping size is large enough, process the largest possible
-+		 * number of PTEs multiple of ARM_VMSA_PTE_CONT_ENTRIES.
-+		 * Otherwise process the smallest number of PTEs to align the
-+		 * address to a contiguous region size or to complete the
-+		 * mapping.
-+		 */
-+		if (IS_ALIGNED(addr, ARM_VMSA_PTE_CONT_SIZE) &&
-+		    end - addr >= ARM_VMSA_PTE_CONT_SIZE) {
-+			chunk_end = round_down(end, ARM_VMSA_PTE_CONT_SIZE);
-+			pteval |= ARM_VMSA_PTE_CONT;
-+		} else {
-+			chunk_end = min(ALIGN(addr, ARM_VMSA_PTE_CONT_SIZE),
-+					end);
-+			pteval &= ~ARM_VMSA_PTE_CONT;
-+		}
-+
-+		do {
-+			*pte++ = pfn_pte(pfn++, __pgprot(pteval));
-+			addr += PAGE_SIZE;
-+		} while (addr != chunk_end);
- 	} while (addr != end);
- 
- 	ipmmu_flush_pgtable(mmu, start, sizeof(*pte) * (pte - start));
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 8b89e33..96755ec 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1167,7 +1167,7 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
+ 	for (i = 0; i < master->num_streamids; ++i) {
+ 		u32 idx, s2cr;
+ 		idx = master->smrs ? master->smrs[i].idx : master->streamids[i];
+-		s2cr = (S2CR_TYPE_TRANS << S2CR_TYPE_SHIFT) |
++		s2cr = S2CR_TYPE_TRANS |
+ 		       (smmu_domain->root_cfg.cbndx << S2CR_CBNDX_SHIFT);
+ 		writel_relaxed(s2cr, gr0_base + ARM_SMMU_GR0_S2CR(idx));
+ 	}
 -- 
-1.8.3.2
+1.7.1
