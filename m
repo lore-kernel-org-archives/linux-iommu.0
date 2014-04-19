@@ -1,107 +1,129 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH v2 0/5] Renesas VMSA-compatible IPMMU DT support
-Date: Fri, 18 Apr 2014 00:50:14 +0200
-Message-ID: <2308571.W3LBJprK1V@avalon>
-References: <6626224.o7l75GClE1@avalon> <20140417155519.GE30553@arm.com>
+From: Ritesh Harjani <ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH] arm: dma-mapping: Fix mapping size value
+Date: Sat, 19 Apr 2014 16:49:17 +0530
+Message-ID: <CAD15aga8DTuzYrPfHF3X=ZvCuCQxfx1nOTk90DdwdxeZvV5tdA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <20140417155519.GE30553@arm.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Russell King <rmk-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+I am finding an oops after following commit. I am on 3.10.30 kernel but applied
+all the latest patches from arch/arm/mm/dma-mapping.c
 
-On Thursday 17 April 2014 16:55:19 Will Deacon wrote:
-> On Thu, Apr 17, 2014 at 12:12:57PM +0100, Laurent Pinchart wrote:
-> > Hello,
-> 
-> Hi Laurent,
-> 
-> > This patch set adds DT support to the Renesas VMSA-compatible IPMMU
-> > driver. The first patch refactors the driver to remove dependencies on
-> > platform data, the second patch adds the DT bindings documentation and the
-> > third patch implement them in the driver.
-> > 
-> > The next two patches show real-life examples for IPMMU DT bindings usage.
-> > Patch 4/5 adds IPMMU DT nodes to the r8a7791 SoC dtsi file, and patch 5/5
-> > enables IOMMU support for the VSP1 on the same platform.
-> > 
-> > The patches are based on top of the IPMMU driver previously submitted to
-> > the iommu mailing list. The last patch additionally requires to VSP1 DT
-> > support patch series previously submitted to the linux-media mailing list
-> > and is thus a test patch only at the moment, not meant to be merged yet.
-> > 
-> > The DT bindings are pretty simple, with only three standard properties in
-> > the IPMMU DT node. The driver doesn't need to know the number of
-> > micro-TLBs (a micro-TLB being a port to which a bus master device is
-> > attached, identified by a number similar in purpose to a stream ID), so
-> > I've decided not to specify it in DT. The micro-TLBs are configured when
-> > a bus master device is attached or detached, and at that point the device
-> > provides its micro-TLB number.
-> > 
-> > The only reason I can foresee why the number of micro-TLBs would be useful
-> > is to iterate over micro-TLBs when the driver probes the device to
-> > disable them all. A mask would probably be better than a number in that
-> > case, and I think we can always add that later if we find a need for it.
-> > 
-> > The device to IOMMU association is represented in the bus master device
-> > nodes using an iommus property, similarly to interrupts or clocks. This
-> > model departs from the ARM SMMU DT bindings that represent the same
-> > information inside the IOMMU DT node. Will, please feel free to tell me
-> > if you believe this model isn't good.
-> 
-> If this model works for you, then I'm also fine with it. The only complaint
-> is that we now have a needless difference between the ARM SMMU driver and
-> your driver in the way that the device <-> smmu topology is described. I'd
-> be happy to try and move my driver over to your binding, but that would
-> break all existing users and, whilst there aren't any in-tree .dts files
-> using the ARM SMMU, I doubt it would be a popular move.
+I added some debug logs to see what is the error, on which I found that we are
+incorrectly setting mapping->size value.
+Please take a look at this and correct me if I am wrong here.
 
-I'm also slightly unhappy with having two different models. Of course, if I 
-had thought that the two models were equally good, I would have followed yours 
-:-) It seems more natural to me to express the association with an IOMMU as a 
-resource, similarly to clocks, GPIOs or interrupts. It would also allow easier 
-support for devices that use multiple IOMMUs (which should be pretty uncommon, 
-in my case devices can have several independent bus master ports, but they all 
-go through the same IOMMU, with different micro-TLBs/stream IDs).
+FAULTY COMMIT:
+commit 68efd7d2fb32c2606f1da318b6a851
+d933813f27
+Author: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Date:   Tue Feb 25 13:01:09 2014 +0100
 
-There's no other mainline IOMMU driver that model the bus masters to IOMMU 
-relationship in DT, so it's probably a good time to discuss this issue as 
-broadly as possible and decide on sane rules. If we have to live with 
-different models, so be it, but I think we should establish a default model at 
-least for new drivers. It would especially be useful if we want to handle 
-device to domain association in common code, which I believe would be a good 
-target.
+    arm: dma-mapping: remove order parameter from arm_iommu_create_mapping()
 
-> > Every IPMMU instance serves multiple bus master devices and implements
-> > four independent page tables and TLBs. Each bus master can be freely
-> > assigned to one of the page tables, lowering the risk of TLB miss when
-> > multiple bus masters require address translation at the same time. I've
-> > decided not to express the bus master to page table association in DT as
-> > this seems to me to be a software configuration decision, not a hardware
-> > property. Feel free to disagree.
->
-> Isn't the master -> page table association a dynamic property, defined by
-> the (runtime) configuration of IOMMU domains? That is, you have one page
-> table per domain and the act of attaching a device to a domain associates
-> it with that page table?
 
-That's correct. The IPMMU has four domains and handles more than four devices. 
-I thus need to decide to which domain to attach each device. Doing so in a 
-round-robin fashion is an acceptable first implementation, but fine-tuning 
-might be needed at some point for performance reasons.
+OOPS LOGS:
+[26.898145] __alloc_iova#LINE: 1097 start = 0x3500
+[26.898159] __alloc_iova#LINE:1136 iova = 0x53500000
+[26.898170] __alloc_iova#LINE:1138 mapping->base= 0x50000000
+[26.898181] __alloc_iova#LINE:1140 mapping->size = 0x1000000, i = 0
+[26.924442] __free_iova, bitmap_index = 3
 
-> Or do you need an identity-mapped page table in order to pass-through
-> transactions when no translation is configured?
+[Ritesh]: bitmap_index should be 0 for address 0x53500000. see in alloc_iova
+above.
 
-Fortunately I don't need that.
+[26.924454] __free_iova,addr = 0x53500000
+[26.924463] __free_iova,mapping->base = 0x50000000
+[26.924472] __free_iova,mapping->size = 0x1000000
+[26.924482] __free_iova,bitmap_base = 0x53000000
+[26.924490] __free_iova, start = 0x500
 
--- 
-Regards,
+[Ritesh]: start should be 0x3500 for address 0x53500000. see in alloc_iova
+above.
 
-Laurent Pinchart
+[26.924533] Unable to handle kernel NULL pointer dereference at virtual
+address 000000a0
+[26.924543] pgd = e7a84000
+[26.924558] [000000a0] *pgd=00000000
+[26.924572] Internal error: Oops: 5 [#1] PREEMPT SMP ARM
+[26.924598] Modules linked in:
+[26.924613] CPU: 1 PID: 2263 Comm: BufferLiberator Not tainted 3.10.30+
+#144
+[26.924624] task: e7370a40 ti: e6e06000 task.ti: e6e06000
+[26.924644] PC is at bitmap_clear+0x48/0xd0
+[26.924659] LR is at __iommu_remove_mapping+0x130/0x164
+[26.924673] pc : [<c02d0814>]    lr : [<c001bd30>]    psr: 20000093
+[26.924673] sp : e6e07e20  ip : ffffffff  fp : e6e07e3c
+[26.924682] r10: 00000500  r9 : c1333ea8  r8 : 80000013
+[26.924692] r7 : ffffffff  r6 : 00000321  r5 : 000000a0  r4 : 00000028
+[26.924707] r3 : 00000000  r2 : 00000341  r1 : 00000500  r0 : 00000000
+[26.924730] Flags: nzCv  IRQs off  FIQs on  Mode SVC_32  ISA ARM  Segment
+user
+[26.924742] Control: 10c5387d  Table: 77a8406a  DAC: 00000015
 
+
+See below on how this is wrong:
+
+here iova_base = 0x50000000
+iova_size = 0x20000000
+=> bits needed to map = 131072.
+        => bitmap_size = 0x4000
+        since bitmap_size > PAGE_SIZE
+        => bitmap_size = PAGE_SIZE,  extensions = 4;
+
+Now, mapping->size is currently set as bitmap_size << PAGE_SHIFT.
+        =>mapping->size = 0x1000000.
+mapping->size is the IOVA size, which one bitmap can address.
+
+Now mapping->size * extensions should be size (0x20000000).
+which is not true, => our bitmap_size is set wrong.
+
+it should be (mapping->bits << PAGE_SIZE) or say
+(BITS_PER_BYTE * bitmap_size << PAGE_SIZE)
+        => (8 * 0x1000) << 12) = 0x8000000
+With this IOVA_SIZE = extensions * mapping->size = 0x20000000
+
+
+
+PATCH:
+
+Currently mapping->size is wrongly set resulting
+in OOPS (atleast we see OOPS with extension 4).
+
+Fix this.
+
+Signed-off-by: Ritesh Harjani <ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+---
+ arch/arm/mm/dma-mapping.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index f62aa06..d1701a2 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -1963,8 +1963,8 @@ arm_iommu_create_mapping(struct bus_type *bus,
+dma_addr_t base, size_t size)
+        mapping->nr_bitmaps = 1;
+        mapping->extensions = extensions;
+        mapping->base = base;
+-       mapping->size = bitmap_size << PAGE_SHIFT;
+        mapping->bits = BITS_PER_BYTE * bitmap_size;
++       mapping->size = mapping->bits << PAGE_SHIFT;
+
+        spin_lock_init(&mapping->lock);
+
+--
+1.8.1.3
