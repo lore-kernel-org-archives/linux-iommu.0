@@ -1,13 +1,16 @@
-From: Ritesh Harjani <ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH] arm: dma-mapping: Fix mapping size value
-Date: Sat, 19 Apr 2014 16:55:30 +0530
-Message-ID: <CAD15agbgOhK2b4WaWM4g45iiT7yH8HPYu=GmsOs7BkCnVvjcsw@mail.gmail.com>
-References: <CAD15aga8DTuzYrPfHF3X=ZvCuCQxfx1nOTk90DdwdxeZvV5tdA@mail.gmail.com>
+From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 2/8] Consolidate all .h lines at front of intel-iommu.c
+	file
+Date: Sat, 19 Apr 2014 22:05:27 +0800
+Message-ID: <20140419140444.GA1565@dhcp-17-102.nay.redhat.com>
+References: <1397603349-30930-1-git-send-email-bill.sumner@hp.com>
+	<1397603349-30930-3-git-send-email-bill.sumner@hp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAD15aga8DTuzYrPfHF3X=ZvCuCQxfx1nOTk90DdwdxeZvV5tdA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1397603349-30930-3-git-send-email-bill.sumner-VXdhtT5mjnY@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,127 +20,153 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Russell King <rmk-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
+To: Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, zhenhua-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-In explaining the issue below, made a mistake of taking PAGE_SIZE
-instead of PAGE_SHIFT (mistake mentioned inline).
-Although numerical values and patch is correct.
+Hi Bill,
+
+Could you rebase on latest linus's kernel tree, since there are several
+changes in intel-iommu.c. This patch can't be applied because of below
+commits. I think patch need be reabsed on latest linus's tree before
+post, people will apply your patch without conflict.
+
+commit b94e4117f8c4ffb591b1e462364d725e3a1c63c4
+Author: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Date:   Wed Feb 19 14:07:25 2014 +0800
+
+    iommu/vt-d: Move private structures and variables into intel-iommu.c
+    
+    Move private structures and variables into intel-iommu.c, which will
+    help to simplify locking policy for hotplug. Also delete redundant
+    declarations.
+    
+    Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+    Signed-off-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 
 
-On Sat, Apr 19, 2014 at 4:49 PM, Ritesh Harjani
-<ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-> I am finding an oops after following commit. I am on 3.10.30 kernel but applied
-> all the latest patches from arch/arm/mm/dma-mapping.c
->
-> I added some debug logs to see what is the error, on which I found that we are
-> incorrectly setting mapping->size value.
-> Please take a look at this and correct me if I am wrong here.
->
-> FAULTY COMMIT:
-> commit 68efd7d2fb32c2606f1da318b6a851
-> d933813f27
-> Author: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> Date:   Tue Feb 25 13:01:09 2014 +0100
->
->     arm: dma-mapping: remove order parameter from arm_iommu_create_mapping()
->
->
-> OOPS LOGS:
-> [26.898145] __alloc_iova#LINE: 1097 start = 0x3500
-> [26.898159] __alloc_iova#LINE:1136 iova = 0x53500000
-> [26.898170] __alloc_iova#LINE:1138 mapping->base= 0x50000000
-> [26.898181] __alloc_iova#LINE:1140 mapping->size = 0x1000000, i = 0
-> [26.924442] __free_iova, bitmap_index = 3
->
-> [Ritesh]: bitmap_index should be 0 for address 0x53500000. see in alloc_iova
-> above.
->
-> [26.924454] __free_iova,addr = 0x53500000
-> [26.924463] __free_iova,mapping->base = 0x50000000
-> [26.924472] __free_iova,mapping->size = 0x1000000
-> [26.924482] __free_iova,bitmap_base = 0x53000000
-> [26.924490] __free_iova, start = 0x500
->
-> [Ritesh]: start should be 0x3500 for address 0x53500000. see in alloc_iova
-> above.
->
-> [26.924533] Unable to handle kernel NULL pointer dereference at virtual
-> address 000000a0
-> [26.924543] pgd = e7a84000
-> [26.924558] [000000a0] *pgd=00000000
-> [26.924572] Internal error: Oops: 5 [#1] PREEMPT SMP ARM
-> [26.924598] Modules linked in:
-> [26.924613] CPU: 1 PID: 2263 Comm: BufferLiberator Not tainted 3.10.30+
-> #144
-> [26.924624] task: e7370a40 ti: e6e06000 task.ti: e6e06000
-> [26.924644] PC is at bitmap_clear+0x48/0xd0
-> [26.924659] LR is at __iommu_remove_mapping+0x130/0x164
-> [26.924673] pc : [<c02d0814>]    lr : [<c001bd30>]    psr: 20000093
-> [26.924673] sp : e6e07e20  ip : ffffffff  fp : e6e07e3c
-> [26.924682] r10: 00000500  r9 : c1333ea8  r8 : 80000013
-> [26.924692] r7 : ffffffff  r6 : 00000321  r5 : 000000a0  r4 : 00000028
-> [26.924707] r3 : 00000000  r2 : 00000341  r1 : 00000500  r0 : 00000000
-> [26.924730] Flags: nzCv  IRQs off  FIQs on  Mode SVC_32  ISA ARM  Segment
-> user
-> [26.924742] Control: 10c5387d  Table: 77a8406a  DAC: 00000015
->
->
-> See below on how this is wrong:
->
-> here iova_base = 0x50000000
-> iova_size = 0x20000000
-> => bits needed to map = 131072.
->         => bitmap_size = 0x4000
->         since bitmap_size > PAGE_SIZE
->         => bitmap_size = PAGE_SIZE,  extensions = 4;
->
-> Now, mapping->size is currently set as bitmap_size << PAGE_SHIFT.
->         =>mapping->size = 0x1000000.
-> mapping->size is the IOVA size, which one bitmap can address.
->
-> Now mapping->size * extensions should be size (0x20000000).
-> which is not true, => our bitmap_size is set wrong.
->
-> it should be (mapping->bits << PAGE_SIZE) or say
+Thanks
+Baoquan
 
-It should be PAGE_SHIFT here.
-> (BITS_PER_BYTE * bitmap_size << PAGE_SIZE)
-
-It should be PAGE_SHIFT here.
-
->         => (8 * 0x1000) << 12) = 0x8000000
-> With this IOVA_SIZE = extensions * mapping->size = 0x20000000
->
->
->
-> PATCH:
->
-> Currently mapping->size is wrongly set resulting
-> in OOPS (atleast we see OOPS with extension 4).
->
-> Fix this.
->
-> Signed-off-by: Ritesh Harjani <ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+On 04/15/14 at 05:09pm, Bill Sumner wrote:
+>  In intel-iommu.c, move downward the few lines near the
+>  front that should not move to an intel-iommu-private.h
+>  file (mostly data-item definitions) This leaves a
+>  consolidated block of the lines that would move to an
+>  intel-iommu-private.h file at the front of the file.
+> 
+> 
+> Signed-off-by: Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
 > ---
->  arch/arm/mm/dma-mapping.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-> index f62aa06..d1701a2 100644
-> --- a/arch/arm/mm/dma-mapping.c
-> +++ b/arch/arm/mm/dma-mapping.c
-> @@ -1963,8 +1963,8 @@ arm_iommu_create_mapping(struct bus_type *bus,
-> dma_addr_t base, size_t size)
->         mapping->nr_bitmaps = 1;
->         mapping->extensions = extensions;
->         mapping->base = base;
-> -       mapping->size = bitmap_size << PAGE_SHIFT;
->         mapping->bits = BITS_PER_BYTE * bitmap_size;
-> +       mapping->size = mapping->bits << PAGE_SHIFT;
->
->         spin_lock_init(&mapping->lock);
->
-> --
-> 1.8.1.3
+>  drivers/iommu/intel-iommu.c | 74 +++++++++++++++++++++++----------------------
+>  1 file changed, 38 insertions(+), 36 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 8abcb6c..22298e9 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -165,17 +165,6 @@ static inline unsigned long virt_to_dma_pfn(void *p)
+>  	return page_to_dma_pfn(virt_to_page(p));
+>  }
+>  
+> -/* global iommu list, set NULL for ignored DMAR units */
+> -static struct intel_iommu **g_iommus;
+> -
+> -static void __init check_tylersburg_isoch(void);
+> -static int rwbf_quirk;
+> -
+> -/*
+> - * set to 1 to panic kernel if can't successfully enable VT-d
+> - * (used when kernel is launched w/ TXT)
+> - */
+> -static int force_on;
+>  
+>  /*
+>   * 0: Present
+> @@ -314,15 +303,6 @@ static inline int first_pte_in_page(struct dma_pte *pte)
+>  	return !((unsigned long)pte & ~VTD_PAGE_MASK);
+>  }
+>  
+> -/*
+> - * This domain is a statically identity mapping domain.
+> - *	1. This domain creats a static 1:1 mapping to all usable memory.
+> - *	2. It maps to each iommu if successful.
+> - *	3. Each iommu mapps to this domain if successful.
+> - */
+> -static struct dmar_domain *si_domain;
+> -static int hw_pass_through = 1;
+> -
+>  /* devices under the same p2p bridge are owned in one domain */
+>  #define DOMAIN_FLAG_P2P_MULTIPLE_DEVICES (1 << 0)
+>  
+> @@ -380,6 +360,44 @@ struct device_domain_info {
+>  	struct dmar_domain *domain; /* pointer to domain */
+>  };
+>  
+> +static inline void *alloc_pgtable_page(int node)
+> +{
+> +	struct page *page;
+> +	void *vaddr = NULL;
+> +
+> +	page = alloc_pages_node(node, GFP_ATOMIC | __GFP_ZERO, 0);
+> +	if (page)
+> +		vaddr = page_address(page);
+> +	return vaddr;
+> +}
+> +
+> +static inline void free_pgtable_page(void *vaddr)
+> +{
+> +	free_page((unsigned long)vaddr);
+> +}
+> +
+> +
+> +static void __init check_tylersburg_isoch(void);
+> +
+> +/* global iommu list, set NULL for ignored DMAR units */
+> +static struct intel_iommu **g_iommus;
+> +static int rwbf_quirk;
+> +
+> +/*
+> + * set to 1 to panic kernel if can't successfully enable VT-d
+> + * (used when kernel is launched w/ TXT)
+> + */
+> +static int force_on;
+> +
+> +/*
+> + * This domain is a statically identity mapping domain.
+> + *	1. This domain creats a static 1:1 mapping to all usable memory.
+> + *	2. It maps to each iommu if successful.
+> + *	3. Each iommu mapps to this domain if successful.
+> + */
+> +static struct dmar_domain *si_domain;
+> +static int hw_pass_through = 1;
+> +
+>  static void flush_unmaps_timeout(unsigned long data);
+>  
+>  static DEFINE_TIMER(unmap_timer,  flush_unmaps_timeout, 0, 0);
+> @@ -468,22 +486,6 @@ static struct kmem_cache *iommu_domain_cache;
+>  static struct kmem_cache *iommu_devinfo_cache;
+>  static struct kmem_cache *iommu_iova_cache;
+>  
+> -static inline void *alloc_pgtable_page(int node)
+> -{
+> -	struct page *page;
+> -	void *vaddr = NULL;
+> -
+> -	page = alloc_pages_node(node, GFP_ATOMIC | __GFP_ZERO, 0);
+> -	if (page)
+> -		vaddr = page_address(page);
+> -	return vaddr;
+> -}
+> -
+> -static inline void free_pgtable_page(void *vaddr)
+> -{
+> -	free_page((unsigned long)vaddr);
+> -}
+> -
+>  static inline void *alloc_domain_mem(void)
+>  {
+>  	return kmem_cache_alloc(iommu_domain_cache, GFP_ATOMIC);
+> -- 
+> Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
+> 
