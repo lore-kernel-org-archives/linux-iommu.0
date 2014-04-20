@@ -1,16 +1,10 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 2/8] Consolidate all .h lines at front of intel-iommu.c
-	file
-Date: Sat, 19 Apr 2014 22:05:27 +0800
-Message-ID: <20140419140444.GA1565@dhcp-17-102.nay.redhat.com>
-References: <1397603349-30930-1-git-send-email-bill.sumner@hp.com>
-	<1397603349-30930-3-git-send-email-bill.sumner@hp.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [git pull] IOMMU Fixes for Linux v3.15-rc1
+Date: Sun, 20 Apr 2014 11:45:37 +0200
+Message-ID: <20140420094535.GA3237@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============9187262027993184749=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1397603349-30930-3-git-send-email-bill.sumner-VXdhtT5mjnY@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,153 +14,105 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, zhenhua-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Bill,
 
-Could you rebase on latest linus's kernel tree, since there are several
-changes in intel-iommu.c. This patch can't be applied because of below
-commits. I think patch need be reabsed on latest linus's tree before
-post, people will apply your patch without conflict.
-
-commit b94e4117f8c4ffb591b1e462364d725e3a1c63c4
-Author: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Date:   Wed Feb 19 14:07:25 2014 +0800
-
-    iommu/vt-d: Move private structures and variables into intel-iommu.c
-    
-    Move private structures and variables into intel-iommu.c, which will
-    help to simplify locking policy for hotplug. Also delete redundant
-    declarations.
-    
-    Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-    Signed-off-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+--===============9187262027993184749==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="OXfL5xGRrasGEqWY"
+Content-Disposition: inline
 
 
-Thanks
-Baoquan
+--OXfL5xGRrasGEqWY
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On 04/15/14 at 05:09pm, Bill Sumner wrote:
->  In intel-iommu.c, move downward the few lines near the
->  front that should not move to an intel-iommu-private.h
->  file (mostly data-item definitions) This leaves a
->  consolidated block of the lines that would move to an
->  intel-iommu-private.h file at the front of the file.
-> 
-> 
-> Signed-off-by: Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
-> ---
->  drivers/iommu/intel-iommu.c | 74 +++++++++++++++++++++++----------------------
->  1 file changed, 38 insertions(+), 36 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 8abcb6c..22298e9 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -165,17 +165,6 @@ static inline unsigned long virt_to_dma_pfn(void *p)
->  	return page_to_dma_pfn(virt_to_page(p));
->  }
->  
-> -/* global iommu list, set NULL for ignored DMAR units */
-> -static struct intel_iommu **g_iommus;
-> -
-> -static void __init check_tylersburg_isoch(void);
-> -static int rwbf_quirk;
-> -
-> -/*
-> - * set to 1 to panic kernel if can't successfully enable VT-d
-> - * (used when kernel is launched w/ TXT)
-> - */
-> -static int force_on;
->  
->  /*
->   * 0: Present
-> @@ -314,15 +303,6 @@ static inline int first_pte_in_page(struct dma_pte *pte)
->  	return !((unsigned long)pte & ~VTD_PAGE_MASK);
->  }
->  
-> -/*
-> - * This domain is a statically identity mapping domain.
-> - *	1. This domain creats a static 1:1 mapping to all usable memory.
-> - *	2. It maps to each iommu if successful.
-> - *	3. Each iommu mapps to this domain if successful.
-> - */
-> -static struct dmar_domain *si_domain;
-> -static int hw_pass_through = 1;
-> -
->  /* devices under the same p2p bridge are owned in one domain */
->  #define DOMAIN_FLAG_P2P_MULTIPLE_DEVICES (1 << 0)
->  
-> @@ -380,6 +360,44 @@ struct device_domain_info {
->  	struct dmar_domain *domain; /* pointer to domain */
->  };
->  
-> +static inline void *alloc_pgtable_page(int node)
-> +{
-> +	struct page *page;
-> +	void *vaddr = NULL;
-> +
-> +	page = alloc_pages_node(node, GFP_ATOMIC | __GFP_ZERO, 0);
-> +	if (page)
-> +		vaddr = page_address(page);
-> +	return vaddr;
-> +}
-> +
-> +static inline void free_pgtable_page(void *vaddr)
-> +{
-> +	free_page((unsigned long)vaddr);
-> +}
-> +
-> +
-> +static void __init check_tylersburg_isoch(void);
-> +
-> +/* global iommu list, set NULL for ignored DMAR units */
-> +static struct intel_iommu **g_iommus;
-> +static int rwbf_quirk;
-> +
-> +/*
-> + * set to 1 to panic kernel if can't successfully enable VT-d
-> + * (used when kernel is launched w/ TXT)
-> + */
-> +static int force_on;
-> +
-> +/*
-> + * This domain is a statically identity mapping domain.
-> + *	1. This domain creats a static 1:1 mapping to all usable memory.
-> + *	2. It maps to each iommu if successful.
-> + *	3. Each iommu mapps to this domain if successful.
-> + */
-> +static struct dmar_domain *si_domain;
-> +static int hw_pass_through = 1;
-> +
->  static void flush_unmaps_timeout(unsigned long data);
->  
->  static DEFINE_TIMER(unmap_timer,  flush_unmaps_timeout, 0, 0);
-> @@ -468,22 +486,6 @@ static struct kmem_cache *iommu_domain_cache;
->  static struct kmem_cache *iommu_devinfo_cache;
->  static struct kmem_cache *iommu_iova_cache;
->  
-> -static inline void *alloc_pgtable_page(int node)
-> -{
-> -	struct page *page;
-> -	void *vaddr = NULL;
-> -
-> -	page = alloc_pages_node(node, GFP_ATOMIC | __GFP_ZERO, 0);
-> -	if (page)
-> -		vaddr = page_address(page);
-> -	return vaddr;
-> -}
-> -
-> -static inline void free_pgtable_page(void *vaddr)
-> -{
-> -	free_page((unsigned long)vaddr);
-> -}
-> -
->  static inline void *alloc_domain_mem(void)
->  {
->  	return kmem_cache_alloc(iommu_domain_cache, GFP_ATOMIC);
-> -- 
-> Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
-> 
+Hi Linus,
+
+The following changes since commit c9eaa447e77efe77b7fa4c953bd62de8297fd6c5:
+
+  Linux 3.15-rc1 (2014-04-13 14:18:35 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v3.15-rc1
+
+for you to fetch changes up to 3426cb3d3578eab55ec231e0ce4dfc12ec3abc1f:
+
+  Merge git://git.infradead.org/iommu-2.6 into iommu/fixes (2014-04-16 16:09:40 +0200)
+
+----------------------------------------------------------------
+
+IOMMU Fixes for Linux v3.15-rc1
+
+Fixes for regressions:
+
+	* Fix wrong IOMMU enumeration causing some SCSI device drivers
+	  initialization failures
+	* ARM-SMMU fixes for a panic condition and a wrong return value.
+
+----------------------------------------------------------------
+Bin Wang (1):
+      iommu/arm-smmu: fix panic in arm_smmu_alloc_init_pte
+
+David Woodhouse (1):
+      iommu/vt-d: Fix get_domain_for_dev() handling of upstream PCIe bridges
+
+Jiang Liu (2):
+      iommu/vt-d: fix memory leakage caused by commit ea8ea46
+      iommu/vt-d: fix bug in matching PCI devices with DRHD/RMRR descriptors
+
+Joerg Roedel (1):
+      Merge git://git.infradead.org/iommu-2.6 into iommu/fixes
+
+Laurent Pinchart (1):
+      iommu/arm-smmu: Return 0 on unmap failure
+
+ drivers/iommu/arm-smmu.c    |    4 ++--
+ drivers/iommu/dmar.c        |    3 ++-
+ drivers/iommu/intel-iommu.c |   10 +++++++---
+ 3 files changed, 11 insertions(+), 6 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+
+--OXfL5xGRrasGEqWY
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+
+iQIcBAEBAgAGBQJTU5c/AAoJECvwRC2XARrjXXYP/jYyncsBx46WjWXWd6Qa+hqt
+Iv4Gr8ciZROJv97o8funMev41kmkUT48Air8fHbcxA7LQJC9DmXv7EOJlO8Pqo2M
+5yIMc9MvqUx8/EHLIem7xk6APJWksvRWhPwR8KYd7KO9vROd6SKUD4VRwPQuMP8S
+U15S6b+Ybu/XlK34WL8vneiT1C7jY8qU0fDfd/da0EnprBOum8r5aMVd6KaYXrFW
+xVscU9SzXhCtVW9+Vl0ZpvJtTy75atMFtFcB/PTQJk9qXzVuQrBizr9luqJjy3vp
+ewB5JK3VKNdvXlIjTjgBe2puDjUPOHlQDwiZEh8gIZSJ4Eze5bSCPb/Oqym/hJsJ
+3eS+HWg6XGc1kR6OYbvOGudXULGwvk/vQkQvDtG/LbGWcANmrRZvKrsbjGugqzF+
+uLod5I5KUxzkLYT1Z0ZTyTgvN6zvvkif67uZYzZd7bTX6zneUMShhbX58BmartYY
+QfYK6shuNtC0yQW3WEahYVXKvJDjkfSRycuf199OuAYq0pycTc9zKAAhh/ckhTs6
+SI4D8QqmMBceP9aTiRQmADHvM+oazNTQ3wQJLqkUaFqI56SJupko6CWnMDku9bPF
+xiVDCTF1mljcSa+hjPXUtSfS8PfAaghupRO62FComQDMPVv8CoVahJ3ddgzEtWaO
+flURoUOqhjiRHm0RR6nB
+=SRpi
+-----END PGP SIGNATURE-----
+
+--OXfL5xGRrasGEqWY--
+
+
+
+--===============9187262027993184749==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============9187262027993184749==--
