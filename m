@@ -1,256 +1,98 @@
-From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 9/9] iommu/ipmmu-vmsa: Support clearing mappings
-Date: Mon, 21 Apr 2014 16:13:09 +0200
-Message-ID: <1398089589-9181-10-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: [PATCH 4/9] iommu/ipmmu-vmsa: Set the PTE contiguous hint bit when
+	possible
+Date: Mon, 21 Apr 2014 16:13:04 +0200
+Message-ID: <1398089589-9181-5-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1398089589-9181-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1398089589-9181-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: linux-sh@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Will Deacon <will.deacon@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1398089589-9181-1-git-send-email-laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+The contiguous hint bit signals to the IOMMU that a range of 16 PTEs
+refer to physically contiguous memory. It improves performances by
+dividing the number of TLB lookups by 16, effectively implementing 64kB
+page sizes.
+
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 ---
- drivers/iommu/ipmmu-vmsa.c | 190 ++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 186 insertions(+), 4 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c | 43 ++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 40 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 711e5c4..de6461d 100644
+index 7c8c21e..1ce2115 100644
 --- a/drivers/iommu/ipmmu-vmsa.c
 +++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -193,14 +193,22 @@ static LIST_HEAD(ipmmu_devices);
- #define ARM_VMSA_PTE_SH_NS		(((pteval_t)0) << 8)
- #define ARM_VMSA_PTE_SH_OS		(((pteval_t)2) << 8)
- #define ARM_VMSA_PTE_SH_IS		(((pteval_t)3) << 8)
-+#define ARM_VMSA_PTE_SH_MASK		(((pteval_t)3) << 8)
- #define ARM_VMSA_PTE_NS			(((pteval_t)1) << 5)
- #define ARM_VMSA_PTE_PAGE		(((pteval_t)3) << 0)
+@@ -210,6 +210,9 @@ static LIST_HEAD(ipmmu_devices);
+ #define ARM_VMSA_PTE_MEMATTR_NC		(((pteval_t)0x5) << 2)
+ #define ARM_VMSA_PTE_MEMATTR_DEV	(((pteval_t)0x1) << 2)
  
- /* Stage-1 PTE */
-+#define ARM_VMSA_PTE_nG			(((pteval_t)1) << 11)
- #define ARM_VMSA_PTE_AP_UNPRIV		(((pteval_t)1) << 6)
- #define ARM_VMSA_PTE_AP_RDONLY		(((pteval_t)2) << 6)
-+#define ARM_VMSA_PTE_AP_MASK		(((pteval_t)3) << 6)
-+#define ARM_VMSA_PTE_ATTRINDX_MASK	(((pteval_t)3) << 2)
- #define ARM_VMSA_PTE_ATTRINDX_SHIFT	2
--#define ARM_VMSA_PTE_nG			(((pteval_t)1) << 11)
++#define ARM_VMSA_PTE_CONT_ENTRIES	16
++#define ARM_VMSA_PTE_CONT_SIZE		(PAGE_SIZE * ARM_VMSA_PTE_CONT_ENTRIES)
 +
-+#define ARM_VMSA_PTE_ATTRS_MASK \
-+	(ARM_VMSA_PTE_XN | ARM_VMSA_PTE_CONT | ARM_VMSA_PTE_nG | \
-+	 ARM_VMSA_PTE_AF | ARM_VMSA_PTE_SH_MASK | ARM_VMSA_PTE_AP_MASK | \
-+	 ARM_VMSA_PTE_NS | ARM_VMSA_PTE_ATTRINDX_MASK)
+ #define IPMMU_PTRS_PER_PTE		512
+ #define IPMMU_PTRS_PER_PMD		512
+ #define IPMMU_PTRS_PER_PGD		4
+@@ -569,10 +572,44 @@ static int ipmmu_alloc_init_pte(struct ipmmu_vmsa_device *mmu, pmd_t *pmd,
+ 	pteval |= ARM_VMSA_PTE_SH_IS;
+ 	start = pte;
  
- #define ARM_VMSA_PTE_CONT_ENTRIES	16
- #define ARM_VMSA_PTE_CONT_SIZE		(PAGE_SIZE * ARM_VMSA_PTE_CONT_ENTRIES)
-@@ -615,7 +623,7 @@ static int ipmmu_alloc_init_pmd(struct ipmmu_vmsa_device *mmu, pmd_t *pmd,
- 	return 0;
- }
- 
--static int ipmmu_handle_mapping(struct ipmmu_vmsa_domain *domain,
-+static int ipmmu_create_mapping(struct ipmmu_vmsa_domain *domain,
- 				unsigned long iova, phys_addr_t paddr,
- 				size_t size, int prot)
- {
-@@ -669,6 +677,180 @@ done:
- 	return ret;
- }
- 
-+static void ipmmu_clear_pud(struct ipmmu_vmsa_device *mmu, pud_t *pud)
-+{
-+	/* Free the page table. */
-+	pgtable_t table = pud_pgtable(*pud);
-+	__free_page(table);
-+
-+	/* Clear the PUD. */
-+	*pud = __pud(0);
-+	ipmmu_flush_pgtable(mmu, pud, sizeof(*pud));
-+}
-+
-+static void ipmmu_clear_pmd(struct ipmmu_vmsa_device *mmu, pud_t *pud,
-+			    pmd_t *pmd)
-+{
-+	unsigned int i;
-+
-+	/* Free the page table. */
-+	if (pmd_table(*pmd)) {
-+		pgtable_t table = pmd_pgtable(*pmd);
-+		__free_page(table);
-+	}
-+
-+	/* Clear the PMD. */
-+	*pmd = __pmd(0);
-+	ipmmu_flush_pgtable(mmu, pmd, sizeof(*pmd));
-+
-+	/* Check whether the PUD is still needed. */
-+	pmd = pmd_offset(pud, 0);
-+	for (i = 0; i < IPMMU_PTRS_PER_PMD; ++i) {
-+		if (!pmd_none(pmd[i]))
-+			return;
-+	}
-+
-+	/* Clear the parent PUD. */
-+	ipmmu_clear_pud(mmu, pud);
-+}
-+
-+static void ipmmu_clear_pte(struct ipmmu_vmsa_device *mmu, pud_t *pud,
-+			    pmd_t *pmd, pte_t *pte, unsigned int num_ptes)
-+{
-+	unsigned int i;
-+
-+	/* Clear the PTE. */
-+	for (i = num_ptes; i; --i)
-+		pte[i-1] = __pte(0);
-+
-+	ipmmu_flush_pgtable(mmu, pte, sizeof(*pte) * num_ptes);
-+
-+	/* Check whether the PMD is still needed. */
-+	pte = pte_offset_kernel(pmd, 0);
-+	for (i = 0; i < IPMMU_PTRS_PER_PTE; ++i) {
-+		if (!pte_none(pte[i]))
-+			return;
-+	}
-+
-+	/* Clear the parent PMD. */
-+	ipmmu_clear_pmd(mmu, pud, pmd);
-+}
-+
-+static int ipmmu_split_pmd(struct ipmmu_vmsa_device *mmu, pmd_t *pmd)
-+{
-+	pte_t *pte, *start;
-+	pteval_t pteval;
-+	unsigned long pfn;
-+	unsigned int i;
-+
-+	pte = (pte_t *)get_zeroed_page(GFP_ATOMIC);
-+	if (!pte)
-+		return -ENOMEM;
-+
-+	/* Copy the PMD attributes. */
-+	pteval = (pmd_val(*pmd) & ARM_VMSA_PTE_ATTRS_MASK)
-+	       | ARM_VMSA_PTE_CONT | ARM_VMSA_PTE_PAGE;
-+
-+	pfn = pmd_pfn(*pmd);
-+	start = pte;
-+
-+	for (i = IPMMU_PTRS_PER_PTE; i; --i)
-+		*pte++ = pfn_pte(pfn++, __pgprot(pteval));
-+
-+	ipmmu_flush_pgtable(mmu, start, PAGE_SIZE);
-+	*pmd = __pmd(__pa(start) | PMD_NSTABLE | PMD_TYPE_TABLE);
-+	ipmmu_flush_pgtable(mmu, pmd, sizeof(*pmd));
-+
-+	return 0;
-+}
-+
-+static void ipmmu_split_pte(struct ipmmu_vmsa_device *mmu, pte_t *pte)
-+{
-+	unsigned int i;
-+
-+	for (i = ARM_VMSA_PTE_CONT_ENTRIES; i; --i)
-+		pte[i-1] = __pte(pte_val(*pte) & ~ARM_VMSA_PTE_CONT);
-+
-+	ipmmu_flush_pgtable(mmu, pte, sizeof(*pte) * ARM_VMSA_PTE_CONT_ENTRIES);
-+}
-+
-+static int ipmmu_clear_mapping(struct ipmmu_vmsa_domain *domain,
-+			       unsigned long iova, size_t size)
-+{
-+	struct ipmmu_vmsa_device *mmu = domain->mmu;
-+	unsigned long flags;
-+	pgd_t *pgd = domain->pgd;
-+	pud_t *pud;
-+	pmd_t *pmd;
-+	pte_t *pte;
-+	int ret = 0;
-+
-+	if (!pgd)
-+		return -EINVAL;
-+
-+	if (size & ~PAGE_MASK)
-+		return -EINVAL;
-+
-+	pgd += pgd_index(iova);
-+	pud = (pud_t *)pgd;
-+
-+	spin_lock_irqsave(&domain->lock, flags);
-+
-+	/* If there's no PUD or PMD we're done. */
-+	if (pud_none(*pud))
-+		goto done;
-+
-+	pmd = pmd_offset(pud, iova);
-+	if (pmd_none(*pmd))
-+		goto done;
-+
+-	/* Install the page table entries. */
 +	/*
-+	 * When freeing a 2MB block just clear the PMD. In the unlikely case the
-+	 * block is mapped as individual pages this will free the corresponding
-+	 * PTE page table.
++	 * Install the page table entries.
++	 *
++	 * Set the contiguous hint in the PTEs where possible. The hint
++	 * indicates a series of ARM_VMSA_PTE_CONT_ENTRIES PTEs mapping a
++	 * physically contiguous region with the following constraints:
++	 *
++	 * - The region start is aligned to ARM_VMSA_PTE_CONT_SIZE
++	 * - Each PTE in the region has the contiguous hint bit set
++	 *
++	 * We don't support partial unmapping so there's no need to care about
++	 * clearing the contiguous hint from neighbour PTEs.
 +	 */
-+	if (size == SZ_2M) {
-+		ipmmu_clear_pmd(mmu, pud, pmd);
-+		goto done;
-+	}
+ 	do {
+-		*pte++ = pfn_pte(pfn++, __pgprot(pteval));
+-		addr += PAGE_SIZE;
++		unsigned long chunk_end;
 +
-+	/*
-+	 * If the PMD has been mapped as a section remap it as pages to allow
-+	 * freeing individual pages.
-+	 */
-+	if (pmd_sect(*pmd))
-+		ipmmu_split_pmd(mmu, pmd);
++		/*
++		 * If the address is aligned to a contiguous region size and the
++		 * mapping size is large enough, process the largest possible
++		 * number of PTEs multiple of ARM_VMSA_PTE_CONT_ENTRIES.
++		 * Otherwise process the smallest number of PTEs to align the
++		 * address to a contiguous region size or to complete the
++		 * mapping.
++		 */
++		if (IS_ALIGNED(addr, ARM_VMSA_PTE_CONT_SIZE) &&
++		    end - addr >= ARM_VMSA_PTE_CONT_SIZE) {
++			chunk_end = round_down(end, ARM_VMSA_PTE_CONT_SIZE);
++			pteval |= ARM_VMSA_PTE_CONT;
++		} else {
++			chunk_end = min(ALIGN(addr, ARM_VMSA_PTE_CONT_SIZE),
++					end);
++			pteval &= ~ARM_VMSA_PTE_CONT;
++		}
 +
-+	pte = pte_offset_kernel(pmd, iova);
-+
-+	/*
-+	 * When freeing a 64kB block just clear the PTE entries. We don't have
-+	 * to care about the contiguous hint of the surrounding entries.
-+	 */
-+	if (size == SZ_64K) {
-+		ipmmu_clear_pte(mmu, pud, pmd, pte, ARM_VMSA_PTE_CONT_ENTRIES);
-+		goto done;
-+	}
-+
-+	/*
-+	 * If the PTE has been mapped with the contiguous hint set remap it and
-+	 * its surrounding PTEs to allow unmapping a single page.
-+	 */
-+	if (pte_val(*pte) & ARM_VMSA_PTE_CONT)
-+		ipmmu_split_pte(mmu, pte);
-+
-+	/* Clear the PTE. */
-+	ipmmu_clear_pte(mmu, pud, pmd, pte, 1);
-+
-+done:
-+	spin_unlock_irqrestore(&domain->lock, flags);
-+
-+	if (ret)
-+		ipmmu_tlb_invalidate(domain);
-+
-+	return 0;
-+}
-+
- /* -----------------------------------------------------------------------------
-  * IOMMU Operations
-  */
-@@ -769,7 +951,7 @@ static int ipmmu_map(struct iommu_domain *io_domain, unsigned long iova,
- 	if (!domain)
- 		return -ENODEV;
++		do {
++			*pte++ = pfn_pte(pfn++, __pgprot(pteval));
++			addr += PAGE_SIZE;
++		} while (addr != chunk_end);
+ 	} while (addr != end);
  
--	return ipmmu_handle_mapping(domain, iova, paddr, size, prot);
-+	return ipmmu_create_mapping(domain, iova, paddr, size, prot);
- }
- 
- static size_t ipmmu_unmap(struct iommu_domain *io_domain, unsigned long iova,
-@@ -778,7 +960,7 @@ static size_t ipmmu_unmap(struct iommu_domain *io_domain, unsigned long iova,
- 	struct ipmmu_vmsa_domain *domain = io_domain->priv;
- 	int ret;
- 
--	ret = ipmmu_handle_mapping(domain, iova, 0, size, 0);
-+	ret = ipmmu_clear_mapping(domain, iova, size);
- 	return ret ? 0 : size;
- }
- 
+ 	ipmmu_flush_pgtable(mmu, start, sizeof(*pte) * (pte - start));
 -- 
 1.8.3.2
-
