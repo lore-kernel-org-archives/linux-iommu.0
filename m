@@ -1,8 +1,8 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part3 V1 06/22] iommu/vt-d: fix possible invalid memory access
-	caused by free_dmar_iommu()
-Date: Tue, 22 Apr 2014 15:07:17 +0800
-Message-ID: <1398150453-28141-7-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part3 V1 07/22] iommu/vt-d: avoid freeing virtual machine
+	domain in free_dmar_iommu()
+Date: Tue, 22 Apr 2014 15:07:18 +0800
+Message-ID: <1398150453-28141-8-git-send-email-jiang.liu@linux.intel.com>
 References: <1398150453-28141-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,50 +22,29 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse
 Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Static identity and virtual machine domains may be cached in
-iommu->domain_ids array after corresponding IOMMUs have been removed
-from domain->iommu_bmp. So we should check domain->iommu_bmp before
-decreasing domain->iommu_count in function free_dmar_iommu(), otherwise
-it may cause free of inuse domain data structure.
+Virtual machine domains are created by intel_iommu_domain_init() and
+should be destroyed by intel_iommu_domain_destroy(). So avoid freeing
+virtual machine domain data structure in free_dmar_iommu() when
+doamin->iommu_count reaches zero, otherwise it may cause invalid
+memory access because the IOMMU framework still holds references
+to the domain structure.
 
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c |   11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+ drivers/iommu/intel-iommu.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 0ab0cd236b16..1f10fcd1c696 100644
+index 1f10fcd1c696..5e865c1265ad 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -425,6 +425,8 @@ static void domain_remove_one_dev_info(struct dmar_domain *domain,
- 				       struct device *dev);
- static void iommu_detach_dependent_devices(struct intel_iommu *iommu,
- 					   struct device *dev);
-+static int domain_detach_iommu(struct dmar_domain *domain,
-+			       struct intel_iommu *iommu);
- 
- #ifdef CONFIG_INTEL_IOMMU_DEFAULT_ON
- int dmar_disabled = 0;
-@@ -1467,8 +1469,7 @@ static int iommu_init_domains(struct intel_iommu *iommu)
- static void free_dmar_iommu(struct intel_iommu *iommu)
- {
- 	struct dmar_domain *domain;
--	int i, count;
--	unsigned long flags;
-+	int i;
- 
- 	if ((iommu->domains) && (iommu->domain_ids)) {
- 		for_each_set_bit(i, iommu->domain_ids, cap_ndoms(iommu->cap)) {
-@@ -1481,11 +1482,7 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
+@@ -1482,7 +1482,8 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
  
  			domain = iommu->domains[i];
  			clear_bit(i, iommu->domain_ids);
--
--			spin_lock_irqsave(&domain->iommu_lock, flags);
--			count = --domain->iommu_count;
--			spin_unlock_irqrestore(&domain->iommu_lock, flags);
--			if (count == 0)
-+			if (domain_detach_iommu(domain, iommu) == 0)
+-			if (domain_detach_iommu(domain, iommu) == 0)
++			if (domain_detach_iommu(domain, iommu) == 0 &&
++			    !domain_type_is_vm(domain))
  				domain_exit(domain);
  		}
  	}
