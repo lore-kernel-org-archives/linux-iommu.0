@@ -1,8 +1,8 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part3 V1 09/22] iommu/vt-d: change
-	iommu_enable/disable_translation to return void
-Date: Tue, 22 Apr 2014 15:07:20 +0800
-Message-ID: <1398150453-28141-10-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part3 V1 10/22] iommu/vt-d: dynamically allocate and free
+	seq_id for DMAR units
+Date: Tue, 22 Apr 2014 15:07:21 +0800
+Message-ID: <1398150453-28141-11-git-send-email-jiang.liu@linux.intel.com>
 References: <1398150453-28141-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,72 +22,160 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse
 Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Simplify error handling path by changing iommu_{enable|disable}_translation
-to return void.
+Introduce functions to support dynamic IOMMU seq_id allocating and
+releasing, which will be used to support DMAR hotplug.
+
+Also rename IOMMU_UNITS_SUPPORTED as DMAR_UNITS_SUPPORTED.
 
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c |   18 +++++-------------
- 1 file changed, 5 insertions(+), 13 deletions(-)
+ drivers/iommu/dmar.c        |   40 ++++++++++++++++++++++++++++++++++------
+ drivers/iommu/intel-iommu.c |   13 +++----------
+ include/linux/dmar.h        |    6 ++++++
+ 3 files changed, 43 insertions(+), 16 deletions(-)
 
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 39f8b717fe84..3e4168cddc64 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -61,6 +61,7 @@ LIST_HEAD(dmar_drhd_units);
+ struct acpi_table_header * __initdata dmar_tbl;
+ static acpi_size dmar_tbl_size;
+ static int dmar_dev_scope_status = 1;
++static unsigned long dmar_seq_ids[BITS_TO_LONGS(DMAR_UNITS_SUPPORTED)];
+ 
+ static int alloc_iommu(struct dmar_drhd_unit *drhd);
+ static void free_iommu(struct intel_iommu *iommu);
+@@ -914,11 +915,32 @@ out:
+ 	return err;
+ }
+ 
++static int dmar_alloc_seq_id(struct intel_iommu *iommu)
++{
++	iommu->seq_id = find_first_zero_bit(dmar_seq_ids,
++					    DMAR_UNITS_SUPPORTED);
++	if (iommu->seq_id >= DMAR_UNITS_SUPPORTED) {
++		iommu->seq_id = -1;
++	} else {
++		set_bit(iommu->seq_id, dmar_seq_ids);
++		sprintf(iommu->name, "dmar%d", iommu->seq_id);
++	}
++
++	return iommu->seq_id;
++}
++
++static void dmar_free_seq_id(struct intel_iommu *iommu)
++{
++	if (iommu->seq_id >= 0) {
++		clear_bit(iommu->seq_id, dmar_seq_ids);
++		iommu->seq_id = -1;
++	}
++}
++
+ static int alloc_iommu(struct dmar_drhd_unit *drhd)
+ {
+ 	struct intel_iommu *iommu;
+ 	u32 ver, sts;
+-	static int iommu_allocated = 0;
+ 	int agaw = 0;
+ 	int msagaw = 0;
+ 	int err;
+@@ -932,13 +954,16 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
+ 	if (!iommu)
+ 		return -ENOMEM;
+ 
+-	iommu->seq_id = iommu_allocated++;
+-	sprintf (iommu->name, "dmar%d", iommu->seq_id);
++	if (dmar_alloc_seq_id(iommu) < 0) {
++		pr_err("IOMMU: failed to allocate seq_id\n");
++		err = -ENOSPC;
++		goto error;
++	}
+ 
+ 	err = map_iommu(iommu, drhd->reg_base_addr);
+ 	if (err) {
+ 		pr_err("IOMMU: failed to map %s\n", iommu->name);
+-		goto error;
++		goto error_free_seq_id;
+ 	}
+ 
+ 	err = -EINVAL;
+@@ -982,9 +1007,11 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
+ 	drhd->iommu = iommu;
+ 	return 0;
+ 
+- err_unmap:
++err_unmap:
+ 	unmap_iommu(iommu);
+- error:
++error_free_seq_id:
++	dmar_free_seq_id(iommu);
++error:
+ 	kfree(iommu);
+ 	return err;
+ }
+@@ -1006,6 +1033,7 @@ static void free_iommu(struct intel_iommu *iommu)
+ 	if (iommu->reg)
+ 		unmap_iommu(iommu);
+ 
++	dmar_free_seq_id(iommu);
+ 	kfree(iommu);
+ }
+ 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 5e865c1265ad..75d7c5e3f77d 100644
+index 75d7c5e3f77d..92d7b276edb3 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1391,7 +1391,7 @@ static void iommu_disable_protect_mem_regions(struct intel_iommu *iommu)
- 	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
- }
+@@ -328,17 +328,10 @@ static int hw_pass_through = 1;
+ /* si_domain contains mulitple devices */
+ #define DOMAIN_FLAG_STATIC_IDENTITY	(1 << 1)
  
--static int iommu_enable_translation(struct intel_iommu *iommu)
-+static void iommu_enable_translation(struct intel_iommu *iommu)
- {
- 	u32 sts;
- 	unsigned long flags;
-@@ -1405,10 +1405,9 @@ static int iommu_enable_translation(struct intel_iommu *iommu)
- 		      readl, (sts & DMA_GSTS_TES), sts);
- 
- 	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
--	return 0;
- }
- 
--static int iommu_disable_translation(struct intel_iommu *iommu)
-+static void iommu_disable_translation(struct intel_iommu *iommu)
- {
- 	u32 sts;
- 	unsigned long flag;
-@@ -1422,7 +1421,6 @@ static int iommu_disable_translation(struct intel_iommu *iommu)
- 		      readl, (!(sts & DMA_GSTS_TES)), sts);
- 
- 	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
--	return 0;
- }
- 
- 
-@@ -2875,11 +2873,7 @@ static int __init init_dmars(void)
- 
- 		iommu->flush.flush_context(iommu, 0, 0, 0, DMA_CCMD_GLOBAL_INVL);
- 		iommu->flush.flush_iotlb(iommu, 0, 0, 0, DMA_TLB_GLOBAL_FLUSH);
+-/* define the limit of IOMMUs supported in each domain */
+-#ifdef	CONFIG_X86
+-# define	IOMMU_UNITS_SUPPORTED	MAX_IO_APICS
+-#else
+-# define	IOMMU_UNITS_SUPPORTED	64
+-#endif
 -
--		ret = iommu_enable_translation(iommu);
--		if (ret)
--			goto free_iommu;
--
-+		iommu_enable_translation(iommu);
- 		iommu_disable_protect_mem_regions(iommu);
+ struct dmar_domain {
+ 	int	id;			/* domain id */
+ 	int	nid;			/* node id */
+-	DECLARE_BITMAP(iommu_bmp, IOMMU_UNITS_SUPPORTED);
++	DECLARE_BITMAP(iommu_bmp, DMAR_UNITS_SUPPORTED);
+ 					/* bitmap of iommus this domain uses*/
+ 
+ 	struct list_head devices; 	/* all devices' list */
+@@ -2707,12 +2700,12 @@ static int __init init_dmars(void)
+ 		 * threaded kernel __init code path all other access are read
+ 		 * only
+ 		 */
+-		if (g_num_of_iommus < IOMMU_UNITS_SUPPORTED) {
++		if (g_num_of_iommus < DMAR_UNITS_SUPPORTED) {
+ 			g_num_of_iommus++;
+ 			continue;
+ 		}
+ 		printk_once(KERN_ERR "intel-iommu: exceeded %d IOMMUs\n",
+-			  IOMMU_UNITS_SUPPORTED);
++			  DMAR_UNITS_SUPPORTED);
  	}
  
-@@ -3577,10 +3571,8 @@ static int init_iommu_hw(void)
+ 	g_iommus = kcalloc(g_num_of_iommus, sizeof(struct intel_iommu *),
+diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+index 1deece46a0ca..4aa8de0d1b97 100644
+--- a/include/linux/dmar.h
++++ b/include/linux/dmar.h
+@@ -30,6 +30,12 @@
  
- 		iommu->flush.flush_context(iommu, 0, 0, 0,
- 					   DMA_CCMD_GLOBAL_INVL);
--		iommu->flush.flush_iotlb(iommu, 0, 0, 0,
--					 DMA_TLB_GLOBAL_FLUSH);
--		if (iommu_enable_translation(iommu))
--			return 1;
-+		iommu->flush.flush_iotlb(iommu, 0, 0, 0, DMA_TLB_GLOBAL_FLUSH);
-+		iommu_enable_translation(iommu);
- 		iommu_disable_protect_mem_regions(iommu);
- 	}
+ struct acpi_dmar_header;
  
++#ifdef	CONFIG_X86
++# define	DMAR_UNITS_SUPPORTED	MAX_IO_APICS
++#else
++# define	DMAR_UNITS_SUPPORTED	64
++#endif
++
+ /* DMAR Flags */
+ #define DMAR_INTR_REMAP		0x1
+ #define DMAR_X2APIC_OPT_OUT	0x2
 -- 
 1.7.10.4
