@@ -1,36 +1,62 @@
-From: Jiang Liu <jiang.liu@linux.intel.com>
-Subject: Re: [Patch Part3 V1 19/22] iommu/vt-d: simplify intel_unmap_sg()
- and kill duplicated code
-Date: Tue, 22 Apr 2014 15:42:25 +0800
-Message-ID: <53561D61.7030706@linux.intel.com>
-References: <1398150453-28141-1-git-send-email-jiang.liu@linux.intel.com>	 <1398150453-28141-20-git-send-email-jiang.liu@linux.intel.com> <1398152333.723.27.camel@shinybook.infradead.org>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] arm: dma-mapping: Fix mapping size value
+Date: Tue, 22 Apr 2014 09:53:07 +0100
+Message-ID: <20140422085307.GB5747@arm.com>
+References: <1398062847-5770-1-git-send-email-ritesh.harjani@gmail.com>
+	<1398062847-5770-2-git-send-email-ritesh.harjani@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1398152333.723.27.camel@shinybook.infradead.org>
-Sender: linux-pci-owner@vger.kernel.org
-To: David Woodhouse <dwmw2@infradead.org>
-Cc: Joerg Roedel <joro@8bytes.org>, Yinghai Lu <yinghai@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>, Ashok Raj <ashok.raj@intel.com>, Yijing Wang <wangyijing@huawei.com>, Tony Luck <tony.luck@intel.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1398062847-5770-2-git-send-email-ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Ritesh Harjani <ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "mp.vikram-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <mp.vikram-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "menon.vinayak-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <menon.vinayak-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "rmk-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org" <rmk-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2014/4/22 15:38, David Woodhouse wrote:
-> On Tue, 2014-04-22 at 15:07 +0800, Jiang Liu wrote:
->> +       size_t size = 0;
->> +#if 0
->> +       /* current the third argument of intel_unmap_page is unsued */
->> +       int i;
->> +       struct scatterlist *sg;
->>  
->> -       freelist = domain_unmap(domain, start_pfn, last_pfn);
->> +       for_each_sg(sglist, sg, nelems, i)
->> +               size += sg->length;
->> +#endif
+On Mon, Apr 21, 2014 at 07:47:27AM +0100, Ritesh Harjani wrote:
+> 68efd7d2fb("arm: dma-mapping: remove order parameter from
+> arm_iommu_create_mapping()") is causing kernel panic
+> because it wrongly sets the value of mapping->size:
 > 
-> Please don't do that. If you want to rely on the fact that
-> intel_unmap_page() currently just uses the size from the IOVA it finds,
-> then split it out into a separate function which explicitly does
-> precisely that. And call that new function from both intel_unmap_sg()
-> and intel_unmap_page().
+> Unable to handle kernel NULL pointer dereference at virtual
+> address 000000a0
+> pgd = e7a84000
+> [000000a0] *pgd=00000000
+> ...
+> PC is at bitmap_clear+0x48/0xd0
+> LR is at __iommu_remove_mapping+0x130/0x164
+> 
+> Fix it by correcting mapping->size value.
+> 
+> Signed-off-by: Ritesh Harjani <ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Acked-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+> ---
+>  arch/arm/mm/dma-mapping.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+> index f62aa06..6b00be1 100644
+> --- a/arch/arm/mm/dma-mapping.c
+> +++ b/arch/arm/mm/dma-mapping.c
+> @@ -1963,8 +1963,8 @@ arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, size_t size)
+>  	mapping->nr_bitmaps = 1;
+>  	mapping->extensions = extensions;
+>  	mapping->base = base;
+> -	mapping->size = bitmap_size << PAGE_SHIFT;
+>  	mapping->bits = BITS_PER_BYTE * bitmap_size;
+> +	mapping->size = mapping->bits << PAGE_SHIFT;
 
-Good suggestion, will change to follow that way in next version.
+Ok, but given that mapping->size is derived from mapping->bits, do we really
+need both of these fields in struct dma_iommu_mapping?
+
+Will
