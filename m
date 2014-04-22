@@ -1,7 +1,7 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part3 V1 08/22] iommu/VT-d: simplify include/linux/dmar.h
-Date: Tue, 22 Apr 2014 15:07:19 +0800
-Message-ID: <1398150453-28141-9-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part3 V1 13/22] iommu/vt-d: search _DSM method for DMAR hotplug
+Date: Tue, 22 Apr 2014 15:07:24 +0800
+Message-ID: <1398150453-28141-14-git-send-email-jiang.liu@linux.intel.com>
 References: <1398150453-28141-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,85 +21,72 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse
 Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Simplify include/linux/dmar.h a bit based on the fact that
-both CONFIG_INTEL_IOMMU and CONFIG_IRQ_REMAP select CONFIG_DMAR_TABLE.
+According to Intel VT-d specification, _DSM method to support DMAR
+hotplug should exist directly under corresponding ACPI object
+representing PCI host bridge. But some BIOSes doesn't conform to
+this, so search for _DSM method in the subtree starting from the
+ACPI object representing the PCI host bridge.
 
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- include/linux/dmar.h |   50 ++++++++++++++++++--------------------------------
- 1 file changed, 18 insertions(+), 32 deletions(-)
+ drivers/iommu/dmar.c |   34 +++++++++++++++++++++++++++++++---
+ 1 file changed, 31 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index 23c8db129560..1deece46a0ca 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -114,22 +114,30 @@ extern int dmar_remove_dev_scope(struct dmar_pci_notify_info *info,
- /* Intel IOMMU detection */
- extern int detect_intel_iommu(void);
- extern int enable_drhd_fault_handling(void);
--#else
--struct dmar_pci_notify_info;
--static inline int detect_intel_iommu(void)
-+
-+#ifdef CONFIG_INTEL_IOMMU
-+extern int iommu_detected, no_iommu;
-+extern int intel_iommu_init(void);
-+extern int dmar_parse_one_rmrr(struct acpi_dmar_header *header);
-+extern int dmar_parse_one_atsr(struct acpi_dmar_header *header);
-+extern int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info);
-+#else /* !CONFIG_INTEL_IOMMU: */
-+static inline int intel_iommu_init(void) { return -ENODEV; }
-+static inline int dmar_parse_one_rmrr(struct acpi_dmar_header *header)
- {
--	return -ENODEV;
-+	return 0;
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 290b4bdcaa3a..7a7383858c34 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -1920,20 +1920,48 @@ static int dmar_hotplug_remove(acpi_handle handle)
+ 	return ret;
  }
--
--static inline int dmar_table_init(void)
-+static inline int dmar_parse_one_atsr(struct acpi_dmar_header *header)
- {
--	return -ENODEV;
-+	return 0;
- }
--static inline int enable_drhd_fault_handling(void)
-+static inline int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info)
- {
--	return -1;
-+	return 0;
- }
--#endif /* !CONFIG_DMAR_TABLE */
-+#endif /* CONFIG_INTEL_IOMMU */
-+
-+#endif /* CONFIG_DMAR_TABLE */
  
- struct irte {
- 	union {
-@@ -177,26 +185,4 @@ extern int dmar_set_interrupt(struct intel_iommu *iommu);
- extern irqreturn_t dmar_fault(int irq, void *dev_id);
- extern int arch_setup_dmar_msi(unsigned int irq);
++static acpi_status dmar_get_dsm_handle(acpi_handle handle, u32 lvl,
++				       void *context, void **retval)
++{
++	acpi_handle *phdl = retval;
++
++	if (dmar_detect_dsm(handle, DMAR_DSM_FUNC_DRHD)) {
++		*phdl = handle;
++		return AE_CTRL_TERMINATE;
++	}
++
++	return AE_OK;
++}
++
+ int dmar_device_hotplug(acpi_handle handle, bool insert)
+ {
+ 	int ret;
++	acpi_handle tmp = NULL;
++	acpi_status status;
  
--#ifdef CONFIG_INTEL_IOMMU
--extern int iommu_detected, no_iommu;
--extern int dmar_parse_one_rmrr(struct acpi_dmar_header *header);
--extern int dmar_parse_one_atsr(struct acpi_dmar_header *header);
--extern int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info);
--extern int intel_iommu_init(void);
--#else /* !CONFIG_INTEL_IOMMU: */
--static inline int intel_iommu_init(void) { return -ENODEV; }
--static inline int dmar_parse_one_rmrr(struct acpi_dmar_header *header)
--{
--	return 0;
--}
--static inline int dmar_parse_one_atsr(struct acpi_dmar_header *header)
--{
--	return 0;
--}
--static inline int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info)
--{
--	return 0;
--}
--#endif /* CONFIG_INTEL_IOMMU */
--
- #endif /* __DMAR_H__ */
+ 	if (!dmar_in_use())
+ 		return 0;
+-	if (!dmar_detect_dsm(handle, DMAR_DSM_FUNC_DRHD))
++
++	if (dmar_detect_dsm(handle, DMAR_DSM_FUNC_DRHD)) {
++		tmp = handle;
++	} else {
++		status = acpi_walk_namespace(ACPI_TYPE_DEVICE, handle,
++					     ACPI_UINT32_MAX,
++					     dmar_get_dsm_handle,
++					     NULL, NULL, &tmp);
++		if (ACPI_FAILURE(status)) {
++			pr_warn("Failed to locate _DSM method.\n");
++			return -ENXIO;
++		}
++	}
++	if (tmp == NULL)
+ 		return 0;
+ 
+ 	down_write(&dmar_global_lock);
+ 	if (insert)
+-		ret = dmar_hotplug_insert(handle);
++		ret = dmar_hotplug_insert(tmp);
+ 	else
+-		ret = dmar_hotplug_remove(handle);
++		ret = dmar_hotplug_remove(tmp);
+ 	up_write(&dmar_global_lock);
+ 
+ 	return ret;
 -- 
 1.7.10.4
