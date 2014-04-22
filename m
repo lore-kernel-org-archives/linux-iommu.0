@@ -1,69 +1,103 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH] arm: dma-mapping: Fix mapping size value
-Date: Tue, 22 Apr 2014 11:09:29 +0200
-Message-ID: <535631C9.9060100@samsung.com>
-References: <1398062847-5770-1-git-send-email-ritesh.harjani@gmail.com>
-	<1398062847-5770-2-git-send-email-ritesh.harjani@gmail.com>
+From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Subject: Re: [Patch Part3 V1 17/22] pci, ACPI, iommu: enhance pci_root to support DMAR device hotplug
+Date: Tue, 22 Apr 2014 11:49:48 +0200
+Message-ID: <2370777.I1hYvaFUEg@vostro.rjw.lan>
+References: <1398150453-28141-1-git-send-email-jiang.liu@linux.intel.com> <1398150453-28141-18-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <1398062847-5770-2-git-send-email-ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ritesh Harjani <ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org
-Cc: mp.vikram-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, Will.Deacon-5wv7dgnIgG8@public.gmane.org, menon.vinayak-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, rmk-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1398150453-28141-18-git-send-email-jiang.liu@linux.intel.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Jiang Liu <jiang.liu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>, Len Brown <lenb@kernel.org>, Ashok Raj <ashok.raj@intel.com>, Yijing Wang <wangyijing@huawei.com>, Tony Luck <tony.luck@intel.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, linux-acpi@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
-
-On 2014-04-21 08:47, Ritesh Harjani wrote:
-> 68efd7d2fb("arm: dma-mapping: remove order parameter from
-> arm_iommu_create_mapping()") is causing kernel panic
-> because it wrongly sets the value of mapping->size:
->
-> Unable to handle kernel NULL pointer dereference at virtual
-> address 000000a0
-> pgd = e7a84000
-> [000000a0] *pgd=00000000
-> ...
-> PC is at bitmap_clear+0x48/0xd0
-> LR is at __iommu_remove_mapping+0x130/0x164
->
-> Fix it by correcting mapping->size value.
->
-> Signed-off-by: Ritesh Harjani <ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> Acked-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-
-Thanks for spotting this issue! I'm really sorry for introducing it. I 
-will push it to the fixes branch asap.
-
+On Tuesday, April 22, 2014 03:07:28 PM Jiang Liu wrote:
+> Finally enhance pci_root driver to support DMAR device hotplug when
+> hot-plugging PCI host bridges.
+> 
+> Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
 > ---
->   arch/arm/mm/dma-mapping.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-> index f62aa06..6b00be1 100644
-> --- a/arch/arm/mm/dma-mapping.c
-> +++ b/arch/arm/mm/dma-mapping.c
-> @@ -1963,8 +1963,8 @@ arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, size_t size)
->   	mapping->nr_bitmaps = 1;
->   	mapping->extensions = extensions;
->   	mapping->base = base;
-> -	mapping->size = bitmap_size << PAGE_SHIFT;
->   	mapping->bits = BITS_PER_BYTE * bitmap_size;
-> +	mapping->size = mapping->bits << PAGE_SHIFT;
->   
->   	spin_lock_init(&mapping->lock);
+>  drivers/acpi/pci_root.c |   16 ++++++++++++++--
+>  1 file changed, 14 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/acpi/pci_root.c b/drivers/acpi/pci_root.c
+> index d388f13d48b4..aa8f549869f3 100644
+> --- a/drivers/acpi/pci_root.c
+> +++ b/drivers/acpi/pci_root.c
+> @@ -33,6 +33,7 @@
+>  #include <linux/pci.h>
+>  #include <linux/pci-acpi.h>
+>  #include <linux/pci-aspm.h>
+> +#include <linux/dmar.h>
+>  #include <linux/acpi.h>
+>  #include <linux/slab.h>
+>  #include <acpi/apei.h>	/* for acpi_hest_init() */
+> @@ -511,6 +512,7 @@ static int acpi_pci_root_add(struct acpi_device *device,
+>  	struct acpi_pci_root *root;
+>  	acpi_handle handle = device->handle;
+>  	int no_aspm = 0, clear_aspm = 0;
+> +	bool hotadd = (system_state != SYSTEM_BOOTING);
 
-Best regards
+The parens are not necessary in the above instruction.
+
+>  	root = kzalloc(sizeof(struct acpi_pci_root), GFP_KERNEL);
+>  	if (!root)
+> @@ -557,6 +559,11 @@ static int acpi_pci_root_add(struct acpi_device *device,
+>  	strcpy(acpi_device_class(device), ACPI_PCI_ROOT_CLASS);
+>  	device->driver_data = root;
+>  
+> +	if (hotadd && dmar_device_hotplug(handle, true)) {
+> +		result = -ENXIO;
+> +		goto end;
+> +	}
+> +
+>  	pr_info(PREFIX "%s [%s] (domain %04x %pR)\n",
+>  	       acpi_device_name(device), acpi_device_bid(device),
+>  	       root->segment, &root->secondary);
+> @@ -583,7 +590,7 @@ static int acpi_pci_root_add(struct acpi_device *device,
+>  			root->segment, (unsigned int)root->secondary.start);
+>  		device->driver_data = NULL;
+>  		result = -ENODEV;
+> -		goto end;
+> +		goto remove_dmar;
+>  	}
+>  
+>  	if (clear_aspm) {
+> @@ -597,7 +604,7 @@ static int acpi_pci_root_add(struct acpi_device *device,
+>  	if (device->wakeup.flags.run_wake)
+>  		device_set_run_wake(root->bus->bridge, true);
+>  
+> -	if (system_state != SYSTEM_BOOTING) {
+> +	if (hotadd) {
+>  		pcibios_resource_survey_bus(root->bus);
+>  		pci_assign_unassigned_root_bus_resources(root->bus);
+>  	}
+> @@ -607,6 +614,9 @@ static int acpi_pci_root_add(struct acpi_device *device,
+>  	pci_unlock_rescan_remove();
+>  	return 1;
+>  
+> +remove_dmar:
+> +	if (hotadd)
+> +		dmar_device_hotplug(handle, false);
+
+I suppose that works if dmar_device_hotplug() returned false before?
+
+>  end:
+>  	kfree(root);
+>  	return result;
+> @@ -625,6 +635,8 @@ static void acpi_pci_root_remove(struct acpi_device *device)
+>  
+>  	pci_remove_root_bus(root->bus);
+>  
+> +	dmar_device_hotplug(device->handle, false);
+> +
+>  	pci_unlock_rescan_remove();
+>  
+>  	kfree(root);
+> 
+
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+I speak only for myself.
+Rafael J. Wysocki, Intel Open Source Technology Center.
