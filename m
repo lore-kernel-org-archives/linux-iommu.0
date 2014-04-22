@@ -1,74 +1,72 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH 3/9] iommu/ipmmu-vmsa: Define driver-specific page directory sizes
-Date: Mon, 21 Apr 2014 22:52:14 +0200
-Message-ID: <11850321.Q0Kc9vhtF9@avalon>
-References: <1398089589-9181-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <1398089589-9181-4-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <53556BDC.6040705@cogentembedded.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <53556BDC.6040705@cogentembedded.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, iommu@lists.linux-foundation.org, linux-sh@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Will Deacon <will.deacon@arm.com>
+From: Jiang Liu <jiang.liu@linux.intel.com>
+Subject: [RFC Patch Part3 V1 00/22] Enable Intel DMAR device hotplug
+Date: Tue, 22 Apr 2014 15:07:11 +0800
+Message-ID: <1398150453-28141-1-git-send-email-jiang.liu@linux.intel.com>
+Return-path: <linux-pci-owner@vger.kernel.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, Ashok Raj <ashok.raj@intel.com>, Yijing Wang <wangyijing@huawei.com>, Tony Luck <tony.luck@intel.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Sergei,
+When hot plugging a descrete IOH or a physical processor with embedded
+IIO, we need to handle DMAR(or IOMMU) unit in the PCIe host bridge if
+DMAR is in use. This patch set tries to enhance current DMAR/IOMMU/IR
+drivers to support hotplug and is based on latest mainstream kernel
+v3.15-rc2-36-gc089b229dfdd.
 
-Thank you for the review.
+Patch 1-9 are bugfixes and code improvement for current drivers.
+Patch 10-13 enhances DMAR framework to support hotplug
+Patch 14 enhances Intel interrupt remapping driver to support hotplug
+Patch 15 enhances error handling in Intel IR driver
+Patch 16 enhance Intel IOMMU to support hotplug
+Patch 17 enhance ACPI pci_root driver to handle DMAR units
+Patch 18-22 are bugfixes and code improvement again
 
-On Monday 21 April 2014 23:05:00 Sergei Shtylyov wrote:
-> On 04/21/2014 06:13 PM, Laurent Pinchart wrote:
-> > The PTRS_PER_(PGD|PMD|PTE) macros evaluate to different values depending
-> > on whether LPAE is enabled. The IPMMU driver uses a long descriptor
-> > format regardless of LPAE, making those macros mismatch the IPMMU
-> > configuration on non-LPAE systems.
-> > 
-> > Replace the macros by driver-specific versions that always evaluate to
-> > the right value.
-> > 
-> > Signed-off-by: Laurent Pinchart
-> > <laurent.pinchart+renesas@ideasonboard.com>
-> > ---
-> > 
-> >   drivers/iommu/ipmmu-vmsa.c | 14 +++++++++-----
-> >   1 file changed, 9 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> > index 1ae97d8..7c8c21e 100644
-> > --- a/drivers/iommu/ipmmu-vmsa.c
-> > +++ b/drivers/iommu/ipmmu-vmsa.c
-> > @@ -210,6 +210,10 @@ static LIST_HEAD(ipmmu_devices);
-> > 
-> >   #define ARM_VMSA_PTE_MEMATTR_NC		(((pteval_t)0x5) << 2)
-> >   #define ARM_VMSA_PTE_MEMATTR_DEV	(((pteval_t)0x1) << 2)
-> > 
-> > +#define IPMMU_PTRS_PER_PTE		512
-> > +#define IPMMU_PTRS_PER_PMD		512
-> > +#define IPMMU_PTRS_PER_PGD		4
-> > +
-> 
-> [...]
-> 
-> > @@ -487,7 +491,7 @@ static void ipmmu_free_puds(pgd_t *pgd)
-> > 
-> >   	unsigned int i;
-> >   	
-> >   	pud = pud_base;
-> > 
-> > -	for (i = 0; i < PTRS_PER_PUD; ++i) {
-> > +	for (i = 0; i < IPMMU_PTRS_PER_PUD; ++i) {
-> 
-> I don't see where you #define IPMMU_PTRS_PER_PUD...
+This patch set has been tested on Intel development machine.
+Appreciate any comments and tests.
 
-Come on, it's easy. I don't define it anywhere :-)
+Best Regards!
 
-The line is changed in a further patch, it seems I've forgotten to compile-
-test all intermediate versions. Thank you for catching the problem, I'll fix 
-that in v2 and will make sure to properly test all patches individually.
+Jiang Liu (22):
+  iommu/vt-d: match segment number when searching for dev_iotlb capable
+    devices
+  iommu/vt-d: use correct domain id to flush virtual machine domains
+  iommu/vt-d: introduce helper functions to improve code readability
+  iommu/vt-d: introduce helper functions to make code symmetric for
+    readability
+  iommu/vt-d: only dynamically allocate domain id for virtual domains
+  iommu/vt-d: fix possible invalid memory access caused by
+    free_dmar_iommu()
+  iommu/vt-d: avoid freeing virtual machine domain in free_dmar_iommu()
+  iommu/VT-d: simplify include/linux/dmar.h
+  iommu/vt-d: change iommu_enable/disable_translation to return void
+  iommu/vt-d: dynamically allocate and free seq_id for DMAR units
+  IOMMU/vt-d: introduce helper function dmar_walk_resources()
+  iommu/vt-d: implement DMAR unit hotplug framework
+  iommu/vt-d: search _DSM method for DMAR hotplug
+  iommu/vt-d: enhance intel_irq_remapping driver to support DMAR unit
+    hotplug
+  iommu/vt-d: enhance error recovery in function
+    intel_enable_irq_remapping()
+  iommu/vt-d: enhance intel-iommu driver to support DMAR unit hotplug
+  pci, ACPI, iommu: enhance pci_root to support DMAR device hotplug
+  iommu/vt-d: update proximity information when a new node with memory
+    available
+  iommu/vt-d: simplify intel_unmap_sg() and kill duplicated code
+  iommu/vt-d: introduce helper domain_pfn_within_range() to simplify
+    code
+  iommu/vt-d: introduce helper function iova_size() to improve code
+    readability
+  iommu/vt-d: fix bug in computing domain's iommu_snooping flag
+
+ drivers/acpi/pci_root.c             |   16 +-
+ drivers/iommu/dmar.c                |  568 ++++++++++++++++++++++------
+ drivers/iommu/intel-iommu.c         |  711 +++++++++++++++++++++--------------
+ drivers/iommu/intel_irq_remapping.c |  233 +++++++++---
+ include/linux/dmar.h                |   80 ++--
+ include/linux/intel-iommu.h         |    1 +
+ include/linux/iova.h                |    5 +
+ 7 files changed, 1133 insertions(+), 481 deletions(-)
 
 -- 
-Regards,
-
-Laurent Pinchart
-
+1.7.10.4
