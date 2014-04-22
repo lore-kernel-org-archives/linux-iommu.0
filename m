@@ -1,8 +1,8 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part3 V1 15/22] iommu/vt-d: enhance error recovery in function
-	intel_enable_irq_remapping()
-Date: Tue, 22 Apr 2014 15:07:26 +0800
-Message-ID: <1398150453-28141-16-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part3 V1 16/22] iommu/vt-d: enhance intel-iommu driver to
+	support DMAR unit hotplug
+Date: Tue, 22 Apr 2014 15:07:27 +0800
+Message-ID: <1398150453-28141-17-git-send-email-jiang.liu@linux.intel.com>
 References: <1398150453-28141-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,32 +22,277 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse
 Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Enhance error recovery in function intel_enable_irq_remapping()
-by tearing down all created data structures.
+Implement required callback functions for intel-iommu driver
+to support DMAR unit hotplug.
 
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/intel_irq_remapping.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/iommu/intel-iommu.c |  194 +++++++++++++++++++++++++++++++------------
+ 1 file changed, 139 insertions(+), 55 deletions(-)
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 9f1c86566452..f65b68d3de10 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -673,9 +673,11 @@ static int __init intel_enable_irq_remapping(void)
- 	return eim ? IRQ_REMAP_X2APIC_MODE : IRQ_REMAP_XAPIC_MODE;
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 33e636c246a6..f2143b59ad68 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -1116,8 +1116,11 @@ static int iommu_alloc_root_entry(struct intel_iommu *iommu)
+ 	unsigned long flags;
  
- error:
+ 	root = (struct root_entry *)alloc_pgtable_page(iommu->node);
+-	if (!root)
++	if (!root) {
++		pr_err("IOMMU: allocating root entry for %s failed\n",
++			iommu->name);
+ 		return -ENOMEM;
++	}
+ 
+ 	__iommu_flush_cache(iommu, root, ROOT_SIZE);
+ 
+@@ -1457,7 +1460,7 @@ static int iommu_init_domains(struct intel_iommu *iommu)
+ 	return 0;
+ }
+ 
+-static void free_dmar_iommu(struct intel_iommu *iommu)
++static void disable_dmar_iommu(struct intel_iommu *iommu)
+ {
+ 	struct dmar_domain *domain;
+ 	int i;
+@@ -1481,11 +1484,16 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
+ 
+ 	if (iommu->gcmd & DMA_GCMD_TE)
+ 		iommu_disable_translation(iommu);
++}
+ 
+-	kfree(iommu->domains);
+-	kfree(iommu->domain_ids);
+-	iommu->domains = NULL;
+-	iommu->domain_ids = NULL;
++static void free_dmar_iommu(struct intel_iommu *iommu)
++{
++	if ((iommu->domains) && (iommu->domain_ids)) {
++		kfree(iommu->domains);
++		kfree(iommu->domain_ids);
++		iommu->domains = NULL;
++		iommu->domain_ids = NULL;
++	}
+ 
+ 	g_iommus[iommu->seq_id] = NULL;
+ 
+@@ -2680,6 +2688,41 @@ static int __init iommu_prepare_static_identity_mapping(int hw)
+ 	return 0;
+ }
+ 
++static void intel_iommu_init_qi(struct intel_iommu *iommu)
++{
++	/*
++	 * Start from the sane iommu hardware state.
++	 * If the queued invalidation is already initialized by us
++	 * (for example, while enabling interrupt-remapping) then
++	 * we got the things already rolling from a sane state.
++	 */
++	if (!iommu->qi) {
++		/*
++		 * Clear any previous faults.
++		 */
++		dmar_fault(-1, iommu);
++		/*
++		 * Disable queued invalidation if supported and already enabled
++		 * before OS handover.
++		 */
++		dmar_disable_qi(iommu);
++	}
++
++	if (dmar_enable_qi(iommu)) {
++		/*
++		 * Queued Invalidate not enabled, use Register Based Invalidate
++		 */
++		iommu->flush.flush_context = __iommu_flush_context;
++		iommu->flush.flush_iotlb = __iommu_flush_iotlb;
++		pr_info("IOMMU: %s using Register based invalidation\n",
++			iommu->name);
++	} else {
++		iommu->flush.flush_context = qi_flush_context;
++		iommu->flush.flush_iotlb = qi_flush_iotlb;
++		pr_info("IOMMU: %s using Queued invalidation\n", iommu->name);
++	}
++}
++
+ static int __init init_dmars(void)
+ {
+ 	struct dmar_drhd_unit *drhd;
+@@ -2708,6 +2751,10 @@ static int __init init_dmars(void)
+ 			  DMAR_UNITS_SUPPORTED);
+ 	}
+ 
++	/* Preallocate enough resources for IOMMU hot-addition */
++	if (g_num_of_iommus < DMAR_UNITS_SUPPORTED)
++		g_num_of_iommus = DMAR_UNITS_SUPPORTED;
++
+ 	g_iommus = kcalloc(g_num_of_iommus, sizeof(struct intel_iommu *),
+ 			GFP_KERNEL);
+ 	if (!g_iommus) {
+@@ -2736,58 +2783,14 @@ static int __init init_dmars(void)
+ 		 * among all IOMMU's. Need to Split it later.
+ 		 */
+ 		ret = iommu_alloc_root_entry(iommu);
+-		if (ret) {
+-			printk(KERN_ERR "IOMMU: allocate root entry failed\n");
++		if (ret)
+ 			goto free_iommu;
+-		}
+ 		if (!ecap_pass_through(iommu->ecap))
+ 			hw_pass_through = 0;
+ 	}
+ 
 -	/*
--	 * handle error condition gracefully here!
+-	 * Start from the sane iommu hardware state.
 -	 */
-+	for_each_iommu(iommu, drhd)
-+		if (ecap_ir_support(iommu->ecap)) {
-+			iommu_disable_irq_remapping(iommu);
-+			intel_teardown_irq_remapping(iommu);
-+		}
+-	for_each_active_iommu(iommu, drhd) {
+-		/*
+-		 * If the queued invalidation is already initialized by us
+-		 * (for example, while enabling interrupt-remapping) then
+-		 * we got the things already rolling from a sane state.
+-		 */
+-		if (iommu->qi)
+-			continue;
+-
+-		/*
+-		 * Clear any previous faults.
+-		 */
+-		dmar_fault(-1, iommu);
+-		/*
+-		 * Disable queued invalidation if supported and already enabled
+-		 * before OS handover.
+-		 */
+-		dmar_disable_qi(iommu);
+-	}
+-
+-	for_each_active_iommu(iommu, drhd) {
+-		if (dmar_enable_qi(iommu)) {
+-			/*
+-			 * Queued Invalidate not enabled, use Register Based
+-			 * Invalidate
+-			 */
+-			iommu->flush.flush_context = __iommu_flush_context;
+-			iommu->flush.flush_iotlb = __iommu_flush_iotlb;
+-			printk(KERN_INFO "IOMMU %d 0x%Lx: using Register based "
+-			       "invalidation\n",
+-				iommu->seq_id,
+-			       (unsigned long long)drhd->reg_base_addr);
+-		} else {
+-			iommu->flush.flush_context = qi_flush_context;
+-			iommu->flush.flush_iotlb = qi_flush_iotlb;
+-			printk(KERN_INFO "IOMMU %d 0x%Lx: using Queued "
+-			       "invalidation\n",
+-				iommu->seq_id,
+-			       (unsigned long long)drhd->reg_base_addr);
+-		}
+-	}
++	for_each_active_iommu(iommu, drhd)
++		intel_iommu_init_qi(iommu);
  
- 	if (x2apic_present)
- 		pr_warn("Failed to enable irq remapping.  You are vulnerable to irq-injection attacks.\n");
+ 	if (iommu_pass_through)
+ 		iommu_identity_mapping |= IDENTMAP_ALL;
+@@ -2873,8 +2876,10 @@ static int __init init_dmars(void)
+ 	return 0;
+ 
+ free_iommu:
+-	for_each_active_iommu(iommu, drhd)
++	for_each_active_iommu(iommu, drhd) {
++		disable_dmar_iommu(iommu);
+ 		free_dmar_iommu(iommu);
++	}
+ 	kfree(deferred_flush);
+ free_g_iommus:
+ 	kfree(g_iommus);
+@@ -3800,9 +3805,88 @@ int dmar_check_one_atsr(struct acpi_dmar_header *hdr, void *arg)
+ 	return 0;
+ }
+ 
++static int intel_iommu_add(struct dmar_drhd_unit *dmaru)
++{
++	int ret = 0;
++	struct intel_iommu *iommu = dmaru->iommu;
++
++	if (g_iommus[iommu->seq_id])
++		return 0;
++
++	if (hw_pass_through && !ecap_pass_through(iommu->ecap)) {
++		pr_warn("IOMMU: %s doesn't support hardware pass through.\n",
++			iommu->name);
++		return -ENXIO;
++	}
++
++	/*
++	 * Disable translation if already enabled prior to OS handover.
++	 */
++	if (iommu->gcmd & DMA_GCMD_TE)
++		iommu_disable_translation(iommu);
++
++	g_iommus[iommu->seq_id] = iommu;
++	ret = iommu_init_domains(iommu);
++	if (ret == 0)
++		ret = iommu_alloc_root_entry(iommu);
++	if (ret)
++		goto out;
++
++	if (dmaru->ignored) {
++		/*
++		 * we always have to disable PMRs or DMA may fail on this device
++		 */
++		if (force_on)
++			iommu_disable_protect_mem_regions(iommu);
++		return 0;
++	}
++
++	intel_iommu_init_qi(iommu);
++	iommu_flush_write_buffer(iommu);
++	ret = dmar_set_interrupt(iommu);
++	if (ret)
++		goto disable_iommu;
++
++	iommu_set_root_entry(iommu);
++	iommu->flush.flush_context(iommu, 0, 0, 0, DMA_CCMD_GLOBAL_INVL);
++	iommu->flush.flush_iotlb(iommu, 0, 0, 0, DMA_TLB_GLOBAL_FLUSH);
++	iommu_enable_translation(iommu);
++
++	if (si_domain) {
++		ret = iommu_attach_domain(si_domain, iommu);
++		if (ret < 0 || si_domain->id != ret)
++			goto disable_iommu;
++		domain_attach_iommu(si_domain, iommu);
++	}
++
++	iommu_disable_protect_mem_regions(iommu);
++	return 0;
++
++disable_iommu:
++	disable_dmar_iommu(iommu);
++out:
++	free_dmar_iommu(iommu);
++	return ret;
++}
++
+ int dmar_iommu_hotplug(struct dmar_drhd_unit *dmaru, bool insert)
+ {
+-	return intel_iommu_enabled ? -ENOSYS : 0;
++	int ret = 0;
++	struct intel_iommu *iommu = dmaru->iommu;
++
++	if (!intel_iommu_enabled)
++		return 0;
++	if (iommu == NULL)
++		return -EINVAL;
++
++	if (insert) {
++		ret = intel_iommu_add(dmaru);
++	} else {
++		disable_dmar_iommu(iommu);
++		free_dmar_iommu(iommu);
++	}
++
++	return ret;
+ }
+ 
+ static void intel_iommu_free_dmars(void)
 -- 
 1.7.10.4
