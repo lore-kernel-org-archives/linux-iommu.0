@@ -1,8 +1,8 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part3 V1 18/22] iommu/vt-d: update proximity information when
-	a new node with memory available
-Date: Tue, 22 Apr 2014 15:07:29 +0800
-Message-ID: <1398150453-28141-19-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part3 V1 19/22] iommu/vt-d: simplify intel_unmap_sg() and kill
+	duplicated code
+Date: Tue, 22 Apr 2014 15:07:30 +0800
+Message-ID: <1398150453-28141-20-git-send-email-jiang.liu@linux.intel.com>
 References: <1398150453-28141-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,123 +22,113 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse
 Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-If node associated with a DMAR unit has no memory available, it uses -1
-as default NUMA node id. So when memory hot-addition adds new memory to
-an empty NUMA node, we should update the NUMA node id associated with
-the DMAR unit. This will help to optomize memory allocation.
+Simplify intel_unmap_sg() by calling intel_unmap_page() and
+kill duplicated code, no functionality changes.
 
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/dmar.c        |   50 ++++++++++++++++++++++++++++++++++++++++---
- include/linux/intel-iommu.h |    1 +
- 2 files changed, 48 insertions(+), 3 deletions(-)
+ drivers/iommu/intel-iommu.c |   63 +++++++++++++------------------------------
+ 1 file changed, 18 insertions(+), 45 deletions(-)
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 7a7383858c34..d607691a6a80 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -38,6 +38,7 @@
- #include <linux/tboot.h>
- #include <linux/dmi.h>
- #include <linux/slab.h>
-+#include <linux/memory.h>
- #include <asm/irq_remapping.h>
- #include <asm/iommu_table.h>
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index f2143b59ad68..4738e64fe097 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -979,6 +979,8 @@ static void dma_pte_free_pagetable(struct dmar_domain *domain,
+ 	BUG_ON(addr_width < BITS_PER_LONG && last_pfn >> addr_width);
+ 	BUG_ON(start_pfn > last_pfn);
  
-@@ -444,6 +445,7 @@ static int dmar_parse_one_rhsa(struct acpi_dmar_header *header, void *arg)
- 			if (!node_online(node))
- 				node = -1;
- 			drhd->iommu->node = node;
-+			drhd->iommu->proximity_domain = rhsa->proximity_domain;
- 			return 0;
- 		}
- 	}
-@@ -458,8 +460,48 @@ static int dmar_parse_one_rhsa(struct acpi_dmar_header *header, void *arg)
- 
- 	return 0;
- }
++	dma_pte_clear_range(domain, start_pfn, last_pfn);
 +
-+static int dmar_memory_notifier(struct notifier_block *nb,
-+				unsigned long val, void *v)
-+{
-+	struct memory_notify *mhp = v;
-+	struct dmar_drhd_unit *drhd;
-+	struct intel_iommu *iommu;
-+	int nid;
-+
-+	if (val != MEM_ONLINE)
-+		return NOTIFY_OK;
-+
-+	if (mhp->status_change_nid < 0)
-+		return NOTIFY_OK;
-+
-+	down_read(&dmar_global_lock);
-+	for_each_iommu(iommu, drhd) {
-+		if (iommu->node != -1)
-+			continue;
-+		nid = acpi_map_pxm_to_node(iommu->proximity_domain);
-+		if (nid == mhp->status_change_nid)
-+			iommu->node = nid;
-+	}
-+	up_read(&dmar_global_lock);
-+
-+	return NOTIFY_OK;
-+}
-+
-+static struct notifier_block dmar_memory_nb = {
-+	.notifier_call = dmar_memory_notifier,
-+};
-+
-+static void dmar_register_memory_notifier(void)
-+{
-+	register_memory_notifier(&dmar_memory_nb);
-+}
- #else
- #define	dmar_parse_one_rhsa		dmar_res_noop
-+
-+static void dmar_register_memory_notifier(void)
-+{
-+}
- #endif
- 
- static void __init
-@@ -1715,12 +1757,14 @@ static inline bool dmar_in_use(void)
- 	return irq_remapping_enabled || intel_iommu_enabled;
- }
- 
--static int __init dmar_free_unused_resources(void)
-+static int __init dmar_late_init(void)
+ 	/* We don't need lock here; nobody else touches the iova range */
+ 	dma_pte_free_level(domain, agaw_to_level(domain->agaw),
+ 			   domain->pgd, 0, start_pfn, last_pfn);
+@@ -2031,12 +2033,14 @@ static int __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+ 			/* It is large page*/
+ 			if (largepage_lvl > 1) {
+ 				pteval |= DMA_PTE_LARGE_PAGE;
+-				/* Ensure that old small page tables are removed to make room
+-				   for superpage, if they exist. */
+-				dma_pte_clear_range(domain, iov_pfn,
+-						    iov_pfn + lvl_to_nr_pages(largepage_lvl) - 1);
++				lvl_pages = lvl_to_nr_pages(largepage_lvl);
++				/*
++				 * Ensure that old small page tables are
++				 * removed to make room for superpage,
++				 * if they exist.
++				 */
+ 				dma_pte_free_pagetable(domain, iov_pfn,
+-						       iov_pfn + lvl_to_nr_pages(largepage_lvl) - 1);
++						       iov_pfn + lvl_pages - 1);
+ 			} else {
+ 				pteval &= ~(uint64_t)DMA_PTE_LARGE_PAGE;
+ 			}
+@@ -3256,43 +3260,17 @@ static void intel_unmap_sg(struct device *dev, struct scatterlist *sglist,
+ 			   int nelems, enum dma_data_direction dir,
+ 			   struct dma_attrs *attrs)
  {
- 	struct dmar_drhd_unit *dmaru, *dmaru_n;
+-	struct dmar_domain *domain;
+-	unsigned long start_pfn, last_pfn;
+-	struct iova *iova;
+-	struct intel_iommu *iommu;
+-	struct page *freelist;
+-
+-	if (iommu_no_mapping(dev))
+-		return;
+-
+-	domain = find_domain(dev);
+-	BUG_ON(!domain);
+-
+-	iommu = domain_get_iommu(domain);
+-
+-	iova = find_iova(&domain->iovad, IOVA_PFN(sglist[0].dma_address));
+-	if (WARN_ONCE(!iova, "Driver unmaps unmatched sglist at PFN %llx\n",
+-		      (unsigned long long)sglist[0].dma_address))
+-		return;
+-
+-	start_pfn = mm_to_dma_pfn(iova->pfn_lo);
+-	last_pfn = mm_to_dma_pfn(iova->pfn_hi + 1) - 1;
++	size_t size = 0;
++#if 0
++	/* current the third argument of intel_unmap_page is unsued */
++	int i;
++	struct scatterlist *sg;
  
--	if (dmar_in_use())
-+	if (dmar_in_use()) {
-+		dmar_register_memory_notifier();
- 		return 0;
-+	}
+-	freelist = domain_unmap(domain, start_pfn, last_pfn);
++	for_each_sg(sglist, sg, nelems, i)
++		size += sg->length;
++#endif
  
- 	if (dmar_dev_scope_status != 1 && !list_empty(&dmar_drhd_units))
- 		bus_unregister_notifier(&pci_bus_type, &dmar_pci_bus_nb);
-@@ -1735,7 +1779,7 @@ static int __init dmar_free_unused_resources(void)
- 	return 0;
+-	if (intel_iommu_strict) {
+-		iommu_flush_iotlb_psi(iommu, domain->id, start_pfn,
+-				      last_pfn - start_pfn + 1, !freelist, 0);
+-		/* free iova */
+-		__free_iova(&domain->iovad, iova);
+-		dma_free_pagelist(freelist);
+-	} else {
+-		add_unmap(domain, iova, freelist);
+-		/*
+-		 * queue up the release of the unmap to save the 1/6th of the
+-		 * cpu used up by the iotlb flush operation...
+-		 */
+-	}
++	intel_unmap_page(dev, sglist[0].dma_address, size, dir, attrs);
  }
  
--late_initcall(dmar_free_unused_resources);
-+late_initcall(dmar_late_init);
- IOMMU_INIT_POST(detect_intel_iommu);
+ static int intel_nontranslate_map_sg(struct device *hddev,
+@@ -3356,13 +3334,8 @@ static int intel_map_sg(struct device *dev, struct scatterlist *sglist, int nele
  
- /*
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 0a2da5188217..eea52ccdbd8e 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -337,6 +337,7 @@ struct intel_iommu {
- 	struct ir_table *ir_table;	/* Interrupt remapping info */
- #endif
- 	int		node;
-+	int		proximity_domain;
- };
- 
- static inline void __iommu_flush_cache(
+ 	ret = domain_sg_mapping(domain, start_vpfn, sglist, size, prot);
+ 	if (unlikely(ret)) {
+-		/*  clear the page */
+-		dma_pte_clear_range(domain, start_vpfn,
+-				    start_vpfn + size - 1);
+-		/* free page tables */
+ 		dma_pte_free_pagetable(domain, start_vpfn,
+ 				       start_vpfn + size - 1);
+-		/* free iova */
+ 		__free_iova(&domain->iovad, iova);
+ 		return 0;
+ 	}
 -- 
 1.7.10.4
