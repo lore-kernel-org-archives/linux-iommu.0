@@ -1,8 +1,8 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part3 V1 20/22] iommu/vt-d: introduce helper
-	domain_pfn_within_range() to simplify code
-Date: Tue, 22 Apr 2014 15:07:31 +0800
-Message-ID: <1398150453-28141-21-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part3 V1 21/22] iommu/vt-d: introduce helper function
+	iova_size() to improve code readability
+Date: Tue, 22 Apr 2014 15:07:32 +0800
+Message-ID: <1398150453-28141-22-git-send-email-jiang.liu@linux.intel.com>
 References: <1398150453-28141-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,104 +22,54 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse
 Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Introduce helper function domain_pfn_within_range() to simplify code
-and improve readability.
-
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c |   30 ++++++++++++++++--------------
- 1 file changed, 16 insertions(+), 14 deletions(-)
+ drivers/iommu/intel-iommu.c |    7 +++----
+ include/linux/iova.h        |    5 +++++
+ 2 files changed, 8 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 4738e64fe097..c4bca2d814c8 100644
+index c4bca2d814c8..6d5b94aaac6e 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -542,6 +542,14 @@ static inline int domain_type_is_vm_or_si(struct dmar_domain *domain)
- 				DOMAIN_FLAG_STATIC_IDENTITY);
- }
+@@ -3114,10 +3114,10 @@ static void flush_unmaps(void)
+ 			/* On real hardware multiple invalidations are expensive */
+ 			if (cap_caching_mode(iommu->cap))
+ 				iommu_flush_iotlb_psi(iommu, domain->id,
+-					iova->pfn_lo, iova->pfn_hi - iova->pfn_lo + 1,
++					iova->pfn_lo, iova_size(iova),
+ 					!deferred_flush[i].freelist[j], 0);
+ 			else {
+-				mask = ilog2(mm_to_dma_pfn(iova->pfn_hi - iova->pfn_lo + 1));
++				mask = ilog2(mm_to_dma_pfn(iova_size(iova)));
+ 				iommu_flush_dev_iotlb(deferred_flush[i].domain[j],
+ 						(uint64_t)iova->pfn_lo << PAGE_SHIFT, mask);
+ 			}
+@@ -4061,8 +4061,7 @@ static int intel_iommu_memory_notifier(struct notifier_block *nb,
+ 			rcu_read_lock();
+ 			for_each_active_iommu(iommu, drhd)
+ 				iommu_flush_iotlb_psi(iommu, si_domain->id,
+-					iova->pfn_lo,
+-					iova->pfn_hi - iova->pfn_lo + 1,
++					iova->pfn_lo, iova_size(iova),
+ 					!freelist, 0);
+ 			rcu_read_unlock();
+ 			dma_free_pagelist(freelist);
+diff --git a/include/linux/iova.h b/include/linux/iova.h
+index 3277f4711349..19e81d5ccb6d 100644
+--- a/include/linux/iova.h
++++ b/include/linux/iova.h
+@@ -34,6 +34,11 @@ struct iova_domain {
+ 	unsigned long	dma_32bit_pfn;
+ };
  
-+static inline int domain_pfn_supported(struct dmar_domain *domain,
-+				       unsigned long pfn)
++static inline unsigned long iova_size(struct iova *iova)
 +{
-+	int addr_width = agaw_to_width(domain->agaw) - VTD_PAGE_SHIFT;
-+
-+	return !(addr_width < BITS_PER_LONG && pfn >> addr_width);
++	return iova->pfn_hi - iova->pfn_lo + 1;
 +}
 +
- static int __iommu_calculate_agaw(struct intel_iommu *iommu, int max_gaw)
- {
- 	unsigned long sagaw;
-@@ -815,14 +823,13 @@ out:
- static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
- 				      unsigned long pfn, int *target_level)
- {
--	int addr_width = agaw_to_width(domain->agaw) - VTD_PAGE_SHIFT;
- 	struct dma_pte *parent, *pte = NULL;
- 	int level = agaw_to_level(domain->agaw);
- 	int offset;
- 
- 	BUG_ON(!domain->pgd);
- 
--	if (addr_width < BITS_PER_LONG && pfn >> addr_width)
-+	if (!domain_pfn_supported(domain, pfn))
- 		/* Address beyond IOMMU's addressing capabilities. */
- 		return NULL;
- 
-@@ -907,12 +914,11 @@ static void dma_pte_clear_range(struct dmar_domain *domain,
- 				unsigned long start_pfn,
- 				unsigned long last_pfn)
- {
--	int addr_width = agaw_to_width(domain->agaw) - VTD_PAGE_SHIFT;
- 	unsigned int large_page = 1;
- 	struct dma_pte *first_pte, *pte;
- 
--	BUG_ON(addr_width < BITS_PER_LONG && start_pfn >> addr_width);
--	BUG_ON(addr_width < BITS_PER_LONG && last_pfn >> addr_width);
-+	BUG_ON(!domain_pfn_supported(domain, start_pfn));
-+	BUG_ON(!domain_pfn_supported(domain, last_pfn));
- 	BUG_ON(start_pfn > last_pfn);
- 
- 	/* we don't need lock here; nobody else touches the iova range */
-@@ -973,10 +979,8 @@ static void dma_pte_free_pagetable(struct dmar_domain *domain,
- 				   unsigned long start_pfn,
- 				   unsigned long last_pfn)
- {
--	int addr_width = agaw_to_width(domain->agaw) - VTD_PAGE_SHIFT;
--
--	BUG_ON(addr_width < BITS_PER_LONG && start_pfn >> addr_width);
--	BUG_ON(addr_width < BITS_PER_LONG && last_pfn >> addr_width);
-+	BUG_ON(!domain_pfn_supported(domain, start_pfn));
-+	BUG_ON(!domain_pfn_supported(domain, last_pfn));
- 	BUG_ON(start_pfn > last_pfn);
- 
- 	dma_pte_clear_range(domain, start_pfn, last_pfn);
-@@ -1078,11 +1082,10 @@ struct page *domain_unmap(struct dmar_domain *domain,
- 			  unsigned long start_pfn,
- 			  unsigned long last_pfn)
- {
--	int addr_width = agaw_to_width(domain->agaw) - VTD_PAGE_SHIFT;
- 	struct page *freelist = NULL;
- 
--	BUG_ON(addr_width < BITS_PER_LONG && start_pfn >> addr_width);
--	BUG_ON(addr_width < BITS_PER_LONG && last_pfn >> addr_width);
-+	BUG_ON(!domain_pfn_supported(domain, start_pfn));
-+	BUG_ON(!domain_pfn_supported(domain, last_pfn));
- 	BUG_ON(start_pfn > last_pfn);
- 
- 	/* we don't need lock here; nobody else touches the iova range */
-@@ -1994,12 +1997,11 @@ static int __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
- {
- 	struct dma_pte *first_pte = NULL, *pte = NULL;
- 	phys_addr_t uninitialized_var(pteval);
--	int addr_width = agaw_to_width(domain->agaw) - VTD_PAGE_SHIFT;
- 	unsigned long sg_res;
- 	unsigned int largepage_lvl = 0;
- 	unsigned long lvl_pages = 0;
- 
--	BUG_ON(addr_width < BITS_PER_LONG && (iov_pfn + nr_pages - 1) >> addr_width);
-+	BUG_ON(!domain_pfn_supported(domain, iov_pfn + nr_pages - 1));
- 
- 	if ((prot & (DMA_PTE_READ|DMA_PTE_WRITE)) == 0)
- 		return -EINVAL;
+ struct iova *alloc_iova_mem(void);
+ void free_iova_mem(struct iova *iova);
+ void free_iova(struct iova_domain *iovad, unsigned long pfn);
 -- 
 1.7.10.4
