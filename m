@@ -1,103 +1,93 @@
-From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Subject: Re: [Patch Part3 V1 17/22] pci, ACPI, iommu: enhance pci_root to support DMAR device hotplug
-Date: Tue, 22 Apr 2014 11:49:48 +0200
-Message-ID: <2370777.I1hYvaFUEg@vostro.rjw.lan>
-References: <1398150453-28141-1-git-send-email-jiang.liu@linux.intel.com> <1398150453-28141-18-git-send-email-jiang.liu@linux.intel.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu: fix incorrect use of S2CR_TYPE_SHIFT
+Date: Tue, 22 Apr 2014 11:00:16 +0100
+Message-ID: <20140422100015.GA7484@arm.com>
+References: <1397786874-11372-1-git-send-email-wangkefeng.wang@huawei.com>
+	<53508E75.2080703@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1398150453-28141-18-git-send-email-jiang.liu@linux.intel.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Jiang Liu <jiang.liu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>, Len Brown <lenb@kernel.org>, Ashok Raj <ashok.raj@intel.com>, Yijing Wang <wangyijing@huawei.com>, Tony Luck <tony.luck@intel.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, linux-acpi@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <53508E75.2080703-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Kefeng Wang <wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tuesday, April 22, 2014 03:07:28 PM Jiang Liu wrote:
-> Finally enhance pci_root driver to support DMAR device hotplug when
-> hot-plugging PCI host bridges.
+On Fri, Apr 18, 2014 at 03:31:17AM +0100, Kefeng Wang wrote:
+> On 04/18 10:07, Kefeng Wang wrote:
+> > There is already S2CR_TYPE_TRANS in S2CR_TYPE_TRANS macro,
+> > so drop the second shift.
 > 
-> Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
+> Typo issue, please use following patch.
+
+They look the same to me -- which one should I take?
+
+Also, since S2CR_TYPE_TRANS is 0x0, this fix isn't critical, so I'll include
+it in my updates pull for 3.16.
+
+Cheers,
+
+Will
+
+> > Signed-off-by: Kefeng Wang <wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+> > ---
+> >  drivers/iommu/arm-smmu.c |    2 +-
+> >  1 files changed, 1 insertions(+), 1 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> > index 8b89e33..96755ec 100644
+> > --- a/drivers/iommu/arm-smmu.c
+> > +++ b/drivers/iommu/arm-smmu.c
+> > @@ -1167,7 +1167,7 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
+> >  	for (i = 0; i < master->num_streamids; ++i) {
+> >  		u32 idx, s2cr;
+> >  		idx = master->smrs ? master->smrs[i].idx : master->streamids[i];
+> > -		s2cr = (S2CR_TYPE_TRANS << S2CR_TYPE_SHIFT) |
+> > +		s2cr = S2CR_TYPE_TRANS |
+> >  		       (smmu_domain->root_cfg.cbndx << S2CR_CBNDX_SHIFT);
+> >  		writel_relaxed(s2cr, gr0_base + ARM_SMMU_GR0_S2CR(idx));
+> >  	}
+> > 
+> 
+> 
+> From bfcdbee6f5e71c561dfddf8751c4eabdca1e3a56 Mon Sep 17 00:00:00 2001
+> From: Kefeng Wang <wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+> Date: Fri, 18 Apr 2014 10:20:48 +0800
+> Subject: [PATCH] iommu/arm-smmu: fix incorrect use of S2CR_TYPE_SHIFT
+> 
+> There is already S2CR_TYPE_SHIFT in S2CR_TYPE_TRANS macro,
+> so drop the second shift.
+> 
+> Signed-off-by: Kefeng Wang <wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 > ---
->  drivers/acpi/pci_root.c |   16 ++++++++++++++--
->  1 file changed, 14 insertions(+), 2 deletions(-)
+>  drivers/iommu/arm-smmu.c |    2 +-
+>  1 files changed, 1 insertions(+), 1 deletions(-)
 > 
-> diff --git a/drivers/acpi/pci_root.c b/drivers/acpi/pci_root.c
-> index d388f13d48b4..aa8f549869f3 100644
-> --- a/drivers/acpi/pci_root.c
-> +++ b/drivers/acpi/pci_root.c
-> @@ -33,6 +33,7 @@
->  #include <linux/pci.h>
->  #include <linux/pci-acpi.h>
->  #include <linux/pci-aspm.h>
-> +#include <linux/dmar.h>
->  #include <linux/acpi.h>
->  #include <linux/slab.h>
->  #include <acpi/apei.h>	/* for acpi_hest_init() */
-> @@ -511,6 +512,7 @@ static int acpi_pci_root_add(struct acpi_device *device,
->  	struct acpi_pci_root *root;
->  	acpi_handle handle = device->handle;
->  	int no_aspm = 0, clear_aspm = 0;
-> +	bool hotadd = (system_state != SYSTEM_BOOTING);
-
-The parens are not necessary in the above instruction.
-
->  	root = kzalloc(sizeof(struct acpi_pci_root), GFP_KERNEL);
->  	if (!root)
-> @@ -557,6 +559,11 @@ static int acpi_pci_root_add(struct acpi_device *device,
->  	strcpy(acpi_device_class(device), ACPI_PCI_ROOT_CLASS);
->  	device->driver_data = root;
->  
-> +	if (hotadd && dmar_device_hotplug(handle, true)) {
-> +		result = -ENXIO;
-> +		goto end;
-> +	}
-> +
->  	pr_info(PREFIX "%s [%s] (domain %04x %pR)\n",
->  	       acpi_device_name(device), acpi_device_bid(device),
->  	       root->segment, &root->secondary);
-> @@ -583,7 +590,7 @@ static int acpi_pci_root_add(struct acpi_device *device,
->  			root->segment, (unsigned int)root->secondary.start);
->  		device->driver_data = NULL;
->  		result = -ENODEV;
-> -		goto end;
-> +		goto remove_dmar;
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 8b89e33..96755ec 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -1167,7 +1167,7 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
+>  	for (i = 0; i < master->num_streamids; ++i) {
+>  		u32 idx, s2cr;
+>  		idx = master->smrs ? master->smrs[i].idx : master->streamids[i];
+> -		s2cr = (S2CR_TYPE_TRANS << S2CR_TYPE_SHIFT) |
+> +		s2cr = S2CR_TYPE_TRANS |
+>  		       (smmu_domain->root_cfg.cbndx << S2CR_CBNDX_SHIFT);
+>  		writel_relaxed(s2cr, gr0_base + ARM_SMMU_GR0_S2CR(idx));
 >  	}
->  
->  	if (clear_aspm) {
-> @@ -597,7 +604,7 @@ static int acpi_pci_root_add(struct acpi_device *device,
->  	if (device->wakeup.flags.run_wake)
->  		device_set_run_wake(root->bus->bridge, true);
->  
-> -	if (system_state != SYSTEM_BOOTING) {
-> +	if (hotadd) {
->  		pcibios_resource_survey_bus(root->bus);
->  		pci_assign_unassigned_root_bus_resources(root->bus);
->  	}
-> @@ -607,6 +614,9 @@ static int acpi_pci_root_add(struct acpi_device *device,
->  	pci_unlock_rescan_remove();
->  	return 1;
->  
-> +remove_dmar:
-> +	if (hotadd)
-> +		dmar_device_hotplug(handle, false);
-
-I suppose that works if dmar_device_hotplug() returned false before?
-
->  end:
->  	kfree(root);
->  	return result;
-> @@ -625,6 +635,8 @@ static void acpi_pci_root_remove(struct acpi_device *device)
->  
->  	pci_remove_root_bus(root->bus);
->  
-> +	dmar_device_hotplug(device->handle, false);
-> +
->  	pci_unlock_rescan_remove();
->  
->  	kfree(root);
+> -- 
+> 1.7.1
 > 
-
--- 
-I speak only for myself.
-Rafael J. Wysocki, Intel Open Source Technology Center.
+> 
+> 
