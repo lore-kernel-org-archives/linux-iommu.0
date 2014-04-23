@@ -1,160 +1,75 @@
-From: Cho KyongHo <pullip.cho@samsung.com>
-Subject: Re: [PATCH v11 20/27] iommu/exynos: allow having multiple System MMUs
- for a master H/W
-Date: Wed, 23 Apr 2014 10:15:24 +0900
-Message-ID: <20140423101524.4145e9f88300293e0cea92c4@samsung.com>
-References: <20140314141050.c8bedcb66532d277c496796d@samsung.com>
- <CAOD6ATobD8HCJWXeRgoXYaBBuKxy_TPj_AuWOfdPhJRF=Gxz5w@mail.gmail.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH] arm: dma-mapping: Fix mapping size value
+Date: Wed, 23 Apr 2014 10:53:24 +0200
+Message-ID: <53577F84.1080101@samsung.com>
+References: <1398062847-5770-1-git-send-email-ritesh.harjani@gmail.com>
+	<1398062847-5770-2-git-send-email-ritesh.harjani@gmail.com>
+	<20140422085307.GB5747@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <CAOD6ATobD8HCJWXeRgoXYaBBuKxy_TPj_AuWOfdPhJRF=Gxz5w@mail.gmail.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Shaik Ameer Basha <shaik.samsung@gmail.com>
-Cc: Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>, Linux DeviceTree <devicetree@vger.kernel.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux Kernel <linux-kernel@vger.kernel.org>, Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>, Antonios Motakis <a.motakis@virtualopensystems.com>, Grant Grundler <grundler@chromium.org>, Joerg Roedel <joro@8bytes.org>, Kukjin Kim <kgene.kim@samsung.com>, Prathyush <prathyush.k@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Sachin Kamat <sachin.kamat@linaro.org>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Tomasz Figa <t.figa@samsung.com>, Varun Sethi <Varun.Sethi@freescale.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-reply-to: <20140422085307.GB5747-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Ritesh Harjani <ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "mp.vikram-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <mp.vikram-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "menon.vinayak-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <menon.vinayak-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "rmk-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org" <rmk-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 22 Apr 2014 18:53:51 +0530, Shaik Ameer Basha wrote:
-> Hi KyongHo Cho,
-> 
-> 
-> 
-> On Fri, Mar 14, 2014 at 10:40 AM, Cho KyongHo <pullip.cho@samsung.com> wrote:
-> > Some master device descriptor like fimc-is which is an abstraction
-> > of very complex H/W may have multiple System MMUs. For those devices,
-> > the design of the link between System MMU and its master H/W is needed
-> > to be reconsidered.
+Hello,
+
+On 2014-04-22 10:53, Will Deacon wrote:
+> On Mon, Apr 21, 2014 at 07:47:27AM +0100, Ritesh Harjani wrote:
+> > 68efd7d2fb("arm: dma-mapping: remove order parameter from
+> > arm_iommu_create_mapping()") is causing kernel panic
+> > because it wrongly sets the value of mapping->size:
 > >
-> > A link structure, sysmmu_list_data is introduced that provides a link
-> > to master H/W and that has a pointer to the device descriptor of a
-> > System MMU. Given a device descriptor of a master H/W, it is possible
-> > to traverse all System MMUs that must be controlled along with the
-> > master H/W.
+> > Unable to handle kernel NULL pointer dereference at virtual
+> > address 000000a0
+> > pgd = e7a84000
+> > [000000a0] *pgd=00000000
+> > ...
+> > PC is at bitmap_clear+0x48/0xd0
+> > LR is at __iommu_remove_mapping+0x130/0x164
 > >
-> > Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
+> > Fix it by correcting mapping->size value.
+> >
+> > Signed-off-by: Ritesh Harjani <ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> > Acked-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 > > ---
-> >  drivers/iommu/exynos-iommu.c |  534 ++++++++++++++++++++++++++----------------
-> >  1 file changed, 333 insertions(+), 201 deletions(-)
+> >  arch/arm/mm/dma-mapping.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
 > >
-> > diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> > index 84ba29a..7489343 100644
-> > --- a/drivers/iommu/exynos-iommu.c
-> > +++ b/drivers/iommu/exynos-iommu.c
-> > @@ -128,6 +128,10 @@
-> >  #define __master_clk_disable(data)     __clk_gate_ctrl(data, clk_master, dis)
-> >
-> 
-> [snip]
-> 
-> > +static int __init __sysmmu_init_master(struct device *dev)
-> > +{
-> > +       int ret;
-> > +       int i = 0;
-> > +       struct device_node *node;
-> > +
-> > +       while ((node = of_parse_phandle(dev->of_node, "mmu-masters", i++))) {
-> >                 struct platform_device *master = of_find_device_by_node(node);
-> > +               struct exynos_iommu_owner *owner;
-> > +               struct sysmmu_list_data *list_data;
-> >
-> >                 if (!master) {
-> >                         dev_err(dev, "%s: mmu-master '%s' not found\n",
-> >                                 __func__, node->name);
-> > -                       return -EINVAL;
-> > +                       ret = -EINVAL;
-> > +                       goto err;
-> >                 }
-> >
-> > -               if (master->dev.archdata.iommu != NULL) {
-> > -                       dev_err(dev, "%s: '%s' is master of other MMU\n",
-> > -                               __func__, node->name);
-> > -                       return -EINVAL;
-> > +               owner = master->dev.archdata.iommu;
-> > +               if (!owner) {
-> > +                       owner = devm_kzalloc(dev, sizeof(*owner), GFP_KERNEL);
-> > +                       if (!owner) {
-> > +                               dev_err(dev,
-> > +                               "%s: Failed to allocate owner structure\n",
-> > +                               __func__);
-> > +                               ret = -ENOMEM;
-> > +                               goto err;
-> > +                       }
-> > +
-> > +                       INIT_LIST_HEAD(&owner->mmu_list);
-> > +                       INIT_LIST_HEAD(&owner->client);
-> > +                       owner->dev = &master->dev;
-> > +                       spin_lock_init(&owner->lock);
-> > +
-> > +                       master->dev.archdata.iommu = owner;
-> >                 }
-> >
-> > +               list_data = devm_kzalloc(dev, sizeof(*list_data), GFP_KERNEL);
-> > +               if (!list_data) {
-> > +                       dev_err(dev,
-> > +                               "%s: Failed to allocate sysmmu_list_data\n",
-> > +                               __func__);
-> > +                       ret = -ENOMEM;
-> > +                       goto err;
-> > +               }
-> > +
-> > +               INIT_LIST_HEAD(&list_data->entry);
-> > +               list_data->sysmmu = dev;
-> > +
-> >                 /*
-> > -                * archdata.iommu will be initialized with exynos_iommu_client
-> > -                * in sysmmu_hook_driver_register().
-> > +                * System MMUs are attached in the order of the presence
-> > +                * in device tree
-> >                  */
-> > -               master->dev.archdata.iommu = dev;
-> > +               list_add_tail(&list_data->entry, &owner->mmu_list);
-> >         }
-> >
-> > -       data->sysmmu = dev;
-> > -       rwlock_init(&data->lock);
-> > +       return 0;
-> > +err:
-> > +       while ((node = of_parse_phandle(dev->of_node, "mmu-masters", i++))) {
-> 
-> Don't we need to reinitialize variable 'i' here before using?
-> i = 0;
-> 
+> > diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+> > index f62aa06..6b00be1 100644
+> > --- a/arch/arm/mm/dma-mapping.c
+> > +++ b/arch/arm/mm/dma-mapping.c
+> > @@ -1963,8 +1963,8 @@ arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, size_t size)
+> >  	mapping->nr_bitmaps = 1;
+> >  	mapping->extensions = extensions;
+> >  	mapping->base = base;
+> > -	mapping->size = bitmap_size << PAGE_SHIFT;
+> >  	mapping->bits = BITS_PER_BYTE * bitmap_size;
+> > +	mapping->size = mapping->bits << PAGE_SHIFT;
+>
+> Ok, but given that mapping->size is derived from mapping->bits, do we really
+> need both of these fields in struct dma_iommu_mapping?
 
-Oh. You are right.
+You are right. I didn't notice this while I was refactoring the code. 
+Ritesh,
+could you update your patch and simply replace all references of 
+mapping->size
+with (mapping->bits << PAGE_SHIFT), probably with some temporary variable to
+make the code easier to understand? I've didn't apply your patch yet.
 
-Thanks.
-
-> 
-> 
-> 
-> > +               struct platform_device *master = of_find_device_by_node(node);
-> > +               struct exynos_iommu_owner *owner;
-> > +               struct sysmmu_list_data *list_data;
-> >
-> > -       platform_set_drvdata(pdev, data);
-> > +               if (!master)
-> > +                       continue;
-> >
-> > -       pm_runtime_enable(dev);
-> > -       data->runtime_active = !pm_runtime_enabled(dev);
-> > +               owner = master->dev.archdata.iommu;
-> > +               if (!owner)
-> > +                       continue;
-> >
-> > -       dev_dbg(dev, "Probed and initialized\n");
-> > -       return 0;
-> > +               for_each_sysmmu_list(owner->dev, list_data) {
-> > +                       if (list_data->sysmmu == dev) {
-> > +                               list_del(&list_data->entry);
-> > +                               kfree(list_data);
-> > +                               break;
-> > +                       }
-> > +               }
-> > +       }
-> > +
-> > +       return ret;
-> >  }
-> >
-> 
-> [snip]
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
