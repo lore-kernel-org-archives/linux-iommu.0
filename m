@@ -1,7 +1,7 @@
 From: Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
-Subject: [PATCH 1/8] iommu/vt-d: Fix a few existing lines for checkpatch.pl
-Date: Thu, 24 Apr 2014 18:36:31 -0600
-Message-ID: <1398386198-19304-2-git-send-email-bill.sumner@hp.com>
+Subject: [PATCH 2/8] iommu/vt-d: Consolidate lines for a new private header
+Date: Thu, 24 Apr 2014 18:36:32 -0600
+Message-ID: <1398386198-19304-3-git-send-email-bill.sumner@hp.com>
 References: <1398386198-19304-1-git-send-email-bill.sumner@hp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,127 +21,129 @@ To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, indou.takao-+CUm20s59erQFUHtd
 Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, zhenhua-VXdhtT5mjnY@public.gmane.org, bill.sumner-VXdhtT5mjnY@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Things like:
-1. no space before tabs
-2. no initialization of static variables to 0 or NULL
-3. no extra parentheses around the value on the 'return' statement
-4. no line over 80-characters
-
-The first three patches in this set enable the intel-iommu driver to consist
-of multiple *.c source files by moving many of the existing definitions,
-prototypes, and structure definitions from the front of intel-iommu.c into
-a new intel-iommu-private.h file -- and replacing them with a #include
-of that file.  
-
-
-The last five patches in this set use the above enablement to implement,
-within the new source file intel-iommu-kdump.c, a fix for:
-
-A kdump problem about DMA that has been discussed for a long time.
-That is, when a kernel panics and boots into the kdump kernel, DMA that was
-started by the panicked kernel is not stopped before the kdump kernel is booted;
-and the kdump kernel disables the IOMMU while this DMA continues.
-This causes the IOMMU to stop translating the DMA addresses as IOVAs and
-begin to treat them as physical memory addresses -- which causes the DMA to either:
-1. generate DMAR errors or
-2. generate PCI SERR errors or
-3. transfer data to or from incorrect areas of memory.
-Often this causes the dump to fail.
-
-This patch set modifies the behavior of the Intel iommu in the crashdump kernel: 
-1. to accept the iommu hardware in an active state,
-2. to leave the current translations in-place so that legacy DMA will continue
-   using its current buffers until the device drivers in the crashdump kernel
-   initialize and initialize their devices,
-3. to use different portions of the iova address ranges for the device drivers
-   in the crashdump kernel than the iova ranges that were in-use at the time
-   of the panic.  
-
-Advantages of this approach:
-1. All manipulation of the IO-device is done by the Linux device-driver
-   for that device.
-2. This approach behaves in a manner very similar to operation without an
-   active iommu.
-3. Any activity between the IO-device and its RMRR areas is handled by the
-   device-driver in the same manner as during a non-kdump boot.
-4. If an IO-device has no driver in the kdump kernel, it is simply left alone.
-   This supports the practice of creating a special kdump kernel without
-   drivers for any devices that are not required for taking a crashdump. 
-5. Minimal code-changes among the existing mainline intel-iommu code.
-
+ In intel-iommu.c, move downward the few lines near the
+ front that should not move to an intel-iommu-private.h
+ file (mostly data-item definitions.) Also move upward
+ a couple of inline functions that allocate and free pages.
+ This leaves at the front of the file a consolidated block
+ of the lines that would move to an intel-iommu-private.h file.
 
 Signed-off-by: Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
+ drivers/iommu/intel-iommu.c | 74 +++++++++++++++++++++++----------------------
+ 1 file changed, 38 insertions(+), 36 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 69fa7da..f80b4bb 100644
+index f80b4bb..49fdac5 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -69,7 +69,8 @@
-    to match. That way, we can use 'unsigned long' for PFNs with impunity. */
- #define DOMAIN_MAX_PFN(gaw)	((unsigned long) min_t(uint64_t, \
- 				__DOMAIN_MAX_PFN(gaw), (unsigned long)-1))
--#define DOMAIN_MAX_ADDR(gaw)	(((uint64_t)__DOMAIN_MAX_PFN(gaw)) << VTD_PAGE_SHIFT)
-+#define DOMAIN_MAX_ADDR(gaw) (((uint64_t)__DOMAIN_MAX_PFN(gaw)) << \
-+					VTD_PAGE_SHIFT)
+@@ -163,17 +163,6 @@ static inline unsigned long virt_to_dma_pfn(void *p)
+ 	return page_to_dma_pfn(virt_to_page(p));
+ }
  
- #define IOVA_PFN(addr)		((addr) >> PAGE_SHIFT)
- #define DMA_32BIT_PFN		IOVA_PFN(DMA_BIT_MASK(32))
-@@ -172,7 +173,7 @@ static int rwbf_quirk;
-  * set to 1 to panic kernel if can't successfully enable VT-d
-  * (used when kernel is launched w/ TXT)
-  */
--static int force_on = 0;
-+static int force_on;
+-/* global iommu list, set NULL for ignored DMAR units */
+-static struct intel_iommu **g_iommus;
+-
+-static void __init check_tylersburg_isoch(void);
+-static int rwbf_quirk;
+-
+-/*
+- * set to 1 to panic kernel if can't successfully enable VT-d
+- * (used when kernel is launched w/ TXT)
+- */
+-static int force_on;
  
  /*
   * 0: Present
-@@ -187,7 +188,7 @@ struct root_entry {
- #define ROOT_ENTRY_NR (VTD_PAGE_SIZE/sizeof(struct root_entry))
- static inline bool root_present(struct root_entry *root)
- {
--	return (root->val & 1);
-+	return root->val & 1;
- }
- static inline void set_root_present(struct root_entry *root)
- {
-@@ -225,7 +226,7 @@ struct context_entry {
- 
- static inline bool context_present(struct context_entry *context)
- {
--	return (context->lo & 1);
-+	return context->lo & 1;
- }
- static inline void context_set_present(struct context_entry *context)
- {
-@@ -303,7 +304,7 @@ static inline bool dma_pte_present(struct dma_pte *pte)
- 
- static inline bool dma_pte_superpage(struct dma_pte *pte)
- {
--	return (pte->val & (1 << 7));
-+	return pte->val & (1 << 7);
+@@ -312,15 +301,6 @@ static inline int first_pte_in_page(struct dma_pte *pte)
+ 	return !((unsigned long)pte & ~VTD_PAGE_MASK);
  }
  
- static inline int first_pte_in_page(struct dma_pte *pte)
-@@ -314,7 +315,7 @@ static inline int first_pte_in_page(struct dma_pte *pte)
- /*
-  * This domain is a statically identity mapping domain.
-  *	1. This domain creats a static 1:1 mapping to all usable memory.
-- * 	2. It maps to each iommu if successful.
+-/*
+- * This domain is a statically identity mapping domain.
+- *	1. This domain creats a static 1:1 mapping to all usable memory.
+- *	2. It maps to each iommu if successful.
+- *	3. Each iommu mapps to this domain if successful.
+- */
+-static struct dmar_domain *si_domain;
+-static int hw_pass_through = 1;
+-
+ /* devices under the same p2p bridge are owned in one domain */
+ #define DOMAIN_FLAG_P2P_MULTIPLE_DEVICES (1 << 0)
+ 
+@@ -394,12 +374,50 @@ struct dmar_atsr_unit {
+ 	u8 include_all:1;		/* include all ports */
+ };
+ 
++static inline void *alloc_pgtable_page(int node)
++{
++	struct page *page;
++	void *vaddr = NULL;
++
++	page = alloc_pages_node(node, GFP_ATOMIC | __GFP_ZERO, 0);
++	if (page)
++		vaddr = page_address(page);
++	return vaddr;
++}
++
++static inline void free_pgtable_page(void *vaddr)
++{
++	free_page((unsigned long)vaddr);
++}
++
+ static LIST_HEAD(dmar_atsr_units);
+ static LIST_HEAD(dmar_rmrr_units);
+ 
+ #define for_each_rmrr_units(rmrr) \
+ 	list_for_each_entry(rmrr, &dmar_rmrr_units, list)
+ 
++
++static void __init check_tylersburg_isoch(void);
++
++/* global iommu list, set NULL for ignored DMAR units */
++static struct intel_iommu **g_iommus;
++static int rwbf_quirk;
++
++/*
++ * set to 1 to panic kernel if can't successfully enable VT-d
++ * (used when kernel is launched w/ TXT)
++ */
++static int force_on;
++
++/*
++ * This domain is a statically identity mapping domain.
++ *	1. This domain creats a static 1:1 mapping to all usable memory.
 + *	2. It maps to each iommu if successful.
-  *	3. Each iommu mapps to this domain if successful.
-  */
- static struct dmar_domain *si_domain;
-@@ -344,7 +345,7 @@ struct dmar_domain {
- 	DECLARE_BITMAP(iommu_bmp, IOMMU_UNITS_SUPPORTED);
- 					/* bitmap of iommus this domain uses*/
++ *	3. Each iommu mapps to this domain if successful.
++ */
++static struct dmar_domain *si_domain;
++static int hw_pass_through = 1;
++
+ static void flush_unmaps_timeout(unsigned long data);
  
--	struct list_head devices; 	/* all devices' list */
-+	struct list_head devices;	/* all devices' list */
- 	struct iova_domain iovad;	/* iova's that belong to this domain */
+ static DEFINE_TIMER(unmap_timer,  flush_unmaps_timeout, 0, 0);
+@@ -494,22 +512,6 @@ static struct kmem_cache *iommu_domain_cache;
+ static struct kmem_cache *iommu_devinfo_cache;
+ static struct kmem_cache *iommu_iova_cache;
  
- 	struct dma_pte	*pgd;		/* virtual address */
+-static inline void *alloc_pgtable_page(int node)
+-{
+-	struct page *page;
+-	void *vaddr = NULL;
+-
+-	page = alloc_pages_node(node, GFP_ATOMIC | __GFP_ZERO, 0);
+-	if (page)
+-		vaddr = page_address(page);
+-	return vaddr;
+-}
+-
+-static inline void free_pgtable_page(void *vaddr)
+-{
+-	free_page((unsigned long)vaddr);
+-}
+-
+ static inline void *alloc_domain_mem(void)
+ {
+ 	return kmem_cache_alloc(iommu_domain_cache, GFP_ATOMIC);
 -- 
 Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
