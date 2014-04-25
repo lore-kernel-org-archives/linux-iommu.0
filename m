@@ -1,255 +1,83 @@
 From: Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
-Subject: [PATCH 8/8] iommu/vt-d: Changes to support kdump
-Date: Thu, 24 Apr 2014 18:36:38 -0600
-Message-ID: <1398386198-19304-9-git-send-email-bill.sumner@hp.com>
+Subject: [PATCH 7/8] iommu/vt-d: Add domain-id functions to intel-iommu-kdump.c
+Date: Thu, 24 Apr 2014 18:36:37 -0600
+Message-ID: <1398386198-19304-8-git-send-email-bill.sumner@hp.com>
 References: <1398386198-19304-1-git-send-email-bill.sumner@hp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <kexec-bounces+glkk-kexec=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 In-Reply-To: <1398386198-19304-1-git-send-email-bill.sumner-VXdhtT5mjnY@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/kexec>,
+ <mailto:kexec-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/kexec/>
+List-Post: <mailto:kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:kexec-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/kexec>,
+ <mailto:kexec-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "kexec" <kexec-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: kexec-bounces+glkk-kexec=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, zhenhua-VXdhtT5mjnY@public.gmane.org, bill.sumner-VXdhtT5mjnY@public.gmane.org
+Cc: jerry.hoemann-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, zhenhua-VXdhtT5mjnY@public.gmane.org, bill.sumner-VXdhtT5mjnY@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
- Add "#include <linux/crash_dump.h>" to gain access to is_kdump_kernel()
-
- Modify the operation of the following functions when called during crash dump:
- device_to_domain_id
- get_domain_for_dev
- init_dmars
- intel_iommu_init
+Interfaces for when a new domain in the crashdump kernel needs some
+values from the panicked kernel's context entries.
 
 Signed-off-by: Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 133 +++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 120 insertions(+), 13 deletions(-)
+ drivers/iommu/intel-iommu-kdump.c | 39 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 39 insertions(+)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 226c1d0..8b3e509 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -46,6 +46,7 @@
- #include "irq_remapping.h"
- #include "pci.h"
- #include "intel-iommu-private.h"
-+#include <linux/crash_dump.h>
+diff --git a/drivers/iommu/intel-iommu-kdump.c b/drivers/iommu/intel-iommu-kdump.c
+index 4e653e048..f3c777e 100644
+--- a/drivers/iommu/intel-iommu-kdump.c
++++ b/drivers/iommu/intel-iommu-kdump.c
+@@ -53,6 +53,45 @@ static struct list_head *domain_values_list;
  
- static LIST_HEAD(dmar_atsr_units);
- static LIST_HEAD(dmar_rmrr_units);
-@@ -53,6 +54,7 @@ static LIST_HEAD(dmar_rmrr_units);
- #define for_each_rmrr_units(rmrr) \
- 	list_for_each_entry(rmrr, &dmar_rmrr_units, list)
  
-+static int intel_iommu_in_crashdump;
- 
- static void __init check_tylersburg_isoch(void);
- 
-@@ -1796,6 +1798,24 @@ static void domain_remove_dev_info(struct dmar_domain *domain)
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
- }
- 
-+#ifdef CONFIG_CRASH_DUMP
-+static int device_to_domain_id(struct intel_iommu *iommu, u8 bus, u8 devfn)
+ /* ========================================================================
++ * Interfaces for when a new domain in the crashdump kernel needs some
++ * values from the panicked kernel's context entries
++ * ------------------------------------------------------------------------
++ */
++
++
++struct domain_values_entry *intel_iommu_did_to_domain_values_entry(int did,
++		struct intel_iommu *iommu)
 +{
-+	int did = -1;			/* domain-id returned */
-+	struct root_entry *root;
-+	struct context_entry *context;
-+	unsigned long flags;
++	struct domain_values_entry *dve;	/* iterator */
 +
-+	spin_lock_irqsave(&iommu->lock, flags);
-+	root = &iommu->root_entry[bus];
-+	context = get_context_addr_from_root(root);
-+	if (context && context_present(context+devfn))
-+		did = context_get_did(context+devfn);
-+	spin_unlock_irqrestore(&iommu->lock, flags);
-+	return did;
++	list_for_each_entry(dve, &domain_values_list[iommu->seq_id], link)
++		if (dve->did == did)
++			return dve;
++	return NULL;
 +}
-+#endif /* CONFIG_CRASH_DUMP */
 +
- /*
-  * find_domain
-  * Note: we use struct device->archdata.iommu stores the info
-@@ -1880,6 +1900,9 @@ static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
- 	unsigned long flags;
- 	u8 bus, devfn, bridge_bus, bridge_devfn;
- 	int did = -1;   /* Default to "no domain_id supplied" */
-+#ifdef CONFIG_CRASH_DUMP
-+	struct domain_values_entry *dve = NULL;
-+#endif /* CONFIG_CRASH_DUMP */
- 
- 	domain = find_domain(dev);
- 	if (domain)
-@@ -1920,6 +1943,24 @@ static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
- 	domain = alloc_domain(false);
- 	if (!domain)
- 		goto error;
 +
-+#ifdef CONFIG_CRASH_DUMP
-+	if (intel_iommu_in_crashdump) {
-+		/*
-+		 * if this device had a did in the old kernel
-+		 * use its values instead of generating new ones
-+		 */
-+		did = device_to_domain_id(iommu, bus, devfn);
-+		if (did > 0 || (did == 0 && !cap_caching_mode(iommu->cap)))
-+			dve = intel_iommu_did_to_domain_values_entry(did,
-+								iommu);
-+		if (dve)
-+			gaw = dve->gaw;
-+		else
-+			did = -1;
++/* Mark domain-id's from old kernel as in-use on this iommu so that a new
++ * domain-id is allocated in the case where there is a device in the new kernel
++ * that was not in the old kernel -- and therefore a new domain-id is needed.
++ */
++int intel_iommu_get_dids_from_old_kernel(struct intel_iommu *iommu)
++{
++	struct domain_values_entry *dve;	/* iterator */
++
++	pr_info("IOMMU:%d Domain ids from panicked kernel:\n", iommu->seq_id);
++
++	list_for_each_entry(dve, &domain_values_list[iommu->seq_id], link) {
++		set_bit(dve->did, iommu->domain_ids);
++		pr_info("DID did:%d(0x%4.4x)\n", dve->did, dve->did);
 +	}
-+#endif /* CONFIG_CRASH_DUMP */
 +
- 	if (iommu_attach_domain(domain, iommu, did)) {
- 		free_domain_mem(domain);
- 		domain = NULL;
-@@ -1929,6 +1970,18 @@ static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
- 	if (domain_init(domain, gaw))
- 		goto error;
- 
-+#ifdef CONFIG_CRASH_DUMP
-+	if (intel_iommu_in_crashdump && dve) {
++	pr_info("----------------------------------------\n");
++	return 0;
++}
 +
-+		if (domain->pgd)
-+			free_pgtable_page(domain->pgd);
 +
-+		domain->pgd = dve->pgd;
-+
-+		copy_reserved_iova(&dve->iovad, &domain->iovad);
-+	}
-+#endif /* CONFIG_CRASH_DUMP */
-+
- 	/* register pcie-to-pci device */
- 	if (dev_tmp) {
- 		domain = dmar_insert_dev_info(iommu, bridge_bus, bridge_devfn,
-@@ -2331,6 +2384,10 @@ static int __init init_dmars(void)
- 	struct device *dev;
- 	struct intel_iommu *iommu;
- 	int i, ret;
-+#ifdef CONFIG_CRASH_DUMP
-+	struct root_entry *root_old_phys;
-+	struct root_entry *root_new_virt;
-+#endif /* CONFIG_CRASH_DUMP */
- 
- 	/*
- 	 * for each drhd
-@@ -2374,16 +2431,40 @@ static int __init init_dmars(void)
- 		if (ret)
- 			goto free_iommu;
- 
--		/*
--		 * TBD:
--		 * we could share the same root & context tables
--		 * among all IOMMU's. Need to Split it later.
--		 */
--		ret = iommu_alloc_root_entry(iommu);
--		if (ret) {
--			printk(KERN_ERR "IOMMU: allocate root entry failed\n");
--			goto free_iommu;
-+#ifdef CONFIG_CRASH_DUMP
-+		if (intel_iommu_in_crashdump) {
-+			pr_info("IOMMU Copying translate tables from panicked kernel\n");
-+			ret = intel_iommu_copy_translation_tables(drhd,
-+					&root_old_phys, &root_new_virt,
-+					g_num_of_iommus);
-+			if (ret) {
-+				pr_err("IOMMU: Copy translate tables failed\n");
-+
-+				/* Best to stop trying */
-+				intel_iommu_in_crashdump = false;
-+				goto error;
-+			}
-+			iommu->root_entry = root_new_virt;
-+			pr_info("IOMMU: root_new_virt:0x%12.12llx phys:0x%12.12llx\n",
-+				(u64)root_new_virt,
-+				virt_to_phys(root_new_virt));
-+			intel_iommu_get_dids_from_old_kernel(iommu);
-+		} else {
-+#endif /* CONFIG_CRASH_DUMP */
-+			/*
-+			 * TBD:
-+			 * we could share the same root & context tables
-+			 * among all IOMMU's. Need to Split it later.
-+			 */
-+			ret = iommu_alloc_root_entry(iommu);
-+			if (ret) {
-+				printk(KERN_ERR "IOMMU: allocate root entry failed\n");
-+				goto free_iommu;
-+			}
-+#ifdef CONFIG_CRASH_DUMP
- 		}
-+#endif /* CONFIG_CRASH_DUMP */
-+
- 		if (!ecap_pass_through(iommu->ecap))
- 			hw_pass_through = 0;
- 	}
-@@ -2442,6 +2523,16 @@ static int __init init_dmars(void)
- 
- 	check_tylersburg_isoch();
- 
-+#ifdef CONFIG_CRASH_DUMP
-+	/*
-+	 * In the crashdump kernel: Skip setting-up new domains for
-+	 * si, rmrr, and the isa bus on the expectation that these
-+	 * translations were copied from the old kernel.
-+	 */
-+	if (intel_iommu_in_crashdump)
-+		goto skip_new_domains_for_si_rmrr_isa;
-+#endif /* CONFIG_CRASH_DUMP */
-+
- 	/*
- 	 * If pass through is not set or not enabled, setup context entries for
- 	 * identity mappings for rmrr, gfx, and isa and may fall back to static
-@@ -2482,6 +2573,10 @@ static int __init init_dmars(void)
- 
- 	iommu_prepare_isa();
- 
-+#ifdef CONFIG_CRASH_DUMP
-+skip_new_domains_for_si_rmrr_isa:;
-+#endif /* CONFIG_CRASH_DUMP */
-+
- 	/*
- 	 * for each drhd
- 	 *   enable fault log
-@@ -3624,12 +3719,24 @@ int __init intel_iommu_init(void)
- 		goto out_free_dmar;
- 	}
- 
-+#ifdef CONFIG_CRASH_DUMP
- 	/*
--	 * Disable translation if already enabled prior to OS handover.
-+	 * If (This is the crash kernel)
-+	 *    Set: copy iommu translate tables from old kernel
-+	 *    Skip disabling the iommu hardware translations
- 	 */
--	for_each_active_iommu(iommu, drhd)
--		if (iommu->gcmd & DMA_GCMD_TE)
--			iommu_disable_translation(iommu);
-+	if (is_kdump_kernel()) {
-+		intel_iommu_in_crashdump = true;
-+		pr_info("IOMMU intel_iommu_in_crashdump = true\n");
-+		pr_info("IOMMU Skip disabling iommu hardware translations\n");
-+	} else
-+#endif /* CONFIG_CRASH_DUMP */
-+		/*
-+		 * Disable translation if already enabled prior to OS handover.
-+		 */
-+		for_each_active_iommu(iommu, drhd)
-+			if (iommu->gcmd & DMA_GCMD_TE)
-+				iommu_disable_translation(iommu);
- 
- 	if (dmar_dev_scope_init() < 0) {
- 		if (force_on)
++/* ========================================================================
+  * Copy iommu translation tables from old kernel into new  kernel.
+  * Entry to this set of functions is: intel_iommu_copy_translation_tables()
+  * ------------------------------------------------------------------------
 -- 
 Bill Sumner <bill.sumner-VXdhtT5mjnY@public.gmane.org>
