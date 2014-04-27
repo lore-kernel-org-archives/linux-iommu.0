@@ -1,155 +1,225 @@
-From: Ritesh Harjani <ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: IOMMU DMA-mapping API for arm64 ?
-Date: Sat, 26 Apr 2014 19:58:37 +0530
-Message-ID: <CAD15aga3VAHH9aV134tfp+CgA8x25R_H4DKoPKNkFyAC9FTxBg@mail.gmail.com>
-References: <CAD15agaps45rZT5ko9JKP2CfRF_iTV+0JMDwa239ExgKrRzBYQ@mail.gmail.com>
-	<201402272006.51057.arnd@arndb.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <201402272006.51057.arnd-r2nGTMty4D4@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+From: Shaik Ameer Basha <shaik.ameer@samsung.com>
+Subject: [PATCH v12 00/31] iommu/exynos: Fixes and Enhancements of System MMU
+ driver with DT
+Date: Sun, 27 Apr 2014 13:07:32 +0530
+Message-ID: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: kgene.kim@samsung.com, tomasz.figa@gmail.com, pullip.cho@samsung.com, a.motakis@virtualopensystems.com, grundler@chromium.org, joro@8bytes.org, prathyush.k@samsung.com, rahul.sharma@samsung.com, sachin.kamat@linaro.org, supash.ramaswamy@linaro.org, Varun.Sethi@freescale.com, s.nawrocki@samsung.com, t.figa@samsung.com, joshi@samsung.com, Shaik Ameer Basha <shaik.ameer@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Guys,
+The current exynos-iommu(System MMU) driver does not work autonomously
+since it is lack of support for power management of peripheral blocks.
+For example, MFC device driver must ensure that its System MMU is disabled
+before MFC block is power-down not to invalidate IOTLB in the System MMU
+when I/O memory mapping is changed. Because a System MMU resides in the
+same H/W block, access to control registers of System MMU while the H/W
+block is turned off must be prohibited.
 
-Need again some help in deciding which all functions/Data structures
-needs to be moved out from arch/arm/mm/dma-mapping to
-lib/iommu-helper.c.
+This set of changes solves the above problem with setting each System MMUs
+as the parent of the device which owns the System MMU to receive the
+information when the device is turned off or turned on.
 
-1. There is this dma_iommu_mapping structure defination in
-arch/arm/include/asm/dma-iommu.h. In arm this structure is declared as
-"mapping" which is part of dev_archdata structure, which is used for
-IOVA management.
-Now, does this make sense to move this structure out to
-include/linux/iommu-helper.h ? And define a config like
-CONFIG_IOMMU_USE_HELPER_MAPPING (default n) which will be used to,
-have a variable("mapping") defined or not in dev_archdata of all
-archs.
+Another big change to the driver is the support for devicetree.
+The bindings for System MMU is described in
+Documentation/devicetree/bindings/arm/samsung/system-mmu.txt
 
-    a. With this IOVA management can be completely moved out
-lib/iommu-helper.c. And as Arnd said(below) this will be
-implementation specific and will not be visible to architectures in
-the header file.
-    b. buffer allocation can be either ways moved out to
-lib/iommu-helper.c. Except the atomic allocations (as of 1st step
-atleast) which is part of arch/arm/mm/dma-mapping.c
+In addition, this patchset also includes several bug fixes and enhancements
+of the current driver.
 
-Taking this above step, following are functions can be moved out:
+Change log:
+v12:
+- Rebased to the latest 3.15-rc2 master branch
+  git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/master (3.15-rc2)
+- Addressed v11 review comments from
+	'Sachin Kamat', 'Tomasz Figa' and 'Shaik Ameer Basha'
+- Uses macro names instead of magic numbers for clock description in DT
+- Moved DT binding document to seperate patch
+- dtsi changes are separated into multiple patches
+- patch description of some patches are updated according to the review comments
+- removed the macros which hides the clock operations
+- review comments related to compatible strings will be fixed in followup patches
 
-extern void __iommu_detach_device(struct device *dev);
-extern int __iommu_attach_device(struct device *dev, struct
-dma_iommu_mapping *mapping);
-extern void __iommu_release_mapping(struct dma_iommu_mapping *mapping);
-extern struct dma_iommu_mapping *__iommu_init_mapping(struct bus_type
-*bus, dma_addr_t base, size_t size);
+v11:
+- Rebased on the latest works on clock, arm/samsung, iommu branches
+- Change the property to link System MMU and its master H/W
+  'iommu' in the master's node -> 'mmu-masters' in the System MMU's node
+- Changed compatible string:
+  "samsung,sysmmu-v1"
+  "samsung,sysmmu-v2"
+  "samsung,sysmmu-v3.1"
+  "samsung,sysmmu-v3.2"
+  "samsung,sysmmu-v3.3"
+- Change the implementation of retrieving System MMU version -> simpler
+- Check NULL pointer before call to clk_enable() and clk_disable()
+- Allow a single master to link to multiple System MMUs.
+  (fimc-is, fimd/g2d/Scaler in Exynos5420)
+- Workarounds of known problems of System MMU
+- Code enhancements:
+  * Compilable for 64-bit
+  * Enhanced error messages
 
-__iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
-void *cpu_addr, dma_addr_t dma_addr, size_t size,
-dma_addr_t iommu_coherent_map_page(struct device *dev, struct page
-*page, unsigned long offset, size_t size, enum dma_data_direction dir,
-struct dma_attrs *attrs)
-void iommu_coherent_unmap_page(struct device *dev, dma_addr_t handle,
-size_t size, enum dma_data_direction dir, struct dma_attrs *attrs)
-int iommu_coherent_map_sg(struct device *dev, struct scatterlist *sg,
-int nents, enum dma_data_direction dir, struct dma_attrs *attrs)
+v10:
+- Rebased on the following branches
+  git.linaro.org/git-ro/people/mturquette/linux.git/clk-next
+  git.kernel.org/pub/scm/linux/kernel/git/kgene/linux-samsung.git/for-next
+  git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git/next
+  git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/master (3.12-rc3)
+- Set parent clock to all System MMU clocks.
+- Add clock and DT descriptos for Exynos5420
+- Modified error handling in exynos_iommu_init()
+- Split "iommu/exynos: support for device tree" patch into the following 6 patches
+  iommu/exynos: handle only one instance of System MMU
+  iommu/exynos: always enable runtime PM
+  iommu/exynos: always use a single clock descriptor
+  iommu/exynos: remove dbgname from drvdata of a System MMU
+  iommu/exynos: use managed driver helper functions
+  iommu/exynos: support for device tree
+- Remove 'interrupt-names' and 'status' properties from DT
+- Change n:1 relationship between master:System MMU into 1:1 relationship.
+- Removed custom fault handler and print the status of System MMU
+  whenever System MMU fault is occurred.
+- Post Antonios Motakis's commit together:
+  "iommu/exynos: add devices attached to the System MMU to an IOMMU group"
 
-and there are some more...
+v9:
+- Rebased on the following branches
+  git.linaro.org/git-ro/people/mturquette/linux.git/clk-next
+  git.kernel.org/pub/scm/linux/kernel/git/kgene/linux-samsung.git/samsung-next
+  git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/master (3.11-rc4)
+- Split "add bus notifier for registering System MMU" into 5 patches
+- Call clk_prepare() that was missing in v8.
+- Fixed base address of sysmmu_tv in exynos4210.dtsi
+- BUG_ON() instead of return -EADDRINUSE when trying mapping on an mapped area
+- Moved camif_top to 317 in drivers/clk/samsung/clk-exynos5250.c
+- Removed 'iommu' property from 'codec'(mfc) node
+- Does not make 'master' clock to be the parent of 'sysmmu' clock.
+   'master' clock is enabled before accessing control registers of System MMU
+   and disabled after the access.
 
-Current users of this refactored code to lib/iommu-helper.c will be
-arm and arm64.
+v8:
+- Reordered patch list: moved "change rwloc to spinlock" to the last.
+- Fixed remained bug in "fix page table maintenance".
+- Always return 0 from exynos_iommu_attach_device().
+- Removed prefetch buffer setting when System MMU is enabled
+  due to the restriction of prefetch buffers:
+  A prefetch buffer must not hit from more than one DMA.
+  For instance with GScalers, if a single prefetch buffer is initialized
+  with 0x0 ~ 0xFFFFFFFF and a GScaler works on source buffer at 0x10000000
+  and target buffer @ 0x20000000, the System MMU may be got deadlock.
+  Clients must initialize prefetch buffers with custom function defined
+  in exynos-iommu drivers whenever they need to enable prefetch buffers.
+- The clock of System MMU has no relationship with the clock of its master H/W.
+  The clock of master H/W is always enabled when exynos-iommu driver needs to
+  access MMIO area and disabled as soon as the access finishes.
+- Removed err_page variable used in exynos_iommu_unmap() in the previous patch
+  "fix page table maintenance".
+- Split a big patch "add bus notifier for registering System MMU".
+   Extracted the following 2 patches: 9/12 and 10/12.
+- And some additional fixes...
 
+v7:
+- Rebased on the stable 3.10
+- Registered PM domains and gate clocks with DT
+- Changed connection method between a System MMU and its master H/W
+   'mmu-master' property in the node of System MMU
+   --> 'iommu' property in the node of master H/W
+- Marking device descriptor of master H/W of a System MMU with bus notifier.
+- Power management (PM_RUNTIME, PM_SLEEP) of System MMUs with gpd_dev_ops
+   of Generic IO Powerdomain. gpd_dev_ops are set to the master H/Ws
+   before they are probed in the bus notifier.
+- Removed additional debugging features like debugfs entries and
+   version names.
+- Removed support for advanced features of System MMU 3.2 and 3.3
+   the current IOMMU API cannot handle the feature
+  (A kind of L2 TLB that fetches several consequence page table entries.
+   It must be initialized by the driver of master H/W whenever it works.)
 
-2. Now, if we don't bring this structure outside, there will be little
-code which can be moved out. Following functions are what I can think
-of:
+v6:
+- Rebased on the branch, next/iommu-exynos of
+  git.kernel.org/pub/scm/linux/kernel/git/kgene/linux-samsung.git
 
-struct page **iommu_alloc_buffer(struct device *dev, size_t size,
-gfp_t gfp, struct dma_attrs *attrs);
-int iommu_free_buffer(struct device *dev, struct page **pages, size_t
-size, struct dma_attrs *attrs);
-int iommu_map_pages(struct iommu_domain *domain, struct page **pages,
-dma_addr_t iova, size_t size);
-int iommu_dma_direction_to_prot(enum dma_data_direction dir);
-void *iommu_alloc_remap(struct page **pages, size_t size, unsigned
-long flags, pgprot_t prot, const void *caller);
-int iommu_mmap_pages_prot(struct vm_area_struct *vma, struct page
-**pages, pgprot_t prot);
-and also say iommu_map_sg (excluing alloc_iova).
+v5:
+- new bugfix: patch 01
+- Reordered patches
+  * patch 01 ~ 05: Bugfix and enhancements of the existing driver
+  * patch 06 ~ 10: Device Tree support and callbacks for power management
+  * patch 11     : System MMU 3.2 and 3.3 support
+  * patch 12 ~ 14: Debugging features
+- Additional code compaction
 
+v4:
+- Remove Change-Id from v3 patches
+- Change the order of the third and the first patch
+  Thanks to Kukjin Kim.
+- Fix memory leak when allocating and assigning exynos_iommu_owner to client
+  device if the client device has multiple System MMUs.
+  Thanks to Rahul Sharma.
 
+v3:
+- Fix prefetch buffer flag definition for System MMU 3.3 (patch 10/12)
+- Fix incorrect setting for SET_RUNTIME_PM_OPS (patch 09/12)
+  Thanks to Prathyush.
 
-This might sound like too much to ask, but because of many arch's
-dev_archdata will be affected, its a bit confusing to take this
-decision.
-I felt its better to ask before and have a theoretical design ready,
-instead of cribbing my head to redo the design after the incorrect
-changes.
+v2:
+- Split the patch to iommu/exynos into 9 patches
+- Support for System MMU 3.3
+- Some code compaction
 
+Antonios Motakis (1):
+  iommu/exynos: add devices attached to the System MMU to an IOMMU
+    group
 
-Please let me know your thought on this.
+Cho KyongHo (30):
+  iommu/exynos: do not include removed header
+  iommu/exynos: add missing cache flush for removed page table entries
+  iommu/exynos: change error handling when page table update is failed
+  iommu/exynos: fix L2TLB invalidation
+  iommu/exynos: remove prefetch buffer setting
+  iommu/exynos: allocate lv2 page table from own slab
+  iommu/exynos: always enable runtime PM
+  iommu/exynos: handle one instance of sysmmu with a device descriptor
+  iommu/exynos: remove dbgname from drvdata of a System MMU
+  iommu/exynos: use managed device helper functions
+  documentation: iommu: add binding document of Exynos System MMU
+  iommu/exynos: support for device tree
+  iommu/exynos: gating clocks of master H/W
+  iommu/exynos: remove custom fault handler
+  iommu/exynos: handle 'mmu-masters' property of DT and improve
+    handling sysmmu
+  iommu/exynos: turn on useful configuration options
+  iommu/exynos: add support for power management subsystems.
+  iommu/exynos: allow having multiple System MMUs for a master H/W
+  iommu/exynos: change rwlock to spinlock
+  iommu/exynos: fix address handling
+  iommu/exynos: use exynos-iommu specific typedef
+  iommu/exynos: use simpler function to get MMU version
+  iommu/exynos: apply workaround of caching fault page table entries
+  iommu/exynos: enhanced error messages
+  clk: exynos: add gate clock descriptions of System MMU
+  ARM: dts: add System MMU nodes of exynos4 series
+  ARM: dts: add System MMU nodes of exynos4210
+  ARM: dts: add System MMU nodes of exynos4x12
+  ARM: dts: add System MMU nodes of exynos5250
+  ARM: dts: add System MMU nodes of exynos5420
 
+ .../devicetree/bindings/iommu/samsung,sysmmu.txt   |   79 ++
+ arch/arm/Kconfig                                   |    2 +
+ arch/arm/boot/dts/exynos4.dtsi                     |  107 ++
+ arch/arm/boot/dts/exynos4210.dtsi                  |   23 +-
+ arch/arm/boot/dts/exynos4x12.dtsi                  |   78 +-
+ arch/arm/boot/dts/exynos5250.dtsi                  |  270 +++-
+ arch/arm/boot/dts/exynos5420.dtsi                  |  209 ++-
+ drivers/clk/samsung/clk-exynos5250.c               |   36 +
+ drivers/clk/samsung/clk-exynos5420.c               |   13 +-
+ drivers/iommu/Kconfig                              |    8 +-
+ drivers/iommu/exynos-iommu.c                       | 1436 ++++++++++++++------
+ include/dt-bindings/clock/exynos5250.h             |   17 +
+ include/dt-bindings/clock/exynos5420.h             |    6 +-
+ 13 files changed, 1852 insertions(+), 432 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iommu/samsung,sysmmu.txt
+ mode change 100644 => 100755 drivers/iommu/exynos-iommu.c
 
-
-On Fri, Feb 28, 2014 at 12:36 AM, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> wrote:
-> On Thursday 27 February 2014, Ritesh Harjani wrote:
->> Hi Everyone,
->>
->> I was going through some iommu code in arch/arm and of some other
->> archs code. I have some doubts on this for refactoring and may need
->> some suggestions from you guys.
->>
->> 1. So, looking at other arch code, looks like they have their
->> different way of implementation of iova management and buffer
->> allocation. So to refactor the iommu common code out from arch/arm/ to
->> lib/iommu-helper, do we need to take care across all arch  ?
->
-> I'd say not initially. The code can easily live in a generic place
-> but not be shared by everyone. If it turns out that another architecture
-> has a better allocator, then we can always change the common code
-> later.
->
->> 2. Should the approach be like take the common code(between arm/arm64)
->> and move it into lib/iommu-helper.c ?
->>
->> Could someone give an example of what sort of code(will be better if
->> this is little more specific) we are talking here to be taken out to
->> lib/iommu-helper.c ? Earlier I was thinking of iova management can be
->> taken out but then I saw it might not be suited across all archs.
->>
->> I am ready to do this work, but need some guidance from the experts .
->
-> I think we should start by splitting out the iommu_coherent_ops structure
-> and everything that depends on. Noncoherent DMA is harder to do in
-> an architecture independent way, since we don't have a common way
-> to manage the cache across architectures. It would also be good
-> to follow the example of include/linux/swiotlb.h regarding the
-> public interface, to keep that part common. This way, ARM can easily
-> implement the noncoherent ops on top.
-
-I think we can follow step 1 above, and move most of code to
-lib/iommu-helper.h. Currently anyways only arm and arm64 will be using
-this code.
-Later based on the need of different archs, this code can be modified ??
-
-
->
-> I would leave the iova management as implementation details and
-> not make that visible to architectures in the header file.
->
->         Arnd
-
-
-Thanks
-Ritesh
+-- 
+1.7.9.5
