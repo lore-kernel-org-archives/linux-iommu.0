@@ -1,7 +1,7 @@
 From: Shaik Ameer Basha <shaik.ameer@samsung.com>
-Subject: [PATCH v12 10/31] iommu/exynos: use managed device helper functions
-Date: Sun, 27 Apr 2014 13:07:42 +0530
-Message-ID: <1398584283-22846-11-git-send-email-shaik.ameer@samsung.com>
+Subject: [PATCH v12 13/31] iommu/exynos: gating clocks of master H/W
+Date: Sun, 27 Apr 2014 13:07:45 +0530
+Message-ID: <1398584283-22846-14-git-send-email-shaik.ameer@samsung.com>
 References: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,127 +23,139 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Cho KyongHo <pullip.cho@samsung.com>
 
-This patch uses managed device helper functions in the probe().
+This patch gates clocks of master H/W as well as clocks of System MMU
+if master clocks are specified.
 
+Some Exynos SoCs (i.e. GScalers in Exynos5250) have dependencies in
+the gating clocks of master H/W and its System MMU. If a H/W is the
+case, accessing control registers of System MMU is prohibited unless
+both of the gating clocks of System MMU and its master H/W.
+
+CC: Tomasz Figa <t.figa@samsung.com>
 Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
 ---
- drivers/iommu/exynos-iommu.c |   68 ++++++++++++++++--------------------------
- 1 file changed, 25 insertions(+), 43 deletions(-)
+ drivers/iommu/exynos-iommu.c |   40 ++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 38 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 1af2d23..0f1d3f0 100755
+index cbb9b67..ba477c4 100755
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -342,8 +342,7 @@ static bool __exynos_sysmmu_disable(struct sysmmu_drvdata *data)
+@@ -172,6 +172,7 @@ struct sysmmu_drvdata {
+ 	struct device *dev;	/* Owner of system MMU */
+ 	void __iomem *sfrbase;
+ 	struct clk *clk;
++	struct clk *clk_master;
+ 	int activations;
+ 	rwlock_t lock;
+ 	struct iommu_domain *domain;
+@@ -300,6 +301,8 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
  
+ 	WARN_ON(!is_sysmmu_active(data));
+ 
++	if (!IS_ERR(data->clk_master))
++		clk_enable(data->clk_master);
+ 	itype = (enum exynos_sysmmu_inttype)
+ 		__ffs(__raw_readl(data->sfrbase + REG_INT_STATUS));
+ 	if (WARN_ON(!((itype >= 0) && (itype < SYSMMU_FAULT_UNKNOWN))))
+@@ -326,6 +329,9 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
+ 	if (itype != SYSMMU_FAULT_UNKNOWN)
+ 		sysmmu_unblock(data->sfrbase);
+ 
++	if (!IS_ERR(data->clk_master))
++		clk_disable(data->clk_master);
++
+ 	read_unlock(&data->lock);
+ 
+ 	return IRQ_HANDLED;
+@@ -341,9 +347,14 @@ static bool __exynos_sysmmu_disable(struct sysmmu_drvdata *data)
+ 	if (!set_sysmmu_inactive(data))
+ 		goto finish;
+ 
++	if (!IS_ERR(data->clk_master))
++		clk_enable(data->clk_master);
++
  	__raw_writel(CTRL_DISABLE, data->sfrbase + REG_MMU_CTRL);
  
--	if (!IS_ERR(data->clk))
--		clk_disable(data->clk);
-+	clk_disable(data->clk);
+ 	clk_disable(data->clk);
++	if (!IS_ERR(data->clk_master))
++		clk_disable(data->clk_master);
  
  	disabled = true;
  	data->pgtable = 0;
-@@ -386,8 +385,7 @@ static int __exynos_sysmmu_enable(struct sysmmu_drvdata *data,
+@@ -386,14 +397,19 @@ static int __exynos_sysmmu_enable(struct sysmmu_drvdata *data,
  		goto finish;
  	}
  
--	if (!IS_ERR(data->clk))
--		clk_enable(data->clk);
-+	clk_enable(data->clk);
- 
+-	clk_enable(data->clk);
+-
  	data->pgtable = pgtable;
  
-@@ -498,49 +496,43 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
++	if (!IS_ERR(data->clk_master))
++		clk_enable(data->clk_master);
++	clk_enable(data->clk);
++
+ 	__sysmmu_set_ptbase(data->sfrbase, pgtable);
  
- static int exynos_sysmmu_probe(struct platform_device *pdev)
- {
--	int ret;
-+	int irq, ret;
- 	struct device *dev = &pdev->dev;
- 	struct sysmmu_drvdata *data;
- 	struct resource *res;
+ 	__raw_writel(CTRL_ENABLE, data->sfrbase + REG_MMU_CTRL);
  
--	data = kzalloc(sizeof(*data), GFP_KERNEL);
--	if (!data) {
--		dev_dbg(dev, "Not enough memory\n");
--		ret = -ENOMEM;
--		goto err_alloc;
--	}
-+	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
++	if (!IS_ERR(data->clk_master))
++		clk_disable(data->clk_master);
++
+ 	data->domain = domain;
  
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	if (!res) {
--		dev_dbg(dev, "Unable to find IOMEM region\n");
--		ret = -ENOENT;
--		goto err_init;
--	}
-+	data->sfrbase = devm_ioremap_resource(dev, res);
-+	if (IS_ERR(data->sfrbase))
-+		return PTR_ERR(data->sfrbase);
+ 	dev_dbg(data->sysmmu, "Enabled\n");
+@@ -450,6 +466,10 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova,
+ 	if (is_sysmmu_active(data)) {
+ 		unsigned int maj;
+ 		unsigned int num_inv = 1;
++
++		if (!IS_ERR(data->clk_master))
++			clk_enable(data->clk_master);
++
+ 		maj = __raw_readl(data->sfrbase + REG_MMU_VERSION);
+ 		/*
+ 		 * L2TLB invalidation required
+@@ -469,6 +489,8 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova,
+ 							num_inv);
+ 			sysmmu_unblock(data->sfrbase);
+ 		}
++		if (!IS_ERR(data->clk_master))
++			clk_disable(data->clk_master);
+ 	} else {
+ 		dev_dbg(data->sysmmu, "Disabled. Skipping invalidating TLB.\n");
+ 	}
+@@ -484,10 +506,14 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
+ 	read_lock_irqsave(&data->lock, flags);
  
--	data->sfrbase = ioremap(res->start, resource_size(res));
--	if (!data->sfrbase) {
--		dev_dbg(dev, "Unable to map IOMEM @ PA:%#x\n", res->start);
--		ret = -ENOENT;
--		goto err_res;
--	}
--
--	ret = platform_get_irq(pdev, 0);
--	if (ret <= 0) {
-+	irq = platform_get_irq(pdev, 0);
-+	if (irq <= 0) {
- 		dev_dbg(dev, "Unable to find IRQ resource\n");
--		goto err_irq;
-+		return irq;
+ 	if (is_sysmmu_active(data)) {
++		if (!IS_ERR(data->clk_master))
++			clk_enable(data->clk_master);
+ 		if (sysmmu_block(data->sfrbase)) {
+ 			__sysmmu_tlb_invalidate(data->sfrbase);
+ 			sysmmu_unblock(data->sfrbase);
+ 		}
++		if (!IS_ERR(data->clk_master))
++			clk_disable(data->clk_master);
+ 	} else {
+ 		dev_dbg(data->sysmmu, "Disabled. Skipping invalidating TLB.\n");
+ 	}
+@@ -536,6 +562,16 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
+ 		}
  	}
  
--	ret = request_irq(ret, exynos_sysmmu_irq, 0,
-+	ret = devm_request_irq(dev, irq, exynos_sysmmu_irq, 0,
- 				dev_name(dev), data);
- 	if (ret) {
--		dev_dbg(dev, "Unabled to register interrupt handler\n");
--		goto err_irq;
-+		dev_err(dev, "Unabled to register handler of irq %d\n", irq);
-+		return ret;
- 	}
- 
--	if (dev_get_platdata(dev)) {
--		data->clk = clk_get(dev, "sysmmu");
--		if (IS_ERR(data->clk))
--			dev_dbg(dev, "No clock descriptor registered\n");
-+	data->clk = devm_clk_get(dev, "sysmmu");
-+	if (IS_ERR(data->clk)) {
-+		dev_err(dev, "Failed to get clock!\n");
-+		return PTR_ERR(data->clk);
-+	} else  {
-+		ret = clk_prepare(data->clk);
++	data->clk_master = devm_clk_get(dev, "master");
++	if (!IS_ERR(data->clk_master)) {
++		ret = clk_prepare(data->clk_master);
 +		if (ret) {
-+			dev_err(dev, "Failed to prepare clk\n");
++			clk_unprepare(data->clk);
++			dev_err(dev, "Failed to prepare master's clk\n");
 +			return ret;
 +		}
- 	}
- 
++	}
++
  	data->sysmmu = dev;
-@@ -553,17 +545,7 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
- 
- 	pm_runtime_enable(dev);
- 
--	dev_dbg(dev, "Initialized\n");
- 	return 0;
--err_irq:
--	free_irq(platform_get_irq(pdev, 0), data);
--err_res:
--	iounmap(data->sfrbase);
--err_init:
--	kfree(data);
--err_alloc:
--	dev_err(dev, "Failed to initialize\n");
--	return ret;
- }
- 
- static struct platform_driver exynos_sysmmu_driver = {
+ 	rwlock_init(&data->lock);
+ 	INIT_LIST_HEAD(&data->node);
 -- 
 1.7.9.5
