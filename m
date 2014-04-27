@@ -1,196 +1,111 @@
-From: Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v12 09/31] iommu/exynos: remove dbgname from drvdata of a
+From: Shaik Ameer Basha <shaik.ameer@samsung.com>
+Subject: [PATCH v12 11/31] documentation: iommu: add binding document of Exynos
  System MMU
-Date: Sun, 27 Apr 2014 13:07:41 +0530
-Message-ID: <1398584283-22846-10-git-send-email-shaik.ameer@samsung.com>
+Date: Sun, 27 Apr 2014 13:07:43 +0530
+Message-ID: <1398584283-22846-12-git-send-email-shaik.ameer@samsung.com>
 References: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-reply-to: <1398584283-22846-1-git-send-email-shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, joshi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: kgene.kim@samsung.com, tomasz.figa@gmail.com, pullip.cho@samsung.com, a.motakis@virtualopensystems.com, grundler@chromium.org, joro@8bytes.org, prathyush.k@samsung.com, rahul.sharma@samsung.com, sachin.kamat@linaro.org, supash.ramaswamy@linaro.org, Varun.Sethi@freescale.com, s.nawrocki@samsung.com, t.figa@samsung.com, joshi@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+From: Cho KyongHo <pullip.cho@samsung.com>
 
-This patch removes dbgname member from sysmmu_drvdata structure.
-Kernel message for debugging already has the name of a single
-System MMU node. It also removes some compilation warnings.
+This patch adds a description of the device tree binding for the
+Samsung Exynos System MMU.
 
-Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
 ---
- drivers/iommu/exynos-iommu.c |   54 +++++++++++++++++++-----------------------
- 1 file changed, 25 insertions(+), 29 deletions(-)
- mode change 100644 => 100755 drivers/iommu/exynos-iommu.c
+ .../devicetree/bindings/iommu/samsung,sysmmu.txt   |   79 ++++++++++++++++++++
+ 1 file changed, 79 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iommu/samsung,sysmmu.txt
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-old mode 100644
-new mode 100755
-index a15216f..1af2d23
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -169,7 +169,6 @@ struct sysmmu_drvdata {
- 	struct list_head node; /* entry of exynos_iommu_domain.clients */
- 	struct device *sysmmu;	/* System MMU's device descriptor */
- 	struct device *dev;	/* Owner of system MMU */
--	char *dbgname;
- 	void __iomem *sfrbase;
- 	struct clk *clk;
- 	int activations;
-@@ -320,8 +319,8 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
- 	if (!ret && (itype != SYSMMU_FAULT_UNKNOWN))
- 		__raw_writel(1 << itype, data->sfrbase + REG_INT_CLEAR);
- 	else
--		dev_dbg(data->sysmmu, "(%s) %s is not handled.\n",
--				data->dbgname, sysmmu_fault_name[itype]);
-+		dev_dbg(data->sysmmu, "%s is not handled.\n",
-+				sysmmu_fault_name[itype]);
- 
- 	if (itype != SYSMMU_FAULT_UNKNOWN)
- 		sysmmu_unblock(data->sfrbase);
-@@ -353,10 +352,10 @@ finish:
- 	write_unlock_irqrestore(&data->lock, flags);
- 
- 	if (disabled)
--		dev_dbg(data->sysmmu, "(%s) Disabled\n", data->dbgname);
-+		dev_dbg(data->sysmmu, "Disabled\n");
- 	else
--		dev_dbg(data->sysmmu, "(%s) %d times left to be disabled\n",
--					data->dbgname, data->activations);
-+		dev_dbg(data->sysmmu, "%d times left to be disabled\n",
-+					data->activations);
- 
- 	return disabled;
- }
-@@ -383,7 +382,7 @@ static int __exynos_sysmmu_enable(struct sysmmu_drvdata *data,
- 			ret = 1;
- 		}
- 
--		dev_dbg(data->sysmmu, "(%s) Already enabled\n", data->dbgname);
-+		dev_dbg(data->sysmmu, "Already enabled\n");
- 		goto finish;
- 	}
- 
-@@ -398,7 +397,7 @@ static int __exynos_sysmmu_enable(struct sysmmu_drvdata *data,
- 
- 	data->domain = domain;
- 
--	dev_dbg(data->sysmmu, "(%s) Enabled\n", data->dbgname);
-+	dev_dbg(data->sysmmu, "Enabled\n");
- finish:
- 	write_unlock_irqrestore(&data->lock, flags);
- 
-@@ -414,16 +413,15 @@ int exynos_sysmmu_enable(struct device *dev, unsigned long pgtable)
- 
- 	ret = pm_runtime_get_sync(data->sysmmu);
- 	if (ret < 0) {
--		dev_dbg(data->sysmmu, "(%s) Failed to enable\n", data->dbgname);
-+		dev_dbg(data->sysmmu, "Failed to enable\n");
- 		return ret;
- 	}
- 
- 	ret = __exynos_sysmmu_enable(data, pgtable, NULL);
- 	if (WARN_ON(ret < 0)) {
- 		pm_runtime_put(data->sysmmu);
--		dev_err(data->sysmmu,
--			"(%s) Already enabled with page table %#lx\n",
--			data->dbgname, data->pgtable);
-+		dev_err(data->sysmmu, "Already enabled with page table %#lx\n",
-+			data->pgtable);
- 	} else {
- 		data->dev = dev;
- 	}
-@@ -473,9 +471,7 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova,
- 			sysmmu_unblock(data->sfrbase);
- 		}
- 	} else {
--		dev_dbg(data->sysmmu,
--			"(%s) Disabled. Skipping invalidating TLB.\n",
--			data->dbgname);
-+		dev_dbg(data->sysmmu, "Disabled. Skipping invalidating TLB.\n");
- 	}
- 
- 	read_unlock_irqrestore(&data->lock, flags);
-@@ -494,9 +490,7 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
- 			sysmmu_unblock(data->sfrbase);
- 		}
- 	} else {
--		dev_dbg(data->sysmmu,
--			"(%s) Disabled. Skipping invalidating TLB.\n",
--			data->dbgname);
-+		dev_dbg(data->sysmmu, "Disabled. Skipping invalidating TLB.\n");
- 	}
- 
- 	read_unlock_irqrestore(&data->lock, flags);
-@@ -559,7 +553,7 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
- 
- 	pm_runtime_enable(dev);
- 
--	dev_dbg(dev, "(%s) Initialized\n", data->dbgname);
-+	dev_dbg(dev, "Initialized\n");
- 	return 0;
- err_irq:
- 	free_irq(platform_get_irq(pdev, 0), data);
-@@ -659,6 +653,7 @@ static int exynos_iommu_attach_device(struct iommu_domain *domain,
- {
- 	struct sysmmu_drvdata *data = dev_get_drvdata(dev->archdata.iommu);
- 	struct exynos_iommu_domain *priv = domain->priv;
-+	phys_addr_t pagetable = virt_to_phys(priv->pgtable);
- 	unsigned long flags;
- 	int ret;
- 
-@@ -682,15 +677,15 @@ static int exynos_iommu_attach_device(struct iommu_domain *domain,
- 	spin_unlock_irqrestore(&priv->lock, flags);
- 
- 	if (ret < 0) {
--		dev_err(dev, "%s: Failed to attach IOMMU with pgtable %#lx\n",
--				__func__, __pa(priv->pgtable));
-+		dev_err(dev, "%s: Failed to attach IOMMU with pgtable %pa\n",
-+					__func__, &pagetable);
- 		pm_runtime_put(data->sysmmu);
- 	} else if (ret > 0) {
--		dev_dbg(dev, "%s: IOMMU with pgtable 0x%lx already attached\n",
--					__func__, __pa(priv->pgtable));
-+		dev_dbg(dev, "%s: IOMMU with pgtable %pa already attached\n",
-+					__func__, &pagetable);
- 	} else {
--		dev_dbg(dev, "%s: Attached new IOMMU with pgtable 0x%lx\n",
--					__func__, __pa(priv->pgtable));
-+		dev_dbg(dev, "%s: Attached new IOMMU with pgtable %pa\n",
-+					__func__, &pagetable);
- 	}
- 
- 	return ret;
-@@ -702,6 +697,7 @@ static void exynos_iommu_detach_device(struct iommu_domain *domain,
- 	struct sysmmu_drvdata *data = dev_get_drvdata(dev->archdata.iommu);
- 	struct exynos_iommu_domain *priv = domain->priv;
- 	struct list_head *pos;
-+	phys_addr_t pagetable = virt_to_phys(priv->pgtable);
- 	unsigned long flags;
- 	bool found = false;
- 
-@@ -718,13 +714,13 @@ static void exynos_iommu_detach_device(struct iommu_domain *domain,
- 		goto finish;
- 
- 	if (__exynos_sysmmu_disable(data)) {
--		dev_dbg(dev, "%s: Detached IOMMU with pgtable %#lx\n",
--					__func__, __pa(priv->pgtable));
-+		dev_dbg(dev, "%s: Detached IOMMU with pgtable %pa\n",
-+					__func__, &pagetable);
- 		list_del_init(&data->node);
- 
- 	} else {
--		dev_dbg(dev, "%s: Detaching IOMMU with pgtable %#lx delayed",
--					__func__, __pa(priv->pgtable));
-+		dev_dbg(dev, "%s: Detaching IOMMU with pgtable %pa delayed",
-+					__func__, &pagetable);
- 	}
- 
- finish:
+diff --git a/Documentation/devicetree/bindings/iommu/samsung,sysmmu.txt b/Documentation/devicetree/bindings/iommu/samsung,sysmmu.txt
+new file mode 100644
+index 0000000..16e13a2
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iommu/samsung,sysmmu.txt
+@@ -0,0 +1,79 @@
++Samsung Exynos IOMMU H/W, System MMU (System Memory Management Unit)
++
++Samsung's Exynos architecture contains System MMUs that enables scattered
++physical memory chunks visible as a contiguous region to DMA-capable peripheral
++devices like MFC, FIMC, FIMD, GScaler, FIMC-IS and so forth.
++
++System MMU is an IOMMU and supports identical translation table format to
++ARMv7 translation tables with minimum set of page properties including access
++permissions, shareability and security protection. In addition, System MMU has
++another capabilities like L2 TLB or block-fetch buffers to minimize translation
++latency.
++
++System MMUs are in many to one relation with peripheral devices, i.e. single
++peripheral device might have multiple System MMUs (usually one for each bus
++master), but one System MMU can handle transactions from only one peripheral
++device. The relation between a System MMU and the peripheral device needs to be
++defined in device node of the peripheral device.
++
++MFC in all Exynos SoCs and FIMD, M2M Scalers and G2D in Exynos5420 has 2 System
++MMUs.
++* MFC has one System MMU on its left and right bus.
++* FIMD in Exynos5420 has one System MMU for window 0 and 4, the other system MMU
++  for window 1, 2 and 3.
++* M2M Scalers and G2D in Exynos5420 has one System MMU on the read channel and
++  the other System MMU on the write channel.
++The drivers must consider how to handle those System MMUs. One of the idea is
++to implement child devices or sub-devices which are the client devices of the
++System MMU.
++
++Required properties:
++- compatible: Should be one of:
++		"samsung,sysmmu-v1"
++		"samsung,sysmmu-v2"
++		"samsung,sysmmu-v3.1"
++		"samsung,sysmmu-v3.2"
++		"samsung,sysmmu-v3.3"
++
++- reg: A tuple of base address and size of System MMU registers.
++- interrupt-parent: The phandle of the interrupt controller of System MMU
++- interrupts: An interrupt specifier for interrupt signal of System MMU,
++	      according to the format defined by a particular interrupt
++	      controller.
++- clock-names: Should be "sysmmu" if the System MMU is needed to gate its clock.
++	       Optional "master" if the clock to the System MMU is gated by
++	       another gate clock other than "sysmmu".
++	       Exynos4 SoCs, there needs no "master" clock.
++	       Exynos5 SoCs, some System MMUs must have "master" clocks.
++- clocks: Required if the System MMU is needed to gate its clock.
++- samsung,power-domain: Required if the System MMU is needed to gate its power.
++	  Please refer to the following document:
++	  Documentation/devicetree/bindings/arm/exynos/power_domain.txt
++- mmu-masters: A phandle to device nodes representing the master for which
++               the System MMU can provide a translation. Any additional values
++	       after the phandle will be ignored because a System MMU never
++	       have two or more masters. "#stream-id-cells" specified in the
++	       master's node will be also ignored.
++	       If more than one phandle is specified, only the first phandle
++	       will be treated.
++
++Examples:
++	gsc_0: gsc@13e00000 {
++		compatible = "samsung,exynos5-gsc";
++		reg = <0x13e00000 0x1000>;
++		interrupts = <0 85 0>;
++		samsung,power-domain = <&pd_gsc>;
++		clocks = <&clock CLK_GSCL0>;
++		clock-names = "gscl";
++	};
++
++	sysmmu_gsc0: sysmmu@13E80000 {
++		compatible = "samsung,sysmmu-v3.2";
++		reg = <0x13E80000 0x1000>;
++		interrupt-parent = <&combiner>;
++		interrupts = <2 0>;
++		clock-names = "sysmmu", "master";
++		clocks = <&clock CLK_SMMU_GSCL0>, <&clock CLK_GSCL0>;
++		samsung,power-domain = <&pd_gsc>;
++		mmu-masters = <&gsc_0>;
++	};
 -- 
 1.7.9.5
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
