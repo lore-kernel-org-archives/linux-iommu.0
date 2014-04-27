@@ -1,112 +1,131 @@
 From: Shaik Ameer Basha <shaik.ameer@samsung.com>
-Subject: [PATCH v12 04/31] iommu/exynos: fix L2TLB invalidation
-Date: Sun, 27 Apr 2014 13:07:36 +0530
-Message-ID: <1398584283-22846-5-git-send-email-shaik.ameer@samsung.com>
+Subject: [PATCH v12 16/31] iommu/exynos: turn on useful configuration options
+Date: Sun, 27 Apr 2014 13:07:48 +0530
+Message-ID: <1398584283-22846-17-git-send-email-shaik.ameer@samsung.com>
 References: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
 In-reply-to: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Sender: linux-samsung-soc-owner@vger.kernel.org
 To: linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Cc: kgene.kim@samsung.com, prathyush.k@samsung.com, grundler@chromium.org, joro@8bytes.org, supash.ramaswamy@linaro.org, tomasz.figa@gmail.com, joshi@samsung.com, sachin.kamat@linaro.org, s.nawrocki@samsung.com, Varun.Sethi@freescale.com, a.motakis@virtualopensystems.com, pullip.cho@samsung.com, t.figa@samsung.com, rahul.sharma@samsung.com
+Cc: kgene.kim@samsung.com, tomasz.figa@gmail.com, pullip.cho@samsung.com, a.motakis@virtualopensystems.com, grundler@chromium.org, joro@8bytes.org, prathyush.k@samsung.com, rahul.sharma@samsung.com, sachin.kamat@linaro.org, supash.ramaswamy@linaro.org, Varun.Sethi@freescale.com, s.nawrocki@samsung.com, t.figa@samsung.com, joshi@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
 From: Cho KyongHo <pullip.cho@samsung.com>
 
-L2TLB is 8-way set-associative TLB with 512 entries. The number of
-sets is 64.
-A single 4KB(small page) translation information is cached
-only to a set whose index is the same with the lower 6 bits of the page
-frame number.
-A single 64KB(large page) translation information can be
-cached to any 16 sets whose top two bits of their indices are the same
-with the bit [5:4] of the page frame number.
-A single 1MB(section) or larger translation information can be cached to
-any set in the TLB.
+This turns on FLPD_CACHE, ACGEN and SYSSEL.
 
-It is required to invalidate entire sets that may cache the target
-translation information to guarantee that the L2TLB has no stale data.
+FLPD_CACHE is a cache of 1st level page table entries that contains
+the address of a 2nd level page table to reduce latency of page table
+walking.
+
+ACGEN is architectural clock gating that gates clocks by System MMU
+itself if it is not active. Note that ACGEN is different from clock
+gating by the CPU. ACGEN just gates clocks to the internal logic of
+System MMU while clock gating by the CPU gates clocks to the System
+MMU.
+
+SYSSEL selects System MMU version in some Exynos SoCs. Some Exynos
+SoCs have an option to select System MMU versions exclusively because
+the SoCs adopts new System MMU version experimentally.
+
+This also always selects LRU as TLB replacement policy. Selecting TLB
+replacement policy is deprecated from System MMU 3.2. TLB in System
+MMU 3.3 has single TLB replacement policy, LRU. The bit of MMU_CFG
+selecting TLB replacement policy is remained as reserved.
+
+QoS value of page table walking is set to 15 (highst value). System
+MMU 3.3 can inherit QoS value of page table walking from its master
+H/W's transaction. This new feature is enabled by default and QoS
+value written to MMU_CFG is ignored.
 
 Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
 ---
- drivers/iommu/exynos-iommu.c |   31 ++++++++++++++++++++++++++-----
- 1 file changed, 26 insertions(+), 5 deletions(-)
+ drivers/iommu/exynos-iommu.c |   52 +++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 51 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 84fc3b4..7ce44a8 100644
+index 45c792c..810bcaf 100755
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -224,9 +224,14 @@ static void __sysmmu_tlb_invalidate(void __iomem *sfrbase)
+@@ -81,6 +81,13 @@
+ #define CTRL_BLOCK	0x7
+ #define CTRL_DISABLE	0x0
+ 
++#define CFG_LRU		0x1
++#define CFG_QOS(n)	((n & 0xF) << 7)
++#define CFG_MASK	0x0150FFFF /* Selecting bit 0-15, 20, 22 and 24 */
++#define CFG_ACGEN	(1 << 24) /* System MMU 3.3 only */
++#define CFG_SYSSEL	(1 << 22) /* System MMU 3.2 only */
++#define CFG_FLPDCACHE	(1 << 20) /* System MMU 3.2+ only */
++
+ #define REG_MMU_CTRL		0x000
+ #define REG_MMU_CFG		0x004
+ #define REG_MMU_STATUS		0x008
+@@ -97,6 +104,12 @@
+ 
+ #define REG_MMU_VERSION		0x034
+ 
++#define MMU_MAJ_VER(val)	((val) >> 7)
++#define MMU_MIN_VER(val)	((val) & 0x7F)
++#define MMU_RAW_VER(reg)	(((reg) >> 21) & ((1 << 11) - 1)) /* 11 bits */
++
++#define MAKE_MMU_VER(maj, min)	((((maj) & 0xF) << 7) | ((min) & 0x7F))
++
+ #define REG_PB0_SADDR		0x04C
+ #define REG_PB0_EADDR		0x050
+ #define REG_PB1_SADDR		0x054
+@@ -206,6 +219,29 @@ static void sysmmu_unblock(void __iomem *sfrbase)
+ 	__raw_writel(CTRL_ENABLE, sfrbase + REG_MMU_CTRL);
  }
  
- static void __sysmmu_tlb_invalidate_entry(void __iomem *sfrbase,
--						unsigned long iova)
-+				unsigned long iova, unsigned int num_inv)
- {
--	__raw_writel((iova & SPAGE_MASK) | 1, sfrbase + REG_MMU_FLUSH_ENTRY);
-+	unsigned int i;
-+	for (i = 0; i < num_inv; i++) {
-+		__raw_writel((iova & SPAGE_MASK) | 1,
-+				sfrbase + REG_MMU_FLUSH_ENTRY);
-+		iova += SPAGE_SIZE;
++static unsigned int __raw_sysmmu_version(struct sysmmu_drvdata *data)
++{
++	return MMU_RAW_VER(__raw_readl(data->sfrbase + REG_MMU_VERSION));
++}
++
++static unsigned int __sysmmu_version(struct sysmmu_drvdata *data,
++				     unsigned int *minor)
++{
++	unsigned int ver = 0;
++
++	ver = __raw_sysmmu_version(data);
++	if (ver > MAKE_MMU_VER(3, 3)) {
++		dev_err(data->sysmmu, "%s: version(%d.%d) is higher than 3.3\n",
++			__func__, MMU_MAJ_VER(ver), MMU_MIN_VER(ver));
++		BUG();
 +	}
- }
- 
- static void __sysmmu_set_ptbase(void __iomem *sfrbase,
-@@ -476,7 +481,8 @@ static bool exynos_sysmmu_disable(struct device *dev)
- 	return disabled;
- }
- 
--static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova)
-+static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova,
-+					size_t size)
++
++	if (minor)
++		*minor = MMU_MIN_VER(ver);
++
++	return MMU_MAJ_VER(ver);
++}
++
+ static bool sysmmu_block(void __iomem *sfrbase)
  {
- 	unsigned long flags;
- 	struct sysmmu_drvdata *data = dev_get_drvdata(dev->archdata.iommu);
-@@ -486,9 +492,24 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova)
- 	if (is_sysmmu_active(data)) {
- 		int i;
- 		for (i = 0; i < data->nsfrs; i++) {
-+			unsigned int maj;
-+			unsigned int num_inv = 1;
-+			maj = __raw_readl(data->sfrbases[i] + REG_MMU_VERSION);
-+			/*
-+			 * L2TLB invalidation required
-+			 * 4KB page: 1 invalidation
-+			 * 64KB page: 16 invalidation
-+			 * 1MB page: 64 invalidation
-+			 * because it is set-associative TLB
-+			 * with 8-way and 64 sets.
-+			 * 1MB page can be cached in one of all sets.
-+			 * 64KB page can be one of 16 consecutive sets.
-+			 */
-+			if ((maj >> 28) == 2) /* major version number */
-+				num_inv = min_t(unsigned int, size / PAGE_SIZE, 64);
- 			if (sysmmu_block(data->sfrbases[i])) {
- 				__sysmmu_tlb_invalidate_entry(
--						data->sfrbases[i], iova);
-+					data->sfrbases[i], iova, num_inv);
- 				sysmmu_unblock(data->sfrbases[i]);
- 			}
- 		}
-@@ -998,7 +1019,7 @@ done:
+ 	int i = 120;
+@@ -360,7 +396,21 @@ static bool __sysmmu_disable(struct sysmmu_drvdata *data)
  
- 	spin_lock_irqsave(&priv->lock, flags);
- 	list_for_each_entry(data, &priv->clients, node)
--		sysmmu_tlb_invalidate_entry(data->dev, iova);
-+		sysmmu_tlb_invalidate_entry(data->dev, iova, size);
- 	spin_unlock_irqrestore(&priv->lock, flags);
+ static void __sysmmu_init_config(struct sysmmu_drvdata *data)
+ {
+-	unsigned long cfg = 0;
++	unsigned long cfg = CFG_LRU | CFG_QOS(15);
++	int maj, min = 0;
++
++	maj = __sysmmu_version(data, &min);
++	if (maj == 3) {
++		if (min >= 2) {
++			cfg |= CFG_FLPDCACHE;
++			if (min == 3) {
++				cfg |= CFG_ACGEN;
++				cfg &= ~CFG_LRU;
++			} else {
++				cfg |= CFG_SYSSEL;
++			}
++		}
++	}
  
- 	return size;
+ 	__raw_writel(cfg, data->sfrbase + REG_MMU_CFG);
+ }
 -- 
 1.7.9.5
