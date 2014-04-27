@@ -1,110 +1,112 @@
 From: Shaik Ameer Basha <shaik.ameer@samsung.com>
-Subject: [PATCH v12 12/31] iommu/exynos: support for device tree
-Date: Sun, 27 Apr 2014 13:07:44 +0530
-Message-ID: <1398584283-22846-13-git-send-email-shaik.ameer@samsung.com>
+Subject: [PATCH v12 04/31] iommu/exynos: fix L2TLB invalidation
+Date: Sun, 27 Apr 2014 13:07:36 +0530
+Message-ID: <1398584283-22846-5-git-send-email-shaik.ameer@samsung.com>
 References: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-reply-to: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Cc: kgene.kim@samsung.com, tomasz.figa@gmail.com, pullip.cho@samsung.com, a.motakis@virtualopensystems.com, grundler@chromium.org, joro@8bytes.org, prathyush.k@samsung.com, rahul.sharma@samsung.com, sachin.kamat@linaro.org, supash.ramaswamy@linaro.org, Varun.Sethi@freescale.com, s.nawrocki@samsung.com, t.figa@samsung.com, joshi@samsung.com, Shaik Ameer Basha <shaik.ameer@samsung.com>
+Cc: kgene.kim@samsung.com, prathyush.k@samsung.com, grundler@chromium.org, joro@8bytes.org, supash.ramaswamy@linaro.org, tomasz.figa@gmail.com, joshi@samsung.com, sachin.kamat@linaro.org, s.nawrocki@samsung.com, Varun.Sethi@freescale.com, a.motakis@virtualopensystems.com, pullip.cho@samsung.com, t.figa@samsung.com, rahul.sharma@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
 From: Cho KyongHo <pullip.cho@samsung.com>
 
-This commit adds device tree support for System MMU.
-It also enables iommu support for ARCH_EXYNOS.
+L2TLB is 8-way set-associative TLB with 512 entries. The number of
+sets is 64.
+A single 4KB(small page) translation information is cached
+only to a set whose index is the same with the lower 6 bits of the page
+frame number.
+A single 64KB(large page) translation information can be
+cached to any 16 sets whose top two bits of their indices are the same
+with the bit [5:4] of the page frame number.
+A single 1MB(section) or larger translation information can be cached to
+any set in the TLB.
+
+It is required to invalidate entire sets that may cache the target
+translation information to guarantee that the L2TLB has no stale data.
 
 Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
-Signed-off-by: Shaik Ameer Basha <shaik.ameer@samsung.com>
 ---
- arch/arm/Kconfig             |    2 ++
- drivers/iommu/Kconfig        |    8 +++-----
- drivers/iommu/exynos-iommu.c |   19 +++++++++++++++----
- 3 files changed, 20 insertions(+), 9 deletions(-)
+ drivers/iommu/exynos-iommu.c |   31 ++++++++++++++++++++++++++-----
+ 1 file changed, 26 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index ab438cb..19689e4 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -834,6 +834,8 @@ config ARCH_EXYNOS
- 	select ARCH_HAS_HOLES_MEMORYMODEL
- 	select ARCH_REQUIRE_GPIOLIB
- 	select ARCH_SPARSEMEM_ENABLE
-+	select ARM_AMBA
-+	select ARM_DMA_USE_IOMMU
- 	select ARM_GIC
- 	select COMMON_CLK
- 	select CPU_V7
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index df56e4c..5feadb8 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -178,16 +178,14 @@ config TEGRA_IOMMU_SMMU
- 
- config EXYNOS_IOMMU
- 	bool "Exynos IOMMU Support"
--	depends on ARCH_EXYNOS && EXYNOS_DEV_SYSMMU
-+	depends on ARCH_EXYNOS
- 	select IOMMU_API
- 	help
--	  Support for the IOMMU(System MMU) of Samsung Exynos application
--	  processor family. This enables H/W multimedia accellerators to see
-+	  Support for the IOMMU (System MMU) of Samsung Exynos application
-+	  processor family. This enables H/W multimedia accelerators to see
- 	  non-linear physical memory chunks as a linear memory in their
- 	  address spaces
- 
--	  If unsure, say N here.
--
- config EXYNOS_IOMMU_DEBUG
- 	bool "Debugging log for Exynos IOMMU"
- 	depends on EXYNOS_IOMMU
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 0f1d3f0..cbb9b67 100755
+index 84fc3b4..7ce44a8 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -25,6 +25,7 @@
- #include <linux/list.h>
- #include <linux/memblock.h>
- #include <linux/export.h>
-+#include <linux/of.h>
- 
- #include <asm/cacheflush.h>
- #include <asm/pgtable.h>
-@@ -494,7 +495,7 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
- 	read_unlock_irqrestore(&data->lock, flags);
+@@ -224,9 +224,14 @@ static void __sysmmu_tlb_invalidate(void __iomem *sfrbase)
  }
  
--static int exynos_sysmmu_probe(struct platform_device *pdev)
-+static int __init exynos_sysmmu_probe(struct platform_device *pdev)
+ static void __sysmmu_tlb_invalidate_entry(void __iomem *sfrbase,
+-						unsigned long iova)
++				unsigned long iova, unsigned int num_inv)
  {
- 	int irq, ret;
- 	struct device *dev = &pdev->dev;
-@@ -548,11 +549,21 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
- 	return 0;
+-	__raw_writel((iova & SPAGE_MASK) | 1, sfrbase + REG_MMU_FLUSH_ENTRY);
++	unsigned int i;
++	for (i = 0; i < num_inv; i++) {
++		__raw_writel((iova & SPAGE_MASK) | 1,
++				sfrbase + REG_MMU_FLUSH_ENTRY);
++		iova += SPAGE_SIZE;
++	}
  }
  
--static struct platform_driver exynos_sysmmu_driver = {
--	.probe		= exynos_sysmmu_probe,
--	.driver		= {
-+static const struct of_device_id sysmmu_of_match[] __initconst = {
-+	{ .compatible	= "samsung,sysmmu-v1", },
-+	{ .compatible	= "samsung,sysmmu-v2", },
-+	{ .compatible	= "samsung,sysmmu-v3.1", },
-+	{ .compatible	= "samsung,sysmmu-v3.2", },
-+	{ .compatible	= "samsung,sysmmu-v3.3", },
-+	{ },
-+};
-+
-+static struct platform_driver exynos_sysmmu_driver __refdata = {
-+	.probe	= exynos_sysmmu_probe,
-+	.driver	= {
- 		.owner		= THIS_MODULE,
- 		.name		= "exynos-sysmmu",
-+		.of_match_table	= sysmmu_of_match,
- 	}
- };
+ static void __sysmmu_set_ptbase(void __iomem *sfrbase,
+@@ -476,7 +481,8 @@ static bool exynos_sysmmu_disable(struct device *dev)
+ 	return disabled;
+ }
  
+-static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova)
++static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova,
++					size_t size)
+ {
+ 	unsigned long flags;
+ 	struct sysmmu_drvdata *data = dev_get_drvdata(dev->archdata.iommu);
+@@ -486,9 +492,24 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova)
+ 	if (is_sysmmu_active(data)) {
+ 		int i;
+ 		for (i = 0; i < data->nsfrs; i++) {
++			unsigned int maj;
++			unsigned int num_inv = 1;
++			maj = __raw_readl(data->sfrbases[i] + REG_MMU_VERSION);
++			/*
++			 * L2TLB invalidation required
++			 * 4KB page: 1 invalidation
++			 * 64KB page: 16 invalidation
++			 * 1MB page: 64 invalidation
++			 * because it is set-associative TLB
++			 * with 8-way and 64 sets.
++			 * 1MB page can be cached in one of all sets.
++			 * 64KB page can be one of 16 consecutive sets.
++			 */
++			if ((maj >> 28) == 2) /* major version number */
++				num_inv = min_t(unsigned int, size / PAGE_SIZE, 64);
+ 			if (sysmmu_block(data->sfrbases[i])) {
+ 				__sysmmu_tlb_invalidate_entry(
+-						data->sfrbases[i], iova);
++					data->sfrbases[i], iova, num_inv);
+ 				sysmmu_unblock(data->sfrbases[i]);
+ 			}
+ 		}
+@@ -998,7 +1019,7 @@ done:
+ 
+ 	spin_lock_irqsave(&priv->lock, flags);
+ 	list_for_each_entry(data, &priv->clients, node)
+-		sysmmu_tlb_invalidate_entry(data->dev, iova);
++		sysmmu_tlb_invalidate_entry(data->dev, iova, size);
+ 	spin_unlock_irqrestore(&priv->lock, flags);
+ 
+ 	return size;
 -- 
 1.7.9.5
