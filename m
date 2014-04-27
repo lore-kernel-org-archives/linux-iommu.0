@@ -1,7 +1,7 @@
 From: Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v12 27/31] ARM: dts: add System MMU nodes of exynos4 series
-Date: Sun, 27 Apr 2014 13:07:59 +0530
-Message-ID: <1398584283-22846-28-git-send-email-shaik.ameer@samsung.com>
+Subject: [PATCH v12 28/31] ARM: dts: add System MMU nodes of exynos4210
+Date: Sun, 27 Apr 2014 13:08:00 +0530
+Message-ID: <1398584283-22846-29-git-send-email-shaik.ameer@samsung.com>
 References: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,127 +23,50 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 
-This patch adds System MMU nodes that are common to exynos4 series.
+This patch adds System MMUs that are specific to exynos4210.
 
 Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- arch/arm/boot/dts/exynos4.dtsi |  107 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 107 insertions(+)
+ arch/arm/boot/dts/exynos4210.dtsi |   23 ++++++++++++++++++++++-
+ 1 file changed, 22 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/exynos4.dtsi b/arch/arm/boot/dts/exynos4.dtsi
-index 2f8bcd0..229efee 100644
---- a/arch/arm/boot/dts/exynos4.dtsi
-+++ b/arch/arm/boot/dts/exynos4.dtsi
-@@ -536,4 +536,111 @@
- 		samsung,power-domain = <&pd_lcd0>;
+diff --git a/arch/arm/boot/dts/exynos4210.dtsi b/arch/arm/boot/dts/exynos4210.dtsi
+index cacf614..0b4ece1 100644
+--- a/arch/arm/boot/dts/exynos4210.dtsi
++++ b/arch/arm/boot/dts/exynos4210.dtsi
+@@ -114,7 +114,7 @@
  		status = "disabled";
  	};
+ 
+-	g2d@12800000 {
++	g2d: g2d@12800000 {
+ 		compatible = "samsung,s5pv210-g2d";
+ 		reg = <0x12800000 0x1000>;
+ 		interrupts = <0 89 0>;
+@@ -153,4 +153,25 @@
+ 			samsung,lcd-wb;
+ 		};
+ 	};
 +
-+	sysmmu_mfc_l: sysmmu@13620000 {
-+		compatible = "samsung,sysmmu-v2";
-+		reg = <0x13620000 0x1000>;
-+		interrupt-parent = <&combiner>;
-+		interrupts = <5 5>;
-+		clock-names = "sysmmu";
-+		clocks = <&clock CLK_SMMU_MFCL>;
-+		samsung,power-domain = <&pd_mfc>;
-+		mmu-masters = <&mfc>;
-+	};
-+
-+	sysmmu_mfc_r: sysmmu@13630000 {
-+		compatible = "samsung,sysmmu-v2";
-+		reg = <0x13630000 0x1000>;
-+		interrupt-parent = <&combiner>;
-+		interrupts = <5 6>;
-+		clock-names = "sysmmu";
-+		clocks = <&clock CLK_SMMU_MFCR>;
-+		samsung,power-domain = <&pd_mfc>;
-+		mmu-masters = <&mfc>;
-+	};
-+
-+	sysmmu_tv: sysmmu@12E20000 {
++	sysmmu_g2d: sysmmu@12A20000 {
 +		compatible = "samsung,sysmmu-v1";
-+		reg = <0x12E20000 0x1000>;
++		reg = <0x12A20000 0x1000>;
 +		interrupt-parent = <&combiner>;
-+		interrupts = <5 4>;
++		interrupts = <4 7>;
 +		clock-names = "sysmmu";
-+		clocks = <&clock CLK_SMMU_TV>;
-+		samsung,power-domain = <&pd_tv>;
-+	};
-+
-+	sysmmu_fimc0: sysmmu@11A20000 {
-+		compatible = "samsung,sysmmu-v1";
-+		reg = <0x11A20000 0x1000>;
-+		interrupt-parent = <&combiner>;
-+		interrupts = <4 2>;
-+		clock-names = "sysmmu";
-+		clocks = <&clock CLK_SMMU_FIMC0>;
-+		samsung,power-domain = <&pd_cam>;
-+		mmu-masters = <&fimc_0>;
-+	};
-+
-+	sysmmu_fimc1: sysmmu@11A30000 {
-+		compatible = "samsung,sysmmu-v1";
-+		reg = <0x11A30000 0x1000>;
-+		interrupt-parent = <&combiner>;
-+		interrupts = <4 3>;
-+		clock-names = "sysmmu";
-+		clocks = <&clock CLK_SMMU_FIMC1>;
-+		samsung,power-domain = <&pd_cam>;
-+		mmu-masters = <&fimc_1>;
-+	};
-+
-+	sysmmu_fimc2: sysmmu@11A40000 {
-+		compatible = "samsung,sysmmu-v1";
-+		reg = <0x11A40000 0x1000>;
-+		interrupt-parent = <&combiner>;
-+		interrupts = <4 4>;
-+		clock-names = "sysmmu";
-+		clocks = <&clock CLK_SMMU_FIMC2>;
-+		samsung,power-domain = <&pd_cam>;
-+		mmu-masters = <&fimc_2>;
-+	};
-+
-+	sysmmu_fimc3: sysmmu@11A50000 {
-+		compatible = "samsung,sysmmu-v1";
-+		reg = <0x11A50000 0x1000>;
-+		interrupt-parent = <&combiner>;
-+		interrupts = <4 5>;
-+		clock-names = "sysmmu";
-+		clocks = <&clock CLK_SMMU_FIMC3>;
-+		samsung,power-domain = <&pd_cam>;
-+		mmu-masters = <&fimc_3>;
-+	};
-+
-+	sysmmu_jpeg: sysmmu@11A60000 {
-+		compatible = "samsung,sysmmu-v1";
-+		reg = <0x11A60000 0x1000>;
-+		interrupt-parent = <&combiner>;
-+		interrupts = <4 6>;
-+		clock-names = "sysmmu";
-+		clocks = <&clock CLK_SMMU_JPEG>;
-+		samsung,power-domain = <&pd_cam>;
-+	};
-+
-+	sysmmu_rotator: sysmmu@12A30000 {
-+		compatible = "samsung,sysmmu-v1";
-+		reg = <0x12A30000 0x1000>;
-+		interrupt-parent = <&combiner>;
-+		interrupts = <5 0>;
-+		clock-names = "sysmmu";
-+		clocks = <&clock CLK_SMMU_ROTATOR>;
++		clocks = <&clock CLK_SMMU_G2D>;
 +		samsung,power-domain = <&pd_lcd0>;
++		mmu-masters = <&g2d>;
 +	};
 +
-+	sysmmu_fimd0: sysmmu@11E20000 {
++	sysmmu_fimd1: sysmmu@12220000 {
 +		compatible = "samsung,sysmmu-v1";
-+		reg = <0x11E20000 0x1000>;
 +		interrupt-parent = <&combiner>;
-+		interrupts = <5 2>;
++		reg = <0x12220000 0x1000>;
++		interrupts = <5 3>;
 +		clock-names = "sysmmu";
-+		clocks = <&clock CLK_SMMU_FIMD0>;
-+		samsung,power-domain = <&pd_lcd0>;
-+		mmu-masters = <&fimd>;
++		clocks = <&clock CLK_SMMU_FIMD1>;
++		samsung,power-domain = <&pd_lcd1>;
 +	};
  };
 -- 
