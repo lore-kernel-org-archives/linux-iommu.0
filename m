@@ -1,189 +1,386 @@
-From: Shaik Ameer Basha <shaik.ameer@samsung.com>
-Subject: [PATCH v12 19/31] iommu/exynos: change rwlock to spinlock
-Date: Sun, 27 Apr 2014 13:07:51 +0530
-Message-ID: <1398584283-22846-20-git-send-email-shaik.ameer@samsung.com>
+From: Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: [PATCH v12 24/31] iommu/exynos: apply workaround of caching fault page
+	table entries
+Date: Sun, 27 Apr 2014 13:07:56 +0530
+Message-ID: <1398584283-22846-25-git-send-email-shaik.ameer@samsung.com>
 References: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-reply-to: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Cc: kgene.kim@samsung.com, tomasz.figa@gmail.com, pullip.cho@samsung.com, a.motakis@virtualopensystems.com, grundler@chromium.org, joro@8bytes.org, prathyush.k@samsung.com, rahul.sharma@samsung.com, sachin.kamat@linaro.org, supash.ramaswamy@linaro.org, Varun.Sethi@freescale.com, s.nawrocki@samsung.com, t.figa@samsung.com, joshi@samsung.com
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-reply-to: <1398584283-22846-1-git-send-email-shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, joshi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Cho KyongHo <pullip.cho@samsung.com>
+From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 
-Since acquiring read_lock is not more frequent than write_lock, it is
-not beneficial to use rwlock, this commit changes rwlock to spinlock.
+This patch contains 2 workaround for the System MMU v3.x.
 
-Reviewed-by: Grant Grundler <grundler@chromium.org>
-Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
+System MMU v3.2 and v3.3 has FLPD cache that caches first level page
+table entries to reduce page table walking latency. However, the
+FLPD cache is filled with a first level page table entry even though
+it is not accessed by a master H/W because System MMU v3.3
+speculatively prefetches page table entries that may be accessed
+in the near future by the master H/W.
+The prefetched FLPD cache entries are not invalidated by iommu_unmap()
+because iommu_unmap() only unmaps and invalidates the page table
+entries that is mapped.
+
+Because exynos-iommu driver discards a second level page table when
+it needs to be replaced with another second level page table or
+a first level page table entry with 1MB mapping, It is required to
+invalidate FLPD cache that may contain the first level page table
+entry that points to the second level page table.
+
+Another workaround of System MMU v3.3 is initializing the first level
+page table entries with the second level page table which is filled
+with all zeros. This prevents System MMU prefetches 'fault' first
+level page table entry which may lead page fault on access to 16MiB
+wide.
+
+System MMU 3.x fetches consecutive page table entries by a page
+table walking to maximize bus utilization and to minimize TLB miss
+panelty.
+Unfortunately, functional problem is raised with the fetching behavior
+because it fetches 'fault' page table entries that specifies no
+translation information and that a valid translation information will
+be written to in the near future. The logic in the System MMU generates
+page fault with the cached fault entries that is no longer coherent
+with the page table which is updated.
+
+There is another workaround that must be implemented by I/O virtual
+memory manager: any two consecutive I/O virtual memory area must have
+a hole between the two that is larger than or equal to 128KiB.
+Also, next I/O virtual memory area must be started from the next
+128KiB boundary.
+
+0            128K           256K               384K             512K
+|-------------|---------------|-----------------|----------------|
+|area1---------------->|.........hole...........|<--- area2 -----
+
+The constraint is depicted above.
+The size is selected by the calculation followed:
+ - System MMU can fetch consecutive 64 page table entries at once
+   64 * 4KiB = 256KiB. This is the size between 128K ~ 384K of the
+   above picture. This style of fetching is 'block fetch'. It fetches
+   the page table entries predefined consecutive page table entries
+   including the entry that is the reason of the page table walking.
+ - System MMU can prefetch upto consecutive 32 page table entries.
+   This is the size between 256K ~ 384K.
+
+Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/exynos-iommu.c |   39 ++++++++++++++++++++-------------------
- 1 file changed, 20 insertions(+), 19 deletions(-)
+ drivers/iommu/exynos-iommu.c |  166 +++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 149 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index c2e6365..c9076e1 100755
+index 54011e5..35b055e 100755
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -200,7 +200,7 @@ struct sysmmu_drvdata {
- 	struct clk *clk;
- 	struct clk *clk_master;
- 	int activations;
--	rwlock_t lock;
-+	spinlock_t lock;
- 	struct iommu_domain *domain;
- 	bool powered_on;
- 	bool suspended;
-@@ -323,12 +323,13 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
- 	unsigned long addr = -1;
- 	int ret = -ENOSYS;
+@@ -49,8 +49,12 @@ typedef u32 sysmmu_pte_t;
+ #define LPAGE_MASK (~(LPAGE_SIZE - 1))
+ #define SPAGE_MASK (~(SPAGE_SIZE - 1))
  
--	read_lock(&data->lock);
--
- 	WARN_ON(!is_sysmmu_active(data));
+-#define lv1ent_fault(sent) (((*(sent) & 3) == 0) || ((*(sent) & 3) == 3))
+-#define lv1ent_page(sent) ((*(sent) & 3) == 1)
++#define lv1ent_fault(sent) ((*(sent) == ZERO_LV2LINK) || \
++			   ((*(sent) & 3) == 0) || ((*(sent) & 3) == 3))
++#define lv1ent_zero(sent) (*(sent) == ZERO_LV2LINK)
++#define lv1ent_page_zero(sent) ((*(sent) & 3) == 1)
++#define lv1ent_page(sent) ((*(sent) != ZERO_LV2LINK) && \
++			  ((*(sent) & 3) == 1))
+ #define lv1ent_section(sent) ((*(sent) & 3) == 2)
  
-+	spin_lock(&data->lock);
-+
- 	if (!IS_ERR(data->clk_master))
- 		clk_enable(data->clk_master);
-+
- 	itype = (enum exynos_sysmmu_inttype)
- 		__ffs(__raw_readl(data->sfrbase + REG_INT_STATUS));
- 	if (WARN_ON(!((itype >= 0) && (itype < SYSMMU_FAULT_UNKNOWN))))
-@@ -362,7 +363,7 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
- 	if (!IS_ERR(data->clk_master))
- 		clk_disable(data->clk_master);
+ #define lv2ent_fault(pent) ((*(pent) & 3) == 0)
+@@ -138,6 +142,8 @@ static u32 lv2ent_offset(sysmmu_iova_t iova)
+ 		entry)
  
--	read_unlock(&data->lock);
-+	spin_unlock(&data->lock);
+ static struct kmem_cache *lv2table_kmem_cache;
++static sysmmu_pte_t *zero_lv2_table;
++#define ZERO_LV2LINK mk_lv1ent_page(virt_to_phys(zero_lv2_table))
  
- 	return IRQ_HANDLED;
- }
-@@ -385,7 +386,7 @@ static bool __sysmmu_disable(struct sysmmu_drvdata *data)
- 	bool disabled;
- 	unsigned long flags;
- 
--	write_lock_irqsave(&data->lock, flags);
-+	spin_lock_irqsave(&data->lock, flags);
- 
- 	disabled = set_sysmmu_inactive(data);
- 
-@@ -402,7 +403,7 @@ static bool __sysmmu_disable(struct sysmmu_drvdata *data)
- 					data->activations);
- 	}
- 
--	write_unlock_irqrestore(&data->lock, flags);
-+	spin_unlock_irqrestore(&data->lock, flags);
- 
+ static sysmmu_pte_t *section_entry(sysmmu_pte_t *pgtable, sysmmu_iova_t iova)
+ {
+@@ -545,6 +551,35 @@ static bool exynos_sysmmu_disable(struct device *dev)
  	return disabled;
  }
-@@ -452,7 +453,7 @@ static int __sysmmu_enable(struct sysmmu_drvdata *data,
- 	int ret = 0;
- 	unsigned long flags;
  
--	write_lock_irqsave(&data->lock, flags);
-+	spin_lock_irqsave(&data->lock, flags);
- 	if (set_sysmmu_active(data)) {
- 		data->pgtable = pgtable;
- 		data->domain = domain;
-@@ -470,7 +471,7 @@ static int __sysmmu_enable(struct sysmmu_drvdata *data,
- 	if (WARN_ON(ret < 0))
- 		set_sysmmu_inactive(data); /* decrement count */
++static void __sysmmu_tlb_invalidate_flpdcache(struct sysmmu_drvdata *data,
++					      sysmmu_iova_t iova)
++{
++	if (__raw_sysmmu_version(data) == MAKE_MMU_VER(3, 3))
++		__raw_writel(iova | 0x1, data->sfrbase + REG_MMU_FLUSH_ENTRY);
++}
++
++static void sysmmu_tlb_invalidate_flpdcache(struct device *dev,
++					    sysmmu_iova_t iova)
++{
++	struct sysmmu_list_data *list;
++
++	for_each_sysmmu_list(dev, list) {
++		unsigned long flags;
++		struct sysmmu_drvdata *data = dev_get_drvdata(list->sysmmu);
++
++		if (!IS_ERR(data->clk_master))
++			clk_enable(data->clk_master);
++
++		spin_lock_irqsave(&data->lock, flags);
++		if (is_sysmmu_active(data) && data->powered_on)
++			__sysmmu_tlb_invalidate_flpdcache(data, iova);
++		spin_unlock_irqrestore(&data->lock, flags);
++
++		if (!IS_ERR(data->clk_master))
++			clk_disable(data->clk_master);
++	}
++}
++
+ static void sysmmu_tlb_invalidate_entry(struct device *dev, sysmmu_iova_t iova,
+ 					size_t size)
+ {
+@@ -848,21 +883,32 @@ static inline void pgtable_flush(void *vastart, void *vaend)
+ static int exynos_iommu_domain_init(struct iommu_domain *domain)
+ {
+ 	struct exynos_iommu_domain *priv;
++	int i;
  
--	write_unlock_irqrestore(&data->lock, flags);
-+	spin_unlock_irqrestore(&data->lock, flags);
+ 	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+ 	if (!priv)
+ 		return -ENOMEM;
  
+-	priv->pgtable = (sysmmu_pte_t *)__get_free_pages(
+-						GFP_KERNEL | __GFP_ZERO, 2);
++	priv->pgtable = (sysmmu_pte_t *)__get_free_pages(GFP_KERNEL, 2);
+ 	if (!priv->pgtable)
+ 		goto err_pgtable;
+ 
+-	priv->lv2entcnt = (short *)__get_free_pages(
+-						GFP_KERNEL | __GFP_ZERO, 1);
++	priv->lv2entcnt = (short *)__get_free_pages(GFP_KERNEL | __GFP_ZERO, 1);
+ 	if (!priv->lv2entcnt)
+ 		goto err_counter;
+ 
++	/* w/a of System MMU v3.3 to prevent caching 1MiB mapping */
++	for (i = 0; i < NUM_LV1ENTRIES; i += 8) {
++		priv->pgtable[i + 0] = ZERO_LV2LINK;
++		priv->pgtable[i + 1] = ZERO_LV2LINK;
++		priv->pgtable[i + 2] = ZERO_LV2LINK;
++		priv->pgtable[i + 3] = ZERO_LV2LINK;
++		priv->pgtable[i + 4] = ZERO_LV2LINK;
++		priv->pgtable[i + 5] = ZERO_LV2LINK;
++		priv->pgtable[i + 6] = ZERO_LV2LINK;
++		priv->pgtable[i + 7] = ZERO_LV2LINK;
++	}
++
+ 	pgtable_flush(priv->pgtable, priv->pgtable + NUM_LV1ENTRIES);
+ 
+ 	spin_lock_init(&priv->lock);
+@@ -975,8 +1021,8 @@ static void exynos_iommu_detach_device(struct iommu_domain *domain,
+ 		dev_dbg(dev, "%s: No IOMMU is attached\n", __func__);
+ }
+ 
+-static sysmmu_pte_t *alloc_lv2entry(sysmmu_pte_t *sent, sysmmu_iova_t iova,
+-					short *pgcounter)
++static sysmmu_pte_t *alloc_lv2entry(struct exynos_iommu_domain *priv,
++		sysmmu_pte_t *sent, sysmmu_iova_t iova, short *pgcounter)
+ {
+ 	if (lv1ent_section(sent)) {
+ 		WARN(1, "Trying mapping on %#08x mapped with 1MiB page", iova);
+@@ -985,6 +1031,7 @@ static sysmmu_pte_t *alloc_lv2entry(sysmmu_pte_t *sent, sysmmu_iova_t iova,
+ 
+ 	if (lv1ent_fault(sent)) {
+ 		sysmmu_pte_t *pent;
++		bool need_flush_flpd_cache = lv1ent_zero(sent);
+ 
+ 		pent = kmem_cache_zalloc(lv2table_kmem_cache, GFP_ATOMIC);
+ 		BUG_ON((unsigned int)pent & (LV2TABLE_SIZE - 1));
+@@ -995,12 +1042,39 @@ static sysmmu_pte_t *alloc_lv2entry(sysmmu_pte_t *sent, sysmmu_iova_t iova,
+ 		*pgcounter = NUM_LV2ENTRIES;
+ 		pgtable_flush(pent, pent + NUM_LV2ENTRIES);
+ 		pgtable_flush(sent, sent + 1);
++
++		/*
++		 * If pretched SLPD is a fault SLPD in zero_l2_table, FLPD cache
++		 * may caches the address of zero_l2_table. This function
++		 * replaces the zero_l2_table with new L2 page table to write
++		 * valid mappings.
++		 * Accessing the valid area may cause page fault since FLPD
++		 * cache may still caches zero_l2_table for the valid area
++		 * instead of new L2 page table that have the mapping
++		 * information of the valid area
++		 * Thus any replacement of zero_l2_table with other valid L2
++		 * page table must involve FLPD cache invalidation for System
++		 * MMU v3.3.
++		 * FLPD cache invalidation is performed with TLB invalidation
++		 * by VPN without blocking. It is safe to invalidate TLB without
++		 * blocking because the target address of TLB invalidation is
++		 * not currently mapped.
++		 */
++		if (need_flush_flpd_cache) {
++			struct exynos_iommu_owner *owner;
++			spin_lock(&priv->lock);
++			list_for_each_entry(owner, &priv->clients, client)
++				sysmmu_tlb_invalidate_flpdcache(
++							owner->dev, iova);
++			spin_unlock(&priv->lock);
++		}
+ 	}
+ 
+ 	return page_entry(sent, iova);
+ }
+ 
+-static int lv1set_section(sysmmu_pte_t *sent, sysmmu_iova_t iova,
++static int lv1set_section(struct exynos_iommu_domain *priv,
++			  sysmmu_pte_t *sent, sysmmu_iova_t iova,
+ 			  phys_addr_t paddr, short *pgcnt)
+ {
+ 	if (lv1ent_section(sent)) {
+@@ -1020,6 +1094,18 @@ static int lv1set_section(sysmmu_pte_t *sent, sysmmu_iova_t iova,
+ 		*pgcnt = 0;
+ 	}
+ 
++	spin_lock(&priv->lock);
++	if (lv1ent_page_zero(sent)) {
++		struct exynos_iommu_owner *owner;
++		/*
++		 * Flushing FLPD cache in System MMU v3.3 that may cache a FLPD
++		 * entry by speculative prefetch of SLPD which has no mapping.
++		 */
++		list_for_each_entry(owner, &priv->clients, client)
++			sysmmu_tlb_invalidate_flpdcache(owner->dev, iova);
++	}
++	spin_unlock(&priv->lock);
++
+ 	*sent = mk_lv1ent_sect(paddr);
+ 
+ 	pgtable_flush(sent, sent + 1);
+@@ -1059,6 +1145,32 @@ static int lv2set_page(sysmmu_pte_t *pent, phys_addr_t paddr, size_t size,
+ 	return 0;
+ }
+ 
++/*
++ * *CAUTION* to the I/O virtual memory managers that support exynos-iommu:
++ *
++ * System MMU v3.x have an advanced logic to improve address translation
++ * performance with caching more page table entries by a page table walk.
++ * However, the logic has a bug that caching fault page table entries and System
++ * MMU reports page fault if the cached fault entry is hit even though the fault
++ * entry is updated to a valid entry after the entry is cached.
++ * To prevent caching fault page table entries which may be updated to valid
++ * entries later, the virtual memory manager should care about the w/a about the
++ * problem. The followings describe w/a.
++ *
++ * Any two consecutive I/O virtual address regions must have a hole of 128KiB
++ * in maximum to prevent misbehavior of System MMU 3.x. (w/a of h/w bug)
++ *
++ * Precisely, any start address of I/O virtual region must be aligned by
++ * the following sizes for System MMU v3.1 and v3.2.
++ * System MMU v3.1: 128KiB
++ * System MMU v3.2: 256KiB
++ *
++ * Because System MMU v3.3 caches page table entries more aggressively, it needs
++ * more w/a.
++ * - Any two consecutive I/O virtual regions must be have a hole of larger size
++ *   than or equal size to 128KiB.
++ * - Start address of an I/O virtual region must be aligned by 128KiB.
++ */
+ static int exynos_iommu_map(struct iommu_domain *domain, unsigned long l_iova,
+ 			 phys_addr_t paddr, size_t size, int prot)
+ {
+@@ -1075,12 +1187,12 @@ static int exynos_iommu_map(struct iommu_domain *domain, unsigned long l_iova,
+ 	entry = section_entry(priv->pgtable, iova);
+ 
+ 	if (size == SECT_SIZE) {
+-		ret = lv1set_section(entry, iova, paddr,
++		ret = lv1set_section(priv, entry, iova, paddr,
+ 					&priv->lv2entcnt[lv1ent_offset(iova)]);
+ 	} else {
+ 		sysmmu_pte_t *pent;
+ 
+-		pent = alloc_lv2entry(entry, iova,
++		pent = alloc_lv2entry(priv, entry, iova,
+ 					&priv->lv2entcnt[lv1ent_offset(iova)]);
+ 
+ 		if (IS_ERR(pent))
+@@ -1099,11 +1211,24 @@ static int exynos_iommu_map(struct iommu_domain *domain, unsigned long l_iova,
  	return ret;
  }
-@@ -557,7 +558,7 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova,
  
- 	for_each_sysmmu_list(dev, list) {
- 		struct sysmmu_drvdata *data = dev_get_drvdata(list->sysmmu);
--		read_lock(&data->lock);
-+		spin_lock(&data->lock);
- 		if (is_sysmmu_active(data) && data->powered_on) {
- 			unsigned int num_inv = 1;
- 
-@@ -592,7 +593,7 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova,
- 				iova);
++static void exynos_iommu_tlb_invalidate_entry(struct exynos_iommu_domain *priv,
++						sysmmu_iova_t iova, size_t size)
++{
++	struct exynos_iommu_owner *owner;
++	unsigned long flags;
++
++	spin_lock_irqsave(&priv->lock, flags);
++
++	list_for_each_entry(owner, &priv->clients, client)
++		sysmmu_tlb_invalidate_entry(owner->dev, iova, size);
++
++	spin_unlock_irqrestore(&priv->lock, flags);
++}
++
+ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
+ 				       unsigned long l_iova, size_t size)
+ {
+ 	struct exynos_iommu_domain *priv = domain->priv;
+-	struct exynos_iommu_owner *owner;
+ 	sysmmu_iova_t iova = (sysmmu_iova_t)l_iova;
+ 	sysmmu_pte_t *ent;
+ 	size_t err_pgsize;
+@@ -1121,7 +1246,7 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
+ 			goto err;
  		}
  
--		read_unlock(&data->lock);
-+		spin_unlock(&data->lock);
+-		*ent = 0;
++		*ent = ZERO_LV2LINK; /* w/a for h/w bug in Sysmem MMU v3.3 */
+ 		pgtable_flush(ent, ent + 1);
+ 		size = SECT_SIZE;
+ 		goto done;
+@@ -1164,10 +1289,7 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
+ done:
+ 	spin_unlock_irqrestore(&priv->pgtablelock, flags);
+ 
+-	spin_lock_irqsave(&priv->lock, flags);
+-	list_for_each_entry(owner, &priv->clients, client)
+-		sysmmu_tlb_invalidate_entry(owner->dev, iova, size);
+-	spin_unlock_irqrestore(&priv->lock, flags);
++	exynos_iommu_tlb_invalidate_entry(priv, iova, size);
+ 
+ 	return size;
+ err:
+@@ -1264,6 +1386,14 @@ static int __init exynos_iommu_init(void)
+ 		goto err_reg_driver;
  	}
  
- 	spin_unlock_irqrestore(&owner->lock, flags);
-@@ -608,7 +609,7 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
- 
- 	for_each_sysmmu_list(dev, list) {
- 		struct sysmmu_drvdata *data = dev_get_drvdata(list->sysmmu);
--		read_lock(&data->lock);
-+		spin_lock(&data->lock);
- 		if (is_sysmmu_active(data) && data->powered_on) {
- 			if (!IS_ERR(data->clk_master))
- 				clk_enable(data->clk_master);
-@@ -621,7 +622,7 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
- 		} else {
- 			dev_dbg(dev, "disabled. Skipping TLB invalidation\n");
- 		}
--		read_unlock(&data->lock);
-+		spin_unlock(&data->lock);
- 	}
- 
- 	spin_unlock_irqrestore(&owner->lock, flags);
-@@ -813,7 +814,7 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
- 	if (!ret) {
- 		data->powered_on = !pm_runtime_enabled(dev);
- 		data->sysmmu = dev;
--		rwlock_init(&data->lock);
-+		spin_lock_init(&data->lock);
- 
- 		platform_set_drvdata(pdev, data);
- 	}
-@@ -1264,12 +1265,12 @@ static int sysmmu_pm_genpd_suspend(struct device *dev)
- 	for_each_sysmmu_list(dev, list) {
- 		struct sysmmu_drvdata *data = dev_get_drvdata(list->sysmmu);
- 		unsigned long flags;
--		write_lock_irqsave(&data->lock, flags);
-+		spin_lock_irqsave(&data->lock, flags);
- 		if (!data->suspended && is_sysmmu_active(data) &&
- 			(!pm_runtime_enabled(dev) || data->powered_on))
- 			__sysmmu_disable_nocount(data);
- 		data->suspended = true;
--		write_unlock_irqrestore(&data->lock, flags);
-+		spin_unlock_irqrestore(&data->lock, flags);
- 	}
++	zero_lv2_table = kmem_cache_zalloc(lv2table_kmem_cache, GFP_KERNEL);
++	if (zero_lv2_table == NULL) {
++		pr_err("%s: Failed to allocate zero level2 page table\n",
++			__func__);
++		ret = -ENOMEM;
++		goto err_zero_lv2;
++	}
++
+ 	ret = bus_set_iommu(&platform_bus_type, &exynos_iommu_ops);
+ 	if (ret) {
+ 		pr_err("%s: Failed to register exynos-iommu driver.\n",
+@@ -1273,6 +1403,8 @@ static int __init exynos_iommu_init(void)
  
  	return 0;
-@@ -1282,12 +1283,12 @@ static int sysmmu_pm_genpd_resume(struct device *dev)
- 	for_each_sysmmu_list(dev, list) {
- 		struct sysmmu_drvdata *data = dev_get_drvdata(list->sysmmu);
- 		unsigned long flags;
--		write_lock_irqsave(&data->lock, flags);
-+		spin_lock_irqsave(&data->lock, flags);
- 		if (data->suspended && is_sysmmu_active(data) &&
- 			(!pm_runtime_enabled(dev) || data->powered_on))
- 			__sysmmu_enable_nocount(data);
- 		data->suspended = false;
--		write_unlock_irqrestore(&data->lock, flags);
-+		spin_unlock_irqrestore(&data->lock, flags);
- 	}
- 
- 	return pm_generic_resume(dev);
-@@ -1439,12 +1440,12 @@ static int sysmmu_hook_driver_register(struct notifier_block *nb,
- 					dev_get_drvdata(list->sysmmu);
- 			unsigned long flags;
- 
--			write_lock_irqsave(&data->lock, flags);
-+			spin_lock_irqsave(&data->lock, flags);
- 			if (is_sysmmu_active(data) && !data->powered_on)
- 				__sysmmu_enable_nocount(data);
- 			data->powered_on = true;
- 			pm_runtime_disable(data->sysmmu);
--			write_unlock_irqrestore(&data->lock, flags);
-+			spin_unlock_irqrestore(&data->lock, flags);
- 		}
- 		break;
- 	}
+ err_set_iommu:
++	kmem_cache_free(lv2table_kmem_cache, zero_lv2_table);
++err_zero_lv2:
+ 	platform_driver_unregister(&exynos_sysmmu_driver);
+ err_reg_driver:
+ 	kmem_cache_destroy(lv2table_kmem_cache);
 -- 
 1.7.9.5
