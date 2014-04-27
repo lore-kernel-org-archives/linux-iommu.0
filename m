@@ -1,7 +1,8 @@
 From: Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v12 05/31] iommu/exynos: remove prefetch buffer setting
-Date: Sun, 27 Apr 2014 13:07:37 +0530
-Message-ID: <1398584283-22846-6-git-send-email-shaik.ameer@samsung.com>
+Subject: [PATCH v12 03/31] iommu/exynos: change error handling when page table
+ update is failed
+Date: Sun, 27 Apr 2014 13:07:35 +0530
+Message-ID: <1398584283-22846-4-git-send-email-shaik.ameer@samsung.com>
 References: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-reply-to: <1398584283-22846-1-git-send-email-shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
@@ -12,55 +13,166 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 
-Prefetch buffer is a cache of System MMU 3.x and caches a block of
-page table entries to make effect of larger page with small pages.
-However, how to control prefetch buffers and the specifications of
-prefetch buffers different from minor versions of System MMU v3.
-Prefetch buffers must be controled with care because there are some
-restrictions in H/W design.
-
-The interface and implementation to initiate prefetch buffers will
-be prepared later.
+This patch changes not to panic on any error when updating page table.
+Instead prints error messages with callstack.
 
 Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/exynos-iommu.c |   16 ----------------
- 1 file changed, 16 deletions(-)
+ drivers/iommu/exynos-iommu.c |   58 ++++++++++++++++++++++++++++++++----------
+ 1 file changed, 44 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 7ce44a8..7556177 100644
+index 34e4273..84fc3b4 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -243,13 +243,6 @@ static void __sysmmu_set_ptbase(void __iomem *sfrbase,
- 	__sysmmu_tlb_invalidate(sfrbase);
+@@ -811,13 +811,18 @@ finish:
+ static unsigned long *alloc_lv2entry(unsigned long *sent, unsigned long iova,
+ 					short *pgcounter)
+ {
++	if (lv1ent_section(sent)) {
++		WARN(1, "Trying mapping on %#08lx mapped with 1MiB page", iova);
++		return ERR_PTR(-EADDRINUSE);
++	}
++
+ 	if (lv1ent_fault(sent)) {
+ 		unsigned long *pent;
+ 
+ 		pent = kzalloc(LV2TABLE_SIZE, GFP_ATOMIC);
+ 		BUG_ON((unsigned long)pent & (LV2TABLE_SIZE - 1));
+ 		if (!pent)
+-			return NULL;
++			return ERR_PTR(-ENOMEM);
+ 
+ 		*sent = mk_lv1ent_page(__pa(pent));
+ 		*pgcounter = NUM_LV2ENTRIES;
+@@ -828,14 +833,21 @@ static unsigned long *alloc_lv2entry(unsigned long *sent, unsigned long iova,
+ 	return page_entry(sent, iova);
  }
  
--static void __sysmmu_set_prefbuf(void __iomem *sfrbase, unsigned long base,
--						unsigned long size, int idx)
--{
--	__raw_writel(base, sfrbase + REG_PB0_SADDR + idx * 8);
--	__raw_writel(size - 1 + base,  sfrbase + REG_PB0_EADDR + idx * 8);
--}
--
- static void __set_fault_handler(struct sysmmu_drvdata *data,
- 					sysmmu_fault_handler_t handler)
+-static int lv1set_section(unsigned long *sent, phys_addr_t paddr, short *pgcnt)
++static int lv1set_section(unsigned long *sent, unsigned long iova,
++			  phys_addr_t paddr, short *pgcnt)
  {
-@@ -423,15 +416,6 @@ static int __exynos_sysmmu_enable(struct sysmmu_drvdata *data,
+-	if (lv1ent_section(sent))
++	if (lv1ent_section(sent)) {
++		WARN(1, "Trying mapping on 1MiB@%#08lx that is mapped",
++			iova);
+ 		return -EADDRINUSE;
++	}
  
- 	for (i = 0; i < data->nsfrs; i++) {
- 		__sysmmu_set_ptbase(data->sfrbases[i], pgtable);
--
--		if ((readl(data->sfrbases[i] + REG_MMU_VERSION) >> 28) == 3) {
--			/* System MMU version is 3.x */
--			__raw_writel((1 << 12) | (2 << 28),
--					data->sfrbases[i] + REG_MMU_CFG);
--			__sysmmu_set_prefbuf(data->sfrbases[i], 0, -1, 0);
--			__sysmmu_set_prefbuf(data->sfrbases[i], 0, -1, 1);
--		}
--
- 		__raw_writel(CTRL_ENABLE, data->sfrbases[i] + REG_MMU_CTRL);
+ 	if (lv1ent_page(sent)) {
+-		if (*pgcnt != NUM_LV2ENTRIES)
++		if (*pgcnt != NUM_LV2ENTRIES) {
++			WARN(1, "Trying mapping on 1MiB@%#08lx that is mapped",
++				iova);
+ 			return -EADDRINUSE;
++		}
+ 
+ 		kfree(page_entry(sent, 0));
+ 
+@@ -853,8 +865,10 @@ static int lv2set_page(unsigned long *pent, phys_addr_t paddr, size_t size,
+ 								short *pgcnt)
+ {
+ 	if (size == SPAGE_SIZE) {
+-		if (!lv2ent_fault(pent))
++		if (!lv2ent_fault(pent)) {
++			WARN(1, "Trying mapping on 4KiB where mapping exists");
+ 			return -EADDRINUSE;
++		}
+ 
+ 		*pent = mk_lv2ent_spage(paddr);
+ 		pgtable_flush(pent, pent + 1);
+@@ -863,7 +877,10 @@ static int lv2set_page(unsigned long *pent, phys_addr_t paddr, size_t size,
+ 		int i;
+ 		for (i = 0; i < SPAGES_PER_LPAGE; i++, pent++) {
+ 			if (!lv2ent_fault(pent)) {
+-				memset(pent, 0, sizeof(*pent) * i);
++				WARN(1,
++				"Trying mapping on 64KiB where mapping exists");
++				if (i > 0)
++					memset(pent - i, 0, sizeof(*pent) * i);
+ 				return -EADDRINUSE;
+ 			}
+ 
+@@ -891,7 +908,7 @@ static int exynos_iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 	entry = section_entry(priv->pgtable, iova);
+ 
+ 	if (size == SECT_SIZE) {
+-		ret = lv1set_section(entry, paddr,
++		ret = lv1set_section(entry, iova, paddr,
+ 					&priv->lv2entcnt[lv1ent_offset(iova)]);
+ 	} else {
+ 		unsigned long *pent;
+@@ -899,17 +916,16 @@ static int exynos_iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 		pent = alloc_lv2entry(entry, iova,
+ 					&priv->lv2entcnt[lv1ent_offset(iova)]);
+ 
+-		if (!pent)
+-			ret = -ENOMEM;
++		if (IS_ERR(pent))
++			ret = PTR_ERR(pent);
+ 		else
+ 			ret = lv2set_page(pent, paddr, size,
+ 					&priv->lv2entcnt[lv1ent_offset(iova)]);
  	}
  
+-	if (ret) {
++	if (ret)
+ 		pr_debug("%s: Failed to map iova 0x%lx/0x%x bytes\n",
+ 							__func__, iova, size);
+-	}
+ 
+ 	spin_unlock_irqrestore(&priv->pgtablelock, flags);
+ 
+@@ -923,6 +939,7 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
+ 	struct sysmmu_drvdata *data;
+ 	unsigned long flags;
+ 	unsigned long *ent;
++	size_t err_pgsize;
+ 
+ 	BUG_ON(priv->pgtable == NULL);
+ 
+@@ -931,7 +948,10 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
+ 	ent = section_entry(priv->pgtable, iova);
+ 
+ 	if (lv1ent_section(ent)) {
+-		BUG_ON(size < SECT_SIZE);
++		if (size < SECT_SIZE) {
++			err_pgsize = SECT_SIZE;
++			goto err;
++		}
+ 
+ 		*ent = 0;
+ 		pgtable_flush(ent, ent + 1);
+@@ -963,7 +983,10 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
+ 	}
+ 
+ 	/* lv1ent_large(ent) == true here */
+-	BUG_ON(size < LPAGE_SIZE);
++	if (size < LPAGE_SIZE) {
++		err_pgsize = LPAGE_SIZE;
++		goto err;
++	}
+ 
+ 	memset(ent, 0, sizeof(*ent) * SPAGES_PER_LPAGE);
+ 	pgtable_flush(ent, ent + SPAGES_PER_LPAGE);
+@@ -978,8 +1001,15 @@ done:
+ 		sysmmu_tlb_invalidate_entry(data->dev, iova);
+ 	spin_unlock_irqrestore(&priv->lock, flags);
+ 
+-
+ 	return size;
++err:
++	spin_unlock_irqrestore(&priv->pgtablelock, flags);
++
++	WARN(1,
++	"%s: Failed due to size(%#x) @ %#08lx is smaller than page size %#x\n",
++	__func__, size, iova, err_pgsize);
++
++	return 0;
+ }
+ 
+ static phys_addr_t exynos_iommu_iova_to_phys(struct iommu_domain *domain,
 -- 
 1.7.9.5
 
