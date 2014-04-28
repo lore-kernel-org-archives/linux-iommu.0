@@ -1,217 +1,49 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH v5 11/11] VFIO_PLATFORM: Support for maskable and
-	automasked interrupts
-Date: Mon, 28 Apr 2014 11:46:38 -0600
-Message-ID: <1398707198.24318.293.camel@ul30vt.home>
-References: <1398700371-20096-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1398700371-20096-12-git-send-email-a.motakis@virtualopensystems.com>
+From: Stephen Warren <swarren@wwwdotorg.org>
+Subject: Re: [PATCH v12 11/31] documentation: iommu: add binding document
+ of Exynos System MMU
+Date: Mon, 28 Apr 2014 11:52:24 -0600
+Message-ID: <535E9558.8010803@wwwdotorg.org>
+References: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
+ <4447051.OnJtcFSqFV@wuerfel> <20140428103919.GF19455@ulmo>
+ <6544270.ddFBoY6LMm@wuerfel> <20140428111802.GI19455@ulmo>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1398700371-20096-12-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20140428111802.GI19455@ulmo>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>, Arnd Bergmann <arnd@arndb.de>
+Cc: t.figa@samsung.com, Will Deacon <will.deacon@arm.com>, tomasz.figa@gmail.com, joshi@samsung.com, s.nawrocki@samsung.com, Varun.Sethi@freescale.com, kgene.kim@samsung.com, prathyush.k@samsung.com, sachin.kamat@linaro.org, joro@8bytes.org, devicetree@vger.kernel.org, grundler@chromium.org, linux-samsung-soc@vger.kernel.org, a.motakis@virtualopensystems.com, pullip.cho@samsung.com, linux-arm-kernel@lists.infradead.org, rahul.sharma@samsung.com, Shaik Ameer Basha <shaik.ameer@samsung.com>, supash.ramaswamy@linaro.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Hiroshi Doyu <hdoyu@nvidia.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2014-04-28 at 17:52 +0200, Antonios Motakis wrote:
-> Adds support to mask interrupts, and also for automasked interrupts.
-> Level sensitive interrupts are exposed as automasked interrupts and
-> are masked and disabled automatically when they fire.
+On 04/28/2014 05:18 AM, Thierry Reding wrote:
+> On Mon, Apr 28, 2014 at 12:56:03PM +0200, Arnd Bergmann wrote:
+...
+>> A lot of drivers probably only support one
+>> master, so they can just set #iommu-cells=<0>, others might require
+>> IDs that do not fit into one cell.
 > 
-> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-> ---
->  drivers/vfio/platform/vfio_platform_irq.c     | 117 ++++++++++++++++++++++++--
->  drivers/vfio/platform/vfio_platform_private.h |   2 +
->  2 files changed, 113 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/vfio/platform/vfio_platform_irq.c b/drivers/vfio/platform/vfio_platform_irq.c
-> index 433edc1..e38982f 100644
-> --- a/drivers/vfio/platform/vfio_platform_irq.c
-> +++ b/drivers/vfio/platform/vfio_platform_irq.c
-> @@ -52,9 +52,16 @@ int vfio_platform_irq_init(struct vfio_platform_device *vdev)
->  		struct vfio_platform_irq irq;
->  		int hwirq = platform_get_irq(vdev->pdev, i);
->  
-> -		irq.flags = VFIO_IRQ_INFO_EVENTFD;
-> +		spin_lock_init(&irq.lock);
-> +
-> +		irq.flags = VFIO_IRQ_INFO_EVENTFD | VFIO_IRQ_INFO_MASKABLE;
-> +
-> +		if (irq_get_trigger_type(hwirq) & IRQ_TYPE_LEVEL_MASK)
-> +			irq.flags |= VFIO_IRQ_INFO_AUTOMASKED;
-> +
->  		irq.count = 1;
->  		irq.hwirq = hwirq;
-> +		irq.masked = false;
->  
->  		vdev->irq[i] = irq;
->  	}
-> @@ -66,19 +73,39 @@ void vfio_platform_irq_cleanup(struct vfio_platform_device *vdev)
->  {
->  	int i;
->  
-> -	for (i = 0; i < vdev->num_irqs; i++)
-> +	for (i = 0; i < vdev->num_irqs; i++) {
->  		vfio_set_trigger(vdev, i, -1);
->  
-> +		if (vdev->irq[i].masked)
-> +			enable_irq(vdev->irq[i].hwirq);
+> You mean "#iommu-cells = <1>" for devices that only require one master?
+> There still has to be one cell to specify which master. Unless perhaps
+> if they can be arbitrarily assigned. I guess even if there's a fixed
+> mapping that applies to one SoC generation, it might be good to still
+> employ a specifier and have the mapping in DT for flexibility.
 
-This looks suspicious.  set_trigger(,, -1) calls free_irq() and here we
-enable_irq().  Shouldn't the nexe user's call to request_irq() be
-sufficient to re-enable it?  Thanks,
+#iommu-cells doesn't include the phandle, so if you want the client
+references to be:
 
-Alex
+property = <&iommu>;
 
-> +	}
-> +
->  	kfree(vdev->irq);
->  }
->  
->  static irqreturn_t vfio_irq_handler(int irq, void *dev_id)
->  {
-> -	struct eventfd_ctx *trigger = dev_id;
-> +	struct vfio_platform_irq *irq_ctx = dev_id;
-> +	unsigned long flags;
-> +	int ret = IRQ_NONE;
-> +
-> +	spin_lock_irqsave(&irq_ctx->lock, flags);
-> +
-> +	if (!irq_ctx->masked) {
-> +		ret = IRQ_HANDLED;
-> +
-> +		if (irq_ctx->flags & VFIO_IRQ_INFO_AUTOMASKED) {
-> +			disable_irq_nosync(irq_ctx->hwirq);
-> +			irq_ctx->masked = true;
-> +		}
-> +	}
->  
-> -	eventfd_signal(trigger, 1);
-> +	spin_unlock_irqrestore(&irq_ctx->lock, flags);
->  
-> -	return IRQ_HANDLED;
-> +	if (ret == IRQ_HANDLED)
-> +		eventfd_signal(irq_ctx->trigger, 1);
-> +
-> +	return ret;
->  }
->  
->  static int vfio_set_trigger(struct vfio_platform_device *vdev,
-> @@ -159,6 +186,82 @@ static int vfio_platform_set_irq_trigger(struct vfio_platform_device *vdev,
->  	return -EFAULT;
->  }
->  
-> +static int vfio_platform_set_irq_unmask(struct vfio_platform_device *vdev,
-> +				    unsigned index, unsigned start,
-> +				    unsigned count, uint32_t flags, void *data)
-> +{
-> +	uint8_t arr;
-> +
-> +	if (start != 0 || count != 1)
-> +		return -EINVAL;
-> +
-> +	switch (flags & VFIO_IRQ_SET_DATA_TYPE_MASK) {
-> +	case VFIO_IRQ_SET_DATA_BOOL:
-> +		if (copy_from_user(&arr, data, sizeof(uint8_t)))
-> +			return -EFAULT;
-> +
-> +		if (arr != 0x1)
-> +			return -EINVAL;
-> +
-> +	case VFIO_IRQ_SET_DATA_NONE:
-> +
-> +		spin_lock_irq(&vdev->irq[index].lock);
-> +
-> +		if (vdev->irq[index].masked) {
-> +			enable_irq(vdev->irq[index].hwirq);
-> +			vdev->irq[index].masked = false;
-> +		}
-> +
-> +		spin_unlock_irq(&vdev->irq[index].lock);
-> +
-> +		return 0;
-> +
-> +	case VFIO_IRQ_SET_DATA_EVENTFD: /* XXX not implemented yet */
-> +	default:
-> +		return -ENOTTY;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int vfio_platform_set_irq_mask(struct vfio_platform_device *vdev,
-> +				    unsigned index, unsigned start,
-> +				    unsigned count, uint32_t flags, void *data)
-> +{
-> +	uint8_t arr;
-> +
-> +	if (start != 0 || count != 1)
-> +		return -EINVAL;
-> +
-> +	switch (flags & VFIO_IRQ_SET_DATA_TYPE_MASK) {
-> +	case VFIO_IRQ_SET_DATA_BOOL:
-> +		if (copy_from_user(&arr, data, sizeof(uint8_t)))
-> +			return -EFAULT;
-> +
-> +		if (arr != 0x1)
-> +			return -EINVAL;
-> +
-> +	case VFIO_IRQ_SET_DATA_NONE:
-> +
-> +		spin_lock_irq(&vdev->irq[index].lock);
-> +
-> +		if (!vdev->irq[index].masked) {
-> +			disable_irq(vdev->irq[index].hwirq);
-> +			vdev->irq[index].masked = true;
-> +		}
-> +
-> +		spin_unlock_irq(&vdev->irq[index].lock);
-> +
-> +		return 0;
-> +
-> +	case VFIO_IRQ_SET_DATA_EVENTFD: /* XXX not implemented yet */
-> +	default:
-> +		return -ENOTTY;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  int vfio_platform_set_irqs_ioctl(struct vfio_platform_device *vdev,
->  				 uint32_t flags, unsigned index, unsigned start,
->  				 unsigned count, void *data)
-> @@ -169,8 +272,10 @@ int vfio_platform_set_irqs_ioctl(struct vfio_platform_device *vdev,
->  
->  	switch (flags & VFIO_IRQ_SET_ACTION_TYPE_MASK) {
->  	case VFIO_IRQ_SET_ACTION_MASK:
-> +		func = vfio_platform_set_irq_mask;
-> +		break;
->  	case VFIO_IRQ_SET_ACTION_UNMASK:
-> -		/* XXX not implemented */
-> +		func = vfio_platform_set_irq_unmask;
->  		break;
->  	case VFIO_IRQ_SET_ACTION_TRIGGER:
->  		func = vfio_platform_set_irq_trigger;
-> diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
-> index e21c15a..e283171 100644
-> --- a/drivers/vfio/platform/vfio_platform_private.h
-> +++ b/drivers/vfio/platform/vfio_platform_private.h
-> @@ -30,6 +30,8 @@ struct vfio_platform_irq {
->  	u32			count;
->  	int			hwirq;
->  	char			*name;
-> +	bool			masked;
-> +	spinlock_t		lock;
->  };
->  
->  struct vfio_platform_region {
+then that's #iommu-cells=<0>, whereas:
+
+property = <&iommu N>;
+
+is #iommu-cells=<1>.
