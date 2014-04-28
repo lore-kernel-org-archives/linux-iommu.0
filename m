@@ -1,48 +1,71 @@
-From: <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH] iommu/amd: Take mmap_sem when calling get_user_pages
-Date: Mon, 28 Apr 2014 17:27:46 -0500
-Message-ID: <1398724066-3730-1-git-send-email-suravee.suthikulpanit@amd.com>
+From: Doug Anderson <dianders@chromium.org>
+Subject: Re: [PATCH v12 30/31] ARM: dts: add System MMU nodes of exynos5250
+Date: Mon, 28 Apr 2014 16:13:19 -0700
+Message-ID: <CAD=FV=UCpQRg9nWu5EfuzWmBpee9N3X6yCmtpRaNQxitfFZkMQ@mail.gmail.com>
+References: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
+	<1398584283-22846-31-git-send-email-shaik.ameer@samsung.com>
+	<CAGm_ybhTEN9QxFBd1Su8NGP32KeYTF8d_Z8gXKo7cYpapZrA9w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: jay.cornwall-5C7GfCeVMHo@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kim.naru-5C7GfCeVMHo@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <CAGm_ybhTEN9QxFBd1Su8NGP32KeYTF8d_Z8gXKo7cYpapZrA9w@mail.gmail.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Vikas Sajjan <sajjan.linux@gmail.com>
+Cc: Shaik Ameer Basha <shaik.ameer@samsung.com>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Kukjin Kim <kgene.kim@samsung.com>, Prathyush <prathyush.k@samsung.com>, Grant Grundler <grundler@chromium.org>, joro@8bytes.org, supash.ramaswamy@linaro.org, Tomasz Figa <tomasz.figa@gmail.com>, sunil joshi <joshi@samsung.com>, Sachin Kamat <sachin.kamat@linaro.org>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Varun.Sethi@freescale.com, a.motakis@virtualopensystems.com, pullip.cho@samsung.com, Tomasz Figa <t.figa@samsung.com>, RAHUL SHARMA <rahul.sharma@samsung.com>, Abhilash Kesavan <a.kesavan@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Jay Cornwall <jay.cornwall-5C7GfCeVMHo@public.gmane.org>
+Vikas,
 
-get_user_pages requires caller to hold a read lock on mmap_sem.
 
-Signed-off-by: Jay Cornwall <jay.cornwall-5C7GfCeVMHo@public.gmane.org>
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
----
- drivers/iommu/amd_iommu_v2.c |    2 ++
- 1 file changed, 2 insertions(+)
+On Sun, Apr 27, 2014 at 10:39 AM, Vikas Sajjan <sajjan.linux@gmail.com> wrote:
+> Hi shaik,
+>
+> +Doug, Abhilash,
+>
+> On Sun, Apr 27, 2014 at 1:08 PM, Shaik Ameer Basha
+> <shaik.ameer@samsung.com> wrote:
+>> From: Cho KyongHo <pullip.cho@samsung.com>
+>>
+>> Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
+>> ---
+>>  arch/arm/boot/dts/exynos5250.dtsi |  270 ++++++++++++++++++++++++++++++++++++-
+>>  1 file changed, 267 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/arch/arm/boot/dts/exynos5250.dtsi b/arch/arm/boot/dts/exynos5250.dtsi
+>> index 3742331..eebd397 100644
+>> --- a/arch/arm/boot/dts/exynos5250.dtsi
+>> +++ b/arch/arm/boot/dts/exynos5250.dtsi
+>> @@ -82,6 +82,16 @@
+>>                 reg = <0x10044040 0x20>;
+>>         };
+>>
+>> +       pd_isp: isp-power-domain@0x10044020 {
+>> +               compatible = "samsung,exynos4210-pd";
+>> +               reg = <0x10044020 0x20>;
+>> +       };
+>> +
+>> +       pd_disp1: disp1-power-domain@0x100440A0 {
+>> +               compatible = "samsung,exynos4210-pd";
+>> +               reg = <0x100440A0 0x20>;
+>> +       };
+>> +
+>
+> As per subject "add System MMU nodes of exynos5250", it should only
+> add SysMMU node.
+> So, I think adding power domain nodes should go in a separate patch.
+>
+> Adding power domain nodes can break the system, if powering ON/OFF of
+> the given power domain is NOT taken care well.
+> I can see ISP is one such case. With this series I can see S2R breaks
+> [1] on 5250 chromebook with current mainline kernel (same applies for
+> arndale and smdk5250, but I have tested on these boards yet)
 
-diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
-index 5208828..203b2e6 100644
---- a/drivers/iommu/amd_iommu_v2.c
-+++ b/drivers/iommu/amd_iommu_v2.c
-@@ -504,8 +504,10 @@ static void do_fault(struct work_struct *work)
- 
- 	write = !!(fault->flags & PPR_FAULT_WRITE);
- 
-+	down_read(&fault->state->mm->mmap_sem);
- 	npages = get_user_pages(fault->state->task, fault->state->mm,
- 				fault->address, 1, write, 0, &page, NULL);
-+	up_read(&fault->state->mm->mmap_sem);
- 
- 	if (npages == 1) {
- 		put_page(page);
--- 
-1.7.10.4
+Thanks for catching that!  Let's make sure not to break suspend/resume.
+
+Given that these power domains are actually used as the domains for
+some of the System MMU nodes I don't totally object to adding them in
+the same patch, but if they're breaking things then I agree that we
+could leave them out and add them in a later patch (once issues are
+sorted out).
+
+-Doug
