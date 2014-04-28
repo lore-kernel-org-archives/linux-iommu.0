@@ -1,166 +1,135 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v12 11/31] documentation: iommu: add binding document of
-	Exynos System MMU
-Date: Mon, 28 Apr 2014 13:18:03 +0200
-Message-ID: <20140428111802.GI19455@ulmo>
-References: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
-	<4447051.OnJtcFSqFV@wuerfel> <20140428103919.GF19455@ulmo>
-	<6544270.ddFBoY6LMm@wuerfel>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v12 11/31] documentation: iommu: add binding document of Exynos System MMU
+Date: Mon, 28 Apr 2014 14:05:30 +0200
+Message-ID: <4780885.JaktFvJeC7@wuerfel>
+References: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com> <6544270.ddFBoY6LMm@wuerfel> <20140428111802.GI19455@ulmo>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============6358302904948906807=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <6544270.ddFBoY6LMm@wuerfel>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, joshi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <20140428111802.GI19455@ulmo>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Thierry Reding <thierry.reding@gmail.com>, t.figa@samsung.com, Will Deacon <will.deacon@arm.com>, tomasz.figa@gmail.com, joshi@samsung.com, s.nawrocki@samsung.com, Varun.Sethi@freescale.com, kgene.kim@samsung.com, prathyush.k@samsung.com, sachin.kamat@linaro.org, joro@8bytes.org, devicetree@vger.kernel.org, Stephen Warren <swarren@wwwdotorg.org>, grundler@chromium.org, linux-samsung-soc@vger.kernel.org, a.motakis@virtualopensystems.com, pullip.cho@samsung.com, rahul.sharma@samsung.com, Shaik Ameer Basha <shaik.ameer@samsung.com>, supash.ramaswamy@linaro.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Hiroshi Doyu <hdoyu@nvidia.com>
 List-Id: iommu@lists.linux-foundation.org
 
+On Monday 28 April 2014 13:18:03 Thierry Reding wrote:
+> On Mon, Apr 28, 2014 at 12:56:03PM +0200, Arnd Bergmann wrote:
+> > On Monday 28 April 2014 12:39:20 Thierry Reding wrote:
+> > > And possibly with a iommu-names property to go along with that. The idea
+> > > being that a device can be a master on possibly multiple IOMMUs. Using
+> > > the above it would also be possible to have one device be multiple
+> > > masters on the same IOMMU.
+> > 
+> > Yes, that seems reasonable. Just one question: How would you represent a
+> > device that has multiple masters, with at least one connected to an IOMMU
+> > and another one connected to memory directly, without going to the IOMMU?
+> 
+> Heh, I don't think I've ever thought about that use-case. I guess I was
+> always assuming that in the absence of an IOMMU the device would simply
+> access memory directly. From what I can tell that's how Tegra works at
+> least. If the IOMMU is not enabled for a given client, that client will
+> access physical memory untranslated.
+> 
+> I suppose if that really must be represented then a global dummy IOMMU
+> could be introduced to help with these cases.
 
---===============6358302904948906807==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="7SrMUQONj8Rl9QNG"
-Content-Disposition: inline
+It's actually not too uncommon: you can have e.g. the lower 2GB mapped
+directly from the device address space into the host memory, but have
+an iommu that translates accesses from some range in the upper 2GB of
+the 32-bit address space into full 64-bit addresses.
 
+This use case makes no sense if you use the IOMMU for isolation
+or virtualization, but it gives better performance for lowmem access
+when the only reason to have the IOMMU is to map highmem addresses.
 
---7SrMUQONj8Rl9QNG
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> > > On Tegra the specifier would be used to encode a memory controller's
+> > > client ID. One discussion point back at the time was to encode the ID as
+> > > a bitmask to allow more than a single master per entry. Another solution
+> > > which I think is a little cleaner and more generic, would be to use one
+> > > entry per master and use a single cell to encode the client ID. Devices
+> > > with multiple clients to the same IOMMU could then use multiple entries
+> > > referencing the same IOMMU.
+> > 
+> > I'm not completely following here. Are you talking about the generic
+> > binding, or the part that is tegra specific for the specifier?
+> > 
+> > My first impression is that the generic binding should just allow an
+> > arbitrary specifier with a variable #iommu-cells, and leave the format
+> > up to the IOMMU driver.
+> 
+> Yes, I was getting ahead of myself. The idea was to have #iommu-cells
+> and allow the specifier to be IOMMU-specific. On Tegra that would
+> translate to the memory controller client ID, on other devices I suspect
+> something similar might exist, but for the generic binding it should be
+> completely opaque and hence irrelevant.
+> 
+> Really just like any of the other bindings that have foos and #foo-cells
+> properties.
 
-On Mon, Apr 28, 2014 at 12:56:03PM +0200, Arnd Bergmann wrote:
-> On Monday 28 April 2014 12:39:20 Thierry Reding wrote:
-> > On Sun, Apr 27, 2014 at 08:23:06PM +0200, Arnd Bergmann wrote:
-> > > On Sunday 27 April 2014 13:07:43 Shaik Ameer Basha wrote:
-> > > > +- mmu-masters: A phandle to device nodes representing the master f=
-or which
-> > > > +               the System MMU can provide a translation. Any addit=
-ional values
-> > > > +              after the phandle will be ignored because a System M=
-MU never
-> > > > +              have two or more masters. "#stream-id-cells" specifi=
-ed in the
-> > > > +              master's node will be also ignored.
-> > > > +              If more than one phandle is specified, only the firs=
-t phandle
-> > > > +              will be treated.
-> > >=20
-> > > This seems completely backwards: Why would you list the masters for a=
-n IOMMU
-> > > in the IOMMU node?
-> > >=20
-> > > The master should have a standard property pointing to the IOMMU inst=
-ead.
-> > >=20
-> > > We don't have a generic binding for IOMMUs yet it seems, but the time=
- is
-> > > overdue to make one.
-> > >=20
-> > > Consider this NAKed until there is a generic binding for IOMMUs that =
-all
-> > > relevant developers have agreed to.
-> >=20
-> > I'd like to take this opportunity and revive one of the hibernating
-> > patch sets that we have for Tegra. The last effort to get things merged
-> > was back in January I think. I haven't bothered to look up the reference
-> > since it's probably good to start from scratch anyway.
-> >=20
-> > The latest version of the binding that was under discussion back then I
-> > think looked something like this:
-> >=20
-> > 	device@... {
-> > 		iommus =3D <&iommu [spec]>[, <&other_iommu [other_spec]>...];
-> > 	};
-> >=20
-> > And possibly with a iommu-names property to go along with that. The idea
-> > being that a device can be a master on possibly multiple IOMMUs. Using
-> > the above it would also be possible to have one device be multiple
-> > masters on the same IOMMU.
->=20
-> Yes, that seems reasonable. Just one question: How would you represent a
-> device that has multiple masters, with at least one connected to an IOMMU
-> and another one connected to memory directly, without going to the IOMMU?
+Ok.
 
-Heh, I don't think I've ever thought about that use-case. I guess I was
-always assuming that in the absence of an IOMMU the device would simply
-access memory directly. From what I can tell that's how Tegra works at
-least. If the IOMMU is not enabled for a given client, that client will
-access physical memory untranslated.
+> > A lot of drivers probably only support one
+> > master, so they can just set #iommu-cells=<0>, others might require
+> > IDs that do not fit into one cell.
+> 
+> You mean "#iommu-cells = <1>" for devices that only require one master?
 
-I suppose if that really must be represented then a global dummy IOMMU
-could be introduced to help with these cases.
+I meant an IOMMU device that acts as the slave for exactly one device,
+even if that device has multiple master ports.
 
-> > On Tegra the specifier would be used to encode a memory controller's
-> > client ID. One discussion point back at the time was to encode the ID as
-> > a bitmask to allow more than a single master per entry. Another solution
-> > which I think is a little cleaner and more generic, would be to use one
-> > entry per master and use a single cell to encode the client ID. Devices
-> > with multiple clients to the same IOMMU could then use multiple entries
-> > referencing the same IOMMU.
->=20
-> I'm not completely following here. Are you talking about the generic
-> binding, or the part that is tegra specific for the specifier?
->=20
-> My first impression is that the generic binding should just allow an
-> arbitrary specifier with a variable #iommu-cells, and leave the format
-> up to the IOMMU driver.
+> There still has to be one cell to specify which master. Unless perhaps
+> if they can be arbitrarily assigned. I guess even if there's a fixed
+> mapping that applies to one SoC generation, it might be good to still
+> employ a specifier and have the mapping in DT for flexibility.
 
-Yes, I was getting ahead of myself. The idea was to have #iommu-cells
-and allow the specifier to be IOMMU-specific. On Tegra that would
-translate to the memory controller client ID, on other devices I suspect
-something similar might exist, but for the generic binding it should be
-completely opaque and hence irrelevant.
+let me clarify by example:
 
-Really just like any of the other bindings that have foos and #foo-cells
-properties.
+	iommu@1 {
+		compatible = "some,simple-iommu";
+		reg = <1>;
+		#iommu-cells = <0>; /* supports only one master */
+	};
 
-> A lot of drivers probably only support one
-> master, so they can just set #iommu-cells=3D<0>, others might require
-> IDs that do not fit into one cell.
+	iommu@2 {
+		compatible = "some,other-iommu";
+		reg = <3>;
+		#iommu-cells = <1>; /* contains master ID */
+	};
 
-You mean "#iommu-cells =3D <1>" for devices that only require one master?
-There still has to be one cell to specify which master. Unless perhaps
-if they can be arbitrarily assigned. I guess even if there's a fixed
-mapping that applies to one SoC generation, it might be good to still
-employ a specifier and have the mapping in DT for flexibility.
+	iommu@3 {
+		compatible = "some,windowed-iommu";
+		reg = <2>;
+		#iommu-cells = <2>; /* contains dma-window */
+	};
 
-Thierry
+	device@4 {
+		compatible = "some,ethernet";
+		iommus = <&/iommu@1>;
+	};
 
---7SrMUQONj8Rl9QNG
-Content-Type: application/pgp-signature
+	device@5 {
+		compatible = "some,dmaengine";
+		iommus = <&/iommu@2 0x40000000 0x1000000>,
+			 <&/iommu@3 0x101>;
+	};
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+The device at address 4 has a one-one relationship with iommu@1, so there
+is no need for any data. device@5 has two master ports. One is connected to
+an IOMMU that has a per-device aperture, device@5 can only issue transfers
+to the 256MB area at 0x40000000, and the IOMMU will have to put entries for
+this device into that address. The second master port is connected to
+iommu@3, which uses a master ID that gets passed along with each transfer,
+so that needs to be put into the IOTLBs.
 
-iQIcBAEBAgAGBQJTXjjqAAoJEN0jrNd/PrOh694P/0oLJF8Cc/zfMQ9l+N3j/YZf
-uGkUbAFZGRUomXEiHUzBp7tAsefrIs5RQnAlKm1LL6GYYrSTrWYcPAdOv3z9s/0V
-JjbXQ+XpPuyuJMYPa1S6HZhm2BixKS21ValCHz8ubEjsDsMHIgL7MXeiCoou5Y3M
-Qv66zIB60jrhnUJ12B3xbQQ2wJOE0XBGDc2Vofq9y6uqKAbkNGkTZGd9TbMn05fl
-IGr9jhnHlkxCBHjB48cg28nxrnG5PuxQDBX3GCQy1gId21MceEglmBvcF69mTrup
-F8pDrT6vUzQ22ieX6RPc5YKRwF32QmCntMY9NhBFdIEJP3IxQa22EN6pn7etx7IK
-dPeAw9GOb4RTiLIdeGWHj+pZ7PXBQCbyVBA7uqCsiVIuuuNB4OvKcUCa5D1llKAQ
-9VDnpSPqCRHEB4BMgw1ISGNDC76WTtZWSzrNZt6nLCjirxYpt3z6osvOoH/XauWL
-6NsYQGPCRjH3OJNOR/RWB9OrUfJK/6R/TxVSwkNqLq89qINX3nGfQvRptiThfsxD
-Jk2a/iFe7gAlNlMwGHDv6A7h12OSbYkMUzksXggxBDo/Kup6nTOWgK2l+sTqt+Ah
-Nrlc/+LWwqi63dc1jlsSCvd2772yncnS06E10j8OUYp7H/CRRULY/HPMQ+uvxOuA
-TDDJvh/X71we9QM4yE9/
-=0JBD
------END PGP SIGNATURE-----
+A variation would be to not use #iommu-cells at all, but provide a
+#address-cells / #size-cells pair in the IOMMU, and have a translation
+as we do for dma-ranges. This is probably most flexible.
 
---7SrMUQONj8Rl9QNG--
+One completely open question that I just noticed is how the kernel should
+deal with the case of multiple IOMMUs attached to one master: the
+data structures we have assume that we know exactly how to do DMA by
+setting the per-device dma_map_ops (iommu or not, coherent or not),
+and by setting a pointer to at most one IOMMU.
 
---===============6358302904948906807==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============6358302904948906807==--
+	Arnd
