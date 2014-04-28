@@ -1,15 +1,11 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v12 11/31] documentation: iommu: add binding document of
-	Exynos System MMU
-Date: Mon, 28 Apr 2014 14:49:14 +0200
-Message-ID: <20140428124912.GL19455@ulmo>
-References: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
-	<6544270.ddFBoY6LMm@wuerfel> <20140428111802.GI19455@ulmo>
-	<4780885.JaktFvJeC7@wuerfel>
+From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Subject: [RFC PATCH v5 00/11] VFIO support for platform devices
+Date: Mon, 28 Apr 2014 17:52:40 +0200
+Message-ID: <1398700371-20096-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1879648532245944921=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <4780885.JaktFvJeC7@wuerfel>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,207 +15,129 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, joshi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+This patch series aims to implement VFIO support for platform devices that
+reside behind an IOMMU. Examples of such devices are devices behind an ARM
+SMMU, or behind a Samsung Exynos System MMU.
 
---===============1879648532245944921==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="RD6GsZsdEJvsf78O"
-Content-Disposition: inline
+This v5 of the VFIO_PLATFORN patch series includes a number of fixes and
+improvements over the features already implemented in the series. The next
+version v6 of the VFIO_PLATFORM patch series is planned to introduce more
+complete functionality with more comprehensive eventfd support.
 
+The API used is based on the existing VFIO API that is also used with PCI
+devices. Only devices that include a basic set of IRQs and memory regions are
+targeted; devices with complex relationships with other devices on a device
+tree are not taken into account at this stage.
 
---RD6GsZsdEJvsf78O
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+A copy with all the dependencies applied can be cloned from branch
+vfio-platform-v5 at git-9UaJU3cA/F/QT0dZR+AlfA@public.gmane.org:virtualopensystems/linux-kvm-arm.git
 
-On Mon, Apr 28, 2014 at 02:05:30PM +0200, Arnd Bergmann wrote:
-> On Monday 28 April 2014 13:18:03 Thierry Reding wrote:
-> > On Mon, Apr 28, 2014 at 12:56:03PM +0200, Arnd Bergmann wrote:
-> > > On Monday 28 April 2014 12:39:20 Thierry Reding wrote:
-> > > > And possibly with a iommu-names property to go along with that. The=
- idea
-> > > > being that a device can be a master on possibly multiple IOMMUs. Us=
-ing
-> > > > the above it would also be possible to have one device be multiple
-> > > > masters on the same IOMMU.
-> > >=20
-> > > Yes, that seems reasonable. Just one question: How would you represen=
-t a
-> > > device that has multiple masters, with at least one connected to an I=
-OMMU
-> > > and another one connected to memory directly, without going to the IO=
-MMU?
-> >=20
-> > Heh, I don't think I've ever thought about that use-case. I guess I was
-> > always assuming that in the absence of an IOMMU the device would simply
-> > access memory directly. From what I can tell that's how Tegra works at
-> > least. If the IOMMU is not enabled for a given client, that client will
-> > access physical memory untranslated.
-> >=20
-> > I suppose if that really must be represented then a global dummy IOMMU
-> > could be introduced to help with these cases.
->=20
-> It's actually not too uncommon: you can have e.g. the lower 2GB mapped
-> directly from the device address space into the host memory, but have
-> an iommu that translates accesses from some range in the upper 2GB of
-> the 32-bit address space into full 64-bit addresses.
->=20
-> This use case makes no sense if you use the IOMMU for isolation
-> or virtualization, but it gives better performance for lowmem access
-> when the only reason to have the IOMMU is to map highmem addresses.
+For those who want to apply manually, these patches are based on Alex
+Williamson's 'next' branch available from https://github.com/awilliam/linux-vfio
+which includes the multi domain support patches for VFIO_IOMMU_TYPE1.
+Kim Phillip's driver_override patch for platform bus devices is also
+included here for convenience.
 
-Thinking about this some more, isn't the non-IOMMU master something we
-can completely ignore in the DT? Or at least it shouldn't be handled by
-the IOMMU bindings because, well, it's not an IOMMU to begin with.
+The following IOCTLs have been found to be working on FastModels with an
+ARM SMMU (MMU400). Testing was based on the ARM PL330 DMA Controller featured
+on those models.
+ - VFIO_GET_API_VERSION
+ - VFIO_CHECK_EXTENSION
+ - VFIO_GROUP_GET_STATUS
+ - VFIO_GROUP_SET_CONTAINER
+ - VFIO_SET_IOMMU
+ - VFIO_IOMMU_GET_INFO
+ - VFIO_IOMMU_MAP_DMA
+     For this ioctl specifically, a new flag has been added:
+     VFIO_DMA_MAP_FLAG_EXEC. This flag is taken into account on systems with
+     an ARM SMMU. The availability of this flag is exposed via the capability
+     VFIO_IOMMU_PROT_EXEC.
 
-Perhaps it's something that should be described using dma-ranges?
+The VFIO platform driver proposed here implements the following:
+ - VFIO_GROUP_GET_DEVICE_FD
+ - VFIO_DEVICE_GET_INFO
+ - VFIO_DEVICE_GET_REGION_INFO
+ - VFIO_DEVICE_GET_IRQ_INFO
+ - VFIO_DEVICE_SET_IRQS
+     IRQs are implemented partially using this ioctl. Handling incoming
+     interrupts with an eventfd is supported, as is masking and unmasking.
+     Level sensitive interrupts are automasked. What is not implemented is
+     masking/unmasking via eventfd. More comprehensive support for eventfd
+     functionality is planned for v6.
 
-> > > A lot of drivers probably only support one
-> > > master, so they can just set #iommu-cells=3D<0>, others might require
-> > > IDs that do not fit into one cell.
-> >=20
-> > You mean "#iommu-cells =3D <1>" for devices that only require one maste=
-r?
->=20
-> I meant an IOMMU device that acts as the slave for exactly one device,
-> even if that device has multiple master ports.
+In addition, the VFIO platform driver implements the following through
+the VFIO device file descriptor:
+ - MMAPing memory regions to the virtual address space of the VFIO user.
+ - Read / write of memory regions directly through the file descriptor.
 
-Okay, makes sense. I guess depending on the nature of the IOMMU it might
-make sense not to expose it as an IOMMU at all. For example if it lives
-completely within the register space of its master device. In that case
-it could be directly programmed from the device's driver.
+What still needs to be done, includes:
+ - Eventfd for masking/unmasking (IRQFD and IOEVENTFD from the KVM side)
+ - Extend the driver and API for device tree metadata
+ - Support ARM AMBA devices natively
+ - Device specific functionality (e.g. VFIO_DEVICE_RESET)
+ - IOMMUs with nested page tables (Stage 1 & 2 translation on ARM SMMUs)
 
-> > There still has to be one cell to specify which master. Unless perhaps
-> > if they can be arbitrarily assigned. I guess even if there's a fixed
-> > mapping that applies to one SoC generation, it might be good to still
-> > employ a specifier and have the mapping in DT for flexibility.
->=20
-> let me clarify by example:
->=20
-> 	iommu@1 {
-> 		compatible =3D "some,simple-iommu";
-> 		reg =3D <1>;
-> 		#iommu-cells =3D <0>; /* supports only one master */
-> 	};
->=20
-> 	iommu@2 {
-> 		compatible =3D "some,other-iommu";
-> 		reg =3D <3>;
-> 		#iommu-cells =3D <1>; /* contains master ID */
-> 	};
->=20
-> 	iommu@3 {
-> 		compatible =3D "some,windowed-iommu";
-> 		reg =3D <2>;
-> 		#iommu-cells =3D <2>; /* contains dma-window */
-> 	};
->=20
-> 	device@4 {
-> 		compatible =3D "some,ethernet";
-> 		iommus =3D <&/iommu@1>;
-> 	};
->=20
-> 	device@5 {
-> 		compatible =3D "some,dmaengine";
-> 		iommus =3D <&/iommu@2 0x40000000 0x1000000>,
-> 			 <&/iommu@3 0x101>;
-> 	};
->=20
-> The device at address 4 has a one-one relationship with iommu@1, so there
-> is no need for any data. device@5 has two master ports. One is connected =
-to
-> an IOMMU that has a per-device aperture, device@5 can only issue transfers
-> to the 256MB area at 0x40000000, and the IOMMU will have to put entries f=
-or
-> this device into that address. The second master port is connected to
-> iommu@3, which uses a master ID that gets passed along with each transfer,
-> so that needs to be put into the IOTLBs.
-
-The above sounds reasonable to me with the exception of the DMA window
-specifier. Isn't that precisely the information that we currently
-describe using the dma-ranges property?
-
-> A variation would be to not use #iommu-cells at all, but provide a
-> #address-cells / #size-cells pair in the IOMMU, and have a translation
-> as we do for dma-ranges. This is probably most flexible.
-
-I'm not sure I follow. Wouldn't that require masters to be children of
-the IOMMU DT nodes for that to work out? Also how would that work for
-cases where more data than the address ranges (such as the master ID) is
-needed to operate the IOMMU?
-
-> One completely open question that I just noticed is how the kernel should
-> deal with the case of multiple IOMMUs attached to one master: the
-> data structures we have assume that we know exactly how to do DMA by
-> setting the per-device dma_map_ops (iommu or not, coherent or not),
-> and by setting a pointer to at most one IOMMU.
-
-Perhaps we need something more fine-grained than what we currently have.
-I can imagine that rather than having it all abstracted away and handled
-transparently (which undoubtedly has a lot of advantages), we need to
-expose a client API of sorts that drivers can use.
-
-I'm mostly brainstorming here and not thinking of any concrete use-case:
-
-	struct iommu_master *master =3D iommu_get(dev, "foo");
-
-	iommu_master_set_range(master, 0, SZ_256M);
-
-	pages =3D alloc_pages(...);
-
-	iova =3D iommu_master_map(master, pages);
-
-The above would essentially obtain a handle to the "foo" IOMMUs master,
-set the valid DMA range (hard-coded in the driver or obtained from a
-dma-ranges property), allocates some pages of memory and then maps them
-into the device's address space via the IOMMU.
-
-The reason why I think what we have isn't going to work is that it is
-assumed that either there is an IOMMU or there isn't. So memory gets
-either mapped through an IOMMU or it doesn't. Furthermore IOMMU usage is
-likely very use-case dependent and it's probably not easy to determine
-automatically which IOMMU is to be used for individual allocations.
-
-Allowing more fine-grained control of the IOMMU from drivers should
-increase the flexibility of users since they have more context to make
-the right decisions.
-
-But then again, I have only a very sketchy idea of what an IOMMU needs
-to be able to do, so maybe the above doesn't make sense at all.
-
-Thierry
-
---RD6GsZsdEJvsf78O
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJTXk5IAAoJEN0jrNd/PrOhezEP/3C7xzBZWcJrzPQ9qV6KAnRe
-DVxWfqnADwh6v4tgSU5QGGaKlRofh799/Du9RkSlbKMoONFOBAIR7NgnRBEHx4kk
-sh5EYPrF3FVD55ISVDuTMksM4d5onMR9zR4/y0W0mUWgpekLIjCRbFSaimbc6Xkq
-w2eQVUQftjtwCJKqnuMWlrbz51aMo+6PGK07NQzHzq7CUhr+jQiCjOTRXp7tO83q
-5EkuA9O4vFPLjfBV9QZaS+7HALNGB2GjnrvWV7ZpUZnhECIvYZuVrzd4w+27hE6j
-oELjQSz5zT9tWWg7nwKkVMKhXhNgAiQ2lB+Y0Od3CRSeYe99VPbuPmNXNhwzVw5L
-ICaMx2elWE6oE+8OCPLxRWIEzHoIPIWEBTZJm1NfoiMHVfRQSouUrl0/PLZofcIu
-gqf16cFwUC8P6dxQIvYUzZy4ZLfYtwnujRY0hLlFL+YxLJ2t9csKcLE2PYx6vfRl
-khms5FaPRjFli4sOqnKxMT9U4+b4CxBQ4ZV7gxSJmwx3gSEsebZwiNax38XFEtF1
-fJb56ZMLnPKi+7Hp3BSXrpA4j2ob0W1eJECMOL2+kr5Dv03x2APYFL20m46fG/q0
-VTqGWvvFSXJQA4J4rm1rdH7uEmWW6jnjeC1IfaAzebHk2UaecCpUuwiz9BRCVW0p
-NzkWGbVXOXIuzpZb871M
-=ULBi
------END PGP SIGNATURE-----
-
---RD6GsZsdEJvsf78O--
-
---===============1879648532245944921==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Changes since v4:
+ - Use static offsets for each region in the VFIO device fd
+ - Include patch in the series for the ARM SMMU to expose IOMMU_EXEC
+   availability via IOMMU_CAP_DMA_EXEC
+ - Rebased on VFIO multi domain support:
+   - IOMMU_EXEC is now available if at least one IOMMU in the container
+     supports it
+   - Expose IOMMU_EXEC if available via the capability VFIO_IOMMU_PROT_EXEC
+ - Some bug fixes
+Changes since v3:
+ - Use Kim Phillips' driver_probe_device()
+Changes since v2:
+ - Fixed Read/Write and MMAP on device regions
+ - Removed dependency on Device Tree
+ - Interrupts support
+ - Interrupt masking/unmasking
+ - Automask level sensitive interrupts
+ - Introduced VFIO_DMA_MAP_FLAG_EXEC
+ - Code clean ups
 
 
---===============1879648532245944921==--
+Antonios Motakis (10):
+  ARM SMMU: Add capability IOMMU_CAP_DMA_EXEC
+  VFIO_IOMMU_TYPE1 for platform bus devices on ARM
+  VFIO_IOMMU_TYPE1: Introduce the VFIO_DMA_MAP_FLAG_EXEC flag
+  VFIO_PLATFORM: Initial skeleton of VFIO support for platform devices
+  VFIO_PLATFORM: Return info for device and its memory mapped IO regions
+  VFIO_PLATFORM: Read and write support for the device fd
+  VFIO_PLATFORM: Support MMAP of MMIO regions
+  VFIO_PLATFORM: Return IRQ info
+  VFIO_PLATFORM: Initial interrupts support
+  VFIO_PLATFORM: Support for maskable and automasked interrupts
+
+Kim Phillips (1):
+  driver core: platform: add device binding path 'driver_override'
+
+ Documentation/ABI/testing/sysfs-bus-platform  |  20 ++
+ drivers/base/platform.c                       |  46 +++
+ drivers/iommu/arm-smmu.c                      |   2 +
+ drivers/vfio/Kconfig                          |   3 +-
+ drivers/vfio/Makefile                         |   1 +
+ drivers/vfio/platform/Kconfig                 |   9 +
+ drivers/vfio/platform/Makefile                |   4 +
+ drivers/vfio/platform/vfio_platform.c         | 436 ++++++++++++++++++++++++++
+ drivers/vfio/platform/vfio_platform_irq.c     | 289 +++++++++++++++++
+ drivers/vfio/platform/vfio_platform_private.h |  59 ++++
+ drivers/vfio/vfio_iommu_type1.c               |  39 ++-
+ include/linux/iommu.h                         |   5 +-
+ include/linux/platform_device.h               |   1 +
+ include/uapi/linux/vfio.h                     |   3 +
+ 14 files changed, 910 insertions(+), 7 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-platform
+ create mode 100644 drivers/vfio/platform/Kconfig
+ create mode 100644 drivers/vfio/platform/Makefile
+ create mode 100644 drivers/vfio/platform/vfio_platform.c
+ create mode 100644 drivers/vfio/platform/vfio_platform_irq.c
+ create mode 100644 drivers/vfio/platform/vfio_platform_private.h
+
+-- 
+1.8.3.2
