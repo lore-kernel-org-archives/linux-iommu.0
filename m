@@ -1,15 +1,15 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH v5 04/11] VFIO_IOMMU_TYPE1: Introduce the
-	VFIO_DMA_MAP_FLAG_EXEC flag
-Date: Mon, 28 Apr 2014 10:53:56 -0600
-Message-ID: <1398704036.24318.269.camel@ul30vt.home>
+Subject: Re: [RFC PATCH v5 05/11] VFIO_PLATFORM: Initial skeleton of VFIO
+	support for platform devices
+Date: Mon, 28 Apr 2014 11:04:02 -0600
+Message-ID: <1398704642.24318.273.camel@ul30vt.home>
 References: <1398700371-20096-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1398700371-20096-5-git-send-email-a.motakis@virtualopensystems.com>
+	<1398700371-20096-6-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1398700371-20096-5-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+In-Reply-To: <1398700371-20096-6-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,146 +20,295 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 On Mon, 2014-04-28 at 17:52 +0200, Antonios Motakis wrote:
-> The ARM SMMU driver expects the IOMMU_EXEC flag, otherwise it will
-> set the page tables for a device as XN (execute never). This affects
-> devices such as the ARM PL330 DMA Controller, which fails to operate
-> if the XN flag is set on the memory it tries to fetch its instructions
-> from.
-> 
-> We introduce the VFIO_DMA_MAP_FLAG_EXEC to VFIO, and use it in
-> VFIO_IOMMU_TYPE1 to set the IOMMU_EXEC flag. This way the user can
-> control whether the XN flag will be set on the requested mappings. If
-> the IOMMU_EXEC flag is available for at least one IOMMU of a container,
-> the new capability VFIO_IOMMU_PROT_EXEC will be exposed.
+> This patch forms the skeleton for platform devices support with VFIO.
 > 
 > Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 > ---
->  drivers/vfio/vfio_iommu_type1.c | 34 +++++++++++++++++++++++++++++++---
->  include/uapi/linux/vfio.h       |  2 ++
->  2 files changed, 33 insertions(+), 3 deletions(-)
+>  drivers/vfio/Kconfig                          |   1 +
+>  drivers/vfio/Makefile                         |   1 +
+>  drivers/vfio/platform/Kconfig                 |   9 ++
+>  drivers/vfio/platform/Makefile                |   4 +
+>  drivers/vfio/platform/vfio_platform.c         | 172 ++++++++++++++++++++++++++
+>  drivers/vfio/platform/vfio_platform_private.h |  22 ++++
+>  include/uapi/linux/vfio.h                     |   1 +
+>  7 files changed, 210 insertions(+)
+>  create mode 100644 drivers/vfio/platform/Kconfig
+>  create mode 100644 drivers/vfio/platform/Makefile
+>  create mode 100644 drivers/vfio/platform/vfio_platform.c
+>  create mode 100644 drivers/vfio/platform/vfio_platform_private.h
 > 
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index 4dc989d..6ce32bf 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -498,12 +498,15 @@ static int map_try_harder(struct vfio_domain *domain, dma_addr_t iova,
->  }
+> diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
+> index 3a598ed..a484d72 100644
+> --- a/drivers/vfio/Kconfig
+> +++ b/drivers/vfio/Kconfig
+> @@ -21,3 +21,4 @@ menuconfig VFIO
+>  	  If you don't know what to do here, say N.
 >  
->  static int vfio_iommu_map(struct vfio_iommu *iommu, dma_addr_t iova,
-> -			  unsigned long pfn, long npage, int prot)
-> +			  unsigned long pfn, long npage, int prot, bool exec)
->  {
->  	struct vfio_domain *d;
->  	int ret;
->  
->  	list_for_each_entry(d, &iommu->domain_list, next) {
-> +		if (exec && iommu_domain_has_cap(d->domain, IOMMU_CAP_DMA_EXEC))
-> +			prot |= IOMMU_EXEC;
-> +
->  		ret = iommu_map(d->domain, iova, (phys_addr_t)pfn << PAGE_SHIFT,
->  				npage << PAGE_SHIFT, prot | d->prot);
->  		if (ret) {
-> @@ -530,6 +533,7 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
->  	size_t size = map->size;
->  	long npage;
->  	int ret = 0, prot = 0;
-> +	bool prot_exec = false;
->  	uint64_t mask;
->  	struct vfio_dma *dma;
->  	unsigned long pfn;
-> @@ -543,6 +547,8 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
->  		prot |= IOMMU_WRITE;
->  	if (map->flags & VFIO_DMA_MAP_FLAG_READ)
->  		prot |= IOMMU_READ;
-> +	if (map->flags & VFIO_DMA_MAP_FLAG_EXEC)
-> +		prot_exec = true;
+>  source "drivers/vfio/pci/Kconfig"
+> +source "drivers/vfio/platform/Kconfig"
+> diff --git a/drivers/vfio/Makefile b/drivers/vfio/Makefile
+> index 72bfabc..b5e4a33 100644
+> --- a/drivers/vfio/Makefile
+> +++ b/drivers/vfio/Makefile
+> @@ -2,3 +2,4 @@ obj-$(CONFIG_VFIO) += vfio.o
+>  obj-$(CONFIG_VFIO_IOMMU_TYPE1) += vfio_iommu_type1.o
+>  obj-$(CONFIG_VFIO_IOMMU_SPAPR_TCE) += vfio_iommu_spapr_tce.o
+>  obj-$(CONFIG_VFIO_PCI) += pci/
+> +obj-$(CONFIG_VFIO_PLATFORM) += platform/
+> diff --git a/drivers/vfio/platform/Kconfig b/drivers/vfio/platform/Kconfig
+> new file mode 100644
+> index 0000000..42b0022
+> --- /dev/null
+> +++ b/drivers/vfio/platform/Kconfig
+> @@ -0,0 +1,9 @@
+> +config VFIO_PLATFORM
+> +	tristate "VFIO support for platform devices"
+> +	depends on VFIO && EVENTFD
 
-Is it really necessary for this to be a new parameter rather than prot |
-= IOMMU_EXEC here?  It could simply be masked out in vfio_iommu_map()
-when not supported.  When IOMMU_CAP_DMA_EXEC is not supported, does
-IOMMU_EXEC effectively follow IOMMU_READ?  If so, does that imply we
-need to error on a request for (IOMMU_WRITE | IOMMU_EXEC)?  Thanks,
+VFIO_PCI also depends on PCI, is there no CONFIG_PLATFORM?  What benefit
+would I get from this if I enable it on my x86 box?
+
+> +	help
+> +	  Support for platform devices with VFIO. This is required to make
+> +	  use of platform devices present on the system using the VFIO
+> +	  framework.
+> +
+> +	  If you don't know what to do here, say N.
+> diff --git a/drivers/vfio/platform/Makefile b/drivers/vfio/platform/Makefile
+> new file mode 100644
+> index 0000000..df3a014
+> --- /dev/null
+> +++ b/drivers/vfio/platform/Makefile
+> @@ -0,0 +1,4 @@
+> +
+> +vfio-platform-y := vfio_platform.o
+> +
+> +obj-$(CONFIG_VFIO_PLATFORM) += vfio-platform.o
+> diff --git a/drivers/vfio/platform/vfio_platform.c b/drivers/vfio/platform/vfio_platform.c
+> new file mode 100644
+> index 0000000..1661746
+> --- /dev/null
+> +++ b/drivers/vfio/platform/vfio_platform.c
+> @@ -0,0 +1,172 @@
+> +/*
+> + * Copyright (C) 2013 - Virtual Open Systems
+> + * Author: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License, version 2, as
+> + * published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + */
+> +
+> +#include <linux/device.h>
+> +#include <linux/eventfd.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/iommu.h>
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/notifier.h>
+> +#include <linux/pm_runtime.h>
+> +#include <linux/slab.h>
+> +#include <linux/types.h>
+> +#include <linux/uaccess.h>
+> +#include <linux/vfio.h>
+> +#include <linux/io.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/irq.h>
+> +
+> +#include "vfio_platform_private.h"
+> +
+> +#define DRIVER_VERSION  "0.5"
+> +#define DRIVER_AUTHOR   "Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>"
+> +#define DRIVER_DESC     "VFIO for platform devices - User Level meta-driver"
+> +
+> +static void vfio_platform_release(void *device_data)
+> +{
+> +	module_put(THIS_MODULE);
+> +}
+> +
+> +static int vfio_platform_open(void *device_data)
+> +{
+> +	if (!try_module_get(THIS_MODULE))
+> +		return -ENODEV;
+> +
+> +	return 0;
+> +}
+> +
+> +static long vfio_platform_ioctl(void *device_data,
+> +			   unsigned int cmd, unsigned long arg)
+> +{
+> +	struct vfio_platform_device *vdev = device_data;
+> +	unsigned long minsz;
+> +
+> +	if (cmd == VFIO_DEVICE_GET_INFO) {
+> +		struct vfio_device_info info;
+> +
+> +		minsz = offsetofend(struct vfio_device_info, num_irqs);
+> +
+> +		if (copy_from_user(&info, (void __user *)arg, minsz))
+> +			return -EFAULT;
+> +
+> +		if (info.argsz < minsz)
+> +			return -EINVAL;
+> +
+> +		info.flags = VFIO_DEVICE_FLAGS_PLATFORM;
+> +		info.num_regions = 0;
+> +		info.num_irqs = 0;
+> +
+> +		return copy_to_user((void __user *)arg, &info, minsz);
+> +
+> +	} else if (cmd == VFIO_DEVICE_GET_REGION_INFO)
+> +		return -EINVAL;
+> +
+> +	else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
+> +		return -EINVAL;
+> +
+> +	else if (cmd == VFIO_DEVICE_SET_IRQS)
+> +		return -EINVAL;
+> +
+> +	else if (cmd == VFIO_DEVICE_RESET)
+> +		return -EINVAL;
+> +
+> +	return -ENOTTY;
+> +}
+> +
+> +static ssize_t vfio_platform_read(void *device_data, char __user *buf,
+> +			     size_t count, loff_t *ppos)
+> +{
+> +	return 0;
+> +}
+> +
+> +static ssize_t vfio_platform_write(void *device_data, const char __user *buf,
+> +			      size_t count, loff_t *ppos)
+> +{
+> +	return 0;
+> +}
+
+I know these are just stubs, but I suspect they should probably return
+error.  Thanks,
 
 Alex
 
->  
->  	if (!prot)
->  		return -EINVAL; /* No READ/WRITE? */
-> @@ -595,7 +601,7 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
->  		}
->  
->  		/* Map it! */
-> -		ret = vfio_iommu_map(iommu, iova, pfn, npage, prot);
-> +		ret = vfio_iommu_map(iommu, iova, pfn, npage, prot, prot_exec);
->  		if (ret) {
->  			vfio_unpin_pages(pfn, npage, prot, true);
->  			break;
-> @@ -887,6 +893,23 @@ static int vfio_domains_have_iommu_cache(struct vfio_iommu *iommu)
->  	return ret;
->  }
->  
-> +static int vfio_domains_have_iommu_exec(struct vfio_iommu *iommu)
-> +{
-> +	struct vfio_domain *d;
-> +	int ret = 0;
 > +
-> +	mutex_lock(&iommu->lock);
-> +	list_for_each_entry(d, &iommu->domain_list, next) {
-> +		if (iommu_domain_has_cap(d->domain, IOMMU_CAP_DMA_EXEC)) {
-> +			ret = 1;
-> +			break;
-> +		}
+> +static int vfio_platform_mmap(void *device_data, struct vm_area_struct *vma)
+> +{
+> +	return -EINVAL;
+> +}
+> +
+> +static const struct vfio_device_ops vfio_platform_ops = {
+> +	.name		= "vfio-platform",
+> +	.open		= vfio_platform_open,
+> +	.release	= vfio_platform_release,
+> +	.ioctl		= vfio_platform_ioctl,
+> +	.read		= vfio_platform_read,
+> +	.write		= vfio_platform_write,
+> +	.mmap		= vfio_platform_mmap,
+> +};
+> +
+> +static int vfio_platform_probe(struct platform_device *pdev)
+> +{
+> +	struct vfio_platform_device *vdev;
+> +	struct iommu_group *group;
+> +	int ret;
+> +
+> +	group = iommu_group_get(&pdev->dev);
+> +	if (!group) {
+> +		pr_err("VFIO: No IOMMU group for device %s\n", pdev->name);
+> +		return -EINVAL;
 > +	}
-> +	mutex_unlock(&iommu->lock);
+> +
+> +	vdev = kzalloc(sizeof(*vdev), GFP_KERNEL);
+> +	if (!vdev) {
+> +		iommu_group_put(group);
+> +		return -ENOMEM;
+> +	}
+> +
+> +	vdev->pdev = pdev;
+> +
+> +	ret = vfio_add_group_dev(&pdev->dev, &vfio_platform_ops, vdev);
+> +	if (ret) {
+> +		iommu_group_put(group);
+> +		kfree(vdev);
+> +	}
 > +
 > +	return ret;
 > +}
 > +
->  static long vfio_iommu_type1_ioctl(void *iommu_data,
->  				   unsigned int cmd, unsigned long arg)
->  {
-> @@ -902,6 +925,10 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
->  			if (!iommu)
->  				return 0;
->  			return vfio_domains_have_iommu_cache(iommu);
-> +		case VFIO_IOMMU_PROT_EXEC:
-> +			if (!iommu)
-> +				return 0;
-> +			return vfio_domains_have_iommu_exec(iommu);
->  		default:
->  			return 0;
->  		}
-> @@ -925,7 +952,8 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
->  	} else if (cmd == VFIO_IOMMU_MAP_DMA) {
->  		struct vfio_iommu_type1_dma_map map;
->  		uint32_t mask = VFIO_DMA_MAP_FLAG_READ |
-> -				VFIO_DMA_MAP_FLAG_WRITE;
-> +				VFIO_DMA_MAP_FLAG_WRITE |
-> +				VFIO_DMA_MAP_FLAG_EXEC;
->  
->  		minsz = offsetofend(struct vfio_iommu_type1_dma_map, size);
->  
+> +static int vfio_platform_remove(struct platform_device *pdev)
+> +{
+> +	struct vfio_platform_device *vdev;
+> +
+> +	vdev = vfio_del_group_dev(&pdev->dev);
+> +	if (!vdev)
+> +		return -EINVAL;
+> +
+> +	iommu_group_put(pdev->dev.iommu_group);
+> +	kfree(vdev);
+> +
+> +	return 0;
+> +}
+> +
+> +static struct platform_driver vfio_platform_driver = {
+> +	.probe		= vfio_platform_probe,
+> +	.remove		= vfio_platform_remove,
+> +	.driver	= {
+> +		.name	= "vfio-platform",
+> +		.owner	= THIS_MODULE,
+> +	},
+> +};
+> +
+> +module_platform_driver(vfio_platform_driver);
+> +
+> +MODULE_VERSION(DRIVER_VERSION);
+> +MODULE_LICENSE("GPL v2");
+> +MODULE_AUTHOR(DRIVER_AUTHOR);
+> +MODULE_DESCRIPTION(DRIVER_DESC);
+> diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
+> new file mode 100644
+> index 0000000..4ae88f8
+> --- /dev/null
+> +++ b/drivers/vfio/platform/vfio_platform_private.h
+> @@ -0,0 +1,22 @@
+> +/*
+> + * Copyright (C) 2013 - Virtual Open Systems
+> + * Author: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License, version 2, as
+> + * published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + */
+> +
+> +#ifndef VFIO_PLATFORM_PRIVATE_H
+> +#define VFIO_PLATFORM_PRIVATE_H
+> +
+> +struct vfio_platform_device {
+> +	struct platform_device		*pdev;
+> +};
+> +
+> +#endif /* VFIO_PLATFORM_PRIVATE_H */
 > diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> index cb9023d..0847b29 100644
+> index 0847b29..b1a8de8 100644
 > --- a/include/uapi/linux/vfio.h
 > +++ b/include/uapi/linux/vfio.h
-> @@ -29,6 +29,7 @@
->   * capability is subject to change as groups are added or removed.
->   */
->  #define VFIO_DMA_CC_IOMMU		4
-> +#define VFIO_IOMMU_PROT_EXEC		5
->  
->  /*
->   * The IOCTL interface is designed for extensibility by embedding the
-> @@ -398,6 +399,7 @@ struct vfio_iommu_type1_dma_map {
+> @@ -155,6 +155,7 @@ struct vfio_device_info {
 >  	__u32	flags;
->  #define VFIO_DMA_MAP_FLAG_READ (1 << 0)		/* readable from device */
->  #define VFIO_DMA_MAP_FLAG_WRITE (1 << 1)	/* writable from device */
-> +#define VFIO_DMA_MAP_FLAG_EXEC (1 << 2)		/* executable from device */
->  	__u64	vaddr;				/* Process virtual address */
->  	__u64	iova;				/* IO virtual address */
->  	__u64	size;				/* Size of mapping (bytes) */
+>  #define VFIO_DEVICE_FLAGS_RESET	(1 << 0)	/* Device supports reset */
+>  #define VFIO_DEVICE_FLAGS_PCI	(1 << 1)	/* vfio-pci device */
+> +#define VFIO_DEVICE_FLAGS_PLATFORM (1 << 2)	/* vfio-platform device */
+>  	__u32	num_regions;	/* Max region index + 1 */
+>  	__u32	num_irqs;	/* Max IRQ index + 1 */
+>  };
