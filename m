@@ -1,15 +1,15 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH v5 03/11] VFIO_IOMMU_TYPE1 for platform bus devices
-	on ARM
-Date: Mon, 28 Apr 2014 10:43:41 -0600
-Message-ID: <1398703421.24318.262.camel@ul30vt.home>
+Subject: Re: [RFC PATCH v5 04/11] VFIO_IOMMU_TYPE1: Introduce the
+	VFIO_DMA_MAP_FLAG_EXEC flag
+Date: Mon, 28 Apr 2014 10:53:56 -0600
+Message-ID: <1398704036.24318.269.camel@ul30vt.home>
 References: <1398700371-20096-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1398700371-20096-4-git-send-email-a.motakis@virtualopensystems.com>
+	<1398700371-20096-5-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1398700371-20096-4-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+In-Reply-To: <1398700371-20096-5-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,62 +24,142 @@ Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, open list <linux-kernel-u79uwXL
 List-Id: iommu@lists.linux-foundation.org
 
 On Mon, 2014-04-28 at 17:52 +0200, Antonios Motakis wrote:
-> This allows to make use of the VFIO_IOMMU_TYPE1 driver with platform
-> devices on ARM in addition to PCI. This is required in order to use the
-> Exynos SMMU, or ARM SMMU driver with VFIO_IOMMU_TYPE1.
+> The ARM SMMU driver expects the IOMMU_EXEC flag, otherwise it will
+> set the page tables for a device as XN (execute never). This affects
+> devices such as the ARM PL330 DMA Controller, which fails to operate
+> if the XN flag is set on the memory it tries to fetch its instructions
+> from.
+> 
+> We introduce the VFIO_DMA_MAP_FLAG_EXEC to VFIO, and use it in
+> VFIO_IOMMU_TYPE1 to set the IOMMU_EXEC flag. This way the user can
+> control whether the XN flag will be set on the requested mappings. If
+> the IOMMU_EXEC flag is available for at least one IOMMU of a container,
+> the new capability VFIO_IOMMU_PROT_EXEC will be exposed.
 > 
 > Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 > ---
->  drivers/vfio/Kconfig            | 2 +-
->  drivers/vfio/vfio_iommu_type1.c | 5 ++++-
->  2 files changed, 5 insertions(+), 2 deletions(-)
+>  drivers/vfio/vfio_iommu_type1.c | 34 +++++++++++++++++++++++++++++++---
+>  include/uapi/linux/vfio.h       |  2 ++
+>  2 files changed, 33 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
-> index af7b204..3a598ed 100644
-> --- a/drivers/vfio/Kconfig
-> +++ b/drivers/vfio/Kconfig
-> @@ -11,7 +11,7 @@ config VFIO_IOMMU_SPAPR_TCE
->  menuconfig VFIO
->  	tristate "VFIO Non-Privileged userspace driver framework"
->  	depends on IOMMU_API
-> -	select VFIO_IOMMU_TYPE1 if X86
-> +	select VFIO_IOMMU_TYPE1 if X86 || ARM
->  	select VFIO_IOMMU_SPAPR_TCE if (PPC_POWERNV || PPC_PSERIES)
->  	select ANON_INODES
->  	help
 > diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index 1f90344..4dc989d 100644
+> index 4dc989d..6ce32bf 100644
 > --- a/drivers/vfio/vfio_iommu_type1.c
 > +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -30,6 +30,7 @@
->  #include <linux/iommu.h>
->  #include <linux/module.h>
->  #include <linux/mm.h>
-> +#include <linux/pci.h>		/* pci_bus_type */
->  #include <linux/rbtree.h>
->  #include <linux/sched.h>
->  #include <linux/slab.h>
-> @@ -721,13 +722,15 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->  	INIT_LIST_HEAD(&domain->group_list);
->  	list_add(&group->next, &domain->group_list);
+> @@ -498,12 +498,15 @@ static int map_try_harder(struct vfio_domain *domain, dma_addr_t iova,
+>  }
 >  
-> -	if (!allow_unsafe_interrupts &&
-> +#ifdef CONFIG_PCI
-> +	if (bus == &pci_bus_type && !allow_unsafe_interrupts &&
->  	    !iommu_domain_has_cap(domain->domain, IOMMU_CAP_INTR_REMAP)) {
->  		pr_warn("%s: No interrupt remapping support.  Use the module param \"allow_unsafe_interrupts\" to enable VFIO IOMMU support on this platform\n",
->  		       __func__);
->  		ret = -EPERM;
->  		goto out_detach;
->  	}
-> +#endif
+>  static int vfio_iommu_map(struct vfio_iommu *iommu, dma_addr_t iova,
+> -			  unsigned long pfn, long npage, int prot)
+> +			  unsigned long pfn, long npage, int prot, bool exec)
+>  {
+>  	struct vfio_domain *d;
+>  	int ret;
 >  
->  	if (iommu_domain_has_cap(domain->domain, IOMMU_CAP_CACHE_COHERENCY))
->  		domain->prot |= IOMMU_CACHE;
+>  	list_for_each_entry(d, &iommu->domain_list, next) {
+> +		if (exec && iommu_domain_has_cap(d->domain, IOMMU_CAP_DMA_EXEC))
+> +			prot |= IOMMU_EXEC;
+> +
+>  		ret = iommu_map(d->domain, iova, (phys_addr_t)pfn << PAGE_SHIFT,
+>  				npage << PAGE_SHIFT, prot | d->prot);
+>  		if (ret) {
+> @@ -530,6 +533,7 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
+>  	size_t size = map->size;
+>  	long npage;
+>  	int ret = 0, prot = 0;
+> +	bool prot_exec = false;
+>  	uint64_t mask;
+>  	struct vfio_dma *dma;
+>  	unsigned long pfn;
+> @@ -543,6 +547,8 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
+>  		prot |= IOMMU_WRITE;
+>  	if (map->flags & VFIO_DMA_MAP_FLAG_READ)
+>  		prot |= IOMMU_READ;
+> +	if (map->flags & VFIO_DMA_MAP_FLAG_EXEC)
+> +		prot_exec = true;
 
-This is not a PCI specific requirement.  Anything that can support MSI
-needs an IOMMU that can provide isolation for both DMA and interrupts.
-I think the IOMMU should still be telling us that it has this feature.
-Thanks,
+Is it really necessary for this to be a new parameter rather than prot |
+= IOMMU_EXEC here?  It could simply be masked out in vfio_iommu_map()
+when not supported.  When IOMMU_CAP_DMA_EXEC is not supported, does
+IOMMU_EXEC effectively follow IOMMU_READ?  If so, does that imply we
+need to error on a request for (IOMMU_WRITE | IOMMU_EXEC)?  Thanks,
 
 Alex
+
+>  
+>  	if (!prot)
+>  		return -EINVAL; /* No READ/WRITE? */
+> @@ -595,7 +601,7 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
+>  		}
+>  
+>  		/* Map it! */
+> -		ret = vfio_iommu_map(iommu, iova, pfn, npage, prot);
+> +		ret = vfio_iommu_map(iommu, iova, pfn, npage, prot, prot_exec);
+>  		if (ret) {
+>  			vfio_unpin_pages(pfn, npage, prot, true);
+>  			break;
+> @@ -887,6 +893,23 @@ static int vfio_domains_have_iommu_cache(struct vfio_iommu *iommu)
+>  	return ret;
+>  }
+>  
+> +static int vfio_domains_have_iommu_exec(struct vfio_iommu *iommu)
+> +{
+> +	struct vfio_domain *d;
+> +	int ret = 0;
+> +
+> +	mutex_lock(&iommu->lock);
+> +	list_for_each_entry(d, &iommu->domain_list, next) {
+> +		if (iommu_domain_has_cap(d->domain, IOMMU_CAP_DMA_EXEC)) {
+> +			ret = 1;
+> +			break;
+> +		}
+> +	}
+> +	mutex_unlock(&iommu->lock);
+> +
+> +	return ret;
+> +}
+> +
+>  static long vfio_iommu_type1_ioctl(void *iommu_data,
+>  				   unsigned int cmd, unsigned long arg)
+>  {
+> @@ -902,6 +925,10 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
+>  			if (!iommu)
+>  				return 0;
+>  			return vfio_domains_have_iommu_cache(iommu);
+> +		case VFIO_IOMMU_PROT_EXEC:
+> +			if (!iommu)
+> +				return 0;
+> +			return vfio_domains_have_iommu_exec(iommu);
+>  		default:
+>  			return 0;
+>  		}
+> @@ -925,7 +952,8 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
+>  	} else if (cmd == VFIO_IOMMU_MAP_DMA) {
+>  		struct vfio_iommu_type1_dma_map map;
+>  		uint32_t mask = VFIO_DMA_MAP_FLAG_READ |
+> -				VFIO_DMA_MAP_FLAG_WRITE;
+> +				VFIO_DMA_MAP_FLAG_WRITE |
+> +				VFIO_DMA_MAP_FLAG_EXEC;
+>  
+>  		minsz = offsetofend(struct vfio_iommu_type1_dma_map, size);
+>  
+> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+> index cb9023d..0847b29 100644
+> --- a/include/uapi/linux/vfio.h
+> +++ b/include/uapi/linux/vfio.h
+> @@ -29,6 +29,7 @@
+>   * capability is subject to change as groups are added or removed.
+>   */
+>  #define VFIO_DMA_CC_IOMMU		4
+> +#define VFIO_IOMMU_PROT_EXEC		5
+>  
+>  /*
+>   * The IOCTL interface is designed for extensibility by embedding the
+> @@ -398,6 +399,7 @@ struct vfio_iommu_type1_dma_map {
+>  	__u32	flags;
+>  #define VFIO_DMA_MAP_FLAG_READ (1 << 0)		/* readable from device */
+>  #define VFIO_DMA_MAP_FLAG_WRITE (1 << 1)	/* writable from device */
+> +#define VFIO_DMA_MAP_FLAG_EXEC (1 << 2)		/* executable from device */
+>  	__u64	vaddr;				/* Process virtual address */
+>  	__u64	iova;				/* IO virtual address */
+>  	__u64	size;				/* Size of mapping (bytes) */
