@@ -1,11 +1,14 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [RFC PATCH v5 00/11] VFIO support for platform devices
-Date: Mon, 28 Apr 2014 17:52:40 +0200
-Message-ID: <1398700371-20096-1-git-send-email-a.motakis@virtualopensystems.com>
+Subject: [RFC PATCH v5 01/11] driver core: platform: add device binding path
+	'driver_override'
+Date: Mon, 28 Apr 2014 17:52:41 +0200
+Message-ID: <1398700371-20096-2-git-send-email-a.motakis@virtualopensystems.com>
+References: <1398700371-20096-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1398700371-20096-1-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,128 +19,146 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Cc: open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "open list:DOCUMENTATION" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Johan Hovold <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, Rob Herring <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, Rob Landley <rob-VoJi6FS/r0vR7s880joybQ@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, Libo Chen <clbchenlibo.chen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch series aims to implement VFIO support for platform devices that
-reside behind an IOMMU. Examples of such devices are devices behind an ARM
-SMMU, or behind a Samsung Exynos System MMU.
+From: Kim Phillips <kim.phillips-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 
-This v5 of the VFIO_PLATFORN patch series includes a number of fixes and
-improvements over the features already implemented in the series. The next
-version v6 of the VFIO_PLATFORM patch series is planned to introduce more
-complete functionality with more comprehensive eventfd support.
+Needed by platform device drivers, such as the vfio-platform driver [1],
+in order to bypass the existing OF, ACPI, id_table and name string matches,
+and successfully be able to be bound to any device, like so:
 
-The API used is based on the existing VFIO API that is also used with PCI
-devices. Only devices that include a basic set of IRQs and memory regions are
-targeted; devices with complex relationships with other devices on a device
-tree are not taken into account at this stage.
+echo vfio-platform > /sys/bus/platform/devices/fff51000.ethernet/driver_override
+echo fff51000.ethernet > /sys/bus/platform/devices/fff51000.ethernet/driver/unbind
+echo fff51000.ethernet > /sys/bus/platform/drivers_probe
 
-A copy with all the dependencies applied can be cloned from branch
-vfio-platform-v5 at git-9UaJU3cA/F/QT0dZR+AlfA@public.gmane.org:virtualopensystems/linux-kvm-arm.git
+This mimics "PCI: Introduce new device binding path using
+pci_dev.driver_override" [2], which is an interface enhancement
+for more deterministic PCI device binding, e.g., when in the
+presence of hotplug.
 
-For those who want to apply manually, these patches are based on Alex
-Williamson's 'next' branch available from https://github.com/awilliam/linux-vfio
-which includes the multi domain support patches for VFIO_IOMMU_TYPE1.
-Kim Phillip's driver_override patch for platform bus devices is also
-included here for convenience.
+[1] http://lkml.iu.edu/hypermail/linux/kernel/1402.1/00177.html
+[2] http://lists-archives.com/linux-kernel/28030441-pci-introduce-new-device-binding-path-using-pci_dev-driver_override.html
 
-The following IOCTLs have been found to be working on FastModels with an
-ARM SMMU (MMU400). Testing was based on the ARM PL330 DMA Controller featured
-on those models.
- - VFIO_GET_API_VERSION
- - VFIO_CHECK_EXTENSION
- - VFIO_GROUP_GET_STATUS
- - VFIO_GROUP_SET_CONTAINER
- - VFIO_SET_IOMMU
- - VFIO_IOMMU_GET_INFO
- - VFIO_IOMMU_MAP_DMA
-     For this ioctl specifically, a new flag has been added:
-     VFIO_DMA_MAP_FLAG_EXEC. This flag is taken into account on systems with
-     an ARM SMMU. The availability of this flag is exposed via the capability
-     VFIO_IOMMU_PROT_EXEC.
-
-The VFIO platform driver proposed here implements the following:
- - VFIO_GROUP_GET_DEVICE_FD
- - VFIO_DEVICE_GET_INFO
- - VFIO_DEVICE_GET_REGION_INFO
- - VFIO_DEVICE_GET_IRQ_INFO
- - VFIO_DEVICE_SET_IRQS
-     IRQs are implemented partially using this ioctl. Handling incoming
-     interrupts with an eventfd is supported, as is masking and unmasking.
-     Level sensitive interrupts are automasked. What is not implemented is
-     masking/unmasking via eventfd. More comprehensive support for eventfd
-     functionality is planned for v6.
-
-In addition, the VFIO platform driver implements the following through
-the VFIO device file descriptor:
- - MMAPing memory regions to the virtual address space of the VFIO user.
- - Read / write of memory regions directly through the file descriptor.
-
-What still needs to be done, includes:
- - Eventfd for masking/unmasking (IRQFD and IOEVENTFD from the KVM side)
- - Extend the driver and API for device tree metadata
- - Support ARM AMBA devices natively
- - Device specific functionality (e.g. VFIO_DEVICE_RESET)
- - IOMMUs with nested page tables (Stage 1 & 2 translation on ARM SMMUs)
-
-Changes since v4:
- - Use static offsets for each region in the VFIO device fd
- - Include patch in the series for the ARM SMMU to expose IOMMU_EXEC
-   availability via IOMMU_CAP_DMA_EXEC
- - Rebased on VFIO multi domain support:
-   - IOMMU_EXEC is now available if at least one IOMMU in the container
-     supports it
-   - Expose IOMMU_EXEC if available via the capability VFIO_IOMMU_PROT_EXEC
- - Some bug fixes
-Changes since v3:
- - Use Kim Phillips' driver_probe_device()
-Changes since v2:
- - Fixed Read/Write and MMAP on device regions
- - Removed dependency on Device Tree
- - Interrupts support
- - Interrupt masking/unmasking
- - Automask level sensitive interrupts
- - Introduced VFIO_DMA_MAP_FLAG_EXEC
- - Code clean ups
-
-
-Antonios Motakis (10):
-  ARM SMMU: Add capability IOMMU_CAP_DMA_EXEC
-  VFIO_IOMMU_TYPE1 for platform bus devices on ARM
-  VFIO_IOMMU_TYPE1: Introduce the VFIO_DMA_MAP_FLAG_EXEC flag
-  VFIO_PLATFORM: Initial skeleton of VFIO support for platform devices
-  VFIO_PLATFORM: Return info for device and its memory mapped IO regions
-  VFIO_PLATFORM: Read and write support for the device fd
-  VFIO_PLATFORM: Support MMAP of MMIO regions
-  VFIO_PLATFORM: Return IRQ info
-  VFIO_PLATFORM: Initial interrupts support
-  VFIO_PLATFORM: Support for maskable and automasked interrupts
-
-Kim Phillips (1):
-  driver core: platform: add device binding path 'driver_override'
-
- Documentation/ABI/testing/sysfs-bus-platform  |  20 ++
- drivers/base/platform.c                       |  46 +++
- drivers/iommu/arm-smmu.c                      |   2 +
- drivers/vfio/Kconfig                          |   3 +-
- drivers/vfio/Makefile                         |   1 +
- drivers/vfio/platform/Kconfig                 |   9 +
- drivers/vfio/platform/Makefile                |   4 +
- drivers/vfio/platform/vfio_platform.c         | 436 ++++++++++++++++++++++++++
- drivers/vfio/platform/vfio_platform_irq.c     | 289 +++++++++++++++++
- drivers/vfio/platform/vfio_platform_private.h |  59 ++++
- drivers/vfio/vfio_iommu_type1.c               |  39 ++-
- include/linux/iommu.h                         |   5 +-
- include/linux/platform_device.h               |   1 +
- include/uapi/linux/vfio.h                     |   3 +
- 14 files changed, 910 insertions(+), 7 deletions(-)
+Suggested-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Kim Phillips <kim.phillips-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+---
+ Documentation/ABI/testing/sysfs-bus-platform | 20 ++++++++++++
+ drivers/base/platform.c                      | 46 ++++++++++++++++++++++++++++
+ include/linux/platform_device.h              |  1 +
+ 3 files changed, 67 insertions(+)
  create mode 100644 Documentation/ABI/testing/sysfs-bus-platform
- create mode 100644 drivers/vfio/platform/Kconfig
- create mode 100644 drivers/vfio/platform/Makefile
- create mode 100644 drivers/vfio/platform/vfio_platform.c
- create mode 100644 drivers/vfio/platform/vfio_platform_irq.c
- create mode 100644 drivers/vfio/platform/vfio_platform_private.h
 
+diff --git a/Documentation/ABI/testing/sysfs-bus-platform b/Documentation/ABI/testing/sysfs-bus-platform
+new file mode 100644
+index 0000000..5172a61
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-platform
+@@ -0,0 +1,20 @@
++What:		/sys/bus/platform/devices/.../driver_override
++Date:		April 2014
++Contact:	Kim Phillips <kim.phillips-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
++Description:
++		This file allows the driver for a device to be specified which
++		will override standard OF, ACPI, ID table, and name matching.
++		When specified, only a driver with a name matching the value
++		written to driver_override will have an opportunity to bind
++		to the device.  The override is specified by writing a string
++		to the driver_override file (echo vfio-platform > \
++		driver_override) and may be cleared with an empty string
++		(echo > driver_override).  This returns the device to standard
++		matching rules binding.  Writing to driver_override does not
++		automatically unbind the device from its current driver or make
++		any attempt to automatically load the specified driver.  If no
++		driver with a matching name is currently loaded in the kernel,
++		the device will not bind to any driver.  This also allows
++		devices to opt-out of driver binding using a driver_override
++		name such as "none".  Only a single driver may be specified in
++		the override, there is no support for parsing delimiters.
+diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+index bc78848..6db9fc2 100644
+--- a/drivers/base/platform.c
++++ b/drivers/base/platform.c
+@@ -22,6 +22,7 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/idr.h>
+ #include <linux/acpi.h>
++#include <linux/limits.h>
+ 
+ #include "base.h"
+ #include "power/power.h"
+@@ -693,8 +694,49 @@ static ssize_t modalias_show(struct device *dev, struct device_attribute *a,
+ }
+ static DEVICE_ATTR_RO(modalias);
+ 
++static ssize_t driver_override_store(struct device *dev,
++				     struct device_attribute *attr,
++				     const char *buf, size_t count)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++	char *driver_override, *old = pdev->driver_override, *cp;
++
++	if (count > PATH_MAX)
++		return -EINVAL;
++
++	driver_override = kstrndup(buf, count, GFP_KERNEL);
++	if (!driver_override)
++		return -ENOMEM;
++
++	cp = strchr(driver_override, '\n');
++	if (cp)
++		*cp = '\0';
++
++	if (strlen(driver_override)) {
++		pdev->driver_override = driver_override;
++	} else {
++		kfree(driver_override);
++		pdev->driver_override = NULL;
++	}
++
++	kfree(old);
++
++	return count;
++}
++
++static ssize_t driver_override_show(struct device *dev,
++				    struct device_attribute *attr, char *buf)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++
++	return sprintf(buf, "%s\n", pdev->driver_override);
++}
++static DEVICE_ATTR_RW(driver_override);
++
++
+ static struct attribute *platform_dev_attrs[] = {
+ 	&dev_attr_modalias.attr,
++	&dev_attr_driver_override.attr,
+ 	NULL,
+ };
+ ATTRIBUTE_GROUPS(platform_dev);
+@@ -750,6 +792,10 @@ static int platform_match(struct device *dev, struct device_driver *drv)
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	struct platform_driver *pdrv = to_platform_driver(drv);
+ 
++	/* When driver_override is set, only bind to the matching driver */
++	if (pdev->driver_override)
++		return !strcmp(pdev->driver_override, drv->name);
++
+ 	/* Attempt an OF style match first */
+ 	if (of_driver_match_device(dev, drv))
+ 		return 1;
+diff --git a/include/linux/platform_device.h b/include/linux/platform_device.h
+index 16f6654..153d303 100644
+--- a/include/linux/platform_device.h
++++ b/include/linux/platform_device.h
+@@ -28,6 +28,7 @@ struct platform_device {
+ 	struct resource	*resource;
+ 
+ 	const struct platform_device_id	*id_entry;
++	char *driver_override; /* Driver name to force a match */
+ 
+ 	/* MFD cell pointer */
+ 	struct mfd_cell *mfd_cell;
 -- 
 1.8.3.2
