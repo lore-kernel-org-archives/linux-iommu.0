@@ -1,16 +1,16 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: Re: [RFC PATCH v5 05/11] VFIO_PLATFORM: Initial skeleton of VFIO
-	support for platform devices
-Date: Tue, 29 Apr 2014 15:23:01 +0200
-Message-ID: <CAG8rG2yX9gFFetX+=wXx4azYqBDOsV8shzp2tCCxY6hSaTS1jw@mail.gmail.com>
+Subject: Re: [RFC PATCH v5 07/11] VFIO_PLATFORM: Read and write support for
+	the device fd
+Date: Tue, 29 Apr 2014 15:27:49 +0200
+Message-ID: <CAG8rG2xNZHW2YDHzgvKn-i9S6=YW9MfhVo9gn-dzKiWe_7proA@mail.gmail.com>
 References: <1398700371-20096-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1398700371-20096-6-git-send-email-a.motakis@virtualopensystems.com>
-	<1398704642.24318.273.camel@ul30vt.home>
+	<1398700371-20096-8-git-send-email-a.motakis@virtualopensystems.com>
+	<1398705857.24318.284.camel@ul30vt.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1398704642.24318.273.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
+In-Reply-To: <1398705857.24318.284.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,310 +21,175 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, KVM devel mailing list <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, alvise rigo <a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: KVM devel mailing list <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, alvise rigo <a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Apr 28, 2014 at 7:04 PM, Alex Williamson
+On Mon, Apr 28, 2014 at 7:24 PM, Alex Williamson
 <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
 > On Mon, 2014-04-28 at 17:52 +0200, Antonios Motakis wrote:
->> This patch forms the skeleton for platform devices support with VFIO.
->>
+>> VFIO returns a file descriptor which we can use to manipulate the memory
+>> regions of the device. Since some memory regions we cannot mmap due to
+>> security concerns, we also allow to read and write to this file descriptor
+>> directly.
+>
+> If there are regions we cannot mmap for security, why do we provide full
+> read/write access to them?
+
+What I refer to here is to the problem of mmaping an MMIO region that
+is not page-sized. For example if it is just a small number of
+registers which are not aligned on a page boundary, mmaping them would
+still make the whole page accessible to the guest, with unpredictable
+outcomes. But in these cases read/write is still OK.
+
+>
 >> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 >> ---
->>  drivers/vfio/Kconfig                          |   1 +
->>  drivers/vfio/Makefile                         |   1 +
->>  drivers/vfio/platform/Kconfig                 |   9 ++
->>  drivers/vfio/platform/Makefile                |   4 +
->>  drivers/vfio/platform/vfio_platform.c         | 172 ++++++++++++++++++++++++++
->>  drivers/vfio/platform/vfio_platform_private.h |  22 ++++
->>  include/uapi/linux/vfio.h                     |   1 +
->>  7 files changed, 210 insertions(+)
->>  create mode 100644 drivers/vfio/platform/Kconfig
->>  create mode 100644 drivers/vfio/platform/Makefile
->>  create mode 100644 drivers/vfio/platform/vfio_platform.c
->>  create mode 100644 drivers/vfio/platform/vfio_platform_private.h
+>>  drivers/vfio/platform/vfio_platform.c | 110 +++++++++++++++++++++++++++++++++-
+>>  1 file changed, 107 insertions(+), 3 deletions(-)
 >>
->> diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
->> index 3a598ed..a484d72 100644
->> --- a/drivers/vfio/Kconfig
->> +++ b/drivers/vfio/Kconfig
->> @@ -21,3 +21,4 @@ menuconfig VFIO
->>         If you don't know what to do here, say N.
->>
->>  source "drivers/vfio/pci/Kconfig"
->> +source "drivers/vfio/platform/Kconfig"
->> diff --git a/drivers/vfio/Makefile b/drivers/vfio/Makefile
->> index 72bfabc..b5e4a33 100644
->> --- a/drivers/vfio/Makefile
->> +++ b/drivers/vfio/Makefile
->> @@ -2,3 +2,4 @@ obj-$(CONFIG_VFIO) += vfio.o
->>  obj-$(CONFIG_VFIO_IOMMU_TYPE1) += vfio_iommu_type1.o
->>  obj-$(CONFIG_VFIO_IOMMU_SPAPR_TCE) += vfio_iommu_spapr_tce.o
->>  obj-$(CONFIG_VFIO_PCI) += pci/
->> +obj-$(CONFIG_VFIO_PLATFORM) += platform/
->> diff --git a/drivers/vfio/platform/Kconfig b/drivers/vfio/platform/Kconfig
->> new file mode 100644
->> index 0000000..42b0022
->> --- /dev/null
->> +++ b/drivers/vfio/platform/Kconfig
->> @@ -0,0 +1,9 @@
->> +config VFIO_PLATFORM
->> +     tristate "VFIO support for platform devices"
->> +     depends on VFIO && EVENTFD
->
-> VFIO_PCI also depends on PCI, is there no CONFIG_PLATFORM?  What benefit
-> would I get from this if I enable it on my x86 box?
-
-That's a good point. Unfortunately I don't know of an obvious config
-we can depend on, other than known target platforms (i.e. ARM).
-
-Useless on an x86 PC, but maybe someone has a weird x86 based non-PC
-based architecture somewhere :)
-
->
->> +     help
->> +       Support for platform devices with VFIO. This is required to make
->> +       use of platform devices present on the system using the VFIO
->> +       framework.
->> +
->> +       If you don't know what to do here, say N.
->> diff --git a/drivers/vfio/platform/Makefile b/drivers/vfio/platform/Makefile
->> new file mode 100644
->> index 0000000..df3a014
->> --- /dev/null
->> +++ b/drivers/vfio/platform/Makefile
->> @@ -0,0 +1,4 @@
->> +
->> +vfio-platform-y := vfio_platform.o
->> +
->> +obj-$(CONFIG_VFIO_PLATFORM) += vfio-platform.o
 >> diff --git a/drivers/vfio/platform/vfio_platform.c b/drivers/vfio/platform/vfio_platform.c
->> new file mode 100644
->> index 0000000..1661746
->> --- /dev/null
+>> index 5430cbe..7c01ced 100644
+>> --- a/drivers/vfio/platform/vfio_platform.c
 >> +++ b/drivers/vfio/platform/vfio_platform.c
->> @@ -0,0 +1,172 @@
->> +/*
->> + * Copyright (C) 2013 - Virtual Open Systems
->> + * Author: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
->> + *
->> + * This program is free software; you can redistribute it and/or modify
->> + * it under the terms of the GNU General Public License, version 2, as
->> + * published by the Free Software Foundation.
->> + *
->> + * This program is distributed in the hope that it will be useful,
->> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
->> + * GNU General Public License for more details.
->> + */
->> +
->> +#include <linux/device.h>
->> +#include <linux/eventfd.h>
->> +#include <linux/interrupt.h>
->> +#include <linux/iommu.h>
->> +#include <linux/module.h>
->> +#include <linux/mutex.h>
->> +#include <linux/notifier.h>
->> +#include <linux/pm_runtime.h>
->> +#include <linux/slab.h>
->> +#include <linux/types.h>
->> +#include <linux/uaccess.h>
->> +#include <linux/vfio.h>
->> +#include <linux/io.h>
->> +#include <linux/platform_device.h>
->> +#include <linux/irq.h>
->> +
->> +#include "vfio_platform_private.h"
->> +
->> +#define DRIVER_VERSION  "0.5"
->> +#define DRIVER_AUTHOR   "Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>"
->> +#define DRIVER_DESC     "VFIO for platform devices - User Level meta-driver"
->> +
->> +static void vfio_platform_release(void *device_data)
->> +{
->> +     module_put(THIS_MODULE);
->> +}
->> +
->> +static int vfio_platform_open(void *device_data)
->> +{
->> +     if (!try_module_get(THIS_MODULE))
->> +             return -ENODEV;
->> +
->> +     return 0;
->> +}
->> +
->> +static long vfio_platform_ioctl(void *device_data,
->> +                        unsigned int cmd, unsigned long arg)
->> +{
+>> @@ -55,7 +55,8 @@ static int vfio_platform_regions_init(struct vfio_platform_device *vdev)
+>>
+>>               region.addr = res->start;
+>>               region.size = resource_size(res);
+>> -             region.flags = 0;
+>> +             region.flags = VFIO_REGION_INFO_FLAG_READ
+>> +                             | VFIO_REGION_INFO_FLAG_WRITE;
+>>
+>>               vdev->region[i] = region;
+>>       }
+>> @@ -153,13 +154,116 @@ static long vfio_platform_ioctl(void *device_data,
+>>  static ssize_t vfio_platform_read(void *device_data, char __user *buf,
+>>                            size_t count, loff_t *ppos)
+>>  {
+>> -     return 0;
 >> +     struct vfio_platform_device *vdev = device_data;
->> +     unsigned long minsz;
+>> +     unsigned int index = VFIO_PLATFORM_OFFSET_TO_INDEX(*ppos);
+>> +     loff_t off = *ppos & VFIO_PLATFORM_OFFSET_MASK;
+>> +     unsigned int done = 0;
+>> +     void __iomem *io;
 >> +
->> +     if (cmd == VFIO_DEVICE_GET_INFO) {
->> +             struct vfio_device_info info;
->> +
->> +             minsz = offsetofend(struct vfio_device_info, num_irqs);
->> +
->> +             if (copy_from_user(&info, (void __user *)arg, minsz))
->> +                     return -EFAULT;
->> +
->> +             if (info.argsz < minsz)
->> +                     return -EINVAL;
->> +
->> +             info.flags = VFIO_DEVICE_FLAGS_PLATFORM;
->> +             info.num_regions = 0;
->> +             info.num_irqs = 0;
->> +
->> +             return copy_to_user((void __user *)arg, &info, minsz);
->> +
->> +     } else if (cmd == VFIO_DEVICE_GET_REGION_INFO)
+>> +     if (index >= vdev->num_regions)
 >> +             return -EINVAL;
 >> +
->> +     else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
->> +             return -EINVAL;
->> +
->> +     else if (cmd == VFIO_DEVICE_SET_IRQS)
->> +             return -EINVAL;
->> +
->> +     else if (cmd == VFIO_DEVICE_RESET)
->> +             return -EINVAL;
->> +
->> +     return -ENOTTY;
->> +}
->> +
->> +static ssize_t vfio_platform_read(void *device_data, char __user *buf,
->> +                          size_t count, loff_t *ppos)
->> +{
->> +     return 0;
->> +}
->> +
->> +static ssize_t vfio_platform_write(void *device_data, const char __user *buf,
->> +                           size_t count, loff_t *ppos)
->> +{
->> +     return 0;
->> +}
+>> +     io = ioremap_nocache(vdev->region[index].addr,
+>> +                          vdev->region[index].size);
 >
-> I know these are just stubs, but I suspect they should probably return
-> error.  Thanks,
+> I haven't looked at ioremap on arm, but if it's remotely non-trivially,
+> it's probably a good idea to do this only on first access, cache it, and
+> unmap it on region cleanup.  Thanks,
+
+Ack.
+
 >
-
-Ok!
-
 > Alex
 >
 >> +
->> +static int vfio_platform_mmap(void *device_data, struct vm_area_struct *vma)
->> +{
->> +     return -EINVAL;
->> +}
+>> +     while (count) {
+>> +             size_t filled;
 >> +
->> +static const struct vfio_device_ops vfio_platform_ops = {
->> +     .name           = "vfio-platform",
->> +     .open           = vfio_platform_open,
->> +     .release        = vfio_platform_release,
->> +     .ioctl          = vfio_platform_ioctl,
->> +     .read           = vfio_platform_read,
->> +     .write          = vfio_platform_write,
->> +     .mmap           = vfio_platform_mmap,
->> +};
+>> +             if (count >= 4 && !(off % 4)) {
+>> +                     u32 val;
 >> +
->> +static int vfio_platform_probe(struct platform_device *pdev)
->> +{
->> +     struct vfio_platform_device *vdev;
->> +     struct iommu_group *group;
->> +     int ret;
+>> +                     val = ioread32(io + off);
+>> +                     if (copy_to_user(buf, &val, 4))
+>> +                             goto err;
 >> +
->> +     group = iommu_group_get(&pdev->dev);
->> +     if (!group) {
->> +             pr_err("VFIO: No IOMMU group for device %s\n", pdev->name);
+>> +                     filled = 4;
+>> +             } else if (count >= 2 && !(off % 2)) {
+>> +                     u16 val;
+>> +
+>> +                     val = ioread16(io + off);
+>> +                     if (copy_to_user(buf, &val, 2))
+>> +                             goto err;
+>> +
+>> +                     filled = 2;
+>> +             } else {
+>> +                     u8 val;
+>> +
+>> +                     val = ioread8(io + off);
+>> +                     if (copy_to_user(buf, &val, 1))
+>> +                             goto err;
+>> +
+>> +                     filled = 1;
+>> +             }
+>> +
+>> +
+>> +             count -= filled;
+>> +             done += filled;
+>> +             off += filled;
+>> +             buf += filled;
+>> +     }
+>> +
+>> +     iounmap(io);
+>> +     return done;
+>> +err:
+>> +     iounmap(io);
+>> +     return -EFAULT;
+>>  }
+>>
+>>  static ssize_t vfio_platform_write(void *device_data, const char __user *buf,
+>>                             size_t count, loff_t *ppos)
+>>  {
+>> -     return 0;
+>> +     struct vfio_platform_device *vdev = device_data;
+>> +     unsigned int index = VFIO_PLATFORM_OFFSET_TO_INDEX(*ppos);
+>> +     loff_t off = *ppos & VFIO_PLATFORM_OFFSET_MASK;
+>> +     unsigned int done = 0;
+>> +     void __iomem *io;
+>> +
+>> +     if (index >= vdev->num_regions)
 >> +             return -EINVAL;
+>> +
+>> +     io = ioremap_nocache(vdev->region[index].addr,
+>> +                          vdev->region[index].size);
+>> +
+>> +     while (count) {
+>> +             size_t filled;
+>> +
+>> +             if (count >= 4 && !(off % 4)) {
+>> +                     u32 val;
+>> +
+>> +                     if (copy_from_user(&val, buf, 4))
+>> +                             goto err;
+>> +                     iowrite32(val, io + off);
+>> +
+>> +                     filled = 4;
+>> +             } else if (count >= 2 && !(off % 2)) {
+>> +                     u16 val;
+>> +
+>> +                     if (copy_from_user(&val, buf, 2))
+>> +                             goto err;
+>> +                     iowrite16(val, io + off);
+>> +
+>> +                     filled = 2;
+>> +             } else {
+>> +                     u8 val;
+>> +
+>> +                     if (copy_from_user(&val, buf, 1))
+>> +                             goto err;
+>> +                     iowrite8(val, io + off);
+>> +
+>> +                     filled = 1;
+>> +             }
+>> +
+>> +             count -= filled;
+>> +             done += filled;
+>> +             off += filled;
+>> +             buf += filled;
 >> +     }
 >> +
->> +     vdev = kzalloc(sizeof(*vdev), GFP_KERNEL);
->> +     if (!vdev) {
->> +             iommu_group_put(group);
->> +             return -ENOMEM;
->> +     }
->> +
->> +     vdev->pdev = pdev;
->> +
->> +     ret = vfio_add_group_dev(&pdev->dev, &vfio_platform_ops, vdev);
->> +     if (ret) {
->> +             iommu_group_put(group);
->> +             kfree(vdev);
->> +     }
->> +
->> +     return ret;
->> +}
->> +
->> +static int vfio_platform_remove(struct platform_device *pdev)
->> +{
->> +     struct vfio_platform_device *vdev;
->> +
->> +     vdev = vfio_del_group_dev(&pdev->dev);
->> +     if (!vdev)
->> +             return -EINVAL;
->> +
->> +     iommu_group_put(pdev->dev.iommu_group);
->> +     kfree(vdev);
->> +
->> +     return 0;
->> +}
->> +
->> +static struct platform_driver vfio_platform_driver = {
->> +     .probe          = vfio_platform_probe,
->> +     .remove         = vfio_platform_remove,
->> +     .driver = {
->> +             .name   = "vfio-platform",
->> +             .owner  = THIS_MODULE,
->> +     },
->> +};
->> +
->> +module_platform_driver(vfio_platform_driver);
->> +
->> +MODULE_VERSION(DRIVER_VERSION);
->> +MODULE_LICENSE("GPL v2");
->> +MODULE_AUTHOR(DRIVER_AUTHOR);
->> +MODULE_DESCRIPTION(DRIVER_DESC);
->> diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
->> new file mode 100644
->> index 0000000..4ae88f8
->> --- /dev/null
->> +++ b/drivers/vfio/platform/vfio_platform_private.h
->> @@ -0,0 +1,22 @@
->> +/*
->> + * Copyright (C) 2013 - Virtual Open Systems
->> + * Author: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
->> + *
->> + * This program is free software; you can redistribute it and/or modify
->> + * it under the terms of the GNU General Public License, version 2, as
->> + * published by the Free Software Foundation.
->> + *
->> + * This program is distributed in the hope that it will be useful,
->> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
->> + * GNU General Public License for more details.
->> + */
->> +
->> +#ifndef VFIO_PLATFORM_PRIVATE_H
->> +#define VFIO_PLATFORM_PRIVATE_H
->> +
->> +struct vfio_platform_device {
->> +     struct platform_device          *pdev;
->> +};
->> +
->> +#endif /* VFIO_PLATFORM_PRIVATE_H */
->> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
->> index 0847b29..b1a8de8 100644
->> --- a/include/uapi/linux/vfio.h
->> +++ b/include/uapi/linux/vfio.h
->> @@ -155,6 +155,7 @@ struct vfio_device_info {
->>       __u32   flags;
->>  #define VFIO_DEVICE_FLAGS_RESET      (1 << 0)        /* Device supports reset */
->>  #define VFIO_DEVICE_FLAGS_PCI        (1 << 1)        /* vfio-pci device */
->> +#define VFIO_DEVICE_FLAGS_PLATFORM (1 << 2)  /* vfio-platform device */
->>       __u32   num_regions;    /* Max region index + 1 */
->>       __u32   num_irqs;       /* Max IRQ index + 1 */
->>  };
+>> +     iounmap(io);
+>> +     return done;
+>> +err:
+>> +     iounmap(io);
+>> +     return -EFAULT;
+>>  }
+>>
+>>  static int vfio_platform_mmap(void *device_data, struct vm_area_struct *vma)
 >
 >
 >
