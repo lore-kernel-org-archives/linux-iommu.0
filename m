@@ -1,94 +1,105 @@
-From: Hiroshi Doyu <hdoyu@nvidia.com>
-Subject: Re: [PATCH v12 11/31] documentation: iommu: add binding document of
- Exynos System MMU
-Date: Tue, 29 Apr 2014 08:55:35 +0300
-Message-ID: <87eh0gd6i0.fsf@nvidia.com>
-References: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
- <1398584283-22846-12-git-send-email-shaik.ameer@samsung.com>
- <4447051.OnJtcFSqFV@wuerfel> <20140428103919.GF19455@ulmo>
+From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Subject: Re: [RFC PATCH v5 02/11] ARM SMMU: Add capability IOMMU_CAP_DMA_EXEC
+Date: Tue, 29 Apr 2014 11:49:48 +0200
+Message-ID: <CAG8rG2xGPLjuVBn6fwHdLAnawsyKBudgZMysHL6XOmMmtCGD8A@mail.gmail.com>
+References: <1398700371-20096-1-git-send-email-a.motakis@virtualopensystems.com>
+	<1398700371-20096-3-git-send-email-a.motakis@virtualopensystems.com>
+	<20140428193709.GE22135@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20140428103919.GF19455@ulmo>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: "t.figa@samsung.com" <t.figa@samsung.com>, Will Deacon <will.deacon@arm.com>, "tomasz.figa@gmail.com" <tomasz.figa@gmail.com>, "joshi@samsung.com" <joshi@samsung.com>, "s.nawrocki@samsung.com" <s.nawrocki@samsung.com>, "Varun.Sethi@freescale.com" <Varun.Sethi@freescale.com>, "kgene.kim@samsung.com" <kgene.kim@samsung.com>, "prathyush.k@samsung.com" <prathyush.k@samsung.com>, "sachin.kamat@linaro.org" <sachin.kamat@linaro.org>, "joro@8bytes.org" <joro@8bytes.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Stephen Warren <swarren@wwwdotorg.org>, "grundler@chromium.org" <grundler@chromium.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "a.motakis@virtualopensystems.com" <a.motakis@virtualopensystems.com>, "pullip.cho@samsung.com" <pullip.cho@samsung.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: multipart/mixed; boundary="===============6343610371212242751=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20140428193709.GE22135-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "moderated list:ARM SMMU DRIVER" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, "christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+--===============6343610371212242751==
+Content-Type: multipart/alternative; boundary=047d7b15a16d7fa0e104f82b5bde
 
-Thierry Reding <thierry.reding@gmail.com> writes:
+--047d7b15a16d7fa0e104f82b5bde
+Content-Type: text/plain; charset=ISO-8859-1
 
-> * PGP Signed by an unknown key
->
-> On Sun, Apr 27, 2014 at 08:23:06PM +0200, Arnd Bergmann wrote:
->> On Sunday 27 April 2014 13:07:43 Shaik Ameer Basha wrote:
->> > +- mmu-masters: A phandle to device nodes representing the master for which
->> > +               the System MMU can provide a translation. Any additional values
->> > +              after the phandle will be ignored because a System MMU never
->> > +              have two or more masters. "#stream-id-cells" specified in the
->> > +              master's node will be also ignored.
->> > +              If more than one phandle is specified, only the first phandle
->> > +              will be treated.
->> 
->> This seems completely backwards: Why would you list the masters for an IOMMU
->> in the IOMMU node?
->> 
->> The master should have a standard property pointing to the IOMMU instead.
->> 
->> We don't have a generic binding for IOMMUs yet it seems, but the time is
->> overdue to make one.
->> 
->> Consider this NAKed until there is a generic binding for IOMMUs that all
->> relevant developers have agreed to.
->
-> I'd like to take this opportunity and revive one of the hibernating
-> patch sets that we have for Tegra. The last effort to get things merged
-> was back in January I think. I haven't bothered to look up the reference
-> since it's probably good to start from scratch anyway.
->
-> The latest version of the binding that was under discussion back then I
-> think looked something like this:
->
-> 	device@... {
-> 		iommus = <&iommu [spec]>[, <&other_iommu [other_spec]>...];
-> 	};
->
-> And possibly with a iommu-names property to go along with that. The idea
-> being that a device can be a master on possibly multiple IOMMUs. Using
-> the above it would also be possible to have one device be multiple
-> masters on the same IOMMU.
->
-> On Tegra the specifier would be used to encode a memory controller's
-> client ID. One discussion point back at the time was to encode the ID as
-> a bitmask to allow more than a single master per entry. Another solution
-> which I think is a little cleaner and more generic, would be to use one
-> entry per master and use a single cell to encode the client ID. Devices
-> with multiple clients to the same IOMMU could then use multiple entries
-> referencing the same IOMMU.
->
-> I've added Hiroshi Doyu on Cc since he knows the Tegra IOMMU best.
-> Hiroshi, can you summarize exactly what the proposed bindings were. If
-> my memory serves me well they were mostly along the lines of what Arnd
-> proposes here, and perhaps they are something that can also be used for
-> Exynos.
+I agree, that would be simpler for the user. As it is now we have to worry
+about whether the EXEC flac is available just to use the PL330, with NOEXEC
+the device would always be usable by default.
 
-You can find the detail from:
 
-[PATCHv7 09/12] iommu/tegra: smmu: get swgroups from DT "iommus="
-  http://lists.linuxfoundation.org/pipermail/iommu/2013-December/007212.html
+On Mon, Apr 28, 2014 at 9:37 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
 
-You can specify any parameters which your iommu requires from a device,
-and a device(master) can have multiple IOMMUs.
+> On Mon, Apr 28, 2014 at 04:52:42PM +0100, Antonios Motakis wrote:
+> > The ARM SMMU can take an IOMMU_EXEC protection flag in addition to
+> > IOMMU_READ and IOMMU_WRITE. Expose this as an IOMMU capability.
+>
+> The other way of handling this would be to negate the capability and
+> advertise a NOEXEC cap instead. That would need the IOMMU_EXEC flag to
+> become IOMMU_NOEXEC and the ARM SMMU driver updating accordingly, but it
+> might make more sense if people don't object to mixing positive and
+> negative
+> logic in the IOMMU_* flags.
+>
+> Any thoughts?
+>
+> Will
+>
 
- 	device@... {
- 		iommus = <&iommu [spec]>[, <&other_iommu [other_spec]>...];
- 	};
+
+
+-- 
+Antonios Motakis
+Virtual Open Systems
+
+--047d7b15a16d7fa0e104f82b5bde
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">I agree, that would be simpler for the user. As it is now =
+we have to worry about whether the EXEC flac is available just to use the P=
+L330, with NOEXEC the device would always be usable by default.<br></div><d=
+iv class=3D"gmail_extra">
+
+<br><br><div class=3D"gmail_quote">On Mon, Apr 28, 2014 at 9:37 PM, Will De=
+acon <span dir=3D"ltr">&lt;<a href=3D"mailto:will.deacon-5wv7dgnIgG8@public.gmane.org" target=3D=
+"_blank">will.deacon-5wv7dgnIgG8@public.gmane.org</a>&gt;</span> wrote:<br><blockquote class=3D"=
+gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-=
+left:1ex">
+
+<div class=3D"">On Mon, Apr 28, 2014 at 04:52:42PM +0100, Antonios Motakis =
+wrote:<br>
+&gt; The ARM SMMU can take an IOMMU_EXEC protection flag in addition to<br>
+&gt; IOMMU_READ and IOMMU_WRITE. Expose this as an IOMMU capability.<br>
+<br>
+</div>The other way of handling this would be to negate the capability and<=
+br>
+advertise a NOEXEC cap instead. That would need the IOMMU_EXEC flag to<br>
+become IOMMU_NOEXEC and the ARM SMMU driver updating accordingly, but it<br=
+>
+might make more sense if people don&#39;t object to mixing positive and neg=
+ative<br>
+logic in the IOMMU_* flags.<br>
+<br>
+Any thoughts?<br>
+<span class=3D"HOEnZb"><font color=3D"#888888"><br>
+Will<br>
+</font></span></blockquote></div><br><br clear=3D"all"><br>-- <br>Antonios =
+Motakis<br>Virtual Open Systems
+</div>
+
+--047d7b15a16d7fa0e104f82b5bde--
+
+--===============6343610371212242751==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============6343610371212242751==--
