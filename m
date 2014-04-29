@@ -1,71 +1,94 @@
-From: Doug Anderson <dianders@chromium.org>
-Subject: Re: [PATCH v12 30/31] ARM: dts: add System MMU nodes of exynos5250
-Date: Mon, 28 Apr 2014 16:13:19 -0700
-Message-ID: <CAD=FV=UCpQRg9nWu5EfuzWmBpee9N3X6yCmtpRaNQxitfFZkMQ@mail.gmail.com>
+From: Hiroshi Doyu <hdoyu@nvidia.com>
+Subject: Re: [PATCH v12 11/31] documentation: iommu: add binding document of
+ Exynos System MMU
+Date: Tue, 29 Apr 2014 08:55:35 +0300
+Message-ID: <87eh0gd6i0.fsf@nvidia.com>
 References: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
-	<1398584283-22846-31-git-send-email-shaik.ameer@samsung.com>
-	<CAGm_ybhTEN9QxFBd1Su8NGP32KeYTF8d_Z8gXKo7cYpapZrA9w@mail.gmail.com>
+ <1398584283-22846-12-git-send-email-shaik.ameer@samsung.com>
+ <4447051.OnJtcFSqFV@wuerfel> <20140428103919.GF19455@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <CAGm_ybhTEN9QxFBd1Su8NGP32KeYTF8d_Z8gXKo7cYpapZrA9w@mail.gmail.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Vikas Sajjan <sajjan.linux@gmail.com>
-Cc: Shaik Ameer Basha <shaik.ameer@samsung.com>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Kukjin Kim <kgene.kim@samsung.com>, Prathyush <prathyush.k@samsung.com>, Grant Grundler <grundler@chromium.org>, joro@8bytes.org, supash.ramaswamy@linaro.org, Tomasz Figa <tomasz.figa@gmail.com>, sunil joshi <joshi@samsung.com>, Sachin Kamat <sachin.kamat@linaro.org>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Varun.Sethi@freescale.com, a.motakis@virtualopensystems.com, pullip.cho@samsung.com, Tomasz Figa <t.figa@samsung.com>, RAHUL SHARMA <rahul.sharma@samsung.com>, Abhilash Kesavan <a.kesavan@samsung.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20140428103919.GF19455@ulmo>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: "t.figa@samsung.com" <t.figa@samsung.com>, Will Deacon <will.deacon@arm.com>, "tomasz.figa@gmail.com" <tomasz.figa@gmail.com>, "joshi@samsung.com" <joshi@samsung.com>, "s.nawrocki@samsung.com" <s.nawrocki@samsung.com>, "Varun.Sethi@freescale.com" <Varun.Sethi@freescale.com>, "kgene.kim@samsung.com" <kgene.kim@samsung.com>, "prathyush.k@samsung.com" <prathyush.k@samsung.com>, "sachin.kamat@linaro.org" <sachin.kamat@linaro.org>, "joro@8bytes.org" <joro@8bytes.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Stephen Warren <swarren@wwwdotorg.org>, "grundler@chromium.org" <grundler@chromium.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "a.motakis@virtualopensystems.com" <a.motakis@virtualopensystems.com>, "pullip.cho@samsung.com" <pullip.cho@samsung.com>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-Vikas,
 
+Thierry Reding <thierry.reding@gmail.com> writes:
 
-On Sun, Apr 27, 2014 at 10:39 AM, Vikas Sajjan <sajjan.linux@gmail.com> wrote:
-> Hi shaik,
+> * PGP Signed by an unknown key
 >
-> +Doug, Abhilash,
+> On Sun, Apr 27, 2014 at 08:23:06PM +0200, Arnd Bergmann wrote:
+>> On Sunday 27 April 2014 13:07:43 Shaik Ameer Basha wrote:
+>> > +- mmu-masters: A phandle to device nodes representing the master for which
+>> > +               the System MMU can provide a translation. Any additional values
+>> > +              after the phandle will be ignored because a System MMU never
+>> > +              have two or more masters. "#stream-id-cells" specified in the
+>> > +              master's node will be also ignored.
+>> > +              If more than one phandle is specified, only the first phandle
+>> > +              will be treated.
+>> 
+>> This seems completely backwards: Why would you list the masters for an IOMMU
+>> in the IOMMU node?
+>> 
+>> The master should have a standard property pointing to the IOMMU instead.
+>> 
+>> We don't have a generic binding for IOMMUs yet it seems, but the time is
+>> overdue to make one.
+>> 
+>> Consider this NAKed until there is a generic binding for IOMMUs that all
+>> relevant developers have agreed to.
 >
-> On Sun, Apr 27, 2014 at 1:08 PM, Shaik Ameer Basha
-> <shaik.ameer@samsung.com> wrote:
->> From: Cho KyongHo <pullip.cho@samsung.com>
->>
->> Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
->> ---
->>  arch/arm/boot/dts/exynos5250.dtsi |  270 ++++++++++++++++++++++++++++++++++++-
->>  1 file changed, 267 insertions(+), 3 deletions(-)
->>
->> diff --git a/arch/arm/boot/dts/exynos5250.dtsi b/arch/arm/boot/dts/exynos5250.dtsi
->> index 3742331..eebd397 100644
->> --- a/arch/arm/boot/dts/exynos5250.dtsi
->> +++ b/arch/arm/boot/dts/exynos5250.dtsi
->> @@ -82,6 +82,16 @@
->>                 reg = <0x10044040 0x20>;
->>         };
->>
->> +       pd_isp: isp-power-domain@0x10044020 {
->> +               compatible = "samsung,exynos4210-pd";
->> +               reg = <0x10044020 0x20>;
->> +       };
->> +
->> +       pd_disp1: disp1-power-domain@0x100440A0 {
->> +               compatible = "samsung,exynos4210-pd";
->> +               reg = <0x100440A0 0x20>;
->> +       };
->> +
+> I'd like to take this opportunity and revive one of the hibernating
+> patch sets that we have for Tegra. The last effort to get things merged
+> was back in January I think. I haven't bothered to look up the reference
+> since it's probably good to start from scratch anyway.
 >
-> As per subject "add System MMU nodes of exynos5250", it should only
-> add SysMMU node.
-> So, I think adding power domain nodes should go in a separate patch.
+> The latest version of the binding that was under discussion back then I
+> think looked something like this:
 >
-> Adding power domain nodes can break the system, if powering ON/OFF of
-> the given power domain is NOT taken care well.
-> I can see ISP is one such case. With this series I can see S2R breaks
-> [1] on 5250 chromebook with current mainline kernel (same applies for
-> arndale and smdk5250, but I have tested on these boards yet)
+> 	device@... {
+> 		iommus = <&iommu [spec]>[, <&other_iommu [other_spec]>...];
+> 	};
+>
+> And possibly with a iommu-names property to go along with that. The idea
+> being that a device can be a master on possibly multiple IOMMUs. Using
+> the above it would also be possible to have one device be multiple
+> masters on the same IOMMU.
+>
+> On Tegra the specifier would be used to encode a memory controller's
+> client ID. One discussion point back at the time was to encode the ID as
+> a bitmask to allow more than a single master per entry. Another solution
+> which I think is a little cleaner and more generic, would be to use one
+> entry per master and use a single cell to encode the client ID. Devices
+> with multiple clients to the same IOMMU could then use multiple entries
+> referencing the same IOMMU.
+>
+> I've added Hiroshi Doyu on Cc since he knows the Tegra IOMMU best.
+> Hiroshi, can you summarize exactly what the proposed bindings were. If
+> my memory serves me well they were mostly along the lines of what Arnd
+> proposes here, and perhaps they are something that can also be used for
+> Exynos.
 
-Thanks for catching that!  Let's make sure not to break suspend/resume.
+You can find the detail from:
 
-Given that these power domains are actually used as the domains for
-some of the System MMU nodes I don't totally object to adding them in
-the same patch, but if they're breaking things then I agree that we
-could leave them out and add them in a later patch (once issues are
-sorted out).
+[PATCHv7 09/12] iommu/tegra: smmu: get swgroups from DT "iommus="
+  http://lists.linuxfoundation.org/pipermail/iommu/2013-December/007212.html
 
--Doug
+You can specify any parameters which your iommu requires from a device,
+and a device(master) can have multiple IOMMUs.
+
+ 	device@... {
+ 		iommus = <&iommu [spec]>[, <&other_iommu [other_spec]>...];
+ 	};
