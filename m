@@ -1,76 +1,190 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH v5 03/11] VFIO_IOMMU_TYPE1 for platform bus devices
-	on ARM
-Date: Wed, 30 Apr 2014 14:08:14 +0100
-Message-ID: <20140430130814.GB15719@arm.com>
-References: <1398700371-20096-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1398700371-20096-4-git-send-email-a.motakis@virtualopensystems.com>
-	<1398703421.24318.262.camel@ul30vt.home>
-	<20140428191920.GC22135@arm.com>
-	<1398715690.24318.321.camel@ul30vt.home>
+From: Dave Martin <Dave.Martin@arm.com>
+Subject: Re: [PATCH v12 11/31] documentation: iommu: add binding document of
+ Exynos System MMU
+Date: Wed, 30 Apr 2014 16:14:15 +0100
+Message-ID: <20140430151415.GC3986@e103592.cambridge.arm.com>
+References: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
+ <20140429181601.GE3582@e103592.cambridge.arm.com>
+ <CANEJEGs6TXNzE8cWYgEKfFSsD2w5XiYvwSbhQ_+gtfzfs+6udA@mail.gmail.com>
+ <7044616.kdaKNu3Qet@wuerfel>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <1398715690.24318.321.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, "christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+In-Reply-To: <7044616.kdaKNu3Qet@wuerfel>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: "t.figa@samsung.com" <t.figa@samsung.com>, Will Deacon <will.deacon@arm.com>, "tomasz.figa@gmail.com" <tomasz.figa@gmail.com>, "joshi@samsung.com" <joshi@samsung.com>, Thierry Reding <thierry.reding@gmail.com>, "s.nawrocki@samsung.com" <s.nawrocki@samsung.com>, "Varun.Sethi@freescale.com" <Varun.Sethi@freescale.com>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "prathyush.k@samsung.com" <prathyush.k@samsung.com>, "sachin.kamat@linaro.org" <sachin.kamat@linaro.org>, "joro@8bytes.org" <joro@8bytes.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Stephen Warren <swarren@wwwdotorg.org>, Grant Grundler <grundler@chromium.org>, "kgene.kim@samsung.com" <kgene.kim@samsung.com>, "a.motakis@virtualopensystems.com" <a.motakis@virtualopensystems.com>, "pullip.cho@samsung.com" <pullip.cho@samsung.com>, linux-arm-kernel@lists.infradead.o
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Apr 28, 2014 at 09:08:10PM +0100, Alex Williamson wrote:
-> On Mon, 2014-04-28 at 20:19 +0100, Will Deacon wrote:
-> > Please excuse any ignorance on part here (I'm not at all familiar with the
-> > Intel IOMMU), but shouldn't this really be a property of the interrupt
-> > controller itself? On ARM with GICv3, there is a separate block called the
-> > ITS (interrupt translation service) which is part of the interrupt
-> > controller. The ITS provides a doorbell page which the SMMU can map into a
-> > guest operating system to provide MSI for passthrough devices, but this
-> > isn't something the SMMU is aware of -- it will just see the iommu_map
-> > request for a non-cacheable mapping.
+On Tue, Apr 29, 2014 at 11:00:29PM +0200, Arnd Bergmann wrote: > On Tuesday 29 April 2014 13:07:54 Grant Grundler wrote: > > On Tue, Apr 29, 2014 at 11:16 AM, Dave Martin <Dave.Martin@arm.com> wrote:
+> > ...
+> > > An IOMMU is really a specialised bridge
+> > 
+> > Is a GART a bridge?
+
+Depends what you mean by "bridge".
+
+I would say that it can be logically viewed as a bridge through which
+graphics cards master onto the bus.
+
+In this context it's integrated into the bus, but I think the function
+it performs is still in series with, and logically distinct from, the
+routing done by the bus proper.
+
+> > IOMMUs can provide three basic functions:
+> > 1) remap address space to reach phys mem ranges that the device is
+> > otherwise not capable of accessing (classic 32-bit DMA to reach 64-bit
+> > Phys address)
+> > 
+> > 2) implement scatter-gather (page level granularity) so the device
+> > doesn't have to
+> > 
+> > 3) provide some level of system protection against "rogue" DMA by
+> > forcing everything through a DMA mapping interface and faulting when
+> > encountering unmapped DMA transactions.
 > 
-> I don't know the history of why this is an IOMMU domain capability on
-> x86, it's sort of a paradox.  An MSI from a device is conceptually just
-> a DMA write and is therefore logically co-located in the IOMMU hardware,
-> but x86 doesn't allow it to be mapped via the IOMMU API interfaces.  For
-> compatibility, interrupt remapping support is buried deep in the
-> request_irq interface and effectively invisible other than having this
-> path to query it.  Therefore this flag is effectively just saying "MSI
-> isolation support is present and enabled".  IOW, the host is protected
-> from interrupt injection attacks from malicious devices.  If there is
-> some property of your platform that makes this always the case, then the
-> IOMMU driver can always export this capability as true.
+> [ 4) provide isolation between multiple contexts, typically for purposes
+>      of virtualization]
 
-Thanks for the explanation. On ARM, the SMMU does indeed see the MSI write
-just like a normal write, so it can be mapped via iommu_map() to point at
-the interrupt controller doorbell page. I guess that means we can enable
-this capability for all MSI-capable devices upstream of the SMMU, providing
-that the IRQ controller doesn't have any horrible quirks.
+All of which are classic functionalities of an MMU.  What is different
+is that the CPU MMU is built into the CPU and standardised, and either
+symmetrically shared or private to the CPU so that there is rarely if
+ever any need to describe anything in DT ... whereas an IOMMU is not
+tightly coupled to the CPU, and wired up to external hardware in
+sometimes arbitrary ways that may require description (especially for
+SoC systems).
 
-> With PCI, MSI is configured via spec defined configuration space
-> registers, so we emulate these registers and prevent user access to them
-> so that we don't need to allow the user a way to setup an interrupt
-> remapping entry.  It's done for them via request_irq.
+> > I summarize IOMMUs as: "participate in the routing of MMIO
+> > transactions in the system fabric."
+> > In this sense, IOMMUs are sort of a bridge. Defining what kind of
+> > routing they can do (coalesce transactions? remapping MMIO domains?)
+> > and which address ranges they route would describe most of that
+> > functionality.
+
+agreed
+
+> > This "remapping" of MMIO transaction is also usually asymmetric.
+> > Meaning routing of "downstream" transactions *might* be completely
+> > different than the routing + remapping of transactions heading
+> > upstream. DMA mappings services are designed to handle only the
+> > transactions generated (aka "mastered") by a downstream device.
+
+Also agreed.  In the SoC world, the upstream and downstream paths
+may be completely separate in the topology, not following the same
+path at all, so then it becomes more natural for them to have
+independent characteristics.  "dma-ranges" doesn't work for these
+situations.
+
+> For the purposes of the DT binding, we have a 'ranges' property
+> that defines the downstream translation (CPU-to-MMIO) and a
+> 'dma-ranges' property for the opposite address translation
+> (device-to-memory).
 > 
-> IIRC, the Freescale devices have a limited number of MSI pages and can
-> therefore create some instances with isolation while others may require
-> sharing.  In that case I would expect this flag to indicate whether the
-> domain has an exclusive or shared page.
+> > >, so it may be cleaner to describe
+> > > an IOMMU using a real bus node in the DT, if we also define a way to make
+> > > master/slave linkages explicit where it matters.
+> > 
+> > "where it matters" is a bit vague.  Is the goal to just enable DMA
+> > mapping services to "do the right thing" for a device that can
+> > generate DMA?
 > 
-> In any case, I suspect keying on the bus_type here is not the correct
-> way to go.  Thanks,
+> Yes. It's very complicated unfortunately, because we have to be
+> able to deal with arbitrary combinations of a lot of oddball cases
+> that can show up in random SoCs:
+> 
+> - device can only do DMA to a limited address range
+> - DMA is noncoherent and needs manual cache management
+> - DMA address is at an offset from physical address
+> - some devices have an IOMMU
+> - some IOMMUs are shared between devices
+> - some devices with IOMMU can have multiple simultaneous contexts
+> - a device may access some memory directly and some other memory through IOMMU
+> - a device may have DMA access to a bus that is invisible to the CPU
+> - DMA on some device is only coherent if the IOMMU is enabled
+> - DMA on some device is only coherent if the IOMMU is disabled
+> - the IOVA range to an IOMMU is device dependent
 
-Agreed, I was more intrigued by the meaning of the flag.
+This sounds bad on the surface, but really these are permutations of a
+few key concepts:
 
-Thanks,
+ 1) Topologies that can't be reduced to a tree, resulting from
+   unidirectional buses (common in SoC architectures).
 
-Will
+ 2) Many-to-many connectivity of devices, unlike the familiar
+   many-to-one parent/child relationship from PCI and similar.
+
+ 3) Interconnects made up of independently configured and
+   connected components, such that they can't be described as optional
+   features of some standard bus.
+
+ 4) Bridge components and devices that process, route or transform
+   transactions based on more than just the destination address.
+   Instead, the handling of a transaction can involve some kind of
+   device ID, memory type and cacheability attributes and coherency
+   domain information in addition to the address.
+
+
+To address these, we need a few things:
+
+ a) A way to describe the cross-links where the topology is not
+    reducible to a tree.  This would involve a phandle to describe
+    a "A masters on B" relationship analogous to what the parent/
+    child relationship in DT already means.
+
+ b) For devices with multiple distinct master roles with different
+    routing or behaviour in the interconnect, a way to describe those
+    roles.
+
+ c) A way to describe mappings across bridges that builds on
+    "ranges" to cover a wider range of situations.
+
+
+> > > I've been hacking around some proposals on these areas which are a bit
+> > > different from the approach suggested here -- I'll try to summarise some
+> > > of it intelligibly and post something tomorrow so that we can discuss.
+> > 
+> > Are you planning on consolidating Documentation/devicetree/bindings/iommu/ ?
+
+Not initially.  Ripping out old bindings that work perfectly well today
+will just cause churn.  But if we can lay a good foundation for future
+bindings that should help us in the future.
+
+> > Do you care about Documentation/Intel-IOMMU.txt?
+
+Probably answered by my above point.
+
+If it ain't broke, there's no reason to fix it.
+
+Defining DT bindings and refactoring kernel frameworks are pretty
+orthogonal: we could retain compatibility with existing IOMMU bindings
+within a modified framework that can also handle more diverse SoC
+scenarios which may use a more uniform and sophisticated description in
+the DT.
+
+> I think we can ignore the Intel-IOMMU because that is specialized on PCI
+> devices, which we don't normally represent in DT. It is also a special
+> case because the Intel IOMMU is a single-instance device. If it's present
+> and enabled, it will be used by every device. The case we do need to describe
+> is when we don't know which IOMMU is used for which master, or how to
+> configure it.
+
+Agreed.  Because of the single-instance nature of the Intel IOMMU, and
+the fact that is integrated into the interconnect in a pretty standard
+way, we can get away with much less description.
+
+
+I'll follow up with some more concrete details on my thinking --
+hopefully that will make it a bit clearer what I mean.
+
+Cheers
+---Dave
