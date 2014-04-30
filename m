@@ -1,15 +1,19 @@
-From: Shaik Ameer Basha <shaik.samsung-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v12 00/31] iommu/exynos: Fixes and Enhancements of System
-	MMU driver with DT
-Date: Wed, 30 Apr 2014 16:27:10 +0530
-Message-ID: <CAOD6ATqZ5UwRwSKiPDQLrgmX=UUrJVE7ybM_RhXz_CEUjM3W7w@mail.gmail.com>
-References: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
-	<26065037.GxQQuIURPg@wuerfel>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH v5 03/11] VFIO_IOMMU_TYPE1 for platform bus devices
+	on ARM
+Date: Wed, 30 Apr 2014 14:08:14 +0100
+Message-ID: <20140430130814.GB15719@arm.com>
+References: <1398700371-20096-1-git-send-email-a.motakis@virtualopensystems.com>
+	<1398700371-20096-4-git-send-email-a.motakis@virtualopensystems.com>
+	<1398703421.24318.262.camel@ul30vt.home>
+	<20140428191920.GC22135@arm.com>
+	<1398715690.24318.321.camel@ul30vt.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <26065037.GxQQuIURPg@wuerfel>
+Content-Disposition: inline
+In-Reply-To: <1398715690.24318.321.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,60 +23,54 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Linux DeviceTree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Samsung SOC <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Prathyush <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "supash.ramaswamy" <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, sunil joshi <joshi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Tomasz Figa <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Rahul Sharma <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, "christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Apr 28, 2014 at 2:04 PM, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> wrote:
-> On Sunday 27 April 2014 13:07:32 Shaik Ameer Basha wrote:
->> The current exynos-iommu(System MMU) driver does not work autonomously
->> since it is lack of support for power management of peripheral blocks.
->> For example, MFC device driver must ensure that its System MMU is disabled
->> before MFC block is power-down not to invalidate IOTLB in the System MMU
->> when I/O memory mapping is changed. Because a System MMU resides in the
->> same H/W block, access to control registers of System MMU while the H/W
->> block is turned off must be prohibited.
->>
->> This set of changes solves the above problem with setting each System MMUs
->> as the parent of the device which owns the System MMU to receive the
->> information when the device is turned off or turned on.
->>
->> Another big change to the driver is the support for devicetree.
->> The bindings for System MMU is described in
->> Documentation/devicetree/bindings/arm/samsung/system-mmu.txt
->
-> Sorry I've been absent from the review so far. Most of the patches
-> seem entirely reasonable to me, but I'm worried about the DT binding
-> aspect. We are going to see more systems shipping with IOMMUs now,
-> and we are seeing an increasing number of submissions for 64-bit
-> systems. We really have to work out what the DT representation for
-> IOMMUs should look like in general before adding another ad-hod
-> implementation that is private to one driver.
+On Mon, Apr 28, 2014 at 09:08:10PM +0100, Alex Williamson wrote:
+> On Mon, 2014-04-28 at 20:19 +0100, Will Deacon wrote:
+> > Please excuse any ignorance on part here (I'm not at all familiar with the
+> > Intel IOMMU), but shouldn't this really be a property of the interrupt
+> > controller itself? On ARM with GICv3, there is a separate block called the
+> > ITS (interrupt translation service) which is part of the interrupt
+> > controller. The ITS provides a doorbell page which the SMMU can map into a
+> > guest operating system to provide MSI for passthrough devices, but this
+> > isn't something the SMMU is aware of -- it will just see the iommu_map
+> > request for a non-cacheable mapping.
+> 
+> I don't know the history of why this is an IOMMU domain capability on
+> x86, it's sort of a paradox.  An MSI from a device is conceptually just
+> a DMA write and is therefore logically co-located in the IOMMU hardware,
+> but x86 doesn't allow it to be mapped via the IOMMU API interfaces.  For
+> compatibility, interrupt remapping support is buried deep in the
+> request_irq interface and effectively invisible other than having this
+> path to query it.  Therefore this flag is effectively just saying "MSI
+> isolation support is present and enabled".  IOW, the host is protected
+> from interrupt injection attacks from malicious devices.  If there is
+> some property of your platform that makes this always the case, then the
+> IOMMU driver can always export this capability as true.
 
+Thanks for the explanation. On ARM, the SMMU does indeed see the MSI write
+just like a normal write, so it can be mapped via iommu_map() to point at
+the interrupt controller doorbell page. I guess that means we can enable
+this capability for all MSI-capable devices upstream of the SMMU, providing
+that the IRQ controller doesn't have any horrible quirks.
 
-I have one question.
+> With PCI, MSI is configured via spec defined configuration space
+> registers, so we emulate these registers and prevent user access to them
+> so that we don't need to allow the user a way to setup an interrupt
+> remapping entry.  It's done for them via request_irq.
+> 
+> IIRC, the Freescale devices have a limited number of MSI pages and can
+> therefore create some instances with isolation while others may require
+> sharing.  In that case I would expect this flag to indicate whether the
+> domain has an exclusive or shared page.
+> 
+> In any case, I suspect keying on the bus_type here is not the correct
+> way to go.  Thanks,
 
-This series is going on for quite a long time and most of the patches here
-doesn't depend on dt bindings. As Exynos IOMMU h/w is introducing new versions
-very frequently, maintaining and reviewing all these patches again and
-again is quite a hard job.
+Agreed, I was more intrigued by the meaning of the flag.
 
-If it is acceptable, I can post one more series with the subset of
-above patches,
-which doesn't depend on dt-bindings. As all the patches which doesn't depend on
-DT bindings are already tested,  I hope merging these subset of patches may help
-in reducing the rework and review effort every time.
+Thanks,
 
-Once we finalize the generic DT bindings for the IOMMU devices, the driver
-can be updated with the proposed DT bindings in mind.
-
-Regards,
-Shaik
-
-
->
->         Arnd
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-samsung-soc" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Will
