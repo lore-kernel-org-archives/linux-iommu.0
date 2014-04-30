@@ -1,16 +1,15 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [PATCH v12 11/31] documentation: iommu: add binding document of
-	Exynos System MMU
-Date: Tue, 29 Apr 2014 23:00:29 +0200
-Message-ID: <7044616.kdaKNu3Qet@wuerfel>
+From: Shaik Ameer Basha <shaik.samsung-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v12 00/31] iommu/exynos: Fixes and Enhancements of System
+	MMU driver with DT
+Date: Wed, 30 Apr 2014 10:20:05 +0530
+Message-ID: <CAOD6ATrKumCcFFWFp7i7XLMssG23QV0FZ=3KqGCnnJt17Xmr1A@mail.gmail.com>
 References: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
-	<20140429181601.GE3582@e103592.cambridge.arm.com>
-	<CANEJEGs6TXNzE8cWYgEKfFSsD2w5XiYvwSbhQ_+gtfzfs+6udA@mail.gmail.com>
+	<26065037.GxQQuIURPg@wuerfel>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CANEJEGs6TXNzE8cWYgEKfFSsD2w5XiYvwSbhQ_+gtfzfs+6udA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <26065037.GxQQuIURPg@wuerfel>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,86 +19,93 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Cc: "t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "joshi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <joshi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: Tomasz Figa <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, sunil joshi <joshi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Linux Samsung SOC <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Prathyush <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Dave.Martin-5wv7dgnIgG8@public.gmane.org, Linux DeviceTree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Rahul Sharma <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tuesday 29 April 2014 13:07:54 Grant Grundler wrote:
-> On Tue, Apr 29, 2014 at 11:16 AM, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org> wrote:
-> ...
-> > An IOMMU is really a specialised bridge
-> 
-> Is a GART a bridge?
-> 
-> IOMMUs can provide three basic functions:
-> 1) remap address space to reach phys mem ranges that the device is
-> otherwise not capable of accessing (classic 32-bit DMA to reach 64-bit
-> Phys address)
-> 
-> 2) implement scatter-gather (page level granularity) so the device
-> doesn't have to
-> 
-> 3) provide some level of system protection against "rogue" DMA by
-> forcing everything through a DMA mapping interface and faulting when
-> encountering unmapped DMA transactions.
+On Mon, Apr 28, 2014 at 2:04 PM, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> wrote:
+> On Sunday 27 April 2014 13:07:32 Shaik Ameer Basha wrote:
+>> The current exynos-iommu(System MMU) driver does not work autonomously
+>> since it is lack of support for power management of peripheral blocks.
+>> For example, MFC device driver must ensure that its System MMU is disabled
+>> before MFC block is power-down not to invalidate IOTLB in the System MMU
+>> when I/O memory mapping is changed. Because a System MMU resides in the
+>> same H/W block, access to control registers of System MMU while the H/W
+>> block is turned off must be prohibited.
+>>
+>> This set of changes solves the above problem with setting each System MMUs
+>> as the parent of the device which owns the System MMU to receive the
+>> information when the device is turned off or turned on.
+>>
+>> Another big change to the driver is the support for devicetree.
+>> The bindings for System MMU is described in
+>> Documentation/devicetree/bindings/arm/samsung/system-mmu.txt
+>
+> Sorry I've been absent from the review so far. Most of the patches
+> seem entirely reasonable to me, but I'm worried about the DT binding
+> aspect. We are going to see more systems shipping with IOMMUs now,
+> and we are seeing an increasing number of submissions for 64-bit
+> systems. We really have to work out what the DT representation for
+> IOMMUs should look like in general before adding another ad-hod
+> implementation that is private to one driver.
 
-[ 4) provide isolation between multiple contexts, typically for purposes
-     of virtualization]
+Hi Arnd,
 
-> I summarize IOMMUs as: "participate in the routing of MMIO
-> transactions in the system fabric."
-> In this sense, IOMMUs are sort of a bridge. Defining what kind of
-> routing they can do (coalesce transactions? remapping MMIO domains?)
-> and which address ranges they route would describe most of that
-> functionality.
-> 
-> This "remapping" of MMIO transaction is also usually asymmetric.
-> Meaning routing of "downstream" transactions *might* be completely
-> different than the routing + remapping of transactions heading
-> upstream. DMA mappings services are designed to handle only the
-> transactions generated (aka "mastered") by a downstream device.
+No issues. Its good that finally you are here :)
 
-For the purposes of the DT binding, we have a 'ranges' property
-that defines the downstream translation (CPU-to-MMIO) and a
-'dma-ranges' property for the opposite address translation
-(device-to-memory).
+I am going through the possibilities for new bindings that you
+mentioned in the other thread.
+    -- [PATCH v12 11/31] documentation: iommu: add binding document of
+Exynos System MMU
 
-> >, so it may be cleaner to describe
-> > an IOMMU using a real bus node in the DT, if we also define a way to make
-> > master/slave linkages explicit where it matters.
-> 
-> "where it matters" is a bit vague.  Is the goal to just enable DMA
-> mapping services to "do the right thing" for a device that can
-> generate DMA?
+Exynos IOMMU driver is pretty simple with only one exception, "some
+devices are using multiple IOMMUs".
 
-Yes. It's very complicated unfortunately, because we have to be
-able to deal with arbitrary combinations of a lot of oddball cases
-that can show up in random SoCs:
+>From starting (of this patch set), we were trying to fix three major issues.
+[1] How to control the probing order of required IOMMU(s) for a given
+device and a device itself.
+[2] Handling multiple IOMMUs for one device.
+[3] Generic DT bindings to link Device and IOMMUs.
 
-- device can only do DMA to a limited address range
-- DMA is noncoherent and needs manual cache management
-- DMA address is at an offset from physical address
-- some devices have an IOMMU
-- some IOMMUs are shared between devices
-- some devices with IOMMU can have multiple simultaneous contexts
-- a device may access some memory directly and some other memory through IOMMU
-- a device may have DMA access to a bus that is invisible to the CPU
-- DMA on some device is only coherent if the IOMMU is enabled
-- DMA on some device is only coherent if the IOMMU is disabled
-- the IOVA range to an IOMMU is device dependent
+I have gone through the implementation of Tegra SMMU driver by "Hiroshi Doyu"
+    -- [PATCHv7 00/12] Unifying SMMU driver among Tegra SoCs
+[https://lkml.org/lkml/2013/12/12/74]
 
-> > I've been hacking around some proposals on these areas which are a bit
-> > different from the approach suggested here -- I'll try to summarise some
-> > of it intelligibly and post something tomorrow so that we can discuss.
-> 
-> Are you planning on consolidating Documentation/devicetree/bindings/iommu/ ?
-> Do you care about Documentation/Intel-IOMMU.txt?
+For the first point [1],
+------------------------------
+Tegra implementation tries to fix this issue with these two patches
+    -- iommu/of: check if dependee iommu is ready or not
+[http://patchwork.ozlabs.org/patch/300560/]
+    -- driver/core: populate devices in order for IOMMUs
+[http://patchwork.ozlabs.org/patch/300558/]
+I can follow this driver if this approach is acceptable.
 
-I think we can ignore the Intel-IOMMU because that is specialized on PCI
-devices, which we don't normally represent in DT. It is also a special
-case because the Intel IOMMU is a single-instance device. If it's present
-and enabled, it will be used by every device. The case we do need to describe
-is when we don't know which IOMMU is used for which master, or how to
-configure it.
+For the second point [2]
+----------------------------------
+Currently we are handling this issue by providing same mapping for all
+IOMMUs linked to the same device.
+And current Exynos drivers doesn't have any special implementation to
+handle this case differently.
 
-	Arnd
+I thought of understanding how Tegra SMMU driver is handling this case.
+Frankly speaking, I didn't understand how its done there.
+
+For the third point [3]
+-------------------------------
+As Tegra SMMU driver is inline with the discussion in other thread, we
+can follow the same bindings, unless
+the discussion takes us in the other direction.
+
+"KyongHo Cho" is the author for this driver and hope he has more inputs.
+
+Regards,
+Shaik
+
+
+
+>
+>         Arnd
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-samsung-soc" in
+> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
