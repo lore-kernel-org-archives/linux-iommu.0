@@ -1,8 +1,8 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 06/13] iommu/amd: Use pci_find_dma_isolation_root() for
+Subject: [PATCH 08/13] iommu/intel: Use pci_find_dma_isolation_root() for
 	IOMMU groups
-Date: Thu, 01 May 2014 10:27:41 -0600
-Message-ID: <20140501162741.17512.82459.stgit@bling.home>
+Date: Thu, 01 May 2014 10:27:54 -0600
+Message-ID: <20140501162754.17512.36589.stgit@bling.home>
 References: <20140501160128.17512.23609.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,67 +19,59 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The IVRS tables provides aliases, but not to the extent now provided
-by PCI core with DMA alias support and pci_find_dma_isolation_root().
-The expectation is that the kernel and IVRS will produce the same
-result for topology based aliases while the kernel will also include
-device specific DMA quirks.  We therefore drop the AMD-specific IOMMU
-group discovery in favor of the common code.  This also allows us to
-drop tracking of the IOMMU group on the alias dev_data structure.
+Drop custom code that attempts to do the exact same thing and use
+PCI provided isolation root support.  Existing IOMMU group laytout
+should not change.
 
 Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c       |  158 ++-------------------------------------
- drivers/iommu/amd_iommu_types.h |    1 
- 2 files changed, 10 insertions(+), 149 deletions(-)
+ drivers/iommu/intel-iommu.c |   71 +++++--------------------------------------
+ 1 file changed, 8 insertions(+), 63 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index c949520..3d58de4 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -46,7 +46,6 @@
- #include "amd_iommu_proto.h"
- #include "amd_iommu_types.h"
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index f256ffc..f0e50f1 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -44,7 +44,6 @@
+ #include <asm/iommu.h>
+ 
  #include "irq_remapping.h"
 -#include "pci.h"
  
- #define CMD_SET_TYPE(cmd, t) ((cmd)->data[1] |= ((t) << 28))
- 
-@@ -133,9 +132,6 @@ static void free_dev_data(struct iommu_dev_data *dev_data)
- 	list_del(&dev_data->dev_data_list);
- 	spin_unlock_irqrestore(&dev_data_list_lock, flags);
- 
--	if (dev_data->group)
--		iommu_group_put(dev_data->group);
--
- 	kfree(dev_data);
+ #define ROOT_SIZE		VTD_PAGE_SIZE
+ #define CONTEXT_SIZE		VTD_PAGE_SIZE
+@@ -4359,12 +4358,9 @@ static int intel_iommu_domain_has_cap(struct iommu_domain *domain,
+ 	return 0;
  }
  
-@@ -264,107 +260,10 @@ static bool check_device(struct device *dev)
- 	return true;
- }
- 
--static struct pci_bus *find_hosted_bus(struct pci_bus *bus)
--{
--	while (!bus->self) {
--		if (!pci_is_root_bus(bus))
--			bus = bus->parent;
--		else
--			return ERR_PTR(-ENODEV);
--	}
--
--	return bus;
--}
--
 -#define REQ_ACS_FLAGS	(PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF)
 -
--static struct pci_dev *get_isolation_root(struct pci_dev *pdev)
--{
--	struct pci_dev *dma_pdev = pdev;
+ static int intel_iommu_add_device(struct device *dev)
+ {
+-	struct pci_dev *pdev = to_pci_dev(dev);
+-	struct pci_dev *bridge, *dma_pdev = NULL;
++	struct pci_dev *pdev;
+ 	struct iommu_group *group;
+ 	int ret;
+ 	u8 bus, devfn;
+@@ -4372,68 +4368,16 @@ static int intel_iommu_add_device(struct device *dev)
+ 	if (!device_to_iommu(dev, &bus, &devfn))
+ 		return -ENODEV;
+ 
+-	bridge = pci_find_upstream_pcie_bridge(pdev);
+-	if (bridge) {
+-		if (pci_is_pcie(bridge))
+-			dma_pdev = pci_get_domain_bus_and_slot(
+-						pci_domain_nr(pdev->bus),
+-						bridge->subordinate->number, 0);
+-		if (!dma_pdev)
+-			dma_pdev = pci_dev_get(bridge);
+-	} else
+-		dma_pdev = pci_dev_get(pdev);
 -
 -	/* Account for quirked devices */
 -	swap_pci_ref(&dma_pdev, pci_get_dma_source(dma_pdev));
@@ -106,145 +98,46 @@ index c949520..3d58de4 100644
 -			}
 -			pci_dev_put(tmp);
 -		}
--	}
--
++	group = iommu_group_get(dev);
++	if (group) {
++		iommu_group_put(group);
++		return 0;
+ 	}
+ 
 -	/*
 -	 * Devices on the root bus go through the iommu.  If that's not us,
 -	 * find the next upstream device and test ACS up to the root bus.
 -	 * Finding the next device may require skipping virtual buses.
 -	 */
 -	while (!pci_is_root_bus(dma_pdev->bus)) {
--		struct pci_bus *bus = find_hosted_bus(dma_pdev->bus);
--		if (IS_ERR(bus))
--			break;
--
+-		struct pci_bus *bus = dma_pdev->bus;
++	pdev = pci_find_dma_isolation_root(to_pci_dev(dev));
+ 
+-		while (!bus->self) {
+-			if (!pci_is_root_bus(bus))
+-				bus = bus->parent;
+-			else
+-				goto root_bus;
+-		}
++	group = iommu_group_get(&pdev->dev);
+ 
 -		if (pci_acs_path_enabled(bus->self, NULL, REQ_ACS_FLAGS))
 -			break;
 -
 -		swap_pci_ref(&dma_pdev, pci_dev_get(bus->self));
 -	}
 -
--	return dma_pdev;
--}
--
--static int use_pdev_iommu_group(struct pci_dev *pdev, struct device *dev)
--{
--	struct iommu_group *group = iommu_group_get(&pdev->dev);
--	int ret;
--
--	if (!group) {
--		group = iommu_group_alloc();
--		if (IS_ERR(group))
--			return PTR_ERR(group);
--
--		WARN_ON(&pdev->dev != dev);
--	}
--
--	ret = iommu_group_add_device(group, dev);
--	iommu_group_put(group);
--	return ret;
--}
--
--static int use_dev_data_iommu_group(struct iommu_dev_data *dev_data,
--				    struct device *dev)
--{
--	if (!dev_data->group) {
--		struct iommu_group *group = iommu_group_alloc();
--		if (IS_ERR(group))
--			return PTR_ERR(group);
--
--		dev_data->group = group;
--	}
--
--	return iommu_group_add_device(dev_data->group, dev);
--}
--
- static int init_iommu_group(struct device *dev)
- {
--	struct iommu_dev_data *dev_data;
- 	struct iommu_group *group;
--	struct pci_dev *dma_pdev;
-+	struct pci_dev *pdev;
- 	int ret;
- 
- 	group = iommu_group_get(dev);
-@@ -373,58 +272,21 @@ static int init_iommu_group(struct device *dev)
- 		return 0;
- 	}
- 
--	dev_data = find_dev_data(get_device_id(dev));
--	if (!dev_data)
--		return -ENOMEM;
--
--	if (dev_data->alias_data) {
--		u16 alias;
--		struct pci_bus *bus;
-+	pdev = pci_find_dma_isolation_root(to_pci_dev(dev));
- 
--		if (dev_data->alias_data->group)
--			goto use_group;
--
--		/*
--		 * If the alias device exists, it's effectively just a first
--		 * level quirk for finding the DMA source.
--		 */
--		alias = amd_iommu_alias_table[dev_data->devid];
--		dma_pdev = pci_get_bus_and_slot(alias >> 8, alias & 0xff);
--		if (dma_pdev) {
--			dma_pdev = get_isolation_root(dma_pdev);
--			goto use_pdev;
--		}
--
--		/*
--		 * If the alias is virtual, try to find a parent device
--		 * and test whether the IOMMU group is actualy rooted above
--		 * the alias.  Be careful to also test the parent device if
--		 * we think the alias is the root of the group.
--		 */
--		bus = pci_find_bus(0, alias >> 8);
--		if (!bus)
--			goto use_group;
-+	group = iommu_group_get(&pdev->dev);
- 
--		bus = find_hosted_bus(bus);
--		if (IS_ERR(bus) || !bus->self)
--			goto use_group;
-+	if (!group) {
-+		group = iommu_group_alloc();
-+		if (IS_ERR(group))
-+			return PTR_ERR(group);
-+	}
- 
--		dma_pdev = get_isolation_root(pci_dev_get(bus->self));
--		if (dma_pdev != bus->self || (dma_pdev->multifunction &&
--		    !pci_acs_enabled(dma_pdev, REQ_ACS_FLAGS)))
--			goto use_pdev;
-+	ret = iommu_group_add_device(group, dev);
- 
--		pci_dev_put(dma_pdev);
--		goto use_group;
--	}
-+	iommu_group_put(group);
- 
--	dma_pdev = get_isolation_root(pci_dev_get(to_pci_dev(dev)));
--use_pdev:
--	ret = use_pdev_iommu_group(dma_pdev, dev);
+-root_bus:
+-	group = iommu_group_get(&dma_pdev->dev);
 -	pci_dev_put(dma_pdev);
+ 	if (!group) {
+ 		group = iommu_group_alloc();
+ 		if (IS_ERR(group))
+@@ -4443,6 +4387,7 @@ root_bus:
+ 	ret = iommu_group_add_device(group, dev);
+ 
+ 	iommu_group_put(group);
++
  	return ret;
--use_group:
--	return use_dev_data_iommu_group(dev_data->alias_data, dev);
  }
  
- static int iommu_init_device(struct device *dev)
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index f1a5abf..7277a20 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -432,7 +432,6 @@ struct iommu_dev_data {
- 	struct iommu_dev_data *alias_data;/* The alias dev_data */
- 	struct protection_domain *domain; /* Domain the device is bound to */
- 	atomic_t bind;			  /* Domain attach reference count */
--	struct iommu_group *group;	  /* IOMMU group for virtual aliases */
- 	u16 devid;			  /* PCI Device ID */
- 	bool iommu_v2;			  /* Device can make use of IOMMUv2 */
- 	bool passthrough;		  /* Default for device is pt_domain */
