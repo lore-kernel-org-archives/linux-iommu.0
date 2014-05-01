@@ -1,19 +1,18 @@
-From: Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v12 11/31] documentation: iommu: add binding document of
-	Exynos System MMU
-Date: Thu, 1 May 2014 15:50:03 +0100
-Message-ID: <20140501145003.GC3732@e103592.cambridge.arm.com>
+From: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v12 11/31] documentation: iommu: add binding document
+	of Exynos System MMU
+Date: Thu, 01 May 2014 16:11:48 +0100
+Message-ID: <53626434.8000807@arm.com>
 References: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
-	<20140429181601.GE3582@e103592.cambridge.arm.com>
-	<CANEJEGs6TXNzE8cWYgEKfFSsD2w5XiYvwSbhQ_+gtfzfs+6udA@mail.gmail.com>
-	<7044616.kdaKNu3Qet@wuerfel>
-	<20140501230214.ed53cd0fc977225f37b14e29@samsung.com>
+	<6607258.MzzLbm2Afe@wuerfel>
+	<20140501111527.GA3732@e103592.cambridge.arm.com>
+	<36874558.Vf2LgdL3qf@wuerfel>
+	<20140501143654.GB3732@e103592.cambridge.arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20140501230214.ed53cd0fc977225f37b14e29-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+In-Reply-To: <20140501143654.GB3732-M5GwZQ6tE7x5pKCnmE3YQBJ8xKzm50AiAL8bYrjMMd8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,94 +22,108 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: "t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "joshi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <joshi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, rahul.sharm
+To: Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: "t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "joshi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <joshi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org" <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel@lists>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, May 01, 2014 at 11:02:14PM +0900, Cho KyongHo wrote:
-> On Tue, 29 Apr 2014 23:00:29 +0200, Arnd Bergmann wrote:
-> > On Tuesday 29 April 2014 13:07:54 Grant Grundler wrote:
-> > > On Tue, Apr 29, 2014 at 11:16 AM, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org> wrote:
-> > > ...
-> > > > An IOMMU is really a specialised bridge
-> > > 
-> > > Is a GART a bridge?
-> > > 
-> > > IOMMUs can provide three basic functions:
-> > > 1) remap address space to reach phys mem ranges that the device is
-> > > otherwise not capable of accessing (classic 32-bit DMA to reach 64-bit
-> > > Phys address)
-> > > 
-> > > 2) implement scatter-gather (page level granularity) so the device
-> > > doesn't have to
-> > > 
-> > > 3) provide some level of system protection against "rogue" DMA by
-> > > forcing everything through a DMA mapping interface and faulting when
-> > > encountering unmapped DMA transactions.
-> > 
-> > [ 4) provide isolation between multiple contexts, typically for purposes
-> >      of virtualization]
-> > 
-> > > I summarize IOMMUs as: "participate in the routing of MMIO
-> > > transactions in the system fabric."
-> > > In this sense, IOMMUs are sort of a bridge. Defining what kind of
-> > > routing they can do (coalesce transactions? remapping MMIO domains?)
-> > > and which address ranges they route would describe most of that
-> > > functionality.
-> > > 
-> > > This "remapping" of MMIO transaction is also usually asymmetric.
-> > > Meaning routing of "downstream" transactions *might* be completely
-> > > different than the routing + remapping of transactions heading
-> > > upstream. DMA mappings services are designed to handle only the
-> > > transactions generated (aka "mastered") by a downstream device.
-> > 
-> > For the purposes of the DT binding, we have a 'ranges' property
-> > that defines the downstream translation (CPU-to-MMIO) and a
-> > 'dma-ranges' property for the opposite address translation
-> > (device-to-memory).
-> > 
-> > > >, so it may be cleaner to describe
-> > > > an IOMMU using a real bus node in the DT, if we also define a way to make
-> > > > master/slave linkages explicit where it matters.
-> > > 
-> > > "where it matters" is a bit vague.  Is the goal to just enable DMA
-> > > mapping services to "do the right thing" for a device that can
-> > > generate DMA?
-> > 
-> > Yes. It's very complicated unfortunately, because we have to be
-> > able to deal with arbitrary combinations of a lot of oddball cases
-> > that can show up in random SoCs:
-> > 
-> > - device can only do DMA to a limited address range
-> > - DMA is noncoherent and needs manual cache management
-> > - DMA address is at an offset from physical address
-> > - some devices have an IOMMU
-> > - some IOMMUs are shared between devices
-> > - some devices with IOMMU can have multiple simultaneous contexts
-> > - a device may access some memory directly and some other memory through IOMMU
+On 01/05/14 15:36, Dave Martin wrote:
+> On Thu, May 01, 2014 at 02:29:50PM +0100, Arnd Bergmann wrote:
+>> On Thursday 01 May 2014 12:15:35 Dave Martin wrote:
+>>> On Tue, Apr 29, 2014 at 10:46:18PM +0200, Arnd Bergmann wrote:
+>>>> On Tuesday 29 April 2014 19:16:02 Dave Martin wrote:
+>>>
+>>> [...]
+>>>
+>>>>> For example, suppose devices can post MSIs to an interrupt controller
+>>>>> via a mailbox accessed through the IOMMU.  Suppose also that the IOMMU
+>>>>> generates MSIs itself in order to signal management events or faults
+>>>>> to a host OS.  Linux (as host) will need to configure the interrupt
+>>>>> controller separately for the IOMMU and for the IOMMU clients.  This
+>>>>> means that Linux needs to know which IDs may travel to the interrupt
+>>>>> controller for which purpose, and they must be distinct.
+>>>>
+>>>> I don't understand. An MSI controller is just an address that acts
+>>>> as a DMA slave for a 4-byte inbound data packet. It has no way of
+>>>> knowing who is sending data, other than by the address or the data
+>>>> sent to it. Are you talking of something else?
+>>>
+>>> Oops, looks like there are a few points I failed to respond to here...
+>>>
+>>>
+>>> I'm not an expert on PCI -- I'm prepared to believe it works that way.
+>>>
+>>> GICv3 can descriminate between different MSI senders based on ID
+>>> signals on the bus.
+>>
+>> Any idea what this is good for? Do we have to use it? It probably doesn't
+>> fit very well into the way Linux handles MSIs today.
 > 
-> Do we need to consider this case?
-> I don't think a device can have different contexts at the same time.
-> If there such device is in a system, its driver must handle it correctly
-> with different devices descriptors for the different contexts, for example.
-> I mean, if a device has two DMA ports that are in different contexts,
-> they can be treated as different devices which are handed by a driver.
+> Marc may be better placed than me to comment on this in detail.
 
-GPUs will definitely be capable of acting on behalf of multiple contexts
-at the same time, in a dynamic fashion.  This doesn't necessarily mean
-that it masters through different ports or onto different buses though.
+As to "fitting Linux", it seems to match what Linux does fairly well
+(see the kvm-arm64/gicv3 branch in my tree). Not saying that it does it
+in a very simple way (far from it, actually), but it works.
 
-Sketching out how we would describe this in DT doesn't imply that we
-need Linux to support it.  It's more about asking: if we have to support
-this in the future, how badly will it screw up the current framework?
+As to "what it is good for" (and before someone bursts into an Edwin
+Starr interpretation), it mostly has to do with isolation, and the fact
+that you may want to let the whole MSI programming to a guest (and yet
+ensure that the guest cannot generate interrupts that would be assigned
+to other devices). This is done by sampling the requester-id at the ITS
+level, and use this information to index a per-device interrupt
+translation table (I could talk for hours about the concept and its
+variations, mostly using expletives and possibly a hammer, but I think
+it is the time for my pink pill).
 
-> I worry that abstracting everything we can think may make the problem harder.
+> However, I believe it's correct to say that because the GIC is not part
+> of PCI, end-to-end MSI delivery inherently involves a non-PCI step from
+> the PCI RC to the GIC itself.
+> 
+> Thus this is likely to be a fundamental requirement for MSIs on ARM SoCs
+> using GIC, if we want to have a hope of mapping MSIs to VMs efficiently.
 
-That's always a risk, though pain today may be worth it if is saves a
-larger amount of pain in the future.
+Indeed. GICv[34] is the ARM way of implementing MSI on SBSA compliant
+systems (from level 1 onwards, if memory serves well). People are
+actively building systems with this architecture, and relying on it to
+provide VM isolation.
 
-As I say on the other branch of this thread, I'll follow up with
-something a bit more concrete to illustrate the kind of thing I mean.
+>>>>> I'm not sure whether there is actually a SoC today that is MSI-capable
+>>>>> and contains an IOMMU, but all the components to build one are out
+>>>>> there today.  GICv3 is also explicitly designed to support such
+>>>>> systems.
+>>>>
+>>>> A lot of SoCs have MSI integrated into the PCI root complex, which
+>>>> of course is pointless from MSI perspective, as well as implying that
+>>>> the MSI won't go through the IOMMU.
+>>>>
+>>>> We have briefly mentioned MSI in the review of the Samsung GH7 PCI
+>>>> support. It's possible that this one can either use the built-in
+>>>> MSI or the one in the GICv2m.
+>>>
+>>> We are likely to get non-PCI MSIs in future SoC systems too, and there
+>>> are no standards governing how such systems should look.
+>>
+>> I wouldn't call that MSI though -- using the same term in the code
+>> can be rather confusing. There are existing SoCs that use message
+>> based interrupt notification. We are probably better off modeling
+>> those are regular irqchips in Linux and DT, given that they may
+>> not be bound by the same constraints as PCI MSI.
+> 
+> We can call it what we like and maybe bury the distinction in irqchip
+> drivers for some fixed-configuration cases, but it's logically the same
+> concept.  Naming and subsystem factoring are implementation decisions
+> for Linux.
+> 
+> For full dynamic assignment of pluggable devices or buses to VMs, I'm
+> less sure that we can model that as plain irqchips.
 
-Cheers
----Dave
+Yeah, I've been looking at that. For some restricted cases, the irqchip
+model works very well (think of wire to "MSI" translators, which are
+likely to have a fixed configuration). Anything more dynamic requires a
+more evolved infrastructure, but I'd hope they would also be on a
+discoverable bus, removing most of the need for description in DT.
+
+Cheers,
+
+	M.
+-- 
+Jazz is not dead. It just smells funny...
