@@ -1,16 +1,16 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [PATCH v12 11/31] documentation: iommu: add binding document of
-	Exynos System MMU
-Date: Thu, 01 May 2014 16:12:24 +0200
-Message-ID: <5035945.xBiLK9bFYq@wuerfel>
+From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH v12 30/31] ARM: dts: add System MMU nodes of exynos5250
+Date: Thu, 01 May 2014 23:16:26 +0900
+Message-ID: <20140501231626.fd15cca4a30891f81c953a44@samsung.com>
 References: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
-	<7044616.kdaKNu3Qet@wuerfel>
-	<20140501230214.ed53cd0fc977225f37b14e29@samsung.com>
+	<1398584283-22846-31-git-send-email-shaik.ameer@samsung.com>
+	<CAGm_ybhTEN9QxFBd1Su8NGP32KeYTF8d_Z8gXKo7cYpapZrA9w@mail.gmail.com>
+	<CAD=FV=UCpQRg9nWu5EfuzWmBpee9N3X6yCmtpRaNQxitfFZkMQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140501230214.ed53cd0fc977225f37b14e29-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+In-reply-to: <CAD=FV=UCpQRg9nWu5EfuzWmBpee9N3X6yCmtpRaNQxitfFZkMQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,39 +20,69 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: "t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+To: Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: Vikas Sajjan <sajjan.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-samsung-soc <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Prathyush <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, Abhilash Kesavan <a.kesavan-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, sunil joshi <joshi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Tomasz Figa <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, RAHUL SHARMA <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thursday 01 May 2014 23:02:14 Cho KyongHo wrote:
-> > 
-> > - device can only do DMA to a limited address range
-> > - DMA is noncoherent and needs manual cache management
-> > - DMA address is at an offset from physical address
-> > - some devices have an IOMMU
-> > - some IOMMUs are shared between devices
-> > - some devices with IOMMU can have multiple simultaneous contexts
-> > - a device may access some memory directly and some other memory through IOMMU
+On Mon, 28 Apr 2014 16:13:19 -0700, Doug Anderson wrote:
+> Vikas,
 > 
-> Do we need to consider this case?
-> I don't think a device can have different contexts at the same time.
-> If there such device is in a system, its driver must handle it correctly
-> with different devices descriptors for the different contexts, for example.
-> I mean, if a device has two DMA ports that are in different contexts,
-> they can be treated as different devices which are handed by a driver.
 > 
-> I worry that abstracting everything we can think may make the problem harder.
+> On Sun, Apr 27, 2014 at 10:39 AM, Vikas Sajjan <sajjan.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+> > Hi shaik,
+> >
+> > +Doug, Abhilash,
+> >
+> > On Sun, Apr 27, 2014 at 1:08 PM, Shaik Ameer Basha
+> > <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org> wrote:
+> >> From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> >>
+> >> Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> >> ---
+> >>  arch/arm/boot/dts/exynos5250.dtsi |  270 ++++++++++++++++++++++++++++++++++++-
+> >>  1 file changed, 267 insertions(+), 3 deletions(-)
+> >>
+> >> diff --git a/arch/arm/boot/dts/exynos5250.dtsi b/arch/arm/boot/dts/exynos5250.dtsi
+> >> index 3742331..eebd397 100644
+> >> --- a/arch/arm/boot/dts/exynos5250.dtsi
+> >> +++ b/arch/arm/boot/dts/exynos5250.dtsi
+> >> @@ -82,6 +82,16 @@
+> >>                 reg = <0x10044040 0x20>;
+> >>         };
+> >>
+> >> +       pd_isp: isp-power-domain@0x10044020 {
+> >> +               compatible = "samsung,exynos4210-pd";
+> >> +               reg = <0x10044020 0x20>;
+> >> +       };
+> >> +
+> >> +       pd_disp1: disp1-power-domain@0x100440A0 {
+> >> +               compatible = "samsung,exynos4210-pd";
+> >> +               reg = <0x100440A0 0x20>;
+> >> +       };
+> >> +
+> >
+> > As per subject "add System MMU nodes of exynos5250", it should only
+> > add SysMMU node.
+> > So, I think adding power domain nodes should go in a separate patch.
+> >
+> > Adding power domain nodes can break the system, if powering ON/OFF of
+> > the given power domain is NOT taken care well.
+> > I can see ISP is one such case. With this series I can see S2R breaks
+> > [1] on 5250 chromebook with current mainline kernel (same applies for
+> > arndale and smdk5250, but I have tested on these boards yet)
+> 
+> Thanks for catching that!  Let's make sure not to break suspend/resume.
+> 
+> Given that these power domains are actually used as the domains for
+> some of the System MMU nodes I don't totally object to adding them in
+> the same patch, but if they're breaking things then I agree that we
+> could leave them out and add them in a later patch (once issues are
+> sorted out).
+> 
 
-It's the default operation for some of the simpler IOMMUs, see
-arch/x86/kernel/amd_gart_64.c for instance. It's possible that AMD
-will have the same thing in their ARM64 SoCs, but I don't have
-specific information about that.
+Thank you, Vikas.
 
-It can probably be handled in the iommu_map_ops() as a generalization,
-at least if we only have to worry about checking whether a memory address
-is below the dma_mask in order to decide whether to use the IOMMU or not.
+Let me consider adding ISP power doamin after checking
+power down sequence of ISP domain.
 
-Or we can decide not to handle it at all, and always go through the IOMMU,
-which would be slightly slower but still functional.
-
-	Arnd
+KyongHo
