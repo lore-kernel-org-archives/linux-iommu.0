@@ -1,13 +1,17 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 13/13] PCI: Remove pci_get_dma_source()
-Date: Thu, 01 May 2014 10:28:24 -0600
-Message-ID: <20140501162824.17512.556.stgit@bling.home>
-References: <20140501160128.17512.23609.stgit@bling.home>
+From: Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: Re: [PATCH v12 11/31] documentation: iommu: add binding document of
+	Exynos System MMU
+Date: Thu, 1 May 2014 09:42:24 -0700
+Message-ID: <CANEJEGtS8VHgT=W54QT-849Nz9n+uURj6LFM-sie0cX6=zn37A@mail.gmail.com>
+References: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
+	<6607258.MzzLbm2Afe@wuerfel>
+	<20140501111527.GA3732@e103592.cambridge.arm.com>
+	<36874558.Vf2LgdL3qf@wuerfel>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140501160128.17512.23609.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+In-Reply-To: <36874558.Vf2LgdL3qf@wuerfel>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,98 +21,79 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: "t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "joshi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <joshi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org" <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWMP3drIcvDWNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-It has no users; replaced by dma_func_alias.
+On Thu, May 1, 2014 at 6:29 AM, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> wrote:
+...
+>> GICv3 can descriminate between different MSI senders based on ID
+>> signals on the bus.
+>
+> Any idea what this is good for? Do we have to use it? It probably doesn't
+> fit very well into the way Linux handles MSIs today.
 
-Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/pci/quirks.c |   51 --------------------------------------------------
- include/linux/pci.h  |    5 -----
- 2 files changed, 56 deletions(-)
+I can see this being used for diagnosing failures - e.g. hung system
+would leave tracks if an interrupt was or was not provided by the
+device. I can't think of a reason why Linux MSI code would need to
+support this though.
 
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 82b2733..ea55b0f 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -3371,57 +3371,6 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_JMICRON,
- 			 PCI_DEVICE_ID_JMICRON_JMB388_ESD,
- 			 quirk_dma_func1_alias);
- 
--static struct pci_dev *pci_func_0_dma_source(struct pci_dev *dev)
--{
--	if (!PCI_FUNC(dev->devfn))
--		return pci_dev_get(dev);
--
--	return pci_get_slot(dev->bus, PCI_DEVFN(PCI_SLOT(dev->devfn), 0));
--}
--
--static const struct pci_dev_dma_source {
--	u16 vendor;
--	u16 device;
--	struct pci_dev *(*dma_source)(struct pci_dev *dev);
--} pci_dev_dma_source[] = {
--	/*
--	 * https://bugzilla.redhat.com/show_bug.cgi?id=605888
--	 *
--	 * Some Ricoh devices use the function 0 source ID for DMA on
--	 * other functions of a multifunction device.  The DMA devices
--	 * is therefore function 0, which will have implications of the
--	 * iommu grouping of these devices.
--	 */
--	{ PCI_VENDOR_ID_RICOH, 0xe822, pci_func_0_dma_source },
--	{ PCI_VENDOR_ID_RICOH, 0xe230, pci_func_0_dma_source },
--	{ PCI_VENDOR_ID_RICOH, 0xe832, pci_func_0_dma_source },
--	{ PCI_VENDOR_ID_RICOH, 0xe476, pci_func_0_dma_source },
--	{ 0 }
--};
--
--/*
-- * IOMMUs with isolation capabilities need to be programmed with the
-- * correct source ID of a device.  In most cases, the source ID matches
-- * the device doing the DMA, but sometimes hardware is broken and will
-- * tag the DMA as being sourced from a different device.  This function
-- * allows that translation.  Note that the reference count of the
-- * returned device is incremented on all paths.
-- */
--struct pci_dev *pci_get_dma_source(struct pci_dev *dev)
--{
--	const struct pci_dev_dma_source *i;
--
--	for (i = pci_dev_dma_source; i->dma_source; i++) {
--		if ((i->vendor == dev->vendor ||
--		     i->vendor == (u16)PCI_ANY_ID) &&
--		    (i->device == dev->device ||
--		     i->device == (u16)PCI_ANY_ID))
--			return i->dma_source(dev);
--	}
--
--	return pci_dev_get(dev);
--}
--
- /*
-  * AMD has indicated that the devices below do not support peer-to-peer
-  * in any system where they are found in the southbridge with an AMD
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index bf4b0e9..65bdcfd 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1530,16 +1530,11 @@ enum pci_fixup_pass {
- 
- #ifdef CONFIG_PCI_QUIRKS
- void pci_fixup_device(enum pci_fixup_pass pass, struct pci_dev *dev);
--struct pci_dev *pci_get_dma_source(struct pci_dev *dev);
- int pci_dev_specific_acs_enabled(struct pci_dev *dev, u16 acs_flags);
- void pci_dev_specific_enable_acs(struct pci_dev *dev);
- #else
- static inline void pci_fixup_device(enum pci_fixup_pass pass,
- 				    struct pci_dev *dev) { }
--static inline struct pci_dev *pci_get_dma_source(struct pci_dev *dev)
--{
--	return pci_dev_get(dev);
--}
- static inline int pci_dev_specific_acs_enabled(struct pci_dev *dev,
- 					       u16 acs_flags)
- {
+...
+>> We are likely to get non-PCI MSIs in future SoC systems too, and there
+>> are no standards governing how such systems should look.
+
+Why look to the future when one can look in the past? :)
+
+PA-RISC was designed in the 1980s to use "MSI" to generate all CPU
+interrupts. This is as simple as it gets.
+
+The concept is identical to MSI: MMIO routeable address with a payload
+to indicate interrupt source (or map that source to some "vector
+table".) Look at arch/parisc/kernel/smp.c:ipi_send() for an example
+(note "p->hpa" is "processor->host physical address").
+
+Current and  future products do the same things but add more
+"features" that make this more complicated. But the basic transaction
+will be identical and it needs to be routed like any other MMIO
+transaction by any bridge (including IOMMUs).
+
+> I wouldn't call that MSI though -- using the same term in the code
+> can be rather confusing. There are existing SoCs that use message
+> based interrupt notification. We are probably better off modeling
+> those are regular irqchips in Linux and DT, given that they may
+> not be bound by the same constraints as PCI MSI.
+
+PCI device is one "source" for MSI and PCI defines how to initialize
+an MSI source.  The target is not PCI (or not even Intel). Intel
+defines how MSI works on their chipsets/CPUs. Other can still do it
+differently.
+
+I'm perfectly ok with using "MSI" to refer to any "in band interrupt message".
+
+>> Who knows?  A management component of the GPU that is under exclusive
+>> control of the host or hypervisor might be wired up to bypass the IOMMU
+>> completely.
+
+Does the linux kernel need to know about a device/component that it
+can't control?
+Either linux kernel shouldn't be told about it OR should ignore this
+device/component.
+
+>> Partly, yes.  The concept embodied by "dma-ranges" is correct, but the
+>> topological relationship is not: the assumption that a master device
+>> always masters onto its parent node doesn't work for non-tree-like
+>> topologies.
+>
+> In almost all cases it will fit. When it doesn't, we can work around it by
+> defining virtual address spaces the way that the PCI binding does. The only
+> major exception that we know we have to handle is IOMMUs.
+
+MMIO routing (and thus dma-ranges) is a "graph" (very comparable to
+network routing). Some simple (e.g. PCI) implementations look like a
+tree - but that's not the general case.
+
+DMA cares about more than routing though - cache coherency and
+performance (BW and latency) matter too.
+
+cheers,
+grant
