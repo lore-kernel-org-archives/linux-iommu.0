@@ -1,16 +1,11 @@
-From: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v12 11/31] documentation: iommu: add binding document
-	of Exynos System MMU
-Date: Thu, 01 May 2014 17:24:31 +0100
-Message-ID: <5362753F.4030904@arm.com>
-References: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
-	<20140501143654.GB3732@e103592.cambridge.arm.com>
-	<53626434.8000807@arm.com> <4916028.thxt7fH2bg@wuerfel>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH 00/13] PCI/iommu: Fix DMA alias problems
+Date: Thu, 01 May 2014 10:27:05 -0600
+Message-ID: <20140501160128.17512.23609.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <4916028.thxt7fH2bg@wuerfel>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,96 +15,87 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: "t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "joshi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <joshi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org" <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-arm-kernel@lists.i
+To: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/05/14 16:53, Arnd Bergmann wrote:
-> On Thursday 01 May 2014 16:11:48 Marc Zyngier wrote:
->> On 01/05/14 15:36, Dave Martin wrote:
->>> On Thu, May 01, 2014 at 02:29:50PM +0100, Arnd Bergmann wrote:
->>>> On Thursday 01 May 2014 12:15:35 Dave Martin wrote:
->>>>> On Tue, Apr 29, 2014 at 10:46:18PM +0200, Arnd Bergmann wrote:
->>>>>> I don't understand. An MSI controller is just an address that acts
->>>>>> as a DMA slave for a 4-byte inbound data packet. It has no way of
->>>>>> knowing who is sending data, other than by the address or the data
->>>>>> sent to it. Are you talking of something else?
->>>>>
->>>>> Oops, looks like there are a few points I failed to respond to here...
->>>>>
->>>>>
->>>>> I'm not an expert on PCI -- I'm prepared to believe it works that way.
->>>>>
->>>>> GICv3 can descriminate between different MSI senders based on ID
->>>>> signals on the bus.
->>>>
->>>> Any idea what this is good for? Do we have to use it? It probably doesn't
->>>> fit very well into the way Linux handles MSIs today.
->>>
->>> Marc may be better placed than me to comment on this in detail.
->>
->> As to "fitting Linux", it seems to match what Linux does fairly well
->> (see the kvm-arm64/gicv3 branch in my tree). Not saying that it does it
->> in a very simple way (far from it, actually), but it works.
-> 
-> ok.
-> 
->> As to "what it is good for" (and before someone bursts into an Edwin
->> Starr interpretation), it mostly has to do with isolation, and the fact
->> that you may want to let the whole MSI programming to a guest (and yet
->> ensure that the guest cannot generate interrupts that would be assigned
->> to other devices). This is done by sampling the requester-id at the ITS
->> level, and use this information to index a per-device interrupt
->> translation table (I could talk for hours about the concept and its
->> variations, mostly using expletives and possibly a hammer, but I think
->> it is the time for my pink pill).
-> 
-> So the idea is that you want to give the guest unfiltered access to the
-> PCI config space of an assigned device?
-> 
-> Is that safe?
-> 
-> If the config space access goes through the hypervisor (as I think we
-> always do today), there should be no isse.
+This series attempts to fix a couple issues we've had outstanding in
+the PCI/IOMMU code for a while.  The first issue is with devices that
+use the wrong requester ID for DMA transactions.  We already have a
+sort of half-baked attempt to fix this for several Ricoh devices, but
+the fix only helps them be useful through IOMMU groups, not the
+general DMA case.  There are also several Marvell devices which use
+use a different wrong requester ID and don't even fit into the DMA
+source idea.  This series creates a DMA alias iterator that will
+step through each possible alias of a device, allowing IOMMUs to
+insert mappings for both the device and its aliases.
 
-My natural tendency would be to filter everything, as we certainly don't
-want the device to be reconfigured in weird and fancy ways (my PCI-foo
-is a bit limited, so bear with me). But as usual, GICv3 is not PCI
-specific, and is designed to cater for weird and wonderful cases, PCI
-being only one possible implementation...
+Hand-in-hand with this is our broken pci_find_upstream_pcie_bridge()
+function, which is known to blowup when it finds itself suddenly at
+a PCIe device without crossing a PCIe-to-PCI bridge (as identified by
+the PCIe capability).  It also likes to make the invalid assumption
+that a PCIe device never has its requester ID masked by any usptream
+bus.  We can fix this using the above new DMA alias iterator, since
+that's effectively what this function was meant to do.
 
-On a non-PCI system, you definitely could assign a MSI-like capable
-device, and let the guest do its thing. I'm already seeing that kind of
-design.
+Finally, with all these helpers, it makes sense to consolidate code
+for determining IOMMU groups.  The first step in finding the root
+of a group is finding the final upstream DMA alias for the device,
+then applying additional ACS rules and incorporating device specific
+aliases.  As this is all common to PCI, create a single implementation
+and remove piles of code from the individual IOMMU drivers.
 
->>> However, I believe it's correct to say that because the GIC is not part
->>> of PCI, end-to-end MSI delivery inherently involves a non-PCI step from
->>> the PCI RC to the GIC itself.
->>>
->>> Thus this is likely to be a fundamental requirement for MSIs on ARM SoCs
->>> using GIC, if we want to have a hope of mapping MSIs to VMs efficiently.
->>
->> Indeed. GICv[34] is the ARM way of implementing MSI on SBSA compliant
->> systems (from level 1 onwards, if memory serves well). People are
->> actively building systems with this architecture, and relying on it to
->> provide VM isolation.
-> 
-> I don't mind it being there, but if we don't need it, we shouldn't
-> have to use that isolation feature and be able to just allow any
-> initiator to send an MSI.
+This series allows devices like the Marvell 88SE9123 to finally work
+on Linux with either AMD-Vi or VT-d enabled on the box.  I've
+collected device IDs from various bugs to support as many SKUs of
+these devices as possible, but I'm sure there are others that I've
+missed.
 
-It is not that simple. You could design things around a global ITT,
-pointed to by all the possible devices in your system. But that table
-would be quite big (it has to contain the routing information for all
-the possible messages in your system, and must be physically
-contiguous). You still need to know the devices (requester-id,
-device-id, whatever), as there is no wildcard mechanism.
+This should also enable motherboards with an onboard ASmedia
+ASM1083/1085 PCIe-to-PCI bridge to work with VT-d enabled.  I've
+acquired an adapter board with this chip, but it actually exposes
+a PCIe capability, unlike most of the onboard controllers.  Therefore
+I expect this series will fix the WARN_ON currently hit during boot,
+but there's a 50/50 chance whether the device behaves like a PCI
+bridge or a PCIe bridge with regard to the requester ID that it uses
+to take ownership of the transaction.  If it turns out to use the
+PCIe bridge model, I expect we can quirk it using a dev_flags bit
+to identify a PCI bridge that takes ownership as if it was a PCIe
+bridge.
 
-Also, this approach pretty much kills hotplug (you cannot easily resize
-that table to add new interrupt entries). That's why I've opted for a
-more dynamic configuration, where each device gets its own ITT as it
-appears on the system.
+Please test and provide feedback.  I expect IOMMU group topology
+should not change from this series, but if a case is found where it
+does, please share.  Also, if there are additional quirks we need
+to add, please either file new or add to the existing bugs.  Thanks,
 
-	M.
--- 
-Jazz is not dead. It just smells funny...
+Alex
+
+---
+
+Alex Williamson (13):
+      PCI: Add DMA alias iterator
+      PCI: quirk pci_for_each_dma_alias()
+      PCI: quirk dma_func_alias for Ricoh devices
+      PCI: quirk dma_func_alias for Marvell devices
+      PCI: Consolidate isolation domain code
+      iommu/amd: Use pci_find_dma_isolation_root() for IOMMU groups
+      iommu/amd: Update to use PCI DMA aliases
+      iommu/intel: Use pci_find_dma_isolation_root() for IOMMU groups
+      iommu/intel: Update to use PCI DMA aliases
+      iommu/fsl: Use pci_find_dma_isolation_root() for IOMMU groups
+      iommu: Remove pci.h
+      PCI: Remove pci_find_upstream_pcie_bridge()
+      PCI: Remove pci_get_dma_source()
+
+
+ drivers/iommu/amd_iommu.c           |  185 ++++------------------
+ drivers/iommu/amd_iommu_types.h     |    1 
+ drivers/iommu/fsl_pamu_domain.c     |   67 --------
+ drivers/iommu/intel-iommu.c         |  293 +++++++++++++----------------------
+ drivers/iommu/intel_irq_remapping.c |   55 +++++--
+ drivers/iommu/pci.h                 |   29 ---
+ drivers/pci/quirks.c                |   73 ++++-----
+ drivers/pci/search.c                |  234 +++++++++++++++++++++++++---
+ include/linux/pci.h                 |   21 +--
+ 9 files changed, 430 insertions(+), 528 deletions(-)
+ delete mode 100644 drivers/iommu/pci.h
