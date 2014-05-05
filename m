@@ -1,121 +1,109 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 03/13] PCI: quirk dma_func_alias for Ricoh devices
-Date: Fri, 02 May 2014 23:15:10 -0600
-Message-ID: <1399094110.24318.505.camel@ul30vt.home>
-References: <20140501160128.17512.23609.stgit@bling.home>
-	<20140501162723.17512.96286.stgit@bling.home>
-	<CAJtEV7bZ10fAE-JoTO6Gg1rg8sWxwzQUR5FkQpLZ1nTF_+dk5w@mail.gmail.com>
+From: Jiang Liu <jiang.liu@linux.intel.com>
+Subject: Re: [Patch Part3 V1 17/22] pci, ACPI, iommu: enhance pci_root to
+ support DMAR device hotplug
+Date: Mon, 05 May 2014 16:31:42 +0800
+Message-ID: <53674C6E.1070909@linux.intel.com>
+References: <1398150453-28141-1-git-send-email-jiang.liu@linux.intel.com> <1398150453-28141-18-git-send-email-jiang.liu@linux.intel.com> <2370777.I1hYvaFUEg@vostro.rjw.lan>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAJtEV7bZ10fAE-JoTO6Gg1rg8sWxwzQUR5FkQpLZ1nTF_+dk5w-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Andrew Cooks <acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "open list:PCI SUBSYSTEM" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL
-	IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <2370777.I1hYvaFUEg@vostro.rjw.lan>
+Sender: linux-pci-owner@vger.kernel.org
+To: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>, Len Brown <lenb@kernel.org>, Ashok Raj <ashok.raj@intel.com>, Yijing Wang <wangyijing@huawei.com>, Tony Luck <tony.luck@intel.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, linux-acpi@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, 2014-05-03 at 10:29 +0800, Andrew Cooks wrote:
-> Hi Alex
-> 
-> On Fri, May 2, 2014 at 12:27 AM, Alex Williamson
-> <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> > The existing quirk for these devices doesn't really solve the problem,
-> > re-implement it using the DMA alias iterator.  We'll come back later
-> > and remove the existing quirk and dma_source interface.
-> >
-> > Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> > ---
-> >  drivers/pci/quirks.c |   16 ++++++++++++++++
-> >  1 file changed, 16 insertions(+)
-> >
-> > diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-> > index e729206..a458c6b 100644
-> > --- a/drivers/pci/quirks.c
-> > +++ b/drivers/pci/quirks.c
-> > @@ -3333,6 +3333,22 @@ int pci_dev_specific_reset(struct pci_dev *dev, int probe)
-> >         return -ENOTTY;
-> >  }
-> >
-> > +static void quirk_dma_func0_alias(struct pci_dev *dev)
-> > +{
-> > +       if (PCI_SLOT(dev->devfn) != 0)
-> > +               dev->dma_func_alias |= (1 << 0);
-> > +}
-> > +
-> > +/*
-> > + * https://bugzilla.redhat.com/show_bug.cgi?id=605888
-> > + *
-> > + * Some Ricoh devices use function 0 as the PCIe requester ID for DMA.
-> > + */
-> > +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_RICOH, 0xe822, quirk_dma_func0_alias);
-> > +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_RICOH, 0xe230, quirk_dma_func0_alias);
-> > +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_RICOH, 0xe832, quirk_dma_func0_alias);
-> > +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_RICOH, 0xe832, quirk_dma_func0_alias);
-> 
-> 0xe832 is listed twice.
 
-oops, copy-paste error
 
-> Previously only 0xe832 needed the dma alias on my thinkpad T410, which
-> has all three devices.
+On 2014/4/22 17:49, Rafael J. Wysocki wrote:
+> On Tuesday, April 22, 2014 03:07:28 PM Jiang Liu wrote:
+>> Finally enhance pci_root driver to support DMAR device hotplug when
+>> hot-plugging PCI host bridges.
+>>
+>> Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
+>> ---
+>>  drivers/acpi/pci_root.c |   16 ++++++++++++++--
+>>  1 file changed, 14 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/acpi/pci_root.c b/drivers/acpi/pci_root.c
+>> index d388f13d48b4..aa8f549869f3 100644
+>> --- a/drivers/acpi/pci_root.c
+>> +++ b/drivers/acpi/pci_root.c
+>> @@ -33,6 +33,7 @@
+>>  #include <linux/pci.h>
+>>  #include <linux/pci-acpi.h>
+>>  #include <linux/pci-aspm.h>
+>> +#include <linux/dmar.h>
+>>  #include <linux/acpi.h>
+>>  #include <linux/slab.h>
+>>  #include <acpi/apei.h>	/* for acpi_hest_init() */
+>> @@ -511,6 +512,7 @@ static int acpi_pci_root_add(struct acpi_device *device,
+>>  	struct acpi_pci_root *root;
+>>  	acpi_handle handle = device->handle;
+>>  	int no_aspm = 0, clear_aspm = 0;
+>> +	bool hotadd = (system_state != SYSTEM_BOOTING);
 > 
-> > +
-> >  static struct pci_dev *pci_func_0_dma_source(struct pci_dev *dev)
-> >  {
-> >         if (!PCI_FUNC(dev->devfn))
-> >
+> The parens are not necessary in the above instruction.
+Hi Rafael,
+	Thanks! Will fix it in next version.
+
 > 
-> Unfortunately, this quirk doesn't work for me. I tried it without
-> modification, as well as with each alias individually. I get:
+>>  	root = kzalloc(sizeof(struct acpi_pci_root), GFP_KERNEL);
+>>  	if (!root)
+>> @@ -557,6 +559,11 @@ static int acpi_pci_root_add(struct acpi_device *device,
+>>  	strcpy(acpi_device_class(device), ACPI_PCI_ROOT_CLASS);
+>>  	device->driver_data = root;
+>>  
+>> +	if (hotadd && dmar_device_hotplug(handle, true)) {
+>> +		result = -ENXIO;
+>> +		goto end;
+>> +	}
+>> +
+>>  	pr_info(PREFIX "%s [%s] (domain %04x %pR)\n",
+>>  	       acpi_device_name(device), acpi_device_bid(device),
+>>  	       root->segment, &root->secondary);
+>> @@ -583,7 +590,7 @@ static int acpi_pci_root_add(struct acpi_device *device,
+>>  			root->segment, (unsigned int)root->secondary.start);
+>>  		device->driver_data = NULL;
+>>  		result = -ENODEV;
+>> -		goto end;
+>> +		goto remove_dmar;
+>>  	}
+>>  
+>>  	if (clear_aspm) {
+>> @@ -597,7 +604,7 @@ static int acpi_pci_root_add(struct acpi_device *device,
+>>  	if (device->wakeup.flags.run_wake)
+>>  		device_set_run_wake(root->bus->bridge, true);
+>>  
+>> -	if (system_state != SYSTEM_BOOTING) {
+>> +	if (hotadd) {
+>>  		pcibios_resource_survey_bus(root->bus);
+>>  		pci_assign_unassigned_root_bus_resources(root->bus);
+>>  	}
+>> @@ -607,6 +614,9 @@ static int acpi_pci_root_add(struct acpi_device *device,
+>>  	pci_unlock_rescan_remove();
+>>  	return 1;
+>>  
+>> +remove_dmar:
+>> +	if (hotadd)
+>> +		dmar_device_hotplug(handle, false);
 > 
-> Set context mapping for 0d:00.3
-> firewire_ohci 0000:0d:00.3: added OHCI v1.10 device as card 0, 4 IR +
-> 4 IT contexts, quirks 0x11
-> dmar: DRHD: handling fault status reg 2
-> dmar: DMAR:[DMA Read] Request device [0d:00.0] fault addr fffff000
-> DMAR:[fault reason 02] Present bit in context entry is clear
+> I suppose that works if dmar_device_hotplug() returned false before?
+Yes, it's for error recover only.
+
 > 
-> I think I need to see
-> Set context mapping for 0d:00.0
-> before
-> Set context mapping for 0d:00.3
-
-It would actually be the reverse, we always set the device, then the
-alias for the device.
-
-> in the log, but it's not there. I'd love to look into this and
-> understand it properly, but I don't have time for the next four weeks.
+>>  end:
+>>  	kfree(root);
+>>  	return result;
+>> @@ -625,6 +635,8 @@ static void acpi_pci_root_remove(struct acpi_device *device)
+>>  
+>>  	pci_remove_root_bus(root->bus);
+>>  
+>> +	dmar_device_hotplug(device->handle, false);
+>> +
+>>  	pci_unlock_rescan_remove();
+>>  
+>>  	kfree(root);
+>>
 > 
-> The devices are attached as follows:
-> BDF, device ID
-> 0d:00.0, e822
-> 0d:00.1, e230
-> 0d:00.3, e832
-> 
-> The kernel log is attached.
-
-Hmm, there are only a few reasons why you'd never see 0d:00.3 followed
-by 0d:00.0...
-
-1) dma_func_alias bit 0 isn't getting set on 0d:00.3; we are building
-with CONFIG_PCI_QUIRKS=y, right?
-2) domain_context_mapping_one called from domain_context_mapping_cb
-returns !0; there's only one possible non-zero return for a non-vm,
-non-si domain
-3) something is broken in the first loop of pci_for_each_dma_alias; I'm
-not seeing anything obvious
-
-Anyway, appreciate an debugging you're able to fit in, my only ricoh
-device has only function 0.  Thanks,
-
-Alex
