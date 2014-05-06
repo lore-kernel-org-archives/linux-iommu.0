@@ -1,364 +1,242 @@
-From: Jiang Liu <jiang.liu@linux.intel.com>
-Subject: [Patch Part3 V2 18/21] iommu/vt-d: enhance intel_irq_remapping driver to support DMAR unit hotplug
-Date: Tue,  6 May 2014 15:05:29 +0800
-Message-ID: <1399359932-28972-19-git-send-email-jiang.liu@linux.intel.com>
-References: <1399359932-28972-1-git-send-email-jiang.liu@linux.intel.com>
-Return-path: <linux-hotplug-owner@vger.kernel.org>
-In-Reply-To: <1399359932-28972-1-git-send-email-jiang.liu@linux.intel.com>
-Sender: linux-hotplug-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, Ashok Raj <ashok.raj@intel.com>, Yijing Wang <wangyijing@huawei.com>, Tony Luck <tony.luck@intel.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-hotplug@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org
+From: Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH] PCI: Introduce new device binding path using
+ pci_dev.driver_override
+Date: Tue, 06 May 2014 11:22:03 -0600
+Message-ID: <1399396923.17639.10.camel@ul30vt.home>
+References: <20140404201818.14389.86188.stgit@bling.home>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20140404201818.14389.86188.stgit@bling.home>
+Sender: linux-kernel-owner@vger.kernel.org
+Cc: linux-pci@vger.kernel.org, agraf@suse.de, kvm@vger.kernel.org, konrad.wilk@oracle.com, kim.phillips@linaro.org, gregkh@linuxfoundation.org, stuart.yoder@freescale.com, linux-kernel@vger.kernel.org, libvir-list@redhat.com, iommu@lists.linux-foundation.org, tech@virtualopensystems.com, kvmarm@lists.cs.columbia.edu, christoffer.dall@linaro.org, Bjorn Helgaas <bhelgaas@google.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Implement required callback functions for intel_irq_remapping driver
-to support DMAR unit hotplug.
+Hi Greg,
 
-Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
----
- drivers/iommu/intel_irq_remapping.c |  222 ++++++++++++++++++++++++++---------
- 1 file changed, 169 insertions(+), 53 deletions(-)
+I think Bjorn is waiting for an ack from you on this.  Do you approve of
+this approach from a driver-core perspective?  Thanks,
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index aa309a8e4d3a..9f1c86566452 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -36,7 +36,6 @@ struct hpet_scope {
- 
- static struct ioapic_scope ir_ioapic[MAX_IO_APICS];
- static struct hpet_scope ir_hpet[MAX_HPET_TBS];
--static int ir_ioapic_num, ir_hpet_num;
- 
- /*
-  * Lock ordering:
-@@ -320,7 +319,7 @@ static int set_ioapic_sid(struct irte *irte, int apic)
- 
- 	down_read(&dmar_global_lock);
- 	for (i = 0; i < MAX_IO_APICS; i++) {
--		if (ir_ioapic[i].id == apic) {
-+		if (ir_ioapic[i].iommu && ir_ioapic[i].id == apic) {
- 			sid = (ir_ioapic[i].bus << 8) | ir_ioapic[i].devfn;
- 			break;
- 		}
-@@ -347,7 +346,7 @@ static int set_hpet_sid(struct irte *irte, u8 id)
- 
- 	down_read(&dmar_global_lock);
- 	for (i = 0; i < MAX_HPET_TBS; i++) {
--		if (ir_hpet[i].id == id) {
-+		if (ir_hpet[i].iommu && ir_hpet[i].id == id) {
- 			sid = (ir_hpet[i].bus << 8) | ir_hpet[i].devfn;
- 			break;
- 		}
-@@ -446,17 +445,17 @@ static void iommu_set_irq_remapping(struct intel_iommu *iommu, int mode)
- 	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
- }
- 
--
--static int intel_setup_irq_remapping(struct intel_iommu *iommu, int mode)
-+static int intel_setup_irq_remapping(struct intel_iommu *iommu)
- {
- 	struct ir_table *ir_table;
- 	struct page *pages;
- 	unsigned long *bitmap;
- 
--	ir_table = iommu->ir_table = kzalloc(sizeof(struct ir_table),
--					     GFP_ATOMIC);
-+	if (iommu->ir_table)
-+		return 0;
- 
--	if (!iommu->ir_table)
-+	ir_table = kzalloc(sizeof(struct ir_table), GFP_ATOMIC);
-+	if (!ir_table)
- 		return -ENOMEM;
- 
- 	pages = alloc_pages_node(iommu->node, GFP_ATOMIC | __GFP_ZERO,
-@@ -465,7 +464,7 @@ static int intel_setup_irq_remapping(struct intel_iommu *iommu, int mode)
- 	if (!pages) {
- 		pr_err("IR%d: failed to allocate pages of order %d\n",
- 		       iommu->seq_id, INTR_REMAP_PAGE_ORDER);
--		kfree(iommu->ir_table);
-+		kfree(ir_table);
- 		return -ENOMEM;
- 	}
- 
-@@ -480,11 +479,22 @@ static int intel_setup_irq_remapping(struct intel_iommu *iommu, int mode)
- 
- 	ir_table->base = page_address(pages);
- 	ir_table->bitmap = bitmap;
-+	iommu->ir_table = ir_table;
- 
--	iommu_set_irq_remapping(iommu, mode);
- 	return 0;
- }
- 
-+static void intel_teardown_irq_remapping(struct intel_iommu *iommu)
-+{
-+	if (iommu && iommu->ir_table) {
-+		free_pages((unsigned long)iommu->ir_table->base,
-+			   INTR_REMAP_PAGE_ORDER);
-+		kfree(iommu->ir_table->bitmap);
-+		kfree(iommu->ir_table);
-+		iommu->ir_table = NULL;
-+	}
-+}
-+
- /*
-  * Disable Interrupt Remapping.
-  */
-@@ -639,9 +649,10 @@ static int __init intel_enable_irq_remapping(void)
- 		if (!ecap_ir_support(iommu->ecap))
- 			continue;
- 
--		if (intel_setup_irq_remapping(iommu, eim))
-+		if (intel_setup_irq_remapping(iommu))
- 			goto error;
- 
-+		iommu_set_irq_remapping(iommu, eim);
- 		setup = 1;
- 	}
- 
-@@ -672,12 +683,13 @@ error:
- 	return -1;
- }
- 
--static void ir_parse_one_hpet_scope(struct acpi_dmar_device_scope *scope,
--				      struct intel_iommu *iommu)
-+static int ir_parse_one_hpet_scope(struct acpi_dmar_device_scope *scope,
-+				   struct intel_iommu *iommu,
-+				   struct acpi_dmar_hardware_unit *drhd)
- {
- 	struct acpi_dmar_pci_path *path;
- 	u8 bus;
--	int count;
-+	int count, free = -1;
- 
- 	bus = scope->bus;
- 	path = (struct acpi_dmar_pci_path *)(scope + 1);
-@@ -693,19 +705,36 @@ static void ir_parse_one_hpet_scope(struct acpi_dmar_device_scope *scope,
- 					   PCI_SECONDARY_BUS);
- 		path++;
- 	}
--	ir_hpet[ir_hpet_num].bus   = bus;
--	ir_hpet[ir_hpet_num].devfn = PCI_DEVFN(path->device, path->function);
--	ir_hpet[ir_hpet_num].iommu = iommu;
--	ir_hpet[ir_hpet_num].id    = scope->enumeration_id;
--	ir_hpet_num++;
-+
-+	for (count = 0; count < MAX_HPET_TBS; count++) {
-+		if (ir_hpet[count].iommu == iommu &&
-+		    ir_hpet[count].id == scope->enumeration_id)
-+			return 0;
-+		else if (ir_hpet[count].iommu == NULL && free == -1)
-+			free = count;
-+	}
-+	if (free == -1) {
-+		pr_warn("Exceeded Max HPET blocks\n");
-+		return -ENOSPC;
-+	}
-+
-+	ir_hpet[free].iommu = iommu;
-+	ir_hpet[free].id    = scope->enumeration_id;
-+	ir_hpet[free].bus   = bus;
-+	ir_hpet[free].devfn = PCI_DEVFN(path->device, path->function);
-+	pr_info("HPET id %d under DRHD base 0x%Lx\n",
-+		scope->enumeration_id, drhd->address);
-+
-+	return 0;
- }
- 
--static void ir_parse_one_ioapic_scope(struct acpi_dmar_device_scope *scope,
--				      struct intel_iommu *iommu)
-+static int ir_parse_one_ioapic_scope(struct acpi_dmar_device_scope *scope,
-+				     struct intel_iommu *iommu,
-+				     struct acpi_dmar_hardware_unit *drhd)
- {
- 	struct acpi_dmar_pci_path *path;
- 	u8 bus;
--	int count;
-+	int count, free = -1;
- 
- 	bus = scope->bus;
- 	path = (struct acpi_dmar_pci_path *)(scope + 1);
-@@ -722,54 +751,63 @@ static void ir_parse_one_ioapic_scope(struct acpi_dmar_device_scope *scope,
- 		path++;
- 	}
- 
--	ir_ioapic[ir_ioapic_num].bus   = bus;
--	ir_ioapic[ir_ioapic_num].devfn = PCI_DEVFN(path->device, path->function);
--	ir_ioapic[ir_ioapic_num].iommu = iommu;
--	ir_ioapic[ir_ioapic_num].id    = scope->enumeration_id;
--	ir_ioapic_num++;
-+	for (count = 0; count < MAX_IO_APICS; count++) {
-+		if (ir_ioapic[count].iommu == iommu &&
-+		    ir_ioapic[count].id == scope->enumeration_id)
-+			return 0;
-+		else if (ir_ioapic[count].iommu == NULL && free == -1)
-+			free = count;
-+	}
-+	if (free == -1) {
-+		pr_warn("Exceeded Max IO APICS\n");
-+		return -ENOSPC;
-+	}
-+
-+	ir_ioapic[free].bus   = bus;
-+	ir_ioapic[free].devfn = PCI_DEVFN(path->device, path->function);
-+	ir_ioapic[free].iommu = iommu;
-+	ir_ioapic[free].id    = scope->enumeration_id;
-+	pr_info("IOAPIC id %d under DRHD base  0x%Lx IOMMU %d\n",
-+		scope->enumeration_id, drhd->address, iommu->seq_id);
-+
-+	return 0;
- }
- 
- static int ir_parse_ioapic_hpet_scope(struct acpi_dmar_header *header,
- 				      struct intel_iommu *iommu)
- {
-+	int ret = 0;
- 	struct acpi_dmar_hardware_unit *drhd;
- 	struct acpi_dmar_device_scope *scope;
- 	void *start, *end;
- 
- 	drhd = (struct acpi_dmar_hardware_unit *)header;
--
- 	start = (void *)(drhd + 1);
- 	end = ((void *)drhd) + header->length;
- 
--	while (start < end) {
-+	while (start < end && ret == 0) {
- 		scope = start;
--		if (scope->entry_type == ACPI_DMAR_SCOPE_TYPE_IOAPIC) {
--			if (ir_ioapic_num == MAX_IO_APICS) {
--				printk(KERN_WARNING "Exceeded Max IO APICS\n");
--				return -1;
--			}
--
--			printk(KERN_INFO "IOAPIC id %d under DRHD base "
--			       " 0x%Lx IOMMU %d\n", scope->enumeration_id,
--			       drhd->address, iommu->seq_id);
-+		if (scope->entry_type == ACPI_DMAR_SCOPE_TYPE_IOAPIC)
-+			ret = ir_parse_one_ioapic_scope(scope, iommu, drhd);
-+		else if (scope->entry_type == ACPI_DMAR_SCOPE_TYPE_HPET)
-+			ret = ir_parse_one_hpet_scope(scope, iommu, drhd);
-+		start += scope->length;
-+	}
- 
--			ir_parse_one_ioapic_scope(scope, iommu);
--		} else if (scope->entry_type == ACPI_DMAR_SCOPE_TYPE_HPET) {
--			if (ir_hpet_num == MAX_HPET_TBS) {
--				printk(KERN_WARNING "Exceeded Max HPET blocks\n");
--				return -1;
--			}
-+	return ret;
-+}
- 
--			printk(KERN_INFO "HPET id %d under DRHD base"
--			       " 0x%Lx\n", scope->enumeration_id,
--			       drhd->address);
-+static void ir_remove_ioapic_hpet_scope(struct intel_iommu *iommu)
-+{
-+	int i;
- 
--			ir_parse_one_hpet_scope(scope, iommu);
--		}
--		start += scope->length;
--	}
-+	for (i = 0; i < MAX_HPET_TBS; i++)
-+		if (ir_hpet[i].iommu == iommu)
-+			ir_hpet[i].iommu = NULL;
- 
--	return 0;
-+	for (i = 0; i < MAX_IO_APICS; i++)
-+		if (ir_ioapic[i].iommu == iommu)
-+			ir_ioapic[i].iommu = NULL;
- }
- 
- /*
-@@ -1145,7 +1183,85 @@ struct irq_remap_ops intel_irq_remap_ops = {
- 	.setup_hpet_msi		= intel_setup_hpet_msi,
- };
- 
-+/*
-+ * Support of Interrupt Remapping Unit Hotplug
-+ */
-+static int dmar_ir_add(struct dmar_drhd_unit *dmaru, struct intel_iommu *iommu)
-+{
-+	int ret;
-+	int eim = x2apic_enabled();
-+
-+	if (eim && !ecap_eim_support(iommu->ecap)) {
-+		pr_info("DRHD %Lx: EIM not supported by DRHD, ecap %Lx\n",
-+			iommu->reg_phys, iommu->ecap);
-+		return -ENODEV;
-+	}
-+
-+	if (ir_parse_ioapic_hpet_scope(dmaru->hdr, iommu)) {
-+		pr_warn("DRHD %Lx: failed to parse managed IOAPIC/HPET\n",
-+			iommu->reg_phys);
-+		return -ENODEV;
-+	}
-+
-+	/* TODO: check all IOAPICs are covered by IOMMU */
-+
-+	/* Setup Interrupt-remapping now. */
-+	ret = intel_setup_irq_remapping(iommu);
-+	if (ret) {
-+		pr_err("DRHD %Lx: failed to allocate resource\n",
-+		       iommu->reg_phys);
-+		ir_remove_ioapic_hpet_scope(iommu);
-+		return ret;
-+	}
-+
-+	if (!iommu->qi) {
-+		/* Clear previous faults. */
-+		dmar_fault(-1, iommu);
-+		iommu_disable_irq_remapping(iommu);
-+		dmar_disable_qi(iommu);
-+	}
-+
-+	/* Enable queued invalidation */
-+	ret = dmar_enable_qi(iommu);
-+	if (!ret) {
-+		iommu_set_irq_remapping(iommu, eim);
-+	} else {
-+		pr_err("DRHD %Lx: failed to enable queued invalidation, ecap %Lx, ret %d\n",
-+		       iommu->reg_phys, iommu->ecap, ret);
-+		intel_teardown_irq_remapping(iommu);
-+		ir_remove_ioapic_hpet_scope(iommu);
-+	}
-+
-+	return ret;
-+}
-+
- int dmar_ir_hotplug(struct dmar_drhd_unit *dmaru, bool insert)
- {
--	return irq_remapping_enabled ? -ENOSYS : 0;
-+	int ret = 0;
-+	struct intel_iommu *iommu = dmaru->iommu;
-+
-+	if (!irq_remapping_enabled)
-+		return 0;
-+	if (iommu == NULL)
-+		return -EINVAL;
-+	if (!ecap_ir_support(iommu->ecap))
-+		return 0;
-+
-+	if (insert) {
-+		if (!iommu->ir_table)
-+			ret = dmar_ir_add(dmaru, iommu);
-+	} else {
-+		if (iommu->ir_table) {
-+			if (!bitmap_empty(iommu->ir_table->bitmap,
-+					  INTR_REMAP_TABLE_ENTRIES)) {
-+				ret = -EBUSY;
-+			} else {
-+				iommu_disable_irq_remapping(iommu);
-+				intel_teardown_irq_remapping(iommu);
-+				ir_remove_ioapic_hpet_scope(iommu);
-+			}
-+		}
-+	}
-+
-+	return ret;
- }
--- 
-1.7.10.4
+Alex
 
+On Fri, 2014-04-04 at 14:19 -0600, Alex Williamson wrote:
+> The driver_override field allows us to specify the driver for a device
+> rather than relying on the driver to provide a positive match of the
+> device.  This shortcuts the existing process of looking up the vendor
+> and device ID, adding them to the driver new_id, binding the device,
+> then removing the ID, but it also provides a couple advantages.
+> 
+> First, the above existing process allows the driver to bind to any
+> device matching the new_id for the window where it's enabled.  This is
+> often not desired, such as the case of trying to bind a single device
+> to a meta driver like pci-stub or vfio-pci.  Using driver_override we
+> can do this deterministically using:
+> 
+> echo pci-stub > /sys/bus/pci/devices/0000:03:00.0/driver_override
+> echo 0000:03:00.0 > /sys/bus/pci/devices/0000:03:00.0/driver/unbind
+> echo 0000:03:00.0 > /sys/bus/pci/drivers_probe
+> 
+> Previously we could not invoke drivers_probe after adding a device
+> to new_id for a driver as we get non-deterministic behavior whether
+> the driver we intend or the standard driver will claim the device.
+> Now it becomes a deterministic process, only the driver matching
+> driver_override will probe the device.
+> 
+> To return the device to the standard driver, we simply clear the
+> driver_override and reprobe the device:
+> 
+> echo > /sys/bus/pci/devices/0000:03:00.0/preferred_driver
+> echo 0000:03:00.0 > /sys/bus/pci/devices/0000:03:00.0/driver/unbind
+> echo 0000:03:00.0 > /sys/bus/pci/drivers_probe
+> 
+> Another advantage to this approach is that we can specify a driver
+> override to force a specific binding or prevent any binding.  For
+> instance when an IOMMU group is exposed to userspace through VFIO
+> we require that all devices within that group are owned by VFIO.
+> However, devices can be hot-added into an IOMMU group, in which case
+> we want to prevent the device from binding to any driver (preferred
+> driver = "none") or perhaps have it automatically bind to vfio-pci.
+> With driver_override it's a simple matter for this field to be set
+> internally when the device is first discovered to prevent driver
+> matches.
+> 
+> Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+> ---
+> 
+> Changes since RFC:
+>  - Add ABI documentation (gregkh)
+>  - Documentation wording clarification (Christoffer)
+> 
+> Nobody puked on the RFC and platform folks have posted a working
+> version of this for platform devices, so I guess the only thing left
+> to do is formally propose this as a new driver binding mechanism.  I
+> don't see much incentive to push this into the driver core since the
+> match ultimately needs to be done by the bus driver.  I think this is
+> therefore like new_id/remove_id where PCI and USB implement separate,
+> but consistent interfaces.
+> 
+> I've pruned the CC list a bit from the RFC, but I've added libvirt
+> folks since I expect they would be the first userspace tool that would
+> adopt this.  Thanks,
+> 
+> Alex
+> 
+>  Documentation/ABI/testing/sysfs-bus-pci |   21 ++++++++++++++++
+>  drivers/pci/pci-driver.c                |   25 +++++++++++++++++--
+>  drivers/pci/pci-sysfs.c                 |   40 +++++++++++++++++++++++++++++++
+>  include/linux/pci.h                     |    1 +
+>  4 files changed, 84 insertions(+), 3 deletions(-)
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
+> index a3c5a66..898ddc4 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-pci
+> +++ b/Documentation/ABI/testing/sysfs-bus-pci
+> @@ -250,3 +250,24 @@ Description:
+>  		valid.  For example, writing a 2 to this file when sriov_numvfs
+>  		is not 0 and not 2 already will return an error. Writing a 10
+>  		when the value of sriov_totalvfs is 8 will return an error.
+> +
+> +What:		/sys/bus/pci/devices/.../driver_override
+> +Date:		April 2014
+> +Contact:	Alex Williamson <alex.williamson@redhat.com>
+> +Description:
+> +		This file allows the driver for a device to be specified which
+> +		will override standard static and dynamic ID matching.  When
+> +		specified, only a driver with a name matching the value written
+> +		to driver_override will have an opportunity to bind to the
+> +		device.  The override is specified by writing a string to the
+> +		driver_override file (echo pci-stub > driver_override) and
+> +		may be cleared with an empty string (echo > driver_override).
+> +		This returns the device to standard matching rules binding.
+> +		Writing to driver_override does not automatically unbind the
+> +		device from its current driver or make any attempt to
+> +		automatically load the specified driver.  If no driver with a
+> +		matching name is currently loaded in the kernel, the device
+> +		will not bind to any driver.  This also allows devices to
+> +		opt-out of driver binding using a driver_override name such as
+> +		"none".  Only a single driver may be specified in the override,
+> +		there is no support for parsing delimiters.
+> diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+> index 25f0bc6..f780eb8 100644
+> --- a/drivers/pci/pci-driver.c
+> +++ b/drivers/pci/pci-driver.c
+> @@ -216,6 +216,13 @@ const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
+>  	return NULL;
+>  }
+>  
+> +static const struct pci_device_id pci_device_id_any = {
+> +	.vendor = PCI_ANY_ID,
+> +	.device = PCI_ANY_ID,
+> +	.subvendor = PCI_ANY_ID,
+> +	.subdevice = PCI_ANY_ID,
+> +};
+> +
+>  /**
+>   * pci_match_device - Tell if a PCI device structure has a matching PCI device id structure
+>   * @drv: the PCI driver to match against
+> @@ -229,18 +236,30 @@ static const struct pci_device_id *pci_match_device(struct pci_driver *drv,
+>  						    struct pci_dev *dev)
+>  {
+>  	struct pci_dynid *dynid;
+> +	const struct pci_device_id *found_id = NULL;
+> +
+> +	/* When driver_override is set, only bind to the matching driver */
+> +	if (dev->driver_override && strcmp(dev->driver_override, drv->name))
+> +		return NULL;
+>  
+>  	/* Look at the dynamic ids first, before the static ones */
+>  	spin_lock(&drv->dynids.lock);
+>  	list_for_each_entry(dynid, &drv->dynids.list, node) {
+>  		if (pci_match_one_device(&dynid->id, dev)) {
+> -			spin_unlock(&drv->dynids.lock);
+> -			return &dynid->id;
+> +			found_id = &dynid->id;
+> +			break;
+>  		}
+>  	}
+>  	spin_unlock(&drv->dynids.lock);
+>  
+> -	return pci_match_id(drv->id_table, dev);
+> +	if (!found_id)
+> +		found_id = pci_match_id(drv->id_table, dev);
+> +
+> +	/* driver_override will always match, send a dummy id */
+> +	if (!found_id && dev->driver_override)
+> +		found_id = &pci_device_id_any;
+> +
+> +	return found_id;
+>  }
+>  
+>  struct drv_dev_and_id {
+> diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
+> index 276ef9c..70cb39d 100644
+> --- a/drivers/pci/pci-sysfs.c
+> +++ b/drivers/pci/pci-sysfs.c
+> @@ -510,6 +510,45 @@ static struct device_attribute sriov_numvfs_attr =
+>  		       sriov_numvfs_show, sriov_numvfs_store);
+>  #endif /* CONFIG_PCI_IOV */
+>  
+> +static ssize_t driver_override_store(struct device *dev,
+> +				     struct device_attribute *attr,
+> +				     const char *buf, size_t count)
+> +{
+> +	struct pci_dev *pdev = to_pci_dev(dev);
+> +	char *driver_override, *old = pdev->driver_override;
+> +
+> +	if (count > PATH_MAX)
+> +		return -EINVAL;
+> +
+> +	driver_override = kstrndup(buf, count, GFP_KERNEL);
+> +	if (!driver_override)
+> +		return -ENOMEM;
+> +
+> +	while (strlen(driver_override) &&
+> +	       driver_override[strlen(driver_override) - 1] == '\n')
+> +		driver_override[strlen(driver_override) - 1] = '\0';
+> +
+> +	if (strlen(driver_override)) {
+> +		pdev->driver_override = driver_override;
+> +	} else {
+> +		kfree(driver_override);
+> +		pdev->driver_override = NULL;
+> +	}
+> +
+> +	kfree(old);
+> +
+> +	return count;
+> +}
+> +
+> +static ssize_t driver_override_show(struct device *dev,
+> +				    struct device_attribute *attr, char *buf)
+> +{
+> +	struct pci_dev *pdev = to_pci_dev(dev);
+> +
+> +	return sprintf(buf, "%s\n", pdev->driver_override);
+> +}
+> +static DEVICE_ATTR_RW(driver_override);
+> +
+>  static struct attribute *pci_dev_attrs[] = {
+>  	&dev_attr_resource.attr,
+>  	&dev_attr_vendor.attr,
+> @@ -532,6 +571,7 @@ static struct attribute *pci_dev_attrs[] = {
+>  #if defined(CONFIG_PM_RUNTIME) && defined(CONFIG_ACPI)
+>  	&dev_attr_d3cold_allowed.attr,
+>  #endif
+> +	&dev_attr_driver_override.attr,
+>  	NULL,
+>  };
+>  
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index 33aa2ca..6b666af 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -364,6 +364,7 @@ struct pci_dev {
+>  #endif
+>  	phys_addr_t rom; /* Physical address of ROM if it's not from the BAR */
+>  	size_t romlen; /* Length of ROM if it's not from the BAR */
+> +	char *driver_override; /* Driver name to force a match */
+>  };
+>  
+>  static inline struct pci_dev *pci_physfn(struct pci_dev *dev)
+> 
