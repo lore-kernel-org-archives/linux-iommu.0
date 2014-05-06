@@ -1,242 +1,268 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH] PCI: Introduce new device binding path using
- pci_dev.driver_override
-Date: Tue, 06 May 2014 11:22:03 -0600
-Message-ID: <1399396923.17639.10.camel@ul30vt.home>
-References: <20140404201818.14389.86188.stgit@bling.home>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+From: Jiang Liu <jiang.liu@linux.intel.com>
+Subject: [Patch Part3 V2 04/21] iommu/vt-d: introduce helper functions to make code symmetric for readability
+Date: Tue,  6 May 2014 15:05:15 +0800
+Message-ID: <1399359932-28972-5-git-send-email-jiang.liu@linux.intel.com>
+References: <1399359932-28972-1-git-send-email-jiang.liu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20140404201818.14389.86188.stgit@bling.home>
+In-Reply-To: <1399359932-28972-1-git-send-email-jiang.liu@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-Cc: linux-pci@vger.kernel.org, agraf@suse.de, kvm@vger.kernel.org, konrad.wilk@oracle.com, kim.phillips@linaro.org, gregkh@linuxfoundation.org, stuart.yoder@freescale.com, linux-kernel@vger.kernel.org, libvir-list@redhat.com, iommu@lists.linux-foundation.org, tech@virtualopensystems.com, kvmarm@lists.cs.columbia.edu, christoffer.dall@linaro.org, Bjorn Helgaas <bhelgaas@google.com>
+To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, Ashok Raj <ashok.raj@intel.com>, Yijing Wang <wangyijing@huawei.com>, Tony Luck <tony.luck@intel.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-hotplug@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Greg,
+Introduce domain_attach_iommu()/domain_detach_iommu() and refine
+iommu_attach_domain()/iommu_detach_domain() to make code symmetric
+and improve readability.
 
-I think Bjorn is waiting for an ack from you on this.  Do you approve of
-this approach from a driver-core perspective?  Thanks,
+Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
+---
+ drivers/iommu/intel-iommu.c |  146 ++++++++++++++++++++++++-------------------
+ 1 file changed, 80 insertions(+), 66 deletions(-)
 
-Alex
-
-On Fri, 2014-04-04 at 14:19 -0600, Alex Williamson wrote:
-> The driver_override field allows us to specify the driver for a device
-> rather than relying on the driver to provide a positive match of the
-> device.  This shortcuts the existing process of looking up the vendor
-> and device ID, adding them to the driver new_id, binding the device,
-> then removing the ID, but it also provides a couple advantages.
-> 
-> First, the above existing process allows the driver to bind to any
-> device matching the new_id for the window where it's enabled.  This is
-> often not desired, such as the case of trying to bind a single device
-> to a meta driver like pci-stub or vfio-pci.  Using driver_override we
-> can do this deterministically using:
-> 
-> echo pci-stub > /sys/bus/pci/devices/0000:03:00.0/driver_override
-> echo 0000:03:00.0 > /sys/bus/pci/devices/0000:03:00.0/driver/unbind
-> echo 0000:03:00.0 > /sys/bus/pci/drivers_probe
-> 
-> Previously we could not invoke drivers_probe after adding a device
-> to new_id for a driver as we get non-deterministic behavior whether
-> the driver we intend or the standard driver will claim the device.
-> Now it becomes a deterministic process, only the driver matching
-> driver_override will probe the device.
-> 
-> To return the device to the standard driver, we simply clear the
-> driver_override and reprobe the device:
-> 
-> echo > /sys/bus/pci/devices/0000:03:00.0/preferred_driver
-> echo 0000:03:00.0 > /sys/bus/pci/devices/0000:03:00.0/driver/unbind
-> echo 0000:03:00.0 > /sys/bus/pci/drivers_probe
-> 
-> Another advantage to this approach is that we can specify a driver
-> override to force a specific binding or prevent any binding.  For
-> instance when an IOMMU group is exposed to userspace through VFIO
-> we require that all devices within that group are owned by VFIO.
-> However, devices can be hot-added into an IOMMU group, in which case
-> we want to prevent the device from binding to any driver (preferred
-> driver = "none") or perhaps have it automatically bind to vfio-pci.
-> With driver_override it's a simple matter for this field to be set
-> internally when the device is first discovered to prevent driver
-> matches.
-> 
-> Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
-> ---
-> 
-> Changes since RFC:
->  - Add ABI documentation (gregkh)
->  - Documentation wording clarification (Christoffer)
-> 
-> Nobody puked on the RFC and platform folks have posted a working
-> version of this for platform devices, so I guess the only thing left
-> to do is formally propose this as a new driver binding mechanism.  I
-> don't see much incentive to push this into the driver core since the
-> match ultimately needs to be done by the bus driver.  I think this is
-> therefore like new_id/remove_id where PCI and USB implement separate,
-> but consistent interfaces.
-> 
-> I've pruned the CC list a bit from the RFC, but I've added libvirt
-> folks since I expect they would be the first userspace tool that would
-> adopt this.  Thanks,
-> 
-> Alex
-> 
->  Documentation/ABI/testing/sysfs-bus-pci |   21 ++++++++++++++++
->  drivers/pci/pci-driver.c                |   25 +++++++++++++++++--
->  drivers/pci/pci-sysfs.c                 |   40 +++++++++++++++++++++++++++++++
->  include/linux/pci.h                     |    1 +
->  4 files changed, 84 insertions(+), 3 deletions(-)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
-> index a3c5a66..898ddc4 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-pci
-> +++ b/Documentation/ABI/testing/sysfs-bus-pci
-> @@ -250,3 +250,24 @@ Description:
->  		valid.  For example, writing a 2 to this file when sriov_numvfs
->  		is not 0 and not 2 already will return an error. Writing a 10
->  		when the value of sriov_totalvfs is 8 will return an error.
-> +
-> +What:		/sys/bus/pci/devices/.../driver_override
-> +Date:		April 2014
-> +Contact:	Alex Williamson <alex.williamson@redhat.com>
-> +Description:
-> +		This file allows the driver for a device to be specified which
-> +		will override standard static and dynamic ID matching.  When
-> +		specified, only a driver with a name matching the value written
-> +		to driver_override will have an opportunity to bind to the
-> +		device.  The override is specified by writing a string to the
-> +		driver_override file (echo pci-stub > driver_override) and
-> +		may be cleared with an empty string (echo > driver_override).
-> +		This returns the device to standard matching rules binding.
-> +		Writing to driver_override does not automatically unbind the
-> +		device from its current driver or make any attempt to
-> +		automatically load the specified driver.  If no driver with a
-> +		matching name is currently loaded in the kernel, the device
-> +		will not bind to any driver.  This also allows devices to
-> +		opt-out of driver binding using a driver_override name such as
-> +		"none".  Only a single driver may be specified in the override,
-> +		there is no support for parsing delimiters.
-> diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-> index 25f0bc6..f780eb8 100644
-> --- a/drivers/pci/pci-driver.c
-> +++ b/drivers/pci/pci-driver.c
-> @@ -216,6 +216,13 @@ const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
->  	return NULL;
->  }
->  
-> +static const struct pci_device_id pci_device_id_any = {
-> +	.vendor = PCI_ANY_ID,
-> +	.device = PCI_ANY_ID,
-> +	.subvendor = PCI_ANY_ID,
-> +	.subdevice = PCI_ANY_ID,
-> +};
-> +
->  /**
->   * pci_match_device - Tell if a PCI device structure has a matching PCI device id structure
->   * @drv: the PCI driver to match against
-> @@ -229,18 +236,30 @@ static const struct pci_device_id *pci_match_device(struct pci_driver *drv,
->  						    struct pci_dev *dev)
->  {
->  	struct pci_dynid *dynid;
-> +	const struct pci_device_id *found_id = NULL;
-> +
-> +	/* When driver_override is set, only bind to the matching driver */
-> +	if (dev->driver_override && strcmp(dev->driver_override, drv->name))
-> +		return NULL;
->  
->  	/* Look at the dynamic ids first, before the static ones */
->  	spin_lock(&drv->dynids.lock);
->  	list_for_each_entry(dynid, &drv->dynids.list, node) {
->  		if (pci_match_one_device(&dynid->id, dev)) {
-> -			spin_unlock(&drv->dynids.lock);
-> -			return &dynid->id;
-> +			found_id = &dynid->id;
-> +			break;
->  		}
->  	}
->  	spin_unlock(&drv->dynids.lock);
->  
-> -	return pci_match_id(drv->id_table, dev);
-> +	if (!found_id)
-> +		found_id = pci_match_id(drv->id_table, dev);
-> +
-> +	/* driver_override will always match, send a dummy id */
-> +	if (!found_id && dev->driver_override)
-> +		found_id = &pci_device_id_any;
-> +
-> +	return found_id;
->  }
->  
->  struct drv_dev_and_id {
-> diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
-> index 276ef9c..70cb39d 100644
-> --- a/drivers/pci/pci-sysfs.c
-> +++ b/drivers/pci/pci-sysfs.c
-> @@ -510,6 +510,45 @@ static struct device_attribute sriov_numvfs_attr =
->  		       sriov_numvfs_show, sriov_numvfs_store);
->  #endif /* CONFIG_PCI_IOV */
->  
-> +static ssize_t driver_override_store(struct device *dev,
-> +				     struct device_attribute *attr,
-> +				     const char *buf, size_t count)
-> +{
-> +	struct pci_dev *pdev = to_pci_dev(dev);
-> +	char *driver_override, *old = pdev->driver_override;
-> +
-> +	if (count > PATH_MAX)
-> +		return -EINVAL;
-> +
-> +	driver_override = kstrndup(buf, count, GFP_KERNEL);
-> +	if (!driver_override)
-> +		return -ENOMEM;
-> +
-> +	while (strlen(driver_override) &&
-> +	       driver_override[strlen(driver_override) - 1] == '\n')
-> +		driver_override[strlen(driver_override) - 1] = '\0';
-> +
-> +	if (strlen(driver_override)) {
-> +		pdev->driver_override = driver_override;
-> +	} else {
-> +		kfree(driver_override);
-> +		pdev->driver_override = NULL;
-> +	}
-> +
-> +	kfree(old);
-> +
-> +	return count;
-> +}
-> +
-> +static ssize_t driver_override_show(struct device *dev,
-> +				    struct device_attribute *attr, char *buf)
-> +{
-> +	struct pci_dev *pdev = to_pci_dev(dev);
-> +
-> +	return sprintf(buf, "%s\n", pdev->driver_override);
-> +}
-> +static DEVICE_ATTR_RW(driver_override);
-> +
->  static struct attribute *pci_dev_attrs[] = {
->  	&dev_attr_resource.attr,
->  	&dev_attr_vendor.attr,
-> @@ -532,6 +571,7 @@ static struct attribute *pci_dev_attrs[] = {
->  #if defined(CONFIG_PM_RUNTIME) && defined(CONFIG_ACPI)
->  	&dev_attr_d3cold_allowed.attr,
->  #endif
-> +	&dev_attr_driver_override.attr,
->  	NULL,
->  };
->  
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index 33aa2ca..6b666af 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -364,6 +364,7 @@ struct pci_dev {
->  #endif
->  	phys_addr_t rom; /* Physical address of ROM if it's not from the BAR */
->  	size_t romlen; /* Length of ROM if it's not from the BAR */
-> +	char *driver_override; /* Driver name to force a match */
->  };
->  
->  static inline struct pci_dev *pci_physfn(struct pci_dev *dev)
-> 
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 63f351a39c63..29f613e7eea3 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -1525,32 +1525,39 @@ static struct dmar_domain *alloc_domain(int flags)
+ 	return domain;
+ }
+ 
+-static int iommu_attach_domain(struct dmar_domain *domain,
+-			       struct intel_iommu *iommu)
++static int __iommu_attach_domain(struct dmar_domain *domain,
++				 struct intel_iommu *iommu)
+ {
+ 	int num;
+ 	unsigned long ndomains;
+-	unsigned long flags;
+ 
+ 	ndomains = cap_ndoms(iommu->cap);
+-
+-	spin_lock_irqsave(&iommu->lock, flags);
+-
+ 	num = find_first_zero_bit(iommu->domain_ids, ndomains);
+-	if (num >= ndomains) {
+-		spin_unlock_irqrestore(&iommu->lock, flags);
+-		printk(KERN_ERR "IOMMU: no free domain ids\n");
+-		return -ENOMEM;
++	if (num < ndomains) {
++		set_bit(num, iommu->domain_ids);
++		iommu->domains[num] = domain;
++	} else {
++		num = -ENOSPC;
+ 	}
+ 
+-	domain->id = num;
+-	domain->iommu_count++;
+-	set_bit(num, iommu->domain_ids);
+-	set_bit(iommu->seq_id, domain->iommu_bmp);
+-	iommu->domains[num] = domain;
++	return num;
++}
++
++static int iommu_attach_domain(struct dmar_domain *domain,
++			       struct intel_iommu *iommu)
++{
++	int num;
++	unsigned long flags;
++
++	spin_lock_irqsave(&iommu->lock, flags);
++	num = __iommu_attach_domain(domain, iommu);
++	if (num < 0)
++		pr_err("IOMMU: no free domain ids\n");
++	else
++		domain->id = num;
+ 	spin_unlock_irqrestore(&iommu->lock, flags);
+ 
+-	return 0;
++	return num;
+ }
+ 
+ static void iommu_detach_domain(struct dmar_domain *domain,
+@@ -1560,17 +1567,53 @@ static void iommu_detach_domain(struct dmar_domain *domain,
+ 	int num, ndomains;
+ 
+ 	spin_lock_irqsave(&iommu->lock, flags);
+-	ndomains = cap_ndoms(iommu->cap);
+-	for_each_set_bit(num, iommu->domain_ids, ndomains) {
+-		if (iommu->domains[num] == domain) {
+-			clear_bit(num, iommu->domain_ids);
+-			iommu->domains[num] = NULL;
+-			break;
++	if (domain_type_is_vm_or_si(domain)) {
++		ndomains = cap_ndoms(iommu->cap);
++		for_each_set_bit(num, iommu->domain_ids, ndomains) {
++			if (iommu->domains[num] == domain) {
++				clear_bit(num, iommu->domain_ids);
++				iommu->domains[num] = NULL;
++				break;
++			}
+ 		}
++	} else {
++		clear_bit(domain->id, iommu->domain_ids);
++		iommu->domains[domain->id] = NULL;
+ 	}
+ 	spin_unlock_irqrestore(&iommu->lock, flags);
+ }
+ 
++static void domain_attach_iommu(struct dmar_domain *domain,
++			       struct intel_iommu *iommu)
++{
++	unsigned long flags;
++
++	spin_lock_irqsave(&domain->iommu_lock, flags);
++	if (!test_and_set_bit(iommu->seq_id, domain->iommu_bmp)) {
++		domain->iommu_count++;
++		if (domain->iommu_count == 1)
++			domain->nid = iommu->node;
++		domain_update_iommu_cap(domain);
++	}
++	spin_unlock_irqrestore(&domain->iommu_lock, flags);
++}
++
++static int domain_detach_iommu(struct dmar_domain *domain,
++			       struct intel_iommu *iommu)
++{
++	unsigned long flags;
++	int count = INT_MAX;
++
++	spin_lock_irqsave(&domain->iommu_lock, flags);
++	if (test_and_clear_bit(iommu->seq_id, domain->iommu_bmp)) {
++		count = --domain->iommu_count;
++		domain_update_iommu_cap(domain);
++	}
++	spin_unlock_irqrestore(&domain->iommu_lock, flags);
++
++	return count;
++}
++
+ static struct iova_domain reserved_iova_list;
+ static struct lock_class_key reserved_rbtree_key;
+ 
+@@ -1708,9 +1751,7 @@ static void domain_exit(struct dmar_domain *domain)
+ 	/* clear attached or cached domains */
+ 	rcu_read_lock();
+ 	for_each_active_iommu(iommu, drhd)
+-		if (domain_type_is_vm(domain) ||
+-		    test_bit(iommu->seq_id, domain->iommu_bmp))
+-			iommu_detach_domain(domain, iommu);
++		iommu_detach_domain(domain, iommu);
+ 	rcu_read_unlock();
+ 
+ 	dma_free_pagelist(freelist);
+@@ -1764,16 +1805,12 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
+ 		}
+ 
+ 		if (found == 0) {
+-			num = find_first_zero_bit(iommu->domain_ids, ndomains);
+-			if (num >= ndomains) {
++			id = __iommu_attach_domain(domain, iommu);
++			if (id < 0) {
+ 				spin_unlock_irqrestore(&iommu->lock, flags);
+-				printk(KERN_ERR "IOMMU: no free domain ids\n");
++				pr_err("IOMMU: no free domain ids\n");
+ 				return -EFAULT;
+ 			}
+-
+-			set_bit(num, iommu->domain_ids);
+-			iommu->domains[num] = domain;
+-			id = num;
+ 		}
+ 
+ 		/* Skip top levels of page tables for
+@@ -1832,14 +1869,8 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
+ 	iommu_enable_dev_iotlb(info);
+ 	spin_unlock_irqrestore(&iommu->lock, flags);
+ 
+-	spin_lock_irqsave(&domain->iommu_lock, flags);
+-	if (!test_and_set_bit(iommu->seq_id, domain->iommu_bmp)) {
+-		domain->iommu_count++;
+-		if (domain->iommu_count == 1)
+-			domain->nid = iommu->node;
+-		domain_update_iommu_cap(domain);
+-	}
+-	spin_unlock_irqrestore(&domain->iommu_lock, flags);
++	domain_attach_iommu(domain, iommu);
++
+ 	return 0;
+ }
+ 
+@@ -2104,7 +2135,7 @@ static inline void unlink_domain_info(struct device_domain_info *info)
+ static void domain_remove_dev_info(struct dmar_domain *domain)
+ {
+ 	struct device_domain_info *info;
+-	unsigned long flags, flags2;
++	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&device_domain_lock, flags);
+ 	while (!list_empty(&domain->devices)) {
+@@ -2118,16 +2149,7 @@ static void domain_remove_dev_info(struct dmar_domain *domain)
+ 
+ 		if (domain_type_is_vm(domain)) {
+ 			iommu_detach_dependent_devices(info->iommu, info->dev);
+-			/* clear this iommu in iommu_bmp, update iommu count
+-			 * and capabilities
+-			 */
+-			spin_lock_irqsave(&domain->iommu_lock, flags2);
+-			if (test_and_clear_bit(info->iommu->seq_id,
+-					       domain->iommu_bmp)) {
+-				domain->iommu_count--;
+-				domain_update_iommu_cap(domain);
+-			}
+-			spin_unlock_irqrestore(&domain->iommu_lock, flags2);
++			domain_detach_iommu(domain, info->iommu);
+ 		}
+ 
+ 		free_devinfo_mem(info);
+@@ -2259,11 +2281,12 @@ static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
+ 	domain = alloc_domain(0);
+ 	if (!domain)
+ 		goto error;
+-	if (iommu_attach_domain(domain, iommu)) {
++	if (iommu_attach_domain(domain, iommu) < 0) {
+ 		free_domain_mem(domain);
+ 		domain = NULL;
+ 		goto error;
+ 	}
++	domain_attach_iommu(domain, iommu);
+ 	free = domain;
+ 	if (domain_init(domain, gaw))
+ 		goto error;
+@@ -2426,10 +2449,11 @@ static int __init si_domain_init(int hw)
+ 
+ 	for_each_active_iommu(iommu, drhd) {
+ 		ret = iommu_attach_domain(si_domain, iommu);
+-		if (ret) {
++		if (ret < 0) {
+ 			domain_exit(si_domain);
+ 			return -EFAULT;
+ 		}
++		domain_attach_iommu(si_domain, iommu);
+ 	}
+ 
+ 	if (md_domain_init(si_domain, DEFAULT_DOMAIN_ADDRESS_WIDTH)) {
+@@ -4099,19 +4123,9 @@ static void domain_remove_one_dev_info(struct dmar_domain *domain,
+ 	spin_unlock_irqrestore(&device_domain_lock, flags);
+ 
+ 	if (found == 0) {
+-		unsigned long tmp_flags;
+-		spin_lock_irqsave(&domain->iommu_lock, tmp_flags);
+-		clear_bit(iommu->seq_id, domain->iommu_bmp);
+-		domain->iommu_count--;
+-		domain_update_iommu_cap(domain);
+-		spin_unlock_irqrestore(&domain->iommu_lock, tmp_flags);
+-
+-		if (!domain_type_is_vm_or_si(domain)) {
+-			spin_lock_irqsave(&iommu->lock, tmp_flags);
+-			clear_bit(domain->id, iommu->domain_ids);
+-			iommu->domains[domain->id] = NULL;
+-			spin_unlock_irqrestore(&iommu->lock, tmp_flags);
+-		}
++		domain_detach_iommu(domain, iommu);
++		if (!domain_type_is_vm_or_si(domain))
++			iommu_detach_domain(domain, iommu);
+ 	}
+ }
+ 
+-- 
+1.7.10.4
