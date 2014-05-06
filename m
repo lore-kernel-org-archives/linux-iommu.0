@@ -1,7 +1,7 @@
 From: Jiang Liu <jiang.liu@linux.intel.com>
-Subject: [Patch Part3 V2 13/21] iommu/vt-d: fix bug in computing domain's iommu_snooping flag
-Date: Tue,  6 May 2014 15:05:24 +0800
-Message-ID: <1399359932-28972-14-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part3 V2 08/21] iommu/VT-d: simplify include/linux/dmar.h
+Date: Tue,  6 May 2014 15:05:19 +0800
+Message-ID: <1399359932-28972-9-git-send-email-jiang.liu@linux.intel.com>
 References: <1399359932-28972-1-git-send-email-jiang.liu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1399359932-28972-1-git-send-email-jiang.liu@linux.intel.com>
@@ -10,96 +10,85 @@ To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Yingh
 Cc: Jiang Liu <jiang.liu@linux.intel.com>, Ashok Raj <ashok.raj@intel.com>, Yijing Wang <wangyijing@huawei.com>, Tony Luck <tony.luck@intel.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-hotplug@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-IOMMU units may dynamically attached to/detached from domains,
-so we should scan all active IOMMU units when computing iommu_snooping
-flag for a domain instead of only scanning IOMMU units associated
-with the domain.
-
-Also check snooping and superpage capabilities when hot-adding DMAR units.
+Simplify include/linux/dmar.h a bit based on the fact that
+both CONFIG_INTEL_IOMMU and CONFIG_IRQ_REMAP select CONFIG_DMAR_TABLE.
 
 Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
 ---
- drivers/iommu/intel-iommu.c |   42 ++++++++++++++++++++++++------------------
- 1 file changed, 24 insertions(+), 18 deletions(-)
+ include/linux/dmar.h |   50 ++++++++++++++++++--------------------------------
+ 1 file changed, 18 insertions(+), 32 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 0ebea100108f..080b4f24bd7c 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -633,50 +633,56 @@ static void domain_update_iommu_coherency(struct dmar_domain *domain)
- 	rcu_read_unlock();
- }
- 
--static void domain_update_iommu_snooping(struct dmar_domain *domain)
-+static int domain_update_iommu_snooping(struct intel_iommu *skip)
- {
--	int i;
--
--	domain->iommu_snooping = 1;
-+	struct dmar_drhd_unit *drhd;
-+	struct intel_iommu *iommu;
-+	int ret = 1;
- 
--	for_each_set_bit(i, domain->iommu_bmp, g_num_of_iommus) {
--		if (!ecap_sc_support(g_iommus[i]->ecap)) {
--			domain->iommu_snooping = 0;
--			break;
-+	rcu_read_lock();
-+	for_each_active_iommu(iommu, drhd) {
-+		if (iommu != skip) {
-+			if (!ecap_sc_support(iommu->ecap)) {
-+				ret = 0;
-+				break;
-+			}
- 		}
- 	}
-+	rcu_read_unlock();
+diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+index 23c8db129560..1deece46a0ca 100644
+--- a/include/linux/dmar.h
++++ b/include/linux/dmar.h
+@@ -114,22 +114,30 @@ extern int dmar_remove_dev_scope(struct dmar_pci_notify_info *info,
+ /* Intel IOMMU detection */
+ extern int detect_intel_iommu(void);
+ extern int enable_drhd_fault_handling(void);
+-#else
+-struct dmar_pci_notify_info;
+-static inline int detect_intel_iommu(void)
 +
-+	return ret;
- }
- 
--static void domain_update_iommu_superpage(struct dmar_domain *domain)
-+static int domain_update_iommu_superpage(struct intel_iommu *skip)
++#ifdef CONFIG_INTEL_IOMMU
++extern int iommu_detected, no_iommu;
++extern int intel_iommu_init(void);
++extern int dmar_parse_one_rmrr(struct acpi_dmar_header *header);
++extern int dmar_parse_one_atsr(struct acpi_dmar_header *header);
++extern int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info);
++#else /* !CONFIG_INTEL_IOMMU: */
++static inline int intel_iommu_init(void) { return -ENODEV; }
++static inline int dmar_parse_one_rmrr(struct acpi_dmar_header *header)
  {
- 	struct dmar_drhd_unit *drhd;
--	struct intel_iommu *iommu = NULL;
-+	struct intel_iommu *iommu;
- 	int mask = 0xf;
- 
- 	if (!intel_iommu_superpage) {
--		domain->iommu_superpage = 0;
--		return;
-+		return 0;
- 	}
- 
- 	/* set iommu_superpage to the smallest common denominator */
- 	rcu_read_lock();
- 	for_each_active_iommu(iommu, drhd) {
--		mask &= cap_super_page_val(iommu->cap);
--		if (!mask) {
--			break;
-+		if (iommu != skip) {
-+			mask &= cap_super_page_val(iommu->cap);
-+			if (!mask)
-+				break;
- 		}
- 	}
- 	rcu_read_unlock();
- 
--	domain->iommu_superpage = fls(mask);
-+	return fls(mask);
+-	return -ENODEV;
++	return 0;
  }
- 
- /* Some capabilities may be different across iommus */
- static void domain_update_iommu_cap(struct dmar_domain *domain)
+-
+-static inline int dmar_table_init(void)
++static inline int dmar_parse_one_atsr(struct acpi_dmar_header *header)
  {
- 	domain_update_iommu_coherency(domain);
--	domain_update_iommu_snooping(domain);
--	domain_update_iommu_superpage(domain);
-+	domain->iommu_snooping = domain_update_iommu_snooping(NULL);
-+	domain->iommu_superpage = domain_update_iommu_superpage(NULL);
+-	return -ENODEV;
++	return 0;
  }
+-static inline int enable_drhd_fault_handling(void)
++static inline int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info)
+ {
+-	return -1;
++	return 0;
+ }
+-#endif /* !CONFIG_DMAR_TABLE */
++#endif /* CONFIG_INTEL_IOMMU */
++
++#endif /* CONFIG_DMAR_TABLE */
  
- static struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devfn)
+ struct irte {
+ 	union {
+@@ -177,26 +185,4 @@ extern int dmar_set_interrupt(struct intel_iommu *iommu);
+ extern irqreturn_t dmar_fault(int irq, void *dev_id);
+ extern int arch_setup_dmar_msi(unsigned int irq);
+ 
+-#ifdef CONFIG_INTEL_IOMMU
+-extern int iommu_detected, no_iommu;
+-extern int dmar_parse_one_rmrr(struct acpi_dmar_header *header);
+-extern int dmar_parse_one_atsr(struct acpi_dmar_header *header);
+-extern int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info);
+-extern int intel_iommu_init(void);
+-#else /* !CONFIG_INTEL_IOMMU: */
+-static inline int intel_iommu_init(void) { return -ENODEV; }
+-static inline int dmar_parse_one_rmrr(struct acpi_dmar_header *header)
+-{
+-	return 0;
+-}
+-static inline int dmar_parse_one_atsr(struct acpi_dmar_header *header)
+-{
+-	return 0;
+-}
+-static inline int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info)
+-{
+-	return 0;
+-}
+-#endif /* CONFIG_INTEL_IOMMU */
+-
+ #endif /* __DMAR_H__ */
 -- 
 1.7.10.4
