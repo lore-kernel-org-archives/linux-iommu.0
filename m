@@ -1,7 +1,7 @@
 From: Jiang Liu <jiang.liu@linux.intel.com>
-Subject: [Patch Part3 V2 06/21] iommu/vt-d: fix possible invalid memory access caused by free_dmar_iommu()
-Date: Tue,  6 May 2014 15:05:17 +0800
-Message-ID: <1399359932-28972-7-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part3 V2 15/21] iommu/vt-d: dynamically allocate and free seq_id for DMAR units
+Date: Tue,  6 May 2014 15:05:26 +0800
+Message-ID: <1399359932-28972-16-git-send-email-jiang.liu@linux.intel.com>
 References: <1399359932-28972-1-git-send-email-jiang.liu@linux.intel.com>
 Return-path: <linux-pci-owner@vger.kernel.org>
 In-Reply-To: <1399359932-28972-1-git-send-email-jiang.liu@linux.intel.com>
@@ -10,52 +10,160 @@ To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Yingh
 Cc: Jiang Liu <jiang.liu@linux.intel.com>, Ashok Raj <ashok.raj@intel.com>, Yijing Wang <wangyijing@huawei.com>, Tony Luck <tony.luck@intel.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-hotplug@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Static identity and virtual machine domains may be cached in
-iommu->domain_ids array after corresponding IOMMUs have been removed
-from domain->iommu_bmp. So we should check domain->iommu_bmp before
-decreasing domain->iommu_count in function free_dmar_iommu(), otherwise
-it may cause free of inuse domain data structure.
+Introduce functions to support dynamic IOMMU seq_id allocating and
+releasing, which will be used to support DMAR hotplug.
+
+Also rename IOMMU_UNITS_SUPPORTED as DMAR_UNITS_SUPPORTED.
 
 Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
 ---
- drivers/iommu/intel-iommu.c |   11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+ drivers/iommu/dmar.c        |   40 ++++++++++++++++++++++++++++++++++------
+ drivers/iommu/intel-iommu.c |   13 +++----------
+ include/linux/dmar.h        |    6 ++++++
+ 3 files changed, 43 insertions(+), 16 deletions(-)
 
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index acfceb25a2d2..7a871607cedb 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -69,6 +69,7 @@ LIST_HEAD(dmar_drhd_units);
+ struct acpi_table_header * __initdata dmar_tbl;
+ static acpi_size dmar_tbl_size;
+ static int dmar_dev_scope_status = 1;
++static unsigned long dmar_seq_ids[BITS_TO_LONGS(DMAR_UNITS_SUPPORTED)];
+ 
+ static int alloc_iommu(struct dmar_drhd_unit *drhd);
+ static void free_iommu(struct intel_iommu *iommu);
+@@ -928,11 +929,32 @@ out:
+ 	return err;
+ }
+ 
++static int dmar_alloc_seq_id(struct intel_iommu *iommu)
++{
++	iommu->seq_id = find_first_zero_bit(dmar_seq_ids,
++					    DMAR_UNITS_SUPPORTED);
++	if (iommu->seq_id >= DMAR_UNITS_SUPPORTED) {
++		iommu->seq_id = -1;
++	} else {
++		set_bit(iommu->seq_id, dmar_seq_ids);
++		sprintf(iommu->name, "dmar%d", iommu->seq_id);
++	}
++
++	return iommu->seq_id;
++}
++
++static void dmar_free_seq_id(struct intel_iommu *iommu)
++{
++	if (iommu->seq_id >= 0) {
++		clear_bit(iommu->seq_id, dmar_seq_ids);
++		iommu->seq_id = -1;
++	}
++}
++
+ static int alloc_iommu(struct dmar_drhd_unit *drhd)
+ {
+ 	struct intel_iommu *iommu;
+ 	u32 ver, sts;
+-	static int iommu_allocated = 0;
+ 	int agaw = 0;
+ 	int msagaw = 0;
+ 	int err;
+@@ -946,13 +968,16 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
+ 	if (!iommu)
+ 		return -ENOMEM;
+ 
+-	iommu->seq_id = iommu_allocated++;
+-	sprintf (iommu->name, "dmar%d", iommu->seq_id);
++	if (dmar_alloc_seq_id(iommu) < 0) {
++		pr_err("IOMMU: failed to allocate seq_id\n");
++		err = -ENOSPC;
++		goto error;
++	}
+ 
+ 	err = map_iommu(iommu, drhd->reg_base_addr);
+ 	if (err) {
+ 		pr_err("IOMMU: failed to map %s\n", iommu->name);
+-		goto error;
++		goto error_free_seq_id;
+ 	}
+ 
+ 	err = -EINVAL;
+@@ -996,9 +1021,11 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
+ 	drhd->iommu = iommu;
+ 	return 0;
+ 
+- err_unmap:
++err_unmap:
+ 	unmap_iommu(iommu);
+- error:
++error_free_seq_id:
++	dmar_free_seq_id(iommu);
++error:
+ 	kfree(iommu);
+ 	return err;
+ }
+@@ -1020,6 +1047,7 @@ static void free_iommu(struct intel_iommu *iommu)
+ 	if (iommu->reg)
+ 		unmap_iommu(iommu);
+ 
++	dmar_free_seq_id(iommu);
+ 	kfree(iommu);
+ }
+ 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 0ab0cd236b16..1f10fcd1c696 100644
+index b696bcd3f6e0..361de6697d8a 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -425,6 +425,8 @@ static void domain_remove_one_dev_info(struct dmar_domain *domain,
- 				       struct device *dev);
- static void iommu_detach_dependent_devices(struct intel_iommu *iommu,
- 					   struct device *dev);
-+static int domain_detach_iommu(struct dmar_domain *domain,
-+			       struct intel_iommu *iommu);
+@@ -328,17 +328,10 @@ static int hw_pass_through = 1;
+ /* si_domain contains mulitple devices */
+ #define DOMAIN_FLAG_STATIC_IDENTITY	(1 << 1)
  
- #ifdef CONFIG_INTEL_IOMMU_DEFAULT_ON
- int dmar_disabled = 0;
-@@ -1467,8 +1469,7 @@ static int iommu_init_domains(struct intel_iommu *iommu)
- static void free_dmar_iommu(struct intel_iommu *iommu)
- {
- 	struct dmar_domain *domain;
--	int i, count;
--	unsigned long flags;
-+	int i;
- 
- 	if ((iommu->domains) && (iommu->domain_ids)) {
- 		for_each_set_bit(i, iommu->domain_ids, cap_ndoms(iommu->cap)) {
-@@ -1481,11 +1482,7 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
- 
- 			domain = iommu->domains[i];
- 			clear_bit(i, iommu->domain_ids);
+-/* define the limit of IOMMUs supported in each domain */
+-#ifdef	CONFIG_X86
+-# define	IOMMU_UNITS_SUPPORTED	MAX_IO_APICS
+-#else
+-# define	IOMMU_UNITS_SUPPORTED	64
+-#endif
 -
--			spin_lock_irqsave(&domain->iommu_lock, flags);
--			count = --domain->iommu_count;
--			spin_unlock_irqrestore(&domain->iommu_lock, flags);
--			if (count == 0)
-+			if (domain_detach_iommu(domain, iommu) == 0)
- 				domain_exit(domain);
+ struct dmar_domain {
+ 	int	id;			/* domain id */
+ 	int	nid;			/* node id */
+-	DECLARE_BITMAP(iommu_bmp, IOMMU_UNITS_SUPPORTED);
++	DECLARE_BITMAP(iommu_bmp, DMAR_UNITS_SUPPORTED);
+ 					/* bitmap of iommus this domain uses*/
+ 
+ 	struct list_head devices; 	/* all devices' list */
+@@ -2719,12 +2712,12 @@ static int __init init_dmars(void)
+ 		 * threaded kernel __init code path all other access are read
+ 		 * only
+ 		 */
+-		if (g_num_of_iommus < IOMMU_UNITS_SUPPORTED) {
++		if (g_num_of_iommus < DMAR_UNITS_SUPPORTED) {
+ 			g_num_of_iommus++;
+ 			continue;
  		}
+ 		printk_once(KERN_ERR "intel-iommu: exceeded %d IOMMUs\n",
+-			  IOMMU_UNITS_SUPPORTED);
++			  DMAR_UNITS_SUPPORTED);
  	}
+ 
+ 	g_iommus = kcalloc(g_num_of_iommus, sizeof(struct intel_iommu *),
+diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+index fac8ca34f9a8..c8a576bc3a98 100644
+--- a/include/linux/dmar.h
++++ b/include/linux/dmar.h
+@@ -30,6 +30,12 @@
+ 
+ struct acpi_dmar_header;
+ 
++#ifdef	CONFIG_X86
++# define	DMAR_UNITS_SUPPORTED	MAX_IO_APICS
++#else
++# define	DMAR_UNITS_SUPPORTED	64
++#endif
++
+ /* DMAR Flags */
+ #define DMAR_INTR_REMAP		0x1
+ #define DMAR_X2APIC_OPT_OUT	0x2
 -- 
 1.7.10.4
