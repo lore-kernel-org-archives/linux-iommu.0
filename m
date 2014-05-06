@@ -1,298 +1,157 @@
 From: Jiang Liu <jiang.liu@linux.intel.com>
-Subject: [Patch Part3 V2 20/21] iommu/vt-d: enhance intel-iommu driver to support DMAR unit hotplug
-Date: Tue,  6 May 2014 15:05:31 +0800
-Message-ID: <1399359932-28972-21-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part3 V2 10/21] iommu/vt-d: simplify intel_unmap_sg() and kill duplicated code
+Date: Tue,  6 May 2014 15:05:21 +0800
+Message-ID: <1399359932-28972-11-git-send-email-jiang.liu@linux.intel.com>
 References: <1399359932-28972-1-git-send-email-jiang.liu@linux.intel.com>
-Return-path: <linux-pci-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1399359932-28972-1-git-send-email-jiang.liu@linux.intel.com>
-Sender: linux-pci-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
 Cc: Jiang Liu <jiang.liu@linux.intel.com>, Ashok Raj <ashok.raj@intel.com>, Yijing Wang <wangyijing@huawei.com>, Tony Luck <tony.luck@intel.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-hotplug@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Implement required callback functions for intel-iommu driver
-to support DMAR unit hotplug.
+Introduce intel_unmap() to reduce duplicated code in intel_unmap_sg()
+and intel_unmap_page().
+
+Also let dma_pte_free_pagetable() to call dma_pte_clear_range() directly,
+so caller only needs to call dma_pte_free_pagetable().
 
 Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
 ---
- drivers/iommu/intel-iommu.c |  206 +++++++++++++++++++++++++++++++------------
- 1 file changed, 151 insertions(+), 55 deletions(-)
+ drivers/iommu/intel-iommu.c |   77 +++++++++++--------------------------------
+ 1 file changed, 20 insertions(+), 57 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index f8db3788d08a..fabafb7a0c9a 100644
+index 75d7c5e3f77d..cf083c8a223e 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1127,8 +1127,11 @@ static int iommu_alloc_root_entry(struct intel_iommu *iommu)
- 	unsigned long flags;
+@@ -986,6 +986,8 @@ static void dma_pte_free_pagetable(struct dmar_domain *domain,
+ 	BUG_ON(addr_width < BITS_PER_LONG && last_pfn >> addr_width);
+ 	BUG_ON(start_pfn > last_pfn);
  
- 	root = (struct root_entry *)alloc_pgtable_page(iommu->node);
--	if (!root)
-+	if (!root) {
-+		pr_err("IOMMU: allocating root entry for %s failed\n",
-+			iommu->name);
- 		return -ENOMEM;
-+	}
- 
- 	__iommu_flush_cache(iommu, root, ROOT_SIZE);
- 
-@@ -1468,7 +1471,7 @@ static int iommu_init_domains(struct intel_iommu *iommu)
- 	return 0;
++	dma_pte_clear_range(domain, start_pfn, last_pfn);
++
+ 	/* We don't need lock here; nobody else touches the iova range */
+ 	dma_pte_free_level(domain, agaw_to_level(domain->agaw),
+ 			   domain->pgd, 0, start_pfn, last_pfn);
+@@ -2030,12 +2032,14 @@ static int __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+ 			/* It is large page*/
+ 			if (largepage_lvl > 1) {
+ 				pteval |= DMA_PTE_LARGE_PAGE;
+-				/* Ensure that old small page tables are removed to make room
+-				   for superpage, if they exist. */
+-				dma_pte_clear_range(domain, iov_pfn,
+-						    iov_pfn + lvl_to_nr_pages(largepage_lvl) - 1);
++				lvl_pages = lvl_to_nr_pages(largepage_lvl);
++				/*
++				 * Ensure that old small page tables are
++				 * removed to make room for superpage,
++				 * if they exist.
++				 */
+ 				dma_pte_free_pagetable(domain, iov_pfn,
+-						       iov_pfn + lvl_to_nr_pages(largepage_lvl) - 1);
++						       iov_pfn + lvl_pages - 1);
+ 			} else {
+ 				pteval &= ~(uint64_t)DMA_PTE_LARGE_PAGE;
+ 			}
+@@ -3163,9 +3167,7 @@ static void add_unmap(struct dmar_domain *dom, struct iova *iova, struct page *f
+ 	spin_unlock_irqrestore(&async_umap_flush_lock, flags);
  }
  
--static void free_dmar_iommu(struct intel_iommu *iommu)
-+static void disable_dmar_iommu(struct intel_iommu *iommu)
+-static void intel_unmap_page(struct device *dev, dma_addr_t dev_addr,
+-			     size_t size, enum dma_data_direction dir,
+-			     struct dma_attrs *attrs)
++static void intel_unmap(struct device *dev, dma_addr_t dev_addr)
  {
  	struct dmar_domain *domain;
- 	int i;
-@@ -1492,11 +1495,16 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
- 
- 	if (iommu->gcmd & DMA_GCMD_TE)
- 		iommu_disable_translation(iommu);
-+}
- 
--	kfree(iommu->domains);
--	kfree(iommu->domain_ids);
--	iommu->domains = NULL;
--	iommu->domain_ids = NULL;
-+static void free_dmar_iommu(struct intel_iommu *iommu)
-+{
-+	if ((iommu->domains) && (iommu->domain_ids)) {
-+		kfree(iommu->domains);
-+		kfree(iommu->domain_ids);
-+		iommu->domains = NULL;
-+		iommu->domain_ids = NULL;
-+	}
- 
- 	g_iommus[iommu->seq_id] = NULL;
- 
-@@ -2692,6 +2700,41 @@ static int __init iommu_prepare_static_identity_mapping(int hw)
- 	return 0;
- }
- 
-+static void intel_iommu_init_qi(struct intel_iommu *iommu)
-+{
-+	/*
-+	 * Start from the sane iommu hardware state.
-+	 * If the queued invalidation is already initialized by us
-+	 * (for example, while enabling interrupt-remapping) then
-+	 * we got the things already rolling from a sane state.
-+	 */
-+	if (!iommu->qi) {
-+		/*
-+		 * Clear any previous faults.
-+		 */
-+		dmar_fault(-1, iommu);
-+		/*
-+		 * Disable queued invalidation if supported and already enabled
-+		 * before OS handover.
-+		 */
-+		dmar_disable_qi(iommu);
-+	}
-+
-+	if (dmar_enable_qi(iommu)) {
-+		/*
-+		 * Queued Invalidate not enabled, use Register Based Invalidate
-+		 */
-+		iommu->flush.flush_context = __iommu_flush_context;
-+		iommu->flush.flush_iotlb = __iommu_flush_iotlb;
-+		pr_info("IOMMU: %s using Register based invalidation\n",
-+			iommu->name);
-+	} else {
-+		iommu->flush.flush_context = qi_flush_context;
-+		iommu->flush.flush_iotlb = qi_flush_iotlb;
-+		pr_info("IOMMU: %s using Queued invalidation\n", iommu->name);
-+	}
-+}
-+
- static int __init init_dmars(void)
- {
- 	struct dmar_drhd_unit *drhd;
-@@ -2720,6 +2763,10 @@ static int __init init_dmars(void)
- 			  DMAR_UNITS_SUPPORTED);
+ 	unsigned long start_pfn, last_pfn;
+@@ -3209,6 +3211,13 @@ static void intel_unmap_page(struct device *dev, dma_addr_t dev_addr,
  	}
- 
-+	/* Preallocate enough resources for IOMMU hot-addition */
-+	if (g_num_of_iommus < DMAR_UNITS_SUPPORTED)
-+		g_num_of_iommus = DMAR_UNITS_SUPPORTED;
-+
- 	g_iommus = kcalloc(g_num_of_iommus, sizeof(struct intel_iommu *),
- 			GFP_KERNEL);
- 	if (!g_iommus) {
-@@ -2748,58 +2795,14 @@ static int __init init_dmars(void)
- 		 * among all IOMMU's. Need to Split it later.
- 		 */
- 		ret = iommu_alloc_root_entry(iommu);
--		if (ret) {
--			printk(KERN_ERR "IOMMU: allocate root entry failed\n");
-+		if (ret)
- 			goto free_iommu;
--		}
- 		if (!ecap_pass_through(iommu->ecap))
- 			hw_pass_through = 0;
- 	}
- 
--	/*
--	 * Start from the sane iommu hardware state.
--	 */
--	for_each_active_iommu(iommu, drhd) {
--		/*
--		 * If the queued invalidation is already initialized by us
--		 * (for example, while enabling interrupt-remapping) then
--		 * we got the things already rolling from a sane state.
--		 */
--		if (iommu->qi)
--			continue;
--
--		/*
--		 * Clear any previous faults.
--		 */
--		dmar_fault(-1, iommu);
--		/*
--		 * Disable queued invalidation if supported and already enabled
--		 * before OS handover.
--		 */
--		dmar_disable_qi(iommu);
--	}
--
--	for_each_active_iommu(iommu, drhd) {
--		if (dmar_enable_qi(iommu)) {
--			/*
--			 * Queued Invalidate not enabled, use Register Based
--			 * Invalidate
--			 */
--			iommu->flush.flush_context = __iommu_flush_context;
--			iommu->flush.flush_iotlb = __iommu_flush_iotlb;
--			printk(KERN_INFO "IOMMU %d 0x%Lx: using Register based "
--			       "invalidation\n",
--				iommu->seq_id,
--			       (unsigned long long)drhd->reg_base_addr);
--		} else {
--			iommu->flush.flush_context = qi_flush_context;
--			iommu->flush.flush_iotlb = qi_flush_iotlb;
--			printk(KERN_INFO "IOMMU %d 0x%Lx: using Queued "
--			       "invalidation\n",
--				iommu->seq_id,
--			       (unsigned long long)drhd->reg_base_addr);
--		}
--	}
-+	for_each_active_iommu(iommu, drhd)
-+		intel_iommu_init_qi(iommu);
- 
- 	if (iommu_pass_through)
- 		iommu_identity_mapping |= IDENTMAP_ALL;
-@@ -2885,8 +2888,10 @@ static int __init init_dmars(void)
- 	return 0;
- 
- free_iommu:
--	for_each_active_iommu(iommu, drhd)
-+	for_each_active_iommu(iommu, drhd) {
-+		disable_dmar_iommu(iommu);
- 		free_dmar_iommu(iommu);
-+	}
- 	kfree(deferred_flush);
- free_g_iommus:
- 	kfree(g_iommus);
-@@ -3771,9 +3776,100 @@ int dmar_check_one_atsr(struct acpi_dmar_header *hdr, void *arg)
- 	return 0;
  }
  
-+static int intel_iommu_add(struct dmar_drhd_unit *dmaru)
++static void intel_unmap_page(struct device *dev, dma_addr_t dev_addr,
++			     size_t size, enum dma_data_direction dir,
++			     struct dma_attrs *attrs)
 +{
-+	int ret = 0;
-+	struct intel_iommu *iommu = dmaru->iommu;
-+
-+	if (g_iommus[iommu->seq_id])
-+		return 0;
-+
-+	if (hw_pass_through && !ecap_pass_through(iommu->ecap)) {
-+		pr_warn("IOMMU: %s doesn't support hardware pass through.\n",
-+			iommu->name);
-+		return -ENXIO;
-+	}
-+	if (!ecap_sc_support(iommu->ecap) &&
-+	    domain_update_iommu_snooping(iommu)) {
-+		pr_warn("IOMMU: %s doesn't support snooping.\n",
-+			iommu->name);
-+		return -ENXIO;
-+	}
-+	if ((cap_super_page_val(iommu->cap) &
-+	    (1 << domain_update_iommu_superpage(iommu))) == 0) {
-+		pr_warn("IOMMU: %s doesn't support large page.\n",
-+			iommu->name);
-+		return -ENXIO;
-+	}
-+
-+	/*
-+	 * Disable translation if already enabled prior to OS handover.
-+	 */
-+	if (iommu->gcmd & DMA_GCMD_TE)
-+		iommu_disable_translation(iommu);
-+
-+	g_iommus[iommu->seq_id] = iommu;
-+	ret = iommu_init_domains(iommu);
-+	if (ret == 0)
-+		ret = iommu_alloc_root_entry(iommu);
-+	if (ret)
-+		goto out;
-+
-+	if (dmaru->ignored) {
-+		/*
-+		 * we always have to disable PMRs or DMA may fail on this device
-+		 */
-+		if (force_on)
-+			iommu_disable_protect_mem_regions(iommu);
-+		return 0;
-+	}
-+
-+	intel_iommu_init_qi(iommu);
-+	iommu_flush_write_buffer(iommu);
-+	ret = dmar_set_interrupt(iommu);
-+	if (ret)
-+		goto disable_iommu;
-+
-+	iommu_set_root_entry(iommu);
-+	iommu->flush.flush_context(iommu, 0, 0, 0, DMA_CCMD_GLOBAL_INVL);
-+	iommu->flush.flush_iotlb(iommu, 0, 0, 0, DMA_TLB_GLOBAL_FLUSH);
-+	iommu_enable_translation(iommu);
-+
-+	if (si_domain) {
-+		ret = iommu_attach_domain(si_domain, iommu);
-+		if (ret < 0 || si_domain->id != ret)
-+			goto disable_iommu;
-+		domain_attach_iommu(si_domain, iommu);
-+	}
-+
-+	iommu_disable_protect_mem_regions(iommu);
-+	return 0;
-+
-+disable_iommu:
-+	disable_dmar_iommu(iommu);
-+out:
-+	free_dmar_iommu(iommu);
-+	return ret;
++	intel_unmap(dev, dev_addr);
 +}
 +
- int dmar_iommu_hotplug(struct dmar_drhd_unit *dmaru, bool insert)
+ static void *intel_alloc_coherent(struct device *dev, size_t size,
+ 				  dma_addr_t *dma_handle, gfp_t flags,
+ 				  struct dma_attrs *attrs)
+@@ -3245,56 +3254,15 @@ static void *intel_alloc_coherent(struct device *dev, size_t size,
+ static void intel_free_coherent(struct device *dev, size_t size, void *vaddr,
+ 				dma_addr_t dma_handle, struct dma_attrs *attrs)
  {
--	return intel_iommu_enabled ? -ENOSYS : 0;
-+	int ret = 0;
-+	struct intel_iommu *iommu = dmaru->iommu;
-+
-+	if (!intel_iommu_enabled)
-+		return 0;
-+	if (iommu == NULL)
-+		return -EINVAL;
-+
-+	if (insert) {
-+		ret = intel_iommu_add(dmaru);
-+	} else {
-+		disable_dmar_iommu(iommu);
-+		free_dmar_iommu(iommu);
-+	}
-+
-+	return ret;
+-	int order;
+-
+-	size = PAGE_ALIGN(size);
+-	order = get_order(size);
+-
+-	intel_unmap_page(dev, dma_handle, size, DMA_BIDIRECTIONAL, NULL);
+-	free_pages((unsigned long)vaddr, order);
++	intel_unmap(dev, dma_handle);
++	free_pages((unsigned long)vaddr, get_order(PAGE_ALIGN(size)));
  }
  
- static void intel_iommu_free_dmars(void)
+ static void intel_unmap_sg(struct device *dev, struct scatterlist *sglist,
+ 			   int nelems, enum dma_data_direction dir,
+ 			   struct dma_attrs *attrs)
+ {
+-	struct dmar_domain *domain;
+-	unsigned long start_pfn, last_pfn;
+-	struct iova *iova;
+-	struct intel_iommu *iommu;
+-	struct page *freelist;
+-
+-	if (iommu_no_mapping(dev))
+-		return;
+-
+-	domain = find_domain(dev);
+-	BUG_ON(!domain);
+-
+-	iommu = domain_get_iommu(domain);
+-
+-	iova = find_iova(&domain->iovad, IOVA_PFN(sglist[0].dma_address));
+-	if (WARN_ONCE(!iova, "Driver unmaps unmatched sglist at PFN %llx\n",
+-		      (unsigned long long)sglist[0].dma_address))
+-		return;
+-
+-	start_pfn = mm_to_dma_pfn(iova->pfn_lo);
+-	last_pfn = mm_to_dma_pfn(iova->pfn_hi + 1) - 1;
+-
+-	freelist = domain_unmap(domain, start_pfn, last_pfn);
+-
+-	if (intel_iommu_strict) {
+-		iommu_flush_iotlb_psi(iommu, domain->id, start_pfn,
+-				      last_pfn - start_pfn + 1, !freelist, 0);
+-		/* free iova */
+-		__free_iova(&domain->iovad, iova);
+-		dma_free_pagelist(freelist);
+-	} else {
+-		add_unmap(domain, iova, freelist);
+-		/*
+-		 * queue up the release of the unmap to save the 1/6th of the
+-		 * cpu used up by the iotlb flush operation...
+-		 */
+-	}
++	intel_unmap(dev, sglist[0].dma_address);
+ }
+ 
+ static int intel_nontranslate_map_sg(struct device *hddev,
+@@ -3358,13 +3326,8 @@ static int intel_map_sg(struct device *dev, struct scatterlist *sglist, int nele
+ 
+ 	ret = domain_sg_mapping(domain, start_vpfn, sglist, size, prot);
+ 	if (unlikely(ret)) {
+-		/*  clear the page */
+-		dma_pte_clear_range(domain, start_vpfn,
+-				    start_vpfn + size - 1);
+-		/* free page tables */
+ 		dma_pte_free_pagetable(domain, start_vpfn,
+ 				       start_vpfn + size - 1);
+-		/* free iova */
+ 		__free_iova(&domain->iovad, iova);
+ 		return 0;
+ 	}
 -- 
 1.7.10.4
