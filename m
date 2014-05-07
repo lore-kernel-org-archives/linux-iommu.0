@@ -1,61 +1,55 @@
-From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v12 00/31] iommu/exynos: Fixes and Enhancements of System
-	MMU driver with DT
-Date: Wed, 07 May 2014 09:44:53 +0900
-Message-ID: <20140507094453.28f0429152e5b59a5dda9fd8@samsung.com>
-References: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
-	<26065037.GxQQuIURPg@wuerfel>
-	<CAOD6ATqZ5UwRwSKiPDQLrgmX=UUrJVE7ybM_RhXz_CEUjM3W7w@mail.gmail.com>
-	<20140506175904.GB12376@8bytes.org> <5369252F.4070402@gmail.com>
+From: "Su, Friendy" <Friendy.Su@sony.com.cn>
+Subject: [PATCH v1 1/1] iommu/amd: fix enabling exclusion range for an exact
+ device
+Date: Wed, 7 May 2014 13:54:52 +0800
+Message-ID: <053191AD6E9023439BF3970DE87005185086D31DA3@APSHAXMS02.ap.sony.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <5369252F.4070402-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Linux DeviceTree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Linux Samsung SOC <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Prathyush <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "supash.ramaswamy" <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sunil joshi <joshi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Tomasz Figa <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Rahul Sharma <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: "joro@8bytes.org" <joro@8bytes.org>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 06 May 2014 20:08:47 +0200, Tomasz Figa wrote:
-> On 06.05.2014 19:59, Joerg Roedel wrote:
-> > On Wed, Apr 30, 2014 at 04:27:10PM +0530, Shaik Ameer Basha wrote:
-> >> This series is going on for quite a long time and most of the patches here
-> >> doesn't depend on dt bindings. As Exynos IOMMU h/w is introducing new versions
-> >> very frequently, maintaining and reviewing all these patches again and
-> >> again is quite a hard job.
-> >>
-> >> If it is acceptable, I can post one more series with the subset of
-> >> above patches,
-> >> which doesn't depend on dt-bindings. As all the patches which doesn't depend on
-> >> DT bindings are already tested,  I hope merging these subset of patches may help
-> >> in reducing the rework and review effort every time.
-> >>
-> >> Once we finalize the generic DT bindings for the IOMMU devices, the driver
-> >> can be updated with the proposed DT bindings in mind.
-> >
-> > Sounds reasonable to me if the patch subset is self-contained. When
-> > Arnd is OK with that and no one else has objections I can take the
-> > dt-independend parts.
-> 
-> +1.
-> 
-> I would also suggest dropping patch 18/31, for the reasons I mentioned 
-> in my reply to it.
-> 
 
-Great.
+From: Su Friendy <friendy.su@sony.com.cn>
 
-We will prepare the next patch series that are independent upon DT bindings soon.
+set_device_exclusion_range(u16 devid, struct ivmd_header *m) enables
+exclusion range for ONE device. IOMMU does not translate the access
+to the exclusion range from the device.
 
-Thank you.
+The device is specified by input argument 'devid'. But 'devid' is not
+passed to the actual set function set_dev_entry_bit(), instead
+'m->devid' is passed. 'm->devid' does not specify the exact device
+which needs enable the exclusion range. 'm->devid' represents DeviceID
+field of IVMD, which has different meaning depends on IVMD type.
 
-KyongHo
+The caller init_exclusion_range() sets 'devid' for ONE device. When
+m->type is equal to ACPI_IVMD_TYPE_ALL or ACPI_IVMD_TYPE_RANGE,
+'m->devid' is not equal to 'devid'.
+
+This patch fixes 'm->devid' to 'devid'.
+
+Signed-off-by: Su Friendy <friendy.su@sony.com.cn>
+Signed-off-by: Tamori Masahiro <Masahiro.Tamori@jp.sony.com>
+---
+ drivers/iommu/amd_iommu_init.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index b76c58d..0e08545 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -788,7 +788,7 @@ static void __init set_device_exclusion_range(u16 devid, struct ivmd_header *m)
+ 		 * per device. But we can enable the exclusion range per
+ 		 * device. This is done here
+ 		 */
+-		set_dev_entry_bit(m->devid, DEV_ENTRY_EX);
++		set_dev_entry_bit(devid, DEV_ENTRY_EX);
+ 		iommu->exclusion_start = m->range_start;
+ 		iommu->exclusion_length = m->range_length;
+ 	}
+-- 
+1.8.2.1
