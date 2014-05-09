@@ -1,13 +1,16 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC PATCH 3/2] iommu/amd: Add sysfs support
-Date: Thu, 08 May 2014 12:20:05 -0600
-Message-ID: <20140508181900.31415.35795.stgit@bling.home>
-References: <20140507230308.3124.90856.stgit@bling.home>
+From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH v12 18/31] iommu/exynos: allow having multiple System MMUs
+	for a master H/W
+Date: Fri, 09 May 2014 19:54:40 +0900
+Message-ID: <20140509195440.ae989be464cde24ade92eec2@samsung.com>
+References: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
+	<1398584283-22846-19-git-send-email-shaik.ameer@samsung.com>
+	<5369245A.1060001@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140507230308.3124.90856.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+In-reply-to: <5369245A.1060001-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,148 +20,75 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, joshi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-No proof of concept is complete with only a single user, so here's an
-example for AMD IOMMU.  This IOMMU is neatly associated with a device,
-so we don't need to leave the IOMMU device dangling in virtual space.
-This just has a couple fields from struct amd_iommu cherry picked to
-expose and looks something like this (pruned):
+On Tue, 06 May 2014 20:05:14 +0200, Tomasz Figa wrote:
+> On 27.04.2014 09:37, Shaik Ameer Basha wrote:
+> > From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> >
+> > Some master device descriptor like fimc-is which is an abstraction
+> > of very complex H/W may have multiple System MMUs. For those devices,
+> > the design of the link between System MMU and its master H/W is needed
+> > to be reconsidered.
+> >
+> > A link structure, sysmmu_list_data is introduced that provides a link
+> > to master H/W and that has a pointer to the device descriptor of a
+> > System MMU. Given a device descriptor of a master H/W, it is possible
+> > to traverse all System MMUs that must be controlled along with the
+> > master H/W.
+> >
+> > Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> > ---
+> >   drivers/iommu/exynos-iommu.c |  545 ++++++++++++++++++++++++++----------------
+> >   1 file changed, 335 insertions(+), 210 deletions(-)
+> >
+> > diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> > index fefedec3..c2e6365 100755
+> > --- a/drivers/iommu/exynos-iommu.c
+> > +++ b/drivers/iommu/exynos-iommu.c
+> > @@ -117,6 +117,10 @@
+> >   #define REG_PB1_EADDR		0x058
+> >
+> >   #define has_sysmmu(dev)		(dev->archdata.iommu != NULL)
+> > +#define for_each_sysmmu_list(dev, list_data)				\
+> > +	list_for_each_entry(list_data,					\
+> > +		&((struct exynos_iommu_owner *)dev->archdata.iommu)->mmu_list, \
+> > +		entry)
+> 
+> Sorry, NAK.
+> 
+> Please don't add this kind of complexity and business logic to low level 
+> code. We want the configuration functions to be simple, easy to read, 
+> maintain and extend.
+> 
+> The proper way to do it is to let the IOMMUs be grouped together on 
+> IOMMU subsystem level, so that each IOMMU consumer driver would see just 
+> one IOMMU, but then IOMMU driver callbacks would handle just particular 
+> instances of the IOMMU IP blocks, without any loops, lists and other 
+> crazy code...
+> 
 
-# find /sys | grep ivhd
-/sys/devices/pci0000:00/0000:00:00.2/iommu/ivhd0
-/sys/devices/pci0000:00/0000:00:00.2/iommu/ivhd0/devices
-/sys/devices/pci0000:00/0000:00:00.2/iommu/ivhd0/devices/0000:00:00.0
-/sys/devices/pci0000:00/0000:00:00.2/iommu/ivhd0/devices/0000:00:02.0
-/sys/devices/pci0000:00/0000:00:00.2/iommu/ivhd0/devices/0000:00:04.0
-/sys/devices/pci0000:00/0000:00:00.2/iommu/ivhd0/devices/0000:00:09.0
-/sys/devices/pci0000:00/0000:00:00.2/iommu/ivhd0/devices/0000:00:11.0
-/sys/devices/pci0000:00/0000:00:00.2/iommu/ivhd0/devices/0000:00:12.0
-/sys/devices/pci0000:00/0000:00:00.2/iommu/ivhd0/devices/0000:00:12.2
-/sys/devices/pci0000:00/0000:00:00.2/iommu/ivhd0/devices/0000:00:13.0
-...
-/sys/devices/pci0000:00/0000:00:00.2/iommu/ivhd0/power
-/sys/devices/pci0000:00/0000:00:00.2/iommu/ivhd0/power/control
-...
-/sys/devices/pci0000:00/0000:00:00.2/iommu/ivhd0/device
-/sys/devices/pci0000:00/0000:00:00.2/iommu/ivhd0/subsystem
-/sys/devices/pci0000:00/0000:00:00.2/iommu/ivhd0/amd-iommu
-/sys/devices/pci0000:00/0000:00:00.2/iommu/ivhd0/amd-iommu/cap
-/sys/devices/pci0000:00/0000:00:00.2/iommu/ivhd0/amd-iommu/is_iommu_v2
-/sys/devices/pci0000:00/0000:00:00.2/iommu/ivhd0/amd-iommu/features
-/sys/devices/pci0000:00/0000:00:00.2/iommu/ivhd0/uevent
-/sys/class/iommu/ivhd0
+It is done in IOMMU driver internally.
+IOMMU consumer driver(IOMMU client device driver?) sees IOMMU domain
+but IOMMU itself. How to handle IOMMUs of the client device is just
+in charge of IOMMU driver according to the hardwired bus topology.
 
-Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/amd_iommu.c      |    4 +++
- drivers/iommu/amd_iommu_init.c |   53 ++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 57 insertions(+)
+If a master and IOMMU device should be 1:1 relationship as you contend,
+the master device driver should be responsible for express the bus
+topology in its business logic. I think it is not good as I told earlier.
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 4621692..4849580 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -346,6 +346,8 @@ static int iommu_init_device(struct device *dev)
- 
- 	dev->archdata.iommu = dev_data;
- 
-+	iommu_device_link(amd_iommu_rlookup_table[dev_data->devid], dev);
-+
- 	return 0;
- }
- 
-@@ -370,6 +372,8 @@ static void iommu_uninit_device(struct device *dev)
- 	if (!dev_data)
- 		return;
- 
-+	iommu_device_unlink(amd_iommu_rlookup_table[dev_data->devid], dev);
-+
- 	iommu_group_remove_device(dev);
- 
- 	/* Unlink from alias, it may change if another device is re-plugged */
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index b76c58d..68f7c08 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -26,6 +26,8 @@
- #include <linux/msi.h>
- #include <linux/amd-iommu.h>
- #include <linux/export.h>
-+#include <linux/iommu.h>
-+#include <linux/device.h>
- #include <asm/pci-direct.h>
- #include <asm/iommu.h>
- #include <asm/gart.h>
-@@ -1197,11 +1199,55 @@ static void init_iommu_perf_ctr(struct amd_iommu *iommu)
- 	iommu->max_counters = (u8) ((val >> 7) & 0xf);
- }
- 
-+static ssize_t amd_iommu_show_cap(struct device *dev,
-+				  struct device_attribute *attr,
-+				  char *buf)
-+{
-+	struct amd_iommu *iommu = dev->platform_data;
-+	return sprintf(buf, "%x\n", iommu->cap);
-+}
-+static DEVICE_ATTR(cap, S_IRUGO, amd_iommu_show_cap, NULL);
-+
-+static ssize_t amd_iommu_show_features(struct device *dev,
-+				       struct device_attribute *attr,
-+				       char *buf)
-+{
-+	struct amd_iommu *iommu = dev->platform_data;
-+	return sprintf(buf, "%llx\n", iommu->features);
-+}
-+static DEVICE_ATTR(features, S_IRUGO, amd_iommu_show_features, NULL);
-+
-+static ssize_t amd_iommu_show_v2(struct device *dev,
-+				 struct device_attribute *attr,
-+				 char *buf)
-+{
-+	struct amd_iommu *iommu = dev->platform_data;
-+	return sprintf(buf, "%c\n", iommu->is_iommu_v2 ? 'Y' : 'N');
-+}
-+static DEVICE_ATTR(is_iommu_v2, S_IRUGO, amd_iommu_show_v2, NULL);
-+
-+static struct attribute *amd_iommu_attrs[] = {
-+	&dev_attr_cap.attr,
-+	&dev_attr_features.attr,
-+	&dev_attr_is_iommu_v2.attr,
-+	NULL,
-+};
-+
-+static struct attribute_group amd_iommu_group = {
-+	.name = "amd-iommu",
-+	.attrs = amd_iommu_attrs,
-+};
-+
-+const struct attribute_group *amd_iommu_groups[] = {
-+	&amd_iommu_group,
-+	NULL,
-+};
- 
- static int iommu_init_pci(struct amd_iommu *iommu)
- {
- 	int cap_ptr = iommu->cap_ptr;
- 	u32 range, misc, low, high;
-+	char *name;
- 
- 	iommu->dev = pci_get_bus_and_slot(PCI_BUS_NUM(iommu->devid),
- 					  iommu->devid & 0xff);
-@@ -1297,6 +1343,13 @@ static int iommu_init_pci(struct amd_iommu *iommu)
- 
- 	amd_iommu_erratum_746_workaround(iommu);
- 
-+	name = kasprintf(GFP_KERNEL, "ivhd%d", iommu->index);
-+	if (name) {
-+		iommu_register_device(&iommu->dev->dev, name,
-+				      amd_iommu_groups, iommu);
-+		kfree(name);
-+	}
-+
- 	return pci_enable_device(iommu->dev);
- }
- 
+IOMMU group is different from the grouping System MMUs in Exynos IOMMU driver.
+IOMMU group is invented to group several IOMMUs on different bus with different
+masters to assign the same IOMMU domain.
+It is useful for user level virtualization but for expressing bus topology.
+Exynos IOMMU driver just groups System MMUs that have the same master device.
+Even though Exynos IOMMU driver implements IOMMU group which is already
+implemented by 20/31 patch, such looping is still required.
+
+However, I will consider other elegant way of interation of multiple System MMUs.
+
+Regards,
+
+KyongHo
