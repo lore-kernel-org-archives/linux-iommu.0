@@ -1,7 +1,7 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v2 14/15] PCI: Remove pci_find_upstream_pcie_bridge()
-Date: Fri, 09 May 2014 09:29:49 -0600
-Message-ID: <20140509152949.8321.55082.stgit@bling.home>
+Subject: [PATCH v2 15/15] PCI: Remove pci_get_dma_source()
+Date: Fri, 09 May 2014 09:29:56 -0600
+Message-ID: <20140509152955.8321.36350.stgit@bling.home>
 References: <20140509151735.8321.22017.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,77 +21,94 @@ To: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7K
 Cc: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-It's broken and has no users.
+It has no users; replaced by dma_func_alias.
 
 Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/pci/search.c |   35 -----------------------------------
- include/linux/pci.h  |   11 -----------
- 2 files changed, 46 deletions(-)
+ drivers/pci/quirks.c |   51 --------------------------------------------------
+ include/linux/pci.h  |    5 -----
+ 2 files changed, 56 deletions(-)
 
-diff --git a/drivers/pci/search.c b/drivers/pci/search.c
-index aea2443..473c6e8 100644
---- a/drivers/pci/search.c
-+++ b/drivers/pci/search.c
-@@ -244,41 +244,6 @@ struct pci_dev *pci_find_dma_isolation_root(struct pci_dev *pdev)
- 	return pdev;
- }
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index a10a685..2b3bd1e 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -3406,57 +3406,6 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_JMICRON,
+ 			 PCI_DEVICE_ID_JMICRON_JMB388_ESD,
+ 			 quirk_dma_func1_alias);
  
--/*
-- * find the upstream PCIe-to-PCI bridge of a PCI device
-- * if the device is PCIE, return NULL
-- * if the device isn't connected to a PCIe bridge (that is its parent is a
-- * legacy PCI bridge and the bridge is directly connected to bus 0), return its
-- * parent
-- */
--struct pci_dev *
--pci_find_upstream_pcie_bridge(struct pci_dev *pdev)
+-static struct pci_dev *pci_func_0_dma_source(struct pci_dev *dev)
 -{
--	struct pci_dev *tmp = NULL;
+-	if (!PCI_FUNC(dev->devfn))
+-		return pci_dev_get(dev);
 -
--	if (pci_is_pcie(pdev))
--		return NULL;
--	while (1) {
--		if (pci_is_root_bus(pdev->bus))
--			break;
--		pdev = pdev->bus->self;
--		/* a p2p bridge */
--		if (!pci_is_pcie(pdev)) {
--			tmp = pdev;
--			continue;
--		}
--		/* PCI device should connect to a PCIe bridge */
--		if (pci_pcie_type(pdev) != PCI_EXP_TYPE_PCI_BRIDGE) {
--			/* Busted hardware? */
--			WARN_ON_ONCE(1);
--			return NULL;
--		}
--		return pdev;
--	}
--
--	return tmp;
+-	return pci_get_slot(dev->bus, PCI_DEVFN(PCI_SLOT(dev->devfn), 0));
 -}
 -
- static struct pci_bus *pci_do_find_bus(struct pci_bus *bus, unsigned char busnr)
- {
- 	struct pci_bus *child;
+-static const struct pci_dev_dma_source {
+-	u16 vendor;
+-	u16 device;
+-	struct pci_dev *(*dma_source)(struct pci_dev *dev);
+-} pci_dev_dma_source[] = {
+-	/*
+-	 * https://bugzilla.redhat.com/show_bug.cgi?id=605888
+-	 *
+-	 * Some Ricoh devices use the function 0 source ID for DMA on
+-	 * other functions of a multifunction device.  The DMA devices
+-	 * is therefore function 0, which will have implications of the
+-	 * iommu grouping of these devices.
+-	 */
+-	{ PCI_VENDOR_ID_RICOH, 0xe822, pci_func_0_dma_source },
+-	{ PCI_VENDOR_ID_RICOH, 0xe230, pci_func_0_dma_source },
+-	{ PCI_VENDOR_ID_RICOH, 0xe832, pci_func_0_dma_source },
+-	{ PCI_VENDOR_ID_RICOH, 0xe476, pci_func_0_dma_source },
+-	{ 0 }
+-};
+-
+-/*
+- * IOMMUs with isolation capabilities need to be programmed with the
+- * correct source ID of a device.  In most cases, the source ID matches
+- * the device doing the DMA, but sometimes hardware is broken and will
+- * tag the DMA as being sourced from a different device.  This function
+- * allows that translation.  Note that the reference count of the
+- * returned device is incremented on all paths.
+- */
+-struct pci_dev *pci_get_dma_source(struct pci_dev *dev)
+-{
+-	const struct pci_dev_dma_source *i;
+-
+-	for (i = pci_dev_dma_source; i->dma_source; i++) {
+-		if ((i->vendor == dev->vendor ||
+-		     i->vendor == (u16)PCI_ANY_ID) &&
+-		    (i->device == dev->device ||
+-		     i->device == (u16)PCI_ANY_ID))
+-			return i->dma_source(dev);
+-	}
+-
+-	return pci_dev_get(dev);
+-}
+-
+ /*
+  * AMD has indicated that the devices below do not support peer-to-peer
+  * in any system where they are found in the southbridge with an AMD
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 5096031..64184d5 100644
+index 64184d5..c7183be 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1804,15 +1804,4 @@ int pci_for_each_dma_alias(struct pci_dev *pdev,
- 				     u16 alias, void *data), void *data);
- struct pci_dev *pci_find_dma_isolation_root(struct pci_dev *pdev);
+@@ -1532,16 +1532,11 @@ enum pci_fixup_pass {
  
--/**
-- * pci_find_upstream_pcie_bridge - find upstream PCIe-to-PCI bridge of a device
-- * @pdev: the PCI device
-- *
-- * if the device is PCIE, return NULL
-- * if the device isn't connected to a PCIe bridge (that is its parent is a
-- * legacy PCI bridge and the bridge is directly connected to bus 0), return its
-- * parent
-- */
--struct pci_dev *pci_find_upstream_pcie_bridge(struct pci_dev *pdev);
--
- #endif /* LINUX_PCI_H */
+ #ifdef CONFIG_PCI_QUIRKS
+ void pci_fixup_device(enum pci_fixup_pass pass, struct pci_dev *dev);
+-struct pci_dev *pci_get_dma_source(struct pci_dev *dev);
+ int pci_dev_specific_acs_enabled(struct pci_dev *dev, u16 acs_flags);
+ void pci_dev_specific_enable_acs(struct pci_dev *dev);
+ #else
+ static inline void pci_fixup_device(enum pci_fixup_pass pass,
+ 				    struct pci_dev *dev) { }
+-static inline struct pci_dev *pci_get_dma_source(struct pci_dev *dev)
+-{
+-	return pci_dev_get(dev);
+-}
+ static inline int pci_dev_specific_acs_enabled(struct pci_dev *dev,
+ 					       u16 acs_flags)
+ {
