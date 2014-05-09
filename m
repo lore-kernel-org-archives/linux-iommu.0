@@ -1,7 +1,7 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v2 02/15] PCI: quirk pci_for_each_dma_alias()
-Date: Fri, 09 May 2014 09:28:37 -0600
-Message-ID: <20140509152837.8321.90171.stgit@bling.home>
+Subject: [PATCH v2 04/15] PCI: quirk dma_func_alias for Marvell devices
+Date: Fri, 09 May 2014 09:28:49 -0600
+Message-ID: <20140509152849.8321.61634.stgit@bling.home>
 References: <20140509151735.8321.22017.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,60 +21,58 @@ To: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7K
 Cc: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-There are a few broken devices that use the requester ID of a different
-function in the slot for their DMA.  To handle these, add a bitmap to
-struct pci_dev (using an alignment gap) that quirks can populate.  As
-we iterate over the device and bus DMA aliases, also iterate over any
-bits in the map.
+Several Marvell devices and a JMicron device have a similar DMA
+requester ID problem to Ricoh, except they use function 1 as the
+PCIe requester ID.  Add a quirk for these to populate the DMA
+function alias bitmap.
 
 Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/pci/search.c |   21 +++++++++++++++++++++
- include/linux/pci.h  |    2 ++
- 2 files changed, 23 insertions(+)
+ drivers/pci/quirks.c |   34 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
 
-diff --git a/drivers/pci/search.c b/drivers/pci/search.c
-index 5601cdb..ad698b2 100644
---- a/drivers/pci/search.c
-+++ b/drivers/pci/search.c
-@@ -37,6 +37,27 @@ int pci_for_each_dma_alias(struct pci_dev *pdev,
- 	if (ret)
- 		return ret;
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index fa70476..63b8245 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -3349,6 +3349,40 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_RICOH, 0xe230, quirk_dma_func0_alias);
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_RICOH, 0xe832, quirk_dma_func0_alias);
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_RICOH, 0xe476, quirk_dma_func0_alias);
  
-+	/*
-+	 * dma_func_alias provides a bitmap of other function numbers on
-+	 * this same PCI slot to use as DMA aliases.
-+	 */
-+	if (unlikely(pdev->dma_func_alias)) {
-+		u8 map = pdev->dma_func_alias & ~(1 << PCI_FUNC(pdev->devfn));
-+		int func;
++static void quirk_dma_func1_alias(struct pci_dev *dev)
++{
++	if (PCI_SLOT(dev->devfn) != 1)
++		dev->dma_func_alias |= (1 << 1);
++}
 +
-+		for (func = 0; map && func < 8; func++, map >>= 1) {
-+			if (!(map & 1))
-+				continue;
++/*
++ * Marvell 88SE9123 uses function 1 as the requester ID for DMA.  In some
++ * SKUs function 1 is present and is a legacy IDE controller, in other
++ * SKUs this function is not present, making this a ghost requester.
++ * https://bugzilla.kernel.org/show_bug.cgi?id=42679
++ */
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9123,
++			 quirk_dma_func1_alias);
++/* https://bugzilla.kernel.org/show_bug.cgi?id=42679#c14 */
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9130,
++			 quirk_dma_func1_alias);
++/* https://bugzilla.kernel.org/show_bug.cgi?id=42679#c47 + c57 */
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9172,
++			 quirk_dma_func1_alias);
++/* https://bugzilla.kernel.org/show_bug.cgi?id=42679#c59 */
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x917a,
++			 quirk_dma_func1_alias);
++/* https://bugzilla.kernel.org/show_bug.cgi?id=42679#c46 */
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x91a0,
++			 quirk_dma_func1_alias);
++/* https://bugzilla.kernel.org/show_bug.cgi?id=42679#c49 */
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9230,
++			 quirk_dma_func1_alias);
++/* https://bugs.gentoo.org/show_bug.cgi?id=497630 */
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_JMICRON,
++			 PCI_DEVICE_ID_JMICRON_JMB388_ESD,
++			 quirk_dma_func1_alias);
 +
-+			ret = fn(pdev,
-+				 PCI_DEVID(pdev->bus->number,
-+					   PCI_DEVFN(PCI_SLOT(pdev->devfn),
-+					   func)), data);
-+			if (ret)
-+				return ret;
-+		}
-+	}
-+
- 	for (bus = pdev->bus; !pci_is_root_bus(bus); bus = bus->parent) {
- 		struct pci_dev *tmp;
- 
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 14b074b..b4c97d2 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -268,6 +268,8 @@ struct pci_dev {
- 	u8		rom_base_reg;	/* which config register controls the ROM */
- 	u8		pin;		/* which interrupt pin this device uses */
- 	u16		pcie_flags_reg;	/* cached PCIe Capabilities Register */
-+	u8		dma_func_alias;	/* bitmap of functions used as DMA
-+					   aliases for this device */
- 
- 	struct pci_driver *driver;	/* which driver has allocated this device */
- 	u64		dma_mask;	/* Mask of the bits of bus address this
+ static struct pci_dev *pci_func_0_dma_source(struct pci_dev *dev)
+ {
+ 	if (!PCI_FUNC(dev->devfn))
