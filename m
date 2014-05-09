@@ -1,16 +1,11 @@
-From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v12 18/31] iommu/exynos: allow having multiple System MMUs
-	for a master H/W
-Date: Fri, 09 May 2014 19:54:40 +0900
-Message-ID: <20140509195440.ae989be464cde24ade92eec2@samsung.com>
-References: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
-	<1398584283-22846-19-git-send-email-shaik.ameer@samsung.com>
-	<5369245A.1060001@gmail.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v2 00/15] PCI/iommu: Fix DMA alias problems
+Date: Fri, 09 May 2014 09:28:25 -0600
+Message-ID: <20140509151735.8321.22017.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <5369245A.1060001-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,75 +15,123 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, joshi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+To: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 06 May 2014 20:05:14 +0200, Tomasz Figa wrote:
-> On 27.04.2014 09:37, Shaik Ameer Basha wrote:
-> > From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> >
-> > Some master device descriptor like fimc-is which is an abstraction
-> > of very complex H/W may have multiple System MMUs. For those devices,
-> > the design of the link between System MMU and its master H/W is needed
-> > to be reconsidered.
-> >
-> > A link structure, sysmmu_list_data is introduced that provides a link
-> > to master H/W and that has a pointer to the device descriptor of a
-> > System MMU. Given a device descriptor of a master H/W, it is possible
-> > to traverse all System MMUs that must be controlled along with the
-> > master H/W.
-> >
-> > Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> > ---
-> >   drivers/iommu/exynos-iommu.c |  545 ++++++++++++++++++++++++++----------------
-> >   1 file changed, 335 insertions(+), 210 deletions(-)
-> >
-> > diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> > index fefedec3..c2e6365 100755
-> > --- a/drivers/iommu/exynos-iommu.c
-> > +++ b/drivers/iommu/exynos-iommu.c
-> > @@ -117,6 +117,10 @@
-> >   #define REG_PB1_EADDR		0x058
-> >
-> >   #define has_sysmmu(dev)		(dev->archdata.iommu != NULL)
-> > +#define for_each_sysmmu_list(dev, list_data)				\
-> > +	list_for_each_entry(list_data,					\
-> > +		&((struct exynos_iommu_owner *)dev->archdata.iommu)->mmu_list, \
-> > +		entry)
-> 
-> Sorry, NAK.
-> 
-> Please don't add this kind of complexity and business logic to low level 
-> code. We want the configuration functions to be simple, easy to read, 
-> maintain and extend.
-> 
-> The proper way to do it is to let the IOMMUs be grouped together on 
-> IOMMU subsystem level, so that each IOMMU consumer driver would see just 
-> one IOMMU, but then IOMMU driver callbacks would handle just particular 
-> instances of the IOMMU IP blocks, without any loops, lists and other 
-> crazy code...
-> 
+v2:
+ - Several new Marvell controllers added to quirks.  There's been
+   a lot of success reported with this series in
+   https://bugzilla.kernel.org/show_bug.cgi?id=42679
 
-It is done in IOMMU driver internally.
-IOMMU consumer driver(IOMMU client device driver?) sees IOMMU domain
-but IOMMU itself. How to handle IOMMUs of the client device is just
-in charge of IOMMU driver according to the hardwired bus topology.
+ - Add quirk for ASMedia and Tundra PCIe-to-PCI bridges that do
+   not expose a PCIe capability.  These have been shown to use
+   the standard PCIe-to-PCI bridge requester ID.
 
-If a master and IOMMU device should be 1:1 relationship as you contend,
-the master device driver should be responsible for express the bus
-topology in its business logic. I think it is not good as I told earlier.
+ - Fix copy/paste duplicate Ricoh quirk ID
 
-IOMMU group is different from the grouping System MMUs in Exynos IOMMU driver.
-IOMMU group is invented to group several IOMMUs on different bus with different
-masters to assign the same IOMMU domain.
-It is useful for user level virtualization but for expressing bus topology.
-Exynos IOMMU driver just groups System MMUs that have the same master device.
-Even though Exynos IOMMU driver implements IOMMU group which is already
-implemented by 20/31 patch, such looping is still required.
+ - Fixed AMD IOMMU for the "ghost" function case where the DMA
+   alias is for an absent device.  The iommu rlookup table and
+   data fields need to be initializes.
 
-However, I will consider other elegant way of interation of multiple System MMUs.
+ - Fixed Intel interrupt remapping, I wasn't passing the target
+   bus number, only the alias bus number.
 
-Regards,
+The only outstanding issue that I know about is that Andrew Cooks
+reported that the Ricoh quirk doesn't work.  AFAIK, the existing
+Ricoh quirk has only ever worked for IOMMU groups, not for dma_ops.
+I don't have access to a system with this device to test on my
+own.  I'd appreciate feedback from anyone that can test on these
+devices.
 
-KyongHo
+These patches are split across PCI and IOMMU, but I've front-loaded
+all of the PCI infrastructure so that the first 7 patches can be
+applied to PCI-core, the IOMMU maintainers can pickup their patches,
+then we can finish with dead code removal.  Bjorn might also be
+willing to carry the IOMMU changes if the maintainers want to ack
+them.
+
+Original description:
+
+This series attempts to fix a couple issues we've had outstanding in
+the PCI/IOMMU code for a while.  The first issue is with devices that
+use the wrong requester ID for DMA transactions.  We already have a
+sort of half-baked attempt to fix this for several Ricoh devices, but
+the fix only helps them be useful through IOMMU groups, not the
+general DMA case.  There are also several Marvell devices which use
+use a different wrong requester ID and don't even fit into the DMA
+source idea.  This series creates a DMA alias iterator that will
+step through each possible alias of a device, allowing IOMMUs to
+insert mappings for both the device and its aliases.
+
+Hand-in-hand with this is our broken pci_find_upstream_pcie_bridge()
+function, which is known to blowup when it finds itself suddenly at
+a PCIe device without crossing a PCIe-to-PCI bridge (as identified by
+the PCIe capability).  It also likes to make the invalid assumption
+that a PCIe device never has its requester ID masked by any usptream
+bus.  We can fix this using the above new DMA alias iterator, since
+that's effectively what this function was meant to do.
+
+Finally, with all these helpers, it makes sense to consolidate code
+for determining IOMMU groups.  The first step in finding the root
+of a group is finding the final upstream DMA alias for the device,
+then applying additional ACS rules and incorporating device specific
+aliases.  As this is all common to PCI, create a single implementation
+and remove piles of code from the individual IOMMU drivers.
+
+This series allows devices like the Marvell 88SE9123 to finally work
+on Linux with either AMD-Vi or VT-d enabled on the box.  I've
+collected device IDs from various bugs to support as many SKUs of
+these devices as possible, but I'm sure there are others that I've
+missed.
+
+This should also enable motherboards with an onboard ASmedia
+ASM1083/1085 PCIe-to-PCI bridge to work with VT-d enabled.  I've
+acquired an adapter board with this chip, but it actually exposes
+a PCIe capability, unlike most of the onboard controllers.  Therefore
+I expect this series will fix the WARN_ON currently hit during boot,
+but there's a 50/50 chance whether the device behaves like a PCI
+bridge or a PCIe bridge with regard to the requester ID that it uses
+to take ownership of the transaction.  If it turns out to use the
+PCIe bridge model, I expect we can quirk it using a dev_flags bit
+to identify a PCI bridge that takes ownership as if it was a PCIe
+bridge.
+
+Please test and provide feedback.  I expect IOMMU group topology
+should not change from this series, but if a case is found where it
+does, please share.  Also, if there are additional quirks we need
+to add, please either file new or add to the existing bugs.  Thanks,
+
+Alex
+
+---
+
+Alex Williamson (15):
+      PCI: Add DMA alias iterator
+      PCI: quirk pci_for_each_dma_alias()
+      PCI: quirk dma_func_alias for Ricoh devices
+      PCI: quirk dma_func_alias for Marvell devices
+      PCI: Quirk pci_for_each_dma_alias() for bridges
+      PCI: Add quirks for ASMedia and Tundra bridges
+      PCI: Consolidate isolation domain code
+      iommu/amd: Use pci_find_dma_isolation_root() for IOMMU groups
+      iommu/amd: Update to use PCI DMA aliases
+      iommu/intel: Use pci_find_dma_isolation_root() for IOMMU groups
+      iommu/intel: Update to use PCI DMA aliases
+      iommu/fsl: Use pci_find_dma_isolation_root() for IOMMU groups
+      iommu: Remove pci.h
+      PCI: Remove pci_find_upstream_pcie_bridge()
+      PCI: Remove pci_get_dma_source()
+
+
+ drivers/iommu/amd_iommu.c           |  195 +++++------------------
+ drivers/iommu/amd_iommu_types.h     |    1 
+ drivers/iommu/fsl_pamu_domain.c     |   67 --------
+ drivers/iommu/intel-iommu.c         |  293 +++++++++++++----------------------
+ drivers/iommu/intel_irq_remapping.c |   55 +++++--
+ drivers/iommu/pci.h                 |   29 ---
+ drivers/pci/quirks.c                |  114 ++++++++------
+ drivers/pci/search.c                |  240 ++++++++++++++++++++++++++---
+ include/linux/pci.h                 |   23 +--
+ 9 files changed, 486 insertions(+), 531 deletions(-)
+ delete mode 100644 drivers/iommu/pci.h
