@@ -1,7 +1,7 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v3 02/15] PCI: quirk pci_for_each_dma_alias()
-Date: Sat, 10 May 2014 09:02:35 -0600
-Message-ID: <20140510150235.2997.88101.stgit@bling.home>
+Subject: [PATCH v3 03/15] PCI: quirk dma_func_alias for Ricoh devices
+Date: Sat, 10 May 2014 09:02:41 -0600
+Message-ID: <20140510150241.2997.38099.stgit@bling.home>
 References: <20140510145619.2997.429.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,60 +21,41 @@ To: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7K
 Cc: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-gpGsJRJZ3PBBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-There are a few broken devices that use the requester ID of a different
-function in the slot for their DMA.  To handle these, add a bitmap to
-struct pci_dev (using an alignment gap) that quirks can populate.  As
-we iterate over the device and bus DMA aliases, also iterate over any
-bits in the map.
+The existing quirk for these devices doesn't really solve the problem,
+re-implement it using the DMA alias iterator.  We'll come back later
+and remove the existing quirk and dma_source interface.  Note that
+device ID 0xe822 is typically function 0 and 0xe230 has been tested
+to not need the quirk and are therefore removed versus the equivalent
+dma_source quirk.  If the exist in other configurations we can re-add
+them.
 
 Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/pci/search.c |   21 +++++++++++++++++++++
- include/linux/pci.h  |    2 ++
- 2 files changed, 23 insertions(+)
+ drivers/pci/quirks.c |   14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/pci/search.c b/drivers/pci/search.c
-index 5601cdb..ad698b2 100644
---- a/drivers/pci/search.c
-+++ b/drivers/pci/search.c
-@@ -37,6 +37,27 @@ int pci_for_each_dma_alias(struct pci_dev *pdev,
- 	if (ret)
- 		return ret;
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index e729206..ea2cb9f 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -3333,6 +3333,20 @@ int pci_dev_specific_reset(struct pci_dev *dev, int probe)
+ 	return -ENOTTY;
+ }
  
-+	/*
-+	 * dma_func_alias provides a bitmap of other function numbers on
-+	 * this same PCI slot to use as DMA aliases.
-+	 */
-+	if (unlikely(pdev->dma_func_alias)) {
-+		u8 map = pdev->dma_func_alias & ~(1 << PCI_FUNC(pdev->devfn));
-+		int func;
++static void quirk_dma_func0_alias(struct pci_dev *dev)
++{
++	if (PCI_FUNC(dev->devfn) != 0)
++		dev->dma_func_alias |= (1 << 0);
++}
 +
-+		for (func = 0; map && func < 8; func++, map >>= 1) {
-+			if (!(map & 1))
-+				continue;
++/*
++ * https://bugzilla.redhat.com/show_bug.cgi?id=605888
++ *
++ * Some Ricoh devices use function 0 as the PCIe requester ID for DMA.
++ */
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_RICOH, 0xe832, quirk_dma_func0_alias);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_RICOH, 0xe476, quirk_dma_func0_alias);
 +
-+			ret = fn(pdev,
-+				 PCI_DEVID(pdev->bus->number,
-+					   PCI_DEVFN(PCI_SLOT(pdev->devfn),
-+					   func)), data);
-+			if (ret)
-+				return ret;
-+		}
-+	}
-+
- 	for (bus = pdev->bus; !pci_is_root_bus(bus); bus = bus->parent) {
- 		struct pci_dev *tmp;
- 
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 14b074b..b4c97d2 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -268,6 +268,8 @@ struct pci_dev {
- 	u8		rom_base_reg;	/* which config register controls the ROM */
- 	u8		pin;		/* which interrupt pin this device uses */
- 	u16		pcie_flags_reg;	/* cached PCIe Capabilities Register */
-+	u8		dma_func_alias;	/* bitmap of functions used as DMA
-+					   aliases for this device */
- 
- 	struct pci_driver *driver;	/* which driver has allocated this device */
- 	u64		dma_mask;	/* Mask of the bits of bus address this
+ static struct pci_dev *pci_func_0_dma_source(struct pci_dev *dev)
+ {
+ 	if (!PCI_FUNC(dev->devfn))
