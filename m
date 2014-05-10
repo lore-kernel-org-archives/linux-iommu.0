@@ -1,114 +1,21 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v3 15/15] PCI: Remove pci_get_dma_source()
-Date: Sat, 10 May 2014 09:03:54 -0600
-Message-ID: <20140510150354.2997.57688.stgit@bling.home>
-References: <20140510145619.2997.429.stgit@bling.home>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140510145619.2997.429.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-gpGsJRJZ3PBBDgjK7y7TUQ@public.gmane.org
+From: "George Spelvin" <linux@horizon.com>
+Subject: Re: [PATCH v2 00/15] PCI/iommu: Fix DMA alias problems
+Date: 10 May 2014 12:16:36 -0400
+Message-ID: <20140510161636.25044.qmail@ns.horizon.com>
+References: <1399731309.17639.167.camel@ul30vt.home>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1399731309.17639.167.camel@ul30vt.home>
+Sender: linux-pci-owner@vger.kernel.org
+To: alex.williamson@redhat.com, linux@horizon.com
+Cc: acooks@gmail.com, bhelgaas@google.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-It has no users; replaced by dma_func_alias.
+> I'll post a v3 soon, I think we figured out the problem Andrew was
+> having, a couple typos on my part.  I'll push out a new branch for that
+> so you don't need to piece it together yourself.  Thanks,
 
-Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/pci/quirks.c |   51 --------------------------------------------------
- include/linux/pci.h  |    5 -----
- 2 files changed, 56 deletions(-)
+Don't worry; I imported v2, and have it running successfully right now.
+I ran e2fsck and hdparm -t on a couple of drives on the controller
+(including in parallel), with no problems.
 
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 652b49e..df814a2 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -3404,57 +3404,6 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_JMICRON,
- 			 PCI_DEVICE_ID_JMICRON_JMB388_ESD,
- 			 quirk_dma_func1_alias);
- 
--static struct pci_dev *pci_func_0_dma_source(struct pci_dev *dev)
--{
--	if (!PCI_FUNC(dev->devfn))
--		return pci_dev_get(dev);
--
--	return pci_get_slot(dev->bus, PCI_DEVFN(PCI_SLOT(dev->devfn), 0));
--}
--
--static const struct pci_dev_dma_source {
--	u16 vendor;
--	u16 device;
--	struct pci_dev *(*dma_source)(struct pci_dev *dev);
--} pci_dev_dma_source[] = {
--	/*
--	 * https://bugzilla.redhat.com/show_bug.cgi?id=605888
--	 *
--	 * Some Ricoh devices use the function 0 source ID for DMA on
--	 * other functions of a multifunction device.  The DMA devices
--	 * is therefore function 0, which will have implications of the
--	 * iommu grouping of these devices.
--	 */
--	{ PCI_VENDOR_ID_RICOH, 0xe822, pci_func_0_dma_source },
--	{ PCI_VENDOR_ID_RICOH, 0xe230, pci_func_0_dma_source },
--	{ PCI_VENDOR_ID_RICOH, 0xe832, pci_func_0_dma_source },
--	{ PCI_VENDOR_ID_RICOH, 0xe476, pci_func_0_dma_source },
--	{ 0 }
--};
--
--/*
-- * IOMMUs with isolation capabilities need to be programmed with the
-- * correct source ID of a device.  In most cases, the source ID matches
-- * the device doing the DMA, but sometimes hardware is broken and will
-- * tag the DMA as being sourced from a different device.  This function
-- * allows that translation.  Note that the reference count of the
-- * returned device is incremented on all paths.
-- */
--struct pci_dev *pci_get_dma_source(struct pci_dev *dev)
--{
--	const struct pci_dev_dma_source *i;
--
--	for (i = pci_dev_dma_source; i->dma_source; i++) {
--		if ((i->vendor == dev->vendor ||
--		     i->vendor == (u16)PCI_ANY_ID) &&
--		    (i->device == dev->device ||
--		     i->device == (u16)PCI_ANY_ID))
--			return i->dma_source(dev);
--	}
--
--	return pci_dev_get(dev);
--}
--
- /*
-  * AMD has indicated that the devices below do not support peer-to-peer
-  * in any system where they are found in the southbridge with an AMD
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 64184d5..c7183be 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1532,16 +1532,11 @@ enum pci_fixup_pass {
- 
- #ifdef CONFIG_PCI_QUIRKS
- void pci_fixup_device(enum pci_fixup_pass pass, struct pci_dev *dev);
--struct pci_dev *pci_get_dma_source(struct pci_dev *dev);
- int pci_dev_specific_acs_enabled(struct pci_dev *dev, u16 acs_flags);
- void pci_dev_specific_enable_acs(struct pci_dev *dev);
- #else
- static inline void pci_fixup_device(enum pci_fixup_pass pass,
- 				    struct pci_dev *dev) { }
--static inline struct pci_dev *pci_get_dma_source(struct pci_dev *dev)
--{
--	return pci_dev_get(dev);
--}
- static inline int pci_dev_specific_acs_enabled(struct pci_dev *dev,
- 					       u16 acs_flags)
- {
+Again, sorry for my earlier laziness.
