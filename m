@@ -1,8 +1,7 @@
 From: Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v13 08/19] iommu/exynos: remove dbgname from drvdata of a
-	System MMU
-Date: Mon, 12 May 2014 11:44:53 +0530
-Message-ID: <1399875304-19948-9-git-send-email-shaik.ameer@samsung.com>
+Subject: [PATCH v13 10/19] iommu/exynos: gating clocks of master H/W
+Date: Mon, 12 May 2014 11:44:55 +0530
+Message-ID: <1399875304-19948-11-git-send-email-shaik.ameer@samsung.com>
 References: <1399875304-19948-1-git-send-email-shaik.ameer@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,121 +23,140 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 
-This patch removes dbgname member from sysmmu_drvdata structure.
-Kernel message for debugging already has the name of a single
-System MMU node. It also removes some compilation warnings.
+This patch gates clocks of master H/W as well as clocks of System MMU
+if master clocks are specified.
 
+Some Exynos SoCs (i.e. GScalers in Exynos5250) have dependencies in
+the gating clocks of master H/W and its System MMU. If a H/W is the
+case, accessing control registers of System MMU is prohibited unless
+both of the gating clocks of System MMU and its master H/W.
+
+CC: Tomasz Figa <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 Signed-off-by: Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/exynos-iommu.c |   32 +++++++++++++-------------------
- 1 file changed, 13 insertions(+), 19 deletions(-)
+ drivers/iommu/exynos-iommu.c |   40 ++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 38 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index ef771a2..be7a7b9 100644
+index c86e374..5af5c5c 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -170,7 +170,6 @@ struct sysmmu_drvdata {
- 	struct list_head node; /* entry of exynos_iommu_domain.clients */
- 	struct device *sysmmu;	/* System MMU's device descriptor */
+@@ -172,6 +172,7 @@ struct sysmmu_drvdata {
  	struct device *dev;	/* Owner of system MMU */
--	char *dbgname;
  	void __iomem *sfrbase;
  	struct clk *clk;
++	struct clk *clk_master;
  	int activations;
-@@ -321,8 +320,8 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
- 	if (!ret && (itype != SYSMMU_FAULT_UNKNOWN))
- 		__raw_writel(1 << itype, data->sfrbase + REG_INT_CLEAR);
- 	else
--		dev_dbg(data->sysmmu, "(%s) %s is not handled.\n",
--				data->dbgname, sysmmu_fault_name[itype]);
-+		dev_dbg(data->sysmmu, "%s is not handled.\n",
-+				sysmmu_fault_name[itype]);
+ 	rwlock_t lock;
+ 	struct iommu_domain *domain;
+@@ -300,6 +301,8 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
  
+ 	WARN_ON(!is_sysmmu_active(data));
+ 
++	if (!IS_ERR(data->clk_master))
++		clk_enable(data->clk_master);
+ 	itype = (enum exynos_sysmmu_inttype)
+ 		__ffs(__raw_readl(data->sfrbase + REG_INT_STATUS));
+ 	if (WARN_ON(!((itype >= 0) && (itype < SYSMMU_FAULT_UNKNOWN))))
+@@ -326,6 +329,9 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
  	if (itype != SYSMMU_FAULT_UNKNOWN)
  		sysmmu_unblock(data->sfrbase);
-@@ -354,10 +353,10 @@ finish:
- 	write_unlock_irqrestore(&data->lock, flags);
  
- 	if (disabled)
--		dev_dbg(data->sysmmu, "(%s) Disabled\n", data->dbgname);
-+		dev_dbg(data->sysmmu, "Disabled\n");
- 	else
--		dev_dbg(data->sysmmu, "(%s) %d times left to be disabled\n",
--					data->dbgname, data->activations);
-+		dev_dbg(data->sysmmu, "%d times left to be disabled\n",
-+					data->activations);
++	if (!IS_ERR(data->clk_master))
++		clk_disable(data->clk_master);
++
+ 	read_unlock(&data->lock);
  
- 	return disabled;
- }
-@@ -384,7 +383,7 @@ static int __exynos_sysmmu_enable(struct sysmmu_drvdata *data,
- 			ret = 1;
- 		}
+ 	return IRQ_HANDLED;
+@@ -341,9 +347,14 @@ static bool __exynos_sysmmu_disable(struct sysmmu_drvdata *data)
+ 	if (!set_sysmmu_inactive(data))
+ 		goto finish;
  
--		dev_dbg(data->sysmmu, "(%s) Already enabled\n", data->dbgname);
-+		dev_dbg(data->sysmmu, "Already enabled\n");
++	if (!IS_ERR(data->clk_master))
++		clk_enable(data->clk_master);
++
+ 	__raw_writel(CTRL_DISABLE, data->sfrbase + REG_MMU_CTRL);
+ 
+ 	clk_disable(data->clk);
++	if (!IS_ERR(data->clk_master))
++		clk_disable(data->clk_master);
+ 
+ 	disabled = true;
+ 	data->pgtable = 0;
+@@ -386,14 +397,19 @@ static int __exynos_sysmmu_enable(struct sysmmu_drvdata *data,
  		goto finish;
  	}
  
-@@ -399,7 +398,7 @@ static int __exynos_sysmmu_enable(struct sysmmu_drvdata *data,
+-	clk_enable(data->clk);
+-
+ 	data->pgtable = pgtable;
  
++	if (!IS_ERR(data->clk_master))
++		clk_enable(data->clk_master);
++	clk_enable(data->clk);
++
+ 	__sysmmu_set_ptbase(data->sfrbase, pgtable);
+ 
+ 	__raw_writel(CTRL_ENABLE, data->sfrbase + REG_MMU_CTRL);
+ 
++	if (!IS_ERR(data->clk_master))
++		clk_disable(data->clk_master);
++
  	data->domain = domain;
  
--	dev_dbg(data->sysmmu, "(%s) Enabled\n", data->dbgname);
-+	dev_dbg(data->sysmmu, "Enabled\n");
- finish:
- 	write_unlock_irqrestore(&data->lock, flags);
- 
-@@ -415,16 +414,15 @@ int exynos_sysmmu_enable(struct device *dev, unsigned long pgtable)
- 
- 	ret = pm_runtime_get_sync(data->sysmmu);
- 	if (ret < 0) {
--		dev_dbg(data->sysmmu, "(%s) Failed to enable\n", data->dbgname);
-+		dev_dbg(data->sysmmu, "Failed to enable\n");
- 		return ret;
- 	}
- 
- 	ret = __exynos_sysmmu_enable(data, pgtable, NULL);
- 	if (WARN_ON(ret < 0)) {
- 		pm_runtime_put(data->sysmmu);
--		dev_err(data->sysmmu,
--			"(%s) Already enabled with page table %#x\n",
--			data->dbgname, data->pgtable);
-+		dev_err(data->sysmmu, "Already enabled with page table %#x\n",
-+			data->pgtable);
- 	} else {
- 		data->dev = dev;
- 	}
-@@ -474,9 +472,7 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova,
+ 	dev_dbg(data->sysmmu, "Enabled\n");
+@@ -450,6 +466,10 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova,
+ 	if (is_sysmmu_active(data)) {
+ 		unsigned int maj;
+ 		unsigned int num_inv = 1;
++
++		if (!IS_ERR(data->clk_master))
++			clk_enable(data->clk_master);
++
+ 		maj = __raw_readl(data->sfrbase + REG_MMU_VERSION);
+ 		/*
+ 		 * L2TLB invalidation required
+@@ -469,6 +489,8 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova,
+ 				data->sfrbase, iova, num_inv);
  			sysmmu_unblock(data->sfrbase);
  		}
++		if (!IS_ERR(data->clk_master))
++			clk_disable(data->clk_master);
  	} else {
--		dev_dbg(data->sysmmu,
--			"(%s) Disabled. Skipping invalidating TLB.\n",
--			data->dbgname);
-+		dev_dbg(data->sysmmu, "Disabled. Skipping invalidating TLB.\n");
+ 		dev_dbg(data->sysmmu, "Disabled. Skipping invalidating TLB.\n");
  	}
+@@ -484,10 +506,14 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
+ 	read_lock_irqsave(&data->lock, flags);
  
- 	read_unlock_irqrestore(&data->lock, flags);
-@@ -495,9 +491,7 @@ void exynos_sysmmu_tlb_invalidate(struct device *dev)
+ 	if (is_sysmmu_active(data)) {
++		if (!IS_ERR(data->clk_master))
++			clk_enable(data->clk_master);
+ 		if (sysmmu_block(data->sfrbase)) {
+ 			__sysmmu_tlb_invalidate(data->sfrbase);
  			sysmmu_unblock(data->sfrbase);
  		}
++		if (!IS_ERR(data->clk_master))
++			clk_disable(data->clk_master);
  	} else {
--		dev_dbg(data->sysmmu,
--			"(%s) Disabled. Skipping invalidating TLB.\n",
--			data->dbgname);
-+		dev_dbg(data->sysmmu, "Disabled. Skipping invalidating TLB.\n");
+ 		dev_dbg(data->sysmmu, "Disabled. Skipping invalidating TLB.\n");
+ 	}
+@@ -536,6 +562,16 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
+ 		}
  	}
  
- 	read_unlock_irqrestore(&data->lock, flags);
-@@ -560,7 +554,7 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
- 
- 	pm_runtime_enable(dev);
- 
--	dev_dbg(dev, "(%s) Initialized\n", data->dbgname);
-+	dev_dbg(dev, "Initialized\n");
- 	return 0;
- err_irq:
- 	free_irq(platform_get_irq(pdev, 0), data);
++	data->clk_master = devm_clk_get(dev, "master");
++	if (!IS_ERR(data->clk_master)) {
++		ret = clk_prepare(data->clk_master);
++		if (ret) {
++			clk_unprepare(data->clk);
++			dev_err(dev, "Failed to prepare master's clk\n");
++			return ret;
++		}
++	}
++
+ 	data->sysmmu = dev;
+ 	rwlock_init(&data->lock);
+ 	INIT_LIST_HEAD(&data->node);
 -- 
 1.7.9.5
