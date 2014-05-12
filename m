@@ -1,7 +1,8 @@
 From: Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v13 04/19] iommu/exynos: fix L2TLB invalidation
-Date: Mon, 12 May 2014 11:44:49 +0530
-Message-ID: <1399875304-19948-5-git-send-email-shaik.ameer@samsung.com>
+Subject: [PATCH v13 02/19] iommu/exynos: change error handling when page table
+	update is failed
+Date: Mon, 12 May 2014 11:44:47 +0530
+Message-ID: <1399875304-19948-3-git-send-email-shaik.ameer@samsung.com>
 References: <1399875304-19948-1-git-send-email-shaik.ameer@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,92 +24,166 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 
-L2TLB is 8-way set-associative TLB with 512 entries. The number of
-sets is 64.
-A single 4KB(small page) translation information is cached
-only to a set whose index is the same with the lower 6 bits of the page
-frame number.
-A single 64KB(large page) translation information can be
-cached to any 16 sets whose top two bits of their indices are the same
-with the bit [5:4] of the page frame number.
-A single 1MB(section) or larger translation information can be cached to
-any set in the TLB.
-
-It is required to invalidate entire sets that may cache the target
-translation information to guarantee that the L2TLB has no stale data.
+This patch changes not to panic on any error when updating page table.
+Instead prints error messages with callstack.
 
 Signed-off-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 Signed-off-by: Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/exynos-iommu.c |   32 +++++++++++++++++++++++++++-----
- 1 file changed, 27 insertions(+), 5 deletions(-)
+ drivers/iommu/exynos-iommu.c |   58 ++++++++++++++++++++++++++++++++----------
+ 1 file changed, 44 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 4ff4b0b..06fc70e 100644
+index 8d7c3f9..aec7fd7 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -226,9 +226,14 @@ static void __sysmmu_tlb_invalidate(void __iomem *sfrbase)
- }
- 
- static void __sysmmu_tlb_invalidate_entry(void __iomem *sfrbase,
--						unsigned long iova)
-+				unsigned long iova, unsigned int num_inv)
+@@ -728,13 +728,18 @@ finish:
+ static unsigned long *alloc_lv2entry(unsigned long *sent, unsigned long iova,
+ 					short *pgcounter)
  {
--	__raw_writel((iova & SPAGE_MASK) | 1, sfrbase + REG_MMU_FLUSH_ENTRY);
-+	unsigned int i;
-+	for (i = 0; i < num_inv; i++) {
-+		__raw_writel((iova & SPAGE_MASK) | 1,
-+				sfrbase + REG_MMU_FLUSH_ENTRY);
-+		iova += SPAGE_SIZE;
++	if (lv1ent_section(sent)) {
++		WARN(1, "Trying mapping on %#08lx mapped with 1MiB page", iova);
++		return ERR_PTR(-EADDRINUSE);
 +	}
- }
- 
- static void __sysmmu_set_ptbase(void __iomem *sfrbase,
-@@ -452,7 +457,8 @@ static bool exynos_sysmmu_disable(struct device *dev)
- 	return disabled;
- }
- 
--static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova)
-+static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova,
-+					size_t size)
- {
- 	unsigned long flags;
- 	struct sysmmu_drvdata *data = dev_get_drvdata(dev->archdata.iommu);
-@@ -460,9 +466,25 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, unsigned long iova)
- 	read_lock_irqsave(&data->lock, flags);
- 
- 	if (is_sysmmu_active(data)) {
-+		unsigned int maj;
-+		unsigned int num_inv = 1;
-+		maj = __raw_readl(data->sfrbase + REG_MMU_VERSION);
-+		/*
-+		 * L2TLB invalidation required
-+		 * 4KB page: 1 invalidation
-+		 * 64KB page: 16 invalidation
-+		 * 1MB page: 64 invalidation
-+		 * because it is set-associative TLB
-+		 * with 8-way and 64 sets.
-+		 * 1MB page can be cached in one of all sets.
-+		 * 64KB page can be one of 16 consecutive sets.
-+		 */
-+		if ((maj >> 28) == 2) /* major version number */
-+			num_inv = min_t(unsigned int, size / PAGE_SIZE, 64);
 +
- 		if (sysmmu_block(data->sfrbase)) {
- 			__sysmmu_tlb_invalidate_entry(
--					data->sfrbase, iova);
-+				data->sfrbase, iova, num_inv);
- 			sysmmu_unblock(data->sfrbase);
- 		}
- 	} else {
-@@ -915,7 +937,7 @@ done:
+ 	if (lv1ent_fault(sent)) {
+ 		unsigned long *pent;
  
- 	spin_lock_irqsave(&priv->lock, flags);
- 	list_for_each_entry(data, &priv->clients, node)
--		sysmmu_tlb_invalidate_entry(data->dev, iova);
-+		sysmmu_tlb_invalidate_entry(data->dev, iova, size);
+ 		pent = kzalloc(LV2TABLE_SIZE, GFP_ATOMIC);
+ 		BUG_ON((unsigned long)pent & (LV2TABLE_SIZE - 1));
+ 		if (!pent)
+-			return NULL;
++			return ERR_PTR(-ENOMEM);
+ 
+ 		*sent = mk_lv1ent_page(virt_to_phys(pent));
+ 		*pgcounter = NUM_LV2ENTRIES;
+@@ -745,14 +750,21 @@ static unsigned long *alloc_lv2entry(unsigned long *sent, unsigned long iova,
+ 	return page_entry(sent, iova);
+ }
+ 
+-static int lv1set_section(unsigned long *sent, phys_addr_t paddr, short *pgcnt)
++static int lv1set_section(unsigned long *sent, unsigned long iova,
++			  phys_addr_t paddr, short *pgcnt)
+ {
+-	if (lv1ent_section(sent))
++	if (lv1ent_section(sent)) {
++		WARN(1, "Trying mapping on 1MiB@%#08lx that is mapped",
++			iova);
+ 		return -EADDRINUSE;
++	}
+ 
+ 	if (lv1ent_page(sent)) {
+-		if (*pgcnt != NUM_LV2ENTRIES)
++		if (*pgcnt != NUM_LV2ENTRIES) {
++			WARN(1, "Trying mapping on 1MiB@%#08lx that is mapped",
++				iova);
+ 			return -EADDRINUSE;
++		}
+ 
+ 		kfree(page_entry(sent, 0));
+ 
+@@ -770,8 +782,10 @@ static int lv2set_page(unsigned long *pent, phys_addr_t paddr, size_t size,
+ 								short *pgcnt)
+ {
+ 	if (size == SPAGE_SIZE) {
+-		if (!lv2ent_fault(pent))
++		if (!lv2ent_fault(pent)) {
++			WARN(1, "Trying mapping on 4KiB where mapping exists");
+ 			return -EADDRINUSE;
++		}
+ 
+ 		*pent = mk_lv2ent_spage(paddr);
+ 		pgtable_flush(pent, pent + 1);
+@@ -780,7 +794,10 @@ static int lv2set_page(unsigned long *pent, phys_addr_t paddr, size_t size,
+ 		int i;
+ 		for (i = 0; i < SPAGES_PER_LPAGE; i++, pent++) {
+ 			if (!lv2ent_fault(pent)) {
+-				memset(pent, 0, sizeof(*pent) * i);
++				WARN(1,
++				"Trying mapping on 64KiB where mapping exists");
++				if (i > 0)
++					memset(pent - i, 0, sizeof(*pent) * i);
+ 				return -EADDRINUSE;
+ 			}
+ 
+@@ -808,7 +825,7 @@ static int exynos_iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 	entry = section_entry(priv->pgtable, iova);
+ 
+ 	if (size == SECT_SIZE) {
+-		ret = lv1set_section(entry, paddr,
++		ret = lv1set_section(entry, iova, paddr,
+ 					&priv->lv2entcnt[lv1ent_offset(iova)]);
+ 	} else {
+ 		unsigned long *pent;
+@@ -816,17 +833,16 @@ static int exynos_iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 		pent = alloc_lv2entry(entry, iova,
+ 					&priv->lv2entcnt[lv1ent_offset(iova)]);
+ 
+-		if (!pent)
+-			ret = -ENOMEM;
++		if (IS_ERR(pent))
++			ret = PTR_ERR(pent);
+ 		else
+ 			ret = lv2set_page(pent, paddr, size,
+ 					&priv->lv2entcnt[lv1ent_offset(iova)]);
+ 	}
+ 
+-	if (ret) {
++	if (ret)
+ 		pr_debug("%s: Failed to map iova 0x%lx/0x%x bytes\n",
+ 							__func__, iova, size);
+-	}
+ 
+ 	spin_unlock_irqrestore(&priv->pgtablelock, flags);
+ 
+@@ -840,6 +856,7 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
+ 	struct sysmmu_drvdata *data;
+ 	unsigned long flags;
+ 	unsigned long *ent;
++	size_t err_pgsize;
+ 
+ 	BUG_ON(priv->pgtable == NULL);
+ 
+@@ -848,7 +865,10 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
+ 	ent = section_entry(priv->pgtable, iova);
+ 
+ 	if (lv1ent_section(ent)) {
+-		BUG_ON(size < SECT_SIZE);
++		if (size < SECT_SIZE) {
++			err_pgsize = SECT_SIZE;
++			goto err;
++		}
+ 
+ 		*ent = 0;
+ 		pgtable_flush(ent, ent + 1);
+@@ -879,7 +899,10 @@ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
+ 	}
+ 
+ 	/* lv1ent_large(ent) == true here */
+-	BUG_ON(size < LPAGE_SIZE);
++	if (size < LPAGE_SIZE) {
++		err_pgsize = LPAGE_SIZE;
++		goto err;
++	}
+ 
+ 	memset(ent, 0, sizeof(*ent) * SPAGES_PER_LPAGE);
+ 
+@@ -893,8 +916,15 @@ done:
+ 		sysmmu_tlb_invalidate_entry(data->dev, iova);
  	spin_unlock_irqrestore(&priv->lock, flags);
  
+-
  	return size;
++err:
++	spin_unlock_irqrestore(&priv->pgtablelock, flags);
++
++	WARN(1,
++	"%s: Failed due to size(%#x) @ %#08lx is smaller than page size %#x\n",
++	__func__, size, iova, err_pgsize);
++
++	return 0;
+ }
+ 
+ static phys_addr_t exynos_iommu_iova_to_phys(struct iommu_domain *domain,
 -- 
 1.7.9.5
