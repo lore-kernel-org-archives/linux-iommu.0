@@ -1,14 +1,14 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu/amd: Fix interrupt remapping for aliased devices
-Date: Mon, 12 May 2014 21:05:12 +0200
-Message-ID: <20140512190511.GB10562@8bytes.org>
-References: <20140422160802.11173.29725.stgit@bling.home>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [GIT PULL FOR v3.16] SH-Mobile IPMMU miscellaneous cleanups
+Date: Mon, 12 May 2014 21:46:57 +0200
+Message-ID: <3320346.ObYc3HAjHb@avalon>
+References: <1396482562-1851-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+	<2764209.oq6GXMERSj@avalon> <20140512185554.GY12376@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20140422160802.11173.29725.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+In-Reply-To: <20140512185554.GY12376-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,21 +18,31 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Apr 22, 2014 at 10:08:40AM -0600, Alex Williamson wrote:
-> An apparent cut and paste error prevents the correct flags from being
-> set on the alias device resulting in MSI on conventional PCI devices
-> failing to work.  This also produces error events from the IOMMU like:
-> 
-> AMD-Vi: Event logged [INVALID_DEVICE_REQUEST device=00:14.4 address=0x000000fdf8000000 flags=0x0a00]
-> 
-> Where 14.4 is a PCIe-to-PCI bridge with a device behind it trying to
-> use MSI interrupts.
-> 
-> Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Hi Joerg,
 
-Applied, thanks Alex.
+On Monday 12 May 2014 20:55:54 Joerg Roedel wrote:
+> On Thu, Apr 17, 2014 at 12:18:21PM +0200, Laurent Pinchart wrote:
+> >   git://linuxtv.org/pinchartl/fbdev.git iommu/for-v3.16
+> 
+> Pulled, thanks Laurent,
+
+Thank you. Now, what about the "iommu: Add driver for Renesas VMSA-compatible 
+IPMMU" patch ? :-)
+
+> despite I missed a MAINTAINERS patch ;-)
+
+Since when are developers required to become maintainers when submitting the 
+odd cleanup patch ? :-)
+
+> What happened to the original author of this driver?
+
+I'm afraid I don't know. Magnus (CC'ed) might have more information.
+
+-- 
+Regards,
+
+Laurent Pinchart
