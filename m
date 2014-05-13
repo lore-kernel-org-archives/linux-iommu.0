@@ -1,15 +1,15 @@
-From: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v1 1/1] iommu/amd: fix enabling exclusion range for an
-	exact device
-Date: Tue, 13 May 2014 12:35:56 +0200
-Message-ID: <20140513103556.GB23770@8bytes.org>
-References: <053191AD6E9023439BF3970DE87005185086D31DA3@APSHAXMS02.ap.sony.com>
+From: Shaik Ameer Basha <shaik.samsung-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v13 00/19] iommu/exynos: Fixes and Enhancements of System
+	MMU driver with DT
+Date: Tue, 13 May 2014 19:02:39 +0530
+Message-ID: <CAOD6ATou_4aNce-0NVFWOXO66W0dsEva0MQddAqQCqhCGRWxMQ@mail.gmail.com>
+References: <1399875304-19948-1-git-send-email-shaik.ameer@samsung.com>
+	<5576160.rCaFbvon4G@wuerfel>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <053191AD6E9023439BF3970DE87005185086D31DA3-vLFws2UBKuUBqgaMIWwxlo3UfPj+9hkl@public.gmane.org>
+In-Reply-To: <5576160.rCaFbvon4G@wuerfel>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,31 +19,44 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Su, Friendy" <Friendy.Su-7U/KSKJipcvM1kAEIRd3EQ@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Linux DeviceTree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Samsung SOC <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Prathyush <prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Tomasz Figa <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "supash.ramaswamy" <supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sunil joshi <joshi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Varun Sethi <varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Rahul Sharma <rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, May 07, 2014 at 01:54:52PM +0800, Su, Friendy wrote:
-> 
-> From: Su Friendy <friendy.su-7U/KSKJipcvM1kAEIRd3EQ@public.gmane.org>
-> 
-> set_device_exclusion_range(u16 devid, struct ivmd_header *m) enables
-> exclusion range for ONE device. IOMMU does not translate the access
-> to the exclusion range from the device.
-> 
-> The device is specified by input argument 'devid'. But 'devid' is not
-> passed to the actual set function set_dev_entry_bit(), instead
-> 'm->devid' is passed. 'm->devid' does not specify the exact device
-> which needs enable the exclusion range. 'm->devid' represents DeviceID
-> field of IVMD, which has different meaning depends on IVMD type.
-> 
-> The caller init_exclusion_range() sets 'devid' for ONE device. When
-> m->type is equal to ACPI_IVMD_TYPE_ALL or ACPI_IVMD_TYPE_RANGE,
-> 'm->devid' is not equal to 'devid'.
-> 
-> This patch fixes 'm->devid' to 'devid'.
-> 
-> Signed-off-by: Su Friendy <friendy.su-7U/KSKJipcvM1kAEIRd3EQ@public.gmane.org>
-> Signed-off-by: Tamori Masahiro <Masahiro.Tamori-7rVYBvDxQfZBDgjK7y7TUQ@public.gmane.org>
+On Mon, May 12, 2014 at 3:37 PM, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> wrote:
+> On Monday 12 May 2014 11:44:45 Shaik Ameer Basha wrote:
+>> This is the subset of previous v12 series and includes only the fixes and
+>> enhancements, leaving out the private DT bindings as discussed in the below thread.
+>>     -- http://www.gossamer-threads.com/lists/linux/kernel/1918178
+>>
+>> This patch series includes,
+>> 1] fixes for exynos-iommu driver build break
+>> 2] includes several bug fixes and enhancements for the exynos-iommu driver
+>> 3] code to handle multiple exynos sysmmu versions
+>> 4] adding support for device tree
+>>         Documentation/devicetree/bindings/iommu/samsung,sysmmu.txt
+>
+> The patches look good to me, but please add a note into the samsung,sysmmu.txt
+> file explaining that the binding is incomplete and that it's possible to
+> change in incompatible ways when we add support for attaching devices to
+> the IOMMU through the generic IOMMU binding.
 
-Applied, thanks.
+Hi Arnd,
+
+Thank you.
+If there are no more comments on this series, I can send one more
+incremental patch
+with the note mentioned in your review comment.
+
+Hi Joerg Roedel,
+Can you please add this series to your tree.
+
+Regards,
+Shaik Ameer Basha
+
+>
+>         Arnd
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
