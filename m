@@ -1,14 +1,12 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v3 00/15] PCI/iommu: Fix DMA alias problems
-Date: Wed, 14 May 2014 11:18:57 -0600
-Message-ID: <1400087937.17639.223.camel@ul30vt.home>
-References: <20140510145619.2997.429.stgit@bling.home>
-	<1400020520427-859747.post@n7.nabble.com>
+Subject: [PATCH] iommu/intel: Exclude devices using RMRRs from IOMMU API
+	domains
+Date: Wed, 14 May 2014 13:27:18 -0600
+Message-ID: <20140514192620.7767.43842.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1400020520427-859747.post-hbTxXoYVu7Vl57MIdRCFDg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,79 +16,45 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: eddy0596 <eddy0596-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-pci <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, chegu_vinod-VXdhtT5mjnY@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-[+cc original lists]
+The user of the IOMMU API domain expects to have full control of
+the IOVA space for the domain.  RMRRs are fundamentally incompatible
+with that idea.  We can neither map the RMRR into the IOMMU API
+domain, nor can we guarantee that the device won't continue DMA with
+the area described by the RMRR as part of the new domain.  Therefore
+we must prevent such devices from being used by the IOMMU API.
 
-Hi Edward,
+Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/intel-iommu.c |   15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-On Tue, 2014-05-13 at 15:35 -0700, eddy0596 wrote:
-> Hello Alex,
-> 
-> Thanks for working on a fix on this long standing issue. I have applied the
-> amd portion of the IOMMU patches against the 3.14.3 kernel and found the
-> followings:
-> 1) The computer would not boot up if it's from a cold start. The kernel log
-> shows that it hangs at the point the kernel attempt to attach the scsi disk
-> [sdk] that connects to the LSI-SAS2008 controller at pci 04:00.0. I can use
-> Ctrl+Alt+Del to reboot the computer. So, I guess the kernel didn't "hang"
-> and I don't see any oops either.
-> 2) After a warm reboot with Ctrl+Alt+Del, the kernel will boot up fine. And,
-> the Marvell controller behaves properly (More stress test needed) and so as
-> the two LSI-SAS2008. A warm reboot after a hard reset at BIOS prompt will
-> also boot up fine.
-
-Both of these indicate that the hand-off state of the system is
-different between a warm an cold reset.  Can you capture the boot
-messages (serial console or netconsole) of each case and add the
-pci=earlydump option so we can compare the PCI state?
-
-> 3) Removing sdk and perform a cold reboot, the kernel stops after attaching
-> all the ST3000DM001 harddisks that connects to the LSI-SAS2008 at pci
-> 01:00:0. The kernel stops at "ata12: SATA link down (SStatus 0 SControl
-> 300)".
-> 4) Removing sda and sdl that connects to the Marvell 88SE9172 at pci
-> 09:00.0, the kernel stops after attaching the eight ST3000DM001 that
-> connects to the LSI-SAS2008 at pci 01:00:0.
-
-So it's not an issue with those specific disks.  Is it possible to
-remove or disable the controller in the BIOS to further isolate?
-
-> 5) Cold start with a kernel without the IOMMU patches starts up fine except
-> a number of kernel oops related to the Marvell controller complaining about
-> invalid PCI access from the AMD IOMMU.
-
-Is this kernel built from the same source tree as below without the
-indicated IOMMU patches applied?
-
-> Attached is the kernel boot log that's obtained with all HDDs attached and
-> successfully boot up after a warm reboot and some information on my setup.
-> Let me know if you need more information/log to help with debuging. 
-
-The mailing list doesn't like attachments, but it was included in the
-re-send to me where it was inline.  An unsuccessful boot log is probably
-the most interesting, preferably with the pci=earlydump option (and
-continue to use the amd_iommu_dump option as well).  Also, what happens
-with amd_iommu=off?  If we're not getting any IOMMU faults, it seems
-like the patches are doing their job and I'm at a bit of a loss to
-understand how it would fail only on a cold boot.
-
-It might also be useful to test the branch provided in case there's an
-issue with backporting the patches to 3.14.
-
-> Best Regards,
-> 
-> Edward Cheung
-> 
-> Motherboard: Gigabyte GA-990FXA-UD5 Revision 1.0. Note that the kernel is
-> using software IO TLB belief due to broken IVRS table. I am still trying to
-> find a fix for this.
-
-What brings you to the conclusion that the IVRS table is broken?  IIRC,
-AMD-Vi initializes the swiotlb to support pasthrough devices that can
-only do 32bit DMA... or something like that.  So I don't think it's
-unusual to see it initialized alongside AMD IOMMU.  Thanks,
-
-Alex
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index f256ffc..eb77149 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -4188,6 +4188,21 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
+ 	int addr_width;
+ 	u8 bus, devfn;
+ 
++	/*
++	 * With IOMMU API domains we don't have the freedom to insert RMRR
++	 * entries into the domain mapping, the IOMMU API user expects full
++	 * control of the IOVA space of the device.  We also have no ability
++	 * to shutdown whatever back channel operations occur through the
++	 * RMRR.  Therefore our only option is to prevent devices making use
++	 * of RMRRs from being used by the IOMMU API.  As usual we exempt
++	 * USB devices since their RMRR support is largely historical.
++	 */
++	if (device_has_rmrr(dev) && (!dev_is_pci(dev) ||
++	    (to_pci_dev(dev)->class >> 8) != PCI_CLASS_SERIAL_USB)) {
++		dev_warn(dev, "Device is ineligible for IOMMU domain attach due to platform RMRR requirement.  Contact your platform vendor.\n");
++		return -EPERM;
++	}
++
+ 	/* normally dev is not mapped */
+ 	if (unlikely(domain_context_mapped(dev))) {
+ 		struct dmar_domain *old_domain;
