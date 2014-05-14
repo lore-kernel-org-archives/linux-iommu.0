@@ -1,34 +1,33 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v3 08/15] iommu/amd: Use pci_find_dma_isolation_root()
- for IOMMU groups
-Date: Wed, 14 May 2014 12:34:50 +0200
-Message-ID: <20140514103449.GE6026@8bytes.org>
-References: <20140510145619.2997.429.stgit@bling.home>
- <20140510150311.2997.62903.stgit@bling.home>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [PATCH] documentation/iommu: Add note on existing DT binding
+	status
+Date: Wed, 14 May 2014 14:46:07 +0200
+Message-ID: <4285609.T2z8nUPpCQ@wuerfel>
+References: <1400046813-15248-1-git-send-email-shaik.ameer@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20140510150311.2997.62903.stgit@bling.home>
-Sender: linux-pci-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, bhelgaas@google.com, acooks@gmail.com, linux-kernel@vger.kernel.org, linux@horizon.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1400046813-15248-1-git-send-email-shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, May 10, 2014 at 09:03:11AM -0600, Alex Williamson wrote:
-> The expectation is that the kernel and IVRS will produce the same
-> result for topology based aliases while the kernel will also include
-> device specific DMA quirks.
+On Wednesday 14 May 2014 11:23:33 Shaik Ameer Basha wrote:
+> The current dt binding for Exynos System MMU can be changed, if found
+> incompatible with the support for "Generic IOMMU Binding".
+> This patch adds a note to the binding documentation stating the same.
+> 
+> Signed-off-by: Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> 
 
-Is that expectation really true? There are PCIe devices out there that
-don't use their own device-id for requests but another one that isn't
-even visible as a PCI device (so the kernel has no pci_dev structure for
-it). The IVRS table contains such information, but I am not sure whether
-the PCI core finds the right requestor-id for those devices.
-
-I've seen this on PCIe cards that where the vendor just used an PCI-X
-chip with a PCIe-to-PCI-X bridge on the card. The PCI-X device is
-visible for the OS but uses the requestor-id of the invisible bridge.
-
-
-	Joerg
+Acked-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
