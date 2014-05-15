@@ -1,14 +1,15 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 00/15] PCI/iommu: Fix DMA alias problems
-Date: Thu, 15 May 2014 11:43:54 -0600
-Message-ID: <1400175834.3289.65.camel@ul30vt.home>
-References: <20140509151735.8321.22017.stgit@bling.home>
-	<CAJtEV7YYB4W_+nZeMgiqZVDV+M4OyFJVBic09z=KbMjOpihnTQ@mail.gmail.com>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v12 11/31] documentation: iommu: add binding document of
+	Exynos System MMU
+Date: Thu, 15 May 2014 22:37:31 +0200
+Message-ID: <20140515203729.GA7136@mithrandir>
+References: <1398584283-22846-1-git-send-email-shaik.ameer@samsung.com>
+	<6544270.ddFBoY6LMm@wuerfel> <20140428111802.GI19455@ulmo>
+	<4780885.JaktFvJeC7@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============4910969773740930535=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAJtEV7YYB4W_+nZeMgiqZVDV+M4OyFJVBic09z=KbMjOpihnTQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <4780885.JaktFvJeC7@wuerfel>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,57 +19,120 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Andrew Cooks <acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "open list:PCI SUBSYSTEM" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL
-	IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, joshi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, prathyush.k-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, rahul.sharma-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, supash.ramaswamy-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 2014-05-15 at 07:40 +0800, Andrew Cooks wrote:
-> Hi Alex
-> 
-> On Fri, May 9, 2014 at 11:28 PM, Alex Williamson
-> <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> > ....
-> >
-> > Original description:
-> >
-> > This series attempts to fix a couple issues we've had outstanding in
-> > the PCI/IOMMU code for a while.  The first issue is with devices that
-> > use the wrong requester ID for DMA transactions.  We already have a
-> > sort of half-baked attempt to fix this for several Ricoh devices, but
-> > the fix only helps them be useful through IOMMU groups, not the
-> > general DMA case.  There are also several Marvell devices which use
-> > use a different wrong requester ID and don't even fit into the DMA
-> > source idea.  This series creates a DMA alias iterator that will
-> > step through each possible alias of a device, allowing IOMMUs to
-> > insert mappings for both the device and its aliases.
-> >
-> > Hand-in-hand with this is our broken pci_find_upstream_pcie_bridge()
-> > function, which is known to blowup when it finds itself suddenly at
-> > a PCIe device without crossing a PCIe-to-PCI bridge (as identified by
-> > the PCIe capability).  It also likes to make the invalid assumption
-> > that a PCIe device never has its requester ID masked by any usptream
-> > bus.  We can fix this using the above new DMA alias iterator, since
-> > that's effectively what this function was meant to do.
-> >
-> 
-> There are two cases where the DMA requester id seems to use the wrong
-> slot (as opposed to function) in the patch I attached to
-> https://bugzilla.kernel.org/show_bug.cgi?id=42679
-> The original bug reports are listed in the patch.
-> 
-> Unfortunately, I wasn't able to get test feedback on those two cases,
-> but I'm wondering...
-> Did I understand correctly that a slot alias is something that could be needed?
-> If so, is it a variation of the PCIe-to-PCI bridge case that's already
-> covered or will it require a different approach?
 
-Wow, I didn't think that kind of broken was possible.  Maybe instead of
-a bitmap of function aliases we could have a single devfn alias for a
-device.  That means we'd only be able to support a single alias for a
-device, but since I don't think we've seen devices that use more than a
-single alias, maybe that's ok.  I'll see what changes we'd need to make
-for that, but I probably won't go adding the actual quirk based on those
-old reports.  Thanks,
+--===============4910969773740930535==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="82I3+IH0IqGh5yIs"
+Content-Disposition: inline
 
-Alex
+
+--82I3+IH0IqGh5yIs
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Mon, Apr 28, 2014 at 02:05:30PM +0200, Arnd Bergmann wrote:
+[...]
+> let me clarify by example:
+>=20
+> 	iommu@1 {
+> 		compatible =3D "some,simple-iommu";
+> 		reg =3D <1>;
+> 		#iommu-cells =3D <0>; /* supports only one master */
+> 	};
+>=20
+> 	iommu@2 {
+> 		compatible =3D "some,other-iommu";
+> 		reg =3D <3>;
+> 		#iommu-cells =3D <1>; /* contains master ID */
+> 	};
+>=20
+> 	iommu@3 {
+> 		compatible =3D "some,windowed-iommu";
+> 		reg =3D <2>;
+> 		#iommu-cells =3D <2>; /* contains dma-window */
+> 	};
+>=20
+> 	device@4 {
+> 		compatible =3D "some,ethernet";
+> 		iommus =3D <&/iommu@1>;
+> 	};
+>=20
+> 	device@5 {
+> 		compatible =3D "some,dmaengine";
+> 		iommus =3D <&/iommu@2 0x40000000 0x1000000>,
+> 			 <&/iommu@3 0x101>;
+> 	};
+>=20
+> The device at address 4 has a one-one relationship with iommu@1, so there
+> is no need for any data. device@5 has two master ports. One is connected =
+to
+> an IOMMU that has a per-device aperture, device@5 can only issue transfers
+> to the 256MB area at 0x40000000, and the IOMMU will have to put entries f=
+or
+> this device into that address. The second master port is connected to
+> iommu@3, which uses a master ID that gets passed along with each transfer,
+> so that needs to be put into the IOTLBs.
+
+iommu@3 and the second port of device@5 seem to match what we need for
+Tegra (and as I understand also Exynos). Can we settle on this for now
+so that Hiroshi and Cho can go update their drivers for this binding?
+
+> A variation would be to not use #iommu-cells at all, but provide a
+> #address-cells / #size-cells pair in the IOMMU, and have a translation
+> as we do for dma-ranges. This is probably most flexible.
+
+The remainder of this discussion seems to indicate that #iommu-cells and
+dma-ranges don't have to be mutually exclusive. For some IOMMUs it might
+make sense to use both.
+
+In fact perhaps we should require every IOMMU user to also specify a
+dma-ranges property, even if for some cases the range would be simply
+the complete physical address space. Perhaps in analogy to the ranges
+property an empty dma-ranges property could be taken to mean all of the
+physical address space.
+
+I'm aware that this doesn't cover any of the more exotic cases out
+there, but the fact is that we have real devices out there that ship
+with some variations of these simple IOMMUs and I don't think we're
+doing ourselves a favour by blocking support for these to be added on
+the hope of merging the perfect solution that covers all use-cases.
+Patches for Tegra have already been around for close to half a year.
+
+Thierry
+
+--82I3+IH0IqGh5yIs
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJTdSWIAAoJEN0jrNd/PrOhNlcQAL3IQystbn7k1fYhGLuqJ15t
+FnHMNLIrL5LroGQBJ0F/zGd+tGe8lSlo+pwbAK5ewxVdPCJL29VpeuEPLwZpZGiN
+QRrxFHnZPhyKTiTiFVGJJThCW0yY4IMLZ/c3wZk/17KYKftTFyOaWjGQFLwMQ6Hu
+xDZOO+5dmcc9SckHRJUOn+WDLExBDV3GNOZxSGbMNtiYqYjCV6vRmqI+O55lq9+1
+vmN78TzdKCj+lHN4jsRk2ehn1Zfqy/mNkmjcV1I4wL5CPl4XV7XC1SxFaZNBINIT
+12cp+2NcGE+yuizM+mOyF/hVdGR8P4i3wMBTAuX8fzH6g2gAnelRkzCGvefLe5aX
+2qJbUJ/S/pXxq+kga9eBgyMzTj8xLqZMawHCfDUSIv1YDfRXBWyZy0xK44aD+a/g
+igQOpSLhJc0xb3QF8EUntTB8Et23OzbyKXWW+cMXnuAcW1ahL0M85Z+ixuYRfJl+
+MggbJUUVa14EJvJMrAwFMVHm2j7Kjsalhfy8m8dke/3HoAeeaY1Lrehdf8DbsGtu
+edFGeuwLyUCwYc1jh620+qeNjDjo6ovORjPOJo6fIxf+gaiszXxFf7Fm/KHtBAoQ
+ns8fOahCGwFvch3snzU12QhVW6cBNtMPINL3+nqyeThN3shf6neaqrgWJPOiUSwh
+zoYccPp4OLvP5zEZCEmA
+=tf6d
+-----END PGP SIGNATURE-----
+
+--82I3+IH0IqGh5yIs--
+
+--===============4910969773740930535==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============4910969773740930535==--
