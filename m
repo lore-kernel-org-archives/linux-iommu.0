@@ -1,98 +1,158 @@
-From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: [PATCH v2 05/10] iommu/ipmmu-vmsa: Set the PTE contiguous hint bit
-	when possible
-Date: Thu, 15 May 2014 12:40:46 +0200
-Message-ID: <1400150451-13469-6-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH v2 06/10] iommu/ipmmu-vmsa: PMD is never folded, PUD always is
+Date: Thu, 15 May 2014 12:40:47 +0200
+Message-ID: <1400150451-13469-7-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1400150451-13469-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1400150451-13469-1-git-send-email-laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1400150451-13469-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: linux-sh@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-The contiguous hint bit signals to the IOMMU that a range of 16 PTEs
-refer to physically contiguous memory. It improves performances by
-dividing the number of TLB lookups by 16, effectively implementing 64kB
-page sizes.
+The driver only supports the 3-level long descriptor format that has no
+PUD and always has a PMD.
 
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 ---
- drivers/iommu/ipmmu-vmsa.c | 43 ++++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 40 insertions(+), 3 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c | 66 +++++++---------------------------------------
+ 1 file changed, 9 insertions(+), 57 deletions(-)
 
 diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index b34a4b7b..150e18e 100644
+index 150e18e..d388749 100644
 --- a/drivers/iommu/ipmmu-vmsa.c
 +++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -209,6 +209,9 @@ static LIST_HEAD(ipmmu_devices);
- #define ARM_VMSA_PTE_MEMATTR_NC		(((pteval_t)0x5) << 2)
- #define ARM_VMSA_PTE_MEMATTR_DEV	(((pteval_t)0x1) << 2)
- 
-+#define ARM_VMSA_PTE_CONT_ENTRIES	16
-+#define ARM_VMSA_PTE_CONT_SIZE		(PAGE_SIZE * ARM_VMSA_PTE_CONT_ENTRIES)
-+
+@@ -215,7 +215,6 @@ static LIST_HEAD(ipmmu_devices);
  #define IPMMU_PTRS_PER_PTE		512
  #define IPMMU_PTRS_PER_PMD		512
  #define IPMMU_PTRS_PER_PGD		4
-@@ -569,10 +572,44 @@ static int ipmmu_alloc_init_pte(struct ipmmu_vmsa_device *mmu, pmd_t *pmd,
- 	pteval |= ARM_VMSA_PTE_SH_IS;
- 	start = pte;
+-#define IPMMU_PTRS_PER_PUD		1
  
--	/* Install the page table entries. */
-+	/*
-+	 * Install the page table entries.
-+	 *
-+	 * Set the contiguous hint in the PTEs where possible. The hint
-+	 * indicates a series of ARM_VMSA_PTE_CONT_ENTRIES PTEs mapping a
-+	 * physically contiguous region with the following constraints:
-+	 *
-+	 * - The region start is aligned to ARM_VMSA_PTE_CONT_SIZE
-+	 * - Each PTE in the region has the contiguous hint bit set
-+	 *
-+	 * We don't support partial unmapping so there's no need to care about
-+	 * clearing the contiguous hint from neighbour PTEs.
-+	 */
+ /* -----------------------------------------------------------------------------
+  * Read/Write Access
+@@ -465,6 +464,8 @@ static irqreturn_t ipmmu_irq(int irq, void *dev)
+  * Page Table Management
+  */
+ 
++#define pud_pgtable(pud) pfn_to_page(__phys_to_pfn(pud_val(pud) & PHYS_MASK))
++
+ static void ipmmu_free_ptes(pmd_t *pmd)
+ {
+ 	pgtable_t table = pmd_pgtable(*pmd);
+@@ -473,10 +474,10 @@ static void ipmmu_free_ptes(pmd_t *pmd)
+ 
+ static void ipmmu_free_pmds(pud_t *pud)
+ {
+-	pmd_t *pmd, *pmd_base = pmd_offset(pud, 0);
++	pmd_t *pmd = pmd_offset(pud, 0);
++	pgtable_t table;
+ 	unsigned int i;
+ 
+-	pmd = pmd_base;
+ 	for (i = 0; i < IPMMU_PTRS_PER_PMD; ++i) {
+ 		if (pmd_none(*pmd))
+ 			continue;
+@@ -485,24 +486,8 @@ static void ipmmu_free_pmds(pud_t *pud)
+ 		pmd++;
+ 	}
+ 
+-	pmd_free(NULL, pmd_base);
+-}
+-
+-static void ipmmu_free_puds(pgd_t *pgd)
+-{
+-	pud_t *pud, *pud_base = pud_offset(pgd, 0);
+-	unsigned int i;
+-
+-	pud = pud_base;
+-	for (i = 0; i < IPMMU_PTRS_PER_PUD; ++i) {
+-		if (pud_none(*pud))
+-			continue;
+-
+-		ipmmu_free_pmds(pud);
+-		pud++;
+-	}
+-
+-	pud_free(NULL, pud_base);
++	table = pud_pgtable(*pud);
++	__free_page(table);
+ }
+ 
+ static void ipmmu_free_pgtables(struct ipmmu_vmsa_domain *domain)
+@@ -520,7 +505,7 @@ static void ipmmu_free_pgtables(struct ipmmu_vmsa_domain *domain)
+ 	for (i = 0; i < IPMMU_PTRS_PER_PGD; ++i) {
+ 		if (pgd_none(*pgd))
+ 			continue;
+-		ipmmu_free_puds(pgd);
++		ipmmu_free_pmds((pud_t *)pgd);
+ 		pgd++;
+ 	}
+ 
+@@ -624,7 +609,6 @@ static int ipmmu_alloc_init_pmd(struct ipmmu_vmsa_device *mmu, pud_t *pud,
+ 	pmd_t *pmd;
+ 	int ret;
+ 
+-#ifndef __PAGETABLE_PMD_FOLDED
+ 	if (pud_none(*pud)) {
+ 		pmd = (pmd_t *)get_zeroed_page(GFP_ATOMIC);
+ 		if (!pmd)
+@@ -636,7 +620,6 @@ static int ipmmu_alloc_init_pmd(struct ipmmu_vmsa_device *mmu, pud_t *pud,
+ 
+ 		pmd += pmd_index(addr);
+ 	} else
+-#endif
+ 		pmd = pmd_offset(pud, addr);
+ 
  	do {
--		*pte++ = pfn_pte(pfn++, __pgprot(pteval));
--		addr += PAGE_SIZE;
-+		unsigned long chunk_end;
-+
-+		/*
-+		 * If the address is aligned to a contiguous region size and the
-+		 * mapping size is large enough, process the largest possible
-+		 * number of PTEs multiple of ARM_VMSA_PTE_CONT_ENTRIES.
-+		 * Otherwise process the smallest number of PTEs to align the
-+		 * address to a contiguous region size or to complete the
-+		 * mapping.
-+		 */
-+		if (IS_ALIGNED(addr, ARM_VMSA_PTE_CONT_SIZE) &&
-+		    end - addr >= ARM_VMSA_PTE_CONT_SIZE) {
-+			chunk_end = round_down(end, ARM_VMSA_PTE_CONT_SIZE);
-+			pteval |= ARM_VMSA_PTE_CONT;
-+		} else {
-+			chunk_end = min(ALIGN(addr, ARM_VMSA_PTE_CONT_SIZE),
-+					end);
-+			pteval &= ~ARM_VMSA_PTE_CONT;
-+		}
-+
-+		do {
-+			*pte++ = pfn_pte(pfn++, __pgprot(pteval));
-+			addr += PAGE_SIZE;
-+		} while (addr != chunk_end);
- 	} while (addr != end);
+@@ -648,38 +631,6 @@ static int ipmmu_alloc_init_pmd(struct ipmmu_vmsa_device *mmu, pud_t *pud,
+ 	return ret;
+ }
  
- 	ipmmu_flush_pgtable(mmu, start, sizeof(*pte) * (pte - start));
+-static int ipmmu_alloc_init_pud(struct ipmmu_vmsa_device *mmu, pgd_t *pgd,
+-				unsigned long addr, unsigned long end,
+-				phys_addr_t phys, int prot)
+-{
+-	unsigned long next;
+-	pud_t *pud;
+-	int ret;
+-
+-#ifndef __PAGETABLE_PUD_FOLDED
+-	if (pgd_none(*pgd)) {
+-		pud = (pud_t *)get_zeroed_page(GFP_ATOMIC);
+-		if (!pud)
+-			return -ENOMEM;
+-
+-		ipmmu_flush_pgtable(mmu, pud, PAGE_SIZE);
+-		*pgd = __pgd(__pa(pud) | PMD_NSTABLE | PMD_TYPE_TABLE);
+-		ipmmu_flush_pgtable(mmu, pgd, sizeof(*pgd));
+-
+-		pud += pud_index(addr);
+-	} else
+-#endif
+-		pud = pud_offset(pgd, addr);
+-
+-	do {
+-		next = pud_addr_end(addr, end);
+-		ret = ipmmu_alloc_init_pmd(mmu, pud, addr, next, phys, prot);
+-		phys += next - addr;
+-	} while (pud++, addr = next, addr < end);
+-
+-	return ret;
+-}
+-
+ static int ipmmu_handle_mapping(struct ipmmu_vmsa_domain *domain,
+ 				unsigned long iova, phys_addr_t paddr,
+ 				size_t size, int prot)
+@@ -707,7 +658,8 @@ static int ipmmu_handle_mapping(struct ipmmu_vmsa_domain *domain,
+ 	do {
+ 		unsigned long next = pgd_addr_end(iova, end);
+ 
+-		ret = ipmmu_alloc_init_pud(mmu, pgd, iova, next, paddr, prot);
++		ret = ipmmu_alloc_init_pmd(mmu, (pud_t *)pgd, iova, next, paddr,
++					   prot);
+ 		if (ret)
+ 			break;
+ 
 -- 
 1.8.5.5
+
