@@ -1,40 +1,103 @@
-From: Rickard Strandqvist <rickard_strandqvist-IW2WV5XWFqGZkjO+N0TKoMugMpMbD5Xr@public.gmane.org>
-Subject: [PATCH] iommu: fsl_pamu.c:  Fix for possible null pointer dereference
-Date: Sat, 17 May 2014 19:16:44 +0200
-Message-ID: <1400347004-25368-1-git-send-email-rickard_strandqvist@spectrumdigital.se>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Rickard Strandqvist <rickard_strandqvist-IW2WV5XWFqGZkjO+N0TKoMugMpMbD5Xr@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH] devicetree: Add generic IOMMU device tree bindings
+Date: Sat, 17 May 2014 22:48:06 +0200
+Message-ID: <20140517204805.GA1046@mithrandir>
+References: <1400242998-437-1-git-send-email-thierry.reding@gmail.com>
+ <20140517170455.08e181f16d3abf36d1ec6274@samsung.com>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="6TrnltStXW4iwmi0"
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20140517170455.08e181f16d3abf36d1ec6274@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Cho KyongHo <pullip.cho@samsung.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Arnd Bergmann <arnd@arndb.de>, Grant Grundler <grundler@chromium.org>, Dave Martin <Dave.Martin@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Stephen Warren <swarren@wwwdotorg.org>, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org, linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-There is otherwise a risk of a possible null pointer dereference.
 
-Was largely found by using a static code analysis program called cppcheck.
+--6TrnltStXW4iwmi0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Rickard Strandqvist <rickard_strandqvist-IW2WV5XWFqGZkjO+N0TKoMugMpMbD5Xr@public.gmane.org>
----
- drivers/iommu/fsl_pamu.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+On Sat, May 17, 2014 at 05:04:55PM +0900, Cho KyongHo wrote:
+> On Fri, 16 May 2014 14:23:18 +0200, Thierry Reding wrote:
+[...]
+> > +Examples:
+> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > +
+> > +Single-master IOMMU:
+> > +--------------------
+> > +
+> > +	iommu {
+> > +		#iommu-cells =3D <0>;
+> > +	};
+> > +
+> > +	master {
+> > +		iommu =3D <&/iommu>;
+> > +	};
+> > +
+>=20
+> Great work, Thierry.
+>=20
+> One simple comment.
+>=20
+> This should be also applicable to multi-master IOMMUs that the masters
+> of an IOMMU is not configurable with ID or something.
+> I think the title needs to be changed to cover such IOMMUs which always
+> translate master's transactions and unable to change the configuration
+> of the relationship between the masters and IOMMUs by S/W.
 
-diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
-index cba0498..b99dd88 100644
---- a/drivers/iommu/fsl_pamu.c
-+++ b/drivers/iommu/fsl_pamu.c
-@@ -592,8 +592,7 @@ found_cpu_node:
- 		/* advance to next node in cache hierarchy */
- 		node = of_find_node_by_phandle(*prop);
- 		if (!node) {
--			pr_debug("Invalid node for cache hierarchy %s\n",
--				node->full_name);
-+			pr_debug("Invalid node for cache hierarchy\n");
- 			return ~(u32)0;
- 		}
- 	}
--- 
-1.7.10.4
+Agreed, how about we add a separate example for that case:
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Multiple-master IOMMU with fixed associations:
+----------------------------------------------
+
+	/* multiple-master IOMMU */
+	iommu {
+		/*
+		 * Masters are statically associated with this IOMMU and
+		 * address translation is always enabled.
+		 */
+		#iommu-cells =3D <0>;
+	};
+
+	/* static association with IOMMU */
+	master@1 {
+		reg =3D <1>;
+		iommus =3D <&/iommu>;
+	};
+
+	/* static association with IOMMU */
+	master@2 {
+		reg =3D <2>;
+		iommus =3D <&/iommu>;
+	};
+
+?
+
+Thierry
+
+--6TrnltStXW4iwmi0
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJTd8sFAAoJEN0jrNd/PrOhGXIQAJOqRSklMjl4lFQfRhWaoB3m
+pYpRwqjrA0rLzEb+u6bk5Kv4kLRK5wOYr6Fd/y8DYONY+vZ0SXBOgEo7uv/mXURM
+R2m8tTiKLtmQm6xZ///FmcU98lOZM+l6Vv3/F+QVH/41RRNTzTXXir0q2XTYG5wU
+Fefylq654a8Ha1rDN2Y6kPt4P/1Q0tuA/7Z0jidDYXK04Pp+5QTBUHSFAYJ4V1Q3
+HuH2XmCioGRTem4cl4SMM6uA+IrnuZcXePrNT35HwtN6bmSe2IKNxaK+VKvnVzza
+Qc0hvQEDdsjijs1Fy4rY3zPhkvAGz/rbs6nYUJpRl96R3Zb5sKaO2Vqj9glLX5/e
+B5/wv5yVSs/ygRLW8/E76LXB2PNqkVg68smSRGrA/7q7iU2/ZUatnqoVCTWT2Jid
+0zUkBur8KM0wdBrowgrs/sVzFvS5Ii/yUyyfXJQWZELkhEo681LGGNt7PXYugjtr
+P//6zQwn1ogR7xq+7hCcy5yZAtc8UrXyIRF9/XrNvdGhg0zXdaQa1viM5AapeLGs
+WAPwb+KlFvXxG/8EY96Y59LvULcP5oGhwMXkUrkvH9OiDzZXIVbEZfrtCvKhUzn6
+G7CzsIQr4Q3+5u42Ndt94WglpdiDfVeUmh6ofv34rTZHqy7MGpybJBp67qf0sff9
+wO7Z6vqP8a7m/yZuQ7tr
+=Y4ib
+-----END PGP SIGNATURE-----
+
+--6TrnltStXW4iwmi0--
