@@ -1,14 +1,13 @@
-From: Alexander Graf <agraf-l3A5Bk7waGM@public.gmane.org>
-Subject: Re: [PATCH v2] PCI: Introduce new device binding path using
-	pci_dev.driver_override
-Date: Mon, 19 May 2014 15:28:50 +0200
-Message-ID: <537A0712.7000600@suse.de>
-References: <20140509164326.12141.44591.stgit@bling.home>
+From: Ritesh Harjani <ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 0/1] arm: dma-iommu: Clean up redundant variable
+Date: Mon, 19 May 2014 20:37:13 +0530
+Message-ID: <CAD15agbxvrypWN4f9b9J_ivSUK6uuTW_7ZzdHULEXs-n98w84g@mail.gmail.com>
+References: <1400511859-22286-1-git-send-email-ritesh.harjani@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140509164326.12141.44591.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+In-Reply-To: <1400511859-22286-1-git-send-email-ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,172 +17,31 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kim.phillips-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, libvir-list-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+++ mailing lists
 
-On 09.05.14 18:50, Alex Williamson wrote:
-> The driver_override field allows us to specify the driver for a device
-> rather than relying on the driver to provide a positive match of the
-> device.  This shortcuts the existing process of looking up the vendor
-> and device ID, adding them to the driver new_id, binding the device,
-> then removing the ID, but it also provides a couple advantages.
+On Mon, May 19, 2014 at 8:34 PM,  <ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+> From: Ritesh Harjani <ritesh.harjani-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 >
-> First, the above existing process allows the driver to bind to any
-> device matching the new_id for the window where it's enabled.  This is
-> often not desired, such as the case of trying to bind a single device
-> to a meta driver like pci-stub or vfio-pci.  Using driver_override we
-> can do this deterministically using:
+> This redundant variable was identified by Will (cc'd) in below mentioned
+> thread [1].
+> It was discussed earlier that this variable will be cleaned up as part of
+> dma-iommu refractoring code, but currently it has taken longer time then
+> expected.
 >
-> echo pci-stub > /sys/bus/pci/devices/0000:03:00.0/driver_override
-> echo 0000:03:00.0 > /sys/bus/pci/devices/0000:03:00.0/driver/unbind
-> echo 0000:03:00.0 > /sys/bus/pci/drivers_probe
+> So, submitting this small patch for review before we forget about it.
+> [1]: http://www.spinics.net/lists/arm-kernel/msg324224.html
 >
-> Previously we could not invoke drivers_probe after adding a device
-> to new_id for a driver as we get non-deterministic behavior whether
-> the driver we intend or the standard driver will claim the device.
-> Now it becomes a deterministic process, only the driver matching
-> driver_override will probe the device.
+> Ritesh Harjani (1):
+>   arm: dma-iommu: Clean up redundant variable
 >
-> To return the device to the standard driver, we simply clear the
-> driver_override and reprobe the device:
+>  arch/arm/include/asm/dma-iommu.h |  1 -
+>  arch/arm/mm/dma-mapping.c        | 11 ++++++-----
+>  2 files changed, 6 insertions(+), 6 deletions(-)
 >
-> echo > /sys/bus/pci/devices/0000:03:00.0/driver_override
-> echo 0000:03:00.0 > /sys/bus/pci/devices/0000:03:00.0/driver/unbind
-> echo 0000:03:00.0 > /sys/bus/pci/drivers_probe
+> --
+> 1.8.1.3
 >
-> Another advantage to this approach is that we can specify a driver
-> override to force a specific binding or prevent any binding.  For
-> instance when an IOMMU group is exposed to userspace through VFIO
-> we require that all devices within that group are owned by VFIO.
-> However, devices can be hot-added into an IOMMU group, in which case
-> we want to prevent the device from binding to any driver (override
-> driver = "none") or perhaps have it automatically bind to vfio-pci.
-> With driver_override it's a simple matter for this field to be set
-> internally when the device is first discovered to prevent driver
-> matches.
->
-> Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-> ---
->
-> v2: Use strchr() as suggested by Guenter Roeck and adopted by the
->      platform driver version of this same interface.
->
->   Documentation/ABI/testing/sysfs-bus-pci |   21 ++++++++++++++++
->   drivers/pci/pci-driver.c                |   25 +++++++++++++++++--
->   drivers/pci/pci-sysfs.c                 |   40 +++++++++++++++++++++++++++++++
->   include/linux/pci.h                     |    1 +
->   4 files changed, 84 insertions(+), 3 deletions(-)
->
-> diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
-> index a3c5a66..898ddc4 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-pci
-> +++ b/Documentation/ABI/testing/sysfs-bus-pci
-> @@ -250,3 +250,24 @@ Description:
->   		valid.  For example, writing a 2 to this file when sriov_numvfs
->   		is not 0 and not 2 already will return an error. Writing a 10
->   		when the value of sriov_totalvfs is 8 will return an error.
-> +
-> +What:		/sys/bus/pci/devices/.../driver_override
-> +Date:		April 2014
-> +Contact:	Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> +Description:
-> +		This file allows the driver for a device to be specified which
-> +		will override standard static and dynamic ID matching.  When
-> +		specified, only a driver with a name matching the value written
-> +		to driver_override will have an opportunity to bind to the
-> +		device.  The override is specified by writing a string to the
-> +		driver_override file (echo pci-stub > driver_override) and
-> +		may be cleared with an empty string (echo > driver_override).
-> +		This returns the device to standard matching rules binding.
-> +		Writing to driver_override does not automatically unbind the
-> +		device from its current driver or make any attempt to
-> +		automatically load the specified driver.  If no driver with a
-> +		matching name is currently loaded in the kernel, the device
-> +		will not bind to any driver.  This also allows devices to
-> +		opt-out of driver binding using a driver_override name such as
-> +		"none".  Only a single driver may be specified in the override,
-> +		there is no support for parsing delimiters.
-> diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-> index d911e0c..4393c12 100644
-> --- a/drivers/pci/pci-driver.c
-> +++ b/drivers/pci/pci-driver.c
-> @@ -216,6 +216,13 @@ const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
->   	return NULL;
->   }
->   
-> +static const struct pci_device_id pci_device_id_any = {
-> +	.vendor = PCI_ANY_ID,
-> +	.device = PCI_ANY_ID,
-> +	.subvendor = PCI_ANY_ID,
-> +	.subdevice = PCI_ANY_ID,
-> +};
-> +
->   /**
->    * pci_match_device - Tell if a PCI device structure has a matching PCI device id structure
->    * @drv: the PCI driver to match against
-> @@ -229,18 +236,30 @@ static const struct pci_device_id *pci_match_device(struct pci_driver *drv,
->   						    struct pci_dev *dev)
->   {
->   	struct pci_dynid *dynid;
-> +	const struct pci_device_id *found_id = NULL;
-> +
-> +	/* When driver_override is set, only bind to the matching driver */
-> +	if (dev->driver_override && strcmp(dev->driver_override, drv->name))
-> +		return NULL;
->   
->   	/* Look at the dynamic ids first, before the static ones */
->   	spin_lock(&drv->dynids.lock);
->   	list_for_each_entry(dynid, &drv->dynids.list, node) {
->   		if (pci_match_one_device(&dynid->id, dev)) {
-> -			spin_unlock(&drv->dynids.lock);
-> -			return &dynid->id;
-> +			found_id = &dynid->id;
-> +			break;
->   		}
->   	}
->   	spin_unlock(&drv->dynids.lock);
->   
-> -	return pci_match_id(drv->id_table, dev);
-> +	if (!found_id)
-> +		found_id = pci_match_id(drv->id_table, dev);
-> +
-> +	/* driver_override will always match, send a dummy id */
-> +	if (!found_id && dev->driver_override)
-> +		found_id = &pci_device_id_any;
-> +
-> +	return found_id;
->   }
->   
->   struct drv_dev_and_id {
-> diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
-> index 4e0acef..faa4ab5 100644
-> --- a/drivers/pci/pci-sysfs.c
-> +++ b/drivers/pci/pci-sysfs.c
-> @@ -499,6 +499,45 @@ static struct device_attribute sriov_numvfs_attr =
->   		       sriov_numvfs_show, sriov_numvfs_store);
->   #endif /* CONFIG_PCI_IOV */
->   
-> +static ssize_t driver_override_store(struct device *dev,
-> +				     struct device_attribute *attr,
-> +				     const char *buf, size_t count)
-> +{
-> +	struct pci_dev *pdev = to_pci_dev(dev);
-> +	char *driver_override, *old = pdev->driver_override, *cp;
-> +
-> +	if (count > PATH_MAX)
-> +		return -EINVAL;
-> +
-> +	driver_override = kstrndup(buf, count, GFP_KERNEL);
-
-Is there anything we have to do on hot remove of this device to free 
-that variable?
-
-Otherwise,
-
-   Reviewed-by: Alexander Graf <agraf-l3A5Bk7waGM@public.gmane.org>
-
-
-Alex
