@@ -1,103 +1,33 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] devicetree: Add generic IOMMU device tree bindings
-Date: Sat, 17 May 2014 22:48:06 +0200
-Message-ID: <20140517204805.GA1046@mithrandir>
-References: <1400242998-437-1-git-send-email-thierry.reding@gmail.com>
- <20140517170455.08e181f16d3abf36d1ec6274@samsung.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [Patch Part3 V2 00/21] Enable support of Intel DMAR device
+ hotplug
+Date: Mon, 19 May 2014 11:23:58 +0200
+Message-ID: <20140519092358.GB17056@8bytes.org>
+References: <1399359932-28972-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="6TrnltStXW4iwmi0"
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-hotplug-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20140517170455.08e181f16d3abf36d1ec6274@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Cho KyongHo <pullip.cho@samsung.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Arnd Bergmann <arnd@arndb.de>, Grant Grundler <grundler@chromium.org>, Dave Martin <Dave.Martin@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Stephen Warren <swarren@wwwdotorg.org>, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org, linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <1399359932-28972-1-git-send-email-jiang.liu@linux.intel.com>
+Sender: linux-hotplug-owner@vger.kernel.org
+To: Jiang Liu <jiang.liu@linux.intel.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>, Ashok Raj <ashok.raj@intel.com>, Yijing Wang <wangyijing@huawei.com>, Tony Luck <tony.luck@intel.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-hotplug@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
+Hey David,
 
---6TrnltStXW4iwmi0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Tue, May 06, 2014 at 03:05:11PM +0800, Jiang Liu wrote:
+> Patch 1-13 are bugfixes and code improvement for current drivers.
+> Patch 14-17 enhances DMAR framework to support hotplug
+> Patch 18 enhances Intel interrupt remapping driver to support hotplug
+> Patch 19 enhances error handling in Intel IR driver
+> Patch 20 enhance Intel IOMMU to support hotplug
+> Patch 21 enhance ACPI pci_root driver to handle DMAR units
 
-On Sat, May 17, 2014 at 05:04:55PM +0900, Cho KyongHo wrote:
-> On Fri, 16 May 2014 14:23:18 +0200, Thierry Reding wrote:
-[...]
-> > +Examples:
-> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > +
-> > +Single-master IOMMU:
-> > +--------------------
-> > +
-> > +	iommu {
-> > +		#iommu-cells =3D <0>;
-> > +	};
-> > +
-> > +	master {
-> > +		iommu =3D <&/iommu>;
-> > +	};
-> > +
->=20
-> Great work, Thierry.
->=20
-> One simple comment.
->=20
-> This should be also applicable to multi-master IOMMUs that the masters
-> of an IOMMU is not configurable with ID or something.
-> I think the title needs to be changed to cover such IOMMUs which always
-> translate master's transactions and unable to change the configuration
-> of the relationship between the masters and IOMMUs by S/W.
+Have you had a chance to look into this patch-set? I'll wonder whether
+it should be merged for 3.16.
 
-Agreed, how about we add a separate example for that case:
 
-Multiple-master IOMMU with fixed associations:
-----------------------------------------------
+	Joerg
 
-	/* multiple-master IOMMU */
-	iommu {
-		/*
-		 * Masters are statically associated with this IOMMU and
-		 * address translation is always enabled.
-		 */
-		#iommu-cells =3D <0>;
-	};
 
-	/* static association with IOMMU */
-	master@1 {
-		reg =3D <1>;
-		iommus =3D <&/iommu>;
-	};
-
-	/* static association with IOMMU */
-	master@2 {
-		reg =3D <2>;
-		iommus =3D <&/iommu>;
-	};
-
-?
-
-Thierry
-
---6TrnltStXW4iwmi0
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJTd8sFAAoJEN0jrNd/PrOhGXIQAJOqRSklMjl4lFQfRhWaoB3m
-pYpRwqjrA0rLzEb+u6bk5Kv4kLRK5wOYr6Fd/y8DYONY+vZ0SXBOgEo7uv/mXURM
-R2m8tTiKLtmQm6xZ///FmcU98lOZM+l6Vv3/F+QVH/41RRNTzTXXir0q2XTYG5wU
-Fefylq654a8Ha1rDN2Y6kPt4P/1Q0tuA/7Z0jidDYXK04Pp+5QTBUHSFAYJ4V1Q3
-HuH2XmCioGRTem4cl4SMM6uA+IrnuZcXePrNT35HwtN6bmSe2IKNxaK+VKvnVzza
-Qc0hvQEDdsjijs1Fy4rY3zPhkvAGz/rbs6nYUJpRl96R3Zb5sKaO2Vqj9glLX5/e
-B5/wv5yVSs/ygRLW8/E76LXB2PNqkVg68smSRGrA/7q7iU2/ZUatnqoVCTWT2Jid
-0zUkBur8KM0wdBrowgrs/sVzFvS5Ii/yUyyfXJQWZELkhEo681LGGNt7PXYugjtr
-P//6zQwn1ogR7xq+7hCcy5yZAtc8UrXyIRF9/XrNvdGhg0zXdaQa1viM5AapeLGs
-WAPwb+KlFvXxG/8EY96Y59LvULcP5oGhwMXkUrkvH9OiDzZXIVbEZfrtCvKhUzn6
-G7CzsIQr4Q3+5u42Ndt94WglpdiDfVeUmh6ofv34rTZHqy7MGpybJBp67qf0sff9
-wO7Z6vqP8a7m/yZuQ7tr
-=Y4ib
------END PGP SIGNATURE-----
-
---6TrnltStXW4iwmi0--
