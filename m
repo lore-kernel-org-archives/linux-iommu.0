@@ -1,32 +1,22 @@
-From: Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>
+From: Arnd Bergmann <arnd@arndb.de>
 Subject: Re: [PATCH] devicetree: Add generic IOMMU device tree bindings
-Date: Mon, 19 May 2014 18:22:31 +0100
-Message-ID: <20140519172113.GA13858@e103592.cambridge.arm.com>
-References: <1400242998-437-1-git-send-email-thierry.reding@gmail.com>
-	<4391809.OTRCiJQXS4@wuerfel> <20140519125336.GA9466@ulmo>
+Date: Mon, 19 May 2014 20:34:07 +0200
+Message-ID: <14622654.QO8kH1AoTT@wuerfel>
+References: <1400242998-437-1-git-send-email-thierry.reding@gmail.com> <4391809.OTRCiJQXS4@wuerfel> <20140519125336.GA9466@ulmo>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
 In-Reply-To: <20140519125336.GA9466@ulmo>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-arm-kernel@lists.infradead.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, linux-samsung-soc@vger.kernel.org, Stephen Warren <swarren@wwwdotorg.org>, Grant Grundler <grundler@chromium.org>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, iommu@lists.linux-foundation.org, linux-tegra@vger.kernel.org, Cho KyongHo <pullip.cho@samsung.com>, Dave Martin <Dave.Martin@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, May 19, 2014 at 01:53:37PM +0100, Thierry Reding wrote:
+On Monday 19 May 2014 14:53:37 Thierry Reding wrote:
 > On Mon, May 19, 2014 at 12:26:35PM +0200, Arnd Bergmann wrote:
 > > On Friday 16 May 2014 14:23:18 Thierry Reding wrote:
-> > > From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> > > From: Thierry Reding <treding@nvidia.com>
 > > > 
 > > > This commit introduces a generic device tree binding for IOMMU devices.
 > > > Only a very minimal subset is described here, but it is enough to cover
@@ -50,10 +40,10 @@ On Mon, May 19, 2014 at 01:53:37PM +0100, Thierry Reding wrote:
 > So what I was trying to avoid was another lengthy discussion on the
 > topic of dma-ranges. Oh well... =)
 
-Apologies for the silence on this topic...  I'm trying to do too many
-things at the sime time as usual :/
+I think that can't work, because we need a way to specify the
+ranges for some iommu drivers. We have to make sure we at least
+don't prevent it from working.
 
-> 
 > > A lot of IOMMUs have only 32-bit bus addresses when targetted
 > > by a bus master, it would also be normal for some to be smaller and
 > > some might even support 64-bit.
@@ -68,7 +58,10 @@ things at the sime time as usual :/
 > 
 > I'm not sure I understand what you mean by upstream and downstream in
 > this context.
-> 
+
+Upstream -> close to memory
+Downstream -> close to DMA master
+
 > > We can't put it into the iommu node, because  that would imply translating
 > > to the iommu's parent bus, not the iommu's own bus space.
 > 
@@ -80,13 +73,26 @@ things at the sime time as usual :/
 > Would be used to translate a region of size <child-size> from the
 > <child-address> (the I/O address space created by the IOMMU) to the
 > <parent-address> (physical address space).
-> 
+
+That's how it's defined for normal buses, we haven't defined it for
+IOMMUs yet.
+
 > > We also can't put it into the master, because dma-ranges is supposed to be
 > > in the parent bus.
 > 
 > I don't understand. From the above I would think that the master's node
 > is precisely where it belongs.
-> 
+
+The way that I read the binding, the way that dma-ranges belongs into the parent
+of the master, according. On normal buses (e.g. classic PCI), all DMA masters
+see the same address space. The bus defines how a transaction started on one
+of its children gets translated to the address space of its parent. This
+is similar to 'ranges', which defines how an MMIO address initiated on the
+parent of a bus gets translated to an address understood by its children.
+
+My interpretation at least matches the defintion of of_dma_get_range(),
+but then again Santosh added that according to my comments.
+
 > > Finally, it makes no sense to use the dma-ranges property of the master's
 > > parent bus, because that bus isn't actually involved in the translation.
 > 
@@ -106,36 +112,19 @@ things at the sime time as usual :/
 > 			 */
 > 			#address-cells = <1>;
 > 			#size-cells = <2>;
-> 
+
+You should never need #size-cells > #address-cells
+
 > 			#iommu-cells = <1>;
 > 		};
 > 
 > 		master {
 > 			iommus = <&/iommu 42>;
-
-Comparing this with the other discussion thread, we have a similar
-concept here, in that the iommu is made a logical parent, however...
-
-Firstly, there's an implicit assumption here that the only kind of
-thing the master could possibly be connected to is an IOMMU, with
-no non-trivial interconnect in between.  I'm not sure this is going
-to scale to complex SoCs.
-
-If a range of Stream IDs may be issued (especially from something like
-a PCIe RC where the stream ID may be a many-bit value), describing
-the IDs individually may be impractical.
-
 > 			/*
 > 			 * Map I/O addresses 0 - 4 GiB to physical addresses
 > 			 * 2 GiB - 6 GiB.
 > 			 */
 > 			dma-ranges = <0x00000000 0 0x80000000 1 0>;
-
-... I concur with Arnd dma-ranges is now in the wrong place with
-respect to the (overridden) child-parent relationship, and that if
-this device masters to multiple destinations there's no possibility
-of describing different ranges mappings for each.
-
 > 		};
 > 	};
 > 
@@ -146,7 +135,18 @@ of describing different ranges mappings for each.
 > space for the master.
 > 
 > [0]: http://www.openfirmware.org/ofwg/proposals/Closed/Accepted/410-it.txt
-> 
+
+I don't think you can have a dma-ranges without a #address-cells and
+#size-cells property in the same node. In your example, I'd also expect
+a child node below 'master' that then interprets the address space
+made up by dma-ranges.
+
+As a comment on the numbers in your example, I don't expect to ever
+see a 4GB IOMMU address space that doesn't start at an offset. Instead
+I'd expect either addresses that encode a device ID, or those that
+are just a subset of the parent address space, with non-overlapping
+bus addresses for each master.
+
 > > My preferred option would be to always put the address range into
 > > the iommu descriptor, using the iommu's #address-cells.
 > 
@@ -159,23 +159,39 @@ of describing different ranges mappings for each.
 > master interfaces on a device. With a separate dma-ranges property how
 > can you define which ranges apply to which of the master interfaces?
 
-In theory, you could describe split ranges simply by multiplying out:
+Well, you could have multiple links to the same IOMMU if you want to 
+do that, and define that there must be at least one dma-ranges entry
+for each IOMMU entry (although not necessarily the other way round,
+you could have direct ranges in addition to translated ones.
 
-	<&/iommu 42 sub-range-1>,
-	<&/iommu 42 sub-range-2>,
-	...
-
-This is only manageable if the number of subranges for each
-(iommu,streamID) mapping is small (and usually 1).
-
-Of course, I hope the number of subranges normally _is_ small...
-
-
-Cheers
----Dave
-	
 > Then again if address ranges can't be broken up in the first place, then
 > dma-ranges could be considered to be one entry per IOMMU in the iommus
 > property.
-> 
-> Thierry
+
+Let me do another example, with the address merged into the iommu
+references:
+
+/ {
+	#address-cells = <2>; // 64-bit address
+	#size-cells = <2>;
+
+	iommu@a {
+		#address-cells = <2>; // 1 cell ID, 1 cell address
+		#size-cells = <1>;
+
+		// no need for #iommu-cells
+	};
+
+
+	master@b {
+		iommus = <&/iommu@a // iommu
+			0x23  	     // ID
+			0x40000000   // window start
+			0x10000000>; //window size
+	};
+};
+
+A disadvantage of this model would be that for all ARM SMMU users, we'd
+have to always list a 4GB address space, which is kind of redundant.
+
+	Arnd
