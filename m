@@ -1,7 +1,8 @@
 From: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 4/6] iommu/vt-d: clear the redundant assignment for domain->nid
-Date: Tue, 20 May 2014 20:37:50 +0800
-Message-ID: <1400589472-8544-5-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH 3/6] iommu/vt-d: clear the redundant assignment in
+	dmar_enable_qi
+Date: Tue, 20 May 2014 20:37:49 +0800
+Message-ID: <1400589472-8544-4-git-send-email-wangyijing@huawei.com>
 References: <1400589472-8544-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,26 +22,28 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Alloc_domain() will initialize domain->nid to -1. So the
-initialization for domain->nid in md_domain_init() is redundant,
-clear it.
+__dmar_enable_qi() will initialize free_head,free_tail and
+free_cnt for q_inval. Remove the redundant initialization
+in dmar_enable_qi().
 
 Signed-off-by: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c |    1 -
- 1 files changed, 0 insertions(+), 1 deletions(-)
+ drivers/iommu/dmar.c |    3 ---
+ 1 files changed, 0 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 6b71608..d1d6636 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -4134,7 +4134,6 @@ static int md_domain_init(struct dmar_domain *domain, int guest_width)
- 	domain->iommu_snooping = 0;
- 	domain->iommu_superpage = 0;
- 	domain->max_addr = 0;
--	domain->nid = -1;
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 39f8b71..1168469 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -1339,9 +1339,6 @@ int dmar_enable_qi(struct intel_iommu *iommu)
+ 		return -ENOMEM;
+ 	}
  
- 	/* always allocate the top pgd */
- 	domain->pgd = (struct dma_pte *)alloc_pgtable_page(domain->nid);
+-	qi->free_head = qi->free_tail = 0;
+-	qi->free_cnt = QI_LENGTH;
+-
+ 	raw_spin_lock_init(&qi->q_lock);
+ 
+ 	__dmar_enable_qi(iommu);
 -- 
 1.7.1
