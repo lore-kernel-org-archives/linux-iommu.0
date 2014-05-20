@@ -1,14 +1,11 @@
 From: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 3/6] iommu/vt-d: clear the redundant assignment in
-	dmar_enable_qi
-Date: Tue, 20 May 2014 20:37:49 +0800
-Message-ID: <1400589472-8544-4-git-send-email-wangyijing@huawei.com>
-References: <1400589472-8544-1-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH 0/6] trivial cleanup for iommu/vt-d
+Date: Tue, 20 May 2014 20:37:46 +0800
+Message-ID: <1400589472-8544-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1400589472-8544-1-git-send-email-wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,28 +19,16 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-__dmar_enable_qi() will initialize free_head,free_tail and
-free_cnt for q_inval. Remove the redundant initialization
-in dmar_enable_qi().
+Some cleanup patches for iommu/vt-d.
 
-Signed-off-by: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/dmar.c |    3 ---
- 1 files changed, 0 insertions(+), 3 deletions(-)
+Yijing Wang (6):
+  iommu/vt-d: Use list_for_each_safe() to simplify code
+  iommu/vt-d: move up no_iommu and dmar_disabled check
+  iommu/vt-d: clear the redundant assignment in dmar_enable_qi
+  iommu/vt-d: clear the redundant assignment for domain->nid
+  iommu/vt-d: use inline function dma_pte_superpage instead of macros
+  iommu/vt-d: fix reference count in iommu_prepare_isa
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 39f8b71..1168469 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -1339,9 +1339,6 @@ int dmar_enable_qi(struct intel_iommu *iommu)
- 		return -ENOMEM;
- 	}
- 
--	qi->free_head = qi->free_tail = 0;
--	qi->free_cnt = QI_LENGTH;
--
- 	raw_spin_lock_init(&qi->q_lock);
- 
- 	__dmar_enable_qi(iommu);
--- 
-1.7.1
+ drivers/iommu/dmar.c        |    3 ---
+ drivers/iommu/intel-iommu.c |   18 ++++++++----------
+ 2 files changed, 8 insertions(+), 13 deletions(-)
