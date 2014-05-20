@@ -1,8 +1,7 @@
 From: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 5/6] iommu/vt-d: use inline function dma_pte_superpage instead
-	of macros
-Date: Tue, 20 May 2014 20:37:51 +0800
-Message-ID: <1400589472-8544-6-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH 2/6] iommu/vt-d: move up no_iommu and dmar_disabled check
+Date: Tue, 20 May 2014 20:37:48 +0800
+Message-ID: <1400589472-8544-3-git-send-email-wangyijing@huawei.com>
 References: <1400589472-8544-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,26 +21,37 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Use inline function dma_pte_superpage() instead of macro for
-better readability.
+Move up the no_iommu and dmar_disabled check, avoid the
+useless initialization for dmar.
 
 Signed-off-by: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ drivers/iommu/intel-iommu.c |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index d1d6636..455896c 100644
+index e020dcf..6b71608 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -891,7 +891,7 @@ static struct dma_pte *dma_pfn_level_pte(struct dmar_domain *domain,
- 			break;
- 		}
+@@ -3948,6 +3948,9 @@ int __init intel_iommu_init(void)
+ 	/* VT-d is required for a TXT/tboot launch, so enforce that */
+ 	force_on = tboot_force_iommu();
  
--		if (pte->val & DMA_PTE_LARGE_PAGE) {
-+		if (dma_pte_superpage(pte)) {
- 			*large_page = total;
- 			return pte;
- 		}
++	if (no_iommu || dmar_disabled)
++		return ret;
++
+ 	if (iommu_init_mempool()) {
+ 		if (force_on)
+ 			panic("tboot: Failed to initialize iommu memory\n");
+@@ -3974,9 +3977,6 @@ int __init intel_iommu_init(void)
+ 		goto out_free_dmar;
+ 	}
+ 
+-	if (no_iommu || dmar_disabled)
+-		goto out_free_dmar;
+-
+ 	if (list_empty(&dmar_rmrr_units))
+ 		printk(KERN_INFO "DMAR: No RMRR found\n");
+ 
 -- 
 1.7.1
