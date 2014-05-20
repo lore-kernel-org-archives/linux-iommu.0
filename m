@@ -1,131 +1,81 @@
-From: Arnd Bergmann <arnd@arndb.de>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
 Subject: Re: [PATCH] devicetree: Add generic IOMMU device tree bindings
-Date: Tue, 20 May 2014 22:31:29 +0200
-Message-ID: <5123714.0MpMQfsmcr@wuerfel>
-References: <1400242998-437-1-git-send-email-thierry.reding@gmail.com> <4161434.ylGuoPKcfs@wuerfel> <20140520135956.GA23140@ulmo>
+Date: Tue, 20 May 2014 22:40:50 +0200
+Message-ID: <4511166.2tFHJMxbnG@wuerfel>
+References: <1400242998-437-1-git-send-email-thierry.reding@gmail.com>
+	<20140520152659.GA30404@arm.com>
+	<20140520163912.GC5041@e103592.cambridge.arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <20140520135956.GA23140@ulmo>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-arm-kernel@lists.infradead.org, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, linux-samsung-soc@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Grant Grundler <grundler@chromium.org>, Joerg Roedel <joro@8bytes.org>, Stephen Warren <swarren@wwwdotorg.org>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>, Kumar Gala <galak@codeaurora.org>, linux-tegra@vger.kernel.org, Cho KyongHo <pullip.cho@samsung.com>, Dave Martin <Dave.Martin@arm.com>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20140520163912.GC5041-M5GwZQ6tE7x5pKCnmE3YQBJ8xKzm50AiAL8bYrjMMd8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tuesday 20 May 2014 16:00:02 Thierry Reding wrote:
-> On Tue, May 20, 2014 at 03:34:46PM +0200, Arnd Bergmann wrote:
-> > On Tuesday 20 May 2014 15:17:43 Thierry Reding wrote:
-> > > On Tue, May 20, 2014 at 02:41:18PM +0200, Arnd Bergmann wrote:
-> > > > On Tuesday 20 May 2014 14:02:43 Thierry Reding wrote:
-> > > [...]
-> > > > > Couldn't a single-master IOMMU be windowed?
-> > > > 
-> > > > Ah, yes. That would actually be like an IBM pSeries, which has a windowed
-> > > > IOMMU but uses one window per virtual machine. In that case, the window could
-> > > > be a property of the iommu node though, rather than part of the address
-> > > > in the link.
+On Tuesday 20 May 2014 17:39:12 Dave Martin wrote:
+> On Tue, May 20, 2014 at 04:26:59PM +0100, Will Deacon wrote:
+> > On Tue, May 20, 2014 at 02:23:47PM +0100, Arnd Bergmann wrote:
+> > > 	Bit#   33222222 22221111 11111100 00000000
+> > > 	       10987654 32109876 54321098 76543210
+> > > phys.hi cell:  npt000ss bbbbbbbb dddddfff rrrrrrrr
+> > > phys.mid cell: hhhhhhhh hhhhhhhh hhhhhhhh hhhhhhhh
+> > > phys.lo cell:  llllllll llllllll llllllll llllllll
 > > > 
-> > > Does that mean that the IOMMU has one statically configured window which
-> > > is the same for each virtual machine? That would require some other
-> > > mechanism to assign separate address spaces to each virtual machine,
-> > > wouldn't it? But I suspect that if the IOMMU allows that it could be
-> > > allocated dynamically at runtime.
+> > > where:
+> > > n is 0 if the address is relocatable, 1 otherwise
+> > > p is 1 if the addressable region is "prefetchable", 0 otherwise
+> > > t is 1 if the address is aliased (for non-relocatable I/O),
+> > >  below 1 MB (for Memory), or below 64 KB (for relocatable I/O).
+> > > ss is the space code, denoting the address space
+> > > bbbbbbbb is the 8-bit Bus Number
+> > > ddddd is the 5-bit Device Number
+> > > fff is the 3-bit Function Number
+> > > rrrrrrrr is the 8-bit Register Number
+> > > hh...hh is a 32-bit unsigned number
+> > > ll...ll is a 32-bit unsigned number
+> > > 
+> > > We can ignore n, p, t and r here, and use the same format for a DMA
+> > > address, then define an empty "dma-ranges" property. That would
+> > > imply that using b/d/f is sufficient to identify each master at the
+> > > iommu. Any device outside of the PCI host but connected to the same
+> > > iommu can use the same notation to list the logical b/d/f that gets
+> > > sent to the IOMMU in bus master transactions.
+> > > 
+> > > Do you think this is sufficient for the ARM SMMU, or do we need
+> > > something beyond that?
 > > 
-> > The way it works on pSeries is that upon VM creation, the guest is assigned
-> > one 256MB window for use by assigned DMA capable devices. When the guest
-> > creates a mapping, it uses a hypercall to associate a bus address in that
-> > range with a guest physical address. The hypervisor checks that the bus
-> > address is within the allowed range, and translates the guest physical
-> > address into a host physical address, then enters both into the I/O page
-> > table or I/O TLB.
+> > I think it can define the common-cases for the existing implementations,
+> > yes. I anticipate Stream-IDs becoming > 16-bit in the near future though,
+> > so we'd need extra bits if we're describing other devices coming into the
+> > SMMU.
+> > 
+> > Note that we already have a binding for the current SMMU driver, so I'm not
+> > really in a position to shift over to a new binding until the next version of
+> > the SMMU architecture comes along...
 > 
-> So when a VM is booted it is passed a device tree with that DMA window?
+> How much code relies on the meaning of the nptsbdf bits?
 
-Correct.
+Not much at all, I think this was defined mostly for open firmware
+client interfaces, which we don't use with FDT.
 
-> Given what you describe above this seems to be more of a configuration
-> option to restrict the IOMMU to a subset of the physical memory for
-> purposes of virtualization. So I agree that this wouldn't be a good fit
-> for what we're trying to achieve with iommus or dma-ranges in this
-> binding.
+n, t and r are probably only used in PCI functions that are listed
+in DT, not in the host bridge.
 
-Thinking about it again now, I wonder if there are any other use cases
-for windowed IOMMUs. If this is the only one, there might be no use
-in the #address-cells model I suggested instead of your original
-#iommu-cells.
+b/d/f I think is mostly used for the interrupt-maps property, when
+describing hardwired interrupts.
 
-> > > > I would like to add an explanation about dma-ranges to the binding:
-> > > > 
-> > > > 8<--------
-> > > > The parent bus of the iommu must have a valid "dma-ranges" property
-> > > > describing how the physical address space of the IOMMU maps into
-> > > > memory.
-> > > 
-> > > With physical address space you mean the addresses after translation,
-> > > not the I/O virtual addresses, right? But even so, how will this work
-> > > when there are multiple IOMMU devices? What determines which IOMMU is
-> > > mapped via which entry?
-> > > 
-> > > Perhaps having multiple IOMMUs implies that there will have to be some
-> > > partitioning of the parent address space to make sure two IOMMUs don't
-> > > translate to the same ranges?
-> > 
-> > These dma-ranges properties would almost always be for the entire RAM,
-> > and we can treat anything else as a bug.
-> 
-> Would it typically be a 1:1 mapping? In that case could we define an
-> empty dma-ranges property to mean exactly that? That would make it
-> consistent with the ranges property.
-
-Yes, I believe that is how it's already defined.
-
-> > > > A device with an "iommus" property will ignore the "dma-ranges" property
-> > > > of the parent node and rely on the IOMMU for translation instead.
-> > > 
-> > > Do we need to consider the case where an IOMMU listed in iommus isn't
-> > > enabled (status = "disabled")? In that case presumably the device would
-> > > either not function or may optionally continue to master onto the parent
-> > > untranslated.
-> > 
-> > My reasoning was that the DT should specify whether we use the IOMMU
-> > or not. Being able to just switch on or off the IOMMU sounds nice as
-> > well, so we could change the text above to do that.
-> > 
-> > Another option would be to do this in the IOMMU code, basically
-> > falling back to the IOMMU parent's dma-ranges property and using
-> > linear dma_map_ops when that is disabled.
-> 
-> Yes, it should be trivial for the IOMMU core code to take care of this
-> special case. Still I think it's worth mentioning it in the binding so
-> that it's clearly specified.
-
-Agreed.
-
-> > > > Using an "iommus" property in bus device nodes with "dma-ranges"
-> > > > specifying how child devices relate to the IOMMU is a possible extension
-> > > > but is not recommended until this binding gets extended.
-> > > 
-> > > Just for my understanding, bus device nodes with iommus and dma-ranges
-> > > properties could be equivalently written by explicitly moving the iommus
-> > > properties into the child device nodes, right? In which case they should
-> > > be the same as the other examples. So that concept is a convenience
-> > > notation to reduce duplication, but doesn't fundamentally introduce any
-> > > new concept.
-> > 
-> > The one case  where that doesn't work is PCI, because we don't list the
-> > PCI devices in DT normally, and the iommus property would only exist
-> > at the PCI host controller node.
-> 
-> But it could work in classic OpenFirmware where the device tree can be
-> populated with the tree of PCI devices enumerated by OF. There are also
-> devices that have a fixed configuration and where technically the PCI
-> devices can be listed in the device tree. This is somewhat important if
-> for example one PCI device is a GPIO controller and needs to be
-> referenced by phandle from some other device.
-
-Correct. The flaw of classic Open Firmware here was that it cannot
-handle PCIe hotplug though, so we can never rely on the DT to
-describe all devices.
+p and s are used when setting up the translation for inbound MMIO
+and PIO.
 
 	Arnd
