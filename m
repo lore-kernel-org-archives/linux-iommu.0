@@ -1,14 +1,12 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH] devicetree: Add generic IOMMU device tree bindings
-Date: Tue, 20 May 2014 16:00:02 +0200
-Message-ID: <20140520135956.GA23140@ulmo>
-References: <1400242998-437-1-git-send-email-thierry.reding@gmail.com>
-	<8663464.40PHEumOar@wuerfel> <20140520131741.GB6240@ulmo>
-	<4161434.ylGuoPKcfs@wuerfel>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v3] PCI: Introduce new device binding path using
+	pci_dev.driver_override
+Date: Tue, 20 May 2014 08:53:21 -0600
+Message-ID: <20140520145136.28232.90707.stgit@bling.home>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============5076457214143967117=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <4161434.ylGuoPKcfs@wuerfel>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,167 +16,226 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kim.phillips-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, libvir-list-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+The driver_override field allows us to specify the driver for a device
+rather than relying on the driver to provide a positive match of the
+device.  This shortcuts the existing process of looking up the vendor
+and device ID, adding them to the driver new_id, binding the device,
+then removing the ID, but it also provides a couple advantages.
 
---===============5076457214143967117==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Q68bSM7Ycu6FN28Q"
-Content-Disposition: inline
+First, the above existing process allows the driver to bind to any
+device matching the new_id for the window where it's enabled.  This is
+often not desired, such as the case of trying to bind a single device
+to a meta driver like pci-stub or vfio-pci.  Using driver_override we
+can do this deterministically using:
 
+echo pci-stub > /sys/bus/pci/devices/0000:03:00.0/driver_override
+echo 0000:03:00.0 > /sys/bus/pci/devices/0000:03:00.0/driver/unbind
+echo 0000:03:00.0 > /sys/bus/pci/drivers_probe
 
---Q68bSM7Ycu6FN28Q
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Previously we could not invoke drivers_probe after adding a device
+to new_id for a driver as we get non-deterministic behavior whether
+the driver we intend or the standard driver will claim the device.
+Now it becomes a deterministic process, only the driver matching
+driver_override will probe the device.
 
-On Tue, May 20, 2014 at 03:34:46PM +0200, Arnd Bergmann wrote:
-> On Tuesday 20 May 2014 15:17:43 Thierry Reding wrote:
-> > On Tue, May 20, 2014 at 02:41:18PM +0200, Arnd Bergmann wrote:
-> > > On Tuesday 20 May 2014 14:02:43 Thierry Reding wrote:
-> > [...]
-> > > > Couldn't a single-master IOMMU be windowed?
-> > >=20
-> > > Ah, yes. That would actually be like an IBM pSeries, which has a wind=
-owed
-> > > IOMMU but uses one window per virtual machine. In that case, the wind=
-ow could
-> > > be a property of the iommu node though, rather than part of the addre=
-ss
-> > > in the link.
-> >=20
-> > Does that mean that the IOMMU has one statically configured window which
-> > is the same for each virtual machine? That would require some other
-> > mechanism to assign separate address spaces to each virtual machine,
-> > wouldn't it? But I suspect that if the IOMMU allows that it could be
-> > allocated dynamically at runtime.
->=20
-> The way it works on pSeries is that upon VM creation, the guest is assign=
-ed
-> one 256MB window for use by assigned DMA capable devices. When the guest
-> creates a mapping, it uses a hypercall to associate a bus address in that
-> range with a guest physical address. The hypervisor checks that the bus
-> address is within the allowed range, and translates the guest physical
-> address into a host physical address, then enters both into the I/O page
-> table or I/O TLB.
+To return the device to the standard driver, we simply clear the
+driver_override and reprobe the device:
 
-So when a VM is booted it is passed a device tree with that DMA window?
-Given what you describe above this seems to be more of a configuration
-option to restrict the IOMMU to a subset of the physical memory for
-purposes of virtualization. So I agree that this wouldn't be a good fit
-for what we're trying to achieve with iommus or dma-ranges in this
-binding.
+echo > /sys/bus/pci/devices/0000:03:00.0/driver_override
+echo 0000:03:00.0 > /sys/bus/pci/devices/0000:03:00.0/driver/unbind
+echo 0000:03:00.0 > /sys/bus/pci/drivers_probe
 
-> > > I would like to add an explanation about dma-ranges to the binding:
-> > >=20
-> > > 8<--------
-> > > The parent bus of the iommu must have a valid "dma-ranges" property
-> > > describing how the physical address space of the IOMMU maps into
-> > > memory.
-> >=20
-> > With physical address space you mean the addresses after translation,
-> > not the I/O virtual addresses, right? But even so, how will this work
-> > when there are multiple IOMMU devices? What determines which IOMMU is
-> > mapped via which entry?
-> >=20
-> > Perhaps having multiple IOMMUs implies that there will have to be some
-> > partitioning of the parent address space to make sure two IOMMUs don't
-> > translate to the same ranges?
->=20
-> These dma-ranges properties would almost always be for the entire RAM,
-> and we can treat anything else as a bug.
+Another advantage to this approach is that we can specify a driver
+override to force a specific binding or prevent any binding.  For
+instance when an IOMMU group is exposed to userspace through VFIO
+we require that all devices within that group are owned by VFIO.
+However, devices can be hot-added into an IOMMU group, in which case
+we want to prevent the device from binding to any driver (override
+driver = "none") or perhaps have it automatically bind to vfio-pci.
+With driver_override it's a simple matter for this field to be set
+internally when the device is first discovered to prevent driver
+matches.
 
-Would it typically be a 1:1 mapping? In that case could we define an
-empty dma-ranges property to mean exactly that? That would make it
-consistent with the ranges property.
+Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+---
 
-> The mapping between what goes into the IOMMU and what comes out of it
-> is not reflected in DT at all, since it only happens at runtime.
-> The dma-ranges property I mean above describes how what comes out of
-> the IOMMU maps into physical memory.
+v3: kfree() override buffer on device release, noted by Alex Graf
 
-Understood. That makes sense.
+v2: Use strchr() as suggested by Guenter Roeck and adopted by the
+    platform driver version of this same interface.
 
-> > > A device with an "iommus" property will ignore the "dma-ranges" prope=
-rty
-> > > of the parent node and rely on the IOMMU for translation instead.
-> >=20
-> > Do we need to consider the case where an IOMMU listed in iommus isn't
-> > enabled (status =3D "disabled")? In that case presumably the device wou=
-ld
-> > either not function or may optionally continue to master onto the parent
-> > untranslated.
->=20
-> My reasoning was that the DT should specify whether we use the IOMMU
-> or not. Being able to just switch on or off the IOMMU sounds nice as
-> well, so we could change the text above to do that.
->=20
-> Another option would be to do this in the IOMMU code, basically
-> falling back to the IOMMU parent's dma-ranges property and using
-> linear dma_map_ops when that is disabled.
+ Documentation/ABI/testing/sysfs-bus-pci |   21 ++++++++++++++++
+ drivers/pci/pci-driver.c                |   25 +++++++++++++++++--
+ drivers/pci/pci-sysfs.c                 |   40 +++++++++++++++++++++++++++++++
+ drivers/pci/probe.c                     |    1 +
+ include/linux/pci.h                     |    1 +
+ 5 files changed, 85 insertions(+), 3 deletions(-)
 
-Yes, it should be trivial for the IOMMU core code to take care of this
-special case. Still I think it's worth mentioning it in the binding so
-that it's clearly specified.
-
-> > > Using an "iommus" property in bus device nodes with "dma-ranges"
-> > > specifying how child devices relate to the IOMMU is a possible extens=
-ion
-> > > but is not recommended until this binding gets extended.
-> >=20
-> > Just for my understanding, bus device nodes with iommus and dma-ranges
-> > properties could be equivalently written by explicitly moving the iommus
-> > properties into the child device nodes, right? In which case they should
-> > be the same as the other examples. So that concept is a convenience
-> > notation to reduce duplication, but doesn't fundamentally introduce any
-> > new concept.
->=20
-> The one case  where that doesn't work is PCI, because we don't list the
-> PCI devices in DT normally, and the iommus property would only exist
-> at the PCI host controller node.
-
-But it could work in classic OpenFirmware where the device tree can be
-populated with the tree of PCI devices enumerated by OF. There are also
-devices that have a fixed configuration and where technically the PCI
-devices can be listed in the device tree. This is somewhat important if
-for example one PCI device is a GPIO controller and needs to be
-referenced by phandle from some other device.
-
-I'll make a note in the binding document about this possible future
-extension.
-
-Thierry
-
---Q68bSM7Ycu6FN28Q
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJTe1/cAAoJEN0jrNd/PrOhkR8P/RDBGxIvfWfn4jiC1iY5GWsP
-WCd7Bpkht4e5XN5drJDbS7+gG6pN79Ga0kXYJvX9gwoBpnkdTGg6mVLkEHWzfPe+
-5Cd6kUqt99sIQjCkkgxw3cV6S2s4qITcwPnAo20ZVOLuvbDlAwdSFlC3ld78Z+pZ
-aqi0lFYAR2Y2m2vs24f/hebwwdWQdJCGrTWCCvMdKsVQrYbnLw/r4wC3MpfjUfv6
-inUev07n7dlMzZz+X2XkdFLmqH59jkCFPh4bZ6EIiwbwXrF5fbRZXh2DM3UgtffV
-n56XVuxwNg6ehSyfmhMXDDLysexOosU7zS4AbxKzwfdHAxImsqRmk85l+oWPyDZ8
-6Ub8XE/sYspxJnOhJZMMexCLtsPW3XTUpSUL1uLQByviBylYHrTX1cKVlyeRfHEl
-zzXfZclBh0QyY09PAXOrUoCsoDJNY5nbWdpU0nFkWI8RrxYE6AiYKMhfsIJcVZ10
-wNind7Z06rQO6EpTt/iPo0pZPYz884BZICm9sEbF7hsPGXgDfIGXyoj/6M8ap1Es
-uG5m6rNZQuti5p1E8QRgHFPYBNTc6P8vHMUuOv0O8qsQAwoc4pnPR3koPPUnjcDD
-zEUeOTywgjS/ZgBNvWBmzkersRn4UohLiK0/rTOQ9L7qkKgeFFDeK0Lfx7QOVx/f
-2obbFFKrmwvP2OosFlGV
-=8zHY
------END PGP SIGNATURE-----
-
---Q68bSM7Ycu6FN28Q--
-
---===============5076457214143967117==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============5076457214143967117==--
+diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
+index a3c5a66..898ddc4 100644
+--- a/Documentation/ABI/testing/sysfs-bus-pci
++++ b/Documentation/ABI/testing/sysfs-bus-pci
+@@ -250,3 +250,24 @@ Description:
+ 		valid.  For example, writing a 2 to this file when sriov_numvfs
+ 		is not 0 and not 2 already will return an error. Writing a 10
+ 		when the value of sriov_totalvfs is 8 will return an error.
++
++What:		/sys/bus/pci/devices/.../driver_override
++Date:		April 2014
++Contact:	Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
++Description:
++		This file allows the driver for a device to be specified which
++		will override standard static and dynamic ID matching.  When
++		specified, only a driver with a name matching the value written
++		to driver_override will have an opportunity to bind to the
++		device.  The override is specified by writing a string to the
++		driver_override file (echo pci-stub > driver_override) and
++		may be cleared with an empty string (echo > driver_override).
++		This returns the device to standard matching rules binding.
++		Writing to driver_override does not automatically unbind the
++		device from its current driver or make any attempt to
++		automatically load the specified driver.  If no driver with a
++		matching name is currently loaded in the kernel, the device
++		will not bind to any driver.  This also allows devices to
++		opt-out of driver binding using a driver_override name such as
++		"none".  Only a single driver may be specified in the override,
++		there is no support for parsing delimiters.
+diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+index d911e0c..4393c12 100644
+--- a/drivers/pci/pci-driver.c
++++ b/drivers/pci/pci-driver.c
+@@ -216,6 +216,13 @@ const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
+ 	return NULL;
+ }
+ 
++static const struct pci_device_id pci_device_id_any = {
++	.vendor = PCI_ANY_ID,
++	.device = PCI_ANY_ID,
++	.subvendor = PCI_ANY_ID,
++	.subdevice = PCI_ANY_ID,
++};
++
+ /**
+  * pci_match_device - Tell if a PCI device structure has a matching PCI device id structure
+  * @drv: the PCI driver to match against
+@@ -229,18 +236,30 @@ static const struct pci_device_id *pci_match_device(struct pci_driver *drv,
+ 						    struct pci_dev *dev)
+ {
+ 	struct pci_dynid *dynid;
++	const struct pci_device_id *found_id = NULL;
++
++	/* When driver_override is set, only bind to the matching driver */
++	if (dev->driver_override && strcmp(dev->driver_override, drv->name))
++		return NULL;
+ 
+ 	/* Look at the dynamic ids first, before the static ones */
+ 	spin_lock(&drv->dynids.lock);
+ 	list_for_each_entry(dynid, &drv->dynids.list, node) {
+ 		if (pci_match_one_device(&dynid->id, dev)) {
+-			spin_unlock(&drv->dynids.lock);
+-			return &dynid->id;
++			found_id = &dynid->id;
++			break;
+ 		}
+ 	}
+ 	spin_unlock(&drv->dynids.lock);
+ 
+-	return pci_match_id(drv->id_table, dev);
++	if (!found_id)
++		found_id = pci_match_id(drv->id_table, dev);
++
++	/* driver_override will always match, send a dummy id */
++	if (!found_id && dev->driver_override)
++		found_id = &pci_device_id_any;
++
++	return found_id;
+ }
+ 
+ struct drv_dev_and_id {
+diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
+index 4e0acef..faa4ab5 100644
+--- a/drivers/pci/pci-sysfs.c
++++ b/drivers/pci/pci-sysfs.c
+@@ -499,6 +499,45 @@ static struct device_attribute sriov_numvfs_attr =
+ 		       sriov_numvfs_show, sriov_numvfs_store);
+ #endif /* CONFIG_PCI_IOV */
+ 
++static ssize_t driver_override_store(struct device *dev,
++				     struct device_attribute *attr,
++				     const char *buf, size_t count)
++{
++	struct pci_dev *pdev = to_pci_dev(dev);
++	char *driver_override, *old = pdev->driver_override, *cp;
++
++	if (count > PATH_MAX)
++		return -EINVAL;
++
++	driver_override = kstrndup(buf, count, GFP_KERNEL);
++	if (!driver_override)
++		return -ENOMEM;
++
++	cp = strchr(driver_override, '\n');
++	if (cp)
++		*cp = '\0';
++
++	if (strlen(driver_override)) {
++		pdev->driver_override = driver_override;
++	} else {
++		kfree(driver_override);
++		pdev->driver_override = NULL;
++	}
++
++	kfree(old);
++
++	return count;
++}
++
++static ssize_t driver_override_show(struct device *dev,
++				    struct device_attribute *attr, char *buf)
++{
++	struct pci_dev *pdev = to_pci_dev(dev);
++
++	return sprintf(buf, "%s\n", pdev->driver_override);
++}
++static DEVICE_ATTR_RW(driver_override);
++
+ static struct attribute *pci_dev_attrs[] = {
+ 	&dev_attr_resource.attr,
+ 	&dev_attr_vendor.attr,
+@@ -521,6 +560,7 @@ static struct attribute *pci_dev_attrs[] = {
+ #if defined(CONFIG_PM_RUNTIME) && defined(CONFIG_ACPI)
+ 	&dev_attr_d3cold_allowed.attr,
+ #endif
++	&dev_attr_driver_override.attr,
+ 	NULL,
+ };
+ 
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index ef09f5f..54268de 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -1215,6 +1215,7 @@ static void pci_release_dev(struct device *dev)
+ 	pci_release_of_node(pci_dev);
+ 	pcibios_release_device(pci_dev);
+ 	pci_bus_put(pci_dev->bus);
++	kfree(pci_dev->driver_override);
+ 	kfree(pci_dev);
+ }
+ 
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index aab57b4..b72af27 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -365,6 +365,7 @@ struct pci_dev {
+ #endif
+ 	phys_addr_t rom; /* Physical address of ROM if it's not from the BAR */
+ 	size_t romlen; /* Length of ROM if it's not from the BAR */
++	char *driver_override; /* Driver name to force a match */
+ };
+ 
+ static inline struct pci_dev *pci_physfn(struct pci_dev *dev)
