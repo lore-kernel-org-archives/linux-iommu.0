@@ -1,15 +1,15 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] iommu/intel: Exclude devices using RMRRs from IOMMU API
-	domains
-Date: Wed, 21 May 2014 07:20:26 -0600
-Message-ID: <1400678426.3289.396.camel@ul30vt.home>
-References: <20140514192620.7767.43842.stgit@bling.home>
-	<1400668716.13839.66.camel@shinybook.infradead.org>
+From: Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: Re: [PATCH] devicetree: Add generic IOMMU device tree bindings
+Date: Wed, 21 May 2014 08:44:42 -0700
+Message-ID: <CANEJEGvhEsC9wKqX_pYmOg7LwsQkoN9=jjXJuW0UeEa9XywSPw@mail.gmail.com>
+References: <1400242998-437-1-git-send-email-thierry.reding@gmail.com>
+	<4506822.XX7GrvtHhk@wuerfel> <20140521090244.GB19268@ulmo>
+	<11242680.PQytQQqlPJ@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1400668716.13839.66.camel-Fexsq3y4057IgHVZqg5X0TlWvGAXklZc@public.gmane.org>
+In-Reply-To: <11242680.PQytQQqlPJ@wuerfel>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,79 +19,48 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, chegu_vinod-VXdhtT5mjnY@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Linux DeviceTree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-samsung-soc <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gV2VkLCAyMDE0LTA1LTIxIGF0IDExOjM4ICswMTAwLCBEYXZpZCBXb29kaG91c2Ugd3JvdGU6
-Cj4gT24gV2VkLCAyMDE0LTA1LTE0IGF0IDEzOjI3IC0wNjAwLCBBbGV4IFdpbGxpYW1zb24gd3Jv
-dGU6Cj4gPiBUaGUgdXNlciBvZiB0aGUgSU9NTVUgQVBJIGRvbWFpbiBleHBlY3RzIHRvIGhhdmUg
-ZnVsbCBjb250cm9sIG9mCj4gPiB0aGUgSU9WQSBzcGFjZSBmb3IgdGhlIGRvbWFpbi4gIFJNUlJz
-IGFyZSBmdW5kYW1lbnRhbGx5IGluY29tcGF0aWJsZQo+ID4gd2l0aCB0aGF0IGlkZWEuICBXZSBj
-YW4gbmVpdGhlciBtYXAgdGhlIFJNUlIgaW50byB0aGUgSU9NTVUgQVBJCj4gPiBkb21haW4sIG5v
-ciBjYW4gd2UgZ3VhcmFudGVlIHRoYXQgdGhlIGRldmljZSB3b24ndCBjb250aW51ZSBETUEgd2l0
-aAo+ID4gdGhlIGFyZWEgZGVzY3JpYmVkIGJ5IHRoZSBSTVJSIGFzIHBhcnQgb2YgdGhlIG5ldyBk
-b21haW4uICBUaGVyZWZvcmUKPiA+IHdlIG11c3QgcHJldmVudCBzdWNoIGRldmljZXMgZnJvbSBi
-ZWluZyB1c2VkIGJ5IHRoZSBJT01NVSBBUEkuCj4gCj4gSWNrLCBpY2ssIGljay4gVGhlIG1vcmUg
-dGhlIHJhbWlmaWNhdGlvbnMgb2YgUk1SUnMgYmVjb21lIGFwcGFyZW50LCB0aGUKPiBtb3JlIEkg
-d2lzaCB3ZSdkIGp1c3QgZG9uZSB0aGUgUmlnaHQgVGhpbmfihKIgYW5kIGRlY2xhcmVkIHRoYXQg
-ZmlybXdhcmUKPiBTSEFMTCBOT1QgbGVhdmUgYW55IGRldmljZSBkb2luZyAoSU9NTVUtdmlzaWJs
-ZSkgRE1BIGFmdGVyIHRoZSBPUyB0YWtlcwo+IG92ZXIuIFRoYXQgd2F5LCBpZiB0aGV5IHdhbnRl
-ZCB0aGlzIGtpbmQgb2YgYWJvbWluYXRpb24gdGhlbiB0aGV5J2QgaGF2ZQo+IHRvIGNvbWUgdXAg
-d2l0aCBhIHdheSBvZiBkb2luZyBpdCBkaWZmZXJlbnRseS4gSGVsbCwgY2FuJ3QgeW91IGRvIFBD
-SWUKPiB0cmFuc2FjdGlvbnMgd2hpY2ggY2xhaW0gdG8gYmUgYWxyZWFkeSB0cmFuc2xhdGVkLCBh
-bmQgdGh1cyBqdXN0IGJ5cGFzcwo+IHRoZSBJT01NVT8KPiAKPiBPSywgcmFudCBvdmVyLi4uIAo+
-IAo+IFdoeSBjYW4ndCB3ZSBtYXAgdGhlIFJNUlIgaW50byB0aGUgSU9NTVUgQVBJIGRvbWFpbj8g
-SWYgd2UncmUgc2V0dGluZyB1cAo+IGEgVk0gZ3Vlc3QsIHRoYXQgYmFzaWNhbGx5IG1lYW5zIHdl
-J2Qgd2FudCB0byBwb2tlIGEgaG9sZSBpbiBpdHMgbWVtb3J5Cj4gbWFwIGFuZCBtYXJrIHRoZSBS
-TVJSLWFmZmxpY3RlZCByYW5nZSBhcyByZXNlcnZlZCBvciBhYnNlbnQuIEl0J3MKPiBob3JyaWJs
-ZSwgYnV0ICpldmVyeXRoaW5nKiBhYm91dCBSTVJScyBpcyBob3JyaWJsZS4gSXQncyBub3QgaW1w
-b3NzaWJsZSwKPiBhbmQgaXQgd291bGQgYWxsb3cgdXMgdG8gZ2l2ZSB0aGVzZSBkZXZpY2VzIGF3
-YXkgdG8gZ3Vlc3RzLiBEb24ndCB3ZQo+IHNvbWV0aW1lcyAqaGF2ZSogZGV2aWNlcyB0aGF0IHdl
-IHdhbnQgdG8gZ2l2ZSB0byBndWVzdHMsIHRoYXQgYXJlCj4gYWZmbGljdGVkIHdpdGggUk1SUnM/
-CgpZb3UncmUgcmlnaHQsIGl0IGlzIHBvc3NpYmxlIHRvIGFzc2lnbiBkZXZpY2VzIHdpdGggUk1S
-UnMsIGJ1dCBpbiBvcmRlcgp0byBkbyBzbyB3ZSdkIG5lZWQgdG8gZXhwb3NlIHRoZSBSTVJSIGFy
-ZWFzIGZvciBhIGRldmljZSBiZXlvbmQgdGhlCmlubmVyIHdvcmtpbmdzIG9mIGludGVsLWlvbW11
-IGFuZCBtYXJrIHRob3NlIHJhbmdlcyBhcyByZXNlcnZlZCBpbiB0aGUKZ3Vlc3QuICBUaGF0IGFs
-b25lIG1ha2VzIGhvdHBsdWcgb2Ygc3VjaCBkZXZpY2VzIGludG8gYSBndWVzdAppbXBvc3NpYmxl
-LgoKRW5hYmxpbmcgc3VjaCBhIHVzZSBjYXNlIGFsc28gcG90ZW50aWFsbHkgcHJvdmlkZXMgYW4g
-dW50cnVzdGVkIGd1ZXN0CndpdGggZGlyZWN0IGFjY2VzcyB0byByZWdpb25zIG9mIHBsYXRmb3Jt
-IG1lbW9yeSB0aGF0IHBvdGVudGlhbGx5IGFsbG93cwpmb3IgdW50b2xkIHBsYXRmb3JtIHNwZWNp
-ZmljIGV4cGxvaXRzLgoKV2UgY3VycmVudGx5IGhhdmUgbm8gdmlzaWJpbGl0eSB0byBSTVJScyBm
-cm9tIHRoZSBJT01NVSBBUEksIHNvIHdlIGNhbid0CmV2ZW4gYXR0ZW1wdCB0byBkbyB0aGUgYWJv
-dmUsIG5vciBjYW4gd2UgZ3VhcmFudGVlIHRoYXQgd2UgaGF2ZSBhbnkKYWJpbGl0eSB0byBtYWtl
-IGEgZGV2aWNlIGRpc2NvbnRpbnVlIHVzZSBvZiBhbiBSTVJSIGFyZWEgd2hlbiBpdCBpcwphc3Np
-Z25lZCB0byBhIFZNIGRvbWFpbi4gIFRoZXJlZm9yZSB0aGUgb25seSBzYWZlIHRoaW5nIHRvIGRv
-IGlzIHByZXZlbnQKdXNlIG9mIHN1Y2ggZGV2aWNlcyBieSBhIFZNIGRvbWFpbi4KCj4gVGhlcmUg
-YXJlIGRpc2N1c3Npb25zIGFib3V0IFJNUlJzIGJlaW5nIChhYil1c2VkIGZvciBtb3JlIHRoYW4g
-dGhlaXIKPiBleGlzdGluZyBicmFpbi1kYW1hZ2VkIHB1cnBvc2UuIFdoZXJlIHdlIGhhdmUgYSBw
-ZXJpcGhlcmFsIGRldmljZSB0aGF0Cj4gd2lsbCAobWlzKWludGVycHJldCBjZXJ0YWluIGFkZHJl
-c3MgcmFuZ2VzIGFzICJsb2NhbCIgcmF0aGVyIHRoYW4KPiBmb3J3YXJkaW5nIHRyYW5zYWN0aW9u
-cyB1cCB0b3dhcmRzIG1haW4gbWVtb3J5LCB3ZSBuZWVkIHRvIGVuc3VyZSB0aGF0Cj4gc3VjaCBy
-YW5nZXMgYXJlIG5ldmVyIHVzZWQgYXMgdmlydHVhbCBhZGRyZXNzZXMuIFRoaXMgaGFzIGxhcmdl
-bHkgYmVlbgo+IGFuIGludmlzaWJsZSBwcm9ibGVtIHVudGlsIHdlIGZvdW5kIGEgZGV2aWNlIHdo
-ZXJlIHRoZSBhZmZlY3RlZCByYW5nZQo+IG1hdGNoZWQgdGhlIElPVkEgb3VyIERNQSBBUEkgdXNl
-cyBieSBkZWZhdWx0LiBVc2luZyBhbiBSTVJSIGhhcyBiZWVuCj4gcHJvcG9zZWQgYXMgYSBzaW1w
-bGUgd2F5IHRvIGFjaGlldmUgdGhhdC4uLiB3aGljaCBtZWFucyB0aGF0IHlvdSBlbmQgdXAKPiBu
-b3QgYmVpbmcgYWJsZSB0byBhc3NpZ24gKnRob3NlKiBkZXZpY2VzIHRvIElPTU1VIGRvbWFpbnMg
-ZWl0aGVyLgo+IAo+IEkgZG8gc3VzcGVjdCBpdCdzIGdvaW5nIHRvIGxlYWQgdG8gY29tcGxhaW50
-cy4uLiBidXQgSSdtIGp1c3Qgbm90IHN1cmUgSQo+IGNhbiBicmluZyBteXNlbGYgdG8gY2FyZS4g
-U2FuZSBkZXNpZ25zIGRvbid0IHJlcXVpcmUgUk1SUnMuIElmIHNvbWVvbmUKPiBjb21lcyB0byBt
-ZSBhbmQgY29tcGxhaW5zIHRoYXQgdGhlaXIgSFAgc3RvcmFnZSBjb250cm9sbGVyIG9yIHdoYXRl
-dmVyCj4gY2FuJ3QgYmUgYXNzaWduZWQgdG8gYSBndWVzdCwgSSdtIHF1aXRlIHByZXBhcmVkIHRv
-IHRlbGwgdGhlbSB0byByZXBsYWNlCj4gaXQgd2l0aCBzb21ldGhpbmcgbm9uLWJyb2tlbi4gV2ls
-bCB5b3UgYmFjayBtZSB1cCB3aGVuIGl0IGhhcHBlbnM/CgpFeGFjdGx5LCBJIGhhdmUgYSBoYXJk
-IHRpbWUgYnJpbmdpbmcgbXlzZWxmIHRvIGNhcmUgYWJvdXQgc3VwcG9ydGluZwpzdWNoIGRldmlj
-ZXMuICBWZW5kb3JzIHRoYXQgcHJvbGlmZXJhdGUgUk1SUiB1c2FnZSBuZWVkIHRvIGJlIGF3YXJl
-IG9mCnRoZSBpbXBsaWNhdGlvbnMgb2YgUk1SUnMgZm9yIGFsbCB1c2UgY2FzZXMgb2YgYSBkZXZp
-Y2UuICBGaXJzdCBhbmQKZm9yZW1vc3QsIHdlIG5lZWQgdG8gbG9jayBvdXQgZGV2aWNlcyB3aXRo
-IFJNUlJzIGJlY2F1c2Ugd2UgaGF2ZSBubwphYmlsaXR5IHRvIGVpdGhlciBob25vciBvciBkaXNh
-YmxlIFJNUlJzIHdoZW4gdXNlZCBieSB0aGUgSU9NTVUgQVBJLiAgSWYKdmVuZG9ycyB0aGF0IHJl
-bHkgb24gUk1SUnMgd2FudCB0byBtYWtlIHN1Y2ggZGV2aWNlcyBhc3NpZ25hYmxlIGJ5CnByb3Zp
-ZGluZyBpbnRlcmZhY2VzIHRvIGRlc2NyaWJlIGFuZCBtYXAgdGhlIGFyZWEgaW50byBhIFZNLCBv
-ciBldmVuIGEKbWVjaGFuaXNtIHRvIGRpc2FibGUgdGhlIFJNUlIsIG1vcmUgcG93ZXIgdG8gdGhl
-bS4gIFRoZSBjdXJyZW50CnNpdHVhdGlvbiBpcyBzaW1wbHkgdW5zYWZlIGFuZCBuZWVkcyB0byBi
-ZSBwcmV2ZW50ZWQuICBUaGFua3MsCgpBbGV4CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgt
-Zm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4v
-bGlzdGluZm8vaW9tbXU=
+On Wed, May 21, 2014 at 2:32 AM, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> wrote:
+> On Wednesday 21 May 2014 11:02:45 Thierry Reding wrote:
+>> On Wed, May 21, 2014 at 10:54:42AM +0200, Arnd Bergmann wrote:
+>>
+>> > Right. As long as we always unmap the buffers from the IOMMU after they
+>> > have stopped being in use, it's very unlikely that even a broken device
+>> > driver causes a DMA into some bus address that happens to be mapped for
+>> > another device.
+>>
+>> I think that if buffers remain mapped in the IOMMU when they have been
+>> deallocated that should be considered a bug.
+
+There is currently no general requirement to tear down mappings immediately.
+An option to enforce immediate tear down might be useful since I agree
+Virtual Guests sharing host memory through shared physical devices
+will want that. ie there should be no opportunity for a shared device
+to be able to access another guests memory through "stale" (but live)
+DMA mappings. I don't think that's the case but I'd ask someone like
+Alex Williamson for a more certain answer.
+
+> You could see it as a performance optimization in some cases, e.g. when you
+> cannot flush individual IOTLBs or doing so is expensive, and you just keep
+> assigning new addresses until every one has been used, then you do a global
+> IOTLB flush once.
+
+This is in fact exactly what several IOMMUs do - including the Intel
+IOMMU driver.
+
+IIRC, the Intel IOMMU driver collects 256 or so  entries to flush and
+then flushes them all at once and updates the metadata. I don't if it
+does this for ranges assigned to different virtual guests though or
+just within a given range.
+
+> Obviously you have to maintain the IO page tables correctly.
+
+To be clear, "Correctly" in this case just means until the IOTLB is
+flushed, the given IOMMU Pdir entries are marked "in use" even though
+the driver has handed "ownership" back to the IOMMU driver.
+
+cheers,
+grant
