@@ -1,14 +1,15 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH v2 00/10] Renesas ipmmu-vmsa: Miscellaneous cleanups and
-	fixes
-Date: Wed, 21 May 2014 18:11:55 +0200
-Message-ID: <1419363.GGUKXiAPyI@avalon>
-References: <1400150451-13469-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+From: Linda Knippers <linda.knippers-VXdhtT5mjnY@public.gmane.org>
+Subject: Re: [PATCH] iommu/intel: Exclude devices using RMRRs from IOMMU API
+	domains
+Date: Wed, 21 May 2014 13:05:06 -0400
+Message-ID: <537CDCC2.6020209@hp.com>
+References: <20140514192620.7767.43842.stgit@bling.home>	<1400668716.13839.66.camel@shinybook.infradead.org>
+	<1400678426.3289.396.camel@ul30vt.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1400150451-13469-1-git-send-email-laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+In-Reply-To: <1400678426.3289.396.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,55 +19,86 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, chegu_vinod-VXdhtT5mjnY@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
-
-Ping ?
-
-On Thursday 15 May 2014 12:40:41 Laurent Pinchart wrote:
-> Hello,
-> 
-> This patch set cleans up and fixes small issues in the ipmmu-vmsa driver.
-> The patches are based on top of "[PATCH v3] iommu: Add driver for Renesas
-> VMSA-compatible IPMMU" that adds the ipmmu-vmsa driver.
-> 
-> The most interesting part of this series is the rewrite of the page table
-> management code. The IOMMU core guarantees that the map and unmap operations
-> will always be called only with page sizes advertised by the driver. We can
-> use that assumption to remove loops of PGD and PMD entries, simplifying the
-> code.
-> 
-> Joerg, is there still time to get this merged in v3.16 ? The patches have
-> all been posted previously and the only comment I've received was about a
-> missing #define in patch 04/10.
-> 
-> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> 
-> Changes since v1:
-> 
-> - Add missing IPMMU_PTRS_PER_PUD definition in patch 04/10
-> 
-> Laurent Pinchart (10):
->   iommu/ipmmu-vmsa: Refactor micro-TLB lookup
->   iommu/ipmmu-vmsa: Cleanup failures of ARM mapping creation or
->     attachment
->   iommu/ipmmu-vmsa: Fix the supported page sizes
->   iommu/ipmmu-vmsa: Define driver-specific page directory sizes
->   iommu/ipmmu-vmsa: Set the PTE contiguous hint bit when possible
->   iommu/ipmmu-vmsa: PMD is never folded, PUD always is
->   iommu/ipmmu-vmsa: Rewrite page table management
->   iommu/ipmmu-vmsa: Support 2MB mappings
->   iommu/ipmmu-vmsa: Remove stage 2 PTE bits definitions
->   iommu/ipmmu-vmsa: Support clearing mappings
-> 
-> drivers/iommu/ipmmu-vmsa.c | 535 +++++++++++++++++++++++++++---------------
-> 1 file changed, 361
-> insertions(+), 174 deletions(-)
-
--- 
-Regards,
-
-Laurent Pinchart
+T24gNS8yMS8yMDE0IDk6MjAgQU0sIEFsZXggV2lsbGlhbXNvbiB3cm90ZToKPiBPbiBXZWQsIDIw
+MTQtMDUtMjEgYXQgMTE6MzggKzAxMDAsIERhdmlkIFdvb2Rob3VzZSB3cm90ZToKPj4gT24gV2Vk
+LCAyMDE0LTA1LTE0IGF0IDEzOjI3IC0wNjAwLCBBbGV4IFdpbGxpYW1zb24gd3JvdGU6Cj4+PiBU
+aGUgdXNlciBvZiB0aGUgSU9NTVUgQVBJIGRvbWFpbiBleHBlY3RzIHRvIGhhdmUgZnVsbCBjb250
+cm9sIG9mCj4+PiB0aGUgSU9WQSBzcGFjZSBmb3IgdGhlIGRvbWFpbi4gIFJNUlJzIGFyZSBmdW5k
+YW1lbnRhbGx5IGluY29tcGF0aWJsZQo+Pj4gd2l0aCB0aGF0IGlkZWEuICBXZSBjYW4gbmVpdGhl
+ciBtYXAgdGhlIFJNUlIgaW50byB0aGUgSU9NTVUgQVBJCj4+PiBkb21haW4sIG5vciBjYW4gd2Ug
+Z3VhcmFudGVlIHRoYXQgdGhlIGRldmljZSB3b24ndCBjb250aW51ZSBETUEgd2l0aAo+Pj4gdGhl
+IGFyZWEgZGVzY3JpYmVkIGJ5IHRoZSBSTVJSIGFzIHBhcnQgb2YgdGhlIG5ldyBkb21haW4uICBU
+aGVyZWZvcmUKPj4+IHdlIG11c3QgcHJldmVudCBzdWNoIGRldmljZXMgZnJvbSBiZWluZyB1c2Vk
+IGJ5IHRoZSBJT01NVSBBUEkuCj4+Cj4+IEljaywgaWNrLCBpY2suIFRoZSBtb3JlIHRoZSByYW1p
+ZmljYXRpb25zIG9mIFJNUlJzIGJlY29tZSBhcHBhcmVudCwgdGhlCj4+IG1vcmUgSSB3aXNoIHdl
+J2QganVzdCBkb25lIHRoZSBSaWdodCBUaGluZ+KEoiBhbmQgZGVjbGFyZWQgdGhhdCBmaXJtd2Fy
+ZQo+PiBTSEFMTCBOT1QgbGVhdmUgYW55IGRldmljZSBkb2luZyAoSU9NTVUtdmlzaWJsZSkgRE1B
+IGFmdGVyIHRoZSBPUyB0YWtlcwo+PiBvdmVyLiBUaGF0IHdheSwgaWYgdGhleSB3YW50ZWQgdGhp
+cyBraW5kIG9mIGFib21pbmF0aW9uIHRoZW4gdGhleSdkIGhhdmUKPj4gdG8gY29tZSB1cCB3aXRo
+IGEgd2F5IG9mIGRvaW5nIGl0IGRpZmZlcmVudGx5LiBIZWxsLCBjYW4ndCB5b3UgZG8gUENJZQo+
+PiB0cmFuc2FjdGlvbnMgd2hpY2ggY2xhaW0gdG8gYmUgYWxyZWFkeSB0cmFuc2xhdGVkLCBhbmQg
+dGh1cyBqdXN0IGJ5cGFzcwo+PiB0aGUgSU9NTVU/Cj4+Cj4+IE9LLCByYW50IG92ZXIuLi4gCj4+
+Cj4+IFdoeSBjYW4ndCB3ZSBtYXAgdGhlIFJNUlIgaW50byB0aGUgSU9NTVUgQVBJIGRvbWFpbj8g
+SWYgd2UncmUgc2V0dGluZyB1cAo+PiBhIFZNIGd1ZXN0LCB0aGF0IGJhc2ljYWxseSBtZWFucyB3
+ZSdkIHdhbnQgdG8gcG9rZSBhIGhvbGUgaW4gaXRzIG1lbW9yeQo+PiBtYXAgYW5kIG1hcmsgdGhl
+IFJNUlItYWZmbGljdGVkIHJhbmdlIGFzIHJlc2VydmVkIG9yIGFic2VudC4gSXQncwo+PiBob3Jy
+aWJsZSwgYnV0ICpldmVyeXRoaW5nKiBhYm91dCBSTVJScyBpcyBob3JyaWJsZS4gSXQncyBub3Qg
+aW1wb3NzaWJsZSwKPj4gYW5kIGl0IHdvdWxkIGFsbG93IHVzIHRvIGdpdmUgdGhlc2UgZGV2aWNl
+cyBhd2F5IHRvIGd1ZXN0cy4gRG9uJ3Qgd2UKPj4gc29tZXRpbWVzICpoYXZlKiBkZXZpY2VzIHRo
+YXQgd2Ugd2FudCB0byBnaXZlIHRvIGd1ZXN0cywgdGhhdCBhcmUKPj4gYWZmbGljdGVkIHdpdGgg
+Uk1SUnM/Cj4gCj4gWW91J3JlIHJpZ2h0LCBpdCBpcyBwb3NzaWJsZSB0byBhc3NpZ24gZGV2aWNl
+cyB3aXRoIFJNUlJzLCBidXQgaW4gb3JkZXIKPiB0byBkbyBzbyB3ZSdkIG5lZWQgdG8gZXhwb3Nl
+IHRoZSBSTVJSIGFyZWFzIGZvciBhIGRldmljZSBiZXlvbmQgdGhlCj4gaW5uZXIgd29ya2luZ3Mg
+b2YgaW50ZWwtaW9tbXUgYW5kIG1hcmsgdGhvc2UgcmFuZ2VzIGFzIHJlc2VydmVkIGluIHRoZQo+
+IGd1ZXN0LiAgVGhhdCBhbG9uZSBtYWtlcyBob3RwbHVnIG9mIHN1Y2ggZGV2aWNlcyBpbnRvIGEg
+Z3Vlc3QKPiBpbXBvc3NpYmxlLgo+IAo+IEVuYWJsaW5nIHN1Y2ggYSB1c2UgY2FzZSBhbHNvIHBv
+dGVudGlhbGx5IHByb3ZpZGVzIGFuIHVudHJ1c3RlZCBndWVzdAo+IHdpdGggZGlyZWN0IGFjY2Vz
+cyB0byByZWdpb25zIG9mIHBsYXRmb3JtIG1lbW9yeSB0aGF0IHBvdGVudGlhbGx5IGFsbG93cwo+
+IGZvciB1bnRvbGQgcGxhdGZvcm0gc3BlY2lmaWMgZXhwbG9pdHMuCj4gCj4gV2UgY3VycmVudGx5
+IGhhdmUgbm8gdmlzaWJpbGl0eSB0byBSTVJScyBmcm9tIHRoZSBJT01NVSBBUEksIHNvIHdlIGNh
+bid0Cj4gZXZlbiBhdHRlbXB0IHRvIGRvIHRoZSBhYm92ZSwgbm9yIGNhbiB3ZSBndWFyYW50ZWUg
+dGhhdCB3ZSBoYXZlIGFueQo+IGFiaWxpdHkgdG8gbWFrZSBhIGRldmljZSBkaXNjb250aW51ZSB1
+c2Ugb2YgYW4gUk1SUiBhcmVhIHdoZW4gaXQgaXMKPiBhc3NpZ25lZCB0byBhIFZNIGRvbWFpbi4g
+IFRoZXJlZm9yZSB0aGUgb25seSBzYWZlIHRoaW5nIHRvIGRvIGlzIHByZXZlbnQKPiB1c2Ugb2Yg
+c3VjaCBkZXZpY2VzIGJ5IGEgVk0gZG9tYWluLgo+IAo+PiBUaGVyZSBhcmUgZGlzY3Vzc2lvbnMg
+YWJvdXQgUk1SUnMgYmVpbmcgKGFiKXVzZWQgZm9yIG1vcmUgdGhhbiB0aGVpcgo+PiBleGlzdGlu
+ZyBicmFpbi1kYW1hZ2VkIHB1cnBvc2UuIFdoZXJlIHdlIGhhdmUgYSBwZXJpcGhlcmFsIGRldmlj
+ZSB0aGF0Cj4+IHdpbGwgKG1pcylpbnRlcnByZXQgY2VydGFpbiBhZGRyZXNzIHJhbmdlcyBhcyAi
+bG9jYWwiIHJhdGhlciB0aGFuCj4+IGZvcndhcmRpbmcgdHJhbnNhY3Rpb25zIHVwIHRvd2FyZHMg
+bWFpbiBtZW1vcnksIHdlIG5lZWQgdG8gZW5zdXJlIHRoYXQKPj4gc3VjaCByYW5nZXMgYXJlIG5l
+dmVyIHVzZWQgYXMgdmlydHVhbCBhZGRyZXNzZXMuIFRoaXMgaGFzIGxhcmdlbHkgYmVlbgo+PiBh
+biBpbnZpc2libGUgcHJvYmxlbSB1bnRpbCB3ZSBmb3VuZCBhIGRldmljZSB3aGVyZSB0aGUgYWZm
+ZWN0ZWQgcmFuZ2UKPj4gbWF0Y2hlZCB0aGUgSU9WQSBvdXIgRE1BIEFQSSB1c2VzIGJ5IGRlZmF1
+bHQuIFVzaW5nIGFuIFJNUlIgaGFzIGJlZW4KPj4gcHJvcG9zZWQgYXMgYSBzaW1wbGUgd2F5IHRv
+IGFjaGlldmUgdGhhdC4uLiB3aGljaCBtZWFucyB0aGF0IHlvdSBlbmQgdXAKPj4gbm90IGJlaW5n
+IGFibGUgdG8gYXNzaWduICp0aG9zZSogZGV2aWNlcyB0byBJT01NVSBkb21haW5zIGVpdGhlci4K
+Pj4KPj4gSSBkbyBzdXNwZWN0IGl0J3MgZ29pbmcgdG8gbGVhZCB0byBjb21wbGFpbnRzLi4uIGJ1
+dCBJJ20ganVzdCBub3Qgc3VyZSBJCj4+IGNhbiBicmluZyBteXNlbGYgdG8gY2FyZS4gU2FuZSBk
+ZXNpZ25zIGRvbid0IHJlcXVpcmUgUk1SUnMuIElmIHNvbWVvbmUKPj4gY29tZXMgdG8gbWUgYW5k
+IGNvbXBsYWlucyB0aGF0IHRoZWlyIEhQIHN0b3JhZ2UgY29udHJvbGxlciBvciB3aGF0ZXZlcgo+
+PiBjYW4ndCBiZSBhc3NpZ25lZCB0byBhIGd1ZXN0LCBJJ20gcXVpdGUgcHJlcGFyZWQgdG8gdGVs
+bCB0aGVtIHRvIHJlcGxhY2UKPj4gaXQgd2l0aCBzb21ldGhpbmcgbm9uLWJyb2tlbi4gV2lsbCB5
+b3UgYmFjayBtZSB1cCB3aGVuIGl0IGhhcHBlbnM/Cj4gCj4gRXhhY3RseSwgSSBoYXZlIGEgaGFy
+ZCB0aW1lIGJyaW5naW5nIG15c2VsZiB0byBjYXJlIGFib3V0IHN1cHBvcnRpbmcKPiBzdWNoIGRl
+dmljZXMuICBWZW5kb3JzIHRoYXQgcHJvbGlmZXJhdGUgUk1SUiB1c2FnZSBuZWVkIHRvIGJlIGF3
+YXJlIG9mCj4gdGhlIGltcGxpY2F0aW9ucyBvZiBSTVJScyBmb3IgYWxsIHVzZSBjYXNlcyBvZiBh
+IGRldmljZS4gIEZpcnN0IGFuZAo+IGZvcmVtb3N0LCB3ZSBuZWVkIHRvIGxvY2sgb3V0IGRldmlj
+ZXMgd2l0aCBSTVJScyBiZWNhdXNlIHdlIGhhdmUgbm8KPiBhYmlsaXR5IHRvIGVpdGhlciBob25v
+ciBvciBkaXNhYmxlIFJNUlJzIHdoZW4gdXNlZCBieSB0aGUgSU9NTVUgQVBJLiAgSWYKPiB2ZW5k
+b3JzIHRoYXQgcmVseSBvbiBSTVJScyB3YW50IHRvIG1ha2Ugc3VjaCBkZXZpY2VzIGFzc2lnbmFi
+bGUgYnkKPiBwcm92aWRpbmcgaW50ZXJmYWNlcyB0byBkZXNjcmliZSBhbmQgbWFwIHRoZSBhcmVh
+IGludG8gYSBWTSwgb3IgZXZlbiBhCj4gbWVjaGFuaXNtIHRvIGRpc2FibGUgdGhlIFJNUlIsIG1v
+cmUgcG93ZXIgdG8gdGhlbS4gIFRoZSBjdXJyZW50Cj4gc2l0dWF0aW9uIGlzIHNpbXBseSB1bnNh
+ZmUgYW5kIG5lZWRzIHRvIGJlIHByZXZlbnRlZC4gIAoKSSBjYXJlIGJ1dCBJIHRoaW5rIHRoaXMg
+cGF0Y2ggc2hvdWxkIGdvIGluIHVudGlsIHRoZXJlIGlzIGEgYmV0dGVyCnNvbHV0aW9uLgoKLS0g
+bGprCgo+IFRoYW5rcywKPiAKPiBBbGV4Cj4gCj4gX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX18KPiBpb21tdSBtYWlsaW5nIGxpc3QKPiBpb21tdUBsaXN0cy5s
+aW51eC1mb3VuZGF0aW9uLm9yZwo+IGh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9t
+YWlsbWFuL2xpc3RpbmZvL2lvbW11Cj4gCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91
+bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlz
+dGluZm8vaW9tbXU=
