@@ -1,14 +1,10 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [PATCH] devicetree: Add generic IOMMU device tree bindings
-Date: Wed, 21 May 2014 11:36:32 +0200
-Message-ID: <5371868.4QO1YJ0hU2@wuerfel>
-References: <1400242998-437-1-git-send-email-thierry.reding@gmail.com>
-	<4367469.BqpJyVF8PT@wuerfel> <20140521090037.GA19268@ulmo>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [git pull] IOMMU Fixes for Linux v3.15-rc5
+Date: Wed, 21 May 2014 12:16:08 +0200
+Message-ID: <20140521101607.GA25600@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============3855691734226055663=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140521090037.GA19268@ulmo>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,45 +14,97 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wednesday 21 May 2014 11:00:38 Thierry Reding wrote:
-> On Wed, May 21, 2014 at 10:50:38AM +0200, Arnd Bergmann wrote:
-> > On Wednesday 21 May 2014 10:26:11 Thierry Reding wrote:
 
-> > > > > For determining dma masks, it is the output address that it
-> > > > > important.  Santosh's code can probably be taught to handle this,
-> > > > > if given an additional traversal rule for following "iommus"
-> > > > > properties.  However, deploying an IOMMU whose output address size
-> > > > > is smaller than the 
-> > > > 
-> > > > Something seems to be missing here. I don't think we want to handle
-> > > > the case where the IOMMU output cannot the entire memory address
-> > > > space. If necessary, that would mean using both an IOMMU driver
-> > > > and swiotlb, but I think it's a reasonable assumption that hardware
-> > > > isn't /that/ crazy.
-> > > 
-> > > Similarily, should the IOMMU not be treated like any other device here?
-> > > Its DMA mask should determine what address range it can access.
-> > 
-> > Right. But for that we need a dma-ranges property in the parent of the
-> > iommu, just so the mask can be set correctly and we don't have to
-> > rely on the 32-bit fallback case.
-> 
-> Shouldn't the IOMMU driver be the one to set the DMA mask for the device
-> in exactly the same way that other drivers override the 32-bit default?
+--===============3855691734226055663==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="5vNYLRcllDrimb99"
+Content-Disposition: inline
 
-The IOMMU driver could /ask/ for an appropriate mask based on its internal
-design, but if you have an IOMMU with a 64-bit output address connected
-to a 32-bit bus, that should fail.
 
-Note that it's not obvious what the IOMMU's DMA mask actually means.
-It clearly has to be the mask that is used for allocating the IO page
-tables, but it wouldn't normally be used in the path that allocates
-pages on behalf of a DMA master attached to the IOMMU, because that
-allocation is performed by the code that looks at the other device's
-dma mask.
+--5vNYLRcllDrimb99
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-	Arnd
+Hi Linus,
+
+The following changes since commit d6d211db37e75de2ddc3a4f979038c40df7cc79c:
+
+  Linux 3.15-rc5 (2014-05-09 13:10:52 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v3.15-rc5
+
+for you to fetch changes up to 2c16c9fdacbbf3bd8ff6390e12c5d28b3f2c78ac:
+
+  iommu/amd: fix enabling exclusion range for an exact device (2014-05-13 12:33:12 +0200)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v3.15-rc5
+
+3 Fixes for the AMD IOMMU driver:
+
+	* Fix a locking issue around get_user_pages()
+	* Fix 2 issues with device aliasing and
+	  exclusion range handling
+
+----------------------------------------------------------------
+Alex Williamson (1):
+      iommu/amd: Fix interrupt remapping for aliased devices
+
+Jay Cornwall (1):
+      iommu/amd: Take mmap_sem when calling get_user_pages
+
+Su Friendy (1):
+      iommu/amd: fix enabling exclusion range for an exact device
+
+ drivers/iommu/amd_iommu.c      |    2 +-
+ drivers/iommu/amd_iommu_init.c |    2 +-
+ drivers/iommu/amd_iommu_v2.c   |    2 ++
+ 3 files changed, 4 insertions(+), 2 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+
+--5vNYLRcllDrimb99
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+
+iQIcBAEBAgAGBQJTfHznAAoJECvwRC2XARrj1fIP/24CFB/ZO3WSbGcA8KiL9+3K
+rMxy758v8vgWgU4n857a37bBOtsz5UQud6uglO7aCzokAGSHKCtFH6K9EFotJVbs
+xWz3iHEywQiqFupkZIwIPz7ubljq3Shl2G8a3Ae1x0q0ZFLDhQV4L/Q3zXDbAoZz
+w5KadA76dwvogXlMQcWLyXaap1n0QNESEeubfqbplRCpaOodojgwhHXB17l+eIcQ
+/R5gbNKbSauc/mqOkemducBWe8+1+mbcG14wuqtdg4BxVxNMttWKsruqry1yPJNI
+tz/YfFgXMYA2UP4RvO8fKvELAMDk308iiyRkZVB2iEzwUOaJHdRqg7MPJ5gqzhr9
+3MScnt+Hy/MXLqJRuWkBdiB6W925FjAEJy6Ul82DBQCFaSLjPw9ytulFD4erfgCR
+Zd+e9SM35AFYygQ9YW30XnG1aPFrwU4J4Ay9n02VEo32q+2dtddxYT/eAHBlHyye
+5knKWlQg6eAmsdKTPVxZMxNRFZs9+qSi3jpoQAaIi+GmuslW0cpiwBUYW/iUGAaV
+KLLunmpEOY7LBEFO6WDkVOSTu4O9FUjsDh6CPe0eyq3tItYyPTEcreR1GkQOI9ew
+MPfm4qh/6iNfwEXqmrMvXJKhBc/zBnlRZdi4CaCuddSUsLbZv0B0L9pGHi6kc8Ds
+vR+KZT9N7DM1S4qoqBlc
+=xC8T
+-----END PGP SIGNATURE-----
+
+--5vNYLRcllDrimb99--
+
+
+
+--===============3855691734226055663==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============3855691734226055663==--
