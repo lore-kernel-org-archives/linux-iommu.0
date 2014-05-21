@@ -1,118 +1,97 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [PATCH] devicetree: Add generic IOMMU device tree bindings
-Date: Wed, 21 May 2014 16:01:41 +0200
-Message-ID: <4994892.2gk6QRjAPD@wuerfel>
-References: <1400242998-437-1-git-send-email-thierry.reding@gmail.com> <5371868.4QO1YJ0hU2@wuerfel> <20140521105034.GA2014@ulmo>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH] iommu/intel: Exclude devices using RMRRs from IOMMU API
+	domains
+Date: Wed, 21 May 2014 07:20:26 -0600
+Message-ID: <1400678426.3289.396.camel@ul30vt.home>
+References: <20140514192620.7767.43842.stgit@bling.home>
+	<1400668716.13839.66.camel@shinybook.infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20140521105034.GA2014@ulmo>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1400668716.13839.66.camel-Fexsq3y4057IgHVZqg5X0TlWvGAXklZc@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, chegu_vinod-VXdhtT5mjnY@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wednesday 21 May 2014 12:50:38 Thierry Reding wrote:
-> On Wed, May 21, 2014 at 11:36:32AM +0200, Arnd Bergmann wrote:
-> > On Wednesday 21 May 2014 11:00:38 Thierry Reding wrote:
-> > > On Wed, May 21, 2014 at 10:50:38AM +0200, Arnd Bergmann wrote:
-> > > > On Wednesday 21 May 2014 10:26:11 Thierry Reding wrote:
-> > 
-> > > > > > > For determining dma masks, it is the output address that it
-> > > > > > > important.  Santosh's code can probably be taught to handle this,
-> > > > > > > if given an additional traversal rule for following "iommus"
-> > > > > > > properties.  However, deploying an IOMMU whose output address size
-> > > > > > > is smaller than the 
-> > > > > > 
-> > > > > > Something seems to be missing here. I don't think we want to handle
-> > > > > > the case where the IOMMU output cannot the entire memory address
-> > > > > > space. If necessary, that would mean using both an IOMMU driver
-> > > > > > and swiotlb, but I think it's a reasonable assumption that hardware
-> > > > > > isn't /that/ crazy.
-> > > > > 
-> > > > > Similarily, should the IOMMU not be treated like any other device here?
-> > > > > Its DMA mask should determine what address range it can access.
-> > > > 
-> > > > Right. But for that we need a dma-ranges property in the parent of the
-> > > > iommu, just so the mask can be set correctly and we don't have to
-> > > > rely on the 32-bit fallback case.
-> > > 
-> > > Shouldn't the IOMMU driver be the one to set the DMA mask for the device
-> > > in exactly the same way that other drivers override the 32-bit default?
-> > 
-> > The IOMMU driver could /ask/ for an appropriate mask based on its internal
-> > design, but if you have an IOMMU with a 64-bit output address connected
-> > to a 32-bit bus, that should fail.
-> 
-> Are there real use-cases where that really happens? I guess if we need
-> that the correct thing would be to bitwise AND both the DMA mask of the
-> IOMMU device (as set by the driver) with that derived from the IOMMU's
-> parent bus' dma-ranges property.
-
-It would be unusual for an IOMMU to need this, but it's how the DMA
-mask is supposed to work for normal devices. As mentioned before, I
-would probably just error out if we ever encounter such an IOMMU.
-
-> > Note that it's not obvious what the IOMMU's DMA mask actually means.
-> > It clearly has to be the mask that is used for allocating the IO page
-> > tables, but it wouldn't normally be used in the path that allocates
-> > pages on behalf of a DMA master attached to the IOMMU, because that
-> > allocation is performed by the code that looks at the other device's
-> > dma mask.
-> 
-> Interesting. If a DMA buffer is allocated using the master's DMA mask
-> wouldn't that cause breakage if the IOMMU and master's DMA masks don't
-> match. It seems to me like the right thing to do for buffer allocation
-> is to use the IOMMU's DMA mask if a device uses the IOMMU for
-> translation and use the device's DMA mask when determining to what I/O
-> virtual address to map that buffer.
-
-Unfortunately not all code agrees regarding how dma mask is actually
-interpreted. The most important use is within the dma_map_ops, and
-that is aware of the IOMMU. The dma_map_ops use that to decide what
-IOVA (bus address) to generate that is usable for the device, normally
-this would be a 32-bit range.
-
-When driver code looks at the dma mask of the device itself to make
-an allocation decision without taking the IOMMU or swiotlb into
-account, things can indeed go wrong.
-
-Russell has recently done a good cleanup of various issues around
-dma masks, and I can't find any drivers that get this wrong.
-However, there is an issue with the two or three subsystems using
-"PCI_DMA_BUS_IS_PHYS" to decide how they should treat high buffers
-coming from user space that get passed to hardware.
-
-If the SCSI layer or the network layer find the horribly misnamed
-PCI_DMA_BUS_IS_PHYS (which is hardcoded to "1" on ARM32), they
-will create copy in low memory for any data that is above
-the device dma_mask (SCSI) or above max_low_pfn (network).
-
-This is not normally a bug, and won't hurt for the swiotlb case,
-but will give us worse performance for the IOMMU case, and
-we should probably change this code to calculate the boundary
-per device by calling a function from dma_map_ops.
-
-We also really need to implement swiotlb support on ARM32 to deal
-with any other device (besides SCSI and network) that does not
-have an IOMMU but wants to use the streaming DMA API on pages
-outside of the dma_mask. We already have this case on shmobile.
-
-> Obviously if we always assume that IOMMU hardware is sane and can always
-> access at least the whole memory then this isn't an issue. But what if a
-> device can do DMA to a 64-bit address space, but the IOMMU can only
-> address 32 bits. If the device's DMA mask is used for allocations, then
-> buffers could reside beyond the 4 GiB boundary that the IOMMU can
-> address, so effectively the IOMMU wouldn't be able to write to those
-> buffers.
-
-The mask of the device is not even an issue here, it's more the general
-case of passing a buffer outside of the IOMMU's upstream bus DMA mask
-into a driver connected to the IOMMU.
-
-	Arnd
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+T24gV2VkLCAyMDE0LTA1LTIxIGF0IDExOjM4ICswMTAwLCBEYXZpZCBXb29kaG91c2Ugd3JvdGU6
+Cj4gT24gV2VkLCAyMDE0LTA1LTE0IGF0IDEzOjI3IC0wNjAwLCBBbGV4IFdpbGxpYW1zb24gd3Jv
+dGU6Cj4gPiBUaGUgdXNlciBvZiB0aGUgSU9NTVUgQVBJIGRvbWFpbiBleHBlY3RzIHRvIGhhdmUg
+ZnVsbCBjb250cm9sIG9mCj4gPiB0aGUgSU9WQSBzcGFjZSBmb3IgdGhlIGRvbWFpbi4gIFJNUlJz
+IGFyZSBmdW5kYW1lbnRhbGx5IGluY29tcGF0aWJsZQo+ID4gd2l0aCB0aGF0IGlkZWEuICBXZSBj
+YW4gbmVpdGhlciBtYXAgdGhlIFJNUlIgaW50byB0aGUgSU9NTVUgQVBJCj4gPiBkb21haW4sIG5v
+ciBjYW4gd2UgZ3VhcmFudGVlIHRoYXQgdGhlIGRldmljZSB3b24ndCBjb250aW51ZSBETUEgd2l0
+aAo+ID4gdGhlIGFyZWEgZGVzY3JpYmVkIGJ5IHRoZSBSTVJSIGFzIHBhcnQgb2YgdGhlIG5ldyBk
+b21haW4uICBUaGVyZWZvcmUKPiA+IHdlIG11c3QgcHJldmVudCBzdWNoIGRldmljZXMgZnJvbSBi
+ZWluZyB1c2VkIGJ5IHRoZSBJT01NVSBBUEkuCj4gCj4gSWNrLCBpY2ssIGljay4gVGhlIG1vcmUg
+dGhlIHJhbWlmaWNhdGlvbnMgb2YgUk1SUnMgYmVjb21lIGFwcGFyZW50LCB0aGUKPiBtb3JlIEkg
+d2lzaCB3ZSdkIGp1c3QgZG9uZSB0aGUgUmlnaHQgVGhpbmfihKIgYW5kIGRlY2xhcmVkIHRoYXQg
+ZmlybXdhcmUKPiBTSEFMTCBOT1QgbGVhdmUgYW55IGRldmljZSBkb2luZyAoSU9NTVUtdmlzaWJs
+ZSkgRE1BIGFmdGVyIHRoZSBPUyB0YWtlcwo+IG92ZXIuIFRoYXQgd2F5LCBpZiB0aGV5IHdhbnRl
+ZCB0aGlzIGtpbmQgb2YgYWJvbWluYXRpb24gdGhlbiB0aGV5J2QgaGF2ZQo+IHRvIGNvbWUgdXAg
+d2l0aCBhIHdheSBvZiBkb2luZyBpdCBkaWZmZXJlbnRseS4gSGVsbCwgY2FuJ3QgeW91IGRvIFBD
+SWUKPiB0cmFuc2FjdGlvbnMgd2hpY2ggY2xhaW0gdG8gYmUgYWxyZWFkeSB0cmFuc2xhdGVkLCBh
+bmQgdGh1cyBqdXN0IGJ5cGFzcwo+IHRoZSBJT01NVT8KPiAKPiBPSywgcmFudCBvdmVyLi4uIAo+
+IAo+IFdoeSBjYW4ndCB3ZSBtYXAgdGhlIFJNUlIgaW50byB0aGUgSU9NTVUgQVBJIGRvbWFpbj8g
+SWYgd2UncmUgc2V0dGluZyB1cAo+IGEgVk0gZ3Vlc3QsIHRoYXQgYmFzaWNhbGx5IG1lYW5zIHdl
+J2Qgd2FudCB0byBwb2tlIGEgaG9sZSBpbiBpdHMgbWVtb3J5Cj4gbWFwIGFuZCBtYXJrIHRoZSBS
+TVJSLWFmZmxpY3RlZCByYW5nZSBhcyByZXNlcnZlZCBvciBhYnNlbnQuIEl0J3MKPiBob3JyaWJs
+ZSwgYnV0ICpldmVyeXRoaW5nKiBhYm91dCBSTVJScyBpcyBob3JyaWJsZS4gSXQncyBub3QgaW1w
+b3NzaWJsZSwKPiBhbmQgaXQgd291bGQgYWxsb3cgdXMgdG8gZ2l2ZSB0aGVzZSBkZXZpY2VzIGF3
+YXkgdG8gZ3Vlc3RzLiBEb24ndCB3ZQo+IHNvbWV0aW1lcyAqaGF2ZSogZGV2aWNlcyB0aGF0IHdl
+IHdhbnQgdG8gZ2l2ZSB0byBndWVzdHMsIHRoYXQgYXJlCj4gYWZmbGljdGVkIHdpdGggUk1SUnM/
+CgpZb3UncmUgcmlnaHQsIGl0IGlzIHBvc3NpYmxlIHRvIGFzc2lnbiBkZXZpY2VzIHdpdGggUk1S
+UnMsIGJ1dCBpbiBvcmRlcgp0byBkbyBzbyB3ZSdkIG5lZWQgdG8gZXhwb3NlIHRoZSBSTVJSIGFy
+ZWFzIGZvciBhIGRldmljZSBiZXlvbmQgdGhlCmlubmVyIHdvcmtpbmdzIG9mIGludGVsLWlvbW11
+IGFuZCBtYXJrIHRob3NlIHJhbmdlcyBhcyByZXNlcnZlZCBpbiB0aGUKZ3Vlc3QuICBUaGF0IGFs
+b25lIG1ha2VzIGhvdHBsdWcgb2Ygc3VjaCBkZXZpY2VzIGludG8gYSBndWVzdAppbXBvc3NpYmxl
+LgoKRW5hYmxpbmcgc3VjaCBhIHVzZSBjYXNlIGFsc28gcG90ZW50aWFsbHkgcHJvdmlkZXMgYW4g
+dW50cnVzdGVkIGd1ZXN0CndpdGggZGlyZWN0IGFjY2VzcyB0byByZWdpb25zIG9mIHBsYXRmb3Jt
+IG1lbW9yeSB0aGF0IHBvdGVudGlhbGx5IGFsbG93cwpmb3IgdW50b2xkIHBsYXRmb3JtIHNwZWNp
+ZmljIGV4cGxvaXRzLgoKV2UgY3VycmVudGx5IGhhdmUgbm8gdmlzaWJpbGl0eSB0byBSTVJScyBm
+cm9tIHRoZSBJT01NVSBBUEksIHNvIHdlIGNhbid0CmV2ZW4gYXR0ZW1wdCB0byBkbyB0aGUgYWJv
+dmUsIG5vciBjYW4gd2UgZ3VhcmFudGVlIHRoYXQgd2UgaGF2ZSBhbnkKYWJpbGl0eSB0byBtYWtl
+IGEgZGV2aWNlIGRpc2NvbnRpbnVlIHVzZSBvZiBhbiBSTVJSIGFyZWEgd2hlbiBpdCBpcwphc3Np
+Z25lZCB0byBhIFZNIGRvbWFpbi4gIFRoZXJlZm9yZSB0aGUgb25seSBzYWZlIHRoaW5nIHRvIGRv
+IGlzIHByZXZlbnQKdXNlIG9mIHN1Y2ggZGV2aWNlcyBieSBhIFZNIGRvbWFpbi4KCj4gVGhlcmUg
+YXJlIGRpc2N1c3Npb25zIGFib3V0IFJNUlJzIGJlaW5nIChhYil1c2VkIGZvciBtb3JlIHRoYW4g
+dGhlaXIKPiBleGlzdGluZyBicmFpbi1kYW1hZ2VkIHB1cnBvc2UuIFdoZXJlIHdlIGhhdmUgYSBw
+ZXJpcGhlcmFsIGRldmljZSB0aGF0Cj4gd2lsbCAobWlzKWludGVycHJldCBjZXJ0YWluIGFkZHJl
+c3MgcmFuZ2VzIGFzICJsb2NhbCIgcmF0aGVyIHRoYW4KPiBmb3J3YXJkaW5nIHRyYW5zYWN0aW9u
+cyB1cCB0b3dhcmRzIG1haW4gbWVtb3J5LCB3ZSBuZWVkIHRvIGVuc3VyZSB0aGF0Cj4gc3VjaCBy
+YW5nZXMgYXJlIG5ldmVyIHVzZWQgYXMgdmlydHVhbCBhZGRyZXNzZXMuIFRoaXMgaGFzIGxhcmdl
+bHkgYmVlbgo+IGFuIGludmlzaWJsZSBwcm9ibGVtIHVudGlsIHdlIGZvdW5kIGEgZGV2aWNlIHdo
+ZXJlIHRoZSBhZmZlY3RlZCByYW5nZQo+IG1hdGNoZWQgdGhlIElPVkEgb3VyIERNQSBBUEkgdXNl
+cyBieSBkZWZhdWx0LiBVc2luZyBhbiBSTVJSIGhhcyBiZWVuCj4gcHJvcG9zZWQgYXMgYSBzaW1w
+bGUgd2F5IHRvIGFjaGlldmUgdGhhdC4uLiB3aGljaCBtZWFucyB0aGF0IHlvdSBlbmQgdXAKPiBu
+b3QgYmVpbmcgYWJsZSB0byBhc3NpZ24gKnRob3NlKiBkZXZpY2VzIHRvIElPTU1VIGRvbWFpbnMg
+ZWl0aGVyLgo+IAo+IEkgZG8gc3VzcGVjdCBpdCdzIGdvaW5nIHRvIGxlYWQgdG8gY29tcGxhaW50
+cy4uLiBidXQgSSdtIGp1c3Qgbm90IHN1cmUgSQo+IGNhbiBicmluZyBteXNlbGYgdG8gY2FyZS4g
+U2FuZSBkZXNpZ25zIGRvbid0IHJlcXVpcmUgUk1SUnMuIElmIHNvbWVvbmUKPiBjb21lcyB0byBt
+ZSBhbmQgY29tcGxhaW5zIHRoYXQgdGhlaXIgSFAgc3RvcmFnZSBjb250cm9sbGVyIG9yIHdoYXRl
+dmVyCj4gY2FuJ3QgYmUgYXNzaWduZWQgdG8gYSBndWVzdCwgSSdtIHF1aXRlIHByZXBhcmVkIHRv
+IHRlbGwgdGhlbSB0byByZXBsYWNlCj4gaXQgd2l0aCBzb21ldGhpbmcgbm9uLWJyb2tlbi4gV2ls
+bCB5b3UgYmFjayBtZSB1cCB3aGVuIGl0IGhhcHBlbnM/CgpFeGFjdGx5LCBJIGhhdmUgYSBoYXJk
+IHRpbWUgYnJpbmdpbmcgbXlzZWxmIHRvIGNhcmUgYWJvdXQgc3VwcG9ydGluZwpzdWNoIGRldmlj
+ZXMuICBWZW5kb3JzIHRoYXQgcHJvbGlmZXJhdGUgUk1SUiB1c2FnZSBuZWVkIHRvIGJlIGF3YXJl
+IG9mCnRoZSBpbXBsaWNhdGlvbnMgb2YgUk1SUnMgZm9yIGFsbCB1c2UgY2FzZXMgb2YgYSBkZXZp
+Y2UuICBGaXJzdCBhbmQKZm9yZW1vc3QsIHdlIG5lZWQgdG8gbG9jayBvdXQgZGV2aWNlcyB3aXRo
+IFJNUlJzIGJlY2F1c2Ugd2UgaGF2ZSBubwphYmlsaXR5IHRvIGVpdGhlciBob25vciBvciBkaXNh
+YmxlIFJNUlJzIHdoZW4gdXNlZCBieSB0aGUgSU9NTVUgQVBJLiAgSWYKdmVuZG9ycyB0aGF0IHJl
+bHkgb24gUk1SUnMgd2FudCB0byBtYWtlIHN1Y2ggZGV2aWNlcyBhc3NpZ25hYmxlIGJ5CnByb3Zp
+ZGluZyBpbnRlcmZhY2VzIHRvIGRlc2NyaWJlIGFuZCBtYXAgdGhlIGFyZWEgaW50byBhIFZNLCBv
+ciBldmVuIGEKbWVjaGFuaXNtIHRvIGRpc2FibGUgdGhlIFJNUlIsIG1vcmUgcG93ZXIgdG8gdGhl
+bS4gIFRoZSBjdXJyZW50CnNpdHVhdGlvbiBpcyBzaW1wbHkgdW5zYWZlIGFuZCBuZWVkcyB0byBi
+ZSBwcmV2ZW50ZWQuICBUaGFua3MsCgpBbGV4CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgt
+Zm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4v
+bGlzdGluZm8vaW9tbXU=
