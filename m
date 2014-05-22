@@ -1,61 +1,42 @@
-From: Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 3/3] iommu/exynos: Fix checkpatch warning
-Date: Thu, 22 May 2014 09:50:56 +0530
-Message-ID: <1400732456-5716-3-git-send-email-sachin.kamat@linaro.org>
-References: <1400732456-5716-1-git-send-email-sachin.kamat@linaro.org>
+From: Laine Stump <laine@laine.org>
+Subject: Re: [libvirt] [PATCH v3] PCI: Introduce new device binding path using
+ pci_dev.driver_override
+Date: Thu, 22 May 2014 16:36:24 +0300
+Message-ID: <537DFD58.5040809@laine.org>
+References: <20140520145136.28232.90707.stgit@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1400732456-5716-1-git-send-email-sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20140520145136.28232.90707.stgit@bling.home>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>, bhelgaas@google.com, linux-pci@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, kvm@vger.kernel.org, konrad.wilk@oracle.com, kim.phillips@linaro.org, gregkh@linuxfoundation.org, agraf@suse.de, stuart.yoder@freescale.com, libvir-list@redhat.com, iommu@lists.linux-foundation.org, tech@virtualopensystems.com, kvmarm@lists.cs.columbia.edu, christoffer.dall@linaro.org
 List-Id: iommu@lists.linux-foundation.org
 
-Silences the following type of warnings:
-WARNING: Missing a blank line after declarations
+On 05/20/2014 05:53 PM, Alex Williamson wrote:
+> The driver_override field allows us to specify the driver for a device
+> rather than relying on the driver to provide a positive match of the
+> device.  This shortcuts the existing process of looking up the vendor
+> and device ID, adding them to the driver new_id, binding the device,
+> then removing the ID, but it also provides a couple advantages.
+>
+> First, the above existing process allows the driver to bind to any
+> device matching the new_id for the window where it's enabled.  This is
+> often not desired, such as the case of trying to bind a single device
+> to a meta driver like pci-stub or vfio-pci.  Using driver_override we
+> can do this deterministically using:
+>
+> echo pci-stub > /sys/bus/pci/devices/0000:03:00.0/driver_override
+> echo 0000:03:00.0 > /sys/bus/pci/devices/0000:03:00.0/driver/unbind
+> echo 0000:03:00.0 > /sys/bus/pci/drivers_probe
 
-Signed-off-by: Sachin Kamat <sachin.kamat-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
----
- drivers/iommu/exynos-iommu.c |    3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 09f69b1d80fc..99054d2c040d 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -268,6 +268,7 @@ static void __sysmmu_tlb_invalidate_entry(void __iomem *sfrbase,
- 				sysmmu_iova_t iova, unsigned int num_inv)
- {
- 	unsigned int i;
-+
- 	for (i = 0; i < num_inv; i++) {
- 		__raw_writel((iova & SPAGE_MASK) | 1,
- 				sfrbase + REG_MMU_FLUSH_ENTRY);
-@@ -878,6 +879,7 @@ static sysmmu_pte_t *alloc_lv2entry(struct exynos_iommu_domain *priv,
- 		 */
- 		if (need_flush_flpd_cache) {
- 			struct exynos_iommu_owner *owner;
-+
- 			spin_lock(&priv->lock);
- 			list_for_each_entry(owner, &priv->clients, client)
- 				sysmmu_tlb_invalidate_flpdcache(
-@@ -941,6 +943,7 @@ static int lv2set_page(sysmmu_pte_t *pent, phys_addr_t paddr, size_t size,
- 		*pgcnt -= 1;
- 	} else { /* size == LPAGE_SIZE */
- 		int i;
-+
- 		for (i = 0; i < SPAGES_PER_LPAGE; i++, pent++) {
- 			if (WARN_ON(!lv2ent_fault(pent))) {
- 				if (i > 0)
--- 
-1.7.9.5
+I'm not qualified to review the mechanics of the patch, but as a
+potential consumer of this new interface (in libvirt), I want to say
+that it is *immensely* improved over the racy, error prone method that
+the kernel currently has available. The first day that I looked at the
+libvirt code that uses the "new_id" method to bind drivers to devices, I
+wished that there would instead be an interface more or less identical
+to what Alex has described here - simple, deterministic, and with
+minimal side effect outside of the exact device and driver pair we want
+to bind.
