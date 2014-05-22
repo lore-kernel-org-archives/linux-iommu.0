@@ -1,7 +1,7 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v4 03/16] PCI: quirk pci_for_each_dma_alias()
-Date: Thu, 22 May 2014 17:07:43 -0600
-Message-ID: <20140522230742.2856.25341.stgit@bling.home>
+Subject: [PATCH v4 04/16] PCI: quirk dma_alias_devfn for Ricoh devices
+Date: Thu, 22 May 2014 17:07:49 -0600
+Message-ID: <20140522230749.2856.5415.stgit@bling.home>
 References: <20140522230230.2856.40017.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,58 +21,43 @@ To: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7K
 Cc: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-gpGsJRJZ3PBBDgjK7y7TUQ@public.gmane.org, eddy0596-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Some devices are broken and use a requester ID other than their
-physical devfn.  Add a byte, using an existing gap in the pci_dev
-structure, to store an alternate "alias" devfn.  A bit in the
-dev_flags tells us when this is valid.  We then add the alias as
-one more step in the pci_for_each_dma_alias() iterator.
+The existing quirk for these devices doesn't really solve the problem;
+re-implement it using the DMA alias iterator.  We'll come back later
+and remove the existing quirk and dma_source interface.  Note that
+device ID 0xe822 is typically function 0 and 0xe230 has been tested to
+not need the quirk and are therefore removed versus the equivalent
+dma_source quirk.  If there exist in other configurations we can
+re-add them.
 
 Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/pci/search.c |   11 +++++++++++
- include/linux/pci.h  |    3 +++
- 2 files changed, 14 insertions(+)
+ drivers/pci/quirks.c |   16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/drivers/pci/search.c b/drivers/pci/search.c
-index 5601cdb..2c19f3f 100644
---- a/drivers/pci/search.c
-+++ b/drivers/pci/search.c
-@@ -37,6 +37,17 @@ int pci_for_each_dma_alias(struct pci_dev *pdev,
- 	if (ret)
- 		return ret;
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index e729206..bc8ebd9 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -3333,6 +3333,22 @@ int pci_dev_specific_reset(struct pci_dev *dev, int probe)
+ 	return -ENOTTY;
+ }
  
-+	/*
-+	 * If the device is broken and uses an alias requester ID for
-+	 * DMA, iterate over that too.
-+	 */
-+	if (unlikely(pdev->dev_flags & PCI_DEV_FLAGS_DMA_ALIAS_DEVFN)) {
-+		ret = fn(pdev, PCI_DEVID(pdev->bus->number,
-+					 pdev->dma_alias_devfn), data);
-+		if (ret)
-+			return ret;
++static void quirk_dma_func0_alias(struct pci_dev *dev)
++{
++	if (PCI_FUNC(dev->devfn) != 0) {
++		dev->dma_alias_devfn = PCI_DEVFN(PCI_SLOT(dev->devfn), 0);
++		dev->dev_flags |= PCI_DEV_FLAGS_DMA_ALIAS_DEVFN;
 +	}
++}
 +
- 	for (bus = pdev->bus; !pci_is_root_bus(bus); bus = bus->parent) {
- 		struct pci_dev *tmp;
- 
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 545903d..9d4035c 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -171,6 +171,8 @@ enum pci_dev_flags {
- 	PCI_DEV_FLAGS_ASSIGNED = (__force pci_dev_flags_t) (1 << 2),
- 	/* Flag for quirk use to store if quirk-specific ACS is enabled */
- 	PCI_DEV_FLAGS_ACS_ENABLED_QUIRK = (__force pci_dev_flags_t) (1 << 3),
-+	/* Flag to indicate the device uses dma_alias_devfn */
-+	PCI_DEV_FLAGS_DMA_ALIAS_DEVFN = (__force pci_dev_flags_t) (1 << 4),
- };
- 
- enum pci_irq_reroute_variant {
-@@ -268,6 +270,7 @@ struct pci_dev {
- 	u8		rom_base_reg;	/* which config register controls the ROM */
- 	u8		pin;		/* which interrupt pin this device uses */
- 	u16		pcie_flags_reg;	/* cached PCIe Capabilities Register */
-+	u8		dma_alias_devfn;/* devfn of DMA alias, if any */
- 
- 	struct pci_driver *driver;	/* which driver has allocated this device */
- 	u64		dma_mask;	/* Mask of the bits of bus address this
++/*
++ * https://bugzilla.redhat.com/show_bug.cgi?id=605888
++ *
++ * Some Ricoh devices use function 0 as the PCIe requester ID for DMA.
++ */
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_RICOH, 0xe832, quirk_dma_func0_alias);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_RICOH, 0xe476, quirk_dma_func0_alias);
++
+ static struct pci_dev *pci_func_0_dma_source(struct pci_dev *dev)
+ {
+ 	if (!PCI_FUNC(dev->devfn))
