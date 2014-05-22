@@ -1,7 +1,7 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v4 01/16] PCI: Add DMA alias iterator
-Date: Thu, 22 May 2014 17:07:30 -0600
-Message-ID: <20140522230730.2856.39308.stgit@bling.home>
+Subject: [PATCH v4 02/16] PCI: define pci_dev_flags as bit shifts
+Date: Thu, 22 May 2014 17:07:36 -0600
+Message-ID: <20140522230736.2856.30635.stgit@bling.home>
 References: <20140522230230.2856.40017.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,121 +21,33 @@ To: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7K
 Cc: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-gpGsJRJZ3PBBDgjK7y7TUQ@public.gmane.org, eddy0596-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-In a mixed PCI/PCI-X/PCI-e topology, bridges can take ownership of
-transactions, replacing the original requester ID with their own.
-Sometimes we just want to know the resulting device or resulting
-alias, sometimes we want each step in the chain.  This iterator
-allows either usage.  When an endpoint is connected via an unbroken
-chain of PCIe switches and root ports, it has no alias and its
-requester ID is visible to the root bus.  When PCI/X get in the way,
-we pick up aliases for bridges.
-
-The reason why we potentially care about each step in the path is
-because of PCI-X.  PCI-X has the concept of a requester ID, but
-bridges may or may not take ownership of various types of
-transactions.  We therefore leave it to the consumer of this function
-to prune out what they don't care about rather than attempt to flatten
-the alias ourselves.
+We're only a few entries away from where using the decimal value
+becomes cumbersome.
 
 Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/pci/search.c |   70 ++++++++++++++++++++++++++++++++++++++++++++++++++
- include/linux/pci.h  |    4 +++
- 2 files changed, 74 insertions(+)
+ include/linux/pci.h |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/pci/search.c b/drivers/pci/search.c
-index 4a1b972..5601cdb 100644
---- a/drivers/pci/search.c
-+++ b/drivers/pci/search.c
-@@ -18,6 +18,76 @@ DECLARE_RWSEM(pci_bus_sem);
- EXPORT_SYMBOL_GPL(pci_bus_sem);
- 
- /*
-+ * pci_for_each_dma_alias - Iterate over DMA aliases for a device
-+ * @pdev: starting downstream device
-+ * @fn: function to call for each alias
-+ * @data: opaque data to pass to @fn
-+ *
-+ * Starting @pdev, walk up the bus calling @fn for each possible alias
-+ * of @pdev at the root bus.
-+ */
-+int pci_for_each_dma_alias(struct pci_dev *pdev,
-+			   int (*fn)(struct pci_dev *pdev,
-+				     u16 alias, void *data), void *data)
-+{
-+	struct pci_bus *bus;
-+	int ret;
-+
-+	ret = fn(pdev, PCI_DEVID(pdev->bus->number, pdev->devfn), data);
-+	if (ret)
-+		return ret;
-+
-+	for (bus = pdev->bus; !pci_is_root_bus(bus); bus = bus->parent) {
-+		struct pci_dev *tmp;
-+
-+		/* Skip virtual buses */
-+		if (!bus->self)
-+			continue;
-+
-+		tmp = bus->self;
-+
-+		/*
-+		 * PCIe-to-PCI/X bridges alias transactions from downstream
-+		 * devices using the subordinate bus number (PCI Express to
-+		 * PCI/PCI-X Bridge Spec, rev 1.0, sec 2.3).  For all cases
-+		 * where the upstream bus is PCI/X we alias to the bridge
-+		 * (there are various conditions in the previous reference
-+		 * where the bridge may take ownership of transactions, even
-+		 * when the secondary interface is PCI-X).
-+		 */
-+		if (pci_is_pcie(tmp)) {
-+			switch (pci_pcie_type(tmp)) {
-+			case PCI_EXP_TYPE_ROOT_PORT:
-+			case PCI_EXP_TYPE_UPSTREAM:
-+			case PCI_EXP_TYPE_DOWNSTREAM:
-+				continue;
-+			case PCI_EXP_TYPE_PCI_BRIDGE:
-+				ret = fn(tmp,
-+					 PCI_DEVID(tmp->subordinate->number,
-+						   PCI_DEVFN(0, 0)), data);
-+				if (ret)
-+					return ret;
-+				continue;
-+			case PCI_EXP_TYPE_PCIE_BRIDGE:
-+				ret = fn(tmp,
-+					 PCI_DEVID(tmp->bus->number,
-+						   tmp->devfn), data);
-+				if (ret)
-+					return ret;
-+				continue;
-+			}
-+		} else {
-+			ret = fn(tmp, PCI_DEVID(tmp->bus->number, tmp->devfn),
-+				 data);
-+			if (ret)
-+				return ret;
-+		}
-+	}
-+
-+	return ret;
-+}
-+
-+/*
-  * find the upstream PCIe-to-PCI bridge of a PCI device
-  * if the device is PCIE, return NULL
-  * if the device isn't connected to a PCIe bridge (that is its parent is a
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index aab57b4..14b074b 100644
+index 14b074b..545903d 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1795,6 +1795,10 @@ static inline struct eeh_dev *pci_dev_to_eeh_dev(struct pci_dev *pdev)
- }
- #endif
+@@ -164,13 +164,13 @@ enum pci_dev_flags {
+ 	/* INTX_DISABLE in PCI_COMMAND register disables MSI
+ 	 * generation too.
+ 	 */
+-	PCI_DEV_FLAGS_MSI_INTX_DISABLE_BUG = (__force pci_dev_flags_t) 1,
++	PCI_DEV_FLAGS_MSI_INTX_DISABLE_BUG = (__force pci_dev_flags_t) (1 << 0),
+ 	/* Device configuration is irrevocably lost if disabled into D3 */
+-	PCI_DEV_FLAGS_NO_D3 = (__force pci_dev_flags_t) 2,
++	PCI_DEV_FLAGS_NO_D3 = (__force pci_dev_flags_t) (1 << 1),
+ 	/* Provide indication device is assigned by a Virtual Machine Manager */
+-	PCI_DEV_FLAGS_ASSIGNED = (__force pci_dev_flags_t) 4,
++	PCI_DEV_FLAGS_ASSIGNED = (__force pci_dev_flags_t) (1 << 2),
+ 	/* Flag for quirk use to store if quirk-specific ACS is enabled */
+-	PCI_DEV_FLAGS_ACS_ENABLED_QUIRK = (__force pci_dev_flags_t) 8,
++	PCI_DEV_FLAGS_ACS_ENABLED_QUIRK = (__force pci_dev_flags_t) (1 << 3),
+ };
  
-+int pci_for_each_dma_alias(struct pci_dev *pdev,
-+			   int (*fn)(struct pci_dev *pdev,
-+				     u16 alias, void *data), void *data);
-+
- /**
-  * pci_find_upstream_pcie_bridge - find upstream PCIe-to-PCI bridge of a device
-  * @pdev: the PCI device
+ enum pci_irq_reroute_variant {
