@@ -1,7 +1,7 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Subject: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
-Date: Fri, 23 May 2014 22:33:38 +0200
-Message-ID: <1400877218-4113-1-git-send-email-thierry.reding@gmail.com>
+Date: Fri, 23 May 2014 22:36:35 +0200
+Message-ID: <1400877395-4235-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -30,6 +30,9 @@ discussed here:
 
 Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
+Apologies for the noise, but apparently I mistyped one of the email
+addresses, should be fixed now.
+
 Changes in v2:
 - add notes about "dma-ranges" property (drop note from commit message)
 - document priorities of "iommus" property vs. "dma-ranges" property
