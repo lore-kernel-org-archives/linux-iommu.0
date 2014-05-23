@@ -1,13 +1,11 @@
-From: "George Spelvin" <linux-gpGsJRJZ3PBBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v4 05/16] PCI: quirk dma_alias_devfn for Marvell devices
-Date: 22 May 2014 21:29:33 -0400
-Message-ID: <20140523012933.7078.qmail@ns.horizon.com>
-References: <20140522230755.2856.19714.stgit@bling.home>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
+Date: Fri, 23 May 2014 22:33:38 +0200
+Message-ID: <1400877218-4113-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140522230755.2856.19714.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,10 +15,203 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-gpGsJRJZ3PBBDgjK7y7TUQ@public.gmane.org, eddy0596-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Tested-by: George Spelvin <linux-gpGsJRJZ3PBBDgjK7y7TUQ@public.gmane.org>
+From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-(I'm running the whole series, but 1b4b:9172 are the devices I have.)
+This commit introduces a generic device tree binding for IOMMU devices.
+Only a very minimal subset is described here, but it is enough to cover
+the requirements of both the Exynos System MMU and Tegra SMMU as
+discussed here:
+
+    https://lkml.org/lkml/2014/4/27/346
+
+Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+---
+Changes in v2:
+- add notes about "dma-ranges" property (drop note from commit message)
+- document priorities of "iommus" property vs. "dma-ranges" property
+- drop #iommu-cells in favour of #address-cells and #size-cells
+- remove multiple-master device example
+
+ Documentation/devicetree/bindings/iommu/iommu.txt | 167 ++++++++++++++++++++++
+ 1 file changed, 167 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iommu/iommu.txt
+
+diff --git a/Documentation/devicetree/bindings/iommu/iommu.txt b/Documentation/devicetree/bindings/iommu/iommu.txt
+new file mode 100644
+index 000000000000..6ce759afcc94
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iommu/iommu.txt
+@@ -0,0 +1,167 @@
++This document describes the generic device tree binding for IOMMUs and their
++master(s).
++
++
++IOMMU device node:
++==================
++
++An IOMMU can provide the following services:
++
++* Remap address space to allow devices to access physical memory ranges that
++  they otherwise wouldn't be capable of accessing.
++
++  Example: 32-bit DMA to 64-bit physical addresses
++
++* Implement scatter-gather at page level granularity so that the device does
++  not have to.
++
++* Provide system protection against "rogue" DMA by forcing all accesses to go
++  through the IOMMU and faulting when encountering accesses to unmapped
++  address regions.
++
++* Provide address space isolation between multiple contexts.
++
++  Example: Virtualization
++
++Device nodes compatible with this binding represent hardware with some of the
++above capabilities.
++
++IOMMUs can be single-master or multiple-master. Single-master IOMMU devices
++typically have a fixed association to the master device, whereas multiple-
++master IOMMU devices can translate accesses from more than one master.
++
++The device tree node of the IOMMU device's parent bus must contain a valid
++"dma-ranges" property that describes how the physical address space of the
++IOMMU maps to memory. An empty "dma-ranges" property means that there is a
++1:1 mapping from IOMMU to memory.
++
++Required properties:
++--------------------
++- #address-cells: The number of cells in an IOMMU specifier needed to encode
++  an address.
++- #size-cells: The number of cells in an IOMMU specifier needed to represent
++  the length of an address range.
++
++Typical values for the above include:
++- #address-cells = <0>, size-cells = <0>: Single master IOMMU devices are not
++  configurable and therefore no additional information needs to be encoded in
++  the specifier. This may also apply to multiple master IOMMU devices that do
++  not allow the association of masters to be configured.
++- #address-cells = <1>, size-cells = <0>: Multiple master IOMMU devices may
++  need to be configured in order to enable translation for a given master. In
++  such cases the single address cell corresponds to the master device's ID.
++- #address-cells = <2>, size-cells = <2>: Some IOMMU devices allow the DMA
++  window for masters to be configured. The first cell of the address in this
++  may contain the master device's ID for example, while the second cell could
++  contain the start of the DMA window for the given device. The length of the
++  DMA window is specified by two additional cells.
++
++
++IOMMU master node:
++==================
++
++Devices that access memory through an IOMMU are called masters. A device can
++have multiple master interfaces (to one or more IOMMU devices).
++
++Required properties:
++--------------------
++- iommus: A list of phandle and IOMMU specifier pairs that describe the IOMMU
++  master interfaces of the device. One entry in the list describes one master
++  interface of the device.
++
++When an "iommus" property is specified in a device tree node, the IOMMU will
++be used for address translation. If a "dma-ranges" property exists in the
++device's parent node it will be ignored. An exception to this rule is if the
++referenced IOMMU is disabled, in which case the "dma-ranges" property of the
++parent shall take effect.
++
++Optional properties:
++--------------------
++- iommu-names: A list of names identifying each entry in the "iommus"
++  property.
++
++
++Notes:
++======
++
++One possible extension to the above is to use an "iommus" property along with
++a "dma-ranges" property in a bus device node (such as PCI host bridges). This
++can be useful to describe how children on the bus relate to the IOMMU if they
++are not explicitly listed in the device tree (e.g. PCI devices). However, the
++requirements of that use-case haven't been fully determined yet. Implementing
++this is therefore not recommended without further discussion and extension of
++this binding.
++
++
++Examples:
++=========
++
++Single-master IOMMU:
++--------------------
++
++	iommu {
++		#address-cells = <0>;
++		#size-cells = <0>;
++	};
++
++	master {
++		iommus = <&/iommu>;
++	};
++
++Multiple-master IOMMU with fixed associations:
++----------------------------------------------
++
++	/* multiple-master IOMMU */
++	iommu {
++		/*
++		 * Masters are statically associated with this IOMMU and
++		 * address translation is always enabled.
++		 */
++		#address-cells = <0>;
++		#size-cells = <0>;
++	};
++
++	/* static association with IOMMU */
++	master@1 {
++		reg = <1>;
++		iommus = <&/iommu>;
++	};
++
++	/* static association with IOMMU */
++	master@2 {
++		reg = <2>;
++		iommus = <&/iommu>;
++	};
++
++Multiple-master IOMMU:
++----------------------
++
++	iommu {
++		/* the specifier represents the ID of the master */
++		#address-cells = <1>;
++		#size-cells = <0>;
++	};
++
++	master {
++		/* device has master ID 42 in the IOMMU */
++		iommus = <&/iommu 42>;
++	};
++
++Multiple-master IOMMU with configurable DMA window:
++---------------------------------------------------
++
++	/ {
++		#address-cells = <1>;
++		#size-cells = <1>;
++
++		iommu {
++			/* master ID, address of DMA window */
++			#address-cells = <2>;
++			#size-cells = <2>;
++		};
++
++		master {
++			/* master ID 42, 4 GiB DMA window starting at 0 */
++			iommus = <&/iommu  42 0  0x1 0x0>;
++		};
++	};
+-- 
+1.9.2
