@@ -1,10 +1,10 @@
 From: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 1/2] iommu/vt-d: remove the useless dma_pte_addr
-Date: Mon, 26 May 2014 20:13:47 +0800
-Message-ID: <1401106427-9420-1-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH 2/2] iommu/vt-d: suppress compiler warnings
+Date: Mon, 26 May 2014 20:14:06 +0800
+Message-ID: <1401106446-10688-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -19,30 +19,31 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Signed-off-by: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/intel-iommu.c |    6 ++----
- 1 files changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index f256ffc..7b7127a 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -848,13 +848,11 @@ static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
- 
- 			domain_flush_cache(domain, tmp_page, VTD_PAGE_SIZE);
- 			pteval = ((uint64_t)virt_to_dma_pfn(tmp_page) << VTD_PAGE_SHIFT) | DMA_PTE_READ | DMA_PTE_WRITE;
--			if (cmpxchg64(&pte->val, 0ULL, pteval)) {
-+			if (cmpxchg64(&pte->val, 0ULL, pteval))
- 				/* Someone else set it while we were thinking; use theirs. */
- 				free_pgtable_page(tmp_page);
--			} else {
--				dma_pte_addr(pte);
-+			else
- 				domain_flush_cache(domain, pte, sizeof(*pte));
--			}
- 		}
- 		if (level == 1)
- 			break;
--- 
-1.7.1
+c3VwcHJlc3MgY29tcGlsZXIgd2FybmluZ3M6CmRyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYzog
+SW4gZnVuY3Rpb24g4oCYZGV2aWNlX3RvX2lvbW114oCZOgpkcml2ZXJzL2lvbW11L2ludGVsLWlv
+bW11LmM6NjczOiB3YXJuaW5nOiDigJhzZWdtZW504oCZIG1heSBiZSB1c2VkIHVuaW5pdGlhbGl6
+ZWQgaW4gdGhpcyBmdW5jdGlvbgpkcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmM6IEluIGZ1bmN0
+aW9uIOKAmGdldF9kb21haW5fZm9yX2Rldi5jbG9uZS4z4oCZOgpkcml2ZXJzL2lvbW11L2ludGVs
+LWlvbW11LmM6MjIxNzogd2FybmluZzog4oCYYnJpZGdlX2J1c+KAmSBtYXkgYmUgdXNlZCB1bmlu
+aXRpYWxpemVkIGluIHRoaXMgZnVuY3Rpb24KZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jOjIy
+MTc6IHdhcm5pbmc6IOKAmGJyaWRnZV9kZXZmbuKAmSBtYXkgYmUgdXNlZCB1bmluaXRpYWxpemVk
+IGluIHRoaXMgZnVuY3Rpb24KClNpZ25lZC1vZmYtYnk6IFlpamluZyBXYW5nIDx3YW5neWlqaW5n
+QGh1YXdlaS5jb20+Ci0tLQogZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jIHwgICAgNSArKyst
+LQogMSBmaWxlcyBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pCgpkaWZm
+IC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jIGIvZHJpdmVycy9pb21tdS9pbnRl
+bC1pb21tdS5jCmluZGV4IDdiNzEyN2EuLmM1ZmMwYWQgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvaW9t
+bXUvaW50ZWwtaW9tbXUuYworKysgYi9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMKQEAgLTY3
+MCw3ICs2NzAsNyBAQCBzdGF0aWMgc3RydWN0IGludGVsX2lvbW11ICpkZXZpY2VfdG9faW9tbXUo
+c3RydWN0IGRldmljZSAqZGV2LCB1OCAqYnVzLCB1OCAqZGV2ZgogCXN0cnVjdCBpbnRlbF9pb21t
+dSAqaW9tbXU7CiAJc3RydWN0IGRldmljZSAqdG1wOwogCXN0cnVjdCBwY2lfZGV2ICpwdG1wLCAq
+cGRldiA9IE5VTEw7Ci0JdTE2IHNlZ21lbnQ7CisJdTE2IHNlZ21lbnQgPSAwOwogCWludCBpOwog
+CiAJaWYgKGRldl9pc19wY2koZGV2KSkgewpAQCAtMjIxNCw3ICsyMjE0LDggQEAgc3RhdGljIHN0
+cnVjdCBkbWFyX2RvbWFpbiAqZ2V0X2RvbWFpbl9mb3JfZGV2KHN0cnVjdCBkZXZpY2UgKmRldiwg
+aW50IGdhdykKIAlzdHJ1Y3QgZGV2aWNlX2RvbWFpbl9pbmZvICppbmZvOwogCXN0cnVjdCBwY2lf
+ZGV2ICpkZXZfdG1wID0gTlVMTDsKIAl1bnNpZ25lZCBsb25nIGZsYWdzOwotCXU4IGJ1cywgZGV2
+Zm4sIGJyaWRnZV9idXMsIGJyaWRnZV9kZXZmbjsKKwl1OCBidXMsIGRldmZuOworCXU4IGJyaWRn
+ZV9idXMgPSAwLCBicmlkZ2VfZGV2Zm4gPSAwOwogCiAJZG9tYWluID0gZmluZF9kb21haW4oZGV2
+KTsKIAlpZiAoZG9tYWluKQotLSAKMS43LjEKCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgt
+Zm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4v
+bGlzdGluZm8vaW9tbXU=
