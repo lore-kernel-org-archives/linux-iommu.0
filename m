@@ -1,69 +1,57 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+From: Joerg Roedel <joro@8bytes.org>
 Subject: Re: [PATCH v2 02/10] iommu/ipmmu-vmsa: Cleanup failures of ARM
-	mapping creation or attachment
-Date: Mon, 26 May 2014 12:08:37 +0200
-Message-ID: <9405311.lnqBdrCsyu@avalon>
+ mapping creation or attachment
+Date: Mon, 26 May 2014 13:31:17 +0200
+Message-ID: <20140526113117.GI17056@8bytes.org>
 References: <1400150451-13469-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-	<1400150451-13469-3-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-	<20140526092310.GA11299@8bytes.org>
+ <1400150451-13469-3-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+ <20140526092310.GA11299@8bytes.org>
+ <9405311.lnqBdrCsyu@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140526092310.GA11299-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-sh-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <9405311.lnqBdrCsyu@avalon>
+Sender: linux-sh-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-sh@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
-
-On Monday 26 May 2014 11:23:11 Joerg Roedel wrote:
-> On Thu, May 15, 2014 at 12:40:43PM +0200, Laurent Pinchart wrote:
-> > Signed-off-by: Laurent Pinchart
-> > <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-> > ---
-> > 
-> >  drivers/iommu/ipmmu-vmsa.c | 4 +++-
-> >  1 file changed, 3 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> > index 49e00f7..49dbedd 100644
-> > --- a/drivers/iommu/ipmmu-vmsa.c
-> > +++ b/drivers/iommu/ipmmu-vmsa.c
-> > @@ -917,7 +917,8 @@ static int ipmmu_add_device(struct device *dev)
-> >  							SZ_1G, SZ_2G);
-> >  		if (IS_ERR(mapping)) {
-> >  			dev_err(mmu->dev, "failed to create ARM IOMMU mapping\n");
-> > -			return PTR_ERR(mapping);
-> > +			ret = PTR_ERR(mapping);
-> > +			goto error;
-> >  		}
-> >  		
-> >  		mmu->mapping = mapping;
-> > @@ -933,6 +934,7 @@ static int ipmmu_add_device(struct device *dev)
-> >  	return 0;
-> >  
-> >  error:
-> > +	arm_iommu_release_mapping(mmu->mapping);
-> >  	kfree(dev->archdata.iommu);
-> >  	dev->archdata.iommu = NULL;
-> >  	iommu_group_remove_device(dev);
+On Mon, May 26, 2014 at 12:08:37PM +0200, Laurent Pinchart wrote:
 > 
-> Skipped this one because it didn't apply. The others are applied.
+> Thank you. I'll rebase the patch on top of your tree as soon as you publish 
+> the related branch and resubmit.
 
-Thank you. I'll rebase the patch on top of your tree as soon as you publish 
-the related branch and resubmit.
+I also put this patch on-top to fix a compile error.
 
+>From 720b0cef715ab97b21b33e7f3c328e2863411cab Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Mon, 26 May 2014 13:07:01 +0200
+Subject: [PATCH] arm/ipmmu-vmsa: Fix compile error
+
+The function arm_iommu_create_mapping lost the order
+parameter. Remove it from this IOMMU driver too to make it
+build.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ drivers/iommu/ipmmu-vmsa.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index 95b819a..53cde08 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -1087,7 +1087,7 @@ static int ipmmu_add_device(struct device *dev)
+ 		struct dma_iommu_mapping *mapping;
+ 
+ 		mapping = arm_iommu_create_mapping(&platform_bus_type,
+-							SZ_1G, SZ_2G, 0);
++						   SZ_1G, SZ_2G);
+ 		if (IS_ERR(mapping)) {
+ 			dev_err(mmu->dev, "failed to create ARM IOMMU mapping\n");
+ 			return PTR_ERR(mapping);
 -- 
-Regards,
+1.7.9.5
 
-Laurent Pinchart
+
