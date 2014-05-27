@@ -1,10 +1,10 @@
-From: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 2/2] iommu/vt-d: suppress compiler warnings
-Date: Mon, 26 May 2014 20:14:06 +0800
-Message-ID: <1401106446-10688-1-git-send-email-wangyijing@huawei.com>
+From: Kefeng Wang <wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH] iommu: msm: use devm_ioremap_resource to simplify code
+Date: Tue, 27 May 2014 18:18:42 +0800
+Message-ID: <1401185922-6908-1-git-send-email-wangkefeng.wang@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -15,35 +15,104 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Kefeng Wang <wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-c3VwcHJlc3MgY29tcGlsZXIgd2FybmluZ3M6CmRyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYzog
-SW4gZnVuY3Rpb24g4oCYZGV2aWNlX3RvX2lvbW114oCZOgpkcml2ZXJzL2lvbW11L2ludGVsLWlv
-bW11LmM6NjczOiB3YXJuaW5nOiDigJhzZWdtZW504oCZIG1heSBiZSB1c2VkIHVuaW5pdGlhbGl6
-ZWQgaW4gdGhpcyBmdW5jdGlvbgpkcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmM6IEluIGZ1bmN0
-aW9uIOKAmGdldF9kb21haW5fZm9yX2Rldi5jbG9uZS4z4oCZOgpkcml2ZXJzL2lvbW11L2ludGVs
-LWlvbW11LmM6MjIxNzogd2FybmluZzog4oCYYnJpZGdlX2J1c+KAmSBtYXkgYmUgdXNlZCB1bmlu
-aXRpYWxpemVkIGluIHRoaXMgZnVuY3Rpb24KZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jOjIy
-MTc6IHdhcm5pbmc6IOKAmGJyaWRnZV9kZXZmbuKAmSBtYXkgYmUgdXNlZCB1bmluaXRpYWxpemVk
-IGluIHRoaXMgZnVuY3Rpb24KClNpZ25lZC1vZmYtYnk6IFlpamluZyBXYW5nIDx3YW5neWlqaW5n
-QGh1YXdlaS5jb20+Ci0tLQogZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jIHwgICAgNSArKyst
-LQogMSBmaWxlcyBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pCgpkaWZm
-IC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jIGIvZHJpdmVycy9pb21tdS9pbnRl
-bC1pb21tdS5jCmluZGV4IDdiNzEyN2EuLmM1ZmMwYWQgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvaW9t
-bXUvaW50ZWwtaW9tbXUuYworKysgYi9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMKQEAgLTY3
-MCw3ICs2NzAsNyBAQCBzdGF0aWMgc3RydWN0IGludGVsX2lvbW11ICpkZXZpY2VfdG9faW9tbXUo
-c3RydWN0IGRldmljZSAqZGV2LCB1OCAqYnVzLCB1OCAqZGV2ZgogCXN0cnVjdCBpbnRlbF9pb21t
-dSAqaW9tbXU7CiAJc3RydWN0IGRldmljZSAqdG1wOwogCXN0cnVjdCBwY2lfZGV2ICpwdG1wLCAq
-cGRldiA9IE5VTEw7Ci0JdTE2IHNlZ21lbnQ7CisJdTE2IHNlZ21lbnQgPSAwOwogCWludCBpOwog
-CiAJaWYgKGRldl9pc19wY2koZGV2KSkgewpAQCAtMjIxNCw3ICsyMjE0LDggQEAgc3RhdGljIHN0
-cnVjdCBkbWFyX2RvbWFpbiAqZ2V0X2RvbWFpbl9mb3JfZGV2KHN0cnVjdCBkZXZpY2UgKmRldiwg
-aW50IGdhdykKIAlzdHJ1Y3QgZGV2aWNlX2RvbWFpbl9pbmZvICppbmZvOwogCXN0cnVjdCBwY2lf
-ZGV2ICpkZXZfdG1wID0gTlVMTDsKIAl1bnNpZ25lZCBsb25nIGZsYWdzOwotCXU4IGJ1cywgZGV2
-Zm4sIGJyaWRnZV9idXMsIGJyaWRnZV9kZXZmbjsKKwl1OCBidXMsIGRldmZuOworCXU4IGJyaWRn
-ZV9idXMgPSAwLCBicmlkZ2VfZGV2Zm4gPSAwOwogCiAJZG9tYWluID0gZmluZF9kb21haW4oZGV2
-KTsKIAlpZiAoZG9tYWluKQotLSAKMS43LjEKCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgt
-Zm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4v
-bGlzdGluZm8vaW9tbXU=
+Use devm_ioremap_resource() to make the code simpler, drop unused variable,
+redundant return value check, and error-handing code.
+
+Signed-off-by: Kefeng Wang <wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/msm_iommu_dev.c |   38 +++++++-------------------------------
+ 1 files changed, 7 insertions(+), 31 deletions(-)
+
+diff --git a/drivers/iommu/msm_iommu_dev.c b/drivers/iommu/msm_iommu_dev.c
+index 08ba497..61def7c 100644
+--- a/drivers/iommu/msm_iommu_dev.c
++++ b/drivers/iommu/msm_iommu_dev.c
+@@ -127,13 +127,12 @@ static void msm_iommu_reset(void __iomem *base, int ncb)
+ 
+ static int msm_iommu_probe(struct platform_device *pdev)
+ {
+-	struct resource *r, *r2;
++	struct resource *r;
+ 	struct clk *iommu_clk;
+ 	struct clk *iommu_pclk;
+ 	struct msm_iommu_drvdata *drvdata;
+ 	struct msm_iommu_dev *iommu_dev = pdev->dev.platform_data;
+ 	void __iomem *regs_base;
+-	resource_size_t	len;
+ 	int ret, irq, par;
+ 
+ 	if (pdev->id == -1) {
+@@ -178,35 +177,16 @@ static int msm_iommu_probe(struct platform_device *pdev)
+ 		iommu_clk = NULL;
+ 
+ 	r = platform_get_resource_byname(pdev, IORESOURCE_MEM, "physbase");
+-
+-	if (!r) {
+-		ret = -ENODEV;
+-		goto fail_clk;
+-	}
+-
+-	len = resource_size(r);
+-
+-	r2 = request_mem_region(r->start, len, r->name);
+-	if (!r2) {
+-		pr_err("Could not request memory region: start=%p, len=%d\n",
+-							(void *) r->start, len);
+-		ret = -EBUSY;
++	regs_base = devm_ioremap_resource(&pdev->dev, r);
++	if (IS_ERR(regs_base)) {
++		ret = PTR_ERR(regs_base);
+ 		goto fail_clk;
+ 	}
+ 
+-	regs_base = ioremap(r2->start, len);
+-
+-	if (!regs_base) {
+-		pr_err("Could not ioremap: start=%p, len=%d\n",
+-			 (void *) r2->start, len);
+-		ret = -EBUSY;
+-		goto fail_mem;
+-	}
+-
+ 	irq = platform_get_irq_byname(pdev, "secure_irq");
+ 	if (irq < 0) {
+ 		ret = -ENODEV;
+-		goto fail_io;
++		goto fail_clk;
+ 	}
+ 
+ 	msm_iommu_reset(regs_base, iommu_dev->ncb);
+@@ -222,14 +202,14 @@ static int msm_iommu_probe(struct platform_device *pdev)
+ 	if (!par) {
+ 		pr_err("%s: Invalid PAR value detected\n", iommu_dev->name);
+ 		ret = -ENODEV;
+-		goto fail_io;
++		goto fail_clk;
+ 	}
+ 
+ 	ret = request_irq(irq, msm_iommu_fault_handler, 0,
+ 			"msm_iommu_secure_irpt_handler", drvdata);
+ 	if (ret) {
+ 		pr_err("Request IRQ %d failed with ret=%d\n", irq, ret);
+-		goto fail_io;
++		goto fail_clk;
+ 	}
+ 
+ 
+@@ -250,10 +230,6 @@ static int msm_iommu_probe(struct platform_device *pdev)
+ 	clk_disable(iommu_pclk);
+ 
+ 	return 0;
+-fail_io:
+-	iounmap(regs_base);
+-fail_mem:
+-	release_mem_region(r->start, len);
+ fail_clk:
+ 	if (iommu_clk) {
+ 		clk_disable(iommu_clk);
+-- 
+1.7.1
