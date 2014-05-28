@@ -1,66 +1,78 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: [PATCH v4.1 06/16] PCI: Quirk pci_for_each_dma_alias() for bridges
-Date: Wed, 28 May 2014 14:57:02 -0600
-Message-ID: <20140528205517.27973.56814.stgit@bling.home>
-References: <20140522230801.2856.18629.stgit@bling.home>
+From: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Subject: Re: [PATCH v3] PCI: Introduce new device binding path using
+	pci_dev.driver_override
+Date: Wed, 28 May 2014 14:59:56 -0700
+Message-ID: <20140528215956.GA7339@kroah.com>
+References: <20140520145136.28232.90707.stgit@bling.home>
+	<20140528030742.GO11907@google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20140522230801.2856.18629.stgit@bling.home>
-Sender: linux-pci-owner@vger.kernel.org
-To: linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org
-Cc: bhelgaas@google.com, acooks@gmail.com, linux-kernel@vger.kernel.org, eddy0596@gmail.com, linux@horizon.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20140528030742.GO11907-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kim.phillips-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, agraf-l3A5Bk7waGM@public.gmane.org, libvir-list-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Several PCIe-to-PCI bridges fail to provide a PCIe capability, causing
-us to handle them as conventional PCI devices when they really use the
-requester ID of the secondary bus.  We need to differentiate these
-from PCIe-to-PCI bridges that actually use the conventional PCI ID
-when a PCIe capability is not present, such as those found on the root
-complex of may Intel chipsets.  Add a dev_flag bit to identify devices
-to be handled as standard PCIe-to-PCI bridges.
+On Tue, May 27, 2014 at 09:07:42PM -0600, Bjorn Helgaas wrote:
+> On Tue, May 20, 2014 at 08:53:21AM -0600, Alex Williamson wrote:
+> > The driver_override field allows us to specify the driver for a device
+> > rather than relying on the driver to provide a positive match of the
+> > device.  This shortcuts the existing process of looking up the vendor
+> > and device ID, adding them to the driver new_id, binding the device,
+> > then removing the ID, but it also provides a couple advantages.
+> > 
+> > First, the above existing process allows the driver to bind to any
+> > device matching the new_id for the window where it's enabled.  This is
+> > often not desired, such as the case of trying to bind a single device
+> > to a meta driver like pci-stub or vfio-pci.  Using driver_override we
+> > can do this deterministically using:
+> > 
+> > echo pci-stub > /sys/bus/pci/devices/0000:03:00.0/driver_override
+> > echo 0000:03:00.0 > /sys/bus/pci/devices/0000:03:00.0/driver/unbind
+> > echo 0000:03:00.0 > /sys/bus/pci/drivers_probe
+> > 
+> > Previously we could not invoke drivers_probe after adding a device
+> > to new_id for a driver as we get non-deterministic behavior whether
+> > the driver we intend or the standard driver will claim the device.
+> > Now it becomes a deterministic process, only the driver matching
+> > driver_override will probe the device.
+> > 
+> > To return the device to the standard driver, we simply clear the
+> > driver_override and reprobe the device:
+> > 
+> > echo > /sys/bus/pci/devices/0000:03:00.0/driver_override
+> > echo 0000:03:00.0 > /sys/bus/pci/devices/0000:03:00.0/driver/unbind
+> > echo 0000:03:00.0 > /sys/bus/pci/drivers_probe
+> > 
+> > Another advantage to this approach is that we can specify a driver
+> > override to force a specific binding or prevent any binding.  For
+> > instance when an IOMMU group is exposed to userspace through VFIO
+> > we require that all devices within that group are owned by VFIO.
+> > However, devices can be hot-added into an IOMMU group, in which case
+> > we want to prevent the device from binding to any driver (override
+> > driver = "none") or perhaps have it automatically bind to vfio-pci.
+> > With driver_override it's a simple matter for this field to be set
+> > internally when the device is first discovered to prevent driver
+> > matches.
+> > 
+> > Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> > Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+> 
+> Greg, are you going to weigh in on this?  It does seem to solve some real
+> problems.  ISTR you had an opinion once, but I don't know your current
+> thoughts.
 
-Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
----
+This looks good to me:
 
-v4.1: expand commitlog, no code change
-
- drivers/pci/search.c |   10 ++++++++--
- include/linux/pci.h  |    2 ++
- 2 files changed, 10 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/pci/search.c b/drivers/pci/search.c
-index 2c19f3f..df38f73 100644
---- a/drivers/pci/search.c
-+++ b/drivers/pci/search.c
-@@ -88,8 +88,14 @@ int pci_for_each_dma_alias(struct pci_dev *pdev,
- 				continue;
- 			}
- 		} else {
--			ret = fn(tmp, PCI_DEVID(tmp->bus->number, tmp->devfn),
--				 data);
-+			if (tmp->dev_flags & PCI_DEV_FLAG_PCIE_BRIDGE_ALIAS)
-+				ret = fn(tmp,
-+					 PCI_DEVID(tmp->subordinate->number,
-+						   PCI_DEVFN(0, 0)), data);
-+			else
-+				ret = fn(tmp,
-+					 PCI_DEVID(tmp->bus->number,
-+						   tmp->devfn), data);
- 			if (ret)
- 				return ret;
- 		}
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 9d4035c..85ab35e 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -173,6 +173,8 @@ enum pci_dev_flags {
- 	PCI_DEV_FLAGS_ACS_ENABLED_QUIRK = (__force pci_dev_flags_t) (1 << 3),
- 	/* Flag to indicate the device uses dma_alias_devfn */
- 	PCI_DEV_FLAGS_DMA_ALIAS_DEVFN = (__force pci_dev_flags_t) (1 << 4),
-+	/* Use a PCIe-to-PCI bridge alias even if !pci_is_pcie */
-+	PCI_DEV_FLAG_PCIE_BRIDGE_ALIAS = (__force pci_dev_flags_t) (1 << 5),
- };
- 
- enum pci_irq_reroute_variant {
+Acked-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
