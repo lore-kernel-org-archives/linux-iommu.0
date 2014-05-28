@@ -1,83 +1,66 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v4.1 05/16] PCI: quirk dma_alias_devfn for Marvell devices
-Date: Wed, 28 May 2014 14:54:00 -0600
-Message-ID: <20140528205242.27872.54432.stgit@bling.home>
-References: <20140522230755.2856.19714.stgit@bling.home>
+From: Alex Williamson <alex.williamson@redhat.com>
+Subject: [PATCH v4.1 06/16] PCI: Quirk pci_for_each_dma_alias() for bridges
+Date: Wed, 28 May 2014 14:57:02 -0600
+Message-ID: <20140528205517.27973.56814.stgit@bling.home>
+References: <20140522230801.2856.18629.stgit@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140522230755.2856.19714.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-gpGsJRJZ3PBBDgjK7y7TUQ@public.gmane.org, eddy0596-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20140522230801.2856.18629.stgit@bling.home>
+Sender: linux-pci-owner@vger.kernel.org
+To: linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org
+Cc: bhelgaas@google.com, acooks@gmail.com, linux-kernel@vger.kernel.org, eddy0596@gmail.com, linux@horizon.com
 List-Id: iommu@lists.linux-foundation.org
 
-Several Marvell devices and a JMicron device have a similar DMA
-requester ID problem to Ricoh, except they use function 1 as the
-PCIe requester ID.  Add a quirk for these to populate the DMA
-alias with the correct devfn.
+Several PCIe-to-PCI bridges fail to provide a PCIe capability, causing
+us to handle them as conventional PCI devices when they really use the
+requester ID of the secondary bus.  We need to differentiate these
+from PCIe-to-PCI bridges that actually use the conventional PCI ID
+when a PCIe capability is not present, such as those found on the root
+complex of may Intel chipsets.  Add a dev_flag bit to identify devices
+to be handled as standard PCIe-to-PCI bridges.
 
-Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
 ---
 
-v4.1: minor commitlog tweak, no code chage
+v4.1: expand commitlog, no code change
 
- drivers/pci/quirks.c |   36 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
+ drivers/pci/search.c |   10 ++++++++--
+ include/linux/pci.h  |    2 ++
+ 2 files changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index bc8ebd9..923689f 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -3349,6 +3349,42 @@ static void quirk_dma_func0_alias(struct pci_dev *dev)
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_RICOH, 0xe832, quirk_dma_func0_alias);
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_RICOH, 0xe476, quirk_dma_func0_alias);
+diff --git a/drivers/pci/search.c b/drivers/pci/search.c
+index 2c19f3f..df38f73 100644
+--- a/drivers/pci/search.c
++++ b/drivers/pci/search.c
+@@ -88,8 +88,14 @@ int pci_for_each_dma_alias(struct pci_dev *pdev,
+ 				continue;
+ 			}
+ 		} else {
+-			ret = fn(tmp, PCI_DEVID(tmp->bus->number, tmp->devfn),
+-				 data);
++			if (tmp->dev_flags & PCI_DEV_FLAG_PCIE_BRIDGE_ALIAS)
++				ret = fn(tmp,
++					 PCI_DEVID(tmp->subordinate->number,
++						   PCI_DEVFN(0, 0)), data);
++			else
++				ret = fn(tmp,
++					 PCI_DEVID(tmp->bus->number,
++						   tmp->devfn), data);
+ 			if (ret)
+ 				return ret;
+ 		}
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 9d4035c..85ab35e 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -173,6 +173,8 @@ enum pci_dev_flags {
+ 	PCI_DEV_FLAGS_ACS_ENABLED_QUIRK = (__force pci_dev_flags_t) (1 << 3),
+ 	/* Flag to indicate the device uses dma_alias_devfn */
+ 	PCI_DEV_FLAGS_DMA_ALIAS_DEVFN = (__force pci_dev_flags_t) (1 << 4),
++	/* Use a PCIe-to-PCI bridge alias even if !pci_is_pcie */
++	PCI_DEV_FLAG_PCIE_BRIDGE_ALIAS = (__force pci_dev_flags_t) (1 << 5),
+ };
  
-+static void quirk_dma_func1_alias(struct pci_dev *dev)
-+{
-+	if (PCI_FUNC(dev->devfn) != 1) {
-+		dev->dma_alias_devfn = PCI_DEVFN(PCI_SLOT(dev->devfn), 1);
-+		dev->dev_flags |= PCI_DEV_FLAGS_DMA_ALIAS_DEVFN;
-+	}
-+}
-+
-+/*
-+ * Marvell 88SE9123 uses function 1 as the requester ID for DMA.  In some
-+ * SKUs function 1 is present and is a legacy IDE controller, in other
-+ * SKUs this function is not present, making this a ghost requester.
-+ * https://bugzilla.kernel.org/show_bug.cgi?id=42679
-+ */
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9123,
-+			 quirk_dma_func1_alias);
-+/* https://bugzilla.kernel.org/show_bug.cgi?id=42679#c14 */
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9130,
-+			 quirk_dma_func1_alias);
-+/* https://bugzilla.kernel.org/show_bug.cgi?id=42679#c47 + c57 */
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9172,
-+			 quirk_dma_func1_alias);
-+/* https://bugzilla.kernel.org/show_bug.cgi?id=42679#c59 */
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x917a,
-+			 quirk_dma_func1_alias);
-+/* https://bugzilla.kernel.org/show_bug.cgi?id=42679#c46 */
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x91a0,
-+			 quirk_dma_func1_alias);
-+/* https://bugzilla.kernel.org/show_bug.cgi?id=42679#c49 */
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9230,
-+			 quirk_dma_func1_alias);
-+/* https://bugs.gentoo.org/show_bug.cgi?id=497630 */
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_JMICRON,
-+			 PCI_DEVICE_ID_JMICRON_JMB388_ESD,
-+			 quirk_dma_func1_alias);
-+
- static struct pci_dev *pci_func_0_dma_source(struct pci_dev *dev)
- {
- 	if (!PCI_FUNC(dev->devfn))
+ enum pci_irq_reroute_variant {
