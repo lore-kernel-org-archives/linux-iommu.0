@@ -1,14 +1,13 @@
-From: Paul Bolle <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>
-Subject: Re: [PATCH] remove duplicate checking code
-Date: Thu, 29 May 2014 15:45:47 +0200
-Message-ID: <1401371147.22923.4.camel@x220>
-References: <1400225980-12797-1-git-send-email-vaughan.cao@oracle.com>
-	<20140526093959.GH17056@8bytes.org>
+From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
+Date: Thu, 29 May 2014 09:52:22 -0600
+Message-ID: <538757B6.4010109@wwwdotorg.org>
+References: <1400877395-4235-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140526093959.GH17056-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1400877395-4235-1-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,28 +17,43 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Vaughan Cao <vaughan.cao-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gTW9uLCAyMDE0LTA1LTI2IGF0IDExOjM5ICswMjAwLCBKb2VyZyBSb2VkZWwgd3JvdGU6Cj4g
-T24gRnJpLCBNYXkgMTYsIDIwMTQgYXQgMDM6Mzk6NDBQTSArMDgwMCwgVmF1Z2hhbiBDYW8gd3Jv
-dGU6Cj4gPiBhbWRfaW9tbXVfcmxvb2t1cF90YWJsZVtkZXZpZF0gIT0gTlVMTCBpcyBhbHJlYWR5
-IGd1YXJhbnRlZWQgYnkgY2hlY2tfZGV2aWNlCj4gPiBjYWxsZWQgYmVmb3JlLCBpdCdzIGZpbmUg
-dG8gYXR0YWNoIGRldmljZSBhdCB0aGlzIHBvaW50Lgo+ID4gCj4gPiBTaWduZWQtb2ZmLWJ5OiBW
-YXVnaGFuIENhbyA8dmF1Z2hhbi5jYW9Ab3JhY2xlLmNvbT4KPiA+IC0tLQo+ID4gIGRyaXZlcnMv
-aW9tbXUvYW1kX2lvbW11LmMgfCA2IC0tLS0tLQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCA2IGRlbGV0
-aW9ucygtKQo+IAo+IEFwcGxpZWQsIHRoYW5rcy4KClRoaXMgb25lIGVudGVyZWQgbGludXgtbmV4
-dCwgYXMgb2YgbmV4dC0yMDE0MjUyNywgaW4gY29tbWl0IGVjZWYxMTVkNDU0MAooImlvbW11L2Ft
-ZDogUmVtb3ZlIGR1cGxpY2F0ZSBjaGVja2luZyBjb2RlIikuIEl0IHRyaWdnZXJzIGFuIG9idmlv
-dXNseQpjb3JyZWN0IHdhcm5pbmc6CiAgICBkcml2ZXJzL2lvbW11L2FtZF9pb21tdS5jOiBJbiBm
-dW5jdGlvbiDigJhhbWRfaW9tbXVfaW5pdF9wYXNzdGhyb3VnaOKAmToKICAgIGRyaXZlcnMvaW9t
-bXUvYW1kX2lvbW11LmM6MzUwMzo2OiB3YXJuaW5nOiB1bnVzZWQgdmFyaWFibGUg4oCYZGV2aWTi
-gJkgWy1XdW51c2VkLXZhcmlhYmxlXQogICAgICB1MTYgZGV2aWQ7CiAgICAgICAgICBeCiAgICBk
-cml2ZXJzL2lvbW11L2FtZF9pb21tdS5jOjM1MDI6MjA6IHdhcm5pbmc6IHVudXNlZCB2YXJpYWJs
-ZSDigJhpb21tdeKAmSBbLVd1bnVzZWQtdmFyaWFibGVdCiAgICAgIHN0cnVjdCBhbWRfaW9tbXUg
-KmlvbW11OwogICAgICAgICAgICAgICAgICAgICAgICBeCgpJcyB0aGUgdHJpdmlhbCBmaXggZm9y
-IHRoaXMgcXVldWVkIHNvbWV3aGVyZT8KCgpQYXVsIEJvbGxlCgpfX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlz
-dHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3Jn
-L21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On 05/23/2014 02:36 PM, Thierry Reding wrote:
+> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> 
+> This commit introduces a generic device tree binding for IOMMU devices.
+> Only a very minimal subset is described here, but it is enough to cover
+> the requirements of both the Exynos System MMU and Tegra SMMU as
+> discussed here:
+> 
+>     https://lkml.org/lkml/2014/4/27/346
+> 
+> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> ---
+> Apologies for the noise, but apparently I mistyped one of the email
+> addresses, should be fixed now.
+> 
+> Changes in v2:
+> - add notes about "dma-ranges" property (drop note from commit message)
+> - document priorities of "iommus" property vs. "dma-ranges" property
+> - drop #iommu-cells in favour of #address-cells and #size-cells
+
+I think this is a mistake. address-cells/size-cells are for transactions
+flowing down the bus (from the CPU to date). Describing a connection
+from a device to an IOMMU is something completely different, and should
+therefore simply use an iommu-cells property to describe any necessary
+information. If we start re-using properties for different things in
+different contexts, how is anyone going to know what they mean, and how
+will conflicts be resolved. For example, what if there's a single HW
+module that both acts as a regular register bus with children (where
+address-cells/size-cells defines how transactions reach the children
+from the parent), and is also an IOMMU (where according to this binding
+proposal, address-cells/size-cells represent some aspect of the IOMMU
+feature). Using different properties for different things is the only
+sane way to keep different concepts separate. Another alternative would
+be to represent the single HW module as separate nodes in DT, but I
+think that will only make our lives harder, and where I've done that in
+the past, I've regretted it.
