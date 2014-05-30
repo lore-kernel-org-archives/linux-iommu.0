@@ -1,115 +1,74 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+From: Arnd Bergmann <arnd@arndb.de>
 Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
-Date: Fri, 30 May 2014 21:49:59 +0200
-Message-ID: <5288123.eXagyPAxNq@wuerfel>
-References: <1400877218-4113-1-git-send-email-thierry.reding@gmail.com>
-	<4545972.cM7IP1qTXQ@wuerfel>
-	<CAL_Jsq+tkFNpjSEZboT+o69B_Z3a8e-ZVKaYDmLwtkyYoPy6VQ@mail.gmail.com>
+Date: Fri, 30 May 2014 21:54:37 +0200
+Message-ID: <4462924.8iRbdkOPp7@wuerfel>
+References: <1400877218-4113-1-git-send-email-thierry.reding@gmail.com> <4545972.cM7IP1qTXQ@wuerfel> <87tx87rrp2.fsf@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAL_Jsq+tkFNpjSEZboT+o69B_Z3a8e-ZVKaYDmLwtkyYoPy6VQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <87tx87rrp2.fsf@nvidia.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Hiroshi Doyu <hdoyu@nvidia.com>
+Cc: Rob Herring <robherring2@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Cho KyongHo <pullip.cho@samsung.com>, Grant Grundler <grundler@chromium.org>, Dave Martin <Dave.Martin@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Stephen Warren <swarren@wwwdotorg.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Friday 30 May 2014 14:31:55 Rob Herring wrote:
-> On Fri, May 30, 2014 at 2:06 PM, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> wrote:
-> > On Friday 30 May 2014 08:16:05 Rob Herring wrote:
-> >> On Fri, May 23, 2014 at 3:33 PM, Thierry Reding
-> >> <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-> >> > From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> >> > +IOMMU master node:
-> >> > +==================
-> >> > +
-> >> > +Devices that access memory through an IOMMU are called masters. A device can
-> >> > +have multiple master interfaces (to one or more IOMMU devices).
-> >> > +
-> >> > +Required properties:
-> >> > +--------------------
-> >> > +- iommus: A list of phandle and IOMMU specifier pairs that describe the IOMMU
-> >> > +  master interfaces of the device. One entry in the list describes one master
-> >> > +  interface of the device.
-> >> > +
-> >> > +When an "iommus" property is specified in a device tree node, the IOMMU will
-> >> > +be used for address translation. If a "dma-ranges" property exists in the
-> >> > +device's parent node it will be ignored. An exception to this rule is if the
-> >> > +referenced IOMMU is disabled, in which case the "dma-ranges" property of the
-> >> > +parent shall take effect.
-> >>
-> >> Just thinking out loud, could you have dma-ranges in the iommu node
-> >> for the case when the iommu is enabled rather than putting the DMA
-> >> window information into the iommus property?
-> >>
-> >> This would probably mean that you need both #iommu-cells and #address-cells.
-> >
-> > The reason for doing like this was that you may need a different window
-> > for each device, while there can only be one dma-ranges property in
-> > an iommu node.
+On Friday 30 May 2014 22:29:13 Hiroshi Doyu wrote:
 > 
-> My suggestion was that you also put the IDs in the dma-ranges as the
-> first cell much as ranges for PCI encodes other information in the
-> first cell. Then you can have an entry for each ID. The downside is
-> another special case like PCI.
+> IIUC the original problem, "a master with 8 streamIDs" means something
+> like below, where some devices have multiple IDs but some have a
+> single. A sinle #address-cells cannot afford those 2 masters at once.
 > 
-> The argument for using #address-cells and #size-cells seems to be to
-> align with how ranges work. If that's the route we want to go, then I
-> say we should not stop there and actually use dma-ranges as well.
-> Otherwise, I don't see the advantage over #iommu-cells.
-
-I can see how dma-ranges in bus nodes work, it just doesn't seem to
-have any reasonable meaning in the iommu node itself.
-
-> > I don't understand the problem. If you have stream IDs 0 through 7,
-> > you would have
-> >
-> >         master@a {
-> >                 ...
-> >                 iommus = <&smmu 0>;
-> >         };
-> >
-> >         master@b {
-> >                 ...
-> >                 iommus = <&smmu 1;
-> >         };
-> >
-> >         ...
-> >
-> >         master@12 {
-> >                 ...
-> >                 iommus = <&smmu 7;
-> >         };
-> >
-> > and you don't need a window at all. Why would you need a mask of
-> > some sort?
+>        iommu {
+>                /* the specifier represents the ID of the master */
+>                #address-cells = <1>;
+>                #size-cells = <0>;
+>        };
 > 
-> 1 master with 7 IDs like this:
+>         master@a {
+>                 ...
+>                 iommus = <&smmu 1 2 3>; # 3 IDs
+>         };
 > 
->          master@a {
->                  ...
->                  iommus = <&smmu 0> <&smmu 1> <&smmu 2> <&smmu 3>
-> <&smmu 4> <&smmu 5> <&smmu 6> <&smmu 7>;
->          };
+>         master@b {
+>                 ...
+>                 iommus = <&smmu 4>;     # 1 ID
+>         };
+
+This would not be the usual format really. It should instead be
+
+		iommus = <&smmu 1>, <&smmu 2>, <&smmu 3>;
+
+which can be tedious to type.
+
+> Tegra,SMMU has a similar problem and we have used a fixed size bitmap(64
+> bit) to afford 64 stream IDs so that a single device can hold multiple
+> IDs. If we apply the same bitmap to the above exmaple:
 > 
-> If there was any sort of window, then it is almost certainly the same
-> window for each ID.
+>        iommu {
+>                /* the specifier represents the ID of the master */
+>                #address-cells = <1>;
+>                #size-cells = <0>;
+>        };
+> 
+>         master@a {
+>                 ...
+>                 iommus = <&smmu (BIT(1) | BIT(2) | BIT(3))>; # IDs 1 2 3
+>         };
+> 
+>         master@b {
+>                 ...
+>                 iommus = <&smmu BIT(4)>;     # ID 4
+>         };
+> 
+> The disadvantage of this is that this limits the max number of streamIDs
+> to support. If # of streamID is increased later more than 64, this
+> format cannot cover any more. You have to predict the max # of streamIDs
+> in advance if steamID is statically assigned.
+> 
 
-Ok, I see. In that case you'd probably want to have #address-cells = <1>
-and #size-cells = <1> and give a range of IDs like
-
-	iommus = <&smmu 0 8>;
-
-Do you think that ranges can have a meaningful definition with the ARM
-SMMU stream IDs?
+Well, the iommu specific binding could allow a variable #address-cells.
+That way, you just need to know the number of stream IDs for that instance
+of the iommu.
 
 	Arnd
