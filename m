@@ -1,17 +1,14 @@
-From: Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [RFC PATCH v5_v2 01/11] driver core: platform: add device binding
-	path 'driver_override'
-Date: Fri, 30 May 2014 00:36:35 +0000
-Message-ID: <9a17e6ce9d2e4da39ec4254ae8814d5e@BY2PR03MB348.namprd03.prod.outlook.com>
-References: <1398700371-20096-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1398700371-20096-2-git-send-email-a.motakis@virtualopensystems.com>
-	<20140520192537.bab9fa2088c1cd5da3f92639@linaro.org>
+From: Andrew Cooks <acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v4 00/16] PCI/iommu: Fix DMA alias problems
+Date: Fri, 30 May 2014 13:30:25 +0800
+Message-ID: <CAJtEV7a+JwAgajOW-H0NKvNSf8gkM2XDs1OrK20svutZFSpupw@mail.gmail.com>
+References: <20140522230230.2856.40017.stgit@bling.home>
+	<20140528202922.GT11907@google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140520192537.bab9fa2088c1cd5da3f92639-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <20140528202922.GT11907-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,59 +18,168 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Kim Phillips <kim.phillips-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Cc: Alexander Graf <agraf-l3A5Bk7waGM@public.gmane.org>, Julien Grall <julien.grall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Ian Campbell <ian.campbell-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org" <rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "clbchenlibo.chen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <clbchenlibo.chen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "rob-VoJi6FS/r0vR7s880joybQ@public.gmane.org" <rob-VoJi6FS/r0vR7s880joybQ@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Stefano Stabellini <stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org>, kvmarm-FPEHb7Xf0XX1GAl8QSHYmA@public.gmane.org
+To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: "open list:PCI SUBSYSTEM" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, George Spelvin <linux-gpGsJRJZ3PBBDgjK7y7TUQ@public.gmane.org>, eddy0596-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+On Thu, May 29, 2014 at 4:29 AM, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org> wrote:
+> On Thu, May 22, 2014 at 05:07:23PM -0600, Alex Williamson wrote:
+>> For testing, this version can be found in my git tree:
+>>
+>> git://github.com/awilliam/linux-vfio.git dma-alias-v4
+>>
+>> Please report any issues.
+>>
+>> v4:
+>>  - Change dma_func_alias to dma_alias_devfn, holding a single
+>>    devfn to alias, thereby supporting aliases to the wrong slot.
+>>    The DMA alias iterator is easily changed, but IOMMU grouping
+>>    requires significant rework.  This is now done in IOMMU code
+>>    rather than PCI code.
+>>
+>>  - AMD-Vi - try to incorporate IVRS aliases dynamically into
+>>    PCI alias quirks to make sure that our grouping remains the
+>>    same.  Potentially this could end up reporting BIOS aliases
+>>    that we can add to our list of quirks.
+>>
+>> v3:
+>>  - Found several instances where I had PCI_SLOT when I meant
+>>    PCI_FUNC.  Thanks to Andrew for spotting this.  This should
+>>    fix the problem he was having with Ricoh quirks.  We also
+>>    pruned down the func0 quirks to only those that we know are
+>>    needed.  We can always add them back later.
+>>
+>>  - Found a case in intel-iommu of using dev_is_pci() where I
+>>    really wanted !dev_is_pci().  Fixed.
+>>
+>> v2:
+>>  - Several new Marvell controllers added to quirks.  There's been
+>>    a lot of success reported with this series in
+>>    https://bugzilla.kernel.org/show_bug.cgi?id=42679
+>>
+>>  - Add quirk for ASMedia and Tundra PCIe-to-PCI bridges that do
+>>    not expose a PCIe capability.  These have been shown to use
+>>    the standard PCIe-to-PCI bridge requester ID.
+>>
+>>  - Fix copy/paste duplicate Ricoh quirk ID
+>>
+>>  - Fixed AMD IOMMU for the "ghost" function case where the DMA
+>>    alias is for an absent device.  The iommu rlookup table and
+>>    data fields need to be initializes.
+>>
+>>  - Fixed Intel interrupt remapping, I wasn't passing the target
+>>    bus number, only the alias bus number.
+>>
+>> These patches are split across PCI and IOMMU, but I've front-loaded
+>> all of the PCI infrastructure so that the first 7 patches can be
+>> applied to PCI-core, the IOMMU maintainers can pickup their patches,
+>> then we can finish with dead code removal.  Bjorn might also be
+>> willing to carry the IOMMU changes if the maintainers want to ack
+>> them.
+>
+> I put 1-7 on a pci/iommu branch for v3.16.  I'm happy to include the rest,
+> too, given acks from Joerg and David.  Or if they prefer to take them all,
+> which might be easier than coordinating two trees, especially since there's
+> PCI stuff at the beginning and end, here's my ack for the PCI bits (patches
+> 1-7 and 15-16):
+>
+>     Acked-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+>
+> If you want to send me updated changelogs for patches 5 & 6, I'll drop
+> those in.
+>
+> Didn't you have more testing reports?  I see George's, but I thought there
+> were some others, too.
+>
+Tested-by: Andrew Cooks <acooks-vYTEC60ixJUAvxtiuMwx3w@public.gmane.org>
 
-> -----Original Message-----
-> From: Kim Phillips [mailto:kim.phillips-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org]
-> Sent: Tuesday, May 20, 2014 7:26 PM
-> To: a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org
-> Cc: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org;
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org; jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org;
-> a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org; rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org; Yoder Stuart-
-> B08248; rob-VoJi6FS/r0vR7s880joybQ@public.gmane.org; grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org;
-> tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org; clbchenlibo.chen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org;
-> christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; Julien Grall; Ian
-> Campbell; Stefano Stabellini; Alexander Graf
-> Subject: [RFC PATCH v5_v2 01/11] driver core: platform: add device
-> binding path 'driver_override'
-> 
-> From: Kim Phillips <kim.phillips-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-> 
-> Needed by platform device drivers, such as the vfio-platform driver
-> later in series, in order to bypass the existing OF, ACPI, id_table and
-> name string matches, and successfully be able to be bound to any
-> device, like so:
-> 
-> echo vfio-platform >
-> /sys/bus/platform/devices/fff51000.ethernet/driver_override
-> echo fff51000.ethernet >
-> /sys/bus/platform/devices/fff51000.ethernet/driver/unbind
-> echo fff51000.ethernet > /sys/bus/platform/drivers_probe
-> 
-> This mimics "PCI: Introduce new device binding path using
-> pci_dev.driver_override" [1], which is an interface enhancement
-> for more deterministic PCI device binding, e.g., when in the
-> presence of hotplug.
-> 
-> [1] https://lists.cs.columbia.edu/pipermail/kvmarm/2014-May/009527.html
-> 
-> Suggested-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> Signed-off-by: Kim Phillips <kim.phillips-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-> ---
-> changes in v2 patch of v5 of this patchseries:
-> - rebased onto today's Linus' ToT
-> - added kfree to match PCI counterpart fix, as Alex Williamson
->   just posted a v3 of the patch (thanks Christoffer for the
->   notification)
-> - in the commit text, replaced vfio platform driver reference with
->   'later in series', and updated the PCI version mailing list reference
->   to the v3 version.
+I've reviewed parts of this patch set, over multiple iterations, if
+that's worth anything.
 
-Reviewed-by: Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-
-Stuart
+>> Original description:
+>>
+>> This series attempts to fix a couple issues we've had outstanding in
+>> the PCI/IOMMU code for a while.  The first issue is with devices that
+>> use the wrong requester ID for DMA transactions.  We already have a
+>> sort of half-baked attempt to fix this for several Ricoh devices, but
+>> the fix only helps them be useful through IOMMU groups, not the
+>> general DMA case.  There are also several Marvell devices which use
+>> use a different wrong requester ID and don't even fit into the DMA
+>> source idea.  This series creates a DMA alias iterator that will
+>> step through each possible alias of a device, allowing IOMMUs to
+>> insert mappings for both the device and its aliases.
+>>
+>> Hand-in-hand with this is our broken pci_find_upstream_pcie_bridge()
+>> function, which is known to blowup when it finds itself suddenly at
+>> a PCIe device without crossing a PCIe-to-PCI bridge (as identified by
+>> the PCIe capability).  It also likes to make the invalid assumption
+>> that a PCIe device never has its requester ID masked by any usptream
+>> bus.  We can fix this using the above new DMA alias iterator, since
+>> that's effectively what this function was meant to do.
+>>
+>> Finally, with all these helpers, it makes sense to consolidate code
+>> for determining IOMMU groups.  The first step in finding the root
+>> of a group is finding the final upstream DMA alias for the device,
+>> then applying additional ACS rules and incorporating device specific
+>> aliases.  As this is all common to PCI, create a single implementation
+>> and remove piles of code from the individual IOMMU drivers.
+>>
+>> This series allows devices like the Marvell 88SE9123 to finally work
+>> on Linux with either AMD-Vi or VT-d enabled on the box.  I've
+>> collected device IDs from various bugs to support as many SKUs of
+>> these devices as possible, but I'm sure there are others that I've
+>> missed.
+>>
+>> This should also enable motherboards with an onboard ASmedia
+>> ASM1083/1085 PCIe-to-PCI bridge to work with VT-d enabled.  I've
+>> acquired an adapter board with this chip, but it actually exposes
+>> a PCIe capability, unlike most of the onboard controllers.  Therefore
+>> I expect this series will fix the WARN_ON currently hit during boot,
+>> but there's a 50/50 chance whether the device behaves like a PCI
+>> bridge or a PCIe bridge with regard to the requester ID that it uses
+>> to take ownership of the transaction.  If it turns out to use the
+>> PCIe bridge model, I expect we can quirk it using a dev_flags bit
+>> to identify a PCI bridge that takes ownership as if it was a PCIe
+>> bridge.
+>>
+>> Please test and provide feedback.  I expect IOMMU group topology
+>> should not change from this series, but if a case is found where it
+>> does, please share.  Also, if there are additional quirks we need
+>> to add, please either file new or add to the existing bugs.  Thanks,
+>>
+>> Alex
+>>
+>> ---
+>>
+>> Alex Williamson (16):
+>>       PCI: Add DMA alias iterator
+>>       PCI: define pci_dev_flags as bit shifts
+>>       PCI: quirk pci_for_each_dma_alias()
+>>       PCI: quirk dma_alias_devfn for Ricoh devices
+>>       PCI: quirk dma_alias_devfn for Marvell devices
+>>       PCI: Quirk pci_for_each_dma_alias() for bridges
+>>       PCI: Add quirks for ASMedia and Tundra bridges
+>>       iommu: Create central IOMMU group lookup/creation interface
+>>       iommu/amd: Update to use PCI DMA aliases
+>>       iommu/amd: Use iommu_group_get_for_dev()
+>>       iommu/intel: Use iommu_group_get_for_dev()
+>>       iommu/intel: Update to use PCI DMA aliases
+>>       iommu/fsl: Use iommu_group_get_for_dev() for IOMMU groups
+>>       iommu: Remove pci.h
+>>       PCI: Remove pci_find_upstream_pcie_bridge()
+>>       PCI: Remove pci_get_dma_source()
+>>
+>>
+>>  drivers/iommu/amd_iommu.c           |  214 +++++++-----------------
+>>  drivers/iommu/amd_iommu_types.h     |    1
+>>  drivers/iommu/fsl_pamu_domain.c     |   66 --------
+>>  drivers/iommu/intel-iommu.c         |  307 +++++++++++++----------------------
+>>  drivers/iommu/intel_irq_remapping.c |   55 ++++--
+>>  drivers/iommu/iommu.c               |  181 +++++++++++++++++++++
+>>  drivers/iommu/pci.h                 |   29 ---
+>>  drivers/pci/quirks.c                |  116 ++++++++-----
+>>  drivers/pci/search.c                |  104 +++++++++---
+>>  include/linux/iommu.h               |    1
+>>  include/linux/pci.h                 |   31 +---
+>>  11 files changed, 557 insertions(+), 548 deletions(-)
+>>  delete mode 100644 drivers/iommu/pci.h
