@@ -1,14 +1,14 @@
 From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
 Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
-Date: Fri, 30 May 2014 21:01:19 +0200
-Message-ID: <4830064.JvgTAs8Xty@wuerfel>
-References: <1400877395-4235-1-git-send-email-thierry.reding@gmail.com>
-	<20140530112226.GA3949@e103592.cambridge.arm.com>
+Date: Fri, 30 May 2014 21:06:16 +0200
+Message-ID: <4545972.cM7IP1qTXQ@wuerfel>
+References: <1400877218-4113-1-git-send-email-thierry.reding@gmail.com>
+	<CAL_JsqKumG1PSFoVfeGpLLG+MjXFeF4aUjun=vv1BJpaxk0Byg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140530112226.GA3949-M5GwZQ6tE7x5pKCnmE3YQBJ8xKzm50AiAL8bYrjMMd8@public.gmane.org>
+In-Reply-To: <CAL_JsqKumG1PSFoVfeGpLLG+MjXFeF4aUjun=vv1BJpaxk0Byg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,104 +18,97 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>
+To: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Friday 30 May 2014 12:22:32 Dave Martin wrote:
+On Friday 30 May 2014 08:16:05 Rob Herring wrote:
+> On Fri, May 23, 2014 at 3:33 PM, Thierry Reding
+> <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+> > From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> > +IOMMU master node:
+> > +==================
 > > +
-> > +Examples:
-> > +=========
+> > +Devices that access memory through an IOMMU are called masters. A device can
+> > +have multiple master interfaces (to one or more IOMMU devices).
 > > +
-> > +Single-master IOMMU:
+> > +Required properties:
 > > +--------------------
+> > +- iommus: A list of phandle and IOMMU specifier pairs that describe the IOMMU
+> > +  master interfaces of the device. One entry in the list describes one master
+> > +  interface of the device.
 > > +
-> > +	iommu {
-> > +		#address-cells = <0>;
-> > +		#size-cells = <0>;
-> > +	};
+> > +When an "iommus" property is specified in a device tree node, the IOMMU will
+> > +be used for address translation. If a "dma-ranges" property exists in the
+> > +device's parent node it will be ignored. An exception to this rule is if the
+> > +referenced IOMMU is disabled, in which case the "dma-ranges" property of the
+> > +parent shall take effect.
+> 
+> Just thinking out loud, could you have dma-ranges in the iommu node
+> for the case when the iommu is enabled rather than putting the DMA
+> window information into the iommus property?
+> 
+> This would probably mean that you need both #iommu-cells and #address-cells.
+
+The reason for doing like this was that you may need a different window
+for each device, while there can only be one dma-ranges property in 
+an iommu node.
+
 > > +
-> > +	master {
-> > +		iommus = <&/iommu>;
-> > +	};
+> > +Optional properties:
+> > +--------------------
+> > +- iommu-names: A list of names identifying each entry in the "iommus"
+> > +  property.
+> 
+> Do we really need a name here? I would not expect that you have
+> clearly documented names here from the datasheet like you would for
+> interrupts or clocks, so you'd just be making up names. Sorry, but I'm
+> not a fan of names properties in general.
+
+Good point, this was really overdesign by modeling it after other
+subsystems that can have a use for names.
+ 
+> > +Multiple-master IOMMU:
+> > +----------------------
 > > +
-> > +Multiple-master IOMMU with fixed associations:
-> > +----------------------------------------------
+> > +       iommu {
+> > +               /* the specifier represents the ID of the master */
+> > +               #address-cells = <1>;
+> > +               #size-cells = <0>;
+> > +       };
 > > +
-> > +	/* multiple-master IOMMU */
-> > +	iommu {
-> > +		/*
-> > +		 * Masters are statically associated with this IOMMU and
-> > +		 * address translation is always enabled.
-> > +		 */
-> > +		#address-cells = <0>;
-> > +		#size-cells = <0>;
+> > +       master {
+> > +               /* device has master ID 42 in the IOMMU */
+> > +               iommus = <&/iommu 42>;
+> > +       };
 > 
-> In this example, can different translations be set up for the different
-> masters?
-> 
-> With no cells available to contain any sort of ID, it looks like this
-> is not possible.
+> Presumably the ID would be the streamID on ARM's SMMU. How would a
+> master with 8 streamIDs be described? This is what Calxeda midway has
+> for SATA and I would expect that to be somewhat common. Either you
+> need some ID masking or you'll have lots of duplication when you have
+> windows.
 
-Correct, this example is for an IOMMU that does not use IDs but has a
-shared address space for all devices.
+I don't understand the problem. If you have stream IDs 0 through 7,
+you would have
 
-> > +Multiple-master IOMMU with configurable DMA window:
-> > +---------------------------------------------------
-> > +
-> > +	/ {
-> > +		#address-cells = <1>;
-> > +		#size-cells = <1>;
-> > +
-> > +		iommu {
-> > +			/* master ID, address of DMA window */
-> > +			#address-cells = <2>;
-> > +			#size-cells = <2>;
-> > +		};
-> > +
-> > +		master {
-> > +			/* master ID 42, 4 GiB DMA window starting at 0 */
-> > +			iommus = <&/iommu  42 0  0x1 0x0>;
-> 
-> I'm still concerned that in order to deal with future cases we will have
-> to invent multiple ways to parse the "iommus" property.  For example, if
-> we have a PCEe RC mastering through an IOMMU, it will pass a huge set
-> of possible master IDs to the IOMMU, not just noe or two.
-> 
-> Do you have a solution in mind for that which doesn't break backwards
-> compatibility?
+	master@a {
+		...
+		iommus = <&smmu 0>;
+	};
 
-I think we can treat PCI as a special case here and have an interface
-that gets used by the PCI core code to talk to the IOMMU core code
-when setting up a the dma_map_ops for a PCI function. As long as the
-IOMMU driver understands what PCI is, we don't have to describe the
-mapping in detail.
+	master@b {
+		...
+		iommus = <&smmu 1;
+	};
 
-> One option is to include an extra cell to the IOMMUs property
-> that indicates how to parse it.  For now, only a single value would
-> be defined.  For example:
-> 
-> 	iommus = <&/iommu IOMMU_SIMPLE 42>;
-> 
-> Then maybe later
-> 
-> 	iommus = <&/iommu IOMMU_RANGE 0x10000 0x10000>;
-> 
-> (I'm not suggesting what IOMMU_RANGE might mean.)
-> 
+	...
 
-This can really be left up to the specific IOMMU driver itself.
-We can have drivers that support both #address-cells=<1>
-and #address-cells=<2> and behave differently based on that.
-I don't see a reason to define that across IOMMU implementations.
+	master@12 {
+		...
+		iommus = <&smmu 7;
+	};
 
-> Other options are to introduce a new property name
-> 
-> 	range-iommus = <&/iommu 0x10000 0x10000>;
-> 
-> or control the parsing of incompatible iommus properties via a compatible
-> string somewhere.
-
-Introducing a new compatible string is always an option as the last resort.
+and you don't need a window at all. Why would you need a mask of
+some sort?
 
 	Arnd
