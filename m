@@ -1,15 +1,14 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] remove duplicate checking code
-Date: Fri, 30 May 2014 20:21:43 +0200
-Message-ID: <20140530182143.GK17056@8bytes.org>
-References: <1400225980-12797-1-git-send-email-vaughan.cao@oracle.com>
-	<20140526093959.GH17056@8bytes.org> <1401371147.22923.4.camel@x220>
+Subject: Re: [PATCH] iommu: msm: use devm_ioremap_resource to simplify code
+Date: Fri, 30 May 2014 20:22:04 +0200
+Message-ID: <20140530182204.GL17056@8bytes.org>
+References: <1401185922-6908-1-git-send-email-wangkefeng.wang@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1401371147.22923.4.camel@x220>
+In-Reply-To: <1401185922-6908-1-git-send-email-wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,31 +18,17 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Paul Bolle <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>
-Cc: Vaughan Cao <vaughan.cao-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Kefeng Wang <wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVGh1LCBNYXkgMjksIDIwMTQgYXQgMDM6NDU6NDdQTSArMDIwMCwgUGF1bCBCb2xsZSB3cm90
-ZToKPiBPbiBNb24sIDIwMTQtMDUtMjYgYXQgMTE6MzkgKzAyMDAsIEpvZXJnIFJvZWRlbCB3cm90
-ZToKPiA+IE9uIEZyaSwgTWF5IDE2LCAyMDE0IGF0IDAzOjM5OjQwUE0gKzA4MDAsIFZhdWdoYW4g
-Q2FvIHdyb3RlOgo+ID4gPiBhbWRfaW9tbXVfcmxvb2t1cF90YWJsZVtkZXZpZF0gIT0gTlVMTCBp
-cyBhbHJlYWR5IGd1YXJhbnRlZWQgYnkgY2hlY2tfZGV2aWNlCj4gPiA+IGNhbGxlZCBiZWZvcmUs
-IGl0J3MgZmluZSB0byBhdHRhY2ggZGV2aWNlIGF0IHRoaXMgcG9pbnQuCj4gPiA+IAo+ID4gPiBT
-aWduZWQtb2ZmLWJ5OiBWYXVnaGFuIENhbyA8dmF1Z2hhbi5jYW9Ab3JhY2xlLmNvbT4KPiA+ID4g
-LS0tCj4gPiA+ICBkcml2ZXJzL2lvbW11L2FtZF9pb21tdS5jIHwgNiAtLS0tLS0KPiA+ID4gIDEg
-ZmlsZSBjaGFuZ2VkLCA2IGRlbGV0aW9ucygtKQo+ID4gCj4gPiBBcHBsaWVkLCB0aGFua3MuCj4g
-Cj4gVGhpcyBvbmUgZW50ZXJlZCBsaW51eC1uZXh0LCBhcyBvZiBuZXh0LTIwMTQyNTI3LCBpbiBj
-b21taXQgZWNlZjExNWQ0NTQwCj4gKCJpb21tdS9hbWQ6IFJlbW92ZSBkdXBsaWNhdGUgY2hlY2tp
-bmcgY29kZSIpLiBJdCB0cmlnZ2VycyBhbiBvYnZpb3VzbHkKPiBjb3JyZWN0IHdhcm5pbmc6Cj4g
-ICAgIGRyaXZlcnMvaW9tbXUvYW1kX2lvbW11LmM6IEluIGZ1bmN0aW9uIOKAmGFtZF9pb21tdV9p
-bml0X3Bhc3N0aHJvdWdo4oCZOgo+ICAgICBkcml2ZXJzL2lvbW11L2FtZF9pb21tdS5jOjM1MDM6
-Njogd2FybmluZzogdW51c2VkIHZhcmlhYmxlIOKAmGRldmlk4oCZIFstV3VudXNlZC12YXJpYWJs
-ZV0KPiAgICAgICB1MTYgZGV2aWQ7Cj4gICAgICAgICAgIF4KPiAgICAgZHJpdmVycy9pb21tdS9h
-bWRfaW9tbXUuYzozNTAyOjIwOiB3YXJuaW5nOiB1bnVzZWQgdmFyaWFibGUg4oCYaW9tbXXigJkg
-Wy1XdW51c2VkLXZhcmlhYmxlXQo+ICAgICAgIHN0cnVjdCBhbWRfaW9tbXUgKmlvbW11Owo+ICAg
-ICAgICAgICAgICAgICAgICAgICAgIF4KPiAKPiBJcyB0aGUgdHJpdmlhbCBmaXggZm9yIHRoaXMg
-cXVldWVkIHNvbWV3aGVyZT8KCkp1c3QgcXVldWVkIG9uZSB0byBteSB4ODYvYW1kIGJyYW5jaC4g
-VGhhbmtzIGZvciB0aGUgcmVwb3J0LgoKCglKb2VyZwoKCl9fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5s
-aW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFp
-bG1hbi9saXN0aW5mby9pb21tdQ==
+On Tue, May 27, 2014 at 06:18:42PM +0800, Kefeng Wang wrote:
+> Use devm_ioremap_resource() to make the code simpler, drop unused variable,
+> redundant return value check, and error-handing code.
+> 
+> Signed-off-by: Kefeng Wang <wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+> ---
+>  drivers/iommu/msm_iommu_dev.c |   38 +++++++-------------------------------
+>  1 files changed, 7 insertions(+), 31 deletions(-)
+
+Applied to arm/msm, thanks.
