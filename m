@@ -1,101 +1,152 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
-Date: Fri, 30 May 2014 09:30:08 +0200
-Message-ID: <20140530073006.GA24748@ulmo>
-References: <1400877395-4235-1-git-send-email-thierry.reding@gmail.com>
- <538757B6.4010109@wwwdotorg.org>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH v4 13/16] iommu/fsl: Use iommu_group_get_for_dev() for
+	IOMMU groups
+Date: Fri, 30 May 2014 09:17:07 +0000
+Message-ID: <878ea3496f194c6ab6198bdc3e0a413c@BL2PR03MB468.namprd03.prod.outlook.com>
+References: <20140522230230.2856.40017.stgit@bling.home>
+	<20140522230845.2856.95844.stgit@bling.home>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="3MwIy2ne0vdjdPXF"
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <538757B6.4010109@wwwdotorg.org>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Stephen Warren <swarren@wwwdotorg.org>, Arnd Bergmann <arnd@arndb.de>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Cho KyongHo <pullip.cho@samsung.com>, Grant Grundler <grundler@chromium.org>, Dave Martin <Dave.Martin@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Hiroshi Doyu <hdoyu@nvidia.com>, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org, linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20140522230845.2856.95844.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Cc: "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eddy0596-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <eddy0596-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-gpGsJRJZ3PBBDgjK7y7TUQ@public.gmane.org" <linux-gpGsJRJZ3PBBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
---3MwIy2ne0vdjdPXF
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Thu, May 29, 2014 at 09:52:22AM -0600, Stephen Warren wrote:
-> On 05/23/2014 02:36 PM, Thierry Reding wrote:
-> > From: Thierry Reding <treding@nvidia.com>
-> >=20
-> > This commit introduces a generic device tree binding for IOMMU devices.
-> > Only a very minimal subset is described here, but it is enough to cover
-> > the requirements of both the Exynos System MMU and Tegra SMMU as
-> > discussed here:
-> >=20
-> >     https://lkml.org/lkml/2014/4/27/346
-> >=20
-> > Signed-off-by: Thierry Reding <treding@nvidia.com>
-> > ---
-> > Apologies for the noise, but apparently I mistyped one of the email
-> > addresses, should be fixed now.
-> >=20
-> > Changes in v2:
-> > - add notes about "dma-ranges" property (drop note from commit message)
-> > - document priorities of "iommus" property vs. "dma-ranges" property
-> > - drop #iommu-cells in favour of #address-cells and #size-cells
->=20
-> I think this is a mistake. address-cells/size-cells are for transactions
-> flowing down the bus (from the CPU to date). Describing a connection
-> from a device to an IOMMU is something completely different, and should
-> therefore simply use an iommu-cells property to describe any necessary
-> information. If we start re-using properties for different things in
-> different contexts, how is anyone going to know what they mean, and how
-> will conflicts be resolved. For example, what if there's a single HW
-> module that both acts as a regular register bus with children (where
-> address-cells/size-cells defines how transactions reach the children
-> from the parent), and is also an IOMMU (where according to this binding
-> proposal, address-cells/size-cells represent some aspect of the IOMMU
-> feature). Using different properties for different things is the only
-> sane way to keep different concepts separate. Another alternative would
-> be to represent the single HW module as separate nodes in DT, but I
-> think that will only make our lives harder, and where I've done that in
-> the past, I've regretted it.
-
-There was some back-and-forth on this topic and the latest concensus
-when I wrote the second version was that #address-cells and #size-cells
-were to be used.
-
-But there was some bore back-and-forth after that, and it seems like
-Arnd no longer thinks that using #address-cells and #size-cells is a
-good idea either[0].
-
-Arnd, can you take another look at this binding and see if there's
-anything else missing? If not I'll go through the document again and
-update all #address-cells/#size-cells references with #iommu-cells as
-appropriate and submit v3.
-
-Thanks,
-Thierry
-
-[0]: https://lkml.org/lkml/2014/5/20/609
-
---3MwIy2ne0vdjdPXF
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJTiDN+AAoJEN0jrNd/PrOhrpwP/28UxOr3xF30hFVjZUvRegoA
-QxLOiXKgYfLiDpVTqR6XiJHbnhFv/I7gfwOC5jphjDH3MkH4HN3sMn1pFjzqlcu1
-rbiUksPkuqGhuHSuHD2+9IY7RdgKrsYE+5afTSAR5q3PLXPIDdIoyRukuJa17oI0
-bcQUWsK+uQ4T9NkelSQPFQZhHLPA0csPGzA5L4l/3Dz3ZVrWyIgrs0ZGmm9yI5Q3
-uBP4gtRsOpLB7OEmR70nXVn90W/Ndz2U2mb7T2N57R+oLADcGoMGe7W8n5szy/bu
-fWoJ/4Quw7ZMqXN9cGRbnb4aDxfefhDIVIR7gLOciosVQltDOwRMxnnGkJgQ4okN
-BZrxJ2zKIjNm9eus5LIKvjydNAkPjUnw9k455b8NNEQT6pLdldUa2XCiRs4VFSuy
-iNk9HeBTVykQtyyZCGC4g4wA9HsLYgNFSqX1MjI0yDZk4FCsbaUXwTiaKJRBwVtf
-85khJ4TTHVdeTaBvpDGCDmyx8L7s3ZPWrSIxKY9K/1dwCFe49Fb5dmJzokiyd72i
-O/eXjDSKcE5bGgYCRdWliL8qvS5BnpayrR2hY70lyr6ROSX3L6inofh4E62urUIH
-PJUSnlM2YVTn1mwg+WGq41gin6wiEy7xArEOkrcD0k7nxlsl+Y2S1toWf8gHn9QV
-akEZa3AIOH+rQ/U7/MjP
-=Ifqv
------END PGP SIGNATURE-----
-
---3MwIy2ne0vdjdPXF--
+> -----Original Message-----
+> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> Sent: Friday, May 23, 2014 4:39 AM
+> To: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org; linux-gpGsJRJZ3PBBDgjK7y7TUQ@public.gmane.org;
+> bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; Sethi Varun-B16395; eddy0596-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+> Subject: [PATCH v4 13/16] iommu/fsl: Use iommu_group_get_for_dev() for
+> IOMMU groups
+> 
+> Drop custom code and use IOMMU provided grouping support for PCI.
+> 
+> Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> Cc: Varun Sethi <varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+> ---
+>  drivers/iommu/fsl_pamu_domain.c |   66 +--------------------------------
+> ------
+>  1 file changed, 1 insertion(+), 65 deletions(-)
+> 
+> diff --git a/drivers/iommu/fsl_pamu_domain.c
+> b/drivers/iommu/fsl_pamu_domain.c index 93072ba..d02d668 100644
+> --- a/drivers/iommu/fsl_pamu_domain.c
+> +++ b/drivers/iommu/fsl_pamu_domain.c
+> @@ -38,7 +38,6 @@
+>  #include <sysdev/fsl_pci.h>
+> 
+>  #include "fsl_pamu_domain.h"
+> -#include "pci.h"
+> 
+>  /*
+>   * Global spinlock that needs to be held while @@ -892,8 +891,6 @@
+> static int fsl_pamu_get_domain_attr(struct iommu_domain *domain,
+>  	return ret;
+>  }
+> 
+> -#define REQ_ACS_FLAGS	(PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR |
+> PCI_ACS_UF)
+> -
+>  static struct iommu_group *get_device_iommu_group(struct device *dev)  {
+>  	struct iommu_group *group;
+> @@ -950,74 +947,13 @@ static struct iommu_group
+> *get_pci_device_group(struct pci_dev *pdev)
+>  	struct pci_controller *pci_ctl;
+>  	bool pci_endpt_partioning;
+>  	struct iommu_group *group = NULL;
+> -	struct pci_dev *bridge, *dma_pdev = NULL;
+> 
+>  	pci_ctl = pci_bus_to_host(pdev->bus);
+>  	pci_endpt_partioning = check_pci_ctl_endpt_part(pci_ctl);
+>  	/* We can partition PCIe devices so assign device group to the
+> device */
+>  	if (pci_endpt_partioning) {
+> -		bridge = pci_find_upstream_pcie_bridge(pdev);
+> -		if (bridge) {
+> -			if (pci_is_pcie(bridge))
+> -				dma_pdev = pci_get_domain_bus_and_slot(
+> -						pci_domain_nr(pdev->bus),
+> -						bridge->subordinate->number, 0);
+> -			if (!dma_pdev)
+> -				dma_pdev = pci_dev_get(bridge);
+> -		} else
+> -			dma_pdev = pci_dev_get(pdev);
+> -
+> -		/* Account for quirked devices */
+> -		swap_pci_ref(&dma_pdev, pci_get_dma_source(dma_pdev));
+> -
+> -		/*
+> -		 * If it's a multifunction device that does not support our
+> -		 * required ACS flags, add to the same group as lowest
+> numbered
+> -		 * function that also does not suport the required ACS flags.
+> -		 */
+> -		if (dma_pdev->multifunction &&
+> -		    !pci_acs_enabled(dma_pdev, REQ_ACS_FLAGS)) {
+> -			u8 i, slot = PCI_SLOT(dma_pdev->devfn);
+> -
+> -			for (i = 0; i < 8; i++) {
+> -				struct pci_dev *tmp;
+> -
+> -				tmp = pci_get_slot(dma_pdev->bus, PCI_DEVFN(slot,
+> i));
+> -				if (!tmp)
+> -					continue;
+> -
+> -				if (!pci_acs_enabled(tmp, REQ_ACS_FLAGS)) {
+> -					swap_pci_ref(&dma_pdev, tmp);
+> -					break;
+> -				}
+> -				pci_dev_put(tmp);
+> -			}
+> -		}
+> -
+> -		/*
+> -		 * Devices on the root bus go through the iommu.  If that's
+> not us,
+> -		 * find the next upstream device and test ACS up to the root
+> bus.
+> -		 * Finding the next device may require skipping virtual
+> buses.
+> -		 */
+> -		while (!pci_is_root_bus(dma_pdev->bus)) {
+> -			struct pci_bus *bus = dma_pdev->bus;
+> -
+> -			while (!bus->self) {
+> -				if (!pci_is_root_bus(bus))
+> -					bus = bus->parent;
+> -				else
+> -					goto root_bus;
+> -			}
+> -
+> -			if (pci_acs_path_enabled(bus->self, NULL,
+> REQ_ACS_FLAGS))
+> -				break;
+> -
+> -			swap_pci_ref(&dma_pdev, pci_dev_get(bus->self));
+> -		}
+> +		group = iommu_group_get_for_dev(&pdev->dev);
+> 
+> -root_bus:
+> -		group = get_device_iommu_group(&dma_pdev->dev);
+> -		pci_dev_put(dma_pdev);
+>  		/*
+>  		 * PCIe controller is not a paritionable entity
+>  		 * free the controller device iommu_group.
+Acknowledged-by: Varun Sethi <varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
