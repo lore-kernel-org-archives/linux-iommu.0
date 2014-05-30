@@ -1,185 +1,101 @@
-From: Andrew Cooks <acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v4 00/16] PCI/iommu: Fix DMA alias problems
-Date: Fri, 30 May 2014 13:30:25 +0800
-Message-ID: <CAJtEV7a+JwAgajOW-H0NKvNSf8gkM2XDs1OrK20svutZFSpupw@mail.gmail.com>
-References: <20140522230230.2856.40017.stgit@bling.home>
-	<20140528202922.GT11907@google.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
+Date: Fri, 30 May 2014 09:30:08 +0200
+Message-ID: <20140530073006.GA24748@ulmo>
+References: <1400877395-4235-1-git-send-email-thierry.reding@gmail.com>
+ <538757B6.4010109@wwwdotorg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140528202922.GT11907-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: "open list:PCI SUBSYSTEM" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, George Spelvin <linux-gpGsJRJZ3PBBDgjK7y7TUQ@public.gmane.org>, eddy0596-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="3MwIy2ne0vdjdPXF"
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <538757B6.4010109@wwwdotorg.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Stephen Warren <swarren@wwwdotorg.org>, Arnd Bergmann <arnd@arndb.de>
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Cho KyongHo <pullip.cho@samsung.com>, Grant Grundler <grundler@chromium.org>, Dave Martin <Dave.Martin@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Hiroshi Doyu <hdoyu@nvidia.com>, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org, linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, May 29, 2014 at 4:29 AM, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org> wrote:
-> On Thu, May 22, 2014 at 05:07:23PM -0600, Alex Williamson wrote:
->> For testing, this version can be found in my git tree:
->>
->> git://github.com/awilliam/linux-vfio.git dma-alias-v4
->>
->> Please report any issues.
->>
->> v4:
->>  - Change dma_func_alias to dma_alias_devfn, holding a single
->>    devfn to alias, thereby supporting aliases to the wrong slot.
->>    The DMA alias iterator is easily changed, but IOMMU grouping
->>    requires significant rework.  This is now done in IOMMU code
->>    rather than PCI code.
->>
->>  - AMD-Vi - try to incorporate IVRS aliases dynamically into
->>    PCI alias quirks to make sure that our grouping remains the
->>    same.  Potentially this could end up reporting BIOS aliases
->>    that we can add to our list of quirks.
->>
->> v3:
->>  - Found several instances where I had PCI_SLOT when I meant
->>    PCI_FUNC.  Thanks to Andrew for spotting this.  This should
->>    fix the problem he was having with Ricoh quirks.  We also
->>    pruned down the func0 quirks to only those that we know are
->>    needed.  We can always add them back later.
->>
->>  - Found a case in intel-iommu of using dev_is_pci() where I
->>    really wanted !dev_is_pci().  Fixed.
->>
->> v2:
->>  - Several new Marvell controllers added to quirks.  There's been
->>    a lot of success reported with this series in
->>    https://bugzilla.kernel.org/show_bug.cgi?id=42679
->>
->>  - Add quirk for ASMedia and Tundra PCIe-to-PCI bridges that do
->>    not expose a PCIe capability.  These have been shown to use
->>    the standard PCIe-to-PCI bridge requester ID.
->>
->>  - Fix copy/paste duplicate Ricoh quirk ID
->>
->>  - Fixed AMD IOMMU for the "ghost" function case where the DMA
->>    alias is for an absent device.  The iommu rlookup table and
->>    data fields need to be initializes.
->>
->>  - Fixed Intel interrupt remapping, I wasn't passing the target
->>    bus number, only the alias bus number.
->>
->> These patches are split across PCI and IOMMU, but I've front-loaded
->> all of the PCI infrastructure so that the first 7 patches can be
->> applied to PCI-core, the IOMMU maintainers can pickup their patches,
->> then we can finish with dead code removal.  Bjorn might also be
->> willing to carry the IOMMU changes if the maintainers want to ack
->> them.
->
-> I put 1-7 on a pci/iommu branch for v3.16.  I'm happy to include the rest,
-> too, given acks from Joerg and David.  Or if they prefer to take them all,
-> which might be easier than coordinating two trees, especially since there's
-> PCI stuff at the beginning and end, here's my ack for the PCI bits (patches
-> 1-7 and 15-16):
->
->     Acked-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
->
-> If you want to send me updated changelogs for patches 5 & 6, I'll drop
-> those in.
->
-> Didn't you have more testing reports?  I see George's, but I thought there
-> were some others, too.
->
-Tested-by: Andrew Cooks <acooks-vYTEC60ixJUAvxtiuMwx3w@public.gmane.org>
 
-I've reviewed parts of this patch set, over multiple iterations, if
-that's worth anything.
+--3MwIy2ne0vdjdPXF
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
->> Original description:
->>
->> This series attempts to fix a couple issues we've had outstanding in
->> the PCI/IOMMU code for a while.  The first issue is with devices that
->> use the wrong requester ID for DMA transactions.  We already have a
->> sort of half-baked attempt to fix this for several Ricoh devices, but
->> the fix only helps them be useful through IOMMU groups, not the
->> general DMA case.  There are also several Marvell devices which use
->> use a different wrong requester ID and don't even fit into the DMA
->> source idea.  This series creates a DMA alias iterator that will
->> step through each possible alias of a device, allowing IOMMUs to
->> insert mappings for both the device and its aliases.
->>
->> Hand-in-hand with this is our broken pci_find_upstream_pcie_bridge()
->> function, which is known to blowup when it finds itself suddenly at
->> a PCIe device without crossing a PCIe-to-PCI bridge (as identified by
->> the PCIe capability).  It also likes to make the invalid assumption
->> that a PCIe device never has its requester ID masked by any usptream
->> bus.  We can fix this using the above new DMA alias iterator, since
->> that's effectively what this function was meant to do.
->>
->> Finally, with all these helpers, it makes sense to consolidate code
->> for determining IOMMU groups.  The first step in finding the root
->> of a group is finding the final upstream DMA alias for the device,
->> then applying additional ACS rules and incorporating device specific
->> aliases.  As this is all common to PCI, create a single implementation
->> and remove piles of code from the individual IOMMU drivers.
->>
->> This series allows devices like the Marvell 88SE9123 to finally work
->> on Linux with either AMD-Vi or VT-d enabled on the box.  I've
->> collected device IDs from various bugs to support as many SKUs of
->> these devices as possible, but I'm sure there are others that I've
->> missed.
->>
->> This should also enable motherboards with an onboard ASmedia
->> ASM1083/1085 PCIe-to-PCI bridge to work with VT-d enabled.  I've
->> acquired an adapter board with this chip, but it actually exposes
->> a PCIe capability, unlike most of the onboard controllers.  Therefore
->> I expect this series will fix the WARN_ON currently hit during boot,
->> but there's a 50/50 chance whether the device behaves like a PCI
->> bridge or a PCIe bridge with regard to the requester ID that it uses
->> to take ownership of the transaction.  If it turns out to use the
->> PCIe bridge model, I expect we can quirk it using a dev_flags bit
->> to identify a PCI bridge that takes ownership as if it was a PCIe
->> bridge.
->>
->> Please test and provide feedback.  I expect IOMMU group topology
->> should not change from this series, but if a case is found where it
->> does, please share.  Also, if there are additional quirks we need
->> to add, please either file new or add to the existing bugs.  Thanks,
->>
->> Alex
->>
->> ---
->>
->> Alex Williamson (16):
->>       PCI: Add DMA alias iterator
->>       PCI: define pci_dev_flags as bit shifts
->>       PCI: quirk pci_for_each_dma_alias()
->>       PCI: quirk dma_alias_devfn for Ricoh devices
->>       PCI: quirk dma_alias_devfn for Marvell devices
->>       PCI: Quirk pci_for_each_dma_alias() for bridges
->>       PCI: Add quirks for ASMedia and Tundra bridges
->>       iommu: Create central IOMMU group lookup/creation interface
->>       iommu/amd: Update to use PCI DMA aliases
->>       iommu/amd: Use iommu_group_get_for_dev()
->>       iommu/intel: Use iommu_group_get_for_dev()
->>       iommu/intel: Update to use PCI DMA aliases
->>       iommu/fsl: Use iommu_group_get_for_dev() for IOMMU groups
->>       iommu: Remove pci.h
->>       PCI: Remove pci_find_upstream_pcie_bridge()
->>       PCI: Remove pci_get_dma_source()
->>
->>
->>  drivers/iommu/amd_iommu.c           |  214 +++++++-----------------
->>  drivers/iommu/amd_iommu_types.h     |    1
->>  drivers/iommu/fsl_pamu_domain.c     |   66 --------
->>  drivers/iommu/intel-iommu.c         |  307 +++++++++++++----------------------
->>  drivers/iommu/intel_irq_remapping.c |   55 ++++--
->>  drivers/iommu/iommu.c               |  181 +++++++++++++++++++++
->>  drivers/iommu/pci.h                 |   29 ---
->>  drivers/pci/quirks.c                |  116 ++++++++-----
->>  drivers/pci/search.c                |  104 +++++++++---
->>  include/linux/iommu.h               |    1
->>  include/linux/pci.h                 |   31 +---
->>  11 files changed, 557 insertions(+), 548 deletions(-)
->>  delete mode 100644 drivers/iommu/pci.h
+On Thu, May 29, 2014 at 09:52:22AM -0600, Stephen Warren wrote:
+> On 05/23/2014 02:36 PM, Thierry Reding wrote:
+> > From: Thierry Reding <treding@nvidia.com>
+> >=20
+> > This commit introduces a generic device tree binding for IOMMU devices.
+> > Only a very minimal subset is described here, but it is enough to cover
+> > the requirements of both the Exynos System MMU and Tegra SMMU as
+> > discussed here:
+> >=20
+> >     https://lkml.org/lkml/2014/4/27/346
+> >=20
+> > Signed-off-by: Thierry Reding <treding@nvidia.com>
+> > ---
+> > Apologies for the noise, but apparently I mistyped one of the email
+> > addresses, should be fixed now.
+> >=20
+> > Changes in v2:
+> > - add notes about "dma-ranges" property (drop note from commit message)
+> > - document priorities of "iommus" property vs. "dma-ranges" property
+> > - drop #iommu-cells in favour of #address-cells and #size-cells
+>=20
+> I think this is a mistake. address-cells/size-cells are for transactions
+> flowing down the bus (from the CPU to date). Describing a connection
+> from a device to an IOMMU is something completely different, and should
+> therefore simply use an iommu-cells property to describe any necessary
+> information. If we start re-using properties for different things in
+> different contexts, how is anyone going to know what they mean, and how
+> will conflicts be resolved. For example, what if there's a single HW
+> module that both acts as a regular register bus with children (where
+> address-cells/size-cells defines how transactions reach the children
+> from the parent), and is also an IOMMU (where according to this binding
+> proposal, address-cells/size-cells represent some aspect of the IOMMU
+> feature). Using different properties for different things is the only
+> sane way to keep different concepts separate. Another alternative would
+> be to represent the single HW module as separate nodes in DT, but I
+> think that will only make our lives harder, and where I've done that in
+> the past, I've regretted it.
+
+There was some back-and-forth on this topic and the latest concensus
+when I wrote the second version was that #address-cells and #size-cells
+were to be used.
+
+But there was some bore back-and-forth after that, and it seems like
+Arnd no longer thinks that using #address-cells and #size-cells is a
+good idea either[0].
+
+Arnd, can you take another look at this binding and see if there's
+anything else missing? If not I'll go through the document again and
+update all #address-cells/#size-cells references with #iommu-cells as
+appropriate and submit v3.
+
+Thanks,
+Thierry
+
+[0]: https://lkml.org/lkml/2014/5/20/609
+
+--3MwIy2ne0vdjdPXF
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJTiDN+AAoJEN0jrNd/PrOhrpwP/28UxOr3xF30hFVjZUvRegoA
+QxLOiXKgYfLiDpVTqR6XiJHbnhFv/I7gfwOC5jphjDH3MkH4HN3sMn1pFjzqlcu1
+rbiUksPkuqGhuHSuHD2+9IY7RdgKrsYE+5afTSAR5q3PLXPIDdIoyRukuJa17oI0
+bcQUWsK+uQ4T9NkelSQPFQZhHLPA0csPGzA5L4l/3Dz3ZVrWyIgrs0ZGmm9yI5Q3
+uBP4gtRsOpLB7OEmR70nXVn90W/Ndz2U2mb7T2N57R+oLADcGoMGe7W8n5szy/bu
+fWoJ/4Quw7ZMqXN9cGRbnb4aDxfefhDIVIR7gLOciosVQltDOwRMxnnGkJgQ4okN
+BZrxJ2zKIjNm9eus5LIKvjydNAkPjUnw9k455b8NNEQT6pLdldUa2XCiRs4VFSuy
+iNk9HeBTVykQtyyZCGC4g4wA9HsLYgNFSqX1MjI0yDZk4FCsbaUXwTiaKJRBwVtf
+85khJ4TTHVdeTaBvpDGCDmyx8L7s3ZPWrSIxKY9K/1dwCFe49Fb5dmJzokiyd72i
+O/eXjDSKcE5bGgYCRdWliL8qvS5BnpayrR2hY70lyr6ROSX3L6inofh4E62urUIH
+PJUSnlM2YVTn1mwg+WGq41gin6wiEy7xArEOkrcD0k7nxlsl+Y2S1toWf8gHn9QV
+akEZa3AIOH+rQ/U7/MjP
+=Ifqv
+-----END PGP SIGNATURE-----
+
+--3MwIy2ne0vdjdPXF--
