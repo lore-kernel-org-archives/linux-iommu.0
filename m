@@ -1,16 +1,14 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH v4 13/16] iommu/fsl: Use iommu_group_get_for_dev() for
-	IOMMU groups
-Date: Fri, 30 May 2014 09:17:07 +0000
-Message-ID: <878ea3496f194c6ab6198bdc3e0a413c@BL2PR03MB468.namprd03.prod.outlook.com>
-References: <20140522230230.2856.40017.stgit@bling.home>
-	<20140522230845.2856.95844.stgit@bling.home>
+From: Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
+Date: Fri, 30 May 2014 12:22:32 +0100
+Message-ID: <20140530112226.GA3949@e103592.cambridge.arm.com>
+References: <1400877395-4235-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140522230845.2856.95844.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <1400877395-4235-1-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,133 +18,244 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eddy0596-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <eddy0596-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-gpGsJRJZ3PBBDgjK7y7TUQ@public.gmane.org" <linux-gpGsJRJZ3PBBDgjK7y7TUQ@public.gmane.org>
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-> -----Original Message-----
-> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> Sent: Friday, May 23, 2014 4:39 AM
-> To: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; acooks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org; linux-gpGsJRJZ3PBBDgjK7y7TUQ@public.gmane.org;
-> bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; Sethi Varun-B16395; eddy0596-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
-> Subject: [PATCH v4 13/16] iommu/fsl: Use iommu_group_get_for_dev() for
-> IOMMU groups
+On Fri, May 23, 2014 at 10:36:35PM +0200, Thierry Reding wrote:
+> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 > 
-> Drop custom code and use IOMMU provided grouping support for PCI.
+> This commit introduces a generic device tree binding for IOMMU devices.
+> Only a very minimal subset is described here, but it is enough to cover
+> the requirements of both the Exynos System MMU and Tegra SMMU as
+> discussed here:
 > 
-> Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> Cc: Varun Sethi <varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+>     https://lkml.org/lkml/2014/4/27/346
+> 
+> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 > ---
->  drivers/iommu/fsl_pamu_domain.c |   66 +--------------------------------
-> ------
->  1 file changed, 1 insertion(+), 65 deletions(-)
+> Apologies for the noise, but apparently I mistyped one of the email
+> addresses, should be fixed now.
 > 
-> diff --git a/drivers/iommu/fsl_pamu_domain.c
-> b/drivers/iommu/fsl_pamu_domain.c index 93072ba..d02d668 100644
-> --- a/drivers/iommu/fsl_pamu_domain.c
-> +++ b/drivers/iommu/fsl_pamu_domain.c
-> @@ -38,7 +38,6 @@
->  #include <sysdev/fsl_pci.h>
+> Changes in v2:
+> - add notes about "dma-ranges" property (drop note from commit message)
+> - document priorities of "iommus" property vs. "dma-ranges" property
+> - drop #iommu-cells in favour of #address-cells and #size-cells
+> - remove multiple-master device example
 > 
->  #include "fsl_pamu_domain.h"
-> -#include "pci.h"
+>  Documentation/devicetree/bindings/iommu/iommu.txt | 167 ++++++++++++++++++++++
+>  1 file changed, 167 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iommu/iommu.txt
 > 
->  /*
->   * Global spinlock that needs to be held while @@ -892,8 +891,6 @@
-> static int fsl_pamu_get_domain_attr(struct iommu_domain *domain,
->  	return ret;
->  }
-> 
-> -#define REQ_ACS_FLAGS	(PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR |
-> PCI_ACS_UF)
-> -
->  static struct iommu_group *get_device_iommu_group(struct device *dev)  {
->  	struct iommu_group *group;
-> @@ -950,74 +947,13 @@ static struct iommu_group
-> *get_pci_device_group(struct pci_dev *pdev)
->  	struct pci_controller *pci_ctl;
->  	bool pci_endpt_partioning;
->  	struct iommu_group *group = NULL;
-> -	struct pci_dev *bridge, *dma_pdev = NULL;
-> 
->  	pci_ctl = pci_bus_to_host(pdev->bus);
->  	pci_endpt_partioning = check_pci_ctl_endpt_part(pci_ctl);
->  	/* We can partition PCIe devices so assign device group to the
-> device */
->  	if (pci_endpt_partioning) {
-> -		bridge = pci_find_upstream_pcie_bridge(pdev);
-> -		if (bridge) {
-> -			if (pci_is_pcie(bridge))
-> -				dma_pdev = pci_get_domain_bus_and_slot(
-> -						pci_domain_nr(pdev->bus),
-> -						bridge->subordinate->number, 0);
-> -			if (!dma_pdev)
-> -				dma_pdev = pci_dev_get(bridge);
-> -		} else
-> -			dma_pdev = pci_dev_get(pdev);
-> -
-> -		/* Account for quirked devices */
-> -		swap_pci_ref(&dma_pdev, pci_get_dma_source(dma_pdev));
-> -
-> -		/*
-> -		 * If it's a multifunction device that does not support our
-> -		 * required ACS flags, add to the same group as lowest
-> numbered
-> -		 * function that also does not suport the required ACS flags.
-> -		 */
-> -		if (dma_pdev->multifunction &&
-> -		    !pci_acs_enabled(dma_pdev, REQ_ACS_FLAGS)) {
-> -			u8 i, slot = PCI_SLOT(dma_pdev->devfn);
-> -
-> -			for (i = 0; i < 8; i++) {
-> -				struct pci_dev *tmp;
-> -
-> -				tmp = pci_get_slot(dma_pdev->bus, PCI_DEVFN(slot,
-> i));
-> -				if (!tmp)
-> -					continue;
-> -
-> -				if (!pci_acs_enabled(tmp, REQ_ACS_FLAGS)) {
-> -					swap_pci_ref(&dma_pdev, tmp);
-> -					break;
-> -				}
-> -				pci_dev_put(tmp);
-> -			}
-> -		}
-> -
-> -		/*
-> -		 * Devices on the root bus go through the iommu.  If that's
-> not us,
-> -		 * find the next upstream device and test ACS up to the root
-> bus.
-> -		 * Finding the next device may require skipping virtual
-> buses.
-> -		 */
-> -		while (!pci_is_root_bus(dma_pdev->bus)) {
-> -			struct pci_bus *bus = dma_pdev->bus;
-> -
-> -			while (!bus->self) {
-> -				if (!pci_is_root_bus(bus))
-> -					bus = bus->parent;
-> -				else
-> -					goto root_bus;
-> -			}
-> -
-> -			if (pci_acs_path_enabled(bus->self, NULL,
-> REQ_ACS_FLAGS))
-> -				break;
-> -
-> -			swap_pci_ref(&dma_pdev, pci_dev_get(bus->self));
-> -		}
-> +		group = iommu_group_get_for_dev(&pdev->dev);
-> 
-> -root_bus:
-> -		group = get_device_iommu_group(&dma_pdev->dev);
-> -		pci_dev_put(dma_pdev);
->  		/*
->  		 * PCIe controller is not a paritionable entity
->  		 * free the controller device iommu_group.
-Acknowledged-by: Varun Sethi <varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+> diff --git a/Documentation/devicetree/bindings/iommu/iommu.txt b/Documentation/devicetree/bindings/iommu/iommu.txt
+> new file mode 100644
+> index 000000000000..6ce759afcc94
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iommu/iommu.txt
+> @@ -0,0 +1,167 @@
+> +This document describes the generic device tree binding for IOMMUs and their
+> +master(s).
+> +
+> +
+> +IOMMU device node:
+> +==================
+> +
+> +An IOMMU can provide the following services:
+> +
+> +* Remap address space to allow devices to access physical memory ranges that
+> +  they otherwise wouldn't be capable of accessing.
+> +
+> +  Example: 32-bit DMA to 64-bit physical addresses
+> +
+> +* Implement scatter-gather at page level granularity so that the device does
+> +  not have to.
+> +
+> +* Provide system protection against "rogue" DMA by forcing all accesses to go
+> +  through the IOMMU and faulting when encountering accesses to unmapped
+> +  address regions.
+> +
+> +* Provide address space isolation between multiple contexts.
+> +
+> +  Example: Virtualization
+> +
+> +Device nodes compatible with this binding represent hardware with some of the
+> +above capabilities.
+> +
+> +IOMMUs can be single-master or multiple-master. Single-master IOMMU devices
+> +typically have a fixed association to the master device, whereas multiple-
+> +master IOMMU devices can translate accesses from more than one master.
+> +
+> +The device tree node of the IOMMU device's parent bus must contain a valid
+> +"dma-ranges" property that describes how the physical address space of the
+> +IOMMU maps to memory. An empty "dma-ranges" property means that there is a
+> +1:1 mapping from IOMMU to memory.
+> +
+> +Required properties:
+> +--------------------
+> +- #address-cells: The number of cells in an IOMMU specifier needed to encode
+> +  an address.
+> +- #size-cells: The number of cells in an IOMMU specifier needed to represent
+> +  the length of an address range.
+> +
+> +Typical values for the above include:
+> +- #address-cells = <0>, size-cells = <0>: Single master IOMMU devices are not
+> +  configurable and therefore no additional information needs to be encoded in
+> +  the specifier. This may also apply to multiple master IOMMU devices that do
+> +  not allow the association of masters to be configured.
+> +- #address-cells = <1>, size-cells = <0>: Multiple master IOMMU devices may
+> +  need to be configured in order to enable translation for a given master. In
+> +  such cases the single address cell corresponds to the master device's ID.
+> +- #address-cells = <2>, size-cells = <2>: Some IOMMU devices allow the DMA
+> +  window for masters to be configured. The first cell of the address in this
+> +  may contain the master device's ID for example, while the second cell could
+> +  contain the start of the DMA window for the given device. The length of the
+> +  DMA window is specified by two additional cells.
+> +
+> +
+> +IOMMU master node:
+> +==================
+> +
+> +Devices that access memory through an IOMMU are called masters. A device can
+> +have multiple master interfaces (to one or more IOMMU devices).
+> +
+> +Required properties:
+> +--------------------
+> +- iommus: A list of phandle and IOMMU specifier pairs that describe the IOMMU
+> +  master interfaces of the device. One entry in the list describes one master
+> +  interface of the device.
+> +
+> +When an "iommus" property is specified in a device tree node, the IOMMU will
+> +be used for address translation. If a "dma-ranges" property exists in the
+> +device's parent node it will be ignored. An exception to this rule is if the
+> +referenced IOMMU is disabled, in which case the "dma-ranges" property of the
+> +parent shall take effect.
+> +
+> +Optional properties:
+> +--------------------
+> +- iommu-names: A list of names identifying each entry in the "iommus"
+> +  property.
+> +
+> +
+> +Notes:
+> +======
+> +
+> +One possible extension to the above is to use an "iommus" property along with
+> +a "dma-ranges" property in a bus device node (such as PCI host bridges). This
+> +can be useful to describe how children on the bus relate to the IOMMU if they
+> +are not explicitly listed in the device tree (e.g. PCI devices). However, the
+> +requirements of that use-case haven't been fully determined yet. Implementing
+> +this is therefore not recommended without further discussion and extension of
+> +this binding.
+
+Sounds sensible.
+
+> +
+> +
+> +Examples:
+> +=========
+> +
+> +Single-master IOMMU:
+> +--------------------
+> +
+> +	iommu {
+> +		#address-cells = <0>;
+> +		#size-cells = <0>;
+> +	};
+> +
+> +	master {
+> +		iommus = <&/iommu>;
+> +	};
+> +
+> +Multiple-master IOMMU with fixed associations:
+> +----------------------------------------------
+> +
+> +	/* multiple-master IOMMU */
+> +	iommu {
+> +		/*
+> +		 * Masters are statically associated with this IOMMU and
+> +		 * address translation is always enabled.
+> +		 */
+> +		#address-cells = <0>;
+> +		#size-cells = <0>;
+
+In this example, can different translations be set up for the different
+masters?
+
+With no cells available to contain any sort of ID, it looks like this
+is not possible.
+
+> +	};
+> +
+> +	/* static association with IOMMU */
+> +	master@1 {
+> +		reg = <1>;
+> +		iommus = <&/iommu>;
+> +	};
+> +
+> +	/* static association with IOMMU */
+> +	master@2 {
+> +		reg = <2>;
+> +		iommus = <&/iommu>;
+> +	};
+> +
+> +Multiple-master IOMMU:
+> +----------------------
+> +
+> +	iommu {
+> +		/* the specifier represents the ID of the master */
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +	};
+> +
+> +	master {
+> +		/* device has master ID 42 in the IOMMU */
+> +		iommus = <&/iommu 42>;
+> +	};
+> +
+> +Multiple-master IOMMU with configurable DMA window:
+> +---------------------------------------------------
+> +
+> +	/ {
+> +		#address-cells = <1>;
+> +		#size-cells = <1>;
+> +
+> +		iommu {
+> +			/* master ID, address of DMA window */
+> +			#address-cells = <2>;
+> +			#size-cells = <2>;
+> +		};
+> +
+> +		master {
+> +			/* master ID 42, 4 GiB DMA window starting at 0 */
+> +			iommus = <&/iommu  42 0  0x1 0x0>;
+
+I'm still concerned that in order to deal with future cases we will have
+to invent multiple ways to parse the "iommus" property.  For example, if
+we have a PCEe RC mastering through an IOMMU, it will pass a huge set
+of possible master IDs to the IOMMU, not just noe or two.
+
+Do you have a solution in mind for that which doesn't break backwards
+compatibility?
+
+One option is to include an extra cell to the IOMMUs property
+that indicates how to parse it.  For now, only a single value would
+be defined.  For example:
+
+	iommus = <&/iommu IOMMU_SIMPLE 42>;
+
+Then maybe later
+
+	iommus = <&/iommu IOMMU_RANGE 0x10000 0x10000>;
+
+(I'm not suggesting what IOMMU_RANGE might mean.)
+
+
+Other options are to introduce a new property name
+
+	range-iommus = <&/iommu 0x10000 0x10000>;
+
+or control the parsing of incompatible iommus properties via a compatible
+string somewhere.
+
+Cheers
+---Dave
