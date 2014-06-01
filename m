@@ -1,74 +1,57 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
-Date: Fri, 30 May 2014 21:54:37 +0200
-Message-ID: <4462924.8iRbdkOPp7@wuerfel>
-References: <1400877218-4113-1-git-send-email-thierry.reding@gmail.com> <4545972.cM7IP1qTXQ@wuerfel> <87tx87rrp2.fsf@nvidia.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <87tx87rrp2.fsf@nvidia.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Hiroshi Doyu <hdoyu@nvidia.com>
-Cc: Rob Herring <robherring2@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Cho KyongHo <pullip.cho@samsung.com>, Grant Grundler <grundler@chromium.org>, Dave Martin <Dave.Martin@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Stephen Warren <swarren@wwwdotorg.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, linux-kernel@vger.kernel.org
+From: Eli Billauer <eli.billauer@gmail.com>
+Subject: [PATCH v2 0/4] devres: dma-mapping: Introducing new functions
+Date: Sun,  1 Jun 2014 10:01:13 +0300
+Message-ID: <1401606077-1739-1-git-send-email-eli.billauer@gmail.com>
+Return-path: <linux-pci-owner@vger.kernel.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: tj@kernel.org
+Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org, bhelgaas@google.com, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, shuah.kh@samsung.com, iommu@lists.linux-foundation.org, discuss@x86-64.org, Eli Billauer <eli.billauer@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Friday 30 May 2014 22:29:13 Hiroshi Doyu wrote:
-> 
-> IIUC the original problem, "a master with 8 streamIDs" means something
-> like below, where some devices have multiple IDs but some have a
-> single. A sinle #address-cells cannot afford those 2 masters at once.
-> 
->        iommu {
->                /* the specifier represents the ID of the master */
->                #address-cells = <1>;
->                #size-cells = <0>;
->        };
-> 
->         master@a {
->                 ...
->                 iommus = <&smmu 1 2 3>; # 3 IDs
->         };
-> 
->         master@b {
->                 ...
->                 iommus = <&smmu 4>;     # 1 ID
->         };
+This patchset consists of new functions to the managed device resource
+API, followed by a patch for the Xillybus driver, which is my motivation
+and what I tested with.
 
-This would not be the usual format really. It should instead be
+This is a resubmission after changing the API slightly.
 
-		iommus = <&smmu 1>, <&smmu 2>, <&smmu 3>;
+Rationale: While migrating the staging/xillybus driver to rely completely on
+managed resources, some functionalities were missing, and hence added:
 
-which can be tedious to type.
+* dmam_map_single()
+* dmam_unmap_single()
+* pcim_map_single()
+* pcim_unmap_single()
 
-> Tegra,SMMU has a similar problem and we have used a fixed size bitmap(64
-> bit) to afford 64 stream IDs so that a single device can hold multiple
-> IDs. If we apply the same bitmap to the above exmaple:
-> 
->        iommu {
->                /* the specifier represents the ID of the master */
->                #address-cells = <1>;
->                #size-cells = <0>;
->        };
-> 
->         master@a {
->                 ...
->                 iommus = <&smmu (BIT(1) | BIT(2) | BIT(3))>; # IDs 1 2 3
->         };
-> 
->         master@b {
->                 ...
->                 iommus = <&smmu BIT(4)>;     # ID 4
->         };
-> 
-> The disadvantage of this is that this limits the max number of streamIDs
-> to support. If # of streamID is increased later more than 64, this
-> format cannot cover any more. You have to predict the max # of streamIDs
-> in advance if steamID is statically assigned.
-> 
+Tejun suggested that dma_map_single_attrs() should have a managed version as
+well. The second patch in this set turns dmam_map_single() into
+dma_map_single_attrs(), and implements the former as a macro. Functions added:
 
-Well, the iommu specific binding could allow a variable #address-cells.
-That way, you just need to know the number of stream IDs for that instance
-of the iommu.
+* dmam_map_single_attrs()
+* dmam_unmap_single_attrs()
 
-	Arnd
+Xillybus' driver works with and without this patch (depends on patches #1 and #3
+only).
+
+Thanks,
+   Eli
+
+Eli Billauer (4):
+  dma-mapping: Add devm_ interface for dma_map_single()
+  dma-mapping: Add devm_ interface for dma_map_single_attrs()
+  dma-mapping: pci: Add devm_ interface for pci_map_single
+  staging: xillybus: Use devm_ API for memory allocation and DMA
+    mapping
+
+ Documentation/driver-model/devres.txt    |    6 +
+ drivers/base/dma-mapping.c               |  106 +++++++++++++++++
+ drivers/staging/xillybus/xillybus.h      |   38 +------
+ drivers/staging/xillybus/xillybus_core.c |  186 +++++++++---------------------
+ drivers/staging/xillybus/xillybus_of.c   |   61 +---------
+ drivers/staging/xillybus/xillybus_pcie.c |   54 ++--------
+ include/asm-generic/dma-mapping-common.h |    3 +
+ include/asm-generic/pci-dma-compat.h     |   18 +++
+ include/linux/dma-mapping.h              |    8 +-
+ 9 files changed, 214 insertions(+), 266 deletions(-)
+
+-- 
+1.7.2.3
