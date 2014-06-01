@@ -1,183 +1,61 @@
-From: Eli Billauer <eli.billauer@gmail.com>
-Subject: [PATCH v2 1/4] dma-mapping: Add devm_ interface for dma_map_single()
-Date: Sun,  1 Jun 2014 10:01:14 +0300
-Message-ID: <1401606077-1739-2-git-send-email-eli.billauer@gmail.com>
-References: <1401606077-1739-1-git-send-email-eli.billauer@gmail.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
+Date: Sun, 1 Jun 2014 10:55:46 +0100
+Message-ID: <20140601095546.GA8625@arm.com>
+References: <1400877218-4113-1-git-send-email-thierry.reding@gmail.com>
+ <4545972.cM7IP1qTXQ@wuerfel>
+ <87tx87rrp2.fsf@nvidia.com>
+ <4462924.8iRbdkOPp7@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
-In-Reply-To: <1401606077-1739-1-git-send-email-eli.billauer@gmail.com>
-List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
-List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel>
-List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
-List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
-List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
-Errors-To: driverdev-devel-bounces@linuxdriverproject.org
-Sender: driverdev-devel-bounces@linuxdriverproject.org
-To: tj@kernel.org
-Cc: devel@driverdev.osuosl.org, shuah.kh@samsung.com, discuss@x86-64.org, gregkh@linuxfoundation.org, Eli Billauer <eli.billauer@gmail.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, bhelgaas@google.com
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <4462924.8iRbdkOPp7@wuerfel>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-dmam_map_single() and dmam_unmap_single() are the managed counterparts
-for the respective dma_* functions.
+On Fri, May 30, 2014 at 08:54:37PM +0100, Arnd Bergmann wrote:
+> On Friday 30 May 2014 22:29:13 Hiroshi Doyu wrote:
+> > Tegra,SMMU has a similar problem and we have used a fixed size bitmap(64
+> > bit) to afford 64 stream IDs so that a single device can hold multiple
+> > IDs. If we apply the same bitmap to the above exmaple:
+> > 
+> >        iommu {
+> >                /* the specifier represents the ID of the master */
+> >                #address-cells = <1>;
+> >                #size-cells = <0>;
+> >        };
+> > 
+> >         master@a {
+> >                 ...
+> >                 iommus = <&smmu (BIT(1) | BIT(2) | BIT(3))>; # IDs 1 2 3
+> >         };
+> > 
+> >         master@b {
+> >                 ...
+> >                 iommus = <&smmu BIT(4)>;     # ID 4
+> >         };
+> > 
+> > The disadvantage of this is that this limits the max number of streamIDs
+> > to support. If # of streamID is increased later more than 64, this
+> > format cannot cover any more. You have to predict the max # of streamIDs
+> > in advance if steamID is statically assigned.
+> > 
+> 
+> Well, the iommu specific binding could allow a variable #address-cells.
+> That way, you just need to know the number of stream IDs for that instance
+> of the iommu.
 
-Note that dmam_map_single() returns a status value rather than the DMA handle.
-The DMA handle is passed to the caller through a pointer in the arguments.
+In general, though, the SMMU will be able to support a large number of
+stream IDs (say a 16-bit space). The restriction we're interested in here is
+how many different stream IDs can be emitted by a single master device
+coming into the SMMU. *That* is a property of the master, not the SMMU.
 
-The reason for this API change is that dmam_map_single() allocates memory,
-which may fail even if the DMA mapping is successful. On the other hand,
-it seems like there's no platform-independent value for dma_handle that can
-be used to indicate an error.
+In the current arm,smmu binding I have a #stream-id-cells property in each
+master. I can then feed that straight into of_parse_phandle_with_args to
+enumerate the IDs for that master. The problem with that is we're
+artificially restricted by MAX_PHANDLE_ARGS.
 
-This leaves dmam_map_single() with no safe way to tell its caller that the
-memory allocation has failed, except for returning a status as an int. Trying
-to keep close to the non-devres API could also tempt programmers into using
-dma_mapping_error() on the dmam_* functions. This would work incorrectly on
-platforms, for which dma_mapping_error() ignores its argument, and always
-returns success.
-
-Thanks to Tejun Heo for suggesting this API.
-
-Signed-off-by: Eli Billauer <eli.billauer@gmail.com>
----
- Documentation/driver-model/devres.txt |    2 +
- drivers/base/dma-mapping.c            |   86 +++++++++++++++++++++++++++++++++
- include/linux/dma-mapping.h           |    6 ++-
- 3 files changed, 93 insertions(+), 1 deletions(-)
-
-diff --git a/Documentation/driver-model/devres.txt b/Documentation/driver-model/devres.txt
-index e1a2707..13b8be0 100644
---- a/Documentation/driver-model/devres.txt
-+++ b/Documentation/driver-model/devres.txt
-@@ -266,6 +266,8 @@ DMA
-   dmam_declare_coherent_memory()
-   dmam_pool_create()
-   dmam_pool_destroy()
-+  dmam_map_single()
-+  dmam_unmap_single()
- 
- PCI
-   pcim_enable_device()	: after success, all PCI ops become managed
-diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
-index 0ce39a3..f76ea0f 100644
---- a/drivers/base/dma-mapping.c
-+++ b/drivers/base/dma-mapping.c
-@@ -19,6 +19,7 @@ struct dma_devres {
- 	size_t		size;
- 	void		*vaddr;
- 	dma_addr_t	dma_handle;
-+	enum dma_data_direction direction;
- };
- 
- static void dmam_coherent_release(struct device *dev, void *res)
-@@ -267,3 +268,88 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
- 	return ret;
- }
- EXPORT_SYMBOL(dma_common_mmap);
-+
-+static int dmam_map_match(struct device *dev, void *res, void *match_data)
-+{
-+	struct dma_devres *this = res, *match = match_data;
-+
-+	if (this->dma_handle == match->dma_handle) {
-+		WARN_ON(this->size != match->size ||
-+			this->direction != match->direction);
-+		return 1;
-+	}
-+	return 0;
-+}
-+
-+static void dmam_map_single_release(struct device *dev, void *res)
-+{
-+	struct dma_devres *this = res;
-+
-+	dma_unmap_single(dev, this->dma_handle, this->size, this->direction);
-+}
-+
-+/**
-+ * dmam_map_single - Managed dma_map_single()
-+ * @dev: Device to map DMA region for
-+ * @ptr: Pointer to region
-+ * @size: Size to map
-+ * @direction: The mapping's direction
-+ * @ret_dma_handle: Pointer to return the value of the DMA handle
-+ *
-+ * Managed dma_map_single().  The region mapped using this
-+ * function will be automatically unmapped on driver detach.
-+ *
-+ * RETURNED VALUE:
-+ * 0 is returned on success
-+ * -EIO if the DMA mapping failed
-+ * -ENOMEM on failure to allocate memory for internal data structure
-+ */
-+int dmam_map_single(struct device *dev, void *ptr, size_t size,
-+		    enum dma_data_direction direction,
-+		    dma_addr_t *ret_dma_handle)
-+
-+{
-+	struct dma_devres *dr;
-+	dma_addr_t dma_handle;
-+
-+	dr = devres_alloc(dmam_map_single_release, sizeof(*dr), GFP_KERNEL);
-+	if (!dr)
-+		return -ENOMEM;
-+
-+	dma_handle = dma_map_single(dev, ptr, size, direction);
-+	if (dma_mapping_error(dev, dma_handle)) {
-+		devres_free(dr);
-+		return -EIO;
-+	}
-+
-+	*ret_dma_handle = dma_handle;
-+
-+	dr->vaddr = ptr;
-+	dr->dma_handle = dma_handle;
-+	dr->size = size;
-+	dr->direction = direction;
-+
-+	devres_add(dev, dr);
-+
-+	return 0; /* Success */
-+}
-+EXPORT_SYMBOL(dmam_map_single);
-+
-+/**
-+ * dmam_unmap_single - Managed dma_unmap_single()
-+ * @dev: Device to map DMA region for
-+ * @dma_handle: DMA handle of the region to unmap
-+ * @size: Size to unmap
-+ * @direction: The mapping's direction
-+ *
-+ * Managed dma_unmap_single().
-+ */
-+void dmam_unmap_single(struct device *dev, dma_addr_t dma_handle,
-+		       size_t size, enum dma_data_direction direction)
-+{
-+	struct dma_devres match_data = { size, NULL, dma_handle, direction };
-+
-+	WARN_ON(devres_release(dev, dmam_map_single_release, dmam_map_match,
-+			       &match_data));
-+}
-+EXPORT_SYMBOL(dmam_unmap_single);
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index fd4aee2..cad63de 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -233,7 +233,11 @@ static inline void dmam_release_declared_memory(struct device *dev)
- {
- }
- #endif /* ARCH_HAS_DMA_DECLARE_COHERENT_MEMORY */
--
-+int dmam_map_single(struct device *dev, void *ptr, size_t size,
-+		    enum dma_data_direction direction,
-+		    dma_addr_t *ret_dma_handle);
-+void dmam_unmap_single(struct device *dev, dma_addr_t dma_handle,
-+		       size_t size, enum dma_data_direction direction);
- #ifndef CONFIG_HAVE_DMA_ATTRS
- struct dma_attrs;
- 
--- 
-1.7.2.3
+Will
