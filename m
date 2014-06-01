@@ -1,57 +1,61 @@
 From: Eli Billauer <eli.billauer@gmail.com>
-Subject: [PATCH v2 0/4] devres: dma-mapping: Introducing new functions
-Date: Sun,  1 Jun 2014 10:01:13 +0300
-Message-ID: <1401606077-1739-1-git-send-email-eli.billauer@gmail.com>
-Return-path: <linux-pci-owner@vger.kernel.org>
-Sender: linux-pci-owner@vger.kernel.org
+Subject: [PATCH v2 3/4] dma-mapping: pci: Add devm_ interface for pci_map_single
+Date: Sun,  1 Jun 2014 10:01:16 +0300
+Message-ID: <1401606077-1739-4-git-send-email-eli.billauer@gmail.com>
+References: <1401606077-1739-1-git-send-email-eli.billauer@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1401606077-1739-1-git-send-email-eli.billauer@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: tj@kernel.org
 Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org, bhelgaas@google.com, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, shuah.kh@samsung.com, iommu@lists.linux-foundation.org, discuss@x86-64.org, Eli Billauer <eli.billauer@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This patchset consists of new functions to the managed device resource
-API, followed by a patch for the Xillybus driver, which is my motivation
-and what I tested with.
 
-This is a resubmission after changing the API slightly.
+Signed-off-by: Eli Billauer <eli.billauer@gmail.com>
+---
+ Documentation/driver-model/devres.txt |    2 ++
+ include/asm-generic/pci-dma-compat.h  |   18 ++++++++++++++++++
+ 2 files changed, 20 insertions(+), 0 deletions(-)
 
-Rationale: While migrating the staging/xillybus driver to rely completely on
-managed resources, some functionalities were missing, and hence added:
-
-* dmam_map_single()
-* dmam_unmap_single()
-* pcim_map_single()
-* pcim_unmap_single()
-
-Tejun suggested that dma_map_single_attrs() should have a managed version as
-well. The second patch in this set turns dmam_map_single() into
-dma_map_single_attrs(), and implements the former as a macro. Functions added:
-
-* dmam_map_single_attrs()
-* dmam_unmap_single_attrs()
-
-Xillybus' driver works with and without this patch (depends on patches #1 and #3
-only).
-
-Thanks,
-   Eli
-
-Eli Billauer (4):
-  dma-mapping: Add devm_ interface for dma_map_single()
-  dma-mapping: Add devm_ interface for dma_map_single_attrs()
-  dma-mapping: pci: Add devm_ interface for pci_map_single
-  staging: xillybus: Use devm_ API for memory allocation and DMA
-    mapping
-
- Documentation/driver-model/devres.txt    |    6 +
- drivers/base/dma-mapping.c               |  106 +++++++++++++++++
- drivers/staging/xillybus/xillybus.h      |   38 +------
- drivers/staging/xillybus/xillybus_core.c |  186 +++++++++---------------------
- drivers/staging/xillybus/xillybus_of.c   |   61 +---------
- drivers/staging/xillybus/xillybus_pcie.c |   54 ++--------
- include/asm-generic/dma-mapping-common.h |    3 +
- include/asm-generic/pci-dma-compat.h     |   18 +++
- include/linux/dma-mapping.h              |    8 +-
- 9 files changed, 214 insertions(+), 266 deletions(-)
-
+diff --git a/Documentation/driver-model/devres.txt b/Documentation/driver-model/devres.txt
+index 2112a00..fea2c69 100644
+--- a/Documentation/driver-model/devres.txt
++++ b/Documentation/driver-model/devres.txt
+@@ -274,6 +274,8 @@ DMA
+ PCI
+   pcim_enable_device()	: after success, all PCI ops become managed
+   pcim_pin_device()	: keep PCI device enabled after release
++  pcim_map_single()
++  pcim_unmap_single()
+ 
+ IOMAP
+   devm_ioport_map()
+diff --git a/include/asm-generic/pci-dma-compat.h b/include/asm-generic/pci-dma-compat.h
+index 1437b7d..796a892 100644
+--- a/include/asm-generic/pci-dma-compat.h
++++ b/include/asm-generic/pci-dma-compat.h
+@@ -113,4 +113,22 @@ static inline int pci_set_consistent_dma_mask(struct pci_dev *dev, u64 mask)
+ }
+ #endif
+ 
++/*
++ * Managed DMA API
++ */
++
++static inline int
++pcim_map_single(struct pci_dev *hwdev, void *ptr, size_t size, int direction,
++		dma_addr_t *ret_dma_handle)
++{
++	return dmam_map_single(hwdev == NULL ? NULL : &hwdev->dev, ptr, size, (enum dma_data_direction)direction, ret_dma_handle);
++}
++
++static inline void
++pcim_unmap_single(struct pci_dev *hwdev, dma_addr_t dma_addr,
++		 size_t size, int direction)
++{
++	dmam_unmap_single(hwdev == NULL ? NULL : &hwdev->dev, dma_addr, size, (enum dma_data_direction)direction);
++}
++
+ #endif
 -- 
 1.7.2.3
