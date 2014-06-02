@@ -1,17 +1,17 @@
 From: Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>
 Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
-Date: Mon, 2 Jun 2014 11:41:04 +0100
-Message-ID: <20140602104104.GD3855@e103592.cambridge.arm.com>
-References: <1400877218-4113-1-git-send-email-thierry.reding@gmail.com>
-	<4545972.cM7IP1qTXQ@wuerfel>
-	<CAL_Jsq+tkFNpjSEZboT+o69B_Z3a8e-ZVKaYDmLwtkyYoPy6VQ@mail.gmail.com>
-	<5288123.eXagyPAxNq@wuerfel>
+Date: Mon, 2 Jun 2014 11:56:26 +0100
+Message-ID: <20140602105626.GE3855@e103592.cambridge.arm.com>
+References: <1400877395-4235-1-git-send-email-thierry.reding@gmail.com>
+	<20140530073006.GA24748@ulmo>
+	<20140530112728.GB3949@e103592.cambridge.arm.com>
+	<4663172.oXIylQOrlk@wuerfel>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <5288123.eXagyPAxNq@wuerfel>
+In-Reply-To: <4663172.oXIylQOrlk@wuerfel>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,119 +22,117 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, May 30, 2014 at 09:49:59PM +0200, Arnd Bergmann wrote:
-> On Friday 30 May 2014 14:31:55 Rob Herring wrote:
-> > On Fri, May 30, 2014 at 2:06 PM, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> wrote:
-> > > On Friday 30 May 2014 08:16:05 Rob Herring wrote:
-> > >> On Fri, May 23, 2014 at 3:33 PM, Thierry Reding
-> > >> <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-> > >> > From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> > >> > +IOMMU master node:
-> > >> > +==================
-> > >> > +
-> > >> > +Devices that access memory through an IOMMU are called masters. A device can
-> > >> > +have multiple master interfaces (to one or more IOMMU devices).
-> > >> > +
-> > >> > +Required properties:
-> > >> > +--------------------
-> > >> > +- iommus: A list of phandle and IOMMU specifier pairs that describe the IOMMU
-> > >> > +  master interfaces of the device. One entry in the list describes one master
-> > >> > +  interface of the device.
-> > >> > +
-> > >> > +When an "iommus" property is specified in a device tree node, the IOMMU will
-> > >> > +be used for address translation. If a "dma-ranges" property exists in the
-> > >> > +device's parent node it will be ignored. An exception to this rule is if the
-> > >> > +referenced IOMMU is disabled, in which case the "dma-ranges" property of the
-> > >> > +parent shall take effect.
-> > >>
-> > >> Just thinking out loud, could you have dma-ranges in the iommu node
-> > >> for the case when the iommu is enabled rather than putting the DMA
-> > >> window information into the iommus property?
-> > >>
-> > >> This would probably mean that you need both #iommu-cells and #address-cells.
-> > >
-> > > The reason for doing like this was that you may need a different window
-> > > for each device, while there can only be one dma-ranges property in
-> > > an iommu node.
+On Fri, May 30, 2014 at 09:11:07PM +0200, Arnd Bergmann wrote:
+> On Friday 30 May 2014 12:27:28 Dave Martin wrote:
+> > On Fri, May 30, 2014 at 08:30:08AM +0100, Thierry Reding wrote:
+> > > On Thu, May 29, 2014 at 09:52:22AM -0600, Stephen Warren wrote:
+> > > > On 05/23/2014 02:36 PM, Thierry Reding wrote:
+> > > > I think this is a mistake. address-cells/size-cells are for transactions
+> > > > flowing down the bus (from the CPU to date). Describing a connection
+> > > > from a device to an IOMMU is something completely different, and should
+> > > > therefore simply use an iommu-cells property to describe any necessary
+> > > > information. If we start re-using properties for different things in
+> > > > different contexts, how is anyone going to know what they mean, and how
+> > > > will conflicts be resolved. For example, what if there's a single HW
+> > > > module that both acts as a regular register bus with children (where
+> > > > address-cells/size-cells defines how transactions reach the children
+> > > > from the parent), and is also an IOMMU (where according to this binding
+> > > > proposal, address-cells/size-cells represent some aspect of the IOMMU
+> > > > feature). Using different properties for different things is the only
+> > > > sane way to keep different concepts separate. Another alternative would
+> > > > be to represent the single HW module as separate nodes in DT, but I
+> > > > think that will only make our lives harder, and where I've done that in
+> > > > the past, I've regretted it.
+> > > 
+> > > There was some back-and-forth on this topic and the latest concensus
+> > > when I wrote the second version was that #address-cells and #size-cells
+> > > were to be used.
+> > > 
+> > > But there was some bore back-and-forth after that, and it seems like
+> > > Arnd no longer thinks that using #address-cells and #size-cells is a
+> > > good idea either[0].
 > > 
-> > My suggestion was that you also put the IDs in the dma-ranges as the
-> > first cell much as ranges for PCI encodes other information in the
-> > first cell. Then you can have an entry for each ID. The downside is
-> > another special case like PCI.
+> > Mistake or not, ePAPR already (ab)uses the address concept for PCI.
+> > Unless ePAPR is wrong, I don't think it makes sense to argue that
+> > the address concept cannot be repurposed.
 > > 
-> > The argument for using #address-cells and #size-cells seems to be to
-> > align with how ranges work. If that's the route we want to go, then I
-> > say we should not stop there and actually use dma-ranges as well.
-> > Otherwise, I don't see the advantage over #iommu-cells.
+> > The reason why this is abused for PCI is the same as our reason here:
+> > different masters really are treated as distinct even when accessing
+> > the same destination address, and DT has no general native way to
+> > describe that.
+> > 
+> > One clear advantage of using #address-cells etc. is that ePAPR already
+> > has very clear and well-defined ways of how to specify range mappings.
+> > This gives us a ready-made way to describe windowed IOMMUs and 1:1
+> > remappings of whole blocks of master IDs, which are the most obvious
+> > cases other than having a small-integer set of explicit IDs.
+> > 
+> > That said, the PCI pseudo-address thing is not something we _necessarily_
+> > want to repeat.
 > 
-> I can see how dma-ranges in bus nodes work, it just doesn't seem to
-> have any reasonable meaning in the iommu node itself.
-
-dma-ranges defines a static mapping for mastering through the bus node.
-
-The whole point of an IOMMU is that it maps dynamically, so I agree:
-I'm unclear on what dma-ranges should mean in the IOMMU node itself
-(if anything).
-
+> I'm really impartial to the question of whether to use #address-cells
+> or #iommus now. It's possible that we can use the addresses in some
+> meaningful way, but it's not clear to me that this will help make the
+> representation cleaner or that we will actually want it for SMMU.
 > 
-> > > I don't understand the problem. If you have stream IDs 0 through 7,
-> > > you would have
-> > >
-> > >         master@a {
-> > >                 ...
-> > >                 iommus = <&smmu 0>;
-> > >         };
-> > >
-> > >         master@b {
-> > >                 ...
-> > >                 iommus = <&smmu 1;
-> > >         };
-> > >
-> > >         ...
-> > >
-> > >         master@12 {
-> > >                 ...
-> > >                 iommus = <&smmu 7;
-> > >         };
-> > >
-> > > and you don't need a window at all. Why would you need a mask of
-> > > some sort?
+> > > Arnd, can you take another look at this binding and see if there's
+> > > anything else missing? If not I'll go through the document again and
+> > > update all #address-cells/#size-cells references with #iommu-cells as
+> > > appropriate and submit v3.
 > > 
-> > 1 master with 7 IDs like this:
+> > How do you envisage propagation of the master ID bits downstream of the
+> > IOMMU would be described?
 > > 
-> >          master@a {
-> >                  ...
-> >                  iommus = <&smmu 0> <&smmu 1> <&smmu 2> <&smmu 3>
-> > <&smmu 4> <&smmu 5> <&smmu 6> <&smmu 7>;
-> >          };
+> > We will definitely need a way to describe this for GICv3.  How those
+> > values are propagated is likely to vary between related SoCs and doesn't
+> > feel like it should be baked into a driver, especially for the ARM SMMU
+> > which may get reused in radically different SoC families from different
+> > vendors.
 > > 
-> > If there was any sort of window, then it is almost certainly the same
-> > window for each ID.
-
-Do we have real examples of using a window *and* an ID?  I thought the
-windowed-IOMMU concept was partly a way of encoding the ID in some
-real address bits on the bus.  If you're doing that, it seems less likely
-that there is a true "ID" as such (though it is possible).
-
-> Ok, I see. In that case you'd probably want to have #address-cells = <1>
-> and #size-cells = <1> and give a range of IDs like
+> > The most likely types of remapping are the adding of a base offset or
+> > some extra bits to the ID -- because not all MSIs to the GIC will
+> > necessarily pass through the IOMMU.  It's also possible that we might
+> > see ID squashing or folding in some systems.
+> > 
+> > 
+> > For types of remapping which mix the ID and address together, I now
+> > do tend to agree that any flexibility arising from describing that
+> > in a general way that is unlikely to repay the cost of trying to
+> > interpret and analyse the DT.  Defining a few sterotypical kinds
+> > of mapping explicitly, as needed, looks more sensible for now.  The
+> > windowed-IOMMU case is one example.
 > 
-> 	iommus = <&smmu 0 8>;
-> 
-> Do you think that ranges can have a meaningful definition with the ARM
-> SMMU stream IDs?
+> For MSI, my feeling is that we'd just be best off doing an end-to-end
+> description. Any device using an MSI would have an interrupt specifier
+> that is sufficient for the interrupt controller to understand where
+> the IRQ comes from, and return an address/value pair back to the driver
+> to program into some register.
 
-In the strictest sense, no.
+This is OK so long as the number of endpoint pairings is trivial.
 
-But for a large set of sane configurations, this probably works.
+If there are multiple GICv3 ITSes addressable by a master, then we
+might have to describe each one per master, or impose policy on the
+DT whereby we choose one or two arbitrary or preferred ITSes for a
+particular master and describe just those.
 
-Small sets of randomly-assigned IDs can just be enumerated one by one.
+It's worth nothing that ePAPR strenuously avoids such an approach
+for describing DMA: device-device DMA would require information about
+every possible destination in every master node.
 
-We wouldn't be able to describe folding and bit shuffling, but we
-probably don't want to encourage that anyway.
+Of course, device-device DMA turns out not to be a hot topic in
+practice most of the time, and likewise with this master ID stuff the
+number of pairings that are really relevant in useful situations is
+much smaller than the number of possible pairings.
+
+The element of gamble here, and the design of DT around Linux's
+present-day limitations makes me feel uneasy, but there's no
+knockdown argument that I'm aware of.
+
+_If_ we end up with a combinatorial explosion of pairings in the
+future, do you have a solution in mind?
 
 Cheers
 ---Dave
