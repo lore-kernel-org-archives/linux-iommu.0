@@ -1,59 +1,84 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH v3] iommu: Add driver for Renesas VMSA-compatible IPMMU
-Date: Tue, 03 Jun 2014 19:39:05 +0200
-Message-ID: <1837932.hUVa08Puz4@avalon>
-References: <1396435657-3922-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-	<538D55C2.3090209@renesas.com>
+From: Shuah Khan <shuah.kh@samsung.com>
+Subject: Re: [PATCH v2 1/4] dma-mapping: Add devm_ interface for
+ dma_map_single()
+Date: Tue, 03 Jun 2014 15:24:20 -0600
+Message-ID: <538E3D04.9060808@samsung.com>
+References: <1401606077-1739-1-git-send-email-eli.billauer@gmail.com>
+ <1401606077-1739-2-git-send-email-eli.billauer@gmail.com>
+Reply-To: shuah.kh@samsung.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <538D55C2.3090209-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Khiem Nguyen <khiem.nguyen.xt-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-reply-to: <1401606077-1739-2-git-send-email-eli.billauer@gmail.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Eli Billauer <eli.billauer@gmail.com>, tj@kernel.org, Joerg Roedel <joro@8bytes.org>
+Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org, bhelgaas@google.com, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, discuss@x86-64.org, Shuah Khan <shuah.kh@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+On 06/01/2014 01:01 AM, Eli Billauer wrote:
+> dmam_map_single() and dmam_unmap_single() are the managed counterparts
+> for the respective dma_* functions.
+>
+> Note that dmam_map_single() returns a status value rather than the DMA handle.
+> The DMA handle is passed to the caller through a pointer in the arguments.
+>
+> The reason for this API change is that dmam_map_single() allocates memory,
+> which may fail even if the DMA mapping is successful. On the other hand,
+> it seems like there's no platform-independent value for dma_handle that can
+> be used to indicate an error.
+>
+> This leaves dmam_map_single() with no safe way to tell its caller that the
+> memory allocation has failed, except for returning a status as an int. Trying
+> to keep close to the non-devres API could also tempt programmers into using
+> dma_mapping_error() on the dmam_* functions. This would work incorrectly on
+> platforms, for which dma_mapping_error() ignores its argument, and always
+> returns success.
+>
 
-On Tuesday 03 June 2014 13:57:38 Khiem Nguyen wrote:
-> Hi Laurent,
-> 
-> Thanks for the patch.
-> 
-> > +	if (!iommu_present(&platform_bus_type))
-> > +		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
-> 
-> With this code, if error occurs, it's hidden.
-> 
-> I think it should be like below,
-> 
-> > +	ret = bus_set_iommu(&platform_bus_type, &ipmmu_ops);
-> > +	if (ret < 0)
-> > +		return ret;
-> 
-> In this case, if error occurs, -EBUSY is returned.
-> It's easier for troubleshooting the issue.
-> 
-> How do you think ?
+I see the value of this interface in unmap case, this type of wrapper
+can release dma buffers, drivers neglected to release leaving dangling
+buffers.
 
-I agree that we have a problem, but the problem is broader than this. Only one 
-IOMMU type can be associated with a given bus, so things will break as soon as 
-we will compile multiple IOMMU drivers in a multiplatform kernel. I'd like to 
-fix this properly, but it requires IOMMU framework changes, and thus time. In 
-the meantime we could apply your proposed modification, but it needs an 
-additional platform_driver_unregister() call in the bus_set_iommu() error 
-path.
+However, driver writers should give it some thought before switching
+from conventional dma_map_*() interfaces to these proposed managed
+dma mapping interfaces. These new interfaces shouldn't be treated as
+drop in replacements to dma_map_*() interfaces.
+
+The reasons are:
+
+1. This interface adds an overhead in allocation memory for devres to
+    compared to other dma_map_* wrappers. Users need to be aware of that.
+    This would be okay in the cases where a driver allocates several
+    buffers at init time and uses them. However, several drivers allocate
+    during run-time and release as soon as it is no longer needed. This
+    overhead is going to be in the performance path.
+
+2. It adds a failure case even when dma buffers are available. i.e if
+    if devres alloc fails, it will return failure even if dma map could
+    have succeeded. This is a new failure case for DMA-API.
+
+    The reason dma_map_*() routines fail now is because there are no
+    buffers available. Drivers handle this error as a retry case.
+
+    Drivers using dmam_map_single() will have to handle the failure
+    cases differently.
+
+    Since the return values are different for dmam_map_*(), that is
+    plus that these interfaces can't be drop in replacements to the
+    dma_map_*() interfaces.
+
+3. Similarly, it adds an overhead in releasing memory for devres to
+    compared to other dma_unmap_* wrappers. Users need to be aware of
+    that. This overhead is going to be in the performance path when
+    drivers unmap buffers during run-time.
+
+Adding Joerg Roedel to the thread.
+
+-- Shuah
 
 -- 
-Regards,
-
-Laurent Pinchart
+Shuah Khan
+Senior Linux Kernel Developer - Open Source Group
+Samsung Research America(Silicon Valley)
+shuah.kh@samsung.com | (970) 672-0658
