@@ -1,17 +1,14 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2 1/4] dma-mapping: Add devm_ interface for
-	dma_map_single()
-Date: Wed, 4 Jun 2014 01:39:07 +0200
-Message-ID: <20140603233907.GB23880@8bytes.org>
-References: <1401606077-1739-1-git-send-email-eli.billauer@gmail.com>
-	<1401606077-1739-2-git-send-email-eli.billauer@gmail.com>
-	<538E3D04.9060808@samsung.com>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
+Date: Wed, 4 Jun 2014 15:39:36 +0200
+Message-ID: <20140604133934.GD28484@ulmo>
+References: <1400877218-4113-1-git-send-email-thierry.reding@gmail.com>
+	<4545972.cM7IP1qTXQ@wuerfel> <87tx87rrp2.fsf@nvidia.com>
+	<4462924.8iRbdkOPp7@wuerfel> <20140601095546.GA8625@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============7066928884594820527=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <538E3D04.9060808-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+In-Reply-To: <20140601095546.GA8625-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,61 +18,109 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org, discuss-Wa75r+71Mmgdnm+yROfE0A@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, Eli Billauer <eli.billauer-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tj-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jun 03, 2014 at 03:24:20PM -0600, Shuah Khan wrote:
-> On 06/01/2014 01:01 AM, Eli Billauer wrote:
-> I see the value of this interface in unmap case, this type of wrapper
-> can release dma buffers, drivers neglected to release leaving dangling
-> buffers.
-> 
-> However, driver writers should give it some thought before switching
-> from conventional dma_map_*() interfaces to these proposed managed
-> dma mapping interfaces. These new interfaces shouldn't be treated as
-> drop in replacements to dma_map_*() interfaces.
-> 
-> The reasons are:
-> 
-> 1. This interface adds an overhead in allocation memory for devres to
->    compared to other dma_map_* wrappers. Users need to be aware of that.
->    This would be okay in the cases where a driver allocates several
->    buffers at init time and uses them. However, several drivers allocate
->    during run-time and release as soon as it is no longer needed. This
->    overhead is going to be in the performance path.
-> 
-> 2. It adds a failure case even when dma buffers are available. i.e if
->    if devres alloc fails, it will return failure even if dma map could
->    have succeeded. This is a new failure case for DMA-API.
-> 
->    The reason dma_map_*() routines fail now is because there are no
->    buffers available. Drivers handle this error as a retry case.
-> 
->    Drivers using dmam_map_single() will have to handle the failure
->    cases differently.
-> 
->    Since the return values are different for dmam_map_*(), that is
->    plus that these interfaces can't be drop in replacements to the
->    dma_map_*() interfaces.
-> 
-> 3. Similarly, it adds an overhead in releasing memory for devres to
->    compared to other dma_unmap_* wrappers. Users need to be aware of
->    that. This overhead is going to be in the performance path when
->    drivers unmap buffers during run-time.
 
-I fully agree with the points Shuah brought up here. I don't think it is
-a good idea to add this kind of resource management to runtime-allocated
-(and de-allocated) resources of device drivers.
-
-Also DMA handles are not something that could be garbage collected at
-driver unload time. They are a limited resource that may be used up at
-some point. And the whole point of a devm-API is that code can be
-simpler because we don't need to de-allocate everything on the
-error-path or at unload time, no?
-
-Besides that, we already have DMA-API debug to find drivers that do not
-release all their DMA buffers.
+--===============7066928884594820527==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="T7mxYSe680VjQnyC"
+Content-Disposition: inline
 
 
-	Joerg
+--T7mxYSe680VjQnyC
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Sun, Jun 01, 2014 at 10:55:46AM +0100, Will Deacon wrote:
+> On Fri, May 30, 2014 at 08:54:37PM +0100, Arnd Bergmann wrote:
+> > On Friday 30 May 2014 22:29:13 Hiroshi Doyu wrote:
+> > > Tegra,SMMU has a similar problem and we have used a fixed size bitmap=
+(64
+> > > bit) to afford 64 stream IDs so that a single device can hold multiple
+> > > IDs. If we apply the same bitmap to the above exmaple:
+> > >=20
+> > >        iommu {
+> > >                /* the specifier represents the ID of the master */
+> > >                #address-cells =3D <1>;
+> > >                #size-cells =3D <0>;
+> > >        };
+> > >=20
+> > >         master@a {
+> > >                 ...
+> > >                 iommus =3D <&smmu (BIT(1) | BIT(2) | BIT(3))>; # IDs =
+1 2 3
+> > >         };
+> > >=20
+> > >         master@b {
+> > >                 ...
+> > >                 iommus =3D <&smmu BIT(4)>;     # ID 4
+> > >         };
+> > >=20
+> > > The disadvantage of this is that this limits the max number of stream=
+IDs
+> > > to support. If # of streamID is increased later more than 64, this
+> > > format cannot cover any more. You have to predict the max # of stream=
+IDs
+> > > in advance if steamID is statically assigned.
+> > >=20
+> >=20
+> > Well, the iommu specific binding could allow a variable #address-cells.
+> > That way, you just need to know the number of stream IDs for that insta=
+nce
+> > of the iommu.
+>=20
+> In general, though, the SMMU will be able to support a large number of
+> stream IDs (say a 16-bit space). The restriction we're interested in here=
+ is
+> how many different stream IDs can be emitted by a single master device
+> coming into the SMMU. *That* is a property of the master, not the SMMU.
+>=20
+> In the current arm,smmu binding I have a #stream-id-cells property in each
+> master. I can then feed that straight into of_parse_phandle_with_args to
+> enumerate the IDs for that master. The problem with that is we're
+> artificially restricted by MAX_PHANDLE_ARGS.
+
+Maybe I don't fully understand, but since we leave it up to the IOMMU
+binding to define the exact meaning of #iommu-cells, can't you simply
+use that to your advantage and define something like:
+
+	iommus =3D <&smmu 0 7>;
+
+to mean IDs 0 to 7 for this particular IOMMU type?
+
+Thierry
+
+--T7mxYSe680VjQnyC
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJTjyGWAAoJEN0jrNd/PrOhJxsP/1QEAS+0iTQlOqf1sv4Oez0K
+DasrIeJ6Hg9a/Rgr3N+LLHF0uocLBhW17z+gG1wzPghsRyqzsnK9574Rlc+hpCEz
+98+hbQq1Vv+gZJbm80kuSNZEwScteyNblaG7tSk83YQhqLs7EXczVuU9Mlg2TnCX
+z+bZArGke7KrMAseG4HcdoZiauMwM+2CcMXE8Nib43+OZj5Xpin8HHn9so53VZCc
+VSE+m+SVydcEVIq3DlEQOTNywCRHiyOtYy1esUPo+H9lkMOOFUkXnm0PYDP5iCFb
+TZ4NZ0AoJO6zjXSFRba9M1TpJEZ+ZXoEA8HxmRKXCUUZnoSpcnJc490T09K3cKLf
+bkdhqdwkGairvX849B9GaHWDFLy6v6ZBqYrFSC5xWh1J9SFDoq/7rpCosJxBmdOK
+EH6SSmPaQgtko3iFbSxU75BQoHLB+/TD/9xx5eWhmDTkfmV79Sg1cCo2sBrTZmvm
+J2m1Qmp1LKv7gwSq8dVQmhW+g19WyPKzr3GsqnZuaNpFvSPik61BloeNe9iTOLvS
+f1MHMWFhypILGZyhXmV7RCoMfl36L9eKAdgHY9oDZNBqGRgk7G19kCxxHA1lKbw/
+/jiwG1IuFwme9QRODqgmfUJtYQcroGP6aQRQQ7ethVp9oxUH8AH5hHUFoB1P3mzO
+bu+xsmkOPv/NcGnNT1Ps
+=KYXF
+-----END PGP SIGNATURE-----
+
+--T7mxYSe680VjQnyC--
+
+--===============7066928884594820527==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============7066928884594820527==--
