@@ -1,51 +1,52 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
-Date: Wed, 04 Jun 2014 16:01:15 +0200
-Message-ID: <13061821.NYx1AfEhs0@wuerfel>
-References: <1400877218-4113-1-git-send-email-thierry.reding@gmail.com>
-	<20140604134400.GE28484@ulmo> <20140604135600.GD6644@arm.com>
+From: Tejun Heo <tj@kernel.org>
+Subject: Re: [PATCH v2 1/4] dma-mapping: Add devm_ interface for
+ dma_map_single()
+Date: Wed, 4 Jun 2014 10:04:08 -0400
+Message-ID: <20140604140408.GC5004@htj.dyndns.org>
+References: <1401606077-1739-1-git-send-email-eli.billauer@gmail.com>
+ <1401606077-1739-2-git-send-email-eli.billauer@gmail.com>
+ <538E3D04.9060808@samsung.com> <20140603233907.GB23880@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140604135600.GD6644-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
+Content-Disposition: inline
+In-Reply-To: <20140603233907.GB23880@8bytes.org>
+List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
+List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel>
+List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
+List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
+List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
+Errors-To: driverdev-devel-bounces@linuxdriverproject.org
+Sender: driverdev-devel-bounces@linuxdriverproject.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: devel@driverdev.osuosl.org, Shuah Khan <shuah.kh@samsung.com>, discuss@x86-64.org, gregkh@linuxfoundation.org, Eli Billauer <eli.billauer@gmail.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, bhelgaas@google.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Wednesday 04 June 2014 14:56:01 Will Deacon wrote:
-> On Wed, Jun 04, 2014 at 02:44:03PM +0100, Thierry Reding wrote:
-> > On Fri, May 30, 2014 at 09:54:37PM +0200, Arnd Bergmann wrote:
-> > > On Friday 30 May 2014 22:29:13 Hiroshi Doyu wrote:
-> > > > The disadvantage of this is that this limits the max number of streamIDs
-> > > > to support. If # of streamID is increased later more than 64, this
-> > > > format cannot cover any more. You have to predict the max # of streamIDs
-> > > > in advance if steamID is statically assigned.
-> > > > 
-> > > 
-> > > Well, the iommu specific binding could allow a variable #address-cells.
-> > > That way, you just need to know the number of stream IDs for that instance
-> > > of the iommu.
-> > 
-> > That sounds fairly complicated to me. I don't see what that buys us over
-> > the clarity and simplicity that the above explicit notation gives us. Is
-> > it not more common for a device to have a single master rather than a
-> > whole bunch of them?
-> 
-> I've never seen a device upstream of an ARM SMMU with a single stream-id;
-> they always seem to have a whole bunch of them. Calxeda's SATA controller
-> had 10 IDs, for example, and a PL330 DMA controller tends to have at least
-> 3.
+Hello,
 
-What are those good for? Would we just always use the first one?
+On Wed, Jun 04, 2014 at 01:39:07AM +0200, Joerg Roedel wrote:
+> I fully agree with the points Shuah brought up here. I don't think it is
+> a good idea to add this kind of resource management to runtime-allocated
+> (and de-allocated) resources of device drivers.
+>
+> Also DMA handles are not something that could be garbage collected at
+> driver unload time. They are a limited resource that may be used up at
+> some point. And the whole point of a devm-API is that code can be
+> simpler because we don't need to de-allocate everything on the
+> error-path or at unload time, no?
 
-	Arnd
+Hmmm?  Don't we have drivers which map dma buffers on device init and
+release them on exit?  For dynamic usages, its usefulness is limited
+especially given that dynamic tracking of buffers usually would
+involve tracking of other information too in addition to dma buffer
+pointer themselves.  If alloc on init and free on exit is a very rare
+usage pattern, I have no objection against not adding devm interface
+for dma mappings.
+
+Thanks.
+
+-- 
+tejun
