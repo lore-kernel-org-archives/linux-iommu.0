@@ -1,124 +1,87 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
-Date: Wed, 4 Jun 2014 23:00:52 +0200
-Message-ID: <20140604210045.GB18710@mithrandir>
-References: <1400877218-4113-1-git-send-email-thierry.reding@gmail.com>
-	<4545972.cM7IP1qTXQ@wuerfel>
-	<CAL_Jsq+tkFNpjSEZboT+o69B_Z3a8e-ZVKaYDmLwtkyYoPy6VQ@mail.gmail.com>
-	<5288123.eXagyPAxNq@wuerfel>
-	<20140602104104.GD3855@e103592.cambridge.arm.com>
-	<20140604143509.GF28484@ulmo> <20140604164132.GF6644@arm.com>
+Date: Wed, 4 Jun 2014 23:12:38 +0200
+Message-ID: <20140604211237.GC18710@mithrandir>
+References: <1400877395-4235-1-git-send-email-thierry.reding@gmail.com>
+ <538757B6.4010109@wwwdotorg.org>
+ <20140530073006.GA24748@ulmo>
+ <20140530112728.GB3949@e103592.cambridge.arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============4741008934705419610=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140604164132.GF6644-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="VywGB/WGlW4DM4P8"
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20140530112728.GB3949@e103592.cambridge.arm.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Dave Martin <Dave.Martin@arm.com>
+Cc: Stephen Warren <swarren@wwwdotorg.org>, Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <Pawel.Moll@arm.com>, Mark Rutland <Mark.Rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Cho KyongHo <pullip.cho@samsung.com>, Grant Grundler <grundler@chromium.org>, Marc Zyngier <Marc.Zyngier@arm.com>, Will Deacon <Will.Deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Hiroshi Doyu <hdoyu@nvidia.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============4741008934705419610==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="dTy3Mrz/UPE2dbVg"
-Content-Disposition: inline
-
-
---dTy3Mrz/UPE2dbVg
+--VywGB/WGlW4DM4P8
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jun 04, 2014 at 05:41:32PM +0100, Will Deacon wrote:
-> On Wed, Jun 04, 2014 at 03:35:10PM +0100, Thierry Reding wrote:
-> > On Mon, Jun 02, 2014 at 11:41:04AM +0100, Dave Martin wrote:
-> > > In the strictest sense, no.
-> > >=20
-> > > But for a large set of sane configurations, this probably works.
-> > >=20
-> > > Small sets of randomly-assigned IDs can just be enumerated one by one.
-> > >=20
-> > > We wouldn't be able to describe folding and bit shuffling, but we
-> > > probably don't want to encourage that anyway.
-> >=20
-> > I'm having some difficulty understanding this. You make it sound like
-> > there's a fairly arbitrary number of IDs that the SMMU can handle. So
-> > how is the mapping to devices defined? If you say encourage that does
-> > make it sound like the assignment of IDs is purely defined by some
-> > mechanism in software rather than in hardware. Or they are more or less
-> > randomly picked by someone. If that's the case, is that not something
-> > that should be dynamically allocated by the kernel rather than put into
-> > the device tree?
+On Fri, May 30, 2014 at 12:27:28PM +0100, Dave Martin wrote:
+> On Fri, May 30, 2014 at 08:30:08AM +0100, Thierry Reding wrote:
+[...]
+> > Arnd, can you take another look at this binding and see if there's
+> > anything else missing? If not I'll go through the document again and
+> > update all #address-cells/#size-cells references with #iommu-cells as
+> > appropriate and submit v3.
 >=20
-> The set of StreamIDs that can be generated by a master is fixed in the
-> hardware. The SMMU can then be programmed to map these incoming IDs onto
-> a context ID (or a set of context IDs), which are the IDs used internally
-> by the SMMU to find the page tables etc.
+> How do you envisage propagation of the master ID bits downstream of the
+> IOMMU would be described?
 >=20
-> The StreamID -> ContextID mapping is dynamic and controlled by software.
-> The Master -> StreamIDs mapping is fixed in the hardware.
+> We will definitely need a way to describe this for GICv3.  How those
+> values are propagated is likely to vary between related SoCs and doesn't
+> feel like it should be baked into a driver, especially for the ARM SMMU
+> which may get reused in radically different SoC families from different
+> vendors.
 
-Okay, that sounds similar to what the Tegra SMMU does. The naming is
-slightly differently. "Master" is called "memory client", "StreamID"
-would be "SWGROUP" and "ContextID" I guess would map to what's called an
-"ASID" (Address Space ID) on Tegra.
+Well, we've had cases like these in the past (power sequences come to
+mind). Some concepts are just too difficult or unwieldy to be put into
+device tree. I think that this is one of them.
 
-I'm not sure about the amount of leverage that we have to encourage the
-mappings that we think are easy to describe in DT and discourage those
-that we don't want. Last time I checked we were still playing catch up
-rather than being able to give recommendations to hardware engineers
-about what will result in sane DT content and what won't.
+> The most likely types of remapping are the adding of a base offset or
+> some extra bits to the ID -- because not all MSIs to the GIC will
+> necessarily pass through the IOMMU.  It's also possible that we might
+> see ID squashing or folding in some systems.
 
-Irrespective of the above, I still think that a generic binding based on
-an #iommu-cells and iommus property gives us the most flexibility. For
-easy cases, most of which are listed in the current proposal could
-easily be dealt with in convenience helpers. For the more complex cases
-drivers for those IOMMUs can define a specifier that make sense for the
-mappings they need to be able to describe.
+It can easily be argued that if the algorithm used to remap the ID
+varies, the compatibility of the device changes. Therefore I would
+expect any variant of the GICv3 that deviates from the "standard"
+mapping (if there is such a thing) to have its own compatible string.
 
-Also we're talking about a generic IOMMU binding here. That means that
-if some hardware comes along that's not "generic" and doesn't fit into
-the constraints set by this binding, then we still have the option of
-defining a completely different one for that particular case.
+At that point there are two possibilities: a) handle the remapping in
+code hooked into the driver via matching of the compatible string or
+b) specifying a different specifier for each of these and keep the
+description in DT. From an implementation point of view, variant b) is
+likely going to be very similar to a), though (I'm thinking .of_xlate
+type of functions here).
 
 Thierry
 
---dTy3Mrz/UPE2dbVg
+--VywGB/WGlW4DM4P8
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJTj4j9AAoJEN0jrNd/PrOhthkP/3PIBa/lJxjOHVGl6FhiC0t4
-IbjaZ7cTtGPpmnAzVVJK6CW75XM4UUXdmSXefh/8qMFGmhUT+Y8x6lCgT8yTh7hG
-VAp2qAAeZNBzUjeDDfbMO+insDB+qqYkZs5KmG/y9gMuBHxkpP0rIgx3xsCDXtGs
-/8F+X/+ca06tqUW6zlCzVMvQoy3r8PU+UxyjztUz4qa6L1F5OeI6SU8+S13lsmE0
-RzWvUbDtehfuDvEr98JHcSjd+Mge7Ewj1G3637dIdO3nbdlOzwzrPgG6Om9gdExN
-Addh2mQ0DxUPVv0gDyNDB0UP5RdUsPUjILrERW1wxB2bLynMjcw7gtstvRRmEmTe
-99ZcuEe7d/SddSR0dCdmscYnI3oWw3b5nnU/KzcdaVAEtJyXtYAuJPZFRfvOA+JC
-t7D8Q5Ic037iW8Fsj17UfxqlgsoHVrfdhVGYZJ/nwsRtU6t4o/RQ9YIBFl3kGU6L
-cNzhHOhbKQssxPIQW0PdxPxdw+Ud3q1x4XI947eh0j2BRFnNBINo1ryOKkH2+uqc
-0xIf+W6IrNyuaJZVHbmmWuS7CKH9npNXOly+5YPKRqiIwxd4rkBZrvsEjm9sSbSX
-pNp/p9K3a9ixsFIOxKaUxhH+gSQZs2GwXQZ4c7nuCWBgYPvB5CMw7RA2/aWVXpuF
-RrtSvQiLY8FTipVjQHEQ
-=pRJk
+iQIcBAEBAgAGBQJTj4vFAAoJEN0jrNd/PrOheCAP/i+lBZElAIcRlK6s2zrZYOSX
+92zTVfj0mb8G1wjEGuuFARffdwwjiiy6EvSMvFHelQr7eHdhBaWS1NnXDTArNeHe
+1GXXRMG7v3uJaIY7FDIHWxloL+v6/8FOpiQD8oyXwnZRE7cUwp1wikYO34fwRURH
+KQ4TwBNFYe8wXku1gffSYLKIF5HeN0zd+36f2E+JmbzEJEcvjagRSDdfV03uj3KA
+lqzwHNuIqBzsUVBCg7SI5fInfstUOTo/yRqXA6KYNms0twy7xC5wbKi5K2MQhAl4
+3xHrfwaC42Z6W2tXt8XGYRgS31V5nvq3Xg+sd/pr9v73jnwXzvyYNrlAuRBPvrPO
+UdKOpI8//EqU1+abQDpO0nZZtGEPYFqg7Rljz66gCav2faEn+44qZlAsQvDIzON3
+1FyEQIbFEUd/2m/RGEMO+Dhk0M0cpkVlmYteSvuNNRK/nrzCldYH8ubhGF5lFOCr
+dYfZfXXRS8JT3jH1o+i4eSts/cDQr29h9rE/fqhOercD2vc6DQjzC8UHFNgO78yN
+ozBhBd1EyQ1McT5SROrTqY1VXHjOAsADfP5pW2fbdDCyBnX3mVznqHYx0G5CINf7
+Ux1xscC6qGldF9+xFMTXJd8g5xAglPRZzXf9pP68ZJnxV+OJcuwsDixP3zcLIpMg
+UX+JzjNS4F7MccluPvrz
+=xLVK
 -----END PGP SIGNATURE-----
 
---dTy3Mrz/UPE2dbVg--
-
---===============4741008934705419610==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============4741008934705419610==--
+--VywGB/WGlW4DM4P8--
