@@ -1,74 +1,66 @@
-From: Eli Billauer <eli.billauer@gmail.com>
-Subject: Re: [PATCH v2 1/4] dma-mapping: Add devm_ interface for
- dma_map_single()
-Date: Wed, 04 Jun 2014 18:03:36 +0300
-Message-ID: <538F3548.4050101@gmail.com>
-References: <1401606077-1739-1-git-send-email-eli.billauer@gmail.com>
- <1401606077-1739-2-git-send-email-eli.billauer@gmail.com>
- <538E3D04.9060808@samsung.com> <20140603233907.GB23880@8bytes.org>
- <20140604140408.GC5004@htj.dyndns.org> <20140604141211.GC23880@8bytes.org>
- <20140604141416.GD5004@htj.dyndns.org>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
+Date: Wed, 4 Jun 2014 17:39:33 +0100
+Message-ID: <20140604163933.GE6644@arm.com>
+References: <1400877218-4113-1-git-send-email-thierry.reding@gmail.com>
+	<20140604134400.GE28484@ulmo> <20140604135600.GD6644@arm.com>
+	<13061821.NYx1AfEhs0@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
-In-reply-to: <20140604141416.GD5004@htj.dyndns.org>
-List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
-List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel>
-List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
-List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
-List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
-Errors-To: driverdev-devel-bounces@linuxdriverproject.org
-Sender: driverdev-devel-bounces@linuxdriverproject.org
-To: Tejun Heo <tj@kernel.org>
-Cc: devel@driverdev.osuosl.org, Shuah Khan <shuah.kh@samsung.com>, discuss@x86-64.org, gregkh@linuxfoundation.org, Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, bhelgaas@google.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <13061821.NYx1AfEhs0@wuerfel>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+On Wed, Jun 04, 2014 at 03:01:15PM +0100, Arnd Bergmann wrote:
+> On Wednesday 04 June 2014 14:56:01 Will Deacon wrote:
+> > On Wed, Jun 04, 2014 at 02:44:03PM +0100, Thierry Reding wrote:
+> > > On Fri, May 30, 2014 at 09:54:37PM +0200, Arnd Bergmann wrote:
+> > > > On Friday 30 May 2014 22:29:13 Hiroshi Doyu wrote:
+> > > > > The disadvantage of this is that this limits the max number of streamIDs
+> > > > > to support. If # of streamID is increased later more than 64, this
+> > > > > format cannot cover any more. You have to predict the max # of streamIDs
+> > > > > in advance if steamID is statically assigned.
+> > > > > 
+> > > > 
+> > > > Well, the iommu specific binding could allow a variable #address-cells.
+> > > > That way, you just need to know the number of stream IDs for that instance
+> > > > of the iommu.
+> > > 
+> > > That sounds fairly complicated to me. I don't see what that buys us over
+> > > the clarity and simplicity that the above explicit notation gives us. Is
+> > > it not more common for a device to have a single master rather than a
+> > > whole bunch of them?
+> > 
+> > I've never seen a device upstream of an ARM SMMU with a single stream-id;
+> > they always seem to have a whole bunch of them. Calxeda's SATA controller
+> > had 10 IDs, for example, and a PL330 DMA controller tends to have at least
+> > 3.
+> 
+> What are those good for? Would we just always use the first one?
 
-I believe that I need a managed dma_map_single() my own driver, which 
-doesn't fall in the case of a single use: The driver allocates its 
-buffers with __get_free_pages() (or the to-be managed version of it). 
-Then it cuts the allocated memory into smaller buffers (in some cases, 
-and with certain alignment rules), and  then calls dma_map_single() to 
-do the DMA mapping for each. The buffers are held along the driver's 
-lifetime, with DMA sync API juggling control back and forth to the 
-hardware. Note that the DMA is noncoherent.
+I think It's just an artifact of how these systems tend to be built. The
+StreamID is constructed out of bits on the bus (AXI and sideband), so a
+DMA controller could easily have one ID for reads, one for writes,
+one for execute. Masters capable of multiple outstanding transactions
+could also have sets of IDs too.
 
-Once could argue, that since dma_map_noncoherent() calls 
-__get_free_pages() under the hood, I could request the larger chunk from 
-dma_map_noncoherent(), and cut it into smaller DMA buffers. My concern 
-is that the dma_sync_single_*() functions expect a DMA handle, not a 
-physical address I've made up with my own buffer splitting. I don't see 
-any problem with this trick on platforms I've worked with, but I'm not 
-sure if this is the proper way to go. dma_map_single(), on the other 
-hand, returns a DMA handle.
+The SMMU driver would point them all at the same context bank, as far as I
+can tell, but that means the driver does need to be aware of the incoming
+IDs.
 
-The DMA pool functions could be interesting, but I understand that they 
-would supply me with coherent memory only.
+Rob might know how they constructed the IDs on the Calxeda SATA controller?
 
-Anything I missed?
-
-Thanks,
-    Eli
-
-On 04/06/14 17:14, Tejun Heo wrote:
-> Hello,
->
-> On Wed, Jun 04, 2014 at 04:12:11PM +0200, Joerg Roedel wrote:
->    
->> Yes, but those drivers usually get DMA buffers at init time with the
->> dma_alloc_* interfaces. The dma_map_* interfaces discussed here belong
->> to the streaming DMA-API, so they are usually used for only one DMA
->> transaction before dma_unmap_* is called on them.
->>
->> A devm interface for the dma_alloc_* family of functions would
->> actually make sense, but not for the dma_map_* functions.
->>      
-> Ah, okay.  Fair enough.
->
-> Thanks.
->
->    
+Will
