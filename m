@@ -1,87 +1,51 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
-Date: Wed, 4 Jun 2014 23:12:38 +0200
-Message-ID: <20140604211237.GC18710@mithrandir>
-References: <1400877395-4235-1-git-send-email-thierry.reding@gmail.com>
- <538757B6.4010109@wwwdotorg.org>
- <20140530073006.GA24748@ulmo>
- <20140530112728.GB3949@e103592.cambridge.arm.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 1/4] dma-mapping: Add devm_ interface for
+	dma_map_single()
+Date: Wed, 4 Jun 2014 23:25:25 +0200
+Message-ID: <20140604212525.GE23880@8bytes.org>
+References: <1401606077-1739-1-git-send-email-eli.billauer@gmail.com>
+	<1401606077-1739-2-git-send-email-eli.billauer@gmail.com>
+	<538E3D04.9060808@samsung.com> <20140603233907.GB23880@8bytes.org>
+	<20140604140408.GC5004@htj.dyndns.org>
+	<20140604141211.GC23880@8bytes.org>
+	<20140604141416.GD5004@htj.dyndns.org> <538F3548.4050101@gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="VywGB/WGlW4DM4P8"
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20140530112728.GB3949@e103592.cambridge.arm.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Dave Martin <Dave.Martin@arm.com>
-Cc: Stephen Warren <swarren@wwwdotorg.org>, Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <Pawel.Moll@arm.com>, Mark Rutland <Mark.Rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Cho KyongHo <pullip.cho@samsung.com>, Grant Grundler <grundler@chromium.org>, Marc Zyngier <Marc.Zyngier@arm.com>, Will Deacon <Will.Deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Hiroshi Doyu <hdoyu@nvidia.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+In-Reply-To: <538F3548.4050101-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Eli Billauer <eli.billauer-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org, Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, discuss-Wa75r+71Mmgdnm+yROfE0A@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tejun Heo <tj-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Hi,
 
---VywGB/WGlW4DM4P8
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Wed, Jun 04, 2014 at 06:03:36PM +0300, Eli Billauer wrote:
+> I believe that I need a managed dma_map_single() my own driver,
+> which doesn't fall in the case of a single use: The driver allocates
+> its buffers with __get_free_pages() (or the to-be managed version of
+> it). Then it cuts the allocated memory into smaller buffers (in some
+> cases, and with certain alignment rules), and  then calls
+> dma_map_single() to do the DMA mapping for each. The buffers are
+> held along the driver's lifetime, with DMA sync API juggling control
+> back and forth to the hardware. Note that the DMA is noncoherent.
 
-On Fri, May 30, 2014 at 12:27:28PM +0100, Dave Martin wrote:
-> On Fri, May 30, 2014 at 08:30:08AM +0100, Thierry Reding wrote:
-[...]
-> > Arnd, can you take another look at this binding and see if there's
-> > anything else missing? If not I'll go through the document again and
-> > update all #address-cells/#size-cells references with #iommu-cells as
-> > appropriate and submit v3.
->=20
-> How do you envisage propagation of the master ID bits downstream of the
-> IOMMU would be described?
->=20
-> We will definitely need a way to describe this for GICv3.  How those
-> values are propagated is likely to vary between related SoCs and doesn't
-> feel like it should be baked into a driver, especially for the ARM SMMU
-> which may get reused in radically different SoC families from different
-> vendors.
+What you are trying to do should work with dma_alloc_noncoherent(). The
+API allows partial syncs on this memory, so you should be fine.
 
-Well, we've had cases like these in the past (power sequences come to
-mind). Some concepts are just too difficult or unwieldy to be put into
-device tree. I think that this is one of them.
+The problem with a devm variant of dma_map_* is that it is too easy to
+misuse or to use it wrong so that a driver could eat up all available
+DMA handles on some platforms.
 
-> The most likely types of remapping are the adding of a base offset or
-> some extra bits to the ID -- because not all MSIs to the GIC will
-> necessarily pass through the IOMMU.  It's also possible that we might
-> see ID squashing or folding in some systems.
 
-It can easily be argued that if the algorithm used to remap the ID
-varies, the compatibility of the device changes. Therefore I would
-expect any variant of the GICv3 that deviates from the "standard"
-mapping (if there is such a thing) to have its own compatible string.
-
-At that point there are two possibilities: a) handle the remapping in
-code hooked into the driver via matching of the compatible string or
-b) specifying a different specifier for each of these and keep the
-description in DT. From an implementation point of view, variant b) is
-likely going to be very similar to a), though (I'm thinking .of_xlate
-type of functions here).
-
-Thierry
-
---VywGB/WGlW4DM4P8
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJTj4vFAAoJEN0jrNd/PrOheCAP/i+lBZElAIcRlK6s2zrZYOSX
-92zTVfj0mb8G1wjEGuuFARffdwwjiiy6EvSMvFHelQr7eHdhBaWS1NnXDTArNeHe
-1GXXRMG7v3uJaIY7FDIHWxloL+v6/8FOpiQD8oyXwnZRE7cUwp1wikYO34fwRURH
-KQ4TwBNFYe8wXku1gffSYLKIF5HeN0zd+36f2E+JmbzEJEcvjagRSDdfV03uj3KA
-lqzwHNuIqBzsUVBCg7SI5fInfstUOTo/yRqXA6KYNms0twy7xC5wbKi5K2MQhAl4
-3xHrfwaC42Z6W2tXt8XGYRgS31V5nvq3Xg+sd/pr9v73jnwXzvyYNrlAuRBPvrPO
-UdKOpI8//EqU1+abQDpO0nZZtGEPYFqg7Rljz66gCav2faEn+44qZlAsQvDIzON3
-1FyEQIbFEUd/2m/RGEMO+Dhk0M0cpkVlmYteSvuNNRK/nrzCldYH8ubhGF5lFOCr
-dYfZfXXRS8JT3jH1o+i4eSts/cDQr29h9rE/fqhOercD2vc6DQjzC8UHFNgO78yN
-ozBhBd1EyQ1McT5SROrTqY1VXHjOAsADfP5pW2fbdDCyBnX3mVznqHYx0G5CINf7
-Ux1xscC6qGldF9+xFMTXJd8g5xAglPRZzXf9pP68ZJnxV+OJcuwsDixP3zcLIpMg
-UX+JzjNS4F7MccluPvrz
-=xLVK
------END PGP SIGNATURE-----
-
---VywGB/WGlW4DM4P8--
+	Joerg
