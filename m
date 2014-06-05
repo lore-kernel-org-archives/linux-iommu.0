@@ -1,15 +1,15 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH v6 10/20] vfio/platform: return info for device and
-	its memory mapped IO regions
-Date: Thu, 05 Jun 2014 15:14:01 -0600
-Message-ID: <1402002841.9207.260.camel@ul30vt.home>
+Subject: Re: [RFC PATCH v6 17/20] vfio: add local lock in virqfd instead of
+	depending on VFIO PCI
+Date: Thu, 05 Jun 2014 16:19:10 -0600
+Message-ID: <1402006750.9207.267.camel@ul30vt.home>
 References: <1401987808-23596-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1401987808-23596-11-git-send-email-a.motakis@virtualopensystems.com>
+	<1401987808-23596-18-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1401987808-23596-11-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+In-Reply-To: <1401987808-23596-18-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,178 +20,163 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Alexander Gordeev <agordeev-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 On Thu, 2014-06-05 at 19:03 +0200, Antonios Motakis wrote:
-> A VFIO userspace driver will start by opening the VFIO device
-> that corresponds to an IOMMU group, and will use the ioctl interface
-> to get the basic device info, such as number of memory regions and
-> interrupts, and their properties.
-> 
-> This patch enables the IOCTLs:
->  - VFIO_DEVICE_GET_INFO
->  - VFIO_DEVICE_GET_REGION_INFO
-> 
-> IRQ info is provided by one of the latter patches.
-> 
-> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-> ---
->  drivers/vfio/platform/vfio_platform.c         | 79 +++++++++++++++++++++++++--
->  drivers/vfio/platform/vfio_platform_private.h | 17 ++++++
->  2 files changed, 90 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/vfio/platform/vfio_platform.c b/drivers/vfio/platform/vfio_platform.c
-> index 1df76d8..eeaebc4 100644
-> --- a/drivers/vfio/platform/vfio_platform.c
-> +++ b/drivers/vfio/platform/vfio_platform.c
-> @@ -34,17 +34,66 @@
->  #define DRIVER_AUTHOR   "Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>"
->  #define DRIVER_DESC     "VFIO for platform devices - User Level meta-driver"
->  
-> +static int vfio_platform_regions_init(struct vfio_platform_device *vdev)
-> +{
-> +	int cnt = 0, i;
-> +
-> +	while (platform_get_resource(vdev->pdev, IORESOURCE_MEM, cnt))
-> +		cnt++;
-> +
-> +	vdev->region = kzalloc(sizeof(struct vfio_platform_region) * cnt,
-> +				GFP_KERNEL);
-> +	if (!vdev->region)
-> +		return -ENOMEM;
-> +
-> +	for (i = 0; i < cnt;  i++) {
-> +		struct resource *res =
-> +			platform_get_resource(vdev->pdev, IORESOURCE_MEM, i);
-> +
-> +		if (!res)
-> +			goto err;
-> +
-> +		vdev->region[i].addr = res->start;
-> +		vdev->region[i].size = resource_size(res);
-> +		vdev->region[i].flags = 0;
-> +	}
-> +
-> +	vdev->num_regions = cnt;
-> +
-> +	return 0;
-> +err:
-> +	kfree(vdev->region);
-> +	return -EINVAL;
-> +}
-> +
-> +static void vfio_platform_regions_cleanup(struct vfio_platform_device *vdev)
-> +{
-> +	vdev->num_regions = 0;
-> +	kfree(vdev->region);
-> +}
-> +
->  static void vfio_platform_release(void *device_data)
->  {
-> +	struct vfio_platform_device *vdev = device_data;
-> +
-> +	vfio_platform_regions_cleanup(vdev);
-> +
->  	module_put(THIS_MODULE);
->  }
->  
->  static int vfio_platform_open(void *device_data)
->  {
-> +	struct vfio_platform_device *vdev = device_data;
-> +	int ret;
-> +
->  	if (!try_module_get(THIS_MODULE))
->  		return -ENODEV;
->  
-> -	return 0;
-> +	ret = vfio_platform_regions_init(vdev);
-> +	if (ret)
-> +		module_put(THIS_MODULE);
-> +
-> +	return ret;
+> Sharing the same spinlock with the VFIO bus driver is not necessary for
+> the virqfd code, so remove that dependency.
 
-The user can call VFIO_GROUP_GET_DEVICE_FD for a single device more than
-once, vfio_pci maintains a reference count to make sure we only allocate
-and initialize on the first open and cleanup on the last close.
-
->  }
->  
->  static long vfio_platform_ioctl(void *device_data,
-> @@ -65,18 +114,36 @@ static long vfio_platform_ioctl(void *device_data,
->  			return -EINVAL;
->  
->  		info.flags = VFIO_DEVICE_FLAGS_PLATFORM;
-> -		info.num_regions = 0;
-> +		info.num_regions = vdev->num_regions;
->  		info.num_irqs = 0;
->  
->  		return copy_to_user((void __user *)arg, &info, minsz);
->  
-> -	} else if (cmd == VFIO_DEVICE_GET_REGION_INFO)
-> -		return -EINVAL;
-> +	} else if (cmd == VFIO_DEVICE_GET_REGION_INFO) {
-> +		struct vfio_region_info info;
-> +
-> +		minsz = offsetofend(struct vfio_region_info, offset);
-> +
-> +		if (copy_from_user(&info, (void __user *)arg, minsz))
-> +			return -EFAULT;
-> +
-> +		if (info.argsz < minsz)
-> +			return -EINVAL;
-> +
-> +		if (info.index >= vdev->num_regions)
-> +			return -EINVAL;
-> +
-> +		/* map offset to the physical address  */
-> +		info.offset = VFIO_PLATFORM_INDEX_TO_OFFSET(info.index);
-> +		info.size = vdev->region[info.index].size;
-> +		info.flags = vdev->region[info.index].flags;
-> +
-> +		return copy_to_user((void __user *)arg, &info, minsz);
->  
-> -	else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
-> +	} else if (cmd == VFIO_DEVICE_GET_IRQ_INFO) {
->  		return -EINVAL;
->  
-> -	else if (cmd == VFIO_DEVICE_SET_IRQS)
-> +	} else if (cmd == VFIO_DEVICE_SET_IRQS)
->  		return -EINVAL;
->  
->  	else if (cmd == VFIO_DEVICE_RESET)
-> diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
-> index 4ae88f8..3448f918 100644
-> --- a/drivers/vfio/platform/vfio_platform_private.h
-> +++ b/drivers/vfio/platform/vfio_platform_private.h
-> @@ -15,8 +15,25 @@
->  #ifndef VFIO_PLATFORM_PRIVATE_H
->  #define VFIO_PLATFORM_PRIVATE_H
->  
-> +#define VFIO_PLATFORM_OFFSET_SHIFT   40
-> +#define VFIO_PLATFORM_OFFSET_MASK (((u64)(1) << VFIO_PLATFORM_OFFSET_SHIFT) - 1)
-> +
-> +#define VFIO_PLATFORM_OFFSET_TO_INDEX(off)	\
-> +	(off >> VFIO_PLATFORM_OFFSET_SHIFT)
-> +
-> +#define VFIO_PLATFORM_INDEX_TO_OFFSET(index)	\
-> +	((u64)(index) << VFIO_PLATFORM_OFFSET_SHIFT)
-> +
-> +struct vfio_platform_region {
-> +	u64			addr;
-> +	resource_size_t		size;
-> +	u32			flags;
-> +};
-> +
->  struct vfio_platform_device {
->  	struct platform_device		*pdev;
-> +	struct vfio_platform_region	*region;
-
-"regions" (plural) has slightly better consistency.  Thanks,
+I like the idea of consolidating this code, but I need more
+justification for why the use of the lock here is independent of the bus
+driver and why it's ok to move from a per-device lock to a global lock.
+Thanks,
 
 Alex
 
-> +	u32				num_regions;
->  };
+> 
+> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+> ---
+>  drivers/vfio/pci/vfio_pci_intrs.c | 10 +++++-----
+>  drivers/vfio/virqfd.c             | 24 +++++++++++++-----------
+>  include/linux/vfio.h              |  3 +--
+>  3 files changed, 19 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/vfio/pci/vfio_pci_intrs.c b/drivers/vfio/pci/vfio_pci_intrs.c
+> index 3f909bb..e56c814 100644
+> --- a/drivers/vfio/pci/vfio_pci_intrs.c
+> +++ b/drivers/vfio/pci/vfio_pci_intrs.c
+> @@ -226,8 +226,8 @@ static int vfio_intx_set_signal(struct vfio_pci_device *vdev, int fd)
+>  static void vfio_intx_disable(struct vfio_pci_device *vdev)
+>  {
+>  	vfio_intx_set_signal(vdev, -1);
+> -	virqfd_disable(vdev, &vdev->ctx[0].unmask);
+> -	virqfd_disable(vdev, &vdev->ctx[0].mask);
+> +	virqfd_disable(&vdev->ctx[0].unmask);
+> +	virqfd_disable(&vdev->ctx[0].mask);
+>  	vdev->irq_type = VFIO_PCI_NUM_IRQS;
+>  	vdev->num_ctx = 0;
+>  	kfree(vdev->ctx);
+> @@ -377,8 +377,8 @@ static void vfio_msi_disable(struct vfio_pci_device *vdev, bool msix)
+>  	vfio_msi_set_block(vdev, 0, vdev->num_ctx, NULL, msix);
 >  
->  #endif /* VFIO_PLATFORM_PRIVATE_H */
+>  	for (i = 0; i < vdev->num_ctx; i++) {
+> -		virqfd_disable(vdev, &vdev->ctx[i].unmask);
+> -		virqfd_disable(vdev, &vdev->ctx[i].mask);
+> +		virqfd_disable(&vdev->ctx[i].unmask);
+> +		virqfd_disable(&vdev->ctx[i].mask);
+>  	}
+>  
+>  	if (msix) {
+> @@ -415,7 +415,7 @@ static int vfio_pci_set_intx_unmask(struct vfio_pci_device *vdev,
+>  					     vfio_send_intx_eventfd, NULL,
+>  					     &vdev->ctx[0].unmask, fd);
+>  
+> -		virqfd_disable(vdev, &vdev->ctx[0].unmask);
+> +		virqfd_disable(&vdev->ctx[0].unmask);
+>  	}
+>  
+>  	return 0;
+> diff --git a/drivers/vfio/virqfd.c b/drivers/vfio/virqfd.c
+> index 9cf2842..4528450 100644
+> --- a/drivers/vfio/virqfd.c
+> +++ b/drivers/vfio/virqfd.c
+> @@ -17,6 +17,7 @@
+>  #include "pci/vfio_pci_private.h"
+>  
+>  static struct workqueue_struct *vfio_irqfd_cleanup_wq;
+> +static spinlock_t lock;
+>  
+>  int __init vfio_pci_virqfd_init(void)
+>  {
+> @@ -25,6 +26,8 @@ int __init vfio_pci_virqfd_init(void)
+>  	if (!vfio_irqfd_cleanup_wq)
+>  		return -ENOMEM;
+>  
+> +	spin_lock_init(&lock);
+> +
+>  	return 0;
+>  }
+>  
+> @@ -53,21 +56,21 @@ static int virqfd_wakeup(wait_queue_t *wait, unsigned mode, int sync, void *key)
+>  
+>  	if (flags & POLLHUP) {
+>  		unsigned long flags;
+> -		spin_lock_irqsave(&virqfd->vdev->irqlock, flags);
+> +		spin_lock_irqsave(&lock, flags);
+>  
+>  		/*
+>  		 * The eventfd is closing, if the virqfd has not yet been
+>  		 * queued for release, as determined by testing whether the
+> -		 * vdev pointer to it is still valid, queue it now.  As
+> +		 * virqfd pointer to it is still valid, queue it now.  As
+>  		 * with kvm irqfds, we know we won't race against the virqfd
+> -		 * going away because we hold wqh->lock to get here.
+> +		 * going away because we hold the lock to get here.
+>  		 */
+>  		if (*(virqfd->pvirqfd) == virqfd) {
+>  			*(virqfd->pvirqfd) = NULL;
+>  			virqfd_deactivate(virqfd);
+>  		}
+>  
+> -		spin_unlock_irqrestore(&virqfd->vdev->irqlock, flags);
+> +		spin_unlock_irqrestore(&lock, flags);
+>  	}
+>  
+>  	return 0;
+> @@ -143,16 +146,16 @@ int virqfd_enable(struct vfio_pci_device *vdev,
+>  	 * we update the pointer to the virqfd under lock to avoid
+>  	 * pushing multiple jobs to release the same virqfd.
+>  	 */
+> -	spin_lock_irq(&vdev->irqlock);
+> +	spin_lock_irq(&lock);
+>  
+>  	if (*pvirqfd) {
+> -		spin_unlock_irq(&vdev->irqlock);
+> +		spin_unlock_irq(&lock);
+>  		ret = -EBUSY;
+>  		goto err_busy;
+>  	}
+>  	*pvirqfd = virqfd;
+>  
+> -	spin_unlock_irq(&vdev->irqlock);
+> +	spin_unlock_irq(&lock);
+>  
+>  	/*
+>  	 * Install our own custom wake-up handling so we are notified via
+> @@ -189,19 +192,18 @@ err_fd:
+>  	return ret;
+>  }
+>  
+> -void virqfd_disable(struct vfio_pci_device *vdev,
+> -			   struct virqfd **pvirqfd)
+> +void virqfd_disable(struct virqfd **pvirqfd)
+>  {
+>  	unsigned long flags;
+>  
+> -	spin_lock_irqsave(&vdev->irqlock, flags);
+> +	spin_lock_irqsave(&lock, flags);
+>  
+>  	if (*pvirqfd) {
+>  		virqfd_deactivate(*pvirqfd);
+>  		*pvirqfd = NULL;
+>  	}
+>  
+> -	spin_unlock_irqrestore(&vdev->irqlock, flags);
+> +	spin_unlock_irqrestore(&lock, flags);
+>  
+>  	/*
+>  	 * Block until we know all outstanding shutdown jobs have completed.
+> diff --git a/include/linux/vfio.h b/include/linux/vfio.h
+> index 43968e8..44c9808 100644
+> --- a/include/linux/vfio.h
+> +++ b/include/linux/vfio.h
+> @@ -123,7 +123,6 @@ extern int virqfd_enable(struct vfio_pci_device *vdev,
+>  			 int (*handler)(struct vfio_pci_device *, void *),
+>  			 void (*thread)(struct vfio_pci_device *, void *),
+>  			 void *data, struct virqfd **pvirqfd, int fd);
+> -extern void virqfd_disable(struct vfio_pci_device *vdev,
+> -			   struct virqfd **pvirqfd);
+> +extern void virqfd_disable(struct virqfd **pvirqfd);
+>  
+>  #endif /* VFIO_H */
