@@ -1,77 +1,53 @@
-From: Varun Sethi <Varun.Sethi@freescale.com>
-Subject: RE: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
-Date: Thu, 5 Jun 2014 19:10:19 +0000
-Message-ID: <07321368d15d4ad9928ebb83af87e401@DM2PR03MB479.namprd03.prod.outlook.com>
-References: <1400877218-4113-1-git-send-email-thierry.reding@gmail.com>
- <4545972.cM7IP1qTXQ@wuerfel>
- <CAL_Jsq+tkFNpjSEZboT+o69B_Z3a8e-ZVKaYDmLwtkyYoPy6VQ@mail.gmail.com>
- <5288123.eXagyPAxNq@wuerfel>
- <20140602104104.GD3855@e103592.cambridge.arm.com>
- <20140604143509.GF28484@ulmo> <20140604164132.GF6644@arm.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC PATCH v6 02/20] iommu: add capability IOMMU_CAP_NOEXEC
+Date: Thu, 05 Jun 2014 14:03:47 -0600
+Message-ID: <1401998627.9207.227.camel@ul30vt.home>
+References: <1401987808-23596-1-git-send-email-a.motakis@virtualopensystems.com>
+	<1401987808-23596-3-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20140604164132.GF6644@arm.com>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Will Deacon <will.deacon@arm.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: Mark Rutland <Mark.Rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Pawel Moll <Pawel.Moll@arm.com>, Arnd Bergmann <arnd@arndb.de>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Grant Grundler <grundler@chromium.org>, Stephen Warren <swarren@wwwdotorg.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Stuart Yoder <stuart.yoder@freescale.com>, Marc Zyngier <Marc.Zyngier@arm.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, Rob Herring <robh+dt@kernel.org>, Kumar Gala <galak@codeaurora.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, Cho KyongHo <pullip.cho@samsung.com>, Dave P Martin <Dave.Martin@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1401987808-23596-3-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Cc: Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-> -----Original Message-----
-> From: iommu-bounces@lists.linux-foundation.org [mailto:iommu-
-> bounces@lists.linux-foundation.org] On Behalf Of Will Deacon
-> Sent: Wednesday, June 04, 2014 10:12 PM
-> To: Thierry Reding
-> Cc: Mark Rutland; devicetree@vger.kernel.org; linux-samsung-
-> soc@vger.kernel.org; Pawel Moll; Arnd Bergmann; Ian Campbell; Grant
-> Grundler; Stephen Warren; linux-kernel@vger.kernel.org; Marc Zyngier;
-> Linux IOMMU; Rob Herring; Kumar Gala; linux-tegra@vger.kernel.org; Cho
-> KyongHo; Dave P Martin; linux-arm-kernel@lists.infradead.org
-> Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree
-> bindings
+On Thu, 2014-06-05 at 19:03 +0200, Antonios Motakis wrote:
+> Some IOMMUs accept an IOMMU_NOEXEC protection flag in addition to
+> IOMMU_READ and IOMMU_WRITE. Expose this as an IOMMU capability.
 > 
-> On Wed, Jun 04, 2014 at 03:35:10PM +0100, Thierry Reding wrote:
-> > On Mon, Jun 02, 2014 at 11:41:04AM +0100, Dave Martin wrote:
-> > > In the strictest sense, no.
-> > >
-> > > But for a large set of sane configurations, this probably works.
-> > >
-> > > Small sets of randomly-assigned IDs can just be enumerated one by
-> one.
-> > >
-> > > We wouldn't be able to describe folding and bit shuffling, but we
-> > > probably don't want to encourage that anyway.
-> >
-> > I'm having some difficulty understanding this. You make it sound like
-> > there's a fairly arbitrary number of IDs that the SMMU can handle. So
-> > how is the mapping to devices defined? If you say encourage that does
-> > make it sound like the assignment of IDs is purely defined by some
-> > mechanism in software rather than in hardware. Or they are more or
-> > less randomly picked by someone. If that's the case, is that not
-> > something that should be dynamically allocated by the kernel rather
-> > than put into the device tree?
+> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+> ---
+>  include/linux/iommu.h | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
 > 
-> The set of StreamIDs that can be generated by a master is fixed in the
-> hardware. The SMMU can then be programmed to map these incoming IDs onto
-> a context ID (or a set of context IDs), which are the IDs used internally
-> by the SMMU to find the page tables etc.
-> 
-> The StreamID -> ContextID mapping is dynamic and controlled by software.
-> The Master -> StreamIDs mapping is fixed in the hardware.
-The Master -> StreamIDs mapping may not always be fixed in the hardware. At, least in our case we plan to program these via software. PCI devices is one place where this mapping would have to be dynamic (based on the topology i.e. if the devices are connected to a bridge etc). Also, we have a hot plug device architecture where the stream ID is software programmable.
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index fc464d2..7e152fb 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -57,8 +57,9 @@ struct iommu_domain {
+>  	struct iommu_domain_geometry geometry;
+>  };
+>  
+> -#define IOMMU_CAP_CACHE_COHERENCY	0x1
+> -#define IOMMU_CAP_INTR_REMAP		0x2	/* isolates device intrs */
+> +#define IOMMU_CAP_CACHE_COHERENCY	(1 << 0)
+> +#define IOMMU_CAP_INTR_REMAP		(1 << 1) /* isolates device intrs */
+> +#define IOMMU_CAP_NOEXEC		(1 << 2) /* IOMMU_NOEXEC flag */
+>  
+>  /*
+>   * Following constraints are specifc to FSL_PAMUV1:
 
-Other than that, based on the isolation requirements (iommu domain) software programmability offers greater flexibility.
+Hmm, was this really intended to be a bitmap?  Why?  Thanks,
 
--Varun
+Alex
