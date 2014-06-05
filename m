@@ -1,67 +1,77 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [RFC PATCH v6 04/20] iommu/arm-smmu: add capability
-	IOMMU_CAP_INTR_REMAP
-Date: Thu, 5 Jun 2014 18:31:35 +0000
-Message-ID: <87aae116ba7a473b85a5a176f300551c@DM2PR03MB479.namprd03.prod.outlook.com>
-References: <1401987808-23596-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1401987808-23596-5-git-send-email-a.motakis@virtualopensystems.com>
+From: Varun Sethi <Varun.Sethi@freescale.com>
+Subject: RE: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
+Date: Thu, 5 Jun 2014 19:10:19 +0000
+Message-ID: <07321368d15d4ad9928ebb83af87e401@DM2PR03MB479.namprd03.prod.outlook.com>
+References: <1400877218-4113-1-git-send-email-thierry.reding@gmail.com>
+ <4545972.cM7IP1qTXQ@wuerfel>
+ <CAL_Jsq+tkFNpjSEZboT+o69B_Z3a8e-ZVKaYDmLwtkyYoPy6VQ@mail.gmail.com>
+ <5288123.eXagyPAxNq@wuerfel>
+ <20140602104104.GD3855@e103592.cambridge.arm.com>
+ <20140604143509.GF28484@ulmo> <20140604164132.GF6644@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1401987808-23596-5-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20140604164132.GF6644@arm.com>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "moderated list:ARM SMMU DRIVER" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Will Deacon <will.deacon@arm.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: Mark Rutland <Mark.Rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Pawel Moll <Pawel.Moll@arm.com>, Arnd Bergmann <arnd@arndb.de>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Grant Grundler <grundler@chromium.org>, Stephen Warren <swarren@wwwdotorg.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Stuart Yoder <stuart.yoder@freescale.com>, Marc Zyngier <Marc.Zyngier@arm.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, Rob Herring <robh+dt@kernel.org>, Kumar Gala <galak@codeaurora.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, Cho KyongHo <pullip.cho@samsung.com>, Dave P Martin <Dave.Martin@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
 
 > -----Original Message-----
-> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
-> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Antonios Motakis
-> Sent: Thursday, June 05, 2014 10:33 PM
-> To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org;
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; open list;
-> will.deacon-5wv7dgnIgG8@public.gmane.org; a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org; Yoder Stuart-B08248;
-> moderated list:ARM SMMU DRIVER; Antonios Motakis;
-> tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org; christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
-> Subject: [RFC PATCH v6 04/20] iommu/arm-smmu: add capability
-> IOMMU_CAP_INTR_REMAP
+> From: iommu-bounces@lists.linux-foundation.org [mailto:iommu-
+> bounces@lists.linux-foundation.org] On Behalf Of Will Deacon
+> Sent: Wednesday, June 04, 2014 10:12 PM
+> To: Thierry Reding
+> Cc: Mark Rutland; devicetree@vger.kernel.org; linux-samsung-
+> soc@vger.kernel.org; Pawel Moll; Arnd Bergmann; Ian Campbell; Grant
+> Grundler; Stephen Warren; linux-kernel@vger.kernel.org; Marc Zyngier;
+> Linux IOMMU; Rob Herring; Kumar Gala; linux-tegra@vger.kernel.org; Cho
+> KyongHo; Dave P Martin; linux-arm-kernel@lists.infradead.org
+> Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree
+> bindings
 > 
-> With an ARM SMMU, interrupt remapping should always be safe from the
-> SMMU's point of view, as it is properly handled by the GIC.
+> On Wed, Jun 04, 2014 at 03:35:10PM +0100, Thierry Reding wrote:
+> > On Mon, Jun 02, 2014 at 11:41:04AM +0100, Dave Martin wrote:
+> > > In the strictest sense, no.
+> > >
+> > > But for a large set of sane configurations, this probably works.
+> > >
+> > > Small sets of randomly-assigned IDs can just be enumerated one by
+> one.
+> > >
+> > > We wouldn't be able to describe folding and bit shuffling, but we
+> > > probably don't want to encourage that anyway.
+> >
+> > I'm having some difficulty understanding this. You make it sound like
+> > there's a fairly arbitrary number of IDs that the SMMU can handle. So
+> > how is the mapping to devices defined? If you say encourage that does
+> > make it sound like the assignment of IDs is purely defined by some
+> > mechanism in software rather than in hardware. Or they are more or
+> > less randomly picked by someone. If that's the case, is that not
+> > something that should be dynamically allocated by the kernel rather
+> > than put into the device tree?
 > 
-> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-> ---
->  drivers/iommu/arm-smmu.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> The set of StreamIDs that can be generated by a master is fixed in the
+> hardware. The SMMU can then be programmed to map these incoming IDs onto
+> a context ID (or a set of context IDs), which are the IDs used internally
+> by the SMMU to find the page tables etc.
 > 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c index
-> 15ab2af..ff29402 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -1544,7 +1544,7 @@ static int arm_smmu_domain_has_cap(struct
-> iommu_domain *domain,
->  	if (smmu_domain->root_cfg.smmu->features &
-> ARM_SMMU_FEAT_COHERENT_WALK)
->  		caps |= IOMMU_CAP_CACHE_COHERENCY;
-> 
-> -	caps |= IOMMU_CAP_NOEXEC;
-> +	caps |= IOMMU_CAP_NOEXEC | IOMMU_CAP_INTR_REMAP;
-> 
->  	return !!(cap & caps);
->  }
-Why mention this as an IOMMU capability when IOMMU doesn't support it? Also, wouldn't this depend on the GIC IP version? What are we gaining by adding this IOMMU capability list?
+> The StreamID -> ContextID mapping is dynamic and controlled by software.
+> The Master -> StreamIDs mapping is fixed in the hardware.
+The Master -> StreamIDs mapping may not always be fixed in the hardware. At, least in our case we plan to program these via software. PCI devices is one place where this mapping would have to be dynamic (based on the topology i.e. if the devices are connected to a bridge etc). Also, we have a hot plug device architecture where the stream ID is software programmable.
+
+Other than that, based on the isolation requirements (iommu domain) software programmability offers greater flexibility.
 
 -Varun
