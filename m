@@ -1,8 +1,7 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [RFC PATCH v6 03/20] iommu/arm-smmu: add IOMMU_CAP_NOEXEC to the ARM
-	SMMU driver
-Date: Thu,  5 Jun 2014 19:03:11 +0200
-Message-ID: <1401987808-23596-4-git-send-email-a.motakis@virtualopensystems.com>
+Subject: [RFC PATCH v6 02/20] iommu: add capability IOMMU_CAP_NOEXEC
+Date: Thu,  5 Jun 2014 19:03:10 +0200
+Message-ID: <1401987808-23596-3-git-send-email-a.motakis@virtualopensystems.com>
 References: <1401987808-23596-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,29 +18,32 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, "moderated list:ARM SMMU DRIVER" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Cc: Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The ARM SMMU supports the IOMMU_NOEXEC protection flag. Add the
-corresponding IOMMU capability.
+Some IOMMUs accept an IOMMU_NOEXEC protection flag in addition to
+IOMMU_READ and IOMMU_WRITE. Expose this as an IOMMU capability.
 
 Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 2 ++
- 1 file changed, 2 insertions(+)
+ include/linux/iommu.h | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index d5a2200..15ab2af 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1544,6 +1544,8 @@ static int arm_smmu_domain_has_cap(struct iommu_domain *domain,
- 	if (smmu_domain->root_cfg.smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
- 		caps |= IOMMU_CAP_CACHE_COHERENCY;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index fc464d2..7e152fb 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -57,8 +57,9 @@ struct iommu_domain {
+ 	struct iommu_domain_geometry geometry;
+ };
  
-+	caps |= IOMMU_CAP_NOEXEC;
-+
- 	return !!(cap & caps);
- }
+-#define IOMMU_CAP_CACHE_COHERENCY	0x1
+-#define IOMMU_CAP_INTR_REMAP		0x2	/* isolates device intrs */
++#define IOMMU_CAP_CACHE_COHERENCY	(1 << 0)
++#define IOMMU_CAP_INTR_REMAP		(1 << 1) /* isolates device intrs */
++#define IOMMU_CAP_NOEXEC		(1 << 2) /* IOMMU_NOEXEC flag */
  
+ /*
+  * Following constraints are specifc to FSL_PAMUV1:
 -- 
 1.8.3.2
