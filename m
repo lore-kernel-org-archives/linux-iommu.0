@@ -1,14 +1,16 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: Re: [RFC PATCH v6 02/20] iommu: add capability IOMMU_CAP_NOEXEC
-Date: Fri, 6 Jun 2014 18:35:06 +0200
-Message-ID: <CAG8rG2xMeeExpz9aDMx4oxJDDiQcPOexHZ7xi8oiUemd8=t3Xg@mail.gmail.com>
+Subject: Re: [RFC PATCH v6 10/20] vfio/platform: return info for device and
+	its memory mapped IO regions
+Date: Fri, 6 Jun 2014 18:39:19 +0200
+Message-ID: <CAG8rG2yqDWW03o74Hq1N=p7hKgrSLt1CAAFkLy=79RPvqp6=Mw@mail.gmail.com>
 References: <1401987808-23596-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1401987808-23596-3-git-send-email-a.motakis@virtualopensystems.com>
-	<1401998627.9207.227.camel@ul30vt.home>
+	<1401987808-23596-11-git-send-email-a.motakis@virtualopensystems.com>
+	<1402002841.9207.260.camel@ul30vt.home>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============7876699416468763974=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1401998627.9207.227.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
+In-Reply-To: <1402002841.9207.260.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,122 +21,184 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, KVM devel mailing list <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, alvise rigo <a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, KVM devel mailing list <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, alvise rigo <a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
---===============7876699416468763974==
-Content-Type: multipart/alternative; boundary=001a1134a8e0eb16aa04fb2d72fa
-
---001a1134a8e0eb16aa04fb2d72fa
-Content-Type: text/plain; charset=UTF-8
-
-On Thu, Jun 5, 2014 at 10:03 PM, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-> wrote:
-
+On Thu, Jun 5, 2014 at 11:14 PM, Alex Williamson
+<alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
 > On Thu, 2014-06-05 at 19:03 +0200, Antonios Motakis wrote:
-> > Some IOMMUs accept an IOMMU_NOEXEC protection flag in addition to
-> > IOMMU_READ and IOMMU_WRITE. Expose this as an IOMMU capability.
-> >
-> > Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-> > ---
-> >  include/linux/iommu.h | 5 +++--
-> >  1 file changed, 3 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> > index fc464d2..7e152fb 100644
-> > --- a/include/linux/iommu.h
-> > +++ b/include/linux/iommu.h
-> > @@ -57,8 +57,9 @@ struct iommu_domain {
-> >       struct iommu_domain_geometry geometry;
-> >  };
-> >
-> > -#define IOMMU_CAP_CACHE_COHERENCY    0x1
-> > -#define IOMMU_CAP_INTR_REMAP         0x2     /* isolates device intrs */
-> > +#define IOMMU_CAP_CACHE_COHERENCY    (1 << 0)
-> > +#define IOMMU_CAP_INTR_REMAP         (1 << 1) /* isolates device intrs
-> */
-> > +#define IOMMU_CAP_NOEXEC             (1 << 2) /* IOMMU_NOEXEC flag */
-> >
-> >  /*
-> >   * Following constraints are specifc to FSL_PAMUV1:
+>> A VFIO userspace driver will start by opening the VFIO device
+>> that corresponds to an IOMMU group, and will use the ioctl interface
+>> to get the basic device info, such as number of memory regions and
+>> interrupts, and their properties.
+>>
+>> This patch enables the IOCTLs:
+>>  - VFIO_DEVICE_GET_INFO
+>>  - VFIO_DEVICE_GET_REGION_INFO
+>>
+>> IRQ info is provided by one of the latter patches.
+>>
+>> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+>> ---
+>>  drivers/vfio/platform/vfio_platform.c         | 79 +++++++++++++++++++++++++--
+>>  drivers/vfio/platform/vfio_platform_private.h | 17 ++++++
+>>  2 files changed, 90 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/drivers/vfio/platform/vfio_platform.c b/drivers/vfio/platform/vfio_platform.c
+>> index 1df76d8..eeaebc4 100644
+>> --- a/drivers/vfio/platform/vfio_platform.c
+>> +++ b/drivers/vfio/platform/vfio_platform.c
+>> @@ -34,17 +34,66 @@
+>>  #define DRIVER_AUTHOR   "Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>"
+>>  #define DRIVER_DESC     "VFIO for platform devices - User Level meta-driver"
+>>
+>> +static int vfio_platform_regions_init(struct vfio_platform_device *vdev)
+>> +{
+>> +     int cnt = 0, i;
+>> +
+>> +     while (platform_get_resource(vdev->pdev, IORESOURCE_MEM, cnt))
+>> +             cnt++;
+>> +
+>> +     vdev->region = kzalloc(sizeof(struct vfio_platform_region) * cnt,
+>> +                             GFP_KERNEL);
+>> +     if (!vdev->region)
+>> +             return -ENOMEM;
+>> +
+>> +     for (i = 0; i < cnt;  i++) {
+>> +             struct resource *res =
+>> +                     platform_get_resource(vdev->pdev, IORESOURCE_MEM, i);
+>> +
+>> +             if (!res)
+>> +                     goto err;
+>> +
+>> +             vdev->region[i].addr = res->start;
+>> +             vdev->region[i].size = resource_size(res);
+>> +             vdev->region[i].flags = 0;
+>> +     }
+>> +
+>> +     vdev->num_regions = cnt;
+>> +
+>> +     return 0;
+>> +err:
+>> +     kfree(vdev->region);
+>> +     return -EINVAL;
+>> +}
+>> +
+>> +static void vfio_platform_regions_cleanup(struct vfio_platform_device *vdev)
+>> +{
+>> +     vdev->num_regions = 0;
+>> +     kfree(vdev->region);
+>> +}
+>> +
+>>  static void vfio_platform_release(void *device_data)
+>>  {
+>> +     struct vfio_platform_device *vdev = device_data;
+>> +
+>> +     vfio_platform_regions_cleanup(vdev);
+>> +
+>>       module_put(THIS_MODULE);
+>>  }
+>>
+>>  static int vfio_platform_open(void *device_data)
+>>  {
+>> +     struct vfio_platform_device *vdev = device_data;
+>> +     int ret;
+>> +
+>>       if (!try_module_get(THIS_MODULE))
+>>               return -ENODEV;
+>>
+>> -     return 0;
+>> +     ret = vfio_platform_regions_init(vdev);
+>> +     if (ret)
+>> +             module_put(THIS_MODULE);
+>> +
+>> +     return ret;
 >
-> Hmm, was this really intended to be a bitmap?  Why?  Thanks,
+> The user can call VFIO_GROUP_GET_DEVICE_FD for a single device more than
+> once, vfio_pci maintains a reference count to make sure we only allocate
+> and initialize on the first open and cleanup on the last close.
 >
 
-Oops, not really :) will change that
+Ack
 
+>>  }
+>>
+>>  static long vfio_platform_ioctl(void *device_data,
+>> @@ -65,18 +114,36 @@ static long vfio_platform_ioctl(void *device_data,
+>>                       return -EINVAL;
+>>
+>>               info.flags = VFIO_DEVICE_FLAGS_PLATFORM;
+>> -             info.num_regions = 0;
+>> +             info.num_regions = vdev->num_regions;
+>>               info.num_irqs = 0;
+>>
+>>               return copy_to_user((void __user *)arg, &info, minsz);
+>>
+>> -     } else if (cmd == VFIO_DEVICE_GET_REGION_INFO)
+>> -             return -EINVAL;
+>> +     } else if (cmd == VFIO_DEVICE_GET_REGION_INFO) {
+>> +             struct vfio_region_info info;
+>> +
+>> +             minsz = offsetofend(struct vfio_region_info, offset);
+>> +
+>> +             if (copy_from_user(&info, (void __user *)arg, minsz))
+>> +                     return -EFAULT;
+>> +
+>> +             if (info.argsz < minsz)
+>> +                     return -EINVAL;
+>> +
+>> +             if (info.index >= vdev->num_regions)
+>> +                     return -EINVAL;
+>> +
+>> +             /* map offset to the physical address  */
+>> +             info.offset = VFIO_PLATFORM_INDEX_TO_OFFSET(info.index);
+>> +             info.size = vdev->region[info.index].size;
+>> +             info.flags = vdev->region[info.index].flags;
+>> +
+>> +             return copy_to_user((void __user *)arg, &info, minsz);
+>>
+>> -     else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
+>> +     } else if (cmd == VFIO_DEVICE_GET_IRQ_INFO) {
+>>               return -EINVAL;
+>>
+>> -     else if (cmd == VFIO_DEVICE_SET_IRQS)
+>> +     } else if (cmd == VFIO_DEVICE_SET_IRQS)
+>>               return -EINVAL;
+>>
+>>       else if (cmd == VFIO_DEVICE_RESET)
+>> diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
+>> index 4ae88f8..3448f918 100644
+>> --- a/drivers/vfio/platform/vfio_platform_private.h
+>> +++ b/drivers/vfio/platform/vfio_platform_private.h
+>> @@ -15,8 +15,25 @@
+>>  #ifndef VFIO_PLATFORM_PRIVATE_H
+>>  #define VFIO_PLATFORM_PRIVATE_H
+>>
+>> +#define VFIO_PLATFORM_OFFSET_SHIFT   40
+>> +#define VFIO_PLATFORM_OFFSET_MASK (((u64)(1) << VFIO_PLATFORM_OFFSET_SHIFT) - 1)
+>> +
+>> +#define VFIO_PLATFORM_OFFSET_TO_INDEX(off)   \
+>> +     (off >> VFIO_PLATFORM_OFFSET_SHIFT)
+>> +
+>> +#define VFIO_PLATFORM_INDEX_TO_OFFSET(index) \
+>> +     ((u64)(index) << VFIO_PLATFORM_OFFSET_SHIFT)
+>> +
+>> +struct vfio_platform_region {
+>> +     u64                     addr;
+>> +     resource_size_t         size;
+>> +     u32                     flags;
+>> +};
+>> +
+>>  struct vfio_platform_device {
+>>       struct platform_device          *pdev;
+>> +     struct vfio_platform_region     *region;
+>
+> "regions" (plural) has slightly better consistency.  Thanks,
+>
 
->
-> Alex
->
->
+Ack as well.
 
 
 -- 
 Antonios Motakis
 Virtual Open Systems
-
---001a1134a8e0eb16aa04fb2d72fa
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><br><div class=3D"gmail=
-_quote">On Thu, Jun 5, 2014 at 10:03 PM, Alex Williamson <span dir=3D"ltr">=
-&lt;<a href=3D"mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" target=3D"_blank">alex.wi=
-lliamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org</a>&gt;</span> wrote:<br>
-
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex"><div class=3D"HOEnZb"><div class=3D"h5">On T=
-hu, 2014-06-05 at 19:03 +0200, Antonios Motakis wrote:<br>
-&gt; Some IOMMUs accept an IOMMU_NOEXEC protection flag in addition to<br>
-&gt; IOMMU_READ and IOMMU_WRITE. Expose this as an IOMMU capability.<br>
-&gt;<br>
-&gt; Signed-off-by: Antonios Motakis &lt;<a href=3D"mailto:a.motakis@virtua=
-lopensystems.com">a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org</a>&gt;<br>
-&gt; ---<br>
-&gt; =C2=A0include/linux/iommu.h | 5 +++--<br>
-&gt; =C2=A01 file changed, 3 insertions(+), 2 deletions(-)<br>
-&gt;<br>
-&gt; diff --git a/include/linux/iommu.h b/include/linux/iommu.h<br>
-&gt; index fc464d2..7e152fb 100644<br>
-&gt; --- a/include/linux/iommu.h<br>
-&gt; +++ b/include/linux/iommu.h<br>
-&gt; @@ -57,8 +57,9 @@ struct iommu_domain {<br>
-&gt; =C2=A0 =C2=A0 =C2=A0 struct iommu_domain_geometry geometry;<br>
-&gt; =C2=A0};<br>
-&gt;<br>
-&gt; -#define IOMMU_CAP_CACHE_COHERENCY =C2=A0 =C2=A00x1<br>
-&gt; -#define IOMMU_CAP_INTR_REMAP =C2=A0 =C2=A0 =C2=A0 =C2=A0 0x2 =C2=A0 =
-=C2=A0 /* isolates device intrs */<br>
-&gt; +#define IOMMU_CAP_CACHE_COHERENCY =C2=A0 =C2=A0(1 &lt;&lt; 0)<br>
-&gt; +#define IOMMU_CAP_INTR_REMAP =C2=A0 =C2=A0 =C2=A0 =C2=A0 (1 &lt;&lt; =
-1) /* isolates device intrs */<br>
-&gt; +#define IOMMU_CAP_NOEXEC =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 (1=
- &lt;&lt; 2) /* IOMMU_NOEXEC flag */<br>
-&gt;<br>
-&gt; =C2=A0/*<br>
-&gt; =C2=A0 * Following constraints are specifc to FSL_PAMUV1:<br>
-<br>
-</div></div>Hmm, was this really intended to be a bitmap? =C2=A0Why? =C2=A0=
-Thanks,<br></blockquote><div><br></div><div>Oops, not really :) will change=
- that<br></div><div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"=
-margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
-
-
-<br>
-Alex<br>
-<br>
-</blockquote></div><br><br clear=3D"all"><br>-- <br>Antonios Motakis<br>Vir=
-tual Open Systems
-</div></div>
-
---001a1134a8e0eb16aa04fb2d72fa--
-
---===============7876699416468763974==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============7876699416468763974==--
