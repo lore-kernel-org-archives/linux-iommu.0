@@ -1,87 +1,89 @@
-From: Shuah Khan <shuah.kh@samsung.com>
-Subject: Re: [PATCH v2 1/4] dma-mapping: Add devm_ interface for
- dma_map_single()
-Date: Fri, 06 Jun 2014 11:02:48 -0600
-Message-ID: <5391F438.90703@samsung.com>
-References: <1401606077-1739-1-git-send-email-eli.billauer@gmail.com>
- <1401606077-1739-2-git-send-email-eli.billauer@gmail.com>
- <538E3D04.9060808@samsung.com> <20140603233907.GB23880@8bytes.org>
- <20140604140408.GC5004@htj.dyndns.org> <20140604141211.GC23880@8bytes.org>
- <20140604141416.GD5004@htj.dyndns.org> <538F3548.4050101@gmail.com>
- <20140604212525.GE23880@8bytes.org> <5391A9C2.3040602@gmail.com>
- <20140606160103.GG15110@kroah.com> <5391EA92.9050306@gmail.com>
-Reply-To: shuah.kh@samsung.com
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
+Date: Sat, 7 Jun 2014 00:45:45 +0200
+Message-ID: <20140606224542.GA22188@mithrandir>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-reply-to: <5391EA92.9050306@gmail.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Eli Billauer <eli.billauer@gmail.com>, Greg KH <gregkh@linuxfoundation.org>
-Cc: Joerg Roedel <joro@8bytes.org>, devel@driverdev.osuosl.org, discuss@x86-64.org, linux-kernel@vger.kernel.org, bhelgaas@google.com, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, Tejun Heo <tj@kernel.org>, Shuah Khan <shuah.kh@samsung.com>
+Content-Type: multipart/mixed; boundary="===============6915435674400188627=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 06/06/2014 10:21 AM, Eli Billauer wrote:
-> On 06/06/14 19:01, Greg KH wrote:
->>> Please try to put yourself in my position: I have a driver that I care
->>> >  about, which works fine for a few years. It's based upon
->>> dma_map_single(),
->>> >  which seems to be the common way to get non-coherent memory, even
->>> for the
->>> >  driver's entire lifespan. I realize that dma_alloc_* was the
->>> intended way to
->>> >  do it, but fact is that dma_map_* has become the common choice.
->>>
->> Is your driver in the kernel tree?  If not, you really are on your own :(
->>
-> It's the Xillybus driver in the staging area. I don't know if this
-> counts for being in the kernel tree...
->
-> The suggested patchset would allow replacing my use of dma_map_single()
-> with a managed version of that function. This will clean the driver's
-> code considerably.
->
-> But I think that the discussion here is if it's valid to use
-> dma_map_single() for a device-permanent DMA mapping, or if
-> dma_alloc_noncoherent() is the only way. If the answer is no, there's
-> quite obviously no point in a devres version for that function.
->
 
-Eli,
-
-dma_map_single() and dma_unmap_single() are streaming DMA APIs. These
-are intended for one DMA transfer and unmapped right after it is done.
-
-dma buffers are limited shared resources for streaming that are
-shared by several drivers. Hence the need for use and release
-model.
-
-Please refer to the Using Streaming DMA mappings in DMA-API-HOWTO.txt
-
-"- Streaming DMA mappings which are usually mapped for one DMA
-   transfer, unmapped right after it (unless you use dma_sync_* below)
-   and for which hardware can optimize for sequential accesses.
-
-   This of "streaming" as "asynchronous" or "outside the coherency
-   domain".
-
-   Good examples of what to use streaming mappings for are:
-
-         - Networking buffers transmitted/received by a device.
-         - Filesystem buffers written/read by a SCSI device."
+--===============6915435674400188627==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="qMm9M+Fa2AknHoGS"
+Content-Disposition: inline
 
 
-If I understand your intended usage correctly, you are looking to
-allocate and hold the buffers for the lifetime of the driver. For
-such cases, dma_alloc_*() interfaces are the ones to use.
+--qMm9M+Fa2AknHoGS
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Please also refer to DMA-API.txt as well. Hope this helps.
+This is somewhat off-topic, but given the various concepts discussed in
+this thread I'm beginning to wonder how they will be implemented. The
+current implementation hooks the IOMMU API into the DMA mapping API, and
+the way this is done is by setting a single IOMMU (or rather a set of
+IOMMU operations) globally per bus type.
 
--- Shuah
+There are two issues that I can see with that: one is that we can't
+support multiple IOMMUs in the system at all, and the other is that
+there is no context associated with the IOMMU ops, and therefore there
+is no way to differentiate between two instances of the same IOMMU. A
+few drivers use global variables to keep track of context information
+but that won't work with multiple instances, unless they keep a global
+list of all instances and then require explicit lookup in each of the
+IOMMU operations. That sounds more like a workaround rather than a
+proper solution to me.
+
+Discussion in this thread indicates that both of the above will be
+required at some point. Have I completely missed something or will we
+have to rework (parts of) the IOMMU API to make this work?
+
+One other thing that I have some difficulty understanding is how we can
+support things like process isolation using the current IOMMU API. Since
+a device will be statically assigned to one IOMMU domain at probe time
+there is no way we can change the address space upon a context switch.
+
+Thierry
+
+--qMm9M+Fa2AknHoGS
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJTkkSWAAoJEN0jrNd/PrOhnAoP/3dnbiyJe31uxLcJwE0Bm10+
+EMBYvkA7Bct+YasVpd/xS3BVCda+L4mG3qDxUWJriU9YZ6ybEnRIrpPhxh1+xoWA
+iQXLkPHK+1+0f5NR56vqfOtDlY+NS2YQx2lQZ/CtswpRSzA8dYXGiVZwWXQMjsC/
+f+Uj19Wusn+4Qym4AekPP5HclGyqBpYuqmZM8Yp96QHyrd3jEu4YZeRh492Fs9Xv
+Xi8R5en3ZHEfU2erAgJIrY1jg0/g8TI6WGaXmGEz5SsTX7QSLde1RaJYsSoLOqsE
+zm2icD8FEM3oS95zoAuoFXk5N0zL/xNWDghurLWcmG6A6iHNAeB0qAYebq888HNe
+KUUObwgkfy2UaFGcLqf1VmQ8uw4p76yNwgRT1Zv+jNO7zsrZAo7zyzcYFnF4pHrv
+BmspaojhXs3CRVXG0PwipcYP2SmKgnV2KpkK4aHnAS6uUMyEHP6ZB2UOqi7/SfOD
+57h5Eo6ZczLWbYzYHaLr7JZE2F94p9h2vZg6utUmlaWoVFFgJeowWr+DgpdhiCwH
+EFhYz4+YP4f8tEpnMY39Y8BqMJayIYbinqVgmwsbHOQWQnYAV+D3f0UzxxxRnqjP
+tYhmNsaC+fiW0ZXAifXcxkddv+Dr1Owg7cEvZ7lFr6CCsIdEsbVfs8aFZ5zHQiCI
+p2HYv8e/oeHFxbpX+8wi
+=iyXI
+-----END PGP SIGNATURE-----
+
+--qMm9M+Fa2AknHoGS--
+
+--===============6915435674400188627==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 
--- 
-Shuah Khan
-Senior Linux Kernel Developer - Open Source Group
-Samsung Research America(Silicon Valley)
-shuah.kh@samsung.com | (970) 672-0658
+--===============6915435674400188627==--
