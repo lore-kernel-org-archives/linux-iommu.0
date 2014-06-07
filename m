@@ -1,101 +1,86 @@
-From: Eli Billauer <eli.billauer@gmail.com>
-Subject: Re: [PATCH v2 1/4] dma-mapping: Add devm_ interface for
- dma_map_single()
-Date: Sat, 07 Jun 2014 14:23:39 +0300
-Message-ID: <5392F63B.6050708@gmail.com>
-References: <1401606077-1739-1-git-send-email-eli.billauer@gmail.com>
- <1401606077-1739-2-git-send-email-eli.billauer@gmail.com>
- <538E3D04.9060808@samsung.com> <20140603233907.GB23880@8bytes.org>
- <20140604140408.GC5004@htj.dyndns.org> <20140604141211.GC23880@8bytes.org>
- <20140604141416.GD5004@htj.dyndns.org> <538F3548.4050101@gmail.com>
- <20140604212525.GE23880@8bytes.org> <5391A9C2.3040602@gmail.com>
- <20140606160103.GG15110@kroah.com> <5391EA92.9050306@gmail.com>
- <5391F438.90703@samsung.com>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
+Date: Sat, 07 Jun 2014 15:22:13 +0200
+Message-ID: <4306568.dZTtF4xhhK@wuerfel>
+References: <20140606224542.GA22188@mithrandir>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
-In-reply-to: <5391F438.90703@samsung.com>
-List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
-List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel>
-List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
-List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
-List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
-Errors-To: driverdev-devel-bounces@linuxdriverproject.org
-Sender: driverdev-devel-bounces@linuxdriverproject.org
-To: shuah.kh@samsung.com
-Cc: devel@driverdev.osuosl.org, discuss@x86-64.org, Greg KH <gregkh@linuxfoundation.org>, Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org, Tejun Heo <tj@kernel.org>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, bhelgaas@google.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20140606224542.GA22188@mithrandir>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hello Shuah,
+On Saturday 07 June 2014 00:45:45 Thierry Reding wrote:
+> This is somewhat off-topic, but given the various concepts discussed in
+> this thread I'm beginning to wonder how they will be implemented.
 
+I think it's good you raised the question.
 
-We agree that the streaming API was originally *intended* for short 
-map-unmap DMA sessions, and that dma_alloc_noncoherent() was the 
-*intended* API for those who want to hold the DMA during a device's 
-lifetime.
+> The
+> current implementation hooks the IOMMU API into the DMA mapping API, and
+> the way this is done is by setting a single IOMMU (or rather a set of
+> IOMMU operations) globally per bus type.
 
-We also agree that on some platforms, DMA mappings are precious, and 
-therefore any driver should unmap a region as soon as it's not needed 
-anymore.
+I hadn't realized that we have a per-bus iommu_ops pointer. I agree
+this will become a limitation as soon as we have a soc with two different
+IOMMUs that have platform devices attached, and it has to be moved into
+the device or a structure related to that.
 
-But if we stick to the citation you gave, it says "...unmapped right 
-after it (unless you use dma_sync_* below)". So even in the streaming 
-API's definition, there's an understanding, that the "streaming" DMA 
-buffer can be held for more than a single session. And a good sync tool 
-for that is made available.
+If that turns out controversial, we can probably have a set of pseudo
+iommu ops that just call into dev->archdata->iommu_ops->function()
+for ARM.
 
-Using cross-reference on Linux' code, I get a strong impression, that 
-dma_alloc_NONcoherent() is pretty much unused (I counted 8 drivers). The 
-streaming API's sync functions are heavily used, on the other hand. So 
-one gets a hunch, that there's a lot of use of the streaming API in the 
-kernel tree for long-term DMA mappings.
+> There are two issues that I can see with that: one is that we can't
+> support multiple IOMMUs in the system at all, and the other is that
+> there is no context associated with the IOMMU ops, and therefore there
+> is no way to differentiate between two instances of the same IOMMU. A
+> few drivers use global variables to keep track of context information
+> but that won't work with multiple instances, unless they keep a global
+> list of all instances and then require explicit lookup in each of the
+> IOMMU operations. That sounds more like a workaround rather than a
+> proper solution to me.
 
-This wasn't the original intention -- we agree on that. But why is it 
-wrong? Assuming that a driver needs to hold a DMA mapping for a long 
-while, why does it matter if it was done with dma_alloc_noncoherent() or 
-with dma_map_*()? They are equally wasteful, aren't they?
+Supporting multiple iommus that share one iommu driver should work
+without such hacks, as you can put the per-device information into
+dev->device_dma_parameters (this works only for very simple IOMMUs)
+or dev->archdata->iommu (we may want to generalize that, I think
+someone just posted patches for it).
 
-Why maintaining two API sets doing the same thing? Or is there a subtle 
-functional difference I'm not aware of?
+> Discussion in this thread indicates that both of the above will be
+> required at some point. Have I completely missed something or will we
+> have to rework (parts of) the IOMMU API to make this work?
+> 
+> One other thing that I have some difficulty understanding is how we can
+> support things like process isolation using the current IOMMU API. Since
+> a device will be statically assigned to one IOMMU domain at probe time
+> there is no way we can change the address space upon a context switch.
 
-Thanks,
-   Eli
+We have just introduced a way to parse dma-ranges in of_dma_configure().
 
+The only way I see this done for platform devices is to do the IOMMU
+configuration in the same place: if an iommus property is found there,
+we call out to the iommu driver that matches the respective iommu device
+and let it configure the master device.
 
+The device already has multiple properties related to iommus:
+'struct device_dma_parameters', 'archdata', 'iommu_group', and
+pdev_archdata for platform devices. This should be enough to set up
+the default iommu dma_map_ops so we can have non-isolated DMA using
+dma_map_* and dma_alloc_coherent.
 
-On 06/06/14 20:02, Shuah Khan wrote:
->
-> dma_map_single() and dma_unmap_single() are streaming DMA APIs. These
-> are intended for one DMA transfer and unmapped right after it is done.
->
-> dma buffers are limited shared resources for streaming that are
-> shared by several drivers. Hence the need for use and release
-> model.
->
-> Please refer to the Using Streaming DMA mappings in DMA-API-HOWTO.txt
->
-> "- Streaming DMA mappings which are usually mapped for one DMA
->   transfer, unmapped right after it (unless you use dma_sync_* below)
->   and for which hardware can optimize for sequential accesses.
->
->   This of "streaming" as "asynchronous" or "outside the coherency
->   domain".
->
->   Good examples of what to use streaming mappings for are:
->
->         - Networking buffers transmitted/received by a device.
->         - Filesystem buffers written/read by a SCSI device."
->
->
-> If I understand your intended usage correctly, you are looking to
-> allocate and hold the buffers for the lifetime of the driver. For
-> such cases, dma_alloc_*() interfaces are the ones to use.
->
-> Please also refer to DMA-API.txt as well. Hope this helps.
->
-> -- Shuah
->
->
+I haven't given much thought to devices that want to use the IOMMU
+API directly so they can have multiple domains rather than rely on
+the dma-mapping abstraction.
+
+	Arnd
