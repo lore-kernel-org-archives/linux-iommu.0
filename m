@@ -1,15 +1,16 @@
 From: Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [RFC PATCH v6 14/20] vfio/platform: initial interrupts support
-Date: Sun, 8 Jun 2014 12:09:24 +0200
-Message-ID: <20140608100924.GA3279@lvm>
+Subject: Re: [RFC PATCH v6 15/20] vfio/platform: support for maskable and
+	automasked interrupts
+Date: Sun, 8 Jun 2014 12:17:03 +0200
+Message-ID: <20140608101703.GB3279@lvm>
 References: <1401987808-23596-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1401987808-23596-15-git-send-email-a.motakis@virtualopensystems.com>
+	<1401987808-23596-16-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1401987808-23596-15-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+In-Reply-To: <1401987808-23596-16-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,136 +24,194 @@ To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.or
 Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jun 05, 2014 at 07:03:22PM +0200, Antonios Motakis wrote:
-> This patch allows to set an eventfd for a patform device's interrupt,
-> and also to trigger the interrupt eventfd from userspace for testing.
+On Thu, Jun 05, 2014 at 07:03:23PM +0200, Antonios Motakis wrote:
+> Adds support to mask interrupts, and also for automasked interrupts.
+> Level sensitive interrupts are exposed as automasked interrupts and
+> are masked and disabled automatically when they fire.
 > 
 > Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 > ---
->  drivers/vfio/platform/vfio_platform.c         |  36 ++++++-
->  drivers/vfio/platform/vfio_platform_irq.c     | 130 +++++++++++++++++++++++++-
->  drivers/vfio/platform/vfio_platform_private.h |   7 ++
->  3 files changed, 169 insertions(+), 4 deletions(-)
+>  drivers/vfio/platform/vfio_platform_irq.c     | 112 ++++++++++++++++++++++++--
+>  drivers/vfio/platform/vfio_platform_private.h |   2 +
+>  2 files changed, 109 insertions(+), 5 deletions(-)
 > 
-> diff --git a/drivers/vfio/platform/vfio_platform.c b/drivers/vfio/platform/vfio_platform.c
-> index 192291c..f4c06c6 100644
-> --- a/drivers/vfio/platform/vfio_platform.c
-> +++ b/drivers/vfio/platform/vfio_platform.c
-> @@ -177,10 +177,40 @@ static long vfio_platform_ioctl(void *device_data,
->  
->  		return copy_to_user((void __user *)arg, &info, minsz);
->  
-> -	} else if (cmd == VFIO_DEVICE_SET_IRQS)
-> -		return -EINVAL;
-> +	} else if (cmd == VFIO_DEVICE_SET_IRQS) {
-> +		struct vfio_irq_set hdr;
-> +		int ret = 0;
-> +
-> +		minsz = offsetofend(struct vfio_irq_set, count);
-> +
-> +		if (copy_from_user(&hdr, (void __user *)arg, minsz))
-> +			return -EFAULT;
-> +
-> +		if (hdr.argsz < minsz)
-> +			return -EINVAL;
-> +
-> +		if (hdr.index >= vdev->num_irqs)
-> +			return -EINVAL;
-> +
-> +		if (hdr.start != 0 || hdr.count > 1)
-> +			return -EINVAL;
-> +
-> +		if (hdr.count == 0 &&
-> +			(!(hdr.flags & VFIO_IRQ_SET_DATA_NONE) ||
-> +			 !(hdr.flags & VFIO_IRQ_SET_ACTION_TRIGGER)))
-> +			return -EINVAL;
-> +
-> +		if (hdr.flags & ~(VFIO_IRQ_SET_DATA_TYPE_MASK |
-> +				  VFIO_IRQ_SET_ACTION_TYPE_MASK))
-> +			return -EINVAL;
-> +
-> +		ret = vfio_platform_set_irqs_ioctl(vdev, hdr.flags, hdr.index,
-> +						   hdr.start, hdr.count,
-> +						   (void *)arg+minsz);
-> +
-> +		return ret;
->  
-> -	else if (cmd == VFIO_DEVICE_RESET)
-> +	} else if (cmd == VFIO_DEVICE_RESET)
->  		return -EINVAL;
->  
->  	return -ENOTTY;
 > diff --git a/drivers/vfio/platform/vfio_platform_irq.c b/drivers/vfio/platform/vfio_platform_irq.c
-> index 22c214f..d79f5af 100644
+> index d79f5af..10dfbf0 100644
 > --- a/drivers/vfio/platform/vfio_platform_irq.c
 > +++ b/drivers/vfio/platform/vfio_platform_irq.c
-> @@ -31,6 +31,9 @@
+> @@ -51,9 +51,17 @@ int vfio_platform_irq_init(struct vfio_platform_device *vdev)
+>  		if (hwirq < 0)
+>  			goto err;
 >  
->  #include "vfio_platform_private.h"
->  
-> +static int vfio_set_trigger(struct vfio_platform_device *vdev,
-> +			    int index, int fd);
+> -		vdev->irq[i].flags = VFIO_IRQ_INFO_EVENTFD;
+> +		spin_lock_init(&vdev->irq[i].lock);
 > +
->  int vfio_platform_irq_init(struct vfio_platform_device *vdev)
->  {
->  	int cnt = 0, i;
-> @@ -43,17 +46,142 @@ int vfio_platform_irq_init(struct vfio_platform_device *vdev)
->  		return -ENOMEM;
->  
->  	for (i = 0; i < cnt; i++) {
-> -		vdev->irq[i].flags = 0;
-> +		int hwirq = platform_get_irq(vdev->pdev, i);
+> +		vdev->irq[i].flags = VFIO_IRQ_INFO_EVENTFD
+> +					| VFIO_IRQ_INFO_MASKABLE;
 > +
-> +		if (hwirq < 0)
-> +			goto err;
+> +		if (irq_get_trigger_type(hwirq) & IRQ_TYPE_LEVEL_MASK)
+> +			vdev->irq[i].flags |= VFIO_IRQ_INFO_AUTOMASKED;
+
+This seems to rely on the fact that you had actually loaded a driver for
+your device to set the right type.  Is this assumption always correct?
+
+It seems to me that this configuration bit should now be up to your user
+space drive who is the best candidate to know details about your device
+at this point?
+
 > +
-> +		vdev->irq[i].flags = VFIO_IRQ_INFO_EVENTFD;
 >  		vdev->irq[i].count = 1;
-> +		vdev->irq[i].hwirq = hwirq;
+>  		vdev->irq[i].hwirq = hwirq;
+> +		vdev->irq[i].masked = false;
 >  	}
 >  
 >  	vdev->num_irqs = cnt;
+> @@ -77,11 +85,27 @@ void vfio_platform_irq_cleanup(struct vfio_platform_device *vdev)
 >  
->  	return 0;
-> +err:
-> +	kfree(vdev->irq);
-> +	return -EINVAL;
->  }
->  
->  void vfio_platform_irq_cleanup(struct vfio_platform_device *vdev)
+>  static irqreturn_t vfio_irq_handler(int irq, void *dev_id)
 >  {
-> +	int i;
+> -	struct eventfd_ctx *trigger = dev_id;
+> +	struct vfio_platform_irq *irq_ctx = dev_id;
+> +	unsigned long flags;
+> +	int ret = IRQ_NONE;
 > +
-> +	for (i = 0; i < vdev->num_irqs; i++)
-> +		vfio_set_trigger(vdev, i, -1);
+> +	spin_lock_irqsave(&irq_ctx->lock, flags);
 > +
->  	vdev->num_irqs = 0;
->  	kfree(vdev->irq);
+> +	if (!irq_ctx->masked) {
+> +		ret = IRQ_HANDLED;
+> +
+> +		if (irq_ctx->flags & VFIO_IRQ_INFO_AUTOMASKED) {
+> +			disable_irq_nosync(irq_ctx->hwirq);
+> +			irq_ctx->masked = true;
+> +		}
+> +	}
+>  
+> -	eventfd_signal(trigger, 1);
+> +	spin_unlock_irqrestore(&irq_ctx->lock, flags);
+>  
+> -	return IRQ_HANDLED;
+> +	if (ret == IRQ_HANDLED)
+> +		eventfd_signal(irq_ctx->trigger, 1);
+> +
+> +	return ret;
 >  }
-> +
-> +static irqreturn_t vfio_irq_handler(int irq, void *dev_id)
+>  
+>  static int vfio_set_trigger(struct vfio_platform_device *vdev,
+> @@ -162,6 +186,82 @@ static int vfio_platform_set_irq_trigger(struct vfio_platform_device *vdev,
+>  	return -EFAULT;
+>  }
+>  
+> +static int vfio_platform_set_irq_unmask(struct vfio_platform_device *vdev,
+> +				    unsigned index, unsigned start,
+> +				    unsigned count, uint32_t flags, void *data)
 > +{
-> +	struct eventfd_ctx *trigger = dev_id;
+> +	uint8_t arr;
+
+
+arr?
+
 > +
-> +	eventfd_signal(trigger, 1);
+> +	if (start != 0 || count != 1)
+> +		return -EINVAL;
 > +
-> +	return IRQ_HANDLED;
+> +	switch (flags & VFIO_IRQ_SET_DATA_TYPE_MASK) {
+> +	case VFIO_IRQ_SET_DATA_BOOL:
+> +		if (copy_from_user(&arr, data, sizeof(uint8_t)))
+> +			return -EFAULT;
+> +
+> +		if (arr != 0x1)
+> +			return -EINVAL;
+
+why the fallthrough, what's this about?
+
+> +
+> +	case VFIO_IRQ_SET_DATA_NONE:
+> +
+> +		spin_lock_irq(&vdev->irq[index].lock);
+> +
+> +		if (vdev->irq[index].masked) {
+> +			enable_irq(vdev->irq[index].hwirq);
+> +			vdev->irq[index].masked = false;
+> +		}
+> +
+> +		spin_unlock_irq(&vdev->irq[index].lock);
+> +
+> +		return 0;
+> +
+> +	case VFIO_IRQ_SET_DATA_EVENTFD: /* XXX not implemented yet */
+> +	default:
+> +		return -ENOTTY;
+> +	}
+> +
+> +	return 0;
 > +}
 > +
-> +static int vfio_set_trigger(struct vfio_platform_device *vdev,
-> +			    int index, int fd)
+> +static int vfio_platform_set_irq_mask(struct vfio_platform_device *vdev,
+> +				    unsigned index, unsigned start,
+> +				    unsigned count, uint32_t flags, void *data)
 > +{
-> +	struct vfio_platform_irq *irq = &vdev->irq[index];
-> +	struct eventfd_ctx *trigger;
-> +	int ret;
+> +	uint8_t arr;
 > +
-> +	if (irq->trigger) {
-> +		free_irq(irq->hwirq, irq);
-> +		kfree(irq->name);
-> +		eventfd_ctx_put(irq->trigger);
-> +		irq->trigger = NULL;
+> +	if (start != 0 || count != 1)
+> +		return -EINVAL;
+> +
+> +	switch (flags & VFIO_IRQ_SET_DATA_TYPE_MASK) {
+> +	case VFIO_IRQ_SET_DATA_BOOL:
+> +		if (copy_from_user(&arr, data, sizeof(uint8_t)))
+> +			return -EFAULT;
+> +
+> +		if (arr != 0x1)
+> +			return -EINVAL;
+> +
+> +	case VFIO_IRQ_SET_DATA_NONE:
+> +
+> +		spin_lock_irq(&vdev->irq[index].lock);
+> +
+> +		if (!vdev->irq[index].masked) {
+> +			disable_irq(vdev->irq[index].hwirq);
+> +			vdev->irq[index].masked = true;
+> +		}
+> +
+> +		spin_unlock_irq(&vdev->irq[index].lock);
+> +
+> +		return 0;
+> +
+> +	case VFIO_IRQ_SET_DATA_EVENTFD: /* XXX not implemented yet */
+> +	default:
+> +		return -ENOTTY;
 > +	}
-
-this feels incredibly racy, is some lock protecting this access?
-
--Christoffer
+> +
+> +	return 0;
+> +}
+> +
+>  int vfio_platform_set_irqs_ioctl(struct vfio_platform_device *vdev,
+>  				 uint32_t flags, unsigned index, unsigned start,
+>  				 unsigned count, void *data)
+> @@ -172,8 +272,10 @@ int vfio_platform_set_irqs_ioctl(struct vfio_platform_device *vdev,
+>  
+>  	switch (flags & VFIO_IRQ_SET_ACTION_TYPE_MASK) {
+>  	case VFIO_IRQ_SET_ACTION_MASK:
+> +		func = vfio_platform_set_irq_mask;
+> +		break;
+>  	case VFIO_IRQ_SET_ACTION_UNMASK:
+> -		/* XXX not implemented */
+> +		func = vfio_platform_set_irq_unmask;
+>  		break;
+>  	case VFIO_IRQ_SET_ACTION_TRIGGER:
+>  		func = vfio_platform_set_irq_trigger;
+> diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
+> index d6200df..4d887fd 100644
+> --- a/drivers/vfio/platform/vfio_platform_private.h
+> +++ b/drivers/vfio/platform/vfio_platform_private.h
+> @@ -30,6 +30,8 @@ struct vfio_platform_irq {
+>  	u32			count;
+>  	int			hwirq;
+>  	char			*name;
+> +	bool			masked;
+> +	spinlock_t		lock;
+>  };
+>  
+>  struct vfio_platform_region {
+> -- 
+> 1.8.3.2
+> 
