@@ -1,13 +1,15 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
-Date: Sat, 07 Jun 2014 15:22:13 +0200
-Message-ID: <4306568.dZTtF4xhhK@wuerfel>
-References: <20140606224542.GA22188@mithrandir>
+From: Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFC PATCH v6 14/20] vfio/platform: initial interrupts support
+Date: Sun, 8 Jun 2014 12:09:24 +0200
+Message-ID: <20140608100924.GA3279@lvm>
+References: <1401987808-23596-1-git-send-email-a.motakis@virtualopensystems.com>
+	<1401987808-23596-15-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140606224542.GA22188@mithrandir>
+Content-Disposition: inline
+In-Reply-To: <1401987808-23596-15-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,70 +19,140 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Saturday 07 June 2014 00:45:45 Thierry Reding wrote:
-> This is somewhat off-topic, but given the various concepts discussed in
-> this thread I'm beginning to wonder how they will be implemented.
-
-I think it's good you raised the question.
-
-> The
-> current implementation hooks the IOMMU API into the DMA mapping API, and
-> the way this is done is by setting a single IOMMU (or rather a set of
-> IOMMU operations) globally per bus type.
-
-I hadn't realized that we have a per-bus iommu_ops pointer. I agree
-this will become a limitation as soon as we have a soc with two different
-IOMMUs that have platform devices attached, and it has to be moved into
-the device or a structure related to that.
-
-If that turns out controversial, we can probably have a set of pseudo
-iommu ops that just call into dev->archdata->iommu_ops->function()
-for ARM.
-
-> There are two issues that I can see with that: one is that we can't
-> support multiple IOMMUs in the system at all, and the other is that
-> there is no context associated with the IOMMU ops, and therefore there
-> is no way to differentiate between two instances of the same IOMMU. A
-> few drivers use global variables to keep track of context information
-> but that won't work with multiple instances, unless they keep a global
-> list of all instances and then require explicit lookup in each of the
-> IOMMU operations. That sounds more like a workaround rather than a
-> proper solution to me.
-
-Supporting multiple iommus that share one iommu driver should work
-without such hacks, as you can put the per-device information into
-dev->device_dma_parameters (this works only for very simple IOMMUs)
-or dev->archdata->iommu (we may want to generalize that, I think
-someone just posted patches for it).
-
-> Discussion in this thread indicates that both of the above will be
-> required at some point. Have I completely missed something or will we
-> have to rework (parts of) the IOMMU API to make this work?
+On Thu, Jun 05, 2014 at 07:03:22PM +0200, Antonios Motakis wrote:
+> This patch allows to set an eventfd for a patform device's interrupt,
+> and also to trigger the interrupt eventfd from userspace for testing.
 > 
-> One other thing that I have some difficulty understanding is how we can
-> support things like process isolation using the current IOMMU API. Since
-> a device will be statically assigned to one IOMMU domain at probe time
-> there is no way we can change the address space upon a context switch.
+> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+> ---
+>  drivers/vfio/platform/vfio_platform.c         |  36 ++++++-
+>  drivers/vfio/platform/vfio_platform_irq.c     | 130 +++++++++++++++++++++++++-
+>  drivers/vfio/platform/vfio_platform_private.h |   7 ++
+>  3 files changed, 169 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/vfio/platform/vfio_platform.c b/drivers/vfio/platform/vfio_platform.c
+> index 192291c..f4c06c6 100644
+> --- a/drivers/vfio/platform/vfio_platform.c
+> +++ b/drivers/vfio/platform/vfio_platform.c
+> @@ -177,10 +177,40 @@ static long vfio_platform_ioctl(void *device_data,
+>  
+>  		return copy_to_user((void __user *)arg, &info, minsz);
+>  
+> -	} else if (cmd == VFIO_DEVICE_SET_IRQS)
+> -		return -EINVAL;
+> +	} else if (cmd == VFIO_DEVICE_SET_IRQS) {
+> +		struct vfio_irq_set hdr;
+> +		int ret = 0;
+> +
+> +		minsz = offsetofend(struct vfio_irq_set, count);
+> +
+> +		if (copy_from_user(&hdr, (void __user *)arg, minsz))
+> +			return -EFAULT;
+> +
+> +		if (hdr.argsz < minsz)
+> +			return -EINVAL;
+> +
+> +		if (hdr.index >= vdev->num_irqs)
+> +			return -EINVAL;
+> +
+> +		if (hdr.start != 0 || hdr.count > 1)
+> +			return -EINVAL;
+> +
+> +		if (hdr.count == 0 &&
+> +			(!(hdr.flags & VFIO_IRQ_SET_DATA_NONE) ||
+> +			 !(hdr.flags & VFIO_IRQ_SET_ACTION_TRIGGER)))
+> +			return -EINVAL;
+> +
+> +		if (hdr.flags & ~(VFIO_IRQ_SET_DATA_TYPE_MASK |
+> +				  VFIO_IRQ_SET_ACTION_TYPE_MASK))
+> +			return -EINVAL;
+> +
+> +		ret = vfio_platform_set_irqs_ioctl(vdev, hdr.flags, hdr.index,
+> +						   hdr.start, hdr.count,
+> +						   (void *)arg+minsz);
+> +
+> +		return ret;
+>  
+> -	else if (cmd == VFIO_DEVICE_RESET)
+> +	} else if (cmd == VFIO_DEVICE_RESET)
+>  		return -EINVAL;
+>  
+>  	return -ENOTTY;
+> diff --git a/drivers/vfio/platform/vfio_platform_irq.c b/drivers/vfio/platform/vfio_platform_irq.c
+> index 22c214f..d79f5af 100644
+> --- a/drivers/vfio/platform/vfio_platform_irq.c
+> +++ b/drivers/vfio/platform/vfio_platform_irq.c
+> @@ -31,6 +31,9 @@
+>  
+>  #include "vfio_platform_private.h"
+>  
+> +static int vfio_set_trigger(struct vfio_platform_device *vdev,
+> +			    int index, int fd);
+> +
+>  int vfio_platform_irq_init(struct vfio_platform_device *vdev)
+>  {
+>  	int cnt = 0, i;
+> @@ -43,17 +46,142 @@ int vfio_platform_irq_init(struct vfio_platform_device *vdev)
+>  		return -ENOMEM;
+>  
+>  	for (i = 0; i < cnt; i++) {
+> -		vdev->irq[i].flags = 0;
+> +		int hwirq = platform_get_irq(vdev->pdev, i);
+> +
+> +		if (hwirq < 0)
+> +			goto err;
+> +
+> +		vdev->irq[i].flags = VFIO_IRQ_INFO_EVENTFD;
+>  		vdev->irq[i].count = 1;
+> +		vdev->irq[i].hwirq = hwirq;
+>  	}
+>  
+>  	vdev->num_irqs = cnt;
+>  
+>  	return 0;
+> +err:
+> +	kfree(vdev->irq);
+> +	return -EINVAL;
+>  }
+>  
+>  void vfio_platform_irq_cleanup(struct vfio_platform_device *vdev)
+>  {
+> +	int i;
+> +
+> +	for (i = 0; i < vdev->num_irqs; i++)
+> +		vfio_set_trigger(vdev, i, -1);
+> +
+>  	vdev->num_irqs = 0;
+>  	kfree(vdev->irq);
+>  }
+> +
+> +static irqreturn_t vfio_irq_handler(int irq, void *dev_id)
+> +{
+> +	struct eventfd_ctx *trigger = dev_id;
+> +
+> +	eventfd_signal(trigger, 1);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int vfio_set_trigger(struct vfio_platform_device *vdev,
+> +			    int index, int fd)
+> +{
+> +	struct vfio_platform_irq *irq = &vdev->irq[index];
+> +	struct eventfd_ctx *trigger;
+> +	int ret;
+> +
+> +	if (irq->trigger) {
+> +		free_irq(irq->hwirq, irq);
+> +		kfree(irq->name);
+> +		eventfd_ctx_put(irq->trigger);
+> +		irq->trigger = NULL;
+> +	}
 
-We have just introduced a way to parse dma-ranges in of_dma_configure().
+this feels incredibly racy, is some lock protecting this access?
 
-The only way I see this done for platform devices is to do the IOMMU
-configuration in the same place: if an iommus property is found there,
-we call out to the iommu driver that matches the respective iommu device
-and let it configure the master device.
-
-The device already has multiple properties related to iommus:
-'struct device_dma_parameters', 'archdata', 'iommu_group', and
-pdev_archdata for platform devices. This should be enough to set up
-the default iommu dma_map_ops so we can have non-isolated DMA using
-dma_map_* and dma_alloc_coherent.
-
-I haven't given much thought to devices that want to use the IOMMU
-API directly so they can have multiple domains rather than rely on
-the dma-mapping abstraction.
-
-	Arnd
+-Christoffer
