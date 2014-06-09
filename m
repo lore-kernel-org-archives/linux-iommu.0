@@ -1,13 +1,14 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v4 00/16] PCI/iommu: Fix DMA alias problems
-Date: Mon, 09 Jun 2014 12:01:22 -0600
-Message-ID: <1402336882.14174.107.camel@ul30vt.home>
-References: <20140522230230.2856.40017.stgit@bling.home>
+From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Subject: [PATCH 3.14 78/78] [stable PATCH] iommu/vt-d: Fix missing IOTLB flush
+	in intel_iommu_unmap()
+Date: Mon,  9 Jun 2014 15:48:58 -0700
+Message-ID: <20140609224815.816758729@linuxfoundation.org>
+References: <20140609224813.282275135@linuxfoundation.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140522230230.2856.40017.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+In-Reply-To: <20140609224813.282275135-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,62 +18,62 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-pci <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stable-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 2014-05-22 at 17:07 -0600, Alex Williamson wrote:
-> Alex Williamson (16):
->       PCI: Add DMA alias iterator
->       PCI: define pci_dev_flags as bit shifts
->       PCI: quirk pci_for_each_dma_alias()
->       PCI: quirk dma_alias_devfn for Ricoh devices
->       PCI: quirk dma_alias_devfn for Marvell devices
->       PCI: Quirk pci_for_each_dma_alias() for bridges
->       PCI: Add quirks for ASMedia and Tundra bridges
+3.14-stable review patch.  If anyone has any objections, please let me know.
 
+------------------
 
-Hi Joerg & David,
+From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 
-Bjorn has accepted the above patches for v3.16 and they currently live
-in his pci/iommu branch.  This series has been shown by numerous users
-to make devices with buggy DMA issues work in the presence of an IOMMU
-and it would be really great if we could get an opinion on both the
-common IOMMU changes as well as the changes for AMD-Vi and Intel VT-d.
-Varun has already ack'd the changes for fsl.  Please let us know how
-you'd like to proceed.  Can we get acks and allow Bjorn to shepherd the
-whole series in?  Would you prefer to pull the changes via your
-respective trees and let Bjorn follow-up with the code removal?  Do you
-have any outstanding issues with the patches to your areas?  Thanks,
+Based on commit ea8ea460c9ace60bbb5ac6e5521d637d5c15293d upstream
 
-Alex
+This missing IOTLB flush was added as a minor, inconsequential bug-fix
+in commit ea8ea460c ("iommu/vt-d: Clean up and fix page table clear/free
+behaviour") in 3.15. It wasn't originally intended for -stable but a
+couple of users have reported issues which turn out to be fixed by
+adding the missing flush.
 
->       iommu: Create central IOMMU group lookup/creation interface
->       iommu/amd: Update to use PCI DMA aliases
->       iommu/amd: Use iommu_group_get_for_dev()
->       iommu/intel: Use iommu_group_get_for_dev()
->       iommu/intel: Update to use PCI DMA aliases
->       iommu/fsl: Use iommu_group_get_for_dev() for IOMMU groups
->       iommu: Remove pci.h
->       PCI: Remove pci_find_upstream_pcie_bridge()
->       PCI: Remove pci_get_dma_source()
-> 
-> 
->  drivers/iommu/amd_iommu.c           |  214 +++++++-----------------
->  drivers/iommu/amd_iommu_types.h     |    1 
->  drivers/iommu/fsl_pamu_domain.c     |   66 --------
->  drivers/iommu/intel-iommu.c         |  307 +++++++++++++----------------------
->  drivers/iommu/intel_irq_remapping.c |   55 ++++--
->  drivers/iommu/iommu.c               |  181 +++++++++++++++++++++
->  drivers/iommu/pci.h                 |   29 ---
->  drivers/pci/quirks.c                |  116 ++++++++-----
->  drivers/pci/search.c                |  104 +++++++++---
->  include/linux/iommu.h               |    1 
->  include/linux/pci.h                 |   31 +---
->  11 files changed, 557 insertions(+), 548 deletions(-)
->  delete mode 100644 drivers/iommu/pci.h
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
+Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+---
+For 3.14 and earlier. As noted, this fix is in 3.15 already.
+
+ drivers/iommu/intel-iommu.c |   18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
+
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -4075,7 +4075,7 @@ static size_t intel_iommu_unmap(struct i
+ 			     unsigned long iova, size_t size)
+ {
+ 	struct dmar_domain *dmar_domain = domain->priv;
+-	int order;
++	int order, iommu_id;
+ 
+ 	order = dma_pte_clear_range(dmar_domain, iova >> VTD_PAGE_SHIFT,
+ 			    (iova + size - 1) >> VTD_PAGE_SHIFT);
+@@ -4083,6 +4083,22 @@ static size_t intel_iommu_unmap(struct i
+ 	if (dmar_domain->max_addr == iova + size)
+ 		dmar_domain->max_addr = iova;
+ 
++	for_each_set_bit(iommu_id, dmar_domain->iommu_bmp, g_num_of_iommus) {
++		struct intel_iommu *iommu = g_iommus[iommu_id];
++		int num, ndomains;
++
++		/*
++		 * find bit position of dmar_domain
++		 */
++		ndomains = cap_ndoms(iommu->cap);
++		for_each_set_bit(num, iommu->domain_ids, ndomains) {
++			if (iommu->domains[num] == dmar_domain)
++				iommu_flush_iotlb_psi(iommu, num,
++						      iova >> VTD_PAGE_SHIFT,
++						      1 << order, 0);
++		}
++	}
++
+ 	return PAGE_SIZE << order;
+ }
+ 
