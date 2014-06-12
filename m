@@ -1,8 +1,7 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RESEND PATCH] iommu/intel: Exclude devices using RMRRs from IOMMU
-	API domains
-Date: Thu, 12 Jun 2014 10:35:23 -0600
-Message-ID: <20140612163402.9108.50209.stgit@bling.home>
+Subject: [PATCH 0/3] iommu: Expose IOMMU information in sysfs
+Date: Thu, 12 Jun 2014 16:12:18 -0600
+Message-ID: <20140612215954.2754.30263.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -16,49 +15,58 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
-Cc: chegu_vinod-VXdhtT5mjnY@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The user of the IOMMU API domain expects to have full control of
-the IOVA space for the domain.  RMRRs are fundamentally incompatible
-with that idea.  We can neither map the RMRR into the IOMMU API
-domain, nor can we guarantee that the device won't continue DMA with
-the area described by the RMRR as part of the new domain.  Therefore
-we must prevent such devices from being used by the IOMMU API.
+Users want to know the features of their hardware and we need a better
+way to get it than parsing it out of dmesg.  This series creates an
+IOMMU class and allows drivers to create and destroy a device within
+that class.  Drivers may also link and unlink devices to expose the
+association of a device to a specific hardware unit and create
+attribute groups to expose further information about the specific
+IOMMU.
 
-Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+An example use case for this would be to determine whether the IOMMU
+for a device supports super-pages, which can have performance
+implications for a device assignment scenario.  A user with multiple
+IOMMU units may also want to factor load per IOMMU into their hardware
+layout.  This helps to expose those connections.
+
+I posted an RFC for this last month, but there were no comments.  This
+version officialy includes AMD-Vi support and removes the kobject used
+for creating the "devices" subdirectory, instead using an empty
+attribute group.  I've tried not to duplicate any information
+available elsewhere for the user, for example in the DMAR or IVRS
+tables.  This means that while I think it might be interesting to
+expose things like RMRR, the user already has access to those by
+parsing the appropriate firmware table.  I welcome any additional
+IOMMU driver implementaitons.  Thanks,
+
+Alex
+
 ---
 
-I didn't see any actionable items from the last posting of this, so
-re-posting unchanged.
+Alex Williamson (3):
+      iommu: Add sysfs support for IOMMUs
+      iommu/intel: Make use of IOMMU sysfs support
+      iommu/amd: Add sysfs support
 
- drivers/iommu/intel-iommu.c |   15 +++++++++++++++
- 1 file changed, 15 insertions(+)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index c4f11c0..41db805 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -4171,6 +4171,21 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
- 	int addr_width;
- 	u8 bus, devfn;
- 
-+	/*
-+	 * With IOMMU API domains we don't have the freedom to insert RMRR
-+	 * entries into the domain mapping, the IOMMU API user expects full
-+	 * control of the IOVA space of the device.  We also have no ability
-+	 * to shutdown whatever back channel operations occur through the
-+	 * RMRR.  Therefore our only option is to prevent devices making use
-+	 * of RMRRs from being used by the IOMMU API.  As usual we exempt
-+	 * USB devices since their RMRR support is largely historical.
-+	 */
-+	if (device_has_rmrr(dev) && (!dev_is_pci(dev) ||
-+	    (to_pci_dev(dev)->class >> 8) != PCI_CLASS_SERIAL_USB)) {
-+		dev_warn(dev, "Device is ineligible for IOMMU domain attach due to platform RMRR requirement.  Contact your platform vendor.\n");
-+		return -EPERM;
-+	}
-+
- 	/* normally dev is not mapped */
- 	if (unlikely(domain_context_mapped(dev))) {
- 		struct dmar_domain *old_domain;
+ Documentation/ABI/testing/sysfs-class-iommu        |   17 +++
+ .../ABI/testing/sysfs-class-iommu-amd-iommu        |   14 ++
+ .../ABI/testing/sysfs-class-iommu-intel-iommu      |   32 +++++
+ drivers/iommu/Makefile                             |    1 
+ drivers/iommu/amd_iommu.c                          |    6 +
+ drivers/iommu/amd_iommu_init.c                     |   38 ++++++
+ drivers/iommu/amd_iommu_types.h                    |    3 
+ drivers/iommu/dmar.c                               |    9 +
+ drivers/iommu/intel-iommu.c                        |   77 +++++++++++-
+ drivers/iommu/iommu-sysfs.c                        |  133 ++++++++++++++++++++
+ include/linux/intel-iommu.h                        |    3 
+ include/linux/iommu.h                              |   26 ++++
+ 12 files changed, 358 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-class-iommu
+ create mode 100644 Documentation/ABI/testing/sysfs-class-iommu-amd-iommu
+ create mode 100644 Documentation/ABI/testing/sysfs-class-iommu-intel-iommu
+ create mode 100644 drivers/iommu/iommu-sysfs.c
