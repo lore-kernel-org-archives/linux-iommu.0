@@ -1,20 +1,21 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [RFC PATCH v6 04/20] iommu/arm-smmu: add capability
-	IOMMU_CAP_INTR_REMAP
-Date: Mon, 16 Jun 2014 17:38:32 +0200
-Message-ID: <20140616153832.GC31771@8bytes.org>
-References: <1401987808-23596-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1401987808-23596-5-git-send-email-a.motakis@virtualopensystems.com>
-	<20140608103129.GC3279@lvm> <20140616145344.GD18986@8bytes.org>
-	<20140616151329.GQ16758@arm.com>
-	<20140616152157.GB31771@8bytes.org>
-	<20140616152526.GR16758@arm.com>
+From: Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
+Date: Mon, 16 Jun 2014 16:56:32 +0000
+Message-ID: <8b0492b4697943a0b1f276ef42cc8223@DM2PR03MB352.namprd03.prod.outlook.com>
+References: <1400877218-4113-1-git-send-email-thierry.reding@gmail.com>
+	<4545972.cM7IP1qTXQ@wuerfel>
+	<CAL_Jsq+tkFNpjSEZboT+o69B_Z3a8e-ZVKaYDmLwtkyYoPy6VQ@mail.gmail.com>
+	<5288123.eXagyPAxNq@wuerfel>
+	<20140602104104.GD3855@e103592.cambridge.arm.com>
+	<20140604143509.GF28484@ulmo> <20140604164132.GF6644@arm.com>
+	<07321368d15d4ad9928ebb83af87e401@DM2PR03MB479.namprd03.prod.outlook.com>
+	<20140616152739.GS16758@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20140616152526.GR16758-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20140616152739.GS16758-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,19 +25,93 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "moderated list:ARM SMMU DRIVER" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jun 16, 2014 at 04:25:26PM +0100, Will Deacon wrote:
-> Ok, thanks. In which case, I think this is really a combined property of
-> the SMMU and the interrupt controller, so we might need some extra code
-> so that the SMMU can check that the interrupt controller for the device
-> is also capable of interrupt remapping.
-
-Right, that this is part of IOMMU code has more or less historic reasons
-on x86. Interrupt remapping is purely implemented in the IOMMU there, so
-on ARM some clue-code between interrupt controler and smmu is needed.
 
 
-	Joerg
+> -----Original Message-----
+> From: Will Deacon [mailto:will.deacon-5wv7dgnIgG8@public.gmane.org]
+> Sent: Monday, June 16, 2014 10:28 AM
+> To: Sethi Varun-B16395
+> Cc: Thierry Reding; Mark Rutland; devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-
+> samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Pawel Moll; Arnd Bergmann; Ian Campbell;
+> Grant Grundler; Stephen Warren; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Marc
+> Zyngier; Linux IOMMU; Rob Herring; Kumar Gala; linux-
+> tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Cho KyongHo; Dave P Martin; linux-arm-
+> kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; Yoder Stuart-B08248
+> Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree
+> bindings
+> 
+> Hi Varun,
+> 
+> On Thu, Jun 05, 2014 at 08:10:19PM +0100, Varun Sethi wrote:
+> > > The set of StreamIDs that can be generated by a master is fixed in
+> the
+> > > hardware. The SMMU can then be programmed to map these incoming IDs
+> onto
+> > > a context ID (or a set of context IDs), which are the IDs used
+> internally
+> > > by the SMMU to find the page tables etc.
+> > >
+> > > The StreamID -> ContextID mapping is dynamic and controlled by
+> software.
+> > > The Master -> StreamIDs mapping is fixed in the hardware.
+> > The Master -> StreamIDs mapping may not always be fixed in the
+> hardware.
+> > At, least in our case we plan to program these via software. PCI
+> devices
+> > is one place where this mapping would have to be dynamic (based on the
+> > topology i.e. if the devices are connected to a bridge etc). Also, we
+> have
+> > a hot plug device architecture where the stream ID is software
+> > programmable.
+> >
+> > Other than that, based on the isolation requirements (iommu domain)
+> > software programmability offers greater flexibility.
+> 
+> For the sake of consistency, I'd really like to treat the master ->
+> streamIDs mapping as fixed. If that means setting it once during boot in
+> your case, then so be it (ideally in the firmware). That way, we just
+> describe the fixed mapping to the kernel and the driver doesn't have to
+> worry about changing the mapping, especially given that that's likely to
+> be
+> highly error-prone once the SMMU is in us.
+> 
+> Do you have use-cases where you really need to change these mappings
+> dynamically?
+
+Yes.  In the case of a PCI bus-- you may not know in advance how many
+PCI devices there are until you probe the bus.   We have another FSL
+proprietary bus we call the "fsl-mc" bus that is similar.
+
+Another thing to consider-- starting with SMMUv2, as you know, there
+is a new distributed architecture with multiple TBUs and a centralized
+TCU that walks the SMMU page tables.  So instead of sprinkling multiple
+SMMUs all over an SoC you now have the option a 1 central TCU and sprinkling
+multiple TBUs around.   However, this means that the stream ID namespace
+is now global and can be pretty limited.  In the SMMU implementation we 
+have there are only 64 stream ID total for our Soc.  But we have many more
+masters than that.
+
+So we look at stream IDs as really corresponding to an 'isolation context'
+and not to a bus master.  An isolation context is the domain you are
+trying to isolate with the SMMU.  Devices that all belong to the same
+'isolation context' can share the same stream ID, since they share
+the same domain and page tables.
+
+So, perhaps by default some/most SMMU masters may have a default stream ID
+of 0x0 that is used by the host...and that could be represented
+statically in the device tree.
+
+But, we absolutely will need to dynamically set new stream IDs
+into masters when a new IOMMU 'domain' is created and devices
+are added to it.   All the devices in a domain will share
+the same stream ID.
+
+So whatever we do, let's please have an architecture flexible enough
+to allow for this.
+
+Thanks,
+Stuart
