@@ -1,55 +1,54 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
-Date: Mon, 16 Jun 2014 13:57:04 +0100
-Message-ID: <20140616125704.GE16758@arm.com>
-References: <1400877395-4235-1-git-send-email-thierry.reding@gmail.com>
- <538757B6.4010109@wwwdotorg.org>
- <20140530073006.GA24748@ulmo>
- <20140530112728.GB3949@e103592.cambridge.arm.com>
- <20140604211237.GC18710@mithrandir>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v4 00/16] PCI/iommu: Fix DMA alias problems
+Date: Mon, 16 Jun 2014 16:47:59 +0200
+Message-ID: <20140616144759.GC18986@8bytes.org>
+References: <20140522230230.2856.40017.stgit@bling.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20140604211237.GC18710@mithrandir>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TbrhsbdSgBK9A@public.gmane.org>
+In-Reply-To: <20140522230230.2856.40017.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-gpGsJRJZ3PBBDgjK7y7TUQ@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, eddy0596-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jun 04, 2014 at 10:12:38PM +0100, Thierry Reding wrote:
-> On Fri, May 30, 2014 at 12:27:28PM +0100, Dave Martin wrote:
-> > On Fri, May 30, 2014 at 08:30:08AM +0100, Thierry Reding wrote:
-> [...]
-> > > Arnd, can you take another look at this binding and see if there's
-> > > anything else missing? If not I'll go through the document again and
-> > > update all #address-cells/#size-cells references with #iommu-cells as
-> > > appropriate and submit v3.
-> > 
-> > How do you envisage propagation of the master ID bits downstream of the
-> > IOMMU would be described?
-> > 
-> > We will definitely need a way to describe this for GICv3.  How those
-> > values are propagated is likely to vary between related SoCs and doesn't
-> > feel like it should be baked into a driver, especially for the ARM SMMU
-> > which may get reused in radically different SoC families from different
-> > vendors.
-> 
-> Well, we've had cases like these in the past (power sequences come to
-> mind). Some concepts are just too difficult or unwieldy to be put into
-> device tree. I think that this is one of them.
-> 
-> > The most likely types of remapping are the adding of a base offset or
-> > some extra bits to the ID -- because not all MSIs to the GIC will
-> > necessarily pass through the IOMMU.  It's also possible that we might
-> > see ID squashing or folding in some systems.
-> 
-> It can easily be argued that if the algorithm used to remap the ID
-> varies, the compatibility of the device changes. Therefore I would
-> expect any variant of the GICv3 that deviates from the "standard"
-> mapping (if there is such a thing) to have its own compatible string.
+Hi Alex,
 
-There is no standard mapping; it's a property defined at system integration
-time. I fully expect different SoCs to do different things here.
+On Thu, May 22, 2014 at 05:07:23PM -0600, Alex Williamson wrote:
+> Alex Williamson (16):
+>       PCI: Add DMA alias iterator
+>       PCI: define pci_dev_flags as bit shifts
+>       PCI: quirk pci_for_each_dma_alias()
+>       PCI: quirk dma_alias_devfn for Ricoh devices
+>       PCI: quirk dma_alias_devfn for Marvell devices
+>       PCI: Quirk pci_for_each_dma_alias() for bridges
+>       PCI: Add quirks for ASMedia and Tundra bridges
+>       iommu: Create central IOMMU group lookup/creation interface
+>       iommu/amd: Update to use PCI DMA aliases
+>       iommu/amd: Use iommu_group_get_for_dev()
+>       iommu/intel: Use iommu_group_get_for_dev()
+>       iommu/intel: Update to use PCI DMA aliases
+>       iommu/fsl: Use iommu_group_get_for_dev() for IOMMU groups
+>       iommu: Remove pci.h
+>       PCI: Remove pci_find_upstream_pcie_bridge()
+>       PCI: Remove pci_get_dma_source()
 
-Will
+Sorry for the delay, I had a look at the generic IOMMU and the AMD part
+now. It looks good to me so far, but I still have to review the VT-d
+changes and give it all some testing on my machines. I really like the
+code simplification in the IOMMU drivers and also feel more comfortable
+when the IVRS table is still taken into consideration for getting
+aliases.
+
+
+	Joerg
