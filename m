@@ -1,104 +1,58 @@
-From: Thierry Reding <thierry.reding@gmail.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
-Date: Tue, 17 Jun 2014 13:58:30 +0200
-Message-ID: <20140617115829.GB18816@ulmo>
+Date: Tue, 17 Jun 2014 13:18:11 +0100
+Message-ID: <20140617121811.GG13808@arm.com>
 References: <1400877395-4235-1-git-send-email-thierry.reding@gmail.com>
  <538757B6.4010109@wwwdotorg.org>
  <20140530073006.GA24748@ulmo>
  <20140530112728.GB3949@e103592.cambridge.arm.com>
  <20140604211237.GC18710@mithrandir>
  <20140616125704.GE16758@arm.com>
+ <20140617115829.GB18816@ulmo>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="GID0FwUMdk1T2AWN"
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20140616125704.GE16758@arm.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: Dave P Martin <Dave.Martin@arm.com>, Stephen Warren <swarren@wwwdotorg.org>, Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <Pawel.Moll@arm.com>, Mark Rutland <Mark.Rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Cho KyongHo <pullip.cho@samsung.com>, Grant Grundler <grundler@chromium.org>, Marc Zyngier <Marc.Zyngier@arm.com>, Joerg Roedel <joro@8bytes.org>, Hiroshi Doyu <hdoyu@nvidia.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.o>
+In-Reply-To: <20140617115829.GB18816@ulmo>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TbrhsbdSgBK9A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+On Tue, Jun 17, 2014 at 12:58:30PM +0100, Thierry Reding wrote:
+> On Mon, Jun 16, 2014 at 01:57:04PM +0100, Will Deacon wrote:
+> > On Wed, Jun 04, 2014 at 10:12:38PM +0100, Thierry Reding wrote:
+> > > It can easily be argued that if the algorithm used to remap the ID
+> > > varies, the compatibility of the device changes. Therefore I would
+> > > expect any variant of the GICv3 that deviates from the "standard"
+> > > mapping (if there is such a thing) to have its own compatible string.
+> > 
+> > There is no standard mapping; it's a property defined at system integration
+> > time. I fully expect different SoCs to do different things here.
+> 
+> My point was that the mapping itself seems to be fundamental enough to
+> make devices with different mappings "incompatible". Therefore I think
+> this could probably be handled by using different compatible values,
+> something along the lines of this:
+> 
+> 	compatible = "vendor,soc-gicv3", "arm,gicv3";
+> 
+> Then the mapping can be described in code, which should be a whole lot
+> easier and more flexible than a more or less generic notation in device
+> tree.
 
---GID0FwUMdk1T2AWN
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I don't think that scales well beyond a handful of unique mappings, and I
+really anticipate everybody doing something different based on their
+integration constraints.
 
-On Mon, Jun 16, 2014 at 01:57:04PM +0100, Will Deacon wrote:
-> On Wed, Jun 04, 2014 at 10:12:38PM +0100, Thierry Reding wrote:
-> > On Fri, May 30, 2014 at 12:27:28PM +0100, Dave Martin wrote:
-> > > On Fri, May 30, 2014 at 08:30:08AM +0100, Thierry Reding wrote:
-> > [...]
-> > > > Arnd, can you take another look at this binding and see if there's
-> > > > anything else missing? If not I'll go through the document again and
-> > > > update all #address-cells/#size-cells references with #iommu-cells =
-as
-> > > > appropriate and submit v3.
-> > >=20
-> > > How do you envisage propagation of the master ID bits downstream of t=
-he
-> > > IOMMU would be described?
-> > >=20
-> > > We will definitely need a way to describe this for GICv3.  How those
-> > > values are propagated is likely to vary between related SoCs and does=
-n't
-> > > feel like it should be baked into a driver, especially for the ARM SM=
-MU
-> > > which may get reused in radically different SoC families from differe=
-nt
-> > > vendors.
-> >=20
-> > Well, we've had cases like these in the past (power sequences come to
-> > mind). Some concepts are just too difficult or unwieldy to be put into
-> > device tree. I think that this is one of them.
-> >=20
-> > > The most likely types of remapping are the adding of a base offset or
-> > > some extra bits to the ID -- because not all MSIs to the GIC will
-> > > necessarily pass through the IOMMU.  It's also possible that we might
-> > > see ID squashing or folding in some systems.
-> >=20
-> > It can easily be argued that if the algorithm used to remap the ID
-> > varies, the compatibility of the device changes. Therefore I would
-> > expect any variant of the GICv3 that deviates from the "standard"
-> > mapping (if there is such a thing) to have its own compatible string.
->=20
-> There is no standard mapping; it's a property defined at system integrati=
-on
-> time. I fully expect different SoCs to do different things here.
+You'd very quickly end up with sets of tables for each SoC, describing the
+topology and associated IDs in the kernel source, which feels like a giant
+step backwards from where we are today with device tree.
 
-My point was that the mapping itself seems to be fundamental enough to
-make devices with different mappings "incompatible". Therefore I think
-this could probably be handled by using different compatible values,
-something along the lines of this:
+If, for example, the GIC architecture prescribed a fixed set of Device IDs
+and an algorithm for converting from Stream IDs then your approach may have
+some merits, but that's not where we are today (and I also don't think it's
+practical to try and enforce such system-wide properties into an interrupt
+controller architecture).
 
-	compatible =3D "vendor,soc-gicv3", "arm,gicv3";
-
-Then the mapping can be described in code, which should be a whole lot
-easier and more flexible than a more or less generic notation in device
-tree.
-
-Thierry
-
---GID0FwUMdk1T2AWN
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJToC1lAAoJEN0jrNd/PrOhoDoQAIrRLnCfk4INnOK9LyQbVali
-ZiChXj0F9DYqy+drqd/trV4ogPjHcaylSGyK4w/3c0kpEr8ENs0axnoDtO34HxFz
-AU1LoFTaNZoevj3ZUC7XN26CUgGRe/Jq9+BolD0c5Jw41mD0mStKpJTSZOPkGpYs
-8b7y+2/04s2uidndI6oOymM2Yp3rC8qAsjI6ppBE0oypwRzzcvBS65JIod3MKIx9
-oYDOMan8+twFIBXl4DP5azQv8sGfCMdM4cv1436jTNRJXW2E2hoN4D3ED6tDOFWK
-ubucFt7o0YPbsJkVgpXt2o8qUw9f99+h0UE9n+92mzpnzykfe1BrNX3TS7Rb/smw
-ZIbgJsCjOsCmPLfpXlaFxf3dHPh2Fz73vXWz/8jm+pFgW+QLZ37tLLRssuTZzMlZ
-cdRivcKVrkN+pDvsJ8atZ/fL2c00kc3l0pjdFUVL8+M5qn8/Xbg2S/GBItL6d2Kk
-Ij9gg/6irAjjnrpyUzCjXU3R2ILeBDHSc1iLUjwx0tV70qVbheFylNsPMJisUDeu
-Bbevv4mMsvxSwiei+FHHGlJ5VGeZx4NoII8a0HnROLdd5T1x8+WnHFQpwnYD8wxz
-pkI7pCIB5RpMw+1bq6XWiwym0TU9Ep3Qkabc0oknnJ8NnikvLStPW3AMFsWeFaKR
-anoBpU795w1snQT2xFWG
-=sthc
------END PGP SIGNATURE-----
-
---GID0FwUMdk1T2AWN--
+Will
