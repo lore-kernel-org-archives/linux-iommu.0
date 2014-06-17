@@ -1,43 +1,41 @@
-From: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: Re: [PATCH 09/24]  drivers/iommu: check actual error on iommu_init
-Date: Tue, 17 Jun 2014 12:24:30 -0700
-Message-ID: <20140617192430.GC4628@kroah.com>
-References: <53A050BF.3000101@oracle.com> <20140617152154.GE31771@8bytes.org>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH v2 02/10] iommu/ipmmu-vmsa: Cleanup failures of ARM mapping creation or attachment
+Date: Wed, 18 Jun 2014 01:20:37 +0200
+Message-ID: <5430380.Ocpv7sA44O@avalon>
+References: <1400150451-13469-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <9405311.lnqBdrCsyu@avalon> <20140616151142.GE18986@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20140617152154.GE31771-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Jeff Liu <jeff.liu-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <20140616151142.GE18986@8bytes.org>
+Sender: linux-sh-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-sh@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jun 17, 2014 at 05:21:54PM +0200, Joerg Roedel wrote:
-> On Tue, Jun 17, 2014 at 10:29:19PM +0800, Jeff Liu wrote:
-> > From: Jie Liu <jeff.liu-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Hi Joerg,
+
+On Monday 16 June 2014 17:11:42 Joerg Roedel wrote:
+> On Mon, May 26, 2014 at 12:08:37PM +0200, Laurent Pinchart wrote:
+> > > Skipped this one because it didn't apply. The others are applied.
 > > 
-> > kset_create_and_add() has been fixed to return the actual error
-> > code ptr rather than NULL, so update iommu_init() to check the
-> > return value via IS_ERR() accordingly.
-> > 
-> > Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> > Signed-off-by: Jie Liu <jeff.liu-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+> > Thank you. I'll rebase the patch on top of your tree as soon as you
+> > publish the related branch and resubmit.
 > 
-> Acked-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> What happened to this patch?
 
-Nope, please do not take this patch, it is not needed and as the kset
-call is not changing, it will be incorrect.
+It looks like it slipped through the cracks :-/ Should I submit it as a fix 
+for v3.16 or wait until v3.17 ?
 
-thanks,
+> And how about the other iommu_domain changes requested. Will you submit them
+> for 3.17?
 
-greg k-h
+I plan to work on that, but I'm not sure whether I'll be able to finish the 
+work for v3.17, as I need to concentrate on a DMA engine driver right now, and 
+will then need to finish the DT bindings for the IPMMU driver (which may 
+result in fixes for some of the iommu_domain-related problems).
+
+-- 
+Regards,
+
+Laurent Pinchart
