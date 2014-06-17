@@ -1,87 +1,104 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
-Date: Tue, 17 Jun 2014 11:21:43 +0000
-Message-ID: <32165315f0b84be9948f489fd87bf6a9@BL2PR03MB468.namprd03.prod.outlook.com>
-References: <5288123.eXagyPAxNq@wuerfel>
-	<20140602104104.GD3855@e103592.cambridge.arm.com>
-	<20140604143509.GF28484@ulmo> <20140604164132.GF6644@arm.com>
-	<07321368d15d4ad9928ebb83af87e401@DM2PR03MB479.namprd03.prod.outlook.com>
-	<20140616152739.GS16758@arm.com>
-	<8b0492b4697943a0b1f276ef42cc8223@DM2PR03MB352.namprd03.prod.outlook.com>
-	<20140616170416.GA16758@arm.com>
-	<419e67f783524d208ab3be16bcd94bd9@DM2PR03MB352.namprd03.prod.outlook.com>
-	<0587e1f4894546398be0798d2bc2c84f@BL2PR03MB468.namprd03.prod.outlook.com>
-	<20140617104304.GD13808@arm.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
+Date: Tue, 17 Jun 2014 13:58:30 +0200
+Message-ID: <20140617115829.GB18816@ulmo>
+References: <1400877395-4235-1-git-send-email-thierry.reding@gmail.com>
+ <538757B6.4010109@wwwdotorg.org>
+ <20140530073006.GA24748@ulmo>
+ <20140530112728.GB3949@e103592.cambridge.arm.com>
+ <20140604211237.GC18710@mithrandir>
+ <20140616125704.GE16758@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140617104304.GD13808-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="GID0FwUMdk1T2AWN"
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20140616125704.GE16758@arm.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Will Deacon <will.deacon@arm.com>
+Cc: Dave P Martin <Dave.Martin@arm.com>, Stephen Warren <swarren@wwwdotorg.org>, Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <Pawel.Moll@arm.com>, Mark Rutland <Mark.Rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Cho KyongHo <pullip.cho@samsung.com>, Grant Grundler <grundler@chromium.org>, Marc Zyngier <Marc.Zyngier@arm.com>, Joerg Roedel <joro@8bytes.org>, Hiroshi Doyu <hdoyu@nvidia.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.o>
 List-Id: iommu@lists.linux-foundation.org
 
 
+--GID0FwUMdk1T2AWN
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> -----Original Message-----
-> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
-> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Will Deacon
-> Sent: Tuesday, June 17, 2014 4:13 PM
-> To: Sethi Varun-B16395
-> Cc: Mark Rutland; devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-samsung-
-> soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Arnd Bergmann; Pawel Moll; Ian Campbell; Grant
-> Grundler; Stephen Warren; Yoder Stuart-B08248; Rob Herring; linux-
-> kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Marc Zyngier; Linux IOMMU; Thierry Reding; Kumar
-> Gala; linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Cho KyongHo; Dave P Martin; linux-arm-
-> kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree
-> bindings
-> 
-> On Tue, Jun 17, 2014 at 11:26:48AM +0100, Varun Sethi wrote:
-> > > The way we generally thought it would work was something like
-> > > this:
-> > >    -u-boot/bootloader makes any static streamID allocation if needed,
-> > >     sets a default streamID  (e.g. 0x0) in device and expresses
-> > >     that in the device tree
-> > >    -device tree would express relationship between devices
-> > >     (including bus controllers) and the SMMU through mmu-masters
-> > >     property
-> > >    -u-boot would express the range of unused (or used) streamIDs via
-> > > a new
-> > >     device tree property so the kernel SMMU driver knows what
-> > > streamIDs are
-> > >     free
-> > >    -in the SMMU driver a different vendor specific 'add_device'
-> callback
-> > >     could be used to handle our special cases where we need to
-> set/change
-> > >     the stream ID for devices added to a domain
-> >
-> > Another possibility, could be to program the stream Id in the device
-> > registers (reference for the stream ID register can be obtained from
-> > the device tree) during device attach. This could be relevant in case
-> > of VFIO, when we are assigning multiple devices to a single VM. All
-> > the devices can share the same stream ID.
-> 
-> I think for simple masters (i.e. those that have all their StreamIDs
-> under control of one driver), then setting something during attach (or
-> add?) based on the DT could work pretty well. The other case is when we
-> have masters behind a bridge (such as a PCI RC). In this case, it might
-> actually be better to ask the bridge for the IDs and let it sort out the
-> allocation itself. That would also move the RequesterID -> StreamID
-> mapping out of the SMMU code.
-> 
-> What do you think?
-The PCI bus iommu group creation code would be part of the SMMU driver (it is handled by other IOMMU drivers as well). My understanding is that there would be one is to one correspondence between the requestor ID and the iommu group. May be, we can have an API provided by the PCI bridge (architecture specific) for setting the stream ID.
+On Mon, Jun 16, 2014 at 01:57:04PM +0100, Will Deacon wrote:
+> On Wed, Jun 04, 2014 at 10:12:38PM +0100, Thierry Reding wrote:
+> > On Fri, May 30, 2014 at 12:27:28PM +0100, Dave Martin wrote:
+> > > On Fri, May 30, 2014 at 08:30:08AM +0100, Thierry Reding wrote:
+> > [...]
+> > > > Arnd, can you take another look at this binding and see if there's
+> > > > anything else missing? If not I'll go through the document again and
+> > > > update all #address-cells/#size-cells references with #iommu-cells =
+as
+> > > > appropriate and submit v3.
+> > >=20
+> > > How do you envisage propagation of the master ID bits downstream of t=
+he
+> > > IOMMU would be described?
+> > >=20
+> > > We will definitely need a way to describe this for GICv3.  How those
+> > > values are propagated is likely to vary between related SoCs and does=
+n't
+> > > feel like it should be baked into a driver, especially for the ARM SM=
+MU
+> > > which may get reused in radically different SoC families from differe=
+nt
+> > > vendors.
+> >=20
+> > Well, we've had cases like these in the past (power sequences come to
+> > mind). Some concepts are just too difficult or unwieldy to be put into
+> > device tree. I think that this is one of them.
+> >=20
+> > > The most likely types of remapping are the adding of a base offset or
+> > > some extra bits to the ID -- because not all MSIs to the GIC will
+> > > necessarily pass through the IOMMU.  It's also possible that we might
+> > > see ID squashing or folding in some systems.
+> >=20
+> > It can easily be argued that if the algorithm used to remap the ID
+> > varies, the compatibility of the device changes. Therefore I would
+> > expect any variant of the GICv3 that deviates from the "standard"
+> > mapping (if there is such a thing) to have its own compatible string.
+>=20
+> There is no standard mapping; it's a property defined at system integrati=
+on
+> time. I fully expect different SoCs to do different things here.
 
--Varun
+My point was that the mapping itself seems to be fundamental enough to
+make devices with different mappings "incompatible". Therefore I think
+this could probably be handled by using different compatible values,
+something along the lines of this:
+
+	compatible =3D "vendor,soc-gicv3", "arm,gicv3";
+
+Then the mapping can be described in code, which should be a whole lot
+easier and more flexible than a more or less generic notation in device
+tree.
+
+Thierry
+
+--GID0FwUMdk1T2AWN
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJToC1lAAoJEN0jrNd/PrOhoDoQAIrRLnCfk4INnOK9LyQbVali
+ZiChXj0F9DYqy+drqd/trV4ogPjHcaylSGyK4w/3c0kpEr8ENs0axnoDtO34HxFz
+AU1LoFTaNZoevj3ZUC7XN26CUgGRe/Jq9+BolD0c5Jw41mD0mStKpJTSZOPkGpYs
+8b7y+2/04s2uidndI6oOymM2Yp3rC8qAsjI6ppBE0oypwRzzcvBS65JIod3MKIx9
+oYDOMan8+twFIBXl4DP5azQv8sGfCMdM4cv1436jTNRJXW2E2hoN4D3ED6tDOFWK
+ubucFt7o0YPbsJkVgpXt2o8qUw9f99+h0UE9n+92mzpnzykfe1BrNX3TS7Rb/smw
+ZIbgJsCjOsCmPLfpXlaFxf3dHPh2Fz73vXWz/8jm+pFgW+QLZ37tLLRssuTZzMlZ
+cdRivcKVrkN+pDvsJ8atZ/fL2c00kc3l0pjdFUVL8+M5qn8/Xbg2S/GBItL6d2Kk
+Ij9gg/6irAjjnrpyUzCjXU3R2ILeBDHSc1iLUjwx0tV70qVbheFylNsPMJisUDeu
+Bbevv4mMsvxSwiei+FHHGlJ5VGeZx4NoII8a0HnROLdd5T1x8+WnHFQpwnYD8wxz
+pkI7pCIB5RpMw+1bq6XWiwym0TU9Ep3Qkabc0oknnJ8NnikvLStPW3AMFsWeFaKR
+anoBpU795w1snQT2xFWG
+=sthc
+-----END PGP SIGNATURE-----
+
+--GID0FwUMdk1T2AWN--
