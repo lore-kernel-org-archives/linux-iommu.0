@@ -1,148 +1,43 @@
-From: Daniel Vetter <daniel@ffwll.ch>
-Subject: Re: [PATCH v2] iommu/intel: Exclude devices using RMRRs
- from IOMMU API domains
-Date: Tue, 17 Jun 2014 19:53:14 +0200
-Message-ID: <20140617175314.GR5821@phenom.ffwll.local>
-References: <20140613162901.4550.94476.stgit@bling.home>
- <1402983303.3707.94.camel@ul30vt.home>
- <1402988692.7595.106.camel@i7.infradead.org>
- <1403007757.3707.100.camel@ul30vt.home>
- <1403008864.7595.144.camel@i7.infradead.org>
- <1403010982.3707.123.camel@ul30vt.home>
- <20140617134408.GM5821@phenom.ffwll.local>
- <1403014547.3707.130.camel@ul30vt.home>
- <20140617164531.GQ5821@phenom.ffwll.local>
- <1403024391.3707.139.camel@ul30vt.home>
+From: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Subject: Re: [PATCH 09/24]  drivers/iommu: check actual error on iommu_init
+Date: Tue, 17 Jun 2014 12:24:30 -0700
+Message-ID: <20140617192430.GC4628@kroah.com>
+References: <53A050BF.3000101@oracle.com> <20140617152154.GE31771@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1403024391.3707.139.camel@ul30vt.home>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: Intel Graphics Development <intel-gfx@lists.freedesktop.org>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, chegu_vinod@hp.com
+In-Reply-To: <20140617152154.GE31771-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Jeff Liu <jeff.liu-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVHVlLCBKdW4gMTcsIDIwMTQgYXQgMTA6NTk6NTFBTSAtMDYwMCwgQWxleCBXaWxsaWFtc29u
-IHdyb3RlOgo+IE9uIFR1ZSwgMjAxNC0wNi0xNyBhdCAxODo0NSArMDIwMCwgRGFuaWVsIFZldHRl
-ciB3cm90ZToKPiA+IE9uIFR1ZSwgSnVuIDE3LCAyMDE0IGF0IDA4OjE1OjQ3QU0gLTA2MDAsIEFs
-ZXggV2lsbGlhbXNvbiB3cm90ZToKPiA+ID4gT24gVHVlLCAyMDE0LTA2LTE3IGF0IDE1OjQ0ICsw
-MjAwLCBEYW5pZWwgVmV0dGVyIHdyb3RlOgo+ID4gPiA+IE9uIFR1ZSwgSnVuIDE3LCAyMDE0IGF0
-IDA3OjE2OjIyQU0gLTA2MDAsIEFsZXggV2lsbGlhbXNvbiB3cm90ZToKPiA+ID4gPiA+IE9uIFR1
-ZSwgMjAxNC0wNi0xNyBhdCAxMzo0MSArMDEwMCwgRGF2aWQgV29vZGhvdXNlIHdyb3RlOgo+ID4g
-PiA+ID4gPiBPbiBUdWUsIDIwMTQtMDYtMTcgYXQgMDY6MjIgLTA2MDAsIEFsZXggV2lsbGlhbXNv
-biB3cm90ZToKPiA+ID4gPiA+ID4gPiBPbiBUdWUsIDIwMTQtMDYtMTcgYXQgMDg6MDQgKzAxMDAs
-IERhdmlkIFdvb2Rob3VzZSB3cm90ZToKPiA+ID4gPiA+ID4gPiA+IE9uIE1vbiwgMjAxNC0wNi0x
-NiBhdCAyMzozNSAtMDYwMCwgQWxleCBXaWxsaWFtc29uIHdyb3RlOgo+ID4gPiA+ID4gPiA+ID4g
-PiAKPiA+ID4gPiA+ID4gPiA+ID4gQW55IGlkZWEgd2hhdCBhbiBvZmYtdGhlLXNoZWxmIEFzdXMg
-bW90aGVyYm9hcmQgd291bGQgYmUgZG9pbmcgd2l0aCBhbgo+ID4gPiA+ID4gPiA+ID4gPiBSTVJS
-IG9uIHRoZSBJbnRlbCBIRCBncmFwaGljcz8KPiA+ID4gPiA+ID4gPiA+ID4gCj4gPiA+ID4gPiA+
-ID4gPiA+IGRtYXI6IFJNUlIgYmFzZTogMHgwMDAwMDBiYjgwMDAwMCBlbmQ6IDB4MDAwMDAwYmY5
-ZmZmZmYKPiA+ID4gPiA+ID4gPiA+ID4gSU9NTVU6IFNldHRpbmcgaWRlbnRpdHkgbWFwIGZvciBk
-ZXZpY2UgMDAwMDowMDowMi4wIFsweGJiODAwMDAwIC0gMHhiZjlmZmZmZl0KPiA+ID4gPiA+ID4g
-PiA+IAo+ID4gPiA+ID4gPiA+ID4gSG0sIHdlIHNob3VsZCBoYXZlIHRob3VnaHQgb2YgdGhhdCBz
-b29uZXIuIFRoYXQncyBxdWl0ZSBub3JtYWwg4oCUIGl0J3MKPiA+ID4gPiA+ID4gPiA+IGZvciB0
-aGUgJ3N0b2xlbicgbWVtb3J5IHVzZWQgZm9yIHRoZSBmcmFtZWJ1ZmZlci4gQW5kIG1heWJlIGFs
-c28gdGhlCj4gPiA+ID4gPiA+ID4gPiBHVFQsIGFuZCBzaGFkb3cgR1RUIGFuZCBvdGhlciB0aGlu
-Z3M7IEkgZm9yZ2V0IHByZWNpc2VseSB3aGF0LCBhbmQgaXQKPiA+ID4gPiA+ID4gPiA+IHZhcmll
-cyBmcm9tIG9uZSBzZXR1cCB0byBhbm90aGVyLgo+ID4gPiA+ID4gPiA+IAo+ID4gPiA+ID4gPiA+
-IFdoeSBleGFjdGx5IGRvIHRoZXNlIHRoaW5ncyBuZWVkIHRvIGJlIGlkZW50aXR5IG1hcHBlZCB0
-aHJvdWdoIHRoZQo+ID4gPiA+ID4gPiA+IElPTU1VPyAgVGhpcyBzb3VuZHMgbGlrZSBzb21ldGhp
-bmcgYSBub3JtYWwgZGV2aWNlIG1pZ2h0IGRvIHdpdGggYQo+ID4gPiA+ID4gPiA+IGNvaGVyZW50
-IG1hcHBpbmcuCj4gPiA+ID4gPiA+IAo+ID4gPiA+ID4gPiBUaGUgQklPUyAoRUZJIG9yIFZFU0Ep
-IHNldHMgdXAgYSBmcmFtZWJ1ZmZlciBpbiBzdG9sZW4gbWFpbiBtZW1vcnkuIEl0J3MKPiA+ID4g
-PiA+ID4gYWNjZXNzZWQgYnkgRE1BLCB1c2luZyB0aGUgcGh5c2ljYWwgYWRkcmVzcy4gVGhlIFJN
-UlIgZXhpc3RzIGJlY2F1c2Ugd2UKPiA+ID4gPiA+ID4gbmVlZCBpdCAqbm90KiB0byBzdWRkZW5s
-eSBzdG9wIHdvcmtpbmcgdGhlIG1vbWVudCB0aGUgT1MgdHVybnMgb24gdGhlCj4gPiA+ID4gPiA+
-IElPTU1VLgo+ID4gPiA+ID4gPiAKPiA+ID4gPiA+ID4gVGhlIE9TIGdyYXBoaWNzIGRyaXZlciwg
-aWYgYW55LCBpcyBub3QgbG9hZGVkIGF0IHRoaXMgcG9pbnQuCj4gPiA+ID4gPiA+IAo+ID4gPiA+
-ID4gPiBBbmQgZXZlbiBsYXRlciwgdGhlIE9TIGdyYXBoaWNzIGRyaXZlciBtYXkgY2hvb3NlIHRv
-IG1ha2UgdXNlIG9mIHRoZQo+ID4gPiA+ID4gPiAnc3RvbGVuJyBtZW1vcnkgZm9yIHZhcmlvdXMg
-cHVycG9zZXMuIEFuZCBzaW5jZSBpdCB3YXMgYWxyZWFkeSBzdG9sZW4sCj4gPiA+ID4gPiA+IGl0
-IGRvZXNuJ3QgZ28gYW5kIHNldCB1cCAqYW5vdGhlciogbWFwcGluZyBmb3IgaXQ7IGl0IGtub3dz
-IHRoYXQgYQo+ID4gPiA+ID4gPiBtYXBwaW5nIGFscmVhZHkgZXhpc3RzLgo+ID4gPiA+ID4gPiAK
-PiA+ID4gPiA+ID4gPiA+IEknZCBleHBlY3QgZmFpcmx5IG11Y2ggYWxsIHN5c3RlbXMgdG8gaGF2
-ZSBhbiBSTVJSIGZvciB0aGUgaW50ZWdyYXRlZAo+ID4gPiA+ID4gPiA+ID4gZ3JhcGhpY3MgZGV2
-aWNlIGlmIHRoZXkgaGF2ZSBvbmUsIGFuZCB5b3VyIHBhdGNowrkgaXMgZ29pbmcgdG8gcHJldmVu
-dAo+ID4gPiA+ID4gPiA+ID4gYXNzaWdubWVudCBvZiB0aG9zZSB0byBndWVzdHMuLi4gYXMgeW91
-J3ZlIHByZXN1bWFibHkgbm90aWNlZC4KPiA+ID4gPiA+ID4gPiA+IAo+ID4gPiA+ID4gPiA+ID4g
-SSdtIG5vdCBzdXJlIGlmIHRoZSBpOTE1IGRyaXZlciBpcyBjYXBhYmxlIG9mIGZ1bGx5IHJlcHJv
-Z3JhbW1pbmcgdGhlCj4gPiA+ID4gPiA+ID4gPiBoYXJkd2FyZSB0byBjb21wbGV0ZWx5IHN0b3Ag
-dXNpbmcgdGhhdCByZWdpb24sIHRvIGFsbG93IGFzc2lnbm1lbnQgdG8gYQo+ID4gPiA+ID4gPiA+
-ID4gZ3Vlc3Qgd2l0aCBhICdwdXJlJyBtZW1vcnkgbWFwIGFuZCBubyBzdG9sZW4gcmVnaW9uLiBJ
-IHN1cHBvc2UgaXQgbXVzdCwKPiA+ID4gPiA+ID4gPiA+IGlmIGFzc2lnbm1lbnQgdG8gZ3Vlc3Rz
-IHdhcyB3b3JraW5nIGNvcnJlY3RseSBiZWZvcmU/Cj4gPiA+ID4gPiA+ID4gCj4gPiA+ID4gPiA+
-ID4gSUdEIGFzc2lnbm1lbnQgaGFzIG5ldmVyIHdvcmtlZCB3aXRoIEtWTS4KPiA+ID4gPiA+ID4g
-Cj4gPiA+ID4gPiA+IEhtLiBJdCB3b3JrcyB3aXRoIFhlbiB0aG91Z2gsIGRvZXNuJ3QgaXQ/Cj4g
-PiA+ID4gPiAKPiA+ID4gPiA+IEFwcGFyZW50bHkKPiA+ID4gPiA+IAo+ID4gPiA+ID4gPiBBcmUg
-d2UgY29udGVudCB0byBzYXkgdGhhdCBpdCdsbCAqbmV2ZXIqIHdvcmsgd2l0aCBLVk0sIGFuZCB0
-aHVzIHdlIGNhbgo+ID4gPiA+ID4gPiBsaXZlIHdpdGggdGhlIGZhY3QgdGhhdCB5b3VyIHBhdGNo
-IG1ha2VzIGl0IGhhcmRlciB0byBmaXggd2hhdGV2ZXIgd2FzCj4gPiA+ID4gPiA+IHdyb25nIGlu
-IHRoZSBmaXJzdCBwbGFjZT8KPiA+ID4gPiA+IAo+ID4gPiA+ID4gUHJvYmFibHkgbm90LiAgSG93
-ZXZlciwgaXQgc2VlbXMgbGlrZSB5b3UncmUgc2F5aW5nIHRoYXQgdGhpcyBSTVJSIGlzCj4gPiA+
-ID4gPiB1c2VkIGJ5IGFuZCB2aXNpYmxlIHRvIE9TIGxldmVsIGRyaXZlcnMsIHZlcnN1cyBiYWNr
-Y2hhbm5lbAo+ID4gPiA+ID4gY29tbXVuaWNhdGlvbiBjaGFubmVscywgaW52aXNpYmxlIHRvIHRo
-ZSBPUy4gIEkgdGhpbmsgdGhlIGxhdHRlciBpcwo+ID4gPiA+ID4gc3BlY2lmaWNhbGx5IHdoYXQg
-d2Ugd2FudCB0byBwcmV2ZW50IGJ5IGV4Y2x1ZGluZyBkZXZpY2VzIHdpdGggUk1SUnMuCj4gPiA+
-ID4gPiBUaGlzIGlzIGEgY2hhbGxlbmdpbmcgdXNlIGNhc2UsIGJ1dCBpdCBzZWVtcyB0byBiZSB1
-bmRlcnN0b29kLiAgSWYgd2hlbgo+ID4gPiA+ID4gSUdEIGlzIGJvdW5kIHRvIHZmaW8tcGNpIHdl
-IGNhbiBiZSBzdXJlIHRoYXQgYWNjZXNzIHRvIHRoZSBSTVJSIGFyZWEKPiA+ID4gPiA+IGNlYXNl
-cywgdGhlbiB3ZSBjYW4gdGVhciBpdCBkb3duIGFuZCByZS1lc3RhYmxpc2ggaXQgZnJvbQo+ID4g
-PiA+ID4gdXNlcnNwYWNlL1FFTVUsIGRlc2NyaWJlIGl0IHRvIHRoZSBndWVzdCBpbiBhbiBlODIw
-IHJlc2VydmVkIHJlZ2lvbiwgYW5kCj4gPiA+ID4gPiBuZXZlciBjb25zaWRlciBob3RwbHVnIG9m
-IHRoZSBkZXZpY2UgZm9yIGd1ZXN0cy4gIElmIHRoYXQncyB0aGUgY2FzZSwKPiA+ID4gPiA+IG1h
-eWJlIGl0J3MgYW5vdGhlciBleGNlcHRpb24sIGxpa2UgVVNCLiAgSSdsbCBuZWVkIHRvIGxvb2sg
-dGhyb3VnaCBpOTE1Cj4gPiA+ID4gPiBtb3JlIHRvIGZpbmQgaG93IHRoZSByZWdpb24gaXMgZGlz
-Y292ZXJlZC4gIFRoYW5rcywKPiA+ID4gPiAKPiA+ID4gPiBXZSBoYXZlIGEgYnVuY2ggb2YgcmVn
-aXN0ZXIgaW4gdGhlIG1taW8gYmFyIHNldCB1cCBieSB0aGUgYmlvcyB0aGF0IHRlbGxzCj4gPiA+
-ID4gdXMgdGhlIGFkZHJlc3MgYW5kIHNpemUgb2YgdGhlIHN0b2xlbiByYW5nZSB3ZSBjYW4gdXNl
-LiBUaGUgYWRkcmVzcyB3ZQo+ID4gPiA+IG5lZWQgZm9yIHByb2dyYW1taW5nIHB0ZXMsIHRoZSBz
-aXplIHRvIGtub3cgaG93IG11Y2ggdGhlcmUgaXMuIFdlIGFsc28KPiA+ID4gPiBoYXZlIGFuIGVh
-cmx5IGJvb3QgcGNpIHF1aXJrIGluIHg4NiBub3dhZGF5cyB0byBtYWtlIHN1cmUgdGhlIHBjaSBs
-YXllcgo+ID4gPiA+IGRvZXNuJ3QgcHV0IHJhbmRvbSBzdHVmZiBpbiB0aGF0IHJhbmdlLgo+ID4g
-PiA+IAo+ID4gPiA+IFNlZSBkcml2ZXJzL2dwdS9kcm0vaTkxNS9pOTE1X2dlbV9ndHQuYyAoc2Vh
-cmNoIGZvciBzdG9sZW4gc2l6ZSkKPiA+ID4gPiBpOTE1X2dlbV9zdG9sZW4uYyAobG9vayBhdCBz
-dG9sZW5fdG9fcGh5cykgYW5kIHRoZSBlYXJseSBxdWlya3MgaW4KPiA+ID4gPiBhcmNoL3g4Ni9r
-ZXJuZWwvZWFybHktcXVpcmtzLmMgZm9yIGNvcGllcyBvZiB0aGUgc2FtZSBjb2RlLgo+ID4gPiAK
-PiA+ID4gVGhhbmtzIGZvciB0aGUgdGlwcy4gIElmIHRoZSBwdXJwb3NlIG9mIHRoZSBSTVJSIGlz
-IHRvIG1haW50YWluCj4gPiA+IGNvbnNpc3RlbmN5IGFjcm9zcyB0aGUgT1MgZW5hYmxpbmcgVlQt
-ZCwgdGhlbiB0aGVyZSdzIHJlYWxseSBubyByZWFzb24KPiA+ID4gZm9yIHRoaXMgdG8gYmUgaWRl
-bnRpdHkgbWFwcGVkIGluIGEgZ3Vlc3QgKHdoZXJlIFZULWQgaXMgbm90IGV4cG9zZWQpIGlzCj4g
-PiA+IHRoZXJlPyAgSXQgbWF5IHdhc3RlIHRoZSBtZW1vcnkgdGhhdCdzIGFscmVhZHkgcmVzZXJ2
-ZWQgb24gdGhlIHBsYXRmb3JtCj4gPiA+IHRvIG5vdCBzZXR1cCBhbiBpZGVudGl0eSBtYXAsIGJ1
-dCBJIGNvdWxkIGJhY2sgc3RvbGVuIG1lbW9yeSBieQo+ID4gPiBub24tc3RvbGVuIHVzZXIgbWVt
-b3J5LCBjb3VsZG4ndCBJPyAgSXQgbWlnaHQgYmUgbmljZSB0byBhdm9pZCBhZGRpbmcgYW4KPiA+
-ID4gaWRlbnRpdHkgbWFwcGluZyBpbnRlcmZhY2UgdG8gdGhlIElPTU1VIEFQSSwgZXZlbiBpZiBp
-dCBjb3N0cyBzb21lCj4gPiA+IG1lbW9yeSB0byBkbyBzby4gIE9yIG1heWJlIEkgY291bGQgZXhw
-b3NlIHRoZSBSTVJSIGFyZWEgdGhyb3VnaCB0aGUgVkZJTwo+ID4gPiBkZXZpY2UgZmlsZSBkZXNj
-cmlwdG9yLCBhbGxvdyBpdCB0byBiZSBtbWFwJ2QgdGhlcmUsIHRoZW4gYWxsb3cgdGhhdAo+ID4g
-PiBtbWFwIHRvIGJlIG1hcHBlZCB0aHJvdWdoIHRoZSBJT01NVS4gIFRoYW5rcywKPiA+IAo+ID4g
-VGhlIHN0b2xlbiByYW5nZSBpcyBsb2NrZWQgZG93biBhdCBib290IGluIHRoZSBtZW1vcnkgY29u
-dHJvbGxlciBhbmQgYXQKPiA+IGxlYXN0IG9uIHNvbWUgcGxhdGZvcm1zIG5vdCBjcHUgYWNjZXNz
-aWJsZS4gQWxzbyBvdXIgZ3B1IGlzIGZhbW91cyBmb3IKPiA+IHdhcnRzIGluIHRoZSB0bGIgYW5k
-IHB0ZSBsb29rdXAgaHcsIHNvIEkgd291bGRuJ3QgYmUgc3VycHJpc2VkIGF0IGFsbCBpZgo+ID4g
-dGhlIHN0b2xlbiByYW5nZSBjb3VsZG4ndCBiZSBiYWNrZWQgYnkgbm9ybWFsIG1lbW9yeS4gT3Vy
-IGRyaXZlciBvdG9oIHdpbGwKPiA+IHN1cnZpdmUgaWYgeW91IHNldCB0aGUgc3RvbGVuIHNpemUg
-dG8gMCAod2l0aCBzbGlnaHQgZmVhdHVyZSBkZWdyYXRpb24pLgo+IAo+IERvIHlvdSBrbm93IGlm
-IHRoZSBzYW1lIGlzIHRydWUgb2YgdGhlIFdpbmRvd3MgZHJpdmVyIGZvciBzdG9sZW4gc2l6ZT8K
-PiBXZSBjYW4gZWFzaWx5IHNldCB0aGUgZ3Vlc3QgcGh5c2ljYWwgYWRkcmVzcyBvZiBzdG9sZW4g
-bWVtb3J5IHRvIG1hdGNoCj4gdGhlIHBoeXNpY2FsIGhhcmR3YXJlLCB3aGljaCB3b3VsZCBob3Bl
-ZnVsbHkga2VlcCB0aGUgR1BVIGhhcHB5LCBidXQgaWYKPiBpdCdzIHNwZWNpYWwgYXQgdGhlIG1l
-bW9yeSBjb250cm9sbGVyIGxldmVsLCBpdCBzb3VuZHMgbGlrZSB3ZSdkIHJlYWxseQo+IG5lZWQg
-dG8gaWRlbnRpdHkgbWFwIGl0LiAgVGhhbmtzLAoKTm8gaWRlYSB3aGF0IHdpbmRvd3MgZG9lcyBo
-ZXJlLCBhbmQgdGhlIHBhdGggYmV0d2VlbiBtZSBhbmQgdGhlIHdpbmRvd3MKdGVhbSBmb3Igc3Vj
-aCBpbnF1aXJpZXMgaXMgZXh0cmVtZWx5IGxvbmcgOigKLURhbmllbAotLSAKRGFuaWVsIFZldHRl
-cgpTb2Z0d2FyZSBFbmdpbmVlciwgSW50ZWwgQ29ycG9yYXRpb24KKzQxICgwKSA3OSAzNjUgNTcg
-NDggLSBodHRwOi8vYmxvZy5mZndsbC5jaApfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fXwpJbnRlbC1nZnggbWFpbGluZyBsaXN0CkludGVsLWdmeEBsaXN0cy5m
-cmVlZGVza3RvcC5vcmcKaHR0cDovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3Rp
-bmZvL2ludGVsLWdmeAo=
+On Tue, Jun 17, 2014 at 05:21:54PM +0200, Joerg Roedel wrote:
+> On Tue, Jun 17, 2014 at 10:29:19PM +0800, Jeff Liu wrote:
+> > From: Jie Liu <jeff.liu-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+> > 
+> > kset_create_and_add() has been fixed to return the actual error
+> > code ptr rather than NULL, so update iommu_init() to check the
+> > return value via IS_ERR() accordingly.
+> > 
+> > Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> > Signed-off-by: Jie Liu <jeff.liu-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+> 
+> Acked-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+
+Nope, please do not take this patch, it is not needed and as the kset
+call is not changing, it will be incorrect.
+
+thanks,
+
+greg k-h
