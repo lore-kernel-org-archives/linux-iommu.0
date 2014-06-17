@@ -1,115 +1,40 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH v2] iommu/intel: Exclude devices using RMRRs
- from IOMMU API domains
-Date: Tue, 17 Jun 2014 08:15:47 -0600
-Message-ID: <1403014547.3707.130.camel@ul30vt.home>
-References: <20140613162901.4550.94476.stgit@bling.home>
- <1402983303.3707.94.camel@ul30vt.home>
- <1402988692.7595.106.camel@i7.infradead.org>
- <1403007757.3707.100.camel@ul30vt.home>
- <1403008864.7595.144.camel@i7.infradead.org>
- <1403010982.3707.123.camel@ul30vt.home>
- <20140617134408.GM5821@phenom.ffwll.local>
+From: Jeff Liu <jeff.liu@oracle.com>
+Subject: [PATCH 09/24]  drivers/iommu: check actual error on iommu_init
+Date: Tue, 17 Jun 2014 22:29:19 +0800
+Message-ID: <53A050BF.3000101@oracle.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-In-Reply-To: <20140617134408.GM5821@phenom.ffwll.local>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: Daniel Vetter <daniel@ffwll.ch>
-Cc: chegu_vinod@hp.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Intel Graphics Development <intel-gfx@lists.freedesktop.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org
+Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVHVlLCAyMDE0LTA2LTE3IGF0IDE1OjQ0ICswMjAwLCBEYW5pZWwgVmV0dGVyIHdyb3RlOgo+
-IE9uIFR1ZSwgSnVuIDE3LCAyMDE0IGF0IDA3OjE2OjIyQU0gLTA2MDAsIEFsZXggV2lsbGlhbXNv
-biB3cm90ZToKPiA+IE9uIFR1ZSwgMjAxNC0wNi0xNyBhdCAxMzo0MSArMDEwMCwgRGF2aWQgV29v
-ZGhvdXNlIHdyb3RlOgo+ID4gPiBPbiBUdWUsIDIwMTQtMDYtMTcgYXQgMDY6MjIgLTA2MDAsIEFs
-ZXggV2lsbGlhbXNvbiB3cm90ZToKPiA+ID4gPiBPbiBUdWUsIDIwMTQtMDYtMTcgYXQgMDg6MDQg
-KzAxMDAsIERhdmlkIFdvb2Rob3VzZSB3cm90ZToKPiA+ID4gPiA+IE9uIE1vbiwgMjAxNC0wNi0x
-NiBhdCAyMzozNSAtMDYwMCwgQWxleCBXaWxsaWFtc29uIHdyb3RlOgo+ID4gPiA+ID4gPiAKPiA+
-ID4gPiA+ID4gQW55IGlkZWEgd2hhdCBhbiBvZmYtdGhlLXNoZWxmIEFzdXMgbW90aGVyYm9hcmQg
-d291bGQgYmUgZG9pbmcgd2l0aCBhbgo+ID4gPiA+ID4gPiBSTVJSIG9uIHRoZSBJbnRlbCBIRCBn
-cmFwaGljcz8KPiA+ID4gPiA+ID4gCj4gPiA+ID4gPiA+IGRtYXI6IFJNUlIgYmFzZTogMHgwMDAw
-MDBiYjgwMDAwMCBlbmQ6IDB4MDAwMDAwYmY5ZmZmZmYKPiA+ID4gPiA+ID4gSU9NTVU6IFNldHRp
-bmcgaWRlbnRpdHkgbWFwIGZvciBkZXZpY2UgMDAwMDowMDowMi4wIFsweGJiODAwMDAwIC0gMHhi
-ZjlmZmZmZl0KPiA+ID4gPiA+IAo+ID4gPiA+ID4gSG0sIHdlIHNob3VsZCBoYXZlIHRob3VnaHQg
-b2YgdGhhdCBzb29uZXIuIFRoYXQncyBxdWl0ZSBub3JtYWwg4oCUIGl0J3MKPiA+ID4gPiA+IGZv
-ciB0aGUgJ3N0b2xlbicgbWVtb3J5IHVzZWQgZm9yIHRoZSBmcmFtZWJ1ZmZlci4gQW5kIG1heWJl
-IGFsc28gdGhlCj4gPiA+ID4gPiBHVFQsIGFuZCBzaGFkb3cgR1RUIGFuZCBvdGhlciB0aGluZ3M7
-IEkgZm9yZ2V0IHByZWNpc2VseSB3aGF0LCBhbmQgaXQKPiA+ID4gPiA+IHZhcmllcyBmcm9tIG9u
-ZSBzZXR1cCB0byBhbm90aGVyLgo+ID4gPiA+IAo+ID4gPiA+IFdoeSBleGFjdGx5IGRvIHRoZXNl
-IHRoaW5ncyBuZWVkIHRvIGJlIGlkZW50aXR5IG1hcHBlZCB0aHJvdWdoIHRoZQo+ID4gPiA+IElP
-TU1VPyAgVGhpcyBzb3VuZHMgbGlrZSBzb21ldGhpbmcgYSBub3JtYWwgZGV2aWNlIG1pZ2h0IGRv
-IHdpdGggYQo+ID4gPiA+IGNvaGVyZW50IG1hcHBpbmcuCj4gPiA+IAo+ID4gPiBUaGUgQklPUyAo
-RUZJIG9yIFZFU0EpIHNldHMgdXAgYSBmcmFtZWJ1ZmZlciBpbiBzdG9sZW4gbWFpbiBtZW1vcnku
-IEl0J3MKPiA+ID4gYWNjZXNzZWQgYnkgRE1BLCB1c2luZyB0aGUgcGh5c2ljYWwgYWRkcmVzcy4g
-VGhlIFJNUlIgZXhpc3RzIGJlY2F1c2Ugd2UKPiA+ID4gbmVlZCBpdCAqbm90KiB0byBzdWRkZW5s
-eSBzdG9wIHdvcmtpbmcgdGhlIG1vbWVudCB0aGUgT1MgdHVybnMgb24gdGhlCj4gPiA+IElPTU1V
-Lgo+ID4gPiAKPiA+ID4gVGhlIE9TIGdyYXBoaWNzIGRyaXZlciwgaWYgYW55LCBpcyBub3QgbG9h
-ZGVkIGF0IHRoaXMgcG9pbnQuCj4gPiA+IAo+ID4gPiBBbmQgZXZlbiBsYXRlciwgdGhlIE9TIGdy
-YXBoaWNzIGRyaXZlciBtYXkgY2hvb3NlIHRvIG1ha2UgdXNlIG9mIHRoZQo+ID4gPiAnc3RvbGVu
-JyBtZW1vcnkgZm9yIHZhcmlvdXMgcHVycG9zZXMuIEFuZCBzaW5jZSBpdCB3YXMgYWxyZWFkeSBz
-dG9sZW4sCj4gPiA+IGl0IGRvZXNuJ3QgZ28gYW5kIHNldCB1cCAqYW5vdGhlciogbWFwcGluZyBm
-b3IgaXQ7IGl0IGtub3dzIHRoYXQgYQo+ID4gPiBtYXBwaW5nIGFscmVhZHkgZXhpc3RzLgo+ID4g
-PiAKPiA+ID4gPiA+IEknZCBleHBlY3QgZmFpcmx5IG11Y2ggYWxsIHN5c3RlbXMgdG8gaGF2ZSBh
-biBSTVJSIGZvciB0aGUgaW50ZWdyYXRlZAo+ID4gPiA+ID4gZ3JhcGhpY3MgZGV2aWNlIGlmIHRo
-ZXkgaGF2ZSBvbmUsIGFuZCB5b3VyIHBhdGNowrkgaXMgZ29pbmcgdG8gcHJldmVudAo+ID4gPiA+
-ID4gYXNzaWdubWVudCBvZiB0aG9zZSB0byBndWVzdHMuLi4gYXMgeW91J3ZlIHByZXN1bWFibHkg
-bm90aWNlZC4KPiA+ID4gPiA+IAo+ID4gPiA+ID4gSSdtIG5vdCBzdXJlIGlmIHRoZSBpOTE1IGRy
-aXZlciBpcyBjYXBhYmxlIG9mIGZ1bGx5IHJlcHJvZ3JhbW1pbmcgdGhlCj4gPiA+ID4gPiBoYXJk
-d2FyZSB0byBjb21wbGV0ZWx5IHN0b3AgdXNpbmcgdGhhdCByZWdpb24sIHRvIGFsbG93IGFzc2ln
-bm1lbnQgdG8gYQo+ID4gPiA+ID4gZ3Vlc3Qgd2l0aCBhICdwdXJlJyBtZW1vcnkgbWFwIGFuZCBu
-byBzdG9sZW4gcmVnaW9uLiBJIHN1cHBvc2UgaXQgbXVzdCwKPiA+ID4gPiA+IGlmIGFzc2lnbm1l
-bnQgdG8gZ3Vlc3RzIHdhcyB3b3JraW5nIGNvcnJlY3RseSBiZWZvcmU/Cj4gPiA+ID4gCj4gPiA+
-ID4gSUdEIGFzc2lnbm1lbnQgaGFzIG5ldmVyIHdvcmtlZCB3aXRoIEtWTS4KPiA+ID4gCj4gPiA+
-IEhtLiBJdCB3b3JrcyB3aXRoIFhlbiB0aG91Z2gsIGRvZXNuJ3QgaXQ/Cj4gPiAKPiA+IEFwcGFy
-ZW50bHkKPiA+IAo+ID4gPiBBcmUgd2UgY29udGVudCB0byBzYXkgdGhhdCBpdCdsbCAqbmV2ZXIq
-IHdvcmsgd2l0aCBLVk0sIGFuZCB0aHVzIHdlIGNhbgo+ID4gPiBsaXZlIHdpdGggdGhlIGZhY3Qg
-dGhhdCB5b3VyIHBhdGNoIG1ha2VzIGl0IGhhcmRlciB0byBmaXggd2hhdGV2ZXIgd2FzCj4gPiA+
-IHdyb25nIGluIHRoZSBmaXJzdCBwbGFjZT8KPiA+IAo+ID4gUHJvYmFibHkgbm90LiAgSG93ZXZl
-ciwgaXQgc2VlbXMgbGlrZSB5b3UncmUgc2F5aW5nIHRoYXQgdGhpcyBSTVJSIGlzCj4gPiB1c2Vk
-IGJ5IGFuZCB2aXNpYmxlIHRvIE9TIGxldmVsIGRyaXZlcnMsIHZlcnN1cyBiYWNrY2hhbm5lbAo+
-ID4gY29tbXVuaWNhdGlvbiBjaGFubmVscywgaW52aXNpYmxlIHRvIHRoZSBPUy4gIEkgdGhpbmsg
-dGhlIGxhdHRlciBpcwo+ID4gc3BlY2lmaWNhbGx5IHdoYXQgd2Ugd2FudCB0byBwcmV2ZW50IGJ5
-IGV4Y2x1ZGluZyBkZXZpY2VzIHdpdGggUk1SUnMuCj4gPiBUaGlzIGlzIGEgY2hhbGxlbmdpbmcg
-dXNlIGNhc2UsIGJ1dCBpdCBzZWVtcyB0byBiZSB1bmRlcnN0b29kLiAgSWYgd2hlbgo+ID4gSUdE
-IGlzIGJvdW5kIHRvIHZmaW8tcGNpIHdlIGNhbiBiZSBzdXJlIHRoYXQgYWNjZXNzIHRvIHRoZSBS
-TVJSIGFyZWEKPiA+IGNlYXNlcywgdGhlbiB3ZSBjYW4gdGVhciBpdCBkb3duIGFuZCByZS1lc3Rh
-Ymxpc2ggaXQgZnJvbQo+ID4gdXNlcnNwYWNlL1FFTVUsIGRlc2NyaWJlIGl0IHRvIHRoZSBndWVz
-dCBpbiBhbiBlODIwIHJlc2VydmVkIHJlZ2lvbiwgYW5kCj4gPiBuZXZlciBjb25zaWRlciBob3Rw
-bHVnIG9mIHRoZSBkZXZpY2UgZm9yIGd1ZXN0cy4gIElmIHRoYXQncyB0aGUgY2FzZSwKPiA+IG1h
-eWJlIGl0J3MgYW5vdGhlciBleGNlcHRpb24sIGxpa2UgVVNCLiAgSSdsbCBuZWVkIHRvIGxvb2sg
-dGhyb3VnaCBpOTE1Cj4gPiBtb3JlIHRvIGZpbmQgaG93IHRoZSByZWdpb24gaXMgZGlzY292ZXJl
-ZC4gIFRoYW5rcywKPiAKPiBXZSBoYXZlIGEgYnVuY2ggb2YgcmVnaXN0ZXIgaW4gdGhlIG1taW8g
-YmFyIHNldCB1cCBieSB0aGUgYmlvcyB0aGF0IHRlbGxzCj4gdXMgdGhlIGFkZHJlc3MgYW5kIHNp
-emUgb2YgdGhlIHN0b2xlbiByYW5nZSB3ZSBjYW4gdXNlLiBUaGUgYWRkcmVzcyB3ZQo+IG5lZWQg
-Zm9yIHByb2dyYW1taW5nIHB0ZXMsIHRoZSBzaXplIHRvIGtub3cgaG93IG11Y2ggdGhlcmUgaXMu
-IFdlIGFsc28KPiBoYXZlIGFuIGVhcmx5IGJvb3QgcGNpIHF1aXJrIGluIHg4NiBub3dhZGF5cyB0
-byBtYWtlIHN1cmUgdGhlIHBjaSBsYXllcgo+IGRvZXNuJ3QgcHV0IHJhbmRvbSBzdHVmZiBpbiB0
-aGF0IHJhbmdlLgo+IAo+IFNlZSBkcml2ZXJzL2dwdS9kcm0vaTkxNS9pOTE1X2dlbV9ndHQuYyAo
-c2VhcmNoIGZvciBzdG9sZW4gc2l6ZSkKPiBpOTE1X2dlbV9zdG9sZW4uYyAobG9vayBhdCBzdG9s
-ZW5fdG9fcGh5cykgYW5kIHRoZSBlYXJseSBxdWlya3MgaW4KPiBhcmNoL3g4Ni9rZXJuZWwvZWFy
-bHktcXVpcmtzLmMgZm9yIGNvcGllcyBvZiB0aGUgc2FtZSBjb2RlLgoKVGhhbmtzIGZvciB0aGUg
-dGlwcy4gIElmIHRoZSBwdXJwb3NlIG9mIHRoZSBSTVJSIGlzIHRvIG1haW50YWluCmNvbnNpc3Rl
-bmN5IGFjcm9zcyB0aGUgT1MgZW5hYmxpbmcgVlQtZCwgdGhlbiB0aGVyZSdzIHJlYWxseSBubyBy
-ZWFzb24KZm9yIHRoaXMgdG8gYmUgaWRlbnRpdHkgbWFwcGVkIGluIGEgZ3Vlc3QgKHdoZXJlIFZU
-LWQgaXMgbm90IGV4cG9zZWQpIGlzCnRoZXJlPyAgSXQgbWF5IHdhc3RlIHRoZSBtZW1vcnkgdGhh
-dCdzIGFscmVhZHkgcmVzZXJ2ZWQgb24gdGhlIHBsYXRmb3JtCnRvIG5vdCBzZXR1cCBhbiBpZGVu
-dGl0eSBtYXAsIGJ1dCBJIGNvdWxkIGJhY2sgc3RvbGVuIG1lbW9yeSBieQpub24tc3RvbGVuIHVz
-ZXIgbWVtb3J5LCBjb3VsZG4ndCBJPyAgSXQgbWlnaHQgYmUgbmljZSB0byBhdm9pZCBhZGRpbmcg
-YW4KaWRlbnRpdHkgbWFwcGluZyBpbnRlcmZhY2UgdG8gdGhlIElPTU1VIEFQSSwgZXZlbiBpZiBp
-dCBjb3N0cyBzb21lCm1lbW9yeSB0byBkbyBzby4gIE9yIG1heWJlIEkgY291bGQgZXhwb3NlIHRo
-ZSBSTVJSIGFyZWEgdGhyb3VnaCB0aGUgVkZJTwpkZXZpY2UgZmlsZSBkZXNjcmlwdG9yLCBhbGxv
-dyBpdCB0byBiZSBtbWFwJ2QgdGhlcmUsIHRoZW4gYWxsb3cgdGhhdAptbWFwIHRvIGJlIG1hcHBl
-ZCB0aHJvdWdoIHRoZSBJT01NVS4gIFRoYW5rcywKCkFsZXgKCl9fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fCkludGVsLWdmeCBtYWlsaW5nIGxpc3QKSW50ZWwt
-Z2Z4QGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21h
-aWxtYW4vbGlzdGluZm8vaW50ZWwtZ2Z4Cg==
+From: Jie Liu <jeff.liu@oracle.com>
+
+kset_create_and_add() has been fixed to return the actual error
+code ptr rather than NULL, so update iommu_init() to check the
+return value via IS_ERR() accordingly.
+
+Cc: Joerg Roedel <joro@8bytes.org>
+Signed-off-by: Jie Liu <jeff.liu@oracle.com>
+---
+ drivers/iommu/iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index e5555fc..297b5ad 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -925,7 +925,7 @@ static int __init iommu_init(void)
+ 	ida_init(&iommu_group_ida);
+ 	mutex_init(&iommu_group_mutex);
+ 
+-	BUG_ON(!iommu_group_kset);
++	BUG_ON(IS_ERR(iommu_group_kset));
+ 
+ 	return 0;
+ }
+-- 
+1.8.3.2
