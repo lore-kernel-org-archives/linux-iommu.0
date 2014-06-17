@@ -1,23 +1,14 @@
-From: Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
-Date: Mon, 16 Jun 2014 18:53:52 +0000
-Message-ID: <419e67f783524d208ab3be16bcd94bd9@DM2PR03MB352.namprd03.prod.outlook.com>
-References: <1400877218-4113-1-git-send-email-thierry.reding@gmail.com>
-	<4545972.cM7IP1qTXQ@wuerfel>
-	<CAL_Jsq+tkFNpjSEZboT+o69B_Z3a8e-ZVKaYDmLwtkyYoPy6VQ@mail.gmail.com>
-	<5288123.eXagyPAxNq@wuerfel>
-	<20140602104104.GD3855@e103592.cambridge.arm.com>
-	<20140604143509.GF28484@ulmo> <20140604164132.GF6644@arm.com>
-	<07321368d15d4ad9928ebb83af87e401@DM2PR03MB479.namprd03.prod.outlook.com>
-	<20140616152739.GS16758@arm.com>
-	<8b0492b4697943a0b1f276ef42cc8223@DM2PR03MB352.namprd03.prod.outlook.com>
-	<20140616170416.GA16758@arm.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2] iommu/intel: Exclude devices using RMRRs from IOMMU
+	API domains
+Date: Mon, 16 Jun 2014 23:35:03 -0600
+Message-ID: <1402983303.3707.94.camel@ul30vt.home>
+References: <20140613162901.4550.94476.stgit@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140616170416.GA16758-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <20140613162901.4550.94476.stgit-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -27,98 +18,114 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: chegu_vinod-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+On Fri, 2014-06-13 at 10:30 -0600, Alex Williamson wrote:
+> The user of the IOMMU API domain expects to have full control of
+> the IOVA space for the domain.  RMRRs are fundamentally incompatible
+> with that idea.  We can neither map the RMRR into the IOMMU API
+> domain, nor can we guarantee that the device won't continue DMA with
+> the area described by the RMRR as part of the new domain.  Therefore
+> we must prevent such devices from being used by the IOMMU API.
+> 
+> Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> ---
 
+David,
 
-> -----Original Message-----
-> From: Will Deacon [mailto:will.deacon-5wv7dgnIgG8@public.gmane.org]
-> Sent: Monday, June 16, 2014 12:04 PM
-> To: Yoder Stuart-B08248
-> Cc: Sethi Varun-B16395; Thierry Reding; Mark Rutland;
-> devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Pawel
-> Moll; Arnd Bergmann; Ian Campbell; Grant Grundler; Stephen Warren; linux-
-> kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Marc Zyngier; Linux IOMMU; Rob Herring; Kumar
-> Gala; linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Cho KyongHo; Dave P Martin; linux-arm-
-> kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree
-> bindings
-> 
-> Hi Stuart,
-> 
-> On Mon, Jun 16, 2014 at 05:56:32PM +0100, Stuart Yoder wrote:
-> > > Do you have use-cases where you really need to change these mappings
-> > > dynamically?
-> >
-> > Yes.  In the case of a PCI bus-- you may not know in advance how many
-> > PCI devices there are until you probe the bus.   We have another FSL
-> > proprietary bus we call the "fsl-mc" bus that is similar.
-> 
-> For that case, though, you could still describe an algorithmic
-> transformation from RequesterID to StreamID which corresponds to a fixed
-> mapping.
-> 
-> > Another thing to consider-- starting with SMMUv2, as you know, there
-> > is a new distributed architecture with multiple TBUs and a centralized
-> > TCU that walks the SMMU page tables.  So instead of sprinkling multiple
-> > SMMUs all over an SoC you now have the option a 1 central TCU and
-> sprinkling
-> > multiple TBUs around.   However, this means that the stream ID
-> namespace
-> > is now global and can be pretty limited.  In the SMMU implementation we
-> > have there are only 64 stream ID total for our Soc.  But we have many
-> more
-> > masters than that.
-> >
-> > So we look at stream IDs as really corresponding to an 'isolation
-> context'
-> > and not to a bus master.  An isolation context is the domain you are
-> > trying to isolate with the SMMU.  Devices that all belong to the same
-> > 'isolation context' can share the same stream ID, since they share
-> > the same domain and page tables.
-> 
-> Ok, this is more compelling.
-> 
-> > So, perhaps by default some/most SMMU masters may have a default stream
-> ID
-> > of 0x0 that is used by the host...and that could be represented
-> > statically in the device tree.
-> >
-> > But, we absolutely will need to dynamically set new stream IDs
-> > into masters when a new IOMMU 'domain' is created and devices
-> > are added to it.   All the devices in a domain will share
-> > the same stream ID.
-> >
-> > So whatever we do, let's please have an architecture flexible enough
-> > to allow for this.
-> 
-> What is the software interface to the logic that assigns the StreamIDs?
-> Is
-> it part of the SMMU, or a separate device (or set of devices)?
+Any idea what an off-the-shelf Asus motherboard would be doing with an
+RMRR on the Intel HD graphics?
 
-For us at the hardware level there are a few different ways that the streamIDs
-can be set.  It is not part of the SMMU.  In the cases where there is simply
-1 device to 1 streamID (e.g. USB controller) there is an SoC register where
-you just program the stream ID.   In the case of PCI, our PCI controller
-has a RequesterID-to-streamID table that you set via some PCI controller
-registers.
-
-The way we generally thought it would work was something like
-this:
-   -u-boot/bootloader makes any static streamID allocation if needed,
-    sets a default streamID  (e.g. 0x0) in device and expresses
-    that in the device tree
-   -device tree would express relationship between devices
-    (including bus controllers) and the SMMU through mmu-masters
-    property
-   -u-boot would express the range of unused (or used) streamIDs via a new
-    device tree property so the kernel SMMU driver knows what streamIDs are
-    free
-   -in the SMMU driver a different vendor specific 'add_device' callback
-    could be used to handle our special cases where we need to set/change
-    the stream ID for devices added to a domain
+dmar: RMRR base: 0x000000bb800000 end: 0x000000bf9fffff
+IOMMU: Setting identity map for device 0000:00:02.0 [0xbb800000 - 0xbf9fffff]
 
 Thanks,
-Stuart
+
+Alex
+
+> v2: consolidate test to a single, well documented function.
+> 
+>  drivers/iommu/intel-iommu.c |   49 ++++++++++++++++++++++++++++++++++---------
+>  1 file changed, 39 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index c4f11c0..253d598 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -2511,22 +2511,46 @@ static bool device_has_rmrr(struct device *dev)
+>  	return false;
+>  }
+>  
+> +/*
+> + * There are a couple cases where we need to restrict the functionality of
+> + * devices associated with RMRRs.  The first is when evaluating a device for
+> + * identity mapping because problems exist when devices are moved in and out
+> + * of domains and their respective RMRR information is lost.  This means that
+> + * a device with associated RMRRs will never be in a "passthrough" domain.
+> + * The second is use of the device through the IOMMU API.  This interface
+> + * expects to have full control of the IOVA space for the device.  We cannot
+> + * satisfy both the requirement that RMRR access is maintained and have an
+> + * unencumbered IOVA space.  We also have no ability to quiesce the device's
+> + * use of the RMRR space or even inform the IOMMU API user of the restriction.
+> + * We therefore prevent devices associated with an RMRR from participating in
+> + * the IOMMU API, which eliminates them from device assignment.
+> + *
+> + * In both cases we assume that PCI USB devices with RMRRs have them largely
+> + * for historical reasons and that the RMRR space is not actively used post
+> + * boot.  This exclusion may change if vendors begin to abuse it.
+> + */
+> +static bool device_is_rmrr_locked(struct device *dev)
+> +{
+> +	if (!device_has_rmrr(dev))
+> +		return false;
+> +
+> +	if (dev_is_pci(dev)) {
+> +		struct pci_dev *pdev = to_pci_dev(dev);
+> +
+> +		if ((pdev->class >> 8) == PCI_CLASS_SERIAL_USB)
+> +			return false;
+> +	}
+> +
+> +	return true;
+> +}
+> +
+>  static int iommu_should_identity_map(struct device *dev, int startup)
+>  {
+>  
+>  	if (dev_is_pci(dev)) {
+>  		struct pci_dev *pdev = to_pci_dev(dev);
+>  
+> -		/*
+> -		 * We want to prevent any device associated with an RMRR from
+> -		 * getting placed into the SI Domain. This is done because
+> -		 * problems exist when devices are moved in and out of domains
+> -		 * and their respective RMRR info is lost. We exempt USB devices
+> -		 * from this process due to their usage of RMRRs that are known
+> -		 * to not be needed after BIOS hand-off to OS.
+> -		 */
+> -		if (device_has_rmrr(dev) &&
+> -		    (pdev->class >> 8) != PCI_CLASS_SERIAL_USB)
+> +		if (device_is_rmrr_locked(dev))
+>  			return 0;
+>  
+>  		if ((iommu_identity_mapping & IDENTMAP_AZALIA) && IS_AZALIA(pdev))
+> @@ -4171,6 +4195,11 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
+>  	int addr_width;
+>  	u8 bus, devfn;
+>  
+> +	if (device_is_rmrr_locked(dev)) {
+> +		dev_warn(dev, "Device is ineligible for IOMMU domain attach due to platform RMRR requirement.  Contact your platform vendor.\n");
+> +		return -EPERM;
+> +	}
+> +
+>  	/* normally dev is not mapped */
+>  	if (unlikely(domain_context_mapped(dev))) {
+>  		struct dmar_domain *old_domain;
+> 
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
