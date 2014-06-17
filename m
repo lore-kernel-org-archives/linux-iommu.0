@@ -1,15 +1,10 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 0/3] iommu: Expose IOMMU information in sysfs
-Date: Thu, 03 Jul 2014 10:08:46 -0600
-Message-ID: <1404403726.1862.78.camel@ul30vt.home>
-References: <20140612215954.2754.30263.stgit@bling.home>
-	<20140616151619.GA31771@8bytes.org>
-	<1402932269.3707.35.camel@ul30vt.home>
+From: Ilya Lesokhin <ilya.lesokhin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: What devices are using ATS/PRI?
+Date: Tue, 17 Jun 2014 16:10:07 +0300
+Message-ID: <CAEPKs0f7NWVfrD5Gn3cRRfKbcrp3CtWZHvObwkDXErFe8ChbPQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============8337726761831329741=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1402932269.3707.35.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,29 +14,56 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: joerg.roedel-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2014-06-16 at 09:24 -0600, Alex Williamson wrote:
-> On Mon, 2014-06-16 at 17:16 +0200, Joerg Roedel wrote:
-> > On Thu, Jun 12, 2014 at 04:12:18PM -0600, Alex Williamson wrote:
-> > > Alex Williamson (3):
-> > >       iommu: Add sysfs support for IOMMUs
-> > >       iommu/intel: Make use of IOMMU sysfs support
-> > >       iommu/amd: Add sysfs support
-> > 
-> > I like the general approach. But why do you only enable the x86 iommus?
-> > Some ARM IOMMUs and PAMU would certainly also benefit from a sysfs
-> > representation of which device is translated by which IOMMU.
-> 
-> Only because I have no ability to test the others platforms.  I'd be
-> thrilled if someone working on those IOMMUs could validate this on
-> non-x86.  Thanks,
+--===============8337726761831329741==
+Content-Type: multipart/alternative; boundary=047d7bd75b66e6ba2704fc07dc37
 
-Should I re-send this series or are you hoping I'll attempt to piece
-together a non-x86 user for which I have no hardware and can't test?
-Varun, do you have any interest in this for the fsl iommu to try a proof
-of concept?  Thanks,
+--047d7bd75b66e6ba2704fc07dc37
+Content-Type: text/plain; charset=UTF-8
 
-Alex
+Hi,
+I'm doing research about support for I/O page faults and I'm trying to find
+out what devices are using it today.
+
+I've notice that the AMD IOMMUv2 driver has support for I/O page faults.
+However I'm a bit confused as to how it relates to ATS/PRI.
+
+I've gotten the impression that the code is used by AMD GPUs to implement
+HSA.
+If I understand correctly HSA is implemented with integrated GPUs. I would
+assume such GPUs wouldn't use PCIe to access memory, is that indeed the
+case?
+
+Do those GPUs use PRI to generate page faults anyway?
+
+Thanks,
+Ilya
+
+--047d7bd75b66e6ba2704fc07dc37
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi,<br>I&#39;m doing research about support for I/O page f=
+aults and I&#39;m trying to find out what devices are using it today.<br><b=
+r>I&#39;ve notice that the AMD IOMMUv2 driver has support for I/O page faul=
+ts. However I&#39;m a bit confused as to how it relates to ATS/PRI.<br>
+<br>I&#39;ve gotten the impression that the code is used by AMD GPUs to imp=
+lement HSA. <br>If I understand correctly HSA is implemented with integrate=
+d GPUs. I would assume such GPUs wouldn&#39;t use PCIe to access memory, is=
+ that indeed the case? <br>
+<br>Do those GPUs use PRI to generate page faults anyway?<br><br>Thanks,<br=
+>Ilya<br></div>
+
+--047d7bd75b66e6ba2704fc07dc37--
+
+--===============8337726761831329741==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============8337726761831329741==--
