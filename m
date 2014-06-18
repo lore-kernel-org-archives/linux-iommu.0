@@ -1,57 +1,64 @@
-From: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/2] iommu/vt-d: remove the useless dma_pte_addr
-Date: Wed, 18 Jun 2014 08:57:29 +0800
-Message-ID: <53A0E3F9.4000103@huawei.com>
-References: <1401106427-9420-1-git-send-email-wangyijing@huawei.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
+Date: Wed, 18 Jun 2014 10:29:06 +0100
+Message-ID: <20140618092906.GA32699@arm.com>
+References: <20140604164132.GF6644@arm.com>
+ <07321368d15d4ad9928ebb83af87e401@DM2PR03MB479.namprd03.prod.outlook.com>
+ <20140616152739.GS16758@arm.com>
+ <8b0492b4697943a0b1f276ef42cc8223@DM2PR03MB352.namprd03.prod.outlook.com>
+ <20140616170416.GA16758@arm.com>
+ <419e67f783524d208ab3be16bcd94bd9@DM2PR03MB352.namprd03.prod.outlook.com>
+ <0587e1f4894546398be0798d2bc2c84f@BL2PR03MB468.namprd03.prod.outlook.com>
+ <20140617104304.GD13808@arm.com>
+ <32165315f0b84be9948f489fd87bf6a9@BL2PR03MB468.namprd03.prod.outlook.com>
+ <7c03c5cffa174b20962bff3b09de0eb8@DM2PR03MB352.namprd03.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1401106427-9420-1-git-send-email-wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <7c03c5cffa174b20962bff3b09de0eb8@DM2PR03MB352.namprd03.prod.outlook.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Stuart Yoder <stuart.yoder@freescale.com>
+Cc: Varun Sethi <Varun.Sethi@freescale.com>, Mark Rutland <Mark.Rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Pawel Moll <Pawel.Moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Grant Grundler <grundler@chromium.org>, Stephen Warren <swarren@wwwdotorg.org>, Rob Herring <robh+dt@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Marc Zyngier <Marc.Zyngier@arm.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, Thierry Reding <thierry.reding@gmail.com>, Kumar Gala <galak@codeaurora.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, Cho KyongHo <pullip.cho@samsung.com>, Dave P Martin <Dave.Martin@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-ping...
-
-On 2014/5/26 20:13, Yijing Wang wrote:
-> Signed-off-by: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> ---
->  drivers/iommu/intel-iommu.c |    6 ++----
->  1 files changed, 2 insertions(+), 4 deletions(-)
+On Tue, Jun 17, 2014 at 03:50:25PM +0100, Stuart Yoder wrote:
+> > > I think for simple masters (i.e. those that have all their StreamIDs
+> > > under control of one driver), then setting something during attach (or
+> > > add?) based on the DT could work pretty well. The other case is when we
+> > > have masters behind a bridge (such as a PCI RC). In this case, it might
+> > > actually be better to ask the bridge for the IDs and let it sort out
+> > the
+> > > allocation itself. That would also move the RequesterID -> StreamID
+> > > mapping out of the SMMU code.
+> > >
+> > > What do you think?
+> > The PCI bus iommu group creation code would be part of the SMMU driver
+> > (it is handled by other IOMMU drivers as well). My understanding is that
+> > there would be one is to one correspondence between the requestor ID and
+> > the iommu group. May be, we can have an API provided by the PCI bridge
+> > (architecture specific) for setting the stream ID.
 > 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index f256ffc..7b7127a 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -848,13 +848,11 @@ static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
->  
->  			domain_flush_cache(domain, tmp_page, VTD_PAGE_SIZE);
->  			pteval = ((uint64_t)virt_to_dma_pfn(tmp_page) << VTD_PAGE_SHIFT) | DMA_PTE_READ | DMA_PTE_WRITE;
-> -			if (cmpxchg64(&pte->val, 0ULL, pteval)) {
-> +			if (cmpxchg64(&pte->val, 0ULL, pteval))
->  				/* Someone else set it while we were thinking; use theirs. */
->  				free_pgtable_page(tmp_page);
-> -			} else {
-> -				dma_pte_addr(pte);
-> +			else
->  				domain_flush_cache(domain, pte, sizeof(*pte));
-> -			}
->  		}
->  		if (level == 1)
->  			break;
+> I think Will is suggesting something along those lines-- I think it's a
+> question of where the streamID allocation happens.  You could
+> either do something like the following in the SMMU driver when attaching
+> a PCI device:
 > 
+>     id = alloc_stream_id(...);
+>     pci_set_streamid(pci-dev, id);
+> 
+>     or
+> 
+>     id = pci_get_streamid(pci-dev);
+> 
+> ...i.e the PCI RC could allocate (from some TBD
+> allocator) and set the stream ID itself.
+> 
+> Not sure how big a deal it is to extend PCI RC interfaces for 
+> something like that.
 
+I think both interfaces have their place; the latter for hotpluggable buses
+and the former for static allocation (i.e. set once). The only way to see
+how well it works is to try implementing it, I guess.
 
--- 
-Thanks!
-Yijing
+Will
