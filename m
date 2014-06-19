@@ -1,8 +1,8 @@
-From: Alex Williamson <alex.williamson@redhat.com>
+From: Daniel Vetter <daniel@ffwll.ch>
 Subject: Re: [PATCH v2] iommu/intel: Exclude devices using RMRRs
  from IOMMU API domains
-Date: Thu, 19 Jun 2014 08:29:20 -0600
-Message-ID: <1403188160.3707.242.camel@ul30vt.home>
+Date: Thu, 19 Jun 2014 16:41:35 +0200
+Message-ID: <CAKMK7uHhNfRn0LD7YQnmkBmK05KDDfeYNVjmpJOxh2cw8qPtyw@mail.gmail.com>
 References: <20140613162901.4550.94476.stgit@bling.home>
  <1402983303.3707.94.camel@ul30vt.home>
  <1402988692.7595.106.camel@i7.infradead.org>
@@ -13,11 +13,12 @@ References: <20140613162901.4550.94476.stgit@bling.home>
  <1403128088.3707.223.camel@ul30vt.home>
  <1403142438.3707.234.camel@ul30vt.home>
  <CAKMK7uE6Ab7pvyNvz7sd7QD1ZKDXd6kkEmXHxTzeFCmH1Z_bMQ@mail.gmail.com>
+ <1403188160.3707.242.camel@ul30vt.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-In-Reply-To: <CAKMK7uE6Ab7pvyNvz7sd7QD1ZKDXd6kkEmXHxTzeFCmH1Z_bMQ@mail.gmail.com>
+In-Reply-To: <1403188160.3707.242.camel@ul30vt.home>
 List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
  <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
 List-Archive: <http://lists.freedesktop.org/archives/intel-gfx>
@@ -27,53 +28,36 @@ List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
  <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
 Errors-To: intel-gfx-bounces@lists.freedesktop.org
 Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: Daniel Vetter <daniel@ffwll.ch>
+To: Alex Williamson <alex.williamson@redhat.com>
 Cc: chegu_vinod@hp.com, iommu@lists.linux-foundation.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Intel Graphics Development <intel-gfx@lists.freedesktop.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVGh1LCAyMDE0LTA2LTE5IGF0IDA4OjEwICswMjAwLCBEYW5pZWwgVmV0dGVyIHdyb3RlOgo+
-IE9uIFRodSwgSnVuIDE5LCAyMDE0IGF0IDM6NDcgQU0sIEFsZXggV2lsbGlhbXNvbgo+IDxhbGV4
-LndpbGxpYW1zb25AcmVkaGF0LmNvbT4gd3JvdGU6Cj4gPiBGaW5kaW5nIHNvbWUgbW9yZSBzcGVj
-cy4uLiB0aGUgTUdHQzAgcmVnaXN0ZXIgKDUwaCkgc2VlbXMgdG8gaW5kaWNhdGUKPiA+IHRoZSBH
-VFQgc3RvbGVuIG1lbW9yeSBzaXplIGlzIDJNLCB3aGljaCBzb3VuZHMgc3VzcGljaW91c2x5IGxp
-a2UgdGhlIDJNCj4gPiB0aGF0IHRoZSBSTVJSIGlzIHJlcG9ydGluZy4gIEhvd2V2ZXIsIGZyb20g
-dGhlIEl2eUJyaWRnZSBNTUlPLCBNZWRpYQo+ID4gUmVnaXN0ZXJzICYgUHJvZ3JhbW1pbmcgRW52
-IG1hbnVhbDoKPiA+Cj4gPiAgICAgICAgIDQuNi4xIENoYW5nZXMgdG8gR1RUCj4gPgo+ID4gICAg
-ICAgICBUaGUgR1RUIGlzIGNvbnN0cmFpbmVkIHRvIGJlIGxvY2F0ZWQgYXQgdGhlIGJlZ2lubmlu
-ZyBvZiBhCj4gPiAgICAgICAgIHNwZWNpYWwgc2VjdGlvbiBvZiBzdG9sZW4gbWVtb3J5IGNhbGxl
-ZCB0aGUgR1RUIHN0b2xlbiBtZW1vcnkKPiA+ICAgICAgICAgKEdTTSkuIFRoZXJlIGlzIG5vIGxv
-bmdlciBhbiBNTUlPIHJlZ2lzdGVyIGNvbnRhaW5pbmcgdGhlCj4gPiAgICAgICAgIHBoeXNpY2Fs
-IGJhc2UgYWRkcmVzcyBvZiB0aGUgR1RUIGFzIG9uIHByaW9yIGRldmljZXMuIEluc3RlYWQgb2YK
-PiA+ICAgICAgICAgdXNpbmcgdGhlIFBHVEJMX0NUTCByZWdpc3RlciB0byBzcGVjaWZ5IHRoZSBi
-YXNlIGFkZHJlc3Mgb2YgdGhlCj4gPiAgICAgICAgIEdUVCwgdGhlIEdUVCBiYXNlIGlzIG5vdyBk
-ZWZpbmVkIHRvIGJlIGF0IHRoZSBib3R0b20gKG9mZnNldCAwKQo+ID4gICAgICAgICBvZiBHU00u
-Cj4gPgo+ID4gICAgICAgICBTaW5jZSB0aGUgZ3JhcGhpY3MgZGV2aWNlIChpbmNsdWRpbmcgdGhl
-IGRyaXZlcikga25vd3Mgbm90aGluZwo+ID4gICAgICAgICBhYm91dCB0aGUgbG9jYXRpb24gb2Yg
-R1NNLCBpdCBkb2VzIG5vdCDigJxrbm934oCdIHdoZXJlIHRoZSBHVFQgaXMKPiA+ICAgICAgICAg
-bG9jYXRlZCBpbiBtZW1vcnkuIEluIGZhY3QsIHRoZSBDUFUgY2Fubm90IGRpcmVjdGx5IGFjY2Vz
-cyB0aGUKPiA+ICAgICAgICAgR1NNIGNvbnRhaW5pbmcgdGhlIEdUVC4KPiA+Cj4gPiBUaGF0IHNl
-ZW1zIHRvIHN1Z2dlc3Qgd2UgY2FuJ3QgZGlzY292ZXIgdGhpcyByZWdpb24gZnJvbSB0aGUgZGV2
-aWNlLCBidXQKPiA+IHRoZSBkZXZpY2UgZG9lcyBuZWVkIHRvIG1haW50YWluIGFjY2VzcyB0byBp
-dC4uLiBJIGRvbid0IGtub3cgaG93IHRvCj4gPiByZXNvbHZlIHRoYXQgd2l0aG91dCBleHBvc2lu
-ZyB0aGUgUk1SUiB0aHJvdWdoIHRoZSBJT01NVSBBUEkuCj4gPgo+ID4gSW4gYW55IGNhc2UsIEkg
-ZG9uJ3Qga25vdyB0aGF0IGFueSBvZiB0aGlzIHNob3VsZCBibG9jayB0aGUgb3JpZ2luYWwKPiA+
-IHBhdGNoLiAgQWxsIG9mIHRoaXMgc2VlbXMgbGlrZSAiYWNjZXB0YWJsZSIgdXNlIG9mIFJNUlJz
-IHRoYXQgd2UgY2FuCj4gPiBsYXRlciBhZGQgYW4gZXhjZXB0aW9uIHRvIGFsbG93IGlmIHdlIGdl
-dCB0byB0aGUgcG9pbnQgb2YgdW5kZXJzdGFuZGluZwo+ID4gaXQgYW5kIGJlaW5nIGFibGUgdG8g
-cmVwcm9kdWNlIGFueSByZXF1aXJlZCBtYXBwaW5ncyBpbiB0aGUgZ3Vlc3QuCj4gPiBUaGFua3Ms
-Cj4gCj4gR1RUIHN0b2xlbiBpcyB0aGUgcGxhY2Ugd2hlcmUgdGhlIGdwdSBzdG9yZXMgcGFnZSB0
-YWJsZXMuIFdlIG5ldmVyCj4gYWNjZXNzIHRoZW0gZGlyZWN0bHkgYnV0IHRocm91Z2ggYSBzcGVj
-aWFsIG1taW8gcmFuZ2Ugc28gdGhhdCB0aGUgZ3B1Cj4gY2FuIGludGVyY2VwdCBwdGUgdXBkYXRl
-cyBhbmQgaW52YWxpZGF0ZSB0bGJzIGFjY29yZGluZ2x5LiBTbyB5ZWFoLCB3ZQo+IG5lZWQgdGhp
-cywgdG9vLgoKQnV0IGlzIHRoZXJlIGEgd2F5IGZvciBzb2Z0d2FyZSB0byBkaXNjb3ZlciBpdHMg
-bG9jYXRpb24gZnJvbSB0aGUKZGV2aWNlPyAgSWYgc28sIHRoZW4gSSB0aGluayB3ZSBjYW4gcmVj
-cmVhdGUgYWxsIHRoZSBpZGVudGl0eSBtYXBzIHdlJ2QKbmVlZCBmb3IgYSBndWVzdCBmcm9tIHRo
-ZSBkZXZpY2UuICBJZiBub3QsIHRoZW4gd2UnZCBuZWVkIHRvIGZpZ3VyZSBvdXQKc29tZSBJT01N
-VSBBUEkgZXh0ZW5zaW9uIHRvIGhhbmRsZSB0aGUgbWFwcGluZy4gIFRoZSBzcGVjIGV4Y2VycHQg
-YWJvdmUKc2VlbXMgdG8gaW5kaWNhdGUgdGhhdCBoYXJkd2FyZSBkZXNpZ25lcnMgZGVjaWRlZCBz
-b2Z0d2FyZSBkb2Vzbid0IG5lZWQKdG8ga25vdyBhYm91dCBpdCwgYnV0IHRoZSBSTVJSIHNlZW1z
-IHRvIGJlIHRoZSAib2ggY3JhcCIgbW9tZW50IHdoZW4KdGhleSByZWFsaXplZCB0aGF0IHllcyB3
-ZSBkbyBuZWVkIHRvIGtub3cgYWJvdXQgaXQuICBUaGFua3MsCgpBbGV4CgpfX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpJbnRlbC1nZnggbWFpbGluZyBsaXN0
-CkludGVsLWdmeEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cDovL2xpc3RzLmZyZWVkZXNrdG9w
-Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2ludGVsLWdmeAo=
+On Thu, Jun 19, 2014 at 4:29 PM, Alex Williamson
+<alex.williamson@redhat.com> wrote:
+> But is there a way for software to discover its location from the
+> device?  If so, then I think we can recreate all the identity maps we'd
+> need for a guest from the device.  If not, then we'd need to figure out
+> some IOMMU API extension to handle the mapping.  The spec excerpt above
+> seems to indicate that hardware designers decided software doesn't need
+> to know about it, but the RMRR seems to be the "oh crap" moment when
+> they realized that yes we do need to know about it.  Thanks,
+
+It's all specified somewhere how it exactly works. But we've just had
+piles of fun trying to get the stolen range (i.e. for gfx buffer
+usage, no the gtt pte block) to work correctly and it's not been fun.
+The issue is that these registers are sw-defined and set by the bios.
+And the bios team occasionally smokes strong stuff and nilly-willy
+changes the definitions without telling anyone ... And we know that
+there's more reserved stuff in that stolen range that occasionally
+shouldn't be used by the driver. We have regular discussions with
+them.
+
+Otoh the same bios teams also set up the RMRR ranges with equallly
+predictable results.
+
+I don't have a recommendation here, but expect breakage no matter what you do.
+-Daniel
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
++41 (0) 79 365 57 48 - http://blog.ffwll.ch
