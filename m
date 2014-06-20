@@ -1,63 +1,50 @@
-From: Daniel Vetter <daniel@ffwll.ch>
-Subject: Re: [PATCH v2] iommu/intel: Exclude devices using RMRRs
- from IOMMU API domains
-Date: Thu, 19 Jun 2014 16:41:35 +0200
-Message-ID: <CAKMK7uHhNfRn0LD7YQnmkBmK05KDDfeYNVjmpJOxh2cw8qPtyw@mail.gmail.com>
-References: <20140613162901.4550.94476.stgit@bling.home>
- <1402983303.3707.94.camel@ul30vt.home>
- <1402988692.7595.106.camel@i7.infradead.org>
- <1403007757.3707.100.camel@ul30vt.home>
- <1403008864.7595.144.camel@i7.infradead.org>
- <1403010982.3707.123.camel@ul30vt.home>
- <20140617134408.GM5821@phenom.ffwll.local>
- <1403128088.3707.223.camel@ul30vt.home>
- <1403142438.3707.234.camel@ul30vt.home>
- <CAKMK7uE6Ab7pvyNvz7sd7QD1ZKDXd6kkEmXHxTzeFCmH1Z_bMQ@mail.gmail.com>
- <1403188160.3707.242.camel@ul30vt.home>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-In-Reply-To: <1403188160.3707.242.camel@ul30vt.home>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: chegu_vinod@hp.com, iommu@lists.linux-foundation.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Intel Graphics Development <intel-gfx@lists.freedesktop.org>
+From: Jiang Liu <jiang.liu@linux.intel.com>
+Subject: [Patch] iommu/vt-d: fix bug in handling multiple RMRRs for the same PCI device
+Date: Fri, 20 Jun 2014 15:08:06 +0800
+Message-ID: <1403248086-13853-1-git-send-email-jiang.liu@linux.intel.com>
+Return-path: <linux-hotplug-owner@vger.kernel.org>
+Sender: linux-hotplug-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-hotplug@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jun 19, 2014 at 4:29 PM, Alex Williamson
-<alex.williamson@redhat.com> wrote:
-> But is there a way for software to discover its location from the
-> device?  If so, then I think we can recreate all the identity maps we'd
-> need for a guest from the device.  If not, then we'd need to figure out
-> some IOMMU API extension to handle the mapping.  The spec excerpt above
-> seems to indicate that hardware designers decided software doesn't need
-> to know about it, but the RMRR seems to be the "oh crap" moment when
-> they realized that yes we do need to know about it.  Thanks,
+Function dmar_iommu_notify_scope_dev() makes a wrong assumption that
+there's one RMRR for each PCI device at most, which causes DMA failure
+on some HP platforms. So enhance dmar_iommu_notify_scope_dev() to
+handle multiple RMRRs for the same PCI device.
 
-It's all specified somewhere how it exactly works. But we've just had
-piles of fun trying to get the stolen range (i.e. for gfx buffer
-usage, no the gtt pte block) to work correctly and it's not been fun.
-The issue is that these registers are sw-defined and set by the bios.
-And the bios team occasionally smokes strong stuff and nilly-willy
-changes the definitions without telling anyone ... And we know that
-there's more reserved stuff in that stolen range that occasionally
-shouldn't be used by the driver. We have regular discussions with
-them.
+Fixbug: https://bugzilla.novell.com/show_bug.cgi?id=879482
 
-Otoh the same bios teams also set up the RMRR ranges with equallly
-predictable results.
+Cc: <stable@vger.kernel.org> # 3.15
+Reported-by: Tom Mingarelli <thomas.mingarelli@hp.com>
+Tested-by: Linda Knippers <linda.knippers@hp.com>
+Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
+---
+ drivers/iommu/intel-iommu.c |    9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-I don't have a recommendation here, but expect breakage no matter what you do.
--Daniel
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 6bb32773c3ac..51b6b77dc3e5 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -3816,14 +3816,11 @@ int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info)
+ 				((void *)rmrr) + rmrr->header.length,
+ 				rmrr->segment, rmrru->devices,
+ 				rmrru->devices_cnt);
+-			if (ret > 0)
+-				break;
+-			else if(ret < 0)
++			if(ret < 0)
+ 				return ret;
+ 		} else if (info->event == BUS_NOTIFY_DEL_DEVICE) {
+-			if (dmar_remove_dev_scope(info, rmrr->segment,
+-				rmrru->devices, rmrru->devices_cnt))
+-				break;
++			dmar_remove_dev_scope(info, rmrr->segment,
++				rmrru->devices, rmrru->devices_cnt);
+ 		}
+ 	}
+ 
 -- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-+41 (0) 79 365 57 48 - http://blog.ffwll.ch
+1.7.10.4
+
