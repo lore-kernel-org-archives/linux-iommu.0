@@ -1,53 +1,147 @@
-From: Arnd Bergmann <arnd@arndb.de>
+From: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
-Date: Fri, 20 Jun 2014 20:55:23 +0200
-Message-ID: <63766434.z4MqtGKoIA@wuerfel>
-References: <1400877395-4235-1-git-send-email-thierry.reding@gmail.com> <39682213.otHMo6zoRf@wuerfel> <20140620175051.GE30656@arm.com>
+Date: Fri, 20 Jun 2014 16:16:25 -0700
+Message-ID: <53A4C0C9.2050908@codeaurora.org>
+References: <1400877218-4113-1-git-send-email-thierry.reding@gmail.com>
+	<CAL_JsqKumG1PSFoVfeGpLLG+MjXFeF4aUjun=vv1BJpaxk0Byg@mail.gmail.com>
+	<4545972.cM7IP1qTXQ@wuerfel>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20140620175051.GE30656@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <Mark.Rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Pawel Moll <Pawel.Moll@arm.com>, Stephen Warren <swarren@wwwdotorg.org>, Grant Grundler <grundler@chromium.org>, Joerg Roedel <joro@8bytes.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Marc Zyngier <Marc.Zyngier@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Rob Herring <robh+dt@kernel.org>, Kumar Gala <galak@codeaurora.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, Cho KyongHo <pullip.cho@samsung.com>, Dave P Martin <Dave.Martin@arm.com>, Hiroshi Doyu <hd>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <4545972.cM7IP1qTXQ@wuerfel>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Friday 20 June 2014 18:50:51 Will Deacon wrote:
-> On Fri, Jun 20, 2014 at 04:53:08PM +0100, Arnd Bergmann wrote:
-> > On Wednesday 18 June 2014 11:14:39 Will Deacon wrote:
-> > > On Wed, Jun 18, 2014 at 12:37:16AM +0100, Thierry Reding wrote:
-> > >   - Each master has a set of fixed StreamIDs
-> > >   - StreamIDs can be remastered by adding a constant offset (this could also
-> > >     be used to describe RequesterID -> StreamID mapping)
-> > > 
-> > > I'd hope this would be sufficient for most people. Dynamic ID assignment can
-> > > be worked out later (I'm not even sure it belongs in this binding) and any
-> > > mappings other than `add a constant offset' can be treated on a case-by-case
-> > > basis. We don't want to throw the kitchen sink at a language for describing
-> > > arbitrary transformations!
-> > > 
-> > > > We've had similar discussions before (power sequences anyone?) where we
-> > > > tried to come up with a generic way to describe something in device tree
-> > > > that just didn't work out too well. Some things are better done in code,
-> > > > so I think we should at least consider that possibility rather than
-> > > > blindly try and force everything into device tree.
-> > > 
-> > > If we can support 90% of SoCs with a simple DT-based description, we can
-> > > address the corner cases as they arise. I'm not ruling our hardcoding
-> > > topology if we have no choice, but I don't think that's a healthy place to
-> > > start from.
-> > 
-> > So we could use the "arm,gicv3" comaptible string for all those that
-> > have a relatively simple mapping, and describe that mapping entirely
-> > in DT properties, but use a different compatible string for those
-> > SoCs that have a mapping which we can't easily describe, and then
-> > put that into code?
+On 5/30/2014 12:06 PM, Arnd Bergmann wrote:
+> On Friday 30 May 2014 08:16:05 Rob Herring wrote:
+>> On Fri, May 23, 2014 at 3:33 PM, Thierry Reding
+>> <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+>>> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+>>> +IOMMU master node:
+>>> +==================
+>>> +
+>>> +Devices that access memory through an IOMMU are called masters. A device can
+>>> +have multiple master interfaces (to one or more IOMMU devices).
+>>> +
+>>> +Required properties:
+>>> +--------------------
+>>> +- iommus: A list of phandle and IOMMU specifier pairs that describe the IOMMU
+>>> +  master interfaces of the device. One entry in the list describes one master
+>>> +  interface of the device.
+>>> +
+>>> +When an "iommus" property is specified in a device tree node, the IOMMU will
+>>> +be used for address translation. If a "dma-ranges" property exists in the
+>>> +device's parent node it will be ignored. An exception to this rule is if the
+>>> +referenced IOMMU is disabled, in which case the "dma-ranges" property of the
+>>> +parent shall take effect.
+>>
+>> Just thinking out loud, could you have dma-ranges in the iommu node
+>> for the case when the iommu is enabled rather than putting the DMA
+>> window information into the iommus property?
+>>
+>> This would probably mean that you need both #iommu-cells and #address-cells.
 > 
-> That doesn't sound unreasonable, but I don't think we should commit to
-> putting things into code until they come along and we can't describe them.
+> The reason for doing like this was that you may need a different window
+> for each device, while there can only be one dma-ranges property in 
+> an iommu node.
+> 
+>>> +
+>>> +Optional properties:
+>>> +--------------------
+>>> +- iommu-names: A list of names identifying each entry in the "iommus"
+>>> +  property.
+>>
+>> Do we really need a name here? I would not expect that you have
+>> clearly documented names here from the datasheet like you would for
+>> interrupts or clocks, so you'd just be making up names. Sorry, but I'm
+>> not a fan of names properties in general.
+> 
+> Good point, this was really overdesign by modeling it after other
+> subsystems that can have a use for names.
+>  
+>>> +Multiple-master IOMMU:
+>>> +----------------------
+>>> +
+>>> +       iommu {
+>>> +               /* the specifier represents the ID of the master */
+>>> +               #address-cells = <1>;
+>>> +               #size-cells = <0>;
+>>> +       };
+>>> +
+>>> +       master {
+>>> +               /* device has master ID 42 in the IOMMU */
+>>> +               iommus = <&/iommu 42>;
+>>> +       };
+>>
+>> Presumably the ID would be the streamID on ARM's SMMU. How would a
+>> master with 8 streamIDs be described? This is what Calxeda midway has
+>> for SATA and I would expect that to be somewhat common. Either you
+>> need some ID masking or you'll have lots of duplication when you have
+>> windows.
+> 
+> I don't understand the problem. If you have stream IDs 0 through 7,
+> you would have
+> 
+> 	master@a {
+> 		...
+> 		iommus = <&smmu 0>;
+> 	};
+> 
+> 	master@b {
+> 		...
+> 		iommus = <&smmu 1;
+> 	};
+> 
+> 	...
+> 
+> 	master@12 {
+> 		...
+> 		iommus = <&smmu 7;
+> 	};
+> 
+> and you don't need a window at all. Why would you need a mask of
+> some sort?
 
-Yes, that makes sense. But it's good to know that we have the option so
-we don't have to cover all corner cases with the binding.
+We have multiple-master SMMUs and each master emits a variable number of
+StreamIDs. However, we have to apply a mask (the ARM SMMU spec allows
+for this) to the StreamIDs due to limited number of StreamID 2 Context
+Bank entries in the SMMU. If my understanding is correct we would
+represent this in the DT like this:
 
-	Arnd
+	iommu {
+		#address-cells = <2>;
+		#size-cells = <0>;
+	};
+
+	master@a {
+		...
+		iommus = <&iommu StreamID0 MASK0>,
+			 <&iommu StreamID1 MASK1>,
+			 <&iommu StreamID2 MASK2>;
+	};
+
+	master@b {
+		...
+		iommus = <&iommu StreamID3 MASK3>,
+			 <&iommu StreamID4 MASK4>;
+	};
+
+
+Thanks,
+
+Olav Haugan
+
+-- 
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+hosted by The Linux Foundation
