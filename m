@@ -1,62 +1,64 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
-Date: Tue, 24 Jun 2014 19:11:50 +0100
-Message-ID: <20140624181150.GB4067@arm.com>
-References: <1400877218-4113-1-git-send-email-thierry.reding@gmail.com>
- <CAL_JsqKumG1PSFoVfeGpLLG+MjXFeF4aUjun=vv1BJpaxk0Byg@mail.gmail.com>
- <4545972.cM7IP1qTXQ@wuerfel>
- <53A4C0C9.2050908@codeaurora.org>
- <20140624091808.GC26013@arm.com>
- <53A9BC18.2090106@codeaurora.org>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: [PATCH 3/3] iommu/fsl: Fix the error condition during iommu group
+Date: Tue, 24 Jun 2014 19:27:17 +0530
+Message-ID: <1403618237-26248-4-git-send-email-Varun.Sethi@freescale.com>
+References: <1403618237-26248-1-git-send-email-Varun.Sethi@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <53A9BC18.2090106@codeaurora.org>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Olav Haugan <ohaugan@codeaurora.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, Rob Herring <robherring2@gmail.com>, Mark Rutland <Mark.Rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Pawel Moll <Pawel.Moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Grant Grundler <grundler@chromium.org>, Joerg Roedel <joro@8bytes.org>, Stephen Warren <swarren@wwwdotorg.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Marc Zyngier <Marc.Zyngier@arm.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Kumar Gala <galak@codeaurora.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, Cho KyongHo <pullip.cho@samsung.com>, Dave P Martin <Dave.Martin@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm->
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1403618237-26248-1-git-send-email-Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jun 24, 2014 at 06:57:44PM +0100, Olav Haugan wrote:
-> On 6/24/2014 2:18 AM, Will Deacon wrote:
-> > On Sat, Jun 21, 2014 at 12:16:25AM +0100, Olav Haugan wrote:
-> >> We have multiple-master SMMUs and each master emits a variable number of
-> >> StreamIDs. However, we have to apply a mask (the ARM SMMU spec allows
-> >> for this) to the StreamIDs due to limited number of StreamID 2 Context
-> >> Bank entries in the SMMU. If my understanding is correct we would
-> >> represent this in the DT like this:
-> >>
-> >> 	iommu {
-> >> 		#address-cells = <2>;
-> >> 		#size-cells = <0>;
-> >> 	};
-> >>
-> >> 	master@a {
-> >> 		...
-> >> 		iommus = <&iommu StreamID0 MASK0>,
-> >> 			 <&iommu StreamID1 MASK1>,
-> >> 			 <&iommu StreamID2 MASK2>;
-> >> 	};
-> > 
-> > Stupid question, but why not simply describe the masked IDs? What use does
-> > the `raw' ID have to Linux?
-> 
-> We do describe the masked StreamID (SID) but we need to specify the mask
-> that the SMMU should apply to the incoming SIDs, right?
-> 
-> We have a bus master that emits 43 unique SIDs. However, we have only 40
-> SMMU_SMRn registers in the SMMU. So we need to mask out some of the
-> incoming SID bits so that the 43 SIDs can match one of 40 entries in the
-> SMR.
+Earlier PTR_ERR was being returned even if group was set to null.
+Now, we explicitly set an ERR_PTR value in case the group  pointer is
+NULL.
 
-Hmm, so you're talking about stream matching, right? That doesn't belong in
-the device-tree. I appreciate that the current driver does a terrible job at
-allocating the SMRs (it's bloody difficult!), but we should try to improve
-the dynamic behaviour instead of moving configuration of the SMMU out into
-device-tree, where it's inflexible at best.
+Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+---
+ drivers/iommu/fsl_pamu_domain.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-There have been patches previously posted by Andreas Herrmann helping here.
-I'd be glad to see them revived.
-
-Will
+diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+index 54060d1..af47648 100644
+--- a/drivers/iommu/fsl_pamu_domain.c
++++ b/drivers/iommu/fsl_pamu_domain.c
+@@ -1037,12 +1037,15 @@ root_bus:
+ 			group = get_shared_pci_device_group(pdev);
+ 	}
+ 
++	if (!group)
++		group = ERR_PTR(-ENODEV);
++
+ 	return group;
+ }
+ 
+ static int fsl_pamu_add_device(struct device *dev)
+ {
+-	struct iommu_group *group = NULL;
++	struct iommu_group *group = ERR_PTR(-ENODEV);
+ 	struct pci_dev *pdev;
+ 	const u32 *prop;
+ 	int ret, len;
+@@ -1065,7 +1068,7 @@ static int fsl_pamu_add_device(struct device *dev)
+ 			group = get_device_iommu_group(dev);
+ 	}
+ 
+-	if (!group || IS_ERR(group))
++	if (IS_ERR(group))
+ 		return PTR_ERR(group);
+ 
+ 	ret = iommu_group_add_device(group, dev);
+-- 
+1.7.9.5
