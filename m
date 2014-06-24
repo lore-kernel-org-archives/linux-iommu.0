@@ -1,13 +1,14 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: [PATCH 3/3] iommu/fsl: Fix the error condition during iommu group
-Date: Tue, 24 Jun 2014 19:27:17 +0530
-Message-ID: <1403618237-26248-4-git-send-email-Varun.Sethi@freescale.com>
-References: <1403618237-26248-1-git-send-email-Varun.Sethi@freescale.com>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
+Date: Tue, 24 Jun 2014 20:20:56 +0200
+Message-ID: <4855051.rhxSrNMNLg@wuerfel>
+References: <1400877218-4113-1-git-send-email-thierry.reding@gmail.com>
+	<53A9BC18.2090106@codeaurora.org> <20140624181150.GB4067@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1403618237-26248-1-git-send-email-Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+In-Reply-To: <20140624181150.GB4067-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,48 +18,62 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Earlier PTR_ERR was being returned even if group was set to null.
-Now, we explicitly set an ERR_PTR value in case the group  pointer is
-NULL.
+On Tuesday 24 June 2014 19:11:50 Will Deacon wrote:
+> On Tue, Jun 24, 2014 at 06:57:44PM +0100, Olav Haugan wrote:
+> > On 6/24/2014 2:18 AM, Will Deacon wrote:
+> > > On Sat, Jun 21, 2014 at 12:16:25AM +0100, Olav Haugan wrote:
+> > >> We have multiple-master SMMUs and each master emits a variable number of
+> > >> StreamIDs. However, we have to apply a mask (the ARM SMMU spec allows
+> > >> for this) to the StreamIDs due to limited number of StreamID 2 Context
+> > >> Bank entries in the SMMU. If my understanding is correct we would
+> > >> represent this in the DT like this:
+> > >>
+> > >>    iommu {
+> > >>            #address-cells = <2>;
+> > >>            #size-cells = <0>;
+> > >>    };
+> > >>
+> > >>    master@a {
+> > >>            ...
+> > >>            iommus = <&iommu StreamID0 MASK0>,
+> > >>                     <&iommu StreamID1 MASK1>,
+> > >>                     <&iommu StreamID2 MASK2>;
+> > >>    };
+> > > 
+> > > Stupid question, but why not simply describe the masked IDs? What use does
+> > > the `raw' ID have to Linux?
+> > 
+> > We do describe the masked StreamID (SID) but we need to specify the mask
+> > that the SMMU should apply to the incoming SIDs, right?
+> > 
+> > We have a bus master that emits 43 unique SIDs. However, we have only 40
+> > SMMU_SMRn registers in the SMMU. So we need to mask out some of the
+> > incoming SID bits so that the 43 SIDs can match one of 40 entries in the
+> > SMR.
+> 
+> Hmm, so you're talking about stream matching, right? That doesn't belong in
+> the device-tree. I appreciate that the current driver does a terrible job at
+> allocating the SMRs (it's bloody difficult!), but we should try to improve
+> the dynamic behaviour instead of moving configuration of the SMMU out into
+> device-tree, where it's inflexible at best.
+> 
+> There have been patches previously posted by Andreas Herrmann helping here.
+> I'd be glad to see them revived.
 
-Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
----
- drivers/iommu/fsl_pamu_domain.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+Note that there are areas where we have in the past decided that dynamic
+configuration is just too hard for the kernel to do and that we're better
+off putting the configuration into DT. Pinctrl and clocks are at least
+partially in that category.
 
-diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
-index 54060d1..af47648 100644
---- a/drivers/iommu/fsl_pamu_domain.c
-+++ b/drivers/iommu/fsl_pamu_domain.c
-@@ -1037,12 +1037,15 @@ root_bus:
- 			group = get_shared_pci_device_group(pdev);
- 	}
- 
-+	if (!group)
-+		group = ERR_PTR(-ENODEV);
-+
- 	return group;
- }
- 
- static int fsl_pamu_add_device(struct device *dev)
- {
--	struct iommu_group *group = NULL;
-+	struct iommu_group *group = ERR_PTR(-ENODEV);
- 	struct pci_dev *pdev;
- 	const u32 *prop;
- 	int ret, len;
-@@ -1065,7 +1068,7 @@ static int fsl_pamu_add_device(struct device *dev)
- 			group = get_device_iommu_group(dev);
- 	}
- 
--	if (!group || IS_ERR(group))
-+	if (IS_ERR(group))
- 		return PTR_ERR(group);
- 
- 	ret = iommu_group_add_device(group, dev);
--- 
-1.7.9.5
+It's always best if you can get the kernel to do things in the ideal
+way where that is possible, but getting there may be just not worth it.
+
+I have no idea where it should be for SMMU, but it's something to consider:
+if you can take reasonable shortcuts by reading parts of the configuration
+from DT, you may just as well do that.
+
+	Arnd
