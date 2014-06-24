@@ -1,13 +1,16 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: [PATCH 1/3] iommu/fsl: Fix PAMU window size check.
-Date: Tue, 24 Jun 2014 19:27:15 +0530
-Message-ID: <1403618237-26248-2-git-send-email-Varun.Sethi@freescale.com>
-References: <1403618237-26248-1-git-send-email-Varun.Sethi@freescale.com>
+From: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
+Date: Tue, 24 Jun 2014 10:57:44 -0700
+Message-ID: <53A9BC18.2090106@codeaurora.org>
+References: <1400877218-4113-1-git-send-email-thierry.reding@gmail.com>
+	<CAL_JsqKumG1PSFoVfeGpLLG+MjXFeF4aUjun=vv1BJpaxk0Byg@mail.gmail.com>
+	<4545972.cM7IP1qTXQ@wuerfel> <53A4C0C9.2050908@codeaurora.org>
+	<20140624091808.GC26013@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1403618237-26248-1-git-send-email-Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+In-Reply-To: <20140624091808.GC26013-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,69 +20,76 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-is_power_of_2 requires an unsigned long parameter which would
-lead to truncation of 64 bit values on 32 bit architectures.
+On 6/24/2014 2:18 AM, Will Deacon wrote:
+> On Sat, Jun 21, 2014 at 12:16:25AM +0100, Olav Haugan wrote:
+>> On 5/30/2014 12:06 PM, Arnd Bergmann wrote:
+>>> On Friday 30 May 2014 08:16:05 Rob Herring wrote:
+>>>> Presumably the ID would be the streamID on ARM's SMMU. How would a
+>>>> master with 8 streamIDs be described? This is what Calxeda midway has
+>>>> for SATA and I would expect that to be somewhat common. Either you
+>>>> need some ID masking or you'll have lots of duplication when you have
+>>>> windows.
+>>>
+>>> I don't understand the problem. If you have stream IDs 0 through 7,
+>>> you would have
+>>>
+>>> 	master@a {
+>>> 		...
+>>> 		iommus = <&smmu 0>;
+>>> 	};
+>>>
+>>> 	master@b {
+>>> 		...
+>>> 		iommus = <&smmu 1;
+>>> 	};
+>>>
+>>> 	...
+>>>
+>>> 	master@12 {
+>>> 		...
+>>> 		iommus = <&smmu 7;
+>>> 	};
+>>>
+>>> and you don't need a window at all. Why would you need a mask of
+>>> some sort?
+>>
+>> We have multiple-master SMMUs and each master emits a variable number of
+>> StreamIDs. However, we have to apply a mask (the ARM SMMU spec allows
+>> for this) to the StreamIDs due to limited number of StreamID 2 Context
+>> Bank entries in the SMMU. If my understanding is correct we would
+>> represent this in the DT like this:
+>>
+>> 	iommu {
+>> 		#address-cells = <2>;
+>> 		#size-cells = <0>;
+>> 	};
+>>
+>> 	master@a {
+>> 		...
+>> 		iommus = <&iommu StreamID0 MASK0>,
+>> 			 <&iommu StreamID1 MASK1>,
+>> 			 <&iommu StreamID2 MASK2>;
+>> 	};
+> 
+> Stupid question, but why not simply describe the masked IDs? What use does
+> the `raw' ID have to Linux?
 
-__ffs also expects an unsigned long parameter thus won't work
-for 64 bit values on 32 bit architectures.
+We do describe the masked StreamID (SID) but we need to specify the mask
+that the SMMU should apply to the incoming SIDs, right?
 
-Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
----
- drivers/iommu/fsl_pamu.c        |    8 ++++----
- drivers/iommu/fsl_pamu_domain.c |    2 +-
- 2 files changed, 5 insertions(+), 5 deletions(-)
+We have a bus master that emits 43 unique SIDs. However, we have only 40
+SMMU_SMRn registers in the SMMU. So we need to mask out some of the
+incoming SID bits so that the 43 SIDs can match one of 40 entries in the
+SMR.
 
-diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
-index b99dd88..bb446d7 100644
---- a/drivers/iommu/fsl_pamu.c
-+++ b/drivers/iommu/fsl_pamu.c
-@@ -170,10 +170,10 @@ int pamu_disable_liodn(int liodn)
- static unsigned int map_addrspace_size_to_wse(phys_addr_t addrspace_size)
- {
- 	/* Bug if not a power of 2 */
--	BUG_ON(!is_power_of_2(addrspace_size));
-+	BUG_ON((addrspace_size & (addrspace_size - 1)));
- 
- 	/* window size is 2^(WSE+1) bytes */
--	return __ffs(addrspace_size) - 1;
-+	return fls64(addrspace_size) - 2;
- }
- 
- /* Derive the PAACE window count encoding for the subwindow count */
-@@ -351,7 +351,7 @@ int pamu_config_ppaace(int liodn, phys_addr_t win_addr, phys_addr_t win_size,
- 	struct paace *ppaace;
- 	unsigned long fspi;
- 
--	if (!is_power_of_2(win_size) || win_size < PAMU_PAGE_SIZE) {
-+	if ((win_size & (win_size - 1)) || win_size < PAMU_PAGE_SIZE) {
- 		pr_debug("window size too small or not a power of two %llx\n", win_size);
- 		return -EINVAL;
- 	}
-@@ -464,7 +464,7 @@ int pamu_config_spaace(int liodn, u32 subwin_cnt, u32 subwin,
- 		return -ENOENT;
- 	}
- 
--	if (!is_power_of_2(subwin_size) || subwin_size < PAMU_PAGE_SIZE) {
-+	if ((subwin_size & (subwin_size - 1)) || subwin_size < PAMU_PAGE_SIZE) {
- 		pr_debug("subwindow size out of range, or not a power of 2\n");
- 		return -EINVAL;
- 	}
-diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
-index 93072ba..3dd0b8e 100644
---- a/drivers/iommu/fsl_pamu_domain.c
-+++ b/drivers/iommu/fsl_pamu_domain.c
-@@ -301,7 +301,7 @@ static int check_size(u64 size, dma_addr_t iova)
- 	 * Size must be a power of two and at least be equal
- 	 * to PAMU page size.
- 	 */
--	if (!is_power_of_2(size) || size < PAMU_PAGE_SIZE) {
-+	if ((size & (size - 1)) || size < PAMU_PAGE_SIZE) {
- 		pr_debug("%s: size too small or not a power of two\n", __func__);
- 		return -EINVAL;
- 	}
+Thanks,
+
+Olav Haugan
+
 -- 
-1.7.9.5
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+hosted by The Linux Foundation
