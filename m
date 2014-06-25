@@ -1,62 +1,55 @@
-From: Will Deacon <will.deacon@arm.com>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
 Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
-Date: Wed, 25 Jun 2014 10:57:36 +0100
-Message-ID: <20140625095735.GI6153@arm.com>
+Date: Wed, 25 Jun 2014 12:12:13 +0200
+Message-ID: <6589024.32Qh7fFhXo@wuerfel>
 References: <1400877218-4113-1-git-send-email-thierry.reding@gmail.com>
- <4839521.56FtveYIl6@wuerfel>
- <20140625093825.GH6153@arm.com>
- <130361958.xFghHXmZkz@wuerfel>
+	<130361958.xFghHXmZkz@wuerfel> <20140625095735.GI6153@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <130361958.xFghHXmZkz@wuerfel>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Olav Haugan <ohaugan@codeaurora.org>, Rob Herring <robherring2@gmail.com>, Mark Rutland <Mark.Rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Pawel Moll <Pawel.Moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Grant Grundler <grundler@chromium.org>, Joerg Roedel <joro@8bytes.org>, Stephen Warren <swarren@wwwdotorg.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Marc Zyngier <Marc.Zyngier@arm.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Kumar Gala <galak@codeaurora.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, Cho KyongHo <pullip.cho@samsung.com>, Dave P Martin <Dave.Martin@arm.com>"linux-arm-kernel@lists.infradead.org" <li>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20140625095735.GI6153-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jun 25, 2014 at 10:48:31AM +0100, Arnd Bergmann wrote:
-> On Wednesday 25 June 2014 10:38:25 Will Deacon wrote:
-> > On Wed, Jun 25, 2014 at 10:27:50AM +0100, Arnd Bergmann wrote:
-> > > I think the situation is a bit different here: It's less about the corner
-> > > cases for the SMMU, but about the question whether it makes more sense to
-> > > have the kernel figure out the settings, or have them come from DT
-> > > all the time.
-> > 
-> > But, as far as I can tell, this setting is basically `which bits are
-> > constant among this set of IDs'.
-> > 
-> > > As I said, I can't tell which approach is best here, but it sounds to
-> > > me we should either do dynamic configuration and get it right, or
-> > > hardcode the configuration it all the time if we can't.
-> > 
-> > I disagree. If you have `sensible' StreamID allocations, doing this
-> > dynamically should be straight-forward and gives the driver more flexibility
-> > (e.g. we then have the option of combining SMR entries for different masters
-> > if they are in the same domain). The dynamic approach also lends itself to
-> > sanity-checking (it is IMPLEMENTATION DEFINED whether the SMMU detects SMR
-> > aliases) and helps with virtualisation (forcing QEMU to generate these masks
-> > in a device-tree for a guest using a virtual SMMU interface is very painful).
+On Wednesday 25 June 2014 10:57:36 Will Deacon wrote:
+> So far, I've been avoiding the hardcoding. However, you could potentially
+> build a system with a small number of SMRs (compared to the number of
+> StreamIDs) and allocate the StreamIDs in such a way that I think the dynamic
+> configuration would be NP complete if we require an optimal SMR allocation.
 > 
-> In which case do you think hardcoding is needed then? I'm still confused
-> why you think we need both, as your arguments seem to all be in favor of
-> dynamic configuration.
+> However:
+> 
+>   (1) I don't know of a system where this is the case
+>   (2) Not much work has been done on improving the dynamic allocator yet
+> 
+> which is why I'm still favouring dynamic configuration in the driver.
+> 
+> The other thing I forgot to mention earlier is that we need to support
+> device hotplug in the future, so some level of dynamic configuration
+> will always be required.
 
-So far, I've been avoiding the hardcoding. However, you could potentially
-build a system with a small number of SMRs (compared to the number of
-StreamIDs) and allocate the StreamIDs in such a way that I think the dynamic
-configuration would be NP complete if we require an optimal SMR allocation.
+Ok, got it. So we just hope that we can make dynamic configuration
+work all the time, but if it all fails, then we come up with a
+hardcoded configuration method.
 
-However:
+I guess this could be done similarly to how we handle clocks on
+a lot of systems: generally these are dynamic, but you have the
+option to provide hints in the clock controller node about how
+you expect things to be configured.
 
-  (1) I don't know of a system where this is the case
-  (2) Not much work has been done on improving the dynamic allocator yet
+For the SMMU that could mean that (if we get into the situation you
+describe), we add optional properties to the SMMU node itself
+describing how we expect the SMRs to be used.
 
-which is why I'm still favouring dynamic configuration in the driver.
-
-The other thing I forgot to mention earlier is that we need to support
-device hotplug in the future, so some level of dynamic configuration
-will always be required.
-
-Will
+	Arnd
