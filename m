@@ -1,78 +1,81 @@
-From: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
-Date: Tue, 24 Jun 2014 14:35:54 -0700
-Message-ID: <53A9EF3A.2070704@codeaurora.org>
-References: <1400877218-4113-1-git-send-email-thierry.reding@gmail.com>
-	<CAL_JsqKumG1PSFoVfeGpLLG+MjXFeF4aUjun=vv1BJpaxk0Byg@mail.gmail.com>
-	<4545972.cM7IP1qTXQ@wuerfel> <53A4C0C9.2050908@codeaurora.org>
-	<20140624091808.GC26013@arm.com> <53A9BC18.2090106@codeaurora.org>
-	<20140624181150.GB4067@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140624181150.GB4067-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+From: Jiang Liu <jiang.liu@linux.intel.com>
+Subject: [Patch Part3 V3 00/21] Enable support of Intel DMAR device hotplug
+Date: Wed, 25 Jun 2014 17:02:26 +0800
+Message-ID: <1403686967-10887-1-git-send-email-jiang.liu@linux.intel.com>
+Return-path: <linux-hotplug-owner@vger.kernel.org>
+Sender: linux-hotplug-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, Ashok Raj <ashok.raj@intel.com>, Yijing Wang <wangyijing@huawei.com>, Tony Luck <tony.luck@intel.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-hotplug@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 6/24/2014 11:11 AM, Will Deacon wrote:
-> On Tue, Jun 24, 2014 at 06:57:44PM +0100, Olav Haugan wrote:
->> On 6/24/2014 2:18 AM, Will Deacon wrote:
->>> On Sat, Jun 21, 2014 at 12:16:25AM +0100, Olav Haugan wrote:
->>>> We have multiple-master SMMUs and each master emits a variable number of
->>>> StreamIDs. However, we have to apply a mask (the ARM SMMU spec allows
->>>> for this) to the StreamIDs due to limited number of StreamID 2 Context
->>>> Bank entries in the SMMU. If my understanding is correct we would
->>>> represent this in the DT like this:
->>>>
->>>> 	iommu {
->>>> 		#address-cells = <2>;
->>>> 		#size-cells = <0>;
->>>> 	};
->>>>
->>>> 	master@a {
->>>> 		...
->>>> 		iommus = <&iommu StreamID0 MASK0>,
->>>> 			 <&iommu StreamID1 MASK1>,
->>>> 			 <&iommu StreamID2 MASK2>;
->>>> 	};
->>>
->>> Stupid question, but why not simply describe the masked IDs? What use does
->>> the `raw' ID have to Linux?
->>
->> We do describe the masked StreamID (SID) but we need to specify the mask
->> that the SMMU should apply to the incoming SIDs, right?
->>
->> We have a bus master that emits 43 unique SIDs. However, we have only 40
->> SMMU_SMRn registers in the SMMU. So we need to mask out some of the
->> incoming SID bits so that the 43 SIDs can match one of 40 entries in the
->> SMR.
-> 
-> Hmm, so you're talking about stream matching, right? That doesn't belong in
-> the device-tree. I appreciate that the current driver does a terrible job at
-> allocating the SMRs (it's bloody difficult!), but we should try to improve
-> the dynamic behaviour instead of moving configuration of the SMMU out into
-> device-tree, where it's inflexible at best.
+When hot plugging a descrete IOH or a physical processor with embedded
+IIO, we need to handle DMAR(or IOMMU) unit in the PCIe host bridge if
+DMAR is in use. This patch set tries to enhance current DMAR/IOMMU/IR
+drivers to support hotplug and is based on latest mainstream kernel
+v3.16-rc2.
 
-I am talking about SMMU_SMRn[MASK] register bits. This is not something
-that can be dynamically detected at run-time. It is configuration at the
-same level as the actual StreamIDs.
+Patch 1-13 are bugfixes and code improvement for current drivers.
+Patch 14-17 enhances DMAR framework to support hotplug
+Patch 18 enhances Intel interrupt remapping driver to support hotplug
+Patch 19 enhances error handling in Intel IR driver
+Patch 20 enhance Intel IOMMU to support hotplug
+Patch 21 enhance ACPI pci_root driver to handle DMAR units
 
-Thanks,
+This patch set has been tested on Intel development machine.
+Appreciate any comments and tests. With this patch set and
+another IOAPIC hotplug patch set(http://www.mail-archive.com/linux-kernel
+@vger.kernel.org/msg671316.html) applied, we could support full functional
+socket hotplug on x86 platforms now.
 
+V2->V3:
+1) rebase to latest v3.16-rc2
+2) fix a bug in detecting super page support when hot-adding IOMMU
 
-Olav Haugan
+V1->V2:
+1) enhance the way to simplify intel_unmap_sg()
+2) rename dmar_device_hotplug() to dmar_device_add/remove()
+3) coding style improvment
+
+Best Regards!
+
+Jiang Liu (21):
+  iommu/vt-d: match segment number when searching for dev_iotlb capable
+    devices
+  iommu/vt-d: use correct domain id to flush virtual machine domains
+  iommu/vt-d: introduce helper functions to improve code readability
+  iommu/vt-d: introduce helper functions to make code symmetric for
+    readability
+  iommu/vt-d: only dynamically allocate domain id for virtual domains
+  iommu/vt-d: fix possible invalid memory access caused by
+    free_dmar_iommu()
+  iommu/vt-d: avoid freeing virtual machine domain in free_dmar_iommu()
+  iommu/VT-d: simplify include/linux/dmar.h
+  iommu/vt-d: change iommu_enable/disable_translation to return void
+  iommu/vt-d: simplify intel_unmap_sg() and kill duplicated code
+  iommu/vt-d: introduce helper domain_pfn_within_range() to simplify
+    code
+  iommu/vt-d: introduce helper function iova_size() to improve code
+    readability
+  iommu/vt-d: fix bug in computing domain's iommu_snooping flag
+  IOMMU/vt-d: introduce helper function dmar_walk_resources()
+  iommu/vt-d: dynamically allocate and free seq_id for DMAR units
+  iommu/vt-d: implement DMAR unit hotplug framework
+  iommu/vt-d: search _DSM method for DMAR hotplug
+  iommu/vt-d: enhance intel_irq_remapping driver to support DMAR unit
+    hotplug
+  iommu/vt-d: enhance error recovery in function
+    intel_enable_irq_remapping()
+  iommu/vt-d: enhance intel-iommu driver to support DMAR unit hotplug
+  pci, ACPI, iommu: enhance pci_root to support DMAR device hotplug
+
+ drivers/acpi/pci_root.c             |   16 +-
+ drivers/iommu/dmar.c                |  531 ++++++++++++++++++++------
+ drivers/iommu/intel-iommu.c         |  718 +++++++++++++++++++++--------------
+ drivers/iommu/intel_irq_remapping.c |  233 +++++++++---
+ include/linux/dmar.h                |   86 +++--
+ include/linux/iova.h                |    5 +
+ 6 files changed, 1104 insertions(+), 485 deletions(-)
 
 -- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-hosted by The Linux Foundation
+1.7.10.4
+
