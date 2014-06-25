@@ -1,363 +1,93 @@
-From: Jiang Liu <jiang.liu@linux.intel.com>
-Subject: [Patch Part3 V3 18/21] iommu/vt-d: enhance intel_irq_remapping driver to support DMAR unit hotplug
-Date: Wed, 25 Jun 2014 17:02:44 +0800
-Message-ID: <1403686967-10887-19-git-send-email-jiang.liu@linux.intel.com>
+From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [Patch Part3 V3 17/21] iommu/vt-d: search _DSM method for DMAR hotplug
+Date: Wed, 25 Jun 2014 17:02:43 +0800
+Message-ID: <1403686967-10887-18-git-send-email-jiang.liu@linux.intel.com>
 References: <1403686967-10887-1-git-send-email-jiang.liu@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1403686967-10887-1-git-send-email-jiang.liu@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, Ashok Raj <ashok.raj@intel.com>, Yijing Wang <wangyijing@huawei.com>, Tony Luck <tony.luck@intel.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-hotplug@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1403686967-10887-1-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Rafael J . Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hotplug-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Implement required callback functions for intel_irq_remapping driver
-to support DMAR unit hotplug.
+According to Intel VT-d specification, _DSM method to support DMAR
+hotplug should exist directly under corresponding ACPI object
+representing PCI host bridge. But some BIOSes doesn't conform to
+this, so search for _DSM method in the subtree starting from the
+ACPI object representing the PCI host bridge.
 
-Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
+Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/intel_irq_remapping.c |  222 ++++++++++++++++++++++++++---------
- 1 file changed, 169 insertions(+), 53 deletions(-)
+ drivers/iommu/dmar.c |   35 +++++++++++++++++++++++++++++++----
+ 1 file changed, 31 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index aa309a8e4d3a..9f1c86566452 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -36,7 +36,6 @@ struct hpet_scope {
- 
- static struct ioapic_scope ir_ioapic[MAX_IO_APICS];
- static struct hpet_scope ir_hpet[MAX_HPET_TBS];
--static int ir_ioapic_num, ir_hpet_num;
- 
- /*
-  * Lock ordering:
-@@ -320,7 +319,7 @@ static int set_ioapic_sid(struct irte *irte, int apic)
- 
- 	down_read(&dmar_global_lock);
- 	for (i = 0; i < MAX_IO_APICS; i++) {
--		if (ir_ioapic[i].id == apic) {
-+		if (ir_ioapic[i].iommu && ir_ioapic[i].id == apic) {
- 			sid = (ir_ioapic[i].bus << 8) | ir_ioapic[i].devfn;
- 			break;
- 		}
-@@ -347,7 +346,7 @@ static int set_hpet_sid(struct irte *irte, u8 id)
- 
- 	down_read(&dmar_global_lock);
- 	for (i = 0; i < MAX_HPET_TBS; i++) {
--		if (ir_hpet[i].id == id) {
-+		if (ir_hpet[i].iommu && ir_hpet[i].id == id) {
- 			sid = (ir_hpet[i].bus << 8) | ir_hpet[i].devfn;
- 			break;
- 		}
-@@ -446,17 +445,17 @@ static void iommu_set_irq_remapping(struct intel_iommu *iommu, int mode)
- 	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index ea4771e68e59..8854b070b4bb 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -1921,21 +1921,48 @@ static int dmar_hotplug_remove(acpi_handle handle)
+ 	return ret;
  }
  
--
--static int intel_setup_irq_remapping(struct intel_iommu *iommu, int mode)
-+static int intel_setup_irq_remapping(struct intel_iommu *iommu)
- {
- 	struct ir_table *ir_table;
- 	struct page *pages;
- 	unsigned long *bitmap;
- 
--	ir_table = iommu->ir_table = kzalloc(sizeof(struct ir_table),
--					     GFP_ATOMIC);
-+	if (iommu->ir_table)
-+		return 0;
- 
--	if (!iommu->ir_table)
-+	ir_table = kzalloc(sizeof(struct ir_table), GFP_ATOMIC);
-+	if (!ir_table)
- 		return -ENOMEM;
- 
- 	pages = alloc_pages_node(iommu->node, GFP_ATOMIC | __GFP_ZERO,
-@@ -465,7 +464,7 @@ static int intel_setup_irq_remapping(struct intel_iommu *iommu, int mode)
- 	if (!pages) {
- 		pr_err("IR%d: failed to allocate pages of order %d\n",
- 		       iommu->seq_id, INTR_REMAP_PAGE_ORDER);
--		kfree(iommu->ir_table);
-+		kfree(ir_table);
- 		return -ENOMEM;
- 	}
- 
-@@ -480,11 +479,22 @@ static int intel_setup_irq_remapping(struct intel_iommu *iommu, int mode)
- 
- 	ir_table->base = page_address(pages);
- 	ir_table->bitmap = bitmap;
-+	iommu->ir_table = ir_table;
- 
--	iommu_set_irq_remapping(iommu, mode);
- 	return 0;
- }
- 
-+static void intel_teardown_irq_remapping(struct intel_iommu *iommu)
+-static int dmar_device_hotplug(acpi_handle handle, bool insert)
++static acpi_status dmar_get_dsm_handle(acpi_handle handle, u32 lvl,
++				       void *context, void **retval)
 +{
-+	if (iommu && iommu->ir_table) {
-+		free_pages((unsigned long)iommu->ir_table->base,
-+			   INTR_REMAP_PAGE_ORDER);
-+		kfree(iommu->ir_table->bitmap);
-+		kfree(iommu->ir_table);
-+		iommu->ir_table = NULL;
++	acpi_handle *phdl = retval;
++
++	if (dmar_detect_dsm(handle, DMAR_DSM_FUNC_DRHD)) {
++		*phdl = handle;
++		return AE_CTRL_TERMINATE;
 +	}
++
++	return AE_OK;
 +}
 +
- /*
-  * Disable Interrupt Remapping.
-  */
-@@ -639,9 +649,10 @@ static int __init intel_enable_irq_remapping(void)
- 		if (!ecap_ir_support(iommu->ecap))
- 			continue;
- 
--		if (intel_setup_irq_remapping(iommu, eim))
-+		if (intel_setup_irq_remapping(iommu))
- 			goto error;
- 
-+		iommu_set_irq_remapping(iommu, eim);
- 		setup = 1;
- 	}
- 
-@@ -672,12 +683,13 @@ error:
- 	return -1;
- }
- 
--static void ir_parse_one_hpet_scope(struct acpi_dmar_device_scope *scope,
--				      struct intel_iommu *iommu)
-+static int ir_parse_one_hpet_scope(struct acpi_dmar_device_scope *scope,
-+				   struct intel_iommu *iommu,
-+				   struct acpi_dmar_hardware_unit *drhd)
++int dmar_device_hotplug(acpi_handle handle, bool insert)
  {
- 	struct acpi_dmar_pci_path *path;
- 	u8 bus;
--	int count;
-+	int count, free = -1;
+ 	int ret;
++	acpi_handle tmp = NULL;
++	acpi_status status;
  
- 	bus = scope->bus;
- 	path = (struct acpi_dmar_pci_path *)(scope + 1);
-@@ -693,19 +705,36 @@ static void ir_parse_one_hpet_scope(struct acpi_dmar_device_scope *scope,
- 					   PCI_SECONDARY_BUS);
- 		path++;
- 	}
--	ir_hpet[ir_hpet_num].bus   = bus;
--	ir_hpet[ir_hpet_num].devfn = PCI_DEVFN(path->device, path->function);
--	ir_hpet[ir_hpet_num].iommu = iommu;
--	ir_hpet[ir_hpet_num].id    = scope->enumeration_id;
--	ir_hpet_num++;
-+
-+	for (count = 0; count < MAX_HPET_TBS; count++) {
-+		if (ir_hpet[count].iommu == iommu &&
-+		    ir_hpet[count].id == scope->enumeration_id)
-+			return 0;
-+		else if (ir_hpet[count].iommu == NULL && free == -1)
-+			free = count;
-+	}
-+	if (free == -1) {
-+		pr_warn("Exceeded Max HPET blocks\n");
-+		return -ENOSPC;
-+	}
-+
-+	ir_hpet[free].iommu = iommu;
-+	ir_hpet[free].id    = scope->enumeration_id;
-+	ir_hpet[free].bus   = bus;
-+	ir_hpet[free].devfn = PCI_DEVFN(path->device, path->function);
-+	pr_info("HPET id %d under DRHD base 0x%Lx\n",
-+		scope->enumeration_id, drhd->address);
-+
-+	return 0;
- }
+ 	if (!dmar_in_use())
+ 		return 0;
  
--static void ir_parse_one_ioapic_scope(struct acpi_dmar_device_scope *scope,
--				      struct intel_iommu *iommu)
-+static int ir_parse_one_ioapic_scope(struct acpi_dmar_device_scope *scope,
-+				     struct intel_iommu *iommu,
-+				     struct acpi_dmar_hardware_unit *drhd)
- {
- 	struct acpi_dmar_pci_path *path;
- 	u8 bus;
--	int count;
-+	int count, free = -1;
- 
- 	bus = scope->bus;
- 	path = (struct acpi_dmar_pci_path *)(scope + 1);
-@@ -722,54 +751,63 @@ static void ir_parse_one_ioapic_scope(struct acpi_dmar_device_scope *scope,
- 		path++;
- 	}
- 
--	ir_ioapic[ir_ioapic_num].bus   = bus;
--	ir_ioapic[ir_ioapic_num].devfn = PCI_DEVFN(path->device, path->function);
--	ir_ioapic[ir_ioapic_num].iommu = iommu;
--	ir_ioapic[ir_ioapic_num].id    = scope->enumeration_id;
--	ir_ioapic_num++;
-+	for (count = 0; count < MAX_IO_APICS; count++) {
-+		if (ir_ioapic[count].iommu == iommu &&
-+		    ir_ioapic[count].id == scope->enumeration_id)
-+			return 0;
-+		else if (ir_ioapic[count].iommu == NULL && free == -1)
-+			free = count;
-+	}
-+	if (free == -1) {
-+		pr_warn("Exceeded Max IO APICS\n");
-+		return -ENOSPC;
-+	}
-+
-+	ir_ioapic[free].bus   = bus;
-+	ir_ioapic[free].devfn = PCI_DEVFN(path->device, path->function);
-+	ir_ioapic[free].iommu = iommu;
-+	ir_ioapic[free].id    = scope->enumeration_id;
-+	pr_info("IOAPIC id %d under DRHD base  0x%Lx IOMMU %d\n",
-+		scope->enumeration_id, drhd->address, iommu->seq_id);
-+
-+	return 0;
- }
- 
- static int ir_parse_ioapic_hpet_scope(struct acpi_dmar_header *header,
- 				      struct intel_iommu *iommu)
- {
-+	int ret = 0;
- 	struct acpi_dmar_hardware_unit *drhd;
- 	struct acpi_dmar_device_scope *scope;
- 	void *start, *end;
- 
- 	drhd = (struct acpi_dmar_hardware_unit *)header;
--
- 	start = (void *)(drhd + 1);
- 	end = ((void *)drhd) + header->length;
- 
--	while (start < end) {
-+	while (start < end && ret == 0) {
- 		scope = start;
--		if (scope->entry_type == ACPI_DMAR_SCOPE_TYPE_IOAPIC) {
--			if (ir_ioapic_num == MAX_IO_APICS) {
--				printk(KERN_WARNING "Exceeded Max IO APICS\n");
--				return -1;
--			}
--
--			printk(KERN_INFO "IOAPIC id %d under DRHD base "
--			       " 0x%Lx IOMMU %d\n", scope->enumeration_id,
--			       drhd->address, iommu->seq_id);
-+		if (scope->entry_type == ACPI_DMAR_SCOPE_TYPE_IOAPIC)
-+			ret = ir_parse_one_ioapic_scope(scope, iommu, drhd);
-+		else if (scope->entry_type == ACPI_DMAR_SCOPE_TYPE_HPET)
-+			ret = ir_parse_one_hpet_scope(scope, iommu, drhd);
-+		start += scope->length;
-+	}
- 
--			ir_parse_one_ioapic_scope(scope, iommu);
--		} else if (scope->entry_type == ACPI_DMAR_SCOPE_TYPE_HPET) {
--			if (ir_hpet_num == MAX_HPET_TBS) {
--				printk(KERN_WARNING "Exceeded Max HPET blocks\n");
--				return -1;
--			}
-+	return ret;
-+}
- 
--			printk(KERN_INFO "HPET id %d under DRHD base"
--			       " 0x%Lx\n", scope->enumeration_id,
--			       drhd->address);
-+static void ir_remove_ioapic_hpet_scope(struct intel_iommu *iommu)
-+{
-+	int i;
- 
--			ir_parse_one_hpet_scope(scope, iommu);
--		}
--		start += scope->length;
--	}
-+	for (i = 0; i < MAX_HPET_TBS; i++)
-+		if (ir_hpet[i].iommu == iommu)
-+			ir_hpet[i].iommu = NULL;
- 
--	return 0;
-+	for (i = 0; i < MAX_IO_APICS; i++)
-+		if (ir_ioapic[i].iommu == iommu)
-+			ir_ioapic[i].iommu = NULL;
- }
- 
- /*
-@@ -1145,7 +1183,85 @@ struct irq_remap_ops intel_irq_remap_ops = {
- 	.setup_hpet_msi		= intel_setup_hpet_msi,
- };
- 
-+/*
-+ * Support of Interrupt Remapping Unit Hotplug
-+ */
-+static int dmar_ir_add(struct dmar_drhd_unit *dmaru, struct intel_iommu *iommu)
-+{
-+	int ret;
-+	int eim = x2apic_enabled();
-+
-+	if (eim && !ecap_eim_support(iommu->ecap)) {
-+		pr_info("DRHD %Lx: EIM not supported by DRHD, ecap %Lx\n",
-+			iommu->reg_phys, iommu->ecap);
-+		return -ENODEV;
-+	}
-+
-+	if (ir_parse_ioapic_hpet_scope(dmaru->hdr, iommu)) {
-+		pr_warn("DRHD %Lx: failed to parse managed IOAPIC/HPET\n",
-+			iommu->reg_phys);
-+		return -ENODEV;
-+	}
-+
-+	/* TODO: check all IOAPICs are covered by IOMMU */
-+
-+	/* Setup Interrupt-remapping now. */
-+	ret = intel_setup_irq_remapping(iommu);
-+	if (ret) {
-+		pr_err("DRHD %Lx: failed to allocate resource\n",
-+		       iommu->reg_phys);
-+		ir_remove_ioapic_hpet_scope(iommu);
-+		return ret;
-+	}
-+
-+	if (!iommu->qi) {
-+		/* Clear previous faults. */
-+		dmar_fault(-1, iommu);
-+		iommu_disable_irq_remapping(iommu);
-+		dmar_disable_qi(iommu);
-+	}
-+
-+	/* Enable queued invalidation */
-+	ret = dmar_enable_qi(iommu);
-+	if (!ret) {
-+		iommu_set_irq_remapping(iommu, eim);
+-	if (!dmar_detect_dsm(handle, DMAR_DSM_FUNC_DRHD))
++	if (dmar_detect_dsm(handle, DMAR_DSM_FUNC_DRHD)) {
++		tmp = handle;
 +	} else {
-+		pr_err("DRHD %Lx: failed to enable queued invalidation, ecap %Lx, ret %d\n",
-+		       iommu->reg_phys, iommu->ecap, ret);
-+		intel_teardown_irq_remapping(iommu);
-+		ir_remove_ioapic_hpet_scope(iommu);
-+	}
-+
-+	return ret;
-+}
-+
- int dmar_ir_hotplug(struct dmar_drhd_unit *dmaru, bool insert)
- {
--	return irq_remapping_enabled ? -ENOSYS : 0;
-+	int ret = 0;
-+	struct intel_iommu *iommu = dmaru->iommu;
-+
-+	if (!irq_remapping_enabled)
-+		return 0;
-+	if (iommu == NULL)
-+		return -EINVAL;
-+	if (!ecap_ir_support(iommu->ecap))
-+		return 0;
-+
-+	if (insert) {
-+		if (!iommu->ir_table)
-+			ret = dmar_ir_add(dmaru, iommu);
-+	} else {
-+		if (iommu->ir_table) {
-+			if (!bitmap_empty(iommu->ir_table->bitmap,
-+					  INTR_REMAP_TABLE_ENTRIES)) {
-+				ret = -EBUSY;
-+			} else {
-+				iommu_disable_irq_remapping(iommu);
-+				intel_teardown_irq_remapping(iommu);
-+				ir_remove_ioapic_hpet_scope(iommu);
-+			}
++		status = acpi_walk_namespace(ACPI_TYPE_DEVICE, handle,
++					     ACPI_UINT32_MAX,
++					     dmar_get_dsm_handle,
++					     NULL, NULL, &tmp);
++		if (ACPI_FAILURE(status)) {
++			pr_warn("Failed to locate _DSM method.\n");
++			return -ENXIO;
 +		}
 +	}
-+
-+	return ret;
- }
++	if (tmp == NULL)
+ 		return 0;
+ 
+ 	down_write(&dmar_global_lock);
+ 	if (insert)
+-		ret = dmar_hotplug_insert(handle);
++		ret = dmar_hotplug_insert(tmp);
+ 	else
+-		ret = dmar_hotplug_remove(handle);
++		ret = dmar_hotplug_remove(tmp);
+ 	up_write(&dmar_global_lock);
+ 
+ 	return ret;
 -- 
 1.7.10.4
