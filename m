@@ -1,81 +1,37 @@
 From: Jiang Liu <jiang.liu@linux.intel.com>
-Subject: [Patch Part3 V3 00/21] Enable support of Intel DMAR device hotplug
-Date: Wed, 25 Jun 2014 17:02:26 +0800
-Message-ID: <1403686967-10887-1-git-send-email-jiang.liu@linux.intel.com>
-Return-path: <linux-hotplug-owner@vger.kernel.org>
-Sender: linux-hotplug-owner@vger.kernel.org
+Subject: [Patch Part3 V3 02/21] iommu/vt-d: use correct domain id to flush virtual machine domains
+Date: Wed, 25 Jun 2014 17:02:28 +0800
+Message-ID: <1403686967-10887-3-git-send-email-jiang.liu@linux.intel.com>
+References: <1403686967-10887-1-git-send-email-jiang.liu@linux.intel.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1403686967-10887-1-git-send-email-jiang.liu@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
 Cc: Jiang Liu <jiang.liu@linux.intel.com>, Ashok Raj <ashok.raj@intel.com>, Yijing Wang <wangyijing@huawei.com>, Tony Luck <tony.luck@intel.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-hotplug@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-When hot plugging a descrete IOH or a physical processor with embedded
-IIO, we need to handle DMAR(or IOMMU) unit in the PCIe host bridge if
-DMAR is in use. This patch set tries to enhance current DMAR/IOMMU/IR
-drivers to support hotplug and is based on latest mainstream kernel
-v3.16-rc2.
+For virtual machine domains, domain->id is a virtual id, and the real
+domain id written into context entry is dynamically allocated.
+So use the real domain id instead of domain->id when flushing iotlbs
+for virtual machine domains.
 
-Patch 1-13 are bugfixes and code improvement for current drivers.
-Patch 14-17 enhances DMAR framework to support hotplug
-Patch 18 enhances Intel interrupt remapping driver to support hotplug
-Patch 19 enhances error handling in Intel IR driver
-Patch 20 enhance Intel IOMMU to support hotplug
-Patch 21 enhance ACPI pci_root driver to handle DMAR units
+Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
+---
+ drivers/iommu/intel-iommu.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-This patch set has been tested on Intel development machine.
-Appreciate any comments and tests. With this patch set and
-another IOAPIC hotplug patch set(http://www.mail-archive.com/linux-kernel
-@vger.kernel.org/msg671316.html) applied, we could support full functional
-socket hotplug on x86 platforms now.
-
-V2->V3:
-1) rebase to latest v3.16-rc2
-2) fix a bug in detecting super page support when hot-adding IOMMU
-
-V1->V2:
-1) enhance the way to simplify intel_unmap_sg()
-2) rename dmar_device_hotplug() to dmar_device_add/remove()
-3) coding style improvment
-
-Best Regards!
-
-Jiang Liu (21):
-  iommu/vt-d: match segment number when searching for dev_iotlb capable
-    devices
-  iommu/vt-d: use correct domain id to flush virtual machine domains
-  iommu/vt-d: introduce helper functions to improve code readability
-  iommu/vt-d: introduce helper functions to make code symmetric for
-    readability
-  iommu/vt-d: only dynamically allocate domain id for virtual domains
-  iommu/vt-d: fix possible invalid memory access caused by
-    free_dmar_iommu()
-  iommu/vt-d: avoid freeing virtual machine domain in free_dmar_iommu()
-  iommu/VT-d: simplify include/linux/dmar.h
-  iommu/vt-d: change iommu_enable/disable_translation to return void
-  iommu/vt-d: simplify intel_unmap_sg() and kill duplicated code
-  iommu/vt-d: introduce helper domain_pfn_within_range() to simplify
-    code
-  iommu/vt-d: introduce helper function iova_size() to improve code
-    readability
-  iommu/vt-d: fix bug in computing domain's iommu_snooping flag
-  IOMMU/vt-d: introduce helper function dmar_walk_resources()
-  iommu/vt-d: dynamically allocate and free seq_id for DMAR units
-  iommu/vt-d: implement DMAR unit hotplug framework
-  iommu/vt-d: search _DSM method for DMAR hotplug
-  iommu/vt-d: enhance intel_irq_remapping driver to support DMAR unit
-    hotplug
-  iommu/vt-d: enhance error recovery in function
-    intel_enable_irq_remapping()
-  iommu/vt-d: enhance intel-iommu driver to support DMAR unit hotplug
-  pci, ACPI, iommu: enhance pci_root to support DMAR device hotplug
-
- drivers/acpi/pci_root.c             |   16 +-
- drivers/iommu/dmar.c                |  531 ++++++++++++++++++++------
- drivers/iommu/intel-iommu.c         |  718 +++++++++++++++++++++--------------
- drivers/iommu/intel_irq_remapping.c |  233 +++++++++---
- include/linux/dmar.h                |   86 +++--
- include/linux/iova.h                |    5 +
- 6 files changed, 1104 insertions(+), 485 deletions(-)
-
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index e29d963f3967..64a3c37d5cfa 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -1825,7 +1825,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
+ 					   (((u16)bus) << 8) | devfn,
+ 					   DMA_CCMD_MASK_NOBIT,
+ 					   DMA_CCMD_DEVICE_INVL);
+-		iommu->flush.flush_iotlb(iommu, domain->id, 0, 0, DMA_TLB_DSI_FLUSH);
++		iommu->flush.flush_iotlb(iommu, id, 0, 0, DMA_TLB_DSI_FLUSH);
+ 	} else {
+ 		iommu_flush_write_buffer(iommu);
+ 	}
 -- 
 1.7.10.4
-
