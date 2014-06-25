@@ -1,103 +1,55 @@
-From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part3 V3 21/21] pci, ACPI,
-	iommu: enhance pci_root to support DMAR device hotplug
-Date: Wed, 25 Jun 2014 17:02:47 +0800
-Message-ID: <1403686967-10887-22-git-send-email-jiang.liu@linux.intel.com>
-References: <1403686967-10887-1-git-send-email-jiang.liu@linux.intel.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
+Date: Wed, 25 Jun 2014 10:17:02 +0100
+Message-ID: <20140625091702.GF6153@arm.com>
+References: <1400877218-4113-1-git-send-email-thierry.reding@gmail.com>
+ <53A9BC18.2090106@codeaurora.org>
+ <20140624181150.GB4067@arm.com>
+ <4855051.rhxSrNMNLg@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1403686967-10887-1-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Rafael J . Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Len Brown <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hotplug-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <4855051.rhxSrNMNLg@wuerfel>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Olav Haugan <ohaugan@codeaurora.org>, Rob Herring <robherring2@gmail.com>, Mark Rutland <Mark.Rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Pawel Moll <Pawel.Moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Grant Grundler <grundler@chromium.org>, Joerg Roedel <joro@8bytes.org>, Stephen Warren <swarren@wwwdotorg.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Marc Zyngier <Marc.Zyngier@arm.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Kumar Gala <galak@codeaurora.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, Cho KyongHo <pullip.cho@samsung.com>, Dave P Martin <Dave.Martin@arm.com>"linux-arm-kernel@lists.infradead.org" <li>
 List-Id: iommu@lists.linux-foundation.org
 
-Finally enhance pci_root driver to support DMAR device hotplug when
-hot-plugging PCI host bridges.
+On Tue, Jun 24, 2014 at 07:20:56PM +0100, Arnd Bergmann wrote:
+> On Tuesday 24 June 2014 19:11:50 Will Deacon wrote:
+> > On Tue, Jun 24, 2014 at 06:57:44PM +0100, Olav Haugan wrote:
+> > > We do describe the masked StreamID (SID) but we need to specify the mask
+> > > that the SMMU should apply to the incoming SIDs, right?
+> > > 
+> > > We have a bus master that emits 43 unique SIDs. However, we have only 40
+> > > SMMU_SMRn registers in the SMMU. So we need to mask out some of the
+> > > incoming SID bits so that the 43 SIDs can match one of 40 entries in the
+> > > SMR.
+> > 
+> > Hmm, so you're talking about stream matching, right? That doesn't belong in
+> > the device-tree. I appreciate that the current driver does a terrible job at
+> > allocating the SMRs (it's bloody difficult!), but we should try to improve
+> > the dynamic behaviour instead of moving configuration of the SMMU out into
+> > device-tree, where it's inflexible at best.
+> > 
+> > There have been patches previously posted by Andreas Herrmann helping here.
+> > I'd be glad to see them revived.
+> 
+> Note that there are areas where we have in the past decided that dynamic
+> configuration is just too hard for the kernel to do and that we're better
+> off putting the configuration into DT. Pinctrl and clocks are at least
+> partially in that category.
+> 
+> It's always best if you can get the kernel to do things in the ideal
+> way where that is possible, but getting there may be just not worth it.
+> 
+> I have no idea where it should be for SMMU, but it's something to consider:
+> if you can take reasonable shortcuts by reading parts of the configuration
+> from DT, you may just as well do that.
 
-Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
----
- drivers/acpi/pci_root.c |   16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+I treat this in the same manner as the topology bindings we discussed
+previously; we should do a best-effort to configure things dynamically and
+solve corner-cases and quirks as special cases.
 
-diff --git a/drivers/acpi/pci_root.c b/drivers/acpi/pci_root.c
-index d388f13d48b4..99c2b9761c12 100644
---- a/drivers/acpi/pci_root.c
-+++ b/drivers/acpi/pci_root.c
-@@ -33,6 +33,7 @@
- #include <linux/pci.h>
- #include <linux/pci-acpi.h>
- #include <linux/pci-aspm.h>
-+#include <linux/dmar.h>
- #include <linux/acpi.h>
- #include <linux/slab.h>
- #include <acpi/apei.h>	/* for acpi_hest_init() */
-@@ -511,6 +512,7 @@ static int acpi_pci_root_add(struct acpi_device *device,
- 	struct acpi_pci_root *root;
- 	acpi_handle handle = device->handle;
- 	int no_aspm = 0, clear_aspm = 0;
-+	bool hotadd = system_state != SYSTEM_BOOTING;
- 
- 	root = kzalloc(sizeof(struct acpi_pci_root), GFP_KERNEL);
- 	if (!root)
-@@ -557,6 +559,11 @@ static int acpi_pci_root_add(struct acpi_device *device,
- 	strcpy(acpi_device_class(device), ACPI_PCI_ROOT_CLASS);
- 	device->driver_data = root;
- 
-+	if (hotadd && dmar_device_add(handle)) {
-+		result = -ENXIO;
-+		goto end;
-+	}
-+
- 	pr_info(PREFIX "%s [%s] (domain %04x %pR)\n",
- 	       acpi_device_name(device), acpi_device_bid(device),
- 	       root->segment, &root->secondary);
-@@ -583,7 +590,7 @@ static int acpi_pci_root_add(struct acpi_device *device,
- 			root->segment, (unsigned int)root->secondary.start);
- 		device->driver_data = NULL;
- 		result = -ENODEV;
--		goto end;
-+		goto remove_dmar;
- 	}
- 
- 	if (clear_aspm) {
-@@ -597,7 +604,7 @@ static int acpi_pci_root_add(struct acpi_device *device,
- 	if (device->wakeup.flags.run_wake)
- 		device_set_run_wake(root->bus->bridge, true);
- 
--	if (system_state != SYSTEM_BOOTING) {
-+	if (hotadd) {
- 		pcibios_resource_survey_bus(root->bus);
- 		pci_assign_unassigned_root_bus_resources(root->bus);
- 	}
-@@ -607,6 +614,9 @@ static int acpi_pci_root_add(struct acpi_device *device,
- 	pci_unlock_rescan_remove();
- 	return 1;
- 
-+remove_dmar:
-+	if (hotadd)
-+		dmar_device_remove(handle);
- end:
- 	kfree(root);
- 	return result;
-@@ -625,6 +635,8 @@ static void acpi_pci_root_remove(struct acpi_device *device)
- 
- 	pci_remove_root_bus(root->bus);
- 
-+	dmar_device_remove(device->handle);
-+
- 	pci_unlock_rescan_remove();
- 
- 	kfree(root);
--- 
-1.7.10.4
+Will
