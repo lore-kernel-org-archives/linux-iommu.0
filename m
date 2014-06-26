@@ -1,287 +1,117 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH] iommu: Constify struct iommu_ops
-Date: Thu, 26 Jun 2014 21:04:54 +0200
-Message-ID: <1403809494-31432-1-git-send-email-thierry.reding@gmail.com>
+From: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla@caviumnetworks.com>
+Subject: RE: [RFC PATCH v6 04/20] iommu/arm-smmu: add capability
+ IOMMU_CAP_INTR_REMAP
+Date: Thu, 26 Jun 2014 19:10:16 +0000
+Message-ID: <ec8dbbcb991e4d73b73f4b4f98342445@BY2PR07MB203.namprd07.prod.outlook.com>
+References: <1401987808-23596-1-git-send-email-a.motakis@virtualopensystems.com>
+	 <1401987808-23596-5-git-send-email-a.motakis@virtualopensystems.com>
+	 <20140608103129.GC3279@lvm> <20140616145344.GD18986@8bytes.org>
+	 <20140616151329.GQ16758@arm.com> <20140616152157.GB31771@8bytes.org>
+	 <20140616152526.GR16758@arm.com> <20140616153832.GC31771@8bytes.org>
+	 <9353770066894e85809e1e443b71d1cd@BY2PR07MB203.namprd07.prod.outlook.com>
+	 <748dccbbd3284521af4659ccbbb11453@BY2PR07MB203.namprd07.prod.outlook.com>
+	 <b085e02e72dc424d9624c3e810951087@BY2PR07MB203.namprd07.prod.outlook.com>
+ <1403809223.31091.137.camel@ul30vt.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1403809223.31091.137.camel@ul30vt.home>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>, "stuart.yoder@freescale.com" <stuart.yoder@freescale.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "tech@virtualopensystems.com" <tech@virtualopensystems.com>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "moderated list:ARM SMMU DRIVER" <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-
-This structure is read-only data and should never be modified.
-
-Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/amd_iommu.c       |  4 ++--
- drivers/iommu/arm-smmu.c        |  2 +-
- drivers/iommu/exynos-iommu.c    |  2 +-
- drivers/iommu/fsl_pamu_domain.c |  2 +-
- drivers/iommu/intel-iommu.c     |  4 ++--
- drivers/iommu/iommu.c           | 19 ++++++++++++++-----
- drivers/iommu/ipmmu-vmsa.c      |  2 +-
- drivers/iommu/msm_iommu.c       |  2 +-
- drivers/iommu/omap-iommu.c      |  2 +-
- drivers/iommu/shmobile-iommu.c  |  2 +-
- drivers/iommu/tegra-gart.c      |  2 +-
- drivers/iommu/tegra-smmu.c      |  2 +-
- include/linux/iommu.h           |  4 ++--
- 13 files changed, 29 insertions(+), 20 deletions(-)
-
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 4aec6a29e316..7eb0e4246a79 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -81,7 +81,7 @@ LIST_HEAD(hpet_map);
-  */
- static struct protection_domain *pt_domain;
- 
--static struct iommu_ops amd_iommu_ops;
-+static const struct iommu_ops amd_iommu_ops;
- 
- static ATOMIC_NOTIFIER_HEAD(ppr_notifier);
- int amd_iommu_max_glx_val = -1;
-@@ -3473,7 +3473,7 @@ static int amd_iommu_domain_has_cap(struct iommu_domain *domain,
- 	return 0;
- }
- 
--static struct iommu_ops amd_iommu_ops = {
-+static const struct iommu_ops amd_iommu_ops = {
- 	.domain_init = amd_iommu_domain_init,
- 	.domain_destroy = amd_iommu_domain_destroy,
- 	.attach_dev = amd_iommu_attach_device,
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 1599354e974d..67727294e6b5 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1609,7 +1609,7 @@ static void arm_smmu_remove_device(struct device *dev)
- 	iommu_group_remove_device(dev);
- }
- 
--static struct iommu_ops arm_smmu_ops = {
-+static const struct iommu_ops arm_smmu_ops = {
- 	.domain_init	= arm_smmu_domain_init,
- 	.domain_destroy	= arm_smmu_domain_destroy,
- 	.attach_dev	= arm_smmu_attach_dev,
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 99054d2c040d..d037e87a1fe5 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -1170,7 +1170,7 @@ static void exynos_iommu_remove_device(struct device *dev)
- 	iommu_group_remove_device(dev);
- }
- 
--static struct iommu_ops exynos_iommu_ops = {
-+static const struct iommu_ops exynos_iommu_ops = {
- 	.domain_init = exynos_iommu_domain_init,
- 	.domain_destroy = exynos_iommu_domain_destroy,
- 	.attach_dev = exynos_iommu_attach_device,
-diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
-index 93072ba44b1d..5b47c5495873 100644
---- a/drivers/iommu/fsl_pamu_domain.c
-+++ b/drivers/iommu/fsl_pamu_domain.c
-@@ -1140,7 +1140,7 @@ static u32 fsl_pamu_get_windows(struct iommu_domain *domain)
- 	return dma_domain->win_cnt;
- }
- 
--static struct iommu_ops fsl_pamu_ops = {
-+static const struct iommu_ops fsl_pamu_ops = {
- 	.domain_init	= fsl_pamu_domain_init,
- 	.domain_destroy = fsl_pamu_domain_destroy,
- 	.attach_dev	= fsl_pamu_attach_device,
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 51b6b77dc3e5..9aab7963f424 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -451,7 +451,7 @@ EXPORT_SYMBOL_GPL(intel_iommu_gfx_mapped);
- static DEFINE_SPINLOCK(device_domain_lock);
- static LIST_HEAD(device_domain_list);
- 
--static struct iommu_ops intel_iommu_ops;
-+static const struct iommu_ops intel_iommu_ops;
- 
- static int __init intel_iommu_setup(char *str)
- {
-@@ -4465,7 +4465,7 @@ static void intel_iommu_remove_device(struct device *dev)
- 	iommu_group_remove_device(dev);
- }
- 
--static struct iommu_ops intel_iommu_ops = {
-+static const struct iommu_ops intel_iommu_ops = {
- 	.domain_init	= intel_iommu_domain_init,
- 	.domain_destroy = intel_iommu_domain_destroy,
- 	.attach_dev	= intel_iommu_attach_device,
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 896ce352d88e..5e9e82c73bbf 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -39,6 +39,10 @@ static struct kset *iommu_group_kset;
- static struct ida iommu_group_ida;
- static struct mutex iommu_group_mutex;
- 
-+struct iommu_callback_data {
-+	const struct iommu_ops *ops;
-+};
-+
- struct iommu_group {
- 	struct kobject kobj;
- 	struct kobject *devices_kobj;
-@@ -520,7 +524,8 @@ EXPORT_SYMBOL_GPL(iommu_group_id);
- 
- static int add_iommu_group(struct device *dev, void *data)
- {
--	struct iommu_ops *ops = data;
-+	struct iommu_callback_data *cb = data;
-+	const struct iommu_ops *ops = cb->ops;
- 
- 	if (!ops->add_device)
- 		return -ENODEV;
-@@ -536,7 +541,7 @@ static int iommu_bus_notifier(struct notifier_block *nb,
- 			      unsigned long action, void *data)
- {
- 	struct device *dev = data;
--	struct iommu_ops *ops = dev->bus->iommu_ops;
-+	const struct iommu_ops *ops = dev->bus->iommu_ops;
- 	struct iommu_group *group;
- 	unsigned long group_action = 0;
- 
-@@ -589,10 +594,14 @@ static struct notifier_block iommu_bus_nb = {
- 	.notifier_call = iommu_bus_notifier,
- };
- 
--static void iommu_bus_init(struct bus_type *bus, struct iommu_ops *ops)
-+static void iommu_bus_init(struct bus_type *bus, const struct iommu_ops *ops)
- {
-+	struct iommu_callback_data cb = {
-+		.ops = ops,
-+	};
-+
- 	bus_register_notifier(bus, &iommu_bus_nb);
--	bus_for_each_dev(bus, NULL, ops, add_iommu_group);
-+	bus_for_each_dev(bus, NULL, &cb, add_iommu_group);
- }
- 
- /**
-@@ -608,7 +617,7 @@ static void iommu_bus_init(struct bus_type *bus, struct iommu_ops *ops)
-  * is set up. With this function the iommu-driver can set the iommu-ops
-  * afterwards.
-  */
--int bus_set_iommu(struct bus_type *bus, struct iommu_ops *ops)
-+int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops)
- {
- 	if (bus->iommu_ops != NULL)
- 		return -EBUSY;
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 53cde086e83b..7dab5cbcc775 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -1120,7 +1120,7 @@ static void ipmmu_remove_device(struct device *dev)
- 	dev->archdata.iommu = NULL;
- }
- 
--static struct iommu_ops ipmmu_ops = {
-+static const struct iommu_ops ipmmu_ops = {
- 	.domain_init = ipmmu_domain_init,
- 	.domain_destroy = ipmmu_domain_destroy,
- 	.attach_dev = ipmmu_attach_device,
-diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index f5ff657f49fa..49f41d6e02f1 100644
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -674,7 +674,7 @@ fail:
- 	return 0;
- }
- 
--static struct iommu_ops msm_iommu_ops = {
-+static const struct iommu_ops msm_iommu_ops = {
- 	.domain_init = msm_iommu_domain_init,
- 	.domain_destroy = msm_iommu_domain_destroy,
- 	.attach_dev = msm_iommu_attach_dev,
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index 895af06a667f..031b2476bcc4 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -1291,7 +1291,7 @@ static void omap_iommu_remove_device(struct device *dev)
- 	kfree(arch_data);
- }
- 
--static struct iommu_ops omap_iommu_ops = {
-+static const struct iommu_ops omap_iommu_ops = {
- 	.domain_init	= omap_iommu_domain_init,
- 	.domain_destroy	= omap_iommu_domain_destroy,
- 	.attach_dev	= omap_iommu_attach_dev,
-diff --git a/drivers/iommu/shmobile-iommu.c b/drivers/iommu/shmobile-iommu.c
-index 464acda0bbc4..1333e6fb3405 100644
---- a/drivers/iommu/shmobile-iommu.c
-+++ b/drivers/iommu/shmobile-iommu.c
-@@ -354,7 +354,7 @@ static int shmobile_iommu_add_device(struct device *dev)
- 	return 0;
- }
- 
--static struct iommu_ops shmobile_iommu_ops = {
-+static const struct iommu_ops shmobile_iommu_ops = {
- 	.domain_init = shmobile_iommu_domain_init,
- 	.domain_destroy = shmobile_iommu_domain_destroy,
- 	.attach_dev = shmobile_iommu_attach_device,
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index dba1a9fd5070..b10a8ecede8e 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -309,7 +309,7 @@ static int gart_iommu_domain_has_cap(struct iommu_domain *domain,
- 	return 0;
- }
- 
--static struct iommu_ops gart_iommu_ops = {
-+static const struct iommu_ops gart_iommu_ops = {
- 	.domain_init	= gart_iommu_domain_init,
- 	.domain_destroy	= gart_iommu_domain_destroy,
- 	.attach_dev	= gart_iommu_attach_dev,
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 605b5b46a903..792da5ea6d12 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -947,7 +947,7 @@ static void smmu_iommu_domain_destroy(struct iommu_domain *domain)
- 	dev_dbg(smmu->dev, "smmu_as@%p\n", as);
- }
- 
--static struct iommu_ops smmu_iommu_ops = {
-+static const struct iommu_ops smmu_iommu_ops = {
- 	.domain_init	= smmu_iommu_domain_init,
- 	.domain_destroy	= smmu_iommu_domain_destroy,
- 	.attach_dev	= smmu_iommu_attach_dev,
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 156c09174de1..ac2ceef194d4 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -61,7 +61,7 @@ struct iommu_domain_geometry {
- };
- 
- struct iommu_domain {
--	struct iommu_ops *ops;
-+	const struct iommu_ops *ops;
- 	void *priv;
- 	iommu_fault_handler_t handler;
- 	void *handler_token;
-@@ -154,7 +154,7 @@ struct iommu_ops {
- #define IOMMU_GROUP_NOTIFY_UNBIND_DRIVER	5 /* Pre Driver unbind */
- #define IOMMU_GROUP_NOTIFY_UNBOUND_DRIVER	6 /* Post Driver unbind */
- 
--extern int bus_set_iommu(struct bus_type *bus, struct iommu_ops *ops);
-+extern int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops);
- extern bool iommu_present(struct bus_type *bus);
- extern struct iommu_domain *iommu_domain_alloc(struct bus_type *bus);
- extern struct iommu_group *iommu_group_get_by_id(int id);
--- 
-2.0.0
+VGhhbmtzIGZvciB0aGUgY2xhcmlmaWNhdGlvbiBBbGV4LCBUaGF04oCZcyBleGFjdGx5IG15IHBv
+aW50LCB3aHkgYXJlIHdlIHJlbHlpbmcgb24gIFFFTVUgb3Igc29tZXRoaW5nIGVsc2UgdG8gZW11
+bGF0ZSB0aGUgTVNJIHNwYWNlIHdoZW4gd2UgY2FuIGRpcmVjdGx5IGdpdmUgYWNjZXNzIHRvIGRl
+dmljZXMgdXNpbmcgSVRTIChvZiBjb3Vyc2Ugd2l0aCBhIHNtYWxsIGVtdWxhdGlvbiBjb2RlKS4N
+ClRoaXMgd2F5IHdlIGFyZSBhbHNvIGJlbmVmaXRlZCBmcm9tIGFsbCBJVFMgc2VydmljZXMgbGlr
+ZSBWQ1BVIG1pZ3JhdGlvbiBldGMuICANCg0KV2hhdCBhYm91dCBub24gUUVNVSBWRklPIHVzZXJz
+LCBmb3IgZXhhbXBsZSwgaWYgSSB3YW50ZWQgdG8gdXNlIFZGSU8gdG8gYXNzaWduIGEgZGV2aWNl
+IHRvIGEgdXNlciBwcm9jZXNzIEkgZG9uJ3QgbmVlZCB0byBkZXBlbmQgb24gUUVNVS4gICBJIHRo
+b3VnaHQgdGhpcyBpcyBvbmUgb2YgdGhlIG1haW4gZ29hbHMgb2YgdmZpbyB0byBtYWtlIGl0IGlu
+ZGVwZW5kZW50IG9mIGh5cGVydmlzb3JzLiAgICAgDQoNClRoYW5rcywNClRpcnVtYWxlc2guIA0K
+ICAgICAgICAgIA0KDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogQWxleCBXaWxs
+aWFtc29uIFttYWlsdG86YWxleC53aWxsaWFtc29uQHJlZGhhdC5jb21dIA0KU2VudDogVGh1cnNk
+YXksIEp1bmUgMjYsIDIwMTQgMTI6MDAgUE0NClRvOiBDaGFsYW1hcmxhLCBUaXJ1bWFsZXNoDQpD
+YzogSm9lcmcgUm9lZGVsOyBXaWxsIERlYWNvbjsga3ZtQHZnZXIua2VybmVsLm9yZzsgb3BlbiBs
+aXN0OyBzdHVhcnQueW9kZXJAZnJlZXNjYWxlLmNvbTsgaW9tbXVAbGlzdHMubGludXgtZm91bmRh
+dGlvbi5vcmc7IHRlY2hAdmlydHVhbG9wZW5zeXN0ZW1zLmNvbTsga3ZtYXJtQGxpc3RzLmNzLmNv
+bHVtYmlhLmVkdTsgbW9kZXJhdGVkIGxpc3Q6QVJNIFNNTVUgRFJJVkVSDQpTdWJqZWN0OiBSZTog
+W1JGQyBQQVRDSCB2NiAwNC8yMF0gaW9tbXUvYXJtLXNtbXU6IGFkZCBjYXBhYmlsaXR5IElPTU1V
+X0NBUF9JTlRSX1JFTUFQDQoNCk9uIFRodSwgMjAxNC0wNi0yNiBhdCAxODo0MSArMDAwMCwgQ2hh
+bGFtYXJsYSwgVGlydW1hbGVzaCB3cm90ZToNCj4gU29ycnkgdGhlcmUgd2FzIGEgdHlwZSwNCj4g
+DQo+IFRoZSBxdWVzdGlvbiBpczoNCj4gIA0KPiAgICAgICAgICAgICBIb3cgaXMgVkZJTyByZXN0
+cmljdGluZyBzb2Z0d2FyZSBmcm9tIHdyaXRpbmcgdG8gTVNJL01TSS1YIHZlY3RvcnMgb2YgdGhl
+IGRldmljZS4gDQoNCkFsbCBpbnRlcnJ1cHRzIGFyZSBjb25maWd1cmVkIHZpYSBpb2N0bCwgbm90
+IE1TSSBjb25maWcgc3BhY2Ugb3IgdGhlIE1TSS1YIHZlY3RvciB0YWJsZSBpbiBNTUlPIHNwYWNl
+LiAgVkZJTyBwcm90ZWN0cyB0aGUgTVNJIGNvbmZpZyBhcmVhIGJ5IHZpcnR1YWxpemluZyBpdCAo
+eW91IGNhbid0IGFjdHVhbGx5IHdyaXRlIHRoZSBwaHlzaWNhbCBlbmFibGUgYml0IG9yIGFkZHJl
+c3MvZGF0YSB0aHJvdWdoIFZGSU8pLiAgVGhlIE1TSS1YIHZlY3RvciB0YWJsZSBpcyBwcm90ZWN0
+ZWQgYnkgcHJldmVudGluZyByZWFkLCB3cml0ZSwgb3IgbW1hcCBhY2Nlc3MgdG8gaXQuICBRRU1V
+IHByb3ZpZGVzIGZ1cnRoZXIgdmlydHVhbGl6YXRpb24gYWJvdmUgdGhlIGJhc2ljcyBwcm92aWRl
+ZCBieSBWRklPLiAgV2UgcmVhbGx5IGNhbid0IGd1YXJhbnRlZSB0aGF0IGRldmljZXMgZG9uJ3Qg
+aGF2ZSBiYWNrZG9vcnMgdG8gY29uZmlndXJlIHRoZXNlIHRob3VnaC4NClNlZSB0aGUgcmVhbHRl
+ayBxdWlyayBpbiBRRU1VIGZvciBhbiBleGFtcGxlIG9mIGEgZGV2aWNlIHRoYXQgaGFzIHN1Y2gg
+YSBiYWNrZG9vci4gIFRoYXQncyB3aHkgd2UgcmVxdWlyZSBpbnRlcnJ1cHQgcmVtYXBwaW5nLCBz
+byB0aGF0IGEgZGV2aWNlIHRoYXQgZG9lcyB0aGlzIGNhbiBvbmx5IGh1cnQgdGhlIGd1ZXN0LCBh
+bmQgcmVxdWlyZSB0aGUgdXNlciB0byBvcHQtb3V0IGlmIHRoZXkgZmVlbCB0aGV5IGhhdmUgYSBz
+dWZmaWNpZW50bHkgdHJ1c3RlZCBndWVzdC4gIFRoYW5rcywNCg0KQWxleA0KDQo+IA0KPiAtLS0t
+LU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBDaGFsYW1hcmxhLCBUaXJ1bWFsZXNoDQo+
+IFNlbnQ6IFRodXJzZGF5LCBKdW5lIDI2LCAyMDE0IDExOjE2IEFNDQo+IFRvOiBDaGFsYW1hcmxh
+LCBUaXJ1bWFsZXNoOyBKb2VyZyBSb2VkZWw7IFdpbGwgRGVhY29uDQo+IENjOiBrdm1Admdlci5r
+ZXJuZWwub3JnOyBvcGVuIGxpc3Q7IGFsZXgud2lsbGlhbXNvbkByZWRoYXQuY29tOyANCj4gc3R1
+YXJ0LnlvZGVyQGZyZWVzY2FsZS5jb207IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3Jn
+OyANCj4gdGVjaEB2aXJ0dWFsb3BlbnN5c3RlbXMuY29tOyBrdm1hcm1AbGlzdHMuY3MuY29sdW1i
+aWEuZWR1OyBtb2RlcmF0ZWQgDQo+IGxpc3Q6QVJNIFNNTVUgRFJJVkVSDQo+IFN1YmplY3Q6IFJF
+OiBbUkZDIFBBVENIIHY2IDA0LzIwXSBpb21tdS9hcm0tc21tdTogYWRkIGNhcGFiaWxpdHkgDQo+
+IElPTU1VX0NBUF9JTlRSX1JFTUFQDQo+IA0KPiBXaGVuIEkgc2F5IGVtdWxhdGluZyBJVFMsIEkg
+bWVhbiB0cmFuc2xhdGluZyBndWVzdCBJVFMgY29tbWFuZHMgdG8gcGh5c2ljYWwgSVRTIGNvbW1h
+bmRzICBhbmQgcGxhY2luZyB0aGVtIGluIHBoeXNpY2FsIHF1ZXVlLiANCj4gDQo+IFJlZ2FyZHMs
+DQo+IFRpcnVtYWxlc2guDQo+IA0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9t
+OiBrdm1hcm0tYm91bmNlc0BsaXN0cy5jcy5jb2x1bWJpYS5lZHUgDQo+IFttYWlsdG86a3ZtYXJt
+LWJvdW5jZXNAbGlzdHMuY3MuY29sdW1iaWEuZWR1XSBPbiBCZWhhbGYgT2YgQ2hhbGFtYXJsYSwg
+DQo+IFRpcnVtYWxlc2gNCj4gU2VudDogVGh1cnNkYXksIEp1bmUgMjYsIDIwMTQgMTE6MDggQU0N
+Cj4gVG86IEpvZXJnIFJvZWRlbDsgV2lsbCBEZWFjb24NCj4gQ2M6IGt2bUB2Z2VyLmtlcm5lbC5v
+cmc7IG9wZW4gbGlzdDsgYWxleC53aWxsaWFtc29uQHJlZGhhdC5jb207IA0KPiBzdHVhcnQueW9k
+ZXJAZnJlZXNjYWxlLmNvbTsgaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmc7IA0KPiB0
+ZWNoQHZpcnR1YWxvcGVuc3lzdGVtcy5jb207IGt2bWFybUBsaXN0cy5jcy5jb2x1bWJpYS5lZHU7
+IG1vZGVyYXRlZCANCj4gbGlzdDpBUk0gU01NVSBEUklWRVINCj4gU3ViamVjdDogUkU6IFtSRkMg
+UEFUQ0ggdjYgMDQvMjBdIGlvbW11L2FybS1zbW11OiBhZGQgY2FwYWJpbGl0eSANCj4gSU9NTVVf
+Q0FQX0lOVFJfUkVNQVANCj4gDQo+IEZvcmdpdmUgbWUgaWYgdGhpcyBkaXNjdXNzaW9uIGlzIG5v
+dCByZWxhdGl2ZSBoZXJlLCBidXQgSSB0aG91Z2h0IGl0IGlzLiAgDQo+IA0KPiBIb3cgaXMgVkZJ
+TyByZXN0cmljdGluZyBkZXZpY2VzIGZyb20gd3JpdGluZyAgdG8gTVNJL01TSS1YLCBJcyBhbGwg
+dGhlIHZlY3RvciBhcmVhIGlzIG1hcHBlZCBieSBWRklPIHRvIHRyYXAgdGhlIGFjY2Vzc2VzLiAg
+SSBhbSBhc2tpbmcgdGhpcyBiZWNhdXNlIHdlIG1pZ2h0IG5lZWQgdG8gZW11bGF0ZSBJVFMgc29t
+ZXdoZXJlIGVpdGhlciBpbiBLVk0gb3IgVkZJTyB0byBwcm92aWRlIGRpcmVjdCBhY2Nlc3MgdG8g
+ZGV2aWNlcy4NCj4gQW5kIEkgZG9uJ3Qgc2VlIGFueSBtZW50aW9ucyBvbiB0aGF0LiAgIEkgdGhp
+bmsgdGhpcyBmbGFnIG5lZWRzIHRvIGJlIHNldCBieSBJVFMgZW11bGF0aW9uLg0KPiANCj4gUmVn
+YXJkcywNCj4gVGlydW1hbGVzaC4NCj4gDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+
+IEZyb206IGt2bWFybS1ib3VuY2VzQGxpc3RzLmNzLmNvbHVtYmlhLmVkdSANCj4gW21haWx0bzpr
+dm1hcm0tYm91bmNlc0BsaXN0cy5jcy5jb2x1bWJpYS5lZHVdIE9uIEJlaGFsZiBPZiBKb2VyZyAN
+Cj4gUm9lZGVsDQo+IFNlbnQ6IE1vbmRheSwgSnVuZSAxNiwgMjAxNCA4OjM5IEFNDQo+IFRvOiBX
+aWxsIERlYWNvbg0KPiBDYzogc3R1YXJ0LnlvZGVyQGZyZWVzY2FsZS5jb207IGt2bUB2Z2VyLmtl
+cm5lbC5vcmc7IG9wZW4gbGlzdDsgDQo+IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3Jn
+OyBhbGV4LndpbGxpYW1zb25AcmVkaGF0LmNvbTsgDQo+IG1vZGVyYXRlZCBsaXN0OkFSTSBTTU1V
+IERSSVZFUjsgdGVjaEB2aXJ0dWFsb3BlbnN5c3RlbXMuY29tOyANCj4ga3ZtYXJtQGxpc3RzLmNz
+LmNvbHVtYmlhLmVkdTsgQ2hyaXN0b2ZmZXIgRGFsbA0KPiBTdWJqZWN0OiBSZTogW1JGQyBQQVRD
+SCB2NiAwNC8yMF0gaW9tbXUvYXJtLXNtbXU6IGFkZCBjYXBhYmlsaXR5IA0KPiBJT01NVV9DQVBf
+SU5UUl9SRU1BUA0KPiANCj4gT24gTW9uLCBKdW4gMTYsIDIwMTQgYXQgMDQ6MjU6MjZQTSArMDEw
+MCwgV2lsbCBEZWFjb24gd3JvdGU6DQo+ID4gT2ssIHRoYW5rcy4gSW4gd2hpY2ggY2FzZSwgSSB0
+aGluayB0aGlzIGlzIHJlYWxseSBhIGNvbWJpbmVkIA0KPiA+IHByb3BlcnR5IG9mIHRoZSBTTU1V
+IGFuZCB0aGUgaW50ZXJydXB0IGNvbnRyb2xsZXIsIHNvIHdlIG1pZ2h0IG5lZWQgDQo+ID4gc29t
+ZSBleHRyYSBjb2RlIHNvIHRoYXQgdGhlIFNNTVUgY2FuIGNoZWNrIHRoYXQgdGhlIGludGVycnVw
+dCANCj4gPiBjb250cm9sbGVyIGZvciB0aGUgZGV2aWNlIGlzIGFsc28gY2FwYWJsZSBvZiBpbnRl
+cnJ1cHQgcmVtYXBwaW5nLg0KPiANCj4gUmlnaHQsIHRoYXQgdGhpcyBpcyBwYXJ0IG9mIElPTU1V
+IGNvZGUgaGFzIG1vcmUgb3IgbGVzcyBoaXN0b3JpYyByZWFzb25zIG9uIHg4Ni4gSW50ZXJydXB0
+IHJlbWFwcGluZyBpcyBwdXJlbHkgaW1wbGVtZW50ZWQgaW4gdGhlIElPTU1VIHRoZXJlLCBzbyBv
+biBBUk0gc29tZSBjbHVlLWNvZGUgYmV0d2VlbiBpbnRlcnJ1cHQgY29udHJvbGVyIGFuZCBzbW11
+IGlzIG5lZWRlZC4NCj4gDQo+IA0KPiAJSm9lcmcNCj4gDQo+IA0KPiBfX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0KPiBrdm1hcm0gbWFpbGluZyBsaXN0DQo+
+IGt2bWFybUBsaXN0cy5jcy5jb2x1bWJpYS5lZHUNCj4gaHR0cHM6Ly9saXN0cy5jcy5jb2x1bWJp
+YS5lZHUvbWFpbG1hbi9saXN0aW5mby9rdm1hcm0NCj4gX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX18NCj4ga3ZtYXJtIG1haWxpbmcgbGlzdA0KPiBrdm1hcm1A
+bGlzdHMuY3MuY29sdW1iaWEuZWR1DQo+IGh0dHBzOi8vbGlzdHMuY3MuY29sdW1iaWEuZWR1L21h
+aWxtYW4vbGlzdGluZm8va3ZtYXJtDQoNCg0KDQo=
