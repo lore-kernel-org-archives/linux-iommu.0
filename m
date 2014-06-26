@@ -1,23 +1,11 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH v6 04/20] iommu/arm-smmu: add capability
-	IOMMU_CAP_INTR_REMAP
-Date: Thu, 26 Jun 2014 13:36:24 -0600
-Message-ID: <1403811384.31091.151.camel@ul30vt.home>
-References: <1401987808-23596-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1401987808-23596-5-git-send-email-a.motakis@virtualopensystems.com>
-	<20140608103129.GC3279@lvm> <20140616145344.GD18986@8bytes.org>
-	<20140616151329.GQ16758@arm.com> <20140616152157.GB31771@8bytes.org>
-	<20140616152526.GR16758@arm.com> <20140616153832.GC31771@8bytes.org>
-	<9353770066894e85809e1e443b71d1cd@BY2PR07MB203.namprd07.prod.outlook.com>
-	<748dccbbd3284521af4659ccbbb11453@BY2PR07MB203.namprd07.prod.outlook.com>
-	<b085e02e72dc424d9624c3e810951087@BY2PR07MB203.namprd07.prod.outlook.com>
-	<1403809223.31091.137.camel@ul30vt.home>
-	<ec8dbbcb991e4d73b73f4b4f98342445@BY2PR07MB203.namprd07.prod.outlook.com>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [RFC 00/10] Add NVIDIA Tegra124 IOMMU support
+Date: Thu, 26 Jun 2014 22:49:40 +0200
+Message-ID: <1403815790-8548-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <ec8dbbcb991e4d73b73f4b4f98342445-Rl8gF8DaO8QN+Mk3fGG+YBQPvRvOrrxkXA4E9RH9d+qIuWR1G4zioA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -27,114 +15,87 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, "moderated list:ARM SMMU DRIVER" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Rhyland Klein <rklein-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Allen Martin <amartin-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Paul Walmsley <pwalmsley-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVGh1LCAyMDE0LTA2LTI2IGF0IDE5OjEwICswMDAwLCBDaGFsYW1hcmxhLCBUaXJ1bWFsZXNo
-IHdyb3RlOgo+IFRoYW5rcyBmb3IgdGhlIGNsYXJpZmljYXRpb24gQWxleCwgVGhhdOKAmXMgZXhh
-Y3RseSBteSBwb2ludCwgd2h5IGFyZSB3ZSByZWx5aW5nIG9uICBRRU1VIG9yIHNvbWV0aGluZyBl
-bHNlIHRvIGVtdWxhdGUgdGhlIE1TSSBzcGFjZSB3aGVuIHdlIGNhbiBkaXJlY3RseSBnaXZlIGFj
-Y2VzcyB0byBkZXZpY2VzIHVzaW5nIElUUyAob2YgY291cnNlIHdpdGggYSBzbWFsbCBlbXVsYXRp
-b24gY29kZSkuCj4gVGhpcyB3YXkgd2UgYXJlIGFsc28gYmVuZWZpdGVkIGZyb20gYWxsIElUUyBz
-ZXJ2aWNlcyBsaWtlIFZDUFUgbWlncmF0aW9uIGV0Yy4gIAoKSSBoYXZlIG5vIGlkZWEgd2hhdCBJ
-VFMgaXMuCgo+IFdoYXQgYWJvdXQgbm9uIFFFTVUgVkZJTyB1c2VycywgZm9yIGV4YW1wbGUsIGlm
-IEkgd2FudGVkIHRvIHVzZSBWRklPIHRvIGFzc2lnbiBhIGRldmljZSB0byBhIHVzZXIgcHJvY2Vz
-cyBJIGRvbid0IG5lZWQgdG8gZGVwZW5kIG9uIFFFTVUuICAgSSB0aG91Z2h0IHRoaXMgaXMgb25l
-IG9mIHRoZSBtYWluIGdvYWxzIG9mIHZmaW8gdG8gbWFrZSBpdCBpbmRlcGVuZGVudCBvZiBoeXBl
-cnZpc29ycy4gICAgIAoKV2hlcmUgZGlkIFFFTVUgYmVjb21lIGEgcmVxdWlyZW1lbnQ/ICBNYXli
-ZSBJJ20gbWlzc2luZyBzb21ldGhpbmcgaW4gdGhlCkFSTSBwYXJ0IG9mIHRoZSBjb252ZXJzYXRp
-b24gdGhhdCBnb3QgY2hvcHBlZCBvZmYsIGJ1dCB0aGlzIGlzIGV4YWN0bHkKd2h5IHdlIGhhdmUg
-dGhlIFZGSU8vUUVNVSBzcGxpdCB0aGF0IHdlIGRvLiAgVkZJTyBwcm92aWRlcyBiYXNpYwp2aXJ0
-dWFsaXphdGlvbiBmb3IgY29uZmlnIHNwYWNlIGFuZCByZXN0cmljdHMgYWNjZXNzIHRvIG90aGVy
-IGFyZWFzIHRoYXQKdXNlcnMgc2hvdWxkbid0IGJlIGFsbG93ZWQgdG8gY2hhbmdlLiAgUUVNVSBp
-cyBqdXN0IG9uZSBleGFtcGxlIG9mIGEKdXNlcnNwYWNlIFZGSU8gZHJpdmVyLiAgUUVNVSB0YWtl
-cyB0aGUgZGVjb21wb3NlZCBkZXZpY2UgZXhwb3NlZCB0aHJvdWdoCnRoZSBWRklPIEFCSSBhbmQg
-cmUtY3JlYXRlcyBhIFBDSSBkZXZpY2Ugb3V0IG9mIGl0LiAgVkZJTyBpdHNlbGYgaGFzIG5vCmRl
-cGVuZGVuY3kgb24gUUVNVS4gIFRoYW5rcywKCkFsZXggIAoKPiAtLS0tLU9yaWdpbmFsIE1lc3Nh
-Z2UtLS0tLQo+IEZyb206IEFsZXggV2lsbGlhbXNvbiBbbWFpbHRvOmFsZXgud2lsbGlhbXNvbkBy
-ZWRoYXQuY29tXSAKPiBTZW50OiBUaHVyc2RheSwgSnVuZSAyNiwgMjAxNCAxMjowMCBQTQo+IFRv
-OiBDaGFsYW1hcmxhLCBUaXJ1bWFsZXNoCj4gQ2M6IEpvZXJnIFJvZWRlbDsgV2lsbCBEZWFjb247
-IGt2bUB2Z2VyLmtlcm5lbC5vcmc7IG9wZW4gbGlzdDsgc3R1YXJ0LnlvZGVyQGZyZWVzY2FsZS5j
-b207IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnOyB0ZWNoQHZpcnR1YWxvcGVuc3lz
-dGVtcy5jb207IGt2bWFybUBsaXN0cy5jcy5jb2x1bWJpYS5lZHU7IG1vZGVyYXRlZCBsaXN0OkFS
-TSBTTU1VIERSSVZFUgo+IFN1YmplY3Q6IFJlOiBbUkZDIFBBVENIIHY2IDA0LzIwXSBpb21tdS9h
-cm0tc21tdTogYWRkIGNhcGFiaWxpdHkgSU9NTVVfQ0FQX0lOVFJfUkVNQVAKPiAKPiBPbiBUaHUs
-IDIwMTQtMDYtMjYgYXQgMTg6NDEgKzAwMDAsIENoYWxhbWFybGEsIFRpcnVtYWxlc2ggd3JvdGU6
-Cj4gPiBTb3JyeSB0aGVyZSB3YXMgYSB0eXBlLAo+ID4gCj4gPiBUaGUgcXVlc3Rpb24gaXM6Cj4g
-PiAgCj4gPiAgICAgICAgICAgICBIb3cgaXMgVkZJTyByZXN0cmljdGluZyBzb2Z0d2FyZSBmcm9t
-IHdyaXRpbmcgdG8gTVNJL01TSS1YIHZlY3RvcnMgb2YgdGhlIGRldmljZS4gCj4gCj4gQWxsIGlu
-dGVycnVwdHMgYXJlIGNvbmZpZ3VyZWQgdmlhIGlvY3RsLCBub3QgTVNJIGNvbmZpZyBzcGFjZSBv
-ciB0aGUgTVNJLVggdmVjdG9yIHRhYmxlIGluIE1NSU8gc3BhY2UuICBWRklPIHByb3RlY3RzIHRo
-ZSBNU0kgY29uZmlnIGFyZWEgYnkgdmlydHVhbGl6aW5nIGl0ICh5b3UgY2FuJ3QgYWN0dWFsbHkg
-d3JpdGUgdGhlIHBoeXNpY2FsIGVuYWJsZSBiaXQgb3IgYWRkcmVzcy9kYXRhIHRocm91Z2ggVkZJ
-TykuICBUaGUgTVNJLVggdmVjdG9yIHRhYmxlIGlzIHByb3RlY3RlZCBieSBwcmV2ZW50aW5nIHJl
-YWQsIHdyaXRlLCBvciBtbWFwIGFjY2VzcyB0byBpdC4gIFFFTVUgcHJvdmlkZXMgZnVydGhlciB2
-aXJ0dWFsaXphdGlvbiBhYm92ZSB0aGUgYmFzaWNzIHByb3ZpZGVkIGJ5IFZGSU8uICBXZSByZWFs
-bHkgY2FuJ3QgZ3VhcmFudGVlIHRoYXQgZGV2aWNlcyBkb24ndCBoYXZlIGJhY2tkb29ycyB0byBj
-b25maWd1cmUgdGhlc2UgdGhvdWdoLgo+IFNlZSB0aGUgcmVhbHRlayBxdWlyayBpbiBRRU1VIGZv
-ciBhbiBleGFtcGxlIG9mIGEgZGV2aWNlIHRoYXQgaGFzIHN1Y2ggYSBiYWNrZG9vci4gIFRoYXQn
-cyB3aHkgd2UgcmVxdWlyZSBpbnRlcnJ1cHQgcmVtYXBwaW5nLCBzbyB0aGF0IGEgZGV2aWNlIHRo
-YXQgZG9lcyB0aGlzIGNhbiBvbmx5IGh1cnQgdGhlIGd1ZXN0LCBhbmQgcmVxdWlyZSB0aGUgdXNl
-ciB0byBvcHQtb3V0IGlmIHRoZXkgZmVlbCB0aGV5IGhhdmUgYSBzdWZmaWNpZW50bHkgdHJ1c3Rl
-ZCBndWVzdC4gIFRoYW5rcywKPiAKPiBBbGV4Cj4gCj4gPiAKPiA+IC0tLS0tT3JpZ2luYWwgTWVz
-c2FnZS0tLS0tCj4gPiBGcm9tOiBDaGFsYW1hcmxhLCBUaXJ1bWFsZXNoCj4gPiBTZW50OiBUaHVy
-c2RheSwgSnVuZSAyNiwgMjAxNCAxMToxNiBBTQo+ID4gVG86IENoYWxhbWFybGEsIFRpcnVtYWxl
-c2g7IEpvZXJnIFJvZWRlbDsgV2lsbCBEZWFjb24KPiA+IENjOiBrdm1Admdlci5rZXJuZWwub3Jn
-OyBvcGVuIGxpc3Q7IGFsZXgud2lsbGlhbXNvbkByZWRoYXQuY29tOyAKPiA+IHN0dWFydC55b2Rl
-ckBmcmVlc2NhbGUuY29tOyBpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZzsgCj4gPiB0
-ZWNoQHZpcnR1YWxvcGVuc3lzdGVtcy5jb207IGt2bWFybUBsaXN0cy5jcy5jb2x1bWJpYS5lZHU7
-IG1vZGVyYXRlZCAKPiA+IGxpc3Q6QVJNIFNNTVUgRFJJVkVSCj4gPiBTdWJqZWN0OiBSRTogW1JG
-QyBQQVRDSCB2NiAwNC8yMF0gaW9tbXUvYXJtLXNtbXU6IGFkZCBjYXBhYmlsaXR5IAo+ID4gSU9N
-TVVfQ0FQX0lOVFJfUkVNQVAKPiA+IAo+ID4gV2hlbiBJIHNheSBlbXVsYXRpbmcgSVRTLCBJIG1l
-YW4gdHJhbnNsYXRpbmcgZ3Vlc3QgSVRTIGNvbW1hbmRzIHRvIHBoeXNpY2FsIElUUyBjb21tYW5k
-cyAgYW5kIHBsYWNpbmcgdGhlbSBpbiBwaHlzaWNhbCBxdWV1ZS4gCj4gPiAKPiA+IFJlZ2FyZHMs
-Cj4gPiBUaXJ1bWFsZXNoLgo+ID4gCj4gPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQo+ID4g
-RnJvbToga3ZtYXJtLWJvdW5jZXNAbGlzdHMuY3MuY29sdW1iaWEuZWR1IAo+ID4gW21haWx0bzpr
-dm1hcm0tYm91bmNlc0BsaXN0cy5jcy5jb2x1bWJpYS5lZHVdIE9uIEJlaGFsZiBPZiBDaGFsYW1h
-cmxhLCAKPiA+IFRpcnVtYWxlc2gKPiA+IFNlbnQ6IFRodXJzZGF5LCBKdW5lIDI2LCAyMDE0IDEx
-OjA4IEFNCj4gPiBUbzogSm9lcmcgUm9lZGVsOyBXaWxsIERlYWNvbgo+ID4gQ2M6IGt2bUB2Z2Vy
-Lmtlcm5lbC5vcmc7IG9wZW4gbGlzdDsgYWxleC53aWxsaWFtc29uQHJlZGhhdC5jb207IAo+ID4g
-c3R1YXJ0LnlvZGVyQGZyZWVzY2FsZS5jb207IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24u
-b3JnOyAKPiA+IHRlY2hAdmlydHVhbG9wZW5zeXN0ZW1zLmNvbTsga3ZtYXJtQGxpc3RzLmNzLmNv
-bHVtYmlhLmVkdTsgbW9kZXJhdGVkIAo+ID4gbGlzdDpBUk0gU01NVSBEUklWRVIKPiA+IFN1Ympl
-Y3Q6IFJFOiBbUkZDIFBBVENIIHY2IDA0LzIwXSBpb21tdS9hcm0tc21tdTogYWRkIGNhcGFiaWxp
-dHkgCj4gPiBJT01NVV9DQVBfSU5UUl9SRU1BUAo+ID4gCj4gPiBGb3JnaXZlIG1lIGlmIHRoaXMg
-ZGlzY3Vzc2lvbiBpcyBub3QgcmVsYXRpdmUgaGVyZSwgYnV0IEkgdGhvdWdodCBpdCBpcy4gIAo+
-ID4gCj4gPiBIb3cgaXMgVkZJTyByZXN0cmljdGluZyBkZXZpY2VzIGZyb20gd3JpdGluZyAgdG8g
-TVNJL01TSS1YLCBJcyBhbGwgdGhlIHZlY3RvciBhcmVhIGlzIG1hcHBlZCBieSBWRklPIHRvIHRy
-YXAgdGhlIGFjY2Vzc2VzLiAgSSBhbSBhc2tpbmcgdGhpcyBiZWNhdXNlIHdlIG1pZ2h0IG5lZWQg
-dG8gZW11bGF0ZSBJVFMgc29tZXdoZXJlIGVpdGhlciBpbiBLVk0gb3IgVkZJTyB0byBwcm92aWRl
-IGRpcmVjdCBhY2Nlc3MgdG8gZGV2aWNlcy4KPiA+IEFuZCBJIGRvbid0IHNlZSBhbnkgbWVudGlv
-bnMgb24gdGhhdC4gICBJIHRoaW5rIHRoaXMgZmxhZyBuZWVkcyB0byBiZSBzZXQgYnkgSVRTIGVt
-dWxhdGlvbi4KPiA+IAo+ID4gUmVnYXJkcywKPiA+IFRpcnVtYWxlc2guCj4gPiAKPiA+IC0tLS0t
-T3JpZ2luYWwgTWVzc2FnZS0tLS0tCj4gPiBGcm9tOiBrdm1hcm0tYm91bmNlc0BsaXN0cy5jcy5j
-b2x1bWJpYS5lZHUgCj4gPiBbbWFpbHRvOmt2bWFybS1ib3VuY2VzQGxpc3RzLmNzLmNvbHVtYmlh
-LmVkdV0gT24gQmVoYWxmIE9mIEpvZXJnIAo+ID4gUm9lZGVsCj4gPiBTZW50OiBNb25kYXksIEp1
-bmUgMTYsIDIwMTQgODozOSBBTQo+ID4gVG86IFdpbGwgRGVhY29uCj4gPiBDYzogc3R1YXJ0Lnlv
-ZGVyQGZyZWVzY2FsZS5jb207IGt2bUB2Z2VyLmtlcm5lbC5vcmc7IG9wZW4gbGlzdDsgCj4gPiBp
-b21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZzsgYWxleC53aWxsaWFtc29uQHJlZGhhdC5j
-b207IAo+ID4gbW9kZXJhdGVkIGxpc3Q6QVJNIFNNTVUgRFJJVkVSOyB0ZWNoQHZpcnR1YWxvcGVu
-c3lzdGVtcy5jb207IAo+ID4ga3ZtYXJtQGxpc3RzLmNzLmNvbHVtYmlhLmVkdTsgQ2hyaXN0b2Zm
-ZXIgRGFsbAo+ID4gU3ViamVjdDogUmU6IFtSRkMgUEFUQ0ggdjYgMDQvMjBdIGlvbW11L2FybS1z
-bW11OiBhZGQgY2FwYWJpbGl0eSAKPiA+IElPTU1VX0NBUF9JTlRSX1JFTUFQCj4gPiAKPiA+IE9u
-IE1vbiwgSnVuIDE2LCAyMDE0IGF0IDA0OjI1OjI2UE0gKzAxMDAsIFdpbGwgRGVhY29uIHdyb3Rl
-Ogo+ID4gPiBPaywgdGhhbmtzLiBJbiB3aGljaCBjYXNlLCBJIHRoaW5rIHRoaXMgaXMgcmVhbGx5
-IGEgY29tYmluZWQgCj4gPiA+IHByb3BlcnR5IG9mIHRoZSBTTU1VIGFuZCB0aGUgaW50ZXJydXB0
-IGNvbnRyb2xsZXIsIHNvIHdlIG1pZ2h0IG5lZWQgCj4gPiA+IHNvbWUgZXh0cmEgY29kZSBzbyB0
-aGF0IHRoZSBTTU1VIGNhbiBjaGVjayB0aGF0IHRoZSBpbnRlcnJ1cHQgCj4gPiA+IGNvbnRyb2xs
-ZXIgZm9yIHRoZSBkZXZpY2UgaXMgYWxzbyBjYXBhYmxlIG9mIGludGVycnVwdCByZW1hcHBpbmcu
-Cj4gPiAKPiA+IFJpZ2h0LCB0aGF0IHRoaXMgaXMgcGFydCBvZiBJT01NVSBjb2RlIGhhcyBtb3Jl
-IG9yIGxlc3MgaGlzdG9yaWMgcmVhc29ucyBvbiB4ODYuIEludGVycnVwdCByZW1hcHBpbmcgaXMg
-cHVyZWx5IGltcGxlbWVudGVkIGluIHRoZSBJT01NVSB0aGVyZSwgc28gb24gQVJNIHNvbWUgY2x1
-ZS1jb2RlIGJldHdlZW4gaW50ZXJydXB0IGNvbnRyb2xlciBhbmQgc21tdSBpcyBuZWVkZWQuCj4g
-PiAKPiA+IAo+ID4gCUpvZXJnCj4gPiAKPiA+IAo+ID4gX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX18KPiA+IGt2bWFybSBtYWlsaW5nIGxpc3QKPiA+IGt2bWFy
-bUBsaXN0cy5jcy5jb2x1bWJpYS5lZHUKPiA+IGh0dHBzOi8vbGlzdHMuY3MuY29sdW1iaWEuZWR1
-L21haWxtYW4vbGlzdGluZm8va3ZtYXJtCj4gPiBfX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fXwo+ID4ga3ZtYXJtIG1haWxpbmcgbGlzdAo+ID4ga3ZtYXJtQGxp
-c3RzLmNzLmNvbHVtYmlhLmVkdQo+ID4gaHR0cHM6Ly9saXN0cy5jcy5jb2x1bWJpYS5lZHUvbWFp
-bG1hbi9saXN0aW5mby9rdm1hcm0KPiAKPiAKPiAKCgoKX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxp
-bnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWls
-bWFuL2xpc3RpbmZvL2lvbW11
+From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+
+This series adds support for the IOMMU found on Tegra124 SoCs. The SMMU
+groups memory clients into SWGROUPs and each SWGROUP can be assigned to
+one I/O virtual address space. Translation of virtual addresses can be
+enabled per memory client.
+
+Patch 1 adds an IOMMU device registry. The driver in patch 4 will add
+the IOMMU device with this registry, which will in turn be used by the
+client drivers to attach to the IOMMU device. Note that the API that is
+introduced in this patch may not be sufficient in the long term (f.e.
+when multiple master interfaces need to be supported).
+
+Patch 2 is v3 of the generic IOMMU device tree binding that has been
+discussed previously. Patch 3 defines the device tree binding for the
+NVIDIA Tegra124 memory controller (and references the generic IOMMU
+binding).
+
+Patch 4 implements a memory controller driver for NVIDIA Tegra124. It
+initializes the latency allowance programming to sensible defaults and
+registers an IOMMU device. Note that this is still somewhat work in
+progress. The page tables aren't properly cleaned up yet and other
+features of the memory controller may be useful to implement
+subsequently.
+
+Patches 5 through 8 add the device tree node for the memory controller
+and enable IOMMU support in the display and SDMMC controllers as
+examples.
+
+Patches 9 and 10 add support for IOMMU to the DRM and SDMMC drivers.
+SDMMC uses the DMA mapping API, which will make use of ARM's DMA/IOMMU
+integration. DRM has special needs (buffers that are mapped can be
+scanned out by either display controller) and not a good fit for the
+DMA mapping API, so it uses the IOMMU API directly.
+
+This has been tested using both SDMMC and DRM drivers via the IOMMU. For
+DRM when an IOMMU is detected it will use shmem as backing store, which
+removes the need for CMA. Importing from gk20a via the Nouveau driver
+also works, but buffers occasionally have some kind of offset that I
+haven't been able to track down yet.
+
+Thierry
+
+Thierry Reding (10):
+  iommu: Add IOMMU device registry
+  devicetree: Add generic IOMMU device tree bindings
+  of: Add NVIDIA Tegra124 memory controller binding
+  memory: Add Tegra124 memory controller support
+  ARM: tegra: Add memory controller on Tegra124
+  ARM: tegra: tegra124: Enable IOMMU for display controllers
+  ARM: tegra: tegra124: Enable IOMMU for SDMMC controllers
+  ARM: tegra: Select ARM_DMA_USE_IOMMU
+  drm/tegra: Add IOMMU support
+  mmc: sdhci-tegra: Add IOMMU support
+
+ Documentation/devicetree/bindings/iommu/iommu.txt  |  156 ++
+ .../memory-controllers/nvidia,tegra124-mc.txt      |   12 +
+ arch/arm/boot/dts/tegra124.dtsi                    |   18 +
+ arch/arm/mach-tegra/Kconfig                        |    1 +
+ drivers/gpu/drm/tegra/dc.c                         |   21 +
+ drivers/gpu/drm/tegra/drm.c                        |   17 +
+ drivers/gpu/drm/tegra/drm.h                        |    3 +
+ drivers/gpu/drm/tegra/fb.c                         |   16 +-
+ drivers/gpu/drm/tegra/gem.c                        |  236 ++-
+ drivers/gpu/drm/tegra/gem.h                        |    4 +
+ drivers/iommu/iommu.c                              |   93 +
+ drivers/memory/Kconfig                             |    9 +
+ drivers/memory/Makefile                            |    1 +
+ drivers/memory/tegra124-mc.c                       | 1945 ++++++++++++++++++++
+ drivers/mmc/host/sdhci-tegra.c                     |    8 +
+ include/dt-bindings/memory/tegra124-mc.h           |   30 +
+ include/linux/iommu.h                              |   27 +
+ 17 files changed, 2573 insertions(+), 24 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iommu/iommu.txt
+ create mode 100644 Documentation/devicetree/bindings/memory-controllers/nvidia,tegra124-mc.txt
+ create mode 100644 drivers/memory/tegra124-mc.c
+ create mode 100644 include/dt-bindings/memory/tegra124-mc.h
+
+-- 
+2.0.0
