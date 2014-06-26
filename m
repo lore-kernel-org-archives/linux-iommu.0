@@ -1,7 +1,7 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v3 02/10] devicetree: Add generic IOMMU device tree bindings
-Date: Thu, 26 Jun 2014 22:49:42 +0200
-Message-ID: <1403815790-8548-3-git-send-email-thierry.reding@gmail.com>
+Subject: [RFC 01/10] iommu: Add IOMMU device registry
+Date: Thu, 26 Jun 2014 22:49:41 +0200
+Message-ID: <1403815790-8548-2-git-send-email-thierry.reding@gmail.com>
 References: <1403815790-8548-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,190 +23,185 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-This commit introduces a generic device tree binding for IOMMU devices.
-Only a very minimal subset is described here, but it is enough to cover
-the requirements of both the Exynos System MMU and Tegra SMMU as
-discussed here:
-
-    https://lkml.org/lkml/2014/4/27/346
+Add an IOMMU device registry for drivers to register with and implement
+a method for users of the IOMMU API to attach to an IOMMU device. This
+allows to support deferred probing and gives the IOMMU API a convenient
+hook to perform early initialization of a device if necessary.
 
 Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
-Changes in v3:
-- use #iommu-cells instead of #address-cells/#size-cells
-- drop optional iommu-names property
+ drivers/iommu/iommu.c | 93 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/iommu.h | 27 +++++++++++++++
+ 2 files changed, 120 insertions(+)
 
-Changes in v2:
-- add notes about "dma-ranges" property (drop note from commit message)
-- document priorities of "iommus" property vs. "dma-ranges" property
-- drop #iommu-cells in favour of #address-cells and #size-cells
-- remove multiple-master device example
-
- Documentation/devicetree/bindings/iommu/iommu.txt | 156 ++++++++++++++++++++++
- 1 file changed, 156 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iommu/iommu.txt
-
-diff --git a/Documentation/devicetree/bindings/iommu/iommu.txt b/Documentation/devicetree/bindings/iommu/iommu.txt
-new file mode 100644
-index 000000000000..f8f03f057156
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iommu/iommu.txt
-@@ -0,0 +1,156 @@
-+This document describes the generic device tree binding for IOMMUs and their
-+master(s).
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 806b55d056b7..5e9e82c73bbf 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -29,8 +29,12 @@
+ #include <linux/idr.h>
+ #include <linux/notifier.h>
+ #include <linux/err.h>
++#include <linux/of.h>
+ #include <trace/events/iommu.h>
+ 
++static DEFINE_MUTEX(iommus_lock);
++static LIST_HEAD(iommus);
 +
+ static struct kset *iommu_group_kset;
+ static struct ida iommu_group_ida;
+ static struct mutex iommu_group_mutex;
+@@ -1004,3 +1008,92 @@ int iommu_domain_set_attr(struct iommu_domain *domain,
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(iommu_domain_set_attr);
 +
-+IOMMU device node:
-+==================
++int iommu_add(struct iommu *iommu)
++{
++	mutex_lock(&iommus_lock);
++	list_add_tail(&iommu->list, &iommus);
++	mutex_unlock(&iommus_lock);
 +
-+An IOMMU can provide the following services:
++	return 0;
++}
++EXPORT_SYMBOL_GPL(iommu_add);
 +
-+* Remap address space to allow devices to access physical memory ranges that
-+  they otherwise wouldn't be capable of accessing.
++void iommu_remove(struct iommu *iommu)
++{
++	mutex_lock(&iommus_lock);
++	list_del_init(&iommu->list);
++	mutex_unlock(&iommus_lock);
++}
++EXPORT_SYMBOL_GPL(iommu_remove);
 +
-+  Example: 32-bit DMA to 64-bit physical addresses
++static int of_iommu_attach(struct device *dev)
++{
++	struct of_phandle_iter iter;
++	struct iommu *iommu;
 +
-+* Implement scatter-gather at page level granularity so that the device does
-+  not have to.
++	mutex_lock(&iommus_lock);
 +
-+* Provide system protection against "rogue" DMA by forcing all accesses to go
-+  through the IOMMU and faulting when encountering accesses to unmapped
-+  address regions.
++	of_property_for_each_phandle_with_args(iter, dev->of_node, "iommus",
++					       "#iommu-cells", 0) {
++		bool found = false;
++		int err;
 +
-+* Provide address space isolation between multiple contexts.
++		/* skip disabled IOMMUs */
++		if (!of_device_is_available(iter.out_args.np))
++			continue;
 +
-+  Example: Virtualization
++		list_for_each_entry(iommu, &iommus, list) {
++			if (iommu->dev->of_node == iter.out_args.np) {
++				err = iommu->ops->attach(iommu, dev);
++				if (err < 0) {
++				}
 +
-+Device nodes compatible with this binding represent hardware with some of the
-+above capabilities.
++				found = true;
++			}
++		}
 +
-+IOMMUs can be single-master or multiple-master. Single-master IOMMU devices
-+typically have a fixed association to the master device, whereas multiple-
-+master IOMMU devices can translate accesses from more than one master.
++		if (!found) {
++			mutex_unlock(&iommus_lock);
++			return -EPROBE_DEFER;
++		}
++	}
 +
-+The device tree node of the IOMMU device's parent bus must contain a valid
-+"dma-ranges" property that describes how the physical address space of the
-+IOMMU maps to memory. An empty "dma-ranges" property means that there is a
-+1:1 mapping from IOMMU to memory.
++	mutex_unlock(&iommus_lock);
 +
-+Required properties:
-+--------------------
-+- #iommu-cells: The number of cells in an IOMMU specifier needed to encode an
-+  address.
++	return 0;
++}
 +
-+Typical values for the above include:
-+- #iommu-cells = <0>: Single master IOMMU devices are not configurable and
-+  therefore no additional information needs to be encoded in the specifier.
-+  This may also apply to multiple master IOMMU devices that do not allow the
-+  association of masters to be configured.
-+- #iommu-cells = <1>: Multiple master IOMMU devices may need to be configured
-+  in order to enable translation for a given master. In such cases the single
-+  address cell corresponds to the master device's ID.
-+- #iommu-cells = <4>: Some IOMMU devices allow the DMA window for masters to
-+  be configured. The first cell of the address in this may contain the master
-+  device's ID for example, while the second cell could contain the start of
-+  the DMA window for the given device. The length of the DMA window is given
-+  by the third and fourth cells.
++static int of_iommu_detach(struct device *dev)
++{
++	/* TODO: implement */
++	return -ENOSYS;
++}
 +
++int iommu_attach(struct device *dev)
++{
++	int err = 0;
 +
-+IOMMU master node:
-+==================
++	if (IS_ENABLED(CONFIG_OF) && dev->of_node) {
++		err = of_iommu_attach(dev);
++		if (!err)
++			return 0;
++	}
 +
-+Devices that access memory through an IOMMU are called masters. A device can
-+have multiple master interfaces (to one or more IOMMU devices).
++	return err;
++}
++EXPORT_SYMBOL_GPL(iommu_attach);
 +
-+Required properties:
-+--------------------
-+- iommus: A list of phandle and IOMMU specifier pairs that describe the IOMMU
-+  master interfaces of the device. One entry in the list describes one master
-+  interface of the device.
++int iommu_detach(struct device *dev)
++{
++	int err = 0;
 +
-+When an "iommus" property is specified in a device tree node, the IOMMU will
-+be used for address translation. If a "dma-ranges" property exists in the
-+device's parent node it will be ignored. An exception to this rule is if the
-+referenced IOMMU is disabled, in which case the "dma-ranges" property of the
-+parent shall take effect.
++	if (IS_ENABLED(CONFIG_OF) && dev->of_node) {
++		err = of_iommu_detach(dev);
++		if (!err)
++			return 0;
++	}
 +
++	return err;
++}
++EXPORT_SYMBOL_GPL(iommu_detach);
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 284a4683fdc1..ac2ceef194d4 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -43,6 +43,17 @@ struct notifier_block;
+ typedef int (*iommu_fault_handler_t)(struct iommu_domain *,
+ 			struct device *, unsigned long, int, void *);
+ 
++struct iommu {
++	struct device *dev;
 +
-+Notes:
-+======
++	struct list_head list;
 +
-+One possible extension to the above is to use an "iommus" property along with
-+a "dma-ranges" property in a bus device node (such as PCI host bridges). This
-+can be useful to describe how children on the bus relate to the IOMMU if they
-+are not explicitly listed in the device tree (e.g. PCI devices). However, the
-+requirements of that use-case haven't been fully determined yet. Implementing
-+this is therefore not recommended without further discussion and extension of
-+this binding.
++	const struct iommu_ops *ops;
++};
 +
++int iommu_add(struct iommu *iommu);
++void iommu_remove(struct iommu *iommu);
 +
-+Examples:
-+=========
+ struct iommu_domain_geometry {
+ 	dma_addr_t aperture_start; /* First address that can be mapped    */
+ 	dma_addr_t aperture_end;   /* Last address that can be mapped     */
+@@ -130,6 +141,9 @@ struct iommu_ops {
+ 	/* Get the numer of window per domain */
+ 	u32 (*domain_get_windows)(struct iommu_domain *domain);
+ 
++	int (*attach)(struct iommu *iommu, struct device *dev);
++	int (*detach)(struct iommu *iommu, struct device *dev);
 +
-+Single-master IOMMU:
-+--------------------
+ 	unsigned long pgsize_bitmap;
+ };
+ 
+@@ -192,6 +206,10 @@ extern int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
+ 				      phys_addr_t offset, u64 size,
+ 				      int prot);
+ extern void iommu_domain_window_disable(struct iommu_domain *domain, u32 wnd_nr);
 +
-+	iommu {
-+		#iommu-cells = <0>;
-+	};
++int iommu_attach(struct device *dev);
++int iommu_detach(struct device *dev);
 +
-+	master {
-+		iommus = <&/iommu>;
-+	};
+ /**
+  * report_iommu_fault() - report about an IOMMU fault to the IOMMU framework
+  * @domain: the iommu domain where the fault has happened
+@@ -396,6 +414,15 @@ static inline int iommu_domain_set_attr(struct iommu_domain *domain,
+ 	return -EINVAL;
+ }
+ 
++static inline int iommu_attach(struct device *dev)
++{
++	return 0;
++}
 +
-+Multiple-master IOMMU with fixed associations:
-+----------------------------------------------
-+
-+	/* multiple-master IOMMU */
-+	iommu {
-+		/*
-+		 * Masters are statically associated with this IOMMU and
-+		 * address translation is always enabled.
-+		 */
-+		#iommu-cells = <0>;
-+	};
-+
-+	/* static association with IOMMU */
-+	master@1 {
-+		reg = <1>;
-+		iommus = <&/iommu>;
-+	};
-+
-+	/* static association with IOMMU */
-+	master@2 {
-+		reg = <2>;
-+		iommus = <&/iommu>;
-+	};
-+
-+Multiple-master IOMMU:
-+----------------------
-+
-+	iommu {
-+		/* the specifier represents the ID of the master */
-+		#iommu-cells = <1>;
-+	};
-+
-+	master {
-+		/* device has master ID 42 in the IOMMU */
-+		iommus = <&/iommu 42>;
-+	};
-+
-+Multiple-master IOMMU with configurable DMA window:
-+---------------------------------------------------
-+
-+	/ {
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+
-+		iommu {
-+			/* master ID, address and length of DMA window */
-+			#iommu-cells = <4>;
-+		};
-+
-+		master {
-+			/* master ID 42, 4 GiB DMA window starting at 0 */
-+			iommus = <&/iommu  42  0  0x1 0x0>;
-+		};
-+	};
++static inline int iommu_detach(struct device *dev)
++{
++	return 0;
++}
+ #endif /* CONFIG_IOMMU_API */
+ 
+ #endif /* __LINUX_IOMMU_H */
 -- 
 2.0.0
