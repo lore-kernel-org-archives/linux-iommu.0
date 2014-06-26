@@ -1,7 +1,7 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [RFC 10/10] mmc: sdhci-tegra: Add IOMMU support
-Date: Thu, 26 Jun 2014 22:49:50 +0200
-Message-ID: <1403815790-8548-11-git-send-email-thierry.reding@gmail.com>
+Subject: [RFC 08/10] ARM: tegra: Select ARM_DMA_USE_IOMMU
+Date: Thu, 26 Jun 2014 22:49:48 +0200
+Message-ID: <1403815790-8548-9-git-send-email-thierry.reding@gmail.com>
 References: <1403815790-8548-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,48 +23,26 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-Attach to the device's master interface of the IOMMU at .probe() time.
-IOMMU support becomes available via the DMA mapping API interoperation
-code, but this explicit attachment is necessary to ensure proper probe
-order.
+This enables IOMMU interoperation with the DMA mapping API so that
+clients that use the DMA mapping API can seemlessly make use of an
+existing IOMMU.
 
 Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/mmc/host/sdhci-tegra.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/arm/mach-tegra/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/mmc/host/sdhci-tegra.c b/drivers/mmc/host/sdhci-tegra.c
-index 33100d10d176..b884614fa4e6 100644
---- a/drivers/mmc/host/sdhci-tegra.c
-+++ b/drivers/mmc/host/sdhci-tegra.c
-@@ -15,6 +15,7 @@
- #include <linux/err.h>
- #include <linux/module.h>
- #include <linux/init.h>
-+#include <linux/iommu.h>
- #include <linux/platform_device.h>
- #include <linux/clk.h>
- #include <linux/io.h>
-@@ -237,6 +238,11 @@ static int sdhci_tegra_probe(struct platform_device *pdev)
- 	match = of_match_device(sdhci_tegra_dt_match, &pdev->dev);
- 	if (!match)
- 		return -EINVAL;
-+
-+	rc = iommu_attach(&pdev->dev);
-+	if (rc < 0)
-+		return rc;
-+
- 	soc_data = match->data;
- 
- 	host = sdhci_pltfm_init(pdev, soc_data->pdata, 0);
-@@ -310,6 +316,8 @@ static int sdhci_tegra_remove(struct platform_device *pdev)
- 	clk_disable_unprepare(pltfm_host->clk);
- 	clk_put(pltfm_host->clk);
- 
-+	iommu_detach(&pdev->dev);
-+
- 	sdhci_pltfm_free(pdev);
- 
- 	return 0;
+diff --git a/arch/arm/mach-tegra/Kconfig b/arch/arm/mach-tegra/Kconfig
+index a52d96366919..20bc43975bde 100644
+--- a/arch/arm/mach-tegra/Kconfig
++++ b/arch/arm/mach-tegra/Kconfig
+@@ -2,6 +2,7 @@ menuconfig ARCH_TEGRA
+ 	bool "NVIDIA Tegra" if ARCH_MULTI_V7
+ 	select ARCH_REQUIRE_GPIOLIB
+ 	select ARCH_SUPPORTS_TRUSTED_FOUNDATIONS
++	select ARM_DMA_USE_IOMMU
+ 	select ARM_GIC
+ 	select CLKSRC_MMIO
+ 	select HAVE_ARM_SCU if SMP
 -- 
 2.0.0
