@@ -1,17 +1,14 @@
-From: Kim Phillips <kim.phillips-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: Re: [PATCH] driver core: platform: add device binding path
-	'driver_override'
-Date: Wed, 25 Jun 2014 20:08:11 -0500
-Message-ID: <20140625200811.9363cac92fdbc9810bf5aa65@freescale.com>
-References: <1398700371-20096-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1398700371-20096-2-git-send-email-a.motakis@virtualopensystems.com>
-	<20140602194258.5135925bf3c71b9c010fb409@freescale.com>
-	<20140603042842.GD14668@kroah.com>
+From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [Patch Part3 V3 00/21] Enable support of Intel DMAR device hotplug
+Date: Thu, 26 Jun 2014 21:59:58 +0800
+Message-ID: <53AC275E.4090602@linux.intel.com>
+References: <1403686967-10887-1-git-send-email-jiang.liu@linux.intel.com>
+	<CAErSpo5z9OH_u3f9L5qKoJsJ+mgRU5rba9mnQG0Y5XXn0zcEvg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140603042842.GD14668-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <CAErSpo5z9OH_u3f9L5qKoJsJ+mgRU5rba9mnQG0Y5XXn0zcEvg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,22 +18,61 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, clbchenlibo.chen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Alexander Graf <agraf-l3A5Bk7waGM@public.gmane.org>, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Ian Campbell <ian.campbell-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org>, Stefano Stabellini <stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org>, Julien Grall <julien.grall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org, a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, rob-VoJi6FS/r0vR7s880joybQ@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "Rafael J . Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux hotplug mailing <linux-hotplug-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2 Jun 2014 21:28:42 -0700
-Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org> wrote:
-
-> On Mon, Jun 02, 2014 at 07:42:58PM -0500, Kim Phillips wrote:
-> > You are the platform driver core maintainer: can you apply this to
-> > your driver-core tree now?
+On 2014/6/26 2:00, Bjorn Helgaas wrote:
+>>   iommu/vt-d: match segment number when searching for dev_iotlb capable
+>>     devices
+>>   iommu/vt-d: use correct domain id to flush virtual machine domains
+>>   iommu/vt-d: introduce helper functions to improve code readability
+>>   iommu/vt-d: introduce helper functions to make code symmetric for
+>>     readability
+>>   iommu/vt-d: only dynamically allocate domain id for virtual domains
+>>   iommu/vt-d: fix possible invalid memory access caused by
+>>     free_dmar_iommu()
+>>   iommu/vt-d: avoid freeing virtual machine domain in free_dmar_iommu()
+>>   iommu/VT-d: simplify include/linux/dmar.h
+>>   iommu/vt-d: change iommu_enable/disable_translation to return void
+>>   iommu/vt-d: simplify intel_unmap_sg() and kill duplicated code
+>>   iommu/vt-d: introduce helper domain_pfn_within_range() to simplify
+>>     code
+>>   iommu/vt-d: introduce helper function iova_size() to improve code
+>>     readability
+>>   iommu/vt-d: fix bug in computing domain's iommu_snooping flag
+>>   IOMMU/vt-d: introduce helper function dmar_walk_resources()
+>>   iommu/vt-d: dynamically allocate and free seq_id for DMAR units
+>>   iommu/vt-d: implement DMAR unit hotplug framework
+>>   iommu/vt-d: search _DSM method for DMAR hotplug
+>>   iommu/vt-d: enhance intel_irq_remapping driver to support DMAR unit
+>>     hotplug
+>>   iommu/vt-d: enhance error recovery in function
+>>     intel_enable_irq_remapping()
+>>   iommu/vt-d: enhance intel-iommu driver to support DMAR unit hotplug
+>>   pci, ACPI, iommu: enhance pci_root to support DMAR device hotplug
 > 
-> Yes, I will after this merge window ends, it's too late for 3.16-rc1
-> with the window opening up a week early, sorry.
-
-How about now?  fwiw, I just checked: it still applies cleanly.
-
-Thanks,
-
-Kim
+> This looks a little sloppy; you have three different ways of
+> capitalizing the area:
+> 
+>   iommu/vt-d:
+>   iommu/VT-d:
+>   IOMMU/vt-d:
+> 
+> Also, "git log --oneline drivers/iommu" says that the convention for
+> drivers/iommu is to capitalize the first word of the rest of the
+> subject line.
+Hi Bjorn,
+	Really sorry about my careless. I just rebased the patch set
+onto v3.16-rc1, I should do more careful check about the commit
+messages. I will wait for more comments and resend a new version
+to address the commit message issues.
+	Thanks for your reminder again.
+Regards!
+Gerry
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
+> 
