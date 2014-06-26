@@ -1,11 +1,13 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [RFC 00/10] Add NVIDIA Tegra124 IOMMU support
-Date: Thu, 26 Jun 2014 22:49:40 +0200
-Message-ID: <1403815790-8548-1-git-send-email-thierry.reding@gmail.com>
+Subject: [PATCH v3 02/10] devicetree: Add generic IOMMU device tree bindings
+Date: Thu, 26 Jun 2014 22:49:42 +0200
+Message-ID: <1403815790-8548-3-git-send-email-thierry.reding@gmail.com>
+References: <1403815790-8548-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1403815790-8548-1-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,81 +23,190 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-This series adds support for the IOMMU found on Tegra124 SoCs. The SMMU
-groups memory clients into SWGROUPs and each SWGROUP can be assigned to
-one I/O virtual address space. Translation of virtual addresses can be
-enabled per memory client.
+This commit introduces a generic device tree binding for IOMMU devices.
+Only a very minimal subset is described here, but it is enough to cover
+the requirements of both the Exynos System MMU and Tegra SMMU as
+discussed here:
 
-Patch 1 adds an IOMMU device registry. The driver in patch 4 will add
-the IOMMU device with this registry, which will in turn be used by the
-client drivers to attach to the IOMMU device. Note that the API that is
-introduced in this patch may not be sufficient in the long term (f.e.
-when multiple master interfaces need to be supported).
+    https://lkml.org/lkml/2014/4/27/346
 
-Patch 2 is v3 of the generic IOMMU device tree binding that has been
-discussed previously. Patch 3 defines the device tree binding for the
-NVIDIA Tegra124 memory controller (and references the generic IOMMU
-binding).
+Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+---
+Changes in v3:
+- use #iommu-cells instead of #address-cells/#size-cells
+- drop optional iommu-names property
 
-Patch 4 implements a memory controller driver for NVIDIA Tegra124. It
-initializes the latency allowance programming to sensible defaults and
-registers an IOMMU device. Note that this is still somewhat work in
-progress. The page tables aren't properly cleaned up yet and other
-features of the memory controller may be useful to implement
-subsequently.
+Changes in v2:
+- add notes about "dma-ranges" property (drop note from commit message)
+- document priorities of "iommus" property vs. "dma-ranges" property
+- drop #iommu-cells in favour of #address-cells and #size-cells
+- remove multiple-master device example
 
-Patches 5 through 8 add the device tree node for the memory controller
-and enable IOMMU support in the display and SDMMC controllers as
-examples.
-
-Patches 9 and 10 add support for IOMMU to the DRM and SDMMC drivers.
-SDMMC uses the DMA mapping API, which will make use of ARM's DMA/IOMMU
-integration. DRM has special needs (buffers that are mapped can be
-scanned out by either display controller) and not a good fit for the
-DMA mapping API, so it uses the IOMMU API directly.
-
-This has been tested using both SDMMC and DRM drivers via the IOMMU. For
-DRM when an IOMMU is detected it will use shmem as backing store, which
-removes the need for CMA. Importing from gk20a via the Nouveau driver
-also works, but buffers occasionally have some kind of offset that I
-haven't been able to track down yet.
-
-Thierry
-
-Thierry Reding (10):
-  iommu: Add IOMMU device registry
-  devicetree: Add generic IOMMU device tree bindings
-  of: Add NVIDIA Tegra124 memory controller binding
-  memory: Add Tegra124 memory controller support
-  ARM: tegra: Add memory controller on Tegra124
-  ARM: tegra: tegra124: Enable IOMMU for display controllers
-  ARM: tegra: tegra124: Enable IOMMU for SDMMC controllers
-  ARM: tegra: Select ARM_DMA_USE_IOMMU
-  drm/tegra: Add IOMMU support
-  mmc: sdhci-tegra: Add IOMMU support
-
- Documentation/devicetree/bindings/iommu/iommu.txt  |  156 ++
- .../memory-controllers/nvidia,tegra124-mc.txt      |   12 +
- arch/arm/boot/dts/tegra124.dtsi                    |   18 +
- arch/arm/mach-tegra/Kconfig                        |    1 +
- drivers/gpu/drm/tegra/dc.c                         |   21 +
- drivers/gpu/drm/tegra/drm.c                        |   17 +
- drivers/gpu/drm/tegra/drm.h                        |    3 +
- drivers/gpu/drm/tegra/fb.c                         |   16 +-
- drivers/gpu/drm/tegra/gem.c                        |  236 ++-
- drivers/gpu/drm/tegra/gem.h                        |    4 +
- drivers/iommu/iommu.c                              |   93 +
- drivers/memory/Kconfig                             |    9 +
- drivers/memory/Makefile                            |    1 +
- drivers/memory/tegra124-mc.c                       | 1945 ++++++++++++++++++++
- drivers/mmc/host/sdhci-tegra.c                     |    8 +
- include/dt-bindings/memory/tegra124-mc.h           |   30 +
- include/linux/iommu.h                              |   27 +
- 17 files changed, 2573 insertions(+), 24 deletions(-)
+ Documentation/devicetree/bindings/iommu/iommu.txt | 156 ++++++++++++++++++++++
+ 1 file changed, 156 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iommu/iommu.txt
- create mode 100644 Documentation/devicetree/bindings/memory-controllers/nvidia,tegra124-mc.txt
- create mode 100644 drivers/memory/tegra124-mc.c
- create mode 100644 include/dt-bindings/memory/tegra124-mc.h
 
+diff --git a/Documentation/devicetree/bindings/iommu/iommu.txt b/Documentation/devicetree/bindings/iommu/iommu.txt
+new file mode 100644
+index 000000000000..f8f03f057156
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iommu/iommu.txt
+@@ -0,0 +1,156 @@
++This document describes the generic device tree binding for IOMMUs and their
++master(s).
++
++
++IOMMU device node:
++==================
++
++An IOMMU can provide the following services:
++
++* Remap address space to allow devices to access physical memory ranges that
++  they otherwise wouldn't be capable of accessing.
++
++  Example: 32-bit DMA to 64-bit physical addresses
++
++* Implement scatter-gather at page level granularity so that the device does
++  not have to.
++
++* Provide system protection against "rogue" DMA by forcing all accesses to go
++  through the IOMMU and faulting when encountering accesses to unmapped
++  address regions.
++
++* Provide address space isolation between multiple contexts.
++
++  Example: Virtualization
++
++Device nodes compatible with this binding represent hardware with some of the
++above capabilities.
++
++IOMMUs can be single-master or multiple-master. Single-master IOMMU devices
++typically have a fixed association to the master device, whereas multiple-
++master IOMMU devices can translate accesses from more than one master.
++
++The device tree node of the IOMMU device's parent bus must contain a valid
++"dma-ranges" property that describes how the physical address space of the
++IOMMU maps to memory. An empty "dma-ranges" property means that there is a
++1:1 mapping from IOMMU to memory.
++
++Required properties:
++--------------------
++- #iommu-cells: The number of cells in an IOMMU specifier needed to encode an
++  address.
++
++Typical values for the above include:
++- #iommu-cells = <0>: Single master IOMMU devices are not configurable and
++  therefore no additional information needs to be encoded in the specifier.
++  This may also apply to multiple master IOMMU devices that do not allow the
++  association of masters to be configured.
++- #iommu-cells = <1>: Multiple master IOMMU devices may need to be configured
++  in order to enable translation for a given master. In such cases the single
++  address cell corresponds to the master device's ID.
++- #iommu-cells = <4>: Some IOMMU devices allow the DMA window for masters to
++  be configured. The first cell of the address in this may contain the master
++  device's ID for example, while the second cell could contain the start of
++  the DMA window for the given device. The length of the DMA window is given
++  by the third and fourth cells.
++
++
++IOMMU master node:
++==================
++
++Devices that access memory through an IOMMU are called masters. A device can
++have multiple master interfaces (to one or more IOMMU devices).
++
++Required properties:
++--------------------
++- iommus: A list of phandle and IOMMU specifier pairs that describe the IOMMU
++  master interfaces of the device. One entry in the list describes one master
++  interface of the device.
++
++When an "iommus" property is specified in a device tree node, the IOMMU will
++be used for address translation. If a "dma-ranges" property exists in the
++device's parent node it will be ignored. An exception to this rule is if the
++referenced IOMMU is disabled, in which case the "dma-ranges" property of the
++parent shall take effect.
++
++
++Notes:
++======
++
++One possible extension to the above is to use an "iommus" property along with
++a "dma-ranges" property in a bus device node (such as PCI host bridges). This
++can be useful to describe how children on the bus relate to the IOMMU if they
++are not explicitly listed in the device tree (e.g. PCI devices). However, the
++requirements of that use-case haven't been fully determined yet. Implementing
++this is therefore not recommended without further discussion and extension of
++this binding.
++
++
++Examples:
++=========
++
++Single-master IOMMU:
++--------------------
++
++	iommu {
++		#iommu-cells = <0>;
++	};
++
++	master {
++		iommus = <&/iommu>;
++	};
++
++Multiple-master IOMMU with fixed associations:
++----------------------------------------------
++
++	/* multiple-master IOMMU */
++	iommu {
++		/*
++		 * Masters are statically associated with this IOMMU and
++		 * address translation is always enabled.
++		 */
++		#iommu-cells = <0>;
++	};
++
++	/* static association with IOMMU */
++	master@1 {
++		reg = <1>;
++		iommus = <&/iommu>;
++	};
++
++	/* static association with IOMMU */
++	master@2 {
++		reg = <2>;
++		iommus = <&/iommu>;
++	};
++
++Multiple-master IOMMU:
++----------------------
++
++	iommu {
++		/* the specifier represents the ID of the master */
++		#iommu-cells = <1>;
++	};
++
++	master {
++		/* device has master ID 42 in the IOMMU */
++		iommus = <&/iommu 42>;
++	};
++
++Multiple-master IOMMU with configurable DMA window:
++---------------------------------------------------
++
++	/ {
++		#address-cells = <1>;
++		#size-cells = <1>;
++
++		iommu {
++			/* master ID, address and length of DMA window */
++			#iommu-cells = <4>;
++		};
++
++		master {
++			/* master ID 42, 4 GiB DMA window starting at 0 */
++			iommus = <&/iommu  42  0  0x1 0x0>;
++		};
++	};
 -- 
 2.0.0
