@@ -1,7 +1,7 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [RFC 03/10] of: Add NVIDIA Tegra124 memory controller binding
-Date: Thu, 26 Jun 2014 22:49:43 +0200
-Message-ID: <1403815790-8548-4-git-send-email-thierry.reding@gmail.com>
+Subject: [RFC 05/10] ARM: tegra: Add memory controller on Tegra124
+Date: Thu, 26 Jun 2014 22:49:45 +0200
+Message-ID: <1403815790-8548-6-git-send-email-thierry.reding@gmail.com>
 References: <1403815790-8548-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,37 +23,34 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-The memory controller on NVIDIA Tegra124 exposes various knobs that can
-be used to tune the behaviour of the clients attached to it.
-
-In addition, the memory controller implements an SMMU (IOMMU) which can
-translate I/O virtual addresses to physical addresses for clients. This
-is useful for scatter-gather operation on devices that don't support it
-natively and for virtualization or process separation.
+Add the memory controller and wire up the interrupt that is used to
+report errors. Also add an #iommu-cells property to make the device
+as an IOMMU.
 
 Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- .../bindings/memory-controllers/nvidia,tegra124-mc.txt       | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/memory-controllers/nvidia,tegra124-mc.txt
+ arch/arm/boot/dts/tegra124.dtsi | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra124-mc.txt b/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra124-mc.txt
-new file mode 100644
-index 000000000000..4c922e839059
---- /dev/null
-+++ b/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra124-mc.txt
-@@ -0,0 +1,12 @@
-+NVIDIA Tegra124 Memory Controller device tree bindings
-+======================================================
+diff --git a/arch/arm/boot/dts/tegra124.dtsi b/arch/arm/boot/dts/tegra124.dtsi
+index 0bf050696186..efa0f0c519be 100644
+--- a/arch/arm/boot/dts/tegra124.dtsi
++++ b/arch/arm/boot/dts/tegra124.dtsi
+@@ -560,6 +560,15 @@
+ 		reset-names = "fuse";
+ 	};
+ 
++	mc: memory-controller@0,70019000 {
++		compatible = "nvidia,tegra124-mc";
++		reg = <0x0 0x70019000 0x0 0x1000>;
 +
-+Required properties:
-+- compatible: Should be "nvidia,tegra124-mc"
-+- reg: Physical base address and length of the controller's registers.
-+- interrupts: The interrupt outputs from the controller.
-+- #iommu-cells: Should be 1. The single cell of the IOMMU specifier defines
-+  the SWGROUP of the master.
++		interrupts = <GIC_SPI 77 IRQ_TYPE_LEVEL_HIGH>;
 +
-+This device implements an IOMMU that complies with the generic IOMMU binding.
-+See ../iommu/iommu.txt for details.
++		#iommu-cells = <1>;
++	};
++
+ 	hda@0,70030000 {
+ 		compatible = "nvidia,tegra124-hda", "nvidia,tegra30-hda";
+ 		reg = <0x0 0x70030000 0x0 0x10000>;
 -- 
 2.0.0
