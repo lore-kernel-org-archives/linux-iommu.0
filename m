@@ -1,78 +1,53 @@
-From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [Patch Part3 V3 00/21] Enable support of Intel DMAR device hotplug
-Date: Thu, 26 Jun 2014 21:59:58 +0800
-Message-ID: <53AC275E.4090602@linux.intel.com>
-References: <1403686967-10887-1-git-send-email-jiang.liu@linux.intel.com>
-	<CAErSpo5z9OH_u3f9L5qKoJsJ+mgRU5rba9mnQG0Y5XXn0zcEvg@mail.gmail.com>
+From: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla@caviumnetworks.com>
+Subject: RE: [RFC PATCH v6 04/20] iommu/arm-smmu: add capability
+ IOMMU_CAP_INTR_REMAP
+Date: Thu, 26 Jun 2014 18:08:25 +0000
+Message-ID: <9353770066894e85809e1e443b71d1cd@BY2PR07MB203.namprd07.prod.outlook.com>
+References: <1401987808-23596-1-git-send-email-a.motakis@virtualopensystems.com>
+ <1401987808-23596-5-git-send-email-a.motakis@virtualopensystems.com>
+ <20140608103129.GC3279@lvm> <20140616145344.GD18986@8bytes.org>
+ <20140616151329.GQ16758@arm.com> <20140616152157.GB31771@8bytes.org>
+ <20140616152526.GR16758@arm.com> <20140616153832.GC31771@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAErSpo5z9OH_u3f9L5qKoJsJ+mgRU5rba9mnQG0Y5XXn0zcEvg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "Rafael J . Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux hotplug mailing <linux-hotplug-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20140616153832.GC31771@8bytes.org>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>
+Cc: "stuart.yoder@freescale.com" <stuart.yoder@freescale.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "moderated list:ARM SMMU DRIVER" <linux-arm-kernel@lists.infradead.org>, "tech@virtualopensystems.com" <tech@virtualopensystems.com>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, Christoffer Dall <christoffer.dall@linaro.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2014/6/26 2:00, Bjorn Helgaas wrote:
->>   iommu/vt-d: match segment number when searching for dev_iotlb capable
->>     devices
->>   iommu/vt-d: use correct domain id to flush virtual machine domains
->>   iommu/vt-d: introduce helper functions to improve code readability
->>   iommu/vt-d: introduce helper functions to make code symmetric for
->>     readability
->>   iommu/vt-d: only dynamically allocate domain id for virtual domains
->>   iommu/vt-d: fix possible invalid memory access caused by
->>     free_dmar_iommu()
->>   iommu/vt-d: avoid freeing virtual machine domain in free_dmar_iommu()
->>   iommu/VT-d: simplify include/linux/dmar.h
->>   iommu/vt-d: change iommu_enable/disable_translation to return void
->>   iommu/vt-d: simplify intel_unmap_sg() and kill duplicated code
->>   iommu/vt-d: introduce helper domain_pfn_within_range() to simplify
->>     code
->>   iommu/vt-d: introduce helper function iova_size() to improve code
->>     readability
->>   iommu/vt-d: fix bug in computing domain's iommu_snooping flag
->>   IOMMU/vt-d: introduce helper function dmar_walk_resources()
->>   iommu/vt-d: dynamically allocate and free seq_id for DMAR units
->>   iommu/vt-d: implement DMAR unit hotplug framework
->>   iommu/vt-d: search _DSM method for DMAR hotplug
->>   iommu/vt-d: enhance intel_irq_remapping driver to support DMAR unit
->>     hotplug
->>   iommu/vt-d: enhance error recovery in function
->>     intel_enable_irq_remapping()
->>   iommu/vt-d: enhance intel-iommu driver to support DMAR unit hotplug
->>   pci, ACPI, iommu: enhance pci_root to support DMAR device hotplug
-> 
-> This looks a little sloppy; you have three different ways of
-> capitalizing the area:
-> 
->   iommu/vt-d:
->   iommu/VT-d:
->   IOMMU/vt-d:
-> 
-> Also, "git log --oneline drivers/iommu" says that the convention for
-> drivers/iommu is to capitalize the first word of the rest of the
-> subject line.
-Hi Bjorn,
-	Really sorry about my careless. I just rebased the patch set
-onto v3.16-rc1, I should do more careful check about the commit
-messages. I will wait for more comments and resend a new version
-to address the commit message issues.
-	Thanks for your reminder again.
-Regards!
-Gerry
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
-> 
+Forgive me if this discussion is not relative here, but I thought it is.  
+
+How is VFIO restricting devices from writing  to MSI/MSI-X,
+Is all the vector area is mapped by VFIO to trap the accesses.  I am asking this because we might need to emulate ITS somewhere either in KVM or VFIO to provide direct access to devices.
+And I don't see any mentions on that.   I think this flag needs to be set by ITS emulation.
+
+Regards,
+Tirumalesh.
+
+-----Original Message-----
+From: kvmarm-bounces@lists.cs.columbia.edu [mailto:kvmarm-bounces@lists.cs.columbia.edu] On Behalf Of Joerg Roedel
+Sent: Monday, June 16, 2014 8:39 AM
+To: Will Deacon
+Cc: stuart.yoder@freescale.com; kvm@vger.kernel.org; open list; iommu@lists.linux-foundation.org; alex.williamson@redhat.com; moderated list:ARM SMMU DRIVER; tech@virtualopensystems.com; kvmarm@lists.cs.columbia.edu; Christoffer Dall
+Subject: Re: [RFC PATCH v6 04/20] iommu/arm-smmu: add capability IOMMU_CAP_INTR_REMAP
+
+On Mon, Jun 16, 2014 at 04:25:26PM +0100, Will Deacon wrote:
+> Ok, thanks. In which case, I think this is really a combined property 
+> of the SMMU and the interrupt controller, so we might need some extra 
+> code so that the SMMU can check that the interrupt controller for the 
+> device is also capable of interrupt remapping.
+
+Right, that this is part of IOMMU code has more or less historic reasons on x86. Interrupt remapping is purely implemented in the IOMMU there, so on ARM some clue-code between interrupt controler and smmu is needed.
+
+
+	Joerg
+
+
+_______________________________________________
+kvmarm mailing list
+kvmarm@lists.cs.columbia.edu
+https://lists.cs.columbia.edu/mailman/listinfo/kvmarm
