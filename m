@@ -1,14 +1,12 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [RFC 04/10] memory: Add Tegra124 memory controller support
-Date: Fri, 27 Jun 2014 10:17:00 +0200
-Message-ID: <20140627081659.GA10794@ulmo>
-References: <1403815790-8548-1-git-send-email-thierry.reding@gmail.com>
-	<1403815790-8548-5-git-send-email-thierry.reding@gmail.com>
-	<53AD2020.1050802@nvidia.com>
+Subject: Re: [PATCH] iommu: Constify struct iommu_ops
+Date: Fri, 27 Jun 2014 10:18:44 +0200
+Message-ID: <20140627081844.GA10835@ulmo>
+References: <1403809494-31432-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============8499723190041747257=="
+Content-Type: multipart/mixed; boundary="===============6629437908592079206=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <53AD2020.1050802-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1403809494-31432-1-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,100 +16,77 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joseph Lo <josephl-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Paul Walmsley <pwalmsley-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Allen Martin <AMartin-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOJiIJoWrK/4GQ@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============8499723190041747257==
+--===============6629437908592079206==
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="d6Gm4EdcadzBjdND"
+	protocol="application/pgp-signature"; boundary="k+w/mQv8wyuph6w0"
 Content-Disposition: inline
 
 
---d6Gm4EdcadzBjdND
+--k+w/mQv8wyuph6w0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jun 27, 2014 at 03:41:20PM +0800, Joseph Lo wrote:
-> Hi Thierry,
+On Thu, Jun 26, 2014 at 09:04:54PM +0200, Thierry Reding wrote:
+> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 >=20
-> On 06/27/2014 04:49 AM, Thierry Reding wrote:
-> [snip]
-> >+
-> >+#define MC_INTSTATUS 0x000
-> >+#define  MC_INT_DECERR_MTS (1 << 16)
-> >+#define  MC_INT_SECERR_SEC (1 << 13)
-> >+#define  MC_INT_DECERR_VPR (1 << 12)
-> >+#define  MC_INT_INVALID_APB_ASID_UPDATE (1 << 11)
-> >+#define  MC_INT_INVALID_SMMU_PAGE (1 << 10)
-> >+#define  MC_INT_ARBITRATION_EMEM (1 << 9)
-> >+#define  MC_INT_SECURITY_VIOLATION (1 << 8)
-> >+#define  MC_INT_DECERR_EMEM (1 << 6)
-> >+#define MC_INTMASK 0x004
-> >+#define MC_ERR_STATUS 0x08
-> >+#define MC_ERR_ADR 0x0c
-> >+
-> [snip]
-> >+
-> >+#define SMMU_PDE_ATTR          (SMMU_PDE_READABLE | SMMU_PDE_WRITABLE |=
- \
-> >+                                SMMU_PDE_NONSECURE)
-> >+#define SMMU_PTE_ATTR          (SMMU_PTE_READABLE | SMMU_PTE_WRITABLE |=
- \
-> >+                                SMMU_PTE_NONSECURE)
-> >+
-> >+#define SMMU_PDE_VACANT(n)     (((n) << 10) | SMMU_PDE_ATTR)
-> >+#define SMMU_PTE_VACANT(n)     (((n) << 12) | SMMU_PTE_ATTR)
+> This structure is read-only data and should never be modified.
 >=20
-> There is an ISR to catch the invalid SMMU translation. Do you want to mod=
-ify
-> the identity mapping with read/write attribute of the unused SMMU pages?
+> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> ---
+>  drivers/iommu/amd_iommu.c       |  4 ++--
+>  drivers/iommu/arm-smmu.c        |  2 +-
+>  drivers/iommu/exynos-iommu.c    |  2 +-
+>  drivers/iommu/fsl_pamu_domain.c |  2 +-
+>  drivers/iommu/intel-iommu.c     |  4 ++--
+>  drivers/iommu/iommu.c           | 19 ++++++++++++++-----
+>  drivers/iommu/ipmmu-vmsa.c      |  2 +-
+>  drivers/iommu/msm_iommu.c       |  2 +-
+>  drivers/iommu/omap-iommu.c      |  2 +-
+>  drivers/iommu/shmobile-iommu.c  |  2 +-
+>  drivers/iommu/tegra-gart.c      |  2 +-
+>  drivers/iommu/tegra-smmu.c      |  2 +-
+>  include/linux/iommu.h           |  4 ++--
+>  13 files changed, 29 insertions(+), 20 deletions(-)
 
-I'm not sure I understand what you mean by "identity mapping". None of
-the public documentation seems to describe the exact layout of PDEs or
-PTEs, so it's somewhat hard to tell what to set them to when pages are
-unmapped.
-
-> This can make sure we capture the invalid SMMU translation. And helps for
-> driver to capture issues when using SMMU.
-
-That certainly sounds like a useful thing to have. Like I said this is
-an RFC and I'm not even sure if it's acceptable in the current form, so
-I wanted to get feedback early on to avoid wasting effort on something
-that turn out to be a wild-goose chase.
+I noticed that this patch is missing a hunk to include/linux/device.h
+and I've sent a v2 to address this. Apologies for the noise.
 
 Thierry
 
---d6Gm4EdcadzBjdND
+--k+w/mQv8wyuph6w0
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAEBAgAGBQJTrSh7AAoJEN0jrNd/PrOhHXsQAIofIx+IcObVIU5pebdVPE64
-KB9+bvQGZfjn6EiaoqDuJ9DsiFKhWFrn3cFXZM9nkgYioPK/IVY6/wPguoC1MEW3
-95sX9SkVhXjjbQOLAuDu2hYJZXB0ljpYnV23ag2rJtCcqQqOoiKuSdziqSmoYPdA
-JerEdaZQRU3yy0wBGkG+pAeHCZLmJCX6zAGYGqIaFks9Y7TUE3tfLOffZHxY22nc
-uMP7Q756Py1KMxObpEcU6twL5I6gRloVP8maES54ZfNJ2aUMDyhHHn0+2LMEil1f
-4nEmkOuFTBgJpMHtzA4I1VtudRzsDXbrINgEP1WVyUrmol1xwI918+kMj3ap+Pd0
-H5Qw0AvlXsIvTYSVj+y+mrPrfTR07m1vxutUE1Fxcj7FI55X7HLM3aaAG+Qrxei4
-z41szUY1JSxLBPJckbhdyV5EA290y9n/8iCRMCzITeohXM1JDTg5Qa91eGPtvAYa
-rRbJEE5mPdkIRAlieTUrqxKaZ0k4mYQNd7v5AuglEA42FMEJB1YugkcveKVMpOdg
-x3sfPuT1lHGsMcM1G/s11zWeGK1Mc4dWbiwTdaXMGDgdC9pjG79Zo8pBObocJSlH
-YlPCizYYlOizZoOMp5fCoc2QFwCwxJ2XNYUs8fhY2veSOF9yN6SZFzTwsMxUMS81
-makzzz/StBEFKD5aUsLM
-=DBY2
+iQIcBAEBAgAGBQJTrSjkAAoJEN0jrNd/PrOheW4QAI5fiSMIn1dMUzE3mYFP4OMu
+R5zlK+Yr3E2PQdNfgp0It9sxA/RjXo0GVGMLVKw7wtDVLb3AOyBoKvYzj7oVu9TJ
+PjFTlTJo3zMukjjAKXlPgE3DP9IUI0le7tzdOaBqrqt2edBgYb6LaLDg43Su32/h
+UmZijdFxEiiq8YEyqpQMibYjznKE//XwLtecynyhDRkiGdZc/pisnUxtW2EU5kZr
+Pf+owBsMS8ua4SsR7SPYy3EZBcc0VascYwkQUOEXbsBRjmjkAKfWEIQyHfaHNZtm
+EbTELeCIjxQ5Am/O2C2OBlNZ+TAOgQ5Myu7a09M5YJTLOm974Fr++2Liw0fUGNb3
+4YMVJ6dmWBa1l342yR+wTVeeBkoWurIbvvGpTlEbwpMosP0HkQSGcTtxCnx2vMcT
+4SJLS/HmkAeKI4b88E/VUvc4YsRUXW+HGvu2RlirFkfu4ZsD1R4lqRbv6MztY72H
+TXPyf21sybdnW8Y4LiwI+gwxIhnMfJN7hwFOKBVi+taLwnGsD1bmen5r6vNBlKUx
+pl+/cXU54QLPfI2U/BLi3Z7VToDBVQOSufaB2lPajzi9sTLIh9N7+ES6q3TH9JsK
+vhODDx3JlqabA6SuNcQglfA1bB1faE79eJfj31roaa+bqJNlOQG7O4ZD7CQGbRfJ
+EipwOH90UoomyvXozCWY
+=M3e9
 -----END PGP SIGNATURE-----
 
---d6Gm4EdcadzBjdND--
+--k+w/mQv8wyuph6w0--
 
---===============8499723190041747257==
+--===============6629437908592079206==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============8499723190041747257==--
+--===============6629437908592079206==--
