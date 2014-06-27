@@ -1,11 +1,14 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v2] iommu: Constify struct iommu_ops
-Date: Fri, 27 Jun 2014 09:03:12 +0200
-Message-ID: <1403852592-10637-1-git-send-email-thierry.reding@gmail.com>
+From: Joseph Lo <josephl-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC 04/10] memory: Add Tegra124 memory controller support
+Date: Fri, 27 Jun 2014 15:41:20 +0800
+Message-ID: <53AD2020.1050802@nvidia.com>
+References: <1403815790-8548-1-git-send-email-thierry.reding@gmail.com>
+	<1403815790-8548-5-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1403815790-8548-5-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,290 +18,104 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar
+	Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Arnd
+	Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Rhyland Klein <rklein-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Allen Martin <AMartin-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Paul Walmsley <pwalmsley-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Hi Thierry,
 
-This structure is read-only data and should never be modified.
+On 06/27/2014 04:49 AM, Thierry Reding wrote:
+[snip]
+> +
+> +#define MC_INTSTATUS 0x000
+> +#define  MC_INT_DECERR_MTS (1 << 16)
+> +#define  MC_INT_SECERR_SEC (1 << 13)
+> +#define  MC_INT_DECERR_VPR (1 << 12)
+> +#define  MC_INT_INVALID_APB_ASID_UPDATE (1 << 11)
+> +#define  MC_INT_INVALID_SMMU_PAGE (1 << 10)
+> +#define  MC_INT_ARBITRATION_EMEM (1 << 9)
+> +#define  MC_INT_SECURITY_VIOLATION (1 << 8)
+> +#define  MC_INT_DECERR_EMEM (1 << 6)
+> +#define MC_INTMASK 0x004
+> +#define MC_ERR_STATUS 0x08
+> +#define MC_ERR_ADR 0x0c
+> +
+[snip]
+> +
+> +#define SMMU_PDE_ATTR          (SMMU_PDE_READABLE | SMMU_PDE_WRITABLE | \
+> +                                SMMU_PDE_NONSECURE)
+> +#define SMMU_PTE_ATTR          (SMMU_PTE_READABLE | SMMU_PTE_WRITABLE | \
+> +                                SMMU_PTE_NONSECURE)
+> +
+> +#define SMMU_PDE_VACANT(n)     (((n) << 10) | SMMU_PDE_ATTR)
+> +#define SMMU_PTE_VACANT(n)     (((n) << 12) | SMMU_PTE_ATTR)
 
-Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
----
-Changes in v2:
-- add missing hunk from include/device.h
+There is an ISR to catch the invalid SMMU translation. Do you want to 
+modify the identity mapping with read/write attribute of the unused SMMU 
+pages?
 
- drivers/iommu/amd_iommu.c       |  4 ++--
- drivers/iommu/arm-smmu.c        |  2 +-
- drivers/iommu/exynos-iommu.c    |  2 +-
- drivers/iommu/fsl_pamu_domain.c |  2 +-
- drivers/iommu/intel-iommu.c     |  4 ++--
- drivers/iommu/iommu.c           | 19 ++++++++++++++-----
- drivers/iommu/ipmmu-vmsa.c      |  2 +-
- drivers/iommu/msm_iommu.c       |  2 +-
- drivers/iommu/omap-iommu.c      |  2 +-
- drivers/iommu/shmobile-iommu.c  |  2 +-
- drivers/iommu/tegra-gart.c      |  2 +-
- drivers/iommu/tegra-smmu.c      |  2 +-
- include/linux/device.h          |  2 +-
- include/linux/iommu.h           |  4 ++--
- 14 files changed, 30 insertions(+), 21 deletions(-)
+This can make sure we capture the invalid SMMU translation. And helps 
+for driver to capture issues when using SMMU.
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 4aec6a29e316..7eb0e4246a79 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -81,7 +81,7 @@ LIST_HEAD(hpet_map);
-  */
- static struct protection_domain *pt_domain;
- 
--static struct iommu_ops amd_iommu_ops;
-+static const struct iommu_ops amd_iommu_ops;
- 
- static ATOMIC_NOTIFIER_HEAD(ppr_notifier);
- int amd_iommu_max_glx_val = -1;
-@@ -3473,7 +3473,7 @@ static int amd_iommu_domain_has_cap(struct iommu_domain *domain,
- 	return 0;
- }
- 
--static struct iommu_ops amd_iommu_ops = {
-+static const struct iommu_ops amd_iommu_ops = {
- 	.domain_init = amd_iommu_domain_init,
- 	.domain_destroy = amd_iommu_domain_destroy,
- 	.attach_dev = amd_iommu_attach_device,
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 1599354e974d..67727294e6b5 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1609,7 +1609,7 @@ static void arm_smmu_remove_device(struct device *dev)
- 	iommu_group_remove_device(dev);
- }
- 
--static struct iommu_ops arm_smmu_ops = {
-+static const struct iommu_ops arm_smmu_ops = {
- 	.domain_init	= arm_smmu_domain_init,
- 	.domain_destroy	= arm_smmu_domain_destroy,
- 	.attach_dev	= arm_smmu_attach_dev,
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 99054d2c040d..d037e87a1fe5 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -1170,7 +1170,7 @@ static void exynos_iommu_remove_device(struct device *dev)
- 	iommu_group_remove_device(dev);
- }
- 
--static struct iommu_ops exynos_iommu_ops = {
-+static const struct iommu_ops exynos_iommu_ops = {
- 	.domain_init = exynos_iommu_domain_init,
- 	.domain_destroy = exynos_iommu_domain_destroy,
- 	.attach_dev = exynos_iommu_attach_device,
-diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
-index 93072ba44b1d..5b47c5495873 100644
---- a/drivers/iommu/fsl_pamu_domain.c
-+++ b/drivers/iommu/fsl_pamu_domain.c
-@@ -1140,7 +1140,7 @@ static u32 fsl_pamu_get_windows(struct iommu_domain *domain)
- 	return dma_domain->win_cnt;
- }
- 
--static struct iommu_ops fsl_pamu_ops = {
-+static const struct iommu_ops fsl_pamu_ops = {
- 	.domain_init	= fsl_pamu_domain_init,
- 	.domain_destroy = fsl_pamu_domain_destroy,
- 	.attach_dev	= fsl_pamu_attach_device,
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 51b6b77dc3e5..9aab7963f424 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -451,7 +451,7 @@ EXPORT_SYMBOL_GPL(intel_iommu_gfx_mapped);
- static DEFINE_SPINLOCK(device_domain_lock);
- static LIST_HEAD(device_domain_list);
- 
--static struct iommu_ops intel_iommu_ops;
-+static const struct iommu_ops intel_iommu_ops;
- 
- static int __init intel_iommu_setup(char *str)
- {
-@@ -4465,7 +4465,7 @@ static void intel_iommu_remove_device(struct device *dev)
- 	iommu_group_remove_device(dev);
- }
- 
--static struct iommu_ops intel_iommu_ops = {
-+static const struct iommu_ops intel_iommu_ops = {
- 	.domain_init	= intel_iommu_domain_init,
- 	.domain_destroy = intel_iommu_domain_destroy,
- 	.attach_dev	= intel_iommu_attach_device,
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index e5555fcfe703..806b55d056b7 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -35,6 +35,10 @@ static struct kset *iommu_group_kset;
- static struct ida iommu_group_ida;
- static struct mutex iommu_group_mutex;
- 
-+struct iommu_callback_data {
-+	const struct iommu_ops *ops;
-+};
-+
- struct iommu_group {
- 	struct kobject kobj;
- 	struct kobject *devices_kobj;
-@@ -516,7 +520,8 @@ EXPORT_SYMBOL_GPL(iommu_group_id);
- 
- static int add_iommu_group(struct device *dev, void *data)
- {
--	struct iommu_ops *ops = data;
-+	struct iommu_callback_data *cb = data;
-+	const struct iommu_ops *ops = cb->ops;
- 
- 	if (!ops->add_device)
- 		return -ENODEV;
-@@ -532,7 +537,7 @@ static int iommu_bus_notifier(struct notifier_block *nb,
- 			      unsigned long action, void *data)
- {
- 	struct device *dev = data;
--	struct iommu_ops *ops = dev->bus->iommu_ops;
-+	const struct iommu_ops *ops = dev->bus->iommu_ops;
- 	struct iommu_group *group;
- 	unsigned long group_action = 0;
- 
-@@ -585,10 +590,14 @@ static struct notifier_block iommu_bus_nb = {
- 	.notifier_call = iommu_bus_notifier,
- };
- 
--static void iommu_bus_init(struct bus_type *bus, struct iommu_ops *ops)
-+static void iommu_bus_init(struct bus_type *bus, const struct iommu_ops *ops)
- {
-+	struct iommu_callback_data cb = {
-+		.ops = ops,
-+	};
-+
- 	bus_register_notifier(bus, &iommu_bus_nb);
--	bus_for_each_dev(bus, NULL, ops, add_iommu_group);
-+	bus_for_each_dev(bus, NULL, &cb, add_iommu_group);
- }
- 
- /**
-@@ -604,7 +613,7 @@ static void iommu_bus_init(struct bus_type *bus, struct iommu_ops *ops)
-  * is set up. With this function the iommu-driver can set the iommu-ops
-  * afterwards.
-  */
--int bus_set_iommu(struct bus_type *bus, struct iommu_ops *ops)
-+int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops)
- {
- 	if (bus->iommu_ops != NULL)
- 		return -EBUSY;
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 53cde086e83b..7dab5cbcc775 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -1120,7 +1120,7 @@ static void ipmmu_remove_device(struct device *dev)
- 	dev->archdata.iommu = NULL;
- }
- 
--static struct iommu_ops ipmmu_ops = {
-+static const struct iommu_ops ipmmu_ops = {
- 	.domain_init = ipmmu_domain_init,
- 	.domain_destroy = ipmmu_domain_destroy,
- 	.attach_dev = ipmmu_attach_device,
-diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index f5ff657f49fa..49f41d6e02f1 100644
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -674,7 +674,7 @@ fail:
- 	return 0;
- }
- 
--static struct iommu_ops msm_iommu_ops = {
-+static const struct iommu_ops msm_iommu_ops = {
- 	.domain_init = msm_iommu_domain_init,
- 	.domain_destroy = msm_iommu_domain_destroy,
- 	.attach_dev = msm_iommu_attach_dev,
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index 895af06a667f..031b2476bcc4 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -1291,7 +1291,7 @@ static void omap_iommu_remove_device(struct device *dev)
- 	kfree(arch_data);
- }
- 
--static struct iommu_ops omap_iommu_ops = {
-+static const struct iommu_ops omap_iommu_ops = {
- 	.domain_init	= omap_iommu_domain_init,
- 	.domain_destroy	= omap_iommu_domain_destroy,
- 	.attach_dev	= omap_iommu_attach_dev,
-diff --git a/drivers/iommu/shmobile-iommu.c b/drivers/iommu/shmobile-iommu.c
-index 464acda0bbc4..1333e6fb3405 100644
---- a/drivers/iommu/shmobile-iommu.c
-+++ b/drivers/iommu/shmobile-iommu.c
-@@ -354,7 +354,7 @@ static int shmobile_iommu_add_device(struct device *dev)
- 	return 0;
- }
- 
--static struct iommu_ops shmobile_iommu_ops = {
-+static const struct iommu_ops shmobile_iommu_ops = {
- 	.domain_init = shmobile_iommu_domain_init,
- 	.domain_destroy = shmobile_iommu_domain_destroy,
- 	.attach_dev = shmobile_iommu_attach_device,
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index dba1a9fd5070..b10a8ecede8e 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -309,7 +309,7 @@ static int gart_iommu_domain_has_cap(struct iommu_domain *domain,
- 	return 0;
- }
- 
--static struct iommu_ops gart_iommu_ops = {
-+static const struct iommu_ops gart_iommu_ops = {
- 	.domain_init	= gart_iommu_domain_init,
- 	.domain_destroy	= gart_iommu_domain_destroy,
- 	.attach_dev	= gart_iommu_attach_dev,
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 605b5b46a903..792da5ea6d12 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -947,7 +947,7 @@ static void smmu_iommu_domain_destroy(struct iommu_domain *domain)
- 	dev_dbg(smmu->dev, "smmu_as@%p\n", as);
- }
- 
--static struct iommu_ops smmu_iommu_ops = {
-+static const struct iommu_ops smmu_iommu_ops = {
- 	.domain_init	= smmu_iommu_domain_init,
- 	.domain_destroy	= smmu_iommu_domain_destroy,
- 	.attach_dev	= smmu_iommu_attach_dev,
-diff --git a/include/linux/device.h b/include/linux/device.h
-index 921fa0a74df6..28113885260c 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -124,7 +124,7 @@ struct bus_type {
- 
- 	const struct dev_pm_ops *pm;
- 
--	struct iommu_ops *iommu_ops;
-+	const struct iommu_ops *iommu_ops;
- 
- 	struct subsys_private *p;
- 	struct lock_class_key lock_key;
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index b96a5b2136e4..284a4683fdc1 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -50,7 +50,7 @@ struct iommu_domain_geometry {
- };
- 
- struct iommu_domain {
--	struct iommu_ops *ops;
-+	const struct iommu_ops *ops;
- 	void *priv;
- 	iommu_fault_handler_t handler;
- 	void *handler_token;
-@@ -140,7 +140,7 @@ struct iommu_ops {
- #define IOMMU_GROUP_NOTIFY_UNBIND_DRIVER	5 /* Pre Driver unbind */
- #define IOMMU_GROUP_NOTIFY_UNBOUND_DRIVER	6 /* Post Driver unbind */
- 
--extern int bus_set_iommu(struct bus_type *bus, struct iommu_ops *ops);
-+extern int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops);
- extern bool iommu_present(struct bus_type *bus);
- extern struct iommu_domain *iommu_domain_alloc(struct bus_type *bus);
- extern struct iommu_group *iommu_group_get_by_id(int id);
--- 
-2.0.0
+-joseph
+
+> +static irqreturn_t tegra124_mc_irq(int irq, void *data)
+> +{
+> +       struct tegra_mc *mc = data;
+> +       u32 value, status, mask;
+> +
+> +       /* mask all interrupts to avoid flooding */
+> +       mask = mc_readl(mc, MC_INTMASK);
+> +       mc_writel(mc, 0, MC_INTMASK);
+> +
+> +       status = mc_readl(mc, MC_INTSTATUS);
+> +       mc_writel(mc, status, MC_INTSTATUS);
+> +
+> +       dev_dbg(mc->dev, "INTSTATUS: %08x\n", status);
+> +
+> +       if (status & MC_INT_DECERR_MTS)
+> +               dev_dbg(mc->dev, "  DECERR_MTS\n");
+> +
+> +       if (status & MC_INT_SECERR_SEC)
+> +               dev_dbg(mc->dev, "  SECERR_SEC\n");
+> +
+> +       if (status & MC_INT_DECERR_VPR)
+> +               dev_dbg(mc->dev, "  DECERR_VPR\n");
+> +
+> +       if (status & MC_INT_INVALID_APB_ASID_UPDATE)
+> +               dev_dbg(mc->dev, "  INVALID_APB_ASID_UPDATE\n");
+> +
+> +       if (status & MC_INT_INVALID_SMMU_PAGE)
+> +               dev_dbg(mc->dev, "  INVALID_SMMU_PAGE\n");
+> +
+> +       if (status & MC_INT_ARBITRATION_EMEM)
+> +               dev_dbg(mc->dev, "  ARBITRATION_EMEM\n");
+> +
+> +       if (status & MC_INT_SECURITY_VIOLATION)
+> +               dev_dbg(mc->dev, "  SECURITY_VIOLATION\n");
+> +
+> +       if (status & MC_INT_DECERR_EMEM)
+> +               dev_dbg(mc->dev, "  DECERR_EMEM\n");
+> +
+> +       value = mc_readl(mc, MC_ERR_STATUS);
+> +
+> +       dev_dbg(mc->dev, "ERR_STATUS: %08x\n", value);
+> +       dev_dbg(mc->dev, "  type: %x\n", (value >> 28) & 0x7);
+> +       dev_dbg(mc->dev, "  protection: %x\n", (value >> 25) & 0x7);
+> +       dev_dbg(mc->dev, "  adr_hi: %x\n", (value >> 20) & 0x3);
+> +       dev_dbg(mc->dev, "  swap: %x\n", (value >> 18) & 0x1);
+> +       dev_dbg(mc->dev, "  security: %x\n", (value >> 17) & 0x1);
+> +       dev_dbg(mc->dev, "  r/w: %x\n", (value >> 16) & 0x1);
+> +       dev_dbg(mc->dev, "  adr1: %x\n", (value >> 12) & 0x7);
+> +       dev_dbg(mc->dev, "  client: %x\n", value & 0x7f);
+> +
+> +       value = mc_readl(mc, MC_ERR_ADR);
+> +       dev_dbg(mc->dev, "ERR_ADR: %08x\n", value);
+> +
+> +       mc_writel(mc, mask, MC_INTMASK);
+> +
+> +       return IRQ_HANDLED;
+> +}
+> +
