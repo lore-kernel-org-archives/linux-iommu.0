@@ -1,14 +1,15 @@
-From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: Re: [PATCH v2] iommu: Constify struct iommu_ops
-Date: Fri, 27 Jun 2014 10:49:40 -0700
-Message-ID: <20140627174940.GB1653@kroah.com>
-References: <1403852592-10637-1-git-send-email-thierry.reding@gmail.com>
+From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Subject: Re: [RFC 04/10] memory: Add Tegra124 memory controller support
+Date: Fri, 27 Jun 2014 15:33:28 -0600
+Message-ID: <53ADE328.1080005@wwwdotorg.org>
+References: <1403815790-8548-1-git-send-email-thierry.reding@gmail.com>
+	<1403815790-8548-5-git-send-email-thierry.reding@gmail.com>
+	<20140627124638.7ec150cca163c89727b8953f@nvidia.com>
+	<20140627110811.GD2797@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============7369199666262110692=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1403852592-10637-1-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <20140627110811.GD2797@ulmo>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,19 +19,106 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Hiroshi DOyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Rhyland Klein <rklein-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Allen Martin <AMartin-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Paul Walmsley <pwalmsley-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jun 27, 2014 at 09:03:12AM +0200, Thierry Reding wrote:
-> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> 
-> This structure is read-only data and should never be modified.
-> 
-> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> ---
-> Changes in v2:
-> - add missing hunk from include/device.h
-> 
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--===============7369199666262110692==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature";
+ boundary="iRP0KUiPV5PFsE2Td3VmAJUehJcledoiQ"
 
-Signed-off-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--iRP0KUiPV5PFsE2Td3VmAJUehJcledoiQ
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+On 06/27/2014 05:08 AM, Thierry Reding wrote:
+> On Fri, Jun 27, 2014 at 12:46:38PM +0300, Hiroshi DOyu wrote:
+>>
+>> Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> writes:
+>>
+>>> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+>>>
+>>> The memory controller on NVIDIA Tegra124 exposes various knobs that c=
+an
+>>> be used to tune the behaviour of the clients attached to it.
+>>>
+>>> Currently this driver sets up the latency allowance registers to the =
+HW
+>>> defaults. Eventually an API should be exported by this driver (via a
+>>> custom API or a generic subsystem) to allow clients to register laten=
+cy
+>>> requirements.
+>>>
+>>> This driver also registers an IOMMU (SMMU) that's implemented by the
+>>> memory controller.
+>>>
+>>> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+>>> ---
+>>>  drivers/memory/Kconfig                   |    9 +
+>>>  drivers/memory/Makefile                  |    1 +
+>>>  drivers/memory/tegra124-mc.c             | 1945 ++++++++++++++++++++=
+++++++++++
+>>>  include/dt-bindings/memory/tegra124-mc.h |   30 +
+>>>  4 files changed, 1985 insertions(+)
+>>>  create mode 100644 drivers/memory/tegra124-mc.c
+>>>  create mode 100644 include/dt-bindings/memory/tegra124-mc.h
+>>
+>> I prefer reusing the existing SMMU and having MC and SMMU separated
+>> since most of SMMU code are not different from functionality POV, and
+>> new MC features are quite independent of SMMU.
+>>
+>> If it's really convenient to combine MC and SMMU into one driver, we
+>> could move "drivers/iomm/tegra-smmu.c" here first, and add MC features=
+
+>> on the top of it.
+>=20
+> I'm not sure if we can do that, since the tegra-smmu driver is
+> technically used by Tegra30 and Tegra114. We've never really made use o=
+f
+> it, but there are device trees in mainline releases that contain the
+> separate SMMU node.
+
+The existing DT nodes do nothing more than instantiate the driver.
+However, IIUC nothing actually uses the driver for any purpose, so if we
+simply deleted those nodes or changed them incompatibly, there'd be no
+functional difference. Perhaps this is stretching DT ABIness very
+slightly, but I think it makes no practical difference.
+
+
+--iRP0KUiPV5PFsE2Td3VmAJUehJcledoiQ
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+
+iQIcBAEBAgAGBQJTreMoAAoJEJuNpwkmVCGchyMP/RMvyiKBagbYiO7NxlbVm0El
+as1+Vf95u18zvTQkYpLCj4mwwAB0WQ1F4gQPrlk8DeLVVgiK0cg3FJfn29y2ufLK
+bjXWXO9Lq2UtL2MP3fZmttkYUi6SLTsP/NCQVLPPbheAQyJKGjSextI8/lKV8uq1
+kufVLFDd+qdYNdM/VJaso1Q6oUn5PB43sft57JudZovzLrAVFfm/6sQXwwTqYfFw
+W2CZ+zKBnt2L8L1KBaVvFvZGiizxejvfApgbUrfNhY/q8v0330fU8htg+9z1mgjY
+isfeEllFK0wV+Vmq/v2cFDMC3OhpLZp5nq5/fhCAJB2/HNXhP8mEypKeKQHeFvey
+TjciyQ3MFI9Rig41o/qKVt5w8Ih8WvY7NCm+6n/yukBfFn8k4cHLteBbrjU6+qhc
++lJ/tmkXgHqF+u+J3iJdmblOrjkLWhDTxQCRpj1M+5gxpdCIXdmMUGRY1TGiqzzm
+Wx/GHJ2EdujyWjmrYsO62WwQrRtb2nutytBHk7VCtghmEqWwUOx5fsc/hH4zDrwl
+oxQO9L5Knt7tpqoQOqXpYQpoxdcwfMmU6DGi0CVWMncISqAL9JZG+f/eY/wxrgpu
+L5QsAx5+19pEtuxeFvTelC9APzNz5ccOl0joRBvYybkqjstsmTd5GxAF4moO1NwQ
+2v8lj49ngpi/pssv2j2A
+=Ovyz
+-----END PGP SIGNATURE-----
+
+--iRP0KUiPV5PFsE2Td3VmAJUehJcledoiQ--
+
+--===============7369199666262110692==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============7369199666262110692==--
