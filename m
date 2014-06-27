@@ -1,15 +1,24 @@
-From: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC 04/10] memory: Add Tegra124 memory controller support
-Date: Fri, 27 Jun 2014 11:24:59 +0300
-Message-ID: <87mwcy4v50.fsf@nvidia.com>
-References: <1403815790-8548-1-git-send-email-thierry.reding@gmail.com>
-	<1403815790-8548-5-git-send-email-thierry.reding@gmail.com>
-	<53AD2020.1050802@nvidia.com> <20140627081659.GA10794@ulmo>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH v6 04/20] iommu/arm-smmu: add capability
+	IOMMU_CAP_INTR_REMAP
+Date: Fri, 27 Jun 2014 09:47:22 +0100
+Message-ID: <20140627084722.GB26276@arm.com>
+References: <20140616151329.GQ16758@arm.com>
+	<20140616152157.GB31771@8bytes.org>
+	<20140616152526.GR16758@arm.com>
+	<20140616153832.GC31771@8bytes.org>
+	<9353770066894e85809e1e443b71d1cd@BY2PR07MB203.namprd07.prod.outlook.com>
+	<748dccbbd3284521af4659ccbbb11453@BY2PR07MB203.namprd07.prod.outlook.com>
+	<b085e02e72dc424d9624c3e810951087@BY2PR07MB203.namprd07.prod.outlook.com>
+	<1403809223.31091.137.camel@ul30vt.home>
+	<ec8dbbcb991e4d73b73f4b4f98342445@BY2PR07MB203.namprd07.prod.outlook.com>
+	<1403811384.31091.151.camel@ul30vt.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140627081659.GA10794@ulmo>
+Content-Disposition: inline
+In-Reply-To: <1403811384.31091.151.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,66 +28,44 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Paul Walmsley <pwalmsley-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Joseph Lo <josephl-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Allen Martin <AMartin-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, marc.zyngier-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, "moderated list:ARM SMMU DRIVER" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-
-Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> writes:
-
-> * PGP Signed by an unknown key
->
-> On Fri, Jun 27, 2014 at 03:41:20PM +0800, Joseph Lo wrote:
->> Hi Thierry,
->> 
->> On 06/27/2014 04:49 AM, Thierry Reding wrote:
->> [snip]
->> >+
->> >+#define MC_INTSTATUS 0x000
->> >+#define  MC_INT_DECERR_MTS (1 << 16)
->> >+#define  MC_INT_SECERR_SEC (1 << 13)
->> >+#define  MC_INT_DECERR_VPR (1 << 12)
->> >+#define  MC_INT_INVALID_APB_ASID_UPDATE (1 << 11)
->> >+#define  MC_INT_INVALID_SMMU_PAGE (1 << 10)
->> >+#define  MC_INT_ARBITRATION_EMEM (1 << 9)
->> >+#define  MC_INT_SECURITY_VIOLATION (1 << 8)
->> >+#define  MC_INT_DECERR_EMEM (1 << 6)
->> >+#define MC_INTMASK 0x004
->> >+#define MC_ERR_STATUS 0x08
->> >+#define MC_ERR_ADR 0x0c
->> >+
->> [snip]
->> >+
->> >+#define SMMU_PDE_ATTR          (SMMU_PDE_READABLE | SMMU_PDE_WRITABLE | \
->> >+                                SMMU_PDE_NONSECURE)
->> >+#define SMMU_PTE_ATTR          (SMMU_PTE_READABLE | SMMU_PTE_WRITABLE | \
->> >+                                SMMU_PTE_NONSECURE)
->> >+
->> >+#define SMMU_PDE_VACANT(n)     (((n) << 10) | SMMU_PDE_ATTR)
->> >+#define SMMU_PTE_VACANT(n)     (((n) << 12) | SMMU_PTE_ATTR)
-
-They should be set 0.
-
-The above VACANT macros are legacy support for some special case that a
-device wanted linear SMMU mapping where iova == phy. No need any more.
-
->> There is an ISR to catch the invalid SMMU translation. Do you want to modify
->> the identity mapping with read/write attribute of the unused SMMU pages?
->
-> I'm not sure I understand what you mean by "identity mapping". None of
-> the public documentation seems to describe the exact layout of PDEs or
-> PTEs, so it's somewhat hard to tell what to set them to when pages are
-> unmapped.
->
->> This can make sure we capture the invalid SMMU translation. And helps for
->> driver to capture issues when using SMMU.
->
-> That certainly sounds like a useful thing to have. Like I said this is
-> an RFC and I'm not even sure if it's acceptable in the current form, so
-> I wanted to get feedback early on to avoid wasting effort on something
-> that turn out to be a wild-goose chase.
->
-> Thierry
->
-> * Unknown Key
-> * 0x7F3EB3A1
+T24gVGh1LCBKdW4gMjYsIDIwMTQgYXQgMDg6MzY6MjRQTSArMDEwMCwgQWxleCBXaWxsaWFtc29u
+IHdyb3RlOgo+IE9uIFRodSwgMjAxNC0wNi0yNiBhdCAxOToxMCArMDAwMCwgQ2hhbGFtYXJsYSwg
+VGlydW1hbGVzaCB3cm90ZToKPiA+IFRoYW5rcyBmb3IgdGhlIGNsYXJpZmljYXRpb24gQWxleCwg
+VGhhdOKAmXMgZXhhY3RseSBteSBwb2ludCwgd2h5IGFyZSB3ZQo+ID4gcmVseWluZyBvbiAgUUVN
+VSBvciBzb21ldGhpbmcgZWxzZSB0byBlbXVsYXRlIHRoZSBNU0kgc3BhY2Ugd2hlbiB3ZSBjYW4K
+PiA+IGRpcmVjdGx5IGdpdmUgYWNjZXNzIHRvIGRldmljZXMgdXNpbmcgSVRTIChvZiBjb3Vyc2Ug
+d2l0aCBhIHNtYWxsCj4gPiBlbXVsYXRpb24gY29kZSkuICBUaGlzIHdheSB3ZSBhcmUgYWxzbyBi
+ZW5lZml0ZWQgZnJvbSBhbGwgSVRTIHNlcnZpY2VzCj4gPiBsaWtlIFZDUFUgbWlncmF0aW9uIGV0
+Yy4gIAo+IAo+IEkgaGF2ZSBubyBpZGVhIHdoYXQgSVRTIGlzLgoKSVRTIGlzIHRoZSBNU0kgZG9v
+cmJlbGwgZm9yIEdJQ3YzIChBUk0ncyBsYXRlc3QgaW50ZXJydXB0IGNvbnRyb2xsZXIpLgoKSSBh
+Z3JlZSB0aGF0IHdlIHdpbGwgbmVlZCBhbiBJVFMgZW11bGF0aW9uIGlmIHdlIHdhbnQgdG8gdXNl
+IE1TSXMgaW4gdGhlCmd1ZXN0LCBhbmQgSSBiZWxpZXZlIHRoYXQgTWFyYyAoQ0MnZCkgaGFkIGFs
+cmVhZHkgc3RhcnRlZCB0aGlua2luZyBhYm91dAp0aGF0LgoKPiA+IFdoYXQgYWJvdXQgbm9uIFFF
+TVUgVkZJTyB1c2VycywgZm9yIGV4YW1wbGUsIGlmIEkgd2FudGVkIHRvIHVzZSBWRklPIHRvCj4g
+PiBhc3NpZ24gYSBkZXZpY2UgdG8gYSB1c2VyIHByb2Nlc3MgSSBkb24ndCBuZWVkIHRvIGRlcGVu
+ZCBvbiBRRU1VLiAgIEkKPiA+IHRob3VnaHQgdGhpcyBpcyBvbmUgb2YgdGhlIG1haW4gZ29hbHMg
+b2YgdmZpbyB0byBtYWtlIGl0IGluZGVwZW5kZW50IG9mCj4gPiBoeXBlcnZpc29ycy4gICAgIAo+
+IAo+IFdoZXJlIGRpZCBRRU1VIGJlY29tZSBhIHJlcXVpcmVtZW50PyAgTWF5YmUgSSdtIG1pc3Np
+bmcgc29tZXRoaW5nIGluIHRoZQo+IEFSTSBwYXJ0IG9mIHRoZSBjb252ZXJzYXRpb24gdGhhdCBn
+b3QgY2hvcHBlZCBvZmYsIGJ1dCB0aGlzIGlzIGV4YWN0bHkKPiB3aHkgd2UgaGF2ZSB0aGUgVkZJ
+Ty9RRU1VIHNwbGl0IHRoYXQgd2UgZG8uICBWRklPIHByb3ZpZGVzIGJhc2ljCj4gdmlydHVhbGl6
+YXRpb24gZm9yIGNvbmZpZyBzcGFjZSBhbmQgcmVzdHJpY3RzIGFjY2VzcyB0byBvdGhlciBhcmVh
+cyB0aGF0Cj4gdXNlcnMgc2hvdWxkbid0IGJlIGFsbG93ZWQgdG8gY2hhbmdlLiAgUUVNVSBpcyBq
+dXN0IG9uZSBleGFtcGxlIG9mIGEKPiB1c2Vyc3BhY2UgVkZJTyBkcml2ZXIuICBRRU1VIHRha2Vz
+IHRoZSBkZWNvbXBvc2VkIGRldmljZSBleHBvc2VkIHRocm91Z2gKPiB0aGUgVkZJTyBBQkkgYW5k
+IHJlLWNyZWF0ZXMgYSBQQ0kgZGV2aWNlIG91dCBvZiBpdC4gIFZGSU8gaXRzZWxmIGhhcyBubwo+
+IGRlcGVuZGVuY3kgb24gUUVNVS4gIFRoYW5rcywKCkkgYWxzbyBkb24ndCB1bmRlcnN0YW5kIHRo
+ZSBRRU1VIHBhcnQgaGVyZS4gVGhlIE1TSSBlbXVsYXRpb24gd291bGQgYmUgaW4KdGhlIGtlcm5l
+bCwganVzdCBsaWtlIHRoZSBHSUN2MiBlbXVsYXRpb24gdGhhdCB3ZSBhbHJlYWR5IGhhdmUuIEZv
+cgp1c2Vyc3BhY2UgZHJpdmVycywgd291bGRuJ3QgeW91IGp1c3QgdXNlIGV2ZW50ZmQgcmF0aGVy
+IHRoYW4gYm90aGVyIHdpdGgKZW11bGF0aW5nIE1TSXM/CgpGaW5hbGx5LCB0aGUgaW50ZXJydXB0
+IHJlbWFwcGluZyBwYXJ0IGlzIGFib3V0IHRoZSBTTU1VIHByZXZlbnRpbmcgTVNJCndyaXRlcyB0
+byBhcmJpdHJhcnkgcG9ydGlvbnMgb2YgdGhlIGhvc3QgYWRkcmVzcyBzcGFjZS4gVGhlIElUUyBp
+cyBhYm91dApyb3V0aW5nIGludGVycnVwdHMgdG8gQ1BVcy4KCldpbGwKX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11
+QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9u
+Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
