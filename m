@@ -1,73 +1,106 @@
-From: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla@caviumnetworks.com>
-Subject: RE: [RFC PATCH v6 04/20] iommu/arm-smmu: add capability
- IOMMU_CAP_INTR_REMAP
-Date: Fri, 27 Jun 2014 21:57:28 +0000
-Message-ID: <2645e3a22f5e4ae9994c0ee8fa327cb4@BY2PR07MB203.namprd07.prod.outlook.com>
-References: <20140616151329.GQ16758@arm.com>
- <20140616152157.GB31771@8bytes.org> <20140616152526.GR16758@arm.com>
- <20140616153832.GC31771@8bytes.org>
- <9353770066894e85809e1e443b71d1cd@BY2PR07MB203.namprd07.prod.outlook.com>
- <748dccbbd3284521af4659ccbbb11453@BY2PR07MB203.namprd07.prod.outlook.com>
- <b085e02e72dc424d9624c3e810951087@BY2PR07MB203.namprd07.prod.outlook.com>
- <1403809223.31091.137.camel@ul30vt.home>
- <ec8dbbcb991e4d73b73f4b4f98342445@BY2PR07MB203.namprd07.prod.outlook.com>
- <1403811384.31091.151.camel@ul30vt.home> <20140627084722.GB26276@arm.com>
+From: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
+Date: Fri, 27 Jun 2014 15:23:27 -0700
+Message-ID: <53ADEEDF.7060902@codeaurora.org>
+References: <1400877218-4113-1-git-send-email-thierry.reding@gmail.com>
+	<CAL_JsqKumG1PSFoVfeGpLLG+MjXFeF4aUjun=vv1BJpaxk0Byg@mail.gmail.com>
+	<4545972.cM7IP1qTXQ@wuerfel> <53A4C0C9.2050908@codeaurora.org>
+	<20140624091808.GC26013@arm.com> <53A9BC18.2090106@codeaurora.org>
+	<20140624181150.GB4067@arm.com> <53A9EF3A.2070704@codeaurora.org>
+	<20140625091858.GG6153@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20140627084722.GB26276@arm.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>, Alex Williamson <alex.williamson@redhat.com>
-Cc: Joerg Roedel <joro@8bytes.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>, "stuart.yoder@freescale.com" <stuart.yoder@freescale.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "tech@virtualopensystems.com" <tech@virtualopensystems.com>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "moderated list:ARM SMMU DRIVER" <linux-arm-kernel@lists.infradead.org>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20140625091858.GG6153-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-TWFyYywNCg0KICAgICAgICAgV2hhdCBpcyB5b3VyIG9waW5pb24gb24gSVRTIGVtdWxhdGlvbiAu
-IGlzIGl0IHNob3VsZCBiZSBwYXJ0IG9mIEtWTSBvciBWRklPLg0KICAgICAgICBBbHNvIHRoaXMg
-Y29kZSBuZWVkcyB0byBkZXBlbmQgb24gSVRTIGhvc3QgZHJpdmVyIGEgbG90LCBIb3N0IElUUyBk
-cml2ZXIgbmVlZHMgdG8gaGF2ZSBhbiBpbnRlcmZhY2UgZm9yIHRoaXMgY29kZSB0byB1c2UuDQoN
-ClRoYW5rcywNCiBUaXJ1bWFsZXNoDQogICAgIA0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0N
-CkZyb206IFdpbGwgRGVhY29uIFttYWlsdG86d2lsbC5kZWFjb25AYXJtLmNvbV0gDQpTZW50OiBG
-cmlkYXksIEp1bmUgMjcsIDIwMTQgMTo0NyBBTQ0KVG86IEFsZXggV2lsbGlhbXNvbg0KQ2M6IENo
-YWxhbWFybGEsIFRpcnVtYWxlc2g7IEpvZXJnIFJvZWRlbDsga3ZtQHZnZXIua2VybmVsLm9yZzsg
-b3BlbiBsaXN0OyBzdHVhcnQueW9kZXJAZnJlZXNjYWxlLmNvbTsgaW9tbXVAbGlzdHMubGludXgt
-Zm91bmRhdGlvbi5vcmc7IHRlY2hAdmlydHVhbG9wZW5zeXN0ZW1zLmNvbTsga3ZtYXJtQGxpc3Rz
-LmNzLmNvbHVtYmlhLmVkdTsgbW9kZXJhdGVkIGxpc3Q6QVJNIFNNTVUgRFJJVkVSOyBtYXJjLnp5
-bmdpZXJAYXJtLmNvbQ0KU3ViamVjdDogUmU6IFtSRkMgUEFUQ0ggdjYgMDQvMjBdIGlvbW11L2Fy
-bS1zbW11OiBhZGQgY2FwYWJpbGl0eSBJT01NVV9DQVBfSU5UUl9SRU1BUA0KDQpPbiBUaHUsIEp1
-biAyNiwgMjAxNCBhdCAwODozNjoyNFBNICswMTAwLCBBbGV4IFdpbGxpYW1zb24gd3JvdGU6DQo+
-IE9uIFRodSwgMjAxNC0wNi0yNiBhdCAxOToxMCArMDAwMCwgQ2hhbGFtYXJsYSwgVGlydW1hbGVz
-aCB3cm90ZToNCj4gPiBUaGFua3MgZm9yIHRoZSBjbGFyaWZpY2F0aW9uIEFsZXgsIFRoYXTigJlz
-IGV4YWN0bHkgbXkgcG9pbnQsIHdoeSBhcmUgDQo+ID4gd2UgcmVseWluZyBvbiAgUUVNVSBvciBz
-b21ldGhpbmcgZWxzZSB0byBlbXVsYXRlIHRoZSBNU0kgc3BhY2Ugd2hlbiANCj4gPiB3ZSBjYW4g
-ZGlyZWN0bHkgZ2l2ZSBhY2Nlc3MgdG8gZGV2aWNlcyB1c2luZyBJVFMgKG9mIGNvdXJzZSB3aXRo
-IGEgDQo+ID4gc21hbGwgZW11bGF0aW9uIGNvZGUpLiAgVGhpcyB3YXkgd2UgYXJlIGFsc28gYmVu
-ZWZpdGVkIGZyb20gYWxsIElUUyANCj4gPiBzZXJ2aWNlcyBsaWtlIFZDUFUgbWlncmF0aW9uIGV0
-Yy4NCj4gDQo+IEkgaGF2ZSBubyBpZGVhIHdoYXQgSVRTIGlzLg0KDQpJVFMgaXMgdGhlIE1TSSBk
-b29yYmVsbCBmb3IgR0lDdjMgKEFSTSdzIGxhdGVzdCBpbnRlcnJ1cHQgY29udHJvbGxlcikuDQoN
-CkkgYWdyZWUgdGhhdCB3ZSB3aWxsIG5lZWQgYW4gSVRTIGVtdWxhdGlvbiBpZiB3ZSB3YW50IHRv
-IHVzZSBNU0lzIGluIHRoZSBndWVzdCwgYW5kIEkgYmVsaWV2ZSB0aGF0IE1hcmMgKENDJ2QpIGhh
-ZCBhbHJlYWR5IHN0YXJ0ZWQgdGhpbmtpbmcgYWJvdXQgdGhhdC4NCg0KDQo+ID4gV2hhdCBhYm91
-dCBub24gUUVNVSBWRklPIHVzZXJzLCBmb3IgZXhhbXBsZSwgaWYgSSB3YW50ZWQgdG8gdXNlIFZG
-SU8gdG8NCj4gPiBhc3NpZ24gYSBkZXZpY2UgdG8gYSB1c2VyIHByb2Nlc3MgSSBkb24ndCBuZWVk
-IHRvIGRlcGVuZCBvbiBRRU1VLiAgIEkNCj4gPiB0aG91Z2h0IHRoaXMgaXMgb25lIG9mIHRoZSBt
-YWluIGdvYWxzIG9mIHZmaW8gdG8gbWFrZSBpdCBpbmRlcGVuZGVudCBvZg0KPiA+IGh5cGVydmlz
-b3JzLiAgICAgDQo+IA0KPiBXaGVyZSBkaWQgUUVNVSBiZWNvbWUgYSByZXF1aXJlbWVudD8gIE1h
-eWJlIEknbSBtaXNzaW5nIHNvbWV0aGluZyBpbiANCj4gdGhlIEFSTSBwYXJ0IG9mIHRoZSBjb252
-ZXJzYXRpb24gdGhhdCBnb3QgY2hvcHBlZCBvZmYsIGJ1dCB0aGlzIGlzIA0KPiBleGFjdGx5IHdo
-eSB3ZSBoYXZlIHRoZSBWRklPL1FFTVUgc3BsaXQgdGhhdCB3ZSBkby4gIFZGSU8gcHJvdmlkZXMg
-DQo+IGJhc2ljIHZpcnR1YWxpemF0aW9uIGZvciBjb25maWcgc3BhY2UgYW5kIHJlc3RyaWN0cyBh
-Y2Nlc3MgdG8gb3RoZXIgDQo+IGFyZWFzIHRoYXQgdXNlcnMgc2hvdWxkbid0IGJlIGFsbG93ZWQg
-dG8gY2hhbmdlLiAgUUVNVSBpcyBqdXN0IG9uZSANCj4gZXhhbXBsZSBvZiBhIHVzZXJzcGFjZSBW
-RklPIGRyaXZlci4gIFFFTVUgdGFrZXMgdGhlIGRlY29tcG9zZWQgZGV2aWNlIA0KPiBleHBvc2Vk
-IHRocm91Z2ggdGhlIFZGSU8gQUJJIGFuZCByZS1jcmVhdGVzIGEgUENJIGRldmljZSBvdXQgb2Yg
-aXQuICANCj4gVkZJTyBpdHNlbGYgaGFzIG5vIGRlcGVuZGVuY3kgb24gUUVNVS4gIFRoYW5rcywN
-Cg0KSSBhbHNvIGRvbid0IHVuZGVyc3RhbmQgdGhlIFFFTVUgcGFydCBoZXJlLiBUaGUgTVNJIGVt
-dWxhdGlvbiB3b3VsZCBiZSBpbiB0aGUga2VybmVsLCBqdXN0IGxpa2UgdGhlIEdJQ3YyIGVtdWxh
-dGlvbiB0aGF0IHdlIGFscmVhZHkgaGF2ZS4gRm9yIHVzZXJzcGFjZSBkcml2ZXJzLCB3b3VsZG4n
-dCB5b3UganVzdCB1c2UgZXZlbnRmZCByYXRoZXIgdGhhbiBib3RoZXIgd2l0aCBlbXVsYXRpbmcg
-TVNJcz8NCg0KRmluYWxseSwgdGhlIGludGVycnVwdCByZW1hcHBpbmcgcGFydCBpcyBhYm91dCB0
-aGUgU01NVSBwcmV2ZW50aW5nIE1TSSB3cml0ZXMgdG8gYXJiaXRyYXJ5IHBvcnRpb25zIG9mIHRo
-ZSBob3N0IGFkZHJlc3Mgc3BhY2UuIFRoZSBJVFMgaXMgYWJvdXQgcm91dGluZyBpbnRlcnJ1cHRz
-IHRvIENQVXMuDQoNCldpbGwNCg==
+On 6/25/2014 2:18 AM, Will Deacon wrote:
+> On Tue, Jun 24, 2014 at 10:35:54PM +0100, Olav Haugan wrote:
+>> On 6/24/2014 11:11 AM, Will Deacon wrote:
+>>> On Tue, Jun 24, 2014 at 06:57:44PM +0100, Olav Haugan wrote:
+>>>> On 6/24/2014 2:18 AM, Will Deacon wrote:
+>>>>> On Sat, Jun 21, 2014 at 12:16:25AM +0100, Olav Haugan wrote:
+>>>>>> We have multiple-master SMMUs and each master emits a variable number of
+>>>>>> StreamIDs. However, we have to apply a mask (the ARM SMMU spec allows
+>>>>>> for this) to the StreamIDs due to limited number of StreamID 2 Context
+>>>>>> Bank entries in the SMMU. If my understanding is correct we would
+>>>>>> represent this in the DT like this:
+>>>>>>
+>>>>>> 	iommu {
+>>>>>> 		#address-cells = <2>;
+>>>>>> 		#size-cells = <0>;
+>>>>>> 	};
+>>>>>>
+>>>>>> 	master@a {
+>>>>>> 		...
+>>>>>> 		iommus = <&iommu StreamID0 MASK0>,
+>>>>>> 			 <&iommu StreamID1 MASK1>,
+>>>>>> 			 <&iommu StreamID2 MASK2>;
+>>>>>> 	};
+>>>>>
+>>>>> Stupid question, but why not simply describe the masked IDs? What use does
+>>>>> the `raw' ID have to Linux?
+>>>>
+>>>> We do describe the masked StreamID (SID) but we need to specify the mask
+>>>> that the SMMU should apply to the incoming SIDs, right?
+>>>>
+>>>> We have a bus master that emits 43 unique SIDs. However, we have only 40
+>>>> SMMU_SMRn registers in the SMMU. So we need to mask out some of the
+>>>> incoming SID bits so that the 43 SIDs can match one of 40 entries in the
+>>>> SMR.
+>>>
+>>> Hmm, so you're talking about stream matching, right? That doesn't belong in
+>>> the device-tree. I appreciate that the current driver does a terrible job at
+>>> allocating the SMRs (it's bloody difficult!), but we should try to improve
+>>> the dynamic behaviour instead of moving configuration of the SMMU out into
+>>> device-tree, where it's inflexible at best.
+>>
+>> I am talking about SMMU_SMRn[MASK] register bits. This is not something
+>> that can be dynamically detected at run-time. It is configuration at the
+>> same level as the actual StreamIDs.
+> 
+> Why can't it be dynamically detected? Whilst the StreamIDs are fixed in
+> hardware (from the SMMU architecture perspective), the SMRs are completely
+> programmable. Why doesn't something like Andreas's proposal work for you?
+> The idea there was to find the constant bits among the StreamIDs for a
+> master and create the mask accordingly.
+> 
+Lets say I have an IOMMU with 2 masters and 2 SMRn slots with the
+following stream IDs coming from the masters:
+
+Master 1: 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28
+Master 2: 0x30
+
+To make this work I would program SMR[0] with StreamID 0x20 and mask 0xF
+to ignore lower 4 bits. SMR[1] would just be StreamID 0x30 with mask 0x0.
+
+However, I could also have an IOMMU with 2 masters and 9 SMRn slots with
+the following stream IDs:
+
+Master 1: 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28
+Master 2: 0x29
+
+Here I would program all SMRn and leave the mask to be 0 for all SMRn's.
+So how do I detect when to apply a mask or not?
+
+I am not familiar with Andreas's proposal. Do you have a link?
+
+Thanks,
+
+Olav Haugan
+
+-- 
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+hosted by The Linux Foundation
