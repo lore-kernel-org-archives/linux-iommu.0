@@ -1,25 +1,11 @@
-From: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH v6 04/20] iommu/arm-smmu: add capability
-	IOMMU_CAP_INTR_REMAP
-Date: Sat, 28 Jun 2014 08:05:28 +0100
-Message-ID: <86ionl4ipz.fsf@arm.com>
-References: <20140616151329.GQ16758@arm.com>
-	<20140616152157.GB31771@8bytes.org> <20140616152526.GR16758@arm.com>
-	<20140616153832.GC31771@8bytes.org>
-	<9353770066894e85809e1e443b71d1cd@BY2PR07MB203.namprd07.prod.outlook.com>
-	<748dccbbd3284521af4659ccbbb11453@BY2PR07MB203.namprd07.prod.outlook.com>
-	<b085e02e72dc424d9624c3e810951087@BY2PR07MB203.namprd07.prod.outlook.com>
-	<1403809223.31091.137.camel@ul30vt.home>
-	<ec8dbbcb991e4d73b73f4b4f98342445@BY2PR07MB203.namprd07.prod.outlook.com>
-	<1403811384.31091.151.camel@ul30vt.home>
-	<20140627084722.GB26276@arm.com>
-	<2645e3a22f5e4ae9994c0ee8fa327cb4@BY2PR07MB203.namprd07.prod.outlook.com>
+From: Fabian Frederick <fabf-AgBVmzD5pcezQB+pC5nmwQ@public.gmane.org>
+Subject: [PATCH 1/1] iommu/fsl_pamu: Remove unnecessary null test before kfree
+Date: Sun, 29 Jun 2014 10:01:26 +0200
+Message-ID: <1404028886-5060-1-git-send-email-fabf@skynet.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <2645e3a22f5e4ae9994c0ee8fa327cb4-Rl8gF8DaO8QN+Mk3fGG+YBQPvRvOrrxkXA4E9RH9d+qIuWR1G4zioA@public.gmane.org>
-	(Tirumalesh Chalamarla's message of "Fri, 27 Jun 2014 22:57:28 +0100")
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -29,68 +15,35 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, "moderated list:ARM SMMU DRIVER" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Fabian Frederick <fabf-AgBVmzD5pcezQB+pC5nmwQ@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gRnJpLCBKdW4gMjcgMjAxNCBhdCAxMDo1NzoyOCBQTSwgIkNoYWxhbWFybGEsIFRpcnVtYWxl
-c2giIDxUaXJ1bWFsZXNoLkNoYWxhbWFybGFAY2F2aXVtbmV0d29ya3MuY29tPiB3cm90ZToKPiBN
-YXJjLAo+Cj4gICAgICAgICAgV2hhdCBpcyB5b3VyIG9waW5pb24gb24gSVRTIGVtdWxhdGlvbiAu
-IGlzIGl0IHNob3VsZCBiZSBwYXJ0Cj4gICAgICAgICAgb2YgS1ZNIG9yIFZGSU8uCgpNYWtpbmcg
-YW55IHNvcnQgb2YgZW11bGF0aW9uIHBhcnQgb2YgVkZJTyBzb3VuZHMgcXVpdGUgd3JvbmcuIFRo
-YXQncyBub3QKd2hhdCBWRklPIGlzIGFib3V0LCBhdCBhbGwuIEVtdWxhdGlvbiBiZWxvbmdzIHRv
-IHRoZSBoeXBlcnZpc29yLCBhbmQKbm93aGVyZSBlbHNlLgoKPiAgICAgICAgIEFsc28gdGhpcyBj
-b2RlIG5lZWRzIHRvIGRlcGVuZCBvbiBJVFMgaG9zdCBkcml2ZXIgYSBsb3QsIEhvc3QKPiAgICAg
-ICAgIElUUyBkcml2ZXIgbmVlZHMgdG8gaGF2ZSBhbiBpbnRlcmZhY2UgZm9yIHRoaXMgY29kZSB0
-byB1c2UuCgpZb3UgY2FuIHNoYXJlIHRoZSBjb21tYW5kIGludGVyZmFjZSBhcyBzb21lIGZvcm0g
-b2YgbGlicmFyeSwgYnV0IHRoYXQncwphYm91dCBpdC4gVGhlcmUgaXMgbm8gbW9yZSByZWxhdGlv
-bnNoaXAgYmV0d2VlbiB0aGUgSVRTIGRyaXZlciBhbmQgdGhlCklUUyBlbXVsYXRpb24gYXMgdGhl
-cmUgaXMgYmV0d2VlbiB0aGUgR0lDIGRyaXZlciBhbmQgaXRzIGVtdWxhdGlvbgpjb3VudGVycGFy
-dC4KCglNLgoKCj4gVGhhbmtzLAo+ICBUaXJ1bWFsZXNoCj4gICAgICAKPiAtLS0tLU9yaWdpbmFs
-IE1lc3NhZ2UtLS0tLQo+IEZyb206IFdpbGwgRGVhY29uIFttYWlsdG86d2lsbC5kZWFjb25AYXJt
-LmNvbV0gCj4gU2VudDogRnJpZGF5LCBKdW5lIDI3LCAyMDE0IDE6NDcgQU0KPiBUbzogQWxleCBX
-aWxsaWFtc29uCj4gQ2M6IENoYWxhbWFybGEsIFRpcnVtYWxlc2g7IEpvZXJnIFJvZWRlbDsga3Zt
-QHZnZXIua2VybmVsLm9yZzsgb3BlbiBsaXN0OyBzdHVhcnQueW9kZXJAZnJlZXNjYWxlLmNvbTsg
-aW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmc7IHRlY2hAdmlydHVhbG9wZW5zeXN0ZW1z
-LmNvbTsga3ZtYXJtQGxpc3RzLmNzLmNvbHVtYmlhLmVkdTsgbW9kZXJhdGVkIGxpc3Q6QVJNIFNN
-TVUgRFJJVkVSOyBtYXJjLnp5bmdpZXJAYXJtLmNvbQo+IFN1YmplY3Q6IFJlOiBbUkZDIFBBVENI
-IHY2IDA0LzIwXSBpb21tdS9hcm0tc21tdTogYWRkIGNhcGFiaWxpdHkgSU9NTVVfQ0FQX0lOVFJf
-UkVNQVAKPgo+IE9uIFRodSwgSnVuIDI2LCAyMDE0IGF0IDA4OjM2OjI0UE0gKzAxMDAsIEFsZXgg
-V2lsbGlhbXNvbiB3cm90ZToKPj4gT24gVGh1LCAyMDE0LTA2LTI2IGF0IDE5OjEwICswMDAwLCBD
-aGFsYW1hcmxhLCBUaXJ1bWFsZXNoIHdyb3RlOgo+PiA+IFRoYW5rcyBmb3IgdGhlIGNsYXJpZmlj
-YXRpb24gQWxleCwgVGhhdOKAmXMgZXhhY3RseSBteSBwb2ludCwgd2h5IGFyZSAKPj4gPiB3ZSBy
-ZWx5aW5nIG9uICBRRU1VIG9yIHNvbWV0aGluZyBlbHNlIHRvIGVtdWxhdGUgdGhlIE1TSSBzcGFj
-ZSB3aGVuIAo+PiA+IHdlIGNhbiBkaXJlY3RseSBnaXZlIGFjY2VzcyB0byBkZXZpY2VzIHVzaW5n
-IElUUyAob2YgY291cnNlIHdpdGggYSAKPj4gPiBzbWFsbCBlbXVsYXRpb24gY29kZSkuICBUaGlz
-IHdheSB3ZSBhcmUgYWxzbyBiZW5lZml0ZWQgZnJvbSBhbGwgSVRTIAo+PiA+IHNlcnZpY2VzIGxp
-a2UgVkNQVSBtaWdyYXRpb24gZXRjLgo+PiAKPj4gSSBoYXZlIG5vIGlkZWEgd2hhdCBJVFMgaXMu
-Cj4KPiBJVFMgaXMgdGhlIE1TSSBkb29yYmVsbCBmb3IgR0lDdjMgKEFSTSdzIGxhdGVzdCBpbnRl
-cnJ1cHQgY29udHJvbGxlcikuCj4KPiBJIGFncmVlIHRoYXQgd2Ugd2lsbCBuZWVkIGFuIElUUyBl
-bXVsYXRpb24gaWYgd2Ugd2FudCB0byB1c2UgTVNJcyBpbgo+PiB0aGUgZ3Vlc3QsIGFuZCBJIGJl
-bGlldmUgdGhhdCBNYXJjIChDQydkKSBoYWQgYWxyZWFkeSBzdGFydGVkCj4+IHRoaW5raW5nIGFi
-b3V0IHRoYXQuCj4KPgo+PiA+IFdoYXQgYWJvdXQgbm9uIFFFTVUgVkZJTyB1c2VycywgZm9yIGV4
-YW1wbGUsIGlmIEkgd2FudGVkIHRvIHVzZSBWRklPIHRvCj4+ID4gYXNzaWduIGEgZGV2aWNlIHRv
-IGEgdXNlciBwcm9jZXNzIEkgZG9uJ3QgbmVlZCB0byBkZXBlbmQgb24gUUVNVS4gICBJCj4+ID4g
-dGhvdWdodCB0aGlzIGlzIG9uZSBvZiB0aGUgbWFpbiBnb2FscyBvZiB2ZmlvIHRvIG1ha2UgaXQg
-aW5kZXBlbmRlbnQgb2YKPj4gPiBoeXBlcnZpc29ycy4gICAgIAo+PiAKPj4gV2hlcmUgZGlkIFFF
-TVUgYmVjb21lIGEgcmVxdWlyZW1lbnQ/ICBNYXliZSBJJ20gbWlzc2luZyBzb21ldGhpbmcgaW4g
-Cj4+IHRoZSBBUk0gcGFydCBvZiB0aGUgY29udmVyc2F0aW9uIHRoYXQgZ290IGNob3BwZWQgb2Zm
-LCBidXQgdGhpcyBpcyAKPj4gZXhhY3RseSB3aHkgd2UgaGF2ZSB0aGUgVkZJTy9RRU1VIHNwbGl0
-IHRoYXQgd2UgZG8uICBWRklPIHByb3ZpZGVzIAo+PiBiYXNpYyB2aXJ0dWFsaXphdGlvbiBmb3Ig
-Y29uZmlnIHNwYWNlIGFuZCByZXN0cmljdHMgYWNjZXNzIHRvIG90aGVyIAo+PiBhcmVhcyB0aGF0
-IHVzZXJzIHNob3VsZG4ndCBiZSBhbGxvd2VkIHRvIGNoYW5nZS4gIFFFTVUgaXMganVzdCBvbmUg
-Cj4+IGV4YW1wbGUgb2YgYSB1c2Vyc3BhY2UgVkZJTyBkcml2ZXIuICBRRU1VIHRha2VzIHRoZSBk
-ZWNvbXBvc2VkIGRldmljZSAKPj4gZXhwb3NlZCB0aHJvdWdoIHRoZSBWRklPIEFCSSBhbmQgcmUt
-Y3JlYXRlcyBhIFBDSSBkZXZpY2Ugb3V0IG9mIGl0LiAgCj4+IFZGSU8gaXRzZWxmIGhhcyBubyBk
-ZXBlbmRlbmN5IG9uIFFFTVUuICBUaGFua3MsCj4KPiBJIGFsc28gZG9uJ3QgdW5kZXJzdGFuZCB0
-aGUgUUVNVSBwYXJ0IGhlcmUuIFRoZSBNU0kgZW11bGF0aW9uIHdvdWxkIGJlCj4+IGluIHRoZSBr
-ZXJuZWwsIGp1c3QgbGlrZSB0aGUgR0lDdjIgZW11bGF0aW9uIHRoYXQgd2UgYWxyZWFkeQo+PiBo
-YXZlLiBGb3IgdXNlcnNwYWNlIGRyaXZlcnMsIHdvdWxkbid0IHlvdSBqdXN0IHVzZSBldmVudGZk
-IHJhdGhlcgo+PiB0aGFuIGJvdGhlciB3aXRoIGVtdWxhdGluZyBNU0lzPwo+Cj4gRmluYWxseSwg
-dGhlIGludGVycnVwdCByZW1hcHBpbmcgcGFydCBpcyBhYm91dCB0aGUgU01NVSBwcmV2ZW50aW5n
-IE1TSQo+PiB3cml0ZXMgdG8gYXJiaXRyYXJ5IHBvcnRpb25zIG9mIHRoZSBob3N0IGFkZHJlc3Mg
-c3BhY2UuIFRoZSBJVFMgaXMKPj4gYWJvdXQgcm91dGluZyBpbnRlcnJ1cHRzIHRvIENQVXMuCj4K
-PiBXaWxsCgotLSAKSmF6eiBpcyBub3QgZGVhZC4gSXQganVzdCBzbWVsbHMgZnVubnkuCl9fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcg
-bGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4
-Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+Fix checkpatch warning:
+WARNING: kfree(NULL) is safe this check is probably not required
+
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Signed-off-by: Fabian Frederick <fabf-AgBVmzD5pcezQB+pC5nmwQ@public.gmane.org>
+---
+ drivers/iommu/fsl_pamu_domain.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+index 93072ba..0009dff 100644
+--- a/drivers/iommu/fsl_pamu_domain.c
++++ b/drivers/iommu/fsl_pamu_domain.c
+@@ -1118,8 +1118,7 @@ static int fsl_pamu_set_windows(struct iommu_domain *domain, u32 w_count)
+ 	ret = pamu_set_domain_geometry(dma_domain, &domain->geometry,
+ 				((w_count > 1) ? w_count : 0));
+ 	if (!ret) {
+-		if (dma_domain->win_arr)
+-			kfree(dma_domain->win_arr);
++		kfree(dma_domain->win_arr);
+ 		dma_domain->win_arr = kzalloc(sizeof(struct dma_window) *
+ 							  w_count, GFP_ATOMIC);
+ 		if (!dma_domain->win_arr) {
+-- 
+1.8.4.5
