@@ -1,7 +1,7 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 3/5] iommu/arm-smmu: caps: add IOMMU_CAP_INTR_REMAP capability
-Date: Mon, 30 Jun 2014 11:52:08 +0100
-Message-ID: <1404125530-17984-4-git-send-email-will.deacon@arm.com>
+Subject: [PATCH 1/5] iommu/arm-smmu: fix calculation of TCR.T0SZ
+Date: Mon, 30 Jun 2014 11:52:06 +0100
+Message-ID: <1404125530-17984-2-git-send-email-will.deacon@arm.com>
 References: <1404125530-17984-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,44 +21,36 @@ To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cu
 Cc: ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-MSIs are just seen as bog standard memory writes by the ARM SMMU, so
-they can be translated (and isolated) in the same way.
-
-This patch adds the IOMMU_CAP_INTR_REMAP capability to the ARM SMMU
-driver and reworks our capabaility code so that we don't assume the
-caps are organised as bits in a bitmask (since this isn't the intention).
+T0SZ controls the input address range for TTBR0, so use the input
+address range rather than the output address range for the calculation.
+For stage-2, this means using the output size of stage-1.
 
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+ drivers/iommu/arm-smmu.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index e4eebc50612c..835d01f47302 100644
+index 1599354e974d..81e8ec290756 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -1606,13 +1606,17 @@ static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
- static int arm_smmu_domain_has_cap(struct iommu_domain *domain,
- 				   unsigned long cap)
- {
--	unsigned long caps = 0;
- 	struct arm_smmu_domain *smmu_domain = domain->priv;
-+	u32 features = smmu_domain->root_cfg.smmu->features;
+@@ -800,6 +800,8 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
+ 			reg = TTBCR_TG0_64K;
  
--	if (smmu_domain->root_cfg.smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
--		caps |= IOMMU_CAP_CACHE_COHERENCY;
--
--	return !!(cap & caps);
-+	switch (cap) {
-+	case IOMMU_CAP_CACHE_COHERENCY:
-+		return features & ARM_SMMU_FEAT_COHERENT_WALK;
-+	case IOMMU_CAP_INTR_REMAP:
-+		return 1; /* MSIs are just memory writes */
-+	default:
-+		return 0;
-+	}
- }
- 
- static int __arm_smmu_get_pci_sid(struct pci_dev *pdev, u16 alias, void *data)
+ 		if (!stage1) {
++			reg |= (64 - smmu->s1_output_size) << TTBCR_T0SZ_SHIFT;
++
+ 			switch (smmu->s2_output_size) {
+ 			case 32:
+ 				reg |= (TTBCR2_ADDR_32 << TTBCR_PASIZE_SHIFT);
+@@ -821,7 +823,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
+ 				break;
+ 			}
+ 		} else {
+-			reg |= (64 - smmu->s1_output_size) << TTBCR_T0SZ_SHIFT;
++			reg |= (64 - smmu->input_size) << TTBCR_T0SZ_SHIFT;
+ 		}
+ 	} else {
+ 		reg = 0;
 -- 
 2.0.0
