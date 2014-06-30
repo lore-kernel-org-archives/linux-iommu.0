@@ -1,65 +1,132 @@
-From: Jerome Glisse <j.glisse@gmail.com>
-Subject: Re: [PATCH 1/6] mmput: use notifier chain to call subsystem exit
- handler.
-Date: Mon, 30 Jun 2014 12:06:05 -0400
-Message-ID: <20140630160604.GF1956@gmail.com>
-References: <1403920822-14488-1-git-send-email-j.glisse@gmail.com>
- <1403920822-14488-2-git-send-email-j.glisse@gmail.com>
- <019CCE693E457142B37B791721487FD91806B836@storexdag01.amd.com>
- <20140630154042.GD26537@8bytes.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-Return-path: <owner-linux-mm@kvack.org>
-Content-Disposition: inline
-In-Reply-To: <20140630154042.GD26537@8bytes.org>
-Sender: owner-linux-mm@kvack.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: "Gabbay, Oded" <Oded.Gabbay@amd.com>, "Deucher, Alexander" <Alexander.Deucher@amd.com>, "Lewycky, Andrew" <Andrew.Lewycky@amd.com>, "Cornwall, Jay" <Jay.Cornwall@amd.com>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "mgorman@suse.de" <mgorman@suse.de>, "hpa@zytor.com" <hpa@zytor.com>, "peterz@infraread.org" <peterz@infraread.org>, "aarcange@redhat.com" <aarcange@redhat.com>, "riel@redhat.com" <riel@redhat.com>, "jweiner@redhat.com" <jweiner@redhat.com>, "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>, Mark Hairgrove <mhairgrove@nvidia.com>, Jatin Kumar <jakumar@nvidia.com>, Subhash Gutti <sgutti@nvidia.com>, Lucien Dunning <ldunning@nvidia.com>, Cameron Buschardt <cabuschardt@nvidia.com>, Arvind Gopalakrishnan <arvindg@nvidia.com>
+From: Olav Haugan <ohaugan@codeaurora.org>
+Subject: [RFC/PATCH 2/7] iommu-api: Add map_range/unmap_range functions
+Date: Mon, 30 Jun 2014 09:51:51 -0700
+Message-ID: <1404147116-4598-3-git-send-email-ohaugan@codeaurora.org>
+References: <1404147116-4598-1-git-send-email-ohaugan@codeaurora.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <1404147116-4598-1-git-send-email-ohaugan@codeaurora.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org
+Cc: linux-arm-msm@vger.kernel.org, will.deacon@arm.com, thierry.reding@gmail.com, joro@8bytes.org, vgandhi@codeaurora.org, Olav Haugan <ohaugan@codeaurora.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jun 30, 2014 at 05:40:42PM +0200, Joerg Roedel wrote:
-> On Mon, Jun 30, 2014 at 02:41:24PM +0000, Gabbay, Oded wrote:
-> > I did face some problems regarding the amd IOMMU v2 driver, which
-> > changed its behavior (see commit "iommu/amd: Implement
-> > mmu_notifier_release call-back") to use mmu_notifier_release and did
-> > some "bad things" inside that
-> > notifier (primarily, but not only, deleting the object which held the
-> > mmu_notifier object itself, which you mustn't do because of the
-> > locking).=20
-> >=20
-> > I'm thinking of changing that driver's behavior to use this new
-> > mechanism instead of using mmu_notifier_release. Does that seem
-> > acceptable ? Another solution will be to add a new mmu_notifier call,
-> > but we already ruled that out ;)
->=20
-> The mmu_notifier_release() function is exactly what this new notifier
-> aims to do. Unless there is a very compelling reason to duplicate this
-> functionality I stronly NACK this approach.
->=20
->
+Mapping and unmapping are more often than not in the critical path.
+map_range and unmap_range allows SMMU driver implementations to optimize
+the process of mapping and unmapping buffers into the SMMU page tables.
+Instead of mapping one physical address, do TLB operation (expensive),
+mapping, do TLB operation, mapping, do TLB operation the driver can map
+a scatter-gatherlist of physically contiguous pages into one virtual
+address space and then at the end do one TLB operation.
 
-No this patch does not duplicate it. Current user of mmu_notifier
-rely on file close code path to call mmu_notifier_unregister. New
-code like AMD IOMMUv2 or HMM can not rely on that. Thus they need
-a way to call the mmu_notifer_unregister (which can not be done
-from inside the the release call back).
+Additionally, the mapping operation would be faster in general since
+clients does not have to keep calling map API over and over again for
+each physically contiguous chunk of memory that needs to be mapped to a
+virtually contiguous region.
 
-If you look at current code the release callback is use to kill
-secondary translation but not to free associated resources. All
-the associated resources are free later on after the release
-callback (well it depends if the file is close before the process
-is kill).
+Signed-off-by: Olav Haugan <ohaugan@codeaurora.org>
+---
+ drivers/iommu/iommu.c | 24 ++++++++++++++++++++++++
+ include/linux/iommu.h | 24 ++++++++++++++++++++++++
+ 2 files changed, 48 insertions(+)
 
-So this patch aims to provide a callback to code outside of the
-mmu_notifier realms, a place where it is safe to cleanup the
-mmu_notifier and associated resources.
-
-Cheers,
-J=E9r=F4me Glisse
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=3Dmailto:"dont@kvack.org"> email@kvack.org </a>
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index e5555fc..f2a6b80 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -898,6 +898,30 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
+ EXPORT_SYMBOL_GPL(iommu_unmap);
+ 
+ 
++int iommu_map_range(struct iommu_domain *domain, unsigned int iova,
++		    struct scatterlist *sg, unsigned int len, int prot)
++{
++	if (unlikely(domain->ops->map_range == NULL))
++		return -ENODEV;
++
++	BUG_ON(iova & (~PAGE_MASK));
++
++	return domain->ops->map_range(domain, iova, sg, len, prot);
++}
++EXPORT_SYMBOL_GPL(iommu_map_range);
++
++int iommu_unmap_range(struct iommu_domain *domain, unsigned int iova,
++		      unsigned int len)
++{
++	if (unlikely(domain->ops->unmap_range == NULL))
++		return -ENODEV;
++
++	BUG_ON(iova & (~PAGE_MASK));
++
++	return domain->ops->unmap_range(domain, iova, len);
++}
++EXPORT_SYMBOL_GPL(iommu_unmap_range);
++
+ int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
+ 			       phys_addr_t paddr, u64 size, int prot)
+ {
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index b96a5b2..63dca6d 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -22,6 +22,7 @@
+ #include <linux/errno.h>
+ #include <linux/err.h>
+ #include <linux/types.h>
++#include <linux/scatterlist.h>
+ #include <trace/events/iommu.h>
+ 
+ #define IOMMU_READ	(1 << 0)
+@@ -93,6 +94,8 @@ enum iommu_attr {
+  * @detach_dev: detach device from an iommu domain
+  * @map: map a physically contiguous memory region to an iommu domain
+  * @unmap: unmap a physically contiguous memory region from an iommu domain
++ * @map_range: map a scatter-gather list of physically contiguous memory chunks to an iommu domain
++ * @unmap_range: unmap a scatter-gather list of physically contiguous memory chunks from an iommu domain
+  * @iova_to_phys: translate iova to physical address
+  * @domain_has_cap: domain capabilities query
+  * @add_device: add device to iommu grouping
+@@ -110,6 +113,10 @@ struct iommu_ops {
+ 		   phys_addr_t paddr, size_t size, int prot);
+ 	size_t (*unmap)(struct iommu_domain *domain, unsigned long iova,
+ 		     size_t size);
++	int (*map_range)(struct iommu_domain *domain, unsigned int iova,
++		    struct scatterlist *sg, unsigned int len, int prot);
++	int (*unmap_range)(struct iommu_domain *domain, unsigned int iova,
++		      unsigned int len);
+ 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain, dma_addr_t iova);
+ 	int (*domain_has_cap)(struct iommu_domain *domain,
+ 			      unsigned long cap);
+@@ -153,6 +160,10 @@ extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 		     phys_addr_t paddr, size_t size, int prot);
+ extern size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+ 		       size_t size);
++extern int iommu_map_range(struct iommu_domain *domain, unsigned int iova,
++		    struct scatterlist *sg, unsigned int len, int prot);
++extern int iommu_unmap_range(struct iommu_domain *domain, unsigned int iova,
++		      unsigned int len);
+ extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova);
+ extern int iommu_domain_has_cap(struct iommu_domain *domain,
+ 				unsigned long cap);
+@@ -280,6 +291,19 @@ static inline int iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+ 	return -ENODEV;
+ }
+ 
++static inline int iommu_map_range(struct iommu_domain *domain,
++				  unsigned int iova, struct scatterlist *sg,
++				  unsigned int len, int prot)
++{
++	return -ENODEV;
++}
++
++static inline int iommu_unmap_range(struct iommu_domain *domain,
++				    unsigned int iova, unsigned int len)
++{
++	return -ENODEV;
++}
++
+ static inline int iommu_domain_window_enable(struct iommu_domain *domain,
+ 					     u32 wnd_nr, phys_addr_t paddr,
+ 					     u64 size, int prot)
+-- 
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+hosted by The Linux Foundation
