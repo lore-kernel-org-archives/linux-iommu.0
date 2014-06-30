@@ -1,13 +1,15 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [RFC/PATCH 3/7] iopoll: Introduce memory-mapped IO polling macros
-Date: Mon, 30 Jun 2014 21:46:37 +0200
-Message-ID: <20140630194631.GD32594@mithrandir>
-References: <1404147116-4598-1-git-send-email-ohaugan@codeaurora.org>
-	<1404147116-4598-4-git-send-email-ohaugan@codeaurora.org>
+From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Subject: Re: [PATCH v3 02/10] devicetree: Add generic IOMMU device tree
+	bindings
+Date: Mon, 30 Jun 2014 16:24:59 -0600
+Message-ID: <53B1E3BB.1030407@wwwdotorg.org>
+References: <1403815790-8548-1-git-send-email-thierry.reding@gmail.com>
+	<1403815790-8548-3-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============3672351613892261140=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1404147116-4598-4-git-send-email-ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-Reply-To: <1403815790-8548-3-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,90 +19,31 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, vgandhi-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Rhyland Klein <rklein-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Allen Martin <amartin-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Paul Walmsley <pwalmsley-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+On 06/26/2014 02:49 PM, Thierry Reding wrote:
+> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> 
+> This commit introduces a generic device tree binding for IOMMU devices.
+> Only a very minimal subset is described here, but it is enough to cover
+> the requirements of both the Exynos System MMU and Tegra SMMU as
+> discussed here:
+> 
+>     https://lkml.org/lkml/2014/4/27/346
 
---===============3672351613892261140==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Dzs2zDY0zgkG72+7"
-Content-Disposition: inline
+> diff --git a/Documentation/devicetree/bindings/iommu/iommu.txt b/Documentation/devicetree/bindings/iommu/iommu.txt
 
+> +When an "iommus" property is specified in a device tree node, the IOMMU will
+> +be used for address translation. If a "dma-ranges" property exists in the
+> +device's parent node it will be ignored. An exception to this rule is if the
+> +referenced IOMMU is disabled, in which case the "dma-ranges" property of the
+> +parent shall take effect.
 
---Dzs2zDY0zgkG72+7
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-On Mon, Jun 30, 2014 at 09:51:52AM -0700, Olav Haugan wrote:
-[...]
-> diff --git a/include/linux/iopoll.h b/include/linux/iopoll.h
-[...]
-> +/**
-> + * readl_poll_timeout - Periodically poll an address until a condition is met or a timeout occurs
-> + * @addr: Address to poll
-> + * @val: Variable to read the value into
-> + * @cond: Break condition (usually involving @val)
-> + * @sleep_us: Maximum time to sleep between reads in uS (0 tight-loops)
-
-s/uS/us/ here and elsewhere. S is the symbol for Siemens.
-
-> + * @timeout_us: Timeout in uS, 0 means never timeout
-> + *
-> + * Returns 0 on success and -ETIMEDOUT upon a timeout. In either
-> + * case, the last read value at @addr is stored in @val. Must not
-> + * be called from atomic context if sleep_us or timeout_us are used.
-> + */
-> +#define readl_poll_timeout(addr, val, cond, sleep_us, timeout_us) \
-> +({ \
-> +	ktime_t timeout = ktime_add_us(ktime_get(), timeout_us); \
-> +	might_sleep_if(timeout_us); \
-> +	for (;;) { \
-> +		(val) = readl(addr); \
-> +		if (cond) \
-> +			break; \
-> +		if (timeout_us && ktime_compare(ktime_get(), timeout) > 0) { \
-> +			(val) = readl(addr); \
-> +			break; \
-> +		} \
-> +		if (sleep_us) \
-> +			usleep_range(DIV_ROUND_UP(sleep_us, 4), sleep_us); \
-> +	} \
-> +	(cond) ? 0 : -ETIMEDOUT; \
-> +})
-
-Why can't these be functions?
-
-Thierry
-
---Dzs2zDY0zgkG72+7
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJTsb6bAAoJEN0jrNd/PrOhyQsP/R3AeSu8vE/d8c/uCFu4+cJO
-yFyrP4iOVHuAKQSrz472/ETOdDkw0s/bBQv/qSrCJQrkMqObZhYIL/FT/lURy89b
-NUCLacvjrvGhF/ToGsbDb89GH6AdD0veO8bBy5AYxF685tZ9H9TZaGgS+gLfyVbC
-ZqMlT9uCSFW4RsNQJCs+KkC67a0tBDGy0Fv8EauP+NlGXXhhpirT2Lb2xu627FyY
-f/ucDWHeZ/OS0YJ1GDmP6OUSoSxQaQWzvUKPngyQRqAF5dGt9eInxKmWrsYFsx5W
-Lmxv+fseiWv6Q35e2qEL8UHEDklL502FYKCcKlVp7OYYCO7SXy6ayzapwUUmNzlh
-QVUdYCYSkJeI6PWHz586Pk52Gu03+0YhS/nqRb007TMqrbMdEuoNwOcSF2pz4wV3
-bqE7wntBQTiLdtdFodrzjOc2gZAmsrlB2XKvgQba4uBLpW0ypy1TwjatDnAXFIJD
-r1untzvIcWcz1bzz7tjA1mZwfMTfpsVtlVXl2/nIW7YYQVS+KrQUaglRtRt8qjLa
-1+gdlMw1SAQKGm6TUVRvuqA5ojXV0H2ybRY8nYru1N9/zqDFTFo1/Jd2jfPuf761
-tI8tEcRZNlGuYW/Y0Cr6IJdvts6xTjMVX4/b+Rki5miAs3ofrZzwDKvbYYxmWA+V
-tc6h4q9T5rOQ9F7v+a1H
-=XiTW
------END PGP SIGNATURE-----
-
---Dzs2zDY0zgkG72+7--
-
---===============3672351613892261140==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============3672351613892261140==--
+I wonder how useful that paragraph is. The fact that someone disabled a
+particular IOMMU's node doesn't necessarily mean that the HW can
+actually do that; an IOMMU might always be active in HW and always
+translate accesses by some master. In that case, the fallback to
+dma-ranges wouldn't correlate with what the HW actually does. Perhaps
+all we need is to add a note to that effect here?
