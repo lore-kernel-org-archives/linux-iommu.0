@@ -1,660 +1,280 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 4/5] iommu/arm-smmu: remove support for chained SMMUs
-Date: Mon, 30 Jun 2014 11:52:09 +0100
-Message-ID: <1404125530-17984-5-git-send-email-will.deacon@arm.com>
-References: <1404125530-17984-1-git-send-email-will.deacon@arm.com>
+From: "Gabbay, Oded" <Oded.Gabbay@amd.com>
+Subject: Re: [PATCH 1/6] mmput: use notifier chain to call subsystem exit
+ handler.
+Date: Mon, 30 Jun 2014 14:41:24 +0000
+Message-ID: <019CCE693E457142B37B791721487FD91806B836@storexdag01.amd.com>
+References: <1403920822-14488-1-git-send-email-j.glisse@gmail.com>
+ <1403920822-14488-2-git-send-email-j.glisse@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1404125530-17984-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <1403920822-14488-2-git-send-email-j.glisse@gmail.com>
+Content-Language: en-US
+Sender: owner-linux-mm@kvack.org
+To: =?utf-8?B?SsOpcsO0bWUgR2xpc3Nl?= <j.glisse@gmail.com>
+Cc: "Deucher, Alexander" <Alexander.Deucher@amd.com>, "Lewycky, Andrew" <Andrew.Lewycky@amd.com>, "Cornwall, Jay" <Jay.Cornwall@amd.com>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "mgorman@suse.de" <mgorman@suse.de>, "hpa@zytor.com" <hpa@zytor.com>, "peterz@infraread.org" <peterz@infraread.org>, "aarcange@redhat.com" <aarcange@redhat.com>, "riel@redhat.com" <riel@redhat.com>, "jweiner@redhat.com" <jweiner@redhat.com>, "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>, Mark Hairgrove <mhairgrove@nvidia.com>, Jatin Kumar <jakumar@nvidia.com>, Subhash Gutti <sgutti@nvidia.com>, Lucien
+ Dunning <ldunning@nvidia.com>, Cameron Buschardt <cabuschardt@nvidia.com>, Arvind Gopalakrishnan <arvindg@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Sherry
 List-Id: iommu@lists.linux-foundation.org
 
-The ARM SMMU driver has supported chained SMMUs (i.e. SMMUs connected
-back-to-back in series) via the smmu-parent property in device tree.
-This was in anticipation of somebody building such a configuration,
-however that seems not to be the case.
+T24gRnJpLCAyMDE0LTA2LTI3IGF0IDIyOjAwIC0wNDAwLCBKw6lyw7RtZSBHbGlzc2Ugd3JvdGU6
+Cj4gRnJvbTogSsOpcsO0bWUgR2xpc3NlIDxqZ2xpc3NlQHJlZGhhdC5jb20+Cj4gCj4gU2V2ZXJh
+bCBzdWJzeXN0ZW0gcmVxdWlyZSBhIGNhbGxiYWNrIHdoZW4gYSBtbSBzdHJ1Y3QgaXMgYmVpbmcg
+ZGVzdHJveQo+IHNvIHRoYXQgdGhleSBjYW4gY2xlYW51cCB0aGVyZSByZXNwZWN0aXZlIHBlciBt
+bSBzdHJ1Y3QuIEluc3RlYWQgb2YKPiBoYXZpbmcgZWFjaCBzdWJzeXN0ZW0gYWRkIGl0cyBjYWxs
+YmFjayB0byBtbXB1dCB1c2UgYSBub3RpZmllciBjaGFpbgo+IHRvIGNhbGwgZWFjaCBvZiB0aGUg
+c3Vic3lzdGVtLgo+IAo+IFRoaXMgd2lsbCBhbGxvdyBuZXcgc3Vic3lzdGVtIHRvIHJlZ2lzdGVy
+IGNhbGxiYWNrIGV2ZW4gaWYgdGhleSBhcmUKPiBtb2R1bGUuIFRoZXJlIHNob3VsZCBiZSBubyBj
+b250ZW50aW9uIG9uIHRoZSBydyBzZW1hcGhvcmUgcHJvdGVjdGluZwo+IHRoZSBjYWxsIGNoYWlu
+IGFuZCB0aGUgaW1wYWN0IG9uIHRoZSBjb2RlIHBhdGggc2hvdWxkIGJlIGxvdyBhbmQKPiBidXJy
+aWVkIGluIHRoZSBub2lzZS4KPiAKPiBOb3RlIHRoYXQgdGhpcyBwYXRjaCBhbHNvIG1vdmUgdGhl
+IGNhbGwgdG8gY2xlYW51cCBmdW5jdGlvbnMgYWZ0ZXIKPiBleGl0X21tYXAgc28gdGhhdCBuZXcg
+Y2FsbCBiYWNrIGNhbiBhc3N1bWUgdGhhdCBtbXVfbm90aWZpZXJfcmVsZWFzZQo+IGhhdmUgYWxy
+ZWFkeSBiZWVuIGNhbGwuIFRoaXMgZG9lcyBub3QgaW1wYWN0IGV4aXN0aW5nIGNsZWFudXAgZnVu
+Y3Rpb25zCj4gYXMgdGhleSBkbyBub3QgcmVseSBvbiBhbnl0aGluZyB0aGF0IGV4aXRfbW1hcCBp
+cyBmcmVlaW5nLiBBbHNvIG1vdmVkCj4ga2h1Z2VwYWdlZF9leGl0IHRvIGV4aXRfbW1hcCBzbyB0
+aGF0IG9yZGVyaW5nIGlzIHByZXNlcnZlZCBmb3IgdGhhdAo+IGZ1bmN0aW9uLgo+IAo+IFNpZ25l
+ZC1vZmYtYnk6IErDqXLDtG1lIEdsaXNzZSA8amdsaXNzZUByZWRoYXQuY29tPgo+IC0tLQo+ICBm
+cy9haW8uYyAgICAgICAgICAgICAgICB8IDI5ICsrKysrKysrKysrKysrKysrKysrKystLS0tLS0t
+Cj4gIGluY2x1ZGUvbGludXgvYWlvLmggICAgIHwgIDIgLS0KPiAgaW5jbHVkZS9saW51eC9rc20u
+aCAgICAgfCAxMSAtLS0tLS0tLS0tLQo+ICBpbmNsdWRlL2xpbnV4L3NjaGVkLmggICB8ICA1ICsr
+KysrCj4gIGluY2x1ZGUvbGludXgvdXByb2Jlcy5oIHwgIDEgLQo+ICBrZXJuZWwvZXZlbnRzL3Vw
+cm9iZXMuYyB8IDE5ICsrKysrKysrKysrKysrKystLS0KPiAga2VybmVsL2ZvcmsuYyAgICAgICAg
+ICAgfCAyMiArKysrKysrKysrKysrKysrKystLS0tCj4gIG1tL2tzbS5jICAgICAgICAgICAgICAg
+IHwgMjYgKysrKysrKysrKysrKysrKysrKysrLS0tLS0KPiAgbW0vbW1hcC5jICAgICAgICAgICAg
+ICAgfCAgMyArKysKPiAgOSBmaWxlcyBjaGFuZ2VkLCA4NSBpbnNlcnRpb25zKCspLCAzMyBkZWxl
+dGlvbnMoLSkKPiAKPiBkaWZmIC0tZ2l0IGEvZnMvYWlvLmMgYi9mcy9haW8uYwo+IGluZGV4IGMx
+ZDhjNDguLjFkMDZlOTIgMTAwNjQ0Cj4gLS0tIGEvZnMvYWlvLmMKPiArKysgYi9mcy9haW8uYwo+
+IEBAIC00MCw2ICs0MCw3IEBACj4gICNpbmNsdWRlIDxsaW51eC9yYW1mcy5oPgo+ICAjaW5jbHVk
+ZSA8bGludXgvcGVyY3B1LXJlZmNvdW50Lmg+Cj4gICNpbmNsdWRlIDxsaW51eC9tb3VudC5oPgo+
+ICsjaW5jbHVkZSA8bGludXgvbm90aWZpZXIuaD4KPiAgCj4gICNpbmNsdWRlIDxhc20va21hcF90
+eXBlcy5oPgo+ICAjaW5jbHVkZSA8YXNtL3VhY2Nlc3MuaD4KPiBAQCAtNzc0LDIwICs3NzUsMjIg
+QEAgc3NpemVfdCB3YWl0X29uX3N5bmNfa2lvY2Ioc3RydWN0IGtpb2NiICpyZXEpCj4gIEVYUE9S
+VF9TWU1CT0wod2FpdF9vbl9zeW5jX2tpb2NiKTsKPiAgCj4gIC8qCj4gLSAqIGV4aXRfYWlvOiBj
+YWxsZWQgd2hlbiB0aGUgbGFzdCB1c2VyIG9mIG1tIGdvZXMgYXdheS4gIEF0IHRoaXMgcG9pbnQs
+IHRoZXJlIGlzCj4gKyAqIGFpb19leGl0OiBjYWxsZWQgd2hlbiB0aGUgbGFzdCB1c2VyIG9mIG1t
+IGdvZXMgYXdheS4gIEF0IHRoaXMgcG9pbnQsIHRoZXJlIGlzCj4gICAqIG5vIHdheSBmb3IgYW55
+IG5ldyByZXF1ZXN0cyB0byBiZSBzdWJtaXRlZCBvciBhbnkgb2YgdGhlIGlvXyogc3lzY2FsbHMg
+dG8gYmUKPiAgICogY2FsbGVkIG9uIHRoZSBjb250ZXh0Lgo+ICAgKgo+ICAgKiBUaGVyZSBtYXkg
+YmUgb3V0c3RhbmRpbmcga2lvY2JzLCBidXQgZnJlZV9pb2N0eCgpIHdpbGwgZXhwbGljaXRseSB3
+YWl0IG9uCj4gICAqIHRoZW0uCj4gICAqLwo+IC12b2lkIGV4aXRfYWlvKHN0cnVjdCBtbV9zdHJ1
+Y3QgKm1tKQo+ICtzdGF0aWMgaW50IGFpb19leGl0KHN0cnVjdCBub3RpZmllcl9ibG9jayAqbmIs
+Cj4gKwkJICAgIHVuc2lnbmVkIGxvbmcgYWN0aW9uLCB2b2lkICpkYXRhKQo+ICB7Cj4gKwlzdHJ1
+Y3QgbW1fc3RydWN0ICptbSA9IGRhdGE7Cj4gIAlzdHJ1Y3Qga2lvY3R4X3RhYmxlICp0YWJsZSA9
+IHJjdV9kZXJlZmVyZW5jZV9yYXcobW0tPmlvY3R4X3RhYmxlKTsKPiAgCWludCBpOwo+ICAKPiAg
+CWlmICghdGFibGUpCj4gLQkJcmV0dXJuOwo+ICsJCXJldHVybiAwOwo+ICAKPiAgCWZvciAoaSA9
+IDA7IGkgPCB0YWJsZS0+bnI7ICsraSkgewo+ICAJCXN0cnVjdCBraW9jdHggKmN0eCA9IHRhYmxl
+LT50YWJsZVtpXTsKPiBAQCAtNzk2LDEwICs3OTksMTAgQEAgdm9pZCBleGl0X2FpbyhzdHJ1Y3Qg
+bW1fc3RydWN0ICptbSkKPiAgCQkJY29udGludWU7Cj4gIAkJLyoKPiAgCQkgKiBXZSBkb24ndCBu
+ZWVkIHRvIGJvdGhlciB3aXRoIG11bm1hcCgpIGhlcmUgLSBleGl0X21tYXAobW0pCj4gLQkJICog
+aXMgY29taW5nIGFuZCBpdCdsbCB1bm1hcCBldmVyeXRoaW5nLiBBbmQgd2Ugc2ltcGx5IGNhbid0
+LAo+IC0JCSAqIHRoaXMgaXMgbm90IG5lY2Vzc2FyaWx5IG91ciAtPm1tLgo+IC0JCSAqIFNpbmNl
+IGtpbGxfaW9jdHgoKSB1c2VzIG5vbi16ZXJvIC0+bW1hcF9zaXplIGFzIGluZGljYXRvcgo+IC0J
+CSAqIHRoYXQgaXQgbmVlZHMgdG8gdW5tYXAgdGhlIGFyZWEsIGp1c3Qgc2V0IGl0IHRvIDAuCj4g
+KwkJICogaGF2ZSBhbHJlYWR5IGJlZW4gY2FsbCBhbmQgZXZlcnl0aGluZyBpcyB1bm1hcCBieSBu
+b3cuIEJ1dAo+ICsJCSAqIHRvIGJlIHNhZmUgc2V0IC0+bW1hcF9zaXplIHRvIDAgc2luY2UgYWlv
+X2ZyZWVfcmluZygpIHVzZXMKPiArCQkgKiBub24temVybyAtPm1tYXBfc2l6ZSBhcyBpbmRpY2F0
+b3IgdGhhdCBpdCBuZWVkcyB0byB1bm1hcCB0aGUKPiArCQkgKiBhcmVhLgo+ICAJCSAqLwo+ICAJ
+CWN0eC0+bW1hcF9zaXplID0gMDsKPiAgCQlraWxsX2lvY3R4KG1tLCBjdHgsIE5VTEwpOwo+IEBA
+IC04MDcsNiArODEwLDcgQEAgdm9pZCBleGl0X2FpbyhzdHJ1Y3QgbW1fc3RydWN0ICptbSkKPiAg
+Cj4gIAlSQ1VfSU5JVF9QT0lOVEVSKG1tLT5pb2N0eF90YWJsZSwgTlVMTCk7Cj4gIAlrZnJlZSh0
+YWJsZSk7Cj4gKwlyZXR1cm4gMDsKPiAgfQo+ICAKPiAgc3RhdGljIHZvaWQgcHV0X3JlcXNfYXZh
+aWxhYmxlKHN0cnVjdCBraW9jdHggKmN0eCwgdW5zaWduZWQgbnIpCj4gQEAgLTE2MjksMyArMTYz
+MywxNCBAQCBTWVNDQUxMX0RFRklORTUoaW9fZ2V0ZXZlbnRzLCBhaW9fY29udGV4dF90LCBjdHhf
+aWQsCj4gIAl9Cj4gIAlyZXR1cm4gcmV0Owo+ICB9Cj4gKwo+ICtzdGF0aWMgc3RydWN0IG5vdGlm
+aWVyX2Jsb2NrIGFpb19tbXB1dF9uYiA9IHsKPiArCS5ub3RpZmllcl9jYWxsCQk9IGFpb19leGl0
+LAo+ICsJLnByaW9yaXR5CQk9IDEsCj4gK307Cj4gKwo+ICtzdGF0aWMgaW50IF9faW5pdCBhaW9f
+aW5pdCh2b2lkKQo+ICt7Cj4gKwlyZXR1cm4gbW1wdXRfcmVnaXN0ZXJfbm90aWZpZXIoJmFpb19t
+bXB1dF9uYik7Cj4gK30KPiArc3Vic3lzX2luaXRjYWxsKGFpb19pbml0KTsKPiBkaWZmIC0tZ2l0
+IGEvaW5jbHVkZS9saW51eC9haW8uaCBiL2luY2x1ZGUvbGludXgvYWlvLmgKPiBpbmRleCBkOWM5
+MmRhLi42MzA4ZmFjIDEwMDY0NAo+IC0tLSBhL2luY2x1ZGUvbGludXgvYWlvLmgKPiArKysgYi9p
+bmNsdWRlL2xpbnV4L2Fpby5oCj4gQEAgLTczLDcgKzczLDYgQEAgc3RhdGljIGlubGluZSB2b2lk
+IGluaXRfc3luY19raW9jYihzdHJ1Y3Qga2lvY2IgKmtpb2NiLCBzdHJ1Y3QgZmlsZSAqZmlscCkK
+PiAgZXh0ZXJuIHNzaXplX3Qgd2FpdF9vbl9zeW5jX2tpb2NiKHN0cnVjdCBraW9jYiAqaW9jYik7
+Cj4gIGV4dGVybiB2b2lkIGFpb19jb21wbGV0ZShzdHJ1Y3Qga2lvY2IgKmlvY2IsIGxvbmcgcmVz
+LCBsb25nIHJlczIpOwo+ICBzdHJ1Y3QgbW1fc3RydWN0Owo+IC1leHRlcm4gdm9pZCBleGl0X2Fp
+byhzdHJ1Y3QgbW1fc3RydWN0ICptbSk7Cj4gIGV4dGVybiBsb25nIGRvX2lvX3N1Ym1pdChhaW9f
+Y29udGV4dF90IGN0eF9pZCwgbG9uZyBuciwKPiAgCQkJIHN0cnVjdCBpb2NiIF9fdXNlciAqX191
+c2VyICppb2NicHAsIGJvb2wgY29tcGF0KTsKPiAgdm9pZCBraW9jYl9zZXRfY2FuY2VsX2ZuKHN0
+cnVjdCBraW9jYiAqcmVxLCBraW9jYl9jYW5jZWxfZm4gKmNhbmNlbCk7Cj4gQEAgLTgxLDcgKzgw
+LDYgQEAgdm9pZCBraW9jYl9zZXRfY2FuY2VsX2ZuKHN0cnVjdCBraW9jYiAqcmVxLCBraW9jYl9j
+YW5jZWxfZm4gKmNhbmNlbCk7Cj4gIHN0YXRpYyBpbmxpbmUgc3NpemVfdCB3YWl0X29uX3N5bmNf
+a2lvY2Ioc3RydWN0IGtpb2NiICppb2NiKSB7IHJldHVybiAwOyB9Cj4gIHN0YXRpYyBpbmxpbmUg
+dm9pZCBhaW9fY29tcGxldGUoc3RydWN0IGtpb2NiICppb2NiLCBsb25nIHJlcywgbG9uZyByZXMy
+KSB7IH0KPiAgc3RydWN0IG1tX3N0cnVjdDsKPiAtc3RhdGljIGlubGluZSB2b2lkIGV4aXRfYWlv
+KHN0cnVjdCBtbV9zdHJ1Y3QgKm1tKSB7IH0KPiAgc3RhdGljIGlubGluZSBsb25nIGRvX2lvX3N1
+Ym1pdChhaW9fY29udGV4dF90IGN0eF9pZCwgbG9uZyBuciwKPiAgCQkJCXN0cnVjdCBpb2NiIF9f
+dXNlciAqIF9fdXNlciAqaW9jYnBwLAo+ICAJCQkJYm9vbCBjb21wYXQpIHsgcmV0dXJuIDA7IH0K
+PiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9rc20uaCBiL2luY2x1ZGUvbGludXgva3NtLmgK
+PiBpbmRleCAzYmU2YmIxLi44NGMxODRmIDEwMDY0NAo+IC0tLSBhL2luY2x1ZGUvbGludXgva3Nt
+LmgKPiArKysgYi9pbmNsdWRlL2xpbnV4L2tzbS5oCj4gQEAgLTIwLDcgKzIwLDYgQEAgc3RydWN0
+IG1lbV9jZ3JvdXA7Cj4gIGludCBrc21fbWFkdmlzZShzdHJ1Y3Qgdm1fYXJlYV9zdHJ1Y3QgKnZt
+YSwgdW5zaWduZWQgbG9uZyBzdGFydCwKPiAgCQl1bnNpZ25lZCBsb25nIGVuZCwgaW50IGFkdmlj
+ZSwgdW5zaWduZWQgbG9uZyAqdm1fZmxhZ3MpOwo+ICBpbnQgX19rc21fZW50ZXIoc3RydWN0IG1t
+X3N0cnVjdCAqbW0pOwo+IC12b2lkIF9fa3NtX2V4aXQoc3RydWN0IG1tX3N0cnVjdCAqbW0pOwo+
+ICAKPiAgc3RhdGljIGlubGluZSBpbnQga3NtX2Zvcmsoc3RydWN0IG1tX3N0cnVjdCAqbW0sIHN0
+cnVjdCBtbV9zdHJ1Y3QgKm9sZG1tKQo+ICB7Cj4gQEAgLTI5LDEyICsyOCw2IEBAIHN0YXRpYyBp
+bmxpbmUgaW50IGtzbV9mb3JrKHN0cnVjdCBtbV9zdHJ1Y3QgKm1tLCBzdHJ1Y3QgbW1fc3RydWN0
+ICpvbGRtbSkKPiAgCXJldHVybiAwOwo+ICB9Cj4gIAo+IC1zdGF0aWMgaW5saW5lIHZvaWQga3Nt
+X2V4aXQoc3RydWN0IG1tX3N0cnVjdCAqbW0pCj4gLXsKPiAtCWlmICh0ZXN0X2JpdChNTUZfVk1f
+TUVSR0VBQkxFLCAmbW0tPmZsYWdzKSkKPiAtCQlfX2tzbV9leGl0KG1tKTsKPiAtfQo+IC0KPiAg
+LyoKPiAgICogQSBLU00gcGFnZSBpcyBvbmUgb2YgdGhvc2Ugd3JpdGUtcHJvdGVjdGVkICJzaGFy
+ZWQgcGFnZXMiIG9yICJtZXJnZWQgcGFnZXMiCj4gICAqIHdoaWNoIEtTTSBtYXBzIGludG8gbXVs
+dGlwbGUgbW1zLCB3aGVyZXZlciBpZGVudGljYWwgYW5vbnltb3VzIHBhZ2UgY29udGVudAo+IEBA
+IC04MywxMCArNzYsNiBAQCBzdGF0aWMgaW5saW5lIGludCBrc21fZm9yayhzdHJ1Y3QgbW1fc3Ry
+dWN0ICptbSwgc3RydWN0IG1tX3N0cnVjdCAqb2xkbW0pCj4gIAlyZXR1cm4gMDsKPiAgfQo+ICAK
+PiAtc3RhdGljIGlubGluZSB2b2lkIGtzbV9leGl0KHN0cnVjdCBtbV9zdHJ1Y3QgKm1tKQo+IC17
+Cj4gLX0KPiAtCj4gIHN0YXRpYyBpbmxpbmUgaW50IFBhZ2VLc20oc3RydWN0IHBhZ2UgKnBhZ2Up
+Cj4gIHsKPiAgCXJldHVybiAwOwo+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L3NjaGVkLmgg
+Yi9pbmNsdWRlL2xpbnV4L3NjaGVkLmgKPiBpbmRleCAzMjJkNGZjLi40MjhiM2NmIDEwMDY0NAo+
+IC0tLSBhL2luY2x1ZGUvbGludXgvc2NoZWQuaAo+ICsrKyBiL2luY2x1ZGUvbGludXgvc2NoZWQu
+aAo+IEBAIC0yMzg0LDYgKzIzODQsMTEgQEAgc3RhdGljIGlubGluZSB2b2lkIG1tZHJvcChzdHJ1
+Y3QgbW1fc3RydWN0ICogbW0pCj4gIAkJX19tbWRyb3AobW0pOwo+ICB9Cj4gIAo+ICsvKiBtbXB1
+dCBjYWxsIGxpc3Qgb2Ygbm90aWZpZXIgYW5kIHN1YnN5c3RlbS9tb2R1bGUgY2FuIHJlZ2lzdGVy
+Cj4gKyAqIG5ldyBvbmUgdGhyb3VnaCB0aGlzIGNhbGwuCj4gKyAqLwo+ICtleHRlcm4gaW50IG1t
+cHV0X3JlZ2lzdGVyX25vdGlmaWVyKHN0cnVjdCBub3RpZmllcl9ibG9jayAqbmIpOwo+ICtleHRl
+cm4gaW50IG1tcHV0X3VucmVnaXN0ZXJfbm90aWZpZXIoc3RydWN0IG5vdGlmaWVyX2Jsb2NrICpu
+Yik7Cj4gIC8qIG1tcHV0IGdldHMgcmlkIG9mIHRoZSBtYXBwaW5ncyBhbmQgYWxsIHVzZXItc3Bh
+Y2UgKi8KPiAgZXh0ZXJuIHZvaWQgbW1wdXQoc3RydWN0IG1tX3N0cnVjdCAqKTsKPiAgLyogR3Jh
+YiBhIHJlZmVyZW5jZSB0byBhIHRhc2sncyBtbSwgaWYgaXQgaXMgbm90IGFscmVhZHkgZ29pbmcg
+YXdheSAqLwo+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L3Vwcm9iZXMuaCBiL2luY2x1ZGUv
+bGludXgvdXByb2Jlcy5oCj4gaW5kZXggNGY4NDRjNi4uNDRlNzI2NyAxMDA2NDQKPiAtLS0gYS9p
+bmNsdWRlL2xpbnV4L3Vwcm9iZXMuaAo+ICsrKyBiL2luY2x1ZGUvbGludXgvdXByb2Jlcy5oCj4g
+QEAgLTEyMCw3ICsxMjAsNiBAQCBleHRlcm4gaW50IHVwcm9iZV9wcmVfc3N0ZXBfbm90aWZpZXIo
+c3RydWN0IHB0X3JlZ3MgKnJlZ3MpOwo+ICBleHRlcm4gdm9pZCB1cHJvYmVfbm90aWZ5X3Jlc3Vt
+ZShzdHJ1Y3QgcHRfcmVncyAqcmVncyk7Cj4gIGV4dGVybiBib29sIHVwcm9iZV9kZW55X3NpZ25h
+bCh2b2lkKTsKPiAgZXh0ZXJuIGJvb2wgYXJjaF91cHJvYmVfc2tpcF9zc3RlcChzdHJ1Y3QgYXJj
+aF91cHJvYmUgKmF1cCwgc3RydWN0IHB0X3JlZ3MgKnJlZ3MpOwo+IC1leHRlcm4gdm9pZCB1cHJv
+YmVfY2xlYXJfc3RhdGUoc3RydWN0IG1tX3N0cnVjdCAqbW0pOwo+ICBleHRlcm4gaW50ICBhcmNo
+X3Vwcm9iZV9hbmFseXplX2luc24oc3RydWN0IGFyY2hfdXByb2JlICphdXAsIHN0cnVjdCBtbV9z
+dHJ1Y3QgKm1tLCB1bnNpZ25lZCBsb25nIGFkZHIpOwo+ICBleHRlcm4gaW50ICBhcmNoX3Vwcm9i
+ZV9wcmVfeG9sKHN0cnVjdCBhcmNoX3Vwcm9iZSAqYXVwLCBzdHJ1Y3QgcHRfcmVncyAqcmVncyk7
+Cj4gIGV4dGVybiBpbnQgIGFyY2hfdXByb2JlX3Bvc3RfeG9sKHN0cnVjdCBhcmNoX3Vwcm9iZSAq
+YXVwLCBzdHJ1Y3QgcHRfcmVncyAqcmVncyk7Cj4gZGlmZiAtLWdpdCBhL2tlcm5lbC9ldmVudHMv
+dXByb2Jlcy5jIGIva2VybmVsL2V2ZW50cy91cHJvYmVzLmMKPiBpbmRleCA0NmI3YzMxLi4zMmIw
+NGRjIDEwMDY0NAo+IC0tLSBhL2tlcm5lbC9ldmVudHMvdXByb2Jlcy5jCj4gKysrIGIva2VybmVs
+L2V2ZW50cy91cHJvYmVzLmMKPiBAQCAtMzcsNiArMzcsNyBAQAo+ICAjaW5jbHVkZSA8bGludXgv
+cGVyY3B1LXJ3c2VtLmg+Cj4gICNpbmNsdWRlIDxsaW51eC90YXNrX3dvcmsuaD4KPiAgI2luY2x1
+ZGUgPGxpbnV4L3NobWVtX2ZzLmg+Cj4gKyNpbmNsdWRlIDxsaW51eC9ub3RpZmllci5oPgo+ICAK
+PiAgI2luY2x1ZGUgPGxpbnV4L3Vwcm9iZXMuaD4KPiAgCj4gQEAgLTEyMjAsMTYgKzEyMjEsMTkg
+QEAgc3RhdGljIHN0cnVjdCB4b2xfYXJlYSAqZ2V0X3hvbF9hcmVhKHZvaWQpCj4gIC8qCj4gICAq
+IHVwcm9iZV9jbGVhcl9zdGF0ZSAtIEZyZWUgdGhlIGFyZWEgYWxsb2NhdGVkIGZvciBzbG90cy4K
+PiAgICovCj4gLXZvaWQgdXByb2JlX2NsZWFyX3N0YXRlKHN0cnVjdCBtbV9zdHJ1Y3QgKm1tKQo+
+ICtzdGF0aWMgaW50IHVwcm9iZV9jbGVhcl9zdGF0ZShzdHJ1Y3Qgbm90aWZpZXJfYmxvY2sgKm5i
+LAo+ICsJCQkgICAgICB1bnNpZ25lZCBsb25nIGFjdGlvbiwgdm9pZCAqZGF0YSkKPiAgewo+ICsJ
+c3RydWN0IG1tX3N0cnVjdCAqbW0gPSBkYXRhOwo+ICAJc3RydWN0IHhvbF9hcmVhICphcmVhID0g
+bW0tPnVwcm9iZXNfc3RhdGUueG9sX2FyZWE7Cj4gIAo+ICAJaWYgKCFhcmVhKQo+IC0JCXJldHVy
+bjsKPiArCQlyZXR1cm4gMDsKPiAgCj4gIAlwdXRfcGFnZShhcmVhLT5wYWdlKTsKPiAgCWtmcmVl
+KGFyZWEtPmJpdG1hcCk7Cj4gIAlrZnJlZShhcmVhKTsKPiArCXJldHVybiAwOwo+ICB9Cj4gIAo+
+ICB2b2lkIHVwcm9iZV9zdGFydF9kdXBfbW1hcCh2b2lkKQo+IEBAIC0xOTc5LDkgKzE5ODMsMTQg
+QEAgc3RhdGljIHN0cnVjdCBub3RpZmllcl9ibG9jayB1cHJvYmVfZXhjZXB0aW9uX25iID0gewo+
+ICAJLnByaW9yaXR5CQk9IElOVF9NQVgtMSwJLyogbm90aWZpZWQgYWZ0ZXIga3Byb2Jlcywga2dk
+YiAqLwo+ICB9Owo+ICAKPiArc3RhdGljIHN0cnVjdCBub3RpZmllcl9ibG9jayB1cHJvYmVfbW1w
+dXRfbmIgPSB7Cj4gKwkubm90aWZpZXJfY2FsbAkJPSB1cHJvYmVfY2xlYXJfc3RhdGUsCj4gKwku
+cHJpb3JpdHkJCT0gMCwKPiArfTsKPiArCj4gIHN0YXRpYyBpbnQgX19pbml0IGluaXRfdXByb2Jl
+cyh2b2lkKQo+ICB7Cj4gLQlpbnQgaTsKPiArCWludCBpLCBlcnI7Cj4gIAo+ICAJZm9yIChpID0g
+MDsgaSA8IFVQUk9CRVNfSEFTSF9TWjsgaSsrKQo+ICAJCW11dGV4X2luaXQoJnVwcm9iZXNfbW1h
+cF9tdXRleFtpXSk7Cj4gQEAgLTE5ODksNiArMTk5OCwxMCBAQCBzdGF0aWMgaW50IF9faW5pdCBp
+bml0X3Vwcm9iZXModm9pZCkKPiAgCWlmIChwZXJjcHVfaW5pdF9yd3NlbSgmZHVwX21tYXBfc2Vt
+KSkKPiAgCQlyZXR1cm4gLUVOT01FTTsKPiAgCj4gKwllcnIgPSBtbXB1dF9yZWdpc3Rlcl9ub3Rp
+ZmllcigmdXByb2JlX21tcHV0X25iKTsKPiArCWlmIChlcnIpCj4gKwkJcmV0dXJuIGVycjsKPiAr
+Cj4gIAlyZXR1cm4gcmVnaXN0ZXJfZGllX25vdGlmaWVyKCZ1cHJvYmVfZXhjZXB0aW9uX25iKTsK
+PiAgfQo+ICBfX2luaXRjYWxsKGluaXRfdXByb2Jlcyk7Cj4gZGlmZiAtLWdpdCBhL2tlcm5lbC9m
+b3JrLmMgYi9rZXJuZWwvZm9yay5jCj4gaW5kZXggZGQ4ODY0Zi4uYjQ0ODUwOSAxMDA2NDQKPiAt
+LS0gYS9rZXJuZWwvZm9yay5jCj4gKysrIGIva2VybmVsL2ZvcmsuYwo+IEBAIC04Nyw2ICs4Nyw4
+IEBACj4gICNkZWZpbmUgQ1JFQVRFX1RSQUNFX1BPSU5UUwo+ICAjaW5jbHVkZSA8dHJhY2UvZXZl
+bnRzL3Rhc2suaD4KPiAgCj4gK3N0YXRpYyBCTE9DS0lOR19OT1RJRklFUl9IRUFEKG1tcHV0X25v
+dGlmaWVyKTsKPiArCj4gIC8qCj4gICAqIFByb3RlY3RlZCBjb3VudGVycyBieSB3cml0ZV9sb2Nr
+X2lycSgmdGFza2xpc3RfbG9jaykKPiAgICovCj4gQEAgLTYyMyw2ICs2MjUsMjEgQEAgdm9pZCBf
+X21tZHJvcChzdHJ1Y3QgbW1fc3RydWN0ICptbSkKPiAgRVhQT1JUX1NZTUJPTF9HUEwoX19tbWRy
+b3ApOwo+ICAKPiAgLyoKPiArICogUmVnaXN0ZXIgYSBub3RpZmllciB0aGF0IHdpbGwgYmUgY2Fs
+bCBieSBtbXB1dAo+ICsgKi8KPiAraW50IG1tcHV0X3JlZ2lzdGVyX25vdGlmaWVyKHN0cnVjdCBu
+b3RpZmllcl9ibG9jayAqbmIpCj4gK3sKPiArCXJldHVybiBibG9ja2luZ19ub3RpZmllcl9jaGFp
+bl9yZWdpc3RlcigmbW1wdXRfbm90aWZpZXIsIG5iKTsKPiArfQo+ICtFWFBPUlRfU1lNQk9MX0dQ
+TChtbXB1dF9yZWdpc3Rlcl9ub3RpZmllcik7Cj4gKwo+ICtpbnQgbW1wdXRfdW5yZWdpc3Rlcl9u
+b3RpZmllcihzdHJ1Y3Qgbm90aWZpZXJfYmxvY2sgKm5iKQo+ICt7Cj4gKwlyZXR1cm4gYmxvY2tp
+bmdfbm90aWZpZXJfY2hhaW5fdW5yZWdpc3RlcigmbW1wdXRfbm90aWZpZXIsIG5iKTsKPiArfQo+
+ICtFWFBPUlRfU1lNQk9MX0dQTChtbXB1dF91bnJlZ2lzdGVyX25vdGlmaWVyKTsKPiArCj4gKy8q
+Cj4gICAqIERlY3JlbWVudCB0aGUgdXNlIGNvdW50IGFuZCByZWxlYXNlIGFsbCByZXNvdXJjZXMg
+Zm9yIGFuIG1tLgo+ICAgKi8KPiAgdm9pZCBtbXB1dChzdHJ1Y3QgbW1fc3RydWN0ICptbSkKPiBA
+QCAtNjMwLDExICs2NDcsOCBAQCB2b2lkIG1tcHV0KHN0cnVjdCBtbV9zdHJ1Y3QgKm1tKQo+ICAJ
+bWlnaHRfc2xlZXAoKTsKPiAgCj4gIAlpZiAoYXRvbWljX2RlY19hbmRfdGVzdCgmbW0tPm1tX3Vz
+ZXJzKSkgewo+IC0JCXVwcm9iZV9jbGVhcl9zdGF0ZShtbSk7Cj4gLQkJZXhpdF9haW8obW0pOwo+
+IC0JCWtzbV9leGl0KG1tKTsKPiAtCQlraHVnZXBhZ2VkX2V4aXQobW0pOyAvKiBtdXN0IHJ1biBi
+ZWZvcmUgZXhpdF9tbWFwICovCj4gIAkJZXhpdF9tbWFwKG1tKTsKPiArCQlibG9ja2luZ19ub3Rp
+Zmllcl9jYWxsX2NoYWluKCZtbXB1dF9ub3RpZmllciwgMCwgbW0pOwo+ICAJCXNldF9tbV9leGVf
+ZmlsZShtbSwgTlVMTCk7Cj4gIAkJaWYgKCFsaXN0X2VtcHR5KCZtbS0+bW1saXN0KSkgewo+ICAJ
+CQlzcGluX2xvY2soJm1tbGlzdF9sb2NrKTsKPiBkaWZmIC0tZ2l0IGEvbW0va3NtLmMgYi9tbS9r
+c20uYwo+IGluZGV4IDM0NmRkYzkuLmNiMWU5NzYgMTAwNjQ0Cj4gLS0tIGEvbW0va3NtLmMKPiAr
+KysgYi9tbS9rc20uYwo+IEBAIC0zNyw2ICszNyw3IEBACj4gICNpbmNsdWRlIDxsaW51eC9mcmVl
+emVyLmg+Cj4gICNpbmNsdWRlIDxsaW51eC9vb20uaD4KPiAgI2luY2x1ZGUgPGxpbnV4L251bWEu
+aD4KPiArI2luY2x1ZGUgPGxpbnV4L25vdGlmaWVyLmg+Cj4gIAo+ICAjaW5jbHVkZSA8YXNtL3Rs
+YmZsdXNoLmg+Cj4gICNpbmNsdWRlICJpbnRlcm5hbC5oIgo+IEBAIC0xNTg2LDcgKzE1ODcsNyBA
+QCBzdGF0aWMgc3RydWN0IHJtYXBfaXRlbSAqc2Nhbl9nZXRfbmV4dF9ybWFwX2l0ZW0oc3RydWN0
+IHBhZ2UgKipwYWdlKQo+ICAJCWtzbV9zY2FuLm1tX3Nsb3QgPSBzbG90Owo+ICAJCXNwaW5fdW5s
+b2NrKCZrc21fbW1saXN0X2xvY2spOwo+ICAJCS8qCj4gLQkJICogQWx0aG91Z2ggd2UgdGVzdGVk
+IGxpc3RfZW1wdHkoKSBhYm92ZSwgYSByYWNpbmcgX19rc21fZXhpdAo+ICsJCSAqIEFsdGhvdWdo
+IHdlIHRlc3RlZCBsaXN0X2VtcHR5KCkgYWJvdmUsIGEgcmFjaW5nIGtzbV9leGl0Cj4gIAkJICog
+b2YgdGhlIGxhc3QgbW0gb24gdGhlIGxpc3QgbWF5IGhhdmUgcmVtb3ZlZCBpdCBzaW5jZSB0aGVu
+Lgo+ICAJCSAqLwo+ICAJCWlmIChzbG90ID09ICZrc21fbW1faGVhZCkKPiBAQCAtMTY1OCw5ICsx
+NjU5LDkgQEAgbmV4dF9tbToKPiAgCQkvKgo+ICAJCSAqIFdlJ3ZlIGNvbXBsZXRlZCBhIGZ1bGwg
+c2NhbiBvZiBhbGwgdm1hcywgaG9sZGluZyBtbWFwX3NlbQo+ICAJCSAqIHRocm91Z2hvdXQsIGFu
+ZCBmb3VuZCBubyBWTV9NRVJHRUFCTEU6IHNvIGRvIHRoZSBzYW1lIGFzCj4gLQkJICogX19rc21f
+ZXhpdCBkb2VzIHRvIHJlbW92ZSB0aGlzIG1tIGZyb20gYWxsIG91ciBsaXN0cyBub3cuCj4gLQkJ
+ICogVGhpcyBhcHBsaWVzIGVpdGhlciB3aGVuIGNsZWFuaW5nIHVwIGFmdGVyIF9fa3NtX2V4aXQK
+PiAtCQkgKiAoYnV0IGJld2FyZTogd2UgY2FuIHJlYWNoIGhlcmUgZXZlbiBiZWZvcmUgX19rc21f
+ZXhpdCksCj4gKwkJICoga3NtX2V4aXQgZG9lcyB0byByZW1vdmUgdGhpcyBtbSBmcm9tIGFsbCBv
+dXIgbGlzdHMgbm93Lgo+ICsJCSAqIFRoaXMgYXBwbGllcyBlaXRoZXIgd2hlbiBjbGVhbmluZyB1
+cCBhZnRlciBrc21fZXhpdAo+ICsJCSAqIChidXQgYmV3YXJlOiB3ZSBjYW4gcmVhY2ggaGVyZSBl
+dmVuIGJlZm9yZSBrc21fZXhpdCksCj4gIAkJICogb3Igd2hlbiBhbGwgVk1fTUVSR0VBQkxFIGFy
+ZWFzIGhhdmUgYmVlbiB1bm1hcHBlZCAoYW5kCj4gIAkJICogbW1hcF9zZW0gdGhlbiBwcm90ZWN0
+cyBhZ2FpbnN0IHJhY2Ugd2l0aCBNQURWX01FUkdFQUJMRSkuCj4gIAkJICovCj4gQEAgLTE4MjEs
+MTEgKzE4MjIsMTYgQEAgaW50IF9fa3NtX2VudGVyKHN0cnVjdCBtbV9zdHJ1Y3QgKm1tKQo+ICAJ
+cmV0dXJuIDA7Cj4gIH0KPiAgCj4gLXZvaWQgX19rc21fZXhpdChzdHJ1Y3QgbW1fc3RydWN0ICpt
+bSkKPiArc3RhdGljIGludCBrc21fZXhpdChzdHJ1Y3Qgbm90aWZpZXJfYmxvY2sgKm5iLAo+ICsJ
+CSAgICB1bnNpZ25lZCBsb25nIGFjdGlvbiwgdm9pZCAqZGF0YSkKPiAgewo+ICsJc3RydWN0IG1t
+X3N0cnVjdCAqbW0gPSBkYXRhOwo+ICAJc3RydWN0IG1tX3Nsb3QgKm1tX3Nsb3Q7Cj4gIAlpbnQg
+ZWFzeV90b19mcmVlID0gMDsKPiAgCj4gKwlpZiAoIXRlc3RfYml0KE1NRl9WTV9NRVJHRUFCTEUs
+ICZtbS0+ZmxhZ3MpKQo+ICsJCXJldHVybiAwOwo+ICsKPiAgCS8qCj4gIAkgKiBUaGlzIHByb2Nl
+c3MgaXMgZXhpdGluZzogaWYgaXQncyBzdHJhaWdodGZvcndhcmQgKGFzIGlzIHRoZQo+ICAJICog
+Y2FzZSB3aGVuIGtzbWQgd2FzIG5ldmVyIHJ1bm5pbmcpLCBmcmVlIG1tX3Nsb3QgaW1tZWRpYXRl
+bHkuCj4gQEAgLTE4NTcsNiArMTg2Myw3IEBAIHZvaWQgX19rc21fZXhpdChzdHJ1Y3QgbW1fc3Ry
+dWN0ICptbSkKPiAgCQlkb3duX3dyaXRlKCZtbS0+bW1hcF9zZW0pOwo+ICAJCXVwX3dyaXRlKCZt
+bS0+bW1hcF9zZW0pOwo+ICAJfQo+ICsJcmV0dXJuIDA7Cj4gIH0KPiAgCj4gIHN0cnVjdCBwYWdl
+ICprc21fbWlnaHRfbmVlZF90b19jb3B5KHN0cnVjdCBwYWdlICpwYWdlLAo+IEBAIC0yMzA1LDEx
+ICsyMzEyLDIwIEBAIHN0YXRpYyBzdHJ1Y3QgYXR0cmlidXRlX2dyb3VwIGtzbV9hdHRyX2dyb3Vw
+ID0gewo+ICB9Owo+ICAjZW5kaWYgLyogQ09ORklHX1NZU0ZTICovCj4gIAo+ICtzdGF0aWMgc3Ry
+dWN0IG5vdGlmaWVyX2Jsb2NrIGtzbV9tbXB1dF9uYiA9IHsKPiArCS5ub3RpZmllcl9jYWxsCQk9
+IGtzbV9leGl0LAo+ICsJLnByaW9yaXR5CQk9IDIsCj4gK307Cj4gKwo+ICBzdGF0aWMgaW50IF9f
+aW5pdCBrc21faW5pdCh2b2lkKQo+ICB7Cj4gIAlzdHJ1Y3QgdGFza19zdHJ1Y3QgKmtzbV90aHJl
+YWQ7Cj4gIAlpbnQgZXJyOwo+ICAKPiArCWVyciA9IG1tcHV0X3JlZ2lzdGVyX25vdGlmaWVyKCZr
+c21fbW1wdXRfbmIpOwo+ICsJaWYgKGVycikKPiArCQlyZXR1cm4gZXJyOwo+ICsKPiAgCWVyciA9
+IGtzbV9zbGFiX2luaXQoKTsKPiAgCWlmIChlcnIpCj4gIAkJZ290byBvdXQ7Cj4gZGlmZiAtLWdp
+dCBhL21tL21tYXAuYyBiL21tL21tYXAuYwo+IGluZGV4IDYxYWVjOTMuLmI2ODRhMjEgMTAwNjQ0
+Cj4gLS0tIGEvbW0vbW1hcC5jCj4gKysrIGIvbW0vbW1hcC5jCj4gQEAgLTI3NzUsNiArMjc3NSw5
+IEBAIHZvaWQgZXhpdF9tbWFwKHN0cnVjdCBtbV9zdHJ1Y3QgKm1tKQo+ICAJc3RydWN0IHZtX2Fy
+ZWFfc3RydWN0ICp2bWE7Cj4gIAl1bnNpZ25lZCBsb25nIG5yX2FjY291bnRlZCA9IDA7Cj4gIAo+
+ICsJLyogSW1wb3J0YW50IHRvIGNhbGwgdGhpcyBmaXJzdC4gKi8KPiArCWtodWdlcGFnZWRfZXhp
+dChtbSk7Cj4gKwo+ICAJLyogbW0ncyBsYXN0IHVzZXIgaGFzIGdvbmUsIGFuZCBpdHMgYWJvdXQg
+dG8gYmUgcHVsbGVkIGRvd24gKi8KPiAgCW1tdV9ub3RpZmllcl9yZWxlYXNlKG1tKTsKPiAgCgpI
+aSBKZXJvbWUsIEkgcmV2aWV3ZWQgdGhlIHBhdGNoLCBpbnRlZ3JhdGVkIGFuZCB0ZXN0ZWQgaXQg
+aW4gQU1EJ3MgSFNBCmRyaXZlciAoS0ZEKS4gSXQgd29ya3MgYXMgZXhwZWN0ZWQgYW5kIEkgZGlk
+bid0IGZpbmQgYW55IHByb2JsZW1zIHdpdGgKaXQuCgpJIGRpZCBmYWNlIHNvbWUgcHJvYmxlbXMg
+cmVnYXJkaW5nIHRoZSBhbWQgSU9NTVUgdjIgZHJpdmVyLCB3aGljaApjaGFuZ2VkIGl0cyBiZWhh
+dmlvciAoc2VlIGNvbW1pdCAiaW9tbXUvYW1kOiBJbXBsZW1lbnQKbW11X25vdGlmaWVyX3JlbGVh
+c2UgY2FsbC1iYWNrIikgdG8gdXNlIG1tdV9ub3RpZmllcl9yZWxlYXNlIGFuZCBkaWQKc29tZSAi
+YmFkIHRoaW5ncyIgaW5zaWRlIHRoYXQKbm90aWZpZXIgKHByaW1hcmlseSwgYnV0IG5vdCBvbmx5
+LCBkZWxldGluZyB0aGUgb2JqZWN0IHdoaWNoIGhlbGQgdGhlCm1tdV9ub3RpZmllciBvYmplY3Qg
+aXRzZWxmLCB3aGljaCB5b3UgbXVzdG4ndCBkbyBiZWNhdXNlIG9mIHRoZQpsb2NraW5nKS4gCgpJ
+J20gdGhpbmtpbmcgb2YgY2hhbmdpbmcgdGhhdCBkcml2ZXIncyBiZWhhdmlvciB0byB1c2UgdGhp
+cyBuZXcKbWVjaGFuaXNtIGluc3RlYWQgb2YgdXNpbmcgbW11X25vdGlmaWVyX3JlbGVhc2UuIERv
+ZXMgdGhhdCBzZWVtCmFjY2VwdGFibGUgPyBBbm90aGVyIHNvbHV0aW9uIHdpbGwgYmUgdG8gYWRk
+IGEgbmV3IG1tdV9ub3RpZmllciBjYWxsLApidXQgd2UgYWxyZWFkeSBydWxlZCB0aGF0IG91dCA7
+KQoKU28sClJldmlld2VkLWJ5OiBPZGVkIEdhYmJheSA8b2RlZC5nYWJiYXlAYW1kLmNvbT4KCglP
+ZGVkCgo=
 
-This patch removes the unused chained SMMU hack from the driver. We can
-consider adding it back later if somebody decided they need it, but for
-the time being it's just pointless mess that we're carrying in mainline.
-
-Removal of the feature also makes migration to the generic IOMMU bindings
-easier.
-
-Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
----
- .../devicetree/bindings/iommu/arm,smmu.txt         |   6 -
- drivers/iommu/arm-smmu.c                           | 263 ++++++---------------
- 2 files changed, 77 insertions(+), 192 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-index f284b99402bc..2d0f7cd867ea 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-@@ -42,12 +42,6 @@ conditions.
- 
- ** System MMU optional properties:
- 
--- smmu-parent   : When multiple SMMUs are chained together, this
--                  property can be used to provide a phandle to the
--                  parent SMMU (that is the next SMMU on the path going
--                  from the mmu-masters towards memory) node for this
--                  SMMU.
--
- - calxeda,smmu-secure-config-access : Enable proper handling of buggy
-                   implementations that always use secure access to
-                   SMMU configuration registers. In this case non-secure
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 835d01f47302..60986de3ada8 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -333,28 +333,17 @@ struct arm_smmu_smr {
- struct arm_smmu_master_cfg {
- 	int				num_streamids;
- 	u16				streamids[MAX_MASTER_STREAMIDS];
--
--	/*
--	 * We only need to allocate these on the root SMMU, as we
--	 * configure unmatched streams to bypass translation.
--	 */
- 	struct arm_smmu_smr		*smrs;
- };
- 
- struct arm_smmu_master {
- 	struct device_node		*of_node;
--
--	/*
--	 * The following is specific to the master's position in the
--	 * SMMU chain.
--	 */
- 	struct rb_node			node;
- 	struct arm_smmu_master_cfg	cfg;
- };
- 
- struct arm_smmu_device {
- 	struct device			*dev;
--	struct device_node		*parent_of_node;
- 
- 	void __iomem			*base;
- 	unsigned long			size;
-@@ -392,7 +381,6 @@ struct arm_smmu_device {
- };
- 
- struct arm_smmu_cfg {
--	struct arm_smmu_device		*smmu;
- 	u8				cbndx;
- 	u8				irptndx;
- 	u32				cbar;
-@@ -404,15 +392,8 @@ struct arm_smmu_cfg {
- #define ARM_SMMU_CB_VMID(cfg)		((cfg)->cbndx + 1)
- 
- struct arm_smmu_domain {
--	/*
--	 * A domain can span across multiple, chained SMMUs and requires
--	 * all devices within the domain to follow the same translation
--	 * path.
--	 */
--	struct arm_smmu_device		*leaf_smmu;
--	struct arm_smmu_cfg		root_cfg;
--	phys_addr_t			output_mask;
--
-+	struct arm_smmu_device		*smmu;
-+	struct arm_smmu_cfg		cfg;
- 	spinlock_t			lock;
- };
- 
-@@ -546,59 +527,20 @@ static int register_smmu_master(struct arm_smmu_device *smmu,
- 	return insert_smmu_master(smmu, master);
- }
- 
--static struct arm_smmu_device *find_parent_smmu(struct arm_smmu_device *smmu)
-+static struct arm_smmu_device *find_smmu_for_device(struct device *dev)
- {
--	struct arm_smmu_device *parent;
--
--	if (!smmu->parent_of_node)
--		return NULL;
--
--	spin_lock(&arm_smmu_devices_lock);
--	list_for_each_entry(parent, &arm_smmu_devices, list)
--		if (parent->dev->of_node == smmu->parent_of_node)
--			goto out_unlock;
--
--	parent = NULL;
--	dev_warn(smmu->dev,
--		 "Failed to find SMMU parent despite parent in DT\n");
--out_unlock:
--	spin_unlock(&arm_smmu_devices_lock);
--	return parent;
--}
--
--static struct arm_smmu_device *find_parent_smmu_for_device(struct device *dev)
--{
--	struct arm_smmu_device *child, *parent, *smmu;
-+	struct arm_smmu_device *smmu;
- 	struct arm_smmu_master *master = NULL;
- 	struct device_node *dev_node = dev_get_master_dev(dev)->of_node;
- 
- 	spin_lock(&arm_smmu_devices_lock);
--	list_for_each_entry(parent, &arm_smmu_devices, list) {
--		smmu = parent;
--
--		/* Try to find a child of the current SMMU. */
--		list_for_each_entry(child, &arm_smmu_devices, list) {
--			if (child->parent_of_node == parent->dev->of_node) {
--				/* Does the child sit above our master? */
--				master = find_smmu_master(child, dev_node);
--				if (master) {
--					smmu = NULL;
--					break;
--				}
--			}
--		}
--
--		/* We found some children, so keep searching. */
--		if (!smmu) {
--			master = NULL;
--			continue;
--		}
--
-+	list_for_each_entry(smmu, &arm_smmu_devices, list) {
- 		master = find_smmu_master(smmu, dev_node);
- 		if (master)
- 			break;
- 	}
- 	spin_unlock(&arm_smmu_devices_lock);
-+
- 	return master ? smmu : NULL;
- }
- 
-@@ -639,9 +581,10 @@ static void arm_smmu_tlb_sync(struct arm_smmu_device *smmu)
- 	}
- }
- 
--static void arm_smmu_tlb_inv_context(struct arm_smmu_cfg *cfg)
-+static void arm_smmu_tlb_inv_context(struct arm_smmu_domain *smmu_domain)
- {
--	struct arm_smmu_device *smmu = cfg->smmu;
-+	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 	void __iomem *base = ARM_SMMU_GR0(smmu);
- 	bool stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
- 
-@@ -665,11 +608,11 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
- 	unsigned long iova;
- 	struct iommu_domain *domain = dev;
- 	struct arm_smmu_domain *smmu_domain = domain->priv;
--	struct arm_smmu_cfg *root_cfg = &smmu_domain->root_cfg;
--	struct arm_smmu_device *smmu = root_cfg->smmu;
-+	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 	void __iomem *cb_base;
- 
--	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, root_cfg->cbndx);
-+	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
- 	fsr = readl_relaxed(cb_base + ARM_SMMU_CB_FSR);
- 
- 	if (!(fsr & FSR_FAULT))
-@@ -696,7 +639,7 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
- 	} else {
- 		dev_err_ratelimited(smmu->dev,
- 		    "Unhandled context fault: iova=0x%08lx, fsynr=0x%x, cb=%d\n",
--		    iova, fsynr, root_cfg->cbndx);
-+		    iova, fsynr, cfg->cbndx);
- 		ret = IRQ_NONE;
- 		resume = RESUME_TERMINATE;
- 	}
-@@ -761,19 +704,19 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
- {
- 	u32 reg;
- 	bool stage1;
--	struct arm_smmu_cfg *root_cfg = &smmu_domain->root_cfg;
--	struct arm_smmu_device *smmu = root_cfg->smmu;
-+	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 	void __iomem *cb_base, *gr0_base, *gr1_base;
- 
- 	gr0_base = ARM_SMMU_GR0(smmu);
- 	gr1_base = ARM_SMMU_GR1(smmu);
--	stage1 = root_cfg->cbar != CBAR_TYPE_S2_TRANS;
--	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, root_cfg->cbndx);
-+	stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
-+	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
- 
- 	/* CBAR */
--	reg = root_cfg->cbar;
-+	reg = cfg->cbar;
- 	if (smmu->version == 1)
--	      reg |= root_cfg->irptndx << CBAR_IRPTNDX_SHIFT;
-+	      reg |= cfg->irptndx << CBAR_IRPTNDX_SHIFT;
- 
- 	/*
- 	 * Use the weakest shareability/memory types, so they are
-@@ -783,9 +726,9 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
- 		reg |= (CBAR_S1_BPSHCFG_NSH << CBAR_S1_BPSHCFG_SHIFT) |
- 			(CBAR_S1_MEMATTR_WB << CBAR_S1_MEMATTR_SHIFT);
- 	} else {
--		reg |= ARM_SMMU_CB_VMID(root_cfg) << CBAR_VMID_SHIFT;
-+		reg |= ARM_SMMU_CB_VMID(cfg) << CBAR_VMID_SHIFT;
- 	}
--	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(root_cfg->cbndx));
-+	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(cfg->cbndx));
- 
- 	if (smmu->version > 1) {
- 		/* CBA2R */
-@@ -795,7 +738,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
- 		reg = CBA2R_RW64_32BIT;
- #endif
- 		writel_relaxed(reg,
--			       gr1_base + ARM_SMMU_GR1_CBA2R(root_cfg->cbndx));
-+			       gr1_base + ARM_SMMU_GR1_CBA2R(cfg->cbndx));
- 
- 		/* TTBCR2 */
- 		switch (smmu->input_size) {
-@@ -845,13 +788,13 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
- 	}
- 
- 	/* TTBR0 */
--	arm_smmu_flush_pgtable(smmu, root_cfg->pgd,
-+	arm_smmu_flush_pgtable(smmu, cfg->pgd,
- 			       PTRS_PER_PGD * sizeof(pgd_t));
--	reg = __pa(root_cfg->pgd);
-+	reg = __pa(cfg->pgd);
- 	writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR0_LO);
--	reg = (phys_addr_t)__pa(root_cfg->pgd) >> 32;
-+	reg = (phys_addr_t)__pa(cfg->pgd) >> 32;
- 	if (stage1)
--		reg |= ARM_SMMU_CB_ASID(root_cfg) << TTBRn_HI_ASID_SHIFT;
-+		reg |= ARM_SMMU_CB_ASID(cfg) << TTBRn_HI_ASID_SHIFT;
- 	writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR0_HI);
- 
- 	/*
-@@ -920,44 +863,24 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
- }
- 
- static int arm_smmu_init_domain_context(struct iommu_domain *domain,
--					struct device *dev,
--					struct arm_smmu_device *device_smmu)
-+					struct arm_smmu_device *smmu)
- {
- 	int irq, ret, start;
- 	struct arm_smmu_domain *smmu_domain = domain->priv;
--	struct arm_smmu_cfg *root_cfg = &smmu_domain->root_cfg;
--	struct arm_smmu_device *smmu, *parent;
--
--	/*
--	 * Walk the SMMU chain to find the root device for this chain.
--	 * We assume that no masters have translations which terminate
--	 * early, and therefore check that the root SMMU does indeed have
--	 * a StreamID for the master in question.
--	 */
--	parent = device_smmu;
--	smmu_domain->output_mask = -1;
--	do {
--		smmu = parent;
--		smmu_domain->output_mask &= (1ULL << smmu->s2_output_size) - 1;
--	} while ((parent = find_parent_smmu(smmu)));
--
--	if (!find_smmu_master_cfg(smmu, dev)) {
--		dev_err(dev, "unable to find root SMMU config for device\n");
--		return -ENODEV;
--	}
-+	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
- 
- 	if (smmu->features & ARM_SMMU_FEAT_TRANS_NESTED) {
- 		/*
- 		 * We will likely want to change this if/when KVM gets
- 		 * involved.
- 		 */
--		root_cfg->cbar = CBAR_TYPE_S1_TRANS_S2_BYPASS;
-+		cfg->cbar = CBAR_TYPE_S1_TRANS_S2_BYPASS;
- 		start = smmu->num_s2_context_banks;
- 	} else if (smmu->features & ARM_SMMU_FEAT_TRANS_S2) {
--		root_cfg->cbar = CBAR_TYPE_S2_TRANS;
-+		cfg->cbar = CBAR_TYPE_S2_TRANS;
- 		start = 0;
- 	} else {
--		root_cfg->cbar = CBAR_TYPE_S1_TRANS_S2_BYPASS;
-+		cfg->cbar = CBAR_TYPE_S1_TRANS_S2_BYPASS;
- 		start = smmu->num_s2_context_banks;
- 	}
- 
-@@ -966,39 +889,38 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 	if (IS_ERR_VALUE(ret))
- 		return ret;
- 
--	root_cfg->cbndx = ret;
-+	cfg->cbndx = ret;
- 	if (smmu->version == 1) {
--		root_cfg->irptndx = atomic_inc_return(&smmu->irptndx);
--		root_cfg->irptndx %= smmu->num_context_irqs;
-+		cfg->irptndx = atomic_inc_return(&smmu->irptndx);
-+		cfg->irptndx %= smmu->num_context_irqs;
- 	} else {
--		root_cfg->irptndx = root_cfg->cbndx;
-+		cfg->irptndx = cfg->cbndx;
- 	}
- 
--	irq = smmu->irqs[smmu->num_global_irqs + root_cfg->irptndx];
-+	irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
- 	ret = request_irq(irq, arm_smmu_context_fault, IRQF_SHARED,
- 			  "arm-smmu-context-fault", domain);
- 	if (IS_ERR_VALUE(ret)) {
- 		dev_err(smmu->dev, "failed to request context IRQ %d (%u)\n",
--			root_cfg->irptndx, irq);
--		root_cfg->irptndx = INVALID_IRPTNDX;
-+			cfg->irptndx, irq);
-+		cfg->irptndx = INVALID_IRPTNDX;
- 		goto out_free_context;
- 	}
- 
--	root_cfg->smmu = smmu;
-+	smmu_domain->smmu = smmu;
- 	arm_smmu_init_context_bank(smmu_domain);
--	smmu_domain->leaf_smmu = device_smmu;
- 	return 0;
- 
- out_free_context:
--	__arm_smmu_free_bitmap(smmu->context_map, root_cfg->cbndx);
-+	__arm_smmu_free_bitmap(smmu->context_map, cfg->cbndx);
- 	return ret;
- }
- 
- static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
- {
- 	struct arm_smmu_domain *smmu_domain = domain->priv;
--	struct arm_smmu_cfg *root_cfg = &smmu_domain->root_cfg;
--	struct arm_smmu_device *smmu = root_cfg->smmu;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
- 	void __iomem *cb_base;
- 	int irq;
- 
-@@ -1006,16 +928,16 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
- 		return;
- 
- 	/* Disable the context bank and nuke the TLB before freeing it. */
--	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, root_cfg->cbndx);
-+	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
- 	writel_relaxed(0, cb_base + ARM_SMMU_CB_SCTLR);
--	arm_smmu_tlb_inv_context(root_cfg);
-+	arm_smmu_tlb_inv_context(smmu_domain);
- 
--	if (root_cfg->irptndx != INVALID_IRPTNDX) {
--		irq = smmu->irqs[smmu->num_global_irqs + root_cfg->irptndx];
-+	if (cfg->irptndx != INVALID_IRPTNDX) {
-+		irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
- 		free_irq(irq, domain);
- 	}
- 
--	__arm_smmu_free_bitmap(smmu->context_map, root_cfg->cbndx);
-+	__arm_smmu_free_bitmap(smmu->context_map, cfg->cbndx);
- }
- 
- static int arm_smmu_domain_init(struct iommu_domain *domain)
-@@ -1035,7 +957,7 @@ static int arm_smmu_domain_init(struct iommu_domain *domain)
- 	pgd = kzalloc(PTRS_PER_PGD * sizeof(pgd_t), GFP_KERNEL);
- 	if (!pgd)
- 		goto out_free_domain;
--	smmu_domain->root_cfg.pgd = pgd;
-+	smmu_domain->cfg.pgd = pgd;
- 
- 	spin_lock_init(&smmu_domain->lock);
- 	domain->priv = smmu_domain;
-@@ -1090,8 +1012,8 @@ static void arm_smmu_free_puds(pgd_t *pgd)
- static void arm_smmu_free_pgtables(struct arm_smmu_domain *smmu_domain)
- {
- 	int i;
--	struct arm_smmu_cfg *root_cfg = &smmu_domain->root_cfg;
--	pgd_t *pgd, *pgd_base = root_cfg->pgd;
-+	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-+	pgd_t *pgd, *pgd_base = cfg->pgd;
- 
- 	/*
- 	 * Recursively free the page tables for this domain. We don't
-@@ -1142,7 +1064,7 @@ static int arm_smmu_master_configure_smrs(struct arm_smmu_device *smmu,
- 		return -ENOMEM;
- 	}
- 
--	/* Allocate the SMRs on the root SMMU */
-+	/* Allocate the SMRs on the SMMU */
- 	for (i = 0; i < cfg->num_streamids; ++i) {
- 		int idx = __arm_smmu_alloc_bitmap(smmu->smr_map, 0,
- 						  smmu->num_mapping_groups);
-@@ -1210,34 +1132,18 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
- 				      struct arm_smmu_master_cfg *cfg)
- {
- 	int i, ret;
--	struct arm_smmu_device *parent, *smmu = smmu_domain->root_cfg.smmu;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
- 
- 	ret = arm_smmu_master_configure_smrs(smmu, cfg);
- 	if (ret)
- 		return ret;
- 
--	/* Bypass the leaves */
--	smmu = smmu_domain->leaf_smmu;
--	while ((parent = find_parent_smmu(smmu))) {
--		/*
--		 * We won't have a StreamID match for anything but the root
--		 * smmu, so we only need to worry about StreamID indexing,
--		 * where we must install bypass entries in the S2CRs.
--		 */
--		if (smmu->features & ARM_SMMU_FEAT_STREAM_MATCH)
--			continue;
--
--		arm_smmu_bypass_stream_mapping(smmu, cfg);
--		smmu = parent;
--	}
--
--	/* Now we're at the root, time to point at our context bank */
- 	for (i = 0; i < cfg->num_streamids; ++i) {
- 		u32 idx, s2cr;
- 		idx = cfg->smrs ? cfg->smrs[i].idx : cfg->streamids[i];
- 		s2cr = S2CR_TYPE_TRANS |
--		       (smmu_domain->root_cfg.cbndx << S2CR_CBNDX_SHIFT);
-+		       (smmu_domain->cfg.cbndx << S2CR_CBNDX_SHIFT);
- 		writel_relaxed(s2cr, gr0_base + ARM_SMMU_GR0_S2CR(idx));
- 	}
- 
-@@ -1247,7 +1153,7 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
- static void arm_smmu_domain_remove_master(struct arm_smmu_domain *smmu_domain,
- 					  struct arm_smmu_master_cfg *cfg)
- {
--	struct arm_smmu_device *smmu = smmu_domain->root_cfg.smmu;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 
- 	/*
- 	 * We *must* clear the S2CR first, because freeing the SMR means
-@@ -1261,37 +1167,37 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- {
- 	int ret = -EINVAL;
- 	struct arm_smmu_domain *smmu_domain = domain->priv;
--	struct arm_smmu_device *device_smmu;
-+	struct arm_smmu_device *smmu;
- 	struct arm_smmu_master_cfg *cfg;
- 	unsigned long flags;
- 
--	device_smmu = dev_get_master_dev(dev)->archdata.iommu;
--	if (!device_smmu) {
-+	smmu = dev_get_master_dev(dev)->archdata.iommu;
-+	if (!smmu) {
- 		dev_err(dev, "cannot attach to SMMU, is it on the same bus?\n");
- 		return -ENXIO;
- 	}
- 
- 	/*
--	 * Sanity check the domain. We don't currently support domains
--	 * that cross between different SMMU chains.
-+	 * Sanity check the domain. We don't support domains across
-+	 * different SMMUs.
- 	 */
- 	spin_lock_irqsave(&smmu_domain->lock, flags);
--	if (!smmu_domain->leaf_smmu) {
-+	if (!smmu_domain->smmu) {
- 		/* Now that we have a master, we can finalise the domain */
--		ret = arm_smmu_init_domain_context(domain, dev, device_smmu);
-+		ret = arm_smmu_init_domain_context(domain, smmu);
- 		if (IS_ERR_VALUE(ret))
- 			goto err_unlock;
--	} else if (smmu_domain->leaf_smmu != device_smmu) {
-+	} else if (smmu_domain->smmu != smmu) {
- 		dev_err(dev,
- 			"cannot attach to SMMU %s whilst already attached to domain on SMMU %s\n",
--			dev_name(smmu_domain->leaf_smmu->dev),
--			dev_name(device_smmu->dev));
-+			dev_name(smmu_domain->smmu->dev),
-+			dev_name(smmu->dev));
- 		goto err_unlock;
- 	}
- 	spin_unlock_irqrestore(&smmu_domain->lock, flags);
- 
- 	/* Looks ok, so add the device to the domain */
--	cfg = find_smmu_master_cfg(smmu_domain->leaf_smmu, dev);
-+	cfg = find_smmu_master_cfg(smmu_domain->smmu, dev);
- 	if (!cfg)
- 		return -ENODEV;
- 
-@@ -1307,7 +1213,7 @@ static void arm_smmu_detach_dev(struct iommu_domain *domain, struct device *dev)
- 	struct arm_smmu_domain *smmu_domain = domain->priv;
- 	struct arm_smmu_master_cfg *cfg;
- 
--	cfg = find_smmu_master_cfg(smmu_domain->leaf_smmu, dev);
-+	cfg = find_smmu_master_cfg(smmu_domain->smmu, dev);
- 	if (cfg)
- 		arm_smmu_domain_remove_master(smmu_domain, cfg);
- }
-@@ -1497,12 +1403,12 @@ static int arm_smmu_handle_mapping(struct arm_smmu_domain *smmu_domain,
- 	int ret, stage;
- 	unsigned long end;
- 	phys_addr_t input_mask, output_mask;
--	struct arm_smmu_cfg *root_cfg = &smmu_domain->root_cfg;
--	pgd_t *pgd = root_cfg->pgd;
--	struct arm_smmu_device *smmu = root_cfg->smmu;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-+	pgd_t *pgd = cfg->pgd;
- 	unsigned long flags;
- 
--	if (root_cfg->cbar == CBAR_TYPE_S2_TRANS) {
-+	if (cfg->cbar == CBAR_TYPE_S2_TRANS) {
- 		stage = 2;
- 		output_mask = (1ULL << smmu->s2_output_size) - 1;
- 	} else {
-@@ -1552,10 +1458,6 @@ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
- 	if (!smmu_domain)
- 		return -ENODEV;
- 
--	/* Check for silent address truncation up the SMMU chain. */
--	if ((phys_addr_t)iova & ~smmu_domain->output_mask)
--		return -ERANGE;
--
- 	return arm_smmu_handle_mapping(smmu_domain, iova, paddr, size, prot);
- }
- 
-@@ -1566,7 +1468,7 @@ static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
- 	struct arm_smmu_domain *smmu_domain = domain->priv;
- 
- 	ret = arm_smmu_handle_mapping(smmu_domain, iova, 0, size, 0);
--	arm_smmu_tlb_inv_context(&smmu_domain->root_cfg);
-+	arm_smmu_tlb_inv_context(smmu_domain);
- 	return ret ? 0 : size;
- }
- 
-@@ -1578,9 +1480,9 @@ static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
- 	pmd_t pmd;
- 	pte_t pte;
- 	struct arm_smmu_domain *smmu_domain = domain->priv;
--	struct arm_smmu_cfg *root_cfg = &smmu_domain->root_cfg;
-+	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
- 
--	pgdp = root_cfg->pgd;
-+	pgdp = cfg->pgd;
- 	if (!pgdp)
- 		return 0;
- 
-@@ -1607,7 +1509,7 @@ static int arm_smmu_domain_has_cap(struct iommu_domain *domain,
- 				   unsigned long cap)
- {
- 	struct arm_smmu_domain *smmu_domain = domain->priv;
--	u32 features = smmu_domain->root_cfg.smmu->features;
-+	u32 features = smmu_domain->smmu->features;
- 
- 	switch (cap) {
- 	case IOMMU_CAP_CACHE_COHERENCY:
-@@ -1636,7 +1538,7 @@ static int arm_smmu_add_device(struct device *dev)
- 		return -EINVAL;
- 	}
- 
--	smmu = find_parent_smmu_for_device(dev);
-+	smmu = find_smmu_for_device(dev);
- 	if (!smmu)
- 		return -ENODEV;
- 
-@@ -1914,7 +1816,6 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- {
- 	struct resource *res;
- 	struct arm_smmu_device *smmu;
--	struct device_node *dev_node;
- 	struct device *dev = &pdev->dev;
- 	struct rb_node *node;
- 	struct of_phandle_args masterspec;
-@@ -1984,12 +1885,9 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 	}
- 	dev_notice(dev, "registered %d master devices\n", i);
- 
--	if ((dev_node = of_parse_phandle(dev->of_node, "smmu-parent", 0)))
--		smmu->parent_of_node = dev_node;
--
- 	err = arm_smmu_device_cfg_probe(smmu);
- 	if (err)
--		goto out_put_parent;
-+		goto out_put_masters;
- 
- 	parse_driver_options(smmu);
- 
-@@ -1999,7 +1897,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 			"found only %d context interrupt(s) but %d required\n",
- 			smmu->num_context_irqs, smmu->num_context_banks);
- 		err = -ENODEV;
--		goto out_put_parent;
-+		goto out_put_masters;
- 	}
- 
- 	for (i = 0; i < smmu->num_global_irqs; ++i) {
-@@ -2027,10 +1925,6 @@ out_free_irqs:
- 	while (i--)
- 		free_irq(smmu->irqs[i], smmu);
- 
--out_put_parent:
--	if (smmu->parent_of_node)
--		of_node_put(smmu->parent_of_node);
--
- out_put_masters:
- 	for (node = rb_first(&smmu->masters); node; node = rb_next(node)) {
- 		struct arm_smmu_master *master;
-@@ -2061,9 +1955,6 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
- 	if (!smmu)
- 		return -ENODEV;
- 
--	if (smmu->parent_of_node)
--		of_node_put(smmu->parent_of_node);
--
- 	for (node = rb_first(&smmu->masters); node; node = rb_next(node)) {
- 		struct arm_smmu_master *master;
- 		master = container_of(node, struct arm_smmu_master, node);
--- 
-2.0.0
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
