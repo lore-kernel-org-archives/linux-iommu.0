@@ -1,280 +1,520 @@
-From: "Gabbay, Oded" <Oded.Gabbay@amd.com>
+From: Jerome Glisse <j.glisse-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Subject: Re: [PATCH 1/6] mmput: use notifier chain to call subsystem exit
- handler.
-Date: Mon, 30 Jun 2014 14:41:24 +0000
-Message-ID: <019CCE693E457142B37B791721487FD91806B836@storexdag01.amd.com>
+	handler.
+Date: Mon, 30 Jun 2014 11:06:30 -0400
+Message-ID: <20140630150628.GA1956@gmail.com>
 References: <1403920822-14488-1-git-send-email-j.glisse@gmail.com>
- <1403920822-14488-2-git-send-email-j.glisse@gmail.com>
+	<1403920822-14488-2-git-send-email-j.glisse@gmail.com>
+	<019CCE693E457142B37B791721487FD91806B836@storexdag01.amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <1403920822-14488-2-git-send-email-j.glisse@gmail.com>
-Content-Language: en-US
-Sender: owner-linux-mm@kvack.org
-To: =?utf-8?B?SsOpcsO0bWUgR2xpc3Nl?= <j.glisse@gmail.com>
-Cc: "Deucher, Alexander" <Alexander.Deucher@amd.com>, "Lewycky, Andrew" <Andrew.Lewycky@amd.com>, "Cornwall, Jay" <Jay.Cornwall@amd.com>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "mgorman@suse.de" <mgorman@suse.de>, "hpa@zytor.com" <hpa@zytor.com>, "peterz@infraread.org" <peterz@infraread.org>, "aarcange@redhat.com" <aarcange@redhat.com>, "riel@redhat.com" <riel@redhat.com>, "jweiner@redhat.com" <jweiner@redhat.com>, "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>, Mark Hairgrove <mhairgrove@nvidia.com>, Jatin Kumar <jakumar@nvidia.com>, Subhash Gutti <sgutti@nvidia.com>, Lucien
- Dunning <ldunning@nvidia.com>, Cameron Buschardt <cabuschardt@nvidia.com>, Arvind Gopalakrishnan <arvindg@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Sherry
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <019CCE693E457142B37B791721487FD91806B836-0nO7ALo/ziwxlywnonMhLEEOCMrvLtNR@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Gabbay, Oded" <Oded.Gabbay-5C7GfCeVMHo@public.gmane.org>
+Cc: Sherry Cheung <SCheung-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "aarcange-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <aarcange-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jatin Kumar <jakumar-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Lucien Dunning <ldunning-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "mgorman-l3A5Bk7waGM@public.gmane.org" <mgorman-l3A5Bk7waGM@public.gmane.org>, "jweiner-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <jweiner-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Subhash Gutti <sgutti-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, John Hubbard <jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mark Hairgrove <mhairgrove-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Cameron Buschardt <cabuschardt-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "peterz-hDdKplPs4pWWVfeAwA7xHQ@public.gmane.org" <peterz-hDdKplPs4pWWVfeAwA7xHQ@public.gmane.org>, Duncan Poole <dpoole-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "Cornwall,
+	Jay" <Jay.Cornwall-5C7GfCeVMHo@public.gmane.org>, "Lewycky, Andrew" <Andrew.Lewycky-5C7GfCeVMHo@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Arvind Gopalakrishnan <arvindg-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "Deucher,
+	Alexander" <Alexander.Deuch>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gRnJpLCAyMDE0LTA2LTI3IGF0IDIyOjAwIC0wNDAwLCBKw6lyw7RtZSBHbGlzc2Ugd3JvdGU6
-Cj4gRnJvbTogSsOpcsO0bWUgR2xpc3NlIDxqZ2xpc3NlQHJlZGhhdC5jb20+Cj4gCj4gU2V2ZXJh
-bCBzdWJzeXN0ZW0gcmVxdWlyZSBhIGNhbGxiYWNrIHdoZW4gYSBtbSBzdHJ1Y3QgaXMgYmVpbmcg
-ZGVzdHJveQo+IHNvIHRoYXQgdGhleSBjYW4gY2xlYW51cCB0aGVyZSByZXNwZWN0aXZlIHBlciBt
-bSBzdHJ1Y3QuIEluc3RlYWQgb2YKPiBoYXZpbmcgZWFjaCBzdWJzeXN0ZW0gYWRkIGl0cyBjYWxs
-YmFjayB0byBtbXB1dCB1c2UgYSBub3RpZmllciBjaGFpbgo+IHRvIGNhbGwgZWFjaCBvZiB0aGUg
-c3Vic3lzdGVtLgo+IAo+IFRoaXMgd2lsbCBhbGxvdyBuZXcgc3Vic3lzdGVtIHRvIHJlZ2lzdGVy
-IGNhbGxiYWNrIGV2ZW4gaWYgdGhleSBhcmUKPiBtb2R1bGUuIFRoZXJlIHNob3VsZCBiZSBubyBj
-b250ZW50aW9uIG9uIHRoZSBydyBzZW1hcGhvcmUgcHJvdGVjdGluZwo+IHRoZSBjYWxsIGNoYWlu
-IGFuZCB0aGUgaW1wYWN0IG9uIHRoZSBjb2RlIHBhdGggc2hvdWxkIGJlIGxvdyBhbmQKPiBidXJy
-aWVkIGluIHRoZSBub2lzZS4KPiAKPiBOb3RlIHRoYXQgdGhpcyBwYXRjaCBhbHNvIG1vdmUgdGhl
-IGNhbGwgdG8gY2xlYW51cCBmdW5jdGlvbnMgYWZ0ZXIKPiBleGl0X21tYXAgc28gdGhhdCBuZXcg
-Y2FsbCBiYWNrIGNhbiBhc3N1bWUgdGhhdCBtbXVfbm90aWZpZXJfcmVsZWFzZQo+IGhhdmUgYWxy
-ZWFkeSBiZWVuIGNhbGwuIFRoaXMgZG9lcyBub3QgaW1wYWN0IGV4aXN0aW5nIGNsZWFudXAgZnVu
-Y3Rpb25zCj4gYXMgdGhleSBkbyBub3QgcmVseSBvbiBhbnl0aGluZyB0aGF0IGV4aXRfbW1hcCBp
-cyBmcmVlaW5nLiBBbHNvIG1vdmVkCj4ga2h1Z2VwYWdlZF9leGl0IHRvIGV4aXRfbW1hcCBzbyB0
-aGF0IG9yZGVyaW5nIGlzIHByZXNlcnZlZCBmb3IgdGhhdAo+IGZ1bmN0aW9uLgo+IAo+IFNpZ25l
-ZC1vZmYtYnk6IErDqXLDtG1lIEdsaXNzZSA8amdsaXNzZUByZWRoYXQuY29tPgo+IC0tLQo+ICBm
-cy9haW8uYyAgICAgICAgICAgICAgICB8IDI5ICsrKysrKysrKysrKysrKysrKysrKystLS0tLS0t
-Cj4gIGluY2x1ZGUvbGludXgvYWlvLmggICAgIHwgIDIgLS0KPiAgaW5jbHVkZS9saW51eC9rc20u
-aCAgICAgfCAxMSAtLS0tLS0tLS0tLQo+ICBpbmNsdWRlL2xpbnV4L3NjaGVkLmggICB8ICA1ICsr
-KysrCj4gIGluY2x1ZGUvbGludXgvdXByb2Jlcy5oIHwgIDEgLQo+ICBrZXJuZWwvZXZlbnRzL3Vw
-cm9iZXMuYyB8IDE5ICsrKysrKysrKysrKysrKystLS0KPiAga2VybmVsL2ZvcmsuYyAgICAgICAg
-ICAgfCAyMiArKysrKysrKysrKysrKysrKystLS0tCj4gIG1tL2tzbS5jICAgICAgICAgICAgICAg
-IHwgMjYgKysrKysrKysrKysrKysrKysrKysrLS0tLS0KPiAgbW0vbW1hcC5jICAgICAgICAgICAg
-ICAgfCAgMyArKysKPiAgOSBmaWxlcyBjaGFuZ2VkLCA4NSBpbnNlcnRpb25zKCspLCAzMyBkZWxl
-dGlvbnMoLSkKPiAKPiBkaWZmIC0tZ2l0IGEvZnMvYWlvLmMgYi9mcy9haW8uYwo+IGluZGV4IGMx
-ZDhjNDguLjFkMDZlOTIgMTAwNjQ0Cj4gLS0tIGEvZnMvYWlvLmMKPiArKysgYi9mcy9haW8uYwo+
-IEBAIC00MCw2ICs0MCw3IEBACj4gICNpbmNsdWRlIDxsaW51eC9yYW1mcy5oPgo+ICAjaW5jbHVk
-ZSA8bGludXgvcGVyY3B1LXJlZmNvdW50Lmg+Cj4gICNpbmNsdWRlIDxsaW51eC9tb3VudC5oPgo+
-ICsjaW5jbHVkZSA8bGludXgvbm90aWZpZXIuaD4KPiAgCj4gICNpbmNsdWRlIDxhc20va21hcF90
-eXBlcy5oPgo+ICAjaW5jbHVkZSA8YXNtL3VhY2Nlc3MuaD4KPiBAQCAtNzc0LDIwICs3NzUsMjIg
-QEAgc3NpemVfdCB3YWl0X29uX3N5bmNfa2lvY2Ioc3RydWN0IGtpb2NiICpyZXEpCj4gIEVYUE9S
-VF9TWU1CT0wod2FpdF9vbl9zeW5jX2tpb2NiKTsKPiAgCj4gIC8qCj4gLSAqIGV4aXRfYWlvOiBj
-YWxsZWQgd2hlbiB0aGUgbGFzdCB1c2VyIG9mIG1tIGdvZXMgYXdheS4gIEF0IHRoaXMgcG9pbnQs
-IHRoZXJlIGlzCj4gKyAqIGFpb19leGl0OiBjYWxsZWQgd2hlbiB0aGUgbGFzdCB1c2VyIG9mIG1t
-IGdvZXMgYXdheS4gIEF0IHRoaXMgcG9pbnQsIHRoZXJlIGlzCj4gICAqIG5vIHdheSBmb3IgYW55
-IG5ldyByZXF1ZXN0cyB0byBiZSBzdWJtaXRlZCBvciBhbnkgb2YgdGhlIGlvXyogc3lzY2FsbHMg
-dG8gYmUKPiAgICogY2FsbGVkIG9uIHRoZSBjb250ZXh0Lgo+ICAgKgo+ICAgKiBUaGVyZSBtYXkg
-YmUgb3V0c3RhbmRpbmcga2lvY2JzLCBidXQgZnJlZV9pb2N0eCgpIHdpbGwgZXhwbGljaXRseSB3
-YWl0IG9uCj4gICAqIHRoZW0uCj4gICAqLwo+IC12b2lkIGV4aXRfYWlvKHN0cnVjdCBtbV9zdHJ1
-Y3QgKm1tKQo+ICtzdGF0aWMgaW50IGFpb19leGl0KHN0cnVjdCBub3RpZmllcl9ibG9jayAqbmIs
-Cj4gKwkJICAgIHVuc2lnbmVkIGxvbmcgYWN0aW9uLCB2b2lkICpkYXRhKQo+ICB7Cj4gKwlzdHJ1
-Y3QgbW1fc3RydWN0ICptbSA9IGRhdGE7Cj4gIAlzdHJ1Y3Qga2lvY3R4X3RhYmxlICp0YWJsZSA9
-IHJjdV9kZXJlZmVyZW5jZV9yYXcobW0tPmlvY3R4X3RhYmxlKTsKPiAgCWludCBpOwo+ICAKPiAg
-CWlmICghdGFibGUpCj4gLQkJcmV0dXJuOwo+ICsJCXJldHVybiAwOwo+ICAKPiAgCWZvciAoaSA9
-IDA7IGkgPCB0YWJsZS0+bnI7ICsraSkgewo+ICAJCXN0cnVjdCBraW9jdHggKmN0eCA9IHRhYmxl
-LT50YWJsZVtpXTsKPiBAQCAtNzk2LDEwICs3OTksMTAgQEAgdm9pZCBleGl0X2FpbyhzdHJ1Y3Qg
-bW1fc3RydWN0ICptbSkKPiAgCQkJY29udGludWU7Cj4gIAkJLyoKPiAgCQkgKiBXZSBkb24ndCBu
-ZWVkIHRvIGJvdGhlciB3aXRoIG11bm1hcCgpIGhlcmUgLSBleGl0X21tYXAobW0pCj4gLQkJICog
-aXMgY29taW5nIGFuZCBpdCdsbCB1bm1hcCBldmVyeXRoaW5nLiBBbmQgd2Ugc2ltcGx5IGNhbid0
-LAo+IC0JCSAqIHRoaXMgaXMgbm90IG5lY2Vzc2FyaWx5IG91ciAtPm1tLgo+IC0JCSAqIFNpbmNl
-IGtpbGxfaW9jdHgoKSB1c2VzIG5vbi16ZXJvIC0+bW1hcF9zaXplIGFzIGluZGljYXRvcgo+IC0J
-CSAqIHRoYXQgaXQgbmVlZHMgdG8gdW5tYXAgdGhlIGFyZWEsIGp1c3Qgc2V0IGl0IHRvIDAuCj4g
-KwkJICogaGF2ZSBhbHJlYWR5IGJlZW4gY2FsbCBhbmQgZXZlcnl0aGluZyBpcyB1bm1hcCBieSBu
-b3cuIEJ1dAo+ICsJCSAqIHRvIGJlIHNhZmUgc2V0IC0+bW1hcF9zaXplIHRvIDAgc2luY2UgYWlv
-X2ZyZWVfcmluZygpIHVzZXMKPiArCQkgKiBub24temVybyAtPm1tYXBfc2l6ZSBhcyBpbmRpY2F0
-b3IgdGhhdCBpdCBuZWVkcyB0byB1bm1hcCB0aGUKPiArCQkgKiBhcmVhLgo+ICAJCSAqLwo+ICAJ
-CWN0eC0+bW1hcF9zaXplID0gMDsKPiAgCQlraWxsX2lvY3R4KG1tLCBjdHgsIE5VTEwpOwo+IEBA
-IC04MDcsNiArODEwLDcgQEAgdm9pZCBleGl0X2FpbyhzdHJ1Y3QgbW1fc3RydWN0ICptbSkKPiAg
-Cj4gIAlSQ1VfSU5JVF9QT0lOVEVSKG1tLT5pb2N0eF90YWJsZSwgTlVMTCk7Cj4gIAlrZnJlZSh0
-YWJsZSk7Cj4gKwlyZXR1cm4gMDsKPiAgfQo+ICAKPiAgc3RhdGljIHZvaWQgcHV0X3JlcXNfYXZh
-aWxhYmxlKHN0cnVjdCBraW9jdHggKmN0eCwgdW5zaWduZWQgbnIpCj4gQEAgLTE2MjksMyArMTYz
-MywxNCBAQCBTWVNDQUxMX0RFRklORTUoaW9fZ2V0ZXZlbnRzLCBhaW9fY29udGV4dF90LCBjdHhf
-aWQsCj4gIAl9Cj4gIAlyZXR1cm4gcmV0Owo+ICB9Cj4gKwo+ICtzdGF0aWMgc3RydWN0IG5vdGlm
-aWVyX2Jsb2NrIGFpb19tbXB1dF9uYiA9IHsKPiArCS5ub3RpZmllcl9jYWxsCQk9IGFpb19leGl0
-LAo+ICsJLnByaW9yaXR5CQk9IDEsCj4gK307Cj4gKwo+ICtzdGF0aWMgaW50IF9faW5pdCBhaW9f
-aW5pdCh2b2lkKQo+ICt7Cj4gKwlyZXR1cm4gbW1wdXRfcmVnaXN0ZXJfbm90aWZpZXIoJmFpb19t
-bXB1dF9uYik7Cj4gK30KPiArc3Vic3lzX2luaXRjYWxsKGFpb19pbml0KTsKPiBkaWZmIC0tZ2l0
-IGEvaW5jbHVkZS9saW51eC9haW8uaCBiL2luY2x1ZGUvbGludXgvYWlvLmgKPiBpbmRleCBkOWM5
-MmRhLi42MzA4ZmFjIDEwMDY0NAo+IC0tLSBhL2luY2x1ZGUvbGludXgvYWlvLmgKPiArKysgYi9p
-bmNsdWRlL2xpbnV4L2Fpby5oCj4gQEAgLTczLDcgKzczLDYgQEAgc3RhdGljIGlubGluZSB2b2lk
-IGluaXRfc3luY19raW9jYihzdHJ1Y3Qga2lvY2IgKmtpb2NiLCBzdHJ1Y3QgZmlsZSAqZmlscCkK
-PiAgZXh0ZXJuIHNzaXplX3Qgd2FpdF9vbl9zeW5jX2tpb2NiKHN0cnVjdCBraW9jYiAqaW9jYik7
-Cj4gIGV4dGVybiB2b2lkIGFpb19jb21wbGV0ZShzdHJ1Y3Qga2lvY2IgKmlvY2IsIGxvbmcgcmVz
-LCBsb25nIHJlczIpOwo+ICBzdHJ1Y3QgbW1fc3RydWN0Owo+IC1leHRlcm4gdm9pZCBleGl0X2Fp
-byhzdHJ1Y3QgbW1fc3RydWN0ICptbSk7Cj4gIGV4dGVybiBsb25nIGRvX2lvX3N1Ym1pdChhaW9f
-Y29udGV4dF90IGN0eF9pZCwgbG9uZyBuciwKPiAgCQkJIHN0cnVjdCBpb2NiIF9fdXNlciAqX191
-c2VyICppb2NicHAsIGJvb2wgY29tcGF0KTsKPiAgdm9pZCBraW9jYl9zZXRfY2FuY2VsX2ZuKHN0
-cnVjdCBraW9jYiAqcmVxLCBraW9jYl9jYW5jZWxfZm4gKmNhbmNlbCk7Cj4gQEAgLTgxLDcgKzgw
-LDYgQEAgdm9pZCBraW9jYl9zZXRfY2FuY2VsX2ZuKHN0cnVjdCBraW9jYiAqcmVxLCBraW9jYl9j
-YW5jZWxfZm4gKmNhbmNlbCk7Cj4gIHN0YXRpYyBpbmxpbmUgc3NpemVfdCB3YWl0X29uX3N5bmNf
-a2lvY2Ioc3RydWN0IGtpb2NiICppb2NiKSB7IHJldHVybiAwOyB9Cj4gIHN0YXRpYyBpbmxpbmUg
-dm9pZCBhaW9fY29tcGxldGUoc3RydWN0IGtpb2NiICppb2NiLCBsb25nIHJlcywgbG9uZyByZXMy
-KSB7IH0KPiAgc3RydWN0IG1tX3N0cnVjdDsKPiAtc3RhdGljIGlubGluZSB2b2lkIGV4aXRfYWlv
-KHN0cnVjdCBtbV9zdHJ1Y3QgKm1tKSB7IH0KPiAgc3RhdGljIGlubGluZSBsb25nIGRvX2lvX3N1
-Ym1pdChhaW9fY29udGV4dF90IGN0eF9pZCwgbG9uZyBuciwKPiAgCQkJCXN0cnVjdCBpb2NiIF9f
-dXNlciAqIF9fdXNlciAqaW9jYnBwLAo+ICAJCQkJYm9vbCBjb21wYXQpIHsgcmV0dXJuIDA7IH0K
-PiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9rc20uaCBiL2luY2x1ZGUvbGludXgva3NtLmgK
-PiBpbmRleCAzYmU2YmIxLi44NGMxODRmIDEwMDY0NAo+IC0tLSBhL2luY2x1ZGUvbGludXgva3Nt
-LmgKPiArKysgYi9pbmNsdWRlL2xpbnV4L2tzbS5oCj4gQEAgLTIwLDcgKzIwLDYgQEAgc3RydWN0
-IG1lbV9jZ3JvdXA7Cj4gIGludCBrc21fbWFkdmlzZShzdHJ1Y3Qgdm1fYXJlYV9zdHJ1Y3QgKnZt
-YSwgdW5zaWduZWQgbG9uZyBzdGFydCwKPiAgCQl1bnNpZ25lZCBsb25nIGVuZCwgaW50IGFkdmlj
-ZSwgdW5zaWduZWQgbG9uZyAqdm1fZmxhZ3MpOwo+ICBpbnQgX19rc21fZW50ZXIoc3RydWN0IG1t
-X3N0cnVjdCAqbW0pOwo+IC12b2lkIF9fa3NtX2V4aXQoc3RydWN0IG1tX3N0cnVjdCAqbW0pOwo+
-ICAKPiAgc3RhdGljIGlubGluZSBpbnQga3NtX2Zvcmsoc3RydWN0IG1tX3N0cnVjdCAqbW0sIHN0
-cnVjdCBtbV9zdHJ1Y3QgKm9sZG1tKQo+ICB7Cj4gQEAgLTI5LDEyICsyOCw2IEBAIHN0YXRpYyBp
-bmxpbmUgaW50IGtzbV9mb3JrKHN0cnVjdCBtbV9zdHJ1Y3QgKm1tLCBzdHJ1Y3QgbW1fc3RydWN0
-ICpvbGRtbSkKPiAgCXJldHVybiAwOwo+ICB9Cj4gIAo+IC1zdGF0aWMgaW5saW5lIHZvaWQga3Nt
-X2V4aXQoc3RydWN0IG1tX3N0cnVjdCAqbW0pCj4gLXsKPiAtCWlmICh0ZXN0X2JpdChNTUZfVk1f
-TUVSR0VBQkxFLCAmbW0tPmZsYWdzKSkKPiAtCQlfX2tzbV9leGl0KG1tKTsKPiAtfQo+IC0KPiAg
-LyoKPiAgICogQSBLU00gcGFnZSBpcyBvbmUgb2YgdGhvc2Ugd3JpdGUtcHJvdGVjdGVkICJzaGFy
-ZWQgcGFnZXMiIG9yICJtZXJnZWQgcGFnZXMiCj4gICAqIHdoaWNoIEtTTSBtYXBzIGludG8gbXVs
-dGlwbGUgbW1zLCB3aGVyZXZlciBpZGVudGljYWwgYW5vbnltb3VzIHBhZ2UgY29udGVudAo+IEBA
-IC04MywxMCArNzYsNiBAQCBzdGF0aWMgaW5saW5lIGludCBrc21fZm9yayhzdHJ1Y3QgbW1fc3Ry
-dWN0ICptbSwgc3RydWN0IG1tX3N0cnVjdCAqb2xkbW0pCj4gIAlyZXR1cm4gMDsKPiAgfQo+ICAK
-PiAtc3RhdGljIGlubGluZSB2b2lkIGtzbV9leGl0KHN0cnVjdCBtbV9zdHJ1Y3QgKm1tKQo+IC17
-Cj4gLX0KPiAtCj4gIHN0YXRpYyBpbmxpbmUgaW50IFBhZ2VLc20oc3RydWN0IHBhZ2UgKnBhZ2Up
-Cj4gIHsKPiAgCXJldHVybiAwOwo+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L3NjaGVkLmgg
-Yi9pbmNsdWRlL2xpbnV4L3NjaGVkLmgKPiBpbmRleCAzMjJkNGZjLi40MjhiM2NmIDEwMDY0NAo+
-IC0tLSBhL2luY2x1ZGUvbGludXgvc2NoZWQuaAo+ICsrKyBiL2luY2x1ZGUvbGludXgvc2NoZWQu
-aAo+IEBAIC0yMzg0LDYgKzIzODQsMTEgQEAgc3RhdGljIGlubGluZSB2b2lkIG1tZHJvcChzdHJ1
-Y3QgbW1fc3RydWN0ICogbW0pCj4gIAkJX19tbWRyb3AobW0pOwo+ICB9Cj4gIAo+ICsvKiBtbXB1
-dCBjYWxsIGxpc3Qgb2Ygbm90aWZpZXIgYW5kIHN1YnN5c3RlbS9tb2R1bGUgY2FuIHJlZ2lzdGVy
-Cj4gKyAqIG5ldyBvbmUgdGhyb3VnaCB0aGlzIGNhbGwuCj4gKyAqLwo+ICtleHRlcm4gaW50IG1t
-cHV0X3JlZ2lzdGVyX25vdGlmaWVyKHN0cnVjdCBub3RpZmllcl9ibG9jayAqbmIpOwo+ICtleHRl
-cm4gaW50IG1tcHV0X3VucmVnaXN0ZXJfbm90aWZpZXIoc3RydWN0IG5vdGlmaWVyX2Jsb2NrICpu
-Yik7Cj4gIC8qIG1tcHV0IGdldHMgcmlkIG9mIHRoZSBtYXBwaW5ncyBhbmQgYWxsIHVzZXItc3Bh
-Y2UgKi8KPiAgZXh0ZXJuIHZvaWQgbW1wdXQoc3RydWN0IG1tX3N0cnVjdCAqKTsKPiAgLyogR3Jh
-YiBhIHJlZmVyZW5jZSB0byBhIHRhc2sncyBtbSwgaWYgaXQgaXMgbm90IGFscmVhZHkgZ29pbmcg
-YXdheSAqLwo+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L3Vwcm9iZXMuaCBiL2luY2x1ZGUv
-bGludXgvdXByb2Jlcy5oCj4gaW5kZXggNGY4NDRjNi4uNDRlNzI2NyAxMDA2NDQKPiAtLS0gYS9p
-bmNsdWRlL2xpbnV4L3Vwcm9iZXMuaAo+ICsrKyBiL2luY2x1ZGUvbGludXgvdXByb2Jlcy5oCj4g
-QEAgLTEyMCw3ICsxMjAsNiBAQCBleHRlcm4gaW50IHVwcm9iZV9wcmVfc3N0ZXBfbm90aWZpZXIo
-c3RydWN0IHB0X3JlZ3MgKnJlZ3MpOwo+ICBleHRlcm4gdm9pZCB1cHJvYmVfbm90aWZ5X3Jlc3Vt
-ZShzdHJ1Y3QgcHRfcmVncyAqcmVncyk7Cj4gIGV4dGVybiBib29sIHVwcm9iZV9kZW55X3NpZ25h
-bCh2b2lkKTsKPiAgZXh0ZXJuIGJvb2wgYXJjaF91cHJvYmVfc2tpcF9zc3RlcChzdHJ1Y3QgYXJj
-aF91cHJvYmUgKmF1cCwgc3RydWN0IHB0X3JlZ3MgKnJlZ3MpOwo+IC1leHRlcm4gdm9pZCB1cHJv
-YmVfY2xlYXJfc3RhdGUoc3RydWN0IG1tX3N0cnVjdCAqbW0pOwo+ICBleHRlcm4gaW50ICBhcmNo
-X3Vwcm9iZV9hbmFseXplX2luc24oc3RydWN0IGFyY2hfdXByb2JlICphdXAsIHN0cnVjdCBtbV9z
-dHJ1Y3QgKm1tLCB1bnNpZ25lZCBsb25nIGFkZHIpOwo+ICBleHRlcm4gaW50ICBhcmNoX3Vwcm9i
-ZV9wcmVfeG9sKHN0cnVjdCBhcmNoX3Vwcm9iZSAqYXVwLCBzdHJ1Y3QgcHRfcmVncyAqcmVncyk7
-Cj4gIGV4dGVybiBpbnQgIGFyY2hfdXByb2JlX3Bvc3RfeG9sKHN0cnVjdCBhcmNoX3Vwcm9iZSAq
-YXVwLCBzdHJ1Y3QgcHRfcmVncyAqcmVncyk7Cj4gZGlmZiAtLWdpdCBhL2tlcm5lbC9ldmVudHMv
-dXByb2Jlcy5jIGIva2VybmVsL2V2ZW50cy91cHJvYmVzLmMKPiBpbmRleCA0NmI3YzMxLi4zMmIw
-NGRjIDEwMDY0NAo+IC0tLSBhL2tlcm5lbC9ldmVudHMvdXByb2Jlcy5jCj4gKysrIGIva2VybmVs
-L2V2ZW50cy91cHJvYmVzLmMKPiBAQCAtMzcsNiArMzcsNyBAQAo+ICAjaW5jbHVkZSA8bGludXgv
-cGVyY3B1LXJ3c2VtLmg+Cj4gICNpbmNsdWRlIDxsaW51eC90YXNrX3dvcmsuaD4KPiAgI2luY2x1
-ZGUgPGxpbnV4L3NobWVtX2ZzLmg+Cj4gKyNpbmNsdWRlIDxsaW51eC9ub3RpZmllci5oPgo+ICAK
-PiAgI2luY2x1ZGUgPGxpbnV4L3Vwcm9iZXMuaD4KPiAgCj4gQEAgLTEyMjAsMTYgKzEyMjEsMTkg
-QEAgc3RhdGljIHN0cnVjdCB4b2xfYXJlYSAqZ2V0X3hvbF9hcmVhKHZvaWQpCj4gIC8qCj4gICAq
-IHVwcm9iZV9jbGVhcl9zdGF0ZSAtIEZyZWUgdGhlIGFyZWEgYWxsb2NhdGVkIGZvciBzbG90cy4K
-PiAgICovCj4gLXZvaWQgdXByb2JlX2NsZWFyX3N0YXRlKHN0cnVjdCBtbV9zdHJ1Y3QgKm1tKQo+
-ICtzdGF0aWMgaW50IHVwcm9iZV9jbGVhcl9zdGF0ZShzdHJ1Y3Qgbm90aWZpZXJfYmxvY2sgKm5i
-LAo+ICsJCQkgICAgICB1bnNpZ25lZCBsb25nIGFjdGlvbiwgdm9pZCAqZGF0YSkKPiAgewo+ICsJ
-c3RydWN0IG1tX3N0cnVjdCAqbW0gPSBkYXRhOwo+ICAJc3RydWN0IHhvbF9hcmVhICphcmVhID0g
-bW0tPnVwcm9iZXNfc3RhdGUueG9sX2FyZWE7Cj4gIAo+ICAJaWYgKCFhcmVhKQo+IC0JCXJldHVy
-bjsKPiArCQlyZXR1cm4gMDsKPiAgCj4gIAlwdXRfcGFnZShhcmVhLT5wYWdlKTsKPiAgCWtmcmVl
-KGFyZWEtPmJpdG1hcCk7Cj4gIAlrZnJlZShhcmVhKTsKPiArCXJldHVybiAwOwo+ICB9Cj4gIAo+
-ICB2b2lkIHVwcm9iZV9zdGFydF9kdXBfbW1hcCh2b2lkKQo+IEBAIC0xOTc5LDkgKzE5ODMsMTQg
-QEAgc3RhdGljIHN0cnVjdCBub3RpZmllcl9ibG9jayB1cHJvYmVfZXhjZXB0aW9uX25iID0gewo+
-ICAJLnByaW9yaXR5CQk9IElOVF9NQVgtMSwJLyogbm90aWZpZWQgYWZ0ZXIga3Byb2Jlcywga2dk
-YiAqLwo+ICB9Owo+ICAKPiArc3RhdGljIHN0cnVjdCBub3RpZmllcl9ibG9jayB1cHJvYmVfbW1w
-dXRfbmIgPSB7Cj4gKwkubm90aWZpZXJfY2FsbAkJPSB1cHJvYmVfY2xlYXJfc3RhdGUsCj4gKwku
-cHJpb3JpdHkJCT0gMCwKPiArfTsKPiArCj4gIHN0YXRpYyBpbnQgX19pbml0IGluaXRfdXByb2Jl
-cyh2b2lkKQo+ICB7Cj4gLQlpbnQgaTsKPiArCWludCBpLCBlcnI7Cj4gIAo+ICAJZm9yIChpID0g
-MDsgaSA8IFVQUk9CRVNfSEFTSF9TWjsgaSsrKQo+ICAJCW11dGV4X2luaXQoJnVwcm9iZXNfbW1h
-cF9tdXRleFtpXSk7Cj4gQEAgLTE5ODksNiArMTk5OCwxMCBAQCBzdGF0aWMgaW50IF9faW5pdCBp
-bml0X3Vwcm9iZXModm9pZCkKPiAgCWlmIChwZXJjcHVfaW5pdF9yd3NlbSgmZHVwX21tYXBfc2Vt
-KSkKPiAgCQlyZXR1cm4gLUVOT01FTTsKPiAgCj4gKwllcnIgPSBtbXB1dF9yZWdpc3Rlcl9ub3Rp
-ZmllcigmdXByb2JlX21tcHV0X25iKTsKPiArCWlmIChlcnIpCj4gKwkJcmV0dXJuIGVycjsKPiAr
-Cj4gIAlyZXR1cm4gcmVnaXN0ZXJfZGllX25vdGlmaWVyKCZ1cHJvYmVfZXhjZXB0aW9uX25iKTsK
-PiAgfQo+ICBfX2luaXRjYWxsKGluaXRfdXByb2Jlcyk7Cj4gZGlmZiAtLWdpdCBhL2tlcm5lbC9m
-b3JrLmMgYi9rZXJuZWwvZm9yay5jCj4gaW5kZXggZGQ4ODY0Zi4uYjQ0ODUwOSAxMDA2NDQKPiAt
-LS0gYS9rZXJuZWwvZm9yay5jCj4gKysrIGIva2VybmVsL2ZvcmsuYwo+IEBAIC04Nyw2ICs4Nyw4
-IEBACj4gICNkZWZpbmUgQ1JFQVRFX1RSQUNFX1BPSU5UUwo+ICAjaW5jbHVkZSA8dHJhY2UvZXZl
-bnRzL3Rhc2suaD4KPiAgCj4gK3N0YXRpYyBCTE9DS0lOR19OT1RJRklFUl9IRUFEKG1tcHV0X25v
-dGlmaWVyKTsKPiArCj4gIC8qCj4gICAqIFByb3RlY3RlZCBjb3VudGVycyBieSB3cml0ZV9sb2Nr
-X2lycSgmdGFza2xpc3RfbG9jaykKPiAgICovCj4gQEAgLTYyMyw2ICs2MjUsMjEgQEAgdm9pZCBf
-X21tZHJvcChzdHJ1Y3QgbW1fc3RydWN0ICptbSkKPiAgRVhQT1JUX1NZTUJPTF9HUEwoX19tbWRy
-b3ApOwo+ICAKPiAgLyoKPiArICogUmVnaXN0ZXIgYSBub3RpZmllciB0aGF0IHdpbGwgYmUgY2Fs
-bCBieSBtbXB1dAo+ICsgKi8KPiAraW50IG1tcHV0X3JlZ2lzdGVyX25vdGlmaWVyKHN0cnVjdCBu
-b3RpZmllcl9ibG9jayAqbmIpCj4gK3sKPiArCXJldHVybiBibG9ja2luZ19ub3RpZmllcl9jaGFp
-bl9yZWdpc3RlcigmbW1wdXRfbm90aWZpZXIsIG5iKTsKPiArfQo+ICtFWFBPUlRfU1lNQk9MX0dQ
-TChtbXB1dF9yZWdpc3Rlcl9ub3RpZmllcik7Cj4gKwo+ICtpbnQgbW1wdXRfdW5yZWdpc3Rlcl9u
-b3RpZmllcihzdHJ1Y3Qgbm90aWZpZXJfYmxvY2sgKm5iKQo+ICt7Cj4gKwlyZXR1cm4gYmxvY2tp
-bmdfbm90aWZpZXJfY2hhaW5fdW5yZWdpc3RlcigmbW1wdXRfbm90aWZpZXIsIG5iKTsKPiArfQo+
-ICtFWFBPUlRfU1lNQk9MX0dQTChtbXB1dF91bnJlZ2lzdGVyX25vdGlmaWVyKTsKPiArCj4gKy8q
-Cj4gICAqIERlY3JlbWVudCB0aGUgdXNlIGNvdW50IGFuZCByZWxlYXNlIGFsbCByZXNvdXJjZXMg
-Zm9yIGFuIG1tLgo+ICAgKi8KPiAgdm9pZCBtbXB1dChzdHJ1Y3QgbW1fc3RydWN0ICptbSkKPiBA
-QCAtNjMwLDExICs2NDcsOCBAQCB2b2lkIG1tcHV0KHN0cnVjdCBtbV9zdHJ1Y3QgKm1tKQo+ICAJ
-bWlnaHRfc2xlZXAoKTsKPiAgCj4gIAlpZiAoYXRvbWljX2RlY19hbmRfdGVzdCgmbW0tPm1tX3Vz
-ZXJzKSkgewo+IC0JCXVwcm9iZV9jbGVhcl9zdGF0ZShtbSk7Cj4gLQkJZXhpdF9haW8obW0pOwo+
-IC0JCWtzbV9leGl0KG1tKTsKPiAtCQlraHVnZXBhZ2VkX2V4aXQobW0pOyAvKiBtdXN0IHJ1biBi
-ZWZvcmUgZXhpdF9tbWFwICovCj4gIAkJZXhpdF9tbWFwKG1tKTsKPiArCQlibG9ja2luZ19ub3Rp
-Zmllcl9jYWxsX2NoYWluKCZtbXB1dF9ub3RpZmllciwgMCwgbW0pOwo+ICAJCXNldF9tbV9leGVf
-ZmlsZShtbSwgTlVMTCk7Cj4gIAkJaWYgKCFsaXN0X2VtcHR5KCZtbS0+bW1saXN0KSkgewo+ICAJ
-CQlzcGluX2xvY2soJm1tbGlzdF9sb2NrKTsKPiBkaWZmIC0tZ2l0IGEvbW0va3NtLmMgYi9tbS9r
-c20uYwo+IGluZGV4IDM0NmRkYzkuLmNiMWU5NzYgMTAwNjQ0Cj4gLS0tIGEvbW0va3NtLmMKPiAr
-KysgYi9tbS9rc20uYwo+IEBAIC0zNyw2ICszNyw3IEBACj4gICNpbmNsdWRlIDxsaW51eC9mcmVl
-emVyLmg+Cj4gICNpbmNsdWRlIDxsaW51eC9vb20uaD4KPiAgI2luY2x1ZGUgPGxpbnV4L251bWEu
-aD4KPiArI2luY2x1ZGUgPGxpbnV4L25vdGlmaWVyLmg+Cj4gIAo+ICAjaW5jbHVkZSA8YXNtL3Rs
-YmZsdXNoLmg+Cj4gICNpbmNsdWRlICJpbnRlcm5hbC5oIgo+IEBAIC0xNTg2LDcgKzE1ODcsNyBA
-QCBzdGF0aWMgc3RydWN0IHJtYXBfaXRlbSAqc2Nhbl9nZXRfbmV4dF9ybWFwX2l0ZW0oc3RydWN0
-IHBhZ2UgKipwYWdlKQo+ICAJCWtzbV9zY2FuLm1tX3Nsb3QgPSBzbG90Owo+ICAJCXNwaW5fdW5s
-b2NrKCZrc21fbW1saXN0X2xvY2spOwo+ICAJCS8qCj4gLQkJICogQWx0aG91Z2ggd2UgdGVzdGVk
-IGxpc3RfZW1wdHkoKSBhYm92ZSwgYSByYWNpbmcgX19rc21fZXhpdAo+ICsJCSAqIEFsdGhvdWdo
-IHdlIHRlc3RlZCBsaXN0X2VtcHR5KCkgYWJvdmUsIGEgcmFjaW5nIGtzbV9leGl0Cj4gIAkJICog
-b2YgdGhlIGxhc3QgbW0gb24gdGhlIGxpc3QgbWF5IGhhdmUgcmVtb3ZlZCBpdCBzaW5jZSB0aGVu
-Lgo+ICAJCSAqLwo+ICAJCWlmIChzbG90ID09ICZrc21fbW1faGVhZCkKPiBAQCAtMTY1OCw5ICsx
-NjU5LDkgQEAgbmV4dF9tbToKPiAgCQkvKgo+ICAJCSAqIFdlJ3ZlIGNvbXBsZXRlZCBhIGZ1bGwg
-c2NhbiBvZiBhbGwgdm1hcywgaG9sZGluZyBtbWFwX3NlbQo+ICAJCSAqIHRocm91Z2hvdXQsIGFu
-ZCBmb3VuZCBubyBWTV9NRVJHRUFCTEU6IHNvIGRvIHRoZSBzYW1lIGFzCj4gLQkJICogX19rc21f
-ZXhpdCBkb2VzIHRvIHJlbW92ZSB0aGlzIG1tIGZyb20gYWxsIG91ciBsaXN0cyBub3cuCj4gLQkJ
-ICogVGhpcyBhcHBsaWVzIGVpdGhlciB3aGVuIGNsZWFuaW5nIHVwIGFmdGVyIF9fa3NtX2V4aXQK
-PiAtCQkgKiAoYnV0IGJld2FyZTogd2UgY2FuIHJlYWNoIGhlcmUgZXZlbiBiZWZvcmUgX19rc21f
-ZXhpdCksCj4gKwkJICoga3NtX2V4aXQgZG9lcyB0byByZW1vdmUgdGhpcyBtbSBmcm9tIGFsbCBv
-dXIgbGlzdHMgbm93Lgo+ICsJCSAqIFRoaXMgYXBwbGllcyBlaXRoZXIgd2hlbiBjbGVhbmluZyB1
-cCBhZnRlciBrc21fZXhpdAo+ICsJCSAqIChidXQgYmV3YXJlOiB3ZSBjYW4gcmVhY2ggaGVyZSBl
-dmVuIGJlZm9yZSBrc21fZXhpdCksCj4gIAkJICogb3Igd2hlbiBhbGwgVk1fTUVSR0VBQkxFIGFy
-ZWFzIGhhdmUgYmVlbiB1bm1hcHBlZCAoYW5kCj4gIAkJICogbW1hcF9zZW0gdGhlbiBwcm90ZWN0
-cyBhZ2FpbnN0IHJhY2Ugd2l0aCBNQURWX01FUkdFQUJMRSkuCj4gIAkJICovCj4gQEAgLTE4MjEs
-MTEgKzE4MjIsMTYgQEAgaW50IF9fa3NtX2VudGVyKHN0cnVjdCBtbV9zdHJ1Y3QgKm1tKQo+ICAJ
-cmV0dXJuIDA7Cj4gIH0KPiAgCj4gLXZvaWQgX19rc21fZXhpdChzdHJ1Y3QgbW1fc3RydWN0ICpt
-bSkKPiArc3RhdGljIGludCBrc21fZXhpdChzdHJ1Y3Qgbm90aWZpZXJfYmxvY2sgKm5iLAo+ICsJ
-CSAgICB1bnNpZ25lZCBsb25nIGFjdGlvbiwgdm9pZCAqZGF0YSkKPiAgewo+ICsJc3RydWN0IG1t
-X3N0cnVjdCAqbW0gPSBkYXRhOwo+ICAJc3RydWN0IG1tX3Nsb3QgKm1tX3Nsb3Q7Cj4gIAlpbnQg
-ZWFzeV90b19mcmVlID0gMDsKPiAgCj4gKwlpZiAoIXRlc3RfYml0KE1NRl9WTV9NRVJHRUFCTEUs
-ICZtbS0+ZmxhZ3MpKQo+ICsJCXJldHVybiAwOwo+ICsKPiAgCS8qCj4gIAkgKiBUaGlzIHByb2Nl
-c3MgaXMgZXhpdGluZzogaWYgaXQncyBzdHJhaWdodGZvcndhcmQgKGFzIGlzIHRoZQo+ICAJICog
-Y2FzZSB3aGVuIGtzbWQgd2FzIG5ldmVyIHJ1bm5pbmcpLCBmcmVlIG1tX3Nsb3QgaW1tZWRpYXRl
-bHkuCj4gQEAgLTE4NTcsNiArMTg2Myw3IEBAIHZvaWQgX19rc21fZXhpdChzdHJ1Y3QgbW1fc3Ry
-dWN0ICptbSkKPiAgCQlkb3duX3dyaXRlKCZtbS0+bW1hcF9zZW0pOwo+ICAJCXVwX3dyaXRlKCZt
-bS0+bW1hcF9zZW0pOwo+ICAJfQo+ICsJcmV0dXJuIDA7Cj4gIH0KPiAgCj4gIHN0cnVjdCBwYWdl
-ICprc21fbWlnaHRfbmVlZF90b19jb3B5KHN0cnVjdCBwYWdlICpwYWdlLAo+IEBAIC0yMzA1LDEx
-ICsyMzEyLDIwIEBAIHN0YXRpYyBzdHJ1Y3QgYXR0cmlidXRlX2dyb3VwIGtzbV9hdHRyX2dyb3Vw
-ID0gewo+ICB9Owo+ICAjZW5kaWYgLyogQ09ORklHX1NZU0ZTICovCj4gIAo+ICtzdGF0aWMgc3Ry
-dWN0IG5vdGlmaWVyX2Jsb2NrIGtzbV9tbXB1dF9uYiA9IHsKPiArCS5ub3RpZmllcl9jYWxsCQk9
-IGtzbV9leGl0LAo+ICsJLnByaW9yaXR5CQk9IDIsCj4gK307Cj4gKwo+ICBzdGF0aWMgaW50IF9f
-aW5pdCBrc21faW5pdCh2b2lkKQo+ICB7Cj4gIAlzdHJ1Y3QgdGFza19zdHJ1Y3QgKmtzbV90aHJl
-YWQ7Cj4gIAlpbnQgZXJyOwo+ICAKPiArCWVyciA9IG1tcHV0X3JlZ2lzdGVyX25vdGlmaWVyKCZr
-c21fbW1wdXRfbmIpOwo+ICsJaWYgKGVycikKPiArCQlyZXR1cm4gZXJyOwo+ICsKPiAgCWVyciA9
-IGtzbV9zbGFiX2luaXQoKTsKPiAgCWlmIChlcnIpCj4gIAkJZ290byBvdXQ7Cj4gZGlmZiAtLWdp
-dCBhL21tL21tYXAuYyBiL21tL21tYXAuYwo+IGluZGV4IDYxYWVjOTMuLmI2ODRhMjEgMTAwNjQ0
-Cj4gLS0tIGEvbW0vbW1hcC5jCj4gKysrIGIvbW0vbW1hcC5jCj4gQEAgLTI3NzUsNiArMjc3NSw5
-IEBAIHZvaWQgZXhpdF9tbWFwKHN0cnVjdCBtbV9zdHJ1Y3QgKm1tKQo+ICAJc3RydWN0IHZtX2Fy
-ZWFfc3RydWN0ICp2bWE7Cj4gIAl1bnNpZ25lZCBsb25nIG5yX2FjY291bnRlZCA9IDA7Cj4gIAo+
-ICsJLyogSW1wb3J0YW50IHRvIGNhbGwgdGhpcyBmaXJzdC4gKi8KPiArCWtodWdlcGFnZWRfZXhp
-dChtbSk7Cj4gKwo+ICAJLyogbW0ncyBsYXN0IHVzZXIgaGFzIGdvbmUsIGFuZCBpdHMgYWJvdXQg
-dG8gYmUgcHVsbGVkIGRvd24gKi8KPiAgCW1tdV9ub3RpZmllcl9yZWxlYXNlKG1tKTsKPiAgCgpI
-aSBKZXJvbWUsIEkgcmV2aWV3ZWQgdGhlIHBhdGNoLCBpbnRlZ3JhdGVkIGFuZCB0ZXN0ZWQgaXQg
-aW4gQU1EJ3MgSFNBCmRyaXZlciAoS0ZEKS4gSXQgd29ya3MgYXMgZXhwZWN0ZWQgYW5kIEkgZGlk
-bid0IGZpbmQgYW55IHByb2JsZW1zIHdpdGgKaXQuCgpJIGRpZCBmYWNlIHNvbWUgcHJvYmxlbXMg
-cmVnYXJkaW5nIHRoZSBhbWQgSU9NTVUgdjIgZHJpdmVyLCB3aGljaApjaGFuZ2VkIGl0cyBiZWhh
-dmlvciAoc2VlIGNvbW1pdCAiaW9tbXUvYW1kOiBJbXBsZW1lbnQKbW11X25vdGlmaWVyX3JlbGVh
-c2UgY2FsbC1iYWNrIikgdG8gdXNlIG1tdV9ub3RpZmllcl9yZWxlYXNlIGFuZCBkaWQKc29tZSAi
-YmFkIHRoaW5ncyIgaW5zaWRlIHRoYXQKbm90aWZpZXIgKHByaW1hcmlseSwgYnV0IG5vdCBvbmx5
-LCBkZWxldGluZyB0aGUgb2JqZWN0IHdoaWNoIGhlbGQgdGhlCm1tdV9ub3RpZmllciBvYmplY3Qg
-aXRzZWxmLCB3aGljaCB5b3UgbXVzdG4ndCBkbyBiZWNhdXNlIG9mIHRoZQpsb2NraW5nKS4gCgpJ
-J20gdGhpbmtpbmcgb2YgY2hhbmdpbmcgdGhhdCBkcml2ZXIncyBiZWhhdmlvciB0byB1c2UgdGhp
-cyBuZXcKbWVjaGFuaXNtIGluc3RlYWQgb2YgdXNpbmcgbW11X25vdGlmaWVyX3JlbGVhc2UuIERv
-ZXMgdGhhdCBzZWVtCmFjY2VwdGFibGUgPyBBbm90aGVyIHNvbHV0aW9uIHdpbGwgYmUgdG8gYWRk
-IGEgbmV3IG1tdV9ub3RpZmllciBjYWxsLApidXQgd2UgYWxyZWFkeSBydWxlZCB0aGF0IG91dCA7
-KQoKU28sClJldmlld2VkLWJ5OiBPZGVkIEdhYmJheSA8b2RlZC5nYWJiYXlAYW1kLmNvbT4KCglP
-ZGVkCgo=
+On Mon, Jun 30, 2014 at 02:41:24PM +0000, Gabbay, Oded wrote:
+> On Fri, 2014-06-27 at 22:00 -0400, J=E9r=F4me Glisse wrote:
+> > From: J=E9r=F4me Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> > =
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+> > Several subsystem require a callback when a mm struct is being destroy
+> > so that they can cleanup there respective per mm struct. Instead of
+> > having each subsystem add its callback to mmput use a notifier chain
+> > to call each of the subsystem.
+> > =
+
+> > This will allow new subsystem to register callback even if they are
+> > module. There should be no contention on the rw semaphore protecting
+> > the call chain and the impact on the code path should be low and
+> > burried in the noise.
+> > =
+
+> > Note that this patch also move the call to cleanup functions after
+> > exit_mmap so that new call back can assume that mmu_notifier_release
+> > have already been call. This does not impact existing cleanup functions
+> > as they do not rely on anything that exit_mmap is freeing. Also moved
+> > khugepaged_exit to exit_mmap so that ordering is preserved for that
+> > function.
+> > =
+
+> > Signed-off-by: J=E9r=F4me Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> > ---
+> >  fs/aio.c                | 29 ++++++++++++++++++++++-------
+> >  include/linux/aio.h     |  2 --
+> >  include/linux/ksm.h     | 11 -----------
+> >  include/linux/sched.h   |  5 +++++
+> >  include/linux/uprobes.h |  1 -
+> >  kernel/events/uprobes.c | 19 ++++++++++++++++---
+> >  kernel/fork.c           | 22 ++++++++++++++++++----
+> >  mm/ksm.c                | 26 +++++++++++++++++++++-----
+> >  mm/mmap.c               |  3 +++
+> >  9 files changed, 85 insertions(+), 33 deletions(-)
+> > =
+
+> > diff --git a/fs/aio.c b/fs/aio.c
+> > index c1d8c48..1d06e92 100644
+> > --- a/fs/aio.c
+> > +++ b/fs/aio.c
+> > @@ -40,6 +40,7 @@
+> >  #include <linux/ramfs.h>
+> >  #include <linux/percpu-refcount.h>
+> >  #include <linux/mount.h>
+> > +#include <linux/notifier.h>
+> >  =
+
+> >  #include <asm/kmap_types.h>
+> >  #include <asm/uaccess.h>
+> > @@ -774,20 +775,22 @@ ssize_t wait_on_sync_kiocb(struct kiocb *req)
+> >  EXPORT_SYMBOL(wait_on_sync_kiocb);
+> >  =
+
+> >  /*
+> > - * exit_aio: called when the last user of mm goes away.  At this point=
+, there is
+> > + * aio_exit: called when the last user of mm goes away.  At this point=
+, there is
+> >   * no way for any new requests to be submited or any of the io_* sysca=
+lls to be
+> >   * called on the context.
+> >   *
+> >   * There may be outstanding kiocbs, but free_ioctx() will explicitly w=
+ait on
+> >   * them.
+> >   */
+> > -void exit_aio(struct mm_struct *mm)
+> > +static int aio_exit(struct notifier_block *nb,
+> > +		    unsigned long action, void *data)
+> >  {
+> > +	struct mm_struct *mm =3D data;
+> >  	struct kioctx_table *table =3D rcu_dereference_raw(mm->ioctx_table);
+> >  	int i;
+> >  =
+
+> >  	if (!table)
+> > -		return;
+> > +		return 0;
+> >  =
+
+> >  	for (i =3D 0; i < table->nr; ++i) {
+> >  		struct kioctx *ctx =3D table->table[i];
+> > @@ -796,10 +799,10 @@ void exit_aio(struct mm_struct *mm)
+> >  			continue;
+> >  		/*
+> >  		 * We don't need to bother with munmap() here - exit_mmap(mm)
+> > -		 * is coming and it'll unmap everything. And we simply can't,
+> > -		 * this is not necessarily our ->mm.
+> > -		 * Since kill_ioctx() uses non-zero ->mmap_size as indicator
+> > -		 * that it needs to unmap the area, just set it to 0.
+> > +		 * have already been call and everything is unmap by now. But
+> > +		 * to be safe set ->mmap_size to 0 since aio_free_ring() uses
+> > +		 * non-zero ->mmap_size as indicator that it needs to unmap the
+> > +		 * area.
+> >  		 */
+> >  		ctx->mmap_size =3D 0;
+> >  		kill_ioctx(mm, ctx, NULL);
+> > @@ -807,6 +810,7 @@ void exit_aio(struct mm_struct *mm)
+> >  =
+
+> >  	RCU_INIT_POINTER(mm->ioctx_table, NULL);
+> >  	kfree(table);
+> > +	return 0;
+> >  }
+> >  =
+
+> >  static void put_reqs_available(struct kioctx *ctx, unsigned nr)
+> > @@ -1629,3 +1633,14 @@ SYSCALL_DEFINE5(io_getevents, aio_context_t, ctx=
+_id,
+> >  	}
+> >  	return ret;
+> >  }
+> > +
+> > +static struct notifier_block aio_mmput_nb =3D {
+> > +	.notifier_call		=3D aio_exit,
+> > +	.priority		=3D 1,
+> > +};
+> > +
+> > +static int __init aio_init(void)
+> > +{
+> > +	return mmput_register_notifier(&aio_mmput_nb);
+> > +}
+> > +subsys_initcall(aio_init);
+> > diff --git a/include/linux/aio.h b/include/linux/aio.h
+> > index d9c92da..6308fac 100644
+> > --- a/include/linux/aio.h
+> > +++ b/include/linux/aio.h
+> > @@ -73,7 +73,6 @@ static inline void init_sync_kiocb(struct kiocb *kioc=
+b, struct file *filp)
+> >  extern ssize_t wait_on_sync_kiocb(struct kiocb *iocb);
+> >  extern void aio_complete(struct kiocb *iocb, long res, long res2);
+> >  struct mm_struct;
+> > -extern void exit_aio(struct mm_struct *mm);
+> >  extern long do_io_submit(aio_context_t ctx_id, long nr,
+> >  			 struct iocb __user *__user *iocbpp, bool compat);
+> >  void kiocb_set_cancel_fn(struct kiocb *req, kiocb_cancel_fn *cancel);
+> > @@ -81,7 +80,6 @@ void kiocb_set_cancel_fn(struct kiocb *req, kiocb_can=
+cel_fn *cancel);
+> >  static inline ssize_t wait_on_sync_kiocb(struct kiocb *iocb) { return =
+0; }
+> >  static inline void aio_complete(struct kiocb *iocb, long res, long res=
+2) { }
+> >  struct mm_struct;
+> > -static inline void exit_aio(struct mm_struct *mm) { }
+> >  static inline long do_io_submit(aio_context_t ctx_id, long nr,
+> >  				struct iocb __user * __user *iocbpp,
+> >  				bool compat) { return 0; }
+> > diff --git a/include/linux/ksm.h b/include/linux/ksm.h
+> > index 3be6bb1..84c184f 100644
+> > --- a/include/linux/ksm.h
+> > +++ b/include/linux/ksm.h
+> > @@ -20,7 +20,6 @@ struct mem_cgroup;
+> >  int ksm_madvise(struct vm_area_struct *vma, unsigned long start,
+> >  		unsigned long end, int advice, unsigned long *vm_flags);
+> >  int __ksm_enter(struct mm_struct *mm);
+> > -void __ksm_exit(struct mm_struct *mm);
+> >  =
+
+> >  static inline int ksm_fork(struct mm_struct *mm, struct mm_struct *old=
+mm)
+> >  {
+> > @@ -29,12 +28,6 @@ static inline int ksm_fork(struct mm_struct *mm, str=
+uct mm_struct *oldmm)
+> >  	return 0;
+> >  }
+> >  =
+
+> > -static inline void ksm_exit(struct mm_struct *mm)
+> > -{
+> > -	if (test_bit(MMF_VM_MERGEABLE, &mm->flags))
+> > -		__ksm_exit(mm);
+> > -}
+> > -
+> >  /*
+> >   * A KSM page is one of those write-protected "shared pages" or "merge=
+d pages"
+> >   * which KSM maps into multiple mms, wherever identical anonymous page=
+ content
+> > @@ -83,10 +76,6 @@ static inline int ksm_fork(struct mm_struct *mm, str=
+uct mm_struct *oldmm)
+> >  	return 0;
+> >  }
+> >  =
+
+> > -static inline void ksm_exit(struct mm_struct *mm)
+> > -{
+> > -}
+> > -
+> >  static inline int PageKsm(struct page *page)
+> >  {
+> >  	return 0;
+> > diff --git a/include/linux/sched.h b/include/linux/sched.h
+> > index 322d4fc..428b3cf 100644
+> > --- a/include/linux/sched.h
+> > +++ b/include/linux/sched.h
+> > @@ -2384,6 +2384,11 @@ static inline void mmdrop(struct mm_struct * mm)
+> >  		__mmdrop(mm);
+> >  }
+> >  =
+
+> > +/* mmput call list of notifier and subsystem/module can register
+> > + * new one through this call.
+> > + */
+> > +extern int mmput_register_notifier(struct notifier_block *nb);
+> > +extern int mmput_unregister_notifier(struct notifier_block *nb);
+> >  /* mmput gets rid of the mappings and all user-space */
+> >  extern void mmput(struct mm_struct *);
+> >  /* Grab a reference to a task's mm, if it is not already going away */
+> > diff --git a/include/linux/uprobes.h b/include/linux/uprobes.h
+> > index 4f844c6..44e7267 100644
+> > --- a/include/linux/uprobes.h
+> > +++ b/include/linux/uprobes.h
+> > @@ -120,7 +120,6 @@ extern int uprobe_pre_sstep_notifier(struct pt_regs=
+ *regs);
+> >  extern void uprobe_notify_resume(struct pt_regs *regs);
+> >  extern bool uprobe_deny_signal(void);
+> >  extern bool arch_uprobe_skip_sstep(struct arch_uprobe *aup, struct pt_=
+regs *regs);
+> > -extern void uprobe_clear_state(struct mm_struct *mm);
+> >  extern int  arch_uprobe_analyze_insn(struct arch_uprobe *aup, struct m=
+m_struct *mm, unsigned long addr);
+> >  extern int  arch_uprobe_pre_xol(struct arch_uprobe *aup, struct pt_reg=
+s *regs);
+> >  extern int  arch_uprobe_post_xol(struct arch_uprobe *aup, struct pt_re=
+gs *regs);
+> > diff --git a/kernel/events/uprobes.c b/kernel/events/uprobes.c
+> > index 46b7c31..32b04dc 100644
+> > --- a/kernel/events/uprobes.c
+> > +++ b/kernel/events/uprobes.c
+> > @@ -37,6 +37,7 @@
+> >  #include <linux/percpu-rwsem.h>
+> >  #include <linux/task_work.h>
+> >  #include <linux/shmem_fs.h>
+> > +#include <linux/notifier.h>
+> >  =
+
+> >  #include <linux/uprobes.h>
+> >  =
+
+> > @@ -1220,16 +1221,19 @@ static struct xol_area *get_xol_area(void)
+> >  /*
+> >   * uprobe_clear_state - Free the area allocated for slots.
+> >   */
+> > -void uprobe_clear_state(struct mm_struct *mm)
+> > +static int uprobe_clear_state(struct notifier_block *nb,
+> > +			      unsigned long action, void *data)
+> >  {
+> > +	struct mm_struct *mm =3D data;
+> >  	struct xol_area *area =3D mm->uprobes_state.xol_area;
+> >  =
+
+> >  	if (!area)
+> > -		return;
+> > +		return 0;
+> >  =
+
+> >  	put_page(area->page);
+> >  	kfree(area->bitmap);
+> >  	kfree(area);
+> > +	return 0;
+> >  }
+> >  =
+
+> >  void uprobe_start_dup_mmap(void)
+> > @@ -1979,9 +1983,14 @@ static struct notifier_block uprobe_exception_nb=
+ =3D {
+> >  	.priority		=3D INT_MAX-1,	/* notified after kprobes, kgdb */
+> >  };
+> >  =
+
+> > +static struct notifier_block uprobe_mmput_nb =3D {
+> > +	.notifier_call		=3D uprobe_clear_state,
+> > +	.priority		=3D 0,
+> > +};
+> > +
+> >  static int __init init_uprobes(void)
+> >  {
+> > -	int i;
+> > +	int i, err;
+> >  =
+
+> >  	for (i =3D 0; i < UPROBES_HASH_SZ; i++)
+> >  		mutex_init(&uprobes_mmap_mutex[i]);
+> > @@ -1989,6 +1998,10 @@ static int __init init_uprobes(void)
+> >  	if (percpu_init_rwsem(&dup_mmap_sem))
+> >  		return -ENOMEM;
+> >  =
+
+> > +	err =3D mmput_register_notifier(&uprobe_mmput_nb);
+> > +	if (err)
+> > +		return err;
+> > +
+> >  	return register_die_notifier(&uprobe_exception_nb);
+> >  }
+> >  __initcall(init_uprobes);
+> > diff --git a/kernel/fork.c b/kernel/fork.c
+> > index dd8864f..b448509 100644
+> > --- a/kernel/fork.c
+> > +++ b/kernel/fork.c
+> > @@ -87,6 +87,8 @@
+> >  #define CREATE_TRACE_POINTS
+> >  #include <trace/events/task.h>
+> >  =
+
+> > +static BLOCKING_NOTIFIER_HEAD(mmput_notifier);
+> > +
+> >  /*
+> >   * Protected counters by write_lock_irq(&tasklist_lock)
+> >   */
+> > @@ -623,6 +625,21 @@ void __mmdrop(struct mm_struct *mm)
+> >  EXPORT_SYMBOL_GPL(__mmdrop);
+> >  =
+
+> >  /*
+> > + * Register a notifier that will be call by mmput
+> > + */
+> > +int mmput_register_notifier(struct notifier_block *nb)
+> > +{
+> > +	return blocking_notifier_chain_register(&mmput_notifier, nb);
+> > +}
+> > +EXPORT_SYMBOL_GPL(mmput_register_notifier);
+> > +
+> > +int mmput_unregister_notifier(struct notifier_block *nb)
+> > +{
+> > +	return blocking_notifier_chain_unregister(&mmput_notifier, nb);
+> > +}
+> > +EXPORT_SYMBOL_GPL(mmput_unregister_notifier);
+> > +
+> > +/*
+> >   * Decrement the use count and release all resources for an mm.
+> >   */
+> >  void mmput(struct mm_struct *mm)
+> > @@ -630,11 +647,8 @@ void mmput(struct mm_struct *mm)
+> >  	might_sleep();
+> >  =
+
+> >  	if (atomic_dec_and_test(&mm->mm_users)) {
+> > -		uprobe_clear_state(mm);
+> > -		exit_aio(mm);
+> > -		ksm_exit(mm);
+> > -		khugepaged_exit(mm); /* must run before exit_mmap */
+> >  		exit_mmap(mm);
+> > +		blocking_notifier_call_chain(&mmput_notifier, 0, mm);
+> >  		set_mm_exe_file(mm, NULL);
+> >  		if (!list_empty(&mm->mmlist)) {
+> >  			spin_lock(&mmlist_lock);
+> > diff --git a/mm/ksm.c b/mm/ksm.c
+> > index 346ddc9..cb1e976 100644
+> > --- a/mm/ksm.c
+> > +++ b/mm/ksm.c
+> > @@ -37,6 +37,7 @@
+> >  #include <linux/freezer.h>
+> >  #include <linux/oom.h>
+> >  #include <linux/numa.h>
+> > +#include <linux/notifier.h>
+> >  =
+
+> >  #include <asm/tlbflush.h>
+> >  #include "internal.h"
+> > @@ -1586,7 +1587,7 @@ static struct rmap_item *scan_get_next_rmap_item(=
+struct page **page)
+> >  		ksm_scan.mm_slot =3D slot;
+> >  		spin_unlock(&ksm_mmlist_lock);
+> >  		/*
+> > -		 * Although we tested list_empty() above, a racing __ksm_exit
+> > +		 * Although we tested list_empty() above, a racing ksm_exit
+> >  		 * of the last mm on the list may have removed it since then.
+> >  		 */
+> >  		if (slot =3D=3D &ksm_mm_head)
+> > @@ -1658,9 +1659,9 @@ next_mm:
+> >  		/*
+> >  		 * We've completed a full scan of all vmas, holding mmap_sem
+> >  		 * throughout, and found no VM_MERGEABLE: so do the same as
+> > -		 * __ksm_exit does to remove this mm from all our lists now.
+> > -		 * This applies either when cleaning up after __ksm_exit
+> > -		 * (but beware: we can reach here even before __ksm_exit),
+> > +		 * ksm_exit does to remove this mm from all our lists now.
+> > +		 * This applies either when cleaning up after ksm_exit
+> > +		 * (but beware: we can reach here even before ksm_exit),
+> >  		 * or when all VM_MERGEABLE areas have been unmapped (and
+> >  		 * mmap_sem then protects against race with MADV_MERGEABLE).
+> >  		 */
+> > @@ -1821,11 +1822,16 @@ int __ksm_enter(struct mm_struct *mm)
+> >  	return 0;
+> >  }
+> >  =
+
+> > -void __ksm_exit(struct mm_struct *mm)
+> > +static int ksm_exit(struct notifier_block *nb,
+> > +		    unsigned long action, void *data)
+> >  {
+> > +	struct mm_struct *mm =3D data;
+> >  	struct mm_slot *mm_slot;
+> >  	int easy_to_free =3D 0;
+> >  =
+
+> > +	if (!test_bit(MMF_VM_MERGEABLE, &mm->flags))
+> > +		return 0;
+> > +
+> >  	/*
+> >  	 * This process is exiting: if it's straightforward (as is the
+> >  	 * case when ksmd was never running), free mm_slot immediately.
+> > @@ -1857,6 +1863,7 @@ void __ksm_exit(struct mm_struct *mm)
+> >  		down_write(&mm->mmap_sem);
+> >  		up_write(&mm->mmap_sem);
+> >  	}
+> > +	return 0;
+> >  }
+> >  =
+
+> >  struct page *ksm_might_need_to_copy(struct page *page,
+> > @@ -2305,11 +2312,20 @@ static struct attribute_group ksm_attr_group =
+=3D {
+> >  };
+> >  #endif /* CONFIG_SYSFS */
+> >  =
+
+> > +static struct notifier_block ksm_mmput_nb =3D {
+> > +	.notifier_call		=3D ksm_exit,
+> > +	.priority		=3D 2,
+> > +};
+> > +
+> >  static int __init ksm_init(void)
+> >  {
+> >  	struct task_struct *ksm_thread;
+> >  	int err;
+> >  =
+
+> > +	err =3D mmput_register_notifier(&ksm_mmput_nb);
+> > +	if (err)
+> > +		return err;
+> > +
+> >  	err =3D ksm_slab_init();
+> >  	if (err)
+> >  		goto out;
+> > diff --git a/mm/mmap.c b/mm/mmap.c
+> > index 61aec93..b684a21 100644
+> > --- a/mm/mmap.c
+> > +++ b/mm/mmap.c
+> > @@ -2775,6 +2775,9 @@ void exit_mmap(struct mm_struct *mm)
+> >  	struct vm_area_struct *vma;
+> >  	unsigned long nr_accounted =3D 0;
+> >  =
+
+> > +	/* Important to call this first. */
+> > +	khugepaged_exit(mm);
+> > +
+> >  	/* mm's last user has gone, and its about to be pulled down */
+> >  	mmu_notifier_release(mm);
+> >  =
+
+> =
+
+> Hi Jerome, I reviewed the patch, integrated and tested it in AMD's HSA
+> driver (KFD). It works as expected and I didn't find any problems with
+> it.
+> =
+
+> I did face some problems regarding the amd IOMMU v2 driver, which
+> changed its behavior (see commit "iommu/amd: Implement
+> mmu_notifier_release call-back") to use mmu_notifier_release and did
+> some "bad things" inside that
+> notifier (primarily, but not only, deleting the object which held the
+> mmu_notifier object itself, which you mustn't do because of the
+> locking). =
+
+> =
+
+> I'm thinking of changing that driver's behavior to use this new
+> mechanism instead of using mmu_notifier_release. Does that seem
+> acceptable ? Another solution will be to add a new mmu_notifier call,
+> but we already ruled that out ;)
+> =
+
+
+This sounds acceptable. You can check how i did it in hmm :
+http://cgit.freedesktop.org/~glisse/linux/log/?h=3Dhmm
+
+As it had similar issues.
+
+Cheers,
+J=E9r=F4me
+
+> So,
+> Reviewed-by: Oded Gabbay <oded.gabbay-5C7GfCeVMHo@public.gmane.org>
+> =
+
+> 	Oded
