@@ -1,72 +1,110 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+From: "Gabbay, Oded" <Oded.Gabbay@amd.com>
 Subject: Re: [PATCH 1/6] mmput: use notifier chain to call subsystem exit
-	handler.
-Date: Tue, 1 Jul 2014 11:15:35 +0200
-Message-ID: <20140701091535.GF26537@8bytes.org>
+ handler.
+Date: Tue, 1 Jul 2014 09:29:49 +0000
+Message-ID: <019CCE693E457142B37B791721487FD91806DD8B@storexdag01.amd.com>
 References: <1403920822-14488-1-git-send-email-j.glisse@gmail.com>
-	<1403920822-14488-2-git-send-email-j.glisse@gmail.com>
-	<019CCE693E457142B37B791721487FD91806B836@storexdag01.amd.com>
-	<20140630154042.GD26537@8bytes.org>
-	<20140630160604.GF1956@gmail.com>
-	<20140630181623.GE26537@8bytes.org>
-	<20140630183556.GB3280@gmail.com>
+ <1403920822-14488-2-git-send-email-j.glisse@gmail.com>
+ <019CCE693E457142B37B791721487FD91806B836@storexdag01.amd.com>
+ <20140630154042.GD26537@8bytes.org> <20140630160604.GF1956@gmail.com>
+ <20140630181623.GE26537@8bytes.org> <20140630183556.GB3280@gmail.com>
+ <20140701091535.GF26537@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20140630183556.GB3280-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jerome Glisse <j.glisse-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Sherry Cheung <SCheung-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "Gabbay,
-	Oded" <Oded.Gabbay-5C7GfCeVMHo@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "aarcange-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <aarcange-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jatin Kumar <jakumar-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Lucien Dunning <ldunning-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "mgorman-l3A5Bk7waGM@public.gmane.org" <mgorman-l3A5Bk7waGM@public.gmane.org>, "jweiner-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <jweiner-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Subhash Gutti <sgutti-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, John Hubbard <jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mark Hairgrove <mhairgrove-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Cameron Buschardt <cabuschardt-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "peterz-hDdKplPs4pWWVfeAwA7xHQ@public.gmane.org" <peterz-hDdKplPs4pWWVfeAwA7xHQ@public.gmane.org>, Duncan Poole <dpoole-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "Cornwall,
-	Jay" <Jay.Cornwall-5C7GfCeVMHo@public.gmane.org>, "Lewycky, Andrew" <Andrew.Lewycky-5C7GfCeVMHo@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Arvind Gopalakrishnan <arvindg-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <20140701091535.GF26537@8bytes.org>
+Content-Language: en-US
+Sender: owner-linux-mm@kvack.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: "Deucher, Alexander" <Alexander.Deucher@amd.com>, "Lewycky, Andrew" <Andrew.Lewycky@amd.com>, "Cornwall, Jay" <Jay.Cornwall@amd.com>, "Bridgman,
+ John" <John.Bridgman@amd.com>, Jerome Glisse <j.glisse@gmail.com>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "mgorman@suse.de" <mgorman@suse.de>, "hpa@zytor.com" <hpa@zytor.com>, "peterz@infraread.org" <peterz@infraread.org>, "aarcange@redhat.com" <aarcange@redhat.com>, "riel@redhat.com" <riel@redhat.com>, "jweiner@redhat.com" <jweiner@redhat.com>, "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>, Mark Hairgrove <mhairgrove@nvidia.com>, Jatin Kumar <jakumar@nvidia.com>, Subhash Gutti <sgutti@nvidia.com>, Lucien
+ Dunning <ldunning@nvidia.com>, Cameron Buschardt <cabuschardt@nvidia.com>, Arvind
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jun 30, 2014 at 02:35:57PM -0400, Jerome Glisse wrote:
-> We do intend to tear down all secondary mapping inside the relase
-> callback but still we can not cleanup all the resources associated
-> with it.
->
+T24gVHVlLCAyMDE0LTA3LTAxIGF0IDExOjE1ICswMjAwLCBKb2VyZyBSb2VkZWwgd3JvdGU6Cj4g
+T24gTW9uLCBKdW4gMzAsIDIwMTQgYXQgMDI6MzU6NTdQTSAtMDQwMCwgSmVyb21lIEdsaXNzZSB3
+cm90ZToKPiA+IFdlIGRvIGludGVuZCB0byB0ZWFyIGRvd24gYWxsIHNlY29uZGFyeSBtYXBwaW5n
+IGluc2lkZSB0aGUgcmVsYXNlCj4gPiBjYWxsYmFjayBidXQgc3RpbGwgd2UgY2FuIG5vdCBjbGVh
+bnVwIGFsbCB0aGUgcmVzb3VyY2VzIGFzc29jaWF0ZWQKPiA+IHdpdGggaXQuCj4gPgo+IAo+IEFu
+ZCB3aHkgY2FuJ3QgeW91IGNsZWFudXAgdGhlIG90aGVyIHJlc291cmNlcyBpbiB0aGUgZmlsZSBj
+bG9zZSBwYXRoPwo+IFRlYXJpbmcgZG93biB0aGUgbWFwcGluZ3MgaXMgYWxsIHlvdSBuZWVkIHRv
+IGRvIGluIHRoZSByZWxlYXNlIGZ1bmN0aW9uCj4gYW55d2F5Lgo+IAo+ID4gQXMgc2FpZCBmcm9t
+IHRoZSByZWxlYXNlIGNhbGwgYmFjayB5b3UgY2FuIG5vdCBjYWxsCj4gPiBtbXVfbm90aWZpZXJf
+dW5yZWdpc3RlciBhbmQgdGh1cyB5b3UgY2FuIG5vdCBmdWxseSBjbGVhbnVwIHRoaW5ncy4KPiAK
+PiBZb3UgZG9uJ3QgbmVlZCB0byBjYWxsIG1tdV9ub3RpZmllcl91bnJlZ2lzdGVyIHdoZW4gdGhl
+IHJlbGVhc2UgZnVuY3Rpb24KPiBpcyBhbHJlYWR5IHJ1bm5pbmcgZnJvbSBleGl0X21tYXAgYmVj
+YXVzZSB0aGlzIGlzIGVxdWl2YWxlbnQgdG8gY2FsbGluZwo+IG1tdV9ub3RpZmllcl91bnJlZ2lz
+dGVyLgo+IAo+ID4gT25seSB3YXkgdG8gYWNoaWV2ZSBzbyBpcyB0byBkbyBpdCBvdXNpZGUgbW11
+X25vdGlmaWVyIGNhbGxiYWNrLgo+IAo+IFRoZSByZXNvdXJjZXMgdGhhdCBjYW4ndCBiZSBoYW5k
+bGVkIHRoZXJlIGNhbiBiZSBjbGVhbmVkIHVwIGluIHRoZQo+IGZpbGUtY2xvc2UgcGF0aC4gTm8g
+bmVlZCBmb3IgYSBuZXcgbm90aWZpZXIgaW4gbW0gY29kZS4KPiAKPiBJbiB0aGUgZW5kIGFsbCB5
+b3UgbmVlZCB0byBkbyBpbiB0aGUgcmVsZWFzZSBmdW5jdGlvbiBpcyB0byB0ZWFyIGRvd24KPiB0
+aGUgc2Vjb25kYXJ5IG1hcHBpbmcgYW5kIG1ha2Ugc3VyZSB0aGUgZGV2aWNlIGNhbiBubyBsb25n
+ZXIgYWNjZXNzIHRoZQo+IGFkZHJlc3Mgc3BhY2Ugd2hlbiB0aGUgcmVsZWFzZSBmdW5jdGlvbiBy
+ZXR1cm5zLiBFdmVyeXRoaW5nIGVsc2UsIGxpa2UKPiBmcmVlaW5nIGFueSByZXNvdXJjZXMgY2Fu
+IGJlIGRvbmUgbGF0ZXIgd2hlbiB0aGUgZmlsZSBkZXNjcmlwdG9ycyBhcmUKPiB0ZWFyZWQgZG93
+bi4KCkkgd2lsbCBhbnN3ZXIgZnJvbSB0aGUgS0ZEIHBlcnBlY3RpdmUsIGFzIEknbSBBTUQncyBt
+YWludGFpbmVyIG9mIHRoaXMKZHJpdmVyLgoKTGl0dGxlIGJhY2tncm91bmQ6IEFNRCdzIEhTQSBM
+aW51eCBrZXJuZWwgZHJpdmVyIChjYWxsZWQgcmFkZW9uX2tmZCBvcgpLRkQgaW4gc2hvcnQpLCBo
+YXMgYmVlbiBkZXZlbG9wZWQgZm9yIHRoZSBwYXN0IHllYXIgYnkgQU1ELCB0byBzdXBwb3J0CnJ1
+bm5pbmcgTGludXggY29tcHV0ZSBhcHBsaWNhdGlvbnMgb24gQU1EJ3MgSFNBLWVuYWJsZWQgQVBV
+cywgaS5lIEthdmVyaQooQTEwLTc4NTBLLzc3MDBLKS4gVGhlIGRyaXZlciB3aWxsIGJlIHVwIGZv
+ciBrZXJuZWwgY29tbXVuaXR5IHJldmlldyBpbgphYm91dCAyLTMgd2Vla3Mgc28gd2UgY291bGQg
+cHVzaCBpdCBkdXJpbmcgdGhlIDMuMTcgbWVyZ2Ugd2luZG93LiBQcmlvcgpkaXNjdXNzaW9ucyB3
+ZXJlIG1hZGUgd2l0aCBncHUvZHJtIHN1YnN5c3RlbSBtYWludGFpbmVycyBhYm91dCB0aGlzCmRy
+aXZlci4KCkluIHRoZSBLRkQsIHdlIG5lZWQgdG8gbWFpbnRhaW4gYSBub3Rpb24gb2YgZWFjaCBj
+b21wdXRlIHByb2Nlc3MuClRoZXJlZm9yZSwgd2UgaGF2ZSBhbiBvYmplY3QgY2FsbGVkICJrZmRf
+cHJvY2VzcyIgdGhhdCBpcyBjcmVhdGVkIGZvcgplYWNoIHByb2Nlc3MgdGhhdCB1c2VzIHRoZSBL
+RkQuIE5hdHVyYWxseSwgd2UgbmVlZCB0byBiZSBhYmxlIHRvIHRyYWNrCnRoZSBwcm9jZXNzJ3Mg
+c2h1dGRvd24gaW4gb3JkZXIgdG8gcGVyZm9ybSBjbGVhbnVwIG9mIHRoZSByZXNvdXJjZXMgaXQK
+dXNlcyAoY29tcHV0ZSBxdWV1ZXMsIHZpcnR1YWwgYWRkcmVzcyBzcGFjZSwgZ3B1IGxvY2FsIG1l
+bW9yeQphbGxvY2F0aW9ucywgZXRjLikuCgpUbyBlbmFibGUgdGhpcyB0cmFja2luZyBtZWNoYW5p
+c20sIHdlIGRlY2lkZWQgdG8gYXNzb2NpYXRlIHRoZQprZmRfcHJvY2VzcyB3aXRoIG1tX3N0cnVj
+dCB0byBlbnN1cmUgdGhhdCBhIGtmZF9wcm9jZXNzIG9iamVjdCBoYXMKZXhhY3RseSB0aGUgc2Ft
+ZSBsaWZlc3BhbiBhcyB0aGUgcHJvY2VzcyBpdCByZXByZXNlbnRzLiBXZSBwcmVmZXJyZWQgdG8K
+dXNlIHRoZSBtbV9zdHJ1Y3QgYW5kIG5vdCBhIGZpbGUgZGVzY3JpcHRpb24gYmVjYXVzZSB1c2lu
+ZyBhIGZpbGUKZGVzY3JpcHRvciB0byB0cmFjayDigJxwcm9jZXNz4oCdIHNodXRkb3duIGlzIHdy
+b25nIGluIHR3byB3YXlzOgoKKiBUZWNobmljYWw6IGZpbGUgZGVzY3JpcHRvcnMgY2FuIGJlIHBh
+c3NlZCB0byB1bnJlbGF0ZWQgcHJvY2Vzc2VzIHVzaW5nCkFGX1VOSVggc29ja2V0cy4gVGhpcyBt
+ZWFucyB0aGF0IGEgcHJvY2VzcyBjYW4gZXhpdCB3aGlsZSB0aGUgZmlsZSBzdGF5cwpvcGVuLiBF
+dmVuIGlmIHdlIGltcGxlbWVudCB0aGlzIOKAnGNvcnJlY3RseeKAnSBpLmUuIGhvbGRpbmcgdGhl
+IGFkZHJlc3MKc3BhY2UgJiBwYWdlIHRhYmxlcyBhbGl2ZSB1bnRpbCB0aGUgZmlsZSBpcyBmaW5h
+bGx5IHJlbGVhc2VkLCBpdOKAmXMKcmVhbGx5IGRvZGd5LgoKKiBQaGlsb3NvcGhpY2FsOiBvdXIg
+aW9jdGxzIGFyZSBhY3R1YWxseSBzeXN0ZW0gY2FsbHMgaW4gZGlzZ3Vpc2UuIFRoZXkKb3BlcmF0
+ZSBvbiB0aGUgcHJvY2Vzcywgbm90IG9uIGEgZGV2aWNlLgoKTW9yZW92ZXIsIGJlY2F1c2UgdGhl
+IEdQVSBpbnRlcmFjdHMgd2l0aCB0aGUgcHJvY2VzcyBvbmx5IHRocm91Z2gKdmlydHVhbCBtZW1v
+cnkgKGFuZCBub3QgZS5nLiBmaWxlIGRlc2NyaXB0b3JzKSwgYW5kIGJlY2F1c2UgdmlydHVhbAph
+ZGRyZXNzIHNwYWNlIGlzIGZ1bmRhbWVudGFsIHRvIGFuIGludHVpdGl2ZSBub3Rpb24gb2Ygd2hh
+dCBhIHByb2Nlc3MKaXMsIHRoZSBkZWNpc2lvbiB0byBhc3NvY2lhdGUgdGhlIGtmZF9wcm9jZXNz
+IHdpdGggbW1fc3RydWN0IHNlZW1zIGxpa2UKYSBuYXR1cmFsIGNob2ljZS4KClRoZW4gYXJyaXZl
+ZCB0aGUgaXNzdWUgb2YgaG93IHRoZSBLRkQgaXMgbm90aWZpZWQgYWJvdXQgYW4gbW1fc3RydWN0
+CmRlc3RydWN0aW9uLiBCZWNhdXNlIHRoZSBtbXVfbm90aWZpZXIgcmVsZWFzZSBjYWxsYmFjayBp
+cyBjYWxsZWQgZnJvbSBhbgpSQ1UgcmVhZCBsb2NrLCBpdCBjYW4ndCBkZXN0b3J5IHRoZSBtbXVf
+bm90aWZpZXIgb2JqZWN0LCB3aGljaCBpcyB0aGUKa2ZkX3Byb2Nlc3Mgb2JqZWN0IGl0c2VsZi4g
+VGhlcmVmb3JlLCBJIHRhbGtlZCB0byBKZXJvbWUgYW5kIEFuZHJldwpNb3J0b24gb24gYSB3YXkg
+dG8gaW1wbGVtZW50IHRoaXMgYW5kIGFmdGVyIHRoZSBkaXNjdXNzaW9uICh3aGljaCB3YXMgaW4K
+cHJpdmF0ZSBlbWFpbHMpLCBKZXJvbWUgd2FzIGtpbmQgZW5vdWdoIHRvIHdyaXRlIGEgcGF0Y2gs
+IHdoaWNoIGlzIHRoZQpwYXRjaCB3ZSBhcmUgbm93IGRpc2N1c3NpbmcuCgpZb3UgYXJlIG1vcmUg
+dGhhbiB3ZWxjb21lZCB0byB0YWtlIGEgbG9vayBhdCB0aGUgZW50aXJlIGRyaXZlciwgYXQKaHR0
+cDovL2NnaXQuZnJlZWRlc2t0b3Aub3JnL35nYWJiYXlvL2xpbnV4Lz9oPWtmZC0wLjYueCAgICAg
+IGFsdGhvdWdoCnRoZSBkcml2ZXIgd2lsbCB1bmRlcmdvIHNvbWUgY2hhbmdlcyBiZWZvcmUgc2Vu
+ZGluZyB0aGUgcHVsbCByZXF1ZXN0IHRvCkRhdmUgQWlybGUuCgpJIGJlbGlldmUgdGhhdCBjb252
+ZXJ0aW5nIGFtZF9pb21tdV92MiBkcml2ZXIgdG8gdXNlIHRoaXMgcGF0Y2ggYXMgd2VsbCwKd2ls
+bCBiZW5lZml0IGFsbCBwYXJ0aWVzLiBBRkFJSywgS0ZEIGlzIHRoZSBfb25seV8gY2xpZW50IG9m
+IHRoZQphbWRfaW9tbXVfdjIgZHJpdmVyLCBzbyBpdCBpcyBpbXBlcmF0aXZlIHRoYXQgd2Ugd2ls
+bCB3b3JrIHRvZ2V0aGVyIG9uCnRoaXMuCgoJT2RlZAo+ID4gSWYgeW91IGtub3cgYW55IG90aGVy
+IHdheSB0byBjYWxsIG1tdV9ub3RpZmllcl91bnJlZ2lzdGVyIGJlZm9yZSB0aGUKPiA+IGVuZCBv
+ZiBtbXB1dCBmdW5jdGlvbiB0aGFuIGkgYW0gYWxsIGVhci4gSSBhbSBub3QgYWRkaW5nIHRoaXMg
+Y2FsbAo+ID4gYmFjayBqdXN0IGZvciB0aGUgZnVuIG9mIGl0IGkgc3BlbmQgc2VyaW91cyB0aW1l
+IHRyeWluZyB0byBmaW5kIGEKPiA+IHdheSB0byBkbyB0aGluZyB3aXRob3V0IGl0LiBJIG1pZ2h0
+IGhhdmUgbWlzcyBhIHdheSBzbyBpZiBpIGRpZCBwbGVhc2UKPiA+IHNob3cgaXQgdG8gbWUuCj4g
+Cj4gV2h5IGRvIHlvdSBuZWVkIHRvIGNhbGwgbW11X25vdGlmaWVyX3VucmVnaXN0ZXIgbWFudWFs
+bHkgd2hlbiBpdCBpcyBkb25lCj4gaW1wbGljaXRseSBpbiBleGl0X21tYXAgYWxyZWFkeT8gCj4g
+Cj4gCj4gCUpvZXJnCj4gCj4gCgo=
 
-And why can't you cleanup the other resources in the file close path?
-Tearing down the mappings is all you need to do in the release function
-anyway.
-
-> As said from the release call back you can not call
-> mmu_notifier_unregister and thus you can not fully cleanup things.
-
-You don't need to call mmu_notifier_unregister when the release function
-is already running from exit_mmap because this is equivalent to calling
-mmu_notifier_unregister.
-
-> Only way to achieve so is to do it ouside mmu_notifier callback.
-
-The resources that can't be handled there can be cleaned up in the
-file-close path. No need for a new notifier in mm code.
-
-In the end all you need to do in the release function is to tear down
-the secondary mapping and make sure the device can no longer access the
-address space when the release function returns. Everything else, like
-freeing any resources can be done later when the file descriptors are
-teared down.
-
-> If you know any other way to call mmu_notifier_unregister before the
-> end of mmput function than i am all ear. I am not adding this call
-> back just for the fun of it i spend serious time trying to find a
-> way to do thing without it. I might have miss a way so if i did please
-> show it to me.
-
-Why do you need to call mmu_notifier_unregister manually when it is done
-implicitly in exit_mmap already? 
-
-
-	Joerg
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
