@@ -1,16 +1,21 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [RFC/PATCH 7/7] iommu-api: Add domain attribute to enable
-	coherent HTW
-Date: Tue, 1 Jul 2014 08:49:21 +0000
-Message-ID: <e64e7ca617d64093bbe5dc7caf9283e1@BL2PR03MB468.namprd03.prod.outlook.com>
-References: <1404147116-4598-1-git-send-email-ohaugan@codeaurora.org>
-	<1404147116-4598-8-git-send-email-ohaugan@codeaurora.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 1/6] mmput: use notifier chain to call subsystem exit
+	handler.
+Date: Tue, 1 Jul 2014 11:15:35 +0200
+Message-ID: <20140701091535.GF26537@8bytes.org>
+References: <1403920822-14488-1-git-send-email-j.glisse@gmail.com>
+	<1403920822-14488-2-git-send-email-j.glisse@gmail.com>
+	<019CCE693E457142B37B791721487FD91806B836@storexdag01.amd.com>
+	<20140630154042.GD26537@8bytes.org>
+	<20140630160604.GF1956@gmail.com>
+	<20140630181623.GE26537@8bytes.org>
+	<20140630183556.GB3280@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1404147116-4598-8-git-send-email-ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20140630183556.GB3280-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,84 +25,48 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "vgandhi-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <vgandhi-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>
+To: Jerome Glisse <j.glisse-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Sherry Cheung <SCheung-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "Gabbay,
+	Oded" <Oded.Gabbay-5C7GfCeVMHo@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "aarcange-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <aarcange-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jatin Kumar <jakumar-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Lucien Dunning <ldunning-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "mgorman-l3A5Bk7waGM@public.gmane.org" <mgorman-l3A5Bk7waGM@public.gmane.org>, "jweiner-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <jweiner-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Subhash Gutti <sgutti-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, John Hubbard <jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mark Hairgrove <mhairgrove-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Cameron Buschardt <cabuschardt-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "peterz-hDdKplPs4pWWVfeAwA7xHQ@public.gmane.org" <peterz-hDdKplPs4pWWVfeAwA7xHQ@public.gmane.org>, Duncan Poole <dpoole-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "Cornwall,
+	Jay" <Jay.Cornwall-5C7GfCeVMHo@public.gmane.org>, "Lewycky, Andrew" <Andrew.Lewycky-5C7GfCeVMHo@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Arvind Gopalakrishnan <arvindg-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+On Mon, Jun 30, 2014 at 02:35:57PM -0400, Jerome Glisse wrote:
+> We do intend to tear down all secondary mapping inside the relase
+> callback but still we can not cleanup all the resources associated
+> with it.
+>
+
+And why can't you cleanup the other resources in the file close path?
+Tearing down the mappings is all you need to do in the release function
+anyway.
+
+> As said from the release call back you can not call
+> mmu_notifier_unregister and thus you can not fully cleanup things.
+
+You don't need to call mmu_notifier_unregister when the release function
+is already running from exit_mmap because this is equivalent to calling
+mmu_notifier_unregister.
+
+> Only way to achieve so is to do it ouside mmu_notifier callback.
+
+The resources that can't be handled there can be cleaned up in the
+file-close path. No need for a new notifier in mm code.
+
+In the end all you need to do in the release function is to tear down
+the secondary mapping and make sure the device can no longer access the
+address space when the release function returns. Everything else, like
+freeing any resources can be done later when the file descriptors are
+teared down.
+
+> If you know any other way to call mmu_notifier_unregister before the
+> end of mmput function than i am all ear. I am not adding this call
+> back just for the fun of it i spend serious time trying to find a
+> way to do thing without it. I might have miss a way so if i did please
+> show it to me.
+
+Why do you need to call mmu_notifier_unregister manually when it is done
+implicitly in exit_mmap already? 
 
 
-> -----Original Message-----
-> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
-> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Olav Haugan
-> Sent: Monday, June 30, 2014 10:22 PM
-> To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
-> foundation.org
-> Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org;
-> thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org; vgandhi-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
-> Subject: [RFC/PATCH 7/7] iommu-api: Add domain attribute to enable
-> coherent HTW
-> 
-> Add a new iommu domain attribute that can be used to enable cache
-> coherent hardware table walks (HTW) by the SMMU. HTW might be supported
-> by the SMMU HW but depending on the use case and the usage of the SMMU in
-> the SoC it might not be always beneficial to always turn on coherent HTW
-> for all domains/iommu's.
-> 
-[Sethi Varun-B16395] Why won't you want to use the coherent table walk feature?
-
-> Signed-off-by: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> ---
->  drivers/iommu/msm_iommu-v1.c | 16 ++++++++++++++++
->  include/linux/iommu.h        |  1 +
->  2 files changed, 17 insertions(+)
-> 
-> diff --git a/drivers/iommu/msm_iommu-v1.c b/drivers/iommu/msm_iommu-v1.c
-> index 2c574ef..e163ffc 100644
-> --- a/drivers/iommu/msm_iommu-v1.c
-> +++ b/drivers/iommu/msm_iommu-v1.c
-> @@ -1456,8 +1456,16 @@ static int msm_domain_get_attr(struct iommu_domain
-> *domain,
->  			       enum iommu_attr attr, void *data)  {
->  	s32 ret = 0;
-> +	struct msm_iommu_priv *priv = domain->priv;
-> 
->  	switch (attr) {
-> +	case DOMAIN_ATTR_COHERENT_HTW:
-> +	{
-> +		s32 *int_ptr = (s32 *) data;
-> +
-> +		*int_ptr = priv->pt.redirect;
-> +		break;
-> +	}
->  	default:
->  		pr_err("Unsupported attribute type\n");
->  		ret = -EINVAL;
-> @@ -1471,8 +1479,16 @@ static int msm_domain_set_attr(struct iommu_domain
-> *domain,
->  			       enum iommu_attr attr, void *data)  {
->  	s32 ret = 0;
-> +	struct msm_iommu_priv *priv = domain->priv;
-> 
->  	switch (attr) {
-> +	case DOMAIN_ATTR_COHERENT_HTW:
-> +	{
-> +		s32 *int_ptr = (s32 *) data;
-> +
-> +		priv->pt.redirect = *int_ptr;
-> +		break;
-> +	}
->  	default:
->  		pr_err("Unsupported attribute type\n");
->  		ret = -EINVAL;
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h index
-> 63dca6d..6d9596d 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -81,6 +81,7 @@ enum iommu_attr {
->  	DOMAIN_ATTR_FSL_PAMU_STASH,
->  	DOMAIN_ATTR_FSL_PAMU_ENABLE,
->  	DOMAIN_ATTR_FSL_PAMUV1,
-> +	DOMAIN_ATTR_COHERENT_HTW,
-[Sethi Varun-B16395] Would it make sense to represent this as DOMAIN_ATTR_SMMU_COHERENT_HTW? I believe this is specific to SMMU.
-
--Varun
+	Joerg
