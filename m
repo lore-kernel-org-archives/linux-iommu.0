@@ -1,74 +1,38 @@
-From: Jerome Glisse <j.glisse@gmail.com>
-Subject: Re: [PATCH 1/6] mmput: use notifier chain to call subsystem exit
- handler.
-Date: Tue, 1 Jul 2014 17:32:09 -0400
-Message-ID: <20140701213208.GC3322@gmail.com>
-References: <019CCE693E457142B37B791721487FD91806B836@storexdag01.amd.com>
- <20140630154042.GD26537@8bytes.org>
- <20140630160604.GF1956@gmail.com>
- <20140630181623.GE26537@8bytes.org>
- <20140630183556.GB3280@gmail.com>
- <20140701091535.GF26537@8bytes.org>
- <019CCE693E457142B37B791721487FD91806DD8B@storexdag01.amd.com>
- <20140701110018.GH26537@8bytes.org>
- <20140701193343.GB3322@gmail.com>
- <20140701210620.GL26537@8bytes.org>
+From: Emil Medve <Emilian.Medve@Freescale.com>
+Subject: Re: [PATCH 1/3] iommu/fsl: Fix PAMU window size check.
+Date: Wed, 2 Jul 2014 02:46:01 -0500
+Message-ID: <53B3B8B9.30400@Freescale.com>
+References: <1403618237-26248-1-git-send-email-Varun.Sethi@freescale.com>
+ <1403618237-26248-2-git-send-email-Varun.Sethi__13822.953499812$1403630309$gmane$org@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-Return-path: <owner-linux-mm@kvack.org>
-Content-Disposition: inline
-In-Reply-To: <20140701210620.GL26537@8bytes.org>
-Sender: owner-linux-mm@kvack.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: "Gabbay, Oded" <Oded.Gabbay@amd.com>, "Deucher, Alexander" <Alexander.Deucher@amd.com>, "Lewycky, Andrew" <Andrew.Lewycky@amd.com>, "Cornwall, Jay" <Jay.Cornwall@amd.com>, "Bridgman, John" <John.Bridgman@amd.com>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "mgorman@suse.de" <mgorman@suse.de>, "hpa@zytor.com" <hpa@zytor.com>, "peterz@infraread.org" <peterz@infraread.org>, "aarcange@redhat.com" <aarcange@redhat.com>, "riel@redhat.com" <riel@redhat.com>, "jweiner@redhat.com" <jweiner@redhat.com>, "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>, Mark Hairgrove <mhairgrove@nvidia.com>, Jatin Kumar <jakumar@nvidia.com>, Subhash Gutti <sgutti@nvidia.com>, Lucien Dunning <ldunning@nvidia.com>, Cameron Buschardt <cabuschardt@nvidia.com>, Ar
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+In-Reply-To: <1403618237-26248-2-git-send-email-Varun.Sethi__13822.953499812$1403630309$gmane$org@freescale.com>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+To: Varun Sethi <Varun.Sethi@Freescale.com>, iommu@lists.linux-foundation.org, joro@8bytes.org, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, alex.williamson@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jul 01, 2014 at 11:06:20PM +0200, Joerg Roedel wrote:
-> On Tue, Jul 01, 2014 at 03:33:44PM -0400, Jerome Glisse wrote:
-> > On Tue, Jul 01, 2014 at 01:00:18PM +0200, Joerg Roedel wrote:
-> > > No, its not in this case. The file descriptor is used to connect a
-> > > process address space with a device context. Thus without the mappi=
-ngs
-> > > the file-descriptor is useless and the mappings should stay in-tact
-> > > until the fd is closed.
-> > >=20
-> > > It would be a very bad semantic for userspace if a fd that is passe=
-d on
-> > > fails on the other side because the sending process died.
-> >=20
-> > Consider use case where there is no file associated with the mmu_noti=
-fier
-> > ie there is no device file descriptor that could hold and take care o=
-f
-> > mmu_notifier destruction and cleanup. We need this call chain for thi=
-s
-> > case.
->=20
-> Example of such a use-case where no fd will be associated?
->=20
-> Anyway, even without an fd, there will always be something that sets th=
-e
-> mm->device binding up (calling mmu_notifier_register) and tears it down
-> in the end (calling mmu_notifier_unregister). And this will be the
-> places where any resources left from the .release call-back can be
-> cleaned up.
->=20
-
-That's the whole point we can not do what we want without the callback ie
-the place where we do the cleanup is the mm callback we need. If you do n=
-ot
-like the call chain than we will just add ourself as another caller in th=
-e
-exact same spot where the notifier chain is which Andrew disliked because
-there are already enough submodule that are interested in being inform of
-mm destruction.
-
-Cheers,
-J=E9r=F4me
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=3Dmailto:"dont@kvack.org"> email@kvack.org </a>
+T24gMDYvMjQvMjAxNCAwODo1NyBBTSwgVmFydW4gU2V0aGkgd3JvdGU6Cj4gaXNfcG93ZXJfb2Zf
+MiByZXF1aXJlcyBhbiB1bnNpZ25lZCBsb25nIHBhcmFtZXRlciB3aGljaCB3b3VsZAo+IGxlYWQg
+dG8gdHJ1bmNhdGlvbiBvZiA2NCBiaXQgdmFsdWVzIG9uIDMyIGJpdCBhcmNoaXRlY3R1cmVzLgo+
+IAo+IF9fZmZzIGFsc28gZXhwZWN0cyBhbiB1bnNpZ25lZCBsb25nIHBhcmFtZXRlciB0aHVzIHdv
+bid0IHdvcmsKPiBmb3IgNjQgYml0IHZhbHVlcyBvbiAzMiBiaXQgYXJjaGl0ZWN0dXJlcy4KPiAK
+PiBTaWduZWQtb2ZmLWJ5OiBWYXJ1biBTZXRoaSA8VmFydW4uU2V0aGlAZnJlZXNjYWxlLmNvbT4K
+PiAtLS0KPiAgZHJpdmVycy9pb21tdS9mc2xfcGFtdS5jICAgICAgICB8ICAgIDggKysrKy0tLS0K
+PiAgZHJpdmVycy9pb21tdS9mc2xfcGFtdV9kb21haW4uYyB8ICAgIDIgKy0KPiAgMiBmaWxlcyBj
+aGFuZ2VkLCA1IGluc2VydGlvbnMoKyksIDUgZGVsZXRpb25zKC0pCgpUZXN0ZWQtYnk6IEVtaWwg
+TWVkdmUgPEVtaWxpYW4uTWVkdmVARnJlZXNjYWxlLmNvbT4KCk9uIGEgUDQwODAgRFMgKGkuZS4g
+MzItYml0IFNvQykKCgpDaGVlcnMsCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fCkxpbnV4cHBjLWRldiBtYWlsaW5nIGxpc3QKTGludXhwcGMtZGV2QGxpc3Rz
+Lm96bGFicy5vcmcKaHR0cHM6Ly9saXN0cy5vemxhYnMub3JnL2xpc3RpbmZvL2xpbnV4cHBjLWRl
+dg==
