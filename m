@@ -1,12 +1,15 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RESEND PATCH v2] iommu/intel: Exclude devices using RMRRs from IOMMU
-	API domains
-Date: Thu, 03 Jul 2014 09:57:02 -0600
-Message-ID: <20140703155435.8419.72901.stgit@gimli.home>
+Subject: Re: [PATCH 0/3] iommu: Expose IOMMU information in sysfs
+Date: Thu, 03 Jul 2014 10:08:46 -0600
+Message-ID: <1404403726.1862.78.camel@ul30vt.home>
+References: <20140612215954.2754.30263.stgit@bling.home>
+	<20140616151619.GA31771@8bytes.org>
+	<1402932269.3707.35.camel@ul30vt.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1402932269.3707.35.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,101 +19,29 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
-Cc: chegu_vinod-VXdhtT5mjnY@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The user of the IOMMU API domain expects to have full control of
-the IOVA space for the domain.  RMRRs are fundamentally incompatible
-with that idea.  We can neither map the RMRR into the IOMMU API
-domain, nor can we guarantee that the device won't continue DMA with
-the area described by the RMRR as part of the new domain.  Therefore
-we must prevent such devices from being used by the IOMMU API.
+On Mon, 2014-06-16 at 09:24 -0600, Alex Williamson wrote:
+> On Mon, 2014-06-16 at 17:16 +0200, Joerg Roedel wrote:
+> > On Thu, Jun 12, 2014 at 04:12:18PM -0600, Alex Williamson wrote:
+> > > Alex Williamson (3):
+> > >       iommu: Add sysfs support for IOMMUs
+> > >       iommu/intel: Make use of IOMMU sysfs support
+> > >       iommu/amd: Add sysfs support
+> > 
+> > I like the general approach. But why do you only enable the x86 iommus?
+> > Some ARM IOMMUs and PAMU would certainly also benefit from a sysfs
+> > representation of which device is translated by which IOMMU.
+> 
+> Only because I have no ability to test the others platforms.  I'd be
+> thrilled if someone working on those IOMMUs could validate this on
+> non-x86.  Thanks,
 
-Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
----
+Should I re-send this series or are you hoping I'll attempt to piece
+together a non-x86 user for which I have no hardware and can't test?
+Varun, do you have any interest in this for the fsl iommu to try a proof
+of concept?  Thanks,
 
-We had an interesting discussion last time around about IGD use of
-RMRR, but if anything I think it only reinforces the value of this
-patch.  We can later add exemptions, but we currently have no API
-to expose the RMRR requirements outside of the VT-d driver and it's
-not clear the hardware exposes everything we need.
-
- drivers/iommu/intel-iommu.c |   49 ++++++++++++++++++++++++++++++++++---------
- 1 file changed, 39 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index f38ec7a..3c7cd80 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -2512,22 +2512,46 @@ static bool device_has_rmrr(struct device *dev)
- 	return false;
- }
- 
-+/*
-+ * There are a couple cases where we need to restrict the functionality of
-+ * devices associated with RMRRs.  The first is when evaluating a device for
-+ * identity mapping because problems exist when devices are moved in and out
-+ * of domains and their respective RMRR information is lost.  This means that
-+ * a device with associated RMRRs will never be in a "passthrough" domain.
-+ * The second is use of the device through the IOMMU API.  This interface
-+ * expects to have full control of the IOVA space for the device.  We cannot
-+ * satisfy both the requirement that RMRR access is maintained and have an
-+ * unencumbered IOVA space.  We also have no ability to quiesce the device's
-+ * use of the RMRR space or even inform the IOMMU API user of the restriction.
-+ * We therefore prevent devices associated with an RMRR from participating in
-+ * the IOMMU API, which eliminates them from device assignment.
-+ *
-+ * In both cases we assume that PCI USB devices with RMRRs have them largely
-+ * for historical reasons and that the RMRR space is not actively used post
-+ * boot.  This exclusion may change if vendors begin to abuse it.
-+ */
-+static bool device_is_rmrr_locked(struct device *dev)
-+{
-+	if (!device_has_rmrr(dev))
-+		return false;
-+
-+	if (dev_is_pci(dev)) {
-+		struct pci_dev *pdev = to_pci_dev(dev);
-+
-+		if ((pdev->class >> 8) == PCI_CLASS_SERIAL_USB)
-+			return false;
-+	}
-+
-+	return true;
-+}
-+
- static int iommu_should_identity_map(struct device *dev, int startup)
- {
- 
- 	if (dev_is_pci(dev)) {
- 		struct pci_dev *pdev = to_pci_dev(dev);
- 
--		/*
--		 * We want to prevent any device associated with an RMRR from
--		 * getting placed into the SI Domain. This is done because
--		 * problems exist when devices are moved in and out of domains
--		 * and their respective RMRR info is lost. We exempt USB devices
--		 * from this process due to their usage of RMRRs that are known
--		 * to not be needed after BIOS hand-off to OS.
--		 */
--		if (device_has_rmrr(dev) &&
--		    (pdev->class >> 8) != PCI_CLASS_SERIAL_USB)
-+		if (device_is_rmrr_locked(dev))
- 			return 0;
- 
- 		if ((iommu_identity_mapping & IDENTMAP_AZALIA) && IS_AZALIA(pdev))
-@@ -4185,6 +4209,11 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
- 	int addr_width;
- 	u8 bus, devfn;
- 
-+	if (device_is_rmrr_locked(dev)) {
-+		dev_warn(dev, "Device is ineligible for IOMMU domain attach due to platform RMRR requirement.  Contact your platform vendor.\n");
-+		return -EPERM;
-+	}
-+
- 	/* normally dev is not mapped */
- 	if (unlikely(domain_context_mapped(dev))) {
- 		struct dmar_domain *old_domain;
+Alex
