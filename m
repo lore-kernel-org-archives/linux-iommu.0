@@ -1,7 +1,7 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 2/7] iommu/amd: Update to use PCI DMA aliases
-Date: Thu, 03 Jul 2014 09:51:24 -0600
-Message-ID: <20140703155124.8112.99914.stgit@gimli.home>
+Subject: [PATCH 6/7] iommu/fsl: Use iommu_group_get_for_dev() for IOMMU groups
+Date: Thu, 03 Jul 2014 09:51:49 -0600
+Message-ID: <20140703155149.8112.80977.stgit@gimli.home>
 References: <20140703154428.8112.97562.stgit@gimli.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,131 +18,112 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Varun Sethi <varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-AMD-Vi already has a concept of an alias provided via the IVRS table.
-Now that PCI-core also understands aliases, we need to incorporate
-both aspects when programming the IOMMU.  IVRS is generally quite
-reliable, so we continue to prefer it when an alias is present.  For
-cases where we have an IVRS alias that does not match the PCI alias
-or where PCI does not report an alias, report the mismatch to allow
-us to collect more quirks and dynamically incorporate the alias into
-the device alias quirks where possible.
-
-This should allow AMD-Vi to work with devices like Marvell and Ricoh
-with DMA function alias quirks unknown to the BIOS.
+Drop custom code and use IOMMU provided grouping support for PCI.
 
 Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Acked-by: Varun Sethi <varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 ---
 
- drivers/iommu/amd_iommu.c |   78 +++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 74 insertions(+), 4 deletions(-)
+ drivers/iommu/fsl_pamu_domain.c |   66 +--------------------------------------
+ 1 file changed, 1 insertion(+), 65 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 4aec6a2..25d7571 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -427,6 +427,68 @@ use_group:
- 	return use_dev_data_iommu_group(dev_data->alias_data, dev);
+diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+index 93072ba..d02d668 100644
+--- a/drivers/iommu/fsl_pamu_domain.c
++++ b/drivers/iommu/fsl_pamu_domain.c
+@@ -38,7 +38,6 @@
+ #include <sysdev/fsl_pci.h>
+ 
+ #include "fsl_pamu_domain.h"
+-#include "pci.h"
+ 
+ /*
+  * Global spinlock that needs to be held while
+@@ -892,8 +891,6 @@ static int fsl_pamu_get_domain_attr(struct iommu_domain *domain,
+ 	return ret;
  }
  
-+static int __last_alias(struct pci_dev *pdev, u16 alias, void *data)
-+{
-+	*(u16 *)data = alias;
-+	return 0;
-+}
-+
-+static u16 get_alias(struct device *dev)
-+{
-+	struct pci_dev *pdev = to_pci_dev(dev);
-+	u16 devid, ivrs_alias, pci_alias;
-+
-+	devid = get_device_id(dev);
-+	ivrs_alias = amd_iommu_alias_table[devid];
-+	pci_for_each_dma_alias(pdev, __last_alias, &pci_alias);
-+
-+	if (ivrs_alias == pci_alias)
-+		return ivrs_alias;
-+
-+	/*
-+	 * DMA alias showdown
-+	 *
-+	 * The IVRS is fairly reliable in telling us about aliases, but it
-+	 * can't know about every screwy device.  If we don't have an IVRS
-+	 * reported alias, use the PCI reported alias.  In that case we may
-+	 * still need to initialize the rlookup and dev_table entries if the
-+	 * alias is to a non-existent device.
-+	 */
-+	if (ivrs_alias == devid) {
-+		if (!amd_iommu_rlookup_table[pci_alias]) {
-+			amd_iommu_rlookup_table[pci_alias] =
-+				amd_iommu_rlookup_table[devid];
-+			memcpy(amd_iommu_dev_table[pci_alias].data,
-+			       amd_iommu_dev_table[devid].data,
-+			       sizeof(amd_iommu_dev_table[pci_alias].data));
-+		}
-+
-+		return pci_alias;
-+	}
-+
-+	pr_info("AMD-Vi: Using IVRS reported alias %02x:%02x.%d "
-+		"for device %s[%04x:%04x], kernel reported alias "
-+		"%02x:%02x.%d\n", PCI_BUS_NUM(ivrs_alias), PCI_SLOT(ivrs_alias),
-+		PCI_FUNC(ivrs_alias), dev_name(dev), pdev->vendor, pdev->device,
-+		PCI_BUS_NUM(pci_alias), PCI_SLOT(pci_alias),
-+		PCI_FUNC(pci_alias));
-+
-+	/*
-+	 * If we don't have a PCI DMA alias and the IVRS alias is on the same
-+	 * bus, then the IVRS table may know about a quirk that we don't.
-+	 */
-+	if (pci_alias == devid &&
-+	    PCI_BUS_NUM(ivrs_alias) == pdev->bus->number) {
-+		pdev->dev_flags |= PCI_DEV_FLAGS_DMA_ALIAS_DEVFN;
-+		pdev->dma_alias_devfn = ivrs_alias & 0xff;
-+		pr_info("AMD-Vi: Added PCI DMA alias %02x.%d for %s\n",
-+			PCI_SLOT(ivrs_alias), PCI_FUNC(ivrs_alias),
-+			dev_name(dev));
-+	}
-+
-+	return ivrs_alias;
-+}
-+
- static int iommu_init_device(struct device *dev)
+-#define REQ_ACS_FLAGS	(PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF)
+-
+ static struct iommu_group *get_device_iommu_group(struct device *dev)
  {
- 	struct pci_dev *pdev = to_pci_dev(dev);
-@@ -441,7 +503,8 @@ static int iommu_init_device(struct device *dev)
- 	if (!dev_data)
- 		return -ENOMEM;
+ 	struct iommu_group *group;
+@@ -950,74 +947,13 @@ static struct iommu_group *get_pci_device_group(struct pci_dev *pdev)
+ 	struct pci_controller *pci_ctl;
+ 	bool pci_endpt_partioning;
+ 	struct iommu_group *group = NULL;
+-	struct pci_dev *bridge, *dma_pdev = NULL;
  
--	alias = amd_iommu_alias_table[dev_data->devid];
-+	alias = get_alias(dev);
-+
- 	if (alias != dev_data->devid) {
- 		struct iommu_dev_data *alias_data;
+ 	pci_ctl = pci_bus_to_host(pdev->bus);
+ 	pci_endpt_partioning = check_pci_ctl_endpt_part(pci_ctl);
+ 	/* We can partition PCIe devices so assign device group to the device */
+ 	if (pci_endpt_partioning) {
+-		bridge = pci_find_upstream_pcie_bridge(pdev);
+-		if (bridge) {
+-			if (pci_is_pcie(bridge))
+-				dma_pdev = pci_get_domain_bus_and_slot(
+-						pci_domain_nr(pdev->bus),
+-						bridge->subordinate->number, 0);
+-			if (!dma_pdev)
+-				dma_pdev = pci_dev_get(bridge);
+-		} else
+-			dma_pdev = pci_dev_get(pdev);
+-
+-		/* Account for quirked devices */
+-		swap_pci_ref(&dma_pdev, pci_get_dma_source(dma_pdev));
+-
+-		/*
+-		 * If it's a multifunction device that does not support our
+-		 * required ACS flags, add to the same group as lowest numbered
+-		 * function that also does not suport the required ACS flags.
+-		 */
+-		if (dma_pdev->multifunction &&
+-		    !pci_acs_enabled(dma_pdev, REQ_ACS_FLAGS)) {
+-			u8 i, slot = PCI_SLOT(dma_pdev->devfn);
+-
+-			for (i = 0; i < 8; i++) {
+-				struct pci_dev *tmp;
+-
+-				tmp = pci_get_slot(dma_pdev->bus, PCI_DEVFN(slot, i));
+-				if (!tmp)
+-					continue;
+-
+-				if (!pci_acs_enabled(tmp, REQ_ACS_FLAGS)) {
+-					swap_pci_ref(&dma_pdev, tmp);
+-					break;
+-				}
+-				pci_dev_put(tmp);
+-			}
+-		}
+-
+-		/*
+-		 * Devices on the root bus go through the iommu.  If that's not us,
+-		 * find the next upstream device and test ACS up to the root bus.
+-		 * Finding the next device may require skipping virtual buses.
+-		 */
+-		while (!pci_is_root_bus(dma_pdev->bus)) {
+-			struct pci_bus *bus = dma_pdev->bus;
+-
+-			while (!bus->self) {
+-				if (!pci_is_root_bus(bus))
+-					bus = bus->parent;
+-				else
+-					goto root_bus;
+-			}
+-
+-			if (pci_acs_path_enabled(bus->self, NULL, REQ_ACS_FLAGS))
+-				break;
+-
+-			swap_pci_ref(&dma_pdev, pci_dev_get(bus->self));
+-		}
++		group = iommu_group_get_for_dev(&pdev->dev);
  
-@@ -489,12 +552,19 @@ static void iommu_ignore_device(struct device *dev)
- 
- static void iommu_uninit_device(struct device *dev)
- {
-+	struct iommu_dev_data *dev_data = search_dev_data(get_device_id(dev));
-+
-+	if (!dev_data)
-+		return;
-+
- 	iommu_group_remove_device(dev);
- 
-+	/* Unlink from alias, it may change if another device is re-plugged */
-+	dev_data->alias_data = NULL;
-+
- 	/*
--	 * Nothing to do here - we keep dev_data around for unplugged devices
--	 * and reuse it when the device is re-plugged - not doing so would
--	 * introduce a ton of races.
-+	 * We keep dev_data around for unplugged devices and reuse it when the
-+	 * device is re-plugged - not doing so would introduce a ton of races.
- 	 */
- }
- 
+-root_bus:
+-		group = get_device_iommu_group(&dma_pdev->dev);
+-		pci_dev_put(dma_pdev);
+ 		/*
+ 		 * PCIe controller is not a paritionable entity
+ 		 * free the controller device iommu_group.
