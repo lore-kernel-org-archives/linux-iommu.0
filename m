@@ -1,13 +1,12 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 5/7] iommu/intel: Update to use PCI DMA aliases
-Date: Thu, 03 Jul 2014 09:51:43 -0600
-Message-ID: <20140703155142.8112.71120.stgit@gimli.home>
-References: <20140703154428.8112.97562.stgit@gimli.home>
+Subject: [RESEND PATCH v2] iommu/intel: Exclude devices using RMRRs from IOMMU
+	API domains
+Date: Thu, 03 Jul 2014 09:57:02 -0600
+Message-ID: <20140703155435.8419.72901.stgit@gimli.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140703154428.8112.97562.stgit-GCcqpEzw8uZBDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,409 +16,101 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Cc: chegu_vinod-VXdhtT5mjnY@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-VT-d code currently makes use of pci_find_upstream_pcie_bridge() in
-order to find the topology based alias of a device.  This function has
-a few problems.  First, it doesn't check the entire alias path of the
-device to the root bus, therefore if a PCIe device is masked upstream,
-the wrong result is produced.  Also, it's known to get confused and
-give up when it crosses a bridge from a conventional PCI bus to a PCIe
-bus that lacks a PCIe capability.  The PCI-core provided DMA alias
-support solves both of these problems and additionally adds support
-for DMA function quirks allowing VT-d to work with devices like
-Marvell and Ricoh with known broken requester IDs.
+The user of the IOMMU API domain expects to have full control of
+the IOVA space for the domain.  RMRRs are fundamentally incompatible
+with that idea.  We can neither map the RMRR into the IOMMU API
+domain, nor can we guarantee that the device won't continue DMA with
+the area described by the RMRR as part of the new domain.  Therefore
+we must prevent such devices from being used by the IOMMU API.
 
 Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 ---
 
- drivers/iommu/intel-iommu.c         |  228 ++++++++++++++++-------------------
- drivers/iommu/intel_irq_remapping.c |   55 ++++++--
- 2 files changed, 145 insertions(+), 138 deletions(-)
+We had an interesting discussion last time around about IGD use of
+RMRR, but if anything I think it only reinforces the value of this
+patch.  We can later add exemptions, but we currently have no API
+to expose the RMRR requirements outside of the VT-d driver and it's
+not clear the hardware exposes everything we need.
+
+ drivers/iommu/intel-iommu.c |   49 ++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 39 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 9128c84..f38ec7a 100644
+index f38ec7a..3c7cd80 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1841,54 +1841,56 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
- 	return 0;
+@@ -2512,22 +2512,46 @@ static bool device_has_rmrr(struct device *dev)
+ 	return false;
  }
  
-+struct domain_context_mapping_data {
-+	struct dmar_domain *domain;
-+	struct intel_iommu *iommu;
-+	int translation;
-+};
-+
-+static int domain_context_mapping_cb(struct pci_dev *pdev,
-+				     u16 alias, void *opaque)
++/*
++ * There are a couple cases where we need to restrict the functionality of
++ * devices associated with RMRRs.  The first is when evaluating a device for
++ * identity mapping because problems exist when devices are moved in and out
++ * of domains and their respective RMRR information is lost.  This means that
++ * a device with associated RMRRs will never be in a "passthrough" domain.
++ * The second is use of the device through the IOMMU API.  This interface
++ * expects to have full control of the IOVA space for the device.  We cannot
++ * satisfy both the requirement that RMRR access is maintained and have an
++ * unencumbered IOVA space.  We also have no ability to quiesce the device's
++ * use of the RMRR space or even inform the IOMMU API user of the restriction.
++ * We therefore prevent devices associated with an RMRR from participating in
++ * the IOMMU API, which eliminates them from device assignment.
++ *
++ * In both cases we assume that PCI USB devices with RMRRs have them largely
++ * for historical reasons and that the RMRR space is not actively used post
++ * boot.  This exclusion may change if vendors begin to abuse it.
++ */
++static bool device_is_rmrr_locked(struct device *dev)
 +{
-+	struct domain_context_mapping_data *data = opaque;
++	if (!device_has_rmrr(dev))
++		return false;
 +
-+	return domain_context_mapping_one(data->domain, data->iommu,
-+					  PCI_BUS_NUM(alias), alias & 0xff,
-+					  data->translation);
++	if (dev_is_pci(dev)) {
++		struct pci_dev *pdev = to_pci_dev(dev);
++
++		if ((pdev->class >> 8) == PCI_CLASS_SERIAL_USB)
++			return false;
++	}
++
++	return true;
 +}
 +
- static int
- domain_context_mapping(struct dmar_domain *domain, struct device *dev,
- 		       int translation)
+ static int iommu_should_identity_map(struct device *dev, int startup)
  {
--	int ret;
--	struct pci_dev *pdev, *tmp, *parent;
- 	struct intel_iommu *iommu;
- 	u8 bus, devfn;
-+	struct domain_context_mapping_data data;
  
- 	iommu = device_to_iommu(dev, &bus, &devfn);
- 	if (!iommu)
- 		return -ENODEV;
- 
--	ret = domain_context_mapping_one(domain, iommu, bus, devfn,
--					 translation);
--	if (ret || !dev_is_pci(dev))
--		return ret;
--
--	/* dependent device mapping */
--	pdev = to_pci_dev(dev);
--	tmp = pci_find_upstream_pcie_bridge(pdev);
--	if (!tmp)
--		return 0;
--	/* Secondary interface's bus number and devfn 0 */
--	parent = pdev->bus->self;
--	while (parent != tmp) {
--		ret = domain_context_mapping_one(domain, iommu,
--						 parent->bus->number,
--						 parent->devfn, translation);
--		if (ret)
--			return ret;
--		parent = parent->bus->self;
--	}
--	if (pci_is_pcie(tmp)) /* this is a PCIe-to-PCI bridge */
--		return domain_context_mapping_one(domain, iommu,
--					tmp->subordinate->number, 0,
--					translation);
--	else /* this is a legacy PCI bridge */
--		return domain_context_mapping_one(domain, iommu,
--						  tmp->bus->number,
--						  tmp->devfn,
-+	if (!dev_is_pci(dev))
-+		return domain_context_mapping_one(domain, iommu, bus, devfn,
- 						  translation);
-+
-+	data.domain = domain;
-+	data.iommu = iommu;
-+	data.translation = translation;
-+
-+	return pci_for_each_dma_alias(to_pci_dev(dev),
-+				      &domain_context_mapping_cb, &data);
-+}
-+
-+static int domain_context_mapped_cb(struct pci_dev *pdev,
-+				    u16 alias, void *opaque)
-+{
-+	struct intel_iommu *iommu = opaque;
-+
-+	return !device_context_mapped(iommu, PCI_BUS_NUM(alias), alias & 0xff);
- }
- 
- static int domain_context_mapped(struct device *dev)
- {
--	int ret;
--	struct pci_dev *pdev, *tmp, *parent;
- 	struct intel_iommu *iommu;
- 	u8 bus, devfn;
- 
-@@ -1896,30 +1898,11 @@ static int domain_context_mapped(struct device *dev)
- 	if (!iommu)
- 		return -ENODEV;
- 
--	ret = device_context_mapped(iommu, bus, devfn);
--	if (!ret || !dev_is_pci(dev))
--		return ret;
-+	if (!dev_is_pci(dev))
-+		return device_context_mapped(iommu, bus, devfn);
- 
--	/* dependent device mapping */
--	pdev = to_pci_dev(dev);
--	tmp = pci_find_upstream_pcie_bridge(pdev);
--	if (!tmp)
--		return ret;
--	/* Secondary interface's bus number and devfn 0 */
--	parent = pdev->bus->self;
--	while (parent != tmp) {
--		ret = device_context_mapped(iommu, parent->bus->number,
--					    parent->devfn);
--		if (!ret)
--			return ret;
--		parent = parent->bus->self;
--	}
--	if (pci_is_pcie(tmp))
--		return device_context_mapped(iommu, tmp->subordinate->number,
--					     0);
--	else
--		return device_context_mapped(iommu, tmp->bus->number,
--					     tmp->devfn);
-+	return !pci_for_each_dma_alias(to_pci_dev(dev),
-+				       domain_context_mapped_cb, iommu);
- }
- 
- /* Returns a number of VTD pages, but aligned to MM page size */
-@@ -2208,79 +2191,86 @@ static struct dmar_domain *dmar_insert_dev_info(struct intel_iommu *iommu,
- 	return domain;
- }
- 
-+static int get_last_alias(struct pci_dev *pdev, u16 alias, void *opaque)
-+{
-+	*(u16 *)opaque = alias;
-+	return 0;
-+}
-+
- /* domain is initialized */
- static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
- {
--	struct dmar_domain *domain, *free = NULL;
--	struct intel_iommu *iommu = NULL;
-+	struct dmar_domain *domain, *tmp;
-+	struct intel_iommu *iommu;
- 	struct device_domain_info *info;
--	struct pci_dev *dev_tmp = NULL;
-+	u16 dma_alias;
- 	unsigned long flags;
--	u8 bus, devfn, bridge_bus, bridge_devfn;
-+	u8 bus, devfn;
- 
- 	domain = find_domain(dev);
- 	if (domain)
- 		return domain;
- 
-+	iommu = device_to_iommu(dev, &bus, &devfn);
-+	if (!iommu)
-+		return NULL;
-+
  	if (dev_is_pci(dev)) {
  		struct pci_dev *pdev = to_pci_dev(dev);
--		u16 segment;
  
--		segment = pci_domain_nr(pdev->bus);
--		dev_tmp = pci_find_upstream_pcie_bridge(pdev);
--		if (dev_tmp) {
--			if (pci_is_pcie(dev_tmp)) {
--				bridge_bus = dev_tmp->subordinate->number;
--				bridge_devfn = 0;
--			} else {
--				bridge_bus = dev_tmp->bus->number;
--				bridge_devfn = dev_tmp->devfn;
--			}
--			spin_lock_irqsave(&device_domain_lock, flags);
--			info = dmar_search_domain_by_dev_info(segment,
--							      bridge_bus,
--							      bridge_devfn);
--			if (info) {
--				iommu = info->iommu;
--				domain = info->domain;
--			}
--			spin_unlock_irqrestore(&device_domain_lock, flags);
--			/* pcie-pci bridge already has a domain, uses it */
--			if (info)
--				goto found_domain;
-+		pci_for_each_dma_alias(pdev, get_last_alias, &dma_alias);
-+
-+		spin_lock_irqsave(&device_domain_lock, flags);
-+		info = dmar_search_domain_by_dev_info(pci_domain_nr(pdev->bus),
-+						      PCI_BUS_NUM(dma_alias),
-+						      dma_alias & 0xff);
-+		if (info) {
-+			iommu = info->iommu;
-+			domain = info->domain;
- 		}
--	}
-+		spin_unlock_irqrestore(&device_domain_lock, flags);
+-		/*
+-		 * We want to prevent any device associated with an RMRR from
+-		 * getting placed into the SI Domain. This is done because
+-		 * problems exist when devices are moved in and out of domains
+-		 * and their respective RMRR info is lost. We exempt USB devices
+-		 * from this process due to their usage of RMRRs that are known
+-		 * to not be needed after BIOS hand-off to OS.
+-		 */
+-		if (device_has_rmrr(dev) &&
+-		    (pdev->class >> 8) != PCI_CLASS_SERIAL_USB)
++		if (device_is_rmrr_locked(dev))
+ 			return 0;
  
--	iommu = device_to_iommu(dev, &bus, &devfn);
--	if (!iommu)
--		goto error;
-+		/* DMA alias already has a domain, uses it */
-+		if (info)
-+			goto found_domain;
-+	}
+ 		if ((iommu_identity_mapping & IDENTMAP_AZALIA) && IS_AZALIA(pdev))
+@@ -4185,6 +4209,11 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
+ 	int addr_width;
+ 	u8 bus, devfn;
  
- 	/* Allocate and initialize new domain for the device */
- 	domain = alloc_domain(false);
- 	if (!domain)
--		goto error;
-+		return NULL;
-+
- 	if (iommu_attach_domain(domain, iommu)) {
- 		free_domain_mem(domain);
--		domain = NULL;
--		goto error;
-+		return NULL;
- 	}
--	free = domain;
--	if (domain_init(domain, gaw))
--		goto error;
- 
--	/* register pcie-to-pci device */
--	if (dev_tmp) {
--		domain = dmar_insert_dev_info(iommu, bridge_bus, bridge_devfn,
--					      NULL, domain);
-+	if (domain_init(domain, gaw)) {
-+		domain_exit(domain);
-+		return NULL;
++	if (device_is_rmrr_locked(dev)) {
++		dev_warn(dev, "Device is ineligible for IOMMU domain attach due to platform RMRR requirement.  Contact your platform vendor.\n");
++		return -EPERM;
 +	}
 +
-+	/* register PCI DMA alias device */
-+	if (dev_is_pci(dev)) {
-+		tmp = dmar_insert_dev_info(iommu, PCI_BUS_NUM(dma_alias),
-+					   dma_alias & 0xff, NULL, domain);
-+
-+		if (!tmp || tmp != domain) {
-+			domain_exit(domain);
-+			domain = tmp;
-+		}
-+
- 		if (!domain)
--			goto error;
-+			return NULL;
- 	}
- 
- found_domain:
--	domain = dmar_insert_dev_info(iommu, bus, devfn, dev, domain);
--error:
--	if (free != domain)
--		domain_exit(free);
-+	tmp = dmar_insert_dev_info(iommu, bus, devfn, dev, domain);
-+
-+	if (!tmp || tmp != domain) {
-+		domain_exit(domain);
-+		domain = tmp;
-+	}
- 
- 	return domain;
- }
-@@ -4043,33 +4033,27 @@ out_free_dmar:
- 	return ret;
- }
- 
-+static int iommu_detach_dev_cb(struct pci_dev *pdev, u16 alias, void *opaque)
-+{
-+	struct intel_iommu *iommu = opaque;
-+
-+	iommu_detach_dev(iommu, PCI_BUS_NUM(alias), alias & 0xff);
-+	return 0;
-+}
-+
-+/*
-+ * NB - intel-iommu lacks any sort of reference counting for the users of
-+ * dependent devices.  If multiple endpoints have intersecting dependent
-+ * devices, unbinding the driver from any one of them will possibly leave
-+ * the others unable to operate.
-+ */
- static void iommu_detach_dependent_devices(struct intel_iommu *iommu,
- 					   struct device *dev)
- {
--	struct pci_dev *tmp, *parent, *pdev;
--
- 	if (!iommu || !dev || !dev_is_pci(dev))
- 		return;
- 
--	pdev = to_pci_dev(dev);
--
--	/* dependent device detach */
--	tmp = pci_find_upstream_pcie_bridge(pdev);
--	/* Secondary interface's bus number and devfn 0 */
--	if (tmp) {
--		parent = pdev->bus->self;
--		while (parent != tmp) {
--			iommu_detach_dev(iommu, parent->bus->number,
--					 parent->devfn);
--			parent = parent->bus->self;
--		}
--		if (pci_is_pcie(tmp)) /* this is a PCIe-to-PCI bridge */
--			iommu_detach_dev(iommu,
--				tmp->subordinate->number, 0);
--		else /* this is a legacy PCI bridge */
--			iommu_detach_dev(iommu, tmp->bus->number,
--					 tmp->devfn);
--	}
-+	pci_for_each_dma_alias(to_pci_dev(dev), &iommu_detach_dev_cb, iommu);
- }
- 
- static void domain_remove_one_dev_info(struct dmar_domain *domain,
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 9b17489..757e0b0 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -369,29 +369,52 @@ static int set_hpet_sid(struct irte *irte, u8 id)
- 	return 0;
- }
- 
-+struct set_msi_sid_data {
-+	struct pci_dev *pdev;
-+	u16 alias;
-+};
-+
-+static int set_msi_sid_cb(struct pci_dev *pdev, u16 alias, void *opaque)
-+{
-+	struct set_msi_sid_data *data = opaque;
-+
-+	data->pdev = pdev;
-+	data->alias = alias;
-+
-+	return 0;
-+}
-+
- static int set_msi_sid(struct irte *irte, struct pci_dev *dev)
- {
--	struct pci_dev *bridge;
-+	struct set_msi_sid_data data;
- 
- 	if (!irte || !dev)
- 		return -1;
- 
--	/* PCIe device or Root Complex integrated PCI device */
--	if (pci_is_pcie(dev) || !dev->bus->parent) {
--		set_irte_sid(irte, SVT_VERIFY_SID_SQ, SQ_ALL_16,
--			     (dev->bus->number << 8) | dev->devfn);
--		return 0;
--	}
-+	pci_for_each_dma_alias(dev, set_msi_sid_cb, &data);
- 
--	bridge = pci_find_upstream_pcie_bridge(dev);
--	if (bridge) {
--		if (pci_is_pcie(bridge))/* this is a PCIe-to-PCI/PCIX bridge */
--			set_irte_sid(irte, SVT_VERIFY_BUS, SQ_ALL_16,
--				(bridge->bus->number << 8) | dev->bus->number);
--		else /* this is a legacy PCI bridge */
--			set_irte_sid(irte, SVT_VERIFY_SID_SQ, SQ_ALL_16,
--				(bridge->bus->number << 8) | bridge->devfn);
--	}
-+	/*
-+	 * DMA alias provides us with a PCI device and alias.  The only case
-+	 * where the it will return an alias on a different bus than the
-+	 * device is the case of a PCIe-to-PCI bridge, where the alias is for
-+	 * the subordinate bus.  In this case we can only verify the bus.
-+	 *
-+	 * If the alias device is on a different bus than our source device
-+	 * then we have a topology based alias, use it.
-+	 *
-+	 * Otherwise, the alias is for a device DMA quirk and we cannot
-+	 * assume that MSI uses the same requester ID.  Therefore use the
-+	 * original device.
-+	 */
-+	if (PCI_BUS_NUM(data.alias) != data.pdev->bus->number)
-+		set_irte_sid(irte, SVT_VERIFY_BUS, SQ_ALL_16,
-+			     PCI_DEVID(PCI_BUS_NUM(data.alias),
-+				       dev->bus->number));
-+	else if (data.pdev->bus->number != dev->bus->number)
-+		set_irte_sid(irte, SVT_VERIFY_SID_SQ, SQ_ALL_16, data.alias);
-+	else
-+		set_irte_sid(irte, SVT_VERIFY_SID_SQ, SQ_ALL_16,
-+			     PCI_DEVID(dev->bus->number, dev->devfn));
- 
- 	return 0;
- }
+ 	/* normally dev is not mapped */
+ 	if (unlikely(domain_context_mapped(dev))) {
+ 		struct dmar_domain *old_domain;
