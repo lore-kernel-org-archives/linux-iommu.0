@@ -1,75 +1,32 @@
-From: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 0/6] trivial cleanup for iommu/vt-d
-Date: Fri, 4 Jul 2014 17:29:24 +0800
-Message-ID: <53B673F4.1050205@huawei.com>
-References: <1400589472-8544-1-git-send-email-wangyijing@huawei.com>
-	<20140704092209.GA13434@8bytes.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140704092209.GA13434-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Tushar Behera <tushar.b@samsung.com>
+Subject: [PATCH] iommu/exynos: Select ARM_DMA_USE_IOMMU
+Date: Fri,  4 Jul 2014 15:01:08 +0530
+Message-ID: <1404466268-9512-1-git-send-email-tushar.b@samsung.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+Cc: pullip.cho@samsung.com, shaik.ameer@samsung.com, trblinux@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 2014/7/4 17:22, Joerg Roedel wrote:
-> On Tue, May 20, 2014 at 08:37:46PM +0800, Yijing Wang wrote:
->>
->> Yijing Wang (6):
->>   iommu/vt-d: Use list_for_each_safe() to simplify code
->>   iommu/vt-d: move up no_iommu and dmar_disabled check
->>   iommu/vt-d: clear the redundant assignment in dmar_enable_qi
->>   iommu/vt-d: clear the redundant assignment for domain->nid
->>   iommu/vt-d: use inline function dma_pte_superpage instead of macros
->>   iommu/vt-d: fix reference count in iommu_prepare_isa
-> 
-> Applied patches 1, 3, 4, 5 and 6, thanks. Also added another patch
-> on-top, see below.
+For IOMMU to use on Exynos platforms, we need to enable ARM_DMA_USE_IOMMU. It
+would be better to select it by default when EXYNOS_IOMMU is enabled.
 
-Thanks a lot!
+Signed-off-by: Tushar Behera <tushar.b@samsung.com>
+---
+ drivers/iommu/Kconfig |    1 +
+ 1 file changed, 1 insertion(+)
 
-Yijing.
-
-> 
->>From 77c704bebc5d023ece7af32ea18bc3508cdb0007 Mon Sep 17 00:00:00 2001
-> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> Date: Fri, 4 Jul 2014 11:19:10 +0200
-> Subject: [PATCH] iommu/vt-d: Don't use magic number in dma_pte_superpage
-> 
-> Use the already defined DMA_PTE_LARGE_PAGE for testing
-> instead of hardcoding the value again.
-> 
-> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> ---
->  drivers/iommu/intel-iommu.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 9b9f28e..5d86e93 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -304,7 +304,7 @@ static inline bool dma_pte_present(struct dma_pte *pte)
->  
->  static inline bool dma_pte_superpage(struct dma_pte *pte)
->  {
-> -	return (pte->val & (1 << 7));
-> +	return (pte->val & DMA_PTE_LARGE_PAGE);
->  }
->  
->  static inline int first_pte_in_page(struct dma_pte *pte)
-> 
-
-
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index d260605..54f3ad1a 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -180,6 +180,7 @@ config EXYNOS_IOMMU
+ 	bool "Exynos IOMMU Support"
+ 	depends on ARCH_EXYNOS
+ 	select IOMMU_API
++	select ARM_DMA_USE_IOMMU
+ 	help
+ 	  Support for the IOMMU (System MMU) of Samsung Exynos application
+ 	  processor family. This enables H/W multimedia accelerators to see
 -- 
-Thanks!
-Yijing
+1.7.9.5
