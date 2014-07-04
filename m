@@ -1,13 +1,14 @@
-From: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH] iommu/exynos: Select ARM_DMA_USE_IOMMU
-Date: Fri, 04 Jul 2014 18:58:02 +0900
-Message-ID: <20140704185802.6883ac53f77ce18781fc0525@samsung.com>
-References: <1404466268-9512-1-git-send-email-tushar.b@samsung.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 0/7] iommu: Fix DMA alias problems
+Date: Fri, 4 Jul 2014 12:36:53 +0200
+Message-ID: <20140704103653.GU26537@8bytes.org>
+References: <20140703154428.8112.97562.stgit@gimli.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <1404466268-9512-1-git-send-email-tushar.b-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20140703154428.8112.97562.stgit-GCcqpEzw8uZBDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,35 +18,30 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tushar Behera <tushar.b-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, trblinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 04 Jul 2014 15:01:08 +0530, Tushar Behera wrote:
-> For IOMMU to use on Exynos platforms, we need to enable ARM_DMA_USE_IOMMU. It
-> would be better to select it by default when EXYNOS_IOMMU is enabled.
+On Thu, Jul 03, 2014 at 09:51:12AM -0600, Alex Williamson wrote:
+> Alex Williamson (7):
+>       iommu: Remove pci.h
+>       iommu/fsl: Use iommu_group_get_for_dev() for IOMMU groups
+>       iommu/intel: Update to use PCI DMA aliases
+>       iommu/intel: Use iommu_group_get_for_dev()
+>       iommu/amd: Use iommu_group_get_for_dev()
+>       iommu/amd: Update to use PCI DMA aliases
+>       iommu: Create central IOMMU group lookup/creation interface
 > 
-> Signed-off-by: Tushar Behera <tushar.b-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> ---
->  drivers/iommu/Kconfig |    1 +
->  1 file changed, 1 insertion(+)
 > 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index d260605..54f3ad1a 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -180,6 +180,7 @@ config EXYNOS_IOMMU
->  	bool "Exynos IOMMU Support"
->  	depends on ARCH_EXYNOS
->  	select IOMMU_API
-> +	select ARM_DMA_USE_IOMMU
->  	help
->  	  Support for the IOMMU (System MMU) of Samsung Exynos application
->  	  processor family. This enables H/W multimedia accelerators to see
-> -- 
+>  drivers/iommu/amd_iommu.c           |  214 +++++++-----------------
+>  drivers/iommu/amd_iommu_types.h     |    1 
+>  drivers/iommu/fsl_pamu_domain.c     |   66 --------
+>  drivers/iommu/intel-iommu.c         |  307 +++++++++++++----------------------
+>  drivers/iommu/intel_irq_remapping.c |   55 ++++--
+>  drivers/iommu/iommu.c               |  182 +++++++++++++++++++++
+>  drivers/iommu/pci.h                 |   29 ---
+>  include/linux/iommu.h               |    1 
+>  8 files changed, 398 insertions(+), 457 deletions(-)
+>  delete mode 100644 drivers/iommu/pci.h
 
-Reviewed-by: Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>'
-
-Thank you.
-
-KyongHo
+Applied to the core branch, thanks Alex.
