@@ -1,15 +1,18 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 2/6] iommu/vt-d: move up no_iommu and dmar_disabled check
-Date: Fri, 4 Jul 2014 11:06:40 +0200
-Message-ID: <20140704090640.GS26537@8bytes.org>
-References: <1400589472-8544-1-git-send-email-wangyijing@huawei.com>
-	<1400589472-8544-3-git-send-email-wangyijing@huawei.com>
+From: David Laight <David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org>
+Subject: RE: [PATCH 1/3] PCI/MSI: Add pci_enable_msi_partial()
+Date: Fri, 4 Jul 2014 09:11:50 +0000
+Message-ID: <063D6719AE5E284EB5DD2968C1650D6D1726C717@AcuExch.aculab.com>
+References: <cover.1402405331.git.agordeev@redhat.com>
+	<4fef62a2e647a7c38e9f2a1ea4244b3506a85e2b.1402405331.git.agordeev@redhat.com>
+	<20140702202201.GA28852@google.com>
+	<063D6719AE5E284EB5DD2968C1650D6D1726BF4E@AcuExch.aculab.com>
+	<20140704085816.GB12247@dhcp-26-207.brq.redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1400589472-8544-3-git-send-email-wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20140704085816.GB12247-hdGaXg0bp3uRXgp2RCiI5R/sF2h8X+2i0E9HWUfgJXw@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,46 +22,34 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: 'Alexander Gordeev' <agordeev-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org" <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, "linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, 'Bjorn Helgaas' <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org" <xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, May 20, 2014 at 08:37:48PM +0800, Yijing Wang wrote:
-> Move up the no_iommu and dmar_disabled check, avoid the
-> useless initialization for dmar.
+From: Alexander Gordeev
+...
+> > Even if you do that, you ought to write valid interrupt information
+> > into the 4th slot (maybe replicating one of the earlier interrupts).
+> > Then, if the device does raise the 'unexpected' interrupt you don't
+> > get a write to a random kernel location.
 > 
-> Signed-off-by: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> ---
->  drivers/iommu/intel-iommu.c |    6 +++---
->  1 files changed, 3 insertions(+), 3 deletions(-)
+> I might be missing something, but we are talking of MSI address space
+> here, aren't we? I am not getting how we could end up with a 'write'
+> to a random kernel location when a unclaimed MSI vector sent. We could
+> only expect a spurious interrupt at worst, which is handled and reported.
 > 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index e020dcf..6b71608 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -3948,6 +3948,9 @@ int __init intel_iommu_init(void)
->  	/* VT-d is required for a TXT/tboot launch, so enforce that */
->  	force_on = tboot_force_iommu();
->  
-> +	if (no_iommu || dmar_disabled)
-> +		return ret;
-> +
->  	if (iommu_init_mempool()) {
->  		if (force_on)
->  			panic("tboot: Failed to initialize iommu memory\n");
-> @@ -3974,9 +3977,6 @@ int __init intel_iommu_init(void)
->  		goto out_free_dmar;
->  	}
->  
-> -	if (no_iommu || dmar_disabled)
-> -		goto out_free_dmar;
-> -
->  	if (list_empty(&dmar_rmrr_units))
->  		printk(KERN_INFO "DMAR: No RMRR found\n");
+> Anyway, as I described in my reply to Bjorn, this is not a concern IMO.
 
-This breaks the kexec case were the old kernel had VT-d enabled and the
-new one disabled. In this case the new kernel might need to disable the
-IOMMUs.
+I'm thinking of the following - which might be MSI-X ?
+1) Hardware requests some interrupts and tells the host the BAR (and offset)
+   where the 'vectors' should be written.
+2) To raise an interrupt the hardware uses the 'vector' as the address
+   of a normal PCIe write cycle.
 
+So if the hardware requests 4 interrupts, but the driver (believing it
+will only use 3) only write 3 vectors, and then the hardware uses the
+4th vector it can write to a random location.
 
-	Joerg
+Debugging that would be hard!
+
+	David
