@@ -1,15 +1,15 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 2/3] iommu/fsl: Fix the device domain attach condition.
-Date: Fri, 4 Jul 2014 12:54:31 +0200
-Message-ID: <20140704105430.GE13434@8bytes.org>
-References: <1403618237-26248-1-git-send-email-Varun.Sethi@freescale.com>
-	<1403618237-26248-3-git-send-email-Varun.Sethi@freescale.com>
+Subject: Re: [RFC 01/10] iommu: Add IOMMU device registry
+Date: Fri, 4 Jul 2014 13:05:30 +0200
+Message-ID: <20140704110529.GF13434@8bytes.org>
+References: <1403815790-8548-1-git-send-email-thierry.reding@gmail.com>
+	<1403815790-8548-2-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1403618237-26248-3-git-send-email-Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+In-Reply-To: <1403815790-8548-2-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,46 +19,20 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Paul Walmsley <pwalmsley-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Rhyland Klein <rklein-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Allen Martin <amartin-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hmm,
+On Thu, Jun 26, 2014 at 10:49:41PM +0200, Thierry Reding wrote:
+> Add an IOMMU device registry for drivers to register with and implement
+> a method for users of the IOMMU API to attach to an IOMMU device. This
+> allows to support deferred probing and gives the IOMMU API a convenient
+> hook to perform early initialization of a device if necessary.
 
-On Tue, Jun 24, 2014 at 07:27:16PM +0530, Varun Sethi wrote:
-> -	old_domain_info = find_domain(dev);
-> +	old_domain_info = dev->archdata.iommu_domain;
->  	if (old_domain_info && old_domain_info->domain != dma_domain) {
->  		spin_unlock_irqrestore(&device_domain_lock, flags);
->  		detach_device(dev, old_domain_info->domain);
+Can you elaborate on why exactly you need this? The IOMMU-API is
+designed to hide any details from the user about the available IOMMUs in
+the system and which IOMMU handles which device. This looks like it is
+going in a completly different direction from that.
 
-Wouldn't this set dev->archdata.iommu_domain to NULL anyway, so that ...
 
-> @@ -399,7 +394,7 @@ static void attach_device(struct fsl_dma_domain *dma_domain, int liodn, struct d
->  	 * the info for the first LIODN as all
->  	 * LIODNs share the same domain
->  	 */
-> -	if (!old_domain_info)
-> +	if (!dev->archdata.iommu_domain)
->  		dev->archdata.iommu_domain = info;
-
-We already know that it _must_ be NULL here?
-
->  	spin_unlock_irqrestore(&device_domain_lock, flags);
-
-This would shrink down the patch to:
-
-diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
-index 93072ba..d21b554 100644
---- a/drivers/iommu/fsl_pamu_domain.c
-+++ b/drivers/iommu/fsl_pamu_domain.c
-@@ -399,8 +399,7 @@ static void attach_device(struct fsl_dma_domain *dma_domain, int liodn, struct d
- 	 * the info for the first LIODN as all
- 	 * LIODNs share the same domain
- 	 */
--	if (!old_domain_info)
--		dev->archdata.iommu_domain = info;
-+	dev->archdata.iommu_domain = info;
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
- 
- }
+	Joerg
