@@ -1,14 +1,16 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu: Add void declarations in zero-arg functions.
-Date: Fri, 4 Jul 2014 13:23:56 +0200
-Message-ID: <20140704112355.GH13434@8bytes.org>
-References: <1404392581-14507-1-git-send-email-fempsci@gmail.com>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH 1/3] iommu/fsl: Fix PAMU window size check.
+Date: Fri, 4 Jul 2014 12:47:44 +0000
+Message-ID: <6425d2420c6f4f03b15f2d7ce5be3215@BL2PR03MB468.namprd03.prod.outlook.com>
+References: <1403618237-26248-1-git-send-email-Varun.Sethi@freescale.com>
+	<1403618237-26248-2-git-send-email-Varun.Sethi@freescale.com>
+	<20140704104430.GD13434@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1404392581-14507-1-git-send-email-fempsci-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <20140704104430.GD13434-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,56 +20,28 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Chi Pham <fempsci-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jul 03, 2014 at 03:03:01PM +0200, Chi Pham wrote:
-> Added explicit void declarations to zero-argument function headers.
-> The following coccinelle script was used:
-> @addvoid@
-> identifier f;
-> @@
-> 
-> f(
-> + void
->  ) { ... }
-> 
-> Signed-off-by: Chi Pham <fempsci-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>a
 
-Applied, thanks.
 
-> ---
->  drivers/iommu/fsl_pamu.c        |    2 +-
->  drivers/iommu/fsl_pamu_domain.c |    2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
+> -----Original Message-----
+> From: Joerg Roedel [mailto:joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org]
+> Sent: Friday, July 04, 2014 4:15 PM
+> To: Sethi Varun-B16395
+> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+> linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+> Subject: Re: [PATCH 1/3] iommu/fsl: Fix PAMU window size check.
 > 
-> diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
-> index b99dd88..5c9b424 100644
-> --- a/drivers/iommu/fsl_pamu.c
-> +++ b/drivers/iommu/fsl_pamu.c
-> @@ -92,7 +92,7 @@ struct gen_pool *spaace_pool;
->   * subwindow count per liodn.
->   *
->   */
-> -u32 pamu_get_max_subwin_cnt()
-> +u32 pamu_get_max_subwin_cnt(void)
->  {
->  	return max_subwindow_count;
->  }
-> diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
-> index 93072ba..0ead81c 100644
-> --- a/drivers/iommu/fsl_pamu_domain.c
-> +++ b/drivers/iommu/fsl_pamu_domain.c
-> @@ -1157,7 +1157,7 @@ static struct iommu_ops fsl_pamu_ops = {
->  	.remove_device	= fsl_pamu_remove_device,
->  };
->  
-> -int pamu_domain_init()
-> +int pamu_domain_init(void)
->  {
->  	int ret = 0;
->  
-> -- 
-> 1.7.10.4
+> On Tue, Jun 24, 2014 at 07:27:15PM +0530, Varun Sethi wrote:
+> >  	/* window size is 2^(WSE+1) bytes */
+> > -	return __ffs(addrspace_size) - 1;
+> > +	return fls64(addrspace_size) - 2;
 > 
+> This looks bogus, why do you replace ffs (find-first-bit) by fls (find-
+> last-bit)?
+> 
+Address space size is always a power of 2. This change was required to handle address sizes > 32bit width on 32 bit architectures.
+
+-Varun
