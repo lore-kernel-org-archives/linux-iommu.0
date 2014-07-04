@@ -1,14 +1,15 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 0/6] trivial cleanup for iommu/vt-d
-Date: Fri, 4 Jul 2014 11:22:09 +0200
-Message-ID: <20140704092209.GA13434@8bytes.org>
+From: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 2/6] iommu/vt-d: move up no_iommu and dmar_disabled check
+Date: Fri, 4 Jul 2014 17:28:47 +0800
+Message-ID: <53B673CF.2040101@huawei.com>
 References: <1400589472-8544-1-git-send-email-wangyijing@huawei.com>
+	<1400589472-8544-3-git-send-email-wangyijing@huawei.com>
+	<20140704090640.GS26537@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1400589472-8544-1-git-send-email-wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20140704090640.GS26537-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,48 +19,57 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, May 20, 2014 at 08:37:46PM +0800, Yijing Wang wrote:
+>> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+>> index e020dcf..6b71608 100644
+>> --- a/drivers/iommu/intel-iommu.c
+>> +++ b/drivers/iommu/intel-iommu.c
+>> @@ -3948,6 +3948,9 @@ int __init intel_iommu_init(void)
+>>  	/* VT-d is required for a TXT/tboot launch, so enforce that */
+>>  	force_on = tboot_force_iommu();
+>>  
+>> +	if (no_iommu || dmar_disabled)
+>> +		return ret;
+>> +
+>>  	if (iommu_init_mempool()) {
+>>  		if (force_on)
+>>  			panic("tboot: Failed to initialize iommu memory\n");
+>> @@ -3974,9 +3977,6 @@ int __init intel_iommu_init(void)
+>>  		goto out_free_dmar;
+>>  	}
+>>  
+>> -	if (no_iommu || dmar_disabled)
+>> -		goto out_free_dmar;
+>> -
+>>  	if (list_empty(&dmar_rmrr_units))
+>>  		printk(KERN_INFO "DMAR: No RMRR found\n");
 > 
-> Yijing Wang (6):
->   iommu/vt-d: Use list_for_each_safe() to simplify code
->   iommu/vt-d: move up no_iommu and dmar_disabled check
->   iommu/vt-d: clear the redundant assignment in dmar_enable_qi
->   iommu/vt-d: clear the redundant assignment for domain->nid
->   iommu/vt-d: use inline function dma_pte_superpage instead of macros
->   iommu/vt-d: fix reference count in iommu_prepare_isa
+> This breaks the kexec case were the old kernel had VT-d enabled and the
+> new one disabled. In this case the new kernel might need to disable the
+> IOMMUs.
 
-Applied patches 1, 3, 4, 5 and 6, thanks. Also added another patch
-on-top, see below.
+Hi Joerg,
+   Thanks for your review and comments! You are right, I didn't consider the kexec case,
+I will drop this patch.
 
->From 77c704bebc5d023ece7af32ea18bc3508cdb0007 Mon Sep 17 00:00:00 2001
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Date: Fri, 4 Jul 2014 11:19:10 +0200
-Subject: [PATCH] iommu/vt-d: Don't use magic number in dma_pte_superpage
+Thanks!
+Yijing.
 
-Use the already defined DMA_PTE_LARGE_PAGE for testing
-instead of hardcoding the value again.
 
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
----
- drivers/iommu/intel-iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
+> 
+> 
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 9b9f28e..5d86e93 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -304,7 +304,7 @@ static inline bool dma_pte_present(struct dma_pte *pte)
- 
- static inline bool dma_pte_superpage(struct dma_pte *pte)
- {
--	return (pte->val & (1 << 7));
-+	return (pte->val & DMA_PTE_LARGE_PAGE);
- }
- 
- static inline int first_pte_in_page(struct dma_pte *pte)
+
 -- 
-1.8.4.5
+Thanks!
+Yijing
