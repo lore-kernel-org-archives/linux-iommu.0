@@ -1,15 +1,15 @@
 From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 1/3] iommu/fsl: Fix PAMU window size check.
-Date: Fri, 4 Jul 2014 12:47:44 +0000
-Message-ID: <6425d2420c6f4f03b15f2d7ce5be3215@BL2PR03MB468.namprd03.prod.outlook.com>
+Subject: RE: [PATCH 2/3] iommu/fsl: Fix the device domain attach condition.
+Date: Fri, 4 Jul 2014 12:50:28 +0000
+Message-ID: <23ace98ce7e145b0909a1f5f5d1fd2dd@BL2PR03MB468.namprd03.prod.outlook.com>
 References: <1403618237-26248-1-git-send-email-Varun.Sethi@freescale.com>
-	<1403618237-26248-2-git-send-email-Varun.Sethi@freescale.com>
-	<20140704104430.GD13434@8bytes.org>
+	<1403618237-26248-3-git-send-email-Varun.Sethi@freescale.com>
+	<20140704105430.GE13434@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140704104430.GD13434-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20140704105430.GE13434-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -28,20 +28,57 @@ List-Id: iommu@lists.linux-foundation.org
 
 > -----Original Message-----
 > From: Joerg Roedel [mailto:joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org]
-> Sent: Friday, July 04, 2014 4:15 PM
+> Sent: Friday, July 04, 2014 4:25 PM
 > To: Sethi Varun-B16395
 > Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
 > linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-> Subject: Re: [PATCH 1/3] iommu/fsl: Fix PAMU window size check.
+> Subject: Re: [PATCH 2/3] iommu/fsl: Fix the device domain attach
+> condition.
 > 
-> On Tue, Jun 24, 2014 at 07:27:15PM +0530, Varun Sethi wrote:
-> >  	/* window size is 2^(WSE+1) bytes */
-> > -	return __ffs(addrspace_size) - 1;
-> > +	return fls64(addrspace_size) - 2;
+> Hmm,
 > 
-> This looks bogus, why do you replace ffs (find-first-bit) by fls (find-
-> last-bit)?
+> On Tue, Jun 24, 2014 at 07:27:16PM +0530, Varun Sethi wrote:
+> > -	old_domain_info = find_domain(dev);
+> > +	old_domain_info = dev->archdata.iommu_domain;
+> >  	if (old_domain_info && old_domain_info->domain != dma_domain) {
+> >  		spin_unlock_irqrestore(&device_domain_lock, flags);
+> >  		detach_device(dev, old_domain_info->domain);
 > 
-Address space size is always a power of 2. This change was required to handle address sizes > 32bit width on 32 bit architectures.
+> Wouldn't this set dev->archdata.iommu_domain to NULL anyway, so that ...
+> 
+Not for the case where device has multiple LIODNs.
+
+> > @@ -399,7 +394,7 @@ static void attach_device(struct fsl_dma_domain
+> *dma_domain, int liodn, struct d
+> >  	 * the info for the first LIODN as all
+> >  	 * LIODNs share the same domain
+> >  	 */
+> > -	if (!old_domain_info)
+> > +	if (!dev->archdata.iommu_domain)
+> >  		dev->archdata.iommu_domain = info;
+> 
+> We already know that it _must_ be NULL here?
+> 
+
+That won't be true for devices having multiple LIODNs
+
+> >  	spin_unlock_irqrestore(&device_domain_lock, flags);
+> 
+> This would shrink down the patch to:
+> 
+> diff --git a/drivers/iommu/fsl_pamu_domain.c
+> b/drivers/iommu/fsl_pamu_domain.c index 93072ba..d21b554 100644
+> --- a/drivers/iommu/fsl_pamu_domain.c
+> +++ b/drivers/iommu/fsl_pamu_domain.c
+> @@ -399,8 +399,7 @@ static void attach_device(struct fsl_dma_domain
+> *dma_domain, int liodn, struct d
+>  	 * the info for the first LIODN as all
+>  	 * LIODNs share the same domain
+>  	 */
+> -	if (!old_domain_info)
+> -		dev->archdata.iommu_domain = info;
+> +	dev->archdata.iommu_domain = info;
+
+For devices having multiple LIODNs, we don't want to overwrite the info.
 
 -Varun
