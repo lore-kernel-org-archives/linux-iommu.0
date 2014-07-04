@@ -1,15 +1,16 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: 3.16rc3 multiplatform, Armada 370 and IOMMU: unbootable kernel
-Date: Fri, 04 Jul 2014 10:47:44 +0200
-Message-ID: <1936558.QaAG1bYMuD@avalon>
-References: <20140703135146.GA6898@luxor.wired.org>
-	<53B5C61D.2060308@free-electrons.com>
-	<53B5CA26.7050405@free-electrons.com>
+From: Alexander Gordeev <agordeev-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 1/3] PCI/MSI: Add pci_enable_msi_partial()
+Date: Fri, 4 Jul 2014 10:57:42 +0200
+Message-ID: <20140704085741.GA12247@dhcp-26-207.brq.redhat.com>
+References: <cover.1402405331.git.agordeev@redhat.com>
+	<4fef62a2e647a7c38e9f2a1ea4244b3506a85e2b.1402405331.git.agordeev@redhat.com>
+	<20140702202201.GA28852@google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <53B5CA26.7050405-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20140702202201.GA28852-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,80 +20,455 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Gregory CLEMENT <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Cc: Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Hiroshi.DOYU-xNZwKgViW5gAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Ezequiel Garcia <ezequiel.garcia-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Paolo Pisati <p.pisati-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>, Sebastian Hesselbarth <sebastian.hesselbarth-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Gregory,
-
-(CC'ing the IOMMU mailing list)
-
-On Thursday 03 July 2014 23:24:54 Gregory CLEMENT wrote:
-> On 03/07/2014 23:07, Gregory CLEMENT wrote:
-> > On 03/07/2014 23:01, Thomas Petazzoni wrote:
-> >> Hello,
-> >> 
-> >> If you have touched the OMAP IOMMU driver recently, please read on.
-> >> 
-> >> On Thu, 03 Jul 2014 22:57:38 +0200, Gregory CLEMENT wrote:
-> >>>> So it calls bus_set_iommu() unconditionally, without caring at all
-> >>>> whether it is running on a platform that actually cares about OMAP
-> >>>> IOMMU. And then later on, a bus notifier of the IOMMU subsystem gets
-> >>>> called, and some NULL pointer gets dereferenced. I'm pretty sure that
-> >>>> if you comment out this subsys_initcall(), you won't see the problem
-> >>>> anymore.
-
-The OMAP IOMMU driver isn't the only one registering itself with the platform 
-bus at probe time, regardless of the system the kernel runs on. Some IOMMU 
-drivers push the bus_set_iommu() call to the probe function, but that's not a 
-good solution either, as we could have several instances of the same IOMMU, 
-and all of them should be probed before the bus_set_iommu() call.
-
-We need a quick fix for v3.16, but we also need to fix bus_set_iommu(). That's 
-on my to-do list for <insert some fuzzy future date here>, but if you want to 
-give it a go, please feel free to do so. In all cases, this is a good occasion 
-to start discussing the problem. Any opinion on what the perfect API would 
-look like ?
-
-> >>> Indeed I comment it, and I didn't see the problem anymore.
-> >>> 
-> >>>> However, this code has been around since a while, so I don't know if
-> >>>> it's actually the change that makes it visible. Maybe some other IOMMU
-> >>>> core internal change makes it actually visible. But this
-> >>>> subsys_initcall() that does random stuff without caring about the
-> >>>> platform it runs on anyway looks incorrect.
-> >>> 
-> >>> I think that nobody until now have run this configuration.
-> >> 
-> >> Hum, indeed, I was assuming multi_v7_defconfig would have that enabled,
-> >> but it only has the Tegra IOMMU enabled, and not the OMAP IOMMU one.
-> >> 
-> >> So, the bug clearly belongs to the developers of the OMAP IOMMU driver,
-> >> so I've added a bunch of people who touched this driver recently in Cc.
+On Wed, Jul 02, 2014 at 02:22:01PM -0600, Bjorn Helgaas wrote:
+> On Tue, Jun 10, 2014 at 03:10:30PM +0200, Alexander Gordeev wrote:
+> > There are PCI devices that require a particular value written
+> > to the Multiple Message Enable (MME) register while aligned on
+> > power of 2 boundary value of actually used MSI vectors 'nvec'
+> > is a lesser of that MME value:
 > > 
-> > To add more information: I thought the problem was here from a long time
-> > so I tested a 3.14 kernel, and in this case the kernel booted without any
-> > problem. So the bug is pretty recent. I will do a last test with 3.15 and
-> > I will keep you inform.
+> > 	roundup_pow_of_two(nvec) < 'Multiple Message Enable'
+> > 
+> > However the existing pci_enable_msi_block() interface is not
+> > able to configure such devices, since the value written to the
+> > MME register is calculated from the number of requested MSIs
+> > 'nvec':
+> > 
+> > 	'Multiple Message Enable' = roundup_pow_of_two(nvec)
 > 
-> So it also boot well in 3.15 and then failed in 3.16-rc3. I hope it will
-> help the developers of the OMAP IOMMU driver to fix it.
+> For MSI, software learns how many vectors a device requests by reading
+> the Multiple Message Capable (MMC) field.  This field is encoded, so a
+> device can only request 1, 2, 4, 8, etc., vectors.  It's impossible
+> for a device to request 3 vectors; it would have to round up that up
+> to a power of two and request 4 vectors.
+> 
+> Software writes similarly encoded values to MME to tell the device how
+> many vectors have been allocated for its use.  For example, it's
+> impossible to tell the device that it can use 3 vectors; the OS has to
+> round that up and tell the device it can use 4 vectors.
 
-Thank you. I've had a look at the OMAP IOMMU driver changes between v3.15 and 
-v3.16-rc3, and didn't find at first sight any change that could explain the 
-crash.
+Nod.
 
-286f600 iommu/omap: Fix map protection value handling
-67b779d iommu/omap: Remove comment about supporting single page mappings only
-f7129a0 iommu/omap: Fix 'no page for' debug message in flush_iotlb_page()
-5acc97d iommu/omap: Move to_iommu definition from omap-iopgtable.h
-2ac6133 iommu/omap: Remove omap_iommu_domain_has_cap() function
-d760e3e iommu/omap: Correct init value of iotlb_entry valid field
+> So if I understand correctly, the point of this series is to take
+> advantage of device-specific knowledge, e.g., the device requests 4
+> vectors via MMC, but we "know" the device is only capable of using 3.
+> Moreover, we tell the device via MME that 4 vectors are available, but
+> we've only actually set up 3 of them.
 
-Could you try reverting those changes and retest ? If the problem doesn't 
-disappear, we'll need to look somewhere else.
+Exactly.
+
+> This makes me uneasy because we're lying to the device, and the device
+> is perfectly within spec to use all 4 of those vectors.  If anything
+> changes the number of vectors the device uses (new device revision,
+> firmware upgrade, etc.), this is liable to break.
+
+If a device committed via non-MSI specific means to send only 3 vectors
+out of 4 available why should we expect it to send 4? The probability of
+a firmware sending 4/4 vectors in this case is equal to the probability
+of sending 5/4 or 16/4, with the very same reason - a bug in the firmware.
+Moreover, even vector 4/4 would be unexpected by the device driver, though
+it is perfectly within the spec.
+
+As of new device revision or firmware update etc. - it is just yet another
+case of device driver vs the firmware match/mismatch. Not including this
+change does not help here at all IMHO.
+
+> Can you quantify the benefit of this?  Can't a device already use
+> MSI-X to request exactly the number of vectors it can use?  (I know
+
+A Intel AHCI chipset requires 16 vectors written to MME while advertises
+(via AHCI registers) and uses only 6. Even attempt to init 8 vectors results
+in device's fallback to 1 (!).
+
+> not all devices support MSI-X, but maybe we should just accept MSI for
+> what it is and encourage the HW guys to use MSI-X if MSI isn't good
+> enough.)
+> 
+> > In this case the result written to the MME register may not
+> > satisfy the aforementioned PCI devices requirement and therefore
+> > the PCI functions will not operate in a desired mode.
+> 
+> I'm not sure what you mean by "will not operate in a desired mode."
+> I thought this was an optimization to save vectors and that these
+> changes would be completely invisible to the hardware.
+
+Yes, this should be invisible to the hardware. The above is an attempt
+to describe the Intel AHCI weirdness in general terms :) I think it
+could be omitted.
+
+> Bjorn
+> 
+> > This update introduces pci_enable_msi_partial() extension to
+> > pci_enable_msi_block() interface that accepts extra 'nvec_mme'
+> > argument which is then written to MME register while the value
+> > of 'nvec' is still used to setup as many interrupts as requested.
+> > 
+> > As result of this change, architecture-specific callbacks
+> > arch_msi_check_device() and arch_setup_msi_irqs() get an extra
+> > 'nvec_mme' parameter as well, but it is ignored for now.
+> > Therefore, this update is a placeholder for architectures that
+> > wish to support pci_enable_msi_partial() function in the future.
+> > 
+> > Cc: linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org
+> > Cc: linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+> > Cc: linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+> > Cc: xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org
+> > Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> > Cc: linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > Signed-off-by: Alexander Gordeev <agordeev-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> > ---
+> >  Documentation/PCI/MSI-HOWTO.txt |   36 ++++++++++++++--
+> >  arch/mips/pci/msi-octeon.c      |    2 +-
+> >  arch/powerpc/kernel/msi.c       |    4 +-
+> >  arch/s390/pci/pci.c             |    2 +-
+> >  arch/x86/kernel/x86_init.c      |    2 +-
+> >  drivers/pci/msi.c               |   83 ++++++++++++++++++++++++++++++++++-----
+> >  include/linux/msi.h             |    5 +-
+> >  include/linux/pci.h             |    3 +
+> >  8 files changed, 115 insertions(+), 22 deletions(-)
+> > 
+> > diff --git a/Documentation/PCI/MSI-HOWTO.txt b/Documentation/PCI/MSI-HOWTO.txt
+> > index 10a9369..c8a8503 100644
+> > --- a/Documentation/PCI/MSI-HOWTO.txt
+> > +++ b/Documentation/PCI/MSI-HOWTO.txt
+> > @@ -195,14 +195,40 @@ By contrast with pci_enable_msi_range() function, pci_enable_msi_exact()
+> >  returns zero in case of success, which indicates MSI interrupts have been
+> >  successfully allocated.
+> >  
+> > -4.2.4 pci_disable_msi
+> > +4.2.4 pci_enable_msi_partial
+> > +
+> > +int pci_enable_msi_partial(struct pci_dev *dev, int nvec, int nvec_mme)
+> > +
+> > +This variation on pci_enable_msi_exact() call allows a device driver to
+> > +setup 'nvec_mme' number of multiple MSIs with the PCI function, while
+> > +setup only 'nvec' (which could be a lesser of 'nvec_mme') number of MSIs
+> > +in operating system. The MSI specification only allows 'nvec_mme' to be
+> > +allocated in powers of two, up to a maximum of 2^5 (32).
+> > +
+> > +This function could be used when a PCI function is known to send 'nvec'
+> > +MSIs, but still requires a particular number of MSIs 'nvec_mme' to be
+> > +initialized with. As result, 'nvec_mme' - 'nvec' number of unused MSIs
+> > +do not waste system resources.
+> > +
+> > +If this function returns 0, it has succeeded in allocating 'nvec_mme'
+> > +interrupts and setting up 'nvec' interrupts. In this case, the function
+> > +enables MSI on this device and updates dev->irq to be the lowest of the
+> > +new interrupts assigned to it.  The other interrupts assigned to the
+> > +device are in the range dev->irq to dev->irq + nvec - 1.
+> > +
+> > +If this function returns a negative number, it indicates an error and
+> > +the driver should not attempt to request any more MSI interrupts for
+> > +this device.
+> > +
+> > +4.2.5 pci_disable_msi
+> >  
+> >  void pci_disable_msi(struct pci_dev *dev)
+> >  
+> > -This function should be used to undo the effect of pci_enable_msi_range().
+> > -Calling it restores dev->irq to the pin-based interrupt number and frees
+> > -the previously allocated MSIs.  The interrupts may subsequently be assigned
+> > -to another device, so drivers should not cache the value of dev->irq.
+> > +This function should be used to undo the effect of pci_enable_msi_range()
+> > +or pci_enable_msi_partial(). Calling it restores dev->irq to the pin-based
+> > +interrupt number and frees the previously allocated MSIs.  The interrupts
+> > +may subsequently be assigned to another device, so drivers should not cache
+> > +the value of dev->irq.
+> >  
+> >  Before calling this function, a device driver must always call free_irq()
+> >  on any interrupt for which it previously called request_irq().
+> > diff --git a/arch/mips/pci/msi-octeon.c b/arch/mips/pci/msi-octeon.c
+> > index 2b91b0e..2be7979 100644
+> > --- a/arch/mips/pci/msi-octeon.c
+> > +++ b/arch/mips/pci/msi-octeon.c
+> > @@ -178,7 +178,7 @@ msi_irq_allocated:
+> >  	return 0;
+> >  }
+> >  
+> > -int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
+> > +int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int nvec_mme, int type)
+> >  {
+> >  	struct msi_desc *entry;
+> >  	int ret;
+> > diff --git a/arch/powerpc/kernel/msi.c b/arch/powerpc/kernel/msi.c
+> > index 8bbc12d..c60aee3 100644
+> > --- a/arch/powerpc/kernel/msi.c
+> > +++ b/arch/powerpc/kernel/msi.c
+> > @@ -13,7 +13,7 @@
+> >  
+> >  #include <asm/machdep.h>
+> >  
+> > -int arch_msi_check_device(struct pci_dev* dev, int nvec, int type)
+> > +int arch_msi_check_device(struct pci_dev *dev, int nvec, int nvec_mme, int type)
+> >  {
+> >  	if (!ppc_md.setup_msi_irqs || !ppc_md.teardown_msi_irqs) {
+> >  		pr_debug("msi: Platform doesn't provide MSI callbacks.\n");
+> > @@ -32,7 +32,7 @@ int arch_msi_check_device(struct pci_dev* dev, int nvec, int type)
+> >          return 0;
+> >  }
+> >  
+> > -int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
+> > +int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int nvec_mme, int type)
+> >  {
+> >  	return ppc_md.setup_msi_irqs(dev, nvec, type);
+> >  }
+> > diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
+> > index 9ddc51e..3cf38a8 100644
+> > --- a/arch/s390/pci/pci.c
+> > +++ b/arch/s390/pci/pci.c
+> > @@ -398,7 +398,7 @@ static void zpci_irq_handler(struct airq_struct *airq)
+> >  	}
+> >  }
+> >  
+> > -int arch_setup_msi_irqs(struct pci_dev *pdev, int nvec, int type)
+> > +int arch_setup_msi_irqs(struct pci_dev *pdev, int nvec, int nvec_mme, int type)
+> >  {
+> >  	struct zpci_dev *zdev = get_zdev(pdev);
+> >  	unsigned int hwirq, msi_vecs;
+> > diff --git a/arch/x86/kernel/x86_init.c b/arch/x86/kernel/x86_init.c
+> > index e48b674..b65bf95 100644
+> > --- a/arch/x86/kernel/x86_init.c
+> > +++ b/arch/x86/kernel/x86_init.c
+> > @@ -121,7 +121,7 @@ struct x86_msi_ops x86_msi = {
+> >  };
+> >  
+> >  /* MSI arch specific hooks */
+> > -int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
+> > +int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int nvec_mme, int type)
+> >  {
+> >  	return x86_msi.setup_msi_irqs(dev, nvec, type);
+> >  }
+> > diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
+> > index 27a7e67..0410d9b 100644
+> > --- a/drivers/pci/msi.c
+> > +++ b/drivers/pci/msi.c
+> > @@ -56,7 +56,8 @@ void __weak arch_teardown_msi_irq(unsigned int irq)
+> >  	chip->teardown_irq(chip, irq);
+> >  }
+> >  
+> > -int __weak arch_msi_check_device(struct pci_dev *dev, int nvec, int type)
+> > +int __weak arch_msi_check_device(struct pci_dev *dev,
+> > +				 int nvec, int nvec_mme, int type)
+> >  {
+> >  	struct msi_chip *chip = dev->bus->msi;
+> >  
+> > @@ -66,7 +67,8 @@ int __weak arch_msi_check_device(struct pci_dev *dev, int nvec, int type)
+> >  	return chip->check_device(chip, dev, nvec, type);
+> >  }
+> >  
+> > -int __weak arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
+> > +int __weak arch_setup_msi_irqs(struct pci_dev *dev,
+> > +			       int nvec, int nvec_mme, int type)
+> >  {
+> >  	struct msi_desc *entry;
+> >  	int ret;
+> > @@ -598,6 +600,7 @@ error_attrs:
+> >   * msi_capability_init - configure device's MSI capability structure
+> >   * @dev: pointer to the pci_dev data structure of MSI device function
+> >   * @nvec: number of interrupts to allocate
+> > + * @nvec_mme: number of interrupts to write to Multiple Message Enable register
+> >   *
+> >   * Setup the MSI capability structure of the device with the requested
+> >   * number of interrupts.  A return value of zero indicates the successful
+> > @@ -605,7 +608,7 @@ error_attrs:
+> >   * an error, and a positive return value indicates the number of interrupts
+> >   * which could have been allocated.
+> >   */
+> > -static int msi_capability_init(struct pci_dev *dev, int nvec)
+> > +static int msi_capability_init(struct pci_dev *dev, int nvec, int nvec_mme)
+> >  {
+> >  	struct msi_desc *entry;
+> >  	int ret;
+> > @@ -640,7 +643,7 @@ static int msi_capability_init(struct pci_dev *dev, int nvec)
+> >  	list_add_tail(&entry->list, &dev->msi_list);
+> >  
+> >  	/* Configure MSI capability structure */
+> > -	ret = arch_setup_msi_irqs(dev, nvec, PCI_CAP_ID_MSI);
+> > +	ret = arch_setup_msi_irqs(dev, nvec, nvec_mme, PCI_CAP_ID_MSI);
+> >  	if (ret) {
+> >  		msi_mask_irq(entry, mask, ~mask);
+> >  		free_msi_irqs(dev);
+> > @@ -758,7 +761,8 @@ static int msix_capability_init(struct pci_dev *dev,
+> >  	if (ret)
+> >  		return ret;
+> >  
+> > -	ret = arch_setup_msi_irqs(dev, nvec, PCI_CAP_ID_MSIX);
+> > +	/* Parameter 'nvec_mme' does not make sense in case of MSI-X */
+> > +	ret = arch_setup_msi_irqs(dev, nvec, 0, PCI_CAP_ID_MSIX);
+> >  	if (ret)
+> >  		goto out_avail;
+> >  
+> > @@ -812,13 +816,15 @@ out_free:
+> >   * pci_msi_check_device - check whether MSI may be enabled on a device
+> >   * @dev: pointer to the pci_dev data structure of MSI device function
+> >   * @nvec: how many MSIs have been requested ?
+> > + * @nvec_mme: how many MSIs write to Multiple Message Enable register ?
+> >   * @type: are we checking for MSI or MSI-X ?
+> >   *
+> >   * Look at global flags, the device itself, and its parent buses
+> >   * to determine if MSI/-X are supported for the device. If MSI/-X is
+> >   * supported return 0, else return an error code.
+> >   **/
+> > -static int pci_msi_check_device(struct pci_dev *dev, int nvec, int type)
+> > +static int pci_msi_check_device(struct pci_dev *dev,
+> > +				int nvec, int nvec_mme, int type)
+> >  {
+> >  	struct pci_bus *bus;
+> >  	int ret;
+> > @@ -846,7 +852,7 @@ static int pci_msi_check_device(struct pci_dev *dev, int nvec, int type)
+> >  		if (bus->bus_flags & PCI_BUS_FLAGS_NO_MSI)
+> >  			return -EINVAL;
+> >  
+> > -	ret = arch_msi_check_device(dev, nvec, type);
+> > +	ret = arch_msi_check_device(dev, nvec, nvec_mme, type);
+> >  	if (ret)
+> >  		return ret;
+> >  
+> > @@ -878,6 +884,62 @@ int pci_msi_vec_count(struct pci_dev *dev)
+> >  }
+> >  EXPORT_SYMBOL(pci_msi_vec_count);
+> >  
+> > +/**
+> > + * pci_enable_msi_partial - configure device's MSI capability structure
+> > + * @dev: device to configure
+> > + * @nvec: number of interrupts to configure
+> > + * @nvec_mme: number of interrupts to write to Multiple Message Enable register
+> > + *
+> > + * This function tries to allocate @nvec number of interrupts while setup
+> > + * device's Multiple Message Enable register with @nvec_mme interrupts.
+> > + * It returns a negative errno if an error occurs. If it succeeds, it returns
+> > + * zero and updates the @dev's irq member to the lowest new interrupt number;
+> > + * the other interrupt numbers allocated to this device are consecutive.
+> > + */
+> > +int pci_enable_msi_partial(struct pci_dev *dev, int nvec, int nvec_mme)
+> > +{
+> > +	int maxvec;
+> > +	int rc;
+> > +
+> > +	if (dev->current_state != PCI_D0)
+> > +		return -EINVAL;
+> > +
+> > +	WARN_ON(!!dev->msi_enabled);
+> > +
+> > +	/* Check whether driver already requested MSI-X irqs */
+> > +	if (dev->msix_enabled) {
+> > +		dev_info(&dev->dev, "can't enable MSI "
+> > +			 "(MSI-X already enabled)\n");
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	if (!is_power_of_2(nvec_mme))
+> > +		return -EINVAL;
+> > +	if (nvec > nvec_mme)
+> > +		return -EINVAL;
+> > +
+> > +	maxvec = pci_msi_vec_count(dev);
+> > +	if (maxvec < 0)
+> > +		return maxvec;
+> > +	else if (nvec_mme > maxvec)
+> > +		return -EINVAL;
+> > +
+> > +	rc = pci_msi_check_device(dev, nvec, nvec_mme, PCI_CAP_ID_MSI);
+> > +	if (rc < 0)
+> > +		return rc;
+> > +	else if (rc > 0)
+> > +		return -ENOSPC;
+> > +
+> > +	rc = msi_capability_init(dev, nvec, nvec_mme);
+> > +	if (rc < 0)
+> > +		return rc;
+> > +	else if (rc > 0)
+> > +		return -ENOSPC;
+> > +
+> > +	return 0;
+> > +}
+> > +EXPORT_SYMBOL(pci_enable_msi_partial);
+> > +
+> >  void pci_msi_shutdown(struct pci_dev *dev)
+> >  {
+> >  	struct msi_desc *desc;
+> > @@ -957,7 +1019,7 @@ int pci_enable_msix(struct pci_dev *dev, struct msix_entry *entries, int nvec)
+> >  	if (!entries || !dev->msix_cap || dev->current_state != PCI_D0)
+> >  		return -EINVAL;
+> >  
+> > -	status = pci_msi_check_device(dev, nvec, PCI_CAP_ID_MSIX);
+> > +	status = pci_msi_check_device(dev, nvec, 0, PCI_CAP_ID_MSIX);
+> >  	if (status)
+> >  		return status;
+> >  
+> > @@ -1110,7 +1172,8 @@ int pci_enable_msi_range(struct pci_dev *dev, int minvec, int maxvec)
+> >  		nvec = maxvec;
+> >  
+> >  	do {
+> > -		rc = pci_msi_check_device(dev, nvec, PCI_CAP_ID_MSI);
+> > +		rc = pci_msi_check_device(dev, nvec, roundup_pow_of_two(nvec),
+> > +					  PCI_CAP_ID_MSI);
+> >  		if (rc < 0) {
+> >  			return rc;
+> >  		} else if (rc > 0) {
+> > @@ -1121,7 +1184,7 @@ int pci_enable_msi_range(struct pci_dev *dev, int minvec, int maxvec)
+> >  	} while (rc);
+> >  
+> >  	do {
+> > -		rc = msi_capability_init(dev, nvec);
+> > +		rc = msi_capability_init(dev, nvec, roundup_pow_of_two(nvec));
+> >  		if (rc < 0) {
+> >  			return rc;
+> >  		} else if (rc > 0) {
+> > diff --git a/include/linux/msi.h b/include/linux/msi.h
+> > index 92a2f99..b9f89ee 100644
+> > --- a/include/linux/msi.h
+> > +++ b/include/linux/msi.h
+> > @@ -57,9 +57,10 @@ struct msi_desc {
+> >   */
+> >  int arch_setup_msi_irq(struct pci_dev *dev, struct msi_desc *desc);
+> >  void arch_teardown_msi_irq(unsigned int irq);
+> > -int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type);
+> > +int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int nvec_mme, int type);
+> >  void arch_teardown_msi_irqs(struct pci_dev *dev);
+> > -int arch_msi_check_device(struct pci_dev* dev, int nvec, int type);
+> > +int arch_msi_check_device(struct pci_dev *dev,
+> > +			  int nvec, int nvec_mme, int type);
+> >  void arch_restore_msi_irqs(struct pci_dev *dev);
+> >  
+> >  void default_teardown_msi_irqs(struct pci_dev *dev);
+> > diff --git a/include/linux/pci.h b/include/linux/pci.h
+> > index 71d9673..7360bd2 100644
+> > --- a/include/linux/pci.h
+> > +++ b/include/linux/pci.h
+> > @@ -1184,6 +1184,7 @@ void pci_disable_msix(struct pci_dev *dev);
+> >  void msi_remove_pci_irq_vectors(struct pci_dev *dev);
+> >  void pci_restore_msi_state(struct pci_dev *dev);
+> >  int pci_msi_enabled(void);
+> > +int pci_enable_msi_partial(struct pci_dev *dev, int nvec, int nvec_mme);
+> >  int pci_enable_msi_range(struct pci_dev *dev, int minvec, int maxvec);
+> >  static inline int pci_enable_msi_exact(struct pci_dev *dev, int nvec)
+> >  {
+> > @@ -1215,6 +1216,8 @@ static inline void pci_disable_msix(struct pci_dev *dev) { }
+> >  static inline void msi_remove_pci_irq_vectors(struct pci_dev *dev) { }
+> >  static inline void pci_restore_msi_state(struct pci_dev *dev) { }
+> >  static inline int pci_msi_enabled(void) { return 0; }
+> > +static int pci_enable_msi_partial(struct pci_dev *dev, int nvec, int nvec_mme)
+> > +{ return -ENOSYS; }
+> >  static inline int pci_enable_msi_range(struct pci_dev *dev, int minvec,
+> >  				       int maxvec)
+> >  { return -ENOSYS; }
+> > -- 
+> > 1.7.7.6
+> > 
+> > --
+> > To unsubscribe from this list: send the line "unsubscribe linux-pci" in
+> > the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
 -- 
 Regards,
-
-Laurent Pinchart
+Alexander Gordeev
+agordeev-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
