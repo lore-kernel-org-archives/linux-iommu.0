@@ -1,90 +1,75 @@
-From: Jerome Glisse <j.glisse@gmail.com>
-Subject: Re: [PATCH 1/6] mmput: use notifier chain to call subsystem exit
- handler.
-Date: Thu, 3 Jul 2014 20:03:49 -0400
-Message-ID: <20140704000347.GA2442@gmail.com>
-References: <20140630181623.GE26537@8bytes.org>
- <20140630183556.GB3280@gmail.com>
- <20140701091535.GF26537@8bytes.org>
- <019CCE693E457142B37B791721487FD91806DD8B@storexdag01.amd.com>
- <20140701110018.GH26537@8bytes.org>
- <20140701193343.GB3322@gmail.com>
- <20140701210620.GL26537@8bytes.org>
- <20140701213208.GC3322@gmail.com>
- <20140703183024.GA3306@gmail.com>
- <20140703231541.GR26537@8bytes.org>
+From: Hiroshi Doyu <hdoyu@nvidia.com>
+Subject: Re: [RFC/PATCH 2/7] iommu-api: Add map_range/unmap_range functions
+Date: Fri, 4 Jul 2014 07:29:40 +0300
+Message-ID: <20140704072940.c1e8e8cdd38fbc295fe5c086@nvidia.com>
+References: <1404147116-4598-1-git-send-email-ohaugan@codeaurora.org>
+ <1404147116-4598-3-git-send-email-ohaugan@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-Return-path: <owner-linux-mm@kvack.org>
-Content-Disposition: inline
-In-Reply-To: <20140703231541.GR26537@8bytes.org>
-Sender: owner-linux-mm@kvack.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: "Gabbay, Oded" <Oded.Gabbay@amd.com>, "Deucher, Alexander" <Alexander.Deucher@amd.com>, "Lewycky, Andrew" <Andrew.Lewycky@amd.com>, "Cornwall, Jay" <Jay.Cornwall@amd.com>, "Bridgman, John" <John.Bridgman@amd.com>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "mgorman@suse.de" <mgorman@suse.de>, "hpa@zytor.com" <hpa@zytor.com>, peterz@infradead.org, "aarcange@redhat.com" <aarcange@redhat.com>, "riel@redhat.com" <riel@redhat.com>, "jweiner@redhat.com" <jweiner@redhat.com>, "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>, Mark Hairgrove <mhairgrove@nvidia.com>, Jatin Kumar <jakumar@nvidia.com>, Subhash Gutti <sgutti@nvidia.com>, Lucien Dunning <ldunning@nvidia.com>, Cameron Buschardt <cabuschardt@nvidia.com>, Arvind Gopalakrishnan <arvin>
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <1404147116-4598-3-git-send-email-ohaugan@codeaurora.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Olav Haugan <ohaugan@codeaurora.org>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>, "will.deacon@arm.com" <will.deacon@arm.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "vgandhi@codeaurora.org" <vgandhi@codeaurora.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jul 04, 2014 at 01:15:41AM +0200, Joerg Roedel wrote:
-> Hi Jerome,
->=20
-> On Thu, Jul 03, 2014 at 02:30:26PM -0400, Jerome Glisse wrote:
-> > Joerg do you still object to this patch ?
->=20
-> Yes.
->=20
-> > Again the natural place to call this is from mmput and the fact that =
-many
-> > other subsystem already call in from there to cleanup there own per m=
-m data
-> > structure is a testimony that this is a valid use case and valid desi=
-gn.
->=20
-> Device drivers are something different than subsystems. I think the
-> point that the mmu_notifier struct can not be freed in the .release
-> call-back is a weak reason for introducing a new notifier. In the end
-> every user of mmu_notifiers has to call mmu_notifier_register somewhere
-> (file-open/ioctl path or somewhere else where the mm<->device binding i=
-s
->  set up) and can call mmu_notifier_unregister in a similar path which
-> destroys the binding.
->=20
-> > You pointed out that the cleanup should be done from the device drive=
-r file
-> > close call. But as i stressed some of the new user will not necessari=
-ly have
-> > a device file open hence no way for them to free the associated struc=
-ture
-> > except with hackish delayed job.
->=20
-> Please tell me more about these 'new users', how does mm<->device bindi=
-ng
-> is set up there if no fd is used?
+Hi Olav,
 
-It could be setup on behalf of another process through others means like
-local socket. Thought main use case i am thinking about is you open devic=
-e
-fd you setup your gpu queue and then you close the fd but you keep using
-the gpu and the gpu keep accessing the address space.
+Olav Haugan <ohaugan@codeaurora.org> writes:
 
-Further done the lane we might even see gpu code as directly executable
-thought that seems yet unreleasistic at this time.
+> Mapping and unmapping are more often than not in the critical path.
+> map_range and unmap_range allows SMMU driver implementations to optimize
+> the process of mapping and unmapping buffers into the SMMU page tables.
+> Instead of mapping one physical address, do TLB operation (expensive),
+> mapping, do TLB operation, mapping, do TLB operation the driver can map
+> a scatter-gatherlist of physically contiguous pages into one virtual
+> address space and then at the end do one TLB operation.
+>
+> Additionally, the mapping operation would be faster in general since
+> clients does not have to keep calling map API over and over again for
+> each physically contiguous chunk of memory that needs to be mapped to a
+> virtually contiguous region.
+>
+> Signed-off-by: Olav Haugan <ohaugan@codeaurora.org>
+> ---
+>  drivers/iommu/iommu.c | 24 ++++++++++++++++++++++++
+>  include/linux/iommu.h | 24 ++++++++++++++++++++++++
+>  2 files changed, 48 insertions(+)
+>
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index e5555fc..f2a6b80 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -898,6 +898,30 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
+>  EXPORT_SYMBOL_GPL(iommu_unmap);
+>  
+>  
+> +int iommu_map_range(struct iommu_domain *domain, unsigned int iova,
+> +		    struct scatterlist *sg, unsigned int len, int prot)
+> +{
+> +	if (unlikely(domain->ops->map_range == NULL))
+> +		return -ENODEV;
+> +
+> +	BUG_ON(iova & (~PAGE_MASK));
+> +
+> +	return domain->ops->map_range(domain, iova, sg, len, prot);
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_map_range);
 
-Anyway whole point is that no matter how you turn the matter anything tha=
-t
-mirror a process address is linked to the lifetime of the mm_struct so in
-order to have some logic there it is far best to have destruction match
-the destruction of mm. This also make things like fork lot cleaner, as on
-work the device file descriptor is duplicated inside the child process
-but nothing setup child process to keep using the gpu. Thus you might
-end up with way delayed file closure compare to parent process mm
-destruction.
+We have the similar one internally, which is named, "iommu_map_sg()",
+called from DMA API.
 
-Cheers,
-J=E9r=F4me
+> +int iommu_unmap_range(struct iommu_domain *domain, unsigned int iova,
+> +		      unsigned int len)
+> +{
+> +	if (unlikely(domain->ops->unmap_range == NULL))
+> +		return -ENODEV;
+> +
+> +	BUG_ON(iova & (~PAGE_MASK));
+> +
+> +	return domain->ops->unmap_range(domain, iova, len);
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_unmap_range);
 
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=3Dmailto:"dont@kvack.org"> email@kvack.org </a>
+Can the existing iommu_unmap() do the same?
