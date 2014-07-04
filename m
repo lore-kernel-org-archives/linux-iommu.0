@@ -1,38 +1,44 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 2/2] iommu/vt-d: suppress compiler warnings
-Date: Fri, 4 Jul 2014 11:35:16 +0200
-Message-ID: <20140704093516.GT26537@8bytes.org>
-References: <1401106446-10688-1-git-send-email-wangyijing@huawei.com>
+From: Sachin Kamat <spk.linux@gmail.com>
+Subject: Re: [PATCH] iommu/exynos: Select ARM_DMA_USE_IOMMU
+Date: Fri, 4 Jul 2014 15:23:10 +0530
+Message-ID: <CAK5sBcFKwR5hYTq9uUYtR0DRN=hZLVWN_HmOU7P7+6-70R=BFw@mail.gmail.com>
+References: <1404466268-9512-1-git-send-email-tushar.b@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1401106446-10688-1-git-send-email-wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1404466268-9512-1-git-send-email-tushar.b@samsung.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Tushar Behera <tushar.b@samsung.com>
+Cc: open list <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, pullip.cho@samsung.com, shaik.ameer@samsung.com, Tushar Behera <trblinux@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gTW9uLCBNYXkgMjYsIDIwMTQgYXQgMDg6MTQ6MDZQTSArMDgwMCwgWWlqaW5nIFdhbmcgd3Jv
-dGU6Cj4gc3VwcHJlc3MgY29tcGlsZXIgd2FybmluZ3M6Cj4gZHJpdmVycy9pb21tdS9pbnRlbC1p
-b21tdS5jOiBJbiBmdW5jdGlvbiDigJhkZXZpY2VfdG9faW9tbXXigJk6Cj4gZHJpdmVycy9pb21t
-dS9pbnRlbC1pb21tdS5jOjY3Mzogd2FybmluZzog4oCYc2VnbWVudOKAmSBtYXkgYmUgdXNlZCB1
-bmluaXRpYWxpemVkIGluIHRoaXMgZnVuY3Rpb24KPiBkcml2ZXJzL2lvbW11L2ludGVsLWlvbW11
-LmM6IEluIGZ1bmN0aW9uIOKAmGdldF9kb21haW5fZm9yX2Rldi5jbG9uZS4z4oCZOgo+IGRyaXZl
-cnMvaW9tbXUvaW50ZWwtaW9tbXUuYzoyMjE3OiB3YXJuaW5nOiDigJhicmlkZ2VfYnVz4oCZIG1h
-eSBiZSB1c2VkIHVuaW5pdGlhbGl6ZWQgaW4gdGhpcyBmdW5jdGlvbgo+IGRyaXZlcnMvaW9tbXUv
-aW50ZWwtaW9tbXUuYzoyMjE3OiB3YXJuaW5nOiDigJhicmlkZ2VfZGV2Zm7igJkgbWF5IGJlIHVz
-ZWQgdW5pbml0aWFsaXplZCBpbiB0aGlzIGZ1bmN0aW9uCj4gCj4gU2lnbmVkLW9mZi1ieTogWWlq
-aW5nIFdhbmcgPHdhbmd5aWppbmdAaHVhd2VpLmNvbT4KCkFwcGxpZWQgYm90aCwgdGhhbmtzLgoK
-Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1h
-aWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3Rz
-LmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+Hi Tushar,
+
+On Fri, Jul 4, 2014 at 3:01 PM, Tushar Behera <tushar.b@samsung.com> wrote:
+> For IOMMU to use on Exynos platforms, we need to enable ARM_DMA_USE_IOMMU. It
+> would be better to select it by default when EXYNOS_IOMMU is enabled.
+>
+> Signed-off-by: Tushar Behera <tushar.b@samsung.com>
+> ---
+>  drivers/iommu/Kconfig |    1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index d260605..54f3ad1a 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -180,6 +180,7 @@ config EXYNOS_IOMMU
+>         bool "Exynos IOMMU Support"
+>         depends on ARCH_EXYNOS
+>         select IOMMU_API
+> +       select ARM_DMA_USE_IOMMU
+>         help
+>           Support for the IOMMU (System MMU) of Samsung Exynos application
+>           processor family. This enables H/W multimedia accelerators to see
+> --
+
+Reviewed-by: Sachin Kamat <sachin.kamat@samsung.com>
+
+-- 
+Regards,
+Sachin.
