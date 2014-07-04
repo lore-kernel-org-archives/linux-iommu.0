@@ -1,18 +1,14 @@
-From: David Laight <David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org>
-Subject: RE: [PATCH 1/3] PCI/MSI: Add pci_enable_msi_partial()
-Date: Fri, 4 Jul 2014 09:11:50 +0000
-Message-ID: <063D6719AE5E284EB5DD2968C1650D6D1726C717@AcuExch.aculab.com>
-References: <cover.1402405331.git.agordeev@redhat.com>
-	<4fef62a2e647a7c38e9f2a1ea4244b3506a85e2b.1402405331.git.agordeev@redhat.com>
-	<20140702202201.GA28852@google.com>
-	<063D6719AE5E284EB5DD2968C1650D6D1726BF4E@AcuExch.aculab.com>
-	<20140704085816.GB12247@dhcp-26-207.brq.redhat.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 0/6] trivial cleanup for iommu/vt-d
+Date: Fri, 4 Jul 2014 11:22:09 +0200
+Message-ID: <20140704092209.GA13434@8bytes.org>
+References: <1400589472-8544-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140704085816.GB12247-hdGaXg0bp3uRXgp2RCiI5R/sF2h8X+2i0E9HWUfgJXw@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <1400589472-8544-1-git-send-email-wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,34 +18,48 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: 'Alexander Gordeev' <agordeev-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org" <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, "linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, 'Bjorn Helgaas' <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org" <xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+To: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Alexander Gordeev
-...
-> > Even if you do that, you ought to write valid interrupt information
-> > into the 4th slot (maybe replicating one of the earlier interrupts).
-> > Then, if the device does raise the 'unexpected' interrupt you don't
-> > get a write to a random kernel location.
+On Tue, May 20, 2014 at 08:37:46PM +0800, Yijing Wang wrote:
 > 
-> I might be missing something, but we are talking of MSI address space
-> here, aren't we? I am not getting how we could end up with a 'write'
-> to a random kernel location when a unclaimed MSI vector sent. We could
-> only expect a spurious interrupt at worst, which is handled and reported.
-> 
-> Anyway, as I described in my reply to Bjorn, this is not a concern IMO.
+> Yijing Wang (6):
+>   iommu/vt-d: Use list_for_each_safe() to simplify code
+>   iommu/vt-d: move up no_iommu and dmar_disabled check
+>   iommu/vt-d: clear the redundant assignment in dmar_enable_qi
+>   iommu/vt-d: clear the redundant assignment for domain->nid
+>   iommu/vt-d: use inline function dma_pte_superpage instead of macros
+>   iommu/vt-d: fix reference count in iommu_prepare_isa
 
-I'm thinking of the following - which might be MSI-X ?
-1) Hardware requests some interrupts and tells the host the BAR (and offset)
-   where the 'vectors' should be written.
-2) To raise an interrupt the hardware uses the 'vector' as the address
-   of a normal PCIe write cycle.
+Applied patches 1, 3, 4, 5 and 6, thanks. Also added another patch
+on-top, see below.
 
-So if the hardware requests 4 interrupts, but the driver (believing it
-will only use 3) only write 3 vectors, and then the hardware uses the
-4th vector it can write to a random location.
+>From 77c704bebc5d023ece7af32ea18bc3508cdb0007 Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Date: Fri, 4 Jul 2014 11:19:10 +0200
+Subject: [PATCH] iommu/vt-d: Don't use magic number in dma_pte_superpage
 
-Debugging that would be hard!
+Use the already defined DMA_PTE_LARGE_PAGE for testing
+instead of hardcoding the value again.
 
-	David
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ drivers/iommu/intel-iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 9b9f28e..5d86e93 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -304,7 +304,7 @@ static inline bool dma_pte_present(struct dma_pte *pte)
+ 
+ static inline bool dma_pte_superpage(struct dma_pte *pte)
+ {
+-	return (pte->val & (1 << 7));
++	return (pte->val & DMA_PTE_LARGE_PAGE);
+ }
+ 
+ static inline int first_pte_in_page(struct dma_pte *pte)
+-- 
+1.8.4.5
