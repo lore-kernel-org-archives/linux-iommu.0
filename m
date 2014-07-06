@@ -1,17 +1,22 @@
-From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: Re: 3.16rc3 multiplatform, Armada 370 and IOMMU: unbootable kernel
-Date: Sat, 5 Jul 2014 13:59:51 -0700
-Message-ID: <20140705205951.GB3678@kroah.com>
-References: <20140703135146.GA6898@luxor.wired.org>
-	<53B5C61D.2060308@free-electrons.com>
-	<53B5CA26.7050405@free-electrons.com> <1936558.QaAG1bYMuD@avalon>
-	<20140705150308.GA28791@arch.cereza>
+From: "Gabbay, Oded" <Oded.Gabbay-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH 1/6] mmput: use notifier chain to call subsystem exit
+	handler.
+Date: Sun, 6 Jul 2014 19:25:18 +0000
+Message-ID: <019CCE693E457142B37B791721487FD918085329@storexdag01.amd.com>
+References: <20140630160604.GF1956@gmail.com>
+	<20140630181623.GE26537@8bytes.org> <20140630183556.GB3280@gmail.com>
+	<20140701091535.GF26537@8bytes.org>
+	<019CCE693E457142B37B791721487FD91806DD8B@storexdag01.amd.com>
+	<20140701110018.GH26537@8bytes.org> <20140701193343.GB3322@gmail.com>
+	<20140701210620.GL26537@8bytes.org> <20140701213208.GC3322@gmail.com>
+	<20140703183024.GA3306@gmail.com> <20140703231541.GR26537@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20140705150308.GA28791-nAQHv47ARr+vIlHkl8J1cg@public.gmane.org>
+In-Reply-To: <20140703231541.GR26537-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Language: en-US
+Content-ID: <0A58AD1CCF4E7042BF1AAC8E44083E23-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,80 +26,55 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ezequiel Garcia <ezequiel.garcia-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Cc: Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Hiroshi.DOYU-xNZwKgViW5gAvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Paolo Pisati <p.pisati-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Gregory CLEMENT <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Sebastian Hesselbarth <sebastian.hesselbarth-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "SCheung-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <SCheung-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "j.glisse-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <j.glisse-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "aarcange-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <aarcange-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "jakumar-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <jakumar-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "ldunning-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <ldunning-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "mgorman-l3A5Bk7waGM@public.gmane.org" <mgorman-l3A5Bk7waGM@public.gmane.org>, "jweiner-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <jweiner-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "sgutti-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <sgutti-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Bridgman,
+	John" <John.Bridgman-5C7GfCeVMHo@public.gmane.org>, "jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "mhairgrove-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <mhairgrove-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "cabuschardt-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <cabuschardt-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "dpoole-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <dpoole-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "Cornwall,
+	Jay" <Jay.Cornwall-5C7GfCeVMHo@public.gmane.org>, "Lewycky, Andrew" <Andrew.Lewycky-5C7GfCeVMHo@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iom
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, Jul 05, 2014 at 12:03:08PM -0300, Ezequiel Garcia wrote:
-> After following Gregory's stacktrace (also reproduced here):
+On Fri, 2014-07-04 at 01:15 +0200, Joerg Roedel wrote:
+> Hi Jerome,
 > 
-> [<c02451f8>] (iommu_bus_notifier) from [<c00512e8>] (notifier_call_chain+0x64/0x9c)
-> [<c00512e8>] (notifier_call_chain) from [<c00514cc>] (__blocking_notifier_call_chain+0x40/0x58)
-> [<c00514cc>] (__blocking_notifier_call_chain) from [<c00514f8>] (blocking_notifier_call_chain+0x14/0x1c)
-> [<c00514f8>] (blocking_notifier_call_chain) from [<c01d225c>] (device_add+0x424/0x524)
-> [<c01d225c>] (device_add) from [<c0186d90>] (pci_device_add+0xec/0x110)
-> [<c0186d90>] (pci_device_add) from [<c0186e54>] (pci_scan_single_device+0xa0/0xac)
+> On Thu, Jul 03, 2014 at 02:30:26PM -0400, Jerome Glisse wrote:
+> > Joerg do you still object to this patch ?
 > 
-> I added a few printks and found that the problem is that the iommu_bus_notifier is
-> called for the 'pci' bus type, which has a null iommu_ops.
+> Yes.
 > 
-> On 04 Jul 10:47 AM, Laurent Pinchart wrote:
-> [..]
-> > 
-> > We need a quick fix for v3.16, ...
+> > Again the natural place to call this is from mmput and the fact that many
+> > other subsystem already call in from there to cleanup there own per mm data
+> > structure is a testimony that this is a valid use case and valid design.
 > 
-> Therefore, a quick fix would be to simply check for that:
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index e5555fc..b712cb2 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -536,6 +536,9 @@ static int iommu_bus_notifier(struct notifier_block *nb,
->         struct iommu_group *group;
->         unsigned long group_action = 0;
->  
-> +       if (!ops)
-> +               return 0;
-> +
->         /*
->          * ADD/DEL call into iommu driver ops if provided, which may
->          * result in ADD/DEL notifiers to group->notifier
-> 
-> This (nasty workaround?) patch makes the problem go away.
-> 
-> [..]
-> > > So it also boot well in 3.15 and then failed in 3.16-rc3. I hope it will
-> > > help the developers of the OMAP IOMMU driver to fix it.
-> > 
-> > Thank you. I've had a look at the OMAP IOMMU driver changes between v3.15 and 
-> > v3.16-rc3, and didn't find at first sight any change that could explain the 
-> > crash.
-> > 
-> > 286f600 iommu/omap: Fix map protection value handling
-> > 67b779d iommu/omap: Remove comment about supporting single page mappings only
-> > f7129a0 iommu/omap: Fix 'no page for' debug message in flush_iotlb_page()
-> > 5acc97d iommu/omap: Move to_iommu definition from omap-iopgtable.h
-> > 2ac6133 iommu/omap: Remove omap_iommu_domain_has_cap() function
-> > d760e3e iommu/omap: Correct init value of iotlb_entry valid field
-> > 
-> > Could you try reverting those changes and retest ? If the problem doesn't 
-> > disappear, we'll need to look somewhere else.
-> > 
-> 
-> I reverted the above commits but nothing changed. I'm far from being an expert,
-> but it sounds odd to have this bus notifier (that got registered for the
-> platform bus type) called by a pci bus type.
+> Device drivers are something different than subsystems. 
+I think that hsa (kfd) and hmm _are_ subsystems, if not in definition
+than in practice. Our model is not a classic device-driver model in the
+sense that our ioctl's are more like syscalls than traditional
+device-driver ioctls. e.g our kfd_open() doesn't open a kfd device or
+even a gpu device, it *binds* a *process* to a device. So basically, our
+ioctls are not related to a specific H/W instance (specific GPU in case
+of kfd) but more related to a specific process.
 
-Why wouldn't the PCI bus set this up for its devices?  Are you
-"assuming" you know the bus type and that's the issue?
+Once we can agree on that, than I think we can agree that kfd and hmm
+can and should be bounded to mm struct and not file descriptors.
 
-I see the a number of different places this is being initialized for the
-pci bus.
+	Oded
 
-Ah, look at drivers/iommu/fsl_pamu_domain.c, odds are, it shouldn't be
-doing that logic in the pamu_domain_init() code, using the same bus ops
-for different bus types, that's ripe for major problems...
-
-thanks,
-
-greg k-h
+> I think the
+> point that the mmu_notifier struct can not be freed in the .release
+> call-back is a weak reason for introducing a new notifier. In the end
+> every user of mmu_notifiers has to call mmu_notifier_register somewhere
+> (file-open/ioctl path or somewhere else where the mm<->device binding is
+>  set up) and can call mmu_notifier_unregister in a similar path which
+> destroys the binding.
+> 
+> > You pointed out that the cleanup should be done from the device driver file
+> > close call. But as i stressed some of the new user will not necessarily have
+> > a device file open hence no way for them to free the associated structure
+> > except with hackish delayed job.
+> 
+> Please tell me more about these 'new users', how does mm<->device binding
+> is set up there if no fd is used?
+> 
+> 
+> 	Joerg
+> 
+> 
