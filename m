@@ -1,16 +1,11 @@
-From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/3] PCI/MSI: Add pci_enable_msi_partial()
-Date: Mon, 7 Jul 2014 13:40:48 -0600
-Message-ID: <CAErSpo6f6RXWv0DEtLBZX0jXoSUYJeWrSm7mubSJ_F-O7tQp6w@mail.gmail.com>
-References: <cover.1402405331.git.agordeev@redhat.com>
-	<4fef62a2e647a7c38e9f2a1ea4244b3506a85e2b.1402405331.git.agordeev@redhat.com>
-	<20140702202201.GA28852@google.com>
-	<20140704085741.GA12247@dhcp-26-207.brq.redhat.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH] iommu: Fix IOMMU sysfs stubs
+Date: Mon, 07 Jul 2014 14:31:36 -0600
+Message-ID: <20140707203054.28174.58508.stgit@gimli.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140704085741.GA12247-hdGaXg0bp3uRXgp2RCiI5R/sF2h8X+2i0E9HWUfgJXw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,88 +15,67 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alexander Gordeev <agordeev-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org" <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, linuxppc-dev <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jul 4, 2014 at 2:57 AM, Alexander Gordeev <agordeev-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> On Wed, Jul 02, 2014 at 02:22:01PM -0600, Bjorn Helgaas wrote:
->> On Tue, Jun 10, 2014 at 03:10:30PM +0200, Alexander Gordeev wrote:
->> > There are PCI devices that require a particular value written
->> > to the Multiple Message Enable (MME) register while aligned on
->> > power of 2 boundary value of actually used MSI vectors 'nvec'
->> > is a lesser of that MME value:
->> >
->> >     roundup_pow_of_two(nvec) < 'Multiple Message Enable'
->> >
->> > However the existing pci_enable_msi_block() interface is not
->> > able to configure such devices, since the value written to the
->> > MME register is calculated from the number of requested MSIs
->> > 'nvec':
->> >
->> >     'Multiple Message Enable' = roundup_pow_of_two(nvec)
->>
->> For MSI, software learns how many vectors a device requests by reading
->> the Multiple Message Capable (MMC) field.  This field is encoded, so a
->> device can only request 1, 2, 4, 8, etc., vectors.  It's impossible
->> for a device to request 3 vectors; it would have to round up that up
->> to a power of two and request 4 vectors.
->>
->> Software writes similarly encoded values to MME to tell the device how
->> many vectors have been allocated for its use.  For example, it's
->> impossible to tell the device that it can use 3 vectors; the OS has to
->> round that up and tell the device it can use 4 vectors.
->
-> Nod.
->
->> So if I understand correctly, the point of this series is to take
->> advantage of device-specific knowledge, e.g., the device requests 4
->> vectors via MMC, but we "know" the device is only capable of using 3.
->> Moreover, we tell the device via MME that 4 vectors are available, but
->> we've only actually set up 3 of them.
->
-> Exactly.
->
->> This makes me uneasy because we're lying to the device, and the device
->> is perfectly within spec to use all 4 of those vectors.  If anything
->> changes the number of vectors the device uses (new device revision,
->> firmware upgrade, etc.), this is liable to break.
->
-> If a device committed via non-MSI specific means to send only 3 vectors
-> out of 4 available why should we expect it to send 4? The probability of
-> a firmware sending 4/4 vectors in this case is equal to the probability
-> of sending 5/4 or 16/4, with the very same reason - a bug in the firmware.
-> Moreover, even vector 4/4 would be unexpected by the device driver, though
-> it is perfectly within the spec.
->
-> As of new device revision or firmware update etc. - it is just yet another
-> case of device driver vs the firmware match/mismatch. Not including this
-> change does not help here at all IMHO.
->
->> Can you quantify the benefit of this?  Can't a device already use
->> MSI-X to request exactly the number of vectors it can use?  (I know
->
-> A Intel AHCI chipset requires 16 vectors written to MME while advertises
-> (via AHCI registers) and uses only 6. Even attempt to init 8 vectors results
-> in device's fallback to 1 (!).
+0-day kernel build testing reports:
 
-Is the fact that it uses only 6 vectors documented in the public spec?
+   arch/x86/kvm/x86.o: In function `iommu_device_destroy':
+>> (.text+0x7a0a): multiple definition of `iommu_device_destroy'
+   arch/x86/kvm/../../../virt/kvm/vfio.o:vfio.c:(.text+0x490): first defined here
+   arch/x86/kvm/x86.o: In function `iommu_device_link':
+>> (.text+0x7a15): multiple definition of `iommu_device_link'
+   arch/x86/kvm/../../../virt/kvm/vfio.o:vfio.c:(.text+0x49b): first defined here
+   arch/x86/kvm/x86.o: In function `iommu_device_unlink':
+>> (.text+0x7a25): multiple definition of `iommu_device_unlink'
+   arch/x86/kvm/../../../virt/kvm/vfio.o:vfio.c:(.text+0x4ab): first defined here
+   arch/x86/kvm/x86.o: In function `iommu_device_create':
+>> (.text+0x79f8): multiple definition of `iommu_device_create'
+   arch/x86/kvm/../../../virt/kvm/vfio.o:vfio.c:(.text+0x47e): first defined here
 
-Is this a chipset erratum?  Are there newer versions of the chipset
-that fix this, e.g., by requesting 8 vectors and using 6, or by also
-supporting MSI-X?
+These are due to failing to define the stubs as static inline.  Fix.
 
-I know this conserves vector numbers.  What does that mean in real
-user-visible terms?  Are there systems that won't boot because of this
-issue, and this patch fixes them?  Does it enable bigger
-configurations, e.g., more I/O devices, than before?
+Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+---
 
-Do you know how Windows handles this?  Does it have a similar interface?
+relative to joro/iommu.git core
 
-As you can tell, I'm a little skeptical about this.  It's a fairly big
-change, it affects the arch interface, it seems to be targeted for
-only a single chipset (though it's widely used), and we already
-support a standard solution (MSI-X, reducing the number of vectors
-requested, or even operating with 1 vector).
+ include/linux/iommu.h |   13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-Bjorn
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index c7097d7..20f9a52 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -403,23 +403,24 @@ static inline int iommu_domain_set_attr(struct iommu_domain *domain,
+ 	return -EINVAL;
+ }
+ 
+-struct device *iommu_device_create(struct device *parent, void *drvdata,
+-				   const struct attribute_group **groups,
+-				   const char *fmt, ...)
++static inline struct device *iommu_device_create(struct device *parent,
++					void *drvdata,
++					const struct attribute_group **groups,
++					const char *fmt, ...)
+ {
+ 	return ERR_PTR(-ENODEV);
+ }
+ 
+-void iommu_device_destroy(struct device *dev)
++static inline void iommu_device_destroy(struct device *dev)
+ {
+ }
+ 
+-int iommu_device_link(struct device *dev, struct device *link)
++static inline int iommu_device_link(struct device *dev, struct device *link)
+ {
+ 	return -EINVAL;
+ }
+ 
+-void iommu_device_unlink(struct device *dev, struct device *link)
++static inline void iommu_device_unlink(struct device *dev, struct device *link)
+ {
+ }
+ 
