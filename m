@@ -1,163 +1,202 @@
-From: Ezequiel Garcia <ezequiel.garcia@free-electrons.com>
-Subject: Re: 3.16rc3 multiplatform, Armada 370 and IOMMU: unbootable kernel
-Date: Mon, 7 Jul 2014 07:58:18 -0300
-Message-ID: <20140707105818.GA1101@arch.cereza>
-References: <20140703135146.GA6898@luxor.wired.org>
- <53B5C61D.2060308@free-electrons.com>
- <53B5CA26.7050405@free-electrons.com>
- <1936558.QaAG1bYMuD@avalon>
- <20140705150308.GA28791@arch.cereza>
- <20140705205951.GB3678@kroah.com>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [RFC 01/10] iommu: Add IOMMU device registry
+Date: Mon, 7 Jul 2014 13:42:02 +0200
+Message-ID: <20140707114201.GA17036@ulmo>
+References: <1403815790-8548-1-git-send-email-thierry.reding@gmail.com>
+	<20140704134709.GA4203@ulmo> <20140704134928.GA25714@arm.com>
+	<201407062017.23049.arnd@arndb.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20140705205951.GB3678@kroah.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Andrew Lunn <andrew@lunn.ch>, Jason Cooper <jason@lakedaemon.net>, Joerg Roedel <joro@8bytes.org>, Hiroshi.DOYU@nokia.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Paolo Pisati <p.pisati@gmail.com>, Gregory CLEMENT <gregory.clement@free-electrons.com>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Florian Vaussard <florian.vaussard@epfl.ch>, linux-arm-kernel@lists.infradead.org
+Content-Type: multipart/mixed; boundary="===============3107883978343429481=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <201407062017.23049.arnd-r2nGTMty4D4@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Paul Walmsley <pwalmsley-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Allen Martin <amartin-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Rhyland Klein <rklein-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 05 Jul 01:59 PM, Greg Kroah-Hartman wrote:
-> On Sat, Jul 05, 2014 at 12:03:08PM -0300, Ezequiel Garcia wrote:
-> > After following Gregory's stacktrace (also reproduced here):
-> >=20
-> > [<c02451f8>] (iommu_bus_notifier) from [<c00512e8>] (notifier_call_=
-chain+0x64/0x9c)
-> > [<c00512e8>] (notifier_call_chain) from [<c00514cc>] (__blocking_no=
-tifier_call_chain+0x40/0x58)
-> > [<c00514cc>] (__blocking_notifier_call_chain) from [<c00514f8>] (bl=
-ocking_notifier_call_chain+0x14/0x1c)
-> > [<c00514f8>] (blocking_notifier_call_chain) from [<c01d225c>] (devi=
-ce_add+0x424/0x524)
-> > [<c01d225c>] (device_add) from [<c0186d90>] (pci_device_add+0xec/0x=
-110)
-> > [<c0186d90>] (pci_device_add) from [<c0186e54>] (pci_scan_single_de=
-vice+0xa0/0xac)
-> >=20
-> > I added a few printks and found that the problem is that the iommu_=
-bus_notifier is
-> > called for the 'pci' bus type, which has a null iommu_ops.
-> >=20
-> > On 04 Jul 10:47 AM, Laurent Pinchart wrote:
-> > [..]
+
+--===============3107883978343429481==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="jRHKVT23PllUwdXP"
+Content-Disposition: inline
+
+
+--jRHKVT23PllUwdXP
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Sun, Jul 06, 2014 at 08:17:22PM +0200, Arnd Bergmann wrote:
+> On Friday 04 July 2014, Will Deacon wrote:
+> > On Fri, Jul 04, 2014 at 02:47:10PM +0100, Thierry Reding wrote:
+> > > On Fri, Jul 04, 2014 at 01:05:30PM +0200, Joerg Roedel wrote:
+> > > > On Thu, Jun 26, 2014 at 10:49:41PM +0200, Thierry Reding wrote:
+> > > > > Add an IOMMU device registry for drivers to register with and imp=
+lement
+> > > > > a method for users of the IOMMU API to attach to an IOMMU device.=
+ This
+> > > > > allows to support deferred probing and gives the IOMMU API a conv=
+enient
+> > > > > hook to perform early initialization of a device if necessary.
+> > > >=20
+> > > > Can you elaborate on why exactly you need this? The IOMMU-API is
+> > > > designed to hide any details from the user about the available IOMM=
+Us in
+> > > > the system and which IOMMU handles which device. This looks like it=
+ is
+> > > > going in a completly different direction from that.
 > > >=20
-> > > We need a quick fix for v3.16, ...
+> > > I need this primarily to properly serialize device probing order.
+> > > Without it the IOMMU may be probed later than its clients, in which c=
+ase
+> > > the client drivers will assume that there is no IOMMU (iommu_present()
+> > > for the parent bus fails).
 > >=20
-> > Therefore, a quick fix would be to simply check for that:
-> >=20
-> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > index e5555fc..b712cb2 100644
-> > --- a/drivers/iommu/iommu.c
-> > +++ b/drivers/iommu/iommu.c
-> > @@ -536,6 +536,9 @@ static int iommu_bus_notifier(struct notifier_b=
-lock *nb,
-> >         struct iommu_group *group;
-> >         unsigned long group_action =3D 0;
-> > =20
-> > +       if (!ops)
-> > +               return 0;
-> > +
-> >         /*
-> >          * ADD/DEL call into iommu driver ops if provided, which ma=
-y
-> >          * result in ADD/DEL notifiers to group->notifier
-> >=20
-> > This (nasty workaround?) patch makes the problem go away.
-> >=20
-> > [..]
-> > > > So it also boot well in 3.15 and then failed in 3.16-rc3. I hop=
-e it will
-> > > > help the developers of the OMAP IOMMU driver to fix it.
-> > >=20
-> > > Thank you. I've had a look at the OMAP IOMMU driver changes betwe=
-en v3.15 and=20
-> > > v3.16-rc3, and didn't find at first sight any change that could e=
-xplain the=20
-> > > crash.
-> > >=20
-> > > 286f600 iommu/omap: Fix map protection value handling
-> > > 67b779d iommu/omap: Remove comment about supporting single page m=
-appings only
-> > > f7129a0 iommu/omap: Fix 'no page for' debug message in flush_iotl=
-b_page()
-> > > 5acc97d iommu/omap: Move to_iommu definition from omap-iopgtable.=
-h
-> > > 2ac6133 iommu/omap: Remove omap_iommu_domain_has_cap() function
-> > > d760e3e iommu/omap: Correct init value of iotlb_entry valid field
-> > >=20
-> > > Could you try reverting those changes and retest ? If the problem=
- doesn't=20
-> > > disappear, we'll need to look somewhere else.
-> > >=20
-> >=20
-> > I reverted the above commits but nothing changed. I'm far from bein=
-g an expert,
-> > but it sounds odd to have this bus notifier (that got registered fo=
-r the
-> > platform bus type) called by a pci bus type.
+> > I can also vouch for needing a solution to this problem. The ARM SMMU (=
+and
+> > I think others) rely on initcall ordering rather than the driver probing
+> > model to ensure the IOMMU is probed before any of its masters.
 >=20
-> Why wouldn't the PCI bus set this up for its devices?  Are you
-> "assuming" you know the bus type and that's the issue?
->=20
+> I think it would be best to attach platform devices to IOMMUs from the
+> of_dma_configure() we just introduced. That still requires handling
+> IOMMUs special though, and I don't know how we should best deal
+> with that. It would not be too hard to scan for IOMMUs in DT first
+> and register them all in a way that we can later look them up
+> by phandle, but that would break down if we ever get nested IOMMUs.
 
-Thanks for looking at this.
+But even for nested IOMMUs each will have an associated device node, so
+we could scan the tree up front. But given that it only solves the
+problem partially I don't think that's a big advantage.
 
-I guess I snipped the thread and lost most of the information about the=
- panic.
-Here's the original bug report:
+> Another possibility might be to register all devices as we do today,
+> including IOMMU devices, but return -EPROBE_DEFER from
+> platform_drv_probe() before we call into the driver's probe function
+> if the IOMMU has not been set up at that point.
 
-http://www.spinics.net/lists/arm-kernel/msg344059.html
+Right, Hiroshi already proposed a patch for that, but it was more or
+less NAK'ed because people didn't want to have that functionality in the
+device driver core.
 
-The problem reported involves enabling OMAP IOMMU driver and not any ot=
-her IOMMU
-driver. Doing some tracing and adding a few prints, we found that
-omap_iommu_init() sets a bus notifier for the platform bus type:
+> For PCI devices, we need a different way of dealing with the IOMMUs,
+> some generic PCI code needs to be added to attach the correct IOMMU
+> to a newly added PCI device based on how the host bridge is configured.
 
-omap_iommu_init -> bus_set_iommu -> iommu_bus_init:
+I'm curious. Without device tree, how do we find out what IOMMU a device
+is connected to? Will it always be an ancestor of the device in the PCI
+hierarchy?
 
-static void iommu_bus_init(struct bus_type *bus, struct iommu_ops *ops)
-{
-        bus_register_notifier(bus, &iommu_bus_nb);
-        bus_for_each_dev(bus, NULL, ops, add_iommu_group);
-}
+> We can probably for now get away with not worrying about any bus type
+> other than platform, amba or PCI: we don't use any other DMA master
+> capable bus on ARM, and other architectures can probably rely on
+> having only a single IOMMU implementation in the system.
 
-But the iommu bus notifier gets called for the 'pci' bus type, which
-has the iommu_ops field NULL (since it hasn't been set for iommu).
+Neither of the above proposals will work for cases where more than a
+single IOMMU exists in the system. Currently we can only register one
+IOMMU per bus and if we try to register a second IOMMU it will fail
+(bus_set_iommu() returns -EBUSY).
 
-The panic is here when the NULL field is dereferenced:
+Also, struct bus_type has only a pointer to a struct iommu_ops, but no
+associated context. Hence my proposal, which I only posted partially
+here since it didn't seem immediately relevant. But I guess to better
+illustrate how I envisioned this to work, here goes:
 
-static int iommu_bus_notifier(struct notifier_block *nb,
-                              unsigned long action, void *data)
-{
-        struct device *dev =3D data;
-        struct iommu_ops *ops =3D dev->bus->iommu_ops;
+The idea was to allow each device to have zero or more master on zero or
+more IOMMUs. That's as general a case as it gets. Now to make this work
+we'd need something like this:
+
+	struct iommu_master {
+		struct device *dev; /* the master device */
+		struct iommu *iommu; /* the IOMMU that dev masters */
+		struct list_head list; /* link in a list of all master
+					  interfaces of dev */
+	};
+
+Then we could store a list in struct device:
+
+	struct device {
+		...
+		struct list_head iommu_masters;
+		...
+	};
+
+It was already mentioned in other threads that if a device does indeed
+have more than one master interface, then it needs to control access to
+them explicitly via the IOMMU API. Since we only have an API to allocate
+an IRQ domain (which automatically forwards calls to the global IOMMU)
+we'd need something new, such as:
+
+	master =3D iommu_get(dev, "foo");
+
+or
+
+	master =3D iommu_get(dev, 0);
+
+Or whichever variant we prefer. That could return a pointer to a struct
+iommu_master, which could then be used to obtain a domain, like so:
+
+	domain =3D iommu_master_alloc_domain(master);
+
+To make that work, as far as I can tell only very minimal changes would
+have to be done to iommu_ops. Most of the functions take a pointer to a
+struct iommu_domain anyway, we could extend it with a reference to the
+parent of a domain. For that we'll need a structure that represents the
+IOMMU device's context (which is what this patch introduces as struct
+iommu).
+
+The only functions in struct iommu_ops that deal with an IOMMU directly
+are .add_device(), .remove_device() and .device_group(), although they
+may become obsolete with the new APIs. Currently .add_device() and
+=2Eremove_device() are only used to register devices from a bus notifier
+and that would be replaced by something more explicit like above. As for
+device_group(), I don't see it being used at all currently.
+
+Now for DMA mapping API integration we could make that use the first (or
+only) IOMMU device registered. Perhaps we could even reject using this
+layer of integration for multi-master devices, since it would be
+difficult to tell whether or not the selected device is the correct one.
+
+We still have the option to handle things mostly transparently with the
+above by moving calls to iommu_get() into the core. But we also gain the
+flexibility to work with multiple IOMMU contexts explicitly if required.
+
+Thierry
+
+--jRHKVT23PllUwdXP
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJTuoeJAAoJEN0jrNd/PrOhb88P/1uENYOhXZVOnicN0RR0TfDv
+Fn9hiPslFbsiYOXy9fE3rZzXaj/pILOjOIVBE1VMg21HnbT7rlgEe8yqnn8w2uts
+cnzN2arYqvUBb1MW/96FabN4qaQZds8YIAf6zyLMqQt/+JSITCJ01t1ZA9FjkK+R
+gRd0dtbStWBPVg8UuUsDUKIHpfUg4O5hF/xQMVPX0R+zbyM+xmWG2s0ZNwFQLXrF
+hkQUYF48uKwzuIrA8tFnlX2OygZt5ZrxO9I3RmDbsp8hiBOFL+cSY0DD7NbqgWH6
+ZYR9J5SuA8pyAcBpI0Cmwf/vDynIhlgIaBeGN4SJAagAD8bSP+zMz8dsKbxl0eVR
+EJkQ4cPN6+KZPdkqth7KGuhiR1H0NL4j7f2JzqE970A/DauqQiLWQr0/n3l3x+O7
+gODhol2aJOwVPMjs7Or38ldjB20pebEm7ngRcS2oL4ne4hO6Wl+I/hScIPaWhJqq
+4/3BchbUKyB4rfs5olD6o8HmNasOUMh7UZiRzOzwprKpPLKhXyO+UUA+7CPqSj0M
+eb6KZfLUi4iBQctP4/7jh877jYMpsPJB4Squ27eAaIb/o0YO6sJ460HpwM2sex62
+HYGHJQE6aEpp+ZnMhAAYne2kNsZcK8kagpFWvXSqXHSmf98vOYlaH1KYS6J9vFYM
++ROTOvX3Wpqr3N/nZKQa
+=Lj8G
+-----END PGP SIGNATURE-----
+
+--jRHKVT23PllUwdXP--
+
+--===============3107883978343429481==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 
-> I see the a number of different places this is being initialized for =
-the
-> pci bus.
->=20
-> Ah, look at drivers/iommu/fsl_pamu_domain.c, odds are, it shouldn't b=
-e
-> doing that logic in the pamu_domain_init() code, using the same bus o=
-ps
-> for different bus types, that's ripe for major problems...
->=20
-
-Maybe I'm missing something, but since the fsl driver is not enabled it=
- has
-nothing to do. And since the OMAP IOMMU doesn't set the iommu bus notif=
-ier
-for the 'pci' bus type, I was wondering if there's a problem with the b=
-us
-notifier itself.
-
-I hope the above makes sense.
-
-Thanks again for helping out,
---=20
-Ezequiel Garc=EDa, Free Electrons
-Embedded Linux, Kernel and Android Engineering
-http://free-electrons.com
+--===============3107883978343429481==--
