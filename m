@@ -1,69 +1,45 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [RFC 01/10] iommu: Add IOMMU device registry
-Date: Sun, 6 Jul 2014 20:17:22 +0200
-Message-ID: <201407062017.23049.arnd@arndb.de>
-References: <1403815790-8548-1-git-send-email-thierry.reding@gmail.com>
-	<20140704134709.GA4203@ulmo> <20140704134928.GA25714@arm.com>
+From: "joro@8bytes.org" <joro@8bytes.org>
+Subject: Re: [PATCH 1/6] mmput: use notifier chain to call subsystem exit
+ handler.
+Date: Mon, 7 Jul 2014 12:11:59 +0200
+Message-ID: <20140707101158.GD1958@8bytes.org>
+References: <20140630183556.GB3280@gmail.com>
+ <20140701091535.GF26537@8bytes.org>
+ <019CCE693E457142B37B791721487FD91806DD8B@storexdag01.amd.com>
+ <20140701110018.GH26537@8bytes.org>
+ <20140701193343.GB3322@gmail.com>
+ <20140701210620.GL26537@8bytes.org>
+ <20140701213208.GC3322@gmail.com>
+ <20140703183024.GA3306@gmail.com>
+ <20140703231541.GR26537@8bytes.org>
+ <019CCE693E457142B37B791721487FD918085329@storexdag01.amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140704134928.GA25714-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Paul Walmsley <pwalmsley-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Allen Martin <amartin-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Rhyland Klein <rklein-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <owner-linux-mm@kvack.org>
+Content-Disposition: inline
+In-Reply-To: <019CCE693E457142B37B791721487FD918085329@storexdag01.amd.com>
+Sender: owner-linux-mm@kvack.org
+To: "Gabbay, Oded" <Oded.Gabbay@amd.com>
+Cc: "dpoole@nvidia.com" <dpoole@nvidia.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "peterz@infradead.org" <peterz@infradead.org>, "jweiner@redhat.com" <jweiner@redhat.com>, "mhairgrove@nvidia.com" <mhairgrove@nvidia.com>, "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "j.glisse@gmail.com" <j.glisse@gmail.com>, "Bridgman, John" <John.Bridgman@amd.com>, "Deucher, Alexander" <Alexander.Deucher@amd.com>, "Lewycky, Andrew" <Andrew.Lewycky@amd.com>, "sgutti@nvidia.com" <sgutti@nvidia.com>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "hpa@zytor.com" <hpa@zytor.com>, "aarcange@redhat.com" <aarcange@redhat.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "riel@redhat.com" <riel@redhat.com>, "arvindg@nvidia.com" <arvindg@nvidia.com>, SCheung@nvidia.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Friday 04 July 2014, Will Deacon wrote:
-> On Fri, Jul 04, 2014 at 02:47:10PM +0100, Thierry Reding wrote:
-> > On Fri, Jul 04, 2014 at 01:05:30PM +0200, Joerg Roedel wrote:
-> > > On Thu, Jun 26, 2014 at 10:49:41PM +0200, Thierry Reding wrote:
-> > > > Add an IOMMU device registry for drivers to register with and implement
-> > > > a method for users of the IOMMU API to attach to an IOMMU device. This
-> > > > allows to support deferred probing and gives the IOMMU API a convenient
-> > > > hook to perform early initialization of a device if necessary.
-> > > 
-> > > Can you elaborate on why exactly you need this? The IOMMU-API is
-> > > designed to hide any details from the user about the available IOMMUs in
-> > > the system and which IOMMU handles which device. This looks like it is
-> > > going in a completly different direction from that.
-> > 
-> > I need this primarily to properly serialize device probing order.
-> > Without it the IOMMU may be probed later than its clients, in which case
-> > the client drivers will assume that there is no IOMMU (iommu_present()
-> > for the parent bus fails).
-> 
-> I can also vouch for needing a solution to this problem. The ARM SMMU (and
-> I think others) rely on initcall ordering rather than the driver probing
-> model to ensure the IOMMU is probed before any of its masters.
+On Sun, Jul 06, 2014 at 07:25:18PM +0000, Gabbay, Oded wrote:
+> Once we can agree on that, than I think we can agree that kfd and hmm
+> can and should be bounded to mm struct and not file descriptors.
 
-I think it would be best to attach platform devices to IOMMUs from the
-of_dma_configure() we just introduced. That still requires handling
-IOMMUs special though, and I don't know how we should best deal
-with that. It would not be too hard to scan for IOMMUs in DT first
-and register them all in a way that we can later look them up
-by phandle, but that would break down if we ever get nested IOMMUs.
+The file descriptor concept is the way it works in the rest of the
+kernel. It works for numerous drivers and subsystems (KVM, VFIO, UIO,
+...), when you close a file descriptor handed out from any of those
+drivers (already in the kernel) all related resources will be freed. I
+don't see a reason why HSA drivers should break these expectations and
+be different.
 
-Another possibility might be to register all devices as we do today,
-including IOMMU devices, but return -EPROBE_DEFER from
-platform_drv_probe() before we call into the driver's probe function
-if the IOMMU has not been set up at that point.
 
-For PCI devices, we need a different way of dealing with the IOMMUs,
-some generic PCI code needs to be added to attach the correct IOMMU
-to a newly added PCI device based on how the host bridge is configured.
+	Joerg
 
-We can probably for now get away with not worrying about any bus type
-other than platform, amba or PCI: we don't use any other DMA master
-capable bus on ARM, and other architectures can probably rely on
-having only a single IOMMU implementation in the system.
 
-	Arnd
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
