@@ -1,47 +1,118 @@
-From: Kim Phillips <kim.phillips-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: Re: [PATCH] driver core: platform: add device binding path
-	'driver_override'
-Date: Mon, 7 Jul 2014 16:19:32 -0500
-Message-ID: <20140707161932.e7ddaecd7cee53150694f022@freescale.com>
-References: <1398700371-20096-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1398700371-20096-2-git-send-email-a.motakis@virtualopensystems.com>
-	<20140602194258.5135925bf3c71b9c010fb409@freescale.com>
-	<20140603042842.GD14668@kroah.com>
+From: Ezequiel Garcia <ezequiel.garcia@free-electrons.com>
+Subject: Re: 3.16rc3 multiplatform, Armada 370 and IOMMU: unbootable kernel
+Date: Mon, 7 Jul 2014 20:37:58 -0300
+Message-ID: <20140707233758.GA1456@arch.cereza>
+References: <20140703135146.GA6898@luxor.wired.org>
+ <53B5C61D.2060308@free-electrons.com>
+ <53B5CA26.7050405@free-electrons.com>
+ <1936558.QaAG1bYMuD@avalon>
+ <20140705150308.GA28791@arch.cereza>
+ <20140705205951.GB3678@kroah.com>
+ <20140707105818.GA1101@arch.cereza>
+ <20140707183002.GA5947@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140603042842.GD14668-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, clbchenlibo.chen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Alexander Graf <agraf-l3A5Bk7waGM@public.gmane.org>, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Ian Campbell <ian.campbell-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org>, Stefano Stabellini <stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org>, Julien Grall <julien.grall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org, a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, rob-VoJi6FS/r0vR7s880joybQ@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20140707183002.GA5947@kroah.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Paolo Pisati <p.pisati@gmail.com>
+Cc: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Andrew Lunn <andrew@lunn.ch>, Jason Cooper <jason@lakedaemon.net>, Joerg Roedel <joro@8bytes.org>, Hiroshi.DOYU@nokia.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Gregory CLEMENT <gregory.clement@free-electrons.com>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Florian Vaussard <florian.vaussard@epfl.ch>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2 Jun 2014 21:28:42 -0700
-Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org> wrote:
+On 07 Jul 11:30 AM, Greg Kroah-Hartman wrote:
+> On Mon, Jul 07, 2014 at 07:58:18AM -0300, Ezequiel Garcia wrote:
+[..]
+> >=20
+> > I guess I snipped the thread and lost most of the information about=
+ the panic.
+> > Here's the original bug report:
+> >=20
+> > http://www.spinics.net/lists/arm-kernel/msg344059.html
+> >=20
+> > The problem reported involves enabling OMAP IOMMU driver and not an=
+y other IOMMU
+> > driver. Doing some tracing and adding a few prints, we found that
+> > omap_iommu_init() sets a bus notifier for the platform bus type:
+> >=20
+> > omap_iommu_init -> bus_set_iommu -> iommu_bus_init:
+> >=20
+> > static void iommu_bus_init(struct bus_type *bus, struct iommu_ops *=
+ops)
+> > {
+> >         bus_register_notifier(bus, &iommu_bus_nb);
+> >         bus_for_each_dev(bus, NULL, ops, add_iommu_group);
+> > }
+> >=20
+> > But the iommu bus notifier gets called for the 'pci' bus type, whic=
+h
+> > has the iommu_ops field NULL (since it hasn't been set for iommu).
+>=20
+> So this is what needs to be figured out, how is the notifier being
+> called with a PCI device?  Who else called iommu_bus_init() for the P=
+CI
+> bus?
+>=20
 
-> On Mon, Jun 02, 2014 at 07:42:58PM -0500, Kim Phillips wrote:
-> > You are the platform driver core maintainer: can you apply this to
-> > your driver-core tree now?
-> 
-> Yes, I will after this merge window ends, it's too late for 3.16-rc1
-> with the window opening up a week early, sorry.
+Nobody. The only caller of iommu_bus_init() the above OMAP IOMMU.
 
-Hi Greg,
+However, I found something interesting. Tried to bisect this without mu=
+ch
+luck; I did two bisects and ended up in the same merge commit:
 
-The merge window has ended, and I see commit activity on your
-driver-core tree's driver-core-next branch, but this patch is still
-missing:  Do you think you can get around to applying it before the
-next merge window?
+# good: [0f16aa3c24a216d14d7f0587e1cbd2c1b51a38f3] Merge tag 'samsung-d=
+t-3' of git://git.kernel.org/pub/scm/linux/kernel/git/kgene/linux-samsu=
+ng into next/dt
+# first bad commit: [755a9ba7bf24a45b6dbf8bb15a5a56c8ed12461a] Merge ta=
+g 'dt-for-3.16' of git://git.kernel.org/pub/scm/linux/kernel/git/arm/ar=
+m-soc into next
 
-Thanks,
+So, after doing a few diff's between that good and bad and searching fo=
+r
+"bus_notifier" changes, saw something strange in arch/arm/mach-mvebu/co=
+herency.c.
 
-Kim
+It seems bus_register_notifier() is been called for platform and pci de=
+vices
+with the *same* notifier block. Haven't looked close enough, but you me=
+ntioned
+that could cause trouble?
+
+This patch fixes the issue here:
+
+diff --git a/arch/arm/mach-mvebu/coherency.c b/arch/arm/mach-mvebu/cohe=
+rency.c
+index 477202f..2bdc323 100644
+--- a/arch/arm/mach-mvebu/coherency.c
++++ b/arch/arm/mach-mvebu/coherency.c
+@@ -292,6 +292,10 @@ static struct notifier_block mvebu_hwcc_nb =3D {
+ 	.notifier_call =3D mvebu_hwcc_notifier,
+ };
+=20
++static struct notifier_block mvebu_hwcc_pci_nb =3D {
++	.notifier_call =3D mvebu_hwcc_notifier,
++};
++
+ static void __init armada_370_coherency_init(struct device_node *np)
+ {
+ 	struct resource res;
+@@ -427,7 +431,7 @@ static int __init coherency_pci_init(void)
+ {
+ 	if (coherency_available())
+ 		bus_register_notifier(&pci_bus_type,
+-				       &mvebu_hwcc_nb);
++				       &mvebu_hwcc_pci_nb);
+ 	return 0;
+ }
+=20
+Paolo, can you apply it and confirm it fixes the problem?
+
+Greg, can you confirm using the same notifier block pointer
+for two different bus types makes the bus notifier go nuts?
+
+Thanks for the help,
+--=20
+Ezequiel Garc=EDa, Free Electrons
+Embedded Linux, Kernel and Android Engineering
+http://free-electrons.com
