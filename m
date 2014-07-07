@@ -1,19 +1,17 @@
-From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: Re: 3.16rc3 multiplatform, Armada 370 and IOMMU: unbootable kernel
-Date: Mon, 7 Jul 2014 11:30:02 -0700
-Message-ID: <20140707183002.GA5947@kroah.com>
-References: <20140703135146.GA6898@luxor.wired.org>
-	<53B5C61D.2060308@free-electrons.com>
-	<53B5CA26.7050405@free-electrons.com> <1936558.QaAG1bYMuD@avalon>
-	<20140705150308.GA28791@arch.cereza>
-	<20140705205951.GB3678@kroah.com>
-	<20140707105818.GA1101@arch.cereza>
+From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 1/3] PCI/MSI: Add pci_enable_msi_partial()
+Date: Mon, 7 Jul 2014 13:26:43 -0600
+Message-ID: <CAErSpo7QWc35seoMhJA+H1_=MkKWYMdeYG=hT=i1v=iz8d5ezA@mail.gmail.com>
+References: <cover.1402405331.git.agordeev@redhat.com>
+	<4fef62a2e647a7c38e9f2a1ea4244b3506a85e2b.1402405331.git.agordeev@redhat.com>
+	<20140702202201.GA28852@google.com>
+	<063D6719AE5E284EB5DD2968C1650D6D1726BF4E@AcuExch.aculab.com>
+	<20140704085816.GB12247@dhcp-26-207.brq.redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20140707105818.GA1101-nAQHv47ARr+vIlHkl8J1cg@public.gmane.org>
+In-Reply-To: <20140704085816.GB12247-hdGaXg0bp3uRXgp2RCiI5R/sF2h8X+2i0E9HWUfgJXw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,102 +21,64 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ezequiel Garcia <ezequiel.garcia-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Cc: Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Hiroshi.DOYU-xNZwKgViW5gAvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Paolo Pisati <p.pisati-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Gregory CLEMENT <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>, Sebastian Hesselbarth <sebastian.hesselbarth-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+To: Alexander Gordeev <agordeev-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org" <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, "linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Laight <David.Laight-JxhZ9S5GRejQT0dZR+AlfA@public.gmane.org>, "xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org" <xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jul 07, 2014 at 07:58:18AM -0300, Ezequiel Garcia wrote:
-> On 05 Jul 01:59 PM, Greg Kroah-Hartman wrote:
-> > On Sat, Jul 05, 2014 at 12:03:08PM -0300, Ezequiel Garcia wrote:
-> > > After following Gregory's stacktrace (also reproduced here):
-> > > 
-> > > [<c02451f8>] (iommu_bus_notifier) from [<c00512e8>] (notifier_call_chain+0x64/0x9c)
-> > > [<c00512e8>] (notifier_call_chain) from [<c00514cc>] (__blocking_notifier_call_chain+0x40/0x58)
-> > > [<c00514cc>] (__blocking_notifier_call_chain) from [<c00514f8>] (blocking_notifier_call_chain+0x14/0x1c)
-> > > [<c00514f8>] (blocking_notifier_call_chain) from [<c01d225c>] (device_add+0x424/0x524)
-> > > [<c01d225c>] (device_add) from [<c0186d90>] (pci_device_add+0xec/0x110)
-> > > [<c0186d90>] (pci_device_add) from [<c0186e54>] (pci_scan_single_device+0xa0/0xac)
-> > > 
-> > > I added a few printks and found that the problem is that the iommu_bus_notifier is
-> > > called for the 'pci' bus type, which has a null iommu_ops.
-> > > 
-> > > On 04 Jul 10:47 AM, Laurent Pinchart wrote:
-> > > [..]
-> > > > 
-> > > > We need a quick fix for v3.16, ...
-> > > 
-> > > Therefore, a quick fix would be to simply check for that:
-> > > 
-> > > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > > index e5555fc..b712cb2 100644
-> > > --- a/drivers/iommu/iommu.c
-> > > +++ b/drivers/iommu/iommu.c
-> > > @@ -536,6 +536,9 @@ static int iommu_bus_notifier(struct notifier_block *nb,
-> > >         struct iommu_group *group;
-> > >         unsigned long group_action = 0;
-> > >  
-> > > +       if (!ops)
-> > > +               return 0;
-> > > +
-> > >         /*
-> > >          * ADD/DEL call into iommu driver ops if provided, which may
-> > >          * result in ADD/DEL notifiers to group->notifier
-> > > 
-> > > This (nasty workaround?) patch makes the problem go away.
-> > > 
-> > > [..]
-> > > > > So it also boot well in 3.15 and then failed in 3.16-rc3. I hope it will
-> > > > > help the developers of the OMAP IOMMU driver to fix it.
-> > > > 
-> > > > Thank you. I've had a look at the OMAP IOMMU driver changes between v3.15 and 
-> > > > v3.16-rc3, and didn't find at first sight any change that could explain the 
-> > > > crash.
-> > > > 
-> > > > 286f600 iommu/omap: Fix map protection value handling
-> > > > 67b779d iommu/omap: Remove comment about supporting single page mappings only
-> > > > f7129a0 iommu/omap: Fix 'no page for' debug message in flush_iotlb_page()
-> > > > 5acc97d iommu/omap: Move to_iommu definition from omap-iopgtable.h
-> > > > 2ac6133 iommu/omap: Remove omap_iommu_domain_has_cap() function
-> > > > d760e3e iommu/omap: Correct init value of iotlb_entry valid field
-> > > > 
-> > > > Could you try reverting those changes and retest ? If the problem doesn't 
-> > > > disappear, we'll need to look somewhere else.
-> > > > 
-> > > 
-> > > I reverted the above commits but nothing changed. I'm far from being an expert,
-> > > but it sounds odd to have this bus notifier (that got registered for the
-> > > platform bus type) called by a pci bus type.
-> > 
-> > Why wouldn't the PCI bus set this up for its devices?  Are you
-> > "assuming" you know the bus type and that's the issue?
-> > 
-> 
-> Thanks for looking at this.
-> 
-> I guess I snipped the thread and lost most of the information about the panic.
-> Here's the original bug report:
-> 
-> http://www.spinics.net/lists/arm-kernel/msg344059.html
-> 
-> The problem reported involves enabling OMAP IOMMU driver and not any other IOMMU
-> driver. Doing some tracing and adding a few prints, we found that
-> omap_iommu_init() sets a bus notifier for the platform bus type:
-> 
-> omap_iommu_init -> bus_set_iommu -> iommu_bus_init:
-> 
-> static void iommu_bus_init(struct bus_type *bus, struct iommu_ops *ops)
-> {
->         bus_register_notifier(bus, &iommu_bus_nb);
->         bus_for_each_dev(bus, NULL, ops, add_iommu_group);
-> }
-> 
-> But the iommu bus notifier gets called for the 'pci' bus type, which
-> has the iommu_ops field NULL (since it hasn't been set for iommu).
+On Fri, Jul 4, 2014 at 2:58 AM, Alexander Gordeev <agordeev-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+> On Thu, Jul 03, 2014 at 09:20:52AM +0000, David Laight wrote:
+>> From: Bjorn Helgaas
+>> > On Tue, Jun 10, 2014 at 03:10:30PM +0200, Alexander Gordeev wrote:
+>> > > There are PCI devices that require a particular value written
+>> > > to the Multiple Message Enable (MME) register while aligned on
+>> > > power of 2 boundary value of actually used MSI vectors 'nvec'
+>> > > is a lesser of that MME value:
+>> > >
+>> > >   roundup_pow_of_two(nvec) < 'Multiple Message Enable'
+>> > >
+>> > > However the existing pci_enable_msi_block() interface is not
+>> > > able to configure such devices, since the value written to the
+>> > > MME register is calculated from the number of requested MSIs
+>> > > 'nvec':
+>> > >
+>> > >   'Multiple Message Enable' = roundup_pow_of_two(nvec)
+>> >
+>> > For MSI, software learns how many vectors a device requests by reading
+>> > the Multiple Message Capable (MMC) field.  This field is encoded, so a
+>> > device can only request 1, 2, 4, 8, etc., vectors.  It's impossible
+>> > for a device to request 3 vectors; it would have to round up that up
+>> > to a power of two and request 4 vectors.
+>> >
+>> > Software writes similarly encoded values to MME to tell the device how
+>> > many vectors have been allocated for its use.  For example, it's
+>> > impossible to tell the device that it can use 3 vectors; the OS has to
+>> > round that up and tell the device it can use 4 vectors.
+>> >
+>> > So if I understand correctly, the point of this series is to take
+>> > advantage of device-specific knowledge, e.g., the device requests 4
+>> > vectors via MMC, but we "know" the device is only capable of using 3.
+>> > Moreover, we tell the device via MME that 4 vectors are available, but
+>> > we've only actually set up 3 of them.
+>> ...
+>>
+>> Even if you do that, you ought to write valid interrupt information
+>> into the 4th slot (maybe replicating one of the earlier interrupts).
+>> Then, if the device does raise the 'unexpected' interrupt you don't
+>> get a write to a random kernel location.
+>
+> I might be missing something, but we are talking of MSI address space
+> here, aren't we? I am not getting how we could end up with a 'write'
+> to a random kernel location when a unclaimed MSI vector sent. We could
+> only expect a spurious interrupt at worst, which is handled and reported.
 
-So this is what needs to be figured out, how is the notifier being
-called with a PCI device?  Who else called iommu_bus_init() for the PCI
-bus?
+Yes, that's how I understand it.  With MSI, the OS specifies the a
+single Message Address, e.g., a LAPIC address, and a single Message
+Data value, e.g., a vector number that will be written to the LAPIC.
+The device is permitted to modify some low-order bits of the Message
+Data to send one of several vector numbers (the MME value tells the
+device how many bits it can modify).
 
-thanks,
+Bottom line, I think a spurious interrupt is the failure we'd expect
+if a device used more vectors than the OS expects it to.
 
-greg k-h
+Bjorn
