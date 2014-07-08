@@ -1,62 +1,75 @@
-From: Michael Ellerman <mpe@ellerman.id.au>
-Subject: Re: [PATCH 1/3] PCI/MSI: Add pci_enable_msi_partial()
-Date: Tue, 08 Jul 2014 14:01:30 +1000
-Message-ID: <1404792090.26459.1.camel@concordia>
-References: <cover.1402405331.git.agordeev@redhat.com>
-	 <4fef62a2e647a7c38e9f2a1ea4244b3506a85e2b.1402405331.git.agordeev@redhat.com>
-	 <20140702202201.GA28852@google.com>
+From: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+Subject: Re: 3.16rc3 multiplatform, Armada 370 and IOMMU: unbootable kernel
+Date: Tue, 8 Jul 2014 09:41:49 +0200
+Message-ID: <20140708094149.0ad6ab13@free-electrons.com>
+References: <20140703135146.GA6898@luxor.wired.org>
+	<53B5C61D.2060308@free-electrons.com>
+	<53B5CA26.7050405@free-electrons.com>
+	<1936558.QaAG1bYMuD@avalon>
+	<20140705150308.GA28791@arch.cereza>
+	<20140705205951.GB3678@kroah.com>
+	<20140707105818.GA1101@arch.cereza>
+	<20140707183002.GA5947@kroah.com>
+	<20140707233758.GA1456@arch.cereza>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <20140702202201.GA28852@google.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Alexander Gordeev <agordeev@redhat.com>, linux-mips@linux-mips.org, linux-s390@vger.kernel.org, linux-pci@vger.kernel.org, x86@kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org, iommu@lists.linux-foundation.org, xen-devel@lists.xenproject.org, linuxppc-dev@lists.ozlabs.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20140707233758.GA1456@arch.cereza>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Ezequiel Garcia <ezequiel.garcia@free-electrons.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Paolo Pisati <p.pisati@gmail.com>, Andrew Lunn <andrew@lunn.ch>, Jason Cooper <jason@lakedaemon.net>, Joerg Roedel <joro@8bytes.org>, Hiroshi.DOYU@nokia.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Gregory CLEMENT <gregory.clement@free-electrons.com>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Florian Vaussard <florian.vaussard@epfl.ch>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2014-07-02 at 14:22 -0600, Bjorn Helgaas wrote:
-> On Tue, Jun 10, 2014 at 03:10:30PM +0200, Alexander Gordeev wrote:
-> > There are PCI devices that require a particular value written
-> > to the Multiple Message Enable (MME) register while aligned on
-> > power of 2 boundary value of actually used MSI vectors 'nvec'
-> > is a lesser of that MME value:
-> > 
-> > 	roundup_pow_of_two(nvec) < 'Multiple Message Enable'
-> > 
-> > However the existing pci_enable_msi_block() interface is not
-> > able to configure such devices, since the value written to the
-> > MME register is calculated from the number of requested MSIs
-> > 'nvec':
-> > 
-> > 	'Multiple Message Enable' = roundup_pow_of_two(nvec)
-> 
-> For MSI, software learns how many vectors a device requests by reading
-> the Multiple Message Capable (MMC) field.  This field is encoded, so a
-> device can only request 1, 2, 4, 8, etc., vectors.  It's impossible
-> for a device to request 3 vectors; it would have to round up that up
-> to a power of two and request 4 vectors.
-> 
-> Software writes similarly encoded values to MME to tell the device how
-> many vectors have been allocated for its use.  For example, it's
-> impossible to tell the device that it can use 3 vectors; the OS has to
-> round that up and tell the device it can use 4 vectors.
-> 
-> So if I understand correctly, the point of this series is to take
-> advantage of device-specific knowledge, e.g., the device requests 4
-> vectors via MMC, but we "know" the device is only capable of using 3.
-> Moreover, we tell the device via MME that 4 vectors are available, but
-> we've only actually set up 3 of them.
-> 
-> This makes me uneasy because we're lying to the device, and the device
-> is perfectly within spec to use all 4 of those vectors.  If anything
-> changes the number of vectors the device uses (new device revision,
-> firmware upgrade, etc.), this is liable to break.
+Dear Ezequiel Garcia,
 
-It also adds more complexity into the already complex MSI API, across all
-architectures, all so a single Intel chipset can save a couple of MSIs. That
-seems like the wrong trade off to me.
+On Mon, 7 Jul 2014 20:37:58 -0300, Ezequiel Garcia wrote:
 
-cheers
+> It seems bus_register_notifier() is been called for platform and pci devices
+> with the *same* notifier block. Haven't looked close enough, but you mentioned
+> that could cause trouble?
+> 
+> This patch fixes the issue here:
+> 
+> diff --git a/arch/arm/mach-mvebu/coherency.c b/arch/arm/mach-mvebu/coherency.c
+> index 477202f..2bdc323 100644
+> --- a/arch/arm/mach-mvebu/coherency.c
+> +++ b/arch/arm/mach-mvebu/coherency.c
+> @@ -292,6 +292,10 @@ static struct notifier_block mvebu_hwcc_nb = {
+>  	.notifier_call = mvebu_hwcc_notifier,
+>  };
+>  
+> +static struct notifier_block mvebu_hwcc_pci_nb = {
+> +	.notifier_call = mvebu_hwcc_notifier,
+> +};
+> +
+>  static void __init armada_370_coherency_init(struct device_node *np)
+>  {
+>  	struct resource res;
+> @@ -427,7 +431,7 @@ static int __init coherency_pci_init(void)
+>  {
+>  	if (coherency_available())
+>  		bus_register_notifier(&pci_bus_type,
+> -				       &mvebu_hwcc_nb);
+> +				       &mvebu_hwcc_pci_nb);
+>  	return 0;
+>  }
+>  
+> Paolo, can you apply it and confirm it fixes the problem?
+> 
+> Greg, can you confirm using the same notifier block pointer
+> for two different bus types makes the bus notifier go nuts?
 
+Looking at how notifier_chain_register() is implemented (which gets
+called by bus_register_notifier() ->
+blocking_notifier_chain_register()), I indeed don't see how a single
+'struct notifier_block' can be registered on multiple notifier chains,
+so I believe your patch is correct.
 
+Thanks for the investigation!
+
+Thomas
+-- 
+Thomas Petazzoni, CTO, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
