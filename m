@@ -1,55 +1,76 @@
-From: David Laight <David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org>
-Subject: RE: [PATCH 1/3] PCI/MSI: Add pci_enable_msi_partial()
-Date: Tue, 8 Jul 2014 08:33:17 +0000
-Message-ID: <063D6719AE5E284EB5DD2968C1650D6D1726E211@AcuExch.aculab.com>
-References: <cover.1402405331.git.agordeev@redhat.com>
-	<4fef62a2e647a7c38e9f2a1ea4244b3506a85e2b.1402405331.git.agordeev@redhat.com>
-	<20140702202201.GA28852@google.com>
-	<063D6719AE5E284EB5DD2968C1650D6D1726BF4E@AcuExch.aculab.com>
-	<20140704085816.GB12247@dhcp-26-207.brq.redhat.com>
-	<CAErSpo7QWc35seoMhJA+H1_=MkKWYMdeYG=hT=i1v=iz8d5ezA@mail.gmail.com>
+From: Paolo Pisati <p.pisati@gmail.com>
+Subject: Re: 3.16rc3 multiplatform, Armada 370 and IOMMU: unbootable kernel
+Date: Tue, 8 Jul 2014 11:20:28 +0200
+Message-ID: <CAMmgNdY-BZvGQL=1_7ANgSbV0TJfcqFRXgmLgyYCk+nAnNkT7w@mail.gmail.com>
+References: <20140703135146.GA6898@luxor.wired.org>
+	<53B5C61D.2060308@free-electrons.com>
+	<53B5CA26.7050405@free-electrons.com>
+	<1936558.QaAG1bYMuD@avalon>
+	<20140705150308.GA28791@arch.cereza>
+	<20140705205951.GB3678@kroah.com>
+	<20140707105818.GA1101@arch.cereza>
+	<20140707183002.GA5947@kroah.com>
+	<20140707233758.GA1456@arch.cereza>
+	<20140708094149.0ad6ab13@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAErSpo7QWc35seoMhJA+H1_=MkKWYMdeYG=hT=i1v=iz8d5ezA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: 'Bjorn Helgaas' <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Alexander Gordeev <agordeev-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org" <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, "linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org" <xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20140708094149.0ad6ab13@free-electrons.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+Cc: Ezequiel Garcia <ezequiel.garcia@free-electrons.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Lunn <andrew@lunn.ch>, Jason Cooper <jason@lakedaemon.net>, Joerg Roedel <joro@8bytes.org>, Hiroshi.DOYU@nokia.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Gregory CLEMENT <gregory.clement@free-electrons.com>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Florian Vaussard <florian.vaussard@epfl.ch>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Bjorn Helgaas
-...
-> >> Even if you do that, you ought to write valid interrupt information
-> >> into the 4th slot (maybe replicating one of the earlier interrupts).
-> >> Then, if the device does raise the 'unexpected' interrupt you don't
-> >> get a write to a random kernel location.
-> >
-> > I might be missing something, but we are talking of MSI address space
-> > here, aren't we? I am not getting how we could end up with a 'write'
-> > to a random kernel location when a unclaimed MSI vector sent. We could
-> > only expect a spurious interrupt at worst, which is handled and reported.
-> 
-> Yes, that's how I understand it.  With MSI, the OS specifies the a
-> single Message Address, e.g., a LAPIC address, and a single Message
-> Data value, e.g., a vector number that will be written to the LAPIC.
-> The device is permitted to modify some low-order bits of the Message
-> Data to send one of several vector numbers (the MME value tells the
-> device how many bits it can modify).
-> 
-> Bottom line, I think a spurious interrupt is the failure we'd expect
-> if a device used more vectors than the OS expects it to.
+On Tue, Jul 8, 2014 at 9:41 AM, Thomas Petazzoni
+<thomas.petazzoni@free-electrons.com> wrote:
+> Dear Ezequiel Garcia,
+>
+> On Mon, 7 Jul 2014 20:37:58 -0300, Ezequiel Garcia wrote:
+>
+>> It seems bus_register_notifier() is been called for platform and pci devices
+>> with the *same* notifier block. Haven't looked close enough, but you mentioned
+>> that could cause trouble?
+>>
+>> This patch fixes the issue here:
+>>
+>> diff --git a/arch/arm/mach-mvebu/coherency.c b/arch/arm/mach-mvebu/coherency.c
+>> index 477202f..2bdc323 100644
+>> --- a/arch/arm/mach-mvebu/coherency.c
+>> +++ b/arch/arm/mach-mvebu/coherency.c
+>> @@ -292,6 +292,10 @@ static struct notifier_block mvebu_hwcc_nb = {
+>>       .notifier_call = mvebu_hwcc_notifier,
+>>  };
+>>
+>> +static struct notifier_block mvebu_hwcc_pci_nb = {
+>> +     .notifier_call = mvebu_hwcc_notifier,
+>> +};
+>> +
+>>  static void __init armada_370_coherency_init(struct device_node *np)
+>>  {
+>>       struct resource res;
+>> @@ -427,7 +431,7 @@ static int __init coherency_pci_init(void)
+>>  {
+>>       if (coherency_available())
+>>               bus_register_notifier(&pci_bus_type,
+>> -                                    &mvebu_hwcc_nb);
+>> +                                    &mvebu_hwcc_pci_nb);
+>>       return 0;
+>>  }
+>>
+>> Paolo, can you apply it and confirm it fixes the problem?
+>>
+>> Greg, can you confirm using the same notifier block pointer
+>> for two different bus types makes the bus notifier go nuts?
+>
+> Looking at how notifier_chain_register() is implemented (which gets
+> called by bus_register_notifier() ->
+> blocking_notifier_chain_register()), I indeed don't see how a single
+> 'struct notifier_block' can be registered on multiple notifier chains,
+> so I believe your patch is correct.
+>
 
-So you need to tell the device where to write in order to raise the
-'spurious interrupt'.
+yes, i confim this patch fixes my issue, thanks!
 
-	David
+-- 
+bye,
+p.
