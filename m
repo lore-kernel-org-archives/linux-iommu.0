@@ -1,14 +1,19 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu: Fix IOMMU sysfs stubs
-Date: Tue, 8 Jul 2014 10:05:52 +0200
-Message-ID: <20140708080552.GG1958@8bytes.org>
-References: <20140707203054.28174.58508.stgit@gimli.home>
+From: David Laight <David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org>
+Subject: RE: [PATCH 1/3] PCI/MSI: Add pci_enable_msi_partial()
+Date: Tue, 8 Jul 2014 08:33:17 +0000
+Message-ID: <063D6719AE5E284EB5DD2968C1650D6D1726E211@AcuExch.aculab.com>
+References: <cover.1402405331.git.agordeev@redhat.com>
+	<4fef62a2e647a7c38e9f2a1ea4244b3506a85e2b.1402405331.git.agordeev@redhat.com>
+	<20140702202201.GA28852@google.com>
+	<063D6719AE5E284EB5DD2968C1650D6D1726BF4E@AcuExch.aculab.com>
+	<20140704085816.GB12247@dhcp-26-207.brq.redhat.com>
+	<CAErSpo7QWc35seoMhJA+H1_=MkKWYMdeYG=hT=i1v=iz8d5ezA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20140707203054.28174.58508.stgit-GCcqpEzw8uZBDLzU/O5InQ@public.gmane.org>
+In-Reply-To: <CAErSpo7QWc35seoMhJA+H1_=MkKWYMdeYG=hT=i1v=iz8d5ezA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,28 +23,33 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: 'Bjorn Helgaas' <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Alexander Gordeev <agordeev-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org" <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, "linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org" <xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jul 07, 2014 at 02:31:36PM -0600, Alex Williamson wrote:
-> 0-day kernel build testing reports:
+From: Bjorn Helgaas
+...
+> >> Even if you do that, you ought to write valid interrupt information
+> >> into the 4th slot (maybe replicating one of the earlier interrupts).
+> >> Then, if the device does raise the 'unexpected' interrupt you don't
+> >> get a write to a random kernel location.
+> >
+> > I might be missing something, but we are talking of MSI address space
+> > here, aren't we? I am not getting how we could end up with a 'write'
+> > to a random kernel location when a unclaimed MSI vector sent. We could
+> > only expect a spurious interrupt at worst, which is handled and reported.
 > 
->    arch/x86/kvm/x86.o: In function `iommu_device_destroy':
-> >> (.text+0x7a0a): multiple definition of `iommu_device_destroy'
->    arch/x86/kvm/../../../virt/kvm/vfio.o:vfio.c:(.text+0x490): first defined here
->    arch/x86/kvm/x86.o: In function `iommu_device_link':
-> >> (.text+0x7a15): multiple definition of `iommu_device_link'
->    arch/x86/kvm/../../../virt/kvm/vfio.o:vfio.c:(.text+0x49b): first defined here
->    arch/x86/kvm/x86.o: In function `iommu_device_unlink':
-> >> (.text+0x7a25): multiple definition of `iommu_device_unlink'
->    arch/x86/kvm/../../../virt/kvm/vfio.o:vfio.c:(.text+0x4ab): first defined here
->    arch/x86/kvm/x86.o: In function `iommu_device_create':
-> >> (.text+0x79f8): multiple definition of `iommu_device_create'
->    arch/x86/kvm/../../../virt/kvm/vfio.o:vfio.c:(.text+0x47e): first defined here
+> Yes, that's how I understand it.  With MSI, the OS specifies the a
+> single Message Address, e.g., a LAPIC address, and a single Message
+> Data value, e.g., a vector number that will be written to the LAPIC.
+> The device is permitted to modify some low-order bits of the Message
+> Data to send one of several vector numbers (the MME value tells the
+> device how many bits it can modify).
 > 
-> These are due to failing to define the stubs as static inline.  Fix.
-> 
-> Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> Bottom line, I think a spurious interrupt is the failure we'd expect
+> if a device used more vectors than the OS expects it to.
 
-Applied, thanks.
+So you need to tell the device where to write in order to raise the
+'spurious interrupt'.
+
+	David
