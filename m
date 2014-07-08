@@ -1,66 +1,116 @@
-From: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: Re: [PATCH] driver core: platform: add device binding path
-	'driver_override'
-Date: Tue, 8 Jul 2014 15:37:14 -0700
-Message-ID: <20140708223714.GA15197@kroah.com>
-References: <1398700371-20096-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1398700371-20096-2-git-send-email-a.motakis@virtualopensystems.com>
-	<20140602194258.5135925bf3c71b9c010fb409@freescale.com>
+From: Rob Clark <robdclark@gmail.com>
+Subject: Re: [RFC/PATCH 2/7] iommu-api: Add map_range/unmap_range functions
+Date: Tue, 8 Jul 2014 19:49:59 -0400
+Message-ID: <CAF6AEGvpD+gvDvQte6YVOP8Q6NeXsoReQ_waWqjsMjffUzALOA@mail.gmail.com>
+References: <1404147116-4598-1-git-send-email-ohaugan@codeaurora.org>
+	<1404147116-4598-3-git-send-email-ohaugan@codeaurora.org>
+	<20140704072940.c1e8e8cdd38fbc295fe5c086@nvidia.com>
+	<53BC6866.30803@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20140602194258.5135925bf3c71b9c010fb409-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Kim Phillips <kim.phillips-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, clbchenlibo.chen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, jhovold-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Alexander Graf <agraf-l3A5Bk7waGM@public.gmane.org>, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Ian Campbell <ian.campbell-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org>, Stefano Stabellini <stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org>, Julien Grall <julien.grall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, rob.herring-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org, a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, rob-VoJi6FS/r0vR7s880joybQ@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <53BC6866.30803@codeaurora.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Olav Haugan <ohaugan@codeaurora.org>
+Cc: Hiroshi Doyu <hdoyu@nvidia.com>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>, "will.deacon@arm.com" <will.deacon@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "vgandhi@codeaurora.org" <vgandhi@codeaurora.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Joerg Roedel <joro@8bytes.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jun 02, 2014 at 07:42:58PM -0500, Kim Phillips wrote:
-> Needed by platform device drivers, such as the upcoming
-> vfio-platform driver, in order to bypass the existing OF, ACPI,
-> id_table and name string matches, and successfully be able to be
-> bound to any device, like so:
-> 
-> echo vfio-platform > /sys/bus/platform/devices/fff51000.ethernet/driver_override
-> echo fff51000.ethernet > /sys/bus/platform/devices/fff51000.ethernet/driver/unbind
-> echo fff51000.ethernet > /sys/bus/platform/drivers_probe
-> 
-> This mimics "PCI: Introduce new device binding path using
-> pci_dev.driver_override", which is an interface enhancement
-> for more deterministic PCI device binding, e.g., when in the
-> presence of hotplug.
-> 
-> Reviewed-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> Reviewed-by: Alexander Graf <agraf-l3A5Bk7waGM@public.gmane.org>
-> Reviewed-by: Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-> Signed-off-by: Kim Phillips <kim.phillips-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-> ---
-> Greg,
-> 
-> This is largely identical to the PCI version of the same that has
-> been accepted for v3.16 and ack'd by you:
-> 
-> https://lists.cs.columbia.edu/pipermail/kvmarm/2014-May/009674.html
-> 
-> and applied to Bjorn Helgaas' PCI tree:
-> 
-> https://git.kernel.org/cgit/linux/kernel/git/helgaas/pci.git/commit/?h=pci/virtualization&id=782a985d7af26db39e86070d28f987cad21313c0
-> 
-> You are the platform driver core maintainer: can you apply this to
-> your driver-core tree now?
+On Tue, Jul 8, 2014 at 5:53 PM, Olav Haugan <ohaugan@codeaurora.org> wrote:
+> Hi Hiroshi,
+>
+> On 7/3/2014 9:29 PM, Hiroshi Doyu wrote:
+>> Hi Olav,
+>>
+>> Olav Haugan <ohaugan@codeaurora.org> writes:
+>>
+>>> Mapping and unmapping are more often than not in the critical path.
+>>> map_range and unmap_range allows SMMU driver implementations to optimize
+>>> the process of mapping and unmapping buffers into the SMMU page tables.
+>>> Instead of mapping one physical address, do TLB operation (expensive),
+>>> mapping, do TLB operation, mapping, do TLB operation the driver can map
+>>> a scatter-gatherlist of physically contiguous pages into one virtual
+>>> address space and then at the end do one TLB operation.
+>>>
+>>> Additionally, the mapping operation would be faster in general since
+>>> clients does not have to keep calling map API over and over again for
+>>> each physically contiguous chunk of memory that needs to be mapped to a
+>>> virtually contiguous region.
+>>>
+>>> Signed-off-by: Olav Haugan <ohaugan@codeaurora.org>
+>>> ---
+>>>  drivers/iommu/iommu.c | 24 ++++++++++++++++++++++++
+>>>  include/linux/iommu.h | 24 ++++++++++++++++++++++++
+>>>  2 files changed, 48 insertions(+)
+>>>
+>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>>> index e5555fc..f2a6b80 100644
+>>> --- a/drivers/iommu/iommu.c
+>>> +++ b/drivers/iommu/iommu.c
+>>> @@ -898,6 +898,30 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
+>>>  EXPORT_SYMBOL_GPL(iommu_unmap);
+>>>
+>>>
+>>> +int iommu_map_range(struct iommu_domain *domain, unsigned int iova,
+>>> +                struct scatterlist *sg, unsigned int len, int prot)
+>>> +{
+>>> +    if (unlikely(domain->ops->map_range == NULL))
+>>> +            return -ENODEV;
+>>> +
+>>> +    BUG_ON(iova & (~PAGE_MASK));
+>>> +
+>>> +    return domain->ops->map_range(domain, iova, sg, len, prot);
+>>> +}
+>>> +EXPORT_SYMBOL_GPL(iommu_map_range);
+>>
+>> We have the similar one internally, which is named, "iommu_map_sg()",
+>> called from DMA API.
+>
+> Great, so this new API will be useful to more people!
+>
+>>> +int iommu_unmap_range(struct iommu_domain *domain, unsigned int iova,
+>>> +                  unsigned int len)
+>>> +{
+>>> +    if (unlikely(domain->ops->unmap_range == NULL))
+>>> +            return -ENODEV;
+>>> +
+>>> +    BUG_ON(iova & (~PAGE_MASK));
+>>> +
+>>> +    return domain->ops->unmap_range(domain, iova, len);
+>>> +}
+>>> +EXPORT_SYMBOL_GPL(iommu_unmap_range);
+>>
+>> Can the existing iommu_unmap() do the same?
+>
+> I believe iommu_unmap() behaves a bit differently because it will keep
+> on calling domain->ops->unmap() until everything is unmapped instead of
+> letting the iommu implementation take care of unmapping everything in
+> one call.
+>
+> I am abandoning the patch series since our driver was not accepted.
+> However, if there are no objections I will resubmit this patch (PATCH
+> 2/7) as an independent patch to add this new map_range API.
 
-Sorry for the very long delay, it's now merged in my tree.
++1 for map_range().. I've seen for gpu workloads, at least, it is the
+downstream map_range() API is quite beneficial.   It was worth at
+least a few fps in xonotic.
 
-Thanks for being persistant.
+And, possibly getting off the subject a bit, but I was wondering about
+the possibility of going one step further and batching up mapping
+and/or unmapping multiple buffers (ranges) at once.  I have a pretty
+convenient sync point in drm/msm to flush out multiple mappings before
+kicking gpu.
 
-greg k-h
+BR,
+-R
+
+> Thanks,
+>
+> Olav Haugan
+>
+> --
+> The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+> hosted by The Linux Foundation
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-arm-msm" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
