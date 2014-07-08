@@ -1,91 +1,73 @@
-From: Olav Haugan <ohaugan@codeaurora.org>
-Subject: Re: [RFC/PATCH 2/7] iommu-api: Add map_range/unmap_range functions
-Date: Tue, 08 Jul 2014 14:53:42 -0700
-Message-ID: <53BC6866.30803@codeaurora.org>
-References: <1404147116-4598-1-git-send-email-ohaugan@codeaurora.org> <1404147116-4598-3-git-send-email-ohaugan@codeaurora.org> <20140704072940.c1e8e8cdd38fbc295fe5c086@nvidia.com>
+From: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [RFC/PATCH 7/7] iommu-api: Add domain attribute to enable coherent
+	HTW
+Date: Tue, 08 Jul 2014 15:24:05 -0700
+Message-ID: <53BC6F85.5090301@codeaurora.org>
+References: <1404147116-4598-1-git-send-email-ohaugan@codeaurora.org>
+	<1404147116-4598-8-git-send-email-ohaugan@codeaurora.org>
+	<e64e7ca617d64093bbe5dc7caf9283e1@BL2PR03MB468.namprd03.prod.outlook.com>
+	<53B48381.9050707@codeaurora.org> <20140703174321.GE17372@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <20140704072940.c1e8e8cdd38fbc295fe5c086@nvidia.com>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Hiroshi Doyu <hdoyu@nvidia.com>
-Cc: "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>, "will.deacon@arm.com" <will.deacon@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "vgandhi@codeaurora.org" <vgandhi@codeaurora.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Joerg Roedel <joro@8bytes.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20140703174321.GE17372-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "vgandhi-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <vgandhi-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Hiroshi,
-
-On 7/3/2014 9:29 PM, Hiroshi Doyu wrote:
-> Hi Olav,
-> 
-> Olav Haugan <ohaugan@codeaurora.org> writes:
-> 
->> Mapping and unmapping are more often than not in the critical path.
->> map_range and unmap_range allows SMMU driver implementations to optimize
->> the process of mapping and unmapping buffers into the SMMU page tables.
->> Instead of mapping one physical address, do TLB operation (expensive),
->> mapping, do TLB operation, mapping, do TLB operation the driver can map
->> a scatter-gatherlist of physically contiguous pages into one virtual
->> address space and then at the end do one TLB operation.
+On 7/3/2014 10:43 AM, Will Deacon wrote:
+> On Wed, Jul 02, 2014 at 11:11:13PM +0100, Olav Haugan wrote:
+>> On 7/1/2014 1:49 AM, Varun Sethi wrote:
+>>>
+>>>
+>>>> -----Original Message-----
+>>>> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
+>>>> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Olav Haugan
+>>>> Sent: Monday, June 30, 2014 10:22 PM
+>>>> To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
+>>>> foundation.org
+>>>> Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org;
+>>>> thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org; vgandhi-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+>>>> Subject: [RFC/PATCH 7/7] iommu-api: Add domain attribute to enable
+>>>> coherent HTW
+>>>>
+>>>> Add a new iommu domain attribute that can be used to enable cache
+>>>> coherent hardware table walks (HTW) by the SMMU. HTW might be supported
+>>>> by the SMMU HW but depending on the use case and the usage of the SMMU in
+>>>> the SoC it might not be always beneficial to always turn on coherent HTW
+>>>> for all domains/iommu's.
+>>>>
+>>> [Sethi Varun-B16395] Why won't you want to use the coherent table walk feature?
 >>
->> Additionally, the mapping operation would be faster in general since
->> clients does not have to keep calling map API over and over again for
->> each physically contiguous chunk of memory that needs to be mapped to a
->> virtually contiguous region.
->>
->> Signed-off-by: Olav Haugan <ohaugan@codeaurora.org>
->> ---
->>  drivers/iommu/iommu.c | 24 ++++++++++++++++++++++++
->>  include/linux/iommu.h | 24 ++++++++++++++++++++++++
->>  2 files changed, 48 insertions(+)
->>
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index e5555fc..f2a6b80 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -898,6 +898,30 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
->>  EXPORT_SYMBOL_GPL(iommu_unmap);
->>  
->>  
->> +int iommu_map_range(struct iommu_domain *domain, unsigned int iova,
->> +		    struct scatterlist *sg, unsigned int len, int prot)
->> +{
->> +	if (unlikely(domain->ops->map_range == NULL))
->> +		return -ENODEV;
->> +
->> +	BUG_ON(iova & (~PAGE_MASK));
->> +
->> +	return domain->ops->map_range(domain, iova, sg, len, prot);
->> +}
->> +EXPORT_SYMBOL_GPL(iommu_map_range);
+>> Very good question. We have found that turning on IOMMU coherent HTW is
+>> not always beneficial to performance (performance either the same or
+>> slightly worse in some cases). Even if the perf. is the same we would
+>> like to avoid using precious L2 cache for no benefit to the IOMMU.
+>> Although our HW supports this feature we don't always want to turn this
+>> on for a specific use case/domain (bus master).
 > 
-> We have the similar one internally, which is named, "iommu_map_sg()",
-> called from DMA API.
-
-Great, so this new API will be useful to more people!
-
->> +int iommu_unmap_range(struct iommu_domain *domain, unsigned int iova,
->> +		      unsigned int len)
->> +{
->> +	if (unlikely(domain->ops->unmap_range == NULL))
->> +		return -ENODEV;
->> +
->> +	BUG_ON(iova & (~PAGE_MASK));
->> +
->> +	return domain->ops->unmap_range(domain, iova, len);
->> +}
->> +EXPORT_SYMBOL_GPL(iommu_unmap_range);
+> Could we at least invert the feature flag, please? i.e. you set an attribute
+> to *disable* coherent walks? I'd also be interested to see some performance
+> numbers, as the added cacheflushing overhead from non-coherent walks is
+> going to be non-trivial.
 > 
-> Can the existing iommu_unmap() do the same?
 
-I believe iommu_unmap() behaves a bit differently because it will keep
-on calling domain->ops->unmap() until everything is unmapped instead of
-letting the iommu implementation take care of unmapping everything in
-one call.
-
-I am abandoning the patch series since our driver was not accepted.
-However, if there are no objections I will resubmit this patch (PATCH
-2/7) as an independent patch to add this new map_range API.
+Yes, agree that we can do the inverse. On one SoC I saw about 5%
+degradation in performance with coherent table walk enabled for a
+specific bus master. However, we have seen improved performance also
+with other SMMUs/bus masters. It just depends on the SMMU/bus master and
+how it is being used. Hence the need to be able to disable this on a
+per-domain basis.
 
 Thanks,
 
