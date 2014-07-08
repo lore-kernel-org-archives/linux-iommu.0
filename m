@@ -1,21 +1,11 @@
-From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: Re: 3.16rc3 multiplatform, Armada 370 and IOMMU: unbootable kernel
-Date: Mon, 7 Jul 2014 16:47:18 -0700
-Message-ID: <20140707234718.GA8352@kroah.com>
-References: <20140703135146.GA6898@luxor.wired.org>
-	<53B5C61D.2060308@free-electrons.com>
-	<53B5CA26.7050405@free-electrons.com> <1936558.QaAG1bYMuD@avalon>
-	<20140705150308.GA28791@arch.cereza>
-	<20140705205951.GB3678@kroah.com>
-	<20140707105818.GA1101@arch.cereza>
-	<20140707183002.GA5947@kroah.com>
-	<20140707233758.GA1456@arch.cereza>
+From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH] iommu/arm-smmu: fix some checkpatch issues
+Date: Mon,  7 Jul 2014 17:45:24 -0700
+Message-ID: <1404780324-21847-1-git-send-email-mitchelh@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20140707233758.GA1456-nAQHv47ARr+vIlHkl8J1cg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,92 +15,257 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ezequiel Garcia <ezequiel.garcia-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Cc: Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Hiroshi.DOYU-xNZwKgViW5gAvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Paolo Pisati <p.pisati-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Gregory CLEMENT <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>, Sebastian Hesselbarth <sebastian.hesselbarth-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jul 07, 2014 at 08:37:58PM -0300, Ezequiel Garcia wrote:
-> On 07 Jul 11:30 AM, Greg Kroah-Hartman wrote:
-> > On Mon, Jul 07, 2014 at 07:58:18AM -0300, Ezequiel Garcia wrote:
-> [..]
-> > > 
-> > > I guess I snipped the thread and lost most of the information about the panic.
-> > > Here's the original bug report:
-> > > 
-> > > http://www.spinics.net/lists/arm-kernel/msg344059.html
-> > > 
-> > > The problem reported involves enabling OMAP IOMMU driver and not any other IOMMU
-> > > driver. Doing some tracing and adding a few prints, we found that
-> > > omap_iommu_init() sets a bus notifier for the platform bus type:
-> > > 
-> > > omap_iommu_init -> bus_set_iommu -> iommu_bus_init:
-> > > 
-> > > static void iommu_bus_init(struct bus_type *bus, struct iommu_ops *ops)
-> > > {
-> > >         bus_register_notifier(bus, &iommu_bus_nb);
-> > >         bus_for_each_dev(bus, NULL, ops, add_iommu_group);
-> > > }
-> > > 
-> > > But the iommu bus notifier gets called for the 'pci' bus type, which
-> > > has the iommu_ops field NULL (since it hasn't been set for iommu).
-> > 
-> > So this is what needs to be figured out, how is the notifier being
-> > called with a PCI device?  Who else called iommu_bus_init() for the PCI
-> > bus?
-> > 
-> 
-> Nobody. The only caller of iommu_bus_init() the above OMAP IOMMU.
-> 
-> However, I found something interesting. Tried to bisect this without much
-> luck; I did two bisects and ended up in the same merge commit:
-> 
-> # good: [0f16aa3c24a216d14d7f0587e1cbd2c1b51a38f3] Merge tag 'samsung-dt-3' of git://git.kernel.org/pub/scm/linux/kernel/git/kgene/linux-samsung into next/dt
-> # first bad commit: [755a9ba7bf24a45b6dbf8bb15a5a56c8ed12461a] Merge tag 'dt-for-3.16' of git://git.kernel.org/pub/scm/linux/kernel/git/arm/arm-soc into next
-> 
-> So, after doing a few diff's between that good and bad and searching for
-> "bus_notifier" changes, saw something strange in arch/arm/mach-mvebu/coherency.c.
-> 
-> It seems bus_register_notifier() is been called for platform and pci devices
-> with the *same* notifier block. Haven't looked close enough, but you mentioned
-> that could cause trouble?
-> 
-> This patch fixes the issue here:
-> 
-> diff --git a/arch/arm/mach-mvebu/coherency.c b/arch/arm/mach-mvebu/coherency.c
-> index 477202f..2bdc323 100644
-> --- a/arch/arm/mach-mvebu/coherency.c
-> +++ b/arch/arm/mach-mvebu/coherency.c
-> @@ -292,6 +292,10 @@ static struct notifier_block mvebu_hwcc_nb = {
->  	.notifier_call = mvebu_hwcc_notifier,
->  };
->  
-> +static struct notifier_block mvebu_hwcc_pci_nb = {
-> +	.notifier_call = mvebu_hwcc_notifier,
-> +};
-> +
->  static void __init armada_370_coherency_init(struct device_node *np)
->  {
->  	struct resource res;
-> @@ -427,7 +431,7 @@ static int __init coherency_pci_init(void)
->  {
->  	if (coherency_available())
->  		bus_register_notifier(&pci_bus_type,
-> -				       &mvebu_hwcc_nb);
-> +				       &mvebu_hwcc_pci_nb);
->  	return 0;
->  }
->  
-> Paolo, can you apply it and confirm it fixes the problem?
-> 
-> Greg, can you confirm using the same notifier block pointer
-> for two different bus types makes the bus notifier go nuts?
+Fix some issues reported by checkpatch.pl. Mostly whitespace, but also
+includes min=>min_t, kzalloc=>kcalloc, and kmalloc=>kmalloc_array.
 
-The bus notifier doesn't "go nuts", but the call back functions must be
-able to handle the devices for that specific bus being passed to the
-function for it.
+Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+---
+ drivers/iommu/arm-smmu.c | 59 ++++++++++++++++++++++++++++++------------------
+ 1 file changed, 37 insertions(+), 22 deletions(-)
 
-Again, you shouldn't ever mix bus types with the same notifier unless
-you _really_ know what you are doing, and even then, I wouldn't
-recommend it.
-
-greg k-h
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 1599354e97..e59517c3b7 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -316,9 +316,9 @@
+ #define FSR_AFF				(1 << 2)
+ #define FSR_TF				(1 << 1)
+ 
+-#define FSR_IGN				(FSR_AFF | FSR_ASF | FSR_TLBMCF |	\
++#define FSR_IGN				(FSR_AFF | FSR_ASF | FSR_TLBMCF | \
+ 					 FSR_TLBLKF)
+-#define FSR_FAULT			(FSR_MULTI | FSR_SS | FSR_UUT |		\
++#define FSR_FAULT			(FSR_MULTI | FSR_SS | FSR_UUT | \
+ 					 FSR_EF | FSR_PF | FSR_TF | FSR_IGN)
+ 
+ #define FSYNR0_WNR			(1 << 4)
+@@ -419,7 +419,7 @@ struct arm_smmu_option_prop {
+ 	const char *prop;
+ };
+ 
+-static struct arm_smmu_option_prop arm_smmu_options [] = {
++static struct arm_smmu_option_prop arm_smmu_options[] = {
+ 	{ ARM_SMMU_OPT_SECURE_CFG_ACCESS, "calxeda,smmu-secure-config-access" },
+ 	{ 0, NULL},
+ };
+@@ -427,6 +427,7 @@ static struct arm_smmu_option_prop arm_smmu_options [] = {
+ static void parse_driver_options(struct arm_smmu_device *smmu)
+ {
+ 	int i = 0;
++
+ 	do {
+ 		if (of_property_read_bool(smmu->dev->of_node,
+ 						arm_smmu_options[i].prop)) {
+@@ -443,8 +444,8 @@ static struct arm_smmu_master *find_smmu_master(struct arm_smmu_device *smmu,
+ 	struct rb_node *node = smmu->masters.rb_node;
+ 
+ 	while (node) {
+-		struct arm_smmu_master *master;
+-		master = container_of(node, struct arm_smmu_master, node);
++		struct arm_smmu_master *master
++			= container_of(node, struct arm_smmu_master, node);
+ 
+ 		if (dev_node < master->of_node)
+ 			node = node->rb_left;
+@@ -465,8 +466,8 @@ static int insert_smmu_master(struct arm_smmu_device *smmu,
+ 	new = &smmu->masters.rb_node;
+ 	parent = NULL;
+ 	while (*new) {
+-		struct arm_smmu_master *this;
+-		this = container_of(*new, struct arm_smmu_master, node);
++		struct arm_smmu_master *this
++			= container_of(*new, struct arm_smmu_master, node);
+ 
+ 		parent = *new;
+ 		if (master->of_node < this->of_node)
+@@ -708,7 +709,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
+ 	/* CBAR */
+ 	reg = root_cfg->cbar;
+ 	if (smmu->version == 1)
+-	      reg |= root_cfg->irptndx << CBAR_IRPTNDX_SHIFT;
++		reg |= root_cfg->irptndx << CBAR_IRPTNDX_SHIFT;
+ 
+ 	/*
+ 	 * Use the weakest shareability/memory types, so they are
+@@ -963,7 +964,7 @@ static int arm_smmu_domain_init(struct iommu_domain *domain)
+ 	if (!smmu_domain)
+ 		return -ENOMEM;
+ 
+-	pgd = kzalloc(PTRS_PER_PGD * sizeof(pgd_t), GFP_KERNEL);
++	pgd = kcalloc(PTRS_PER_PGD, sizeof(pgd_t), GFP_KERNEL);
+ 	if (!pgd)
+ 		goto out_free_domain;
+ 	smmu_domain->root_cfg.pgd = pgd;
+@@ -980,6 +981,7 @@ out_free_domain:
+ static void arm_smmu_free_ptes(pmd_t *pmd)
+ {
+ 	pgtable_t table = pmd_pgtable(*pmd);
++
+ 	pgtable_page_dtor(table);
+ 	__free_page(table);
+ }
+@@ -1066,7 +1068,7 @@ static int arm_smmu_master_configure_smrs(struct arm_smmu_device *smmu,
+ 	if (master->smrs)
+ 		return -EEXIST;
+ 
+-	smrs = kmalloc(sizeof(*smrs) * master->num_streamids, GFP_KERNEL);
++	smrs = kmalloc_array(master->num_streamids, sizeof(*smrs), GFP_KERNEL);
+ 	if (!smrs) {
+ 		dev_err(smmu->dev, "failed to allocate %d SMRs for master %s\n",
+ 			master->num_streamids, master->of_node->name);
+@@ -1116,6 +1118,7 @@ static void arm_smmu_master_free_smrs(struct arm_smmu_device *smmu,
+ 	/* Invalidate the SMRs before freeing back to the allocator */
+ 	for (i = 0; i < master->num_streamids; ++i) {
+ 		u8 idx = smrs[i].idx;
++
+ 		writel_relaxed(~SMR_VALID, gr0_base + ARM_SMMU_GR0_SMR(idx));
+ 		__arm_smmu_free_bitmap(smmu->smr_map, idx);
+ 	}
+@@ -1132,6 +1135,7 @@ static void arm_smmu_bypass_stream_mapping(struct arm_smmu_device *smmu,
+ 
+ 	for (i = 0; i < master->num_streamids; ++i) {
+ 		u16 sid = master->streamids[i];
++
+ 		writel_relaxed(S2CR_TYPE_BYPASS,
+ 			       gr0_base + ARM_SMMU_GR0_S2CR(sid));
+ 	}
+@@ -1166,6 +1170,7 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
+ 	/* Now we're at the root, time to point at our context bank */
+ 	for (i = 0; i < master->num_streamids; ++i) {
+ 		u32 idx, s2cr;
++
+ 		idx = master->smrs ? master->smrs[i].idx : master->streamids[i];
+ 		s2cr = S2CR_TYPE_TRANS |
+ 		       (smmu_domain->root_cfg.cbndx << S2CR_CBNDX_SHIFT);
+@@ -1261,6 +1266,7 @@ static int arm_smmu_alloc_init_pte(struct arm_smmu_device *smmu, pmd_t *pmd,
+ 	if (pmd_none(*pmd)) {
+ 		/* Allocate a new set of tables */
+ 		pgtable_t table = alloc_page(GFP_ATOMIC|__GFP_ZERO);
++
+ 		if (!table)
+ 			return -ENOMEM;
+ 
+@@ -1326,6 +1332,7 @@ static int arm_smmu_alloc_init_pte(struct arm_smmu_device *smmu, pmd_t *pmd,
+ 	 */
+ 	do {
+ 		int i = 1;
++
+ 		pteval &= ~ARM_SMMU_PTE_CONT;
+ 
+ 		if (arm_smmu_pte_is_contiguous_range(addr, end)) {
+@@ -1340,7 +1347,8 @@ static int arm_smmu_alloc_init_pte(struct arm_smmu_device *smmu, pmd_t *pmd,
+ 			idx &= ~(ARM_SMMU_PTE_CONT_ENTRIES - 1);
+ 			cont_start = pmd_page_vaddr(*pmd) + idx;
+ 			for (j = 0; j < ARM_SMMU_PTE_CONT_ENTRIES; ++j)
+-				pte_val(*(cont_start + j)) &= ~ARM_SMMU_PTE_CONT;
++				pte_val(*(cont_start + j))
++					&= ~ARM_SMMU_PTE_CONT;
+ 
+ 			arm_smmu_flush_pgtable(smmu, cont_start,
+ 					       sizeof(*pte) *
+@@ -1639,7 +1647,8 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+ 	/* Mark all SMRn as invalid and all S2CRn as bypass */
+ 	for (i = 0; i < smmu->num_mapping_groups; ++i) {
+ 		writel_relaxed(~SMR_VALID, gr0_base + ARM_SMMU_GR0_SMR(i));
+-		writel_relaxed(S2CR_TYPE_BYPASS, gr0_base + ARM_SMMU_GR0_S2CR(i));
++		writel_relaxed(S2CR_TYPE_BYPASS,
++			gr0_base + ARM_SMMU_GR0_S2CR(i));
+ 	}
+ 
+ 	/* Make sure all context banks are disabled and clear CB_FSR  */
+@@ -1779,11 +1788,13 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+ 	smmu->pagesize = (id & ID1_PAGESIZE) ? SZ_64K : SZ_4K;
+ 
+ 	/* Check for size mismatch of SMMU address space from mapped region */
+-	size = 1 << (((id >> ID1_NUMPAGENDXB_SHIFT) & ID1_NUMPAGENDXB_MASK) + 1);
++	size = 1 <<
++		(((id >> ID1_NUMPAGENDXB_SHIFT) & ID1_NUMPAGENDXB_MASK) + 1);
+ 	size *= (smmu->pagesize << 1);
+ 	if (smmu->size != size)
+-		dev_warn(smmu->dev, "SMMU address space size (0x%lx) differs "
+-			"from mapped region size (0x%lx)!\n", size, smmu->size);
++		dev_warn(smmu->dev,
++			"SMMU address space size (0x%lx) differs from mapped region size (0x%lx)!\n",
++			size, smmu->size);
+ 
+ 	smmu->num_s2_context_banks = (id >> ID1_NUMS2CB_SHIFT) &
+ 				      ID1_NUMS2CB_MASK;
+@@ -1804,14 +1815,14 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+ 	 * allocation (PTRS_PER_PGD).
+ 	 */
+ #ifdef CONFIG_64BIT
+-	smmu->s1_output_size = min((unsigned long)VA_BITS, size);
++	smmu->s1_output_size = min_t(unsigned long, VA_BITS, size);
+ #else
+ 	smmu->s1_output_size = min(32UL, size);
+ #endif
+ 
+ 	/* The stage-2 output mask is also applied for bypass */
+ 	size = arm_smmu_id_size_to_bits((id >> ID2_OAS_SHIFT) & ID2_OAS_MASK);
+-	smmu->s2_output_size = min((unsigned long)PHYS_MASK_SHIFT, size);
++	smmu->s2_output_size = min_t(unsigned long, PHYS_MASK_SHIFT, size);
+ 
+ 	if (smmu->version == 1) {
+ 		smmu->input_size = 32;
+@@ -1835,7 +1846,8 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+ 
+ 	dev_notice(smmu->dev,
+ 		   "\t%lu-bit VA, %lu-bit IPA, %lu-bit PA\n",
+-		   smmu->input_size, smmu->s1_output_size, smmu->s2_output_size);
++		   smmu->input_size, smmu->s1_output_size,
++		   smmu->s2_output_size);
+ 	return 0;
+ }
+ 
+@@ -1890,6 +1902,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 
+ 	for (i = 0; i < num_irqs; ++i) {
+ 		int irq = platform_get_irq(pdev, i);
++
+ 		if (irq < 0) {
+ 			dev_err(dev, "failed to get irq index %d\n", i);
+ 			return -ENODEV;
+@@ -1913,7 +1926,8 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 	}
+ 	dev_notice(dev, "registered %d master devices\n", i);
+ 
+-	if ((dev_node = of_parse_phandle(dev->of_node, "smmu-parent", 0)))
++	dev_node = of_parse_phandle(dev->of_node, "smmu-parent", 0);
++	if (dev_node)
+ 		smmu->parent_of_node = dev_node;
+ 
+ 	err = arm_smmu_device_cfg_probe(smmu);
+@@ -1962,8 +1976,8 @@ out_put_parent:
+ 
+ out_put_masters:
+ 	for (node = rb_first(&smmu->masters); node; node = rb_next(node)) {
+-		struct arm_smmu_master *master;
+-		master = container_of(node, struct arm_smmu_master, node);
++		struct arm_smmu_master *master
++			= container_of(node, struct arm_smmu_master, node);
+ 		of_node_put(master->of_node);
+ 	}
+ 
+@@ -1995,6 +2009,7 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+ 
+ 	for (node = rb_first(&smmu->masters); node; node = rb_next(node)) {
+ 		struct arm_smmu_master *master;
++
+ 		master = container_of(node, struct arm_smmu_master, node);
+ 		of_node_put(master->of_node);
+ 	}
+@@ -2006,7 +2021,7 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+ 		free_irq(smmu->irqs[i], smmu);
+ 
+ 	/* Turn the thing off */
+-	writel(sCR0_CLIENTPD,ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
++	writel(sCR0_CLIENTPD, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
+ 	return 0;
+ }
+ 
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+hosted by The Linux Foundation
