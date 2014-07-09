@@ -1,50 +1,60 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCHv2 0/3] Support for nesting IOMMUs in VFIO
-Date: Wed, 09 Jul 2014 14:37:15 -0600
-Message-ID: <1404938235.4256.199.camel@ul30vt.home>
-References: <1404930526-32119-1-git-send-email-will.deacon@arm.com>
+From: Khiem Nguyen <khiem.nguyen.xt@renesas.com>
+Subject: Re: [PATCH v3] iommu: Add driver for Renesas VMSA-compatible IPMMU
+Date: Thu, 10 Jul 2014 08:20:25 +0900
+Message-ID: <53BDCE39.1070306@renesas.com>
+References: <1396435657-3922-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <538D55C2.3090209@renesas.com> <1837932.hUVa08Puz4@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1404930526-32119-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1837932.hUVa08Puz4@avalon>
+Sender: linux-sh-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: khiem.nguyen.xt@renesas.com, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, iommu@lists.linux-foundation.org, linux-sh@vger.kernel.org, Joerg Roedel <joro@8bytes.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2014-07-09 at 19:28 +0100, Will Deacon wrote:
-> Hello,
-> 
-> This is v2 of the RFC I originally posted here:
-> 
->  RFCv1: http://permalink.gmane.org/gmane.linux.kernel.iommu/5552
-> 
-> It's changed significantly since then, based on helpful feedback from
-> Alex. In particular, I no longer butcher the IOMMU API, instead making
-> use of a new iommu_attr to indicate that a domain requires support for
-> nesting.
-> 
-> All feedback welcome (this is still an RFC after all),
+Hi Laurent,
 
-Hi Will,
+Thanks for your explanation.
 
-It's a lot cleaner this way, but I'm concerned that allowing a "nesting"
-IOMMU to be created and used just like a TYPE1v2 IOMMU, even if the
-IOMMU doesn't support it, puts us in a corner for compatibility later.
-The safer approach might be to fail the attach_group function if we
-can't set the domain attribute, ie. enforce that the IOMMU must support
-it.  I don't know how you'd handle it if only some of the domains within
-a container supported it, so enforcement may simplify things down the
-road too.  We wouldn't need the vfio_domains_have_iommu_nesting()
-function that way either.  Thanks,
+I'm fine with current situation. 
+I have also checked other drivers and they did the same.
+As you said, let's improve this driver when the time comes.
 
-Alex
+Thanks.
+
+Best regards,
+KHIEM Nguyen
+
+On 6/4/2014 2:39 AM, Laurent Pinchart wrote:
+> Hi,
+> 
+> On Tuesday 03 June 2014 13:57:38 Khiem Nguyen wrote:
+>> Hi Laurent,
+>>
+>> Thanks for the patch.
+>>
+>>> +	if (!iommu_present(&platform_bus_type))
+>>> +		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
+>>
+>> With this code, if error occurs, it's hidden.
+>>
+>> I think it should be like below,
+>>
+>>> +	ret = bus_set_iommu(&platform_bus_type, &ipmmu_ops);
+>>> +	if (ret < 0)
+>>> +		return ret;
+>>
+>> In this case, if error occurs, -EBUSY is returned.
+>> It's easier for troubleshooting the issue.
+>>
+>> How do you think ?
+> 
+> I agree that we have a problem, but the problem is broader than this. Only one 
+> IOMMU type can be associated with a given bus, so things will break as soon as 
+> we will compile multiple IOMMU drivers in a multiplatform kernel. I'd like to 
+> fix this properly, but it requires IOMMU framework changes, and thus time. In 
+> the meantime we could apply your proposed modification, but it needs an 
+> additional platform_driver_unregister() call in the bus_set_iommu() error 
+> path.
+> 
