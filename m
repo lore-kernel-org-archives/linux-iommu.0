@@ -1,7 +1,8 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCHv2 1/3] iommu: introduce domain attribute for nesting IOMMUs
-Date: Wed,  9 Jul 2014 19:28:44 +0100
-Message-ID: <1404930526-32119-2-git-send-email-will.deacon@arm.com>
+Subject: [RFC PATCHv2 2/3] vfio/iommu_type1: add new VFIO_TYPE1_NESTING_IOMMU
+	IOMMU type
+Date: Wed,  9 Jul 2014 19:28:45 +0100
+Message-ID: <1404930526-32119-3-git-send-email-will.deacon@arm.com>
 References: <1404930526-32119-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,36 +22,177 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Some IOMMUs, such as the ARM SMMU, support two stages of translation.
-The idea behind such a scheme is to allow a guest operating system to
-use the IOMMU for DMA mappings in the first stage of translation, with
-the hypervisor then installing mappings in the second stage to provide
-isolation of the DMA to the physical range assigned to that virtual
-machine.
+VFIO allows devices to be safely handed off to userspace by putting
+them behind an IOMMU configured to ensure DMA and interrupt isolation.
+This enables userspace KVM clients, such as kvmtool and qemu, to further
+map the device into a virtual machine.
 
-In order to allow IOMMU domains to be used for second-stage translation,
-this patch adds a new iommu_attr (IOMMU_ATTR_NESTING) for setting
-second-stage domains prior to device attach. The attribute can also be
-queried to see if a domain is actually making use of nesting.
+With IOMMUs such as the ARM SMMU, it is then possible to provide SMMU
+translation services to the guest operating system, which are nested
+with the existing translation installed by VFIO. However, enabling this
+feature means that the IOMMU driver must be informed that the VFIO domain
+is being created for the purposes of nested translation.
+
+This patch adds a new IOMMU type (VFIO_TYPE1_NESTING_IOMMU) to the VFIO
+type-1 driver. The new IOMMU type acts identically to the
+VFIO_TYPE1v2_IOMMU type, but additionally sets the DOMAIN_ATTR_NESTING
+attribute on its IOMMU domains. Userspace can check whether nesting is
+actually available using the VFIO_CHECK_EXTENSION ioctl, in a similar
+manner to checking for cache-coherent DMA.
 
 Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- include/linux/iommu.h | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/vfio/vfio_iommu_type1.c | 56 +++++++++++++++++++++++++++++++++++------
+ include/uapi/linux/vfio.h       |  2 ++
+ 2 files changed, 51 insertions(+), 7 deletions(-)
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index b96a5b2136e4..0550286df49b 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -80,6 +80,7 @@ enum iommu_attr {
- 	DOMAIN_ATTR_FSL_PAMU_STASH,
- 	DOMAIN_ATTR_FSL_PAMU_ENABLE,
- 	DOMAIN_ATTR_FSL_PAMUV1,
-+	DOMAIN_ATTR_NESTING,	/* two stages of translation */
- 	DOMAIN_ATTR_MAX,
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index 0734fbe5b651..24cfe69a3c83 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -53,11 +53,15 @@ module_param_named(disable_hugepages,
+ MODULE_PARM_DESC(disable_hugepages,
+ 		 "Disable VFIO IOMMU support for IOMMU hugepages.");
+ 
++/* Feature flags for VFIO Type-1 IOMMUs */
++#define VFIO_IOMMU_FEAT_V2	(1 << 0)
++#define VFIO_IOMMU_FEAT_NESTING	(1 << 1)
++
+ struct vfio_iommu {
+ 	struct list_head	domain_list;
+ 	struct mutex		lock;
+ 	struct rb_root		dma_list;
+-	bool v2;
++	int			features;
  };
  
+ struct vfio_domain {
+@@ -441,7 +445,7 @@ static int vfio_dma_do_unmap(struct vfio_iommu *iommu,
+ 	 * will only return success and a size of zero if there were no
+ 	 * mappings within the range.
+ 	 */
+-	if (iommu->v2) {
++	if (iommu->features & VFIO_IOMMU_FEAT_V2) {
+ 		dma = vfio_find_dma(iommu, unmap->iova, 0);
+ 		if (dma && dma->iova != unmap->iova) {
+ 			ret = -EINVAL;
+@@ -455,7 +459,8 @@ static int vfio_dma_do_unmap(struct vfio_iommu *iommu,
+ 	}
+ 
+ 	while ((dma = vfio_find_dma(iommu, unmap->iova, unmap->size))) {
+-		if (!iommu->v2 && unmap->iova > dma->iova)
++		if (!(iommu->features & VFIO_IOMMU_FEAT_V2) &&
++		    unmap->iova > dma->iova)
+ 			break;
+ 		unmapped += dma->size;
+ 		vfio_remove_dma(iommu, dma);
+@@ -671,7 +676,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 	struct vfio_group *group, *g;
+ 	struct vfio_domain *domain, *d;
+ 	struct bus_type *bus = NULL;
+-	int ret;
++	int ret, attr = 1;
+ 
+ 	mutex_lock(&iommu->lock);
+ 
+@@ -705,6 +710,9 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 		goto out_free;
+ 	}
+ 
++	if (iommu->features & VFIO_IOMMU_FEAT_NESTING)
++		iommu_domain_set_attr(domain->domain, DOMAIN_ATTR_NESTING, &attr);
++
+ 	ret = iommu_attach_group(domain->domain, iommu_group);
+ 	if (ret)
+ 		goto out_domain;
+@@ -818,9 +826,19 @@ done:
+ static void *vfio_iommu_type1_open(unsigned long arg)
+ {
+ 	struct vfio_iommu *iommu;
+-
+-	if (arg != VFIO_TYPE1_IOMMU && arg != VFIO_TYPE1v2_IOMMU)
++	int features = 0;
++
++	switch (arg) {
++	case VFIO_TYPE1_IOMMU:
++		break;
++	case VFIO_TYPE1_NESTING_IOMMU:
++		features |= VFIO_IOMMU_FEAT_NESTING;
++	case VFIO_TYPE1v2_IOMMU:
++		features |= VFIO_IOMMU_FEAT_V2;
++		break;
++	default:
+ 		return ERR_PTR(-EINVAL);
++	}
+ 
+ 	iommu = kzalloc(sizeof(*iommu), GFP_KERNEL);
+ 	if (!iommu)
+@@ -829,7 +847,7 @@ static void *vfio_iommu_type1_open(unsigned long arg)
+ 	INIT_LIST_HEAD(&iommu->domain_list);
+ 	iommu->dma_list = RB_ROOT;
+ 	mutex_init(&iommu->lock);
+-	iommu->v2 = (arg == VFIO_TYPE1v2_IOMMU);
++	iommu->features = features;
+ 
+ 	return iommu;
+ }
+@@ -875,6 +893,26 @@ static int vfio_domains_have_iommu_cache(struct vfio_iommu *iommu)
+ 	return ret;
+ }
+ 
++static int vfio_domains_have_iommu_nesting(struct vfio_iommu *iommu)
++{
++	struct vfio_domain *domain;
++	int ret = 1;
++
++	mutex_lock(&iommu->lock);
++	list_for_each_entry(domain, &iommu->domain_list, next) {
++		int nesting;
++
++		if (iommu_domain_get_attr(domain->domain, DOMAIN_ATTR_NESTING,
++					  &nesting) || !nesting) {
++			ret = 0;
++			break;
++		}
++	}
++	mutex_unlock(&iommu->lock);
++
++	return ret;
++}
++
+ static long vfio_iommu_type1_ioctl(void *iommu_data,
+ 				   unsigned int cmd, unsigned long arg)
+ {
+@@ -886,6 +924,10 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
+ 		case VFIO_TYPE1_IOMMU:
+ 		case VFIO_TYPE1v2_IOMMU:
+ 			return 1;
++		case VFIO_TYPE1_NESTING_IOMMU:
++			if (!iommu)
++				return 1;
++			return vfio_domains_have_iommu_nesting(iommu);
+ 		case VFIO_DMA_CC_IOMMU:
+ 			if (!iommu)
+ 				return 0;
+diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+index cb9023d4f063..babcb33a2756 100644
+--- a/include/uapi/linux/vfio.h
++++ b/include/uapi/linux/vfio.h
+@@ -24,11 +24,13 @@
+ #define VFIO_TYPE1_IOMMU		1
+ #define VFIO_SPAPR_TCE_IOMMU		2
+ #define VFIO_TYPE1v2_IOMMU		3
++
+ /*
+  * IOMMU enforces DMA cache coherence (ex. PCIe NoSnoop stripping).  This
+  * capability is subject to change as groups are added or removed.
+  */
+ #define VFIO_DMA_CC_IOMMU		4
++#define VFIO_TYPE1_NESTING_IOMMU	5	/* Implies v2 */
+ 
+ /*
+  * The IOCTL interface is designed for extensibility by embedding the
 -- 
 2.0.0
