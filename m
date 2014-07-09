@@ -1,78 +1,71 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
-Date: Wed, 9 Jul 2014 11:54:41 +0100
-Message-ID: <20140709105441.GE9485@arm.com>
-References: <4545972.cM7IP1qTXQ@wuerfel>
- <53A4C0C9.2050908@codeaurora.org>
- <20140624091808.GC26013@arm.com>
- <53A9BC18.2090106@codeaurora.org>
- <20140624181150.GB4067@arm.com>
- <53A9EF3A.2070704@codeaurora.org>
- <20140625091858.GG6153@arm.com>
- <53ADEEDF.7060902@codeaurora.org>
- <20140630095220.GA25779@arm.com>
- <53BC95DA.1010500@codeaurora.org>
+Subject: Re: [PATCH 2/5] iommu/arm-smmu: add support for PCI master devices
+Date: Wed, 9 Jul 2014 14:26:53 +0100
+Message-ID: <20140709132653.GM9485@arm.com>
+References: <1404125530-17984-1-git-send-email-will.deacon@arm.com>
+	<1404125530-17984-3-git-send-email-will.deacon@arm.com>
+	<a9de518782874b5c8ddd366e6617b8de@BL2PR03MB468.namprd03.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <53BC95DA.1010500-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Hiroshi
+In-Reply-To: <a9de518782874b5c8ddd366e6617b8de-AZ66ij2kwaacCcN9WK45f+O6mTEJWrR4XA4E9RH9d+qIuWR1G4zioA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jul 09, 2014 at 02:07:38AM +0100, Olav Haugan wrote:
-> On 6/30/2014 2:52 AM, Will Deacon wrote:
-> > On Fri, Jun 27, 2014 at 11:23:27PM +0100, Olav Haugan wrote:
-> >> Lets say I have an IOMMU with 2 masters and 2 SMRn slots with the
-> >> following stream IDs coming from the masters:
-> >>
-> >> Master 1: 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28
-> >> Master 2: 0x30
-> >>
-> >> To make this work I would program SMR[0] with StreamID 0x20 and mask 0xF
-> >> to ignore lower 4 bits. SMR[1] would just be StreamID 0x30 with mask 0x0.
-> >>
-> >> However, I could also have an IOMMU with 2 masters and 9 SMRn slots with
-> >> the following stream IDs:
-> >>
-> >> Master 1: 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28
-> >> Master 2: 0x29
-> >>
-> >> Here I would program all SMRn and leave the mask to be 0 for all SMRn's.
-> >> So how do I detect when to apply a mask or not?
-> > 
-> > You would aim to use the smallest number of SMRs per master possible.
-> > You could probably use:
-> > 
-> >   Master 1: SMR[0].id == 0x20, SMR[0].mask = 0x07
-> >             SMR[1].id == 0x28, SMR[1].mask = 0x00
-> > 
-> >   Master 2: SMR[2].id == 0x29, SMR[2].mask = 0x00
-> 
-> So how does an algorithm figure this out in both my examples? The
-> algorithm would have to know about both (all) bus masters and their
-> stream IDs for a specific SMMU. If the algorithm operates on the set of
-> stream IDs for one bus master at a time the algorithm has no way of
-> knowing which bits can be ignored since it doesn't know the value of the
-> other stream IDs for the other bus masters and thus could potentially
-> create a mask that could cause a stream ID to match in two different
-> entries.
+[Adding Alex; question below]
 
-Complete knowledge of the system topology (i.e. all bus masters) is a
-requirement for being able to configure the SMMU correctly if you want to
-guarantee that you don't have SMR aliasing issues.
+On Thu, Jul 03, 2014 at 03:22:37PM +0100, Varun Sethi wrote:
+> > +static int __arm_smmu_get_pci_sid(struct pci_dev *pdev, u16 alias, void
+> > +*data) {
+> > +     *((u16 *)data) = alias;
+> > +     return 0; /* Continue walking */
+> > +}
 
-> >> I am not familiar with Andreas's proposal. Do you have a link?
-> > 
-> >   http://marc.info/?l=linux-arm-kernel&m=139110598005846&w=2
-> 
-> Unless I am mistaken the algorithm works on one bus master at a time. I
-> don't think that will work.
+[...]
 
-IIRC, it works for densely packed SIDs on the master, so it tries to build
-up power-of-2 sized groups for that master then mops up the rest with
-individual entries.
+> > @@ -1598,15 +1642,36 @@ static int arm_smmu_add_device(struct device
+> > *dev)
+> >               return PTR_ERR(group);
+> >       }
+> >
+> > +     if (dev_is_pci(dev)) {
+> > +             struct arm_smmu_master_cfg *cfg;
+> > +             struct pci_dev *pdev = to_pci_dev(dev);
+> > +
+> > +             cfg = kzalloc(sizeof(*cfg), GFP_KERNEL);
+> > +             if (!cfg) {
+> > +                     ret = -ENOMEM;
+> > +                     goto out_put_group;
+> > +             }
+> > +
+> > +             cfg->num_streamids = 1;
+> > +             pci_for_each_dma_alias(pdev, __arm_smmu_get_pci_sid,
+> > +                                    &cfg->streamids[0]);
+> [Sethi Varun-B16395] We need to look for upstream DMA device. We should be
+> using pci_find_dma_isolation_root here. Also, this would also imply that
+> there could be multiple devices sharing the same stream ID. So, we should
+> check if a particular stream ID value has already been configured in the
+> SMR registers.
+
+pci_find_dma_isolation_root doesn't exist in any of the trees I have. Alex,
+is this queued anywhere and do I actually need it?
+
+The purpose of this code is to find the requester ID of a device as it
+appears at the host controller. At this point, we can map it (via firmware
+tables that are TBD) to a Stream ID for the SMMU. It looks to me like
+pci_for_each_dma_alias walks over non-transparent PCI bridges correctly, so
+the callback I provide just updates the alias until the walk has completed.
 
 Will
