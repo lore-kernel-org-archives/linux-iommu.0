@@ -1,91 +1,89 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v4] devicetree: Add generic IOMMU device tree bindings
-Date: Wed, 9 Jul 2014 16:21:27 +0200
-Message-ID: <20140709142125.GB3262@ulmo>
-References: <1404487757-18829-1-git-send-email-thierry.reding@gmail.com>
- <20140709134050.GN9485@arm.com>
+From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 1/3] PCI/MSI: Add pci_enable_msi_partial()
+Date: Wed, 9 Jul 2014 10:06:48 -0600
+Message-ID: <CAErSpo4oiabgoOjsGdWZpCMPnmopK4xRzB2f3tM0AiUFrdhFww@mail.gmail.com>
+References: <cover.1402405331.git.agordeev@redhat.com>
+	<4fef62a2e647a7c38e9f2a1ea4244b3506a85e2b.1402405331.git.agordeev@redhat.com>
+	<20140702202201.GA28852@google.com>
+	<20140704085741.GA12247@dhcp-26-207.brq.redhat.com>
+	<CAErSpo6f6RXWv0DEtLBZX0jXoSUYJeWrSm7mubSJ_F-O7tQp6w@mail.gmail.com>
+	<20140708122606.GB6270@dhcp-26-207.brq.redhat.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="IrhDeMKUP4DT/M7F"
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20140709134050.GN9485-5wv7dgnIgG8@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Varun Sethi <varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TZNg+MwTxZMZA@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20140708122606.GB6270-hdGaXg0bp3uRXgp2RCiI5R/sF2h8X+2i0E9HWUfgJXw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alexander Gordeev <agordeev-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org" <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, "linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org" <xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org>, linuxppc-dev <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+On Tue, Jul 8, 2014 at 6:26 AM, Alexander Gordeev <agordeev-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+> On Mon, Jul 07, 2014 at 01:40:48PM -0600, Bjorn Helgaas wrote:
+>> >> Can you quantify the benefit of this?  Can't a device already use
+>> >> MSI-X to request exactly the number of vectors it can use?  (I know
+>> >
+>> > A Intel AHCI chipset requires 16 vectors written to MME while advertises
+>> > (via AHCI registers) and uses only 6. Even attempt to init 8 vectors results
+>> > in device's fallback to 1 (!).
+>>
+>> Is the fact that it uses only 6 vectors documented in the public spec?
+>
+> Yes, it is documented in ICH specs.
 
---IrhDeMKUP4DT/M7F
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Out of curiosity, do you have a pointer to this?  It looks like it
+uses one vector per port, and I'm wondering if the reason it requests
+16 is because there's some possibility of a part with more than 8
+ports.
 
-On Wed, Jul 09, 2014 at 02:40:50PM +0100, Will Deacon wrote:
-> On Fri, Jul 04, 2014 at 04:29:17PM +0100, Thierry Reding wrote:
-> > From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> >=20
-> > This commit introduces a generic device tree binding for IOMMU devices.
-> > Only a very minimal subset is described here, but it is enough to cover
-> > the requirements of both the Exynos System MMU and Tegra SMMU as
-> > discussed here:
-> >=20
-> >     https://lkml.org/lkml/2014/4/27/346
-> >=20
-> > Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
->=20
->   Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
->=20
-> I would like to move the ARM SMMU driver over to this for 3.18, if possib=
-le.
-> One use-case there is the ability to describe groups of masters behind a
-> multi-master IOMMU but which must be part of the same domain (i.e. an
-> iommu_group). This is useful for presenting devices to a guest with a
-> virtual SMMU, where the physical devices share a stage-2 context.
->=20
-> With your binding, does this simply mean determining the set of master IDs
-> in the group, then describing the complete set for each master?
+>> Is this a chipset erratum?  Are there newer versions of the chipset
+>> that fix this, e.g., by requesting 8 vectors and using 6, or by also
+>> supporting MSI-X?
+>
+> No, this is not an erratum. The value of 8 vectors is reserved and could
+> cause undefined results if used.
 
-I'm not sure I properly understand what you're trying to do, but I don't
-think the binding is designed to cover that. Rather the goal was to
-describe the IDs belonging to each master, so that an IOMMU can be
-properly configured.
+As I read the spec (PCI 3.0, sec 6.8.1.3), if MMC contains 0b100
+(requesting 16 vectors), the OS is allowed to allocate 1, 2, 4, 8, or
+16 vectors.  If allocating 8 vectors and writing 0b011 to MME causes
+undefined results, I'd say that's a chipset defect.
 
-Anything beyond that (e.g. logical grouping of masters) isn't directly
-within the scope of the binding (it doesn't describe hardware but some
-policy pertaining to some specific use-case).
+>> I know this conserves vector numbers.  What does that mean in real
+>> user-visible terms?  Are there systems that won't boot because of this
+>> issue, and this patch fixes them?  Does it enable bigger
+>> configurations, e.g., more I/O devices, than before?
+>
+> Visibly, it ceases logging messages ('ahci 0000:00:1f.2: irq 107 for
+> MSI/MSI-X') for IRQs that are not shown in /proc/interrupts later.
+>
+> No, it does not enable/fix any existing hardware issue I am aware of.
+> It just saves a couple of interrupt vectors, as Michael put it (10/16
+> to be precise). However, interrupt vectors space is pretty much scarce
+> resource on x86 and a risk of exhausting the vectors (and introducing
+> quota i.e) has already been raised AFAIR.
 
-That said, the IOMMU driver that I prototyped for Tegra did some similar
-grouping of devices, although in a much more restricted way. The goal of
-that was to add a known set of devices into one group, "peripherals", so
-that they could share one IOMMU domain. This was meant to separate them
-=66rom devices with more advanced needs (such as a GPU driver). Devices in
-the "peripherals" group would be using the DMA mapping API integration
-whereas other devices would have to explicitly allocate an IOMMU domain.
+I'm not too concerned about the logging issue.  If necessary, we could
+tweak that message somehow.
 
-I'm not sure how much that helps for the use-case that you have in mind.
+Interrupt vector space is the issue I would worry about, but I think
+I'm going to put this on the back burner until it actually becomes a
+problem.
 
-Thierry
+>> Do you know how Windows handles this?  Does it have a similar interface?
+>
+> Have no clue, TBH. Can try to investigate if you see it helpful.
 
---IrhDeMKUP4DT/M7F
-Content-Type: application/pgp-signature
+No, don't worry about investigating.  I was just curious because if
+Windows *did* support something like this, that would be an indication
+that there's a significant problem here and we might need to solve it,
+too.  But it sounds like we can safely ignore it for now.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJTvU/lAAoJEN0jrNd/PrOhN50P/1dI3aJhI4/+i6WX1nsXpCN2
-8VcmnlCJHdY1rmynJNk3WMEAepjVM6DRhDykwpPGRTD226yJWbiIfyIo53+yyx4a
-A4RjJKluaIfGL0bnlN/cg3lafoh3GwEkahTEPjhOHD8DgvYJNWu6ziojbaUplC9D
-V/UgfqHWtKrrxlum0nNJb8ObdJS/ef7RxAKLN08DMbZJe162Q+FNU/dMEQiueoJ8
-+dGtEM27qP9+XMvgpeiqynyXTnc+/ZyTNQsrZuhwqHyhd3C0ey3aBQ0BF0Z2u4Yg
-ok//PUQcCYgL3mQaK0Ev2zlcHKwXIqt7HiSlIluzKXSPXvx/CUuEXaIjgzceWse8
-9VZ1HmPnTW/UKlcvDdrG9GFtsXTZ9H4p/JGYbTsPM1+Ffc7wzwcKoXrqWigkd9iH
-KdYT3ZsYD/rqz2BrR+8twQJRgFqjku55vu4tojNNs0tt4s5u1RWqbF/9e/y8tPIb
-oM+tLOAsesyBcjlUeYogjT02XHh7SqWg8dSQFm+fMjmlbX6t4nuGCrJrVvSFBJtf
-BwRVX0bA1NM19ybK02GSeTgEOHyQUsQJ0tbkNF/RvYUvqEaXFShhDYZrLxSEk/j3
-WoUhqKO48NvyWMlonaCwMM3DswiJX4raer6gbNUNXhSSSDIl+WQitkhqx81cKIQP
-bdnXlao7qtH18ZygWVGj
-=Hh+x
------END PGP SIGNATURE-----
-
---IrhDeMKUP4DT/M7F--
+Bjorn
