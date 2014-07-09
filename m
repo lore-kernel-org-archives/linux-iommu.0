@@ -1,74 +1,186 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v4] devicetree: Add generic IOMMU device tree bindings
-Date: Wed, 9 Jul 2014 19:10:48 +0100
-Message-ID: <20140709181048.GX9485@arm.com>
-References: <1404487757-18829-1-git-send-email-thierry.reding@gmail.com>
- <20140709134050.GN9485@arm.com>
- <20140709142125.GB3262@ulmo>
+Subject: [RFC PATCHv2 3/3] iommu/arm-smmu: add support for DOMAIN_ATTR_NESTING
+	attribute
+Date: Wed,  9 Jul 2014 19:28:46 +0100
+Message-ID: <1404930526-32119-4-git-send-email-will.deacon@arm.com>
+References: <1404930526-32119-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20140709142125.GB3262@ulmo>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Varun Sethi <varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TZNg+MwTxZMZA@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1404930526-32119-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Thierry,
+When domains are set with the DOMAIN_ATTR_NESTING flag, we must ensure
+that we allocate them to stage-2 context banks if the hardware permits
+it.
 
-On Wed, Jul 09, 2014 at 03:21:27PM +0100, Thierry Reding wrote:
-> On Wed, Jul 09, 2014 at 02:40:50PM +0100, Will Deacon wrote:
-> > I would like to move the ARM SMMU driver over to this for 3.18, if possible.
-> > One use-case there is the ability to describe groups of masters behind a
-> > multi-master IOMMU but which must be part of the same domain (i.e. an
-> > iommu_group). This is useful for presenting devices to a guest with a
-> > virtual SMMU, where the physical devices share a stage-2 context.
-> > 
-> > With your binding, does this simply mean determining the set of master IDs
-> > in the group, then describing the complete set for each master?
-> 
-> I'm not sure I properly understand what you're trying to do, but I don't
-> think the binding is designed to cover that. Rather the goal was to
-> describe the IDs belonging to each master, so that an IOMMU can be
-> properly configured.
+This patch adds support for the attribute to the ARM SMMU driver, with
+the actual stage being determined depending on the features supported
+by the hardware.
 
-This is directly related to that problem, see below.
+Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+---
+ drivers/iommu/arm-smmu.c | 112 ++++++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 92 insertions(+), 20 deletions(-)
 
-> Anything beyond that (e.g. logical grouping of masters) isn't directly
-> within the scope of the binding (it doesn't describe hardware but some
-> policy pertaining to some specific use-case).
-
-This *is* for hardware. I can use PCI as an example, but this could equally
-apply to other types of bus. If you have a bunch of PCI master devices
-sitting being a non-transparent bridge, they can end up sharing the same
-master device ID (requester ID). This means that there is no way in the
-IOMMU to initialise a translation for one of these devices without also
-affecting the others. We currently have iommu_groups to deal with this, but
-it *is* a property of the hardware and we absolutely need a way to describe
-it. I'm happy to add it later, but we need to think about it now to avoid
-merging something that can't easily be extended.
-
-For PCI, the topology is probable but even then, we need this information to
-describe the resulting master device ID emitted by the bridge for the
-upstream group. One way to do this with your binding would be to treat all
-of the upstream masters as having the same device ID.
-
-With virtualisation, we may want to assign a group of devices to a guest but
-without emulating the bridge. This would need something the device-tree to
-describe that they are grouped together.
-
-> That said, the IOMMU driver that I prototyped for Tegra did some similar
-> grouping of devices, although in a much more restricted way. The goal of
-> that was to add a known set of devices into one group, "peripherals", so
-> that they could share one IOMMU domain. This was meant to separate them
-> from devices with more advanced needs (such as a GPU driver). Devices in
-> the "peripherals" group would be using the DMA mapping API integration
-> whereas other devices would have to explicitly allocate an IOMMU domain.
-> 
-> I'm not sure how much that helps for the use-case that you have in mind.
-
-That sounds more like a software decision, which I agree doesn't need to be
-described.
-
-Will
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index f3f66416e252..7d4bac59129b 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -391,9 +391,16 @@ struct arm_smmu_cfg {
+ #define ARM_SMMU_CB_ASID(cfg)		((cfg)->cbndx)
+ #define ARM_SMMU_CB_VMID(cfg)		((cfg)->cbndx + 1)
+ 
++enum arm_smmu_domain_stage {
++	ARM_SMMU_DOMAIN_S1 = 0,
++	ARM_SMMU_DOMAIN_S2,
++	ARM_SMMU_DOMAIN_NESTED,
++};
++
+ struct arm_smmu_domain {
+ 	struct arm_smmu_device		*smmu;
+ 	struct arm_smmu_cfg		cfg;
++	enum arm_smmu_domain_stage	stage;
+ 	spinlock_t			lock;
+ };
+ 
+@@ -872,19 +879,48 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 	struct arm_smmu_domain *smmu_domain = domain->priv;
+ 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+ 
+-	if (smmu->features & ARM_SMMU_FEAT_TRANS_NESTED) {
++	/*
++	 * Mapping the requested stage onto what we support is surprisingly
++	 * complicated, mainly because the spec allows S1+S2 SMMUs without
++	 * support for nested translation. That means we end up with the
++	 * following table:
++	 *
++	 * Requested        Supported        Actual
++	 *     S1               N              S1
++	 *     S1             S1+S2            S1
++	 *     S1               S2             S2
++	 *     S1               S1             S1
++	 *     N                N              N
++	 *     N              S1+S2            S2
++	 *     N                S2             S2
++	 *     N                S1             S1
++	 *
++	 * Note that you can't actually request stage-2 mappings.
++	 */
++	if (!(smmu->features & ARM_SMMU_FEAT_TRANS_S1))
++		smmu_domain->stage = ARM_SMMU_DOMAIN_S2;
++	if (!(smmu->features & ARM_SMMU_FEAT_TRANS_S2))
++		smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
++	if (!(smmu->features & ARM_SMMU_FEAT_TRANS_NESTED) &&
++	    smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED)
++		smmu_domain->stage = ARM_SMMU_DOMAIN_S2;
++
++	switch (smmu_domain->stage) {
++	case ARM_SMMU_DOMAIN_S1:
++		cfg->cbar = CBAR_TYPE_S1_TRANS_S2_BYPASS;
++		start = smmu->num_s2_context_banks;
++		break;
++	case ARM_SMMU_DOMAIN_NESTED:
+ 		/*
+ 		 * We will likely want to change this if/when KVM gets
+ 		 * involved.
+ 		 */
+-		cfg->cbar = CBAR_TYPE_S1_TRANS_S2_BYPASS;
+-		start = smmu->num_s2_context_banks;
+-	} else if (smmu->features & ARM_SMMU_FEAT_TRANS_S1) {
+-		cfg->cbar = CBAR_TYPE_S1_TRANS_S2_BYPASS;
+-		start = smmu->num_s2_context_banks;
+-	} else {
++	case ARM_SMMU_DOMAIN_S2:
+ 		cfg->cbar = CBAR_TYPE_S2_TRANS;
+ 		start = 0;
++		break;
++	default:
++		return -EINVAL;
+ 	}
+ 
+ 	ret = __arm_smmu_alloc_bitmap(smmu->context_map, start,
+@@ -1597,20 +1633,56 @@ static void arm_smmu_remove_device(struct device *dev)
+ 	iommu_group_remove_device(dev);
+ }
+ 
++static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
++				    enum iommu_attr attr, void *data)
++{
++	struct arm_smmu_domain *smmu_domain = domain->priv;
++
++	switch (attr) {
++	case DOMAIN_ATTR_NESTING:
++		*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
++		return 0;
++	default:
++		return -ENODEV;
++	}
++}
++
++static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
++				    enum iommu_attr attr, void *data)
++{
++	struct arm_smmu_domain *smmu_domain = domain->priv;
++
++	switch (attr) {
++	case DOMAIN_ATTR_NESTING:
++		if (smmu_domain->smmu)
++			return -EPERM;
++		if (*(int *)data)
++			smmu_domain->stage = ARM_SMMU_DOMAIN_NESTED;
++		else
++			smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
++
++		return 0;
++	default:
++		return -ENODEV;
++	}
++}
++
+ static struct iommu_ops arm_smmu_ops = {
+-	.domain_init	= arm_smmu_domain_init,
+-	.domain_destroy	= arm_smmu_domain_destroy,
+-	.attach_dev	= arm_smmu_attach_dev,
+-	.detach_dev	= arm_smmu_detach_dev,
+-	.map		= arm_smmu_map,
+-	.unmap		= arm_smmu_unmap,
+-	.iova_to_phys	= arm_smmu_iova_to_phys,
+-	.domain_has_cap	= arm_smmu_domain_has_cap,
+-	.add_device	= arm_smmu_add_device,
+-	.remove_device	= arm_smmu_remove_device,
+-	.pgsize_bitmap	= (SECTION_SIZE |
+-			   ARM_SMMU_PTE_CONT_SIZE |
+-			   PAGE_SIZE),
++	.domain_init		= arm_smmu_domain_init,
++	.domain_destroy		= arm_smmu_domain_destroy,
++	.attach_dev		= arm_smmu_attach_dev,
++	.detach_dev		= arm_smmu_detach_dev,
++	.map			= arm_smmu_map,
++	.unmap			= arm_smmu_unmap,
++	.iova_to_phys		= arm_smmu_iova_to_phys,
++	.domain_has_cap		= arm_smmu_domain_has_cap,
++	.add_device		= arm_smmu_add_device,
++	.remove_device		= arm_smmu_remove_device,
++	.domain_get_attr	= arm_smmu_domain_get_attr,
++	.domain_set_attr	= arm_smmu_domain_set_attr,
++	.pgsize_bitmap		= (SECTION_SIZE |
++				   ARM_SMMU_PTE_CONT_SIZE |
++				   PAGE_SIZE),
+ };
+ 
+ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+-- 
+2.0.0
