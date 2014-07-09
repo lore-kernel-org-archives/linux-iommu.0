@@ -1,18 +1,18 @@
-From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/3] PCI/MSI: Add pci_enable_msi_partial()
-Date: Wed, 9 Jul 2014 10:06:48 -0600
-Message-ID: <CAErSpo4oiabgoOjsGdWZpCMPnmopK4xRzB2f3tM0AiUFrdhFww@mail.gmail.com>
-References: <cover.1402405331.git.agordeev@redhat.com>
-	<4fef62a2e647a7c38e9f2a1ea4244b3506a85e2b.1402405331.git.agordeev@redhat.com>
-	<20140702202201.GA28852@google.com>
-	<20140704085741.GA12247@dhcp-26-207.brq.redhat.com>
-	<CAErSpo6f6RXWv0DEtLBZX0jXoSUYJeWrSm7mubSJ_F-O7tQp6w@mail.gmail.com>
-	<20140708122606.GB6270@dhcp-26-207.brq.redhat.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 2/5] iommu/arm-smmu: add support for PCI master devices
+Date: Wed, 9 Jul 2014 17:39:17 +0100
+Message-ID: <20140709163917.GU9485@arm.com>
+References: <1404125530-17984-1-git-send-email-will.deacon@arm.com>
+	<1404125530-17984-3-git-send-email-will.deacon@arm.com>
+	<a9de518782874b5c8ddd366e6617b8de@BL2PR03MB468.namprd03.prod.outlook.com>
+	<20140709132653.GM9485@arm.com>
+	<1404915184.4256.160.camel@ul30vt.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140708122606.GB6270-hdGaXg0bp3uRXgp2RCiI5R/sF2h8X+2i0E9HWUfgJXw@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1404915184.4256.160.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,68 +22,70 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alexander Gordeev <agordeev-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org" <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, "linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org" <xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org>, linuxppc-dev <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jul 8, 2014 at 6:26 AM, Alexander Gordeev <agordeev-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> On Mon, Jul 07, 2014 at 01:40:48PM -0600, Bjorn Helgaas wrote:
->> >> Can you quantify the benefit of this?  Can't a device already use
->> >> MSI-X to request exactly the number of vectors it can use?  (I know
->> >
->> > A Intel AHCI chipset requires 16 vectors written to MME while advertises
->> > (via AHCI registers) and uses only 6. Even attempt to init 8 vectors results
->> > in device's fallback to 1 (!).
->>
->> Is the fact that it uses only 6 vectors documented in the public spec?
->
-> Yes, it is documented in ICH specs.
+On Wed, Jul 09, 2014 at 03:13:04PM +0100, Alex Williamson wrote:
+> On Wed, 2014-07-09 at 14:26 +0100, Will Deacon wrote:
+> > [Adding Alex; question below]
+> > 
+> > On Thu, Jul 03, 2014 at 03:22:37PM +0100, Varun Sethi wrote:
+> > > > +static int __arm_smmu_get_pci_sid(struct pci_dev *pdev, u16 alias, void
+> > > > +*data) {
+> > > > +     *((u16 *)data) = alias;
+> > > > +     return 0; /* Continue walking */
+> > > > +}
+> > 
+> > [...]
+> > 
+> > > > @@ -1598,15 +1642,36 @@ static int arm_smmu_add_device(struct device
+> > > > *dev)
+> > > >               return PTR_ERR(group);
+> > > >       }
+> > > >
+> > > > +     if (dev_is_pci(dev)) {
+> > > > +             struct arm_smmu_master_cfg *cfg;
+> > > > +             struct pci_dev *pdev = to_pci_dev(dev);
+> > > > +
+> > > > +             cfg = kzalloc(sizeof(*cfg), GFP_KERNEL);
+> > > > +             if (!cfg) {
+> > > > +                     ret = -ENOMEM;
+> > > > +                     goto out_put_group;
+> > > > +             }
+> > > > +
+> > > > +             cfg->num_streamids = 1;
+> > > > +             pci_for_each_dma_alias(pdev, __arm_smmu_get_pci_sid,
+> > > > +                                    &cfg->streamids[0]);
+> > > [Sethi Varun-B16395] We need to look for upstream DMA device. We should be
+> > > using pci_find_dma_isolation_root here. Also, this would also imply that
+> > > there could be multiple devices sharing the same stream ID. So, we should
+> > > check if a particular stream ID value has already been configured in the
+> > > SMR registers.
+> > 
+> > pci_find_dma_isolation_root doesn't exist in any of the trees I have. Alex,
+> > is this queued anywhere and do I actually need it?
+> 
+> That function was in the v3 DMA alias series, in v4 it got replaced.
+> iommu_group_get_for_pci_dev() is the common function for finding or
+> creating a group for a device and pci_for_each_dma_alias() is the
+> interface to walk each alias in a PCI topology.  The pci_ interface is
+> in 3.16-rc and the iommu_ pieces are current in next via the iommu tree.
 
-Out of curiosity, do you have a pointer to this?  It looks like it
-uses one vector per port, and I'm wondering if the reason it requests
-16 is because there's some possibility of a part with more than 8
-ports.
+Cheers, Alex. I'll move my driver to using iommu_group_get_for_pci_dev once
+that's hit mainline (since I currently put each master into its own group).
 
->> Is this a chipset erratum?  Are there newer versions of the chipset
->> that fix this, e.g., by requesting 8 vectors and using 6, or by also
->> supporting MSI-X?
->
-> No, this is not an erratum. The value of 8 vectors is reserved and could
-> cause undefined results if used.
+> > The purpose of this code is to find the requester ID of a device as it
+> > appears at the host controller. At this point, we can map it (via firmware
+> > tables that are TBD) to a Stream ID for the SMMU. It looks to me like
+> > pci_for_each_dma_alias walks over non-transparent PCI bridges correctly, so
+> > the callback I provide just updates the alias until the walk has completed.
+> 
+> Yep, that's the intended usage.  There are cases in VT-d where it wants
+> to add context entries for every alias and cases elsewhere that we just
+> want the final alias.  pci_for_each_dma_alias() is meant to fit both use
+> cases.  Thanks,
 
-As I read the spec (PCI 3.0, sec 6.8.1.3), if MMC contains 0b100
-(requesting 16 vectors), the OS is allowed to allocate 1, 2, 4, 8, or
-16 vectors.  If allocating 8 vectors and writing 0b011 to MME causes
-undefined results, I'd say that's a chipset defect.
+Cracking, cheers for confirming.
 
->> I know this conserves vector numbers.  What does that mean in real
->> user-visible terms?  Are there systems that won't boot because of this
->> issue, and this patch fixes them?  Does it enable bigger
->> configurations, e.g., more I/O devices, than before?
->
-> Visibly, it ceases logging messages ('ahci 0000:00:1f.2: irq 107 for
-> MSI/MSI-X') for IRQs that are not shown in /proc/interrupts later.
->
-> No, it does not enable/fix any existing hardware issue I am aware of.
-> It just saves a couple of interrupt vectors, as Michael put it (10/16
-> to be precise). However, interrupt vectors space is pretty much scarce
-> resource on x86 and a risk of exhausting the vectors (and introducing
-> quota i.e) has already been raised AFAIR.
-
-I'm not too concerned about the logging issue.  If necessary, we could
-tweak that message somehow.
-
-Interrupt vector space is the issue I would worry about, but I think
-I'm going to put this on the back burner until it actually becomes a
-problem.
-
->> Do you know how Windows handles this?  Does it have a similar interface?
->
-> Have no clue, TBH. Can try to investigate if you see it helpful.
-
-No, don't worry about investigating.  I was just curious because if
-Windows *did* support something like this, that would be an indication
-that there's a significant problem here and we might need to solve it,
-too.  But it sounds like we can safely ignore it for now.
-
-Bjorn
+Will
