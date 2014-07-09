@@ -1,91 +1,74 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 2/5] iommu/arm-smmu: add support for PCI master devices
-Date: Wed, 9 Jul 2014 17:39:17 +0100
-Message-ID: <20140709163917.GU9485@arm.com>
-References: <1404125530-17984-1-git-send-email-will.deacon@arm.com>
-	<1404125530-17984-3-git-send-email-will.deacon@arm.com>
-	<a9de518782874b5c8ddd366e6617b8de@BL2PR03MB468.namprd03.prod.outlook.com>
-	<20140709132653.GM9485@arm.com>
-	<1404915184.4256.160.camel@ul30vt.home>
+Subject: Re: [PATCH v4] devicetree: Add generic IOMMU device tree bindings
+Date: Wed, 9 Jul 2014 19:10:48 +0100
+Message-ID: <20140709181048.GX9485@arm.com>
+References: <1404487757-18829-1-git-send-email-thierry.reding@gmail.com>
+ <20140709134050.GN9485@arm.com>
+ <20140709142125.GB3262@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1404915184.4256.160.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <20140709142125.GB3262@ulmo>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Varun Sethi <varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TZNg+MwTxZMZA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jul 09, 2014 at 03:13:04PM +0100, Alex Williamson wrote:
-> On Wed, 2014-07-09 at 14:26 +0100, Will Deacon wrote:
-> > [Adding Alex; question below]
+Hi Thierry,
+
+On Wed, Jul 09, 2014 at 03:21:27PM +0100, Thierry Reding wrote:
+> On Wed, Jul 09, 2014 at 02:40:50PM +0100, Will Deacon wrote:
+> > I would like to move the ARM SMMU driver over to this for 3.18, if possible.
+> > One use-case there is the ability to describe groups of masters behind a
+> > multi-master IOMMU but which must be part of the same domain (i.e. an
+> > iommu_group). This is useful for presenting devices to a guest with a
+> > virtual SMMU, where the physical devices share a stage-2 context.
 > > 
-> > On Thu, Jul 03, 2014 at 03:22:37PM +0100, Varun Sethi wrote:
-> > > > +static int __arm_smmu_get_pci_sid(struct pci_dev *pdev, u16 alias, void
-> > > > +*data) {
-> > > > +     *((u16 *)data) = alias;
-> > > > +     return 0; /* Continue walking */
-> > > > +}
-> > 
-> > [...]
-> > 
-> > > > @@ -1598,15 +1642,36 @@ static int arm_smmu_add_device(struct device
-> > > > *dev)
-> > > >               return PTR_ERR(group);
-> > > >       }
-> > > >
-> > > > +     if (dev_is_pci(dev)) {
-> > > > +             struct arm_smmu_master_cfg *cfg;
-> > > > +             struct pci_dev *pdev = to_pci_dev(dev);
-> > > > +
-> > > > +             cfg = kzalloc(sizeof(*cfg), GFP_KERNEL);
-> > > > +             if (!cfg) {
-> > > > +                     ret = -ENOMEM;
-> > > > +                     goto out_put_group;
-> > > > +             }
-> > > > +
-> > > > +             cfg->num_streamids = 1;
-> > > > +             pci_for_each_dma_alias(pdev, __arm_smmu_get_pci_sid,
-> > > > +                                    &cfg->streamids[0]);
-> > > [Sethi Varun-B16395] We need to look for upstream DMA device. We should be
-> > > using pci_find_dma_isolation_root here. Also, this would also imply that
-> > > there could be multiple devices sharing the same stream ID. So, we should
-> > > check if a particular stream ID value has already been configured in the
-> > > SMR registers.
-> > 
-> > pci_find_dma_isolation_root doesn't exist in any of the trees I have. Alex,
-> > is this queued anywhere and do I actually need it?
+> > With your binding, does this simply mean determining the set of master IDs
+> > in the group, then describing the complete set for each master?
 > 
-> That function was in the v3 DMA alias series, in v4 it got replaced.
-> iommu_group_get_for_pci_dev() is the common function for finding or
-> creating a group for a device and pci_for_each_dma_alias() is the
-> interface to walk each alias in a PCI topology.  The pci_ interface is
-> in 3.16-rc and the iommu_ pieces are current in next via the iommu tree.
+> I'm not sure I properly understand what you're trying to do, but I don't
+> think the binding is designed to cover that. Rather the goal was to
+> describe the IDs belonging to each master, so that an IOMMU can be
+> properly configured.
 
-Cheers, Alex. I'll move my driver to using iommu_group_get_for_pci_dev once
-that's hit mainline (since I currently put each master into its own group).
+This is directly related to that problem, see below.
 
-> > The purpose of this code is to find the requester ID of a device as it
-> > appears at the host controller. At this point, we can map it (via firmware
-> > tables that are TBD) to a Stream ID for the SMMU. It looks to me like
-> > pci_for_each_dma_alias walks over non-transparent PCI bridges correctly, so
-> > the callback I provide just updates the alias until the walk has completed.
+> Anything beyond that (e.g. logical grouping of masters) isn't directly
+> within the scope of the binding (it doesn't describe hardware but some
+> policy pertaining to some specific use-case).
+
+This *is* for hardware. I can use PCI as an example, but this could equally
+apply to other types of bus. If you have a bunch of PCI master devices
+sitting being a non-transparent bridge, they can end up sharing the same
+master device ID (requester ID). This means that there is no way in the
+IOMMU to initialise a translation for one of these devices without also
+affecting the others. We currently have iommu_groups to deal with this, but
+it *is* a property of the hardware and we absolutely need a way to describe
+it. I'm happy to add it later, but we need to think about it now to avoid
+merging something that can't easily be extended.
+
+For PCI, the topology is probable but even then, we need this information to
+describe the resulting master device ID emitted by the bridge for the
+upstream group. One way to do this with your binding would be to treat all
+of the upstream masters as having the same device ID.
+
+With virtualisation, we may want to assign a group of devices to a guest but
+without emulating the bridge. This would need something the device-tree to
+describe that they are grouped together.
+
+> That said, the IOMMU driver that I prototyped for Tegra did some similar
+> grouping of devices, although in a much more restricted way. The goal of
+> that was to add a known set of devices into one group, "peripherals", so
+> that they could share one IOMMU domain. This was meant to separate them
+> from devices with more advanced needs (such as a GPU driver). Devices in
+> the "peripherals" group would be using the DMA mapping API integration
+> whereas other devices would have to explicitly allocate an IOMMU domain.
 > 
-> Yep, that's the intended usage.  There are cases in VT-d where it wants
-> to add context entries for every alias and cases elsewhere that we just
-> want the final alias.  pci_for_each_dma_alias() is meant to fit both use
-> cases.  Thanks,
+> I'm not sure how much that helps for the use-case that you have in mind.
 
-Cracking, cheers for confirming.
+That sounds more like a software decision, which I agree doesn't need to be
+described.
 
 Will
