@@ -1,71 +1,39 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 2/5] iommu/arm-smmu: add support for PCI master devices
-Date: Wed, 9 Jul 2014 14:26:53 +0100
-Message-ID: <20140709132653.GM9485@arm.com>
-References: <1404125530-17984-1-git-send-email-will.deacon@arm.com>
-	<1404125530-17984-3-git-send-email-will.deacon@arm.com>
-	<a9de518782874b5c8ddd366e6617b8de@BL2PR03MB468.namprd03.prod.outlook.com>
+Subject: Re: [PATCH v4] devicetree: Add generic IOMMU device tree bindings
+Date: Wed, 9 Jul 2014 14:40:50 +0100
+Message-ID: <20140709134050.GN9485@arm.com>
+References: <1404487757-18829-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <a9de518782874b5c8ddd366e6617b8de-AZ66ij2kwaacCcN9WK45f+O6mTEJWrR4XA4E9RH9d+qIuWR1G4zioA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Cc: "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <1404487757-18829-1-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Varun Sethi <varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TZNg+MwTxZMZA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-[Adding Alex; question below]
+On Fri, Jul 04, 2014 at 04:29:17PM +0100, Thierry Reding wrote:
+> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> 
+> This commit introduces a generic device tree binding for IOMMU devices.
+> Only a very minimal subset is described here, but it is enough to cover
+> the requirements of both the Exynos System MMU and Tegra SMMU as
+> discussed here:
+> 
+>     https://lkml.org/lkml/2014/4/27/346
+> 
+> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-On Thu, Jul 03, 2014 at 03:22:37PM +0100, Varun Sethi wrote:
-> > +static int __arm_smmu_get_pci_sid(struct pci_dev *pdev, u16 alias, void
-> > +*data) {
-> > +     *((u16 *)data) = alias;
-> > +     return 0; /* Continue walking */
-> > +}
+  Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 
-[...]
+I would like to move the ARM SMMU driver over to this for 3.18, if possible.
+One use-case there is the ability to describe groups of masters behind a
+multi-master IOMMU but which must be part of the same domain (i.e. an
+iommu_group). This is useful for presenting devices to a guest with a
+virtual SMMU, where the physical devices share a stage-2 context.
 
-> > @@ -1598,15 +1642,36 @@ static int arm_smmu_add_device(struct device
-> > *dev)
-> >               return PTR_ERR(group);
-> >       }
-> >
-> > +     if (dev_is_pci(dev)) {
-> > +             struct arm_smmu_master_cfg *cfg;
-> > +             struct pci_dev *pdev = to_pci_dev(dev);
-> > +
-> > +             cfg = kzalloc(sizeof(*cfg), GFP_KERNEL);
-> > +             if (!cfg) {
-> > +                     ret = -ENOMEM;
-> > +                     goto out_put_group;
-> > +             }
-> > +
-> > +             cfg->num_streamids = 1;
-> > +             pci_for_each_dma_alias(pdev, __arm_smmu_get_pci_sid,
-> > +                                    &cfg->streamids[0]);
-> [Sethi Varun-B16395] We need to look for upstream DMA device. We should be
-> using pci_find_dma_isolation_root here. Also, this would also imply that
-> there could be multiple devices sharing the same stream ID. So, we should
-> check if a particular stream ID value has already been configured in the
-> SMR registers.
-
-pci_find_dma_isolation_root doesn't exist in any of the trees I have. Alex,
-is this queued anywhere and do I actually need it?
-
-The purpose of this code is to find the requester ID of a device as it
-appears at the host controller. At this point, we can map it (via firmware
-tables that are TBD) to a Stream ID for the SMMU. It looks to me like
-pci_for_each_dma_alias walks over non-transparent PCI bridges correctly, so
-the callback I provide just updates the alias until the walk has completed.
+With your binding, does this simply mean determining the set of master IDs
+in the group, then describing the complete set for each master?
 
 Will
