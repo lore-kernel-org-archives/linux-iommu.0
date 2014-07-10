@@ -1,112 +1,79 @@
-From: Olav Haugan <ohaugan@codeaurora.org>
-Subject: Re: [RFC/PATCH 2/7] iommu-api: Add map_range/unmap_range functions
-Date: Wed, 09 Jul 2014 17:03:00 -0700
-Message-ID: <53BDD834.5030405@codeaurora.org>
-References: <1404147116-4598-1-git-send-email-ohaugan@codeaurora.org>	<1404147116-4598-3-git-send-email-ohaugan@codeaurora.org>	<20140704072940.c1e8e8cdd38fbc295fe5c086@nvidia.com>	<53BC6866.30803@codeaurora.org> <CAF6AEGvpD+gvDvQte6YVOP8Q6NeXsoReQ_waWqjsMjffUzALOA@mail.gmail.com>
+From: Khiem Nguyen <khiem.nguyen.xt-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH v2 01/10] iommu/ipmmu-vmsa: Refactor micro-TLB lookup
+Date: Thu, 10 Jul 2014 09:03:26 +0900
+Message-ID: <53BDD84E.4090206@renesas.com>
+References: <1400150451-13469-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+	<1400150451-13469-2-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <CAF6AEGvpD+gvDvQte6YVOP8Q6NeXsoReQ_waWqjsMjffUzALOA@mail.gmail.com>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Rob Clark <robdclark@gmail.com>
-Cc: Hiroshi Doyu <hdoyu@nvidia.com>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>, "will.deacon@arm.com" <will.deacon@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "vgandhi@codeaurora.org" <vgandhi@codeaurora.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Joerg Roedel <joro@8bytes.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1400150451-13469-2-git-send-email-laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, khiem.nguyen.xt-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 7/8/2014 4:49 PM, Rob Clark wrote:
-> On Tue, Jul 8, 2014 at 5:53 PM, Olav Haugan <ohaugan@codeaurora.org> wrote:
->> Hi Hiroshi,
->>
->> On 7/3/2014 9:29 PM, Hiroshi Doyu wrote:
->>> Hi Olav,
->>>
->>> Olav Haugan <ohaugan@codeaurora.org> writes:
->>>
->>>> Mapping and unmapping are more often than not in the critical path.
->>>> map_range and unmap_range allows SMMU driver implementations to optimize
->>>> the process of mapping and unmapping buffers into the SMMU page tables.
->>>> Instead of mapping one physical address, do TLB operation (expensive),
->>>> mapping, do TLB operation, mapping, do TLB operation the driver can map
->>>> a scatter-gatherlist of physically contiguous pages into one virtual
->>>> address space and then at the end do one TLB operation.
->>>>
->>>> Additionally, the mapping operation would be faster in general since
->>>> clients does not have to keep calling map API over and over again for
->>>> each physically contiguous chunk of memory that needs to be mapped to a
->>>> virtually contiguous region.
->>>>
->>>> Signed-off-by: Olav Haugan <ohaugan@codeaurora.org>
->>>> ---
->>>>  drivers/iommu/iommu.c | 24 ++++++++++++++++++++++++
->>>>  include/linux/iommu.h | 24 ++++++++++++++++++++++++
->>>>  2 files changed, 48 insertions(+)
->>>>
->>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>>> index e5555fc..f2a6b80 100644
->>>> --- a/drivers/iommu/iommu.c
->>>> +++ b/drivers/iommu/iommu.c
->>>> @@ -898,6 +898,30 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
->>>>  EXPORT_SYMBOL_GPL(iommu_unmap);
->>>>
->>>>
->>>> +int iommu_map_range(struct iommu_domain *domain, unsigned int iova,
->>>> +                struct scatterlist *sg, unsigned int len, int prot)
->>>> +{
->>>> +    if (unlikely(domain->ops->map_range == NULL))
->>>> +            return -ENODEV;
->>>> +
->>>> +    BUG_ON(iova & (~PAGE_MASK));
->>>> +
->>>> +    return domain->ops->map_range(domain, iova, sg, len, prot);
->>>> +}
->>>> +EXPORT_SYMBOL_GPL(iommu_map_range);
->>>
->>> We have the similar one internally, which is named, "iommu_map_sg()",
->>> called from DMA API.
->>
->> Great, so this new API will be useful to more people!
->>
->>>> +int iommu_unmap_range(struct iommu_domain *domain, unsigned int iova,
->>>> +                  unsigned int len)
->>>> +{
->>>> +    if (unlikely(domain->ops->unmap_range == NULL))
->>>> +            return -ENODEV;
->>>> +
->>>> +    BUG_ON(iova & (~PAGE_MASK));
->>>> +
->>>> +    return domain->ops->unmap_range(domain, iova, len);
->>>> +}
->>>> +EXPORT_SYMBOL_GPL(iommu_unmap_range);
->>>
->>> Can the existing iommu_unmap() do the same?
->>
->> I believe iommu_unmap() behaves a bit differently because it will keep
->> on calling domain->ops->unmap() until everything is unmapped instead of
->> letting the iommu implementation take care of unmapping everything in
->> one call.
->>
->> I am abandoning the patch series since our driver was not accepted.
->> However, if there are no objections I will resubmit this patch (PATCH
->> 2/7) as an independent patch to add this new map_range API.
-> 
-> +1 for map_range().. I've seen for gpu workloads, at least, it is the
-> downstream map_range() API is quite beneficial.   It was worth at
-> least a few fps in xonotic.
-> 
-> And, possibly getting off the subject a bit, but I was wondering about
-> the possibility of going one step further and batching up mapping
-> and/or unmapping multiple buffers (ranges) at once.  I have a pretty
-> convenient sync point in drm/msm to flush out multiple mappings before
-> kicking gpu.
+On 5/15/2014 7:40 PM, Laurent Pinchart wrote:
+> Cache the micro-TLB number in archdata allocated in the .add_device
+> handler instead of looking it up when the deviced is attached and
+> detached. This simplifies the .attach_dev and .detach_dev operations and
+> prepares for DT support.
+[snip]
+> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+[snip]
+> +static int ipmmu_find_utlb(struct ipmmu_vmsa_device *mmu, struct device *dev)
+> +{
+> +	const struct ipmmu_vmsa_master *master = mmu->pdata->masters;
+> +	const char *devname = dev_name(dev);
+> +	unsigned int i;
+> +
+> +	for (i = 0; i < mmu->pdata->num_masters; ++i, ++master) {
+> +		if (strcmp(master->name, devname) == 0)
+> +			return master->utlb;
+> +	}
+> +
+> +	return -1;
+> +}
+[snip]
+>  static int ipmmu_add_device(struct device *dev)
+[snip]
+>  	list_for_each_entry(mmu, &ipmmu_devices, list) {
+> -		master = ipmmu_find_master(mmu, dev);
+> -		if (master) {
+> +		utlb = ipmmu_find_utlb(mmu, dev);
+> +		if (utlb >= 0) {
+>  			/*
+> -			 * TODO Take a reference to the master to protect
+> +			 * TODO Take a reference to the MMU to protect
+>  			 * against device removal.
+>  			 */
+>  			break;
+[snip]
+> +	archdata->mmu = mmu;
+> +	archdata->utlb = utlb;
+[snip]
 
-I think you should be able to do that with this API already - at least
-the mapping part since we are passing in a sg list (this could be a
-chained sglist).
+I have one question for ipmmu_add_device().
 
-Thanks,
+In my understanding, your code will find utlb for device
+base on device name.
+For any device, it will /only/ return utlb number of first match.
 
-Olav
+How about the case that a device name connected with more than 1 utlb ?
+e.g DU device (rcar-du-r8a7790) in Lager
 
--- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-hosted by The Linux Foundation
+Was that case already covered in your code ?
+
+Thanks.
+
+Best regards,
+KHIEM Nguyen
