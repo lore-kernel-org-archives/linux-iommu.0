@@ -1,70 +1,118 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCHv2 0/3] Support for nesting IOMMUs in VFIO
-Date: Thu, 10 Jul 2014 12:34:06 +0100
-Message-ID: <20140710113406.GM2449@arm.com>
-References: <1404930526-32119-1-git-send-email-will.deacon@arm.com>
-	<1404938235.4256.199.camel@ul30vt.home>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH v4] devicetree: Add generic IOMMU device tree bindings
+Date: Thu, 10 Jul 2014 13:38:24 +0100
+Message-ID: <20140710123824.GN2449@arm.com>
+References: <1404487757-18829-1-git-send-email-thierry.reding@gmail.com>
+ <20140709134050.GN9485@arm.com>
+ <20140709142125.GB3262@ulmo>
+ <20140709181048.GX9485@arm.com>
+ <20140710094909.GA21583@ulmo>
+ <20140710102334.GG2449@arm.com>
+ <20140710105737.GD21583@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1404938235.4256.199.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20140710105737.GD21583@ulmo>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <Pawel.Moll@arm.com>, Mark Rutland <Mark.Rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Stephen Warren <swarren@wwwdotorg.org>, Arnd Bergmann <arnd@arndb.de>, Joerg Roedel <joro@8bytes.org>, Cho KyongHo <pullip.cho@samsung.com>, Grant Grundler <grundler@chromium.org>, Dave P Martin <Dave.Martin@arm.com>, Marc Zyngier <Marc.Zyngier@arm.com>, Hiroshi Doyu <hdoyu@nvidia.com>, Olav Haugan <ohaugan@codeaurora.org>, Varun Sethi <varun.sethi@freescale.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kerne>
 List-Id: iommu@lists.linux-foundation.org
 
-Hey Alex,
-
-On Wed, Jul 09, 2014 at 09:37:15PM +0100, Alex Williamson wrote:
-> On Wed, 2014-07-09 at 19:28 +0100, Will Deacon wrote:
-> > Hello,
+On Thu, Jul 10, 2014 at 11:57:38AM +0100, Thierry Reding wrote:
+> On Thu, Jul 10, 2014 at 11:23:34AM +0100, Will Deacon wrote:
+> > On Thu, Jul 10, 2014 at 10:49:10AM +0100, Thierry Reding wrote:
+> > > On Wed, Jul 09, 2014 at 07:10:48PM +0100, Will Deacon wrote:
+> > > > On Wed, Jul 09, 2014 at 03:21:27PM +0100, Thierry Reding wrote:
+> > > > > Anything beyond that (e.g. logical grouping of masters) isn't directly
+> > > > > within the scope of the binding (it doesn't describe hardware but some
+> > > > > policy pertaining to some specific use-case).
+> > > > 
+> > > > This *is* for hardware. I can use PCI as an example, but this could equally
+> > > > apply to other types of bus. If you have a bunch of PCI master devices
+> > > > sitting being a non-transparent bridge, they can end up sharing the same
+> > > > master device ID (requester ID). This means that there is no way in the
+> > > > IOMMU to initialise a translation for one of these devices without also
+> > > > affecting the others. We currently have iommu_groups to deal with this, but
+> > > > it *is* a property of the hardware and we absolutely need a way to describe
+> > > > it. I'm happy to add it later, but we need to think about it now to avoid
+> > > > merging something that can't easily be extended.
+> > > > 
+> > > > For PCI, the topology is probable but even then, we need this information to
+> > > > describe the resulting master device ID emitted by the bridge for the
+> > > > upstream group. One way to do this with your binding would be to treat all
+> > > > of the upstream masters as having the same device ID.
+> > > 
+> > > Yes, I think that makes most sense. After all from the IOMMU's point of
+> > > view requests from all devices behind the bridge will originate from the
+> > > same ID.
+> > > 
+> > > So technically it's not really correct to encode the master ID within
+> > > each of the devices, but rather they should be inheriting the ID from
+> > > the non-transparent bridge.
 > > 
-> > This is v2 of the RFC I originally posted here:
-> > 
-> >  RFCv1: http://permalink.gmane.org/gmane.linux.kernel.iommu/5552
-> > 
-> > It's changed significantly since then, based on helpful feedback from
-> > Alex. In particular, I no longer butcher the IOMMU API, instead making
-> > use of a new iommu_attr to indicate that a domain requires support for
-> > nesting.
-> > 
-> > All feedback welcome (this is still an RFC after all),
+> > Indeed. Is that possible with your binding, or would we just duplicate the
+> > IDs between the masters?
 > 
-> It's a lot cleaner this way, but I'm concerned that allowing a "nesting"
-> IOMMU to be created and used just like a TYPE1v2 IOMMU, even if the
-> IOMMU doesn't support it, puts us in a corner for compatibility later.
-> The safer approach might be to fail the attach_group function if we
-> can't set the domain attribute, ie. enforce that the IOMMU must support
-> it. 
+> No, the binding only describes direct relationships between the IOMMU
+> and masters. There's no way to translate them inbetween or inherit them.
 
-I also contemplated this (and was my source of confusion when we were
-discussing using iommu_attr before), however from a user's perspective it's
-not at all clear what's gone wrong. Essentially, VFIO would advertise
-support for VFIO_TYPE1_NESTING_IOMMU but any attempt to VFIO_SET_IOMMU
-for a container would fail. Knowing to try and fall-back on VFIO_TYPE1v2_IOMMU
-isn't at all obvious.
+[...]
 
-> I don't know how you'd handle it if only some of the domains within
-> a container supported it, so enforcement may simplify things down the
-> road too.  We wouldn't need the vfio_domains_have_iommu_nesting()
-> function that way either.
+> ? That way some code could walk up the IOMMU tree to resolve this. Or
+> perhaps even easier:
+> 
+> 	iommu {
+> 		#iommu-cells = <1>;
+> 	};
+> 
+> 	bridge {
+> 		iommus = <&/iommu 42>;
+> 
+> 		device@0 {
+> 			...
+> 		};
+> 
+> 		device@1 {
+> 			...
+> 		};
+> 
+> 		...
+> 	};
 
-Agreed, it would certainly make things simpler in the kernel. Although, if
-we allow a subset of domains in a container to use nesting, I think that's
-possible by only allowing groups in those domains to be part of the virtual
-SMMU interface.
+Yes, I like that. Good thinking!
 
-Do you think that returning something like -EOPNOTSUPP from an attach is
-sufficient for userspace to figure out what's gone wrong?
+> And we could enhance the binding by defining that the iommus node is
+> inherited by devices on a bus, which by what you're saying would be the
+> sensible thing to do anyway.
+> 
+> In the second example above, the presence of an iommus property in the
+> bridge would indicate that it's non-transparent regarding IOMMU
+> translation and therefore the master ID should be inherited. Devices
+> could still override by providing their own iommus property, though I'd
+> be a little surprised if there ever was hardware like that.
+> 
+> > > > With virtualisation, we may want to assign a group of devices to a guest but
+> > > > without emulating the bridge. This would need something the device-tree to
+> > > > describe that they are grouped together.
+> > > 
+> > > But that's also a software decision, isn't it? Virtualization doesn't
+> > > have anything to do with the hardware description. Or am I missing
+> > > something? Of course I guess you could generate a DTB for the guest and
+> > > group device together, in which case you're pretty much free to do what
+> > > you want since you're essentially defining your own hardware.
+> > 
+> > If you're doing device passthrough and you want to allow the guest to
+> > program the IOMMU, I think that virtualisation is directly related to the
+> > hardware description, since the guest will be bound by physical properties
+> > of the system.
+> 
+> Evidently you know much better what the requirements are here and what
+> will actually be required. I guess we'll need to have more discussions
+> along with examples of use-cases.
+
+It's still early days for getting this stuff up and running on ARM, so I
+agree that we'll have to come back to it a few times once we've got concrete
+examples and code.
 
 Will
