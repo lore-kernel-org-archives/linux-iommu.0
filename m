@@ -1,7 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 8/9] iommu/amd: Don't hold a reference to task_struct
-Date: Thu, 10 Jul 2014 15:25:49 +0200
-Message-ID: <1404998750-15536-9-git-send-email-joro@8bytes.org>
+Subject: [PATCH 5/9] iommu/amd: Drop pasid_state reference in ppr_notifer
+	error path
+Date: Thu, 10 Jul 2014 15:25:46 +0200
+Message-ID: <1404998750-15536-6-git-send-email-joro@8bytes.org>
 References: <1404998750-15536-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,45 +24,31 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Since we are only caring about the lifetime of the mm_struct
-and not the task we can't safely keep a reference to it. The
-reference is also not needed anymore, so remove that code
-entirely.
+In case we are not able to allocate a fault structure a
+reference to the pasid_state will be leaked. Fix that by
+dropping the reference in the error path in case we hold
+one.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 Tested-by: Oded Gabbay <Oded.Gabbay-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_v2.c |    4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/iommu/amd_iommu_v2.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
-index 2b848c0..f7ca009 100644
+index 574c71b..6ba707b 100644
 --- a/drivers/iommu/amd_iommu_v2.c
 +++ b/drivers/iommu/amd_iommu_v2.c
-@@ -47,7 +47,6 @@ struct pasid_state {
- 	atomic_t count;				/* Reference count */
- 	unsigned mmu_notifier_count;		/* Counting nested mmu_notifier
- 						   calls */
--	struct task_struct *task;		/* Task bound to this PASID */
- 	struct mm_struct *mm;			/* mm_struct for the faults */
- 	struct mmu_notifier mn;                 /* mmu_notifier handle */
- 	struct pri_queue pri[PRI_QUEUE_SIZE];	/* PRI tag states */
-@@ -531,7 +530,7 @@ static void do_fault(struct work_struct *work)
- 	write = !!(fault->flags & PPR_FAULT_WRITE);
+@@ -607,6 +607,10 @@ static int ppr_notifier(struct notifier_block *nb, unsigned long e, void *data)
+ 	ret = NOTIFY_OK;
  
- 	down_read(&fault->state->mm->mmap_sem);
--	npages = get_user_pages(fault->state->task, fault->state->mm,
-+	npages = get_user_pages(NULL, fault->state->mm,
- 				fault->address, 1, write, 0, &page, NULL);
- 	up_read(&fault->state->mm->mmap_sem);
+ out_drop_state:
++
++	if (ret != NOTIFY_OK && pasid_state)
++		put_pasid_state(pasid_state);
++
+ 	put_device_state(dev_state);
  
-@@ -672,7 +671,6 @@ int amd_iommu_bind_pasid(struct pci_dev *pdev, int pasid,
- 	spin_lock_init(&pasid_state->lock);
- 
- 	mm                        = get_task_mm(task);
--	pasid_state->task         = task;
- 	pasid_state->mm           = mm;
- 	pasid_state->device_state = dev_state;
- 	pasid_state->pasid        = pasid;
+ out:
 -- 
 1.7.9.5
