@@ -1,18 +1,14 @@
 From: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v2] devicetree: Add generic IOMMU device tree bindings
-Date: Thu, 10 Jul 2014 15:32:16 -0700
-Message-ID: <53BF1470.1000704@codeaurora.org>
-References: <4545972.cM7IP1qTXQ@wuerfel> <53A4C0C9.2050908@codeaurora.org>
-	<20140624091808.GC26013@arm.com> <53A9BC18.2090106@codeaurora.org>
-	<20140624181150.GB4067@arm.com> <53A9EF3A.2070704@codeaurora.org>
-	<20140625091858.GG6153@arm.com> <53ADEEDF.7060902@codeaurora.org>
-	<20140630095220.GA25779@arm.com> <53BC95DA.1010500@codeaurora.org>
-	<20140709105441.GE9485@arm.com>
+Subject: Re: [RFC/PATCH 2/7] iommu-api: Add map_range/unmap_range functions
+Date: Thu, 10 Jul 2014 15:43:18 -0700
+Message-ID: <53BF1706.4050203@codeaurora.org>
+References: <1404147116-4598-1-git-send-email-ohaugan@codeaurora.org>	<1404147116-4598-3-git-send-email-ohaugan@codeaurora.org>	<20140704072940.c1e8e8cdd38fbc295fe5c086@nvidia.com>	<53BC6866.30803@codeaurora.org>	<CAF6AEGvpD+gvDvQte6YVOP8Q6NeXsoReQ_waWqjsMjffUzALOA@mail.gmail.com>	<53BDD834.5030405@codeaurora.org>
+	<CAF6AEGucNbo7sm9oQWFq9hcfoSeR5DuwRcRUvG+Y2sxLaM7OTQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140709105441.GE9485-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <CAF6AEGucNbo7sm9oQWFq9hcfoSeR5DuwRcRUvG+Y2sxLaM7OTQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,81 +18,122 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "vgandhi-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <vgandhi-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 7/9/2014 3:54 AM, Will Deacon wrote:
-> On Wed, Jul 09, 2014 at 02:07:38AM +0100, Olav Haugan wrote:
->> On 6/30/2014 2:52 AM, Will Deacon wrote:
->>> On Fri, Jun 27, 2014 at 11:23:27PM +0100, Olav Haugan wrote:
->>>> Lets say I have an IOMMU with 2 masters and 2 SMRn slots with the
->>>> following stream IDs coming from the masters:
+On 7/9/2014 5:40 PM, Rob Clark wrote:
+> On Wed, Jul 9, 2014 at 8:03 PM, Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
+>> On 7/8/2014 4:49 PM, Rob Clark wrote:
+>>> On Tue, Jul 8, 2014 at 5:53 PM, Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
+>>>> Hi Hiroshi,
 >>>>
->>>> Master 1: 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28
->>>> Master 2: 0x30
+>>>> On 7/3/2014 9:29 PM, Hiroshi Doyu wrote:
+>>>>> Hi Olav,
+>>>>>
+>>>>> Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> writes:
+>>>>>
+>>>>>> Mapping and unmapping are more often than not in the critical path.
+>>>>>> map_range and unmap_range allows SMMU driver implementations to optimize
+>>>>>> the process of mapping and unmapping buffers into the SMMU page tables.
+>>>>>> Instead of mapping one physical address, do TLB operation (expensive),
+>>>>>> mapping, do TLB operation, mapping, do TLB operation the driver can map
+>>>>>> a scatter-gatherlist of physically contiguous pages into one virtual
+>>>>>> address space and then at the end do one TLB operation.
+>>>>>>
+>>>>>> Additionally, the mapping operation would be faster in general since
+>>>>>> clients does not have to keep calling map API over and over again for
+>>>>>> each physically contiguous chunk of memory that needs to be mapped to a
+>>>>>> virtually contiguous region.
+>>>>>>
+>>>>>> Signed-off-by: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>>>>>> ---
+>>>>>>  drivers/iommu/iommu.c | 24 ++++++++++++++++++++++++
+>>>>>>  include/linux/iommu.h | 24 ++++++++++++++++++++++++
+>>>>>>  2 files changed, 48 insertions(+)
+>>>>>>
+>>>>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>>>>>> index e5555fc..f2a6b80 100644
+>>>>>> --- a/drivers/iommu/iommu.c
+>>>>>> +++ b/drivers/iommu/iommu.c
+>>>>>> @@ -898,6 +898,30 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
+>>>>>>  EXPORT_SYMBOL_GPL(iommu_unmap);
+>>>>>>
+>>>>>>
+>>>>>> +int iommu_map_range(struct iommu_domain *domain, unsigned int iova,
+>>>>>> +                struct scatterlist *sg, unsigned int len, int prot)
+>>>>>> +{
+>>>>>> +    if (unlikely(domain->ops->map_range == NULL))
+>>>>>> +            return -ENODEV;
+>>>>>> +
+>>>>>> +    BUG_ON(iova & (~PAGE_MASK));
+>>>>>> +
+>>>>>> +    return domain->ops->map_range(domain, iova, sg, len, prot);
+>>>>>> +}
+>>>>>> +EXPORT_SYMBOL_GPL(iommu_map_range);
+>>>>>
+>>>>> We have the similar one internally, which is named, "iommu_map_sg()",
+>>>>> called from DMA API.
 >>>>
->>>> To make this work I would program SMR[0] with StreamID 0x20 and mask 0xF
->>>> to ignore lower 4 bits. SMR[1] would just be StreamID 0x30 with mask 0x0.
+>>>> Great, so this new API will be useful to more people!
 >>>>
->>>> However, I could also have an IOMMU with 2 masters and 9 SMRn slots with
->>>> the following stream IDs:
+>>>>>> +int iommu_unmap_range(struct iommu_domain *domain, unsigned int iova,
+>>>>>> +                  unsigned int len)
+>>>>>> +{
+>>>>>> +    if (unlikely(domain->ops->unmap_range == NULL))
+>>>>>> +            return -ENODEV;
+>>>>>> +
+>>>>>> +    BUG_ON(iova & (~PAGE_MASK));
+>>>>>> +
+>>>>>> +    return domain->ops->unmap_range(domain, iova, len);
+>>>>>> +}
+>>>>>> +EXPORT_SYMBOL_GPL(iommu_unmap_range);
+>>>>>
+>>>>> Can the existing iommu_unmap() do the same?
 >>>>
->>>> Master 1: 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28
->>>> Master 2: 0x29
+>>>> I believe iommu_unmap() behaves a bit differently because it will keep
+>>>> on calling domain->ops->unmap() until everything is unmapped instead of
+>>>> letting the iommu implementation take care of unmapping everything in
+>>>> one call.
 >>>>
->>>> Here I would program all SMRn and leave the mask to be 0 for all SMRn's.
->>>> So how do I detect when to apply a mask or not?
+>>>> I am abandoning the patch series since our driver was not accepted.
+>>>> However, if there are no objections I will resubmit this patch (PATCH
+>>>> 2/7) as an independent patch to add this new map_range API.
 >>>
->>> You would aim to use the smallest number of SMRs per master possible.
->>> You could probably use:
+>>> +1 for map_range().. I've seen for gpu workloads, at least, it is the
+>>> downstream map_range() API is quite beneficial.   It was worth at
+>>> least a few fps in xonotic.
 >>>
->>>   Master 1: SMR[0].id == 0x20, SMR[0].mask = 0x07
->>>             SMR[1].id == 0x28, SMR[1].mask = 0x00
->>>
->>>   Master 2: SMR[2].id == 0x29, SMR[2].mask = 0x00
+>>> And, possibly getting off the subject a bit, but I was wondering about
+>>> the possibility of going one step further and batching up mapping
+>>> and/or unmapping multiple buffers (ranges) at once.  I have a pretty
+>>> convenient sync point in drm/msm to flush out multiple mappings before
+>>> kicking gpu.
 >>
->> So how does an algorithm figure this out in both my examples? The
->> algorithm would have to know about both (all) bus masters and their
->> stream IDs for a specific SMMU. If the algorithm operates on the set of
->> stream IDs for one bus master at a time the algorithm has no way of
->> knowing which bits can be ignored since it doesn't know the value of the
->> other stream IDs for the other bus masters and thus could potentially
->> create a mask that could cause a stream ID to match in two different
->> entries.
+>> I think you should be able to do that with this API already - at least
+>> the mapping part since we are passing in a sg list (this could be a
+>> chained sglist).
 > 
-> Complete knowledge of the system topology (i.e. all bus masters) is a
-> requirement for being able to configure the SMMU correctly if you want to
-> guarantee that you don't have SMR aliasing issues.
-
-So you agree that an algorithm needs to know about all the bus
-masters/stream IDs for a specific IOMMU before it can figure out the
-StreamID masks and how many SMRs can be allocated to a specific bus
-master? Andreas's algorithm does not know about the other bus
-masters/stream IDs. It operates on one bus master at a time.
-
->>>> I am not familiar with Andreas's proposal. Do you have a link?
->>>
->>>   http://marc.info/?l=linux-arm-kernel&m=139110598005846&w=2
->>
->> Unless I am mistaken the algorithm works on one bus master at a time. I
->> don't think that will work.
+> What I mean by batching up is mapping and unmapping multiple sglists
+> each at different iova's with minmal cpu cache and iommu tlb flushes..
+>
+> Ideally we'd let the IOMMU driver be clever and build out all 2nd
+> level tables before inserting into first level tables (to minimize cpu
+> cache flushing).. also, there is probably a reasonable chance that
+> we'd be mapping a new buffer into existing location, so there might be
+> some potential to reuse existing 2nd level tables (and save a tiny bit
+> of free/alloc).  I've not thought too much about how that would look
+> in code.. might be kinda, umm, fun..
 > 
-> IIRC, it works for densely packed SIDs on the master, so it tries to build
-> up power-of-2 sized groups for that master then mops up the rest with
-> individual entries.
+> But at an API level, we should be able to do a bunch of
+> map/unmap_range's with one flush.
+> 
+> Maybe it could look like a sequence of iommu_{map,unmap}_range()
+> followed by iommu_flush()?
+> 
 
-I ran the algorithm through a few trivial cases:
-
-1)
-Stream IDs: 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28
-Number of SMRs: 9
-
-In this case the algorithm decided to set mask to 0 for all entries
-using up 8 of the SMRs.
-
-2) Same Stream IDs but only 2 SMRs.
-The algorithm gave an error saying I did not have enough SMRs.
+So we could add another argument ("options") in the range api that
+allows you to indicate whether you want to invalidate TLB or not.
 
 Thanks,
 
