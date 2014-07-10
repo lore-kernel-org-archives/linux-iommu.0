@@ -1,105 +1,96 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCHv2 0/3] Support for nesting IOMMUs in VFIO
-Date: Thu, 10 Jul 2014 10:14:05 -0600
-Message-ID: <1405008845.4256.252.camel@ul30vt.home>
-References: <1404930526-32119-1-git-send-email-will.deacon@arm.com>
-	<1404938235.4256.199.camel@ul30vt.home> <20140710113406.GM2449@arm.com>
-	<1405006698.4256.237.camel@ul30vt.home> <20140710154510.GV2449@arm.com>
+From: Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH 1/3] PCI/MSI: Add pci_enable_msi_partial()
+Date: Thu, 10 Jul 2014 11:02:24 -0600
+Message-ID: <CAErSpo6p=teHx+ZG9yritgcBvOer-FNtug4-WQQQkHhPhTLjZw@mail.gmail.com>
+References: <cover.1402405331.git.agordeev@redhat.com> <4fef62a2e647a7c38e9f2a1ea4244b3506a85e2b.1402405331.git.agordeev@redhat.com>
+ <20140702202201.GA28852@google.com> <20140704085741.GA12247@dhcp-26-207.brq.redhat.com>
+ <CAErSpo6f6RXWv0DEtLBZX0jXoSUYJeWrSm7mubSJ_F-O7tQp6w@mail.gmail.com>
+ <20140708122606.GB6270@dhcp-26-207.brq.redhat.com> <CAErSpo4oiabgoOjsGdWZpCMPnmopK4xRzB2f3tM0AiUFrdhFww@mail.gmail.com>
+ <20140710101151.GA21629@dhcp-26-207.brq.redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140710154510.GV2449-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <20140710101151.GA21629@dhcp-26-207.brq.redhat.com>
+Sender: linux-doc-owner@vger.kernel.org
+To: Alexander Gordeev <agordeev@redhat.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-mips@linux-mips.org" <linux-mips@linux-mips.org>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>, "x86@kernel.org" <x86@kernel.org>, "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, "linux-ide@vger.kernel.org" <linux-ide@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 2014-07-10 at 16:45 +0100, Will Deacon wrote:
-> On Thu, Jul 10, 2014 at 04:38:18PM +0100, Alex Williamson wrote:
-> > On Thu, 2014-07-10 at 12:34 +0100, Will Deacon wrote:
-> > > On Wed, Jul 09, 2014 at 09:37:15PM +0100, Alex Williamson wrote:
-> > > > On Wed, 2014-07-09 at 19:28 +0100, Will Deacon wrote:
-> > > > > Hello,
-> > > > > 
-> > > > > This is v2 of the RFC I originally posted here:
-> > > > > 
-> > > > >  RFCv1: http://permalink.gmane.org/gmane.linux.kernel.iommu/5552
-> > > > > 
-> > > > > It's changed significantly since then, based on helpful feedback from
-> > > > > Alex. In particular, I no longer butcher the IOMMU API, instead making
-> > > > > use of a new iommu_attr to indicate that a domain requires support for
-> > > > > nesting.
-> > > > > 
-> > > > > All feedback welcome (this is still an RFC after all),
-> > > > 
-> > > > It's a lot cleaner this way, but I'm concerned that allowing a "nesting"
-> > > > IOMMU to be created and used just like a TYPE1v2 IOMMU, even if the
-> > > > IOMMU doesn't support it, puts us in a corner for compatibility later.
-> > > > The safer approach might be to fail the attach_group function if we
-> > > > can't set the domain attribute, ie. enforce that the IOMMU must support
-> > > > it. 
-> > > 
-> > > I also contemplated this (and was my source of confusion when we were
-> > > discussing using iommu_attr before), however from a user's perspective it's
-> > > not at all clear what's gone wrong. Essentially, VFIO would advertise
-> > > support for VFIO_TYPE1_NESTING_IOMMU but any attempt to VFIO_SET_IOMMU
-> > > for a container would fail. Knowing to try and fall-back on VFIO_TYPE1v2_IOMMU
-> > > isn't at all obvious.
-> > > 
-> > > > I don't know how you'd handle it if only some of the domains within
-> > > > a container supported it, so enforcement may simplify things down the
-> > > > road too.  We wouldn't need the vfio_domains_have_iommu_nesting()
-> > > > function that way either.
-> > > 
-> > > Agreed, it would certainly make things simpler in the kernel. Although, if
-> > > we allow a subset of domains in a container to use nesting, I think that's
-> > > possible by only allowing groups in those domains to be part of the virtual
-> > > SMMU interface.
-> > > 
-> > > Do you think that returning something like -EOPNOTSUPP from an attach is
-> > > sufficient for userspace to figure out what's gone wrong?
-> > 
-> > It seems like this would all be a little easier if we had some sort of
-> > bus_type iterator, then when we want to see if nesting is supported we'd
-> > iterate the bus_types, test iommu_present(), iommu_domain_alloc(),
-> > iommu_domain_set_attr(), iommu_domain_free().  We'd only allow a nesting
-> > domain to be set if the IOMMU driver for at least one bus_type supports
-> > it.  Then I think enforcing it would be a little more obvious to
-> > userspace.  There is a bus_kset, but we'd need an iterator or at least
-> > to enable find_bus() and have type1 walk a list of bus names known to
-> > possibly support nesting (uglier, but functional).  Thanks,
-> 
-> That would work fine if we only had one IOMMU instance per bus. The problem
-> is, the ARM SMMU driver (at least) can handle multiple SMMU instances on a
-> single bus, only some of which may be capable of nesting. Until we've done
-> an attach, it's impossible to know what the capabilities are (since the
-> attach is what binds the domain to a physical IOMMU).
-> 
-> So you'd actually need to iterate the bus_type, test iommu_present(),
-> iommu_domain_alloc(), iommu_domain_attach(), iommu_domain_free(). The
-> attach, of course, then requires devices which means you ultimately end up
-> rolling VFIO_SET_IOMMU and VFIO_SET_CONTAINER into a single operation. I
-> don't think that helps the group abstraction much!
+On Thu, Jul 10, 2014 at 4:11 AM, Alexander Gordeev <agordeev@redhat.com> wrote:
+> On Wed, Jul 09, 2014 at 10:06:48AM -0600, Bjorn Helgaas wrote:
+>> Out of curiosity, do you have a pointer to this?  It looks like it
+>
+> I.e. ICH8 chapter 12.1.30 or ICH10 chapter 14.1.27
+>
+>> uses one vector per port, and I'm wondering if the reason it requests
+>> 16 is because there's some possibility of a part with more than 8
+>> ports.
+>
+> I doubt that is the reason. The only allowed MME values (powers of two)
+> are 0b000, 0b001, 0b010 and 0b100. As you can see, only one bit is used -
+> I would speculate it suits nicely to some hardware logic.
+>
+> BTW, apart from AHCI, it seems the reason MSI is not going to disappear
+> (in a decade at least) is it is way cheaper to implement than MSI-X.
+>
+>> > No, this is not an erratum. The value of 8 vectors is reserved and could
+>> > cause undefined results if used.
+>>
+>> As I read the spec (PCI 3.0, sec 6.8.1.3), if MMC contains 0b100
+>> (requesting 16 vectors), the OS is allowed to allocate 1, 2, 4, 8, or
+>> 16 vectors.  If allocating 8 vectors and writing 0b011 to MME causes
+>> undefined results, I'd say that's a chipset defect.
+>
+> Well, the PCI spec does not prevent devices to have their own specs on top
+> of it. Undefined results are meant on the device side here. On the MSI side
+> these results are likely perfectly within the PCI spec. I feel speaking as
+> a lawer here ;)
 
-I don't really see how that diminishes the value.  It still means that
-it's only possible to set the IOMMU type of a container to nesting if
-it's possible to support a nesting IOMMU.  The user would get an error
-trying to attach any group to the container that can't be supported as
-nesting, whether that's behind the wrong bus_type or behind the wrong
-IOMMU in the correct bus_type.  The iommu-sysfs extensions that recently
-went into the iommu next branch would help to expose this kind of
-information to the user.
+I disagree about this part.  The reason MSI is in the PCI spec is so
+the OS can have generic support for it without having to put
+device-specific support in every driver.  The PCI spec is clear that
+the OS can allocate any number of vectors less than or equal to the
+number requested via MMC.  The SATA device requests 16, and it should
+be perfectly legal for the OS to give it 8.
 
-It seems like an improvement versus statically advertising support for
-something that actually cannot be enabled.  Thanks,
+It's interesting that the ICH10 spec (sec 14.1.27, thanks for the
+reference) says MMC 100b means "8 MSI Capable".  That smells like a
+hardware bug.  The PCI spec says:
 
-Alex
+  000 => 1 vector
+  001 => 2 vectors
+  010 => 4 vectors
+  011 => 8 vectors
+  100 => 16 vectors
+
+The ICH10 spec seems to think 100 means 8 vectors (not 16 as the PCI
+spec says), and that would fit with the rest of the ICH10 MME info.
+If ICH10 was built assuming this table:
+
+  000 => 1 vector
+  001 => 2 vectors
+  010 => 4 vectors
+  100 => 8 vectors
+
+then everything makes sense: the device requests 8 vectors, and the
+behavior is defined in all possible MME cases (1, 2, 4, or 8 vectors
+assigned).  The "Values '011b' to '111b' are reserved" part is still
+slightly wrong, because the 100b value is in that range but is not
+reserved, but that's a tangent.
+
+So my guess (speculation, I admit) is that the intent was for ICH SATA
+to request only 8 vectors, but because of this error, it requests 16.
+Maybe some early MSI proposal used a different encoding for MMC and
+MME, and ICH was originally designed using that.
+
+>> Interrupt vector space is the issue I would worry about, but I think
+>> I'm going to put this on the back burner until it actually becomes a
+>> problem.
+>
+> I plan to try get rid of arch_msi_check_device() hook. Should I repost
+> this series afterwards?
+
+Honestly, I'm still not inclined to pursue this because of the API
+complication and lack of concrete benefit.
+
+Bjorn
