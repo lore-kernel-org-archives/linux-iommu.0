@@ -1,60 +1,112 @@
-From: Khiem Nguyen <khiem.nguyen.xt@renesas.com>
-Subject: Re: [PATCH v3] iommu: Add driver for Renesas VMSA-compatible IPMMU
-Date: Thu, 10 Jul 2014 08:20:25 +0900
-Message-ID: <53BDCE39.1070306@renesas.com>
-References: <1396435657-3922-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <538D55C2.3090209@renesas.com> <1837932.hUVa08Puz4@avalon>
+From: Olav Haugan <ohaugan@codeaurora.org>
+Subject: Re: [RFC/PATCH 2/7] iommu-api: Add map_range/unmap_range functions
+Date: Wed, 09 Jul 2014 17:03:00 -0700
+Message-ID: <53BDD834.5030405@codeaurora.org>
+References: <1404147116-4598-1-git-send-email-ohaugan@codeaurora.org>	<1404147116-4598-3-git-send-email-ohaugan@codeaurora.org>	<20140704072940.c1e8e8cdd38fbc295fe5c086@nvidia.com>	<53BC6866.30803@codeaurora.org> <CAF6AEGvpD+gvDvQte6YVOP8Q6NeXsoReQ_waWqjsMjffUzALOA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1837932.hUVa08Puz4@avalon>
-Sender: linux-sh-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: khiem.nguyen.xt@renesas.com, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, iommu@lists.linux-foundation.org, linux-sh@vger.kernel.org, Joerg Roedel <joro@8bytes.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <CAF6AEGvpD+gvDvQte6YVOP8Q6NeXsoReQ_waWqjsMjffUzALOA@mail.gmail.com>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Rob Clark <robdclark@gmail.com>
+Cc: Hiroshi Doyu <hdoyu@nvidia.com>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>, "will.deacon@arm.com" <will.deacon@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "vgandhi@codeaurora.org" <vgandhi@codeaurora.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Joerg Roedel <joro@8bytes.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Laurent,
-
-Thanks for your explanation.
-
-I'm fine with current situation. 
-I have also checked other drivers and they did the same.
-As you said, let's improve this driver when the time comes.
-
-Thanks.
-
-Best regards,
-KHIEM Nguyen
-
-On 6/4/2014 2:39 AM, Laurent Pinchart wrote:
-> Hi,
+On 7/8/2014 4:49 PM, Rob Clark wrote:
+> On Tue, Jul 8, 2014 at 5:53 PM, Olav Haugan <ohaugan@codeaurora.org> wrote:
+>> Hi Hiroshi,
+>>
+>> On 7/3/2014 9:29 PM, Hiroshi Doyu wrote:
+>>> Hi Olav,
+>>>
+>>> Olav Haugan <ohaugan@codeaurora.org> writes:
+>>>
+>>>> Mapping and unmapping are more often than not in the critical path.
+>>>> map_range and unmap_range allows SMMU driver implementations to optimize
+>>>> the process of mapping and unmapping buffers into the SMMU page tables.
+>>>> Instead of mapping one physical address, do TLB operation (expensive),
+>>>> mapping, do TLB operation, mapping, do TLB operation the driver can map
+>>>> a scatter-gatherlist of physically contiguous pages into one virtual
+>>>> address space and then at the end do one TLB operation.
+>>>>
+>>>> Additionally, the mapping operation would be faster in general since
+>>>> clients does not have to keep calling map API over and over again for
+>>>> each physically contiguous chunk of memory that needs to be mapped to a
+>>>> virtually contiguous region.
+>>>>
+>>>> Signed-off-by: Olav Haugan <ohaugan@codeaurora.org>
+>>>> ---
+>>>>  drivers/iommu/iommu.c | 24 ++++++++++++++++++++++++
+>>>>  include/linux/iommu.h | 24 ++++++++++++++++++++++++
+>>>>  2 files changed, 48 insertions(+)
+>>>>
+>>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>>>> index e5555fc..f2a6b80 100644
+>>>> --- a/drivers/iommu/iommu.c
+>>>> +++ b/drivers/iommu/iommu.c
+>>>> @@ -898,6 +898,30 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
+>>>>  EXPORT_SYMBOL_GPL(iommu_unmap);
+>>>>
+>>>>
+>>>> +int iommu_map_range(struct iommu_domain *domain, unsigned int iova,
+>>>> +                struct scatterlist *sg, unsigned int len, int prot)
+>>>> +{
+>>>> +    if (unlikely(domain->ops->map_range == NULL))
+>>>> +            return -ENODEV;
+>>>> +
+>>>> +    BUG_ON(iova & (~PAGE_MASK));
+>>>> +
+>>>> +    return domain->ops->map_range(domain, iova, sg, len, prot);
+>>>> +}
+>>>> +EXPORT_SYMBOL_GPL(iommu_map_range);
+>>>
+>>> We have the similar one internally, which is named, "iommu_map_sg()",
+>>> called from DMA API.
+>>
+>> Great, so this new API will be useful to more people!
+>>
+>>>> +int iommu_unmap_range(struct iommu_domain *domain, unsigned int iova,
+>>>> +                  unsigned int len)
+>>>> +{
+>>>> +    if (unlikely(domain->ops->unmap_range == NULL))
+>>>> +            return -ENODEV;
+>>>> +
+>>>> +    BUG_ON(iova & (~PAGE_MASK));
+>>>> +
+>>>> +    return domain->ops->unmap_range(domain, iova, len);
+>>>> +}
+>>>> +EXPORT_SYMBOL_GPL(iommu_unmap_range);
+>>>
+>>> Can the existing iommu_unmap() do the same?
+>>
+>> I believe iommu_unmap() behaves a bit differently because it will keep
+>> on calling domain->ops->unmap() until everything is unmapped instead of
+>> letting the iommu implementation take care of unmapping everything in
+>> one call.
+>>
+>> I am abandoning the patch series since our driver was not accepted.
+>> However, if there are no objections I will resubmit this patch (PATCH
+>> 2/7) as an independent patch to add this new map_range API.
 > 
-> On Tuesday 03 June 2014 13:57:38 Khiem Nguyen wrote:
->> Hi Laurent,
->>
->> Thanks for the patch.
->>
->>> +	if (!iommu_present(&platform_bus_type))
->>> +		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
->>
->> With this code, if error occurs, it's hidden.
->>
->> I think it should be like below,
->>
->>> +	ret = bus_set_iommu(&platform_bus_type, &ipmmu_ops);
->>> +	if (ret < 0)
->>> +		return ret;
->>
->> In this case, if error occurs, -EBUSY is returned.
->> It's easier for troubleshooting the issue.
->>
->> How do you think ?
+> +1 for map_range().. I've seen for gpu workloads, at least, it is the
+> downstream map_range() API is quite beneficial.   It was worth at
+> least a few fps in xonotic.
 > 
-> I agree that we have a problem, but the problem is broader than this. Only one 
-> IOMMU type can be associated with a given bus, so things will break as soon as 
-> we will compile multiple IOMMU drivers in a multiplatform kernel. I'd like to 
-> fix this properly, but it requires IOMMU framework changes, and thus time. In 
-> the meantime we could apply your proposed modification, but it needs an 
-> additional platform_driver_unregister() call in the bus_set_iommu() error 
-> path.
-> 
+> And, possibly getting off the subject a bit, but I was wondering about
+> the possibility of going one step further and batching up mapping
+> and/or unmapping multiple buffers (ranges) at once.  I have a pretty
+> convenient sync point in drm/msm to flush out multiple mappings before
+> kicking gpu.
+
+I think you should be able to do that with this API already - at least
+the mapping part since we are passing in a sg list (this could be a
+chained sglist).
+
+Thanks,
+
+Olav
+
+-- 
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+hosted by The Linux Foundation
