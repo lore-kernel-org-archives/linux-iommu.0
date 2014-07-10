@@ -1,72 +1,68 @@
-From: Alexander Gordeev <agordeev-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/3] PCI/MSI: Add pci_enable_msi_partial()
-Date: Thu, 10 Jul 2014 12:11:51 +0200
-Message-ID: <20140710101151.GA21629@dhcp-26-207.brq.redhat.com>
-References: <cover.1402405331.git.agordeev@redhat.com>
-	<4fef62a2e647a7c38e9f2a1ea4244b3506a85e2b.1402405331.git.agordeev@redhat.com>
-	<20140702202201.GA28852@google.com>
-	<20140704085741.GA12247@dhcp-26-207.brq.redhat.com>
-	<CAErSpo6f6RXWv0DEtLBZX0jXoSUYJeWrSm7mubSJ_F-O7tQp6w@mail.gmail.com>
-	<20140708122606.GB6270@dhcp-26-207.brq.redhat.com>
-	<CAErSpo4oiabgoOjsGdWZpCMPnmopK4xRzB2f3tM0AiUFrdhFww@mail.gmail.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v4] devicetree: Add generic IOMMU device tree bindings
+Date: Thu, 10 Jul 2014 11:23:34 +0100
+Message-ID: <20140710102334.GG2449@arm.com>
+References: <1404487757-18829-1-git-send-email-thierry.reding@gmail.com>
+ <20140709134050.GN9485@arm.com>
+ <20140709142125.GB3262@ulmo>
+ <20140709181048.GX9485@arm.com>
+ <20140710094909.GA21583@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CAErSpo4oiabgoOjsGdWZpCMPnmopK4xRzB2f3tM0AiUFrdhFww-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: "linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org" <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, "linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org" <xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org>, linuxppc-dev <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+In-Reply-To: <20140710094909.GA21583@ulmo>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Varun Sethi <varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TZNg+MwTxZMZA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jul 09, 2014 at 10:06:48AM -0600, Bjorn Helgaas wrote:
-> Out of curiosity, do you have a pointer to this?  It looks like it
-
-I.e. ICH8 chapter 12.1.30 or ICH10 chapter 14.1.27
-
-> uses one vector per port, and I'm wondering if the reason it requests
-> 16 is because there's some possibility of a part with more than 8
-> ports.
-
-I doubt that is the reason. The only allowed MME values (powers of two)
-are 0b000, 0b001, 0b010 and 0b100. As you can see, only one bit is used -
-I would speculate it suits nicely to some hardware logic.
-
-BTW, apart from AHCI, it seems the reason MSI is not going to disappear
-(in a decade at least) is it is way cheaper to implement than MSI-X.
-
-> > No, this is not an erratum. The value of 8 vectors is reserved and could
-> > cause undefined results if used.
+On Thu, Jul 10, 2014 at 10:49:10AM +0100, Thierry Reding wrote:
+> On Wed, Jul 09, 2014 at 07:10:48PM +0100, Will Deacon wrote:
+> > On Wed, Jul 09, 2014 at 03:21:27PM +0100, Thierry Reding wrote:
+> > > Anything beyond that (e.g. logical grouping of masters) isn't directly
+> > > within the scope of the binding (it doesn't describe hardware but some
+> > > policy pertaining to some specific use-case).
+> > 
+> > This *is* for hardware. I can use PCI as an example, but this could equally
+> > apply to other types of bus. If you have a bunch of PCI master devices
+> > sitting being a non-transparent bridge, they can end up sharing the same
+> > master device ID (requester ID). This means that there is no way in the
+> > IOMMU to initialise a translation for one of these devices without also
+> > affecting the others. We currently have iommu_groups to deal with this, but
+> > it *is* a property of the hardware and we absolutely need a way to describe
+> > it. I'm happy to add it later, but we need to think about it now to avoid
+> > merging something that can't easily be extended.
+> > 
+> > For PCI, the topology is probable but even then, we need this information to
+> > describe the resulting master device ID emitted by the bridge for the
+> > upstream group. One way to do this with your binding would be to treat all
+> > of the upstream masters as having the same device ID.
 > 
-> As I read the spec (PCI 3.0, sec 6.8.1.3), if MMC contains 0b100
-> (requesting 16 vectors), the OS is allowed to allocate 1, 2, 4, 8, or
-> 16 vectors.  If allocating 8 vectors and writing 0b011 to MME causes
-> undefined results, I'd say that's a chipset defect.
+> Yes, I think that makes most sense. After all from the IOMMU's point of
+> view requests from all devices behind the bridge will originate from the
+> same ID.
+> 
+> So technically it's not really correct to encode the master ID within
+> each of the devices, but rather they should be inheriting the ID from
+> the non-transparent bridge.
 
-Well, the PCI spec does not prevent devices to have their own specs on top
-of it. Undefined results are meant on the device side here. On the MSI side
-these results are likely perfectly within the PCI spec. I feel speaking as
-a lawer here ;)
+Indeed. Is that possible with your binding, or would we just duplicate the
+IDs between the masters?
 
-> Interrupt vector space is the issue I would worry about, but I think
-> I'm going to put this on the back burner until it actually becomes a
-> problem.
+> > With virtualisation, we may want to assign a group of devices to a guest but
+> > without emulating the bridge. This would need something the device-tree to
+> > describe that they are grouped together.
+> 
+> But that's also a software decision, isn't it? Virtualization doesn't
+> have anything to do with the hardware description. Or am I missing
+> something? Of course I guess you could generate a DTB for the guest and
+> group device together, in which case you're pretty much free to do what
+> you want since you're essentially defining your own hardware.
 
-I plan to try get rid of arch_msi_check_device() hook. Should I repost
-this series afterwards?
+If you're doing device passthrough and you want to allow the guest to
+program the IOMMU, I think that virtualisation is directly related to the
+hardware description, since the guest will be bound by physical properties
+of the system.
 
-Thanks!
-
--- 
-Regards,
-Alexander Gordeev
-agordeev-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Will
