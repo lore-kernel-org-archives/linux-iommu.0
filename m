@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 1/9] iommu/amd: Fix typo in amd_iommu_v2 driver
-Date: Thu, 10 Jul 2014 15:25:42 +0200
-Message-ID: <1404998750-15536-2-git-send-email-joro@8bytes.org>
+Subject: [PATCH 4/9] iommu/amd: Get rid of __unbind_pasid
+Date: Thu, 10 Jul 2014 15:25:45 +0200
+Message-ID: <1404998750-15536-5-git-send-email-joro@8bytes.org>
 References: <1404998750-15536-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,25 +23,64 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Fix typo in a comment.
+Unbind_pasid is only called from mn_release which already
+has the pasid_state. Use this to simplify the unbind_pasid
+path and get rid of __unbind_pasid.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Tested-by: Oded Gabbay <Oded.Gabbay-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_v2.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/amd_iommu_v2.c |   17 ++---------------
+ 1 file changed, 2 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
-index 92fb77c..0e29f6f 100644
+index a621552..574c71b 100644
 --- a/drivers/iommu/amd_iommu_v2.c
 +++ b/drivers/iommu/amd_iommu_v2.c
-@@ -49,7 +49,7 @@ struct pasid_state {
- 						   calls */
- 	struct task_struct *task;		/* Task bound to this PASID */
- 	struct mm_struct *mm;			/* mm_struct for the faults */
--	struct mmu_notifier mn;                 /* mmu_otifier handle */
-+	struct mmu_notifier mn;                 /* mmu_notifier handle */
- 	struct pri_queue pri[PRI_QUEUE_SIZE];	/* PRI tag states */
- 	struct device_state *device_state;	/* Link to our device_state */
- 	int pasid;				/* PASID index */
+@@ -99,7 +99,6 @@ static struct workqueue_struct *iommu_wq;
+ static u64 *empty_page_table;
+ 
+ static void free_pasid_states(struct device_state *dev_state);
+-static void unbind_pasid(struct device_state *dev_state, int pasid);
+ 
+ static u16 device_id(struct pci_dev *pdev)
+ {
+@@ -301,7 +300,7 @@ static void put_pasid_state_wait(struct pasid_state *pasid_state)
+ 	free_pasid_state(pasid_state);
+ }
+ 
+-static void __unbind_pasid(struct pasid_state *pasid_state)
++static void unbind_pasid(struct pasid_state *pasid_state)
+ {
+ 	struct iommu_domain *domain;
+ 
+@@ -314,18 +313,6 @@ static void __unbind_pasid(struct pasid_state *pasid_state)
+ 	flush_workqueue(iommu_wq);
+ }
+ 
+-static void unbind_pasid(struct device_state *dev_state, int pasid)
+-{
+-	struct pasid_state *pasid_state;
+-
+-	pasid_state = get_pasid_state(dev_state, pasid);
+-	if (pasid_state == NULL)
+-		return;
+-
+-	__unbind_pasid(pasid_state);
+-	put_pasid_state(pasid_state); /* Reference taken in this function */
+-}
+-
+ static void free_pasid_states_level1(struct pasid_state **tbl)
+ {
+ 	int i;
+@@ -480,7 +467,7 @@ static void mn_release(struct mmu_notifier *mn, struct mm_struct *mm)
+ 	if (pasid_state->device_state->inv_ctx_cb)
+ 		dev_state->inv_ctx_cb(dev_state->pdev, pasid_state->pasid);
+ 
+-	unbind_pasid(dev_state, pasid_state->pasid);
++	unbind_pasid(pasid_state);
+ }
+ 
+ static struct mmu_notifier_ops iommu_mn = {
 -- 
 1.7.9.5
