@@ -1,8 +1,8 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part3 V4 18/21] iommu/vt-d: Enhance intel_irq_remapping driver
-	to support DMAR unit hotplug
-Date: Fri, 11 Jul 2014 14:19:42 +0800
-Message-ID: <1405059585-10620-19-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part3 V4 20/21] iommu/vt-d: Enhance intel-iommu driver to
+	support DMAR unit hotplug
+Date: Fri, 11 Jul 2014 14:19:44 +0800
+Message-ID: <1405059585-10620-21-git-send-email-jiang.liu@linux.intel.com>
 References: <1405059585-10620-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,354 +22,289 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse
 Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hotplug-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Implement required callback functions for intel_irq_remapping driver
+Implement required callback functions for intel-iommu driver
 to support DMAR unit hotplug.
 
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/intel_irq_remapping.c |  222 ++++++++++++++++++++++++++---------
- 1 file changed, 169 insertions(+), 53 deletions(-)
+ drivers/iommu/intel-iommu.c |  206 +++++++++++++++++++++++++++++++------------
+ 1 file changed, 151 insertions(+), 55 deletions(-)
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 0a58195ed902..ecf07aba8351 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -36,7 +36,6 @@ struct hpet_scope {
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index d35141ab62c3..fb805caf9774 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -1125,8 +1125,11 @@ static int iommu_alloc_root_entry(struct intel_iommu *iommu)
+ 	unsigned long flags;
  
- static struct ioapic_scope ir_ioapic[MAX_IO_APICS];
- static struct hpet_scope ir_hpet[MAX_HPET_TBS];
--static int ir_ioapic_num, ir_hpet_num;
- 
- /*
-  * Lock ordering:
-@@ -320,7 +319,7 @@ static int set_ioapic_sid(struct irte *irte, int apic)
- 
- 	down_read(&dmar_global_lock);
- 	for (i = 0; i < MAX_IO_APICS; i++) {
--		if (ir_ioapic[i].id == apic) {
-+		if (ir_ioapic[i].iommu && ir_ioapic[i].id == apic) {
- 			sid = (ir_ioapic[i].bus << 8) | ir_ioapic[i].devfn;
- 			break;
- 		}
-@@ -347,7 +346,7 @@ static int set_hpet_sid(struct irte *irte, u8 id)
- 
- 	down_read(&dmar_global_lock);
- 	for (i = 0; i < MAX_HPET_TBS; i++) {
--		if (ir_hpet[i].id == id) {
-+		if (ir_hpet[i].iommu && ir_hpet[i].id == id) {
- 			sid = (ir_hpet[i].bus << 8) | ir_hpet[i].devfn;
- 			break;
- 		}
-@@ -469,17 +468,17 @@ static void iommu_set_irq_remapping(struct intel_iommu *iommu, int mode)
- 	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
- }
- 
--
--static int intel_setup_irq_remapping(struct intel_iommu *iommu, int mode)
-+static int intel_setup_irq_remapping(struct intel_iommu *iommu)
- {
- 	struct ir_table *ir_table;
- 	struct page *pages;
- 	unsigned long *bitmap;
- 
--	ir_table = iommu->ir_table = kzalloc(sizeof(struct ir_table),
--					     GFP_ATOMIC);
-+	if (iommu->ir_table)
-+		return 0;
- 
--	if (!iommu->ir_table)
-+	ir_table = kzalloc(sizeof(struct ir_table), GFP_ATOMIC);
-+	if (!ir_table)
+ 	root = (struct root_entry *)alloc_pgtable_page(iommu->node);
+-	if (!root)
++	if (!root) {
++		pr_err("IOMMU: allocating root entry for %s failed\n",
++			iommu->name);
  		return -ENOMEM;
++	}
  
- 	pages = alloc_pages_node(iommu->node, GFP_ATOMIC | __GFP_ZERO,
-@@ -488,7 +487,7 @@ static int intel_setup_irq_remapping(struct intel_iommu *iommu, int mode)
- 	if (!pages) {
- 		pr_err("IR%d: failed to allocate pages of order %d\n",
- 		       iommu->seq_id, INTR_REMAP_PAGE_ORDER);
--		kfree(iommu->ir_table);
-+		kfree(ir_table);
- 		return -ENOMEM;
- 	}
+ 	__iommu_flush_cache(iommu, root, ROOT_SIZE);
  
-@@ -503,11 +502,22 @@ static int intel_setup_irq_remapping(struct intel_iommu *iommu, int mode)
- 
- 	ir_table->base = page_address(pages);
- 	ir_table->bitmap = bitmap;
-+	iommu->ir_table = ir_table;
- 
--	iommu_set_irq_remapping(iommu, mode);
+@@ -1466,7 +1469,7 @@ static int iommu_init_domains(struct intel_iommu *iommu)
  	return 0;
  }
  
-+static void intel_teardown_irq_remapping(struct intel_iommu *iommu)
-+{
-+	if (iommu && iommu->ir_table) {
-+		free_pages((unsigned long)iommu->ir_table->base,
-+			   INTR_REMAP_PAGE_ORDER);
-+		kfree(iommu->ir_table->bitmap);
-+		kfree(iommu->ir_table);
-+		iommu->ir_table = NULL;
-+	}
-+}
-+
- /*
-  * Disable Interrupt Remapping.
-  */
-@@ -662,9 +672,10 @@ static int __init intel_enable_irq_remapping(void)
- 		if (!ecap_ir_support(iommu->ecap))
- 			continue;
- 
--		if (intel_setup_irq_remapping(iommu, eim))
-+		if (intel_setup_irq_remapping(iommu))
- 			goto error;
- 
-+		iommu_set_irq_remapping(iommu, eim);
- 		setup = 1;
- 	}
- 
-@@ -695,12 +706,13 @@ error:
- 	return -1;
- }
- 
--static void ir_parse_one_hpet_scope(struct acpi_dmar_device_scope *scope,
--				      struct intel_iommu *iommu)
-+static int ir_parse_one_hpet_scope(struct acpi_dmar_device_scope *scope,
-+				   struct intel_iommu *iommu,
-+				   struct acpi_dmar_hardware_unit *drhd)
+-static void free_dmar_iommu(struct intel_iommu *iommu)
++static void disable_dmar_iommu(struct intel_iommu *iommu)
  {
- 	struct acpi_dmar_pci_path *path;
- 	u8 bus;
--	int count;
-+	int count, free = -1;
+ 	struct dmar_domain *domain;
+ 	int i;
+@@ -1490,11 +1493,16 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
  
- 	bus = scope->bus;
- 	path = (struct acpi_dmar_pci_path *)(scope + 1);
-@@ -716,19 +728,36 @@ static void ir_parse_one_hpet_scope(struct acpi_dmar_device_scope *scope,
- 					   PCI_SECONDARY_BUS);
- 		path++;
- 	}
--	ir_hpet[ir_hpet_num].bus   = bus;
--	ir_hpet[ir_hpet_num].devfn = PCI_DEVFN(path->device, path->function);
--	ir_hpet[ir_hpet_num].iommu = iommu;
--	ir_hpet[ir_hpet_num].id    = scope->enumeration_id;
--	ir_hpet_num++;
-+
-+	for (count = 0; count < MAX_HPET_TBS; count++) {
-+		if (ir_hpet[count].iommu == iommu &&
-+		    ir_hpet[count].id == scope->enumeration_id)
-+			return 0;
-+		else if (ir_hpet[count].iommu == NULL && free == -1)
-+			free = count;
-+	}
-+	if (free == -1) {
-+		pr_warn("Exceeded Max HPET blocks\n");
-+		return -ENOSPC;
-+	}
-+
-+	ir_hpet[free].iommu = iommu;
-+	ir_hpet[free].id    = scope->enumeration_id;
-+	ir_hpet[free].bus   = bus;
-+	ir_hpet[free].devfn = PCI_DEVFN(path->device, path->function);
-+	pr_info("HPET id %d under DRHD base 0x%Lx\n",
-+		scope->enumeration_id, drhd->address);
-+
-+	return 0;
- }
- 
--static void ir_parse_one_ioapic_scope(struct acpi_dmar_device_scope *scope,
--				      struct intel_iommu *iommu)
-+static int ir_parse_one_ioapic_scope(struct acpi_dmar_device_scope *scope,
-+				     struct intel_iommu *iommu,
-+				     struct acpi_dmar_hardware_unit *drhd)
- {
- 	struct acpi_dmar_pci_path *path;
- 	u8 bus;
--	int count;
-+	int count, free = -1;
- 
- 	bus = scope->bus;
- 	path = (struct acpi_dmar_pci_path *)(scope + 1);
-@@ -745,54 +774,63 @@ static void ir_parse_one_ioapic_scope(struct acpi_dmar_device_scope *scope,
- 		path++;
- 	}
- 
--	ir_ioapic[ir_ioapic_num].bus   = bus;
--	ir_ioapic[ir_ioapic_num].devfn = PCI_DEVFN(path->device, path->function);
--	ir_ioapic[ir_ioapic_num].iommu = iommu;
--	ir_ioapic[ir_ioapic_num].id    = scope->enumeration_id;
--	ir_ioapic_num++;
-+	for (count = 0; count < MAX_IO_APICS; count++) {
-+		if (ir_ioapic[count].iommu == iommu &&
-+		    ir_ioapic[count].id == scope->enumeration_id)
-+			return 0;
-+		else if (ir_ioapic[count].iommu == NULL && free == -1)
-+			free = count;
-+	}
-+	if (free == -1) {
-+		pr_warn("Exceeded Max IO APICS\n");
-+		return -ENOSPC;
-+	}
-+
-+	ir_ioapic[free].bus   = bus;
-+	ir_ioapic[free].devfn = PCI_DEVFN(path->device, path->function);
-+	ir_ioapic[free].iommu = iommu;
-+	ir_ioapic[free].id    = scope->enumeration_id;
-+	pr_info("IOAPIC id %d under DRHD base  0x%Lx IOMMU %d\n",
-+		scope->enumeration_id, drhd->address, iommu->seq_id);
-+
-+	return 0;
- }
- 
- static int ir_parse_ioapic_hpet_scope(struct acpi_dmar_header *header,
- 				      struct intel_iommu *iommu)
- {
-+	int ret = 0;
- 	struct acpi_dmar_hardware_unit *drhd;
- 	struct acpi_dmar_device_scope *scope;
- 	void *start, *end;
- 
- 	drhd = (struct acpi_dmar_hardware_unit *)header;
--
- 	start = (void *)(drhd + 1);
- 	end = ((void *)drhd) + header->length;
- 
--	while (start < end) {
-+	while (start < end && ret == 0) {
- 		scope = start;
--		if (scope->entry_type == ACPI_DMAR_SCOPE_TYPE_IOAPIC) {
--			if (ir_ioapic_num == MAX_IO_APICS) {
--				printk(KERN_WARNING "Exceeded Max IO APICS\n");
--				return -1;
--			}
--
--			printk(KERN_INFO "IOAPIC id %d under DRHD base "
--			       " 0x%Lx IOMMU %d\n", scope->enumeration_id,
--			       drhd->address, iommu->seq_id);
-+		if (scope->entry_type == ACPI_DMAR_SCOPE_TYPE_IOAPIC)
-+			ret = ir_parse_one_ioapic_scope(scope, iommu, drhd);
-+		else if (scope->entry_type == ACPI_DMAR_SCOPE_TYPE_HPET)
-+			ret = ir_parse_one_hpet_scope(scope, iommu, drhd);
-+		start += scope->length;
-+	}
- 
--			ir_parse_one_ioapic_scope(scope, iommu);
--		} else if (scope->entry_type == ACPI_DMAR_SCOPE_TYPE_HPET) {
--			if (ir_hpet_num == MAX_HPET_TBS) {
--				printk(KERN_WARNING "Exceeded Max HPET blocks\n");
--				return -1;
--			}
-+	return ret;
+ 	if (iommu->gcmd & DMA_GCMD_TE)
+ 		iommu_disable_translation(iommu);
 +}
  
--			printk(KERN_INFO "HPET id %d under DRHD base"
--			       " 0x%Lx\n", scope->enumeration_id,
--			       drhd->address);
-+static void ir_remove_ioapic_hpet_scope(struct intel_iommu *iommu)
+-	kfree(iommu->domains);
+-	kfree(iommu->domain_ids);
+-	iommu->domains = NULL;
+-	iommu->domain_ids = NULL;
++static void free_dmar_iommu(struct intel_iommu *iommu)
 +{
-+	int i;
++	if ((iommu->domains) && (iommu->domain_ids)) {
++		kfree(iommu->domains);
++		kfree(iommu->domain_ids);
++		iommu->domains = NULL;
++		iommu->domain_ids = NULL;
++	}
  
--			ir_parse_one_hpet_scope(scope, iommu);
--		}
--		start += scope->length;
--	}
-+	for (i = 0; i < MAX_HPET_TBS; i++)
-+		if (ir_hpet[i].iommu == iommu)
-+			ir_hpet[i].iommu = NULL;
+ 	g_iommus[iommu->seq_id] = NULL;
  
--	return 0;
-+	for (i = 0; i < MAX_IO_APICS; i++)
-+		if (ir_ioapic[i].iommu == iommu)
-+			ir_ioapic[i].iommu = NULL;
+@@ -2677,6 +2685,41 @@ static int __init iommu_prepare_static_identity_mapping(int hw)
+ 	return 0;
  }
  
- /*
-@@ -1168,7 +1206,85 @@ struct irq_remap_ops intel_irq_remap_ops = {
- 	.setup_hpet_msi		= intel_setup_hpet_msi,
- };
- 
-+/*
-+ * Support of Interrupt Remapping Unit Hotplug
-+ */
-+static int dmar_ir_add(struct dmar_drhd_unit *dmaru, struct intel_iommu *iommu)
++static void intel_iommu_init_qi(struct intel_iommu *iommu)
 +{
-+	int ret;
-+	int eim = x2apic_enabled();
-+
-+	if (eim && !ecap_eim_support(iommu->ecap)) {
-+		pr_info("DRHD %Lx: EIM not supported by DRHD, ecap %Lx\n",
-+			iommu->reg_phys, iommu->ecap);
-+		return -ENODEV;
-+	}
-+
-+	if (ir_parse_ioapic_hpet_scope(dmaru->hdr, iommu)) {
-+		pr_warn("DRHD %Lx: failed to parse managed IOAPIC/HPET\n",
-+			iommu->reg_phys);
-+		return -ENODEV;
-+	}
-+
-+	/* TODO: check all IOAPICs are covered by IOMMU */
-+
-+	/* Setup Interrupt-remapping now. */
-+	ret = intel_setup_irq_remapping(iommu);
-+	if (ret) {
-+		pr_err("DRHD %Lx: failed to allocate resource\n",
-+		       iommu->reg_phys);
-+		ir_remove_ioapic_hpet_scope(iommu);
-+		return ret;
-+	}
-+
++	/*
++	 * Start from the sane iommu hardware state.
++	 * If the queued invalidation is already initialized by us
++	 * (for example, while enabling interrupt-remapping) then
++	 * we got the things already rolling from a sane state.
++	 */
 +	if (!iommu->qi) {
-+		/* Clear previous faults. */
++		/*
++		 * Clear any previous faults.
++		 */
 +		dmar_fault(-1, iommu);
-+		iommu_disable_irq_remapping(iommu);
++		/*
++		 * Disable queued invalidation if supported and already enabled
++		 * before OS handover.
++		 */
 +		dmar_disable_qi(iommu);
 +	}
 +
-+	/* Enable queued invalidation */
-+	ret = dmar_enable_qi(iommu);
-+	if (!ret) {
-+		iommu_set_irq_remapping(iommu, eim);
++	if (dmar_enable_qi(iommu)) {
++		/*
++		 * Queued Invalidate not enabled, use Register Based Invalidate
++		 */
++		iommu->flush.flush_context = __iommu_flush_context;
++		iommu->flush.flush_iotlb = __iommu_flush_iotlb;
++		pr_info("IOMMU: %s using Register based invalidation\n",
++			iommu->name);
 +	} else {
-+		pr_err("DRHD %Lx: failed to enable queued invalidation, ecap %Lx, ret %d\n",
-+		       iommu->reg_phys, iommu->ecap, ret);
-+		intel_teardown_irq_remapping(iommu);
-+		ir_remove_ioapic_hpet_scope(iommu);
++		iommu->flush.flush_context = qi_flush_context;
++		iommu->flush.flush_iotlb = qi_flush_iotlb;
++		pr_info("IOMMU: %s using Queued invalidation\n", iommu->name);
++	}
++}
++
+ static int __init init_dmars(void)
+ {
+ 	struct dmar_drhd_unit *drhd;
+@@ -2705,6 +2748,10 @@ static int __init init_dmars(void)
+ 			  DMAR_UNITS_SUPPORTED);
+ 	}
+ 
++	/* Preallocate enough resources for IOMMU hot-addition */
++	if (g_num_of_iommus < DMAR_UNITS_SUPPORTED)
++		g_num_of_iommus = DMAR_UNITS_SUPPORTED;
++
+ 	g_iommus = kcalloc(g_num_of_iommus, sizeof(struct intel_iommu *),
+ 			GFP_KERNEL);
+ 	if (!g_iommus) {
+@@ -2733,58 +2780,14 @@ static int __init init_dmars(void)
+ 		 * among all IOMMU's. Need to Split it later.
+ 		 */
+ 		ret = iommu_alloc_root_entry(iommu);
+-		if (ret) {
+-			printk(KERN_ERR "IOMMU: allocate root entry failed\n");
++		if (ret)
+ 			goto free_iommu;
+-		}
+ 		if (!ecap_pass_through(iommu->ecap))
+ 			hw_pass_through = 0;
+ 	}
+ 
+-	/*
+-	 * Start from the sane iommu hardware state.
+-	 */
+-	for_each_active_iommu(iommu, drhd) {
+-		/*
+-		 * If the queued invalidation is already initialized by us
+-		 * (for example, while enabling interrupt-remapping) then
+-		 * we got the things already rolling from a sane state.
+-		 */
+-		if (iommu->qi)
+-			continue;
+-
+-		/*
+-		 * Clear any previous faults.
+-		 */
+-		dmar_fault(-1, iommu);
+-		/*
+-		 * Disable queued invalidation if supported and already enabled
+-		 * before OS handover.
+-		 */
+-		dmar_disable_qi(iommu);
+-	}
+-
+-	for_each_active_iommu(iommu, drhd) {
+-		if (dmar_enable_qi(iommu)) {
+-			/*
+-			 * Queued Invalidate not enabled, use Register Based
+-			 * Invalidate
+-			 */
+-			iommu->flush.flush_context = __iommu_flush_context;
+-			iommu->flush.flush_iotlb = __iommu_flush_iotlb;
+-			printk(KERN_INFO "IOMMU %d 0x%Lx: using Register based "
+-			       "invalidation\n",
+-				iommu->seq_id,
+-			       (unsigned long long)drhd->reg_base_addr);
+-		} else {
+-			iommu->flush.flush_context = qi_flush_context;
+-			iommu->flush.flush_iotlb = qi_flush_iotlb;
+-			printk(KERN_INFO "IOMMU %d 0x%Lx: using Queued "
+-			       "invalidation\n",
+-				iommu->seq_id,
+-			       (unsigned long long)drhd->reg_base_addr);
+-		}
+-	}
++	for_each_active_iommu(iommu, drhd)
++		intel_iommu_init_qi(iommu);
+ 
+ 	if (iommu_pass_through)
+ 		iommu_identity_mapping |= IDENTMAP_ALL;
+@@ -2870,8 +2873,10 @@ static int __init init_dmars(void)
+ 	return 0;
+ 
+ free_iommu:
+-	for_each_active_iommu(iommu, drhd)
++	for_each_active_iommu(iommu, drhd) {
++		disable_dmar_iommu(iommu);
+ 		free_dmar_iommu(iommu);
++	}
+ 	kfree(deferred_flush);
+ free_g_iommus:
+ 	kfree(g_iommus);
+@@ -3777,9 +3782,100 @@ int dmar_check_one_atsr(struct acpi_dmar_header *hdr, void *arg)
+ 	return 0;
+ }
+ 
++static int intel_iommu_add(struct dmar_drhd_unit *dmaru)
++{
++	int sp, ret = 0;
++	struct intel_iommu *iommu = dmaru->iommu;
++
++	if (g_iommus[iommu->seq_id])
++		return 0;
++
++	if (hw_pass_through && !ecap_pass_through(iommu->ecap)) {
++		pr_warn("IOMMU: %s doesn't support hardware pass through.\n",
++			iommu->name);
++		return -ENXIO;
++	}
++	if (!ecap_sc_support(iommu->ecap) &&
++	    domain_update_iommu_snooping(iommu)) {
++		pr_warn("IOMMU: %s doesn't support snooping.\n",
++			iommu->name);
++		return -ENXIO;
++	}
++	sp = domain_update_iommu_superpage(iommu) - 1;
++	if (sp >= 0 && !(cap_super_page_val(iommu->cap) & (1 << sp))) {
++		pr_warn("IOMMU: %s doesn't support large page.\n",
++			iommu->name);
++		return -ENXIO;
 +	}
 +
++	/*
++	 * Disable translation if already enabled prior to OS handover.
++	 */
++	if (iommu->gcmd & DMA_GCMD_TE)
++		iommu_disable_translation(iommu);
++
++	g_iommus[iommu->seq_id] = iommu;
++	ret = iommu_init_domains(iommu);
++	if (ret == 0)
++		ret = iommu_alloc_root_entry(iommu);
++	if (ret)
++		goto out;
++
++	if (dmaru->ignored) {
++		/*
++		 * we always have to disable PMRs or DMA may fail on this device
++		 */
++		if (force_on)
++			iommu_disable_protect_mem_regions(iommu);
++		return 0;
++	}
++
++	intel_iommu_init_qi(iommu);
++	iommu_flush_write_buffer(iommu);
++	ret = dmar_set_interrupt(iommu);
++	if (ret)
++		goto disable_iommu;
++
++	iommu_set_root_entry(iommu);
++	iommu->flush.flush_context(iommu, 0, 0, 0, DMA_CCMD_GLOBAL_INVL);
++	iommu->flush.flush_iotlb(iommu, 0, 0, 0, DMA_TLB_GLOBAL_FLUSH);
++	iommu_enable_translation(iommu);
++
++	if (si_domain) {
++		ret = iommu_attach_domain(si_domain, iommu);
++		if (ret < 0 || si_domain->id != ret)
++			goto disable_iommu;
++		domain_attach_iommu(si_domain, iommu);
++	}
++
++	iommu_disable_protect_mem_regions(iommu);
++	return 0;
++
++disable_iommu:
++	disable_dmar_iommu(iommu);
++out:
++	free_dmar_iommu(iommu);
 +	return ret;
 +}
 +
- int dmar_ir_hotplug(struct dmar_drhd_unit *dmaru, bool insert)
+ int dmar_iommu_hotplug(struct dmar_drhd_unit *dmaru, bool insert)
  {
--	return irq_remapping_enabled ? -ENOSYS : 0;
+-	return intel_iommu_enabled ? -ENOSYS : 0;
 +	int ret = 0;
 +	struct intel_iommu *iommu = dmaru->iommu;
 +
-+	if (!irq_remapping_enabled)
++	if (!intel_iommu_enabled)
 +		return 0;
 +	if (iommu == NULL)
 +		return -EINVAL;
-+	if (!ecap_ir_support(iommu->ecap))
-+		return 0;
 +
 +	if (insert) {
-+		if (!iommu->ir_table)
-+			ret = dmar_ir_add(dmaru, iommu);
++		ret = intel_iommu_add(dmaru);
 +	} else {
-+		if (iommu->ir_table) {
-+			if (!bitmap_empty(iommu->ir_table->bitmap,
-+					  INTR_REMAP_TABLE_ENTRIES)) {
-+				ret = -EBUSY;
-+			} else {
-+				iommu_disable_irq_remapping(iommu);
-+				intel_teardown_irq_remapping(iommu);
-+				ir_remove_ioapic_hpet_scope(iommu);
-+			}
-+		}
++		disable_dmar_iommu(iommu);
++		free_dmar_iommu(iommu);
 +	}
 +
 +	return ret;
  }
+ 
+ static void intel_iommu_free_dmars(void)
 -- 
 1.7.10.4
