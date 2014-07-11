@@ -1,18 +1,13 @@
-From: Jerry Hoemann <jerry.hoemann-VXdhtT5mjnY@public.gmane.org>
-Subject: Re: [PATCH 0/8] iommu/vt-d: Fix crash dump failure caused by legacy
-	DMA/IO
-Date: Fri, 11 Jul 2014 10:27:45 -0600
-Message-ID: <20140711162745.GA8335@anatevka.fc.hp.com>
-References: <1398386198-19304-1-git-send-email-bill.sumner@hp.com>
-	<1398854973.12733.23.camel@i7.infradead.org>
-	<20140702133258.GN26537@8bytes.org>
-Reply-To: Jerry.Hoemann-VXdhtT5mjnY@public.gmane.org
+From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v4] devicetree: Add generic IOMMU device tree bindings
+Date: Fri, 11 Jul 2014 16:55:14 -0400
+Message-ID: <CAF6AEGv2P_Uq8CHgm1YdaUeMSNdH62ZwjLnT83Fr5GnxEAhTMw@mail.gmail.com>
+References: <1404487757-18829-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20140702133258.GN26537-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1404487757-18829-1-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,56 +17,279 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, zhenhua-VXdhtT5mjnY@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Varun Sethi <varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jul 02, 2014 at 03:32:59PM +0200, Joerg Roedel wrote:
-> Hi David,
-> 
-> On Wed, Apr 30, 2014 at 11:49:33AM +0100, David Woodhouse wrote:
-> > There could be all kinds of existing mappings in the DMA page tables,
-> > and I'm not sure it's safe to preserve them. What prevents the crashdump
-> > kernel from trying to use any of the physical pages which are
-> > accessible, and which could thus be corrupted by stray DMA?
-> > 
-> > In fact, the old kernel could even have set up 1:1 passthrough mappings
-> > for some devices, which would then be able to DMA *anywhere*. Surely we
-> > need to prevent that?
-> 
-> Ideally we would prevent that, yes. But the problem is that a failed DMA
-> transaction might put the device into an unrecoverable state. Usually
-> any in-flight DMA transactions should only target buffers set up by the
-> previous kernel and not corrupt any data.
-> 
-> > After the last round of this patchset, we discussed a potential
-> > improvement where you point every virtual bus address at the *same*
-> > physical scratch page.
-> 
-> That is a solution to prevent the in-flight DMA failures. But what
-> happens when there is some in-flight DMA to a disk to write some inodes
-> or a new superblock. Then this scratch address-space may cause
-> filesystem corruption at worst.
-> 
-> So with this in mind I would prefer initially taking over the
-> page-tables from the old kernel before the device drivers re-initialize
-> the devices.
-> 
-> 
-> 	Joerg
+On Fri, Jul 4, 2014 at 11:29 AM, Thierry Reding
+<thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+>
+> This commit introduces a generic device tree binding for IOMMU devices.
+> Only a very minimal subset is described here, but it is enough to cover
+> the requirements of both the Exynos System MMU and Tegra SMMU as
+> discussed here:
+>
+>     https://lkml.org/lkml/2014/4/27/346
+>
+> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> ---
+> Changes in v4:
+> - clarify that disabling an IOMMU DT node may not disable translation
+> - be more explicit that examples are only examples
+> - add multi-ID master example
+>
+> Changes in v3:
+> - use #iommu-cells instead of #address-cells/#size-cells
+> - drop optional iommu-names property
+>
+> Changes in v2:
+> - add notes about "dma-ranges" property (drop note from commit message)
+> - document priorities of "iommus" property vs. "dma-ranges" property
+> - drop #iommu-cells in favour of #address-cells and #size-cells
+> - remove multiple-master device example
+>
+>  Documentation/devicetree/bindings/iommu/iommu.txt | 172 ++++++++++++++++++++++
+>  1 file changed, 172 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iommu/iommu.txt
+>
+> diff --git a/Documentation/devicetree/bindings/iommu/iommu.txt b/Documentation/devicetree/bindings/iommu/iommu.txt
+> new file mode 100644
+> index 000000000000..464a81eaaf61
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iommu/iommu.txt
+> @@ -0,0 +1,172 @@
+> +This document describes the generic device tree binding for IOMMUs and their
+> +master(s).
+> +
+> +
+> +IOMMU device node:
+> +==================
+> +
+> +An IOMMU can provide the following services:
+> +
+> +* Remap address space to allow devices to access physical memory ranges that
+> +  they otherwise wouldn't be capable of accessing.
+> +
+> +  Example: 32-bit DMA to 64-bit physical addresses
+> +
+> +* Implement scatter-gather at page level granularity so that the device does
+> +  not have to.
+> +
+> +* Provide system protection against "rogue" DMA by forcing all accesses to go
+> +  through the IOMMU and faulting when encountering accesses to unmapped
+> +  address regions.
+> +
+> +* Provide address space isolation between multiple contexts.
+> +
+> +  Example: Virtualization
+> +
+> +Device nodes compatible with this binding represent hardware with some of the
+> +above capabilities.
+> +
+> +IOMMUs can be single-master or multiple-master. Single-master IOMMU devices
+> +typically have a fixed association to the master device, whereas multiple-
+> +master IOMMU devices can translate accesses from more than one master.
+> +
+> +The device tree node of the IOMMU device's parent bus must contain a valid
+> +"dma-ranges" property that describes how the physical address space of the
+> +IOMMU maps to memory. An empty "dma-ranges" property means that there is a
+> +1:1 mapping from IOMMU to memory.
+> +
+> +Required properties:
+> +--------------------
+> +- #iommu-cells: The number of cells in an IOMMU specifier needed to encode an
+> +  address.
+> +
+> +The meaning of the IOMMU specifier is defined by the device tree binding of
+> +the specific IOMMU. Below are a few examples of typical use-cases:
+> +
+> +- #iommu-cells = <0>: Single master IOMMU devices are not configurable and
+> +  therefore no additional information needs to be encoded in the specifier.
+> +  This may also apply to multiple master IOMMU devices that do not allow the
+> +  association of masters to be configured. Note that an IOMMU can by design
+> +  be multi-master yet only expose a single master in a given configuration.
+> +  In such cases the number of cells will usually be 1 as in the next case.
+> +- #iommu-cells = <1>: Multiple master IOMMU devices may need to be configured
+> +  in order to enable translation for a given master. In such cases the single
+> +  address cell corresponds to the master device's ID. In some cases more than
+> +  one cell can be required to represent a single master ID.
+> +- #iommu-cells = <4>: Some IOMMU devices allow the DMA window for masters to
+> +  be configured. The first cell of the address in this may contain the master
+> +  device's ID for example, while the second cell could contain the start of
+> +  the DMA window for the given device. The length of the DMA window is given
+> +  by the third and fourth cells.
+> +
+> +Note that these are merely examples and real-world use-cases may use different
+> +definitions to represent their individual needs. Always refer to the specific
+> +IOMMU binding for the exact meaning of the cells that make up the specifier.
+> +
+> +
+> +IOMMU master node:
+> +==================
+> +
+> +Devices that access memory through an IOMMU are called masters. A device can
+> +have multiple master interfaces (to one or more IOMMU devices).
+> +
+> +Required properties:
+> +--------------------
+> +- iommus: A list of phandle and IOMMU specifier pairs that describe the IOMMU
+> +  master interfaces of the device. One entry in the list describes one master
+> +  interface of the device.
+> +
+> +When an "iommus" property is specified in a device tree node, the IOMMU will
+> +be used for address translation. If a "dma-ranges" property exists in the
+> +device's parent node it will be ignored. An exception to this rule is if the
+> +referenced IOMMU is disabled, in which case the "dma-ranges" property of the
+> +parent shall take effect. Note that merely disabling a device tree node does
+> +not guarantee that the IOMMU is really disabled since the hardware may not
+> +have a means to turn off translation.
+> +
+> +
+> +Notes:
+> +======
+> +
+> +One possible extension to the above is to use an "iommus" property along with
+> +a "dma-ranges" property in a bus device node (such as PCI host bridges). This
+> +can be useful to describe how children on the bus relate to the IOMMU if they
+> +are not explicitly listed in the device tree (e.g. PCI devices). However, the
+> +requirements of that use-case haven't been fully determined yet. Implementing
+> +this is therefore not recommended without further discussion and extension of
+> +this binding.
+> +
+> +
+> +Examples:
+> +=========
+> +
+> +Single-master IOMMU:
+> +--------------------
+> +
+> +       iommu {
+> +               #iommu-cells = <0>;
+> +       };
+> +
+> +       master {
+> +               iommus = <&/iommu>;
+> +       };
+> +
+> +Multiple-master IOMMU with fixed associations:
+> +----------------------------------------------
+> +
+> +       /* multiple-master IOMMU */
+> +       iommu {
+> +               /*
+> +                * Masters are statically associated with this IOMMU and
+> +                * address translation is always enabled.
+> +                */
+> +               #iommu-cells = <0>;
+> +       };
+> +
+> +       /* static association with IOMMU */
+> +       master@1 {
+> +               reg = <1>;
+> +               iommus = <&/iommu>;
+> +       };
+> +
+> +       /* static association with IOMMU */
+> +       master@2 {
+> +               reg = <2>;
+> +               iommus = <&/iommu>;
+> +       };
+> +
+> +Multiple-master IOMMU:
+> +----------------------
+> +
+> +       iommu {
+> +               /* the specifier represents the ID of the master */
+> +               #iommu-cells = <1>;
+> +       };
+> +
+> +       master@1 {
+> +               /* device has master ID 42 in the IOMMU */
+> +               iommus = <&/iommu 42>;
+> +       };
+> +
+> +       master@2 {
+> +               /* device has master IDs 23 and 24 in the IOMMU */
+> +               iommus = <&/iommu 23>, <&/iommu 24>;
+> +       };
+> +
+> +Multiple-master IOMMU with configurable DMA window:
+> +---------------------------------------------------
+> +
+> +       / {
+> +               #address-cells = <1>;
+> +               #size-cells = <1>;
+> +
+> +               iommu {
+> +                       /* master ID, address and length of DMA window */
+> +                       #iommu-cells = <4>;
+> +               };
+> +
+> +               master {
+> +                       /* master ID 42, 4 GiB DMA window starting at 0 */
+> +                       iommus = <&/iommu  42  0  0x1 0x0>;
+> +               };
+> +       };
 
-David, Joerg,
 
-What do you think here?  Do you want me to update the patch set for 3.17?
+ok, so I was working through this to try to convert my
+{qcom,msm}-iommu-v0 RFC over to using these bindings.  For background,
+I was initially using something that looked a bit more like the
+current arm-smmu bindings:
 
-Jerry
+        gpu {
+            #stream-id-cells = <16>;
+            ...
+        };
 
--- 
+        gfx3d: qcom,iommu@7c00000 {
+            compatible = "qcom,iommu-v0";
+            ...
+            mmu-masters =
+                /* gfx3d_user: */
+                <&gpu 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15>,
+                /* gfx3d_priv: */
+                <&gpu 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31>;
+        };
 
-----------------------------------------------------------------------------
-Jerry Hoemann            Software Engineer              Hewlett-Packard
+        gfx3d1: qcom,iommu@7d00000 {
+            compatible = "qcom,iommu-v0";
+            ...
+            mmu-masters =
+                /* gfx3d_user: */
+                <&gpu 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15>,
+                /* gfx3d_priv: */
+                <&gpu 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31>;
+        };
 
-3404 E Harmony Rd. MS 57                        phone:  (970) 898-1022
-Ft. Collins, CO 80528                           FAX:    (970) 898-XXXX
-                                                email:  jerry.hoemann-VXdhtT5mjnY@public.gmane.org
-----------------------------------------------------------------------------
+With my current arrangement, I have everything I need when the iommu
+device is probed to set up each of the context banks
+
+This proposal inverts that relationship.  Which forces me to do a lot
+more (including DT parsing) on device attach.  Which I'm not a huge
+fan of.  Ie. if I even wanted to try to implement per-process
+pagetables for gpu without completely going behind the IOMMU API's
+back, I would want attach/detach to be as lightweight as possible.
+
+Was there actually a good reason for having the device link to the
+iommu rather than the other way around?  How much would people hate it
+if I just ignore the generic bindings and use something that works for
+me instead.  I mean, it isn't exactly like there is going to be .dts
+re-use across different SoC's..  and at least with current IOMMU API
+some sort of of_get_named_iommu() API doesn't really make sense.
+
+Maybe I'm missing something, I kinda jumped into the discussion late.
+
+BR,
+-R
+
+
+> --
+> 2.0.1
+>
+>
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
