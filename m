@@ -1,103 +1,50 @@
-From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part3 V4 21/21] pci, ACPI,
-	iommu: Enhance pci_root to support DMAR device hotplug
-Date: Fri, 11 Jul 2014 14:19:45 +0800
-Message-ID: <1405059585-10620-22-git-send-email-jiang.liu@linux.intel.com>
-References: <1405059585-10620-1-git-send-email-jiang.liu@linux.intel.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [RFC/PATCH 2/7] iommu-api: Add map_range/unmap_range functions
+Date: Fri, 11 Jul 2014 12:20:53 +0200
+Message-ID: <20140711102053.GB1958@8bytes.org>
+References: <1404147116-4598-1-git-send-email-ohaugan@codeaurora.org>
+ <1404147116-4598-3-git-send-email-ohaugan@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1405059585-10620-1-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Rafael J . Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Len Brown <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hotplug-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1404147116-4598-3-git-send-email-ohaugan@codeaurora.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Olav Haugan <ohaugan@codeaurora.org>
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-arm-msm@vger.kernel.org, will.deacon@arm.com, thierry.reding@gmail.com, vgandhi@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-Finally enhance pci_root driver to support DMAR device hotplug when
-hot-plugging PCI host bridges.
+On Mon, Jun 30, 2014 at 09:51:51AM -0700, Olav Haugan wrote:
+> +int iommu_map_range(struct iommu_domain *domain, unsigned int iova,
+> +		    struct scatterlist *sg, unsigned int len, int prot)
+> +{
+> +	if (unlikely(domain->ops->map_range == NULL))
+> +		return -ENODEV;
+> +
+> +	BUG_ON(iova & (~PAGE_MASK));
+> +
+> +	return domain->ops->map_range(domain, iova, sg, len, prot);
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_map_range);
+> +
+> +int iommu_unmap_range(struct iommu_domain *domain, unsigned int iova,
+> +		      unsigned int len)
+> +{
+> +	if (unlikely(domain->ops->unmap_range == NULL))
+> +		return -ENODEV;
+> +
+> +	BUG_ON(iova & (~PAGE_MASK));
+> +
+> +	return domain->ops->unmap_range(domain, iova, len);
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_unmap_range);
 
-Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
----
- drivers/acpi/pci_root.c |   16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+Before introducing these new API functions there should be a fall-back
+for IOMMU drivers that do (not yet) implement the map_range and
+unmap_range call-backs.
 
-diff --git a/drivers/acpi/pci_root.c b/drivers/acpi/pci_root.c
-index d388f13d48b4..99c2b9761c12 100644
---- a/drivers/acpi/pci_root.c
-+++ b/drivers/acpi/pci_root.c
-@@ -33,6 +33,7 @@
- #include <linux/pci.h>
- #include <linux/pci-acpi.h>
- #include <linux/pci-aspm.h>
-+#include <linux/dmar.h>
- #include <linux/acpi.h>
- #include <linux/slab.h>
- #include <acpi/apei.h>	/* for acpi_hest_init() */
-@@ -511,6 +512,7 @@ static int acpi_pci_root_add(struct acpi_device *device,
- 	struct acpi_pci_root *root;
- 	acpi_handle handle = device->handle;
- 	int no_aspm = 0, clear_aspm = 0;
-+	bool hotadd = system_state != SYSTEM_BOOTING;
- 
- 	root = kzalloc(sizeof(struct acpi_pci_root), GFP_KERNEL);
- 	if (!root)
-@@ -557,6 +559,11 @@ static int acpi_pci_root_add(struct acpi_device *device,
- 	strcpy(acpi_device_class(device), ACPI_PCI_ROOT_CLASS);
- 	device->driver_data = root;
- 
-+	if (hotadd && dmar_device_add(handle)) {
-+		result = -ENXIO;
-+		goto end;
-+	}
-+
- 	pr_info(PREFIX "%s [%s] (domain %04x %pR)\n",
- 	       acpi_device_name(device), acpi_device_bid(device),
- 	       root->segment, &root->secondary);
-@@ -583,7 +590,7 @@ static int acpi_pci_root_add(struct acpi_device *device,
- 			root->segment, (unsigned int)root->secondary.start);
- 		device->driver_data = NULL;
- 		result = -ENODEV;
--		goto end;
-+		goto remove_dmar;
- 	}
- 
- 	if (clear_aspm) {
-@@ -597,7 +604,7 @@ static int acpi_pci_root_add(struct acpi_device *device,
- 	if (device->wakeup.flags.run_wake)
- 		device_set_run_wake(root->bus->bridge, true);
- 
--	if (system_state != SYSTEM_BOOTING) {
-+	if (hotadd) {
- 		pcibios_resource_survey_bus(root->bus);
- 		pci_assign_unassigned_root_bus_resources(root->bus);
- 	}
-@@ -607,6 +614,9 @@ static int acpi_pci_root_add(struct acpi_device *device,
- 	pci_unlock_rescan_remove();
- 	return 1;
- 
-+remove_dmar:
-+	if (hotadd)
-+		dmar_device_remove(handle);
- end:
- 	kfree(root);
- 	return result;
-@@ -625,6 +635,8 @@ static void acpi_pci_root_remove(struct acpi_device *device)
- 
- 	pci_remove_root_bus(root->bus);
- 
-+	dmar_device_remove(device->handle);
-+
- 	pci_unlock_rescan_remove();
- 
- 	kfree(root);
--- 
-1.7.10.4
+The last thing we want is this kind of functional partitioning between
+different IOMMU drivers.
+
+
+	Joerg
