@@ -1,8 +1,7 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part3 V4 06/21] iommu/vt-d: Fix possible invalid memory access
-	caused by free_dmar_iommu()
-Date: Fri, 11 Jul 2014 14:19:30 +0800
-Message-ID: <1405059585-10620-7-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part3 V4 08/21] iommu/vt-d: Simplify include/linux/dmar.h
+Date: Fri, 11 Jul 2014 14:19:32 +0800
+Message-ID: <1405059585-10620-9-git-send-email-jiang.liu@linux.intel.com>
 References: <1405059585-10620-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,52 +21,85 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse
 Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hotplug-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Static identity and virtual machine domains may be cached in
-iommu->domain_ids array after corresponding IOMMUs have been removed
-from domain->iommu_bmp. So we should check domain->iommu_bmp before
-decreasing domain->iommu_count in function free_dmar_iommu(), otherwise
-it may cause free of inuse domain data structure.
+Simplify include/linux/dmar.h a bit based on the fact that
+both CONFIG_INTEL_IOMMU and CONFIG_IRQ_REMAP select CONFIG_DMAR_TABLE.
 
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c |   11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+ include/linux/dmar.h |   50 ++++++++++++++++++--------------------------------
+ 1 file changed, 18 insertions(+), 32 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 968e3d32e305..0984fa58d872 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -425,6 +425,8 @@ static void domain_remove_one_dev_info(struct dmar_domain *domain,
- 				       struct device *dev);
- static void iommu_detach_dependent_devices(struct intel_iommu *iommu,
- 					   struct device *dev);
-+static int domain_detach_iommu(struct dmar_domain *domain,
-+			       struct intel_iommu *iommu);
- 
- #ifdef CONFIG_INTEL_IOMMU_DEFAULT_ON
- int dmar_disabled = 0;
-@@ -1465,8 +1467,7 @@ static int iommu_init_domains(struct intel_iommu *iommu)
- static void free_dmar_iommu(struct intel_iommu *iommu)
+diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+index 23c8db129560..1deece46a0ca 100644
+--- a/include/linux/dmar.h
++++ b/include/linux/dmar.h
+@@ -114,22 +114,30 @@ extern int dmar_remove_dev_scope(struct dmar_pci_notify_info *info,
+ /* Intel IOMMU detection */
+ extern int detect_intel_iommu(void);
+ extern int enable_drhd_fault_handling(void);
+-#else
+-struct dmar_pci_notify_info;
+-static inline int detect_intel_iommu(void)
++
++#ifdef CONFIG_INTEL_IOMMU
++extern int iommu_detected, no_iommu;
++extern int intel_iommu_init(void);
++extern int dmar_parse_one_rmrr(struct acpi_dmar_header *header);
++extern int dmar_parse_one_atsr(struct acpi_dmar_header *header);
++extern int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info);
++#else /* !CONFIG_INTEL_IOMMU: */
++static inline int intel_iommu_init(void) { return -ENODEV; }
++static inline int dmar_parse_one_rmrr(struct acpi_dmar_header *header)
  {
- 	struct dmar_domain *domain;
--	int i, count;
--	unsigned long flags;
-+	int i;
- 
- 	if ((iommu->domains) && (iommu->domain_ids)) {
- 		for_each_set_bit(i, iommu->domain_ids, cap_ndoms(iommu->cap)) {
-@@ -1479,11 +1480,7 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
- 
- 			domain = iommu->domains[i];
- 			clear_bit(i, iommu->domain_ids);
+-	return -ENODEV;
++	return 0;
+ }
 -
--			spin_lock_irqsave(&domain->iommu_lock, flags);
--			count = --domain->iommu_count;
--			spin_unlock_irqrestore(&domain->iommu_lock, flags);
--			if (count == 0)
-+			if (domain_detach_iommu(domain, iommu) == 0)
- 				domain_exit(domain);
- 		}
- 	}
+-static inline int dmar_table_init(void)
++static inline int dmar_parse_one_atsr(struct acpi_dmar_header *header)
+ {
+-	return -ENODEV;
++	return 0;
+ }
+-static inline int enable_drhd_fault_handling(void)
++static inline int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info)
+ {
+-	return -1;
++	return 0;
+ }
+-#endif /* !CONFIG_DMAR_TABLE */
++#endif /* CONFIG_INTEL_IOMMU */
++
++#endif /* CONFIG_DMAR_TABLE */
+ 
+ struct irte {
+ 	union {
+@@ -177,26 +185,4 @@ extern int dmar_set_interrupt(struct intel_iommu *iommu);
+ extern irqreturn_t dmar_fault(int irq, void *dev_id);
+ extern int arch_setup_dmar_msi(unsigned int irq);
+ 
+-#ifdef CONFIG_INTEL_IOMMU
+-extern int iommu_detected, no_iommu;
+-extern int dmar_parse_one_rmrr(struct acpi_dmar_header *header);
+-extern int dmar_parse_one_atsr(struct acpi_dmar_header *header);
+-extern int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info);
+-extern int intel_iommu_init(void);
+-#else /* !CONFIG_INTEL_IOMMU: */
+-static inline int intel_iommu_init(void) { return -ENODEV; }
+-static inline int dmar_parse_one_rmrr(struct acpi_dmar_header *header)
+-{
+-	return 0;
+-}
+-static inline int dmar_parse_one_atsr(struct acpi_dmar_header *header)
+-{
+-	return 0;
+-}
+-static inline int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info)
+-{
+-	return 0;
+-}
+-#endif /* CONFIG_INTEL_IOMMU */
+-
+ #endif /* __DMAR_H__ */
 -- 
 1.7.10.4
