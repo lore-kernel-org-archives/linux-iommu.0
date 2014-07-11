@@ -1,8 +1,8 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part3 V4 09/21] iommu/vt-d: Change
-	iommu_enable/disable_translation to return void
-Date: Fri, 11 Jul 2014 14:19:33 +0800
-Message-ID: <1405059585-10620-10-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part3 V4 10/21] iommu/vt-d: Simplify intel_unmap_sg() and kill
+	duplicated code
+Date: Fri, 11 Jul 2014 14:19:34 +0800
+Message-ID: <1405059585-10620-11-git-send-email-jiang.liu@linux.intel.com>
 References: <1405059585-10620-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,72 +22,142 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse
 Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hotplug-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Simplify error handling path by changing iommu_{enable|disable}_translation
-to return void.
+Introduce intel_unmap() to reduce duplicated code in intel_unmap_sg()
+and intel_unmap_page().
+
+Also let dma_pte_free_pagetable() to call dma_pte_clear_range() directly,
+so caller only needs to call dma_pte_free_pagetable().
 
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c |   18 +++++-------------
- 1 file changed, 5 insertions(+), 13 deletions(-)
+ drivers/iommu/intel-iommu.c |   70 ++++++++++++-------------------------------
+ 1 file changed, 19 insertions(+), 51 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 5d7383775bf1..0ba078bc0f32 100644
+index 0ba078bc0f32..0852b7021e4a 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1389,7 +1389,7 @@ static void iommu_disable_protect_mem_regions(struct intel_iommu *iommu)
- 	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
+@@ -984,6 +984,8 @@ static void dma_pte_free_pagetable(struct dmar_domain *domain,
+ 	BUG_ON(addr_width < BITS_PER_LONG && last_pfn >> addr_width);
+ 	BUG_ON(start_pfn > last_pfn);
+ 
++	dma_pte_clear_range(domain, start_pfn, last_pfn);
++
+ 	/* We don't need lock here; nobody else touches the iova range */
+ 	dma_pte_free_level(domain, agaw_to_level(domain->agaw),
+ 			   domain->pgd, 0, start_pfn, last_pfn);
+@@ -2011,12 +2013,14 @@ static int __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+ 			/* It is large page*/
+ 			if (largepage_lvl > 1) {
+ 				pteval |= DMA_PTE_LARGE_PAGE;
+-				/* Ensure that old small page tables are removed to make room
+-				   for superpage, if they exist. */
+-				dma_pte_clear_range(domain, iov_pfn,
+-						    iov_pfn + lvl_to_nr_pages(largepage_lvl) - 1);
++				lvl_pages = lvl_to_nr_pages(largepage_lvl);
++				/*
++				 * Ensure that old small page tables are
++				 * removed to make room for superpage,
++				 * if they exist.
++				 */
+ 				dma_pte_free_pagetable(domain, iov_pfn,
+-						       iov_pfn + lvl_to_nr_pages(largepage_lvl) - 1);
++						       iov_pfn + lvl_pages - 1);
+ 			} else {
+ 				pteval &= ~(uint64_t)DMA_PTE_LARGE_PAGE;
+ 			}
+@@ -3148,9 +3152,7 @@ static void add_unmap(struct dmar_domain *dom, struct iova *iova, struct page *f
+ 	spin_unlock_irqrestore(&async_umap_flush_lock, flags);
  }
  
--static int iommu_enable_translation(struct intel_iommu *iommu)
-+static void iommu_enable_translation(struct intel_iommu *iommu)
+-static void intel_unmap_page(struct device *dev, dma_addr_t dev_addr,
+-			     size_t size, enum dma_data_direction dir,
+-			     struct dma_attrs *attrs)
++static void intel_unmap(struct device *dev, dma_addr_t dev_addr)
  {
- 	u32 sts;
- 	unsigned long flags;
-@@ -1403,10 +1403,9 @@ static int iommu_enable_translation(struct intel_iommu *iommu)
- 		      readl, (sts & DMA_GSTS_TES), sts);
- 
- 	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
--	return 0;
+ 	struct dmar_domain *domain;
+ 	unsigned long start_pfn, last_pfn;
+@@ -3194,6 +3196,13 @@ static void intel_unmap_page(struct device *dev, dma_addr_t dev_addr,
+ 	}
  }
  
--static int iommu_disable_translation(struct intel_iommu *iommu)
-+static void iommu_disable_translation(struct intel_iommu *iommu)
++static void intel_unmap_page(struct device *dev, dma_addr_t dev_addr,
++			     size_t size, enum dma_data_direction dir,
++			     struct dma_attrs *attrs)
++{
++	intel_unmap(dev, dev_addr);
++}
++
+ static void *intel_alloc_coherent(struct device *dev, size_t size,
+ 				  dma_addr_t *dma_handle, gfp_t flags,
+ 				  struct dma_attrs *attrs)
+@@ -3250,7 +3259,7 @@ static void intel_free_coherent(struct device *dev, size_t size, void *vaddr,
+ 	size = PAGE_ALIGN(size);
+ 	order = get_order(size);
+ 
+-	intel_unmap_page(dev, dma_handle, size, DMA_BIDIRECTIONAL, NULL);
++	intel_unmap(dev, dma_handle);
+ 	if (!dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT))
+ 		__free_pages(page, order);
+ }
+@@ -3259,43 +3268,7 @@ static void intel_unmap_sg(struct device *dev, struct scatterlist *sglist,
+ 			   int nelems, enum dma_data_direction dir,
+ 			   struct dma_attrs *attrs)
  {
- 	u32 sts;
- 	unsigned long flag;
-@@ -1420,7 +1419,6 @@ static int iommu_disable_translation(struct intel_iommu *iommu)
- 		      readl, (!(sts & DMA_GSTS_TES)), sts);
- 
- 	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
--	return 0;
+-	struct dmar_domain *domain;
+-	unsigned long start_pfn, last_pfn;
+-	struct iova *iova;
+-	struct intel_iommu *iommu;
+-	struct page *freelist;
+-
+-	if (iommu_no_mapping(dev))
+-		return;
+-
+-	domain = find_domain(dev);
+-	BUG_ON(!domain);
+-
+-	iommu = domain_get_iommu(domain);
+-
+-	iova = find_iova(&domain->iovad, IOVA_PFN(sglist[0].dma_address));
+-	if (WARN_ONCE(!iova, "Driver unmaps unmatched sglist at PFN %llx\n",
+-		      (unsigned long long)sglist[0].dma_address))
+-		return;
+-
+-	start_pfn = mm_to_dma_pfn(iova->pfn_lo);
+-	last_pfn = mm_to_dma_pfn(iova->pfn_hi + 1) - 1;
+-
+-	freelist = domain_unmap(domain, start_pfn, last_pfn);
+-
+-	if (intel_iommu_strict) {
+-		iommu_flush_iotlb_psi(iommu, domain->id, start_pfn,
+-				      last_pfn - start_pfn + 1, !freelist, 0);
+-		/* free iova */
+-		__free_iova(&domain->iovad, iova);
+-		dma_free_pagelist(freelist);
+-	} else {
+-		add_unmap(domain, iova, freelist);
+-		/*
+-		 * queue up the release of the unmap to save the 1/6th of the
+-		 * cpu used up by the iotlb flush operation...
+-		 */
+-	}
++	intel_unmap(dev, sglist[0].dma_address);
  }
  
+ static int intel_nontranslate_map_sg(struct device *hddev,
+@@ -3359,13 +3332,8 @@ static int intel_map_sg(struct device *dev, struct scatterlist *sglist, int nele
  
-@@ -2860,11 +2858,7 @@ static int __init init_dmars(void)
- 
- 		iommu->flush.flush_context(iommu, 0, 0, 0, DMA_CCMD_GLOBAL_INVL);
- 		iommu->flush.flush_iotlb(iommu, 0, 0, 0, DMA_TLB_GLOBAL_FLUSH);
--
--		ret = iommu_enable_translation(iommu);
--		if (ret)
--			goto free_iommu;
--
-+		iommu_enable_translation(iommu);
- 		iommu_disable_protect_mem_regions(iommu);
+ 	ret = domain_sg_mapping(domain, start_vpfn, sglist, size, prot);
+ 	if (unlikely(ret)) {
+-		/*  clear the page */
+-		dma_pte_clear_range(domain, start_vpfn,
+-				    start_vpfn + size - 1);
+-		/* free page tables */
+ 		dma_pte_free_pagetable(domain, start_vpfn,
+ 				       start_vpfn + size - 1);
+-		/* free iova */
+ 		__free_iova(&domain->iovad, iova);
+ 		return 0;
  	}
- 
-@@ -3578,10 +3572,8 @@ static int init_iommu_hw(void)
- 
- 		iommu->flush.flush_context(iommu, 0, 0, 0,
- 					   DMA_CCMD_GLOBAL_INVL);
--		iommu->flush.flush_iotlb(iommu, 0, 0, 0,
--					 DMA_TLB_GLOBAL_FLUSH);
--		if (iommu_enable_translation(iommu))
--			return 1;
-+		iommu->flush.flush_iotlb(iommu, 0, 0, 0, DMA_TLB_GLOBAL_FLUSH);
-+		iommu_enable_translation(iommu);
- 		iommu_disable_protect_mem_regions(iommu);
- 	}
- 
 -- 
 1.7.10.4
