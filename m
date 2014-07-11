@@ -1,8 +1,8 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part3 V4 17/21] iommu/vt-d: Search for ACPI _DSM method for
-	DMAR hotplug
-Date: Fri, 11 Jul 2014 14:19:41 +0800
-Message-ID: <1405059585-10620-18-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part3 V4 19/21] iommu/vt-d: Enhance error recovery in function
+	intel_enable_irq_remapping()
+Date: Fri, 11 Jul 2014 14:19:43 +0800
+Message-ID: <1405059585-10620-20-git-send-email-jiang.liu@linux.intel.com>
 References: <1405059585-10620-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,73 +22,32 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse
 Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hotplug-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-According to Intel VT-d specification, _DSM method to support DMAR
-hotplug should exist directly under corresponding ACPI object
-representing PCI host bridge. But some BIOSes doesn't conform to
-this, so search for _DSM method in the subtree starting from the
-ACPI object representing the PCI host bridge.
+Enhance error recovery in function intel_enable_irq_remapping()
+by tearing down all created data structures.
 
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/dmar.c |   35 +++++++++++++++++++++++++++++++----
- 1 file changed, 31 insertions(+), 4 deletions(-)
+ drivers/iommu/intel_irq_remapping.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 9d8f5c82b717..cc1d19c33486 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -1927,21 +1927,48 @@ static int dmar_hotplug_remove(acpi_handle handle)
- 	return ret;
- }
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index ecf07aba8351..038963a457c8 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -696,9 +696,11 @@ static int __init intel_enable_irq_remapping(void)
+ 	return eim ? IRQ_REMAP_X2APIC_MODE : IRQ_REMAP_XAPIC_MODE;
  
--static int dmar_device_hotplug(acpi_handle handle, bool insert)
-+static acpi_status dmar_get_dsm_handle(acpi_handle handle, u32 lvl,
-+				       void *context, void **retval)
-+{
-+	acpi_handle *phdl = retval;
-+
-+	if (dmar_detect_dsm(handle, DMAR_DSM_FUNC_DRHD)) {
-+		*phdl = handle;
-+		return AE_CTRL_TERMINATE;
-+	}
-+
-+	return AE_OK;
-+}
-+
-+int dmar_device_hotplug(acpi_handle handle, bool insert)
- {
- 	int ret;
-+	acpi_handle tmp = NULL;
-+	acpi_status status;
- 
- 	if (!dmar_in_use())
- 		return 0;
- 
--	if (!dmar_detect_dsm(handle, DMAR_DSM_FUNC_DRHD))
-+	if (dmar_detect_dsm(handle, DMAR_DSM_FUNC_DRHD)) {
-+		tmp = handle;
-+	} else {
-+		status = acpi_walk_namespace(ACPI_TYPE_DEVICE, handle,
-+					     ACPI_UINT32_MAX,
-+					     dmar_get_dsm_handle,
-+					     NULL, NULL, &tmp);
-+		if (ACPI_FAILURE(status)) {
-+			pr_warn("Failed to locate _DSM method.\n");
-+			return -ENXIO;
+ error:
+-	/*
+-	 * handle error condition gracefully here!
+-	 */
++	for_each_iommu(iommu, drhd)
++		if (ecap_ir_support(iommu->ecap)) {
++			iommu_disable_irq_remapping(iommu);
++			intel_teardown_irq_remapping(iommu);
 +		}
-+	}
-+	if (tmp == NULL)
- 		return 0;
  
- 	down_write(&dmar_global_lock);
- 	if (insert)
--		ret = dmar_hotplug_insert(handle);
-+		ret = dmar_hotplug_insert(tmp);
- 	else
--		ret = dmar_hotplug_remove(handle);
-+		ret = dmar_hotplug_remove(tmp);
- 	up_write(&dmar_global_lock);
- 
- 	return ret;
+ 	if (x2apic_present)
+ 		pr_warn("Failed to enable irq remapping.  You are vulnerable to irq-injection attacks.\n");
 -- 
 1.7.10.4
