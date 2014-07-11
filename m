@@ -1,14 +1,11 @@
-From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [RFC] iommu: qcom-iommu-v0 IOMMU
-Date: Thu, 10 Jul 2014 19:47:09 -0400
-Message-ID: <CAF6AEGvr-5D437QCG+wf01OHJQ_7ydPutJDmODhzAJooenk=2A@mail.gmail.com>
-References: <1405020077-16148-1-git-send-email-robdclark@gmail.com>
-	<20140710215348.GQ20486@codeaurora.org>
+From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [Patch Part3 V4 00/21] Enable support of Intel DMAR device hotplug
+Date: Fri, 11 Jul 2014 14:19:24 +0800
+Message-ID: <1405059585-10620-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140710215348.GQ20486-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,91 +15,81 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Rafael J . Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hotplug-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jul 10, 2014 at 5:53 PM, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
-> On 07/10, Rob Clark wrote:
->> So, in it's current form, this is superficially a copy of msm_iommu
->> plus DT conversion.  But the pre-DT IOMMU driver had fairly different
->> structure.. ie. psuedo root device, with IOMMU devices hanging off
->> that, and context devices hanging off that.  The context devices were
->> what the client device would attach (which was also somewhat non-
->> standard.. see msm_iommu_get_ctx()).
->>
->> I couldn't really think of some sane way to refactor this and add DT
->> while at the same time keeping compatibility with the old pre-DT msm
->> stuff.  So I copied to a new driver.
->>
->> It was pointed out that nothing upstream actually *used* the msm_iommu
->> driver.  So if no one objects to dropping pre-DT support, then I could
->> do some patch rejuggling + sed to make this replace the old driver
->> instead.
->
-> +1
->
->> +
->> +// TODO any good reason for global lock vs per-iommu lock?
->> +DEFINE_SPINLOCK(qcom_iommu_lock);
->
-> static?
+When hot plugging a descrete IOH or a physical processor with embedded
+IIO, we need to handle DMAR(or IOMMU) unit in the PCIe host bridge if
+DMAR is in use. This patch set tries to enhance current DMAR/IOMMU/IR
+drivers to support hotplug and is based on latest Joerg's iommu/next
+branch.
 
-oh, yes.. ofc
+Patch 1-13 are bugfixes and code improvement for current drivers.
+Patch 14-17 enhances DMAR framework to support hotplug
+Patch 18 enhances Intel interrupt remapping driver to support hotplug
+Patch 19 enhances error handling in Intel IR driver
+Patch 20 enhance Intel IOMMU to support hotplug
+Patch 21 enhance ACPI pci_root driver to handle DMAR units
 
-I do wonder if we might want to make locking a bit more fine grained
-to reduce contention (but, otoh, the gpu driver isn't going to contend
-with itself, and other drivers probably aren't taxing the iommu quite
-so hard).  But I guess it would be ok to leave that as a future
-optimization.
+This patch set has been tested on Intel development machine.
+Appreciate any comments and tests. With this patch set and
+another IOAPIC hotplug patch set(http://www.mail-archive.com/linux-kernel
+@vger.kernel.org/msg671316.html) applied, we could support full functional
+socket hotplug on x86 platforms now.
 
->
->> +static LIST_HEAD(qcom_iommu_devices);
->> +
->> +/* Note that a single iommu_domain can, for devices sitting behind
->> + * more than one IOMMU (ie. one per AXI interface) will have more
->> + * than one iommu in the iommu_list.  But all are programmed to
->> + * point at the same pagetables so from client device perspective
->> + * they act as a single IOMMU.
->> + */
->> +struct qcom_domain_priv {
->> +     unsigned long *pgtable;
->> +     struct list_head iommu_list;  /* list of attached 'struct qcom_iommu' */
->> +};
->> +
->> +static int __enable_clocks(struct qcom_iommu *iommu)
->> +{
->> +     int ret;
->> +
->> +     ret = clk_prepare_enable(iommu->pclk);
->
-> Looks like __enable_clocks() is called from within a spinlock
-> sometimes. Please move the prepare call outside of any atomic
-> sections and also enable CONFIG_PROVE_LOCKING and/or
-> CONFIG_DEBUG_ATOMIC_SLEEP to find such problems.
+V3->V4:
+1) rebase onto iommu/next branch to solve conflicts
+2) refine commit messages according to Bjorn's suggestion.
 
-good point.  I haven't gotten around to running this against a debug
-kernel.  It is only at the 'just barely works now' stage, I just
-wanted to send for early feedback on the approach.  (Mainly to make
-sure no one screams bloody murder about dropping pre-DT support from
-old driver.)
+V2->V3:
+1) rebase to latest v3.16-rc2
+2) fix a bug in detecting super page support when hot-adding IOMMU
 
-BR,
--R
+V1->V2:
+1) enhance the way to simplify intel_unmap_sg()
+2) rename dmar_device_hotplug() to dmar_device_add/remove()
+3) coding style improvment
 
->> +     if (ret)
->> +             goto fail;
->> +
->> +     if (iommu->clk) {
->> +             ret = clk_prepare_enable(iommu->clk);
->> +             if (ret)
->> +                     clk_disable_unprepare(iommu->pclk);
->> +     }
->> +fail:
->> +     return ret;
->> +}
->> +
->
-> --
-> Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-> hosted by The Linux Foundation
+Best Regards!
+
+Jiang Liu (21):
+  iommu/vt-d: Match segment number when searching for dev_iotlb capable
+    devices
+  iommu/vt-d: Use correct domain id to flush virtual machine domains
+  iommu/vt-d: Introduce helper functions to improve code readability
+  iommu/vt-d: Introduce helper functions to make code symmetric for
+    readability
+  iommu/vt-d: Allocate dynamic domain id for virtual domains only
+  iommu/vt-d: Fix possible invalid memory access caused by
+    free_dmar_iommu()
+  iommu/vt-d: Avoid freeing virtual machine domain in free_dmar_iommu()
+  iommu/vt-d: Simplify include/linux/dmar.h
+  iommu/vt-d: Change iommu_enable/disable_translation to return void
+  iommu/vt-d: Simplify intel_unmap_sg() and kill duplicated code
+  iommu/vt-d: Introduce helper domain_pfn_within_range() to simplify
+    code
+  iommu/vt-d: Introduce helper function iova_size() to improve code
+    readability
+  iommu/vt-d: Fix issue in computing domain's iommu_snooping flag
+  iommu/vt-d: Introduce helper function dmar_walk_resources()
+  iommu/vt-d: Dynamically allocate and free seq_id for DMAR units
+  iommu/vt-d: Implement DMAR unit hotplug framework
+  iommu/vt-d: Search for ACPI _DSM method for DMAR hotplug
+  iommu/vt-d: Enhance intel_irq_remapping driver to support DMAR unit
+    hotplug
+  iommu/vt-d: Enhance error recovery in function
+    intel_enable_irq_remapping()
+  iommu/vt-d: Enhance intel-iommu driver to support DMAR unit hotplug
+  pci, ACPI, iommu: Enhance pci_root to support DMAR device hotplug
+
+ drivers/acpi/pci_root.c             |   16 +-
+ drivers/iommu/dmar.c                |  531 ++++++++++++++++++++------
+ drivers/iommu/intel-iommu.c         |  720 +++++++++++++++++++++--------------
+ drivers/iommu/intel_irq_remapping.c |  233 +++++++++---
+ include/linux/dmar.h                |   86 +++--
+ include/linux/iova.h                |    5 +
+ 6 files changed, 1104 insertions(+), 487 deletions(-)
+
+-- 
+1.7.10.4
