@@ -1,117 +1,97 @@
-From: Khiem Nguyen <khiem.nguyen.xt@renesas.com>
-Subject: Re: [PATCH v2 01/10] iommu/ipmmu-vmsa: Refactor micro-TLB lookup
-Date: Mon, 14 Jul 2014 18:15:27 +0900
-Message-ID: <53C39FAF.2060306@renesas.com>
-References: <1400150451-13469-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <1474559.zFUJiypt1j@avalon> <53C3220B.30506@renesas.com> <1509851.5UQ4JhkPb5@avalon>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v4] devicetree: Add generic IOMMU device tree bindings
+Date: Mon, 14 Jul 2014 11:08:13 +0100
+Message-ID: <20140714100813.GC1779@arm.com>
+References: <1404487757-18829-1-git-send-email-thierry.reding@gmail.com>
+	<20140712093917.GD18601@arm.com>
+	<CAF6AEGutHp+3f3iPA+jjaRkqq=5T_vytZ_ESoSqsQ4RHZ8F8yQ@mail.gmail.com>
+	<201407121422.02078.arnd@arndb.de>
+	<CAF6AEGs7=3UByP2DLm-uwU03wr7M14x2t-0hLX-VPJ6_eZbU3g@mail.gmail.com>
+	<20140713094341.GB23235@arm.com> <20140714064452.GD2081@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1509851.5UQ4JhkPb5@avalon>
-Sender: linux-sh-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: khiem.nguyen.xt@renesas.com, iommu@lists.linux-foundation.org, linux-sh@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20140714064452.GD2081@ulmo>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Varun Sethi <varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Laurent,
+Hi Thierry,
 
-On 7/14/2014 6:01 PM, Laurent Pinchart wrote:
-> On Monday 14 July 2014 09:19:23 Khiem Nguyen wrote:
->> On 7/10/2014 7:37 PM, Laurent Pinchart wrote:
->>> On Thursday 10 July 2014 09:03:26 Khiem Nguyen wrote:
->>>> On 5/15/2014 7:40 PM, Laurent Pinchart wrote:
->>>>> Cache the micro-TLB number in archdata allocated in the .add_device
->>>>> handler instead of looking it up when the deviced is attached and
->>>>> detached. This simplifies the .attach_dev and .detach_dev operations and
->>>>> prepares for DT support.
->>>>
->>>> [snip]
->>>>
->>>>> Signed-off-by: Laurent Pinchart
->>>>> <laurent.pinchart+renesas@ideasonboard.com>
->>>>
->>>> [snip]
->>>>
->>>>> +static int ipmmu_find_utlb(struct ipmmu_vmsa_device *mmu, struct device
->>>>> *dev)
->>>>> +{
->>>>> +	const struct ipmmu_vmsa_master *master = mmu->pdata->masters;
->>>>> +	const char *devname = dev_name(dev);
->>>>> +	unsigned int i;
->>>>> +
->>>>> +	for (i = 0; i < mmu->pdata->num_masters; ++i, ++master) {
->>>>> +		if (strcmp(master->name, devname) == 0)
->>>>> +			return master->utlb;
->>>>> +	}
->>>>> +
->>>>> +	return -1;
->>>>> +}
->>>>
->>>> [snip]
->>>>
->>>>>  static int ipmmu_add_device(struct device *dev)
->>>>
->>>> [snip]
->>>>
->>>>>  	list_for_each_entry(mmu, &ipmmu_devices, list) {
->>>>> -		master = ipmmu_find_master(mmu, dev);
->>>>> -		if (master) {
->>>>> +		utlb = ipmmu_find_utlb(mmu, dev);
->>>>> +		if (utlb >= 0) {
->>>>>  			/*
->>>>> -			 * TODO Take a reference to the master to protect
->>>>> +			 * TODO Take a reference to the MMU to protect
->>>>>  			 * against device removal.
->>>>>  			 */
->>>>>  			break;
->>>>
->>>> [snip]
->>>>
->>>>> +	archdata->mmu = mmu;
->>>>> +	archdata->utlb = utlb;
->>>>
->>>> [snip]
->>>>
->>>> I have one question for ipmmu_add_device().
->>>>
->>>> In my understanding, your code will find utlb for device
->>>> base on device name.
->>>> For any device, it will /only/ return utlb number of first match.
->>>>
->>>> How about the case that a device name connected with more than 1 utlb ?
->>>> e.g DU device (rcar-du-r8a7790) in Lager
->>>>
->>>> Was that case already covered in your code ?
->>>
->>> For the DU case, the R8A7790 contains /two DU devices/, each connected to
->>> a single utlb. The IPMMU driver will thus work fine in that case.
->>
->> As my understanding, in board-lager-reference.c,
->> DU devices are registered with 1 device name "rcar-du-r8a7790".
->>
->> I also added some logs in ipmmu_add_device() to observe
->> the mapping between device name and utlb number.
->> And I saw that only one utlb is mapped with DU.
->>
->> Do I miss anything here ?
+On Mon, Jul 14, 2014 at 07:44:53AM +0100, Thierry Reding wrote:
+> On Sun, Jul 13, 2014 at 10:43:41AM +0100, Will Deacon wrote:
+> > My plan for the ARM SMMU driver is:
+> > 
+> >   (1) Change ->probe() to walk the device-tree looking for all masters with
+> >       phandles back to the SMMU instance being probed
 > 
-> No, you're right, my bad. This is definitely a limitation of the driver at the 
-> moment.
+> You and Rob mentioned this several times and I don't understand why the
+> SMMU needs to know all masters up front. Is this necessary because it
+> needs to program all registers at .probe() time and they can't be
+> reprogrammed subsequently? Or is this just some kind of optimization?
 
-OK. Thanks for your confirmation.
+It's an optimization to reduce resource usage in the IOMMU, but one that
+is *required* by certain platforms (e.g. Olav mentioned his 43-ID master
+and Calxeda had something similar).
 
-> 
->>> I agree that this is a problem in general though, other devices (such as
->>> the DMAC) are connected to more than one utlb. This is currently not
->>> supported by the driver.
->>
->> Thanks for your confirmation.
->> I guess the driver will be improved in near future.
-> 
-> Yes, it will.
-> 
-I'm happy to wait for your update. :)
+Basically, in order to perform an ->attach() for a master to a domain, we
+need complete knowledge of the system so that we can avoid accidentally
+attaching other masters to the same domain. The programming is done using
+a form of StreamID wildcarding, so at this point we would need to have
+parsed the entire DT to ensure our wildcard doesn't match other masters.
 
--- 
-Best regards,
-KHIEM Nguyen
+> >   (2) For each master, extract the Stream IDs and add them to the internal
+> >       SMMU driver data structures (an rbtree per SMMU instance). For
+> >       hotpluggable buses, we'll need a way for the bus controller to
+> >       reserve a range of IDs -- this will likely be a later extension to
+> >       the binding.
+> > 
+> >   (3) When we get an ->add() call, warn if it's a device we haven't seen
+> >       and reject the addition.
+> 
+> It seems to me like this would be the logical place to parse stream IDs.
+
+We could do that only if we were guaranteed to have an ->add() call for
+*every* master before an ->attach() call for *any* master. I don't think
+that is necessarily true.
+
+> You could for example have a case where some device tree contains a node
+> for which no driver will ever be loaded (for example because it hasn't
+> been built-in, or the device is never used and the module is therefore
+> never loaded). That's a situation that you cannot determine by simply
+> walking the device tree in the IOMMU's .probe().
+
+Why not? If we're simply searching for phandles to the IOMMU, why does it
+matter whether a driver is bound to the master?
+
+> I've always thought about IOMMU masters much in the same way as other
+> types of resources, such as memory or interrupts. In the rest of the
+> kernel we do carefully try to postpone allocation of these resources
+> until they are required, specifically so we don't waste resources when
+> they're unused.
+
+See above, they are all required the moment anybody tries an ->attach().
+
+> That's also one of the reasons why I think associating an IOMMU with the
+> bus type is bad. Currently if an IOMMU driver thinks it should enable
+> translation for a given device, then there's no way for that device's
+> driver to opt out again. There may be reasons (performance, hardware
+> bugs, ...) for the driver to decide against using the IOMMU for
+> translation, but there's currently no way to do that if the IOMMU driver
+> disagrees.
+
+Yes, we need a way to associate an IOMMU with a bus instance, but I think
+that's a separate topic, no?
+
+Will
