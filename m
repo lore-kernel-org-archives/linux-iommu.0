@@ -1,18 +1,19 @@
-From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v4] devicetree: Add generic IOMMU device tree bindings
-Date: Mon, 14 Jul 2014 06:13:03 -0400
-Message-ID: <CAF6AEGspVSxdEj_3LNtMp752LF-RbfQ+Y4EdWoWfT9O8wMnh-g@mail.gmail.com>
-References: <1404487757-18829-1-git-send-email-thierry.reding@gmail.com>
-	<20140712093917.GD18601@arm.com>
-	<CAF6AEGutHp+3f3iPA+jjaRkqq=5T_vytZ_ESoSqsQ4RHZ8F8yQ@mail.gmail.com>
-	<201407121422.02078.arnd@arndb.de>
-	<CAF6AEGs7=3UByP2DLm-uwU03wr7M14x2t-0hLX-VPJ6_eZbU3g@mail.gmail.com>
-	<20140714062428.GC2081@ulmo>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCHv2 0/3] Support for nesting IOMMUs in VFIO
+Date: Mon, 14 Jul 2014 18:06:07 +0100
+Message-ID: <20140714170607.GP1779@arm.com>
+References: <1404930526-32119-1-git-send-email-will.deacon@arm.com>
+	<1404938235.4256.199.camel@ul30vt.home>
+	<20140710113406.GM2449@arm.com>
+	<1405006698.4256.237.camel@ul30vt.home>
+	<20140710154510.GV2449@arm.com>
+	<1405008845.4256.252.camel@ul30vt.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140714062428.GC2081@ulmo>
+Content-Disposition: inline
+In-Reply-To: <1405008845.4256.252.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,63 +23,53 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Varun Sethi <varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jul 14, 2014 at 2:24 AM, Thierry Reding
-<thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-> On Sat, Jul 12, 2014 at 08:57:31AM -0400, Rob Clark wrote:
->> On Sat, Jul 12, 2014 at 8:22 AM, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> wrote:
-> [...]
->> > The way that Thierry's binding does that is the obvious solution to this,
->> > and it mirrors what we do in practically every other subsystem. I definitely
->> > want the SMMU to change before anybody starts using it in a real system,
->> > which we fortunately do not have yet.
->>
->> hmm, well if some of the things I need for (like this or batching
->> mappings) are too weird and gpu specific, I'm willing to duplicate the
->> IOMMU driver in drm/msm.  It really isn't so much code, and that gives
->> me a lot more more flexibility to do crazy things... at some point I'm
->> probably going to want to do context switches by banging the IOMMU
->> registers directly from the gpu.
->
-> If the IOMMU API doesn't provide for what you need, then perhaps it's
-> time to enhance it? We do that all the time in other parts of the
-> kernel, why should IOMMU be special?
+On Thu, Jul 10, 2014 at 05:14:05PM +0100, Alex Williamson wrote:
+> On Thu, 2014-07-10 at 16:45 +0100, Will Deacon wrote:
+> > On Thu, Jul 10, 2014 at 04:38:18PM +0100, Alex Williamson wrote:
+> > > On Thu, 2014-07-10 at 12:34 +0100, Will Deacon wrote:
+> > > > Do you think that returning something like -EOPNOTSUPP from an attach is
+> > > > sufficient for userspace to figure out what's gone wrong?
+> > > 
+> > > It seems like this would all be a little easier if we had some sort of
+> > > bus_type iterator, then when we want to see if nesting is supported we'd
+> > > iterate the bus_types, test iommu_present(), iommu_domain_alloc(),
+> > > iommu_domain_set_attr(), iommu_domain_free().  We'd only allow a nesting
+> > > domain to be set if the IOMMU driver for at least one bus_type supports
+> > > it.  Then I think enforcing it would be a little more obvious to
+> > > userspace.  There is a bus_kset, but we'd need an iterator or at least
+> > > to enable find_bus() and have type1 walk a list of bus names known to
+> > > possibly support nesting (uglier, but functional).  Thanks,
+> > 
+> > That would work fine if we only had one IOMMU instance per bus. The problem
+> > is, the ARM SMMU driver (at least) can handle multiple SMMU instances on a
+> > single bus, only some of which may be capable of nesting. Until we've done
+> > an attach, it's impossible to know what the capabilities are (since the
+> > attach is what binds the domain to a physical IOMMU).
+> > 
+> > So you'd actually need to iterate the bus_type, test iommu_present(),
+> > iommu_domain_alloc(), iommu_domain_attach(), iommu_domain_free(). The
+> > attach, of course, then requires devices which means you ultimately end up
+> > rolling VFIO_SET_IOMMU and VFIO_SET_CONTAINER into a single operation. I
+> > don't think that helps the group abstraction much!
+> 
+> I don't really see how that diminishes the value.  It still means that
+> it's only possible to set the IOMMU type of a container to nesting if
+> it's possible to support a nesting IOMMU.  The user would get an error
+> trying to attach any group to the container that can't be supported as
+> nesting, whether that's behind the wrong bus_type or behind the wrong
+> IOMMU in the correct bus_type.  The iommu-sysfs extensions that recently
+> went into the iommu next branch would help to expose this kind of
+> information to the user.
+> 
+> It seems like an improvement versus statically advertising support for
+> something that actually cannot be enabled.  Thanks,
 
-sure.. and my comment was also about the map/unmap batching.
+Ok, I suppose it's an improvement. Given that we don't have a bus_type
+iterator, would you object if I only do this for the pci_bus_type for now
+(i.e. the only bus that's VFIO currently supports).
 
-Bypassing IOMMU wouldn't be my first choice.  (Especially because I'd
-then get to implement it twice.)  But if some of the things I need are
-too specific to one driver (or worse, problematic for other IOMMU
-use-cases which I don't know about), then it is an option I'd be
-willing to consider.  If nothing else, it would get me out of
-allocating sglists for every buffer..  I wonder how much memory
-scatterlists take up for 500M of gfx buffers?
-
-> It seems to me like context switching for per-process address space
-> isolation is one of the important features of an IOMMU. If the current
-> API doesn't let you do that then we should think of ways how it can be
-> improved. And if it doesn't do it fast enough, then we should equally
-> find ways to speed it up.
->
-> This is part of why I think it would be good to have explicit objects
-> associated with IOMMU contexts. That would give us a good place to add
-> caching for this kind of situation. Currently we're required to handle
-> most of this in drivers (map from struct device to context, ...).
-
-well, it is at least awkward that the current api conflates attaching
-device and attaching context.  I think we could get some use out of an
-iommu_swap() API which conceptually acts as:
-
-  iommu_swap(olddomain, newdomain, dev)
-  {
-     iommu_detach_device(olddomain, dev);
-     iommu_attach_device(newdomain, dev);
-  }
-
-BR,
--R
-
-> Thierry
+Will
