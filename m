@@ -1,102 +1,147 @@
-From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [Patch Part3 V4 21/21] pci, ACPI, iommu: Enhance pci_root to
- support DMAR device hotplug
-Date: Wed, 16 Jul 2014 12:48:33 -0600
-Message-ID: <CAErSpo5MU2tck3iQxf0K0rMzNuHdFMLDF+frqQ-5f-KPGcobqg@mail.gmail.com>
-References: <1405059585-10620-1-git-send-email-jiang.liu@linux.intel.com> <1405059585-10620-22-git-send-email-jiang.liu@linux.intel.com>
+From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v4] devicetree: Add generic IOMMU device tree bindings
+Date: Wed, 16 Jul 2014 16:24:21 -0400
+Message-ID: <CAF6AEGu9K6zu2EoN3LJhCUFwJ6dV+J0YCLeJ1TkWMHp8H3LjQA@mail.gmail.com>
+References: <1404487757-18829-1-git-send-email-thierry.reding@gmail.com>
+	<20140712093917.GD18601@arm.com>
+	<CAF6AEGutHp+3f3iPA+jjaRkqq=5T_vytZ_ESoSqsQ4RHZ8F8yQ@mail.gmail.com>
+	<201407121422.02078.arnd@arndb.de>
+	<CAF6AEGs7=3UByP2DLm-uwU03wr7M14x2t-0hLX-VPJ6_eZbU3g@mail.gmail.com>
+	<20140713094341.GB23235@arm.com>
+	<CAF6AEGt5cQhDCZgYX4=M1EKE=n2J=9G6mO02JMx-+Fcq_0ukfw@mail.gmail.com>
+	<53C5D480.3030409@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1405059585-10620-22-git-send-email-jiang.liu@linux.intel.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Jiang Liu <jiang.liu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Ashok Raj <ashok.raj@intel.com>, Yijing Wang <wangyijing@huawei.com>, Tony Luck <tony.luck@intel.com>, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, linux hotplug mailing <linux-hotplug@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dmaengine@vger.kernel.org, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <53C5D480.3030409-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Varun Sethi <varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jul 11, 2014 at 12:19 AM, Jiang Liu <jiang.liu@linux.intel.com> wrote:
-> Finally enhance pci_root driver to support DMAR device hotplug when
-> hot-plugging PCI host bridges.
+On Tue, Jul 15, 2014 at 9:25 PM, Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
+> On 7/13/2014 4:43 AM, Rob Clark wrote:
+>> On Sun, Jul 13, 2014 at 5:43 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+>>> On Sat, Jul 12, 2014 at 01:57:31PM +0100, Rob Clark wrote:
+>>>> On Sat, Jul 12, 2014 at 8:22 AM, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> wrote:
+>>>>> On Saturday 12 July 2014, Rob Clark wrote:
+>>>>>>>> Was there actually a good reason for having the device link to the
+>>>>>>>> iommu rather than the other way around?  How much would people hate it
+>>>>>>>> if I just ignore the generic bindings and use something that works for
+>>>>>>>> me instead.  I mean, it isn't exactly like there is going to be .dts
+>>>>>>>> re-use across different SoC's..  and at least with current IOMMU API
+>>>>>>>> some sort of of_get_named_iommu() API doesn't really make sense.
+>>>>>>>
+>>>>>>> The thing is, if you end up ignoring the generic binding then we have two
+>>>>>>> IOMMUs using the same (ARM SMMU) binding and it begs the question as to
+>>>>>>> which is the more generic! I know we're keen to get this merged, but merging
+>>>>>>> something that people won't use and calling it generic doesn't seem ideal
+>>>>>>> either. We do, however, desperately need a generic binding.
+>>>>>>
+>>>>>> yeah, ignoring the generic binding is not my first choice.  I'd rather
+>>>>>> have something that works well for everyone.  But I wasn't really sure
+>>>>>> if the current proposal was arbitrary, or if there are some
+>>>>>> conflicting requirements between different platforms.
+>>>>>
+>>>>> The common case that needs to be simple is attaching one (master) device
+>>>>> to an IOMMU using the shared global context for the purposes of implementing
+>>>>> the dma-mapping API.
+>>>>
+>>>> well, I don't disagree that IOMMU API has some problems.  It is too
+>>>> tied to the bus type, which doesn't really seem to make sense for
+>>>> platform devices.  (Unless we start having multiple platform busses?)
+>>>>
+>>>> But at least given the current IOMMU API I'm not really sure how it
+>>>> makes a difference which way the link goes.  But if there has already
+>>>> been some discussion about how you want to handle the tie in with
+>>>> dma-mapping, if you could point me at that then maybe your point will
+>>>> make more sense to me.
+>>>
+>>> If you look at the proposed binding in isolation, I think it *is* cleaner
+>>> than the ARM SMMU binding (I've acked it...) and I believe it's more
+>>> consistent with the way we describe linkages elsewhere.
+>>>
+>>> However, the issue you're raising is that it's more difficult to make use of
+>>> in a Linux IOMMU driver. The reward you'll get for using it will come
+>>> eventually when the DMA ops are automatically swizzled for devices using the
+>>> generic binding.
+>>>
+>>> My plan for the ARM SMMU driver is:
+>>>
+>>>   (1) Change ->probe() to walk the device-tree looking for all masters with
+>>>       phandles back to the SMMU instance being probed
+>>>
+>>>   (2) For each master, extract the Stream IDs and add them to the internal
+>>>       SMMU driver data structures (an rbtree per SMMU instance). For
+>>>       hotpluggable buses, we'll need a way for the bus controller to
+>>>       reserve a range of IDs -- this will likely be a later extension to
+>>>       the binding.
+>>>
+>>>   (3) When we get an ->add() call, warn if it's a device we haven't seen
+>>>       and reject the addition.
+>>>
+>>> That way, ->attach() should be the same as it is now, I think.
+>>>
+>>> Have you tried implementing something like that? We agreed that (1) isn't
+>>> pretty, but I don't have a good alternative and it's only done at
+>>> probe-time.
+>>
+>> I haven't tried implementing that yet, but I'm sure it would work.  I
+>> was just hoping to avoid having to do that ;-)
 >
-> Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
+> Is the reason you want to do it this way because you want to guarantee
+> that all masters (and stream IDs) have been identified before the first
+> attach call? I am just wondering why you cannot continue doing the
+> master/streamID discovery during add_device() callback?
 
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+it was mostly because I couldn't think of a sane way to differentiate
+between first and second time a device attaches (without keeping a
+reference to the device).  But I guess it is ok to assume no hotplug
+(since walking the device tree also seems acceptable)
 
-I assume you'll merge this along with the rest of the series via some
-non-PCI tree.
+BR,
+-R
 
-> ---
->  drivers/acpi/pci_root.c |   16 ++++++++++++++--
->  1 file changed, 14 insertions(+), 2 deletions(-)
+>>>
+>>> BTW: Is the msm-v0 IOMMU compatible with the ARM SMMU driver, or is it a
+>>> completely different design requiring a different driver?
+>>
+>> My understanding is that it is different from msm v1 IOMMU, although I
+>> think it shares the same pagetable format with v1.  Not sure if that
+>> is the same as arm-smmu?   If so it might be nice to try to extract
+>> out some shared helper fxns for map/unmap as well.
+>>
+>> I expect Olav knows better the similarities/differences.
+>>
 >
-> diff --git a/drivers/acpi/pci_root.c b/drivers/acpi/pci_root.c
-> index d388f13d48b4..99c2b9761c12 100644
-> --- a/drivers/acpi/pci_root.c
-> +++ b/drivers/acpi/pci_root.c
-> @@ -33,6 +33,7 @@
->  #include <linux/pci.h>
->  #include <linux/pci-acpi.h>
->  #include <linux/pci-aspm.h>
-> +#include <linux/dmar.h>
->  #include <linux/acpi.h>
->  #include <linux/slab.h>
->  #include <acpi/apei.h> /* for acpi_hest_init() */
-> @@ -511,6 +512,7 @@ static int acpi_pci_root_add(struct acpi_device *device,
->         struct acpi_pci_root *root;
->         acpi_handle handle = device->handle;
->         int no_aspm = 0, clear_aspm = 0;
-> +       bool hotadd = system_state != SYSTEM_BOOTING;
+> The msm-v0 IOMMU is not compatible with ARM SMMUv1 specification.
+> However, it is a close cousin. The hardware was designed before the ARM
+> SMMUv1 specification was available I believe. But it shares many of the
+> same concepts as the ARM SMMUv1.
 >
->         root = kzalloc(sizeof(struct acpi_pci_root), GFP_KERNEL);
->         if (!root)
-> @@ -557,6 +559,11 @@ static int acpi_pci_root_add(struct acpi_device *device,
->         strcpy(acpi_device_class(device), ACPI_PCI_ROOT_CLASS);
->         device->driver_data = root;
+> msm-v0 IOMMU supports V7S page table format only. The ARM SMMU driver
+> does not support V7S at this time. However, I believe we need to support
+> this.
 >
-> +       if (hotadd && dmar_device_add(handle)) {
-> +               result = -ENXIO;
-> +               goto end;
-> +       }
-> +
->         pr_info(PREFIX "%s [%s] (domain %04x %pR)\n",
->                acpi_device_name(device), acpi_device_bid(device),
->                root->segment, &root->secondary);
-> @@ -583,7 +590,7 @@ static int acpi_pci_root_add(struct acpi_device *device,
->                         root->segment, (unsigned int)root->secondary.start);
->                 device->driver_data = NULL;
->                 result = -ENODEV;
-> -               goto end;
-> +               goto remove_dmar;
->         }
+> Will, this reminds me. We definitely have a need to use different page
+> tables in the ARM SMMU driver vs. the ARM CPU. We have an SoC with ARMv8
+> cores (and thus ARMv8 page tables) but the SMMUs (SMMUv1) on this SoC
+> only have support for V7S/V7L page table format. So we cannot use the
+> same page table format as the CPU.
 >
->         if (clear_aspm) {
-> @@ -597,7 +604,7 @@ static int acpi_pci_root_add(struct acpi_device *device,
->         if (device->wakeup.flags.run_wake)
->                 device_set_run_wake(root->bus->bridge, true);
+> Thanks,
 >
-> -       if (system_state != SYSTEM_BOOTING) {
-> +       if (hotadd) {
->                 pcibios_resource_survey_bus(root->bus);
->                 pci_assign_unassigned_root_bus_resources(root->bus);
->         }
-> @@ -607,6 +614,9 @@ static int acpi_pci_root_add(struct acpi_device *device,
->         pci_unlock_rescan_remove();
->         return 1;
+> Olav
 >
-> +remove_dmar:
-> +       if (hotadd)
-> +               dmar_device_remove(handle);
->  end:
->         kfree(root);
->         return result;
-> @@ -625,6 +635,8 @@ static void acpi_pci_root_remove(struct acpi_device *device)
->
->         pci_remove_root_bus(root->bus);
->
-> +       dmar_device_remove(device->handle);
-> +
->         pci_unlock_rescan_remove();
->
->         kfree(root);
 > --
-> 1.7.10.4
->
+> The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+> hosted by The Linux Foundation
