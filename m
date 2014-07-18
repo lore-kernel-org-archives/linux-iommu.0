@@ -1,82 +1,105 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [git pull] IOMMU Fixes for Linux v3.16-rc5
-Date: Fri, 18 Jul 2014 15:38:35 +0200
-Message-ID: <20140718133835.GA19087@8bytes.org>
+From: Suman Anna <s-anna@ti.com>
+Subject: Re: [PATCH] iommu/omap: Remove virtual memory manager
+Date: Fri, 18 Jul 2014 11:45:29 -0500
+Message-ID: <53C94F29.9090403@ti.com>
+References: <1405595355-7341-1-git-send-email-laurent.pinchart@ideasonboard.com> <53C7F15F.6030306@ti.com> <1779106.6LTfJHCcQh@avalon>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="IJpNTDwzlM2Ie8A6"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <1779106.6LTfJHCcQh@avalon>
+Sender: linux-omap-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: iommu@lists.linux-foundation.org, linux-omap@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, Florian Vaussard <florian.vaussard@epfl.ch>
 List-Id: iommu@lists.linux-foundation.org
 
+On 07/18/2014 05:50 AM, Laurent Pinchart wrote:
+> Hi Suman,
+> 
+> Thank you for the review.
+> 
+> On Thursday 17 July 2014 10:53:03 Suman Anna wrote:
+>> On 07/17/2014 06:09 AM, Laurent Pinchart wrote:
+>>> The OMAP3 ISP driver was the only user of the OMAP IOVMM API. Now that
+>>> is has been ported to the DMA API, remove the unused virtual memory
+>>> manager.
+>>>
+>>> Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+>>> ---
+>>>
+>>> Joerg, could you please pick this patch up for v3.17 if possible ?
+>>
+>> Need one minor change as below, otherwise patch is good.
+>>
+>>>  drivers/iommu/Kconfig            |  10 +-
+>>>  drivers/iommu/Makefile           |   1 -
+>>>  drivers/iommu/omap-iommu-debug.c | 114 ------
+>>>  drivers/iommu/omap-iommu.c       |   2 -
+>>>  drivers/iommu/omap-iommu.h       |   6 +-
+>>>  drivers/iommu/omap-iovmm.c       | 791 ----------------------------------
+>>>  include/linux/omap-iommu.h       |  37 +-
+>>>  7 files changed, 8 insertions(+), 953 deletions(-)
+>>>  delete mode 100644 drivers/iommu/omap-iovmm.c
+>>>
+>>> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+>>> index d260605..a1f0fad 100644
+>>> --- a/drivers/iommu/Kconfig
+>>> +++ b/drivers/iommu/Kconfig
+>>> @@ -143,16 +143,12 @@ config OMAP_IOMMU
+>>>  	depends on ARCH_OMAP2PLUS
+>>>  	select IOMMU_API
+>>>
+>>> -config OMAP_IOVMM
+>>> -	tristate "OMAP IO Virtual Memory Manager Support"
+>>> -	depends on OMAP_IOMMU
+>>> -
+>>>  config OMAP_IOMMU_DEBUG
+>>> -       tristate "Export OMAP IOMMU/IOVMM internals in DebugFS"
+>>> -       depends on OMAP_IOVMM && DEBUG_FS
+>>> +       tristate "Export OMAP IOMMU internals in DebugFS"
+>>> +       depends on DEBUG_FS
+>>
+>> This module is relevant only when OMAP_IOMMU is enabled, so this should
+>> be depends on OMAP_IOMMU && DEBUG_FS. The dependency is inherent before
+>> through OMAP_IOVMM. Otherwise, this module can be built by itself and
+>> results in some build errors.
+> 
+> Oops, my bad. I'll fix that in v2.
+> 
+>>>         help
+>>>           Select this to see extensive information about
+>>> -         the internal state of OMAP IOMMU/IOVMM in debugfs.
+>>> +         the internal state of OMAP IOMMU in debugfs.
+>>>
+>>>           Say N unless you know you need this.
+> 
+> [snip]
+> 
+>>> diff --git a/drivers/iommu/omap-iommu.h b/drivers/iommu/omap-iommu.h
+>>> index ea920c3..36a85f3 100644
+>>> --- a/drivers/iommu/omap-iommu.h
+>>> +++ b/drivers/iommu/omap-iommu.h
+>>> @@ -46,9 +46,6 @@ struct omap_iommu {
+>>>
+>>>  	int		nr_tlb_entries;
+>>>
+>>> -	struct list_head	mmap;
+>>> -	struct mutex		mmap_lock; /* protect mmap */
+>>> -
+>>>  	void *ctx; /* iommu context: registres saved area */
+>>>  	u32 da_start;
+>>>  	u32 da_end;
+>>
+>> With the removal of omap-iovmm, the da_start and da_end can also be
+>> removed. No need to block this patch for that, it can be done in a
+>> separate patch.
+> 
+> I'll remove the fields from struct omap_iommu in v2. I'll also remove them 
+> from the platform data, but I'll need to do so in a separate patch, as arch/ 
+> code needs to be touched as well.
 
---IJpNTDwzlM2Ie8A6
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Yeah, that's the reason I said separate patch :)
 
-Hi Linus,
+regards
+Suman
 
-The following changes since commit cd3de83f147601356395b57a8673e9c5ff1e59d1:
-
-  Linux 3.16-rc4 (2014-07-06 12:37:51 -0700)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v3.16-rc5
-
-for you to fetch changes up to 3170447c1f264d51b8d1f3898bf2588588a64fdc:
-
-  iommu/fsl: Fix the error condition during iommu group (2014-07-07 10:30:02 +0200)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v3.16-rc5
-
-A couple of fixes for the Freescale PAMU driver queued up:
-
-      * Fix PAMU window size check.
-      * Fix the device domain attach condition.
-      * Fix the error condition during iommu group
-
-----------------------------------------------------------------
-Varun Sethi (3):
-      iommu/fsl: Fix PAMU window size check.
-      iommu/fsl: Fix the device domain attach condition.
-      iommu/fsl: Fix the error condition during iommu group
-
- drivers/iommu/fsl_pamu.c        |  8 ++++----
- drivers/iommu/fsl_pamu_domain.c | 18 ++++++++----------
- 2 files changed, 12 insertions(+), 14 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
-
---IJpNTDwzlM2Ie8A6
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJTySNbAAoJECvwRC2XARrjdbwQAKNKAk2C6fxyRLtiIE3ab8tk
-U8utu5v0/1UcgFH62axPOt/NPoLVn3YoK7RQJyYc7P/dSE+2o18hhU+Hxn0jfYZN
-RTLn8p7FzqbpK9XGmmYRCJLxCRD2k8xixwA+CLrux5RB9bMupuX2PlczkLu6SgPx
-RuDH4lnUgXG9BCj8hU99QIvzqAux8ZllfUKVxmrfN1qHlmBGJUUfHFWAO8YE2/CZ
-vjvbgvglcUkGKL/qggNJzXNaCwnBeHV8NB3V18ZipX4DdgRULX3e9DYI8MuDjFHn
-7EOJ/XExA1U9OvFc/f39Xrdf4DlGfuytVoyy0yQoZXMrwuGTULzP6A8GoAi3fsGM
-9ZFwNrA450mS7qBhmE/FLfAKT4pYL+v7z9M+ZSvn4PPjJ/xORyuZIra0HtKfaQ6r
-tvCekndO62APyTVmrhcuvmT8BAH5hkj+yUVn+Fjdxb7cGB+S+yUbUJAmjbTOvDP8
-iu5usXyovYz93MPcDvChvXGKd09VARFAFXJpBP2sguYUzC2vfzsK0pKSDHzxttj1
-qZr+KK3shvyiCVn61HYoFsNKr4fLEKI+ls6/4d+m38rIjPdG0Q1XCqjZy0WwTsjJ
-26Kcdakd/Hl/ogG5G7cJjO7yibeLfGOA6yGgAKLiP3I3vnFk90pVXk6wjjQSI9Cl
-5TBrldo10IQQf5A/Bhzg
-=vuJn
------END PGP SIGNATURE-----
-
---IJpNTDwzlM2Ie8A6--
