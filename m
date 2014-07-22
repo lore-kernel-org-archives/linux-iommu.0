@@ -1,50 +1,199 @@
-From: Greg Edwards <gedwards-LfVdkaOWEx8@public.gmane.org>
-Subject: [PATCH] iommu/vt-d: fix race between free_irte() and get_irte()
-Date: Tue, 22 Jul 2014 08:27:19 -0600
-Message-ID: <20140722142719.GA28143@psuche.datadirectnet.com>
+From: Rob Clark <robdclark@gmail.com>
+Subject: Re: [PATCH v2 1/1] iommu-api: Add map_range/unmap_range functions
+Date: Tue, 22 Jul 2014 11:07:03 -0400
+Message-ID: <CAF6AEGvnnYMY81rkw5esmPSm7Bqnye2h0epoGeYT+NLMBU2KLg@mail.gmail.com>
+References: <1405558917-7597-1-git-send-email-ohaugan@codeaurora.org>
+	<1405558917-7597-2-git-send-email-ohaugan@codeaurora.org>
+	<20140717082138.GC18640@ulmo>
+	<53CDB76A.5090602@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <53CDB76A.5090602@codeaurora.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Olav Haugan <ohaugan@codeaurora.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, mitchelh@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-get_irte() can race with free_irte() and dereference a NULL iommu
-pointer.
+On Mon, Jul 21, 2014 at 8:59 PM, Olav Haugan <ohaugan@codeaurora.org> wrote:
+> On 7/17/2014 1:21 AM, Thierry Reding wrote:
+>> On Wed, Jul 16, 2014 at 06:01:57PM -0700, Olav Haugan wrote:
+>>> Mapping and unmapping are more often than not in the critical path.
+>>> map_range and unmap_range allows SMMU driver implementations to optimize
+>>
+>> s/SMMU/IOMMU/
+>>
+>>> the process of mapping and unmapping buffers into the SMMU page tables.
+>>
+>> s/SMMU/IOMMU/
+>>
+>>> Instead of mapping one physical address, do TLB operation (expensive),
+>>> mapping, do TLB operation, mapping, do TLB operation the driver can map
+>>> a scatter-gatherlist of physically contiguous pages into one virtual
+>>> address space and then at the end do one TLB operation.
+>>
+>> I find the above hard to read. Maybe:
+>>
+>> Instead of mapping a buffer one page at a time and requiring potentially
+>> expensive TLB operations for each page, this function allows the driver
+>> to map all pages in one go and defer TLB maintenance until after all
+>> pages have been mapped.
+>
+> Yeah, all above is OK with me.
+>
+>>
+>>> Additionally, the mapping operation would be faster in general since
+>>> clients does not have to keep calling map API over and over again for
+>>> each physically contiguous chunk of memory that needs to be mapped to a
+>>> virtually contiguous region.
+>>>
+>>> Signed-off-by: Olav Haugan <ohaugan@codeaurora.org>
+>>> ---
+>>>  drivers/iommu/iommu.c | 48 ++++++++++++++++++++++++++++++++++++++++++++++++
+>>>  include/linux/iommu.h | 25 +++++++++++++++++++++++++
+>>>  2 files changed, 73 insertions(+)
+>>>
+>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>>> index 1698360..a0eebb7 100644
+>>> --- a/drivers/iommu/iommu.c
+>>> +++ b/drivers/iommu/iommu.c
+>>> @@ -1089,6 +1089,54 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
+>>>  EXPORT_SYMBOL_GPL(iommu_unmap);
+>>>
+>>>
+>>> +int iommu_map_range(struct iommu_domain *domain, unsigned int iova,
+>>
+>> Maybe iova should be dma_addr_t? Or at least unsigned long? And perhaps
+>> iommu_map_sg() would be more consistent with the equivalent function in
+>> struct dma_ops?
+>>
+>>> +                struct scatterlist *sg, unsigned int len, int opt)
+>>
+>> The length argument seems to be the size of the mapping. Again, the
+>> struct dma_ops function uses this argument to denote the number of
+>> entries in the scatterlist.
+>>
+>> opt is somewhat opaque. Perhaps this should be turned into unsigned long
+>> flags? Although given that there aren't any users yet it's difficult to
+>> say what's best here. Perhaps the addition of this argument should be
+>> postponed until there are actual users?
+>
+> I am thinking something like this:
+>
+> int iommu_map_sg(struct iommu_domain *domain, struct scatterlist *sg,
+> unsigned int nents, int prot, unsigned long flags);
+> int iommu_unmap_sg(struct iommu_domain *domain, struct scatterlist *sg,
+> unsigned int nents, unsigned long flags);
+>
+> The iova is contained within sg so we don't need that argument really
+> and I would like to keep the flags argument. I would prefer not to
+> change the API after it has been published which could potentially
+> affect a lot of call sites.
 
-Signed-off-by: Greg Edwards <gedwards-LfVdkaOWEx8@public.gmane.org>
-Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
----
- drivers/iommu/intel_irq_remapping.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ugg.. that at least forces me to construct a separate sg for mapping
+the same buffer in multiple process's gpu addr space.  Not really a
+fan of that.
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 9b17489..2d67e6d 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -70,6 +70,12 @@ static int get_irte(int irq, struct irte *entry)
- 
- 	raw_spin_lock_irqsave(&irq_2_ir_lock, flags);
- 
-+	/* ensure we're not racing with free_irte() */
-+	if (unlikely(!irq_iommu->iommu)) {
-+		raw_spin_unlock_irqrestore(&irq_2_ir_lock, flags);
-+		return -1;
-+	}
-+
- 	index = irq_iommu->irte_index + irq_iommu->sub_handle;
- 	*entry = *(irq_iommu->iommu->ir_table->base + index);
- 
--- 
-1.9.3
+BR,
+-R
+
+>>> +{
+>>> +    s32 ret = 0;
+>>
+>> Should be int to match the function's return type.
+>>
+>>> +    u32 offset = 0;
+>>> +    u32 start_iova = iova;
+>>
+>> These should match the type of iova. Also, what's the point of
+>> start_iova if we can simply keep iova constant and use offset where
+>> necessary?
+>>
+>>> +    BUG_ON(iova & (~PAGE_MASK));
+>>> +
+>>> +    if (unlikely(domain->ops->map_range == NULL)) {
+>>> +            while (offset < len) {
+>>
+>> Maybe this should use for_each_sg()?
+>>
+>>> +                    phys_addr_t phys = page_to_phys(sg_page(sg));
+>>> +                    u32 page_len = PAGE_ALIGN(sg->offset + sg->length);
+>>
+>> Shouldn't this alignment be left to iommu_map() to handle? It has code
+>> to deal with that already.
+>
+> I don't see page alignment in the iommu_map function. I only see a check
+> whether the (iova | paddr | size) is aligned to the minimum page size
+> and then it errors out if it isn't....
+>
+>
+>>> +                    ret = iommu_map(domain, iova, phys, page_len, opt);
+>>
+>> This conflates the new opt argument with iommu_map()'s prot argument.
+>> Maybe those two should rather be split?
+>>
+>>> +                    if (ret)
+>>> +                            goto fail;
+>>> +
+>>> +                    iova += page_len;
+>>> +                    offset += page_len;
+>>> +                    if (offset < len)
+>>> +                            sg = sg_next(sg);
+>>> +            }
+>>> +    } else {
+>>> +            ret = domain->ops->map_range(domain, iova, sg, len, opt);
+>>> +    }
+>>
+>> Perhaps rather than check for a ->map_range implementation everytime a
+>> better option may be to export this generic implementation so that
+>> drivers can set it in their iommu_ops if they don't implement it? So the
+>> contents of the if () block could become a new function:
+>>
+>>       int iommu_map_range_generic(...)
+>>       {
+>>               ...
+>>       }
+>>       EXPORT_SYMBOL(iommu_map_range_generic);
+>>
+>> And drivers would do this:
+>>
+>>       static const struct iommu_ops driver_iommu_ops = {
+>>               ...
+>>               .map_range = iommu_map_range_generic,
+>>               ...
+>>       };
+>
+> I'd like to keep the new API consistent with the rest of the API. Most
+> if not all of the other APIs always check if the operation is non-NULL.
+> A new driver could choose not to set the .map_range callback. I think it
+> is better to keep this consistent with the behavior of the other APIs.
+>
+>>> +int iommu_unmap_range(struct iommu_domain *domain, unsigned int iova,
+>>> +                  unsigned int len, int opt)
+>>
+>> Some comments regarding function name and argument types as for
+>> iommu_map_range().
+>>
+>>> +static inline int iommu_map_range(struct iommu_domain *domain,
+>>> +                              unsigned int iova, struct scatterlist *sg,
+>>> +                              unsigned int len, int opt)
+>>> +{
+>>> +    return -ENODEV;
+>>
+>> I know other IOMMU API dummies already use this error code, but I find
+>> it to be a little confusing. The dummies are used when the IOMMU API is
+>> disabled via Kconfig, so -ENOSYS (Function not implemented) seems like a
+>> more useful error.
+>
+> Again, I would prefer to keep this consistent with the other APIs
+> already there. iommu_map/iommu_unmap both returns -ENODEV. If we want to
+> change this I think this should be done as a separate patch that changed
+> all of them to be consistent.
+>
+> Thanks,
+>
+> Olav
+>
+> --
+> The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+> hosted by The Linux Foundation
