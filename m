@@ -1,199 +1,93 @@
-From: Rob Clark <robdclark@gmail.com>
-Subject: Re: [PATCH v2 1/1] iommu-api: Add map_range/unmap_range functions
-Date: Tue, 22 Jul 2014 11:07:03 -0400
-Message-ID: <CAF6AEGvnnYMY81rkw5esmPSm7Bqnye2h0epoGeYT+NLMBU2KLg@mail.gmail.com>
-References: <1405558917-7597-1-git-send-email-ohaugan@codeaurora.org>
-	<1405558917-7597-2-git-send-email-ohaugan@codeaurora.org>
-	<20140717082138.GC18640@ulmo>
-	<53CDB76A.5090602@codeaurora.org>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [PATCH v2 0/3] iommu: Remove OMAP IOVMM driver
+Date: Wed, 23 Jul 2014 01:42:30 +0200
+Message-ID: <2209624.IN4gI3gsAa@avalon>
+References: <1405680597-10012-1-git-send-email-laurent.pinchart@ideasonboard.com>
+	<5717663.qOZzl7syrN@avalon> <20140722061929.GD18374@atomide.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <53CDB76A.5090602@codeaurora.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Olav Haugan <ohaugan@codeaurora.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, mitchelh@codeaurora.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20140722061929.GD18374-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jul 21, 2014 at 8:59 PM, Olav Haugan <ohaugan@codeaurora.org> wrote:
-> On 7/17/2014 1:21 AM, Thierry Reding wrote:
->> On Wed, Jul 16, 2014 at 06:01:57PM -0700, Olav Haugan wrote:
->>> Mapping and unmapping are more often than not in the critical path.
->>> map_range and unmap_range allows SMMU driver implementations to optimize
->>
->> s/SMMU/IOMMU/
->>
->>> the process of mapping and unmapping buffers into the SMMU page tables.
->>
->> s/SMMU/IOMMU/
->>
->>> Instead of mapping one physical address, do TLB operation (expensive),
->>> mapping, do TLB operation, mapping, do TLB operation the driver can map
->>> a scatter-gatherlist of physically contiguous pages into one virtual
->>> address space and then at the end do one TLB operation.
->>
->> I find the above hard to read. Maybe:
->>
->> Instead of mapping a buffer one page at a time and requiring potentially
->> expensive TLB operations for each page, this function allows the driver
->> to map all pages in one go and defer TLB maintenance until after all
->> pages have been mapped.
->
-> Yeah, all above is OK with me.
->
->>
->>> Additionally, the mapping operation would be faster in general since
->>> clients does not have to keep calling map API over and over again for
->>> each physically contiguous chunk of memory that needs to be mapped to a
->>> virtually contiguous region.
->>>
->>> Signed-off-by: Olav Haugan <ohaugan@codeaurora.org>
->>> ---
->>>  drivers/iommu/iommu.c | 48 ++++++++++++++++++++++++++++++++++++++++++++++++
->>>  include/linux/iommu.h | 25 +++++++++++++++++++++++++
->>>  2 files changed, 73 insertions(+)
->>>
->>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>> index 1698360..a0eebb7 100644
->>> --- a/drivers/iommu/iommu.c
->>> +++ b/drivers/iommu/iommu.c
->>> @@ -1089,6 +1089,54 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
->>>  EXPORT_SYMBOL_GPL(iommu_unmap);
->>>
->>>
->>> +int iommu_map_range(struct iommu_domain *domain, unsigned int iova,
->>
->> Maybe iova should be dma_addr_t? Or at least unsigned long? And perhaps
->> iommu_map_sg() would be more consistent with the equivalent function in
->> struct dma_ops?
->>
->>> +                struct scatterlist *sg, unsigned int len, int opt)
->>
->> The length argument seems to be the size of the mapping. Again, the
->> struct dma_ops function uses this argument to denote the number of
->> entries in the scatterlist.
->>
->> opt is somewhat opaque. Perhaps this should be turned into unsigned long
->> flags? Although given that there aren't any users yet it's difficult to
->> say what's best here. Perhaps the addition of this argument should be
->> postponed until there are actual users?
->
-> I am thinking something like this:
->
-> int iommu_map_sg(struct iommu_domain *domain, struct scatterlist *sg,
-> unsigned int nents, int prot, unsigned long flags);
-> int iommu_unmap_sg(struct iommu_domain *domain, struct scatterlist *sg,
-> unsigned int nents, unsigned long flags);
->
-> The iova is contained within sg so we don't need that argument really
-> and I would like to keep the flags argument. I would prefer not to
-> change the API after it has been published which could potentially
-> affect a lot of call sites.
+Hi Joerg,
 
-ugg.. that at least forces me to construct a separate sg for mapping
-the same buffer in multiple process's gpu addr space.  Not really a
-fan of that.
+(Your attention is kindly requested in time for v3.17, please see below)
 
-BR,
--R
+On Monday 21 July 2014 23:19:29 Tony Lindgren wrote:
+> * Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org> [140721 11:17]:
+> > On Monday 21 July 2014 02:33:36 Tony Lindgren wrote:
+> >> * Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org> [140721 02:16]:
+> >>> On Friday 18 July 2014 11:53:56 Suman Anna wrote:
+> >>>> On 07/18/2014 05:49 AM, Laurent Pinchart wrote:
+> >>>>> Hello,
+> >>>>> 
+> >>>>> The OMAP3 ISP driver was the only user of the OMAP IOVMM API. Now
+> >>>>> that is has been ported to the DMA API, remove the unused virtual
+> >>>>> memory manager.
+> >>>>> 
+> >>>>> The removal is split in three patches to ease upstream merge. The
+> >>>>> first patch removes the omap-iovmm driver, the second patch
+> >>>>> removes setting of now unused platform data fields from arch code,
+> >>>>> and the last patch cleans up the platform data structure.
+> >>>> 
+> >>>> Thanks for the revised series, it looks good. I have also tested the
+> >>>> series on OMAP3, OMAP4 and OMAP5.
+> >>>> 
+> >>>> For the changes in the entire series,
+> >>>> Acked-by: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+> >>> 
+> >>> Thank you.
+> >>> 
+> >>>>> I'd like to get at least the first patch merged in v3.17. To avoid
+> >>>>> splitting the series across three kernel versions, it would be
+> >>>>> nice to also merge at least the second patch for v3.17. If there's
+> >>>>> no risk of conflict everything could be merged in one go through
+> >>>>> the ARM SoC tree. Otherwise a stable branch with patch 1/3 will be
+> >>>>> needed to base the arch change on.
+> >>>>> 
+> >>>>> Joerg, Tony, how would you like to proceed ?
+> >>> 
+> >>> The v3.17 merge window is getting close, it's probably too late to
+> >>> merge patch 2/3. Joerg, could you please take 1/3 in your tree for
+> >>> v3.17 ? 2/3 and 3/3 would then get in v3.18. Tony, how would you like
+> >>> to proceed for those ?
+> >> 
+> >> How about Joerg maybe do an immutable branch against v3.16-rc1
+> >> with just these three patches and merge it into your tree?
+> >> 
+> >> That way I too can merge the minimal branch in if there are conflics.
+> >> If that works for Joerg, then for arch/arm/*omap* changes:
+> >> 
+> >> Acked-by: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
+> > 
+> > I've created an immutable branch (or, rather, immutable until the changes
+> > reach mainline, at which point I will remove the branch) on top of
+> > v3.16-rc1 with just the three patches from this series. You can find it
+> > at.
+> > 
+> > 	git://linuxtv.org/pinchartl/media.git omap/iommu
+> > 
+> > Tony, is there still time to get this (and especially patch 2/3, which
+> > touches arch/ code) in v3.17 ?
+> 
+> Yes as long as Joerg is OK to merge that branch in :)
 
->>> +{
->>> +    s32 ret = 0;
->>
->> Should be int to match the function's return type.
->>
->>> +    u32 offset = 0;
->>> +    u32 start_iova = iova;
->>
->> These should match the type of iova. Also, what's the point of
->> start_iova if we can simply keep iova constant and use offset where
->> necessary?
->>
->>> +    BUG_ON(iova & (~PAGE_MASK));
->>> +
->>> +    if (unlikely(domain->ops->map_range == NULL)) {
->>> +            while (offset < len) {
->>
->> Maybe this should use for_each_sg()?
->>
->>> +                    phys_addr_t phys = page_to_phys(sg_page(sg));
->>> +                    u32 page_len = PAGE_ALIGN(sg->offset + sg->length);
->>
->> Shouldn't this alignment be left to iommu_map() to handle? It has code
->> to deal with that already.
->
-> I don't see page alignment in the iommu_map function. I only see a check
-> whether the (iova | paddr | size) is aligned to the minimum page size
-> and then it errors out if it isn't....
->
->
->>> +                    ret = iommu_map(domain, iova, phys, page_len, opt);
->>
->> This conflates the new opt argument with iommu_map()'s prot argument.
->> Maybe those two should rather be split?
->>
->>> +                    if (ret)
->>> +                            goto fail;
->>> +
->>> +                    iova += page_len;
->>> +                    offset += page_len;
->>> +                    if (offset < len)
->>> +                            sg = sg_next(sg);
->>> +            }
->>> +    } else {
->>> +            ret = domain->ops->map_range(domain, iova, sg, len, opt);
->>> +    }
->>
->> Perhaps rather than check for a ->map_range implementation everytime a
->> better option may be to export this generic implementation so that
->> drivers can set it in their iommu_ops if they don't implement it? So the
->> contents of the if () block could become a new function:
->>
->>       int iommu_map_range_generic(...)
->>       {
->>               ...
->>       }
->>       EXPORT_SYMBOL(iommu_map_range_generic);
->>
->> And drivers would do this:
->>
->>       static const struct iommu_ops driver_iommu_ops = {
->>               ...
->>               .map_range = iommu_map_range_generic,
->>               ...
->>       };
->
-> I'd like to keep the new API consistent with the rest of the API. Most
-> if not all of the other APIs always check if the operation is non-NULL.
-> A new driver could choose not to set the .map_range callback. I think it
-> is better to keep this consistent with the behavior of the other APIs.
->
->>> +int iommu_unmap_range(struct iommu_domain *domain, unsigned int iova,
->>> +                  unsigned int len, int opt)
->>
->> Some comments regarding function name and argument types as for
->> iommu_map_range().
->>
->>> +static inline int iommu_map_range(struct iommu_domain *domain,
->>> +                              unsigned int iova, struct scatterlist *sg,
->>> +                              unsigned int len, int opt)
->>> +{
->>> +    return -ENODEV;
->>
->> I know other IOMMU API dummies already use this error code, but I find
->> it to be a little confusing. The dummies are used when the IOMMU API is
->> disabled via Kconfig, so -ENOSYS (Function not implemented) seems like a
->> more useful error.
->
-> Again, I would prefer to keep this consistent with the other APIs
-> already there. iommu_map/iommu_unmap both returns -ENODEV. If we want to
-> change this I think this should be done as a separate patch that changed
-> all of them to be consistent.
->
-> Thanks,
->
-> Olav
->
-> --
-> The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-> hosted by The Linux Foundation
+Are you ? :-)
+
+-- 
+Regards,
+
+Laurent Pinchart
