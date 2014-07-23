@@ -1,37 +1,33 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH v2 0/3] iommu: Remove OMAP IOVMM driver
-Date: Wed, 23 Jul 2014 16:00:47 +0200
-Message-ID: <4101565.HEj9dhtF5Z@avalon>
-References: <1405680597-10012-1-git-send-email-laurent.pinchart@ideasonboard.com> <20140722061929.GD18374@atomide.com> <20140723135217.GE31450@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] iommu/vt-d: fix race between free_irte() and get_irte()
+Date: Wed, 23 Jul 2014 16:40:24 +0200
+Message-ID: <20140723144024.GA14017@8bytes.org>
+References: <20140722142719.GA28143@psuche.datadirectnet.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <20140723135217.GE31450@8bytes.org>
-Sender: linux-omap-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Tony Lindgren <tony@atomide.com>, Suman Anna <s-anna@ti.com>, iommu@lists.linux-foundation.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Florian Vaussard <florian.vaussard@epfl.ch>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20140722142719.GA28143-+5IcJesBrg1QnCaYh1JbbuXjVpU8mP+x@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Greg Edwards <gedwards-LfVdkaOWEx8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+On Tue, Jul 22, 2014 at 08:27:19AM -0600, Greg Edwards wrote:
+> get_irte() can race with free_irte() and dereference a NULL iommu
+> pointer.
 
-On Wednesday 23 July 2014 15:52:17 Joerg Roedel wrote:
-> On Mon, Jul 21, 2014 at 11:19:29PM -0700, Tony Lindgren wrote:
-> > > Tony, is there still time to get this (and especially patch 2/3, which
-> > > touches arch/ code) in v3.17 ?
-> > 
-> > Yes as long as Joerg is OK to merge that branch in :)
-> 
-> Fine with me, I can take only patch 1 or all 3 into my arm/omap branch,
-> given Tony's Acked-by.
-> 
-> Then you guys can merge in this branch wherever you want :)
+Have you seen any real occurance of this race? Get_irte is called in the
+set_affinity path, how can that race with the irq being freed?
 
-Thank you. Assuming there's currently no conflict to be resolved, I believe 
-the easiest would be for both you and Tony to merge my branch in your trees.
 
--- 
-Regards,
-
-Laurent Pinchart
-
+	Joerg
