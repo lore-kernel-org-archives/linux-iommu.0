@@ -1,16 +1,17 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [Patch Part3 V4 16/21] iommu/vt-d: Implement DMAR unit hotplug
-	framework
-Date: Wed, 23 Jul 2014 17:34:21 +0200
-Message-ID: <20140723153420.GC14017@8bytes.org>
-References: <1405059585-10620-1-git-send-email-jiang.liu@linux.intel.com>
-	<1405059585-10620-17-git-send-email-jiang.liu@linux.intel.com>
+From: Greg Edwards <gedwards-LfVdkaOWEx8@public.gmane.org>
+Subject: [PATCH v2] iommu/vt-d: race setting IRQ CPU affinity while freeing IRQ
+Date: Wed, 23 Jul 2014 10:13:26 -0600
+Message-ID: <20140723161326.GB32422@psuche.datadirectnet.com>
+References: <20140722142719.GA28143@psuche.datadirectnet.com>
+	<20140723144024.GA14017@8bytes.org>
+	<20140723144917.GA26986@psuche.datadirectnet.com>
+	<20140723151040.GB14017@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1405059585-10620-17-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <20140723151040.GB14017-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,42 +21,39 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Rafael J . Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-hotplug-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gRnJpLCBKdWwgMTEsIDIwMTQgYXQgMDI6MTk6NDBQTSArMDgwMCwgSmlhbmcgTGl1IHdyb3Rl
-Ogo+IE9uIEludGVsIHBsYXRmb3JtcywgYW4gSU8gSHViIChQQ0kvUENJZSBob3N0IGJyaWRnZSkg
-bWF5IGNvbnRhaW4gRE1BUgo+IHVuaXRzLCBzbyB3ZSBuZWVkIHRvIHN1cHBvcnQgRE1BUiBob3Rw
-bHVnIHdoZW4gc3VwcG9ydGluZyBQQ0kgaG9zdAo+IGJyaWRnZSBob3RwbHVnIG9uIEludGVsIHBs
-YXRmb3Jtcy4KPiAKPiBBY2NvcmRpbmcgdG8gU2VjdGlvbiA4LjggIlJlbWFwcGluZyBIYXJkd2Fy
-ZSBVbml0IEhvdCBQbHVnIiBpbiAiSW50ZWwKPiBWaXJ0dWFsaXphdGlvbiBUZWNobm9sb2d5IGZv
-ciBEaXJlY3RlZCBJTyBBcmNoaXRlY3R1cmUgU3BlY2lmaWNhdGlvbgo+IFJldiAyLjIiLCBBQ1BJ
-IEJJT1Mgc2hvdWxkIGltcGxlbWVudCBBQ1BJIF9EU00gbWV0aG9kIHVuZGVyIHRoZSBBQ1BJCj4g
-b2JqZWN0IGZvciB0aGUgUENJIGhvc3QgYnJpZGdlIHRvIHN1cHBvcnQgRE1BUiBob3RwbHVnLgo+
-IAo+IFRoaXMgcGF0Y2ggaW50cm9kdWNlcyBpbnRlcmZhY2VzIHRvIHBhcnNlIEFDUEkgX0RTTSBt
-ZXRob2QgZm9yCj4gRE1BUiB1bml0IGhvdHBsdWcuIEl0IGFsc28gaW1wbGVtZW50cyBzdGF0ZSBt
-YWNoaW5lcyBmb3IgRE1BUiB1bml0Cj4gaG90LWFkZGl0aW9uIGFuZCBob3QtcmVtb3ZhbC4KPiAK
-PiBUaGUgUENJIGhvc3QgYnJpZGdlIGhvdHBsdWcgZHJpdmVyIHNob3VsZCBjYWxsIGRtYXJfaG90
-cGx1Z19ob3RwbHVnKCkKPiBiZWZvcmUgc2Nhbm5pbmcgUENJIGRldmljZXMgY29ubmVjdGVkIGZv
-ciBob3QtYWRkaXRpb24gYW5kIGFmdGVyCj4gZGVzdHJveWluZyBhbGwgUENJIGRldmljZXMgZm9y
-IGhvdC1yZW1vdmFsLgo+IAo+IFNpZ25lZC1vZmYtYnk6IEppYW5nIExpdSA8amlhbmcubGl1QGxp
-bnV4LmludGVsLmNvbT4KPiAtLS0KPiAgZHJpdmVycy9pb21tdS9kbWFyLmMgICAgICAgICAgICAg
-ICAgfCAgMjY4ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tCj4gIGRyaXZlcnMv
-aW9tbXUvaW50ZWwtaW9tbXUuYyAgICAgICAgIHwgICA3OCArKysrKysrKystCj4gIGRyaXZlcnMv
-aW9tbXUvaW50ZWxfaXJxX3JlbWFwcGluZy5jIHwgICAgNSArCj4gIGluY2x1ZGUvbGludXgvZG1h
-ci5oICAgICAgICAgICAgICAgIHwgICAzMyArKysrKwo+ICA0IGZpbGVzIGNoYW5nZWQsIDM3MCBp
-bnNlcnRpb25zKCspLCAxNCBkZWxldGlvbnMoLSkKClRoaXMgcGF0Y2ggdHJpZ2dlcnMgYSBjb21w
-aWxlIGVycm9yIHdpdGggYWxsbm9jb25maWcgb24gYW1kNjQ6CgogIENDICAgICAgYXJjaC94ODYv
-a2VybmVsL3BjaS1kbWEubwpJbiBmaWxlIGluY2x1ZGVkIGZyb20gYXJjaC94ODYva2VybmVsL3Bj
-aS1kbWEuYzozOjA6CmluY2x1ZGUvbGludXgvZG1hci5oOjE2ODozNTogZXJyb3I6IHVua25vd24g
-dHlwZSBuYW1lIOKAmGFjcGlfaGFuZGxl4oCZCiBzdGF0aWMgaW5saW5lIGludCBkbWFyX2Rldmlj
-ZV9hZGQoYWNwaV9oYW5kbGUgaGFuZGxlKQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgIF4KaW5jbHVkZS9saW51eC9kbWFyLmg6MTczOjM4OiBlcnJvcjogdW5rbm93biB0eXBlIG5h
-bWUg4oCYYWNwaV9oYW5kbGXigJkKIHN0YXRpYyBpbmxpbmUgaW50IGRtYXJfZGV2aWNlX3JlbW92
-ZShhY3BpX2hhbmRsZSBoYW5kbGUpCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgXgptYWtlWzJdOiAqKiogW2FyY2gveDg2L2tlcm5lbC9wY2ktZG1hLm9dIEVycm9yIDEKbWFr
-ZVsxXTogKioqIFthcmNoL3g4Ni9rZXJuZWxdIEVycm9yIDIKbWFrZTogKioqIFthcmNoL3g4Nl0g
-RXJyb3IgMgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
-aW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBz
-Oi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+A user process setting the CPU affinity of an IRQ for a KVM
+direct-assigned device via /proc/irq/<IRQ#>/smp_affinity can race with
+the IRQ being released by QEMU, resulting in a NULL iommu pointer
+dereference in get_irte().
+
+Signed-off-by: Greg Edwards <gedwards-LfVdkaOWEx8@public.gmane.org>
+---
+
+Dropped the Cc: for stable since this likely wouldn't ever be seen in
+the real world.  We saw it on an automated CI stress test.
+
+ drivers/iommu/intel_irq_remapping.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index 9b17489..d926676 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -70,6 +70,11 @@ static int get_irte(int irq, struct irte *entry)
+ 
+ 	raw_spin_lock_irqsave(&irq_2_ir_lock, flags);
+ 
++	if (unlikely(!irq_iommu->iommu)) {
++		raw_spin_unlock_irqrestore(&irq_2_ir_lock, flags);
++		return -1;
++	}
++
+ 	index = irq_iommu->irte_index + irq_iommu->sub_handle;
+ 	*entry = *(irq_iommu->iommu->ir_table->base + index);
+ 
+-- 
+1.9.3
