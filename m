@@ -1,8 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 3/3] mmu_notifier: Add the call-back for
-	mmu_notifier_invalidate_range()
-Date: Thu, 24 Jul 2014 16:35:41 +0200
-Message-ID: <1406212541-25975-4-git-send-email-joro@8bytes.org>
+Subject: [PATCH 1/3] mmu_notifier: Add mmu_notifier_invalidate_range()
+Date: Thu, 24 Jul 2014 16:35:39 +0200
+Message-ID: <1406212541-25975-2-git-send-email-joro@8bytes.org>
 References: <1406212541-25975-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,109 +23,56 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Now that the mmu_notifier_invalidate_range() calls are in
-place, add the call-back to allow subsystems to register
-against it.
+This notifier closes an important gap with the current
+invalidate_range_start()/end() notifiers. The _start() part
+is called when all pages are still mapped while the _end()
+notifier is called when all pages are potentially unmapped
+and already freed.
+
+This does not allow to manage external (non-CPU) hardware
+TLBs with MMU-notifiers because there is no way to prevent
+that hardware will establish new TLB entries between the
+calls of these two functions. But this is a requirement to
+the subsytem that implements these existing notifiers.
+
+To allow managing external TLBs the MMU-notifiers need to
+catch the moment when pages are unmapped but not yet freed.
+This new notifier catches that moment and notifies the
+interested subsytem when pages that were unmapped are about
+to be freed. The new notifier will only be called between
+invalidate_range_start()/end().
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- include/linux/mmu_notifier.h | 28 ++++++++++++++++++++++------
- mm/mmu_notifier.c            | 15 +++++++++++++++
- 2 files changed, 37 insertions(+), 6 deletions(-)
+ include/linux/mmu_notifier.h | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
 diff --git a/include/linux/mmu_notifier.h b/include/linux/mmu_notifier.h
-index 6959dc8..50dc679 100644
+index deca874..f333668 100644
 --- a/include/linux/mmu_notifier.h
 +++ b/include/linux/mmu_notifier.h
-@@ -95,11 +95,11 @@ struct mmu_notifier_ops {
- 	/*
- 	 * invalidate_range_start() and invalidate_range_end() must be
- 	 * paired and are called only when the mmap_sem and/or the
--	 * locks protecting the reverse maps are held. The subsystem
--	 * must guarantee that no additional references are taken to
--	 * the pages in the range established between the call to
--	 * invalidate_range_start() and the matching call to
--	 * invalidate_range_end().
-+	 * locks protecting the reverse maps are held. If the subsystem
-+	 * can't guarantee that no additional references are taken to
-+	 * the pages in the range, it has to implement the
-+	 * invalidate_range() notifier to remove any references taken
-+	 * after invalidate_range_start().
- 	 *
- 	 * Invalidation of multiple concurrent ranges may be
- 	 * optionally permitted by the driver. Either way the
-@@ -110,9 +110,19 @@ struct mmu_notifier_ops {
- 	 * invalidate_range_start() is called when all pages in the
- 	 * range are still mapped and have at least a refcount of one.
- 	 *
-+	 * invalidate_range() is called between invalidate_range_start()
-+	 * and invalidate_range_end() when the memory management code
-+	 * removed mappings to pages in the range and is about to free
-+	 * them.  This captures the point when pages are unmapped but
-+	 * not yet freed.
-+	 * Note that invalidate_range() might be called only on a
-+	 * sub-range of the range passed to the corresponding
-+	 * invalidate_range_start() call.
-+	 *
- 	 * invalidate_range_end() is called when all pages in the
- 	 * range have been unmapped and the pages have been freed by
--	 * the VM.
-+	 * the VM. It might be called under the ptl spin-lock, so this
-+	 * notifier is not allowed to preempt.
- 	 *
- 	 * The VM will remove the page table entries and potentially
- 	 * the page between invalidate_range_start() and
-@@ -138,6 +148,8 @@ struct mmu_notifier_ops {
- 	void (*invalidate_range_start)(struct mmu_notifier *mn,
- 				       struct mm_struct *mm,
- 				       unsigned long start, unsigned long end);
-+	void (*invalidate_range)(struct mmu_notifier *mn, struct mm_struct *mm,
-+				 unsigned long start, unsigned long end);
- 	void (*invalidate_range_end)(struct mmu_notifier *mn,
- 				     struct mm_struct *mm,
- 				     unsigned long start, unsigned long end);
-@@ -182,6 +194,8 @@ extern void __mmu_notifier_invalidate_page(struct mm_struct *mm,
- 					  unsigned long address);
- extern void __mmu_notifier_invalidate_range_start(struct mm_struct *mm,
- 				  unsigned long start, unsigned long end);
-+extern void __mmu_notifier_invalidate_range(struct mm_struct *mm,
-+				  unsigned long start, unsigned long end);
- extern void __mmu_notifier_invalidate_range_end(struct mm_struct *mm,
- 				  unsigned long start, unsigned long end);
- 
-@@ -231,6 +245,8 @@ static inline void mmu_notifier_invalidate_range_start(struct mm_struct *mm,
- static inline void mmu_notifier_invalidate_range(struct mm_struct *mm,
- 				  unsigned long start, unsigned long end)
- {
-+	if (mm_has_notifiers(mm))
-+		__mmu_notifier_invalidate_range(mm, start, end);
+@@ -228,6 +228,11 @@ static inline void mmu_notifier_invalidate_range_start(struct mm_struct *mm,
+ 		__mmu_notifier_invalidate_range_start(mm, start, end);
  }
  
- static inline void mmu_notifier_invalidate_range_end(struct mm_struct *mm,
-diff --git a/mm/mmu_notifier.c b/mm/mmu_notifier.c
-index 41cefdf..d1bdea0 100644
---- a/mm/mmu_notifier.c
-+++ b/mm/mmu_notifier.c
-@@ -165,6 +165,21 @@ void __mmu_notifier_invalidate_range_start(struct mm_struct *mm,
- }
- EXPORT_SYMBOL_GPL(__mmu_notifier_invalidate_range_start);
- 
-+void __mmu_notifier_invalidate_range(struct mm_struct *mm,
++static inline void mmu_notifier_invalidate_range(struct mm_struct *mm,
 +				  unsigned long start, unsigned long end)
 +{
-+	struct mmu_notifier *mn;
-+	int id;
-+
-+	id = srcu_read_lock(&srcu);
-+	hlist_for_each_entry_rcu(mn, &mm->mmu_notifier_mm->list, hlist) {
-+		if (mn->ops->invalidate_range)
-+			mn->ops->invalidate_range(mn, mm, start, end);
-+	}
-+	srcu_read_unlock(&srcu, id);
 +}
-+EXPORT_SYMBOL_GPL(__mmu_notifier_invalidate_range);
 +
- void __mmu_notifier_invalidate_range_end(struct mm_struct *mm,
+ static inline void mmu_notifier_invalidate_range_end(struct mm_struct *mm,
+ 				  unsigned long start, unsigned long end)
+ {
+@@ -321,6 +326,11 @@ static inline void mmu_notifier_invalidate_range_start(struct mm_struct *mm,
+ {
+ }
+ 
++static inline void mmu_notifier_invalidate_range(struct mm_struct *mm,
++				  unsigned long start, unsigned long end)
++{
++}
++
+ static inline void mmu_notifier_invalidate_range_end(struct mm_struct *mm,
  				  unsigned long start, unsigned long end)
  {
 -- 
