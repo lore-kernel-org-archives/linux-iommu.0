@@ -1,84 +1,72 @@
-From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: [PATCH 2/3] iommu/ipmmu-vmsa: Flush P[UM]D entry before freeing the
-	child page table
-Date: Thu, 24 Jul 2014 17:27:04 +0200
-Message-ID: <1406215625-13982-3-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-References: <1406215625-13982-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+From: Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH 0/3] mmu_notifier: Allow to manage CPU external TLBs
+Date: Thu, 24 Jul 2014 16:33:03 -0700
+Message-ID: <20140724163303.df34065a3c3b26c0a4b3bab1@linux-foundation.org>
+References: <1406212541-25975-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1406215625-13982-1-git-send-email-laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <1406212541-25975-1-git-send-email-joro@8bytes.org>
+Sender: owner-linux-mm@kvack.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Andrea Arcangeli <aarcange@redhat.com>, Peter Zijlstra <a.p.zijlstra@chello.nl>, Rik van Riel <riel@redhat.com>, Hugh Dickins <hughd@google.com>, Mel Gorman <mgorman@suse.de>, Johannes Weiner <jweiner@redhat.com>, Jerome Glisse <jglisse@redhat.com>, jroedel@suse.de, Jay.Cornwall@amd.com, Oded.Gabbay@amd.com, John.Bridgman@amd.com, Suravee.Suthikulpanit@amd.com, ben.sander@amd.com, Jesse Barnes <jbarnes@virtuousgeek.org>, David Woodhouse <dwmw2@infradead.org>, linux-kernel@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-When clearing PUD or PMD entries the child page table (if any) is freed
-and the PUD or PMD entry is then cleared. This result in a small race
-condition window during which a free page table could be accessed by the
-IPMMU.
+On Thu, 24 Jul 2014 16:35:38 +0200 Joerg Roedel <joro@8bytes.org> wrote:
 
-Fix it by clearing and flushing the PUD or PMD entry before freeing the
-child page table.
+> here is a patch-set to extend the mmu_notifiers in the Linux
+> kernel to allow managing CPU external TLBs. Those TLBs may
+> be implemented in IOMMUs or any other external device, e.g.
+> ATS/PRI capable PCI devices.
+> 
+> The problem with managing these TLBs are the semantics of
+> the invalidate_range_start/end call-backs currently
+> available. Currently the subsystem using mmu_notifiers has
+> to guarantee that no new TLB entries are established between
+> invalidate_range_start/end. Furthermore the
+> invalidate_range_start() function is called when all pages
+> are still mapped and invalidate_range_end() when the pages
+> are unmapped an already freed.
+> 
+> So both call-backs can't be used to safely flush any non-CPU
+> TLB because _start() is called too early and _end() too
+> late.
+> 
+> In the AMD IOMMUv2 driver this is currently implemented by
+> assigning an empty page-table to the external device between
+> _start() and _end(). But as tests have shown this doesn't
+> work as external devices don't re-fault infinitly but enter
+> a failure state after some time.
+> 
+> Next problem with this solution is that it causes an
+> interrupt storm for IO page faults to be handled when an
+> empty page-table is assigned.
+> 
+> To solve this situation I wrote a patch-set to introduce a
+> new notifier call-back: mmu_notifer_invalidate_range(). This
+> notifier lifts the strict requirements that no new
+> references are taken in the range between _start() and
+> _end(). When the subsystem can't guarantee that any new
+> references are taken is has to provide the
+> invalidate_range() call-back to clear any new references in
+> there.
+> 
+> It is called between invalidate_range_start() and _end()
+> every time the VMM has to wipe out any references to a
+> couple of pages. This are usually the places where the CPU
+> TLBs are flushed too and where its important that this
+> happens before invalidate_range_end() is called.
+> 
+> Any comments and review appreciated!
 
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
----
- drivers/iommu/ipmmu-vmsa.c | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+It looks pretty simple and harmless.
 
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 7dc77a6..eb605e5 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -678,30 +678,32 @@ done:
- 
- static void ipmmu_clear_pud(struct ipmmu_vmsa_device *mmu, pud_t *pud)
- {
--	/* Free the page table. */
- 	pgtable_t table = pud_pgtable(*pud);
--	__free_page(table);
- 
- 	/* Clear the PUD. */
- 	*pud = __pud(0);
- 	ipmmu_flush_pgtable(mmu, pud, sizeof(*pud));
-+
-+	/* Free the page table. */
-+	__free_page(table);
- }
- 
- static void ipmmu_clear_pmd(struct ipmmu_vmsa_device *mmu, pud_t *pud,
- 			    pmd_t *pmd)
- {
-+	pmd_t pmdval = *pmd;
- 	unsigned int i;
- 
--	/* Free the page table. */
--	if (pmd_table(*pmd)) {
--		pgtable_t table = pmd_pgtable(*pmd);
--		__free_page(table);
--	}
--
- 	/* Clear the PMD. */
- 	*pmd = __pmd(0);
- 	ipmmu_flush_pgtable(mmu, pmd, sizeof(*pmd));
- 
-+	/* Free the page table. */
-+	if (pmd_table(pmdval)) {
-+		pgtable_t table = pmd_pgtable(pmdval);
-+		__free_page(table);
-+	}
-+
- 	/* Check whether the PUD is still needed. */
- 	pmd = pmd_offset(pud, 0);
- 	for (i = 0; i < IPMMU_PTRS_PER_PMD; ++i) {
--- 
-1.8.5.5
+I assume the AMD IOMMUv2 driver actually uses this and it's all
+tested and good?  What is the status of that driver?
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
