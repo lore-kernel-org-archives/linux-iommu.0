@@ -1,40 +1,49 @@
-From: Andrea Arcangeli <aarcange@redhat.com>
-Subject: Re: [PATCH 0/3] mmu_notifier: Allow to manage CPU external TLBs
-Date: Thu, 24 Jul 2014 16:44:49 +0200
-Message-ID: <20140724144449.GC27715@redhat.com>
-References: <1406212541-25975-1-git-send-email-joro@8bytes.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <owner-linux-mm@kvack.org>
-Content-Disposition: inline
-In-Reply-To: <1406212541-25975-1-git-send-email-joro@8bytes.org>
-Sender: owner-linux-mm@kvack.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, Peter Zijlstra <a.p.zijlstra@chello.nl>, Rik van Riel <riel@redhat.com>, Hugh Dickins <hughd@google.com>, Mel Gorman <mgorman@suse.de>, Johannes Weiner <jweiner@redhat.com>, Jerome Glisse <jglisse@redhat.com>, jroedel@suse.de, Jay.Cornwall@amd.com, Oded.Gabbay@amd.com, John.Bridgman@amd.com, Suravee.Suthikulpanit@amd.com, ben.sander@amd.com, Jesse Barnes <jbarnes@virtuousgeek.org>, David Woodhouse <dwmw2@infradead.org>, linux-kernel@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org
+From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 1/3] iommu/ipmmu-vmsa: Cleanup failures of ARM mapping creation or attachment
+Date: Thu, 24 Jul 2014 17:27:03 +0200
+Message-ID: <1406215625-13982-2-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+References: <1406215625-13982-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1406215625-13982-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: linux-sh@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jul 24, 2014 at 04:35:38PM +0200, Joerg Roedel wrote:
-> To solve this situation I wrote a patch-set to introduce a
-> new notifier call-back: mmu_notifer_invalidate_range(). This
-> notifier lifts the strict requirements that no new
-> references are taken in the range between _start() and
-> _end(). When the subsystem can't guarantee that any new
-> references are taken is has to provide the
-> invalidate_range() call-back to clear any new references in
-> there.
-> 
-> It is called between invalidate_range_start() and _end()
-> every time the VMM has to wipe out any references to a
-> couple of pages. This are usually the places where the CPU
-> TLBs are flushed too and where its important that this
-> happens before invalidate_range_end() is called.
-> 
-> Any comments and review appreciated!
+The ARM IOMMU mapping needs to be released when attaching the device
+fails. Add arm_iommu_release_mapping() to the error code path. This is
+safe to call with a NULL mapping, so no specific check is needed.
 
-Reviewed-by: Andrea Arcangeli <aarcange@redhat.com>
+Cleanup is also missing when failing to create a mapping. Jump to the
+error code path in that case instead of returning immediately.
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+---
+ drivers/iommu/ipmmu-vmsa.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index 53cde08..7dc77a6 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -1090,7 +1090,8 @@ static int ipmmu_add_device(struct device *dev)
+ 						   SZ_1G, SZ_2G);
+ 		if (IS_ERR(mapping)) {
+ 			dev_err(mmu->dev, "failed to create ARM IOMMU mapping\n");
+-			return PTR_ERR(mapping);
++			ret = PTR_ERR(mapping);
++			goto error;
+ 		}
+ 
+ 		mmu->mapping = mapping;
+@@ -1106,6 +1107,7 @@ static int ipmmu_add_device(struct device *dev)
+ 	return 0;
+ 
+ error:
++	arm_iommu_release_mapping(mmu->mapping);
+ 	kfree(dev->archdata.iommu);
+ 	dev->archdata.iommu = NULL;
+ 	iommu_group_remove_device(dev);
+-- 
+1.8.5.5
+
