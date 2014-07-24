@@ -1,42 +1,40 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH v2 0/3] iommu: Remove OMAP IOVMM driver
-Date: Wed, 23 Jul 2014 23:54:12 -0700
-Message-ID: <20140724065412.GH22006@atomide.com>
-References: <1405680597-10012-1-git-send-email-laurent.pinchart@ideasonboard.com>
- <20140722061929.GD18374@atomide.com>
- <20140723135217.GE31450@8bytes.org>
- <4101565.HEj9dhtF5Z@avalon>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 1/1] iommu-api: Add map_range/unmap_range functions
+Date: Thu, 24 Jul 2014 11:34:27 +0200
+Message-ID: <20140724093427.GH14017@8bytes.org>
+References: <1405558917-7597-1-git-send-email-ohaugan@codeaurora.org>
+	<1405558917-7597-2-git-send-email-ohaugan@codeaurora.org>
+	<20140717082138.GC18640@ulmo> <53CDB76A.5090602@codeaurora.org>
+	<20140722074507.GB18258@ulmo> <53CFF5C3.5060600@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-omap-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <4101565.HEj9dhtF5Z@avalon>
-Sender: linux-omap-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Suman Anna <s-anna@ti.com>, iommu@lists.linux-foundation.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Florian Vaussard <florian.vaussard@epfl.ch>
+In-Reply-To: <53CFF5C3.5060600-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-* Laurent Pinchart <laurent.pinchart@ideasonboard.com> [140723 07:02]:
-> Hi Joerg,
+On Wed, Jul 23, 2014 at 10:49:55AM -0700, Olav Haugan wrote:
+> Joerg, can you comment on what you envisioned when you suggested that we
+> add the fallback?
 > 
-> On Wednesday 23 July 2014 15:52:17 Joerg Roedel wrote:
-> > On Mon, Jul 21, 2014 at 11:19:29PM -0700, Tony Lindgren wrote:
-> > > > Tony, is there still time to get this (and especially patch 2/3, which
-> > > > touches arch/ code) in v3.17 ?
-> > > 
-> > > Yes as long as Joerg is OK to merge that branch in :)
-> > 
-> > Fine with me, I can take only patch 1 or all 3 into my arm/omap branch,
-> > given Tony's Acked-by.
-> > 
-> > Then you guys can merge in this branch wherever you want :)
-> 
-> Thank you. Assuming there's currently no conflict to be resolved, I believe 
-> the easiest would be for both you and Tony to merge my branch in your trees.
 
-Yes please merge that branch via the IOMMU tree, I only need to merge it
-if I see merge conflicts with it.
+The problem is that we already have tons of IOMMU drivers in the tree
+which don't provide these call-backs. So adding this API extension
+without a fall-back that works for these drivers too would fragment the
+functionality between different IOMMU drivers in an inacceptable way and
+undermine the purpose of a generic API.
 
-Regards,
 
-Tony
+	Joerg
