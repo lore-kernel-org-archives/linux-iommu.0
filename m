@@ -1,53 +1,42 @@
-From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: iommu/vt-d: Fix build error caused by unknown definition of
-	acpi_handle
-Date: Thu, 24 Jul 2014 10:33:27 +0800
-Message-ID: <1406169208-11097-1-git-send-email-jiang.liu@linux.intel.com>
-References: <20140723153420.GC14017@8bytes.org>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH v2 0/3] iommu: Remove OMAP IOVMM driver
+Date: Wed, 23 Jul 2014 23:54:12 -0700
+Message-ID: <20140724065412.GH22006@atomide.com>
+References: <1405680597-10012-1-git-send-email-laurent.pinchart@ideasonboard.com>
+ <20140722061929.GD18374@atomide.com>
+ <20140723135217.GE31450@8bytes.org>
+ <4101565.HEj9dhtF5Z@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140723153420.GC14017-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Rafael J . Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hotplug-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-omap-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <4101565.HEj9dhtF5Z@avalon>
+Sender: linux-omap-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Suman Anna <s-anna@ti.com>, iommu@lists.linux-foundation.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Florian Vaussard <florian.vaussard@epfl.ch>
 List-Id: iommu@lists.linux-foundation.org
 
-V2hlbiBib3RoIENPTkZJR19BQ1BJIGFuZCBDT05GSUdfRE1BUl9UQUJMRSBhcmUgZGlzYWJsZWQs
-IGNvbW1pdAoiSW1wbGVtZW50IERNQVIgdW5pdCBob3RwbHVnIGZyYW1ld29yayIgY2F1c2VzIGJ1
-aWxkIGZhaWx1cmUgYXMgYmVsb3c6CiAgQ0MgICAgICBhcmNoL3g4Ni9rZXJuZWwvcGNpLWRtYS5v
-CkluIGZpbGUgaW5jbHVkZWQgZnJvbSBhcmNoL3g4Ni9rZXJuZWwvcGNpLWRtYS5jOjM6MDoKaW5j
-bHVkZS9saW51eC9kbWFyLmg6MTY4OjM1OiBlcnJvcjogdW5rbm93biB0eXBlIG5hbWUg4oCYYWNw
-aV9oYW5kbGXigJkKIHN0YXRpYyBpbmxpbmUgaW50IGRtYXJfZGV2aWNlX2FkZChhY3BpX2hhbmRs
-ZSBoYW5kbGUpCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXgppbmNsdWRlL2xp
-bnV4L2RtYXIuaDoxNzM6Mzg6IGVycm9yOiB1bmtub3duIHR5cGUgbmFtZSDigJhhY3BpX2hhbmRs
-ZeKAmQogc3RhdGljIGlubGluZSBpbnQgZG1hcl9kZXZpY2VfcmVtb3ZlKGFjcGlfaGFuZGxlIGhh
-bmRsZSkKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBeCm1ha2VbMl06ICoq
-KiBbYXJjaC94ODYva2VybmVsL3BjaS1kbWEub10gRXJyb3IgMQptYWtlWzFdOiAqKiogW2FyY2gv
-eDg2L2tlcm5lbF0gRXJyb3IgMgptYWtlOiAqKiogW2FyY2gveDg2XSBFcnJvciAyCgpTaWduZWQt
-b2ZmLWJ5OiBKaWFuZyBMaXUgPGppYW5nLmxpdUBsaW51eC5pbnRlbC5jb20+Ci0tLQpIaSBKb2Vy
-ZywKCUNvdWxkIHlvdSBwbGVhc2UgaGVscCB0byBtZXJnZSBvciBmb2xkIHRoaXMgcGF0Y2ggdG8g
-Zml4IHRoZQpidWlsZCBlcnJvcj8KUmVnYXJkcyEKR2VycnkKLS0tCiBpbmNsdWRlL2xpbnV4L2Rt
-YXIuaCB8ICAgIDQgKystLQogMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKSwgMiBkZWxl
-dGlvbnMoLSkKCmRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L2RtYXIuaCBiL2luY2x1ZGUvbGlu
-dXgvZG1hci5oCmluZGV4IDljMDZiYjRiNWIxNC4uNTk0ZDRhYzc5ZTc1IDEwMDY0NAotLS0gYS9p
-bmNsdWRlL2xpbnV4L2RtYXIuaAorKysgYi9pbmNsdWRlL2xpbnV4L2RtYXIuaApAQCAtMTY1LDEy
-ICsxNjUsMTIgQEAgc3RhdGljIGlubGluZSBpbnQgZG1hcl9pcl9ob3RwbHVnKHN0cnVjdCBkbWFy
-X2RyaGRfdW5pdCAqZG1hcnUsIGJvb2wgaW5zZXJ0KQogCiAjZWxzZSAvKiBDT05GSUdfRE1BUl9U
-QUJMRSAqLwogCi1zdGF0aWMgaW5saW5lIGludCBkbWFyX2RldmljZV9hZGQoYWNwaV9oYW5kbGUg
-aGFuZGxlKQorc3RhdGljIGlubGluZSBpbnQgZG1hcl9kZXZpY2VfYWRkKHZvaWQgKmhhbmRsZSkK
-IHsKIAlyZXR1cm4gMDsKIH0KIAotc3RhdGljIGlubGluZSBpbnQgZG1hcl9kZXZpY2VfcmVtb3Zl
-KGFjcGlfaGFuZGxlIGhhbmRsZSkKK3N0YXRpYyBpbmxpbmUgaW50IGRtYXJfZGV2aWNlX3JlbW92
-ZSh2b2lkICpoYW5kbGUpCiB7CiAJcmV0dXJuIDA7CiB9Ci0tIAoxLjcuMTAuNAoKX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0
-CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3Vu
-ZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+* Laurent Pinchart <laurent.pinchart@ideasonboard.com> [140723 07:02]:
+> Hi Joerg,
+> 
+> On Wednesday 23 July 2014 15:52:17 Joerg Roedel wrote:
+> > On Mon, Jul 21, 2014 at 11:19:29PM -0700, Tony Lindgren wrote:
+> > > > Tony, is there still time to get this (and especially patch 2/3, which
+> > > > touches arch/ code) in v3.17 ?
+> > > 
+> > > Yes as long as Joerg is OK to merge that branch in :)
+> > 
+> > Fine with me, I can take only patch 1 or all 3 into my arm/omap branch,
+> > given Tony's Acked-by.
+> > 
+> > Then you guys can merge in this branch wherever you want :)
+> 
+> Thank you. Assuming there's currently no conflict to be resolved, I believe 
+> the easiest would be for both you and Tony to merge my branch in your trees.
+
+Yes please merge that branch via the IOMMU tree, I only need to merge it
+if I see merge conflicts with it.
+
+Regards,
+
+Tony
