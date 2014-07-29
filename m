@@ -1,38 +1,81 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [RESEND PATCH v2] iommu/intel: Exclude devices using RMRRs from
-	IOMMU API domains
-Date: Tue, 29 Jul 2014 17:44:17 +0200
-Message-ID: <20140729154417.GB27589@8bytes.org>
-References: <20140703155435.8419.72901.stgit@gimli.home>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20140703155435.8419.72901.stgit-GCcqpEzw8uZBDLzU/O5InQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: chegu_vinod-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 1/3] mmu_notifier: Add mmu_notifier_invalidate_range()
+Date: Tue, 29 Jul 2014 18:18:11 +0200
+Message-ID: <1406650693-23315-2-git-send-email-joro@8bytes.org>
+References: <1406650693-23315-1-git-send-email-joro@8bytes.org>
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <1406650693-23315-1-git-send-email-joro@8bytes.org>
+Sender: owner-linux-mm@kvack.org
+To: Andrew Morton <akpm@linux-foundation.org>, Andrea Arcangeli <aarcange@redhat.com>, Peter Zijlstra <a.p.zijlstra@chello.nl>, Rik van Riel <riel@redhat.com>, Hugh Dickins <hughd@google.com>, Mel Gorman <mgorman@suse.de>, Johannes Weiner <jweiner@redhat.com>
+Cc: Jerome Glisse <jglisse@redhat.com>, jroedel@suse.de, Jay.Cornwall@amd.com, Oded.Gabbay@amd.com, John.Bridgman@amd.com, Suravee.Suthikulpanit@amd.com, ben.sander@amd.com, Jesse Barnes <jbarnes@virtuousgeek.org>, David Woodhouse <dwmw2@infradead.org>, linux-kernel@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jul 03, 2014 at 09:57:02AM -0600, Alex Williamson wrote:
-> The user of the IOMMU API domain expects to have full control of
-> the IOVA space for the domain.  RMRRs are fundamentally incompatible
-> with that idea.  We can neither map the RMRR into the IOMMU API
-> domain, nor can we guarantee that the device won't continue DMA with
-> the area described by the RMRR as part of the new domain.  Therefore
-> we must prevent such devices from being used by the IOMMU API.
-> 
-> Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-> Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Joerg Roedel <jroedel@suse.de>
 
-Applied, thanks Alex.
+This notifier closes two important gaps with the current
+invalidate_range_start()/end() notifiers. The _start() part
+is called when all pages are still mapped while the _end()
+notifier is called when all pages are potentially unmapped
+and already freed.
+
+This does not allow to manage external (non-CPU) hardware
+TLBs with MMU-notifiers because there is no way to prevent
+that hardware will establish new TLB entries between the
+calls of these two functions. But this is a requirement to
+the subsytem that implements these existing notifiers.
+
+To allow managing external TLBs the MMU-notifiers need to
+catch the moment when pages are unmapped but not yet freed.
+This new notifier catches that moment and notifies the
+interested subsytem when pages that were unmapped are about
+to be freed. The new notifier will be called between
+invalidate_range_start()/end() to catch the moment when
+pages are unmapped but not yet freed.
+
+For non-CPU TLBs it is also necessary to know when
+page-table pages are freed. This is the second gap in
+current mmu_notifiers. At those events the new notifier will
+also be called, without calling invalidate_range_start() and
+invalidate_range_end() around it.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ include/linux/mmu_notifier.h | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/include/linux/mmu_notifier.h b/include/linux/mmu_notifier.h
+index deca874..1bac99c 100644
+--- a/include/linux/mmu_notifier.h
++++ b/include/linux/mmu_notifier.h
+@@ -235,6 +235,11 @@ static inline void mmu_notifier_invalidate_range_end(struct mm_struct *mm,
+ 		__mmu_notifier_invalidate_range_end(mm, start, end);
+ }
+ 
++static inline void mmu_notifier_invalidate_range(struct mm_struct *mm,
++				  unsigned long start, unsigned long end)
++{
++}
++
+ static inline void mmu_notifier_mm_init(struct mm_struct *mm)
+ {
+ 	mm->mmu_notifier_mm = NULL;
+@@ -326,6 +331,11 @@ static inline void mmu_notifier_invalidate_range_end(struct mm_struct *mm,
+ {
+ }
+ 
++static inline void mmu_notifier_invalidate_range(struct mm_struct *mm,
++				  unsigned long start, unsigned long end)
++{
++}
++
+ static inline void mmu_notifier_mm_init(struct mm_struct *mm)
+ {
+ }
+-- 
+1.9.1
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
