@@ -1,14 +1,15 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu/exynos: Select ARM_DMA_USE_IOMMU
-Date: Tue, 29 Jul 2014 17:43:55 +0200
-Message-ID: <20140729154354.GA27589@8bytes.org>
-References: <1404466268-9512-1-git-send-email-tushar.b@samsung.com>
+Subject: Re: [RESEND PATCH v2] iommu/intel: Exclude devices using RMRRs from
+	IOMMU API domains
+Date: Tue, 29 Jul 2014 17:44:17 +0200
+Message-ID: <20140729154417.GB27589@8bytes.org>
+References: <20140703155435.8419.72901.stgit@gimli.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1404466268-9512-1-git-send-email-tushar.b-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+In-Reply-To: <20140703155435.8419.72901.stgit-GCcqpEzw8uZBDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,14 +19,20 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tushar Behera <tushar.b-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, trblinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: chegu_vinod-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jul 04, 2014 at 03:01:08PM +0530, Tushar Behera wrote:
-> For IOMMU to use on Exynos platforms, we need to enable ARM_DMA_USE_IOMMU. It
-> would be better to select it by default when EXYNOS_IOMMU is enabled.
+On Thu, Jul 03, 2014 at 09:57:02AM -0600, Alex Williamson wrote:
+> The user of the IOMMU API domain expects to have full control of
+> the IOVA space for the domain.  RMRRs are fundamentally incompatible
+> with that idea.  We can neither map the RMRR into the IOMMU API
+> domain, nor can we guarantee that the device won't continue DMA with
+> the area described by the RMRR as part of the new domain.  Therefore
+> we must prevent such devices from being used by the IOMMU API.
 > 
-> Signed-off-by: Tushar Behera <tushar.b-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+> Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 
-Applied, thanks. Please always Cc me directly on IOMMU patches.
+Applied, thanks Alex.
