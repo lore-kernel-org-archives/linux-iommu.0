@@ -1,108 +1,102 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 0/3 v2] mmu_notifier: Allow to manage CPU external TLBs
-Date: Tue, 29 Jul 2014 18:18:10 +0200
-Message-ID: <1406650693-23315-1-git-send-email-joro@8bytes.org>
-Return-path: <owner-linux-mm@kvack.org>
-Sender: owner-linux-mm@kvack.org
-To: Andrew Morton <akpm@linux-foundation.org>, Andrea Arcangeli <aarcange@redhat.com>, Peter Zijlstra <a.p.zijlstra@chello.nl>, Rik van Riel <riel@redhat.com>, Hugh Dickins <hughd@google.com>, Mel Gorman <mgorman@suse.de>, Johannes Weiner <jweiner@redhat.com>
-Cc: Jerome Glisse <jglisse@redhat.com>, jroedel@suse.de, Jay.Cornwall@amd.com, Oded.Gabbay@amd.com, John.Bridgman@amd.com, Suravee.Suthikulpanit@amd.com, ben.sander@amd.com, Jesse Barnes <jbarnes@virtuousgeek.org>, David Woodhouse <dwmw2@infradead.org>, linux-kernel@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Joerg Roedel <joro@8bytes.org>
+From: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH v3 1/1] iommu-api: Add map_sg/unmap_sg functions
+Date: Tue, 29 Jul 2014 10:21:48 -0700
+Message-ID: <53D7D82C.2080201@codeaurora.org>
+References: <1406572731-6216-1-git-send-email-ohaugan@codeaurora.org>
+	<1406572731-6216-2-git-send-email-ohaugan@codeaurora.org>
+	<20140728191111.GW15536@arm.com> <53D6EFC0.1060308@codeaurora.org>
+	<20140729092547.GB9245@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20140729092547.GB9245-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Changes V1->V2:
+On 7/29/2014 2:25 AM, Will Deacon wrote:
+> Hi Olav,
+> 
+> On Tue, Jul 29, 2014 at 01:50:08AM +0100, Olav Haugan wrote:
+>> On 7/28/2014 12:11 PM, Will Deacon wrote:
+>>> On Mon, Jul 28, 2014 at 07:38:51PM +0100, Olav Haugan wrote:
+>>>> +int iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+>>>> +			struct scatterlist *sg, unsigned int nents,
+>>>> +			int prot, unsigned long flags)
+>>>> +{
+>>>> +	int ret = 0;
+>>>> +	unsigned long offset = 0;
+>>>> +
+>>>> +	BUG_ON(iova & (~PAGE_MASK));
+>>>> +
+>>>> +	if (unlikely(domain->ops->map_sg == NULL)) {
+>>>> +		unsigned int i;
+>>>> +		struct scatterlist *s;
+>>>> +
+>>>> +		for_each_sg(sg, s, nents, i) {
+>>>> +			phys_addr_t phys = page_to_phys(sg_page(s));
+>>>> +			u32 page_len = PAGE_ALIGN(s->offset + s->length);
+>>>
+>>> Hmm, this is a pretty horrible place where CPU page size (from the sg list)
+>>> meets the IOMMU and I think we need to do something better to avoid spurious
+>>> failures. In other words, the sg list should be iterated in such a way that
+>>> we always pass a multiple of a supported iommu page size to iommu_map.
+>>>
+>>> All the code using PAGE_MASK and PAGE_ALIGN needn't match what is supported
+>>> by the IOMMU hardware.
+>>
+>> I am not sure what you mean. How can we iterate over the sg list in a
+>> different way to ensure we pass a multiple of a supported iommu page
+>> size? Each entry in the sg list are physically discontinuous from each
+>> other. If the page is too big iommu_map will take care of it for us. It
+>> already finds the biggest supported page size and splits up the calls to
+>> domain->ops->map(). Also, whoever allocates memory for use by IOMMU
+>> needs to be aware of what the supported minimum size is or else they
+>> would get mapping failures anyway.
+> 
+> I agree that we can't handle IOMMUs that have a minimum page size larger
+> than the CPU page size, but we should be able to handle the case where the
+> maximum supported page size on the IOMMU is smaller than the CPU page size
+> (e.g. 4k IOMMU with 64k pages on the CPU). I think that could trip a BUG_ON
+> with your patch, although the alignment would be ok in iommu_map because
+> page sizes are always a power-of-2. You also end up rounding the size to
+> 64k, which could lead to mapping more than you really need to.
 
-* Rebase to v3.16-rc7
-* Added call of ->invalidate_range to
-  __mmu_notifier_invalidate_end() so that the subsystem
-  doesn't need to register an ->invalidate_end() call-back,
-  subsystems will likely either register
-  invalidate_range_start/end or invalidate_range, so that
-  should be fine.
-* Re-orded declarations a bit to reflect that
-  invalidate_range is not only called between
-  invalidate_range_start/end
-* Updated documentation to cover the case where
-  invalidate_range is called outside of
-  invalidate_range_start/end to flush page-table pages out
-  of the TLB
+Which BUG_ON would I trip? If the supported IOMMU page size is less than
+the CPU supported page size then iommu_map will nicely take care of
+splitting up the mapping calls into sizes supported by the IOMMU (taken
+care of by iommu_pgsize()). However, I see you point regarding the
+PAGE_ALIGN of the offset+length that can cause overmapping which you
+don't really want. What is the alternative here? Just leave it and do
+not align at all? That is how iommu_map() currently works. It will
+return error if the iova|phys|size is not aligned to the minimum pgsize
+supported by the IOMMU. So I would not change the behavior if I just
+left it without trying to align.
 
-Hi,
+I will remove the BUG_ON for (iova & (~PAGE_MASK)).
 
-here is a patch-set to extend the mmu_notifiers in the Linux
-kernel to allow managing CPU external TLBs. Those TLBs may
-be implemented in IOMMUs or any other external device, e.g.
-ATS/PRI capable PCI devices.
+>> (The code in __map_sg_chunk in arch/arm/mm/dma-mapping.c does the same
+>> thing btw.)
+> 
+> I have the same objection to that code :)
 
-The problem with managing these TLBs are the semantics of
-the invalidate_range_start/end call-backs currently
-available. Currently the subsystem using mmu_notifiers has
-to guarantee that no new TLB entries are established between
-invalidate_range_start/end. Furthermore the
-invalidate_range_start() function is called when all pages
-are still mapped and invalidate_range_end() when the pages
-are unmapped an already freed.
-
-So both call-backs can't be used to safely flush any non-CPU
-TLB because _start() is called too early and _end() too
-late.
-
-In the AMD IOMMUv2 driver this is currently implemented by
-assigning an empty page-table to the external device between
-_start() and _end(). But as tests have shown this doesn't
-work as external devices don't re-fault infinitly but enter
-a failure state after some time.
-
-Next problem with this solution is that it causes an
-interrupt storm for IO page faults to be handled when an
-empty page-table is assigned.
-
-Furthermore the _start()/end() notifiers only catch the
-moment when page mappings are released, but not page-table
-pages. But this is necessary for managing external TLBs when
-the page-table is shared with the CPU.
-
-To solve this situation I wrote a patch-set to introduce a
-new notifier call-back: mmu_notifer_invalidate_range(). This
-notifier lifts the strict requirements that no new
-references are taken in the range between _start() and
-_end(). When the subsystem can't guarantee that any new
-references are taken is has to provide the
-invalidate_range() call-back to clear any new references in
-there.
-
-It is called between invalidate_range_start() and _end()
-every time the VMM has to wipe out any references to a
-couple of pages. This are usually the places where the CPU
-TLBs are flushed too and where its important that this
-happens before invalidate_range_end() is called.
-
-Any comments and review appreciated!
+I am hoping we can remove/simplify some of that code when we have the
+iommmu_map_sg API available....
 
 Thanks,
 
-	Joerg
-
-Joerg Roedel (3):
-  mmu_notifier: Add mmu_notifier_invalidate_range()
-  mmu_notifier: Call mmu_notifier_invalidate_range() from VMM
-  mmu_notifier: Add the call-back for mmu_notifier_invalidate_range()
-
- include/linux/mmu_notifier.h | 75 +++++++++++++++++++++++++++++++++++++++++---
- kernel/events/uprobes.c      |  2 +-
- mm/fremap.c                  |  2 +-
- mm/huge_memory.c             |  9 +++---
- mm/hugetlb.c                 |  7 ++++-
- mm/ksm.c                     |  4 +--
- mm/memory.c                  |  3 +-
- mm/migrate.c                 |  3 +-
- mm/mmu_notifier.c            | 25 +++++++++++++++
- mm/rmap.c                    |  2 +-
- 10 files changed, 115 insertions(+), 17 deletions(-)
+Olav
 
 -- 
-1.9.1
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+hosted by The Linux Foundation
