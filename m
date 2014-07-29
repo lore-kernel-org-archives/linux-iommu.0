@@ -1,20 +1,11 @@
-From: Greg Edwards <gedwards-LfVdkaOWEx8@public.gmane.org>
-Subject: Re: [PATCH v2] iommu/vt-d: race setting IRQ CPU affinity while
-	freeing IRQ
-Date: Tue, 29 Jul 2014 11:21:58 -0600
-Message-ID: <20140729172158.GA23529@psuche.datadirectnet.com>
-References: <20140722142719.GA28143@psuche.datadirectnet.com>
-	<20140723144024.GA14017@8bytes.org>
-	<20140723144917.GA26986@psuche.datadirectnet.com>
-	<20140723151040.GB14017@8bytes.org>
-	<20140723161326.GB32422@psuche.datadirectnet.com>
-	<20140729104531.GB9809@8bytes.org>
+From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH v3] iommu/arm-smmu: avoid calling request_irq in atomic context
+Date: Tue, 29 Jul 2014 11:11:15 -0700
+Message-ID: <1406657475-1232-1-git-send-email-mitchelh@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20140729104531.GB9809-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,93 +15,173 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jul 29, 2014 at 12:45:31PM +0200, Joerg Roedel wrote:
-> On Wed, Jul 23, 2014 at 10:13:26AM -0600, Greg Edwards wrote:
->> A user process setting the CPU affinity of an IRQ for a KVM
->> direct-assigned device via /proc/irq/<IRQ#>/smp_affinity can race with
->> the IRQ being released by QEMU, resulting in a NULL iommu pointer
->> dereference in get_irte().
->
-> Maybe I wasn't clear enough, what I am missing is a panic message with a
-> backtrace from the NULL pointer deref you are seeing in the commit
-> message.
+request_irq shouldn't be called from atomic context since it might
+sleep, but we're calling it with a spinlock held, resulting in:
 
-Sure, sorry I didn't send that along previously.  We originally saw this on a
-3.9 kernel, then recently on a 3.14 stable kernel.  I hadn't reproduced it on
-current tip yet.  Here it is for Linus' tree as of this morning:
+    [    9.172202] BUG: sleeping function called from invalid context at kernel/mm/slub.c:926
+    [    9.182989] in_atomic(): 1, irqs_disabled(): 128, pid: 1, name: swapper/0
+    [    9.189762] CPU: 1 PID: 1 Comm: swapper/0 Tainted: G        W    3.10.40-gbc1b510b-38437-g55831d3bd9-dirty #97
+    [    9.199757] [<c020c448>] (unwind_backtrace+0x0/0x11c) from [<c02097d0>] (show_stack+0x10/0x14)
+    [    9.208346] [<c02097d0>] (show_stack+0x10/0x14) from [<c0301d74>] (kmem_cache_alloc_trace+0x3c/0x210)
+    [    9.217543] [<c0301d74>] (kmem_cache_alloc_trace+0x3c/0x210) from [<c0276a48>] (request_threaded_irq+0x88/0x11c)
+    [    9.227702] [<c0276a48>] (request_threaded_irq+0x88/0x11c) from [<c0931ca4>] (arm_smmu_attach_dev+0x188/0x858)
+    [    9.237686] [<c0931ca4>] (arm_smmu_attach_dev+0x188/0x858) from [<c0212cd8>] (arm_iommu_attach_device+0x18/0xd0)
+    [    9.247837] [<c0212cd8>] (arm_iommu_attach_device+0x18/0xd0) from [<c093314c>] (arm_smmu_test_probe+0x68/0xd4)
+    [    9.257823] [<c093314c>] (arm_smmu_test_probe+0x68/0xd4) from [<c05aadd0>] (driver_probe_device+0x12c/0x330)
+    [    9.267629] [<c05aadd0>] (driver_probe_device+0x12c/0x330) from [<c05ab080>] (__driver_attach+0x68/0x8c)
+    [    9.277090] [<c05ab080>] (__driver_attach+0x68/0x8c) from [<c05a92d4>] (bus_for_each_dev+0x70/0x84)
+    [    9.286118] [<c05a92d4>] (bus_for_each_dev+0x70/0x84) from [<c05aa3b0>] (bus_add_driver+0x100/0x244)
+    [    9.295233] [<c05aa3b0>] (bus_add_driver+0x100/0x244) from [<c05ab5d0>] (driver_register+0x9c/0x124)
+    [    9.304347] [<c05ab5d0>] (driver_register+0x9c/0x124) from [<c0933088>] (arm_smmu_test_init+0x14/0x38)
+    [    9.313635] [<c0933088>] (arm_smmu_test_init+0x14/0x38) from [<c0200618>] (do_one_initcall+0xb8/0x160)
+    [    9.322926] [<c0200618>] (do_one_initcall+0xb8/0x160) from [<c1200b7c>] (kernel_init_freeable+0x108/0x1cc)
+    [    9.332564] [<c1200b7c>] (kernel_init_freeable+0x108/0x1cc) from [<c0b924b0>] (kernel_init+0xc/0xe4)
+    [    9.341675] [<c0b924b0>] (kernel_init+0xc/0xe4) from [<c0205e38>] (ret_from_fork+0x14/0x3c)
 
-[ 6638.327851] BUG: unable to handle kernel NULL pointer dereference at 0000000000000090
-[ 6638.335955] IP: [<ffffffff8190a652>] intel_ioapic_set_affinity+0x82/0x1b0
-[ 6638.343012] PGD 99172e067 PUD 1026979067 PMD 0 
-[ 6638.347858] Oops: 0000 [#1] SMP 
-[ 6638.351386] Modules linked in:
-[ 6638.354718] CPU: 1 PID: 3354 Comm: affin Not tainted 3.16.0-rc7-00007-g31dab71 #1
-[ 6638.362480] Hardware name: Supermicro SYS-F617R2-RT+/X9DRFR, BIOS 3.0a 01/29/2014
-[ 6638.370259] task: ffff881025b0e720 ti: ffff88099173c000 task.ti: ffff88099173c000
-[ 6638.378063] RIP: 0010:[<ffffffff8190a652>]  [<ffffffff8190a652>] intel_ioapic_set_affinity+0x82/0x1b0
-[ 6638.387649] RSP: 0018:ffff88099173fdb0  EFLAGS: 00010046
-[ 6638.393314] RAX: 0000000000000082 RBX: ffff880a36294600 RCX: 0000000000000082
-[ 6638.400824] RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffffff8266af00
-[ 6638.408341] RBP: ffff88099173fdf8 R08: 0000000000000000 R09: ffff88103ec00490
-[ 6638.415867] R10: 0000000000000000 R11: 0000000000000000 R12: ffff88099173fe90
-[ 6638.423402] R13: 000000000000005f R14: ffff880faa38fe80 R15: ffff880faa38fe80
-[ 6638.430942] FS:  00007f7161f05740(0000) GS:ffff88107fc40000(0000) knlGS:0000000000000000
-[ 6638.439456] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 6638.445640] CR2: 0000000000000090 CR3: 000000099140d000 CR4: 00000000001427e0
-[ 6638.453227] Stack:
-[ 6638.455699]  ffffffff81c44740 ffff88099173fdc8 ffffffff00000000 00000000c991fd3b
-[ 6638.463660]  ffff880a36294600 ffff88099173fe90 ffff88099173fe90 0000000000000000
-[ 6638.471623]  0000000000000286 ffff88099173fe08 ffffffff8190aac5 ffff88099173fe28
-[ 6638.479605] Call Trace:
-[ 6638.482562]  [<ffffffff8190aac5>] set_remapped_irq_affinity+0x25/0x40
-[ 6638.489534]  [<ffffffff811322dc>] irq_do_set_affinity+0x1c/0x50
-[ 6638.495985]  [<ffffffff81132458>] irq_set_affinity_locked+0x98/0xd0
-[ 6638.502781]  [<ffffffff811324d6>] __irq_set_affinity+0x46/0x70
-[ 6638.509142]  [<ffffffff811362dc>] write_irq_affinity.isra.6+0xdc/0x100
-[ 6638.516198]  [<ffffffff8113631c>] irq_affinity_list_proc_write+0x1c/0x20
-[ 6638.523440]  [<ffffffff8129f30d>] proc_reg_write+0x3d/0x80
-[ 6638.529474]  [<ffffffff812384a7>] vfs_write+0xb7/0x1f0
-[ 6638.535165]  [<ffffffff81243619>] ? putname+0x29/0x40
-[ 6638.540771]  [<ffffffff812390c5>] SyS_write+0x55/0xd0
-[ 6638.546386]  [<ffffffff81adc729>] system_call_fastpath+0x16/0x1b
-[ 6638.552970] Code: ff 48 85 d2 74 68 4c 8b 7a 30 4d 85 ff 74 5f 48 c7 c7 00 af 66 82 e8 9e 1b 1d 00 49 8b 57 20 41 0f b7 77 28 48 c7 c7 00 af 66 82 <48> 8b 8a 90 00 00 00 41 0f b7 57 2a 01 f2 48 89 c6 48 63 d2 48 
-[ 6638.574199] RIP  [<ffffffff8190a652>] intel_ioapic_set_affinity+0x82/0x1b0
-[ 6638.581735]  RSP <ffff88099173fdb0>
-[ 6638.585872] CR2: 0000000000000090
+Fix this by moving the request_irq out of the critical section. This
+should be okay since smmu_domain->smmu is still being protected by the
+critical section. Also, we still don't program the Stream Match Register
+until after registering our interrupt handler so we shouldn't be missing
+any interrupts.
 
-> Also I am still wondering why it is possible to set affinity from
-> userspace while the irq is about to be freed. Shouldn't the proc files
-> are already unregistered when the irq is freed?
+Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+---
+Changelog:
 
-The QEMU thread is doing a KVM_DEASSIGN_DEV_IRQ ioctl.  It looks like the call
-chain is:
+  - v3: rework irq request code to avoid requesting the irq every
+        time a master is added to the domain
+  - v2: return error code from request_irq on failure
+---
+ drivers/iommu/arm-smmu.c | 73 +++++++++++++++++++++++++++---------------------
+ 1 file changed, 41 insertions(+), 32 deletions(-)
 
-  kvm_vm_ioctl_assigned_device
-    kvm_vm_ioctl_deassign_dev_irq
-      kvm_deassign_irq
-        deassign_host_irq
-          pci_disable_msix
-            free_msi_irqs
-              arch_teardown_msi_irqs
-                default_teardown_msi_irqs
-                  arch_teardown_msi_irq
-                    native_teardown_msi_irq
-                      irq_free_hwirq
-                        irq_free_hwirqs
-
-irq_free_hwirqs() does:
-
-460         for (i = from, j = cnt; j > 0; i++, j--) {
-461                 irq_set_status_flags(i, _IRQ_NOREQUEST | _IRQ_NOPROBE);
-462                 arch_teardown_hwirq(i);   <----------- QEMU is down this path to free_irte()
-463         }
-464         irq_free_descs(from, cnt);   <------------ proc files unregistered down this path
-
-
-I guess the question is if it would be safe to change that ordering?  I don't know.
-
-Greg
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index f3f66416e2..572f5579d3 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -868,7 +868,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
+ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 					struct arm_smmu_device *smmu)
+ {
+-	int irq, ret, start;
++	int ret, start;
+ 	struct arm_smmu_domain *smmu_domain = domain->priv;
+ 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+ 
+@@ -900,23 +900,9 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 		cfg->irptndx = cfg->cbndx;
+ 	}
+ 
+-	irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
+-	ret = request_irq(irq, arm_smmu_context_fault, IRQF_SHARED,
+-			  "arm-smmu-context-fault", domain);
+-	if (IS_ERR_VALUE(ret)) {
+-		dev_err(smmu->dev, "failed to request context IRQ %d (%u)\n",
+-			cfg->irptndx, irq);
+-		cfg->irptndx = INVALID_IRPTNDX;
+-		goto out_free_context;
+-	}
+-
+-	smmu_domain->smmu = smmu;
++	ACCESS_ONCE(smmu_domain->smmu) = smmu;
+ 	arm_smmu_init_context_bank(smmu_domain);
+ 	return 0;
+-
+-out_free_context:
+-	__arm_smmu_free_bitmap(smmu->context_map, cfg->cbndx);
+-	return ret;
+ }
+ 
+ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
+@@ -1172,10 +1158,11 @@ static void arm_smmu_domain_remove_master(struct arm_smmu_domain *smmu_domain,
+ 
+ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ {
+-	int ret = -EINVAL;
++	int irq, ret;
+ 	struct arm_smmu_domain *smmu_domain = domain->priv;
+-	struct arm_smmu_device *smmu;
+-	struct arm_smmu_master_cfg *cfg;
++	struct arm_smmu_device *smmu, *dom_smmu;
++	struct arm_smmu_master_cfg *master_cfg;
++	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+ 	unsigned long flags;
+ 
+ 	smmu = dev_get_master_dev(dev)->archdata.iommu;
+@@ -1184,35 +1171,57 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 		return -ENXIO;
+ 	}
+ 
++	dom_smmu = ACCESS_ONCE(smmu_domain->smmu);
++
+ 	/*
+ 	 * Sanity check the domain. We don't support domains across
+ 	 * different SMMUs.
+ 	 */
+-	spin_lock_irqsave(&smmu_domain->lock, flags);
+-	if (!smmu_domain->smmu) {
++	if (!dom_smmu) {
++		spin_lock_irqsave(&smmu_domain->lock, flags);
++		/*
++		 * make sure we're not racing with someone who might
++		 * have just attached and init'd the domain context
++		 */
++		dom_smmu = smmu_domain->smmu;
++		if (dom_smmu) {
++			spin_unlock_irqrestore(&smmu_domain->lock, flags);
++			goto have_dom_smmu;
++		}
+ 		/* Now that we have a master, we can finalise the domain */
+ 		ret = arm_smmu_init_domain_context(domain, smmu);
++		spin_unlock_irqrestore(&smmu_domain->lock, flags);
+ 		if (IS_ERR_VALUE(ret))
+-			goto err_unlock;
+-	} else if (smmu_domain->smmu != smmu) {
++			return ret;
++		dom_smmu = smmu_domain->smmu;
++
++		irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
++		ret = request_irq(irq, arm_smmu_context_fault, IRQF_SHARED,
++				"arm-smmu-context-fault", domain);
++		if (IS_ERR_VALUE(ret)) {
++			dev_err(smmu->dev, "failed to request context IRQ %d (%u)\n",
++				cfg->irptndx, irq);
++			cfg->irptndx = INVALID_IRPTNDX;
++			return ret;
++		}
++	}
++
++have_dom_smmu:
++
++	if (dom_smmu != smmu) {
+ 		dev_err(dev,
+ 			"cannot attach to SMMU %s whilst already attached to domain on SMMU %s\n",
+ 			dev_name(smmu_domain->smmu->dev),
+ 			dev_name(smmu->dev));
+-		goto err_unlock;
++		return -EINVAL;
+ 	}
+-	spin_unlock_irqrestore(&smmu_domain->lock, flags);
+ 
+ 	/* Looks ok, so add the device to the domain */
+-	cfg = find_smmu_master_cfg(smmu_domain->smmu, dev);
+-	if (!cfg)
++	master_cfg = find_smmu_master_cfg(smmu_domain->smmu, dev);
++	if (!master_cfg)
+ 		return -ENODEV;
+ 
+-	return arm_smmu_domain_add_master(smmu_domain, cfg);
+-
+-err_unlock:
+-	spin_unlock_irqrestore(&smmu_domain->lock, flags);
+-	return ret;
++	return arm_smmu_domain_add_master(smmu_domain, master_cfg);
+ }
+ 
+ static void arm_smmu_detach_dev(struct iommu_domain *domain, struct device *dev)
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+hosted by The Linux Foundation
