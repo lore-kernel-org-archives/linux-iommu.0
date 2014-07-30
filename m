@@ -1,58 +1,60 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH v3 1/1] iommu-api: Add map_sg/unmap_sg functions
-Date: Wed, 30 Jul 2014 10:45:57 +0100
-Message-ID: <20140730094557.GD12239@arm.com>
-References: <1406572731-6216-1-git-send-email-ohaugan@codeaurora.org>
- <1406572731-6216-2-git-send-email-ohaugan@codeaurora.org>
- <20140728191111.GW15536@arm.com>
- <53D6EFC0.1060308@codeaurora.org>
- <20140729092547.GB9245@arm.com>
- <53D7D82C.2080201@codeaurora.org>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v4] devicetree: Add generic IOMMU device tree bindings
+Date: Wed, 30 Jul 2014 12:04:25 +0100
+Message-ID: <20140730110425.GI12239@arm.com>
+References: <1404487757-18829-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <53D7D82C.2080201@codeaurora.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Olav Haugan <ohaugan@codeaurora.org>
-Cc: "joro@8bytes.org" <joro@8bytes.org>, "robdclark@gmail.com" <robdclark@gmail.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>, "mitchelh@codeaurora.org" <mitchelh@codeaurora.org>
+In-Reply-To: <1404487757-18829-1-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Varun Sethi <varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TZNg+MwTxZMZA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jul 29, 2014 at 06:21:48PM +0100, Olav Haugan wrote:
-> On 7/29/2014 2:25 AM, Will Deacon wrote:
-> > I agree that we can't handle IOMMUs that have a minimum page size larger
-> > than the CPU page size, but we should be able to handle the case where the
-> > maximum supported page size on the IOMMU is smaller than the CPU page size
-> > (e.g. 4k IOMMU with 64k pages on the CPU). I think that could trip a BUG_ON
-> > with your patch, although the alignment would be ok in iommu_map because
-> > page sizes are always a power-of-2. You also end up rounding the size to
-> > 64k, which could lead to mapping more than you really need to.
+Hi all,
+
+On Fri, Jul 04, 2014 at 04:29:17PM +0100, Thierry Reding wrote:
+> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 > 
-> Which BUG_ON would I trip? If the supported IOMMU page size is less than
-> the CPU supported page size then iommu_map will nicely take care of
-> splitting up the mapping calls into sizes supported by the IOMMU (taken
-> care of by iommu_pgsize()). However, I see you point regarding the
-> PAGE_ALIGN of the offset+length that can cause overmapping which you
-> don't really want. What is the alternative here? Just leave it and do
-> not align at all? That is how iommu_map() currently works. It will
-> return error if the iova|phys|size is not aligned to the minimum pgsize
-> supported by the IOMMU. So I would not change the behavior if I just
-> left it without trying to align.
-
-Yeah, I think losing the align is probably the best bet for now.
-
-> I will remove the BUG_ON for (iova & (~PAGE_MASK)).
-
-Great, that's the BUG_ON I was referring to above.
-
-> >> (The code in __map_sg_chunk in arch/arm/mm/dma-mapping.c does the same
-> >> thing btw.)
-> > 
-> > I have the same objection to that code :)
+> This commit introduces a generic device tree binding for IOMMU devices.
+> Only a very minimal subset is described here, but it is enough to cover
+> the requirements of both the Exynos System MMU and Tegra SMMU as
+> discussed here:
 > 
-> I am hoping we can remove/simplify some of that code when we have the
-> iommmu_map_sg API available....
+>     https://lkml.org/lkml/2014/4/27/346
+> 
+> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> ---
+> Changes in v4:
+> - clarify that disabling an IOMMU DT node may not disable translation
+> - be more explicit that examples are only examples
+> - add multi-ID master example
+> 
+> Changes in v3:
+> - use #iommu-cells instead of #address-cells/#size-cells
+> - drop optional iommu-names property
+> 
+> Changes in v2:
+> - add notes about "dma-ranges" property (drop note from commit message)
+> - document priorities of "iommus" property vs. "dma-ranges" property
+> - drop #iommu-cells in favour of #address-cells and #size-cells
+> - remove multiple-master device example
+> 
+>  Documentation/devicetree/bindings/iommu/iommu.txt | 172 ++++++++++++++++++++++
+>  1 file changed, 172 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iommu/iommu.txt
 
-Looking forward to it!
+I'm concerned that this patch hasn't been picked up for 3.17 (I can't see it
+in -next). If we want to move the ARM SMMU driver over to this new binding,
+we can't keep dragging our feet for much longer as I *really* don't plan to
+support two bindings in parallel (one is complicated enough already).
+
+Any chance we can see this merged, please?
 
 Will
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
