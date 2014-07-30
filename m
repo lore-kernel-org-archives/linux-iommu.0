@@ -1,12 +1,13 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 1/4] iommu/amd: Don't set pasid_state->mm to NULL in
-	unbind_pasid
-Date: Wed, 30 Jul 2014 16:04:37 +0200
-Message-ID: <1406729080-2486-1-git-send-email-joro@8bytes.org>
+Subject: [PATCH 2/4] iommu/amd: Remove change_pte mmu_notifier call-back
+Date: Wed, 30 Jul 2014 16:04:38 +0200
+Message-ID: <1406729080-2486-2-git-send-email-joro@8bytes.org>
+References: <1406729080-2486-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1406729080-2486-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,59 +23,42 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-With calling te mmu_notifier_register function we hold a
-reference to the mm_struct that needs to be released in
-mmu_notifier_unregister. This is true even if the notifier
-was already unregistered from exit_mmap and the .release
-call-back has already run.
-
-So make sure we call mmu_notifier_unregister unconditionally
-in amd_iommu_unbind_pasid.
+All calls to this call-back are wrapped with
+mmu_notifer_invalidate_range_start()/end(), making this
+notifier pretty useless, so remove it.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 Tested-by: Oded Gabbay <oded.gabbay-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_v2.c | 20 +++-----------------
- 1 file changed, 3 insertions(+), 17 deletions(-)
+ drivers/iommu/amd_iommu_v2.c | 9 ---------
+ 1 file changed, 9 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
-index a195c78..2b7de88 100644
+index 2b7de88..524fd67 100644
 --- a/drivers/iommu/amd_iommu_v2.c
 +++ b/drivers/iommu/amd_iommu_v2.c
-@@ -320,13 +320,6 @@ static void unbind_pasid(struct pasid_state *pasid_state)
- 
- 	/* Make sure no more pending faults are in the queue */
- 	flush_workqueue(iommu_wq);
--
--	/*
--	 * No more faults are in the work queue and no new faults will be queued
--	 * from here on. We can safely set pasid_state->mm to NULL now as the
--	 * mm_struct might go away after we return.
--	 */
--	pasid_state->mm = NULL;
+@@ -406,14 +406,6 @@ static int mn_clear_flush_young(struct mmu_notifier *mn,
+ 	return 0;
  }
  
- static void free_pasid_states_level1(struct pasid_state **tbl)
-@@ -756,17 +749,10 @@ void amd_iommu_unbind_pasid(struct pci_dev *pdev, int pasid)
- 	clear_pasid_state(dev_state, pasid_state->pasid);
- 
- 	/*
--	 * Check if pasid_state->mm is still valid. If mn_release has already
--	 * run it will be NULL and we can't (and don't need to) call
--	 * mmu_notifier_unregister() on it anymore.
-+	 * Call mmu_notifier_unregister to drop our reference
-+	 * to pasid_state->mm
- 	 */
--	if (pasid_state->mm) {
--		/*
--		 * This will call the mn_release function and unbind
--		 * the PASID.
--		 */
--		mmu_notifier_unregister(&pasid_state->mn, pasid_state->mm);
--	}
-+	mmu_notifier_unregister(&pasid_state->mn, pasid_state->mm);
- 
- 	put_pasid_state_wait(pasid_state); /* Reference taken in
- 					      amd_iommu_pasid_bind */
+-static void mn_change_pte(struct mmu_notifier *mn,
+-			  struct mm_struct *mm,
+-			  unsigned long address,
+-			  pte_t pte)
+-{
+-	__mn_flush_page(mn, address);
+-}
+-
+ static void mn_invalidate_page(struct mmu_notifier *mn,
+ 			       struct mm_struct *mm,
+ 			       unsigned long address)
+@@ -484,7 +476,6 @@ static void mn_release(struct mmu_notifier *mn, struct mm_struct *mm)
+ static struct mmu_notifier_ops iommu_mn = {
+ 	.release		= mn_release,
+ 	.clear_flush_young      = mn_clear_flush_young,
+-	.change_pte             = mn_change_pte,
+ 	.invalidate_page        = mn_invalidate_page,
+ 	.invalidate_range_start = mn_invalidate_range_start,
+ 	.invalidate_range_end   = mn_invalidate_range_end,
 -- 
 1.9.1
