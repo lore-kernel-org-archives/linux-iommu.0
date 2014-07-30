@@ -1,15 +1,13 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v4] devicetree: Add generic IOMMU device tree bindings
-Date: Wed, 30 Jul 2014 15:33:09 +0200
-Message-ID: <20140730133309.GF9809@8bytes.org>
-References: <1404487757-18829-1-git-send-email-thierry.reding@gmail.com>
-	<20140730110425.GI12239@arm.com> <20140730132348.GM29590@ulmo>
+Subject: [PATCH 4/4] iommu/amd: Fix 2 typos in comments
+Date: Wed, 30 Jul 2014 16:04:40 +0200
+Message-ID: <1406729080-2486-4-git-send-email-joro@8bytes.org>
+References: <1406729080-2486-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20140730132348.GM29590@ulmo>
+In-Reply-To: <1406729080-2486-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,24 +17,40 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, arm-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Varun Sethi <varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jul 30, 2014 at 03:23:50PM +0200, Thierry Reding wrote:
-> I think there weren't any comments left for me to address and I've
-> mostly been waiting for Joerg to pick it up.
-> 
-> Joerg, can you take this through the iommu tree for 3.17? Will acked
-> this, but perhaps you were waiting for an ACK from the device tree
-> bindings maintainers?
-> 
-> Will, perhaps you can get Pawel or Mark to look at this?
-> 
-> Arnd, I'm sure if we had your Acked-by that would go a long way too.
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Yes, as Arnd requested this generic binding it would be good to have his
-Acked-by before proceeding. Arnd?
+amd_iommu_pasid_bind -> amd_iommu_bind_pasid
 
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ drivers/iommu/amd_iommu_v2.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-	Joerg
+diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
+index 2de13be..5f578e8 100644
+--- a/drivers/iommu/amd_iommu_v2.c
++++ b/drivers/iommu/amd_iommu_v2.c
+@@ -367,7 +367,7 @@ static void free_pasid_states(struct device_state *dev_state)
+ 		mmu_notifier_unregister(&pasid_state->mn, pasid_state->mm);
+ 
+ 		put_pasid_state_wait(pasid_state); /* Reference taken in
+-						      amd_iommu_pasid_bind */
++						      amd_iommu_bind_pasid */
+ 
+ 		/* Drop reference taken in amd_iommu_bind_pasid */
+ 		put_device_state(dev_state);
+@@ -749,7 +749,7 @@ void amd_iommu_unbind_pasid(struct pci_dev *pdev, int pasid)
+ 	mmu_notifier_unregister(&pasid_state->mn, pasid_state->mm);
+ 
+ 	put_pasid_state_wait(pasid_state); /* Reference taken in
+-					      amd_iommu_pasid_bind */
++					      amd_iommu_bind_pasid */
+ out:
+ 	/* Drop reference taken in this function */
+ 	put_device_state(dev_state);
+-- 
+1.9.1
