@@ -1,14 +1,15 @@
-From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v4] devicetree: Add generic IOMMU device tree bindings
-Date: Wed, 30 Jul 2014 16:26:47 +0100
-Message-ID: <20140730152646.GC20162@leverpostej>
-References: <1404487757-18829-1-git-send-email-thierry.reding@gmail.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v3] iommu/arm-smmu: avoid calling request_irq in atomic
+	context
+Date: Wed, 30 Jul 2014 16:31:14 +0100
+Message-ID: <20140730153114.GG8989@arm.com>
+References: <1406657475-1232-1-git-send-email-mitchelh@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1404487757-18829-1-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1406657475-1232-1-git-send-email-mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,248 +19,192 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Varun Sethi <varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Thierry,
+Hey Mitch,
 
-This looks sane to me.
-
-I just have a few questions below which are hopefully simple/stupid.
-
-On Fri, Jul 04, 2014 at 04:29:17PM +0100, Thierry Reding wrote:
-> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+On Tue, Jul 29, 2014 at 07:11:15PM +0100, Mitchel Humpherys wrote:
+> request_irq shouldn't be called from atomic context since it might
+> sleep, but we're calling it with a spinlock held, resulting in:
 > 
-> This commit introduces a generic device tree binding for IOMMU devices.
-> Only a very minimal subset is described here, but it is enough to cover
-> the requirements of both the Exynos System MMU and Tegra SMMU as
-> discussed here:
+>     [    9.172202] BUG: sleeping function called from invalid context at kernel/mm/slub.c:926
+>     [    9.182989] in_atomic(): 1, irqs_disabled(): 128, pid: 1, name: swapper/0
+>     [    9.189762] CPU: 1 PID: 1 Comm: swapper/0 Tainted: G        W    3.10.40-gbc1b510b-38437-g55831d3bd9-dirty #97
+>     [    9.199757] [<c020c448>] (unwind_backtrace+0x0/0x11c) from [<c02097d0>] (show_stack+0x10/0x14)
+>     [    9.208346] [<c02097d0>] (show_stack+0x10/0x14) from [<c0301d74>] (kmem_cache_alloc_trace+0x3c/0x210)
+>     [    9.217543] [<c0301d74>] (kmem_cache_alloc_trace+0x3c/0x210) from [<c0276a48>] (request_threaded_irq+0x88/0x11c)
+>     [    9.227702] [<c0276a48>] (request_threaded_irq+0x88/0x11c) from [<c0931ca4>] (arm_smmu_attach_dev+0x188/0x858)
+>     [    9.237686] [<c0931ca4>] (arm_smmu_attach_dev+0x188/0x858) from [<c0212cd8>] (arm_iommu_attach_device+0x18/0xd0)
+>     [    9.247837] [<c0212cd8>] (arm_iommu_attach_device+0x18/0xd0) from [<c093314c>] (arm_smmu_test_probe+0x68/0xd4)
+>     [    9.257823] [<c093314c>] (arm_smmu_test_probe+0x68/0xd4) from [<c05aadd0>] (driver_probe_device+0x12c/0x330)
+>     [    9.267629] [<c05aadd0>] (driver_probe_device+0x12c/0x330) from [<c05ab080>] (__driver_attach+0x68/0x8c)
+>     [    9.277090] [<c05ab080>] (__driver_attach+0x68/0x8c) from [<c05a92d4>] (bus_for_each_dev+0x70/0x84)
+>     [    9.286118] [<c05a92d4>] (bus_for_each_dev+0x70/0x84) from [<c05aa3b0>] (bus_add_driver+0x100/0x244)
+>     [    9.295233] [<c05aa3b0>] (bus_add_driver+0x100/0x244) from [<c05ab5d0>] (driver_register+0x9c/0x124)
+>     [    9.304347] [<c05ab5d0>] (driver_register+0x9c/0x124) from [<c0933088>] (arm_smmu_test_init+0x14/0x38)
+>     [    9.313635] [<c0933088>] (arm_smmu_test_init+0x14/0x38) from [<c0200618>] (do_one_initcall+0xb8/0x160)
+>     [    9.322926] [<c0200618>] (do_one_initcall+0xb8/0x160) from [<c1200b7c>] (kernel_init_freeable+0x108/0x1cc)
+>     [    9.332564] [<c1200b7c>] (kernel_init_freeable+0x108/0x1cc) from [<c0b924b0>] (kernel_init+0xc/0xe4)
+>     [    9.341675] [<c0b924b0>] (kernel_init+0xc/0xe4) from [<c0205e38>] (ret_from_fork+0x14/0x3c)
 > 
->     https://lkml.org/lkml/2014/4/27/346
+> Fix this by moving the request_irq out of the critical section. This
+> should be okay since smmu_domain->smmu is still being protected by the
+> critical section. Also, we still don't program the Stream Match Register
+> until after registering our interrupt handler so we shouldn't be missing
+> any interrupts.
 > 
-> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 > ---
-> Changes in v4:
-> - clarify that disabling an IOMMU DT node may not disable translation
-> - be more explicit that examples are only examples
-> - add multi-ID master example
+> Changelog:
 > 
-> Changes in v3:
-> - use #iommu-cells instead of #address-cells/#size-cells
-> - drop optional iommu-names property
-> 
-> Changes in v2:
-> - add notes about "dma-ranges" property (drop note from commit message)
-> - document priorities of "iommus" property vs. "dma-ranges" property
-> - drop #iommu-cells in favour of #address-cells and #size-cells
-> - remove multiple-master device example
-> 
->  Documentation/devicetree/bindings/iommu/iommu.txt | 172 ++++++++++++++++++++++
->  1 file changed, 172 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iommu/iommu.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iommu/iommu.txt b/Documentation/devicetree/bindings/iommu/iommu.txt
-> new file mode 100644
-> index 000000000000..464a81eaaf61
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iommu/iommu.txt
-> @@ -0,0 +1,172 @@
-> +This document describes the generic device tree binding for IOMMUs and their
-> +master(s).
-> +
-> +
-> +IOMMU device node:
-> +==================
-> +
-> +An IOMMU can provide the following services:
-> +
-> +* Remap address space to allow devices to access physical memory ranges that
-> +  they otherwise wouldn't be capable of accessing.
-> +
-> +  Example: 32-bit DMA to 64-bit physical addresses
-> +
-> +* Implement scatter-gather at page level granularity so that the device does
-> +  not have to.
-> +
-> +* Provide system protection against "rogue" DMA by forcing all accesses to go
-> +  through the IOMMU and faulting when encountering accesses to unmapped
-> +  address regions.
-> +
-> +* Provide address space isolation between multiple contexts.
-> +
-> +  Example: Virtualization
-> +
-> +Device nodes compatible with this binding represent hardware with some of the
-> +above capabilities.
-> +
-> +IOMMUs can be single-master or multiple-master. Single-master IOMMU devices
-> +typically have a fixed association to the master device, whereas multiple-
-> +master IOMMU devices can translate accesses from more than one master.
-> +
-> +The device tree node of the IOMMU device's parent bus must contain a valid
-> +"dma-ranges" property that describes how the physical address space of the
-> +IOMMU maps to memory. An empty "dma-ranges" property means that there is a
-> +1:1 mapping from IOMMU to memory.
-> +
-> +Required properties:
-> +--------------------
-> +- #iommu-cells: The number of cells in an IOMMU specifier needed to encode an
-> +  address.
-> +
-> +The meaning of the IOMMU specifier is defined by the device tree binding of
-> +the specific IOMMU. Below are a few examples of typical use-cases:
-> +
-> +- #iommu-cells = <0>: Single master IOMMU devices are not configurable and
-> +  therefore no additional information needs to be encoded in the specifier.
-> +  This may also apply to multiple master IOMMU devices that do not allow the
-> +  association of masters to be configured. Note that an IOMMU can by design
-> +  be multi-master yet only expose a single master in a given configuration.
-> +  In such cases the number of cells will usually be 1 as in the next case.
-> +- #iommu-cells = <1>: Multiple master IOMMU devices may need to be configured
-> +  in order to enable translation for a given master. In such cases the single
-> +  address cell corresponds to the master device's ID. In some cases more than
-> +  one cell can be required to represent a single master ID.
-> +- #iommu-cells = <4>: Some IOMMU devices allow the DMA window for masters to
-> +  be configured. The first cell of the address in this may contain the master
-> +  device's ID for example, while the second cell could contain the start of
-> +  the DMA window for the given device. The length of the DMA window is given
-> +  by the third and fourth cells.
-> +
-> +Note that these are merely examples and real-world use-cases may use different
-> +definitions to represent their individual needs. Always refer to the specific
-> +IOMMU binding for the exact meaning of the cells that make up the specifier.
-> +
-> +
-> +IOMMU master node:
-> +==================
-> +
-> +Devices that access memory through an IOMMU are called masters. A device can
-> +have multiple master interfaces (to one or more IOMMU devices).
-> +
-> +Required properties:
-> +--------------------
-> +- iommus: A list of phandle and IOMMU specifier pairs that describe the IOMMU
-> +  master interfaces of the device. One entry in the list describes one master
-> +  interface of the device.
-> +
-> +When an "iommus" property is specified in a device tree node, the IOMMU will
-> +be used for address translation. If a "dma-ranges" property exists in the
-> +device's parent node it will be ignored. An exception to this rule is if the
-> +referenced IOMMU is disabled, in which case the "dma-ranges" property of the
-> +parent shall take effect. Note that merely disabling a device tree node does
-> +not guarantee that the IOMMU is really disabled since the hardware may not
-> +have a means to turn off translation.
-> +
-> +
-> +Notes:
-> +======
-> +
-> +One possible extension to the above is to use an "iommus" property along with
-> +a "dma-ranges" property in a bus device node (such as PCI host bridges). This
-> +can be useful to describe how children on the bus relate to the IOMMU if they
-> +are not explicitly listed in the device tree (e.g. PCI devices). However, the
-> +requirements of that use-case haven't been fully determined yet. Implementing
-> +this is therefore not recommended without further discussion and extension of
-> +this binding.
-> +
-> +
-> +Examples:
-> +=========
-> +
-> +Single-master IOMMU:
-> +--------------------
-> +
-> +	iommu {
-> +		#iommu-cells = <0>;
-> +	};
-> +
-> +	master {
-> +		iommus = <&/iommu>;
+>   - v3: rework irq request code to avoid requesting the irq every
+>         time a master is added to the domain
+>   - v2: return error code from request_irq on failure
+> ---
+>  drivers/iommu/arm-smmu.c | 73 +++++++++++++++++++++++++++---------------------
+>  1 file changed, 41 insertions(+), 32 deletions(-)
 
-Nit: this should be iommus = <&{/iommu}>, or it's not valid dts syntax.
+I think this is correct, but we can do some cleanup now that you've moved
+all the locking into the conditional. Messy diff below, which would be much
+nicer sqaushed into your patch.
 
-> +	};
-> +
-> +Multiple-master IOMMU with fixed associations:
-> +----------------------------------------------
-> +
-> +	/* multiple-master IOMMU */
-> +	iommu {
-> +		/*
-> +		 * Masters are statically associated with this IOMMU and
-> +		 * address translation is always enabled.
-> +		 */
-> +		#iommu-cells = <0>;
+What do you reckon?
 
-I don't follow why translation being always enabled is relevant to the
-example; that would seem to be independent from the binding.
+Will
 
-Surely the key point is that with no way to distinguish devices, they
-presumably share the same translations?
+--->8
 
-> +	};
-> +
-> +	/* static association with IOMMU */
-> +	master@1 {
-> +		reg = <1>;
-> +		iommus = <&/iommu>;
-> +	};
-> +
-> +	/* static association with IOMMU */
-> +	master@2 {
-> +		reg = <2>;
-> +		iommus = <&/iommu>;
-> +	};
-> +
-> +Multiple-master IOMMU:
-> +----------------------
-> +
-> +	iommu {
-> +		/* the specifier represents the ID of the master */
-> +		#iommu-cells = <1>;
-> +	};
-> +
-> +	master@1 {
-> +		/* device has master ID 42 in the IOMMU */
-> +		iommus = <&/iommu 42>;
-> +	};
-> +
-> +	master@2 {
-> +		/* device has master IDs 23 and 24 in the IOMMU */
-> +		iommus = <&/iommu 23>, <&/iommu 24>;
-> +	};
-
-In future I suspect master will need to be able to identify which master
-IDs correspond to which of their master ports (where each port might
-have an arbitrary number of master IDs).
-
-While we don't need that for the first run, it would be nice to have
-that looked into so master bindings don't come up with arbitrarily
-different ways of doing that.
-
-> +
-> +Multiple-master IOMMU with configurable DMA window:
-> +---------------------------------------------------
-> +
-> +	/ {
-> +		#address-cells = <1>;
-> +		#size-cells = <1>;
-> +
-> +		iommu {
-> +			/* master ID, address and length of DMA window */
-> +			#iommu-cells = <4>;
-> +		};
-> +
-> +		master {
-> +			/* master ID 42, 4 GiB DMA window starting at 0 */
-> +			iommus = <&/iommu  42  0  0x1 0x0>;
-
-Is this that window is from the POV of the master, i.e. the master can
-address 0x0 to 0xffffffff when generating transactions, and these get
-translated somehow?
-
-Or is this the physical addresses to allocate to the master?
-
-Cheers,
-Mark.
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 572f5579d38b..e33df1a676ec 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -868,10 +868,15 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
+ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 					struct arm_smmu_device *smmu)
+ {
+-	int ret, start;
++	int irq, start, ret = 0;
++	unsigned long flags;
+ 	struct arm_smmu_domain *smmu_domain = domain->priv;
+ 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+ 
++	spin_lock_irqsave(&smmu_domain->lock, flags);
++	if (smmu_domain->smmu)
++		goto out_unlock;
++
+ 	if (smmu->features & ARM_SMMU_FEAT_TRANS_NESTED) {
+ 		/*
+ 		 * We will likely want to change this if/when KVM gets
+@@ -890,7 +895,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 	ret = __arm_smmu_alloc_bitmap(smmu->context_map, start,
+ 				      smmu->num_context_banks);
+ 	if (IS_ERR_VALUE(ret))
+-		return ret;
++		goto out_unlock;
+ 
+ 	cfg->cbndx = ret;
+ 	if (smmu->version == 1) {
+@@ -902,7 +907,22 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 
+ 	ACCESS_ONCE(smmu_domain->smmu) = smmu;
+ 	arm_smmu_init_context_bank(smmu_domain);
++	spin_unlock_irqrestore(&smmu_domain->lock, flags);
++
++	irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
++	ret = request_irq(irq, arm_smmu_context_fault, IRQF_SHARED,
++			  "arm-smmu-context-fault", smmu_domain);
++	if (IS_ERR_VALUE(ret)) {
++		dev_err(smmu->dev, "failed to request context IRQ %d (%u)\n",
++			cfg->irptndx, irq);
++		cfg->irptndx = INVALID_IRPTNDX;
++	}
++
+ 	return 0;
++
++out_unlock:
++	spin_unlock_irqrestore(&smmu_domain->lock, flags);
++	return ret;
+ }
+ 
+ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
+@@ -1158,12 +1178,10 @@ static void arm_smmu_domain_remove_master(struct arm_smmu_domain *smmu_domain,
+ 
+ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ {
+-	int irq, ret;
++	int ret;
+ 	struct arm_smmu_domain *smmu_domain = domain->priv;
+ 	struct arm_smmu_device *smmu, *dom_smmu;
+-	struct arm_smmu_master_cfg *master_cfg;
+-	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+-	unsigned long flags;
++	struct arm_smmu_master_cfg *cfg;
+ 
+ 	smmu = dev_get_master_dev(dev)->archdata.iommu;
+ 	if (!smmu) {
+@@ -1171,57 +1189,33 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 		return -ENXIO;
+ 	}
+ 
+-	dom_smmu = ACCESS_ONCE(smmu_domain->smmu);
+-
+ 	/*
+ 	 * Sanity check the domain. We don't support domains across
+ 	 * different SMMUs.
+ 	 */
++	dom_smmu = ACCESS_ONCE(smmu_domain->smmu);
+ 	if (!dom_smmu) {
+-		spin_lock_irqsave(&smmu_domain->lock, flags);
+-		/*
+-		 * make sure we're not racing with someone who might
+-		 * have just attached and init'd the domain context
+-		 */
+-		dom_smmu = smmu_domain->smmu;
+-		if (dom_smmu) {
+-			spin_unlock_irqrestore(&smmu_domain->lock, flags);
+-			goto have_dom_smmu;
+-		}
+ 		/* Now that we have a master, we can finalise the domain */
+ 		ret = arm_smmu_init_domain_context(domain, smmu);
+-		spin_unlock_irqrestore(&smmu_domain->lock, flags);
+ 		if (IS_ERR_VALUE(ret))
+ 			return ret;
+-		dom_smmu = smmu_domain->smmu;
+ 
+-		irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
+-		ret = request_irq(irq, arm_smmu_context_fault, IRQF_SHARED,
+-				"arm-smmu-context-fault", domain);
+-		if (IS_ERR_VALUE(ret)) {
+-			dev_err(smmu->dev, "failed to request context IRQ %d (%u)\n",
+-				cfg->irptndx, irq);
+-			cfg->irptndx = INVALID_IRPTNDX;
+-			return ret;
+-		}
++		dom_smmu = smmu_domain->smmu;
+ 	}
+ 
+-have_dom_smmu:
+-
+ 	if (dom_smmu != smmu) {
+ 		dev_err(dev,
+ 			"cannot attach to SMMU %s whilst already attached to domain on SMMU %s\n",
+-			dev_name(smmu_domain->smmu->dev),
+-			dev_name(smmu->dev));
++			dev_name(smmu_domain->smmu->dev), dev_name(smmu->dev));
+ 		return -EINVAL;
+ 	}
+ 
+ 	/* Looks ok, so add the device to the domain */
+-	master_cfg = find_smmu_master_cfg(smmu_domain->smmu, dev);
+-	if (!master_cfg)
++	cfg = find_smmu_master_cfg(smmu_domain->smmu, dev);
++	if (!cfg)
+ 		return -ENODEV;
+ 
+-	return arm_smmu_domain_add_master(smmu_domain, master_cfg);
++	return arm_smmu_domain_add_master(smmu_domain, cfg);
+ }
+ 
+ static void arm_smmu_detach_dev(struct iommu_domain *domain, struct device *dev)
