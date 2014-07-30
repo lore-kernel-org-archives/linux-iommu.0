@@ -1,13 +1,12 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 4/4] iommu/amd: Fix 2 typos in comments
-Date: Wed, 30 Jul 2014 16:04:40 +0200
-Message-ID: <1406729080-2486-4-git-send-email-joro@8bytes.org>
-References: <1406729080-2486-1-git-send-email-joro@8bytes.org>
+Subject: [PATCH 1/4] iommu/amd: Don't set pasid_state->mm to NULL in
+	unbind_pasid
+Date: Wed, 30 Jul 2014 16:04:37 +0200
+Message-ID: <1406729080-2486-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1406729080-2486-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,34 +22,59 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-amd_iommu_pasid_bind -> amd_iommu_bind_pasid
+With calling te mmu_notifier_register function we hold a
+reference to the mm_struct that needs to be released in
+mmu_notifier_unregister. This is true even if the notifier
+was already unregistered from exit_mmap and the .release
+call-back has already run.
+
+So make sure we call mmu_notifier_unregister unconditionally
+in amd_iommu_unbind_pasid.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Tested-by: Oded Gabbay <oded.gabbay-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_v2.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iommu/amd_iommu_v2.c | 20 +++-----------------
+ 1 file changed, 3 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
-index 2de13be..5f578e8 100644
+index a195c78..2b7de88 100644
 --- a/drivers/iommu/amd_iommu_v2.c
 +++ b/drivers/iommu/amd_iommu_v2.c
-@@ -367,7 +367,7 @@ static void free_pasid_states(struct device_state *dev_state)
- 		mmu_notifier_unregister(&pasid_state->mn, pasid_state->mm);
+@@ -320,13 +320,6 @@ static void unbind_pasid(struct pasid_state *pasid_state)
  
- 		put_pasid_state_wait(pasid_state); /* Reference taken in
--						      amd_iommu_pasid_bind */
-+						      amd_iommu_bind_pasid */
+ 	/* Make sure no more pending faults are in the queue */
+ 	flush_workqueue(iommu_wq);
+-
+-	/*
+-	 * No more faults are in the work queue and no new faults will be queued
+-	 * from here on. We can safely set pasid_state->mm to NULL now as the
+-	 * mm_struct might go away after we return.
+-	 */
+-	pasid_state->mm = NULL;
+ }
  
- 		/* Drop reference taken in amd_iommu_bind_pasid */
- 		put_device_state(dev_state);
-@@ -749,7 +749,7 @@ void amd_iommu_unbind_pasid(struct pci_dev *pdev, int pasid)
- 	mmu_notifier_unregister(&pasid_state->mn, pasid_state->mm);
+ static void free_pasid_states_level1(struct pasid_state **tbl)
+@@ -756,17 +749,10 @@ void amd_iommu_unbind_pasid(struct pci_dev *pdev, int pasid)
+ 	clear_pasid_state(dev_state, pasid_state->pasid);
+ 
+ 	/*
+-	 * Check if pasid_state->mm is still valid. If mn_release has already
+-	 * run it will be NULL and we can't (and don't need to) call
+-	 * mmu_notifier_unregister() on it anymore.
++	 * Call mmu_notifier_unregister to drop our reference
++	 * to pasid_state->mm
+ 	 */
+-	if (pasid_state->mm) {
+-		/*
+-		 * This will call the mn_release function and unbind
+-		 * the PASID.
+-		 */
+-		mmu_notifier_unregister(&pasid_state->mn, pasid_state->mm);
+-	}
++	mmu_notifier_unregister(&pasid_state->mn, pasid_state->mm);
  
  	put_pasid_state_wait(pasid_state); /* Reference taken in
--					      amd_iommu_pasid_bind */
-+					      amd_iommu_bind_pasid */
- out:
- 	/* Drop reference taken in this function */
- 	put_device_state(dev_state);
+ 					      amd_iommu_pasid_bind */
 -- 
 1.9.1
