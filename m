@@ -1,187 +1,190 @@
-From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH v3] iommu/arm-smmu: avoid calling request_irq in atomic context
-Date: Tue, 29 Jul 2014 11:11:15 -0700
-Message-ID: <1406657475-1232-1-git-send-email-mitchelh@codeaurora.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
+From: Lv Zheng <lv.zheng@intel.com>
+Subject: [PATCH 06/17] ACPICA: Tables: Update for DMAR table changes.
+Date: Wed, 30 Jul 2014 12:21:00 +0800
+Message-ID: <a37d8e26b75746ac60fd528944855752968143d2.1406689494.git.lv.zheng@intel.com>
+References: <cover.1406689493.git.lv.zheng@intel.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <cover.1406689493.git.lv.zheng@intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Len Brown <len.brown@intel.com>
+Cc: Lv Zheng <lv.zheng@intel.com>, Lv Zheng <zetalog@gmail.com>, linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org, Bob Moore <robert.moore@intel.com>, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-request_irq shouldn't be called from atomic context since it might
-sleep, but we're calling it with a spinlock held, resulting in:
+From: Bob Moore <robert.moore@intel.com>
 
-    [    9.172202] BUG: sleeping function called from invalid context at kernel/mm/slub.c:926
-    [    9.182989] in_atomic(): 1, irqs_disabled(): 128, pid: 1, name: swapper/0
-    [    9.189762] CPU: 1 PID: 1 Comm: swapper/0 Tainted: G        W    3.10.40-gbc1b510b-38437-g55831d3bd9-dirty #97
-    [    9.199757] [<c020c448>] (unwind_backtrace+0x0/0x11c) from [<c02097d0>] (show_stack+0x10/0x14)
-    [    9.208346] [<c02097d0>] (show_stack+0x10/0x14) from [<c0301d74>] (kmem_cache_alloc_trace+0x3c/0x210)
-    [    9.217543] [<c0301d74>] (kmem_cache_alloc_trace+0x3c/0x210) from [<c0276a48>] (request_threaded_irq+0x88/0x11c)
-    [    9.227702] [<c0276a48>] (request_threaded_irq+0x88/0x11c) from [<c0931ca4>] (arm_smmu_attach_dev+0x188/0x858)
-    [    9.237686] [<c0931ca4>] (arm_smmu_attach_dev+0x188/0x858) from [<c0212cd8>] (arm_iommu_attach_device+0x18/0xd0)
-    [    9.247837] [<c0212cd8>] (arm_iommu_attach_device+0x18/0xd0) from [<c093314c>] (arm_smmu_test_probe+0x68/0xd4)
-    [    9.257823] [<c093314c>] (arm_smmu_test_probe+0x68/0xd4) from [<c05aadd0>] (driver_probe_device+0x12c/0x330)
-    [    9.267629] [<c05aadd0>] (driver_probe_device+0x12c/0x330) from [<c05ab080>] (__driver_attach+0x68/0x8c)
-    [    9.277090] [<c05ab080>] (__driver_attach+0x68/0x8c) from [<c05a92d4>] (bus_for_each_dev+0x70/0x84)
-    [    9.286118] [<c05a92d4>] (bus_for_each_dev+0x70/0x84) from [<c05aa3b0>] (bus_add_driver+0x100/0x244)
-    [    9.295233] [<c05aa3b0>] (bus_add_driver+0x100/0x244) from [<c05ab5d0>] (driver_register+0x9c/0x124)
-    [    9.304347] [<c05ab5d0>] (driver_register+0x9c/0x124) from [<c0933088>] (arm_smmu_test_init+0x14/0x38)
-    [    9.313635] [<c0933088>] (arm_smmu_test_init+0x14/0x38) from [<c0200618>] (do_one_initcall+0xb8/0x160)
-    [    9.322926] [<c0200618>] (do_one_initcall+0xb8/0x160) from [<c1200b7c>] (kernel_init_freeable+0x108/0x1cc)
-    [    9.332564] [<c1200b7c>] (kernel_init_freeable+0x108/0x1cc) from [<c0b924b0>] (kernel_init+0xc/0xe4)
-    [    9.341675] [<c0b924b0>] (kernel_init+0xc/0xe4) from [<c0205e38>] (ret_from_fork+0x14/0x3c)
+Update table compiler and disassembler for new DMAR fields introduced
+in Sept. 2013.
+Note that Linux DMAR users need to be updated after applying this change.
 
-Fix this by moving the request_irq out of the critical section. This
-should be okay since smmu_domain->smmu is still being protected by the
-critical section. Also, we still don't program the Stream Match Register
-until after registering our interrupt handler so we shouldn't be missing
-any interrupts.
+[zetalog: changing drivers/iommu/dmar.c accordingly]
 
-Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: David Woodhouse <dwmw2@infradead.org>
+Cc: iommu@lists.linux-foundation.org
+Signed-off-by: Bob Moore <robert.moore@intel.com>
+Signed-off-by: Lv Zheng <lv.zheng@intel.com>
 ---
-Changelog:
+ drivers/iommu/dmar.c  |   28 ++++++++++++++--------------
+ include/acpi/actbl2.h |   14 +++++++-------
+ 2 files changed, 21 insertions(+), 21 deletions(-)
 
-  - v3: rework irq request code to avoid requesting the irq every
-        time a master is added to the domain
-  - v2: return error code from request_irq on failure
----
- drivers/iommu/arm-smmu.c | 73 +++++++++++++++++++++++++++---------------------
- 1 file changed, 41 insertions(+), 32 deletions(-)
-
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index f3f66416e2..572f5579d3 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -868,7 +868,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
- static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 					struct arm_smmu_device *smmu)
- {
--	int irq, ret, start;
-+	int ret, start;
- 	struct arm_smmu_domain *smmu_domain = domain->priv;
- 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 9a4f05e..bbe33a8 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -84,7 +84,7 @@ void *dmar_alloc_dev_scope(void *start, void *end, int *cnt)
+ 	*cnt = 0;
+ 	while (start < end) {
+ 		scope = start;
+-		if (scope->entry_type == ACPI_DMAR_SCOPE_TYPE_ACPI ||
++		if (scope->entry_type == ACPI_DMAR_SCOPE_TYPE_NAMESPACE ||
+ 		    scope->entry_type == ACPI_DMAR_SCOPE_TYPE_ENDPOINT ||
+ 		    scope->entry_type == ACPI_DMAR_SCOPE_TYPE_BRIDGE)
+ 			(*cnt)++;
+@@ -380,7 +380,7 @@ static int __init dmar_parse_one_andd(struct acpi_dmar_header *header)
+ 	struct acpi_dmar_andd *andd = (void *)header;
  
-@@ -900,23 +900,9 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 		cfg->irptndx = cfg->cbndx;
+ 	/* Check for NUL termination within the designated length */
+-	if (strnlen(andd->object_name, header->length - 8) == header->length - 8) {
++	if (strnlen(andd->device_name, header->length - 8) == header->length - 8) {
+ 		WARN_TAINT(1, TAINT_FIRMWARE_WORKAROUND,
+ 			   "Your BIOS is broken; ANDD object name is not NUL-terminated\n"
+ 			   "BIOS vendor: %s; Ver: %s; Product Version: %s\n",
+@@ -390,7 +390,7 @@ static int __init dmar_parse_one_andd(struct acpi_dmar_header *header)
+ 		return -EINVAL;
  	}
+ 	pr_info("ANDD device: %x name: %s\n", andd->device_number,
+-		andd->object_name);
++		andd->device_name);
  
--	irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
--	ret = request_irq(irq, arm_smmu_context_fault, IRQF_SHARED,
--			  "arm-smmu-context-fault", domain);
--	if (IS_ERR_VALUE(ret)) {
--		dev_err(smmu->dev, "failed to request context IRQ %d (%u)\n",
--			cfg->irptndx, irq);
--		cfg->irptndx = INVALID_IRPTNDX;
--		goto out_free_context;
--	}
--
--	smmu_domain->smmu = smmu;
-+	ACCESS_ONCE(smmu_domain->smmu) = smmu;
- 	arm_smmu_init_context_bank(smmu_domain);
  	return 0;
--
--out_free_context:
--	__arm_smmu_free_bitmap(smmu->context_map, cfg->cbndx);
--	return ret;
  }
+@@ -448,17 +448,17 @@ dmar_table_print_dmar_entry(struct acpi_dmar_header *header)
+ 			(unsigned long long)rmrr->base_address,
+ 			(unsigned long long)rmrr->end_address);
+ 		break;
+-	case ACPI_DMAR_TYPE_ATSR:
++	case ACPI_DMAR_TYPE_ROOT_ATS:
+ 		atsr = container_of(header, struct acpi_dmar_atsr, header);
+ 		pr_info("ATSR flags: %#x\n", atsr->flags);
+ 		break;
+-	case ACPI_DMAR_HARDWARE_AFFINITY:
++	case ACPI_DMAR_TYPE_HARDWARE_AFFINITY:
+ 		rhsa = container_of(header, struct acpi_dmar_rhsa, header);
+ 		pr_info("RHSA base: %#016Lx proximity domain: %#x\n",
+ 		       (unsigned long long)rhsa->base_address,
+ 		       rhsa->proximity_domain);
+ 		break;
+-	case ACPI_DMAR_TYPE_ANDD:
++	case ACPI_DMAR_TYPE_NAMESPACE:
+ 		/* We don't print this here because we need to sanity-check
+ 		   it first. So print it in dmar_parse_one_andd() instead. */
+ 		break;
+@@ -539,15 +539,15 @@ parse_dmar_table(void)
+ 		case ACPI_DMAR_TYPE_RESERVED_MEMORY:
+ 			ret = dmar_parse_one_rmrr(entry_header);
+ 			break;
+-		case ACPI_DMAR_TYPE_ATSR:
++		case ACPI_DMAR_TYPE_ROOT_ATS:
+ 			ret = dmar_parse_one_atsr(entry_header);
+ 			break;
+-		case ACPI_DMAR_HARDWARE_AFFINITY:
++		case ACPI_DMAR_TYPE_HARDWARE_AFFINITY:
+ #ifdef CONFIG_ACPI_NUMA
+ 			ret = dmar_parse_one_rhsa(entry_header);
+ #endif
+ 			break;
+-		case ACPI_DMAR_TYPE_ANDD:
++		case ACPI_DMAR_TYPE_NAMESPACE:
+ 			ret = dmar_parse_one_andd(entry_header);
+ 			break;
+ 		default:
+@@ -631,7 +631,7 @@ static void __init dmar_acpi_insert_dev_scope(u8 device_number,
+ 		for (scope = (void *)(drhd + 1);
+ 		     (unsigned long)scope < ((unsigned long)drhd) + drhd->header.length;
+ 		     scope = ((void *)scope) + scope->length) {
+-			if (scope->entry_type != ACPI_DMAR_SCOPE_TYPE_ACPI)
++			if (scope->entry_type != ACPI_DMAR_SCOPE_TYPE_NAMESPACE)
+ 				continue;
+ 			if (scope->enumeration_id != device_number)
+ 				continue;
+@@ -666,21 +666,21 @@ static int __init dmar_acpi_dev_scope_init(void)
+ 	for (andd = (void *)dmar_tbl + sizeof(struct acpi_table_dmar);
+ 	     ((unsigned long)andd) < ((unsigned long)dmar_tbl) + dmar_tbl->length;
+ 	     andd = ((void *)andd) + andd->header.length) {
+-		if (andd->header.type == ACPI_DMAR_TYPE_ANDD) {
++		if (andd->header.type == ACPI_DMAR_TYPE_NAMESPACE) {
+ 			acpi_handle h;
+ 			struct acpi_device *adev;
  
- static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
-@@ -1172,10 +1158,11 @@ static void arm_smmu_domain_remove_master(struct arm_smmu_domain *smmu_domain,
+ 			if (!ACPI_SUCCESS(acpi_get_handle(ACPI_ROOT_OBJECT,
+-							  andd->object_name,
++							  andd->device_name,
+ 							  &h))) {
+ 				pr_err("Failed to find handle for ACPI object %s\n",
+-				       andd->object_name);
++				       andd->device_name);
+ 				continue;
+ 			}
+ 			acpi_bus_get_device(h, &adev);
+ 			if (!adev) {
+ 				pr_err("Failed to get device for ACPI object %s\n",
+-				       andd->object_name);
++				       andd->device_name);
+ 				continue;
+ 			}
+ 			dmar_acpi_insert_dev_scope(andd->device_number, adev);
+diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
+index 21314d3..ecff624 100644
+--- a/include/acpi/actbl2.h
++++ b/include/acpi/actbl2.h
+@@ -396,7 +396,7 @@ struct acpi_table_dbgp {
+  *        Version 1
+  *
+  * Conforms to "Intel Virtualization Technology for Directed I/O",
+- * Version 1.2, Sept. 2008
++ * Version 2.2, Sept. 2013
+  *
+  ******************************************************************************/
  
- static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- {
--	int ret = -EINVAL;
-+	int irq, ret;
- 	struct arm_smmu_domain *smmu_domain = domain->priv;
--	struct arm_smmu_device *smmu;
--	struct arm_smmu_master_cfg *cfg;
-+	struct arm_smmu_device *smmu, *dom_smmu;
-+	struct arm_smmu_master_cfg *master_cfg;
-+	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
- 	unsigned long flags;
+@@ -423,9 +423,9 @@ struct acpi_dmar_header {
+ enum acpi_dmar_type {
+ 	ACPI_DMAR_TYPE_HARDWARE_UNIT = 0,
+ 	ACPI_DMAR_TYPE_RESERVED_MEMORY = 1,
+-	ACPI_DMAR_TYPE_ATSR = 2,
+-	ACPI_DMAR_HARDWARE_AFFINITY = 3,
+-	ACPI_DMAR_TYPE_ANDD = 4,
++	ACPI_DMAR_TYPE_ROOT_ATS = 2,
++	ACPI_DMAR_TYPE_HARDWARE_AFFINITY = 3,
++	ACPI_DMAR_TYPE_NAMESPACE = 4,
+ 	ACPI_DMAR_TYPE_RESERVED = 5	/* 5 and greater are reserved */
+ };
  
- 	smmu = dev_get_master_dev(dev)->archdata.iommu;
-@@ -1184,35 +1171,57 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 		return -ENXIO;
- 	}
+@@ -439,7 +439,7 @@ struct acpi_dmar_device_scope {
+ 	u8 bus;
+ };
  
-+	dom_smmu = ACCESS_ONCE(smmu_domain->smmu);
-+
- 	/*
- 	 * Sanity check the domain. We don't support domains across
- 	 * different SMMUs.
- 	 */
--	spin_lock_irqsave(&smmu_domain->lock, flags);
--	if (!smmu_domain->smmu) {
-+	if (!dom_smmu) {
-+		spin_lock_irqsave(&smmu_domain->lock, flags);
-+		/*
-+		 * make sure we're not racing with someone who might
-+		 * have just attached and init'd the domain context
-+		 */
-+		dom_smmu = smmu_domain->smmu;
-+		if (dom_smmu) {
-+			spin_unlock_irqrestore(&smmu_domain->lock, flags);
-+			goto have_dom_smmu;
-+		}
- 		/* Now that we have a master, we can finalise the domain */
- 		ret = arm_smmu_init_domain_context(domain, smmu);
-+		spin_unlock_irqrestore(&smmu_domain->lock, flags);
- 		if (IS_ERR_VALUE(ret))
--			goto err_unlock;
--	} else if (smmu_domain->smmu != smmu) {
-+			return ret;
-+		dom_smmu = smmu_domain->smmu;
-+
-+		irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
-+		ret = request_irq(irq, arm_smmu_context_fault, IRQF_SHARED,
-+				"arm-smmu-context-fault", domain);
-+		if (IS_ERR_VALUE(ret)) {
-+			dev_err(smmu->dev, "failed to request context IRQ %d (%u)\n",
-+				cfg->irptndx, irq);
-+			cfg->irptndx = INVALID_IRPTNDX;
-+			return ret;
-+		}
-+	}
-+
-+have_dom_smmu:
-+
-+	if (dom_smmu != smmu) {
- 		dev_err(dev,
- 			"cannot attach to SMMU %s whilst already attached to domain on SMMU %s\n",
- 			dev_name(smmu_domain->smmu->dev),
- 			dev_name(smmu->dev));
--		goto err_unlock;
-+		return -EINVAL;
- 	}
--	spin_unlock_irqrestore(&smmu_domain->lock, flags);
+-/* Values for entry_type in struct acpi_dmar_device_scope */
++/* Values for entry_type in struct acpi_dmar_device_scope - device types */
  
- 	/* Looks ok, so add the device to the domain */
--	cfg = find_smmu_master_cfg(smmu_domain->smmu, dev);
--	if (!cfg)
-+	master_cfg = find_smmu_master_cfg(smmu_domain->smmu, dev);
-+	if (!master_cfg)
- 		return -ENODEV;
+ enum acpi_dmar_scope_type {
+ 	ACPI_DMAR_SCOPE_TYPE_NOT_USED = 0,
+@@ -447,7 +447,7 @@ enum acpi_dmar_scope_type {
+ 	ACPI_DMAR_SCOPE_TYPE_BRIDGE = 2,
+ 	ACPI_DMAR_SCOPE_TYPE_IOAPIC = 3,
+ 	ACPI_DMAR_SCOPE_TYPE_HPET = 4,
+-	ACPI_DMAR_SCOPE_TYPE_ACPI = 5,
++	ACPI_DMAR_SCOPE_TYPE_NAMESPACE = 5,
+ 	ACPI_DMAR_SCOPE_TYPE_RESERVED = 6	/* 6 and greater are reserved */
+ };
  
--	return arm_smmu_domain_add_master(smmu_domain, cfg);
--
--err_unlock:
--	spin_unlock_irqrestore(&smmu_domain->lock, flags);
--	return ret;
-+	return arm_smmu_domain_add_master(smmu_domain, master_cfg);
- }
+@@ -516,7 +516,7 @@ struct acpi_dmar_andd {
+ 	struct acpi_dmar_header header;
+ 	u8 reserved[3];
+ 	u8 device_number;
+-	char object_name[1];
++	char device_name[1];
+ };
  
- static void arm_smmu_detach_dev(struct iommu_domain *domain, struct device *dev)
+ /*******************************************************************************
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-hosted by The Linux Foundation
+1.7.10
