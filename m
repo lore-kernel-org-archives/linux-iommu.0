@@ -1,62 +1,73 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 3/4] iommu/amd: Fix device_state reference counting
-Date: Wed, 30 Jul 2014 16:04:39 +0200
-Message-ID: <1406729080-2486-3-git-send-email-joro@8bytes.org>
-References: <1406729080-2486-1-git-send-email-joro@8bytes.org>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v4] devicetree: Add generic IOMMU device tree bindings
+Date: Wed, 30 Jul 2014 15:30:37 +0100
+Message-ID: <20140730143037.GD8989@arm.com>
+References: <1404487757-18829-1-git-send-email-thierry.reding@gmail.com>
+ <20140730110425.GI12239@arm.com>
+ <20140730132348.GM29590@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1406729080-2486-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20140730132348.GM29590@ulmo>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <Pawel.Moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Dave P Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Varun Sethi <varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29Tb/PtFMR13I2A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+On Wed, Jul 30, 2014 at 02:23:50PM +0100, Thierry Reding wrote:
+> On Wed, Jul 30, 2014 at 12:04:25PM +0100, Will Deacon wrote:
+> > On Fri, Jul 04, 2014 at 04:29:17PM +0100, Thierry Reding wrote:
+> > > From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> > > 
+> > > This commit introduces a generic device tree binding for IOMMU devices.
+> > > Only a very minimal subset is described here, but it is enough to cover
+> > > the requirements of both the Exynos System MMU and Tegra SMMU as
+> > > discussed here:
+> > > 
+> > >     https://lkml.org/lkml/2014/4/27/346
+> > > 
+> > > Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> > > ---
+> > > Changes in v4:
+> > > - clarify that disabling an IOMMU DT node may not disable translation
+> > > - be more explicit that examples are only examples
+> > > - add multi-ID master example
+> > > 
+> > > Changes in v3:
+> > > - use #iommu-cells instead of #address-cells/#size-cells
+> > > - drop optional iommu-names property
+> > > 
+> > > Changes in v2:
+> > > - add notes about "dma-ranges" property (drop note from commit message)
+> > > - document priorities of "iommus" property vs. "dma-ranges" property
+> > > - drop #iommu-cells in favour of #address-cells and #size-cells
+> > > - remove multiple-master device example
+> > > 
+> > >  Documentation/devicetree/bindings/iommu/iommu.txt | 172 ++++++++++++++++++++++
+> > >  1 file changed, 172 insertions(+)
+> > >  create mode 100644 Documentation/devicetree/bindings/iommu/iommu.txt
+> > 
+> > I'm concerned that this patch hasn't been picked up for 3.17 (I can't see it
+> > in -next). If we want to move the ARM SMMU driver over to this new binding,
+> > we can't keep dragging our feet for much longer as I *really* don't plan to
+> > support two bindings in parallel (one is complicated enough already).
+> > 
+> > Any chance we can see this merged, please?
+> 
+> I think there weren't any comments left for me to address and I've
+> mostly been waiting for Joerg to pick it up.
+> 
+> Joerg, can you take this through the iommu tree for 3.17? Will acked
+> this, but perhaps you were waiting for an ACK from the device tree
+> bindings maintainers?
 
-The references to the device state are not dropped
-everywhere. This might cause a dead-lock in
-amd_iommu_free_device(). Fix it.
+Rob, Mark: can one or both of you take a look at this please?
 
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Tested-by: Oded Gabbay <oded.gabbay-5C7GfCeVMHo@public.gmane.org>
----
- drivers/iommu/amd_iommu_v2.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+Cheers,
 
-diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
-index 524fd67..2de13be 100644
---- a/drivers/iommu/amd_iommu_v2.c
-+++ b/drivers/iommu/amd_iommu_v2.c
-@@ -368,6 +368,9 @@ static void free_pasid_states(struct device_state *dev_state)
- 
- 		put_pasid_state_wait(pasid_state); /* Reference taken in
- 						      amd_iommu_pasid_bind */
-+
-+		/* Drop reference taken in amd_iommu_bind_pasid */
-+		put_device_state(dev_state);
- 	}
- 
- 	if (dev_state->pasid_levels == 2)
-@@ -748,6 +751,10 @@ void amd_iommu_unbind_pasid(struct pci_dev *pdev, int pasid)
- 	put_pasid_state_wait(pasid_state); /* Reference taken in
- 					      amd_iommu_pasid_bind */
- out:
-+	/* Drop reference taken in this function */
-+	put_device_state(dev_state);
-+
-+	/* Drop reference taken in amd_iommu_bind_pasid */
- 	put_device_state(dev_state);
- }
- EXPORT_SYMBOL(amd_iommu_unbind_pasid);
--- 
-1.9.1
+Will
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
