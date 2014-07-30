@@ -1,190 +1,58 @@
-From: Lv Zheng <lv.zheng@intel.com>
-Subject: [PATCH 06/17] ACPICA: Tables: Update for DMAR table changes.
-Date: Wed, 30 Jul 2014 12:21:00 +0800
-Message-ID: <a37d8e26b75746ac60fd528944855752968143d2.1406689494.git.lv.zheng@intel.com>
-References: <cover.1406689493.git.lv.zheng@intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1406689493.git.lv.zheng@intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Len Brown <len.brown@intel.com>
-Cc: Lv Zheng <lv.zheng@intel.com>, Lv Zheng <zetalog@gmail.com>, linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org, Bob Moore <robert.moore@intel.com>, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH v3 1/1] iommu-api: Add map_sg/unmap_sg functions
+Date: Wed, 30 Jul 2014 10:45:57 +0100
+Message-ID: <20140730094557.GD12239@arm.com>
+References: <1406572731-6216-1-git-send-email-ohaugan@codeaurora.org>
+ <1406572731-6216-2-git-send-email-ohaugan@codeaurora.org>
+ <20140728191111.GW15536@arm.com>
+ <53D6EFC0.1060308@codeaurora.org>
+ <20140729092547.GB9245@arm.com>
+ <53D7D82C.2080201@codeaurora.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <53D7D82C.2080201@codeaurora.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Olav Haugan <ohaugan@codeaurora.org>
+Cc: "joro@8bytes.org" <joro@8bytes.org>, "robdclark@gmail.com" <robdclark@gmail.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>, "mitchelh@codeaurora.org" <mitchelh@codeaurora.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Bob Moore <robert.moore@intel.com>
+On Tue, Jul 29, 2014 at 06:21:48PM +0100, Olav Haugan wrote:
+> On 7/29/2014 2:25 AM, Will Deacon wrote:
+> > I agree that we can't handle IOMMUs that have a minimum page size larger
+> > than the CPU page size, but we should be able to handle the case where the
+> > maximum supported page size on the IOMMU is smaller than the CPU page size
+> > (e.g. 4k IOMMU with 64k pages on the CPU). I think that could trip a BUG_ON
+> > with your patch, although the alignment would be ok in iommu_map because
+> > page sizes are always a power-of-2. You also end up rounding the size to
+> > 64k, which could lead to mapping more than you really need to.
+> 
+> Which BUG_ON would I trip? If the supported IOMMU page size is less than
+> the CPU supported page size then iommu_map will nicely take care of
+> splitting up the mapping calls into sizes supported by the IOMMU (taken
+> care of by iommu_pgsize()). However, I see you point regarding the
+> PAGE_ALIGN of the offset+length that can cause overmapping which you
+> don't really want. What is the alternative here? Just leave it and do
+> not align at all? That is how iommu_map() currently works. It will
+> return error if the iova|phys|size is not aligned to the minimum pgsize
+> supported by the IOMMU. So I would not change the behavior if I just
+> left it without trying to align.
 
-Update table compiler and disassembler for new DMAR fields introduced
-in Sept. 2013.
-Note that Linux DMAR users need to be updated after applying this change.
+Yeah, I think losing the align is probably the best bet for now.
 
-[zetalog: changing drivers/iommu/dmar.c accordingly]
+> I will remove the BUG_ON for (iova & (~PAGE_MASK)).
 
-Cc: David Woodhouse <dwmw2@infradead.org>
-Cc: iommu@lists.linux-foundation.org
-Signed-off-by: Bob Moore <robert.moore@intel.com>
-Signed-off-by: Lv Zheng <lv.zheng@intel.com>
----
- drivers/iommu/dmar.c  |   28 ++++++++++++++--------------
- include/acpi/actbl2.h |   14 +++++++-------
- 2 files changed, 21 insertions(+), 21 deletions(-)
+Great, that's the BUG_ON I was referring to above.
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 9a4f05e..bbe33a8 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -84,7 +84,7 @@ void *dmar_alloc_dev_scope(void *start, void *end, int *cnt)
- 	*cnt = 0;
- 	while (start < end) {
- 		scope = start;
--		if (scope->entry_type == ACPI_DMAR_SCOPE_TYPE_ACPI ||
-+		if (scope->entry_type == ACPI_DMAR_SCOPE_TYPE_NAMESPACE ||
- 		    scope->entry_type == ACPI_DMAR_SCOPE_TYPE_ENDPOINT ||
- 		    scope->entry_type == ACPI_DMAR_SCOPE_TYPE_BRIDGE)
- 			(*cnt)++;
-@@ -380,7 +380,7 @@ static int __init dmar_parse_one_andd(struct acpi_dmar_header *header)
- 	struct acpi_dmar_andd *andd = (void *)header;
- 
- 	/* Check for NUL termination within the designated length */
--	if (strnlen(andd->object_name, header->length - 8) == header->length - 8) {
-+	if (strnlen(andd->device_name, header->length - 8) == header->length - 8) {
- 		WARN_TAINT(1, TAINT_FIRMWARE_WORKAROUND,
- 			   "Your BIOS is broken; ANDD object name is not NUL-terminated\n"
- 			   "BIOS vendor: %s; Ver: %s; Product Version: %s\n",
-@@ -390,7 +390,7 @@ static int __init dmar_parse_one_andd(struct acpi_dmar_header *header)
- 		return -EINVAL;
- 	}
- 	pr_info("ANDD device: %x name: %s\n", andd->device_number,
--		andd->object_name);
-+		andd->device_name);
- 
- 	return 0;
- }
-@@ -448,17 +448,17 @@ dmar_table_print_dmar_entry(struct acpi_dmar_header *header)
- 			(unsigned long long)rmrr->base_address,
- 			(unsigned long long)rmrr->end_address);
- 		break;
--	case ACPI_DMAR_TYPE_ATSR:
-+	case ACPI_DMAR_TYPE_ROOT_ATS:
- 		atsr = container_of(header, struct acpi_dmar_atsr, header);
- 		pr_info("ATSR flags: %#x\n", atsr->flags);
- 		break;
--	case ACPI_DMAR_HARDWARE_AFFINITY:
-+	case ACPI_DMAR_TYPE_HARDWARE_AFFINITY:
- 		rhsa = container_of(header, struct acpi_dmar_rhsa, header);
- 		pr_info("RHSA base: %#016Lx proximity domain: %#x\n",
- 		       (unsigned long long)rhsa->base_address,
- 		       rhsa->proximity_domain);
- 		break;
--	case ACPI_DMAR_TYPE_ANDD:
-+	case ACPI_DMAR_TYPE_NAMESPACE:
- 		/* We don't print this here because we need to sanity-check
- 		   it first. So print it in dmar_parse_one_andd() instead. */
- 		break;
-@@ -539,15 +539,15 @@ parse_dmar_table(void)
- 		case ACPI_DMAR_TYPE_RESERVED_MEMORY:
- 			ret = dmar_parse_one_rmrr(entry_header);
- 			break;
--		case ACPI_DMAR_TYPE_ATSR:
-+		case ACPI_DMAR_TYPE_ROOT_ATS:
- 			ret = dmar_parse_one_atsr(entry_header);
- 			break;
--		case ACPI_DMAR_HARDWARE_AFFINITY:
-+		case ACPI_DMAR_TYPE_HARDWARE_AFFINITY:
- #ifdef CONFIG_ACPI_NUMA
- 			ret = dmar_parse_one_rhsa(entry_header);
- #endif
- 			break;
--		case ACPI_DMAR_TYPE_ANDD:
-+		case ACPI_DMAR_TYPE_NAMESPACE:
- 			ret = dmar_parse_one_andd(entry_header);
- 			break;
- 		default:
-@@ -631,7 +631,7 @@ static void __init dmar_acpi_insert_dev_scope(u8 device_number,
- 		for (scope = (void *)(drhd + 1);
- 		     (unsigned long)scope < ((unsigned long)drhd) + drhd->header.length;
- 		     scope = ((void *)scope) + scope->length) {
--			if (scope->entry_type != ACPI_DMAR_SCOPE_TYPE_ACPI)
-+			if (scope->entry_type != ACPI_DMAR_SCOPE_TYPE_NAMESPACE)
- 				continue;
- 			if (scope->enumeration_id != device_number)
- 				continue;
-@@ -666,21 +666,21 @@ static int __init dmar_acpi_dev_scope_init(void)
- 	for (andd = (void *)dmar_tbl + sizeof(struct acpi_table_dmar);
- 	     ((unsigned long)andd) < ((unsigned long)dmar_tbl) + dmar_tbl->length;
- 	     andd = ((void *)andd) + andd->header.length) {
--		if (andd->header.type == ACPI_DMAR_TYPE_ANDD) {
-+		if (andd->header.type == ACPI_DMAR_TYPE_NAMESPACE) {
- 			acpi_handle h;
- 			struct acpi_device *adev;
- 
- 			if (!ACPI_SUCCESS(acpi_get_handle(ACPI_ROOT_OBJECT,
--							  andd->object_name,
-+							  andd->device_name,
- 							  &h))) {
- 				pr_err("Failed to find handle for ACPI object %s\n",
--				       andd->object_name);
-+				       andd->device_name);
- 				continue;
- 			}
- 			acpi_bus_get_device(h, &adev);
- 			if (!adev) {
- 				pr_err("Failed to get device for ACPI object %s\n",
--				       andd->object_name);
-+				       andd->device_name);
- 				continue;
- 			}
- 			dmar_acpi_insert_dev_scope(andd->device_number, adev);
-diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
-index 21314d3..ecff624 100644
---- a/include/acpi/actbl2.h
-+++ b/include/acpi/actbl2.h
-@@ -396,7 +396,7 @@ struct acpi_table_dbgp {
-  *        Version 1
-  *
-  * Conforms to "Intel Virtualization Technology for Directed I/O",
-- * Version 1.2, Sept. 2008
-+ * Version 2.2, Sept. 2013
-  *
-  ******************************************************************************/
- 
-@@ -423,9 +423,9 @@ struct acpi_dmar_header {
- enum acpi_dmar_type {
- 	ACPI_DMAR_TYPE_HARDWARE_UNIT = 0,
- 	ACPI_DMAR_TYPE_RESERVED_MEMORY = 1,
--	ACPI_DMAR_TYPE_ATSR = 2,
--	ACPI_DMAR_HARDWARE_AFFINITY = 3,
--	ACPI_DMAR_TYPE_ANDD = 4,
-+	ACPI_DMAR_TYPE_ROOT_ATS = 2,
-+	ACPI_DMAR_TYPE_HARDWARE_AFFINITY = 3,
-+	ACPI_DMAR_TYPE_NAMESPACE = 4,
- 	ACPI_DMAR_TYPE_RESERVED = 5	/* 5 and greater are reserved */
- };
- 
-@@ -439,7 +439,7 @@ struct acpi_dmar_device_scope {
- 	u8 bus;
- };
- 
--/* Values for entry_type in struct acpi_dmar_device_scope */
-+/* Values for entry_type in struct acpi_dmar_device_scope - device types */
- 
- enum acpi_dmar_scope_type {
- 	ACPI_DMAR_SCOPE_TYPE_NOT_USED = 0,
-@@ -447,7 +447,7 @@ enum acpi_dmar_scope_type {
- 	ACPI_DMAR_SCOPE_TYPE_BRIDGE = 2,
- 	ACPI_DMAR_SCOPE_TYPE_IOAPIC = 3,
- 	ACPI_DMAR_SCOPE_TYPE_HPET = 4,
--	ACPI_DMAR_SCOPE_TYPE_ACPI = 5,
-+	ACPI_DMAR_SCOPE_TYPE_NAMESPACE = 5,
- 	ACPI_DMAR_SCOPE_TYPE_RESERVED = 6	/* 6 and greater are reserved */
- };
- 
-@@ -516,7 +516,7 @@ struct acpi_dmar_andd {
- 	struct acpi_dmar_header header;
- 	u8 reserved[3];
- 	u8 device_number;
--	char object_name[1];
-+	char device_name[1];
- };
- 
- /*******************************************************************************
--- 
-1.7.10
+> >> (The code in __map_sg_chunk in arch/arm/mm/dma-mapping.c does the same
+> >> thing btw.)
+> > 
+> > I have the same objection to that code :)
+> 
+> I am hoping we can remove/simplify some of that code when we have the
+> iommmu_map_sg API available....
+
+Looking forward to it!
+
+Will
