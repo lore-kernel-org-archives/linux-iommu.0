@@ -1,17 +1,14 @@
-From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [PATCH] x86, irq: Keep IRQ assignment for PCI devices during
-	suspend/hibernation
-Date: Thu, 31 Jul 2014 17:21:33 +0200
-Message-ID: <20140731152132.GE4375@pd.tnic>
-References: <20140730175836.GC10213@pd.tnic>
-	<1406766807-5745-1-git-send-email-jiang.liu@linux.intel.com>
-	<20140731103941.GA4375@pd.tnic> <53DA55A0.6070005@linux.intel.com>
+From: Olof Johansson <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>
+Subject: Re: [PATCH v5] devicetree: Add generic IOMMU device tree bindings
+Date: Thu, 31 Jul 2014 08:38:47 -0700
+Message-ID: <CAOesGMiS_MJNnkfPOsqxV27=rXPgT9UNbp-+VhpMRNf9u0+-eA@mail.gmail.com>
+References: <1406803383-11601-1-git-send-email-thierry.reding@gmail.com>
+	<20140731120424.GK9809@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <53DA55A0.6070005-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <20140731120424.GK9809-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,57 +18,32 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, "Rafael J . Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, lkml <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+On Thu, Jul 31, 2014 at 5:04 AM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> On Thu, Jul 31, 2014 at 12:43:03PM +0200, Thierry Reding wrote:
+>> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+>>
+>> This commit introduces a generic device tree binding for IOMMU devices.
+>> Only a very minimal subset is described here, but it is enough to cover
+>> the requirements of both the Exynos System MMU and Tegra SMMU as
+>> discussed here:
+>>
+>>     https://lkml.org/lkml/2014/4/27/346
+>>
+>> Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+>> Reviewed-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+>> Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+>> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+>
+> Applied, thanks everyone.
 
-On Thu, Jul 31, 2014 at 10:41:36PM +0800, Jiang Liu wrote:
-> 	Really appreciate your help. There are two issues left
-> according to the log messages.
+Really?
 
-first of all:
+Gee, thanks for giving people a chance to reply with acks. It's
+considered polite to do so when there has been outstanding questions.
 
-A: Because it messes up the order in which people normally read text.
-Q: Why is top-posting such a bad thing?
-A: Top-posting.
-Q: What is the most annoying thing in e-mail?
 
-So please refrain from top-posting on lkml.
-
-> 	The first issue is " WARNING: CPU: 2 PID: 3786 at
-> fs/proc/generic.c:521 remove_proc_entry+0x19c/0x1b0()".
-> It's caused by an issue in usb driver and a patch is ready to fix
-> this issue, please refer to https://lkml.org/lkml/2014/7/20/277.
-> This patch has been merged into Greg's usb repository, so it should
-> be merge into v3.17 too.
-
-I can apply this patch to test.
-
-> 	The second issue is "AMD-Vi: Event logged [IO_PAGE_FAULT
-> device=00:12.0 domain=0x0009 address=0x0000000000000000 flags=0x0000]".
-> I feel it's not caused by IRQ related changes, but may be caused
-> by IO page fault related work for AMD IOMMU. I need more time
-> to investigate this and also CC Joerg for help too.
-
-I don't think that's the issue - plain rc7 doesn't trigger the issue.
-Only if I merge tip/master in it happens. And there are no AMD iommu
-patches in tip/master since Joerg doesn't send stuff through tip
-anymore.
-
-> 	According to the log message, I feel my patch has fixed the
-> original issue caused by IRQ related changes. What's your thoughts?
-
-I still think the issue is in tip/master. I'm currently trying to
-reproduce on another box so that I can bisect it. (Bisecting on my
-workstation is always nasty :-\).
-
-Thanks.
-
--- 
-Regards/Gruss,
-    Boris.
-
-Sent from a fat crate under my desk. Formatting is fine.
---
+-Olof
