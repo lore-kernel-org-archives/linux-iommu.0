@@ -1,21 +1,14 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2] iommu/vt-d: race setting IRQ CPU affinity while
-	freeing IRQ
-Date: Thu, 31 Jul 2014 13:49:55 +0200
-Message-ID: <20140731114955.GA16818@8bytes.org>
-References: <20140722142719.GA28143@psuche.datadirectnet.com>
-	<20140723144024.GA14017@8bytes.org>
-	<20140723144917.GA26986@psuche.datadirectnet.com>
-	<20140723151040.GB14017@8bytes.org>
-	<20140723161326.GB32422@psuche.datadirectnet.com>
-	<20140729104531.GB9809@8bytes.org>
-	<20140729172158.GA23529@psuche.datadirectnet.com>
+Subject: Re: [PATCH v5] devicetree: Add generic IOMMU device tree bindings
+Date: Thu, 31 Jul 2014 14:04:24 +0200
+Message-ID: <20140731120424.GK9809@8bytes.org>
+References: <1406803383-11601-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20140729172158.GA23529-+5IcJesBrg1QnCaYh1JbbuXjVpU8mP+x@public.gmane.org>
+In-Reply-To: <1406803383-11601-1-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,77 +18,23 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Greg Edwards <gedwards-LfVdkaOWEx8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Olof Johansson <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jul 29, 2014 at 11:21:58AM -0600, Greg Edwards wrote:
-> [ 6638.327851] BUG: unable to handle kernel NULL pointer dereference at 0000000000000090
-> [ 6638.335955] IP: [<ffffffff8190a652>] intel_ioapic_set_affinity+0x82/0x1b0
-> [ 6638.343012] PGD 99172e067 PUD 1026979067 PMD 0 
-> [ 6638.347858] Oops: 0000 [#1] SMP 
-> [ 6638.351386] Modules linked in:
-> [ 6638.354718] CPU: 1 PID: 3354 Comm: affin Not tainted 3.16.0-rc7-00007-g31dab71 #1
-> [ 6638.362480] Hardware name: Supermicro SYS-F617R2-RT+/X9DRFR, BIOS 3.0a 01/29/2014
-> [ 6638.370259] task: ffff881025b0e720 ti: ffff88099173c000 task.ti: ffff88099173c000
-> [ 6638.378063] RIP: 0010:[<ffffffff8190a652>]  [<ffffffff8190a652>] intel_ioapic_set_affinity+0x82/0x1b0
-> [ 6638.387649] RSP: 0018:ffff88099173fdb0  EFLAGS: 00010046
-> [ 6638.393314] RAX: 0000000000000082 RBX: ffff880a36294600 RCX: 0000000000000082
-> [ 6638.400824] RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffffff8266af00
-> [ 6638.408341] RBP: ffff88099173fdf8 R08: 0000000000000000 R09: ffff88103ec00490
-> [ 6638.415867] R10: 0000000000000000 R11: 0000000000000000 R12: ffff88099173fe90
-> [ 6638.423402] R13: 000000000000005f R14: ffff880faa38fe80 R15: ffff880faa38fe80
-> [ 6638.430942] FS:  00007f7161f05740(0000) GS:ffff88107fc40000(0000) knlGS:0000000000000000
-> [ 6638.439456] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [ 6638.445640] CR2: 0000000000000090 CR3: 000000099140d000 CR4: 00000000001427e0
-> [ 6638.453227] Stack:
-> [ 6638.455699]  ffffffff81c44740 ffff88099173fdc8 ffffffff00000000 00000000c991fd3b
-> [ 6638.463660]  ffff880a36294600 ffff88099173fe90 ffff88099173fe90 0000000000000000
-> [ 6638.471623]  0000000000000286 ffff88099173fe08 ffffffff8190aac5 ffff88099173fe28
-> [ 6638.479605] Call Trace:
-> [ 6638.482562]  [<ffffffff8190aac5>] set_remapped_irq_affinity+0x25/0x40
-> [ 6638.489534]  [<ffffffff811322dc>] irq_do_set_affinity+0x1c/0x50
-> [ 6638.495985]  [<ffffffff81132458>] irq_set_affinity_locked+0x98/0xd0
-> [ 6638.502781]  [<ffffffff811324d6>] __irq_set_affinity+0x46/0x70
-> [ 6638.509142]  [<ffffffff811362dc>] write_irq_affinity.isra.6+0xdc/0x100
-> [ 6638.516198]  [<ffffffff8113631c>] irq_affinity_list_proc_write+0x1c/0x20
-> [ 6638.523440]  [<ffffffff8129f30d>] proc_reg_write+0x3d/0x80
-> [ 6638.529474]  [<ffffffff812384a7>] vfs_write+0xb7/0x1f0
-> [ 6638.535165]  [<ffffffff81243619>] ? putname+0x29/0x40
-> [ 6638.540771]  [<ffffffff812390c5>] SyS_write+0x55/0xd0
-> [ 6638.546386]  [<ffffffff81adc729>] system_call_fastpath+0x16/0x1b
-> [ 6638.552970] Code: ff 48 85 d2 74 68 4c 8b 7a 30 4d 85 ff 74 5f 48 c7 c7 00 af 66 82 e8 9e 1b 1d 00 49 8b 57 20 41 0f b7 77 28 48 c7 c7 00 af 66 82 <48> 8b 8a 90 00 00 00 41 0f b7 57 2a 01 f2 48 89 c6 48 63 d2 48 
-> [ 6638.574199] RIP  [<ffffffff8190a652>] intel_ioapic_set_affinity+0x82/0x1b0
-> [ 6638.581735]  RSP <ffff88099173fdb0>
-> [ 6638.585872] CR2: 0000000000000090
-
-Okay, I added this to the commit message and applied the patch.
-
-> The QEMU thread is doing a KVM_DEASSIGN_DEV_IRQ ioctl.  It looks like the call
-> chain is:
+On Thu, Jul 31, 2014 at 12:43:03PM +0200, Thierry Reding wrote:
+> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 > 
->   kvm_vm_ioctl_assigned_device
->     kvm_vm_ioctl_deassign_dev_irq
->       kvm_deassign_irq
->         deassign_host_irq
->           pci_disable_msix
->             free_msi_irqs
->               arch_teardown_msi_irqs
->                 default_teardown_msi_irqs
->                   arch_teardown_msi_irq
->                     native_teardown_msi_irq
->                       irq_free_hwirq
->                         irq_free_hwirqs
+> This commit introduces a generic device tree binding for IOMMU devices.
+> Only a very minimal subset is described here, but it is enough to cover
+> the requirements of both the Exynos System MMU and Tegra SMMU as
+> discussed here:
 > 
-> irq_free_hwirqs() does:
+>     https://lkml.org/lkml/2014/4/27/346
 > 
-> 460         for (i = from, j = cnt; j > 0; i++, j--) {
-> 461                 irq_set_status_flags(i, _IRQ_NOREQUEST | _IRQ_NOPROBE);
-> 462                 arch_teardown_hwirq(i);   <----------- QEMU is down this path to free_irte()
-> 463         }
-> 464         irq_free_descs(from, cnt);   <------------ proc files unregistered down this path
+> Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> Reviewed-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+> Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-I see, so it makes sense to fix it in the driver for now.
-
-
-	Joerg
+Applied, thanks everyone.
