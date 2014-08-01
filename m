@@ -1,52 +1,42 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v4] iommu/arm-smmu: avoid calling request_irq in atomic
-	context
-Date: Thu, 31 Jul 2014 19:30:22 +0100
-Message-ID: <20140731183021.GJ26853@arm.com>
-References: <1406743093-17227-1-git-send-email-mitchelh@codeaurora.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1406743093-17227-1-git-send-email-mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+From: Olav Haugan <ohaugan@codeaurora.org>
+Subject: [PATCH v4 0/1] Add iommu map_sg/unmap_sg API
+Date: Thu, 31 Jul 2014 17:54:43 -0700
+Message-ID: <1406854484-3848-1-git-send-email-ohaugan@codeaurora.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: joro@8bytes.org
+Cc: robdclark@gmail.com, will.deacon@arm.com, thierry.reding@gmail.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, mitchelh@codeaurora.org, Olav Haugan <ohaugan@codeaurora.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jul 30, 2014 at 06:58:13PM +0100, Mitchel Humpherys wrote:
-> request_irq shouldn't be called from atomic context since it might
-> sleep, but we're calling it with a spinlock held, resulting in:
+Patch for adding map_sg/unmap_sg to the generic IOMMU API.
 
-[...]
+v3 -> v4:
+* Removed BUG_ON in both map_sg and unmap_sg
+* Removed PAGE_ALIGN of length of mapping
 
-> @@ -900,22 +905,23 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
->  		cfg->irptndx = cfg->cbndx;
->  	}
->  
-> +	ACCESS_ONCE(smmu_domain->smmu) = smmu;
-> +	arm_smmu_init_context_bank(smmu_domain);
-> +	spin_unlock_irqrestore(&smmu_domain->lock, flags);
-> +
->  	irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
->  	ret = request_irq(irq, arm_smmu_context_fault, IRQF_SHARED,
-> -			  "arm-smmu-context-fault", domain);
-> +			  "arm-smmu-context-fault", smmu_domain);
+v2 -> v3:
+* Updated commit text
+* Simplifed fallback code and fixed variable types in map_sg function.
+* Renamed and changed arguments to map and unmap functions
 
-This blew up in testing since we free_irq using the iommu_domain as the
-token, so we should leave the domain parameter as it is (not actually
-sure why this got changed). No need to resend anything, I'll fix it
-locally.
+v1 -> v2:
+* Added support for "option" argument to unmap call. This can be used by
+  IOMMU driver implentations to allow clients to signal to the driver not
+  to do TLB invalidate for example.
+* Added fallback in case iommu_{map,unmap}_range is called for an IOMMU driver
+  that does not have these implemented.
+* Rebased on top of Joerg's tree.
+* Split out patch from the rest of the patches.
 
-Cheers,
 
-Will
+
+Olav Haugan (1):
+  iommu-api: Add map_sg/unmap_sg functions
+
+ drivers/iommu/iommu.c | 44 ++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/iommu.h | 28 ++++++++++++++++++++++++++++
+ 2 files changed, 72 insertions(+)
+
+--
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+hosted by The Linux Foundation
