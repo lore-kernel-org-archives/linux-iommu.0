@@ -1,13 +1,13 @@
-From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH] iommu/amd: Implement syscore_ops.shutdown()
-Date: Sat,  2 Aug 2014 10:25:39 +0800
-Message-ID: <1406946339-4297-1-git-send-email-jiang.liu@linux.intel.com>
-References: <20140801225049.GC4553@pd.tnic>
+From: Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: Re: [PATCH 1/1] iommu: exynos: Fix trivial typos
+Date: Sat, 02 Aug 2014 00:13:10 -0700
+Message-ID: <53DC8F86.9020007@infradead.org>
+References: <1406959395-22600-1-git-send-email-sachin.kamat@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140801225049.GC4553-fF5Pk5pvG8Y@public.gmane.org>
+In-Reply-To: <1406959395-22600-1-git-send-email-sachin.kamat-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,57 +17,115 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, "Rafael J . Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, x86-ml <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, lkml <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Sachin Kamat <sachin.kamat-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: spk.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, trivial-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-During hibernation or shutdown, AMD iommu generates warnings on some
-platforms as below:
-[   89.089832] AMD-Vi: Event logged [IO_PAGE_FAULT device=00:12.0 domain=0x0009 address=0x0000000000000080 flags=0x0020]
-[   89.102239] AMD-Vi: Event logged [IO_PAGE_FAULT device=00:12.0 domain=0x0009 address=0x0000000000000000 flags=0x0000]
-[   89.114684] AMD-Vi: Event logged [IO_PAGE_FAULT device=00:12.0 domain=0x0009 address=0x00000000ffffffc0 flags=0x0010]
-[   89.127162] AMD-Vi: Event logged [IO_PAGE_FAULT device=00:12.0 domain=0x0009 address=0x00000000ffffffc0 flags=0x0010]
-[   89.139576] AMD-Vi: Event logged [IO_PAGE_FAULT device=00:12.0 domain=0x0009 address=0x00000000ffffffc0 flags=0x0010]
-[   89.152017] AMD-Vi: Event logged [IO_PAGE_FAULT device=00:12.0 domain=0x0009 address=0x00000000ffffffc0 flags=0x0010]
-[   89.164481] AMD-Vi: Event logged [IO_PAGE_FAULT device=00:12.0 domain=0x0009 address=0x00000000ffffffc0 flags=0x0010]
+On 08/01/14 23:03, Sachin Kamat wrote:
+> Fixed trivial typos and grammar to improve readability.
+> 
+> Signed-off-by: Sachin Kamat <sachin.kamat-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> ---
+>  drivers/iommu/exynos-iommu.c | 22 +++++++++++-----------
+>  1 file changed, 11 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> index d037e87..327ebec 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+> @@ -32,7 +32,7 @@
+>  typedef u32 sysmmu_iova_t;
+>  typedef u32 sysmmu_pte_t;
+>  
+> -/* We does not consider super section mapping (16MB) */
+> +/* We do not consider super section mapping (16MB) */
+>  #define SECT_ORDER 20
+>  #define LPAGE_ORDER 16
+>  #define SPAGE_ORDER 12
+> @@ -307,7 +307,7 @@ static void show_fault_information(const char *name,
+>  
+>  static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
+>  {
+> -	/* SYSMMU is in blocked when interrupt occurred. */
+> +	/* SYSMMU is in blocked state when interrupt occurred. */
+>  	struct sysmmu_drvdata *data = dev_id;
+>  	enum exynos_sysmmu_inttype itype;
+>  	sysmmu_iova_t addr = -1;
+> @@ -567,8 +567,8 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, sysmmu_iova_t iova,
+>  		/*
+>  		 * L2TLB invalidation required
+>  		 * 4KB page: 1 invalidation
+> -		 * 64KB page: 16 invalidation
+> -		 * 1MB page: 64 invalidation
+> +		 * 64KB page: 16 invalidations
+> +		 * 1MB page: 64 invalidations
+>  		 * because it is set-associative TLB
+>  		 * with 8-way and 64 sets.
+>  		 * 1MB page can be cached in one of all sets.
+> @@ -862,13 +862,13 @@ static sysmmu_pte_t *alloc_lv2entry(struct exynos_iommu_domain *priv,
+>  
+>  		/*
+>  		 * If pretched SLPD is a fault SLPD in zero_l2_table, FLPD cache
 
-It may be caused by that the firmware takes back the device after the OS
-released it and now the legacy emulation tries to do DMA with it. But
-since there is an IOMMU the physical addresses it tries to DMA to is
-not mapped and it generated IO page faults. So explicitly shutdown
-IOMMU units during hibernation or poweroff.
+What is		      pretched ?
 
-Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
----
-Hi Borislav,
-	Could you please help to verify whether this patch help to minimize
-the race window and reduce IOMMU warning messages?
-Regards!
-Gerry
----
- drivers/iommu/amd_iommu_init.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+> -		 * may caches the address of zero_l2_table. This function
+> +		 * may cache the address of zero_l2_table. This function
+>  		 * replaces the zero_l2_table with new L2 page table to write
+>  		 * valid mappings.
+>  		 * Accessing the valid area may cause page fault since FLPD
+> -		 * cache may still caches zero_l2_table for the valid area
+> +		 * cache may still cache zero_l2_table for the valid area
+>  		 * instead of new L2 page table that have the mapping
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 0e08545d7298..4d1752fe12e1 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -1687,9 +1687,16 @@ static int amd_iommu_suspend(void)
- 	return 0;
- }
- 
-+static void amd_iommu_shutdown(void)
-+{
-+	/* disable IOMMUs to go out of the way for BIOS */
-+	disable_iommus();
-+}
-+
- static struct syscore_ops amd_iommu_syscore_ops = {
- 	.suspend = amd_iommu_suspend,
- 	.resume = amd_iommu_resume,
-+	.shutdown = amd_iommu_shutdown,
- };
- 
- static void __init free_on_init_error(void)
+		                                     has
+
+> -		 * information of the valid area
+> +		 * information of the valid area.
+>  		 * Thus any replacement of zero_l2_table with other valid L2
+>  		 * page table must involve FLPD cache invalidation for System
+>  		 * MMU v3.3.
+> @@ -963,14 +963,14 @@ static int lv2set_page(sysmmu_pte_t *pent, phys_addr_t paddr, size_t size,
+>  /*
+>   * *CAUTION* to the I/O virtual memory managers that support exynos-iommu:
+>   *
+> - * System MMU v3.x have an advanced logic to improve address translation
+> + * System MMU v3.x has an advanced logic to improve address translation
+
+                  drop:   an
+just say:             has advanced logic
+
+>   * performance with caching more page table entries by a page table walk.
+>   * However, the logic has a bug that caching fault page table entries and System
+>   * MMU reports page fault if the cached fault entry is hit even though the fault
+>   * entry is updated to a valid entry after the entry is cached.
+>   * To prevent caching fault page table entries which may be updated to valid
+>   * entries later, the virtual memory manager should care about the w/a about the
+> - * problem. The followings describe w/a.
+> + * problem. The following describes w/a.
+>   *
+
+Please change all "w/a" to "workaround".
+It took me a while to figure out what w/a means.
+
+>   * Any two consecutive I/O virtual address regions must have a hole of 128KiB
+>   * in maximum to prevent misbehavior of System MMU 3.x. (w/a of h/w bug)
+> @@ -982,8 +982,8 @@ static int lv2set_page(sysmmu_pte_t *pent, phys_addr_t paddr, size_t size,
+>   *
+>   * Because System MMU v3.3 caches page table entries more aggressively, it needs
+>   * more w/a.
+> - * - Any two consecutive I/O virtual regions must be have a hole of larger size
+> - *   than or equal size to 128KiB.
+> + * - Any two consecutive I/O virtual regions must be have a hole of size larger
+
+                                                must have a hole
+
+> + *   than or equal to 128KiB.
+>   * - Start address of an I/O virtual region must be aligned by 128KiB.
+>   */
+>  static int exynos_iommu_map(struct iommu_domain *domain, unsigned long l_iova,
+> 
+
+
 -- 
-1.7.10.4
+~Randy
