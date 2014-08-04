@@ -1,108 +1,41 @@
-From: Sachin Kamat <sachin.kamat-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH 1/1] iommu: exynos: Fix trivial typos
-Date: Sat,  2 Aug 2014 11:33:15 +0530
-Message-ID: <1406959395-22600-1-git-send-email-sachin.kamat@samsung.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: spk.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, trivial-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+From: Olav Haugan <ohaugan@codeaurora.org>
+Subject: [PATCH v2 1/2] iommu/arm-smmu: Fix programming of SMMU_CBn_TCR for stage 1
+Date: Mon,  4 Aug 2014 11:01:02 -0700
+Message-ID: <1407175263-10699-2-git-send-email-ohaugan@codeaurora.org>
+References: <1407175263-10699-1-git-send-email-ohaugan@codeaurora.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <1407175263-10699-1-git-send-email-ohaugan@codeaurora.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: will.deacon@arm.com
+Cc: mitchelh@codeaurora.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, Olav Haugan <ohaugan@codeaurora.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Fixed trivial typos and grammar to improve readability.
+Stage-1 context bank does not have SMMU_CBn_TCR[SL0] field. SL0 field
+is only applicable to stage-2 context banks.
 
-Signed-off-by: Sachin Kamat <sachin.kamat-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Signed-off-by: Olav Haugan <ohaugan@codeaurora.org>
 ---
- drivers/iommu/exynos-iommu.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ drivers/iommu/arm-smmu.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index d037e87..327ebec 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -32,7 +32,7 @@
- typedef u32 sysmmu_iova_t;
- typedef u32 sysmmu_pte_t;
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 3cf698d..c16431f 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -864,8 +864,11 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
+ 	reg |= TTBCR_EAE |
+ 	      (TTBCR_SH_IS << TTBCR_SH0_SHIFT) |
+ 	      (TTBCR_RGN_WBWA << TTBCR_ORGN0_SHIFT) |
+-	      (TTBCR_RGN_WBWA << TTBCR_IRGN0_SHIFT) |
+-	      (TTBCR_SL0_LVL_1 << TTBCR_SL0_SHIFT);
++	      (TTBCR_RGN_WBWA << TTBCR_IRGN0_SHIFT);
++
++	if (!stage1)
++		reg |= (TTBCR_SL0_LVL_1 << TTBCR_SL0_SHIFT);
++
+ 	writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR);
  
--/* We does not consider super section mapping (16MB) */
-+/* We do not consider super section mapping (16MB) */
- #define SECT_ORDER 20
- #define LPAGE_ORDER 16
- #define SPAGE_ORDER 12
-@@ -307,7 +307,7 @@ static void show_fault_information(const char *name,
- 
- static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
- {
--	/* SYSMMU is in blocked when interrupt occurred. */
-+	/* SYSMMU is in blocked state when interrupt occurred. */
- 	struct sysmmu_drvdata *data = dev_id;
- 	enum exynos_sysmmu_inttype itype;
- 	sysmmu_iova_t addr = -1;
-@@ -567,8 +567,8 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, sysmmu_iova_t iova,
- 		/*
- 		 * L2TLB invalidation required
- 		 * 4KB page: 1 invalidation
--		 * 64KB page: 16 invalidation
--		 * 1MB page: 64 invalidation
-+		 * 64KB page: 16 invalidations
-+		 * 1MB page: 64 invalidations
- 		 * because it is set-associative TLB
- 		 * with 8-way and 64 sets.
- 		 * 1MB page can be cached in one of all sets.
-@@ -862,13 +862,13 @@ static sysmmu_pte_t *alloc_lv2entry(struct exynos_iommu_domain *priv,
- 
- 		/*
- 		 * If pretched SLPD is a fault SLPD in zero_l2_table, FLPD cache
--		 * may caches the address of zero_l2_table. This function
-+		 * may cache the address of zero_l2_table. This function
- 		 * replaces the zero_l2_table with new L2 page table to write
- 		 * valid mappings.
- 		 * Accessing the valid area may cause page fault since FLPD
--		 * cache may still caches zero_l2_table for the valid area
-+		 * cache may still cache zero_l2_table for the valid area
- 		 * instead of new L2 page table that have the mapping
--		 * information of the valid area
-+		 * information of the valid area.
- 		 * Thus any replacement of zero_l2_table with other valid L2
- 		 * page table must involve FLPD cache invalidation for System
- 		 * MMU v3.3.
-@@ -963,14 +963,14 @@ static int lv2set_page(sysmmu_pte_t *pent, phys_addr_t paddr, size_t size,
- /*
-  * *CAUTION* to the I/O virtual memory managers that support exynos-iommu:
-  *
-- * System MMU v3.x have an advanced logic to improve address translation
-+ * System MMU v3.x has an advanced logic to improve address translation
-  * performance with caching more page table entries by a page table walk.
-  * However, the logic has a bug that caching fault page table entries and System
-  * MMU reports page fault if the cached fault entry is hit even though the fault
-  * entry is updated to a valid entry after the entry is cached.
-  * To prevent caching fault page table entries which may be updated to valid
-  * entries later, the virtual memory manager should care about the w/a about the
-- * problem. The followings describe w/a.
-+ * problem. The following describes w/a.
-  *
-  * Any two consecutive I/O virtual address regions must have a hole of 128KiB
-  * in maximum to prevent misbehavior of System MMU 3.x. (w/a of h/w bug)
-@@ -982,8 +982,8 @@ static int lv2set_page(sysmmu_pte_t *pent, phys_addr_t paddr, size_t size,
-  *
-  * Because System MMU v3.3 caches page table entries more aggressively, it needs
-  * more w/a.
-- * - Any two consecutive I/O virtual regions must be have a hole of larger size
-- *   than or equal size to 128KiB.
-+ * - Any two consecutive I/O virtual regions must be have a hole of size larger
-+ *   than or equal to 128KiB.
-  * - Start address of an I/O virtual region must be aligned by 128KiB.
-  */
- static int exynos_iommu_map(struct iommu_domain *domain, unsigned long l_iova,
+ 	/* MAIR0 (stage-1 only) */
 -- 
-1.8.1.2
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+hosted by The Linux Foundation
