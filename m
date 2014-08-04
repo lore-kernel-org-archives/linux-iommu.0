@@ -1,33 +1,39 @@
 From: Olav Haugan <ohaugan@codeaurora.org>
-Subject: [PATCH v2 0/2] arm-smmu fixes for CBn_TCR and S2CR/SMR programming
-Date: Mon,  4 Aug 2014 11:01:01 -0700
-Message-ID: <1407175263-10699-1-git-send-email-ohaugan@codeaurora.org>
+Subject: [PATCH v2 2/2] iommu/arm-smmu: Do not access non-existing SMR registers
+Date: Mon,  4 Aug 2014 11:01:03 -0700
+Message-ID: <1407175263-10699-3-git-send-email-ohaugan@codeaurora.org>
+References: <1407175263-10699-1-git-send-email-ohaugan@codeaurora.org>
 Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <1407175263-10699-1-git-send-email-ohaugan@codeaurora.org>
 Sender: linux-arm-msm-owner@vger.kernel.org
 To: will.deacon@arm.com
 Cc: mitchelh@codeaurora.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, Olav Haugan <ohaugan@codeaurora.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Here are a couple fixes for the arm smmu driver. The first one deals with
-ensuring that we program CBn_TCR correctly when we are programming a stage-1
-context bank.
-The second patch ensures that SMR registers are not touched when stream
-matchign is not supported by the hardware. When stream id matching is not
-supported by the hardware the SMR registers does not exists. However, even
-if they are UNK/SBZP we prefer not to write to more registers than needed.
+The SMR registers do not exist when stream matching is not
+supported by the hardware. Avoid writing to this register if not needed.
 
-v1 -> v2:
-* Fixed so that SL0 is programed for SMMUv1 hardware also
-* Rebased onto Will's iommu/pci branch which only left one issue to fix
-  for the second patch.
+Signed-off-by: Olav Haugan <ohaugan@codeaurora.org>
+---
+ drivers/iommu/arm-smmu.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Olav Haugan (2):
-  iommu/arm-smmu: Fix programming of SMMU_CBn_TCR for stage 1
-  iommu/arm-smmu: Do not access non-existing SMR registers
-
- drivers/iommu/arm-smmu.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
-
---
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index c16431f..1f3a5b3 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1731,7 +1731,10 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+ 
+ 	/* Mark all SMRn as invalid and all S2CRn as bypass */
+ 	for (i = 0; i < smmu->num_mapping_groups; ++i) {
+-		writel_relaxed(~SMR_VALID, gr0_base + ARM_SMMU_GR0_SMR(i));
++		if (smmu->features & ARM_SMMU_FEAT_STREAM_MATCH) {
++			writel_relaxed(~SMR_VALID,
++					gr0_base + ARM_SMMU_GR0_SMR(i));
++		}
+ 		writel_relaxed(S2CR_TYPE_BYPASS,
+ 			gr0_base + ARM_SMMU_GR0_S2CR(i));
+ 	}
+-- 
 The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
 hosted by The Linux Foundation
