@@ -1,193 +1,63 @@
-From: Pramod Gurav <pramod.gurav@smartplayin.com>
-Subject: [PATCH] iommu/msm: Switch to using managed resources
-Date: Mon,  4 Aug 2014 17:37:37 +0530
-Message-ID: <1407154057-25440-1-git-send-email-pramod.gurav@smartplayin.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Cc: Pramod Gurav <pramod.gurav@smartplayin.com>, Stepan Moskovchenko <stepanm@codeaurora.org>, Joerg Roedel <joro@8bytes.org>, Stephen Boyd <sboyd@codeaurora.org>
+From: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH v1 1/2] iommu/arm-smmu: Fix programming of SMMU_CBn_TCR
+	for stage 1
+Date: Mon, 04 Aug 2014 08:39:15 -0700
+Message-ID: <53DFA923.30708@codeaurora.org>
+References: <1407113264-23426-1-git-send-email-ohaugan@codeaurora.org>
+	<1407113264-23426-2-git-send-email-ohaugan@codeaurora.org>
+	<20140804094155.GC15117@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20140804094155.GC15117-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This switches the driver to using managed resources to simplify error
-handling and to do away with remove function.
+On 8/4/2014 2:41 AM, Will Deacon wrote:
+> Hi Olav,
+> 
+> On Mon, Aug 04, 2014 at 01:47:43AM +0100, Olav Haugan wrote:
+>> Stage-1 context bank does not have SMMU_CBn_TCR[SL0] field. SL0 field
+>> is only applicable to stage-2 context banks.
+> 
+> Ha, I actually noticed this last week but didn't get around to writing a
+> a fix. Thanks for taking a look!
+> 
+>> Signed-off-by: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>> ---
+>>  drivers/iommu/arm-smmu.c | 5 +++--
+>>  1 file changed, 3 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>> index ff6633d..a83ca6a 100644
+>> --- a/drivers/iommu/arm-smmu.c
+>> +++ b/drivers/iommu/arm-smmu.c
+>> @@ -833,6 +833,8 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
+>>  				reg |= (TTBCR2_ADDR_48 << TTBCR_PASIZE_SHIFT);
+>>  				break;
+>>  			}
+>> +			reg |= (TTBCR_SL0_LVL_1 << TTBCR_SL0_SHIFT);
+>> +
+> 
+> I think this block is all predicated on smmu->version > 1, so we need
+> something for stage2 CBs on SMMUv1 too.
 
-CC: Stepan Moskovchenko <stepanm@codeaurora.org>
-CC: Joerg Roedel <joro@8bytes.org>
-CC: Stephen Boyd <sboyd@codeaurora.org>
-Signed-off-by: Pramod Gurav <pramod.gurav@smartplayin.com>
----
- drivers/iommu/msm_iommu_dev.c |   76 +++++++++++------------------------------
- 1 file changed, 19 insertions(+), 57 deletions(-)
+Oh, I see. I will fix that.
 
-diff --git a/drivers/iommu/msm_iommu_dev.c b/drivers/iommu/msm_iommu_dev.c
-index 61def7cb..38a538f 100644
---- a/drivers/iommu/msm_iommu_dev.c
-+++ b/drivers/iommu/msm_iommu_dev.c
-@@ -140,39 +140,29 @@ static int msm_iommu_probe(struct platform_device *pdev)
- 		return 0;
- 	}
- 
--	drvdata = kzalloc(sizeof(*drvdata), GFP_KERNEL);
--
--	if (!drvdata) {
--		ret = -ENOMEM;
--		goto fail;
--	}
-+	if (!iommu_dev)
-+		return -ENOMEM;
- 
--	if (!iommu_dev) {
--		ret = -ENODEV;
--		goto fail;
--	}
-+	drvdata = devm_kzalloc(&pdev->dev, sizeof(*drvdata), GFP_KERNEL);
-+	if (!drvdata)
-+		return -ENOMEM;
- 
--	iommu_pclk = clk_get(NULL, "smmu_pclk");
--	if (IS_ERR(iommu_pclk)) {
--		ret = -ENODEV;
--		goto fail;
--	}
-+	iommu_pclk = devm_clk_get(&pdev->dev, "smmu_pclk");
-+	if (IS_ERR(iommu_pclk))
-+		return -ENODEV;
- 
- 	ret = clk_prepare_enable(iommu_pclk);
- 	if (ret)
--		goto fail_enable;
--
--	iommu_clk = clk_get(&pdev->dev, "iommu_clk");
-+		return ret;
- 
-+	iommu_clk = devm_clk_get(&pdev->dev, "iommu_clk");
- 	if (!IS_ERR(iommu_clk))	{
- 		if (clk_get_rate(iommu_clk) == 0)
- 			clk_set_rate(iommu_clk, 1);
- 
- 		ret = clk_prepare_enable(iommu_clk);
--		if (ret) {
--			clk_put(iommu_clk);
-+		if (ret)
- 			goto fail_pclk;
--		}
- 	} else
- 		iommu_clk = NULL;
- 
-@@ -205,14 +195,13 @@ static int msm_iommu_probe(struct platform_device *pdev)
- 		goto fail_clk;
- 	}
- 
--	ret = request_irq(irq, msm_iommu_fault_handler, 0,
-+	ret = devm_request_irq(&pdev->dev, irq, msm_iommu_fault_handler, 0,
- 			"msm_iommu_secure_irpt_handler", drvdata);
- 	if (ret) {
- 		pr_err("Request IRQ %d failed with ret=%d\n", irq, ret);
- 		goto fail_clk;
- 	}
- 
--
- 	drvdata->pclk = iommu_pclk;
- 	drvdata->clk = iommu_clk;
- 	drvdata->base = regs_base;
-@@ -231,16 +220,10 @@ static int msm_iommu_probe(struct platform_device *pdev)
- 
- 	return 0;
- fail_clk:
--	if (iommu_clk) {
-+	if (iommu_clk)
- 		clk_disable(iommu_clk);
--		clk_put(iommu_clk);
--	}
- fail_pclk:
- 	clk_disable_unprepare(iommu_pclk);
--fail_enable:
--	clk_put(iommu_pclk);
--fail:
--	kfree(drvdata);
- 	return ret;
- }
- 
-@@ -250,14 +233,9 @@ static int msm_iommu_remove(struct platform_device *pdev)
- 
- 	drv = platform_get_drvdata(pdev);
- 	if (drv) {
--		if (drv->clk) {
-+		if (drv->clk)
- 			clk_unprepare(drv->clk);
--			clk_put(drv->clk);
--		}
- 		clk_unprepare(drv->pclk);
--		clk_put(drv->pclk);
--		memset(drv, 0, sizeof(*drv));
--		kfree(drv);
- 	}
- 	return 0;
- }
-@@ -276,7 +254,8 @@ static int msm_iommu_ctx_probe(struct platform_device *pdev)
- 	if (!drvdata)
- 		return -ENODEV;
- 
--	ctx_drvdata = kzalloc(sizeof(*ctx_drvdata), GFP_KERNEL);
-+	ctx_drvdata = devm_kzalloc(&pdev->dev, sizeof(*ctx_drvdata),
-+				   GFP_KERNEL);
- 	if (!ctx_drvdata)
- 		return -ENOMEM;
- 
-@@ -288,14 +267,12 @@ static int msm_iommu_ctx_probe(struct platform_device *pdev)
- 
- 	ret = clk_prepare_enable(drvdata->pclk);
- 	if (ret)
--		goto fail;
-+		return ret;
- 
- 	if (drvdata->clk) {
- 		ret = clk_prepare_enable(drvdata->clk);
--		if (ret) {
-+		if (ret)
- 			clk_disable_unprepare(drvdata->pclk);
--			goto fail;
--		}
- 	}
- 
- 	/* Program the M2V tables for this context */
-@@ -329,20 +306,6 @@ static int msm_iommu_ctx_probe(struct platform_device *pdev)
- 
- 	dev_info(&pdev->dev, "context %s using bank %d\n", c->name, c->num);
- 	return 0;
--fail:
--	kfree(ctx_drvdata);
--	return ret;
--}
--
--static int msm_iommu_ctx_remove(struct platform_device *pdev)
--{
--	struct msm_iommu_ctx_drvdata *drv = NULL;
--	drv = platform_get_drvdata(pdev);
--	if (drv) {
--		memset(drv, 0, sizeof(struct msm_iommu_ctx_drvdata));
--		kfree(drv);
--	}
--	return 0;
- }
- 
- static struct platform_driver msm_iommu_driver = {
-@@ -350,7 +313,7 @@ static struct platform_driver msm_iommu_driver = {
- 		.name	= "msm_iommu",
- 	},
- 	.probe		= msm_iommu_probe,
--	.remove		= msm_iommu_remove,
-+	.remove         = msm_iommu_remove,
- };
- 
- static struct platform_driver msm_iommu_ctx_driver = {
-@@ -358,7 +321,6 @@ static struct platform_driver msm_iommu_ctx_driver = {
- 		.name	= "msm_iommu_ctx",
- 	},
- 	.probe		= msm_iommu_ctx_probe,
--	.remove		= msm_iommu_ctx_remove,
- };
- 
- static int __init msm_iommu_driver_init(void)
+
+Olav
+
 -- 
-1.7.9.5
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+hosted by The Linux Foundation
