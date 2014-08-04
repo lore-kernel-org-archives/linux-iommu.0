@@ -1,16 +1,16 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v1 1/2] iommu/arm-smmu: Fix programming of SMMU_CBn_TCR
-	for stage 1
-Date: Mon, 4 Aug 2014 10:41:55 +0100
-Message-ID: <20140804094155.GC15117@arm.com>
+Subject: Re: [PATCH v1 2/2] iommu/arm-smmu: Correctly program S2CR and SMR
+	registers
+Date: Mon, 4 Aug 2014 10:48:23 +0100
+Message-ID: <20140804094823.GD15117@arm.com>
 References: <1407113264-23426-1-git-send-email-ohaugan@codeaurora.org>
-	<1407113264-23426-2-git-send-email-ohaugan@codeaurora.org>
+	<1407113264-23426-3-git-send-email-ohaugan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1407113264-23426-2-git-send-email-ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-Reply-To: <1407113264-23426-3-git-send-email-ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,32 +24,25 @@ To: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 Cc: "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Olav,
-
-On Mon, Aug 04, 2014 at 01:47:43AM +0100, Olav Haugan wrote:
-> Stage-1 context bank does not have SMMU_CBn_TCR[SL0] field. SL0 field
-> is only applicable to stage-2 context banks.
-
-Ha, I actually noticed this last week but didn't get around to writing a
-a fix. Thanks for taking a look!
-
-> Signed-off-by: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> ---
->  drivers/iommu/arm-smmu.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
+On Mon, Aug 04, 2014 at 01:47:44AM +0100, Olav Haugan wrote:
+> When stream matching is supported by the hardware the S2CR is indexed
+> by the stream matching register group index and not the stream id.
+> Fix the programming of the S2CR register to ensure it is programmed
+> correctly in both cases.
 > 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index ff6633d..a83ca6a 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -833,6 +833,8 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
->  				reg |= (TTBCR2_ADDR_48 << TTBCR_PASIZE_SHIFT);
->  				break;
->  			}
-> +			reg |= (TTBCR_SL0_LVL_1 << TTBCR_SL0_SHIFT);
-> +
+> In addition, the SMR registers does not exist when stream matching is not
+> supported by the hardware. Avoid writing to this register if not needed.
 
-I think this block is all predicated on smmu->version > 1, so we need
-something for stage2 CBs on SMMUv1 too.
+I've already fixed some/all of this in my iommu/pci branch:
+
+  https://git.kernel.org/cgit/linux/kernel/git/will/linux.git/commit/?h=iommu/pci&id=d4e46030b91367b50ecb544fee021b30e4ec4e9a
+
+Can you try rebasing on that and see if there's anything left to do, please?
+
+Once we get to -rc1, I'll sort out my branches so the iommu/devel branch
+will contain stuff that I consider candidates for merging (since the
+iommu/pci branch contains a bunch of WIP/RFC stuff too)
+
+Cheers,
 
 Will
