@@ -1,73 +1,34 @@
-From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+From: Joerg Roedel <jroedel@suse.de>
 Subject: Re: [PATCH] iommu/vt-d: Do not BUG_ON in intel_unmap if no domain
-Date: Mon, 4 Aug 2014 13:42:05 +0200
-Message-ID: <20140804114205.GA5545@pd.tnic>
+Date: Mon, 4 Aug 2014 13:49:48 +0200
+Message-ID: <20140804114948.GA8172@suse.de>
 References: <1407151386-16467-1-git-send-email-joro@8bytes.org>
+ <20140804114205.GA5545@pd.tnic>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1407151386-16467-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <20140804114205.GA5545@pd.tnic>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Borislav Petkov <bp@alien8.de>
+Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jiang Liu <jiang.liu@linux.intel.com>, David Woodhouse <dwmw2@infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Aug 04, 2014 at 01:23:06PM +0200, Joerg Roedel wrote:
-> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> 
-> This BUG_ON is easy to trigger with device-hotplug (e.g.
-> SR-IOV). The device_notifier function in the Intel IOMMU
-> driver listens to the BUS_NOTIFY_DEL_DEVICE event and frees
-> the domain for the device if it is reveived.
-> 
-> But this event is triggered before the device driver is
-> unbound from the device. When the driver core actually
-> removes the device the driver may release pending DMA
-> resources, which ends up in intel_unmap and triggers the
-> BUG_ON.
-> 
-> Not listening to BUS_NOTIFY_DEL_DEVICE would cause resource
-> leakage with devices that have never been assigned to any
-> driver, so fix this issue by just making unmap a nop when
-> the domain is already released.
-> 
-> Cc: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> ---
->  drivers/iommu/intel-iommu.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index d1f5caa..7d689d7 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -3196,7 +3196,8 @@ static void intel_unmap(struct device *dev, dma_addr_t dev_addr)
->  		return;
->  
->  	domain = find_domain(dev);
-> -	BUG_ON(!domain);
-> +	if (!domain)
-> +		return;
+On Mon, Aug 04, 2014 at 01:42:05PM +0200, Borislav Petkov wrote:
+> It is always questionable when people remove BUG_ONs because relaxing
+> assertions sound like a temporary fix more often than not. Sounds to me
+> that the original commit which deals with BUS_NOTIFY_DEL_DEVICE needs to
+> try again with the fix. :-)
 
-It is always questionable when people remove BUG_ONs because relaxing
-assertions sound like a temporary fix more often than not. Sounds to me
-that the original commit which deals with BUS_NOTIFY_DEL_DEVICE needs to
-try again with the fix. :-)
+Right, but the "real" fix would be to add a bus notifier that is called
+after the device driver released the device and use this one instead of
+BUS_NOTIFY_DEL_DEVICE.
 
--- 
-Regards/Gruss,
-    Boris.
+But that change wouldn't be suitable for -stable and just removing the
+event handler for BUS_NOTIFY_DEL_DEVICE would cause resource leakage
+again on hotplug, so I think this "fix" is the best for now.
 
-Sent from a fat crate under my desk. Formatting is fine.
---
+We can re-add the BUG_ON when we have a real fix upstream.
+
+
+	Joerg
