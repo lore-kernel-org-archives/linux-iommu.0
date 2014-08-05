@@ -1,7 +1,8 @@
 From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH 04/29] drivers: base: add notifier for failed driver bind
-Date: Tue, 05 Aug 2014 12:47:32 +0200
-Message-ID: <1407235677-26324-5-git-send-email-m.szyprowski@samsung.com>
+Subject: [PATCH 09/29] ARM: dma-mapping: provide stubs if no ARM_DMA_USE_IOMMU
+ has been selected
+Date: Tue, 05 Aug 2014 12:47:37 +0200
+Message-ID: <1407235677-26324-10-git-send-email-m.szyprowski@samsung.com>
 References: <1407235677-26324-1-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,75 +22,63 @@ To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-a
 Cc: Rob Herring <robh@kernel.org>, Thierry Reding <treding@nvidia.com>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Inki Dae <inki.dae@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joerg Roedel <joro@8bytes.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Tomasz Figa <tomasz.figa@gmail.com>, linaro-mm-sig@lists.linaro.org, Kyungmin Park <kyungmin.park@samsung.com>, Kukjin Kim <kgene.kim@samsung.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Olof Johansson <olof@lixom.net>, Cho KyongHo <pullip.cho@samsung.com>, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds support for getting a notify for failed device driver
-bind, so all the items done in BUS_NOTIFY_BIND_DRIVER event can be
-cleaned if the driver fails to bind.
+This patch provides stubs returing errors for all iommu related arm
+dma-mapping functions, which are used when CONFIG_ARM_DMA_USE_IOMMU is
+not set. This let drivers to use common code for iommu and non-iommu
+cases without additional ifdefs.
 
 Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 ---
- drivers/base/dd.c      | 10 +++++++---
- include/linux/device.h |  4 +++-
- 2 files changed, 10 insertions(+), 4 deletions(-)
+ arch/arm/include/asm/dma-iommu.h | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
 
-diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-index e4ffbcf..541a41f 100644
---- a/drivers/base/dd.c
-+++ b/drivers/base/dd.c
-@@ -237,10 +237,14 @@ static int driver_sysfs_add(struct device *dev)
- 	return ret;
- }
+diff --git a/arch/arm/include/asm/dma-iommu.h b/arch/arm/include/asm/dma-iommu.h
+index ae3dac0..1e57569 100644
+--- a/arch/arm/include/asm/dma-iommu.h
++++ b/arch/arm/include/asm/dma-iommu.h
+@@ -9,6 +9,8 @@
+ #include <linux/kmemcheck.h>
+ #include <linux/kref.h>
  
--static void driver_sysfs_remove(struct device *dev)
-+static void driver_sysfs_remove(struct device *dev, int failed)
- {
- 	struct device_driver *drv = dev->driver;
- 
-+	if (failed && dev->bus)
-+		blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
-+					     BUS_NOTIFY_DRVBIND_FAILED, dev);
++#ifdef CONFIG_ARM_DMA_USE_IOMMU
 +
- 	if (drv) {
- 		sysfs_remove_link(&drv->p->kobj, kobject_name(&dev->kobj));
- 		sysfs_remove_link(&dev->kobj, "driver");
-@@ -316,7 +320,7 @@ static int really_probe(struct device *dev, struct device_driver *drv)
+ struct dma_iommu_mapping {
+ 	/* iommu specific data */
+ 	struct iommu_domain	*domain;
+@@ -38,5 +40,34 @@ int arm_iommu_create_default_mapping(struct device *dev, dma_addr_t base,
  
- probe_failed:
- 	devres_release_all(dev);
--	driver_sysfs_remove(dev);
-+	driver_sysfs_remove(dev, true);
- 	dev->driver = NULL;
- 	dev_set_drvdata(dev, NULL);
+ void arm_iommu_release_default_mapping(struct device *dev);
  
-@@ -509,7 +513,7 @@ static void __device_release_driver(struct device *dev)
- 	if (drv) {
- 		pm_runtime_get_sync(dev);
- 
--		driver_sysfs_remove(dev);
-+		driver_sysfs_remove(dev, false);
- 
- 		if (dev->bus)
- 			blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
-diff --git a/include/linux/device.h b/include/linux/device.h
-index b387710..92daded 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -176,7 +176,7 @@ extern int bus_register_notifier(struct bus_type *bus,
- extern int bus_unregister_notifier(struct bus_type *bus,
- 				   struct notifier_block *nb);
- 
--/* All 4 notifers below get called with the target struct device *
-+/* All 7 notifers below get called with the target struct device *
-  * as an argument. Note that those functions are likely to be called
-  * with the device lock held in the core, so be careful.
-  */
-@@ -189,6 +189,8 @@ extern int bus_unregister_notifier(struct bus_type *bus,
- 						      unbound */
- #define BUS_NOTIFY_UNBOUND_DRIVER	0x00000006 /* driver is unbound
- 						      from the device */
-+#define BUS_NOTIFY_DRVBIND_FAILED	0x00000007 /* driver failed to bind
-+						      to device */
- 
- extern struct kset *bus_get_kset(struct bus_type *bus);
- extern struct klist *bus_get_device_klist(struct bus_type *bus);
++#else
++
++static inline struct dma_iommu_mapping *
++arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, size_t size)
++{
++	return ERR_PTR(-ENOSYS);
++}
++
++static inline void
++arm_iommu_release_mapping(struct dma_iommu_mapping *mapping) { }
++
++static inline int arm_iommu_attach_device(struct device *dev,
++					struct dma_iommu_mapping *mapping)
++{
++	return -ENOSYS;
++}
++
++static inline void arm_iommu_detach_device(struct device *dev) { }
++
++static inline int arm_iommu_create_default_mapping(struct device *dev,
++						dma_addr_t base, size_t size)
++{
++	return -ENOSYS;
++}
++
++static inline void arm_iommu_release_default_mapping(struct device *dev) { }
++
++#endif
++
+ #endif /* __KERNEL__ */
+ #endif
 -- 
 1.9.2
