@@ -1,153 +1,136 @@
 From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH 25/29] iommu: exynos: add support for runtime_pm
-Date: Tue, 05 Aug 2014 12:47:53 +0200
-Message-ID: <1407235677-26324-26-git-send-email-m.szyprowski@samsung.com>
+Subject: [PATCH 13/29] temporary: media: s5p-mfc: remove DT hacks &
+ initialization custom memory init code
+Date: Tue, 05 Aug 2014 12:47:41 +0200
+Message-ID: <1407235677-26324-14-git-send-email-m.szyprowski@samsung.com>
 References: <1407235677-26324-1-git-send-email-m.szyprowski@samsung.com>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-reply-to: <1407235677-26324-1-git-send-email-m.szyprowski@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene.kim@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>
+Cc: Rob Herring <robh@kernel.org>, Thierry Reding <treding@nvidia.com>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Inki Dae <inki.dae@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joerg Roedel <joro@8bytes.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Tomasz Figa <tomasz.figa@gmail.com>, linaro-mm-sig@lists.linaro.org, Kyungmin Park <kyungmin.park@samsung.com>, Kukjin Kim <kgene.kim@samsung.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Olof Johansson <olof@lixom.net>, Cho KyongHo <pullip.cho@samsung.com>, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch enables support for runtime pm for SYSMMU controllers. State
-of each controller is saved before master's device power domain is
-turned off and restored after it has been turned on.
+This patch removes custom initialization of reserved memory regions from
+s5p-mfc driver. Driver will use main device pointer for all memory allocations.
 
-exynos_iommu_attach_device() function might be called anytime, even when
-power domain for master's device has been turned off, so to let SYSMMU
-controllers to access its registers, a call to pm_runtime_get_sync() has
-to be done, which turns on the power domain, which SYSMMU belongs to.
-Later, once SYSMMU has been enabled, a call to pm_runtime_put() lets
-runtime pm to turn off the power domain if there are no other devices
-enabled. This way, the SYSMMU drivers get a genpd pm event and save its
-state with sysmmu_save_state() function.
+This patch is temporary, do not merge it yet.
 
 Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 ---
- drivers/iommu/exynos-iommu.c | 54 +++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 53 insertions(+), 1 deletion(-)
+ drivers/media/platform/s5p-mfc/s5p_mfc.c | 73 +-------------------------------
+ 1 file changed, 2 insertions(+), 71 deletions(-)
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 336b2f8..5cd91b11 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -28,6 +28,7 @@
- #include <linux/list.h>
- #include <linux/memblock.h>
- #include <linux/export.h>
-+#include <linux/pm_domain.h>
- 
- #include <asm/cacheflush.h>
- #include <asm/dma-iommu.h>
-@@ -208,6 +209,7 @@ struct sysmmu_drvdata {
- 	struct clk *clk;
- 	struct clk *clk_master;
- 	int activations;
-+	int suspended;
- 	spinlock_t lock;
- 	struct iommu_domain *domain;
- 	struct list_head domain_node;
-@@ -217,6 +219,7 @@ struct sysmmu_drvdata {
- 	const char *name;
- 	dma_addr_t base;
- 	size_t size;
-+	struct notifier_block pm_notifier;
+diff --git a/drivers/media/platform/s5p-mfc/s5p_mfc.c b/drivers/media/platform/s5p-mfc/s5p_mfc.c
+index d35b041..77b99ae 100644
+--- a/drivers/media/platform/s5p-mfc/s5p_mfc.c
++++ b/drivers/media/platform/s5p-mfc/s5p_mfc.c
+@@ -996,55 +996,8 @@ static const struct v4l2_file_operations s5p_mfc_fops = {
+ 	.mmap = s5p_mfc_mmap,
  };
  
- static bool set_sysmmu_active(struct sysmmu_drvdata *data)
-@@ -235,7 +238,7 @@ static bool set_sysmmu_inactive(struct sysmmu_drvdata *data)
+-static int match_child(struct device *dev, void *data)
+-{
+-	if (!dev_name(dev))
+-		return 0;
+-	return !strcmp(dev_name(dev), (char *)data);
+-}
+-
+ static void *mfc_get_drv_data(struct platform_device *pdev);
  
- static bool is_sysmmu_active(struct sysmmu_drvdata *data)
+-static int s5p_mfc_alloc_memdevs(struct s5p_mfc_dev *dev)
+-{
+-	unsigned int mem_info[2] = { };
+-
+-	dev->mem_dev_l = devm_kzalloc(&dev->plat_dev->dev,
+-			sizeof(struct device), GFP_KERNEL);
+-	if (!dev->mem_dev_l) {
+-		mfc_err("Not enough memory\n");
+-		return -ENOMEM;
+-	}
+-	device_initialize(dev->mem_dev_l);
+-	of_property_read_u32_array(dev->plat_dev->dev.of_node,
+-			"samsung,mfc-l", mem_info, 2);
+-	if (dma_declare_coherent_memory(dev->mem_dev_l, mem_info[0],
+-				mem_info[0], mem_info[1],
+-				DMA_MEMORY_MAP | DMA_MEMORY_EXCLUSIVE) == 0) {
+-		mfc_err("Failed to declare coherent memory for\n"
+-		"MFC device\n");
+-		return -ENOMEM;
+-	}
+-
+-	dev->mem_dev_r = devm_kzalloc(&dev->plat_dev->dev,
+-			sizeof(struct device), GFP_KERNEL);
+-	if (!dev->mem_dev_r) {
+-		mfc_err("Not enough memory\n");
+-		return -ENOMEM;
+-	}
+-	device_initialize(dev->mem_dev_r);
+-	of_property_read_u32_array(dev->plat_dev->dev.of_node,
+-			"samsung,mfc-r", mem_info, 2);
+-	if (dma_declare_coherent_memory(dev->mem_dev_r, mem_info[0],
+-				mem_info[0], mem_info[1],
+-				DMA_MEMORY_MAP | DMA_MEMORY_EXCLUSIVE) == 0) {
+-		pr_err("Failed to declare coherent memory for\n"
+-		"MFC device\n");
+-		return -ENOMEM;
+-	}
+-	return 0;
+-}
+-
+ /* MFC probe function */
+ static int s5p_mfc_probe(struct platform_device *pdev)
  {
--	return data->activations > 0;
-+	return (!data->suspended && data->activations > 0);
- }
- 
- static void sysmmu_unblock(void __iomem *sfrbase)
-@@ -528,6 +531,51 @@ static void sysmmu_tlb_invalidate_entry(struct sysmmu_drvdata *data,
- 	spin_unlock_irqrestore(&data->lock, flags);
- }
- 
-+static void sysmmu_restore_state(struct sysmmu_drvdata *data)
-+{
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&data->lock, flags);
-+	if (data->activations > 0) {
-+		data->suspended = false;
-+		__sysmmu_enable_nocount(data);
-+		dev_dbg(data->sysmmu, "restored state\n");
-+	}
-+	spin_unlock_irqrestore(&data->lock, flags);
-+}
-+
-+static void sysmmu_save_state(struct sysmmu_drvdata *data)
-+{
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&data->lock, flags);
-+	if (data->activations > 0) {
-+		__sysmmu_disable_nocount(data);
-+		data->suspended = true;
-+		dev_dbg(data->sysmmu, "saved state\n");
-+	}
-+	spin_unlock_irqrestore(&data->lock, flags);
-+}
-+
-+static int sysmmu_runtime_genpd_event(struct notifier_block *this,
-+				unsigned long event, void *ptr)
-+{
-+	struct sysmmu_drvdata *data;
-+
-+	data = container_of(this, struct sysmmu_drvdata, pm_notifier);
-+
-+	switch (event) {
-+	case PM_GENPD_POST_POWER_ON:
-+		sysmmu_restore_state(data);
-+		break;
-+	case PM_GENPD_POWER_OFF_PREPARE:
-+		sysmmu_save_state(data);
-+		break;
-+	}
-+
-+	return NOTIFY_DONE;
-+}
-+
- static int __init exynos_sysmmu_probe(struct platform_device *pdev)
- {
- 	int irq, ret;
-@@ -580,6 +628,7 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
+@@ -1096,26 +1049,8 @@ static int s5p_mfc_probe(struct platform_device *pdev)
+ 		goto err_res;
  	}
  
- 	data->sysmmu = dev;
-+	data->pm_notifier.notifier_call = sysmmu_runtime_genpd_event;
+-	if (pdev->dev.of_node) {
+-		ret = s5p_mfc_alloc_memdevs(dev);
+-		if (ret < 0)
+-			goto err_res;
+-	} else {
+-		dev->mem_dev_l = device_find_child(&dev->plat_dev->dev,
+-				"s5p-mfc-l", match_child);
+-		if (!dev->mem_dev_l) {
+-			mfc_err("Mem child (L) device get failed\n");
+-			ret = -ENODEV;
+-			goto err_res;
+-		}
+-		dev->mem_dev_r = device_find_child(&dev->plat_dev->dev,
+-				"s5p-mfc-r", match_child);
+-		if (!dev->mem_dev_r) {
+-			mfc_err("Mem child (R) device get failed\n");
+-			ret = -ENODEV;
+-			goto err_res;
+-		}
+-	}
++	dev->mem_dev_l = &dev->plat_dev->dev;
++	dev->mem_dev_r = &dev->plat_dev->dev;
  
- 	/* default io address space parameters */
- 	data->base = SZ_1G;
-@@ -708,6 +757,7 @@ static int exynos_iommu_attach_device(struct iommu_domain *domain,
- 		return -ENODEV;
+ 	dev->alloc_ctx[0] = vb2_dma_contig_init_ctx(dev->mem_dev_l);
+ 	if (IS_ERR(dev->alloc_ctx[0])) {
+@@ -1246,10 +1181,6 @@ static int s5p_mfc_remove(struct platform_device *pdev)
+ 	s5p_mfc_release_firmware(dev);
+ 	vb2_dma_contig_cleanup_ctx(dev->alloc_ctx[0]);
+ 	vb2_dma_contig_cleanup_ctx(dev->alloc_ctx[1]);
+-	if (pdev->dev.of_node) {
+-		put_device(dev->mem_dev_l);
+-		put_device(dev->mem_dev_r);
+-	}
  
- 	list_for_each_entry(data, &owner->clients, owner_node) {
-+		pm_runtime_get_sync(data->sysmmu);
- 		ret = __sysmmu_enable(data, pagetable, domain);
- 		if (ret >= 0) {
- 			data->master = dev;
-@@ -716,6 +766,7 @@ static int exynos_iommu_attach_device(struct iommu_domain *domain,
- 			list_add_tail(&data->domain_node, &priv->clients);
- 			spin_unlock_irqrestore(&priv->lock, flags);
- 		}
-+		pm_runtime_put(data->sysmmu);
- 	}
- 
- 	if (ret < 0) {
-@@ -1156,6 +1207,7 @@ static int __init_master_sysmmu(struct device *dev)
- 		}
- 
- 		list_add_tail(&data->owner_node, &owner->clients);
-+		pm_genpd_register_notifier(dev, &data->pm_notifier);
- 
- 		i++;
- 	}
+ 	s5p_mfc_final_pm(dev);
+ 	return 0;
 -- 
 1.9.2
