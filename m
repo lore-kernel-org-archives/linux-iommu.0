@@ -1,7 +1,7 @@
 From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH 06/29] drivers: iommu: add notify about failed bind
-Date: Tue, 05 Aug 2014 12:47:34 +0200
-Message-ID: <1407235677-26324-7-git-send-email-m.szyprowski@samsung.com>
+Subject: [PATCH 16/29] iommu: exynos: make driver multiarch friendly
+Date: Tue, 05 Aug 2014 12:47:44 +0200
+Message-ID: <1407235677-26324-17-git-send-email-m.szyprowski@samsung.com>
 References: <1407235677-26324-1-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,43 +21,37 @@ To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-a
 Cc: Rob Herring <robh@kernel.org>, Thierry Reding <treding@nvidia.com>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Inki Dae <inki.dae@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joerg Roedel <joro@8bytes.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Tomasz Figa <tomasz.figa@gmail.com>, linaro-mm-sig@lists.linaro.org, Kyungmin Park <kyungmin.park@samsung.com>, Kukjin Kim <kgene.kim@samsung.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Olof Johansson <olof@lixom.net>, Cho KyongHo <pullip.cho@samsung.com>, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds support for forwarding recently introduced
-BUS_NOTIFY_DRVBIND_FAILED event to iommu groups. This lets us getting a
-notify for failed device driver bind, so all the items done in
-IOMMU_GROUP_NOTIFY_BIND_DRIVER event can be cleaned if the driver fails
-to bind.
+Initialize all structures and register to iommu subsystem only on Exynos
+compatible platforms.
 
 Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 ---
- drivers/iommu/iommu.c | 3 +++
- include/linux/iommu.h | 1 +
- 2 files changed, 4 insertions(+)
+ drivers/iommu/exynos-iommu.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 1698360..516e93a 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -758,6 +758,9 @@ static int iommu_bus_notifier(struct notifier_block *nb,
- 	case BUS_NOTIFY_UNBOUND_DRIVER:
- 		group_action = IOMMU_GROUP_NOTIFY_UNBOUND_DRIVER;
- 		break;
-+	case BUS_NOTIFY_DRVBIND_FAILED:
-+		group_action = IOMMU_GROUP_NOTIFY_DRVBIND_FAILED;
-+		break;
- 	}
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index d037e87..64b3bc8 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -20,6 +20,7 @@
+ #include <linux/clk.h>
+ #include <linux/err.h>
+ #include <linux/mm.h>
++#include <linux/of.h>
+ #include <linux/iommu.h>
+ #include <linux/errno.h>
+ #include <linux/list.h>
+@@ -1187,6 +1188,11 @@ static int __init exynos_iommu_init(void)
+ {
+ 	int ret;
  
- 	if (group_action)
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 20f9a52..f9fdae5 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -139,6 +139,7 @@ struct iommu_ops {
- #define IOMMU_GROUP_NOTIFY_BOUND_DRIVER		4 /* Post Driver bind */
- #define IOMMU_GROUP_NOTIFY_UNBIND_DRIVER	5 /* Pre Driver unbind */
- #define IOMMU_GROUP_NOTIFY_UNBOUND_DRIVER	6 /* Post Driver unbind */
-+#define IOMMU_GROUP_NOTIFY_DRVBIND_FAILED	7 /* Driver failed to bind */
- 
- extern int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops);
- extern bool iommu_present(struct bus_type *bus);
++	if (!of_machine_is_compatible("samsung,exynos3") &&
++	    !of_machine_is_compatible("samsung,exynos4") &&
++	    !of_machine_is_compatible("samsung,exynos5"))
++		return -ENODEV;
++
+ 	lv2table_kmem_cache = kmem_cache_create("exynos-iommu-lv2table",
+ 				LV2TABLE_SIZE, LV2TABLE_SIZE, 0, NULL);
+ 	if (!lv2table_kmem_cache) {
 -- 
 1.9.2
