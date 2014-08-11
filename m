@@ -1,191 +1,295 @@
-From: Linda Knippers <linda.knippers-VXdhtT5mjnY@public.gmane.org>
-Subject: Re: [PATCH] iommu/vt-d: Fix broken device issue when using iommu=pt
-Date: Mon, 11 Aug 2014 10:59:42 -0400
-Message-ID: <53E8DA5E.8090406@hp.com>
-References: <1407725674-27271-1-git-send-email-wangyijing@huawei.com>
-	<1407732187.9800.11.camel@ul30vt.home>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1407732187.9800.11.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+From: Olav Haugan <ohaugan@codeaurora.org>
+Subject: [PATCH v5 1/1] iommu-api: Add map_sg/unmap_sg functions
+Date: Mon, 11 Aug 2014 15:45:50 -0700
+Message-ID: <1407797150-515-2-git-send-email-ohaugan@codeaurora.org>
+References: <1407797150-515-1-git-send-email-ohaugan@codeaurora.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <1407797150-515-1-git-send-email-ohaugan@codeaurora.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: joro@8bytes.org, laurent.pinchart+renesas@ideasonboard.com, robdclark@gmail.com, will.deacon@arm.com, thierry.reding@gmail.com, kgene.kim@samsung.com, dwmw2@infradead.org, hdoyu@nvidia.com, Varun.Sethi@freescale.com, konrad.wilk@oracle.com, s-anna@ti.com
+Cc: mitchelh@codeaurora.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, Olav Haugan <ohaugan@codeaurora.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 8/11/2014 12:43 AM, Alex Williamson wrote:
-> On Mon, 2014-08-11 at 10:54 +0800, Yijing Wang wrote:
->> We found some strange devices in HP C7000 and Huawei Server. These devices
->> can not be enumerated by OS, but they still did DMA read/write without OS 
->> management. Because iommu will not create the DMA mapping for these devices,
->> the DMA read/write will be blocked by iommu hardware.
->>
->> Eg.
->>  \-[0000:00]-+-00.0  Intel Corporation Xeon E5/Core i7 DMI2
->>              +-01.0-[11]--
->> 			 +-01.1-[02]--
->> 			 +-02.0-[04]--+-00.0  Emulex Corporation OneConnect 10Gb NIC (be3)
->> 	         |            +-00.1  Emulex Corporation OneConnect 10Gb NIC (be3)
->> 	         |            +-00.2  Emulex Corporation OneConnect 10Gb iSCSI Initiator (be3)
->> 	         |            \-00.3  Emulex Corporation OneConnect 10Gb iSCSI Initiator (be3)
->> 	         +-02.1-[12]--
->> Kernel only found four devices in bus 0x04, but we found following DMA errors in dmesg.
->>
->> [ 1438.477262] DRHD: handling fault status reg 402
->> [ 1438.498278] DMAR:[DMA Write] Request device [04:00.4] fault addr bdf70000 
->> [ 1438.498280] DMAR:[fault reason 02] Present bit in context entry is clear
->> [ 1438.566458] DMAR:[DMA Write] Request device [04:00.5] fault addr bdf70000 
->> [ 1438.566460] DMAR:[fault reason 02] Present bit in context entry is clear
->> [ 1438.635211] DMAR:[DMA Write] Request device [04:00.6] fault addr bdf70000 
->> [ 1438.635213] DMAR:[fault reason 02] Present bit in context entry is clear
->> [ 1438.703849] DMAR:[DMA Write] Request device [04:00.7] fault addr bdf70000 
->> [ 1438.703851] DMAR:[fault reason 02] Present bit in context entry is clear
->>
->> Signed-off-by: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
->> ---
->>  arch/x86/include/asm/iommu.h |    2 ++
->>  arch/x86/kernel/pci-dma.c    |    8 ++++++++
->>  drivers/iommu/intel-iommu.c  |   41 +++++++++++++++++++++++++++++++++++++++++
->>  3 files changed, 51 insertions(+), 0 deletions(-)
->>
->> diff --git a/arch/x86/include/asm/iommu.h b/arch/x86/include/asm/iommu.h
->> index 345c99c..5e3a2d8 100644
->> --- a/arch/x86/include/asm/iommu.h
->> +++ b/arch/x86/include/asm/iommu.h
->> @@ -5,6 +5,8 @@ extern struct dma_map_ops nommu_dma_ops;
->>  extern int force_iommu, no_iommu;
->>  extern int iommu_detected;
->>  extern int iommu_pass_through;
->> +extern int iommu_pt_force_bus;
->> +extern int iommu_pt_force_domain;
->>  
->>  /* 10 seconds */
->>  #define DMAR_OPERATION_TIMEOUT ((cycles_t) tsc_khz*10*1000)
->> diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
->> index a25e202..bf21d97 100644
->> --- a/arch/x86/kernel/pci-dma.c
->> +++ b/arch/x86/kernel/pci-dma.c
->> @@ -44,6 +44,8 @@ int iommu_detected __read_mostly = 0;
->>   * guests and not for driver dma translation.
->>   */
->>  int iommu_pass_through __read_mostly;
->> +int iommu_pt_force_bus = -1;
->> +int iommu_pt_force_domain = -1;
->>  
->>  extern struct iommu_table_entry __iommu_table[], __iommu_table_end[];
->>  
->> @@ -146,6 +148,7 @@ void dma_generic_free_coherent(struct device *dev, size_t size, void *vaddr,
->>   */
->>  static __init int iommu_setup(char *p)
->>  {
->> +	char *end;
->>  	iommu_merge = 1;
->>  
->>  	if (!p)
->> @@ -192,6 +195,11 @@ static __init int iommu_setup(char *p)
->>  #endif
->>  		if (!strncmp(p, "pt", 2))
->>  			iommu_pass_through = 1;
->> +		if (!strncmp(p, "pt_force=", 9)) {
->> +			iommu_pass_through = 1;
->> +			iommu_pt_force_domain = simple_strtol(p+9, &end, 0);
->> +			iommu_pt_force_bus = simple_strtol(end+1, NULL, 0);
-> 
-> Documentation/kernel-parameters.txt?
-> 
->> +		}
->>  
->>  		gart_parse_options(p);
->>  
->> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
->> index d1f5caa..49757f1 100644
->> --- a/drivers/iommu/intel-iommu.c
->> +++ b/drivers/iommu/intel-iommu.c
->> @@ -2705,6 +2705,47 @@ static int __init iommu_prepare_static_identity_mapping(int hw)
->>  				return ret;
->>  		}
->>  
->> +	/* We found some strange devices in HP c7000 and other platforms that
->> +	 * can not be enumerated by OS, but they did DMA read/write without
->> +	 * driver management, so we should create the pt mapping for these
->> +	 * devices to avoid DMA errors. Add iommu=pt_force=segment:busnum to
->> +	 * force to do pt context mapping in the bus number.
->> +	 */
-> 
-> So best case with this patch is that the user needs to discover that
-> this option exists, figure out the undocumented parameters, be running
-> on VT-d, permanently add a kernel commandline option, and never have any
-> intention of assigning the device to userspace or a VM...
-> 
-> Can't we handle this with the DMA alias quirks that are now in 3.17?  Or
-> can the vendor fix this with a firmware update?  This device behavior is
-> really quite broken for this kind of server class product.  
+Mapping and unmapping are more often than not in the critical path.
+map_sg and unmap_sg allows IOMMU driver implementations to optimize
+the process of mapping and unmapping buffers into the IOMMU page tables.
 
-Yeah, something doesn't sound right here.
+Instead of mapping a buffer one page at a time and requiring potentially
+expensive TLB operations for each page, this function allows the driver
+to map all pages in one go and defer TLB maintenance until after all
+pages have been mapped.
 
-I would like to hear more about this configuration, off list if you prefer.
-What servers?  What firmware revisions?
+Additionally, the mapping operation would be faster in general since
+clients does not have to keep calling map API over and over again for
+each physically contiguous chunk of memory that needs to be mapped to a
+virtually contiguous region.
 
-Thanks,
+Signed-off-by: Olav Haugan <ohaugan@codeaurora.org>
+---
+ drivers/iommu/amd_iommu.c      |  2 ++
+ drivers/iommu/arm-smmu.c       |  2 ++
+ drivers/iommu/exynos-iommu.c   |  2 ++
+ drivers/iommu/intel-iommu.c    |  2 ++
+ drivers/iommu/iommu.c          | 33 +++++++++++++++++++++++++++++++
+ drivers/iommu/ipmmu-vmsa.c     |  2 ++
+ drivers/iommu/msm_iommu.c      |  2 ++
+ drivers/iommu/omap-iommu.c     |  2 ++
+ drivers/iommu/shmobile-iommu.c |  2 ++
+ drivers/iommu/tegra-smmu.c     |  2 ++
+ include/linux/iommu.h          | 44 ++++++++++++++++++++++++++++++++++++++++++
+ 11 files changed, 95 insertions(+)
 
--- ljk
-
-> Thanks,
-> 
-> Alex
-> 
->> +	if (iommu_pt_force_bus >= 0 && iommu_pt_force_bus >= 0) {
->> +		int found = 0;
->> +
->> +		iommu = NULL;
->> +		for_each_active_iommu(iommu, drhd) {
->> +			if (iommu_pt_force_domain != drhd->segment)
->> +				continue;
->> +
->> +			for_each_active_dev_scope(drhd->devices, drhd->devices_cnt, i, dev) {
->> +				if (!dev_is_pci(dev))
->> +					continue;
->> +
->> +				pdev = to_pci_dev(dev);
->> +				if (pdev->bus->number == iommu_pt_force_bus ||
->> +						(pdev->subordinate
->> +						 && pdev->subordinate->number <= iommu_pt_force_bus
->> +						 && pdev->subordinate->busn_res.end >= iommu_pt_force_bus)) {
->> +					found = 1;
->> +					break;
->> +				}
->> +			}
->> +
->> +			if (drhd->include_all) {
->> +				found = 1;
->> +				break;
->> +			}
->> +		}
->> +
->> +		if (found && iommu)
->> +			for (i = 0; i < 256; i++)
->> +				domain_context_mapping_one(si_domain, iommu, iommu_pt_force_bus,
->> +						i,  hw ? CONTEXT_TT_PASS_THROUGH :
->> +						CONTEXT_TT_MULTI_LEVEL);
->> +	}
->> +
->>  	return 0;
->>  }
->>  
-> 
-> 
-> 
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> 
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 1840531..3604f3c 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -3402,6 +3402,8 @@ static const struct iommu_ops amd_iommu_ops = {
+ 	.detach_dev = amd_iommu_detach_device,
+ 	.map = amd_iommu_map,
+ 	.unmap = amd_iommu_unmap,
++	.map_sg = default_iommu_map_sg,
++	.unmap_sg = default_iommu_unmap_sg,
+ 	.iova_to_phys = amd_iommu_iova_to_phys,
+ 	.domain_has_cap = amd_iommu_domain_has_cap,
+ 	.pgsize_bitmap	= AMD_IOMMU_PGSIZES,
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index ca18d6d..231e006 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1604,6 +1604,8 @@ static const struct iommu_ops arm_smmu_ops = {
+ 	.detach_dev	= arm_smmu_detach_dev,
+ 	.map		= arm_smmu_map,
+ 	.unmap		= arm_smmu_unmap,
++	.map_sg		= default_iommu_map_sg,
++	.unmap_sg	= default_iommu_unmap_sg,
+ 	.iova_to_phys	= arm_smmu_iova_to_phys,
+ 	.domain_has_cap	= arm_smmu_domain_has_cap,
+ 	.add_device	= arm_smmu_add_device,
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index d037e87..8876508 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -1177,6 +1177,8 @@ static const struct iommu_ops exynos_iommu_ops = {
+ 	.detach_dev = exynos_iommu_detach_device,
+ 	.map = exynos_iommu_map,
+ 	.unmap = exynos_iommu_unmap,
++	.map_sg = default_iommu_map_sg,
++	.unmap_sg = default_iommu_unmap_sg,
+ 	.iova_to_phys = exynos_iommu_iova_to_phys,
+ 	.add_device = exynos_iommu_add_device,
+ 	.remove_device = exynos_iommu_remove_device,
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index d1f5caa..4fc61ff 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -4462,6 +4462,8 @@ static const struct iommu_ops intel_iommu_ops = {
+ 	.detach_dev	= intel_iommu_detach_device,
+ 	.map		= intel_iommu_map,
+ 	.unmap		= intel_iommu_unmap,
++	.map_sg		= default_iommu_map_sg,
++	.unmap_sg	= default_iommu_unmap_sg,
+ 	.iova_to_phys	= intel_iommu_iova_to_phys,
+ 	.domain_has_cap = intel_iommu_domain_has_cap,
+ 	.add_device	= intel_iommu_add_device,
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 1698360..24cf727 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1088,6 +1088,39 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
+ }
+ EXPORT_SYMBOL_GPL(iommu_unmap);
+ 
++int default_iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
++			 struct scatterlist *sg, unsigned int nents,
++			 int prot, unsigned long flags)
++{
++	int ret = 0;
++	unsigned long offset = 0;
++	unsigned int i;
++	struct scatterlist *s;
++
++	for_each_sg(sg, s, nents, i) {
++		phys_addr_t phys = page_to_phys(sg_page(s));
++		size_t page_len = s->offset + s->length;
++
++		ret = iommu_map(domain, iova + offset, phys, page_len,
++				prot);
++		if (ret) {
++			/* undo mappings already done */
++			iommu_unmap(domain, iova, offset);
++			break;
++		}
++		offset += page_len;
++	}
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(default_iommu_map_sg);
++
++int default_iommu_unmap_sg(struct iommu_domain *domain, unsigned long iova,
++			       size_t size, unsigned long flags)
++{
++	return iommu_unmap(domain, iova, size);
++}
++EXPORT_SYMBOL_GPL(default_iommu_unmap_sg);
+ 
+ int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
+ 			       phys_addr_t paddr, u64 size, int prot)
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index 7dab5cb..1dc6f94 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -1127,6 +1127,8 @@ static const struct iommu_ops ipmmu_ops = {
+ 	.detach_dev = ipmmu_detach_device,
+ 	.map = ipmmu_map,
+ 	.unmap = ipmmu_unmap,
++	.map_sg = default_iommu_map_sg,
++	.unmap_sg = default_iommu_unmap_sg,
+ 	.iova_to_phys = ipmmu_iova_to_phys,
+ 	.add_device = ipmmu_add_device,
+ 	.remove_device = ipmmu_remove_device,
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index 49f41d6..2b3c8d3 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -681,6 +681,8 @@ static const struct iommu_ops msm_iommu_ops = {
+ 	.detach_dev = msm_iommu_detach_dev,
+ 	.map = msm_iommu_map,
+ 	.unmap = msm_iommu_unmap,
++	.map_sg = default_iommu_map_sg,
++	.unmap_sg = default_iommu_unmap_sg,
+ 	.iova_to_phys = msm_iommu_iova_to_phys,
+ 	.domain_has_cap = msm_iommu_domain_has_cap,
+ 	.pgsize_bitmap = MSM_IOMMU_PGSIZES,
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index e202b0c..7d4c920 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -1285,6 +1285,8 @@ static const struct iommu_ops omap_iommu_ops = {
+ 	.detach_dev	= omap_iommu_detach_dev,
+ 	.map		= omap_iommu_map,
+ 	.unmap		= omap_iommu_unmap,
++	.map_sg		= default_iommu_map_sg,
++	.unmap_sg	= default_iommu_unmap_sg,
+ 	.iova_to_phys	= omap_iommu_iova_to_phys,
+ 	.add_device	= omap_iommu_add_device,
+ 	.remove_device	= omap_iommu_remove_device,
+diff --git a/drivers/iommu/shmobile-iommu.c b/drivers/iommu/shmobile-iommu.c
+index 1333e6fb..3510f70 100644
+--- a/drivers/iommu/shmobile-iommu.c
++++ b/drivers/iommu/shmobile-iommu.c
+@@ -361,6 +361,8 @@ static const struct iommu_ops shmobile_iommu_ops = {
+ 	.detach_dev = shmobile_iommu_detach_device,
+ 	.map = shmobile_iommu_map,
+ 	.unmap = shmobile_iommu_unmap,
++	.map_sg = default_iommu_map_sg,
++	.unmap_sg = default_iommu_unmap_sg,
+ 	.iova_to_phys = shmobile_iommu_iova_to_phys,
+ 	.add_device = shmobile_iommu_add_device,
+ 	.pgsize_bitmap = SZ_1M | SZ_64K | SZ_4K,
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index 792da5e..ebd847b 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -954,6 +954,8 @@ static const struct iommu_ops smmu_iommu_ops = {
+ 	.detach_dev	= smmu_iommu_detach_dev,
+ 	.map		= smmu_iommu_map,
+ 	.unmap		= smmu_iommu_unmap,
++	.map_sg		= default_iommu_map_sg,
++	.unmap_sg	= default_iommu_unmap_sg,
+ 	.iova_to_phys	= smmu_iommu_iova_to_phys,
+ 	.domain_has_cap	= smmu_iommu_domain_has_cap,
+ 	.pgsize_bitmap	= SMMU_IOMMU_PGSIZES,
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 20f9a52..ee106ce 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -22,6 +22,7 @@
+ #include <linux/errno.h>
+ #include <linux/err.h>
+ #include <linux/types.h>
++#include <linux/scatterlist.h>
+ #include <trace/events/iommu.h>
+ 
+ #define IOMMU_READ	(1 << 0)
+@@ -93,6 +94,10 @@ enum iommu_attr {
+  * @detach_dev: detach device from an iommu domain
+  * @map: map a physically contiguous memory region to an iommu domain
+  * @unmap: unmap a physically contiguous memory region from an iommu domain
++ * @map_sg: map a scatter-gather list of physically contiguous memory chunks
++ * to an iommu domain
++ * @unmap_sg: unmap a scatter-gather list of physically contiguous memory
++ * chunks from an iommu domain
+  * @iova_to_phys: translate iova to physical address
+  * @domain_has_cap: domain capabilities query
+  * @add_device: add device to iommu grouping
+@@ -110,6 +115,11 @@ struct iommu_ops {
+ 		   phys_addr_t paddr, size_t size, int prot);
+ 	size_t (*unmap)(struct iommu_domain *domain, unsigned long iova,
+ 		     size_t size);
++	int (*map_sg)(struct iommu_domain *domain, unsigned long iova,
++			struct scatterlist *sg, unsigned int nents, int prot,
++			unsigned long flags);
++	int (*unmap_sg)(struct iommu_domain *domain, unsigned long iova,
++			size_t size, unsigned long flags);
+ 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain, dma_addr_t iova);
+ 	int (*domain_has_cap)(struct iommu_domain *domain,
+ 			      unsigned long cap);
+@@ -153,6 +163,12 @@ extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 		     phys_addr_t paddr, size_t size, int prot);
+ extern size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+ 		       size_t size);
++extern int default_iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
++				struct scatterlist *sg,unsigned int nents,
++				int prot, unsigned long flags);
++extern int default_iommu_unmap_sg(struct iommu_domain *domain,
++				  unsigned long iova, size_t size,
++				  unsigned long flags);
+ extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova);
+ extern int iommu_domain_has_cap(struct iommu_domain *domain,
+ 				unsigned long cap);
+@@ -240,6 +256,20 @@ static inline int report_iommu_fault(struct iommu_domain *domain,
+ 	return ret;
+ }
+ 
++static inline int iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
++			       struct scatterlist *sg, unsigned int nents,
++			       int prot, unsigned long flags)
++{
++	return domain->ops->map_sg(domain, iova, sg, nents, prot, flags);
++}
++
++static inline int iommu_unmap_sg(struct iommu_domain *domain,
++				 unsigned long iova, size_t size,
++				 unsigned long flags)
++{
++	return domain->ops->unmap_sg(domain, iova, size, flags);
++}
++
+ #else /* CONFIG_IOMMU_API */
+ 
+ struct iommu_ops {};
+@@ -287,6 +317,20 @@ static inline int iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+ 	return -ENODEV;
+ }
+ 
++static inline int iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
++			       struct scatterlist *sg, unsigned int nents,
++			       int prot, unsigned long flags)
++{
++	return -ENODEV;
++}
++
++static inline int iommu_unmap_sg(struct iommu_domain *domain,
++				 unsigned long iova, size_t size,
++				 unsigned long flags)
++{
++	return -ENODEV;
++}
++
+ static inline int iommu_domain_window_enable(struct iommu_domain *domain,
+ 					     u32 wnd_nr, phys_addr_t paddr,
+ 					     u64 size, int prot)
+-- 
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+hosted by The Linux Foundation
