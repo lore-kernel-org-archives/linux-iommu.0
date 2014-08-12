@@ -1,62 +1,53 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: LPC IOMMU and VFIO MicroConference - Call for Participation
-Date: Tue, 12 Aug 2014 11:20:19 +0200
-Message-ID: <20140812092019.GY9809@8bytes.org>
+From: Rob Clark <robdclark@gmail.com>
+Subject: Re: [PATCH v5 1/1] iommu-api: Add map_sg/unmap_sg functions
+Date: Tue, 12 Aug 2014 06:48:54 -0400
+Message-ID: <CAF6AEGvZUanVtPxAt76+AAdOaNwyMJ3cmcJ1srsEYBeG7ELkBQ@mail.gmail.com>
+References: <1407797150-515-1-git-send-email-ohaugan@codeaurora.org>
+	<1407797150-515-2-git-send-email-ohaugan@codeaurora.org>
+	<871tsm5vcn.fsf@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Jesse Barnes <jbarnes-Y1mF5jBUw70BENJcbMCuUQ@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <871tsm5vcn.fsf@nvidia.com>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Hiroshi Doyu <hdoyu@nvidia.com>
+Cc: Olav Haugan <ohaugan@codeaurora.org>, "joro@8bytes.org" <joro@8bytes.org>, "laurent.pinchart+renesas@ideasonboard.com" <laurent.pinchart+renesas@ideasonboard.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "kgene.kim@samsung.com" <kgene.kim@samsung.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "Varun.Sethi@freescale.com" <Varun.Sethi@freescale.com>, "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>, "s-anna@ti.com" <s-anna@ti.com>, "mitchelh@codeaurora.org" <mitchelh@codeaurora.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-LPC IOMMU and VFIO MicroConference - Call for Participation
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D
+On Mon, Aug 11, 2014 at 9:51 PM, Hiroshi Doyu <hdoyu@nvidia.com> wrote:
+> Hi Olav,
+>
+> Olav Haugan <ohaugan@codeaurora.org> writes:
+>
+>> @@ -93,6 +94,10 @@ enum iommu_attr {
+>>   * @detach_dev: detach device from an iommu domain
+>>   * @map: map a physically contiguous memory region to an iommu domain
+>>   * @unmap: unmap a physically contiguous memory region from an iommu domain
+>> + * @map_sg: map a scatter-gather list of physically contiguous memory chunks
+>> + * to an iommu domain
+>> + * @unmap_sg: unmap a scatter-gather list of physically contiguous memory
+>> + * chunks from an iommu domain
+>>   * @iova_to_phys: translate iova to physical address
+>>   * @domain_has_cap: domain capabilities query
+>>   * @add_device: add device to iommu grouping
+>> @@ -110,6 +115,11 @@ struct iommu_ops {
+>>                    phys_addr_t paddr, size_t size, int prot);
+>>         size_t (*unmap)(struct iommu_domain *domain, unsigned long iova,
+>>                      size_t size);
+>> +       int (*map_sg)(struct iommu_domain *domain, unsigned long iova,
+>> +                       struct scatterlist *sg, unsigned int nents, int prot,
+>> +                       unsigned long flags);
+>> +       int (*unmap_sg)(struct iommu_domain *domain, unsigned long iova,
+>> +                       size_t size, unsigned long flags);
+>
+> Do you have any exmaple/explanation for the above "flags"?
+>
+> Is this going to be used for iommu global/standard attribute or SoC
+> spcific one?
 
-We are pleased to announce that this year there will be the first IOMMU
-and VFIO MicroConference held at Linux Plumbers Conference in
-D=FCsseldorf. An initial request for support of this micro conference
-generated, among others, the following possible topic ideas:
+iirc, one plan for 'flags' was some sort of DONT_FLUSH_TLB flag for
+drivers which wanted to map/unmap N buffers with a single flush at the
+end.  There might have been some other usages envisioned.
 
-	* Improving generic IOMMU code and move code out of drivers
-	* IOMMU device error handling
-	* IOMMU Power Management
-	* Virtualizing IOMMUs
-	* Interface between IOMMUs an memory management
-
-More suggested topics can be found at the wiki page of the micro
-conference:
-
-	http://wiki.linuxplumbersconf.org/2014:iommu_microconference
-
-We now ask for formal proposals for these discussions along with any
-other topics or problems that need to be discussed in this area.
-
-The format of the micro conference will be roughly half-hour slots for
-each topic, where the discussion lead gives a short introduction to the
-problem and maybe sketches possible solutions. The rest of the slot is
-open for discussions so that we come to an agreement how to move
-forward.
-
-Please submit your formal proposal on the Linux Plumbers website (OpenID
-login required) until August 31st at:
-
-	http://www.linuxplumbersconf.org/2014/how-to-submit-microconference-discus=
-sions-topics/
-
-Hope to see you in D=FCsseldorf!
-
-
-	Joerg Roedel and Alex Williamson
+BR,
+-R
