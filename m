@@ -1,78 +1,79 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [RFC PATCH 13/20] MIPS/xlr/MSI: Use msi_chip instead of arch func to configure MSI/MSI-X
-Date: Tue, 12 Aug 2014 15:26:06 +0800
-Message-ID: <1407828373-24322-14-git-send-email-wangyijing@huawei.com>
+Subject: [RFC PATCH 06/20] PCI/MSI: Introduce arch_get_match_msi_chip() to
+ find the match msi_chip
+Date: Tue, 12 Aug 2014 15:25:59 +0800
+Message-ID: <1407828373-24322-7-git-send-email-wangyijing@huawei.com>
 References: <1407828373-24322-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 In-Reply-To: <1407828373-24322-1-git-send-email-wangyijing@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: linux-kernel@vger.kernel.org, Xinwei Hu <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, linux-pci@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, arnab.basu@freescale.com, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, Thomas Gleixner <tglx@linutronix.de>, "H. Peter Anvin" <hpa@zytor.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org
+Cc: linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, linux-pci@vger.kernel.org, Xinwei Hu <huxinwei@huawei.com>, Yijing Wang <wangyijing@huawei.com>, "H.
+ Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org, linux-s390@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Joerg Roedel <joro@8bytes.org>, x86@kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, xen-devel@lists.xenproject.org, arnab.basu@freescale.com, Arnd Bergmann <arnd@arndb.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Marc Zyngier <marc.zyngier@arm.com>, Chris Metcalf <cmetcalf@tilera.com>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Wuyun <wuyun.wu@huawei.com>, linuxppc-dev@lists.ozlabs.org, "David S. Miller" <davem@davemloft.net>
 List-Id: iommu@lists.linux-foundation.org
 
-Introduce a new struct msi_chip xlr_msi_chip instead of weak arch
-functions to configure MSI/MSI-X.
-
-Signed-off-by: Yijing Wang <wangyijing@huawei.com>
----
- arch/mips/pci/pci-xlr.c |   19 +++++++++++++++----
- 1 files changed, 15 insertions(+), 4 deletions(-)
-
-diff --git a/arch/mips/pci/pci-xlr.c b/arch/mips/pci/pci-xlr.c
-index 0dde803..6eef164 100644
---- a/arch/mips/pci/pci-xlr.c
-+++ b/arch/mips/pci/pci-xlr.c
-@@ -214,11 +214,11 @@ static int get_irq_vector(const struct pci_dev *dev)
- }
- 
- #ifdef CONFIG_PCI_MSI
--void arch_teardown_msi_irq(unsigned int irq)
-+void xlr_teardown_msi_irq(unsigned int irq)
- {
- }
- 
--int arch_setup_msi_irq(struct pci_dev *dev, struct msi_desc *desc)
-+int xlr_setup_msi_irq(struct device *dev, struct msi_desc *desc)
- {
- 	struct msi_msg msg;
- 	struct pci_dev *lnk;
-@@ -233,7 +233,7 @@ int arch_setup_msi_irq(struct pci_dev *dev, struct msi_desc *desc)
- 	 * Enable MSI on the XLS PCIe controller bridge which was disabled
- 	 * at enumeration, the bridge MSI capability is at 0x50
- 	 */
--	lnk = xls_get_pcie_link(dev);
-+	lnk = xls_get_pcie_link(to_pci_dev(dev));
- 	if (lnk == NULL)
- 		return 1;
- 
-@@ -243,7 +243,7 @@ int arch_setup_msi_irq(struct pci_dev *dev, struct msi_desc *desc)
- 		pci_write_config_word(lnk, 0x50 + PCI_MSI_FLAGS, val);
- 	}
- 
--	irq = get_irq_vector(dev);
-+	irq = get_irq_vector(to_pci_dev(dev));
- 	if (irq <= 0)
- 		return 1;
- 
-@@ -263,6 +263,17 @@ int arch_setup_msi_irq(struct pci_dev *dev, struct msi_desc *desc)
- 	write_msi_msg(irq, &msg);
- 	return 0;
- }
-+
-+struct msi_chip xlr_msi_chip = {
-+	.setup_irq = xlr_setup_msi_irq,
-+	.teardown_irq = xlr_teardown_msi_irq,
-+};
-+
-+struct msi_chip *arch_get_match_msi_chip(struct device *dev)
-+{
-+	return &xlr_msi_chip;
-+}
-+
- #endif
- 
- /* Extra ACK needed for XLR on chip PCI controller */
--- 
-1.7.1
+SW50cm9kdWNlIF9fd2VhayBhcmNoX2dldF9tYXRjaF9tc2lfY2hpcCgpIHRvIGZpbmQgdGhlIG1h
+dGNoIG1zaV9jaGlwLgpXZSBwcmVwYXJlIHRvIHVzZSBzdHJ1Y3QgbXNpX2NoaXAgdG8gZWxpbWlu
+YXRlIGFyY2hfeHh4IGZ1bmN0aW9ucwppbiBhbGwgcGxhdGZvcm1zLiBUaGUgTVNJIGRldmljZSBh
+bmQgdGhlIG1zaV9jaGlwIGJpbmRpbmcgaXMgcGxhdGZvcm0Kc3BlY2lmaWMuIEZvciBpbnN0YW5j
+ZSwgaW4geDg2LCBMQVBJQ3MgcmVjZWl2ZSBhbGwgTVNJIGlycSwgYnV0IGluCmFybSwgUENJIGRl
+dmljZSB1c3VhbGx5IGRlbGl2ZXIgdGhlaXIgTVNJIHRvIFBDSSBob3N0YnJpZGdlLCBpZiBtb3Jl
+CnRoYW4gb25lIG1zaV9jaGlwIGZvdW5kIGluIHN5c3RlbSwgRFRTIGZpbGUgd2lsbCByZXBvcnQg
+dGhlIGJpbmRpbmcKYmV0d2VlbiBNU0kgZGV2aWNlcyBhbmQgdGFyZ2V0IG1zaV9jaGlwLiBTbyB3
+ZSBuZWVkIGEgcGxhdGZvcm0gaW1wbGVtZW50ZWQKaW50ZXJmYWNlIHRvIGRvIHRoYXQuCgpTaWdu
+ZWQtb2ZmLWJ5OiBZaWppbmcgV2FuZyA8d2FuZ3lpamluZ0BodWF3ZWkuY29tPgotLS0KIGRyaXZl
+cnMvcGNpL21zaS5jIHwgICAzMCArKysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0KIDEgZmls
+ZXMgY2hhbmdlZCwgMjYgaW5zZXJ0aW9ucygrKSwgNCBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQg
+YS9kcml2ZXJzL3BjaS9tc2kuYyBiL2RyaXZlcnMvcGNpL21zaS5jCmluZGV4IDdiN2FiZTkuLmZl
+YmE1ZGQgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvcGNpL21zaS5jCisrKyBiL2RyaXZlcnMvcGNpL21z
+aS5jCkBAIC0yOSwxMCArMjksMjIgQEAgc3RhdGljIGludCBwY2lfbXNpX2VuYWJsZSA9IDE7CiAK
+IC8qIEFyY2ggaG9va3MgKi8KIAotaW50IF9fd2VhayBhcmNoX3NldHVwX21zaV9pcnEoc3RydWN0
+IHBjaV9kZXYgKmRldiwgc3RydWN0IG1zaV9kZXNjICpkZXNjKQorc3RydWN0IG1zaV9jaGlwICog
+X193ZWFrIGFyY2hfZ2V0X21hdGNoX21zaV9jaGlwKHN0cnVjdCBkZXZpY2UgKmRldikKK3sKKwlp
+ZiAoZGV2X2lzX3BjaShkZXYpKSB7CisJCXN0cnVjdCBwY2lfZGV2ICpwZGV2ID0gdG9fcGNpX2Rl
+dihkZXYpOworCQlzdHJ1Y3QgbXNpX2NoaXAgKmNoaXAgPSBwZGV2LT5idXMtPm1zaTsKKworCQly
+ZXR1cm4gY2hpcDsKKwl9CisKKwlyZXR1cm4gTlVMTDsKK30KKworaW50IF9fd2VhayBhcmNoX3Nl
+dHVwX21zaV9pcnEoc3RydWN0IHBjaV9kZXYgKmRldiwgc3RydWN0IG1zaV9kZXNjICpkZXNjKQog
+ewotCXN0cnVjdCBtc2lfY2hpcCAqY2hpcCA9IGRldi0+YnVzLT5tc2k7CiAJaW50IGVycjsKKwlz
+dHJ1Y3QgbXNpX2NoaXAgKmNoaXAgPSBhcmNoX2dldF9tYXRjaF9tc2lfY2hpcCgmZGV2LT5kZXYp
+OwogCiAJaWYgKCFjaGlwIHx8ICFjaGlwLT5zZXR1cF9pcnEpCiAJCXJldHVybiAtRUlOVkFMOwpA
+QCAtNDYsNyArNTgsOCBAQCBpbnQgX193ZWFrIGFyY2hfc2V0dXBfbXNpX2lycShzdHJ1Y3QgcGNp
+X2RldiAqZGV2LCBzdHJ1Y3QgbXNpX2Rlc2MgKmRlc2MpCiAKIHZvaWQgX193ZWFrIGFyY2hfdGVh
+cmRvd25fbXNpX2lycSh1bnNpZ25lZCBpbnQgaXJxKQogewotCXN0cnVjdCBtc2lfY2hpcCAqY2hp
+cCA9IGlycV9nZXRfY2hpcF9kYXRhKGlycSk7CisJc3RydWN0IG1zaV9kZXNjICplbnRyeSA9IGly
+cV9nZXRfbXNpX2Rlc2MoaXJxKTsKKwlzdHJ1Y3QgbXNpX2NoaXAgKmNoaXAgPSBhcmNoX2dldF9t
+YXRjaF9tc2lfY2hpcCgmZW50cnktPmRldi0+ZGV2KTsKIAogCWlmICghY2hpcCB8fCAhY2hpcC0+
+dGVhcmRvd25faXJxKQogCQlyZXR1cm47CkBAIC01Niw3ICs2OSw3IEBAIHZvaWQgX193ZWFrIGFy
+Y2hfdGVhcmRvd25fbXNpX2lycSh1bnNpZ25lZCBpbnQgaXJxKQogCiBpbnQgX193ZWFrIGFyY2hf
+bXNpX2NoZWNrX2RldmljZShzdHJ1Y3QgcGNpX2RldiAqZGV2LCBpbnQgbnZlYywgaW50IHR5cGUp
+CiB7Ci0Jc3RydWN0IG1zaV9jaGlwICpjaGlwID0gZGV2LT5idXMtPm1zaTsKKwlzdHJ1Y3QgbXNp
+X2NoaXAgKmNoaXAgPSBhcmNoX2dldF9tYXRjaF9tc2lfY2hpcCgmZGV2LT5kZXYpOwogCiAJaWYg
+KCFjaGlwIHx8ICFjaGlwLT5jaGVja19kZXZpY2UpCiAJCXJldHVybiAwOwpAQCAtNjgsNyArODEs
+MTIgQEAgaW50IF9fd2VhayBhcmNoX3NldHVwX21zaV9pcnFzKHN0cnVjdCBwY2lfZGV2ICpkZXYs
+IGludCBudmVjLCBpbnQgdHlwZSkKIHsKIAlzdHJ1Y3QgbXNpX2Rlc2MgKmVudHJ5OwogCWludCBy
+ZXQ7CisJc3RydWN0IG1zaV9jaGlwICpjaGlwOwogCisJY2hpcCA9IGFyY2hfZ2V0X21hdGNoX21z
+aV9jaGlwKCZkZXYtPmRldik7CisJaWYgKGNoaXAgJiYgY2hpcC0+c2V0dXBfaXJxcykKKwkJcmV0
+dXJuIGNoaXAtPnNldHVwX2lycXMoJmRldi0+ZGV2LCBudmVjLCB0eXBlKTsKKwogCS8qCiAJICog
+SWYgYW4gYXJjaGl0ZWN0dXJlIHdhbnRzIHRvIHN1cHBvcnQgbXVsdGlwbGUgTVNJLCBpdCBuZWVk
+cyB0bwogCSAqIG92ZXJyaWRlIGFyY2hfc2V0dXBfbXNpX2lycXMoKQpAQCAtMTMzLDYgKzE1MSwx
+MCBAQCBzdGF0aWMgdm9pZCBkZWZhdWx0X3Jlc3RvcmVfbXNpX2lycShzdHJ1Y3QgcGNpX2RldiAq
+ZGV2LCBpbnQgaXJxKQogCiB2b2lkIF9fd2VhayBhcmNoX3Jlc3RvcmVfbXNpX2lycXMoc3RydWN0
+IHBjaV9kZXYgKmRldikKIHsKKwlzdHJ1Y3QgbXNpX2NoaXAgKmNoaXAgPSBhcmNoX2dldF9tc2lf
+Y2hpcCgmZGV2LT5kZXYpOworCWlmIChjaGlwICYmIGNoaXAtPnJlc3RvcmVfaXJxcykKKwkJcmV0
+dXJuIGNoaXAtPnJlc3RvcmVfaXJxcygmZGV2LT5kZXYpOworCiAJcmV0dXJuIGRlZmF1bHRfcmVz
+dG9yZV9tc2lfaXJxcyhkZXYpOwogfQogCi0tIAoxLjcuMQoKX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX18KTGludXhwcGMtZGV2IG1haWxpbmcgbGlzdApMaW51
+eHBwYy1kZXZAbGlzdHMub3psYWJzLm9yZwpodHRwczovL2xpc3RzLm96bGFicy5vcmcvbGlzdGlu
+Zm8vbGludXhwcGMtZGV2
