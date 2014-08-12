@@ -1,79 +1,208 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [RFC PATCH 06/20] PCI/MSI: Introduce arch_get_match_msi_chip() to
- find the match msi_chip
-Date: Tue, 12 Aug 2014 15:25:59 +0800
-Message-ID: <1407828373-24322-7-git-send-email-wangyijing@huawei.com>
+Subject: [RFC PATCH 20/20] PCI/MSI: Clean up unused MSI arch functions
+Date: Tue, 12 Aug 2014 15:26:13 +0800
+Message-ID: <1407828373-24322-21-git-send-email-wangyijing@huawei.com>
 References: <1407828373-24322-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1407828373-24322-1-git-send-email-wangyijing@huawei.com>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, linux-pci@vger.kernel.org, Xinwei Hu <huxinwei@huawei.com>, Yijing Wang <wangyijing@huawei.com>, "H.
- Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org, linux-s390@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Joerg Roedel <joro@8bytes.org>, x86@kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, xen-devel@lists.xenproject.org, arnab.basu@freescale.com, Arnd Bergmann <arnd@arndb.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Marc Zyngier <marc.zyngier@arm.com>, Chris Metcalf <cmetcalf@tilera.com>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Wuyun <wuyun.wu@huawei.com>, linuxppc-dev@lists.ozlabs.org, "David S. Miller" <davem@davemloft.net>
+Cc: linux-kernel@vger.kernel.org, Xinwei Hu <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, linux-pci@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, arnab.basu@freescale.com, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, Thomas Gleixner <tglx@linutronix.de>, "H. Peter Anvin" <hpa@zytor.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-SW50cm9kdWNlIF9fd2VhayBhcmNoX2dldF9tYXRjaF9tc2lfY2hpcCgpIHRvIGZpbmQgdGhlIG1h
-dGNoIG1zaV9jaGlwLgpXZSBwcmVwYXJlIHRvIHVzZSBzdHJ1Y3QgbXNpX2NoaXAgdG8gZWxpbWlu
-YXRlIGFyY2hfeHh4IGZ1bmN0aW9ucwppbiBhbGwgcGxhdGZvcm1zLiBUaGUgTVNJIGRldmljZSBh
-bmQgdGhlIG1zaV9jaGlwIGJpbmRpbmcgaXMgcGxhdGZvcm0Kc3BlY2lmaWMuIEZvciBpbnN0YW5j
-ZSwgaW4geDg2LCBMQVBJQ3MgcmVjZWl2ZSBhbGwgTVNJIGlycSwgYnV0IGluCmFybSwgUENJIGRl
-dmljZSB1c3VhbGx5IGRlbGl2ZXIgdGhlaXIgTVNJIHRvIFBDSSBob3N0YnJpZGdlLCBpZiBtb3Jl
-CnRoYW4gb25lIG1zaV9jaGlwIGZvdW5kIGluIHN5c3RlbSwgRFRTIGZpbGUgd2lsbCByZXBvcnQg
-dGhlIGJpbmRpbmcKYmV0d2VlbiBNU0kgZGV2aWNlcyBhbmQgdGFyZ2V0IG1zaV9jaGlwLiBTbyB3
-ZSBuZWVkIGEgcGxhdGZvcm0gaW1wbGVtZW50ZWQKaW50ZXJmYWNlIHRvIGRvIHRoYXQuCgpTaWdu
-ZWQtb2ZmLWJ5OiBZaWppbmcgV2FuZyA8d2FuZ3lpamluZ0BodWF3ZWkuY29tPgotLS0KIGRyaXZl
-cnMvcGNpL21zaS5jIHwgICAzMCArKysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0KIDEgZmls
-ZXMgY2hhbmdlZCwgMjYgaW5zZXJ0aW9ucygrKSwgNCBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQg
-YS9kcml2ZXJzL3BjaS9tc2kuYyBiL2RyaXZlcnMvcGNpL21zaS5jCmluZGV4IDdiN2FiZTkuLmZl
-YmE1ZGQgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvcGNpL21zaS5jCisrKyBiL2RyaXZlcnMvcGNpL21z
-aS5jCkBAIC0yOSwxMCArMjksMjIgQEAgc3RhdGljIGludCBwY2lfbXNpX2VuYWJsZSA9IDE7CiAK
-IC8qIEFyY2ggaG9va3MgKi8KIAotaW50IF9fd2VhayBhcmNoX3NldHVwX21zaV9pcnEoc3RydWN0
-IHBjaV9kZXYgKmRldiwgc3RydWN0IG1zaV9kZXNjICpkZXNjKQorc3RydWN0IG1zaV9jaGlwICog
-X193ZWFrIGFyY2hfZ2V0X21hdGNoX21zaV9jaGlwKHN0cnVjdCBkZXZpY2UgKmRldikKK3sKKwlp
-ZiAoZGV2X2lzX3BjaShkZXYpKSB7CisJCXN0cnVjdCBwY2lfZGV2ICpwZGV2ID0gdG9fcGNpX2Rl
-dihkZXYpOworCQlzdHJ1Y3QgbXNpX2NoaXAgKmNoaXAgPSBwZGV2LT5idXMtPm1zaTsKKworCQly
-ZXR1cm4gY2hpcDsKKwl9CisKKwlyZXR1cm4gTlVMTDsKK30KKworaW50IF9fd2VhayBhcmNoX3Nl
-dHVwX21zaV9pcnEoc3RydWN0IHBjaV9kZXYgKmRldiwgc3RydWN0IG1zaV9kZXNjICpkZXNjKQog
-ewotCXN0cnVjdCBtc2lfY2hpcCAqY2hpcCA9IGRldi0+YnVzLT5tc2k7CiAJaW50IGVycjsKKwlz
-dHJ1Y3QgbXNpX2NoaXAgKmNoaXAgPSBhcmNoX2dldF9tYXRjaF9tc2lfY2hpcCgmZGV2LT5kZXYp
-OwogCiAJaWYgKCFjaGlwIHx8ICFjaGlwLT5zZXR1cF9pcnEpCiAJCXJldHVybiAtRUlOVkFMOwpA
-QCAtNDYsNyArNTgsOCBAQCBpbnQgX193ZWFrIGFyY2hfc2V0dXBfbXNpX2lycShzdHJ1Y3QgcGNp
-X2RldiAqZGV2LCBzdHJ1Y3QgbXNpX2Rlc2MgKmRlc2MpCiAKIHZvaWQgX193ZWFrIGFyY2hfdGVh
-cmRvd25fbXNpX2lycSh1bnNpZ25lZCBpbnQgaXJxKQogewotCXN0cnVjdCBtc2lfY2hpcCAqY2hp
-cCA9IGlycV9nZXRfY2hpcF9kYXRhKGlycSk7CisJc3RydWN0IG1zaV9kZXNjICplbnRyeSA9IGly
-cV9nZXRfbXNpX2Rlc2MoaXJxKTsKKwlzdHJ1Y3QgbXNpX2NoaXAgKmNoaXAgPSBhcmNoX2dldF9t
-YXRjaF9tc2lfY2hpcCgmZW50cnktPmRldi0+ZGV2KTsKIAogCWlmICghY2hpcCB8fCAhY2hpcC0+
-dGVhcmRvd25faXJxKQogCQlyZXR1cm47CkBAIC01Niw3ICs2OSw3IEBAIHZvaWQgX193ZWFrIGFy
-Y2hfdGVhcmRvd25fbXNpX2lycSh1bnNpZ25lZCBpbnQgaXJxKQogCiBpbnQgX193ZWFrIGFyY2hf
-bXNpX2NoZWNrX2RldmljZShzdHJ1Y3QgcGNpX2RldiAqZGV2LCBpbnQgbnZlYywgaW50IHR5cGUp
-CiB7Ci0Jc3RydWN0IG1zaV9jaGlwICpjaGlwID0gZGV2LT5idXMtPm1zaTsKKwlzdHJ1Y3QgbXNp
-X2NoaXAgKmNoaXAgPSBhcmNoX2dldF9tYXRjaF9tc2lfY2hpcCgmZGV2LT5kZXYpOwogCiAJaWYg
-KCFjaGlwIHx8ICFjaGlwLT5jaGVja19kZXZpY2UpCiAJCXJldHVybiAwOwpAQCAtNjgsNyArODEs
-MTIgQEAgaW50IF9fd2VhayBhcmNoX3NldHVwX21zaV9pcnFzKHN0cnVjdCBwY2lfZGV2ICpkZXYs
-IGludCBudmVjLCBpbnQgdHlwZSkKIHsKIAlzdHJ1Y3QgbXNpX2Rlc2MgKmVudHJ5OwogCWludCBy
-ZXQ7CisJc3RydWN0IG1zaV9jaGlwICpjaGlwOwogCisJY2hpcCA9IGFyY2hfZ2V0X21hdGNoX21z
-aV9jaGlwKCZkZXYtPmRldik7CisJaWYgKGNoaXAgJiYgY2hpcC0+c2V0dXBfaXJxcykKKwkJcmV0
-dXJuIGNoaXAtPnNldHVwX2lycXMoJmRldi0+ZGV2LCBudmVjLCB0eXBlKTsKKwogCS8qCiAJICog
-SWYgYW4gYXJjaGl0ZWN0dXJlIHdhbnRzIHRvIHN1cHBvcnQgbXVsdGlwbGUgTVNJLCBpdCBuZWVk
-cyB0bwogCSAqIG92ZXJyaWRlIGFyY2hfc2V0dXBfbXNpX2lycXMoKQpAQCAtMTMzLDYgKzE1MSwx
-MCBAQCBzdGF0aWMgdm9pZCBkZWZhdWx0X3Jlc3RvcmVfbXNpX2lycShzdHJ1Y3QgcGNpX2RldiAq
-ZGV2LCBpbnQgaXJxKQogCiB2b2lkIF9fd2VhayBhcmNoX3Jlc3RvcmVfbXNpX2lycXMoc3RydWN0
-IHBjaV9kZXYgKmRldikKIHsKKwlzdHJ1Y3QgbXNpX2NoaXAgKmNoaXAgPSBhcmNoX2dldF9tc2lf
-Y2hpcCgmZGV2LT5kZXYpOworCWlmIChjaGlwICYmIGNoaXAtPnJlc3RvcmVfaXJxcykKKwkJcmV0
-dXJuIGNoaXAtPnJlc3RvcmVfaXJxcygmZGV2LT5kZXYpOworCiAJcmV0dXJuIGRlZmF1bHRfcmVz
-dG9yZV9tc2lfaXJxcyhkZXYpOwogfQogCi0tIAoxLjcuMQoKX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX18KTGludXhwcGMtZGV2IG1haWxpbmcgbGlzdApMaW51
-eHBwYy1kZXZAbGlzdHMub3psYWJzLm9yZwpodHRwczovL2xpc3RzLm96bGFicy5vcmcvbGlzdGlu
-Zm8vbGludXhwcGMtZGV2
+Now we use struct msi_chip in all platforms to configure
+MSI/MSI-X. We can clean up the unused arch functions.
+
+Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+---
+ drivers/pci/msi.c |   82 ++++++++++++++++++++--------------------------------
+ 1 files changed, 32 insertions(+), 50 deletions(-)
+
+diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
+index feba5dd..2d2d4cd 100644
+--- a/drivers/pci/msi.c
++++ b/drivers/pci/msi.c
+@@ -41,33 +41,7 @@ struct msi_chip * __weak arch_get_match_msi_chip(struct device *dev)
+ 	return NULL;
+ }
+ 
+-int __weak arch_setup_msi_irq(struct pci_dev *dev, struct msi_desc *desc) 
+-{
+-	int err;
+-	struct msi_chip *chip = arch_get_match_msi_chip(&dev->dev);
+-
+-	if (!chip || !chip->setup_irq)
+-		return -EINVAL;
+-
+-	err = chip->setup_irq(&dev->dev, desc);
+-	if (err < 0)
+-		return err;
+-
+-	return 0;
+-}
+-
+-void __weak arch_teardown_msi_irq(unsigned int irq)
+-{
+-	struct msi_desc *entry = irq_get_msi_desc(irq);
+-	struct msi_chip *chip = arch_get_match_msi_chip(&entry->dev->dev);
+-
+-	if (!chip || !chip->teardown_irq)
+-		return;
+-
+-	chip->teardown_irq(irq);
+-}
+-
+-int __weak arch_msi_check_device(struct pci_dev *dev, int nvec, int type)
++static int msi_check_device(struct pci_dev *dev, int nvec, int type)
+ {
+ 	struct msi_chip *chip = arch_get_match_msi_chip(&dev->dev);
+ 
+@@ -77,25 +51,31 @@ int __weak arch_msi_check_device(struct pci_dev *dev, int nvec, int type)
+ 	return chip->check_device(&dev->dev, nvec, type);
+ }
+ 
+-int __weak arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
++static int setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
+ {
+ 	struct msi_desc *entry;
+ 	int ret;
+ 	struct msi_chip *chip;
+ 
+ 	chip = arch_get_match_msi_chip(&dev->dev);
+-	if (chip && chip->setup_irqs)
++	if (!chip)
++		return -EINVAL;
++
++	if (chip->setup_irqs)
+ 		return chip->setup_irqs(&dev->dev, nvec, type);
+ 	
+ 	/*
+ 	 * If an architecture wants to support multiple MSI, it needs to
+-	 * override arch_setup_msi_irqs()
++	 * provide chip->setup_irqs()
+ 	 */
+ 	if (type == PCI_CAP_ID_MSI && nvec > 1)
+ 		return 1;
+ 
++	if (!chip->setup_irq)
++		return -EINVAL;
++
+ 	list_for_each_entry(entry, &dev->msi_list, list) {
+-		ret = arch_setup_msi_irq(dev, entry);
++		ret = chip->setup_irq(&dev->dev, entry);
+ 		if (ret < 0)
+ 			return ret;
+ 		if (ret > 0)
+@@ -105,13 +85,20 @@ int __weak arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
+ 	return 0;
+ }
+ 
+-/*
+- * We have a default implementation available as a separate non-weak
+- * function, as it is used by the Xen x86 PCI code
+- */
+-void default_teardown_msi_irqs(struct pci_dev *dev)
++static void teardown_msi_irqs(struct pci_dev *dev)
+ {
+ 	struct msi_desc *entry;
++	struct msi_chip *chip;
++
++	chip = arch_get_match_msi_chip(&dev->dev);
++	if (!chip)
++		return;
++
++	if (chip->teardown_irqs)
++		return chip->teardown_irqs(&dev->dev);
++
++	if (!chip->teardown_irq)
++		return;
+ 
+ 	list_for_each_entry(entry, &dev->msi_list, list) {
+ 		int i, nvec;
+@@ -122,15 +109,10 @@ void default_teardown_msi_irqs(struct pci_dev *dev)
+ 		else
+ 			nvec = 1 << entry->msi_attrib.multiple;
+ 		for (i = 0; i < nvec; i++)
+-			arch_teardown_msi_irq(entry->irq + i);
++			chip->teardown_irq(entry->irq + i);
+ 	}
+ }
+ 
+-void __weak arch_teardown_msi_irqs(struct pci_dev *dev)
+-{
+-	return default_teardown_msi_irqs(dev);
+-}
+-
+ static void default_restore_msi_irq(struct pci_dev *dev, int irq)
+ {
+ 	struct msi_desc *entry;
+@@ -149,9 +131,9 @@ static void default_restore_msi_irq(struct pci_dev *dev, int irq)
+ 		write_msi_msg(irq, &entry->msg);
+ }
+ 
+-void __weak arch_restore_msi_irqs(struct pci_dev *dev)
++static void restore_msi_irqs(struct pci_dev *dev)
+ {
+-	struct msi_chip *chip = arch_get_msi_chip(&dev->dev);
++	struct msi_chip *chip = arch_get_match_msi_chip(&dev->dev);
+ 	if (chip && chip->restore_irqs)
+ 		return chip->restore_irqs(&dev->dev);
+ 
+@@ -386,7 +368,7 @@ static void free_msi_irqs(struct pci_dev *dev)
+ 			BUG_ON(irq_has_action(entry->irq + i));
+ 	}
+ 
+-	arch_teardown_msi_irqs(dev);
++	teardown_msi_irqs(dev);
+ 
+ 	list_for_each_entry_safe(entry, tmp, &dev->msi_list, list) {
+ 		if (entry->msi_attrib.is_msix) {
+@@ -456,7 +438,7 @@ static void __pci_restore_msi_state(struct pci_dev *dev)
+ 
+ 	pci_intx_for_msi(dev, 0);
+ 	msi_set_enable(dev, 0);
+-	arch_restore_msi_irqs(dev);
++	restore_msi_irqs(dev);
+ 
+ 	pci_read_config_word(dev, dev->msi_cap + PCI_MSI_FLAGS, &control);
+ 	msi_mask_irq(entry, msi_mask(entry->msi_attrib.multi_cap),
+@@ -479,7 +461,7 @@ static void __pci_restore_msix_state(struct pci_dev *dev)
+ 	msix_clear_and_set_ctrl(dev, 0,
+ 				PCI_MSIX_FLAGS_ENABLE | PCI_MSIX_FLAGS_MASKALL);
+ 
+-	arch_restore_msi_irqs(dev);
++	restore_msi_irqs(dev);
+ 	list_for_each_entry(entry, &dev->msi_list, list) {
+ 		msix_mask_irq(entry, entry->masked);
+ 	}
+@@ -650,7 +632,7 @@ static int msi_capability_init(struct pci_dev *dev, int nvec)
+ 	list_add_tail(&entry->list, &dev->msi_list);
+ 
+ 	/* Configure MSI capability structure */
+-	ret = arch_setup_msi_irqs(dev, nvec, PCI_CAP_ID_MSI);
++	ret = setup_msi_irqs(dev, nvec, PCI_CAP_ID_MSI);
+ 	if (ret) {
+ 		msi_mask_irq(entry, mask, ~mask);
+ 		free_msi_irqs(dev);
+@@ -766,7 +748,7 @@ static int msix_capability_init(struct pci_dev *dev,
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = arch_setup_msi_irqs(dev, nvec, PCI_CAP_ID_MSIX);
++	ret = setup_msi_irqs(dev, nvec, PCI_CAP_ID_MSIX);
+ 	if (ret)
+ 		goto out_avail;
+ 
+@@ -853,7 +835,7 @@ static int pci_msi_check_device(struct pci_dev *dev, int nvec, int type)
+ 		if (bus->bus_flags & PCI_BUS_FLAGS_NO_MSI)
+ 			return -EINVAL;
+ 
+-	ret = arch_msi_check_device(dev, nvec, type);
++	ret = msi_check_device(dev, nvec, type);
+ 	if (ret)
+ 		return ret;
+ 
+-- 
+1.7.1
