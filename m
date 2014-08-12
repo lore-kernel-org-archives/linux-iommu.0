@@ -1,110 +1,52 @@
-From: Yijing Wang <wangyijing@huawei.com>
-Subject: Re: [Xen-devel] [RFC PATCH 01/20] x86/xen/MSI: Eliminate
- arch_msix_mask_irq() and arch_msi_mask_irq()
-Date: Tue, 12 Aug 2014 19:11:53 +0800
-Message-ID: <53E9F679.8060302@huawei.com>
-References: <1407828373-24322-1-git-send-email-wangyijing@huawei.com>
- <1407828373-24322-2-git-send-email-wangyijing@huawei.com>
- <53E9D9DD.3060901@citrix.com>
+From: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH v5 1/1] iommu-api: Add map_sg/unmap_sg functions
+Date: Tue, 12 Aug 2014 09:53:44 -0700
+Message-ID: <53EA4698.9020608@codeaurora.org>
+References: <1407797150-515-1-git-send-email-ohaugan@codeaurora.org>
+	<1407797150-515-2-git-send-email-ohaugan@codeaurora.org>
+	<20140812013559.GA25121@laptop.dumpdata.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <53E9D9DD.3060901@citrix.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: David Vrabel <david.vrabel@citrix.com>, Bjorn Helgaas <bhelgaas@google.com>
-Cc: linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, linux-pci@vger.kernel.org, Xinwei Hu <huxinwei@huawei.com>, "H. Peter
- Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org, linux-s390@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Joerg Roedel <joro@8bytes.org>, x86@kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, xen-devel@lists.xenproject.org, arnab.basu@freescale.com, Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <marc.zyngier@arm.com>, Chris Metcalf <cmetcalf@tilera.com>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Wuyun <wuyun.wu@huawei.com>, linuxppc-dev@lists.ozlabs.org, "David S. Miller" <davem@davemloft.net>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20140812013559.GA25121-0iZWjJA6G8GSPmnEAIUT9EEOCMrvLtNR@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Cc: kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 2014/8/12 17:09, David Vrabel wrote:
-> On 12/08/14 08:25, Yijing Wang wrote:
->> Commit 0e4ccb150 added two __weak arch functions arch_msix_mask_irq()
->> and arch_msi_mask_irq() to fix a bug found when running xen in x86.
->> Introduced these two funcntions make MSI code complex. This patch
->> reverted commit 0e4ccb150 and add #ifdef for x86 msi_chip to fix this
->> bug for simplicity. Also this is preparation for using struct
->> msi_chip instead of weak arch MSI functions in all platforms.
-> [...]
->>  static struct irq_chip msi_chip = {
->>  	.name			= "PCI-MSI",
->> +#ifdef CONFIG_XEN
->> +	.irq_unmask		= nop_unmask_msi_irq,
->> +	.irq_mask		= nop_mask_msi_irq,
->> +#else
->>  	.irq_unmask		= unmask_msi_irq,
->>  	.irq_mask		= mask_msi_irq,
->> +#endif
+On 8/11/2014 6:35 PM, Konrad Rzeszutek Wilk wrote:
+> On Mon, Aug 11, 2014 at 03:45:50PM -0700, Olav Haugan wrote:
+> .. snip..
+>> +	for_each_sg(sg, s, nents, i) {
+>> +		phys_addr_t phys = page_to_phys(sg_page(s));
+>> +		size_t page_len = s->offset + s->length;
+>> +
+>> +		ret = iommu_map(domain, iova + offset, phys, page_len,
+>> +				prot);
+>> +		if (ret) {
+>> +			/* undo mappings already done */
+>> +			iommu_unmap(domain, iova, offset);
 > 
-> No.  CONFIG_XEN kernels can run on Xen and bare metal so this must be a
-> runtime option.
-
-Hi David, that's my mistake, what about export struct irq_chip msi_chip, then
-change the msi_chip->irq_mask/irq_unmask() in xen init functions.
-
-
-Eg.
-
-diff --git a/arch/x86/include/asm/apic.h b/arch/x86/include/asm/apic.h
-index 19b0eba..bb6af00 100644
---- a/arch/x86/include/asm/apic.h
-+++ b/arch/x86/include/asm/apic.h
-@@ -43,6 +43,10 @@ static inline void generic_apic_probe(void)
- }
- #endif
-
-+#ifdef CONFIG_PCI_MSI
-+extern struct irq_chip msi_chip;
-+#endif
-+
- #ifdef CONFIG_X86_LOCAL_APIC
-[...]
-+
-+#ifdef CONFIG_PCI_MSI
-+void xen_nop_msi_mask(struct irq_data *data)
- {
--       return 0;
- }
- #endif
-
-@@ -424,8 +423,8 @@ int __init pci_xen_init(void)
-        x86_msi.setup_msi_irqs = xen_setup_msi_irqs;
-        x86_msi.teardown_msi_irq = xen_teardown_msi_irq;
-        x86_msi.teardown_msi_irqs = xen_teardown_msi_irqs;
--       x86_msi.msi_mask_irq = xen_nop_msi_mask_irq;
--       x86_msi.msix_mask_irq = xen_nop_msix_mask_irq;
-+       msi_chip.irq_mask = xen_nop_msi_mask;
-+       msi_chip.irq_unmask = xen_nop_msi_mask;
- #endif
-        return 0;
- }
-@@ -505,8 +504,8 @@ int __init pci_xen_initial_domain(void)
-        x86_msi.setup_msi_irqs = xen_initdom_setup_msi_irqs;
-        x86_msi.teardown_msi_irq = xen_teardown_msi_irq;
-        x86_msi.restore_msi_irqs = xen_initdom_restore_msi_irqs;
--       x86_msi.msi_mask_irq = xen_nop_msi_mask_irq;
--       x86_msi.msix_mask_irq = xen_nop_msix_mask_irq;
-+       msi_chip.irq_mask = xen_nop_msi_mask;
-+       msi_chip.irq_unmask = xen_nop_msi_mask;
- #endif
-        xen_setup_acpi_sci();
-
-
-> 
-> David
-> 
-> .
+> Don't we want then to unmap all of the scatter list instead of just
+> the last one?
 > 
 
+It reverts all the mapping that was already done up until the error
+occurred. "offset" contains the amount we have mapped so far.
+
+Thanks,
+
+Olav
 
 -- 
-Thanks!
-Yijing
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+hosted by The Linux Foundation
