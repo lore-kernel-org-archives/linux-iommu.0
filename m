@@ -1,7 +1,7 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Subject: Re: [PATCH] iommu/vt-d: Fix broken device issue when using iommu=pt
-Date: Tue, 12 Aug 2014 10:34:30 +0800
-Message-ID: <53E97D36.8010403@linux.intel.com>
+Date: Tue, 12 Aug 2014 11:18:07 +0800
+Message-ID: <53E9876F.9040300@linux.intel.com>
 References: <1407725674-27271-1-git-send-email-wangyijing@huawei.com>
 	<1407732187.9800.11.camel@ul30vt.home>
 	<53E8DA5E.8090406@hp.com> <53E96FE0.7080600@huawei.com>
@@ -22,8 +22,6 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Linda Knippers <linda.knippers-VXdhtT5mjnY@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Cc: huaxiuxiu-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
-
-
 
 On 2014/8/12 9:37, Yijing Wang wrote:
 > On 2014/8/11 22:59, Linda Knippers wrote:
@@ -159,7 +157,7 @@ BTW, do function 04:00.[0-3] encounter any other issues except the
 IOMMU warnings?
 
 Thanks!
-Gerry
+
 
 > 
 > 
