@@ -1,136 +1,104 @@
-From: Olav Haugan <ohaugan@codeaurora.org>
-Subject: Re: [PATCH v5 1/1] iommu-api: Add map_sg/unmap_sg functions
-Date: Tue, 12 Aug 2014 10:10:33 -0700
-Message-ID: <53EA4A89.30108@codeaurora.org>
-References: <1407797150-515-1-git-send-email-ohaugan@codeaurora.org> <1407797150-515-2-git-send-email-ohaugan@codeaurora.org> <4605275.P2SLc4fsBd@avalon>
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Subject: Re: [RFC PATCH 07/20] x86/MSI: Use msi_chip instead of arch func to
+ configure MSI/MSI-X
+Date: Tue, 12 Aug 2014 15:09:47 -0400
+Message-ID: <20140812190947.GD13996@laptop.dumpdata.com>
+References: <1407828373-24322-1-git-send-email-wangyijing@huawei.com>
+ <1407828373-24322-8-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <4605275.P2SLc4fsBd@avalon>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: joro@8bytes.org, laurent.pinchart+renesas@ideasonboard.com, robdclark@gmail.com, will.deacon@arm.com, thierry.reding@gmail.com, kgene.kim@samsung.com, dwmw2@infradead.org, hdoyu@nvidia.com, Varun.Sethi@freescale.com, konrad.wilk@oracle.com, s-anna@ti.com, mitchelh@codeaurora.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-mips-bounce@linux-mips.org>
+Content-Disposition: inline
+In-Reply-To: <1407828373-24322-8-git-send-email-wangyijing@huawei.com>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+To: Yijing Wang <wangyijing@huawei.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, linux-kernel@vger.kernel.org, Xinwei Hu <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, linux-pci@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, arnab.basu@freescale.com, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, Thomas Gleixner <tglx@linutronix.de>, "H. Peter Anvin" <hpa@zytor.com>, xen-devel@lists.xenproject.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <dav>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Laurent,
+On Tue, Aug 12, 2014 at 03:26:00PM +0800, Yijing Wang wrote:
+> Introduce a new struct msi_chip apic_msi_chip instead of weak arch
+> functions to configure MSI/MSI-X in x86.
 
-On 8/12/2014 9:55 AM, Laurent Pinchart wrote:
-> Hi Olav,
+Why not 'x86_msi_ops' (see  arch/x86/kernel/x86_init.c)
 > 
-> Thank you for the patch.
+> Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+> ---
+>  arch/x86/include/asm/pci.h     |    1 +
+>  arch/x86/kernel/apic/io_apic.c |   20 ++++++++++++++++----
+>  2 files changed, 17 insertions(+), 4 deletions(-)
 > 
-> On Monday 11 August 2014 15:45:50 Olav Haugan wrote:
->> Mapping and unmapping are more often than not in the critical path.
->> map_sg and unmap_sg allows IOMMU driver implementations to optimize
->> the process of mapping and unmapping buffers into the IOMMU page tables.
->>
->> Instead of mapping a buffer one page at a time and requiring potentially
->> expensive TLB operations for each page, this function allows the driver
->> to map all pages in one go and defer TLB maintenance until after all
->> pages have been mapped.
->>
->> Additionally, the mapping operation would be faster in general since
->> clients does not have to keep calling map API over and over again for
->> each physically contiguous chunk of memory that needs to be mapped to a
->> virtually contiguous region.
->>
->> Signed-off-by: Olav Haugan <ohaugan@codeaurora.org>
->> ---
->>  drivers/iommu/amd_iommu.c      |  2 ++
->>  drivers/iommu/arm-smmu.c       |  2 ++
->>  drivers/iommu/exynos-iommu.c   |  2 ++
->>  drivers/iommu/intel-iommu.c    |  2 ++
->>  drivers/iommu/iommu.c          | 33 +++++++++++++++++++++++++++++++
->>  drivers/iommu/ipmmu-vmsa.c     |  2 ++
->>  drivers/iommu/msm_iommu.c      |  2 ++
->>  drivers/iommu/omap-iommu.c     |  2 ++
->>  drivers/iommu/shmobile-iommu.c |  2 ++
->>  drivers/iommu/tegra-smmu.c     |  2 ++
->>  include/linux/iommu.h          | 44 +++++++++++++++++++++++++++++++++++++++
->>  11 files changed, 95 insertions(+)
+> diff --git a/arch/x86/include/asm/pci.h b/arch/x86/include/asm/pci.h
+> index 0892ea0..878a06d 100644
+> --- a/arch/x86/include/asm/pci.h
+> +++ b/arch/x86/include/asm/pci.h
+> @@ -101,6 +101,7 @@ void native_teardown_msi_irq(unsigned int irq);
+>  void native_restore_msi_irqs(struct pci_dev *dev);
+>  int setup_msi_irq(struct pci_dev *dev, struct msi_desc *msidesc,
+>  		  unsigned int irq_base, unsigned int irq_offset);
+> +extern struct msi_chip *x86_msi_chip;
+>  #else
+>  #define native_setup_msi_irqs		NULL
+>  #define native_teardown_msi_irq		NULL
+> diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
+> index 2609dcd..eb8ab7c 100644
+> --- a/arch/x86/kernel/apic/io_apic.c
+> +++ b/arch/x86/kernel/apic/io_apic.c
+> @@ -3077,24 +3077,25 @@ int setup_msi_irq(struct pci_dev *dev, struct msi_desc *msidesc,
+>  	return 0;
+>  }
+>  
+> -int native_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
+> +int native_setup_msi_irqs(struct device *dev, int nvec, int type)
+>  {
+>  	struct msi_desc *msidesc;
+>  	unsigned int irq;
+>  	int node, ret;
+> +	struct pci_dev *pdev = to_pci_dev(dev);
+>  
+>  	/* Multiple MSI vectors only supported with interrupt remapping */
+>  	if (type == PCI_CAP_ID_MSI && nvec > 1)
+>  		return 1;
+>  
+> -	node = dev_to_node(&dev->dev);
+> +	node = dev_to_node(dev);
+>  
+> -	list_for_each_entry(msidesc, &dev->msi_list, list) {
+> +	list_for_each_entry(msidesc, &pdev->msi_list, list) {
+>  		irq = irq_alloc_hwirq(node);
+>  		if (!irq)
+>  			return -ENOSPC;
+>  
+> -		ret = setup_msi_irq(dev, msidesc, irq, 0);
+> +		ret = setup_msi_irq(pdev, msidesc, irq, 0);
+>  		if (ret < 0) {
+>  			irq_free_hwirq(irq);
+>  			return ret;
+> @@ -3214,6 +3215,17 @@ int default_setup_hpet_msi(unsigned int irq, unsigned int id)
+>  }
+>  #endif
+>  
+> +struct msi_chip apic_msi_chip = {
+> +	.setup_irqs = native_setup_msi_irqs,
+> +	.teardown_irq = native_teardown_msi_irq,
+> +};
+> +
+> +struct msi_chip *arch_get_match_msi_chip(struct device *dev)
+> +{
+> +	return x86_msi_chip;
+> +}
+> +
+> +struct msi_chip *x86_msi_chip = &apic_msi_chip;
+>  #endif /* CONFIG_PCI_MSI */
+>  /*
+>   * Hypertransport interrupt support
+> -- 
+> 1.7.1
 > 
-> [snip]
-> 
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index 1698360..24cf727 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -1088,6 +1088,39 @@ size_t iommu_unmap(struct iommu_domain *domain,
->> unsigned long iova, size_t size)
-> 
-> [snip]
-> 
->> +int default_iommu_unmap_sg(struct iommu_domain *domain, unsigned long iova,
->> +			       size_t size, unsigned long flags)
-> 
-> I would have called this iommu_default_unmap_sg (and same comment for 
-> default_iommu_map_sg) to keep the iommu_ prefix, but that's up to you.
-> 
->> +{
->> +	return iommu_unmap(domain, iova, size);
->> +}
->> +EXPORT_SYMBOL_GPL(default_iommu_unmap_sg);
-> 
-> Do you expect drivers to need to override this ? What are the use cases for 
-> non-default implementation of unmap_sg different than this ?
-
-Good question. Yes, maybe some drivers does not need or want to override
-this but a use case is to provide a more optimized version of the
-map_sg/unmap_sg functions. For example a very simple way to optimize
-this would be to have an implementation that unmaps everything and then
-does a TLB invalidate instead of doing a TLB invalidate after every
-single unmap (which happens with the default implementation if your
-driver does TLB invalidate after unmapping).
-
-> [snip]
-> 
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index 20f9a52..ee106ce 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
-> 
-> [snip]
-> 
->> @@ -240,6 +256,20 @@ static inline int report_iommu_fault(struct
->> iommu_domain *domain, return ret;
->>  }
->>
->> +static inline int iommu_map_sg(struct iommu_domain *domain, unsigned long
->> iova,
->> +			       struct scatterlist *sg, unsigned int nents,
->> +			       int prot, unsigned long flags)
->> +{
->> +	return domain->ops->map_sg(domain, iova, sg, nents, prot, flags);
-> 
-> Instead of having to modify all IOMMU drivers to set the map_sg operation to 
-> default_iommu_map_sg, how about calling it automatically as a fallback when 
-> map_sg is NULL ? Something like
-> 
-> 	if (domain->ops->map_sg)
-> 		return domain->ops->map_sg(domain, iova, sg, nents, prot, flags);
-> 
-> 	return default_iommu_map_sg(domain, iova, sg, nents, prot, flags);
-
-This was my original proposal but after some discussion on the list we
-ended up with what we have now.
-
-> 
->> +}
->> +
->> +static inline int iommu_unmap_sg(struct iommu_domain *domain,
->> +				 unsigned long iova, size_t size,
->> +				 unsigned long flags)
->> +{
->> +	return domain->ops->unmap_sg(domain, iova, size, flags);
->> +}
->> +
-> 
-
-Thanks,
-
-Olav
-
--- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-hosted by The Linux Foundation
