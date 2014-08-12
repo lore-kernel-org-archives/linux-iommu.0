@@ -1,235 +1,90 @@
-From: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] iommu/vt-d: Fix broken device issue when using iommu=pt
-Date: Tue, 12 Aug 2014 11:48:22 +0800
-Message-ID: <53E98E86.50207@huawei.com>
-References: <1407725674-27271-1-git-send-email-wangyijing@huawei.com>
-	<1407732187.9800.11.camel@ul30vt.home>
-	<53E8DA5E.8090406@hp.com> <53E96FE0.7080600@huawei.com>
-	<53E9876F.9040300@linux.intel.com>
+From: Yijing Wang <wangyijing@huawei.com>
+Subject: [RFC PATCH 07/20] x86/MSI: Use msi_chip instead of arch func to configure MSI/MSI-X
+Date: Tue, 12 Aug 2014 15:26:00 +0800
+Message-ID: <1407828373-24322-8-git-send-email-wangyijing@huawei.com>
+References: <1407828373-24322-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <53E9876F.9040300-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Linda Knippers <linda.knippers-VXdhtT5mjnY@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: huaxiuxiu-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-ia64-owner@vger.kernel.org>
+In-Reply-To: <1407828373-24322-1-git-send-email-wangyijing@huawei.com>
+Sender: linux-ia64-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: linux-kernel@vger.kernel.org, Xinwei Hu <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, linux-pci@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, arnab.basu@freescale.com, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, Thomas Gleixner <tglx@linutronix.de>, "H. Peter Anvin" <hpa@zytor.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 2014/8/12 11:18, Jiang Liu wrote:
-> On 2014/8/12 9:37, Yijing Wang wrote:
->> On 2014/8/11 22:59, Linda Knippers wrote:
->>> On 8/11/2014 12:43 AM, Alex Williamson wrote:
->>>> On Mon, 2014-08-11 at 10:54 +0800, Yijing Wang wrote:
->>>>> We found some strange devices in HP C7000 and Huawei Server. These devices
->>>>> can not be enumerated by OS, but they still did DMA read/write without OS 
->>>>> management. Because iommu will not create the DMA mapping for these devices,
->>>>> the DMA read/write will be blocked by iommu hardware.
->>>>>
->>>>> Eg.
->>>>>  \-[0000:00]-+-00.0  Intel Corporation Xeon E5/Core i7 DMI2
->>>>>              +-01.0-[11]--
->>>>> 			 +-01.1-[02]--
->>>>> 			 +-02.0-[04]--+-00.0  Emulex Corporation OneConnect 10Gb NIC (be3)
->>>>> 	         |            +-00.1  Emulex Corporation OneConnect 10Gb NIC (be3)
->>>>> 	         |            +-00.2  Emulex Corporation OneConnect 10Gb iSCSI Initiator (be3)
->>>>> 	         |            \-00.3  Emulex Corporation OneConnect 10Gb iSCSI Initiator (be3)
->>>>> 	         +-02.1-[12]--
->>>>> Kernel only found four devices in bus 0x04, but we found following DMA errors in dmesg.
->>>>>
->>>>> [ 1438.477262] DRHD: handling fault status reg 402
->>>>> [ 1438.498278] DMAR:[DMA Write] Request device [04:00.4] fault addr bdf70000 
->>>>> [ 1438.498280] DMAR:[fault reason 02] Present bit in context entry is clear
->>>>> [ 1438.566458] DMAR:[DMA Write] Request device [04:00.5] fault addr bdf70000 
->>>>> [ 1438.566460] DMAR:[fault reason 02] Present bit in context entry is clear
->>>>> [ 1438.635211] DMAR:[DMA Write] Request device [04:00.6] fault addr bdf70000 
->>>>> [ 1438.635213] DMAR:[fault reason 02] Present bit in context entry is clear
->>>>> [ 1438.703849] DMAR:[DMA Write] Request device [04:00.7] fault addr bdf70000 
->>>>> [ 1438.703851] DMAR:[fault reason 02] Present bit in context entry is clear
->>>>>
->>>>> Signed-off-by: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
->>>>> ---
->>>>>  arch/x86/include/asm/iommu.h |    2 ++
->>>>>  arch/x86/kernel/pci-dma.c    |    8 ++++++++
->>>>>  drivers/iommu/intel-iommu.c  |   41 +++++++++++++++++++++++++++++++++++++++++
->>>>>  3 files changed, 51 insertions(+), 0 deletions(-)
->>>>>
->>>>> diff --git a/arch/x86/include/asm/iommu.h b/arch/x86/include/asm/iommu.h
->>>>> index 345c99c..5e3a2d8 100644
->>>>> --- a/arch/x86/include/asm/iommu.h
->>>>> +++ b/arch/x86/include/asm/iommu.h
->>>>> @@ -5,6 +5,8 @@ extern struct dma_map_ops nommu_dma_ops;
->>>>>  extern int force_iommu, no_iommu;
->>>>>  extern int iommu_detected;
->>>>>  extern int iommu_pass_through;
->>>>> +extern int iommu_pt_force_bus;
->>>>> +extern int iommu_pt_force_domain;
->>>>>  
->>>>>  /* 10 seconds */
->>>>>  #define DMAR_OPERATION_TIMEOUT ((cycles_t) tsc_khz*10*1000)
->>>>> diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
->>>>> index a25e202..bf21d97 100644
->>>>> --- a/arch/x86/kernel/pci-dma.c
->>>>> +++ b/arch/x86/kernel/pci-dma.c
->>>>> @@ -44,6 +44,8 @@ int iommu_detected __read_mostly = 0;
->>>>>   * guests and not for driver dma translation.
->>>>>   */
->>>>>  int iommu_pass_through __read_mostly;
->>>>> +int iommu_pt_force_bus = -1;
->>>>> +int iommu_pt_force_domain = -1;
->>>>>  
->>>>>  extern struct iommu_table_entry __iommu_table[], __iommu_table_end[];
->>>>>  
->>>>> @@ -146,6 +148,7 @@ void dma_generic_free_coherent(struct device *dev, size_t size, void *vaddr,
->>>>>   */
->>>>>  static __init int iommu_setup(char *p)
->>>>>  {
->>>>> +	char *end;
->>>>>  	iommu_merge = 1;
->>>>>  
->>>>>  	if (!p)
->>>>> @@ -192,6 +195,11 @@ static __init int iommu_setup(char *p)
->>>>>  #endif
->>>>>  		if (!strncmp(p, "pt", 2))
->>>>>  			iommu_pass_through = 1;
->>>>> +		if (!strncmp(p, "pt_force=", 9)) {
->>>>> +			iommu_pass_through = 1;
->>>>> +			iommu_pt_force_domain = simple_strtol(p+9, &end, 0);
->>>>> +			iommu_pt_force_bus = simple_strtol(end+1, NULL, 0);
->>>>
->>>> Documentation/kernel-parameters.txt?
->>>>
->>>>> +		}
->>>>>  
->>>>>  		gart_parse_options(p);
->>>>>  
->>>>> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
->>>>> index d1f5caa..49757f1 100644
->>>>> --- a/drivers/iommu/intel-iommu.c
->>>>> +++ b/drivers/iommu/intel-iommu.c
->>>>> @@ -2705,6 +2705,47 @@ static int __init iommu_prepare_static_identity_mapping(int hw)
->>>>>  				return ret;
->>>>>  		}
->>>>>  
->>>>> +	/* We found some strange devices in HP c7000 and other platforms that
->>>>> +	 * can not be enumerated by OS, but they did DMA read/write without
->>>>> +	 * driver management, so we should create the pt mapping for these
->>>>> +	 * devices to avoid DMA errors. Add iommu=pt_force=segment:busnum to
->>>>> +	 * force to do pt context mapping in the bus number.
->>>>> +	 */
->>>>
->>>> So best case with this patch is that the user needs to discover that
->>>> this option exists, figure out the undocumented parameters, be running
->>>> on VT-d, permanently add a kernel commandline option, and never have any
->>>> intention of assigning the device to userspace or a VM...
->>>>
->>>> Can't we handle this with the DMA alias quirks that are now in 3.17?  Or
->>>> can the vendor fix this with a firmware update?  This device behavior is
->>>> really quite broken for this kind of server class product.  
->>>
->>> Yeah, something doesn't sound right here.
->>>
->>> I would like to hear more about this configuration, off list if you prefer.
->>> What servers?  What firmware revisions?
->>
->> Hi Linda, we found this issue in HP C7000 server. I attached the dmesg and lspci info,
->> because the machine is in product department, so I don't know the firmware revision.
->>
->> Thanks!
->> Yijing.
-> Hi Yijing,
-> 	I still suspect something is wrong with ARI support
-> instead of Phantom Function.
-> 	According to lspci output:
-> 1) Root port 00:02.0 has ARIFwd enabled in DevCtl2
-> 2) Function 04:00.[0-3] all have Alternative Routing-ID Interpretation
->    capability.
-> So could you please try to clear ARIFwd bit in devctl2 when enumerating
-> root port 00:02.0?
-> 
-> BTW, do function 04:00.[0-3] encounter any other issues except the
-> IOMMU warnings?
+Introduce a new struct msi_chip apic_msi_chip instead of weak arch
+functions to configure MSI/MSI-X in x86.
 
-Hi Gerry, I cleared the ARIFwd bit and rescan pci device(echo 1 > /sys/bus/pci/rescan), but nothing changed.
-Because the 04:00.0/1/2/3 are ARI devices, so the root port will be forced to set ARIFwd bit. There has some
-problem to change and rebuild the kernel now.
+Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+---
+ arch/x86/include/asm/pci.h     |    1 +
+ arch/x86/kernel/apic/io_apic.c |   20 ++++++++++++++++----
+ 2 files changed, 17 insertions(+), 4 deletions(-)
 
-Other, 04:00.0-3 are 10Ge net devices, I guess no one uses it now, so no other errors found yet.
-
-Gerry, what ARI problem do you suspect ?
-
-> 
-> Thanks!
-> 
-> 
->>
->>
->>>>
->>>>> +	if (iommu_pt_force_bus >= 0 && iommu_pt_force_bus >= 0) {
->>>>> +		int found = 0;
->>>>> +
->>>>> +		iommu = NULL;
->>>>> +		for_each_active_iommu(iommu, drhd) {
->>>>> +			if (iommu_pt_force_domain != drhd->segment)
->>>>> +				continue;
->>>>> +
->>>>> +			for_each_active_dev_scope(drhd->devices, drhd->devices_cnt, i, dev) {
->>>>> +				if (!dev_is_pci(dev))
->>>>> +					continue;
->>>>> +
->>>>> +				pdev = to_pci_dev(dev);
->>>>> +				if (pdev->bus->number == iommu_pt_force_bus ||
->>>>> +						(pdev->subordinate
->>>>> +						 && pdev->subordinate->number <= iommu_pt_force_bus
->>>>> +						 && pdev->subordinate->busn_res.end >= iommu_pt_force_bus)) {
->>>>> +					found = 1;
->>>>> +					break;
->>>>> +				}
->>>>> +			}
->>>>> +
->>>>> +			if (drhd->include_all) {
->>>>> +				found = 1;
->>>>> +				break;
->>>>> +			}
->>>>> +		}
->>>>> +
->>>>> +		if (found && iommu)
->>>>> +			for (i = 0; i < 256; i++)
->>>>> +				domain_context_mapping_one(si_domain, iommu, iommu_pt_force_bus,
->>>>> +						i,  hw ? CONTEXT_TT_PASS_THROUGH :
->>>>> +						CONTEXT_TT_MULTI_LEVEL);
->>>>> +	}
->>>>> +
->>>>>  	return 0;
->>>>>  }
->>>>>  
->>>>
->>>>
->>>>
->>>> _______________________________________________
->>>> iommu mailing list
->>>> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
->>>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
->>>>
->>>
->>>
->>> .
->>>
->>
->>
-> 
-> .
-> 
-
-
+diff --git a/arch/x86/include/asm/pci.h b/arch/x86/include/asm/pci.h
+index 0892ea0..878a06d 100644
+--- a/arch/x86/include/asm/pci.h
++++ b/arch/x86/include/asm/pci.h
+@@ -101,6 +101,7 @@ void native_teardown_msi_irq(unsigned int irq);
+ void native_restore_msi_irqs(struct pci_dev *dev);
+ int setup_msi_irq(struct pci_dev *dev, struct msi_desc *msidesc,
+ 		  unsigned int irq_base, unsigned int irq_offset);
++extern struct msi_chip *x86_msi_chip;
+ #else
+ #define native_setup_msi_irqs		NULL
+ #define native_teardown_msi_irq		NULL
+diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
+index 2609dcd..eb8ab7c 100644
+--- a/arch/x86/kernel/apic/io_apic.c
++++ b/arch/x86/kernel/apic/io_apic.c
+@@ -3077,24 +3077,25 @@ int setup_msi_irq(struct pci_dev *dev, struct msi_desc *msidesc,
+ 	return 0;
+ }
+ 
+-int native_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
++int native_setup_msi_irqs(struct device *dev, int nvec, int type)
+ {
+ 	struct msi_desc *msidesc;
+ 	unsigned int irq;
+ 	int node, ret;
++	struct pci_dev *pdev = to_pci_dev(dev);
+ 
+ 	/* Multiple MSI vectors only supported with interrupt remapping */
+ 	if (type == PCI_CAP_ID_MSI && nvec > 1)
+ 		return 1;
+ 
+-	node = dev_to_node(&dev->dev);
++	node = dev_to_node(dev);
+ 
+-	list_for_each_entry(msidesc, &dev->msi_list, list) {
++	list_for_each_entry(msidesc, &pdev->msi_list, list) {
+ 		irq = irq_alloc_hwirq(node);
+ 		if (!irq)
+ 			return -ENOSPC;
+ 
+-		ret = setup_msi_irq(dev, msidesc, irq, 0);
++		ret = setup_msi_irq(pdev, msidesc, irq, 0);
+ 		if (ret < 0) {
+ 			irq_free_hwirq(irq);
+ 			return ret;
+@@ -3214,6 +3215,17 @@ int default_setup_hpet_msi(unsigned int irq, unsigned int id)
+ }
+ #endif
+ 
++struct msi_chip apic_msi_chip = {
++	.setup_irqs = native_setup_msi_irqs,
++	.teardown_irq = native_teardown_msi_irq,
++};
++
++struct msi_chip *arch_get_match_msi_chip(struct device *dev)
++{
++	return x86_msi_chip;
++}
++
++struct msi_chip *x86_msi_chip = &apic_msi_chip;
+ #endif /* CONFIG_PCI_MSI */
+ /*
+  * Hypertransport interrupt support
 -- 
-Thanks!
-Yijing
+1.7.1
+
