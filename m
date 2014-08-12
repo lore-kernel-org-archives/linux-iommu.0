@@ -1,38 +1,62 @@
-From: David Vrabel <david.vrabel@citrix.com>
-Subject: Re: [Xen-devel] [RFC PATCH 01/20] x86/xen/MSI: Eliminate arch_msix_mask_irq()
- and arch_msi_mask_irq()
-Date: Tue, 12 Aug 2014 10:09:49 +0100
-Message-ID: <53E9D9DD.3060901@citrix.com>
-References: <1407828373-24322-1-git-send-email-wangyijing@huawei.com> <1407828373-24322-2-git-send-email-wangyijing@huawei.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: LPC IOMMU and VFIO MicroConference - Call for Participation
+Date: Tue, 12 Aug 2014 11:20:19 +0200
+Message-ID: <20140812092019.GY9809@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1407828373-24322-2-git-send-email-wangyijing@huawei.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Yijing Wang <wangyijing@huawei.com>, Bjorn Helgaas <bhelgaas@google.com>
-Cc: linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, linux-pci@vger.kernel.org, Xinwei Hu <huxinwei@huawei.com>, "H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org, linux-s390@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Joerg Roedel <joro@8bytes.org>, x86@kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, xen-devel@lists.xenproject.org, arnab.basu@freescale.com, Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <marc.zyngier@arm.com>, Chris Metcalf <cmetcalf@tilera.com>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Wuyun <wuyun.wu@huawei.com>, linuxppc-dev@lists.ozlabs.org, "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Jesse Barnes <jbarnes-Y1mF5jBUw70BENJcbMCuUQ@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 12/08/14 08:25, Yijing Wang wrote:
-> Commit 0e4ccb150 added two __weak arch functions arch_msix_mask_irq()
-> and arch_msi_mask_irq() to fix a bug found when running xen in x86.
-> Introduced these two funcntions make MSI code complex. This patch
-> reverted commit 0e4ccb150 and add #ifdef for x86 msi_chip to fix this
-> bug for simplicity. Also this is preparation for using struct
-> msi_chip instead of weak arch MSI functions in all platforms.
-[...]
->  static struct irq_chip msi_chip = {
->  	.name			= "PCI-MSI",
-> +#ifdef CONFIG_XEN
-> +	.irq_unmask		= nop_unmask_msi_irq,
-> +	.irq_mask		= nop_mask_msi_irq,
-> +#else
->  	.irq_unmask		= unmask_msi_irq,
->  	.irq_mask		= mask_msi_irq,
-> +#endif
+LPC IOMMU and VFIO MicroConference - Call for Participation
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D
 
-No.  CONFIG_XEN kernels can run on Xen and bare metal so this must be a
-runtime option.
+We are pleased to announce that this year there will be the first IOMMU
+and VFIO MicroConference held at Linux Plumbers Conference in
+D=FCsseldorf. An initial request for support of this micro conference
+generated, among others, the following possible topic ideas:
 
-David
+	* Improving generic IOMMU code and move code out of drivers
+	* IOMMU device error handling
+	* IOMMU Power Management
+	* Virtualizing IOMMUs
+	* Interface between IOMMUs an memory management
+
+More suggested topics can be found at the wiki page of the micro
+conference:
+
+	http://wiki.linuxplumbersconf.org/2014:iommu_microconference
+
+We now ask for formal proposals for these discussions along with any
+other topics or problems that need to be discussed in this area.
+
+The format of the micro conference will be roughly half-hour slots for
+each topic, where the discussion lead gives a short introduction to the
+problem and maybe sketches possible solutions. The rest of the slot is
+open for discussions so that we come to an agreement how to move
+forward.
+
+Please submit your formal proposal on the Linux Plumbers website (OpenID
+login required) until August 31st at:
+
+	http://www.linuxplumbersconf.org/2014/how-to-submit-microconference-discus=
+sions-topics/
+
+Hope to see you in D=FCsseldorf!
+
+
+	Joerg Roedel and Alex Williamson
