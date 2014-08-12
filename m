@@ -1,7 +1,7 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [RFC PATCH 11/20] MIPS/Octeon/MSI: Use msi_chip instead of arch func to configure MSI/MSI-X
-Date: Tue, 12 Aug 2014 15:26:04 +0800
-Message-ID: <1407828373-24322-12-git-send-email-wangyijing@huawei.com>
+Subject: [RFC PATCH 09/20] irq_remapping/MSI: Use msi_chip instead of arch func to configure MSI/MSI-X
+Date: Tue, 12 Aug 2014 15:26:02 +0800
+Message-ID: <1407828373-24322-10-git-send-email-wangyijing@huawei.com>
 References: <1407828373-24322-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,132 +12,52 @@ To: Bjorn Helgaas <bhelgaas@google.com>
 Cc: linux-kernel@vger.kernel.org, Xinwei Hu <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, linux-pci@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, arnab.basu@freescale.com, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, Thomas Gleixner <tglx@linutronix.de>, "H. Peter Anvin" <hpa@zytor.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Introduce a new struct msi_chip octeon_msi_chip instead of weak arch
-functions to configure MSI/MSI-X.
+Introduce a new struct msi_chip remap_msi_chip instead of weak arch
+functions to configure irq remapping MSI/MSI-X in x86.
 
 Signed-off-by: Yijing Wang <wangyijing@huawei.com>
 ---
- arch/mips/pci/msi-octeon.c |   45 ++++++++++++++++++-------------------------
- 1 files changed, 19 insertions(+), 26 deletions(-)
+ drivers/iommu/irq_remapping.c |   13 +++++++++----
+ 1 files changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/arch/mips/pci/msi-octeon.c b/arch/mips/pci/msi-octeon.c
-index ab0c5d1..8098066 100644
---- a/arch/mips/pci/msi-octeon.c
-+++ b/arch/mips/pci/msi-octeon.c
-@@ -57,7 +57,7 @@ static int msi_irq_size;
-  *
-  * Returns 0 on success.
-  */
--int arch_setup_msi_irq(struct pci_dev *dev, struct msi_desc *desc)
-+int octeon_setup_msi_irq(struct device *dev, struct msi_desc *desc)
- {
- 	struct msi_msg msg;
- 	u16 control;
-@@ -73,7 +73,7 @@ int arch_setup_msi_irq(struct pci_dev *dev, struct msi_desc *desc)
- 	 * wants.  Most devices only want 1, which will give
- 	 * configured_private_bits and request_private_bits equal 0.
- 	 */
--	pci_read_config_word(dev, desc->msi_attrib.pos + PCI_MSI_FLAGS,
-+	pci_read_config_word(to_pci_dev(dev), desc->msi_attrib.pos + PCI_MSI_FLAGS,
- 			     &control);
- 
- 	/*
-@@ -176,7 +176,7 @@ msi_irq_allocated:
- 	/* Update the number of IRQs the device has available to it */
- 	control &= ~PCI_MSI_FLAGS_QSIZE;
- 	control |= request_private_bits << 4;
--	pci_write_config_word(dev, desc->msi_attrib.pos + PCI_MSI_FLAGS,
-+	pci_write_config_word(to_pci_dev(dev), desc->msi_attrib.pos + PCI_MSI_FLAGS,
- 			      control);
- 
- 	irq_set_msi_desc(irq, desc);
-@@ -184,32 +184,14 @@ msi_irq_allocated:
- 	return 0;
+diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
+index 33c4395..f494b51 100644
+--- a/drivers/iommu/irq_remapping.c
++++ b/drivers/iommu/irq_remapping.c
+@@ -139,15 +139,20 @@ error:
+ 	return ret;
  }
  
--int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
-+int octeon_check_msi_device(struct device *dev, int nvec, int type)
+-static int irq_remapping_setup_msi_irqs(struct pci_dev *dev,
++static int irq_remapping_setup_msi_irqs(struct device *dev,
+ 					int nvec, int type)
  {
--	struct msi_desc *entry;
--	int ret;
--
- 	/*
- 	 * MSI-X is not supported.
- 	 */
- 	if (type == PCI_CAP_ID_MSIX)
- 		return -EINVAL;
- 
--	/*
--	 * If an architecture wants to support multiple MSI, it needs to
--	 * override arch_setup_msi_irqs()
--	 */
--	if (type == PCI_CAP_ID_MSI && nvec > 1)
--		return 1;
--
--	list_for_each_entry(entry, &dev->msi_list, list) {
--		ret = arch_setup_msi_irq(dev, entry);
--		if (ret < 0)
--			return ret;
--		if (ret > 0)
--			return -ENOSPC;
--	}
--
- 	return 0;
+ 	if (type == PCI_CAP_ID_MSI)
+-		return do_setup_msi_irqs(dev, nvec);
++		return do_setup_msi_irqs(to_pci_dev(dev), nvec);
+ 	else
+-		return do_setup_msix_irqs(dev, nvec);
++		return do_setup_msix_irqs(to_pci_dev(dev), nvec);
  }
  
-@@ -219,7 +201,7 @@ int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
-  *
-  * @irq:    The devices first irq number. There may be multple in sequence.
-  */
--void arch_teardown_msi_irq(unsigned int irq)
-+void octeon_teardown_msi_irq(unsigned int irq)
- {
- 	int number_irqs;
- 	u64 bitmask;
-@@ -229,7 +211,7 @@ void arch_teardown_msi_irq(unsigned int irq)
- 	if ((irq < OCTEON_IRQ_MSI_BIT0)
- 		|| (irq > msi_irq_size + OCTEON_IRQ_MSI_BIT0))
- 		panic("arch_teardown_msi_irq: Attempted to teardown illegal "
--		      "MSI interrupt (%d)", irq);
-+			"MSI interrupt (%d)", irq);
- 
- 	irq -= OCTEON_IRQ_MSI_BIT0;
- 	index = irq / 64;
-@@ -242,7 +224,7 @@ void arch_teardown_msi_irq(unsigned int irq)
- 	 */
- 	number_irqs = 0;
- 	while ((irq0 + number_irqs < 64) &&
--	       (msi_multiple_irq_bitmask[index]
-+		(msi_multiple_irq_bitmask[index]
- 		& (1ull << (irq0 + number_irqs))))
- 		number_irqs++;
- 	number_irqs++;
-@@ -252,7 +234,7 @@ void arch_teardown_msi_irq(unsigned int irq)
- 	bitmask <<= irq0;
- 	if ((msi_free_irq_bitmask[index] & bitmask) != bitmask)
- 		panic("arch_teardown_msi_irq: Attempted to teardown MSI "
--		      "interrupt (%d) not in use", irq);
-+			"interrupt (%d) not in use", irq);
- 
- 	/* Checks are done, update the in use bitmask */
- 	spin_lock(&msi_free_irq_bitmask_lock);
-@@ -261,6 +243,17 @@ void arch_teardown_msi_irq(unsigned int irq)
- 	spin_unlock(&msi_free_irq_bitmask_lock);
- }
- 
-+struct msi_chip octeon_msi_chip = {
-+	.setup_irq = octeon_setup_msi_irq,
-+	.teardown_irq = octeon_teardown_msi_irq,
-+	.check_device = octeon_check_msi_device,
++struct msi_chip remap_msi_chip = {
++	.setup_irqs = irq_remapping_setup_msi_irqs,
++	.teardown_irq = native_teardown_msi_irq,
 +};
 +
-+struct msi_chip *arch_get_match_msi_chip(struct device *dev)
-+{
-+	return &octeon_msi_chip;
-+}
-+
- static DEFINE_RAW_SPINLOCK(octeon_irq_msi_lock);
+ static void eoi_ioapic_pin_remapped(int apic, int pin, int vector)
+ {
+ 	/*
+@@ -165,9 +170,9 @@ static void __init irq_remapping_modify_x86_ops(void)
+ 	x86_io_apic_ops.set_affinity	= set_remapped_irq_affinity;
+ 	x86_io_apic_ops.setup_entry	= setup_ioapic_remapped_entry;
+ 	x86_io_apic_ops.eoi_ioapic_pin	= eoi_ioapic_pin_remapped;
+-	x86_msi.setup_msi_irqs		= irq_remapping_setup_msi_irqs;
+ 	x86_msi.setup_hpet_msi		= setup_hpet_msi_remapped;
+ 	x86_msi.compose_msi_msg		= compose_remapped_msi_msg;
++	x86_msi_chip = &remap_msi_chip;
+ }
  
- static u64 msi_rcv_reg[4];
+ static __init int setup_nointremap(char *str)
 -- 
 1.7.1
