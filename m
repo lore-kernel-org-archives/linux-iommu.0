@@ -1,71 +1,49 @@
-From: Yijing Wang <wangyijing@huawei.com>
-Subject: [RFC PATCH 00/20] Use msi_chip to configure MSI/MSI-X in all platforms
-Date: Tue, 12 Aug 2014 15:25:53 +0800
-Message-ID: <1407828373-24322-1-git-send-email-wangyijing@huawei.com>
+From: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: [RFC PATCH 04/20] MSI: Remove the redundant irq_set_chip_data()
+Date: Tue, 12 Aug 2014 15:25:57 +0800
+Message-ID: <1407828373-24322-5-git-send-email-wangyijing@huawei.com>
+References: <1407828373-24322-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: linux-kernel@vger.kernel.org, Xinwei Hu <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, linux-pci@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, arnab.basu@freescale.com, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, Thomas Gleixner <tglx@linutronix.de>, "H. Peter Anvin" <hpa@zytor.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1407828373-24322-1-git-send-email-wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "H.
+	Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Sebastian Ott <sebott-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, arnab.basu-KZfg59tc24xl57MIdRCFDg@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Chris Metcalf <cmetcalf-kv+TWInifGbQT0dZR+AlfA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Wuyun <wuyun.wu-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This series is mainly to use msi_chip instead of currently weak arch functions
-across all platforms. Also clean up current MSI code and make drivers support
-MSI easier.  
+Currently, pcie-designware, pcie-rcar, pci-tegra drivers
+use irq chip_data to the msi_chip pointer. They already call
+irq_set_chip_data() in their own MSI irq map functions.
+So irq_set_chip_data() in arch_setup_msi_irq() is useless.
 
-Yijing Wang (20):
-  x86/xen/MSI: Eliminate arch_msix_mask_irq() and arch_msi_mask_irq()
-  MSI: Clean up struct msi_chip argument
-  PCI/MSI: Remove useless bus->msi assignment
-  MSI: Remove the redundant irq_set_chip_data()
-  MSI: Refactor struct msi_chip to become more common
-  PCI/MSI: Introduce arch_get_match_msi_chip() to find the match
-    msi_chip
-  x86/MSI: Use msi_chip instead of arch func to configure MSI/MSI-X
-  x86/xen/MSI: Use msi_chip instead of arch func to configure MSI/MSI-X
-  irq_remapping/MSI: Use msi_chip instead of arch func to configure
-    MSI/MSI-X
-  x86/MSI: Remove unused MSI weak arch functions
-  MIPS/Octeon/MSI: Use msi_chip instead of arch func to configure
-    MSI/MSI-X
-  MIPS/Xlp/MSI: Use msi_chip instead of arch func to configure
-    MSI/MSI-X
-  MIPS/xlr/MSI: Use msi_chip instead of arch func to configure
-    MSI/MSI-X
-  Powerpc/MSI: Use msi_chip instead of arch func to configure MSI/MSI-X
-  s390/MSI: Use msi_chip instead of arch func to configure MSI/MSI-X
-  arm/iop13xx/MSI: Use msi_chip instead of arch func to configure
-    MSI/MSI-X
-  IA64/MSI: Use msi_chip instead of arch func to configure MSI/MSI-X
-  Sparc/MSI: Use msi_chip instead of arch func to configure MSI/MSI-X
-  tile/MSI: Use msi_chip instead of arch func to configure MSI/MSI-X
-  PCI/MSI: Clean up unused MSI arch functions
+Signed-off-by: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+---
+ drivers/pci/msi.c |    2 --
+ 1 files changed, 0 insertions(+), 2 deletions(-)
 
- arch/arm/mach-iop13xx/include/mach/pci.h |    2 +
- arch/arm/mach-iop13xx/iq81340mc.c        |    1 +
- arch/arm/mach-iop13xx/iq81340sc.c        |    1 +
- arch/arm/mach-iop13xx/msi.c              |   14 +++-
- arch/arm/mach-iop13xx/pci.c              |    6 ++
- arch/ia64/kernel/msi_ia64.c              |   18 +++-
- arch/mips/pci/msi-octeon.c               |   45 ++++------
- arch/mips/pci/msi-xlp.c                  |   15 +++-
- arch/mips/pci/pci-xlr.c                  |   19 +++-
- arch/powerpc/kernel/msi.c                |   23 ++++--
- arch/s390/pci/pci.c                      |   16 +++-
- arch/sparc/kernel/pci.c                  |   18 +++-
- arch/tile/kernel/pci_gx.c                |   20 +++-
- arch/x86/include/asm/pci.h               |    4 +-
- arch/x86/include/asm/x86_init.h          |    3 -
- arch/x86/kernel/apic/io_apic.c           |   35 +++++++-
- arch/x86/kernel/x86_init.c               |   34 -------
- arch/x86/pci/xen.c                       |  139 ++++++++++++++++--------------
- drivers/iommu/irq_remapping.c            |   13 ++-
- drivers/irqchip/irq-armada-370-xp.c      |   12 +--
- drivers/pci/host/pci-tegra.c             |    9 ++-
- drivers/pci/host/pcie-designware.c       |    6 +-
- drivers/pci/host/pcie-rcar.c             |    9 ++-
- drivers/pci/msi.c                        |  118 ++++++++++++--------------
- drivers/pci/probe.c                      |    1 -
- include/linux/msi.h                      |   13 ++--
- 26 files changed, 338 insertions(+), 256 deletions(-)
+diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
+index 782b242..242d775 100644
+--- a/drivers/pci/msi.c
++++ b/drivers/pci/msi.c
+@@ -41,8 +41,6 @@ int __weak arch_setup_msi_irq(struct pci_dev *dev, struct msi_desc *desc)
+ 	if (err < 0)
+ 		return err;
+ 
+-	irq_set_chip_data(desc->irq, chip);
+-
+ 	return 0;
+ }
+ 
+-- 
+1.7.1
