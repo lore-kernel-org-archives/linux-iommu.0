@@ -1,104 +1,58 @@
-From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Subject: Re: [RFC PATCH 07/20] x86/MSI: Use msi_chip instead of arch func to
- configure MSI/MSI-X
-Date: Tue, 12 Aug 2014 15:09:47 -0400
-Message-ID: <20140812190947.GD13996@laptop.dumpdata.com>
-References: <1407828373-24322-1-git-send-email-wangyijing@huawei.com>
- <1407828373-24322-8-git-send-email-wangyijing@huawei.com>
+From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH 0/6] iommu/arm-smmu: misc features, new DT bindings
+Date: Tue, 12 Aug 2014 17:51:33 -0700
+Message-ID: <1407891099-24641-1-git-send-email-mitchelh@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-mips-bounce@linux-mips.org>
-Content-Disposition: inline
-In-Reply-To: <1407828373-24322-8-git-send-email-wangyijing@huawei.com>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-To: Yijing Wang <wangyijing@huawei.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, linux-kernel@vger.kernel.org, Xinwei Hu <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, linux-pci@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, arnab.basu@freescale.com, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, Thomas Gleixner <tglx@linutronix.de>, "H. Peter Anvin" <hpa@zytor.com>, xen-devel@lists.xenproject.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <dav>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Aug 12, 2014 at 03:26:00PM +0800, Yijing Wang wrote:
-> Introduce a new struct msi_chip apic_msi_chip instead of weak arch
-> functions to configure MSI/MSI-X in x86.
+This series contains a some enhancements to the ARM SMMU driver. These
+are mostly distinct but I'm sending them out in a single series since
+they depend on each other for clean application.
 
-Why not 'x86_msi_ops' (see  arch/x86/kernel/x86_init.c)
-> 
-> Signed-off-by: Yijing Wang <wangyijing@huawei.com>
-> ---
->  arch/x86/include/asm/pci.h     |    1 +
->  arch/x86/kernel/apic/io_apic.c |   20 ++++++++++++++++----
->  2 files changed, 17 insertions(+), 4 deletions(-)
-> 
-> diff --git a/arch/x86/include/asm/pci.h b/arch/x86/include/asm/pci.h
-> index 0892ea0..878a06d 100644
-> --- a/arch/x86/include/asm/pci.h
-> +++ b/arch/x86/include/asm/pci.h
-> @@ -101,6 +101,7 @@ void native_teardown_msi_irq(unsigned int irq);
->  void native_restore_msi_irqs(struct pci_dev *dev);
->  int setup_msi_irq(struct pci_dev *dev, struct msi_desc *msidesc,
->  		  unsigned int irq_base, unsigned int irq_offset);
-> +extern struct msi_chip *x86_msi_chip;
->  #else
->  #define native_setup_msi_irqs		NULL
->  #define native_teardown_msi_irq		NULL
-> diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
-> index 2609dcd..eb8ab7c 100644
-> --- a/arch/x86/kernel/apic/io_apic.c
-> +++ b/arch/x86/kernel/apic/io_apic.c
-> @@ -3077,24 +3077,25 @@ int setup_msi_irq(struct pci_dev *dev, struct msi_desc *msidesc,
->  	return 0;
->  }
->  
-> -int native_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
-> +int native_setup_msi_irqs(struct device *dev, int nvec, int type)
->  {
->  	struct msi_desc *msidesc;
->  	unsigned int irq;
->  	int node, ret;
-> +	struct pci_dev *pdev = to_pci_dev(dev);
->  
->  	/* Multiple MSI vectors only supported with interrupt remapping */
->  	if (type == PCI_CAP_ID_MSI && nvec > 1)
->  		return 1;
->  
-> -	node = dev_to_node(&dev->dev);
-> +	node = dev_to_node(dev);
->  
-> -	list_for_each_entry(msidesc, &dev->msi_list, list) {
-> +	list_for_each_entry(msidesc, &pdev->msi_list, list) {
->  		irq = irq_alloc_hwirq(node);
->  		if (!irq)
->  			return -ENOSPC;
->  
-> -		ret = setup_msi_irq(dev, msidesc, irq, 0);
-> +		ret = setup_msi_irq(pdev, msidesc, irq, 0);
->  		if (ret < 0) {
->  			irq_free_hwirq(irq);
->  			return ret;
-> @@ -3214,6 +3215,17 @@ int default_setup_hpet_msi(unsigned int irq, unsigned int id)
->  }
->  #endif
->  
-> +struct msi_chip apic_msi_chip = {
-> +	.setup_irqs = native_setup_msi_irqs,
-> +	.teardown_irq = native_teardown_msi_irq,
-> +};
-> +
-> +struct msi_chip *arch_get_match_msi_chip(struct device *dev)
-> +{
-> +	return x86_msi_chip;
-> +}
-> +
-> +struct msi_chip *x86_msi_chip = &apic_msi_chip;
->  #endif /* CONFIG_PCI_MSI */
->  /*
->   * Hypertransport interrupt support
-> -- 
-> 1.7.1
-> 
+The first two patches are related to power-saving features (clocks and
+regulators).
+
+The third adds support for doing iova_to_phys through the SMMU
+hardware on platforms that support it.
+
+The fourth implements the recently merged generic DT bindings. For
+reference, the discussion around the generic DT bindings is here:
+
+    http://lists.linuxfoundation.org/pipermail/iommu/2014-July/009357.html
+
+The fifth and sixth handle some implementation-specific issues,
+providing knobs in the device tree and a new domain attribute.
+
+This series is based on on Will's iommu/pci branch.
+
+
+
+Mitchel Humpherys (6):
+  iommu/arm-smmu: add support for specifying clocks
+  iommu/arm-smmu: add support for specifying regulators
+  iommu/arm-smmu: add support for iova_to_phys through ATS1PR
+  iommu/arm-smmu: implement generic DT bindings
+  iommu/arm-smmu: support buggy implementations with invalidate-on-map
+  iommu/arm-smmu: add .domain_{set,get}_attr for coherent walk control
+
+ .../devicetree/bindings/iommu/arm,smmu.txt         |  18 +
+ drivers/iommu/arm-smmu.c                           | 444 ++++++++++++++++++---
+ include/linux/iommu.h                              |   1 +
+ 3 files changed, 406 insertions(+), 57 deletions(-)
+
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+hosted by The Linux Foundation
