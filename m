@@ -1,7 +1,8 @@
 From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH 2/6] iommu/arm-smmu: add support for specifying regulators
-Date: Tue, 12 Aug 2014 17:51:35 -0700
-Message-ID: <1407891099-24641-3-git-send-email-mitchelh@codeaurora.org>
+Subject: [PATCH 3/6] iommu/arm-smmu: add support for iova_to_phys through
+	ATS1PR
+Date: Tue, 12 Aug 2014 17:51:36 -0700
+Message-ID: <1407891099-24641-4-git-send-email-mitchelh@codeaurora.org>
 References: <1407891099-24641-1-git-send-email-mitchelh@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -20,252 +21,147 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On some power-constrained platforms it's useful to disable power when a
-device is not in use. Add support for specifying regulators for SMMUs
-and only leave power on as long as the SMMU is in use (attached).
+Currently, we provide the iommu_ops.iova_to_phys service by doing a
+table walk in software to translate IO virtual addresses to physical
+addresses. On SMMUs that support it, it can be useful to ask the SMMU
+itself to do the translation. This can be used to warm the TLBs for an
+SMMU. It can also be useful for testing and hardware validation.
+
+Since the address translation registers are optional on SMMUv2, only
+enable hardware translations when using SMMUv1 or when SMMU_IDR0.S1TS=1
+and SMMU_IDR0.ATOSNS=0, as described in the ARM SMMU v1-v2 spec.
 
 Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 ---
- .../devicetree/bindings/iommu/arm,smmu.txt         |   3 +
- drivers/iommu/arm-smmu.c                           | 102 ++++++++++++++++++---
- 2 files changed, 93 insertions(+), 12 deletions(-)
+ drivers/iommu/arm-smmu.c | 75 +++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 74 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-index ceae3fe207..dbc1ddad79 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-@@ -59,6 +59,9 @@ conditions.
-                   Documentation/devicetree/bindings/clock/clock-bindings.txt
-                   for more info.
- 
-+- vdd-supply    : Phandle of the regulator that should be powered on during
-+                  SMMU register access.
-+
- Example:
- 
-         smmu {
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index e123d75db3..7fdc58d8f8 100644
+index 7fdc58d8f8..63c6707fad 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -402,6 +402,11 @@ struct arm_smmu_device {
+@@ -246,11 +246,17 @@
+ #define ARM_SMMU_CB_TTBR0_HI		0x24
+ #define ARM_SMMU_CB_TTBCR		0x30
+ #define ARM_SMMU_CB_S1_MAIR0		0x38
++#define ARM_SMMU_CB_PAR_LO		0x50
++#define ARM_SMMU_CB_PAR_HI		0x54
+ #define ARM_SMMU_CB_FSR			0x58
+ #define ARM_SMMU_CB_FAR_LO		0x60
+ #define ARM_SMMU_CB_FAR_HI		0x64
+ #define ARM_SMMU_CB_FSYNR0		0x68
+ #define ARM_SMMU_CB_S1_TLBIASID		0x610
++#define ARM_SMMU_CB_ATS1PR_LO		0x800
++#define ARM_SMMU_CB_ATS1PR_HI		0x804
++#define ARM_SMMU_CB_ATSR		0x8f0
++#define ATSR_LOOP_TIMEOUT		1000000	/* 1s! */
  
- 	int num_clocks;
- 	struct clk **clocks;
-+
-+	struct regulator *gdsc;
-+
-+	struct mutex			attach_lock;
-+	unsigned int			attach_count;
- };
+ #define SCTLR_S1_ASIDPNE		(1 << 12)
+ #define SCTLR_CFCFG			(1 << 7)
+@@ -262,6 +268,10 @@
+ #define SCTLR_M				(1 << 0)
+ #define SCTLR_EAE_SBOP			(SCTLR_AFE | SCTLR_TRE)
  
- struct arm_smmu_cfg {
-@@ -617,6 +622,22 @@ static void arm_smmu_disable_clocks(struct arm_smmu_device *smmu)
- 		clk_disable_unprepare(smmu->clocks[i]);
++#define CB_PAR_F			(1 << 0)
++
++#define ATSR_ACTIVE			(1 << 0)
++
+ #define RESUME_RETRY			(0 << 0)
+ #define RESUME_TERMINATE		(1 << 0)
+ 
+@@ -375,6 +385,7 @@ struct arm_smmu_device {
+ #define ARM_SMMU_FEAT_TRANS_S1		(1 << 2)
+ #define ARM_SMMU_FEAT_TRANS_S2		(1 << 3)
+ #define ARM_SMMU_FEAT_TRANS_NESTED	(1 << 4)
++#define ARM_SMMU_FEAT_TRANS_OPS		(1 << 5)
+ 	u32				features;
+ 
+ #define ARM_SMMU_OPT_SECURE_CFG_ACCESS (1 << 0)
+@@ -1653,7 +1664,7 @@ static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
+ 	return ret ? 0 : size;
  }
  
-+static int arm_smmu_enable_regulators(struct arm_smmu_device *smmu)
-+{
-+	if (!smmu->gdsc)
-+		return 0;
-+
-+	return regulator_enable(smmu->gdsc);
-+}
-+
-+static int arm_smmu_disable_regulators(struct arm_smmu_device *smmu)
-+{
-+	if (!smmu->gdsc)
-+		return 0;
-+
-+	return regulator_disable(smmu->gdsc);
-+}
-+
- /* Wait for any pending TLB invalidations to complete */
- static void arm_smmu_tlb_sync(struct arm_smmu_device *smmu)
+-static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
++static phys_addr_t arm_smmu_iova_to_phys_soft(struct iommu_domain *domain,
+ 					 dma_addr_t iova)
  {
-@@ -1275,6 +1296,8 @@ static void arm_smmu_domain_remove_master(struct arm_smmu_domain *smmu_domain,
- 	arm_smmu_disable_clocks(smmu);
+ 	pgd_t *pgdp, pgd;
+@@ -1686,6 +1697,63 @@ static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
+ 	return __pfn_to_phys(pte_pfn(pte)) | (iova & ~PAGE_MASK);
  }
  
-+static void arm_smmu_device_reset(struct arm_smmu_device *smmu);
-+
- static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- {
- 	int ret;
-@@ -1293,7 +1316,15 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 		return -EEXIST;
- 	}
- 
--	arm_smmu_enable_clocks(smmu);
-+	mutex_lock(&smmu->attach_lock);
-+	if (!smmu->attach_count++) {
-+		arm_smmu_enable_regulators(smmu);
-+		arm_smmu_enable_clocks(smmu);
-+		arm_smmu_device_reset(smmu);
-+	} else {
-+		arm_smmu_enable_clocks(smmu);
-+	}
-+	mutex_unlock(&smmu->attach_lock);
- 
- 	/*
- 	 * Sanity check the domain. We don't support domains across
-@@ -1304,7 +1335,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 		/* Now that we have a master, we can finalise the domain */
- 		ret = arm_smmu_init_domain_context(domain, smmu);
- 		if (IS_ERR_VALUE(ret))
--			goto disable_clocks;
-+			goto err_disable_clocks;
- 
- 		dom_smmu = smmu_domain->smmu;
- 	}
-@@ -1314,28 +1345,46 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 			"cannot attach to SMMU %s whilst already attached to domain on SMMU %s\n",
- 			dev_name(smmu_domain->smmu->dev), dev_name(smmu->dev));
- 		ret = -EINVAL;
--		goto disable_clocks;
-+		goto err_disable_clocks;
- 	}
- 
- 	/* Looks ok, so add the device to the domain */
- 	cfg = find_smmu_master_cfg(dev);
- 	if (!cfg) {
- 		ret = -ENODEV;
--		goto disable_clocks;
-+		goto err_disable_clocks;
- 	}
- 
- 	ret = arm_smmu_domain_add_master(smmu_domain, cfg);
- 	if (!ret)
- 		dev->archdata.iommu = domain;
--disable_clocks:
- 	arm_smmu_disable_clocks(smmu);
- 	return ret;
-+
-+err_disable_clocks:
-+	arm_smmu_disable_clocks(smmu);
-+	mutex_lock(&smmu->attach_lock);
-+	if (!--smmu->attach_count)
-+		arm_smmu_disable_regulators(smmu);
-+	mutex_unlock(&smmu->attach_lock);
-+	return ret;
-+}
-+
-+static void arm_smmu_power_off(struct arm_smmu_device *smmu)
++static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
++					dma_addr_t iova)
 +{
-+	/* Turn the thing off */
-+	arm_smmu_enable_clocks(smmu);
-+	writel_relaxed(sCR0_CLIENTPD,
-+		ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
-+	arm_smmu_disable_clocks(smmu);
-+	arm_smmu_disable_regulators(smmu);
- }
- 
- static void arm_smmu_detach_dev(struct iommu_domain *domain, struct device *dev)
- {
- 	struct arm_smmu_domain *smmu_domain = domain->priv;
- 	struct arm_smmu_master_cfg *cfg;
++	struct arm_smmu_domain *smmu_domain = domain->priv;
 +	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 
- 	cfg = find_smmu_master_cfg(dev);
- 	if (!cfg)
-@@ -1343,6 +1392,10 @@ static void arm_smmu_detach_dev(struct iommu_domain *domain, struct device *dev)
- 
- 	dev->archdata.iommu = NULL;
- 	arm_smmu_domain_remove_master(smmu_domain, cfg);
-+	mutex_lock(&smmu->attach_lock);
-+	if (!--smmu->attach_count)
-+		arm_smmu_power_off(smmu);
-+	mutex_unlock(&smmu->attach_lock);
- }
- 
- static bool arm_smmu_pte_is_contiguous_range(unsigned long addr,
-@@ -1844,6 +1897,20 @@ static int arm_smmu_id_size_to_bits(int size)
- 	}
- }
- 
-+static int arm_smmu_init_regulators(struct arm_smmu_device *smmu)
-+{
++	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
 +	struct device *dev = smmu->dev;
++	void __iomem *cb_base;
++	int count = 0;
++	u64 phys;
 +
-+	if (!of_get_property(dev->of_node, "vdd-supply", NULL))
-+		return 0;
++	arm_smmu_enable_clocks(smmu);
 +
-+	smmu->gdsc = devm_regulator_get(dev, "vdd");
-+	if (IS_ERR(smmu->gdsc))
-+		return PTR_ERR(smmu->gdsc);
++	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
 +
-+	return 0;
++	if (smmu->version == 1) {
++		u32 reg = iova & 0xFFFFF000;
++		writel_relaxed(reg, cb_base + ARM_SMMU_CB_ATS1PR_LO);
++	} else {
++		u64 reg = iova & 0xfffffffffffff000;
++		writeq_relaxed(reg, cb_base + ARM_SMMU_CB_ATS1PR_LO);
++	}
++
++	mb();
++	while (readl_relaxed(cb_base + ARM_SMMU_CB_ATSR) & ATSR_ACTIVE) {
++		if (++count == ATSR_LOOP_TIMEOUT) {
++			dev_err(dev,
++				"iova to phys timed out on 0x%pa for %s. Falling back to software table walk.\n",
++				&iova, dev_name(dev));
++			arm_smmu_disable_clocks(smmu);
++			return arm_smmu_iova_to_phys_soft(domain, iova);
++		}
++		cpu_relax();
++	}
++
++	phys = readl_relaxed(cb_base + ARM_SMMU_CB_PAR_LO);
++	phys |= ((u64) readl_relaxed(cb_base + ARM_SMMU_CB_PAR_HI)) << 32;
++
++	if (phys & CB_PAR_F) {
++		dev_err(dev, "translation fault on %s!\n", dev_name(dev));
++		dev_err(dev, "PAR = 0x%llx\n", phys);
++	}
++	phys = (phys & 0xFFFFFFF000ULL) | (iova & 0x00000FFF);
++
++	arm_smmu_disable_clocks(smmu);
++	return phys;
 +}
 +
- static int arm_smmu_init_clocks(struct arm_smmu_device *smmu)
++static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
++					dma_addr_t iova)
++{
++	struct arm_smmu_domain *smmu_domain = domain->priv;
++	if (smmu_domain->smmu->features & ARM_SMMU_FEAT_TRANS_OPS)
++		return arm_smmu_iova_to_phys_hard(domain, iova);
++	return arm_smmu_iova_to_phys_soft(domain, iova);
++}
++
+ static int arm_smmu_domain_has_cap(struct iommu_domain *domain,
+ 				   unsigned long cap)
  {
- 	const char *cname;
-@@ -2065,6 +2132,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 		return -ENOMEM;
+@@ -2005,6 +2073,11 @@ int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+ 		return -ENODEV;
  	}
- 	smmu->dev = dev;
-+	mutex_init(&smmu->attach_lock);
  
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	smmu->base = devm_ioremap_resource(dev, res);
-@@ -2124,13 +2192,19 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 	}
- 	dev_notice(dev, "registered %d master devices\n", i);
- 
-+	err = arm_smmu_init_regulators(smmu);
-+	if (err)
-+		goto out_put_masters;
++	if (smmu->version == 1 || (!(id & ID0_ATOSNS) && (id & ID0_S1TS))) {
++		smmu->features |= ARM_SMMU_FEAT_TRANS_OPS;
++		dev_notice(smmu->dev, "\taddress translation ops\n");
++	}
 +
- 	err = arm_smmu_init_clocks(smmu);
- 	if (err)
- 		goto out_put_masters;
- 
-+	arm_smmu_enable_regulators(smmu);
- 	arm_smmu_enable_clocks(smmu);
--
- 	err = arm_smmu_device_cfg_probe(smmu);
-+	arm_smmu_disable_clocks(smmu);
-+	arm_smmu_disable_regulators(smmu);
- 	if (err)
- 		goto out_disable_clocks;
- 
-@@ -2163,8 +2237,6 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 	list_add(&smmu->list, &arm_smmu_devices);
- 	spin_unlock(&arm_smmu_devices_lock);
- 
--	arm_smmu_device_reset(smmu);
--	arm_smmu_disable_clocks(smmu);
- 	return 0;
- 
- out_free_irqs:
-@@ -2173,6 +2245,7 @@ out_free_irqs:
- 
- out_disable_clocks:
- 	arm_smmu_disable_clocks(smmu);
-+	arm_smmu_disable_regulators(smmu);
- 
- out_put_masters:
- 	for (node = rb_first(&smmu->masters); node; node = rb_next(node)) {
-@@ -2216,10 +2289,15 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
- 	for (i = 0; i < smmu->num_global_irqs; ++i)
- 		free_irq(smmu->irqs[i], smmu);
- 
--	/* Turn the thing off */
--	arm_smmu_enable_clocks(smmu);
--	writel(sCR0_CLIENTPD, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
--	arm_smmu_disable_clocks(smmu);
-+	mutex_lock(&smmu->attach_lock);
-+	/*
-+	 * If all devices weren't detached for some reason, we're
-+	 * still powered on. Power off now.
-+	 */
-+	if (smmu->attach_count)
-+		arm_smmu_power_off(smmu);
-+	mutex_unlock(&smmu->attach_lock);
-+
- 	return 0;
- }
- 
+ 	if (id & ID0_CTTW) {
+ 		smmu->features |= ARM_SMMU_FEAT_COHERENT_WALK;
+ 		dev_notice(smmu->dev, "\tcoherent table walk\n");
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 hosted by The Linux Foundation
