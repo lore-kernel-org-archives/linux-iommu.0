@@ -1,7 +1,8 @@
 From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH 4/6] iommu/arm-smmu: implement generic DT bindings
-Date: Tue, 12 Aug 2014 17:51:37 -0700
-Message-ID: <1407891099-24641-5-git-send-email-mitchelh@codeaurora.org>
+Subject: [PATCH 5/6] iommu/arm-smmu: support buggy implementations with
+	invalidate-on-map
+Date: Tue, 12 Aug 2014 17:51:38 -0700
+Message-ID: <1407891099-24641-6-git-send-email-mitchelh@codeaurora.org>
 References: <1407891099-24641-1-git-send-email-mitchelh@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -20,157 +21,75 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Generic IOMMU device tree bindings were recently added in
-["devicetree: Add generic IOMMU device tree bindings"]. Implement the
-bindings in the ARM SMMU driver.
-
-See Documentation/devicetree/bindings/iommu/iommu.txt for the bindings
-themselves.
+Add a workaround for some buggy hardware that requires a TLB invalidate
+operation to occur at map time. Activate the feature with the
+qcom,smmu-invalidate-on-map boolean DT property.
 
 Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 87 +++++++++++++++++++++++++++++++++++-------------
- 1 file changed, 64 insertions(+), 23 deletions(-)
+ Documentation/devicetree/bindings/iommu/arm,smmu.txt |  4 ++++
+ drivers/iommu/arm-smmu.c                             | 14 +++++++++++++-
+ 2 files changed, 17 insertions(+), 1 deletion(-)
 
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+index dbc1ddad79..aaebeaeda0 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+@@ -48,6 +48,10 @@ conditions.
+                   aliases of secure registers have to be used during
+                   SMMU configuration.
+ 
++- qcom,smmu-invalidate-on-map : Enable proper handling of buggy
++                  implementations that require a TLB invalidate
++                  operation to occur at map time.
++
+ - clocks        : List of clocks to be used during SMMU register access. See
+                   Documentation/devicetree/bindings/clock/clock-bindings.txt
+                   for information about the format. For each clock specified
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 63c6707fad..22e25f3172 100644
+index 22e25f3172..73d056668b 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -538,25 +538,32 @@ static int insert_smmu_master(struct arm_smmu_device *smmu,
- 	return 0;
- }
+@@ -389,6 +389,7 @@ struct arm_smmu_device {
+ 	u32				features;
  
-+struct iommus_entry {
-+	struct list_head list;
-+	struct device_node *node;
-+	u16 streamids[MAX_MASTER_STREAMIDS];
-+	int num_sids;
-+};
-+
- static int register_smmu_master(struct arm_smmu_device *smmu,
--				struct device *dev,
--				struct of_phandle_args *masterspec)
-+				struct iommus_entry *entry)
+ #define ARM_SMMU_OPT_SECURE_CFG_ACCESS (1 << 0)
++#define ARM_SMMU_OPT_INVALIDATE_ON_MAP (1 << 1)
+ 	u32				options;
+ 	int				version;
+ 
+@@ -455,6 +456,7 @@ struct arm_smmu_option_prop {
+ 
+ static struct arm_smmu_option_prop arm_smmu_options[] = {
+ 	{ ARM_SMMU_OPT_SECURE_CFG_ACCESS, "calxeda,smmu-secure-config-access" },
++	{ ARM_SMMU_OPT_INVALIDATE_ON_MAP, "qcom,smmu-invalidate-on-map" },
+ 	{ 0, NULL},
+ };
+ 
+@@ -1693,12 +1695,22 @@ out_unlock:
+ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
+ 			phys_addr_t paddr, size_t size, int prot)
  {
- 	int i;
- 	struct arm_smmu_master *master;
-+	struct device *dev = smmu->dev;
++	int ret;
+ 	struct arm_smmu_domain *smmu_domain = domain->priv;
  
--	master = find_smmu_master(smmu, masterspec->np);
-+	master = find_smmu_master(smmu, entry->node);
- 	if (master) {
- 		dev_err(dev,
- 			"rejecting multiple registrations for master device %s\n",
--			masterspec->np->name);
-+			entry->node->name);
- 		return -EBUSY;
- 	}
+ 	if (!smmu_domain)
+ 		return -ENODEV;
  
--	if (masterspec->args_count > MAX_MASTER_STREAMIDS) {
-+	if (entry->num_sids > MAX_MASTER_STREAMIDS) {
- 		dev_err(dev,
- 			"reached maximum number (%d) of stream IDs for master device %s\n",
--			MAX_MASTER_STREAMIDS, masterspec->np->name);
-+			MAX_MASTER_STREAMIDS, entry->node->name);
- 		return -ENOSPC;
- 	}
- 
-@@ -564,15 +571,58 @@ static int register_smmu_master(struct arm_smmu_device *smmu,
- 	if (!master)
- 		return -ENOMEM;
- 
--	master->of_node			= masterspec->np;
--	master->cfg.num_streamids	= masterspec->args_count;
-+	master->of_node			= entry->node;
-+	master->cfg.num_streamids	= entry->num_sids;
- 
- 	for (i = 0; i < master->cfg.num_streamids; ++i)
--		master->cfg.streamids[i] = masterspec->args[i];
-+		master->cfg.streamids[i] = entry->streamids[i];
- 
- 	return insert_smmu_master(smmu, master);
- }
- 
-+static int arm_smmu_parse_iommus_properties(struct arm_smmu_device *smmu,
-+					int *num_masters)
-+{
-+	struct of_phandle_args iommuspec;
-+	struct device_node *dn;
+-	return arm_smmu_handle_mapping(smmu_domain, iova, paddr, size, prot);
++	ret = arm_smmu_handle_mapping(smmu_domain, iova, paddr, size, prot);
 +
-+	for_each_node_with_property(dn, "iommus") {
-+		int arg_ind = 0;
-+		struct iommus_entry *entry, *n;
-+		LIST_HEAD(iommus);
-+
-+		while (!of_parse_phandle_with_args(dn, "iommus", "#iommu-cells",
-+							arg_ind, &iommuspec)) {
-+			int i;
-+
-+			list_for_each_entry(entry, &iommus, list)
-+				if (entry->node == dn)
-+					break;
-+			if (&entry->list == &iommus) {
-+				entry = devm_kzalloc(smmu->dev, sizeof(*entry),
-+						GFP_KERNEL);
-+				if (!entry)
-+					return -ENOMEM;
-+				entry->node = dn;
-+				list_add(&entry->list, &iommus);
-+			}
-+			entry->num_sids = iommuspec.args_count;
-+			for (i = 0; i < entry->num_sids; ++i)
-+				entry->streamids[i] = iommuspec.args[i];
-+			arg_ind++;
-+		}
-+
-+		list_for_each_entry_safe(entry, n, &iommus, list) {
-+			register_smmu_master(smmu, entry);
-+			(*num_masters)++;
-+			list_del(&entry->list);
-+			devm_kfree(smmu->dev, entry);
-+		}
++	if (!ret &&
++		(smmu_domain->smmu->options & ARM_SMMU_OPT_INVALIDATE_ON_MAP)) {
++		arm_smmu_enable_clocks(smmu_domain->smmu);
++		arm_smmu_tlb_inv_context(smmu_domain);
++		arm_smmu_disable_clocks(smmu_domain->smmu);
 +	}
 +
-+	return 0;
-+}
-+
- static struct arm_smmu_device *find_smmu_for_device(struct device *dev)
- {
- 	struct arm_smmu_device *smmu;
-@@ -2196,8 +2246,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 	struct arm_smmu_device *smmu;
- 	struct device *dev = &pdev->dev;
- 	struct rb_node *node;
--	struct of_phandle_args masterspec;
--	int num_irqs, i, err;
-+	int num_irqs, i, err, num_masters;
++	return ret;
+ }
  
- 	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
- 	if (!smmu) {
-@@ -2251,19 +2300,11 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 
- 	i = 0;
- 	smmu->masters = RB_ROOT;
--	while (!of_parse_phandle_with_args(dev->of_node, "mmu-masters",
--					   "#stream-id-cells", i,
--					   &masterspec)) {
--		err = register_smmu_master(smmu, dev, &masterspec);
--		if (err) {
--			dev_err(dev, "failed to add master %s\n",
--				masterspec.np->name);
--			goto out_put_masters;
--		}
-+	err = arm_smmu_parse_iommus_properties(smmu, &num_masters);
-+	if (err)
-+		goto out_put_masters;
- 
--		i++;
--	}
--	dev_notice(dev, "registered %d master devices\n", i);
-+	dev_notice(dev, "registered %d master devices\n", num_masters);
- 
- 	err = arm_smmu_init_regulators(smmu);
- 	if (err)
+ static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 hosted by The Linux Foundation
