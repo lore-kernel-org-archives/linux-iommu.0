@@ -1,16 +1,15 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v5] devicetree: Add generic IOMMU device tree bindings
-Date: Fri, 15 Aug 2014 14:14:08 +0100
-Message-ID: <20140815131407.GS27466@arm.com>
-References: <1406803383-11601-1-git-send-email-thierry.reding@gmail.com>
-	<87a9774lf5.fsf@nvidia.com> <20140815115110.GO27466@arm.com>
-	<87tx5ehr62.fsf@nvidia.com>
+Subject: Re: [PATCH 0/6] iommu/arm-smmu: misc features, new DT bindings
+Date: Fri, 15 Aug 2014 18:25:48 +0100
+Message-ID: <20140815172547.GB31620@arm.com>
+References: <1407891099-24641-1-git-send-email-mitchelh@codeaurora.org>
+	<vnkwvbpwl2xz.fsf@mitchelh-linux.qualcomm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <87tx5ehr62.fsf-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <vnkwvbpwl2xz.fsf-Yf+dfxj6toJBVvN7MMdr1KRtKmQZhJ7pQQ4Iyu8u01E@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,61 +19,19 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Aug 15, 2014 at 01:29:41PM +0100, Hiroshi Doyu wrote:
-> Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> writes:
-> > I think there's some confusion here. The ARM architected SMMU does not
-> > perform any StreamID translation -- it sees an incoming ID and uses that to
-> > lookup a set of translation tables. However, for hotpluggable buses (e.g.
-> > PCI), we need a way to communicate the StreamIDs for a newly discovered
-> > device to the SMMU. I expect that this would be described as a translation
-> > from another ID (e.g. requester id for PCI), so *that* is where the
-> > translation occurs.
-> >
-> > This translation can be described as a simple base + offset calculation,
-> > e.g. StreamID = RequesterID + offset. Ideally, you'd have one offset per
-> > host controller (and described in the host controller DT node), but you
-> > could also imagine building tables where each RequesterID maps to a
-> > different StreamID.
-> >
-> > The final thing to mention is that some SoCs may have device hotplug
-> > architectures that aren't like PCIe, so we may well need glue code there to
-> > `allocate' StreamIDs from a fixed portion of the numberspace.
+On Wed, Aug 13, 2014 at 06:22:32PM +0100, Mitchel Humpherys wrote:
+> On Tue, Aug 12 2014 at 05:51:33 PM, Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
+> > This series is based on on Will's iommu/pci branch.
 > 
-> Ok, I can assume that, when parsing generic IOMMU binding, SoC specific
-> callback could be called from ARM,SMMU driver to assign allocated
-> "StreamIDs" to thier "RequesterIDs".
+> Incredibly, I also neglected to base this on top of Olav's recent patch
+> ("iommu/arm-smmu: Do not access non-existing SMR registers")! I will do
+> that in v2 after review feedback.
 
-The mapping should be done as part of the ->add_device callback, at the same
-time as the iommu_group initialisation.
-
-> IOW, IOMMU generic binding for ARM,SMMU can have RequresterID instead of
-> StreamID.
-> 
->   Not:
->   	iommus = <&{/arm-smmu} "StreamID">;
->   
->   Instead, can be:
->   	iommus = <&{/arm-smmu} "RequresterID">;
-> 
-> If I extend the above, even ARM,SMMU driver could have any number of
-> params, which SoC requires with keeping "arm,mmu-*" compatibility?
-> 
->   	iommus = <&{/arm-msmmu} param1 param2 param3 param4 .....>;
-> 
-> How to parse params depends on SoC. Parsing params is done at SoC
-> callback, right?
-
-No, I still don't think this is quite right. The SMMU deals with StreamIDs.
-End of story. However, for a hotpluggable bus, you may need to determine
-that StreamID from another dynamic ID. In the case of PCI, you can
-dynamically find the RequesterID, then we'd just have an offset in the DT
-node for the PCI host controller that describes how that maps to the StreamID.
-
-So actually, we need to treat host controllers differently from end-points
-in the binding, which would allow us to describe these transformations.
+No probs, this is for review rather than immediate merge so it's not the end
+of the world (and the conflict should be rather simple).
 
 Will
