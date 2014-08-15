@@ -1,11 +1,15 @@
-From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Subject: [PATCH 1/1] iommu/vt-d: Add new macros for invalidation event
-Date: Fri, 15 Aug 2014 09:55:51 +0800
-Message-ID: <1408067751-30754-1-git-send-email-zhen-hual@hp.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v5] devicetree: Add generic IOMMU device tree bindings
+Date: Fri, 15 Aug 2014 12:51:11 +0100
+Message-ID: <20140815115110.GO27466@arm.com>
+References: <1406803383-11601-1-git-send-email-thierry.reding@gmail.com>
+	<87a9774lf5.fsf@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <87a9774lf5.fsf-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,37 +19,73 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-QWNjb3JkaW5nIHRvIGludGVsJ3Mgc3BlYwogICAgICAgIEludGVswq4gVmlydHVhbGl6YXRpb24g
-VGVjaG5vbG9neSBmb3IgRGlyZWN0ZWQgSS9PLAogICAgICAgIFJldmlzaW9uOiAxLjMgLCBGZWJy
-dWFyeSAyMDExLAogICAgICAgIENoYXBlciAxMC40LjI1IHRvIDEwLjQuMjgKClRoZXJlIGFyZSBm
-b3VyIHJlZ2lzdGVycwoKICAgICAgICBJRUNUTF9SRUcgICAweGEwICAgIEludmFsaWRhdGlvbiBl
-dmVudCBjb250cm9sIHJlZ2lzdGVyCiAgICAgICAgSUVEQVRBX1JFRyAgMHhhNCAgICBJbnZhbGlk
-YXRpb24gZXZlbnQgZGF0YSByZWdpc3RlcgogICAgICAgIElFQUREUl9SRUcgIDB4YTggICAgSW52
-YWxpZGF0aW9uIGV2ZW50IGFkZHJlc3MgcmVnaXN0ZXIKICAgICAgICBJRVVBRERSX1JFRyAweGFj
-ICAgIEludmFsaWRhdGlvbiBldmVudCB1cHBlciBhZGRyZXNzIHJlZ2lzdGVyCgpUaHJvdWdoIHRo
-ZXkgYXJlIG5vdCB1c2VkIGluIGtlcm5lbCBpbiB0aGUgbGF0ZXN0IHZlcnNpb24sIHRoZSBkZWZp
-bmF0aW9uCiBzaG91bGQgYmUgYWRkZWQgdG8ga2VybmVsIGFzIHdlbGwgYXMgb3RoZXIgcmVnaXN0
-ZXJzLgoKU2lnbmVkLW9mZi1ieTogTGksIFpoZW4tSHVhIDx6aGVuLWh1YWxAaHAuY29tPgotLS0K
-IGluY2x1ZGUvbGludXgvaW50ZWwtaW9tbXUuaCB8IDQgKysrKwogMSBmaWxlIGNoYW5nZWQsIDQg
-aW5zZXJ0aW9ucygrKQoKZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvaW50ZWwtaW9tbXUuaCBi
-L2luY2x1ZGUvbGludXgvaW50ZWwtaW9tbXUuaAppbmRleCBhNjUyMDhhLi4xNWZhZmQ1IDEwMDY0
-NAotLS0gYS9pbmNsdWRlL2xpbnV4L2ludGVsLWlvbW11LmgKKysrIGIvaW5jbHVkZS9saW51eC9p
-bnRlbC1pb21tdS5oCkBAIC01Niw2ICs1NiwxMCBAQAogI2RlZmluZSBETUFSX0lRX1NISUZUCTQJ
-LyogSW52YWxpZGF0aW9uIHF1ZXVlIGhlYWQvdGFpbCBzaGlmdCAqLwogI2RlZmluZSBETUFSX0lR
-QV9SRUcJMHg5MAkvKiBJbnZhbGlkYXRpb24gcXVldWUgYWRkciByZWdpc3RlciAqLwogI2RlZmlu
-ZSBETUFSX0lDU19SRUcJMHg5YwkvKiBJbnZhbGlkYXRpb24gY29tcGxldGUgc3RhdHVzIHJlZ2lz
-dGVyICovCisjZGVmaW5lIERNQVJfSUVDVExfUkVHCTB4YTAJLyogSW52YWxpZGF0aW9uIGV2ZW50
-IGNvbnRyb2wgcmVnaXN0ZXIgKi8KKyNkZWZpbmUgRE1BUl9JRURBVEFfUkVHCTB4YTQJLyogSW52
-YWxpZGF0aW9uIGV2ZW50IGRhdGEgcmVnaXN0ZXIgKi8KKyNkZWZpbmUgRE1BUl9JRUFERFJfUkVH
-CTB4YTgJLyogSW52YWxpZGF0aW9uIGV2ZW50IGFkZHJlc3MgcmVnaXN0ZXIgKi8KKyNkZWZpbmUg
-RE1BUl9JRVVBRERSX1JFRyAweGFjCS8qIEludmFsaWRhdGlvbiBldmVudCB1cHBlciBhZGRyZXNz
-IHJlZ2lzdGVyICovCiAjZGVmaW5lIERNQVJfSVJUQV9SRUcJMHhiOCAgICAvKiBJbnRlcnJ1cHQg
-cmVtYXBwaW5nIHRhYmxlIGFkZHIgcmVnaXN0ZXIgKi8KIAogI2RlZmluZSBPRkZTRVRfU1RSSURF
-CQkoOSkKLS0gCjIuMC4wLXJjMAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRp
-b24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZv
-L2lvbW11
+On Thu, Aug 14, 2014 at 07:47:42AM +0100, Hiroshi Doyu wrote:
+> Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> writes:
+> 
+> > +Multiple-master IOMMU:
+> > +----------------------
+> > +
+> > +       iommu {
+> > +               /* the specifier represents the ID of the master */
+> > +               #iommu-cells = <1>;
+> > +       };
+> > +
+> > +       master@1 {
+> > +               /* device has master ID 42 in the IOMMU */
+> > +               iommus = <&{/iommu} 42>;
+> > +       };
+> > +
+> > +       master@2 {
+> > +               /* device has master IDs 23 and 24 in the IOMMU */
+> > +               iommus = <&{/iommu} 23>, <&{/iommu} 24>;
+> > +       };
+> 
+> I think that this "master ID" will be parsed in IOMMU driver. For
+> example, ARM,SMMU expects "streamID" as "master ID", right?
+> 
+> If a SoC has a feature to configure to assign streamID to devices at
+> runtime, "streamID" is not equal to "master ID".
+> 
+>   iommus = <&{/smmu} "soc specific master ID">;
+> 
+> "soc master ID" needs to be translated into "streamID" by SoC SW. It
+> seems that ARM,SMMU kernel driver doesn't expect this kind of ID
+> translation. If ARM,SMMU kernel driver is used as is, "soc master ID"
+> would be incompatible? ARM,SMMU needs such translation before
+> parsing. Is this my understanding right?
+> 
+> If so I think that this master ID configuration/translation may be quite
+> reasonable requirment for SoC using ARM,SMMU.
+> 
+> Can we consider this ID translation within ARM,SMMU compatibility?
+> 
+> IOW, is it possible to implement some SoC specific hook for ID
+> translation/configuration in ARM,SMMU kernel driver?
+
+I think there's some confusion here. The ARM architected SMMU does not
+perform any StreamID translation -- it sees an incoming ID and uses that to
+lookup a set of translation tables. However, for hotpluggable buses (e.g.
+PCI), we need a way to communicate the StreamIDs for a newly discovered
+device to the SMMU. I expect that this would be described as a translation
+from another ID (e.g. requester id for PCI), so *that* is where the
+translation occurs.
+
+This translation can be described as a simple base + offset calculation,
+e.g. StreamID = RequesterID + offset. Ideally, you'd have one offset per
+host controller (and described in the host controller DT node), but you
+could also imagine building tables where each RequesterID maps to a
+different StreamID.
+
+The final thing to mention is that some SoCs may have device hotplug
+architectures that aren't like PCIe, so we may well need glue code there to
+`allocate' StreamIDs from a fixed portion of the numberspace.
+
+We don't need to solve all of these problems in one go, but the base +
+offset code will certainly be useful; not just for the SMMU but also for
+the GIC (where we have DeviceIDs). Mark Rutland is looking at this.
+
+Will
