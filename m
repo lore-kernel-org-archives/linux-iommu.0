@@ -1,14 +1,12 @@
-From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Subject: RE: [PATCH 1/1] iommu/vt-d : clear old root entry for dump kernel
-Date: Mon, 18 Aug 2014 23:01:56 +0000
-Message-ID: <1267BB84A242B24E81E0C0C8955CFFC061A4BA26@G9W0343.americas.hpqcorp.net>
-References: <1408352352-14449-1-git-send-email-zhen-hual@hp.com>
+From: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH v3 1/1] iommu/arm-smmu: Do not access non-existing S2CR
+	registers
+Date: Mon, 18 Aug 2014 16:17:38 -0700
+Message-ID: <1408403858-16766-1-git-send-email-ohaugan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1408352352-14449-1-git-send-email-zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,86 +16,83 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: will.deacon-5wv7dgnIgG8@public.gmane.org
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-There is a bug when Linux running on an HP large system: 
-	when kdump kernel runs, the hardware is still using the old 
-root entry. This causes error message when iommu not finished initialization.
+The number of S2CR registers is not properly set when stream
+matching is not supported. Fix this and add check that we do not try to
+access outside of the number of S2CR regisrers.
 
------Original Message-----
-From: Li, Zhen-Hua 
-Sent: Monday, August 18, 2014 4:59 PM
-To: David Woodhouse; Joerg Roedel; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Li, Zhen-Hua
-Subject: [PATCH 1/1] iommu/vt-d : clear old root entry for dump kernel
-
-If intel_iommu is enabled, when kdump kernel boots, the old root entry
- should be cleared, otherwise it may cause DMAR error.
-
-To make it works for more enviroments, this patch does not use 
-is_kdump_kernel() to check it,  but reads the register to check whether 
-hardware is using old root entry.
-
-Signed-off-by: Li, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Signed-off-by: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 ---
- drivers/iommu/dmar.c | 31 +++++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
+ drivers/iommu/arm-smmu.c | 24 +++++++++++++++++-------
+ 1 file changed, 17 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 60ab474..7b4fa90 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -66,6 +66,8 @@ static int dmar_dev_scope_status = 1;
- static int alloc_iommu(struct dmar_drhd_unit *drhd);
- static void free_iommu(struct intel_iommu *iommu);
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 9fd8754d..a050f7a 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -548,9 +548,16 @@ static int register_smmu_master(struct arm_smmu_device *smmu,
+ 	master->of_node			= masterspec->np;
+ 	master->cfg.num_streamids	= masterspec->args_count;
  
-+static int iommu_check_root_entry(struct intel_iommu *iommu);
-+
- static void __init dmar_register_drhd_unit(struct dmar_drhd_unit *drhd)
- {
- 	/*
-@@ -987,6 +989,8 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
- 						       intel_iommu_groups,
- 						       iommu->name);
- 
-+	iommu_check_root_entry(iommu);
-+
- 	return 0;
- 
-  err_unmap:
-@@ -1666,5 +1670,32 @@ static int __init dmar_free_unused_resources(void)
- 	return 0;
+-	for (i = 0; i < master->cfg.num_streamids; ++i)
++	for (i = 0; i < master->cfg.num_streamids; ++i) {
++		if (!(smmu->features & ARM_SMMU_FEAT_STREAM_MATCH) &&
++		     (masterspec->args[i] >= smmu->num_mapping_groups)) {
++			dev_err(dev,
++				"stream ID for master device %s greater than maximum allowed (%d)\n",
++				masterspec->np->name, smmu->num_mapping_groups);
++			return -ENOSPC;
++		}
+ 		master->cfg.streamids[i] = masterspec->args[i];
+-
++	}
+ 	return insert_smmu_master(smmu, master);
  }
  
-+static int iommu_check_root_entry(struct intel_iommu *iommu)
-+{
-+	u64 re_pa;
+@@ -1734,7 +1741,7 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+ 
+ 	/* Mark all SMRn as invalid and all S2CRn as bypass */
+ 	for (i = 0; i < smmu->num_mapping_groups; ++i) {
+-		writel_relaxed(~SMR_VALID, gr0_base + ARM_SMMU_GR0_SMR(i));
++		writel_relaxed(0, gr0_base + ARM_SMMU_GR0_SMR(i));
+ 		writel_relaxed(S2CR_TYPE_BYPASS,
+ 			gr0_base + ARM_SMMU_GR0_S2CR(i));
+ 	}
+@@ -1875,6 +1882,9 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+ 		dev_notice(smmu->dev,
+ 			   "\tstream matching with %u register groups, mask 0x%x",
+ 			   smmu->num_mapping_groups, mask);
++	} else {
++		smmu->num_mapping_groups = (id >> ID0_NUMSIDB_SHIFT) &
++					   ID0_NUMSIDB_MASK;
+ 	}
+ 	smmu->idr[0] = id;
+ 
+@@ -2011,6 +2021,10 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 		smmu->irqs[i] = irq;
+ 	}
+ 
++	err = arm_smmu_device_cfg_probe(smmu);
++	if (err)
++		return err;
 +
-+	re_pa = dmar_readq(iommu->reg + DMAR_RTADDR_REG);
-+
-+	/* This only works for hardware error and kdump kernel */
-+	if (unlikely(re_pa != 0)) {
-+		u32 sts;
-+		unsigned long flag;
-+
-+		raw_spin_lock_irqsave(&iommu->register_lock, flag);
-+		dmar_writeq(iommu->reg + DMAR_RTADDR_REG, 0);
-+
-+		writel(iommu->gcmd | DMA_GCMD_SRTP, iommu->reg + DMAR_GCMD_REG);
-+
-+		/* Make sure hardware complete it */
-+		IOMMU_WAIT_OP(iommu, DMAR_GSTS_REG,
-+			      readl, (sts & DMA_GSTS_RTPS), sts);
-+
-+		raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
-+
-+	}
-+
-+	return 0;
-+}
-+
- late_initcall(dmar_free_unused_resources);
- IOMMU_INIT_POST(detect_intel_iommu);
+ 	i = 0;
+ 	smmu->masters = RB_ROOT;
+ 	while (!of_parse_phandle_with_args(dev->of_node, "mmu-masters",
+@@ -2027,10 +2041,6 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 	}
+ 	dev_notice(dev, "registered %d master devices\n", i);
+ 
+-	err = arm_smmu_device_cfg_probe(smmu);
+-	if (err)
+-		goto out_put_masters;
+-
+ 	parse_driver_options(smmu);
+ 
+ 	if (smmu->version > 1 &&
 -- 
-2.0.0-rc0
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+hosted by The Linux Foundation
