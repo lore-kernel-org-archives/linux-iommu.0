@@ -1,47 +1,44 @@
-From: Andreea-Cristina Bernat <bernat.ada@gmail.com>
-Subject: [PATCH] iommu: Replace rcu_assign_pointer() with RCU_INIT_POINTER()
-Date: Mon, 18 Aug 2014 15:20:56 +0300
-Message-ID: <20140818122056.GA29961@ada>
+From: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v5 1/1] iommu-api: Add map_sg/unmap_sg functions
+Date: Mon, 18 Aug 2014 16:07:30 +0200
+Message-ID: <20140818140730.GC9809@8bytes.org>
+References: <1407797150-515-1-git-send-email-ohaugan@codeaurora.org>
+	<1407797150-515-2-git-send-email-ohaugan@codeaurora.org>
+	<871tsm5vcn.fsf@nvidia.com>
+	<CAF6AEGvZUanVtPxAt76+AAdOaNwyMJ3cmcJ1srsEYBeG7ELkBQ@mail.gmail.com>
+	<53EA472B.3020900@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: joro@8bytes.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Cc: paulmck@linux.vnet.ibm.com
+In-Reply-To: <53EA472B.3020900-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: "laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The use of "rcu_assign_pointer()" is NULLing out the pointer.
-According to RCU_INIT_POINTER()'s block comment:
-"1.   This use of RCU_INIT_POINTER() is NULLing out the pointer"
-it is better to use it instead of rcu_assign_pointer() because it has a
-smaller overhead.
+On Tue, Aug 12, 2014 at 09:56:11AM -0700, Olav Haugan wrote:
+> On 8/12/2014 3:48 AM, Rob Clark wrote:
+> > iirc, one plan for 'flags' was some sort of DONT_FLUSH_TLB flag for
+> > drivers which wanted to map/unmap N buffers with a single flush at the
+> > end.  There might have been some other usages envisioned.
+> 
+> Yes, that was the original intent of the flags for now. I am sure we can
+> find other uses for this in the future.
 
-The following Coccinelle semantic patch was used:
-@@
-@@
+Do you have anything else in mind already besides the DONT_FLUSH_TLB
+flag?
 
-- rcu_assign_pointer
-+ RCU_INIT_POINTER
-  (..., NULL)
+How is the IOTLB supposed to be flushed when this flag is used?
 
-Signed-off-by: Andreea-Cristina Bernat <bernat.ada@gmail.com>
----
- drivers/iommu/dmar.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 9a4f05e..da9220b 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -246,7 +246,7 @@ int dmar_remove_dev_scope(struct dmar_pci_notify_info *info, u16 segment,
- 
- 	for_each_active_dev_scope(devices, count, index, tmp)
- 		if (tmp == &info->dev->dev) {
--			rcu_assign_pointer(devices[index].dev, NULL);
-+			RCU_INIT_POINTER(devices[index].dev, NULL);
- 			synchronize_rcu();
- 			put_device(tmp);
- 			return 1;
--- 
-1.9.1
+	Joerg
