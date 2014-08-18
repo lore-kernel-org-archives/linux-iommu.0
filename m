@@ -1,14 +1,16 @@
 From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
 Subject: RE: [PATCH 1/1] iommu/vt-d : clear old root entry for dump kernel
-Date: Mon, 18 Aug 2014 23:47:37 +0000
-Message-ID: <1267BB84A242B24E81E0C0C8955CFFC061A4CA86@G9W0343.americas.hpqcorp.net>
+Date: Mon, 18 Aug 2014 23:59:08 +0000
+Message-ID: <1267BB84A242B24E81E0C0C8955CFFC061A4DACB@G9W0343.americas.hpqcorp.net>
 References: <1408352352-14449-1-git-send-email-zhen-hual@hp.com>
 	<1267BB84A242B24E81E0C0C8955CFFC061A4BA26@G9W0343.americas.hpqcorp.net>
 	<20140818232328.GK9809@8bytes.org>
+	<1267BB84A242B24E81E0C0C8955CFFC061A4CA86@G9W0343.americas.hpqcorp.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1267BB84A242B24E81E0C0C8955CFFC061A4CA86-j39jTyOY9jISZAcGdq5asR6epYMZPwEe5NbjCUgZEJk@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -22,6 +24,28 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
+
+My debugging result is this: 
+
+1. Clear the old root entry table, dump kernel will choose another
+ memory region for root entry.
+2. Do NOT clear the old root entry, when dump kernel initializing 
+the iommu data structure, it  will allocate memory for root entry, 
+this is different from the old address. 
+
+If not clear old entry , the error message appears before dump kernel
+finishes the iommu init works, and also appears in other places(before 
+device inits). 
+
+If I clear the old root entry, the error message disappears before iommu
+init work finish, but still appears in other places. 
+
+-----Original Message-----
+From: Li, Zhen-Hua 
+Sent: Tuesday, August 19, 2014 7:48 AM
+To: Li, Zhen-Hua; Joerg Roedel
+Cc: David Woodhouse; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Subject: RE: [PATCH 1/1] iommu/vt-d : clear old root entry for dump kernel
 
 When the dump kernel boots, it will initialize iommu again, and the root entry will be allocted 
 in another memory region.
