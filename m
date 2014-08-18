@@ -1,55 +1,48 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 2/3] iommu/amd: Fix cleanup_domain for mass device removal
-Date: Tue, 19 Aug 2014 00:49:58 +0200
-Message-ID: <1408402199-15178-3-git-send-email-joro@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 3/3] iommu/core: Check for the right function pointer in
+	iommu_map()
+Date: Tue, 19 Aug 2014 00:49:59 +0200
+Message-ID: <1408402199-15178-4-git-send-email-joro@8bytes.org>
 References: <1408402199-15178-1-git-send-email-joro@8bytes.org>
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <1408402199-15178-1-git-send-email-joro@8bytes.org>
-Sender: stable-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Cc: joro@8bytes.org, Joerg Roedel <jroedel@suse.de>, stable@vger.kernel.org
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1408402199-15178-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-When multiple devices are detached in __detach_device, they
-are also removed from the domains dev_list. This makes it
-unsafe to use list_for_each_entry_safe, as the next pointer
-might also not be in the list anymore after __detach_device
-returns. So just repeatedly remove the first element of the
-list until it is empty.
+Check for the ->map and not the ->unmap pointer.
 
-Cc: stable@vger.kernel.org
-Tested-by: Marti Raudsepp <marti@juffo.org>
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/iommu/iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 1840531..ecb0109 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -3149,14 +3149,16 @@ free_domains:
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 1698360..ac4adb3 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -995,7 +995,7 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 	size_t orig_size = size;
+ 	int ret = 0;
  
- static void cleanup_domain(struct protection_domain *domain)
- {
--	struct iommu_dev_data *dev_data, *next;
-+	struct iommu_dev_data *entry;
- 	unsigned long flags;
+-	if (unlikely(domain->ops->unmap == NULL ||
++	if (unlikely(domain->ops->map == NULL ||
+ 		     domain->ops->pgsize_bitmap == 0UL))
+ 		return -ENODEV;
  
- 	write_lock_irqsave(&amd_iommu_devtable_lock, flags);
- 
--	list_for_each_entry_safe(dev_data, next, &domain->dev_list, list) {
--		__detach_device(dev_data);
--		atomic_set(&dev_data->bind, 0);
-+	while (!list_empty(&domain->dev_list)) {
-+		entry = list_first_entry(&domain->dev_list,
-+					 struct iommu_dev_data, list);
-+		__detach_device(entry);
-+		atomic_set(&entry->bind, 0);
- 	}
- 
- 	write_unlock_irqrestore(&amd_iommu_devtable_lock, flags);
 -- 
 1.9.1
