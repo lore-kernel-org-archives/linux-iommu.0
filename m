@@ -1,90 +1,32 @@
-From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Subject: [PATCH 1/1] iommu/vt-d : clear old root entry for dump kernel
-Date: Mon, 18 Aug 2014 16:59:12 +0800
-Message-ID: <1408352352-14449-1-git-send-email-zhen-hual@hp.com>
+From: Tomasz Figa <tomasz.figa@gmail.com>
+Subject: Re: [PATCH 03/29] clk: exynos: add missing smmu_g2d clock and update
+ comments
+Date: Mon, 18 Aug 2014 13:26:17 +0200
+Message-ID: <53F1E2D9.7040101@gmail.com>
+References: <1407235677-26324-1-git-send-email-m.szyprowski@samsung.com> <1407235677-26324-4-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <1407235677-26324-4-git-send-email-m.szyprowski@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc: linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene.kim@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Kyungmin Park <kyungmin.park@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-If intel_iommu is enabled, when kdump kernel boots, the old root entry
- should be cleared, otherwise it may cause DMAR error.
+On 05.08.2014 12:47, Marek Szyprowski wrote:
+> This patch adds missing smmu_g2d clock implementation and updates
+> comment about Exynos4 clocks from 278-282 range. Those clocks are
+> available on all Exynos4 SoC series, so the misleading comment has been
+> removed.
+> 
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> ---
+>  drivers/clk/samsung/clk-exynos4.c   |  1 +
+>  include/dt-bindings/clock/exynos4.h | 10 +++++-----
+>  2 files changed, 6 insertions(+), 5 deletions(-)
 
-To make it works for more enviroments, this patch does not use 
-is_kdump_kernel() to check it,  but reads the register to check whether 
-hardware is using old root entry.
+Acked-by: Tomasz Figa <t.figa@samsung.com>
 
-Signed-off-by: Li, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
----
- drivers/iommu/dmar.c | 31 +++++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
-
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 60ab474..7b4fa90 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -66,6 +66,8 @@ static int dmar_dev_scope_status = 1;
- static int alloc_iommu(struct dmar_drhd_unit *drhd);
- static void free_iommu(struct intel_iommu *iommu);
- 
-+static int iommu_check_root_entry(struct intel_iommu *iommu);
-+
- static void __init dmar_register_drhd_unit(struct dmar_drhd_unit *drhd)
- {
- 	/*
-@@ -987,6 +989,8 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
- 						       intel_iommu_groups,
- 						       iommu->name);
- 
-+	iommu_check_root_entry(iommu);
-+
- 	return 0;
- 
-  err_unmap:
-@@ -1666,5 +1670,32 @@ static int __init dmar_free_unused_resources(void)
- 	return 0;
- }
- 
-+static int iommu_check_root_entry(struct intel_iommu *iommu)
-+{
-+	u64 re_pa;
-+
-+	re_pa = dmar_readq(iommu->reg + DMAR_RTADDR_REG);
-+
-+	/* This only works for hardware error and kdump kernel */
-+	if (unlikely(re_pa != 0)) {
-+		u32 sts;
-+		unsigned long flag;
-+
-+		raw_spin_lock_irqsave(&iommu->register_lock, flag);
-+		dmar_writeq(iommu->reg + DMAR_RTADDR_REG, 0);
-+
-+		writel(iommu->gcmd | DMA_GCMD_SRTP, iommu->reg + DMAR_GCMD_REG);
-+
-+		/* Make sure hardware complete it */
-+		IOMMU_WAIT_OP(iommu, DMAR_GSTS_REG,
-+			      readl, (sts & DMA_GSTS_RTPS), sts);
-+
-+		raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
-+
-+	}
-+
-+	return 0;
-+}
-+
- late_initcall(dmar_free_unused_resources);
- IOMMU_INIT_POST(detect_intel_iommu);
--- 
-2.0.0-rc0
+Best regards,
+Tomasz
