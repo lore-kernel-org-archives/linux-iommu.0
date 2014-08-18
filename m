@@ -1,40 +1,50 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 0/3] IOMMU Fixes
-Date: Tue, 19 Aug 2014 00:49:56 +0200
-Message-ID: <1408402199-15178-1-git-send-email-joro@8bytes.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 1/3] iommu/vt-d: Defer domain removal if device is assigned to a driver
+Date: Tue, 19 Aug 2014 00:49:57 +0200
+Message-ID: <1408402199-15178-2-git-send-email-joro@8bytes.org>
+References: <1408402199-15178-1-git-send-email-joro@8bytes.org>
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <1408402199-15178-1-git-send-email-joro@8bytes.org>
+Sender: stable-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: joro@8bytes.org, Joerg Roedel <jroedel@suse.de>, Jiang Liu <jiang.liu@linux.intel.com>, David Woodhouse <dwmw2@infradead.org>, stable@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+From: Joerg Roedel <jroedel@suse.de>
 
-here are a few fixes for the x86 iommu drivers and a small
-one for the iommu core-code I plan to send for -rc2.
+When the BUS_NOTIFY_DEL_DEVICE event is received the device
+might still be attached to a driver. In this case the domain
+can't be released as the mappings might still be in use.
 
+Defer the domain removal in this case until we receivce the
+BUS_NOTIFY_UNBOUND_DRIVER event.
 
-	Joerg
+Cc: Jiang Liu <jiang.liu@linux.intel.com>
+Cc: David Woodhouse <dwmw2@infradead.org>
+Cc: stable@vger.kernel.org   # v3.15, v3.16
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ drivers/iommu/intel-iommu.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-Joerg Roedel (3):
-  iommu/vt-d: Defer domain removal if device is assigned to a driver
-  iommu/amd: Fix cleanup_domain for mass device removal
-  iommu/core: Check for the right function pointer in iommu_map()
-
- drivers/iommu/amd_iommu.c   | 10 ++++++----
- drivers/iommu/intel-iommu.c |  8 ++++++++
- drivers/iommu/iommu.c       |  2 +-
- 3 files changed, 15 insertions(+), 5 deletions(-)
-
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index d1f5caa..5619f26 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -3869,6 +3869,14 @@ static int device_notifier(struct notifier_block *nb,
+ 	    action != BUS_NOTIFY_DEL_DEVICE)
+ 		return 0;
+ 
++	/*
++	 * If the device is still attached to a device driver we can't
++	 * tear down the domain yet as DMA mappings may still be in use.
++	 * Wait for the BUS_NOTIFY_UNBOUND_DRIVER event to do that.
++	 */
++	if (action == BUS_NOTIFY_DEL_DEVICE && dev->driver != NULL)
++		return 0;
++
+ 	domain = find_domain(dev);
+ 	if (!domain)
+ 		return 0;
 -- 
 1.9.1
