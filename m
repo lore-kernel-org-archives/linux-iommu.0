@@ -1,16 +1,16 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 3/6] iommu/arm-smmu: add support for iova_to_phys through
-	ATS1PR
-Date: Tue, 19 Aug 2014 13:44:32 +0100
-Message-ID: <20140819124431.GL23128@arm.com>
+Subject: Re: [PATCH 6/6] iommu/arm-smmu: add .domain_{set,get}_attr for
+	coherent walk control
+Date: Tue, 19 Aug 2014 13:48:07 +0100
+Message-ID: <20140819124807.GM23128@arm.com>
 References: <1407891099-24641-1-git-send-email-mitchelh@codeaurora.org>
-	<1407891099-24641-4-git-send-email-mitchelh@codeaurora.org>
+	<1407891099-24641-7-git-send-email-mitchelh@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1407891099-24641-4-git-send-email-mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-Reply-To: <1407891099-24641-7-git-send-email-mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,75 +24,66 @@ To: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Aug 13, 2014 at 01:51:36AM +0100, Mitchel Humpherys wrote:
-> Currently, we provide the iommu_ops.iova_to_phys service by doing a
-> table walk in software to translate IO virtual addresses to physical
-> addresses. On SMMUs that support it, it can be useful to ask the SMMU
-> itself to do the translation. This can be used to warm the TLBs for an
-> SMMU. It can also be useful for testing and hardware validation.
+On Wed, Aug 13, 2014 at 01:51:39AM +0100, Mitchel Humpherys wrote:
+> Under certain conditions coherent hardware translation table walks can
+> result in degraded performance. Add a new domain attribute to
+> disable/enable this feature in generic code along with the domain
+> attribute setter and getter to handle it in the ARM SMMU driver.
 
-I'm not really sold on the usefulness of this feature. If you want hardware
-validation features, I'd rather do something through debugfs, but your
-use-case for warming the TLBs is intriguing. Do you have an example use-case
-with performance figures?
+Again, it would be nice to have some information about these cases and the
+performance issues that you are seeing.
 
-> Since the address translation registers are optional on SMMUv2, only
-> enable hardware translations when using SMMUv1 or when SMMU_IDR0.S1TS=1
-> and SMMU_IDR0.ATOSNS=0, as described in the ARM SMMU v1-v2 spec.
-
-[...]
-
-> +static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
-> +					dma_addr_t iova)
-> +{
-> +	struct arm_smmu_domain *smmu_domain = domain->priv;
-> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
+> @@ -1908,11 +1917,15 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+>  				    enum iommu_attr attr, void *data)
+>  {
+>  	struct arm_smmu_domain *smmu_domain = domain->priv;
 > +	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-> +	struct device *dev = smmu->dev;
-> +	void __iomem *cb_base;
-> +	int count = 0;
-> +	u64 phys;
-> +
-> +	arm_smmu_enable_clocks(smmu);
-> +
-> +	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
-> +
-> +	if (smmu->version == 1) {
-> +		u32 reg = iova & 0xFFFFF000;
-> +		writel_relaxed(reg, cb_base + ARM_SMMU_CB_ATS1PR_LO);
-> +	} else {
-> +		u64 reg = iova & 0xfffffffffffff000;
-> +		writeq_relaxed(reg, cb_base + ARM_SMMU_CB_ATS1PR_LO);
+>  
+>  	switch (attr) {
+>  	case DOMAIN_ATTR_NESTING:
+>  		*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
+>  		return 0;
+> +	case DOMAIN_ATTR_COHERENT_HTW_DISABLE:
+> +		*((bool *)data) = cfg->htw_disable;
+> +		return 0;
 
-We don't have writeq for arch/arm/.
+I think I'd be more comfortable using int instead of bool for this, as it
+could well end up in the user ABI if vfio decides to make use of it. While
+we're here, let's also add an attributes bitmap to the arm_smmu_domain
+instead of having a bool in the arm_smmu_cfg.
 
-> +	}
-> +
-> +	mb();
-
-Why?
-
-> +	while (readl_relaxed(cb_base + ARM_SMMU_CB_ATSR) & ATSR_ACTIVE) {
-> +		if (++count == ATSR_LOOP_TIMEOUT) {
-> +			dev_err(dev,
-> +				"iova to phys timed out on 0x%pa for %s. Falling back to software table walk.\n",
-> +				&iova, dev_name(dev));
-> +			arm_smmu_disable_clocks(smmu);
-> +			return arm_smmu_iova_to_phys_soft(domain, iova);
-> +		}
-> +		cpu_relax();
-> +	}
-
-Do you know what happened to Olav's patches to make this sort of code
-generic?
-
-> @@ -2005,6 +2073,11 @@ int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+>  	default:
 >  		return -ENODEV;
 >  	}
+> @@ -1922,6 +1935,7 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+>  				    enum iommu_attr attr, void *data)
+>  {
+>  	struct arm_smmu_domain *smmu_domain = domain->priv;
+> +	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
 >  
-> +	if (smmu->version == 1 || (!(id & ID0_ATOSNS) && (id & ID0_S1TS))) {
+>  	switch (attr) {
+>  	case DOMAIN_ATTR_NESTING:
+> @@ -1933,6 +1947,9 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+>  			smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
+>  
+>  		return 0;
+> +	case DOMAIN_ATTR_COHERENT_HTW_DISABLE:
+> +		cfg->htw_disable = *((bool *)data);
+> +		return 0;
+>  	default:
+>  		return -ENODEV;
+>  	}
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 0550286df4..8a6449857a 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -81,6 +81,7 @@ enum iommu_attr {
+>  	DOMAIN_ATTR_FSL_PAMU_ENABLE,
+>  	DOMAIN_ATTR_FSL_PAMUV1,
+>  	DOMAIN_ATTR_NESTING,	/* two stages of translation */
+> +	DOMAIN_ATTR_COHERENT_HTW_DISABLE,
 
-Are you sure about this? The v2 spec says that is ATOSNS is clear then S1TS
-is also clear.
+I wonder whether we should make this ARM-specific. Can you take a quick look
+to see if any of the other IOMMUs can potentially benefit from this?
 
 Will
