@@ -1,17 +1,16 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v5 1/1] iommu-api: Add map_sg/unmap_sg functions
-Date: Tue, 19 Aug 2014 13:59:54 +0200
-Message-ID: <20140819115954.GC16329@8bytes.org>
-References: <1407797150-515-1-git-send-email-ohaugan@codeaurora.org>
-	<1407797150-515-2-git-send-email-ohaugan@codeaurora.org>
-	<20140818215553.GJ9809@8bytes.org>
-	<53F2829C.2040809@codeaurora.org>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH 00/29] Exynos SYSMMU (IOMMU) integration with DT and
+	DMA-mapping subsystem
+Date: Tue, 19 Aug 2014 14:01:32 +0200
+Message-ID: <53F33C9C.1080601@samsung.com>
+References: <1407235677-26324-1-git-send-email-m.szyprowski@samsung.com>
+	<20140818233201.GL9809@8bytes.org> <53F2E9AD.9030308@samsung.com>
+	<53F3375E.6030402@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <53F2829C.2040809-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-reply-to: <53F3375E.6030402-l3A5Bk7waGM@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,46 +20,46 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: =?UTF-8?B?QW5kcmVhcyBGw6RyYmVy?= <afaerber-l3A5Bk7waGM@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Ajay Kumar <ajaykumar.rs-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Aug 18, 2014 at 03:47:56PM -0700, Olav Haugan wrote:
-> If the alignment is not correct then iommu_map() will return error. Not
-> sure what other option we have here (and why make it different behavior
-> than iommu_map which just return error when it is not aligned properly).
-> I don't think we want to force any kind of alignment automatically. I
-> would rather have the API tell me I am doing something wrong than having
-> the function aligning the values and possibly undermap or overmap.
-
-But sg->offset is an offset into the page (at least it is used that way
-in the DMA-API and since you do 'page_len = s->offset + s->length' you
-use it the same way).
-So when you pass iova + offset the result will no longer be
-page-aligned. You should force sg->offset == 0 and sg->length to be
-page-aligned instead. This makes more sense because the IOMMU-API works
-on (io)-page granularity and not on arbitrary phys-addr ranges like the
-DMA-API.
-
-> Yes, I am aware of that. However, several people prefer this than
-> passing in scatterlist. It is not very convenient to pass a scatterlist
-> in some use cases. Someone mentioned a use case where they would have to
-> create a dummy sg list and populate it with the iova just to do an
-> unmap. I believe we would have to do this also. There is no use for
-> sglist when unmapping. However, would like to keep separate API from
-> iommu_unmap() to keep the API function names symmetric (map_sg/unmap_sg).
-
-Keeping it symetric is not more complicated, the caller just needs to
-keep the sg-list used for mapping around. I prefer the unmap_sg call to
-work in sg-lists too.
-
-> I thought that was why we added the default fallback and set all the
-> drivers to point to these fallback functions. Several people wanted this
-> so that we don't have to have NULL-check in these functions (and have
-> the functions be simple inline functions).
-
-Okay, since you add these call-backs to all drivers I think I can live
-with not doing a pointer check here.
-
-
-	Joerg
+SGVsbG8sCgpPbiAyMDE0LTA4LTE5IDEzOjM5LCBBbmRyZWFzIEbDpHJiZXIgd3JvdGU6Cj4gSGkg
+TWFyZWsgYW5kIElua2ksCj4KPiBBbSAxOS4wOC4yMDE0IDA4OjA3LCBzY2hyaWViIE1hcmVrIFN6
+eXByb3dza2k6Cj4+IE9uIDIwMTQtMDgtMTkgMDE6MzIsIEpvZXJnIFJvZWRlbCB3cm90ZToKPj4+
+IE9uIFR1ZSwgQXVnIDA1LCAyMDE0IGF0IDEyOjQ3OjI4UE0gKzAyMDAsIE1hcmVrIFN6eXByb3dz
+a2kgd3JvdGU6Cj4gWy4uLl0KPj4+PiAgICAzMyBmaWxlcyBjaGFuZ2VkLCAxMDE2IGluc2VydGlv
+bnMoKyksIDM1NiBkZWxldGlvbnMoLSkKPj4+IFRoaXMgdG91Y2hlcyBhIGxvdCBvZiBub24taW9t
+bXUgc3R1ZmYuIFdoYXQgaXMgeW91ciBzdHJhdGVneSBvbiBnZXR0aW5nCj4+PiB0aGlzIGluLCBk
+byB5b3UgcGxhbiB0byBnZXQgdGhlIG5vbi1pb21tdSBjaGFuZ2VzIG1lcmdlZCBmaXJzdCBvciBk
+byB5b3UKPj4+IHdhbnQgdG8gY29sbGVjdCB0aGUgcmVzcGVjdGl2ZSBBY2tzIGFuZCBtZXJnZSB0
+aGlzIGFsbCB0aHJvdWdoIG9uZSB0cmVlPwo+PiBUaG9zZSBwYXRjaGVzIGFyZSBwb3N0ZWQgYXMg
+b25lIHBhdGNoc2V0IG1haW5seSB0byBkZW1vbnN0cmF0ZSBob3cgdG8gZ2V0Cj4+IGV2ZXJ5dGhp
+bmcgdG8gd29yayB0b2dldGhlci4gSSBhbHNvIHBvc3RlZCB0aGlzIGFzIGEgc2luZ2xlIHBhdGNo
+IHNlcmllcwo+PiB0byBnZXQgc29tZSBmZWVkYmFjayBmcm9tIG90aGVyIGlvbW11IGRldmVsb3Bl
+cnMsIGVzcGVjaWFsbHkgYWxsIHRob3NlCj4+IGludm9sdmVkIGluIHRoZSBnZW5lcmljIGlvbW11
+IGR0IGJpbmRpbmdzLgo+Pgo+PiBGb3IgbWVyZ2luZywgSSB3aWxsIHNwbGl0IHRoZW0gaW50byBz
+bWFsbGVyIHNlcmllcyBhbmQgdHJ5IHRvIGdldAo+PiByZXNwZWN0aXZlIGFja3MuCj4gSSdtIHdv
+cmtpbmcgb24gNTI1MCBiYXNlZCBTcHJpbmcgQ2hyb21lYm9vayBhbmQgbm90aWNlZCB0aGF0IHYz
+LjE3LXJjMQo+IGdvdCBzb21lIG1vcmUgaW9tbXUgc3VwcG9ydC4gV2l0aCB0aGUgbmV3IENPTkZJ
+R19EUk1fRVhZTk9TX0lPTU1VPXkgbXkKPiBtYWNoaW5lIHN0b3BzIGJvb3RpbmcuIFNvIEknbSB3
+b25kZXJpbmcsIGlzIGFueSBvZiB0aGlzIGEgZml4IGZvciAzLjE3LAo+IG9yIGlzIGFsbCBvZiB0
+aGlzICJ1bnJlbGF0ZWQiIC1uZXh0IG1hdGVyaWFsPwoKVGhpcyBpcyBwcm9iYWJseSBhIHNpZGUg
+ZWZmZWN0IG9mIHBhdGNoIAozMTcwNDQ3YzFmMjY0ZDUxYjhkMWYzODk4YmYyNTg4NTg4YTY0ZmRj
+CigiaW9tbXUvZXh5bm9zOiBTZWxlY3QgQVJNX0RNQV9VU0VfSU9NTVUiKS4gSXQgYWRkZWQgc2Vs
+ZWN0aW9uIG9mIApBUk1fRE1BX1VTRV9JT01NVQpzeW1ib2wsIG9uIHdoaWNoIElPTU1VIHN1cHBv
+cnQgaW4gRXh5bm9zIERSTSBzdWJzeXN0ZW0gZGVwZW5kcy4gSG93ZXZlciAKc2VsZWN0aW5nCnRo
+aXMgc3ltYm9sIGlzIGFsbCB0aGF0IHRoaXMgcGF0Y2ggZG9lcywgd2l0aG91dCBwcm92aWRpbmcg
+YW55IGNvZGUgY29kZSAKd2hpY2gKaW1wbGVtZW50cyByZWFsIHN1cHBvcnQgZm9yIEFSTSBETUEg
+SU9NTVUgaW50ZWdyYXRpb24sIHdoaWNoIGlzIG5lZWRlZCAKYnkgRXh5bm9zCkRSTSBkcml2ZXIu
+IFBsZWFzZSBkaXNhYmxlIENPTkZJR19EUk1fRVhZTk9TX0lPTU1VIGluIGtlcm5lbCAuY29uZmln
+IGFuZCAKeW91cgpzeXN0ZW0gc2hvdWxkIGJlIGJvb3RhYmxlIGFnYWluLgoKPiBBbHNvLCBhcmUg
+eW91IG9yIHNvbWVvbmUKPiB3b3JraW5nIG9uIHRoZSByZXNwZWN0aXZlIERUIGNoYW5nZXMgZm9y
+IEV4eW5vczU/CgpJIGNhbiBwcmVwYXJlIERUIGNoYW5nZXMgZm9yIEV4eW5vczUgYXMgd2VsbCwg
+YnV0IGZpcnN0IEkgd2FudGVkIHRvIApjbGFyaWZ5IGlmCmV2ZXJ5b25lIGludm9sdmVkIGluIGdl
+bmVyaWMgSU9NTVUgYmluZGluZ3MgYW5kIEV4eW5vcyBJT01NVSBkcml2ZXIgCmFncmVlcyBvbiBt
+eQpwcm9wb3NhbC4KCkJlc3QgcmVnYXJkcwotLSAKTWFyZWsgU3p5cHJvd3NraSwgUGhEClNhbXN1
+bmcgUiZEIEluc3RpdHV0ZSBQb2xhbmQKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3Vu
+ZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0
+aW5mby9pb21tdQ==
