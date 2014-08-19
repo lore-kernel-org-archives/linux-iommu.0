@@ -1,17 +1,15 @@
-From: "Li, ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Subject: Re: [PATCH 1/1] iommu/vt-d : clear old root entry for dump kernel
-Date: Tue, 19 Aug 2014 13:49:17 +0800
-Message-ID: <53F2E55D.6000405@hp.com>
-References: <1408352352-14449-1-git-send-email-zhen-hual@hp.com>
-	<1267BB84A242B24E81E0C0C8955CFFC061A4BA26@G9W0343.americas.hpqcorp.net>
-	<20140818232328.GK9809@8bytes.org>
-	<1267BB84A242B24E81E0C0C8955CFFC061A4CA86@G9W0343.americas.hpqcorp.net>
-	<1267BB84A242B24E81E0C0C8955CFFC061A4DACB@G9W0343.americas.hpqcorp.net>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH 00/29] Exynos SYSMMU (IOMMU) integration with DT and
+	DMA-mapping subsystem
+Date: Tue, 19 Aug 2014 08:07:41 +0200
+Message-ID: <53F2E9AD.9030308@samsung.com>
+References: <1407235677-26324-1-git-send-email-m.szyprowski@samsung.com>
+	<20140818233201.GL9809@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1267BB84A242B24E81E0C0C8955CFFC061A4DACB-j39jTyOY9jISZAcGdq5asR6epYMZPwEe5NbjCUgZEJk@public.gmane.org>
+In-reply-to: <20140818233201.GL9809-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,75 +19,61 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Li,
-	Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-I found there are more data need to be cleared for the dump kernel.
-So please ignore this patch, I will send out another one.
+Hello,
 
-Thanks
-Zhenhua
+On 2014-08-19 01:32, Joerg Roedel wrote:
+> On Tue, Aug 05, 2014 at 12:47:28PM +0200, Marek Szyprowski wrote:
+>>   .../devicetree/bindings/iommu/samsung,sysmmu.txt   |  93 ++-
+>>   Documentation/power/notifiers.txt                  |  14 +
+>>   arch/arm/boot/dts/exynos4.dtsi                     | 118 ++++
+>>   arch/arm/boot/dts/exynos4210.dtsi                  |  23 +
+>>   arch/arm/boot/dts/exynos4x12.dtsi                  |  82 +++
+>>   arch/arm/include/asm/dma-iommu.h                   |  36 ++
+>>   arch/arm/mach-exynos/pm_domains.c                  |  12 +-
+>>   arch/arm/mach-integrator/impd1.c                   |   2 +-
+>>   arch/arm/mm/dma-mapping.c                          |  47 ++
+>>   drivers/base/bus.c                                 |   4 +-
+>>   drivers/base/dd.c                                  |  10 +-
+>>   drivers/base/platform.c                            |   2 +-
+>>   drivers/base/power/domain.c                        |  70 ++-
+>>   drivers/clk/samsung/clk-exynos4.c                  |   1 +
+>>   drivers/gpu/drm/exynos/exynos_drm_fimc.c           |   1 +
+>>   drivers/gpu/drm/exynos/exynos_drm_fimd.c           |  26 +-
+>>   drivers/gpu/drm/exynos/exynos_drm_g2d.c            |   1 +
+>>   drivers/gpu/drm/exynos/exynos_drm_gsc.c            |   1 +
+>>   drivers/gpu/drm/exynos/exynos_drm_rotator.c        |   1 +
+>>   drivers/gpu/drm/exynos/exynos_mixer.c              |   1 +
+>>   drivers/iommu/exynos-iommu.c                       | 663 +++++++++++++--------
+>>   drivers/iommu/iommu.c                              |   3 +
+>>   drivers/media/platform/s5p-mfc/s5p_mfc.c           | 107 ++--
+>>   drivers/pci/host/pci-mvebu.c                       |   2 +-
+>>   drivers/pci/host/pci-rcar-gen2.c                   |   2 +-
+>>   drivers/pci/host/pci-tegra.c                       |   2 +-
+>>   drivers/pci/host/pcie-rcar.c                       |   2 +-
+>>   drivers/soc/tegra/pmc.c                            |   2 +-
+>>   include/dt-bindings/clock/exynos4.h                |  10 +-
+>>   include/linux/device.h                             |  12 +-
+>>   include/linux/iommu.h                              |   1 +
+>>   include/linux/pm.h                                 |   2 +
+>>   include/linux/pm_domain.h                          |  19 +
+>>   33 files changed, 1016 insertions(+), 356 deletions(-)
+> This touches a lot of non-iommu stuff. What is your strategy on getting
+> this in, do you plan to get the non-iommu changes merged first or do you
+> want to collect the respective Acks and merge this all through one tree?
 
-On 08/19/2014 07:59 AM, Li, Zhen-Hua wrote:
-> My debugging result is this:
->
-> 1. Clear the old root entry table, dump kernel will choose another
->   memory region for root entry.
-> 2. Do NOT clear the old root entry, when dump kernel initializing
-> the iommu data structure, it  will allocate memory for root entry,
-> this is different from the old address.
->
-> If not clear old entry , the error message appears before dump kernel
-> finishes the iommu init works, and also appears in other places(before
-> device inits).
->
-> If I clear the old root entry, the error message disappears before iommu
-> init work finish, but still appears in other places.
->
-> -----Original Message-----
-> From: Li, Zhen-Hua
-> Sent: Tuesday, August 19, 2014 7:48 AM
-> To: Li, Zhen-Hua; Joerg Roedel
-> Cc: David Woodhouse; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: RE: [PATCH 1/1] iommu/vt-d : clear old root entry for dump kernel
->
-> When the dump kernel boots, it will initialize iommu again, and the root entry will be allocted
-> in another memory region.
->
-> That means, no matter kernel clears the old root entry table or not,  the dump kernel will use
-> another memory region when iommu initializing.
->
-> -----Original Message-----
-> From: Li, Zhen-Hua
-> Sent: Tuesday, August 19, 2014 7:27 AM
-> To: 'Joerg Roedel'
-> Cc: David Woodhouse; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: RE: [PATCH 1/1] iommu/vt-d : clear old root entry for dump kernel
->
-> : [fault reason 01] Present bit in root entry is clear
-> It appears when iommu initializing in the kdump kernel.
->
-> -----Original Message-----
-> From: Joerg Roedel [mailto:joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org]
-> Sent: Tuesday, August 19, 2014 7:23 AM
-> To: Li, Zhen-Hua
-> Cc: David Woodhouse; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: Re: [PATCH 1/1] iommu/vt-d : clear old root entry for dump kernel
->
-> On Mon, Aug 18, 2014 at 11:01:56PM +0000, Li, Zhen-Hua wrote:
->> There is a bug when Linux running on an HP large system:
->> 	when kdump kernel runs, the hardware is still using the old
->> root entry. This causes error message when iommu not finished initialization.
-> What error message are you seeing? When the kdump kernel boots the iommu
-> should be still enabled from the old kernel with the old root-entry. So
-> any in-flight DMA initiated from the old kernel can still pass and there
-> should be no error messages.
->
-> When you clear the root-entry that in-flight DMA might go to another
-> random location in system memory or just fail, no?
->
->
-> 	Joerg
->
+Those patches are posted as one patchset mainly to demonstrate how to get
+everything to work together. I also posted this as a single patch series
+to get some feedback from other iommu developers, especially all those
+involved in the generic iommu dt bindings.
+
+For merging, I will split them into smaller series and try to get
+respective acks.
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
