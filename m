@@ -1,15 +1,15 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 4/6] iommu/arm-smmu: implement generic DT bindings
-Date: Tue, 19 Aug 2014 13:54:49 +0100
-Message-ID: <20140819125449.GN23128@arm.com>
+Subject: Re: [PATCH 1/6] iommu/arm-smmu: add support for specifying clocks
+Date: Tue, 19 Aug 2014 13:58:34 +0100
+Message-ID: <20140819125833.GO23128@arm.com>
 References: <1407891099-24641-1-git-send-email-mitchelh@codeaurora.org>
-	<1407891099-24641-5-git-send-email-mitchelh@codeaurora.org>
+	<1407891099-24641-2-git-send-email-mitchelh@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1407891099-24641-5-git-send-email-mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-Reply-To: <1407891099-24641-2-git-send-email-mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,134 +20,107 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-[adding Rob, Mark, Arnd, Thierry and Hiroshi]
-
-On Wed, Aug 13, 2014 at 01:51:37AM +0100, Mitchel Humpherys wrote:
-> Generic IOMMU device tree bindings were recently added in
-> ["devicetree: Add generic IOMMU device tree bindings"]. Implement the
-> bindings in the ARM SMMU driver.
+On Wed, Aug 13, 2014 at 01:51:34AM +0100, Mitchel Humpherys wrote:
+> On some platforms with tight power constraints it is polite to only
+> leave your clocks on for as long as you absolutely need them. Currently
+> we assume that all clocks necessary for SMMU register access are always
+> on.
 > 
-> See Documentation/devicetree/bindings/iommu/iommu.txt for the bindings
-> themselves.
+> Add some optional device tree properties to specify any clocks that are
+> necessary for SMMU register access and turn them on and off as needed.
+> 
+> If no clocks are specified in the device tree things continue to work
+> the way they always have: we assume all necessary clocks are always
+> turned on.
 
-Could you look at moving the parsing code into a separate file please (maybe
-under lib/ ?). That way, other IOMMUs can use the same binding without the
-boilerplate having to be rewritten each time.
+How does this interact with an SMMU in bypass mode?
 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 63c6707fad..22e25f3172 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -538,25 +538,32 @@ static int insert_smmu_master(struct arm_smmu_device *smmu,
->  	return 0;
->  }
->  
-> +struct iommus_entry {
-> +	struct list_head list;
-> +	struct device_node *node;
-> +	u16 streamids[MAX_MASTER_STREAMIDS];
-> +	int num_sids;
-> +};
-> +
->  static int register_smmu_master(struct arm_smmu_device *smmu,
-> -				struct device *dev,
-> -				struct of_phandle_args *masterspec)
-> +				struct iommus_entry *entry)
->  {
->  	int i;
->  	struct arm_smmu_master *master;
-> +	struct device *dev = smmu->dev;
->  
-> -	master = find_smmu_master(smmu, masterspec->np);
-> +	master = find_smmu_master(smmu, entry->node);
->  	if (master) {
->  		dev_err(dev,
->  			"rejecting multiple registrations for master device %s\n",
-> -			masterspec->np->name);
-> +			entry->node->name);
->  		return -EBUSY;
->  	}
->  
-> -	if (masterspec->args_count > MAX_MASTER_STREAMIDS) {
-> +	if (entry->num_sids > MAX_MASTER_STREAMIDS) {
->  		dev_err(dev,
->  			"reached maximum number (%d) of stream IDs for master device %s\n",
-> -			MAX_MASTER_STREAMIDS, masterspec->np->name);
-> +			MAX_MASTER_STREAMIDS, entry->node->name);
->  		return -ENOSPC;
->  	}
->  
-> @@ -564,15 +571,58 @@ static int register_smmu_master(struct arm_smmu_device *smmu,
->  	if (!master)
->  		return -ENOMEM;
->  
-> -	master->of_node			= masterspec->np;
-> -	master->cfg.num_streamids	= masterspec->args_count;
-> +	master->of_node			= entry->node;
-> +	master->cfg.num_streamids	= entry->num_sids;
->  
->  	for (i = 0; i < master->cfg.num_streamids; ++i)
-> -		master->cfg.streamids[i] = masterspec->args[i];
-> +		master->cfg.streamids[i] = entry->streamids[i];
->  
->  	return insert_smmu_master(smmu, master);
->  }
->  
-> +static int arm_smmu_parse_iommus_properties(struct arm_smmu_device *smmu,
-> +					int *num_masters)
+[...]
+
+> +static int arm_smmu_enable_clocks(struct arm_smmu_device *smmu)
 > +{
-> +	struct of_phandle_args iommuspec;
-> +	struct device_node *dn;
+> +	int i, ret = 0;
 > +
-> +	for_each_node_with_property(dn, "iommus") {
-> +		int arg_ind = 0;
-> +		struct iommus_entry *entry, *n;
-> +		LIST_HEAD(iommus);
-> +
-> +		while (!of_parse_phandle_with_args(dn, "iommus", "#iommu-cells",
-> +							arg_ind, &iommuspec)) {
-
-We need to check that the phandle does indeed point at one of our SMMUs
-here, in case we have a system with multiple IOMMU types, all using the
-generic binding.
-
-> +			int i;
-> +
-> +			list_for_each_entry(entry, &iommus, list)
-> +				if (entry->node == dn)
-> +					break;
-
-Oh, yuck, this is really nasty to parse...
-
-> +			if (&entry->list == &iommus) {
-
-Where is entry initialised the first time around?
-
-> +				entry = devm_kzalloc(smmu->dev, sizeof(*entry),
-> +						GFP_KERNEL);
-> +				if (!entry)
-> +					return -ENOMEM;
-
-You need to of_node_put the guys you've got back from the phandle parsing
-code.
-
-> +				entry->node = dn;
-> +				list_add(&entry->list, &iommus);
-> +			}
-> +			entry->num_sids = iommuspec.args_count;
-> +			for (i = 0; i < entry->num_sids; ++i)
-> +				entry->streamids[i] = iommuspec.args[i];
-> +			arg_ind++;
-
-Isn't this defined by #iommu-cells?
-
+> +	for (i = 0; i < smmu->num_clocks; ++i) {
+> +		ret = clk_prepare_enable(smmu->clocks[i]);
+> +		if (ret) {
+> +			dev_err(smmu->dev, "Couldn't enable clock #%d\n", i);
+> +			while (i--)
+> +				clk_disable_unprepare(smmu->clocks[i]);
+> +			break;
 > +		}
+> +	}
 > +
-> +		list_for_each_entry_safe(entry, n, &iommus, list) {
+> +	return ret;
+> +}
+> +
+> +static void arm_smmu_disable_clocks(struct arm_smmu_device *smmu)
+> +{
+> +	int i;
+> +
+> +	for (i = 0; i < smmu->num_clocks; ++i)
+> +		clk_disable_unprepare(smmu->clocks[i]);
+> +}
 
-Why the _safe variant? This is a local list, right?
+What stops theses from racing with each other when there are multiple
+clocks? I also assume that the clk API ignores calls to clk_enable_prepare
+for a clk that's already enabled? I couldn't find that code...
+
+>  /* Wait for any pending TLB invalidations to complete */
+>  static void arm_smmu_tlb_sync(struct arm_smmu_device *smmu)
+>  {
+> @@ -644,11 +672,15 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+>  	struct arm_smmu_device *smmu = smmu_domain->smmu;
+>  	void __iomem *cb_base;
+>  
+> +	arm_smmu_enable_clocks(smmu);
+
+How can I get a context interrupt from an SMMU without its clocks enabled?
+
+[...]
+
+> +int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+>  {
+>  	unsigned long size;
+>  	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
+> @@ -2027,10 +2124,16 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+>  	}
+>  	dev_notice(dev, "registered %d master devices\n", i);
+>  
+> -	err = arm_smmu_device_cfg_probe(smmu);
+> +	err = arm_smmu_init_clocks(smmu);
+>  	if (err)
+>  		goto out_put_masters;
+>  
+> +	arm_smmu_enable_clocks(smmu);
+> +
+> +	err = arm_smmu_device_cfg_probe(smmu);
+> +	if (err)
+> +		goto out_disable_clocks;
+> +
+>  	parse_driver_options(smmu);
+>  
+>  	if (smmu->version > 1 &&
+> @@ -2039,7 +2142,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+>  			"found only %d context interrupt(s) but %d required\n",
+>  			smmu->num_context_irqs, smmu->num_context_banks);
+>  		err = -ENODEV;
+> -		goto out_put_masters;
+> +		goto out_disable_clocks;
+>  	}
+>  
+>  	for (i = 0; i < smmu->num_global_irqs; ++i) {
+> @@ -2061,12 +2164,16 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+>  	spin_unlock(&arm_smmu_devices_lock);
+>  
+>  	arm_smmu_device_reset(smmu);
+> +	arm_smmu_disable_clocks(smmu);
+
+I wonder if this is really the right thing to do. Rather than the
+fine-grained clock enable/disable you have, why don't we just enable in
+domain_init and disable in domain_destroy, with refcounting for the clocks?
 
 Will
