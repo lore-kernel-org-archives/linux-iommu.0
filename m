@@ -1,87 +1,80 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH v5] devicetree: Add generic IOMMU device tree bindings
-Date: Tue, 19 Aug 2014 12:11:43 +0000
-Message-ID: <6a3d4048ddb84bd19c847adf7f02fc52@BL2PR03MB468.namprd03.prod.outlook.com>
-References: <1406803383-11601-1-git-send-email-thierry.reding@gmail.com>
-	<87a9774lf5.fsf@nvidia.com> <20140815115110.GO27466@arm.com>
+From: =?UTF-8?B?QW5kcmVhcyBGw6RyYmVy?= <afaerber@suse.de>
+Subject: Re: [PATCH 00/29] Exynos SYSMMU (IOMMU) integration with DT and DMA-mapping
+ subsystem
+Date: Tue, 19 Aug 2014 14:30:59 +0200
+Message-ID: <53F34383.30100@suse.de>
+References: <1407235677-26324-1-git-send-email-m.szyprowski@samsung.com> <20140818233201.GL9809@8bytes.org> <53F2E9AD.9030308@samsung.com> <53F3375E.6030402@suse.de> <53F33C9C.1080601@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140815115110.GO27466-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <53F33C9C.1080601@samsung.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>, Inki Dae <inki.dae@samsung.com>
+Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Kukjin Kim <kgene.kim@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>, Ajay Kumar <ajaykumar.rs@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+Hi,
 
-> -----Original Message-----
-> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
-> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Will Deacon
-> Sent: Friday, August 15, 2014 5:21 PM
-> To: Hiroshi Doyu
-> Cc: Mark Rutland; devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Stephen Warren; Arnd
-> Bergmann; Rob Herring; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Thierry Reding;
-> linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> Subject: Re: [PATCH v5] devicetree: Add generic IOMMU device tree bindings
-> 
-> On Thu, Aug 14, 2014 at 07:47:42AM +0100, Hiroshi Doyu wrote:
-> > Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> writes:
-> >
-> > > +Multiple-master IOMMU:
-> > > +----------------------
-> > > +
-> > > +       iommu {
-> > > +               /* the specifier represents the ID of the master */
-> > > +               #iommu-cells = <1>;
-> > > +       };
-> > > +
-> > > +       master@1 {
-> > > +               /* device has master ID 42 in the IOMMU */
-> > > +               iommus = <&{/iommu} 42>;
-> > > +       };
-> > > +
-> > > +       master@2 {
-> > > +               /* device has master IDs 23 and 24 in the IOMMU */
-> > > +               iommus = <&{/iommu} 23>, <&{/iommu} 24>;
-> > > +       };
-> >
-> > I think that this "master ID" will be parsed in IOMMU driver. For
-> > example, ARM,SMMU expects "streamID" as "master ID", right?
-> >
-> > If a SoC has a feature to configure to assign streamID to devices at
-> > runtime, "streamID" is not equal to "master ID".
-> >
-> >   iommus = <&{/smmu} "soc specific master ID">;
-> >
-> > "soc master ID" needs to be translated into "streamID" by SoC SW. It
-> > seems that ARM,SMMU kernel driver doesn't expect this kind of ID
-> > translation. If ARM,SMMU kernel driver is used as is, "soc master ID"
-> > would be incompatible? ARM,SMMU needs such translation before parsing.
-> > Is this my understanding right?
-> >
-> > If so I think that this master ID configuration/translation may be
-> > quite reasonable requirment for SoC using ARM,SMMU.
-> >
-> > Can we consider this ID translation within ARM,SMMU compatibility?
-> >
-> > IOW, is it possible to implement some SoC specific hook for ID
-> > translation/configuration in ARM,SMMU kernel driver?
-> 
-> I think there's some confusion here. The ARM architected SMMU does not
-> perform any StreamID translation -- it sees an incoming ID and uses that to
-> lookup a set of translation tables. 
+Am 19.08.2014 14:01, schrieb Marek Szyprowski:
+> On 2014-08-19 13:39, Andreas F=C3=A4rber wrote:
+>> I'm working on 5250 based Spring Chromebook and noticed that v3.17-r=
+c1
+>> got some more iommu support. With the new CONFIG_DRM_EXYNOS_IOMMU=3D=
+y my
+>> machine stops booting. So I'm wondering, is any of this a fix for 3.=
+17,
+>> or is all of this "unrelated" -next material?
+>=20
+> This is probably a side effect of patch
+> 3170447c1f264d51b8d1f3898bf2588588a64fdc
+> ("iommu/exynos: Select ARM_DMA_USE_IOMMU"). It added selection of
+> ARM_DMA_USE_IOMMU
+> symbol, on which IOMMU support in Exynos DRM subsystem depends. Howev=
+er
+> selecting
+> this symbol is all that this patch does, without providing any code c=
+ode
+> which
+> implements real support for ARM DMA IOMMU integration, which is neede=
+d
+> by Exynos
+> DRM driver. Please disable CONFIG_DRM_EXYNOS_IOMMU in kernel .config =
+and
+> your
+> system should be bootable again.
 
-I don't completely agree with this. In case of MMU-500  don't we have the "TBUID + device assigned stream ID" representing the stream ID for matching at the TCU? In case of our platform, we have hot pluggable device objects comprising of devices connected to different TBUs. We have a requirement to use a single stream ID for all the distributed objects. We will have to use the stream ID masking capability to mask out the TBU ID.
+Yes, that's what my report implied. :)
 
--Varun
+I'm bringing this up for -rc2 though: It sounds as if that option shoul=
+d
+remain unavailable until the required code is in? Thanks.
+
+>> Also, are you or someone
+>> working on the respective DT changes for Exynos5?
+>=20
+> I can prepare DT changes for Exynos5 as well, but first I wanted to
+> clarify if
+> everyone involved in generic IOMMU bindings and Exynos IOMMU driver
+> agrees on my
+> proposal.
+
+Sure. I'm updating my old spring-bridge.v6 branch [1] to 3.17-rc1 [2],
+which involves three drm bridge patches rebased onto the new drm panel
+prepare/unprepare infrastructure plus two LVDS DT patches in addition t=
+o
+the IOMMU patches. That old branch included DT changes for 5250 in "ARM=
+:
+dts: add System MMU nodes of Exynos SoCs", but that'll probably need
+updating for the new bindings.
+
+Regards,
+Andreas
+
+[1] https://github.com/afaerber/linux/commits/spring-bridge.v6
+[2] https://github.com/afaerber/linux/commits/spring-next
+
+--=20
+SUSE LINUX Products GmbH, Maxfeldstr. 5, 90409 N=C3=BCrnberg, Germany
+GF: Jeff Hawn, Jennifer Guild, Felix Imend=C3=B6rffer; HRB 16746 AG N=C3=
+=BCrnberg
