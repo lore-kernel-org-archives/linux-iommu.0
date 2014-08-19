@@ -1,16 +1,21 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH 00/29] Exynos SYSMMU (IOMMU) integration with DT and
-	DMA-mapping subsystem
-Date: Tue, 19 Aug 2014 14:01:32 +0200
-Message-ID: <53F33C9C.1080601@samsung.com>
-References: <1407235677-26324-1-git-send-email-m.szyprowski@samsung.com>
-	<20140818233201.GL9809@8bytes.org> <53F2E9AD.9030308@samsung.com>
-	<53F3375E.6030402@suse.de>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH v5] devicetree: Add generic IOMMU device tree bindings
+Date: Tue, 19 Aug 2014 12:01:34 +0000
+Message-ID: <1d843c14ed0d49cc916abcfa2d3e0553@BL2PR03MB468.namprd03.prod.outlook.com>
+References: <1406803383-11601-1-git-send-email-thierry.reding@gmail.com>
+	<87a9774lf5.fsf@nvidia.com>
+	<cfb1d2ff66004685b7ead3f5e6321681@BL2PR03MB468.namprd03.prod.outlook.com>
+	<87y4ur2h23.fsf@nvidia.com>
+	<d9fb045d54244f26a773ba45ad3caa2d@BL2PR03MB468.namprd03.prod.outlook.com>
+	<87zjf0hk3b.fsf@nvidia.com>
+	<a0244b6befa9407fb6c2c35cc29f92f7@BL2PR03MB468.namprd03.prod.outlook.com>
+	<87wqa4hhcr.fsf@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <53F3375E.6030402-l3A5Bk7waGM@public.gmane.org>
+In-Reply-To: <87wqa4hhcr.fsf-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,46 +25,78 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: =?UTF-8?B?QW5kcmVhcyBGw6RyYmVy?= <afaerber-l3A5Bk7waGM@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Ajay Kumar <ajaykumar.rs-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGVsbG8sCgpPbiAyMDE0LTA4LTE5IDEzOjM5LCBBbmRyZWFzIEbDpHJiZXIgd3JvdGU6Cj4gSGkg
-TWFyZWsgYW5kIElua2ksCj4KPiBBbSAxOS4wOC4yMDE0IDA4OjA3LCBzY2hyaWViIE1hcmVrIFN6
-eXByb3dza2k6Cj4+IE9uIDIwMTQtMDgtMTkgMDE6MzIsIEpvZXJnIFJvZWRlbCB3cm90ZToKPj4+
-IE9uIFR1ZSwgQXVnIDA1LCAyMDE0IGF0IDEyOjQ3OjI4UE0gKzAyMDAsIE1hcmVrIFN6eXByb3dz
-a2kgd3JvdGU6Cj4gWy4uLl0KPj4+PiAgICAzMyBmaWxlcyBjaGFuZ2VkLCAxMDE2IGluc2VydGlv
-bnMoKyksIDM1NiBkZWxldGlvbnMoLSkKPj4+IFRoaXMgdG91Y2hlcyBhIGxvdCBvZiBub24taW9t
-bXUgc3R1ZmYuIFdoYXQgaXMgeW91ciBzdHJhdGVneSBvbiBnZXR0aW5nCj4+PiB0aGlzIGluLCBk
-byB5b3UgcGxhbiB0byBnZXQgdGhlIG5vbi1pb21tdSBjaGFuZ2VzIG1lcmdlZCBmaXJzdCBvciBk
-byB5b3UKPj4+IHdhbnQgdG8gY29sbGVjdCB0aGUgcmVzcGVjdGl2ZSBBY2tzIGFuZCBtZXJnZSB0
-aGlzIGFsbCB0aHJvdWdoIG9uZSB0cmVlPwo+PiBUaG9zZSBwYXRjaGVzIGFyZSBwb3N0ZWQgYXMg
-b25lIHBhdGNoc2V0IG1haW5seSB0byBkZW1vbnN0cmF0ZSBob3cgdG8gZ2V0Cj4+IGV2ZXJ5dGhp
-bmcgdG8gd29yayB0b2dldGhlci4gSSBhbHNvIHBvc3RlZCB0aGlzIGFzIGEgc2luZ2xlIHBhdGNo
-IHNlcmllcwo+PiB0byBnZXQgc29tZSBmZWVkYmFjayBmcm9tIG90aGVyIGlvbW11IGRldmVsb3Bl
-cnMsIGVzcGVjaWFsbHkgYWxsIHRob3NlCj4+IGludm9sdmVkIGluIHRoZSBnZW5lcmljIGlvbW11
-IGR0IGJpbmRpbmdzLgo+Pgo+PiBGb3IgbWVyZ2luZywgSSB3aWxsIHNwbGl0IHRoZW0gaW50byBz
-bWFsbGVyIHNlcmllcyBhbmQgdHJ5IHRvIGdldAo+PiByZXNwZWN0aXZlIGFja3MuCj4gSSdtIHdv
-cmtpbmcgb24gNTI1MCBiYXNlZCBTcHJpbmcgQ2hyb21lYm9vayBhbmQgbm90aWNlZCB0aGF0IHYz
-LjE3LXJjMQo+IGdvdCBzb21lIG1vcmUgaW9tbXUgc3VwcG9ydC4gV2l0aCB0aGUgbmV3IENPTkZJ
-R19EUk1fRVhZTk9TX0lPTU1VPXkgbXkKPiBtYWNoaW5lIHN0b3BzIGJvb3RpbmcuIFNvIEknbSB3
-b25kZXJpbmcsIGlzIGFueSBvZiB0aGlzIGEgZml4IGZvciAzLjE3LAo+IG9yIGlzIGFsbCBvZiB0
-aGlzICJ1bnJlbGF0ZWQiIC1uZXh0IG1hdGVyaWFsPwoKVGhpcyBpcyBwcm9iYWJseSBhIHNpZGUg
-ZWZmZWN0IG9mIHBhdGNoIAozMTcwNDQ3YzFmMjY0ZDUxYjhkMWYzODk4YmYyNTg4NTg4YTY0ZmRj
-CigiaW9tbXUvZXh5bm9zOiBTZWxlY3QgQVJNX0RNQV9VU0VfSU9NTVUiKS4gSXQgYWRkZWQgc2Vs
-ZWN0aW9uIG9mIApBUk1fRE1BX1VTRV9JT01NVQpzeW1ib2wsIG9uIHdoaWNoIElPTU1VIHN1cHBv
-cnQgaW4gRXh5bm9zIERSTSBzdWJzeXN0ZW0gZGVwZW5kcy4gSG93ZXZlciAKc2VsZWN0aW5nCnRo
-aXMgc3ltYm9sIGlzIGFsbCB0aGF0IHRoaXMgcGF0Y2ggZG9lcywgd2l0aG91dCBwcm92aWRpbmcg
-YW55IGNvZGUgY29kZSAKd2hpY2gKaW1wbGVtZW50cyByZWFsIHN1cHBvcnQgZm9yIEFSTSBETUEg
-SU9NTVUgaW50ZWdyYXRpb24sIHdoaWNoIGlzIG5lZWRlZCAKYnkgRXh5bm9zCkRSTSBkcml2ZXIu
-IFBsZWFzZSBkaXNhYmxlIENPTkZJR19EUk1fRVhZTk9TX0lPTU1VIGluIGtlcm5lbCAuY29uZmln
-IGFuZCAKeW91cgpzeXN0ZW0gc2hvdWxkIGJlIGJvb3RhYmxlIGFnYWluLgoKPiBBbHNvLCBhcmUg
-eW91IG9yIHNvbWVvbmUKPiB3b3JraW5nIG9uIHRoZSByZXNwZWN0aXZlIERUIGNoYW5nZXMgZm9y
-IEV4eW5vczU/CgpJIGNhbiBwcmVwYXJlIERUIGNoYW5nZXMgZm9yIEV4eW5vczUgYXMgd2VsbCwg
-YnV0IGZpcnN0IEkgd2FudGVkIHRvIApjbGFyaWZ5IGlmCmV2ZXJ5b25lIGludm9sdmVkIGluIGdl
-bmVyaWMgSU9NTVUgYmluZGluZ3MgYW5kIEV4eW5vcyBJT01NVSBkcml2ZXIgCmFncmVlcyBvbiBt
-eQpwcm9wb3NhbC4KCkJlc3QgcmVnYXJkcwotLSAKTWFyZWsgU3p5cHJvd3NraSwgUGhEClNhbXN1
-bmcgUiZEIEluc3RpdHV0ZSBQb2xhbmQKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3Vu
-ZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0
-aW5mby9pb21tdQ==
+
+
+> -----Original Message-----
+> From: Hiroshi Doyu [mailto:hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org]
+> Sent: Tuesday, August 19, 2014 4:33 PM
+> To: Sethi Varun-B16395; Will Deacon
+> Cc: Hiroshi Doyu; Thierry Reding; Stephen Warren; Arnd Bergmann; Mark
+> Rutland; devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Olof Johansson; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
+> foundation.org; Rob Herring; linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-arm-
+> kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; Yoder Stuart-B08248
+> Subject: Re: [PATCH v5] devicetree: Add generic IOMMU device tree bindings
+> 
+> 
+> Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org> writes:
+> 
+> >> >> > Also, for dynamic stream ID allocation we would need to
+> >> >> > represent the specific master register (to store the stream ID) in the
+> device tree.
+> >> >>
+> >> >> I assmue that the above means that iMX has such configuration
+> >> >> register to map steramID and a device dynamically.
+> >> >
+> >> > We have per master registers for setting the stream ID on the
+> >> > Layerscape platforms. My point was that we would need the iommu
+> >> > master node to include a reference to the master id register.
+> >> >
+> >> > master@1 {
+> >> >                /* device has master ID 42 in the IOMMU */
+> >> >              iommus = <&{/iommu} 42>;
+> >> >              master-id-reg = <phandle offset> };
+> >>
+> >> In the above, for "iommus=" bindings, you wouldn't need to break
+> >> ARM,SMMU compatibility at all if you set "streamID" exactly as below.
+> >>
+> >>   master@1 {
+> >>                  /* device has master ID 42 in the IOMMU */
+> >>                iommus = <&{/iommu} 'any given streamID'>;
+> >>                master-id-reg = <phandle offset>
+> >>   };
+> >>
+> >> And your SoC needs to register bus_notifier and ADD_DEVICE should
+> >> configure to map 'any given streamID' to a device via the above
+> >> register. This wouldn't need any modification from ARM,SMMU driver
+> >> and keep the iommus bindings as it is.
+> >>
+> >> IOW, SoC only needs to register ADD_DEVICE in bus_notifier to map
+> >> StreamID to a device. This needs to be executed earlier than IOMMU
+> >> bus's ADD_DEVICE, though.
+> >>
+> >> Is my understanding right?
+> >
+> > I don't think that SOC specific code needs a bus notifier for setting
+> > the stream ID. It can be done as a part of SOC specific
+> > initialization. The device tree can be updated to reflect the correct
+> > stream ID (SMMU driver can get the updated stream ID from device
+> > tree).
+> 
+> That's possible.
+> 
+> > I was thinking more on the lines of updating the device stream id
+> > while attaching a device to the domain.
+> 
+> I thought the same but this would break the ARM,SMMU /compatibility/ since
+> the 1st param of "iommus=" is always expected as "streamID".
+> 
+> If streamID can be assigned dynamically like PCIe, not like streamID statically
+> set in DT, how should we describe this dynmaic steramID shifting/assignment in
+> DT?
+ Can you dynamically program the stream ID for the device? If yes, then you require a unique numberspace for allocating a streamID. I am not clear on the stream ID translation requirement.
+
+-Varun
