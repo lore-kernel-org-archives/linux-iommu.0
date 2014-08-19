@@ -1,55 +1,66 @@
-From: =?UTF-8?B?QW5kcmVhcyBGw6RyYmVy?= <afaerber@suse.de>
-Subject: Re: [PATCH 00/29] Exynos SYSMMU (IOMMU) integration with DT and DMA-mapping
- subsystem
-Date: Tue, 19 Aug 2014 13:39:10 +0200
-Message-ID: <53F3375E.6030402@suse.de>
-References: <1407235677-26324-1-git-send-email-m.szyprowski@samsung.com> <20140818233201.GL9809@8bytes.org> <53F2E9AD.9030308@samsung.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v5 1/1] iommu-api: Add map_sg/unmap_sg functions
+Date: Tue, 19 Aug 2014 13:59:54 +0200
+Message-ID: <20140819115954.GC16329@8bytes.org>
+References: <1407797150-515-1-git-send-email-ohaugan@codeaurora.org>
+	<1407797150-515-2-git-send-email-ohaugan@codeaurora.org>
+	<20140818215553.GJ9809@8bytes.org>
+	<53F2829C.2040809@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <53F2E9AD.9030308@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>, Inki Dae <inki.dae@samsung.com>
-Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Kukjin Kim <kgene.kim@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>, Ajay Kumar <ajaykumar.rs@samsung.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <53F2829C.2040809-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Marek and Inki,
+On Mon, Aug 18, 2014 at 03:47:56PM -0700, Olav Haugan wrote:
+> If the alignment is not correct then iommu_map() will return error. Not
+> sure what other option we have here (and why make it different behavior
+> than iommu_map which just return error when it is not aligned properly).
+> I don't think we want to force any kind of alignment automatically. I
+> would rather have the API tell me I am doing something wrong than having
+> the function aligning the values and possibly undermap or overmap.
 
-Am 19.08.2014 08:07, schrieb Marek Szyprowski:
-> On 2014-08-19 01:32, Joerg Roedel wrote:
->> On Tue, Aug 05, 2014 at 12:47:28PM +0200, Marek Szyprowski wrote:
-[...]
->>>   33 files changed, 1016 insertions(+), 356 deletions(-)
->> This touches a lot of non-iommu stuff. What is your strategy on gett=
-ing
->> this in, do you plan to get the non-iommu changes merged first or do=
- you
->> want to collect the respective Acks and merge this all through one t=
-ree?
->=20
-> Those patches are posted as one patchset mainly to demonstrate how to=
- get
-> everything to work together. I also posted this as a single patch ser=
-ies
-> to get some feedback from other iommu developers, especially all thos=
-e
-> involved in the generic iommu dt bindings.
->=20
-> For merging, I will split them into smaller series and try to get
-> respective acks.
+But sg->offset is an offset into the page (at least it is used that way
+in the DMA-API and since you do 'page_len = s->offset + s->length' you
+use it the same way).
+So when you pass iova + offset the result will no longer be
+page-aligned. You should force sg->offset == 0 and sg->length to be
+page-aligned instead. This makes more sense because the IOMMU-API works
+on (io)-page granularity and not on arbitrary phys-addr ranges like the
+DMA-API.
 
-I'm working on 5250 based Spring Chromebook and noticed that v3.17-rc1
-got some more iommu support. With the new CONFIG_DRM_EXYNOS_IOMMU=3Dy m=
-y
-machine stops booting. So I'm wondering, is any of this a fix for 3.17,
-or is all of this "unrelated" -next material? Also, are you or someone
-working on the respective DT changes for Exynos5?
+> Yes, I am aware of that. However, several people prefer this than
+> passing in scatterlist. It is not very convenient to pass a scatterlist
+> in some use cases. Someone mentioned a use case where they would have to
+> create a dummy sg list and populate it with the iova just to do an
+> unmap. I believe we would have to do this also. There is no use for
+> sglist when unmapping. However, would like to keep separate API from
+> iommu_unmap() to keep the API function names symmetric (map_sg/unmap_sg).
 
-Regards,
-Andreas
+Keeping it symetric is not more complicated, the caller just needs to
+keep the sg-list used for mapping around. I prefer the unmap_sg call to
+work in sg-lists too.
 
---=20
-SUSE LINUX Products GmbH, Maxfeldstr. 5, 90409 N=C3=BCrnberg, Germany
-GF: Jeff Hawn, Jennifer Guild, Felix Imend=C3=B6rffer; HRB 16746 AG N=C3=
-=BCrnberg
+> I thought that was why we added the default fallback and set all the
+> drivers to point to these fallback functions. Several people wanted this
+> so that we don't have to have NULL-check in these functions (and have
+> the functions be simple inline functions).
+
+Okay, since you add these call-backs to all drivers I think I can live
+with not doing a pointer check here.
+
+
+	Joerg
