@@ -1,15 +1,14 @@
 From: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v5 1/1] iommu-api: Add map_sg/unmap_sg functions
-Date: Tue, 19 Aug 2014 11:40:24 -0700
-Message-ID: <53F39A18.70409@codeaurora.org>
-References: <1407797150-515-1-git-send-email-ohaugan@codeaurora.org>
-	<53F2829C.2040809@codeaurora.org>
-	<20140819115954.GC16329@8bytes.org> <2348740.xICP2AxYHy@avalon>
+Subject: Re: [PATCH 1/6] iommu/arm-smmu: add support for specifying clocks
+Date: Tue, 19 Aug 2014 12:03:09 -0700
+Message-ID: <53F39F6D.1040205@codeaurora.org>
+References: <1407891099-24641-1-git-send-email-mitchelh@codeaurora.org>	<1407891099-24641-2-git-send-email-mitchelh@codeaurora.org>
+	<20140819125833.GO23128@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <2348740.xICP2AxYHy@avalon>
+In-Reply-To: <20140819125833.GO23128-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,67 +18,139 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 8/19/2014 9:11 AM, Laurent Pinchart wrote:
-> On Tuesday 19 August 2014 13:59:54 Joerg Roedel wrote:
->> On Mon, Aug 18, 2014 at 03:47:56PM -0700, Olav Haugan wrote:
->>> If the alignment is not correct then iommu_map() will return error. Not
->>> sure what other option we have here (and why make it different behavior
->>> than iommu_map which just return error when it is not aligned properly).
->>> I don't think we want to force any kind of alignment automatically. I
->>> would rather have the API tell me I am doing something wrong than having
->>> the function aligning the values and possibly undermap or overmap.
+Hi Will,
+
+On 8/19/2014 5:58 AM, Will Deacon wrote:
+> On Wed, Aug 13, 2014 at 01:51:34AM +0100, Mitchel Humpherys wrote:
+>> On some platforms with tight power constraints it is polite to only
+>> leave your clocks on for as long as you absolutely need them. Currently
+>> we assume that all clocks necessary for SMMU register access are always
+>> on.
 >>
->> But sg->offset is an offset into the page (at least it is used that way
->> in the DMA-API and since you do 'page_len = s->offset + s->length' you
->> use it the same way).
->> So when you pass iova + offset the result will no longer be
->> page-aligned. You should force sg->offset == 0 and sg->length to be
->> page-aligned instead. This makes more sense because the IOMMU-API works
->> on (io)-page granularity and not on arbitrary phys-addr ranges like the
->> DMA-API.
+>> Add some optional device tree properties to specify any clocks that are
+>> necessary for SMMU register access and turn them on and off as needed.
 >>
->>> Yes, I am aware of that. However, several people prefer this than
->>> passing in scatterlist. It is not very convenient to pass a scatterlist
->>> in some use cases. Someone mentioned a use case where they would have to
->>> create a dummy sg list and populate it with the iova just to do an
->>> unmap. I believe we would have to do this also. There is no use for
->>> sglist when unmapping. However, would like to keep separate API from
->>> iommu_unmap() to keep the API function names symmetric (map_sg/unmap_sg).
->>
->> Keeping it symetric is not more complicated, the caller just needs to
->> keep the sg-list used for mapping around. I prefer the unmap_sg call to
->> work in sg-lists too.
+>> If no clocks are specified in the device tree things continue to work
+>> the way they always have: we assume all necessary clocks are always
+>> turned on.
 > 
-> Do we have a use case where the unmap_sg() implementation would be different 
-> than a plain iommu_unmap() call ? If not I'd rather remove unmap_sg() 
-> completely.
+> How does this interact with an SMMU in bypass mode?
+
+Do you mean if you have a platform that requires clock and power
+management but we leave the SMMU in bypass (i.e. no one calls into the
+SMMU driver) how are the clock/power managed?
+
+Clients of the SMMU driver are required to vote for clocks and power
+when they know they need to use the SMMU. However, the clock and power
+needed to be on for the SMMU to service bus masters aren't necessarily
+the same as the ones needed to read/write registers...See below.
+
 > 
->>> I thought that was why we added the default fallback and set all the
->>> drivers to point to these fallback functions. Several people wanted this
->>> so that we don't have to have NULL-check in these functions (and have
->>> the functions be simple inline functions).
->>
->> Okay, since you add these call-backs to all drivers I think I can live
->> with not doing a pointer check here.
+> [...]
 > 
-> I suggested doing a
+>> +static int arm_smmu_enable_clocks(struct arm_smmu_device *smmu)
+>> +{
+>> +	int i, ret = 0;
+>> +
+>> +	for (i = 0; i < smmu->num_clocks; ++i) {
+>> +		ret = clk_prepare_enable(smmu->clocks[i]);
+>> +		if (ret) {
+>> +			dev_err(smmu->dev, "Couldn't enable clock #%d\n", i);
+>> +			while (i--)
+>> +				clk_disable_unprepare(smmu->clocks[i]);
+>> +			break;
+>> +		}
+>> +	}
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static void arm_smmu_disable_clocks(struct arm_smmu_device *smmu)
+>> +{
+>> +	int i;
+>> +
+>> +	for (i = 0; i < smmu->num_clocks; ++i)
+>> +		clk_disable_unprepare(smmu->clocks[i]);
+>> +}
 > 
-> if (ops is not NULL)
-> 	return ops();
-> else
-> 	return default_ops();
+> What stops theses from racing with each other when there are multiple
+> clocks? I also assume that the clk API ignores calls to clk_enable_prepare
+> for a clk that's already enabled? I couldn't find that code...
+
+All the clock APIs are reference counted yes. Not sure what you mean by
+racing with each other? When you call to enable a clock the call does
+not return until the clock is already ON (or OFF).
+
+>>  /* Wait for any pending TLB invalidations to complete */
+>>  static void arm_smmu_tlb_sync(struct arm_smmu_device *smmu)
+>>  {
+>> @@ -644,11 +672,15 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+>>  	struct arm_smmu_device *smmu = smmu_domain->smmu;
+>>  	void __iomem *cb_base;
+>>  
+>> +	arm_smmu_enable_clocks(smmu);
 > 
-> to avoid modifying all drivers. I'm not sure why that wasn't received with 
-> much enthusiasm.
+> How can I get a context interrupt from an SMMU without its clocks enabled?
+
+Good question. At least in our SoC we usually have at least 1 "core"
+clock and 1 "programming" clock. Both clocks are needed to read/write
+registers but only 1 of the clocks is needed for the SMMU to service bus
+master requests.
+
+> 
+> [...]
+> 
+>> +int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+>>  {
+>>  	unsigned long size;
+>>  	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
+>> @@ -2027,10 +2124,16 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+>>  	}
+>>  	dev_notice(dev, "registered %d master devices\n", i);
+>>  
+>> -	err = arm_smmu_device_cfg_probe(smmu);
+>> +	err = arm_smmu_init_clocks(smmu);
+>>  	if (err)
+>>  		goto out_put_masters;
+>>  
+>> +	arm_smmu_enable_clocks(smmu);
+>> +
+>> +	err = arm_smmu_device_cfg_probe(smmu);
+>> +	if (err)
+>> +		goto out_disable_clocks;
+>> +
+>>  	parse_driver_options(smmu);
+>>  
+>>  	if (smmu->version > 1 &&
+>> @@ -2039,7 +2142,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+>>  			"found only %d context interrupt(s) but %d required\n",
+>>  			smmu->num_context_irqs, smmu->num_context_banks);
+>>  		err = -ENODEV;
+>> -		goto out_put_masters;
+>> +		goto out_disable_clocks;
+>>  	}
+>>  
+>>  	for (i = 0; i < smmu->num_global_irqs; ++i) {
+>> @@ -2061,12 +2164,16 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+>>  	spin_unlock(&arm_smmu_devices_lock);
+>>  
+>>  	arm_smmu_device_reset(smmu);
+>> +	arm_smmu_disable_clocks(smmu);
+> 
+> I wonder if this is really the right thing to do. Rather than the
+> fine-grained clock enable/disable you have, why don't we just enable in
+> domain_init and disable in domain_destroy, with refcounting for the clocks?
 > 
 
-Both Thierry R. and Konrad W. argued for modifying the drivers instead
-so I implemented what the majority wanted. :-)
+So the whole point of all of this is that we try to save power. As Mitch
+wrote in the commit text we want to only leave the clock and power on
+for as short period of time as possible.
 
+Thanks,
 
 Olav
 
