@@ -1,14 +1,17 @@
-From: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH 1/6] iommu/arm-smmu: add support for specifying clocks
-Date: Tue, 19 Aug 2014 12:03:09 -0700
-Message-ID: <53F39F6D.1040205@codeaurora.org>
-References: <1407891099-24641-1-git-send-email-mitchelh@codeaurora.org>	<1407891099-24641-2-git-send-email-mitchelh@codeaurora.org>
-	<20140819125833.GO23128@arm.com>
+From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH 6/6] iommu/arm-smmu: add .domain_{set,
+	get}_attr for coherent walk control
+Date: Tue, 19 Aug 2014 12:19:35 -0700
+Message-ID: <vnkw4mx8p9rs.fsf@mitchelh-linux.qualcomm.com>
+References: <1407891099-24641-1-git-send-email-mitchelh@codeaurora.org>
+	<1407891099-24641-7-git-send-email-mitchelh@codeaurora.org>
+	<20140819124807.GM23128@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140819125833.GO23128-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20140819124807.GM23128-5wv7dgnIgG8@public.gmane.org> (Will Deacon's message of "Tue,
+	19 Aug 2014 13:48:07 +0100")
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,142 +21,91 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+On Tue, Aug 19 2014 at 05:48:07 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> On Wed, Aug 13, 2014 at 01:51:39AM +0100, Mitchel Humpherys wrote:
+>> Under certain conditions coherent hardware translation table walks can
+>> result in degraded performance. Add a new domain attribute to
+>> disable/enable this feature in generic code along with the domain
+>> attribute setter and getter to handle it in the ARM SMMU driver.
+>
+> Again, it would be nice to have some information about these cases and the
+> performance issues that you are seeing.
 
-On 8/19/2014 5:58 AM, Will Deacon wrote:
-> On Wed, Aug 13, 2014 at 01:51:34AM +0100, Mitchel Humpherys wrote:
->> On some platforms with tight power constraints it is polite to only
->> leave your clocks on for as long as you absolutely need them. Currently
->> we assume that all clocks necessary for SMMU register access are always
->> on.
->>
->> Add some optional device tree properties to specify any clocks that are
->> necessary for SMMU register access and turn them on and off as needed.
->>
->> If no clocks are specified in the device tree things continue to work
->> the way they always have: we assume all necessary clocks are always
->> turned on.
-> 
-> How does this interact with an SMMU in bypass mode?
+Basically, the data I'm basing these statements on is: that's what the
+HW folks tell me :). I believe it's specific to our hardware, not ARM
+IP. Unfortunately, I don't think I could share the specifics even if I
+had them, but I can try to press the issue if you want me to.
 
-Do you mean if you have a platform that requires clock and power
-management but we leave the SMMU in bypass (i.e. no one calls into the
-SMMU driver) how are the clock/power managed?
-
-Clients of the SMMU driver are required to vote for clocks and power
-when they know they need to use the SMMU. However, the clock and power
-needed to be on for the SMMU to service bus masters aren't necessarily
-the same as the ones needed to read/write registers...See below.
-
-> 
-> [...]
-> 
->> +static int arm_smmu_enable_clocks(struct arm_smmu_device *smmu)
->> +{
->> +	int i, ret = 0;
->> +
->> +	for (i = 0; i < smmu->num_clocks; ++i) {
->> +		ret = clk_prepare_enable(smmu->clocks[i]);
->> +		if (ret) {
->> +			dev_err(smmu->dev, "Couldn't enable clock #%d\n", i);
->> +			while (i--)
->> +				clk_disable_unprepare(smmu->clocks[i]);
->> +			break;
->> +		}
->> +	}
->> +
->> +	return ret;
->> +}
->> +
->> +static void arm_smmu_disable_clocks(struct arm_smmu_device *smmu)
->> +{
->> +	int i;
->> +
->> +	for (i = 0; i < smmu->num_clocks; ++i)
->> +		clk_disable_unprepare(smmu->clocks[i]);
->> +}
-> 
-> What stops theses from racing with each other when there are multiple
-> clocks? I also assume that the clk API ignores calls to clk_enable_prepare
-> for a clk that's already enabled? I couldn't find that code...
-
-All the clock APIs are reference counted yes. Not sure what you mean by
-racing with each other? When you call to enable a clock the call does
-not return until the clock is already ON (or OFF).
-
->>  /* Wait for any pending TLB invalidations to complete */
->>  static void arm_smmu_tlb_sync(struct arm_smmu_device *smmu)
+>
+>> @@ -1908,11 +1917,15 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+>>  				    enum iommu_attr attr, void *data)
 >>  {
->> @@ -644,11 +672,15 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
->>  	struct arm_smmu_device *smmu = smmu_domain->smmu;
->>  	void __iomem *cb_base;
+>>  	struct arm_smmu_domain *smmu_domain = domain->priv;
+>> +	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
 >>  
->> +	arm_smmu_enable_clocks(smmu);
-> 
-> How can I get a context interrupt from an SMMU without its clocks enabled?
+>>  	switch (attr) {
+>>  	case DOMAIN_ATTR_NESTING:
+>>  		*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
+>>  		return 0;
+>> +	case DOMAIN_ATTR_COHERENT_HTW_DISABLE:
+>> +		*((bool *)data) = cfg->htw_disable;
+>> +		return 0;
+>
+> I think I'd be more comfortable using int instead of bool for this, as it
+> could well end up in the user ABI if vfio decides to make use of it. While
+> we're here, let's also add an attributes bitmap to the arm_smmu_domain
+> instead of having a bool in the arm_smmu_cfg.
 
-Good question. At least in our SoC we usually have at least 1 "core"
-clock and 1 "programming" clock. Both clocks are needed to read/write
-registers but only 1 of the clocks is needed for the SMMU to service bus
-master requests.
+Sounds good. I'll make these changes in v2.
 
-> 
-> [...]
-> 
->> +int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+>
+>>  	default:
+>>  		return -ENODEV;
+>>  	}
+>> @@ -1922,6 +1935,7 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+>>  				    enum iommu_attr attr, void *data)
 >>  {
->>  	unsigned long size;
->>  	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
->> @@ -2027,10 +2124,16 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+>>  	struct arm_smmu_domain *smmu_domain = domain->priv;
+>> +	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+>>  
+>>  	switch (attr) {
+>>  	case DOMAIN_ATTR_NESTING:
+>> @@ -1933,6 +1947,9 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+>>  			smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
+>>  
+>>  		return 0;
+>> +	case DOMAIN_ATTR_COHERENT_HTW_DISABLE:
+>> +		cfg->htw_disable = *((bool *)data);
+>> +		return 0;
+>>  	default:
+>>  		return -ENODEV;
 >>  	}
->>  	dev_notice(dev, "registered %d master devices\n", i);
->>  
->> -	err = arm_smmu_device_cfg_probe(smmu);
->> +	err = arm_smmu_init_clocks(smmu);
->>  	if (err)
->>  		goto out_put_masters;
->>  
->> +	arm_smmu_enable_clocks(smmu);
->> +
->> +	err = arm_smmu_device_cfg_probe(smmu);
->> +	if (err)
->> +		goto out_disable_clocks;
->> +
->>  	parse_driver_options(smmu);
->>  
->>  	if (smmu->version > 1 &&
->> @@ -2039,7 +2142,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
->>  			"found only %d context interrupt(s) but %d required\n",
->>  			smmu->num_context_irqs, smmu->num_context_banks);
->>  		err = -ENODEV;
->> -		goto out_put_masters;
->> +		goto out_disable_clocks;
->>  	}
->>  
->>  	for (i = 0; i < smmu->num_global_irqs; ++i) {
->> @@ -2061,12 +2164,16 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
->>  	spin_unlock(&arm_smmu_devices_lock);
->>  
->>  	arm_smmu_device_reset(smmu);
->> +	arm_smmu_disable_clocks(smmu);
-> 
-> I wonder if this is really the right thing to do. Rather than the
-> fine-grained clock enable/disable you have, why don't we just enable in
-> domain_init and disable in domain_destroy, with refcounting for the clocks?
-> 
+>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>> index 0550286df4..8a6449857a 100644
+>> --- a/include/linux/iommu.h
+>> +++ b/include/linux/iommu.h
+>> @@ -81,6 +81,7 @@ enum iommu_attr {
+>>  	DOMAIN_ATTR_FSL_PAMU_ENABLE,
+>>  	DOMAIN_ATTR_FSL_PAMUV1,
+>>  	DOMAIN_ATTR_NESTING,	/* two stages of translation */
+>> +	DOMAIN_ATTR_COHERENT_HTW_DISABLE,
+>
+> I wonder whether we should make this ARM-specific. Can you take a quick look
+> to see if any of the other IOMMUs can potentially benefit from this?
 
-So the whole point of all of this is that we try to save power. As Mitch
-wrote in the commit text we want to only leave the clock and power on
-for as short period of time as possible.
+Yeah looks like amd_iommu.c and intel-iommu.c are using
+IOMMU_CAP_CACHE_COHERENCY which seems to be the same thing (at least
+that's how we're treating it in arm-smmu.c). AMD's doesn't look
+configurable but Intel's does, so perhaps they would benefit from this.
 
-Thanks,
 
-Olav
+
+-Mitch
 
 -- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 hosted by The Linux Foundation
