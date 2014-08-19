@@ -1,79 +1,108 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH 00/29] Exynos SYSMMU (IOMMU) integration with DT and
-	DMA-mapping subsystem
-Date: Tue, 19 Aug 2014 08:07:41 +0200
-Message-ID: <53F2E9AD.9030308@samsung.com>
-References: <1407235677-26324-1-git-send-email-m.szyprowski@samsung.com>
-	<20140818233201.GL9809@8bytes.org>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH v5] devicetree: Add generic IOMMU device tree bindings
+Date: Tue, 19 Aug 2014 09:52:30 +0000
+Message-ID: <d9fb045d54244f26a773ba45ad3caa2d@BL2PR03MB468.namprd03.prod.outlook.com>
+References: <1406803383-11601-1-git-send-email-thierry.reding@gmail.com>
+ <87a9774lf5.fsf@nvidia.com>
+ <cfb1d2ff66004685b7ead3f5e6321681@BL2PR03MB468.namprd03.prod.outlook.com>
+ <87y4ur2h23.fsf@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <20140818233201.GL9809-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <87y4ur2h23.fsf-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Stephen Warren <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Olof Johansson <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
+Hi Hiroshi,
 
-On 2014-08-19 01:32, Joerg Roedel wrote:
-> On Tue, Aug 05, 2014 at 12:47:28PM +0200, Marek Szyprowski wrote:
->>   .../devicetree/bindings/iommu/samsung,sysmmu.txt   |  93 ++-
->>   Documentation/power/notifiers.txt                  |  14 +
->>   arch/arm/boot/dts/exynos4.dtsi                     | 118 ++++
->>   arch/arm/boot/dts/exynos4210.dtsi                  |  23 +
->>   arch/arm/boot/dts/exynos4x12.dtsi                  |  82 +++
->>   arch/arm/include/asm/dma-iommu.h                   |  36 ++
->>   arch/arm/mach-exynos/pm_domains.c                  |  12 +-
->>   arch/arm/mach-integrator/impd1.c                   |   2 +-
->>   arch/arm/mm/dma-mapping.c                          |  47 ++
->>   drivers/base/bus.c                                 |   4 +-
->>   drivers/base/dd.c                                  |  10 +-
->>   drivers/base/platform.c                            |   2 +-
->>   drivers/base/power/domain.c                        |  70 ++-
->>   drivers/clk/samsung/clk-exynos4.c                  |   1 +
->>   drivers/gpu/drm/exynos/exynos_drm_fimc.c           |   1 +
->>   drivers/gpu/drm/exynos/exynos_drm_fimd.c           |  26 +-
->>   drivers/gpu/drm/exynos/exynos_drm_g2d.c            |   1 +
->>   drivers/gpu/drm/exynos/exynos_drm_gsc.c            |   1 +
->>   drivers/gpu/drm/exynos/exynos_drm_rotator.c        |   1 +
->>   drivers/gpu/drm/exynos/exynos_mixer.c              |   1 +
->>   drivers/iommu/exynos-iommu.c                       | 663 +++++++++++++--------
->>   drivers/iommu/iommu.c                              |   3 +
->>   drivers/media/platform/s5p-mfc/s5p_mfc.c           | 107 ++--
->>   drivers/pci/host/pci-mvebu.c                       |   2 +-
->>   drivers/pci/host/pci-rcar-gen2.c                   |   2 +-
->>   drivers/pci/host/pci-tegra.c                       |   2 +-
->>   drivers/pci/host/pcie-rcar.c                       |   2 +-
->>   drivers/soc/tegra/pmc.c                            |   2 +-
->>   include/dt-bindings/clock/exynos4.h                |  10 +-
->>   include/linux/device.h                             |  12 +-
->>   include/linux/iommu.h                              |   1 +
->>   include/linux/pm.h                                 |   2 +
->>   include/linux/pm_domain.h                          |  19 +
->>   33 files changed, 1016 insertions(+), 356 deletions(-)
-> This touches a lot of non-iommu stuff. What is your strategy on getting
-> this in, do you plan to get the non-iommu changes merged first or do you
-> want to collect the respective Acks and merge this all through one tree?
+> -----Original Message-----
+> From: Hiroshi Doyu [mailto:hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org]
+> Sent: Thursday, August 14, 2014 9:35 PM
+> To: Sethi Varun-B16395
+> Cc: Hiroshi Doyu; Thierry Reding; Stephen Warren; Arnd Bergmann; Will
+> Deacon; Mark Rutland; devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Olof Johansson;
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Rob Herring; linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+> Subject: Re: [PATCH v5] devicetree: Add generic IOMMU device tree bindings
+> 
+> Hi Varun,
+> 
+> Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org> writes:
+> 
+> >> -----Original Message-----
+> >> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
+> >> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Hiroshi Doyu
+> >> Sent: Thursday, August 14, 2014 12:18 PM
+> >> To: Thierry Reding; Stephen Warren; Arnd Bergmann; Will Deacon
+> >> Cc: Mark Rutland; devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Olof Johansson;
+> >> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Rob Herring;
+> >> linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+> >> Subject: Re: [PATCH v5] devicetree: Add generic IOMMU device tree
+> >> bindings
+> >>
+> >>
+> >> Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> writes:
+> >>
+> >> > +Multiple-master IOMMU:
+> >> > +----------------------
+> >> > +
+> >> > +       iommu {
+> >> > +               /* the specifier represents the ID of the master */
+> >> > +               #iommu-cells = <1>;
+> >> > +       };
+> >> > +
+> >> > +       master@1 {
+> >> > +               /* device has master ID 42 in the IOMMU */
+> >> > +               iommus = <&{/iommu} 42>;
+> >> > +       };
+> >> > +
+> >> > +       master@2 {
+> >> > +               /* device has master IDs 23 and 24 in the IOMMU */
+> >> > +               iommus = <&{/iommu} 23>, <&{/iommu} 24>;
+> >> > +       };
+> >>
+> >> I think that this "master ID" will be parsed in IOMMU driver. For
+> >> example, ARM,SMMU expects "streamID" as "master ID", right?
+> >>
+> >> If a SoC has a feature to configure to assign streamID to devices at
+> >> runtime, "streamID" is not equal to "master ID".
+> >>
+> >>   iommus = <&{/smmu} "soc specific master ID">;
+> >>
+> >> "soc master ID" needs to be translated into "streamID" by SoC SW. It
+> >> seems that ARM,SMMU kernel driver doesn't expect this kind of ID
+> >> translation. If ARM,SMMU kernel driver is used as is, "soc master ID"
+> >> would be incompatible? ARM,SMMU needs such translation before
+> >> parsing. Is this my understanding right?
+> >>
+> >> If so I think that this master ID configuration/translation may be
+> >> quite reasonable requirment for SoC using ARM,SMMU.
+> >>
+> >> Can we consider this ID translation within ARM,SMMU compatibility?
+> >>
+> >> IOW, is it possible to implement some SoC specific hook for ID
+> >> translation/configuration in ARM,SMMU kernel driver?
+> >
+> >
+> > Can the id translation be done using a SMR mask?
+> 
+> No, "SoC master ID" is completely independenf of SMR.
+> 
+> > Also, for dynamic stream ID allocation we would need to represent the
+> > specific master register (to store the stream ID) in the device tree.
+> 
+> I assmue that the above means that iMX has such configuration register to map
+> steramID and a device dynamically.
+We have per master registers for setting the stream ID on the Layerscape platforms. My point was that we would need the iommu master node
+to include a reference to the master id register.
+master@1 {
+               /* device has master ID 42 in the IOMMU */
+             iommus = <&{/iommu} 42>;
+             master-id-reg = <phandle offset>
+};
 
-Those patches are posted as one patchset mainly to demonstrate how to get
-everything to work together. I also posted this as a single patch series
-to get some feedback from other iommu developers, especially all those
-involved in the generic iommu dt bindings.
-
-For merging, I will split them into smaller series and try to get
-respective acks.
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+-Varun
