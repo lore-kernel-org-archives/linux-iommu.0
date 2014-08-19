@@ -1,16 +1,15 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 6/6] iommu/arm-smmu: add .domain_{set,get}_attr for
-	coherent walk control
-Date: Tue, 19 Aug 2014 13:48:07 +0100
-Message-ID: <20140819124807.GM23128@arm.com>
+Subject: Re: [PATCH 4/6] iommu/arm-smmu: implement generic DT bindings
+Date: Tue, 19 Aug 2014 13:54:49 +0100
+Message-ID: <20140819125449.GN23128@arm.com>
 References: <1407891099-24641-1-git-send-email-mitchelh@codeaurora.org>
-	<1407891099-24641-7-git-send-email-mitchelh@codeaurora.org>
+	<1407891099-24641-5-git-send-email-mitchelh@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1407891099-24641-7-git-send-email-mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-Reply-To: <1407891099-24641-5-git-send-email-mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,69 +20,134 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Aug 13, 2014 at 01:51:39AM +0100, Mitchel Humpherys wrote:
-> Under certain conditions coherent hardware translation table walks can
-> result in degraded performance. Add a new domain attribute to
-> disable/enable this feature in generic code along with the domain
-> attribute setter and getter to handle it in the ARM SMMU driver.
+[adding Rob, Mark, Arnd, Thierry and Hiroshi]
 
-Again, it would be nice to have some information about these cases and the
-performance issues that you are seeing.
+On Wed, Aug 13, 2014 at 01:51:37AM +0100, Mitchel Humpherys wrote:
+> Generic IOMMU device tree bindings were recently added in
+> ["devicetree: Add generic IOMMU device tree bindings"]. Implement the
+> bindings in the ARM SMMU driver.
+> 
+> See Documentation/devicetree/bindings/iommu/iommu.txt for the bindings
+> themselves.
 
-> @@ -1908,11 +1917,15 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
->  				    enum iommu_attr attr, void *data)
+Could you look at moving the parsing code into a separate file please (maybe
+under lib/ ?). That way, other IOMMUs can use the same binding without the
+boilerplate having to be rewritten each time.
+
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 63c6707fad..22e25f3172 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -538,25 +538,32 @@ static int insert_smmu_master(struct arm_smmu_device *smmu,
+>  	return 0;
+>  }
+>  
+> +struct iommus_entry {
+> +	struct list_head list;
+> +	struct device_node *node;
+> +	u16 streamids[MAX_MASTER_STREAMIDS];
+> +	int num_sids;
+> +};
+> +
+>  static int register_smmu_master(struct arm_smmu_device *smmu,
+> -				struct device *dev,
+> -				struct of_phandle_args *masterspec)
+> +				struct iommus_entry *entry)
 >  {
->  	struct arm_smmu_domain *smmu_domain = domain->priv;
-> +	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+>  	int i;
+>  	struct arm_smmu_master *master;
+> +	struct device *dev = smmu->dev;
 >  
->  	switch (attr) {
->  	case DOMAIN_ATTR_NESTING:
->  		*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
->  		return 0;
-> +	case DOMAIN_ATTR_COHERENT_HTW_DISABLE:
-> +		*((bool *)data) = cfg->htw_disable;
-> +		return 0;
-
-I think I'd be more comfortable using int instead of bool for this, as it
-could well end up in the user ABI if vfio decides to make use of it. While
-we're here, let's also add an attributes bitmap to the arm_smmu_domain
-instead of having a bool in the arm_smmu_cfg.
-
->  	default:
->  		return -ENODEV;
+> -	master = find_smmu_master(smmu, masterspec->np);
+> +	master = find_smmu_master(smmu, entry->node);
+>  	if (master) {
+>  		dev_err(dev,
+>  			"rejecting multiple registrations for master device %s\n",
+> -			masterspec->np->name);
+> +			entry->node->name);
+>  		return -EBUSY;
 >  	}
-> @@ -1922,6 +1935,7 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
->  				    enum iommu_attr attr, void *data)
->  {
->  	struct arm_smmu_domain *smmu_domain = domain->priv;
-> +	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
 >  
->  	switch (attr) {
->  	case DOMAIN_ATTR_NESTING:
-> @@ -1933,6 +1947,9 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
->  			smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
->  
->  		return 0;
-> +	case DOMAIN_ATTR_COHERENT_HTW_DISABLE:
-> +		cfg->htw_disable = *((bool *)data);
-> +		return 0;
->  	default:
->  		return -ENODEV;
+> -	if (masterspec->args_count > MAX_MASTER_STREAMIDS) {
+> +	if (entry->num_sids > MAX_MASTER_STREAMIDS) {
+>  		dev_err(dev,
+>  			"reached maximum number (%d) of stream IDs for master device %s\n",
+> -			MAX_MASTER_STREAMIDS, masterspec->np->name);
+> +			MAX_MASTER_STREAMIDS, entry->node->name);
+>  		return -ENOSPC;
 >  	}
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 0550286df4..8a6449857a 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -81,6 +81,7 @@ enum iommu_attr {
->  	DOMAIN_ATTR_FSL_PAMU_ENABLE,
->  	DOMAIN_ATTR_FSL_PAMUV1,
->  	DOMAIN_ATTR_NESTING,	/* two stages of translation */
-> +	DOMAIN_ATTR_COHERENT_HTW_DISABLE,
+>  
+> @@ -564,15 +571,58 @@ static int register_smmu_master(struct arm_smmu_device *smmu,
+>  	if (!master)
+>  		return -ENOMEM;
+>  
+> -	master->of_node			= masterspec->np;
+> -	master->cfg.num_streamids	= masterspec->args_count;
+> +	master->of_node			= entry->node;
+> +	master->cfg.num_streamids	= entry->num_sids;
+>  
+>  	for (i = 0; i < master->cfg.num_streamids; ++i)
+> -		master->cfg.streamids[i] = masterspec->args[i];
+> +		master->cfg.streamids[i] = entry->streamids[i];
+>  
+>  	return insert_smmu_master(smmu, master);
+>  }
+>  
+> +static int arm_smmu_parse_iommus_properties(struct arm_smmu_device *smmu,
+> +					int *num_masters)
+> +{
+> +	struct of_phandle_args iommuspec;
+> +	struct device_node *dn;
+> +
+> +	for_each_node_with_property(dn, "iommus") {
+> +		int arg_ind = 0;
+> +		struct iommus_entry *entry, *n;
+> +		LIST_HEAD(iommus);
+> +
+> +		while (!of_parse_phandle_with_args(dn, "iommus", "#iommu-cells",
+> +							arg_ind, &iommuspec)) {
 
-I wonder whether we should make this ARM-specific. Can you take a quick look
-to see if any of the other IOMMUs can potentially benefit from this?
+We need to check that the phandle does indeed point at one of our SMMUs
+here, in case we have a system with multiple IOMMU types, all using the
+generic binding.
+
+> +			int i;
+> +
+> +			list_for_each_entry(entry, &iommus, list)
+> +				if (entry->node == dn)
+> +					break;
+
+Oh, yuck, this is really nasty to parse...
+
+> +			if (&entry->list == &iommus) {
+
+Where is entry initialised the first time around?
+
+> +				entry = devm_kzalloc(smmu->dev, sizeof(*entry),
+> +						GFP_KERNEL);
+> +				if (!entry)
+> +					return -ENOMEM;
+
+You need to of_node_put the guys you've got back from the phandle parsing
+code.
+
+> +				entry->node = dn;
+> +				list_add(&entry->list, &iommus);
+> +			}
+> +			entry->num_sids = iommuspec.args_count;
+> +			for (i = 0; i < entry->num_sids; ++i)
+> +				entry->streamids[i] = iommuspec.args[i];
+> +			arg_ind++;
+
+Isn't this defined by #iommu-cells?
+
+> +		}
+> +
+> +		list_for_each_entry_safe(entry, n, &iommus, list) {
+
+Why the _safe variant? This is a local list, right?
 
 Will
