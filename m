@@ -1,15 +1,13 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH v5 1/1] iommu-api: Add map_sg/unmap_sg functions
-Date: Wed, 20 Aug 2014 16:15:15 +0200
-Message-ID: <1689625.AvEiiWCphE@avalon>
-References: <1407797150-515-1-git-send-email-ohaugan@codeaurora.org>
-	<2767102.8U6hAaZh2n@avalon>
-	<20140820130250.GA3120@laptop.dumpdata.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: LPC IOMMU and VFIO MicroConference - Call for Participation
+Date: Wed, 20 Aug 2014 11:10:23 -0600
+Message-ID: <1408554623.11383.63.camel@ul30vt.home>
+References: <20140812092019.GY9809@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140820130250.GA3120-0iZWjJA6G8GSPmnEAIUT9EEOCMrvLtNR@public.gmane.org>
+In-Reply-To: <20140812092019.GY9809-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,69 +17,61 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jesse Barnes <jbarnes-Y1mF5jBUw70BENJcbMCuUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Konrad,
-
-On Wednesday 20 August 2014 09:02:50 Konrad Rzeszutek Wilk wrote:
-> On Tue, Aug 19, 2014 at 10:52:46PM +0200, Laurent Pinchart wrote:
-> > On Tuesday 19 August 2014 11:40:24 Olav Haugan wrote:
-> > > On 8/19/2014 9:11 AM, Laurent Pinchart wrote:
-> > > > On Tuesday 19 August 2014 13:59:54 Joerg Roedel wrote:
-
-[snip]
-
-> > > >> Okay, since you add these call-backs to all drivers I think I can
-> > > >> live with not doing a pointer check here.
-> > > > 
-> > > > I suggested doing a
-> > > > 
-> > > > if (ops is not NULL)
-> > > > 	return ops();
-> > > > else
-> > > > 	return default_ops();
-> > > > 
-> > > > to avoid modifying all drivers. I'm not sure why that wasn't received
-> > > > with much enthusiasm.
-> > > 
-> > > Both Thierry R. and Konrad W. argued for modifying the drivers instead
-> > > so I implemented what the majority wanted. :-)
-> > 
-> > I'm not blaming you :-) I was just wondering what their rationale was.
-> 
-> a). To be inline with the usage of this API.
-> 
->     For this particular case the other functions (but maybe I missed some)
->     follow the idea that they implement the ops->func for every operation
->     and they don't have an fallback.
-
-That's because the other functions are mandatory, while this particular one is 
-just an optimization and can be implemented generically.
-
-> b)  Follow what x86 maintainers prefer (based on other API calls,
->     such as x86_init or any other platform overrides).
-> 
-> c). When there are new IOMMUs it has to take in-to account all of the
->     function ops. If they fail to implement all of them the kernel
->     crashes instead of working (but maybe working incorrectly).
-
-I don't think that applies in this case, the generic implementation should 
-work in all cases.
-
-> d). Lastly, we also want the bloat of kernel. If the compiler decides
->     to roll in the fallback implementation for 'iommu_map_sg' in - it will
->     needlessly expand the kernel wherever we use 'iommu_map_sg' call with
->     a fallback implementation (which might not be called 99% of time).
-> 
->     Having the little inline static just do 'func_ops->func' will
->     stop the compiler from optimizing too much and convert this just
->     to a simple function.
-
-That's an argument I can buy.
-
--- 
-Regards,
-
-Laurent Pinchart
+Ck9rIGZvbGtzLCBpdCdzIHRpbWUgdG8gc3VibWl0IHlvdXIgZGlzY3Vzc2lvbiBwcm9wb3NhbHMg
+Zm9yIHRoZSBMUEMKSU9NTVUgYW5kIFZGSU8gdWNvbmYuICBJZiB5b3UgYWRkZWQgYW4gaWRlYSB0
+byB0aGUgd2lraSwgbm93IGlzIHRoZSB0aW1lCnRvIGZvcm1hbGx5IHByb3Bvc2UgaXQgYXMgYSBk
+aXNjdXNzaW9uIHRvcGljLiAgSWYgeW91IGhhdmUgaWRlYXMgaG93IHRvCm1ha2UgdGhlIElPTU1V
+IG9yIFZGSU8gc3Vic3lzdGVtcyBiZXR0ZXIsIG5vdyBpcyB0aGUgdGltZSB0byBwcm9wb3NlIGl0
+LgpJZiB5b3UgY2FuJ3QgZmlndXJlIG91dCBob3cgdG8gbWFrZSBzb21ldGhpbmcgd29yayBpbiB0
+aGUgY3VycmVudAppbmZyYXN0cnVjdHVyZSwgbm93IGlzIHRoZSB0aW1lIHRvIHByb3Bvc2UgYSBk
+aXNjdXNzaW9uLiAgSWYgeW91J3JlCmFkZGluZyBuZXcgZmVhdHVyZXMgYW5kIHdhbnQgdG8gbWFr
+ZSBzdXJlIHdlIGNhbiBzdXBwb3J0IHRoZW0sIG5vdyBpcwp0aGUgdGltZSB0byBwcm9wb3NlIGEg
+ZGlzY3Vzc2lvbi4KCkkgZG9uJ3QgdGhpbmsgd2UndmUgc2VlbiBhIGZvcm1hbCBzY2hlZHVsZSB5
+ZXQsIGJ1dCBtYW55IG9mIHVzIGhhdmUKY29uZmxpY3RzIHdpdGggS1ZNIEZvcnVtIHRoaXMgeWVh
+ciBhbmQgSSBleHBlY3QgdGhlIExQQyBwbGFubmluZwpjb21taXR0ZWUgdG8gdGFrZSB0aGF0IGlu
+dG8gYWNjb3VudCwgc28gcGxlYXNlIHN1Ym1pdCB5b3VyIHByb3Bvc2Fscwphbnl3YXkgYW5kIGZl
+ZWwgZnJlZSB0byBub3RlIHlvdXIgYXZhaWxhYmlsaXR5L2NvbmZsaWN0cyBpbiB0aGUgIk5vdGUg
+dG8Kb3JnYW5pemVycyIgc2VjdGlvbi4KCkxQQyBpcyBmdWxsLCBidXQgdGhlcmUgaXMgYSB3YWl0
+aW5nIGxpc3QgYW5kIHRoZSBzb29uZXIgeW91IGNhbiBnZXQgb24KaXQsIHRoZSBtb3JlIGxpa2Vs
+eSB5b3UgYXJlIHRvIGJlIHJlZ2lzdGVyZWQuICBJIGV4cGVjdCB1Y29uZiBkaXNjdXNzaW9uCmxl
+YWRzIHRvIGhhdmUgYW4gYWR2YW50YWdlIGluIG1vdmluZyB0aHJvdWdoIHRoZSBxdWV1ZSBhbmQg
+d2UgbWF5IGJlCmFibGUgdG8gcHJvdmlkZSBkaXNjb3VudGVkIHJlZ2lzdHJhdGlvbiBmb3IgZGlz
+Y3Vzc2lvbiBsZWFkcy4gIFRoYW5rcywKCkFsZXgKCk9uIFR1ZSwgMjAxNC0wOC0xMiBhdCAxMToy
+MCArMDIwMCwgSm9lcmcgUm9lZGVsIHdyb3RlOgo+IExQQyBJT01NVSBhbmQgVkZJTyBNaWNyb0Nv
+bmZlcmVuY2UgLSBDYWxsIGZvciBQYXJ0aWNpcGF0aW9uCj4gPT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KPiAKPiBXZSBhcmUgcGxlYXNl
+ZCB0byBhbm5vdW5jZSB0aGF0IHRoaXMgeWVhciB0aGVyZSB3aWxsIGJlIHRoZSBmaXJzdCBJT01N
+VQo+IGFuZCBWRklPIE1pY3JvQ29uZmVyZW5jZSBoZWxkIGF0IExpbnV4IFBsdW1iZXJzIENvbmZl
+cmVuY2UgaW4KPiBEw7xzc2VsZG9yZi4gQW4gaW5pdGlhbCByZXF1ZXN0IGZvciBzdXBwb3J0IG9m
+IHRoaXMgbWljcm8gY29uZmVyZW5jZQo+IGdlbmVyYXRlZCwgYW1vbmcgb3RoZXJzLCB0aGUgZm9s
+bG93aW5nIHBvc3NpYmxlIHRvcGljIGlkZWFzOgo+IAo+IAkqIEltcHJvdmluZyBnZW5lcmljIElP
+TU1VIGNvZGUgYW5kIG1vdmUgY29kZSBvdXQgb2YgZHJpdmVycwo+IAkqIElPTU1VIGRldmljZSBl
+cnJvciBoYW5kbGluZwo+IAkqIElPTU1VIFBvd2VyIE1hbmFnZW1lbnQKPiAJKiBWaXJ0dWFsaXpp
+bmcgSU9NTVVzCj4gCSogSW50ZXJmYWNlIGJldHdlZW4gSU9NTVVzIGFuIG1lbW9yeSBtYW5hZ2Vt
+ZW50Cj4gCj4gTW9yZSBzdWdnZXN0ZWQgdG9waWNzIGNhbiBiZSBmb3VuZCBhdCB0aGUgd2lraSBw
+YWdlIG9mIHRoZSBtaWNybwo+IGNvbmZlcmVuY2U6Cj4gCj4gCWh0dHA6Ly93aWtpLmxpbnV4cGx1
+bWJlcnNjb25mLm9yZy8yMDE0OmlvbW11X21pY3JvY29uZmVyZW5jZQo+IAo+IFdlIG5vdyBhc2sg
+Zm9yIGZvcm1hbCBwcm9wb3NhbHMgZm9yIHRoZXNlIGRpc2N1c3Npb25zIGFsb25nIHdpdGggYW55
+Cj4gb3RoZXIgdG9waWNzIG9yIHByb2JsZW1zIHRoYXQgbmVlZCB0byBiZSBkaXNjdXNzZWQgaW4g
+dGhpcyBhcmVhLgo+IAo+IFRoZSBmb3JtYXQgb2YgdGhlIG1pY3JvIGNvbmZlcmVuY2Ugd2lsbCBi
+ZSByb3VnaGx5IGhhbGYtaG91ciBzbG90cyBmb3IKPiBlYWNoIHRvcGljLCB3aGVyZSB0aGUgZGlz
+Y3Vzc2lvbiBsZWFkIGdpdmVzIGEgc2hvcnQgaW50cm9kdWN0aW9uIHRvIHRoZQo+IHByb2JsZW0g
+YW5kIG1heWJlIHNrZXRjaGVzIHBvc3NpYmxlIHNvbHV0aW9ucy4gVGhlIHJlc3Qgb2YgdGhlIHNs
+b3QgaXMKPiBvcGVuIGZvciBkaXNjdXNzaW9ucyBzbyB0aGF0IHdlIGNvbWUgdG8gYW4gYWdyZWVt
+ZW50IGhvdyB0byBtb3ZlCj4gZm9yd2FyZC4KPiAKPiBQbGVhc2Ugc3VibWl0IHlvdXIgZm9ybWFs
+IHByb3Bvc2FsIG9uIHRoZSBMaW51eCBQbHVtYmVycyB3ZWJzaXRlIChPcGVuSUQKPiBsb2dpbiBy
+ZXF1aXJlZCkgdW50aWwgQXVndXN0IDMxc3QgYXQ6Cj4gCj4gCWh0dHA6Ly93d3cubGludXhwbHVt
+YmVyc2NvbmYub3JnLzIwMTQvaG93LXRvLXN1Ym1pdC1taWNyb2NvbmZlcmVuY2UtZGlzY3Vzc2lv
+bnMtdG9waWNzLwo+IAo+IEhvcGUgdG8gc2VlIHlvdSBpbiBEw7xzc2VsZG9yZiEKPiAKPiAKPiAJ
+Sm9lcmcgUm9lZGVsIGFuZCBBbGV4IFdpbGxpYW1zb24KPiAKPiAtLQo+IFRvIHVuc3Vic2NyaWJl
+IGZyb20gdGhpcyBsaXN0OiBzZW5kIHRoZSBsaW5lICJ1bnN1YnNjcmliZSBsaW51eC1rZXJuZWwi
+IGluCj4gdGhlIGJvZHkgb2YgYSBtZXNzYWdlIHRvIG1ham9yZG9tb0B2Z2VyLmtlcm5lbC5vcmcK
+PiBNb3JlIG1ham9yZG9tbyBpbmZvIGF0ICBodHRwOi8vdmdlci5rZXJuZWwub3JnL21ham9yZG9t
+by1pbmZvLmh0bWwKPiBQbGVhc2UgcmVhZCB0aGUgRkFRIGF0ICBodHRwOi8vd3d3LnR1eC5vcmcv
+bGttbC8KCgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
+aW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBz
+Oi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
