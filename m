@@ -1,14 +1,15 @@
-From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: LPC IOMMU and VFIO MicroConference - Call for Participation
-Date: Thu, 21 Aug 2014 10:29:00 +0800
-Message-ID: <53F5596C.6040106@linux.intel.com>
-References: <20140812092019.GY9809@8bytes.org>
-	<1408554623.11383.63.camel@ul30vt.home>
+From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Subject: Re: [RFC 0/4] VFIO: PLATFORM: Return device tree info for a platform
+	device node
+Date: Thu, 21 Aug 2014 14:19:32 +0200
+Message-ID: <CAG8rG2zteFC=S8zPrzAB_bFZon=oP8w30Z1bRm46SoHsHH=62Q@mail.gmail.com>
+References: <1407927740-14993-1-git-send-email-a.motakis@virtualopensystems.com>
+	<53F3B32C.6080101@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1408554623.11383.63.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
+In-Reply-To: <53F3B32C.6080101-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,66 +19,68 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jesse Barnes <jbarnes-Y1mF5jBUw70BENJcbMCuUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Joel Schopp <joel.schopp-5C7GfCeVMHo@public.gmane.org>
+Cc: Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, KVM devel mailing list <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, alvise rigo <a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgQWxleCBhbmQgSm9lcmcsCglJIGhhdmUgbXkgdHJhdmVsIHJlcXVlc3QgYXBwcm92ZWQgYnV0
-IG1pc3NlZCB0aGUgcmVnaXN0cmF0aW9uIHdpbmRvdy4KSG9wZSBJIHdpbGwgYmUgbHVja3k6KQpS
-ZWdhcmRzIQpHZXJyeQoKT24gMjAxNC84LzIxIDE6MTAsIEFsZXggV2lsbGlhbXNvbiB3cm90ZToK
-PiAKPiBPayBmb2xrcywgaXQncyB0aW1lIHRvIHN1Ym1pdCB5b3VyIGRpc2N1c3Npb24gcHJvcG9z
-YWxzIGZvciB0aGUgTFBDCj4gSU9NTVUgYW5kIFZGSU8gdWNvbmYuICBJZiB5b3UgYWRkZWQgYW4g
-aWRlYSB0byB0aGUgd2lraSwgbm93IGlzIHRoZSB0aW1lCj4gdG8gZm9ybWFsbHkgcHJvcG9zZSBp
-dCBhcyBhIGRpc2N1c3Npb24gdG9waWMuICBJZiB5b3UgaGF2ZSBpZGVhcyBob3cgdG8KPiBtYWtl
-IHRoZSBJT01NVSBvciBWRklPIHN1YnN5c3RlbXMgYmV0dGVyLCBub3cgaXMgdGhlIHRpbWUgdG8g
-cHJvcG9zZSBpdC4KPiBJZiB5b3UgY2FuJ3QgZmlndXJlIG91dCBob3cgdG8gbWFrZSBzb21ldGhp
-bmcgd29yayBpbiB0aGUgY3VycmVudAo+IGluZnJhc3RydWN0dXJlLCBub3cgaXMgdGhlIHRpbWUg
-dG8gcHJvcG9zZSBhIGRpc2N1c3Npb24uICBJZiB5b3UncmUKPiBhZGRpbmcgbmV3IGZlYXR1cmVz
-IGFuZCB3YW50IHRvIG1ha2Ugc3VyZSB3ZSBjYW4gc3VwcG9ydCB0aGVtLCBub3cgaXMKPiB0aGUg
-dGltZSB0byBwcm9wb3NlIGEgZGlzY3Vzc2lvbi4KPiAKPiBJIGRvbid0IHRoaW5rIHdlJ3ZlIHNl
-ZW4gYSBmb3JtYWwgc2NoZWR1bGUgeWV0LCBidXQgbWFueSBvZiB1cyBoYXZlCj4gY29uZmxpY3Rz
-IHdpdGggS1ZNIEZvcnVtIHRoaXMgeWVhciBhbmQgSSBleHBlY3QgdGhlIExQQyBwbGFubmluZwo+
-IGNvbW1pdHRlZSB0byB0YWtlIHRoYXQgaW50byBhY2NvdW50LCBzbyBwbGVhc2Ugc3VibWl0IHlv
-dXIgcHJvcG9zYWxzCj4gYW55d2F5IGFuZCBmZWVsIGZyZWUgdG8gbm90ZSB5b3VyIGF2YWlsYWJp
-bGl0eS9jb25mbGljdHMgaW4gdGhlICJOb3RlIHRvCj4gb3JnYW5pemVycyIgc2VjdGlvbi4KPiAK
-PiBMUEMgaXMgZnVsbCwgYnV0IHRoZXJlIGlzIGEgd2FpdGluZyBsaXN0IGFuZCB0aGUgc29vbmVy
-IHlvdSBjYW4gZ2V0IG9uCj4gaXQsIHRoZSBtb3JlIGxpa2VseSB5b3UgYXJlIHRvIGJlIHJlZ2lz
-dGVyZWQuICBJIGV4cGVjdCB1Y29uZiBkaXNjdXNzaW9uCj4gbGVhZHMgdG8gaGF2ZSBhbiBhZHZh
-bnRhZ2UgaW4gbW92aW5nIHRocm91Z2ggdGhlIHF1ZXVlIGFuZCB3ZSBtYXkgYmUKPiBhYmxlIHRv
-IHByb3ZpZGUgZGlzY291bnRlZCByZWdpc3RyYXRpb24gZm9yIGRpc2N1c3Npb24gbGVhZHMuICBU
-aGFua3MsCj4gCj4gQWxleAo+IAo+IE9uIFR1ZSwgMjAxNC0wOC0xMiBhdCAxMToyMCArMDIwMCwg
-Sm9lcmcgUm9lZGVsIHdyb3RlOgo+PiBMUEMgSU9NTVUgYW5kIFZGSU8gTWljcm9Db25mZXJlbmNl
-IC0gQ2FsbCBmb3IgUGFydGljaXBhdGlvbgo+PiA9PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQo+Pgo+PiBXZSBhcmUgcGxlYXNlZCB0byBh
-bm5vdW5jZSB0aGF0IHRoaXMgeWVhciB0aGVyZSB3aWxsIGJlIHRoZSBmaXJzdCBJT01NVQo+PiBh
-bmQgVkZJTyBNaWNyb0NvbmZlcmVuY2UgaGVsZCBhdCBMaW51eCBQbHVtYmVycyBDb25mZXJlbmNl
-IGluCj4+IETDvHNzZWxkb3JmLiBBbiBpbml0aWFsIHJlcXVlc3QgZm9yIHN1cHBvcnQgb2YgdGhp
-cyBtaWNybyBjb25mZXJlbmNlCj4+IGdlbmVyYXRlZCwgYW1vbmcgb3RoZXJzLCB0aGUgZm9sbG93
-aW5nIHBvc3NpYmxlIHRvcGljIGlkZWFzOgo+Pgo+PiAJKiBJbXByb3ZpbmcgZ2VuZXJpYyBJT01N
-VSBjb2RlIGFuZCBtb3ZlIGNvZGUgb3V0IG9mIGRyaXZlcnMKPj4gCSogSU9NTVUgZGV2aWNlIGVy
-cm9yIGhhbmRsaW5nCj4+IAkqIElPTU1VIFBvd2VyIE1hbmFnZW1lbnQKPj4gCSogVmlydHVhbGl6
-aW5nIElPTU1Vcwo+PiAJKiBJbnRlcmZhY2UgYmV0d2VlbiBJT01NVXMgYW4gbWVtb3J5IG1hbmFn
-ZW1lbnQKPj4KPj4gTW9yZSBzdWdnZXN0ZWQgdG9waWNzIGNhbiBiZSBmb3VuZCBhdCB0aGUgd2lr
-aSBwYWdlIG9mIHRoZSBtaWNybwo+PiBjb25mZXJlbmNlOgo+Pgo+PiAJaHR0cDovL3dpa2kubGlu
-dXhwbHVtYmVyc2NvbmYub3JnLzIwMTQ6aW9tbXVfbWljcm9jb25mZXJlbmNlCj4+Cj4+IFdlIG5v
-dyBhc2sgZm9yIGZvcm1hbCBwcm9wb3NhbHMgZm9yIHRoZXNlIGRpc2N1c3Npb25zIGFsb25nIHdp
-dGggYW55Cj4+IG90aGVyIHRvcGljcyBvciBwcm9ibGVtcyB0aGF0IG5lZWQgdG8gYmUgZGlzY3Vz
-c2VkIGluIHRoaXMgYXJlYS4KPj4KPj4gVGhlIGZvcm1hdCBvZiB0aGUgbWljcm8gY29uZmVyZW5j
-ZSB3aWxsIGJlIHJvdWdobHkgaGFsZi1ob3VyIHNsb3RzIGZvcgo+PiBlYWNoIHRvcGljLCB3aGVy
-ZSB0aGUgZGlzY3Vzc2lvbiBsZWFkIGdpdmVzIGEgc2hvcnQgaW50cm9kdWN0aW9uIHRvIHRoZQo+
-PiBwcm9ibGVtIGFuZCBtYXliZSBza2V0Y2hlcyBwb3NzaWJsZSBzb2x1dGlvbnMuIFRoZSByZXN0
-IG9mIHRoZSBzbG90IGlzCj4+IG9wZW4gZm9yIGRpc2N1c3Npb25zIHNvIHRoYXQgd2UgY29tZSB0
-byBhbiBhZ3JlZW1lbnQgaG93IHRvIG1vdmUKPj4gZm9yd2FyZC4KPj4KPj4gUGxlYXNlIHN1Ym1p
-dCB5b3VyIGZvcm1hbCBwcm9wb3NhbCBvbiB0aGUgTGludXggUGx1bWJlcnMgd2Vic2l0ZSAoT3Bl
-bklECj4+IGxvZ2luIHJlcXVpcmVkKSB1bnRpbCBBdWd1c3QgMzFzdCBhdDoKPj4KPj4gCWh0dHA6
-Ly93d3cubGludXhwbHVtYmVyc2NvbmYub3JnLzIwMTQvaG93LXRvLXN1Ym1pdC1taWNyb2NvbmZl
-cmVuY2UtZGlzY3Vzc2lvbnMtdG9waWNzLwo+Pgo+PiBIb3BlIHRvIHNlZSB5b3UgaW4gRMO8c3Nl
-bGRvcmYhCj4+Cj4+Cj4+IAlKb2VyZyBSb2VkZWwgYW5kIEFsZXggV2lsbGlhbXNvbgo+Pgo+PiAt
-LQo+PiBUbyB1bnN1YnNjcmliZSBmcm9tIHRoaXMgbGlzdDogc2VuZCB0aGUgbGluZSAidW5zdWJz
-Y3JpYmUgbGludXgta2VybmVsIiBpbgo+PiB0aGUgYm9keSBvZiBhIG1lc3NhZ2UgdG8gbWFqb3Jk
-b21vQHZnZXIua2VybmVsLm9yZwo+PiBNb3JlIG1ham9yZG9tbyBpbmZvIGF0ICBodHRwOi8vdmdl
-ci5rZXJuZWwub3JnL21ham9yZG9tby1pbmZvLmh0bWwKPj4gUGxlYXNlIHJlYWQgdGhlIEZBUSBh
-dCAgaHR0cDovL3d3dy50dXgub3JnL2xrbWwvCj4gCj4gCj4gCl9fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0
-cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcv
-bWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On Tue, Aug 19, 2014 at 10:27 PM, Joel Schopp <joel.schopp-5C7GfCeVMHo@public.gmane.org> wrote:
+>
+>
+> > This RFC's intention is to show what an interface to access device node
+> > properties for VFIO_PLATFORM can look like.
+> >
+> > If a device tree node corresponding to a platform device bound by VFIO_PLATFORM
+> > is available, this patch series will allow the user to query the properties
+> > associated with this device node. This can be useful for userspace drivers
+> > to automatically query parameters related to the device.
+> >
+> > An API to return data from a device's device tree has been proposed before on
+> > these lists. The API proposed here is slightly different.
+> >
+> > Properties to parse from the device tree are not indexed by a numerical id.
+> > The host system doesn't guarantee any specific ordering for the available
+> > properties, or that those will remain the same; while this does not happen in
+> > practice, there is nothing from the host changing the device nodes during
+> > operation. So properties are accessed by property name.
+> >
+> > The type of the property accessed must also be known by the user. Properties
+> > types implemented in this RFC:
+> > - VFIO_DEVTREE_ARR_TYPE_STRING (strings sepparated by the null character)
+> > - VFIO_DEVTREE_ARR_TYPE_U32
+> > - VFIO_DEVTREE_ARR_TYPE_U16
+> > - VFIO_DEVTREE_ARR_TYPE_U8
+> >
+> > These can all be access by the ioctl VFIO_DEVICE_GET_DEVTREE_INFO. A new ioctl
+> > was preferred instead of shoehorning the functionality in VFIO_DEVICE_GET_INFO.
+> > The structure exchanged looks like this:
+>
+> You'll have to forgive my ignorance on the history.  But with the dtc
+> tool already supporting a filesystem representation (--in-format=fs),
+> with the dtc tool source already built into qemu, and having an example
+> implementation of such an interface in /proc/device-tree/ why is an
+> ioctl interface preferred over a filesystem interface?
+>
+
+Hello Joel,
+
+VFIO already exposes an ioctl interface, so from the side of VFIO I
+think it wouldn't make sense to add another interface just for the
+device node data of the target device. I don't think the existing
+/proc interface would be appropriate to use since (1) you would have
+to give to the VFIO user (e.g. QEMU) access to the whole hierarchy (2)
+the VFIO user would have to implement logic to figure out which node
+it needs to get data from.
+
+One thing to keep in mind is that VFIO is not designed to be used only
+by QEMU. Taking as an example a hypothetical user space driver for the
+PL330 DMAC, I think it makes sense to be able to directly get from
+VFIO the right values for #dma-cells, #dma-channels, #dma-requests,
+etc.
+
+Of course QEMU could let the user override any values via any format
+QEMU supports, but IMHO out of the box it would make sense to use an
+interface such as the proposed one.
+
+-- 
+Antonios Motakis
+Virtual Open Systems
