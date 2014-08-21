@@ -1,102 +1,64 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH 04/29] drivers: base: add notifier for failed driver bind
-Date: Thu, 21 Aug 2014 21:46:30 +0200
-Message-ID: <5058601.WyRAooKDLt@avalon>
-References: <1407235677-26324-1-git-send-email-m.szyprowski@samsung.com> <1407235677-26324-5-git-send-email-m.szyprowski@samsung.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 1/2] iommu: Make iommu_group_get_for_dev() more robust
+Date: Thu, 21 Aug 2014 23:37:24 +0200
+Message-ID: <1408657045-4979-2-git-send-email-joro@8bytes.org>
+References: <1408657045-4979-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <1407235677-26324-5-git-send-email-m.szyprowski@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene.kim@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1408657045-4979-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Marek,
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Thank you for the patch.
+When a non-PCI device is passed to that function it might
+pass group == NULL to iommu_group_add_device() which then
+dereferences it and cause a crash this way. Fix it by
+just returning an error for non-PCI devices.
 
-On Tuesday 05 August 2014 12:47:32 Marek Szyprowski wrote:
-> This patch adds support for getting a notify for failed device driver
-> bind, so all the items done in BUS_NOTIFY_BIND_DRIVER event can be
-> cleaned if the driver fails to bind.
-> 
-> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> ---
->  drivers/base/dd.c      | 10 +++++++---
->  include/linux/device.h |  4 +++-
->  2 files changed, 10 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-> index e4ffbcf..541a41f 100644
-> --- a/drivers/base/dd.c
-> +++ b/drivers/base/dd.c
-> @@ -237,10 +237,14 @@ static int driver_sysfs_add(struct device *dev)
->  	return ret;
->  }
-> 
-> -static void driver_sysfs_remove(struct device *dev)
-> +static void driver_sysfs_remove(struct device *dev, int failed)
->  {
->  	struct device_driver *drv = dev->driver;
-> 
-> +	if (failed && dev->bus)
-> +		blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
-> +					     BUS_NOTIFY_DRVBIND_FAILED, dev);
+Fixes: 104a1c13ac66e40cf8c6ae74d76ff14ff24b9b01
+Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ drivers/iommu/iommu.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-This might be a stupid question, but as you only call driver_sysfs_remove with 
-failed set to true in a single location (in the failure path of really_probe), 
-how about moving the blocking_notifier_call_chain to that location ? The code 
-seems to be a bit out of place here.
-
-> +
->  	if (drv) {
->  		sysfs_remove_link(&drv->p->kobj, kobject_name(&dev->kobj));
->  		sysfs_remove_link(&dev->kobj, "driver");
-> @@ -316,7 +320,7 @@ static int really_probe(struct device *dev, struct
-> device_driver *drv)
-> 
->  probe_failed:
->  	devres_release_all(dev);
-> -	driver_sysfs_remove(dev);
-> +	driver_sysfs_remove(dev, true);
->  	dev->driver = NULL;
->  	dev_set_drvdata(dev, NULL);
-> 
-> @@ -509,7 +513,7 @@ static void __device_release_driver(struct device *dev)
->  	if (drv) {
->  		pm_runtime_get_sync(dev);
-> 
-> -		driver_sysfs_remove(dev);
-> +		driver_sysfs_remove(dev, false);
-> 
->  		if (dev->bus)
->  			blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
-> diff --git a/include/linux/device.h b/include/linux/device.h
-> index b387710..92daded 100644
-> --- a/include/linux/device.h
-> +++ b/include/linux/device.h
-> @@ -176,7 +176,7 @@ extern int bus_register_notifier(struct bus_type *bus,
->  extern int bus_unregister_notifier(struct bus_type *bus,
->  				   struct notifier_block *nb);
-> 
-> -/* All 4 notifers below get called with the target struct device *
-> +/* All 7 notifers below get called with the target struct device *
->   * as an argument. Note that those functions are likely to be called
->   * with the device lock held in the core, so be careful.
->   */
-> @@ -189,6 +189,8 @@ extern int bus_unregister_notifier(struct bus_type *bus,
-> unbound */
->  #define BUS_NOTIFY_UNBOUND_DRIVER	0x00000006 /* driver is unbound
->  						      from the device */
-> +#define BUS_NOTIFY_DRVBIND_FAILED	0x00000007 /* driver failed to bind
-> +						      to device */
-> 
->  extern struct kset *bus_get_kset(struct bus_type *bus);
->  extern struct klist *bus_get_device_klist(struct bus_type *bus);
-
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 1698360..ef8da12 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -678,15 +678,17 @@ static struct iommu_group *iommu_group_get_for_pci_dev(struct pci_dev *pdev)
+  */
+ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
+ {
+-	struct iommu_group *group = ERR_PTR(-EIO);
++	struct iommu_group *group;
+ 	int ret;
+ 
+ 	group = iommu_group_get(dev);
+ 	if (group)
+ 		return group;
+ 
+-	if (dev_is_pci(dev))
+-		group = iommu_group_get_for_pci_dev(to_pci_dev(dev));
++	if (!dev_is_pci(dev))
++		return ERR_PTR(-EINVAL);
++
++	group = iommu_group_get_for_pci_dev(to_pci_dev(dev));
+ 
+ 	if (IS_ERR(group))
+ 		return group;
 -- 
-Regards,
-
-Laurent Pinchart
+1.9.1
