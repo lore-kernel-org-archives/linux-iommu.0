@@ -1,13 +1,11 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 1/2] iommu: Make iommu_group_get_for_dev() more robust
-Date: Thu, 21 Aug 2014 23:37:24 +0200
-Message-ID: <1408657045-4979-2-git-send-email-joro@8bytes.org>
-References: <1408657045-4979-1-git-send-email-joro@8bytes.org>
+Subject: [PATCH 0/2] More IOMMU Fixes
+Date: Thu, 21 Aug 2014 23:37:23 +0200
+Message-ID: <1408657045-4979-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1408657045-4979-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,44 +19,22 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Hi,
 
-When a non-PCI device is passed to that function it might
-pass group == NULL to iommu_group_add_device() which then
-dereferences it and cause a crash this way. Fix it by
-just returning an error for non-PCI devices.
+here are two patches that fix valid issues discovered by
+Coverity. Please review.
 
-Fixes: 104a1c13ac66e40cf8c6ae74d76ff14ff24b9b01
-Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
----
+Thanks,
+
+	Joerg
+
+Joerg Roedel (2):
+  iommu: Make iommu_group_get_for_dev() more robust
+  iommu/vt-d: Check return value of acpi_bus_get_device()
+
+ drivers/iommu/dmar.c  | 3 +--
  drivers/iommu/iommu.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ 2 files changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 1698360..ef8da12 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -678,15 +678,17 @@ static struct iommu_group *iommu_group_get_for_pci_dev(struct pci_dev *pdev)
-  */
- struct iommu_group *iommu_group_get_for_dev(struct device *dev)
- {
--	struct iommu_group *group = ERR_PTR(-EIO);
-+	struct iommu_group *group;
- 	int ret;
- 
- 	group = iommu_group_get(dev);
- 	if (group)
- 		return group;
- 
--	if (dev_is_pci(dev))
--		group = iommu_group_get_for_pci_dev(to_pci_dev(dev));
-+	if (!dev_is_pci(dev))
-+		return ERR_PTR(-EINVAL);
-+
-+	group = iommu_group_get_for_pci_dev(to_pci_dev(dev));
- 
- 	if (IS_ERR(group))
- 		return group;
 -- 
 1.9.1
