@@ -1,11 +1,13 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [RFC 0/5] vfio: AMBA devices support
-Date: Fri, 22 Aug 2014 11:01:23 +0200
-Message-ID: <1408698088-5349-1-git-send-email-a.motakis@virtualopensystems.com>
+Subject: [RFC 1/5] driver core: amba: add device binding path 'driver_override'
+Date: Fri, 22 Aug 2014 11:01:24 +0200
+Message-ID: <1408698088-5349-2-git-send-email-a.motakis@virtualopensystems.com>
+References: <1408698088-5349-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1408698088-5349-1-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,39 +21,106 @@ To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvmarm-FPEHb7Xf0XXU
 Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch series depends on the VFIO for PLATFORM devices patch series,
-and implements AMBA device support for VFIO.
+As already demonstrated with PCI [1] and the platform bus [2], a
+driver_override property in sysfs can be used to bypass the id matching
+of a device to a AMBA driver. This can be used by VFIO to bind to any AMBA
+device requested by the user.
 
-This can be used for example with the PL330 DMA Controller, which is an
-AMBA device and not a proper platform device. By using the VFIO AMBA driver
-introduced here, one can bind VFIO directly to such a device without hacking
-the host device tree to make the device look like a platform device to the
-system.
+[1] http://lists-archives.com/linux-kernel/28030441-pci-introduce-new-device-binding-path-using-pci_dev-driver_override.html
+[2] https://www.redhat.com/archives/libvir-list/2014-April/msg00382.html
 
-Also adding driver_override support to ARM AMBA bus devices, one can
-alternate between using the proper host device driver and VFIO without
-restarting the host system with a new device tree.
+Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+---
+ drivers/amba/bus.c       | 43 +++++++++++++++++++++++++++++++++++++++++++
+ include/linux/amba/bus.h |  1 +
+ 2 files changed, 44 insertions(+)
 
-Antonios Motakis (5):
-  driver core: amba: add device binding path 'driver_override'
-  vfio: platform: decouple code probing devices from the platform bus
-  vfio: platform: move code that can be shared with AMBA to a common
-    file
-  vfio: amba: VFIO support for AMBA devices
-  vfio: amba: add the VFIO for AMBA devices module to Kconfig
-
- drivers/amba/bus.c                            |  43 +++
- drivers/vfio/platform/Kconfig                 |  10 +
- drivers/vfio/platform/Makefile                |   6 +-
- drivers/vfio/platform/vfio_amba.c             | 129 +++++++++
- drivers/vfio/platform/vfio_platform.c         | 355 +-----------------------
- drivers/vfio/platform/vfio_platform_common.c  | 380 ++++++++++++++++++++++++++
- drivers/vfio/platform/vfio_platform_irq.c     |   6 +-
- drivers/vfio/platform/vfio_platform_private.h |   9 +-
- include/linux/amba/bus.h                      |   1 +
- 9 files changed, 591 insertions(+), 348 deletions(-)
- create mode 100644 drivers/vfio/platform/vfio_amba.c
- create mode 100644 drivers/vfio/platform/vfio_platform_common.c
-
+diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
+index 3cf61a1..8174a9a 100644
+--- a/drivers/amba/bus.c
++++ b/drivers/amba/bus.c
+@@ -17,6 +17,7 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/amba/bus.h>
+ #include <linux/sizes.h>
++#include <linux/limits.h>
+ 
+ #include <asm/irq.h>
+ 
+@@ -42,6 +43,10 @@ static int amba_match(struct device *dev, struct device_driver *drv)
+ 	struct amba_device *pcdev = to_amba_device(dev);
+ 	struct amba_driver *pcdrv = to_amba_driver(drv);
+ 
++	/* When driver_override is set, only bind to the matching driver */
++	if (pcdev->driver_override)
++		return !strcmp(pcdev->driver_override, drv->name);
++
+ 	return amba_lookup(pcdrv->id_table, pcdev) != NULL;
+ }
+ 
+@@ -58,6 +63,43 @@ static int amba_uevent(struct device *dev, struct kobj_uevent_env *env)
+ 	return retval;
+ }
+ 
++static ssize_t driver_override_show(struct device *_dev,
++				    struct device_attribute *attr, char *buf)
++{
++	struct amba_device *dev = to_amba_device(_dev);
++	return sprintf(buf, "%s\n", dev->driver_override);
++}
++
++static ssize_t driver_override_store(struct device *_dev,
++				     struct device_attribute *attr,
++				     const char *buf, size_t count)
++{
++	struct amba_device *dev = to_amba_device(_dev);
++	char *driver_override, *old = dev->driver_override, *cp;
++
++	if (count > PATH_MAX)
++	       return -EINVAL;
++
++	driver_override = kstrndup(buf, count, GFP_KERNEL);
++	if (!driver_override)
++	       return -ENOMEM;
++
++	cp = strchr(driver_override, '\n');
++	if (cp)
++	       *cp = '\0';
++
++	if (strlen(driver_override)) {
++	       dev->driver_override = driver_override;
++	} else {
++	       kfree(driver_override);
++	       dev->driver_override = NULL;
++	}
++
++	kfree(old);
++
++	return count;
++}
++
+ #define amba_attr_func(name,fmt,arg...)					\
+ static ssize_t name##_show(struct device *_dev,				\
+ 			   struct device_attribute *attr, char *buf)	\
+@@ -80,6 +122,7 @@ amba_attr_func(resource, "\t%016llx\t%016llx\t%016lx\n",
+ static struct device_attribute amba_dev_attrs[] = {
+ 	__ATTR_RO(id),
+ 	__ATTR_RO(resource),
++	__ATTR_RW(driver_override),
+ 	__ATTR_NULL,
+ };
+ 
+diff --git a/include/linux/amba/bus.h b/include/linux/amba/bus.h
+index fdd7e1b..7c011e7 100644
+--- a/include/linux/amba/bus.h
++++ b/include/linux/amba/bus.h
+@@ -32,6 +32,7 @@ struct amba_device {
+ 	struct clk		*pclk;
+ 	unsigned int		periphid;
+ 	unsigned int		irq[AMBA_NR_IRQS];
++	char			*driver_override;
+ };
+ 
+ struct amba_driver {
 -- 
 1.8.3.2
