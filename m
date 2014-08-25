@@ -1,17 +1,15 @@
-From: Sathya Perla <Sathya.Perla-iH1Dq9VlAzfQT0dZR+AlfA@public.gmane.org>
-Subject: RE: [PATCH v2] iommu/vt-d: Fix broken device issue when using iommu=pt
-Date: Mon, 25 Aug 2014 12:11:51 +0000
-Message-ID: <8b3c2f14-d454-45f5-87ab-69e1b87f27c9@CMEXHTCAS1.ad.emulex.com>
-References: <1408949099-18677-1-git-send-email-wangyijing@huawei.com>
-	<20140825091531.GG16329@8bytes.org>
-	<8dada92a-19af-4b77-b917-f2d97291abbe@CMEXHTCAS2.ad.emulex.com>
-	<53FB1B09.5070209@huawei.com>
+From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Subject: Re: [PATCH 04/29] drivers: base: add notifier for failed driver bind
+Date: Mon, 25 Aug 2014 13:05:39 -0700
+Message-ID: <20140825200539.GA22076@kroah.com>
+References: <1407235677-26324-1-git-send-email-m.szyprowski@samsung.com>
+	<1407235677-26324-5-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <53FB1B09.5070209-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <1407235677-26324-5-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,77 +19,39 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Subramanian Seetharaman <subbu.seetharaman-laKkSmNT4hbQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-> -----Original Message-----
-> From: Yijing Wang [mailto:wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org]
+On Tue, Aug 05, 2014 at 12:47:32PM +0200, Marek Szyprowski wrote:
+> This patch adds support for getting a notify for failed device driver
+> bind, so all the items done in BUS_NOTIFY_BIND_DRIVER event can be
+> cleaned if the driver fails to bind.
+
+But doesn't the bus know if the driver fails to bind, so why would a
+notifier be needed here?  Can't it unwind any problems then?
+
+> Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> ---
+>  drivers/base/dd.c      | 10 +++++++---
+>  include/linux/device.h |  4 +++-
+>  2 files changed, 10 insertions(+), 4 deletions(-)
 > 
-> On 2014/8/25 17:32, Sathya Perla wrote:
-> >> -----Original Message-----
-> >> From: Joerg Roedel [mailto:joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org]
-> >>
-> >> [Adding the Emulex driver developers to Cc for some input on the device,
-> >>  and why it might use wrong request ids]
-> >>
-> >> On Mon, Aug 25, 2014 at 02:44:59PM +0800, Yijing Wang wrote:
-> >>> We found some strange devices in HP C7000 and Huawei Storage Server.
-> >> These
-> >>> devices can not be enumerated by OS, but they still did DMA read/write
-> >>> without OS management. Because iommu will not create the DMA
-> >> mapping for
-> >>> these devices, the DMA read/write will be blocked by iommu hardware.
-...
-> >>> Eg.
-> >>> in HP C7000:
-> >>>  \-[0000:00]-+-00.0  Intel Corporation Xeon E5/Core i7 DMI2
-> >>>              +-01.0-[11]--
-> >>> 			 +-01.1-[02]--
-> >>> 			 +-02.0-[04]--+-00.0  Emulex Corporation OneConnect
-> >> 10Gb NIC (be3)
-> >>> 	         |            +-00.1  Emulex Corporation OneConnect 10Gb NIC (be3)
-> >>> 	         |            +-00.2  Emulex Corporation OneConnect 10Gb iSCSI
-> >> Initiator (be3)
-> >>> 	         |            \-00.3  Emulex Corporation OneConnect 10Gb iSCSI
-> >> Initiator (be3)
-> >>> 	         +-02.1-[12]--
-> >>> Kernel only found four devices in bus 0x04, but we found following DMA
-> >> errors in dmesg.
-> >>>
-> >>> [ 1438.477262] DRHD: handling fault status reg 402
-> >>> [ 1438.498278] DMAR:[DMA Write] Request device [04:00.4] fault addr
-> >> bdf70000
-> >>> [ 1438.498280] DMAR:[fault reason 02] Present bit in context entry is
-> clear
-> >>> [ 1438.566458] DMAR:[DMA Write] Request device [04:00.5] fault addr
-> >> bdf70000
-> >>> [ 1438.566460] DMAR:[fault reason 02] Present bit in context entry is
-> clear
-> >>> [ 1438.635211] DMAR:[DMA Write] Request device [04:00.6] fault addr
-> >> bdf70000
-> >>> [ 1438.635213] DMAR:[fault reason 02] Present bit in context entry is
-> clear
-> >>> [ 1438.703849] DMAR:[DMA Write] Request device [04:00.7] fault addr
-> >> bdf70000
-> >>> [ 1438.703851] DMAR:[fault reason 02] Present bit in context entry is
-> clear
+> diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+> index e4ffbcf..541a41f 100644
+> --- a/drivers/base/dd.c
+> +++ b/drivers/base/dd.c
+> @@ -237,10 +237,14 @@ static int driver_sysfs_add(struct device *dev)
+>  	return ret;
+>  }
+>  
+> -static void driver_sysfs_remove(struct device *dev)
+> +static void driver_sysfs_remove(struct device *dev, int failed)
 
-Hi Wang, from the kernel log I can see that the faulting address 0xbdf70000 falls in the
-RMRR range the BIOS requested:
-[    0.111343] DMAR: RMRR base: 0x000000bdf6f000 end: 0x000000bdf7efff
-
-An identity map is being setup for the visible functions, but not for the "invisible"
-functions:
-[    2.695951] IOMMU: Setting identity map for device 0000:04:00.0 [0xbdf6e000 - 0xbdf6efff]
-[    2.698637] IOMMU: Setting identity map for device 0000:04:00.1 [0xbdf6e000 - 0xbdf6efff]
-[    2.702551] IOMMU: Setting identity map for device 0000:04:00.2 [0xbdf6e000 - 0xbdf6efff]
-[    2.705134] IOMMU: Setting identity map for device 0000:04:00.3 [0xbdf6e000 - 0xbdf6efff]
-
-I'm going to follow-up with our FW folks as to why functions 04.00.4-7 are invisible
-but yet are trying to access the RMRR memory region.
-
-Could you also please send the me the FW version (output of "ethtool -i eth0")
+I _hate_ having functions with a flag that does something different
+depending on it.  If you _really_ need this, just make the notifier call
+before calling this function, which should work just fine, right?
 
 thanks,
--Sathya
+
+greg k-h
