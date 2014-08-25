@@ -1,14 +1,14 @@
-From: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Subject: Re: [PATCH v2] iommu/vt-d: Fix broken device issue when using iommu=pt
-Date: Mon, 25 Aug 2014 15:13:32 +0800
-Message-ID: <53FAE21C.3000603@huawei.com>
+Date: Mon, 25 Aug 2014 11:15:31 +0200
+Message-ID: <20140825091531.GG16329@8bytes.org>
 References: <1408949099-18677-1-git-send-email-wangyijing@huawei.com>
-	<8121916dfcae4c4a9d71377081c082fc@BLUPR03MB566.namprd03.prod.outlook.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <8121916dfcae4c4a9d71377081c082fc-GeMU99Gfrru4FpqPz9FowuO6mTEJWrR4XA4E9RH9d+qIuWR1G4zioA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1408949099-18677-1-git-send-email-wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,89 +18,48 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Joerg
-	Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+To: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: Sathya Perla <sathya.perla-laKkSmNT4hbQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Subbu Seetharaman <subbu.seetharaman-laKkSmNT4hbQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
->> +	/* We found some strange devices in HP c7000 and other platforms, they
->> +	 * can not be enumerated by OS, and they did DMA read/write without
->> +	 * driver management. if we open iommu in these platforms, the DMA
->> read/write
->> +	 * will be blocked by IOMMU hardware. Currently, we only create identity
->> mapping
->> +	 * for the devices in OS. To fix this, add iommu=pt_force=segment:busnum
->> to
->> +	 * force to do identity mapping for the specific bus.
->> +	 */
->> +	if (iommu_pt_force_bus >= 0 && iommu_pt_force_bus >= 0) {
+[Adding the Emulex driver developers to Cc for some input on the device,
+ and why it might use wrong request ids]
+
+On Mon, Aug 25, 2014 at 02:44:59PM +0800, Yijing Wang wrote:
+> We found some strange devices in HP C7000 and Huawei Storage Server. These
+> devices can not be enumerated by OS, but they still did DMA read/write
+> without OS management. Because iommu will not create the DMA mapping for
+> these devices, the DMA read/write will be blocked by iommu hardware.
 > 
-> iommu_pt_force_bus twice?
-
-Sharp eyes! Sorry, it should be if (iommu_pt_force_domain >= 0 && iommu_pt_force_bus >= 0).
-
-Thanks for your good catch!
-
-Thanks!
-Yijing.
-
+> Eg.
+> in HP C7000:
+>  \-[0000:00]-+-00.0  Intel Corporation Xeon E5/Core i7 DMI2
+>              +-01.0-[11]--
+> 			 +-01.1-[02]--
+> 			 +-02.0-[04]--+-00.0  Emulex Corporation OneConnect 10Gb NIC (be3)
+> 	         |            +-00.1  Emulex Corporation OneConnect 10Gb NIC (be3)
+> 	         |            +-00.2  Emulex Corporation OneConnect 10Gb iSCSI Initiator (be3)
+> 	         |            \-00.3  Emulex Corporation OneConnect 10Gb iSCSI Initiator (be3)
+> 	         +-02.1-[12]--
+> Kernel only found four devices in bus 0x04, but we found following DMA errors in dmesg.
 > 
-> Thanks
-> -Bharat
+> [ 1438.477262] DRHD: handling fault status reg 402
+> [ 1438.498278] DMAR:[DMA Write] Request device [04:00.4] fault addr bdf70000
+> [ 1438.498280] DMAR:[fault reason 02] Present bit in context entry is clear
+> [ 1438.566458] DMAR:[DMA Write] Request device [04:00.5] fault addr bdf70000
+> [ 1438.566460] DMAR:[fault reason 02] Present bit in context entry is clear
+> [ 1438.635211] DMAR:[DMA Write] Request device [04:00.6] fault addr bdf70000
+> [ 1438.635213] DMAR:[fault reason 02] Present bit in context entry is clear
+> [ 1438.703849] DMAR:[DMA Write] Request device [04:00.7] fault addr bdf70000
+> [ 1438.703851] DMAR:[fault reason 02] Present bit in context entry is clear
 > 
->> +		int found = 0;
->> +
->> +		iommu = NULL;
->> +		for_each_active_iommu(iommu, drhd) {
->> +			if (iommu_pt_force_domain != drhd->segment)
->> +				continue;
->> +
->> +			for_each_active_dev_scope(drhd->devices, drhd->devices_cnt,
->> i, dev) {
->> +				if (!dev_is_pci(dev))
->> +					continue;
->> +
->> +				pdev = to_pci_dev(dev);
->> +				if (pdev->bus->number == iommu_pt_force_bus ||
->> +						(pdev->subordinate
->> +						 && pdev->subordinate->number <=
->> iommu_pt_force_bus
->> +						 && pdev->subordinate->busn_res.end >=
->> iommu_pt_force_bus)) {
->> +					found = 1;
->> +					break;
->> +				}
->> +			}
->> +
->> +			if (drhd->include_all) {
->> +				found = 1;
->> +				break;
->> +			}
->> +		}
->> +
->> +		if (found && iommu)
->> +			for (i = 0; i < 256; i++)
->> +				domain_context_mapping_one(si_domain, iommu,
->> iommu_pt_force_bus,
->> +						i,  hw ? CONTEXT_TT_PASS_THROUGH :
->> +						CONTEXT_TT_MULTI_LEVEL);
->> +	}
->> +
->>  	return 0;
->>  }
->>
->> --
->> 1.7.1
->>
->> _______________________________________________
->> iommu mailing list
->> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
->> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> 
-> .
-> 
+> This patch add a kernel boot command parameter iommu=pt_force=domain:busnum
+> that based iommu identity mapping and force to create identity for all devfn in
+> the specific bus number to fix this issue.
+
+No! If the device really uses request-ids it shouldn't use please add a
+DMA alias quirk instead. A new kernel parameter will not work out of the
+box for other users of this device.
 
 
--- 
-Thanks!
-Yijing
+	Joerg
