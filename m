@@ -1,11 +1,13 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 0/4] AMD IOMMU: Assign/de-assign complete alias groups
-Date: Tue, 26 Aug 2014 11:36:10 +0200
-Message-ID: <1409045774-32000-1-git-send-email-joro@8bytes.org>
+Subject: [PATCH 3/4] iommu/amd: Attach and detach complete alias group
+Date: Tue, 26 Aug 2014 11:36:13 +0200
+Message-ID: <1409045774-32000-4-git-send-email-joro@8bytes.org>
+References: <1409045774-32000-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1409045774-32000-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,47 +18,102 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Here is a patch-set to fix the following issue:
+Change tha device attach and detach semantic to apply to all
+devices in an alias group. This means all devices in an
+alias group are now attached and detached at the same time.
 
-When a device is added to an iommu domain, the current amd
-iommu code will add the device itself and the device it
-aliases to to the domain. But this alias relation is
-uni-directional.
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ drivers/iommu/amd_iommu.c | 46 ++++++++++++++++++++--------------------------
+ 1 file changed, 20 insertions(+), 26 deletions(-)
 
-If, for example, device 03:00.1 aliases to 03:00.0 and is
-added to a domain, the iommu code will add both devices.
-But if 03.00.0 is added, 03.00.1 will be not.
-
-This is a problem with some broken devices that appear with
-function 0 on the bus but use function 1 as the request-id.
-These devices will not work with the current implementation.
-
-This patch-set changes the behavior of the code by
-introducing alias-groups (similar to iommu-groups, but
-support non-existent pci devices) and always
-assigns/de-assigns complete alias groups to/from a domain.
-
-This makes the alias relation bi-directional and fixes the
-issues with broken devices.
-
-Thanks,
-
-	Joerg
-
-Joerg Roedel (4):
-  iommu/amd: Move struct iommu_dev_data to amd_iommu.c
-  iommu/amd: Keep a list of devices in an alias group
-  iommu/amd: Attach and detach complete alias group
-  iommu/amd: Remove device binding reference count
-
- drivers/iommu/amd_iommu.c       | 74 +++++++++++++++++++++++++----------------
- drivers/iommu/amd_iommu_types.h | 21 ------------
- 2 files changed, 46 insertions(+), 49 deletions(-)
-
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 8a15256..a5e6b0a 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2149,35 +2149,29 @@ static void do_detach(struct iommu_dev_data *dev_data)
+ static int __attach_device(struct iommu_dev_data *dev_data,
+ 			   struct protection_domain *domain)
+ {
++	struct iommu_dev_data *head, *entry;
+ 	int ret;
+ 
+ 	/* lock domain */
+ 	spin_lock(&domain->lock);
+ 
+-	if (dev_data->alias_data != NULL) {
+-		struct iommu_dev_data *alias_data = dev_data->alias_data;
+-
+-		/* Some sanity checks */
+-		ret = -EBUSY;
+-		if (alias_data->domain != NULL &&
+-				alias_data->domain != domain)
+-			goto out_unlock;
++	head = dev_data;
+ 
+-		if (dev_data->domain != NULL &&
+-				dev_data->domain != domain)
+-			goto out_unlock;
++	if (head->alias_data != NULL)
++		head = head->alias_data;
+ 
+-		/* Do real assignment */
+-		if (alias_data->domain == NULL)
+-			do_attach(alias_data, domain);
++	/* Now we have the root of the alias group, if any */
+ 
+-		atomic_inc(&alias_data->bind);
+-	}
++	ret = -EBUSY;
++	if (head->domain != NULL)
++		goto out_unlock;
+ 
+-	if (dev_data->domain == NULL)
+-		do_attach(dev_data, domain);
++	/* Attach alias group root */
++	do_attach(head, domain);
+ 
+-	atomic_inc(&dev_data->bind);
++	/* Attach other devices in the alias group */
++	list_for_each_entry(entry, &head->alias_list, alias_list)
++		do_attach(entry, domain);
+ 
+ 	ret = 0;
+ 
+@@ -2325,6 +2319,7 @@ static int attach_device(struct device *dev,
+  */
+ static void __detach_device(struct iommu_dev_data *dev_data)
+ {
++	struct iommu_dev_data *head, *entry;
+ 	struct protection_domain *domain;
+ 	unsigned long flags;
+ 
+@@ -2334,15 +2329,14 @@ static void __detach_device(struct iommu_dev_data *dev_data)
+ 
+ 	spin_lock_irqsave(&domain->lock, flags);
+ 
+-	if (dev_data->alias_data != NULL) {
+-		struct iommu_dev_data *alias_data = dev_data->alias_data;
++	head = dev_data;
++	if (head->alias_data != NULL)
++		head = head->alias_data;
+ 
+-		if (atomic_dec_and_test(&alias_data->bind))
+-			do_detach(alias_data);
+-	}
++	list_for_each_entry(entry, &head->alias_list, alias_list)
++		do_detach(entry);
+ 
+-	if (atomic_dec_and_test(&dev_data->bind))
+-		do_detach(dev_data);
++	do_detach(head);
+ 
+ 	spin_unlock_irqrestore(&domain->lock, flags);
+ 
 -- 
 1.9.1
