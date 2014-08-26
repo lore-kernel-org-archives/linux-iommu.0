@@ -1,15 +1,14 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v4 1/1] iommu/arm-smmu: Do not access non-existing S2CR
-	registers
-Date: Tue, 26 Aug 2014 11:37:33 +0100
-Message-ID: <20140826103730.GE23445@arm.com>
-References: <1408752752-15601-1-git-send-email-ohaugan@codeaurora.org>
+From: Andy Burns <iommu+lists-6TVDe6PzSGq9FHfhHBbuYA@public.gmane.org>
+Subject: Re: [RFC PATCH v2 2/2] iommu/intel: Make use of PCIe requester ID
+	interface
+Date: Tue, 26 Aug 2014 11:33:04 +0100
+Message-ID: <53FC6260.1050901@adslpipe.co.uk>
+References: <53FC33AF.5040407@adslpipe.co.uk> <53FC3C07.8050906@adslpipe.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1408752752-15601-1-git-send-email-ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-Reply-To: <53FC3C07.8050906-6TVDe6PzSGq9FHfhHBbuYA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,23 +18,21 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Olav,
+Andy Burns wrote:
 
-On Sat, Aug 23, 2014 at 01:12:32AM +0100, Olav Haugan wrote:
-> The number of S2CR registers is not properly set when stream
-> matching is not supported. Fix this and add check that we do not try to
-> access outside of the number of S2CR regisrers.
+> "should also enable motherboards with an onboard ASmedia
+> ASM1083/1085 PCIe-to-PCI bridge to work with VT-d enabled"
+>
+> Are any parts of this in mainline yet?
 
-Sorry for the bother, but could you base this on either iommu/devel or
-iommu/staging please? Now that the merge window is well and truly over, I
-moved those branches forward, so you needn't worry about iommu/pci anymore
-(which, as you pointed out, contains a bunch of WIP patches which should
-hold-up useful fixes like this one).
+I tried with an elrepo 3.17-rc1 kernel (which presumably includes 
+dma-alias-v4 patches) and the warning from pci_find_upstream_pcie_bridge 
+is now gone.
 
-Cheers,
+I still have to learn a little about how to pass through the whole group 
+of devices using VT-d, to get PCI passthrough working.
 
-Will
+Thanks.
