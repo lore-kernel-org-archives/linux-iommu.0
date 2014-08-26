@@ -1,16 +1,15 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 1/6] iommu/arm-smmu: add support for specifying clocks
-Date: Tue, 26 Aug 2014 15:27:58 +0100
-Message-ID: <20140826142757.GU23445@arm.com>
-References: <1407891099-24641-1-git-send-email-mitchelh@codeaurora.org>
-	<1407891099-24641-2-git-send-email-mitchelh@codeaurora.org>
-	<20140819125833.GO23128@arm.com> <53F39F6D.1040205@codeaurora.org>
+From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Subject: Re: [RFC 4/5] vfio: amba: VFIO support for AMBA devices
+Date: Tue, 26 Aug 2014 17:39:21 +0200
+Message-ID: <CAG8rG2z5Jqwnpr49vX7=rgXMtuKd-4=eBaS2JaOrdT6Tgn0hqg@mail.gmail.com>
+References: <1408698088-5349-1-git-send-email-a.motakis@virtualopensystems.com>
+	<1408698088-5349-5-git-send-email-a.motakis@virtualopensystems.com>
+	<20140826105027.GH23445@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <53F39F6D.1040205-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-Reply-To: <20140826105027.GH23445-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,137 +19,78 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, "christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-[adding Mike]
+Hello WIll,
 
-On Tue, Aug 19, 2014 at 08:03:09PM +0100, Olav Haugan wrote:
-> Hi Will,
+On Tue, Aug 26, 2014 at 12:50 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> Hi Antonios,
+>
+> On Fri, Aug 22, 2014 at 10:01:27AM +0100, Antonios Motakis wrote:
+>> Add support for discovering AMBA devices with VFIO and handle them
+>> similarly to Linux platform devices.
+>
+> [...]
+>
+>> +static struct amba_id pl330_ids[] = {
+>> +     { 0, 0 },
+>> +};
+>> +
+>> +MODULE_DEVICE_TABLE(amba, pl330_ids);
+>> +
+>> +static struct amba_driver vfio_amba_driver = {
+>> +     .probe = vfio_amba_probe,
+>> +     .remove = vfio_amba_remove,
+>> +     .id_table = pl330_ids,
+>> +     .drv = {
+>> +             .name = "vfio-amba",
+>> +             .owner = THIS_MODULE,
+>> +     },
+>> +};
+>
+> I don't understand what you're doing with the IDs here. What's the point in
+> the empty list?
+>
 
-Hi Olav,
+The empty list means VFIO will not bind to any AMBA devices by
+default. If the user wants to use an AMBA device with VFIO, the idea
+is to use the driver override proposed in [RFC 1/5] driver core: amba:
+add device binding path 'driver_override'.
 
-> On 8/19/2014 5:58 AM, Will Deacon wrote:
-> > On Wed, Aug 13, 2014 at 01:51:34AM +0100, Mitchel Humpherys wrote:
-> >> On some platforms with tight power constraints it is polite to only
-> >> leave your clocks on for as long as you absolutely need them. Currently
-> >> we assume that all clocks necessary for SMMU register access are always
-> >> on.
-> >>
-> >> Add some optional device tree properties to specify any clocks that are
-> >> necessary for SMMU register access and turn them on and off as needed.
-> >>
-> >> If no clocks are specified in the device tree things continue to work
-> >> the way they always have: we assume all necessary clocks are always
-> >> turned on.
-> > 
-> > How does this interact with an SMMU in bypass mode?
-> 
-> Do you mean if you have a platform that requires clock and power
-> management but we leave the SMMU in bypass (i.e. no one calls into the
-> SMMU driver) how are the clock/power managed?
-> 
-> Clients of the SMMU driver are required to vote for clocks and power
-> when they know they need to use the SMMU. However, the clock and power
-> needed to be on for the SMMU to service bus masters aren't necessarily
-> the same as the ones needed to read/write registers...See below.
+> This also raises a larger question about whether or not it's safe to allow
+> device passthrough of arbitrary platform devices with VFIO. In the absence
+> of a bus/device standard like PCI, I really think this should be in opt-in
+> decision, where certain platform drivers can declare that their device can
+> be safely used with passthrough.
 
-The case I'm thinking of is where a device masters through the IOMMU, but
-doesn't make use of any translations. In this case, its transactions will
-bypass the SMMU and I want to ensure that continues to happen, regardless of
-the power state of the SMMU.
+In a sense the driver_override is already an opt-in, although under
+control of the user. I don't know if we want to take the decision for
+the user and whitelist the devices one can safely use, and reject any
+other device one might want to try. I would argue that if a user
+decides to use driver_override, he should be able to do that (and then
+report the consequences to us ;)
 
-> >> +static int arm_smmu_enable_clocks(struct arm_smmu_device *smmu)
-> >> +{
-> >> +	int i, ret = 0;
-> >> +
-> >> +	for (i = 0; i < smmu->num_clocks; ++i) {
-> >> +		ret = clk_prepare_enable(smmu->clocks[i]);
-> >> +		if (ret) {
-> >> +			dev_err(smmu->dev, "Couldn't enable clock #%d\n", i);
-> >> +			while (i--)
-> >> +				clk_disable_unprepare(smmu->clocks[i]);
-> >> +			break;
-> >> +		}
-> >> +	}
-> >> +
-> >> +	return ret;
-> >> +}
-> >> +
-> >> +static void arm_smmu_disable_clocks(struct arm_smmu_device *smmu)
-> >> +{
-> >> +	int i;
-> >> +
-> >> +	for (i = 0; i < smmu->num_clocks; ++i)
-> >> +		clk_disable_unprepare(smmu->clocks[i]);
-> >> +}
-> > 
-> > What stops theses from racing with each other when there are multiple
-> > clocks? I also assume that the clk API ignores calls to clk_enable_prepare
-> > for a clk that's already enabled? I couldn't find that code...
-> 
-> All the clock APIs are reference counted yes. Not sure what you mean by
-> racing with each other? When you call to enable a clock the call does
-> not return until the clock is already ON (or OFF).
+Some of the differences between PLATFORM devices, could be handled at
+the QEMU level. With the addition of the VFIO device node info patches
+we also proposed recently, any VFIO user essentially sees a bunch of
+MMIO regions, IRQs and some device node properties that describe the
+device. So a VFIO user (e.g. QEMU) has access to more or less the same
+stuff a kernel driver does.
 
-I was thinking of an interrupt handler racing with normal code, but actually
-you balance the clk enable/disable in the interrupt handlers. However, it's
-not safe to call these clk functions from irq context anyway, since
-clk_prepare may sleep.
+I could see this breaking if a device tries to do memory accesses that
+don't go through the IOMMU (maybe if it is directly connected with
+another device), but in that situation that device is probably
+unusable with VFIO even if we special-case it. Any other ideas?
 
-> >> +int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
-> >>  {
-> >>  	unsigned long size;
-> >>  	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
-> >> @@ -2027,10 +2124,16 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
-> >>  	}
-> >>  	dev_notice(dev, "registered %d master devices\n", i);
-> >>  
-> >> -	err = arm_smmu_device_cfg_probe(smmu);
-> >> +	err = arm_smmu_init_clocks(smmu);
-> >>  	if (err)
-> >>  		goto out_put_masters;
-> >>  
-> >> +	arm_smmu_enable_clocks(smmu);
-> >> +
-> >> +	err = arm_smmu_device_cfg_probe(smmu);
-> >> +	if (err)
-> >> +		goto out_disable_clocks;
-> >> +
-> >>  	parse_driver_options(smmu);
-> >>  
-> >>  	if (smmu->version > 1 &&
-> >> @@ -2039,7 +2142,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
-> >>  			"found only %d context interrupt(s) but %d required\n",
-> >>  			smmu->num_context_irqs, smmu->num_context_banks);
-> >>  		err = -ENODEV;
-> >> -		goto out_put_masters;
-> >> +		goto out_disable_clocks;
-> >>  	}
-> >>  
-> >>  	for (i = 0; i < smmu->num_global_irqs; ++i) {
-> >> @@ -2061,12 +2164,16 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
-> >>  	spin_unlock(&arm_smmu_devices_lock);
-> >>  
-> >>  	arm_smmu_device_reset(smmu);
-> >> +	arm_smmu_disable_clocks(smmu);
-> > 
-> > I wonder if this is really the right thing to do. Rather than the
-> > fine-grained clock enable/disable you have, why don't we just enable in
-> > domain_init and disable in domain_destroy, with refcounting for the clocks?
-> > 
-> 
-> So the whole point of all of this is that we try to save power. As Mitch
-> wrote in the commit text we want to only leave the clock and power on
-> for as short period of time as possible.
+>
+> Thoughts?
+>
+> Will
 
-Understood, but if the clocks are going up and down like yo-yos, then it's
-not obvious that you end up saving any power at all. Have you tried
-measuring the power consumption with different granularities for the clocks?
 
-The code you're proposing seems to take the approach of `we're going to
-access registers so enable the clocks, access the registers then disable the
-clocks', which is simple but may not be particularly effective.
 
-Will
+-- 
+Antonios Motakis
+Virtual Open Systems
