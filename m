@@ -1,13 +1,11 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 2/4] iommu/amd: Keep a list of devices in an alias group
-Date: Tue, 26 Aug 2014 11:36:12 +0200
-Message-ID: <1409045774-32000-3-git-send-email-joro@8bytes.org>
-References: <1409045774-32000-1-git-send-email-joro@8bytes.org>
+Subject: [PATCH 0/4] AMD IOMMU: Assign/de-assign complete alias groups
+Date: Tue, 26 Aug 2014 11:36:10 +0200
+Message-ID: <1409045774-32000-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1409045774-32000-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,50 +16,47 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Hi,
 
-Some broken devices might use any request-id from the alias
-group, so we need to set a DTE entry for every device in
-there. This patch adds creation of those lists.
+Here is a patch-set to fix the following issue:
 
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
----
- drivers/iommu/amd_iommu.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+When a device is added to an iommu domain, the current amd
+iommu code will add the device itself and the device it
+aliases to to the domain. But this alias relation is
+uni-directional.
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index fe6d7cc..8a15256 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -93,6 +93,7 @@ static struct dma_map_ops amd_iommu_dma_ops;
- struct iommu_dev_data {
- 	struct list_head list;		  /* For domain->dev_list */
- 	struct list_head dev_data_list;	  /* For global dev_data_list */
-+	struct list_head alias_list;      /* Link alias-groups together */
- 	struct iommu_dev_data *alias_data;/* The alias dev_data */
- 	struct protection_domain *domain; /* Domain the device is bound to */
- 	atomic_t bind;			  /* Domain attach reference count */
-@@ -135,6 +136,8 @@ static struct iommu_dev_data *alloc_dev_data(u16 devid)
- 	if (!dev_data)
- 		return NULL;
- 
-+	INIT_LIST_HEAD(&dev_data->alias_list);
-+
- 	dev_data->devid = devid;
- 	atomic_set(&dev_data->bind, 0);
- 
-@@ -383,6 +386,9 @@ static int iommu_init_device(struct device *dev)
- 			return -ENOTSUPP;
- 		}
- 		dev_data->alias_data = alias_data;
-+
-+		/* Add device to the alias_list */
-+		list_add(&dev_data->alias_list, &alias_data->alias_list);
- 	}
- 
- 	ret = init_iommu_group(dev);
+If, for example, device 03:00.1 aliases to 03:00.0 and is
+added to a domain, the iommu code will add both devices.
+But if 03.00.0 is added, 03.00.1 will be not.
+
+This is a problem with some broken devices that appear with
+function 0 on the bus but use function 1 as the request-id.
+These devices will not work with the current implementation.
+
+This patch-set changes the behavior of the code by
+introducing alias-groups (similar to iommu-groups, but
+support non-existent pci devices) and always
+assigns/de-assigns complete alias groups to/from a domain.
+
+This makes the alias relation bi-directional and fixes the
+issues with broken devices.
+
+Thanks,
+
+	Joerg
+
+Joerg Roedel (4):
+  iommu/amd: Move struct iommu_dev_data to amd_iommu.c
+  iommu/amd: Keep a list of devices in an alias group
+  iommu/amd: Attach and detach complete alias group
+  iommu/amd: Remove device binding reference count
+
+ drivers/iommu/amd_iommu.c       | 74 +++++++++++++++++++++++++----------------
+ drivers/iommu/amd_iommu_types.h | 21 ------------
+ 2 files changed, 46 insertions(+), 49 deletions(-)
+
 -- 
 1.9.1
