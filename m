@@ -1,8 +1,8 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 4/7] iommu/arm-smmu: fix programming of SMMU_CBn_TCR for stage
-	1
-Date: Fri, 29 Aug 2014 15:47:42 +0100
-Message-ID: <1409323665-9605-5-git-send-email-will.deacon@arm.com>
+Subject: [PATCH 5/7] iommu/arm-smmu: fix decimal printf format specifiers
+	prefixed with 0x
+Date: Fri, 29 Aug 2014 15:47:43 +0100
+Message-ID: <1409323665-9605-6-git-send-email-will.deacon@arm.com>
 References: <1409323665-9605-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,37 +22,31 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: vladimir.murzin-5wv7dgnIgG8@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, hans-7z9IcJk4adCsTnJN9+BGXg@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+From: Hans Wennborg <hans-7z9IcJk4adCsTnJN9+BGXg@public.gmane.org>
 
-Stage-1 context banks do not have the SMMU_CBn_TCR[SL0] field since it
-is only applicable to stage-2 context banks.
+The prefix suggests the number should be printed in hex, so use
+the %x specifier to do that.
 
-This patch ensures that we don't set the reserved TCR bits for stage-1
-translations.
+Found by using regex suggested by Joe Perches.
 
-Signed-off-by: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Signed-off-by: Hans Wennborg <hans-7z9IcJk4adCsTnJN9+BGXg@public.gmane.org>
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/iommu/arm-smmu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 34dc7b1cec3c..b03959ddb32c 100644
+index b03959ddb32c..7fec50bb54c3 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -854,8 +854,11 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
- 	reg |= TTBCR_EAE |
- 	      (TTBCR_SH_IS << TTBCR_SH0_SHIFT) |
- 	      (TTBCR_RGN_WBWA << TTBCR_ORGN0_SHIFT) |
--	      (TTBCR_RGN_WBWA << TTBCR_IRGN0_SHIFT) |
--	      (TTBCR_SL0_LVL_1 << TTBCR_SL0_SHIFT);
-+	      (TTBCR_RGN_WBWA << TTBCR_IRGN0_SHIFT);
-+
-+	if (!stage1)
-+		reg |= (TTBCR_SL0_LVL_1 << TTBCR_SL0_SHIFT);
-+
- 	writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR);
+@@ -634,7 +634,7 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
  
- 	/* MAIR0 (stage-1 only) */
+ 	if (fsr & FSR_IGN)
+ 		dev_err_ratelimited(smmu->dev,
+-				    "Unexpected context fault (fsr 0x%u)\n",
++				    "Unexpected context fault (fsr 0x%x)\n",
+ 				    fsr);
+ 
+ 	fsynr = readl_relaxed(cb_base + ARM_SMMU_CB_FSYNR0);
 -- 
 2.1.0
