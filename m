@@ -1,12 +1,14 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH 0/7] Introduce automatic DMA configuration for IOMMU
-	masters
-Date: Fri, 29 Aug 2014 16:54:23 +0100
-Message-ID: <1409327670-3495-1-git-send-email-will.deacon@arm.com>
+Subject: [RFC PATCH 1/7] iommu: provide early initialisation hook for IOMMU
+	drivers
+Date: Fri, 29 Aug 2014 16:54:24 +0100
+Message-ID: <1409327670-3495-2-git-send-email-will.deacon@arm.com>
+References: <1409327670-3495-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1409327670-3495-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,62 +22,118 @@ To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cu
 Cc: jroedel-l3A5Bk7waGM@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi all,
+IOMMU drivers must be initialised before any of their upstream devices,
+otherwise the relevant iommu_ops won't be configured for the bus in
+question. To solve this, a number of IOMMU drivers use initcalls to
+initialise the driver before anything has a chance to be probed.
 
-This patch series is an RFC to implement IOMMU master configuration into
-of_dma_configure. I haven't yet ported any IOMMU drivers to it, so it
-remains untested, but I wanted to get some early feedback to ensure that
-this doesn't end up going in the wrong direction.
+Whilst this solves the immediate problem, it leaves the job of probing
+the IOMMU completely separate from the iommu_ops to configure the IOMMU,
+which are called on a per-bus basis and require the driver to figure out
+exactly which instance of the IOMMU is being requested. In particular,
+the add_device callback simply passes a struct device to the driver,
+which then has to parse firmware tables or probe buses to identify the
+relevant IOMMU instance.
 
-The idea comes out of my understanding following discussions with Arnd
-and David at Kernel Summit / LinuxCon in Chicago. Essentially:
+This patch takes the first step in addressing this problem by adding an
+early initialisation pass for IOMMU drivers, giving them the ability to
+set some per-instance data on their of_node. This data can then be
+passed back to a new add_device function (added in a later patch) to
+identify the IOMMU instance in question.
 
-  - Allow IOMMUs to be probed early and set up per-instance data on their
-    of_node
+Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+---
+ drivers/iommu/of_iommu.c          | 14 ++++++++++++++
+ include/asm-generic/vmlinux.lds.h |  2 ++
+ include/linux/of_iommu.h          | 21 +++++++++++++++++++++
+ 3 files changed, 37 insertions(+)
 
-  - Add a new callback to the iommu_ops structure for adding a device
-    with a set of opaque IDs (e.g. Stream IDs or Requester IDs)
-
-  - Add an of_iommu_configure function, called from of_dma_configure,
-    which registers the master IDs with the correspond IOMMU before
-    probing the master itself
-
-  - Where applicable, create an IOMMU domain per device and swizzle the
-    DMA ops for that device to use the IOMMU variants.
-
-I haven't bothered doing anything clever with the DMA masks yet, so I
-wouldn't be surprised if we end up chewing through tonnes of memory
-allocating IOMMU domains that are far too big at the moment. Again, this
-is just an RFC and I'd welcome comments on the general direction of the
-series.
-
-Cheers,
-
-Will
-
---->8
-
-Will Deacon (7):
-  iommu: provide early initialisation hook for IOMMU drivers
-  dma-mapping: replace set_arch_dma_coherent_ops with arch_setup_dma_ops
-  iommu: add new iommu_ops callback for adding a device with a set of
-    IDs
-  iommu: provide helper function to configure an IOMMU for an of master
-  dma-mapping: detect and configure IOMMU in of_dma_configure
-  arm: call iommu_init before of_platform_populate
-  arm: dma-mapping: plumb our iommu mapping ops into arch_setup_dma_ops
-
- arch/arm/include/asm/dma-mapping.h | 10 ++---
- arch/arm/kernel/setup.c            |  5 ++-
- arch/arm/mm/dma-mapping.c          | 77 ++++++++++++++++++++++++++++++++++----
- drivers/iommu/Kconfig              |  2 +-
- drivers/iommu/of_iommu.c           | 50 +++++++++++++++++++++++++
- drivers/of/platform.c              | 53 ++++++++++----------------
- include/asm-generic/vmlinux.lds.h  |  2 +
- include/linux/dma-mapping.h        | 10 ++---
- include/linux/iommu.h              |  2 +
- include/linux/of_iommu.h           | 27 +++++++++++++
- 10 files changed, 184 insertions(+), 54 deletions(-)
-
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index e550ccb7634e..f9209666157c 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -89,3 +89,17 @@ int of_get_dma_window(struct device_node *dn, const char *prefix, int index,
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(of_get_dma_window);
++
++void __init of_iommu_init(void)
++{
++	struct device_node *np;
++	const struct of_device_id *match, *matches = &__iommu_of_table;
++
++	for_each_matching_node_and_match(np, matches, &match) {
++		const int (*init_fn)(struct device_node *) = match->data;
++
++		if (init_fn(np))
++			pr_err("Failed to initialise IOMMU %s\n",
++				of_node_full_name(np));
++	}
++}
+diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
+index 5ba0360663a7..b75ede8f99ae 100644
+--- a/include/asm-generic/vmlinux.lds.h
++++ b/include/asm-generic/vmlinux.lds.h
+@@ -162,6 +162,7 @@
+ #define CLKSRC_OF_TABLES()	OF_TABLE(CONFIG_CLKSRC_OF, clksrc)
+ #define IRQCHIP_OF_MATCH_TABLE() OF_TABLE(CONFIG_IRQCHIP, irqchip)
+ #define CLK_OF_TABLES()		OF_TABLE(CONFIG_COMMON_CLK, clk)
++#define IOMMU_OF_TABLES()	OF_TABLE(CONFIG_OF_IOMMU, iommu)
+ #define RESERVEDMEM_OF_TABLES()	OF_TABLE(CONFIG_OF_RESERVED_MEM, reservedmem)
+ #define CPU_METHOD_OF_TABLES()	OF_TABLE(CONFIG_SMP, cpu_method)
+ #define EARLYCON_OF_TABLES()	OF_TABLE(CONFIG_SERIAL_EARLYCON, earlycon)
+@@ -495,6 +496,7 @@
+ 	CLK_OF_TABLES()							\
+ 	RESERVEDMEM_OF_TABLES()						\
+ 	CLKSRC_OF_TABLES()						\
++	IOMMU_OF_TABLES()						\
+ 	CPU_METHOD_OF_TABLES()						\
+ 	KERNEL_DTB()							\
+ 	IRQCHIP_OF_MATCH_TABLE()					\
+diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
+index 51a560f34bca..29f2f3f88d6a 100644
+--- a/include/linux/of_iommu.h
++++ b/include/linux/of_iommu.h
+@@ -1,12 +1,16 @@
+ #ifndef __OF_IOMMU_H
+ #define __OF_IOMMU_H
+ 
++#include <linux/of.h>
++
+ #ifdef CONFIG_OF_IOMMU
+ 
+ extern int of_get_dma_window(struct device_node *dn, const char *prefix,
+ 			     int index, unsigned long *busno, dma_addr_t *addr,
+ 			     size_t *size);
+ 
++extern void of_iommu_init(void);
++
+ #else
+ 
+ static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
+@@ -16,6 +20,23 @@ static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
+ 	return -EINVAL;
+ }
+ 
++static inline void of_iommu_init(void) { }
++
+ #endif	/* CONFIG_OF_IOMMU */
+ 
++static inline void of_iommu_set_data(struct device_node *np, void *data)
++{
++	np->data = data;
++}
++
++static inline void *of_iommu_get_data(struct device_node *np)
++{
++	return np->data;
++}
++
++extern struct of_device_id __iommu_of_table;
++
++#define IOMMU_OF_DECLARE(name, compat, fn) \
++	OF_DECLARE_1(iommu, name, compat, fn)
++
+ #endif /* __OF_IOMMU_H */
 -- 
 2.1.0
