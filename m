@@ -1,8 +1,8 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 3/7] iommu/arm-smmu: fix s2cr and smr teardown on device
-	detach from domain
-Date: Fri, 29 Aug 2014 15:47:41 +0100
-Message-ID: <1409323665-9605-4-git-send-email-will.deacon@arm.com>
+Subject: [PATCH 6/7] iommu/arm-smmu: fix corner cases in address size
+	calculations
+Date: Fri, 29 Aug 2014 15:47:44 +0100
+Message-ID: <1409323665-9605-7-git-send-email-will.deacon@arm.com>
 References: <1409323665-9605-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,77 +22,60 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: vladimir.murzin-5wv7dgnIgG8@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, hans-7z9IcJk4adCsTnJN9+BGXg@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When we attach a device to a domain, we configure the SMRs (if we have
-any) to match the Stream IDs for the corresponding SMMU master and
-program the s2crs accordingly. However, on detach we tear down the s2crs
-assuming stream-indexing (as opposed to stream-matching) and SMRs
-assuming they are present.
+Working out the usable address sizes for the SMMU is surprisingly tricky.
+We must take into account both the limitations of the hardware for VA,
+IPA and PA sizes but also any restrictions imposed by the Linux page
+table code, particularly when dealing with nested translation (where the
+IPA size is limited by the input address size at stage-2).
 
-This patch fixes the device detach code so that it operates as a
-converse of the attach code.
+This patch fixes a few corner cases in our address size handling so that
+we correctly deal with 40-bit addresses in TTBCR2 and restrict the IPA
+size differently depending on whether or not we have support for nested
+translation.
 
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 27 ++++++++++++---------------
- 1 file changed, 12 insertions(+), 15 deletions(-)
+ drivers/iommu/arm-smmu.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 0ba7a1d3df78..34dc7b1cec3c 100644
+index 7fec50bb54c3..98bb1b746517 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -1125,6 +1125,9 @@ static void arm_smmu_master_free_smrs(struct arm_smmu_device *smmu,
- 	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
- 	struct arm_smmu_smr *smrs = cfg->smrs;
- 
-+	if (!smrs)
-+		return;
-+
- 	/* Invalidate the SMRs before freeing back to the allocator */
- 	for (i = 0; i < cfg->num_streamids; ++i) {
- 		u8 idx = smrs[i].idx;
-@@ -1137,20 +1140,6 @@ static void arm_smmu_master_free_smrs(struct arm_smmu_device *smmu,
- 	kfree(smrs);
- }
- 
--static void arm_smmu_bypass_stream_mapping(struct arm_smmu_device *smmu,
--					   struct arm_smmu_master_cfg *cfg)
--{
--	int i;
--	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
--
--	for (i = 0; i < cfg->num_streamids; ++i) {
--		u16 sid = cfg->streamids[i];
--
--		writel_relaxed(S2CR_TYPE_BYPASS,
--			       gr0_base + ARM_SMMU_GR0_S2CR(sid));
--	}
--}
--
- static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
- 				      struct arm_smmu_master_cfg *cfg)
- {
-@@ -1177,13 +1166,21 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
- static void arm_smmu_domain_remove_master(struct arm_smmu_domain *smmu_domain,
- 					  struct arm_smmu_master_cfg *cfg)
- {
-+	int i;
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
- 
- 	/*
- 	 * We *must* clear the S2CR first, because freeing the SMR means
- 	 * that it can be re-allocated immediately.
+@@ -763,6 +763,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
+ 			reg = (TTBCR2_ADDR_36 << TTBCR2_SEP_SHIFT);
+ 			break;
+ 		case 39:
++		case 40:
+ 			reg = (TTBCR2_ADDR_40 << TTBCR2_SEP_SHIFT);
+ 			break;
+ 		case 42:
+@@ -784,6 +785,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
+ 			reg |= (TTBCR2_ADDR_36 << TTBCR2_PASIZE_SHIFT);
+ 			break;
+ 		case 39:
++		case 40:
+ 			reg |= (TTBCR2_ADDR_40 << TTBCR2_PASIZE_SHIFT);
+ 			break;
+ 		case 42:
+@@ -1811,11 +1813,16 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+ 	 * Stage-1 output limited by stage-2 input size due to pgd
+ 	 * allocation (PTRS_PER_PGD).
  	 */
--	arm_smmu_bypass_stream_mapping(smmu, cfg);
-+	for (i = 0; i < cfg->num_streamids; ++i) {
-+		u32 idx = cfg->smrs ? cfg->smrs[i].idx : cfg->streamids[i];
-+
-+		writel_relaxed(S2CR_TYPE_BYPASS,
-+			       gr0_base + ARM_SMMU_GR0_S2CR(idx));
++	if (smmu->features & ARM_SMMU_FEAT_TRANS_NESTED) {
+ #ifdef CONFIG_64BIT
+-	smmu->s1_output_size = min_t(unsigned long, VA_BITS, size);
++		smmu->s1_output_size = min_t(unsigned long, VA_BITS, size);
+ #else
+-	smmu->s1_output_size = min(32UL, size);
++		smmu->s1_output_size = min(32UL, size);
+ #endif
++	} else {
++		smmu->s1_output_size = min_t(unsigned long, PHYS_MASK_SHIFT,
++					     size);
 +	}
-+
- 	arm_smmu_master_free_smrs(smmu, cfg);
- }
  
+ 	/* The stage-2 output mask is also applied for bypass */
+ 	size = arm_smmu_id_size_to_bits((id >> ID2_OAS_SHIFT) & ID2_OAS_MASK);
 -- 
 2.1.0
