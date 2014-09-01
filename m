@@ -1,15 +1,17 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [RFC PATCH 5/7] dma-mapping: detect and configure IOMMU in
-	of_dma_configure
-Date: Mon, 01 Sep 2014 16:53:34 +0200
-Message-ID: <24828990.FUj2gbXJJY@wuerfel>
-References: <1409327670-3495-1-git-send-email-will.deacon@arm.com>
-	<1409327670-3495-6-git-send-email-will.deacon@arm.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu: Allow size of stage 1 output to max
+	possible value for sateg 2 bypass
+Date: Mon, 1 Sep 2014 16:12:34 +0100
+Message-ID: <20140901151234.GE24594@arm.com>
+References: <1409162541-3940-1-git-send-email-c.tirumalesh@gmail.com>
+	<20140901114238.GB24594@arm.com>
+	<CALuQcNn-d3_fQaygtObzeZL7OxU8BsstKMmCmpQMHEOF31b1RA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1409327670-3495-6-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CALuQcNn-d3_fQaygtObzeZL7OxU8BsstKMmCmpQMHEOF31b1RA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,56 +21,23 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: jroedel-l3A5Bk7waGM@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+To: tirumalesh chalamarla <c.tirumalesh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Prasun.Kapoor-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org" <Prasun.Kapoor-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, Tirumalesh Chalamarla <tchalamarla-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org" <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Friday 29 August 2014 16:54:28 Will Deacon wrote:
->  static void of_dma_configure(struct platform_device *pdev)
->  {
-> -       u64 dma_addr, paddr, size;
-> +       u64 dma_addr, paddr, size, mask;
->         int ret;
-> -       bool coherent;
-> +       bool coherent, iommu;
->         unsigned long offset;
->         struct device *dev = &pdev->dev;
->  
-> +       /*
-> +        * Set default dma-mask to 32 bit. Drivers are expected to setup
-> +        * the correct supported dma_mask.
-> +        */
-> +       mask = DMA_BIT_MASK(32);
-> +
->         ret = of_dma_get_range(dev->of_node, &dma_addr, &paddr, &size);
-> -       offset = ret < 0 ? 0 : PFN_DOWN(paddr - dma_addr);
-> -       dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", dev->dma_pfn_offset);
-> +       if (ret < 0) {
-> +               dma_addr = offset = 0;
-> +               size = mask;
-> +       } else {
-> +               offset = PFN_DOWN(paddr - dma_addr);
-> +               dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", dev->dma_pfn_offset);
-> +       }
->  
->         coherent = of_dma_is_coherent(dev->of_node);
->         dev_dbg(dev, "device is%sdma coherent\n",
->                 coherent ? " " : " not ");
->  
-> -       /*
-> -        * Set default dma-mask to 32 bit. Drivers are expected to setup
-> -        * the correct supported dma_mask.
-> -        */
-> -       arch_setup_dma_ops(dev, DMA_BIT_MASK(32), offset, coherent);
-> +       iommu = !of_iommu_configure(dev);
-> +       dev_dbg(dev, "device is%sbehind an iommu\n",
-> +               iommu ? " " : " not ");
-> +
-> +       arch_setup_dma_ops(dev, mask, dma_addr, size, offset, coherent, iommu);
->  }
+On Mon, Sep 01, 2014 at 02:49:58PM +0100, tirumalesh chalamarla wrote:
+> On Mon, Sep 1, 2014 at 4:42 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> > Assuming I understand the problem correctly, why not simply remove the
+> > truncation from the existing code (untested patch below)? Does that not
+> > work for you?
+> >
+> 
+> This will not restrict stage 1 out put to VA_BITS, even for two level
+> translations. this results in non debuggable problems
+> if we configure incorrectly.  there is no harm in checking the
+> condition for nested translations, as i did in my patch.
 
-Hmm, I was actually expecting of_iommu_configure() to be called from inside
-arch_setup_dma_ops(), leaving the choice for how it's set up to the
-architecture for now. It's probably not a big difference either way.
+Right, but restricting stage-1 output to VA_BITS doesn't make sense;
+remember it's not the same kernel writing the stage-1 and stage-2 tables.
 
-	Arnd
+Will
