@@ -1,14 +1,12 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH 10/29] drivers: add DRIVER_HAS_OWN_IOMMU_MANAGER flag
-Date: Mon, 01 Sep 2014 07:22:32 +0200
-Message-ID: <54040298.9020002@samsung.com>
-References: <1407235677-26324-1-git-send-email-m.szyprowski@samsung.com>
-	<1407235677-26324-11-git-send-email-m.szyprowski@samsung.com>
+From: "Su, Friendy" <Friendy.Su-7U/KSKJipcvM1kAEIRd3EQ@public.gmane.org>
+Subject: [PATCH v1 1/1] iommu/amd: set iommu for early mapped ioapic/hpet
+Date: Mon, 1 Sep 2014 14:17:44 +0800
+Message-ID: <053191AD6E9023439BF3970DE870051856D1EF3AC4@APSHAXMS02.ap.sony.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <1407235677-26324-11-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,43 +16,74 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Greg,
 
-On 2014-08-05 12:47, Marek Szyprowski wrote:
-> This patch adds a new flags for device drivers. This flag instructs
-> kernel that the device driver does it own management of IOMMU assisted
-> IO address space translations, so no default dma-mapping structures
-> should be initialized.
->
-> Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> ---
->   include/linux/device.h | 2 ++
->   1 file changed, 2 insertions(+)
->
-> diff --git a/include/linux/device.h b/include/linux/device.h
-> index 5f4ff02..2e62371 100644
-> --- a/include/linux/device.h
-> +++ b/include/linux/device.h
-> @@ -253,6 +253,8 @@ struct device_driver {
->   
->   /* disables bind/unbind via sysfs */
->   #define DRIVER_SUPPRESS_BIND_ATTRS	(1 << 0)
-> +/* driver uses own methods to manage IO address space */
-> +#define DRIVER_HAS_OWN_IOMMU_MANAGER	(1 << 1)
->   
->   extern int __must_check driver_register(struct device_driver *drv);
->   extern void driver_unregister(struct device_driver *drv);
+From: Su Friendy <friendy.su-7U/KSKJipcvM1kAEIRd3EQ@public.gmane.org>
 
-Could you comment if the approach of using flags in the struct driver
-could be accepted? I've converted suppress_bind_attrs entry to flags to
-avoid extending the structure, please see patch "[PATCH 05/29] drivers:
-convert suppress_bind_attrs parameter into flags".
+The early mapped ioapic/hpet specified by kernel boot parameter
+ivrs_ioapic[ID]/ivrs_hpet[ID] always override the ioapic/hpet with
+same ID reported by ACPI IVRS table. Therefore, the early mapped
+should be always controlled by iommu.
 
-Best regards
+Current driver did not set iommu for the early mapped. This causes
+ivrs_ioapic[ID]/ivrs_hpet[ID] actually are not controlled by iommu.
+This patch fixes this problem by setting iommu for early mapped.
+
+Signed-off-by: Su Friendy <friendy.su-7U/KSKJipcvM1kAEIRd3EQ@public.gmane.org>
+Signed-off-by: Saeki Shusuke <shusuke.saeki-7rVYBvDxQfZBDgjK7y7TUQ@public.gmane.org>
+Signed-off-by: Tamori Masahiro <Masahiro.Tamori-7rVYBvDxQfZBDgjK7y7TUQ@public.gmane.org>
+---
+ drivers/iommu/amd_iommu_init.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 3783e0b..148ab61 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -747,7 +747,7 @@ static int __init add_special_device(u8 type, u8 id, u16 devid, bool cmd_line)
+ 	return 0;
+ }
+ 
+-static int __init add_early_maps(void)
++static int __init add_early_maps(struct amd_iommu *iommu)
+ {
+ 	int i, ret;
+ 
+@@ -758,6 +758,11 @@ static int __init add_early_maps(void)
+ 					 early_ioapic_map[i].cmd_line);
+ 		if (ret)
+ 			return ret;
++		/*
++		 * early mapped ioapci overrides ACPI IVRS,
++		 * they should be always controlled by iommu.
++		 */
++		set_iommu_for_device(iommu, early_ioapic_map[i].devid);
+ 	}
+ 
+ 	for (i = 0; i < early_hpet_map_size; ++i) {
+@@ -767,6 +772,11 @@ static int __init add_early_maps(void)
+ 					 early_hpet_map[i].cmd_line);
+ 		if (ret)
+ 			return ret;
++		/*
++		 * early mapped hpet overrides ACPI IVRS,
++		 * they should be always controlled by iommu.
++		 */
++		set_iommu_for_device(iommu, early_hpet_map[i].devid);
+ 	}
+ 
+ 	return 0;
+@@ -811,7 +821,7 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
+ 	int ret;
+ 
+ 
+-	ret = add_early_maps();
++	ret = add_early_maps(iommu);
+ 	if (ret)
+ 		return ret;
+ 
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+1.8.2.1
