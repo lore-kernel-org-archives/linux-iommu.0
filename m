@@ -1,69 +1,103 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [Linaro-mm-sig] [PATCH 10/29] drivers: add
-	DRIVER_HAS_OWN_IOMMU_MANAGER flag
-Date: Mon, 01 Sep 2014 15:14:45 +0200
-Message-ID: <2864762.XVyAv0xVzJ@wuerfel>
+From: Inki Dae <inki.dae@samsung.com>
+Subject: Re: [PATCH 12/29] DRM: Exynos: fix window clear code
+Date: Mon, 01 Sep 2014 22:37:44 +0900
+Message-ID: <540476A8.8030502@samsung.com>
 References: <1407235677-26324-1-git-send-email-m.szyprowski@samsung.com>
-	<5493968.dbuSPSqts4@wuerfel> <54046186.5030407@samsung.com>
+ <1407235677-26324-13-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <54046186.5030407-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org
-Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <1407235677-26324-13-git-send-email-m.szyprowski@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Kukjin Kim <kgene.kim@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Monday 01 September 2014 14:07:34 Marek Szyprowski wrote:
-> On 2014-09-01 13:56, Arnd Bergmann wrote:
-> > On Monday 01 September 2014 12:47:08 Marek Szyprowski wrote:
-> >>> Who do you think needs to set this flag, and who needs to read it?
-> >> In the proposed solution Exynos IOMMU driver creates a separate IO
-> >> address space
-> >> for every client device in a system and binds it to the default
-> >> dma-mapping space
-> >> for the given device. When drivers are doing its own management of IO
-> >> address
-> >> space, instead of relying on what is available by default with dma-mapping
-> >> interface, this will require releasing of the previously created default
-> >> structures and resources. So this flag is set by the driver doing its own
-> >> management of io address space. The flags is then checked by Exynos
-> >> IOMMU driver
-> >> to avoid creating the default dma-mapping address space for devices
-> >> which driver
-> >> does its own management.
-> > I don't completely understand it yet. I would assume the device
-> > to be added to the default domain at device creation time
-> > (of_platform_populate), way before we know which device driver
-> > is going to be used. How can this prevent the iommu driver
-> > from doing the association with the domain?
-> 
-> of_platform_populate() is too early to do the association, because that 
-> time the
-> exynos iommu driver is even not yet probed.
+Hi Marek,
 
-Please have a look at the "Introduce automatic DMA configuration for IOMMU
-masters" series that Will Deacon sent out the other day. The idea is that
-we are changing the probe order so that the iommu gets initialized early
-enough for all IOMMU association to be done there.
+On 2014=EB=85=84 08=EC=9B=94 05=EC=9D=BC 19:47, Marek Szyprowski wrote:
+> To correctly disable hardware window during driver init, both enable =
+bits
+> (WINCONx_ENWIN in WINCON and SHADOWCON_CHx_ENABLE in SHADOWCON) must =
+be
+> cleared, otherwise hardware fails to re-enable such window later.
+>=20
+> While touching this function, also temporarily disable ctx->suspended=
+ flag
+> to let fimd_wait_for_vblank function really to do its job.
+>=20
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> ---
+>  drivers/gpu/drm/exynos/exynos_drm_fimd.c | 25 ++++++++++++++++++----=
+---
+>  1 file changed, 18 insertions(+), 7 deletions(-)
+>=20
+> diff --git a/drivers/gpu/drm/exynos/exynos_drm_fimd.c b/drivers/gpu/d=
+rm/exynos/exynos_drm_fimd.c
+> index 41904df..7a363d2 100644
+> --- a/drivers/gpu/drm/exynos/exynos_drm_fimd.c
+> +++ b/drivers/gpu/drm/exynos/exynos_drm_fimd.c
+> @@ -165,27 +165,38 @@ static void fimd_wait_for_vblank(struct exynos_=
+drm_manager *mgr)
+>  		DRM_DEBUG_KMS("vblank wait timed out.\n");
+>  }
+> =20
+> -
+>  static void fimd_clear_channel(struct exynos_drm_manager *mgr)
+>  {
+>  	struct fimd_context *ctx =3D mgr->ctx;
+> -	int win, ch_enabled =3D 0;
+> +	int state, win, ch_enabled =3D 0;
 
-> The association with default dma-mapping domain is done in
-> IOMMU_GROUP_NOTIFY_BIND_DRIVER notifier, just before binding the driver 
-> to the
-> given device. This way iommu driver can check dev->driver->flags and 
-> skip creating
-> default dma-mapping domain if driver announces that it wants to handle it by
-> itself.
+It doesn't need to declare state variable here because this variable is
+used only when ch_enabled is 1.
 
-I really want to kill off those notifiers.
+> =20
+>  	DRM_DEBUG_KMS("%s\n", __FILE__);
+> =20
+>  	/* Check if any channel is enabled. */
+>  	for (win =3D 0; win < WINDOWS_NR; win++) {
+> -		u32 val =3D readl(ctx->regs + SHADOWCON);
+> -		if (val & SHADOWCON_CHx_ENABLE(win)) {
+> -			val &=3D ~SHADOWCON_CHx_ENABLE(win);
+> -			writel(val, ctx->regs + SHADOWCON);
+> +		u32 val =3D readl(ctx->regs + WINCON(win));
 
-	Arnd
+WARNING: Missing a blank line after declarations
+
+> +		if (val & WINCONx_ENWIN) {
+> +			/* wincon */
+> +			val &=3D ~WINCONx_ENWIN;
+> +			writel(val, ctx->regs + WINCON(win));
+> +
+> +			/* unprotect windows */
+> +			if (ctx->driver_data->has_shadowcon) {
+> +				val =3D readl(ctx->regs + SHADOWCON);
+> +				val &=3D ~SHADOWCON_CHx_ENABLE(win);
+> +				writel(val, ctx->regs + SHADOWCON);
+> +			}
+>  			ch_enabled =3D 1;
+>  		}
+>  	}
+> =20
+>  	/* Wait for vsync, as disable channel takes effect at next vsync */
+> -	if (ch_enabled)
+> +	if (ch_enabled) {
+> +		state =3D ctx->suspended;
+
+int state =3D ctx->suspended;
+
+> +		ctx->suspended =3D 0;
+>  		fimd_wait_for_vblank(mgr);
+> +		ctx->suspended =3D state;
+> +	}
+>  }
+> =20
+>  static int fimd_mgr_initialize(struct exynos_drm_manager *mgr,
+>=20
+
+Above is trivial so I fixed them. Picked it up.
+
+Thanks,
+Inki Dae
