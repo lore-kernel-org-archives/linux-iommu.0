@@ -1,13 +1,14 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH 6/7] arm: call iommu_init before of_platform_populate
-Date: Fri, 29 Aug 2014 16:54:29 +0100
-Message-ID: <1409327670-3495-7-git-send-email-will.deacon@arm.com>
-References: <1409327670-3495-1-git-send-email-will.deacon@arm.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH 10/29] drivers: add DRIVER_HAS_OWN_IOMMU_MANAGER flag
+Date: Mon, 01 Sep 2014 07:22:32 +0200
+Message-ID: <54040298.9020002@samsung.com>
+References: <1407235677-26324-1-git-send-email-m.szyprowski@samsung.com>
+	<1407235677-26324-11-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1409327670-3495-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
+In-reply-to: <1407235677-26324-11-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,44 +18,43 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: jroedel-l3A5Bk7waGM@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-We need to ensure that the IOMMUs in the system have a chance to perform
-some basic initialisation before we start adding masters to them.
+Hi Greg,
 
-This patch adds a call to of_iommu_init before of_platform_populate.
+On 2014-08-05 12:47, Marek Szyprowski wrote:
+> This patch adds a new flags for device drivers. This flag instructs
+> kernel that the device driver does it own management of IOMMU assisted
+> IO address space translations, so no default dma-mapping structures
+> should be initialized.
+>
+> Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> ---
+>   include/linux/device.h | 2 ++
+>   1 file changed, 2 insertions(+)
+>
+> diff --git a/include/linux/device.h b/include/linux/device.h
+> index 5f4ff02..2e62371 100644
+> --- a/include/linux/device.h
+> +++ b/include/linux/device.h
+> @@ -253,6 +253,8 @@ struct device_driver {
+>   
+>   /* disables bind/unbind via sysfs */
+>   #define DRIVER_SUPPRESS_BIND_ATTRS	(1 << 0)
+> +/* driver uses own methods to manage IO address space */
+> +#define DRIVER_HAS_OWN_IOMMU_MANAGER	(1 << 1)
+>   
+>   extern int __must_check driver_register(struct device_driver *drv);
+>   extern void driver_unregister(struct device_driver *drv);
 
-Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
----
- arch/arm/kernel/setup.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+Could you comment if the approach of using flags in the struct driver
+could be accepted? I've converted suppress_bind_attrs entry to flags to
+avoid extending the structure, please see patch "[PATCH 05/29] drivers:
+convert suppress_bind_attrs parameter into flags".
 
-diff --git a/arch/arm/kernel/setup.c b/arch/arm/kernel/setup.c
-index 84db893dedc2..38a0203523af 100644
---- a/arch/arm/kernel/setup.c
-+++ b/arch/arm/kernel/setup.c
-@@ -18,6 +18,7 @@
- #include <linux/bootmem.h>
- #include <linux/seq_file.h>
- #include <linux/screen_info.h>
-+#include <linux/of_iommu.h>
- #include <linux/of_platform.h>
- #include <linux/init.h>
- #include <linux/kexec.h>
-@@ -803,9 +804,11 @@ static int __init customize_machine(void)
- 	if (machine_desc->init_machine)
- 		machine_desc->init_machine();
- #ifdef CONFIG_OF
--	else
-+	else {
-+		of_iommu_init();
- 		of_platform_populate(NULL, of_default_bus_match_table,
- 					NULL, NULL);
-+	}
- #endif
- 	return 0;
- }
+Best regards
 -- 
-2.1.0
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
