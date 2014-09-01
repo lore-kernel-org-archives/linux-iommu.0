@@ -1,15 +1,15 @@
 From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [RFC PATCH 3/7] iommu: add new iommu_ops callback for adding a
-	device with a set of IDs
-Date: Mon, 01 Sep 2014 19:18:13 +0200
-Message-ID: <3685256.rQ7X7CQ9Fx@wuerfel>
+Subject: Re: [RFC PATCH 4/7] iommu: provide helper function to configure an
+	IOMMU for an of master
+Date: Mon, 01 Sep 2014 22:18:26 +0200
+Message-ID: <4335091.FB685Z52eG@wuerfel>
 References: <1409327670-3495-1-git-send-email-will.deacon@arm.com>
-	<2811939.9L5BJIvoiz@wuerfel> <20140901163400.GK24594@arm.com>
+	<3729116.F0gWrQGFZl@wuerfel> <20140901164000.GM24594@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140901163400.GK24594-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20140901164000.GM24594-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,44 +23,32 @@ To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Monday 01 September 2014 17:34:00 Will Deacon wrote:
-> On Mon, Sep 01, 2014 at 03:39:16PM +0100, Arnd Bergmann wrote:
-> > On Monday 01 September 2014 10:13:22 Thierry Reding wrote:
-> > > On Fri, Aug 29, 2014 at 04:54:26PM +0100, Will Deacon wrote:
-> > > > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> > > > index 20f9a527922a..3dd1b99c4542 100644
-> > > > --- a/include/linux/iommu.h
-> > > > +++ b/include/linux/iommu.h
-> > > > @@ -114,6 +114,8 @@ struct iommu_ops {
-> > > >       int (*domain_has_cap)(struct iommu_domain *domain,
-> > > >                             unsigned long cap);
-> > > >       int (*add_device)(struct device *dev);
-> > > > +     int (*add_device_master_ids)(struct device *dev, int count, u32 *ids,
-> > > > +                                  void *data);
+On Monday 01 September 2014 17:40:00 Will Deacon wrote:
+> On Mon, Sep 01, 2014 at 03:46:18PM +0100, Arnd Bergmann wrote:
+> > On Monday 01 September 2014 10:29:40 Thierry Reding wrote:
 > > > 
-> > > If we want to pass around IOMMU instances I think we should make them
-> > > proper objects rather than some loosely specified void *.
+> > > I think this could use a bit more formalization. As I said in another
+> > > reply earlier, there's very little standardization in the IOMMU API.
+> > > That certainly gives us a lot of flexibility but it also has the
+> > > downside that it's difficult to handle these abstractions in the core,
+> > > which is really what the core is all about, isn't it?
+> > > 
+> > > One method that worked really well for this in the past for other
+> > > subsystems is to allow drivers to specify an .of_xlate() function that
+> > > takes the controller device and a struct of_phandle_args. It is that
+> > > function's responsibility to take the information in an of_phandle_args
+> > > structure and use that to create some subsystem specific handle that
+> > > represents this information in a way that it can readily be used.
 > > 
-> > Agreed.
+> > Yes, good idea.
 > 
-> For OF, this data argument is the data field of the device_node for the
-> IOMMU. That's private to the corresponding IOMMU driver and I don't see
-> what we gain by making that a generic structure. It's likely going to
-> represent some internal driver data structures anyway, so that the IDs can
-> be recorded in the relevant place and for the relevant group etc.
-> 
-> In other words, I have no idea what a generic data structure would look
-> like for this.
+> Hmm, how does this work for PCI devices? The current RFC takes care to
+> ensure that the core changes work just as well for OF devices as PCI
+> devices, and the of-specific functions and data structures are not part of
+> it.
 
-Something like
-
-	struct iommu {
-		struct device *dev;
-		const struct iommu_ops *ops;
-		struct list_head domains;
-		void *private;
-	};
-
-There are probably a few more fields we will need in the long run.
+I don't mind handling PCI devices separately. They are different in a number
+of ways already, in particular the way that they don't normally have an
+of_node attached to them but actually have a PCI bus/dev/function number.
 
 	Arnd
