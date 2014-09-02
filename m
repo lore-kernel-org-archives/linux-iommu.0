@@ -1,15 +1,16 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [RFC PATCH 4/7] iommu: provide helper function to configure an
-	IOMMU for an of master
-Date: Tue, 02 Sep 2014 13:23:43 +0300
-Message-ID: <2453590.E42S9qWAZh@avalon>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [RFC PATCH 0/7] Introduce automatic DMA configuration for IOMMU
+	masters
+Date: Tue, 02 Sep 2014 12:42:13 +0200
+Message-ID: <54059F05.2090901@samsung.com>
 References: <1409327670-3495-1-git-send-email-will.deacon@arm.com>
-	<20140901082939.GC24430@ulmo> <3729116.F0gWrQGFZl@wuerfel>
+	<20140902083138.GA25379@arm.com> <54058442.2070204@samsung.com>
+	<33373396.gPTVFGBBxa@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <3729116.F0gWrQGFZl@wuerfel>
+In-reply-to: <33373396.gPTVFGBBxa@wuerfel>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,66 +21,57 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: jroedel-l3A5Bk7waGM@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Monday 01 September 2014 16:46:18 Arnd Bergmann wrote:
-> On Monday 01 September 2014 10:29:40 Thierry Reding wrote:
-> > I think this could use a bit more formalization. As I said in another
-> > reply earlier, there's very little standardization in the IOMMU API.
-> > That certainly gives us a lot of flexibility but it also has the
-> > downside that it's difficult to handle these abstractions in the core,
-> > which is really what the core is all about, isn't it?
-> > 
-> > One method that worked really well for this in the past for other
-> > subsystems is to allow drivers to specify an .of_xlate() function that
-> > takes the controller device and a struct of_phandle_args. It is that
-> > function's responsibility to take the information in an of_phandle_args
-> > structure and use that to create some subsystem specific handle that
-> > represents this information in a way that it can readily be used.
-> 
-> Yes, good idea.
-> 
-> > So I think it would really be helpful if IOMMU gained support for
-> > something similar. We could create a struct iommu to represent an
-> > instance of an IOMMU. IOMMU drivers can embed this structure and add
-> > device-specific fields that they need. That way we can easily pass
-> > around instances and upcast in the driver in a type-safe way.
-> 
-> Right.
-> 
-> > At the same time, a struct iommu_master could provide the basis to
-> > represent a single master interface on an IOMMU. Drivers can again embed
-> > that in driver-specific structures with additional fields required for
-> > the particular IOMMU implementation. .of_xlate() could return such an
-> > IOMMU master for the core to use.
-> 
-> I'm not convinced it's necessary. Could this just be a 'struct device'
-> instead of 'struct iommu_master'?
+Hi Arnd,
 
-As master drivers should in general be unaware of the IOMMU that serves them, 
-embedding a struct iommu_master inside driver-specific structures is a no-go.
+On 2014-09-02 10:56, Arnd Bergmann wrote:
+> On Tuesday 02 September 2014 10:48:02 Marek Szyprowski wrote:
+>>>    -- I have concerns that allocating one domain per master might be
+>>> too much, but it's hard to tell without an IOMMU driver ported over.
+>> One domain per master is IMHO a sane default configuration. The only default
+>> alternative I see is to have only one domain (related with dma-mapping
+>> subsystem) and bind all devices to it. However I really don't see any
+>> disadvantage of having separate domain per each master and such
+>> configuration
+>> gives devices better separation.
+> I was expecting that the dma-mapping implementation would by default use
+> one domain for all devices, since that is what the simpler IOMMUs without
+> domain support have to do anyway.
+>
+> For isolation purposes, it can only help to have more domains, but
+> I would guess that there is some space overhead in maintaining lots
+> of page tables.
 
-Let's also not forget that a device can be connected to multiple IOMMU ports. 
-The only cases I've seen had multiple connections between a bus master device 
-and a single IOMMU, all of them potentially sharing a TLB, so a simple 
-implementation was possible.
+I'm okay with both approaches (separate domain for each device vs. single
+common domain for all devices). Maybe this can be some kind of Kconfig
+option added to DMA debugging? Separation might be really helpful when
+debugging strange device behavior.
 
-I'm not sure how we could handle connections from one device to different 
-IOMMUs, or to multiple ports of the same IOMMU with different TLBs. Splitting 
-the device in multiple children struct device might be required.
+>> However we also need to figure out how to let drivers to make their own
+>> configuration, like it is required by Exynos DRM subsystem, which consist
+>> of several devices, each having its own IOMMU controller, but for
+>> convenience those drivers assume that they all have been bound to the same,
+>> single domain.
+> IIRC with the way we ended up putting the mask into the iommu descriptor of
+> the ARM SMMU, you can put multiple devices into the same iommu group, and
+> have them automatically share a domain.
+>
+> I don't know if the same would work for the Samsung implementation.
 
-> > With such structures in place we should be able to eliminate many of the
-> > loops in IOMMU drivers that serve no other purpose than to find the
-> > master context from a struct device * and some parameters. It will also
-> > allow us to keep a central registry of IOMMUs and masters rather than
-> > duplicating that in every driver.
-> 
-> Yes, we should be able to identify an iommu context in a generic way,
-> but why do you want to break it down to individual masters within
-> one context?
+The question is how to transfer such information from the device 
+drivers, that
+need/benefit from such configuration to iommu driver, which does all the 
+setup?
+This is something completely internal to particular drivers and should 
+not be
+exported to device tree or userspace. Thierry suggested to hardcode this
+information in the iommu driver, but I'm looking for other approaches.
+Maybe simply releasing device from the default dma-mapping domain before
+attaching to custom one will be the easiest solution.
 
+Best regards
 -- 
-Regards,
-
-Laurent Pinchart
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
