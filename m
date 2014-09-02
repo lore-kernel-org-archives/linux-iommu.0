@@ -1,16 +1,15 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [RFC PATCH 0/7] Introduce automatic DMA configuration for IOMMU
-	masters
-Date: Tue, 02 Sep 2014 12:42:13 +0200
-Message-ID: <54059F05.2090901@samsung.com>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [RFC PATCH 4/7] iommu: provide helper function to configure an
+	IOMMU for an of master
+Date: Tue, 02 Sep 2014 13:51:54 +0300
+Message-ID: <1485866.XbpZvVaUr8@avalon>
 References: <1409327670-3495-1-git-send-email-will.deacon@arm.com>
-	<20140902083138.GA25379@arm.com> <54058442.2070204@samsung.com>
-	<33373396.gPTVFGBBxa@wuerfel>
+	<1409327670-3495-5-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <33373396.gPTVFGBBxa@wuerfel>
+In-Reply-To: <1409327670-3495-5-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,58 +19,138 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Arnd,
+Hi Will,
 
-On 2014-09-02 10:56, Arnd Bergmann wrote:
-> On Tuesday 02 September 2014 10:48:02 Marek Szyprowski wrote:
->>>    -- I have concerns that allocating one domain per master might be
->>> too much, but it's hard to tell without an IOMMU driver ported over.
->> One domain per master is IMHO a sane default configuration. The only default
->> alternative I see is to have only one domain (related with dma-mapping
->> subsystem) and bind all devices to it. However I really don't see any
->> disadvantage of having separate domain per each master and such
->> configuration
->> gives devices better separation.
-> I was expecting that the dma-mapping implementation would by default use
-> one domain for all devices, since that is what the simpler IOMMUs without
-> domain support have to do anyway.
->
-> For isolation purposes, it can only help to have more domains, but
-> I would guess that there is some space overhead in maintaining lots
-> of page tables.
+Thank you for the patch.
 
-I'm okay with both approaches (separate domain for each device vs. single
-common domain for all devices). Maybe this can be some kind of Kconfig
-option added to DMA debugging? Separation might be really helpful when
-debugging strange device behavior.
+On Friday 29 August 2014 16:54:27 Will Deacon wrote:
+> The generic IOMMU device-tree bindings can be used to add arbitrary OF
+> masters to an IOMMU with a compliant binding.
+> 
+> This patch introduces of_iommu_configure, which does exactly that.
+> 
+> Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  drivers/iommu/Kconfig    |  2 +-
+>  drivers/iommu/of_iommu.c | 36 ++++++++++++++++++++++++++++++++++++
+>  include/linux/of_iommu.h |  6 ++++++
+>  3 files changed, 43 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index dd5112265cc9..6d13f962f156 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -15,7 +15,7 @@ if IOMMU_SUPPORT
+> 
+>  config OF_IOMMU
+>         def_bool y
+> -       depends on OF
+> +       depends on OF && IOMMU_API
+> 
+>  config FSL_PAMU
+>  	bool "Freescale IOMMU support"
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index f9209666157c..a7d3b3a13b83 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -19,6 +19,7 @@
+> 
+>  #include <linux/export.h>
+>  #include <linux/limits.h>
+> +#include <linux/iommu.h>
 
->> However we also need to figure out how to let drivers to make their own
->> configuration, like it is required by Exynos DRM subsystem, which consist
->> of several devices, each having its own IOMMU controller, but for
->> convenience those drivers assume that they all have been bound to the same,
->> single domain.
-> IIRC with the way we ended up putting the mask into the iommu descriptor of
-> the ARM SMMU, you can put multiple devices into the same iommu group, and
-> have them automatically share a domain.
->
-> I don't know if the same would work for the Samsung implementation.
+Pet peeve of mine, how about keeping the headers alphabetically sorted ?
 
-The question is how to transfer such information from the device 
-drivers, that
-need/benefit from such configuration to iommu driver, which does all the 
-setup?
-This is something completely internal to particular drivers and should 
-not be
-exported to device tree or userspace. Thierry suggested to hardcode this
-information in the iommu driver, but I'm looking for other approaches.
-Maybe simply releasing device from the default dma-mapping domain before
-attaching to custom one will be the easiest solution.
+>  #include <linux/of.h>
+>  #include <linux/of_iommu.h>
+> 
+> @@ -90,6 +91,41 @@ int of_get_dma_window(struct device_node *dn, const char
+> *prefix, int index, }
+>  EXPORT_SYMBOL_GPL(of_get_dma_window);
+> 
+> +int of_iommu_configure(struct device *dev)
+> +{
+> +	struct of_phandle_args iommu_spec;
+> +	struct bus_type *bus = dev->bus;
+> +	const struct iommu_ops *ops = bus->iommu_ops;
+> +	int ret = -EINVAL, idx = 0;
+> +
+> +	if (!iommu_present(bus))
+> +		return -ENODEV;
+> +
+> +	/*
+> +	 * We don't currently walk up the tree looking for a parent IOMMU.
+> +	 * See the `Notes:' section of
+> +	 * Documentation/devicetree/bindings/iommu/iommu.txt
+> +	 */
+> +	while (!of_parse_phandle_with_args(dev->of_node, "iommus",
+> +					   "#iommu-cells", idx,
+> +					   &iommu_spec)) {
+> +		void *data = of_iommu_get_data(iommu_spec.np);
+> +
+> +		of_node_put(iommu_spec.np);
+> +		if (!ops->add_device_master_ids)
+> +			return -ENODEV;
 
-Best regards
+Can't you move this outside of the loop ?
+
+> +
+> +		ret = ops->add_device_master_ids(dev, iommu_spec.args_count,
+> +						 iommu_spec.args, data);
+
+I'm curious, how do you envision support for devices connected to multiple 
+IOMMUs ? IOMMU drivers usually allocate a per-device archdata structure in the 
+add_device operation and store it in the dev->archdata.iommu field. How would 
+that work with multiple invocations of add_device or add_device_master_ids ?
+
+> +		if (ret)
+> +			break;
+> +
+> +		idx++;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+>  void __init of_iommu_init(void)
+>  {
+>  	struct device_node *np;
+> diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
+> index 29f2f3f88d6a..85c6d1152624 100644
+> --- a/include/linux/of_iommu.h
+> +++ b/include/linux/of_iommu.h
+> @@ -1,6 +1,7 @@
+>  #ifndef __OF_IOMMU_H
+>  #define __OF_IOMMU_H
+> 
+> +#include <linux/device.h>
+>  #include <linux/of.h>
+> 
+>  #ifdef CONFIG_OF_IOMMU
+> @@ -10,6 +11,7 @@ extern int of_get_dma_window(struct device_node *dn, const
+> char *prefix, size_t *size);
+> 
+>  extern void of_iommu_init(void);
+> +extern int of_iommu_configure(struct device *dev);
+> 
+>  #else
+> 
+> @@ -21,6 +23,10 @@ static inline int of_get_dma_window(struct device_node
+> *dn, const char *prefix, }
+> 
+>  static inline void of_iommu_init(void) { }
+> +static inline int of_iommu_configure(struct device *dev)
+> +{
+> +	return -ENODEV;
+> +}
+> 
+>  #endif	/* CONFIG_OF_IOMMU */
+
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Regards,
+
+Laurent Pinchart
