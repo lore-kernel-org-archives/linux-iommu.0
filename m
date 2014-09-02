@@ -1,15 +1,13 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [RFC PATCH 0/7] Introduce automatic DMA configuration for IOMMU
-	masters
-Date: Tue, 02 Sep 2014 10:56:36 +0200
-Message-ID: <33373396.gPTVFGBBxa@wuerfel>
-References: <1409327670-3495-1-git-send-email-will.deacon@arm.com>
-	<20140902083138.GA25379@arm.com> <54058442.2070204@samsung.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH v3 1/3] iommu: introduce domain attribute for nesting IOMMUs
+Date: Tue,  2 Sep 2014 10:53:37 +0100
+Message-ID: <1409651619-27342-2-git-send-email-will.deacon@arm.com>
+References: <1409651619-27342-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <54058442.2070204-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+In-Reply-To: <1409651619-27342-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,40 +17,40 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tuesday 02 September 2014 10:48:02 Marek Szyprowski wrote:
-> 
-> >   -- I have concerns that allocating one domain per master might be
-> > too much, but it's hard to tell without an IOMMU driver ported over.
-> 
-> One domain per master is IMHO a sane default configuration. The only default
-> alternative I see is to have only one domain (related with dma-mapping
-> subsystem) and bind all devices to it. However I really don't see any
-> disadvantage of having separate domain per each master and such 
-> configuration
-> gives devices better separation.
+Some IOMMUs, such as the ARM SMMU, support two stages of translation.
+The idea behind such a scheme is to allow a guest operating system to
+use the IOMMU for DMA mappings in the first stage of translation, with
+the hypervisor then installing mappings in the second stage to provide
+isolation of the DMA to the physical range assigned to that virtual
+machine.
 
-I was expecting that the dma-mapping implementation would by default use
-one domain for all devices, since that is what the simpler IOMMUs without
-domain support have to do anyway.
+In order to allow IOMMU domains to be used for second-stage translation,
+this patch adds a new iommu_attr (IOMMU_ATTR_NESTING) for setting
+second-stage domains prior to device attach. The attribute can also be
+queried to see if a domain is actually making use of nesting.
 
-For isolation purposes, it can only help to have more domains, but
-I would guess that there is some space overhead in maintaining lots
-of page tables.
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+---
+ include/linux/iommu.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-> However we also need to figure out how to let drivers to make their own
-> configuration, like it is required by Exynos DRM subsystem, which consist
-> of several devices, each having its own IOMMU controller, but for
-> convenience those drivers assume that they all have been bound to the same,
-> single domain.
-
-IIRC with the way we ended up putting the mask into the iommu descriptor of
-the ARM SMMU, you can put multiple devices into the same iommu group, and
-have them automatically share a domain.
-
-I don't know if the same would work for the Samsung implementation.
-
-	Arnd
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 20f9a527922a..7b02bcc85b9e 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -80,6 +80,7 @@ enum iommu_attr {
+ 	DOMAIN_ATTR_FSL_PAMU_STASH,
+ 	DOMAIN_ATTR_FSL_PAMU_ENABLE,
+ 	DOMAIN_ATTR_FSL_PAMUV1,
++	DOMAIN_ATTR_NESTING,	/* two stages of translation */
+ 	DOMAIN_ATTR_MAX,
+ };
+ 
+-- 
+2.1.0
