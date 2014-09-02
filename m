@@ -1,8 +1,8 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH v2 7/7] arm: dma-mapping: plumb our iommu mapping ops into
-	arch_setup_dma_ops
-Date: Tue,  2 Sep 2014 18:56:27 +0100
-Message-ID: <1409680587-29818-8-git-send-email-will.deacon@arm.com>
+Subject: [RFC PATCH v2 3/7] iommu: add new iommu_ops callback for adding an OF
+	device
+Date: Tue,  2 Sep 2014 18:56:23 +0100
+Message-ID: <1409680587-29818-4-git-send-email-will.deacon@arm.com>
 References: <1409680587-29818-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,155 +22,39 @@ To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cu
 Cc: jroedel-l3A5Bk7waGM@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch plumbs the existing ARM IOMMU DMA infrastructure (which isn't
-actually called outside of a few drivers) into arch_setup_dma_ops, so
-that we can use IOMMUs for DMA transfers in a more generic fashion.
-
-Since this significantly complicates the arch_setup_dma_ops function,
-it is moved out of line into dma-mapping.c. If CONFIG_ARM_DMA_USE_IOMMU
-is not set, the iommu paramater is ignored and the normal ops are used
-instead.
+This patch adds a new function to the iommu_ops structure to allow an
+OF device to be added to a specific IOMMU instance using the recently
+merged generic devicetree binding for IOMMUs. The callback (of_xlate)
+takes a struct device representing the master and an of_phandle_args
+representing the IOMMU and the correspondong IDs for the new master.
 
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- arch/arm/include/asm/dma-mapping.h | 17 +++------
- arch/arm/mm/dma-mapping.c          | 72 +++++++++++++++++++++++++++++++++-----
- 2 files changed, 68 insertions(+), 21 deletions(-)
+ include/linux/iommu.h | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/arch/arm/include/asm/dma-mapping.h b/arch/arm/include/asm/dma-mapping.h
-index 788b8eef40e8..2f648b9b000d 100644
---- a/arch/arm/include/asm/dma-mapping.h
-+++ b/arch/arm/include/asm/dma-mapping.h
-@@ -121,20 +121,11 @@ static inline unsigned long dma_max_pfn(struct device *dev)
- }
- #define dma_max_pfn(dev) dma_max_pfn(dev)
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index fdddb14cd8f5..3e766b85daa3 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -21,6 +21,7 @@
  
--static inline void arch_setup_dma_ops(struct device *dev, u64 mask,
--				      u64 dma_base, u64 size,
--				      unsigned long offset,
--				      struct iommu_dma_mapping *iommu,
--				      bool coherent)
--{
--	dev->coherent_dma_mask	= mask;
--	dev->dma_mask		= &dev->coherent_dma_mask;
--	dev->dma_pfn_offset	= offset;
--
--	if (coherent)
--		set_dma_ops(dev, &arm_coherent_dma_ops);
--}
- #define arch_setup_dma_ops arch_setup_dma_ops
-+extern void arch_setup_dma_ops(struct device *dev, u64 mask, u64 dma_base,
-+			       u64 size, unsigned long offset,
-+			       struct iommu_dma_mapping *iommu,
-+			       bool coherent);
+ #include <linux/errno.h>
+ #include <linux/err.h>
++#include <linux/of.h>
+ #include <linux/types.h>
+ #include <trace/events/iommu.h>
  
- static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
- {
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index 7a996aaa061e..07179b2003eb 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -2041,10 +2041,9 @@ EXPORT_SYMBOL_GPL(arm_iommu_release_mapping);
-  * @mapping: io address space mapping structure (returned from
-  *	arm_iommu_create_mapping)
-  *
-- * Attaches specified io address space mapping to the provided device,
-- * this replaces the dma operations (dma_map_ops pointer) with the
-- * IOMMU aware version. More than one client might be attached to
-- * the same io address space mapping.
-+ * Attaches specified io address space mapping to the provided device.
-+ * More than one client might be attached to the same io address space
-+ * mapping.
-  */
- int arm_iommu_attach_device(struct device *dev,
- 			    struct dma_iommu_mapping *mapping)
-@@ -2057,7 +2056,6 @@ int arm_iommu_attach_device(struct device *dev,
+@@ -136,6 +137,10 @@ struct iommu_ops {
+ 	/* Get the numer of window per domain */
+ 	u32 (*domain_get_windows)(struct iommu_domain *domain);
  
- 	kref_get(&mapping->kref);
- 	dev->archdata.mapping = mapping;
--	set_dma_ops(dev, &iommu_ops);
++#ifdef CONFIG_OF_IOMMU
++	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
++#endif
++
+ 	unsigned long pgsize_bitmap;
+ };
  
- 	pr_debug("Attached IOMMU controller to %s device.\n", dev_name(dev));
- 	return 0;
-@@ -2069,7 +2067,6 @@ EXPORT_SYMBOL_GPL(arm_iommu_attach_device);
-  * @dev: valid struct device pointer
-  *
-  * Detaches the provided device from a previously attached map.
-- * This voids the dma operations (dma_map_ops pointer)
-  */
- void arm_iommu_detach_device(struct device *dev)
- {
-@@ -2084,10 +2081,69 @@ void arm_iommu_detach_device(struct device *dev)
- 	iommu_detach_device(mapping->domain, dev);
- 	kref_put(&mapping->kref, release_iommu_mapping);
- 	dev->archdata.mapping = NULL;
--	set_dma_ops(dev, NULL);
- 
- 	pr_debug("Detached IOMMU controller from %s device.\n", dev_name(dev));
- }
- EXPORT_SYMBOL_GPL(arm_iommu_detach_device);
- 
--#endif
-+static bool arm_setup_iommu_dma_ops(struct device *dev, u64 dma_base, u64 size)
-+{
-+	struct dma_iommu_mapping *mapping;
-+
-+	mapping = arm_iommu_create_mapping(dev->bus, dma_base, size);
-+	if (IS_ERR(mapping)) {
-+		pr_warn("Failed to create %llu-byte IOMMU mapping for device %s\n",
-+				size, dev_name(dev));
-+		return false;
-+	}
-+
-+	if (arm_iommu_attach_device(dev, mapping)) {
-+		pr_warn("Failed to attach device %s to IOMMU mapping\n",
-+				dev_name(dev));
-+		arm_iommu_release_mapping(mapping);
-+		return false;
-+	}
-+
-+	return true;
-+}
-+
-+static struct dma_map_ops *arm_get_iommu_dma_map_ops(bool coherent)
-+{
-+	return coherent ? &iommu_coherent_ops : &iommu_ops;
-+}
-+
-+#else
-+
-+static bool arm_setup_iommu_dma_ops(struct device *dev, u64 dma_base, u64 size)
-+{
-+	return false;
-+}
-+
-+#define arm_get_iommu_dma_map_ops arm_get_dma_map_ops
-+
-+#endif /* CONFIG_ARM_DMA_USE_IOMMU */
-+
-+static struct dma_map_ops *arm_get_dma_map_ops(bool coherent)
-+{
-+	return coherent ? &arm_coherent_dma_ops : &arm_dma_ops;
-+}
-+
-+void arch_setup_dma_ops(struct device *dev, u64 mask, u64 dma_base, u64 size,
-+			unsigned long offset, struct iommu_dma_mapping *iommu,
-+			bool coherent)
-+{
-+	struct dma_map_ops *dma_ops;
-+
-+	dev->coherent_dma_mask	= mask;
-+	dev->dma_mask		= &dev->coherent_dma_mask;
-+
-+	if (iommu && arm_setup_iommu_dma_ops(dev, dma_base, size)) {
-+		dma_ops = arm_get_iommu_dma_map_ops(coherent);
-+	} else {
-+		dev->dma_pfn_offset = offset;
-+		dma_ops = arm_get_dma_map_ops(coherent);
-+	}
-+
-+	set_dma_ops(dev, dma_ops);
-+}
-+EXPORT_SYMBOL_GPL(arch_setup_dma_ops);
 -- 
 2.1.0
