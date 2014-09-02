@@ -1,7 +1,8 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v3 1/3] iommu: introduce domain attribute for nesting IOMMUs
-Date: Tue,  2 Sep 2014 10:53:37 +0100
-Message-ID: <1409651619-27342-2-git-send-email-will.deacon@arm.com>
+Subject: [PATCH v3 3/3] iommu/arm-smmu: add support for DOMAIN_ATTR_NESTING
+	attribute
+Date: Tue,  2 Sep 2014 10:53:39 +0100
+Message-ID: <1409651619-27342-4-git-send-email-will.deacon@arm.com>
 References: <1409651619-27342-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,36 +22,163 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Some IOMMUs, such as the ARM SMMU, support two stages of translation.
-The idea behind such a scheme is to allow a guest operating system to
-use the IOMMU for DMA mappings in the first stage of translation, with
-the hypervisor then installing mappings in the second stage to provide
-isolation of the DMA to the physical range assigned to that virtual
-machine.
+When domains are set with the DOMAIN_ATTR_NESTING flag, we must ensure
+that we allocate them to stage-2 context banks if the hardware permits
+it.
 
-In order to allow IOMMU domains to be used for second-stage translation,
-this patch adds a new iommu_attr (IOMMU_ATTR_NESTING) for setting
-second-stage domains prior to device attach. The attribute can also be
-queried to see if a domain is actually making use of nesting.
+This patch adds support for the attribute to the ARM SMMU driver, with
+the actual stage being determined depending on the features supported
+by the hardware.
 
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- include/linux/iommu.h | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/arm-smmu.c | 110 ++++++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 90 insertions(+), 20 deletions(-)
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 20f9a527922a..7b02bcc85b9e 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -80,6 +80,7 @@ enum iommu_attr {
- 	DOMAIN_ATTR_FSL_PAMU_STASH,
- 	DOMAIN_ATTR_FSL_PAMU_ENABLE,
- 	DOMAIN_ATTR_FSL_PAMUV1,
-+	DOMAIN_ATTR_NESTING,	/* two stages of translation */
- 	DOMAIN_ATTR_MAX,
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index d2d8cdaf4f0b..c745296b170f 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -404,9 +404,16 @@ struct arm_smmu_cfg {
+ #define ARM_SMMU_CB_ASID(cfg)		((cfg)->cbndx)
+ #define ARM_SMMU_CB_VMID(cfg)		((cfg)->cbndx + 1)
+ 
++enum arm_smmu_domain_stage {
++	ARM_SMMU_DOMAIN_S1 = 0,
++	ARM_SMMU_DOMAIN_S2,
++	ARM_SMMU_DOMAIN_NESTED,
++};
++
+ struct arm_smmu_domain {
+ 	struct arm_smmu_device		*smmu;
+ 	struct arm_smmu_cfg		cfg;
++	enum arm_smmu_domain_stage	stage;
+ 	spinlock_t			lock;
  };
  
+@@ -899,19 +906,46 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 	if (smmu_domain->smmu)
+ 		goto out_unlock;
+ 
+-	if (smmu->features & ARM_SMMU_FEAT_TRANS_NESTED) {
++	/*
++	 * Mapping the requested stage onto what we support is surprisingly
++	 * complicated, mainly because the spec allows S1+S2 SMMUs without
++	 * support for nested translation. That means we end up with the
++	 * following table:
++	 *
++	 * Requested        Supported        Actual
++	 *     S1               N              S1
++	 *     S1             S1+S2            S1
++	 *     S1               S2             S2
++	 *     S1               S1             S1
++	 *     N                N              N
++	 *     N              S1+S2            S2
++	 *     N                S2             S2
++	 *     N                S1             S1
++	 *
++	 * Note that you can't actually request stage-2 mappings.
++	 */
++	if (!(smmu->features & ARM_SMMU_FEAT_TRANS_S1))
++		smmu_domain->stage = ARM_SMMU_DOMAIN_S2;
++	if (!(smmu->features & ARM_SMMU_FEAT_TRANS_S2))
++		smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
++
++	switch (smmu_domain->stage) {
++	case ARM_SMMU_DOMAIN_S1:
++		cfg->cbar = CBAR_TYPE_S1_TRANS_S2_BYPASS;
++		start = smmu->num_s2_context_banks;
++		break;
++	case ARM_SMMU_DOMAIN_NESTED:
+ 		/*
+ 		 * We will likely want to change this if/when KVM gets
+ 		 * involved.
+ 		 */
+-		cfg->cbar = CBAR_TYPE_S1_TRANS_S2_BYPASS;
+-		start = smmu->num_s2_context_banks;
+-	} else if (smmu->features & ARM_SMMU_FEAT_TRANS_S1) {
+-		cfg->cbar = CBAR_TYPE_S1_TRANS_S2_BYPASS;
+-		start = smmu->num_s2_context_banks;
+-	} else {
++	case ARM_SMMU_DOMAIN_S2:
+ 		cfg->cbar = CBAR_TYPE_S2_TRANS;
+ 		start = 0;
++		break;
++	default:
++		ret = -EINVAL;
++		goto out_unlock;
+ 	}
+ 
+ 	ret = __arm_smmu_alloc_bitmap(smmu->context_map, start,
+@@ -1637,20 +1671,56 @@ static void arm_smmu_remove_device(struct device *dev)
+ 	iommu_group_remove_device(dev);
+ }
+ 
++static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
++				    enum iommu_attr attr, void *data)
++{
++	struct arm_smmu_domain *smmu_domain = domain->priv;
++
++	switch (attr) {
++	case DOMAIN_ATTR_NESTING:
++		*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
++		return 0;
++	default:
++		return -ENODEV;
++	}
++}
++
++static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
++				    enum iommu_attr attr, void *data)
++{
++	struct arm_smmu_domain *smmu_domain = domain->priv;
++
++	switch (attr) {
++	case DOMAIN_ATTR_NESTING:
++		if (smmu_domain->smmu)
++			return -EPERM;
++		if (*(int *)data)
++			smmu_domain->stage = ARM_SMMU_DOMAIN_NESTED;
++		else
++			smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
++
++		return 0;
++	default:
++		return -ENODEV;
++	}
++}
++
+ static const struct iommu_ops arm_smmu_ops = {
+-	.domain_init	= arm_smmu_domain_init,
+-	.domain_destroy	= arm_smmu_domain_destroy,
+-	.attach_dev	= arm_smmu_attach_dev,
+-	.detach_dev	= arm_smmu_detach_dev,
+-	.map		= arm_smmu_map,
+-	.unmap		= arm_smmu_unmap,
+-	.iova_to_phys	= arm_smmu_iova_to_phys,
+-	.domain_has_cap	= arm_smmu_domain_has_cap,
+-	.add_device	= arm_smmu_add_device,
+-	.remove_device	= arm_smmu_remove_device,
+-	.pgsize_bitmap	= (SECTION_SIZE |
+-			   ARM_SMMU_PTE_CONT_SIZE |
+-			   PAGE_SIZE),
++	.domain_init		= arm_smmu_domain_init,
++	.domain_destroy		= arm_smmu_domain_destroy,
++	.attach_dev		= arm_smmu_attach_dev,
++	.detach_dev		= arm_smmu_detach_dev,
++	.map			= arm_smmu_map,
++	.unmap			= arm_smmu_unmap,
++	.iova_to_phys		= arm_smmu_iova_to_phys,
++	.domain_has_cap		= arm_smmu_domain_has_cap,
++	.add_device		= arm_smmu_add_device,
++	.remove_device		= arm_smmu_remove_device,
++	.domain_get_attr	= arm_smmu_domain_get_attr,
++	.domain_set_attr	= arm_smmu_domain_set_attr,
++	.pgsize_bitmap		= (SECTION_SIZE |
++				   ARM_SMMU_PTE_CONT_SIZE |
++				   PAGE_SIZE),
+ };
+ 
+ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
 -- 
 2.1.0
