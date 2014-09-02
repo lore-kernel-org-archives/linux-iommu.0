@@ -1,15 +1,16 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [RFC PATCH 4/7] iommu: provide helper function to configure an
-	IOMMU for an of master
-Date: Tue, 02 Sep 2014 16:01:32 +0200
-Message-ID: <5897964.3ztXLVfPDF@wuerfel>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [RFC PATCH 1/7] iommu: provide early initialisation hook for
+	IOMMU drivers
+Date: Tue, 2 Sep 2014 14:47:54 +0000
+Message-ID: <04b313674bc14231a47570f91336c6e6@BL2PR03MB468.namprd03.prod.outlook.com>
 References: <1409327670-3495-1-git-send-email-will.deacon@arm.com>
-	<3424322.yoZKhlAsy0@wuerfel> <20140902130508.GK25379@arm.com>
+	<1409327670-3495-2-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140902130508.GK25379-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1409327670-3495-2-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,82 +20,67 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tuesday 02 September 2014 14:05:08 Will Deacon wrote:
-> On Tue, Sep 02, 2014 at 01:15:06PM +0100, Arnd Bergmann wrote:
+Hi Will,
 
-> > > Anyway, I'll try to hack something together shortly. I think the proposal
-> > > is:
-> > > 
-> > >   - Make add_device_master_ids take a generic structure (struct iommu)
-> > >   - Add an of_xlate callback into iommu_ops which returns a populated
-> > >     struct iommu based on the of_node
-> > 
-> > We may have been talking past one another. What I meant with 'struct iommu'
-> > is something that identifies the iommu instance, not the connection to
-> > a particular master. What you describe here would work, but then I think
-> > the structure should have a different name. However, it seems easier to
-> > not have the add_device_master_ids at and just do the association in the
-> > xlate callback instead.
+> -----Original Message-----
+> From: Will Deacon [mailto:will.deacon-5wv7dgnIgG8@public.gmane.org]
+> Sent: Friday, August 29, 2014 9:24 PM
+> To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> Cc: arnd-r2nGTMty4D4@public.gmane.org; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org; jroedel-l3A5Bk7waGM@public.gmane.org;
+> hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org; Sethi Varun-B16395; thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org;
+> laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org; Will Deacon
+> Subject: [RFC PATCH 1/7] iommu: provide early initialisation hook for IOMMU
+> drivers
 > 
-> Yes, I think we were talking about two different things. If we move all
-> of the master handling into the xlate callback, then we can just use
-> of_phandle_args as the generic master representation (using the PCI host
-> controller node for PCI devices, as you mentioned). However, xlate is a
-> bit of a misnomer then, as it's not actually translating anything; the
-> handle used for DMA masters is still struct device, and we have that
-> already in of_dma_configure.
+> IOMMU drivers must be initialised before any of their upstream devices,
+> otherwise the relevant iommu_ops won't be configured for the bus in
+> question. To solve this, a number of IOMMU drivers use initcalls to
+> initialise the driver before anything has a chance to be probed.
 > 
-> I'm still unsure about what to put inside struct iommu other than a private
-> data pointer. You previously suggested:
+> Whilst this solves the immediate problem, it leaves the job of probing
+> the IOMMU completely separate from the iommu_ops to configure the
+> IOMMU,
+> which are called on a per-bus basis and require the driver to figure out
+> exactly which instance of the IOMMU is being requested. In particular,
+> the add_device callback simply passes a struct device to the driver,
+> which then has to parse firmware tables or probe buses to identify the
+> relevant IOMMU instance.
 > 
-> 	struct iommu {
-> 		struct device *dev;
-> 		const struct iommu_ops *ops;
-> 		struct list_head domains;
-> 		void *private;
-> 	};
+> This patch takes the first step in addressing this problem by adding an
+> early initialisation pass for IOMMU drivers, giving them the ability to
+> set some per-instance data on their of_node. This data can then be
+> passed back to a new add_device function (added in a later patch) to
+> identify the IOMMU instance in question.
 > 
-> but that has the following problems:
+> Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  drivers/iommu/of_iommu.c          | 14 ++++++++++++++
+>  include/asm-generic/vmlinux.lds.h |  2 ++
+>  include/linux/of_iommu.h          | 21 +++++++++++++++++++++
+>  3 files changed, 37 insertions(+)
 > 
->   - We don't have a struct device * for the IOMMU until it's been probed
->     via the standard driver probing mechanisms, which may well be after
->     we've started registering masters
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index e550ccb7634e..f9209666157c 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -89,3 +89,17 @@ int of_get_dma_window(struct device_node *dn, const
+> char *prefix, int index,
+>  	return 0;
+>  }
+>  EXPORT_SYMBOL_GPL(of_get_dma_window);
+> +
+> +void __init of_iommu_init(void)
+> +{
+> +	struct device_node *np;
+> +	const struct of_device_id *match, *matches = &__iommu_of_table;
+> +
+> +	for_each_matching_node_and_match(np, matches, &match) {
+> +		const int (*init_fn)(struct device_node *) = match->data;
 
-Right, this may have to be the device_node pointer. I also realized that if
-we have this structure, we can stop using the device_node->data field
-and instead walk a list of iommu structures.
+Is the init function also responsible for setting iommu_ops (per bus)? We need to take in to consideration that iommu API (iommu.c) initialization happens during  "arch_init". When we setup bus iommu ops add_device would be called for devices which have already been probed. Also, as I can see from the code we have of_platform_populate which gets called right after of_iommu_init, which would in turn also lead to add_device invocation (after add_device_master_ids). I believe this would happen before iommu API initialization which would cause issues.
 
->   - The ops are still registered on a per-bus basis, and each domain has
->     a pointer to them anyway
-
-I think that has to change in the long run: we may well require distinct
-IOMMU operations if we have multiple IOMMUs used on the same bus_type.
- 
->   - The IOMMU driver really doesn't care about the domains, as the domain
->     in question is always passed back to the functions that need it (e.g.
->     attach, map, ...).
-
-This is an artifact of the API being single-instance at the moment.
-We might not in fact need it, I was just trying to think of things
-that naturally fit in there and that are probably already linked
-together in the individual iommu drivers.
-
-> The only useful field I can think of is something like a tree of masters,
-> but then we have to define a generic wrapper around struct device, which
-> is at odds with the rest of the IOMMU API.
-
-Maybe a list of the groups instead? I don't think you should need
-a list of every single master here.
-
-> One alternative is having the xlate call populate device->archdata.iommu,
-> but that's arch-specific and is essentially another opaque pointer.
-
-I think every architecture that supports IOMMUs needs to have this
-archdata pointer though, so that is still a good place to put private
-stuff.
-
-	Arnd
+-Varun
