@@ -1,117 +1,63 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [RFC PATCH 4/7] iommu: provide helper function to configure an
-	IOMMU for an of master
-Date: Tue, 2 Sep 2014 15:03:14 +0000
-Message-ID: <b8484a1ea45846bbaa8512d4597b9e65@BL2PR03MB468.namprd03.prod.outlook.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [RFC PATCH 1/7] iommu: provide early initialisation hook for
+ IOMMU drivers
+Date: Tue, 02 Sep 2014 17:04:30 +0200
+Message-ID: <3346878.JiG6x1BkX4@wuerfel>
 References: <1409327670-3495-1-git-send-email-will.deacon@arm.com>
-	<4335091.FB685Z52eG@wuerfel> <20140902100342.GG25379@arm.com>
-	<3424322.yoZKhlAsy0@wuerfel>
+ <1409327670-3495-2-git-send-email-will.deacon@arm.com>
+ <04b313674bc14231a47570f91336c6e6@BL2PR03MB468.namprd03.prod.outlook.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <3424322.yoZKhlAsy0@wuerfel>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <04b313674bc14231a47570f91336c6e6@BL2PR03MB468.namprd03.prod.outlook.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Varun Sethi <Varun.Sethi@freescale.com>
+Cc: "jroedel@suse.de" <jroedel@suse.de>, Will Deacon <will.deacon@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "laurent.pinchart@ideasonboard.com" <laurent.pinchart@ideasonboard.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "hdoyu@nvidia.com" <hdoyu@nvidia.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Thierry/Will/Arnd,
-Where would the of_xlate callback reside and what would be its function? 
+On Tuesday 02 September 2014 14:47:54 Varun Sethi wrote:
+> > +void __init of_iommu_init(void)
+> > +{
+> > +     struct device_node *np;
+> > +     const struct of_device_id *match, *matches = &__iommu_of_table;
+> > +
+> > +     for_each_matching_node_and_match(np, matches, &match) {
+> > +             const int (*init_fn)(struct device_node *) = match->data;
+> 
+> Is the init function also responsible for setting iommu_ops (per bus)?
+> We need to take in to consideration that iommu API (iommu.c)
+> initialization happens during  "arch_init".
 
-Regards
-Varun
+I would hope that as part as one of the next steps, we can skip
+the step of setting the iommu_ops per bus_type. It's really
+not that meaningful when only some of the devices on one bus
+are able to use an iommu, and some may need other ops than others.
 
-> -----Original Message-----
-> From: Arnd Bergmann [mailto:arnd-r2nGTMty4D4@public.gmane.org]
-> Sent: Tuesday, September 02, 2014 5:45 PM
-> To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> Cc: Will Deacon; jroedel-l3A5Bk7waGM@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Thierry
-> Reding; laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org; Sethi Varun-B16395;
-> dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org; hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org
-> Subject: Re: [RFC PATCH 4/7] iommu: provide helper function to configure an
-> IOMMU for an of master
-> 
-> On Tuesday 02 September 2014 11:03:42 Will Deacon wrote:
-> > On Mon, Sep 01, 2014 at 09:18:26PM +0100, Arnd Bergmann wrote:
-> > > On Monday 01 September 2014 17:40:00 Will Deacon wrote:
-> > > > On Mon, Sep 01, 2014 at 03:46:18PM +0100, Arnd Bergmann wrote:
-> > > > > On Monday 01 September 2014 10:29:40 Thierry Reding wrote:
-> > > > > >
-> > > > > > I think this could use a bit more formalization. As I said in
-> > > > > > another reply earlier, there's very little standardization in the IOMMU
-> API.
-> > > > > > That certainly gives us a lot of flexibility but it also has
-> > > > > > the downside that it's difficult to handle these abstractions
-> > > > > > in the core, which is really what the core is all about, isn't it?
-> > > > > >
-> > > > > > One method that worked really well for this in the past for
-> > > > > > other subsystems is to allow drivers to specify an .of_xlate()
-> > > > > > function that takes the controller device and a struct
-> > > > > > of_phandle_args. It is that function's responsibility to take
-> > > > > > the information in an of_phandle_args structure and use that
-> > > > > > to create some subsystem specific handle that represents this
-> information in a way that it can readily be used.
-> > > > >
-> > > > > Yes, good idea.
-> > > >
-> > > > Hmm, how does this work for PCI devices? The current RFC takes
-> > > > care to ensure that the core changes work just as well for OF
-> > > > devices as PCI devices, and the of-specific functions and data
-> > > > structures are not part of it.
-> > >
-> > > I don't mind handling PCI devices separately. They are different in
-> > > a number of ways already, in particular the way that they don't
-> > > normally have an of_node attached to them but actually have a PCI
-> bus/dev/function number.
-> >
-> > Sure, but at the point when we call back into the iommu_ops structure
-> > we really don't want bus specific functions. That's why I avoided any
-> > OF data structures being passed to add_device_master_ids.
-> 
-> Well, we clearly need some format that the caller and the callee agree on. It
-> can't be a completely opaque pointer because it's something that has to be
-> filled out by someone who knows the format.
-> 
-> Using the DT format has the advantage that the caller does not have to know
-> anything about the underlying driver except for #size-cells, and it just passes
-> the data it gets from DT into the driver. This is how we do the association in a
-> lot of other subsystems.
-> 
-> > Anyway, I'll try to hack something together shortly. I think the
-> > proposal
-> > is:
-> >
-> >   - Make add_device_master_ids take a generic structure (struct iommu)
-> >   - Add an of_xlate callback into iommu_ops which returns a populated
-> >     struct iommu based on the of_node
-> 
-> We may have been talking past one another. What I meant with 'struct iommu'
-> is something that identifies the iommu instance, not the connection to a
-> particular master. What you describe here would work, but then I think the
-> structure should have a different name. However, it seems easier to not have
-> the add_device_master_ids at and just do the association in the xlate callback
-> instead.
-> 
-> We still need to figure out how to do it for PCI of course. One possibility would
-> be to add another argument to the xlate function and have that called by the
-> PCI device probing method with the iommus property of the PCI host controller
-> along with the a u64 number that is generated by the host bridge driver based
-> on the bus/device/function number of the device.
-> 
-> This means that the new callback function for the iommu API remains DT
-> specific, but is not really bus specific. It does however not solve the embedded
-> x86 use case, which may need some other callback.
-> 
-> We might be lucky there if we are able to just use the PCI b/d/f number as a
-> unique identifier and have a NULL argument for the respective iommus
-> property.
+> When we setup bus iommu
+> ops add_device would be called for devices which have already been
+> probed.
+
+As soon as you move to the generic way of probing the IOMMU for
+DT, you should not need an add_device callback any more.
+
+Each iommu driver should do one one or the other, but not both.
+
+> Also, as I can see from the code we have of_platform_populate
+> which gets called right after of_iommu_init, which would in turn also
+> lead to add_device invocation (after add_device_master_ids). 
+> I believe this would happen before iommu API initialization which
+> would cause issues. 
+
+of_iommu_init should be the point where the iommu API gets
+initialized.
+
+	Arnd
