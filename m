@@ -1,8 +1,8 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH v2 5/7] dma-mapping: detect and configure IOMMU in
-	of_dma_configure
-Date: Tue,  2 Sep 2014 18:56:25 +0100
-Message-ID: <1409680587-29818-6-git-send-email-will.deacon@arm.com>
+Subject: [RFC PATCH v2 1/7] iommu: provide early initialisation hook for IOMMU
+	drivers
+Date: Tue,  2 Sep 2014 18:56:21 +0100
+Message-ID: <1409680587-29818-2-git-send-email-will.deacon@arm.com>
 References: <1409680587-29818-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,121 +22,138 @@ To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cu
 Cc: jroedel-l3A5Bk7waGM@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch extends of_dma_configure so that it sets up the IOMMU for a
-device, as well as the coherent/non-coherent DMA mapping ops.
+IOMMU drivers must be initialised before any of their upstream devices,
+otherwise the relevant iommu_ops won't be configured for the bus in
+question. To solve this, a number of IOMMU drivers use initcalls to
+initialise the driver before anything has a chance to be probed.
+
+Whilst this solves the immediate problem, it leaves the job of probing
+the IOMMU completely separate from the iommu_ops to configure the IOMMU,
+which are called on a per-bus basis and require the driver to figure out
+exactly which instance of the IOMMU is being requested. In particular,
+the add_device callback simply passes a struct device to the driver,
+which then has to parse firmware tables or probe buses to identify the
+relevant IOMMU instance.
+
+This patch takes the first step in addressing this problem by adding an
+early initialisation pass for IOMMU drivers, giving them the ability to
+set some per-instance data on their of_node in the form of a new
+iommu_data structure. This can later be used when parsing OF masters to
+identify the IOMMU instance in question.
 
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- arch/arm/include/asm/dma-mapping.h |  5 ++++-
- drivers/of/platform.c              | 36 ++++++++++++++++++++++--------------
- include/linux/dma-mapping.h        |  5 ++++-
- 3 files changed, 30 insertions(+), 16 deletions(-)
+ drivers/iommu/of_iommu.c          | 14 ++++++++++++++
+ include/asm-generic/vmlinux.lds.h |  2 ++
+ include/linux/iommu.h             |  6 ++++++
+ include/linux/of_iommu.h          | 23 +++++++++++++++++++++++
+ 4 files changed, 45 insertions(+)
 
-diff --git a/arch/arm/include/asm/dma-mapping.h b/arch/arm/include/asm/dma-mapping.h
-index dad006dabbe6..788b8eef40e8 100644
---- a/arch/arm/include/asm/dma-mapping.h
-+++ b/arch/arm/include/asm/dma-mapping.h
-@@ -122,7 +122,10 @@ static inline unsigned long dma_max_pfn(struct device *dev)
- #define dma_max_pfn(dev) dma_max_pfn(dev)
- 
- static inline void arch_setup_dma_ops(struct device *dev, u64 mask,
--				      unsigned long offset, bool coherent)
-+				      u64 dma_base, u64 size,
-+				      unsigned long offset,
-+				      struct iommu_dma_mapping *iommu,
-+				      bool coherent)
- {
- 	dev->coherent_dma_mask	= mask;
- 	dev->dma_mask		= &dev->coherent_dma_mask;
-diff --git a/drivers/of/platform.c b/drivers/of/platform.c
-index 484c558c63a6..6067f6423674 100644
---- a/drivers/of/platform.c
-+++ b/drivers/of/platform.c
-@@ -19,6 +19,7 @@
- #include <linux/slab.h>
- #include <linux/of_address.h>
- #include <linux/of_device.h>
-+#include <linux/of_iommu.h>
- #include <linux/of_irq.h>
- #include <linux/of_platform.h>
- #include <linux/platform_device.h>
-@@ -162,25 +163,37 @@ EXPORT_SYMBOL(of_device_alloc);
-  */
- static void of_dma_configure(struct platform_device *pdev)
- {
--	u64 dma_addr, paddr, size;
-+	u64 dma_addr, paddr, size, mask;
- 	int ret;
- 	bool coherent;
- 	unsigned long offset;
-+	struct iommu_dma_mapping *iommu;
- 	struct device *dev = &pdev->dev;
- 
-+	/*
-+	 * Set default dma-mask to 32 bit. Drivers are expected to setup
-+	 * the correct supported dma_mask.
-+	 */
-+	mask = DMA_BIT_MASK(32);
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index e550ccb7634e..f9209666157c 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -89,3 +89,17 @@ int of_get_dma_window(struct device_node *dn, const char *prefix, int index,
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(of_get_dma_window);
 +
- 	ret = of_dma_get_range(dev->of_node, &dma_addr, &paddr, &size);
--	offset = ret < 0 ? 0 : PFN_DOWN(paddr - dma_addr);
--	dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", dev->dma_pfn_offset);
-+	if (ret < 0) {
-+		dma_addr = offset = 0;
-+		size = mask;
-+	} else {
-+		offset = PFN_DOWN(paddr - dma_addr);
-+		dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", dev->dma_pfn_offset);
++void __init of_iommu_init(void)
++{
++	struct device_node *np;
++	const struct of_device_id *match, *matches = &__iommu_of_table;
++
++	for_each_matching_node_and_match(np, matches, &match) {
++		const int (*init_fn)(struct device_node *) = match->data;
++
++		if (init_fn(np))
++			pr_err("Failed to initialise IOMMU %s\n",
++				of_node_full_name(np));
 +	}
++}
+diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
+index 5ba0360663a7..b75ede8f99ae 100644
+--- a/include/asm-generic/vmlinux.lds.h
++++ b/include/asm-generic/vmlinux.lds.h
+@@ -162,6 +162,7 @@
+ #define CLKSRC_OF_TABLES()	OF_TABLE(CONFIG_CLKSRC_OF, clksrc)
+ #define IRQCHIP_OF_MATCH_TABLE() OF_TABLE(CONFIG_IRQCHIP, irqchip)
+ #define CLK_OF_TABLES()		OF_TABLE(CONFIG_COMMON_CLK, clk)
++#define IOMMU_OF_TABLES()	OF_TABLE(CONFIG_OF_IOMMU, iommu)
+ #define RESERVEDMEM_OF_TABLES()	OF_TABLE(CONFIG_OF_RESERVED_MEM, reservedmem)
+ #define CPU_METHOD_OF_TABLES()	OF_TABLE(CONFIG_SMP, cpu_method)
+ #define EARLYCON_OF_TABLES()	OF_TABLE(CONFIG_SERIAL_EARLYCON, earlycon)
+@@ -495,6 +496,7 @@
+ 	CLK_OF_TABLES()							\
+ 	RESERVEDMEM_OF_TABLES()						\
+ 	CLKSRC_OF_TABLES()						\
++	IOMMU_OF_TABLES()						\
+ 	CPU_METHOD_OF_TABLES()						\
+ 	KERNEL_DTB()							\
+ 	IRQCHIP_OF_MATCH_TABLE()					\
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 20f9a527922a..fdddb14cd8f5 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -57,6 +57,12 @@ struct iommu_domain {
+ 	struct iommu_domain_geometry geometry;
+ };
  
- 	coherent = of_dma_is_coherent(dev->of_node);
- 	dev_dbg(dev, "device is%sdma coherent\n",
- 		coherent ? " " : " not ");
- 
--	/*
--	 * Set default dma-mask to 32 bit. Drivers are expected to setup
--	 * the correct supported dma_mask.
--	 */
--	arch_setup_dma_ops(dev, DMA_BIT_MASK(32), offset, coherent);
-+	iommu = of_iommu_configure(dev);
-+	dev_dbg(dev, "device is%sbehind an iommu\n",
-+		iommu ? " " : " not ");
++struct iommu_data {
++	struct iommu_domain *domain;
++	struct iova_domain *iovad;
++	void *priv;
++};
 +
-+	arch_setup_dma_ops(dev, mask, dma_addr, size, offset, iommu, coherent);
+ #define IOMMU_CAP_CACHE_COHERENCY	0x1
+ #define IOMMU_CAP_INTR_REMAP		0x2	/* isolates device intrs */
+ 
+diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
+index 51a560f34bca..a39e2d78f735 100644
+--- a/include/linux/of_iommu.h
++++ b/include/linux/of_iommu.h
+@@ -1,12 +1,17 @@
+ #ifndef __OF_IOMMU_H
+ #define __OF_IOMMU_H
+ 
++#include <linux/iommu.h>
++#include <linux/of.h>
++
+ #ifdef CONFIG_OF_IOMMU
+ 
+ extern int of_get_dma_window(struct device_node *dn, const char *prefix,
+ 			     int index, unsigned long *busno, dma_addr_t *addr,
+ 			     size_t *size);
+ 
++extern void of_iommu_init(void);
++
+ #else
+ 
+ static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
+@@ -16,6 +21,24 @@ static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
+ 	return -EINVAL;
  }
  
- /**
-@@ -209,14 +222,9 @@ static struct platform_device *of_platform_device_create_pdata(
- 	if (!dev)
- 		goto err_clear_flag;
++static inline void of_iommu_init(void) { }
++
+ #endif	/* CONFIG_OF_IOMMU */
  
--	of_dma_configure(dev);
- 	dev->dev.bus = &platform_bus_type;
- 	dev->dev.platform_data = platform_data;
--
--	/* We do not fill the DMA ops for platform devices by default.
--	 * This is currently the responsibility of the platform code
--	 * to do such, possibly using a device notifier
--	 */
-+	of_dma_configure(dev);
- 
- 	if (of_device_add(dev) != 0) {
- 		platform_device_put(dev);
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index 16bf92f71c3e..19a31f55a5d0 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -138,7 +138,10 @@ extern u64 dma_get_required_mask(struct device *dev);
- 
- #ifndef arch_setup_dma_ops
- static inline void arch_setup_dma_ops(struct device *dev, u64 mask,
--				      unsigned long offset, bool coherent) { }
-+				      u64 dma_base, u64 size,
-+				      unsigned long offset,
-+				      struct iommu_dma_mapping *iommu,
-+				      bool coherent) { }
- #endif
- 
- static inline unsigned int dma_get_max_seg_size(struct device *dev)
++static inline void of_iommu_set_data(struct device_node *np,
++				     struct iommu_data *data)
++{
++	np->data = data;
++}
++
++static inline struct iommu_data *of_iommu_get_data(struct device_node *np)
++{
++	return np->data;
++}
++
++extern struct of_device_id __iommu_of_table;
++
++#define IOMMU_OF_DECLARE(name, compat, fn) \
++	OF_DECLARE_1(iommu, name, compat, fn)
++
+ #endif /* __OF_IOMMU_H */
 -- 
 2.1.0
