@@ -1,14 +1,17 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v3 2/3] vfio/iommu_type1: add new VFIO_TYPE1_NESTING_IOMMU
-	IOMMU type
-Date: Tue,  2 Sep 2014 10:53:38 +0100
-Message-ID: <1409651619-27342-3-git-send-email-will.deacon@arm.com>
-References: <1409651619-27342-1-git-send-email-will.deacon@arm.com>
+Subject: Re: [RFC PATCH 4/7] iommu: provide helper function to configure an
+	IOMMU for an of master
+Date: Tue, 2 Sep 2014 11:03:42 +0100
+Message-ID: <20140902100342.GG25379@arm.com>
+References: <1409327670-3495-1-git-send-email-will.deacon@arm.com>
+	<3729116.F0gWrQGFZl@wuerfel> <20140901164000.GM24594@arm.com>
+	<4335091.FB685Z52eG@wuerfel>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1409651619-27342-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <4335091.FB685Z52eG@wuerfel>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,215 +21,50 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-VFIO allows devices to be safely handed off to userspace by putting
-them behind an IOMMU configured to ensure DMA and interrupt isolation.
-This enables userspace KVM clients, such as kvmtool and qemu, to further
-map the device into a virtual machine.
+On Mon, Sep 01, 2014 at 09:18:26PM +0100, Arnd Bergmann wrote:
+> On Monday 01 September 2014 17:40:00 Will Deacon wrote:
+> > On Mon, Sep 01, 2014 at 03:46:18PM +0100, Arnd Bergmann wrote:
+> > > On Monday 01 September 2014 10:29:40 Thierry Reding wrote:
+> > > > 
+> > > > I think this could use a bit more formalization. As I said in another
+> > > > reply earlier, there's very little standardization in the IOMMU API.
+> > > > That certainly gives us a lot of flexibility but it also has the
+> > > > downside that it's difficult to handle these abstractions in the core,
+> > > > which is really what the core is all about, isn't it?
+> > > > 
+> > > > One method that worked really well for this in the past for other
+> > > > subsystems is to allow drivers to specify an .of_xlate() function that
+> > > > takes the controller device and a struct of_phandle_args. It is that
+> > > > function's responsibility to take the information in an of_phandle_args
+> > > > structure and use that to create some subsystem specific handle that
+> > > > represents this information in a way that it can readily be used.
+> > > 
+> > > Yes, good idea.
+> > 
+> > Hmm, how does this work for PCI devices? The current RFC takes care to
+> > ensure that the core changes work just as well for OF devices as PCI
+> > devices, and the of-specific functions and data structures are not part of
+> > it.
+> 
+> I don't mind handling PCI devices separately. They are different in a number
+> of ways already, in particular the way that they don't normally have an
+> of_node attached to them but actually have a PCI bus/dev/function number.
 
-With IOMMUs such as the ARM SMMU, it is then possible to provide SMMU
-translation services to the guest operating system, which are nested
-with the existing translation installed by VFIO. However, enabling this
-feature means that the IOMMU driver must be informed that the VFIO domain
-is being created for the purposes of nested translation.
+Sure, but at the point when we call back into the iommu_ops structure we
+really don't want bus specific functions. That's why I avoided any OF
+data structures being passed to add_device_master_ids.
 
-This patch adds a new IOMMU type (VFIO_TYPE1_NESTING_IOMMU) to the VFIO
-type-1 driver. The new IOMMU type acts identically to the
-VFIO_TYPE1v2_IOMMU type, but additionally sets the DOMAIN_ATTR_NESTING
-attribute on its IOMMU domains. Userspace can check whether nesting is
-actually available using the VFIO_CHECK_EXTENSION ioctl, in a similar
-manner to checking for cache-coherent DMA.
+Anyway, I'll try to hack something together shortly. I think the proposal
+is:
 
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
----
- drivers/vfio/vfio_iommu_type1.c | 87 +++++++++++++++++++++++++++++++++++++----
- include/uapi/linux/vfio.h       |  2 +
- 2 files changed, 82 insertions(+), 7 deletions(-)
+  - Make add_device_master_ids take a generic structure (struct iommu)
+  - Add an of_xlate callback into iommu_ops which returns a populated
+    struct iommu based on the of_node
 
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 0734fbe5b651..50aa56c7b6a7 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -53,11 +53,15 @@ module_param_named(disable_hugepages,
- MODULE_PARM_DESC(disable_hugepages,
- 		 "Disable VFIO IOMMU support for IOMMU hugepages.");
- 
-+/* Feature flags for VFIO Type-1 IOMMUs */
-+#define VFIO_IOMMU_FEAT_V2	(1 << 0)
-+#define VFIO_IOMMU_FEAT_NESTING	(1 << 1)
-+
- struct vfio_iommu {
- 	struct list_head	domain_list;
- 	struct mutex		lock;
- 	struct rb_root		dma_list;
--	bool v2;
-+	int			features;
- };
- 
- struct vfio_domain {
-@@ -441,7 +445,7 @@ static int vfio_dma_do_unmap(struct vfio_iommu *iommu,
- 	 * will only return success and a size of zero if there were no
- 	 * mappings within the range.
- 	 */
--	if (iommu->v2) {
-+	if (iommu->features & VFIO_IOMMU_FEAT_V2) {
- 		dma = vfio_find_dma(iommu, unmap->iova, 0);
- 		if (dma && dma->iova != unmap->iova) {
- 			ret = -EINVAL;
-@@ -455,7 +459,8 @@ static int vfio_dma_do_unmap(struct vfio_iommu *iommu,
- 	}
- 
- 	while ((dma = vfio_find_dma(iommu, unmap->iova, unmap->size))) {
--		if (!iommu->v2 && unmap->iova > dma->iova)
-+		if (!(iommu->features & VFIO_IOMMU_FEAT_V2) &&
-+		    unmap->iova > dma->iova)
- 			break;
- 		unmapped += dma->size;
- 		vfio_remove_dma(iommu, dma);
-@@ -671,7 +676,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	struct vfio_group *group, *g;
- 	struct vfio_domain *domain, *d;
- 	struct bus_type *bus = NULL;
--	int ret;
-+	int ret, attr = 1;
- 
- 	mutex_lock(&iommu->lock);
- 
-@@ -705,6 +710,9 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 		goto out_free;
- 	}
- 
-+	if (iommu->features & VFIO_IOMMU_FEAT_NESTING)
-+		iommu_domain_set_attr(domain->domain, DOMAIN_ATTR_NESTING, &attr);
-+
- 	ret = iommu_attach_group(domain->domain, iommu_group);
- 	if (ret)
- 		goto out_domain;
-@@ -815,12 +823,50 @@ done:
- 	mutex_unlock(&iommu->lock);
- }
- 
-+static int vfio_iommus_have_nesting(void)
-+{
-+	static struct bus_type *bus_types[] = { &pci_bus_type };
-+	int i, ret = 0;
-+
-+	for (i = 0; !ret && i < ARRAY_SIZE(bus_types); ++i) {
-+		struct iommu_domain *domain;
-+		struct bus_type *bus = bus_types[i];
-+		int attr = 1;
-+
-+		if (!iommu_present(bus))
-+			continue;
-+
-+		domain = iommu_domain_alloc(bus);
-+		if (!domain)
-+			continue;
-+
-+		if (!iommu_domain_set_attr(domain, DOMAIN_ATTR_NESTING, &attr))
-+			ret = 1;
-+
-+		iommu_domain_free(domain);
-+	}
-+
-+	return ret;
-+}
-+
- static void *vfio_iommu_type1_open(unsigned long arg)
- {
- 	struct vfio_iommu *iommu;
--
--	if (arg != VFIO_TYPE1_IOMMU && arg != VFIO_TYPE1v2_IOMMU)
-+	int features = 0;
-+
-+	switch (arg) {
-+	case VFIO_TYPE1_IOMMU:
-+		break;
-+	case VFIO_TYPE1_NESTING_IOMMU:
-+		if (!vfio_iommus_have_nesting())
-+			return ERR_PTR(-EOPNOTSUPP);
-+		features |= VFIO_IOMMU_FEAT_NESTING;
-+	case VFIO_TYPE1v2_IOMMU:
-+		features |= VFIO_IOMMU_FEAT_V2;
-+		break;
-+	default:
- 		return ERR_PTR(-EINVAL);
-+	}
- 
- 	iommu = kzalloc(sizeof(*iommu), GFP_KERNEL);
- 	if (!iommu)
-@@ -829,7 +875,7 @@ static void *vfio_iommu_type1_open(unsigned long arg)
- 	INIT_LIST_HEAD(&iommu->domain_list);
- 	iommu->dma_list = RB_ROOT;
- 	mutex_init(&iommu->lock);
--	iommu->v2 = (arg == VFIO_TYPE1v2_IOMMU);
-+	iommu->features = features;
- 
- 	return iommu;
- }
-@@ -875,6 +921,29 @@ static int vfio_domains_have_iommu_cache(struct vfio_iommu *iommu)
- 	return ret;
- }
- 
-+static int vfio_domains_have_iommu_nesting(struct vfio_iommu *iommu)
-+{
-+	struct vfio_domain *domain;
-+	int ret = 1;
-+
-+	if (!(iommu->features & VFIO_IOMMU_FEAT_NESTING))
-+		return 0;
-+
-+	mutex_lock(&iommu->lock);
-+	list_for_each_entry(domain, &iommu->domain_list, next) {
-+		int attr;
-+
-+		if (iommu_domain_get_attr(domain->domain, DOMAIN_ATTR_NESTING,
-+					   &attr) || !attr) {
-+			ret = 0;
-+			break;
-+		}
-+	}
-+	mutex_unlock(&iommu->lock);
-+
-+	return ret;
-+}
-+
- static long vfio_iommu_type1_ioctl(void *iommu_data,
- 				   unsigned int cmd, unsigned long arg)
- {
-@@ -886,6 +955,10 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
- 		case VFIO_TYPE1_IOMMU:
- 		case VFIO_TYPE1v2_IOMMU:
- 			return 1;
-+		case VFIO_TYPE1_NESTING_IOMMU:
-+			if (!iommu)
-+				return vfio_iommus_have_nesting();
-+			return vfio_domains_have_iommu_nesting(iommu);
- 		case VFIO_DMA_CC_IOMMU:
- 			if (!iommu)
- 				return 0;
-diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-index 6612974c64bf..ac79f6214fd6 100644
---- a/include/uapi/linux/vfio.h
-+++ b/include/uapi/linux/vfio.h
-@@ -24,11 +24,13 @@
- #define VFIO_TYPE1_IOMMU		1
- #define VFIO_SPAPR_TCE_IOMMU		2
- #define VFIO_TYPE1v2_IOMMU		3
-+
- /*
-  * IOMMU enforces DMA cache coherence (ex. PCIe NoSnoop stripping).  This
-  * capability is subject to change as groups are added or removed.
-  */
- #define VFIO_DMA_CC_IOMMU		4
-+#define VFIO_TYPE1_NESTING_IOMMU	5	/* Implies v2 */
- 
- /* Check if EEH is supported */
- #define VFIO_EEH			5
--- 
-2.1.0
+Sound about right?
+
+Will
