@@ -1,16 +1,16 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [RFC PATCH 4/7] iommu: provide helper function to configure an
-	IOMMU for an of master
-Date: Tue, 02 Sep 2014 17:08:29 +0200
-Message-ID: <2801290.H6TrhuIyTE@wuerfel>
-References: <1409327670-3495-1-git-send-email-will.deacon@arm.com>
-	<3424322.yoZKhlAsy0@wuerfel>
-	<b8484a1ea45846bbaa8512d4597b9e65@BL2PR03MB468.namprd03.prod.outlook.com>
+From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Subject: Re: [RFC PATCH v6 15/20] vfio/platform: support for maskable and
+	automasked interrupts
+Date: Tue, 2 Sep 2014 18:06:17 +0200
+Message-ID: <CAG8rG2z02JPE+D-Bo1puuMPCR=wETciLaBgKT+i1XKQ55U-kYg@mail.gmail.com>
+References: <1401987808-23596-1-git-send-email-a.motakis@virtualopensystems.com>
+	<1401987808-23596-16-git-send-email-a.motakis@virtualopensystems.com>
+	<20140608101703.GB3279@lvm>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <b8484a1ea45846bbaa8512d4597b9e65-AZ66ij2kwaacCcN9WK45f+O6mTEJWrR4XA4E9RH9d+qIuWR1G4zioA@public.gmane.org>
+In-Reply-To: <20140608101703.GB3279@lvm>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,21 +20,231 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, KVM devel mailing list <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, alvise rigo <a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tuesday 02 September 2014 15:03:14 Varun Sethi wrote:
-> Hi Thierry/Will/Arnd,
-> Where would the of_xlate callback reside and what would be its function? 
-> 
+On Sun, Jun 8, 2014 at 12:17 PM, Christoffer Dall
+<christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
+> On Thu, Jun 05, 2014 at 07:03:23PM +0200, Antonios Motakis wrote:
+>> Adds support to mask interrupts, and also for automasked interrupts.
+>> Level sensitive interrupts are exposed as automasked interrupts and
+>> are masked and disabled automatically when they fire.
+>>
+>> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+>> ---
+>>  drivers/vfio/platform/vfio_platform_irq.c     | 112 ++++++++++++++++++++++++--
+>>  drivers/vfio/platform/vfio_platform_private.h |   2 +
+>>  2 files changed, 109 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/vfio/platform/vfio_platform_irq.c b/drivers/vfio/platform/vfio_platform_irq.c
+>> index d79f5af..10dfbf0 100644
+>> --- a/drivers/vfio/platform/vfio_platform_irq.c
+>> +++ b/drivers/vfio/platform/vfio_platform_irq.c
+>> @@ -51,9 +51,17 @@ int vfio_platform_irq_init(struct vfio_platform_device *vdev)
+>>               if (hwirq < 0)
+>>                       goto err;
+>>
+>> -             vdev->irq[i].flags = VFIO_IRQ_INFO_EVENTFD;
+>> +             spin_lock_init(&vdev->irq[i].lock);
+>> +
+>> +             vdev->irq[i].flags = VFIO_IRQ_INFO_EVENTFD
+>> +                                     | VFIO_IRQ_INFO_MASKABLE;
+>> +
+>> +             if (irq_get_trigger_type(hwirq) & IRQ_TYPE_LEVEL_MASK)
+>> +                     vdev->irq[i].flags |= VFIO_IRQ_INFO_AUTOMASKED;
+>
+> This seems to rely on the fact that you had actually loaded a driver for
+> your device to set the right type.  Is this assumption always correct?
+>
+> It seems to me that this configuration bit should now be up to your user
+> space drive who is the best candidate to know details about your device
+> at this point?
+>
 
-It is an additional function pointer in iommu_ops and replaces the
-add_device callback for IOMMUs that are DT-enabled.
+Hm, I see this type being set usually either in a device tree source,
+or in the support code for a specific platform. Are there any
+situations where this is actually set by the driver? If I understand
+right this is not the case for the PL330, but if it is possible that
+it is the case for another device then I need to rethink this. Though
+as far as I understand this should not be the case.
 
-The idea is that we can have a single function that sets up DMA
-for the device properly, including iommus when they are configured,
-and it lets us pass the necessary parameters describing the setup
-of the master device into the iommu driver.
+>> +
+>>               vdev->irq[i].count = 1;
+>>               vdev->irq[i].hwirq = hwirq;
+>> +             vdev->irq[i].masked = false;
+>>       }
+>>
+>>       vdev->num_irqs = cnt;
+>> @@ -77,11 +85,27 @@ void vfio_platform_irq_cleanup(struct vfio_platform_device *vdev)
+>>
+>>  static irqreturn_t vfio_irq_handler(int irq, void *dev_id)
+>>  {
+>> -     struct eventfd_ctx *trigger = dev_id;
+>> +     struct vfio_platform_irq *irq_ctx = dev_id;
+>> +     unsigned long flags;
+>> +     int ret = IRQ_NONE;
+>> +
+>> +     spin_lock_irqsave(&irq_ctx->lock, flags);
+>> +
+>> +     if (!irq_ctx->masked) {
+>> +             ret = IRQ_HANDLED;
+>> +
+>> +             if (irq_ctx->flags & VFIO_IRQ_INFO_AUTOMASKED) {
+>> +                     disable_irq_nosync(irq_ctx->hwirq);
+>> +                     irq_ctx->masked = true;
+>> +             }
+>> +     }
+>>
+>> -     eventfd_signal(trigger, 1);
+>> +     spin_unlock_irqrestore(&irq_ctx->lock, flags);
+>>
+>> -     return IRQ_HANDLED;
+>> +     if (ret == IRQ_HANDLED)
+>> +             eventfd_signal(irq_ctx->trigger, 1);
+>> +
+>> +     return ret;
+>>  }
+>>
+>>  static int vfio_set_trigger(struct vfio_platform_device *vdev,
+>> @@ -162,6 +186,82 @@ static int vfio_platform_set_irq_trigger(struct vfio_platform_device *vdev,
+>>       return -EFAULT;
+>>  }
+>>
+>> +static int vfio_platform_set_irq_unmask(struct vfio_platform_device *vdev,
+>> +                                 unsigned index, unsigned start,
+>> +                                 unsigned count, uint32_t flags, void *data)
+>> +{
+>> +     uint8_t arr;
+>
+>
+> arr?
 
-	Arnd
+arr for array! As in, the VFIO API allows an array of IRQs. However
+for platform devices we don't use this, each IRQ is exposed
+independently as an array of 1 IRQ.
+
+>
+>> +
+>> +     if (start != 0 || count != 1)
+>> +             return -EINVAL;
+>> +
+>> +     switch (flags & VFIO_IRQ_SET_DATA_TYPE_MASK) {
+>> +     case VFIO_IRQ_SET_DATA_BOOL:
+>> +             if (copy_from_user(&arr, data, sizeof(uint8_t)))
+>> +                     return -EFAULT;
+>> +
+>> +             if (arr != 0x1)
+>> +                     return -EINVAL;
+>
+> why the fallthrough, what's this about?
+
+The VFIO API allows to unmask/mask an array of IRQs, however with
+platform devices we only have arrays of 1 IRQ (so not really arrays).
+
+So if the user uses VFIO_IRQ_SET_DATA_BOOL, we need to check that arr
+== 0x1. When that is the case, a fallthrough to the same code for
+VFIO_IRQ_SET_DATA_NONE is safe.
+
+If that is not readable enough, then I can add a comment or duplicate
+the code that does the unmasking. I realize that if you don't know the
+VFIO API well, then this can look confusing.
+
+>
+>> +
+>> +     case VFIO_IRQ_SET_DATA_NONE:
+>> +
+>> +             spin_lock_irq(&vdev->irq[index].lock);
+>> +
+>> +             if (vdev->irq[index].masked) {
+>> +                     enable_irq(vdev->irq[index].hwirq);
+>> +                     vdev->irq[index].masked = false;
+>> +             }
+>> +
+>> +             spin_unlock_irq(&vdev->irq[index].lock);
+>> +
+>> +             return 0;
+>> +
+>> +     case VFIO_IRQ_SET_DATA_EVENTFD: /* XXX not implemented yet */
+>> +     default:
+>> +             return -ENOTTY;
+>> +     }
+>> +
+>> +     return 0;
+>> +}
+>> +
+>> +static int vfio_platform_set_irq_mask(struct vfio_platform_device *vdev,
+>> +                                 unsigned index, unsigned start,
+>> +                                 unsigned count, uint32_t flags, void *data)
+>> +{
+>> +     uint8_t arr;
+>> +
+>> +     if (start != 0 || count != 1)
+>> +             return -EINVAL;
+>> +
+>> +     switch (flags & VFIO_IRQ_SET_DATA_TYPE_MASK) {
+>> +     case VFIO_IRQ_SET_DATA_BOOL:
+>> +             if (copy_from_user(&arr, data, sizeof(uint8_t)))
+>> +                     return -EFAULT;
+>> +
+>> +             if (arr != 0x1)
+>> +                     return -EINVAL;
+>> +
+>> +     case VFIO_IRQ_SET_DATA_NONE:
+>> +
+>> +             spin_lock_irq(&vdev->irq[index].lock);
+>> +
+>> +             if (!vdev->irq[index].masked) {
+>> +                     disable_irq(vdev->irq[index].hwirq);
+>> +                     vdev->irq[index].masked = true;
+>> +             }
+>> +
+>> +             spin_unlock_irq(&vdev->irq[index].lock);
+>> +
+>> +             return 0;
+>> +
+>> +     case VFIO_IRQ_SET_DATA_EVENTFD: /* XXX not implemented yet */
+>> +     default:
+>> +             return -ENOTTY;
+>> +     }
+>> +
+>> +     return 0;
+>> +}
+>> +
+>>  int vfio_platform_set_irqs_ioctl(struct vfio_platform_device *vdev,
+>>                                uint32_t flags, unsigned index, unsigned start,
+>>                                unsigned count, void *data)
+>> @@ -172,8 +272,10 @@ int vfio_platform_set_irqs_ioctl(struct vfio_platform_device *vdev,
+>>
+>>       switch (flags & VFIO_IRQ_SET_ACTION_TYPE_MASK) {
+>>       case VFIO_IRQ_SET_ACTION_MASK:
+>> +             func = vfio_platform_set_irq_mask;
+>> +             break;
+>>       case VFIO_IRQ_SET_ACTION_UNMASK:
+>> -             /* XXX not implemented */
+>> +             func = vfio_platform_set_irq_unmask;
+>>               break;
+>>       case VFIO_IRQ_SET_ACTION_TRIGGER:
+>>               func = vfio_platform_set_irq_trigger;
+>> diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
+>> index d6200df..4d887fd 100644
+>> --- a/drivers/vfio/platform/vfio_platform_private.h
+>> +++ b/drivers/vfio/platform/vfio_platform_private.h
+>> @@ -30,6 +30,8 @@ struct vfio_platform_irq {
+>>       u32                     count;
+>>       int                     hwirq;
+>>       char                    *name;
+>> +     bool                    masked;
+>> +     spinlock_t              lock;
+>>  };
+>>
+>>  struct vfio_platform_region {
+>> --
+>> 1.8.3.2
+>>
+
+
+
+-- 
+Antonios Motakis
+Virtual Open Systems
