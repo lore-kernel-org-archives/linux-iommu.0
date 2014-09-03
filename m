@@ -1,14 +1,12 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v3 0/3] Support for nesting IOMMUs in VFIO
-Date: Wed, 3 Sep 2014 17:22:42 +0200
-Message-ID: <20140903152241.GK28786@8bytes.org>
-References: <1409651619-27342-1-git-send-email-will.deacon@arm.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: [GIT PULL] iommu/arm-smmu: fixes for 3.17
+Date: Wed, 3 Sep 2014 16:48:22 +0100
+Message-ID: <20140903154822.GG32378@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1409651619-27342-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,32 +16,56 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+Hi Joerg,
 
-On Tue, Sep 02, 2014 at 10:53:36AM +0100, Will Deacon wrote:
-> This is version three of the patches I originally posted here:
-> 
->   RFCv1: http://permalink.gmane.org/gmane.linux.kernel.iommu/5552
->   RFCv2: http://permalink.gmane.org/gmane.linux.kernel.iommu/5700
-> 
-> Changes since RFCv2 include:
-> 
->   - Dropped the RFC tag
->   - Rebased onto 3.17-rc*
->   - Iterate the support bus_types (currently just PCI) and check that
->     nesting is actually supported
-> 
-> The corresponding arm-smmu changes are included to show how the new
-> domain attribute can be used.
+Please can you pull the following arm-smmu fixes for 3.17? They address
+a variety of issues found by running the driver on more hardware and
+also by the vSMMU work I've been doing.
 
-How is this implemented in the SMMU, can there be only one stage2
-mapping, so that a device can be passed through to a KVM guest or can
-there be multiple stage2 mappings in parallel (like with PRI/PASID on
-PCI) to support multiple translation contexts on one device?
+The only change from the series I posted to the list [1] is that I've
+re-ordered the patches to put the stable candidates first.
 
+Cheers,
 
-	Joerg
+Will
+
+[1] http://lists.linuxfoundation.org/pipermail/iommu/2014-August/009644.html
+
+--->8
+
+The following changes since commit 69e273c0b0a3c337a521d083374c918dc52c666f:
+
+  Linux 3.17-rc3 (2014-08-31 18:23:04 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/fixes
+
+for you to fetch changes up to 4d09d99d543ec28b2280a1f62382697f47ea6366:
+
+  iommu/arm-smmu: fix corner cases in address size calculations (2014-09-02 10:04:43 +0100)
+
+----------------------------------------------------------------
+Hans Wennborg (1):
+      iommu/arm-smmu: fix decimal printf format specifiers prefixed with 0x
+
+Mitchel Humpherys (1):
+      iommu/arm-smmu: avoid calling request_irq in atomic context
+
+Olav Haugan (2):
+      iommu/arm-smmu: fix programming of SMMU_CBn_TCR for stage 1
+      iommu/arm-smmu: Do not access non-existing S2CR registers
+
+Vladimir Murzin (1):
+      iommu/arm-smmu: remove pgtable_page_{c,d}tor()
+
+Will Deacon (2):
+      iommu/arm-smmu: fix s2cr and smr teardown on device detach from domain
+      iommu/arm-smmu: fix corner cases in address size calculations
+
+ drivers/iommu/arm-smmu.c | 127 +++++++++++++++++++++++++++--------------------
+ 1 file changed, 73 insertions(+), 54 deletions(-)
