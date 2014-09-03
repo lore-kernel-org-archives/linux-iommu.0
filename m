@@ -1,38 +1,35 @@
-From: Husam Al Sayed <oscar55@post.sk>
-Subject: FROM: Husam Al Sayed.
-Date: Wed, 3 Sep 2014 20:33:27 +0200 (CEST)
-Message-ID: <763652858.347158.1409769207864.JavaMail.root@mbox05>
-Reply-To: "alsayedhusa@hotmail.com" <alsayedhusa@hotmail.com>
+From: Suman Anna <s-anna@ti.com>
+Subject: [PATCH 0/2] OMAP IOMMU Fixes for DT-clients
+Date: Wed, 3 Sep 2014 18:58:30 -0500
+Message-ID: <1409788712-10741-1-git-send-email-s-anna@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-gpio-owner@vger.kernel.org>
-Sender: linux-gpio-owner@vger.kernel.org
-Cc: mbroemme@plusserver.de, sujith.thomas@intel.com, tigran@aivazian.fsnet.co.uk, dave.jiang@intel.com, dmaengine@vger.kernel.org, dan.j.williams@intel.com, khc@pm.waw.pl, jeffrey.t.kirsher@intel.com, jesse.brandeburg@intel.com, bruce.w.allan@intel.com, carolyn.wyborny@intel.com, donald.c.skidmore@intel.com, gregory.v.rose@intel.com, alexander.h.duyck@intel.com, john.ronciak@intel.com, e1000-devel@lists.sourceforge.net, david.a.cohen@linux.intel.com, linux-gpio@vger.kernel.org, stas.yakovlev@gmail.com, richard.l.maliszewski@intel.com, gang.wei@intel.com, shane.wang@intel.com, tboot-devel@lists.sourceforge.net, sgruszka@redhat.com, johannes.berg@intel.com, emmanuel.grumbach@intel.com, ilw@linux.intel.com, tomas.winkler@intel.com, iommu@lists.linux-foundation.org, jjciarla@raiz.uncu.edu.ar
+Content-Type: text/plain
+Return-path: <linux-omap-owner@vger.kernel.org>
+Sender: linux-omap-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Florian Vaussard <florian.vaussard@epfl.ch>, iommu@lists.linux-foundation.org, linux-omap@vger.kernel.org, Suman Anna <s-anna@ti.com>
 List-Id: iommu@lists.linux-foundation.org
 
-FROM: Husam Al Sayed.
+Hi,
 
-EMAIL:alsayedhusa@hotmail.com
- 
-Hello,
- 
-I decided to write you this proposal in good faith, believing that you will
-not betray me. I am Mr. Husam Al Sayed, a Bank officer here in U.A.E.
- 
-One Mr. Peter Adams, a citizen of your country and Crude Oil dealer made a fixed deposit with my bank in 2005 for 108 calendar months, valued at US$30,000,000.00 (Thirty Million United State Dollars) the due date for this deposit contract was last 22nd of January 2014. Sadly Peter was among the death victims in the May 27 2006 Earthquake disaster in Java, Indonesia that killed over 5,000 people. He was in Indonesia on a business trip and that was how he met his untimely end. My bank management is yet to know about his death, I knew about it because he was my friend and I am his Account Officer. Peter did not mention any Next of Kin/ Heir when the account was opened, he was not married and no children. Last week my Bank Management requested that Peter should give instructions on what to do 
- about his funds, if to renew the contract.
- 
-I know this will happen and that is why I have been looking for a means to handle the situation, because if my Bank Directors happens to know that Peter is dead and do not have any Heir, they will take the funds for their personal use, so I don't want such to happen. That is why I am seeking your co-operation to present you as the Next of Kin/ Heir to the account, since you are a foreigner and my bank head quarters will release the account to you. There is no risk involved; the transaction will be executed under a legitimate arrangement that will protect us from any breach of law. It is better that we claim the money, than allowing the Bank Directors to take it, they are rich already. I am not a greedy person, so I am suggesting we share the funds in this ratio, 50/50%, equal sharing. Let 
- me know your mind on this and please do treat this information highly confidential. We shall go over the details once I receive your urgent response. Please Urgently get back to me through this email address as soon as possible:
- 
- 
- 
-Have a nice day and God bless. Anticipating your communication.
- 
-Regards,
-FROM: Husam Al Sayed.
-EMAIL: alsayedhusa@hotmail.com
-_____________________________________________________________________
+Following are couple of minor fixes to the OMAP IOMMU driver for DT-based
+client devices. The first patch adds an additional check to detect invalid
+usage of IOMMU API for devices with no IOMMUs, and the second patch fixes
+the failure to attach to an OMAP IOMMU for properly configured DT devices.
+The kernel does not yet have any OMAP IOMMU users represented in DT, so
+this failure is not currently seen, but will be seen when users like OMAP3
+ISP or OMAP4 remoteprocs are converted to DT.
 
-Presny televizny program najdete na http://www.ahaho.sk
+regards
+Suman
+
+Suman Anna (2):
+  iommu/omap: Check for valid archdata in attach_dev
+  iommu/omap: Fix iommu archdata name for DT-based devices
+
+ drivers/iommu/omap-iommu.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
+
+-- 
+2.0.4
+
