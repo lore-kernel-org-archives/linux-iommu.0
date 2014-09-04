@@ -1,97 +1,126 @@
-From: Varun Sethi <Varun.Sethi@freescale.com>
-Subject: [PATCH] iommu/fsl: Fix warning resulting from adding PCI device twice
-Date: Thu, 4 Sep 2014 11:33:42 +0530
-Message-ID: <1409810622-742-1-git-send-email-Varun.Sethi@freescale.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [RFC PATCH v2 4/7] iommu: provide helper function to configure
+ an IOMMU for an of master
+Date: Thu, 4 Sep 2014 12:26:25 +0100
+Message-ID: <20140904112625.GE7156@arm.com>
+References: <1409680587-29818-1-git-send-email-will.deacon@arm.com>
+ <1409680587-29818-5-git-send-email-will.deacon@arm.com>
+ <5768908.PeRFksrdyQ@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: joro@8bytes.org, iommu@lists.linux-foundation.org, alex.williamson@redhat.com, Emilian.Medve@freescale.com, linuxppc-dev@ozlabs.org, linux-kernel@vger.kernel.org
-Cc: Varun Sethi <Varun.Sethi@freescale.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <5768908.PeRFksrdyQ@wuerfel>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: "jroedel@suse.de" <jroedel@suse.de>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "laurent.pinchart@ideasonboard.com" <laurent.pinchart@ideasonboard.com>, "Varun.Sethi@freescale.com" <Varun.Sethi@freescale.com>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "hdoyu@nvidia.com" <hdoyu@nvidia.com>
 List-Id: iommu@lists.linux-foundation.org
 
-iommu_group_get_for_dev determines the iommu group for the PCI device and adds
-the device to the group.
+Hi Arnd,
 
-In the PAMU driver we were again adding the device to the same group without checking
-if the device already had an iommu group. This resulted in the following warning.
+Thanks for the review.
 
-sysfs: cannot create duplicate filename '/devices/ffe200000.pcie/pci0000:00/0000:00:00.0/iommu_group'
-------------[ cut here ]------------
-WARNING: at fs/sysfs/dir.c:31
-Modules linked in:
-CPU: 0 PID: 1 Comm: swapper/0 Not tainted 3.17.0-rc3-00002-g7505cea-dirty #126
-task: c0000001fe0a0000 ti: c0000001fe044000 task.ti: c0000001fe044000
-NIP: c00000000018879c LR: c000000000188798 CTR: c00000000001ea50
-REGS: c0000001fe047040 TRAP: 0700   Not tainted  (3.17.0-rc3-00002-g7505cea-dirty)
-MSR: 0000000080029000 <CE,EE,ME>  CR: 24ad8e22  XER: 20000000
-SOFTE: 1 
-GPR00: c000000000188798 c0000001fe0472c0 c0000000009a52e0 0000000000000065 
-GPR04: 0000000000000001 0000000000000000 3a30303a00000000 0000000027000000 
-GPR08: 2f696f6d00000000 c0000000008d3830 c0000000009b3938 c0000000009bb3d0 
-GPR12: 0000000028ad8e24 c00000000fff4000 c00000000000205c 0000000000000000 
-GPR16: 0000000000000000 0000000000000000 0000000000000000 0000000000000000 
-GPR20: 0000000000000000 0000000000000000 0000000000000000 c0000000008a4c70 
-GPR24: c0000000007e9010 c0000001fe0140a8 ffffffffffffffef 0000000000000001 
-GPR28: c0000001fe22ebb8 c0000000007e9010 c00000000090bf10 c0000001fe220000 
-NIP [c00000000018879c] .sysfs_warn_dup+0x74/0xa4
-LR [c000000000188798] .sysfs_warn_dup+0x70/0xa4
-Call Trace:
-[c0000001fe0472c0] [c000000000188798] .sysfs_warn_dup+0x70/0xa4 (unreliable)
-[c0000001fe047350] [c000000000188d34] .sysfs_do_create_link_sd.clone.2+0x168/0x174
-[c0000001fe047400] [c0000000004b3cf8] .iommu_group_add_device+0x78/0x244
-[c0000001fe0474b0] [c0000000004b6964] .fsl_pamu_add_device+0x88/0x1a8
-[c0000001fe047570] [c0000000004b3960] .iommu_bus_notifier+0xdc/0x15c
-[c0000001fe047600] [c000000000059848] .notifier_call_chain+0x8c/0xe8
-[c0000001fe0476a0] [c000000000059d04] .__blocking_notifier_call_chain+0x58/0x84
-[c0000001fe047750] [c00000000036619c] .device_add+0x464/0x5c8
-[c0000001fe047820] [c000000000300ebc] .pci_device_add+0x14c/0x17c
-[c0000001fe0478c0] [c000000000300fbc] .pci_scan_single_device+0xd0/0xf4
-[c0000001fe047970] [c00000000030104c] .pci_scan_slot+0x6c/0x18c
-[c0000001fe047a10] [c00000000030226c] .pci_scan_child_bus+0x40/0x114
-[c0000001fe047ac0] [c000000000021974] .pcibios_scan_phb+0x240/0x2c8
-[c0000001fe047b70] [c00000000085a970] .pcibios_init+0x64/0xc8
-[c0000001fe047c00] [c000000000001884] .do_one_initcall+0xbc/0x224
-[c0000001fe047d00] [c000000000852d50] .kernel_init_freeable+0x14c/0x21c
-[c0000001fe047db0] [c000000000002078] .kernel_init+0x1c/0xfa4
-[c0000001fe047e30] [c000000000000884] .ret_from_kernel_thread+0x58/0xd4
-Instruction dump:
-7c7f1b79 4182001c 7fe4fb78 7f83e378 38a01000 4bffc905 60000000 7c641b78 
-e87e8008 7fa5eb78 48482ff5 60000000 <0fe00000> 7fe3fb78 4bf7bd39 60000000 
+On Tue, Sep 02, 2014 at 08:10:10PM +0100, Arnd Bergmann wrote:
+> On Tuesday 02 September 2014 18:56:24 Will Deacon wrote:
+> > +struct iommu_dma_mapping *of_iommu_configure(struct device *dev)
+> > +{
+> > +       struct of_phandle_args iommu_spec;
+> > +       struct iommu_dma_mapping *mapping;
+> > +       struct bus_type *bus = dev->bus;
+> > +       const struct iommu_ops *ops = bus->iommu_ops;
+> 
+> I think it would be best to not even introduce the tight coupling
+> between bus_type and iommu_ops here, one of the main reasons we
+> are doing this is to break that connection.
+> 
+> Better put the iommu_ops into the iommu_data pointer that gets looked
+> up per iommu device.
 
+Yes, I'll add that. It's a bit weird, because those same ops will later
+be duplicated in iommu_data->domain->ops, but that's an artifact of how
+the domain is currently constructed by iommu_domain_alloc.
 
-Signed-off-by: Varun Sethi <Varun.Sethi@freescale.com>
----
- drivers/iommu/fsl_pamu_domain.c |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+> > +       struct iommu_data *iommu = NULL;
+> > +       int idx = 0;
+> > +
+> > +       if (!iommu_present(bus) || !ops->of_xlate)
+> > +               return NULL;
+> > +
+> > +       /*
+> > +        * We don't currently walk up the tree looking for a parent IOMMU.
+> > +        * See the `Notes:' section of
+> > +        * Documentation/devicetree/bindings/iommu/iommu.txt
+> > +        */
+> > +        */
+> > +       while (!of_parse_phandle_with_args(dev->of_node, "iommus",
+> > +                                          "#iommu-cells", idx,
+> > +                                          &iommu_spec)) {
+> > +               struct device_node *np = iommu_spec.np;
+> > +               struct iommu_data *data = of_iommu_get_data(np);
+> > +
+> > +               if (!iommu) {
+> > +                       if (!ops->of_xlate(dev, &iommu_spec))
+> > +                               iommu = data;
+> 
+> I would make the first argument of the of_xlate function the iommu_data,
+> so the code can find the right instance.
 
-diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
-index 61d1daf..af5a548 100644
---- a/drivers/iommu/fsl_pamu_domain.c
-+++ b/drivers/iommu/fsl_pamu_domain.c
-@@ -984,7 +984,7 @@ static int fsl_pamu_add_device(struct device *dev)
- 	struct iommu_group *group = ERR_PTR(-ENODEV);
- 	struct pci_dev *pdev;
- 	const u32 *prop;
--	int ret, len;
-+	int ret = 0, len;
- 
- 	/*
- 	 * For platform devices we allocate a separate group for
-@@ -1007,7 +1007,13 @@ static int fsl_pamu_add_device(struct device *dev)
- 	if (IS_ERR(group))
- 		return PTR_ERR(group);
- 
--	ret = iommu_group_add_device(group, dev);
-+	/*
-+	 * Check if device has already been added to an iommu group.
-+	 * Group could have already been created for a PCI device in
-+	 * the iommu_group_get_for_dev path.
-+	 */
-+	if (!iommu_group_get(dev))
-+		ret = iommu_group_add_device(group, dev);
- 
- 	iommu_group_put(group);
- 	return ret;
--- 
-1.7.9.5
+Oops, that's what I intended. Well spotted.
+
+> Maybe also add an extra argument at the end that can be used by the
+> PCI code and potentially other drivers with multiple master IDs
+> behind one "iommus" property to pass some value identifying which of
+> the masters is meant.
+> 
+> The format of that is unfortunately bus specific and our platform_bus
+> really covers a number of different hardware buses (AXI, AHB, OPB, ...)
+> but the caller should be able to provide the data in the right form
+> that the iommu understands. I would try using a single u64 argument
+> as a start, hoping that this covers all the buses we need. At least
+> it's enough for PCI (bus/device/function) and for AXI (requester-id?).
+
+Yeah, I think that will work. It's kind of like a device `index' for a
+device that sits behind a bridge (trying to avoid yet another ID parameter
+:).
+
+> 
+> > +               } else if (iommu != data) {
+> > +                       pr_warn("Rejecting device %s with multiple IOMMU instances\n",
+> > +                               dev_name(dev));
+> > +                       iommu = NULL;
+> > +               }
+> > +
+> > +               of_node_put(np);
+> > +
+> > +               if (!iommu)
+> > +                       break;
+> > +
+> > +               idx++;
+> > +       }
+> > +
+> > +       if (!iommu)
+> > +               return NULL;
+> > +
+> > +       mapping = devm_kzalloc(dev, sizeof(*mapping), GFP_KERNEL);
+> > +       if (!mapping)
+> > +               return NULL;
+> > 
+> 
+> I don't think it's safe to use devm_* functions here: this is during
+> device discovery, and this data will be freed if probe() fails or
+> the device gets removed from a driver.
+
+So I can make this a standard kzalloc, but I have no idea where the
+corresponding kfree should live. Is there something equivalent to
+of_dma_unconfigure, or is this data that is expected to persist?
+
+Will
