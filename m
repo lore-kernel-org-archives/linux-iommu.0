@@ -1,68 +1,72 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [RFC PATCH v2 4/7] iommu: provide helper function to configure
- an IOMMU for an of master
-Date: Thu, 4 Sep 2014 13:28:24 +0100
-Message-ID: <20140904122824.GF7156@arm.com>
-References: <1409680587-29818-1-git-send-email-will.deacon@arm.com>
- <5768908.PeRFksrdyQ@wuerfel> <20140904112625.GE7156@arm.com>
- <30707436.FH2aSkoH5H@wuerfel>
+From: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+Subject: Re: [PATCH 1/2] iommu/omap: Check for valid archdata in attach_dev
+Date: Thu, 4 Sep 2014 14:37:44 -0500
+Message-ID: <5408BF88.3050207@ti.com>
+References: <1409788712-10741-1-git-send-email-s-anna@ti.com>
+	<1409788712-10741-2-git-send-email-s-anna@ti.com>
+	<1593534.HBLyulJI44@avalon>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <30707436.FH2aSkoH5H@wuerfel>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: "jroedel@suse.de" <jroedel@suse.de>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "laurent.pinchart@ideasonboard.com" <laurent.pinchart@ideasonboard.com>, "Varun.Sethi@freescale.com" <Varun.Sethi@freescale.com>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "hdoyu@nvidia.com" <hdoyu@nvidia.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1593534.HBLyulJI44@avalon>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Sep 04, 2014 at 12:59:50PM +0100, Arnd Bergmann wrote:
-> On Thursday 04 September 2014 12:26:25 Will Deacon wrote:
-> > > 
-> > > > +               } else if (iommu != data) {
-> > > > +                       pr_warn("Rejecting device %s with multiple IOMMU instances\n",
-> > > > +                               dev_name(dev));
-> > > > +                       iommu = NULL;
-> > > > +               }
-> > > > +
-> > > > +               of_node_put(np);
-> > > > +
-> > > > +               if (!iommu)
-> > > > +                       break;
-> > > > +
-> > > > +               idx++;
-> > > > +       }
-> > > > +
-> > > > +       if (!iommu)
-> > > > +               return NULL;
-> > > > +
-> > > > +       mapping = devm_kzalloc(dev, sizeof(*mapping), GFP_KERNEL);
-> > > > +       if (!mapping)
-> > > > +               return NULL;
-> > > > 
-> > > 
-> > > I don't think it's safe to use devm_* functions here: this is during
-> > > device discovery, and this data will be freed if probe() fails or
-> > > the device gets removed from a driver.
-> > 
-> > So I can make this a standard kzalloc, but I have no idea where the
-> > corresponding kfree should live. Is there something equivalent to
-> > of_dma_unconfigure, or is this data that is expected to persist?
-> > 
+Hi Laurent,
+
+> On Wednesday 03 September 2014 18:58:31 Suman Anna wrote:
+>> Any device requiring to be attached to an iommu_domain must have
+>> valid archdata containing the necessary iommu information, which
+>> is SoC-specific. Add a check in the omap_iommu_attach_dev to make
+>> sure that the device has non-NULL archdata before accessing
+>> different SoC-specific fields of the archdata. This prevents a
+>> NULL pointer dereference on any misconfigured devices.
+>>
+>> Signed-off-by: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+>> ---
+>>  drivers/iommu/omap-iommu.c | 6 ++++++
+>>  1 file changed, 6 insertions(+)
+>>
+>> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+>> index 02ef0ac..f245d51 100644
+>> --- a/drivers/iommu/omap-iommu.c
+>> +++ b/drivers/iommu/omap-iommu.c
+>> @@ -1092,6 +1092,12 @@ omap_iommu_attach_dev(struct iommu_domain *domain,
+>> struct device *dev)
+>>
+>>  	spin_lock(&omap_domain->lock);
+>>
+>> +	if (!arch_data) {
+>> +		dev_err(dev, "device doesn't have an associated iommu\n");
+>> +		ret = -EINVAL;
+>> +		goto out;
+>> +	}
 > 
-> Can this be a simple kfree in of_platform_device_create_pdata?
+> You can move this check outside of the spinlock-protected section. With that 
+> change,
 
-We could certainly hook into the error path there (when of_device_add
-fails), yes, but I was also thinking about device removal and whether we
-need to care about that. I guess not for the OF case.
+Thanks, will fix this in the next revision, will also add the check for
+the name field.
 
-Will
+regards
+Suman
+
+> 
+> Acked-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+> 
+>> +
+>>  	/* only a single device is supported per domain for now */
+>>  	if (omap_domain->iommu_dev) {
+>>  		dev_err(dev, "iommu domain is already attached\n");
+> 
