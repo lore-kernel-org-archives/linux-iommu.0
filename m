@@ -1,98 +1,61 @@
-From: Varun Sethi <Varun.Sethi@freescale.com>
-Subject: [PATCH v2] iommu/fsl: Fix warning resulting from adding PCI device
- twice
-Date: Thu, 4 Sep 2014 17:08:45 +0530
-Message-ID: <1409830725-4469-1-git-send-email-Varun.Sethi@freescale.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [RFC PATCH v2 4/7] iommu: provide helper function to configure an
+ IOMMU for an of master
+Date: Thu, 04 Sep 2014 13:59:50 +0200
+Message-ID: <30707436.FH2aSkoH5H@wuerfel>
+References: <1409680587-29818-1-git-send-email-will.deacon@arm.com>
+ <5768908.PeRFksrdyQ@wuerfel> <20140904112625.GE7156@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-To: joro@8bytes.org, iommu@lists.linux-foundation.org, alex.williamson@redhat.com, Emilian.Medve@freescale.com, linuxppc-dev@ozlabs.org, linux-kernel@vger.kernel.org
-Cc: Varun Sethi <Varun.Sethi@freescale.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20140904112625.GE7156@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Will Deacon <will.deacon@arm.com>
+Cc: "jroedel@suse.de" <jroedel@suse.de>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "laurent.pinchart@ideasonboard.com" <laurent.pinchart@ideasonboard.com>, "Varun.Sethi@freescale.com" <Varun.Sethi@freescale.com>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "hdoyu@nvidia.com" <hdoyu@nvidia.com>
 List-Id: iommu@lists.linux-foundation.org
 
-aW9tbXVfZ3JvdXBfZ2V0X2Zvcl9kZXYgZGV0ZXJtaW5lcyB0aGUgaW9tbXUgZ3JvdXAgZm9yIHRo
-ZSBQQ0kgZGV2aWNlIGFuZCBhZGRzCnRoZSBkZXZpY2UgdG8gdGhlIGdyb3VwLgoKSW4gdGhlIFBB
-TVUgZHJpdmVyIHdlIHdlcmUgYWdhaW4gYWRkaW5nIHRoZSBkZXZpY2UgdG8gdGhlIHNhbWUgZ3Jv
-dXAgd2l0aG91dCBjaGVja2luZwppZiB0aGUgZGV2aWNlIGFscmVhZHkgaGFkIGFuIGlvbW11IGdy
-b3VwLiBUaGlzIHJlc3VsdGVkIGluIHRoZSBmb2xsb3dpbmcgd2FybmluZy4KCnN5c2ZzOiBjYW5u
-b3QgY3JlYXRlIGR1cGxpY2F0ZSBmaWxlbmFtZSAnL2RldmljZXMvZmZlMjAwMDAwLnBjaWUvcGNp
-MDAwMDowMC8wMDAwOjAwOjAwLjAvaW9tbXVfZ3JvdXAnCi0tLS0tLS0tLS0tLVsgY3V0IGhlcmUg
-XS0tLS0tLS0tLS0tLQpXQVJOSU5HOiBhdCBmcy9zeXNmcy9kaXIuYzozMQpNb2R1bGVzIGxpbmtl
-ZCBpbjoKQ1BVOiAwIFBJRDogMSBDb21tOiBzd2FwcGVyLzAgTm90IHRhaW50ZWQgMy4xNy4wLXJj
-My0wMDAwMi1nNzUwNWNlYS1kaXJ0eSAjMTI2CnRhc2s6IGMwMDAwMDAxZmUwYTAwMDAgdGk6IGMw
-MDAwMDAxZmUwNDQwMDAgdGFzay50aTogYzAwMDAwMDFmZTA0NDAwMApOSVA6IGMwMDAwMDAwMDAx
-ODg3OWMgTFI6IGMwMDAwMDAwMDAxODg3OTggQ1RSOiBjMDAwMDAwMDAwMDFlYTUwClJFR1M6IGMw
-MDAwMDAxZmUwNDcwNDAgVFJBUDogMDcwMCAgIE5vdCB0YWludGVkICAoMy4xNy4wLXJjMy0wMDAw
-Mi1nNzUwNWNlYS1kaXJ0eSkKTVNSOiAwMDAwMDAwMDgwMDI5MDAwIDxDRSxFRSxNRT4gIENSOiAy
-NGFkOGUyMiAgWEVSOiAyMDAwMDAwMApTT0ZURTogMSAKR1BSMDA6IGMwMDAwMDAwMDAxODg3OTgg
-YzAwMDAwMDFmZTA0NzJjMCBjMDAwMDAwMDAwOWE1MmUwIDAwMDAwMDAwMDAwMDAwNjUgCkdQUjA0
-OiAwMDAwMDAwMDAwMDAwMDAxIDAwMDAwMDAwMDAwMDAwMDAgM2EzMDMwM2EwMDAwMDAwMCAwMDAw
-MDAwMDI3MDAwMDAwIApHUFIwODogMmY2OTZmNmQwMDAwMDAwMCBjMDAwMDAwMDAwOGQzODMwIGMw
-MDAwMDAwMDA5YjM5MzggYzAwMDAwMDAwMDliYjNkMCAKR1BSMTI6IDAwMDAwMDAwMjhhZDhlMjQg
-YzAwMDAwMDAwZmZmNDAwMCBjMDAwMDAwMDAwMDAyMDVjIDAwMDAwMDAwMDAwMDAwMDAgCkdQUjE2
-OiAwMDAwMDAwMDAwMDAwMDAwIDAwMDAwMDAwMDAwMDAwMDAgMDAwMDAwMDAwMDAwMDAwMCAwMDAw
-MDAwMDAwMDAwMDAwIApHUFIyMDogMDAwMDAwMDAwMDAwMDAwMCAwMDAwMDAwMDAwMDAwMDAwIDAw
-MDAwMDAwMDAwMDAwMDAgYzAwMDAwMDAwMDhhNGM3MCAKR1BSMjQ6IGMwMDAwMDAwMDA3ZTkwMTAg
-YzAwMDAwMDFmZTAxNDBhOCBmZmZmZmZmZmZmZmZmZmVmIDAwMDAwMDAwMDAwMDAwMDEgCkdQUjI4
-OiBjMDAwMDAwMWZlMjJlYmI4IGMwMDAwMDAwMDA3ZTkwMTAgYzAwMDAwMDAwMDkwYmYxMCBjMDAw
-MDAwMWZlMjIwMDAwIApOSVAgW2MwMDAwMDAwMDAxODg3OWNdIC5zeXNmc193YXJuX2R1cCsweDc0
-LzB4YTQKTFIgW2MwMDAwMDAwMDAxODg3OThdIC5zeXNmc193YXJuX2R1cCsweDcwLzB4YTQKQ2Fs
-bCBUcmFjZToKW2MwMDAwMDAxZmUwNDcyYzBdIFtjMDAwMDAwMDAwMTg4Nzk4XSAuc3lzZnNfd2Fy
-bl9kdXArMHg3MC8weGE0ICh1bnJlbGlhYmxlKQpbYzAwMDAwMDFmZTA0NzM1MF0gW2MwMDAwMDAw
-MDAxODhkMzRdIC5zeXNmc19kb19jcmVhdGVfbGlua19zZC5jbG9uZS4yKzB4MTY4LzB4MTc0Cltj
-MDAwMDAwMWZlMDQ3NDAwXSBbYzAwMDAwMDAwMDRiM2NmOF0gLmlvbW11X2dyb3VwX2FkZF9kZXZp
-Y2UrMHg3OC8weDI0NApbYzAwMDAwMDFmZTA0NzRiMF0gW2MwMDAwMDAwMDA0YjY5NjRdIC5mc2xf
-cGFtdV9hZGRfZGV2aWNlKzB4ODgvMHgxYTgKW2MwMDAwMDAxZmUwNDc1NzBdIFtjMDAwMDAwMDAw
-NGIzOTYwXSAuaW9tbXVfYnVzX25vdGlmaWVyKzB4ZGMvMHgxNWMKW2MwMDAwMDAxZmUwNDc2MDBd
-IFtjMDAwMDAwMDAwMDU5ODQ4XSAubm90aWZpZXJfY2FsbF9jaGFpbisweDhjLzB4ZTgKW2MwMDAw
-MDAxZmUwNDc2YTBdIFtjMDAwMDAwMDAwMDU5ZDA0XSAuX19ibG9ja2luZ19ub3RpZmllcl9jYWxs
-X2NoYWluKzB4NTgvMHg4NApbYzAwMDAwMDFmZTA0Nzc1MF0gW2MwMDAwMDAwMDAzNjYxOWNdIC5k
-ZXZpY2VfYWRkKzB4NDY0LzB4NWM4CltjMDAwMDAwMWZlMDQ3ODIwXSBbYzAwMDAwMDAwMDMwMGVi
-Y10gLnBjaV9kZXZpY2VfYWRkKzB4MTRjLzB4MTdjCltjMDAwMDAwMWZlMDQ3OGMwXSBbYzAwMDAw
-MDAwMDMwMGZiY10gLnBjaV9zY2FuX3NpbmdsZV9kZXZpY2UrMHhkMC8weGY0CltjMDAwMDAwMWZl
-MDQ3OTcwXSBbYzAwMDAwMDAwMDMwMTA0Y10gLnBjaV9zY2FuX3Nsb3QrMHg2Yy8weDE4YwpbYzAw
-MDAwMDFmZTA0N2ExMF0gW2MwMDAwMDAwMDAzMDIyNmNdIC5wY2lfc2Nhbl9jaGlsZF9idXMrMHg0
-MC8weDExNApbYzAwMDAwMDFmZTA0N2FjMF0gW2MwMDAwMDAwMDAwMjE5NzRdIC5wY2liaW9zX3Nj
-YW5fcGhiKzB4MjQwLzB4MmM4CltjMDAwMDAwMWZlMDQ3YjcwXSBbYzAwMDAwMDAwMDg1YTk3MF0g
-LnBjaWJpb3NfaW5pdCsweDY0LzB4YzgKW2MwMDAwMDAxZmUwNDdjMDBdIFtjMDAwMDAwMDAwMDAx
-ODg0XSAuZG9fb25lX2luaXRjYWxsKzB4YmMvMHgyMjQKW2MwMDAwMDAxZmUwNDdkMDBdIFtjMDAw
-MDAwMDAwODUyZDUwXSAua2VybmVsX2luaXRfZnJlZWFibGUrMHgxNGMvMHgyMWMKW2MwMDAwMDAx
-ZmUwNDdkYjBdIFtjMDAwMDAwMDAwMDAyMDc4XSAua2VybmVsX2luaXQrMHgxYy8weGZhNApbYzAw
-MDAwMDFmZTA0N2UzMF0gW2MwMDAwMDAwMDAwMDA4ODRdIC5yZXRfZnJvbV9rZXJuZWxfdGhyZWFk
-KzB4NTgvMHhkNApJbnN0cnVjdGlvbiBkdW1wOgo3YzdmMWI3OSA0MTgyMDAxYyA3ZmU0ZmI3OCA3
-ZjgzZTM3OCAzOGEwMTAwMCA0YmZmYzkwNSA2MDAwMDAwMCA3YzY0MWI3OCAKZTg3ZTgwMDggN2Zh
-NWViNzggNDg0ODJmZjUgNjAwMDAwMDAgPDBmZTAwMDAwPiA3ZmUzZmI3OCA0YmY3YmQzOSA2MDAw
-MDAwMCAKCgoKU2lnbmVkLW9mZi1ieTogVmFydW4gU2V0aGkgPFZhcnVuLlNldGhpQGZyZWVzY2Fs
-ZS5jb20+Ci0tLQp2MiBjaGFuZ2VzCi0gZGlyZWN0bHkgY2hlY2sgZm9yIHRoZSBkZXZpY2UgaW9t
-bXVfZ3JvdXAKCiBkcml2ZXJzL2lvbW11L2ZzbF9wYW11X2RvbWFpbi5jIHwgICAxMCArKysrKysr
-Ky0tCiAxIGZpbGUgY2hhbmdlZCwgOCBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQoKZGlm
-ZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvZnNsX3BhbXVfZG9tYWluLmMgYi9kcml2ZXJzL2lvbW11
-L2ZzbF9wYW11X2RvbWFpbi5jCmluZGV4IDYxZDFkYWYuLjU2ZmVlZDcgMTAwNjQ0Ci0tLSBhL2Ry
-aXZlcnMvaW9tbXUvZnNsX3BhbXVfZG9tYWluLmMKKysrIGIvZHJpdmVycy9pb21tdS9mc2xfcGFt
-dV9kb21haW4uYwpAQCAtOTg0LDcgKzk4NCw3IEBAIHN0YXRpYyBpbnQgZnNsX3BhbXVfYWRkX2Rl
-dmljZShzdHJ1Y3QgZGV2aWNlICpkZXYpCiAJc3RydWN0IGlvbW11X2dyb3VwICpncm91cCA9IEVS
-Ul9QVFIoLUVOT0RFVik7CiAJc3RydWN0IHBjaV9kZXYgKnBkZXY7CiAJY29uc3QgdTMyICpwcm9w
-OwotCWludCByZXQsIGxlbjsKKwlpbnQgcmV0ID0gMCwgbGVuOwogCiAJLyoKIAkgKiBGb3IgcGxh
-dGZvcm0gZGV2aWNlcyB3ZSBhbGxvY2F0ZSBhIHNlcGFyYXRlIGdyb3VwIGZvcgpAQCAtMTAwNyw3
-ICsxMDA3LDEzIEBAIHN0YXRpYyBpbnQgZnNsX3BhbXVfYWRkX2RldmljZShzdHJ1Y3QgZGV2aWNl
-ICpkZXYpCiAJaWYgKElTX0VSUihncm91cCkpCiAJCXJldHVybiBQVFJfRVJSKGdyb3VwKTsKIAot
-CXJldCA9IGlvbW11X2dyb3VwX2FkZF9kZXZpY2UoZ3JvdXAsIGRldik7CisJLyoKKwkgKiBDaGVj
-ayBpZiBkZXZpY2UgaGFzIGFscmVhZHkgYmVlbiBhZGRlZCB0byBhbiBpb21tdSBncm91cC4KKwkg
-KiBHcm91cCBjb3VsZCBoYXZlIGFscmVhZHkgYmVlbiBjcmVhdGVkIGZvciBhIFBDSSBkZXZpY2Ug
-aW4KKwkgKiB0aGUgaW9tbXVfZ3JvdXBfZ2V0X2Zvcl9kZXYgcGF0aC4KKwkgKi8KKwlpZiAoIWRl
-di0+aW9tbXVfZ3JvdXApCisJCXJldCA9IGlvbW11X2dyb3VwX2FkZF9kZXZpY2UoZ3JvdXAsIGRl
-dik7CiAKIAlpb21tdV9ncm91cF9wdXQoZ3JvdXApOwogCXJldHVybiByZXQ7Ci0tIAoxLjcuOS41
-CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpMaW51eHBw
-Yy1kZXYgbWFpbGluZyBsaXN0CkxpbnV4cHBjLWRldkBsaXN0cy5vemxhYnMub3JnCmh0dHBzOi8v
-bGlzdHMub3psYWJzLm9yZy9saXN0aW5mby9saW51eHBwYy1kZXY=
+On Thursday 04 September 2014 12:26:25 Will Deacon wrote:
+> > 
+> > > +               } else if (iommu != data) {
+> > > +                       pr_warn("Rejecting device %s with multiple IOMMU instances\n",
+> > > +                               dev_name(dev));
+> > > +                       iommu = NULL;
+> > > +               }
+> > > +
+> > > +               of_node_put(np);
+> > > +
+> > > +               if (!iommu)
+> > > +                       break;
+> > > +
+> > > +               idx++;
+> > > +       }
+> > > +
+> > > +       if (!iommu)
+> > > +               return NULL;
+> > > +
+> > > +       mapping = devm_kzalloc(dev, sizeof(*mapping), GFP_KERNEL);
+> > > +       if (!mapping)
+> > > +               return NULL;
+> > > 
+> > 
+> > I don't think it's safe to use devm_* functions here: this is during
+> > device discovery, and this data will be freed if probe() fails or
+> > the device gets removed from a driver.
+> 
+> So I can make this a standard kzalloc, but I have no idea where the
+> corresponding kfree should live. Is there something equivalent to
+> of_dma_unconfigure, or is this data that is expected to persist?
+> 
+
+Can this be a simple kfree in of_platform_device_create_pdata?
+
+	Arnd
