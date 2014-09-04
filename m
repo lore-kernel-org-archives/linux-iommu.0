@@ -1,14 +1,16 @@
-From: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
-Subject: Re: [PATCH v2] iommu/fsl: Fix warning resulting from adding PCI device
-	twice
-Date: Thu, 4 Sep 2014 15:56:11 -0500
-Message-ID: <5408D1EB.4060907@Freescale.com>
-References: <1409830725-4469-1-git-send-email-Varun.Sethi@freescale.com>
+From: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+Subject: Re: [PATCH 2/2] iommu/omap: Fix iommu archdata name for DT-based
+	devices
+Date: Thu, 4 Sep 2014 16:17:53 -0500
+Message-ID: <5408D701.7070609@ti.com>
+References: <1409788712-10741-1-git-send-email-s-anna@ti.com>
+	<1409788712-10741-3-git-send-email-s-anna@ti.com>
+	<2755871.jyTSgisx8z@avalon>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1409830725-4469-1-git-send-email-Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+In-Reply-To: <2755871.jyTSgisx8z@avalon>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,61 +20,84 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Varun Sethi <Varun.Sethi-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linuxppc-dev-mnsaURCQ41sdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 09/04/2014 06:38 AM, Varun Sethi wrote:
-> iommu_group_get_for_dev determines the iommu group for the PCI device and adds
-> the device to the group.
+Hi Laurent,
+>
+> On Wednesday 03 September 2014 18:58:32 Suman Anna wrote:
+>> A device is tied to an iommu through its archdata field. The archdata
+>> is allocated on the fly for DT-based devices automatically through the
+>> .add_device iommu ops. The current logic incorrectly assigned the name
+>> of the IOMMU user device, instead of the name of the IOMMU device as
+>> required by the attach logic. Fix this issue so that DT-based devices
+>> can attach successfully to an IOMMU domain.
+>>
+>> Signed-off-by: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+>> ---
+>>  drivers/iommu/omap-iommu.c | 10 +++++++++-
+>>  1 file changed, 9 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+>> index f245d51..f47ac03 100644
+>> --- a/drivers/iommu/omap-iommu.c
+>> +++ b/drivers/iommu/omap-iommu.c
+>> @@ -26,6 +26,7 @@
+>>  #include <linux/of.h>
+>>  #include <linux/of_iommu.h>
+>>  #include <linux/of_irq.h>
+>> +#include <linux/of_platform.h>
+>>
+>>  #include <asm/cacheflush.h>
+>>
+>> @@ -1244,6 +1245,7 @@ static int omap_iommu_add_device(struct device *dev)
+>>  {
+>>  	struct omap_iommu_arch_data *arch_data;
+>>  	struct device_node *np;
+>> +	struct platform_device *pdev;
+>>
+>>  	/*
+>>  	 * Allocate the archdata iommu structure for DT-based devices.
+>> @@ -1258,13 +1260,19 @@ static int omap_iommu_add_device(struct device *dev)
+>> if (!np)
+>>  		return 0;
+>>
+>> +	pdev = of_find_device_by_node(np);
+>> +	if (WARN_ON(!pdev)) {
+>> +		of_node_put(np);
+>> +		return -EINVAL;
+>> +	}
 > 
-> In the PAMU driver we were again adding the device to the same group without checking
-> if the device already had an iommu group. This resulted in the following warning.
-> 
-> sysfs: cannot create duplicate filename '/devices/ffe200000.pcie/pci0000:00/0000:00:00.0/iommu_group'
-> ------------[ cut here ]------------
-> WARNING: at fs/sysfs/dir.c:31
-> Modules linked in:
-> CPU: 0 PID: 1 Comm: swapper/0 Not tainted 3.17.0-rc3-00002-g7505cea-dirty #126
-> task: c0000001fe0a0000 ti: c0000001fe044000 task.ti: c0000001fe044000
-> NIP: c00000000018879c LR: c000000000188798 CTR: c00000000001ea50
-> REGS: c0000001fe047040 TRAP: 0700   Not tainted  (3.17.0-rc3-00002-g7505cea-dirty)
-> MSR: 0000000080029000 <CE,EE,ME>  CR: 24ad8e22  XER: 20000000
-> SOFTE: 1 
-> GPR00: c000000000188798 c0000001fe0472c0 c0000000009a52e0 0000000000000065 
-> GPR04: 0000000000000001 0000000000000000 3a30303a00000000 0000000027000000 
-> GPR08: 2f696f6d00000000 c0000000008d3830 c0000000009b3938 c0000000009bb3d0 
-> GPR12: 0000000028ad8e24 c00000000fff4000 c00000000000205c 0000000000000000 
-> GPR16: 0000000000000000 0000000000000000 0000000000000000 0000000000000000 
-> GPR20: 0000000000000000 0000000000000000 0000000000000000 c0000000008a4c70 
-> GPR24: c0000000007e9010 c0000001fe0140a8 ffffffffffffffef 0000000000000001 
-> GPR28: c0000001fe22ebb8 c0000000007e9010 c00000000090bf10 c0000001fe220000 
-> NIP [c00000000018879c] .sysfs_warn_dup+0x74/0xa4
-> LR [c000000000188798] .sysfs_warn_dup+0x70/0xa4
-> Call Trace:
-> [c0000001fe0472c0] [c000000000188798] .sysfs_warn_dup+0x70/0xa4 (unreliable)
-> [c0000001fe047350] [c000000000188d34] .sysfs_do_create_link_sd.clone.2+0x168/0x174
-> [c0000001fe047400] [c0000000004b3cf8] .iommu_group_add_device+0x78/0x244
-> [c0000001fe0474b0] [c0000000004b6964] .fsl_pamu_add_device+0x88/0x1a8
-> [c0000001fe047570] [c0000000004b3960] .iommu_bus_notifier+0xdc/0x15c
-> [c0000001fe047600] [c000000000059848] .notifier_call_chain+0x8c/0xe8
-> [c0000001fe0476a0] [c000000000059d04] .__blocking_notifier_call_chain+0x58/0x84
-> [c0000001fe047750] [c00000000036619c] .device_add+0x464/0x5c8
-> [c0000001fe047820] [c000000000300ebc] .pci_device_add+0x14c/0x17c
-> [c0000001fe0478c0] [c000000000300fbc] .pci_scan_single_device+0xd0/0xf4
-> [c0000001fe047970] [c00000000030104c] .pci_scan_slot+0x6c/0x18c
-> [c0000001fe047a10] [c00000000030226c] .pci_scan_child_bus+0x40/0x114
-> [c0000001fe047ac0] [c000000000021974] .pcibios_scan_phb+0x240/0x2c8
-> [c0000001fe047b70] [c00000000085a970] .pcibios_init+0x64/0xc8
-> [c0000001fe047c00] [c000000000001884] .do_one_initcall+0xbc/0x224
-> [c0000001fe047d00] [c000000000852d50] .kernel_init_freeable+0x14c/0x21c
-> [c0000001fe047db0] [c000000000002078] .kernel_init+0x1c/0xfa4
-> [c0000001fe047e30] [c000000000000884] .ret_from_kernel_thread+0x58/0xd4
-> Instruction dump:
-> 7c7f1b79 4182001c 7fe4fb78 7f83e378 38a01000 4bffc905 60000000 7c641b78 
-> e87e8008 7fa5eb78 48482ff5 60000000 <0fe00000> 7fe3fb78 4bf7bd39 60000000 
-> 
-> 
-> 
-> Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+> I might be wrong, but I don't think there's a guarantee at this point that the 
+> IOMMU device is already instantiated :-/
 
-Tested-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+The omap_iommu_init which registers the iommu_ops is a subsys_initcall,
+so the platform devices are guaranteed to be created by this point. My
+test on OMAP4 in fact has the dsp node created before the IOMMU node,
+and this is not an issue. I have added the WARN_ON in case some one has
+the IOMMU node disabled, but try to use it.
+
+> Will Deacon has posted patches that rework the IOMMU core for better DT 
+> integration, have you seen them ?
+
+Can you point out the thread? Are you talking about
+http://marc.info/?l=linux-arm-kernel&m=140968072117851&w=2?
+
+regards
+Suman
+
+> 
+>> +
+>>  	arch_data = kzalloc(sizeof(*arch_data), GFP_KERNEL);
+>>  	if (!arch_data) {
+>>  		of_node_put(np);
+>>  		return -ENOMEM;
+>>  	}
+>>
+>> -	arch_data->name = kstrdup(dev_name(dev), GFP_KERNEL);
+>> +	arch_data->name = kstrdup(dev_name(&pdev->dev), GFP_KERNEL);
+>>  	dev->archdata.iommu = arch_data;
+>>
+>>  	of_node_put(np);
+> 
