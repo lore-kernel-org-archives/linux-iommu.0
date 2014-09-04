@@ -1,46 +1,97 @@
 From: Varun Sethi <Varun.Sethi@freescale.com>
-Subject: RE: [PATCH] iommu/fsl: Fix warning resulting from adding PCI device
- twice
-Date: Thu, 4 Sep 2014 10:57:59 +0000
-Message-ID: <332f3406b1974ff38aef45cc4f55373a@BL2PR03MB468.namprd03.prod.outlook.com>
-References: <1409810622-742-1-git-send-email-Varun.Sethi@freescale.com>
- <20140904101402.GM28786@8bytes.org>
+Subject: [PATCH] iommu/fsl: Fix warning resulting from adding PCI device twice
+Date: Thu, 4 Sep 2014 11:33:42 +0530
+Message-ID: <1409810622-742-1-git-send-email-Varun.Sethi@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-In-Reply-To: <20140904101402.GM28786@8bytes.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: "linuxppc-dev@ozlabs.org" <linuxppc-dev@ozlabs.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, Emilian Medve <Emilian.Medve@freescale.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org, iommu@lists.linux-foundation.org, alex.williamson@redhat.com, Emilian.Medve@freescale.com, linuxppc-dev@ozlabs.org, linux-kernel@vger.kernel.org
+Cc: Varun Sethi <Varun.Sethi@freescale.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Cgo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tCj4gRnJvbTogSm9lcmcgUm9lZGVsIFttYWls
-dG86am9yb0A4Ynl0ZXMub3JnXQo+IFNlbnQ6IFRodXJzZGF5LCBTZXB0ZW1iZXIgMDQsIDIwMTQg
-Mzo0NCBQTQo+IFRvOiBTZXRoaSBWYXJ1bi1CMTYzOTUKPiBDYzogaW9tbXVAbGlzdHMubGludXgt
-Zm91bmRhdGlvbi5vcmc7IGFsZXgud2lsbGlhbXNvbkByZWRoYXQuY29tOyBNZWR2ZQo+IEVtaWxp
-YW4tRU1NRURWRTE7IGxpbnV4cHBjLWRldkBvemxhYnMub3JnOyBsaW51eC1rZXJuZWxAdmdlci5r
-ZXJuZWwub3JnCj4gU3ViamVjdDogUmU6IFtQQVRDSF0gaW9tbXUvZnNsOiBGaXggd2FybmluZyBy
-ZXN1bHRpbmcgZnJvbSBhZGRpbmcgUENJIGRldmljZQo+IHR3aWNlCj4gCj4gT24gVGh1LCBTZXAg
-MDQsIDIwMTQgYXQgMTE6MzM6NDJBTSArMDUzMCwgVmFydW4gU2V0aGkgd3JvdGU6Cj4gPiArCWlm
-ICghaW9tbXVfZ3JvdXBfZ2V0KGRldikpCj4gPiArCQlyZXQgPSBpb21tdV9ncm91cF9hZGRfZGV2
-aWNlKGdyb3VwLCBkZXYpOwo+ID4KPiA+ICAJaW9tbXVfZ3JvdXBfcHV0KGdyb3VwKTsKPiA+ICAJ
-cmV0dXJuIHJldDsKPiAKPiBEb2Vzbid0IHRoaXMgYWRkaXRpb25hbCBjYWxsIHRvIGlvbW11X2dy
-b3VwX2dldCB0YWtlIGEgcmVmZXJlbmNlIHRvIHRoZQo+IGlvbW11X2dyb3VwIHRoYXQgbmVlZHMg
-dG8gYmUgcmVsZWFzZWQ/ClllcywgeW91IGFyZSByaWdodCB0aGlzIHdvdWxkIHRha2UgYSByZWZl
-cmVuY2UgdG8gdGhlIGdyb3VwIHRoYXQgc2hvdWxkIGJlIHJlbGVhc2VkLiBJIG5lZWQgdG8gYWRk
-IGlvbW11X2dyb3VwX3B1dCBmb3IgZGVjcmVtZW50aW5nIHRoZSByZWZlcmVuY2UgY291bnQuIFdp
-bGwgcG9zdCBhIG5ldyBwYXRjaC4KClRoYW5rcywKVmFydW4KCgpfX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fXwpMaW51eHBwYy1kZXYgbWFpbGluZyBsaXN0Ckxp
-bnV4cHBjLWRldkBsaXN0cy5vemxhYnMub3JnCmh0dHBzOi8vbGlzdHMub3psYWJzLm9yZy9saXN0
-aW5mby9saW51eHBwYy1kZXY=
+iommu_group_get_for_dev determines the iommu group for the PCI device and adds
+the device to the group.
+
+In the PAMU driver we were again adding the device to the same group without checking
+if the device already had an iommu group. This resulted in the following warning.
+
+sysfs: cannot create duplicate filename '/devices/ffe200000.pcie/pci0000:00/0000:00:00.0/iommu_group'
+------------[ cut here ]------------
+WARNING: at fs/sysfs/dir.c:31
+Modules linked in:
+CPU: 0 PID: 1 Comm: swapper/0 Not tainted 3.17.0-rc3-00002-g7505cea-dirty #126
+task: c0000001fe0a0000 ti: c0000001fe044000 task.ti: c0000001fe044000
+NIP: c00000000018879c LR: c000000000188798 CTR: c00000000001ea50
+REGS: c0000001fe047040 TRAP: 0700   Not tainted  (3.17.0-rc3-00002-g7505cea-dirty)
+MSR: 0000000080029000 <CE,EE,ME>  CR: 24ad8e22  XER: 20000000
+SOFTE: 1 
+GPR00: c000000000188798 c0000001fe0472c0 c0000000009a52e0 0000000000000065 
+GPR04: 0000000000000001 0000000000000000 3a30303a00000000 0000000027000000 
+GPR08: 2f696f6d00000000 c0000000008d3830 c0000000009b3938 c0000000009bb3d0 
+GPR12: 0000000028ad8e24 c00000000fff4000 c00000000000205c 0000000000000000 
+GPR16: 0000000000000000 0000000000000000 0000000000000000 0000000000000000 
+GPR20: 0000000000000000 0000000000000000 0000000000000000 c0000000008a4c70 
+GPR24: c0000000007e9010 c0000001fe0140a8 ffffffffffffffef 0000000000000001 
+GPR28: c0000001fe22ebb8 c0000000007e9010 c00000000090bf10 c0000001fe220000 
+NIP [c00000000018879c] .sysfs_warn_dup+0x74/0xa4
+LR [c000000000188798] .sysfs_warn_dup+0x70/0xa4
+Call Trace:
+[c0000001fe0472c0] [c000000000188798] .sysfs_warn_dup+0x70/0xa4 (unreliable)
+[c0000001fe047350] [c000000000188d34] .sysfs_do_create_link_sd.clone.2+0x168/0x174
+[c0000001fe047400] [c0000000004b3cf8] .iommu_group_add_device+0x78/0x244
+[c0000001fe0474b0] [c0000000004b6964] .fsl_pamu_add_device+0x88/0x1a8
+[c0000001fe047570] [c0000000004b3960] .iommu_bus_notifier+0xdc/0x15c
+[c0000001fe047600] [c000000000059848] .notifier_call_chain+0x8c/0xe8
+[c0000001fe0476a0] [c000000000059d04] .__blocking_notifier_call_chain+0x58/0x84
+[c0000001fe047750] [c00000000036619c] .device_add+0x464/0x5c8
+[c0000001fe047820] [c000000000300ebc] .pci_device_add+0x14c/0x17c
+[c0000001fe0478c0] [c000000000300fbc] .pci_scan_single_device+0xd0/0xf4
+[c0000001fe047970] [c00000000030104c] .pci_scan_slot+0x6c/0x18c
+[c0000001fe047a10] [c00000000030226c] .pci_scan_child_bus+0x40/0x114
+[c0000001fe047ac0] [c000000000021974] .pcibios_scan_phb+0x240/0x2c8
+[c0000001fe047b70] [c00000000085a970] .pcibios_init+0x64/0xc8
+[c0000001fe047c00] [c000000000001884] .do_one_initcall+0xbc/0x224
+[c0000001fe047d00] [c000000000852d50] .kernel_init_freeable+0x14c/0x21c
+[c0000001fe047db0] [c000000000002078] .kernel_init+0x1c/0xfa4
+[c0000001fe047e30] [c000000000000884] .ret_from_kernel_thread+0x58/0xd4
+Instruction dump:
+7c7f1b79 4182001c 7fe4fb78 7f83e378 38a01000 4bffc905 60000000 7c641b78 
+e87e8008 7fa5eb78 48482ff5 60000000 <0fe00000> 7fe3fb78 4bf7bd39 60000000 
+
+
+Signed-off-by: Varun Sethi <Varun.Sethi@freescale.com>
+---
+ drivers/iommu/fsl_pamu_domain.c |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+index 61d1daf..af5a548 100644
+--- a/drivers/iommu/fsl_pamu_domain.c
++++ b/drivers/iommu/fsl_pamu_domain.c
+@@ -984,7 +984,7 @@ static int fsl_pamu_add_device(struct device *dev)
+ 	struct iommu_group *group = ERR_PTR(-ENODEV);
+ 	struct pci_dev *pdev;
+ 	const u32 *prop;
+-	int ret, len;
++	int ret = 0, len;
+ 
+ 	/*
+ 	 * For platform devices we allocate a separate group for
+@@ -1007,7 +1007,13 @@ static int fsl_pamu_add_device(struct device *dev)
+ 	if (IS_ERR(group))
+ 		return PTR_ERR(group);
+ 
+-	ret = iommu_group_add_device(group, dev);
++	/*
++	 * Check if device has already been added to an iommu group.
++	 * Group could have already been created for a PCI device in
++	 * the iommu_group_get_for_dev path.
++	 */
++	if (!iommu_group_get(dev))
++		ret = iommu_group_add_device(group, dev);
+ 
+ 	iommu_group_put(group);
+ 	return ret;
+-- 
+1.7.9.5
