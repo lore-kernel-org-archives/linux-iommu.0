@@ -1,59 +1,54 @@
-From: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2] iommu/vt-d: Fix broken device issue when using iommu=pt
-Date: Fri, 5 Sep 2014 09:11:28 +0800
-Message-ID: <54090DC0.9040309@huawei.com>
-References: <1408949099-18677-1-git-send-email-wangyijing@huawei.com>
-	<20140825091531.GG16329@8bytes.org>
-	<8dada92a-19af-4b77-b917-f2d97291abbe@CMEXHTCAS2.ad.emulex.com>
-	<53FB1B09.5070209@huawei.com>
-	<8b3c2f14-d454-45f5-87ab-69e1b87f27c9@CMEXHTCAS1.ad.emulex.com>
-	<53FB3048.90601@huawei.com>
-	<ff926f1d-b899-4245-93bf-3aa1b593ad7e@CMEXHTCAS1.ad.emulex.com>
+From: Yijing Wang <wangyijing@huawei.com>
+Subject: [PATCH v1 05/21] PCI/MSI: Introduce weak arch_find_msi_chip() to find MSI chip
+Date: Fri, 5 Sep 2014 18:09:50 +0800
+Message-ID: <1409911806-10519-6-git-send-email-wangyijing@huawei.com>
+References: <1409911806-10519-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <ff926f1d-b899-4245-93bf-3aa1b593ad7e-3RiH6ntJJkP8BX6JNMqfyFjyZtpTMMwT@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sathya Perla <Sathya.Perla-iH1Dq9VlAzfQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Sarveswara Rao Mygapula <SarveswaraRao.Mygapula-iH1Dq9VlAzfQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Subramanian Seetharaman <subbu.seetharaman-laKkSmNT4hbQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-ia64-owner@vger.kernel.org>
+In-Reply-To: <1409911806-10519-1-git-send-email-wangyijing@huawei.com>
+Sender: linux-ia64-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Xinwei Hu <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, linux-arch@vger.kernel.org, arnab.basu@freescale.com, Bharat.Bhushan@freescale.com, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, Thomas Gleixner <tglx@linutronix.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org, Chris Metcalf <cmetcalf@tilera.com>, Ralf Baechle <ralf@>
 List-Id: iommu@lists.linux-foundation.org
 
->>> Could you also please send the me the FW version (output of "ethtool -i
->> eth0")
->>
->> Hi Sathya, thanks for your help. FW version is 4.6.247.5   driver version is
->> 4.4.161.0s
-> 
-> Hi Wang, this issue (a FW bug) was fixed in the 4.9 FW series. 
-> The HP qualified FW (ver 4.9.416.0) is available at 
-> 
-> http://h20565.www2.hp.com/portal/site/hpsc/template.PAGE/public/psi/swdDetails/?sp4ts.oid=4324790&spf_p.tpst=swdMain&spf_p.prp_swdMain=wsrp-navigationalState%3Didx%253D%257CswItem%253Dco_131997_1%257CswEnvOID%253D54%257CitemLocale%253D%257CswLang%253D%257Cmode%253D%257Caction%253DdriverDocument&javax.portlet.begCacheTok=com.vignette.cachetoken&javax.portlet.endCacheTok=com.vignette.cachetoken
-> 
-> Could you please upgrade your adapter FW and verify the issue.
+Introduce weak arch_find_msi_chip() to find the match msi_chip.
+Currently, MSI chip associates pci bus to msi_chip. Because in
+ARM platform, there may be more than one MSI controller in system.
+Associate pci bus to msi_chip help pci device to find the match
+msi_chip and setup MSI/MSI-X irq correctly. But in other platform,
+like in x86. we only need one MSI chip, because all device use
+the same MSI address/data and irq etc. So it's no need to associate
+pci bus to MSI chip, just use a arch function, arch_find_msi_chip()
+to return the MSI chip for simplicity. The default weak
+arch_find_msi_chip() used in ARM platform, find the MSI chip
+by pci bus.
 
-That's great! Thank you very much. I will notify my colleague to test it. Because this machine is not in my hand, so
-it may take some time.
+Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+---
+ drivers/pci/msi.c |    7 ++++++-
+ 1 files changed, 6 insertions(+), 1 deletions(-)
 
-Thanks!
-Yijing.
-
-> 
-> thanks,
-> -Sathya
-> 
-> .
-> 
-
-
+diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
+index a77e7f7..539c11d 100644
+--- a/drivers/pci/msi.c
++++ b/drivers/pci/msi.c
+@@ -29,9 +29,14 @@ static int pci_msi_enable = 1;
+ 
+ /* Arch hooks */
+ 
++struct msi_chip * __weak arch_find_msi_chip(struct pci_dev *dev)
++{
++	return dev->bus->msi;
++}
++
+ int __weak arch_setup_msi_irq(struct pci_dev *dev, struct msi_desc *desc)
+ {
+-	struct msi_chip *chip = dev->bus->msi;
++	struct msi_chip *chip = arch_find_msi_chip(dev);
+ 	int err;
+ 
+ 	if (!chip || !chip->setup_irq)
 -- 
-Thanks!
-Yijing
+1.7.1
+
