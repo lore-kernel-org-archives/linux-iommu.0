@@ -1,17 +1,14 @@
-From: Sergei Shtylyov <sergei.shtylyov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v1 15/21] Powerpc/MSI: Use MSI chip framework to configure
-	MSI/MSI-X irq
-Date: Fri, 05 Sep 2014 15:41:40 +0400
-Message-ID: <5409A174.3050205@cogentembedded.com>
-References: <1409911806-10519-1-git-send-email-wangyijing@huawei.com>
-	<1409911806-10519-16-git-send-email-wangyijing@huawei.com>
-	<540994D4.6040500@cogentembedded.com>
-	<43412AE0-85BB-4B4B-A4EA-2C6D3B8B85D7@gmail.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCHv2 0/2] OMAP IOMMU Fixes for DT-clients
+Date: Fri, 5 Sep 2014 15:31:40 +0200
+Message-ID: <20140905133140.GO28786@8bytes.org>
+References: <1409869650-26115-1-git-send-email-s-anna@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <43412AE0-85BB-4B4B-A4EA-2C6D3B8B85D7-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1409869650-26115-1-git-send-email-s-anna-l0cyMroinI0@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,40 +18,16 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: wangyijing <wangyijing0307-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: "linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org" <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, "linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Sebastian Ott <sebott-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org" <xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org>, "arnab.basu-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <arnab.basu-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Chris Metcalf <cmetcalf-kv+TWInifGbQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Xinwei Hu <huxinwei>
+To: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 9/5/2014 3:33 PM, wangyijing wrote:
+On Thu, Sep 04, 2014 at 05:27:28PM -0500, Suman Anna wrote:
+> Suman Anna (2):
+>   iommu/omap: Check for valid archdata in attach_dev
+>   iommu/omap: Fix iommu archdata name for DT-based devices
+> 
+>  drivers/iommu/omap-iommu.c | 15 ++++++++++++++-
+>  1 file changed, 14 insertions(+), 1 deletion(-)
 
->>> Use MSI chip framework instead of arch MSI functions to configure
->>> MSI/MSI-X irq. So we can manage MSI/MSI-X irq in a unified framework.
-
->>> Signed-off-by: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
->>> ---
->>>   arch/powerpc/kernel/msi.c |   14 ++++++++++++--
->>>   1 files changed, 12 insertions(+), 2 deletions(-)
-
->>> diff --git a/arch/powerpc/kernel/msi.c b/arch/powerpc/kernel/msi.c
->>> index 71bd161..01781a4 100644
->>> --- a/arch/powerpc/kernel/msi.c
->>> +++ b/arch/powerpc/kernel/msi.c
->> [...]
->>> @@ -27,7 +27,17 @@ int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
->>>       return ppc_md.setup_msi_irqs(dev, nvec, type);
->>>   }
->>>
->>> -void arch_teardown_msi_irqs(struct pci_dev *dev)
->>> +static void ppc_teardown_msi_irqs(struct pci_dev *dev)
-
->>    Shouldn't this function take IRQ # instead?
-
-> This function need to teardown all msi irqs of the pci dev, we should pass the pci dev as argument .
-
-    Ah, I've mixed up the teardown_irqs() method with teardown_irq()! Too 
-similar. :-)
-
-> Thanks!
-> Yijing.
-
-WBR, Sergei
+Applied, thanks.
