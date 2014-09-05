@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 02/12] iommu: Convert iommu-caps from define to enum
-Date: Fri,  5 Sep 2014 12:52:54 +0200
-Message-ID: <1409914384-21191-3-git-send-email-joro@8bytes.org>
+Subject: [PATCH 05/12] iommu/fsl: Convert to iommu_capable() API function
+Date: Fri,  5 Sep 2014 12:52:57 +0200
+Message-ID: <1409914384-21191-6-git-send-email-joro@8bytes.org>
 References: <1409914384-21191-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,67 +18,46 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Allow compile-time type-checking.
-
+Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/iommu.c |  2 +-
- include/linux/iommu.h | 11 +++++++----
- 2 files changed, 8 insertions(+), 5 deletions(-)
+ drivers/iommu/fsl_pamu_domain.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 1bc882e..319d40e 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -955,7 +955,7 @@ phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
- EXPORT_SYMBOL_GPL(iommu_iova_to_phys);
- 
- int iommu_domain_has_cap(struct iommu_domain *domain,
--			 unsigned long cap)
-+			 enum iommu_cap cap)
- {
- 	if (domain->ops->domain_has_cap != NULL)
- 		return domain->ops->domain_has_cap(domain, cap);
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index d43146a..d5534d5 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -57,8 +57,11 @@ struct iommu_domain {
- 	struct iommu_domain_geometry geometry;
- };
- 
--#define IOMMU_CAP_CACHE_COHERENCY	0x1
--#define IOMMU_CAP_INTR_REMAP		0x2	/* isolates device intrs */
-+enum iommu_cap {
-+	IOMMU_CAP_CACHE_COHERENCY,	/* IOMMU can enforce cache coherent DMA
-+					   transactions */
-+	IOMMU_CAP_INTR_REMAP,		/* IOMMU supports interrupt isolation */
-+};
- 
- /*
-  * Following constraints are specifc to FSL_PAMUV1:
-@@ -157,7 +160,7 @@ extern size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova,
- 		       size_t size);
- extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova);
- extern int iommu_domain_has_cap(struct iommu_domain *domain,
--				unsigned long cap);
-+				enum iommu_cap cap);
- extern void iommu_set_fault_handler(struct iommu_domain *domain,
- 			iommu_fault_handler_t handler, void *token);
- 
-@@ -312,7 +315,7 @@ static inline phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_ad
+diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+index 61d1daf..f43a80d 100644
+--- a/drivers/iommu/fsl_pamu_domain.c
++++ b/drivers/iommu/fsl_pamu_domain.c
+@@ -411,8 +411,7 @@ static phys_addr_t fsl_pamu_iova_to_phys(struct iommu_domain *domain,
+ 	return get_phys_addr(dma_domain, iova);
  }
  
- static inline int iommu_domain_has_cap(struct iommu_domain *domain,
--				       unsigned long cap)
-+				       enum iommu_cap cap)
+-static int fsl_pamu_domain_has_cap(struct iommu_domain *domain,
+-				      unsigned long cap)
++static bool fsl_pamu_capable(enum iommu_cap cap)
  {
- 	return 0;
+ 	return cap == IOMMU_CAP_CACHE_COHERENCY;
  }
+@@ -1074,6 +1073,7 @@ static u32 fsl_pamu_get_windows(struct iommu_domain *domain)
+ }
+ 
+ static const struct iommu_ops fsl_pamu_ops = {
++	.capable	= fsl_pamu_capable,
+ 	.domain_init	= fsl_pamu_domain_init,
+ 	.domain_destroy = fsl_pamu_domain_destroy,
+ 	.attach_dev	= fsl_pamu_attach_device,
+@@ -1083,7 +1083,6 @@ static const struct iommu_ops fsl_pamu_ops = {
+ 	.domain_get_windows = fsl_pamu_get_windows,
+ 	.domain_set_windows = fsl_pamu_set_windows,
+ 	.iova_to_phys	= fsl_pamu_iova_to_phys,
+-	.domain_has_cap = fsl_pamu_domain_has_cap,
+ 	.domain_set_attr = fsl_pamu_set_domain_attr,
+ 	.domain_get_attr = fsl_pamu_get_domain_attr,
+ 	.add_device	= fsl_pamu_add_device,
 -- 
 1.9.1
