@@ -1,57 +1,105 @@
-From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Subject: Re: [PATCH v1 15/21] Powerpc/MSI: Use MSI chip framework to configure
- MSI/MSI-X irq
-Date: Fri, 05 Sep 2014 14:47:48 +0400
-Message-ID: <540994D4.6040500@cogentembedded.com>
-References: <1409911806-10519-1-git-send-email-wangyijing@huawei.com> <1409911806-10519-16-git-send-email-wangyijing@huawei.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 01/12] iommu: Introduce iommu_capable API function
+Date: Fri,  5 Sep 2014 12:52:53 +0200
+Message-ID: <1409914384-21191-2-git-send-email-joro@8bytes.org>
+References: <1409914384-21191-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <1409911806-10519-16-git-send-email-wangyijing@huawei.com>
-Sender: linux-arch-owner@vger.kernel.org
-To: Yijing Wang <wangyijing@huawei.com>, Bjorn Helgaas <bhelgaas@google.com>
-Cc: Xinwei Hu <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, linux-arch@vger.kernel.org, arnab.basu@freescale.com, Bharat.Bhushan@freescale.com, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, Thomas Gleixner <tglx@linutronix.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org, Chris Metcalf <cmetcalf@tilera.com>, Ralf Baechle <ralf@linux-mips.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1409914384-21191-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hello.
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-On 9/5/2014 2:10 PM, Yijing Wang wrote:
+This function will replace the current iommu_domain_has_cap
+function and clean up the interface while at it.
 
-> Use MSI chip framework instead of arch MSI functions to configure
-> MSI/MSI-X irq. So we can manage MSI/MSI-X irq in a unified framework.
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ drivers/iommu/iommu.c | 18 +++++++++++++++---
+ include/linux/iommu.h |  7 +++++++
+ 2 files changed, 22 insertions(+), 3 deletions(-)
 
-> Signed-off-by: Yijing Wang <wangyijing@huawei.com>
-> ---
->   arch/powerpc/kernel/msi.c |   14 ++++++++++++--
->   1 files changed, 12 insertions(+), 2 deletions(-)
-
-> diff --git a/arch/powerpc/kernel/msi.c b/arch/powerpc/kernel/msi.c
-> index 71bd161..01781a4 100644
-> --- a/arch/powerpc/kernel/msi.c
-> +++ b/arch/powerpc/kernel/msi.c
-[...]
-> @@ -27,7 +27,17 @@ int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
->   	return ppc_md.setup_msi_irqs(dev, nvec, type);
->   }
->
-> -void arch_teardown_msi_irqs(struct pci_dev *dev)
-> +static void ppc_teardown_msi_irqs(struct pci_dev *dev)
-
-    Shouldn't this function take IRQ # instead?
-
->   {
->   	ppc_md.teardown_msi_irqs(dev);
->   }
-> +
-> +static struct msi_chip ppc_msi_chip = {
-> +	.setup_irqs = ppc_setup_msi_irqs,
-> +	.teardown_irqs = ppc_teardown_msi_irqs,
-> +};
-> +
-> +struct msi_chip *arch_find_msi_chip(struct pci_dev *dev)
-> +{
-> +	return &ppc_msi_chip;
-> +}
-
-WBR, Sergei
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index ac4adb3..1bc882e 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -815,6 +815,15 @@ bool iommu_present(struct bus_type *bus)
+ }
+ EXPORT_SYMBOL_GPL(iommu_present);
+ 
++bool iommu_capable(struct bus_type *bus, enum iommu_cap cap)
++{
++	if (!bus->iommu_ops || !bus->iommu_ops->capable)
++		return false;
++
++	return bus->iommu_ops->capable(cap);
++}
++EXPORT_SYMBOL_GPL(iommu_capable);
++
+ /**
+  * iommu_set_fault_handler() - set a fault handler for an iommu domain
+  * @domain: iommu domain
+@@ -948,10 +957,13 @@ EXPORT_SYMBOL_GPL(iommu_iova_to_phys);
+ int iommu_domain_has_cap(struct iommu_domain *domain,
+ 			 unsigned long cap)
+ {
+-	if (unlikely(domain->ops->domain_has_cap == NULL))
+-		return 0;
++	if (domain->ops->domain_has_cap != NULL)
++		return domain->ops->domain_has_cap(domain, cap);
++
++	if (domain->ops->capable != NULL)
++		return domain->ops->capable(cap);
+ 
+-	return domain->ops->domain_has_cap(domain, cap);
++	return 0;
+ }
+ EXPORT_SYMBOL_GPL(iommu_domain_has_cap);
+ 
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 20f9a52..d43146a 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -102,6 +102,7 @@ enum iommu_attr {
+  * @pgsize_bitmap: bitmap of supported page sizes
+  */
+ struct iommu_ops {
++	bool (*capable)(enum iommu_cap);
+ 	int (*domain_init)(struct iommu_domain *domain);
+ 	void (*domain_destroy)(struct iommu_domain *domain);
+ 	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
+@@ -142,6 +143,7 @@ struct iommu_ops {
+ 
+ extern int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops);
+ extern bool iommu_present(struct bus_type *bus);
++extern bool iommu_capable(struct bus_type *bus, enum iommu_cap cap);
+ extern struct iommu_domain *iommu_domain_alloc(struct bus_type *bus);
+ extern struct iommu_group *iommu_group_get_by_id(int id);
+ extern void iommu_domain_free(struct iommu_domain *domain);
+@@ -250,6 +252,11 @@ static inline bool iommu_present(struct bus_type *bus)
+ 	return false;
+ }
+ 
++static inline bool iommu_capable(struct bus_type *bus, enum iommu_cap cap)
++{
++	return false;
++}
++
+ static inline struct iommu_domain *iommu_domain_alloc(struct bus_type *bus)
+ {
+ 	return NULL;
+-- 
+1.9.1
