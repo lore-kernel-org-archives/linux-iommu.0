@@ -1,65 +1,91 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 07/12] iommu/msm: Convert to iommu_capable() API function
-Date: Fri,  5 Sep 2014 12:52:59 +0200
-Message-ID: <1409914384-21191-8-git-send-email-joro@8bytes.org>
-References: <1409914384-21191-1-git-send-email-joro@8bytes.org>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH 2/2] iommu/omap: Fix iommu archdata name for DT-based devices
+Date: Fri, 05 Sep 2014 14:11:59 +0300
+Message-ID: <2047677.moNByOyTBi@avalon>
+References: <1409788712-10741-1-git-send-email-s-anna@ti.com> <2755871.jyTSgisx8z@avalon> <5408D701.7070609@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1409914384-21191-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <5408D701.7070609@ti.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Suman Anna <s-anna@ti.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Florian Vaussard <florian.vaussard@epfl.ch>, iommu@lists.linux-foundation.org, linux-omap@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Hi Suman,
 
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
----
- drivers/iommu/msm_iommu.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+On Thursday 04 September 2014 16:17:53 Suman Anna wrote:
+> Hi Laurent,
+> 
+> > On Wednesday 03 September 2014 18:58:32 Suman Anna wrote:
+> >> A device is tied to an iommu through its archdata field. The archdata
+> >> is allocated on the fly for DT-based devices automatically through the
+> >> .add_device iommu ops. The current logic incorrectly assigned the name
+> >> of the IOMMU user device, instead of the name of the IOMMU device as
+> >> required by the attach logic. Fix this issue so that DT-based devices
+> >> can attach successfully to an IOMMU domain.
+> >> 
+> >> Signed-off-by: Suman Anna <s-anna@ti.com>
+> >> ---
+> >> 
+> >>  drivers/iommu/omap-iommu.c | 10 +++++++++-
+> >>  1 file changed, 9 insertions(+), 1 deletion(-)
+> >> 
+> >> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+> >> index f245d51..f47ac03 100644
+> >> --- a/drivers/iommu/omap-iommu.c
+> >> +++ b/drivers/iommu/omap-iommu.c
+> >> @@ -26,6 +26,7 @@
+> >>  #include <linux/of.h>
+> >>  #include <linux/of_iommu.h>
+> >>  #include <linux/of_irq.h>
+> >> +#include <linux/of_platform.h>
+> >> 
+> >>  #include <asm/cacheflush.h>
+> >> 
+> >> @@ -1244,6 +1245,7 @@ static int omap_iommu_add_device(struct device
+> >> *dev)
+> >>  {
+> >>  	struct omap_iommu_arch_data *arch_data;
+> >>  	struct device_node *np;
+> >> +	struct platform_device *pdev;
+> >> 
+> >>  	/*
+> >>  	 * Allocate the archdata iommu structure for DT-based devices.
+> >> @@ -1258,13 +1260,19 @@ static int omap_iommu_add_device(struct device
+> >> *dev)
+> >> 	if (!np)
+> >>  		return 0;
+> >> 
+> >> +	pdev = of_find_device_by_node(np);
+> >> +	if (WARN_ON(!pdev)) {
+> >> +		of_node_put(np);
+> >> +		return -EINVAL;
+> >> +	}
+> > 
+> > I might be wrong, but I don't think there's a guarantee at this point that
+> > the IOMMU device is already instantiated :-/
+> 
+> The omap_iommu_init which registers the iommu_ops is a subsys_initcall,
+> so the platform devices are guaranteed to be created by this point.
 
-diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index 49f41d6..6e3dcc28 100644
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -603,10 +603,9 @@ fail:
- 	return ret;
- }
- 
--static int msm_iommu_domain_has_cap(struct iommu_domain *domain,
--				    unsigned long cap)
-+static bool msm_iommu_capable(enum iommu_cap cap)
- {
--	return 0;
-+	return false;
- }
- 
- static void print_ctx_regs(void __iomem *base, int ctx)
-@@ -675,6 +674,7 @@ fail:
- }
- 
- static const struct iommu_ops msm_iommu_ops = {
-+	.capable = msm_iommu_capable,
- 	.domain_init = msm_iommu_domain_init,
- 	.domain_destroy = msm_iommu_domain_destroy,
- 	.attach_dev = msm_iommu_attach_dev,
-@@ -682,7 +682,6 @@ static const struct iommu_ops msm_iommu_ops = {
- 	.map = msm_iommu_map,
- 	.unmap = msm_iommu_unmap,
- 	.iova_to_phys = msm_iommu_iova_to_phys,
--	.domain_has_cap = msm_iommu_domain_has_cap,
- 	.pgsize_bitmap = MSM_IOMMU_PGSIZES,
- };
- 
+OK, no worries then.
+
+> My test on OMAP4 in fact has the dsp node created before the IOMMU node,
+> and this is not an issue. I have added the WARN_ON in case some one has
+> the IOMMU node disabled, but try to use it.
+> 
+> > Will Deacon has posted patches that rework the IOMMU core for better DT
+> > integration, have you seen them ?
+> 
+> Can you point out the thread? Are you talking about
+> http://marc.info/?l=linux-arm-kernel&m=140968072117851&w=2?
+
+Yes that's the one.
+
 -- 
-1.9.1
+Regards,
+
+Laurent Pinchart
+
