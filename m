@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 01/12] iommu: Introduce iommu_capable API function
-Date: Fri,  5 Sep 2014 12:52:53 +0200
-Message-ID: <1409914384-21191-2-git-send-email-joro@8bytes.org>
+Subject: [PATCH 02/12] iommu: Convert iommu-caps from define to enum
+Date: Fri,  5 Sep 2014 12:52:54 +0200
+Message-ID: <1409914384-21191-3-git-send-email-joro@8bytes.org>
 References: <1409914384-21191-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,83 +23,62 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-This function will replace the current iommu_domain_has_cap
-function and clean up the interface while at it.
+Allow compile-time type-checking.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 18 +++++++++++++++---
- include/linux/iommu.h |  7 +++++++
- 2 files changed, 22 insertions(+), 3 deletions(-)
+ drivers/iommu/iommu.c |  2 +-
+ include/linux/iommu.h | 11 +++++++----
+ 2 files changed, 8 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index ac4adb3..1bc882e 100644
+index 1bc882e..319d40e 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -815,6 +815,15 @@ bool iommu_present(struct bus_type *bus)
- }
- EXPORT_SYMBOL_GPL(iommu_present);
+@@ -955,7 +955,7 @@ phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
+ EXPORT_SYMBOL_GPL(iommu_iova_to_phys);
  
-+bool iommu_capable(struct bus_type *bus, enum iommu_cap cap)
-+{
-+	if (!bus->iommu_ops || !bus->iommu_ops->capable)
-+		return false;
-+
-+	return bus->iommu_ops->capable(cap);
-+}
-+EXPORT_SYMBOL_GPL(iommu_capable);
-+
- /**
-  * iommu_set_fault_handler() - set a fault handler for an iommu domain
-  * @domain: iommu domain
-@@ -948,10 +957,13 @@ EXPORT_SYMBOL_GPL(iommu_iova_to_phys);
  int iommu_domain_has_cap(struct iommu_domain *domain,
- 			 unsigned long cap)
+-			 unsigned long cap)
++			 enum iommu_cap cap)
  {
--	if (unlikely(domain->ops->domain_has_cap == NULL))
--		return 0;
-+	if (domain->ops->domain_has_cap != NULL)
-+		return domain->ops->domain_has_cap(domain, cap);
-+
-+	if (domain->ops->capable != NULL)
-+		return domain->ops->capable(cap);
- 
--	return domain->ops->domain_has_cap(domain, cap);
-+	return 0;
- }
- EXPORT_SYMBOL_GPL(iommu_domain_has_cap);
- 
+ 	if (domain->ops->domain_has_cap != NULL)
+ 		return domain->ops->domain_has_cap(domain, cap);
 diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 20f9a52..d43146a 100644
+index d43146a..d5534d5 100644
 --- a/include/linux/iommu.h
 +++ b/include/linux/iommu.h
-@@ -102,6 +102,7 @@ enum iommu_attr {
-  * @pgsize_bitmap: bitmap of supported page sizes
-  */
- struct iommu_ops {
-+	bool (*capable)(enum iommu_cap);
- 	int (*domain_init)(struct iommu_domain *domain);
- 	void (*domain_destroy)(struct iommu_domain *domain);
- 	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
-@@ -142,6 +143,7 @@ struct iommu_ops {
+@@ -57,8 +57,11 @@ struct iommu_domain {
+ 	struct iommu_domain_geometry geometry;
+ };
  
- extern int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops);
- extern bool iommu_present(struct bus_type *bus);
-+extern bool iommu_capable(struct bus_type *bus, enum iommu_cap cap);
- extern struct iommu_domain *iommu_domain_alloc(struct bus_type *bus);
- extern struct iommu_group *iommu_group_get_by_id(int id);
- extern void iommu_domain_free(struct iommu_domain *domain);
-@@ -250,6 +252,11 @@ static inline bool iommu_present(struct bus_type *bus)
- 	return false;
+-#define IOMMU_CAP_CACHE_COHERENCY	0x1
+-#define IOMMU_CAP_INTR_REMAP		0x2	/* isolates device intrs */
++enum iommu_cap {
++	IOMMU_CAP_CACHE_COHERENCY,	/* IOMMU can enforce cache coherent DMA
++					   transactions */
++	IOMMU_CAP_INTR_REMAP,		/* IOMMU supports interrupt isolation */
++};
+ 
+ /*
+  * Following constraints are specifc to FSL_PAMUV1:
+@@ -157,7 +160,7 @@ extern size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+ 		       size_t size);
+ extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova);
+ extern int iommu_domain_has_cap(struct iommu_domain *domain,
+-				unsigned long cap);
++				enum iommu_cap cap);
+ extern void iommu_set_fault_handler(struct iommu_domain *domain,
+ 			iommu_fault_handler_t handler, void *token);
+ 
+@@ -312,7 +315,7 @@ static inline phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_ad
  }
  
-+static inline bool iommu_capable(struct bus_type *bus, enum iommu_cap cap)
-+{
-+	return false;
-+}
-+
- static inline struct iommu_domain *iommu_domain_alloc(struct bus_type *bus)
+ static inline int iommu_domain_has_cap(struct iommu_domain *domain,
+-				       unsigned long cap)
++				       enum iommu_cap cap)
  {
- 	return NULL;
+ 	return 0;
+ }
 -- 
 1.9.1
