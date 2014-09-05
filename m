@@ -1,11 +1,14 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 00/12] iommu: Convert iommu_domain_has_cap() to iommu_capable()
-Date: Fri,  5 Sep 2014 12:52:52 +0200
-Message-ID: <1409914384-21191-1-git-send-email-joro@8bytes.org>
+Subject: [PATCH 09/12] kvm: iommu: Convert to use new iommu_capable() API
+	function
+Date: Fri,  5 Sep 2014 12:53:01 +0200
+Message-ID: <1409914384-21191-10-git-send-email-joro@8bytes.org>
+References: <1409914384-21191-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1409914384-21191-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,52 +19,41 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Gleb Natapov <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-this patch-set removes the iommu_domain_has_cap() function
-from the IOMMU-API and replaces it with the new
-iommu_capable() function.
+Cc: Gleb Natapov <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ virt/kvm/iommu.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-The capabilities that can be queried with the
-iommu_domain_has_cap() function are not domain specific, but
-specific to the IOMMUs in the system, so they are not a
-function of the domain. This should be reflected in the
-IOMMU-API. Please review.
-
-Thanks,
-
-	Joerg
-
-Joerg Roedel (12):
-  iommu: Introduce iommu_capable API function
-  iommu: Convert iommu-caps from define to enum
-  iommu/amd: Convert to iommu_capable() API function
-  iommu/arm-smmu: Convert to iommu_capable() API function
-  iommu/fsl: Convert to iommu_capable() API function
-  iommu/vt-d: Convert to iommu_capable() API function
-  iommu/msm: Convert to iommu_capable() API function
-  iommu/tegra: Convert to iommu_capable() API function
-  kvm: iommu: Convert to use new iommu_capable() API function
-  vfio: Convert to use new iommu_capable() API function
-  IB/usnic: Convert to use new iommu_capable() API function
-  iommu: Remove iommu_domain_has_cap() API function
-
- drivers/infiniband/hw/usnic/usnic_uiom.c |  2 +-
- drivers/iommu/amd_iommu.c                | 11 +++++-----
- drivers/iommu/arm-smmu.c                 | 35 ++++++++++++++++++++++++--------
- drivers/iommu/fsl_pamu_domain.c          |  5 ++---
- drivers/iommu/intel-iommu.c              | 13 +++++-------
- drivers/iommu/iommu.c                    | 19 ++++++++---------
- drivers/iommu/msm_iommu.c                |  7 +++----
- drivers/iommu/tegra-gart.c               |  7 +++----
- drivers/iommu/tegra-smmu.c               |  7 +++----
- drivers/vfio/vfio_iommu_type1.c          |  4 ++--
- include/linux/iommu.h                    | 25 +++++++++++------------
- virt/kvm/iommu.c                         |  6 ++----
- 12 files changed, 73 insertions(+), 68 deletions(-)
-
+diff --git a/virt/kvm/iommu.c b/virt/kvm/iommu.c
+index 714b949..45ee080 100644
+--- a/virt/kvm/iommu.c
++++ b/virt/kvm/iommu.c
+@@ -191,8 +191,7 @@ int kvm_assign_device(struct kvm *kvm,
+ 		return r;
+ 	}
+ 
+-	noncoherent = !iommu_domain_has_cap(kvm->arch.iommu_domain,
+-					    IOMMU_CAP_CACHE_COHERENCY);
++	noncoherent = !iommu_capable(&pci_bus_type, IOMMU_CAP_CACHE_COHERENCY);
+ 
+ 	/* Check if need to update IOMMU page table for guest memory */
+ 	if (noncoherent != kvm->arch.iommu_noncoherent) {
+@@ -254,8 +253,7 @@ int kvm_iommu_map_guest(struct kvm *kvm)
+ 	}
+ 
+ 	if (!allow_unsafe_assigned_interrupts &&
+-	    !iommu_domain_has_cap(kvm->arch.iommu_domain,
+-				  IOMMU_CAP_INTR_REMAP)) {
++	    !iommu_capable(&pci_bus_type, IOMMU_CAP_INTR_REMAP)) {
+ 		printk(KERN_WARNING "%s: No interrupt remapping support,"
+ 		       " disallowing device assignment."
+ 		       " Re-enble with \"allow_unsafe_assigned_interrupts=1\""
 -- 
 1.9.1
