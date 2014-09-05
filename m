@@ -1,15 +1,12 @@
 From: "Su, Friendy" <Friendy.Su-7U/KSKJipcvM1kAEIRd3EQ@public.gmane.org>
-Subject: RE: [PATCH v1 1/1] iommu/amd: set iommu for early mapped ioapic/hpet
-Date: Fri, 5 Sep 2014 19:17:18 +0800
-Message-ID: <053191AD6E9023439BF3970DE870051856D1F164AF@APSHAXMS02.ap.sony.com>
-References: <053191AD6E9023439BF3970DE870051856D1EF3AC4@APSHAXMS02.ap.sony.com>
-	<20140903150538.GJ28786@8bytes.org>
+Subject: [PATCH v2 1/1] iommu/amd: set iommu for early mapped ioapic/hpet
+Date: Fri, 5 Sep 2014 19:25:14 +0800
+Message-ID: <053191AD6E9023439BF3970DE870051856D1EF3AC5@APSHAXMS02.ap.sony.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140903150538.GJ28786-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Content-Language: zh-CN
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,68 +16,120 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi, Joerg,
 
-> -----Original Message-----
-> From: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org [mailto:joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org]
-> Sent: Wednesday, September 03, 2014 11:06 PM
-> To: Su, Friendy
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: Re: [PATCH v1 1/1] iommu/amd: set iommu for early mapped
-> ioapic/hpet
-> 
-> On Mon, Sep 01, 2014 at 02:17:44PM +0800, Su, Friendy wrote:
-> > diff --git a/drivers/iommu/amd_iommu_init.c
-> b/drivers/iommu/amd_iommu_init.c
-> > index 3783e0b..148ab61 100644
-> > --- a/drivers/iommu/amd_iommu_init.c
-> > +++ b/drivers/iommu/amd_iommu_init.c
-> > @@ -747,7 +747,7 @@ static int __init add_special_device(u8 type, u8 id,
-> u16 devid, bool cmd_line)
-> >  	return 0;
-> >  }
-> >
-> > -static int __init add_early_maps(void)
-> > +static int __init add_early_maps(struct amd_iommu *iommu)
-> >  {
-> >  	int i, ret;
-> >
-> > @@ -758,6 +758,11 @@ static int __init add_early_maps(void)
-> >  					 early_ioapic_map[i].cmd_line);
-> >  		if (ret)
-> >  			return ret;
-> > +		/*
-> > +		 * early mapped ioapci overrides ACPI IVRS,
-> > +		 * they should be always controlled by iommu.
-> > +		 */
-> > +		set_iommu_for_device(iommu, early_ioapic_map[i].devid);
-> >  	}
-> >
-> >  	for (i = 0; i < early_hpet_map_size; ++i) {
-> > @@ -767,6 +772,11 @@ static int __init add_early_maps(void)
-> >  					 early_hpet_map[i].cmd_line);
-> >  		if (ret)
-> >  			return ret;
-> > +		/*
-> > +		 * early mapped hpet overrides ACPI IVRS,
-> > +		 * they should be always controlled by iommu.
-> > +		 */
-> > +		set_iommu_for_device(iommu, early_hpet_map[i].devid);
-> 
-> This doesn't work on machines with multiple IOMMUs in it. Also the
-> problem only exists if there is no IVHD entry in the IVRS table for the
-> device containing IOAPIC and HPET.
-> 
-> But if this IVHD entry is not present we can't reliably know which IOMMU
-> is responsible for a given IOAPIC/HPET.
-> 
-> 
-> 	Joerg
-> 
-Thanks. You are correct, we should handle early mapped inside IOMMU whose IVHD reports the same ID. I will update.
+From: Su Friendy <friendy.su-7U/KSKJipcvM1kAEIRd3EQ@public.gmane.org>
 
-Friendy
+Subject: iommu/amd: make early mapped ioapic/hpet override IVHD
+
+The early mapped ioapic/hpet specified by kernel boot parameter
+ivrs_ioapic[ID]/ivrs_hpet[ID] always override the ioapic/hpet with
+same ID reported by ACPI IVHD table.
+
+Current driver still uses devid in IVHD to set dte entry, not devid
+in early mapped. This patch fixed to use devid in early mapped.
+
+This issue is found on a mother board whose BIOS reports wrong
+IOAPIC devid in IVHD table. Without this fix, the early mapped
+does not really override IVHD. So that the wrong reported IOAPIC
+does not work.
+
+Signed-off-by: Su Friendy <friendy.su-7U/KSKJipcvM1kAEIRd3EQ@public.gmane.org>
+Signed-off-by: Saeki Shusuke <shusuke.saeki-7rVYBvDxQfZBDgjK7y7TUQ@public.gmane.org>
+Signed-off-by: Tamori Masahiro <Masahiro.Tamori-7rVYBvDxQfZBDgjK7y7TUQ@public.gmane.org>
+---
+ drivers/iommu/amd_iommu_init.c |   40 +++++++++++++++++++++++++++++++++-------
+ 1 file changed, 33 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 3c06183..83cb31b 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -715,7 +715,7 @@ static void __init set_dev_entry_from_acpi(struct amd_iommu *iommu,
+ 	set_iommu_for_device(iommu, devid);
+ }
+ 
+-static int __init add_special_device(u8 type, u8 id, u16 devid, bool cmd_line)
++static int __init add_special_device(u8 type, u8 id, u16 devid, bool cmd_line, u16 *early_mapped_devid)
+ {
+ 	struct devid_map *entry;
+ 	struct list_head *list;
+@@ -734,6 +734,19 @@ static int __init add_special_device(u8 type, u8 id, u16 devid, bool cmd_line)
+ 		pr_info("AMD-Vi: Command-line override present for %s id %d - ignoring\n",
+ 			type == IVHD_SPECIAL_IOAPIC ? "IOAPIC" : "HPET", id);
+ 
++		/*
++		 * if this special device is added from IVHD and
++		 * its devid in IVHD != devid in early mapped, then
++		 * record early mapped devid.
++		 */
++		if (!cmd_line && devid != entry->devid) {
++			if (early_mapped_devid == NULL)
++				return -EINVAL;
++
++			*early_mapped_devid = entry->devid;
++			return -EEXIST;
++		}
++
+ 		return 0;
+ 	}
+ 
+@@ -758,7 +771,8 @@ static int __init add_early_maps(void)
+ 		ret = add_special_device(IVHD_SPECIAL_IOAPIC,
+ 					 early_ioapic_map[i].id,
+ 					 early_ioapic_map[i].devid,
+-					 early_ioapic_map[i].cmd_line);
++					 early_ioapic_map[i].cmd_line,
++					 NULL);
+ 		if (ret)
+ 			return ret;
+ 	}
+@@ -767,7 +781,8 @@ static int __init add_early_maps(void)
+ 		ret = add_special_device(IVHD_SPECIAL_HPET,
+ 					 early_hpet_map[i].id,
+ 					 early_hpet_map[i].devid,
+-					 early_hpet_map[i].cmd_line);
++					 early_hpet_map[i].cmd_line,
++					 NULL);
+ 		if (ret)
+ 			return ret;
+ 	}
+@@ -961,7 +976,7 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
+ 		case IVHD_DEV_SPECIAL: {
+ 			u8 handle, type;
+ 			const char *var;
+-			u16 devid;
++			u16 devid, early_mapped_devid;
+ 			int ret;
+ 
+ 			handle = e->ext & 0xff;
+@@ -981,10 +996,21 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
+ 				    PCI_SLOT(devid),
+ 				    PCI_FUNC(devid));
+ 
+-			set_dev_entry_from_acpi(iommu, devid, e->flags, 0);
+-			ret = add_special_device(type, handle, devid, false);
+-			if (ret)
++			ret = add_special_device(type, handle, devid, false, &early_mapped_devid);
++
++			/*
++			 * if the special device is already early mapped,
++			 * let the early mapped devid override IVHD.
++			 */
++			if (ret == -EEXIST) {
++				devid = early_mapped_devid;
++				ret = 0;
++			}
++
++			if (ret < 0)
+ 				return ret;
++
++			set_dev_entry_from_acpi(iommu, devid, e->flags, 0);
+ 			break;
+ 		}
+ 		default:
+-- 
+1.7.9.5
