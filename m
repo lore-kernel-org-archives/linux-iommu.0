@@ -1,107 +1,53 @@
-From: Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: Re: [RFC PATCH v2 2/7] dma-mapping: replace set_arch_dma_coherent_ops
- with arch_setup_dma_ops
-Date: Fri, 5 Sep 2014 18:37:41 +0300
-Message-ID: <5409D8C5.9010804@ti.com>
-References: <1409680587-29818-1-git-send-email-will.deacon@arm.com>
- <1409680587-29818-3-git-send-email-will.deacon@arm.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: ath9k and AMD IOMMU alias breakage on 3.16?
+Date: Fri, 05 Sep 2014 22:01:44 -0600
+Message-ID: <1409976104.2982.56.camel@ul30vt.home>
+References: <CAGou9MhCmRajqfh91rxbBUr9PBvJxo7U=g9p4Onp0pJk4BwBnA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1409680587-29818-3-git-send-email-will.deacon@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Will Deacon <will.deacon@arm.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org
-Cc: jroedel@suse.de, arnd@arndb.de, thierry.reding@gmail.com, laurent.pinchart@ideasonboard.com, Varun.Sethi@freescale.com, hdoyu@nvidia.com, dwmw2@infradead.org, m.szyprowski@samsung.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAGou9MhCmRajqfh91rxbBUr9PBvJxo7U=g9p4Onp0pJk4BwBnA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jason Newton <nevion-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
-
-On 09/02/2014 08:56 PM, Will Deacon wrote:
-> set_arch_dma_coherent_ops is called from of_dma_configure in order to
-> swizzle the architectural dma-mapping functions over to a cache-coherent
-> implementation. This is currently implemented only for ARM.
+On Fri, 2014-09-05 at 20:00 -0700, Jason Newton wrote:
+> Hi,
 > 
-> In anticipation of re-using this mechanism for IOMMU-backed dma-mapping
-> ops too, this patch replaces the function with a broader
-> arch_setup_dma_ops callback which is also responsible for setting the
-> DMA mask and offset as well as selecting the correct mapping functions.
+> I have an AR9462 connected over minipcie, it came with the ASRock
+> FM2A88x-itx motherboard and I'm using an AMD A10-7850K cpu with it.  When I
+> have IOMMU enabled, and this is desirable for opencl related things, the
+> AR9462 malfunctions with these two errors occurring:
 > 
-> A further advantage of this split is that it nicely isolates the
-> of-specific code from the dma-mapping code, allowing potential reuse by
-> other buses (e.g. PCI) in the future.
-
-I think this patch can introduce a regression if it will be used as is :(
-
-When this code was initially created there ware a lot of discussion about
-and finally it was decided to configure all common (for all arches) DMA 
-specific parameters for devices in common code, while strictly arch 
-specific things using arch specific APIs/callbacks.
-
-The following parameters are common now:
-dev->coherent_dma_mask	= mask;
-dev->dma_mask		= &dev->coherent_dma_mask;
-dev->dma_pfn_offset	= offset;
-
-and they need to be set always, otherwise it will affect on other
-DT-based arches.
-
-Links:
-- [PATCH v2 0/7] ARM: dma: Support dma-ranges and dma-coherent
-http://www.spinics.net/lists/arm-kernel/msg311678.html
-
-- [PATCH 0/7] of: setup dma parameters using dma-ranges and dma-coherent
-https://lkml.org/lkml/2014/3/6/186
-
-- [PATCH v2 0/7] of: setup dma parameters using dma-ranges and dma-coherent
-https://lkml.org/lkml/2014/4/19/80
-
-- [PATCH v3 0/7] of: setup dma parameters using dma-ranges and dma-coherent
-http://thread.gmane.org/gmane.linux.kernel/1690224/focus=319246
-
+> AMD-Vi: Event logged [INVALID_DEVICE_REQUEST device=00:00.1
+> address=0x000000fdf8080020 flags=0x0a00]
 > 
-> Signed-off-by: Will Deacon <will.deacon@arm.com>
-> ---
->   arch/arm/include/asm/dma-mapping.h | 13 ++++++++----
->   drivers/of/platform.c              | 42 ++++++++++----------------------------
->   include/linux/dma-mapping.h        |  8 +++-----
->   3 files changed, 23 insertions(+), 40 deletions(-)
+> Followed by this  looping error, which reoccurs shortly after associating
+> and obtaining an IP.  I've attached a large snippet from dmesg, due to it's
+> length.
 > 
-
-[...]
-
-> +	arch_setup_dma_ops(dev, DMA_BIT_MASK(32), offset, coherent);
->   }
->   
->   /**
-> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> index 931b70986272..0f7f7b68b0db 100644
-> --- a/include/linux/dma-mapping.h
-> +++ b/include/linux/dma-mapping.h
-> @@ -129,11 +129,9 @@ static inline int dma_coerce_mask_and_coherent(struct device *dev, u64 mask)
->   
->   extern u64 dma_get_required_mask(struct device *dev);
->   
-> -#ifndef set_arch_dma_coherent_ops
-> -static inline int set_arch_dma_coherent_ops(struct device *dev)
-> -{
-> -	return 0;
-> -}
-> +#ifndef arch_setup_dma_ops
-> +static inline void arch_setup_dma_ops(struct device *dev, u64 mask,
-> +				      unsigned long offset, bool coherent) { }
->   #endif
->   
->   static inline unsigned int dma_get_max_seg_size(struct device *dev)
+> I'm not sure where the error is coming from but I did see that Alex
+> Williamson posted a patch that dealt with aliased devices (like pci
+> bridges) and AMD's IOMMU issues, see
+> e028a9e6b8a637af09ac4114083280df4a7045f1 for reference.
 > 
+> I then disable IOMMU in the bios, and immediately the ath9k/AR9462 pair is
+> working without flaw or retries.  Bios is up to date btw, updated it after
+> building the machine last friday.
+> 
+> So anyone have a clue what's going on here?
 
-Regards,
--grygorii
+Please boot with "amd_iommu_dump" on the kernel boot line and send the
+full dmesg log and 'sudo lspci -vvv' output.  Thanks,
+
+Alex
