@@ -1,70 +1,42 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH v2 2/7] dma-mapping: replace
-	set_arch_dma_coherent_ops with arch_setup_dma_ops
-Date: Mon, 8 Sep 2014 11:31:29 +0100
-Message-ID: <20140908103129.GC26030@arm.com>
-References: <1409680587-29818-1-git-send-email-will.deacon@arm.com>
-	<1409680587-29818-3-git-send-email-will.deacon@arm.com>
-	<5409D8C5.9010804@ti.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: ath9k and AMD IOMMU alias breakage on 3.16?
+Date: Mon, 8 Sep 2014 12:32:03 +0200
+Message-ID: <20140908103203.GQ28786@8bytes.org>
+References: <CAGou9MhCmRajqfh91rxbBUr9PBvJxo7U=g9p4Onp0pJk4BwBnA@mail.gmail.com>
+ <1409976104.2982.56.camel@ul30vt.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-wireless-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <5409D8C5.9010804-l0cyMroinI0@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Grygorii Strashko <grygorii.strashko-l0cyMroinI0@public.gmane.org>
-Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <1409976104.2982.56.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
+Sender: linux-wireless-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Jason Newton <nevion-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Sep 05, 2014 at 04:37:41PM +0100, Grygorii Strashko wrote:
-> Hi Will,
-
-Hi Grygorii,
-
-> On 09/02/2014 08:56 PM, Will Deacon wrote:
-> > set_arch_dma_coherent_ops is called from of_dma_configure in order to
-> > swizzle the architectural dma-mapping functions over to a cache-coherent
-> > implementation. This is currently implemented only for ARM.
+On Fri, Sep 05, 2014 at 10:01:44PM -0600, Alex Williamson wrote:
+> On Fri, 2014-09-05 at 20:00 -0700, Jason Newton wrote:
+> > Hi,
 > > 
-> > In anticipation of re-using this mechanism for IOMMU-backed dma-mapping
-> > ops too, this patch replaces the function with a broader
-> > arch_setup_dma_ops callback which is also responsible for setting the
-> > DMA mask and offset as well as selecting the correct mapping functions.
+> > I have an AR9462 connected over minipcie, it came with the ASRock
+> > FM2A88x-itx motherboard and I'm using an AMD A10-7850K cpu with it.  When I
+> > have IOMMU enabled, and this is desirable for opencl related things, the
+> > AR9462 malfunctions with these two errors occurring:
 > > 
-> > A further advantage of this split is that it nicely isolates the
-> > of-specific code from the dma-mapping code, allowing potential reuse by
-> > other buses (e.g. PCI) in the future.
-> 
-> I think this patch can introduce a regression if it will be used as is :(
-> 
-> When this code was initially created there ware a lot of discussion about
-> and finally it was decided to configure all common (for all arches) DMA 
-> specific parameters for devices in common code, while strictly arch 
-> specific things using arch specific APIs/callbacks.
-> 
-> The following parameters are common now:
-> dev->coherent_dma_mask	= mask;
-> dev->dma_mask		= &dev->coherent_dma_mask;
-> dev->dma_pfn_offset	= offset;
-> 
-> and they need to be set always, otherwise it will affect on other
-> DT-based arches.
+> > AMD-Vi: Event logged [INVALID_DEVICE_REQUEST device=00:00.1
+> > address=0x000000fdf8080020 flags=0x0a00]
 
-Ok, in which case we can either configure the struct device in
-of_dma_configure before calling arch_setup_dma_ops, or we can do the work
-in a generic version of arch_setup_dma_ops (that I haven't added yet).
+This means that the device 00:00.1 is sending to the interrupt/EOI
+address-range while interrupt remapping is enabled. You can boot with
+intremap=off on the kernel command line to work around this problem.
 
-The former is how it's done in mainline atm, so I'll stick with that.
+This looks either like another PCI aliasing issue or a 00:00.1 hidden
+device is sending interrupt requests (which it is not allowed to do).
 
-Thanks,
 
-Will
+	Joerg
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-wireless" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
