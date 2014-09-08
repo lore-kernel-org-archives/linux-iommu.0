@@ -1,42 +1,89 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: ath9k and AMD IOMMU alias breakage on 3.16?
-Date: Mon, 8 Sep 2014 12:32:03 +0200
-Message-ID: <20140908103203.GQ28786@8bytes.org>
-References: <CAGou9MhCmRajqfh91rxbBUr9PBvJxo7U=g9p4Onp0pJk4BwBnA@mail.gmail.com>
- <1409976104.2982.56.camel@ul30vt.home>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 04/12] iommu/arm-smmu: Convert to iommu_capable() API
+	function
+Date: Mon, 8 Sep 2014 17:51:36 +0100
+Message-ID: <20140908165136.GW26030@arm.com>
+References: <1409914384-21191-1-git-send-email-joro@8bytes.org>
+	<1409914384-21191-5-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-wireless-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1409976104.2982.56.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
-Sender: linux-wireless-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Jason Newton <nevion-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <1409914384-21191-5-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Sep 05, 2014 at 10:01:44PM -0600, Alex Williamson wrote:
-> On Fri, 2014-09-05 at 20:00 -0700, Jason Newton wrote:
-> > Hi,
-> > 
-> > I have an AR9462 connected over minipcie, it came with the ASRock
-> > FM2A88x-itx motherboard and I'm using an AMD A10-7850K cpu with it.  When I
-> > have IOMMU enabled, and this is desirable for opencl related things, the
-> > AR9462 malfunctions with these two errors occurring:
-> > 
-> > AMD-Vi: Event logged [INVALID_DEVICE_REQUEST device=00:00.1
-> > address=0x000000fdf8080020 flags=0x0a00]
+Hi Joerg,
 
-This means that the device 00:00.1 is sending to the interrupt/EOI
-address-range while interrupt remapping is enabled. You can boot with
-intremap=off on the kernel command line to work around this problem.
+[adding devicetree for the last paragraph]
 
-This looks either like another PCI aliasing issue or a 00:00.1 hidden
-device is sending interrupt requests (which it is not allowed to do).
+On Fri, Sep 05, 2014 at 11:52:56AM +0100, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> 
+> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> ---
+>  drivers/iommu/arm-smmu.c | 35 ++++++++++++++++++++++++++---------
+>  1 file changed, 26 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index ca18d6d..47c2cb6 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -1515,20 +1515,37 @@ static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
+>  	return __pfn_to_phys(pte_pfn(pte)) | (iova & ~PAGE_MASK);
+>  }
+>  
+> -static int arm_smmu_domain_has_cap(struct iommu_domain *domain,
+> -				   unsigned long cap)
+> +static bool arm_smmu_capable(enum iommu_cap cap)
+>  {
+> -	struct arm_smmu_domain *smmu_domain = domain->priv;
+> -	struct arm_smmu_device *smmu = smmu_domain->smmu;
+> -	u32 features = smmu ? smmu->features : 0;
+> +	struct arm_smmu_device *smmu;
+> +	bool ret = false;
+>  
+>  	switch (cap) {
+>  	case IOMMU_CAP_CACHE_COHERENCY:
+> -		return features & ARM_SMMU_FEAT_COHERENT_WALK;
+> +		/*
+> +		 * Use ARM_SMMU_FEAT_COHERENT_WALK as an indicator on whether
+> +		 * the SMMU can force coherency on the DMA transaction. If it
+> +		 * supports COHERENT_WALK it must be behind a coherent
+> +		 * interconnect.
+> +		 * A domain can be attached to any SMMU, so to reliably support
+> +		 * IOMMU_CAP_CACHE_COHERENCY all SMMUs in the system need to be
+> +		 * behind a coherent interconnect.
+> +		 */
 
+I don't think we should rely on the SMMU's advertisement of the coherent
+table walk to mean anything other than `the SMMU can emit cacheable page
+table walks'. The actual walker is a separate observer, and could have a
+different route to memory than transactions flowing through the SMMU.
 
-	Joerg
+In reality, all we can report here is what the SMMU (as opposed to the rest
+of the system) is capable of. The SMMU can always emit cacheable
+transactions for a master if a stage-1 translation is in use so, without
+extending the device-tree binding, we should report true here
+unconditionally.
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-wireless" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+An alternative is to extend the device-tree bindings to have something like
+"dma-coherent" for the SMMU node, which would imply that the interconnect is
+configured to honour snoops from the SMMU into the CPU caches. We might want
+an additional property on top of that to indicate that the table walker is
+also coherent (and we could check this against our ARM_SMMU_FEAT_COHERENT_WALK
+flag)
+
+Will
