@@ -1,116 +1,88 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 3/3] mmu_notifier: Add the call-back for
-	mmu_notifier_invalidate_range()
-Date: Tue,  9 Sep 2014 17:43:54 +0200
-Message-ID: <1410277434-3087-4-git-send-email-joro@8bytes.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 1/3] mmu_notifier: Add mmu_notifier_invalidate_range()
+Date: Tue,  9 Sep 2014 17:43:52 +0200
+Message-ID: <1410277434-3087-2-git-send-email-joro@8bytes.org>
 References: <1410277434-3087-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1410277434-3087-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Andrea Arcangeli <aarcange-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Peter Zijlstra <a.p.zijlstra-/NLkJaSkS4VmR6Xm/wNWPw@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Hugh Dickins <hughd-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Mel Gorman <mgorman-l3A5Bk7waGM@public.gmane.org>, Johannes Weiner <jweiner-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Jay.Cornwall-5C7GfCeVMHo@public.gmane.org, John.Bridgman-5C7GfCeVMHo@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, jroedel-l3A5Bk7waGM@public.gmane.org, Jesse Barnes <jbarnes-Y1mF5jBUw70BENJcbMCuUQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, ben.sander-5C7GfCeVMHo@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <1410277434-3087-1-git-send-email-joro@8bytes.org>
+Sender: owner-linux-mm@kvack.org
+To: Andrew Morton <akpm@linux-foundation.org>, Andrea Arcangeli <aarcange@redhat.com>, Peter Zijlstra <a.p.zijlstra@chello.nl>, Rik van Riel <riel@redhat.com>, Hugh Dickins <hughd@google.com>, Mel Gorman <mgorman@suse.de>, Johannes Weiner <jweiner@redhat.com>
+Cc: Jerome Glisse <jglisse@redhat.com>, jroedel@suse.de, joro@8bytes.org, Jay.Cornwall@amd.com, Oded.Gabbay@amd.com, John.Bridgman@amd.com, Suravee.Suthikulpanit@amd.com, ben.sander@amd.com, Jesse Barnes <jbarnes@virtuousgeek.org>, David Woodhouse <dwmw2@infradead.org>, linux-kernel@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-RnJvbTogSm9lcmcgUm9lZGVsIDxqcm9lZGVsQHN1c2UuZGU+CgpOb3cgdGhhdCB0aGUgbW11X25v
-dGlmaWVyX2ludmFsaWRhdGVfcmFuZ2UoKSBjYWxscyBhcmUgaW4KcGxhY2UsIGFkZCB0aGUgY2Fs
-bC1iYWNrIHRvIGFsbG93IHN1YnN5c3RlbXMgdG8gcmVnaXN0ZXIKYWdhaW5zdCBpdC4KClJldmll
-d2VkLWJ5OiBBbmRyZWEgQXJjYW5nZWxpIDxhYXJjYW5nZUByZWRoYXQuY29tPgpSZXZpZXdlZC1i
-eTogSsOpcsO0bWUgR2xpc3NlIDxqZ2xpc3NlQHJlZGhhdC5jb20+ClNpZ25lZC1vZmYtYnk6IEpv
-ZXJnIFJvZWRlbCA8anJvZWRlbEBzdXNlLmRlPgotLS0KIGluY2x1ZGUvbGludXgvbW11X25vdGlm
-aWVyLmggfCAzNyArKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0tCiBtbS9tbXVf
-bm90aWZpZXIuYyAgICAgICAgICAgIHwgMjUgKysrKysrKysrKysrKysrKysrKysrKysrKwogMiBm
-aWxlcyBjaGFuZ2VkLCA1NyBpbnNlcnRpb25zKCspLCA1IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdp
-dCBhL2luY2x1ZGUvbGludXgvbW11X25vdGlmaWVyLmggYi9pbmNsdWRlL2xpbnV4L21tdV9ub3Rp
-Zmllci5oCmluZGV4IDg3N2QxYzguLmFhMWE2YmYgMTAwNjQ0Ci0tLSBhL2luY2x1ZGUvbGludXgv
-bW11X25vdGlmaWVyLmgKKysrIGIvaW5jbHVkZS9saW51eC9tbXVfbm90aWZpZXIuaApAQCAtOTUs
-MTEgKzk1LDExIEBAIHN0cnVjdCBtbXVfbm90aWZpZXJfb3BzIHsKIAkvKgogCSAqIGludmFsaWRh
-dGVfcmFuZ2Vfc3RhcnQoKSBhbmQgaW52YWxpZGF0ZV9yYW5nZV9lbmQoKSBtdXN0IGJlCiAJICog
-cGFpcmVkIGFuZCBhcmUgY2FsbGVkIG9ubHkgd2hlbiB0aGUgbW1hcF9zZW0gYW5kL29yIHRoZQot
-CSAqIGxvY2tzIHByb3RlY3RpbmcgdGhlIHJldmVyc2UgbWFwcyBhcmUgaGVsZC4gVGhlIHN1YnN5
-c3RlbQotCSAqIG11c3QgZ3VhcmFudGVlIHRoYXQgbm8gYWRkaXRpb25hbCByZWZlcmVuY2VzIGFy
-ZSB0YWtlbiB0bwotCSAqIHRoZSBwYWdlcyBpbiB0aGUgcmFuZ2UgZXN0YWJsaXNoZWQgYmV0d2Vl
-biB0aGUgY2FsbCB0bwotCSAqIGludmFsaWRhdGVfcmFuZ2Vfc3RhcnQoKSBhbmQgdGhlIG1hdGNo
-aW5nIGNhbGwgdG8KLQkgKiBpbnZhbGlkYXRlX3JhbmdlX2VuZCgpLgorCSAqIGxvY2tzIHByb3Rl
-Y3RpbmcgdGhlIHJldmVyc2UgbWFwcyBhcmUgaGVsZC4gSWYgdGhlIHN1YnN5c3RlbQorCSAqIGNh
-bid0IGd1YXJhbnRlZSB0aGF0IG5vIGFkZGl0aW9uYWwgcmVmZXJlbmNlcyBhcmUgdGFrZW4gdG8K
-KwkgKiB0aGUgcGFnZXMgaW4gdGhlIHJhbmdlLCBpdCBoYXMgdG8gaW1wbGVtZW50IHRoZQorCSAq
-IGludmFsaWRhdGVfcmFuZ2UoKSBub3RpZmllciB0byByZW1vdmUgYW55IHJlZmVyZW5jZXMgdGFr
-ZW4KKwkgKiBhZnRlciBpbnZhbGlkYXRlX3JhbmdlX3N0YXJ0KCkuCiAJICoKIAkgKiBJbnZhbGlk
-YXRpb24gb2YgbXVsdGlwbGUgY29uY3VycmVudCByYW5nZXMgbWF5IGJlCiAJICogb3B0aW9uYWxs
-eSBwZXJtaXR0ZWQgYnkgdGhlIGRyaXZlci4gRWl0aGVyIHdheSB0aGUKQEAgLTE0MSw2ICsxNDEs
-MjkgQEAgc3RydWN0IG1tdV9ub3RpZmllcl9vcHMgewogCXZvaWQgKCppbnZhbGlkYXRlX3Jhbmdl
-X2VuZCkoc3RydWN0IG1tdV9ub3RpZmllciAqbW4sCiAJCQkJICAgICBzdHJ1Y3QgbW1fc3RydWN0
-ICptbSwKIAkJCQkgICAgIHVuc2lnbmVkIGxvbmcgc3RhcnQsIHVuc2lnbmVkIGxvbmcgZW5kKTsK
-KworCS8qCisJICogaW52YWxpZGF0ZV9yYW5nZSgpIGlzIGVpdGhlciBjYWxsZWQgYmV0d2Vlbgor
-CSAqIGludmFsaWRhdGVfcmFuZ2Vfc3RhcnQoKSBhbmQgaW52YWxpZGF0ZV9yYW5nZV9lbmQoKSB3
-aGVuIHRoZQorCSAqIFZNIGhhcyB0byBmcmVlIHBhZ2VzIHRoYXQgd2hlcmUgdW5tYXBwZWQsIGJ1
-dCBiZWZvcmUgdGhlCisJICogcGFnZXMgYXJlIGFjdHVhbGx5IGZyZWVkLCBvciBvdXRzaWRlIG9m
-IF9zdGFydCgpL19lbmQoKSB3aGVuCisJICogcGFnZS10YWJsZSBwYWdlcyBhcmUgYWJvdXQgdG8g
-YmUgZnJlZWQuCisJICoKKwkgKiBJZiBpbnZhbGlkYXRlX3JhbmdlKCkgaXMgdXNlZCB0byBtYW5h
-Z2UgYSBub24tQ1BVIFRMQiB3aXRoCisJICogc2hhcmVkIHBhZ2UtdGFibGVzLCBpdCBub3QgbmVj
-ZXNzYXJ5IHRvIGltcGxlbWVudCB0aGUKKwkgKiBpbnZhbGlkYXRlX3JhbmdlX3N0YXJ0KCkvZW5k
-KCkgbm90aWZpZXJzLCBhcworCSAqIGludmFsaWRhdGVfcmFuZ2UoKSBhbHJlYWQgY2F0Y2hlcyB0
-aGUgcG9pbnRzIGluIHRpbWUgd2hlbiBhbgorCSAqIGV4dGVybmFsIFRMQiByYW5nZSBuZWVkcyB0
-byBiZSBmbHVzaGVkLgorCSAqCisJICogVGhlIGludmFsaWRhdGVfcmFuZ2UoKSBmdW5jdGlvbiBp
-cyBjYWxsZWQgdW5kZXIgdGhlIHB0bAorCSAqIHNwaW4tbG9jayBhbmQgbm90IGFsbG93ZWQgdG8g
-c2xlZXAuCisJICoKKwkgKiBOb3RlIHRoYXQgdGhpcyBmdW5jdGlvbiBtaWdodCBiZSBjYWxsZWQg
-d2l0aCBqdXN0IGEgc3ViLXJhbmdlCisJICogb2Ygd2hhdCB3YXMgcGFzc2VkIHRvIGludmFsaWRh
-dGVfcmFuZ2Vfc3RhcnQoKS9lbmQoKSwgaWYKKwkgKiBjYWxsZWQgYmV0d2VlbiB0aG9zZSBmdW5j
-dGlvbnMuCisJICovCisJdm9pZCAoKmludmFsaWRhdGVfcmFuZ2UpKHN0cnVjdCBtbXVfbm90aWZp
-ZXIgKm1uLCBzdHJ1Y3QgbW1fc3RydWN0ICptbSwKKwkJCQkgdW5zaWduZWQgbG9uZyBzdGFydCwg
-dW5zaWduZWQgbG9uZyBlbmQpOwogfTsKIAogLyoKQEAgLTE4Niw2ICsyMDksOCBAQCBleHRlcm4g
-dm9pZCBfX21tdV9ub3RpZmllcl9pbnZhbGlkYXRlX3JhbmdlX3N0YXJ0KHN0cnVjdCBtbV9zdHJ1
-Y3QgKm1tLAogCQkJCSAgdW5zaWduZWQgbG9uZyBzdGFydCwgdW5zaWduZWQgbG9uZyBlbmQpOwog
-ZXh0ZXJuIHZvaWQgX19tbXVfbm90aWZpZXJfaW52YWxpZGF0ZV9yYW5nZV9lbmQoc3RydWN0IG1t
-X3N0cnVjdCAqbW0sCiAJCQkJICB1bnNpZ25lZCBsb25nIHN0YXJ0LCB1bnNpZ25lZCBsb25nIGVu
-ZCk7CitleHRlcm4gdm9pZCBfX21tdV9ub3RpZmllcl9pbnZhbGlkYXRlX3JhbmdlKHN0cnVjdCBt
-bV9zdHJ1Y3QgKm1tLAorCQkJCSAgdW5zaWduZWQgbG9uZyBzdGFydCwgdW5zaWduZWQgbG9uZyBl
-bmQpOwogCiBzdGF0aWMgaW5saW5lIHZvaWQgbW11X25vdGlmaWVyX3JlbGVhc2Uoc3RydWN0IG1t
-X3N0cnVjdCAqbW0pCiB7CkBAIC0yNDAsNiArMjY1LDggQEAgc3RhdGljIGlubGluZSB2b2lkIG1t
-dV9ub3RpZmllcl9pbnZhbGlkYXRlX3JhbmdlX2VuZChzdHJ1Y3QgbW1fc3RydWN0ICptbSwKIHN0
-YXRpYyBpbmxpbmUgdm9pZCBtbXVfbm90aWZpZXJfaW52YWxpZGF0ZV9yYW5nZShzdHJ1Y3QgbW1f
-c3RydWN0ICptbSwKIAkJCQkgIHVuc2lnbmVkIGxvbmcgc3RhcnQsIHVuc2lnbmVkIGxvbmcgZW5k
-KQogeworCWlmIChtbV9oYXNfbm90aWZpZXJzKG1tKSkKKwkJX19tbXVfbm90aWZpZXJfaW52YWxp
-ZGF0ZV9yYW5nZShtbSwgc3RhcnQsIGVuZCk7CiB9CiAKIHN0YXRpYyBpbmxpbmUgdm9pZCBtbXVf
-bm90aWZpZXJfbW1faW5pdChzdHJ1Y3QgbW1fc3RydWN0ICptbSkKZGlmZiAtLWdpdCBhL21tL21t
-dV9ub3RpZmllci5jIGIvbW0vbW11X25vdGlmaWVyLmMKaW5kZXggOTUwODEzYi4uYTkwMDYzNyAx
-MDA2NDQKLS0tIGEvbW0vbW11X25vdGlmaWVyLmMKKysrIGIvbW0vbW11X25vdGlmaWVyLmMKQEAg
-LTE5Miw2ICsxOTIsMTYgQEAgdm9pZCBfX21tdV9ub3RpZmllcl9pbnZhbGlkYXRlX3JhbmdlX2Vu
-ZChzdHJ1Y3QgbW1fc3RydWN0ICptbSwKIAogCWlkID0gc3JjdV9yZWFkX2xvY2soJnNyY3UpOwog
-CWhsaXN0X2Zvcl9lYWNoX2VudHJ5X3JjdShtbiwgJm1tLT5tbXVfbm90aWZpZXJfbW0tPmxpc3Qs
-IGhsaXN0KSB7CisJCS8qCisJCSAqIENhbGwgaW52YWxpZGF0ZV9yYW5nZSBoZXJlIHRvbyB0byBh
-dm9pZCB0aGUgbmVlZCBmb3IgdGhlCisJCSAqIHN1YnN5c3RlbSBvZiBoYXZpbmcgdG8gcmVnaXN0
-ZXIgYW4gaW52YWxpZGF0ZV9yYW5nZV9lbmQKKwkJICogY2FsbC1iYWNrIHdoZW4gdGhlcmUgaXMg
-aW52YWxpZGF0ZV9yYW5nZSBhbHJlYWR5LiBVc3VhbGx5IGEKKwkJICogc3Vic3lzdGVtIHJlZ2lz
-dGVycyBlaXRoZXIgaW52YWxpZGF0ZV9yYW5nZV9zdGFydCgpL2VuZCgpIG9yCisJCSAqIGludmFs
-aWRhdGVfcmFuZ2UoKSwgc28gdGhpcyB3aWxsIGJlIG5vIGFkZGl0aW9uYWwgb3ZlcmhlYWQKKwkJ
-ICogKGJlc2lkZXMgdGhlIHBvaW50ZXIgY2hlY2spLgorCQkgKi8KKwkJaWYgKG1uLT5vcHMtPmlu
-dmFsaWRhdGVfcmFuZ2UpCisJCQltbi0+b3BzLT5pbnZhbGlkYXRlX3JhbmdlKG1uLCBtbSwgc3Rh
-cnQsIGVuZCk7CiAJCWlmIChtbi0+b3BzLT5pbnZhbGlkYXRlX3JhbmdlX2VuZCkKIAkJCW1uLT5v
-cHMtPmludmFsaWRhdGVfcmFuZ2VfZW5kKG1uLCBtbSwgc3RhcnQsIGVuZCk7CiAJfQpAQCAtMTk5
-LDYgKzIwOSwyMSBAQCB2b2lkIF9fbW11X25vdGlmaWVyX2ludmFsaWRhdGVfcmFuZ2VfZW5kKHN0
-cnVjdCBtbV9zdHJ1Y3QgKm1tLAogfQogRVhQT1JUX1NZTUJPTF9HUEwoX19tbXVfbm90aWZpZXJf
-aW52YWxpZGF0ZV9yYW5nZV9lbmQpOwogCit2b2lkIF9fbW11X25vdGlmaWVyX2ludmFsaWRhdGVf
-cmFuZ2Uoc3RydWN0IG1tX3N0cnVjdCAqbW0sCisJCQkJICB1bnNpZ25lZCBsb25nIHN0YXJ0LCB1
-bnNpZ25lZCBsb25nIGVuZCkKK3sKKwlzdHJ1Y3QgbW11X25vdGlmaWVyICptbjsKKwlpbnQgaWQ7
-CisKKwlpZCA9IHNyY3VfcmVhZF9sb2NrKCZzcmN1KTsKKwlobGlzdF9mb3JfZWFjaF9lbnRyeV9y
-Y3UobW4sICZtbS0+bW11X25vdGlmaWVyX21tLT5saXN0LCBobGlzdCkgeworCQlpZiAobW4tPm9w
-cy0+aW52YWxpZGF0ZV9yYW5nZSkKKwkJCW1uLT5vcHMtPmludmFsaWRhdGVfcmFuZ2UobW4sIG1t
-LCBzdGFydCwgZW5kKTsKKwl9CisJc3JjdV9yZWFkX3VubG9jaygmc3JjdSwgaWQpOworfQorRVhQ
-T1JUX1NZTUJPTF9HUEwoX19tbXVfbm90aWZpZXJfaW52YWxpZGF0ZV9yYW5nZSk7CisKIHN0YXRp
-YyBpbnQgZG9fbW11X25vdGlmaWVyX3JlZ2lzdGVyKHN0cnVjdCBtbXVfbm90aWZpZXIgKm1uLAog
-CQkJCSAgICBzdHJ1Y3QgbW1fc3RydWN0ICptbSwKIAkJCQkgICAgaW50IHRha2VfbW1hcF9zZW0p
-Ci0tIAoxLjkuMQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0
-dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+From: Joerg Roedel <jroedel@suse.de>
+
+This notifier closes two important gaps with the current
+invalidate_range_start()/end() notifiers. The _start() part
+is called when all pages are still mapped while the _end()
+notifier is called when all pages are potentially unmapped
+and already freed.
+
+This does not allow to manage external (non-CPU) hardware
+TLBs with MMU-notifiers because there is no way to prevent
+that hardware will establish new TLB entries between the
+calls of these two functions. But this is a requirement to
+the subsytem that implements these existing notifiers.
+
+To allow managing external TLBs the MMU-notifiers need to
+catch the moment when pages are unmapped but not yet freed.
+This new notifier catches that moment and notifies the
+interested subsytem when pages that were unmapped are about
+to be freed. The new notifier will be called between
+invalidate_range_start()/end() to catch the moment when
+pages are unmapped but not yet freed.
+
+For non-CPU TLBs it is also necessary to know when
+page-table pages are freed. This is the second gap in
+current mmu_notifiers. At those events the new notifier will
+also be called, without calling invalidate_range_start() and
+invalidate_range_end() around it.
+
+Reviewed-by: Andrea Arcangeli <aarcange@redhat.com>
+Reviewed-by: J=C3=A9r=C3=B4me Glisse <jglisse@redhat.com>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ include/linux/mmu_notifier.h | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/include/linux/mmu_notifier.h b/include/linux/mmu_notifier.h
+index 2728869..5d03f31 100644
+--- a/include/linux/mmu_notifier.h
++++ b/include/linux/mmu_notifier.h
+@@ -237,6 +237,11 @@ static inline void mmu_notifier_invalidate_range_end=
+(struct mm_struct *mm,
+ 		__mmu_notifier_invalidate_range_end(mm, start, end);
+ }
+=20
++static inline void mmu_notifier_invalidate_range(struct mm_struct *mm,
++				  unsigned long start, unsigned long end)
++{
++}
++
+ static inline void mmu_notifier_mm_init(struct mm_struct *mm)
+ {
+ 	mm->mmu_notifier_mm =3D NULL;
+@@ -332,6 +337,11 @@ static inline void mmu_notifier_invalidate_range_end=
+(struct mm_struct *mm,
+ {
+ }
+=20
++static inline void mmu_notifier_invalidate_range(struct mm_struct *mm,
++				  unsigned long start, unsigned long end)
++{
++}
++
+ static inline void mmu_notifier_mm_init(struct mm_struct *mm)
+ {
+ }
+--=20
+1.9.1
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=3Dmailto:"dont@kvack.org"> email@kvack.org </a>
