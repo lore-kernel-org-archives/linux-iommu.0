@@ -1,118 +1,192 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 0/3 v3] mmu_notifier: Allow to manage CPU external TLBs
-Date: Tue,  9 Sep 2014 17:43:51 +0200
-Message-ID: <1410277434-3087-1-git-send-email-joro@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 2/3] mmu_notifier: Call mmu_notifier_invalidate_range() from
+	VMM
+Date: Tue,  9 Sep 2014 17:43:53 +0200
+Message-ID: <1410277434-3087-3-git-send-email-joro@8bytes.org>
+References: <1410277434-3087-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Return-path: <owner-linux-mm@kvack.org>
-Sender: owner-linux-mm@kvack.org
-To: Andrew Morton <akpm@linux-foundation.org>, Andrea Arcangeli <aarcange@redhat.com>, Peter Zijlstra <a.p.zijlstra@chello.nl>, Rik van Riel <riel@redhat.com>, Hugh Dickins <hughd@google.com>, Mel Gorman <mgorman@suse.de>, Johannes Weiner <jweiner@redhat.com>
-Cc: Jerome Glisse <jglisse@redhat.com>, jroedel@suse.de, joro@8bytes.org, Jay.Cornwall@amd.com, Oded.Gabbay@amd.com, John.Bridgman@amd.com, Suravee.Suthikulpanit@amd.com, ben.sander@amd.com, Jesse Barnes <jbarnes@virtuousgeek.org>, David Woodhouse <dwmw2@infradead.org>, linux-kernel@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1410277434-3087-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Andrea Arcangeli <aarcange-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Peter Zijlstra <a.p.zijlstra-/NLkJaSkS4VmR6Xm/wNWPw@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Hugh Dickins <hughd-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Mel Gorman <mgorman-l3A5Bk7waGM@public.gmane.org>, Johannes Weiner <jweiner-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Jay.Cornwall-5C7GfCeVMHo@public.gmane.org, John.Bridgman-5C7GfCeVMHo@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, jroedel-l3A5Bk7waGM@public.gmane.org, Jesse Barnes <jbarnes-Y1mF5jBUw70BENJcbMCuUQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, ben.sander-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Changes V2->V3:
-
-* Rebased to v3.17-rc4
-* Fixed compile error because pmdp_get_and_clear_notify was
-  missing
-
-Changes V1->V2:
-
-* Rebase to v3.16-rc7
-* Added call of ->invalidate_range to
-  __mmu_notifier_invalidate_end() so that the subsystem
-  doesn't need to register an ->invalidate_end() call-back,
-  subsystems will likely either register
-  invalidate_range_start/end or invalidate_range, so that
-  should be fine.
-* Re-orded declarations a bit to reflect that
-  invalidate_range is not only called between
-  invalidate_range_start/end
-* Updated documentation to cover the case where
-  invalidate_range is called outside of
-  invalidate_range_start/end to flush page-table pages out
-  of the TLB
-
-Hi,
-
-here is a patch-set to extend the mmu_notifiers in the Linux
-kernel to allow managing CPU external TLBs. Those TLBs may
-be implemented in IOMMUs or any other external device, e.g.
-ATS/PRI capable PCI devices.
-
-The problem with managing these TLBs are the semantics of
-the invalidate_range_start/end call-backs currently
-available. Currently the subsystem using mmu_notifiers has
-to guarantee that no new TLB entries are established between
-invalidate_range_start/end. Furthermore the
-invalidate_range_start() function is called when all pages
-are still mapped and invalidate_range_end() when the pages
-are unmapped an already freed.
-
-So both call-backs can't be used to safely flush any non-CPU
-TLB because _start() is called too early and _end() too
-late.
-
-In the AMD IOMMUv2 driver this is currently implemented by
-assigning an empty page-table to the external device between
-_start() and _end(). But as tests have shown this doesn't
-work as external devices don't re-fault infinitly but enter
-a failure state after some time.
-
-Next problem with this solution is that it causes an
-interrupt storm for IO page faults to be handled when an
-empty page-table is assigned.
-
-Furthermore the _start()/end() notifiers only catch the
-moment when page mappings are released, but not page-table
-pages. But this is necessary for managing external TLBs when
-the page-table is shared with the CPU.
-
-To solve this situation I wrote a patch-set to introduce a
-new notifier call-back: mmu_notifer_invalidate_range(). This
-notifier lifts the strict requirements that no new
-references are taken in the range between _start() and
-_end(). When the subsystem can't guarantee that any new
-references are taken is has to provide the
-invalidate_range() call-back to clear any new references in
-there.
-
-It is called between invalidate_range_start() and _end()
-every time the VMM has to wipe out any references to a
-couple of pages. This are usually the places where the CPU
-TLBs are flushed too and where its important that this
-happens before invalidate_range_end() is called.
-
-Any comments and review appreciated!
-
-Thanks,
-
-	Joerg
-
-Joerg Roedel (3):
-  mmu_notifier: Add mmu_notifier_invalidate_range()
-  mmu_notifier: Call mmu_notifier_invalidate_range() from VMM
-  mmu_notifier: Add the call-back for mmu_notifier_invalidate_range()
-
- include/linux/mmu_notifier.h | 88 ++++++++++++++++++++++++++++++++++++++=
-+++---
- kernel/events/uprobes.c      |  2 +-
- mm/fremap.c                  |  2 +-
- mm/huge_memory.c             |  9 +++--
- mm/hugetlb.c                 |  7 +++-
- mm/ksm.c                     |  4 +-
- mm/memory.c                  |  3 +-
- mm/migrate.c                 |  3 +-
- mm/mmu_notifier.c            | 25 +++++++++++++
- mm/rmap.c                    |  2 +-
- 10 files changed, 128 insertions(+), 17 deletions(-)
-
---=20
-1.9.1
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=3Dmailto:"dont@kvack.org"> email@kvack.org </a>
+RnJvbTogSm9lcmcgUm9lZGVsIDxqcm9lZGVsQHN1c2UuZGU+CgpBZGQgY2FsbHMgdG8gdGhlIG5l
+dyBtbXVfbm90aWZpZXJfaW52YWxpZGF0ZV9yYW5nZSgpCmZ1bmN0aW9uIHRvIGFsbCBwbGFjZXMg
+aWYgdGhlIFZNTSB0aGF0IG5lZWQgaXQuCgpSZXZpZXdlZC1ieTogQW5kcmVhIEFyY2FuZ2VsaSA8
+YWFyY2FuZ2VAcmVkaGF0LmNvbT4KUmV2aWV3ZWQtYnk6IErDqXLDtG1lIEdsaXNzZSA8amdsaXNz
+ZUByZWRoYXQuY29tPgpTaWduZWQtb2ZmLWJ5OiBKb2VyZyBSb2VkZWwgPGpyb2VkZWxAc3VzZS5k
+ZT4KLS0tCiBpbmNsdWRlL2xpbnV4L21tdV9ub3RpZmllci5oIHwgNDEgKysrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysKIGtlcm5lbC9ldmVudHMvdXByb2Jlcy5jICAgICAg
+fCAgMiArLQogbW0vZnJlbWFwLmMgICAgICAgICAgICAgICAgICB8ICAyICstCiBtbS9odWdlX21l
+bW9yeS5jICAgICAgICAgICAgIHwgIDkgKysrKystLS0tCiBtbS9odWdldGxiLmMgICAgICAgICAg
+ICAgICAgIHwgIDcgKysrKysrLQogbW0va3NtLmMgICAgICAgICAgICAgICAgICAgICB8ICA0ICsr
+LS0KIG1tL21lbW9yeS5jICAgICAgICAgICAgICAgICAgfCAgMyArKy0KIG1tL21pZ3JhdGUuYyAg
+ICAgICAgICAgICAgICAgfCAgMyArKy0KIG1tL3JtYXAuYyAgICAgICAgICAgICAgICAgICAgfCAg
+MiArLQogOSBmaWxlcyBjaGFuZ2VkLCA2MSBpbnNlcnRpb25zKCspLCAxMiBkZWxldGlvbnMoLSkK
+CmRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L21tdV9ub3RpZmllci5oIGIvaW5jbHVkZS9saW51
+eC9tbXVfbm90aWZpZXIuaAppbmRleCA1ZDAzZjMxLi44NzdkMWM4IDEwMDY0NAotLS0gYS9pbmNs
+dWRlL2xpbnV4L21tdV9ub3RpZmllci5oCisrKyBiL2luY2x1ZGUvbGludXgvbW11X25vdGlmaWVy
+LmgKQEAgLTI3NSw2ICsyNzUsNDQgQEAgc3RhdGljIGlubGluZSB2b2lkIG1tdV9ub3RpZmllcl9t
+bV9kZXN0cm95KHN0cnVjdCBtbV9zdHJ1Y3QgKm1tKQogCV9feW91bmc7CQkJCQkJCVwKIH0pCiAK
+KyNkZWZpbmUJcHRlcF9jbGVhcl9mbHVzaF9ub3RpZnkoX192bWEsIF9fYWRkcmVzcywgX19wdGVw
+KQkJXAorKHsJCQkJCQkJCQlcCisJdW5zaWduZWQgbG9uZyBfX19hZGRyID0gX19hZGRyZXNzICYg
+UEFHRV9NQVNLOwkJCVwKKwlzdHJ1Y3QgbW1fc3RydWN0ICpfX19tbSA9IChfX3ZtYSktPnZtX21t
+OwkJCVwKKwlwdGVfdCBfX19wdGU7CQkJCQkJCVwKKwkJCQkJCQkJCVwKKwlfX19wdGUgPSBwdGVw
+X2NsZWFyX2ZsdXNoKF9fdm1hLCBfX2FkZHJlc3MsIF9fcHRlcCk7CQlcCisJbW11X25vdGlmaWVy
+X2ludmFsaWRhdGVfcmFuZ2UoX19fbW0sIF9fX2FkZHIsCQkJXAorCQkJCQlfX19hZGRyICsgUEFH
+RV9TSVpFKTsJCVwKKwkJCQkJCQkJCVwKKwlfX19wdGU7CQkJCQkJCQlcCit9KQorCisjZGVmaW5l
+IHBtZHBfY2xlYXJfZmx1c2hfbm90aWZ5KF9fdm1hLCBfX2hhZGRyLCBfX3BtZCkJCQlcCisoewkJ
+CQkJCQkJCVwKKwl1bnNpZ25lZCBsb25nIF9fX2hhZGRyID0gX19oYWRkciAmIEhQQUdFX1BNRF9N
+QVNLOwkJXAorCXN0cnVjdCBtbV9zdHJ1Y3QgKl9fX21tID0gKF9fdm1hKS0+dm1fbW07CQkJXAor
+CXBtZF90IF9fX3BtZDsJCQkJCQkJXAorCQkJCQkJCQkJXAorCV9fX3BtZCA9IHBtZHBfY2xlYXJf
+Zmx1c2goX192bWEsIF9faGFkZHIsIF9fcG1kKTsJCVwKKwltbXVfbm90aWZpZXJfaW52YWxpZGF0
+ZV9yYW5nZShfX19tbSwgX19faGFkZHIsCQkJXAorCQkJCSAgICAgIF9fX2hhZGRyICsgSFBBR0Vf
+UE1EX1NJWkUpOwlcCisJCQkJCQkJCQlcCisJX19fcG1kOwkJCQkJCQkJXAorfSkKKworI2RlZmlu
+ZSBwbWRwX2dldF9hbmRfY2xlYXJfbm90aWZ5KF9fbW0sIF9faGFkZHIsIF9fcG1kKQkJCVwKKyh7
+CQkJCQkJCQkJXAorCXVuc2lnbmVkIGxvbmcgX19faGFkZHIgPSBfX2hhZGRyICYgSFBBR0VfUE1E
+X01BU0s7CQlcCisJcG1kX3QgX19fcG1kOwkJCQkJCQlcCisJCQkJCQkJCQlcCisJX19fcG1kID0g
+cG1kcF9nZXRfYW5kX2NsZWFyKF9fbW0sIF9faGFkZHIsIF9fcG1kKTsJCVwKKwltbXVfbm90aWZp
+ZXJfaW52YWxpZGF0ZV9yYW5nZShfX21tLCBfX19oYWRkciwJCQlcCisJCQkJICAgICAgX19faGFk
+ZHIgKyBIUEFHRV9QTURfU0laRSk7CVwKKwkJCQkJCQkJCVwKKwlfX19wbWQ7CQkJCQkJCQlcCit9
+KQorCiAvKgogICogc2V0X3B0ZV9hdF9ub3RpZnkoKSBzZXRzIHRoZSBwdGUgX2FmdGVyXyBydW5u
+aW5nIHRoZSBub3RpZmllci4KICAqIFRoaXMgaXMgc2FmZSB0byBzdGFydCBieSB1cGRhdGluZyB0
+aGUgc2Vjb25kYXJ5IE1NVXMsIGJlY2F1c2UgdGhlIHByaW1hcnkgTU1VCkBAIC0zNTIsNiArMzkw
+LDkgQEAgc3RhdGljIGlubGluZSB2b2lkIG1tdV9ub3RpZmllcl9tbV9kZXN0cm95KHN0cnVjdCBt
+bV9zdHJ1Y3QgKm1tKQogCiAjZGVmaW5lIHB0ZXBfY2xlYXJfZmx1c2hfeW91bmdfbm90aWZ5IHB0
+ZXBfY2xlYXJfZmx1c2hfeW91bmcKICNkZWZpbmUgcG1kcF9jbGVhcl9mbHVzaF95b3VuZ19ub3Rp
+ZnkgcG1kcF9jbGVhcl9mbHVzaF95b3VuZworI2RlZmluZQlwdGVwX2NsZWFyX2ZsdXNoX25vdGlm
+eSBwdGVwX2NsZWFyX2ZsdXNoCisjZGVmaW5lIHBtZHBfY2xlYXJfZmx1c2hfbm90aWZ5IHBtZHBf
+Y2xlYXJfZmx1c2gKKyNkZWZpbmUgcG1kcF9nZXRfYW5kX2NsZWFyX25vdGlmeSBwbWRwX2dldF9h
+bmRfY2xlYXIKICNkZWZpbmUgc2V0X3B0ZV9hdF9ub3RpZnkgc2V0X3B0ZV9hdAogCiAjZW5kaWYg
+LyogQ09ORklHX01NVV9OT1RJRklFUiAqLwpkaWZmIC0tZ2l0IGEva2VybmVsL2V2ZW50cy91cHJv
+YmVzLmMgYi9rZXJuZWwvZXZlbnRzL3Vwcm9iZXMuYwppbmRleCAxZDBhZjhhLi5iYzE0M2NmIDEw
+MDY0NAotLS0gYS9rZXJuZWwvZXZlbnRzL3Vwcm9iZXMuYworKysgYi9rZXJuZWwvZXZlbnRzL3Vw
+cm9iZXMuYwpAQCAtMTkzLDcgKzE5Myw3IEBAIHN0YXRpYyBpbnQgX19yZXBsYWNlX3BhZ2Uoc3Ry
+dWN0IHZtX2FyZWFfc3RydWN0ICp2bWEsIHVuc2lnbmVkIGxvbmcgYWRkciwKIAl9CiAKIAlmbHVz
+aF9jYWNoZV9wYWdlKHZtYSwgYWRkciwgcHRlX3BmbigqcHRlcCkpOwotCXB0ZXBfY2xlYXJfZmx1
+c2godm1hLCBhZGRyLCBwdGVwKTsKKwlwdGVwX2NsZWFyX2ZsdXNoX25vdGlmeSh2bWEsIGFkZHIs
+IHB0ZXApOwogCXNldF9wdGVfYXRfbm90aWZ5KG1tLCBhZGRyLCBwdGVwLCBta19wdGUoa3BhZ2Us
+IHZtYS0+dm1fcGFnZV9wcm90KSk7CiAKIAlwYWdlX3JlbW92ZV9ybWFwKHBhZ2UpOwpkaWZmIC0t
+Z2l0IGEvbW0vZnJlbWFwLmMgYi9tbS9mcmVtYXAuYwppbmRleCA3MmI4ZmEzLi45MTI5MDEzIDEw
+MDY0NAotLS0gYS9tbS9mcmVtYXAuYworKysgYi9tbS9mcmVtYXAuYwpAQCAtMzcsNyArMzcsNyBA
+QCBzdGF0aWMgdm9pZCB6YXBfcHRlKHN0cnVjdCBtbV9zdHJ1Y3QgKm1tLCBzdHJ1Y3Qgdm1fYXJl
+YV9zdHJ1Y3QgKnZtYSwKIAogCWlmIChwdGVfcHJlc2VudChwdGUpKSB7CiAJCWZsdXNoX2NhY2hl
+X3BhZ2Uodm1hLCBhZGRyLCBwdGVfcGZuKHB0ZSkpOwotCQlwdGUgPSBwdGVwX2NsZWFyX2ZsdXNo
+KHZtYSwgYWRkciwgcHRlcCk7CisJCXB0ZSA9IHB0ZXBfY2xlYXJfZmx1c2hfbm90aWZ5KHZtYSwg
+YWRkciwgcHRlcCk7CiAJCXBhZ2UgPSB2bV9ub3JtYWxfcGFnZSh2bWEsIGFkZHIsIHB0ZSk7CiAJ
+CWlmIChwYWdlKSB7CiAJCQlpZiAocHRlX2RpcnR5KHB0ZSkpCmRpZmYgLS1naXQgYS9tbS9odWdl
+X21lbW9yeS5jIGIvbW0vaHVnZV9tZW1vcnkuYwppbmRleCBkOWEyMWQwNi4uYzM0M2ViZCAxMDA2
+NDQKLS0tIGEvbW0vaHVnZV9tZW1vcnkuYworKysgYi9tbS9odWdlX21lbW9yeS5jCkBAIC0xMDM2
+LDcgKzEwMzYsNyBAQCBzdGF0aWMgaW50IGRvX2h1Z2VfcG1kX3dwX3BhZ2VfZmFsbGJhY2soc3Ry
+dWN0IG1tX3N0cnVjdCAqbW0sCiAJCWdvdG8gb3V0X2ZyZWVfcGFnZXM7CiAJVk1fQlVHX09OX1BB
+R0UoIVBhZ2VIZWFkKHBhZ2UpLCBwYWdlKTsKIAotCXBtZHBfY2xlYXJfZmx1c2godm1hLCBoYWRk
+ciwgcG1kKTsKKwlwbWRwX2NsZWFyX2ZsdXNoX25vdGlmeSh2bWEsIGhhZGRyLCBwbWQpOwogCS8q
+IGxlYXZlIHBtZCBlbXB0eSB1bnRpbCBwdGUgaXMgZmlsbGVkICovCiAKIAlwZ3RhYmxlID0gcGd0
+YWJsZV90cmFuc19odWdlX3dpdGhkcmF3KG1tLCBwbWQpOwpAQCAtMTE3OSw3ICsxMTc5LDcgQEAg
+YWxsb2M6CiAJCXBtZF90IGVudHJ5OwogCQllbnRyeSA9IG1rX2h1Z2VfcG1kKG5ld19wYWdlLCB2
+bWEtPnZtX3BhZ2VfcHJvdCk7CiAJCWVudHJ5ID0gbWF5YmVfcG1kX21rd3JpdGUocG1kX21rZGly
+dHkoZW50cnkpLCB2bWEpOwotCQlwbWRwX2NsZWFyX2ZsdXNoKHZtYSwgaGFkZHIsIHBtZCk7CisJ
+CXBtZHBfY2xlYXJfZmx1c2hfbm90aWZ5KHZtYSwgaGFkZHIsIHBtZCk7CiAJCXBhZ2VfYWRkX25l
+d19hbm9uX3JtYXAobmV3X3BhZ2UsIHZtYSwgaGFkZHIpOwogCQltZW1fY2dyb3VwX2NvbW1pdF9j
+aGFyZ2UobmV3X3BhZ2UsIG1lbWNnLCBmYWxzZSk7CiAJCWxydV9jYWNoZV9hZGRfYWN0aXZlX29y
+X3VuZXZpY3RhYmxlKG5ld19wYWdlLCB2bWEpOwpAQCAtMTUxMiw3ICsxNTEyLDcgQEAgaW50IGNo
+YW5nZV9odWdlX3BtZChzdHJ1Y3Qgdm1fYXJlYV9zdHJ1Y3QgKnZtYSwgcG1kX3QgKnBtZCwKIAkJ
+cG1kX3QgZW50cnk7CiAJCXJldCA9IDE7CiAJCWlmICghcHJvdF9udW1hKSB7Ci0JCQllbnRyeSA9
+IHBtZHBfZ2V0X2FuZF9jbGVhcihtbSwgYWRkciwgcG1kKTsKKwkJCWVudHJ5ID0gcG1kcF9nZXRf
+YW5kX2NsZWFyX25vdGlmeShtbSwgYWRkciwgcG1kKTsKIAkJCWlmIChwbWRfbnVtYShlbnRyeSkp
+CiAJCQkJZW50cnkgPSBwbWRfbWtub25udW1hKGVudHJ5KTsKIAkJCWVudHJ5ID0gcG1kX21vZGlm
+eShlbnRyeSwgbmV3cHJvdCk7CkBAIC0xNjQ0LDYgKzE2NDQsNyBAQCBzdGF0aWMgaW50IF9fc3Bs
+aXRfaHVnZV9wYWdlX3NwbGl0dGluZyhzdHJ1Y3QgcGFnZSAqcGFnZSwKIAkJICogc2VyaWFsaXpl
+IGFnYWluc3Qgc3BsaXRfaHVnZV9wYWdlKi4KIAkJICovCiAJCXBtZHBfc3BsaXR0aW5nX2ZsdXNo
+KHZtYSwgYWRkcmVzcywgcG1kKTsKKwogCQlyZXQgPSAxOwogCQlzcGluX3VubG9jayhwdGwpOwog
+CX0KQEAgLTI4MzYsNyArMjgzNyw3IEBAIHN0YXRpYyB2b2lkIF9fc3BsaXRfaHVnZV96ZXJvX3Bh
+Z2VfcG1kKHN0cnVjdCB2bV9hcmVhX3N0cnVjdCAqdm1hLAogCXBtZF90IF9wbWQ7CiAJaW50IGk7
+CiAKLQlwbWRwX2NsZWFyX2ZsdXNoKHZtYSwgaGFkZHIsIHBtZCk7CisJcG1kcF9jbGVhcl9mbHVz
+aF9ub3RpZnkodm1hLCBoYWRkciwgcG1kKTsKIAkvKiBsZWF2ZSBwbWQgZW1wdHkgdW50aWwgcHRl
+IGlzIGZpbGxlZCAqLwogCiAJcGd0YWJsZSA9IHBndGFibGVfdHJhbnNfaHVnZV93aXRoZHJhdyht
+bSwgcG1kKTsKZGlmZiAtLWdpdCBhL21tL2h1Z2V0bGIuYyBiL21tL2h1Z2V0bGIuYwppbmRleCBl
+ZWNlZWViLi4zOTNmMmNkIDEwMDY0NAotLS0gYS9tbS9odWdldGxiLmMKKysrIGIvbW0vaHVnZXRs
+Yi5jCkBAIC0yNTk4LDggKzI1OTgsMTEgQEAgaW50IGNvcHlfaHVnZXRsYl9wYWdlX3JhbmdlKHN0
+cnVjdCBtbV9zdHJ1Y3QgKmRzdCwgc3RydWN0IG1tX3N0cnVjdCAqc3JjLAogCQkJfQogCQkJc2V0
+X2h1Z2VfcHRlX2F0KGRzdCwgYWRkciwgZHN0X3B0ZSwgZW50cnkpOwogCQl9IGVsc2UgewotCQkJ
+aWYgKGNvdykKKwkJCWlmIChjb3cpIHsKIAkJCQlodWdlX3B0ZXBfc2V0X3dycHJvdGVjdChzcmMs
+IGFkZHIsIHNyY19wdGUpOworCQkJCW1tdV9ub3RpZmllcl9pbnZhbGlkYXRlX3JhbmdlKHNyYywg
+bW11bl9zdGFydCwKKwkJCQkJCQkJICAgbW11bl9lbmQpOworCQkJfQogCQkJZW50cnkgPSBodWdl
+X3B0ZXBfZ2V0KHNyY19wdGUpOwogCQkJcHRlcGFnZSA9IHB0ZV9wYWdlKGVudHJ5KTsKIAkJCWdl
+dF9wYWdlKHB0ZXBhZ2UpOwpAQCAtMjg5OSw2ICsyOTAyLDcgQEAgcmV0cnlfYXZvaWRjb3B5Ogog
+CiAJCS8qIEJyZWFrIENPVyAqLwogCQlodWdlX3B0ZXBfY2xlYXJfZmx1c2godm1hLCBhZGRyZXNz
+LCBwdGVwKTsKKwkJbW11X25vdGlmaWVyX2ludmFsaWRhdGVfcmFuZ2UobW0sIG1tdW5fc3RhcnQs
+IG1tdW5fZW5kKTsKIAkJc2V0X2h1Z2VfcHRlX2F0KG1tLCBhZGRyZXNzLCBwdGVwLAogCQkJCW1h
+a2VfaHVnZV9wdGUodm1hLCBuZXdfcGFnZSwgMSkpOwogCQlwYWdlX3JlbW92ZV9ybWFwKG9sZF9w
+YWdlKTsKQEAgLTMzNzQsNiArMzM3OCw3IEBAIHVuc2lnbmVkIGxvbmcgaHVnZXRsYl9jaGFuZ2Vf
+cHJvdGVjdGlvbihzdHJ1Y3Qgdm1fYXJlYV9zdHJ1Y3QgKnZtYSwKIAkgKiBhbmQgdGhhdCBwYWdl
+IHRhYmxlIGJlIHJldXNlZCBhbmQgZmlsbGVkIHdpdGgganVuay4KIAkgKi8KIAlmbHVzaF90bGJf
+cmFuZ2Uodm1hLCBzdGFydCwgZW5kKTsKKwltbXVfbm90aWZpZXJfaW52YWxpZGF0ZV9yYW5nZSht
+bSwgc3RhcnQsIGVuZCk7CiAJbXV0ZXhfdW5sb2NrKCZ2bWEtPnZtX2ZpbGUtPmZfbWFwcGluZy0+
+aV9tbWFwX211dGV4KTsKIAltbXVfbm90aWZpZXJfaW52YWxpZGF0ZV9yYW5nZV9lbmQobW0sIHN0
+YXJ0LCBlbmQpOwogCmRpZmYgLS1naXQgYS9tbS9rc20uYyBiL21tL2tzbS5jCmluZGV4IGZiNzU5
+MDIuLjZiMWMyMzkgMTAwNjQ0Ci0tLSBhL21tL2tzbS5jCisrKyBiL21tL2tzbS5jCkBAIC04OTIs
+NyArODkyLDcgQEAgc3RhdGljIGludCB3cml0ZV9wcm90ZWN0X3BhZ2Uoc3RydWN0IHZtX2FyZWFf
+c3RydWN0ICp2bWEsIHN0cnVjdCBwYWdlICpwYWdlLAogCQkgKiB0aGlzIGFzc3VyZSB1cyB0aGF0
+IG5vIE9fRElSRUNUIGNhbiBoYXBwZW4gYWZ0ZXIgdGhlIGNoZWNrCiAJCSAqIG9yIGluIHRoZSBt
+aWRkbGUgb2YgdGhlIGNoZWNrLgogCQkgKi8KLQkJZW50cnkgPSBwdGVwX2NsZWFyX2ZsdXNoKHZt
+YSwgYWRkciwgcHRlcCk7CisJCWVudHJ5ID0gcHRlcF9jbGVhcl9mbHVzaF9ub3RpZnkodm1hLCBh
+ZGRyLCBwdGVwKTsKIAkJLyoKIAkJICogQ2hlY2sgdGhhdCBubyBPX0RJUkVDVCBvciBzaW1pbGFy
+IEkvTyBpcyBpbiBwcm9ncmVzcyBvbiB0aGUKIAkJICogcGFnZQpAQCAtOTYwLDcgKzk2MCw3IEBA
+IHN0YXRpYyBpbnQgcmVwbGFjZV9wYWdlKHN0cnVjdCB2bV9hcmVhX3N0cnVjdCAqdm1hLCBzdHJ1
+Y3QgcGFnZSAqcGFnZSwKIAlwYWdlX2FkZF9hbm9uX3JtYXAoa3BhZ2UsIHZtYSwgYWRkcik7CiAK
+IAlmbHVzaF9jYWNoZV9wYWdlKHZtYSwgYWRkciwgcHRlX3BmbigqcHRlcCkpOwotCXB0ZXBfY2xl
+YXJfZmx1c2godm1hLCBhZGRyLCBwdGVwKTsKKwlwdGVwX2NsZWFyX2ZsdXNoX25vdGlmeSh2bWEs
+IGFkZHIsIHB0ZXApOwogCXNldF9wdGVfYXRfbm90aWZ5KG1tLCBhZGRyLCBwdGVwLCBta19wdGUo
+a3BhZ2UsIHZtYS0+dm1fcGFnZV9wcm90KSk7CiAKIAlwYWdlX3JlbW92ZV9ybWFwKHBhZ2UpOwpk
+aWZmIC0tZ2l0IGEvbW0vbWVtb3J5LmMgYi9tbS9tZW1vcnkuYwppbmRleCBhZGVhYzMwLi5hMzMy
+NzE0IDEwMDY0NAotLS0gYS9tbS9tZW1vcnkuYworKysgYi9tbS9tZW1vcnkuYwpAQCAtMjM2LDYg
+KzIzNiw3IEBAIHN0YXRpYyB2b2lkIHRsYl9mbHVzaF9tbXVfdGxib25seShzdHJ1Y3QgbW11X2dh
+dGhlciAqdGxiKQogewogCXRsYi0+bmVlZF9mbHVzaCA9IDA7CiAJdGxiX2ZsdXNoKHRsYik7CisJ
+bW11X25vdGlmaWVyX2ludmFsaWRhdGVfcmFuZ2UodGxiLT5tbSwgdGxiLT5zdGFydCwgdGxiLT5l
+bmQpOwogI2lmZGVmIENPTkZJR19IQVZFX1JDVV9UQUJMRV9GUkVFCiAJdGxiX3RhYmxlX2ZsdXNo
+KHRsYik7CiAjZW5kaWYKQEAgLTIyMzAsNyArMjIzMSw3IEBAIGdvdHRlbjoKIAkJICogc2VlbiBp
+biB0aGUgcHJlc2VuY2Ugb2Ygb25lIHRocmVhZCBkb2luZyBTTUMgYW5kIGFub3RoZXIKIAkJICog
+dGhyZWFkIGRvaW5nIENPVy4KIAkJICovCi0JCXB0ZXBfY2xlYXJfZmx1c2godm1hLCBhZGRyZXNz
+LCBwYWdlX3RhYmxlKTsKKwkJcHRlcF9jbGVhcl9mbHVzaF9ub3RpZnkodm1hLCBhZGRyZXNzLCBw
+YWdlX3RhYmxlKTsKIAkJcGFnZV9hZGRfbmV3X2Fub25fcm1hcChuZXdfcGFnZSwgdm1hLCBhZGRy
+ZXNzKTsKIAkJbWVtX2Nncm91cF9jb21taXRfY2hhcmdlKG5ld19wYWdlLCBtZW1jZywgZmFsc2Up
+OwogCQlscnVfY2FjaGVfYWRkX2FjdGl2ZV9vcl91bmV2aWN0YWJsZShuZXdfcGFnZSwgdm1hKTsK
+ZGlmZiAtLWdpdCBhL21tL21pZ3JhdGUuYyBiL21tL21pZ3JhdGUuYwppbmRleCBmNzhlYzliLi40
+NGRiZTkxIDEwMDY0NAotLS0gYS9tbS9taWdyYXRlLmMKKysrIGIvbW0vbWlncmF0ZS5jCkBAIC0x
+ODU5LDcgKzE4NTksNyBAQCBmYWlsX3B1dGJhY2s6CiAJICovCiAJZmx1c2hfY2FjaGVfcmFuZ2Uo
+dm1hLCBtbXVuX3N0YXJ0LCBtbXVuX2VuZCk7CiAJcGFnZV9hZGRfYW5vbl9ybWFwKG5ld19wYWdl
+LCB2bWEsIG1tdW5fc3RhcnQpOwotCXBtZHBfY2xlYXJfZmx1c2godm1hLCBtbXVuX3N0YXJ0LCBw
+bWQpOworCXBtZHBfY2xlYXJfZmx1c2hfbm90aWZ5KHZtYSwgbW11bl9zdGFydCwgcG1kKTsKIAlz
+ZXRfcG1kX2F0KG1tLCBtbXVuX3N0YXJ0LCBwbWQsIGVudHJ5KTsKIAlmbHVzaF90bGJfcmFuZ2Uo
+dm1hLCBtbXVuX3N0YXJ0LCBtbXVuX2VuZCk7CiAJdXBkYXRlX21tdV9jYWNoZV9wbWQodm1hLCBh
+ZGRyZXNzLCAmZW50cnkpOwpAQCAtMTg2Nyw2ICsxODY3LDcgQEAgZmFpbF9wdXRiYWNrOgogCWlm
+IChwYWdlX2NvdW50KHBhZ2UpICE9IDIpIHsKIAkJc2V0X3BtZF9hdChtbSwgbW11bl9zdGFydCwg
+cG1kLCBvcmlnX2VudHJ5KTsKIAkJZmx1c2hfdGxiX3JhbmdlKHZtYSwgbW11bl9zdGFydCwgbW11
+bl9lbmQpOworCQltbXVfbm90aWZpZXJfaW52YWxpZGF0ZV9yYW5nZShtbSwgbW11bl9zdGFydCwg
+bW11bl9lbmQpOwogCQl1cGRhdGVfbW11X2NhY2hlX3BtZCh2bWEsIGFkZHJlc3MsICZlbnRyeSk7
+CiAJCXBhZ2VfcmVtb3ZlX3JtYXAobmV3X3BhZ2UpOwogCQlnb3RvIGZhaWxfcHV0YmFjazsKZGlm
+ZiAtLWdpdCBhL21tL3JtYXAuYyBiL21tL3JtYXAuYwppbmRleCAzZTg0OTFjLi4wYjE5MmZlIDEw
+MDY0NAotLS0gYS9tbS9ybWFwLmMKKysrIGIvbW0vcm1hcC5jCkBAIC0xMzYwLDcgKzEzNjAsNyBA
+QCBzdGF0aWMgaW50IHRyeV90b191bm1hcF9jbHVzdGVyKHVuc2lnbmVkIGxvbmcgY3Vyc29yLCB1
+bnNpZ25lZCBpbnQgKm1hcGNvdW50LAogCiAJCS8qIE51a2UgdGhlIHBhZ2UgdGFibGUgZW50cnku
+ICovCiAJCWZsdXNoX2NhY2hlX3BhZ2Uodm1hLCBhZGRyZXNzLCBwdGVfcGZuKCpwdGUpKTsKLQkJ
+cHRldmFsID0gcHRlcF9jbGVhcl9mbHVzaCh2bWEsIGFkZHJlc3MsIHB0ZSk7CisJCXB0ZXZhbCA9
+IHB0ZXBfY2xlYXJfZmx1c2hfbm90aWZ5KHZtYSwgYWRkcmVzcywgcHRlKTsKIAogCQkvKiBJZiBu
+b25saW5lYXIsIHN0b3JlIHRoZSBmaWxlIHBhZ2Ugb2Zmc2V0IGluIHRoZSBwdGUuICovCiAJCWlm
+IChwYWdlLT5pbmRleCAhPSBsaW5lYXJfcGFnZV9pbmRleCh2bWEsIGFkZHJlc3MpKSB7Ci0tIAox
+LjkuMQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9t
+bXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8v
+bGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
