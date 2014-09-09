@@ -1,14 +1,14 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 2/3] mmu_notifier: Call mmu_notifier_invalidate_range() from
-	VMM
-Date: Tue,  9 Sep 2014 17:43:53 +0200
-Message-ID: <1410277434-3087-3-git-send-email-joro@8bytes.org>
-References: <1410277434-3087-1-git-send-email-joro@8bytes.org>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: [PATCH 1/2] iommu/omap: Reverse dependency between omap-iommu and
+	omap-iommu2
+Date: Tue,  9 Sep 2014 18:45:44 +0300
+Message-ID: <1410277545-32157-2-git-send-email-laurent.pinchart@ideasonboard.com>
+References: <1410277545-32157-1-git-send-email-laurent.pinchart@ideasonboard.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1410277434-3087-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1410277545-32157-1-git-send-email-laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,175 +18,401 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Andrea Arcangeli <aarcange-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Peter Zijlstra <a.p.zijlstra-/NLkJaSkS4VmR6Xm/wNWPw@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Hugh Dickins <hughd-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Mel Gorman <mgorman-l3A5Bk7waGM@public.gmane.org>, Johannes Weiner <jweiner-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Jay.Cornwall-5C7GfCeVMHo@public.gmane.org, John.Bridgman-5C7GfCeVMHo@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, jroedel-l3A5Bk7waGM@public.gmane.org, Jesse Barnes <jbarnes-Y1mF5jBUw70BENJcbMCuUQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, ben.sander-5C7GfCeVMHo@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-RnJvbTogSm9lcmcgUm9lZGVsIDxqcm9lZGVsQHN1c2UuZGU+CgpBZGQgY2FsbHMgdG8gdGhlIG5l
-dyBtbXVfbm90aWZpZXJfaW52YWxpZGF0ZV9yYW5nZSgpCmZ1bmN0aW9uIHRvIGFsbCBwbGFjZXMg
-aWYgdGhlIFZNTSB0aGF0IG5lZWQgaXQuCgpSZXZpZXdlZC1ieTogQW5kcmVhIEFyY2FuZ2VsaSA8
-YWFyY2FuZ2VAcmVkaGF0LmNvbT4KUmV2aWV3ZWQtYnk6IErDqXLDtG1lIEdsaXNzZSA8amdsaXNz
-ZUByZWRoYXQuY29tPgpTaWduZWQtb2ZmLWJ5OiBKb2VyZyBSb2VkZWwgPGpyb2VkZWxAc3VzZS5k
-ZT4KLS0tCiBpbmNsdWRlL2xpbnV4L21tdV9ub3RpZmllci5oIHwgNDEgKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysKIGtlcm5lbC9ldmVudHMvdXByb2Jlcy5jICAgICAg
-fCAgMiArLQogbW0vZnJlbWFwLmMgICAgICAgICAgICAgICAgICB8ICAyICstCiBtbS9odWdlX21l
-bW9yeS5jICAgICAgICAgICAgIHwgIDkgKysrKystLS0tCiBtbS9odWdldGxiLmMgICAgICAgICAg
-ICAgICAgIHwgIDcgKysrKysrLQogbW0va3NtLmMgICAgICAgICAgICAgICAgICAgICB8ICA0ICsr
-LS0KIG1tL21lbW9yeS5jICAgICAgICAgICAgICAgICAgfCAgMyArKy0KIG1tL21pZ3JhdGUuYyAg
-ICAgICAgICAgICAgICAgfCAgMyArKy0KIG1tL3JtYXAuYyAgICAgICAgICAgICAgICAgICAgfCAg
-MiArLQogOSBmaWxlcyBjaGFuZ2VkLCA2MSBpbnNlcnRpb25zKCspLCAxMiBkZWxldGlvbnMoLSkK
-CmRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L21tdV9ub3RpZmllci5oIGIvaW5jbHVkZS9saW51
-eC9tbXVfbm90aWZpZXIuaAppbmRleCA1ZDAzZjMxLi44NzdkMWM4IDEwMDY0NAotLS0gYS9pbmNs
-dWRlL2xpbnV4L21tdV9ub3RpZmllci5oCisrKyBiL2luY2x1ZGUvbGludXgvbW11X25vdGlmaWVy
-LmgKQEAgLTI3NSw2ICsyNzUsNDQgQEAgc3RhdGljIGlubGluZSB2b2lkIG1tdV9ub3RpZmllcl9t
-bV9kZXN0cm95KHN0cnVjdCBtbV9zdHJ1Y3QgKm1tKQogCV9feW91bmc7CQkJCQkJCVwKIH0pCiAK
-KyNkZWZpbmUJcHRlcF9jbGVhcl9mbHVzaF9ub3RpZnkoX192bWEsIF9fYWRkcmVzcywgX19wdGVw
-KQkJXAorKHsJCQkJCQkJCQlcCisJdW5zaWduZWQgbG9uZyBfX19hZGRyID0gX19hZGRyZXNzICYg
-UEFHRV9NQVNLOwkJCVwKKwlzdHJ1Y3QgbW1fc3RydWN0ICpfX19tbSA9IChfX3ZtYSktPnZtX21t
-OwkJCVwKKwlwdGVfdCBfX19wdGU7CQkJCQkJCVwKKwkJCQkJCQkJCVwKKwlfX19wdGUgPSBwdGVw
-X2NsZWFyX2ZsdXNoKF9fdm1hLCBfX2FkZHJlc3MsIF9fcHRlcCk7CQlcCisJbW11X25vdGlmaWVy
-X2ludmFsaWRhdGVfcmFuZ2UoX19fbW0sIF9fX2FkZHIsCQkJXAorCQkJCQlfX19hZGRyICsgUEFH
-RV9TSVpFKTsJCVwKKwkJCQkJCQkJCVwKKwlfX19wdGU7CQkJCQkJCQlcCit9KQorCisjZGVmaW5l
-IHBtZHBfY2xlYXJfZmx1c2hfbm90aWZ5KF9fdm1hLCBfX2hhZGRyLCBfX3BtZCkJCQlcCisoewkJ
-CQkJCQkJCVwKKwl1bnNpZ25lZCBsb25nIF9fX2hhZGRyID0gX19oYWRkciAmIEhQQUdFX1BNRF9N
-QVNLOwkJXAorCXN0cnVjdCBtbV9zdHJ1Y3QgKl9fX21tID0gKF9fdm1hKS0+dm1fbW07CQkJXAor
-CXBtZF90IF9fX3BtZDsJCQkJCQkJXAorCQkJCQkJCQkJXAorCV9fX3BtZCA9IHBtZHBfY2xlYXJf
-Zmx1c2goX192bWEsIF9faGFkZHIsIF9fcG1kKTsJCVwKKwltbXVfbm90aWZpZXJfaW52YWxpZGF0
-ZV9yYW5nZShfX19tbSwgX19faGFkZHIsCQkJXAorCQkJCSAgICAgIF9fX2hhZGRyICsgSFBBR0Vf
-UE1EX1NJWkUpOwlcCisJCQkJCQkJCQlcCisJX19fcG1kOwkJCQkJCQkJXAorfSkKKworI2RlZmlu
-ZSBwbWRwX2dldF9hbmRfY2xlYXJfbm90aWZ5KF9fbW0sIF9faGFkZHIsIF9fcG1kKQkJCVwKKyh7
-CQkJCQkJCQkJXAorCXVuc2lnbmVkIGxvbmcgX19faGFkZHIgPSBfX2hhZGRyICYgSFBBR0VfUE1E
-X01BU0s7CQlcCisJcG1kX3QgX19fcG1kOwkJCQkJCQlcCisJCQkJCQkJCQlcCisJX19fcG1kID0g
-cG1kcF9nZXRfYW5kX2NsZWFyKF9fbW0sIF9faGFkZHIsIF9fcG1kKTsJCVwKKwltbXVfbm90aWZp
-ZXJfaW52YWxpZGF0ZV9yYW5nZShfX21tLCBfX19oYWRkciwJCQlcCisJCQkJICAgICAgX19faGFk
-ZHIgKyBIUEFHRV9QTURfU0laRSk7CVwKKwkJCQkJCQkJCVwKKwlfX19wbWQ7CQkJCQkJCQlcCit9
-KQorCiAvKgogICogc2V0X3B0ZV9hdF9ub3RpZnkoKSBzZXRzIHRoZSBwdGUgX2FmdGVyXyBydW5u
-aW5nIHRoZSBub3RpZmllci4KICAqIFRoaXMgaXMgc2FmZSB0byBzdGFydCBieSB1cGRhdGluZyB0
-aGUgc2Vjb25kYXJ5IE1NVXMsIGJlY2F1c2UgdGhlIHByaW1hcnkgTU1VCkBAIC0zNTIsNiArMzkw
-LDkgQEAgc3RhdGljIGlubGluZSB2b2lkIG1tdV9ub3RpZmllcl9tbV9kZXN0cm95KHN0cnVjdCBt
-bV9zdHJ1Y3QgKm1tKQogCiAjZGVmaW5lIHB0ZXBfY2xlYXJfZmx1c2hfeW91bmdfbm90aWZ5IHB0
-ZXBfY2xlYXJfZmx1c2hfeW91bmcKICNkZWZpbmUgcG1kcF9jbGVhcl9mbHVzaF95b3VuZ19ub3Rp
-ZnkgcG1kcF9jbGVhcl9mbHVzaF95b3VuZworI2RlZmluZQlwdGVwX2NsZWFyX2ZsdXNoX25vdGlm
-eSBwdGVwX2NsZWFyX2ZsdXNoCisjZGVmaW5lIHBtZHBfY2xlYXJfZmx1c2hfbm90aWZ5IHBtZHBf
-Y2xlYXJfZmx1c2gKKyNkZWZpbmUgcG1kcF9nZXRfYW5kX2NsZWFyX25vdGlmeSBwbWRwX2dldF9h
-bmRfY2xlYXIKICNkZWZpbmUgc2V0X3B0ZV9hdF9ub3RpZnkgc2V0X3B0ZV9hdAogCiAjZW5kaWYg
-LyogQ09ORklHX01NVV9OT1RJRklFUiAqLwpkaWZmIC0tZ2l0IGEva2VybmVsL2V2ZW50cy91cHJv
-YmVzLmMgYi9rZXJuZWwvZXZlbnRzL3Vwcm9iZXMuYwppbmRleCAxZDBhZjhhLi5iYzE0M2NmIDEw
-MDY0NAotLS0gYS9rZXJuZWwvZXZlbnRzL3Vwcm9iZXMuYworKysgYi9rZXJuZWwvZXZlbnRzL3Vw
-cm9iZXMuYwpAQCAtMTkzLDcgKzE5Myw3IEBAIHN0YXRpYyBpbnQgX19yZXBsYWNlX3BhZ2Uoc3Ry
-dWN0IHZtX2FyZWFfc3RydWN0ICp2bWEsIHVuc2lnbmVkIGxvbmcgYWRkciwKIAl9CiAKIAlmbHVz
-aF9jYWNoZV9wYWdlKHZtYSwgYWRkciwgcHRlX3BmbigqcHRlcCkpOwotCXB0ZXBfY2xlYXJfZmx1
-c2godm1hLCBhZGRyLCBwdGVwKTsKKwlwdGVwX2NsZWFyX2ZsdXNoX25vdGlmeSh2bWEsIGFkZHIs
-IHB0ZXApOwogCXNldF9wdGVfYXRfbm90aWZ5KG1tLCBhZGRyLCBwdGVwLCBta19wdGUoa3BhZ2Us
-IHZtYS0+dm1fcGFnZV9wcm90KSk7CiAKIAlwYWdlX3JlbW92ZV9ybWFwKHBhZ2UpOwpkaWZmIC0t
-Z2l0IGEvbW0vZnJlbWFwLmMgYi9tbS9mcmVtYXAuYwppbmRleCA3MmI4ZmEzLi45MTI5MDEzIDEw
-MDY0NAotLS0gYS9tbS9mcmVtYXAuYworKysgYi9tbS9mcmVtYXAuYwpAQCAtMzcsNyArMzcsNyBA
-QCBzdGF0aWMgdm9pZCB6YXBfcHRlKHN0cnVjdCBtbV9zdHJ1Y3QgKm1tLCBzdHJ1Y3Qgdm1fYXJl
-YV9zdHJ1Y3QgKnZtYSwKIAogCWlmIChwdGVfcHJlc2VudChwdGUpKSB7CiAJCWZsdXNoX2NhY2hl
-X3BhZ2Uodm1hLCBhZGRyLCBwdGVfcGZuKHB0ZSkpOwotCQlwdGUgPSBwdGVwX2NsZWFyX2ZsdXNo
-KHZtYSwgYWRkciwgcHRlcCk7CisJCXB0ZSA9IHB0ZXBfY2xlYXJfZmx1c2hfbm90aWZ5KHZtYSwg
-YWRkciwgcHRlcCk7CiAJCXBhZ2UgPSB2bV9ub3JtYWxfcGFnZSh2bWEsIGFkZHIsIHB0ZSk7CiAJ
-CWlmIChwYWdlKSB7CiAJCQlpZiAocHRlX2RpcnR5KHB0ZSkpCmRpZmYgLS1naXQgYS9tbS9odWdl
-X21lbW9yeS5jIGIvbW0vaHVnZV9tZW1vcnkuYwppbmRleCBkOWEyMWQwNi4uYzM0M2ViZCAxMDA2
-NDQKLS0tIGEvbW0vaHVnZV9tZW1vcnkuYworKysgYi9tbS9odWdlX21lbW9yeS5jCkBAIC0xMDM2
-LDcgKzEwMzYsNyBAQCBzdGF0aWMgaW50IGRvX2h1Z2VfcG1kX3dwX3BhZ2VfZmFsbGJhY2soc3Ry
-dWN0IG1tX3N0cnVjdCAqbW0sCiAJCWdvdG8gb3V0X2ZyZWVfcGFnZXM7CiAJVk1fQlVHX09OX1BB
-R0UoIVBhZ2VIZWFkKHBhZ2UpLCBwYWdlKTsKIAotCXBtZHBfY2xlYXJfZmx1c2godm1hLCBoYWRk
-ciwgcG1kKTsKKwlwbWRwX2NsZWFyX2ZsdXNoX25vdGlmeSh2bWEsIGhhZGRyLCBwbWQpOwogCS8q
-IGxlYXZlIHBtZCBlbXB0eSB1bnRpbCBwdGUgaXMgZmlsbGVkICovCiAKIAlwZ3RhYmxlID0gcGd0
-YWJsZV90cmFuc19odWdlX3dpdGhkcmF3KG1tLCBwbWQpOwpAQCAtMTE3OSw3ICsxMTc5LDcgQEAg
-YWxsb2M6CiAJCXBtZF90IGVudHJ5OwogCQllbnRyeSA9IG1rX2h1Z2VfcG1kKG5ld19wYWdlLCB2
-bWEtPnZtX3BhZ2VfcHJvdCk7CiAJCWVudHJ5ID0gbWF5YmVfcG1kX21rd3JpdGUocG1kX21rZGly
-dHkoZW50cnkpLCB2bWEpOwotCQlwbWRwX2NsZWFyX2ZsdXNoKHZtYSwgaGFkZHIsIHBtZCk7CisJ
-CXBtZHBfY2xlYXJfZmx1c2hfbm90aWZ5KHZtYSwgaGFkZHIsIHBtZCk7CiAJCXBhZ2VfYWRkX25l
-d19hbm9uX3JtYXAobmV3X3BhZ2UsIHZtYSwgaGFkZHIpOwogCQltZW1fY2dyb3VwX2NvbW1pdF9j
-aGFyZ2UobmV3X3BhZ2UsIG1lbWNnLCBmYWxzZSk7CiAJCWxydV9jYWNoZV9hZGRfYWN0aXZlX29y
-X3VuZXZpY3RhYmxlKG5ld19wYWdlLCB2bWEpOwpAQCAtMTUxMiw3ICsxNTEyLDcgQEAgaW50IGNo
-YW5nZV9odWdlX3BtZChzdHJ1Y3Qgdm1fYXJlYV9zdHJ1Y3QgKnZtYSwgcG1kX3QgKnBtZCwKIAkJ
-cG1kX3QgZW50cnk7CiAJCXJldCA9IDE7CiAJCWlmICghcHJvdF9udW1hKSB7Ci0JCQllbnRyeSA9
-IHBtZHBfZ2V0X2FuZF9jbGVhcihtbSwgYWRkciwgcG1kKTsKKwkJCWVudHJ5ID0gcG1kcF9nZXRf
-YW5kX2NsZWFyX25vdGlmeShtbSwgYWRkciwgcG1kKTsKIAkJCWlmIChwbWRfbnVtYShlbnRyeSkp
-CiAJCQkJZW50cnkgPSBwbWRfbWtub25udW1hKGVudHJ5KTsKIAkJCWVudHJ5ID0gcG1kX21vZGlm
-eShlbnRyeSwgbmV3cHJvdCk7CkBAIC0xNjQ0LDYgKzE2NDQsNyBAQCBzdGF0aWMgaW50IF9fc3Bs
-aXRfaHVnZV9wYWdlX3NwbGl0dGluZyhzdHJ1Y3QgcGFnZSAqcGFnZSwKIAkJICogc2VyaWFsaXpl
-IGFnYWluc3Qgc3BsaXRfaHVnZV9wYWdlKi4KIAkJICovCiAJCXBtZHBfc3BsaXR0aW5nX2ZsdXNo
-KHZtYSwgYWRkcmVzcywgcG1kKTsKKwogCQlyZXQgPSAxOwogCQlzcGluX3VubG9jayhwdGwpOwog
-CX0KQEAgLTI4MzYsNyArMjgzNyw3IEBAIHN0YXRpYyB2b2lkIF9fc3BsaXRfaHVnZV96ZXJvX3Bh
-Z2VfcG1kKHN0cnVjdCB2bV9hcmVhX3N0cnVjdCAqdm1hLAogCXBtZF90IF9wbWQ7CiAJaW50IGk7
-CiAKLQlwbWRwX2NsZWFyX2ZsdXNoKHZtYSwgaGFkZHIsIHBtZCk7CisJcG1kcF9jbGVhcl9mbHVz
-aF9ub3RpZnkodm1hLCBoYWRkciwgcG1kKTsKIAkvKiBsZWF2ZSBwbWQgZW1wdHkgdW50aWwgcHRl
-IGlzIGZpbGxlZCAqLwogCiAJcGd0YWJsZSA9IHBndGFibGVfdHJhbnNfaHVnZV93aXRoZHJhdyht
-bSwgcG1kKTsKZGlmZiAtLWdpdCBhL21tL2h1Z2V0bGIuYyBiL21tL2h1Z2V0bGIuYwppbmRleCBl
-ZWNlZWViLi4zOTNmMmNkIDEwMDY0NAotLS0gYS9tbS9odWdldGxiLmMKKysrIGIvbW0vaHVnZXRs
-Yi5jCkBAIC0yNTk4LDggKzI1OTgsMTEgQEAgaW50IGNvcHlfaHVnZXRsYl9wYWdlX3JhbmdlKHN0
-cnVjdCBtbV9zdHJ1Y3QgKmRzdCwgc3RydWN0IG1tX3N0cnVjdCAqc3JjLAogCQkJfQogCQkJc2V0
-X2h1Z2VfcHRlX2F0KGRzdCwgYWRkciwgZHN0X3B0ZSwgZW50cnkpOwogCQl9IGVsc2UgewotCQkJ
-aWYgKGNvdykKKwkJCWlmIChjb3cpIHsKIAkJCQlodWdlX3B0ZXBfc2V0X3dycHJvdGVjdChzcmMs
-IGFkZHIsIHNyY19wdGUpOworCQkJCW1tdV9ub3RpZmllcl9pbnZhbGlkYXRlX3JhbmdlKHNyYywg
-bW11bl9zdGFydCwKKwkJCQkJCQkJICAgbW11bl9lbmQpOworCQkJfQogCQkJZW50cnkgPSBodWdl
-X3B0ZXBfZ2V0KHNyY19wdGUpOwogCQkJcHRlcGFnZSA9IHB0ZV9wYWdlKGVudHJ5KTsKIAkJCWdl
-dF9wYWdlKHB0ZXBhZ2UpOwpAQCAtMjg5OSw2ICsyOTAyLDcgQEAgcmV0cnlfYXZvaWRjb3B5Ogog
-CiAJCS8qIEJyZWFrIENPVyAqLwogCQlodWdlX3B0ZXBfY2xlYXJfZmx1c2godm1hLCBhZGRyZXNz
-LCBwdGVwKTsKKwkJbW11X25vdGlmaWVyX2ludmFsaWRhdGVfcmFuZ2UobW0sIG1tdW5fc3RhcnQs
-IG1tdW5fZW5kKTsKIAkJc2V0X2h1Z2VfcHRlX2F0KG1tLCBhZGRyZXNzLCBwdGVwLAogCQkJCW1h
-a2VfaHVnZV9wdGUodm1hLCBuZXdfcGFnZSwgMSkpOwogCQlwYWdlX3JlbW92ZV9ybWFwKG9sZF9w
-YWdlKTsKQEAgLTMzNzQsNiArMzM3OCw3IEBAIHVuc2lnbmVkIGxvbmcgaHVnZXRsYl9jaGFuZ2Vf
-cHJvdGVjdGlvbihzdHJ1Y3Qgdm1fYXJlYV9zdHJ1Y3QgKnZtYSwKIAkgKiBhbmQgdGhhdCBwYWdl
-IHRhYmxlIGJlIHJldXNlZCBhbmQgZmlsbGVkIHdpdGgganVuay4KIAkgKi8KIAlmbHVzaF90bGJf
-cmFuZ2Uodm1hLCBzdGFydCwgZW5kKTsKKwltbXVfbm90aWZpZXJfaW52YWxpZGF0ZV9yYW5nZSht
-bSwgc3RhcnQsIGVuZCk7CiAJbXV0ZXhfdW5sb2NrKCZ2bWEtPnZtX2ZpbGUtPmZfbWFwcGluZy0+
-aV9tbWFwX211dGV4KTsKIAltbXVfbm90aWZpZXJfaW52YWxpZGF0ZV9yYW5nZV9lbmQobW0sIHN0
-YXJ0LCBlbmQpOwogCmRpZmYgLS1naXQgYS9tbS9rc20uYyBiL21tL2tzbS5jCmluZGV4IGZiNzU5
-MDIuLjZiMWMyMzkgMTAwNjQ0Ci0tLSBhL21tL2tzbS5jCisrKyBiL21tL2tzbS5jCkBAIC04OTIs
-NyArODkyLDcgQEAgc3RhdGljIGludCB3cml0ZV9wcm90ZWN0X3BhZ2Uoc3RydWN0IHZtX2FyZWFf
-c3RydWN0ICp2bWEsIHN0cnVjdCBwYWdlICpwYWdlLAogCQkgKiB0aGlzIGFzc3VyZSB1cyB0aGF0
-IG5vIE9fRElSRUNUIGNhbiBoYXBwZW4gYWZ0ZXIgdGhlIGNoZWNrCiAJCSAqIG9yIGluIHRoZSBt
-aWRkbGUgb2YgdGhlIGNoZWNrLgogCQkgKi8KLQkJZW50cnkgPSBwdGVwX2NsZWFyX2ZsdXNoKHZt
-YSwgYWRkciwgcHRlcCk7CisJCWVudHJ5ID0gcHRlcF9jbGVhcl9mbHVzaF9ub3RpZnkodm1hLCBh
-ZGRyLCBwdGVwKTsKIAkJLyoKIAkJICogQ2hlY2sgdGhhdCBubyBPX0RJUkVDVCBvciBzaW1pbGFy
-IEkvTyBpcyBpbiBwcm9ncmVzcyBvbiB0aGUKIAkJICogcGFnZQpAQCAtOTYwLDcgKzk2MCw3IEBA
-IHN0YXRpYyBpbnQgcmVwbGFjZV9wYWdlKHN0cnVjdCB2bV9hcmVhX3N0cnVjdCAqdm1hLCBzdHJ1
-Y3QgcGFnZSAqcGFnZSwKIAlwYWdlX2FkZF9hbm9uX3JtYXAoa3BhZ2UsIHZtYSwgYWRkcik7CiAK
-IAlmbHVzaF9jYWNoZV9wYWdlKHZtYSwgYWRkciwgcHRlX3BmbigqcHRlcCkpOwotCXB0ZXBfY2xl
-YXJfZmx1c2godm1hLCBhZGRyLCBwdGVwKTsKKwlwdGVwX2NsZWFyX2ZsdXNoX25vdGlmeSh2bWEs
-IGFkZHIsIHB0ZXApOwogCXNldF9wdGVfYXRfbm90aWZ5KG1tLCBhZGRyLCBwdGVwLCBta19wdGUo
-a3BhZ2UsIHZtYS0+dm1fcGFnZV9wcm90KSk7CiAKIAlwYWdlX3JlbW92ZV9ybWFwKHBhZ2UpOwpk
-aWZmIC0tZ2l0IGEvbW0vbWVtb3J5LmMgYi9tbS9tZW1vcnkuYwppbmRleCBhZGVhYzMwLi5hMzMy
-NzE0IDEwMDY0NAotLS0gYS9tbS9tZW1vcnkuYworKysgYi9tbS9tZW1vcnkuYwpAQCAtMjM2LDYg
-KzIzNiw3IEBAIHN0YXRpYyB2b2lkIHRsYl9mbHVzaF9tbXVfdGxib25seShzdHJ1Y3QgbW11X2dh
-dGhlciAqdGxiKQogewogCXRsYi0+bmVlZF9mbHVzaCA9IDA7CiAJdGxiX2ZsdXNoKHRsYik7CisJ
-bW11X25vdGlmaWVyX2ludmFsaWRhdGVfcmFuZ2UodGxiLT5tbSwgdGxiLT5zdGFydCwgdGxiLT5l
-bmQpOwogI2lmZGVmIENPTkZJR19IQVZFX1JDVV9UQUJMRV9GUkVFCiAJdGxiX3RhYmxlX2ZsdXNo
-KHRsYik7CiAjZW5kaWYKQEAgLTIyMzAsNyArMjIzMSw3IEBAIGdvdHRlbjoKIAkJICogc2VlbiBp
-biB0aGUgcHJlc2VuY2Ugb2Ygb25lIHRocmVhZCBkb2luZyBTTUMgYW5kIGFub3RoZXIKIAkJICog
-dGhyZWFkIGRvaW5nIENPVy4KIAkJICovCi0JCXB0ZXBfY2xlYXJfZmx1c2godm1hLCBhZGRyZXNz
-LCBwYWdlX3RhYmxlKTsKKwkJcHRlcF9jbGVhcl9mbHVzaF9ub3RpZnkodm1hLCBhZGRyZXNzLCBw
-YWdlX3RhYmxlKTsKIAkJcGFnZV9hZGRfbmV3X2Fub25fcm1hcChuZXdfcGFnZSwgdm1hLCBhZGRy
-ZXNzKTsKIAkJbWVtX2Nncm91cF9jb21taXRfY2hhcmdlKG5ld19wYWdlLCBtZW1jZywgZmFsc2Up
-OwogCQlscnVfY2FjaGVfYWRkX2FjdGl2ZV9vcl91bmV2aWN0YWJsZShuZXdfcGFnZSwgdm1hKTsK
-ZGlmZiAtLWdpdCBhL21tL21pZ3JhdGUuYyBiL21tL21pZ3JhdGUuYwppbmRleCBmNzhlYzliLi40
-NGRiZTkxIDEwMDY0NAotLS0gYS9tbS9taWdyYXRlLmMKKysrIGIvbW0vbWlncmF0ZS5jCkBAIC0x
-ODU5LDcgKzE4NTksNyBAQCBmYWlsX3B1dGJhY2s6CiAJICovCiAJZmx1c2hfY2FjaGVfcmFuZ2Uo
-dm1hLCBtbXVuX3N0YXJ0LCBtbXVuX2VuZCk7CiAJcGFnZV9hZGRfYW5vbl9ybWFwKG5ld19wYWdl
-LCB2bWEsIG1tdW5fc3RhcnQpOwotCXBtZHBfY2xlYXJfZmx1c2godm1hLCBtbXVuX3N0YXJ0LCBw
-bWQpOworCXBtZHBfY2xlYXJfZmx1c2hfbm90aWZ5KHZtYSwgbW11bl9zdGFydCwgcG1kKTsKIAlz
-ZXRfcG1kX2F0KG1tLCBtbXVuX3N0YXJ0LCBwbWQsIGVudHJ5KTsKIAlmbHVzaF90bGJfcmFuZ2Uo
-dm1hLCBtbXVuX3N0YXJ0LCBtbXVuX2VuZCk7CiAJdXBkYXRlX21tdV9jYWNoZV9wbWQodm1hLCBh
-ZGRyZXNzLCAmZW50cnkpOwpAQCAtMTg2Nyw2ICsxODY3LDcgQEAgZmFpbF9wdXRiYWNrOgogCWlm
-IChwYWdlX2NvdW50KHBhZ2UpICE9IDIpIHsKIAkJc2V0X3BtZF9hdChtbSwgbW11bl9zdGFydCwg
-cG1kLCBvcmlnX2VudHJ5KTsKIAkJZmx1c2hfdGxiX3JhbmdlKHZtYSwgbW11bl9zdGFydCwgbW11
-bl9lbmQpOworCQltbXVfbm90aWZpZXJfaW52YWxpZGF0ZV9yYW5nZShtbSwgbW11bl9zdGFydCwg
-bW11bl9lbmQpOwogCQl1cGRhdGVfbW11X2NhY2hlX3BtZCh2bWEsIGFkZHJlc3MsICZlbnRyeSk7
-CiAJCXBhZ2VfcmVtb3ZlX3JtYXAobmV3X3BhZ2UpOwogCQlnb3RvIGZhaWxfcHV0YmFjazsKZGlm
-ZiAtLWdpdCBhL21tL3JtYXAuYyBiL21tL3JtYXAuYwppbmRleCAzZTg0OTFjLi4wYjE5MmZlIDEw
-MDY0NAotLS0gYS9tbS9ybWFwLmMKKysrIGIvbW0vcm1hcC5jCkBAIC0xMzYwLDcgKzEzNjAsNyBA
-QCBzdGF0aWMgaW50IHRyeV90b191bm1hcF9jbHVzdGVyKHVuc2lnbmVkIGxvbmcgY3Vyc29yLCB1
-bnNpZ25lZCBpbnQgKm1hcGNvdW50LAogCiAJCS8qIE51a2UgdGhlIHBhZ2UgdGFibGUgZW50cnku
-ICovCiAJCWZsdXNoX2NhY2hlX3BhZ2Uodm1hLCBhZGRyZXNzLCBwdGVfcGZuKCpwdGUpKTsKLQkJ
-cHRldmFsID0gcHRlcF9jbGVhcl9mbHVzaCh2bWEsIGFkZHJlc3MsIHB0ZSk7CisJCXB0ZXZhbCA9
-IHB0ZXBfY2xlYXJfZmx1c2hfbm90aWZ5KHZtYSwgYWRkcmVzcywgcHRlKTsKIAogCQkvKiBJZiBu
-b25saW5lYXIsIHN0b3JlIHRoZSBmaWxlIHBhZ2Ugb2Zmc2V0IGluIHRoZSBwdGUuICovCiAJCWlm
-IChwYWdlLT5pbmRleCAhPSBsaW5lYXJfcGFnZV9pbmRleCh2bWEsIGFkZHJlc3MpKSB7Ci0tIAox
-LjkuMQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9t
-bXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8v
-bGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+The OMAP IOMMU driver supports both the OMAP1 and OMAP2+ IOMMU variants
+by splitting the driver into a core module and a thin arch-specific
+operations module.
+
+(In practice only the OMAP2+ module omap-iommu2 is implemented, but
+let's not denigrate the effort.)
+
+The arch-specific operations module registers itself with the OMAP IOMMU
+core module at initialization time. This initializes a module global
+arch-specific operations pointer, used at runtime by the IOMMU
+instances.
+
+This scheme causes several issues. In addition to making it impossible
+to support different OMAP IOMMU types in a single system (which in all
+fairness is quite unlikely to happen), it also causes initialization
+ordering issues by requiring the arch-specific operations module to be
+loaded before any IOMMU user. This results in a probe breakage with the
+OMAP3 ISP driver when not compiled as a module.
+
+Fix the problem by inverting the dependency. Instead of having the
+omap-iommu2 module register itself to iommu-omap, make the iommu-omap
+retrieve the omap-iommu2 operations structure directly when probing the
+IOMMU device. This ensures that a probed IOMMU will always have valid
+arch-specific operations.
+
+As the arch-specific operations pointer is now initialized at probe
+time, this change requires turning it from a global variable into a
+per-device variable.
+
+Signed-off-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+---
+ drivers/iommu/omap-iommu-debug.c |  6 ++-
+ drivers/iommu/omap-iommu.c       | 94 ++++++++++++++--------------------------
+ drivers/iommu/omap-iommu.h       | 10 ++++-
+ drivers/iommu/omap-iommu2.c      | 18 +-------
+ 4 files changed, 45 insertions(+), 83 deletions(-)
+
+diff --git a/drivers/iommu/omap-iommu-debug.c b/drivers/iommu/omap-iommu-debug.c
+index 531658d..35a2c3a 100644
+--- a/drivers/iommu/omap-iommu-debug.c
++++ b/drivers/iommu/omap-iommu-debug.c
+@@ -33,7 +33,9 @@ static struct dentry *iommu_debug_root;
+ static ssize_t debug_read_ver(struct file *file, char __user *userbuf,
+ 			      size_t count, loff_t *ppos)
+ {
+-	u32 ver = omap_iommu_arch_version();
++	struct device *dev = file->private_data;
++	struct omap_iommu *obj = dev_to_omap_iommu(dev);
++	u32 ver = omap_iommu_arch_version(obj);
+ 	char buf[MAXCOLUMN], *p = buf;
+ 
+ 	p += sprintf(p, "H/W version: %d.%d\n", (ver >> 4) & 0xf , ver & 0xf);
+@@ -117,7 +119,7 @@ static ssize_t debug_write_pagetable(struct file *file,
+ 		return -EINVAL;
+ 	}
+ 
+-	omap_iotlb_cr_to_e(&cr, &e);
++	omap_iotlb_cr_to_e(obj, &cr, &e);
+ 	err = omap_iopgtable_store_entry(obj, &e);
+ 	if (err)
+ 		dev_err(obj->dev, "%s: fail to store cr\n", __func__);
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index df579f8..192c367 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -76,45 +76,10 @@ struct iotlb_lock {
+ 	short vict;
+ };
+ 
+-/* accommodate the difference between omap1 and omap2/3 */
+-static const struct iommu_functions *arch_iommu;
+-
+ static struct platform_driver omap_iommu_driver;
+ static struct kmem_cache *iopte_cachep;
+ 
+ /**
+- * omap_install_iommu_arch - Install archtecure specific iommu functions
+- * @ops:	a pointer to architecture specific iommu functions
+- *
+- * There are several kind of iommu algorithm(tlb, pagetable) among
+- * omap series. This interface installs such an iommu algorighm.
+- **/
+-int omap_install_iommu_arch(const struct iommu_functions *ops)
+-{
+-	if (arch_iommu)
+-		return -EBUSY;
+-
+-	arch_iommu = ops;
+-	return 0;
+-}
+-EXPORT_SYMBOL_GPL(omap_install_iommu_arch);
+-
+-/**
+- * omap_uninstall_iommu_arch - Uninstall archtecure specific iommu functions
+- * @ops:	a pointer to architecture specific iommu functions
+- *
+- * This interface uninstalls the iommu algorighm installed previously.
+- **/
+-void omap_uninstall_iommu_arch(const struct iommu_functions *ops)
+-{
+-	if (arch_iommu != ops)
+-		pr_err("%s: not your arch\n", __func__);
+-
+-	arch_iommu = NULL;
+-}
+-EXPORT_SYMBOL_GPL(omap_uninstall_iommu_arch);
+-
+-/**
+  * omap_iommu_save_ctx - Save registers for pm off-mode support
+  * @dev:	client device
+  **/
+@@ -122,7 +87,7 @@ void omap_iommu_save_ctx(struct device *dev)
+ {
+ 	struct omap_iommu *obj = dev_to_omap_iommu(dev);
+ 
+-	arch_iommu->save_ctx(obj);
++	obj->arch_iommu->save_ctx(obj);
+ }
+ EXPORT_SYMBOL_GPL(omap_iommu_save_ctx);
+ 
+@@ -134,16 +99,16 @@ void omap_iommu_restore_ctx(struct device *dev)
+ {
+ 	struct omap_iommu *obj = dev_to_omap_iommu(dev);
+ 
+-	arch_iommu->restore_ctx(obj);
++	obj->arch_iommu->restore_ctx(obj);
+ }
+ EXPORT_SYMBOL_GPL(omap_iommu_restore_ctx);
+ 
+ /**
+  * omap_iommu_arch_version - Return running iommu arch version
+  **/
+-u32 omap_iommu_arch_version(void)
++u32 omap_iommu_arch_version(struct omap_iommu *obj)
+ {
+-	return arch_iommu->version;
++	return obj->arch_iommu->version;
+ }
+ EXPORT_SYMBOL_GPL(omap_iommu_arch_version);
+ 
+@@ -153,7 +118,7 @@ static int iommu_enable(struct omap_iommu *obj)
+ 	struct platform_device *pdev = to_platform_device(obj->dev);
+ 	struct iommu_platform_data *pdata = pdev->dev.platform_data;
+ 
+-	if (!arch_iommu)
++	if (!obj->arch_iommu)
+ 		return -ENODEV;
+ 
+ 	if (pdata && pdata->deassert_reset) {
+@@ -166,7 +131,7 @@ static int iommu_enable(struct omap_iommu *obj)
+ 
+ 	pm_runtime_get_sync(obj->dev);
+ 
+-	err = arch_iommu->enable(obj);
++	err = obj->arch_iommu->enable(obj);
+ 
+ 	return err;
+ }
+@@ -176,7 +141,7 @@ static void iommu_disable(struct omap_iommu *obj)
+ 	struct platform_device *pdev = to_platform_device(obj->dev);
+ 	struct iommu_platform_data *pdata = pdev->dev.platform_data;
+ 
+-	arch_iommu->disable(obj);
++	obj->arch_iommu->disable(obj);
+ 
+ 	pm_runtime_put_sync(obj->dev);
+ 
+@@ -187,20 +152,21 @@ static void iommu_disable(struct omap_iommu *obj)
+ /*
+  *	TLB operations
+  */
+-void omap_iotlb_cr_to_e(struct cr_regs *cr, struct iotlb_entry *e)
++void omap_iotlb_cr_to_e(struct omap_iommu *obj, struct cr_regs *cr,
++			struct iotlb_entry *e)
+ {
+ 	BUG_ON(!cr || !e);
+ 
+-	arch_iommu->cr_to_e(cr, e);
++	obj->arch_iommu->cr_to_e(cr, e);
+ }
+ EXPORT_SYMBOL_GPL(omap_iotlb_cr_to_e);
+ 
+-static inline int iotlb_cr_valid(struct cr_regs *cr)
++static inline int iotlb_cr_valid(struct omap_iommu *obj, struct cr_regs *cr)
+ {
+ 	if (!cr)
+ 		return -EINVAL;
+ 
+-	return arch_iommu->cr_valid(cr);
++	return obj->arch_iommu->cr_valid(cr);
+ }
+ 
+ static inline struct cr_regs *iotlb_alloc_cr(struct omap_iommu *obj,
+@@ -209,22 +175,22 @@ static inline struct cr_regs *iotlb_alloc_cr(struct omap_iommu *obj,
+ 	if (!e)
+ 		return NULL;
+ 
+-	return arch_iommu->alloc_cr(obj, e);
++	return obj->arch_iommu->alloc_cr(obj, e);
+ }
+ 
+-static u32 iotlb_cr_to_virt(struct cr_regs *cr)
++static u32 iotlb_cr_to_virt(struct omap_iommu *obj, struct cr_regs *cr)
+ {
+-	return arch_iommu->cr_to_virt(cr);
++	return obj->arch_iommu->cr_to_virt(cr);
+ }
+ 
+-static u32 get_iopte_attr(struct iotlb_entry *e)
++static u32 get_iopte_attr(struct omap_iommu *obj, struct iotlb_entry *e)
+ {
+-	return arch_iommu->get_pte_attr(e);
++	return obj->arch_iommu->get_pte_attr(e);
+ }
+ 
+ static u32 iommu_report_fault(struct omap_iommu *obj, u32 *da)
+ {
+-	return arch_iommu->fault_isr(obj, da);
++	return obj->arch_iommu->fault_isr(obj, da);
+ }
+ 
+ static void iotlb_lock_get(struct omap_iommu *obj, struct iotlb_lock *l)
+@@ -250,12 +216,12 @@ static void iotlb_lock_set(struct omap_iommu *obj, struct iotlb_lock *l)
+ 
+ static void iotlb_read_cr(struct omap_iommu *obj, struct cr_regs *cr)
+ {
+-	arch_iommu->tlb_read_cr(obj, cr);
++	obj->arch_iommu->tlb_read_cr(obj, cr);
+ }
+ 
+ static void iotlb_load_cr(struct omap_iommu *obj, struct cr_regs *cr)
+ {
+-	arch_iommu->tlb_load_cr(obj, cr);
++	obj->arch_iommu->tlb_load_cr(obj, cr);
+ 
+ 	iommu_write_reg(obj, 1, MMU_FLUSH_ENTRY);
+ 	iommu_write_reg(obj, 1, MMU_LD_TLB);
+@@ -272,7 +238,7 @@ static inline ssize_t iotlb_dump_cr(struct omap_iommu *obj, struct cr_regs *cr,
+ {
+ 	BUG_ON(!cr || !buf);
+ 
+-	return arch_iommu->dump_cr(obj, cr, buf);
++	return obj->arch_iommu->dump_cr(obj, cr, buf);
+ }
+ 
+ /* only used in iotlb iteration for-loop */
+@@ -317,7 +283,7 @@ static int load_iotlb_entry(struct omap_iommu *obj, struct iotlb_entry *e)
+ 		struct cr_regs tmp;
+ 
+ 		for_each_iotlb_cr(obj, obj->nr_tlb_entries, i, tmp)
+-			if (!iotlb_cr_valid(&tmp))
++			if (!iotlb_cr_valid(obj, &tmp))
+ 				break;
+ 
+ 		if (i == obj->nr_tlb_entries) {
+@@ -384,10 +350,10 @@ static void flush_iotlb_page(struct omap_iommu *obj, u32 da)
+ 		u32 start;
+ 		size_t bytes;
+ 
+-		if (!iotlb_cr_valid(&cr))
++		if (!iotlb_cr_valid(obj, &cr))
+ 			continue;
+ 
+-		start = iotlb_cr_to_virt(&cr);
++		start = iotlb_cr_to_virt(obj, &cr);
+ 		bytes = iopgsz_to_bytes(cr.cam & 3);
+ 
+ 		if ((start <= da) && (da < start + bytes)) {
+@@ -432,7 +398,7 @@ ssize_t omap_iommu_dump_ctx(struct omap_iommu *obj, char *buf, ssize_t bytes)
+ 
+ 	pm_runtime_get_sync(obj->dev);
+ 
+-	bytes = arch_iommu->dump_ctx(obj, buf, bytes);
++	bytes = obj->arch_iommu->dump_ctx(obj, buf, bytes);
+ 
+ 	pm_runtime_put_sync(obj->dev);
+ 
+@@ -452,7 +418,7 @@ __dump_tlb_entries(struct omap_iommu *obj, struct cr_regs *crs, int num)
+ 	iotlb_lock_get(obj, &saved);
+ 
+ 	for_each_iotlb_cr(obj, num, i, tmp) {
+-		if (!iotlb_cr_valid(&tmp))
++		if (!iotlb_cr_valid(obj, &tmp))
+ 			continue;
+ 		*p++ = tmp;
+ 	}
+@@ -666,7 +632,7 @@ iopgtable_store_entry_core(struct omap_iommu *obj, struct iotlb_entry *e)
+ 		break;
+ 	}
+ 
+-	prot = get_iopte_attr(e);
++	prot = get_iopte_attr(obj, e);
+ 
+ 	spin_lock(&obj->page_table_lock);
+ 	err = fn(obj, e->da, e->pa, prot);
+@@ -873,8 +839,10 @@ static struct omap_iommu *omap_iommu_attach(const char *name, u32 *iopgd)
+ 	dev = driver_find_device(&omap_iommu_driver.driver, NULL,
+ 				(void *)name,
+ 				device_match_by_alias);
+-	if (!dev)
++	if (!dev) {
++		dev_err(dev, "%s: can't find IOMMU %s\n", __func__, name);
+ 		return ERR_PTR(-ENODEV);
++	}
+ 
+ 	obj = to_iommu(dev);
+ 
+@@ -894,6 +862,7 @@ static struct omap_iommu *omap_iommu_attach(const char *name, u32 *iopgd)
+ 	flush_iotlb_all(obj);
+ 
+ 	if (!try_module_get(obj->owner)) {
++		dev_err(obj->dev, "%s: can't get owner\n", __func__);
+ 		err = -ENODEV;
+ 		goto err_module;
+ 	}
+@@ -969,6 +938,7 @@ static int omap_iommu_probe(struct platform_device *pdev)
+ 
+ 	obj->dev = &pdev->dev;
+ 	obj->ctx = (void *)obj + sizeof(*obj);
++	obj->arch_iommu = &omap2_iommu_ops;
+ 
+ 	spin_lock_init(&obj->iommu_lock);
+ 	spin_lock_init(&obj->page_table_lock);
+diff --git a/drivers/iommu/omap-iommu.h b/drivers/iommu/omap-iommu.h
+index 1275a82..7a90800 100644
+--- a/drivers/iommu/omap-iommu.h
++++ b/drivers/iommu/omap-iommu.h
+@@ -46,6 +46,9 @@ struct omap_iommu {
+ 
+ 	int		nr_tlb_entries;
+ 
++	/* accommodate the difference between omap1 and omap2/3 */
++	const struct iommu_functions *arch_iommu;
++
+ 	void *ctx; /* iommu context: registres saved area */
+ 
+ 	int has_bus_err_back;
+@@ -193,9 +196,10 @@ static inline struct omap_iommu *dev_to_omap_iommu(struct device *dev)
+ /*
+  * global functions
+  */
+-extern u32 omap_iommu_arch_version(void);
++extern u32 omap_iommu_arch_version(struct omap_iommu *obj);
+ 
+-extern void omap_iotlb_cr_to_e(struct cr_regs *cr, struct iotlb_entry *e);
++extern void omap_iotlb_cr_to_e(struct omap_iommu *obj, struct cr_regs *cr,
++			       struct iotlb_entry *e);
+ 
+ extern int
+ omap_iopgtable_store_entry(struct omap_iommu *obj, struct iotlb_entry *e);
+@@ -214,6 +218,8 @@ omap_iommu_dump_ctx(struct omap_iommu *obj, char *buf, ssize_t len);
+ extern size_t
+ omap_dump_tlb_entries(struct omap_iommu *obj, char *buf, ssize_t len);
+ 
++extern const struct iommu_functions omap2_iommu_ops;
++
+ /*
+  * register accessors
+  */
+diff --git a/drivers/iommu/omap-iommu2.c b/drivers/iommu/omap-iommu2.c
+index 5e1ea3b..e72fe62 100644
+--- a/drivers/iommu/omap-iommu2.c
++++ b/drivers/iommu/omap-iommu2.c
+@@ -296,7 +296,7 @@ static void omap2_cr_to_e(struct cr_regs *cr, struct iotlb_entry *e)
+ 	e->mixed	= cr->ram & MMU_RAM_MIXED;
+ }
+ 
+-static const struct iommu_functions omap2_iommu_ops = {
++const struct iommu_functions omap2_iommu_ops = {
+ 	.version	= IOMMU_ARCH_VERSION,
+ 
+ 	.enable		= omap2_iommu_enable,
+@@ -319,19 +319,3 @@ static const struct iommu_functions omap2_iommu_ops = {
+ 	.restore_ctx	= omap2_iommu_restore_ctx,
+ 	.dump_ctx	= omap2_iommu_dump_ctx,
+ };
+-
+-static int __init omap2_iommu_init(void)
+-{
+-	return omap_install_iommu_arch(&omap2_iommu_ops);
+-}
+-module_init(omap2_iommu_init);
+-
+-static void __exit omap2_iommu_exit(void)
+-{
+-	omap_uninstall_iommu_arch(&omap2_iommu_ops);
+-}
+-module_exit(omap2_iommu_exit);
+-
+-MODULE_AUTHOR("Hiroshi DOYU, Paul Mundt and Toshihiro Kobayashi");
+-MODULE_DESCRIPTION("omap iommu: omap2/3 architecture specific functions");
+-MODULE_LICENSE("GPL v2");
+-- 
+1.8.5.5
