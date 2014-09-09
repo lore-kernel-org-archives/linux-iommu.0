@@ -1,91 +1,133 @@
-From: Yijing Wang <wangyijing@huawei.com>
-Subject: Re: [Xen-devel] [PATCH v1 08/21] x86/xen/MSI: Use MSI chip framework
- to configure MSI/MSI-X irq
-Date: Tue, 9 Sep 2014 10:06:13 +0800
-Message-ID: <540E6095.8030409@huawei.com>
-References: <1409911806-10519-1-git-send-email-wangyijing@huawei.com>
- <1409911806-10519-9-git-send-email-wangyijing@huawei.com>
- <5409C8C0.8020200@citrix.com>
+From: "Su, Friendy" <Friendy.Su-7U/KSKJipcvM1kAEIRd3EQ@public.gmane.org>
+Subject: RE: [PATCH v2 1/1] iommu/amd: set iommu for early mapped ioapic/hpet
+Date: Tue, 9 Sep 2014 16:34:52 +0800
+Message-ID: <053191AD6E9023439BF3970DE870051856D274B417@APSHAXMS02.ap.sony.com>
+References: <053191AD6E9023439BF3970DE870051856D1EF3AC5@APSHAXMS02.ap.sony.com>
+	<20140905135320.GP28786@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <5409C8C0.8020200@citrix.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: David Vrabel <david.vrabel@citrix.com>, Bjorn Helgaas <bhelgaas@google.com>
-Cc: linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, linux-pci@vger.kernel.org, Xinwei Hu <huxinwei@huawei.com>, sparclinux@vger.kernel.org, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Joerg Roedel <joro@8bytes.org>, x86@kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, xen-devel@lists.xenproject.org, arnab.basu@freescale.com, Arnd Bergmann <arnd@arndb.de>, Chris Metcalf <cmetcalf@tilera.com>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Bharat.Bhushan@freescale.com, Tony Luck <tony.luck@intel.com>, Ralf Baechle <ralf@linux-mips.org>, iommu@lists.linux-foundation.org, Wuyun <wuyun.wu@huawei.com>, linuxppc-dev@lists.ozlabs.org, "David S. Miller" <davem@davemloft.net>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20140905135320.GP28786-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Language: zh-CN
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2014/9/5 22:29, David Vrabel wrote:
-> On 05/09/14 11:09, Yijing Wang wrote:
->> Use MSI chip framework instead of arch MSI functions to configure
->> MSI/MSI-X irq. So we can manage MSI/MSI-X irq in a unified framework.
-> [...]
->> --- a/arch/x86/pci/xen.c
->> +++ b/arch/x86/pci/xen.c
-> [...]
->> @@ -418,9 +430,9 @@ int __init pci_xen_init(void)
->>  #endif
->>  
->>  #ifdef CONFIG_PCI_MSI
->> -	x86_msi.setup_msi_irqs = xen_setup_msi_irqs;
->> -	x86_msi.teardown_msi_irq = xen_teardown_msi_irq;
->> -	x86_msi.teardown_msi_irqs = xen_teardown_msi_irqs;
->> +	xen_msi_chip.setup_irqs = xen_setup_msi_irqs;
->> +	xen_msi_chip.teardown_irqs = xen_teardown_msi_irqs;
->> +	x86_msi_chip = &xen_msi_chip;
->>  	msi_chip.irq_mask = xen_nop_msi_mask;
->>  	msi_chip.irq_unmask = xen_nop_msi_mask;
+Hi, Joerg,
+
+> The problem you describe here should also be fixed by this (simpler)
+> patch. Can you test this please?
+
+The running result of this patch is correct.
+
+My opinion is we should avoid modifying the original data "early_ioapic_map[i].devid" and "devid from IVHD" since they are original data from user command line and BIOS. At anytime, "early_ioapic_map[i].devid" should reflect the command line setting. So code should not give possibility to modify it. Same to "devid from IVHD" although it is just a local variable. This is why I imported a new argument to add_special_device().
+
+Best Regards
+Friendy
+
+> -----Original Message-----
+> From: Joerg Roedel [mailto:joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org]
+> Sent: Friday, September 05, 2014 9:53 PM
+> To: Su, Friendy
+> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Subject: Re: [PATCH v2 1/1] iommu/amd: set iommu for early mapped
+> ioapic/hpet
 > 
-> Why have these not been changed to set the x86_msi_chip.mask/unmask
-> fields instead?
-
-Hi David, x86_msi_chip here is struct msi_chip data type, used to configure MSI/MSI-X
-irq. msi_chip above is struct irq_chip data type, represent the MSI irq controller. They are
-not the same object. Their name easily confusing people.
-
-Defined in arch/x86/kernel/apic/io_apic.c
-/*
- * IRQ Chip for MSI PCI/PCI-X/PCI-Express Devices,
- * which implement the MSI or MSI-X Capability Structure.
- */
-static struct irq_chip msi_chip = {
-	.name			= "PCI-MSI",
-	.irq_unmask		= unmask_msi_irq,
-	.irq_mask		= mask_msi_irq,
-	.irq_ack		= ack_apic_edge,
-	.irq_set_affinity	= msi_set_affinity,
-	.irq_retrigger		= ioapic_retrigger_irq,
-};
-
-
-Defined in arch/x86/kernel/apic/io_apic.c, introduced in patch 7/21
-struct msi_chip apic_msi_chip = {
-	.setup_irqs = native_setup_msi_irqs,
-	.teardown_irq = native_teardown_msi_irq,
-};
-[...]
-struct msi_chip *x86_msi_chip = &apic_msi_chip;
-
-
-Thanks!
-Yijing.
-
+> On Fri, Sep 05, 2014 at 07:25:14PM +0800, Su, Friendy wrote:
+> > This issue is found on a mother board whose BIOS reports wrong
+> > IOAPIC devid in IVHD table. Without this fix, the early mapped
+> > does not really override IVHD. So that the wrong reported IOAPIC
+> > does not work.
 > 
-> David
+> The problem you describe here should also be fixed by this (simpler)
+> patch. Can you test this please?
 > 
-> .
+> Thanks,
 > 
-
-
--- 
-Thanks!
-Yijing
+> 	Joerg
+> 
+> diff --git a/drivers/iommu/amd_iommu_init.c
+> b/drivers/iommu/amd_iommu_init.c
+> index 3783e0b..b0522f1 100644
+> --- a/drivers/iommu/amd_iommu_init.c
+> +++ b/drivers/iommu/amd_iommu_init.c
+> @@ -712,7 +712,7 @@ static void __init set_dev_entry_from_acpi(struct
+> amd_iommu *iommu,
+>  	set_iommu_for_device(iommu, devid);
+>  }
+> 
+> -static int __init add_special_device(u8 type, u8 id, u16 devid, bool cmd_line)
+> +static int __init add_special_device(u8 type, u8 id, u16 *devid, bool cmd_line)
+>  {
+>  	struct devid_map *entry;
+>  	struct list_head *list;
+> @@ -731,6 +731,8 @@ static int __init add_special_device(u8 type, u8 id, u16
+> devid, bool cmd_line)
+>  		pr_info("AMD-Vi: Command-line override present for %s id %d -
+> ignoring\n",
+>  			type == IVHD_SPECIAL_IOAPIC ? "IOAPIC" : "HPET", id);
+> 
+> +		*devid = entry->devid;
+> +
+>  		return 0;
+>  	}
+> 
+> @@ -739,7 +741,7 @@ static int __init add_special_device(u8 type, u8 id, u16
+> devid, bool cmd_line)
+>  		return -ENOMEM;
+> 
+>  	entry->id	= id;
+> -	entry->devid	= devid;
+> +	entry->devid	= *devid;
+>  	entry->cmd_line	= cmd_line;
+> 
+>  	list_add_tail(&entry->list, list);
+> @@ -754,7 +756,7 @@ static int __init add_early_maps(void)
+>  	for (i = 0; i < early_ioapic_map_size; ++i) {
+>  		ret = add_special_device(IVHD_SPECIAL_IOAPIC,
+>  					 early_ioapic_map[i].id,
+> -					 early_ioapic_map[i].devid,
+> +					 &early_ioapic_map[i].devid,
+>  					 early_ioapic_map[i].cmd_line);
+>  		if (ret)
+>  			return ret;
+> @@ -763,7 +765,7 @@ static int __init add_early_maps(void)
+>  	for (i = 0; i < early_hpet_map_size; ++i) {
+>  		ret = add_special_device(IVHD_SPECIAL_HPET,
+>  					 early_hpet_map[i].id,
+> -					 early_hpet_map[i].devid,
+> +					 &early_hpet_map[i].devid,
+>  					 early_hpet_map[i].cmd_line);
+>  		if (ret)
+>  			return ret;
+> @@ -978,10 +980,17 @@ static int __init init_iommu_from_acpi(struct
+> amd_iommu *iommu,
+>  				    PCI_SLOT(devid),
+>  				    PCI_FUNC(devid));
+> 
+> -			set_dev_entry_from_acpi(iommu, devid, e->flags, 0);
+> -			ret = add_special_device(type, handle, devid, false);
+> +			ret = add_special_device(type, handle, &devid, false);
+>  			if (ret)
+>  				return ret;
+> +
+> +			/*
+> +			 * add_special_device might update the devid in case a
+> +			 * command-line override is present. So call
+> +			 * set_dev_entry_from_acpi after add_special_device.
+> +			 */
+> +			set_dev_entry_from_acpi(iommu, devid, e->flags, 0);
+> +
+>  			break;
+>  		}
+>  		default:
