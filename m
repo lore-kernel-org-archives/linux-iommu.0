@@ -1,50 +1,33 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH v2 3/7] iommu: add new iommu_ops callback for adding
-	an OF device
-Date: Wed, 10 Sep 2014 12:33:07 +0100
-Message-ID: <20140910113306.GI28488@arm.com>
-References: <1409680587-29818-1-git-send-email-will.deacon@arm.com>
-	<1409680587-29818-4-git-send-email-will.deacon@arm.com>
-	<541032F6.1090809@samsung.com> <20140910112213.GH28488@arm.com>
+From: David Vrabel <david.vrabel@citrix.com>
+Subject: Re: [Xen-devel] [PATCH v1 04/21] x86/xen/MSI: Eliminate arch_msix_mask_irq()
+ and arch_msi_mask_irq()
+Date: Wed, 10 Sep 2014 13:36:14 +0100
+Message-ID: <541045BE.9050804@citrix.com>
+References: <1409911806-10519-1-git-send-email-wangyijing@huawei.com> <1409911806-10519-5-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20140910112213.GH28488-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Return-path: <linux-ia64-owner@vger.kernel.org>
+In-Reply-To: <1409911806-10519-5-git-send-email-wangyijing@huawei.com>
+Sender: linux-ia64-owner@vger.kernel.org
+To: Yijing Wang <wangyijing@huawei.com>, Bjorn Helgaas <bhelgaas@google.com>
+Cc: linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, linux-pci@vger.kernel.org, Bharat.Bhushan@freescale.com, sparclinux@vger.kernel.org, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Joerg Roedel <joro@8bytes.org>, x86@kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, xen-devel@lists.xenproject.org, arnab.basu@freescale.com, Arnd Bergmann <arnd@arndb.de>, Chris Metcalf <cmetcalf@tilera.com>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Xinwei Hu <huxinwei@huawei.com>, Tony Luck <tony.luck@intel.com>, Ralf Baechle <ralf@linux-mips.org>, iommu@lists.linux-foundation.org, Wuyun <wuyun.wu@huawei.com>, linuxppc-dev@lists.ozlabs.org, "David S. Miller" <davem@davemloft.net>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Sep 10, 2014 at 12:22:13PM +0100, Will Deacon wrote:
-> On Wed, Sep 10, 2014 at 12:16:06PM +0100, Marek Szyprowski wrote:
-> > On 2014-09-02 19:56, Will Deacon wrote:
-> > > +#ifdef CONFIG_OF_IOMMU
-> > > +	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
-> > 
-> > If I understand correctly how it is designed to work, then it should be:
-> > 
-> > struct iommu_data *(*of_xlate)(struct device *dev, struct 
-> > of_phandle_args *args);
-> 
-> Yeah, that might be cleaner than the of_iommu_get_data call in
-> of_dma_configure. I'm currently cooking a v3, so I'll include this change.
+On 05/09/14 11:09, Yijing Wang wrote:
+> Commit 0e4ccb150 added two __weak arch functions arch_msix_mask_irq()
+> and arch_msi_mask_irq() to fix a bug found when running xen in x86.
+> Introduced these two funcntions make MSI code complex. And mask/unmask
+> is the irq actions related to interrupt controller, should not use
+> weak arch functions to override mask/unmask interfaces. This patch
+> reverted commit 0e4ccb150 and export struct irq_chip msi_chip, modify
+> msi_chip->irq_mask/irq_unmask() in xen init functions to fix this
+> bug for simplicity. Also this is preparation for using struct
+> msi_chip instead of weak arch MSI functions in all platforms.
 
-Actually, I spoke too soon. If we make of_xlate return the iommu_data, then
-we have to continue getting the iommu_ops from the bus_type, otherwise we
-have no way to call the right of_xlate.
+Acked-by: David Vrabel <david.vrabel@citrix.com>
 
-So I'd rather leave of_dma_configure using of_iommu_get_data (I'm currently
-ripping out the bus code in there) so that we can embed the iommu_ops in
-iommu_data instead.
+But I wonder if it would be better the Xen subsystem to provide its own
+struct irq_chip instead of adjusting the fields in the generic x86 one.
 
-Will
+David
